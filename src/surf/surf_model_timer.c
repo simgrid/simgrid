@@ -39,7 +39,8 @@ static command_t command_new(void *fun, void *args)
   command->args = args;
   xbt_swag_insert(command, command_pending);
   command->action =
-    surf_action_new(sizeof(s_surf_action_timer_t), 0, surf_timer_model, 0);
+      surf_action_new(sizeof(s_surf_action_timer_t), 0, surf_timer_model,
+                      0);
   return command;
 }
 
@@ -179,9 +180,9 @@ static void surf_timer_model_init_internal(void)
   surf_timer_model->model_private->resource_used = resource_used;
   surf_timer_model->model_private->share_resources = share_resources;
   surf_timer_model->model_private->update_actions_state =
-    update_actions_state;
+      update_actions_state;
   surf_timer_model->model_private->update_resource_state =
-    update_resource_state;
+      update_resource_state;
   surf_timer_model->model_private->finalize = finalize;
 
   surf_timer_model->suspend = action_suspend;
@@ -193,8 +194,10 @@ static void surf_timer_model_init_internal(void)
 
   {
     s_command_t var;
-    command_pending = xbt_swag_new(xbt_swag_offset(var, command_set_hookup));
-    command_to_run = xbt_swag_new(xbt_swag_offset(var, command_set_hookup));
+    command_pending =
+        xbt_swag_new(xbt_swag_offset(var, command_set_hookup));
+    command_to_run =
+        xbt_swag_new(xbt_swag_offset(var, command_set_hookup));
   }
 
   empty_trace = tmgr_empty_trace_new();

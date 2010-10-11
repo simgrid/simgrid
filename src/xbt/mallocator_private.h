@@ -18,4 +18,4 @@ typedef struct s_xbt_mallocator {
   void_f_pvoid_t reset_f;       /* function to call when an object is released by the user */
 } s_xbt_mallocator_t;
 
-#endif /* _XBT_MALLOCATOR_PRIVATE_H__ */
+#endif                          /* _XBT_MALLOCATOR_PRIVATE_H__ */

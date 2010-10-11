@@ -15,8 +15,8 @@
 #include "xbt/dynar.h"
 SG_BEGIN_DECL()
 
-XBT_PUBLIC(void) xbt_dynar_dopar(xbt_dynar_t datas, void_f_int_pvoid_t function);
+XBT_PUBLIC(void) xbt_dynar_dopar(xbt_dynar_t datas,
+                                 void_f_int_pvoid_t function);
 
 SG_END_DECL()
-
-#endif /* SYNCHRO_H_ */
+#endif                          /* SYNCHRO_H_ */

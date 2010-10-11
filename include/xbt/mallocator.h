@@ -35,7 +35,7 @@ SG_BEGIN_DECL()
  *  @{
  */
 /** \brief Mallocator data type (opaque structure) */
-     typedef struct s_xbt_mallocator *xbt_mallocator_t;
+typedef struct s_xbt_mallocator *xbt_mallocator_t;
 XBT_PUBLIC(xbt_mallocator_t) xbt_mallocator_new(int size,
                                                 pvoid_f_void_t new_f,
                                                 void_f_pvoid_t free_f,
@@ -55,4 +55,4 @@ XBT_PUBLIC(void) xbt_mallocator_release(xbt_mallocator_t mallocator,
 /** @} */
 
 SG_END_DECL()
-#endif /* _XBT_MALLOCATOR_H */
+#endif                          /* _XBT_MALLOCATOR_H */

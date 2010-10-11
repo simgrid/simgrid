@@ -8,16 +8,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <unistd.h>	/* Prototypes for sbrk (maybe) */
+#include <unistd.h>             /* Prototypes for sbrk (maybe) */
 
-#include <string.h>	/* Prototypes for memcpy, memmove, memset, etc */
+#include <string.h>             /* Prototypes for memcpy, memmove, memset, etc */
 
 #include "xbt.h"
 #include "mmprivate.h"
 
-static void* sbrk_morecore (struct mdesc *mdp, int size);
+static void *sbrk_morecore(struct mdesc *mdp, int size);
 #if NEED_DECLARATION_SBRK
-extern void* sbrk (int size);
+extern void *sbrk(int size);
 #endif
 
 /* The mmalloc() package can use a single implicit malloc descriptor
@@ -30,22 +30,17 @@ struct mdesc *__mmalloc_default_mdp;
 
 /* Use sbrk() to get more core. */
 
-static void*
-sbrk_morecore (mdp, size)
-  struct mdesc *mdp;
-  int size;
+static void *sbrk_morecore(mdp, size)
+struct mdesc *mdp;
+int size;
 {
-  void* result;
+  void *result;
 
-  if ((result = sbrk (size)) == (void*) -1)
-    {
-      result = NULL;
-    }
-  else
-    {
-      mdp -> breakval = (char*)mdp -> breakval + size;
-      mdp -> top      = (char*)mdp -> top + size;
-    }
+  if ((result = sbrk(size)) == (void *) -1) {
+    result = NULL;
+  } else {
+    mdp->breakval = (char *) mdp->breakval + size;
+    mdp->top = (char *) mdp->top + size;
+  }
   return (result);
 }
-

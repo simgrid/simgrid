@@ -23,8 +23,8 @@ class GTNETS_Node {
 
 public:
   GTNETS_Node(int);
-    GTNETS_Node(const GTNETS_Node & node);
-   ~GTNETS_Node();
+   GTNETS_Node(const GTNETS_Node & node);
+  ~GTNETS_Node();
 
   int add_host(int);
   int add_router(int);
@@ -46,8 +46,8 @@ class GTNETS_Link {
 public:
   GTNETS_Link();
   GTNETS_Link(int id);
-    GTNETS_Link(const GTNETS_Link &);
-   ~GTNETS_Link();
+   GTNETS_Link(const GTNETS_Link &);
+  ~GTNETS_Link();
 
   GTNETS_Node *src_node();
   GTNETS_Node *dst_node();
@@ -92,12 +92,12 @@ public:
 private:
 
   int nodeID_;
-    map < int, GTNETS_Link * >links_;
-    vector < GTNETS_Node * >nodes_;
+   map < int, GTNETS_Link * >links_;
+   vector < GTNETS_Node * >nodes_;
 
-    map < int, int >hosts_;     //hostid->nodeid
+   map < int, int >hosts_;      //hostid->nodeid
 
-    set < int >routers_;
+   set < int >routers_;
 };
 
 #endif

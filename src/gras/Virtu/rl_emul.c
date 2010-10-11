@@ -13,9 +13,10 @@
 XBT_LOG_NEW_SUBCATEGORY(gras_virtu_emul, gras_virtu, "Emulation support");
 
 /*** CPU burning */
-void gras_cpu_burn(double flops) {
-  while (flops>0) {
-    flops-=2;
+void gras_cpu_burn(double flops)
+{
+  while (flops > 0) {
+    flops -= 2;
   }
 }
 

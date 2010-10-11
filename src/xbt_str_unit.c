@@ -21,14 +21,15 @@
                    free(s); \
                    xbt_dynar_free(&d);
 
-XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted,"test the function xbt_str_split_quoted")
+XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_str_split_quoted")
 {
   xbt_dynar_t d;
   char *s;
 
   mytest("Empty", "", "");
   mytest("Basic test", "toto tutu", "totoXXXtutu");
-  mytest("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u", "totoXXXtutu");
+  mytest("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u",
+         "totoXXXtutu");
   mytest("Protected space", "toto\\ tutu", "toto tutu");
   mytest("Several spaces", "toto   tutu", "totoXXXtutu");
   mytest("LTriming", "  toto tatu", "totoXXXtatu");
@@ -53,7 +54,7 @@ XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted,"test the function xbt_s
                    free(s); \
                    xbt_dynar_free(&d);
 
-XBT_TEST_UNIT("xbt_str_split_str", test_split_str,"test the function xbt_str_split_str")
+XBT_TEST_UNIT("xbt_str_split_str", test_split_str, "test the function xbt_str_split_str")
 {
   xbt_dynar_t d;
   char *s;

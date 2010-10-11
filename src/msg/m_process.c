@@ -32,7 +32,7 @@ void __MSG_process_cleanup(void *arg)
   /* arg is a pointer to a simix process, we can get the msg process with the field data */
   m_process_t proc = ((smx_process_t) arg)->data;
 #ifdef HAVE_TRACING
-  TRACE_msg_process_end (proc);
+  TRACE_msg_process_end(proc);
 #endif
   xbt_fifo_remove(msg_global->process_list, proc);
   SIMIX_process_cleanup(arg);
@@ -56,8 +56,9 @@ void *_MSG_process_create_from_SIMIX(const char *name,
                                      xbt_dict_t properties)
 {
   m_host_t host = MSG_get_host_by_name(hostname);
-  return (void *) MSG_process_create_with_environment(name, code, data, host,
-                                                      argc, argv, properties);
+  return (void *) MSG_process_create_with_environment(name, code, data,
+                                                      host, argc, argv,
+                                                      properties);
 }
 
 /** \ingroup m_process_management
@@ -186,7 +187,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
 void _MSG_process_kill_from_SIMIX(void *p)
 {
 #ifdef HAVE_TRACING
-  TRACE_msg_process_kill ((m_process_t) p);
+  TRACE_msg_process_kill((m_process_t) p);
 #endif
   MSG_process_kill((m_process_t) p);
 }
@@ -201,22 +202,22 @@ void MSG_process_kill(m_process_t process)
   simdata_process_t p_simdata = process->simdata;
 
 #ifdef HAVE_TRACING
-  TRACE_msg_process_kill (process);
+  TRACE_msg_process_kill(process);
 #endif
 
   DEBUG3("Killing %s(%d) on %s",
          process->name, p_simdata->PID, p_simdata->m_host->name);
 
   if (p_simdata->waiting_task && p_simdata->waiting_task->simdata->comm) {
-      SIMIX_communication_cancel(p_simdata->waiting_task->simdata->comm);
+    SIMIX_communication_cancel(p_simdata->waiting_task->simdata->comm);
   }
- 
+
   if (p_simdata->waiting_action) {
     DEBUG1("Canceling waiting task %s",
            SIMIX_action_get_name(p_simdata->waiting_action));
     SIMIX_action_cancel(p_simdata->waiting_action);
-   }
-  
+  }
+
   xbt_fifo_remove(msg_global->process_list, process);
   SIMIX_process_kill(process->simdata->s_process);
 
@@ -235,7 +236,7 @@ MSG_error_t MSG_process_change_host(m_host_t host)
   m_host_t now = process->simdata->m_host;
   process->simdata->m_host = host;
 #ifdef HAVE_TRACING
-  TRACE_msg_process_change_host (process, now, host);
+  TRACE_msg_process_change_host(process, now, host);
 #endif
   SIMIX_process_change_host(process->simdata->s_process, now->name,
                             host->name);
@@ -428,7 +429,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
   CHECK_HOST();
 
 #ifdef HAVE_TRACING
-  TRACE_msg_process_suspend (process);
+  TRACE_msg_process_suspend(process);
 #endif
 
   SIMIX_process_suspend(process->simdata->s_process);
@@ -449,7 +450,7 @@ MSG_error_t MSG_process_resume(m_process_t process)
   CHECK_HOST();
 
 #ifdef HAVE_TRACING
-  TRACE_msg_process_resume (process);
+  TRACE_msg_process_resume(process);
 #endif
 
   SIMIX_process_resume(process->simdata->s_process);

@@ -18,9 +18,9 @@ typedef struct surf_action_network_Vivaldi {
 } s_surf_action_network_Vivaldi_t, *surf_action_network_Vivaldi_t;
 
 typedef struct s_netviva_coords {
-  double x,y,h;
+  double x, y, h;
 } s_netviva_coords_t, *netviva_coords_t;
-xbt_dict_t coords; /* Host name -> coordinates */
+xbt_dict_t coords;              /* Host name -> coordinates */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 static random_data_t random_latency_viva = NULL;
@@ -36,7 +36,8 @@ static void netviva_define_callbacks(const char *file)
   surfxml_add_callback(STag_surfxml_host_cb_list, &netviva_count_hosts);
 }
 
-static int netviva_resource_used(void *resource_id) {
+static int netviva_resource_used(void *resource_id)
+{
   /* nothing to do here */
   return 0;
 }
@@ -47,7 +48,8 @@ static int netviva_action_unref(surf_action_t action)
   if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
 #ifdef HAVE_TRACING
-    if (action->category) xbt_free (action->category);
+    if (action->category)
+      xbt_free(action->category);
 #endif
     free(action);
     return 1;
@@ -74,7 +76,8 @@ static double netviva_action_get_remains(surf_action_t action)
 static double netviva_share_resources(double now)
 {
   surf_action_network_Vivaldi_t action = NULL;
-  xbt_swag_t running_actions = surf_network_model->states.running_action_set;
+  xbt_swag_t running_actions =
+      surf_network_model->states.running_action_set;
   double min = -1.0;
 
   xbt_swag_foreach(action, running_actions) {
@@ -89,11 +92,13 @@ static double netviva_share_resources(double now)
   return min;
 }
 
-static void netviva_update_actions_state(double now, double delta) {
+static void netviva_update_actions_state(double now, double delta)
+{
   /* Advance the actions by delta seconds */
   surf_action_network_Vivaldi_t action = NULL;
   surf_action_network_Vivaldi_t next_action = NULL;
-  xbt_swag_t running_actions = surf_network_model->states.running_action_set;
+  xbt_swag_t running_actions =
+      surf_network_model->states.running_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     if (action->latency > 0) {
@@ -108,7 +113,7 @@ static void netviva_update_actions_state(double now, double delta) {
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(action->generic_action.max_duration), delta);
 
-    if (action->generic_action.remains <= 0) { /* This action is done, inform SURF about it */
+    if (action->generic_action.remains <= 0) {  /* This action is done, inform SURF about it */
       action->generic_action.finish = surf_get_clock();
       surf_network_model->action_state_set((surf_action_t) action,
                                            SURF_ACTION_DONE);
@@ -122,30 +127,33 @@ static void netviva_update_actions_state(double now, double delta) {
 }
 
 static void netviva_update_resource_state(void *id,
-                                  tmgr_trace_event_t event_type,
-                                  double value, double time)
-{ /* Called as soon as there is a trace modification */
+                                          tmgr_trace_event_t event_type,
+                                          double value, double time)
+{                               /* Called as soon as there is a trace modification */
   DIE_IMPOSSIBLE;
 }
 
-static surf_action_t netviva_communicate(const char *src_name, const char *dst_name,
-                                  double size, double rate)
+static surf_action_t netviva_communicate(const char *src_name,
+                                         const char *dst_name, double size,
+                                         double rate)
 {
   surf_action_network_Vivaldi_t action = NULL;
-  netviva_coords_t c1,c2;
-  c1 = xbt_dict_get(coords,src_name);
-  c2 = xbt_dict_get(coords,dst_name);
+  netviva_coords_t c1, c2;
+  c1 = xbt_dict_get(coords, src_name);
+  c2 = xbt_dict_get(coords, dst_name);
 
-  action = surf_action_new(sizeof(s_surf_action_network_Vivaldi_t), size,surf_network_model, 0);
+  action =
+      surf_action_new(sizeof(s_surf_action_network_Vivaldi_t), size,
+                      surf_network_model, 0);
 
   action->suspended = 0;
 
-  action->latency = sqrt((c1->x-c2->x)*(c1->x-c2->x) + (c1->y-c2->y)*(c1->y-c2->y)) + fabs(c1->h)+ fabs(c2->h) ;          //random_generate(random_latency_viva);
+  action->latency = sqrt((c1->x - c2->x) * (c1->x - c2->x) + (c1->y - c2->y) * (c1->y - c2->y)) + fabs(c1->h) + fabs(c2->h);    //random_generate(random_latency_viva);
   action->lat_init = action->latency;
 
   if (action->latency <= 0.0) {
     action->generic_action.state_set =
-      surf_network_model->states.done_action_set;
+        surf_network_model->states.done_action_set;
     xbt_swag_insert(action, action->generic_action.state_set);
   }
 
@@ -189,7 +197,8 @@ static int netviva_action_is_suspended(surf_action_t action)
   return ((surf_action_network_Vivaldi_t) action)->suspended;
 }
 
-static void netviva_action_set_max_duration(surf_action_t action, double duration)
+static void netviva_action_set_max_duration(surf_action_t action,
+                                            double duration)
 {
   action->max_duration = duration;
 }
@@ -200,25 +209,28 @@ static void netviva_finalize(void)
   surf_network_model = NULL;
 }
 
-static void netviva_parse_host(void) {
-  netviva_coords_t coord = xbt_new(s_netviva_coords_t,1);
+static void netviva_parse_host(void)
+{
+  netviva_coords_t coord = xbt_new(s_netviva_coords_t, 1);
 
-  xbt_dynar_t ctn =xbt_str_split_str(A_surfxml_host_vivaldi," ");
+  xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_host_vivaldi, " ");
 
-  coord->x = atof(xbt_dynar_get_as(ctn, 0, char*));
-  coord->y = atof(xbt_dynar_get_as(ctn, 1, char*));
-  coord->h = atof(xbt_dynar_get_as(ctn, 2, char*));
+  coord->x = atof(xbt_dynar_get_as(ctn, 0, char *));
+  coord->y = atof(xbt_dynar_get_as(ctn, 1, char *));
+  coord->h = atof(xbt_dynar_get_as(ctn, 2, char *));
 
 #ifdef HAVE_TRACING
-  TRACE_surf_host_vivaldi_parse (A_surfxml_host_id, coord->x, coord->y, coord->h);
+  TRACE_surf_host_vivaldi_parse(A_surfxml_host_id, coord->x, coord->y,
+                                coord->h);
 #endif
 
   xbt_dynar_free(&ctn);
-  xbt_dict_set(coords, A_surfxml_host_id,coord,NULL);
+  xbt_dict_set(coords, A_surfxml_host_id, coord, NULL);
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-static int netviva_get_latency_limited(surf_action_t action){
+static int netviva_get_latency_limited(surf_action_t action)
+{
   return 0;
 }
 #endif
@@ -242,11 +254,12 @@ void surf_network_model_init_Vivaldi(const char *filename)
 #endif
 
   surf_network_model->model_private->resource_used = netviva_resource_used;
-  surf_network_model->model_private->share_resources = netviva_share_resources;
+  surf_network_model->model_private->share_resources =
+      netviva_share_resources;
   surf_network_model->model_private->update_actions_state =
-    netviva_update_actions_state;
+      netviva_update_actions_state;
   surf_network_model->model_private->update_resource_state =
-    netviva_update_resource_state;
+      netviva_update_resource_state;
   surf_network_model->model_private->finalize = netviva_finalize;
 
   surf_network_model->suspend = netviva_action_suspend;
@@ -256,8 +269,9 @@ void surf_network_model_init_Vivaldi(const char *filename)
 
   surf_network_model->extension.network.communicate = netviva_communicate;
   surf_network_model->extension.network.get_link_bandwidth =
-    netviva_get_link_bandwidth;
-  surf_network_model->extension.network.get_link_latency = netviva_get_link_latency;
+      netviva_get_link_bandwidth;
+  surf_network_model->extension.network.get_link_latency =
+      netviva_get_link_latency;
   surf_network_model->extension.network.link_shared = netviva_link_shared;
 
   if (!random_latency_viva)
@@ -272,12 +286,11 @@ void surf_network_model_init_Vivaldi(const char *filename)
                            "Vivaldi", surf_network_model);
 
 #ifdef HAVE_TRACING
-  TRACE_user_host_variable(0,"vivaldi_x",0,"declare");
-  TRACE_user_host_variable(0,"vivaldi_y",0,"declare");
-  TRACE_user_host_variable(0,"vivaldi_h",0,"declare");
+  TRACE_user_host_variable(0, "vivaldi_x", 0, "declare");
+  TRACE_user_host_variable(0, "vivaldi_y", 0, "declare");
+  TRACE_user_host_variable(0, "vivaldi_h", 0, "declare");
 #endif
 
   xbt_cfg_set_string(_surf_cfg_set, "routing", "none");
   routing_model_create(sizeof(double), NULL);
 }
-

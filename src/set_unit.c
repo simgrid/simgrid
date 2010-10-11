@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-#line 316 "xbt/set.c" 
+#line 321 "xbt/set.c" 
 #include "xbt.h"
 #include "xbt/ex.h"
 
@@ -77,7 +77,8 @@ static void search_name(xbt_set_t head, const char *key)
     THROW2(mismatch_error, 0, "The key (%s) is not the one expected (%s)",
            key, elm->name);
   if (strcmp(elm->name, elm->data))
-    THROW2(mismatch_error, 0, "The name (%s) != data (%s)", key, elm->name);
+    THROW2(mismatch_error, 0, "The name (%s) != data (%s)", key,
+           elm->name);
   fflush(stdout);
 }
 
@@ -110,7 +111,8 @@ static void traverse(xbt_set_t set)
     xbt_test_assert0(elm, "Dude ! Got a null elm during traversal!");
     xbt_test_log3("Id(%d):  %s->%s\n", elm->ID, elm->name, elm->data);
     xbt_test_assert2(!strcmp(elm->name, elm->data),
-                     "Key(%s) != value(%s). Abording", elm->name, elm->data);
+                     "Key(%s) != value(%s). Abording", elm->name,
+                     elm->data);
   }
 }
 
@@ -121,8 +123,8 @@ static void search_not_found(xbt_set_t set, const char *data)
   xbt_test_add1("Search %s (expected not to be found)", data);
   TRY {
     xbt_set_get_by_name(set, data);
-    THROW1(unknown_error, 0, "Found something which shouldn't be there (%s)",
-           data);
+    THROW1(unknown_error, 0,
+           "Found something which shouldn't be there (%s)", data);
   } CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);

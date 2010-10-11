@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-#line 816 "xbt/dict.c" 
+#line 835 "xbt/dict.c" 
 #include "xbt.h"
 #include "xbt/ex.h"
 #include "portable.h"
@@ -27,7 +27,8 @@ static void debuged_add_ext(xbt_dict_t head, const char *key,
 {
   char *data = xbt_strdup(data_to_fill);
 
-  xbt_test_log2("Add %s under %s", PRINTF_STR(data_to_fill), PRINTF_STR(key));
+  xbt_test_log2("Add %s under %s", PRINTF_STR(data_to_fill),
+                PRINTF_STR(key));
 
   xbt_dict_set(head, key, data, &free);
   if (XBT_LOG_ISENABLED(xbt_dict, xbt_log_priority_debug)) {
@@ -117,8 +118,8 @@ static void search_not_found(xbt_dict_t head, const char *data)
 
   TRY {
     data = xbt_dict_get(head, data);
-    THROW1(unknown_error, 0, "Found something which shouldn't be there (%s)",
-           data);
+    THROW1(unknown_error, 0,
+           "Found something which shouldn't be there (%s)", data);
   } CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
@@ -142,7 +143,7 @@ static void count(xbt_dict_t dict, int length)
                    length);
 
   xbt_dict_foreach(dict, cursor, key, data)
-    effective++;
+      effective++;
 
   xbt_test_assert2(effective == length, "Effective length(%d) != %d.",
                    effective, length);
@@ -152,21 +153,24 @@ static void count(xbt_dict_t dict, int length)
 static void count_check_get_key(xbt_dict_t dict, int length)
 {
   xbt_dict_cursor_t cursor;
-  char *key,*key2;
+  char *key, *key2;
   void *data;
   int effective = 0;
 
 
-  xbt_test_add1("Count elements (expecting %d), and test the getkey function", length);
+  xbt_test_add1
+      ("Count elements (expecting %d), and test the getkey function",
+       length);
   xbt_test_assert2(xbt_dict_length(dict) == length,
                    "Announced length(%d) != %d.", xbt_dict_length(dict),
                    length);
 
   xbt_dict_foreach(dict, cursor, key, data) {
     effective++;
-    key2 = xbt_dict_get_key(dict,data);
-    xbt_assert2(!strcmp(key,key2),
-          "The data was registered under %s instead of %s as expected",key2,key);
+    key2 = xbt_dict_get_key(dict, data);
+    xbt_assert2(!strcmp(key, key2),
+                "The data was registered under %s instead of %s as expected",
+                key2, key);
   }
 
   xbt_test_assert2(effective == length, "Effective length(%d) != %d.",
@@ -179,7 +183,7 @@ xbt_dict_t head = NULL;
 char *data;
 
 
-XBT_TEST_UNIT("basic", test_dict_basic,"Basic usage: change, retrieve, traverse")
+XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse")
 {
   xbt_test_add0("Traversal the null dictionary");
   traverse(head);
@@ -281,7 +285,7 @@ XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
   xbt_dict_free(&head);
 
   xbt_test_add0
-    ("Remove each data manually (traversing the resulting dictionary each time)");
+      ("Remove each data manually (traversing the resulting dictionary each time)");
   fill(&head);
   debuged_remove(head, "12a");
   traverse(head);
@@ -320,7 +324,8 @@ XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
   }
   traverse(head);
 
-  xbt_test_add0("Free dict, create new fresh one, and then reset the dict");
+  xbt_test_add0
+      ("Free dict, create new fresh one, and then reset the dict");
   xbt_dict_free(&head);
   fill(&head);
   xbt_dict_reset(head);
@@ -362,8 +367,9 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
   xbt_dict_free(&head);
 }
 
-static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data) {
-	uintptr_t stored_data = 0;
+static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data)
+{
+  uintptr_t stored_data = 0;
   xbt_test_log2("Add %zu under %zu", data, key);
 
   xbt_dicti_set(head, key, data);
@@ -372,8 +378,9 @@ static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data) {
     fflush(stdout);
   }
   stored_data = xbt_dicti_get(head, key);
-  xbt_test_assert3(stored_data==data,
-      "Retrieved data (%zu) is not what I just stored (%zu) under key %zu",stored_data,data,key);
+  xbt_test_assert3(stored_data == data,
+                   "Retrieved data (%zu) is not what I just stored (%zu) under key %zu",
+                   stored_data, data, key);
 }
 
 XBT_TEST_UNIT("dicti", test_dict_scalar, "Scalar data and key management")
@@ -428,9 +435,11 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 
   for (i = 0; i < 10; i++) {
     xbt_test_add2("CRASH test number %d (%d to go)", i + 1, 10 - i - 1);
-    xbt_test_log0("Fill the struct, count its elems and frees the structure");
-    xbt_test_log1("using 1000 elements with %d chars long randomized keys.",
-                  SIZEOFKEY);
+    xbt_test_log0
+        ("Fill the struct, count its elems and frees the structure");
+    xbt_test_log1
+        ("using 1000 elements with %d chars long randomized keys.",
+         SIZEOFKEY);
     head = xbt_dict_new();
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     nb = 0;
@@ -474,7 +483,8 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   }
   /*xbt_dict_dump(head,(void (*)(void*))&printf); */
 
-  xbt_test_add0("Count the elements (retrieving the key and data for each)");
+  xbt_test_add0
+      ("Count the elements (retrieving the key and data for each)");
   i = countelems(head);
   xbt_test_log1("There is %d elements", i);
 
@@ -490,7 +500,8 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
                        "with get, key=%s != data=%s", key, (char *) data);
       data = xbt_dict_get_ext(head, key, strlen(key));
       xbt_test_assert2(!strcmp(key, (char *) data),
-                       "with get_ext, key=%s != data=%s", key, (char *) data);
+                       "with get_ext, key=%s != data=%s", key,
+                       (char *) data);
     }
   }
   free(key);
@@ -535,9 +546,10 @@ XBT_TEST_UNIT("multicrash", test_dict_multicrash, "Multi-dict crash test")
 
 
   xbt_test_add0("Generic multicache CRASH test");
-  xbt_test_log4(" Fill the struct and frees it %d times, using %d elements, "
-                "depth of multicache=%d, key size=%d",
-                NB_TEST, NB_ELM, DEPTH, KEY_SIZE);
+  xbt_test_log4
+      (" Fill the struct and frees it %d times, using %d elements, "
+       "depth of multicache=%d, key size=%d", NB_TEST, NB_ELM, DEPTH,
+       KEY_SIZE);
 
   for (l = 0; l < DEPTH; l++) {
     key = xbt_malloc(KEY_SIZE);

@@ -101,12 +101,12 @@ int main(int argc, char *argv[]) {
       xbt_test_suite_push(suite, "int",  test_dynar_int,  "Dynars of integers");
       xbt_test_suite_push(suite, "double",  test_dynar_double,  "Dynars of doubles");
       xbt_test_suite_push(suite, "string",  test_dynar_string,  "Dynars of strings");
-      xbt_test_suite_push(suite, "synchronized int",  test_dynar_sync_int, "Synchronized dynars of integers");
+      xbt_test_suite_push(suite, "synchronized int",  test_dynar_sync_int,  "Synchronized dynars of integers");
     /* SGU: END FILE */
 
     /* SGU: BEGIN FILE xbt/dict.c */
       suite = xbt_test_suite_by_name("dict","Dict data container");
-      xbt_test_suite_push(suite, "basic",  test_dict_basic, "Basic usage: change, retrieve, traverse");
+      xbt_test_suite_push(suite, "basic",  test_dict_basic,  "Basic usage: change, retrieve, traverse");
       xbt_test_suite_push(suite, "remove",  test_dict_remove,  "Removing some values");
       xbt_test_suite_push(suite, "nulldata",  test_dict_nulldata,  "NULL data management");
       xbt_test_suite_push(suite, "dicti",  test_dict_scalar,  "Scalar data and key management");
@@ -129,13 +129,13 @@ int main(int argc, char *argv[]) {
 
     /* SGU: BEGIN FILE xbt/xbt_str.c */
       suite = xbt_test_suite_by_name("xbt_str","String Handling");
-      xbt_test_suite_push(suite, "xbt_str_split_quoted",  test_split_quoted, "test the function xbt_str_split_quoted");
-      xbt_test_suite_push(suite, "xbt_str_split_str",  test_split_str, "test the function xbt_str_split_str");
+      xbt_test_suite_push(suite, "xbt_str_split_quoted",  test_split_quoted,  "test the function xbt_str_split_quoted");
+      xbt_test_suite_push(suite, "xbt_str_split_str",  test_split_str,  "test the function xbt_str_split_str");
     /* SGU: END FILE */
 
     /* SGU: BEGIN FILE xbt/xbt_strbuff.c */
       suite = xbt_test_suite_by_name("xbt_strbuff","String Buffers");
-      xbt_test_suite_push(suite, "xbt_strbuff_substitute",  test_strbuff_substitute, "test the function xbt_strbuff_substitute");
+      xbt_test_suite_push(suite, "xbt_strbuff_substitute",  test_strbuff_substitute,  "test the function xbt_strbuff_substitute");
     /* SGU: END FILE */
 
     /* SGU: BEGIN FILE xbt/xbt_sha.c */

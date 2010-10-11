@@ -21,7 +21,6 @@ SG_BEGIN_DECL()
    concepts must implement */
 /* the following function pointers types describe the interface that all context
    concepts must implement */
-
 /* each context type derive from this structure, so they must contain this structure
  * at their begining -- OOP in C :/ */
 typedef struct s_smx_context {
@@ -38,12 +37,12 @@ int smx_ctx_base_factory_finalize(smx_context_factory_t * factory);
 
 smx_context_t
 smx_ctx_base_factory_create_context_sized(size_t size,
-    xbt_main_func_t code, int argc, char** argv,
-    void_f_pvoid_t cleanup_func, void* cleanup_arg);
+                                          xbt_main_func_t code, int argc,
+                                          char **argv,
+                                          void_f_pvoid_t cleanup_func,
+                                          void *cleanup_arg);
 void smx_ctx_base_free(smx_context_t context);
 void smx_ctx_base_stop(smx_context_t context);
 
 SG_END_DECL()
-#endif /* !_XBT_CONTEXT_PRIVATE_H */
-
-
+#endif                          /* !_XBT_CONTEXT_PRIVATE_H */

@@ -1,5 +1,5 @@
 /* Upcalls to the Java functions used as callback to the FleXML parser.     */
-  
+
 /* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -8,7 +8,7 @@
 
 #ifndef MSG_JAPPLICATION_HANDLER_H
 #define MSG_JAPPLICATION_HANDLER_H
-  
+
 #include <jni.h>
 #include "msg/msg.h"
 void japplication_handler_on_start_document(void);
@@ -18,4 +18,4 @@ void japplication_handler_on_process_arg(void);
 void japplication_handler_on_property(void);
 void japplication_handler_on_end_process(void);
 
-#endif  /* !MSG_JAPPLICATION_HANDLER_H */
+#endif                          /* !MSG_JAPPLICATION_HANDLER_H */

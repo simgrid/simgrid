@@ -75,7 +75,8 @@ xbt_main_func_t MSG_get_registered_function(const char *name)
  * \brief register functions bypassing the parser
  */
 
-void MSG_set_function(const char* host_id,const char *function_name,xbt_dynar_t arguments)
+void MSG_set_function(const char *host_id, const char *function_name,
+                      xbt_dynar_t arguments)
 {
-   SIMIX_process_set_function(host_id,function_name,arguments,-1,-1);
+  SIMIX_process_set_function(host_id, function_name, arguments, -1, -1);
 }

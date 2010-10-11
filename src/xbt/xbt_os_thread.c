@@ -101,7 +101,8 @@ void xbt_os_thread_mod_preinit(void)
 
 }
 
-void xbt_os_thread_mod_postexit(void) {
+void xbt_os_thread_mod_postexit(void)
+{
   /* FIXME: don't try to free our key on shutdown.
      Valgrind detects no leak if we don't, and whine if we try to */
   //   int errcode;
@@ -262,8 +263,9 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
     case ETIMEDOUT:
       THROW1(timeout_error, 0, "mutex %p not ready", mutex);
     default:
-      THROW2(system_error, errcode, "xbt_mutex_timedacquire(%p) failed: %s",
-             mutex, strerror(errcode));
+      THROW2(system_error, errcode,
+             "xbt_mutex_timedacquire(%p) failed: %s", mutex,
+             strerror(errcode));
     }
 
 
@@ -279,7 +281,7 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
 
     errcode = pthread_mutex_timedlock(&(mutex->m), &ts_end);
 
-#else /* Well, let's reimplement it since those lazy libc dudes didn't */
+#else                           /* Well, let's reimplement it since those lazy libc dudes didn't */
     double start = xbt_os_time();
     do {
       errcode = pthread_mutex_trylock(&(mutex->m));
@@ -290,7 +292,7 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
     if (errcode == EBUSY)
       errcode = ETIMEDOUT;
 
-#endif /* HAVE_MUTEX_TIMEDLOCK */
+#endif                          /* HAVE_MUTEX_TIMEDLOCK */
 
     switch (errcode) {
     case 0:
@@ -446,7 +448,7 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
     THROW1(system_error, errno, "sem_init() failed: %s", strerror(errno));
   res->ps = &(res->s);
 
-#else /* damn, no sem_init(). Reimplement it */
+#else                           /* damn, no sem_init(). Reimplement it */
 
   xbt_os_mutex_acquire(next_sem_ID_lock);
   res->name = bprintf("/%d.%d", (*xbt_getpid) (), ++next_sem_ID);
@@ -463,7 +465,8 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
 
   /* Remove the name from the semaphore namespace: we never join on it */
   if (sem_unlink(res->name) < 0)
-    THROW1(system_error, errno, "sem_unlink() failed: %s", strerror(errno));
+    THROW1(system_error, errno, "sem_unlink() failed: %s",
+           strerror(errno));
 
 #endif
 
@@ -496,8 +499,9 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
     case ETIMEDOUT:
       THROW1(timeout_error, 0, "semaphore %p not ready", sem);
     default:
-      THROW2(system_error, errcode, "xbt_os_sem_timedacquire(%p) failed: %s",
-             sem, strerror(errcode));
+      THROW2(system_error, errcode,
+             "xbt_os_sem_timedacquire(%p) failed: %s", sem,
+             strerror(errcode));
     }
 
   } else {
@@ -510,7 +514,7 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
     DEBUG2("sem_timedwait(%p,%p)", sem->ps, &ts_end);
     errcode = sem_timedwait(sem->s, &ts_end);
 
-#else /* Okay, reimplement this function then */
+#else                           /* Okay, reimplement this function then */
     double start = xbt_os_time();
     do {
       errcode = sem_trywait(sem->ps);
@@ -528,7 +532,8 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
 
     case ETIMEDOUT:
       THROW2(timeout_error, delay,
-             "semaphore %p wasn't signaled before timeout (%f)", sem, delay);
+             "semaphore %p wasn't signaled before timeout (%f)", sem,
+             delay);
 
     default:
       THROW3(system_error, errcode, "sem_timedwait(%p,%f) failed: %s", sem,
@@ -552,9 +557,9 @@ void xbt_os_sem_destroy(xbt_os_sem_t sem)
     THROW0(arg_error, EINVAL, "Cannot destroy the NULL sempahore");
 
 #ifdef HAVE_SEM_INIT
-  if (sem_destroy(sem->ps)<0)
-      THROW1(system_error, errno, "sem_destroy() failed: %s",
-             strerror(errno));
+  if (sem_destroy(sem->ps) < 0)
+    THROW1(system_error, errno, "sem_destroy() failed: %s",
+           strerror(errno));
 #else
   if (sem_close(sem->ps) < 0)
     THROW1(system_error, errno, "sem_close() failed: %s", strerror(errno));
@@ -567,10 +572,12 @@ void xbt_os_sem_destroy(xbt_os_sem_t sem)
 void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
 {
   if (!sem)
-    THROW0(arg_error, EINVAL, "Cannot get the value of the NULL semaphore");
+    THROW0(arg_error, EINVAL,
+           "Cannot get the value of the NULL semaphore");
 
   if (sem_getvalue(&(sem->s), svalue) < 0)
-    THROW1(system_error, errno, "sem_getvalue() failed: %s", strerror(errno));
+    THROW1(system_error, errno, "sem_getvalue() failed: %s",
+           strerror(errno));
 }
 
 /* ********************************* WINDOWS IMPLEMENTATION ************************************ */
@@ -665,12 +672,14 @@ void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
 {
 
   if (WAIT_OBJECT_0 != WaitForSingleObject(thread->handle, INFINITE))
-    THROW0(system_error, (int) GetLastError(), "WaitForSingleObject failed");
+    THROW0(system_error, (int) GetLastError(),
+           "WaitForSingleObject failed");
 
   if (thread_return) {
 
     if (!GetExitCodeThread(thread->handle, (DWORD *) (*thread_return)))
-      THROW0(system_error, (int) GetLastError(), "GetExitCodeThread failed");
+      THROW0(system_error, (int) GetLastError(),
+             "GetExitCodeThread failed");
   }
 
   CloseHandle(thread->handle);
@@ -860,8 +869,8 @@ void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex,
   if (delay < 0) {
     xbt_os_cond_wait(cond, mutex);
   } else {
-    DEBUG3("xbt_cond_timedwait(%p,%p,%lu)", &(cond->events), &(mutex->lock),
-           end);
+    DEBUG3("xbt_cond_timedwait(%p,%p,%lu)", &(cond->events),
+           &(mutex->lock), end);
 
     /* lock the threads counter and increment it */
     EnterCriticalSection(&cond->waiters_count_lock);
@@ -997,8 +1006,8 @@ void xbt_os_sem_acquire(xbt_os_sem_t sem)
 
   /* wait failure */
   if (WAIT_OBJECT_0 != WaitForSingleObject(sem->h, INFINITE))
-    THROW1(system_error, GetLastError(), "WaitForSingleObject() failed: %s",
-           strerror(GetLastError()));
+    THROW1(system_error, GetLastError(),
+           "WaitForSingleObject() failed: %s", strerror(GetLastError()));
   EnterCriticalSection(&(sem->value_lock));
   sem->value--;
   LeaveCriticalSection(&(sem->value_lock));
@@ -1074,7 +1083,8 @@ void xbt_os_sem_destroy(xbt_os_sem_t sem)
 void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
 {
   if (!sem)
-    THROW0(arg_error, EINVAL, "Cannot get the value of the NULL semaphore");
+    THROW0(arg_error, EINVAL,
+           "Cannot get the value of the NULL semaphore");
 
   EnterCriticalSection(&(sem->value_lock));
   *svalue = sem->value;

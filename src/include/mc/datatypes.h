@@ -18,5 +18,4 @@ SG_BEGIN_DECL()
 typedef struct s_mc_transition *mc_transition_t;
 
 SG_END_DECL()
-
-#endif /* _MC_MC_H */
+#endif                          /* _MC_MC_H */

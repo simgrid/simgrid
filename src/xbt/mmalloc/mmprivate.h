@@ -29,10 +29,10 @@
 #  define MIN(A, B) ((A) < (B) ? (A) : (B))
 #endif
 
-#define MMALLOC_MAGIC		"mmalloc"	/* Mapped file magic number */
-#define MMALLOC_MAGIC_SIZE	8		/* Size of magic number buf */
-#define MMALLOC_VERSION		1		/* Current mmalloc version */
-#define MMALLOC_KEYS		16		/* Keys for application use */
+#define MMALLOC_MAGIC		"mmalloc"       /* Mapped file magic number */
+#define MMALLOC_MAGIC_SIZE	8       /* Size of magic number buf */
+#define MMALLOC_VERSION		1       /* Current mmalloc version */
+#define MMALLOC_KEYS		16      /* Keys for application use */
 
 /* The allocator divides the heap into blocks of fixed size; large
    requests receive one or more whole blocks, and small requests
@@ -84,51 +84,44 @@
 const char *xbt_thread_self_name(void);
 
 /* Data structure giving per-block information.  */
-typedef union
-  {
-    /* Heap information for a busy block.  */
-    struct
-      {
-	/* Zero for a large block, or positive giving the
-	   logarithm to the base two of the fragment size.  */
-	int type;
-	union
-	  {
-	    struct
-	      {
-		size_t nfree;	/* Free fragments in a fragmented block.  */
-		size_t first;	/* First free fragment of the block.  */
-	      } frag;
-	    /* Size (in blocks) of a large cluster.  */
-	    size_t size;
-	  } info;
-      } busy;
-    /* Heap information for a free block (that may be the first of
-       a free cluster).  */
-    struct
-      {
-	size_t size;		/* Size (in blocks) of a free cluster.  */
-	size_t next;		/* Index of next free cluster.  */
-	size_t prev;		/* Index of previous free cluster.  */
-      } free;
-  } malloc_info;
+typedef union {
+  /* Heap information for a busy block.  */
+  struct {
+    /* Zero for a large block, or positive giving the
+       logarithm to the base two of the fragment size.  */
+    int type;
+    union {
+      struct {
+        size_t nfree;           /* Free fragments in a fragmented block.  */
+        size_t first;           /* First free fragment of the block.  */
+      } frag;
+      /* Size (in blocks) of a large cluster.  */
+      size_t size;
+    } info;
+  } busy;
+  /* Heap information for a free block (that may be the first of
+     a free cluster).  */
+  struct {
+    size_t size;                /* Size (in blocks) of a free cluster.  */
+    size_t next;                /* Index of next free cluster.  */
+    size_t prev;                /* Index of previous free cluster.  */
+  } free;
+} malloc_info;
 
 /* List of blocks allocated with `mmemalign' (or `mvalloc').  */
 
-struct alignlist
-  {
-    struct alignlist *next;
-    void* aligned;		/* The address that mmemaligned returned.  */
-    void* exact;			/* The address that malloc returned.  */
-  };
+struct alignlist {
+  struct alignlist *next;
+  void *aligned;                /* The address that mmemaligned returned.  */
+  void *exact;                  /* The address that malloc returned.  */
+};
 
 /* Doubly linked lists of free fragments.  */
 
-struct list
-  {
-    struct list *next;
-    struct list *prev;
-  };
+struct list {
+  struct list *next;
+  struct list *prev;
+};
 
 /* Statistics available to the user.
    FIXME:  By design, the internals of the malloc package are no longer
@@ -136,14 +129,13 @@ struct list
    to be via some other mechanism, such as mmstat_<something> where the
    return value is the <something> the user is interested in. */
 
-struct mstats
-  {
-    size_t bytes_total;		/* Total size of the heap. */
-    size_t chunks_used;		/* Chunks allocated by the user. */
-    size_t bytes_used;		/* Byte total of user-allocated chunks. */
-    size_t chunks_free;		/* Chunks in the free list. */
-    size_t bytes_free;		/* Byte total of chunks in the free list. */
-  };
+struct mstats {
+  size_t bytes_total;           /* Total size of the heap. */
+  size_t chunks_used;           /* Chunks allocated by the user. */
+  size_t bytes_used;            /* Byte total of user-allocated chunks. */
+  size_t chunks_free;           /* Chunks in the free list. */
+  size_t bytes_free;            /* Byte total of chunks in the free list. */
+};
 
 /* Internal structure that defines the format of the malloc-descriptor.
    This gets written to the base address of the region that mmalloc is
@@ -178,8 +170,8 @@ struct mdesc {
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
-  void* (*morecore) (struct mdesc *mdp, int size);
-     
+  void *(*morecore) (struct mdesc * mdp, int size);
+
   /* Pointer to the function that causes an abort when the memory checking
      features are activated.  By default this is set to abort(), but can
      be set to another function by the application using mmalloc().
@@ -192,25 +184,25 @@ struct mdesc {
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
-  void (*mfree_hook) (void* mdp, void* ptr);
+  void (*mfree_hook) (void *mdp, void *ptr);
 
   /* Debugging hook for `malloc'.
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
-  void* (*mmalloc_hook) (void* mdp, size_t size);
+  void *(*mmalloc_hook) (void *mdp, size_t size);
 
   /* Debugging hook for realloc.
 
      FIXME:  For mapped regions shared by more than one process, this
      needs to be maintained on a per-process basis. */
-  void* (*mrealloc_hook) (void* mdp, void* ptr, size_t size);
+  void *(*mrealloc_hook) (void *mdp, void *ptr, size_t size);
 
   /* Number of info entries.  */
   size_t heapsize;
 
   /* Pointer to first block of the heap (base of the first block).  */
-  void* heapbase;
+  void *heapbase;
 
   /* Current search index for the heap table.  */
   /* Search index in the info table.  */
@@ -242,17 +234,17 @@ struct mdesc {
      is the location where the bookkeeping data for mmap and for malloc
      begins. */
 
-  void* base;
+  void *base;
 
   /* The current location in the memory region for this malloc heap which
      represents the end of memory in use. */
 
-  void* breakval;
+  void *breakval;
 
   /* The end of the current memory region for this malloc heap.  This is
      the first location past the end of mapped memory. */
 
-  void* top;
+  void *top;
 
   /* Open file descriptor for the file to which this malloc heap is mapped.
      This will always be a valid file descriptor, since /dev/zero is used
@@ -264,20 +256,20 @@ struct mdesc {
   /* An array of keys to data within the mapped region, for use by the
      application.  */
 
-  void* keys[MMALLOC_KEYS];
+  void *keys[MMALLOC_KEYS];
 
 };
 
 /* Bits to look at in the malloc descriptor flags word */
 
-#define MMALLOC_DEVZERO		(1 << 0)	/* Have mapped to /dev/zero */
-#define MMALLOC_ANONYMOUS (1 << 1)  /* Use anonymous mapping */
-#define MMALLOC_INITIALIZED	(1 << 2)	/* Initialized mmalloc */
-#define MMALLOC_MMCHECK_USED	(1 << 3)	/* mmcheckf() called already */
+#define MMALLOC_DEVZERO		(1 << 0)        /* Have mapped to /dev/zero */
+#define MMALLOC_ANONYMOUS (1 << 1)      /* Use anonymous mapping */
+#define MMALLOC_INITIALIZED	(1 << 2)        /* Initialized mmalloc */
+#define MMALLOC_MMCHECK_USED	(1 << 3)        /* mmcheckf() called already */
 
 /* Internal version of `mfree' used in `morecore'. */
 
-extern void __mmalloc_free (struct mdesc *mdp, void* ptr);
+extern void __mmalloc_free(struct mdesc *mdp, void *ptr);
 
 /* A default malloc descriptor for the single sbrk() managed region. */
 
@@ -286,17 +278,17 @@ extern struct mdesc *__mmalloc_default_mdp;
 /* Initialize the first use of the default malloc descriptor, which uses
    an sbrk() region. */
 
-extern struct mdesc *__mmalloc_create_default_mdp (void);
+extern struct mdesc *__mmalloc_create_default_mdp(void);
 
 /* Grow or shrink a contiguous mapped region using mmap().
    Works much like sbrk(), only faster */
 
-extern void* __mmalloc_mmap_morecore (struct mdesc *mdp, int size);
+extern void *__mmalloc_mmap_morecore(struct mdesc *mdp, int size);
 
 
 /* Remap a mmalloc region that was previously mapped. */
 
-extern void* __mmalloc_remap_core (struct mdesc *mdp);
+extern void *__mmalloc_remap_core(struct mdesc *mdp);
 
 /* Macro to convert from a user supplied malloc descriptor to pointer to the
    internal malloc descriptor.  If the user supplied descriptor is NULL, then
@@ -309,4 +301,4 @@ extern void* __mmalloc_remap_core (struct mdesc *mdp);
    ? __mmalloc_default_mdp  \
    : (struct mdesc *) (md))
 
-#endif  /* __MMPRIVATE_H */
+#endif                          /* __MMPRIVATE_H */

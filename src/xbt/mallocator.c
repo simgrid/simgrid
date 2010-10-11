@@ -12,7 +12,7 @@
 #include "mallocator_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
-extern int _surf_do_model_check; /* kill mallocators when this is true */
+extern int _surf_do_model_check;        /* kill mallocators when this is true */
 
 /**
  * \brief Constructor
@@ -44,7 +44,7 @@ xbt_mallocator_t xbt_mallocator_new(int size,
   xbt_assert0(new_f != NULL && free_f != NULL
               && reset_f != NULL, "invalid parameter");
 
-  /* Let's force 0 size mallocator! (Dirty hack, blame Martin :) )*/
+  /* Let's force 0 size mallocator! (Dirty hack, blame Martin :) ) */
 
   /* mallocators and memory mess introduced by model-checking do not mix well together:
    *   The mallocator will give standard memory when we are using raw memory (so these blocks are killed on restore)
@@ -52,13 +52,13 @@ xbt_mallocator_t xbt_mallocator_new(int size,
    */
   if (_surf_do_model_check)
     size = 0;
-  
+
   m = xbt_new0(s_xbt_mallocator_t, 1);
   VERB1("Create mallocator %p", m);
   if (XBT_LOG_ISENABLED(xbt_mallocator, xbt_log_priority_verbose))
     xbt_backtrace_display_current();
 
-  m->objects = xbt_new0(void *, _surf_do_model_check?1:size);
+  m->objects = xbt_new0(void *, _surf_do_model_check ? 1 : size);
   m->max_size = size;
   m->current_size = 0;
   m->new_f = new_f;
@@ -82,7 +82,8 @@ void xbt_mallocator_free(xbt_mallocator_t m)
   int i;
   xbt_assert0(m != NULL, "Invalid parameter");
 
-  VERB3("Frees mallocator %p (size:%d/%d)", m, m->current_size, m->max_size);
+  VERB3("Frees mallocator %p (size:%d/%d)", m, m->current_size,
+        m->max_size);
   for (i = 0; i < m->current_size; i++) {
     (*(m->free_f)) (m->objects[i]);
   }
@@ -146,8 +147,8 @@ void xbt_mallocator_release(xbt_mallocator_t m, void *object)
   if (m->current_size < m->max_size) {
     /* there is enough place to push the object */
     DEBUG3
-      ("Store deleted object in mallocator %p for further use (size:%d/%d)",
-       m, m->current_size, m->max_size);
+        ("Store deleted object in mallocator %p for further use (size:%d/%d)",
+         m, m->current_size, m->max_size);
     m->objects[m->current_size++] = object;
   } else {
     /* otherwise we don't have a choice, we must free the object */

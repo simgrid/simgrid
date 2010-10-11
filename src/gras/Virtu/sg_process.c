@@ -38,7 +38,7 @@ void gras_agent_spawn(const char *name, void *data,
 void gras_process_init()
 {
   gras_hostdata_t *hd =
-    (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
+      (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
   gras_procdata_t *pd = xbt_new0(gras_procdata_t, 1);
   gras_trp_procdata_t trp_pd;
 
@@ -67,7 +67,8 @@ void gras_process_init()
 
   trp_pd->msg_selectable_sockets = xbt_queue_new(0, sizeof(gras_socket_t));
 
-  trp_pd->meas_selectable_sockets = xbt_queue_new(0, sizeof(gras_socket_t));
+  trp_pd->meas_selectable_sockets =
+      xbt_queue_new(0, sizeof(gras_socket_t));
 
   VERB2("Creating process '%s' (%d)",
         SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid());
@@ -76,18 +77,18 @@ void gras_process_init()
 void gras_process_exit()
 {
   xbt_dynar_t sockets =
-    ((gras_trp_procdata_t) gras_libdata_by_name("gras_trp"))->sockets;
+      ((gras_trp_procdata_t) gras_libdata_by_name("gras_trp"))->sockets;
   gras_socket_t sock_iter;
   unsigned int cursor;
   gras_hostdata_t *hd =
-    (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
+      (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
   gras_procdata_t *pd =
-    (gras_procdata_t *) SIMIX_process_get_data(SIMIX_process_self());
+      (gras_procdata_t *) SIMIX_process_get_data(SIMIX_process_self());
 
   gras_msg_procdata_t msg_pd =
-    (gras_msg_procdata_t) gras_libdata_by_name("gras_msg");
+      (gras_msg_procdata_t) gras_libdata_by_name("gras_msg");
   gras_trp_procdata_t trp_pd =
-    (gras_trp_procdata_t) gras_libdata_by_name("gras_trp");
+      (gras_trp_procdata_t) gras_libdata_by_name("gras_trp");
 
   xbt_queue_free(&trp_pd->msg_selectable_sockets);
 
@@ -102,11 +103,15 @@ void gras_process_exit()
   if (xbt_dynar_length(msg_pd->msg_queue)) {
     unsigned int cpt;
     s_gras_msg_t msg;
-    WARN2("process %d terminated, but %ld messages are still queued. Message list:",
-          gras_os_getpid(),xbt_dynar_length(msg_pd->msg_queue));
-    xbt_dynar_foreach(msg_pd->msg_queue,cpt, msg) {
-      WARN5("   Message %s (%s) from %s@%s:%d",msg.type->name,e_gras_msg_kind_names[msg.kind],
-          gras_socket_peer_proc(msg.expe),gras_socket_peer_name(msg.expe),gras_socket_peer_port(msg.expe));
+    WARN2
+        ("process %d terminated, but %ld messages are still queued. Message list:",
+         gras_os_getpid(), xbt_dynar_length(msg_pd->msg_queue));
+    xbt_dynar_foreach(msg_pd->msg_queue, cpt, msg) {
+      WARN5("   Message %s (%s) from %s@%s:%d", msg.type->name,
+            e_gras_msg_kind_names[msg.kind],
+            gras_socket_peer_proc(msg.expe),
+            gras_socket_peer_name(msg.expe),
+            gras_socket_peer_port(msg.expe));
     }
   }
 
@@ -132,7 +137,7 @@ void gras_process_exit()
 gras_procdata_t *gras_procdata_get(void)
 {
   gras_procdata_t *pd =
-    (gras_procdata_t *) SIMIX_process_get_data(SIMIX_process_self());
+      (gras_procdata_t *) SIMIX_process_get_data(SIMIX_process_self());
 
   xbt_assert0(pd, "Run gras_process_init! (ie, gras_init)");
 
@@ -155,8 +160,8 @@ void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p)
 const char *gras_process_property_value(const char *name)
 {
   return
-    xbt_dict_get_or_null(SIMIX_process_get_properties(SIMIX_process_self()),
-                         name);
+      xbt_dict_get_or_null(SIMIX_process_get_properties
+                           (SIMIX_process_self()), name);
 }
 
 /** @brief retrieve the process properties dictionnary
@@ -175,13 +180,13 @@ const char *xbt_procname(void)
 {
   smx_process_t process = SIMIX_process_self();
   /*FIXME: maestro used not have a simix process, now it does so 
-    SIMIX_process_self will return something different to NULL. This breaks
-    the old xbt_log logic that assumed that NULL was equivalent to maestro,
-    thus when printing it searches for maestro host name (which doesn't exists)
-    and breaks the logging.
-    As a hack we check for maestro by looking to the assigned host, if it is
-    NULL then we are sure is maestro
-  */
+     SIMIX_process_self will return something different to NULL. This breaks
+     the old xbt_log logic that assumed that NULL was equivalent to maestro,
+     thus when printing it searches for maestro host name (which doesn't exists)
+     and breaks the logging.
+     As a hack we check for maestro by looking to the assigned host, if it is
+     NULL then we are sure is maestro
+   */
   if (process != NULL && SIMIX_process_get_host(process))
     return SIMIX_process_get_name(process);
 
@@ -192,13 +197,13 @@ int gras_os_getpid(void)
 {
   gras_procdata_t *data;
   smx_process_t process = SIMIX_process_self();
-  
-  if (process != NULL){
-    data = (gras_procdata_t *)SIMIX_process_get_data(process);
-    if(data != NULL)
+
+  if (process != NULL) {
+    data = (gras_procdata_t *) SIMIX_process_get_data(process);
+    if (data != NULL)
       return data->pid;
   }
-  
+
   return 0;
 }
 
@@ -206,9 +211,9 @@ int gras_os_getpid(void)
 const char *gras_os_host_property_value(const char *name)
 {
   return
-    xbt_dict_get_or_null(SIMIX_host_get_properties
-                         (SIMIX_process_get_host(SIMIX_process_self())),
-                         name);
+      xbt_dict_get_or_null(SIMIX_host_get_properties
+                           (SIMIX_process_get_host(SIMIX_process_self())),
+                           name);
 }
 
 /** @brief retrieve the host properties dictionnary
@@ -217,7 +222,8 @@ const char *gras_os_host_property_value(const char *name)
 xbt_dict_t gras_os_host_properties(void)
 {
   return
-    SIMIX_host_get_properties(SIMIX_process_get_host(SIMIX_process_self()));
+      SIMIX_host_get_properties(SIMIX_process_get_host
+                                (SIMIX_process_self()));
 }
 
 /* **************************************************************************
@@ -257,7 +263,7 @@ void gras_main()
   SIMIX_init();
 
   while (SIMIX_solve(NULL, NULL) != -1.0);
-  
+
   return;
 }
 
@@ -266,20 +272,21 @@ void gras_launch_application(const char *file)
   SIMIX_launch_application(file);
 }
 
-void gras_load_environment_script(const char* script_file)
+void gras_load_environment_script(const char *script_file)
 {
 #ifdef HAVE_LUA
-    lua_State *L = lua_open();
-    luaL_openlibs(L);
+  lua_State *L = lua_open();
+  luaL_openlibs(L);
 
-    if (luaL_loadfile(L, script_file) || lua_pcall(L, 0, 0, 0)) {
-         printf("error: %s\n", lua_tostring(L, -1));
-         return;
-       }
-#else
-    xbt_die("Lua is not available!! to call gras_load_environment_script, lua should be available...");
-#endif
+  if (luaL_loadfile(L, script_file) || lua_pcall(L, 0, 0, 0)) {
+    printf("error: %s\n", lua_tostring(L, -1));
     return;
+  }
+#else
+  xbt_die
+      ("Lua is not available!! to call gras_load_environment_script, lua should be available...");
+#endif
+  return;
 }
 
 void gras_clean()

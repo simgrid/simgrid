@@ -44,11 +44,11 @@ double xbt_os_time(void)
 
   tv.tv_sec = (long) (tm / 1000000L);
   tv.tv_usec = (long) (tm % 1000000L);
-#  endif /* windows version checker */
+#  endif                        /* windows version checker */
 
-#else /* not windows, no gettimeofday => poor resolution */
+#else                           /* not windows, no gettimeofday => poor resolution */
   return (double) (time(NULL));
-#endif /* HAVE_GETTIMEOFDAY? */
+#endif                          /* HAVE_GETTIMEOFDAY? */
 
   return (double) (tv.tv_sec + tv.tv_usec / 1000000.0);
 }
@@ -62,7 +62,7 @@ void xbt_os_sleep(double sec)
 #elif _XBT_WIN32
   Sleep((floor(sec) * 1000) + ((sec - floor(sec)) * 1000));
 
-#else /* don't have usleep. Use select to sleep less than one second */
+#else                           /* don't have usleep. Use select to sleep less than one second */
   struct timeval timeout;
 
 
@@ -93,17 +93,20 @@ struct s_xbt_os_timer {
 #endif
 };
 
-xbt_os_timer_t xbt_os_timer_new(void) {
+xbt_os_timer_t xbt_os_timer_new(void)
+{
   return xbt_new0(struct s_xbt_os_timer, 1);
 }
 
-void xbt_os_timer_free(xbt_os_timer_t timer) {
+void xbt_os_timer_free(xbt_os_timer_t timer)
+{
   free(timer);
 }
 
-void xbt_os_timer_start(xbt_os_timer_t timer) {
+void xbt_os_timer_start(xbt_os_timer_t timer)
+{
 #ifdef HAVE_POSIX_GETTIME
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&(timer->start));
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
 #elif defined(HAVE_GETTIMEOFDAY)
   gettimeofday(&(timer->start), NULL);
 #else
@@ -111,9 +114,10 @@ void xbt_os_timer_start(xbt_os_timer_t timer) {
 #endif
 }
 
-void xbt_os_timer_stop(xbt_os_timer_t timer) {
+void xbt_os_timer_stop(xbt_os_timer_t timer)
+{
 #ifdef HAVE_POSIX_GETTIME
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&(timer->stop));
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->stop));
 #elif defined(HAVE_GETTIMEOFDAY)
   gettimeofday(&(timer->stop), NULL);
 #else
@@ -129,8 +133,8 @@ double xbt_os_timer_elapsed(xbt_os_timer_t timer)
         ((double) timer->start.tv_nsec)) / 1e9);
 #elif defined(HAVE_GETTIMEOFDAY)
   return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) +
-    ((((double) timer->stop.tv_usec) -
-      ((double) timer->start.tv_usec)) / 1000000.0);
+      ((((double) timer->stop.tv_usec) -
+        ((double) timer->start.tv_usec)) / 1000000.0);
 #else
   return (double) timer->stop - (double) timer->start;
 #endif

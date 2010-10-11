@@ -80,7 +80,8 @@ XBT_INLINE void surf_action_free(surf_action_t * action)
   *action = NULL;
 }
 
-void surf_action_state_set(surf_action_t action, e_surf_action_state_t state)
+void surf_action_state_set(surf_action_t action,
+                           e_surf_action_state_t state)
 {
   surf_action_state_t action_state = &(action->model_type->states);
   XBT_IN2("(%p,%s)", action, surf_action_state_names[state]);

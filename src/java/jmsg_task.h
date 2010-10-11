@@ -75,4 +75,4 @@ m_task_t jtask_to_native_task(jobject jtask, JNIEnv * env);
  */
 jboolean jtask_is_valid(jobject jtask, JNIEnv * env);
 
-#endif /* !MSG_JTASK_H */
+#endif                          /* !MSG_JTASK_H */

@@ -88,7 +88,8 @@ _erand48_r(unsigned short int xsubi[3], struct drand48_data *buffer,
   return 0;
 }
 
-int _drand48_iterate(unsigned short int xsubi[3], struct drand48_data *buffer)
+int _drand48_iterate(unsigned short int xsubi[3],
+                     struct drand48_data *buffer)
 {
   uint64_t X;
   uint64_t result;
@@ -122,7 +123,8 @@ double _drand48(void)
 {
   double result;
 
-  (void) _erand48_r(__libc_drand48_data.__x, &__libc_drand48_data, &result);
+  (void) _erand48_r(__libc_drand48_data.__x, &__libc_drand48_data,
+                    &result);
 
   return result;
 }
@@ -213,14 +215,12 @@ double random_generate(random_data_t random)
   if (random->std == 0)
     return random->mean * (random->max - random->min) + random->min;
 
-  a =
-    random->mean * (random->mean * (1 - random->mean) /
-                    (random->std * random->std) - 1);
-  b =
-    (1 -
-     random->mean) * (random->mean * (1 -
-                                      random->mean) / (random->std *
-                                                       random->std) - 1);
+  a = random->mean * (random->mean * (1 - random->mean) /
+                      (random->std * random->std) - 1);
+  b = (1 -
+       random->mean) * (random->mean * (1 -
+                                        random->mean) / (random->std *
+                                                         random->std) - 1);
 
   alpha = a + b;
   if (a <= 1. || b <= 1.)
@@ -261,9 +261,11 @@ random_data_t random_new(Generator generator, long int seed,
   if (max < min)
     THROW2(arg_error, 0, "random->max < random->min (%f < %f)", max, min);
   if (mean < min)
-    THROW2(arg_error, 0, "random->mean < random->min (%f < %f)", mean, min);
+    THROW2(arg_error, 0, "random->mean < random->min (%f < %f)", mean,
+           min);
   if (mean > max)
-    THROW2(arg_error, 0, "random->mean > random->max (%f > %f)", mean, max);
+    THROW2(arg_error, 0, "random->mean > random->max (%f > %f)", mean,
+           max);
 
   /* normalize the mean and standard deviation before storing */
   random->mean = (mean - min) / (max - min);

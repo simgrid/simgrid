@@ -24,11 +24,12 @@ SG_BEGIN_DECL()
  *  @{
  */
   /** \brief Thread data type (opaque structure) */
-     typedef struct xbt_os_thread_ *xbt_os_thread_t;
+typedef struct xbt_os_thread_ *xbt_os_thread_t;
 
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_create(const char *name,
                                                  pvoid_f_pvoid_t
-                                                 start_routine, void *param);
+                                                 start_routine,
+                                                 void *param);
 XBT_PUBLIC(void) xbt_os_thread_exit(int *retcode);
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_self(void);
 XBT_PUBLIC(const char *) xbt_os_thread_self_name(void);
@@ -42,7 +43,7 @@ XBT_PUBLIC(void *) xbt_os_thread_getparam(void);
 
 
   /** \brief Thread mutex data type (opaque structure) */
-     typedef struct xbt_os_mutex_ *xbt_os_mutex_t;
+typedef struct xbt_os_mutex_ *xbt_os_mutex_t;
 
 XBT_PUBLIC(xbt_os_mutex_t) xbt_os_mutex_init(void);
 XBT_PUBLIC(void) xbt_os_mutex_acquire(xbt_os_mutex_t mutex);
@@ -53,10 +54,11 @@ XBT_PUBLIC(void) xbt_os_mutex_destroy(xbt_os_mutex_t mutex);
 
 
   /** \brief Thread condition data type (opaque structure) */
-     typedef struct xbt_os_cond_ *xbt_os_cond_t;
+typedef struct xbt_os_cond_ *xbt_os_cond_t;
 
 XBT_PUBLIC(xbt_os_cond_t) xbt_os_cond_init(void);
-XBT_PUBLIC(void) xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex);
+XBT_PUBLIC(void) xbt_os_cond_wait(xbt_os_cond_t cond,
+                                  xbt_os_mutex_t mutex);
 XBT_PUBLIC(void) xbt_os_cond_timedwait(xbt_os_cond_t cond,
                                        xbt_os_mutex_t mutex, double delay);
 XBT_PUBLIC(void) xbt_os_cond_signal(xbt_os_cond_t cond);
@@ -64,7 +66,7 @@ XBT_PUBLIC(void) xbt_os_cond_broadcast(xbt_os_cond_t cond);
 XBT_PUBLIC(void) xbt_os_cond_destroy(xbt_os_cond_t cond);
 
    /** \brief Semaphore data type (opaque structure) */
-     typedef struct xbt_os_sem_ *xbt_os_sem_t;
+typedef struct xbt_os_sem_ *xbt_os_sem_t;
 
 XBT_PUBLIC(xbt_os_sem_t) xbt_os_sem_init(unsigned int value);
 XBT_PUBLIC(void) xbt_os_sem_acquire(xbt_os_sem_t sem);
@@ -77,4 +79,4 @@ XBT_PUBLIC(void) xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue);
 /** @} */
 
 SG_END_DECL()
-#endif /* _XBT_OS_THREAD_H */
+#endif                          /* _XBT_OS_THREAD_H */

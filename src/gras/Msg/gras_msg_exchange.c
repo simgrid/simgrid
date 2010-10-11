@@ -16,7 +16,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_msg);
 
 char _GRAS_header[6];
 const char *e_gras_msg_kind_names[e_gras_msg_kind_count] =
-  { "UNKNOWN", "ONEWAY", "RPC call", "RPC answer", "RPC error" };
+    { "UNKNOWN", "ONEWAY", "RPC call", "RPC answer", "RPC error" };
 
 
 /** \brief Waits for a message to come in over a given socket.
@@ -43,7 +43,7 @@ gras_msg_wait_ext_(double timeout,
   s_gras_msg_t msg;
   double start, now;
   gras_msg_procdata_t pd =
-    (gras_msg_procdata_t) gras_libdata_by_id(gras_msg_libdata_id);
+      (gras_msg_procdata_t) gras_libdata_by_id(gras_msg_libdata_id);
   unsigned int cpt;
 
   xbt_assert0(msg_got, "msg_got is an output parameter");
@@ -198,7 +198,8 @@ static int gras_msg_wait_or_filter(gras_msg_t msg, void *ctx)
  */
 void gras_msg_wait_or(double timeout,
                       xbt_dynar_t msgt_want,
-                      gras_msg_cb_ctx_t * ctx, int *msgt_got, void *payload)
+                      gras_msg_cb_ctx_t * ctx, int *msgt_got,
+                      void *payload)
 {
   s_gras_msg_t msg;
 
@@ -229,7 +230,8 @@ void gras_msg_wait_or(double timeout,
 
 /** \brief Send the data pointed by \a payload as a message of type
  * \a msgtype to the peer \a sock */
-void gras_msg_send_(gras_socket_t sock, gras_msgtype_t msgtype, void *payload)
+void gras_msg_send_(gras_socket_t sock, gras_msgtype_t msgtype,
+                    void *payload)
 {
 
   if (msgtype->ctn_type) {
@@ -299,7 +301,7 @@ void gras_msg_handle(double timeOut)
   s_gras_msg_t msg;
 
   gras_msg_procdata_t pd =
-    (gras_msg_procdata_t) gras_libdata_by_id(gras_msg_libdata_id);
+      (gras_msg_procdata_t) gras_libdata_by_id(gras_msg_libdata_id);
   gras_cblist_t *list = NULL;
   gras_msg_cb_t cb;
   s_gras_msg_cb_ctx_t ctx;
@@ -353,8 +355,8 @@ void gras_msg_handle(double timeOut)
         xbt_assert1(untiltimer > 0, "Negative timer (%f). I'm 'puzzeled'",
                     untiltimer);
         WARN1
-          ("No timer elapsed, in contrary to expectations (next in %f sec)",
-           untiltimer);
+            ("No timer elapsed, in contrary to expectations (next in %f sec)",
+             untiltimer);
         THROW1(timeout_error, 0,
                "No timer elapsed, in contrary to expectations (next in %f sec)",
                untiltimer);
@@ -378,9 +380,9 @@ void gras_msg_handle(double timeOut)
   }
   if (!list) {
     INFO4
-      ("No callback for message '%s' (type:%s) from %s:%d. Queue it for later gras_msg_wait() use.",
-       msg.type->name, e_gras_msg_kind_names[msg.kind],
-       gras_socket_peer_name(msg.expe), gras_socket_peer_port(msg.expe));
+        ("No callback for message '%s' (type:%s) from %s:%d. Queue it for later gras_msg_wait() use.",
+         msg.type->name, e_gras_msg_kind_names[msg.kind],
+         gras_socket_peer_name(msg.expe), gras_socket_peer_port(msg.expe));
     xbt_dynar_push(pd->msg_waitqueue, &msg);
     return;                     /* FIXME: maybe we should call ourselves again until the end of the timer or a proper msg is got */
   }
@@ -398,8 +400,8 @@ void gras_msg_handle(double timeOut)
       xbt_dynar_foreach(list->cbs, cpt, cb) {
         if (!ran_ok) {
           DEBUG4
-            ("Use the callback #%d (@%p) for incomming msg '%s' (payload_size=%d)",
-             cpt + 1, cb, msg.type->name, msg.payl_size);
+              ("Use the callback #%d (@%p) for incomming msg '%s' (payload_size=%d)",
+               cpt + 1, cb, msg.type->name, msg.payl_size);
           if (!(*cb) (&ctx, msg.payl)) {
             /* cb handled the message */
             free(msg.payl);
@@ -422,12 +424,11 @@ void gras_msg_handle(double timeOut)
           e.host = (char *) gras_os_myname();
           xbt_ex_setup_backtrace(&e);
         }
-        INFO5("Propagate %s exception ('%s') from '%s' RPC cb back to %s:%d",
-              (e.remote ? "remote" : "local"),
-              e.msg,
-              msg.type->name,
-              gras_socket_peer_name(msg.expe),
-              gras_socket_peer_port(msg.expe));
+        INFO5
+            ("Propagate %s exception ('%s') from '%s' RPC cb back to %s:%d",
+             (e.remote ? "remote" : "local"), e.msg, msg.type->name,
+             gras_socket_peer_name(msg.expe),
+             gras_socket_peer_port(msg.expe));
         if (XBT_LOG_ISENABLED(gras_msg, xbt_log_priority_verbose))
           xbt_ex_display(&e);
         gras_msg_send_ext(msg.expe, e_gras_msg_kind_rpcerror,
@@ -438,8 +439,8 @@ void gras_msg_handle(double timeOut)
         ran_ok = 1;
       } else {
         RETHROW4
-          ("Callback #%d (@%p) to message '%s' (payload size: %d) raised an exception: %s",
-           cpt + 1, cb, msg.type->name, msg.payl_size);
+            ("Callback #%d (@%p) to message '%s' (payload size: %d) raised an exception: %s",
+             cpt + 1, cb, msg.type->name, msg.payl_size);
       }
     }
 
@@ -448,9 +449,9 @@ void gras_msg_handle(double timeOut)
                 msg.type->name);
     if (ctx.answer_due)
       CRITICAL1
-        ("BUGS BOTH IN USER CODE (RPC callback to message '%s' didn't call gras_msg_rpcreturn) "
-         "AND IN SIMGRID (process wasn't killed by an assert)",
-         msg.type->name);
+          ("BUGS BOTH IN USER CODE (RPC callback to message '%s' didn't call gras_msg_rpcreturn) "
+           "AND IN SIMGRID (process wasn't killed by an assert)",
+           msg.type->name);
     if (!ran_ok)
       THROW1(mismatch_error, 0,
              "Message '%s' refused by all registered callbacks (maybe your callback misses a 'return 0' at the end)",
@@ -463,14 +464,16 @@ void gras_msg_handle(double timeOut)
     INFO3("Unexpected RPC answer discarded (type: %s; from:%s:%d)",
           msg.type->name, gras_socket_peer_name(msg.expe),
           gras_socket_peer_port(msg.expe));
-    WARN0("FIXME: gras_datadesc_free not implemented => leaking the payload");
+    WARN0
+        ("FIXME: gras_datadesc_free not implemented => leaking the payload");
     return;
 
   case e_gras_msg_kind_rpcerror:
     INFO3("Unexpected RPC error discarded (type: %s; from:%s:%d)",
           msg.type->name, gras_socket_peer_name(msg.expe),
           gras_socket_peer_port(msg.expe));
-    WARN0("FIXME: gras_datadesc_free not implemented => leaking the payload");
+    WARN0
+        ("FIXME: gras_datadesc_free not implemented => leaking the payload");
     return;
 
   default:

@@ -15,4 +15,4 @@ extern char *xbt_binary_name;
 
 XBT_PUBLIC(void) xbt_init(int *argc, char **argv);
 XBT_PUBLIC(void) xbt_exit(void);
-#endif /* _XBT_MODULE_H */
+#endif                          /* _XBT_MODULE_H */

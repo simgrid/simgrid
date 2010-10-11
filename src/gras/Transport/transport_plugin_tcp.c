@@ -63,7 +63,8 @@ struct gras_trp_bufdata_ {
 /*****************************/
 /* we exchange port number on client side on socket creation,
    so we need to be able to talk right now. */
-static XBT_INLINE void gras_trp_tcp_send(gras_socket_t sock, const char *data,
+static XBT_INLINE void gras_trp_tcp_send(gras_socket_t sock,
+                                         const char *data,
                                          unsigned long int size);
 static int gras_trp_tcp_recv(gras_socket_t sock, char *data,
                              unsigned long int size);
@@ -71,7 +72,8 @@ static int gras_trp_tcp_recv(gras_socket_t sock, char *data,
 
 static int _gras_tcp_proto_number(void);
 
-static XBT_INLINE void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
+static XBT_INLINE void gras_trp_sock_socket_client(gras_trp_plugin_t
+                                                   ignored,
                                                    gras_socket_t sock)
 {
 
@@ -80,7 +82,8 @@ static XBT_INLINE void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
   struct in_addr *haddr;
   int size = sock->buf_size;
   uint32_t myport = htonl(((gras_trp_procdata_t)
-                           gras_libdata_by_id(gras_trp_libdata_id))->myport);
+                           gras_libdata_by_id
+                           (gras_trp_libdata_id))->myport);
 
   sock->incoming = 1;           /* TCP sockets are duplex'ed */
 
@@ -131,7 +134,8 @@ static XBT_INLINE void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
  *
  * Open a socket used to receive messages.
  */
-static XBT_INLINE void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
+static XBT_INLINE void gras_trp_sock_socket_server(gras_trp_plugin_t
+                                                   ignored,
                                                    gras_socket_t sock)
 {
   int size = sock->buf_size;
@@ -164,7 +168,8 @@ static XBT_INLINE void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
   if (bind(sock->sd, (struct sockaddr *) &server, sizeof(server)) == -1) {
     tcp_close(sock->sd);
     THROW2(system_error, 0,
-           "Cannot bind to port %d: %s", sock->port, sock_errstr(sock_errno));
+           "Cannot bind to port %d: %s", sock->port,
+           sock_errstr(sock_errno));
   }
 
   DEBUG2("Listen on port %d (sd=%d)", sock->port, sock->sd);
@@ -175,7 +180,8 @@ static XBT_INLINE void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
            sock->port, sock_errstr(sock_errno));
   }
 
-  VERB2("Openned a server socket on port %d (sd=%d)", sock->port, sock->sd);
+  VERB2("Openned a server socket on port %d (sd=%d)", sock->port,
+        sock->sd);
 }
 
 static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
@@ -217,7 +223,8 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
   res->buf_size = sock->buf_size;
   size = sock->buf_size;
   if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (char *) &size, sizeof(size))
-      || setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (char *) &size, sizeof(size)))
+      || setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (char *) &size,
+                    sizeof(size)))
     VERB1("setsockopt failed, cannot set buffer size: %s",
           sock_errstr(tmp_errno));
 
@@ -338,8 +345,8 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
 
     if (status < 0) {
       THROW7(system_error, 0,
-             "read(%d,%p,%d) from %s:%d failed: %s; got %d so far", sock->sd,
-             data + got, (int) size, gras_socket_peer_name(sock),
+             "read(%d,%p,%d) from %s:%d failed: %s; got %d so far",
+             sock->sd, data + got, (int) size, gras_socket_peer_name(sock),
              gras_socket_peer_port(sock), sock_errstr(sock_errno), got);
     }
     DEBUG2("Got %d more bytes (%s)", status,
@@ -350,7 +357,8 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
       got += status;
     } else {
       THROW1(system_error, errno,
-             "Socket closed by remote side (got %d bytes before this)", got);
+             "Socket closed by remote side (got %d bytes before this)",
+             got);
     }
   }
 
@@ -433,7 +441,7 @@ gras_trp_buf_send(gras_socket_t sock,
   while (chunk_pos < size) {
     /* size of the chunk to receive in that shot */
     long int thissize =
-      min(size - chunk_pos, data->buffsize - data->out_buf.size);
+        min(size - chunk_pos, data->buffsize - data->out_buf.size);
     DEBUG4("Set the chars %d..%ld into the buffer; size=%ld, ctn=(%s)",
            (int) data->out_buf.size,
            ((int) data->out_buf.size) + thissize - 1, size,
@@ -476,15 +484,17 @@ gras_trp_buf_recv(gras_socket_t sock, char *chunk, unsigned long int size)
 
 
       data->in_buf.size =
-        gras_trp_tcp_recv_withbuffer(sock, data->in_buf.data,
-                                     MIN(size - chunk_pos, data->buffsize),
-                                     data->buffsize);
+          gras_trp_tcp_recv_withbuffer(sock, data->in_buf.data,
+                                       MIN(size - chunk_pos,
+                                           data->buffsize),
+                                       data->buffsize);
 
       data->in_buf.pos = 0;
     }
 
     thissize = min(size - chunk_pos, data->in_buf.size - data->in_buf.pos);
-    memcpy(chunk + chunk_pos, data->in_buf.data + data->in_buf.pos, thissize);
+    memcpy(chunk + chunk_pos, data->in_buf.data + data->in_buf.pos,
+           thissize);
 
     data->in_buf.pos += thissize;
     chunk_pos += thissize;
@@ -573,8 +583,10 @@ gras_trp_iov_recv(gras_socket_t sock, char *chunk, unsigned long int size)
  *** Prototypes of BUFFERED
  ***/
 
-void gras_trp_buf_socket_client(gras_trp_plugin_t self, gras_socket_t sock);
-void gras_trp_buf_socket_server(gras_trp_plugin_t self, gras_socket_t sock);
+void gras_trp_buf_socket_client(gras_trp_plugin_t self,
+                                gras_socket_t sock);
+void gras_trp_buf_socket_server(gras_trp_plugin_t self,
+                                gras_socket_t sock);
 gras_socket_t gras_trp_buf_socket_accept(gras_socket_t sock);
 
 void gras_trp_buf_socket_close(gras_socket_t sd);
@@ -789,7 +801,7 @@ const char *gras_wsa_err2string(int err)
     RETSTR(WSA_E_NO_MORE);
     RETSTR(WSA_E_CANCELLED);
     RETSTR(WSAEREFUSED);
-#endif /* HAVE_WINSOCK2 */
+#endif                          /* HAVE_WINSOCK2 */
 
     RETSTR(WSAHOST_NOT_FOUND);
     RETSTR(WSATRY_AGAIN);
@@ -798,7 +810,7 @@ const char *gras_wsa_err2string(int err)
   }
   return "unknown WSA error";
 }
-#endif /* HAVE_WINSOCK_H */
+#endif                          /* HAVE_WINSOCK_H */
 
 /***********************************/
 /****[ end of HELPER FUNCTIONS ]****/

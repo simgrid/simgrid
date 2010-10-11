@@ -35,4 +35,4 @@ typedef struct xbt_heap {
 static void xbt_heap_maxHeapify(xbt_heap_t H);
 static void xbt_heap_increaseKey(xbt_heap_t H, int i);
 
-#endif /* _XBT_HEAP_PRIVATE_H */
+#endif                          /* _XBT_HEAP_PRIVATE_H */

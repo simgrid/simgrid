@@ -15,19 +15,27 @@
  * \return the printable name of an error code
  *
  */
-const char *xbt_error_name(xbt_error_t errcode)  {
+const char *xbt_error_name(xbt_error_t errcode)
+{
 
   switch (errcode) {
 
-    case no_error: return "success";
-    case old_mismatch_error: return "mismatch";
-    case old_system_error: return "system";
-    case old_network_error: return "network";
-    case old_timeout_error: return "timeout";
-    case old_thread_error: return "thread";
-    case old_unknown_error: return "unclassified";
-    default:
-      return "SEVERE ERROR in error repporting module";
+  case no_error:
+    return "success";
+  case old_mismatch_error:
+    return "mismatch";
+  case old_system_error:
+    return "system";
+  case old_network_error:
+    return "network";
+  case old_timeout_error:
+    return "timeout";
+  case old_thread_error:
+    return "thread";
+  case old_unknown_error:
+    return "unclassified";
+  default:
+    return "SEVERE ERROR in error repporting module";
   }
 }
 
@@ -44,12 +52,14 @@ XBT_LOG_DEFAULT_CATEGORY(xbt);
  *
  * If you want to pass arguments to the format, you can always write xbt_assert1(0,"fmt",args)
  */
-void xbt_die (const char *msg) {
-  CRITICAL1("%s",msg);
+void xbt_die(const char *msg)
+{
+  CRITICAL1("%s", msg);
   xbt_abort();
 }
 
 /** @brief Kill the program in silence */
-void xbt_abort(void) {
+void xbt_abort(void)
+{
   abort();
 }

@@ -53,5 +53,5 @@ SG_BEGIN_DECL()
 #define xbt_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) THROW6(0,0,msg,a,b,c,d,e,f)
 #endif
 /** @} */
-  SG_END_DECL()
-#endif /* _XBT_ASSERTS_H */
+    SG_END_DECL()
+#endif                          /* _XBT_ASSERTS_H */

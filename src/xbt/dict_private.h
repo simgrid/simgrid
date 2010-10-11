@@ -51,8 +51,9 @@ extern void dict_elm_mallocator_reset_f(void *elem);
 xbt_dictelm_t xbt_dictelm_new(const char *key, int key_len,
                               unsigned int hash_code, void *content,
                               void_f_pvoid_t free_f);
-xbt_dictelm_t xbt_dictielm_new(uintptr_t key, unsigned int hash_code, uintptr_t content);
+xbt_dictelm_t xbt_dictielm_new(uintptr_t key, unsigned int hash_code,
+                               uintptr_t content);
 void xbt_dictelm_free(xbt_dictelm_t element);
 void xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element);
 
-#endif /* _XBT_DICT_PRIVATE_H_ */
+#endif                          /* _XBT_DICT_PRIVATE_H_ */

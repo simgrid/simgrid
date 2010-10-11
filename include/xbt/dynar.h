@@ -9,7 +9,7 @@
 #ifndef _XBT_DYNAR_H
 #define _XBT_DYNAR_H
 
-#include <string.h> /* memcpy */
+#include <string.h>             /* memcpy */
 
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
 #include "xbt/function_types.h"
@@ -59,7 +59,7 @@ SG_BEGIN_DECL()
  *  @{
  */
    /** \brief Dynar data type (opaque type) */
-     typedef struct xbt_dynar_s *xbt_dynar_t;
+typedef struct xbt_dynar_s *xbt_dynar_t;
 
 
 XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new(const unsigned long elm_size,
@@ -70,8 +70,9 @@ XBT_INLINE XBT_PUBLIC(void) xbt_dynar_free(xbt_dynar_t * dynar);
 XBT_PUBLIC(void) xbt_dynar_free_voidp(void *dynar);
 XBT_PUBLIC(void) xbt_dynar_free_container(xbt_dynar_t * dynar);
 
-XBT_INLINE XBT_PUBLIC(unsigned long) xbt_dynar_length(const xbt_dynar_t dynar);
-XBT_INLINE XBT_PUBLIC (int) xbt_dynar_is_empty(const xbt_dynar_t dynar);
+XBT_INLINE XBT_PUBLIC(unsigned long) xbt_dynar_length(const xbt_dynar_t
+                                                      dynar);
+XBT_INLINE XBT_PUBLIC(int) xbt_dynar_is_empty(const xbt_dynar_t dynar);
 XBT_PUBLIC(void) xbt_dynar_reset(xbt_dynar_t const dynar);
 XBT_PUBLIC(void) xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots);
 
@@ -85,21 +86,25 @@ XBT_PUBLIC(void) xbt_dynar_dump(xbt_dynar_t dynar);
  */
 
 XBT_PUBLIC(void) xbt_dynar_get_cpy(const xbt_dynar_t dynar,
-                                   const unsigned long idx, void *const dst);
+                                   const unsigned long idx,
+                                   void *const dst);
 
 XBT_PUBLIC(void) xbt_dynar_set(xbt_dynar_t dynar, const int idx,
                                const void *src);
-XBT_PUBLIC(void) xbt_dynar_replace(xbt_dynar_t dynar, const unsigned long idx,
+XBT_PUBLIC(void) xbt_dynar_replace(xbt_dynar_t dynar,
+                                   const unsigned long idx,
                                    const void *object);
 
-XBT_PUBLIC(void) xbt_dynar_insert_at(xbt_dynar_t const dynar, const int idx,
-                                     const void *src);
-XBT_PUBLIC(void) xbt_dynar_remove_at(xbt_dynar_t const dynar, const int idx,
-                                     void *const dst);
+XBT_PUBLIC(void) xbt_dynar_insert_at(xbt_dynar_t const dynar,
+                                     const int idx, const void *src);
+XBT_PUBLIC(void) xbt_dynar_remove_at(xbt_dynar_t const dynar,
+                                     const int idx, void *const dst);
 
-XBT_PUBLIC(unsigned int) xbt_dynar_search(xbt_dynar_t const dynar, void *elem);
+XBT_PUBLIC(unsigned int) xbt_dynar_search(xbt_dynar_t const dynar,
+                                          void *elem);
 XBT_PUBLIC(int) xbt_dynar_member(xbt_dynar_t const dynar, void *elem);
-XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar, int_f_cpvoid_cpvoid_t compar_fn);
+XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar,
+                                int_f_cpvoid_cpvoid_t compar_fn);
 
 /** @} */
 /** @defgroup XBT_dynar_perl Perl-like use of dynars
@@ -108,9 +113,12 @@ XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar, int_f_cpvoid_cpvoid_t c
  *  @{
  */
 
-XBT_INLINE XBT_PUBLIC(void) xbt_dynar_push(xbt_dynar_t const dynar, const void *src);
-XBT_INLINE XBT_PUBLIC(void) xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst);
-XBT_PUBLIC(void) xbt_dynar_unshift(xbt_dynar_t const dynar, const void *src);
+XBT_INLINE XBT_PUBLIC(void) xbt_dynar_push(xbt_dynar_t const dynar,
+                                           const void *src);
+XBT_INLINE XBT_PUBLIC(void) xbt_dynar_pop(xbt_dynar_t const dynar,
+                                          void *const dst);
+XBT_PUBLIC(void) xbt_dynar_unshift(xbt_dynar_t const dynar,
+                                   const void *src);
 XBT_PUBLIC(void) xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst);
 XBT_PUBLIC(void) xbt_dynar_map(const xbt_dynar_t dynar,
                                void_f_pvoid_t const op);
@@ -125,7 +133,7 @@ XBT_PUBLIC(void) xbt_dynar_map(const xbt_dynar_t dynar,
  */
 
 XBT_INLINE XBT_PUBLIC(void *) xbt_dynar_get_ptr(const xbt_dynar_t dynar,
-                                     const unsigned long idx);
+                                                const unsigned long idx);
 XBT_PUBLIC(void *) xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
                                            const int idx);
 XBT_PUBLIC(void *) xbt_dynar_push_ptr(xbt_dynar_t const dynar);
@@ -186,7 +194,8 @@ XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
  */
 
 XBT_INLINE XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar,
-                                     unsigned int *const cursor);
+                                                unsigned int *const
+                                                cursor);
 XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
 
 /* do not use this structure internals directly, but use the public interface
@@ -206,10 +215,11 @@ typedef struct xbt_dynar_s {
 } s_xbt_dynar_t;
 
 static XBT_INLINE void
-_xbt_dynar_cursor_first(const xbt_dynar_t dynar, unsigned int *const cursor)
+_xbt_dynar_cursor_first(const xbt_dynar_t dynar,
+                        unsigned int *const cursor)
 {
   /* don't test for dynar!=NULL. The segfault would tell us */
-  if (dynar->mutex)  /* ie _dynar_lock(dynar) but not public */
+  if (dynar->mutex)             /* ie _dynar_lock(dynar) but not public */
     xbt_mutex_acquire(dynar->mutex);
 
   //DEBUG1("Set cursor on %p to the first position", (void *) dynar);
@@ -223,13 +233,14 @@ _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
 
   if (idx >= dynar->used) {
     //DEBUG1("Cursor on %p already on last elem", (void *) dynar);
-    if (dynar->mutex) /* unlock */
+    if (dynar->mutex)           /* unlock */
       xbt_mutex_release(dynar->mutex);
     return FALSE;
   }
   //  DEBUG2("Cash out cursor on %p at %u", (void *) dynar, *idx);
 
-  memcpy(dst, ((char*)dynar->data) + idx * dynar->elmsize, dynar->elmsize);
+  memcpy(dst, ((char *) dynar->data) + idx * dynar->elmsize,
+         dynar->elmsize);
 
   return TRUE;
 }
@@ -261,4 +272,4 @@ xbt_dynar_foreach (dyn,cpt,str) {
 /** @} */
 
 SG_END_DECL()
-#endif /* _XBT_DYNAR_H */
+#endif                          /* _XBT_DYNAR_H */

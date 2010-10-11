@@ -15,9 +15,9 @@ SG_BEGIN_DECL()
    *
    * @{
    */
-     typedef struct xbt_node *xbt_node_t;
-     typedef struct xbt_edge *xbt_edge_t;
-     typedef struct xbt_graph *xbt_graph_t;
+typedef struct xbt_node *xbt_node_t;
+typedef struct xbt_edge *xbt_edge_t;
+typedef struct xbt_graph *xbt_graph_t;
 
 /* API */
 XBT_PUBLIC(xbt_graph_t) xbt_graph_new_graph(unsigned short int directed,
@@ -55,27 +55,28 @@ XBT_PUBLIC(xbt_dynar_t) xbt_graph_node_get_outedges(xbt_node_t n);
 XBT_PUBLIC(xbt_node_t) xbt_graph_edge_get_source(xbt_edge_t e);
 XBT_PUBLIC(xbt_node_t) xbt_graph_edge_get_target(xbt_edge_t e);
 XBT_PUBLIC(xbt_graph_t) xbt_graph_read(const char *filename, void
-                                       * (node_label_and_data) (xbt_node_t,
-                                                                const char *,
-                                                                const char *),
-                                       void
-                                       * (edge_label_and_data) (xbt_edge_t,
-                                                                const char *,
-                                                                const char *)
-  );
+                                       *(node_label_and_data) (xbt_node_t,
+                                                               const char
+                                                               *,
+                                                               const char
+                                                               *), void
+                                       *(edge_label_and_data) (xbt_edge_t,
+                                                               const char
+                                                               *,
+                                                               const char
+                                                               *)
+    );
 
 XBT_PUBLIC(void) xbt_graph_export_graphviz(xbt_graph_t g,
                                            const char *filename, const char
-                                           * (node_name) (xbt_node_t), const char
-                                           * (edge_name) (xbt_edge_t));
+                                           *(node_name) (xbt_node_t), const char
+                                           *(edge_name) (xbt_edge_t));
 XBT_PUBLIC(void) xbt_graph_export_graphxml(xbt_graph_t g,
                                            const char *filename, const char
-                                           * (node_name) (xbt_node_t), const char
-                                           * (edge_name) (xbt_edge_t),
-                                           const char *(node_data_print) (void
-                                                                          *),
-                                           const char *(edge_data_print) (void
-                                                                          *));
+                                           *(node_name) (xbt_node_t), const char
+                                           *(edge_name) (xbt_edge_t), const char
+                                           *(node_data_print) (void *), const char
+                                           *(edge_data_print) (void *));
 
 /* Not implemented yet ! */
 /* void *xbt_graph_to_array(xbt_graph_t g);  */
@@ -110,5 +111,5 @@ XBT_PUBLIC(xbt_edge_t *) xbt_graph_spanning_tree_prim(xbt_graph_t g);
 
 
 SG_END_DECL()
-#endif /* _XBT_GRAPH_H */
+#endif                          /* _XBT_GRAPH_H */
 /** @} */

@@ -257,4 +257,4 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
  ********************************************************************/
 extern xbt_dict_t gras_dd_constants;    /* lives in ddt_parse.c of course */
 
-#endif /* GRAS_DATADESC_PRIVATE_H */
+#endif                          /* GRAS_DATADESC_PRIVATE_H */

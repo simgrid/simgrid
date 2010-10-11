@@ -11,7 +11,7 @@
 #include "xbt/dict.h"
 
 typedef struct network_link_GTNETS {
-  s_surf_resource_t generic_resource; /* Must remain first to allow casting */
+  s_surf_resource_t generic_resource;   /* Must remain first to allow casting */
   /* Using this object with the public part of
      model does not make sense */
   double bw_current;
@@ -32,4 +32,4 @@ xbt_dict_t network_card_ids;
 
 
 
-#endif /* _SURF_NETWORK_PRIVATE_H */
+#endif                          /* _SURF_NETWORK_PRIVATE_H */

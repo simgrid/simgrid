@@ -53,7 +53,8 @@ static jobject native_to_java_process(m_process_t process)
 
 JNIEXPORT void JNICALL
 Java_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
-                                         jobject jprocess_arg, jobject jhost)
+                                         jobject jprocess_arg,
+                                         jobject jhost)
 {
   jobject jprocess;             /* the global reference to the java process instance    */
   jstring jname;                /* the name of the java process instance                */
@@ -63,8 +64,8 @@ Java_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
   msg_mailbox_t mailbox;
 
   DEBUG4
-    ("Java_simgrid_msg_MsgNative_processCreate(env=%p,cls=%p,jproc=%p,jhost=%p)",
-     env, cls, jprocess_arg, jhost);
+      ("Java_simgrid_msg_MsgNative_processCreate(env=%p,cls=%p,jproc=%p,jhost=%p)",
+       env, cls, jprocess_arg, jhost);
   /* get the name of the java process */
   jname = jprocess_get_name(jprocess_arg, env);
 
@@ -111,22 +112,23 @@ Java_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
 
   /* create a new context */
   DEBUG8
-    ("fill in process %s/%s (pid=%d) %p (sd=%p, host=%p, host->sd=%p); env=%p",
-     process->name, process->simdata->m_host->name, process->simdata->PID,
-     process, process->simdata, process->simdata->m_host,
-     process->simdata->m_host->simdata, env);
+      ("fill in process %s/%s (pid=%d) %p (sd=%p, host=%p, host->sd=%p); env=%p",
+       process->name, process->simdata->m_host->name,
+       process->simdata->PID, process, process->simdata,
+       process->simdata->m_host, process->simdata->m_host->simdata, env);
 
-  process->simdata->s_process = 
-    SIMIX_process_create(process->name, (xbt_main_func_t)jprocess, 
-                         /*data */ (void *) process,
-                         process->simdata->m_host->simdata->smx_host->name, 
-                         0, NULL, NULL);
-    
+  process->simdata->s_process =
+      SIMIX_process_create(process->name, (xbt_main_func_t) jprocess,
+                           /*data */ (void *) process,
+                           process->simdata->m_host->simdata->
+                           smx_host->name, 0, NULL, NULL);
+
   DEBUG1("context created (s_process=%p)", process->simdata->s_process);
 
 
   if (SIMIX_process_self()) {   /* someone created me */
-    process->simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
+    process->simdata->PPID =
+        MSG_process_get_PID(SIMIX_process_self()->data);
   } else {
     process->simdata->PPID = -1;
   }
@@ -136,11 +138,12 @@ Java_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
   /* add the process to the list of the processes of the simulation */
   xbt_fifo_unshift(msg_global->process_list, process);
 
-  sprintf(alias, "%s:%s", (process->simdata->m_host->simdata->smx_host)->name,
+  sprintf(alias, "%s:%s",
+          (process->simdata->m_host->simdata->smx_host)->name,
           process->name);
 
   mailbox = MSG_mailbox_new(alias);
-  
+
 }
 
 JNIEXPORT void JNICALL
@@ -156,10 +159,10 @@ Java_simgrid_msg_MsgNative_processSuspend(JNIEnv * env, jclass cls,
 
   /* try to suspend the process */
   MSG_error_t rv = MSG_process_suspend(process);
-  
-  jxbt_check_res("MSG_process_suspend()",rv,MSG_OK,
-    bprintf("unexpected error , please report this bug"));
-  
+
+  jxbt_check_res("MSG_process_suspend()", rv, MSG_OK,
+                 bprintf("unexpected error , please report this bug"));
+
 }
 
 JNIEXPORT void JNICALL
@@ -169,15 +172,15 @@ Java_simgrid_msg_MsgNative_processResume(JNIEnv * env, jclass cls,
   m_process_t process = jprocess_to_native_process(jprocess, env);
 
   if (!process) {
-    jxbt_throw_notbound(env,"process", jprocess);
+    jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
 
   /* try to resume the process */
-    MSG_error_t rv = MSG_process_resume(process);
-    
-    jxbt_check_res("MSG_process_resume()",rv,MSG_OK,
-    bprintf("unexpected error , please report this bug"));
+  MSG_error_t rv = MSG_process_resume(process);
+
+  jxbt_check_res("MSG_process_resume()", rv, MSG_OK,
+                 bprintf("unexpected error , please report this bug"));
 }
 
 JNIEXPORT jboolean JNICALL
@@ -242,7 +245,8 @@ Java_simgrid_msg_MsgNative_processGetHost(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_processFromPID(JNIEnv * env, jclass cls, jint PID)
+Java_simgrid_msg_MsgNative_processFromPID(JNIEnv * env, jclass cls,
+                                          jint PID)
 {
   m_process_t process = MSG_process_from_PID(PID);
 
@@ -322,8 +326,8 @@ Java_simgrid_msg_MsgNative_processChangeHost(JNIEnv * env, jclass cls,
   /* try to change the host of the process */
   MSG_error_t rv = MSG_process_change_host(host);
 
-  jxbt_check_res("MSG_process_change_host()",rv,MSG_OK,
-      bprintf("unexpected error , please report this bug"));
+  jxbt_check_res("MSG_process_change_host()", rv, MSG_OK,
+                 bprintf("unexpected error , please report this bug"));
 
 }
 
@@ -331,11 +335,12 @@ JNIEXPORT void JNICALL
 Java_simgrid_msg_MsgNative_processWaitFor(JNIEnv * env, jclass cls,
                                           jdouble seconds)
 {
-    MSG_error_t rv= MSG_process_sleep((double) seconds);
-    
-    jxbt_check_res("MSG_process_sleep()",rv, MSG_HOST_FAILURE,
-    bprintf("while process was waiting for %f seconds",(double)seconds));
-    
+  MSG_error_t rv = MSG_process_sleep((double) seconds);
+
+  jxbt_check_res("MSG_process_sleep()", rv, MSG_HOST_FAILURE,
+                 bprintf("while process was waiting for %f seconds",
+                         (double) seconds));
+
 }
 
 
@@ -364,7 +369,7 @@ Java_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
     return NULL;
   }
 
-  if (!MSG_host_get_data(host)) {            /* native host not associated yet with java host */
+  if (!MSG_host_get_data(host)) {       /* native host not associated yet with java host */
 
     /* instanciate a new java host */
     jhost = jhost_new_instance(env);
@@ -388,7 +393,7 @@ Java_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
     /* the native host data field is set with the global reference to the 
      * java host returned by this function 
      */
-    MSG_host_set_data(host,(void *) jhost);
+    MSG_host_set_data(host, (void *) jhost);
   }
 
   /* return the global reference to the java host instance */
@@ -443,7 +448,7 @@ Java_simgrid_msg_MsgNative_hostSelf(JNIEnv * env, jclass cls)
 
     /* Bind & store it */
     jhost_bind(jhost, host, env);
-    MSG_host_set_data(host,(void *) jhost);
+    MSG_host_set_data(host, (void *) jhost);
   } else {
     jhost = (jobject) MSG_host_get_data(host);
   }
@@ -500,17 +505,19 @@ Java_simgrid_msg_MsgNative_hostIsAvail(JNIEnv * env, jclass cls,
  ***************************************************************************************/
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_taskCreate(JNIEnv * env, jclass cls, jobject jtask,
-                                      jstring jname, jdouble jcomputeDuration,
+Java_simgrid_msg_MsgNative_taskCreate(JNIEnv * env, jclass cls,
+                                      jobject jtask, jstring jname,
+                                      jdouble jcomputeDuration,
                                       jdouble jmessageSize)
 {
   m_task_t task;                /* the native task to create                            */
-  const char *name=NULL;        /* the name of the task                                 */
+  const char *name = NULL;      /* the name of the task                                 */
 
   if (jcomputeDuration < 0) {
     jxbt_throw_illegal(env,
-                       bprintf("Task ComputeDuration (%f) cannot be negative",
-                               (double) jcomputeDuration));
+                       bprintf
+                       ("Task ComputeDuration (%f) cannot be negative",
+                        (double) jcomputeDuration));
     return;
   }
 
@@ -529,24 +536,26 @@ Java_simgrid_msg_MsgNative_taskCreate(JNIEnv * env, jclass cls, jobject jtask,
 
   /* create the task */
   task =
-    MSG_task_create(name, (double) jcomputeDuration, (double) jmessageSize,
-                    NULL);
+      MSG_task_create(name, (double) jcomputeDuration,
+                      (double) jmessageSize, NULL);
 
   if (jname)
     (*env)->ReleaseStringUTFChars(env, jname, name);
 
   /* bind & store the task */
   jtask_bind(jtask, task, env);
-  MSG_task_set_data(task,jtask);
+  MSG_task_set_data(task, jtask);
 }
 
 JNIEXPORT void JNICALL
 Java_simgrid_msg_MsgNative_parallel_taskCreate(JNIEnv * env, jclass cls,
-                                               jobject jtask, jstring jname,
+                                               jobject jtask,
+                                               jstring jname,
                                                jobjectArray jhosts,
                                                jdoubleArray
                                                jcomputeDurations_arg,
-                                               jdoubleArray jmessageSizes_arg)
+                                               jdoubleArray
+                                               jmessageSizes_arg)
 {
 
   m_task_t task;                /* the native parallel task to create           */
@@ -571,7 +580,8 @@ Java_simgrid_msg_MsgNative_parallel_taskCreate(JNIEnv * env, jclass cls,
 
   if (!jmessageSizes_arg) {
     jxbt_throw_null(env,
-                    xbt_strdup("Parallel task message sizes cannot be null"));
+                    xbt_strdup
+                    ("Parallel task message sizes cannot be null"));
     return;
   }
 
@@ -588,8 +598,9 @@ Java_simgrid_msg_MsgNative_parallel_taskCreate(JNIEnv * env, jclass cls,
   messageSizes = xbt_new0(double, host_count * host_count);
 
   jcomputeDurations =
-    (*env)->GetDoubleArrayElements(env, jcomputeDurations_arg, 0);
-  jmessageSizes = (*env)->GetDoubleArrayElements(env, jmessageSizes_arg, 0);
+      (*env)->GetDoubleArrayElements(env, jcomputeDurations_arg, 0);
+  jmessageSizes =
+      (*env)->GetDoubleArrayElements(env, jmessageSizes_arg, 0);
 
   for (index = 0; index < host_count; index++) {
     jhost = (*env)->GetObjectArrayElement(env, jhosts, index);
@@ -610,15 +621,15 @@ Java_simgrid_msg_MsgNative_parallel_taskCreate(JNIEnv * env, jclass cls,
   name = (*env)->GetStringUTFChars(env, jname, 0);
 
   task =
-    MSG_parallel_task_create(name, host_count, hosts, computeDurations,
-                             messageSizes, NULL);
+      MSG_parallel_task_create(name, host_count, hosts, computeDurations,
+                               messageSizes, NULL);
 
   (*env)->ReleaseStringUTFChars(env, jname, name);
 
   /* associate the java task object and the native task */
   jtask_bind(jtask, task, env);
 
-  MSG_task_set_data(task,(void*) jtask);
+  MSG_task_set_data(task, (void *) jtask);
 
   if (!MSG_task_get_data(task))
     jxbt_throw_jni(env, "global ref allocation failed");
@@ -679,7 +690,8 @@ Java_simgrid_msg_MsgNative_taskGetName(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_taskCancel(JNIEnv * env, jclass cls, jobject jtask)
+Java_simgrid_msg_MsgNative_taskCancel(JNIEnv * env, jclass cls,
+                                      jobject jtask)
 {
   m_task_t ptask = jtask_to_native_task(jtask, env);
 
@@ -689,9 +701,9 @@ Java_simgrid_msg_MsgNative_taskCancel(JNIEnv * env, jclass cls, jobject jtask)
   }
 
   MSG_error_t rv = MSG_task_cancel(ptask);
-  
-    jxbt_check_res("MSG_task_cancel()",rv,MSG_OK,
-    bprintf("unexpected error , please report this bug"));
+
+  jxbt_check_res("MSG_task_cancel()", rv, MSG_OK,
+                 bprintf("unexpected error , please report this bug"));
 }
 
 JNIEXPORT jdouble JNICALL
@@ -708,7 +720,8 @@ Java_simgrid_msg_MsgNative_taskGetComputeDuration(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jdouble JNICALL
-Java_simgrid_msg_MsgNative_taskGetRemainingDuration(JNIEnv * env, jclass cls,
+Java_simgrid_msg_MsgNative_taskGetRemainingDuration(JNIEnv * env,
+                                                    jclass cls,
                                                     jobject jtask)
 {
   m_task_t ptask = jtask_to_native_task(jtask, env);
@@ -747,11 +760,11 @@ Java_simgrid_msg_MsgNative_taskDestroy(JNIEnv * env, jclass cls,
     return;
   }
   jtask = (jobject) MSG_task_get_data(task);
-    
+
   MSG_error_t rv = MSG_task_destroy(task);
-    
-  jxbt_check_res("MSG_task_destroy()",rv,MSG_OK,
-    bprintf("unexpected error , please report this bug"));
+
+  jxbt_check_res("MSG_task_destroy()", rv, MSG_OK,
+                 bprintf("unexpected error , please report this bug"));
 }
 
 JNIEXPORT void JNICALL
@@ -766,9 +779,11 @@ Java_simgrid_msg_MsgNative_taskExecute(JNIEnv * env, jclass cls,
   }
 
   MSG_error_t rv = MSG_task_execute(task);
-  
-    jxbt_check_res("MSG_task_execute()",rv,MSG_HOST_FAILURE|MSG_TASK_CANCELLED,
-    bprintf("while executing task %s", MSG_task_get_name(task)));
+
+  jxbt_check_res("MSG_task_execute()", rv,
+                 MSG_HOST_FAILURE | MSG_TASK_CANCELLED,
+                 bprintf("while executing task %s",
+                         MSG_task_get_name(task)));
 }
 
 /***************************************************************************************
@@ -790,7 +805,8 @@ Java_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls)
 
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs) {
+Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
+{
   char **argv = NULL;
   int index;
   int argc = 0;
@@ -823,36 +839,38 @@ Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs) {
 }
 
 JNIEXPORT void JNICALL
-  JNICALL Java_simgrid_msg_Msg_run(JNIEnv * env, jclass cls) {
+    JNICALL Java_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)
+{
   MSG_error_t rv;
-  int index;//xbt_fifo_item_t item = NULL;
+  int index;                    //xbt_fifo_item_t item = NULL;
   m_host_t *hosts;
   jobject jhost;
 
   /* Run everything */
-  rv= MSG_main();
-    jxbt_check_res("MSG_main()",rv,MSG_OK,
-     bprintf("unexpected error : MSG_main() failed .. please report this bug "));
+  rv = MSG_main();
+  jxbt_check_res("MSG_main()", rv, MSG_OK,
+                 bprintf
+                 ("unexpected error : MSG_main() failed .. please report this bug "));
 
   DEBUG0
-    ("MSG_main finished. Bail out before cleanup since there is a bug in this part.");
+      ("MSG_main finished. Bail out before cleanup since there is a bug in this part.");
 
   DEBUG0("Clean java world");
   /* Cleanup java hosts */
   hosts = MSG_get_host_table();
-  for (index=0;index<MSG_get_host_number()-1;index++)
-  {
-    jhost = (jobject)hosts[index]->data;
-    if(jhost)
-    	jhost_unref(env,jhost);
+  for (index = 0; index < MSG_get_host_number() - 1; index++) {
+    jhost = (jobject) hosts[index]->data;
+    if (jhost)
+      jhost_unref(env, jhost);
 
   }
 
   DEBUG0("Clean native world");
   /* cleanup native stuff */
   rv = MSG_OK != MSG_clean();
-  jxbt_check_res("MSG_clean()",rv,MSG_OK,
-       bprintf("unexpected error : MSG_clean() failed .. please report this bug "));
+  jxbt_check_res("MSG_clean()", rv, MSG_OK,
+                 bprintf
+                 ("unexpected error : MSG_clean() failed .. please report this bug "));
 
 }
 
@@ -868,7 +886,8 @@ Java_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls,
                                        jstring jplatformFile)
 {
 
-  const char *platformFile = (*env)->GetStringUTFChars(env, jplatformFile, 0);
+  const char *platformFile =
+      (*env)->GetStringUTFChars(env, jplatformFile, 0);
 
   MSG_create_environment(platformFile);
 
@@ -930,7 +949,8 @@ Java_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
     if (!jhost) {
       jname = (*env)->NewStringUTF(env, MSG_host_get_name(host));
 
-      jhost = Java_simgrid_msg_MsgNative_hostGetByName(env, cls_arg, jname);
+      jhost =
+          Java_simgrid_msg_MsgNative_hostGetByName(env, cls_arg, jname);
       /* FIXME: leak of jname ? */
     }
 
@@ -961,7 +981,8 @@ Java_simgrid_msg_MsgNative_selectContextFactory(JNIEnv * env, jclass class,
   (*env)->ReleaseStringUTFChars(env, jname, name);
 
   if (errmsg) {
-    char *thrown = bprintf("xbt_select_context_factory() failed: %s", errmsg);
+    char *thrown =
+        bprintf("xbt_select_context_factory() failed: %s", errmsg);
     free(errmsg);
     jxbt_throw_jni(env, thrown);
   }
@@ -986,13 +1007,15 @@ Java_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
   }
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
-  MSG_task_set_data(task,(void *) (*env)->NewGlobalRef(env, jtask));
+  MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
   rv = MSG_task_send_with_timeout(task, alias, (double) jtimeout);
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  jxbt_check_res("MSG_task_send_with_timeout()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT,
-    bprintf("while sending task %s to mailbox %s", MSG_task_get_name(task),alias));
+  jxbt_check_res("MSG_task_send_with_timeout()", rv,
+                 MSG_HOST_FAILURE | MSG_TRANSFER_FAILURE | MSG_TIMEOUT,
+                 bprintf("while sending task %s to mailbox %s",
+                         MSG_task_get_name(task), alias));
 }
 
 JNIEXPORT void JNICALL
@@ -1012,14 +1035,17 @@ Java_simgrid_msg_MsgNative_taskSendBounded(JNIEnv * env, jclass cls,
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
-  MSG_task_set_data(task,(void *) (*env)->NewGlobalRef(env, jtask));
+  MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
   rv = MSG_task_send_bounded(task, alias, (double) jmaxRate);
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  jxbt_check_res("MSG_task_send_bounded()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT,
-    bprintf("while sending task %s to mailbox %s with max rate %f", MSG_task_get_name(task),alias,(double)jmaxRate));
-    
+  jxbt_check_res("MSG_task_send_bounded()", rv,
+                 MSG_HOST_FAILURE | MSG_TRANSFER_FAILURE | MSG_TIMEOUT,
+                 bprintf
+                 ("while sending task %s to mailbox %s with max rate %f",
+                  MSG_task_get_name(task), alias, (double) jmaxRate));
+
 }
 
 JNIEXPORT jobject JNICALL
@@ -1050,12 +1076,13 @@ Java_simgrid_msg_MsgNative_taskReceive(JNIEnv * env, jclass cls,
   /* Convert the global ref into a local ref so that the JVM can free the stuff */
   jtask_local = (*env)->NewLocalRef(env, jtask_global);
   (*env)->DeleteGlobalRef(env, jtask_global);
-  MSG_task_set_data(task,NULL);
+  MSG_task_set_data(task, NULL);
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  jxbt_check_res("MSG_task_receive_ext()",rv, MSG_HOST_FAILURE|MSG_TRANSFER_FAILURE|MSG_TIMEOUT,
-    bprintf("while receiving from mailbox %s",alias));
+  jxbt_check_res("MSG_task_receive_ext()", rv,
+                 MSG_HOST_FAILURE | MSG_TRANSFER_FAILURE | MSG_TIMEOUT,
+                 bprintf("while receiving from mailbox %s", alias));
 
   return (jobject) jtask_local;
 }
@@ -1079,7 +1106,8 @@ Java_simgrid_msg_MsgNative_taskListen(JNIEnv * env, jclass cls,
 
 JNIEXPORT jint JNICALL
 Java_simgrid_msg_MsgNative_taskListenFromHost(JNIEnv * env, jclass cls,
-                                              jstring jalias, jobject jhost)
+                                              jstring jalias,
+                                              jobject jhost)
 {
   int rv;
   const char *alias;
@@ -1120,7 +1148,7 @@ Java_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
 {
 
   const char *deploymentFile =
-    (*env)->GetStringUTFChars(env, jdeploymentFile, 0);
+      (*env)->GetStringUTFChars(env, jdeploymentFile, 0);
 
   surf_parse_reset_parser();
 
@@ -1141,7 +1169,7 @@ Java_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
   japplication_handler_on_start_document();
 
   if (surf_parse())
-    jxbt_throw_jni(env,"surf_parse() failed");
+    jxbt_throw_jni(env, "surf_parse() failed");
 
   surf_parse_close();
 

@@ -28,8 +28,8 @@
 typedef struct s_mc_snapshot {
   size_t heap_size;
   size_t data_size;
-	void* data;
-	void* heap;
+  void *data;
+  void *heap;
 
 } s_mc_snapshot_t, *mc_snapshot_t;
 
@@ -76,19 +76,19 @@ typedef enum {
   mc_random
 } mc_trans_type_t;
 
-typedef struct s_mc_transition{
+typedef struct s_mc_transition {
   XBT_SETSET_HEADERS;
-  char* name;
+  char *name;
   smx_process_t process;
   mc_trans_type_t type;
 
   union {
     struct {
-      smx_rdv_t rdv;  
+      smx_rdv_t rdv;
     } isend;
 
     struct {
-      smx_rdv_t rdv;  
+      smx_rdv_t rdv;
     } irecv;
 
     struct {
@@ -120,13 +120,13 @@ int MC_transition_depend(mc_transition_t, mc_transition_t);
 void MC_trans_compute_enabled(xbt_setset_set_t, xbt_setset_set_t);
 
 /******************************** States **************************************/
-typedef struct mc_state{
-  xbt_setset_set_t created_transitions;   /* created in this state */
-  xbt_setset_set_t transitions;           /* created in this state + inherited */
-  xbt_setset_set_t enabled_transitions;   /* they can be executed by the mc */
-  xbt_setset_set_t interleave;            /* the ones to be executed by the mc */
-  xbt_setset_set_t done;                  /* already executed transitions */
-  mc_transition_t executed_transition;    /* last executed transition */
+typedef struct mc_state {
+  xbt_setset_set_t created_transitions; /* created in this state */
+  xbt_setset_set_t transitions; /* created in this state + inherited */
+  xbt_setset_set_t enabled_transitions; /* they can be executed by the mc */
+  xbt_setset_set_t interleave;  /* the ones to be executed by the mc */
+  xbt_setset_set_t done;        /* already executed transitions */
+  mc_transition_t executed_transition;  /* last executed transition */
 } s_mc_state_t, *mc_state_t;
 
 extern xbt_fifo_t mc_stack;
@@ -137,12 +137,12 @@ mc_state_t MC_state_new(void);
 void MC_state_delete(mc_state_t);
 
 /****************************** Statistics ************************************/
-typedef struct mc_stats{
+typedef struct mc_stats {
   unsigned long state_size;
   unsigned long visited_states;
   unsigned long expanded_states;
   unsigned long executed_transitions;
-}s_mc_stats_t, *mc_stats_t;
+} s_mc_stats_t, *mc_stats_t;
 
 extern mc_stats_t mc_stats;
 
@@ -169,26 +169,26 @@ extern size_t libsimgrid_data_size;
 #define MAP_WRITE  1 << 1
 #define MAP_EXEC   1 << 2
 #define MAP_SHARED 1 << 3
-#define MAP_PRIV   1 << 4 
+#define MAP_PRIV   1 << 4
 
 /* Each field is defined as documented in proc's manual page  */
 typedef struct s_map_region {
 
-  void *start_addr;     /* Start address of the map */
-  void *end_addr;       /* End address of the map */
-  int perms;            /* Set of permissions */  
-  void *offset;         /* Offset in the file/whatever */
-  char dev_major;       /* Major of the device */  
-  char dev_minor;       /* Minor of the device */
-  unsigned long inode;  /* Inode in the device */
-  char *pathname;       /* Path name of the mapped file */
+  void *start_addr;             /* Start address of the map */
+  void *end_addr;               /* End address of the map */
+  int perms;                    /* Set of permissions */
+  void *offset;                 /* Offset in the file/whatever */
+  char dev_major;               /* Major of the device */
+  char dev_minor;               /* Minor of the device */
+  unsigned long inode;          /* Inode in the device */
+  char *pathname;               /* Path name of the mapped file */
 
 } s_map_region;
 
 typedef struct s_memory_map {
 
-  s_map_region *regions;  /* Pointer to an array of regions */
-  int mapsize;            /* Number of regions in the memory */
+  s_map_region *regions;        /* Pointer to an array of regions */
+  int mapsize;                  /* Number of regions in the memory */
 
 } s_memory_map_t, *memory_map_t;
 

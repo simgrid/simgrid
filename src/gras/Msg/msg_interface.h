@@ -53,4 +53,4 @@ void gras_msg_listener_close_socket(int sd);
 #define GRAS_PROTOCOL_VERSION '\1';
 
 
-#endif /* GRAS_MSG_INTERFACE_H */
+#endif                          /* GRAS_MSG_INTERFACE_H */

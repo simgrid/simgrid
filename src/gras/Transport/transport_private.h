@@ -115,4 +115,4 @@ void gras_trp_sg_setup(gras_trp_plugin_t plug);
 
 gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock);
 
-#endif /* GRAS_TRP_PRIVATE_H */
+#endif                          /* GRAS_TRP_PRIVATE_H */

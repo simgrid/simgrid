@@ -12,7 +12,7 @@
 
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
 #include "xbt/dynar.h"          /* void_f_pvoid_t */
-#include <stdint.h> /* uintptr_t */
+#include <stdint.h>             /* uintptr_t */
 
 SG_BEGIN_DECL();
 
@@ -61,7 +61,7 @@ XBT_PUBLIC(void) xbt_dict_set(xbt_dict_t dict, const char *key, void *data,
                               void_f_pvoid_t free_ctn);
 XBT_PUBLIC(void *) xbt_dict_get(xbt_dict_t dict, const char *key);
 XBT_PUBLIC(void *) xbt_dict_get_or_null(xbt_dict_t dict, const char *key);
-XBT_PUBLIC(char *) xbt_dict_get_key(xbt_dict_t dict, const void*data);
+XBT_PUBLIC(char *) xbt_dict_get_key(xbt_dict_t dict, const void *data);
 
 XBT_PUBLIC(void) xbt_dict_remove(xbt_dict_t dict, const char *key);
 XBT_PUBLIC(void) xbt_dict_reset(xbt_dict_t dict);
@@ -85,13 +85,14 @@ XBT_PUBLIC(void) xbt_dict_set_ext(xbt_dict_t dict,
                                   void *data, void_f_pvoid_t free_ctn);
 XBT_PUBLIC(void *) xbt_dict_get_ext(xbt_dict_t dict, const char *key,
                                     int key_len);
-XBT_PUBLIC(void *) xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key,
-                                            int key_len);
+XBT_PUBLIC(void *) xbt_dict_get_or_null_ext(xbt_dict_t dict,
+                                            const char *key, int key_len);
 XBT_PUBLIC(void) xbt_dict_remove_ext(xbt_dict_t dict, const char *key,
                                      int key_len);
 
 
-XBT_PUBLIC(void) xbt_dicti_set(xbt_dict_t dict, uintptr_t key, uintptr_t data);
+XBT_PUBLIC(void) xbt_dicti_set(xbt_dict_t dict, uintptr_t key,
+                               uintptr_t data);
 XBT_PUBLIC(uintptr_t) xbt_dicti_get(xbt_dict_t dict, uintptr_t key);
 XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
 
@@ -119,17 +120,19 @@ XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
  *  @{ */
 
   /** @brief Cursor on dictionaries (opaque type) */
-     typedef struct xbt_dict_cursor_ *xbt_dict_cursor_t;
+typedef struct xbt_dict_cursor_ *xbt_dict_cursor_t;
 XBT_PUBLIC(xbt_dict_cursor_t) xbt_dict_cursor_new(const xbt_dict_t dict);
 XBT_PUBLIC(void) xbt_dict_cursor_free(xbt_dict_cursor_t * cursor);
 
-XBT_INLINE XBT_PUBLIC(void) xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor);
+XBT_INLINE XBT_PUBLIC(void) xbt_dict_cursor_rewind(xbt_dict_cursor_t
+                                                   cursor);
 
 
 XBT_PUBLIC(char *) xbt_dict_cursor_get_key(xbt_dict_cursor_t cursor);
 XBT_PUBLIC(void *) xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor);
 XBT_PUBLIC(void) xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor,
-                                          void *data, void_f_pvoid_t free_ctn);
+                                          void *data,
+                                          void_f_pvoid_t free_ctn);
 
 XBT_PUBLIC(void) xbt_dict_cursor_first(const xbt_dict_t dict,
                                        xbt_dict_cursor_t * cursor);
@@ -174,16 +177,18 @@ xbt_multidict_set_ext(xbt_dict_t mdict,
 
 /*----[ xbt_multidict_get ]--------------------------------------------------*/
 XBT_PUBLIC(void *) xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys);
-XBT_PUBLIC(void *) xbt_multidict_get_ext(xbt_dict_t mdict, xbt_dynar_t keys,
+XBT_PUBLIC(void *) xbt_multidict_get_ext(xbt_dict_t mdict,
+                                         xbt_dynar_t keys,
                                          xbt_dynar_t lens);
 
 /*----[ xbt_multidict_remove ]-----------------------------------------------*/
 /*---------------------------------------------------------------------------*/
 XBT_PUBLIC(void) xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys);
-XBT_PUBLIC(void) xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys,
+XBT_PUBLIC(void) xbt_multidict_remove_ext(xbt_dict_t mdict,
+                                          xbt_dynar_t keys,
                                           xbt_dynar_t lens);
 
 /** @} */
 
 SG_END_DECL()
-#endif /* _XBT_DICT_H */
+#endif                          /* _XBT_DICT_H */

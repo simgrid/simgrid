@@ -99,8 +99,8 @@ XBT_PUBLIC(void) amok_bw_test(gras_socket_t peer,
                               /*OUT*/ double *sec, double *bw);
 
 XBT_PUBLIC(void) amok_bw_request(const char *from_name,
-                                 unsigned int from_port, const char *to_name,
-                                 unsigned int to_port,
+                                 unsigned int from_port,
+                                 const char *to_name, unsigned int to_port,
                                  unsigned long int buf_size,
                                  unsigned long int msg_size,
                                  unsigned long int msg_amount,
@@ -109,7 +109,8 @@ XBT_PUBLIC(void) amok_bw_request(const char *from_name,
 
 XBT_PUBLIC(double *) amok_bw_matrix(xbt_dynar_t hosts,  /* dynar of xbt_host_t */
                                     int buf_size_bw, int msg_size_bw,
-                                    int msg_amount_bw, double min_duration);
+                                    int msg_amount_bw,
+                                    double min_duration);
 
 /* ***************************************************************************
  * Link saturation
@@ -127,7 +128,8 @@ XBT_PUBLIC(void) amok_bw_saturate_begin(const char *to_name,
                                         unsigned int to_port,
                                         unsigned int msg_size,
                                         double duration,
-                                        /*out */ double *elapsed, double *bw);
+                                        /*out */ double *elapsed,
+                                        double *bw);
 
 XBT_PUBLIC(void) amok_bw_saturate_stop(const char *from_name,
                                        unsigned int from_port,
@@ -135,4 +137,4 @@ XBT_PUBLIC(void) amok_bw_saturate_stop(const char *from_name,
 
 /** @} */
 
-#endif /* AMOK_BANDWIDTH_H */
+#endif                          /* AMOK_BANDWIDTH_H */

@@ -133,7 +133,7 @@ double SD_link_get_current_bandwidth(SD_link_t link)
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
   return surf_workstation_model->extension.workstation.
-    get_link_bandwidth(link->surf_link);
+      get_link_bandwidth(link->surf_link);
 }
 
 /**
@@ -147,7 +147,7 @@ double SD_link_get_current_latency(SD_link_t link)
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
   return surf_workstation_model->extension.workstation.
-    get_link_latency(link->surf_link);
+      get_link_latency(link->surf_link);
 }
 
 /**

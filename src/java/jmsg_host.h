@@ -107,4 +107,4 @@ void jhost_set_name(jobject jhost, jstring jname, JNIEnv * env);
  */
 jboolean jhost_is_valid(jobject jhost, JNIEnv * env);
 
-#endif /*!MSG_JHOST_H */
+#endif                          /*!MSG_JHOST_H */

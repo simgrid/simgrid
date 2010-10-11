@@ -44,7 +44,8 @@ xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
   res->userparam = param;
   res->code = code;
   DEBUG1("Create thread %p", res);
-  res->os_thread = xbt_os_thread_create(name, xbt_thread_create_wrapper, res);
+  res->os_thread =
+      xbt_os_thread_create(name, xbt_thread_create_wrapper, res);
   return res;
 }
 
@@ -166,7 +167,8 @@ void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex)
 void xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay)
 {
   DEBUG3("Wait cond %p, mutex %p for %f sec", cond, mutex, delay);
-  xbt_os_cond_timedwait((xbt_os_cond_t) cond, (xbt_os_mutex_t) mutex, delay);
+  xbt_os_cond_timedwait((xbt_os_cond_t) cond, (xbt_os_mutex_t) mutex,
+                        delay);
   DEBUG3("Done waiting cond %p, mutex %p for %f sec", cond, mutex, delay);
 }
 

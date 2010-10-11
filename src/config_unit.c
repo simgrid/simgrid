@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-#line 1295 "xbt/config.c" 
+#line 1325 "xbt/config.c" 
 #include "xbt.h"
 #include "xbt/ex.h"
 
@@ -102,7 +102,8 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
     xbt_dynar_t dyn;
     xbt_cfg_t myset = make_set();
 
-    xbt_cfg_set_parse(myset, "peername:veloce user:foo\nuser:bar\tuser:toto");
+    xbt_cfg_set_parse(myset,
+                      "peername:veloce user:foo\nuser:bar\tuser:toto");
     xbt_cfg_set_parse(myset, "speed:42");
     xbt_cfg_check(myset);
     dyn = xbt_cfg_get_dynar(myset, "user");
@@ -112,16 +113,16 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
                      xbt_dynar_length(dyn));
 
     if (strcmp(xbt_dynar_get_as(dyn, 0, char *), "foo"))
-        xbt_test_fail1("Dynar[0] = %s, I expected foo",
-                       xbt_dynar_get_as(dyn, 0, char *));
+       xbt_test_fail1("Dynar[0] = %s, I expected foo",
+                      xbt_dynar_get_as(dyn, 0, char *));
 
     if (strcmp(xbt_dynar_get_as(dyn, 1, char *), "bar"))
-        xbt_test_fail1("Dynar[1] = %s, I expected bar",
-                       xbt_dynar_get_as(dyn, 1, char *));
+       xbt_test_fail1("Dynar[1] = %s, I expected bar",
+                      xbt_dynar_get_as(dyn, 1, char *));
 
     if (strcmp(xbt_dynar_get_as(dyn, 2, char *), "toto"))
-        xbt_test_fail1("Dynar[2] = %s, I expected toto",
-                       xbt_dynar_get_as(dyn, 2, char *));
+       xbt_test_fail1("Dynar[2] = %s, I expected toto",
+                      xbt_dynar_get_as(dyn, 2, char *));
     xbt_cfg_free(&myset);
   }
 

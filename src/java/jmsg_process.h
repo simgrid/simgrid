@@ -239,4 +239,4 @@ void jprocess_schedule(smx_context_t context);
 void jprocess_unschedule(smx_context_t context);
 
 
-#endif /* !MSG_JPROCESS_H */
+#endif                          /* !MSG_JPROCESS_H */

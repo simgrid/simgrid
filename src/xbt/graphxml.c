@@ -1054,7 +1054,7 @@ int xbt_graph_parse__flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *xbt_graph_parse_text;
 /* Validating XML processor for src/xbt/graphxml.dtd.
- * Generated 2010/10/01 22:34:14.
+ * Generated 2010/10/11 11:35:07.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.

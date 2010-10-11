@@ -414,7 +414,7 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
     }
   }
   free(str_to_free);
-  xbt_dynar_shrink(res,0);
+  xbt_dynar_shrink(res, 0);
   return res;
 }
 
@@ -432,14 +432,15 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
                    xbt_dynar_free(&d);
 
 XBT_TEST_SUITE("xbt_str", "String Handling");
-XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted,"test the function xbt_str_split_quoted")
+XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_str_split_quoted")
 {
   xbt_dynar_t d;
   char *s;
 
   mytest("Empty", "", "");
   mytest("Basic test", "toto tutu", "totoXXXtutu");
-  mytest("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u", "totoXXXtutu");
+  mytest("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u",
+         "totoXXXtutu");
   mytest("Protected space", "toto\\ tutu", "toto tutu");
   mytest("Several spaces", "toto   tutu", "totoXXXtutu");
   mytest("LTriming", "  toto tatu", "totoXXXtatu");
@@ -464,7 +465,7 @@ XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted,"test the function xbt_s
                    free(s); \
                    xbt_dynar_free(&d);
 
-XBT_TEST_UNIT("xbt_str_split_str", test_split_str,"test the function xbt_str_split_str")
+XBT_TEST_UNIT("xbt_str_split_str", test_split_str, "test the function xbt_str_split_str")
 {
   xbt_dynar_t d;
   char *s;
@@ -475,7 +476,7 @@ XBT_TEST_UNIT("xbt_str_split_str", test_split_str,"test the function xbt_str_spl
   mytest_str("String with no separator in it", "toto", "##", "toto");
   mytest_str("Basic test", "toto##tutu", "##", "totoXXXtutu");
 }
-#endif /* SIMGRID_TEST */
+#endif                          /* SIMGRID_TEST */
 
 /** @brief Join a set of strings as a single string */
 
@@ -558,15 +559,16 @@ long getline(char **buf, size_t * n, FILE * stream)
   return (ssize_t) i;
 }
 
-#endif /* HAVE_GETLINE */
+#endif                          /* HAVE_GETLINE */
 
 /*
  * Diff related functions
  */
 static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db)
 {
-  xbt_matrix_t C = xbt_matrix_new(xbt_dynar_length(da), xbt_dynar_length(db),
-                                  sizeof(int), NULL);
+  xbt_matrix_t C =
+      xbt_matrix_new(xbt_dynar_length(da), xbt_dynar_length(db),
+                     sizeof(int), NULL);
   unsigned long i, j;
 
   /* Compute the LCS */
@@ -596,13 +598,14 @@ static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db)
     for (j = 1; j < xbt_dynar_length(db); j++) {
 
       if (!strcmp
-          (xbt_dynar_get_as(da, i, char *), xbt_dynar_get_as(db, j, char *)))
-         *((int *) xbt_matrix_get_ptr(C, i, j)) =
-          xbt_matrix_get_as(C, i - 1, j - 1, int) + 1;
+          (xbt_dynar_get_as(da, i, char *),
+           xbt_dynar_get_as(db, j, char *)))
+        *((int *) xbt_matrix_get_ptr(C, i, j)) =
+            xbt_matrix_get_as(C, i - 1, j - 1, int) + 1;
       else
         *((int *) xbt_matrix_get_ptr(C, i, j)) =
-          max(xbt_matrix_get_as(C, i, j - 1, int),
-              xbt_matrix_get_as(C, i - 1, j, int));
+            max(xbt_matrix_get_as(C, i, j - 1, int),
+                xbt_matrix_get_as(C, i - 1, j, int));
     }
   return C;
 }
@@ -633,20 +636,19 @@ static void diff_build_diff(xbt_dynar_t res,
     xbt_dynar_push(res, &topush);
   } else if (j >= 0 &&
              (i <= 0 || j == 0
-              || xbt_matrix_get_as(C, i, j - 1, int) >= xbt_matrix_get_as(C,
-                                                                          i -
-                                                                          1,
-                                                                          j,
-                                                                          int)))
-  {
+              || xbt_matrix_get_as(C, i, j - 1,
+                                   int) >= xbt_matrix_get_as(C, i - 1, j,
+                                                             int))) {
     diff_build_diff(res, C, da, db, i, j - 1);
     topush = bprintf("+ %s", xbt_dynar_get_as(db, j, char *));
     xbt_dynar_push(res, &topush);
   } else if (i >= 0 &&
              (j <= 0
               || xbt_matrix_get_as(C, i, j - 1, int) < xbt_matrix_get_as(C,
-                                                                         i -
-                                                                         1, j,
+                                                                         i
+                                                                         -
+                                                                         1,
+                                                                         j,
                                                                          int)))
   {
     diff_build_diff(res, C, da, db, i - 1, j);
@@ -697,16 +699,17 @@ char *xbt_str_diff(char *a, char *b)
 /** @brief creates a new string containing what can be read on a fd
  *
  */
-char* xbt_str_from_file(FILE *file) {
+char *xbt_str_from_file(FILE * file)
+{
   xbt_strbuff_t buff = xbt_strbuff_new();
   char *res;
   char bread[1024];
-  memset(bread,0,1024);
+  memset(bread, 0, 1024);
 
   while (!feof(file)) {
     int got = fread(bread, 1, 1023, file);
     bread[got] = '\0';
-    xbt_strbuff_append(buff,bread);
+    xbt_strbuff_append(buff, bread);
   }
 
   res = buff->data;

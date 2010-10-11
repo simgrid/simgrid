@@ -141,7 +141,8 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
     xbt_assert1(mod->datasize == datasize,
                 "Module %s reregistered with a different datasize!", name);
     xbt_assert1(mod->p_id == ID,
-                "Module %s reregistered with a different p_id field!", name);
+                "Module %s reregistered with a different p_id field!",
+                name);
 
     DEBUG1("Module %s already registered. Ignoring re-registration", name);
     return;
@@ -194,7 +195,7 @@ void gras_module_join(const char *name)
   gras_procdata_t *pd;
   void *moddata;
   gras_module_t mod =
-    (gras_module_t) xbt_set_get_by_name(_gras_modules, name);
+      (gras_module_t) xbt_set_get_by_name(_gras_modules, name);
 
   VERB2("Join to module %s (%p)", name, mod);
 
@@ -229,7 +230,7 @@ void gras_module_leave(const char *name)
 {
   void *moddata;
   gras_module_t mod =
-    (gras_module_t) xbt_set_get_by_name(_gras_modules, name);
+      (gras_module_t) xbt_set_get_by_name(_gras_modules, name);
 
   VERB1("Leave module %s", name);
 

@@ -36,16 +36,13 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
   if (strlen(xbt_procname()))
     p += snprintf(p, 256 - (p - loc_buff), "%s:%s:(%d) ",
                   gras_os_myname(), xbt_procname(), (*xbt_getpid) ());
-  p +=
-    snprintf(p, 256 - (p - loc_buff), "%f] ",
-             gras_os_time() - simple_begin_of_time);
-  if (ev->priority != xbt_log_priority_info && xbt_log_no_loc==0)
-    p +=
-      snprintf(p, 256 - (p - loc_buff), "%s:%d: ", ev->fileName,
-               ev->lineNum);
-  p +=
-    snprintf(p, 256 - (p - loc_buff), "[%s/%s] ", ev->cat->name,
-             xbt_log_priority_names[ev->priority]);
+  p += snprintf(p, 256 - (p - loc_buff), "%f] ",
+                gras_os_time() - simple_begin_of_time);
+  if (ev->priority != xbt_log_priority_info && xbt_log_no_loc == 0)
+    p += snprintf(p, 256 - (p - loc_buff), "%s:%d: ", ev->fileName,
+                  ev->lineNum);
+  p += snprintf(p, 256 - (p - loc_buff), "[%s/%s] ", ev->cat->name,
+                xbt_log_priority_names[ev->priority]);
 
   xbt_strbuff_append(buff, loc_buff);
 
@@ -73,7 +70,7 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
                                        xbt_log_appender_t app)
 {
   char *p;
-  const char *procname=NULL;
+  const char *procname = NULL;
   xbt_assert0(ev->priority >= 0,
               "Negative logging priority naturally forbidden");
   xbt_assert1(ev->priority < sizeof(xbt_log_priority_names),
@@ -85,7 +82,7 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
   check_overflow;
 
   /* Display the proc info if available */
-  procname=xbt_procname();
+  procname = xbt_procname();
   if (strlen(procname)) {
     p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%s:%s:(%d) ",
                   gras_os_myname(), procname, (*xbt_getpid) ());
@@ -93,16 +90,14 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
   }
 
   /* Display the date */
-  p +=
-    snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%f] ",
-             gras_os_time() - simple_begin_of_time);
+  p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%f] ",
+                gras_os_time() - simple_begin_of_time);
   check_overflow;
 
   /* Display file position if not INFO */
   if (ev->priority != xbt_log_priority_info && !xbt_log_no_loc)
-    p +=
-      snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%s:%d: ",
-               ev->fileName, ev->lineNum);
+    p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%s:%d: ",
+                  ev->fileName, ev->lineNum);
 
   /* Display category name */
   p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "[%s/%s] ",

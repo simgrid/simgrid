@@ -203,7 +203,7 @@ static void good_example(void)
       cp3 = mallocex(SMALLAMOUNT);
       strcpy(cp1, "foo");
       strcpy(cp2, "bar");
-    } TRY_CLEANUP {                 /*04 */
+    } TRY_CLEANUP {             /*04 */
       printf("cp3=%s", cp3 == NULL /*02 */ ? "" : cp3);
       if (cp3 != NULL)
         free(cp3);

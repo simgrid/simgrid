@@ -38,10 +38,10 @@ SG_BEGIN_DECL()
     those structs directly. Use them as an abstract datatype.
 */
 /* @{ */
-     typedef struct xbt_swag_hookup {
-       void *next;
-       void *prev;
-     } s_xbt_swag_hookup_t;
+typedef struct xbt_swag_hookup {
+  void *next;
+  void *prev;
+} s_xbt_swag_hookup_t;
 /**< This type should be added to a type that is to be used in a swag. 
  *
  *  Whenever a new object with this struct is created, all fields have
@@ -68,15 +68,15 @@ typedef struct foo {
 }
 \endcode
 */
-     typedef s_xbt_swag_hookup_t *xbt_swag_hookup_t;
+typedef s_xbt_swag_hookup_t *xbt_swag_hookup_t;
 
 
-     typedef struct xbt_swag {
-       void *head;
-       void *tail;
-       size_t offset;
-       int count;
-     } s_xbt_swag_t, *xbt_swag_t;
+typedef struct xbt_swag {
+  void *head;
+  void *tail;
+  size_t offset;
+  int count;
+} s_xbt_swag_t, *xbt_swag_t;
 /**< A typical swag */
 /* @} */
 
@@ -99,9 +99,11 @@ XBT_PUBLIC(int) xbt_swag_size(xbt_swag_t swag);
 #define xbt_swag_getNext(obj,offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->prev)
 #define xbt_swag_getPrev(obj,offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->next)
 
-static XBT_INLINE int xbt_swag_belongs(void *obj, xbt_swag_t swag) {
-  return ((xbt_swag_getNext(obj, swag->offset)) || (xbt_swag_getPrev(obj, swag->offset))
-      || (swag->head == obj));
+static XBT_INLINE int xbt_swag_belongs(void *obj, xbt_swag_t swag)
+{
+  return ((xbt_swag_getNext(obj, swag->offset))
+          || (xbt_swag_getPrev(obj, swag->offset))
+          || (swag->head == obj));
 }
 
 static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
@@ -164,4 +166,4 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
 /* @} */
 
 SG_END_DECL()
-#endif /* _XBT_SWAG_H */
+#endif                          /* _XBT_SWAG_H */

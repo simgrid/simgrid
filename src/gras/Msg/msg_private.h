@@ -65,7 +65,7 @@ void gras_msgtype_free(void *msgtype);
 
 
 /* functions to extract msg from socket or put it on wire (depend RL vs SG) */
-gras_msg_t gras_msg_recv_any(void); /* Get first message arriving */
+gras_msg_t gras_msg_recv_any(void);     /* Get first message arriving */
 void gras_msg_recv(gras_socket_t sock, gras_msg_t msg /*OUT*/);
 void gras_msg_send_ext(gras_socket_t sock,
                        e_gras_msg_kind_t kind,
@@ -134,4 +134,4 @@ void gras_msg_ctx_mallocator_free_f(void *dict);
 void gras_msg_ctx_mallocator_reset_f(void *dict);
 
 
-#endif /* GRAS_MESSAGE_PRIVATE_H */
+#endif                          /* GRAS_MESSAGE_PRIVATE_H */

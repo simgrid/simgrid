@@ -82,7 +82,8 @@ gras_msgtype_declare_ext(const char *name,
   xbt_ex_t e;
 
   TRY {
-    msgtype = (gras_msgtype_t) xbt_set_get_by_name(_gras_msgtype_set, namev);
+    msgtype =
+        (gras_msgtype_t) xbt_set_get_by_name(_gras_msgtype_set, namev);
     found = 1;
   } CATCH(e) {
     if (e.category != not_found_error) {
@@ -94,18 +95,20 @@ gras_msgtype_declare_ext(const char *name,
 
   if (found) {
     VERB2
-      ("Re-register version %d of message '%s' (same kind & payload, ignored).",
-       version, name);
+        ("Re-register version %d of message '%s' (same kind & payload, ignored).",
+         version, name);
     xbt_assert3(msgtype->kind == kind,
                 "Message %s re-registered as a %s (it was known as a %s)",
                 namev, e_gras_msg_kind_names[kind],
                 e_gras_msg_kind_names[msgtype->kind]);
-    xbt_assert3(!gras_datadesc_type_cmp(msgtype->ctn_type, payload_request),
+    xbt_assert3(!gras_datadesc_type_cmp
+                (msgtype->ctn_type, payload_request),
                 "Message %s re-registred with another payload (%s was %s)",
                 namev, gras_datadesc_get_name(payload_request),
                 gras_datadesc_get_name(msgtype->ctn_type));
 
-    xbt_assert3(!gras_datadesc_type_cmp(msgtype->answer_type, payload_answer),
+    xbt_assert3(!gras_datadesc_type_cmp
+                (msgtype->answer_type, payload_answer),
                 "Message %s re-registred with another answer payload (%s was %s)",
                 namev, gras_datadesc_get_name(payload_answer),
                 gras_datadesc_get_name(msgtype->answer_type));
@@ -127,7 +130,8 @@ gras_msgtype_declare_ext(const char *name,
   msgtype->ctn_type = payload_request;
   msgtype->answer_type = payload_answer;
 
-  xbt_set_add(_gras_msgtype_set, (xbt_set_elm_t) msgtype, &gras_msgtype_free);
+  xbt_set_add(_gras_msgtype_set, (xbt_set_elm_t) msgtype,
+              &gras_msgtype_free);
 }
 
 
@@ -200,7 +204,8 @@ gras_msgtype_t gras_msgtype_by_namev(const char *name, short int version)
     xbt_ex_free(e);
   }
   if (!found)
-    THROW1(not_found_error, 0, "No registred message of that name: %s", name);
+    THROW1(not_found_error, 0, "No registred message of that name: %s",
+           name);
 
   free(namev);
 
@@ -217,7 +222,8 @@ gras_msgtype_t gras_msgtype_by_id(int id)
 /*                         GETTERS                                      */
 /* ******************************************************************** */
 
-XBT_INLINE const char* gras_msgtype_get_name(gras_msgtype_t type) {
+XBT_INLINE const char *gras_msgtype_get_name(gras_msgtype_t type)
+{
   return type->name;
 }
 
@@ -244,7 +250,7 @@ void gras_cbl_free(void *data)
 void gras_cb_register_(gras_msgtype_t msgtype, gras_msg_cb_t cb)
 {
   gras_msg_procdata_t pd =
-    (gras_msg_procdata_t) gras_libdata_by_id(gras_msg_libdata_id);
+      (gras_msg_procdata_t) gras_libdata_by_id(gras_msg_libdata_id);
   gras_cblist_t *list = NULL;
   unsigned int cpt;
 
@@ -275,7 +281,7 @@ void gras_cb_unregister_(gras_msgtype_t msgtype, gras_msg_cb_t cb)
 {
 
   gras_msg_procdata_t pd =
-    (gras_msg_procdata_t) gras_libdata_by_id(gras_msg_libdata_id);
+      (gras_msg_procdata_t) gras_libdata_by_id(gras_msg_libdata_id);
   gras_cblist_t *list;
   gras_msg_cb_t cb_cpt;
   unsigned int cpt;

@@ -14,8 +14,8 @@
 
 SG_BEGIN_DECL()
 
-     void gras_agent_spawn(const char *name, void *data, xbt_main_func_t code,
-                           int argc, char *argv[], xbt_dict_t properties);
+void gras_agent_spawn(const char *name, void *data, xbt_main_func_t code,
+                      int argc, char *argv[], xbt_dict_t properties);
 
 
 /****************************************************************************/
@@ -65,4 +65,4 @@ XBT_PUBLIC(void *) gras_userdata_set(void *ud);
 /* @} */
 
 SG_END_DECL()
-#endif /* GRAS_PROCESS_H */
+#endif                          /* GRAS_PROCESS_H */

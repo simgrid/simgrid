@@ -10,8 +10,10 @@
 #define SURF_RESOURCE_H
 
 static XBT_INLINE
-surf_resource_t surf_resource_new(size_t childsize,
-    surf_model_t model, char *name, xbt_dict_t props) {
+    surf_resource_t surf_resource_new(size_t childsize,
+                                      surf_model_t model, char *name,
+                                      xbt_dict_t props)
+{
   surf_resource_t res = xbt_malloc0(childsize);
   res->model = model;
   res->name = name;
@@ -19,7 +21,8 @@ surf_resource_t surf_resource_new(size_t childsize,
   return res;
 }
 
-static XBT_INLINE void surf_resource_free(void* r) {
+static XBT_INLINE void surf_resource_free(void *r)
+{
   surf_resource_t resource = r;
   if (resource->name)
     free(resource->name);
@@ -28,12 +31,14 @@ static XBT_INLINE void surf_resource_free(void* r) {
   free(resource);
 }
 
-static XBT_INLINE const char *surf_resource_name(const void *resource) {
-  return ((surf_resource_t)resource)->name;
+static XBT_INLINE const char *surf_resource_name(const void *resource)
+{
+  return ((surf_resource_t) resource)->name;
 }
 
-static XBT_INLINE xbt_dict_t surf_resource_properties(const void *resource) {
-  return ((surf_resource_t)resource)->properties;
+static XBT_INLINE xbt_dict_t surf_resource_properties(const void *resource)
+{
+  return ((surf_resource_t) resource)->properties;
 }
 
-#endif /* SURF_RESOURCE_H */
+#endif                          /* SURF_RESOURCE_H */

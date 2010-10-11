@@ -34,10 +34,10 @@ typedef struct {
   smx_process_t server;
   smx_process_t client;
 
-  smx_rdv_t rdv_server; /* The rendez-vous point to use */
-  smx_rdv_t rdv_client; /* The rendez-vous point to use */
-  smx_comm_t comm_recv; /* The comm of irecv on receiver side */
-} s_gras_trp_sg_sock_data_t,*gras_trp_sg_sock_data_t;
+  smx_rdv_t rdv_server;         /* The rendez-vous point to use */
+  smx_rdv_t rdv_client;         /* The rendez-vous point to use */
+  smx_comm_t comm_recv;         /* The comm of irecv on receiver side */
+} s_gras_trp_sg_sock_data_t, *gras_trp_sg_sock_data_t;
 
 
 void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p);
@@ -48,4 +48,4 @@ void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p);
  * order.
  */
 
-#endif /* VIRTU_SG_H */
+#endif                          /* VIRTU_SG_H */

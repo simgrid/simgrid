@@ -13,8 +13,10 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");
 
 static smx_context_t
-smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
-                                    void_f_pvoid_t cleanup_func, void* cleanup_arg);
+smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
+                                    char **argv,
+                                    void_f_pvoid_t cleanup_func,
+                                    void *cleanup_arg);
 
 static void smx_ctx_java_free(smx_context_t context);
 static void smx_ctx_java_start(smx_context_t context);
@@ -38,14 +40,16 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
 }
 
 static smx_context_t
-smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc, char** argv, 
-                                    void_f_pvoid_t cleanup_func, void* cleanup_arg)
+smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
+                                    char **argv,
+                                    void_f_pvoid_t cleanup_func,
+                                    void *cleanup_arg)
 {
   smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
 
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
-  if(code){
+  if (code) {
     context->super.cleanup_func = cleanup_func;
     context->super.cleanup_arg = cleanup_arg;
     context->jprocess = (jobject) code;
@@ -53,7 +57,7 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc, char** argv,
     jprocess_start(((smx_ctx_java_t) context)->jprocess,
                    get_current_thread_env());
   }
-    
+
   return (smx_context_t) context;
 }
 
@@ -74,7 +78,7 @@ static void smx_ctx_java_free(smx_context_t context)
   }
 
   smx_ctx_base_free(context);
-} 
+}
 
 static void smx_ctx_java_stop(smx_context_t context)
 {
@@ -87,7 +91,7 @@ static void smx_ctx_java_stop(smx_context_t context)
 
   ctx_java = (smx_ctx_java_t) context;
 
-  /*FIXME: is this really necessary?*/
+  /*FIXME: is this really necessary? */
   if (simix_global->current_process->iwannadie) {
     /* The maestro call xbt_context_stop() with an exit code set to one */
     if (ctx_java->jprocess) {
@@ -134,8 +138,7 @@ static void smx_ctx_java_suspend(smx_context_t context)
 }
 
 // FIXME: inline those functions
-static void 
-smx_ctx_java_resume(smx_context_t new_context)
+static void smx_ctx_java_resume(smx_context_t new_context)
 {
   jprocess_schedule(new_context);
 }

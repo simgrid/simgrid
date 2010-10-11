@@ -65,7 +65,7 @@ typedef struct SD_task *SD_task_t;
     @see SD_task_management */
 typedef enum {
   SD_NOT_SCHEDULED = 0,      /**< @brief Initial state (not valid for SD_watch and SD_unwatch). */
-  SD_SCHEDULABLE  = 0x0001,		 /**< @brief A task becomes SD_READY as soon as its dependencies are satisfied */
+  SD_SCHEDULABLE = 0x0001,               /**< @brief A task becomes SD_READY as soon as its dependencies are satisfied */
   SD_SCHEDULED = 0x0002,     /**< @brief A task becomes SD_SCHEDULED when you call function
 								  SD_task_schedule. SD_simulate will execute it when it becomes SD_RUNNABLE. */
   SD_RUNNABLE = 0x0004,      /**< @brief A scheduled task becomes runnable is SD_simulate as soon as its dependencies are satisfied. */
@@ -81,8 +81,8 @@ typedef enum {
     @see SD_task_management */
 typedef enum {
   SD_TASK_NOT_TYPED = 0,      /**< @no specified type */
-  SD_TASK_COMM_E2E  = 1,      /**< @brief end to end communication */
-  SD_TASK_COMP_SEQ  = 2,      /**< @brief sequential computation */
+  SD_TASK_COMM_E2E = 1,       /**< @brief end to end communication */
+  SD_TASK_COMP_SEQ = 2,       /**< @brief sequential computation */
 } e_SD_task_kind_t;
 
 

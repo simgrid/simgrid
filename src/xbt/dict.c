@@ -95,7 +95,8 @@ XBT_INLINE unsigned int xbt_dict_size(xbt_dict_t dict)
 /**
  * Returns the hash code of a string.
  */
-static XBT_INLINE unsigned int xbt_dict_hash_ext(const char *str, int str_len)
+static XBT_INLINE unsigned int xbt_dict_hash_ext(const char *str,
+                                                 int str_len)
 {
 
 
@@ -116,7 +117,8 @@ static XBT_INLINE unsigned int xbt_dict_hash_ext(const char *str, int str_len)
   while (bp < be) {
     /* multiply by the 32 bit FNV magic prime mod 2^32 */
     hash +=
-      (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+        (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) +
+        (hash << 24);
 
     /* xor the bottom with the current octet */
     hash ^= (unsigned int) *bp++;
@@ -151,7 +153,8 @@ static XBT_INLINE unsigned int xbt_dict_hash(const char *str)
   while (*str) {
     /* multiply by the 32 bit FNV magic prime mod 2^32 */
     hash +=
-      (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+        (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) +
+        (hash << 24);
 
     /* xor the bottom with the current byte */
     hash ^= (unsigned int) *str++;
@@ -180,8 +183,8 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   register xbt_dictelm_t *pprev;
 
   currcell =
-    (xbt_dictelm_t *) xbt_realloc((char *) dict->table,
-                                  newsize * sizeof(xbt_dictelm_t));
+      (xbt_dictelm_t *) xbt_realloc((char *) dict->table,
+                                    newsize * sizeof(xbt_dictelm_t));
   memset(&currcell[oldsize], 0, oldsize * sizeof(xbt_dictelm_t));       /* zero second half */
   dict->table_size = --newsize;
   dict->table = currcell;
@@ -285,7 +288,8 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
  * null terminated string.
  */
 XBT_INLINE void xbt_dict_set(xbt_dict_t dict,
-                  const char *key, void *data, void_f_pvoid_t free_ctn)
+                             const char *key, void *data,
+                             void_f_pvoid_t free_ctn)
 {
 
   xbt_dict_set_ext(dict, key, strlen(key), data, free_ctn);
@@ -301,7 +305,8 @@ XBT_INLINE void xbt_dict_set(xbt_dict_t dict,
  *
  * Search the given \a key. Throws not_found_error when not found.
  */
-XBT_INLINE void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
+XBT_INLINE void *xbt_dict_get_ext(xbt_dict_t dict, const char *key,
+                                  int key_len)
 {
 
 
@@ -326,7 +331,8 @@ XBT_INLINE void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
 /**
  * \brief like xbt_dict_get_ext(), but returning NULL when not found
  */
-void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
+void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key,
+                               int key_len)
 {
 
   unsigned int hash_code = xbt_dict_hash_ext(key, key_len);
@@ -352,7 +358,8 @@ void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
  *
  * Returns NULL if the object cannot be found
  */
-char *xbt_dict_get_key(xbt_dict_t dict, const void*data) {
+char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
+{
   int i;
   xbt_dictelm_t current;
 
@@ -430,7 +437,8 @@ XBT_INLINE void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
  *
  * Remove the entry associated with the given \a key (throws not_found)
  */
-XBT_INLINE void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
+XBT_INLINE void xbt_dict_remove_ext(xbt_dict_t dict, const char *key,
+                                    int key_len)
 {
 
 
@@ -492,19 +500,22 @@ XBT_INLINE void xbt_dict_remove(xbt_dict_t dict, const char *key)
  * of data, as long as its length is provided in \a key_len.
  */
 XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
-                              uintptr_t key, uintptr_t data) {
+                              uintptr_t key, uintptr_t data)
+{
 
-  unsigned int hash_code = xbt_dict_hash_ext((void*)&key, sizeof(uintptr_t));
+  unsigned int hash_code =
+      xbt_dict_hash_ext((void *) &key, sizeof(uintptr_t));
 
   xbt_dictelm_t current, previous = NULL;
   xbt_assert(dict);
 
-  DEBUG5("ADD %zu->%zu; hash = %d, size = %d, & = %d", key, data, hash_code,
-         dict->table_size, hash_code & dict->table_size);
+  DEBUG5("ADD %zu->%zu; hash = %d, size = %d, & = %d", key, data,
+         hash_code, dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
-         (hash_code != current->hash_code || sizeof(uintptr_t) != current->key_len
-          || (((uintptr_t)key) != ((uintptr_t)current->key)) )) {
+         (hash_code != current->hash_code
+          || sizeof(uintptr_t) != current->key_len
+          || (((uintptr_t) key) != ((uintptr_t) current->key)))) {
     current = current->next;
   }
 
@@ -526,7 +537,7 @@ XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
     if (current->content != NULL && current->free_f != NULL) {
       current->free_f(current->content);
     }
-    current->content = (void*)data;
+    current->content = (void *) data;
     current->free_f = NULL;
   }
 }
@@ -540,37 +551,43 @@ XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
  *
  * Mixing uintptr_t keys with regular keys in the same dict is discouraged
  */
-XBT_INLINE uintptr_t xbt_dicti_get(xbt_dict_t dict, uintptr_t key) {
+XBT_INLINE uintptr_t xbt_dicti_get(xbt_dict_t dict, uintptr_t key)
+{
 
-  unsigned int hash_code = xbt_dict_hash_ext(((void*)&key), sizeof(uintptr_t));
+  unsigned int hash_code =
+      xbt_dict_hash_ext(((void *) &key), sizeof(uintptr_t));
   xbt_dictelm_t current;
 
   xbt_assert(dict);
 
   current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
-         (hash_code != current->hash_code || sizeof(uintptr_t) != current->key_len
-          || (((uintptr_t)key) != ((uintptr_t)current->key)) )) {
+         (hash_code != current->hash_code
+          || sizeof(uintptr_t) != current->key_len
+          || (((uintptr_t) key) != ((uintptr_t) current->key)))) {
     current = current->next;
   }
 
   if (current == NULL)
     return 0;
 
-  return (uintptr_t)(current->content);
+  return (uintptr_t) (current->content);
 }
 
 /** Remove a uintptr_t key from the dict */
-XBT_INLINE void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key) {
+XBT_INLINE void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key)
+{
 
-  unsigned int hash_code = xbt_dict_hash_ext(((void*)&key), sizeof(uintptr_t));
+  unsigned int hash_code =
+      xbt_dict_hash_ext(((void *) &key), sizeof(uintptr_t));
   xbt_dictelm_t current, previous = NULL;
 
 
   current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
-         (hash_code != current->hash_code || sizeof(uintptr_t) != current->key_len
-          || (((uintptr_t)key) != ((uintptr_t)current->key)) )) {
+         (hash_code != current->hash_code
+          || sizeof(uintptr_t) != current->key_len
+          || (((uintptr_t) key) != ((uintptr_t) current->key)))) {
     previous = current;         /* save the previous node */
     current = current->next;
   }
@@ -637,12 +654,13 @@ void xbt_dict_dump_output_string(void *s)
 {
   fputs(s, stdout);
 }
+
 /**
  * \brief test if the dict is empty or not
  */
 XBT_INLINE int xbt_dict_is_empty(xbt_dict_t dict)
 {
-	return (xbt_dict_size(dict) == 0);
+  return (xbt_dict_size(dict) == 0);
 }
 
 /**
@@ -746,7 +764,8 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
  * This is an internal XBT function called during the lib initialization.
  * It can be used several times to recreate the mallocator, for example when you switch to MC mode
  */
-void xbt_dict_preinit(void) {
+void xbt_dict_preinit(void)
+{
   if (dict_mallocator != NULL) {
     /* Already created. I guess we want to switch to MC mode, so kill the previously created mallocator */
     xbt_mallocator_free(dict_mallocator);
@@ -754,13 +773,13 @@ void xbt_dict_preinit(void) {
   }
 
   dict_mallocator = xbt_mallocator_new(256,
-      dict_mallocator_new_f,
-      dict_mallocator_free_f,
-      dict_mallocator_reset_f);
+                                       dict_mallocator_new_f,
+                                       dict_mallocator_free_f,
+                                       dict_mallocator_reset_f);
   dict_elm_mallocator = xbt_mallocator_new(256,
-      dict_elm_mallocator_new_f,
-      dict_elm_mallocator_free_f,
-      dict_elm_mallocator_reset_f);
+                                           dict_elm_mallocator_new_f,
+                                           dict_elm_mallocator_free_f,
+                                           dict_elm_mallocator_reset_f);
 }
 
 /**
@@ -831,7 +850,8 @@ static void debuged_add_ext(xbt_dict_t head, const char *key,
 {
   char *data = xbt_strdup(data_to_fill);
 
-  xbt_test_log2("Add %s under %s", PRINTF_STR(data_to_fill), PRINTF_STR(key));
+  xbt_test_log2("Add %s under %s", PRINTF_STR(data_to_fill),
+                PRINTF_STR(key));
 
   xbt_dict_set(head, key, data, &free);
   if (XBT_LOG_ISENABLED(xbt_dict, xbt_log_priority_debug)) {
@@ -921,8 +941,8 @@ static void search_not_found(xbt_dict_t head, const char *data)
 
   TRY {
     data = xbt_dict_get(head, data);
-    THROW1(unknown_error, 0, "Found something which shouldn't be there (%s)",
-           data);
+    THROW1(unknown_error, 0,
+           "Found something which shouldn't be there (%s)", data);
   } CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
@@ -946,7 +966,7 @@ static void count(xbt_dict_t dict, int length)
                    length);
 
   xbt_dict_foreach(dict, cursor, key, data)
-    effective++;
+      effective++;
 
   xbt_test_assert2(effective == length, "Effective length(%d) != %d.",
                    effective, length);
@@ -956,21 +976,24 @@ static void count(xbt_dict_t dict, int length)
 static void count_check_get_key(xbt_dict_t dict, int length)
 {
   xbt_dict_cursor_t cursor;
-  char *key,*key2;
+  char *key, *key2;
   void *data;
   int effective = 0;
 
 
-  xbt_test_add1("Count elements (expecting %d), and test the getkey function", length);
+  xbt_test_add1
+      ("Count elements (expecting %d), and test the getkey function",
+       length);
   xbt_test_assert2(xbt_dict_length(dict) == length,
                    "Announced length(%d) != %d.", xbt_dict_length(dict),
                    length);
 
   xbt_dict_foreach(dict, cursor, key, data) {
     effective++;
-    key2 = xbt_dict_get_key(dict,data);
-    xbt_assert2(!strcmp(key,key2),
-          "The data was registered under %s instead of %s as expected",key2,key);
+    key2 = xbt_dict_get_key(dict, data);
+    xbt_assert2(!strcmp(key, key2),
+                "The data was registered under %s instead of %s as expected",
+                key2, key);
   }
 
   xbt_test_assert2(effective == length, "Effective length(%d) != %d.",
@@ -983,7 +1006,7 @@ xbt_dict_t head = NULL;
 char *data;
 
 
-XBT_TEST_UNIT("basic", test_dict_basic,"Basic usage: change, retrieve, traverse")
+XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse")
 {
   xbt_test_add0("Traversal the null dictionary");
   traverse(head);
@@ -1085,7 +1108,7 @@ XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
   xbt_dict_free(&head);
 
   xbt_test_add0
-    ("Remove each data manually (traversing the resulting dictionary each time)");
+      ("Remove each data manually (traversing the resulting dictionary each time)");
   fill(&head);
   debuged_remove(head, "12a");
   traverse(head);
@@ -1124,7 +1147,8 @@ XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
   }
   traverse(head);
 
-  xbt_test_add0("Free dict, create new fresh one, and then reset the dict");
+  xbt_test_add0
+      ("Free dict, create new fresh one, and then reset the dict");
   xbt_dict_free(&head);
   fill(&head);
   xbt_dict_reset(head);
@@ -1166,8 +1190,9 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
   xbt_dict_free(&head);
 }
 
-static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data) {
-	uintptr_t stored_data = 0;
+static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data)
+{
+  uintptr_t stored_data = 0;
   xbt_test_log2("Add %zu under %zu", data, key);
 
   xbt_dicti_set(head, key, data);
@@ -1176,8 +1201,9 @@ static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data) {
     fflush(stdout);
   }
   stored_data = xbt_dicti_get(head, key);
-  xbt_test_assert3(stored_data==data,
-      "Retrieved data (%zu) is not what I just stored (%zu) under key %zu",stored_data,data,key);
+  xbt_test_assert3(stored_data == data,
+                   "Retrieved data (%zu) is not what I just stored (%zu) under key %zu",
+                   stored_data, data, key);
 }
 
 XBT_TEST_UNIT("dicti", test_dict_scalar, "Scalar data and key management")
@@ -1232,9 +1258,11 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 
   for (i = 0; i < 10; i++) {
     xbt_test_add2("CRASH test number %d (%d to go)", i + 1, 10 - i - 1);
-    xbt_test_log0("Fill the struct, count its elems and frees the structure");
-    xbt_test_log1("using 1000 elements with %d chars long randomized keys.",
-                  SIZEOFKEY);
+    xbt_test_log0
+        ("Fill the struct, count its elems and frees the structure");
+    xbt_test_log1
+        ("using 1000 elements with %d chars long randomized keys.",
+         SIZEOFKEY);
     head = xbt_dict_new();
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     nb = 0;
@@ -1278,7 +1306,8 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   }
   /*xbt_dict_dump(head,(void (*)(void*))&printf); */
 
-  xbt_test_add0("Count the elements (retrieving the key and data for each)");
+  xbt_test_add0
+      ("Count the elements (retrieving the key and data for each)");
   i = countelems(head);
   xbt_test_log1("There is %d elements", i);
 
@@ -1294,7 +1323,8 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
                        "with get, key=%s != data=%s", key, (char *) data);
       data = xbt_dict_get_ext(head, key, strlen(key));
       xbt_test_assert2(!strcmp(key, (char *) data),
-                       "with get_ext, key=%s != data=%s", key, (char *) data);
+                       "with get_ext, key=%s != data=%s", key,
+                       (char *) data);
     }
   }
   free(key);
@@ -1339,9 +1369,10 @@ XBT_TEST_UNIT("multicrash", test_dict_multicrash, "Multi-dict crash test")
 
 
   xbt_test_add0("Generic multicache CRASH test");
-  xbt_test_log4(" Fill the struct and frees it %d times, using %d elements, "
-                "depth of multicache=%d, key size=%d",
-                NB_TEST, NB_ELM, DEPTH, KEY_SIZE);
+  xbt_test_log4
+      (" Fill the struct and frees it %d times, using %d elements, "
+       "depth of multicache=%d, key size=%d", NB_TEST, NB_ELM, DEPTH,
+       KEY_SIZE);
 
   for (l = 0; l < DEPTH; l++) {
     key = xbt_malloc(KEY_SIZE);
@@ -1393,4 +1424,4 @@ XBT_TEST_UNIT("multicrash", test_dict_multicrash, "Multi-dict crash test")
   xbt_dynar_free(&keys);
 
 }
-#endif /* SIMGRID_TEST */
+#endif                          /* SIMGRID_TEST */

@@ -30,4 +30,4 @@ XBT_PUBLIC(void) amok_base_init(void);
 XBT_PUBLIC(void) amok_base_exit(void);
 
 
-#endif /* AMOK_BASE_H */
+#endif                          /* AMOK_BASE_H */

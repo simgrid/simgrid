@@ -23,7 +23,7 @@
 # define _XBT_GNUC_DESTRUCTOR __attribute__((__destructor__))
 # undef _XBT_NEED_INIT_PRAGMA
 
-#else /* !__GNUC__ */
+#else                           /* !__GNUC__ */
 # define _XBT_GNUC_PRINTF( format_idx, arg_idx )
 # define _XBT_GNUC_SCANF( format_idx, arg_idx )
 # define _XBT_GNUC_FORMAT( arg_idx )
@@ -33,14 +33,14 @@
 # define _XBT_GNUC_DESTRUCTOR
 # define  _XBT_NEED_INIT_PRAGMA 1
 
-#endif /* !__GNUC__ */
+#endif                          /* !__GNUC__ */
 
 /* inline and __FUNCTION__ are only in GCC when -ansi is off */
 
 #if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
 # define _XBT_FUNCTION __FUNCTION__
 #elif (defined(__STDC__) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
-# define _XBT_FUNCTION __func__   /* ISO-C99 compliant */
+# define _XBT_FUNCTION __func__ /* ISO-C99 compliant */
 #else
 # define _XBT_FUNCTION "function"
 #endif
@@ -194,4 +194,4 @@ XBT_PUBLIC(const char *) xbt_procname(void);
 #define XBT_BACKTRACE_SIZE 10   /* FIXME: better place? Do document */
 
 SG_END_DECL()
-#endif /* XBT_MISC_H */
+#endif                          /* XBT_MISC_H */

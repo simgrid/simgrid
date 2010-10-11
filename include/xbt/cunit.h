@@ -17,13 +17,13 @@
 SG_BEGIN_DECL()
 
 /* test suite object type */
-     typedef struct s_xbt_test_suite *xbt_test_suite_t;
+typedef struct s_xbt_test_suite *xbt_test_suite_t;
 
 /* test object type */
-     typedef struct s_xbt_test_unit *xbt_test_unit_t;
+typedef struct s_xbt_test_unit *xbt_test_unit_t;
 
 /* test callback function type */
-     typedef void (*ts_test_cb_t) (void);
+typedef void (*ts_test_cb_t) (void);
 
 /* test suite operations */
 XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_new(const char *name,
@@ -31,8 +31,9 @@ XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_new(const char *name,
 XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_by_name(const char *name,
                                                     const char *fmt, ...);
 XBT_PUBLIC(void) xbt_test_suite_dump(xbt_test_suite_t suite);
-XBT_PUBLIC(void) xbt_test_suite_push(xbt_test_suite_t suite, const char *name,
-                                     ts_test_cb_t func, const char *fmt, ...);
+XBT_PUBLIC(void) xbt_test_suite_push(xbt_test_suite_t suite,
+                                     const char *name, ts_test_cb_t func,
+                                     const char *fmt, ...);
 
 /* Run all the specified tests. what_to_do allows to disable some tests.
  * It is a coma (,) separated list of directives. They are applied from left to right.
@@ -66,8 +67,9 @@ XBT_PUBLIC(void) _xbt_test_add(const char *file, int line, const char *fmt,
 #define xbt_test_add4(fmt,a,b,c,d)   _xbt_test_add(__FILE__,__LINE__,fmt,a,b,c,d)
 #define xbt_test_add5(fmt,a,b,c,d,e) _xbt_test_add(__FILE__,__LINE__,fmt,a,b,c,d,e)
 
-XBT_PUBLIC(void) _xbt_test_fail(const char *file, int line, const char *fmt,
-                                ...) _XBT_GNUC_PRINTF(3, 4);
+XBT_PUBLIC(void) _xbt_test_fail(const char *file, int line,
+                                const char *fmt, ...) _XBT_GNUC_PRINTF(3,
+                                                                       4);
 #define xbt_test_fail0(fmt)           _xbt_test_fail(__FILE__, __LINE__, fmt)
 #define xbt_test_fail1(fmt,a)         _xbt_test_fail(__FILE__, __LINE__, fmt,a)
 #define xbt_test_fail2(fmt,a,b)       _xbt_test_fail(__FILE__, __LINE__, fmt,a,b)
@@ -103,4 +105,4 @@ XBT_PUBLIC(void) xbt_test_skip(void);
     void func(void)
 
 SG_END_DECL()
-#endif /* _TS_H_ */
+#endif                          /* _TS_H_ */

@@ -49,7 +49,7 @@ static const char *disk_drives_letter_table[MAX_DRIVE] = {
   "Y:\\",
   "Z:\\"
 };
-#endif /* #ifdef _XBT_WIN32 */
+#endif                          /* #ifdef _XBT_WIN32 */
 
 /*
  * Returns the initial path. On Windows the initial path is
@@ -112,32 +112,59 @@ xbt_dynar_t surf_path = NULL;
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
-  {"Constant", "Simplistic network model where all communication take a constant time (one second)", NULL, surf_network_model_init_Constant},
-  {"Vivaldi", "Scalable network model using the Vivaldi coordinate ideas", NULL, surf_network_model_init_Vivaldi},
-  {"CM02", "Realistic network model with lmm_solve and no correction factors", NULL, surf_network_model_init_CM02},
-  {"LV08", "Realistic network model with lmm_solve and these correction factors: latency*=10.4, bandwidth*=.92, S=8775" , NULL, surf_network_model_init_LegrandVelho},
-  {"SMPI", "Realistic network model with lmm_solve and correction factors on three intervals (< 1KiB, < 64 KiB, >= 64 KiB)", NULL, surf_network_model_init_SMPI},
+  {"Constant",
+   "Simplistic network model where all communication take a constant time (one second)",
+   NULL, surf_network_model_init_Constant},
+  {"Vivaldi", "Scalable network model using the Vivaldi coordinate ideas",
+   NULL, surf_network_model_init_Vivaldi},
+  {"CM02",
+   "Realistic network model with lmm_solve and no correction factors",
+   NULL, surf_network_model_init_CM02},
+  {"LV08",
+   "Realistic network model with lmm_solve and these correction factors: latency*=10.4, bandwidth*=.92, S=8775",
+   NULL, surf_network_model_init_LegrandVelho},
+  {"SMPI",
+   "Realistic network model with lmm_solve and correction factors on three intervals (< 1KiB, < 64 KiB, >= 64 KiB)",
+   NULL, surf_network_model_init_SMPI},
 #ifdef HAVE_GTNETS
-  {"GTNets", "Network Pseudo-model using the GTNets simulator instead of an analytic model", NULL, surf_network_model_init_GTNETS},
+  {"GTNets",
+   "Network Pseudo-model using the GTNets simulator instead of an analytic model",
+   NULL, surf_network_model_init_GTNETS},
 #endif
-  {"Reno", "Model using lagrange_solve instead of lmm_solve (experts only)", NULL, surf_network_model_init_Reno},
-  {"Reno2", "Model using lagrange_solve instead of lmm_solve (experts only)", NULL, surf_network_model_init_Reno2},
-  {"Vegas", "Model using lagrange_solve instead of lmm_solve (experts only)", NULL, surf_network_model_init_Vegas},
-  {NULL, NULL, NULL, NULL}            /* this array must be NULL terminated */
+  {"Reno",
+   "Model using lagrange_solve instead of lmm_solve (experts only)", NULL,
+   surf_network_model_init_Reno},
+  {"Reno2",
+   "Model using lagrange_solve instead of lmm_solve (experts only)", NULL,
+   surf_network_model_init_Reno2},
+  {"Vegas",
+   "Model using lagrange_solve instead of lmm_solve (experts only)", NULL,
+   surf_network_model_init_Vegas},
+  {NULL, NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_cpu_model_description[] = {
-  {"Cas01_fullupdate", "CPU classical model time=size/power", NULL, surf_cpu_model_init_Cas01},
-  {"Cas01", "Variation of Cas01_fullupdate with partial invalidation optimization of lmm system. Should produce the same values, only faster", NULL, surf_cpu_model_init_Cas01_im},
-  {"CpuTI", "Variation of Cas01 with also trace integration. Should produce the same values, only faster if you use availability traces", NULL, surf_cpu_model_init_ti},
-  {NULL, NULL, NULL, NULL}            /* this array must be NULL terminated */
+  {"Cas01_fullupdate", "CPU classical model time=size/power", NULL,
+   surf_cpu_model_init_Cas01},
+  {"Cas01",
+   "Variation of Cas01_fullupdate with partial invalidation optimization of lmm system. Should produce the same values, only faster",
+   NULL, surf_cpu_model_init_Cas01_im},
+  {"CpuTI",
+   "Variation of Cas01 with also trace integration. Should produce the same values, only faster if you use availability traces",
+   NULL, surf_cpu_model_init_ti},
+  {NULL, NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_workstation_model_description[] = {
-  {"CLM03", "Default workstation model, using LV08 and CM02 as network and CPU", NULL, surf_workstation_model_init_CLM03, create_workstations},
-  {"compound", "Workstation model allowing you to use other network and CPU models", NULL, surf_workstation_model_init_compound, create_workstations},
-  {"ptask_L07", "Workstation model with better parallel task modeling", NULL, surf_workstation_model_init_ptask_L07, NULL},
-  {NULL, NULL, NULL, NULL}            /* this array must be NULL terminated */
+  {"CLM03",
+   "Default workstation model, using LV08 and CM02 as network and CPU",
+   NULL, surf_workstation_model_init_CLM03, create_workstations},
+  {"compound",
+   "Workstation model allowing you to use other network and CPU models",
+   NULL, surf_workstation_model_init_compound, create_workstations},
+  {"ptask_L07", "Workstation model with better parallel task modeling",
+   NULL, surf_workstation_model_init_ptask_L07, NULL},
+  {NULL, NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 void update_model_description(s_surf_model_description_t * table,
@@ -148,9 +175,11 @@ void update_model_description(s_surf_model_description_t * table,
 }
 
 /** Displays the long description of all registered models, and quit */
-void model_help(const char* category, s_surf_model_description_t * table) {
+void model_help(const char *category, s_surf_model_description_t * table)
+{
   int i;
-  printf("Long description of the %s models accepted by this simulator:\n",category);
+  printf("Long description of the %s models accepted by this simulator:\n",
+         category);
   for (i = 0; table[i].name; i++)
     printf("  %s: %s\n", table[i].name, table[i].description);
 }
@@ -168,7 +197,8 @@ int find_model_description(s_surf_model_description_t * table,
   name_list = strdup(table[0].name);
   for (i = 1; table[i].name; i++) {
     name_list =
-      xbt_realloc(name_list, strlen(name_list) + strlen(table[i].name) + 2);
+        xbt_realloc(name_list,
+                    strlen(name_list) + strlen(table[i].name) + 2);
     strcat(name_list, ", ");
     strcat(name_list, table[i].name);
   }
@@ -210,7 +240,8 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
 
 
   for (action = xbt_swag_getNext(action, running_actions->offset);
-       action; action = xbt_swag_getNext(action, running_actions->offset)) {
+       action;
+       action = xbt_swag_getNext(action, running_actions->offset)) {
     value = lmm_variable_getvalue(VARIABLE(action));
     if (value > 0) {
       if (action->remains > 0)
@@ -251,7 +282,7 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
 #endif
 
 void surf_init(int *argc, char **argv)
-{ 
+{
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(surf_cpu, surf);
   XBT_LOG_CONNECT(surf_kernel, surf);
@@ -321,7 +352,7 @@ void surf_exit(void)
   surf_config_finalize();
 
   xbt_dynar_foreach(model_list, iter, model)
-    model->model_private->finalize();
+      model->model_private->finalize();
   xbt_dynar_free(&model_list);
 
   if (maxmin_system) {
@@ -352,20 +383,21 @@ void surf_presolve(void)
   unsigned int iter;
 
   DEBUG0
-    ("First Run! Let's \"purge\" events and put models in the right state");
+      ("First Run! Let's \"purge\" events and put models in the right state");
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
     if (next_event_date > NOW)
       break;
     while ((event =
             tmgr_history_get_next_event_leq(history, next_event_date,
-                                            &value, (void **) &resource))) {
+                                            &value,
+                                            (void **) &resource))) {
       resource->model->model_private->update_resource_state(resource,
                                                             event, value,
                                                             NOW);
     }
   }
   xbt_dynar_foreach(model_list, iter, model)
-    model->model_private->update_actions_state(NOW, 0.0);
+      model->model_private->update_actions_state(NOW, 0.0);
 }
 
 double surf_solve(void)
@@ -401,18 +433,21 @@ double surf_solve(void)
     DEBUG0("Updating models");
     while ((event =
             tmgr_history_get_next_event_leq(history, next_event_date,
-                                            &value, (void **) &resource))) {
+                                            &value,
+                                            (void **) &resource))) {
       if (resource->model->model_private->resource_used(resource)) {
         min = next_event_date - NOW;
         DEBUG1
-          ("This event will modify model state. Next event set to %f", min);
+            ("This event will modify model state. Next event set to %f",
+             min);
       }
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
       DEBUG2("Calling update_resource_state for resource %s with min %lf",
              resource->model->name, min);
-      resource->model->model_private->update_resource_state(resource, event,
-                                                            value, NOW + min);
+      resource->model->model_private->update_resource_state(resource,
+                                                            event, value,
+                                                            NOW + min);
     }
   }
 
@@ -427,7 +462,7 @@ double surf_solve(void)
   NOW = NOW + min;
 
   xbt_dynar_foreach(model_list, iter, model)
-    model->model_private->update_actions_state(NOW, min);
+      model->model_private->update_actions_state(NOW, min);
 
   return min;
 }

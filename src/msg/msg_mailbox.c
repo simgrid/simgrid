@@ -31,7 +31,7 @@ msg_mailbox_t MSG_mailbox_create(const char *alias)
   mailbox->cond = NULL;
   mailbox->alias = alias ? xbt_strdup(alias) : NULL;
   mailbox->rdv = SIMIX_rdv_create(alias);
-  
+
   return mailbox;
 }
 
@@ -51,7 +51,7 @@ void MSG_mailbox_free(void *mailbox)
 
   free(_mailbox->alias);
   SIMIX_rdv_destroy(_mailbox->rdv);
-  
+
   free(_mailbox);
 }
 
@@ -69,16 +69,18 @@ m_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
 {
   smx_comm_t comm = SIMIX_rdv_get_head(mailbox->rdv);
 
-  if(!comm)
-    return NULL; 
-  
-  return (m_task_t)SIMIX_communication_get_data(comm);
+  if (!comm)
+    return NULL;
+
+  return (m_task_t) SIMIX_communication_get_data(comm);
 }
 
 int
-MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox, m_host_t host)
+MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,
+                                         m_host_t host)
 {
-  return SIMIX_rdv_get_count_waiting_comm (mailbox->rdv, host->simdata->smx_host);
+  return SIMIX_rdv_get_count_waiting_comm(mailbox->rdv,
+                                          host->simdata->smx_host);
 }
 
 void MSG_mailbox_set_cond(msg_mailbox_t mailbox, smx_cond_t cond)
@@ -102,7 +104,8 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
   return mailbox;
 }
 
-msg_mailbox_t MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel)
+msg_mailbox_t MSG_mailbox_get_by_channel(m_host_t host,
+                                         m_channel_t channel)
 {
   xbt_assert0((host != NULL), "Invalid host");
   xbt_assert1((channel >= 0)
@@ -113,8 +116,8 @@ msg_mailbox_t MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel)
 }
 
 MSG_error_t
-MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
-                         double timeout)
+MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
+                         m_host_t host, double timeout)
 {
   xbt_ex_t e;
   MSG_error_t ret = MSG_OK;
@@ -123,58 +126,59 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t *task, m_host_t host,
   double start_time = 0;
 #endif
   /* We no longer support getting a task from a specific host */
-  if (host) THROW_UNIMPLEMENTED;
+  if (host)
+    THROW_UNIMPLEMENTED;
 
   CHECK_HOST();
 #ifdef HAVE_TRACING
-  TRACE_msg_task_get_start ();
+  TRACE_msg_task_get_start();
   start_time = MSG_get_clock();
 #endif
 
-  memset(&comm,0,sizeof(comm));
+  memset(&comm, 0, sizeof(comm));
 
   /* Kept for compatibility with older implementation */
   xbt_assert1(!MSG_mailbox_get_cond(mailbox),
-              "A process is already blocked on this channel %s", 
+              "A process is already blocked on this channel %s",
               MSG_mailbox_get_alias(mailbox));
 
   /* Sanity check */
   xbt_assert0(task, "Null pointer for the task storage");
 
   if (*task)
-    CRITICAL0("MSG_task_get() was asked to write in a non empty task struct.");
+    CRITICAL0
+        ("MSG_task_get() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
-  TRY{
+  TRY {
     SIMIX_network_recv(mailbox->rdv, timeout, task, NULL, &comm);
     //INFO2("Got task %s from %s",(*task)->name,mailbox->alias);
     (*task)->simdata->refcount--;
   }
-  CATCH(e){
-    switch(e.category){
-      case host_error:
-        ret = MSG_HOST_FAILURE;
-        break;
-      case network_error:
-        ret = MSG_TRANSFER_FAILURE;
-        break;
-      case timeout_error:
-        ret = MSG_TIMEOUT;
-        break;      
-      default:
-        xbt_die(bprintf("Unhandled SIMIX network exception: %s",e.msg));
+  CATCH(e) {
+    switch (e.category) {
+    case host_error:
+      ret = MSG_HOST_FAILURE;
+      break;
+    case network_error:
+      ret = MSG_TRANSFER_FAILURE;
+      break;
+    case timeout_error:
+      ret = MSG_TIMEOUT;
+      break;
+    default:
+      xbt_die(bprintf("Unhandled SIMIX network exception: %s", e.msg));
     }
-    xbt_ex_free(e);        
+    xbt_ex_free(e);
   }
 
   if (ret != MSG_HOST_FAILURE &&
-      ret != MSG_TRANSFER_FAILURE &&
-      ret != MSG_TIMEOUT){
+      ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
 #ifdef HAVE_TRACING
-    TRACE_msg_task_get_end (start_time, *task);
+    TRACE_msg_task_get_end(start_time, *task);
 #endif
   }
-  MSG_RETURN(ret);        
+  MSG_RETURN(ret);
 }
 
 MSG_error_t
@@ -191,7 +195,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   CHECK_HOST();
 
 #ifdef HAVE_TRACING
-  call_end = TRACE_msg_task_put_start (task); //must be after CHECK_HOST()
+  call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
 #endif
 
 
@@ -207,30 +211,31 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   msg_global->sent_msg++;
 
   process->simdata->waiting_task = task;
-  
+
   /* Try to send it by calling SIMIX network layer */
-  TRY{
+  TRY {
     /* Kept for semantical compatibility with older implementation */
-    if(mailbox->cond)
+    if (mailbox->cond)
       SIMIX_cond_signal(mailbox->cond);
 
-    SIMIX_network_send(mailbox->rdv, t_simdata->message_size, t_simdata->rate,
-                       timeout, task, sizeof(void*), &t_simdata->comm, task);
+    SIMIX_network_send(mailbox->rdv, t_simdata->message_size,
+                       t_simdata->rate, timeout, task, sizeof(void *),
+                       &t_simdata->comm, task);
   }
 
-  CATCH(e){
-    switch(e.category){
-      case host_error:
-        ret = MSG_HOST_FAILURE;
-        break;
-      case network_error:
-        ret = MSG_TRANSFER_FAILURE;
-        break;
-      case timeout_error:
-        ret = MSG_TIMEOUT;
-        break;
-      default:
-        xbt_die(bprintf("Unhandled SIMIX network exception: %s",e.msg));
+  CATCH(e) {
+    switch (e.category) {
+    case host_error:
+      ret = MSG_HOST_FAILURE;
+      break;
+    case network_error:
+      ret = MSG_TRANSFER_FAILURE;
+      break;
+    case timeout_error:
+      ret = MSG_TIMEOUT;
+      break;
+    default:
+      xbt_die(bprintf("Unhandled SIMIX network exception: %s", e.msg));
     }
     xbt_ex_free(e);
 
@@ -240,7 +245,8 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   process->simdata->waiting_task = NULL;
 #ifdef HAVE_TRACING
-  if (call_end) TRACE_msg_task_put_end ();
+  if (call_end)
+    TRACE_msg_task_put_end();
 #endif
-  MSG_RETURN(ret);        
+  MSG_RETURN(ret);
 }

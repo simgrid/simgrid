@@ -84,19 +84,19 @@ void xbt_graph_parse_open(const char *file)
 {
   if (!file) {
     WARN0
-      ("I hope you know what you're doing... you just gave me a NULL pointer!");
+        ("I hope you know what you're doing... you just gave me a NULL pointer!");
     return;
   }
   if (!xbt_graph_input_buffer_stack)
     xbt_graph_input_buffer_stack =
-      xbt_dynar_new(sizeof(YY_BUFFER_STATE), NULL);
+        xbt_dynar_new(sizeof(YY_BUFFER_STATE), NULL);
   if (!xbt_graph_file_to_parse_stack)
     xbt_graph_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), NULL);
 
   xbt_graph_file_to_parse = fopen(file, "r");   /* FIXME should use something like surf_fopen */
   xbt_assert1((xbt_graph_file_to_parse), "Unable to open \"%s\"\n", file);
   xbt_graph_input_buffer =
-    xbt_graph_parse__create_buffer(xbt_graph_file_to_parse, 10);
+      xbt_graph_parse__create_buffer(xbt_graph_file_to_parse, 10);
   xbt_graph_parse__switch_to_buffer(xbt_graph_input_buffer);
   xbt_graph_parse_lineno = 1;
 }

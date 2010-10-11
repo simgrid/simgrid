@@ -53,7 +53,7 @@ XBT_PUBLIC(gras_socket_t) gras_socket_server_ext(unsigned short port,
                                                  unsigned long int bufSize,
                                                  int measurement);
 XBT_PUBLIC(gras_socket_t)
-  gras_socket_server_range(unsigned short minport, unsigned short maxport,
+    gras_socket_server_range(unsigned short minport, unsigned short maxport,
                          unsigned long int buf_size, int measurement);
 
 /* @}*/
@@ -130,4 +130,4 @@ XBT_PUBLIC(gras_socket_t) gras_socket_server_from_file(const char *path);
 
 /* @} */
 
-#endif /* GRAS_TRANSPORT_H */
+#endif                          /* GRAS_TRANSPORT_H */

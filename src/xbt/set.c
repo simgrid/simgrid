@@ -77,7 +77,8 @@ static int _xbt_set_get_id(xbt_set_t set)
  * if elm->name_len <= 0, it is recomputed. If >0, it's used as is;
  * elm->ID is attributed automatically.
  */
-void xbt_set_add(xbt_set_t set, xbt_set_elm_t elm, void_f_pvoid_t free_func)
+void xbt_set_add(xbt_set_t set, xbt_set_elm_t elm,
+                 void_f_pvoid_t free_func)
 {
 
   int found = 1;
@@ -107,13 +108,14 @@ void xbt_set_add(xbt_set_t set, xbt_set_elm_t elm, void_f_pvoid_t free_func)
   if (found) {
     if (elm == found_in_dict) {
       DEBUG2
-        ("Ignoring request to insert the same element twice (key %s ; id %d)",
-         elm->name, elm->ID);
+          ("Ignoring request to insert the same element twice (key %s ; id %d)",
+           elm->name, elm->ID);
       return;
     } else {
       elm->ID = found_in_dict->ID;
       DEBUG2("Reinsertion of key %s (id %d)", elm->name, elm->ID);
-      xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
+      xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm,
+                       free_func);
       xbt_dynar_set(set->dynar, elm->ID, &elm);
       return;
     }
@@ -152,7 +154,8 @@ void xbt_set_remove_by_name(xbt_set_t set, const char *key)
  * \param key name of the element to remove
  * \param key_len length of \a name
  */
-void xbt_set_remove_by_name_ext(xbt_set_t set, const char *key, int key_len)
+void xbt_set_remove_by_name_ext(xbt_set_t set, const char *key,
+                                int key_len)
 {
   xbt_set_elm_t elm = xbt_set_get_by_name_ext(set, key, key_len);
   xbt_set_remove(set, elm);
@@ -261,7 +264,8 @@ void xbt_set_cursor_first(xbt_set_t set, xbt_set_cursor_t * cursor)
     if (!*cursor) {
       DEBUG0("Create the cursor on first use");
       *cursor = xbt_new(s_xbt_set_cursor_t, 1);
-      xbt_assert0(*cursor, "Malloc error during the creation of the cursor");
+      xbt_assert0(*cursor,
+                  "Malloc error during the creation of the cursor");
     }
     (*cursor)->set = set;
 
@@ -292,7 +296,8 @@ void xbt_set_cursor_step(xbt_set_cursor_t cursor)
  *
  * \return true if it's ok, false if there is no more data
  */
-int xbt_set_cursor_get_or_free(xbt_set_cursor_t * curs, xbt_set_elm_t * elm)
+int xbt_set_cursor_get_or_free(xbt_set_cursor_t * curs,
+                               xbt_set_elm_t * elm)
 {
   xbt_set_cursor_t cursor;
 
@@ -381,7 +386,8 @@ static void search_name(xbt_set_t head, const char *key)
     THROW2(mismatch_error, 0, "The key (%s) is not the one expected (%s)",
            key, elm->name);
   if (strcmp(elm->name, elm->data))
-    THROW2(mismatch_error, 0, "The name (%s) != data (%s)", key, elm->name);
+    THROW2(mismatch_error, 0, "The name (%s) != data (%s)", key,
+           elm->name);
   fflush(stdout);
 }
 
@@ -414,7 +420,8 @@ static void traverse(xbt_set_t set)
     xbt_test_assert0(elm, "Dude ! Got a null elm during traversal!");
     xbt_test_log3("Id(%d):  %s->%s\n", elm->ID, elm->name, elm->data);
     xbt_test_assert2(!strcmp(elm->name, elm->data),
-                     "Key(%s) != value(%s). Abording", elm->name, elm->data);
+                     "Key(%s) != value(%s). Abording", elm->name,
+                     elm->data);
   }
 }
 
@@ -425,8 +432,8 @@ static void search_not_found(xbt_set_t set, const char *data)
   xbt_test_add1("Search %s (expected not to be found)", data);
   TRY {
     xbt_set_get_by_name(set, data);
-    THROW1(unknown_error, 0, "Found something which shouldn't be there (%s)",
-           data);
+    THROW1(unknown_error, 0,
+           "Found something which shouldn't be there (%s)", data);
   } CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
@@ -545,4 +552,4 @@ XBT_TEST_UNIT("remove", test_set_remove, "Removing some values")
   xbt_test_assert1(elm->ID == 1, "elm->ID is %d but should be 1", elm->ID);
 }
 
-#endif /* SIMGRID_TEST */
+#endif                          /* SIMGRID_TEST */

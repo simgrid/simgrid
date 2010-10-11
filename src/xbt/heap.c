@@ -25,7 +25,8 @@
  *
  * Creates a new heap.
  */
-XBT_INLINE xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t const free_func)
+XBT_INLINE xbt_heap_t xbt_heap_new(int init_size,
+                                   void_f_pvoid_t const free_func)
 {
   xbt_heap_t H = xbt_new0(struct xbt_heap, 1);
   H->size = init_size;
@@ -41,7 +42,9 @@ XBT_INLINE xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t const free_func
  * \param update_callback function to call on each element to update its index when needed.
  */
 XBT_INLINE void xbt_heap_set_update_callback(xbt_heap_t H,
-                                  void (*update_callback) (void *, int))
+                                             void (*update_callback) (void
+                                                                      *,
+                                                                      int))
 {
   H->update_callback = update_callback;
 }
@@ -90,7 +93,8 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
   if (count > size) {
     H->size = 2 * size + 1;
     H->items =
-      (void *) realloc(H->items, (H->size) * sizeof(struct xbt_heapItem));
+        (void *) realloc(H->items,
+                         (H->size) * sizeof(struct xbt_heapItem));
   }
 
   item = &(H->items[count - 1]);
@@ -124,10 +128,12 @@ void *xbt_heap_pop(xbt_heap_t H)
   if (H->count < H->size / 4 && H->size > 16) {
     H->size = H->size / 2 + 1;
     H->items =
-      (void *) realloc(H->items, (H->size) * sizeof(struct xbt_heapItem));
+        (void *) realloc(H->items,
+                         (H->size) * sizeof(struct xbt_heapItem));
   }
 
-  if(H->update_callback) H->update_callback(max, -1);
+  if (H->update_callback)
+    H->update_callback(max, -1);
   return max;
 }
 
@@ -198,10 +204,12 @@ static void xbt_heap_maxHeapify(xbt_heap_t H)
       struct xbt_heapItem tmp = H->items[i];
       H->items[i] = H->items[greatest];
       H->items[greatest] = tmp;
-      if(H->update_callback) H->update_callback(CONTENT(H, i), i);
+      if (H->update_callback)
+        H->update_callback(CONTENT(H, i), i);
       i = greatest;
     } else {
-      if(H->update_callback) H->update_callback(CONTENT(H, i), i);
+      if (H->update_callback)
+        H->update_callback(CONTENT(H, i), i);
       return;
     }
   }
@@ -220,10 +228,11 @@ static void xbt_heap_increaseKey(xbt_heap_t H, int i)
     struct xbt_heapItem tmp = H->items[i];
     H->items[i] = H->items[PARENT(i)];
     H->items[PARENT(i)] = tmp;
-    if(H->update_callback) H->update_callback(CONTENT(H, i), i);
+    if (H->update_callback)
+      H->update_callback(CONTENT(H, i), i);
     i = PARENT(i);
   }
-  if(H->update_callback) H->update_callback(CONTENT(H, i), i);
+  if (H->update_callback)
+    H->update_callback(CONTENT(H, i), i);
   return;
 }
-

@@ -57,7 +57,7 @@ SG_BEGIN_DECL()
  */
 /** @{ */
 /** \brief Opaque type */
-     typedef struct s_gras_msgtype *gras_msgtype_t;
+typedef struct s_gras_msgtype *gras_msgtype_t;
 
 XBT_PUBLIC(void) gras_msgtype_declare(const char *name,
                                       gras_datadesc_type_t payload);
@@ -70,7 +70,7 @@ XBT_PUBLIC(gras_msgtype_t) gras_msgtype_by_name_or_null(const char *name);
 XBT_PUBLIC(gras_msgtype_t) gras_msgtype_by_namev(const char *name,
                                                  short int version);
 XBT_PUBLIC(gras_msgtype_t) gras_msgtype_by_id(int id);
-XBT_PUBLIC(const char*) gras_msgtype_get_name(gras_msgtype_t type);
+XBT_PUBLIC(const char *) gras_msgtype_get_name(gras_msgtype_t type);
 
 XBT_PUBLIC(void) gras_msgtype_dumpall(void);
 
@@ -93,7 +93,7 @@ XBT_PUBLIC(void) gras_msgtype_dumpall(void);
  */
 
   /** \brief Context of callbacks (opaque structure, created by the middleware only, never by user) */
-     typedef struct s_gras_msg_cb_ctx *gras_msg_cb_ctx_t;
+typedef struct s_gras_msg_cb_ctx *gras_msg_cb_ctx_t;
 
 XBT_PUBLIC(void) gras_msg_cb_ctx_free(gras_msg_cb_ctx_t ctx);
 XBT_PUBLIC(gras_socket_t) gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
@@ -113,7 +113,7 @@ XBT_PUBLIC(gras_socket_t) gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
    *
    * If the callback accepts the message, it should free it after use.
    */
-     typedef int (*gras_msg_cb_t) (gras_msg_cb_ctx_t ctx, void *payload);
+typedef int (*gras_msg_cb_t) (gras_msg_cb_ctx_t ctx, void *payload);
 
  /**
   * @brief Bind the given callback to the given message type (described by its name)
@@ -137,7 +137,8 @@ XBT_PUBLIC(gras_socket_t) gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
   */
 #define gras_cb_unregister(msgtype_name, cb) gras_cb_unregister_(gras_msgtype_by_name(msgtype_name),cb)
 
-XBT_PUBLIC(void) gras_cb_register_(gras_msgtype_t msgtype, gras_msg_cb_t cb);
+XBT_PUBLIC(void) gras_cb_register_(gras_msgtype_t msgtype,
+                                   gras_msg_cb_t cb);
 XBT_PUBLIC(void) gras_cb_unregister_(gras_msgtype_t msgtype,
                                      gras_msg_cb_t cb);
 
@@ -229,10 +230,11 @@ XBT_PUBLIC(gras_msg_cb_ctx_t)
  *  @hideinitializer
  */
 #define gras_msg_rpc_async_call(server,timeout,msg,req) gras_msg_rpc_async_call_(server,timeout,gras_msgtype_by_name(msg),req)
-  gras_msg_rpc_async_call_(gras_socket_t server,
+    gras_msg_rpc_async_call_(gras_socket_t server,
                          double timeOut,
                          gras_msgtype_t msgtype, void *request);
-XBT_PUBLIC(void) gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer);
+XBT_PUBLIC(void) gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
+                                         void *answer);
 
 /* server side */
 XBT_PUBLIC(void) gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,
@@ -248,43 +250,43 @@ XBT_PUBLIC(void) gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,
 /** @{ */
 
 /** @brief Message kind (internal enum) */
-     typedef enum {
-       e_gras_msg_kind_unknown = 0,
+typedef enum {
+  e_gras_msg_kind_unknown = 0,
 
-       e_gras_msg_kind_oneway = 1,
+  e_gras_msg_kind_oneway = 1,
                                /**< good old regular messages */
 
-       e_gras_msg_kind_rpccall = 2,
+  e_gras_msg_kind_rpccall = 2,
                                /**< RPC request */
-       /* HACK: e_gras_msg_kind_rpccall also designate RPC message *type* in 
-          msgtype_t, not only in msg_t */
-       e_gras_msg_kind_rpcanswer = 3,
+  /* HACK: e_gras_msg_kind_rpccall also designate RPC message *type* in 
+     msgtype_t, not only in msg_t */
+  e_gras_msg_kind_rpcanswer = 3,
                                /**< RPC successful answer */
-       e_gras_msg_kind_rpcerror = 4,
+  e_gras_msg_kind_rpcerror = 4,
                                /**< RPC failure on server (payload=exception); should not leak to user-space */
 
-       /* future:
-          call cancel, and others
-          even after:
-          forwarding request and other application level routing stuff
-          group communication
-        */
+  /* future:
+     call cancel, and others
+     even after:
+     forwarding request and other application level routing stuff
+     group communication
+   */
 
-       e_gras_msg_kind_count = 5        /* sentinel, dont mess with */
-     } e_gras_msg_kind_t;
+  e_gras_msg_kind_count = 5     /* sentinel, dont mess with */
+} e_gras_msg_kind_t;
 
 
 /** @brief Message instance (internal struct) */
-     typedef struct {
-       gras_socket_t expe;
-       e_gras_msg_kind_t kind;
-       gras_msgtype_t type;
-       unsigned long int ID;
-       void *payl;
-       int payl_size;
-     } s_gras_msg_t, *gras_msg_t;
+typedef struct {
+  gras_socket_t expe;
+  e_gras_msg_kind_t kind;
+  gras_msgtype_t type;
+  unsigned long int ID;
+  void *payl;
+  int payl_size;
+} s_gras_msg_t, *gras_msg_t;
 
-     typedef int (*gras_msg_filter_t) (gras_msg_t msg, void *ctx);
+typedef int (*gras_msg_filter_t) (gras_msg_t msg, void *ctx);
 
 #define gras_msg_wait_ext(timeout, msg, expe, filter, fctx,got) gras_msg_wait_ext_(timeout, gras_msgtype_by_name(msg), expe, filter, fctx,got)
 XBT_PUBLIC(void) gras_msg_wait_ext_(double timeout,
@@ -302,4 +304,4 @@ XBT_PUBLIC(void) gras_msg_wait_or(double timeout,
 /* @} */
 
 SG_END_DECL()
-#endif /* GRAS_MSG_H */
+#endif                          /* GRAS_MSG_H */

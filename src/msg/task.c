@@ -23,7 +23,7 @@
  *  <em>message size</em> and some <em>private data</em>.
  */
 
-#ifdef HAVE_RUBY /* FIXME: KILLME */
+#ifdef HAVE_RUBY                /* FIXME: KILLME */
 XBT_LOG_EXTERNAL_CATEGORY(ruby);
 #endif
 
@@ -80,7 +80,7 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->comp_amount = NULL;
   simdata->comm_amount = NULL;
 #ifdef HAVE_TRACING
-  TRACE_msg_task_create (task);
+  TRACE_msg_task_create(task);
 #endif
 
   return task;
@@ -105,7 +105,7 @@ void *MSG_task_get_data(m_task_t task)
  * This function allows to associate a new pointer to
    the user data associated of \a task.
  */
-void MSG_task_set_data(m_task_t task,void *data)
+void MSG_task_set_data(m_task_t task, void *data)
 {
   xbt_assert0((task != NULL), "Invalid parameter");
 
@@ -150,10 +150,10 @@ const char *MSG_task_get_name(m_task_t task)
  *
  * This functions allows to associate a name to a task
  */
-void MSG_task_set_name(m_task_t task,const char* name)
+void MSG_task_set_name(m_task_t task, const char *name)
 {
-	xbt_assert0(task,"Invalid parameters");
-	task->name = xbt_strdup(name);
+  xbt_assert0(task, "Invalid parameters");
+  task->name = xbt_strdup(name);
 }
 
 
@@ -178,7 +178,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   if (task->simdata->refcount > 0)
     return MSG_OK;
 #ifdef HAVE_TRACING
-  TRACE_msg_task_destroy (task);
+  TRACE_msg_task_destroy(task);
 #endif
 
   if (task->name)
@@ -190,7 +190,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   action = task->simdata->compute;
   if (action)
     SIMIX_action_destroy(action);
-  
+
   /* parallel tasks only */
   if (task->simdata->host_list)
     xbt_free(task->simdata->host_list);
@@ -240,12 +240,14 @@ double MSG_task_get_compute_duration(m_task_t task)
  * \brief set the computation amount needed to process a task #m_task_t.
  */
 
-void MSG_task_set_compute_duration(m_task_t task,double computation_amount)
+void MSG_task_set_compute_duration(m_task_t task,
+                                   double computation_amount)
 {
-	xbt_assert0(task,"Invalid parameter");
-	task->simdata->computation_amount = computation_amount;
+  xbt_assert0(task, "Invalid parameter");
+  task->simdata->computation_amount = computation_amount;
 
 }
+
 /** \ingroup m_task_management
  * \brief Returns the remaining computation amount of a task #m_task_t.
  *
@@ -270,7 +272,8 @@ double MSG_task_get_remaining_communication(m_task_t task)
 {
   xbt_assert0((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
-  DEBUG1("calling SIMIX_communication_get_remains(%p)", task->simdata->comm);
+  DEBUG1("calling SIMIX_communication_get_remains(%p)",
+         task->simdata->comm);
   return SIMIX_communication_get_remains(task->simdata->comm);
 }
 
@@ -281,10 +284,11 @@ double MSG_task_get_remaining_communication(m_task_t task)
  */
 int MSG_task_is_latency_bounded(m_task_t task)
 {
-	  xbt_assert0((task != NULL)
-	              && (task->simdata != NULL), "Invalid parameter");
-	DEBUG1("calling SIMIX_communication_is_latency_bounded(%p)", task->simdata->comm);
-	return SIMIX_communication_is_latency_bounded(task->simdata->comm);
+  xbt_assert0((task != NULL)
+              && (task->simdata != NULL), "Invalid parameter");
+  DEBUG1("calling SIMIX_communication_is_latency_bounded(%p)",
+         task->simdata->comm);
+  return SIMIX_communication_is_latency_bounded(task->simdata->comm);
 }
 #endif
 
@@ -318,5 +322,3 @@ void MSG_task_set_priority(m_task_t task, double priority)
     SIMIX_action_set_priority(task->simdata->compute,
                               task->simdata->priority);
 }
-
-

@@ -15,7 +15,8 @@
 #include "xbt/synchro.h"
 #include "xbt/queue.h"          /* this module */
 #include "gras/virtu.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_queue, xbt, "Message exchanging queue");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_queue, xbt,
+                                "Message exchanging queue");
 
 typedef struct s_xbt_queue_ {
   int capacity;
@@ -78,7 +79,8 @@ void xbt_queue_push(xbt_queue_t queue, const void *src)
   xbt_mutex_acquire(queue->mutex);
   while (queue->capacity != 0
          && queue->capacity == xbt_dynar_length(queue->data)) {
-    DEBUG2("Capacity of %p exceded (=%d). Waiting", queue, queue->capacity);
+    DEBUG2("Capacity of %p exceded (=%d). Waiting", queue,
+           queue->capacity);
     xbt_cond_wait(queue->not_full, queue->mutex);
   }
   xbt_dynar_push(queue->data, src);
@@ -117,7 +119,8 @@ void xbt_queue_unshift(xbt_queue_t queue, const void *src)
   xbt_mutex_acquire(queue->mutex);
   while (queue->capacity != 0
          && queue->capacity == xbt_dynar_length(queue->data)) {
-    DEBUG2("Capacity of %p exceded (=%d). Waiting", queue, queue->capacity);
+    DEBUG2("Capacity of %p exceded (=%d). Waiting", queue,
+           queue->capacity);
     xbt_cond_wait(queue->not_full, queue->mutex);
   }
   xbt_dynar_unshift(queue->data, src);
@@ -164,15 +167,17 @@ void xbt_queue_push_timed(xbt_queue_t queue, const void *src, double delay)
         queue->capacity == xbt_dynar_length(queue->data)) {
 
       xbt_mutex_release(queue->mutex);
-      THROW2(timeout_error, 0, "Capacity of %p exceded (=%d), and delay = 0",
-             queue, queue->capacity);
+      THROW2(timeout_error, 0,
+             "Capacity of %p exceded (=%d), and delay = 0", queue,
+             queue->capacity);
     }
   } else {
     while (queue->capacity != 0 &&
            queue->capacity == xbt_dynar_length(queue->data) &&
            (delay < 0 || (xbt_time() - begin) <= delay)) {
 
-      DEBUG2("Capacity of %p exceded (=%d). Waiting", queue, queue->capacity);
+      DEBUG2("Capacity of %p exceded (=%d). Waiting", queue,
+             queue->capacity);
       TRY {
         xbt_cond_timedwait(queue->not_full, queue->mutex,
                            delay < 0 ? -1 : delay - (xbt_time() - begin));
@@ -231,7 +236,8 @@ void xbt_queue_pop_timed(xbt_queue_t queue, void *const dst, double delay)
  *
  * @see #xbt_queue_unshift
  */
-void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src, double delay)
+void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src,
+                             double delay)
 {
   double begin = xbt_time();
   xbt_ex_t e;
@@ -243,15 +249,17 @@ void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src, double delay)
         queue->capacity == xbt_dynar_length(queue->data)) {
 
       xbt_mutex_release(queue->mutex);
-      THROW2(timeout_error, 0, "Capacity of %p exceded (=%d), and delay = 0",
-             queue, queue->capacity);
+      THROW2(timeout_error, 0,
+             "Capacity of %p exceded (=%d), and delay = 0", queue,
+             queue->capacity);
     }
   } else {
     while (queue->capacity != 0 &&
            queue->capacity == xbt_dynar_length(queue->data) &&
            (delay < 0 || (xbt_time() - begin) <= delay)) {
 
-      DEBUG2("Capacity of %p exceded (=%d). Waiting", queue, queue->capacity);
+      DEBUG2("Capacity of %p exceded (=%d). Waiting", queue,
+             queue->capacity);
       TRY {
         xbt_cond_timedwait(queue->not_full, queue->mutex,
                            delay < 0 ? -1 : delay - (xbt_time() - begin));
@@ -274,7 +282,8 @@ void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src, double delay)
  * @see #xbt_queue_shift
  *
  */
-void xbt_queue_shift_timed(xbt_queue_t queue, void *const dst, double delay)
+void xbt_queue_shift_timed(xbt_queue_t queue, void *const dst,
+                           double delay)
 {
   double begin = xbt_time();
   xbt_ex_t e;

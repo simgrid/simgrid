@@ -45,14 +45,14 @@ char *warning = NULL;
 /**********************************************/
 
 const char *SIM_PREEMBULE =
-  "/* specific to Borland Compiler */\n"
-  "#ifdef __BORLANDC__\n"
-  "#pragma hdrstop\n"
-  "#endif\n\n"
-  "#include <stdlib.h>\n"
-  "#include <stdio.h>\n"
-  "#include \"msg/msg.h\"\n"
-  "#include <gras.h>\n" "\n" "char *gras_log=NULL;\n";
+    "/* specific to Borland Compiler */\n"
+    "#ifdef __BORLANDC__\n"
+    "#pragma hdrstop\n"
+    "#endif\n\n"
+    "#include <stdlib.h>\n"
+    "#include <stdio.h>\n"
+    "#include \"msg/msg.h\"\n"
+    "#include <gras.h>\n" "\n" "char *gras_log=NULL;\n";
 
 
 #define SIM_LAUNCH_FUNC  \
@@ -75,15 +75,15 @@ const char *SIM_PREEMBULE =
 "}\n"
 
 const char *SIM_MAIN_POSTEMBULE = "\n"
-  "\n"
-  "  gras_load_environment_script(argv[1]);\n"
-  "\n"
-  "  /*  Run the simulation */\n"
-  "  gras_main();\n"
-  "\n"
-  "  /* cleanup the place */\n"
-  "  gras_clean();\n"
-  "  if (gras_log)\n" "    free(gras_log);\n" "  return 0;\n" "}\n";
+    "\n"
+    "  gras_load_environment_script(argv[1]);\n"
+    "\n"
+    "  /*  Run the simulation */\n"
+    "  gras_main();\n"
+    "\n"
+    "  /* cleanup the place */\n"
+    "  gras_clean();\n"
+    "  if (gras_log)\n" "    free(gras_log);\n" "  return 0;\n" "}\n";
 
 
 /***************************************
@@ -133,10 +133,10 @@ void generate_sim(const char *project)
           "  if (argc != 2) {\n"
           "    fprintf(stderr, \"Usage: lua platform_script.lua [--log=...]\\n\");\n"
           "    exit(1);\n" "  }\n" "\n");
-  fprintf(OUT,
-          "\n" "  /*  Application deployment */\n");
+  fprintf(OUT, "\n" "  /*  Application deployment */\n");
   xbt_dict_foreach(process_function_set, cursor, key, data) {
-    fprintf(OUT, "  gras_function_register(\"%s\", launch_%s);\n", key, key);
+    fprintf(OUT, "  gras_function_register(\"%s\", launch_%s);\n", key,
+            key);
   }
   fprintf(OUT, "%s", SIM_MAIN_POSTEMBULE);
   fclose(OUT);
@@ -157,7 +157,8 @@ void generate_rl(const char *project)
 
   xbt_dict_foreach(process_function_set, cursor, key, data) {
     filename =
-      xbt_new(char, strlen(project) + strlen(RL_SOURCENAME) + strlen(key));
+        xbt_new(char,
+                strlen(project) + strlen(RL_SOURCENAME) + strlen(key));
 
     sprintf(filename, RL_SOURCENAME, project, key);
 
@@ -264,7 +265,8 @@ void generate_makefile_local(const char *project)
   char *filename = NULL;
   FILE *OUT = NULL;
 
-  filename = xbt_new(char, strlen(project) + strlen(MAKEFILE_FILENAME_LOCAL));
+  filename =
+      xbt_new(char, strlen(project) + strlen(MAKEFILE_FILENAME_LOCAL));
   sprintf(filename, MAKEFILE_FILENAME_LOCAL, project);
 
   OUT = fopen(filename, "w");

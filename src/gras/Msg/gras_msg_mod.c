@@ -59,8 +59,8 @@ int gras_msg_libdata_id;
 void gras_msg_register()
 {
   gras_msg_libdata_id =
-    gras_procdata_add("gras_msg", gras_msg_procdata_new,
-                      gras_msg_procdata_free);
+      gras_procdata_add("gras_msg", gras_msg_procdata_new,
+                        gras_msg_procdata_free);
 }
 
 /*
@@ -81,10 +81,10 @@ void gras_msg_init(void)
   _GRAS_header[5] = (char) GRAS_THISARCH;
 
   gras_msg_ctx_mallocator =
-    xbt_mallocator_new(1000,
-                       gras_msg_ctx_mallocator_new_f,
-                       gras_msg_ctx_mallocator_free_f,
-                       gras_msg_ctx_mallocator_reset_f);
+      xbt_mallocator_new(1000,
+                         gras_msg_ctx_mallocator_new_f,
+                         gras_msg_ctx_mallocator_free_f,
+                         gras_msg_ctx_mallocator_reset_f);
 }
 
 /*

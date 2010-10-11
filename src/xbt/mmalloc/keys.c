@@ -26,31 +26,27 @@
 
 #include "mmprivate.h"
 
-int
-mmalloc_setkey (void *md, int keynum, void *key)
+int mmalloc_setkey(void *md, int keynum, void *key)
 {
   struct mdesc *mdp = (struct mdesc *) md;
   int result = 0;
 
   LOCK(mdp);
-  if ((mdp != NULL) && (keynum >= 0) && (keynum < MMALLOC_KEYS))
-    {
-      mdp -> keys [keynum] = key;
-      result++;
-    }
+  if ((mdp != NULL) && (keynum >= 0) && (keynum < MMALLOC_KEYS)) {
+    mdp->keys[keynum] = key;
+    result++;
+  }
   UNLOCK(mdp);
   return (result);
 }
 
-void*
-mmalloc_getkey (void *md, int keynum)
+void *mmalloc_getkey(void *md, int keynum)
 {
   struct mdesc *mdp = (struct mdesc *) md;
-  void* keyval = NULL;
+  void *keyval = NULL;
 
-  if ((mdp != NULL) && (keynum >= 0) && (keynum < MMALLOC_KEYS))
-    {
-      keyval = mdp -> keys [keynum];
-    }
+  if ((mdp != NULL) && (keynum >= 0) && (keynum < MMALLOC_KEYS)) {
+    keyval = mdp->keys[keynum];
+  }
   return (keyval);
 }

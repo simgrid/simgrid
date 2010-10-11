@@ -23,10 +23,12 @@ smx_host_t __SIMIX_host_create(const char *name,
   smx_host->name = xbt_strdup(name);
   smx_host->data = data;
   smx_host->host = workstation;
-  smx_host->process_list = xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
+  smx_host->process_list =
+      xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
 
   /* Update global variables */
-  xbt_dict_set(simix_global->host, smx_host->name, smx_host, &__SIMIX_host_destroy);
+  xbt_dict_set(simix_global->host, smx_host->name, smx_host,
+               &__SIMIX_host_destroy);
 
   return smx_host;
 }
@@ -103,7 +105,8 @@ void __SIMIX_host_destroy(void *h)
 
   /* Clean Simulator data */
   if (xbt_swag_size(host->process_list) != 0) {
-    char *msg = bprintf("Shutting down host %s, but it's not empty:", host->name);
+    char *msg =
+        bprintf("Shutting down host %s, but it's not empty:", host->name);
     char *tmp;
     smx_process_t process = NULL;
 
@@ -149,7 +152,7 @@ smx_host_t *SIMIX_host_get_table(void)
   int i = 0;
 
   xbt_dict_foreach(simix_global->host, c, name, h)
-    res[i++] = h;
+      res[i++] = h;
 
   return res;
 }
@@ -203,7 +206,8 @@ XBT_INLINE double SIMIX_host_get_available_speed(smx_host_t host)
 XBT_INLINE smx_host_t SIMIX_host_get_by_name(const char *name)
 {
   xbt_assert0(((simix_global != NULL)
-               && (simix_global->host != NULL)), "Environment not set yet");
+               && (simix_global->host != NULL)),
+              "Environment not set yet");
 
   return xbt_dict_get_or_null(simix_global->host, name);
 }
@@ -218,7 +222,8 @@ XBT_INLINE xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return surf_workstation_model->extension.workstation.get_properties(host->host);
+  return surf_workstation_model->extension.
+      workstation.get_properties(host->host);
 }
 
 

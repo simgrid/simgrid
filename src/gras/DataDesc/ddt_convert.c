@@ -79,7 +79,8 @@ const char *gras_datadesc_arch_name(int code)
 /**
  * Local function doing the grunt work
  */
-static void gras_dd_reverse_bytes(void *to, const void *from, size_t length);
+static void gras_dd_reverse_bytes(void *to, const void *from,
+                                  size_t length);
 
 /**
  * gras_dd_convert_elm:
@@ -109,7 +110,8 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 
   r_size = type->size[r_arch];
   l_size = type->size[GRAS_THISARCH];
-  DEBUG4("r_size=%lu l_size=%lu,    src=%p dst=%p", r_size, l_size, src, dst);
+  DEBUG4("r_size=%lu l_size=%lu,    src=%p dst=%p", r_size, l_size, src,
+         dst);
 
   DEBUG2("remote=%c local=%c", gras_arches[r_arch].endian ? 'B' : 'l',
          gras_arches[GRAS_THISARCH].endian ? 'B' : 'l');
@@ -137,7 +139,7 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
       int padding;
       int sizeChange = l_size - r_size;
       int lowOrderFirst = !gras_arches[r_arch].endian ||
-        gras_arches[r_arch].endian == gras_arches[GRAS_THISARCH].endian;
+          gras_arches[r_arch].endian == gras_arches[GRAS_THISARCH].endian;
 
       DEBUG5("Resize integer %d from %lu @%p to %lu @%p",
              cpt, r_size, r_data, l_size, l_data);
@@ -157,11 +159,11 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
           DEBUG0("This is signed");
           /* Make sure the high order bit of r_data and l_data are the same */
           l_sign = gras_arches[GRAS_THISARCH].endian
-            ? ((unsigned char *) l_data + l_size - 1)
-            : (unsigned char *) l_data;
+              ? ((unsigned char *) l_data + l_size - 1)
+              : (unsigned char *) l_data;
           r_sign = gras_arches[r_arch].endian
-            ? ((unsigned char *) r_data + r_size - 1)
-            : (unsigned char *) r_data;
+              ? ((unsigned char *) r_data + r_size - 1)
+              : (unsigned char *) r_data;
           DEBUG2("This is signed (r_sign=%c l_sign=%c", *r_sign, *l_sign);
 
           if ((*r_sign > 127) != (*l_sign > 127)) {
@@ -179,9 +181,9 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
         } else {
           /* extend sign */
           r_sign =
-            gras_arches[r_arch].endian ? ((unsigned char *) r_data + r_size -
-                                          1)
-            : (unsigned char *) r_data;
+              gras_arches[r_arch].endian ? ((unsigned char *) r_data +
+                                            r_size - 1)
+              : (unsigned char *) r_data;
           padding = (*r_sign > 127) ? 0xff : 0;
         }
 
@@ -223,7 +225,8 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 
 }
 
-static void gras_dd_reverse_bytes(void *to, const void *from, size_t length)
+static void gras_dd_reverse_bytes(void *to, const void *from,
+                                  size_t length)
 {
 
   char charBegin;

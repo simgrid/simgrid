@@ -86,27 +86,29 @@ void xbt_backtrace_preinit(void)
 
   /* get the pointers to debug help library exported functions */
   fun_initialize =
-    (fun_initialize_t) GetProcAddress(hlp_dbg_instance, "SymInitialize");
+      (fun_initialize_t) GetProcAddress(hlp_dbg_instance, "SymInitialize");
   fun_cleanup =
-    (fun_cleanup_t) GetProcAddress(hlp_dbg_instance, "SymCleanup");
+      (fun_cleanup_t) GetProcAddress(hlp_dbg_instance, "SymCleanup");
   fun_function_table_access =
-    (fun_function_table_access_t) GetProcAddress(hlp_dbg_instance,
-                                                 "SymFunctionTableAccess");
+      (fun_function_table_access_t) GetProcAddress(hlp_dbg_instance,
+                                                   "SymFunctionTableAccess");
   fun_get_line_from_addr =
-    (fun_get_line_from_addr_t) GetProcAddress(hlp_dbg_instance,
-                                              "SymGetLineFromAddr");
+      (fun_get_line_from_addr_t) GetProcAddress(hlp_dbg_instance,
+                                                "SymGetLineFromAddr");
   fun_get_module_base =
-    (fun_get_module_base_t) GetProcAddress(hlp_dbg_instance,
-                                           "SymGetModuleBase");
+      (fun_get_module_base_t) GetProcAddress(hlp_dbg_instance,
+                                             "SymGetModuleBase");
   fun_get_options =
-    (fun_get_options_t) GetProcAddress(hlp_dbg_instance, "SymGetOptions");
+      (fun_get_options_t) GetProcAddress(hlp_dbg_instance,
+                                         "SymGetOptions");
   fun_get_sym_from_addr =
-    (fun_get_sym_from_addr_t) GetProcAddress(hlp_dbg_instance,
-                                             "SymGetSymFromAddr");
+      (fun_get_sym_from_addr_t) GetProcAddress(hlp_dbg_instance,
+                                               "SymGetSymFromAddr");
   fun_set_options =
-    (fun_set_options_t) GetProcAddress(hlp_dbg_instance, "SymSetOptions");
+      (fun_set_options_t) GetProcAddress(hlp_dbg_instance,
+                                         "SymSetOptions");
   fun_stack_walk =
-    (fun_stack_walk_t) GetProcAddress(hlp_dbg_instance, "StackWalk");
+      (fun_stack_walk_t) GetProcAddress(hlp_dbg_instance, "StackWalk");
 
   /* Check that everything worked well */
   if (!fun_initialize ||
@@ -202,9 +204,8 @@ int backtrace(void **buffer, int size)
   IMAGEHLP_SYMBOL *pSym;
   unsigned long offset = 0;
   IMAGEHLP_LINE line_info = { 0 };
-  byte
-    __buffer[(sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR) +
-              sizeof(ULONG64) - 1) / sizeof(ULONG64)];
+  byte __buffer[(sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR) +
+                 sizeof(ULONG64) - 1) / sizeof(ULONG64)];
 
   CONTEXT context = { CONTEXT_FULL };
   GetThreadContext(GetCurrentThread(), &context);
@@ -212,12 +213,12 @@ int backtrace(void **buffer, int size)
   /* ebp points on stack base */
   /* esp points on stack pointer, ie on last stacked element (current element) */
   _asm call $ + 5
-    _asm pop eax
-    _asm mov context.Eip, eax
-    _asm mov eax, esp
-    _asm mov context.Esp, eax
-    _asm mov context.Ebp, ebp
-    if ((NULL == hlp_dbg_instance) || (size <= 0) || (NULL == buffer)) {
+      _asm pop eax
+      _asm mov context.Eip, eax
+      _asm mov eax, esp
+      _asm mov context.Esp, eax
+      _asm mov context.Ebp, ebp
+      if ((NULL == hlp_dbg_instance) || (size <= 0) || (NULL == buffer)) {
     errno = EINVAL;
     return 0;
   }
@@ -293,9 +294,8 @@ char **backtrace_symbols(void *const *buffer, int size)
   unsigned long offset = 0;
   IMAGEHLP_LINE line_info = { 0 };
   IMAGEHLP_MODULE module = { 0 };
-  byte
-    __buffer[(sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR) +
-              sizeof(ULONG64) - 1) / sizeof(ULONG64)];
+  byte __buffer[(sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR) +
+                 sizeof(ULONG64) - 1) / sizeof(ULONG64)];
 
   if ((NULL == hlp_dbg_instance) || (size <= 0) || (NULL == buffer)) {
     errno = EINVAL;
@@ -321,10 +321,11 @@ char **backtrace_symbols(void *const *buffer, int size)
       if ((*fun_get_sym_from_addr)
           (process_handle, stack_frame->AddrPC.Offset, &offset, pSym)) {
         if ((*fun_get_line_from_addr)
-            (process_handle, stack_frame->AddrPC.Offset, &offset, &line_info)) {
+            (process_handle, stack_frame->AddrPC.Offset, &offset,
+             &line_info)) {
           strings[pos] =
-            bprintf("**   In %s() at %s:%d", pSym->Name, line_info.FileName,
-                    (int) line_info.LineNumber);
+              bprintf("**   In %s() at %s:%d", pSym->Name,
+                      line_info.FileName, (int) line_info.LineNumber);
         } else {
           strings[pos] = bprintf("**   In %s()", pSym->Name);
         }

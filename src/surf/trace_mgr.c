@@ -82,8 +82,8 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
     }
     xbt_dynar_push(trace->event_list, &event);
     last_event =
-      xbt_dynar_get_ptr(trace->event_list,
-                        xbt_dynar_length(trace->event_list) - 1);
+        xbt_dynar_get_ptr(trace->event_list,
+                          xbt_dynar_length(trace->event_list) - 1);
   }
   if (last_event)
     last_event->delta = periodicity;
@@ -100,7 +100,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
 
 tmgr_trace_t tmgr_trace_new(const char *filename)
 {
-	char *tstr = NULL;
+  char *tstr = NULL;
   FILE *f = NULL;
   tmgr_trace_t trace = NULL;
 
@@ -116,8 +116,8 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   }
 
   f = surf_fopen(filename, "r");
-  xbt_assert2(f!=NULL, "Cannot open file '%s' (path=%s)", filename,
-       xbt_str_join(surf_path,":"));
+  xbt_assert2(f != NULL, "Cannot open file '%s' (path=%s)", filename,
+              xbt_str_join(surf_path, ":"));
 
   tstr = xbt_str_from_file(f);
   fclose(f);

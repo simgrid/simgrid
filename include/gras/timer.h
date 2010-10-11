@@ -51,4 +51,4 @@ XBT_PUBLIC(void) gras_timer_cancel_all(void);
 /** @} */
 
 SG_END_DECL()
-#endif /* GRAS_TIMER_H */
+#endif                          /* GRAS_TIMER_H */

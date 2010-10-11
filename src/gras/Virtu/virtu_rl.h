@@ -11,4 +11,4 @@
 
 #include "gras/Virtu/virtu_private.h"
 
-#endif /* VIRTU_RL_H */
+#endif                          /* VIRTU_RL_H */

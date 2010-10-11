@@ -108,10 +108,10 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
 {
   unsigned int i, j;
 
-  DEBUG10("Copy a %dx%d submatrix from %dx%d(of %dx%d) to %dx%d (of %dx%d)",
-          lsize, rsize,
-          lpos_src, rpos_src, src->lines, src->rows,
-          lpos_dst, rpos_dst, dst->lines, dst->rows);
+  DEBUG10
+      ("Copy a %dx%d submatrix from %dx%d(of %dx%d) to %dx%d (of %dx%d)",
+       lsize, rsize, lpos_src, rpos_src, src->lines, src->rows, lpos_dst,
+       rpos_dst, dst->lines, dst->rows);
 
   /* everybody knows that issue is between the chair and the screen (particulary in my office) */
   xbt_assert(src->elmsize == dst->elmsize);
@@ -128,7 +128,7 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
     if (cpy_f) {
       for (j = 0; j < lsize; j++)
         xbt_matrix_get_as(dst, j + lpos_dst, i + rpos_dst, void *) =
-          (*cpy_f) (xbt_matrix_get_ptr(src, j + rpos_src, i + lpos_src));
+            (*cpy_f) (xbt_matrix_get_ptr(src, j + rpos_src, i + lpos_src));
     } else {
       memcpy(xbt_matrix_get_ptr(dst, lpos_dst, i + rpos_dst),
              xbt_matrix_get_ptr(src, lpos_src, i + rpos_src),
@@ -181,12 +181,14 @@ xbt_matrix_t xbt_matrix_double_new_seq(int lines, int rows)
 
   return res;
 }
+
 /** \brief Checks whether the matrix contains the sequence of numbers */
-int xbt_matrix_double_is_seq(xbt_matrix_t mat) {
+int xbt_matrix_double_is_seq(xbt_matrix_t mat)
+{
   int i;
 
   for (i = 0; i < mat->lines * mat->rows; i++) {
-    double val = xbt_matrix_get_as(mat,i,0,double);
+    double val = xbt_matrix_get_as(mat, i, 0, double);
     if (val != i)
       return 0;
   }
@@ -217,6 +219,6 @@ void xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B,
     for (j = 0; j < C->rows; j++)
       for (k = 0; k < B->lines; k++)
         xbt_matrix_get_as(C, i, j, double) +=
-          xbt_matrix_get_as(A, i, k, double) * xbt_matrix_get_as(B, k, j,
-                                                                 double);
+            xbt_matrix_get_as(A, i, k, double) * xbt_matrix_get_as(B, k, j,
+                                                                   double);
 }

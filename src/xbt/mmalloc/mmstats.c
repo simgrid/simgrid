@@ -16,18 +16,16 @@
    None of the internal mmalloc structures should be externally visible
    outside the library. */
 
-struct mstats
-mmstats (void *md)
+struct mstats mmstats(void *md)
 {
   struct mstats result;
   struct mdesc *mdp;
 
-  mdp = MD_TO_MDP (md);
-  result.bytes_total =
-      (char*) mdp -> top - (char*)mdp;
-  result.chunks_used = mdp -> heapstats.chunks_used;
-  result.bytes_used = mdp -> heapstats.bytes_used;
-  result.chunks_free = mdp -> heapstats.chunks_free;
-  result.bytes_free = mdp -> heapstats.bytes_free;
+  mdp = MD_TO_MDP(md);
+  result.bytes_total = (char *) mdp->top - (char *) mdp;
+  result.chunks_used = mdp->heapstats.chunks_used;
+  result.bytes_used = mdp->heapstats.bytes_used;
+  result.chunks_free = mdp->heapstats.chunks_free;
+  result.bytes_free = mdp->heapstats.bytes_free;
   return (result);
 }

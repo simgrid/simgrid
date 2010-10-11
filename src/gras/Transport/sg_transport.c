@@ -32,7 +32,7 @@ gras_socket_t gras_trp_select(double timeout)
 {
   gras_socket_t res;
   gras_trp_procdata_t pd =
-    (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
+      (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
   gras_trp_sg_sock_data_t *sockdata;
   gras_trp_plugin_t trp;
   gras_socket_t active_socket = NULL;
@@ -103,7 +103,7 @@ gras_socket_t gras_trp_select(double timeout)
   res->peer_port = ((gras_trp_procdata_t)
                     gras_libdata_by_name_from_remote("gras_trp",
                                                      sockdata->to_process))->
-    myport;
+      myport;
   sockdata->to_socket = active_socket;
   /*update the peer to_socket  variable */
   active_socket_data->to_socket = res;
@@ -111,7 +111,7 @@ gras_socket_t gras_trp_select(double timeout)
   sockdata->mutex = SIMIX_mutex_init();
 
   sockdata->to_host =
-    SIMIX_process_get_host(active_socket_data->from_process);
+      SIMIX_process_get_host(active_socket_data->from_process);
 
   res->data = sockdata;
   res->peer_name = strdup(SIMIX_host_get_name(sockdata->to_host));

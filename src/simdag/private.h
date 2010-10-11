@@ -80,7 +80,7 @@ typedef struct SD_task {
   double start_time;
   double finish_time;
   surf_action_t surf_action;
-  unsigned short watch_points; /* bit field xor()ed with masks */
+  unsigned short watch_points;  /* bit field xor()ed with masks */
 
   int fifo_checked;             /* used by SD_task_just_done to make sure we evaluate
                                    the task only once */
@@ -99,7 +99,7 @@ typedef struct SD_task {
   double rate;
 
 #ifdef HAVE_TRACING
-  char *category;      /* sd task category for instrumentation */
+  char *category;               /* sd task category for instrumentation */
 #endif
 } s_SD_task_t;
 
@@ -117,7 +117,8 @@ typedef struct SD_dependency {
 SD_link_t __SD_link_create(void *surf_link, void *data);
 void __SD_link_destroy(void *link);
 
-SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data);
+SD_workstation_t __SD_workstation_create(void *surf_workstation,
+                                         void *data);
 void __SD_workstation_destroy(void *workstation);
 int __SD_workstation_is_busy(SD_workstation_t workstation);
 
@@ -132,14 +133,14 @@ void __SD_task_just_done(SD_task_t task);
 static XBT_INLINE int __SD_task_is_scheduled_or_runnable(SD_task_t task)
 {
   return task->state_set == sd_global->scheduled_task_set ||
-    task->state_set == sd_global->runnable_task_set;
+      task->state_set == sd_global->runnable_task_set;
 }
 
 /* Returns whether the given task is scheduled or runnable. */
 static XBT_INLINE int __SD_task_is_schedulable_or_done(SD_task_t task)
 {
   return task->state_set == sd_global->schedulable_task_set ||
-    task->state_set == sd_global->done_task_set;
+      task->state_set == sd_global->done_task_set;
 }
 
 /* Returns whether the state of the given task is SD_NOT_SCHEDULED. */
@@ -176,7 +177,7 @@ static XBT_INLINE int __SD_task_is_in_fifo(SD_task_t task)
 static XBT_INLINE int __SD_task_is_runnable_or_in_fifo(SD_task_t task)
 {
   return task->state_set == sd_global->runnable_task_set ||
-    task->state_set == sd_global->in_fifo_task_set;
+      task->state_set == sd_global->in_fifo_task_set;
 }
 
 /* Returns whether the state of the given task is SD_RUNNING. */

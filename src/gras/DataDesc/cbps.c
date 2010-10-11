@@ -120,7 +120,7 @@ void
 gras_cbps_v_pop(gras_cbps_t ps,
                 const char *name, gras_datadesc_type_t * ddt, void **res)
 {
-  xbt_dynar_t varstack=NULL, frame=NULL;
+  xbt_dynar_t varstack = NULL, frame = NULL;
   gras_cbps_elm_t var = NULL;
   void *data = NULL;
   xbt_ex_t e;
@@ -324,8 +324,8 @@ int gras_datadesc_cb_pop(gras_datadesc_type_t ignored, gras_cbps_t vars,
 /* ************************* */
 
 /** \brief Cb to push an integer. Must be attached to the field you want to push */
-void gras_datadesc_cb_push_int(gras_datadesc_type_t ignored, gras_cbps_t vars,
-                               void *data)
+void gras_datadesc_cb_push_int(gras_datadesc_type_t ignored,
+                               gras_cbps_t vars, void *data)
 {
   int *i = (int *) data;
   gras_cbps_i_push(vars, (int) *i);

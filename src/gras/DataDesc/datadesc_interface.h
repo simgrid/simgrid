@@ -34,13 +34,13 @@ XBT_PUBLIC(void) gras_datadesc_recv(gras_socket_t sock,
                                     void *dst);
 
 /* Described data exchanges: IDL compilation FIXME: not implemented*/
-     void gras_datadesc_gen_cpy(gras_datadesc_type_t type, void *src,
-                                void **dst);
-     void gras_datadesc_gen_send(gras_socket_t sock,
-                                 gras_datadesc_type_t type, void *src);
-     void gras_datadesc_gen_recv(gras_socket_t sock,
-                                 gras_datadesc_type_t type, int r_arch,
-                                 void *dst);
+void gras_datadesc_gen_cpy(gras_datadesc_type_t type, void *src,
+                           void **dst);
+void gras_datadesc_gen_send(gras_socket_t sock,
+                            gras_datadesc_type_t type, void *src);
+void gras_datadesc_gen_recv(gras_socket_t sock,
+                            gras_datadesc_type_t type, int r_arch,
+                            void *dst);
 
 
-#endif /* GRAS_DATADESC_INTERFACE_H */
+#endif                          /* GRAS_DATADESC_INTERFACE_H */

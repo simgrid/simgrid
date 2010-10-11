@@ -18,12 +18,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_msg_read, gras_msg,
 #include "gras/Transport/transport_interface.h" /* gras_select */
 
 typedef struct s_gras_msg_listener_ {
-  xbt_queue_t incomming_messages; /* messages received from the wire and still to be used by master */
+  xbt_queue_t incomming_messages;       /* messages received from the wire and still to be used by master */
   xbt_queue_t socks_to_close;   /* let the listener close the sockets, since it may be selecting on them. Darwin don't like this trick */
   gras_socket_t wakeup_sock_listener_side;
   gras_socket_t wakeup_sock_master_side;
-  xbt_mutex_t init_mutex; /* both this mutex and condition are used at initialization to make sure that*/
-  xbt_cond_t init_cond;   /* the main thread speaks to the listener only once it is started (FIXME: It would be easier using a semaphore, if only semaphores were in xbt_synchro) */
+  xbt_mutex_t init_mutex;       /* both this mutex and condition are used at initialization to make sure that */
+  xbt_cond_t init_cond;         /* the main thread speaks to the listener only once it is started (FIXME: It would be easier using a semaphore, if only semaphores were in xbt_synchro) */
   xbt_thread_t listener;
 } s_gras_msg_listener_t;
 
@@ -33,11 +33,12 @@ static void listener_function(void *p)
   gras_msg_t msg;
   xbt_ex_t e;
   gras_msgtype_t msg_wakeup_listener_t =
-    gras_msgtype_by_name("_wakeup_listener");
+      gras_msgtype_by_name("_wakeup_listener");
   DEBUG0("I'm the listener");
 
   /* get a free socket for the receiving part of the listener */
-  me->wakeup_sock_listener_side = gras_socket_server_range(5000, 6000, -1, 0);
+  me->wakeup_sock_listener_side =
+      gras_socket_server_range(5000, 6000, -1, 0);
 
   /* wake up the launcher */
   xbt_mutex_acquire(me->init_mutex);
@@ -49,7 +50,7 @@ static void listener_function(void *p)
     msg = gras_msg_recv_any();
     if (msg->type != msg_wakeup_listener_t) {
       VERB1("Got a '%s' message. Queue it for handling by main thread",
-          gras_msgtype_get_name(msg->type));
+            gras_msgtype_get_name(msg->type));
       xbt_queue_push(me->incomming_messages, msg);
     } else {
       char got = *(char *) msg->payl;
@@ -72,7 +73,8 @@ static void listener_function(void *p)
         xbt_queue_shift_timed(me->socks_to_close, &sock, 0);
         if (tcp_close(sock) < 0) {
 #ifdef _XBT_WIN32
-          WARN2("error while closing tcp socket %d: %d\n", sock, sock_errno);
+          WARN2("error while closing tcp socket %d: %d\n", sock,
+                sock_errno);
 #else
           WARN3("error while closing tcp socket %d: %d (%s)\n",
                 sock, sock_errno, sock_errstr(sock_errno));
@@ -104,7 +106,9 @@ gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_received)
   /* actually start the thread, and */
   /* wait for the listener to initialize before we connect to its socket */
   xbt_mutex_acquire(arg->init_mutex);
-  arg->listener = xbt_thread_create("listener", listener_function, arg,1/*joinable*/);
+  arg->listener =
+      xbt_thread_create("listener", listener_function, arg,
+                        1 /*joinable */ );
   xbt_cond_wait(arg->init_cond, arg->init_mutex);
   xbt_mutex_release(arg->init_mutex);
   xbt_cond_destroy(arg->init_cond);
@@ -112,8 +116,9 @@ gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_received)
 
   /* Connect the other part of the socket */
   arg->wakeup_sock_master_side =
-    gras_socket_client(gras_os_myname(),
-                       gras_socket_my_port(arg->wakeup_sock_listener_side));
+      gras_socket_client(gras_os_myname(),
+                         gras_socket_my_port
+                         (arg->wakeup_sock_listener_side));
   return arg;
 }
 
@@ -125,8 +130,8 @@ void gras_msg_listener_shutdown()
   DEBUG0("Listener quit");
 
   if (pd->listener)
-    gras_msg_send(pd->listener->wakeup_sock_master_side, "_wakeup_listener",
-          &kill);
+    gras_msg_send(pd->listener->wakeup_sock_master_side,
+                  "_wakeup_listener", &kill);
 
   xbt_thread_join(pd->listener->listener);
 
@@ -144,8 +149,8 @@ void gras_msg_listener_awake()
   DEBUG0("Awaking the listener");
   pd = gras_procdata_get();
   if (pd->listener) {
-    gras_msg_send(pd->listener->wakeup_sock_master_side, "_wakeup_listener",
-                  &c);
+    gras_msg_send(pd->listener->wakeup_sock_master_side,
+                  "_wakeup_listener", &c);
   }
 }
 

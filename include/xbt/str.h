@@ -25,8 +25,6 @@ SG_BEGIN_DECL()
  * asprintf()), while some other are a bit more exotic.
  * @{
  */
-
-
 /* Trim related functions */
 XBT_PUBLIC(void) xbt_str_rtrim(char *s, const char *char_list);
 XBT_PUBLIC(void) xbt_str_ltrim(char *s, const char *char_list);
@@ -46,15 +44,15 @@ XBT_PUBLIC(char *) xbt_str_varsubst(char *str, xbt_dict_t patterns);
 XBT_PUBLIC(void) xbt_str_strip_spaces(char *);
 XBT_PUBLIC(char *) xbt_str_diff(char *a, char *b);
 
-XBT_PUBLIC(char*)xbt_str_from_file(FILE *file);
+XBT_PUBLIC(char *) xbt_str_from_file(FILE * file);
 
 /** @brief Classical alias to (char*)
  *
  * This of almost no use, beside cosmetics and the GRAS parsing macro (see \ref GRAS_dd_auto).
  */
-     typedef char *xbt_string_t;
+typedef char *xbt_string_t;
 
 /**@}*/
 
 SG_END_DECL()
-#endif /* XBT_STR_H */
+#endif                          /* XBT_STR_H */

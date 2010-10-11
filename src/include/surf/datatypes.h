@@ -33,4 +33,4 @@ typedef struct tmgr_trace *tmgr_trace_t;
 typedef struct tmgr_trace_event *tmgr_trace_event_t;
 
 
-#endif /* MAXMIN_DATATYPES_H */
+#endif                          /* MAXMIN_DATATYPES_H */

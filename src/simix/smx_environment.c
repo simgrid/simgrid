@@ -47,7 +47,7 @@ void SIMIX_create_environment(const char *file)
   DEBUG1("PARSE TIME: %lg", (end - start));
 
 #ifdef HAVE_TRACING
-  TRACE_surf_save_onelink ();
+  TRACE_surf_save_onelink();
 #endif
 
   xbt_dict_foreach(surf_model_resource_set(surf_workstation_model), cursor,

@@ -46,7 +46,8 @@ xbt_multidict_set_ext(xbt_dict_t mdict,
 
   DEBUG2("xbt_multidict_set(%p,%d)", mdict, keys_len);
 
-  for (i = 0, thislevel = mdict; i < keys_len - 1; i++, thislevel = nextlevel) {
+  for (i = 0, thislevel = mdict; i < keys_len - 1;
+       i++, thislevel = nextlevel) {
 
     xbt_dynar_get_cpy(keys, i, &thiskey);
     xbt_dynar_get_cpy(lens, i, &thislen);
@@ -60,7 +61,8 @@ xbt_multidict_set_ext(xbt_dict_t mdict,
       /* make sure the dict of next level exists */
       nextlevel = xbt_dict_new();
       VERB1("Create a dict (%p)", nextlevel);
-      xbt_dict_set_ext(thislevel, thiskey, thislen, nextlevel, &_free_dict);
+      xbt_dict_set_ext(thislevel, thiskey, thislen, nextlevel,
+                       &_free_dict);
     }
   }
 
@@ -127,7 +129,8 @@ void *xbt_multidict_get_ext(xbt_dict_t mdict,
 
   DEBUG2("xbt_multidict_get(%p, %ld)", mdict, xbt_dynar_length(keys));
 
-  for (i = 0, thislevel = mdict; i < keys_len - 1; i++, thislevel = nextlevel) {
+  for (i = 0, thislevel = mdict; i < keys_len - 1;
+       i++, thislevel = nextlevel) {
 
     xbt_dynar_get_cpy(keys, i, &thiskey);
     xbt_dynar_get_cpy(lens, i, &thislen);
@@ -176,7 +179,8 @@ void *xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys)
  */
 
 void
-xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens)
+xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys,
+                         xbt_dynar_t lens)
 {
   xbt_dict_t thislevel, nextlevel = NULL;
   int i;
@@ -190,7 +194,8 @@ xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens)
   xbt_assert0(xbt_dynar_length(keys),
               "Can't remove a zero-long key set in a multidict");
 
-  for (i = 0, thislevel = mdict; i < keys_len - 1; i++, thislevel = nextlevel) {
+  for (i = 0, thislevel = mdict; i < keys_len - 1;
+       i++, thislevel = nextlevel) {
 
     xbt_dynar_get_cpy(keys, i, &thiskey);
     xbt_dynar_get_cpy(lens, i, &thislen);

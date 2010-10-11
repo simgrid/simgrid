@@ -47,7 +47,7 @@ typedef struct xbt_graph {
 } s_xbt_graph_t;
 void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d,
                          xbt_node_t * p);
-void xbt_graph_depth_visit(xbt_graph_t g, xbt_node_t n, xbt_node_t * sorted,
-                           int *idx);
+void xbt_graph_depth_visit(xbt_graph_t g, xbt_node_t n,
+                           xbt_node_t * sorted, int *idx);
 
-#endif /* _XBT_GRAPH_PRIVATE_H */
+#endif                          /* _XBT_GRAPH_PRIVATE_H */

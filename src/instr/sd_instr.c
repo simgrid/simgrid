@@ -8,23 +8,27 @@
 
 #ifdef HAVE_TRACING
 
-void TRACE_sd_task_create (SD_task_t task)
+void TRACE_sd_task_create(SD_task_t task)
 {
-  if (!IS_TRACING) return;
+  if (!IS_TRACING)
+    return;
   task->category = NULL;
 }
 
-void TRACE_sd_task_destroy (SD_task_t task)
+void TRACE_sd_task_destroy(SD_task_t task)
 {
-  if (!IS_TRACING) return;
-  if (task->category) xbt_free (task->category);
+  if (!IS_TRACING)
+    return;
+  if (task->category)
+    xbt_free(task->category);
 }
 
 void TRACE_sd_set_task_category(SD_task_t task, const char *category)
 {
-  if (!IS_TRACING) return;
-  task->category = xbt_new (char, strlen (category)+1);
-  strncpy(task->category, category, strlen(category)+1);
+  if (!IS_TRACING)
+    return;
+  task->category = xbt_new(char, strlen(category) + 1);
+  strncpy(task->category, category, strlen(category) + 1);
 }
 
 #endif

@@ -71,16 +71,17 @@ static void parse_process_finalize(void)
       surf_timer_model->extension.timer.set(start_time, (void *)
                                             &SIMIX_process_create, arg);
 
-  } else { // start_time <= SIMIX_get_clock()
+  } else {                      // start_time <= SIMIX_get_clock()
     DEBUG2("Starting Process %s(%s) right now", parse_argv[0], parse_host);
 
     if (simix_global->create_process_function)
       process =
-        (*simix_global->create_process_function) (parse_argv[0], parse_code,
-                                                  NULL, parse_host,
-                                                  parse_argc, parse_argv,
-                                                  /*the props */
-                                                  current_property_set);
+          (*simix_global->create_process_function) (parse_argv[0],
+                                                    parse_code, NULL,
+                                                    parse_host, parse_argc,
+                                                    parse_argv,
+                                                    /*the props */
+                                                    current_property_set);
     else
       process = SIMIX_process_create(parse_argv[0], parse_code, NULL, parse_host, parse_argc, parse_argv,       /*the props */
                                      current_property_set);
@@ -90,12 +91,12 @@ static void parse_process_finalize(void)
       return;
     }
     if (kill_time > SIMIX_get_clock()) {
-    	if (simix_global->kill_process_function)
-    		surf_timer_model->extension.timer.set(start_time, (void *)
+      if (simix_global->kill_process_function)
+        surf_timer_model->extension.timer.set(start_time, (void *)
                                               simix_global->kill_process_function,
                                               process);
-    	else
-    		surf_timer_model->extension.timer.set(kill_time, (void *)
+      else
+        surf_timer_model->extension.timer.set(kill_time, (void *)
                                               &SIMIX_process_kill,
                                               (void *) process);
     }
@@ -126,7 +127,8 @@ void SIMIX_launch_application(const char *file)
   surfxml_add_callback(STag_surfxml_process_cb_list, parse_process_init);
   surfxml_add_callback(ETag_surfxml_argument_cb_list, parse_argument);
   surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
-  surfxml_add_callback(ETag_surfxml_process_cb_list, parse_process_finalize);
+  surfxml_add_callback(ETag_surfxml_process_cb_list,
+                       parse_process_finalize);
 
   surf_parse_open(file);
   parse_status = surf_parse();
@@ -142,7 +144,8 @@ void SIMIX_launch_application(const char *file)
  * \param name the reference name of the function.
  * \param code the function
  */
-XBT_INLINE void SIMIX_function_register(const char *name, xbt_main_func_t code)
+XBT_INLINE void SIMIX_function_register(const char *name,
+                                        xbt_main_func_t code)
 {
   xbt_assert0(simix_global,
               "SIMIX_global_init has to be called before SIMIX_function_register.");
@@ -188,7 +191,11 @@ xbt_main_func_t SIMIX_get_registered_function(const char *name)
  * \brief Bypass the parser, get arguments, and set function to each process
  */
 
-void SIMIX_process_set_function(const char* process_host,const char *process_function,xbt_dynar_t arguments,double process_start_time,double process_kill_time)
+void SIMIX_process_set_function(const char *process_host,
+                                const char *process_function,
+                                xbt_dynar_t arguments,
+                                double process_start_time,
+                                double process_kill_time)
 {
   unsigned int i;
   char *arg;
@@ -198,8 +205,7 @@ void SIMIX_process_set_function(const char* process_host,const char *process_fun
   xbt_assert1(SIMIX_host_get_by_name(parse_host),
               "Host '%s' unknown", parse_host);
   parse_code = SIMIX_get_registered_function(process_function);
-  xbt_assert1(parse_code, "Function '%s' unknown",
-              process_function);
+  xbt_assert1(parse_code, "Function '%s' unknown", process_function);
 
   parse_argc = 0;
   parse_argv = NULL;
@@ -211,11 +217,10 @@ void SIMIX_process_set_function(const char* process_host,const char *process_fun
   current_property_set = xbt_dict_new();
 
   /* add arguments */
-  xbt_dynar_foreach(arguments,i,arg)
-  {
-	  parse_argc++;
-	  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-	  parse_argv[(parse_argc) - 1] = xbt_strdup(arg);
+  xbt_dynar_foreach(arguments, i, arg) {
+    parse_argc++;
+    parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
+    parse_argv[(parse_argc) - 1] = xbt_strdup(arg);
   }
 
   /*finalize */

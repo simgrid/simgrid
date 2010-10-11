@@ -53,7 +53,8 @@ static XBT_INLINE void _check_inbound_idx(xbt_dynar_t dynar, int idx)
   }
 }
 
-static XBT_INLINE void _check_sloppy_inbound_idx(xbt_dynar_t dynar, int idx)
+static XBT_INLINE void _check_sloppy_inbound_idx(xbt_dynar_t dynar,
+                                                 int idx)
 {
   if (idx > dynar->used) {
     _dynar_unlock(dynar);
@@ -74,13 +75,13 @@ static XBT_INLINE void _check_populated_dynar(xbt_dynar_t dynar)
 static void _dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op);
 
 static XBT_INLINE
-  void _xbt_clear_mem(void *const ptr, const unsigned long length)
+    void _xbt_clear_mem(void *const ptr, const unsigned long length)
 {
   memset(ptr, 0, length);
 }
 
 static XBT_INLINE
-  void _xbt_dynar_expand(xbt_dynar_t const dynar, const unsigned long nb)
+    void _xbt_dynar_expand(xbt_dynar_t const dynar, const unsigned long nb)
 {
   const unsigned long old_size = dynar->size;
 
@@ -93,7 +94,7 @@ static XBT_INLINE
     const unsigned long used_length = used * elmsize;
 
     const unsigned long new_size =
-      nb > (2 * (old_size + 1)) ? nb : (2 * (old_size + 1));
+        nb > (2 * (old_size + 1)) ? nb : (2 * (old_size + 1));
     const unsigned long new_length = new_size * elmsize;
     char *const new_data = (char *) xbt_malloc0(elmsize * new_size);
 
@@ -113,7 +114,7 @@ static XBT_INLINE
 }
 
 static XBT_INLINE
-  void *_xbt_dynar_elm(const xbt_dynar_t dynar, const unsigned long idx)
+    void *_xbt_dynar_elm(const xbt_dynar_t dynar, const unsigned long idx)
 {
   char *const data = (char *) dynar->data;
   const unsigned long elmsize = dynar->elmsize;
@@ -122,7 +123,7 @@ static XBT_INLINE
 }
 
 static XBT_INLINE
-  void
+    void
 _xbt_dynar_get_elm(void *const dst,
                    const xbt_dynar_t dynar, const unsigned long idx)
 {
@@ -132,7 +133,7 @@ _xbt_dynar_get_elm(void *const dst,
 }
 
 static XBT_INLINE
-  void
+    void
 _xbt_dynar_put_elm(const xbt_dynar_t dynar,
                    const unsigned long idx, const void *const src)
 {
@@ -143,7 +144,7 @@ _xbt_dynar_put_elm(const xbt_dynar_t dynar,
 }
 
 static XBT_INLINE
-  void
+    void
 _xbt_dynar_remove_at(xbt_dynar_t const dynar,
                      const unsigned long idx, void *const object)
 {
@@ -173,7 +174,8 @@ _xbt_dynar_remove_at(xbt_dynar_t const dynar,
 
   if (nb_shift) {
     offset = nb_shift * dynar->elmsize;
-    memmove(_xbt_dynar_elm(dynar, idx), _xbt_dynar_elm(dynar, idx + 1), offset);
+    memmove(_xbt_dynar_elm(dynar, idx), _xbt_dynar_elm(dynar, idx + 1),
+            offset);
   }
 
   dynar->used--;
@@ -182,7 +184,8 @@ _xbt_dynar_remove_at(xbt_dynar_t const dynar,
 void xbt_dynar_dump(xbt_dynar_t dynar)
 {
   INFO5("Dynar dump: size=%lu; used=%lu; elmsize=%lu; data=%p; free_f=%p",
-        dynar->size, dynar->used, dynar->elmsize, dynar->data, dynar->free_f);
+        dynar->size, dynar->used, dynar->elmsize, dynar->data,
+        dynar->free_f);
 }
 
 /** @brief Constructor
@@ -216,7 +219,8 @@ xbt_dynar_new(const unsigned long elmsize, void_f_pvoid_t const free_f)
  *
  */
 xbt_dynar_t
-xbt_dynar_new_sync(const unsigned long elmsize, void_f_pvoid_t const free_f)
+xbt_dynar_new_sync(const unsigned long elmsize,
+                   void_f_pvoid_t const free_f)
 {
   xbt_dynar_t res = xbt_dynar_new(elmsize, free_f);
   res->mutex = xbt_mutex_init();
@@ -342,7 +346,7 @@ XBT_INLINE unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
 
 XBT_INLINE int xbt_dynar_is_empty(const xbt_dynar_t dynar)
 {
-	return (xbt_dynar_length(dynar) == 0);
+  return (xbt_dynar_length(dynar) == 0);
 }
 
 /** @brief Retrieve a copy of the Nth element of a dynar.
@@ -372,7 +376,8 @@ xbt_dynar_get_cpy(const xbt_dynar_t dynar,
  * \warning The returned value is the actual content of the dynar.
  * Make a copy before fooling with it.
  */
-XBT_INLINE void *xbt_dynar_get_ptr(const xbt_dynar_t dynar, const unsigned long idx)
+XBT_INLINE void *xbt_dynar_get_ptr(const xbt_dynar_t dynar,
+                                   const unsigned long idx)
 {
 
   void *res;
@@ -411,7 +416,8 @@ _xbt_dynar_set(xbt_dynar_t dynar,
  *
  * If you want to free the previous content, use xbt_dynar_replace().
  */
-XBT_INLINE void xbt_dynar_set(xbt_dynar_t dynar, const int idx, const void *const src)
+XBT_INLINE void xbt_dynar_set(xbt_dynar_t dynar, const int idx,
+                              const void *const src)
 {
 
   _dynar_lock(dynar);
@@ -542,7 +548,8 @@ unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void *const elem)
     }
 
   _dynar_unlock(dynar);
-  THROW2(not_found_error, 0, "Element %p not part of dynar %p", elem, dynar);
+  THROW2(not_found_error, 0, "Element %p not part of dynar %p", elem,
+         dynar);
 }
 
 /** @brief Returns a boolean indicating whether the element is part of the dynar */
@@ -582,11 +589,13 @@ XBT_INLINE void *xbt_dynar_push_ptr(xbt_dynar_t const dynar)
 }
 
 /** @brief Add an element at the end of the dynar */
-XBT_INLINE void xbt_dynar_push(xbt_dynar_t const dynar, const void *const src)
+XBT_INLINE void xbt_dynar_push(xbt_dynar_t const dynar,
+                               const void *const src)
 {
   _dynar_lock(dynar);
   /* checks done in xbt_dynar_insert_at_ptr */
-  memcpy(_xbt_dynar_insert_at_ptr(dynar, dynar->used), src, dynar->elmsize);
+  memcpy(_xbt_dynar_insert_at_ptr(dynar, dynar->used), src,
+         dynar->elmsize);
   _dynar_unlock(dynar);
 }
 
@@ -623,7 +632,8 @@ XBT_INLINE void xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst)
  *
  * This is less efficient than xbt_dynar_push()
  */
-XBT_INLINE void xbt_dynar_unshift(xbt_dynar_t const dynar, const void *const src)
+XBT_INLINE void xbt_dynar_unshift(xbt_dynar_t const dynar,
+                                  const void *const src)
 {
 
   /* sanity checks done by insert_at */
@@ -662,7 +672,8 @@ static void _dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
  * operation, so make sure your function don't call any function
  * from xbt_dynar_* on it, or you'll get a deadlock.
  */
-XBT_INLINE void xbt_dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
+XBT_INLINE void xbt_dynar_map(const xbt_dynar_t dynar,
+                              void_f_pvoid_t const op)
 {
 
   _sanity_check_dynar(dynar);
@@ -678,7 +689,8 @@ XBT_INLINE void xbt_dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
  *
  * This function can be used while traversing without problem.
  */
-XBT_INLINE void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int *const cursor)
+XBT_INLINE void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
+                                    unsigned int *const cursor)
 {
 
   _xbt_dynar_remove_at(dynar, (*cursor)--, NULL);
@@ -702,13 +714,15 @@ XBT_INLINE void xbt_dynar_cursor_unlock(xbt_dynar_t dynar)
  * Remark: if the elements stored in the dynar are structures, the compar_fn
  * function has to retrieve the field to sort first.
  */
-XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn){
+XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
+                               int_f_cpvoid_cpvoid_t compar_fn)
+{
 
-	_dynar_lock(dynar);
+  _dynar_lock(dynar);
 
-	qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
+  qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
 
-	_dynar_unlock(dynar);
+  _dynar_unlock(dynar);
 }
 
 #ifdef SIMGRID_TEST
@@ -732,13 +746,13 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   xbt_dynar_foreach(d, cursor, i) {
     xbt_assert0(0, "Damnit, there is something in the empty dynar");
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add1
-    ("==== Push %d int, set them again 3 times, traverse them, shift them",
-     NB_ELEM);
+      ("==== Push %d int, set them again 3 times, traverse them, shift them",
+       NB_ELEM);
   /* Populate_ints [doxygen cruft] */
   /* 1. Populate the dynar */
   d = xbt_dynar_new(sizeof(int), NULL);
@@ -796,9 +810,9 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   }
 
   /* 5. Free the resources */
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add1("==== Unshift/pop %d int", NB_ELEM);
   d = xbt_dynar_new(sizeof(int), NULL);
@@ -813,14 +827,14 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
                      i, cpt);
     xbt_test_log2("Pop %d, length=%lu", cpt, xbt_dynar_length(d));
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
 
   xbt_test_add1
-    ("==== Push %d int, insert 1000 int in the middle, shift everything",
-     NB_ELEM);
+      ("==== Push %d int, insert 1000 int in the middle, shift everything",
+       NB_ELEM);
   d = xbt_dynar_new(sizeof(int), NULL);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     xbt_dynar_push_as(d, int, cpt);
@@ -850,11 +864,12 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
                      "The retrieved value is not the same than the injected one at the end (%d!=%d)",
                      i, cpt);
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
-  xbt_test_add1("==== Push %d int, remove 2000-4000. free the rest", NB_ELEM);
+  xbt_test_add1("==== Push %d int, remove 2000-4000. free the rest",
+                NB_ELEM);
   d = xbt_dynar_new(sizeof(int), NULL);
   for (cpt = 0; cpt < NB_ELEM; cpt++)
     xbt_dynar_push_as(d, int, cpt);
@@ -865,9 +880,9 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
                      "Remove a bad value. Got %d, expected %d", i, cpt);
     DEBUG2("remove %d, length=%lu", cpt, xbt_dynar_length(d));
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 }
 
 /*******************************************************************************/
@@ -883,11 +898,12 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
   xbt_test_add0("==== Traverse the empty dynar");
   d = xbt_dynar_new(sizeof(int), NULL);
   xbt_dynar_foreach(d, cursor, cpt) {
-    xbt_test_assert0(FALSE, "Damnit, there is something in the empty dynar");
+    xbt_test_assert0(FALSE,
+                     "Damnit, there is something in the empty dynar");
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add0("==== Push/shift 5000 doubles");
   d = xbt_dynar_new(sizeof(double), NULL);
@@ -908,9 +924,9 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
                      "The retrieved value is not the same than the injected one (%f!=%f)",
                      d1, d2);
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add0("==== Unshift/pop 5000 doubles");
   d = xbt_dynar_new(sizeof(double), NULL);
@@ -925,14 +941,14 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
                      "The retrieved value is not the same than the injected one (%f!=%f)",
                      d1, d2);
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
 
 
   xbt_test_add0
-    ("==== Push 5000 doubles, insert 1000 doubles in the middle, shift everything");
+      ("==== Push 5000 doubles, insert 1000 doubles in the middle, shift everything");
   d = xbt_dynar_new(sizeof(double), NULL);
   for (cpt = 0; cpt < 5000; cpt++) {
     d1 = (double) cpt;
@@ -965,9 +981,9 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
                      "The retrieved value is not the same than the injected one at the end (%f!=%f)",
                      d1, d2);
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
 
   xbt_test_add0("==== Push 5000 double, remove 2000-4000. free the rest");
@@ -982,9 +998,9 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
     xbt_test_assert2(d1 == d2,
                      "Remove a bad value. Got %f, expected %f", d2, d1);
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 }
 
 
@@ -1004,11 +1020,12 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   xbt_test_add0("==== Traverse the empty dynar");
   d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   xbt_dynar_foreach(d, iter, s1) {
-    xbt_test_assert0(FALSE, "Damnit, there is something in the empty dynar");
+    xbt_test_assert0(FALSE,
+                     "Damnit, there is something in the empty dynar");
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add1("==== Push %d strings, set them again 3 times, shift them",
                 NB_ELEM);
@@ -1043,9 +1060,9 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
                      buf, s2);
     free(s2);
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add1("==== Unshift, traverse and pop %d strings", NB_ELEM);
   d = xbt_dynar_new(sizeof(char **), &xbt_free_ref);
@@ -1071,14 +1088,14 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
     free(s2);
   }
   /* 4. Free the resources */
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
 
   xbt_test_add2
-    ("==== Push %d strings, insert %d strings in the middle, shift everything",
-     NB_ELEM, NB_ELEM / 5);
+      ("==== Push %d strings, insert %d strings in the middle, shift everything",
+       NB_ELEM, NB_ELEM / 5);
   d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     sprintf(buf, "%d", cpt);
@@ -1115,13 +1132,13 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
                      buf, s2);
     free(s2);
   }
-  xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
-  xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
-                                 /* in your code is naturally the way to go outside a regression test */
+  xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
+  xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
+  /* in your code is naturally the way to go outside a regression test */
 
 
-  xbt_test_add3("==== Push %d strings, remove %d-%d. free the rest", NB_ELEM,
-                2 * (NB_ELEM / 5), 4 * (NB_ELEM / 5));
+  xbt_test_add3("==== Push %d strings, remove %d-%d. free the rest",
+                NB_ELEM, 2 * (NB_ELEM / 5), 4 * (NB_ELEM / 5));
   d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     sprintf(buf, "%d", cpt);
@@ -1175,7 +1192,7 @@ static void poper_f(void *a)
 }
 
 
-XBT_TEST_UNIT("synchronized int", test_dynar_sync_int,"Synchronized dynars of integers")
+XBT_TEST_UNIT("synchronized int", test_dynar_sync_int, "Synchronized dynars of integers")
 {
   /* Vars_decl [doxygen cruft] */
   xbt_dynar_t d;
@@ -1183,11 +1200,11 @@ XBT_TEST_UNIT("synchronized int", test_dynar_sync_int,"Synchronized dynars of in
 
   xbt_test_add0("==== Have a pusher and a popper on the dynar");
   d = xbt_dynar_new_sync(sizeof(int), NULL);
-  pusher = xbt_thread_create("pusher", pusher_f, d,0/*not joinable*/);
-  poper = xbt_thread_create("poper", poper_f, d,0/*not joinable*/);
+  pusher = xbt_thread_create("pusher", pusher_f, d, 0 /*not joinable */ );
+  poper = xbt_thread_create("poper", poper_f, d, 0 /*not joinable */ );
   xbt_thread_join(pusher);
   xbt_thread_join(poper);
   xbt_dynar_free(&d);
 }
 
-#endif /* SIMGRID_TEST */
+#endif                          /* SIMGRID_TEST */

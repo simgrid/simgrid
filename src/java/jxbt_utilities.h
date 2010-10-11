@@ -83,12 +83,12 @@ void jxbt_throw_host_not_found(JNIEnv * env, const char *invalid_name);
 /** Thrown when looking for an host from name does not lead to anything */
 void jxbt_throw_process_not_found(JNIEnv * env, const char *invalid_name);
 /** Thrown when a transfer failure accure while Sending task */
-void jxbt_throw_transfer_failure(JNIEnv * env,char *detail);
+void jxbt_throw_transfer_failure(JNIEnv * env, char *detail);
 /** Thrown when a host failure accures while Sending task*/
-void jxbt_throw_host_failure(JNIEnv *env,char *details);
+void jxbt_throw_host_failure(JNIEnv * env, char *details);
 /** Thrown when a time out accures While Sending task */
-void jxbt_throw_time_out_failure(JNIEnv *env,char *details);
+void jxbt_throw_time_out_failure(JNIEnv * env, char *details);
 /**Thrown when a task is canceled */
-void jxbt_throw_task_cancelled(JNIEnv *env,char *details);
+void jxbt_throw_task_cancelled(JNIEnv * env, char *details);
 
-#endif /* ! JXBT_UTILITY_H */
+#endif                          /* ! JXBT_UTILITY_H */

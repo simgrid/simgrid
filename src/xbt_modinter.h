@@ -30,4 +30,4 @@ void mmalloc_preinit(void);
 void mmalloc_postexit(void);
 
 
-#endif /* XBT_MODINTER_H */
+#endif                          /* XBT_MODINTER_H */

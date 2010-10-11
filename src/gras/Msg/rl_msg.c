@@ -17,8 +17,9 @@ XBT_LOG_DEFAULT_CATEGORY(gras_msg);
 
 void gras_msg_recv(gras_socket_t sock, gras_msg_t msg);
 
-gras_msg_t gras_msg_recv_any(void) {
-  gras_msg_t msg = xbt_new0(s_gras_msg_t,1);
+gras_msg_t gras_msg_recv_any(void)
+{
+  gras_msg_t msg = xbt_new0(s_gras_msg_t, 1);
   msg->expe = gras_trp_select(-1);
   DEBUG0("Select returned something");
   gras_msg_recv(msg->expe, msg);
@@ -117,7 +118,8 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
     msg->kind = (e_gras_msg_kind_t) c_kind;
   }
   CATCH(e) {
-    RETHROW0("Exception caught while trying to get the message header: %s");
+    RETHROW0
+        ("Exception caught while trying to get the message header: %s");
   }
 
   for (cpt = 0; cpt < 4; cpt++)
@@ -146,13 +148,13 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
 
   gras_datadesc_recv(sock, string_type, r_arch, &msg_name);
   DEBUG4
-    ("Handle an incoming message '%s' (%s) using protocol %d (remote is %s)",
-     msg_name, e_gras_msg_kind_names[msg->kind], (int) header[4],
-     gras_datadesc_arch_name(r_arch));
+      ("Handle an incoming message '%s' (%s) using protocol %d (remote is %s)",
+       msg_name, e_gras_msg_kind_names[msg->kind], (int) header[4],
+       gras_datadesc_arch_name(r_arch));
 
   TRY {
     msg->type =
-      (gras_msgtype_t) xbt_set_get_by_name(_gras_msgtype_set, msg_name);
+        (gras_msgtype_t) xbt_set_get_by_name(_gras_msgtype_set, msg_name);
   } CATCH(e) {
     /* FIXME: Survive unknown messages */
     if (e.category == not_found_error) {
@@ -162,8 +164,8 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
              msg_name);
     } else
       RETHROW1
-        ("Exception caught while retrieving the type associated to messages '%s' : %s",
-         msg_name);
+          ("Exception caught while retrieving the type associated to messages '%s' : %s",
+           msg_name);
   }
   free(msg_name);
 

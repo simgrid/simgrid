@@ -26,33 +26,33 @@ SG_BEGIN_DECL()
 
     \see m_host_management
   @{ */
-     typedef struct s_smx_host *smx_host_t;
+typedef struct s_smx_host *smx_host_t;
 /** @} */
 
 
 /* ******************************** Syncro ************************************ */
-     typedef struct s_smx_mutex {
-       xbt_swag_t sleeping;          /* list of sleeping process */
-       int refcount;
-     } s_smx_mutex_t;
-     typedef s_smx_mutex_t *smx_mutex_t;
+typedef struct s_smx_mutex {
+  xbt_swag_t sleeping;          /* list of sleeping process */
+  int refcount;
+} s_smx_mutex_t;
+typedef s_smx_mutex_t *smx_mutex_t;
 
-     typedef struct s_smx_cond {
-       xbt_swag_t sleeping;          /* list of sleeping process */
-       smx_mutex_t mutex;
-       xbt_fifo_t actions;           /* list of actions */
-     } s_smx_cond_t;
-     typedef s_smx_cond_t *smx_cond_t;
+typedef struct s_smx_cond {
+  xbt_swag_t sleeping;          /* list of sleeping process */
+  smx_mutex_t mutex;
+  xbt_fifo_t actions;           /* list of actions */
+} s_smx_cond_t;
+typedef s_smx_cond_t *smx_cond_t;
 
-     typedef struct s_smx_sem {
-       xbt_fifo_t sleeping;          /* list of sleeping process */
-       int capacity;
-       xbt_fifo_t actions;           /* list of actions */
-     } s_smx_sem_t;
-     typedef s_smx_sem_t *smx_sem_t;
+typedef struct s_smx_sem {
+  xbt_fifo_t sleeping;          /* list of sleeping process */
+  int capacity;
+  xbt_fifo_t actions;           /* list of actions */
+} s_smx_sem_t;
+typedef s_smx_sem_t *smx_sem_t;
 
 /********************************** Action *************************************/
-     typedef struct s_smx_action *smx_action_t;
+typedef struct s_smx_action *smx_action_t;
 
 /* ****************************** Process *********************************** */
 /** @brief Agent datatype  
@@ -62,17 +62,17 @@ SG_BEGIN_DECL()
     data</em>, executing in a <em>location</em>.
     \see m_process_management
   @{ */
-     typedef struct s_smx_process *smx_process_t;
+typedef struct s_smx_process *smx_process_t;
 /** @} */
 
-     typedef struct s_smx_context *smx_context_t;
+typedef struct s_smx_context *smx_context_t;
 
 /******************************* Networking ***********************************/
-    typedef struct s_smx_rvpoint *smx_rdv_t;
-    typedef struct s_smx_comm *smx_comm_t;
-    typedef enum {comm_send,
-                  comm_recv
-    } smx_comm_type_t;
+typedef struct s_smx_rvpoint *smx_rdv_t;
+typedef struct s_smx_comm *smx_comm_t;
+typedef enum { comm_send,
+  comm_recv
+} smx_comm_type_t;
 
 
 

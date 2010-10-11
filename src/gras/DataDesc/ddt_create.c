@@ -41,7 +41,8 @@ static gras_datadesc_type_t gras_ddt_new(const char *name)
   res->name_len = strlen(name);
   res->cycle = 0;
 
-  xbt_set_add(gras_datadesc_set_local, (xbt_set_elm_t) res, gras_ddt_freev);
+  xbt_set_add(gras_datadesc_set_local, (xbt_set_elm_t) res,
+              gras_ddt_freev);
   XBT_OUT;
   return res;
 }
@@ -71,8 +72,8 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name)
   volatile int found = 0;
   TRY {
     res =
-      (gras_datadesc_type_t) xbt_set_get_by_name(gras_datadesc_set_local,
-                                                 name);
+        (gras_datadesc_type_t) xbt_set_get_by_name(gras_datadesc_set_local,
+                                                   name);
     found = 1;
   } CATCH(e) {
     if (e.category != not_found_error)
@@ -95,7 +96,8 @@ gras_datadesc_type_t gras_datadesc_by_id(long int code)
   gras_datadesc_type_t res = NULL;
   TRY {
     res =
-      (gras_datadesc_type_t) xbt_set_get_by_id(gras_datadesc_set_local, code);
+        (gras_datadesc_type_t) xbt_set_get_by_id(gras_datadesc_set_local,
+                                                 code);
   } CATCH(e) {
     if (e.category != not_found_error)
       RETHROW;
@@ -135,7 +137,7 @@ gras_datadesc_scalar(const char *name,
     res->size[arch] = gras_arches[arch].sizeofs[type];
     res->alignment[arch] = gras_arches[arch].boundaries[type];
     res->aligned_size[arch] =
-      ddt_aligned(res->size[arch], res->alignment[arch]);
+        ddt_aligned(res->size[arch], res->alignment[arch]);
   }
 
   res->category_code = e_gras_datadesc_type_cat_scalar;
@@ -185,7 +187,7 @@ gras_datadesc_type_t gras_datadesc_struct(const char *name)
   }
   res->category_code = e_gras_datadesc_type_cat_struct;
   res->category.struct_data.fields =
-    xbt_dynar_new(sizeof(gras_dd_cat_field_t), gras_dd_cat_field_free);
+      xbt_dynar_new(sizeof(gras_dd_cat_field_t), gras_dd_cat_field_free);
 
   XBT_OUT;
   return res;
@@ -194,7 +196,8 @@ gras_datadesc_type_t gras_datadesc_struct(const char *name)
 /** \brief Append a new field to a structure description */
 void
 gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
-                            const char *name, gras_datadesc_type_t field_type)
+                            const char *name,
+                            gras_datadesc_type_t field_type)
 {
 
   gras_dd_cat_field_t field;
@@ -206,8 +209,8 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
   XBT_IN3("(%s %s.%s;)", field_type->name, struct_type->name, name);
   if (struct_type->category.struct_data.closed) {
     VERB1
-      ("Ignoring request to add field to struct %s (closed. Redefinition?)",
-       struct_type->name);
+        ("Ignoring request to add field to struct %s (closed. Redefinition?)",
+         struct_type->name);
     return;
   }
 
@@ -243,7 +246,8 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
   xbt_dynar_push(struct_type->category.struct_data.fields, &field);
 
   DEBUG3("Push a %s into %s at offset %ld.",
-         field_type->name, struct_type->name, field->offset[GRAS_THISARCH]);
+         field_type->name, struct_type->name,
+         field->offset[GRAS_THISARCH]);
   DEBUG3("  f={size=%ld,align=%ld,asize=%ld}",
          field_type->size[GRAS_THISARCH],
          field_type->alignment[GRAS_THISARCH],
@@ -333,7 +337,7 @@ gras_datadesc_union(const char *name, gras_datadesc_type_cb_int_t selector)
 
   res->category_code = e_gras_datadesc_type_cat_union;
   res->category.union_data.fields =
-    xbt_dynar_new(sizeof(gras_dd_cat_field_t *), gras_dd_cat_field_free);
+      xbt_dynar_new(sizeof(gras_dd_cat_field_t *), gras_dd_cat_field_free);
   res->category.union_data.selector = selector;
 
   return res;
@@ -373,7 +377,8 @@ void gras_datadesc_union_append(gras_datadesc_type_t union_type,
     union_type->alignment[arch] = max(union_type->alignment[arch],
                                       field_type->alignment[arch]);
     union_type->aligned_size[arch] = ddt_aligned(union_type->size[arch],
-                                                 union_type->alignment[arch]);
+                                                 union_type->alignment
+                                                 [arch]);
   }
 }
 
@@ -409,7 +414,8 @@ gras_datadesc_ref(const char *name, gras_datadesc_type_t referenced_type)
 {
 
   gras_datadesc_type_t res;
-  gras_datadesc_type_t pointer_type = gras_datadesc_by_name("data pointer");
+  gras_datadesc_type_t pointer_type =
+      gras_datadesc_by_name("data pointer");
   int arch;
 
   XBT_IN1("(%s)", name);
@@ -449,11 +455,13 @@ gras_datadesc_ref(const char *name, gras_datadesc_type_t referenced_type)
  * callback and expects it to return the type description to use.
  */
 gras_datadesc_type_t
-gras_datadesc_ref_generic(const char *name, gras_datadesc_selector_t selector)
+gras_datadesc_ref_generic(const char *name,
+                          gras_datadesc_selector_t selector)
 {
 
   gras_datadesc_type_t res;
-  gras_datadesc_type_t pointer_type = gras_datadesc_by_name("data pointer");
+  gras_datadesc_type_t pointer_type =
+      gras_datadesc_by_name("data pointer");
   int arch;
 
   XBT_IN1("(%s)", name);
@@ -504,8 +512,9 @@ gras_datadesc_array_fixed(const char *name,
                 "Redefinition of type %s does not match", name);
 
     if (res->category.array_data.type != element_type) {
-      ERROR1("Redefinition of type %s does not match: array elements differ",
-             name);
+      ERROR1
+          ("Redefinition of type %s does not match: array elements differ",
+           name);
       gras_datadesc_type_dump(res->category.array_data.type);
       gras_datadesc_type_dump(element_type);
     }
@@ -609,8 +618,8 @@ gras_datadesc_type_t gras_datadesc_array_dyn(const char *name,
 gras_datadesc_type_t
 gras_datadesc_ref_pop_arr(gras_datadesc_type_t element_type)
 {
-  int cpt=0;
-  gras_datadesc_type_t res,ddt2;
+  int cpt = 0;
+  gras_datadesc_type_t res, ddt2;
   char *name = (char *) xbt_malloc(strlen(element_type->name) + 4);
 
   sprintf(name, "%s[]", element_type->name);
@@ -619,19 +628,19 @@ gras_datadesc_ref_pop_arr(gras_datadesc_type_t element_type)
 
   while (ddt2) {
     free(name);
-    name=bprintf("%s[]_%d",element_type->name,cpt++);
-    ddt2=gras_datadesc_by_name_or_null(name);
+    name = bprintf("%s[]_%d", element_type->name, cpt++);
+    ddt2 = gras_datadesc_by_name_or_null(name);
   }
 
   res = gras_datadesc_array_dyn(name, element_type, gras_datadesc_cb_pop);
 
   sprintf(name, "%s[]*", element_type->name);
-  cpt=0;
+  cpt = 0;
   ddt2 = gras_datadesc_by_name_or_null(name);
   while (ddt2) {
     free(name);
-    name=bprintf("%s[]*_%d",element_type->name,cpt++);
-    ddt2=gras_datadesc_by_name_or_null(name);
+    name = bprintf("%s[]*_%d", element_type->name, cpt++);
+    ddt2 = gras_datadesc_by_name_or_null(name);
   }
 
   res = gras_datadesc_ref(name, res);
@@ -698,7 +707,8 @@ gras_datadesc_dynar(gras_datadesc_type_t elm_t, void_f_pvoid_t free_func)
   gras_datadesc_struct_append(res, "elmsize",
                               gras_datadesc_by_name("unsigned long int"));
 
-  gras_datadesc_struct_append(res, "data", gras_datadesc_ref_pop_arr(elm_t));
+  gras_datadesc_struct_append(res, "data",
+                              gras_datadesc_ref_pop_arr(elm_t));
 
   gras_datadesc_struct_append(res, "free_f",
                               gras_datadesc_by_name("function pointer"));
@@ -742,7 +752,8 @@ static void gras_datadesc_matrix_cb(gras_datadesc_type_t typedesc,
 }
 
 gras_datadesc_type_t
-gras_datadesc_matrix(gras_datadesc_type_t elm_t, void_f_pvoid_t const free_f)
+gras_datadesc_matrix(gras_datadesc_type_t elm_t,
+                     void_f_pvoid_t const free_f)
 {
   char *buffname;
   gras_datadesc_type_t res;
@@ -758,7 +769,8 @@ gras_datadesc_matrix(gras_datadesc_type_t elm_t, void_f_pvoid_t const free_f)
   gras_datadesc_struct_append(res, "elmsize",
                               gras_datadesc_by_name("unsigned long int"));
 
-  gras_datadesc_struct_append(res, "data", gras_datadesc_ref_pop_arr(elm_t));
+  gras_datadesc_struct_append(res, "data",
+                              gras_datadesc_ref_pop_arr(elm_t));
   gras_datadesc_struct_append(res, "free_f",
                               gras_datadesc_by_name("function pointer"));
   gras_datadesc_struct_close(res);
@@ -779,7 +791,8 @@ gras_datadesc_matrix(gras_datadesc_type_t elm_t, void_f_pvoid_t const free_f)
 
 gras_datadesc_type_t
 gras_datadesc_import_nws(const char *name,
-                         const DataDescriptor * desc, unsigned long howmany)
+                         const DataDescriptor * desc,
+                         unsigned long howmany)
 {
   THROW_UNIMPLEMENTED;
 }
@@ -872,8 +885,8 @@ void gras_datadesc_cb_field_push(gras_datadesc_type_t type,
     field->send = gras_datadesc_cb_push_ulint;
   } else {
     ERROR1
-      ("Field %s is not an int, unsigned int, long int neither unsigned long int",
-       sub_type->name);
+        ("Field %s is not an int, unsigned int, long int neither unsigned long int",
+         sub_type->name);
     xbt_abort();
   }
 }
@@ -905,8 +918,8 @@ void gras_datadesc_cb_field_push_multiplier(gras_datadesc_type_t type,
     field->send = gras_datadesc_cb_push_ulint_mult;
   } else {
     ERROR1
-      ("Field %s is not an int, unsigned int, long int neither unsigned long int",
-       sub_type->name);
+        ("Field %s is not an int, unsigned int, long int neither unsigned long int",
+         sub_type->name);
     xbt_abort();
   }
 }
@@ -1005,9 +1018,9 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
 
     if (d1->aligned_size[cpt] != d2->aligned_size[cpt]) {
       DEBUG5
-        ("ddt_cmp: %s->aligned_size=%ld  !=  %s->aligned_size=%ld (on %s)",
-         d1->name, d1->aligned_size[cpt], d2->name, d2->aligned_size[cpt],
-         gras_arches[cpt].name);
+          ("ddt_cmp: %s->aligned_size=%ld  !=  %s->aligned_size=%ld (on %s)",
+           d1->name, d1->aligned_size[cpt], d2->name,
+           d2->aligned_size[cpt], gras_arches[cpt].name);
       return d1->aligned_size[cpt] > d2->aligned_size[cpt] ? 1 : -1;
     }
   }
@@ -1036,7 +1049,7 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
     if (d1->category.scalar_data.encoding !=
         d2->category.scalar_data.encoding)
       return d1->category.scalar_data.encoding >
-        d2->category.scalar_data.encoding ? 1 : -1;
+          d2->category.scalar_data.encoding ? 1 : -1;
     break;
 
   case e_gras_datadesc_type_cat_struct:
@@ -1047,13 +1060,13 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
              d2->name, xbt_dynar_length(d2->category.struct_data.fields));
 
       return xbt_dynar_length(d1->category.struct_data.fields) >
-        xbt_dynar_length(d2->category.struct_data.fields) ? 1 : -1;
+          xbt_dynar_length(d2->category.struct_data.fields) ? 1 : -1;
     }
     xbt_dynar_foreach(d1->category.struct_data.fields, cpt, field1) {
 
       field2 =
-        xbt_dynar_get_as(d2->category.struct_data.fields, cpt,
-                         gras_dd_cat_field_t);
+          xbt_dynar_get_as(d2->category.struct_data.fields, cpt,
+                           gras_dd_cat_field_t);
       field_desc_1 = field1->type;
       field_desc_2 = field2->type;
       ret = gras_datadesc_type_cmp(field_desc_1, field_desc_2);
@@ -1067,19 +1080,20 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
     break;
 
   case e_gras_datadesc_type_cat_union:
-    if (d1->category.union_data.selector != d2->category.union_data.selector)
+    if (d1->category.union_data.selector !=
+        d2->category.union_data.selector)
       return 1;                 /* ISO C forbids ordered comparisons of pointers to functions */
 
     if (xbt_dynar_length(d1->category.union_data.fields) !=
         xbt_dynar_length(d2->category.union_data.fields))
       return xbt_dynar_length(d1->category.union_data.fields) >
-        xbt_dynar_length(d2->category.union_data.fields) ? 1 : -1;
+          xbt_dynar_length(d2->category.union_data.fields) ? 1 : -1;
 
     xbt_dynar_foreach(d1->category.union_data.fields, cpt, field1) {
 
       field2 =
-        xbt_dynar_get_as(d2->category.union_data.fields, cpt,
-                         gras_dd_cat_field_t);
+          xbt_dynar_get_as(d2->category.union_data.fields, cpt,
+                           gras_dd_cat_field_t);
       field_desc_1 = field1->type;
       field_desc_2 = field2->type;
       ret = gras_datadesc_type_cmp(field_desc_1, field_desc_2);
@@ -1095,18 +1109,19 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
       return 1;                 /* ISO C forbids ordered comparisons of pointers to functions */
 
     if (d1->category.ref_data.type != d2->category.ref_data.type)
-      return d1->category.ref_data.type > d2->category.ref_data.type ? 1 : -1;
+      return d1->category.ref_data.type >
+          d2->category.ref_data.type ? 1 : -1;
     break;
 
   case e_gras_datadesc_type_cat_array:
     if (d1->category.array_data.type != d2->category.array_data.type)
       return d1->category.array_data.type >
-        d2->category.array_data.type ? 1 : -1;
+          d2->category.array_data.type ? 1 : -1;
 
     if (d1->category.array_data.fixed_size !=
         d2->category.array_data.fixed_size)
       return d1->category.array_data.fixed_size >
-        d2->category.array_data.fixed_size ? 1 : -1;
+          d2->category.array_data.fixed_size ? 1 : -1;
 
     if (d1->category.array_data.dynamic_size !=
         d2->category.array_data.dynamic_size)

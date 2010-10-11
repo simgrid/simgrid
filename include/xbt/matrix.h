@@ -14,13 +14,13 @@
 
 SG_BEGIN_DECL()
 
-     typedef struct {
-       unsigned int lines, rows;
-       unsigned long elmsize;
+typedef struct {
+  unsigned int lines, rows;
+  unsigned long elmsize;
 
-       char *data;
-       void_f_pvoid_t free_f;
-     } s_xbt_matrix_t, *xbt_matrix_t;
+  char *data;
+  void_f_pvoid_t free_f;
+} s_xbt_matrix_t, *xbt_matrix_t;
 
 
   /** @brief Retrieve the address of a cell (not its content)
@@ -43,7 +43,8 @@ XBT_PUBLIC(xbt_matrix_t) xbt_matrix_new_sub(xbt_matrix_t from,
 XBT_PUBLIC(void) xbt_matrix_free(xbt_matrix_t matrix);
 XBT_PUBLIC(void) xbt_matrix_free_voidp(void *d);
 
-XBT_PUBLIC(void) xbt_matrix_copy_values(xbt_matrix_t dest, xbt_matrix_t src,
+XBT_PUBLIC(void) xbt_matrix_copy_values(xbt_matrix_t dest,
+                                        xbt_matrix_t src,
                                         unsigned int lsize,
                                         unsigned int rsize,
                                         unsigned int lpos_dst,
@@ -67,4 +68,4 @@ XBT_PUBLIC(xbt_matrix_t) xbt_matrix_double_new_mult(xbt_matrix_t A,
 XBT_PUBLIC(void) xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B,
                                            /*OUT*/ xbt_matrix_t C);
 SG_END_DECL()
-#endif /* XBT_MATRIX_H */
+#endif                          /* XBT_MATRIX_H */

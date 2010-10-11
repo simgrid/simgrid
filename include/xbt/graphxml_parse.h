@@ -9,7 +9,7 @@
 #ifndef _XBT_GRAPHXML_PARSE_H
 #define _XBT_GRAPHXML_PARSE_H
 
-#include <stdio.h>     /* to have FILE */
+#include <stdio.h>              /* to have FILE */
 #include "xbt/misc.h"
 #include "xbt/graphxml.h"
 #include "simgrid_config.h"

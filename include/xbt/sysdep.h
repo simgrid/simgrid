@@ -50,7 +50,8 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 
 #if defined(__GNUC__) || defined(DOXYGEN)
 /** @brief Like strdup, but xbt_die() on error */
-static inline __attribute__((always_inline)) char *xbt_strdup(const char *s)
+static inline __attribute__ ((always_inline))
+char *xbt_strdup(const char *s)
 {
   char *res = NULL;
   if (s) {
@@ -65,7 +66,8 @@ XBT_PUBLIC(void) xbt_backtrace_display_current(void);
 
 /** @brief Like malloc, but xbt_die() on error
     @hideinitializer */
-static inline __attribute__((always_inline)) void *xbt_malloc(unsigned int n)
+static inline __attribute__ ((always_inline))
+void *xbt_malloc(unsigned int n)
 {
   void *res;
 /*  if (n==0) {
@@ -81,7 +83,8 @@ static inline __attribute__((always_inline)) void *xbt_malloc(unsigned int n)
 
 /** @brief like malloc, but xbt_die() on error and memset data to 0
     @hideinitializer */
-static inline __attribute__((always_inline)) void *xbt_malloc0(unsigned int n)
+static inline __attribute__ ((always_inline))
+void *xbt_malloc0(unsigned int n)
 {
   void *res;
   //if (n==0) xbt_die("calloc(0) is not portable");
@@ -93,7 +96,8 @@ static inline __attribute__((always_inline)) void *xbt_malloc0(unsigned int n)
 
 /** @brief like realloc, but xbt_die() on error
     @hideinitializer */
-static inline __attribute__((always_inline)) void *xbt_realloc(void *p, unsigned int s)
+static inline __attribute__ ((always_inline))
+void *xbt_realloc(void *p, unsigned int s)
 {
   void *res = res;
   //if (s==0) xbt_die("realloc(0) is not portable");
@@ -112,12 +116,12 @@ static inline __attribute__((always_inline)) void *xbt_realloc(void *p, unsigned
   }
   return res;
 }
-#else /* non __GNUC__  */
+#else                           /* non __GNUC__  */
 #  define xbt_strdup(s)    strdup(s)
 #  define xbt_malloc(n)    malloc(n)
 #  define xbt_malloc0(n)   calloc(n,1)
 #  define xbt_realloc(p,s) realloc(p,s)
-#endif /* __GNUC__ ? */
+#endif                          /* __GNUC__ ? */
 
 /** @brief like free
     @hideinitializer */
@@ -140,4 +144,4 @@ XBT_PUBLIC(void) xbt_free_ref(void *d);
 
 
 SG_END_DECL()
-#endif /* _XBT_SYSDEP_H */
+#endif                          /* _XBT_SYSDEP_H */

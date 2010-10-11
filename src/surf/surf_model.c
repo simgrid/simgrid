@@ -27,13 +27,13 @@ surf_model_t surf_model_init(void)
   model->model_private = xbt_new0(s_surf_model_private_t, 1);
 
   model->states.ready_action_set =
-    xbt_swag_new(xbt_swag_offset(action, state_hookup));
+      xbt_swag_new(xbt_swag_offset(action, state_hookup));
   model->states.running_action_set =
-    xbt_swag_new(xbt_swag_offset(action, state_hookup));
+      xbt_swag_new(xbt_swag_offset(action, state_hookup));
   model->states.failed_action_set =
-    xbt_swag_new(xbt_swag_offset(action, state_hookup));
+      xbt_swag_new(xbt_swag_offset(action, state_hookup));
   model->states.done_action_set =
-    xbt_swag_new(xbt_swag_offset(action, state_hookup));
+      xbt_swag_new(xbt_swag_offset(action, state_hookup));
   model->resource_set = xbt_dict_new();
 
   model->action_unref = int_die_impossible_paction;
@@ -49,6 +49,7 @@ surf_model_t surf_model_init(void)
 
   return model;
 }
+
 /** @brief finalize common datastructures to all models */
 void surf_model_exit(surf_model_t model)
 {
@@ -65,5 +66,3 @@ void *surf_model_resource_by_name(surf_model_t model, const char *name)
 {
   return xbt_dict_get_or_null(model->resource_set, name);
 }
-
-

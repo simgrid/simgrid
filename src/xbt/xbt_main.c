@@ -7,7 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h"
-#include "simgrid_config.h"		/*HAVE_MMAP _XBT_WIN32*/
+#include "simgrid_config.h"     /*HAVE_MMAP _XBT_WIN32 */
 #include "time.h"               /* to seed the random generator */
 
 #include "xbt/sysdep.h"
@@ -55,7 +55,7 @@ static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR;
 static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR;
 
 #ifdef _XBT_WIN32
- # undef _XBT_NEED_INIT_PRAGMA
+# undef _XBT_NEED_INIT_PRAGMA
 #endif
 
 #ifdef _XBT_NEED_INIT_PRAGMA
@@ -67,12 +67,15 @@ static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR;
 #include <windows.h>
 
 /* Dummy prototype to make gcc happy */
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved);
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
+                    LPVOID lpvReserved);
 
 
 /* see also http://msdn.microsoft.com/en-us/library/ms682583%28VS.85%29.aspx */
 /* and http://www.microsoft.com/whdc/driver/kernel/DLL_bestprac.mspx */
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
+                    LPVOID lpvReserved)
+{
   if (fdwReason == DLL_PROCESS_ATTACH) {
     xbt_preinit();
   } else if (fdwReason == DLL_PROCESS_DETACH) {
@@ -84,10 +87,11 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
 
 #endif
 
-static void xbt_preinit(void) {
-	#ifdef HAVE_MMAP
-	  mmalloc_preinit();
-	#endif
+static void xbt_preinit(void)
+{
+#ifdef HAVE_MMAP
+  mmalloc_preinit();
+#endif
   xbt_log_preinit();
 
   /* Connect our log channels: that must be done manually under windows */
@@ -121,7 +125,8 @@ static void xbt_preinit(void) {
   xbt_os_thread_mod_preinit();
 }
 
-static void xbt_postexit(void) {
+static void xbt_postexit(void)
+{
   xbt_os_thread_mod_postexit();
   xbt_backtrace_postexit();
 
@@ -142,7 +147,7 @@ void xbt_init(int *argc, char **argv)
   // FIXME it would be nice to assert that this function is called only once. But each gras process do call it...
   xbt_initialized++;
 
-  if (xbt_initialized >1)
+  if (xbt_initialized > 1)
     return;
 
   xbt_binary_name = xbt_strdup(argv[0]);
@@ -153,14 +158,16 @@ void xbt_init(int *argc, char **argv)
 }
 
 /** @brief Finalize the xbt mechanisms. */
-void xbt_exit() {
+void xbt_exit()
+{
   WARN0("This function is deprecated, you shouldn't use it");
 }
 
 
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
 /** @brief like free, but you can be sure that it is a function  */
-XBT_PUBLIC(void) xbt_free_f(void *p) {
+XBT_PUBLIC(void) xbt_free_f(void *p)
+{
   free(p);
 }
 

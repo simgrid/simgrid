@@ -80,4 +80,4 @@ XBT_PUBLIC(void) amok_pm_group_shutdown_remote(gras_socket_t master,
 
 
 /** @} */
-#endif /* AMOK_peer_MANAGEMENT_H */
+#endif                          /* AMOK_peer_MANAGEMENT_H */

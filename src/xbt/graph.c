@@ -78,7 +78,8 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
   return edge;
 }
 
-xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst)
+xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src,
+                              xbt_node_t dst)
 {
   xbt_edge_t edge;
   unsigned int cursor;
@@ -149,11 +150,11 @@ void xbt_graph_free_graph(xbt_graph_t g,
   }
 
   xbt_dynar_foreach(g->nodes, cursor, node)
-    free(node);
+      free(node);
   xbt_dynar_free(&(g->nodes));
 
   xbt_dynar_foreach(g->edges, cursor, edge)
-    free(edge);
+      free(edge);
   xbt_dynar_free(&(g->edges));
   if (graph_free_function)
     (*graph_free_function) (g->data);
@@ -190,7 +191,7 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
 
   cursor = 0;
   xbt_dynar_foreach(g->nodes, cursor, node)
-    if (node == n)
+      if (node == n)
     xbt_dynar_cursor_rm(g->nodes, &cursor);
 
   xbt_dynar_free(&(n->in));
@@ -450,7 +451,7 @@ xbt_edge_t *xbt_graph_spanning_tree_prim(xbt_graph_t g)
   node->xbtdata = (void *) 1;
   edge_list = node->out;
   xbt_dynar_foreach(edge_list, cursor, e)
-    xbt_heap_push(heap, e, -(e->length));
+      xbt_heap_push(heap, e, -(e->length));
 
   while ((edge = xbt_heap_pop(heap))) {
     if ((edge->src->xbtdata) && (edge->dst->xbtdata))
@@ -504,10 +505,10 @@ xbt_node_t *xbt_graph_topo_sort(xbt_graph_t g)
   sorted = xbt_malloc(n * sizeof(xbt_node_t));
 
   xbt_dynar_foreach(g->nodes, cursor, node)
-    node->xbtdata = xbt_new0(int, 1);
+      node->xbtdata = xbt_new0(int, 1);
 
   xbt_dynar_foreach(g->nodes, cursor, node)
-    xbt_graph_depth_visit(g, node, sorted, &idx);
+      xbt_graph_depth_visit(g, node, sorted, &idx);
 
   xbt_dynar_foreach(g->nodes, cursor, node) {
     free(node->xbtdata);
@@ -574,8 +575,10 @@ static void __parse_node(void)
   if (__parse_node_label_and_data)
     node->data = __parse_node_label_and_data(node, A_graphxml_node_label,
                                              A_graphxml_node_data);
-  xbt_graph_parse_get_double(&(node->position_x), A_graphxml_node_position_x);
-  xbt_graph_parse_get_double(&(node->position_y), A_graphxml_node_position_y);
+  xbt_graph_parse_get_double(&(node->position_x),
+                             A_graphxml_node_position_x);
+  xbt_graph_parse_get_double(&(node->position_y),
+                             A_graphxml_node_position_y);
 
   xbt_dict_set(parsed_nodes, A_graphxml_node_name, (void *) node, NULL);
 }

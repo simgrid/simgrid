@@ -27,7 +27,8 @@ gras_socket_t _gras_lastly_selected_socket = NULL;
 gras_socket_t gras_trp_select(double timeout)
 {
   xbt_dynar_t sockets =
-    ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
+      ((gras_trp_procdata_t)
+       gras_libdata_by_id(gras_trp_libdata_id))->sockets;
   int done = -1;
   double wakeup = gras_os_time() + timeout;
   double now = 0;
@@ -47,9 +48,10 @@ gras_socket_t gras_trp_select(double timeout)
 
   /* Check whether there is more data to read from the socket we selected last time.
      This can happen with tcp buffered sockets since we try to get as much data as we can for them */
-  if (_gras_lastly_selected_socket && _gras_lastly_selected_socket->moredata) {
+  if (_gras_lastly_selected_socket
+      && _gras_lastly_selected_socket->moredata) {
     VERB0
-      ("Returning _gras_lastly_selected_socket since there is more data on it");
+        ("Returning _gras_lastly_selected_socket since there is more data on it");
     return _gras_lastly_selected_socket;
   }
 
@@ -62,7 +64,7 @@ gras_socket_t gras_trp_select(double timeout)
     fd_setsize = getdtablesize();
 #  else
     fd_setsize = FD_SETSIZE;
-#  endif /* !USE_SYSCONF */
+#  endif                        /* !USE_SYSCONF */
 #endif
   }
 
@@ -130,7 +132,7 @@ gras_socket_t gras_trp_select(double timeout)
       /* set the timeout */
       tout.tv_sec = (unsigned long) (wakeup - now);
       tout.tv_usec =
-        ((wakeup - now) - ((unsigned long) (wakeup - now))) * 1000000;
+          ((wakeup - now) - ((unsigned long) (wakeup - now))) * 1000000;
       p_tout = &tout;
     } else if (timeout == 0) {
       /* polling only */
@@ -144,7 +146,8 @@ gras_socket_t gras_trp_select(double timeout)
       p_tout = NULL;
     }
 
-    DEBUG2("Selecting over %d socket(s); timeout=%f", max_fds - 1, timeout);
+    DEBUG2("Selecting over %d socket(s); timeout=%f", max_fds - 1,
+           timeout);
     ready = select(max_fds, &FDS, NULL, NULL, p_tout);
     DEBUG1("select returned %d", ready);
     if (ready == -1) {

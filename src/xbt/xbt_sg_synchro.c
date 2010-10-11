@@ -28,7 +28,7 @@ typedef struct s_xbt_thread_ {
   void *userparam;
   void *father_data;
   /* stuff to allow other people to wait on me with xbt_thread_join */
-  int joinable:1,done:1;
+  int joinable:1, done:1;
   xbt_cond_t cond;
   xbt_mutex_t mutex;
 } s_xbt_thread_t;
@@ -36,11 +36,11 @@ typedef struct s_xbt_thread_ {
 static int xbt_thread_create_wrapper(int argc, char *argv[])
 {
   xbt_thread_t t =
-    (xbt_thread_t) SIMIX_process_get_data(SIMIX_process_self());
+      (xbt_thread_t) SIMIX_process_get_data(SIMIX_process_self());
   SIMIX_process_set_data(SIMIX_process_self(), t->father_data);
   (*t->code) (t->userparam);
   if (t->joinable) {
-    t->done=1;
+    t->done = 1;
     xbt_mutex_acquire(t->mutex);
     xbt_cond_broadcast(t->cond);
     xbt_mutex_release(t->mutex);
@@ -54,7 +54,7 @@ static int xbt_thread_create_wrapper(int argc, char *argv[])
 }
 
 xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
-                               void *param,int joinable)
+                               void *param, int joinable)
 {
   xbt_thread_t res = xbt_new0(s_xbt_thread_t, 1);
   res->name = xbt_strdup(name);
@@ -90,9 +90,10 @@ const char *xbt_thread_self_name(void)
 void xbt_thread_join(xbt_thread_t thread)
 {
   xbt_mutex_acquire(thread->mutex);
-  xbt_assert1(thread->joinable,"Cannot join on %p: wasn't created joinable",thread);
+  xbt_assert1(thread->joinable,
+              "Cannot join on %p: wasn't created joinable", thread);
   if (!thread->done) {
-    xbt_cond_wait(thread->cond,thread->mutex);
+    xbt_cond_wait(thread->cond, thread->mutex);
     xbt_mutex_release(thread->mutex);
   }
 
@@ -121,7 +122,8 @@ xbt_thread_t xbt_thread_self(void)
   return p ? SIMIX_process_get_data(p) : NULL;
 }
 
-void xbt_thread_yield(void) {
+void xbt_thread_yield(void)
+{
   SIMIX_process_yield();
 }
 
@@ -152,7 +154,7 @@ void xbt_mutex_destroy(xbt_mutex_t mutex)
 
 /***** condition related functions *****/
 struct s_xbt_cond_ {
-  s_smx_cond_t cond; 
+  s_smx_cond_t cond;
 };
 
 xbt_cond_t xbt_cond_init(void)

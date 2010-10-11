@@ -24,7 +24,7 @@
 #include "xbt/dynar.h"
 
 XBT_PUBLIC_DATA(int) (*xbt_pid) ();
-int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
+int xbt_log_no_loc = 0;         /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 
 /** \addtogroup XBT_log
  *
@@ -463,7 +463,7 @@ This is on our TODO list for quite a while now, but your help would be
 welcome here, too.
 
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              *//*' */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              *//*' */
 
 
 xbt_log_appender_t xbt_log_default_appender = NULL;     /* set in log_init */
@@ -506,10 +506,10 @@ const char *xbt_log_priority_names[8] = {
 
 s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
   NULL /*parent */ , NULL /* firstChild */ , NULL /* nextSibling */ ,
-    "root", xbt_log_priority_uninitialized /* threshold */ ,
-    0 /* isThreshInherited */ ,
-    NULL /* appender */ , NULL /* layout */ ,
-    0                           /* additivity */
+      "root", xbt_log_priority_uninitialized /* threshold */ ,
+      0 /* isThreshInherited */ ,
+      NULL /* appender */ , NULL /* layout */ ,
+      0                         /* additivity */
 };
 
 XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
@@ -524,7 +524,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log, xbt,
 
 /* create the default appender and install it in the root category,
    which were already created (damnit. Too slow little beetle) */
-void xbt_log_preinit(void) {
+void xbt_log_preinit(void)
+{
   xbt_log_default_appender = xbt_log_appender_file_new(NULL);
   xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
   _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
@@ -535,7 +536,8 @@ void xbt_log_preinit(void) {
  *
  * xbt_log_control_set() is called on each string we got from cmd line
  */
-void xbt_log_init(int *argc, char **argv) {
+void xbt_log_init(int *argc, char **argv)
+{
   int i, j;
   char *opt;
 
@@ -552,8 +554,8 @@ void xbt_log_init(int *argc, char **argv) {
 
       if (strncmp(argv[i], "--log=", strlen("--log=")))
         WARN2
-          ("Option %.*s is deprecated and will disapear in the future. Use --log instead.",
-           (int) (strchr(argv[i], '=') - argv[i]), argv[i]);
+            ("Option %.*s is deprecated and will disapear in the future. Use --log instead.",
+             (int) (strchr(argv[i], '=') - argv[i]), argv[i]);
 
       opt = strchr(argv[i], '=');
       opt++;
@@ -672,7 +674,6 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category,
     DEBUG2("Set %p as appender of category '%s'",
            setting->appender, category->name);
   }
-
 #undef _xbt_log_cat_init
 }
 
@@ -708,7 +709,8 @@ int _xbt_log_cat_init(xbt_log_category_t category,
     DEBUG3("Set %s (%s) as father of %s ",
            category->parent->name,
            (category->parent->threshold == xbt_log_priority_uninitialized ?
-            "uninited" : xbt_log_priority_names[category->parent->threshold]),
+            "uninited" : xbt_log_priority_names[category->
+                                                parent->threshold]),
            category->name);
     xbt_log_parent_set(category, category->parent);
 
@@ -797,7 +799,8 @@ void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
 
   if (parent->threshold == xbt_log_priority_uninitialized) {
 
-    _xbt_log_cat_init(parent, xbt_log_priority_uninitialized /* ignored */ );
+    _xbt_log_cat_init(parent,
+                      xbt_log_priority_uninitialized /* ignored */ );
   }
 
   cat->threshold = parent->threshold;
@@ -899,7 +902,8 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
         *p -= 'a' - 'A';
       }
     }
-    if (!strcmp(neweq, "ON") || !strcmp(neweq, "YES") || !strcmp(neweq, "1")) {
+    if (!strcmp(neweq, "ON") || !strcmp(neweq, "YES")
+        || !strcmp(neweq, "1")) {
       set->additivity = 1;
     } else {
       set->additivity = 0;
@@ -921,7 +925,8 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   } else {
     char buff[512];
     snprintf(buff, min(512, eq - dot), "%s", dot + 1);
-    THROW1(arg_error, 0, "Unknown setting of the log category: '%s'", buff);
+    THROW1(arg_error, 0, "Unknown setting of the log category: '%s'",
+           buff);
   }
   set->catname = (char *) xbt_malloc(dot - name + 1);
 
@@ -990,8 +995,8 @@ void xbt_log_control_set(const char *control_string)
   DEBUG1("Parse log settings '%s'", control_string);
 
   /* Special handling of no_loc request, which asks for any file localization to be omitted (for tesh runs) */
-  if (!strcmp(control_string,"no_loc")) {
-    xbt_log_no_loc=1;
+  if (!strcmp(control_string, "no_loc")) {
+    xbt_log_no_loc = 1;
     return;
   }
   /* some initialization if this is the first time that this get called */
@@ -1013,7 +1018,8 @@ void xbt_log_control_set(const char *control_string)
     xbt_log_category_t cat = NULL;
 
     set = _xbt_log_parse_setting(str);
-    cat = _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT), set->catname);
+    cat =
+        _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT), set->catname);
 
     if (cat) {
       DEBUG0("Apply directly");
@@ -1042,8 +1048,9 @@ void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app)
 void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
 {
   if (!cat->appender) {
-    VERB1("No appender to category %s. Setting the file appender as default",
-          cat->name);
+    VERB1
+        ("No appender to category %s. Setting the file appender as default",
+         cat->name);
     xbt_log_appender_set(cat, xbt_log_appender_file_new(NULL));
   }
   if (cat->layout && cat != &_XBT_LOGV(root)) {

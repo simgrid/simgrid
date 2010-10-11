@@ -20,9 +20,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_file, gras_trp,
 void gras_trp_file_close(gras_socket_t sd);
 
 void gras_trp_file_chunk_send_raw(gras_socket_t sd,
-                                  const char *data, unsigned long int size);
-void gras_trp_file_chunk_send(gras_socket_t sd,
-                              const char *data,
+                                  const char *data,
+                                  unsigned long int size);
+void gras_trp_file_chunk_send(gras_socket_t sd, const char *data,
                               unsigned long int size, int stable_ignored);
 
 int gras_trp_file_chunk_recv(gras_socket_t sd,
@@ -81,8 +81,8 @@ gras_socket_t gras_socket_client_from_file(const char *path)
 
   if (strcmp("-", path)) {
     res->sd =
-      open(path, O_TRUNC | O_WRONLY | O_CREAT | O_BINARY,
-           S_IRUSR | S_IWUSR | S_IRGRP);
+        open(path, O_TRUNC | O_WRONLY | O_CREAT | O_BINARY,
+             S_IRUSR | S_IWUSR | S_IRGRP);
 
     if (res->sd < 0) {
       THROW2(system_error, 0,

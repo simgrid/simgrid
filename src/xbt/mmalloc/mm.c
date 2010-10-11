@@ -13,7 +13,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>	/* Prototypes for lseek, sbrk (maybe) */
+#include <unistd.h>             /* Prototypes for lseek, sbrk (maybe) */
 #endif
 #include "mcalloc.c"
 #include "mfree.c"

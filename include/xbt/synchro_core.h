@@ -30,11 +30,11 @@ SG_BEGIN_DECL()
  *  @{
  */
   /** \brief Thread data type (opaque structure) */
-     typedef struct s_xbt_thread_ *xbt_thread_t;
+typedef struct s_xbt_thread_ *xbt_thread_t;
 
 XBT_PUBLIC(xbt_thread_t) xbt_thread_create(const char *name,
                                            void_f_pvoid_t start_routine,
-                                           void *param,int joinable);
+                                           void *param, int joinable);
 XBT_PUBLIC(xbt_thread_t) xbt_thread_self(void);
 XBT_PUBLIC(const char *) xbt_thread_name(xbt_thread_t t);
 XBT_PUBLIC(const char *) xbt_thread_self_name(void);
@@ -49,7 +49,7 @@ XBT_PUBLIC(void) xbt_thread_yield(void);
 
 
   /** \brief Thread mutex data type (opaque structure) */
-     typedef struct s_xbt_mutex_ *xbt_mutex_t;
+typedef struct s_xbt_mutex_ *xbt_mutex_t;
 
 XBT_PUBLIC(xbt_mutex_t) xbt_mutex_init(void);
 XBT_PUBLIC(void) xbt_mutex_acquire(xbt_mutex_t mutex);
@@ -59,7 +59,7 @@ XBT_PUBLIC(void) xbt_mutex_destroy(xbt_mutex_t mutex);
 
 
   /** \brief Thread condition data type (opaque structure) */
-     typedef struct s_xbt_cond_ *xbt_cond_t;
+typedef struct s_xbt_cond_ *xbt_cond_t;
 
 XBT_PUBLIC(xbt_cond_t) xbt_cond_init(void);
 XBT_PUBLIC(void) xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex);
@@ -72,4 +72,4 @@ XBT_PUBLIC(void) xbt_cond_destroy(xbt_cond_t cond);
 /** @} */
 
 SG_END_DECL()
-#endif /* _XBT_THREAD_H */
+#endif                          /* _XBT_THREAD_H */

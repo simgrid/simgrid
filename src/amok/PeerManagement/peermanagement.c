@@ -54,7 +54,7 @@ static int amok_pm_cb_get(gras_msg_cb_ctx_t ctx, void *payload)
 static int amok_pm_cb_join(gras_msg_cb_ctx_t ctx, void *payload)
 {
   amok_pm_moddata_t g = gras_moddata_by_id(amok_pm_moddata_id);
-  char* group_name = *(char* *) payload;
+  char *group_name = *(char **) payload;
   xbt_dynar_t group = xbt_dict_get(g->groups, group_name);
   int rank;
 
@@ -64,7 +64,8 @@ static int amok_pm_cb_join(gras_msg_cb_ctx_t ctx, void *payload)
 
   rank = xbt_dynar_length(group);
   xbt_dynar_push(group, &dude);
-  VERB3("Contacted by %s:%d. Give it rank #%d", dude->name, dude->port,rank);
+  VERB3("Contacted by %s:%d. Give it rank #%d", dude->name, dude->port,
+        rank);
 
   gras_msg_rpcreturn(10, ctx, &rank);
   free(group_name);
@@ -181,8 +182,7 @@ int amok_pm_group_join(gras_socket_t master, const char *group_name)
   gras_msg_rpccall(master, 30, "amok_pm_join", &group_name, &rank);
   VERB4("Joined group '%s' on %s:%d. Got rank %d",
         group_name, gras_socket_peer_name(master),
-        gras_socket_peer_port(master),
-        rank);
+        gras_socket_peer_port(master), rank);
   return rank;
 }
 
@@ -236,15 +236,16 @@ static void _amok_pm_init(void)
   /* no world-wide globals */
   /* Datatype and message declarations */
   gras_datadesc_type_t pm_group_type =
-    gras_datadesc_dynar(gras_datadesc_by_name("xbt_peer_t"),
-                        xbt_peer_free_voidp);
+      gras_datadesc_dynar(gras_datadesc_by_name("xbt_peer_t"),
+                          xbt_peer_free_voidp);
 
   gras_msgtype_declare("amok_pm_kill", NULL);
   gras_msgtype_declare_rpc("amok_pm_killrpc", NULL, NULL);
 
   gras_msgtype_declare_rpc("amok_pm_get",
                            gras_datadesc_by_name("string"), pm_group_type);
-  gras_msgtype_declare_rpc("amok_pm_join", gras_datadesc_by_name("string"), gras_datadesc_by_name("int"));
+  gras_msgtype_declare_rpc("amok_pm_join", gras_datadesc_by_name("string"),
+                           gras_datadesc_by_name("int"));
   gras_msgtype_declare_rpc("amok_pm_leave",
                            gras_datadesc_by_name("string"), NULL);
 
@@ -297,9 +298,9 @@ static void _amok_pm_leave(void *p)
 
 void amok_pm_modulecreate()
 {
-  gras_module_add("amok_pm", sizeof(s_amok_pm_moddata_t), &amok_pm_moddata_id,
-                  _amok_pm_init, _amok_pm_exit, _amok_pm_join,
-                  _amok_pm_leave);
+  gras_module_add("amok_pm", sizeof(s_amok_pm_moddata_t),
+                  &amok_pm_moddata_id, _amok_pm_init, _amok_pm_exit,
+                  _amok_pm_join, _amok_pm_leave);
 }
 
 

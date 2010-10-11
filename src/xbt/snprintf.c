@@ -357,8 +357,8 @@
 #endif
 
 /* some other values of possible interest: */
-                                                                                                                                                                                                                                                                                                                                  /* #define breakeven_point  8 *//* VAX 4000          - vaxc */
-                                                                                                                                                                                                                                                                                                                                  /* #define breakeven_point 19 *//* VAX 4000          - gcc 2.7.0 */
+                                                                                                                                                                                                                                                                                                                                                                                                  /* #define breakeven_point  8 *//* VAX 4000          - vaxc */
+                                                                                                                                                                                                                                                                                                                                                                                                  /* #define breakeven_point 19 *//* VAX 4000          - gcc 2.7.0 */
 
 #ifndef breakeven_point
 #  define breakeven_point   6   /* some reasonable one-size-fits-all value */
@@ -417,7 +417,8 @@ int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
 int portable_snprintf(char *str, size_t str_m, const char *fmt, /*args */
                       ...);
 #if !defined(NEED_SNPRINTF_ONLY)
-int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap);
+int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
+                       va_list ap);
 #endif
 #endif
 
@@ -557,7 +558,8 @@ int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap)
 #if !defined(HAVE_SNPRINTF) || defined(PREFER_PORTABLE_SNPRINTF)
 
 #if !defined(NEED_SNPRINTF_ONLY)
-int portable_snprintf(char *str, size_t str_m, const char *fmt, /*args */ ...)
+int portable_snprintf(char *str, size_t str_m, const char *fmt, /*args */
+                      ...)
 {
   va_list ap;
   int str_l;
@@ -570,10 +572,12 @@ int portable_snprintf(char *str, size_t str_m, const char *fmt, /*args */ ...)
 #endif
 
 #if defined(NEED_SNPRINTF_ONLY)
-int portable_snprintf(char *str, size_t str_m, const char *fmt, /*args */ ...)
+int portable_snprintf(char *str, size_t str_m, const char *fmt, /*args */
+                      ...)
 {
 #else
-int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap)
+int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
+                       va_list ap)
 {
 #endif
 
@@ -937,7 +941,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap)
                      /* Actually it uses 0x prefix even for a zero value. */
                      && arg_sign != 0
 #endif
-              ) {
+                ) {
               tmp[str_arg_l++] = '0';
               tmp[str_arg_l++] = 'x';
             }
@@ -953,7 +957,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap)
                * converting a zero value with a precision of zero is a null string.
                * Actually HP returns all zeroes, and Linux returns "(nil)". */
 #endif
-            ) {
+              ) {
             /* converted to null string */
             /* When zero value is formatted with an explicit precision 0,
                the resulting formatted string is empty (d, i, u, o, x, X, p).   */
@@ -1027,7 +1031,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap)
                 && !(zero_padding_insertion_ind < str_arg_l
                      && tmp[zero_padding_insertion_ind] == '0')
 #endif
-              ) {               /* assure leading zero for alternate-form octal numbers */
+                ) {             /* assure leading zero for alternate-form octal numbers */
               if (!precision_specified || precision < num_of_digits + 1) {
                 /* precision is increased to force the first character to be zero,
                    except if a zero value is formatted with an explicit precision

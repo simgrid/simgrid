@@ -96,7 +96,8 @@ void bottleneck_solve(lmm_system_t sys)
       xbt_swag_foreach(elem, elem_list) {
         if (elem->variable->weight <= 0)
           break;
-        if ((elem->value > 0) && xbt_swag_belongs(elem->variable, var_list))
+        if ((elem->value > 0)
+            && xbt_swag_belongs(elem->variable, var_list))
           nb++;
       }
       DEBUG1("\tThere are %d variables", nb);
@@ -114,7 +115,8 @@ void bottleneck_solve(lmm_system_t sys)
     }
 
     xbt_swag_foreach_safe(var, var_next, var_list) {
-      double min_inc = var->cnsts[0].constraint->usage / var->cnsts[0].value;
+      double min_inc =
+          var->cnsts[0].constraint->usage / var->cnsts[0].value;
       for (i = 1; i < var->cnsts_number; i++) {
         lmm_element_t elm = &var->cnsts[i];
         min_inc = MIN(min_inc, elm->constraint->usage / elm->value);
@@ -137,12 +139,14 @@ void bottleneck_solve(lmm_system_t sys)
           break;
         if (cnst->shared) {
           DEBUG4("\tUpdate constraint %p (%g) with variable %p by %g",
-                 cnst, cnst->remaining, elem->variable, elem->variable->mu);
-          double_update(&(cnst->remaining), elem->value * elem->variable->mu);
+                 cnst, cnst->remaining, elem->variable,
+                 elem->variable->mu);
+          double_update(&(cnst->remaining),
+                        elem->value * elem->variable->mu);
         } else {
           DEBUG4
-            ("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g",
-             cnst, cnst->usage, elem->variable, elem->variable->mu);
+              ("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g",
+               cnst, cnst->usage, elem->variable, elem->variable->mu);
           cnst->usage = MIN(cnst->usage, elem->value * elem->variable->mu);
         }
       }

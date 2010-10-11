@@ -69,16 +69,16 @@ static int msgfilter_rpcID(gras_msg_t msg, void *ctx)
 {
   unsigned long int ID = *(unsigned long int *) ctx;
   int res = msg->ID == ID &&
-    (msg->kind == e_gras_msg_kind_rpcanswer
-     || msg->kind == e_gras_msg_kind_rpcerror);
+      (msg->kind == e_gras_msg_kind_rpcanswer
+       || msg->kind == e_gras_msg_kind_rpcerror);
   unsigned int cursor;
   gras_msg_cb_ctx_t rpc_ctx;
 
 
   DEBUG5
-    ("Filter a message of ID %lu, type '%s' and kind '%s'. Waiting for ID=%lu. %s",
-     msg->ID, msg->type->name, e_gras_msg_kind_names[msg->kind], ID,
-     res ? "take it" : "reject");
+      ("Filter a message of ID %lu, type '%s' and kind '%s'. Waiting for ID=%lu. %s",
+       msg->ID, msg->type->name, e_gras_msg_kind_names[msg->kind], ID,
+       res ? "take it" : "reject");
 
   if (res && !_gras_rpc_cancelled)
     return res;
@@ -87,8 +87,8 @@ static int msgfilter_rpcID(gras_msg_t msg, void *ctx)
   xbt_dynar_foreach(_gras_rpc_cancelled, cursor, rpc_ctx) {
     if (msg->ID == rpc_ctx->ID && msg->kind == e_gras_msg_kind_rpcanswer) {
       VERB1
-        ("Got an answer to the already canceled (timeouted?) RPC %ld. Ignore it (leaking the payload!).",
-         msg->ID);
+          ("Got an answer to the already canceled (timeouted?) RPC %ld. Ignore it (leaking the payload!).",
+           msg->ID);
       xbt_dynar_cursor_rm(_gras_rpc_cancelled, &cursor);
       return 1;
     }
@@ -128,7 +128,8 @@ gras_msg_rpc_async_call_(gras_socket_t server,
                 msgtype->name);
   } else {
     xbt_assert1(!request,
-                "No payload was declared for RPC type '%s'", msgtype->name);
+                "No payload was declared for RPC type '%s'",
+                msgtype->name);
   }
 
   ctx->ID = last_msg_ID++;
@@ -175,10 +176,11 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer)
     if (!_gras_rpc_cancelled)
       _gras_rpc_cancelled = xbt_dynar_new(sizeof(ctx), NULL);
     xbt_dynar_push(_gras_rpc_cancelled, &ctx);
-    INFO5("canceled RPC %ld pushed onto the stack (%s from %s:%d) Reason: %s",
-          ctx->ID, ctx->msgtype->name,
-          gras_socket_peer_name(ctx->expeditor),
-          gras_socket_peer_port(ctx->expeditor), e.msg);
+    INFO5
+        ("canceled RPC %ld pushed onto the stack (%s from %s:%d) Reason: %s",
+         ctx->ID, ctx->msgtype->name,
+         gras_socket_peer_name(ctx->expeditor),
+         gras_socket_peer_port(ctx->expeditor), e.msg);
     RETHROW;
   }
 
@@ -201,7 +203,8 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer)
     __xbt_ex_ctx()->ctx_ex.func = e.func;
     __xbt_ex_ctx()->ctx_ex.used = e.used;
     __xbt_ex_ctx()->ctx_ex.bt_strings = e.bt_strings;
-    memset(&__xbt_ex_ctx()->ctx_ex.bt, 0, sizeof(__xbt_ex_ctx()->ctx_ex.bt));
+    memset(&__xbt_ex_ctx()->ctx_ex.bt, 0,
+           sizeof(__xbt_ex_ctx()->ctx_ex.bt));
     DO_THROW(__xbt_ex_ctx()->ctx_ex);
   }
   memcpy(answer, received.payl, received.payl_size);
@@ -227,7 +230,8 @@ void gras_msg_rpccall_(gras_socket_t server,
  * some cleanups before leaving.
  */
 
-void gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx, void *answer)
+void gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,
+                        void *answer)
 {
   xbt_assert0(ctx->answer_due,
               "RPC return not allowed here. Either not a RPC message or already returned a result");

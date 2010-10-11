@@ -62,4 +62,4 @@ typedef struct surf_action_ti {
 #define ACTION_GET_CPU(action) ((cpu_ti_t)((surf_action_cpu_ti_t)action)->cpu)
 
 
-#endif /* _SURF_CPU_TI_PRIVATE_H */
+#endif                          /* _SURF_CPU_TI_PRIVATE_H */

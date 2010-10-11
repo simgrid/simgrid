@@ -20,7 +20,7 @@ extern "C" {
   int gtnets_create_flow(int src, int dst, long datasize, void *metadata);
   double gtnets_get_time_to_next_flow_completion();
   double gtnets_run_until_next_flow_completion(void ***metadata,
-                                            int *number_of_flows);
+                                               int *number_of_flows);
   double gtnets_get_flow_rx(void *metadata);
 
   void gtnets_print_topology(void);

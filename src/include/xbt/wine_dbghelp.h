@@ -719,21 +719,24 @@ extern "C" {
 #define SLMFLAG_VIRTUAL         0x1
 #define SLMFLAG_NO_SYMBOLS      0x4
 
-  typedef BOOL(CALLBACK * PENUMLOADED_MODULES_CALLBACK) (PSTR, ULONG, ULONG,
-                                                         PVOID);
+  typedef BOOL(CALLBACK * PENUMLOADED_MODULES_CALLBACK) (PSTR, ULONG,
+                                                         ULONG, PVOID);
   BOOL WINAPI EnumerateLoadedModules(HANDLE, PENUMLOADED_MODULES_CALLBACK,
                                      PVOID);
   typedef BOOL(CALLBACK * PENUMLOADED_MODULES_CALLBACK64) (PCSTR, DWORD64,
                                                            ULONG, PVOID);
-  BOOL WINAPI EnumerateLoadedModules64(HANDLE, PENUMLOADED_MODULES_CALLBACK64,
+  BOOL WINAPI EnumerateLoadedModules64(HANDLE,
+                                       PENUMLOADED_MODULES_CALLBACK64,
                                        PVOID);
-  typedef BOOL(CALLBACK * PENUMLOADED_MODULES_CALLBACKW64) (PCWSTR, DWORD64,
-                                                            ULONG, PVOID);
+  typedef BOOL(CALLBACK * PENUMLOADED_MODULES_CALLBACKW64) (PCWSTR,
+                                                            DWORD64, ULONG,
+                                                            PVOID);
   BOOL WINAPI EnumerateLoadedModulesW64(HANDLE,
                                         PENUMLOADED_MODULES_CALLBACKW64,
                                         PVOID);
   typedef BOOL(CALLBACK * PSYM_ENUMMODULES_CALLBACK) (PCSTR, ULONG, PVOID);
-  BOOL WINAPI SymEnumerateModules(HANDLE, PSYM_ENUMMODULES_CALLBACK, PVOID);
+  BOOL WINAPI SymEnumerateModules(HANDLE, PSYM_ENUMMODULES_CALLBACK,
+                                  PVOID);
   typedef BOOL(CALLBACK * PSYM_ENUMMODULES_CALLBACK64) (PCSTR, DWORD64,
                                                         PVOID);
   BOOL WINAPI SymEnumerateModules64(HANDLE, PSYM_ENUMMODULES_CALLBACK64,
@@ -751,8 +754,8 @@ extern "C" {
   DWORD WINAPI SymLoadModule(HANDLE, HANDLE, PCSTR, PCSTR, DWORD, DWORD);
   DWORD64 WINAPI SymLoadModule64(HANDLE, HANDLE, PCSTR, PCSTR, DWORD64,
                                  DWORD);
-  DWORD64 WINAPI SymLoadModuleEx(HANDLE, HANDLE, PCSTR, PCSTR, DWORD64, DWORD,
-                                 PMODLOAD_DATA, DWORD);
+  DWORD64 WINAPI SymLoadModuleEx(HANDLE, HANDLE, PCSTR, PCSTR, DWORD64,
+                                 DWORD, PMODLOAD_DATA, DWORD);
   DWORD64 WINAPI SymLoadModuleExW(HANDLE, HANDLE, PCWSTR, PCWSTR, DWORD64,
                                   DWORD, PMODLOAD_DATA, DWORD);
   BOOL WINAPI SymUnloadModule(HANDLE, DWORD);
@@ -915,8 +918,8 @@ extern "C" {
                                                             ULONG, PVOID);
   BOOL WINAPI SymEnumTypes(HANDLE, ULONG64, PSYM_ENUMERATESYMBOLS_CALLBACK,
                            PVOID);
-  BOOL WINAPI SymEnumTypesW(HANDLE, ULONG64, PSYM_ENUMERATESYMBOLS_CALLBACKW,
-                            PVOID);
+  BOOL WINAPI SymEnumTypesW(HANDLE, ULONG64,
+                            PSYM_ENUMERATESYMBOLS_CALLBACKW, PVOID);
   BOOL WINAPI SymFromAddr(HANDLE, DWORD64, DWORD64 *, SYMBOL_INFO *);
   BOOL WINAPI SymFromAddrW(HANDLE, DWORD64, DWORD64 *, SYMBOL_INFOW *);
   BOOL WINAPI SymFromToken(HANDLE, DWORD64, DWORD, PSYMBOL_INFO);
@@ -942,14 +945,14 @@ extern "C" {
                               PSYM_ENUMERATESYMBOLS_CALLBACKW, PVOID);
   typedef BOOL(CALLBACK * PSYM_ENUMSYMBOLS_CALLBACK) (PCSTR, DWORD, ULONG,
                                                       PVOID);
-  typedef BOOL(CALLBACK * PSYM_ENUMSYMBOLS_CALLBACKW) (PCWSTR, DWORD, ULONG,
-                                                       PVOID);
+  typedef BOOL(CALLBACK * PSYM_ENUMSYMBOLS_CALLBACKW) (PCWSTR, DWORD,
+                                                       ULONG, PVOID);
   BOOL WINAPI SymEnumerateSymbols(HANDLE, ULONG, PSYM_ENUMSYMBOLS_CALLBACK,
                                   PVOID);
-  BOOL WINAPI SymEnumerateSymbolsW(HANDLE, ULONG, PSYM_ENUMSYMBOLS_CALLBACKW,
-                                   PVOID);
-  typedef BOOL(CALLBACK * PSYM_ENUMSYMBOLS_CALLBACK64) (PCSTR, DWORD64, ULONG,
-                                                        PVOID);
+  BOOL WINAPI SymEnumerateSymbolsW(HANDLE, ULONG,
+                                   PSYM_ENUMSYMBOLS_CALLBACKW, PVOID);
+  typedef BOOL(CALLBACK * PSYM_ENUMSYMBOLS_CALLBACK64) (PCSTR, DWORD64,
+                                                        ULONG, PVOID);
   typedef BOOL(CALLBACK * PSYM_ENUMSYMBOLS_CALLBACK64W) (PCWSTR, DWORD64,
                                                          ULONG, PVOID);
   BOOL WINAPI SymEnumerateSymbols64(HANDLE, ULONG64,
@@ -959,12 +962,15 @@ extern "C" {
   BOOL WINAPI SymEnumSymbolsForAddr(HANDLE, DWORD64,
                                     PSYM_ENUMERATESYMBOLS_CALLBACK, PVOID);
   BOOL WINAPI SymEnumSymbolsForAddrW(HANDLE, DWORD64,
-                                     PSYM_ENUMERATESYMBOLS_CALLBACKW, PVOID);
-  typedef BOOL(CALLBACK * PSYMBOL_REGISTERED_CALLBACK) (HANDLE, ULONG, PVOID,
-                                                        PVOID);
-  BOOL WINAPI SymRegisterCallback(HANDLE, PSYMBOL_REGISTERED_CALLBACK, PVOID);
+                                     PSYM_ENUMERATESYMBOLS_CALLBACKW,
+                                     PVOID);
+  typedef BOOL(CALLBACK * PSYMBOL_REGISTERED_CALLBACK) (HANDLE, ULONG,
+                                                        PVOID, PVOID);
+  BOOL WINAPI SymRegisterCallback(HANDLE, PSYMBOL_REGISTERED_CALLBACK,
+                                  PVOID);
   typedef BOOL(CALLBACK * PSYMBOL_REGISTERED_CALLBACK64) (HANDLE, ULONG,
-                                                          ULONG64, ULONG64);
+                                                          ULONG64,
+                                                          ULONG64);
   BOOL WINAPI SymRegisterCallback64(HANDLE, PSYMBOL_REGISTERED_CALLBACK64,
                                     ULONG64);
   BOOL WINAPI SymRegisterCallbackW64(HANDLE, PSYMBOL_REGISTERED_CALLBACK64,
@@ -985,14 +991,16 @@ extern "C" {
   BOOL WINAPI SymFromIndex(HANDLE, ULONG64, DWORD, PSYMBOL_INFO);
   BOOL WINAPI SymFromIndexW(HANDLE, ULONG64, DWORD, PSYMBOL_INFOW);
   BOOL WINAPI SymAddSymbol(HANDLE, ULONG64, PCSTR, DWORD64, DWORD, DWORD);
-  BOOL WINAPI SymAddSymbolW(HANDLE, ULONG64, PCWSTR, DWORD64, DWORD, DWORD);
+  BOOL WINAPI SymAddSymbolW(HANDLE, ULONG64, PCWSTR, DWORD64, DWORD,
+                            DWORD);
   BOOL WINAPI SymDeleteSymbol(HANDLE, ULONG64, PCSTR, DWORD64, DWORD);
   BOOL WINAPI SymDeleteSymbolW(HANDLE, ULONG64, PCWSTR, DWORD64, DWORD);
 
 /*************************
  *      Source Files     *
  *************************/
-  typedef BOOL(CALLBACK * PSYM_ENUMSOURCEFILES_CALLBACK) (PSOURCEFILE, PVOID);
+  typedef BOOL(CALLBACK * PSYM_ENUMSOURCEFILES_CALLBACK) (PSOURCEFILE,
+                                                          PVOID);
   typedef BOOL(CALLBACK * PSYM_ENUMSOURCEFILES_CALLBACKW) (PSOURCEFILEW,
                                                            PVOID);
 
@@ -1002,7 +1010,8 @@ extern "C" {
                                   PSYM_ENUMSOURCEFILES_CALLBACKW, PVOID);
   BOOL WINAPI SymGetLineFromAddr(HANDLE, DWORD, PDWORD, PIMAGEHLP_LINE);
   BOOL WINAPI SymGetLineFromAddrW(HANDLE, DWORD, PDWORD, PIMAGEHLP_LINEW);
-  BOOL WINAPI SymGetLineFromAddr64(HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64);
+  BOOL WINAPI SymGetLineFromAddr64(HANDLE, DWORD64, PDWORD,
+                                   PIMAGEHLP_LINE64);
   BOOL WINAPI SymGetLineFromAddrW64(HANDLE, DWORD64, PDWORD,
                                     PIMAGEHLP_LINEW64);
   BOOL WINAPI SymGetLinePrev(HANDLE, PIMAGEHLP_LINE);
@@ -1019,19 +1028,22 @@ extern "C" {
                                    PIMAGEHLP_LINE64);
   BOOL WINAPI SymGetLineFromNameW64(HANDLE, PCWSTR, PCWSTR, DWORD, PLONG,
                                     PIMAGEHLP_LINEW64);
-  ULONG WINAPI SymGetFileLineOffsets64(HANDLE, PCSTR, PCSTR, PDWORD64, ULONG);
+  ULONG WINAPI SymGetFileLineOffsets64(HANDLE, PCSTR, PCSTR, PDWORD64,
+                                       ULONG);
   BOOL WINAPI SymGetSourceFile(HANDLE, ULONG64, PCSTR, PCSTR, PSTR, DWORD);
   BOOL WINAPI SymGetSourceFileW(HANDLE, ULONG64, PCWSTR, PCWSTR, PWSTR,
                                 DWORD);
-  BOOL WINAPI SymGetSourceFileToken(HANDLE, ULONG64, PCSTR, PVOID *, DWORD *);
+  BOOL WINAPI SymGetSourceFileToken(HANDLE, ULONG64, PCSTR, PVOID *,
+                                    DWORD *);
   BOOL WINAPI SymGetSourceFileTokenW(HANDLE, ULONG64, PCWSTR, PVOID *,
                                      DWORD *);
   BOOL WINAPI SymGetSourceFileFromToken(HANDLE, PVOID, PCSTR, PSTR, DWORD);
-  BOOL WINAPI SymGetSourceFileFromTokenW(HANDLE, PVOID, PCWSTR, PWSTR, DWORD);
+  BOOL WINAPI SymGetSourceFileFromTokenW(HANDLE, PVOID, PCWSTR, PWSTR,
+                                         DWORD);
   BOOL WINAPI SymGetSourceVarFromToken(HANDLE, PVOID, PCSTR, PCSTR, PSTR,
                                        DWORD);
-  BOOL WINAPI SymGetSourceVarFromTokenW(HANDLE, PVOID, PCWSTR, PCWSTR, PWSTR,
-                                        DWORD);
+  BOOL WINAPI SymGetSourceVarFromTokenW(HANDLE, PVOID, PCWSTR, PCWSTR,
+                                        PWSTR, DWORD);
 
   typedef struct _SRCCODEINFO {
     DWORD SizeOfStruct;
@@ -1059,8 +1071,8 @@ extern "C" {
                            PSYM_ENUMLINES_CALLBACK, PVOID);
   BOOL WINAPI SymEnumLinesW(HANDLE, ULONG64, PCWSTR, PCWSTR,
                             PSYM_ENUMLINES_CALLBACKW, PVOID);
-  BOOL WINAPI SymEnumSourceLines(HANDLE, ULONG64, PCSTR, PCSTR, DWORD, DWORD,
-                                 PSYM_ENUMLINES_CALLBACK, PVOID);
+  BOOL WINAPI SymEnumSourceLines(HANDLE, ULONG64, PCSTR, PCSTR, DWORD,
+                                 DWORD, PSYM_ENUMLINES_CALLBACK, PVOID);
   BOOL WINAPI SymEnumSourceLinesW(HANDLE, ULONG64, PCWSTR, PCWSTR, DWORD,
                                   DWORD, PSYM_ENUMLINES_CALLBACKW, PVOID);
 
@@ -1072,8 +1084,10 @@ extern "C" {
   BOOL WINAPI SymCleanup(HANDLE);
 
   HANDLE WINAPI FindDebugInfoFile(PCSTR, PCSTR, PSTR);
-  typedef BOOL(CALLBACK * PFIND_DEBUG_FILE_CALLBACK) (HANDLE, PCSTR, PVOID);
-  typedef BOOL(CALLBACK * PFIND_DEBUG_FILE_CALLBACKW) (HANDLE, PCWSTR, PVOID);
+  typedef BOOL(CALLBACK * PFIND_DEBUG_FILE_CALLBACK) (HANDLE, PCSTR,
+                                                      PVOID);
+  typedef BOOL(CALLBACK * PFIND_DEBUG_FILE_CALLBACKW) (HANDLE, PCWSTR,
+                                                       PVOID);
   HANDLE WINAPI FindDebugInfoFileEx(PCSTR, PCSTR, PSTR,
                                     PFIND_DEBUG_FILE_CALLBACK, PVOID);
   HANDLE WINAPI FindDebugInfoFileExW(PCWSTR, PCWSTR, PWSTR,
@@ -1084,16 +1098,18 @@ extern "C" {
                                       PFIND_DEBUG_FILE_CALLBACKW, PVOID);
   typedef BOOL(CALLBACK * PFINDFILEINPATHCALLBACK) (PCSTR, PVOID);
   typedef BOOL(CALLBACK * PFINDFILEINPATHCALLBACKW) (PCWSTR, PVOID);
-  BOOL WINAPI FindFileInPath(HANDLE, PCSTR, PCSTR, PVOID, DWORD, DWORD, DWORD,
-                             PSTR, PFINDFILEINPATHCALLBACK, PVOID);
+  BOOL WINAPI FindFileInPath(HANDLE, PCSTR, PCSTR, PVOID, DWORD, DWORD,
+                             DWORD, PSTR, PFINDFILEINPATHCALLBACK, PVOID);
   BOOL WINAPI SymFindFileInPath(HANDLE, PCSTR, PCSTR, PVOID, DWORD, DWORD,
-                                DWORD, PSTR, PFINDFILEINPATHCALLBACK, PVOID);
-  BOOL WINAPI SymFindFileInPathW(HANDLE, PCWSTR, PCWSTR, PVOID, DWORD, DWORD,
-                                 DWORD, PWSTR, PFINDFILEINPATHCALLBACKW,
-                                 PVOID);
+                                DWORD, PSTR, PFINDFILEINPATHCALLBACK,
+                                PVOID);
+  BOOL WINAPI SymFindFileInPathW(HANDLE, PCWSTR, PCWSTR, PVOID, DWORD,
+                                 DWORD, DWORD, PWSTR,
+                                 PFINDFILEINPATHCALLBACKW, PVOID);
   HANDLE WINAPI FindExecutableImage(PCSTR, PCSTR, PSTR);
   typedef BOOL(CALLBACK * PFIND_EXE_FILE_CALLBACK) (HANDLE, PCSTR, PVOID);
-  typedef BOOL(CALLBACK * PFIND_EXE_FILE_CALLBACKW) (HANDLE, PCWSTR, PVOID);
+  typedef BOOL(CALLBACK * PFIND_EXE_FILE_CALLBACKW) (HANDLE, PCWSTR,
+                                                     PVOID);
   HANDLE WINAPI FindExecutableImageEx(PCSTR, PCSTR, PSTR,
                                       PFIND_EXE_FILE_CALLBACK, PVOID);
   HANDLE WINAPI FindExecutableImageExW(PCWSTR, PCWSTR, PWSTR,
@@ -1120,8 +1136,8 @@ extern "C" {
   BOOL WINAPI SearchTreeForFileW(PCWSTR, PCWSTR, PWSTR);
   typedef BOOL(CALLBACK * PENUMDIRTREE_CALLBACK) (PCSTR, PVOID);
   typedef BOOL(CALLBACK * PENUMDIRTREE_CALLBACKW) (PCWSTR, PVOID);
-  BOOL WINAPI EnumDirTree(HANDLE, PCSTR, PCSTR, PSTR, PENUMDIRTREE_CALLBACK,
-                          PVOID);
+  BOOL WINAPI EnumDirTree(HANDLE, PCSTR, PCSTR, PSTR,
+                          PENUMDIRTREE_CALLBACK, PVOID);
   BOOL WINAPI EnumDirTreeW(HANDLE, PCWSTR, PCWSTR, PWSTR,
                            PENUMDIRTREE_CALLBACKW, PVOID);
   BOOL WINAPI SymMatchFileName(PCSTR, PCSTR, PSTR *, PSTR *);
@@ -1138,7 +1154,8 @@ extern "C" {
 /*************************
  *   Context management  *
  *************************/
-  BOOL WINAPI SymSetContext(HANDLE, PIMAGEHLP_STACK_FRAME, PIMAGEHLP_CONTEXT);
+  BOOL WINAPI SymSetContext(HANDLE, PIMAGEHLP_STACK_FRAME,
+                            PIMAGEHLP_CONTEXT);
 
 
 /*************************
@@ -1196,7 +1213,7 @@ extern "C" {
   } STACKFRAME64, *LPSTACKFRAME64;
 
   typedef BOOL(CALLBACK * PREAD_PROCESS_MEMORY_ROUTINE)
-    (HANDLE, DWORD, PVOID, DWORD, PDWORD);
+   (HANDLE, DWORD, PVOID, DWORD, PDWORD);
   typedef PVOID(CALLBACK * PFUNCTION_TABLE_ACCESS_ROUTINE) (HANDLE, DWORD);
   typedef DWORD(CALLBACK * PGET_MODULE_BASE_ROUTINE) (HANDLE, DWORD);
   typedef DWORD(CALLBACK * PTRANSLATE_ADDRESS_ROUTINE) (HANDLE, HANDLE,
@@ -1204,10 +1221,11 @@ extern "C" {
   BOOL WINAPI StackWalk(DWORD, HANDLE, HANDLE, LPSTACKFRAME, PVOID,
                         PREAD_PROCESS_MEMORY_ROUTINE,
                         PFUNCTION_TABLE_ACCESS_ROUTINE,
-                        PGET_MODULE_BASE_ROUTINE, PTRANSLATE_ADDRESS_ROUTINE);
+                        PGET_MODULE_BASE_ROUTINE,
+                        PTRANSLATE_ADDRESS_ROUTINE);
 
   typedef BOOL(CALLBACK * PREAD_PROCESS_MEMORY_ROUTINE64)
-    (HANDLE, DWORD64, PVOID, DWORD, PDWORD);
+   (HANDLE, DWORD64, PVOID, DWORD, PDWORD);
   typedef PVOID(CALLBACK * PFUNCTION_TABLE_ACCESS_ROUTINE64) (HANDLE,
                                                               DWORD64);
   typedef DWORD64(CALLBACK * PGET_MODULE_BASE_ROUTINE64) (HANDLE, DWORD64);
@@ -1222,7 +1240,8 @@ extern "C" {
   PVOID WINAPI SymFunctionTableAccess(HANDLE, DWORD);
   PVOID WINAPI SymFunctionTableAccess64(HANDLE, DWORD64);
 
-  typedef PVOID(CALLBACK * PSYMBOL_FUNCENTRY_CALLBACK) (HANDLE, DWORD, PVOID);
+  typedef PVOID(CALLBACK * PSYMBOL_FUNCENTRY_CALLBACK) (HANDLE, DWORD,
+                                                        PVOID);
   typedef PVOID(CALLBACK * PSYMBOL_FUNCENTRY_CALLBACK64) (HANDLE, ULONG64,
                                                           ULONG64);
 
@@ -1298,8 +1317,8 @@ extern "C" {
  * Version, global stuff *
  *************************/
 
-  typedef BOOL(WINAPI * PSYMBOLSERVERPROC) (PCSTR, PCSTR, PVOID, DWORD, DWORD,
-                                            PSTR);
+  typedef BOOL(WINAPI * PSYMBOLSERVERPROC) (PCSTR, PCSTR, PVOID, DWORD,
+                                            DWORD, PSTR);
   typedef BOOL(WINAPI * PSYMBOLSERVERPROCA) (PCSTR, PCSTR, PVOID, DWORD,
                                              DWORD, PSTR);
   typedef BOOL(WINAPI * PSYMBOLSERVERPROCW) (PCWSTR, PCWSTR, PVOID, DWORD,

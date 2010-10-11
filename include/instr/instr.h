@@ -25,20 +25,31 @@
 #define TRACE_ERROR_FILE_OPEN 401
 #define TRACE_ERROR_START 500
 
-XBT_PUBLIC(int) TRACE_start (void);
-XBT_PUBLIC(int) TRACE_end (void);
-XBT_PUBLIC(int) TRACE_category (const char *category);
-XBT_PUBLIC(void) TRACE_define_type (const char *type, const char *parent_type, int final);
-XBT_PUBLIC(int) TRACE_create_category (const char *category, const char *type, const char *parent_category);
-XBT_PUBLIC(void) TRACE_msg_set_task_category (m_task_t task, const char *category);
-XBT_PUBLIC(void) TRACE_msg_set_process_category (m_process_t process, const char *category);
-XBT_PUBLIC(void) TRACE_set_mask (int mask);
-XBT_PUBLIC(void) TRACE_user_host_variable (double time, const char *variable, double value, const char *what);
-XBT_PUBLIC(void) TRACE_user_link_variable (double time, const char *src, const char *dst, const char *variable, double value, const char *what);
-XBT_PUBLIC(void) TRACE_declare_mark (const char *mark_type);
-XBT_PUBLIC(void) TRACE_mark (const char *mark_type, const char *mark_value);
-XBT_PUBLIC(int) TRACE_smpi_set_category (const char *category);
-XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task, const char *category);
+XBT_PUBLIC(int) TRACE_start(void);
+XBT_PUBLIC(int) TRACE_end(void);
+XBT_PUBLIC(int) TRACE_category(const char *category);
+XBT_PUBLIC(void) TRACE_define_type(const char *type,
+                                   const char *parent_type, int final);
+XBT_PUBLIC(int) TRACE_create_category(const char *category,
+                                      const char *type,
+                                      const char *parent_category);
+XBT_PUBLIC(void) TRACE_msg_set_task_category(m_task_t task,
+                                             const char *category);
+XBT_PUBLIC(void) TRACE_msg_set_process_category(m_process_t process,
+                                                const char *category);
+XBT_PUBLIC(void) TRACE_set_mask(int mask);
+XBT_PUBLIC(void) TRACE_user_host_variable(double time,
+                                          const char *variable,
+                                          double value, const char *what);
+XBT_PUBLIC(void) TRACE_user_link_variable(double time, const char *src,
+                                          const char *dst,
+                                          const char *variable,
+                                          double value, const char *what);
+XBT_PUBLIC(void) TRACE_declare_mark(const char *mark_type);
+XBT_PUBLIC(void) TRACE_mark(const char *mark_type, const char *mark_value);
+XBT_PUBLIC(int) TRACE_smpi_set_category(const char *category);
+XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task,
+                                            const char *category);
 
 #define TRACE_host_variable_declare(var) \
 	TRACE_user_host_variable(0,var,0,"declare");
@@ -82,7 +93,7 @@ XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task, const char *category
 #define TRACE_link_variable_sub(src,dst,var,value) \
 	TRACE_user_link_variable(MSG_get_clock(),src,dst,var,value,"sub");
 
-#else /* HAVE_TRACING */
+#else                           /* HAVE_TRACING */
 
 #define TRACE_start()
 #define TRACE_end()
@@ -112,6 +123,6 @@ XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task, const char *category
 #define TRACE_smpi_set_category(cat)
 #define TRACE_sd_set_task_category(task,cat)
 
-#endif /* HAVE_TRACING */
+#endif                          /* HAVE_TRACING */
 
-#endif /* INSTR_H_ */
+#endif                          /* INSTR_H_ */

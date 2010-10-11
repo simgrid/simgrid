@@ -65,13 +65,13 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list,
     if (double_positive(tmp - cnst->bound)) {
       if (warn)
         WARN3
-          ("The link (%p) is over-used. Expected less than %f and got %f",
-           cnst, cnst->bound, tmp);
+            ("The link (%p) is over-used. Expected less than %f and got %f",
+             cnst, cnst->bound, tmp);
       return 0;
     }
     DEBUG3
-      ("Checking feasability for constraint (%p): sat = %f, lambda = %f ",
-       cnst, tmp - cnst->bound, cnst->lambda);
+        ("Checking feasability for constraint (%p): sat = %f, lambda = %f ",
+         cnst, tmp - cnst->bound, cnst->lambda);
   }
 
   xbt_swag_foreach(var, var_list) {
@@ -85,8 +85,8 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list,
     if (double_positive(var->value - var->bound)) {
       if (warn)
         WARN3
-          ("The variable (%p) is too large. Expected less than %f and got %f",
-           var, var->bound, var->value);
+            ("The variable (%p) is too large. Expected less than %f and got %f",
+             var, var->bound, var->value);
       return 0;
     }
   }
@@ -147,14 +147,14 @@ static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
     DEBUG2("var %p : sigma_i = %1.20f", var, sigma_i);
 
     obj += var->func_f(var, var->func_fpi(var, sigma_i)) -
-      sigma_i * var->func_fpi(var, sigma_i);
+        sigma_i * var->func_fpi(var, sigma_i);
 
     if (var->bound > 0)
       obj += var->mu * var->bound;
   }
 
   xbt_swag_foreach(cnst, cnst_list)
-    obj += cnst->lambda * cnst->bound;
+      obj += cnst->lambda * cnst->bound;
 
   return obj;
 }
@@ -189,7 +189,8 @@ void lagrange_solve(lmm_system_t sys)
 
   DEBUG0("Iterative method configuration snapshot =====>");
   DEBUG1("#### Maximum number of iterations       : %d", max_iterations);
-  DEBUG1("#### Minimum error tolerated            : %e", epsilon_min_error);
+  DEBUG1("#### Minimum error tolerated            : %e",
+         epsilon_min_error);
   DEBUG1("#### Minimum error tolerated (dichotomy) : %e",
          dichotomy_min_error);
 
@@ -290,8 +291,8 @@ void lagrange_solve(lmm_system_t sys)
     xbt_swag_foreach(cnst, cnst_list) {
       DEBUG1("Working on cnst (%p)", cnst);
       cnst->new_lambda =
-        dichotomy(cnst->lambda, partial_diff_lambda, cnst,
-                  dichotomy_min_error);
+          dichotomy(cnst->lambda, partial_diff_lambda, cnst,
+                    dichotomy_min_error);
 /*       dual_updated += (fabs(cnst->new_lambda-cnst->lambda)>dichotomy_min_error); */
 /*       DEBUG2("dual_updated (%d) : %1.20f",dual_updated,fabs(cnst->new_lambda-cnst->lambda)); */
       DEBUG3("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f",
@@ -319,7 +320,7 @@ void lagrange_solve(lmm_system_t sys)
         tmp = new_value(var);
 
         overall_modification =
-          MAX(overall_modification, fabs(var->value - tmp));
+            MAX(overall_modification, fabs(var->value - tmp));
 
         var->value = tmp;
         DEBUG3("New value of var (%p)  = %e, overall_modification = %e",
@@ -345,8 +346,8 @@ void lagrange_solve(lmm_system_t sys)
   }
   if (iteration >= max_iterations) {
     DEBUG1
-      ("Method reach %d iterations, which is the maximum number of iterations allowed.",
-       iteration);
+        ("Method reach %d iterations, which is the maximum number of iterations allowed.",
+         iteration);
   }
 /*   INFO1("Method converged after %d iterations", iteration); */
 
@@ -422,7 +423,8 @@ static double dichotomy(double init, double diff(double, void *),
       }
     } else if (min_diff < 0 && max_diff > 0) {
       middle = (max + min) / 2.0;
-      CDEBUG1(surf_lagrange_dichotomy, "Trying (max+min)/2 : %1.20f", middle);
+      CDEBUG1(surf_lagrange_dichotomy, "Trying (max+min)/2 : %1.20f",
+              middle);
 
       if ((min == middle) || (max == middle)) {
         CWARN4(surf_lagrange_dichotomy,
@@ -495,7 +497,8 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
     if (var->weight <= 0)
       continue;
 
-    CDEBUG1(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)", var);
+    CDEBUG1(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)",
+            var);
     // Initialize the summation variable
     sigma_i = 0.0;
 
@@ -537,12 +540,12 @@ void lmm_set_default_protocol_function(double (*func_f)
 
 
 
-                                        
-                                       (lmm_variable_t var, double x),
-                                       double (*func_fp) (lmm_variable_t var,
-                                                          double x),
-                                       double (*func_fpi) (lmm_variable_t var,
-                                                           double x))
+
+                                        (lmm_variable_t var, double x),
+                                       double (*func_fp) (lmm_variable_t
+                                                          var, double x),
+                                       double (*func_fpi) (lmm_variable_t
+                                                           var, double x))
 {
   func_f_def = func_f;
   func_fp_def = func_fp;
@@ -591,13 +594,14 @@ double func_reno_f(lmm_variable_t var, double x)
 {
   xbt_assert0(var->weight > 0.0, "Don't call me with stupid values!");
 
-  return RENO_SCALING * sqrt(3.0 / 2.0) / var->weight * atan(sqrt(3.0 / 2.0) *
-                                                             var->weight * x);
+  return RENO_SCALING * sqrt(3.0 / 2.0) / var->weight *
+      atan(sqrt(3.0 / 2.0) * var->weight * x);
 }
 
 double func_reno_fp(lmm_variable_t var, double x)
 {
-  return RENO_SCALING * 3.0 / (3.0 * var->weight * var->weight * x * x + 2.0);
+  return RENO_SCALING * 3.0 / (3.0 * var->weight * var->weight * x * x +
+                               2.0);
 }
 
 double func_reno_fpi(lmm_variable_t var, double x)
@@ -608,8 +612,8 @@ double func_reno_fpi(lmm_variable_t var, double x)
   xbt_assert0(x > 0.0, "Don't call me with stupid values!");
 
   res_fpi =
-    1.0 / (var->weight * var->weight * (x / RENO_SCALING)) -
-    2.0 / (3.0 * var->weight * var->weight);
+      1.0 / (var->weight * var->weight * (x / RENO_SCALING)) -
+      2.0 / (3.0 * var->weight * var->weight);
   if (res_fpi <= 0.0)
     return 0.0;
 /*   xbt_assert0(res_fpi>0.0,"Don't call me with stupid values!"); */

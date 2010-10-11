@@ -47,8 +47,9 @@ int gras_procdata_add(const char *name, pvoid_f_void_t constructor,
 
   if (!_gras_procdata_fabrics) {
     /* create the dynar if needed */
-    _gras_procdata_fabrics = xbt_dynar_new(sizeof(s_gras_procdata_fabric_t),
-                                           gras_procdata_fabric_free);
+    _gras_procdata_fabrics =
+        xbt_dynar_new(sizeof(s_gras_procdata_fabric_t),
+                      gras_procdata_fabric_free);
   }
 
   fab = xbt_dynar_push_ptr(_gras_procdata_fabrics);
@@ -89,7 +90,8 @@ void *gras_libdata_by_name_from_procdata(const char *name,
 {
   void *res = NULL;
   xbt_ex_t e;
-  if (xbt_set_length(pd->libdata) < xbt_dynar_length(_gras_procdata_fabrics)) {
+  if (xbt_set_length(pd->libdata) <
+      xbt_dynar_length(_gras_procdata_fabrics)) {
     /* Damn, some new modules were added since procdata_init(). Amok? */
     /* Get 'em all */
     gras_procdata_init();
@@ -106,7 +108,8 @@ void *gras_libdata_by_name_from_procdata(const char *name,
 void *gras_libdata_by_id(int id)
 {
   gras_procdata_t *pd = gras_procdata_get();
-  if (xbt_set_length(pd->libdata) < xbt_dynar_length(_gras_procdata_fabrics)) {
+  if (xbt_set_length(pd->libdata) <
+      xbt_dynar_length(_gras_procdata_fabrics)) {
     /* Damn, some new modules were added since procdata_init(). Amok? */
     /* Get 'em all */
     gras_procdata_init();
@@ -153,16 +156,16 @@ void gras_procdata_init()
       found = 0;
     }
     if (found)
-      THROW1(unknown_error, 0, "MayDay: two modules use '%s' as libdata name",
-             fab.name);
+      THROW1(unknown_error, 0,
+             "MayDay: two modules use '%s' as libdata name", fab.name);
 
     /* Add the data in place, after some more sanity checking */
     elem = (*(fab.constructor)) ();
     if (elem->name_len && elem->name_len != strlen(elem->name)) {
       elem->name_len = strlen(elem->name);
       WARN1
-        ("Module '%s' constructor is borken: it does not set elem->name_len",
-         fab.name);
+          ("Module '%s' constructor is borken: it does not set elem->name_len",
+           fab.name);
     }
     xbt_set_add(pd->libdata, elem, fab.destructor);
   }

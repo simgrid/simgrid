@@ -21,11 +21,11 @@ not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include <sys/types.h>
-#include <fcntl.h> /* After sys/types.h, at least for dpx/2.  */
+#include <fcntl.h>              /* After sys/types.h, at least for dpx/2.  */
 #include <sys/stat.h>
 #include <string.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>	/* Prototypes for lseek */
+#include <unistd.h>             /* Prototypes for lseek */
 #endif
 #include "mmprivate.h"
 
@@ -36,7 +36,7 @@ Boston, MA 02111-1307, USA.  */
 
 /* Forward declarations/prototypes for local functions */
 
-static struct mdesc *reuse (int fd);
+static struct mdesc *reuse(int fd);
 
 /* Initialize access to a mmalloc managed region.
 
@@ -68,10 +68,11 @@ static struct mdesc *reuse (int fd);
 
    On failure returns NULL. */
 
-void * mmalloc_attach (int fd, void *baseaddr) {
+void *mmalloc_attach(int fd, void *baseaddr)
+{
   struct mdesc mtemp;
   struct mdesc *mdp;
-  void* mbase;
+  void *mbase;
   struct stat sbuf;
 
   /* First check to see if FD is a valid file descriptor, and if so, see
@@ -81,13 +82,12 @@ void * mmalloc_attach (int fd, void *baseaddr) {
      obsolete version, or any other reason, then we fail to attach to
      this file. */
 
-  if (fd >= 0)
-  {
-    if (fstat (fd, &sbuf) < 0)
+  if (fd >= 0) {
+    if (fstat(fd, &sbuf) < 0)
       return (NULL);
 
     else if (sbuf.st_size > 0)
-      return ((void*) reuse (fd));
+      return ((void *) reuse(fd));
   }
 
   /* If the user provided NULL BASEADDR then fail */
@@ -100,19 +100,19 @@ void * mmalloc_attach (int fd, void *baseaddr) {
      then initialize the fields that we know values for. */
 
   mdp = &mtemp;
-  memset ((char *) mdp, 0, sizeof (mtemp));
-  strncpy (mdp -> magic, MMALLOC_MAGIC, MMALLOC_MAGIC_SIZE);
-  mdp -> headersize = sizeof (mtemp);
-  mdp -> version = MMALLOC_VERSION;
-  mdp -> morecore = __mmalloc_mmap_morecore;
-  mdp -> fd = fd;
-  mdp -> base = mdp -> breakval = mdp -> top = baseaddr;
+  memset((char *) mdp, 0, sizeof(mtemp));
+  strncpy(mdp->magic, MMALLOC_MAGIC, MMALLOC_MAGIC_SIZE);
+  mdp->headersize = sizeof(mtemp);
+  mdp->version = MMALLOC_VERSION;
+  mdp->morecore = __mmalloc_mmap_morecore;
+  mdp->fd = fd;
+  mdp->base = mdp->breakval = mdp->top = baseaddr;
 
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then we go for an anonymous map */
 
-  if(mdp -> fd < 0)
-    mdp -> flags |= MMALLOC_ANONYMOUS;
+  if (mdp->fd < 0)
+    mdp->flags |= MMALLOC_ANONYMOUS;
 
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then open /dev/zero and use that to map to. */
@@ -122,25 +122,22 @@ void * mmalloc_attach (int fd, void *baseaddr) {
      fails, then close the file descriptor if it was opened by us, and arrange
      to return a NULL. */
 
-  if ((mbase = mdp -> morecore (mdp, sizeof (mtemp))) != NULL)
-  {
-    memcpy (mbase, mdp, sizeof (mtemp));
+  if ((mbase = mdp->morecore(mdp, sizeof(mtemp))) != NULL) {
+    memcpy(mbase, mdp, sizeof(mtemp));
     //    mdp = (struct mdesc *) mbase;
-  }
-  else
-  {
+  } else {
     abort();
     //    mdp = NULL;
   }
 
-  { /* create the mutex within that heap */
-    void*old_heap=mmalloc_get_current_heap();
+  {                             /* create the mutex within that heap */
+    void *old_heap = mmalloc_get_current_heap();
     mmalloc_set_current_heap(mbase);
-    mdp->mutex =xbt_os_mutex_init();
+    mdp->mutex = xbt_os_mutex_init();
     mmalloc_set_current_heap(old_heap);
   }
 
-  return ((void*) mbase);
+  return ((void *) mbase);
 }
 
 /* Given an valid file descriptor on an open file, test to see if that file
@@ -166,43 +163,39 @@ void * mmalloc_attach (int fd, void *baseaddr) {
    Returns a pointer to the malloc descriptor if successful, or NULL if
    unsuccessful for some reason. */
 
-static struct mdesc *
-reuse (int fd)
+static struct mdesc *reuse(int fd)
 {
   struct mdesc mtemp;
   struct mdesc *mdp = NULL;
 
-  if (lseek (fd, 0L, SEEK_SET) != 0)
+  if (lseek(fd, 0L, SEEK_SET) != 0)
     return NULL;
-  if (read (fd, (char *) &mtemp, sizeof (mtemp)) != sizeof (mtemp))
+  if (read(fd, (char *) &mtemp, sizeof(mtemp)) != sizeof(mtemp))
     return NULL;
-  if (mtemp.headersize != sizeof (mtemp))
+  if (mtemp.headersize != sizeof(mtemp))
     return NULL;
-  if (strcmp (mtemp.magic, MMALLOC_MAGIC) != 0)
+  if (strcmp(mtemp.magic, MMALLOC_MAGIC) != 0)
     return NULL;
   if (mtemp.version > MMALLOC_VERSION)
     return NULL;
 
   mtemp.fd = fd;
-  if (__mmalloc_remap_core (&mtemp) == mtemp.base)
-  {
+  if (__mmalloc_remap_core(&mtemp) == mtemp.base) {
     mdp = (struct mdesc *) mtemp.base;
-    mdp -> fd = fd;
-    mdp -> morecore = __mmalloc_mmap_morecore;
-    mdp->mutex =xbt_os_mutex_init();
-    if (mdp -> mfree_hook != NULL)
-    {
-      mmcheckf ((void*) mdp, (void (*) (void)) NULL, 1);
+    mdp->fd = fd;
+    mdp->morecore = __mmalloc_mmap_morecore;
+    mdp->mutex = xbt_os_mutex_init();
+    if (mdp->mfree_hook != NULL) {
+      mmcheckf((void *) mdp, (void (*)(void)) NULL, 1);
     }
   }
 
-  { /* create the mutex within that heap */
-    void*old_heap=mmalloc_get_current_heap();
+  {                             /* create the mutex within that heap */
+    void *old_heap = mmalloc_get_current_heap();
     mmalloc_set_current_heap(mdp);
-    mdp->mutex =xbt_os_mutex_init();
+    mdp->mutex = xbt_os_mutex_init();
     mmalloc_set_current_heap(old_heap);
   }
 
   return (mdp);
 }
-

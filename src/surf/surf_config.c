@@ -33,14 +33,18 @@ static void surf_config_cmd_line(int *argc, char **argv)
       remove_it = 1;
     } else if (!strncmp(argv[i], "--cfg-help", strlen("--cfg-help") + 1) ||
                !strncmp(argv[i], "--help", strlen("--help") + 1)) {
-      printf("Description of the configuration accepted by this simulator:\n");
+      printf
+          ("Description of the configuration accepted by this simulator:\n");
       xbt_cfg_help(_surf_cfg_set);
-      printf("\nYou can also use --help-models to see the details of all models known by this simulator.\n");
+      printf
+          ("\nYou can also use --help-models to see the details of all models known by this simulator.\n");
       exit(0);
-    } else if (!strncmp(argv[i], "--help-models", strlen("--help-models")+1)) {
-      model_help("workstation",surf_workstation_model_description);
-      model_help("CPU",surf_cpu_model_description);
-      model_help("network",surf_network_model_description);
+    } else
+        if (!strncmp
+            (argv[i], "--help-models", strlen("--help-models") + 1)) {
+      model_help("workstation", surf_workstation_model_description);
+      model_help("CPU", surf_cpu_model_description);
+      model_help("network", surf_network_model_description);
       exit(0);
     }
     if (remove_it) {            /*remove this from argv */
@@ -70,8 +74,8 @@ static void _surf_cfg_cb__workstation_model(const char *name, int pos)
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
 
-  if (!strcmp(val,"help")) {
-    model_help("workstation",surf_workstation_model_description);
+  if (!strcmp(val, "help")) {
+    model_help("workstation", surf_workstation_model_description);
     exit(0);
   }
 
@@ -89,8 +93,8 @@ static void _surf_cfg_cb__cpu_model(const char *name, int pos)
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
 
-  if (!strcmp(val,"help")) {
-    model_help("CPU",surf_cpu_model_description);
+  if (!strcmp(val, "help")) {
+    model_help("CPU", surf_cpu_model_description);
     exit(0);
   }
 
@@ -108,8 +112,8 @@ static void _surf_cfg_cb__network_model(const char *name, int pos)
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
 
-  if (!strcmp(val,"help")) {
-    model_help("network",surf_network_model_description);
+  if (!strcmp(val, "help")) {
+    model_help("network", surf_network_model_description);
     exit(0);
   }
 
@@ -119,74 +123,91 @@ static void _surf_cfg_cb__network_model(const char *name, int pos)
 
 
 /* callbacks of the network models values */
-static void _surf_cfg_cb__tcp_gamma(const char *name, int pos) {
+static void _surf_cfg_cb__tcp_gamma(const char *name, int pos)
+{
   sg_tcp_gamma = xbt_cfg_get_double(_surf_cfg_set, name);
 }
-static void _surf_cfg_cb__latency_factor(const char *name, int pos) {
+
+static void _surf_cfg_cb__latency_factor(const char *name, int pos)
+{
   sg_latency_factor = xbt_cfg_get_double(_surf_cfg_set, name);
 }
-static void _surf_cfg_cb__bandwidth_factor(const char *name, int pos) {
+
+static void _surf_cfg_cb__bandwidth_factor(const char *name, int pos)
+{
   sg_bandwidth_factor = xbt_cfg_get_double(_surf_cfg_set, name);
 }
-static void _surf_cfg_cb__weight_S(const char *name, int pos) {
+
+static void _surf_cfg_cb__weight_S(const char *name, int pos)
+{
   sg_weight_S_parameter = xbt_cfg_get_double(_surf_cfg_set, name);
 }
-static void _surf_cfg_cb__surf_maxmin_selective_update(const char *name, int pos) {
-	sg_maxmin_selective_update = xbt_cfg_get_int(_surf_cfg_set, name);
+
+static void _surf_cfg_cb__surf_maxmin_selective_update(const char *name,
+                                                       int pos)
+{
+  sg_maxmin_selective_update = xbt_cfg_get_int(_surf_cfg_set, name);
 }
 
 /* callback of the inclusion path */
-static void _surf_cfg_cb__surf_path(const char *name, int pos) {
+static void _surf_cfg_cb__surf_path(const char *name, int pos)
+{
   char *path = xbt_cfg_get_string_at(_surf_cfg_set, name, pos);
   xbt_dynar_push(surf_path, &path);
 }
 
 /* callback to decide if we want to use the model-checking */
 #include "xbt_modinter.h"
-int _surf_do_model_check = 0; /* this variable is used accros the lib */
+int _surf_do_model_check = 0;   /* this variable is used accros the lib */
 
-static void _surf_cfg_cb_model_check(const char *name, int pos) {
+static void _surf_cfg_cb_model_check(const char *name, int pos)
+{
   _surf_do_model_check = 1;
   /* Tell modules using mallocators that they shouldn't. MC don't like them */
   xbt_fifo_preinit();
   xbt_dict_preinit();
 }
 
-static void _surf_cfg_cb__surf_network_fullduplex(const char *name, int pos)
+static void _surf_cfg_cb__surf_network_fullduplex(const char *name,
+                                                  int pos)
 {
-	sg_network_fullduplex = xbt_cfg_get_int(_surf_cfg_set, name);
+  sg_network_fullduplex = xbt_cfg_get_int(_surf_cfg_set, name);
 }
 
 #ifdef HAVE_GTNETS
-static void _surf_cfg_cb__gtnets_jitter(const char *name, int pos){
-	sg_gtnets_jitter = xbt_cfg_get_double(_surf_cfg_set, name);
+static void _surf_cfg_cb__gtnets_jitter(const char *name, int pos)
+{
+  sg_gtnets_jitter = xbt_cfg_get_double(_surf_cfg_set, name);
 }
-static void _surf_cfg_cb__gtnets_jitter_seed(const char *name, int pos){
-	sg_gtnets_jitter_seed = xbt_cfg_get_int(_surf_cfg_set, name);
+
+static void _surf_cfg_cb__gtnets_jitter_seed(const char *name, int pos)
+{
+  sg_gtnets_jitter_seed = xbt_cfg_get_int(_surf_cfg_set, name);
 }
 #endif
 
 /* create the config set, register what should be and parse the command line*/
 void surf_config_init(int *argc, char **argv)
 {
-    char *description = xbt_malloc(1024), *p = description;
-    char *default_value;
-    double double_default_value;
-	int default_value_int;
-    int i;
+  char *description = xbt_malloc(1024), *p = description;
+  char *default_value;
+  double double_default_value;
+  int default_value_int;
+  int i;
 
   /* Create the configuration support */
   if (_surf_init_status == 0) { /* Only create stuff if not already inited */
     _surf_init_status = 1;
 
-    sprintf(description, "The model to use for the CPU. Possible values: ");
+    sprintf(description,
+            "The model to use for the CPU. Possible values: ");
     p = description;
     while (*(++p) != '\0');
     for (i = 0; surf_cpu_model_description[i].name; i++)
-      p +=
-        sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                surf_cpu_model_description[i].name);
-    sprintf(p,".\n       (use 'help' as a value to see the long description of each model)");
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_cpu_model_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each model)");
     default_value = xbt_strdup("Cas01");
     xbt_cfg_register(&_surf_cfg_set,
                      "cpu/model", description, xbt_cfgelm_string,
@@ -197,10 +218,10 @@ void surf_config_init(int *argc, char **argv)
     p = description;
     while (*(++p) != '\0');
     for (i = 0; surf_network_model_description[i].name; i++)
-      p +=
-        sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                surf_network_model_description[i].name);
-    sprintf(p,".\n       (use 'help' as a value to see the long description of each model)");
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_network_model_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each model)");
     default_value = xbt_strdup("LV08");
     xbt_cfg_register(&_surf_cfg_set,
                      "network/model", description, xbt_cfgelm_string,
@@ -212,15 +233,15 @@ void surf_config_init(int *argc, char **argv)
     p = description;
     while (*(++p) != '\0');
     for (i = 0; surf_workstation_model_description[i].name; i++)
-      p +=
-        sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                surf_workstation_model_description[i].name);
-    sprintf(p,".\n       (use 'help' as a value to see the long description of each model)");
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_workstation_model_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each model)");
     default_value = xbt_strdup("CLM03");
     xbt_cfg_register(&_surf_cfg_set,
                      "workstation/model", description, xbt_cfgelm_string,
-                     &default_value, 1, 1, &_surf_cfg_cb__workstation_model,
-                     NULL);
+                     &default_value, 1, 1,
+                     &_surf_cfg_cb__workstation_model, NULL);
 
     xbt_free(description);
 
@@ -231,61 +252,70 @@ void surf_config_init(int *argc, char **argv)
 
     xbt_cfg_register(&_surf_cfg_set, "TCP_gamma",
                      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)",
-                     xbt_cfgelm_double, NULL, 1, 1, _surf_cfg_cb__tcp_gamma, NULL);
+                     xbt_cfgelm_double, NULL, 1, 1,
+                     _surf_cfg_cb__tcp_gamma, NULL);
     xbt_cfg_set_double(_surf_cfg_set, "TCP_gamma", 20000.0);
 
     /* The parameters of network models */
     double_default_value = 1.0;
     xbt_cfg_register(&_surf_cfg_set, "network/latency_factor",
                      "Correction factor to apply to the provided latency (default value set by network model)",
-                     xbt_cfgelm_double, &double_default_value, 1, 1, _surf_cfg_cb__latency_factor, NULL);
+                     xbt_cfgelm_double, &double_default_value, 1, 1,
+                     _surf_cfg_cb__latency_factor, NULL);
     double_default_value = 1.0;
     xbt_cfg_register(&_surf_cfg_set, "network/bandwidth_factor",
                      "Correction factor to apply to the provided bandwidth (default value set by network model)",
-                     xbt_cfgelm_double, &double_default_value, 1, 1, _surf_cfg_cb__bandwidth_factor, NULL);
+                     xbt_cfgelm_double, &double_default_value, 1, 1,
+                     _surf_cfg_cb__bandwidth_factor, NULL);
     double_default_value = 0.0;
     xbt_cfg_register(&_surf_cfg_set, "network/weight_S",
                      "Correction factor to apply to the weight of competing streams(default value set by network model)",
-                     xbt_cfgelm_double, &double_default_value, 1, 1, _surf_cfg_cb__weight_S, NULL);
+                     xbt_cfgelm_double, &double_default_value, 1, 1,
+                     _surf_cfg_cb__weight_S, NULL);
 
     /* Inclusion path */
     xbt_cfg_register(&_surf_cfg_set, "path",
                      "Lookup path for inclusions in platform and deployment XML files",
-                     xbt_cfgelm_string, NULL, 0, 0, _surf_cfg_cb__surf_path,
-                     NULL);
+                     xbt_cfgelm_string, NULL, 0, 0,
+                     _surf_cfg_cb__surf_path, NULL);
 
-		default_value_int = 0;
+    default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "maxmin_selective_update",
                      "Update the constraint set propagating recursively to others constraints",
-                     xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb__surf_maxmin_selective_update, NULL);
+                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     _surf_cfg_cb__surf_maxmin_selective_update, NULL);
 
     /* do model-check */
     default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "model-check",
                      "Activate the model-checking of the \"simulated\" system (EXPERIMENTAL -- msg only for now)",
-                     xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb_model_check, NULL);
+                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     _surf_cfg_cb_model_check, NULL);
     /*
-     FIXME: this function is not setting model-check to it's default value because
-     internally it calls to variable->cb_set that in this case is the function 
-     _surf_cfg_cb_model_check which sets it's value to 1 (instead of the defalut value 0)
-     xbt_cfg_set_int(_surf_cfg_set, "model-check", default_value_int); */
+       FIXME: this function is not setting model-check to it's default value because
+       internally it calls to variable->cb_set that in this case is the function 
+       _surf_cfg_cb_model_check which sets it's value to 1 (instead of the defalut value 0)
+       xbt_cfg_set_int(_surf_cfg_set, "model-check", default_value_int); */
 
     default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "fullduplex",
-		     "Update the constraint set propagating recursively to others constraints",
-		     xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb__surf_network_fullduplex, NULL);
+                     "Update the constraint set propagating recursively to others constraints",
+                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     _surf_cfg_cb__surf_network_fullduplex, NULL);
     xbt_cfg_set_int(_surf_cfg_set, "fullduplex", default_value_int);
 
 #ifdef HAVE_GTNETS
     xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter",
-                     "Double value to oscillate the link latency, uniformly in random interval [-latency*gtnets_jitter,latency*gtnets_jitter)", xbt_cfgelm_double,
-                     NULL, 1, 1, _surf_cfg_cb__gtnets_jitter, NULL);
+                     "Double value to oscillate the link latency, uniformly in random interval [-latency*gtnets_jitter,latency*gtnets_jitter)",
+                     xbt_cfgelm_double, NULL, 1, 1,
+                     _surf_cfg_cb__gtnets_jitter, NULL);
     xbt_cfg_set_double(_surf_cfg_set, "gtnets_jitter", 0.0);
 
     default_value_int = 10;
     xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter_seed",
                      "Use a positive seed to reproduce jitted results, value must be in [1,1e8], default is 10",
-                     xbt_cfgelm_int, &default_value_int, 0, 1, _surf_cfg_cb__gtnets_jitter_seed, NULL);
+                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     _surf_cfg_cb__gtnets_jitter_seed, NULL);
 #endif
 
     if (!surf_path) {
@@ -323,7 +353,7 @@ void surf_config_models_setup(const char *platform_file)
   surf_timer_model_init(platform_file);
 
   workstation_model_name =
-    xbt_cfg_get_string(_surf_cfg_set, "workstation/model");
+      xbt_cfg_get_string(_surf_cfg_set, "workstation/model");
   network_model_name = xbt_cfg_get_string(_surf_cfg_set, "network/model");
   cpu_model_name = xbt_cfg_get_string(_surf_cfg_set, "cpu/model");
 
@@ -331,52 +361,55 @@ void surf_config_models_setup(const char *platform_file)
    * we should switch to the "compound" workstation model to correctly dispatch stuff to
    * the right net/cpu models.
    */
-  if ((strcmp(network_model_name,"LV08") || strcmp(cpu_model_name,"Cas01"))
-      && !strcmp(workstation_model_name, "CLM03")){
+  if ((strcmp(network_model_name, "LV08")
+       || strcmp(cpu_model_name, "Cas01"))
+      && !strcmp(workstation_model_name, "CLM03")) {
     const char *val = "compound";
-    INFO0("Switching workstation model to compound since you changed the network and/or cpu model(s)");
-    xbt_cfg_set_string(_surf_cfg_set,"workstation/model",val);
-    workstation_model_name = (char*)"compound";
+    INFO0
+        ("Switching workstation model to compound since you changed the network and/or cpu model(s)");
+    xbt_cfg_set_string(_surf_cfg_set, "workstation/model", val);
+    workstation_model_name = (char *) "compound";
   }
 
   DEBUG1("Workstation model: %s", workstation_model_name);
   workstation_id =
-    find_model_description(surf_workstation_model_description,
-                           workstation_model_name);
+      find_model_description(surf_workstation_model_description,
+                             workstation_model_name);
   if (!strcmp(workstation_model_name, "compound")) {
     int network_id = -1;
     int cpu_id = -1;
 
     xbt_assert0(cpu_model_name,
-        "Set a cpu model to use with the 'compound' workstation model");
+                "Set a cpu model to use with the 'compound' workstation model");
 
     xbt_assert0(network_model_name,
-        "Set a network model to use with the 'compound' workstation model");
+                "Set a network model to use with the 'compound' workstation model");
 
     network_id =
-      find_model_description(surf_network_model_description,
-                             network_model_name);
+        find_model_description(surf_network_model_description,
+                               network_model_name);
     cpu_id =
-      find_model_description(surf_cpu_model_description, cpu_model_name);
+        find_model_description(surf_cpu_model_description, cpu_model_name);
 
     surf_cpu_model_description[cpu_id].model_init_preparse(platform_file);
-    surf_network_model_description[network_id].
-      model_init_preparse(platform_file);
+    surf_network_model_description[network_id].model_init_preparse
+        (platform_file);
   }
 
   DEBUG0("Call workstation_model_init");
   surf_workstation_model_description[workstation_id].model_init_preparse
-    (platform_file);
+      (platform_file);
 }
 
 void surf_config_models_create_elms(void)
 {
   char *workstation_model_name =
-    xbt_cfg_get_string(_surf_cfg_set, "workstation/model");
+      xbt_cfg_get_string(_surf_cfg_set, "workstation/model");
   int workstation_id =
-    find_model_description(surf_workstation_model_description,
-                           workstation_model_name);
-  if (surf_workstation_model_description[workstation_id].
-      model_init_postparse != NULL)
-    surf_workstation_model_description[workstation_id].model_init_postparse();
+      find_model_description(surf_workstation_model_description,
+                             workstation_model_name);
+  if (surf_workstation_model_description
+      [workstation_id].model_init_postparse != NULL)
+    surf_workstation_model_description[workstation_id].model_init_postparse
+        ();
 }

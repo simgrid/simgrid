@@ -42,20 +42,20 @@ SG_BEGIN_DECL()
  *
  * The different existing priorities.
 */
-     typedef enum {
-       xbt_log_priority_none = 0,       /* used internally (don't poke with) */
-       xbt_log_priority_trace = 1,     /**< enter and return of some functions */
-       xbt_log_priority_debug = 2,     /**< crufty output  */
-       xbt_log_priority_verbose = 3,   /**< verbose output for the user wanting more */
-       xbt_log_priority_info = 4,      /**< output about the regular functionning */
-       xbt_log_priority_warning = 5,   /**< minor issue encountered */
-       xbt_log_priority_error = 6,     /**< issue encountered */
-       xbt_log_priority_critical = 7,  /**< major issue encountered */
+typedef enum {
+  xbt_log_priority_none = 0,    /* used internally (don't poke with) */
+  xbt_log_priority_trace = 1,          /**< enter and return of some functions */
+  xbt_log_priority_debug = 2,          /**< crufty output  */
+  xbt_log_priority_verbose = 3,        /**< verbose output for the user wanting more */
+  xbt_log_priority_info = 4,           /**< output about the regular functionning */
+  xbt_log_priority_warning = 5,        /**< minor issue encountered */
+  xbt_log_priority_error = 6,          /**< issue encountered */
+  xbt_log_priority_critical = 7,       /**< major issue encountered */
 
-       xbt_log_priority_infinite = 8,  /**< value for XBT_LOG_STATIC_THRESHOLD to not log */
+  xbt_log_priority_infinite = 8,       /**< value for XBT_LOG_STATIC_THRESHOLD to not log */
 
-       xbt_log_priority_uninitialized = -1      /* used internally (don't poke with) */
-     } e_xbt_log_priority_t;
+  xbt_log_priority_uninitialized = -1   /* used internally (don't poke with) */
+} e_xbt_log_priority_t;
 
 
 /*
@@ -77,13 +77,13 @@ SG_BEGIN_DECL()
 
 #  ifdef NDEBUG
 #    define XBT_LOG_STATIC_THRESHOLD xbt_log_priority_verbose
-#  else /* !NLOG && !NDEBUG */
+#  else                         /* !NLOG && !NDEBUG */
 
 #    ifndef XBT_LOG_STATIC_THRESHOLD
 #      define XBT_LOG_STATIC_THRESHOLD xbt_log_priority_none
-#    endif /* !XBT_LOG_STATIC_THRESHOLD */
-#  endif /* NDEBUG */
-#endif /* !defined(NLOG) */
+#    endif                      /* !XBT_LOG_STATIC_THRESHOLD */
+#  endif                        /* NDEBUG */
+#endif                          /* !defined(NLOG) */
 
 /* Transforms a category name to a global variable name. */
 #define _XBT_LOGV(cat)   _XBT_LOG_CONCAT(_simgrid_log_category__, cat)
@@ -169,7 +169,7 @@ SG_BEGIN_DECL()
  * Indicates which category is the default one.
  */
 
-#if defined(XBT_LOG_MAYDAY) || defined(SUPERNOVAE_MODE)     /*|| defined (NLOG) * turning logging off */
+#if defined(XBT_LOG_MAYDAY) || defined(SUPERNOVAE_MODE) /*|| defined (NLOG) * turning logging off */
 # define XBT_LOG_DEFAULT_CATEGORY(cname)
 #else
 # define XBT_LOG_DEFAULT_CATEGORY(cname) \
@@ -232,12 +232,12 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(void) xbt_log_control_set(const char *cs);
 
 /* Forward declarations */
-     typedef struct xbt_log_appender_s s_xbt_log_appender_t,
-       *xbt_log_appender_t;
-     typedef struct xbt_log_layout_s s_xbt_log_layout_t, *xbt_log_layout_t;
-     typedef struct xbt_log_event_s s_xbt_log_event_t, *xbt_log_event_t;
-     typedef struct xbt_log_category_s s_xbt_log_category_t,
-       *xbt_log_category_t;
+typedef struct xbt_log_appender_s s_xbt_log_appender_t,
+    *xbt_log_appender_t;
+typedef struct xbt_log_layout_s s_xbt_log_layout_t, *xbt_log_layout_t;
+typedef struct xbt_log_event_s s_xbt_log_event_t, *xbt_log_event_t;
+typedef struct xbt_log_category_s s_xbt_log_category_t,
+    *xbt_log_category_t;
 
 /*
  * Do NOT access any members of this structure directly. FIXME: move to private?
@@ -247,32 +247,32 @@ XBT_PUBLIC(void) xbt_log_control_set(const char *cs);
 #else
 #define XBT_LOG_BUFF_SIZE 2048  /* Size of the static string in which we build the log string */
 #endif
-     struct xbt_log_category_s {
-       xbt_log_category_t parent;
-       xbt_log_category_t firstChild;
-       xbt_log_category_t nextSibling;
-       const char *name;
-       int threshold;
-       int isThreshInherited;
-       xbt_log_appender_t appender;
-       xbt_log_layout_t layout;
-       int additivity;
-     };
+struct xbt_log_category_s {
+  xbt_log_category_t parent;
+  xbt_log_category_t firstChild;
+  xbt_log_category_t nextSibling;
+  const char *name;
+  int threshold;
+  int isThreshInherited;
+  xbt_log_appender_t appender;
+  xbt_log_layout_t layout;
+  int additivity;
+};
 
-     struct xbt_log_event_s {
-       xbt_log_category_t cat;
-       e_xbt_log_priority_t priority;
-       const char *fileName;
-       const char *functionName;
-       int lineNum;
-       va_list ap;
-       va_list ap_copy;         /* need a copy to launch dynamic layouts when the static ones overflowed */
+struct xbt_log_event_s {
+  xbt_log_category_t cat;
+  e_xbt_log_priority_t priority;
+  const char *fileName;
+  const char *functionName;
+  int lineNum;
+  va_list ap;
+  va_list ap_copy;              /* need a copy to launch dynamic layouts when the static ones overflowed */
 #ifdef _XBT_WIN32
-       char *buffer;
+  char *buffer;
 #else
-       char buffer[XBT_LOG_BUFF_SIZE];
+  char buffer[XBT_LOG_BUFF_SIZE];
 #endif
-     };
+};
 
 /**
  * \ingroup XBT_log_implem
@@ -344,8 +344,8 @@ XBT_PUBLIC(int) _xbt_log_cat_init(xbt_log_category_t category,
 XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
 
 
-     extern xbt_log_appender_t xbt_log_default_appender;
-     extern xbt_log_layout_t xbt_log_default_layout;
+extern xbt_log_appender_t xbt_log_default_appender;
+extern xbt_log_layout_t xbt_log_default_layout;
 
 /* ********************** */
 /* Public functions again */
@@ -391,7 +391,7 @@ XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
  * Setting the LogEvent's valist member is done inside _log_logEvent.
  */
 #ifdef _XBT_WIN32
-#include <stdlib.h> /* calloc */
+#include <stdlib.h>             /* calloc */
 #define _XBT_LOG_PRE(catv, prio) do {                            \
      if (_XBT_LOG_ISENABLEDV(catv, prio)) {                      \
        s_xbt_log_event_t _log_ev;                                \
@@ -403,7 +403,7 @@ XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
        _log_ev.buffer = (char*) calloc(XBT_LOG_BUFF_SIZE + 1, sizeof(char)); \
        _xbt_log_event_log(&_log_ev
 #else
-#include <string.h> /* memset */
+#include <string.h>             /* memset */
 #define _XBT_LOG_PRE(catv, prio) do {                            \
      if (_XBT_LOG_ISENABLEDV(catv, prio)) {                      \
        s_xbt_log_event_t _log_ev;                                \
@@ -718,4 +718,4 @@ XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
 
 
 SG_END_DECL()
-#endif /* ! _XBT_LOG_H_ */
+#endif                          /* ! _XBT_LOG_H_ */

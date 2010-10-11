@@ -51,11 +51,9 @@ SG_BEGIN_DECL()
 
 /*-*-* Emergency debuging: define this when the exceptions get crazy *-*-*/
 #undef __EX_MAYDAY
-
 #ifdef __EX_MAYDAY
 # include <stdio.h>
 #include <errno.h>
-
 #  define MAYDAY_SAVE(m)    printf("%d %s:%d save %p\n",                \
                                    (*xbt_getpid)(),__FILE__,__LINE__,  \
                                    (m)->jb                              \
@@ -73,23 +71,19 @@ SG_BEGIN_DECL()
 #  define MAYDAY_RESTORE(m)
 #  define MAYDAY_CATCH(e)
 #endif
-
 /*-*-* end of debugging stuff *-*-*/
-
 #if defined(__EX_MCTX_MCSC__)
 #include <ucontext.h>           /* POSIX.1 ucontext(3) */
 #define __ex_mctx_struct         ucontext_t uc;
 #define __ex_mctx_save(mctx)     (getcontext(&(mctx)->uc) == 0)
 #define __ex_mctx_restored(mctx)        /* noop */
 #define __ex_mctx_restore(mctx)  (void)setcontext(&(mctx)->uc)
-
 #elif defined(__EX_MCTX_SSJLJ__)
 #include <setjmp.h>             /* POSIX.1 sigjmp_buf(3) */
 #define __ex_mctx_struct         sigjmp_buf jb;
 #define __ex_mctx_save(mctx)     (sigsetjmp((mctx)->jb, 1) == 0)
 #define __ex_mctx_restored(mctx)        /* noop */
 #define __ex_mctx_restore(mctx)  (void)siglongjmp((mctx)->jb, 1)
-
 #elif defined(__EX_MCTX_SJLJ__) || !defined(__EX_MCTX_CUSTOM__) || defined(__EX_MAYDAY)
 #include <setjmp.h>             /* ISO-C jmp_buf(3) */
 #define __ex_mctx_struct         jmp_buf jb;
@@ -97,7 +91,6 @@ SG_BEGIN_DECL()
 #define __ex_mctx_restored(mctx)        /* noop */
 #define __ex_mctx_restore(mctx)  ( MAYDAY_RESTORE(mctx) (void)longjmp((mctx)->jb, 1))
 #endif
-
 /* declare the machine context type */
 typedef struct {
 __ex_mctx_struct} __ex_mctx_t;
@@ -274,34 +267,34 @@ typedef enum {
 XBT_PUBLIC(const char *) xbt_ex_catname(xbt_errcat_t cat);
 
 /** @brief Structure describing an exception */
-     typedef struct {
-       char *msg;        /**< human readable message */
-       xbt_errcat_t category;
+typedef struct {
+  char *msg;             /**< human readable message */
+  xbt_errcat_t category;
                          /**< category like HTTP (what went wrong) */
-       int value;        /**< like errno (why did it went wrong) */
-       /* throw point */
-       short int remote;
+  int value;             /**< like errno (why did it went wrong) */
+  /* throw point */
+  short int remote;
                     /**< whether it was raised remotely */
-       char *host;/**< NULL locally thrown exceptions; full hostname if remote ones */
-       /* FIXME: host should be hostname:port[#thread] */
-       char *procname;
+  char *host;     /**< NULL locally thrown exceptions; full hostname if remote ones */
+  /* FIXME: host should be hostname:port[#thread] */
+  char *procname;
                   /**< Name of the process who thrown this */
-       int pid;   /**< PID of the process who thrown this */
-       char *file;/**< Thrown point */
-       int line;  /**< Thrown point */
-       char *func;/**< Thrown point */
-       /* Backtrace */
-       int used;
-       char **bt_strings;       /* only filed on display (or before the network propagation) */
-       void *bt[XBT_BACKTRACE_SIZE];
-     } xbt_ex_t;
+  int pid;        /**< PID of the process who thrown this */
+  char *file;     /**< Thrown point */
+  int line;       /**< Thrown point */
+  char *func;     /**< Thrown point */
+  /* Backtrace */
+  int used;
+  char **bt_strings;            /* only filed on display (or before the network propagation) */
+  void *bt[XBT_BACKTRACE_SIZE];
+} xbt_ex_t;
 
 /* declare the context type (private) */
-     typedef struct {
-       __ex_mctx_t *ctx_mctx;   /* permanent machine context of enclosing try/catch */
-       volatile int ctx_caught; /* temporary flag whether exception was caught */
-       volatile xbt_ex_t ctx_ex;        /* temporary exception storage */
-     } ex_ctx_t;
+typedef struct {
+  __ex_mctx_t *ctx_mctx;        /* permanent machine context of enclosing try/catch */
+  volatile int ctx_caught;      /* temporary flag whether exception was caught */
+  volatile xbt_ex_t ctx_ex;     /* temporary exception storage */
+} ex_ctx_t;
 
 /* the static and dynamic initializers for a context structure */
 #define XBT_CTX_INITIALIZER \
@@ -337,14 +330,14 @@ XBT_PUBLIC(const char *) xbt_ex_catname(xbt_errcat_t cat);
     } while (0)
 
 /* the exception context */
-     typedef ex_ctx_t *(*ex_ctx_cb_t) (void);
+typedef ex_ctx_t *(*ex_ctx_cb_t) (void);
 XBT_PUBLIC_DATA(ex_ctx_cb_t) __xbt_ex_ctx;
-     extern ex_ctx_t *__xbt_ex_ctx_default(void);
+extern ex_ctx_t *__xbt_ex_ctx_default(void);
 
 /* the termination handler */
-     typedef void (*ex_term_cb_t) (xbt_ex_t *);
+typedef void (*ex_term_cb_t) (xbt_ex_t *);
 XBT_PUBLIC_DATA(ex_term_cb_t) __xbt_ex_terminate;
-     extern void __xbt_ex_terminate_default(xbt_ex_t * e);
+extern void __xbt_ex_terminate_default(xbt_ex_t * e);
 
 /** @brief Introduce a block where exception may be dealed with 
  *  @hideinitializer
@@ -548,4 +541,4 @@ XBT_PUBLIC(void) xbt_backtrace_display(xbt_ex_t * e);
 SG_END_DECL()
 
 /** @} */
-#endif /* __XBT_EX_H__ */
+#endif                          /* __XBT_EX_H__ */

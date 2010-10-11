@@ -81,7 +81,8 @@ void amok_bw_bw_init()
   gras_datadesc_struct_close(bw_res_desc);
   bw_res_desc = gras_datadesc_ref("bw_res_t", bw_res_desc);
 
-  gras_msgtype_declare_rpc("BW handshake", bw_request_desc, bw_request_desc);
+  gras_msgtype_declare_rpc("BW handshake", bw_request_desc,
+                           bw_request_desc);
 
   gras_msgtype_declare_rpc("BW reask", bw_request_desc, NULL);
   gras_msgtype_declare("BW stop", NULL);
@@ -167,10 +168,10 @@ void amok_bw_test(gras_socket_t peer,
   request->peer.name = NULL;
   request->peer.port = gras_socket_my_port(measMasterIn);
   DEBUG6
-    ("Handshaking with %s:%d to connect it back on my %d (bufsize=%ld, msg_size=%ld, msg_amount=%ld)",
-     gras_socket_peer_name(peer), gras_socket_peer_port(peer),
-     request->peer.port, request->buf_size, request->msg_size,
-     request->msg_amount);
+      ("Handshaking with %s:%d to connect it back on my %d (bufsize=%ld, msg_size=%ld, msg_amount=%ld)",
+       gras_socket_peer_name(peer), gras_socket_peer_port(peer),
+       request->peer.port, request->buf_size, request->msg_size,
+       request->msg_amount);
 
   TRY {
     gras_msg_rpccall(peer, 15, "BW handshake", &request, &request_ack);
@@ -187,11 +188,12 @@ void amok_bw_test(gras_socket_t peer,
   }
   CATCH(e) {
     RETHROW2
-      ("Error encountered while opening the measurement socket to %s:%d for BW test: %s",
-       gras_socket_peer_name(peer), request_ack->peer.port);
+        ("Error encountered while opening the measurement socket to %s:%d for BW test: %s",
+         gras_socket_peer_name(peer), request_ack->peer.port);
   }
-  DEBUG2("Got ACK; conduct the experiment (msg_size = %ld, msg_amount=%ld)",
-         request->msg_size, request->msg_amount);
+  DEBUG2
+      ("Got ACK; conduct the experiment (msg_size = %ld, msg_amount=%ld)",
+       request->msg_size, request->msg_amount);
 
   *sec = 0;
   first_pass = 1;
@@ -215,8 +217,8 @@ void amok_bw_test(gras_socket_t peer,
          And then increase the number of messages to compensate (check for overflow there, too) */
       if (request->msg_size > 64 * 1024 * 1024) {
         unsigned long int new_amount =
-          ((request->msg_size / ((double) 64 * 1024 * 1024))
-           * request->msg_amount) + 1;
+            ((request->msg_size / ((double) 64 * 1024 * 1024))
+             * request->msg_amount) + 1;
 
         xbt_assert0(new_amount > request->msg_amount,
                     "Overflow on the number of messages! You must have a *really* fat pipe. Please fix your platform");
@@ -226,10 +228,11 @@ void amok_bw_test(gras_socket_t peer,
       }
 
       VERB5
-        ("The experiment was too short (%f sec<%f sec). Redo it with msg_size=%lu (nb_messages=%lu) (got %fMb/s)",
-         meas_duration, min_duration, request->msg_size, request->msg_amount,
-         ((double) request->msg_size) * ((double) request->msg_amount /
-                                         (*sec) / 1024.0 / 1024.0));
+          ("The experiment was too short (%f sec<%f sec). Redo it with msg_size=%lu (nb_messages=%lu) (got %fMb/s)",
+           meas_duration, min_duration, request->msg_size,
+           request->msg_amount,
+           ((double) request->msg_size) * ((double) request->msg_amount /
+                                           (*sec) / 1024.0 / 1024.0));
 
       gras_msg_rpccall(peer, 60, "BW reask", &request, NULL);
     }
@@ -250,8 +253,8 @@ void amok_bw_test(gras_socket_t peer,
     *sec = gras_os_time() - *sec;
     if (*sec != 0.0) {
       *bw =
-        ((double) request->msg_size) * ((double) request->msg_amount) /
-        (*sec);
+          ((double) request->msg_size) * ((double) request->msg_amount) /
+          (*sec);
     }
     DEBUG1("Experiment done ; it took %f sec", *sec);
     if (*sec <= 0) {
@@ -260,8 +263,9 @@ void amok_bw_test(gras_socket_t peer,
 
   } while (*sec < min_duration);
 
-  DEBUG2("This measurement was long enough (%f sec; found %f b/s). Stop peer",
-         *sec, *bw);
+  DEBUG2
+      ("This measurement was long enough (%f sec; found %f b/s). Stop peer",
+       *sec, *bw);
   gras_msg_send(peer, "BW stop", NULL);
 
   free(request_ack);
@@ -294,9 +298,9 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
   static xbt_dynar_t msgtwaited = NULL;
 
   DEBUG5
-    ("Handshaked to connect to %s:%d (sizes: buf=%lu msg=%lu msg_amount=%lu)",
-     gras_socket_peer_name(expeditor), request->peer.port, request->buf_size,
-     request->msg_size, request->msg_amount);
+      ("Handshaked to connect to %s:%d (sizes: buf=%lu msg=%lu msg_amount=%lu)",
+       gras_socket_peer_name(expeditor), request->peer.port,
+       request->buf_size, request->msg_size, request->msg_amount);
 
   /* Build our answer */
   answer = xbt_new0(s_bw_request_t, 1);
@@ -312,7 +316,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
       else
         /* FIXME: tell error to remote */
         RETHROW0
-          ("Error encountered while opening a measurement server socket: %s");
+            ("Error encountered while opening a measurement server socket: %s");
     }
   }
 
@@ -339,17 +343,17 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
   }
   CATCH(e) {
     RETHROW2
-      ("Error encountered while opening a measurement socket back to %s:%d : %s",
-       gras_socket_peer_name(expeditor), request->peer.port);
+        ("Error encountered while opening a measurement socket back to %s:%d : %s",
+         gras_socket_peer_name(expeditor), request->peer.port);
     /* FIXME: tell error to remote */
   }
 
   TRY {
     measIn = gras_socket_meas_accept(measMasterIn);
     DEBUG4
-      ("BW handshake answered. buf_size=%lu msg_size=%lu msg_amount=%lu port=%d",
-       answer->buf_size, answer->msg_size, answer->msg_amount,
-       answer->peer.port);
+        ("BW handshake answered. buf_size=%lu msg_size=%lu msg_amount=%lu port=%d",
+         answer->buf_size, answer->msg_size, answer->msg_amount,
+         answer->peer.port);
   }
   CATCH(e) {
     gras_socket_close(measMasterIn);
@@ -529,8 +533,8 @@ double *amok_bw_matrix(xbt_dynar_t peers,
       if (i != j) {
         /* Mesurements of Bandwidth */
         amok_bw_request(p1->name, p1->port, p2->name, p2->port,
-                        buf_size_bw, msg_size_bw, msg_amount_bw, min_duration,
-                        &sec, &matrix_res[i * len + j]);
+                        buf_size_bw, msg_size_bw, msg_amount_bw,
+                        min_duration, &sec, &matrix_res[i * len + j]);
       }
     }
   }

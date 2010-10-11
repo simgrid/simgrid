@@ -49,7 +49,7 @@ XBT_LOG_EXTERNAL_CATEGORY(msg_process);
 void MSG_global_init(int *argc, char **argv)
 {
 #ifdef HAVE_TRACING
-  TRACE_global_init (argc, argv);
+  TRACE_global_init(argc, argv);
 #endif
 
   xbt_getpid = MSG_process_self_PID;
@@ -150,7 +150,7 @@ MSG_error_t MSG_main(void)
   else
 #endif
     while (SIMIX_solve(NULL, NULL) != -1.0);
-  
+
   return MSG_OK;
 }
 
@@ -190,7 +190,7 @@ MSG_error_t MSG_clean(void)
   m_process_t p = NULL;
 
 #ifdef HAVE_TRACING
-  TRACE_surf_release ();
+  TRACE_surf_release();
 #endif
 
   while ((p = xbt_fifo_pop(msg_global->process_list))) {

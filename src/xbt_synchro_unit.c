@@ -8,16 +8,17 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-#line 59 "xbt/xbt_synchro.c" 
+#line 66 "xbt/xbt_synchro.c" 
 #define NB_ELEM 50
 #include "xbt/synchro.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dyn);
 XBT_LOG_DEFAULT_CATEGORY(xbt_dyn);
 
-static void add100(int rank,void *data) {
+static void add100(int rank, void *data)
+{
   //INFO2("Thread%d: Add 100 to %d",rank,*(int*)data);
-  *(int*)data +=100;
+  *(int *) data += 100;
 }
 
 XBT_TEST_UNIT("dopar", test_dynar_dopar, "do parallel on dynars of integers")
@@ -26,13 +27,15 @@ XBT_TEST_UNIT("dopar", test_dynar_dopar, "do parallel on dynars of integers")
   int i, cpt;
   unsigned int cursor;
 
-  xbt_test_add1("==== Push %d int, add 100 to each of them in parallel and check the results", NB_ELEM);
+  xbt_test_add1
+      ("==== Push %d int, add 100 to each of them in parallel and check the results",
+       NB_ELEM);
   d = xbt_dynar_new(sizeof(int), NULL);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     xbt_dynar_push_as(d, int, cpt);     /* This is faster (and possible only with scalars) */
     xbt_test_log2("Push %d, length=%lu", cpt, xbt_dynar_length(d));
   }
-  xbt_dynar_dopar(d,add100);
+  xbt_dynar_dopar(d, add100);
   cpt = 100;
   xbt_dynar_foreach(d, cursor, i) {
     xbt_test_assert2(i == cpt,

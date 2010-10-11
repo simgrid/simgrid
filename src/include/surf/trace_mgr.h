@@ -31,7 +31,8 @@ XBT_INLINE XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
 */
 XBT_PUBLIC(int) tmgr_trace_event_free(tmgr_trace_event_t trace_event);
 
-XBT_PUBLIC(tmgr_trace_event_t) tmgr_history_add_trace(tmgr_history_t history,
+XBT_PUBLIC(tmgr_trace_event_t) tmgr_history_add_trace(tmgr_history_t
+                                                      history,
                                                       tmgr_trace_t trace,
                                                       double start_time,
                                                       unsigned int offset,
@@ -39,12 +40,10 @@ XBT_PUBLIC(tmgr_trace_event_t) tmgr_history_add_trace(tmgr_history_t history,
 
 /* Access functions */
 XBT_PUBLIC(double) tmgr_history_next_date(tmgr_history_t history);
-XBT_PUBLIC(tmgr_trace_event_t) tmgr_history_get_next_event_leq(tmgr_history_t
-                                                               history,
-                                                               double date,
-                                                               double *value,
-                                                               void **model);
+XBT_PUBLIC(tmgr_trace_event_t)
+    tmgr_history_get_next_event_leq(tmgr_history_t history, double date,
+                                double *value, void **model);
 
 XBT_PUBLIC(void) tmgr_finalize(void);
 
-#endif /* _SURF_TMGR_H */
+#endif                          /* _SURF_TMGR_H */

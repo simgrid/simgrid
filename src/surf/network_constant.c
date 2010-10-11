@@ -55,7 +55,8 @@ static void netcste_action_cancel(surf_action_t action)
 static double netcste_share_resources(double now)
 {
   surf_action_network_Constant_t action = NULL;
-  xbt_swag_t running_actions = surf_network_model->states.running_action_set;
+  xbt_swag_t running_actions =
+      surf_network_model->states.running_action_set;
   double min = -1.0;
 
   xbt_swag_foreach(action, running_actions) {
@@ -74,7 +75,8 @@ static void netcste_update_actions_state(double now, double delta)
 {
   surf_action_network_Constant_t action = NULL;
   surf_action_network_Constant_t next_action = NULL;
-  xbt_swag_t running_actions = surf_network_model->states.running_action_set;
+  xbt_swag_t running_actions =
+      surf_network_model->states.running_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     if (action->latency > 0) {
@@ -103,22 +105,23 @@ static void netcste_update_actions_state(double now, double delta)
 }
 
 static void netcste_update_resource_state(void *id,
-                                  tmgr_trace_event_t event_type,
-                                  double value, double time)
+                                          tmgr_trace_event_t event_type,
+                                          double value, double time)
 {
   DIE_IMPOSSIBLE;
 }
 
-static surf_action_t netcste_communicate(const char *src_name, const char *dst_name,
-                                 double size, double rate)
+static surf_action_t netcste_communicate(const char *src_name,
+                                         const char *dst_name, double size,
+                                         double rate)
 {
   surf_action_network_Constant_t action = NULL;
 
   XBT_IN4("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
 
   action =
-    surf_action_new(sizeof(s_surf_action_network_Constant_t), size,
-                    surf_network_model, 0);
+      surf_action_new(sizeof(s_surf_action_network_Constant_t), size,
+                      surf_network_model, 0);
 
   action->suspended = 0;
 
@@ -127,7 +130,7 @@ static surf_action_t netcste_communicate(const char *src_name, const char *dst_n
 
   if (action->latency <= 0.0) {
     action->generic_action.state_set =
-      surf_network_model->states.done_action_set;
+        surf_network_model->states.done_action_set;
     xbt_swag_insert(action, action->generic_action.state_set);
   }
 
@@ -199,11 +202,12 @@ void surf_network_model_init_Constant(const char *filename)
 #endif
 
   surf_network_model->model_private->resource_used = netcste_resource_used;
-  surf_network_model->model_private->share_resources = netcste_share_resources;
+  surf_network_model->model_private->share_resources =
+      netcste_share_resources;
   surf_network_model->model_private->update_actions_state =
-    netcste_update_actions_state;
+      netcste_update_actions_state;
   surf_network_model->model_private->update_resource_state =
-    netcste_update_resource_state;
+      netcste_update_resource_state;
   surf_network_model->model_private->finalize = netcste_finalize;
 
   surf_network_model->suspend = netcste_action_suspend;
@@ -213,8 +217,9 @@ void surf_network_model_init_Constant(const char *filename)
 
   surf_network_model->extension.network.communicate = netcste_communicate;
   surf_network_model->extension.network.get_link_bandwidth =
-    netcste_get_link_bandwidth;
-  surf_network_model->extension.network.get_link_latency = netcste_get_link_latency;
+      netcste_get_link_bandwidth;
+  surf_network_model->extension.network.get_link_latency =
+      netcste_get_link_latency;
   surf_network_model->extension.network.link_shared = link_shared;
 
   if (!random_latency)

@@ -49,7 +49,7 @@ SG_BEGIN_DECL()
  *  @{
  */
 /** \brief Opaque type representing a set */
-     typedef struct xbt_set_ *xbt_set_t;
+typedef struct xbt_set_ *xbt_set_t;
 
 #define XBT_SET_HEADERS \
   unsigned int ID;      \
@@ -57,12 +57,12 @@ SG_BEGIN_DECL()
   unsigned int name_len
 
 /** \brief It must be possible to cast set elements to this type */
-     typedef struct xbt_set_elm_ {
-       unsigned int ID; /**< Identificator (system assigned) */
-       char *name;      /**< Name (user assigned) */
-       unsigned int name_len;
+typedef struct xbt_set_elm_ {
+  unsigned int ID;      /**< Identificator (system assigned) */
+  char *name;           /**< Name (user assigned) */
+  unsigned int name_len;
                         /**< Length of the name */
-     } s_xbt_set_elm_t, *xbt_set_elm_t;
+} s_xbt_set_elm_t, *xbt_set_elm_t;
 
 /*####[ Functions ]##########################################################*/
 XBT_PUBLIC(xbt_set_t) xbt_set_new(void);
@@ -85,7 +85,8 @@ XBT_PUBLIC(void) xbt_set_remove_by_name_ext(xbt_set_t set, const char *key,
                                             int key_len);
 XBT_PUBLIC(void) xbt_set_remove_by_id(xbt_set_t set, int id);
 
-XBT_PUBLIC(xbt_set_elm_t) xbt_set_get_by_name(xbt_set_t set, const char *key);
+XBT_PUBLIC(xbt_set_elm_t) xbt_set_get_by_name(xbt_set_t set,
+                                              const char *key);
 XBT_PUBLIC(xbt_set_elm_t) xbt_set_get_by_name_ext(xbt_set_t set,
                                                   const char *key,
                                                   int key_len);
@@ -104,7 +105,7 @@ XBT_PUBLIC(unsigned long) xbt_set_length(const xbt_set_t set);
  */
 
 /** @brief Cursor type */
-     typedef struct xbt_set_cursor_ *xbt_set_cursor_t;
+typedef struct xbt_set_cursor_ *xbt_set_cursor_t;
 
 XBT_PUBLIC(void) xbt_set_cursor_first(xbt_set_t set,
                                       xbt_set_cursor_t * cursor);
@@ -122,4 +123,4 @@ XBT_PUBLIC(int) xbt_set_cursor_get_or_free(xbt_set_cursor_t * cursor,
 
 /* @} */
 SG_END_DECL()
-#endif /* _XBT_SET_H */
+#endif                          /* _XBT_SET_H */

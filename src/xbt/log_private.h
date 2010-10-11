@@ -36,4 +36,4 @@ XBT_PUBLIC(void) xbt_log_parent_set(xbt_log_category_t cat,
                                     xbt_log_category_t parent);
 
 
-#endif /* LOG_PRIVATE_H */
+#endif                          /* LOG_PRIVATE_H */

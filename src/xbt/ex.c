@@ -176,10 +176,10 @@ void __xbt_ex_terminate_default(xbt_ex_t * e)
 /* the externally visible API */
 XBT_EXPORT_NO_IMPORT(ex_ctx_cb_t) __xbt_ex_ctx = &__xbt_ex_ctx_default;
 XBT_EXPORT_NO_IMPORT(ex_term_cb_t) __xbt_ex_terminate =
-  &__xbt_ex_terminate_default;
+    &__xbt_ex_terminate_default;
 
 
-     void xbt_ex_free(xbt_ex_t e)
+void xbt_ex_free(xbt_ex_t e)
 {
   int i;
 
@@ -422,7 +422,7 @@ static void good_example(void)
       cp3 = mallocex(SMALLAMOUNT);
       strcpy(cp1, "foo");
       strcpy(cp2, "bar");
-    } TRY_CLEANUP {                 /*04 */
+    } TRY_CLEANUP {             /*04 */
       printf("cp3=%s", cp3 == NULL /*02 */ ? "" : cp3);
       if (cp3 != NULL)
         free(cp3);
@@ -437,4 +437,4 @@ static void good_example(void)
   }
   /* end_of_good_example */
 }
-#endif /* SIMGRID_TEST */
+#endif                          /* SIMGRID_TEST */

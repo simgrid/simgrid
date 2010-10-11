@@ -86,7 +86,8 @@ XBT_INLINE void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor)
  * @param      dict   on what to let the cursor iterate
  * @param[out] cursor dest address
  */
-XBT_INLINE void xbt_dict_cursor_first(const xbt_dict_t dict, xbt_dict_cursor_t * cursor)
+XBT_INLINE void xbt_dict_cursor_first(const xbt_dict_t dict,
+                                      xbt_dict_cursor_t * cursor)
 {
   DEBUG0("xbt_dict_cursor_first");
   if (!*cursor) {
@@ -141,7 +142,7 @@ XBT_INLINE void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
  * @returns true if it's ok, false if there is no more data
  */
 XBT_INLINE int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
-                                char **key, void **data)
+                                           char **key, void **data)
 {
 
   xbt_dictelm_t current;
@@ -194,16 +195,14 @@ XBT_INLINE void *xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor)
  * @param free_ctn the function to free the new data
  */
 XBT_INLINE void xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor,
-                                         void *data, void_f_pvoid_t free_ctn)
+                                         void *data,
+                                         void_f_pvoid_t free_ctn)
 {
   __cursor_not_null(cursor);
-  if(cursor->current->free_f)
+  if (cursor->current->free_f)
     cursor->current->free_f(cursor->current->content);
-  
+
   cursor->current->content = data;
   cursor->current->free_f = free_ctn;
   return;
 }
-
-
-

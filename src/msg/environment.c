@@ -37,11 +37,11 @@ m_host_t MSG_get_host_by_name(const char *name)
 {
   smx_host_t simix_h = NULL;
   simix_h = SIMIX_host_get_by_name(name);
-  
+
   if (simix_h == NULL)
     return NULL;
 
-  return (m_host_t)SIMIX_host_get_data(simix_h);
+  return (m_host_t) SIMIX_host_get_data(simix_h);
 }
 
 /** \ingroup msg_easier_life
@@ -83,17 +83,19 @@ void MSG_create_environment(const char *file)
  * and the routing table
  */
 
-void MSG_load_platform_script(const char *script_file) {
+void MSG_load_platform_script(const char *script_file)
+{
 #ifdef HAVE_LUA
-    lua_State *L = lua_open();
-    luaL_openlibs(L);
+  lua_State *L = lua_open();
+  luaL_openlibs(L);
 
-    if (luaL_loadfile(L, script_file) || lua_pcall(L, 0, 0, 0)) {
-         printf("error: %s\n", lua_tostring(L, -1));
-         return;
-       }
-#else
-    xbt_die("Lua is not available!! to call MSG_load_platform_script, lua should be available...");
-#endif
+  if (luaL_loadfile(L, script_file) || lua_pcall(L, 0, 0, 0)) {
+    printf("error: %s\n", lua_tostring(L, -1));
     return;
+  }
+#else
+  xbt_die
+      ("Lua is not available!! to call MSG_load_platform_script, lua should be available...");
+#endif
+  return;
 }

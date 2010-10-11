@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-#line 293 "xbt/xbt_strbuff.c" 
+#line 294 "xbt/xbt_strbuff.c" 
 #include "xbt/strbuff.h"
 
 /* buffstr have 512 chars by default. Adding 1000 chars like this will force a resize, allowing us to test that b->used and b->size are consistent */
@@ -54,7 +54,7 @@ static void mytest(const char *input, const char *patterns,
   xbt_strbuff_free(sb);
 }
 
-XBT_TEST_UNIT("xbt_strbuff_substitute", test_strbuff_substitute,"test the function xbt_strbuff_substitute")
+XBT_TEST_UNIT("xbt_strbuff_substitute", test_strbuff_substitute, "test the function xbt_strbuff_substitute")
 {
   xbt_test_add0("Empty");
   mytest("", "", "");
@@ -123,7 +123,8 @@ XBT_TEST_UNIT("xbt_strbuff_substitute", test_strbuff_substitute,"test the functi
   xbt_test_add0("Value much longer, no braces, data before and after");
   mytest("toto $t tata", "t=" force_resize, "toto " force_resize " tata");
   xbt_test_add0("Value much longer, braces, data before and after");
-  mytest("toto ${t} tata", "t=" force_resize, "toto " force_resize " tata");
+  mytest("toto ${t} tata", "t=" force_resize,
+         "toto " force_resize " tata");
 
   xbt_test_add0("Escaped $");
   mytest("\\$tutu", "tutu=t", "\\$tutu");

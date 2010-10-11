@@ -10,37 +10,37 @@
 
 #include "instr/private.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(tracing,"Tracing Interface");
+XBT_LOG_NEW_DEFAULT_CATEGORY(tracing, "Tracing Interface");
 
 static xbt_dict_t defined_types;
 static xbt_dict_t created_categories;
 
-int TRACE_start ()
+int TRACE_start()
 {
-  if (!TRACE_is_configured()){
-    THROW0 (tracing_error, TRACE_ERROR_START,
-            "TRACE_start should be called after SimGrid initialization functions.");
+  if (!TRACE_is_configured()) {
+    THROW0(tracing_error, TRACE_ERROR_START,
+           "TRACE_start should be called after SimGrid initialization functions.");
     return 0;
   }
 
-  if (IS_TRACING) { /* what? trace is already active... ignore.. */
-    THROW0 (tracing_error, TRACE_ERROR_START,
-	         "TRACE_start called, but tracing is already active.");
+  if (IS_TRACING) {             /* what? trace is already active... ignore.. */
+    THROW0(tracing_error, TRACE_ERROR_START,
+           "TRACE_start called, but tracing is already active.");
     return 0;
   }
 
-  char *filename = TRACE_get_filename ();
-  if (!filename){
-    THROW0 (tracing_error, TRACE_ERROR_START,
-            "Trace filename is not initialized.");
+  char *filename = TRACE_get_filename();
+  if (!filename) {
+    THROW0(tracing_error, TRACE_ERROR_START,
+           "Trace filename is not initialized.");
     return 0;
   }
   FILE *file = fopen(filename, "w");
   if (!file) {
-    THROW1 (tracing_error, TRACE_ERROR_START,
-    		"Tracefile %s could not be opened for writing.", filename);
+    THROW1(tracing_error, TRACE_ERROR_START,
+           "Tracefile %s could not be opened for writing.", filename);
   } else {
-    TRACE_paje_start (file);
+    TRACE_paje_start(file);
   }
   TRACE_paje_create_header();
 
@@ -49,169 +49,195 @@ int TRACE_start ()
   pajeDefineContainerType("HOST", "PLATFORM", "HOST");
   pajeDefineContainerType("LINK", "PLATFORM", "LINK");
 
-  if (IS_TRACING_PLATFORM){
-    pajeDefineVariableType ("power", "HOST", "power");
-    pajeDefineVariableType ("power_used", "HOST", "power_used");
-    pajeDefineVariableType ("bandwidth", "LINK", "bandwidth");
-    pajeDefineVariableType ("bandwidth_used", "LINK", "bandwidth_used");
-    pajeDefineVariableType ("latency", "LINK", "latency");
-    pajeDefineEventType ("source", "LINK", "source");
-    pajeDefineEventType ("destination", "LINK", "destination");
+  if (IS_TRACING_PLATFORM) {
+    pajeDefineVariableType("power", "HOST", "power");
+    pajeDefineVariableType("power_used", "HOST", "power_used");
+    pajeDefineVariableType("bandwidth", "LINK", "bandwidth");
+    pajeDefineVariableType("bandwidth_used", "LINK", "bandwidth_used");
+    pajeDefineVariableType("latency", "LINK", "latency");
+    pajeDefineEventType("source", "LINK", "source");
+    pajeDefineEventType("destination", "LINK", "destination");
   }
 
-  if (IS_TRACING_PROCESSES || IS_TRACING_VOLUME){
+  if (IS_TRACING_PROCESSES || IS_TRACING_VOLUME) {
     //processes grouped by host
     pajeDefineContainerType("PROCESS", "HOST", "PROCESS");
   }
 
-  if (IS_TRACING_PROCESSES){
+  if (IS_TRACING_PROCESSES) {
     pajeDefineStateType("category", "PROCESS", "category");
     pajeDefineStateType("presence", "PROCESS", "presence");
   }
 
-  if (IS_TRACING_VOLUME){
-    pajeDefineLinkType ("volume", "0", "PROCESS", "PROCESS", "volume");
+  if (IS_TRACING_VOLUME) {
+    pajeDefineLinkType("volume", "0", "PROCESS", "PROCESS", "volume");
   }
 
-  if (IS_TRACING_TASKS){
+  if (IS_TRACING_TASKS) {
     //tasks grouped by host
     pajeDefineContainerType("TASK", "HOST", "TASK");
     pajeDefineStateType("category", "TASK", "category");
     pajeDefineStateType("presence", "TASK", "presence");
   }
 
-  if (IS_TRACING_SMPI){
-    pajeDefineContainerType ("MPI_PROCESS", "HOST", "MPI_PROCESS");
-    pajeDefineStateType ("MPI_STATE", "MPI_PROCESS", "MPI_STATE");
-    pajeDefineLinkType ("MPI_LINK", "0", "MPI_PROCESS", "MPI_PROCESS", "MPI_LINK");
+  if (IS_TRACING_SMPI) {
+    pajeDefineContainerType("MPI_PROCESS", "HOST", "MPI_PROCESS");
+    pajeDefineStateType("MPI_STATE", "MPI_PROCESS", "MPI_STATE");
+    pajeDefineLinkType("MPI_LINK", "0", "MPI_PROCESS", "MPI_PROCESS",
+                       "MPI_LINK");
   }
 
   /* creating the platform */
-  pajeCreateContainer(MSG_get_clock(), "platform", "PLATFORM", "0", "simgrid-platform");
+  pajeCreateContainer(MSG_get_clock(), "platform", "PLATFORM", "0",
+                      "simgrid-platform");
 
   /* other trace initialization */
   defined_types = xbt_dict_new();
   created_categories = xbt_dict_new();
-  TRACE_msg_task_alloc ();
-  TRACE_category_alloc ();
-  TRACE_surf_alloc ();
-  TRACE_msg_process_alloc ();
-  TRACE_smpi_alloc ();
+  TRACE_msg_task_alloc();
+  TRACE_category_alloc();
+  TRACE_surf_alloc();
+  TRACE_msg_process_alloc();
+  TRACE_smpi_alloc();
 
   return 0;
 }
 
-int TRACE_end() {
-	FILE *file = NULL;
-  if (!IS_TRACING) return 1;
+int TRACE_end()
+{
+  FILE *file = NULL;
+  if (!IS_TRACING)
+    return 1;
   file = TRACE_paje_end();
-  fclose (file);
+  fclose(file);
   return 0;
 }
 
-int TRACE_category (const char *category)
+int TRACE_category(const char *category)
 {
   static int first_time = 1;
-  if (!IS_TRACING) return 1;
+  if (!IS_TRACING)
+    return 1;
 
-  if (first_time){
-	  TRACE_define_type ("user_type", "0", 1);
-	  first_time = 0;
+  if (first_time) {
+    TRACE_define_type("user_type", "0", 1);
+    first_time = 0;
   }
-  return TRACE_create_category (category, "user_type", "0");
+  return TRACE_create_category(category, "user_type", "0");
 }
 
-void TRACE_define_type (const char *type,
-		const char *parent_type, int final) {
-	char *val_one = NULL;
-  if (!IS_TRACING) return;
+void TRACE_define_type(const char *type,
+                       const char *parent_type, int final)
+{
+  char *val_one = NULL;
+  if (!IS_TRACING)
+    return;
 
   //check if type is already defined
-  if (xbt_dict_get_or_null (defined_types, type)){
-    THROW1 (tracing_error, TRACE_ERROR_TYPE_ALREADY_DEFINED, "Type %s is already defined", type);
+  if (xbt_dict_get_or_null(defined_types, type)) {
+    THROW1(tracing_error, TRACE_ERROR_TYPE_ALREADY_DEFINED,
+           "Type %s is already defined", type);
   }
   //check if parent_type is already defined
-  if (strcmp(parent_type, "0") && !xbt_dict_get_or_null (defined_types, parent_type)) {
-    THROW1 (tracing_error, TRACE_ERROR_TYPE_NOT_DEFINED, "Type (used as parent) %s is not defined", parent_type);
+  if (strcmp(parent_type, "0")
+      && !xbt_dict_get_or_null(defined_types, parent_type)) {
+    THROW1(tracing_error, TRACE_ERROR_TYPE_NOT_DEFINED,
+           "Type (used as parent) %s is not defined", parent_type);
   }
 
   pajeDefineContainerType(type, parent_type, type);
   if (final) {
     //for m_process_t
-    if (IS_TRACING_PROCESSES) pajeDefineContainerType ("process", type, "process");
-    if (IS_TRACING_PROCESSES) pajeDefineStateType ("process-state", "process", "process-state");
+    if (IS_TRACING_PROCESSES)
+      pajeDefineContainerType("process", type, "process");
+    if (IS_TRACING_PROCESSES)
+      pajeDefineStateType("process-state", "process", "process-state");
 
-    if (IS_TRACING_TASKS) pajeDefineContainerType ("task", type, "task");
-    if (IS_TRACING_TASKS) pajeDefineStateType ("task-state", "task", "task-state");
+    if (IS_TRACING_TASKS)
+      pajeDefineContainerType("task", type, "task");
+    if (IS_TRACING_TASKS)
+      pajeDefineStateType("task-state", "task", "task-state");
   }
-  val_one = xbt_strdup ("1");
-  xbt_dict_set (defined_types, type, &val_one, xbt_free);
+  val_one = xbt_strdup("1");
+  xbt_dict_set(defined_types, type, &val_one, xbt_free);
 }
 
-int TRACE_create_category (const char *category,
-		const char *type, const char *parent_category)
+int TRACE_create_category(const char *category,
+                          const char *type, const char *parent_category)
 {
   char state[100];
   char *val_one = NULL;
-  if (!IS_TRACING) return 1;
+  if (!IS_TRACING)
+    return 1;
 
   //check if type is defined
-  if (!xbt_dict_get_or_null (defined_types, type)) {
-	 THROW1 (tracing_error, TRACE_ERROR_TYPE_NOT_DEFINED, "Type %s is not defined", type);
-	 return 1;
+  if (!xbt_dict_get_or_null(defined_types, type)) {
+    THROW1(tracing_error, TRACE_ERROR_TYPE_NOT_DEFINED,
+           "Type %s is not defined", type);
+    return 1;
   }
   //check if parent_category exists
-  if (strcmp(parent_category, "0") && !xbt_dict_get_or_null (created_categories, parent_category)){
-     THROW1 (tracing_error, TRACE_ERROR_CATEGORY_NOT_DEFINED, "Category (used as parent) %s is not created", parent_category);
-     return 1;
+  if (strcmp(parent_category, "0")
+      && !xbt_dict_get_or_null(created_categories, parent_category)) {
+    THROW1(tracing_error, TRACE_ERROR_CATEGORY_NOT_DEFINED,
+           "Category (used as parent) %s is not created", parent_category);
+    return 1;
   }
   //check if category is created
-  if (xbt_dict_get_or_null (created_categories, category)){
-     return 1;
+  if (xbt_dict_get_or_null(created_categories, category)) {
+    return 1;
   }
 
-  pajeCreateContainer(MSG_get_clock(), category, type, parent_category, category);
+  pajeCreateContainer(MSG_get_clock(), category, type, parent_category,
+                      category);
 
   /* for registering application categories on top of platform */
 
-  snprintf (state, 100, "b%s", category);
-  if (IS_TRACING_PLATFORM) pajeDefineVariableType (state, "LINK", state);
-  snprintf (state, 100, "p%s", category);
-  if (IS_TRACING_PLATFORM) pajeDefineVariableType (state, "HOST", state);
+  snprintf(state, 100, "b%s", category);
+  if (IS_TRACING_PLATFORM)
+    pajeDefineVariableType(state, "LINK", state);
+  snprintf(state, 100, "p%s", category);
+  if (IS_TRACING_PLATFORM)
+    pajeDefineVariableType(state, "HOST", state);
 
-  val_one = xbt_strdup ("1");
-  xbt_dict_set (created_categories, category, &val_one, xbt_free);
+  val_one = xbt_strdup("1");
+  xbt_dict_set(created_categories, category, &val_one, xbt_free);
   return 0;
 }
 
-void TRACE_declare_mark (const char *mark_type)
+void TRACE_declare_mark(const char *mark_type)
 {
-  if (!IS_TRACING) return;
-  if (!mark_type) return;
+  if (!IS_TRACING)
+    return;
+  if (!mark_type)
+    return;
 
-  pajeDefineEventType (mark_type, "0", mark_type);
+  pajeDefineEventType(mark_type, "0", mark_type);
 }
 
-void TRACE_mark (const char *mark_type, const char *mark_value)
+void TRACE_mark(const char *mark_type, const char *mark_value)
 {
-  if (!IS_TRACING) return;
-  if (!mark_type || !mark_value) return;
+  if (!IS_TRACING)
+    return;
+  if (!mark_type || !mark_value)
+    return;
 
-  pajeNewEvent (MSG_get_clock(), mark_type, "0", mark_value);
+  pajeNewEvent(MSG_get_clock(), mark_type, "0", mark_value);
 }
 
-int TRACE_smpi_set_category (const char *category)
+int TRACE_smpi_set_category(const char *category)
 {
   //if category is NULL, trace of platform is disabled
-  if (!IS_TRACING) return 1;
-  if (category != NULL){
-    int ret = TRACE_category (category);
-    TRACE_category_set (SIMIX_process_self(), category);
+  if (!IS_TRACING)
+    return 1;
+  if (category != NULL) {
+    int ret = TRACE_category(category);
+    TRACE_category_set(SIMIX_process_self(), category);
     return ret;
-  }else{
-    TRACE_category_unset (SIMIX_process_self());
+  } else {
+    TRACE_category_unset(SIMIX_process_self());
     return 0;
   }
 }
 
-#endif /* HAVE_TRACING */
+#endif                          /* HAVE_TRACING */

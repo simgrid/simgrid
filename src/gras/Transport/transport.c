@@ -218,10 +218,11 @@ gras_socket_server_ext(unsigned short port,
   }
 
   if (!measurement)
-    ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->myport =
-      port;
+    ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->myport
+        = port;
   xbt_dynar_push(((gras_trp_procdata_t)
-                  gras_libdata_by_id(gras_trp_libdata_id))->sockets, &sock);
+                  gras_libdata_by_id(gras_trp_libdata_id))->sockets,
+                 &sock);
 
   gras_msg_listener_awake();
   return sock;
@@ -282,7 +283,8 @@ gras_socket_client_ext(const char *host,
 
   trp = gras_trp_plugin_get_by_name(gras_if_SG()? "sg" : "tcp");
 
-  DEBUG1("Create a client socket from plugin %s", gras_if_RL()? "tcp" : "sg");
+  DEBUG1("Create a client socket from plugin %s",
+         gras_if_RL()? "tcp" : "sg");
   /* defaults settings */
   gras_trp_socket_new(0, &sock);
   sock->plugin = trp;
@@ -302,7 +304,8 @@ gras_socket_client_ext(const char *host,
     RETHROW;
   }
   xbt_dynar_push(((gras_trp_procdata_t)
-                  gras_libdata_by_id(gras_trp_libdata_id))->sockets, &sock);
+                  gras_libdata_by_id(gras_trp_libdata_id))->sockets,
+                 &sock);
   gras_msg_listener_awake();
   return sock;
 }
@@ -332,15 +335,17 @@ gras_socket_t gras_socket_client_from_string(const char *host)
   return res;
 }
 
-void gras_socket_close_voidp(void *sock) {
-  gras_socket_close((gras_socket_t)sock);
+void gras_socket_close_voidp(void *sock)
+{
+  gras_socket_close((gras_socket_t) sock);
 }
 
 /** \brief Close socket */
 void gras_socket_close(gras_socket_t sock)
 {
   xbt_dynar_t sockets =
-    ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
+      ((gras_trp_procdata_t)
+       gras_libdata_by_id(gras_trp_libdata_id))->sockets;
   gras_socket_t sock_iter = NULL;
   unsigned int cursor;
 
@@ -352,7 +357,7 @@ void gras_socket_close(gras_socket_t sock)
 
     if (sock->moredata)
       CRITICAL0
-        ("Closing a socket having more data in buffer. Option nomoredata_on_close disabled, so continuing.");
+          ("Closing a socket having more data in buffer. Option nomoredata_on_close disabled, so continuing.");
     _gras_lastly_selected_socket = NULL;
   }
 
@@ -378,8 +383,9 @@ void gras_socket_close(gras_socket_t sock)
         return;
       }
     }
-    WARN1("Ignoring request to free an unknown socket (%p). Execution stack:",
-          sock);
+    WARN1
+        ("Ignoring request to free an unknown socket (%p). Execution stack:",
+         sock);
     xbt_backtrace_display_current();
   }
   XBT_OUT;
@@ -494,14 +500,15 @@ void gras_socket_meas_send(gras_socket_t peer,
 
   for (sent_sofar = 0; sent_sofar < msg_amount; sent_sofar++) {
     CDEBUG5(gras_trp_meas,
-            "Sent %lu msgs of %lu (size of each: %ld) to %s:%d", sent_sofar,
-            msg_amount, msg_size, gras_socket_peer_name(peer),
+            "Sent %lu msgs of %lu (size of each: %ld) to %s:%d",
+            sent_sofar, msg_amount, msg_size, gras_socket_peer_name(peer),
             gras_socket_peer_port(peer));
     (*peer->plugin->raw_send) (peer, chunk, msg_size);
   }
-  CDEBUG5(gras_trp_meas, "Sent %lu msgs of %lu (size of each: %ld) to %s:%d",
-          sent_sofar, msg_amount, msg_size,
-          gras_socket_peer_name(peer), gras_socket_peer_port(peer));
+  CDEBUG5(gras_trp_meas,
+          "Sent %lu msgs of %lu (size of each: %ld) to %s:%d", sent_sofar,
+          msg_amount, msg_size, gras_socket_peer_name(peer),
+          gras_socket_peer_port(peer));
 
   if (gras_if_RL())
     free(chunk);
@@ -539,14 +546,14 @@ void gras_socket_meas_recv(gras_socket_t peer,
 
   for (got_sofar = 0; got_sofar < msg_amount; got_sofar++) {
     CDEBUG5(gras_trp_meas,
-            "Recvd %ld msgs of %lu (size of each: %ld) from %s:%d", got_sofar,
-            msg_amount, msg_size, gras_socket_peer_name(peer),
+            "Recvd %ld msgs of %lu (size of each: %ld) from %s:%d",
+            got_sofar, msg_amount, msg_size, gras_socket_peer_name(peer),
             gras_socket_peer_port(peer));
     (peer->plugin->raw_recv) (peer, chunk, msg_size);
   }
   CDEBUG5(gras_trp_meas,
-          "Recvd %ld msgs of %lu (size of each: %ld) from %s:%d", got_sofar,
-          msg_amount, msg_size, gras_socket_peer_name(peer),
+          "Recvd %ld msgs of %lu (size of each: %ld) from %s:%d",
+          got_sofar, msg_amount, msg_size, gras_socket_peer_name(peer),
           gras_socket_peer_port(peer));
 
   if (gras_if_RL())
@@ -617,7 +624,7 @@ static void gras_trp_procdata_free(void *data)
 void gras_trp_socketset_dump(const char *name)
 {
   gras_trp_procdata_t procdata =
-    (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
+      (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
 
   unsigned int it;
   gras_socket_t s;
@@ -638,8 +645,8 @@ int gras_trp_libdata_id;
 void gras_trp_register()
 {
   gras_trp_libdata_id =
-    gras_procdata_add("gras_trp", gras_trp_procdata_new,
-                      gras_trp_procdata_free);
+      gras_procdata_add("gras_trp", gras_trp_procdata_new,
+                        gras_trp_procdata_free);
 }
 
 int gras_os_myport(void)

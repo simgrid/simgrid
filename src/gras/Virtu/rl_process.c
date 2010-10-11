@@ -15,23 +15,23 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu_process);
 /* globals */
 static gras_procdata_t *_gras_procdata = NULL;
 XBT_EXPORT_NO_IMPORT(char const *) _gras_procname = NULL;
-     static xbt_dict_t _process_properties = NULL;
-     static xbt_dict_t _host_properties = NULL;
+static xbt_dict_t _process_properties = NULL;
+static xbt_dict_t _host_properties = NULL;
 
 # ifdef __APPLE__
-	/* under darwin, the environment gets added to the process at startup time. So, it's not defined at library link time, forcing us to extra tricks */
-	# include <crt_externs.h>
-	# define environ (*_NSGetEnviron())
+        /* under darwin, the environment gets added to the process at startup time. So, it's not defined at library link time, forcing us to extra tricks */
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
 # else
-	#ifdef _XBT_WIN32
-		 /* the environment, as specified by the opengroup, used to initialize the process properties */
-		 extern char **wenviron;
-	#else
-		 extern char **environ;
-	#endif
+#ifdef _XBT_WIN32
+                 /* the environment, as specified by the opengroup, used to initialize the process properties */
+extern char **wenviron;
+#else
+extern char **environ;
+#endif
 # endif
 
-     void gras_process_init()
+void gras_process_init()
 {
   char **env_iter;
   _gras_procdata = xbt_new0(gras_procdata_t, 1);
@@ -46,12 +46,13 @@ XBT_EXPORT_NO_IMPORT(char const *) _gras_procname = NULL;
     equal = strchr(buf, '=');
     if (!equal) {
       WARN1
-        ("The environment contains an entry without '=' char: %s (ignore it)",
-         *env_iter);
+          ("The environment contains an entry without '=' char: %s (ignore it)",
+           *env_iter);
       continue;
     }
     *equal = '\0';
-    xbt_dict_set(_process_properties, buf, xbt_strdup(equal + 1), xbt_free_f);
+    xbt_dict_set(_process_properties, buf, xbt_strdup(equal + 1),
+                 xbt_free_f);
     free(buf);
     env_iter++;
   }

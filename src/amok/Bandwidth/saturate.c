@@ -175,7 +175,8 @@ void amok_bw_saturate_begin(const char *to_name, unsigned int to_port,
 
   /* Launch the saturation */
 
-  ctx = gras_msg_rpc_async_call(peer_cmd, 60, "amok_bw_sat begin", &request);
+  ctx =
+      gras_msg_rpc_async_call(peer_cmd, 60, "amok_bw_sat begin", &request);
   free(request);
   gras_msg_rpc_async_wait(ctx, &request);
   meas = gras_socket_client_ext(to_name, request->peer.port,
@@ -247,9 +248,9 @@ void amok_bw_saturate_begin(const char *to_name, unsigned int to_port,
     free(answer);
   } else {
     INFO6
-      ("Saturation from %s:%d to %s:%d elapsed after %f sec (achieving %f kb/s)",
-       gras_os_myname(), gras_os_myport(), to_name, to_port, elapsed,
-       bw / 1024.0);
+        ("Saturation from %s:%d to %s:%d elapsed after %f sec (achieving %f kb/s)",
+         gras_os_myname(), gras_os_myport(), to_name, to_port, elapsed,
+         bw / 1024.0);
   }
 
   gras_socket_close(meas);
@@ -277,7 +278,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload)
         xbt_ex_free(e);
       else
         RETHROW0
-          ("Error encountered while opening a measurement server socket: %s");
+            ("Error encountered while opening a measurement server socket: %s");
     }
     if (measMaster == NULL)
       port++;                   /* prepare for a new loop */
@@ -337,7 +338,8 @@ void amok_bw_saturate_stop(const char *from_name, unsigned int from_port,
   TRY {
     gras_msg_rpccall(sock, 60, "amok_bw_sat stop", NULL, &answer);
   } CATCH(e) {
-    RETHROW2("Cannot ask %s:%d to stop saturation: %s", from_name, from_port);
+    RETHROW2("Cannot ask %s:%d to stop saturation: %s", from_name,
+             from_port);
   }
   gras_socket_close(sock);
   if (time)

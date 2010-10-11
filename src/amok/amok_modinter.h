@@ -15,4 +15,4 @@ void amok_exit(void);
 /* module creation functions */
 void amok_pm_modulecreate(void);
 
-#endif /* AMOK_BASE_H */
+#endif                          /* AMOK_BASE_H */

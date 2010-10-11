@@ -7,7 +7,7 @@
 #include "surf_private.h"
 
 typedef s_surf_action_lmm_t s_surf_action_cpu_Cas01_t,
-  *surf_action_cpu_Cas01_t;
+    *surf_action_cpu_Cas01_t;
 
 typedef struct cpu_Cas01 {
   s_surf_resource_t generic_resource;
@@ -28,7 +28,8 @@ surf_model_t surf_cpu_model = NULL;
 lmm_system_t cpu_maxmin_system = NULL;
 
 
-static xbt_swag_t cpu_running_action_set_that_does_not_need_being_checked = NULL;
+static xbt_swag_t cpu_running_action_set_that_does_not_need_being_checked =
+    NULL;
 
 static cpu_Cas01_t cpu_new(char *name, double power_peak,
                            double power_scale,
@@ -39,7 +40,8 @@ static cpu_Cas01_t cpu_new(char *name, double power_peak,
 {
   cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
   xbt_assert1(!surf_model_resource_by_name(surf_cpu_model, name),
-              "Host '%s' declared several times in the platform file", name);
+              "Host '%s' declared several times in the platform file",
+              name);
   cpu->generic_resource.model = surf_cpu_model;
   cpu->generic_resource.name = name;
   cpu->generic_resource.properties = cpu_properties;
@@ -48,21 +50,21 @@ static cpu_Cas01_t cpu_new(char *name, double power_peak,
   cpu->power_scale = power_scale;
   if (power_trace)
     cpu->power_event =
-      tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
+        tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
 
   cpu->state_current = state_initial;
   if (state_trace)
     cpu->state_event =
-      tmgr_history_add_trace(history, state_trace, 0.0, 0, cpu);
+        tmgr_history_add_trace(history, state_trace, 0.0, 0, cpu);
 
   cpu->constraint =
-    lmm_constraint_new(cpu_maxmin_system, cpu,
-                       cpu->power_scale * cpu->power_peak);
+      lmm_constraint_new(cpu_maxmin_system, cpu,
+                         cpu->power_scale * cpu->power_peak);
 
   xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu,
                surf_resource_free);
 #ifdef HAVE_TRACING
-  TRACE_surf_host_declaration (name, cpu->power_scale * cpu->power_peak);
+  TRACE_surf_host_declaration(name, cpu->power_scale * cpu->power_peak);
 #endif
 
   return cpu;
@@ -116,7 +118,8 @@ static void add_traces_cpu(void)
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
 
-    host->state_event = tmgr_history_add_trace(history, trace, 0.0, 0, host);
+    host->state_event =
+        tmgr_history_add_trace(history, trace, 0.0, 0, host);
   }
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
@@ -126,7 +129,8 @@ static void add_traces_cpu(void)
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
 
-    host->power_event = tmgr_history_add_trace(history, trace, 0.0, 0, host);
+    host->power_event =
+        tmgr_history_add_trace(history, trace, 0.0, 0, host);
   }
 }
 
@@ -152,7 +156,8 @@ static int cpu_action_unref(surf_action_t action)
       lmm_variable_free(cpu_maxmin_system,
                         ((surf_action_cpu_Cas01_t) action)->variable);
 #ifdef HAVE_TRACING
-    if (action->category) xbt_free (action->category);
+    if (action->category)
+      xbt_free(action->category);
 #endif
     free(action);
     return 1;
@@ -196,10 +201,16 @@ static void cpu_update_actions_state(double now, double delta)
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
 #ifdef HAVE_TRACING
-    cpu_Cas01_t x = lmm_constraint_id(lmm_get_cnst_from_var (cpu_maxmin_system, action->variable, 0));
+    cpu_Cas01_t x =
+        lmm_constraint_id(lmm_get_cnst_from_var
+                          (cpu_maxmin_system, action->variable, 0));
 
-    TRACE_surf_host_set_utilization (x->generic_resource.name,
-              action->generic_action.data, (surf_action_t)action, lmm_variable_getvalue(action->variable), now-delta, delta);
+    TRACE_surf_host_set_utilization(x->generic_resource.name,
+                                    action->generic_action.data,
+                                    (surf_action_t) action,
+                                    lmm_variable_getvalue
+                                    (action->variable), now - delta,
+                                    delta);
 #endif
     double_update(&(action->generic_action.remains),
                   lmm_variable_getvalue(action->variable) * delta);
@@ -220,8 +231,8 @@ static void cpu_update_actions_state(double now, double delta)
 }
 
 static void cpu_update_resource_state(void *id,
-                                  tmgr_trace_event_t event_type,
-                                  double value, double date)
+                                      tmgr_trace_event_t event_type,
+                                      double value, double date)
 {
   cpu_Cas01_t cpu = id;
 
@@ -230,7 +241,8 @@ static void cpu_update_resource_state(void *id,
     lmm_update_constraint_bound(cpu_maxmin_system, cpu->constraint,
                                 cpu->power_scale * cpu->power_peak);
 #ifdef HAVE_TRACING
-    TRACE_surf_host_set_power (date, cpu->generic_resource.name, cpu->power_scale * cpu->power_peak);
+    TRACE_surf_host_set_power(date, cpu->generic_resource.name,
+                              cpu->power_scale * cpu->power_peak);
 #endif
     if (tmgr_trace_event_free(event_type))
       cpu->power_event = NULL;
@@ -249,7 +261,8 @@ static void cpu_update_resource_state(void *id,
 
         if (surf_action_state_get(action) == SURF_ACTION_RUNNING ||
             surf_action_state_get(action) == SURF_ACTION_READY ||
-            surf_action_state_get(action) == SURF_ACTION_NOT_IN_THE_SYSTEM) {
+            surf_action_state_get(action) ==
+            SURF_ACTION_NOT_IN_THE_SYSTEM) {
           action->finish = date;
           cpu_action_state_set(action, SURF_ACTION_FAILED);
         }
@@ -272,8 +285,9 @@ static surf_action_t cpu_execute(void *cpu, double size)
 
   XBT_IN2("(%s,%g)", surf_resource_name(CPU), size);
   action =
-    surf_action_new(sizeof(s_surf_action_cpu_Cas01_t), size, surf_cpu_model,
-                    CPU->state_current != SURF_RESOURCE_ON);
+      surf_action_new(sizeof(s_surf_action_cpu_Cas01_t), size,
+                      surf_cpu_model,
+                      CPU->state_current != SURF_RESOURCE_ON);
 
   action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
@@ -302,7 +316,7 @@ static surf_action_t cpu_action_sleep(void *cpu, double duration)
        is used to speed up update_resource_state  */
     xbt_swag_remove(action, ((surf_action_t) action)->state_set);
     ((surf_action_t) action)->state_set =
-      cpu_running_action_set_that_does_not_need_being_checked;
+        cpu_running_action_set_that_does_not_need_being_checked;
     xbt_swag_insert(action, ((surf_action_t) action)->state_set);
   }
 
@@ -316,8 +330,8 @@ static void cpu_action_suspend(surf_action_t action)
   XBT_IN1("(%p)", action);
   if (((surf_action_cpu_Cas01_t) action)->suspended != 2) {
     lmm_update_variable_weight(cpu_maxmin_system,
-                               ((surf_action_cpu_Cas01_t) action)->variable,
-                               0.0);
+                               ((surf_action_cpu_Cas01_t)
+                                action)->variable, 0.0);
     ((surf_action_cpu_Cas01_t) action)->suspended = 1;
   }
   XBT_OUT;
@@ -328,8 +342,8 @@ static void cpu_action_resume(surf_action_t action)
   XBT_IN1("(%p)", action);
   if (((surf_action_cpu_Cas01_t) action)->suspended != 2) {
     lmm_update_variable_weight(cpu_maxmin_system,
-                               ((surf_action_cpu_Cas01_t) action)->variable,
-                               action->priority);
+                               ((surf_action_cpu_Cas01_t)
+                                action)->variable, action->priority);
     ((surf_action_cpu_Cas01_t) action)->suspended = 0;
   }
   XBT_OUT;
@@ -340,7 +354,8 @@ static int cpu_action_is_suspended(surf_action_t action)
   return (((surf_action_cpu_Cas01_t) action)->suspended == 1);
 }
 
-static void cpu_action_set_max_duration(surf_action_t action, double duration)
+static void cpu_action_set_max_duration(surf_action_t action,
+                                        double duration)
 {
   XBT_IN2("(%p,%g)", action, duration);
   action->max_duration = duration;
@@ -382,14 +397,14 @@ static double cpu_get_available_speed(void *cpu)
 }
 
 static void cpu_create_resource(char *name, double power_peak,
-        double power_scale,
-        tmgr_trace_t power_trace,
-        e_surf_resource_state_t state_initial,
-        tmgr_trace_t state_trace,
-        xbt_dict_t cpu_properties)
+                                double power_scale,
+                                tmgr_trace_t power_trace,
+                                e_surf_resource_state_t state_initial,
+                                tmgr_trace_t state_trace,
+                                xbt_dict_t cpu_properties)
 {
-	cpu_new(name,power_peak,power_scale,power_trace,
-					  state_initial,state_trace,cpu_properties);
+  cpu_new(name, power_peak, power_scale, power_trace,
+          state_initial, state_trace, cpu_properties);
 }
 
 static void cpu_finalize(void)
@@ -411,7 +426,7 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model = surf_model_init();
 
   cpu_running_action_set_that_does_not_need_being_checked =
-    xbt_swag_new(xbt_swag_offset(action, state_hookup));
+      xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_cpu_model->name = "CPU";
 
@@ -421,9 +436,10 @@ static void surf_cpu_model_init_internal(void)
 
   surf_cpu_model->model_private->resource_used = cpu_resource_used;
   surf_cpu_model->model_private->share_resources = cpu_share_resources;
-  surf_cpu_model->model_private->update_actions_state = cpu_update_actions_state;
+  surf_cpu_model->model_private->update_actions_state =
+      cpu_update_actions_state;
   surf_cpu_model->model_private->update_resource_state =
-    cpu_update_resource_state;
+      cpu_update_resource_state;
   surf_cpu_model->model_private->finalize = cpu_finalize;
 
   surf_cpu_model->suspend = cpu_action_suspend;
@@ -438,7 +454,8 @@ static void surf_cpu_model_init_internal(void)
 
   surf_cpu_model->extension.cpu.get_state = cpu_get_state;
   surf_cpu_model->extension.cpu.get_speed = cpu_get_speed;
-  surf_cpu_model->extension.cpu.get_available_speed = cpu_get_available_speed;
+  surf_cpu_model->extension.cpu.get_available_speed =
+      cpu_get_available_speed;
   surf_cpu_model->extension.cpu.create_resource = cpu_create_resource;
   surf_cpu_model->extension.cpu.add_traces = add_traces_cpu;
 

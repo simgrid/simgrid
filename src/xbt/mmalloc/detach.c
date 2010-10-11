@@ -10,7 +10,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <unistd.h>   /* close */
+#include <unistd.h>             /* close */
 #include <sys/types.h>
 #include "mmprivate.h"
 
@@ -28,35 +28,31 @@
    region we are about to unmap, so we first make a local copy of it on the
    stack and use the copy. */
 
-void*
-mmalloc_detach (void *md)
+void *mmalloc_detach(void *md)
 {
   struct mdesc mtemp;
 
-  if (md != NULL)
-    {
+  if (md != NULL) {
 
-      mtemp = *(struct mdesc *) md;
-      xbt_os_mutex_destroy(((struct mdesc*)md)->mutex);
-      
-      /* Now unmap all the pages associated with this region by asking for a
-	 negative increment equal to the current size of the region. */
-      
-      if ((mtemp.morecore (&mtemp, (char*)mtemp.base - (char*)mtemp.breakval)) == NULL)
-	{
-	  /* Deallocating failed.  Update the original malloc descriptor
-	     with any changes */
-	  *(struct mdesc *) md = mtemp;
-	}
-      else
-	{
-	  if (mtemp.flags & MMALLOC_DEVZERO)
-	    {
-	      close (mtemp.fd);
-	    }
-	  md = NULL;
-	}
+    mtemp = *(struct mdesc *) md;
+    xbt_os_mutex_destroy(((struct mdesc *) md)->mutex);
+
+    /* Now unmap all the pages associated with this region by asking for a
+       negative increment equal to the current size of the region. */
+
+    if ((mtemp.morecore(&mtemp,
+                        (char *) mtemp.base - (char *) mtemp.breakval)) ==
+        NULL) {
+      /* Deallocating failed.  Update the original malloc descriptor
+         with any changes */
+      *(struct mdesc *) md = mtemp;
+    } else {
+      if (mtemp.flags & MMALLOC_DEVZERO) {
+        close(mtemp.fd);
+      }
+      md = NULL;
     }
+  }
 
   return (md);
 }

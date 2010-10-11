@@ -17,12 +17,12 @@ SG_BEGIN_DECL()
 /*
  * Initialization of the mailbox module.
  */
-     void MSG_mailbox_mod_init(void);
+void MSG_mailbox_mod_init(void);
 
 /*
  * Terminaison of the mailbox module.
  */
-     void MSG_mailbox_mod_exit(void);
+void MSG_mailbox_mod_exit(void);
 
 
 /*! \brief MSG_mailbox_new - create a new mailbox.
@@ -35,7 +35,7 @@ SG_BEGIN_DECL()
  * \return		The newly created mailbox.
  */
 XBT_PUBLIC(msg_mailbox_t)
-  MSG_mailbox_new(const char *alias);
+    MSG_mailbox_new(const char *alias);
 
 /*! \brief MSG_mailbox_create - create a new mailbox.
  *
@@ -48,7 +48,7 @@ XBT_PUBLIC(msg_mailbox_t)
  *
  * \return		The newly created mailbox.
  */
-     msg_mailbox_t MSG_mailbox_create(const char *alias);
+msg_mailbox_t MSG_mailbox_create(const char *alias);
 
 /* \brief MSG_mailbox_free - release a mailbox from the memory.
  *
@@ -59,7 +59,7 @@ XBT_PUBLIC(msg_mailbox_t)
  *
  * \see			MSG_mailbox_destroy.
  */
-     void MSG_mailbox_free(void *mailbox);
+void MSG_mailbox_free(void *mailbox);
 
 /* \brief MSG_mailbox_get_by_alias - get a mailbox from its alias.
  *
@@ -73,7 +73,7 @@ XBT_PUBLIC(msg_mailbox_t)
  *		or a new mailbox if the key does not match.
  */
 XBT_PUBLIC(msg_mailbox_t)
-  MSG_mailbox_get_by_alias(const char *alias);
+    MSG_mailbox_get_by_alias(const char *alias);
 
 /* \brief MSG_mailbox_get_by_channel - get a mailbox of the specified host from its channel.
  *
@@ -89,7 +89,7 @@ XBT_PUBLIC(msg_mailbox_t)
  *
  */
 XBT_PUBLIC(msg_mailbox_t)
-  MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel);
+    MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel);
 
 /*! \brief MSG_mailbox_get_alias - get the alias associated with the mailbox.
  *
@@ -112,7 +112,7 @@ XBT_PUBLIC(const char *) MSG_mailbox_get_alias(msg_mailbox_t mailbox);
  * \return The simix condition of the mailbox specified by the parameter mailbox.
  */
 XBT_PUBLIC(smx_cond_t)
-  MSG_mailbox_get_cond(msg_mailbox_t mailbox);
+    MSG_mailbox_get_cond(msg_mailbox_t mailbox);
 
 /*! \brief MSG_mailbox_set_cond - set the simix condition of a mailbox.
  *
@@ -123,7 +123,8 @@ XBT_PUBLIC(smx_cond_t)
  * \param cond		The new simix condition of the mailbox.
  *
  */
-XBT_PUBLIC(void) MSG_mailbox_set_cond(msg_mailbox_t mailbox, smx_cond_t cond);
+XBT_PUBLIC(void) MSG_mailbox_set_cond(msg_mailbox_t mailbox,
+                                      smx_cond_t cond);
 
 /*! \brief MSG_mailbox_is_empty - test if a mailbox is empty.
  *
@@ -148,7 +149,7 @@ XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
  * \return		The task at the head of the mailbox.
  */
 XBT_PUBLIC(m_task_t)
-  MSG_mailbox_get_head(msg_mailbox_t mailbox);
+    MSG_mailbox_get_head(msg_mailbox_t mailbox);
 
 /*! \brief MSG_mailbox_get_count_host_waiting_tasks - Return the number of tasks
    waiting to be received in a mailbox and sent by a host.
@@ -167,4 +168,4 @@ MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,
 
 
 SG_END_DECL()
-#endif /* !SMX_MAILBOX_H */
+#endif                          /* !SMX_MAILBOX_H */

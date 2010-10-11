@@ -63,4 +63,4 @@ void amok_bw_sat_start(const char *from_name, unsigned int from_port,
                        const char *to_name, unsigned int to_port,
                        unsigned int msg_size, unsigned int duration);
 
-#endif /* AMOK_BANDWIDTH_PRIVATE_H */
+#endif                          /* AMOK_BANDWIDTH_PRIVATE_H */

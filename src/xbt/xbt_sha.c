@@ -150,8 +150,8 @@ static void sha_calculate(xbt_sha_t sha)
 
   for (i = 16; i < 80; i++)
     sha->buf[i] =
-      SRL(sha->buf[i - 3] ^ sha->buf[i - 8] ^ sha->
-          buf[i - 14] ^ sha->buf[i - 16], 1);
+        SRL(sha->buf[i - 3] ^ sha->buf[i - 8] ^ sha->
+            buf[i - 14] ^ sha->buf[i - 16], 1);
 
   A = sha->hash[0];
   B = sha->hash[1];
@@ -219,4 +219,4 @@ XBT_TEST_UNIT("sha", test_crypto_sha, "Test of the sha algorithm")
            "373ba8be29d4d95708bf7cd43038f4e409dcb439");
 
 }
-#endif /* SIMGRID_TEST */
+#endif                          /* SIMGRID_TEST */

@@ -86,7 +86,8 @@ void gras_trp_sg_setup(gras_trp_plugin_t plug)
 }
 
 void gras_trp_sg_socket_client(gras_trp_plugin_t self,
-                               /* OUT */ gras_socket_t sock) {
+                               /* OUT */ gras_socket_t sock)
+{
 
   smx_host_t peer;
   gras_hostdata_t *hd;
@@ -100,14 +101,15 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
 
   if (!(hd = (gras_hostdata_t *) SIMIX_host_get_data(peer)))
     THROW1(mismatch_error, 0,
-           "can't connect to %s: no process on this host", sock->peer_name);
+           "can't connect to %s: no process on this host",
+           sock->peer_name);
 
   pr = find_port(hd, sock->peer_port);
 
   if (pr == NULL) {
     THROW2(mismatch_error, 0,
-        "can't connect to %s:%d, no process listen on this port",
-        sock->peer_name, sock->peer_port);
+           "can't connect to %s:%d, no process listen on this port",
+           sock->peer_name, sock->peer_port);
   }
 
   /* Ensure that the listener is expecting the kind of stuff we want to send */
@@ -120,7 +122,8 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
   if (!pr->meas && sock->meas) {
     THROW2(mismatch_error, 0,
            "can't connect to %s:%d in measurement mode, the process listen "
-           "in regular mode on this port", sock->peer_name, sock->peer_port);
+           "in regular mode on this port", sock->peer_name,
+           sock->peer_port);
   }
 
   /* create simulation data of the socket */
@@ -131,7 +134,7 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
   /* initialize synchronization stuff on the socket */
   data->rdv_server = pr->rdv;
   data->rdv_client = SIMIX_rdv_create(NULL);
-  data->comm_recv = SIMIX_network_irecv(data->rdv_client,NULL,0);
+  data->comm_recv = SIMIX_network_irecv(data->rdv_client, NULL, 0);
 
   /* connect that simulation data to the socket */
   sock->data = data;
@@ -139,14 +142,15 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
 
   DEBUG5("%s (PID %d) connects in %s mode to %s:%d",
          SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
-         sock->meas ? "meas" : "regular", sock->peer_name, sock->peer_port);
+         sock->meas ? "meas" : "regular", sock->peer_name,
+         sock->peer_port);
 }
 
 void gras_trp_sg_socket_server(gras_trp_plugin_t self, gras_socket_t sock)
 {
 
   gras_hostdata_t *hd =
-    (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
+      (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
   gras_sg_portrec_t pr;
   gras_trp_sg_sock_data_t data;
 
@@ -163,7 +167,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self, gras_socket_t sock)
            SIMIX_host_get_name(SIMIX_host_self()), sock->port);
 
   /* This port is free, let's take it */
-  pr = xbt_new(s_gras_sg_portrec_t,1);
+  pr = xbt_new(s_gras_sg_portrec_t, 1);
   pr->port = sock->port;
   pr->meas = sock->meas;
   pr->server = SIMIX_process_self();
@@ -176,24 +180,27 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self, gras_socket_t sock)
   data->client = NULL;
   data->rdv_server = pr->rdv;
   data->rdv_client = NULL;
-  data->comm_recv = SIMIX_network_irecv(pr->rdv,NULL,0);
+  data->comm_recv = SIMIX_network_irecv(pr->rdv, NULL, 0);
 
   sock->data = data;
 
-  VERB10("'%s' (%d) ears on %s:%d%s (%p; data:%p); Here rdv: %p; Remote rdv: %p; Comm %p",
-        SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
-        SIMIX_host_get_name(SIMIX_host_self()), sock->port,
-        sock->meas ? " (mode meas)" : "", sock,data,
-        (data->server==SIMIX_process_self())?data->rdv_server:data->rdv_client,
-        (data->server==SIMIX_process_self())?data->rdv_client:data->rdv_server,
-        data->comm_recv);
+  VERB10
+      ("'%s' (%d) ears on %s:%d%s (%p; data:%p); Here rdv: %p; Remote rdv: %p; Comm %p",
+       SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
+       SIMIX_host_get_name(SIMIX_host_self()), sock->port,
+       sock->meas ? " (mode meas)" : "", sock, data,
+       (data->server ==
+        SIMIX_process_self())? data->rdv_server : data->rdv_client,
+       (data->server ==
+        SIMIX_process_self())? data->rdv_client : data->rdv_server,
+       data->comm_recv);
 
 }
 
 void gras_trp_sg_socket_close(gras_socket_t sock)
 {
   gras_hostdata_t *hd =
-    (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
+      (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
   unsigned int cpt;
   gras_sg_portrec_t pr;
 
@@ -219,8 +226,9 @@ void gras_trp_sg_socket_close(gras_socket_t sock)
         return;
       }
     }
-    WARN2("socket_close called on the unknown incoming socket %p (port=%d)",
-          sock, sock->port);
+    WARN2
+        ("socket_close called on the unknown incoming socket %p (port=%d)",
+         sock, sock->port);
   }
   XBT_OUT;
 }
@@ -257,13 +265,14 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
 
   /* creates simix action and waits its ends, waits in the sender host
      condition */
-  if (XBT_LOG_ISENABLED(gras_trp_sg,xbt_log_priority_debug)) {
-    smx_process_t remote_dude = (sock_data->server==SIMIX_process_self())?(sock_data->client):(sock_data->server);
+  if (XBT_LOG_ISENABLED(gras_trp_sg, xbt_log_priority_debug)) {
+    smx_process_t remote_dude =
+        (sock_data->server ==
+         SIMIX_process_self())? (sock_data->client) : (sock_data->server);
     smx_host_t remote_host = SIMIX_process_get_host(remote_dude);
     DEBUG4("send chunk from %s to  %s:%d (size=%ld)",
-        SIMIX_host_get_name(SIMIX_host_self()),
-        SIMIX_host_get_name(remote_host),
-        sock->peer_port, size);
+           SIMIX_host_get_name(SIMIX_host_self()),
+           SIMIX_host_get_name(remote_host), sock->peer_port, size);
   }
   //SIMIX_network_send(sock_data->rdv,size,1,-1,NULL,0,NULL,NULL);
   THROW_UNIMPLEMENTED;
@@ -282,9 +291,9 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
   gras_socket_t remote_socket = NULL;
   gras_msg_t msg_got;
   gras_msg_procdata_t msg_procdata =
-    (gras_msg_procdata_t) gras_libdata_by_name("gras_msg");
+      (gras_msg_procdata_t) gras_libdata_by_name("gras_msg");
   gras_trp_procdata_t trp_proc =
-    (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
+      (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
 
   xbt_assert0(sock->meas,
               "SG chunk exchange shouldn't be used on non-measurement sockets");

@@ -18,23 +18,22 @@
 
 static size_t cache_pagesize;
 #if NEED_DECLARATION_GETPAGESIZE
-extern int getpagesize PARAMS ((void));
+extern int getpagesize PARAMS((void));
 #endif
 
-void*
-mvalloc (void *md, size_t size)
+void *mvalloc(void *md, size_t size)
 {
-  if (cache_pagesize == 0)
-    {
-      cache_pagesize = getpagesize ();
-    }
+  if (cache_pagesize == 0) {
+    cache_pagesize = getpagesize();
+  }
 
-  return (mmemalign (md, cache_pagesize, size));
+  return (mmemalign(md, cache_pagesize, size));
 }
 
 /* Useless prototype to make gcc happy */
-void* valloc (size_t size);
+void *valloc(size_t size);
 
-void* valloc (size_t size) {
-  return mvalloc (NULL, size);
+void *valloc(size_t size)
+{
+  return mvalloc(NULL, size);
 }

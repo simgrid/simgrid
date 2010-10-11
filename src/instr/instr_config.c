@@ -19,44 +19,44 @@
 
 static int trace_configured = 0;
 
-int TRACE_is_configured (void)
+int TRACE_is_configured(void)
 {
   return trace_configured;
 }
 
-int TRACE_smpi_is_enabled (void)
+int TRACE_smpi_is_enabled(void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
 }
 
-int TRACE_platform_is_enabled (void)
+int TRACE_platform_is_enabled(void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_PLATFORM);
 }
 
-int TRACE_msg_task_is_enabled (void)
+int TRACE_msg_task_is_enabled(void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_TASK);
 }
 
-int TRACE_msg_process_is_enabled (void)
+int TRACE_msg_process_is_enabled(void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
 }
 
-int TRACE_msg_volume_is_enabled (void)
+int TRACE_msg_volume_is_enabled(void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_VOLUME);
 }
 
-char *TRACE_get_filename (void)
+char *TRACE_get_filename(void)
 {
-  return xbt_cfg_get_string (_surf_cfg_set, OPT_TRACING_FILENAME);
+  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_FILENAME);
 }
 
-char *TRACE_get_platform_method (void)
+char *TRACE_get_platform_method(void)
 {
-  return xbt_cfg_get_string (_surf_cfg_set, OPT_TRACING_PLATFORM_METHOD);
+  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_PLATFORM_METHOD);
 }
 
 void TRACE_global_init(int *argc, char **argv)
@@ -64,9 +64,9 @@ void TRACE_global_init(int *argc, char **argv)
   /* name of the tracefile */
   char *default_tracing_filename = xbt_strdup("simgrid.trace");
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_FILENAME,
-                    "Trace file created by the instrumented SimGrid.",
-                    xbt_cfgelm_string, &default_tracing_filename, 1, 1,
-                    NULL, NULL);
+                   "Trace file created by the instrumented SimGrid.",
+                   xbt_cfgelm_string, &default_tracing_filename, 1, 1,
+                   NULL, NULL);
 
   /* smpi */
   int default_tracing_smpi = 0;
@@ -83,11 +83,11 @@ void TRACE_global_init(int *argc, char **argv)
                    NULL, NULL);
 
   /* platform method */
-  char *default_tracing_platform_method = xbt_strdup ("b");
+  char *default_tracing_platform_method = xbt_strdup("b");
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM_METHOD,
                    "Tracing method used to register categorized resource behavior.",
-                   xbt_cfgelm_string, &default_tracing_platform_method, 1, 1,
-                   NULL, NULL);
+                   xbt_cfgelm_string, &default_tracing_platform_method, 1,
+                   1, NULL, NULL);
 
   /* msg task */
   int default_tracing_msg_task = 0;

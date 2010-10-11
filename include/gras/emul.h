@@ -167,4 +167,4 @@ XBT_PUBLIC(void) gras_cpu_burn(double flops);
 /** @} */
 
 SG_END_DECL()
-#endif /* GRAS_COND_H */
+#endif                          /* GRAS_COND_H */

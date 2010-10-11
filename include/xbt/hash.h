@@ -28,4 +28,4 @@ XBT_PUBLIC(char *) xbt_sha_read(xbt_sha_t sha);
 XBT_PUBLIC(void) xbt_sha(const char *data, char *hash);
 
 
-#endif /* XBT_HASH_H */
+#endif                          /* XBT_HASH_H */

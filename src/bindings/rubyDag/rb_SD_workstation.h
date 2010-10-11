@@ -20,6 +20,6 @@ static VALUE rb_SD_workstation_list(VALUE Class);
 static VALUE rb_SD_workstation_number(VALUE Class);
 
 // Workstation name
-static VALUE rb_SD_workstation_name(VALUE Class,VALUE workstation);
+static VALUE rb_SD_workstation_name(VALUE Class, VALUE workstation);
 
 #endif

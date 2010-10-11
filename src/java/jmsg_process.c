@@ -27,7 +27,7 @@ void jprocess_delete_global_ref(jobject jprocess, JNIEnv * env)
 jboolean jprocess_is_alive(jobject jprocess, JNIEnv * env)
 {
   jmethodID id =
-    jxbt_get_smethod(env, "simgrid/msg/Process", "isAlive", "()Z");
+      jxbt_get_smethod(env, "simgrid/msg/Process", "isAlive", "()Z");
 
   if (!id)
     return 0;
@@ -37,7 +37,8 @@ jboolean jprocess_is_alive(jobject jprocess, JNIEnv * env)
 
 void jprocess_join(jobject jprocess, JNIEnv * env)
 {
-  jmethodID id = jxbt_get_smethod(env, "simgrid/msg/Process", "join", "()V");
+  jmethodID id =
+      jxbt_get_smethod(env, "simgrid/msg/Process", "join", "()V");
 
   if (!id)
     return;
@@ -48,7 +49,7 @@ void jprocess_join(jobject jprocess, JNIEnv * env)
 void jprocess_exit(jobject jprocess, JNIEnv * env)
 {
   jmethodID id =
-    jxbt_get_smethod(env, "simgrid/msg/Process", "interrupt", "()V");
+      jxbt_get_smethod(env, "simgrid/msg/Process", "interrupt", "()V");
 
   if (!id)
     return;
@@ -59,7 +60,7 @@ void jprocess_exit(jobject jprocess, JNIEnv * env)
 void jprocess_yield(jobject jprocess, JNIEnv * env)
 {
   jmethodID id =
-    jxbt_get_smethod(env, "simgrid/msg/Process", "switchProcess", "()V");
+      jxbt_get_smethod(env, "simgrid/msg/Process", "switchProcess", "()V");
 
   if (!id)
     return;
@@ -70,7 +71,7 @@ void jprocess_yield(jobject jprocess, JNIEnv * env)
 void jprocess_lock_mutex(jobject jprocess, JNIEnv * env)
 {
   jmethodID id =
-    jxbt_get_smethod(env, "simgrid/msg/Process", "lockMutex", "()V");
+      jxbt_get_smethod(env, "simgrid/msg/Process", "lockMutex", "()V");
 
   if (!id)
     return;
@@ -81,7 +82,7 @@ void jprocess_lock_mutex(jobject jprocess, JNIEnv * env)
 void jprocess_unlock_mutex(jobject jprocess, JNIEnv * env)
 {
   jmethodID id =
-    jxbt_get_smethod(env, "simgrid/msg/Process", "unlockMutex", "()V");
+      jxbt_get_smethod(env, "simgrid/msg/Process", "unlockMutex", "()V");
 
   if (!id)
     return;
@@ -93,7 +94,7 @@ void jprocess_unlock_mutex(jobject jprocess, JNIEnv * env)
 void jprocess_signal_cond(jobject jprocess, JNIEnv * env)
 {
   jmethodID id =
-    jxbt_get_smethod(env, "simgrid/msg/Process", "signalCond", "()V");
+      jxbt_get_smethod(env, "simgrid/msg/Process", "signalCond", "()V");
 
   if (!id)
     return;
@@ -104,7 +105,7 @@ void jprocess_signal_cond(jobject jprocess, JNIEnv * env)
 void jprocess_wait_cond(jobject jprocess, JNIEnv * env)
 {
   jmethodID id =
-    jxbt_get_smethod(env, "simgrid/msg/Process", "waitCond", "()V");
+      jxbt_get_smethod(env, "simgrid/msg/Process", "waitCond", "()V");
 
   if (!id)
     return;
@@ -115,7 +116,8 @@ void jprocess_wait_cond(jobject jprocess, JNIEnv * env)
 
 void jprocess_start(jobject jprocess, JNIEnv * env)
 {
-  jmethodID id = jxbt_get_smethod(env, "simgrid/msg/Process", "start", "()V");
+  jmethodID id =
+      jxbt_get_smethod(env, "simgrid/msg/Process", "start", "()V");
 
   if (!id)
     return;
@@ -157,8 +159,8 @@ jlong jprocess_get_id(jobject jprocess, JNIEnv * env)
 
 jstring jprocess_get_name(jobject jprocess, JNIEnv * env)
 {
-  jfieldID id =
-    jxbt_get_sfield(env, "simgrid/msg/Process", "name", "Ljava/lang/String;");
+  jfieldID id = jxbt_get_sfield(env, "simgrid/msg/Process", "name",
+                                "Ljava/lang/String;");
   jobject jname;
 
   if (!id)

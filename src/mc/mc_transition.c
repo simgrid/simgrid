@@ -1,7 +1,7 @@
 #include "private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans, mc,
-				"Logging specific to MC transitions");
+                                "Logging specific to MC transitions");
 
 /* Creates a new iSend transition */
 mc_transition_t MC_trans_isend_new(smx_rdv_t rdv)
@@ -11,7 +11,8 @@ mc_transition_t MC_trans_isend_new(smx_rdv_t rdv)
   trans->type = mc_isend;
   trans->process = SIMIX_process_self();
   trans->isend.rdv = rdv;
-  trans->name = bprintf("[%s]\t iSend (%p)", trans->process->smx_host->name, trans); 
+  trans->name =
+      bprintf("[%s]\t iSend (%p)", trans->process->smx_host->name, trans);
   return trans;
 }
 
@@ -23,7 +24,8 @@ mc_transition_t MC_trans_irecv_new(smx_rdv_t rdv)
   trans->type = mc_irecv;
   trans->process = SIMIX_process_self();
   trans->irecv.rdv = rdv;
-  trans->name = bprintf("[%s]\t iRecv (%p)", trans->process->smx_host->name, trans);
+  trans->name =
+      bprintf("[%s]\t iRecv (%p)", trans->process->smx_host->name, trans);
   return trans;
 }
 
@@ -35,7 +37,8 @@ mc_transition_t MC_trans_wait_new(smx_comm_t comm)
   trans->type = mc_wait;
   trans->process = SIMIX_process_self();
   trans->wait.comm = comm;
-  trans->name = bprintf("[%s]\t Wait (%p)", trans->process->smx_host->name, trans);
+  trans->name =
+      bprintf("[%s]\t Wait (%p)", trans->process->smx_host->name, trans);
   return trans;
 }
 
@@ -47,7 +50,8 @@ mc_transition_t MC_trans_test_new(smx_comm_t comm)
   trans->type = mc_test;
   trans->process = SIMIX_process_self();
   trans->test.comm = comm;
-  trans->name = bprintf("[%s]\t Test (%p)", trans->process->smx_host->name, trans);      
+  trans->name =
+      bprintf("[%s]\t Test (%p)", trans->process->smx_host->name, trans);
   return trans;
 }
 
@@ -59,7 +63,9 @@ mc_transition_t MC_trans_waitany_new(xbt_dynar_t comms)
   trans->type = mc_waitany;
   trans->process = SIMIX_process_self();
   trans->waitany.comms = comms;
-  trans->name = bprintf("[%s]\t WaitAny (%p)", trans->process->smx_host->name, trans);
+  trans->name =
+      bprintf("[%s]\t WaitAny (%p)", trans->process->smx_host->name,
+              trans);
   return trans;
 }
 
@@ -71,7 +77,9 @@ mc_transition_t MC_trans_random_new(int value)
   trans->type = mc_random;
   trans->process = SIMIX_process_self();
   trans->random.value = value;
-  trans->name = bprintf("[%s]\t Random %d (%p)", trans->process->smx_host->name, value, trans);
+  trans->name =
+      bprintf("[%s]\t Random %d (%p)", trans->process->smx_host->name,
+              value, trans);
 
   return trans;
 }
@@ -103,18 +111,18 @@ void MC_transition_delete(mc_transition_t trans)
  */
 void MC_trans_intercept_isend(smx_rdv_t rdv)
 {
-  mc_transition_t trans=NULL;
+  mc_transition_t trans = NULL;
   mc_state_t current_state = NULL;
-  if(!mc_replay_mode){
+  if (!mc_replay_mode) {
     MC_SET_RAW_MEM;
     trans = MC_trans_isend_new(rdv);
-    current_state = (mc_state_t) 
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    current_state = (mc_state_t)
+        xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
     xbt_setset_set_insert(current_state->created_transitions, trans);
     xbt_setset_set_insert(current_state->transitions, trans);
     MC_UNSET_RAW_MEM;
   }
-  SIMIX_process_yield();  
+  SIMIX_process_yield();
 }
 
 /**
@@ -123,13 +131,13 @@ void MC_trans_intercept_isend(smx_rdv_t rdv)
  */
 void MC_trans_intercept_irecv(smx_rdv_t rdv)
 {
-  mc_transition_t trans=NULL;
+  mc_transition_t trans = NULL;
   mc_state_t current_state = NULL;
-  if(!mc_replay_mode){
+  if (!mc_replay_mode) {
     MC_SET_RAW_MEM;
     trans = MC_trans_irecv_new(rdv);
-    current_state = (mc_state_t) 
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    current_state = (mc_state_t)
+        xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
     xbt_setset_set_insert(current_state->created_transitions, trans);
     xbt_setset_set_insert(current_state->transitions, trans);
     MC_UNSET_RAW_MEM;
@@ -143,13 +151,13 @@ void MC_trans_intercept_irecv(smx_rdv_t rdv)
  */
 void MC_trans_intercept_wait(smx_comm_t comm)
 {
-  mc_transition_t trans=NULL;
+  mc_transition_t trans = NULL;
   mc_state_t current_state = NULL;
-  if(!mc_replay_mode){
+  if (!mc_replay_mode) {
     MC_SET_RAW_MEM;
     trans = MC_trans_wait_new(comm);
-    current_state = (mc_state_t) 
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    current_state = (mc_state_t)
+        xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
     xbt_setset_set_insert(current_state->created_transitions, trans);
     xbt_setset_set_insert(current_state->transitions, trans);
     MC_UNSET_RAW_MEM;
@@ -163,13 +171,13 @@ void MC_trans_intercept_wait(smx_comm_t comm)
  */
 void MC_trans_intercept_test(smx_comm_t comm)
 {
-  mc_transition_t trans=NULL;
+  mc_transition_t trans = NULL;
   mc_state_t current_state = NULL;
-  if(!mc_replay_mode){
+  if (!mc_replay_mode) {
     MC_SET_RAW_MEM;
     trans = MC_trans_test_new(comm);
-    current_state = (mc_state_t) 
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    current_state = (mc_state_t)
+        xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
     xbt_setset_set_insert(current_state->created_transitions, trans);
     xbt_setset_set_insert(current_state->transitions, trans);
     MC_UNSET_RAW_MEM;
@@ -187,11 +195,11 @@ void MC_trans_intercept_waitany(xbt_dynar_t comms)
   smx_comm_t comm = NULL;
   mc_transition_t trans = NULL;
   mc_state_t current_state = NULL;
-  if(!mc_replay_mode){
+  if (!mc_replay_mode) {
     MC_SET_RAW_MEM;
-    current_state = (mc_state_t) 
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
-    xbt_dynar_foreach(comms, index, comm){
+    current_state = (mc_state_t)
+        xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    xbt_dynar_foreach(comms, index, comm) {
       trans = MC_trans_wait_new(comm);
       xbt_setset_set_insert(current_state->created_transitions, trans);
       xbt_setset_set_insert(current_state->transitions, trans);
@@ -209,13 +217,13 @@ void MC_trans_intercept_waitany(xbt_dynar_t comms)
 void MC_trans_intercept_random(int min, int max)
 {
   int i;
-  mc_transition_t trans=NULL;
+  mc_transition_t trans = NULL;
   mc_state_t current_state = NULL;
-  if(!mc_replay_mode){
+  if (!mc_replay_mode) {
     MC_SET_RAW_MEM;
-    current_state = (mc_state_t) 
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
-    for(i=min; i <= max; i++){
+    current_state = (mc_state_t)
+        xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    for (i = min; i <= max; i++) {
       trans = MC_trans_random_new(i);
       xbt_setset_set_insert(current_state->created_transitions, trans);
       xbt_setset_set_insert(current_state->transitions, trans);
@@ -226,41 +234,42 @@ void MC_trans_intercept_random(int min, int max)
 }
 
 /* Compute the subset of enabled transitions of the transition set */
-void MC_trans_compute_enabled(xbt_setset_set_t enabled, xbt_setset_set_t transitions)
+void MC_trans_compute_enabled(xbt_setset_set_t enabled,
+                              xbt_setset_set_t transitions)
 {
   unsigned int index = 0;
   smx_comm_t comm = NULL;
   mc_transition_t trans = NULL;
   xbt_setset_cursor_t cursor = NULL;
-  xbt_setset_foreach(transitions, cursor, trans){
-    switch(trans->type){
+  xbt_setset_foreach(transitions, cursor, trans) {
+    switch (trans->type) {
       /* Wait transitions are enabled only if the communication has both a
          sender and receiver */
-      case mc_wait:
-        if(trans->wait.comm->src_proc && trans->wait.comm->dst_proc){
-          xbt_setset_set_insert(enabled, trans);
-          DEBUG1("Transition %p is enabled for next state", trans);
-        }
-        break;
+    case mc_wait:
+      if (trans->wait.comm->src_proc && trans->wait.comm->dst_proc) {
+        xbt_setset_set_insert(enabled, trans);
+        DEBUG1("Transition %p is enabled for next state", trans);
+      }
+      break;
 
       /* WaitAny transitions are enabled if any of it's communications has both
          a sender and a receiver */
-      case mc_waitany:
-        xbt_dynar_foreach(trans->waitany.comms, index, comm){            
-          if(comm->src_proc && comm->dst_proc){
-            xbt_setset_set_insert(enabled, trans);
-            DEBUG1("Transition %p is enabled for next state", trans);
-            break;
-          }
+    case mc_waitany:
+      xbt_dynar_foreach(trans->waitany.comms, index, comm) {
+        if (comm->src_proc && comm->dst_proc) {
+          xbt_setset_set_insert(enabled, trans);
+          DEBUG1("Transition %p is enabled for next state", trans);
+          break;
         }
-        break;
+      }
+      break;
 
       /* The rest of the transitions cannot be disabled */
-      default:
-        xbt_setset_set_insert(enabled, trans);
-        DEBUG1("Transition %p is enabled for next state", trans);
-        break;
-    } 
+    default:
+      xbt_setset_set_insert(enabled, trans);
+      DEBUG1("Transition %p is enabled for next state", trans);
+      break;
+    }
   }
 }
 
@@ -272,40 +281,43 @@ void MC_trans_compute_enabled(xbt_setset_set_t enabled, xbt_setset_set_t transit
  */
 int MC_transition_depend(mc_transition_t t1, mc_transition_t t2)
 {
-  if(t1->process == t2->process) 
+  if (t1->process == t2->process)
     return FALSE;
 
-  if(t1->type != t2->type)
+  if (t1->type != t2->type)
     return FALSE;
-  
+
 /*  if(t1->type == mc_isend && t2->type == mc_irecv)
     return FALSE;
 
   if(t1->type == mc_irecv && t2->type == mc_isend)
     return FALSE;*/
-  
-  if(t1->type == mc_random || t2->type == mc_random)
-    return FALSE;
-  
-  if(t1->type == mc_isend && t2->type == mc_isend && t1->isend.rdv != t2->isend.rdv)
+
+  if (t1->type == mc_random || t2->type == mc_random)
     return FALSE;
 
-  if(t1->type == mc_irecv && t2->type == mc_irecv && t1->irecv.rdv != t2->irecv.rdv)
+  if (t1->type == mc_isend && t2->type == mc_isend
+      && t1->isend.rdv != t2->isend.rdv)
     return FALSE;
 
-  if(t1->type == mc_wait && t2->type == mc_wait && t1->wait.comm == t2->wait.comm)
+  if (t1->type == mc_irecv && t2->type == mc_irecv
+      && t1->irecv.rdv != t2->irecv.rdv)
     return FALSE;
-  
-  if(t1->type == mc_wait && t2->type == mc_wait 
-     && t1->wait.comm->src_buff != NULL
-     && t1->wait.comm->dst_buff != NULL
-     && t2->wait.comm->src_buff != NULL
-     && t2->wait.comm->dst_buff != NULL
-     && t1->wait.comm->dst_buff != t2->wait.comm->src_buff
-     && t1->wait.comm->dst_buff != t2->wait.comm->dst_buff
-     && t2->wait.comm->dst_buff != t1->wait.comm->src_buff)
+
+  if (t1->type == mc_wait && t2->type == mc_wait
+      && t1->wait.comm == t2->wait.comm)
     return FALSE;
- 
-  
+
+  if (t1->type == mc_wait && t2->type == mc_wait
+      && t1->wait.comm->src_buff != NULL
+      && t1->wait.comm->dst_buff != NULL
+      && t2->wait.comm->src_buff != NULL
+      && t2->wait.comm->dst_buff != NULL
+      && t1->wait.comm->dst_buff != t2->wait.comm->src_buff
+      && t1->wait.comm->dst_buff != t2->wait.comm->dst_buff
+      && t2->wait.comm->dst_buff != t1->wait.comm->src_buff)
+    return FALSE;
+
+
   return TRUE;
 }

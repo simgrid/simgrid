@@ -85,9 +85,10 @@ static XBT_INLINE void gras_dd_alloc_ref(xbt_dict_t refs, long int size, char **
   l_data = xbt_malloc((size_t) size);
 
   *l_ref = l_data;
-  DEBUG5("alloc_ref: l_data=%p, &l_data=%p; r_ref=%p; *r_ref=%p, r_len=%ld",
-         (void *) l_data, (void *) &l_data,
-         (void *) r_ref, (void *) (r_ref ? *r_ref : NULL), r_len);
+  DEBUG5
+      ("alloc_ref: l_data=%p, &l_data=%p; r_ref=%p; *r_ref=%p, r_len=%ld",
+       (void *) l_data, (void *) &l_data, (void *) r_ref,
+       (void *) (r_ref ? *r_ref : NULL), r_len);
   if (detect_cycle && r_ref && !gras_dd_is_r_null(r_ref, r_len)) {
     void *ptr = xbt_malloc(sizeof(void *));
 
@@ -105,7 +106,8 @@ static int
 gras_datadesc_memcpy_rec(gras_cbps_t state,
                          xbt_dict_t refs,
                          gras_datadesc_type_t type,
-                         char *src, char *dst, int subsize, int detect_cycle)
+                         char *src, char *dst, int subsize,
+                         int detect_cycle)
 {
 
 
@@ -149,22 +151,23 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
 
         DEBUG1("Copy field %s", field->name);
         count +=
-          gras_datadesc_memcpy_rec(state, refs, sub_type, field_src,
-                                   field_dst, 0, detect_cycle
-                                   || sub_type->cycle);
+            gras_datadesc_memcpy_rec(state, refs, sub_type, field_src,
+                                     field_dst, 0, detect_cycle
+                                     || sub_type->cycle);
 
         if (XBT_LOG_ISENABLED(gras_ddt_exchange, xbt_log_priority_verbose)) {
           if (sub_type == gras_datadesc_by_name("unsigned int")) {
             VERB2("Copied value for field '%s': %d (type: unsigned int)",
                   field->name, *(unsigned int *) field_dst);
           } else if (sub_type == gras_datadesc_by_name("int")) {
-            VERB2("Copied value for field '%s': %d (type: int)", field->name,
-                  *(int *) field_dst);
+            VERB2("Copied value for field '%s': %d (type: int)",
+                  field->name, *(int *) field_dst);
 
-          } else if (sub_type == gras_datadesc_by_name("unsigned long int")) {
+          } else if (sub_type ==
+                     gras_datadesc_by_name("unsigned long int")) {
             VERB2
-              ("Copied value for field '%s': %ld (type: unsigned long int)",
-               field->name, *(unsigned long int *) field_dst);
+                ("Copied value for field '%s': %ld (type: unsigned long int)",
+                 field->name, *(unsigned long int *) field_dst);
           } else if (sub_type == gras_datadesc_by_name("long int")) {
             VERB2("Copied value for field '%s': %ld (type: long int)",
                   field->name, *(long int *) field_dst);
@@ -203,11 +206,13 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
 
       xbt_assert3(field_num < xbt_dynar_length(union_data.fields),
                   "union field selector of %s returned %d but there is only %lu fields",
-                  type->name, field_num, xbt_dynar_length(union_data.fields));
+                  type->name, field_num,
+                  xbt_dynar_length(union_data.fields));
 
       /* Copy the content */
       field =
-        xbt_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t);
+          xbt_dynar_get_as(union_data.fields, field_num,
+                           gras_dd_cat_field_t);
       sub_type = field->type;
 
       if (field->send)
@@ -243,7 +248,9 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
 
       reference_is_to_cpy = 1;
       if (detect_cycle &&
-           (n_ref=xbt_dict_get_or_null_ext(refs, (char *) o_ref, sizeof(char *)))) {
+          (n_ref =
+           xbt_dict_get_or_null_ext(refs, (char *) o_ref,
+                                    sizeof(char *)))) {
         /* already known, no need to copy it */
         //INFO0("Cycle detected");
         reference_is_to_cpy = 0;
@@ -268,12 +275,14 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
           subsub_type = array_data.type;
           subsubcount = array_data.fixed_size;
           if (subsubcount == -1)
-            subsubcount = array_data.dynamic_size(subsub_type, state, *o_ref);
+            subsubcount =
+                array_data.dynamic_size(subsub_type, state, *o_ref);
 
           if (subsubcount != 0)
             gras_dd_alloc_ref(refs,
-                              subsub_type->size[GRAS_THISARCH] * subsubcount,
-                              o_ref, pointer_type->size[GRAS_THISARCH],
+                              subsub_type->size[GRAS_THISARCH] *
+                              subsubcount, o_ref,
+                              pointer_type->size[GRAS_THISARCH],
                               (char **) &l_referenced, detect_cycle);
         } else {
           gras_dd_alloc_ref(refs, sub_type->size[GRAS_THISARCH],
@@ -292,8 +301,8 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
 
       } else {
         VERB2
-          ("NOT copying data previously referenced @%p (already done, @%p now)",
-           *(void **) o_ref, *(void **) n_ref);
+            ("NOT copying data previously referenced @%p (already done, @%p now)",
+             *(void **) o_ref, *(void **) n_ref);
 
         *(void **) dst = *n_ref;
 
@@ -317,7 +326,8 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
       if (array_count == -1) {
         array_count = array_data.dynamic_size(type, state, src);
         xbt_assert1(array_count >= 0,
-                    "Invalid (negative) array size for type %s", type->name);
+                    "Invalid (negative) array size for type %s",
+                    type->name);
       }
 
       /* send the content */
@@ -325,21 +335,23 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
       elm_size = sub_type->aligned_size[GRAS_THISARCH];
       if (sub_type->category_code == e_gras_datadesc_type_cat_scalar) {
         VERB1("Array of %ld scalars, copy it in one shot", array_count);
-        memcpy(dst, src, sub_type->aligned_size[GRAS_THISARCH] * array_count);
+        memcpy(dst, src,
+               sub_type->aligned_size[GRAS_THISARCH] * array_count);
         count += sub_type->aligned_size[GRAS_THISARCH] * array_count;
-      } else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
-                 sub_type->category.array_data.fixed_size > 0 &&
-                 sub_type->category.array_data.type->category_code ==
+      } else if (sub_type->category_code == e_gras_datadesc_type_cat_array
+                 && sub_type->category.array_data.fixed_size > 0
+                 && sub_type->category.array_data.type->category_code ==
                  e_gras_datadesc_type_cat_scalar) {
 
         VERB1("Array of %ld fixed array of scalars, copy it in one shot",
               array_count);
         memcpy(dst, src,
-               sub_type->category.array_data.type->aligned_size[GRAS_THISARCH]
+               sub_type->category.array_data.
+               type->aligned_size[GRAS_THISARCH]
                * array_count * sub_type->category.array_data.fixed_size);
         count +=
-          sub_type->category.array_data.type->aligned_size[GRAS_THISARCH]
-          * array_count * sub_type->category.array_data.fixed_size;
+            sub_type->category.array_data.type->aligned_size[GRAS_THISARCH]
+            * array_count * sub_type->category.array_data.fixed_size;
 
       } else {
         VERB1("Array of %ld stuff, copy it in one after the other",
@@ -347,8 +359,9 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
         for (cpt = 0; cpt < array_count; cpt++) {
           VERB2("Copy the %dth stuff out of %ld", cpt, array_count);
           count +=
-            gras_datadesc_memcpy_rec(state, refs, sub_type, src_ptr, dst_ptr,
-                                     0, detect_cycle || sub_type->cycle);
+              gras_datadesc_memcpy_rec(state, refs, sub_type, src_ptr,
+                                       dst_ptr, 0, detect_cycle
+                                       || sub_type->cycle);
           src_ptr += elm_size;
           dst_ptr += elm_size;
         }
@@ -387,7 +400,9 @@ int gras_datadesc_memcpy(gras_datadesc_type_t type, void *src, void *dst)
   }
 
   TRY {
-    size = gras_datadesc_memcpy_rec(state, refs, type, (char *) src, (char *) dst,0, type->cycle);
+    size =
+        gras_datadesc_memcpy_rec(state, refs, type, (char *) src,
+                                 (char *) dst, 0, type->cycle);
   } TRY_CLEANUP {
     xbt_dict_reset(refs);
     gras_cbps_reset(state);
@@ -478,14 +493,16 @@ gras_datadesc_send_rec(gras_socket_t sock,
 
       xbt_assert3(field_num < xbt_dynar_length(union_data.fields),
                   "union field selector of %s returned %d but there is only %lu fields",
-                  type->name, field_num, xbt_dynar_length(union_data.fields));
+                  type->name, field_num,
+                  xbt_dynar_length(union_data.fields));
 
       /* Send the field number */
       gras_dd_send_int(sock, &field_num, 0 /* not stable */ );
 
       /* Send the content */
       field =
-        xbt_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t);
+          xbt_dynar_get_as(union_data.fields, field_num,
+                           gras_dd_cat_field_t);
       sub_type = field->type;
 
       if (field->send)
@@ -528,7 +545,9 @@ gras_datadesc_send_rec(gras_socket_t sock,
 
       reference_is_to_send = 1;
       /* return ignored. Just checking whether it's known or not */
-      if (detect_cycle && xbt_dict_get_or_null_ext(refs, (char *) ref, sizeof(char *))) {
+      if (detect_cycle
+          && xbt_dict_get_or_null_ext(refs, (char *) ref,
+                                      sizeof(char *))) {
         //INFO0("Cycle detected");
         reference_is_to_send = 0;
       }
@@ -561,7 +580,8 @@ gras_datadesc_send_rec(gras_socket_t sock,
       if (count == -1) {
         count = array_data.dynamic_size(type, state, data);
         xbt_assert1(count >= 0,
-                    "Invalid (negative) array size for type %s", type->name);
+                    "Invalid (negative) array size for type %s",
+                    type->name);
         gras_dd_send_int(sock, &count, 0 /*non-stable */ );
       }
 
@@ -573,9 +593,9 @@ gras_datadesc_send_rec(gras_socket_t sock,
         gras_trp_send(sock, data,
                       sub_type->aligned_size[GRAS_THISARCH] * count,
                       0 /* not stable */ );
-      } else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
-                 sub_type->category.array_data.fixed_size > 0 &&
-                 sub_type->category.array_data.type->category_code ==
+      } else if (sub_type->category_code == e_gras_datadesc_type_cat_array
+                 && sub_type->category.array_data.fixed_size > 0
+                 && sub_type->category.array_data.type->category_code ==
                  e_gras_datadesc_type_cat_scalar) {
 
         VERB1("Array of %d fixed array of scalars, send it in one shot",
@@ -731,7 +751,8 @@ gras_datadesc_recv_rec(gras_socket_t sock,
 
       /* Recv the content */
       field =
-        xbt_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t);
+          xbt_dynar_get_as(union_data.fields, field_num,
+                           gras_dd_cat_field_t);
       sub_type = field->type;
 
       gras_datadesc_recv_rec(sock, state, refs, sub_type,
@@ -780,8 +801,9 @@ gras_datadesc_recv_rec(gras_socket_t sock,
 
       reference_is_to_recv = 1;
       if (detect_cycle && (l_ref =
-            xbt_dict_get_or_null_ext(refs, (char *) r_ref,
-                             pointer_type->size[r_arch]))) {
+                           xbt_dict_get_or_null_ext(refs, (char *) r_ref,
+                                                    pointer_type->size
+                                                    [r_arch]))) {
         reference_is_to_recv = 0;
         //INFO0("Cycle detected");
       }
@@ -805,8 +827,9 @@ gras_datadesc_recv_rec(gras_socket_t sock,
 
           if (subsubcount != 0)
             gras_dd_alloc_ref(refs,
-                              subsub_type->size[GRAS_THISARCH] * subsubcount,
-                              r_ref, pointer_type->size[r_arch],
+                              subsub_type->size[GRAS_THISARCH] *
+                              subsubcount, r_ref,
+                              pointer_type->size[r_arch],
                               (char **) &l_referenced, detect_cycle);
           else
             l_referenced = NULL;
@@ -828,8 +851,8 @@ gras_datadesc_recv_rec(gras_socket_t sock,
 
       } else {
         VERB2
-          ("NOT receiving data remotely referenced @%p (already done, @%p here)",
-           *(void **) r_ref, *(void **) l_ref);
+            ("NOT receiving data remotely referenced @%p (already done, @%p here)",
+             *(void **) r_ref, *(void **) l_ref);
 
         *(void **) l_data = *l_ref;
 
@@ -868,14 +891,15 @@ gras_datadesc_recv_rec(gras_socket_t sock,
         } else {
           ptr = xbt_malloc(sub_type->aligned_size[r_arch] * count);
 
-          gras_trp_recv(sock, (char *) ptr, sub_type->size[r_arch] * count);
+          gras_trp_recv(sock, (char *) ptr,
+                        sub_type->size[r_arch] * count);
           if (r_arch != GRAS_THISARCH)
             gras_dd_convert_elm(sub_type, count, r_arch, ptr, l_data);
           free(ptr);
         }
-      } else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
-                 sub_type->category.array_data.fixed_size >= 0 &&
-                 sub_type->category.array_data.type->category_code ==
+      } else if (sub_type->category_code == e_gras_datadesc_type_cat_array
+                 && sub_type->category.array_data.fixed_size >= 0
+                 && sub_type->category.array_data.type->category_code ==
                  e_gras_datadesc_type_cat_scalar) {
         gras_datadesc_type_t subsub_type;
         array_data = sub_type->category.array_data;
@@ -893,8 +917,8 @@ gras_datadesc_recv_rec(gras_socket_t sock,
                                 r_arch, l_data, l_data);
         } else {
           ptr =
-            xbt_malloc(subsub_type->aligned_size[r_arch] * count *
-                       array_data.fixed_size);
+              xbt_malloc(subsub_type->aligned_size[r_arch] * count *
+                         array_data.fixed_size);
 
           gras_trp_recv(sock, (char *) ptr,
                         subsub_type->size[r_arch] * count *

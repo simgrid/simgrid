@@ -12,7 +12,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(bindings);
 
-void smx_ctx_base_factory_init(smx_context_factory_t * factory) {
+void smx_ctx_base_factory_init(smx_context_factory_t * factory)
+{
   /* instantiate the context factory */
   *factory = xbt_new0(s_smx_context_factory_t, 1);
 
@@ -26,7 +27,8 @@ void smx_ctx_base_factory_init(smx_context_factory_t * factory) {
   (*factory)->name = "base context factory";
 }
 
-int smx_ctx_base_factory_finalize(smx_context_factory_t * factory) {
+int smx_ctx_base_factory_finalize(smx_context_factory_t * factory)
+{
   free(*factory);
   *factory = NULL;
   return 0;
@@ -34,25 +36,28 @@ int smx_ctx_base_factory_finalize(smx_context_factory_t * factory) {
 
 smx_context_t
 smx_ctx_base_factory_create_context_sized(size_t size,
-    xbt_main_func_t code, int argc, char** argv,
-    void_f_pvoid_t cleanup_func, void* cleanup_arg)
+                                          xbt_main_func_t code, int argc,
+                                          char **argv,
+                                          void_f_pvoid_t cleanup_func,
+                                          void *cleanup_arg)
 {
   smx_context_t context = xbt_malloc0(size);
 
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
-  if(code){
+  if (code) {
     context->cleanup_func = cleanup_func;
     context->cleanup_arg = cleanup_arg;
     context->argc = argc;
     context->argv = argv;
     context->code = code;
   }
-    
+
   return context;
 }
 
-void smx_ctx_base_free(smx_context_t context) {
+void smx_ctx_base_free(smx_context_t context)
+{
   int i;
 
   if (context) {
@@ -69,9 +74,10 @@ void smx_ctx_base_free(smx_context_t context) {
     /* free structure */
     free(context);
   }
-} 
+}
 
-void smx_ctx_base_stop(smx_context_t context) {
+void smx_ctx_base_stop(smx_context_t context)
+{
 
   if (context->cleanup_func)
     (*(context->cleanup_func)) (context->cleanup_arg);

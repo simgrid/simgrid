@@ -18,4 +18,4 @@ void xbt_ex_display(xbt_ex_t * e);
 /* Change raw libc symbols to file names and line numbers */
 void xbt_ex_setup_backtrace(xbt_ex_t * e);
 
-#endif /* _XBT_EX_INTERFACE_H_ */
+#endif                          /* _XBT_EX_INTERFACE_H_ */

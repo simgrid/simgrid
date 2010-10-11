@@ -101,7 +101,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
           e->bt_strings = xbt_new(char *, 1);
 
           e->bt_strings[0] =
-            bprintf("(binary '%s' not found the path)", xbt_binary_name);
+              bprintf("(binary '%s' not found the path)", xbt_binary_name);
           return;
         }
         xbt_dynar_free(&path);
@@ -112,8 +112,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
     binary_name = xbt_strdup(xbt_binary_name);
   }
   cmd = curr =
-    xbt_new(char,
-            strlen(ADDR2LINE) + 25 + strlen(binary_name) + 32 * e->used);
+      xbt_new(char,
+              strlen(ADDR2LINE) + 25 + strlen(binary_name) + 32 * e->used);
 
   curr += sprintf(curr, "%s -f -e %s ", ADDR2LINE, binary_name);
   free(binary_name);
@@ -151,17 +151,20 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
     fgets_res = fgets(line_func, 1024, pipe);
     if (fgets_res == NULL)
       THROW2(system_error, 0,
-             "Cannot run fgets to look for symbol %d, addr %s", i, addrs[i]);
+             "Cannot run fgets to look for symbol %d, addr %s", i,
+             addrs[i]);
     line_func[strlen(line_func) - 1] = '\0';
     fgets_res = fgets(line_pos, 1024, pipe);
     if (fgets_res == NULL)
       THROW2(system_error, 0,
-             "Cannot run fgets to look for symbol %d, addr %s", i, addrs[i]);
+             "Cannot run fgets to look for symbol %d, addr %s", i,
+             addrs[i]);
     line_pos[strlen(line_pos) - 1] = '\0';
 
     if (strcmp("??", line_func)) {
       DEBUG2("Found static symbol %s() at %s", line_func, line_pos);
-      e->bt_strings[i] = bprintf("**   In %s() at %s", line_func, line_pos);
+      e->bt_strings[i] =
+          bprintf("**   In %s() at %s", line_func, line_pos);
     } else {
       /* Damn. The symbol is in a dynamic library. Let's get wild */
       char *maps_name;
@@ -207,7 +210,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
         if (found) {
           DEBUG3("%#lx in [%#lx-%#lx]", addr, first, last);
           DEBUG0
-            ("Symbol found, map lines not further displayed (even if looking for next ones)");
+              ("Symbol found, map lines not further displayed (even if looking for next ones)");
         }
       }
       fclose(maps);
@@ -215,7 +218,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
 
       if (!found) {
         VERB0
-          ("Problem while reading the maps file. Following backtrace will be mangled.");
+            ("Problem while reading the maps file. Following backtrace will be mangled.");
         DEBUG1("No dynamic. Static symbol: %s", backtrace_syms[i]);
         e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace_syms[i]);
         continue;
@@ -270,7 +273,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
       /* check whether the trick worked */
       if (strcmp("??", line_func)) {
         DEBUG2("Found dynamic symbol %s() at %s", line_func, line_pos);
-        e->bt_strings[i] = bprintf("**   In %s() at %s", line_func, line_pos);
+        e->bt_strings[i] =
+            bprintf("**   In %s() at %s", line_func, line_pos);
       } else {
         /* damn, nothing to do here. Let's print the raw address */
         DEBUG1("Dynamic symbol not found. Raw address = %s",
@@ -283,8 +287,10 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
 
     /* Mask the bottom of the stack */
     if (!strncmp("main", line_func, strlen("main")) ||
-        !strncmp("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper"))||
-        !strncmp("smx_ctx_sysv_wrapper",line_func,strlen("smx_ctx_sysv_wrapper"))) {
+        !strncmp("xbt_thread_context_wrapper", line_func,
+                 strlen("xbt_thread_context_wrapper"))
+        || !strncmp("smx_ctx_sysv_wrapper", line_func,
+                    strlen("smx_ctx_sysv_wrapper"))) {
       int j;
 
       for (j = i + 1; j < e->used; j++)

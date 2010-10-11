@@ -11,7 +11,7 @@
 #include "xbt/dict.h"
 
 typedef struct network_link_CM02 {
-  s_surf_resource_lmm_t lmm_resource; /* must remain first to be added to a trace */
+  s_surf_resource_lmm_t lmm_resource;   /* must remain first to be added to a trace */
 
   /* Using this object with the public part of
      model does not make sense */
@@ -33,10 +33,10 @@ typedef struct surf_action_network_CM02 {
   int suspended;
 
 #ifdef HAVE_TRACING
-  char* src_name;
-  char* dst_name;
+  char *src_name;
+  char *dst_name;
 #endif
-  
+
 } s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
 
-#endif /* _SURF_NETWORK_PRIVATE_H */
+#endif                          /* _SURF_NETWORK_PRIVATE_H */

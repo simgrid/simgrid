@@ -60,11 +60,11 @@ void SIMIX_global_init(int *argc, char **argv)
 
     simix_global->host = xbt_dict_new();
     simix_global->process_to_run =
-      xbt_swag_new(xbt_swag_offset(proc, synchro_hookup));
+        xbt_swag_new(xbt_swag_offset(proc, synchro_hookup));
     simix_global->process_list =
-      xbt_swag_new(xbt_swag_offset(proc, process_hookup));
+        xbt_swag_new(xbt_swag_offset(proc, process_hookup));
     simix_global->process_to_destroy =
-      xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
+        xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
 
     simix_global->current_process = NULL;
     simix_global->maestro_process = NULL;
@@ -96,10 +96,11 @@ void SIMIX_display_process_status(void)
   smx_action_t act;
   int nbprocess = xbt_swag_size(simix_global->process_list);
 
-  INFO1("%d processes are still running, waiting for something.", nbprocess);
+  INFO1("%d processes are still running, waiting for something.",
+        nbprocess);
   /*  List the process and their state */
   INFO0
-    ("Legend of the following listing: \"<process> on <host>: <status>.\"");
+      ("Legend of the following listing: \"<process> on <host>: <status>.\"");
   xbt_swag_foreach(process, simix_global->process_list) {
     char *who, *who2;
 
@@ -111,50 +112,55 @@ void SIMIX_display_process_status(void)
 
     if (process->mutex) {
       who2 =
-        bprintf("%s Blocked on mutex %p", who,
-                (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose)) ?
-                process->mutex : (void *) 0xdead);
+          bprintf("%s Blocked on mutex %p", who,
+                  (XBT_LOG_ISENABLED
+                   (simix_kernel,
+                    xbt_log_priority_verbose)) ? process->mutex : (void *)
+                  0xdead);
       free(who);
       who = who2;
     } else if (process->cond) {
       who2 =
-        bprintf
-        ("%s Blocked on condition %p; Waiting for the following actions:",
-         who,
-         (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose)) ?
-         process->cond : (void *) 0xdead);
+          bprintf
+          ("%s Blocked on condition %p; Waiting for the following actions:",
+           who,
+           (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose)) ?
+           process->cond : (void *) 0xdead);
       free(who);
       who = who2;
       xbt_fifo_foreach(process->cond->actions, item, act, smx_action_t) {
         who2 =
-          bprintf("%s '%s'(%p)", who, act->name,
-                  (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose))
-                  ? act : (void *) 0xdead);
+            bprintf("%s '%s'(%p)", who, act->name,
+                    (XBT_LOG_ISENABLED
+                     (simix_kernel, xbt_log_priority_verbose))
+                    ? act : (void *) 0xdead);
         free(who);
         who = who2;
       }
     } else if (process->sem) {
       who2 =
-        bprintf
-        ("%s Blocked on semaphore %p; Waiting for the following actions:",
-         who,
-         (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose)) ?
-         process->sem : (void *) 0xdead);
+          bprintf
+          ("%s Blocked on semaphore %p; Waiting for the following actions:",
+           who,
+           (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose)) ?
+           process->sem : (void *) 0xdead);
       free(who);
       who = who2;
       xbt_fifo_foreach(process->sem->actions, item, act, smx_action_t) {
         who2 =
-          bprintf("%s '%s'(%p)", who, act->name,
-                  (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose))
-                  ? act : (void *) 0xdead);
+            bprintf("%s '%s'(%p)", who, act->name,
+                    (XBT_LOG_ISENABLED
+                     (simix_kernel, xbt_log_priority_verbose))
+                    ? act : (void *) 0xdead);
         free(who);
         who = who2;
       }
 
     } else {
       who2 =
-        bprintf
-        ("%s Blocked in an unknown status (please report this bug)", who);
+          bprintf
+          ("%s Blocked in an unknown status (please report this bug)",
+           who);
       free(who);
       who = who2;
     }
@@ -316,7 +322,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
   int actions_on_system = 0;
 
   SIMIX_process_empty_trash();
-  if (XBT_LOG_ISENABLED(simix_kernel,xbt_log_priority_debug) &&
+  if (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_debug) &&
       xbt_swag_size(simix_global->process_to_run) && (elapsed_time > 0)) {
     DEBUG0("**************************************************");
   }
@@ -380,11 +386,13 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
         smx_process_arg_t args = arg;
         DEBUG2("Launching %s on %s", args->name, args->hostname);
         process =
-          (*simix_global->create_process_function) (args->name, args->code,
-                                                    args->data,
-                                                    args->hostname,
-                                                    args->argc, args->argv,
-                                                    args->properties);
+            (*simix_global->create_process_function) (args->name,
+                                                      args->code,
+                                                      args->data,
+                                                      args->hostname,
+                                                      args->argc,
+                                                      args->argv,
+                                                      args->properties);
         /* verify if process has been created */
         if (!process) {
           xbt_free(args);
@@ -432,7 +440,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
       while ((action = xbt_swag_extract(model->states.done_action_set))) {
         smx_action = action->data;
         if (smx_action) {
-          SIMIX_action_signal_all(smx_action);      
+          SIMIX_action_signal_all(smx_action);
         }
       }
     }
@@ -484,7 +492,8 @@ XBT_INLINE int SIMIX_timer_get(void **function, void **arg)
  *	\param function Create process function
  *
  */
-XBT_INLINE void SIMIX_function_register_process_create(smx_creation_func_t function)
+XBT_INLINE void SIMIX_function_register_process_create(smx_creation_func_t
+                                                       function)
 {
   xbt_assert0((simix_global->create_process_function == NULL),
               "Data already set");
@@ -499,7 +508,8 @@ XBT_INLINE void SIMIX_function_register_process_create(smx_creation_func_t funct
  *	\param function Kill process function
  *
  */
-XBT_INLINE void SIMIX_function_register_process_kill(void_f_pvoid_t function)
+XBT_INLINE void SIMIX_function_register_process_kill(void_f_pvoid_t
+                                                     function)
 {
   xbt_assert0((simix_global->kill_process_function == NULL),
               "Data already set");
@@ -514,7 +524,8 @@ XBT_INLINE void SIMIX_function_register_process_kill(void_f_pvoid_t function)
  *	\param function cleanup process function
  *
  */
-XBT_INLINE void SIMIX_function_register_process_cleanup(void_f_pvoid_t function)
+XBT_INLINE void SIMIX_function_register_process_cleanup(void_f_pvoid_t
+                                                        function)
 {
   simix_global->cleanup_process_function = function;
 }

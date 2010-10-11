@@ -57,7 +57,7 @@
 #       else
 #               define tcp_close( s )   close( s )
 #       endif
-#endif /* windows or unix ? */
+#endif                          /* windows or unix ? */
 
 /****
  **** File handling
@@ -110,24 +110,24 @@ XBT_PUBLIC(int) vsnprintf(char *, size_t, const char *, va_list);
 
 /* use internal functions when OS provided ones are borken */
 #if defined(HAVE_SNPRINTF) && defined(PREFER_PORTABLE_SNPRINTF)
-     extern int portable_snprintf(char *str, size_t str_m, const char *fmt,
-                                  /*args */ ...);
-     extern int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
-                                   va_list ap);
+extern int portable_snprintf(char *str, size_t str_m, const char *fmt,
+                             /*args */ ...);
+extern int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
+                              va_list ap);
 #define snprintf  portable_snprintf
 #define vsnprintf portable_vsnprintf
 #endif
 
 /* prototype of GNU functions  */
 #if (defined(__GNUC__) && !defined(__cplusplus))
-     extern int asprintf(char **ptr, const char *fmt, /*args */ ...);
-     extern int vasprintf(char **ptr, const char *fmt, va_list ap);
+extern int asprintf(char **ptr, const char *fmt, /*args */ ...);
+extern int vasprintf(char **ptr, const char *fmt, va_list ap);
 #endif
 
-     extern int asnprintf(char **ptr, size_t str_m, const char *fmt,    /*args */
-                          ...);
-     extern int vasnprintf(char **ptr, size_t str_m, const char *fmt,
-                           va_list ap);
+extern int asnprintf(char **ptr, size_t str_m, const char *fmt, /*args */
+                     ...);
+extern int vasnprintf(char **ptr, size_t str_m, const char *fmt,
+                      va_list ap);
 
 /*
  * That's needed to protect solaris's printf from ever seing NULL associated to a %s format
@@ -150,7 +150,7 @@ XBT_PUBLIC(int) vsnprintf(char *, size_t, const char *, va_list);
 /****
  **** Some debugging functions. Can't we find a better place for this??
  ****/
-     void hexa_print(const char *name, unsigned char *data, int size);
-     const char *hexa_str(unsigned char *data, int size, int downside);
+void hexa_print(const char *name, unsigned char *data, int size);
+const char *hexa_str(unsigned char *data, int size, int downside);
 
-#endif /* GRAS_PORTABLE_H */
+#endif                          /* GRAS_PORTABLE_H */

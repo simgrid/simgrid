@@ -98,7 +98,8 @@ smx_process_t SIMIX_process_create(const char *name,
   DEBUG2("Start process %s on host %s", name, hostname);
 
   if (!SIMIX_host_get_state(host)) {
-    WARN2("Cannot launch process '%s' on failed host '%s'", name, hostname);
+    WARN2("Cannot launch process '%s' on failed host '%s'", name,
+          hostname);
     return NULL;
   }
   process = xbt_new0(s_smx_process_t, 1);
@@ -145,7 +146,8 @@ smx_process_t SIMIX_process_create(const char *name,
  */
 void SIMIX_process_kill(smx_process_t process)
 {
-  DEBUG2("Killing process %s on %s", process->name, process->smx_host->name);
+  DEBUG2("Killing process %s on %s", process->name,
+         process->smx_host->name);
 
   process->iwannadie = 1;
 
@@ -159,7 +161,8 @@ void SIMIX_process_kill(smx_process_t process)
     if (process->cond)
       xbt_swag_remove(process, process->cond->sleeping);
     if (process->waiting_action) {
-      SIMIX_unregister_action_to_condition(process->waiting_action, process->cond);
+      SIMIX_unregister_action_to_condition(process->waiting_action,
+                                           process->cond);
       SIMIX_action_destroy(process->waiting_action);
     }
 
@@ -167,7 +170,8 @@ void SIMIX_process_kill(smx_process_t process)
       xbt_fifo_remove(process->sem->sleeping, process);
 
       if (process->waiting_action) {
-        SIMIX_unregister_action_to_semaphore(process->waiting_action, process->sem);
+        SIMIX_unregister_action_to_semaphore(process->waiting_action,
+                                             process->sem);
         SIMIX_action_destroy(process->waiting_action);
       }
     }
@@ -176,8 +180,8 @@ void SIMIX_process_kill(smx_process_t process)
 
   } else {
     DEBUG4("%s(%p) here! killing %s(%p)",
-        simix_global->current_process->name,simix_global->current_process,
-        process->name,process);
+           simix_global->current_process->name,
+           simix_global->current_process, process->name, process);
 
     /* Cleanup if it were waiting for something */
     if (process->mutex) {
@@ -189,7 +193,8 @@ void SIMIX_process_kill(smx_process_t process)
       xbt_swag_remove(process, process->cond->sleeping);
 
       if (process->waiting_action) {
-        SIMIX_unregister_action_to_condition(process->waiting_action, process->cond);
+        SIMIX_unregister_action_to_condition(process->waiting_action,
+                                             process->cond);
         SIMIX_action_destroy(process->waiting_action);
       }
       process->cond = NULL;
@@ -199,8 +204,9 @@ void SIMIX_process_kill(smx_process_t process)
       xbt_fifo_remove(process->sem->sleeping, process);
 
       if (process->waiting_action) {
-      	SIMIX_unregister_action_to_semaphore(process->waiting_action, process->sem);
-      	SIMIX_action_destroy(process->waiting_action);
+        SIMIX_unregister_action_to_semaphore(process->waiting_action,
+                                             process->sem);
+        SIMIX_action_destroy(process->waiting_action);
       }
       process->sem = NULL;
     }
@@ -297,9 +303,9 @@ XBT_INLINE xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
  */
 XBT_INLINE smx_process_t SIMIX_process_self(void)
 {
- if(simix_global)
-	 return simix_global->current_process;
- return NULL;
+  if (simix_global)
+    return simix_global->current_process;
+  return NULL;
 }
 
 /**
@@ -483,8 +489,9 @@ void SIMIX_process_yield(void)
 
 void SIMIX_process_schedule(smx_process_t new_process)
 {
-  xbt_assert0(simix_global->current_process == simix_global->maestro_process,
-      "This function can only be called from maestro context");
+  xbt_assert0(simix_global->current_process ==
+              simix_global->maestro_process,
+              "This function can only be called from maestro context");
   DEBUG1("Scheduling context: '%s'", new_process->name);
 
   /* update the current process */

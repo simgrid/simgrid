@@ -16,15 +16,15 @@
 /* Borland compilers */
 #if defined (__BORLANDC__)
 #define _XBT_COMPILER_NAME 	"Borland C/C++"
-        #define _XBT_COMPILER_VENDOR    "Inprise Corporation"
+#define _XBT_COMPILER_VENDOR    "Inprise Corporation"
 #define _XBT_BORLAND_COMPILER 	2
 /* version macro : __BORLANDC__ */
 /* version format : ?           */
 #define _XBT_COMPILER_VERSION 		__BORLANDC__
 #define _XBT_COMPILER_VERSION_FORMAT	"?"
 
-        #undef _XBT_COMPILER_RESOLVED
-        #define _XBT_COMPILER_RESOLVED 1
+#undef _XBT_COMPILER_RESOLVED
+#define _XBT_COMPILER_RESOLVED 1
 #endif
 
 /* Microsoft Visual C++ compiler */
@@ -43,15 +43,15 @@
 #endif
 
 #define _XBT_COMPILER_NAME 	"GCC"
-        #define _XBT_COMPILER_VENDOR    "GNU"
+#define _XBT_COMPILER_VENDOR    "GNU"
 #define _XBT_GCC_COMPILER 	2
 /* version macro : __GNUC_VERSION__ */
 /* version format : VVRRPP (VV = Version, RR = Revision, PP = Patch) */
 #define _XBT_COMPILER_VERSION 		__GNUC_VERSION__
 #define _XBT_COMPILER_VERSION_FORMAT	"VVRRPP (VV = Version, RR = Revision, PP = Patch)"
 
-        #undef _XBT_COMPILER_RESOLVED
-        #define _XBT_COMPILER_RESOLVED 1
+#undef _XBT_COMPILER_RESOLVED
+#define _XBT_COMPILER_RESOLVED 1
 #endif
 
 
@@ -74,4 +74,4 @@
 
 
 
-#endif /* #ifndef __XBT_SELECT_FEATURES_COMPILER_H__ */
+#endif                          /* #ifndef __XBT_SELECT_FEATURES_COMPILER_H__ */

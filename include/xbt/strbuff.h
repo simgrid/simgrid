@@ -34,6 +34,7 @@ XBT_INLINE XBT_PUBLIC(void) xbt_strbuff_free_container(xbt_strbuff_t b);
 XBT_PUBLIC(void) xbt_strbuff_append(xbt_strbuff_t b, const char *toadd);
 XBT_PUBLIC(void) xbt_strbuff_chomp(xbt_strbuff_t b);
 XBT_PUBLIC(void) xbt_strbuff_trim(xbt_strbuff_t b);
-XBT_PUBLIC(void) xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns);
+XBT_PUBLIC(void) xbt_strbuff_varsubst(xbt_strbuff_t b,
+                                      xbt_dict_t patterns);
 
 #endif

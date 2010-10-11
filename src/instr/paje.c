@@ -42,25 +42,24 @@ static int pajeNewEventId = 27;
 
 #define TRACE_LINE_SIZE 1000
 
-void TRACE_paje_start (FILE *file)
+void TRACE_paje_start(FILE * file)
 {
   tracing_file = file;
   tracing_active = 1;
 }
 
-FILE *TRACE_paje_end (void)
+FILE *TRACE_paje_end(void)
 {
   tracing_active = 0;
   return tracing_file;
 }
 
 
-void TRACE_paje_create_header(void) {
+void TRACE_paje_create_header(void)
+{
   if (!tracing_active)
     return;
-  fprintf(
-      tracing_file,
-      "\
+  fprintf(tracing_file, "\
 %%EventDef PajeDefineContainerType %d \n\
 %%       Alias string \n\
 %%       ContainerType string \n\
@@ -170,151 +169,183 @@ void TRACE_paje_create_header(void) {
 %%       EntityType string \n\
 %%       Container string \n\
 %%       Value string \n\
-%%EndEventDef\n",
-      pajeDefineContainerTypeId, pajeDefineStateTypeId, pajeDefineEntityValueId,
-      pajeDefineEventTypeId, pajeDefineLinkTypeId, pajeCreateContainerId,
-      pajeDestroyContainerId, pajeSetStateId,
-      pajePopStateId,
-      pajeStartLinkId, pajeEndLinkId,
-      pajePushStateId,
-      pajeSetVariableId,
-      pajeAddVariableId,
-      pajeSubVariableId,
-      pajeDefineVariableTypeId,
-      pajeStartLinkWithVolumeId,
-      pajeNewEventId);
+%%EndEventDef\n", pajeDefineContainerTypeId, pajeDefineStateTypeId, pajeDefineEntityValueId, pajeDefineEventTypeId, pajeDefineLinkTypeId, pajeCreateContainerId, pajeDestroyContainerId, pajeSetStateId, pajePopStateId, pajeStartLinkId, pajeEndLinkId, pajePushStateId, pajeSetVariableId, pajeAddVariableId, pajeSubVariableId, pajeDefineVariableTypeId, pajeStartLinkWithVolumeId, pajeNewEventId);
 }
 
 /* internal to this file */
-static void __pajeCreateContainer (char *output, int len, int eventid, double time, const char *alias, const char *type,
-    const char *container, const char *name)
+static void __pajeCreateContainer(char *output, int len, int eventid,
+                                  double time, const char *alias,
+                                  const char *type, const char *container,
+                                  const char *name)
 {
-  snprintf (output, len, "%d %lf %s %s %s %s", eventid, time,
-      alias, type, container, name);
+  snprintf(output, len, "%d %lf %s %s %s %s", eventid, time,
+           alias, type, container, name);
 }
 
-static void __pajeSetState (char *output, int len, int eventid, double time, const char *entityType, const char *container, const char *value)
+static void __pajeSetState(char *output, int len, int eventid, double time,
+                           const char *entityType, const char *container,
+                           const char *value)
 {
-  snprintf (output, len, "%d %lf %s %s %s", eventid, time, entityType, container, value);
+  snprintf(output, len, "%d %lf %s %s %s", eventid, time, entityType,
+           container, value);
 }
 
-static void __pajeSetVariable (char *output, int len, int eventid, double time, const char *entityType, const char *container, const char *value)
+static void __pajeSetVariable(char *output, int len, int eventid,
+                              double time, const char *entityType,
+                              const char *container, const char *value)
 {
-  snprintf (output, len, "%d %lf %s %s %s", eventid, time, entityType, container, value);
+  snprintf(output, len, "%d %lf %s %s %s", eventid, time, entityType,
+           container, value);
 }
 
-static void __pajeStartLink (char *output, int len, int eventid,  double time, const char *entityType, const char *container, const char *value,
-const char *sourceContainer, const char *key)
+static void __pajeStartLink(char *output, int len, int eventid,
+                            double time, const char *entityType,
+                            const char *container, const char *value,
+                            const char *sourceContainer, const char *key)
 {
-  snprintf(output, len, "%d %lf %s %s %s %s %s", eventid, time, entityType, container, value, sourceContainer, key);
+  snprintf(output, len, "%d %lf %s %s %s %s %s", eventid, time, entityType,
+           container, value, sourceContainer, key);
 }
 
 /* internal do the instrumentation module */
 void pajeDefineContainerType(const char *alias, const char *containerType,
-    const char *name) {
+                             const char *name)
+{
   fprintf(tracing_file, "%d %s %s %s\n", pajeDefineContainerTypeId, alias,
-      containerType, name);
+          containerType, name);
 }
 
 void pajeDefineStateType(const char *alias, const char *containerType,
-    const char *name) {
+                         const char *name)
+{
   fprintf(tracing_file, "%d %s %s %s\n", pajeDefineStateTypeId, alias,
-      containerType, name);
+          containerType, name);
 }
 
 void pajeDefineEventType(const char *alias, const char *containerType,
-    const char *name) {
+                         const char *name)
+{
   fprintf(tracing_file, "%d %s %s %s\n", pajeDefineEventTypeId, alias,
-      containerType, name);
+          containerType, name);
 }
 
 void pajeDefineLinkType(const char *alias, const char *containerType,
-    const char *sourceContainerType, const char *destContainerType,
-    const char *name) {
+                        const char *sourceContainerType,
+                        const char *destContainerType, const char *name)
+{
   fprintf(tracing_file, "%d %s %s %s %s %s\n", pajeDefineLinkTypeId, alias,
-      containerType, sourceContainerType, destContainerType, name);
+          containerType, sourceContainerType, destContainerType, name);
 }
 
-void pajeCreateContainer(double time, const char *alias, const char *type, const char *container, const char *name) {
-  char line[TRACE_LINE_SIZE];
-  __pajeCreateContainer (line, TRACE_LINE_SIZE, pajeCreateContainerId, time, alias, type, container, name);
-  fprintf (tracing_file, "%s\n", line);
-}
-
-void pajeDestroyContainer (double time, const char *type, const char *container)
-{
-  fprintf(tracing_file, "%d %lf %s %s\n", pajeDestroyContainerId, time, type, container);
-}
-
-void pajeSetState (double time, const char *entityType, const char *container, const char *value)
+void pajeCreateContainer(double time, const char *alias, const char *type,
+                         const char *container, const char *name)
 {
   char line[TRACE_LINE_SIZE];
-  __pajeSetState (line, TRACE_LINE_SIZE, pajeSetStateId, time, entityType, container, value);
+  __pajeCreateContainer(line, TRACE_LINE_SIZE, pajeCreateContainerId, time,
+                        alias, type, container, name);
   fprintf(tracing_file, "%s\n", line);
 }
 
-void pajePushState (double time, const char *entityType, const char *container, const char *value)
+void pajeDestroyContainer(double time, const char *type,
+                          const char *container)
+{
+  fprintf(tracing_file, "%d %lf %s %s\n", pajeDestroyContainerId, time,
+          type, container);
+}
+
+void pajeSetState(double time, const char *entityType,
+                  const char *container, const char *value)
 {
   char line[TRACE_LINE_SIZE];
-  __pajeSetState (line, TRACE_LINE_SIZE, pajePushStateId, time, entityType, container, value);
+  __pajeSetState(line, TRACE_LINE_SIZE, pajeSetStateId, time, entityType,
+                 container, value);
   fprintf(tracing_file, "%s\n", line);
 }
 
-void pajePopState (double time, const char *entityType, const char *container)
-{
-  fprintf(tracing_file, "%d %lf %s %s\n", pajePopStateId, time, entityType, container);
-}
-
-void pajeStartLink (double time, const char *entityType, const char *container, const char *value,
-    const char *sourceContainer, const char *key)
+void pajePushState(double time, const char *entityType,
+                   const char *container, const char *value)
 {
   char line[TRACE_LINE_SIZE];
-  __pajeStartLink (line, TRACE_LINE_SIZE, pajeStartLinkId, time, entityType, container, value, sourceContainer, key);
-  fprintf (tracing_file, "%s\n", line);
-}
-
-void pajeStartLinkWithVolume (double time, const char *entityType, const char *container, const char *value,
-    const char *sourceContainer, const char *key, double volume)
-{
-  char line[TRACE_LINE_SIZE];
-  __pajeStartLink (line, TRACE_LINE_SIZE, pajeStartLinkWithVolumeId, time, entityType, container, value, sourceContainer, key);
-  fprintf (tracing_file, "%s %f\n", line, volume);
-}
-
-void pajeEndLink (double time, const char *entityType, const char *container, const char *value,
-    const char *destContainer, const char *key)
-{
-  fprintf(tracing_file, "%d %lf %s %s %s %s %s\n", pajeEndLinkId, time, entityType, container, value, destContainer, key);
-}
-
-void pajeDefineVariableType(const char *alias, const char *containerType, const char *name) {
-  fprintf(tracing_file, "%d %s %s %s\n", pajeDefineVariableTypeId, alias, containerType, name);
-}
-
-void pajeSetVariable (double time, const char *entityType, const char *container, const char *value)
-{
-  char line[TRACE_LINE_SIZE];
-  __pajeSetVariable (line, TRACE_LINE_SIZE, pajeSetVariableId, time, entityType, container, value);
+  __pajeSetState(line, TRACE_LINE_SIZE, pajePushStateId, time, entityType,
+                 container, value);
   fprintf(tracing_file, "%s\n", line);
 }
 
-void pajeAddVariable (double time, const char *entityType, const char *container, const char *value)
+void pajePopState(double time, const char *entityType,
+                  const char *container)
+{
+  fprintf(tracing_file, "%d %lf %s %s\n", pajePopStateId, time, entityType,
+          container);
+}
+
+void pajeStartLink(double time, const char *entityType,
+                   const char *container, const char *value,
+                   const char *sourceContainer, const char *key)
 {
   char line[TRACE_LINE_SIZE];
-  __pajeSetVariable (line, TRACE_LINE_SIZE, pajeAddVariableId, time, entityType, container, value);
+  __pajeStartLink(line, TRACE_LINE_SIZE, pajeStartLinkId, time, entityType,
+                  container, value, sourceContainer, key);
   fprintf(tracing_file, "%s\n", line);
 }
 
-void pajeSubVariable (double time, const char *entityType, const char *container, const char *value)
+void pajeStartLinkWithVolume(double time, const char *entityType,
+                             const char *container, const char *value,
+                             const char *sourceContainer, const char *key,
+                             double volume)
 {
   char line[TRACE_LINE_SIZE];
-  __pajeSetVariable (line, TRACE_LINE_SIZE, pajeSubVariableId, time, entityType, container, value);
+  __pajeStartLink(line, TRACE_LINE_SIZE, pajeStartLinkWithVolumeId, time,
+                  entityType, container, value, sourceContainer, key);
+  fprintf(tracing_file, "%s %f\n", line, volume);
+}
+
+void pajeEndLink(double time, const char *entityType,
+                 const char *container, const char *value,
+                 const char *destContainer, const char *key)
+{
+  fprintf(tracing_file, "%d %lf %s %s %s %s %s\n", pajeEndLinkId, time,
+          entityType, container, value, destContainer, key);
+}
+
+void pajeDefineVariableType(const char *alias, const char *containerType,
+                            const char *name)
+{
+  fprintf(tracing_file, "%d %s %s %s\n", pajeDefineVariableTypeId, alias,
+          containerType, name);
+}
+
+void pajeSetVariable(double time, const char *entityType,
+                     const char *container, const char *value)
+{
+  char line[TRACE_LINE_SIZE];
+  __pajeSetVariable(line, TRACE_LINE_SIZE, pajeSetVariableId, time,
+                    entityType, container, value);
   fprintf(tracing_file, "%s\n", line);
 }
 
-void pajeNewEvent (double time, const char *entityType, const char *container, const char *value)
+void pajeAddVariable(double time, const char *entityType,
+                     const char *container, const char *value)
 {
-  fprintf(tracing_file, "%d %lf %s %s %s\n", pajeNewEventId, time, entityType, container, value);
+  char line[TRACE_LINE_SIZE];
+  __pajeSetVariable(line, TRACE_LINE_SIZE, pajeAddVariableId, time,
+                    entityType, container, value);
+  fprintf(tracing_file, "%s\n", line);
+}
+
+void pajeSubVariable(double time, const char *entityType,
+                     const char *container, const char *value)
+{
+  char line[TRACE_LINE_SIZE];
+  __pajeSetVariable(line, TRACE_LINE_SIZE, pajeSubVariableId, time,
+                    entityType, container, value);
+  fprintf(tracing_file, "%s\n", line);
+}
+
+void pajeNewEvent(double time, const char *entityType,
+                  const char *container, const char *value)
+{
+  fprintf(tracing_file, "%d %lf %s %s %s\n", pajeNewEventId, time,
+          entityType, container, value);
 }
 
 #endif
