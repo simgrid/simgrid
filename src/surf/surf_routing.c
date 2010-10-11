@@ -815,11 +815,15 @@ static xbt_dynar_t full_get_onelink_routes(routing_component_t rc)
       if (route){
         if (xbt_dynar_length(route->generic_route.link_list) == 1){
           void *link = *(void**)xbt_dynar_get_ptr(route->generic_route.link_list,0);
-
           onelink_t onelink = xbt_new0 (s_onelink_t, 1);
-          onelink->src = xbt_strdup (k1);
-          onelink->dst = xbt_strdup (k2);
           onelink->link_ptr = link;
+          if (routing->generic_routing.hierarchy == SURF_ROUTING_BASE){
+            onelink->src = xbt_strdup (k1);
+            onelink->dst = xbt_strdup (k2);
+          }else if (routing->generic_routing.hierarchy == SURF_ROUTING_RECURSIVE){
+            onelink->src = xbt_strdup (route->src_gateway);
+            onelink->dst = xbt_strdup (route->dst_gateway);
+          }
           xbt_dynar_push (ret, &onelink);
         }
       }
@@ -1004,9 +1008,14 @@ static xbt_dynar_t floyd_get_onelink_routes(routing_component_t rc)
         if (xbt_dynar_length(route->generic_route.link_list) == 1){
           void *link = *(void**)xbt_dynar_get_ptr(route->generic_route.link_list,0);
           onelink_t onelink = xbt_new0 (s_onelink_t, 1);
-          onelink->src = xbt_strdup (k1);
-          onelink->dst = xbt_strdup (k2);
           onelink->link_ptr = link;
+          if (routing->generic_routing.hierarchy == SURF_ROUTING_BASE){
+            onelink->src = xbt_strdup (k1);
+            onelink->dst = xbt_strdup (k2);
+          }else if (routing->generic_routing.hierarchy == SURF_ROUTING_RECURSIVE){
+            onelink->src = xbt_strdup (route->src_gateway);
+            onelink->dst = xbt_strdup (route->dst_gateway);
+          }
           xbt_dynar_push (ret, &onelink);
         }
       }
