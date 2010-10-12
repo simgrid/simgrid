@@ -6,21 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "lua_stub_generator.h"
-
-#include <stdio.h>
-#include "xbt/sysdep.h"
-#include "xbt/function_types.h"
-#include "xbt/log.h"
-#include "surf/surfxml_parse.h"
-#include "surf/surf.h"
-#include "portable.h"           /* Needed for the time of the SIMIX convertion */
-#include <stdarg.h>
-
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-
+#include "simgrid_lua.h"
 
 #define WARN "/***********\n * DO NOT EDIT! THIS FILE HAS BEEN AUTOMATICALLY GENERATED FROM %s BY gras_stub_generator\n ***********/\n"
 #define SIM_SOURCENAME  "_%s_simulator.c"
