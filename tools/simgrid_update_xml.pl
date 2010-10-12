@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 
 # This script updates the simgrid XML file passed as argument (modification in place)
-# It is built to do the conversion incrementally (even if for now, only 2 versions are defined)
+# It is built to do the conversion incrementally.
 
 # Copyright (C) 2006-2010. The SimGrid team. All rights reserved.
 #
@@ -72,14 +72,12 @@ while (defined($line = <INPUT>)) {
     }
     
     if ($fromversion < 3)  {
-	if($line =~ /^(.*)<\/platform>(.*)$/) {
-	    $output_string .=  " <\/AS>\n<\/platform>";
-	} else {
-	    $output_string .=  "$line\n";
-	}
 	$line =~ s/\blink:ctn\b/link_ctn/g;
 	$line =~ s/\btrace:connect\b/trace_connect/g;
+	$line =~ s/^(.*)<\/platform>(.*)$/ <\/AS>\n<\/platform>/;
     }
+
+    $output_string .= "$line\n";
 }
 
 close INPUT;
