@@ -9,11 +9,11 @@ IF(pipol_user)
 	set(CMAKE_OPTIONS "	-Wno-dev")
 	
 	if(custom_flags)
-		set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Dcustom_flags=${custom_flags}")
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Dcustom_flags=${custom_flags}")
 	endif(custom_flags)
 	
 	if(with_context)
-		set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Dwith_context=${with_context}")
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Dwith_context=${with_context}")
 	endif(with_context)
 	
 	if(enable_smpi)
@@ -55,6 +55,10 @@ IF(pipol_user)
 	if(enable_model-checking)
 	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_model-checking=on")
 	endif(enable_model-checking)
+	
+    if(enable_latency_bound_tracking)
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_latency_bound_tracking=on")
+	endif(enable_latency_bound_tracking)
 
 	FIND_PROGRAM(HAVE_SSH ssh)
 	FIND_PROGRAM(HAVE_RSYNC rsync)
