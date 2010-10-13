@@ -86,6 +86,10 @@ void TRACE_surf_link_declaration(void *link, char *name, double bw,
   if (!IS_TRACING)
     return;
 
+  if (!link){
+    xbt_die ("link is NULL");
+  }
+
   //filter out loopback
   if (!strcmp(name, "loopback") || !strcmp(name, "__loopback__"))
     return;
