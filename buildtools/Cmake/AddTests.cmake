@@ -191,15 +191,6 @@ ADD_TEST(simdag-test_prop	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}
 ADD_TEST(simdag-metaxml_test	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag metaxml/metaxml_test.tesh)
 ADD_TEST(simdag-minmin_test	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
 
-if(enable_smpi)
-# smpi examples
-ADD_TEST(smpi-bcast 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${PROJECT_DIRECTORY}/examples/smpi/bcast.tesh)
-ADD_TEST(smpi-reduce 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${PROJECT_DIRECTORY}/examples/smpi/reduce.tesh)
-if(HAVE_TRACING)
-  ADD_TEST(smpi-tracing-ptp ${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${PROJECT_DIRECTORY}/examples/smpi/smpi_traced.tesh)
-endif(HAVE_TRACING)
-endif(enable_smpi)
-
 if(HAVE_GTNETS)
 ADD_TEST(msg-gtnets-waxman			${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-waxman.tesh)
 ADD_TEST(msg-gtnets-dogbone			${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-dogbone-gtnets.tesh)
@@ -232,13 +223,16 @@ endif(HAVE_RUBY)
 
 # END TESH TESTS
 
-ADD_TEST(tesh-simdag-full-links01		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters.xml FULL_LINK)
-ADD_TEST(tesh-simdag-full-links02		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters_one_name.xml FULL_LINK)
-ADD_TEST(tesh-simdag-one-link-g5k		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/examples/platforms/g5k.xml ONE_LINK)
-ADD_TEST(msg_icomms_waitany ${PROJECT_DIRECTORY}/examples/msg/icomms/peer3 
-								${PROJECT_DIRECTORY}/examples/msg/icomms/small_platform.xml
-								${PROJECT_DIRECTORY}/examples/msg/icomms/deployment_peer05.xml)
-
+if(enable_smpi)
+# smpi examples
+ADD_TEST(smpi-bcast 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${PROJECT_DIRECTORY}/examples/smpi/bcast.tesh)
+ADD_TEST(smpi-reduce 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${PROJECT_DIRECTORY}/examples/smpi/reduce.tesh)
+if(HAVE_TRACING)
+  ADD_TEST(smpi-tracing-ptp ${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${PROJECT_DIRECTORY}/examples/smpi/smpi_traced.tesh)
+endif(HAVE_TRACING)
+endif(enable_smpi)
+								
+# examples/msg/mc
 if(HAVE_MC)
 ADD_TEST(mc-bugged1			${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/mc bugged1.tesh)
 ADD_TEST(mc-bugged2			${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/mc bugged2.tesh)
@@ -303,21 +297,26 @@ endif(GRAS_IS_BROKEN)
 
 endif(NOT enable_memcheck)
 
+ADD_TEST(tesh-simdag-full-links01		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters.xml FULL_LINK)
+ADD_TEST(tesh-simdag-full-links02		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters_one_name.xml FULL_LINK)
+ADD_TEST(tesh-simdag-one-link-g5k		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/examples/platforms/g5k.xml ONE_LINK)
+ADD_TEST(msg_icomms_waitany 			${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/peer3 ${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/small_platform.xml ${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/deployment_peer05.xml)
+
 # testsuite directory
-add_test(test-xbt-log		${PROJECT_DIRECTORY}/testsuite/xbt/log_usage)
-add_test(test-xbt-graphxml	${PROJECT_DIRECTORY}/testsuite/xbt/graphxml_usage ${PROJECT_DIRECTORY}/testsuite/xbt/graph.xml)
-add_test(test-xbt-heap		${PROJECT_DIRECTORY}/testsuite/xbt/heap_bench)
+add_test(test-xbt-log		${CMAKE_HOME_DIRECTORY}/testsuite/xbt/log_usage)
+add_test(test-xbt-graphxml	${CMAKE_HOME_DIRECTORY}/testsuite/xbt/graphxml_usage ${PROJECT_DIRECTORY}/testsuite/xbt/graph.xml)
+add_test(test-xbt-heap		${CMAKE_HOME_DIRECTORY}/testsuite/xbt/heap_bench)
 
-add_test(test-surf-lmm		${PROJECT_DIRECTORY}/testsuite/surf/lmm_usage)
-add_test(test-surf-maxmin	${PROJECT_DIRECTORY}/testsuite/surf/maxmin_bench)
-add_test(test-surf-usage	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
-add_test(test-surf_usage2	${PROJECT_DIRECTORY}/testsuite/surf/surf_usage2  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
-add_test(test-surf-trace	${PROJECT_DIRECTORY}/testsuite/surf/trace_usage --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/)
+add_test(test-surf-lmm		${CMAKE_HOME_DIRECTORY}/testsuite/surf/lmm_usage)
+add_test(test-surf-maxmin	${CMAKE_HOME_DIRECTORY}/testsuite/surf/maxmin_bench)
+add_test(test-surf-usage	${CMAKE_HOME_DIRECTORY}/testsuite/surf/surf_usage  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
+add_test(test-surf_usage2	${CMAKE_HOME_DIRECTORY}/testsuite/surf/surf_usage2  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
+add_test(test-surf-trace	${CMAKE_HOME_DIRECTORY}/testsuite/surf/trace_usage --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/)
 
-add_test(test-simdag-1 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag small_platform_variable.xml)
-add_test(test-simdag-2 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/small_platform.xml)
-add_test(test-simdag-3 ${PROJECT_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/msg_platform.xml)
+add_test(test-simdag-1 ${CMAKE_HOME_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag small_platform_variable.xml)
+add_test(test-simdag-2 ${CMAKE_HOME_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/small_platform.xml)
+add_test(test-simdag-3 ${CMAKE_HOME_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/msg_platform.xml)
 
-add_test(testall		${PROJECT_DIRECTORY}/src/testall)
+add_test(testall		${CMAKE_HOME_DIRECTORY}/src/testall)
 
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/memcheck_tests.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/memcheck_tests.cmake)
