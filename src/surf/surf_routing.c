@@ -2127,9 +2127,45 @@ static char *remplace(char *value, const char **src_list, int src_size,
   return xbt_strdup(result_result);
 }
 
+static route_extended_t rulebased_get_route(routing_component_t rc,
+                                            const char *src,
+                                            const char *dst);
 static xbt_dynar_t rulebased_get_onelink_routes(routing_component_t rc)
 {
-  xbt_die("\"rulebased_get_onelink_routes\" function not implemented yet");
+  xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
+  routing_component_rulebased_t routing = (routing_component_rulebased_t)rc;
+
+  xbt_dict_cursor_t c1 = NULL;
+  char *k1, *d1;
+
+  //find router
+  char *router = NULL;
+  xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
+    if (strstr (k1, "router")){
+      router = k1;
+    }
+  }
+  if (!router){
+    xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
+  }
+
+  xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
+    route_extended_t route = rulebased_get_route (rc, router, k1);
+
+    int number_of_links = xbt_dynar_length(route->generic_route.link_list);
+    if (number_of_links != 3) {
+      xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
+    }
+
+    void *link_ptr;
+    xbt_dynar_get_cpy (route->generic_route.link_list, 2, &link_ptr);
+    onelink_t onelink = xbt_new0 (s_onelink_t, 1);
+    onelink->src = xbt_strdup (k1);
+    onelink->dst = xbt_strdup (router);
+    onelink->link_ptr = link_ptr;
+    xbt_dynar_push (ret, &onelink);
+  }
+  return ret;
 }
 
 /* Business methods */
