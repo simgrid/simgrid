@@ -155,7 +155,7 @@ static int action_is_suspended(surf_action_t action)
   return 0;
 }
 
-static void finalize(void)
+static void timer_finalize(void)
 {
   xbt_heap_free(timer_heap);
   timer_heap = NULL;
@@ -183,7 +183,7 @@ static void surf_timer_model_init_internal(void)
       update_actions_state;
   surf_timer_model->model_private->update_resource_state =
       update_resource_state;
-  surf_timer_model->model_private->finalize = finalize;
+  surf_timer_model->model_private->finalize = timer_finalize;
 
   surf_timer_model->suspend = action_suspend;
   surf_timer_model->resume = action_resume;
