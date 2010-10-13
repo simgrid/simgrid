@@ -241,8 +241,8 @@ void TRACE_surf_save_onelink(void)
       char resource[100];
       snprintf(resource, 100, "%p", link);
 
-      pajeNewEvent(0.1, "source", resource, src);
-      pajeNewEvent(0.1, "destination", resource, dst);
+      pajeNewEvent(0, "source", resource, src);
+      pajeNewEvent(0, "destination", resource, dst);
     }
   }
 }
