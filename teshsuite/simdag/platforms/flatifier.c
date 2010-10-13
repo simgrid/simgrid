@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 
         tmp_length = SD_route_get_size(hosts[i], hosts[j]);
         for (k = 0; k < tmp_length; k++) {
-          printf("<link:ctn id=\"%s\"/>", SD_link_get_name(tmp[k]));
+          printf("<link_ctn id=\"%s\"/>", SD_link_get_name(tmp[k]));
         }
         printf("\n  </route>\n");
       }
