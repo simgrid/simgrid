@@ -90,9 +90,6 @@ ADD_TEST(tesh-msg-get_sender	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTO
 ADD_TEST(tesh-simdag-reinit_costs	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/test_reinit_costs.tesh)
 ADD_TEST(tesh-simdag-parser		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test.tesh)
 ADD_TEST(tesh-simdag-flatifier		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms flatifier.tesh)
-ADD_TEST(tesh-simdag-full-links01		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters.xml FULL_LINK)
-ADD_TEST(tesh-simdag-full-links02		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters_one_name.xml FULL_LINK)
-ADD_TEST(tesh-simdag-one-link-g5k		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/examples/platforms/g5k.xml ONE_LINK)
 ADD_TEST(tesh-simdag-basic0	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic0.tesh)
 ADD_TEST(tesh-simdag-basic1	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic1.tesh)
 ADD_TEST(tesh-simdag-basic2	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic2.tesh)
@@ -141,9 +138,6 @@ ADD_TEST(msg-properties		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/
 ADD_TEST(msg-trace		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg trace/trace.tesh)
 ADD_TEST(msg-masterslave_cpu_ti	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti.tesh)
 ADD_TEST(msg_icomms ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/icomms peer.tesh)
-ADD_TEST(msg_icomms_waitany ${PROJECT_DIRECTORY}/examples/msg/icomms/peer3 
-								${PROJECT_DIRECTORY}/examples/msg/icomms/small_platform.xml
-								${PROJECT_DIRECTORY}/examples/msg/icomms/deployment_peer05.xml)
 
 IF(HAVE_TRACING)
   ADD_TEST(tracing-ms ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg tracing/ms.tesh)
@@ -237,6 +231,13 @@ ADD_TEST(ruby-quicksort		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/
 endif(HAVE_RUBY)
 
 # END TESH TESTS
+
+ADD_TEST(tesh-simdag-full-links01		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters.xml FULL_LINK)
+ADD_TEST(tesh-simdag-full-links02		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters_one_name.xml FULL_LINK)
+ADD_TEST(tesh-simdag-one-link-g5k		${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/examples/platforms/g5k.xml ONE_LINK)
+ADD_TEST(msg_icomms_waitany ${PROJECT_DIRECTORY}/examples/msg/icomms/peer3 
+								${PROJECT_DIRECTORY}/examples/msg/icomms/small_platform.xml
+								${PROJECT_DIRECTORY}/examples/msg/icomms/deployment_peer05.xml)
 
 if(HAVE_MC)
 ADD_TEST(mc-bugged1			${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/mc bugged1.tesh)
