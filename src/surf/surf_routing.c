@@ -907,7 +907,6 @@ void routing_model_create(size_t size_of_links, void *loopback)
 typedef struct {
   s_routing_component_t generic_routing;
   xbt_dict_t parse_routes;      /* store data during the parse process */
-  xbt_dict_t to_index;          /* char* -> network_element_t */
   xbt_dict_t bypassRoutes;
   route_extended_t *routing_table;
 } s_routing_component_full_t, *routing_component_full_t;
@@ -918,13 +917,13 @@ static xbt_dynar_t full_get_onelink_routes(routing_component_t rc)
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
 
   routing_component_full_t routing = (routing_component_full_t) rc;
-  int table_size = xbt_dict_length(routing->to_index);
+  int table_size = xbt_dict_length(routing->generic_routing.to_index);
   xbt_dict_cursor_t c1 = NULL, c2 = NULL;
   char *k1, *d1, *k2, *d2;
-  xbt_dict_foreach(routing->to_index, c1, k1, d1) {
-    xbt_dict_foreach(routing->to_index, c2, k2, d2) {
-      int *src_id = xbt_dict_get_or_null(routing->to_index, k1);
-      int *dst_id = xbt_dict_get_or_null(routing->to_index, k2);
+  xbt_dict_foreach(routing->generic_routing.to_index, c1, k1, d1) {
+    xbt_dict_foreach(routing->generic_routing.to_index, c2, k2, d2) {
+      int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, k1);
+      int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, k2);
       xbt_assert2(src_id
                   && dst_id,
                   "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
@@ -963,11 +962,11 @@ static route_extended_t full_get_route(routing_component_t rc,
 
   /* set utils vars */
   routing_component_full_t routing = (routing_component_full_t) rc;
-  int table_size = xbt_dict_length(routing->to_index);
+  int table_size = xbt_dict_length(routing->generic_routing.to_index);
 
   generic_src_dst_check(rc, src, dst);
-  int *src_id = xbt_dict_get_or_null(routing->to_index, src);
-  int *dst_id = xbt_dict_get_or_null(routing->to_index, dst);
+  int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
+  int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, dst);
   xbt_assert2(src_id
               && dst_id,
               "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
@@ -996,7 +995,7 @@ static route_extended_t full_get_route(routing_component_t rc,
 static void full_finalize(routing_component_t rc)
 {
   routing_component_full_t routing = (routing_component_full_t) rc;
-  int table_size = xbt_dict_length(routing->to_index);
+  int table_size = xbt_dict_length(routing->generic_routing.to_index);
   int i, j;
   if (routing) {
     /* Delete routing table */
@@ -1007,7 +1006,7 @@ static void full_finalize(routing_component_t rc)
     /* Delete bypass dict */
     xbt_dict_free(&routing->bypassRoutes);
     /* Delete index dict */
-    xbt_dict_free(&(routing->to_index));
+    xbt_dict_free(&(routing->generic_routing.to_index));
     /* Delete structure */
     xbt_free(rc);
   }
@@ -1032,7 +1031,7 @@ static void *model_full_create(void)
   new_component->generic_routing.get_bypass_route =
       generic_get_bypassroute;
   new_component->generic_routing.finalize = full_finalize;
-  new_component->to_index = xbt_dict_new();
+  new_component->generic_routing.to_index = xbt_dict_new();
   new_component->bypassRoutes = xbt_dict_new();
   new_component->parse_routes = xbt_dict_new();
   return new_component;
@@ -1065,7 +1064,7 @@ static void model_full_end(void)
   /* set utils vars */
   routing_component_full_t routing =
       ((routing_component_full_t) current_routing);
-  int table_size = xbt_dict_length(routing->to_index);
+  int table_size = xbt_dict_length(routing->generic_routing.to_index);
 
   /* Create the routing table */
   routing->routing_table =
@@ -1129,7 +1128,6 @@ typedef struct {
   /* vars for calculate the floyd algorith. */
   int *predecessor_table;
   route_extended_t *link_table; /* char* -> int* */
-  xbt_dict_t to_index;
   xbt_dict_t bypassRoutes;
   /* store data during the parse process */
   xbt_dict_t parse_routes;
@@ -1144,11 +1142,11 @@ static xbt_dynar_t floyd_get_onelink_routes(routing_component_t rc)
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
 
   routing_component_floyd_t routing = (routing_component_floyd_t) rc;
-  //int table_size = xbt_dict_length(routing->to_index);
+  //int table_size = xbt_dict_length(routing->generic_routing.to_index);
   xbt_dict_cursor_t c1 = NULL, c2 = NULL;
   char *k1, *d1, *k2, *d2;
-  xbt_dict_foreach(routing->to_index, c1, k1, d1) {
-    xbt_dict_foreach(routing->to_index, c2, k2, d2) {
+  xbt_dict_foreach(routing->generic_routing.to_index, c1, k1, d1) {
+    xbt_dict_foreach(routing->generic_routing.to_index, c2, k2, d2) {
       route_extended_t route = floyd_get_route(rc, k1, k2);
       if (route) {
         if (xbt_dynar_length(route->generic_route.link_list) == 1) {
@@ -1183,11 +1181,11 @@ static route_extended_t floyd_get_route(routing_component_t rc,
 
   /* set utils vars */
   routing_component_floyd_t routing = (routing_component_floyd_t) rc;
-  int table_size = xbt_dict_length(routing->to_index);
+  int table_size = xbt_dict_length(routing->generic_routing.to_index);
 
   generic_src_dst_check(rc, src, dst);
-  int *src_id = xbt_dict_get_or_null(routing->to_index, src);
-  int *dst_id = xbt_dict_get_or_null(routing->to_index, dst);
+  int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
+  int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, dst);
   xbt_assert2(src_id
               && dst_id,
               "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
@@ -1266,7 +1264,7 @@ static void floyd_finalize(routing_component_t rc)
   routing_component_floyd_t routing = (routing_component_floyd_t) rc;
   int i, j, table_size;
   if (routing) {
-    table_size = xbt_dict_length(routing->to_index);
+    table_size = xbt_dict_length(routing->generic_routing.to_index);
     /* Delete link_table */
     for (i = 0; i < table_size; i++)
       for (j = 0; j < table_size; j++)
@@ -1275,7 +1273,7 @@ static void floyd_finalize(routing_component_t rc)
     /* Delete bypass dict */
     xbt_dict_free(&routing->bypassRoutes);
     /* Delete index dict */
-    xbt_dict_free(&(routing->to_index));
+    xbt_dict_free(&(routing->generic_routing.to_index));
     /* Delete dictionary index dict, predecessor and links table */
     xbt_free(routing->predecessor_table);
     /* Delete structure */
@@ -1300,7 +1298,7 @@ static void *model_floyd_create(void)
   new_component->generic_routing.get_bypass_route =
       generic_get_bypassroute;
   new_component->generic_routing.finalize = floyd_finalize;
-  new_component->to_index = xbt_dict_new();
+  new_component->generic_routing.to_index = xbt_dict_new();
   new_component->bypassRoutes = xbt_dict_new();
   new_component->parse_routes = xbt_dict_new();
   return new_component;
@@ -1330,7 +1328,7 @@ static void model_floyd_end(void)
   unsigned int i, j, a, b, c;
 
   /* set the size of inicial table */
-  int table_size = xbt_dict_length(routing->to_index);
+  int table_size = xbt_dict_length(routing->generic_routing.to_index);
 
   /* Create Cost, Predecessor and Link tables */
   cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
@@ -1412,7 +1410,6 @@ static void model_floyd_end(void)
 
 typedef struct {
   s_routing_component_t generic_routing;
-  xbt_dict_t to_index;
   xbt_dict_t bypassRoutes;
   xbt_graph_t route_graph;      /* xbt_graph */
   xbt_dict_t graph_node_map;    /* map */
@@ -1597,8 +1594,8 @@ static route_extended_t dijkstra_get_route(routing_component_t rc,
   routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
 
   generic_src_dst_check(rc, src, dst);
-  int *src_id = xbt_dict_get_or_null(routing->to_index, src);
-  int *dst_id = xbt_dict_get_or_null(routing->to_index, dst);
+  int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
+  int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, dst);
   xbt_assert2(src_id
               && dst_id,
               "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
@@ -1806,7 +1803,7 @@ static void dijkstra_finalize(routing_component_t rc)
     /* Delete bypass dict */
     xbt_dict_free(&routing->bypassRoutes);
     /* Delete index dict */
-    xbt_dict_free(&(routing->to_index));
+    xbt_dict_free(&(routing->generic_routing.to_index));
     /* Delete structure */
     xbt_free(routing);
   }
@@ -1832,7 +1829,7 @@ static void *model_dijkstra_both_create(int cached)
       generic_get_bypassroute;
   new_component->generic_routing.finalize = dijkstra_finalize;
   new_component->cached = cached;
-  new_component->to_index = xbt_dict_new();
+  new_component->generic_routing.to_index = xbt_dict_new();
   new_component->bypassRoutes = xbt_dict_new();
   new_component->parse_routes = xbt_dict_new();
   return new_component;
@@ -2467,21 +2464,9 @@ static void generic_set_processing_unit(routing_component_t rc,
                                         const char *name)
 {
   DEBUG1("Load process unit \"%s\"", name);
-  model_type_t modeltype = rc->routing;
   int *id = xbt_new0(int, 1);
   xbt_dict_t _to_index;
-  if (modeltype == &routing_models[SURF_MODEL_FULL])
-    _to_index = ((routing_component_full_t) rc)->to_index;
-
-  else if (modeltype == &routing_models[SURF_MODEL_FLOYD])
-    _to_index = ((routing_component_floyd_t) rc)->to_index;
-
-  else if (modeltype == &routing_models[SURF_MODEL_DIJKSTRA] ||
-           modeltype == &routing_models[SURF_MODEL_DIJKSTRACACHE])
-    _to_index = ((routing_component_dijkstra_t) rc)->to_index;
-
-  else
-    xbt_die("\"generic_set_processing_unit\" not supported");
+  _to_index = current_routing->to_index;
   *id = xbt_dict_length(_to_index);
   xbt_dict_set(_to_index, name, id, xbt_free);
 }
@@ -2490,21 +2475,9 @@ static void generic_set_autonomous_system(routing_component_t rc,
                                           const char *name)
 {
   DEBUG1("Load Autonomous system \"%s\"", name);
-  model_type_t modeltype = rc->routing;
   int *id = xbt_new0(int, 1);
   xbt_dict_t _to_index;
-  if (modeltype == &routing_models[SURF_MODEL_FULL])
-    _to_index = ((routing_component_full_t) rc)->to_index;
-
-  else if (modeltype == &routing_models[SURF_MODEL_FLOYD])
-    _to_index = ((routing_component_floyd_t) rc)->to_index;
-
-  else if (modeltype == &routing_models[SURF_MODEL_DIJKSTRA] ||
-           modeltype == &routing_models[SURF_MODEL_DIJKSTRACACHE])
-    _to_index = ((routing_component_dijkstra_t) rc)->to_index;
-
-  else
-    xbt_die("\"generic_set_autonomous_system\" not supported");
+  _to_index = current_routing->to_index;
   *id = xbt_dict_length(_to_index);
   xbt_dict_set(_to_index, name, id, xbt_free);
 }
@@ -2518,19 +2491,17 @@ static void generic_set_route(routing_component_t rc, const char *src,
   xbt_dict_t _to_index;
   char *route_name;
   int *src_id, *dst_id;
+  _to_index = current_routing->to_index;
 
   if (modeltype == &routing_models[SURF_MODEL_FULL]) {
     _parse_routes = ((routing_component_full_t) rc)->parse_routes;
-    _to_index = ((routing_component_full_t) rc)->to_index;
 
   } else if (modeltype == &routing_models[SURF_MODEL_FLOYD]) {
     _parse_routes = ((routing_component_floyd_t) rc)->parse_routes;
-    _to_index = ((routing_component_floyd_t) rc)->to_index;
 
   } else if (modeltype == &routing_models[SURF_MODEL_DIJKSTRA] ||
              modeltype == &routing_models[SURF_MODEL_DIJKSTRACACHE]) {
     _parse_routes = ((routing_component_dijkstra_t) rc)->parse_routes;
-    _to_index = ((routing_component_dijkstra_t) rc)->to_index;
 
   } else
     xbt_die("\"generic_set_route\" not supported");
@@ -2563,19 +2534,17 @@ static void generic_set_ASroute(routing_component_t rc, const char *src,
   xbt_dict_t _to_index;
   char *route_name;
   int *src_id, *dst_id;
+  _to_index = current_routing->to_index;
 
   if (modeltype == &routing_models[SURF_MODEL_FULL]) {
     _parse_routes = ((routing_component_full_t) rc)->parse_routes;
-    _to_index = ((routing_component_full_t) rc)->to_index;
 
   } else if (modeltype == &routing_models[SURF_MODEL_FLOYD]) {
     _parse_routes = ((routing_component_floyd_t) rc)->parse_routes;
-    _to_index = ((routing_component_floyd_t) rc)->to_index;
 
   } else if (modeltype == &routing_models[SURF_MODEL_DIJKSTRA] ||
              modeltype == &routing_models[SURF_MODEL_DIJKSTRACACHE]) {
     _parse_routes = ((routing_component_dijkstra_t) rc)->parse_routes;
-    _to_index = ((routing_component_dijkstra_t) rc)->to_index;
 
   } else
     xbt_die("\"generic_set_route\" not supported");
