@@ -260,9 +260,9 @@ void TRACE_surf_action(surf_action_t surf_action, const char *category)
     return;
   if (!IS_TRACING_PLATFORM)
     return;
-  if (!category) {
-    xbt_die("invalid tracing category");
-  }
+  if (!category)
+    return;
+
   surf_action->category = xbt_new(char, strlen(category) + 1);
   strncpy(surf_action->category, category, strlen(category) + 1);
 }
