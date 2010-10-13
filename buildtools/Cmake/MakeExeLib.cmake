@@ -59,7 +59,6 @@ if(HAVE_LUA)
 	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/lua/simgrid.so #for test
 	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.so #for test
 	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/simdag/simgrid.so #for test
-	  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${PROJECT_DIRECTORY}/examples/gras/console/simgrid.so #for compil
 	  COMMENT "Generating libsimgrid.so link for binding lua..."
 	)
 	
