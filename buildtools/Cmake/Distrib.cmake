@@ -180,7 +180,7 @@ add_custom_target(dist-dir
 set(dirs_in_tarball "")
 foreach(file ${source_to_pack})
   # This damn prefix is still set somewhere (seems to be in subdirs)
-  string(REPLACE "${PROJECT_DIRECTORY}/" "" file ${file})
+  string(REPLACE "${PROJECT_DIRECTORY}/" "" file "${file}")
   
   # Create the directory on need
   get_filename_component(file_location ${file} PATH)

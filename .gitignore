@@ -274,6 +274,8 @@ tools/graspe-slave
 tools/tesh/tesh
 examples/msg/tracing/categories
 examples/msg/tracing/ms
+teshsuite/simdag/platforms/is_router_test
+
 
 .cproject
 .project
