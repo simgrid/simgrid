@@ -15,6 +15,7 @@ if [ -e /usr/bin/apt-get ] ; then
     sudo apt-get -y install wget
     sudo apt-get -y install perl
     sudo apt-get -y install graphviz-dev graphviz
+    sudo apt-get -y install libpcre3-dev
 fi
 
 if [ -e /usr/bin/yum ] ; then
@@ -30,6 +31,7 @@ if [ -e /usr/bin/yum ] ; then
     sudo yum -y install wget
     sudo yum -y install perl
     sudo yum -y install graphviz-dev graphviz
+    sudo yum -y install libpcre3-dev
 fi
 
 if [ x$arch = xDarwin ] ; then
@@ -44,6 +46,7 @@ if [ x$arch = xDarwin ] ; then
     sudo fink -y install wget
     sudo fink -y install perl
     sudo fink -y install graphviz-dev graphviz
+    sudo fink -y install libpcre3-dev
 fi
 
 which_svn=`which svn`		#svn necessary
@@ -57,6 +60,7 @@ which_cmake=`which cmake`	#cmake necessary
 which_unzip=`which unzip`	#unzip for gtnets
 which_wget=`which wget`		#wget for cmake
 which_dot=`which dot`		#dot for cgraph
+which_perl=`which perl`		#perl
 echo $which_cmake
 echo $which_unzip
 echo $which_ruby
@@ -68,3 +72,9 @@ echo $which_gpp
 echo $which_svn
 echo $which_dot
 echo $which_wget
+echo $which_perl
+
+directory=`pwd`
+cd ../
+perl $directory/buildtools/pipol/cmake.pl
+cd $directory
