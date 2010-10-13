@@ -2768,7 +2768,7 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
   route_extended_t e_route, new_e_route;
   route_t route;
   unsigned int cpt;
-  xbt_dynar_t links, links_id;
+  xbt_dynar_t links = NULL, links_id = NULL;
 
   new_e_route = xbt_new0(s_route_extended_t, 1);
   new_e_route->generic_route.link_list =
