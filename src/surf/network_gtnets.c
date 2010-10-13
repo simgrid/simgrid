@@ -30,9 +30,6 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   if (xbt_dict_get_or_null(surf_network_model->resource_set, name)) {
     return;
   }
-#ifdef HAVE_TRACING
-  TRACE_surf_link_declaration(name, bw, lat);
-#endif
 
   DEBUG1("Scanning link name %s", name);
   sscanf(name, "%d_%d", &tmp_idsrc, &tmp_iddst);
@@ -67,6 +64,9 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   }
   xbt_dict_set(surf_network_model->resource_set, name, gtnets_link,
                surf_resource_free);
+#ifdef HAVE_TRACING
+  TRACE_surf_link_declaration(gtnets_link, name, bw, lat);
+#endif
 }
 
 static void route_new(int src_id, int dst_id, xbt_dynar_t links,
