@@ -749,10 +749,6 @@ set(bin_files
 tools/MSG_visualization/colorize.pl
 )
 
-file(GLOB_RECURSE doc_files
-"doc/html/*"
-)
-
 # This is the complete lise of what will be added to the source archive
 set(source_to_pack	
 	${XBT_RL_SRC}
@@ -783,5 +779,4 @@ set(source_to_pack
 	${EXTRA_DIST}
 	${CMAKE_SOURCE_FILES}
 	${bin_files}
-	${doc_files}
 )
