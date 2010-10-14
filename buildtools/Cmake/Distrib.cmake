@@ -65,9 +65,13 @@ endif(HAVE_JAVA)
 if(HAVE_LUA)
 	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/lua/5.1")
 	add_custom_target(simgrid_lua ALL
-  		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-  		DEPENDS simgrid
+  		DEPENDS simgrid 
+  				${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
 		)
+	add_custom_command(
+		OUTPUT ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
+	)
 	install(FILES ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
 		DESTINATION $ENV{DESTDIR}${prefix}/lib/lua/5.1
 		)
@@ -77,8 +81,12 @@ if(HAVE_RUBY)
 	string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_ARCH_DIR}")
 	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}")
 	add_custom_target(ruby_simgrid ALL
-	COMMAND ${CMAKE_COMMAND} -E create_symlink ../../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
-	DEPENDS simgrid
+		DEPENDS simgrid
+				${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
+	)
+	add_custom_command(
+		OUTPUT ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
 	)
 	install(FILES ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
 		DESTINATION $ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/
@@ -151,7 +159,7 @@ endif(HAVE_RUBY)
 ######################################
 
 add_custom_target(html
-COMMAND ${CMAKE_COMMAND} -E echo "Make the html doc"
+DEPENDS ${PROJECT_DIRECTORY}/doc/all_bib.html
 COMMAND ${CMAKE_COMMAND} -E echo "cmake -DBIBTEX2HTML=${BIBTEX2HTML} ./"
 COMMAND ${CMAKE_COMMAND} -DBIBTEX2HTML=${BIBTEX2HTML} ./
 COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/CMakeFiles
@@ -159,6 +167,33 @@ COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/
 COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/cmake_install.cmake
 COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/Makefile
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/doc"
+)
+
+add_custom_command(
+OUTPUT 	${PROJECT_DIRECTORY}/doc/all_bib.html
+		${PROJECT_DIRECTORY}/doc/all_bib.latin1.html
+		${PROJECT_DIRECTORY}/doc/all_bib.latin1.html.tmp
+		${PROJECT_DIRECTORY}/doc/logcategories.sh
+		${PROJECT_DIRECTORY}/doc/publis_core.bib
+		${PROJECT_DIRECTORY}/doc/publis_core_bib.html
+		${PROJECT_DIRECTORY}/doc/publis_core_bib.latin1.html
+		${PROJECT_DIRECTORY}/doc/publis_core_bib.latin1.html.tmp
+		${PROJECT_DIRECTORY}/doc/publis_count.html
+		${PROJECT_DIRECTORY}/doc/publis_extern.bib
+		${PROJECT_DIRECTORY}/doc/publis_extern_bib.html
+		${PROJECT_DIRECTORY}/doc/publis_extern_bib.latin1.html
+		${PROJECT_DIRECTORY}/doc/publis_extern_bib.latin1.html.tmp
+		${PROJECT_DIRECTORY}/doc/publis_intra.bib
+		${PROJECT_DIRECTORY}/doc/publis_intra_bib.html
+		${PROJECT_DIRECTORY}/doc/publis_intra_bib.latin1.html
+		${PROJECT_DIRECTORY}/doc/publis_intra_bib.latin1.html.tmp
+		${PROJECT_DIRECTORY}/doc/tmp.realtoc
+		${PROJECT_DIRECTORY}/doc/using_bib.html
+		${PROJECT_DIRECTORY}/doc/using_bib.latin1.html
+		${PROJECT_DIRECTORY}/doc/using_bib.latin1.html.tmp
+		${PROJECT_DIRECTORY}/doc/realtoc.sh
+		${PROJECT_DIRECTORY}/doc/html
+COMMAND ${CMAKE_COMMAND} -E echo "Make the html doc"
 )
 
 ################################################################
@@ -262,7 +297,7 @@ else(enable_memcheck)
 endif(enable_memcheck)
 
 #######################################
-### Fill in the "make all-clean" target ###
+### Fill in the "make xxx-clean" target ###
 #######################################
 
 add_custom_target(maintainer-clean
@@ -287,66 +322,6 @@ COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_sg.c
 COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_smpi.c
 WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
 )
-
-add_custom_target(doc-clean
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/all_bib.html
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/all_bib.latin1.html
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/all_bib.latin1.html.tmp
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/logcategories.sh
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_core.bib
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_core_bib.html
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_core_bib.latin1.html
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_core_bib.latin1.html.tmp
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_count.html
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_extern.bib
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_extern_bib.html
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_extern_bib.latin1.html
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_extern_bib.latin1.html.tmp
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_intra.bib
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_intra_bib.html
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_intra_bib.latin1.html
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/publis_intra_bib.latin1.html.tmp
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/tmp.realtoc
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/using_bib.html
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/using_bib.latin1.html
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/using_bib.latin1.html.tmp
-COMMAND ${CMAKE_COMMAND} -E remove -f doc/realtoc.sh
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
-)
-
-add_custom_target(java-clean
-COMMAND ${CMAKE_COMMAND} -E remove -f src/simgrid.jar
-COMMAND ${CMAKE_COMMAND} -E remove_directory src/.classes
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/basic/BasicTest.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/basic/FinalizeTask.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/basic/Forwarder.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/basic/Master.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/basic/Slave.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/comm_time/CommTimeTest.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/comm_time/FinalizeTask.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/comm_time/Master.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/comm_time/Slave.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/ping_pong/PingPongTask.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/ping_pong/PingPongTest.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/ping_pong/Receiver.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/ping_pong/Sender.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/suspend/DreamMaster.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/suspend/LazyGuy.class
-COMMAND ${CMAKE_COMMAND} -E remove -f examples/java/suspend/SuspendTest.class
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
-)
-
-add_custom_target(all-clean
-COMMAND make clean
-COMMAND make java-clean
-COMMAND make doc-clean
-COMMAND make supernovae-clean
-)
-if(enable_maintainer_mode)
-	add_custom_command(TARGET all-clean
-	COMMAND make maintainer-clean
-	)
-endif(enable_maintainer_mode)
 
 #############################################
 ### Fill in the "make sync-gforge" target ###
