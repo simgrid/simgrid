@@ -18,8 +18,14 @@ endif(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
 # binaries
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
                  ${CMAKE_BINARY_DIR}/bin/smpirun
-                 ${CMAKE_BINARY_DIR}/bin/tesh
 		DESTINATION $ENV{DESTDIR}${prefix}/bin/)
+if(WIN32)
+	install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl
+	DESTINATION $ENV{DESTDIR}${prefix}/bin/)
+else(WIN32)
+	install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh
+	DESTINATION $ENV{DESTDIR}${prefix}/bin/)
+endif(WIN32)  
 	
 install(PROGRAMS tools/MSG_visualization/colorize.pl
         DESTINATION $ENV{DESTDIR}${prefix}/bin/
