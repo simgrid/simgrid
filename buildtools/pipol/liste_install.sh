@@ -46,7 +46,7 @@ if [ x$arch = xDarwin ] ; then
     sudo fink -y install wget
     sudo fink -y install perl
     sudo fink -y install graphviz-dev graphviz
-    sudo fink -y install libpcre3-dev
+    sudo fink -y install pcre
 fi
 
 which_svn=`which svn`		#svn necessary

@@ -20,15 +20,19 @@ add_executable(ping_client_console    	${CMAKE_CURRENT_SOURCE_DIR}/_ping_client.
 add_executable(ping_server_console    	${CMAKE_CURRENT_SOURCE_DIR}/_ping_server.c
 										${CMAKE_CURRENT_SOURCE_DIR}/ping_server.c
 										${CMAKE_CURRENT_SOURCE_DIR}/ping_common.c)
-
+  
 add_custom_command(
   					OUTPUT 	${CMAKE_CURRENT_SOURCE_DIR}/_ping_simulator.c 
          					${CMAKE_CURRENT_SOURCE_DIR}/_ping_client.c 
 	 						${CMAKE_CURRENT_SOURCE_DIR}/_ping_server.c
-	 				COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.so ${CMAKE_HOME_DIRECTORY}/examples/gras/console/simgrid.so
+	 						${CMAKE_HOME_DIRECTORY}/examples/gras/console/simgrid.${LIB_EXE}
+	 				COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_HOME_DIRECTORY}/examples/gras/console/simgrid.${LIB_EXE}
   					COMMAND lua ${CMAKE_CURRENT_SOURCE_DIR}/ping_generator.lua
   					WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} #needed to find simgrid.so. By default CMAKE_CURRENT_BINARY_DIR
 					)
+					
+
+
 ### Add definitions for compile
 target_link_libraries(ping_simulator_console simgrid pthread m )
 target_link_libraries(ping_client_console gras simgrid pthread m )
