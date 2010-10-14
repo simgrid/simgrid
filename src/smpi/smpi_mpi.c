@@ -1085,14 +1085,7 @@ int MPI_Waitany(int count, MPI_Request requests[], int *index,
       xbt_dynar_insert_at(recvs, i, t);
     }
   }
-
-  //search for a suitable request to give the rank of current mpi proc
-  MPI_Request req = NULL;
-  for (i = 0; i < count && req == NULL; i++) {
-    req = requests[i];
-  }
-  MPI_Comm comm = (req)->comm;
-  int rank_traced = smpi_comm_rank(comm);
+  int rank_traced = smpi_comm_rank(MPI_COMM_WORLD);
   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__);
 #endif
   if (index == NULL) {
@@ -1141,14 +1134,7 @@ int MPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
     xbt_dynar_insert_at(dsts, i, adst);
     xbt_dynar_insert_at(recvs, i, arecv);
   }
-
-//  find my rank inside one of MPI_Comm's of the requests
-  MPI_Request req = NULL;
-  for (i = 0; i < count && req == NULL; i++) {
-    req = requests[i];
-  }
-  MPI_Comm comm = (req)->comm;
-  int rank_traced = smpi_comm_rank(comm);
+  int rank_traced = smpi_comm_rank (MPI_COMM_WORLD);
   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__);
 #endif
   smpi_mpi_waitall(count, requests, status);
