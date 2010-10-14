@@ -246,9 +246,13 @@ endforeach(file ${source_to_pack})
 ######################################
 
 add_custom_target(dist
-  COMMAND ${CMAKE_COMMAND} -E tar cf simgrid-${release_version}.tar simgrid-${release_version}/
-  COMMAND gzip -9v simgrid-${release_version}.tar
-  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}
+  DEPENDS ${CMAKE_BINARY_DIR}/simgrid-${release_version}.tar.gz
+)
+add_custom_command(
+	OUTPUT ${CMAKE_BINARY_DIR}/simgrid-${release_version}.tar.gz
+	COMMAND ${CMAKE_COMMAND} -E tar cf simgrid-${release_version}.tar simgrid-${release_version}/
+  	COMMAND gzip -9v simgrid-${release_version}.tar
+  	COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}
 )
 add_dependencies(dist dist-dir)
 
