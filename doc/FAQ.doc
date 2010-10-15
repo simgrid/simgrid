@@ -1367,7 +1367,38 @@ annotate Tiers-generated topologies. This perl-script is in
 <tt>tools/platform_generation/</tt> directory of the SVN. Dinda et Al.
 released a very comparable tool, and called it GridG.
 
-\subsubsection faq_SURF_dynamic Expressing dynamic resource availability in platform files
+\subsubsection faq_SURF_multicore Modeling multi-core resources 
+
+There is currently no native support for multi-core or SMP machines in
+SimGrid. We are currently working on it, but coming up with the right
+model is very hard: Cores share caches and bus to access memory and
+thus interfere with each others. Memory contention is a crucial
+component of multi-core modeling.
+
+In the meanwhile, some user-level tricks can reveal sufficient for
+you. For example, you may model each core by a CPU and add some very
+high speed links between them. This complicates a bit the user code
+since you have to remember that when you assign something to a (real)
+host, it can be any of the (fake) hosts representing the cores of a
+given machine. For that, you can use the prop tag of the XML files as
+follows. Your code should then look at the ‘machine’ property
+associated with each workstation, and run parallel tasks over all
+cores of the machine.
+
+\verbatim
+  <host id="machine0/core0" power="91500E6">
+    <prop id="machine" value="machine0"/>
+    <prop id="core" value="0"/>
+  </host>
+  <host id="machine0/core1" power="91500E6">
+    <prop id="machine" value="machine0"/>
+    <prop id="core" value="1"/>
+</host>
+
+
+\endverbatim
+
+\subsubsection faq_SURF_dynamic Modeling dynamic resource availability 
 
 A nice feature of SimGrid is that it enables you to seamlessly have
 resources whose availability change over time. When you build a
