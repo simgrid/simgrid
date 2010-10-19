@@ -10,6 +10,7 @@ my($execline);
 my($ok)=0;
 chdir("$directory");
 print "Change directory to \"$directory\"\n";
+
 open SH_LIGNE, $file or die "Unable to open $file. $!\n";
 
 while(defined($line1=<SH_LIGNE>))
@@ -19,7 +20,7 @@ while(defined($line1=<SH_LIGNE>))
 			$line1 =~ s/\$\{srcdir\:\=\.\}/./g;
 			$line1 =~ s/\$SG_TEST_EXENV//g;
 			$line1 =~ s/\$SG_EXENV_TEST//g;
-			$line1 =~ s/\$EXEEXT/.exe/g;
+			$line1 =~ s/\$EXEEXT//g;
 			$line1 =~ s/\${EXEEXT:=}//g;
 			$line1 =~ s/^\$\ *//g;
 			$line1 =~ s/^.\/lua/lua/g;
@@ -39,10 +40,25 @@ while(defined($line1=<SH_LIGNE>))
 			$line1 =~ s/\r//g;
 			chomp $line1;
 			
-			if($line1 =~ /^.*\[.*\].*\[.*\/INFO\].*$/){if(!defined($line2=<FILE_ERR>)){die;}}elsif($line1 =~ /^.*\[.*\].*\[.*\/WARNING\].*$/){if(!defined($line2=<FILE_ERR>)){die;}}
-			elsif($line1 =~ /^.*\[.*\].*\[.*\/CRITICAL\].*$/){if(!defined($line2=<FILE_ERR>)){die;}}
-			elsif($line1 =~ /^.*\[.*\].*\[.*\/DEBUG\].*$/){if(!defined($line2=<FILE_ERR>)){die;}}
-			else{if(!defined($line2=<FILE>)){die;}}
+			if($line1 =~ /^.*\[.*\].*\[.*\/INFO\].*$/)
+				{if(!defined($line2=<FILE_ERR>))
+					{	print "- $line1\n";
+						die;}}
+			elsif($line1 =~ /^.*\[.*\].*\[.*\/WARNING\].*$/)
+				{if(!defined($line2=<FILE_ERR>))
+					{	print "- $line1\n";
+						die;}}
+			elsif($line1 =~ /^.*\[.*\].*\[.*\/CRITICAL\].*$/)
+				{if(!defined($line2=<FILE_ERR>))
+					{	print "- $line1\n";
+						die;}}
+			elsif($line1 =~ /^.*\[.*\].*\[.*\/DEBUG\].*$/)
+				{if(!defined($line2=<FILE_ERR>))
+					{	print "- $line1\n";
+						die;}}
+			else{if(!defined($line2=<FILE>))
+					{	print "- $line1\n";
+						die;}}
 			
 			$line2 =~ s/\r//g;							
 			chomp $line2;
