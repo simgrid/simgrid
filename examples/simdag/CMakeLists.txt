@@ -6,6 +6,7 @@ add_executable(ex_sd_test sd_test.c)
 add_executable(sd_test2 sd_test2.c)
 add_executable(sd_seq_access sd_seq_access.c)
 add_executable(sd_test_console sd_test_console.c)
+add_executable(simdag_tracing simdag_trace.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -13,6 +14,7 @@ if(NOT WIN32)
 	target_link_libraries(sd_test2 simgrid pthread m )
 	target_link_libraries(sd_seq_access simgrid pthread m )
 	target_link_libraries(sd_test_console simgrid pthread m )
+	target_link_libraries(simdag_tracing simgrid pthread m )
 	
 	add_custom_command(TARGET ex_sd_test
 		POST_BUILD
@@ -29,6 +31,7 @@ else(NOT WIN32)
 	target_link_libraries(sd_test2 simgrid)
 	target_link_libraries(sd_seq_access simgrid)
 	target_link_libraries(sd_test_console simgrid)
+	target_link_libraries(simdag_tracing simgrid)
 	
 	add_custom_command(TARGET ex_sd_test
 		POST_BUILD
