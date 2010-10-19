@@ -67,6 +67,16 @@ static void dot_task_free(void *task)
   SD_task_destroy(t);
 }
 
+static void TRACE_sd_dotloader (SD_task_t task, const char *category)
+{
+  if (category){
+    if (strlen (category) != 0){
+      TRACE_category (category);
+      TRACE_sd_set_task_category (task, category);
+    }
+  }
+}
+
 /** @brief loads a DOT file describing a DAG
  * 
  * See http://www.graphviz.org/doc/info/lang.html
@@ -181,6 +191,9 @@ void dot_add_task(Agnode_t * dag_node)
   if (current_job == NULL) {
     current_job =
         SD_task_create_comp_seq(name, (void *) performer, runtime);
+#ifdef HAVE_TRACING
+   TRACE_sd_dotloader (current_job, agget (dag_node, (char*)"category"));
+#endif
     xbt_dict_set(jobs, name, current_job, NULL);
     xbt_dynar_push(result, &current_job);
   }
@@ -221,6 +234,9 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
     file = xbt_dict_get_or_null(files, name);
     if (file == NULL) {
       file = SD_task_create_comm_e2e(name, NULL, size);
+#ifdef HAVE_TRACING
+      TRACE_sd_dotloader (file, agget (edge, (char*)"category"));
+#endif
       xbt_dict_set(files, name, file, &dot_task_free);
     } else {
       if (SD_task_get_amount(file) != size) {
@@ -256,6 +272,9 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
     file = xbt_dict_get_or_null(files, name);
     if (file == NULL) {
       file = SD_task_create_comm_e2e(name, NULL, size);
+#ifdef HAVE_TRACING
+      TRACE_sd_dotloader (file, agget (edge, (char*)"category"));
+#endif
       xbt_dict_set(files, name, file, &dot_task_free);
     } else {
       if (SD_task_get_amount(file) != size) {

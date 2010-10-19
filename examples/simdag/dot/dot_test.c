@@ -25,6 +25,8 @@ int main(int argc, char **argv)
   /* initialisation of SD */
   SD_init(&argc, argv);
 
+  TRACE_start ();
+
   /* Check our arguments */
   if (argc < 3) {
     INFO1("Usage: %s platform_file dot_file [trace_file]", argv[0]);
@@ -122,5 +124,7 @@ int main(int argc, char **argv)
 
   /* exit */
   SD_exit();
+
+  TRACE_end();
   return 0;
 }
