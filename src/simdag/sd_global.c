@@ -84,8 +84,10 @@ void SD_init(int *argc, char **argv)
   sd_global->task_number = 0;
 
   surf_init(argc, argv);
+#ifndef HAVE_TRACING
   xbt_cfg_setdefault_string(_surf_cfg_set, "workstation/model",
                             "ptask_L07");
+#endif
 }
 
 /**
