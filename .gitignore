@@ -1,5 +1,10 @@
 checkall.log
 TAGS
+*.exe
+*.bpr
+*.bpf
+*.dsp
+*.ilk
 *.mk
 *.l[oa]
 *.loT
