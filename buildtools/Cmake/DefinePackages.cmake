@@ -240,9 +240,9 @@ set(SIMIX_SRC
 	src/simix/smx_deployment.c
 	src/simix/smx_environment.c
 	src/simix/smx_host.c
+	src/simix/smx_action.c
 	src/simix/smx_process.c
 	src/simix/smx_context.c
-	src/simix/smx_action.c
 	src/simix/smx_synchro.c
 	src/simix/smx_network.c
 	src/simix/smx_context_base.c

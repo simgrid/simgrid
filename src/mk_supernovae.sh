@@ -3,10 +3,15 @@
 file=$1
 shift
 
-echo "#define SUPERNOVAE_MODE 1" > $file
-echo '#include <ctype.h>' >> $file
-echo '#include "portable.h"' >> $file
-echo '#include "xbt.h"' >> $file
+cat > $file <<EOF
+#define SUPERNOVAE_MODE 1
+#ifndef _GNU_SOURCE
+#  define _GNU_SOURCE   /* for getline() with older libc */
+#endif
+#include <ctype.h>
+#include "portable.h"
+#include "xbt.h"
+EOF
 for n in $@ ; do
 #    echo "File $n"
     if [ "X$n" = 'Xxbt/log.c' ] ; then 
