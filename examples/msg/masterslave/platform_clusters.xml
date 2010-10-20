@@ -1,0 +1,26 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="3">
+<AS  id="AS0"  routing="Full">
+  <cluster id="my_cluster_1" prefix="c-" suffix=".me"
+  		radical="0-499"	power="1000000000"    bw="125000000"     lat="5E-5"
+        bb_bw="2250000000" bb_lat="5E-4"/>
+		
+  <cluster id="my_cluster_2" prefix="c-" suffix=".me"
+ 	    radical="500-999" power="1000000000"	bw="125000000"	lat="5E-5"
+ 	    bb_bw="2250000000" bb_lat="5E-4"/>  
+       
+     <link id="backbone" bandwidth="1250000000" latency="5E-4"/>  
+ 	
+     <ASroute src="my_cluster_1" dst="my_cluster_2" 
+	 gw_src="c-my_cluster_1_router.me" 
+	 gw_dst="c-my_cluster_2_router.me">
+ 		<link_ctn id="backbone"/>
+     </ASroute>   
+     <ASroute src="my_cluster_2" dst="my_cluster_1" 
+	 gw_src="c-my_cluster_2_router.me" 
+	 gw_dst="c-my_cluster_1_router.me">
+ 		<link_ctn id="backbone"/>
+     </ASroute> 
+</AS>
+</platform>

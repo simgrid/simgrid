@@ -7,6 +7,7 @@ add_executable(masterslave_forwarder "masterslave_forwarder.c")
 add_executable(masterslave_mailbox "masterslave_mailbox.c")
 add_executable(masterslave_bypass "masterslave_bypass.c")
 add_executable(masterslave_console "masterslave_console.c")
+add_executable(masterslave_cluster "masterslave_cluster.c")
 
 ### Add definitions for compile
 if(WIN32)
@@ -22,3 +23,4 @@ target_link_libraries(masterslave_mailbox simgrid m )
 target_link_libraries(masterslave_bypass simgrid m )
 target_link_libraries(masterslave_console simgrid m )
 endif(WIN32)
+target_link_libraries(masterslave_cluster simgrid)
