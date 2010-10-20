@@ -296,6 +296,7 @@ void surf_parse_close(void)
   if (surf_file_to_parse) {
     surf_parse__delete_buffer(surf_input_buffer);
     fclose(surf_file_to_parse);
+    surf_file_to_parse = NULL; //Must be reset for Bypass
   }
 }
 
