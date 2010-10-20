@@ -2,52 +2,55 @@
 ! timeout 20
 & $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4400 5 --log=root.fmt:%m%n
 > Listening on port 4400 (expecting 5 messages)
-> Got Data from 127.0.0.1:0 (still 4 to go)
-> Got Data from 127.0.0.1:0 (still 3 to go)
-> Got Data from 127.0.0.1:0 (still 2 to go)
-> Got Data from 127.0.0.1:0 (still 1 to go)
-> Got Data from 127.0.0.1:0 (still 0 to go)
+> Got Data from 127.0.0.1:5005 (still 4 to go)
+> Got Data from 127.0.0.1:5005 (still 3 to go)
+> Got Data from 127.0.0.1:5005 (still 2 to go)
+> Got Data from 127.0.0.1:5005 (still 1 to go)
+> Got Data from 127.0.0.1:5005 (still 0 to go)
 > Exiting GRAS
 
 ! timeout 20
 & $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4401 5 --log=root.fmt:%m%n
 > Listening on port 4401 (expecting 5 messages)
-> Got Data from 127.0.0.1:0 (still 4 to go)
-> Got Data from 127.0.0.1:0 (still 3 to go)
-> Got Data from 127.0.0.1:0 (still 2 to go)
-> Got Data from 127.0.0.1:0 (still 1 to go)
-> Got Data from 127.0.0.1:0 (still 0 to go)
+> Got Data from 127.0.0.1:5005 (still 4 to go)
+> Got Data from 127.0.0.1:5005 (still 3 to go)
+> Got Data from 127.0.0.1:5005 (still 2 to go)
+> Got Data from 127.0.0.1:5005 (still 1 to go)
+> Got Data from 127.0.0.1:5005 (still 0 to go)
 > Exiting GRAS
 
 ! timeout 20
 & $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4402 5 --log=root.fmt:%m%n
 > Listening on port 4402 (expecting 5 messages)
-> Got Data from 127.0.0.1:0 (still 4 to go)
-> Got Data from 127.0.0.1:0 (still 3 to go)
-> Got Data from 127.0.0.1:0 (still 2 to go)
-> Got Data from 127.0.0.1:0 (still 1 to go)
-> Got Data from 127.0.0.1:0 (still 0 to go)
+> Got Data from 127.0.0.1:5005 (still 4 to go)
+> Got Data from 127.0.0.1:5005 (still 3 to go)
+> Got Data from 127.0.0.1:5005 (still 2 to go)
+> Got Data from 127.0.0.1:5005 (still 1 to go)
+> Got Data from 127.0.0.1:5005 (still 0 to go)
 > Exiting GRAS
 
 ! timeout 20
 & $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4403 5 --log=root.fmt:%m%n
 > Listening on port 4403 (expecting 5 messages)
-> Got Data from 127.0.0.1:0 (still 4 to go)
-> Got Data from 127.0.0.1:0 (still 3 to go)
-> Got Data from 127.0.0.1:0 (still 2 to go)
-> Got Data from 127.0.0.1:0 (still 1 to go)
-> Got Data from 127.0.0.1:0 (still 0 to go)
+> Got Data from 127.0.0.1:5005 (still 4 to go)
+> Got Data from 127.0.0.1:5005 (still 3 to go)
+> Got Data from 127.0.0.1:5005 (still 2 to go)
+> Got Data from 127.0.0.1:5005 (still 1 to go)
+> Got Data from 127.0.0.1:5005 (still 0 to go)
 > Exiting GRAS
 
 ! timeout 20
 & $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4404 5 --log=root.fmt:%m%n
 > Listening on port 4404 (expecting 5 messages)
-> Got Data from 127.0.0.1:0 (still 4 to go)
-> Got Data from 127.0.0.1:0 (still 3 to go)
-> Got Data from 127.0.0.1:0 (still 2 to go)
-> Got Data from 127.0.0.1:0 (still 1 to go)
-> Got Data from 127.0.0.1:0 (still 0 to go)
+> Got Data from 127.0.0.1:5005 (still 4 to go)
+> Got Data from 127.0.0.1:5005 (still 3 to go)
+> Got Data from 127.0.0.1:5005 (still 2 to go)
+> Got Data from 127.0.0.1:5005 (still 1 to go)
+> Got Data from 127.0.0.1:5005 (still 0 to go)
 > Exiting GRAS
+
+# give the receivers a chance to acquire the expected port numbers
+$ $SG_TEST_EXENV sleep 1
 
 # Five time a sender
 $ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4400 127.0.0.1:4401 127.0.0.1:4402 127.0.0.1:4403 127.0.0.1:4404 512 --log=root.fmt:%m%n

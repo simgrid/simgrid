@@ -5,10 +5,13 @@
 > server:main Messages registered
 > server:main Messages registered
 > server:main >>>>>>>> Listening on port 4302 <<<<<<<<
-> server:main >>>>>>>> Got message PING(1234) from 127.0.0.1:0 <<<<<<<<
+> server:main >>>>>>>> Got message PING(1234) from 127.0.0.1:5001 <<<<<<<<
 > server:main >>>>>>>> Answered with PONG(4321) <<<<<<<<
 > server:main Done.
 > server:main Exiting GRAS
+
+# give the server a chance to acquire the expected port number
+$ $SG_TEST_ENV sleep 1
 
 ! timeout 20
 & $SG_TEST_ENV ./ping_client$EXEEXT 127.0.0.1 4302 --log=root.fmt=%P:%t%e%m%n $ARGS
