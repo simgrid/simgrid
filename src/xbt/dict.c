@@ -491,13 +491,10 @@ XBT_INLINE void xbt_dict_remove(xbt_dict_t dict, const char *key)
  * \brief Add data to the dict (arbitrary key)
  * \param dict the container
  * \param key the key to set the new data
- * \param key_len the size of the \a key
  * \param data the data to add in the dict
- * \param free_ctn function to call with (\a key as argument) when
- *        \a key is removed from the dictionary
  *
- * Set the \a data in the structure under the \a key, which can be any kind
- * of data, as long as its length is provided in \a key_len.
+ * Set the \a data in the structure under the \a key.
+ * Both \a data and \a key are considered as uintptr_t.
  */
 XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
                               uintptr_t key, uintptr_t data)
@@ -516,6 +513,7 @@ XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
          (hash_code != current->hash_code
           || sizeof(uintptr_t) != current->key_len
           || (((uintptr_t) key) != ((uintptr_t) current->key)))) {
+    previous = current;
     current = current->next;
   }
 
