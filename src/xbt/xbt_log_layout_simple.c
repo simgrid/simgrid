@@ -46,7 +46,8 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
 
   xbt_strbuff_append(buff, loc_buff);
 
-  vasprintf(&p, fmt, ev->ap_copy);
+  if (vasprintf(&p, fmt, ev->ap_copy) == -1)
+    xbt_die("vasprintf failed");
   xbt_strbuff_append(buff, p);
   free(p);
 

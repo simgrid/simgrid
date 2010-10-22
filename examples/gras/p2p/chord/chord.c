@@ -312,7 +312,7 @@ int node(int argc, char **argv)
   if (argc == 3) {
     create = 1;
   } else {
-    asprintf(&other_host, "%s", argv[3]);
+    other_host = xbt_strdup(argv[3]);
     other_port = atoi(argv[4]);
   }
 

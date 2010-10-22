@@ -104,11 +104,12 @@ void SIMIX_display_process_status(void)
   xbt_swag_foreach(process, simix_global->process_list) {
     char *who, *who2;
 
-    asprintf(&who, "%s on %s: %s",
-             process->name,
-             process->smx_host->name,
-             (process->blocked) ? "[BLOCKED] "
-             : ((process->suspended) ? "[SUSPENDED] " : ""));
+    if (asprintf(&who, "%s on %s: %s",
+                 process->name,
+                 process->smx_host->name,
+                 (process->blocked) ? "[BLOCKED] "
+                 : ((process->suspended) ? "[SUSPENDED] " : "")) == -1)
+      xbt_die("asprintf failed");
 
     if (process->mutex) {
       who2 =
