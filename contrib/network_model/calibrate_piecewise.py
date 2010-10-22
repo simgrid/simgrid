@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 import sys
 from math import sqrt
 
@@ -81,6 +82,11 @@ for line in skampidat:
       timings.append(float(l[3]) / links)
       sizes.append(int(l[1]))
 
+## adds message sizes of interest: if values are specified starting from the 6th command line arg 
+## and these values are found as message sizes in te log file, add it to the limits list.
+## Each of these value si considered a potential inflexion point between two segments.
+##
+## If no value specified, a single segment is considered from 1st to last message size logged.
 limits = []
 if len(sys.argv) > 5:
    for i in xrange(5, len(sys.argv)):
