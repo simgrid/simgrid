@@ -7,10 +7,11 @@ from math import sqrt
 
 if len(sys.argv) < 5:
    print("Usage : %s datafile links latency bandwidth [size...]" % sys.argv[0])
-   print("where : links is the number of links between nodes")
+   print("where : datafile is a SkaMPI pingpong measurement log file"); 
+   print("        links is the number of links between nodes")
    print("        latency is the nominal latency given in the platform file")
    print("        bandwidth is the nominal bandwidth given in the platform file")
-   print("        size are segments limites")
+   print("        size are segments limits")
    sys.exit(-1)
 
 ##-----------------------------------------
@@ -35,7 +36,7 @@ def cov (X, Y):
    avg_X = avg(X)
    avg_Y = avg(Y)
    S_XY = 0.0
-   for i in xrange(n):
+   for i in range(n):
       S_XY += (X[i] - avg_X) * (Y[i] - avg_Y)
    return (S_XY / n)
 
@@ -48,7 +49,7 @@ def variance (X):
    n = len(X)
    avg_X = avg (X)
    S_X2 = 0.0
-   for i in xrange(n):
+   for i in range(n):
       S_X2 += (X[i] - avg_X) ** 2
    return (S_X2 / n)
 
@@ -70,17 +71,23 @@ latency = float(sys.argv[3])
 bandwidth = float(sys.argv[4])
 skampidat = open(sys.argv[1], "r")
 
+## read data from skampi logs.
 timings = []
 sizes = []
+readdata =[]
 for line in skampidat:
-   l = line.split();
-   if line[0] != '#' and len(l) >= 3:   # is it a comment ?
+	l = line.split();
+	if line[0] != '#' and len(l) >= 3:   # is it a comment ?
       ## expected format
       ## ---------------
       #count= 8388608  8388608  144916.1       7.6       32  144916.1  143262.0
       #("%s %d %d %f %f %d %f %f\n" % (countlbl, count, countn, time, stddev, iter, mini, maxi)
-      timings.append(float(l[3]) / links)
-      sizes.append(int(l[1]))
+		readdata.append( (int(l[1]),float(l[3]) / 2 ) );   # divide by 2 because of ping-pong measured
+
+## These may not be sorted so sort it by message size before processing.
+sorteddata = sorted( readdata, key=lambda pair: pair[0])
+sizes,timings = zip(*sorteddata);
+
 
 ## adds message sizes of interest: if values are specified starting from the 6th command line arg 
 ## and these values are found as message sizes in te log file, add it to the limits list.
@@ -89,8 +96,8 @@ for line in skampidat:
 ## If no value specified, a single segment is considered from 1st to last message size logged.
 limits = []
 if len(sys.argv) > 5:
-   for i in xrange(5, len(sys.argv)):
-      limits += [idx for idx in xrange(len(sizes)) if sizes[idx] == int(sys.argv[i])]
+   for i in range(5, len(sys.argv)):
+      limits += [idx for idx in range(len(sizes)) if sizes[idx] == int(sys.argv[i])]
 limits.append(len(sizes) - 1)
 
 low = 0
