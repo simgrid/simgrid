@@ -67,7 +67,7 @@ XBT_PUBLIC(void) xbt_backtrace_display_current(void);
 /** @brief Like malloc, but xbt_die() on error
     @hideinitializer */
 static inline __attribute__ ((always_inline))
-void *xbt_malloc(unsigned int n)
+void *xbt_malloc(size_t n)
 {
   void *res;
 /*  if (n==0) {
@@ -77,27 +77,29 @@ void *xbt_malloc(unsigned int n)
 
   res = malloc(n);
   if (!res)
-    xbt_die(bprintf("Memory allocation of %d bytes failed", n));
+    xbt_die(bprintf("Memory allocation of %lu bytes failed",
+                    (unsigned long)n));
   return res;
 }
 
 /** @brief like malloc, but xbt_die() on error and memset data to 0
     @hideinitializer */
 static inline __attribute__ ((always_inline))
-void *xbt_malloc0(unsigned int n)
+void *xbt_malloc0(size_t n)
 {
   void *res;
   //if (n==0) xbt_die("calloc(0) is not portable");
   res = calloc(n, 1);
   if (!res)
-    xbt_die(bprintf("Memory callocation of %d bytes failed", n));
+    xbt_die(bprintf("Memory callocation of %lu bytes failed",
+                    (unsigned long)n));
   return res;
 }
 
 /** @brief like realloc, but xbt_die() on error
     @hideinitializer */
 static inline __attribute__ ((always_inline))
-void *xbt_realloc(void *p, unsigned int s)
+void *xbt_realloc(void *p, size_t s)
 {
   void *res = res;
   //if (s==0) xbt_die("realloc(0) is not portable");
@@ -105,7 +107,8 @@ void *xbt_realloc(void *p, unsigned int s)
     if (p) {
       res = realloc(p, s);
       if (!res)
-        xbt_die(bprintf("memory (re)allocation of %d bytes failed", s));
+        xbt_die(bprintf("memory (re)allocation of %lu bytes failed",
+                        (unsigned long)s));
     } else {
       res = xbt_malloc(s);
     }
