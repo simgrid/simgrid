@@ -146,20 +146,24 @@ sum=0
 nblines=0
 skampidat = open(sys.argv[1], "r")
 
+
+## read data from skampi logs.
 timings = []
 sizes = []
+readdata =[]
 for line in skampidat:
 	l = line.split();
-	if line[0] != '#' and len(l)>=3:   # is it a comment ?
-
-## expected format
-## ---------------
-#count= 8388608  8388608  144916.1       7.6       32  144916.1  143262.0
-#("%s %d %d %f %f %d %f %f\n" % (countlbl, count, countn, time, stddev, iter, mini, maxi)
-		timings.append (float(l[3]))
-		sizes.append(int(l[1]))
+	if line[0] != '#' and len(l) >= 3:   # is it a comment ?
+	## expected format
+	## ---------------
+	#count= 8388608  8388608  144916.1       7.6       32  144916.1  143262.0
+	#("%s %d %d %f %f %d %f %f\n" % (countlbl, count, countn, time, stddev, iter, mini, maxi)
+		readdata.append( (int(l[1]),float(l[3]) / 2 ) );   # divide by 2 because of ping-pong measured
 		nblines=nblines+1
 
+## These may not be sorted so sort it by message size before processing.
+sorteddata = sorted( readdata, key=lambda pair: pair[0])
+sizes,timings = zip(*sorteddata);
 
 
 ##----------------------- search for best break points-----------------
@@ -179,7 +183,7 @@ if len(sys.argv) == 4:
 
 	## tweak parameters here to extend/reduce search
 	search_p1 = 30 		# number of values to search +/- around p1
-	search_p2 = 45		# number of values to search +/- around p2
+	search_p2 = 65		# number of values to search +/- around p2
 	min_seg_size = 3
 
 	lb1 = max(1, p1inx-search_p1)		
