@@ -66,10 +66,9 @@ The tree is not splited on projects, but on file finality:
 Most files use the Kernighan & Ritchie coding style with 2 spaces of
 indentation. The indent program can help you to stick to it:
 
-indent -br -brs -ce -bbo -bad -bap --dont-break-procedure-type
-  --no-tabs --cuddle-do-while --cuddle-else --indent-level2
-  --leave-preprocessor-space --no-space-after-function-call-names
-  <myfile>
+indent -kr -br -brs -ce -bbo --dont-break-procedure-type --no-tabs
+--cuddle-do-while --cuddle-else --indent-level2 --leave-preprocessor-space
+--no-space-after-function-call-names <myfile>
 
 FIXME: this list of arguments is still to be discussed, maybe
 
