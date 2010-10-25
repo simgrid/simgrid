@@ -5,8 +5,8 @@ from math import sqrt
 
 
 if len(sys.argv) != 2 and len(sys.argv) != 4:
-	print("Usage : %s datafile", sys.argv[0])
-	print("or    : %s datafile p1 p2", sys.argv[0])
+	print("Usage : {} datafile".format(sys.argv[0]))
+	print("or    : {} datafile p1 p2".format(sys.argv[0]))
 	print("where : p1 < p2 belongs to sizes in datafiles")
 	sys.exit(-1)
 
@@ -27,11 +27,12 @@ def avg (l):
 ##-------------------------------------------------
 ## cov : covariance 
 ## param X first data vector (..x_i..)
-## param Y second data vector (..x_i..)
+## param Y second data vector (..y_i..)
 ## = 1/n \Sum_{i=1}^n (x_i - avg(x)) * (y_i - avg(y))
 ##--------------------------------------------------
 def cov(X,Y):
 
+	assert(len(X)==len(Y))
 	n=len(X)   #  n=len(X)=len(Y)
 	avg_X = avg( X )
 	avg_Y = avg( Y )
@@ -94,7 +95,7 @@ def correl_split_weighted( X , Y , segments ):
 		glob_corr = glob_corr + (l/sum_nb_val)*c  # weighted product of correlation 
 		print('-- %f * %f' % (c,l/sum_nb_val))
 		
-	print("-> glob_corr=%f\n" % glob_corr)
+	print("-> glob_corr={}\n".format(glob_corr))
 	return (glob_corr,interv);
 	
 
@@ -158,7 +159,7 @@ for line in skampidat:
 	## ---------------
 	#count= 8388608  8388608  144916.1       7.6       32  144916.1  143262.0
 	#("%s %d %d %f %f %d %f %f\n" % (countlbl, count, countn, time, stddev, iter, mini, maxi)
-		readdata.append( (int(l[1]),float(l[3]) / 2 ) );   # divide by 2 because of ping-pong measured
+		readdata.append( (int(l[1]),float(l[3])) );   
 		nblines=nblines+1
 
 ## These may not be sorted so sort it by message size before processing.
@@ -207,9 +208,9 @@ if len(sys.argv) == 4:
 						max_glob_corr = glob_cor
 						max_interv = interv
 
+	print("#-------------------- result summary ---------------------------------------------------------------------\n");
 	for (a,b,i,j) in max_interv:
-		print("** OPT: [%d .. %d]" % (i,j))
-	print("** Product of correl coefs = %f" % (max_glob_corr))
+		print("** OPT: [%d .. %d] correl coef prod=%f		slope: %f x + %f" % (i,j,max_glob_corr,a,b))
 
 	print("#-------------------- cut here the gnuplot code -----------------------------------------------------------\n");
 	preamble='set output "regr.eps"\n\
