@@ -694,8 +694,7 @@ gras_datadesc_dynar(gras_datadesc_type_t elm_t, void_f_pvoid_t free_func)
   char *buffname;
   gras_datadesc_type_t res;
 
-  if (asprintf(&buffname, "s_xbt_dynar_of_%s", elm_t->name) == -1)
-    xbt_die("asprintf failed");
+  buffname = bprintf("s_xbt_dynar_of_%s", elm_t->name);
 
   res = gras_datadesc_struct(buffname);
 
@@ -725,8 +724,7 @@ gras_datadesc_dynar(gras_datadesc_type_t elm_t, void_f_pvoid_t free_func)
 
   /* build a ref to it */
   free(buffname);
-  if (asprintf(&buffname, "xbt_dynar_of_%s", elm_t->name) == -1)
-    xbt_die("asprintf failed");
+  buffname = bprintf("xbt_dynar_of_%s", elm_t->name);
   res = gras_datadesc_ref(buffname, res);
   free(buffname);
   return res;
@@ -760,8 +758,7 @@ gras_datadesc_matrix(gras_datadesc_type_t elm_t,
   char *buffname;
   gras_datadesc_type_t res;
 
-  if (asprintf(&buffname, "s_xbt_matrix_t(%s)", elm_t->name) == -1)
-    xbt_die("asprintf failed");
+  buffname = bprintf("s_xbt_matrix_t(%s)", elm_t->name);
   res = gras_datadesc_struct(buffname);
 
   gras_datadesc_struct_append(res, "lines",
@@ -786,8 +783,7 @@ gras_datadesc_matrix(gras_datadesc_type_t elm_t,
 
   /* build a ref to it */
   free(buffname);
-  if (asprintf(&buffname, "xbt_matrix_t(%s)", elm_t->name) == -1)
-    xbt_die("asprintf failed");
+  buffname = bprintf("xbt_matrix_t(%s)", elm_t->name);
   res = gras_datadesc_ref(buffname, res);
   free(buffname);
   return res;

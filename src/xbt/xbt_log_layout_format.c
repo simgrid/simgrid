@@ -56,7 +56,6 @@ static void xbt_log_layout_format_dynamic(xbt_log_layout_t l,
   char *q = l->data;
   char *tmp;
   char *tmp2;
-  int vres;                     /* shut gcc up, but ignored */
 
   while (*q != '\0') {
     if (*q == '%') {
@@ -150,7 +149,7 @@ static void xbt_log_layout_format_dynamic(xbt_log_layout_t l,
         break;
 
       case 'm':                /* user-provided message; LOG4J compliant */
-        vres = vasprintf(&tmp2, fmt, ev->ap_copy);
+        tmp2 = bvprintf(fmt, ev->ap_copy);
         append1("%s", "%.*s", tmp2);
         free(tmp2);
         break;

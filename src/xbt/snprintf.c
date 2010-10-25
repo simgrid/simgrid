@@ -1168,16 +1168,26 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
   /* FIXME: better place */
 #include "xbt/sysdep.h"
 
+char *bvprintf(const char *fmt, va_list ap)
+{
+  char *res;
+
+  if (vasprintf(&res, fmt, ap) < 0) {
+    /* Do not want to use xbt_die() here, as it uses the logging
+     * infrastucture and may fail to allocate memory too. */
+    fprintf(stderr, "bprintf: vasprintf failed. Aborting.\n");
+    abort();
+  }
+  return res;
+}
+
 char *bprintf(const char *fmt, ...)
 {
   va_list ap;
   char *res;
-  int len;
 
   va_start(ap, fmt);
-
-  len = vasprintf(&res, fmt, ap);
-
+  res = bvprintf(fmt, ap);
   va_end(ap);
   return res;
 }

@@ -56,7 +56,7 @@ XBT_PUBLIC(long) getline(char **lineptr, size_t * n, FILE * stream);
 #endif
 #include <stdio.h>
 #endif
-
+#include <stdarg.h>
 
 /* snprintf related functions */
 /** @addtogroup XBT_str
@@ -79,12 +79,18 @@ XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt,   /*args */
  * See asprintf()
  */
 #if defined(SIMGRID_NEED_VASPRINTF)||defined(DOXYGEN)
-#include <stdarg.h>
 XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
 #endif
 /** @brief print to allocated string
  *
- * Works just like asprintf(), but returns a pointer to the newly created string
+ * Works just like vasprintf(), but returns a pointer to the newly
+ * created string, or aborts on error.
+ */
+XBT_PUBLIC(char *) bvprintf(const char *fmt, va_list ap);
+/** @brief print to allocated string
+ *
+ * Works just like asprintf(), but returns a pointer to the newly
+ * created string, or aborts on error.
  */
 XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 /** @} */

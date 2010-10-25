@@ -92,10 +92,10 @@ int maestro(int argc, char *argv[])
   gras_msg_handleall(5);        /* friends, we're ready. Come and play */
 
   if (xbt_dynar_length(group) < 2) {
-    CRITICAL1("Not enough peers arrived. Expected 2 got %ld",
-              xbt_dynar_length(group));
+    char *msg = bprintf("Not enough peers arrived. Expected 2 got %ld",
+                        xbt_dynar_length(group));
     amok_pm_group_shutdown("bandwidth");
-    xbt_abort();
+    xbt_die(msg);
   }
   h1 = *(xbt_peer_t *) xbt_dynar_get_ptr(group, 0);
   h2 = *(xbt_peer_t *) xbt_dynar_get_ptr(group, 1);
