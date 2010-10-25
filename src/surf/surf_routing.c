@@ -917,7 +917,7 @@ static xbt_dynar_t full_get_onelink_routes(routing_component_t rc)
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
 
   routing_component_full_t routing = (routing_component_full_t) rc;
-  int table_size = xbt_dict_length(routing->generic_routing.to_index);
+  size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
   xbt_dict_cursor_t c1 = NULL, c2 = NULL;
   char *k1, *d1, *k2, *d2;
   xbt_dict_foreach(routing->generic_routing.to_index, c1, k1, d1) {
@@ -962,7 +962,7 @@ static route_extended_t full_get_route(routing_component_t rc,
 
   /* set utils vars */
   routing_component_full_t routing = (routing_component_full_t) rc;
-  int table_size = xbt_dict_length(routing->generic_routing.to_index);
+  size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
 
   generic_src_dst_check(rc, src, dst);
   int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
@@ -995,7 +995,7 @@ static route_extended_t full_get_route(routing_component_t rc,
 static void full_finalize(routing_component_t rc)
 {
   routing_component_full_t routing = (routing_component_full_t) rc;
-  int table_size = xbt_dict_length(routing->generic_routing.to_index);
+  size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
   int i, j;
   if (routing) {
     /* Delete routing table */
@@ -1064,7 +1064,7 @@ static void model_full_end(void)
   /* set utils vars */
   routing_component_full_t routing =
       ((routing_component_full_t) current_routing);
-  int table_size = xbt_dict_length(routing->generic_routing.to_index);
+  size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
 
   /* Create the routing table */
   routing->routing_table =
@@ -1142,7 +1142,7 @@ static xbt_dynar_t floyd_get_onelink_routes(routing_component_t rc)
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
 
   routing_component_floyd_t routing = (routing_component_floyd_t) rc;
-  //int table_size = xbt_dict_length(routing->generic_routing.to_index);
+  //size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
   xbt_dict_cursor_t c1 = NULL, c2 = NULL;
   char *k1, *d1, *k2, *d2;
   xbt_dict_foreach(routing->generic_routing.to_index, c1, k1, d1) {
@@ -1181,7 +1181,7 @@ static route_extended_t floyd_get_route(routing_component_t rc,
 
   /* set utils vars */
   routing_component_floyd_t routing = (routing_component_floyd_t) rc;
-  int table_size = xbt_dict_length(routing->generic_routing.to_index);
+  size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
 
   generic_src_dst_check(rc, src, dst);
   int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
@@ -1262,7 +1262,8 @@ static route_extended_t floyd_get_route(routing_component_t rc,
 static void floyd_finalize(routing_component_t rc)
 {
   routing_component_floyd_t routing = (routing_component_floyd_t) rc;
-  int i, j, table_size;
+  int i, j;
+  size_t table_size;
   if (routing) {
     table_size = xbt_dict_length(routing->generic_routing.to_index);
     /* Delete link_table */
@@ -1328,7 +1329,7 @@ static void model_floyd_end(void)
   unsigned int i, j, a, b, c;
 
   /* set the size of inicial table */
-  int table_size = xbt_dict_length(routing->generic_routing.to_index);
+  size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
 
   /* Create Cost, Predecessor and Link tables */
   cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
