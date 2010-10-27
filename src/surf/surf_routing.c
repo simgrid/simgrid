@@ -907,7 +907,6 @@ void routing_model_create(size_t size_of_links, void *loopback)
 typedef struct {
   s_routing_component_t generic_routing;
   xbt_dict_t parse_routes;      /* store data during the parse process */
-  xbt_dict_t bypassRoutes;
   route_extended_t *routing_table;
 } s_routing_component_full_t, *routing_component_full_t;
 
@@ -1004,7 +1003,7 @@ static void full_finalize(routing_component_t rc)
         generic_free_extended_route(TO_ROUTE_FULL(i, j));
     xbt_free(routing->routing_table);
     /* Delete bypass dict */
-    xbt_dict_free(&routing->bypassRoutes);
+    xbt_dict_free(&routing->generic_routing.bypassRoutes);
     /* Delete index dict */
     xbt_dict_free(&(routing->generic_routing.to_index));
     /* Delete structure */
@@ -1032,7 +1031,7 @@ static void *model_full_create(void)
       generic_get_bypassroute;
   new_component->generic_routing.finalize = full_finalize;
   new_component->generic_routing.to_index = xbt_dict_new();
-  new_component->bypassRoutes = xbt_dict_new();
+  new_component->generic_routing.bypassRoutes = xbt_dict_new();
   new_component->generic_routing.parse_routes = xbt_dict_new();
   return new_component;
 }
@@ -1128,7 +1127,6 @@ typedef struct {
   /* vars for calculate the floyd algorith. */
   int *predecessor_table;
   route_extended_t *link_table; /* char* -> int* */
-  xbt_dict_t bypassRoutes;
 } s_routing_component_floyd_t, *routing_component_floyd_t;
 
 static route_extended_t floyd_get_route(routing_component_t rc,
@@ -1270,7 +1268,7 @@ static void floyd_finalize(routing_component_t rc)
         generic_free_extended_route(TO_FLOYD_LINK(i, j));
     xbt_free(routing->link_table);
     /* Delete bypass dict */
-    xbt_dict_free(&routing->bypassRoutes);
+    xbt_dict_free(&routing->generic_routing.bypassRoutes);
     /* Delete index dict */
     xbt_dict_free(&(routing->generic_routing.to_index));
     /* Delete dictionary index dict, predecessor and links table */
@@ -1298,7 +1296,7 @@ static void *model_floyd_create(void)
       generic_get_bypassroute;
   new_component->generic_routing.finalize = floyd_finalize;
   new_component->generic_routing.to_index = xbt_dict_new();
-  new_component->bypassRoutes = xbt_dict_new();
+  new_component->generic_routing.bypassRoutes = xbt_dict_new();
   new_component->generic_routing.parse_routes = xbt_dict_new();
   return new_component;
 }
@@ -1409,7 +1407,6 @@ static void model_floyd_end(void)
 
 typedef struct {
   s_routing_component_t generic_routing;
-  xbt_dict_t bypassRoutes;
   xbt_graph_t route_graph;      /* xbt_graph */
   xbt_dict_t graph_node_map;    /* map */
   xbt_dict_t route_cache;       /* use in cache mode */
@@ -1799,7 +1796,7 @@ static void dijkstra_finalize(routing_component_t rc)
     if (routing->cached)
       xbt_dict_free(&routing->route_cache);
     /* Delete bypass dict */
-    xbt_dict_free(&routing->bypassRoutes);
+    xbt_dict_free(&routing->generic_routing.bypassRoutes);
     /* Delete index dict */
     xbt_dict_free(&(routing->generic_routing.to_index));
     /* Delete structure */
@@ -1828,7 +1825,7 @@ static void *model_dijkstra_both_create(int cached)
   new_component->generic_routing.finalize = dijkstra_finalize;
   new_component->cached = cached;
   new_component->generic_routing.to_index = xbt_dict_new();
-  new_component->bypassRoutes = xbt_dict_new();
+  new_component->generic_routing.bypassRoutes = xbt_dict_new();
   new_component->generic_routing.parse_routes = xbt_dict_new();
   return new_component;
 }
@@ -2304,18 +2301,15 @@ static void *model_rulebased_create(void)
       model_rulebased_set_autonomous_system;
   new_component->generic_routing.set_route = model_rulebased_set_route;
   new_component->generic_routing.set_ASroute = model_rulebased_set_ASroute;
-  new_component->generic_routing.set_bypassroute =
-      model_rulebased_set_bypassroute;
-  new_component->generic_routing.get_onelink_routes =
-      rulebased_get_onelink_routes;
+  new_component->generic_routing.set_bypassroute = model_rulebased_set_bypassroute;
+  new_component->generic_routing.get_onelink_routes = rulebased_get_onelink_routes;
   new_component->generic_routing.get_route = rulebased_get_route;
-  new_component->generic_routing.get_bypass_route = NULL;       //rulebased_get_bypass_route;
+  new_component->generic_routing.get_bypass_route = generic_get_bypassroute;       //rulebased_get_bypass_route;
   new_component->generic_routing.finalize = rulebased_finalize;
   /* initialization of internal structures */
   new_component->dict_processing_units = xbt_dict_new();
   new_component->dict_autonomous_systems = xbt_dict_new();
-  new_component->list_route =
-      xbt_dynar_new(sizeof(rule_route_t), &rule_route_free);
+  new_component->list_route = xbt_dynar_new(sizeof(rule_route_t), &rule_route_free);
   new_component->list_ASroute =
       xbt_dynar_new(sizeof(rule_route_extended_t),
                     &rule_route_extended_free);
@@ -2547,18 +2541,9 @@ static void generic_set_bypassroute(routing_component_t rc,
                                     route_extended_t e_route)
 {
   DEBUG2("Load bypassRoute from \"%s\" to \"%s\"", src, dst);
-  model_type_t modeltype = rc->routing;
-  xbt_dict_t dict_bypassRoutes;
+  xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
   char *route_name;
-  if (modeltype == &routing_models[SURF_MODEL_FULL]) {
-    dict_bypassRoutes = ((routing_component_full_t) rc)->bypassRoutes;
-  } else if (modeltype == &routing_models[SURF_MODEL_FLOYD]) {
-    dict_bypassRoutes = ((routing_component_floyd_t) rc)->bypassRoutes;
-  } else if (modeltype == &routing_models[SURF_MODEL_DIJKSTRA] ||
-             modeltype == &routing_models[SURF_MODEL_DIJKSTRACACHE]) {
-    dict_bypassRoutes = ((routing_component_dijkstra_t) rc)->bypassRoutes;
-  } else
-    xbt_die("\"generic_set_bypassroute\" not supported");
+
   route_name = bprintf("%s#%s", src, dst);
   xbt_assert2(xbt_dynar_length(e_route->generic_route.link_list) > 0,
               "Invalid count of links, must be greater than zero (%s,%s)",
@@ -2589,20 +2574,7 @@ static route_extended_t generic_get_bypassroute(routing_component_t rc,
                                                 const char *src,
                                                 const char *dst)
 {
-  model_type_t modeltype = rc->routing;
-  xbt_dict_t dict_bypassRoutes;
-
-  if (modeltype == &routing_models[SURF_MODEL_FULL]) {
-    dict_bypassRoutes = ((routing_component_full_t) rc)->bypassRoutes;
-  } else if (modeltype == &routing_models[SURF_MODEL_FLOYD]) {
-    dict_bypassRoutes = ((routing_component_floyd_t) rc)->bypassRoutes;
-  } else if (modeltype == &routing_models[SURF_MODEL_DIJKSTRA] ||
-             modeltype == &routing_models[SURF_MODEL_DIJKSTRACACHE]) {
-    dict_bypassRoutes = ((routing_component_dijkstra_t) rc)->bypassRoutes;
-  } else
-    xbt_die("\"generic_get_bypassroute\" not supported");
-
-
+  xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
   routing_component_t src_as, dst_as;
   int index_src, index_dst;
   xbt_dynar_t path_src = NULL;
@@ -3083,17 +3055,17 @@ static void routing_full_parse_Scluster(void)
   SURFXML_BUFFER_SET(route_dst, route_src_dst);
   SURFXML_START_TAG(route);
 
-  DEBUG1("<link:ctn\tid=\"%s_link_$1src\"/>", cluster_id);
+  DEBUG1("<link_ctn\tid=\"%s_link_$1src\"/>", cluster_id);
   SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_$1src", cluster_id));
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
-  DEBUG1("<link:ctn\tid=\"%s_backbone\"/>", cluster_id);
+  DEBUG1("<link_ctn\tid=\"%s_backbone\"/>", cluster_id);
   SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_backbone", cluster_id));
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
-  DEBUG1("<link:ctn\tid=\"%s_link_$1dst\"/>", cluster_id);
+  DEBUG1("<link_ctn\tid=\"%s_link_$1dst\"/>", cluster_id);
   SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_$1dst", cluster_id));
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
@@ -3142,17 +3114,17 @@ static void routing_full_parse_Scluster(void)
                     xbt_dynar_get_as(tab_elements_num, j, int));
       }
 
-      DEBUG1("<link:ctn\tid=\"%s\"/>", route_src);
+      DEBUG1("<link_ctn\tid=\"%s\"/>", route_src);
       SURFXML_BUFFER_SET(link_ctn_id, route_src);
       SURFXML_START_TAG(link_ctn);
       SURFXML_END_TAG(link_ctn);
 
-      DEBUG1("<link:ctn\tid=\"%s_backbone\"/>", cluster_id);
+      DEBUG1("<link_ctn\tid=\"%s_backbone\"/>", cluster_id);
       SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_backbone", cluster_id));
       SURFXML_START_TAG(link_ctn);
       SURFXML_END_TAG(link_ctn);
 
-      DEBUG1("<link:ctn\tid=\"%s\"/>", route_dst);
+      DEBUG1("<link_ctn\tid=\"%s\"/>", route_dst);
       SURFXML_BUFFER_SET(link_ctn_id, route_dst);
       SURFXML_START_TAG(link_ctn);
       SURFXML_END_TAG(link_ctn);
