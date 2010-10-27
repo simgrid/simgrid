@@ -23,7 +23,7 @@ static int surf_parse_bypass_platform(void)
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 
   DEBUG0("<platform>");
-  SURFXML_BUFFER_SET(platform_version, "2");
+  SURFXML_BUFFER_SET(platform_version, "3");
   SURFXML_START_TAG(platform);
 
   DEBUG0("<AS>");
@@ -66,9 +66,11 @@ static int surf_parse_bypass_platform(void)
   DEBUG0("<route src=\"host A\" dst=\"host B\">");
   SURFXML_BUFFER_SET(route_src, "host A");
   SURFXML_BUFFER_SET(route_dst, "host B");
+  A_surfxml_route_symetrical = A_surfxml_route_symetrical_YES;
   SURFXML_START_TAG(route);
   DEBUG0("	<link:ctn id=\"LinkA\"/>");
   SURFXML_BUFFER_SET(link_ctn_id, "LinkA");
+  A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
   DEBUG0("</route>");

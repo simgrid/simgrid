@@ -3108,6 +3108,7 @@ static void routing_full_parse_Scluster(void)
 
   DEBUG1("<link_ctn\tid=\"%s_link_$1src\"/>", cluster_id);
   SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_$1src", cluster_id));
+  A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
   {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_UP;}
   SURFXML_START_TAG(link_ctn);
@@ -3121,6 +3122,7 @@ static void routing_full_parse_Scluster(void)
 
   DEBUG1("<link_ctn\tid=\"%s_link_$1dst\"/>", cluster_id);
   SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_$1dst", cluster_id));
+  A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
   {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_UP;}
   SURFXML_START_TAG(link_ctn);
