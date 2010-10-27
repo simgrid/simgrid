@@ -280,7 +280,8 @@ tools/tesh/tesh
 examples/msg/tracing/categories
 examples/msg/tracing/ms
 teshsuite/simdag/platforms/is_router_test
-
+examples/msg/masterslave/masterslave_cluster
+examples/simdag/simdag_tracing
 
 .cproject
 .project

@@ -1033,7 +1033,7 @@ static void *model_full_create(void)
   new_component->generic_routing.finalize = full_finalize;
   new_component->generic_routing.to_index = xbt_dict_new();
   new_component->bypassRoutes = xbt_dict_new();
-  new_component->parse_routes = xbt_dict_new();
+  new_component->generic_routing.parse_routes = xbt_dict_new();
   return new_component;
 }
 
@@ -1071,7 +1071,7 @@ static void model_full_end(void)
       xbt_new0(route_extended_t, table_size * table_size);
 
   /* Put the routes in position */
-  xbt_dict_foreach(routing->parse_routes, cursor, key, data) {
+  xbt_dict_foreach(routing->generic_routing.parse_routes, cursor, key, data) {
     keys = xbt_str_split_str(key, sep);
     src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 10);
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 10);
@@ -1081,14 +1081,14 @@ static void model_full_end(void)
   }
 
   /* delete the parse table */
-  xbt_dict_foreach(routing->parse_routes, cursor, key, data) {
+  xbt_dict_foreach(routing->generic_routing.parse_routes, cursor, key, data) {
     route = (route_t) data;
     xbt_dynar_free(&(route->link_list));
     xbt_free(data);
   }
 
   /* delete parse dict */
-  xbt_dict_free(&(routing->parse_routes));
+  xbt_dict_free(&(routing->generic_routing.parse_routes));
 
   /* Add the loopback if needed */
   if (current_routing->hierarchy == SURF_ROUTING_BASE) {
@@ -1129,8 +1129,6 @@ typedef struct {
   int *predecessor_table;
   route_extended_t *link_table; /* char* -> int* */
   xbt_dict_t bypassRoutes;
-  /* store data during the parse process */
-  xbt_dict_t parse_routes;
 } s_routing_component_floyd_t, *routing_component_floyd_t;
 
 static route_extended_t floyd_get_route(routing_component_t rc,
@@ -1301,7 +1299,7 @@ static void *model_floyd_create(void)
   new_component->generic_routing.finalize = floyd_finalize;
   new_component->generic_routing.to_index = xbt_dict_new();
   new_component->bypassRoutes = xbt_dict_new();
-  new_component->parse_routes = xbt_dict_new();
+  new_component->generic_routing.parse_routes = xbt_dict_new();
   return new_component;
 }
 
@@ -1345,7 +1343,7 @@ static void model_floyd_end(void)
     }
 
   /* Put the routes in position */
-  xbt_dict_foreach(routing->parse_routes, cursor, key, data) {
+  xbt_dict_foreach(routing->generic_routing.parse_routes, cursor, key, data) {
     keys = xbt_str_split_str(key, sep);
     src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 10);
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 10);
@@ -1393,14 +1391,14 @@ static void model_floyd_end(void)
   }
 
   /* delete the parse table */
-  xbt_dict_foreach(routing->parse_routes, cursor, key, data) {
+  xbt_dict_foreach(routing->generic_routing.parse_routes, cursor, key, data) {
     route_t route = (route_t) data;
     xbt_dynar_free(&(route->link_list));
     xbt_free(data);
   }
 
   /* delete parse dict */
-  xbt_dict_free(&(routing->parse_routes));
+  xbt_dict_free(&(routing->generic_routing.parse_routes));
 
   /* cleanup */
   xbt_free(cost_table);
@@ -1416,7 +1414,6 @@ typedef struct {
   xbt_dict_t graph_node_map;    /* map */
   xbt_dict_t route_cache;       /* use in cache mode */
   int cached;
-  xbt_dict_t parse_routes;
 } s_routing_component_dijkstra_t, *routing_component_dijkstra_t;
 
 
@@ -1832,7 +1829,7 @@ static void *model_dijkstra_both_create(int cached)
   new_component->cached = cached;
   new_component->generic_routing.to_index = xbt_dict_new();
   new_component->bypassRoutes = xbt_dict_new();
-  new_component->parse_routes = xbt_dict_new();
+  new_component->generic_routing.parse_routes = xbt_dict_new();
   return new_component;
 }
 
@@ -1878,7 +1875,7 @@ static void model_dijkstra_both_end(void)
     routing->route_cache = xbt_dict_new();
 
   /* Put the routes in position */
-  xbt_dict_foreach(routing->parse_routes, cursor, key, data) {
+  xbt_dict_foreach(routing->generic_routing.parse_routes, cursor, key, data) {
     keys = xbt_str_split_str(key, sep);
     src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 10);
     dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 10);
@@ -1889,14 +1886,14 @@ static void model_dijkstra_both_end(void)
   }
 
   /* delete the parse table */
-  xbt_dict_foreach(routing->parse_routes, cursor, key, data) {
+  xbt_dict_foreach(routing->generic_routing.parse_routes, cursor, key, data) {
     route = (route_t) data;
     xbt_dynar_free(&(route->link_list));
     xbt_free(data);
   }
 
   /* delete parse dict */
-  xbt_dict_free(&(routing->parse_routes));
+  xbt_dict_free(&(routing->generic_routing.parse_routes));
 
   /* Add the loopback if needed */
   if (current_routing->hierarchy == SURF_ROUTING_BASE)
@@ -2487,25 +2484,13 @@ static void generic_set_route(routing_component_t rc, const char *src,
                               const char *dst, route_t route)
 {
   DEBUG2("Load Route from \"%s\" to \"%s\"", src, dst);
-  model_type_t modeltype = rc->routing;
   xbt_dict_t _parse_routes;
   xbt_dict_t _to_index;
   char *route_name;
   int *src_id, *dst_id;
   _to_index = current_routing->to_index;
-
-  if (modeltype == &routing_models[SURF_MODEL_FULL]) {
-    _parse_routes = ((routing_component_full_t) rc)->parse_routes;
-
-  } else if (modeltype == &routing_models[SURF_MODEL_FLOYD]) {
-    _parse_routes = ((routing_component_floyd_t) rc)->parse_routes;
-
-  } else if (modeltype == &routing_models[SURF_MODEL_DIJKSTRA] ||
-             modeltype == &routing_models[SURF_MODEL_DIJKSTRACACHE]) {
-    _parse_routes = ((routing_component_dijkstra_t) rc)->parse_routes;
-
-  } else
-    xbt_die("\"generic_set_route\" not supported");
+  //TODO
+  _parse_routes = current_routing->parse_routes;
 
   src_id = xbt_dict_get_or_null(_to_index, src);
   dst_id = xbt_dict_get_or_null(_to_index, dst);
@@ -2530,25 +2515,14 @@ static void generic_set_ASroute(routing_component_t rc, const char *src,
 {
   DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
          e_route->src_gateway, dst, e_route->dst_gateway);
-  model_type_t modeltype = rc->routing;
+
   xbt_dict_t _parse_routes;
   xbt_dict_t _to_index;
   char *route_name;
   int *src_id, *dst_id;
   _to_index = current_routing->to_index;
-
-  if (modeltype == &routing_models[SURF_MODEL_FULL]) {
-    _parse_routes = ((routing_component_full_t) rc)->parse_routes;
-
-  } else if (modeltype == &routing_models[SURF_MODEL_FLOYD]) {
-    _parse_routes = ((routing_component_floyd_t) rc)->parse_routes;
-
-  } else if (modeltype == &routing_models[SURF_MODEL_DIJKSTRA] ||
-             modeltype == &routing_models[SURF_MODEL_DIJKSTRACACHE]) {
-    _parse_routes = ((routing_component_dijkstra_t) rc)->parse_routes;
-
-  } else
-    xbt_die("\"generic_set_route\" not supported");
+  //TODO
+  _parse_routes = current_routing->parse_routes;
 
   src_id = xbt_dict_get_or_null(_to_index, src);
   dst_id = xbt_dict_get_or_null(_to_index, dst);
