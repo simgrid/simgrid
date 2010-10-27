@@ -61,14 +61,14 @@
 <!ELEMENT route (link_ctn*)>
 <!ATTLIST route src CDATA #REQUIRED>
 <!ATTLIST route dst CDATA #REQUIRED>
-<!ATTLIST route symetrical (YES|NO) "YES">
+<!ATTLIST route symetrical (YES|NO) "NO">
 
 <!ELEMENT ASroute (link_ctn*)>
 <!ATTLIST ASroute src CDATA #REQUIRED>
 <!ATTLIST ASroute dst CDATA #REQUIRED>
 <!ATTLIST ASroute gw_src CDATA #REQUIRED>
 <!ATTLIST ASroute gw_dst CDATA #REQUIRED>
-<!ATTLIST ASroute symetrical (YES|NO) "YES">
+<!ATTLIST ASroute symetrical (YES|NO) "NO">
 
 <!ELEMENT link_ctn EMPTY>
 <!ATTLIST link_ctn id CDATA #REQUIRED>

@@ -2794,7 +2794,7 @@ int surf_parse__flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *surf_parse_text;
 /* Validating XML processor for src/surf/simgrid.dtd.
- * Generated 2010/10/21 16:55:48.
+ * Generated 2010/10/25 17:57:06.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -4911,7 +4911,7 @@ YY_RULE_SETUP
 {
   AX_surfxml_route_src = 0;
   AX_surfxml_route_dst = 0;
-  AX_surfxml_route_symetrical = A_surfxml_route_symetrical_YES;
+  AX_surfxml_route_symetrical = A_surfxml_route_symetrical_NO;
   ENTER(AL_surfxml_route); pushbuffer(0);
   }
 	YY_BREAK
@@ -5021,7 +5021,7 @@ YY_RULE_SETUP
   AX_surfxml_ASroute_dst = 0;
   AX_surfxml_ASroute_gw_src = 0;
   AX_surfxml_ASroute_gw_dst = 0;
-  AX_surfxml_ASroute_symetrical = A_surfxml_ASroute_symetrical_YES;
+  AX_surfxml_ASroute_symetrical = A_surfxml_ASroute_symetrical_NO;
   ENTER(AL_surfxml_ASroute); pushbuffer(0);
   }
 	YY_BREAK

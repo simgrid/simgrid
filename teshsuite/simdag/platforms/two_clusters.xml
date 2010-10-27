@@ -21,15 +21,13 @@
  	
      <ASroute src="bob_cluster" dst="alice_cluster" 
 	 gw_src="bobbob_cluster_router.hamburger.edu" 
-	 gw_dst="alicealice_cluster_router.crepe.fr"
-	 symetrical="NO">
+	 gw_dst="alicealice_cluster_router.crepe.fr">
  		<link_ctn id="backbone"/>
      </ASroute>
 	 
      <ASroute src="alice_cluster" dst="bob_cluster" 
 	 gw_src="alicealice_cluster_router.crepe.fr" 
-	 gw_dst="bobbob_cluster_router.hamburger.edu"
-	 symetrical="NO">
+	 gw_dst="bobbob_cluster_router.hamburger.edu">
  		<link_ctn id="backbone"/>
      </ASroute>   
      
