@@ -21,6 +21,8 @@ extern int tracing_active;      /* declared in paje.c */
 #define IS_TRACING_VOLUME     (TRACE_msg_volume_is_enabled())
 #define IS_TRACING_SMPI       (TRACE_smpi_is_enabled())
 
+#define INSTR_DEFAULT_STR_SIZE 500
+
 #include "instr/instr.h"
 #include "msg/msg.h"
 #include "simdag/private.h"
