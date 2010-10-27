@@ -22,25 +22,13 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
 {
   static int link_count = -1;
   network_link_GTNETS_t gtnets_link;
-  network_link_GTNETS_t gtnets_link_friend;
-  int tmp_idsrc = -1;
-  int tmp_iddst = -1;
-  char *name_friend;
 
   if (xbt_dict_get_or_null(surf_network_model->resource_set, name)) {
     return;
   }
 
   DEBUG1("Scanning link name %s", name);
-  sscanf(name, "%d_%d", &tmp_idsrc, &tmp_iddst);
-  DEBUG2("Link name split into %d and %d", tmp_idsrc, tmp_iddst);
 
-  xbt_assert0((tmp_idsrc != -1)
-              && (tmp_idsrc != -1),
-              "You need to respect fullduplex convention x_y for xml link id.");
-
-  name_friend = (char *) calloc(strlen(name), sizeof(char));
-  sprintf(name_friend, "%d_%d", tmp_iddst, tmp_idsrc);
 
   gtnets_link = xbt_new0(s_network_link_GTNETS_t, 1);
   gtnets_link->generic_resource.name = name;
@@ -48,22 +36,19 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   gtnets_link->bw_current = bw;
   gtnets_link->lat_current = lat;
 
-  if ((gtnets_link_friend =
-       xbt_dict_get_or_null(surf_network_model->resource_set,
-                            name_friend))) {
-    gtnets_link->id = gtnets_link_friend->id;
-  } else {
-    link_count++;
+  link_count++;
 
-    DEBUG4("Adding new link, linkid %d, name %s, latency %g, bandwidth %g",
+  DEBUG4("Adding new link, linkid %d, name %s, latency %g, bandwidth %g",
            link_count, name, lat, bw);
-    if (gtnets_add_link(link_count, bw, lat)) {
-      xbt_assert0(0, "Cannot create GTNetS link");
-    }
-    gtnets_link->id = link_count;
+
+  if (gtnets_add_link(link_count, bw, lat)) {
+	  xbt_assert0(0, "Cannot create GTNetS link");
   }
+  gtnets_link->id = link_count;
+
   xbt_dict_set(surf_network_model->resource_set, name, gtnets_link,
                surf_resource_free);
+
 #ifdef HAVE_TRACING
   TRACE_surf_link_declaration(gtnets_link, name, bw, lat);
 #endif
@@ -142,34 +127,44 @@ static void parse_link_init(void)
 /* Create the gtnets topology based on routing strategy */
 static void create_gtnets_topology()
 {
-//  xbt_dict_cursor_t cursor = NULL;
-//  char *key, *data;
-//   xbt_dict_t onelink_routes = global_routing->get_onelink_routes();
-//   xbt_assert0(onelink_routes, "Error onelink_routes was not initialized");
-//
-//   DEBUG0("Starting topology generation");
+  int src_id,dst_id;
+
+   DEBUG0("Starting topology generation");
 // À refaire plus tard. Il faut prendre la liste des hôtes/routeurs (dans routing)
 // À partir de cette liste, on les numérote.
 // Ensuite, on peut utiliser les id pour refaire les appels GTNets qui suivent.
 
-//   xbt_dict_foreach(onelink_routes, cursor, key, data){
-//      s_onelink_t link = (s_onelink_t) data;
-//
-//      DEBUG3("Link (#%d), src (#%s), dst (#%s)", ((network_link_GTNETS_t)(link->link_ptr))->id , link->src, link->dst);
-//     DEBUG0("Calling one link route");
-//     if(global_routing->is_router(link->src)){
-//      gtnets_add_router(link->src_id);
-//     }
-//     if(global_routing->is_router(link->dst)){
-//      gtnets_add_router(link->dst_id);
-//     }
-//     route_onehop_new(link->src_id, link->dst_id, (network_link_GTNETS_t)(link->link_ptr));
-//   }
-//
-//   xbt_dict_free(&route_table);
-//   if (XBT_LOG_ISENABLED(surf_network_gtnets, xbt_log_priority_debug)) {
-//        gtnets_print_topology();
-//   }
+   //get the onelinks from the parsed platform
+   xbt_dynar_t onelink_routes = global_routing->get_onelink_routes();
+   if (!onelink_routes)
+     return;
+
+   //save them in trace file
+   onelink_t onelink;
+   unsigned int iter;
+   xbt_dynar_foreach(onelink_routes, iter, onelink) {
+     char *src = onelink->src;
+     char *dst = onelink->dst;
+     void *link = onelink->link_ptr;
+     src_id = *((int *) xbt_dict_get_or_null(global_routing->root->to_index,src));
+     dst_id = *((int *) xbt_dict_get_or_null(global_routing->root->to_index,dst));
+
+     if(src_id != dst_id){
+     DEBUG5("Link (#%p), src (#%s), dst (#%s), src_id = %d, dst_id = %d", link,src,dst, src_id, dst_id);
+     DEBUG0("Calling one link route");
+        if(global_routing->get_network_element_type(src) == SURF_NETWORK_ELEMENT_ROUTER){
+        	gtnets_add_router(src_id);
+        }
+        if(global_routing->get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
+         gtnets_add_router(dst_id);
+        }
+        route_onehop_new(src_id, dst_id, (network_link_GTNETS_t)(link));
+     }
+   }
+
+   if (XBT_LOG_ISENABLED(surf_network_gtnets, xbt_log_priority_debug)) {
+        gtnets_print_topology();
+   }
 }
 
 /* Main XML parsing */
@@ -349,6 +344,8 @@ static surf_action_t communicate(const char *src_name,
   src = dst = -1;
   surf_action_network_GTNETS_t action = NULL;
 
+  src = *((int *) xbt_dict_get_or_null(global_routing->root->to_index,src_name));
+  dst = *((int *) xbt_dict_get_or_null(global_routing->root->to_index,dst_name));
   xbt_assert0((src >= 0
                && dst >= 0), "Either src or dst have invalid id (id<0)");
 
