@@ -1,21 +1,30 @@
 <?xml version='1.0'?>
  <!DOCTYPE platform SYSTEM "simgrid.dtd">
- <platform version="2">
+ <platform version="3">
+ <config id="general">
+ 	<prop id="test" value="retest"></prop>
+ 	<prop id="test" value="retest"></prop>
+ 	<prop id="test" value="retest"></prop>
+ </config>
+	
  <AS  id="AS0"  routing="Full">
-   <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
- 	   radical="0-4" power="1000000000" bw="125000000" lat="5E-5"
- 	   bb_bw="2250000000" bb_lat="5E-4"/>
- 
-   <cluster id="alice_cluster" prefix="alice" suffix=".crepe.fr"
- 	   radical="0-4" power="1000000000" bw="125000000" lat="5E-5"
- 	   bb_bw="2250000000" bb_lat="5E-4"/>
- 
- 
-   <link id="backbone" bandwidth="1250000000" latency="5E-4"/>
- 
-   <route:multi src="bob_cluster" dst="alice_cluster" symmetric="YES">
-     <link_ctn id="backbone"/>
-     <link_ctn id="$dst"/>
-   </route:multi>
+   	
+     <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
+ 	    radical="0-1" power="1000000000" bw="125000000" lat="5E-5"
+ 	    bb_bw="2250000000" bb_lat="5E-4"/>
+   
+     <cluster id="alice_cluster" prefix="alice" suffix=".crepe.fr"
+ 	    radical="0-1" power="1000000000" bw="125000000" lat="5E-5"
+ 	    bb_bw="2250000000" bb_lat="5E-4"/>  
+       
+     <link id="backbone" bandwidth="1250000000" latency="5E-4"/>  
+ 	
+     <ASroute src="bob_cluster" dst="alice_cluster" 
+	 gw_src="bobbob_cluster_router.hamburger.edu" 
+	 gw_dst="alicealice_cluster_router.crepe.fr"
+	 symetrical="YES">
+ 		<link_ctn id="backbone"/>
+     </ASroute>        
  </AS>
  </platform>
+

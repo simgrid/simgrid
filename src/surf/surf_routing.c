@@ -330,8 +330,8 @@ static void parse_E_route_store_route(void)
 {
   route_t route = xbt_new0(s_route_t, 1);
   route->link_list = link_list;
-  xbt_assert1(generic_processing_units_exist(current_routing,src),"the \"%s\" processing units gateway does not exist",src);
-  xbt_assert1(generic_processing_units_exist(current_routing,dst),"the \"%s\" processing units gateway does not exist",dst);
+  //xbt_assert1(generic_processing_units_exist(current_routing,src),"the \"%s\" processing units gateway does not exist",src);
+  //xbt_assert1(generic_processing_units_exist(current_routing,dst),"the \"%s\" processing units gateway does not exist",dst);
   xbt_assert1(current_routing->set_route,
               "no defined method \"set_route\" in \"%s\"",
               current_routing->name);
@@ -2536,8 +2536,8 @@ static void generic_set_ASroute(routing_component_t rc, const char *src,
   char *route_name;
   int *src_id, *dst_id;
   _to_index = current_routing->to_index;
-  //TODO
   _parse_routes = current_routing->parse_routes;
+
 
   src_id = xbt_dict_get_or_null(_to_index, src);
   dst_id = xbt_dict_get_or_null(_to_index, dst);
@@ -2555,6 +2555,26 @@ static void generic_set_ASroute(routing_component_t rc, const char *src,
 
   xbt_dict_set(_parse_routes, route_name, e_route, NULL);
   xbt_free(route_name);
+
+  unsigned long nb_links = xbt_dynar_length(e_route->generic_route.link_list);
+  if(A_surfxml_ASroute_symetrical == A_surfxml_ASroute_symetrical_YES)
+  {
+	  int i;
+	  route_extended_t route_sym = xbt_new0(s_route_extended_t, 1);
+	  route_sym->generic_route.link_list = xbt_dynar_new(sizeof(char *),NULL);
+	  for(i=nb_links ; i>0 ; i--)
+	  {
+		 char *link_name = xbt_new0(char,strlen(xbt_dynar_get_as(e_route->generic_route.link_list, i-1, char *)));
+		 link_name = bprintf("%s",xbt_dynar_get_as(e_route->generic_route.link_list, i-1, char *));
+		 xbt_dynar_push_as(route_sym->generic_route.link_list ,char *, link_name);
+	  }
+	  route_sym->src_gateway = xbt_new0( char,strlen(e_route->dst_gateway) );
+	  route_sym->src_gateway = bprintf("%s",e_route->dst_gateway);
+	  route_sym->dst_gateway = xbt_new0( char,strlen(e_route->src_gateway) );
+	  route_sym->dst_gateway = bprintf("%s",e_route->src_gateway);
+	  DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",dst, route_sym->src_gateway,src,route_sym->dst_gateway);
+	  xbt_dict_set(_parse_routes, bprintf("%d#%d", *dst_id, *src_id), route_sym, NULL);
+   }
 }
 
 static void generic_set_bypassroute(routing_component_t rc,
@@ -3039,7 +3059,7 @@ static void routing_full_parse_Scluster(void)
   SURFXML_START_TAG(router);
   SURFXML_END_TAG(router);
 
-  DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,cluster_bw, cluster_lat);
+  DEBUG3("<link\tid=\"%s\" bw=\"%s\" lat=\"%s\"/>", link_router,cluster_bw, cluster_lat);
   A_surfxml_link_state = A_surfxml_link_state_ON;
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
   if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
@@ -3053,7 +3073,7 @@ static void routing_full_parse_Scluster(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
-  DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,cluster_bw, cluster_lat);
+  DEBUG3("<link\tid=\"%s\" bw=\"%s\" lat=\"%s\"/>", link_backbone,cluster_bw, cluster_lat);
   A_surfxml_link_state = A_surfxml_link_state_ON;
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
   SURFXML_BUFFER_SET(link_id, link_backbone);
@@ -3079,9 +3099,11 @@ static void routing_full_parse_Scluster(void)
 
 #ifdef HAVE_PCRE_LIB
 
-  DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\">", route_src_dst, route_src_dst);
+  DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", route_src_dst, route_src_dst);
+  DEBUG0("symetrical=\"NO\">");
   SURFXML_BUFFER_SET(route_src, route_src_dst);
   SURFXML_BUFFER_SET(route_dst, route_src_dst);
+  A_surfxml_route_symetrical = A_surfxml_route_symetrical_NO;
   SURFXML_START_TAG(route);
 
   DEBUG1("<link_ctn\tid=\"%s_link_$1src\"/>", cluster_id);
@@ -3127,9 +3149,11 @@ static void routing_full_parse_Scluster(void)
                     cluster_suffix);
       }
 
-      DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\">", route_src, route_dst);
+      DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", route_src, route_dst);
+      DEBUG0("symetrical=\"NO\">");
       SURFXML_BUFFER_SET(route_src, route_src);
       SURFXML_BUFFER_SET(route_dst, route_dst);
+      A_surfxml_route_symetrical = A_surfxml_route_symetrical_NO;
       SURFXML_START_TAG(route);
 
       if (i == xbt_dynar_length(tab_elements_num)) {
