@@ -144,7 +144,7 @@ static void net_parse_link_init(void)
   e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
   e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
   tmgr_trace_t state_trace;
-
+  DEBUG0("link_CM02");
   name_link = xbt_strdup(A_surfxml_link_id);
   surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
   bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
@@ -159,18 +159,33 @@ static void net_parse_link_init(void)
   else if (A_surfxml_link_state == A_surfxml_link_state_OFF)
     state_initial_link = SURF_RESOURCE_OFF;
 
-  if (A_surfxml_link_sharing_policy ==
-      A_surfxml_link_sharing_policy_SHARED)
+  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
     policy_initial_link = SURF_LINK_SHARED;
-  else if (A_surfxml_link_sharing_policy ==
-           A_surfxml_link_sharing_policy_FATPIPE)
-    policy_initial_link = SURF_LINK_FATPIPE;
+  else
+	  {
+	  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
+		  policy_initial_link = SURF_LINK_FATPIPE;
+	  else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
+		  policy_initial_link = SURF_LINK_FULLDUPLEX;
+	  }
 
   state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
-  net_link_new(name_link, bw_initial, bw_trace,
-               lat_initial, lat_trace, state_initial_link, state_trace,
-               policy_initial_link, xbt_dict_new());
+  if(policy_initial_link == SURF_LINK_FULLDUPLEX)
+  {
+	  net_link_new(bprintf("%s_UP",name_link), bw_initial, bw_trace,
+	               lat_initial, lat_trace, state_initial_link, state_trace,
+	               policy_initial_link, xbt_dict_new());
+	  net_link_new(bprintf("%s_DOWN",name_link), bw_initial, bw_trace,
+	               lat_initial, lat_trace, state_initial_link, state_trace,
+	               policy_initial_link, xbt_dict_new());
+  }
+  else
+  {
+	  net_link_new(name_link, bw_initial, bw_trace,
+	               lat_initial, lat_trace, state_initial_link, state_trace,
+	               policy_initial_link, xbt_dict_new());
+  }
 
 }
 

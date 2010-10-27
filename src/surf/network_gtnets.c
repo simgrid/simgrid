@@ -108,12 +108,11 @@ static void parse_link_init(void)
   double bw;
   double lat;
   e_surf_resource_state_t state;
-
   name = xbt_strdup(A_surfxml_link_id);
   surf_parse_get_double(&bw, A_surfxml_link_bandwidth);
   surf_parse_get_double(&lat, A_surfxml_link_latency);
   state = SURF_RESOURCE_ON;
-
+  DEBUG0("link_gtnets");
   tmgr_trace_t bw_trace;
   tmgr_trace_t state_trace;
   tmgr_trace_t lat_trace;
@@ -131,7 +130,13 @@ static void parse_link_init(void)
     INFO0("The GTNetS network model doesn't support link state traces");
 
   current_property_set = xbt_dict_new();
-  link_new(name, bw, lat, current_property_set);
+  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
+  {
+	  link_new(bprintf("%s_UP",name), bw, lat, current_property_set);
+	  link_new(bprintf("%s_DOWN",name), bw, lat, current_property_set);
+
+  }
+  else  link_new(name, bw, lat, current_property_set);
 }
 
 /* Create the gtnets topology based on routing strategy */

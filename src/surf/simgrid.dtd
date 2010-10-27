@@ -43,6 +43,7 @@
 <!ATTLIST cluster lat CDATA #REQUIRED>
 <!ATTLIST cluster bb_bw CDATA #REQUIRED>
 <!ATTLIST cluster bb_lat CDATA #REQUIRED>
+<!ATTLIST cluster sharing_policy (SHARED|FULLDUPLEX) "SHARED">
 
 <!ELEMENT router EMPTY>
 <!ATTLIST router id CDATA #REQUIRED>
@@ -55,20 +56,23 @@
 <!ATTLIST link latency_file CDATA "">
 <!ATTLIST link state (ON|OFF) "ON">
 <!ATTLIST link state_file CDATA "">
-<!ATTLIST link sharing_policy (SHARED|FATPIPE) "SHARED">
+<!ATTLIST link sharing_policy (SHARED|FATPIPE|FULLDUPLEX) "SHARED">
 
 <!ELEMENT route (link_ctn*)>
 <!ATTLIST route src CDATA #REQUIRED>
 <!ATTLIST route dst CDATA #REQUIRED>
+<!ATTLIST route symetrical (YES|NO) "YES">
 
 <!ELEMENT ASroute (link_ctn*)>
 <!ATTLIST ASroute src CDATA #REQUIRED>
 <!ATTLIST ASroute dst CDATA #REQUIRED>
 <!ATTLIST ASroute gw_src CDATA #REQUIRED>
 <!ATTLIST ASroute gw_dst CDATA #REQUIRED>
+<!ATTLIST ASroute symetrical (YES|NO) "YES">
 
 <!ELEMENT link_ctn EMPTY>
 <!ATTLIST link_ctn id CDATA #REQUIRED>
+<!ATTLIST link_ctn direction (UP|DOWN|NONE) "NONE">
 
 <!ELEMENT bypassRoute (link_ctn*)>
 <!ATTLIST bypassRoute src CDATA #REQUIRED>

@@ -734,16 +734,15 @@ static link_L07_t ptask_link_new(char *name,
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(nw_link->constraint);
 
-
   xbt_dict_set(surf_network_model->resource_set, name, nw_link,
                surf_resource_free);
+
 
   return nw_link;
 }
 
 static void ptask_parse_link_init(void)
 {
-  char *name_link;
   double bw_initial;
   tmgr_trace_t bw_trace;
   double lat_initial;
@@ -751,8 +750,19 @@ static void ptask_parse_link_init(void)
   e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
   e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
   tmgr_trace_t state_trace;
+  char *name_link_up = NULL;
+  char *name_link_down = NULL;
+  char *name_link = NULL;
 
+  if(A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
+  {
+  name_link_up = xbt_strdup(bprintf("%s_UP",A_surfxml_link_id));
+  name_link_down = xbt_strdup(bprintf("%s_DOWN",A_surfxml_link_id));
+  }
+  else
+  {
   name_link = xbt_strdup(A_surfxml_link_id);
+  }
   surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
   bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
   surf_parse_get_double(&lat_initial, A_surfxml_link_latency);
@@ -766,19 +776,32 @@ static void ptask_parse_link_init(void)
   else if (A_surfxml_link_state == A_surfxml_link_state_OFF)
     state_initial_link = SURF_RESOURCE_OFF;
 
-  if (A_surfxml_link_sharing_policy ==
-      A_surfxml_link_sharing_policy_SHARED)
+  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
     policy_initial_link = SURF_LINK_SHARED;
-  else if (A_surfxml_link_sharing_policy ==
-           A_surfxml_link_sharing_policy_FATPIPE)
-    policy_initial_link = SURF_LINK_FATPIPE;
+  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
+	policy_initial_link = SURF_LINK_FATPIPE;
+  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
+	policy_initial_link = SURF_LINK_FULLDUPLEX;
 
   state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
   current_property_set = xbt_dict_new();
-  ptask_link_new(name_link, bw_initial, bw_trace, lat_initial, lat_trace,
-                 state_initial_link, state_trace, policy_initial_link,
-                 current_property_set);
+
+  if(policy_initial_link == SURF_LINK_FULLDUPLEX)
+  {
+	  ptask_link_new(name_link_up, bw_initial, bw_trace, lat_initial, lat_trace,
+	                 state_initial_link, state_trace, policy_initial_link,
+	                 current_property_set);
+	  ptask_link_new(name_link_down, bw_initial, bw_trace, lat_initial, lat_trace,
+	                 state_initial_link, state_trace, policy_initial_link,
+	                 xbt_dict_new());
+  }
+  else
+  {
+	  ptask_link_new(name_link, bw_initial, bw_trace, lat_initial, lat_trace,
+					 state_initial_link, state_trace, policy_initial_link,
+					 current_property_set);
+  }
 }
 
 static void ptask_link_create_resource(char *name,

@@ -23,6 +23,7 @@ typedef enum {
 } e_surf_resource_state_t;
 
 typedef enum {
+  SURF_LINK_FULLDUPLEX = 2,
   SURF_LINK_SHARED = 1,
   SURF_LINK_FATPIPE = 0
 } e_surf_link_sharing_policy_t;
