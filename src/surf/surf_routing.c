@@ -330,8 +330,8 @@ static void parse_E_route_store_route(void)
 {
   route_t route = xbt_new0(s_route_t, 1);
   route->link_list = link_list;
-//   xbt_assert1(generic_processing_units_exist(current_routing,src),"the \"%s\" processing units gateway does not exist",src);
-//   xbt_assert1(generic_processing_units_exist(current_routing,dst),"the \"%s\" processing units gateway does not exist",dst);
+  xbt_assert1(generic_processing_units_exist(current_routing,src),"the \"%s\" processing units gateway does not exist",src);
+  xbt_assert1(generic_processing_units_exist(current_routing,dst),"the \"%s\" processing units gateway does not exist",dst);
   xbt_assert1(current_routing->set_route,
               "no defined method \"set_route\" in \"%s\"",
               current_routing->name);
@@ -2486,6 +2486,8 @@ static void generic_set_route(routing_component_t rc, const char *src,
   xbt_dict_t _to_index;
   char *route_name;
   int *src_id, *dst_id;
+  unsigned long nb_links = xbt_dynar_length(route->link_list);
+
   _to_index = current_routing->to_index;
   //TODO
   _parse_routes = current_routing->parse_routes;
@@ -2506,6 +2508,21 @@ static void generic_set_route(routing_component_t rc, const char *src,
 
   xbt_dict_set(_parse_routes, route_name, route, NULL);
   xbt_free(route_name);
+
+  if(A_surfxml_route_symetrical == A_surfxml_route_symetrical_YES)
+  {
+	  int i;
+	  route_t route_sym = xbt_new0(s_route_t, 1);
+	  route_sym->link_list = xbt_dynar_new(sizeof(char *),NULL);
+	  for(i=nb_links ; i>0 ; i--)
+	  {
+		 char *link_name = xbt_new0(char,strlen(xbt_dynar_get_as(route->link_list, i-1, char *)));
+		 link_name = bprintf("%s",xbt_dynar_get_as(route->link_list, i-1, char *));
+		 xbt_dynar_push_as(route_sym->link_list ,char *, link_name);
+	  }
+	  DEBUG2("Load Route from \"%s\" to \"%s\"", dst, src);
+	  xbt_dict_set(_parse_routes, bprintf("%d#%d",*dst_id, *src_id), route_sym, NULL);
+   }
 }
 
 static void generic_set_ASroute(routing_component_t rc, const char *src,
