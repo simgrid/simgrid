@@ -57,6 +57,7 @@ static void model_none_end(void);       /* none routing model */
 static void routing_full_parse_Scluster(void);  /*cluster bypass */
 
 static void parse_Sconfig(void);        /*config Tag */
+static void parse_Econfig(void);        /*config Tag */
 
 /* this lines are only for replace use like index in the model table */
 typedef enum {
@@ -146,7 +147,6 @@ static char *dst = NULL;        /* temporary store the destination name of a rou
 static char *gw_src = NULL;     /* temporary store the gateway source name of a route */
 static char *gw_dst = NULL;     /* temporary store the gateway destination name of a route */
 static xbt_dynar_t link_list = NULL;    /* temporary store of current list link of a route */
-
 /**
  * \brief Add a "host" to the network element list
  */
@@ -899,6 +899,7 @@ void routing_model_create(size_t size_of_links, void *loopback)
                        &routing_full_parse_Scluster);
 
   surfxml_add_callback(STag_surfxml_config_cb_list, &parse_Sconfig);
+  surfxml_add_callback(ETag_surfxml_config_cb_list, &parse_Econfig);
 }
 
 /* ************************************************************************** */
@@ -2911,6 +2912,18 @@ static void parse_Sconfig(void)
 {
   //TODO
   DEBUG0("WARNING tag config not yet implemented.");
+  DEBUG1("Configuration name = %s",A_surfxml_config_id);
+}
+
+static void parse_Econfig(void)
+{
+  //TODO
+  xbt_dict_cursor_t cursor = NULL;
+  char *key;
+  char *elem;
+  xbt_dict_foreach(current_property_set, cursor, key, elem) {
+	  DEBUG2("property : %s = %s",key,elem);
+	}
 }
 
 static void routing_full_parse_Scluster(void)
