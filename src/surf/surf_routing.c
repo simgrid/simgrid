@@ -54,10 +54,10 @@ static void model_none_load(void);      /* none routing model */
 static void model_none_unload(void);    /* none routing model */
 static void model_none_end(void);       /* none routing model */
 
-static void routing_full_parse_Scluster(void);  /*cluster bypass */
+static void routing_parse_Scluster(void);  /*cluster bypass */
 
-static void parse_Sconfig(void);        /*config Tag */
-static void parse_Econfig(void);        /*config Tag */
+static void routing_parse_Sconfig(void);        /*config Tag */
+static void routing_parse_Econfig(void);        /*config Tag */
 
 /* this lines are only for replace use like index in the model table */
 typedef enum {
@@ -896,10 +896,12 @@ void routing_model_create(size_t size_of_links, void *loopback)
   surfxml_add_callback(ETag_surfxml_AS_cb_list, &parse_E_AS_XML);
 
   surfxml_add_callback(STag_surfxml_cluster_cb_list,
-                       &routing_full_parse_Scluster);
+                       &routing_parse_Scluster);
 
-  surfxml_add_callback(STag_surfxml_config_cb_list, &parse_Sconfig);
-  surfxml_add_callback(ETag_surfxml_config_cb_list, &parse_Econfig);
+  surfxml_add_callback(STag_surfxml_config_cb_list,
+					   &routing_parse_Sconfig);
+  surfxml_add_callback(ETag_surfxml_config_cb_list,
+					   &routing_parse_Econfig);
 }
 
 /* ************************************************************************** */
@@ -2908,14 +2910,14 @@ static void generic_src_dst_check(routing_component_t rc, const char *src,
               rc->name, dst_as->name);
 }
 
-static void parse_Sconfig(void)
+static void routing_parse_Sconfig(void)
 {
   //TODO
   DEBUG0("WARNING tag config not yet implemented.");
   DEBUG1("Configuration name = %s",A_surfxml_config_id);
 }
 
-static void parse_Econfig(void)
+static void routing_parse_Econfig(void)
 {
   //TODO
   xbt_dict_cursor_t cursor = NULL;
@@ -2926,7 +2928,7 @@ static void parse_Econfig(void)
 	}
 }
 
-static void routing_full_parse_Scluster(void)
+static void routing_parse_Scluster(void)
 {
   static int AX_ptr = 0;
 
