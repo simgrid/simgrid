@@ -1,0 +1,330 @@
+#! ./tesh
+$ ./basic_parsing_test one_cluster_fullduplex.xml FULL_LINK
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 5, link number: 14
+> Route between bob3.hamburger.edu and bob3.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_3_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_3_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob3.hamburger.edu and bob0.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_3_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob3.hamburger.edu and bob2.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_3_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_2_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob3.hamburger.edu and bob4.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_3_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_4_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob3.hamburger.edu and bob6.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_3_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_6_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob0.hamburger.edu and bob3.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_3_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob0.hamburger.edu and bob0.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob0.hamburger.edu and bob2.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_2_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob0.hamburger.edu and bob4.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_4_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob0.hamburger.edu and bob6.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_6_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob2.hamburger.edu and bob3.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_2_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_3_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob2.hamburger.edu and bob0.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_2_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob2.hamburger.edu and bob2.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_2_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_2_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob2.hamburger.edu and bob4.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_2_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_4_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob2.hamburger.edu and bob6.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_2_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_6_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob4.hamburger.edu and bob3.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_4_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_3_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob4.hamburger.edu and bob0.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_4_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob4.hamburger.edu and bob2.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_4_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_2_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob4.hamburger.edu and bob4.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_4_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_4_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob4.hamburger.edu and bob6.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_4_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_6_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob6.hamburger.edu and bob3.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_6_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_3_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob6.hamburger.edu and bob0.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_6_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob6.hamburger.edu and bob2.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_6_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_2_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob6.hamburger.edu and bob4.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_6_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_4_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob6.hamburger.edu and bob6.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_6_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_6_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+
+$ ./basic_parsing_test two_clusters_symmetric.xml FULL_LINK
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 4, link number: 10
+> Route between bob1.hamburger.edu and bob1.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob1.hamburger.edu and bob0.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob1.hamburger.edu and alice0.crepe.fr
+> 	Route size 7
+> 	Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_bob_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+> 	Link alice_cluster_link_alice_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.001700, route bandwidth = 125000000.000000
+> Route between bob1.hamburger.edu and alice1.crepe.fr
+> 	Route size 7
+> 	Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_bob_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+> 	Link alice_cluster_link_alice_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.001700, route bandwidth = 125000000.000000
+> Route between bob0.hamburger.edu and bob1.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob0.hamburger.edu and bob0.hamburger.edu
+> 	Route size 3
+> 	Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between bob0.hamburger.edu and alice0.crepe.fr
+> 	Route size 7
+> 	Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_bob_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+> 	Link alice_cluster_link_alice_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.001700, route bandwidth = 125000000.000000
+> Route between bob0.hamburger.edu and alice1.crepe.fr
+> 	Route size 7
+> 	Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_bob_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+> 	Link alice_cluster_link_alice_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.001700, route bandwidth = 125000000.000000
+> Route between alice0.crepe.fr and bob1.hamburger.edu
+> 	Route size 7
+> 	Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_alice_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+> 	Link bob_cluster_link_bob_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.001700, route bandwidth = 125000000.000000
+> Route between alice0.crepe.fr and bob0.hamburger.edu
+> 	Route size 7
+> 	Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_alice_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+> 	Link bob_cluster_link_bob_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.001700, route bandwidth = 125000000.000000
+> Route between alice0.crepe.fr and alice0.crepe.fr
+> 	Route size 3
+> 	Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between alice0.crepe.fr and alice1.crepe.fr
+> 	Route size 3
+> 	Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between alice1.crepe.fr and bob1.hamburger.edu
+> 	Route size 7
+> 	Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_alice_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+> 	Link bob_cluster_link_bob_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.001700, route bandwidth = 125000000.000000
+> Route between alice1.crepe.fr and bob0.hamburger.edu
+> 	Route size 7
+> 	Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_alice_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+> 	Link bob_cluster_link_bob_cluster_router: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.001700, route bandwidth = 125000000.000000
+> Route between alice1.crepe.fr and alice0.crepe.fr
+> 	Route size 3
+> 	Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+> Route between alice1.crepe.fr and alice1.crepe.fr
+> 	Route size 3
+> 	Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+> 	Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000600, route bandwidth = 125000000.000000
+
+$ ./basic_parsing_test two_hosts_one_link_symetrical.xml FULL_LINK
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 2, link number: 4
+> Route between alice and alice
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between alice and bob
+> 	Route size 3
+> 	Link link3: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link2: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000150, route bandwidth = 125000000.000000
+> Route between bob and alice
+> 	Route size 3
+> 	Link link1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link2: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link3: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000150, route bandwidth = 125000000.000000
+> Route between bob and bob
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
+
+$ ./basic_parsing_test two_hosts_one_link_fullduplex.xml FULL_LINK
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 2, link number: 3
+> Route between alice and alice
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between alice and bob
+> 	Route size 1
+> 	Link link1_UP: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between bob and alice
+> 	Route size 1
+> 	Link link1_DOWN: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between bob and bob
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
