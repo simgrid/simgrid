@@ -9,7 +9,6 @@
 #include "msg/msg.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
-#include "gras_config.h" //for HAVE_LATENCY_BOUND_TRACKING
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
