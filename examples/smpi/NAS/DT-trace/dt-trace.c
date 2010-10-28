@@ -675,11 +675,11 @@ int main(int argc,char **argv ){
   double bytes_sent=2.0,tot_time=0.0;
 
 
-    TRACE_smpi_set_category ("start");
 
     MPI_Init( &argc, &argv );
     MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
     MPI_Comm_size( MPI_COMM_WORLD, &comm_size );
+    TRACE_smpi_set_category ("start");
 
      if(argc!=2||
                 (  strncmp(argv[1],"BH",2)!=0
