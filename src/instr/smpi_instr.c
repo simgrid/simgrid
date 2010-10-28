@@ -23,14 +23,17 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
   xbt_dynar_t d = xbt_dict_get_or_null(keys, aux);
   if (d == NULL) {
-    d = xbt_dynar_new(sizeof(char *), xbt_free);
+    d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
     xbt_dict_set(keys, aux, d, xbt_free);
   }
   //generate the key
   static unsigned long long counter = 0;
   snprintf(key, n, "%d%d%lld", src, dst, counter++);
 
-  xbt_dynar_insert_at(d, 0, xbt_strdup(key));
+  //push it
+  char *a = (char*)xbt_strdup(key);
+  xbt_dynar_push_as(d, char *, a);
+
   return key;
 }
 
@@ -41,9 +44,9 @@ static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
   xbt_dynar_t d = xbt_dict_get_or_null(keys, aux);
 
   int length = xbt_dynar_length(d);
-  char stored_key[n];
-  xbt_dynar_remove_at(d, length - 1, stored_key);
-  strncpy(key, stored_key, n);
+  char *s = xbt_dynar_get_as (d, length-1, char *);
+  snprintf (key, n, "%s", s);
+  xbt_dynar_remove_at (d, length-1, NULL);
   return key;
 }
 
