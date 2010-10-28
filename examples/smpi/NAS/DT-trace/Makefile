@@ -6,7 +6,7 @@ include ../config/make.def
 
 include ../sys/make.common
 #Override PROGRAM
-DTPROGRAM  = $(BINDIR)/$(BENCHMARK).$(CLASS)
+DTPROGRAM  = $(BINDIR)/$(BENCHMARK)-trace.$(CLASS)
 
 OBJS = dt-trace.o DGraph.o \
 	${COMMON}/c_print_results.o ${COMMON}/c_timers.o ${COMMON}/c_randdp.o
