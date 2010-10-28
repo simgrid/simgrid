@@ -383,9 +383,9 @@ typedef struct{
   double* val;
 } Arr;
 Arr *newArr(int len){
-  Arr *arr=(Arr *)malloc(sizeof(Arr));
+  Arr *arr=(Arr *)SMPI_SHARED_MALLOC(sizeof(Arr));
   arr->len=len;
-  arr->val=(double *)malloc(len*sizeof(double));
+  arr->val=(double *)SMPI_SHARED_MALLOC(len*sizeof(double));
   return arr;
 }
 void arrShow(Arr* a){
@@ -455,7 +455,7 @@ Arr* RandomFeatures(char *bmname,int fdim,int id){
 void Resample(Arr *a,int blen){
     long long int i=0,j=0,jlo=0,jhi=0;
     double avval=0.0;
-    double *nval=(double *)malloc(blen*sizeof(double));
+    double *nval=(double *)SMPI_SHARED_MALLOC(blen*sizeof(double));
     Arr *tmp=newArr(10);
     for(i=0;i<blen;i++) nval[i]=0.0;
     for(i=1;i<a->len-1;i++){
@@ -469,7 +469,7 @@ void Resample(Arr *a,int blen){
     }
     nval[0]=a->val[0];
     nval[blen-1]=a->val[a->len-1];
-    free(a->val);
+    SMPI_SHARED_FREE(a->val);
     a->val=nval;
     a->len=blen;
 }
@@ -571,13 +571,13 @@ Arr* CombineStreams(DGraph *dg,DGNode *nd){
       feat=newArr(len);
       MPI_Recv(feat->val,feat->len,MPI_DOUBLE,tail->address,tag,MPI_COMM_WORLD,&status);
       resfeat=WindowFilter(resfeat,feat,nd->id);
-      free(feat);
+      SMPI_SHARED_FREE(feat);
     }else{
       featp=(Arr *)tail->feat;
       feat=newArr(featp->len);
       memcpy(feat->val,featp->val,featp->len*sizeof(double));
       resfeat=WindowFilter(resfeat,feat,nd->id);  
-      free(feat);
+      SMPI_SHARED_FREE(feat);
     }
   }
   for(i=0;i<resfeat->len;i++) resfeat->val[i]=((int)resfeat->val[i])/nd->inDegree;
@@ -619,7 +619,7 @@ double ReduceStreams(DGraph *dg,DGNode *nd){
       feat=newArr(len);
       MPI_Recv(feat->val,feat->len,MPI_DOUBLE,tail->address,tag,MPI_COMM_WORLD,&status);
       csum+=Reduce(feat,(nd->id+1));  
-      free(feat);
+      SMPI_SHARED_FREE(feat);
     }else{
       csum+=Reduce(tail->feat,(nd->id+1));  
     }
