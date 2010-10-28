@@ -11,6 +11,31 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi,
                                 "Logging specific to SMPI (mpi)");
 
+#ifdef HAVE_TRACING
+//this function need to be here because of the calls to smpi_bench
+int TRACE_smpi_set_category(const char *category)
+{
+  //need to end bench otherwise categories for execution tasks are wrong
+  smpi_bench_end (-1, NULL);
+  int ret;
+  if (!IS_TRACING){
+    ret = 1;
+  }else{
+    if (category != NULL) {
+      ret = TRACE_category(category);
+      TRACE_category_set(SIMIX_process_self(), category);
+    }else{
+      //if category is NULL, trace of platform is disabled for this process
+      TRACE_category_unset(SIMIX_process_self());
+      ret = 0;
+    }
+  }
+  //begin bench after changing process's category
+  smpi_bench_begin (-1, NULL);
+  return ret;
+}
+#endif
+
 /* MPI User level calls */
 
 int MPI_Init(int *argc, char ***argv)

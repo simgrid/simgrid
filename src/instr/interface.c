@@ -225,19 +225,4 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   pajeNewEvent(MSG_get_clock(), mark_type, "0", mark_value);
 }
 
-int TRACE_smpi_set_category(const char *category)
-{
-  //if category is NULL, trace of platform is disabled
-  if (!IS_TRACING)
-    return 1;
-  if (category != NULL) {
-    int ret = TRACE_category(category);
-    TRACE_category_set(SIMIX_process_self(), category);
-    return ret;
-  } else {
-    TRACE_category_unset(SIMIX_process_self());
-    return 0;
-  }
-}
-
 #endif                          /* HAVE_TRACING */
