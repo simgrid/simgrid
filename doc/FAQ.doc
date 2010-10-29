@@ -2246,30 +2246,27 @@ void MC_assert(int prop);
 \endverbatim
 
 \subsection faq_binding_lua Lua Binding
-Most of Simgrid modules require a  good level in C programming ,
- since simgrid is used to be as standard C library .
- Sometime ( for some reason or another ) developers prefer using some kind of « easy scripts »
- (something like … lua ? Ruby ? ...?) or a language easier to code with ( Java ? ) for their works,
- which avoid dealing with C errors , and sometime an important  gain of time (coding-time?) .
-Besides Java Binding, Lua  and Ruby bindings are available now( since version 3.4 of Simgrid )
-for MSG Module, and we are currenlty working on bindings for other modules .
+Most of Simgrid modules require a  good level in C programming, since simgrid is used to be as standard C library.
+ Sometime users prefer using some kind of « easy scripts » or a language easier to code with, for their works,
+ which avoid dealing with C errors, and sometime an important  gain of time.
+Besides Java Binding, Lua  and Ruby bindings are available since version 3.4 of Simgrid
+for MSG Module, and we are currenlty working on bindings for other modules.
 
 
 \subsubsection faq_binding_lua_about What is lua ?
-Lua (Moon for portuguese !) is a lightweight, reflective, imperative and functional programming language,
- designed as a scripting language with extensible semantics as a primary goal.(see official web site <a href="http://www.lua.org">here</a>)
+Lua is a lightweight, reflective, imperative and functional programming language,
+ designed as a scripting language with extensible semantics as a primary goal (see official web site <a href="http://www.lua.org">here</a>).
 \subsubsection faq_binding_lua_why Why lua ?
-Lua is a fast,portable and powerful script language, quite simple to use for developpers .
+Lua is a fast, portable and powerful script language, quite simple to use for developpers.
 it combines procedural features with powerful data description facilities,
  by using a simple, yet powerful, mechanism of tables.
 Lua has a relatively simple C API compared to other scripting languages,
 and accordingly it provides a robust, easy to use it.
 \subsubsection faq_binding_lua_simgrid How to use lua in Simgrid ?
-Actually , the use of lua in Simgrid is quite simple, you have just to follow the same steps as coding with C in Simgird,
- but this time, code with Lua ;) :
+Actually, the use of lua in Simgrid is quite simple, you have just to follow the same steps as coding with C in Simgird :
   - Coding functions coresponding to each process
   - loading the platforme/deployment XML file that describe the environment of simulation
-  - and … Running the Simulation !!!
+  - and … Running the Simulation.
   
 \dontinclude lua/master_slave.lua
 \subsubsection faq_binding_lua_example_master_slave Master/Slave Example
@@ -2278,12 +2275,12 @@ Actually , the use of lua in Simgrid is quite simple, you have just to follow th
  \until end_of_master
 we mainly  use   simgrid.Task.new(task_name,computation_size,communication_size) to create our MSG Task, 
 	 then simgrid.Task.send(task,alias) to send it.
-we  use also simgrid.Task.name(task), to get the task's name . 
+we use also simgrid.Task.name(task), to get the task's name. 
 
 \li Slave Code
 \until end_of_slave
-Here, we could see how we use  simgrid.Task.recv(alias) to receive a task with a specific alias,
-this function return directly the task recevied .
+Here, we see the use of simgrid.Task.recv(alias) to receive a task with a specific alias,
+this function return directly the task recevied.
 
 \li Set Environmenet and run application
 \until simgrid.clean()
@@ -2291,7 +2288,7 @@ this function return directly the task recevied .
 \subsubsection faq_binding_lua_example_data Exchanging Data
 You can also exchange data between Process using lua. for that, you have to deal with  lua task as a table,
 since lua is based itself on a mechanism of tables,
-so  you can exchange any kind of data ( tables, matrix, strings … ) between process via tasks.
+so you can exchange any kind of data (tables, matrix, strings,…) between process via tasks.
 
 \li Sender process
 \verbatim 
@@ -2302,8 +2299,8 @@ so  you can exchange any kind of data ( tables, matrix, strings … ) between pr
   …
   simgrid.Task.send(task,alias)
 \endverbatim
-	After creating task, we associate to it  various kind of data with a specific key,( string in this case)
-	to distinguish between data variables. Via this key the receiver could access easily to  datas.
+	After creating task, we associate to it various kind of data with a specific key (string in this case)
+	to distinguish between data variables. The receiver will use this key to access easily to datas.
 
 
 \li Receiver processe
@@ -2314,9 +2311,9 @@ so  you can exchange any kind of data ( tables, matrix, strings … ) between pr
   sender_message = task['message']
   ...
 \endverbatim
-  	Note that in lua, both sender and receiver share the same lua task! 
+  	Note that in lua, both sender and receiver share the same lua task.
 	So that the receiver could joint data directly on the received task without sending it back.
-	You can find  a complet example ( matrix multiplication case ) in the file example/lua/mult_matrix.lua 
+	You can find  a complet example (matrix multiplication case) in the file example/lua/mult_matrix.lua. 
 
 
 \subsubsection faq_binding_lua_example_bypass Bypass XML
@@ -2325,6 +2322,11 @@ so  you can exchange any kind of data ( tables, matrix, strings … ) between pr
 	We provide some additional (tricky?) functions in lua that allows you to set up your own platform without using the XML files
      ( this can be useful for large platforms, so a simple for loop will avoid you to deal with an annoying XML File ;) )
      
+
+\li set Routing mode
+\verbatim
+   simgrid.AS.new{id="AS0",mode="Full"};
+\endverbatim
 
 \li set Hosts
 \verbatim
