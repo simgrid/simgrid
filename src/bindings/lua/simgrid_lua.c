@@ -15,6 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 #define LINK_MODULE_NAME "simgrid.Link"
 #define ROUTE_MODULE_NAME "simgrid.Route"
 #define AS_MODULE_NAME "simgrid.AS"
+#define TRACE_MODULE_NAME "simgrid.Trace"
 
 /* ********************************************************************************* */
 /*                            helper functions                                       */
@@ -312,6 +313,26 @@ static int Host_at(lua_State * L)
 
 }
 
+static int Host_self(lua_State * L)
+{
+	m_host_t host = MSG_host_self();
+	lua_newtable(L);
+	m_host_t *lua_host =(m_host_t *)lua_newuserdata(L,sizeof(m_host_t));
+	*lua_host = host;
+	luaL_getmetatable(L, HOST_MODULE_NAME);
+	lua_setmetatable(L, -2);
+	lua_setfield(L, -2, "__simgrid_host");
+	return 1;
+
+}
+
+static int Host_get_property_value(lua_State * L)
+{
+	m_host_t ht = checkHost(L, -2);
+	const char *prop = luaL_checkstring(L, -1);
+	lua_pushstring(L,MSG_host_get_property_value(ht,prop));
+	return 1;
+}
 
 /* ********************************************************************************* */
 /*                           lua_stub_generator functions                            */
@@ -381,12 +402,39 @@ static int gras_generate(lua_State * L)
   generate_sim(project_name);
   generate_rl(project_name);
   generate_makefile_local(project_name);
-
   return 0;
 }
 
-//***********Register Methods *******************************************//
+/***********************************
+ * 	Tracing
+ **********************************/
+static int trace_start(lua_State *L)
+{
+	TRACE_start();
+	return 1;
+}
 
+static int trace_category(lua_State * L)
+{
+	const char * category = luaL_checkstring(L, 1);
+	TRACE_category(category);
+	return 1;
+}
+
+static int trace_set_task_category(lua_State *L)
+{
+	m_task_t tk = checkTask(L, -2);
+	const char *category = luaL_checkstring(L, -1);
+	TRACE_msg_set_task_category(tk,category);
+	return 1;
+}
+
+static int trace_end(lua_State *L)
+{
+	TRACE_end();
+	return 1;
+}
+//***********Register Methods *******************************************//
 /*
  * Host Methods
  */
@@ -395,6 +443,8 @@ static const luaL_reg Host_methods[] = {
   {"name", Host_get_name},
   {"number", Host_number},
   {"at", Host_at},
+  {"self",Host_self},
+  {"getPropValue",Host_get_property_value},
   // Bypass XML Methods
   {"new", console_add_host},
   {"setFunction", console_set_function},
@@ -446,6 +496,16 @@ static const luaL_reg Route_methods[] = {
   {0, 0}
 };
 
+/**
+ * Tracing Functions
+ */
+static const luaL_reg Trace_methods[] = {
+		{"start",trace_start},
+		{"category",trace_category},
+		{"setTaskCategory",trace_set_task_category},
+		{"finish",trace_end},
+		{0,0}
+};
 /*
  * Environment related
  */
@@ -699,7 +759,12 @@ int luaopen_simgrid(lua_State * L)
 
   /*register the routes methods to lua */
   luaL_openlib(L, ROUTE_MODULE_NAME, Route_methods, 0);
-  luaL_newmetatable(L, LINK_MODULE_NAME);
+  luaL_newmetatable(L, ROUTE_MODULE_NAME);
+  lua_pop(L, 1);
+
+  /*register the Tracing functions to lua */
+  luaL_openlib(L, TRACE_MODULE_NAME, Trace_methods, 0);
+  luaL_newmetatable(L, TRACE_MODULE_NAME);
   lua_pop(L, 1);
 
   /* Keep the context mechanism informed of our lua world today */
