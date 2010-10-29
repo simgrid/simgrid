@@ -41,7 +41,7 @@ void TRACE_smx_action_communicate(smx_action_t act, smx_process_t proc)
 
 void TRACE_smx_action_destroy(smx_action_t act)
 {
-  if (!IS_TRACING || !IS_TRACED(act))
+  if (!IS_TRACING)
     return;
 
   if (act->category) {
