@@ -30,9 +30,9 @@ if(WIN32)
 endif(WIN32)
 set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 
-if(EXISTS /usr/include/)
+if(NOT CMAKE_CROSSCOMPILING AND EXISTS /usr/include/)
 	set(INCLUDES "${INCLUDES} -I/usr/include/")
-endif(EXISTS /usr/include/)
+endif(NOT CMAKE_CROSSCOMPILING AND EXISTS /usr/include/)
 
 ### Check 32bits or 64bits
 INCLUDE (CheckTypeSize)
