@@ -34,6 +34,7 @@ if(HAVE_RUBY)
 	  )
 	add_custom_command(
 		OUTPUT ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
+	        COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
 		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
 	)
 endif(HAVE_RUBY)
@@ -65,8 +66,13 @@ if(HAVE_LUA)
 		OUTPUT 	${PROJECT_DIRECTORY}/examples/lua/simgrid.${LIB_EXE}
 				${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE}
 				${PROJECT_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE}
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/examples/lua/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
 		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/examples/lua/simgrid.${LIB_EXE} #for test
+		
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
 	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE} #for test
+		
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
 	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE} #for test			
 	)
 endif(HAVE_LUA)
