@@ -162,8 +162,8 @@ const char *xbt_os_thread_name(xbt_os_thread_t t)
 
 const char *xbt_os_thread_self_name(void)
 {
-  xbt_os_thread_t self = xbt_os_thread_self();
-  return self ? self->name : "main";
+  xbt_os_thread_t me = xbt_os_thread_self();
+  return me ? me->name : "main";
 }
 
 void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
