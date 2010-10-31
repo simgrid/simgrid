@@ -33,7 +33,7 @@ static void msg_init(VALUE Class, VALUE args)
   }
   ptr = RARRAY(args)->ptr;
   argc = RARRAY(args)->len;
-  //  Create C Array to Hold Data_Get_Struct
+  //  Create C array to hold data_get_struct
   argc++;
   argv = xbt_new0(char *, argc);
   argv[0] = strdup("ruby");

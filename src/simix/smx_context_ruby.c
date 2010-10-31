@@ -24,7 +24,6 @@ smx_ctx_ruby_create_context(xbt_main_func_t code, int argc, char **argv,
 static void smx_ctx_ruby_stop(smx_context_t context);
 static void smx_ctx_ruby_suspend(smx_context_t context);
 static void smx_ctx_ruby_resume(smx_context_t new_context);
-static void smx_ctx_ruby_wrapper(void);
 
 
 void SIMIX_ctx_ruby_factory_init(smx_context_factory_t * factory)
