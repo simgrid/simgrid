@@ -417,7 +417,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
  * is copied into the CATCH relevant variable program control flow 
  * is derouted to the CATCH (after the optional sg_cleanup).
  *
- * If no TRY/CATCH construct embeeds this call, the program calls
+ * If no TRY/CATCH construct embeds this call, the program calls
  * abort(3). 
  *
  * The THROW can be performed everywhere, including inside TRY, 
