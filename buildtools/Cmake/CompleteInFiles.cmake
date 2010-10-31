@@ -292,7 +292,7 @@ IF(CMAKE_CROSSCOMPILING)
 	ENDIF(WIN32)
 ELSE(CMAKE_CROSSCOMPILING)
 	try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
-		${PROJECT_DIRECTORY}
+		${simgrid_BINARY_DIR}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
 		COMPILE_DEFINITIONS "${mcsc_flags}"
 		OUTPUT_VARIABLE var_compil
@@ -410,7 +410,7 @@ endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 IF(NOT CMAKE_CROSSCOMPILING)
 # Check architecture signature begin
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
-	${PROJECT_DIRECTORY}
+	${simgrid_BINARY_DIR}
 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
 	RUN_OUTPUT_VARIABLE var1
 	)
@@ -482,7 +482,7 @@ endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:")
 
 # Check architecture signature end
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
-	${PROJECT_DIRECTORY}
+	${simgrid_BINARY_DIR}
 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_CHECK_STRUCT_COMPACTION.c
 	RUN_OUTPUT_VARIABLE var2
 	)
@@ -493,7 +493,7 @@ endforeach(var_tmp ${var2})
 
 # Check for [SIZEOF_MAX]
 try_run(RUN_SM_VAR COMPILE_SM_VAR
-	${PROJECT_DIRECTORY}
+	${simgrid_BINARY_DIR}
 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_max_size.c
 	RUN_OUTPUT_VARIABLE var3
 	)
@@ -520,7 +520,7 @@ if(HAVE_MAKECONTEXT OR WIN32)
     	endif(__GNUC__)
     else(WIN32)
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
-		${PROJECT_DIRECTORY}
+		${simgrid_BINARY_DIR}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
@@ -540,7 +540,7 @@ endif(HAVE_MAKECONTEXT OR WIN32)
 ### check for stackgrowth
 if (NOT CMAKE_CROSSCOMPILING)
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
-		${PROJECT_DIRECTORY}
+		${simgrid_BINARY_DIR}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_stackgrowth.c
 		)
 file(READ "${simgrid_BINARY_DIR}/conftestval" stack)
@@ -565,7 +565,7 @@ endif(NOT CMAKE_CROSSCOMPILING)
 
 #AC_PRINTF_NULL
 try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
-	${PROJECT_DIRECTORY}
+	${simgrid_BINARY_DIR}
 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_printf_null.c
 	)
 
@@ -618,7 +618,7 @@ foreach(fct ${diff_va})
 	}"
 	)
 	try_compile(COMPILE_VA_NULL_VAR
-	${PROJECT_DIRECTORY}
+	${simgrid_BINARY_DIR}
 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c
 	)
 	if(COMPILE_VA_NULL_VAR)
@@ -676,7 +676,7 @@ endforeach(fct ${diff_va})
 #--------------------------------------------------------------------------------------------------
 ### check for getline
 try_compile(COMPILE_RESULT_VAR
-	${PROJECT_DIRECTORY}
+	${simgrid_BINARY_DIR}
 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_getline.c
 	)
 
@@ -700,7 +700,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
 		#set(PREFER_PORTABLE_SNPRINTF 1)
 	else(CMAKE_CROSSCOMPILING)
   	    try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
-	  	${PROJECT_DIRECTORY}
+	  	${simgrid_BINARY_DIR}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_snprintf.c
 	    )	
 	endif(CMAKE_CROSSCOMPILING)
@@ -710,7 +710,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
 		set(PREFER_PORTABLE_VSNPRINTF 1)
 	else(CMAKE_CROSSCOMPILING)
   	   try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
-		${PROJECT_DIRECTORY}
+		${simgrid_BINARY_DIR}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_vsnprintf.c
 	   )
 	endif(CMAKE_CROSSCOMPILING)
@@ -750,14 +750,12 @@ endif(ADDR2LINE)
 
 ### File to create
 
-configure_file("${PROJECT_DIRECTORY}/src/context_sysv_config.h.in" 			"${PROJECT_DIRECTORY}/src/context_sysv_config.h" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/src/context_sysv_config.h.in" 			"${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/gras_config.h.in" 	"${PROJECT_DIRECTORY}/src/gras_config.h" @ONLY IMMEDIATE)
-configure_file("${PROJECT_DIRECTORY}/src/gras_config.h" 				"${PROJECT_DIRECTORY}/src/gras_config.h" @ONLY IMMEDIATE)
-configure_file("${PROJECT_DIRECTORY}/include/simgrid_config.h.in" 			"${PROJECT_DIRECTORY}/include/simgrid_config.h" @ONLY IMMEDIATE)
-#configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/tracing_config.h.in" 	"${PROJECT_DIRECTORY}/include/instr/tracing_config.h" @ONLY IMMEDIATE)
-#configure_file("${PROJECT_DIRECTORY}/include/instr/tracing_config.h" 		"${PROJECT_DIRECTORY}/include/instr/tracing_config.h" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/gras_config.h.in" 	"${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h" 			"${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
+configure_file("${PROJECT_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
 
 set(top_srcdir "${PROJECT_DIRECTORY}")
 set(srcdir "${PROJECT_DIRECTORY}/src")
