@@ -285,24 +285,31 @@ if(WIN32)
 	endif(__GNUC__)
 endif(WIN32)
 
-try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
-	${PROJECT_DIRECTORY}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
-	COMPILE_DEFINITIONS "${mcsc_flags}"
-	OUTPUT_VARIABLE var_compil
-	)
-
-if(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
-	file(READ "${simgrid_BINARY_DIR}/conftestval" mcsc)
-	STRING(REPLACE "\n" "" mcsc "${mcsc}")
-	if(mcsc)
-		set(mcsc "yes")
-	elseif(mcsc)
-		set(mcsc "no")
-	endif(mcsc)
-else(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
-	set(mcsc "no")
-endif(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
+IF(CMAKE_CROSSCOMPILING)
+	IF(WIN32)
+		set(windows_context "yes")
+		set(IS_WINDOWS 1)	
+	ENDIF(WIN32)
+ELSE(CMAKE_CROSSCOMPILING)
+	try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
+		${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
+		COMPILE_DEFINITIONS "${mcsc_flags}"
+		OUTPUT_VARIABLE var_compil
+		)
+		
+		if(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
+			file(READ "${simgrid_BINARY_DIR}/conftestval" mcsc)
+			STRING(REPLACE "\n" "" mcsc "${mcsc}")
+			if(mcsc)
+				set(mcsc "yes")
+			elseif(mcsc)
+				set(mcsc "no")
+			endif(mcsc)
+	        else(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
+			set(mcsc "no")
+		endif(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
+ENDIF(CMAKE_CROSSCOMPILING)
 
 if(mcsc MATCHES "no" AND pthread)
 	if(HAVE_WINDOWS_H)
@@ -400,6 +407,7 @@ endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 ## SimGrid and GRAS specific checks
 ##
 
+IF(NOT CMAKE_CROSSCOMPILING)
 # Check architecture signature begin
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 	${PROJECT_DIRECTORY}
@@ -407,11 +415,11 @@ try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 	RUN_OUTPUT_VARIABLE var1
 	)
 if(BIGENDIAN)
-set(val_big "B${var1}")
-set(GRAS_BIGENDIAN 1)
+  set(val_big "B${var1}")
+  set(GRAS_BIGENDIAN 1)
 else(BIGENDIAN)
-set(val_big "l${var1}")
-set(GRAS_BIGENDIAN 0)
+  set(val_big "l${var1}")
+  set(GRAS_BIGENDIAN 0)
 endif(BIGENDIAN)
 
 if(val_big MATCHES "l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1:")
@@ -490,6 +498,7 @@ try_run(RUN_SM_VAR COMPILE_SM_VAR
 	RUN_OUTPUT_VARIABLE var3
 	)
 SET(SIZEOF_MAX ${var3})
+ENDIF(NOT CMAKE_CROSSCOMPILING)
 
 #--------------------------------------------------------------------------------------------------
 
@@ -507,10 +516,9 @@ if(HAVE_MAKECONTEXT OR WIN32)
     	endif(__VISUALC__)
     	if(__GNUC__)
     	    set(makecontext_CPPFLAGS "-DTEST_makecontext")
-    		set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt")
+    	    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt")
     	endif(__GNUC__)
-    endif(WIN32)
-
+    else(WIN32)
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${PROJECT_DIRECTORY}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
@@ -524,12 +532,13 @@ if(HAVE_MAKECONTEXT OR WIN32)
 	string(REPLACE "," "" makecontext_size "${MAKECONTEXT_SIZE}")	
 	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
 	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
+    endif(WIN32)
 endif(HAVE_MAKECONTEXT OR WIN32)
 
 #--------------------------------------------------------------------------------------------------
 
 ### check for stackgrowth
-
+if (NOT CMAKE_CROSSCOMPILING)
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${PROJECT_DIRECTORY}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_stackgrowth.c
@@ -542,6 +551,7 @@ if(stack MATCHES "up")
 	set(PTH_STACKGROWTH "1")
 endif(stack MATCHES "up")
 
+endif(NOT CMAKE_CROSSCOMPILING)
 ###############
 ## System checks
 ##
@@ -685,21 +695,26 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
         #set(HAVE_VSNPRINTF 1)
     endif(WIN32)
     
-	try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
-		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_snprintf.c
-		)
 	if(CMAKE_CROSSCOMPILING)
-		set(RUN_SNPRINTF_FUNC "cross") 
+		set(RUN_SNPRINTF_FUNC "cross")
+		#set(PREFER_PORTABLE_SNPRINTF 1)
+	else(CMAKE_CROSSCOMPILING)
+  	    try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
+	  	${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_snprintf.c
+	    )	
 	endif(CMAKE_CROSSCOMPILING)
 
-	try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
-		${PROJECT_DIRECTORY}
-		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_vsnprintf.c
-		)
 	if(CMAKE_CROSSCOMPILING)
 		set(RUN_VSNPRINTF_FUNC "cross")
+		set(PREFER_PORTABLE_VSNPRINTF 1)
+	else(CMAKE_CROSSCOMPILING)
+  	   try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
+		${PROJECT_DIRECTORY}
+		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_vsnprintf.c
+	   )
 	endif(CMAKE_CROSSCOMPILING)
+	
 	set(PREFER_PORTABLE_SNPRINTF 0)
 	if(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
 		set(PREFER_PORTABLE_SNPRINTF 1)
