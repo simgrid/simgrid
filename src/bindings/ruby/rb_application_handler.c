@@ -32,7 +32,7 @@ static void rb_process_create_with_args(VALUE fct_name, VALUE arguments,
 
   VALUE ruby_process =
       rb_process_instance(fct_name, arguments, properties);
-  m_process_t process;          // Native Process to Create
+  m_process_t process = NULL;          // Native Process to Create
   const char *name;             // Name of C Native Processs
 
 
