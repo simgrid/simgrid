@@ -414,7 +414,7 @@ include/gras/timer.h
 include/amok/peermanagement.h
 include/amok/bandwidth.h
 include/instr/instr.h
-include/simgrid_config.h
+${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
 include/gras.h 
 include/xbt.h
 )

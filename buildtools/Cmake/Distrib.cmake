@@ -50,6 +50,7 @@ endif(enable_smpi)
 # include files
 foreach(file ${install_HEADERS})
   get_filename_component(location ${file} PATH)
+  string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/" "" location "${location}")
   install(FILES ${file}
           DESTINATION $ENV{DESTDIR}${prefix}/${location})
 endforeach(file ${install_HEADERS})
