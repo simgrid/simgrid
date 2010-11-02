@@ -1,10 +1,9 @@
 #! /bin/sh
-echo "\n"
-export CLASSPATH=$3:$3/simgrid.jar:$CLASSPATH
-export LD_LIBRARY_PATH=$3/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$3/lib
+export JAVA_LIBRARY_PATH=$JAVA_LIBRARY_PATH:$3/lib
 cd $1
-echo "CLASSPATH 	= $CLASSPATH"
-echo "LD_LIBRARY_PATH 	= $LD_LIBRARY_PATH"
+echo "LD_LIBRARY_PATH   = $LD_LIBRARY_PATH"
+echo "JAVA_LIBRARY_PATH = $JAVA_LIBRARY_PATH"
 pwd
-echo "java $2 *platform.xml *deployment.xml"
-java $2 *platform.xml *deployment.xml
+echo "java -cp .:$3/simgrid.jar $2 *platform.xml *deployment.xml"
+java -cp .:$3/simgrid.jar $2 *platform.xml *deployment.xml
