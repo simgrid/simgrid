@@ -410,29 +410,32 @@ static int gras_generate(lua_State * L)
  **********************************/
 static int trace_start(lua_State *L)
 {
-	TRACE_start();
-	return 1;
+  TRACE_start();
+  return 1;
 }
 
 static int trace_category(lua_State * L)
 {
-	const char * category = luaL_checkstring(L, 1);
-	TRACE_category(category);
-	return 1;
+  /* _XBT_GNUC_UNUSED to pass compilation in paranoid mode without tracing
+   * support, where TRACE_category(x) is preprocessed to nothing. */
+  const char *category _XBT_GNUC_UNUSED = luaL_checkstring(L, 1);
+  TRACE_category(category);
+  return 1;
 }
 
 static int trace_set_task_category(lua_State *L)
 {
-	m_task_t tk = checkTask(L, -2);
-	const char *category = luaL_checkstring(L, -1);
-	TRACE_msg_set_task_category(tk,category);
-	return 1;
+  /* _XBT_GNUC_UNUSED as above */
+  m_task_t tk _XBT_GNUC_UNUSED = checkTask(L, -2);
+  const char *category _XBT_GNUC_UNUSED = luaL_checkstring(L, -1);
+  TRACE_msg_set_task_category(tk, category);
+  return 1;
 }
 
 static int trace_end(lua_State *L)
 {
-	TRACE_end();
-	return 1;
+  TRACE_end();
+  return 1;
 }
 //***********Register Methods *******************************************//
 /*
