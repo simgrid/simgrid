@@ -41,9 +41,10 @@
 <!ATTLIST cluster power CDATA #REQUIRED>
 <!ATTLIST cluster bw CDATA #REQUIRED>
 <!ATTLIST cluster lat CDATA #REQUIRED>
+<!ATTLIST cluster sharing_policy (SHARED|FULLDUPLEX|FATPIPE) "SHARED">
 <!ATTLIST cluster bb_bw CDATA #REQUIRED>
 <!ATTLIST cluster bb_lat CDATA #REQUIRED>
-<!ATTLIST cluster sharing_policy (SHARED|FULLDUPLEX) "SHARED">
+<!ATTLIST cluster bb_sharing_policy (SHARED|FATPIPE) "SHARED">
 
 <!ELEMENT router EMPTY>
 <!ATTLIST router id CDATA #REQUIRED>

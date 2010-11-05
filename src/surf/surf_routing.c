@@ -2948,11 +2948,7 @@ static void routing_parse_Scluster(void)
   xbt_dynar_t radical_elements;
   xbt_dynar_t radical_ends;
   int cluster_sharing_policy = AX_surfxml_cluster_sharing_policy;
-
-  if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
-  {DEBUG0("cluster with sharing_policy FULLDUPLEX");}
-  if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_SHARED)
-  {DEBUG0("cluster with sharing_policy SHARED");}
+  int cluster_bb_sharing_policy = AX_surfxml_cluster_bb_sharing_policy;
 
 #ifndef HAVE_PCRE_LIB
   xbt_dynar_t tab_elements_num = xbt_dynar_new(sizeof(int), NULL);
@@ -3005,6 +3001,8 @@ static void routing_parse_Scluster(void)
       A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
       if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
 	  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
+      if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
+	  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
       SURFXML_BUFFER_SET(link_id, link_id);
       SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
       SURFXML_BUFFER_SET(link_latency, cluster_lat);
@@ -3044,6 +3042,8 @@ static void routing_parse_Scluster(void)
         A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
         if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
   	    {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
+        if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
+  	    {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
         SURFXML_BUFFER_SET(link_id, link_id);
         SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
         SURFXML_BUFFER_SET(link_latency, cluster_lat);
@@ -3079,6 +3079,8 @@ static void routing_parse_Scluster(void)
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
   if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
   {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
+  if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
+  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
   SURFXML_BUFFER_SET(link_id, link_router);
   SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
   SURFXML_BUFFER_SET(link_latency, cluster_lat);
@@ -3091,6 +3093,8 @@ static void routing_parse_Scluster(void)
   DEBUG3("<link\tid=\"%s\" bw=\"%s\" lat=\"%s\"/>", link_backbone,cluster_bw, cluster_lat);
   A_surfxml_link_state = A_surfxml_link_state_ON;
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+  if(cluster_bb_sharing_policy == A_surfxml_cluster_bb_sharing_policy_FATPIPE)
+  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
   SURFXML_BUFFER_SET(link_id, link_backbone);
   SURFXML_BUFFER_SET(link_bandwidth, cluster_bb_bw);
   SURFXML_BUFFER_SET(link_latency, cluster_bb_lat);
@@ -3139,7 +3143,7 @@ static void routing_parse_Scluster(void)
   SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_$1dst", cluster_id));
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
-  {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_UP;}
+  {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_DOWN;}
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
@@ -3191,6 +3195,7 @@ static void routing_parse_Scluster(void)
 
       DEBUG1("<link_ctn\tid=\"%s\"/>", route_src);
       SURFXML_BUFFER_SET(link_ctn_id, route_src);
+      A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
       if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
       {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_UP;}
       SURFXML_START_TAG(link_ctn);
@@ -3198,13 +3203,15 @@ static void routing_parse_Scluster(void)
 
       DEBUG1("<link_ctn\tid=\"%s_backbone\"/>", cluster_id);
       SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_backbone", cluster_id));
+      A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
       SURFXML_START_TAG(link_ctn);
       SURFXML_END_TAG(link_ctn);
 
       DEBUG1("<link_ctn\tid=\"%s\"/>", route_dst);
       SURFXML_BUFFER_SET(link_ctn_id, route_dst);
+      A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
       if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
-      {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_UP;}
+      {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_DOWN;}
       SURFXML_START_TAG(link_ctn);
       SURFXML_END_TAG(link_ctn);
 
