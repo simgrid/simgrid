@@ -168,6 +168,7 @@ void TRACE_smpi_recv(int rank, int src, int dst);
 /* from instr_config.c */
 int TRACE_is_configured(void);
 int TRACE_smpi_is_enabled(void);
+int TRACE_smpi_is_grouped(void);
 int TRACE_platform_is_enabled(void);
 int TRACE_msg_task_is_enabled(void);
 int TRACE_msg_process_is_enabled(void);

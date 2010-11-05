@@ -10,6 +10,7 @@
 #ifdef HAVE_TRACING
 
 #define OPT_TRACING_SMPI          "tracing/smpi"
+#define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
 #define OPT_TRACING_PLATFORM      "tracing/platform"
 #define OPT_TRACING_MSG_TASK      "tracing/msg/task"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
@@ -27,6 +28,11 @@ int TRACE_is_configured(void)
 int TRACE_smpi_is_enabled(void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
+}
+
+int TRACE_smpi_is_grouped(void)
+{
+  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
 }
 
 int TRACE_platform_is_enabled(void)
@@ -74,6 +80,14 @@ void TRACE_global_init(int *argc, char **argv)
                    "Tracing of the SMPI interface.",
                    xbt_cfgelm_int, &default_tracing_smpi, 0, 1,
                    NULL, NULL);
+
+  /* smpi grouped */
+  int default_tracing_smpi_grouped = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_SMPI_GROUP,
+                   "Group MPI processes by host.",
+                   xbt_cfgelm_int, &default_tracing_smpi_grouped, 0, 1,
+                   NULL, NULL);
+
 
   /* platform */
   int default_tracing_platform = 0;

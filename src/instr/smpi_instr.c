@@ -77,8 +77,13 @@ void TRACE_smpi_init(int rank)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   TRACE_smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  pajeCreateContainer(SIMIX_get_clock(), str, "MPI_PROCESS",
+  if (TRACE_smpi_is_grouped()){
+    pajeCreateContainer(SIMIX_get_clock(), str, "MPI_PROCESS",
                       SIMIX_host_get_name(SIMIX_host_self()), str);
+  }else{
+    pajeCreateContainer(SIMIX_get_clock(), str, "MPI_PROCESS",
+                      "platform", str);
+  }
 }
 
 void TRACE_smpi_finalize(int rank)
