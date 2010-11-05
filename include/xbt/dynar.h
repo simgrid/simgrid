@@ -105,6 +105,8 @@ XBT_PUBLIC(unsigned int) xbt_dynar_search(xbt_dynar_t const dynar,
 XBT_PUBLIC(int) xbt_dynar_member(xbt_dynar_t const dynar, void *elem);
 XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar,
                                 int_f_cpvoid_cpvoid_t compar_fn);
+XBT_INLINE int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
+					int(*compar)(const void *, const void *));
 
 /** @} */
 /** @defgroup XBT_dynar_perl Perl-like use of dynars

@@ -2507,12 +2507,13 @@ static void generic_set_route(routing_component_t rc, const char *src,
               "Invalid count of links, must be greater than zero (%s,%s)",
               src, dst);
 
-  if( compare_routes(route,xbt_dict_get_or_null(_parse_routes, route_name)) )
-	  xbt_die(bprintf("The route between \"%s\" and \"%s\" already exist", src,dst));
-
-//  xbt_assert2(!xbt_dict_get_or_null(_parse_routes, route_name),
-//              "The route between \"%s\" and \"%s\" already exist", src,
-//              dst);
+  route_t route_to_test = xbt_dict_get_or_null(_parse_routes, route_name);
+  if(route_to_test)
+  xbt_assert2(xbt_dynar_compare(
+		  (void*)route->link_list,
+		  (void*)route_to_test->link_list,
+		  (int_f_cpvoid_cpvoid_t) strcmp),
+	  "The route between \"%s\" and \"%s\" already exist", src,dst);
 
   xbt_dict_set(_parse_routes, route_name, route, NULL);
   xbt_free(route_name);
@@ -2529,8 +2530,13 @@ static void generic_set_route(routing_component_t rc, const char *src,
 		 xbt_dynar_push_as(route_sym->link_list ,char *, link_name);
 	  }
 	  DEBUG2("Load Route from \"%s\" to \"%s\"", dst, src);
-	  if( compare_routes(route_sym,xbt_dict_get_or_null(_parse_routes, bprintf("%d#%d",*dst_id, *src_id))) )
-		  xbt_die(bprintf("The route between \"%s\" and \"%s\" already exist", dst,src));
+	  route_to_test = xbt_dict_get_or_null(_parse_routes, bprintf("%d#%d",*dst_id, *src_id));
+	  if(route_to_test)
+	  xbt_assert2(xbt_dynar_compare(
+			  (void*)route_sym->link_list,
+			  (void*)route_to_test->link_list,
+			  (int_f_cpvoid_cpvoid_t) strcmp),
+		  "The route between \"%s\" and \"%s\" already exist", dst,src);
 	  xbt_dict_set(_parse_routes, bprintf("%d#%d",*dst_id, *src_id), route_sym, NULL);
    }
 }
@@ -2560,9 +2566,14 @@ static void generic_set_ASroute(routing_component_t rc, const char *src,
               "Invalid count of links, must be greater than zero (%s,%s)",
               src, dst);
 
-  if( compare_routes((route_t) &(e_route->generic_route),xbt_dict_get_or_null(_parse_routes, route_name)) )
-  xbt_die(bprintf("The route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exist",
-              src, e_route->src_gateway, dst, e_route->dst_gateway));
+  route_t route_to_test = xbt_dict_get_or_null(_parse_routes, route_name);
+  if(route_to_test)
+  xbt_assert4(xbt_dynar_compare(
+		  (void*) (&e_route->generic_route)->link_list,
+		  (void*) route_to_test->link_list,
+		  (int_f_cpvoid_cpvoid_t) strcmp),
+		  "The route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exist",
+		                src, e_route->src_gateway, dst, e_route->dst_gateway);
 
   xbt_dict_set(_parse_routes, route_name, e_route, NULL);
   xbt_free(route_name);
@@ -2585,9 +2596,14 @@ static void generic_set_ASroute(routing_component_t rc, const char *src,
 	  route_sym->dst_gateway = bprintf("%s",e_route->src_gateway);
 	  DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",dst, route_sym->src_gateway,src,route_sym->dst_gateway);
 
-	  if( compare_routes((route_t) &(route_sym->generic_route),xbt_dict_get_or_null(_parse_routes,bprintf("%d#%d", *dst_id, *src_id))) )
-	  xbt_die(bprintf("The route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exist",
-	              dst, route_sym->src_gateway, src, route_sym->dst_gateway));
+	  route_to_test = xbt_dict_get_or_null(_parse_routes, bprintf("%d#%d", *dst_id, *src_id));
+	  if(route_to_test)
+	  xbt_assert4(xbt_dynar_compare(
+			  (void*) (&route_sym->generic_route)->link_list,
+			  (void*) route_to_test->link_list,
+			  (int_f_cpvoid_cpvoid_t) strcmp),
+			  "The route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exist",
+			  	              dst, route_sym->src_gateway, src, route_sym->dst_gateway);
 
 	  xbt_dict_set(_parse_routes, bprintf("%d#%d", *dst_id, *src_id), route_sym, NULL);
    }
@@ -3293,27 +3309,4 @@ void routing_set_route(const char *src_id, const char *dst_id)
 void routing_store_route(void)
 {
   parse_E_route_store_route();
-}
-
-/*
- * Compare two routes to know if the second route is in the table.
- *  route1 : route to store
- *  route2 : old route in the table
- */
-int compare_routes(route_t route1, route_t route2)
-{
-	if(!route2) return 0;
-	if(xbt_dynar_length(route1->link_list) == xbt_dynar_length(route2->link_list))
-	{
-		  int i;
-		  int nb_links = xbt_dynar_length(route1->link_list);
-		  for(i=0 ; i<nb_links ; i++)
-		  {
-			 char *link_name1 = xbt_dynar_get_as(route1->link_list, i, char *);
-			 char *link_name2 = xbt_dynar_get_as(route2->link_list, i, char *);
-			 if(strcmp(link_name1,link_name2)) return 1;
-		  }
-		  return 0;
-	}
-	return 1;
 }
