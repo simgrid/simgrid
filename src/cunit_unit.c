@@ -8,7 +8,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-#line 835 "xbt/cunit.c" 
+#line 826 "xbt/cunit.c" 
 
 
 XBT_TEST_UNIT("expect", test_expected_failure, "expected failures")
