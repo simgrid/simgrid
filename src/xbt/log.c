@@ -372,10 +372,17 @@ library itself, or test programs doing strange things) do not display the
 process identity (thus, fmt is '[%%r] %%l: [%%c/%%p] %%m%%n' in that case, and '[%%r]
 [%%c/%%p] %%m%%n' if they are at priority INFO).
 
-For now, there is only one format modifier: the precision field. You
-can for example specify %.4r to get the application age with 4
-numbers after the radix. Another limitation is that you cannot set
-specific layouts to the several priorities.
+For now, there is only two format modifiers: the precision and the
+width fields. You can for example specify %.4r to get the application
+age with 4 numbers after the radix, or %15p to get the process name
+on 15 columns. Finally, you can specify %10.6r to get the time on at
+most 10 columns, with 6 numbers after the radix. 
+
+Note that when specifying the width, it is filled with spaces. That
+is to say that for example %5r in your format is converted to "% 5f"
+for printf (note the extra space); there is no way to fill the empty
+columns with 0 (ie, pass "%05f" to printf). Another limitation is
+that you cannot set specific layouts to the several priorities.
 
 \subsection log_use_conf_app 3.1.4 Category appender
 
