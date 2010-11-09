@@ -170,6 +170,7 @@ int TRACE_is_configured(void);
 int TRACE_smpi_is_enabled(void);
 int TRACE_smpi_is_grouped(void);
 int TRACE_platform_is_enabled(void);
+int TRACE_uncategorized (void);
 int TRACE_msg_task_is_enabled(void);
 int TRACE_msg_process_is_enabled(void);
 int TRACE_msg_volume_is_enabled(void);

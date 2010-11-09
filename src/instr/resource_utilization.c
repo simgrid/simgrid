@@ -414,8 +414,10 @@ void TRACE_surf_host_set_utilization(const char *name,
     return;
 
   //trace uncategorized host utilization
-  TRACE_surf_resource_utilization_event(smx_action, now, delta,
+  if (TRACE_uncategorized()){
+    TRACE_surf_resource_utilization_event(smx_action, now, delta,
                                         "power_used", name, value);
+  }
 
   //trace categorized utilization
   if (!IS_TRACED(surf_action))

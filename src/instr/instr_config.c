@@ -12,6 +12,7 @@
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
 #define OPT_TRACING_PLATFORM      "tracing/platform"
+#define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_TASK      "tracing/msg/task"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
 #define OPT_TRACING_MSG_VOLUME    "tracing/msg/volume"
@@ -38,6 +39,11 @@ int TRACE_smpi_is_grouped(void)
 int TRACE_platform_is_enabled(void)
 {
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_PLATFORM);
+}
+
+int TRACE_uncategorized (void)
+{
+  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_UNCATEGORIZED);
 }
 
 int TRACE_msg_task_is_enabled(void)
@@ -94,6 +100,13 @@ void TRACE_global_init(int *argc, char **argv)
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM,
                    "Tracing of categorized platform (host and link) utilization.",
                    xbt_cfgelm_int, &default_tracing_platform, 0, 1,
+                   NULL, NULL);
+
+  /* tracing uncategorized resource utilization */
+  int default_tracing_uncategorized = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_UNCATEGORIZED,
+                   "Tracing of uncategorized resource (host and link) utilization.",
+                   xbt_cfgelm_int, &default_tracing_uncategorized, 0, 1,
                    NULL, NULL);
 
   /* platform method */
