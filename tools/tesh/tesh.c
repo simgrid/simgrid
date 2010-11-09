@@ -192,18 +192,18 @@ int main(int argc, char *argv[])
   FILE *FICIN = NULL;
   int i;
   char *suitename = NULL;
-
-  /* Ignore pipe issues.
-     They will show up when we try to send data to dead buddies,
-     but we will stop doing so when we're done with provided input */
   struct sigaction newact;
-  memset(&newact, 0, sizeof(newact));
-  newact.sa_handler = SIG_IGN;
-  sigaction(SIGPIPE, &newact, NULL);
 
   xbt_init(&argc, argv);
   rctx_init();
   parse_environ();
+
+  /* Ignore pipe issues.
+     They will show up when we try to send data to dead buddies,
+     but we will stop doing so when we're done with provided input */
+  memset(&newact, 0, sizeof(newact));
+  newact.sa_handler = SIG_IGN;
+  sigaction(SIGPIPE, &newact, NULL);
 
   /* Get args */
   for (i = 1; i < argc; i++) {
@@ -258,5 +258,6 @@ int main(int argc, char *argv[])
   }
 
   rctx_exit();
+  xbt_dict_free(&env);
   return 0;
 }

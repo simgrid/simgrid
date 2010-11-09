@@ -20,11 +20,16 @@ int fg_job = 0;
 xbt_dynar_t bg_jobs = NULL;
 rctx_t armageddon_initiator = NULL;
 xbt_os_mutex_t armageddon_mutex = NULL;
-pid_t father_pid;
 struct {
   int num;
   struct sigaction act;
 } oldact[3];                    /* SIGINT, SIGQUIT, SIGTERM */
+
+xbt_os_thread_t sigwaiter_thread;
+xbt_os_mutex_t sigwaiter_mutex;
+xbt_os_cond_t sigwaiter_cond;
+int armageddon_requested = 0;
+int caught_signum = 0;
 
 /*
  * Module management
@@ -32,10 +37,26 @@ struct {
 
 static void armageddon_sighandler(int signum)
 {
-  if (getpid() == father_pid) {
-    ERROR2("Test suite `%s': caught signal %d", testsuite_name, signum);
+  xbt_os_mutex_acquire(sigwaiter_mutex);
+  caught_signum = signum;
+  armageddon_requested = 1;
+  xbt_os_cond_signal(sigwaiter_cond);
+  xbt_os_mutex_release(sigwaiter_mutex);
+}
+
+static void *armageddon_sigwaiter(_XBT_GNUC_UNUSED void *arg)
+{
+  xbt_os_mutex_acquire(sigwaiter_mutex);
+  /* Inform main thread that it started. */
+  xbt_os_cond_signal(sigwaiter_cond);
+  /* Wait for ending signal... */
+  xbt_os_cond_wait(sigwaiter_cond, sigwaiter_mutex);
+  if (armageddon_requested) {
+    ERROR2("Test suite `%s': caught signal %d", testsuite_name, caught_signum);
     rctx_armageddon(rctx, 3);
   }
+  xbt_os_mutex_release(sigwaiter_mutex);
+  return NULL;
 }
 
 static void wait_it(rctx_t rctx)
@@ -60,7 +81,14 @@ void rctx_init(void)
   bg_jobs = xbt_dynar_new_sync(sizeof(rctx_t), kill_it);
   armageddon_mutex = xbt_os_mutex_init();
   armageddon_initiator = NULL;
-  father_pid = getpid();
+  sigwaiter_mutex = xbt_os_mutex_init();
+  sigwaiter_cond = xbt_os_cond_init();
+  xbt_os_mutex_acquire(sigwaiter_mutex);
+  sigwaiter_thread = xbt_os_thread_create("Armaggedon request waiter",
+                                          armageddon_sigwaiter, NULL);
+  /* Wait for thread to start... */
+  xbt_os_cond_wait(sigwaiter_cond, sigwaiter_mutex);
+  xbt_os_mutex_release(sigwaiter_mutex);
   memset(&newact, 0, sizeof(newact));
   newact.sa_handler = armageddon_sighandler;
   oldact[0].num = SIGINT;
@@ -84,8 +112,12 @@ void rctx_exit(void)
   }
   for (i = 0; i < 3; i++)
     sigaction(oldact[i].num, &oldact[i].act, NULL);
+  xbt_os_cond_signal(sigwaiter_cond);
+  xbt_os_thread_join(sigwaiter_thread, NULL);
   if (bg_jobs)
     xbt_dynar_free(&bg_jobs);
+  xbt_os_cond_destroy(sigwaiter_cond);
+  xbt_os_mutex_destroy(sigwaiter_mutex);
   xbt_os_mutex_destroy(armageddon_mutex);
 }
 
@@ -131,7 +163,6 @@ void rctx_armageddon(rctx_t initiator, int exitcode)
   xbt_os_mutex_acquire(armageddon_mutex);
   if (armageddon_initiator != NULL) {
     VERB0("Armageddon already started. Let it go");
-    xbt_os_mutex_release(initiator->interruption);
     xbt_os_mutex_release(armageddon_mutex);
     return;
   }
@@ -160,7 +191,7 @@ void rctx_armageddon(rctx_t initiator, int exitcode)
 void rctx_empty(rctx_t rc)
 {
   int i;
-  char **env_it = environ;
+  char **env_it;
   void *filepos;
 
   if (rc->cmd)
@@ -171,14 +202,15 @@ void rctx_empty(rctx_t rc)
   rc->filepos = NULL;
   if (filepos)
     free(filepos);
-  if (rc->env)
+  for (i = 0, env_it = environ; *env_it; i++, env_it++);
+  if (rc->env) {
+    for (env_it = rctx->env + i; *env_it; env_it++)
+      free(*env_it);
     free(rc->env);
-
-  for (i = 0; *env_it; i++, env_it++);
-  i++;
-  rc->env_size = i;
-  rc->env = malloc(i * sizeof(char *));
-  memcpy(rc->env, environ, i * sizeof(char *));
+  }
+  rc->env_size = i + 1;
+  rc->env = malloc(rc->env_size * sizeof(char *));
+  memcpy(rc->env, environ, rc->env_size * sizeof(char *));
 
   rc->is_empty = 1;
   rc->is_background = 0;
@@ -216,8 +248,14 @@ void rctx_free(rctx_t rctx)
     free(rctx->cmd);
   if (rctx->filepos)
     free(rctx->filepos);
-  if (rctx->env)
+  if (rctx->env) {
+    int i;
+    char **env_it;
+    for (i = 0, env_it = environ; *env_it; i++, env_it++);
+    for (env_it = rctx->env + i; *env_it; env_it++)
+      free(*env_it);
     free(rctx->env);
+  }
   xbt_os_mutex_destroy(rctx->interruption);
   xbt_strbuff_free(rctx->input);
   xbt_strbuff_free(rctx->output_got);
@@ -319,6 +357,7 @@ void rctx_pushline(const char *filepos, char kind, char *line)
       char *eq = strchr(line + len, '=');
       char *key = bprintf("%.*s", (int) (eq - line - len), line + len);
       xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
+      free(key);
 
       rctx->env = realloc(rctx->env, ++(rctx->env_size) * sizeof(char *));
       rctx->env[rctx->env_size - 2] = xbt_strdup(line + len);
@@ -415,42 +454,57 @@ static void *thread_reader(void *r)
   return NULL;
 }
 
-/* Special command: mkfile is a building creating a file with the input data as content */
+/* Special command: mkfile is a built-in creating a file with the input data as content */
 static void rctx_mkfile(void)
 {
   char *filename = xbt_strdup(rctx->cmd + strlen("mkfile "));
   FILE *OUT;
+  int err;
   xbt_str_trim(filename, NULL);
   OUT = fopen(filename, "w");
   if (!OUT) {
-    free(filename);
     THROW3(system_error, errno, "%s: Cannot create file %s: %s",
            rctx->filepos, filename, strerror(errno));
   }
-  fprintf(OUT, "%s", rctx->input->data);
-  fclose(OUT);
+  err = (fprintf(OUT, "%s", rctx->input->data) < 0);
+  err = (fclose(OUT) == -1) || err;
+  if (err) {
+    THROW3(system_error, errno, "%s: Cannot write file %s: %s",
+           rctx->filepos, filename, strerror(errno));
+  }
+  free(filename);
 }
 
 /* function to be called from the child to start the actual process */
 static void start_command(rctx_t rctx)
 {
-  xbt_dynar_t cmd = xbt_str_split_quoted(rctx->cmd);
+  xbt_dynar_t cmd;
   char *binary_name = NULL;
   unsigned int it;
   char *str;
-  xbt_dynar_get_cpy(cmd, 0, &binary_name);
-  char **args = xbt_new(char *, xbt_dynar_length(cmd) + 1);
+  char **args;
   int errcode;
 
   if (!strncmp(rctx->cmd, "mkfile ", strlen("mkfile "))) {
     rctx_mkfile();
+    /* Valgrind detects memory leaks here.
+     * To correct those leaks, we must free objects allocated in main() or in
+     * handle_suite(), but we have no more reference to them at this point.
+     * A quick and dirty hack to make valgrind happy it to uncomment the
+     * following line.
+     */
+    /* execlp("true", "true", (const char *)0); */
     exit(0);                    /* end the working child */
   }
 
+  cmd = xbt_str_split_quoted(rctx->cmd);
+  xbt_dynar_get_cpy(cmd, 0, &binary_name);
+  args = xbt_new(char *, xbt_dynar_length(cmd) + 1);
   xbt_dynar_foreach(cmd, it, str) {
     args[it] = xbt_strdup(str);
   }
   args[it] = NULL;
+  xbt_dynar_free_container(&cmd);
 
   /* To search for the right executable path when not trivial */
   struct stat stat_buf;
@@ -548,8 +602,6 @@ void rctx_start(void)
         xbt_os_thread_create("writer", thread_writer, (void *) rctx);
 
   } else {                      /* child */
-    xbt_os_mutex_release(armageddon_mutex);
-
     close(child_in[1]);
     dup2(child_in[0], 0);
     close(child_in[0]);
@@ -652,6 +704,7 @@ void *rctx_wait(void *r)
            testsuite_name, rctx->filepos, timeout_value);
     DEBUG2("<%s> Interrupted = %d", rctx->filepos, rctx->interrupted);
     if (!rctx->interrupted) {
+      xbt_os_mutex_release(rctx->interruption);
       rctx_armageddon(rctx, 3);
       return NULL;
     }
@@ -759,8 +812,8 @@ void *rctx_wait(void *r)
   }
   if (errcode) {
     if (!rctx->interrupted) {
-      rctx_armageddon(rctx, errcode);
       xbt_os_mutex_release(rctx->interruption);
+      rctx_armageddon(rctx, errcode);
       return NULL;
     }
   }
