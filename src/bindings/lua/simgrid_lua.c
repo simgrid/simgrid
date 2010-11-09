@@ -416,19 +416,13 @@ static int trace_start(lua_State *L)
 
 static int trace_category(lua_State * L)
 {
-  /* _XBT_GNUC_UNUSED to pass compilation in paranoid mode without tracing
-   * support, where TRACE_category(x) is preprocessed to nothing. */
-  const char *category _XBT_GNUC_UNUSED = luaL_checkstring(L, 1);
-  TRACE_category(category);
+  TRACE_category(luaL_checkstring(L, 1));
   return 1;
 }
 
 static int trace_set_task_category(lua_State *L)
 {
-  /* _XBT_GNUC_UNUSED as above */
-  m_task_t tk _XBT_GNUC_UNUSED = checkTask(L, -2);
-  const char *category _XBT_GNUC_UNUSED = luaL_checkstring(L, -1);
-  TRACE_msg_set_task_category(tk, category);
+  TRACE_msg_set_task_category(checkTask(L, -2), luaL_checkstring(L, -1));
   return 1;
 }
 
