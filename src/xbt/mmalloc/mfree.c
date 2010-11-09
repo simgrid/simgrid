@@ -179,7 +179,6 @@ void mfree(void *md, void *ptr)
 
   if (ptr != NULL) {
     mdp = MD_TO_MDP(md);
-    LOCK(mdp);
     for (l = mdp->aligned_blocks; l != NULL; l = l->next) {
       if (l->aligned == ptr) {
         l->aligned = NULL;      /* Mark the slot in the list as free. */
@@ -192,6 +191,5 @@ void mfree(void *md, void *ptr)
     } else {
       __mmalloc_free(mdp, ptr);
     }
-    UNLOCK(mdp);
   }
 }

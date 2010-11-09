@@ -28,14 +28,22 @@
    region we are about to unmap, so we first make a local copy of it on the
    stack and use the copy. */
 
+void mmalloc_pre_detach(void *md)
+{
+  struct mdesc *mdp = md;
+  xbt_os_mutex_t mutex = mdp->mutex;
+  mdp->mutex = NULL;
+  xbt_os_mutex_destroy(mutex);
+}
+
 void *mmalloc_detach(void *md)
 {
   struct mdesc mtemp;
 
   if (md != NULL) {
 
+    mmalloc_pre_detach(md);
     mtemp = *(struct mdesc *) md;
-    xbt_os_mutex_destroy(((struct mdesc *) md)->mutex);
 
     /* Now unmap all the pages associated with this region by asking for a
        negative increment equal to the current size of the region. */

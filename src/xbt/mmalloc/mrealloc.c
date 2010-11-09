@@ -26,7 +26,6 @@ void *mrealloc(void *md, void *ptr, size_t size)
   int type;
   size_t block, blocks, oldlimit;
 
-
   if (size == 0) {
     mfree(md, ptr);
     return (mmalloc(md, 0));
@@ -46,9 +45,7 @@ void *mrealloc(void *md, void *ptr, size_t size)
     return result;
   }
 
-  LOCK(mdp);
   if (mdp->mrealloc_hook != NULL) {
-    UNLOCK(mdp);
     return ((*mdp->mrealloc_hook) (md, ptr, size));
   }
 
@@ -59,7 +56,6 @@ void *mrealloc(void *md, void *ptr, size_t size)
   case 0:
     /* Maybe reallocate a large block to a small fragment.  */
     if (size <= BLOCKSIZE / 2) {
-      UNLOCK(mdp);
       //printf("(%s) alloc large block...",xbt_thread_self_name());
       result = mmalloc(md, size);
       if (result != NULL) {
@@ -71,7 +67,6 @@ void *mrealloc(void *md, void *ptr, size_t size)
 
     /* The new size is a large allocation as well;
        see if we can hold it in place. */
-    LOCK(mdp);
     blocks = BLOCKIFY(size);
     if (blocks < mdp->heapinfo[block].busy.info.size) {
       /* The new size is smaller; return excess memory to the free list. */
@@ -95,7 +90,6 @@ void *mrealloc(void *md, void *ptr, size_t size)
       mdp->heaplimit = 0;
       mfree(md, ptr);
       mdp->heaplimit = oldlimit;
-      UNLOCK(mdp);
       result = mmalloc(md, size);
       if (result == NULL) {
         mmalloc(md, blocks * BLOCKSIZE);
@@ -103,7 +97,6 @@ void *mrealloc(void *md, void *ptr, size_t size)
       }
       if (ptr != result)
         memmove(result, ptr, blocks * BLOCKSIZE);
-      LOCK(mdp);
     }
     break;
 
@@ -119,7 +112,6 @@ void *mrealloc(void *md, void *ptr, size_t size)
          and copy the lesser of the new size and the old. */
       //printf("(%s) new size is different...",xbt_thread_self_name());
 
-      UNLOCK(mdp);
       result = mmalloc(md, size);
       if (result == NULL)
         return (NULL);

@@ -22,14 +22,16 @@ void mmalloc_set_current_heap(void *new_heap)
   __mmalloc_current_heap = new_heap;
 }
 
-#ifdef MMALLOC_WANT_OVERIDE_LEGACY
+#if 1//def MMALLOC_WANT_OVERIDE_LEGACY
 void *malloc(size_t n)
 {
 #ifdef HAVE_MMAP
   if (!__mmalloc_current_heap)
     mmalloc_preinit();
 #endif
+  LOCK(__mmalloc_current_heap);
   void *ret = mmalloc(__mmalloc_current_heap, n);
+  UNLOCK(__mmalloc_current_heap);
 
   return ret;
 }
@@ -41,7 +43,9 @@ void *calloc(size_t nmemb, size_t size)
   if (!__mmalloc_current_heap)
     mmalloc_preinit();
 #endif
+  LOCK(__mmalloc_current_heap);
   void *ret = mmalloc(__mmalloc_current_heap, total_size);
+  UNLOCK(__mmalloc_current_heap);
 
   /* Fill the allocated memory with zeroes to mimic calloc behaviour */
   memset(ret, '\0', total_size);
@@ -56,6 +60,7 @@ void *realloc(void *p, size_t s)
   if (!__mmalloc_current_heap)
     mmalloc_preinit();
 #endif
+  LOCK(__mmalloc_current_heap);
   if (s) {
     if (p)
       ret = mrealloc(__mmalloc_current_heap, p, s);
@@ -65,19 +70,24 @@ void *realloc(void *p, size_t s)
     if (p)
       mfree(__mmalloc_current_heap, p);
   }
+  UNLOCK(__mmalloc_current_heap);
 
   return ret;
 }
 
 void free(void *p)
 {
-  return mfree(__mmalloc_current_heap, p);
+  LOCK(__mmalloc_current_heap);
+  mfree(__mmalloc_current_heap, p);
+  UNLOCK(__mmalloc_current_heap);
 }
 #endif
 
 /* Make sure it works with md==NULL */
 
-#define HEAP_OFFSET   40960000  /* Safety gap from the heap's break address */
+#define HEAP_OFFSET   (128<<20)  /* Safety gap from the heap's break address.
+                                  * Try to increase this first if you experience
+                                  * strange errors under valgrind. */
 
 void *mmalloc_get_default_md(void)
 {
@@ -85,12 +95,29 @@ void *mmalloc_get_default_md(void)
   return __mmalloc_default_mdp;
 }
 
+static void mmalloc_fork_prepare(void)
+{
+  if (__mmalloc_default_mdp)
+    LOCK(__mmalloc_default_mdp);
+}
+
+static void mmalloc_fork_finish(void)
+{
+  if (__mmalloc_default_mdp)
+    UNLOCK(__mmalloc_default_mdp);
+}
+
 /* Initialize the default malloc descriptor. */
 void mmalloc_preinit(void)
 {
-  if (!__mmalloc_default_mdp)
+  if (!__mmalloc_default_mdp) {
     __mmalloc_default_mdp =
         mmalloc_attach(-1, (char *) sbrk(0) + HEAP_OFFSET);
+    /* Fixme? only the default mdp in protected against forks */
+    if (xbt_os_thread_atfork(mmalloc_fork_prepare,
+                             mmalloc_fork_finish, mmalloc_fork_finish) != 0)
+      abort();
+  }
   xbt_assert(__mmalloc_default_mdp != NULL);
 }
 
@@ -98,4 +125,5 @@ void mmalloc_postexit(void)
 {
   /* Do not detach the default mdp or ldl won't be able to free the memory it allocated since we're in memory */
   //  mmalloc_detach(__mmalloc_default_mdp);
+  mmalloc_pre_detach(__mmalloc_default_mdp);
 }

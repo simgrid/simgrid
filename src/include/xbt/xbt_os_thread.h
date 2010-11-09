@@ -26,6 +26,13 @@ SG_BEGIN_DECL()
   /** \brief Thread data type (opaque structure) */
 typedef struct xbt_os_thread_ *xbt_os_thread_t;
 
+/* Calls pthread_atfork() if present, and else does nothing.
+ * The only known user of this wrapper is mmalloc_preinit().
+ */
+XBT_PUBLIC(int) xbt_os_thread_atfork(void (*prepare)(void),
+                                     void (*parent)(void),
+                                     void (*child)(void));
+
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_create(const char *name,
                                                  pvoid_f_pvoid_t
                                                  start_routine,

@@ -124,11 +124,10 @@ void *mmalloc_attach(int fd, void *baseaddr)
 
   if ((mbase = mdp->morecore(mdp, sizeof(mtemp))) != NULL) {
     memcpy(mbase, mdp, sizeof(mtemp));
-    //    mdp = (struct mdesc *) mbase;
   } else {
     abort();
-    //    mdp = NULL;
   }
+  mdp = (struct mdesc *) mbase;
 
   {                             /* create the mutex within that heap */
     void *old_heap = mmalloc_get_current_heap();

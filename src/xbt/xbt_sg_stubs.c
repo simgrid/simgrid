@@ -27,6 +27,12 @@
  * The decision (and the loading) is made in xbt/context.c.
  */
 
+int xbt_os_thread_atfork(void (*prepare)(void),
+                         void (*parent)(void), void (*child)(void))
+{
+  return 0;
+}
+
 /* Mod_init/exit mecanism */
 void xbt_os_thread_mod_preinit(void)
 {

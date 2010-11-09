@@ -115,19 +115,14 @@ void *mmalloc(void *md, size_t size)
     size = 1;
 
   mdp = MD_TO_MDP(md);
-  LOCK(mdp);
 //  printf("(%s) Mallocing %d bytes on %p (default: %p)...",xbt_thread_self_name(),size,mdp,__mmalloc_default_mdp);fflush(stdout);
 
-
   if (mdp->mmalloc_hook != NULL) {
-    void *res = ((*mdp->mmalloc_hook) (md, size));
-    UNLOCK(mdp);
-    return res;
+    return (*mdp->mmalloc_hook) (md, size);
   }
 
   if (!(mdp->flags & MMALLOC_INITIALIZED)) {
     if (!initialize(mdp)) {
-      UNLOCK(mdp);
       return (NULL);
     }
   }
@@ -172,13 +167,10 @@ void *mmalloc(void *md, size_t size)
     } else {
       /* No free fragments of the desired size, so get a new block
          and break it into fragments, returning the first.  */
-      UNLOCK(mdp);
       //printf("(%s) No free fragment...",xbt_thread_self_name());
       result = mmalloc(md, BLOCKSIZE);
       //printf("(%s) Fragment: %p...",xbt_thread_self_name(),result);
-      LOCK(mdp);
       if (result == NULL) {
-        UNLOCK(mdp);
         return (NULL);
       }
 
@@ -233,7 +225,6 @@ void *mmalloc(void *md, size_t size)
         }
         result = morecore(mdp, blocks * BLOCKSIZE);
         if (result == NULL) {
-          UNLOCK(mdp);
           return (NULL);
         }
         block = BLOCK(result);
@@ -241,7 +232,6 @@ void *mmalloc(void *md, size_t size)
         mdp->heapinfo[block].busy.info.size = blocks;
         mdp->heapstats.chunks_used++;
         mdp->heapstats.bytes_used += blocks * BLOCKSIZE;
-        UNLOCK(mdp);
         return (result);
       }
     }
@@ -278,6 +268,5 @@ void *mmalloc(void *md, size_t size)
     mdp->heapstats.bytes_free -= blocks * BLOCKSIZE;
   }
   //printf("(%s) Done mallocing. Result is %p\n",xbt_thread_self_name(),result);fflush(stdout);
-  UNLOCK(mdp);
   return (result);
 }

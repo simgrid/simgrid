@@ -122,6 +122,12 @@ void xbt_os_thread_mod_postexit(void)
   __xbt_ex_terminate = &__xbt_ex_terminate_default;
 }
 
+int xbt_os_thread_atfork(void (*prepare)(void),
+                         void (*parent)(void), void (*child)(void))
+{
+  return pthread_atfork(prepare, parent, child);
+}
+
 static void *wrapper_start_routine(void *s)
 {
   xbt_os_thread_t t = s;
@@ -616,6 +622,12 @@ void xbt_os_thread_mod_postexit(void)
   if (!TlsFree(xbt_self_thread_key))
     THROW0(system_error, (int) GetLastError(),
            "TlsFree() failed to cleanup the thread submodule");
+}
+
+int xbt_os_thread_atfork(void (*prepare)(void),
+                         void (*parent)(void), void (*child)(void))
+{
+  return 0;
 }
 
 static DWORD WINAPI wrapper_start_routine(void *s)

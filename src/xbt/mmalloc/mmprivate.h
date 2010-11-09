@@ -78,9 +78,6 @@
 
 #define ADDRESS(B) ((void*) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
 
-/* Thread-safety (if the mutex is already created)*/
-#define LOCK(mdp) if (mdp->mutex) xbt_os_mutex_acquire(mdp->mutex)
-#define UNLOCK(mdp) if (mdp->mutex) xbt_os_mutex_release(mdp->mutex)
 const char *xbt_thread_self_name(void);
 
 /* Data structure giving per-block information.  */
@@ -300,5 +297,20 @@ extern void *__mmalloc_remap_core(struct mdesc *mdp);
   ((md) == NULL \
    ? __mmalloc_default_mdp  \
    : (struct mdesc *) (md))
+
+/* Thread-safety (if the mutex is already created)*/
+#define LOCK(md)                                        \
+  do {                                                  \
+    struct mdesc *lock_local_mdp = MD_TO_MDP(md);       \
+    if (lock_local_mdp->mutex)                          \
+      xbt_os_mutex_acquire(lock_local_mdp->mutex);     \
+  } while (0)
+
+#define UNLOCK(md)                                        \
+  do {                                                  \
+    struct mdesc *unlock_local_mdp = MD_TO_MDP(md);       \
+    if (unlock_local_mdp->mutex)                          \
+      xbt_os_mutex_release(unlock_local_mdp->mutex);     \
+  } while (0)
 
 #endif                          /* __MMPRIVATE_H */
