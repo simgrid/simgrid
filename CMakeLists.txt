@@ -24,15 +24,15 @@ endif(APPLE)
 
 ### Set some variables for Cmake
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
-set(INCLUDES "-I${PROJECT_BINARY_DIR} -I${PROJECT_BINARY_DIR}/include -I${PROJECT_BINARY_DIR}/src/include -I${PROJECT_BINARY_DIR}/src")
-set(INCLUDES "${INCLUDES} -I${PROJECT_DIRECTORY} -I${PROJECT_DIRECTORY}/include -I${PROJECT_DIRECTORY}/src/include -I${PROJECT_DIRECTORY}/src -I${CMAKE_CURRENT_BINARY_DIR}/src")
+set(INCLUDES ${PROJECT_BINARY_DIR} ${PROJECT_BINARY_DIR}/include ${PROJECT_BINARY_DIR}/src/include ${PROJECT_BINARY_DIR}/src)
+set(INCLUDES ${INCLUDES} ${PROJECT_DIRECTORY} ${PROJECT_DIRECTORY}/include ${PROJECT_DIRECTORY}/src/include ${PROJECT_DIRECTORY}/src ${CMAKE_CURRENT_BINARY_DIR}/src)
 if(WIN32)
-    set(INCLUDES "${INCLUDES} -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt") #for win32_ucontext.[ch]
+    set(INCLUDES ${INCLUDES} ${PROJECT_DIRECTORY}/include/xbt ${PROJECT_DIRECTORY}/src/xbt) #for win32_ucontext.[ch]
 endif(WIN32)
 set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 
 if(NOT CMAKE_CROSSCOMPILING AND EXISTS /usr/include/)
-	set(INCLUDES "${INCLUDES} -I/usr/include/")
+	set(INCLUDES ${INCLUDES} /usr/include/)
 endif(NOT CMAKE_CROSSCOMPILING AND EXISTS /usr/include/)
 
 ### Check 32bits or 64bits
@@ -53,9 +53,9 @@ if(WIN32)
 	        string(REGEX MATCH ".*[ ].*" testoki "${include_dir}")
 	        if(testoki)
 	        	string(REPLACE " " "\\ " include_dir "${include_dir}")
-	            set(INCLUDES "${INCLUDES} -I\"${include_dir}\"")
+	            set(INCLUDES ${INCLUDES} \"${include_dir}\")
 	        else(testoki)
-	            set(INCLUDES "${INCLUDES} -I${include_dir}")
+	            set(INCLUDES ${INCLUDES} ${include_dir})
 	        endif(testoki)
 	    else(IS_DIRECTORY ${include_dir})
 	        message(FATAL_ERROR "${include_dir} not find")
@@ -120,7 +120,7 @@ if(WIN32)
     
 endif(WIN32)
 
-add_definitions (${INCLUDES})
+include_directories(${INCLUDES})
 
 ### Setup Options
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/Option.cmake)
