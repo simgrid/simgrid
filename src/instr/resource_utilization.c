@@ -131,52 +131,21 @@ static void __TRACE_B_alloc(void)
 
 static void __TRACE_B_release(void)
 {
-  xbt_dict_cursor_t cursor = NULL;
-  unsigned int cursor_ar = 0;
-  char *key, *value, *res;
-  char *resource;
-  char *aux = NULL;
-  char *var_cpy = NULL;
-  xbt_dynar_t resources = NULL;
   if (!IS_TRACING_PLATFORM)
     return;
-  if (!xbt_dict_length(method_b_dict)) {
-    return;
-  } else {
-    /* get all resources from method_b_dict */
-    resources = xbt_dynar_new(sizeof(char *), xbt_free);
-    xbt_dict_foreach(method_b_dict, cursor, key, value) {
-      res = strsplit(key, 0, VARIABLE_SEPARATOR);
-      aux = strsplit(key, 1, VARIABLE_SEPARATOR);
-      if (strcmp(aux, "Time") == 0) {   //only need to add one of three
-        var_cpy = xbt_strdup(res);
-        xbt_dynar_push(resources, &var_cpy);
-      }
-      free(aux);
-      free(res);
-    }
 
-    /* iterate through resources array */
-    xbt_dynar_foreach(resources, cursor_ar, resource) {
-      char timekey[100], valuekey[100], variablekey[100];
-      char *time = NULL;
-      char *value = NULL;
-      char *variable = NULL;
-      snprintf(timekey, 100, "%s%cTime", resource, VARIABLE_SEPARATOR);
-      snprintf(valuekey, 100, "%s%cValue", resource, VARIABLE_SEPARATOR);
-      snprintf(variablekey, 100, "%s%cVariable", resource,
-               VARIABLE_SEPARATOR);
-
-      time = xbt_dict_get_or_null(method_b_dict, timekey);
-      if (!time)
-        continue;
-      value = xbt_dict_get(method_b_dict, valuekey);
-      variable = xbt_dict_get(method_b_dict, variablekey);
+  char *key, *time;
+  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_foreach(method_b_dict, cursor, key, time) {
+    char resource[INSTR_DEFAULT_STR_SIZE];
+    char variable[INSTR_DEFAULT_STR_SIZE];
+    char what[INSTR_DEFAULT_STR_SIZE];
+    sscanf (key, "%s %s %s", resource, variable, what);
+    if (strcmp(what, "time")==0){
+      char key_value[INSTR_DEFAULT_STR_SIZE];
+      snprintf (key_value, INSTR_DEFAULT_STR_SIZE, "%s %s value", resource, variable);
+      char *value = xbt_dict_get_or_null (method_b_dict, key_value);
       pajeSubVariable(atof(time), variable, resource, value);
-
-      xbt_dict_remove(method_b_dict, timekey);
-      xbt_dict_remove(method_b_dict, valuekey);
-      xbt_dict_remove(method_b_dict, variablekey);
     }
   }
   xbt_dict_free(&method_b_dict);
@@ -190,84 +159,48 @@ static void __TRACE_B_event(smx_action_t action, double now, double delta,
                             const char *variable, const char *resource,
                             double value)
 {
-
   if (!IS_TRACING_PLATFORM)
     return;
 
-  char valuestr[100];
-  char nowstr[100], nowdeltastr[100];
-  char timekey[100], valuekey[100], variablekey[100];
-  char *lastvariable = NULL;
-  char *lasttime = NULL;
-  char *lastvalue = NULL;
-  char *nowdeltastr_cpy = NULL;
-  char *valuestr_cpy = NULL;
-  char *variable_cpy = NULL;
+  char key_time[INSTR_DEFAULT_STR_SIZE];
+  char key_value[INSTR_DEFAULT_STR_SIZE];
+  char nowstr[INSTR_DEFAULT_STR_SIZE];
+  char valuestr[INSTR_DEFAULT_STR_SIZE];
+  char nowdeltastr[INSTR_DEFAULT_STR_SIZE];
 
-  /*
-   * The following code replaces the code above with the objective
-   * to decrease the size of file because of unnecessary add/sub on
-   * variables. It should be re-checked before put in production.
-   */
+  snprintf (key_time, INSTR_DEFAULT_STR_SIZE, "%s %s time", resource, variable);
+  snprintf (key_value, INSTR_DEFAULT_STR_SIZE, "%s %s value", resource, variable);
+  snprintf (nowstr, INSTR_DEFAULT_STR_SIZE, "%f", now);
+  snprintf (valuestr, INSTR_DEFAULT_STR_SIZE, "%f", value);
+  snprintf (nowdeltastr, INSTR_DEFAULT_STR_SIZE, "%f", now+delta);
 
-  snprintf(valuestr, 100, "%f", value);
-  snprintf(nowstr, 100, "%f", now);
-  snprintf(nowdeltastr, 100, "%f", now + delta);
-  snprintf(timekey, 100, "%s%cTime", resource, VARIABLE_SEPARATOR);
-  snprintf(valuekey, 100, "%s%cValue", resource, VARIABLE_SEPARATOR);
-  snprintf(variablekey, 100, "%s%cVariable", resource, VARIABLE_SEPARATOR);
-
-  lastvariable = xbt_dict_get_or_null(method_b_dict, variablekey);
-  if (lastvariable == NULL) {
+  char *lasttimestr = xbt_dict_get_or_null(method_b_dict, key_time);
+  char *lastvaluestr = xbt_dict_get_or_null(method_b_dict, key_value);
+  if (lasttimestr == NULL){
     __TRACE_surf_check_variable_set_to_zero(now, variable, resource);
     pajeAddVariable(now, variable, resource, valuestr);
-    nowdeltastr_cpy = xbt_strdup(nowdeltastr);
-    valuestr_cpy = xbt_strdup(valuestr);
-    variable_cpy = xbt_strdup(variable);
-    xbt_dict_set(method_b_dict, timekey, nowdeltastr_cpy, xbt_free);
-    xbt_dict_set(method_b_dict, valuekey, valuestr_cpy, xbt_free);
-    xbt_dict_set(method_b_dict, variablekey, variable_cpy, xbt_free);
-  } else {
-    lasttime = xbt_dict_get_or_null(method_b_dict, timekey);
-    lastvalue = xbt_dict_get_or_null(method_b_dict, valuekey);
+    xbt_dict_set(method_b_dict, key_time, xbt_strdup(nowdeltastr), xbt_free);
+    xbt_dict_set(method_b_dict, key_value, xbt_strdup(valuestr), xbt_free);
+  }else{
+    double lasttime = atof (lasttimestr);
+    double lastvalue = atof (lastvaluestr);
 
-    /* check if it is the same variable */
-    if (strcmp(lastvariable, variable) == 0) {  /* same variable */
-      /* check if lasttime equals now */
-      if (atof(lasttime) == now) {      /* lastime == now */
-        /* check if lastvalue equals valuestr */
-        if (atof(lastvalue) == value) { /* lastvalue == value (good, just advance time) */
-          char *nowdeltastr_cpy = xbt_strdup(nowdeltastr);
-          xbt_dict_set(method_b_dict, timekey, nowdeltastr_cpy, xbt_free);
-        } else {                /* value has changed */
-          /* value has changed, subtract previous value, add new one */
-          pajeSubVariable(atof(lasttime), variable, resource, lastvalue);
-          pajeAddVariable(atof(nowstr), variable, resource, valuestr);
-          nowdeltastr_cpy = xbt_strdup(nowdeltastr);
-          valuestr_cpy = xbt_strdup(valuestr);
-          xbt_dict_set(method_b_dict, timekey, nowdeltastr_cpy, xbt_free);
-          xbt_dict_set(method_b_dict, valuekey, valuestr_cpy, xbt_free);
-        }
-      } else {                  /* lasttime != now */
-        /* the last time is different from new starting time, subtract to lasttime and add from nowstr */
-        pajeSubVariable(atof(lasttime), variable, resource, lastvalue);
-        pajeAddVariable(atof(nowstr), variable, resource, valuestr);
-        nowdeltastr_cpy = xbt_strdup(nowdeltastr);
-        valuestr_cpy = xbt_strdup(valuestr);
-        xbt_dict_set(method_b_dict, timekey, nowdeltastr_cpy, xbt_free);
-        xbt_dict_set(method_b_dict, valuekey, valuestr_cpy, xbt_free);
+    if (lastvalue == value){
+      double dif = fabs(now - lasttime);
+      if (dif < 0.000001){
+        //perfect, just go on
+      }else{
+        //time changed, have to update
+        pajeSubVariable(lasttime, variable, resource, lastvaluestr);
+        pajeAddVariable(now, variable, resource, valuestr);
       }
-    } else {                    /* variable has changed */
-      pajeSubVariable(atof(lasttime), lastvariable, resource, lastvalue);
-      __TRACE_surf_check_variable_set_to_zero(now, variable, resource);
+    }else{
+      //value changed, have to update
+      pajeSubVariable(lasttime, variable, resource, lastvaluestr);
       pajeAddVariable(now, variable, resource, valuestr);
-      nowdeltastr_cpy = xbt_strdup(nowdeltastr);
-      valuestr_cpy = xbt_strdup(valuestr);
-      variable_cpy = xbt_strdup(variable);
-      xbt_dict_set(method_b_dict, timekey, nowdeltastr_cpy, xbt_free);
-      xbt_dict_set(method_b_dict, valuekey, valuestr_cpy, xbt_free);
-      xbt_dict_set(method_b_dict, variablekey, variable_cpy, xbt_free);
     }
+    xbt_dict_set(method_b_dict, key_time, xbt_strdup(nowdeltastr), xbt_free);
+    xbt_dict_set(method_b_dict, key_value, xbt_strdup(valuestr), xbt_free);
   }
   return;
 }
