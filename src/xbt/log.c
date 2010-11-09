@@ -364,9 +364,9 @@ Here are the existing format directives:
 
 
 If you want to mimic the simple layout with the format one, you would use this
-format: '[%%h:%%i:(%%I) %%r] %%l: [%%c/%%p] %%m%%n'. This is not completely correct
+format: '[%%h:%%i:(%%i) %%r] %%l: [%%c/%%p] %%m%%n'. This is not completely correct
 because the simple layout do not display the message location for messages at
-priority INFO (thus, the fmt is '[%%h:%%i:(%%I) %%r] %%l: [%%c/%%p] %%m%%n' in this
+priority INFO (thus, the fmt is '[%%h:%%i:(%%i) %%r] [%%c/%%p] %%m%%n' in this
 case). Moreover, if there is no process name (ie, messages coming from the
 library itself, or test programs doing strange things) do not display the
 process identity (thus, fmt is '[%%r] %%l: [%%c/%%p] %%m%%n' in that case, and '[%%r]
