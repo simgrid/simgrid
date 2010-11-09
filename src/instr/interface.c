@@ -51,9 +51,11 @@ int TRACE_start()
 
   if (IS_TRACING_PLATFORM) {
     pajeDefineVariableType("power", "HOST", "power");
-    pajeDefineVariableType("power_used", "HOST", "power_used");
+    if (TRACE_uncategorized()){
+      pajeDefineVariableType("power_used", "HOST", "power_used");
+      pajeDefineVariableType("bandwidth_used", "LINK", "bandwidth_used");
+    }
     pajeDefineVariableType("bandwidth", "LINK", "bandwidth");
-    pajeDefineVariableType("bandwidth_used", "LINK", "bandwidth_used");
     pajeDefineVariableType("latency", "LINK", "latency");
     pajeDefineEventType("source", "LINK", "source");
     pajeDefineEventType("destination", "LINK", "destination");

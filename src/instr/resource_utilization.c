@@ -383,11 +383,14 @@ void TRACE_surf_link_set_utilization(void *link, smx_action_t smx_action,
   if (!value)
     return;
 
-  //trace uncategorized link utilization
   char resource[100];
   snprintf(resource, 100, "%p", link);
-  TRACE_surf_resource_utilization_event(smx_action, now, delta,
+
+  //trace uncategorized link utilization
+  if (TRACE_uncategorized()){
+    TRACE_surf_resource_utilization_event(smx_action, now, delta,
                                         "bandwidth_used", resource, value);
+  }
 
   //trace categorized utilization
   if (!IS_TRACED(surf_action))
