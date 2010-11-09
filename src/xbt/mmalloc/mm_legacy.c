@@ -22,7 +22,7 @@ void mmalloc_set_current_heap(void *new_heap)
   __mmalloc_current_heap = new_heap;
 }
 
-#if 1//def MMALLOC_WANT_OVERIDE_LEGACY
+#ifdef MMALLOC_WANT_OVERIDE_LEGACY
 void *malloc(size_t n)
 {
 #ifdef HAVE_MMAP
