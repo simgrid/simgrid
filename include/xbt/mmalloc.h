@@ -46,6 +46,8 @@ extern struct mstats mmstats(void *md);
 
 extern void *mmalloc_attach(int fd, void *baseaddr);
 
+extern void mmalloc_pre_detach(void *md);
+
 extern void *mmalloc_detach(void *md);
 
 extern int mmalloc_setkey(void *md, int keynum, void *key);
