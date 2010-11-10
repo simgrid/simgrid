@@ -63,6 +63,8 @@ void pajeEndLink(double time, const char *entityType,
                  const char *destContainer, const char *key);
 void pajeDefineVariableType(const char *alias, const char *containerType,
                             const char *name);
+void pajeDefineVariableTypeWithColor(const char *alias, const char *containerType,
+                            const char *name, const char *color);
 void pajeSetVariable(double time, const char *entityType,
                      const char *container, const char *value);
 void pajeAddVariable(double time, const char *entityType,

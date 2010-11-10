@@ -32,7 +32,7 @@ static int pajeEndLinkId = 13;
 #define UNUSED005 18
 static int pajePushStateId = 19;
 #define UNUSED001 20
-#define UNUSED002 21
+static int pajeDefineVariableTypeWithColorId = 21;
 static int pajeSetVariableId = 22;
 static int pajeAddVariableId = 23;
 static int pajeSubVariableId = 24;
@@ -155,6 +155,12 @@ void TRACE_paje_create_header(void)
 %%       ContainerType string \n\
 %%       Name string \n\
 %%EndEventDef \n\
+%%EventDef PajeDefineVariableType %d \n\
+%%       Alias string \n\
+%%       ContainerType string \n\
+%%       Name string \n\
+%%       Color color \n\
+%%EndEventDef \n\
 %%EventDef PajeStartLink %d \n\
 %%       Time date \n\
 %%       EntityType string \n\
@@ -169,7 +175,7 @@ void TRACE_paje_create_header(void)
 %%       EntityType string \n\
 %%       Container string \n\
 %%       Value string \n\
-%%EndEventDef\n", pajeDefineContainerTypeId, pajeDefineStateTypeId, pajeDefineEntityValueId, pajeDefineEventTypeId, pajeDefineLinkTypeId, pajeCreateContainerId, pajeDestroyContainerId, pajeSetStateId, pajePopStateId, pajeStartLinkId, pajeEndLinkId, pajePushStateId, pajeSetVariableId, pajeAddVariableId, pajeSubVariableId, pajeDefineVariableTypeId, pajeStartLinkWithVolumeId, pajeNewEventId);
+%%EndEventDef\n", pajeDefineContainerTypeId, pajeDefineStateTypeId, pajeDefineEntityValueId, pajeDefineEventTypeId, pajeDefineLinkTypeId, pajeCreateContainerId, pajeDestroyContainerId, pajeSetStateId, pajePopStateId, pajeStartLinkId, pajeEndLinkId, pajePushStateId, pajeSetVariableId, pajeAddVariableId, pajeSubVariableId, pajeDefineVariableTypeId, pajeDefineVariableTypeWithColorId, pajeStartLinkWithVolumeId, pajeNewEventId);
 }
 
 /* internal to this file */
@@ -312,6 +318,13 @@ void pajeDefineVariableType(const char *alias, const char *containerType,
 {
   fprintf(tracing_file, "%d %s %s %s\n", pajeDefineVariableTypeId, alias,
           containerType, name);
+}
+
+void pajeDefineVariableTypeWithColor(const char *alias, const char *containerType,
+                            const char *name, const char *color)
+{
+  fprintf(tracing_file, "%d %s %s %s \"%s\"\n", pajeDefineVariableTypeWithColorId, alias,
+          containerType, name, color);
 }
 
 void pajeSetVariable(double time, const char *entityType,
