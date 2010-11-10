@@ -45,14 +45,14 @@ static void action_send(xbt_dynar_t action)
           xbt_dynar_get_as(action, 2, char *));
   //  char *to =  xbt_dynar_get_as(action, 2, char *);
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
 
   DEBUG2("Entering Send: %s (size: %lg)", name, parse_double(size));
   MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
-  DEBUG2("%s %f", name, MSG_get_clock() - clock);
+  VERB2("%s %f", name, MSG_get_clock() - clock);
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
 }
 
@@ -91,7 +91,7 @@ static void Isend(xbt_dynar_t action)
   comm_helper =
       MSG_process_create_with_arguments(spawn_name, spawned_send,
                                         NULL, MSG_host_self(), 2, myargv);
-  DEBUG2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
+  VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
 }
 
 
@@ -106,7 +106,7 @@ static void action_recv(xbt_dynar_t action)
   sprintf(mailbox_name, "%s_%s", xbt_dynar_get_as(action, 2, char *),
           MSG_process_get_name(MSG_process_self()));
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
 
   DEBUG1("Receiving: %s", name);
@@ -115,7 +115,7 @@ static void action_recv(xbt_dynar_t action)
   DEBUG2("%s %f", name, MSG_get_clock() - clock);
   MSG_task_destroy(task);
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
 }
 
@@ -155,7 +155,7 @@ static void Irecv(xbt_dynar_t action)
                                                   NULL, MSG_host_self(),
                                                   1, myargv);
 
-  DEBUG2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
+  VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
 
   free(name);
 }
@@ -168,7 +168,7 @@ static void action_wait(xbt_dynar_t action)
   m_task_t task = NULL;
   double clock = MSG_get_clock();
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
 
   DEBUG1("Entering %s", name);
@@ -176,8 +176,8 @@ static void action_wait(xbt_dynar_t action)
   DEBUG1("wait: %s", task_name);
   MSG_task_receive(&task, task_name);
   MSG_task_destroy(task);
-  DEBUG2("%s %f", name, MSG_get_clock() - clock);
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  VERB2("%s %f", name, MSG_get_clock() - clock);
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
 }
 
@@ -187,7 +187,7 @@ static void barrier(xbt_dynar_t action)
 {
   char *name = NULL;
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
 
   DEBUG1("Entering barrier: %s", name);
@@ -204,7 +204,7 @@ static void barrier(xbt_dynar_t action)
 
   DEBUG1("Exiting barrier: %s", name);
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
 
 }
@@ -276,7 +276,7 @@ static void reduce(xbt_dynar_t action)
   }
 
   MSG_process_set_data(MSG_process_self(), (void *) counters);
-  DEBUG2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
+  VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
   free(name);
 }
 
@@ -341,7 +341,7 @@ static void bcast(xbt_dynar_t action)
   }
 
   MSG_process_set_data(MSG_process_self(), (void *) counters);
-  DEBUG2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
+  VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
   free(name);
 }
 
@@ -352,14 +352,14 @@ static void action_sleep(xbt_dynar_t action)
   char *duration = xbt_dynar_get_as(action, 2, char *);
   double clock = MSG_get_clock();
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
 
   DEBUG1("Entering %s", name);
   MSG_process_sleep(parse_double(duration));
-  DEBUG2("%s %f ", name, MSG_get_clock() - clock);
+  VERB2("%s %f ", name, MSG_get_clock() - clock);
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
 }
 
@@ -463,7 +463,7 @@ static void allReduce(xbt_dynar_t action)
   }
 
   MSG_process_set_data(MSG_process_self(), (void *) counters);
-  DEBUG2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
+  VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
   free(name);
 }
 
@@ -480,13 +480,13 @@ static void compute(xbt_dynar_t action)
   m_task_t task = MSG_task_create(name, parse_double(amout), 0, NULL);
   double clock = MSG_get_clock();
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
   DEBUG1("Entering %s", name);
   MSG_task_execute(task);
   MSG_task_destroy(task);
-  DEBUG2("%s %f", name, MSG_get_clock() - clock);
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_debug))
+  VERB2("%s %f", name, MSG_get_clock() - clock);
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
 }
 
