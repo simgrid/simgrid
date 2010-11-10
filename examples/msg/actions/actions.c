@@ -112,7 +112,7 @@ static void action_recv(xbt_dynar_t action)
   DEBUG1("Receiving: %s", name);
   MSG_task_receive(&task, mailbox_name);
   //  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
-  DEBUG2("%s %f", name, MSG_get_clock() - clock);
+  VERB2("%s %f", name, MSG_get_clock() - clock);
   MSG_task_destroy(task);
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
@@ -469,8 +469,16 @@ static void allReduce(xbt_dynar_t action)
 
 static void comm_size(xbt_dynar_t action)
 {
+  char *name = NULL;
   char *size = xbt_dynar_get_as(action, 2, char *);
+  double clock = MSG_get_clock();
+
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
+    name = xbt_str_join(action, " ");
   communicator_size = parse_double(size);
+  VERB2("%s %f", name, MSG_get_clock() - clock);
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
+    free(name);
 }
 
 static void compute(xbt_dynar_t action)
