@@ -277,13 +277,14 @@ static double cpu_im_share_resources(double now)
       min = -1;
       value = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
       if (value > 0) {
-        if (GENERIC_ACTION(action).remains > 0)
+        if (GENERIC_ACTION(action).remains > 0) {
           value = GENERIC_ACTION(action).remains / value;
-        else
+          min = now + value;
+        } else {
           value = 0.0;
+          min = now;
+        }
       }
-      if (value > 0)
-        min = now + value;
 
       if ((GENERIC_ACTION(action).max_duration != NO_MAX_DURATION)
           && (min == -1
