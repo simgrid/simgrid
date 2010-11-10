@@ -33,6 +33,9 @@ int main(int argc, char **argv)
 
   /* initialisation of SD */
   SD_init(&argc, argv);
+#ifdef HAVE_TRACING
+  TRACE_start ();
+#endif
 
   /* Check our arguments */
   if (argc < 3) {
@@ -136,5 +139,8 @@ int main(int argc, char **argv)
 
   /* exit */
   SD_exit();
+#ifdef HAVE_TRACING
+  TRACE_end();
+#endif
   return 0;
 }
