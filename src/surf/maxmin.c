@@ -429,16 +429,24 @@ void lmm_print(lmm_system_t sys)
     trace_buf =
         xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
     strcat(trace_buf, print_buf);
+    sprintf(print_buf, "%s(",(cnst->shared)?"":"max");
+    trace_buf =
+      xbt_realloc(trace_buf,
+		  strlen(trace_buf) + strlen(print_buf) + 1);
+    strcat(trace_buf, print_buf);      
     xbt_swag_foreach(elem, elem_list) {
-      sprintf(print_buf, "%f.'%d'(%f) + ", elem->value,
-              elem->variable->id_int, elem->variable->value);
+      sprintf(print_buf, "%f.'%d'(%f) %s ", elem->value,
+              elem->variable->id_int, elem->variable->value,(cnst->shared)?"+":",");
       trace_buf =
           xbt_realloc(trace_buf,
                       strlen(trace_buf) + strlen(print_buf) + 1);
       strcat(trace_buf, print_buf);
-      sum += elem->value * elem->variable->value;
+      if(cnst->shared) 
+	sum += elem->value * elem->variable->value;
+      else 
+	sum = MAX(sum,elem->value * elem->variable->value);
     }
-    sprintf(print_buf, "0 <= %f ('%d')", cnst->bound, cnst->id_int);
+    sprintf(print_buf, "0) <= %f ('%d')", cnst->bound, cnst->id_int);
     trace_buf =
         xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
     strcat(trace_buf, print_buf);
@@ -451,7 +459,7 @@ void lmm_print(lmm_system_t sys)
       strcat(trace_buf, print_buf);
     }
     //   DEBUG1("%s", trace_buf);
-    fprintf(stderr, "%s", trace_buf);
+    fprintf(stderr, "%s\n", trace_buf);
     trace_buf[0] = '\000';
     xbt_assert3(!double_positive(sum - cnst->bound),
                 "Incorrect value (%f is not smaller than %f): %g",
@@ -489,6 +497,8 @@ void lmm_solve(lmm_system_t sys)
   if (!(sys->modified))
     return;
 
+  XBT_IN1("(sys=%p)", sys);
+
   /*
    * Compute Usage and store the variables that reach the maximum.
    */
@@ -510,7 +520,6 @@ void lmm_solve(lmm_system_t sys)
     }
   }
 
-  DEBUG1("Active constraints : %d", xbt_swag_size(cnst_list));
   xbt_swag_foreach(cnst, cnst_list) {
     /* INIT */
     cnst->remaining = cnst->bound;
@@ -531,7 +540,7 @@ void lmm_solve(lmm_system_t sys)
         make_elem_active(elem);
       }
     }
-    DEBUG2("Constraint Usage %d : %f", cnst->id_int, cnst->usage);
+    DEBUG2("Constraint Usage '%d' : %f", cnst->id_int, cnst->usage);
     /* Saturated constraints update */
     saturated_constraint_set_update(sys, cnst, &min_usage);
   }
@@ -630,6 +639,7 @@ void lmm_solve(lmm_system_t sys)
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     lmm_print(sys);
   }
+  XBT_OUT;
 }
 
 /* Not a O(1) function */
