@@ -121,6 +121,11 @@ int TRACE_end()
 
 int TRACE_category(const char *category)
 {
+  return TRACE_category_with_color (category, NULL);
+}
+
+int TRACE_category_with_color (const char *category, const char *color)
+{
   static int first_time = 1;
   if (!IS_TRACING)
     return 1;
@@ -129,7 +134,7 @@ int TRACE_category(const char *category)
     TRACE_define_type("user_type", "0", 1);
     first_time = 0;
   }
-  return TRACE_create_category(category, "user_type", "0");
+  return TRACE_create_category_with_color(category, "user_type", "0", color);
 }
 
 void TRACE_define_type(const char *type,
@@ -171,6 +176,14 @@ void TRACE_define_type(const char *type,
 int TRACE_create_category(const char *category,
                           const char *type, const char *parent_category)
 {
+  return TRACE_create_category_with_color (category, type, parent_category, NULL);
+}
+
+int TRACE_create_category_with_color(const char *category,
+                          const char *type,
+                          const char *parent_category,
+                          const char *color)
+{
   char state[100];
   char *val_one = NULL;
   if (!IS_TRACING)
@@ -197,14 +210,24 @@ int TRACE_create_category(const char *category,
   pajeCreateContainer(MSG_get_clock(), category, type, parent_category,
                       category);
 
-  /* for registering application categories on top of platform */
+  char final_color[INSTR_DEFAULT_STR_SIZE];
+  if (!color){
+    //generate a random color
+    double red = drand48();
+    double green = drand48();
+    double blue = drand48();
+    snprintf (final_color, INSTR_DEFAULT_STR_SIZE, "%f %f %f", red, green, blue);
+  }else{
+    snprintf (final_color, INSTR_DEFAULT_STR_SIZE, "%s", color);
+  }
 
+  /* for registering application categories on top of platform */
   snprintf(state, 100, "b%s", category);
   if (IS_TRACING_PLATFORM)
-    pajeDefineVariableType(state, "LINK", state);
+    pajeDefineVariableTypeWithColor(state, "LINK", state, final_color);
   snprintf(state, 100, "p%s", category);
   if (IS_TRACING_PLATFORM)
-    pajeDefineVariableType(state, "HOST", state);
+    pajeDefineVariableTypeWithColor(state, "HOST", state, final_color);
 
   val_one = xbt_strdup("1");
   xbt_dict_set(created_categories, category, &val_one, xbt_free);

@@ -28,11 +28,16 @@
 XBT_PUBLIC(int) TRACE_start(void);
 XBT_PUBLIC(int) TRACE_end(void);
 XBT_PUBLIC(int) TRACE_category(const char *category);
+XBT_PUBLIC(int) TRACE_category_with_color (const char *category, const char *color);
 XBT_PUBLIC(void) TRACE_define_type(const char *type,
                                    const char *parent_type, int final);
 XBT_PUBLIC(int) TRACE_create_category(const char *category,
                                       const char *type,
                                       const char *parent_category);
+XBT_PUBLIC(int) TRACE_create_category_with_color(const char *category,
+                          const char *type,
+                          const char *parent_category,
+                          const char *color);
 XBT_PUBLIC(void) TRACE_msg_set_task_category(m_task_t task,
                                              const char *category);
 XBT_PUBLIC(void) TRACE_msg_set_process_category(m_process_t process,
