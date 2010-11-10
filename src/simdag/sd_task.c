@@ -61,7 +61,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   task->workstation_list = NULL;
   task->computation_amount = NULL;
   task->communication_amount = NULL;
-  task->rate = 0;
+  task->rate = -1;
 
   sd_global->task_number++;
 
@@ -756,7 +756,7 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
 {
   int communication_nb;
   task->workstation_nb = 0;
-  task->rate = 0;
+  task->rate = -1;
   xbt_assert0(workstation_count > 0, "workstation_nb must be positive");
 
   task->workstation_nb = workstation_count;
