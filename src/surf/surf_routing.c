@@ -2526,7 +2526,7 @@ static void generic_set_route(routing_component_t rc, const char *src,
 	  for(i=nb_links ; i>0 ; i--)
 	  {
 		 char *link_name = xbt_new0(char,strlen(xbt_dynar_get_as(route->link_list, i-1, char *)));
-		 link_name = bprintf("%s",xbt_dynar_get_as(route->link_list, i-1, char *));
+		 link_name = xbt_strdup(xbt_dynar_get_as(route->link_list, i-1, char *));
 		 xbt_dynar_push_as(route_sym->link_list ,char *, link_name);
 	  }
 	  DEBUG2("Load Route from \"%s\" to \"%s\"", dst, src);
