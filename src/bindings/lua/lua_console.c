@@ -7,8 +7,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid_lua.h"
+#include <string.h>
+#include <ctype.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(luax, bindings, "Lua Bindings");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_console, bindings, "Lua Bindings");
 
 static p_AS_attr AS;
 //using xbt_dynar_t :
@@ -281,10 +283,12 @@ static int Host_new(lua_State * L)
  */
 static int Link_new(lua_State * L)      // (id,bandwidth,latency)
 {
+
   if (xbt_dynar_is_empty(link_list_d))
     link_list_d = xbt_dynar_new(sizeof(p_link_attr), &xbt_free_ref);
 
-  const char *id;
+
+  const char* id;
   double bandwidth, latency;
   const char *bandwidth_trace;
   const char *latency_trace;
@@ -337,7 +341,6 @@ static int Link_new(lua_State * L)      // (id,bandwidth,latency)
     state_initial = lua_tonumber(L, -1);
     lua_pop(L, 1);
 
-
     //get policy value
     lua_pushstring(L, "policy");
     lua_gettable(L, -2);
@@ -360,6 +363,13 @@ static int Link_new(lua_State * L)      // (id,bandwidth,latency)
   link->state_initial = state_initial;
   link->policy = policy;
   xbt_dynar_push(link_list_d, &link);
+
+
+  //TEST1
+  unsigned int i;
+  p_link_attr p_link;
+  xbt_dynar_foreach(link_list_d, i, p_link) {
+  }
   return 0;
 }
 
@@ -368,64 +378,121 @@ static int Link_new(lua_State * L)      // (id,bandwidth,latency)
  */
 static int Route_new(lua_State * L)     // (src_id,dest_id,links_number,link_table)
 {
-  if (xbt_dynar_is_empty(route_list_d))
-    route_list_d = xbt_dynar_new(sizeof(p_route_attr), &xbt_free_ref);
-  const char *link_id;
-  p_route_attr route = malloc(sizeof(route_attr));
-  route->src_id = luaL_checkstring(L, 1);
-  route->dest_id = luaL_checkstring(L, 2);
-  route->links_id = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-  lua_pushnil(L);
-  while (lua_next(L, 3) != 0) {
-    link_id = lua_tostring(L, -1);
-    xbt_dynar_push(route->links_id, &link_id);
-    DEBUG2("index = %f , Link_id = %s \n", lua_tonumber(L, -2),
-           lua_tostring(L, -1));
-    lua_pop(L, 1);
-  }
-  lua_pop(L, 1);
+ if (xbt_dynar_is_empty(route_list_d))
+	    route_list_d = xbt_dynar_new(sizeof(p_route_attr), &xbt_free_ref);
 
-  //add route to platform's route list
-  xbt_dynar_push(route_list_d, &route);
-  return 0;
+	 const char *links;
+	 const char* link_id;
+	 p_route_attr route = malloc(sizeof(route_attr));
+
+
+  if (!lua_istable(L, 3)) { // if Route.new is declared as an indexed table (FIXME : we check the third arg if it's not a table)
+     // get Source Value
+     lua_pushstring(L, "src");
+     lua_gettable(L, -2);
+     route->src_id = lua_tostring(L, -1);
+     lua_pop(L, 1);
+
+     // get Destination Value
+     lua_pushstring(L, "dest");
+     lua_gettable(L, -2);
+     route->dest_id = lua_tostring(L, -1);
+     lua_pop(L, 1);
+
+     // get Links Table (char* to be splited later)
+     lua_pushstring(L, "links");
+     lua_gettable(L, -2);
+     links = lua_tostring(L, -1);
+     lua_pop(L,1);
+
+     route->links_id = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+
+     char *tmp_links = malloc(sizeof(char)*strlen(links)+1);//use xbt
+     strcpy(tmp_links,links);
+     link_id = strtok(tmp_links,",");   //tmp_link = strtok((char*)links,",");
+     while(link_id != NULL)
+       {
+          xbt_dynar_push(route->links_id, &link_id);
+          link_id = strtok(NULL,","); //Alternativelly, a null pointer may be specified, in which case the function continues scanning where a previous successful call to the function ended.
+        }
+     xbt_dynar_push(route_list_d, &route);
+     return 0;
+
+      }
+  else { // Route.new is declared as a function
+     //const char* link_id;
+     route->src_id = luaL_checkstring(L, 1);
+     route->dest_id = luaL_checkstring(L, 2);
+     route->links_id = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+     lua_pushnil(L);
+     while (lua_next(L, 3) != 0)
+		{
+    	 link_id = lua_tostring(L, -1);
+    	 xbt_dynar_push(route->links_id, &link_id);
+    	 DEBUG2("index = %f , Link_id = %s \n", lua_tonumber(L, -2),
+    	 lua_tostring(L, -1));
+    	 lua_pop(L, 1);
+    	}
+    	 lua_pop(L, 1);
+    	  //add route to platform's route list
+    	  xbt_dynar_push(route_list_d, &route);
+    	  return 0;
+    }
+
+  return -1;
 }
-
 /**
  * set function to process
  */
 static int Host_set_function(lua_State * L)     //(host,function,nb_args,list_args)
 {
+	p_host_attr p_host;
+	const char *host;
+	const char *function;
+	const char *args;
+	char * tmp_arg;
+	unsigned int i;
+
+   if (lua_istable(L, -1)) {
+	 // get Host id
+	 lua_pushstring(L, "host");
+	 lua_gettable(L, -2);
+	 host = lua_tostring(L, -1);
+	 lua_pop(L, 1);
+	 // get Function Name
+	 lua_pushstring(L, "fct");
+	 lua_gettable(L, -2);
+     function = lua_tostring(L, -1);
+     lua_pop(L, 1);
+     //get args
+     lua_pushstring(L,"args");
+     lua_gettable(L, -2);
+     args = lua_tostring(L,-1);
+     lua_pop(L, 1);
+   }
+   else {
+	   ERROR0("Bad Arguments to create link, Should be a table with named arguments");
+	   return -1;
+   }
+
   // look for the index of host in host_list
-  const char *host_id = luaL_checkstring(L, 1);
-  const char *argument;
-  unsigned int i;
-  p_host_attr p_host;
-
   xbt_dynar_foreach(host_list_d, i, p_host) {
-    if (p_host->id == host_id) {
-      p_host->function = luaL_checkstring(L, 2);
-      if (lua_istable(L, 3)) {
-        p_host->args_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-        // fill the args list
-        lua_pushnil(L);
-        int j = 0;
-        while (lua_next(L, 3) != 0) {
-          argument = lua_tostring(L, -1);
-          xbt_dynar_push(p_host->args_list, &argument);
-          DEBUG2("index = %f , Arg_id = %s \n", lua_tonumber(L, -2),
-                 lua_tostring(L, -1));
-          j++;
-          lua_pop(L, 1);
+	  if (p_host->id == host) {
+      p_host->function = function;
+      p_host->args_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+      // split & fill the args list
+      tmp_arg = strtok((char*)args,",");
+      while (tmp_arg != NULL) {
+          xbt_dynar_push(p_host->args_list, &tmp_arg);
+          tmp_arg = strtok(NULL,",");
         }
-      }
-      lua_pop(L, 1);
       return 0;
-    }
-  }
-  ERROR1("Host : %s Not Found !!", host_id);
-  return 1;
-}
+	   }
+      }
+	  ERROR1("Host : %s Not Found !!", host);
+	  return 1;
 
+}
 /*
  * surf parse bypass platform
  * through CPU/network Models
@@ -440,7 +507,6 @@ static int surf_parse_bypass_platform()
 
   // Init routing mode
   create_AS(AS->id, AS->mode);
-
 
   // Add Hosts
   xbt_dynar_foreach(host_list_d, i, p_host) {
@@ -485,6 +551,7 @@ static int surf_parse_bypass_platform()
 
 static int surf_wsL07_parse_bypass_platform()
 {
+
   unsigned int i;
   p_host_attr p_host;
   p_link_attr p_link;
@@ -537,7 +604,6 @@ static int surf_parse_bypass_application()
   }
   return 0;
 }
-
 
 /*
  * Public Methods
