@@ -12,6 +12,7 @@
 
 #include "xbt/ex.h"
 
+#include "simix/simix.h"
 #include "gras/Msg/msg_private.h"
 #include "gras/Transport/transport_private.h"
 #include "gras/Virtu/virtu_sg.h"
@@ -27,8 +28,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_sg, gras_trp,
 static gras_sg_portrec_t find_port(gras_hostdata_t * hd, int port);
 
 void gras_trp_sg_socket_client(gras_trp_plugin_t self,
+                               const char*host,
+                               int port,
                                /* OUT */ gras_socket_t sock);
 void gras_trp_sg_socket_server(gras_trp_plugin_t self,
+                               int port,
                                /* OUT */ gras_socket_t sock);
 void gras_trp_sg_socket_close(gras_socket_t sd);
 
@@ -66,9 +70,45 @@ static gras_sg_portrec_t find_port(gras_hostdata_t * hd, int port)
   return NULL;
 }
 
+/***
+ *** Info about who's speaking
+ ***/
+static int gras_trp_sg_my_port(gras_socket_t s) {
+  gras_trp_sg_sock_data_t sockdata = s->data;
+  if (sockdata->rdv_client == NULL) /* Master socket, I'm server */
+    return sockdata->server_port;
+  else
+    return sockdata->client_port;
+}
+static int gras_trp_sg_peer_port(gras_socket_t s) {
+  gras_trp_sg_sock_data_t sockdata = s->data;
+  if (sockdata->server == SIMIX_process_self())
+    return sockdata->client_port;
+  else
+    return sockdata->server_port;
+}
+static const char* gras_trp_sg_peer_name(gras_socket_t s) {
+  gras_trp_sg_sock_data_t sockdata = s->data;
+  if (sockdata->server == SIMIX_process_self())
+    return SIMIX_host_get_name(SIMIX_process_get_host(sockdata->client));
+  else
+    return SIMIX_host_get_name(SIMIX_process_get_host(sockdata->server));
+}
+static const char* gras_trp_sg_peer_proc(gras_socket_t s) {
+  THROW_UNIMPLEMENTED;
+}
+static void gras_trp_sg_peer_proc_set(gras_socket_t s,char *name) {
+  THROW_UNIMPLEMENTED;
+}
 
 void gras_trp_sg_setup(gras_trp_plugin_t plug)
 {
+
+  plug->my_port = gras_trp_sg_my_port;
+  plug->peer_port = gras_trp_sg_peer_port;
+  plug->peer_name = gras_trp_sg_peer_name;
+  plug->peer_proc = gras_trp_sg_peer_proc;
+  plug->peer_proc_set = gras_trp_sg_peer_proc_set;
 
   gras_trp_sg_plug_data_t *data = xbt_new(gras_trp_sg_plug_data_t, 1);
 
@@ -86,6 +126,8 @@ void gras_trp_sg_setup(gras_trp_plugin_t plug)
 }
 
 void gras_trp_sg_socket_client(gras_trp_plugin_t self,
+                               const char*host,
+                               int port,
                                /* OUT */ gras_socket_t sock)
 {
 
@@ -95,41 +137,42 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
   gras_sg_portrec_t pr;
 
   /* make sure this socket will reach someone */
-  if (!(peer = SIMIX_host_get_by_name(sock->peer_name)))
+  if (!(peer = SIMIX_host_get_by_name(host)))
     THROW1(mismatch_error, 0,
-           "Can't connect to %s: no such host.\n", sock->peer_name);
+           "Can't connect to %s: no such host.\n", host);
 
   if (!(hd = (gras_hostdata_t *) SIMIX_host_get_data(peer)))
     THROW1(mismatch_error, 0,
            "can't connect to %s: no process on this host",
-           sock->peer_name);
+           host);
 
-  pr = find_port(hd, sock->peer_port);
+  pr = find_port(hd, port);
 
   if (pr == NULL) {
     THROW2(mismatch_error, 0,
            "can't connect to %s:%d, no process listen on this port",
-           sock->peer_name, sock->peer_port);
+           host, port);
   }
 
   /* Ensure that the listener is expecting the kind of stuff we want to send */
   if (pr->meas && !sock->meas) {
     THROW2(mismatch_error, 0,
            "can't connect to %s:%d in regular mode, the process listen "
-           "in measurement mode on this port", sock->peer_name,
-           sock->peer_port);
+           "in measurement mode on this port", host,
+           port);
   }
   if (!pr->meas && sock->meas) {
     THROW2(mismatch_error, 0,
            "can't connect to %s:%d in measurement mode, the process listen "
-           "in regular mode on this port", sock->peer_name,
-           sock->peer_port);
+           "in regular mode on this port", host,
+           port);
   }
 
   /* create simulation data of the socket */
   data = xbt_new(s_gras_trp_sg_sock_data_t, 1);
   data->client = SIMIX_process_self();
   data->server = pr->server;
+  data->server_port = port;
 
   /* initialize synchronization stuff on the socket */
   data->rdv_server = pr->rdv;
@@ -142,11 +185,11 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
 
   DEBUG5("%s (PID %d) connects in %s mode to %s:%d",
          SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
-         sock->meas ? "meas" : "regular", sock->peer_name,
-         sock->peer_port);
+         sock->meas ? "meas" : "regular", host,
+         port);
 }
 
-void gras_trp_sg_socket_server(gras_trp_plugin_t self, gras_socket_t sock)
+void gras_trp_sg_socket_server(gras_trp_plugin_t self, int port, gras_socket_t sock)
 {
 
   gras_hostdata_t *hd =
@@ -159,16 +202,16 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self, gras_socket_t sock)
   sock->accepting = 1;
 
   /* Check whether a server is already listening on that port or not */
-  pr = find_port(hd, sock->port);
+  pr = find_port(hd, port);
 
   if (pr)
     THROW2(mismatch_error, 0,
            "can't listen on address %s:%d: port already in use.",
-           SIMIX_host_get_name(SIMIX_host_self()), sock->port);
+           SIMIX_host_get_name(SIMIX_host_self()), port);
 
   /* This port is free, let's take it */
   pr = xbt_new(s_gras_sg_portrec_t, 1);
-  pr->port = sock->port;
+  pr->port = port;
   pr->meas = sock->meas;
   pr->server = SIMIX_process_self();
   pr->rdv = SIMIX_rdv_create(NULL);
@@ -177,6 +220,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self, gras_socket_t sock)
   /* Create the socket */
   data = xbt_new(s_gras_trp_sg_sock_data_t, 1);
   data->server = SIMIX_process_self();
+  data->server_port = port;
   data->client = NULL;
   data->rdv_server = pr->rdv;
   data->rdv_client = NULL;
@@ -187,7 +231,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self, gras_socket_t sock)
   VERB10
       ("'%s' (%d) ears on %s:%d%s (%p; data:%p); Here rdv: %p; Remote rdv: %p; Comm %p",
        SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
-       SIMIX_host_get_name(SIMIX_host_self()), sock->port,
+       SIMIX_host_get_name(SIMIX_host_self()), port,
        sock->meas ? " (mode meas)" : "", sock, data,
        (data->server ==
         SIMIX_process_self())? data->rdv_server : data->rdv_client,
@@ -211,16 +255,13 @@ void gras_trp_sg_socket_close(gras_socket_t sock)
 
   xbt_assert0(hd, "Please run gras_process_init on each process");
 
-  if (sock->data) {
-    /* FIXME: kill the rdv point if receiver side */
-    free(sock->data);
-  }
+  gras_trp_sg_sock_data_t sockdata = sock->data;
 
-  if (sock->incoming && !sock->outgoing && sock->port >= 0) {
+  if (sock->incoming && !sock->outgoing && sockdata->server_port >= 0) {
     /* server mode socket. Unregister it from 'OS' tables */
     xbt_dynar_foreach(hd->ports, cpt, pr) {
       DEBUG2("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));
-      if (pr->port == sock->port) {
+      if (pr->port == sockdata->server_port) {
         xbt_dynar_cursor_rm(hd->ports, &cpt);
         XBT_OUT;
         return;
@@ -228,7 +269,11 @@ void gras_trp_sg_socket_close(gras_socket_t sock)
     }
     WARN2
         ("socket_close called on the unknown incoming socket %p (port=%d)",
-         sock, sock->port);
+         sock, sockdata->server_port);
+  }
+  if (sock->data) {
+    /* FIXME: kill the rdv point if receiver side */
+    free(sock->data);
   }
   XBT_OUT;
 }
@@ -270,9 +315,6 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
         (sock_data->server ==
          SIMIX_process_self())? (sock_data->client) : (sock_data->server);
     smx_host_t remote_host = SIMIX_process_get_host(remote_dude);
-    DEBUG4("send chunk from %s to  %s:%d (size=%ld)",
-           SIMIX_host_get_name(SIMIX_host_self()),
-           SIMIX_host_get_name(remote_host), sock->peer_port, size);
   }
   //SIMIX_network_send(sock_data->rdv,size,1,-1,NULL,0,NULL,NULL);
   THROW_UNIMPLEMENTED;

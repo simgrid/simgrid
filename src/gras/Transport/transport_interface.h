@@ -51,10 +51,17 @@ struct gras_trp_plugin_ {
   /* dst pointers are created and initialized with default values
      before call to socket_client/server. 
      Retrive the info you need from there. */
-  void (*socket_client) (gras_trp_plugin_t self, gras_socket_t dst);
-  void (*socket_server) (gras_trp_plugin_t self, gras_socket_t dst);
+  void (*socket_client) (gras_trp_plugin_t self,const char *host,int port, gras_socket_t dst);
+  void (*socket_server) (gras_trp_plugin_t self, int port,gras_socket_t dst);
 
   gras_socket_t(*socket_accept) (gras_socket_t from);
+
+  /* Getting info about who's speaking */
+  int (*my_port)(gras_socket_t sd);
+  int (*peer_port)(gras_socket_t sd);
+  const char* (*peer_name)(gras_socket_t sd);
+  const char* (*peer_proc)(gras_socket_t sd);
+  void (*peer_proc_set)(gras_socket_t sd,char*peer_proc);
 
 
   /* socket_close() is responsible of telling the OS that the socket is over,

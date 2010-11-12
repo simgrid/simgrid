@@ -74,10 +74,6 @@ typedef struct s_gras_socket {
                                    Field here to remember it when accepting */
 
   int sd;
-  int port;                     /* port on this side */
-  int peer_port;                /* port on the other side */
-  char *peer_name;              /* hostname of the other side */
-  char *peer_proc;              /* process on the other side */
 
   void *data;                   /* plugin specific data */
 

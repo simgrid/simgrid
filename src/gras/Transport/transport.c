@@ -163,10 +163,6 @@ void gras_trp_socket_new(int incoming, gras_socket_t * dst)
   sock->moredata = 0;
 
   sock->sd = -1;
-  sock->port = -1;
-  sock->peer_port = -1;
-  sock->peer_name = NULL;
-  sock->peer_proc = NULL;
 
   sock->data = NULL;
   sock->bufdata = NULL;
@@ -200,14 +196,13 @@ gras_socket_server_ext(unsigned short port,
   /* defaults settings */
   gras_trp_socket_new(1, &sock);
   sock->plugin = trp;
-  sock->port = port;
   sock->buf_size = buf_size > 0 ? buf_size : 32 * 1024;
   sock->meas = measurement;
 
   /* Call plugin socket creation function */
   DEBUG1("Prepare socket with plugin (fct=%p)", trp->socket_server);
   TRY {
-    trp->socket_server(trp, sock);
+    trp->socket_server(trp, port, sock);
     DEBUG3("in=%c out=%c accept=%c",
            sock->incoming ? 'y' : 'n',
            sock->outgoing ? 'y' : 'n', sock->accepting ? 'y' : 'n');
@@ -288,14 +283,12 @@ gras_socket_client_ext(const char *host,
   /* defaults settings */
   gras_trp_socket_new(0, &sock);
   sock->plugin = trp;
-  sock->peer_port = port;
-  sock->peer_name = (char *) strdup(host ? host : "localhost");
   sock->buf_size = buf_size > 0 ? buf_size : 32 * 1024;
   sock->meas = measurement;
 
   /* plugin-specific */
   TRY {
-    (*trp->socket_client) (trp, sock);
+    (*trp->socket_client) (trp,host,port,sock);
     DEBUG3("in=%c out=%c accept=%c",
            sock->incoming ? 'y' : 'n',
            sock->outgoing ? 'y' : 'n', sock->accepting ? 'y' : 'n');
@@ -376,8 +369,6 @@ void gras_socket_close(gras_socket_t sock)
           (*sock->plugin->socket_close) (sock);
 
         /* free the memory */
-        if (sock->peer_name)
-          free(sock->peer_name);
         free(sock);
         XBT_OUT;
         return;
@@ -432,27 +423,32 @@ gras_trp_plugin_t gras_trp_plugin_get_by_name(const char *name)
 
 int gras_socket_my_port(gras_socket_t sock)
 {
-  return sock->port;
+  if (!sock->plugin->my_port)
+    THROW1(unknown_error,0,"Function my_port unimplemented in plugin %s",sock->plugin->name);
+  return (*sock->plugin->my_port)(sock);
+
 }
 
 int gras_socket_peer_port(gras_socket_t sock)
 {
-  return sock->peer_port;
+  if (!sock->plugin->peer_port)
+    THROW1(unknown_error,0,"Function peer_port unimplemented in plugin %s",sock->plugin->name);
+  return (*sock->plugin->peer_port)(sock);
 }
 
-char *gras_socket_peer_name(gras_socket_t sock)
+const char *gras_socket_peer_name(gras_socket_t sock)
 {
-  return sock->peer_name;
+  return (*sock->plugin->peer_name)(sock);
 }
 
-char *gras_socket_peer_proc(gras_socket_t sock)
+const char *gras_socket_peer_proc(gras_socket_t sock)
 {
-  return sock->peer_proc;
+  return (*sock->plugin->peer_proc)(sock);
 }
 
 void gras_socket_peer_proc_set(gras_socket_t sock, char *peer_proc)
 {
-  sock->peer_proc = peer_proc;
+  return (*sock->plugin->peer_proc_set)(sock,peer_proc);
 }
 
 /** \brief Check if the provided socket is a measurement one (or a regular one) */

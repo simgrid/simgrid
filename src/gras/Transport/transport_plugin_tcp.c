@@ -34,6 +34,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_tcp, gras_trp,
  *** Specific socket part
  ***/
 
+typedef struct {
+  int port;                     /* port on this side */
+  int peer_port;                /* port on the other side */
+  char *peer_name;              /* hostname of the other side */
+  char *peer_proc;              /* process on the other side */
+} s_gras_trp_tcp_sock_data_t, *gras_trp_tcp_sock_data_t;
+
 typedef enum { buffering_buf, buffering_iov } buffering_kind;
 
 typedef struct {
@@ -72,10 +79,18 @@ static int gras_trp_tcp_recv(gras_socket_t sock, char *data,
 
 static int _gras_tcp_proto_number(void);
 
-static XBT_INLINE void gras_trp_sock_socket_client(gras_trp_plugin_t
-                                                   ignored,
-                                                   gras_socket_t sock)
+static XBT_INLINE
+void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
+                                 const char *host,
+                                 int port,
+                                 /*OUT*/gras_socket_t sock)
 {
+  gras_trp_tcp_sock_data_t sockdata = xbt_new(s_gras_trp_tcp_sock_data_t,1);
+  sockdata->port = port;
+  sockdata->peer_proc = NULL;
+  sockdata->peer_port = port;
+  sockdata->peer_name = (char *) strdup(host ? host : "localhost");
+  sock->data = sockdata;
 
   struct sockaddr_in addr;
   struct hostent *he;
@@ -102,10 +117,10 @@ static XBT_INLINE void gras_trp_sock_socket_client(gras_trp_plugin_t
           sock_errstr(sock_errno));
   }
 
-  he = gethostbyname(sock->peer_name);
+  he = gethostbyname(sockdata->peer_name);
   if (he == NULL) {
     THROW2(system_error, 0, "Failed to lookup hostname %s: %s",
-           sock->peer_name, sock_errstr(sock_errno));
+        sockdata->peer_name, sock_errstr(sock_errno));
   }
 
   haddr = ((struct in_addr *) (he->h_addr_list)[0]);
@@ -113,20 +128,20 @@ static XBT_INLINE void gras_trp_sock_socket_client(gras_trp_plugin_t
   memset(&addr, 0, sizeof(struct sockaddr_in));
   memcpy(&addr.sin_addr, haddr, sizeof(struct in_addr));
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(sock->peer_port);
+  addr.sin_port = htons(sockdata->peer_port);
 
   if (connect(sock->sd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
     tcp_close(sock->sd);
     THROW3(system_error, 0,
            "Failed to connect socket to %s:%d (%s)",
-           sock->peer_name, sock->peer_port, sock_errstr(sock_errno));
+           sockdata->peer_name, sockdata->peer_port, sock_errstr(sock_errno));
   }
 
   gras_trp_tcp_send(sock, (char *) &myport, sizeof(uint32_t));
-  DEBUG1("peerport sent to %d", sock->peer_port);
+  DEBUG1("peerport sent to %d", sockdata->peer_port);
 
   VERB4("Connect to %s:%d (sd=%d, port %d here)",
-        sock->peer_name, sock->peer_port, sock->sd, sock->port);
+        sockdata->peer_name, sockdata->peer_port, sock->sd, sockdata->port);
 }
 
 /**
@@ -134,17 +149,25 @@ static XBT_INLINE void gras_trp_sock_socket_client(gras_trp_plugin_t
  *
  * Open a socket used to receive messages.
  */
-static XBT_INLINE void gras_trp_sock_socket_server(gras_trp_plugin_t
-                                                   ignored,
-                                                   gras_socket_t sock)
+static XBT_INLINE
+void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
+                                 int port,
+                                 gras_socket_t sock)
 {
   int size = sock->buf_size;
   int on = 1;
   struct sockaddr_in server;
 
+  gras_trp_tcp_sock_data_t sockdata = xbt_new(s_gras_trp_tcp_sock_data_t,1);
+  sockdata->port = port;
+  sockdata->peer_port = -1;
+  sockdata->peer_name = NULL;
+  sockdata->peer_proc = NULL;
+  sock->data=sockdata;
+
   sock->outgoing = 1;           /* TCP => duplex mode */
 
-  server.sin_port = htons((u_short) sock->port);
+  server.sin_port = htons((u_short) sockdata->port);
   server.sin_addr.s_addr = INADDR_ANY;
   server.sin_family = AF_INET;
   if ((sock->sd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -168,19 +191,19 @@ static XBT_INLINE void gras_trp_sock_socket_server(gras_trp_plugin_t
   if (bind(sock->sd, (struct sockaddr *) &server, sizeof(server)) == -1) {
     tcp_close(sock->sd);
     THROW2(system_error, 0,
-           "Cannot bind to port %d: %s", sock->port,
+           "Cannot bind to port %d: %s", sockdata->port,
            sock_errstr(sock_errno));
   }
 
-  DEBUG2("Listen on port %d (sd=%d)", sock->port, sock->sd);
+  DEBUG2("Listen on port %d (sd=%d)", sockdata->port, sock->sd);
   if (listen(sock->sd, 5) < 0) {
     tcp_close(sock->sd);
     THROW2(system_error, 0,
            "Cannot listen on port %d: %s",
-           sock->port, sock_errstr(sock_errno));
+           sockdata->port, sock_errstr(sock_errno));
   }
 
-  VERB2("Openned a server socket on port %d (sd=%d)", sock->port,
+  VERB2("Openned a server socket on port %d (sd=%d)", sockdata->port,
         sock->sd);
 }
 
@@ -233,15 +256,18 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
   res->outgoing = sock->outgoing;
   res->accepting = 0;
   res->sd = sd;
-  res->port = -1;
+  gras_trp_tcp_sock_data_t sockdata = xbt_new(s_gras_trp_tcp_sock_data_t,1);
+  sockdata->port = -1;
+  res->data=sockdata;
+
 
   gras_trp_tcp_recv(res, (char *) &hisport, sizeof(hisport));
-  res->peer_port = ntohl(hisport);
-  DEBUG1("peerport %d received", res->peer_port);
+  sockdata->peer_port = ntohl(hisport);
+  DEBUG1("peerport %d received", sockdata->peer_port);
 
   /* FIXME: Lock to protect inet_ntoa */
   if (((struct sockaddr *) &peer_in)->sa_family != AF_INET) {
-    res->peer_name = (char *) strdup("unknown");
+    sockdata->peer_name = (char *) strdup("unknown");
   } else {
     struct in_addr addrAsInAddr;
     char *tmp;
@@ -250,13 +276,13 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
 
     tmp = inet_ntoa(addrAsInAddr);
     if (tmp != NULL) {
-      res->peer_name = (char *) strdup(tmp);
+      sockdata->peer_name = (char *) strdup(tmp);
     } else {
-      res->peer_name = (char *) strdup("unknown");
+      sockdata->peer_name = (char *) strdup("unknown");
     }
   }
 
-  VERB3("Accepted from %s:%d (sd=%d)", res->peer_name, res->peer_port, sd);
+  VERB3("Accepted from %s:%d (sd=%d)", sockdata->peer_name, sockdata->peer_port, sd);
   xbt_dynar_push(((gras_trp_procdata_t)
                   gras_libdata_by_id(gras_trp_libdata_id))->sockets, &res);
 
@@ -269,6 +295,10 @@ static void gras_trp_sock_socket_close(gras_socket_t sock)
 
   if (!sock)
     return;                     /* close only once */
+
+  if (((gras_trp_tcp_sock_data_t)sock->data)->peer_name)
+    free(((gras_trp_tcp_sock_data_t)sock->data)->peer_name);
+  free(sock->data);
 
   VERB1("close tcp connection %d", sock->sd);
 
@@ -584,8 +614,11 @@ gras_trp_iov_recv(gras_socket_t sock, char *chunk, unsigned long int size)
  ***/
 
 void gras_trp_buf_socket_client(gras_trp_plugin_t self,
+    const char *host,
+    int port,
                                 gras_socket_t sock);
 void gras_trp_buf_socket_server(gras_trp_plugin_t self,
+                                int port,
                                 gras_socket_t sock);
 gras_socket_t gras_trp_buf_socket_accept(gras_socket_t sock);
 
@@ -622,10 +655,41 @@ gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock)
 }
 
 /***
+ *** Info about who's speaking
+ ***/
+static int gras_trp_tcp_my_port(gras_socket_t s) {
+  gras_trp_tcp_sock_data_t sockdata = s->data;
+  return sockdata->port;
+}
+static int gras_trp_tcp_peer_port(gras_socket_t s) {
+  gras_trp_tcp_sock_data_t sockdata = s->data;
+  return sockdata->peer_port;
+}
+static const char* gras_trp_tcp_peer_name(gras_socket_t s) {
+  gras_trp_tcp_sock_data_t sockdata = s->data;
+  return sockdata->peer_name;
+}
+static const char* gras_trp_tcp_peer_proc(gras_socket_t s) {
+  gras_trp_tcp_sock_data_t sockdata = s->data;
+  return sockdata->peer_proc;
+}
+static void gras_trp_tcp_peer_proc_set(gras_socket_t s,char *name) {
+  gras_trp_tcp_sock_data_t sockdata = s->data;
+  sockdata->peer_proc = xbt_strdup(name);
+}
+
+/***
  *** Code
  ***/
 void gras_trp_tcp_setup(gras_trp_plugin_t plug)
 {
+
+  plug->my_port = gras_trp_tcp_my_port;
+  plug->peer_port = gras_trp_tcp_peer_port;
+  plug->peer_name = gras_trp_tcp_peer_name;
+  plug->peer_proc = gras_trp_tcp_peer_proc;
+  plug->peer_proc_set = gras_trp_tcp_peer_proc_set;
+
 
   plug->socket_client = gras_trp_buf_socket_client;
   plug->socket_server = gras_trp_buf_socket_server;
@@ -649,10 +713,12 @@ void gras_trp_tcp_setup(gras_trp_plugin_t plug)
 }
 
 void gras_trp_buf_socket_client(gras_trp_plugin_t self,
+    const char *host,
+    int port,
                                 /* OUT */ gras_socket_t sock)
 {
 
-  gras_trp_sock_socket_client(NULL, sock);
+  gras_trp_sock_socket_client(NULL, host,port,sock);
   gras_trp_buf_init_sock(sock);
 }
 
@@ -662,10 +728,11 @@ void gras_trp_buf_socket_client(gras_trp_plugin_t self,
  * Open a socket used to receive messages.
  */
 void gras_trp_buf_socket_server(gras_trp_plugin_t self,
+      int port,
                                 /* OUT */ gras_socket_t sock)
 {
 
-  gras_trp_sock_socket_server(NULL, sock);
+  gras_trp_sock_socket_server(NULL, port, sock);
   gras_trp_buf_init_sock(sock);
 }
 

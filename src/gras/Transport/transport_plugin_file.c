@@ -40,7 +40,24 @@ typedef struct {
  *** Specific socket part
  ***/
 
-
+/***
+ *** Info about who's speaking
+ ***/
+static int gras_trp_file_my_port(gras_socket_t s) {
+  THROW_UNIMPLEMENTED;
+}
+static int gras_trp_file_peer_port(gras_socket_t s) {
+  THROW_UNIMPLEMENTED;
+}
+static char* gras_trp_file_peer_name(gras_socket_t s) {
+  THROW_UNIMPLEMENTED;
+}
+static char* gras_trp_file_peer_proc(gras_socket_t s) {
+  THROW_UNIMPLEMENTED;
+}
+static void gras_trp_file_peer_proc_set(gras_socket_t s,char *name) {
+  THROW_UNIMPLEMENTED;
+}
 
 /***
  *** Code
@@ -51,6 +68,12 @@ void gras_trp_file_setup(gras_trp_plugin_t plug)
   gras_trp_file_plug_data_t *file = xbt_new(gras_trp_file_plug_data_t, 1);
 
   FD_ZERO(&(file->incoming_socks));
+
+  plug->my_port = gras_trp_file_my_port;
+  plug->peer_port = gras_trp_file_peer_port;
+  plug->peer_name = gras_trp_file_peer_name;
+  plug->peer_proc = gras_trp_file_peer_proc;
+  plug->peer_proc_set = gras_trp_file_peer_proc_set;
 
   plug->socket_close = gras_trp_file_close;
 

@@ -37,6 +37,9 @@ typedef struct {
   smx_rdv_t rdv_server;         /* The rendez-vous point to use */
   smx_rdv_t rdv_client;         /* The rendez-vous point to use */
   smx_comm_t comm_recv;         /* The comm of irecv on receiver side */
+
+  int server_port;
+  int client_port;
 } s_gras_trp_sg_sock_data_t, *gras_trp_sg_sock_data_t;
 
 
