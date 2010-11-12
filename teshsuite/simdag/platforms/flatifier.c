@@ -18,6 +18,7 @@
 #include "simdag/simdag.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
+#include "xbt/ex.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(validator,
                              "Logging specific to this SimDag example");
@@ -48,6 +49,7 @@ int main(int argc, char **argv)
   xbt_dict_t props = NULL;
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data;
+  xbt_ex_t e;
 
   const SD_workstation_t *hosts;
   const SD_link_t *links, *tmp;
@@ -56,7 +58,12 @@ int main(int argc, char **argv)
 
   platformFile = argv[1];
   DEBUG1("%s", platformFile);
-  SD_create_environment(platformFile);
+  TRY {
+    SD_create_environment(platformFile);
+  } CATCH(e) {
+    xbt_die(bprintf("Error while loading %s: %s",platformFile,e.msg));     
+  }
+   
 
   printf("<?xml version='1.0'?>\n");
   printf("<!DOCTYPE platform SYSTEM \"simgrid.dtd\">\n");
