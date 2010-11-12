@@ -134,6 +134,7 @@ include(${PROJECT_DIRECTORY}/buildtools/Cmake/DefinePackages.cmake)
 
 ### Build some Maintainer files
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/MaintainerMode.cmake)
+include(${PROJECT_DIRECTORY}/buildtools/Cmake/UnitTesting.cmake)
 
 ### Setup gcc flags
 include(${PROJECT_DIRECTORY}/buildtools/Cmake/Flags.cmake)
