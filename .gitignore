@@ -94,6 +94,7 @@ examples/msg/icomms/toto.txt
 examples/msg/masterslave/masterslave_console
 examples/simdag/ex_sd_test_console
 examples/simdag/sd_test_console
+examples/simdag/scheduling/Montage_25.jed
 
 examples/msg/irc_isend/peer
 examples/msg/irc_isend/toto.txt
