@@ -1,0 +1,4 @@
+! expect signal SIGABRT
+$ ./flatifier two_hosts_asymetric_BOGUS.xml
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [0.000000] /home/mquinson/Code/simgrid/src/xbt/asserts.c:29: [xbt/CRITICAL] Error while loading two_hosts_asymetric_BOGUS.xml: The route between "alice" and "bob" already exist
