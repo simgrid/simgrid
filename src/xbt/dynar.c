@@ -743,7 +743,7 @@ XBT_INLINE int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
 	{
 		void *data1 = xbt_dynar_get_as(d1, i, void *);
 		void *data2 = xbt_dynar_get_as(d2, i, void *);
-		if(!compar(data1,data2)) return 1;
+		if(compar(data1,data2)) return 1;
 	}
 	return 0;
 }

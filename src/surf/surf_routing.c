@@ -2509,7 +2509,7 @@ static void generic_set_route(routing_component_t rc, const char *src,
 
   route_t route_to_test = xbt_dict_get_or_null(_parse_routes, route_name);
   if(route_to_test)
-  xbt_assert2(xbt_dynar_compare(
+  xbt_assert2(!xbt_dynar_compare(
 		  (void*)route->link_list,
 		  (void*)route_to_test->link_list,
 		  (int_f_cpvoid_cpvoid_t) strcmp),
@@ -2532,7 +2532,7 @@ static void generic_set_route(routing_component_t rc, const char *src,
 	  DEBUG2("Load Route from \"%s\" to \"%s\"", dst, src);
 	  route_to_test = xbt_dict_get_or_null(_parse_routes, bprintf("%d#%d",*dst_id, *src_id));
 	  if(route_to_test)
-	  xbt_assert2(xbt_dynar_compare(
+	  xbt_assert2(!xbt_dynar_compare(
 			  (void*)route_sym->link_list,
 			  (void*)route_to_test->link_list,
 			  (int_f_cpvoid_cpvoid_t) strcmp),
@@ -2568,7 +2568,7 @@ static void generic_set_ASroute(routing_component_t rc, const char *src,
 
   route_t route_to_test = xbt_dict_get_or_null(_parse_routes, route_name);
   if(route_to_test)
-  xbt_assert4(xbt_dynar_compare(
+  xbt_assert4(!xbt_dynar_compare(
 		  (void*) (&e_route->generic_route)->link_list,
 		  (void*) route_to_test->link_list,
 		  (int_f_cpvoid_cpvoid_t) strcmp),
@@ -2598,7 +2598,7 @@ static void generic_set_ASroute(routing_component_t rc, const char *src,
 
 	  route_to_test = xbt_dict_get_or_null(_parse_routes, bprintf("%d#%d", *dst_id, *src_id));
 	  if(route_to_test)
-	  xbt_assert4(xbt_dynar_compare(
+	  xbt_assert4(!xbt_dynar_compare(
 			  (void*) (&route_sym->generic_route)->link_list,
 			  (void*) route_to_test->link_list,
 			  (int_f_cpvoid_cpvoid_t) strcmp),
