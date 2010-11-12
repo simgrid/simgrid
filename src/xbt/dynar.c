@@ -914,7 +914,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dynar_remove functions")
 {
   xbt_dynar_t d = xbt_dynar_new(sizeof(int), NULL);
-  int cursor,cpt;
+  unsigned int cursor,cpt;
 
   xbt_test_add1("==== Insert %d int, traverse them, remove them",NB_ELEM);
   /* Populate_ints [doxygen cruft] */
@@ -948,7 +948,7 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
                      cursor, cpt);
   }
   xbt_test_assert1(xbt_dynar_length(d) == 0,
-                   "There is still %d elements in the dynar after removing everything",
+                   "There is still %lu elements in the dynar after removing everything",
                    xbt_dynar_length(d));
   xbt_dynar_free(&d);
 
@@ -976,7 +976,7 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
                      cursor, cpt);
   }
   xbt_test_assert1(xbt_dynar_length(d) == 0,
-                   "There is still %d elements in the dynar after removing everything",
+                   "There is still %lu elements in the dynar after removing everything",
                    xbt_dynar_length(d));
   xbt_dynar_free(&d);
 }
