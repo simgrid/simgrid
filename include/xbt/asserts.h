@@ -36,21 +36,21 @@ SG_BEGIN_DECL()
 #else
      /** @brief The condition which failed will be displayed.
 	 @hideinitializer  */
-#define xbt_assert(cond)                  if (!(cond)) THROW1(0,0,"Assertion %s failed", #cond)
+#define xbt_assert(cond)                  do { if (!(cond)) THROW1(0,0,"Assertion %s failed", #cond); } while (0)
      /** @hideinitializer  */
-#define xbt_assert0(cond,msg)             if (!(cond)) THROW0(0,0,msg)
+#define xbt_assert0(cond,msg)             do { if (!(cond)) THROW0(0,0,msg); } while (0)
      /** @hideinitializer  */
-#define xbt_assert1(cond,msg,a)           if (!(cond)) THROW1(0,0,msg,a)
+#define xbt_assert1(cond,msg,a)           do { if (!(cond)) THROW1(0,0,msg,a); } while (0)
      /** @hideinitializer  */
-#define xbt_assert2(cond,msg,a,b)         if (!(cond)) THROW2(0,0,msg,a,b)
+#define xbt_assert2(cond,msg,a,b)         do { if (!(cond)) THROW2(0,0,msg,a,b); } while (0)
      /** @hideinitializer  */
-#define xbt_assert3(cond,msg,a,b,c)       if (!(cond)) THROW3(0,0,msg,a,b,c)
+#define xbt_assert3(cond,msg,a,b,c)       do { if (!(cond)) THROW3(0,0,msg,a,b,c); } while (0)
      /** @hideinitializer  */
-#define xbt_assert4(cond,msg,a,b,c,d)     if (!(cond)) THROW4(0,0,msg,a,b,c,d)
+#define xbt_assert4(cond,msg,a,b,c,d)     do { if (!(cond)) THROW4(0,0,msg,a,b,c,d); } while (0)
      /** @hideinitializer  */
-#define xbt_assert5(cond,msg,a,b,c,d,e)   if (!(cond)) THROW5(0,0,msg,a,b,c,d,e)
+#define xbt_assert5(cond,msg,a,b,c,d,e)   do { if (!(cond)) THROW5(0,0,msg,a,b,c,d,e); } while (0)
      /** @hideinitializer  */
-#define xbt_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) THROW6(0,0,msg,a,b,c,d,e,f)
+#define xbt_assert6(cond,msg,a,b,c,d,e,f) do { if (!(cond)) THROW6(0,0,msg,a,b,c,d,e,f); } while (0)
 #endif
 /** @} */
     SG_END_DECL()
