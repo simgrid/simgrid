@@ -932,6 +932,14 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
   }
   /* end_of_traversal */
 
+  /* Re-fill with the same values using set_as (and re-verify) */
+  for (cpt = 0; cpt < NB_ELEM; cpt++)
+    xbt_dynar_set_as(d, cpt, int, cpt);
+  xbt_dynar_foreach(d, cursor, cpt)
+    xbt_test_assert2(cursor == cpt,
+                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     cursor, cpt);
+
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     int val;
     xbt_dynar_remove_at(d,0,&val);

@@ -156,6 +156,10 @@ XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
    *  @hideinitializer */
 #  define xbt_dynar_get_as(dynar,idx,type) \
           (*(type*)xbt_dynar_get_ptr((dynar),(idx)))
+/** @brief Quick setting of scalar content
+ *  @hideinitializer */
+#  define xbt_dynar_set_as(dynar,idx,type,val) \
+         (*(type*)xbt_dynar_get_ptr((dynar),(idx))) = val
   /** @brief Quick retrieval of scalar content 
    *  @hideinitializer */
 #  define xbt_dynar_getlast_as(dynar,type) \
