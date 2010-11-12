@@ -463,7 +463,6 @@ static XBT_INLINE void *_xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
 
   _sanity_check_dynar(dynar);
   _sanity_check_idx(idx);
-  _check_sloppy_inbound_idx(dynar, idx);
 
   old_used = dynar->used;
   new_used = old_used + 1;
