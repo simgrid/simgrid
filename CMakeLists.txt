@@ -11,6 +11,7 @@ set(libsmpi_version "${release_version}")
 ### Find programs and paths
 FIND_PROGRAM(GCOV_PATH gcov)
 FIND_PROGRAM(VALGRIND_PATH valgrind)
+include(FindPerl)
 
 ### SET THE PROJECT_DIRECTORY
 SET(PROJECT_DIRECTORY "${CMAKE_HOME_DIRECTORY}")

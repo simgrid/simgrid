@@ -2,7 +2,6 @@ if(enable_maintainer_mode AND NOT WIN32)
 find_program(FLEX_EXE NAMES flex)
 find_program(FLEXML_EXE NAMES flexml)
 find_program(SED_EXE NAMES sed)
-include(FindPerl)
 
 IF(FLEX_EXE)
 	set(HAVE_FLEX 1)

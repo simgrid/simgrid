@@ -6,7 +6,6 @@ if(enable_smpi)
 endif(enable_smpi)
 
 if(enable_memcheck)
-	include(FindPerl)
 	exec_program("valgrind --version " OUTPUT_VARIABLE "VALGRIND_VERSION")
 	if(VALGRIND_VERSION AND PERL_EXECUTABLE)
 		string(REGEX MATCH "[0-9].[0-9].[0-9]" NEW_VALGRIND_VERSION "${VALGRIND_VERSION}")
