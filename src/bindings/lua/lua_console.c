@@ -364,12 +364,6 @@ static int Link_new(lua_State * L)      // (id,bandwidth,latency)
   link->policy = policy;
   xbt_dynar_push(link_list_d, &link);
 
-
-  //TEST1
-  unsigned int i;
-  p_link_attr p_link;
-  xbt_dynar_foreach(link_list_d, i, p_link) {
-  }
   return 0;
 }
 
