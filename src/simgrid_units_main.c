@@ -22,6 +22,7 @@ extern xbt_test_unit_t _xbt_current_unit;
 
   /* SGU: BEGIN FILE xbt/dynar.c */
     void  test_dynar_int(void);
+    void test_dynar_insert(void);
     void  test_dynar_double(void);
     void  test_dynar_string(void);
     void  test_dynar_sync_int(void);
@@ -99,6 +100,7 @@ int main(int argc, char *argv[]) {
     /* SGU: BEGIN FILE xbt/dynar.c */
       suite = xbt_test_suite_by_name("dynar","Dynar data container");
       xbt_test_suite_push(suite, "int",  test_dynar_int,  "Dynars of integers");
+      xbt_test_suite_push(suite, "insert", test_dynar_insert, "Using the xbt_dynar_insert and xbt_dynar_remove functions");
       xbt_test_suite_push(suite, "double",  test_dynar_double,  "Dynars of doubles");
       xbt_test_suite_push(suite, "string",  test_dynar_string,  "Dynars of strings");
       xbt_test_suite_push(suite, "synchronized int",  test_dynar_sync_int,  "Synchronized dynars of integers");

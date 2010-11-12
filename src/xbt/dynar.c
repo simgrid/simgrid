@@ -459,7 +459,7 @@ static XBT_INLINE void *_xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
   void *res;
   unsigned long old_used;
   unsigned long new_used;
-  unsigned long nb_shift;
+  long nb_shift;
 
   _sanity_check_dynar(dynar);
   _sanity_check_idx(idx);
@@ -471,9 +471,10 @@ static XBT_INLINE void *_xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
 
   nb_shift = old_used - idx;
 
-  if (nb_shift)
+  if (nb_shift>0) {
     memmove(_xbt_dynar_elm(dynar, idx + 1),
             _xbt_dynar_elm(dynar, idx), nb_shift * dynar->elmsize);
+  }
 
   dynar->used = new_used;
   res = _xbt_dynar_elm(dynar, idx);
@@ -862,12 +863,12 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
     xbt_dynar_push_as(d, int, cpt);
     DEBUG2("Push %d, length=%lu", cpt, xbt_dynar_length(d));
   }
-  for (cpt = 0; cpt < 1000; cpt++) {
-    xbt_dynar_insert_at_as(d, 2500, int, cpt);
+  for (cpt = 0; cpt < NB_ELEM/5; cpt++) {
+    xbt_dynar_insert_at_as(d, NB_ELEM/2, int, cpt);
     DEBUG2("Push %d, length=%lu", cpt, xbt_dynar_length(d));
   }
 
-  for (cpt = 0; cpt < 2500; cpt++) {
+  for (cpt = 0; cpt < NB_ELEM/2; cpt++) {
     xbt_dynar_shift(d, &i);
     xbt_test_assert2(i == cpt,
                      "The retrieved value is not the same than the injected one at the begining (%d!=%d)",
@@ -905,6 +906,71 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
   xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
   /* in your code is naturally the way to go outside a regression test */
+}
+
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dynar_remove functions")
+{
+  xbt_dynar_t d = xbt_dynar_new(sizeof(int), NULL);
+  int cursor,cpt;
+
+  xbt_test_add1("==== Insert %d int, traverse them, remove them",NB_ELEM);
+  /* Populate_ints [doxygen cruft] */
+  /* 1. Populate the dynar */
+  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+    xbt_dynar_insert_at(d, cpt, &cpt);
+    xbt_test_log2("Push %d, length=%lu", cpt, xbt_dynar_length(d));
+  }
+
+  /* 3. Traverse the dynar */
+  xbt_dynar_foreach(d, cursor, cpt) {
+    xbt_test_assert2(cursor == cpt,
+                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     cursor, cpt);
+  }
+  /* end_of_traversal */
+
+  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+    int val;
+    xbt_dynar_remove_at(d,0,&val);
+    xbt_test_assert2(cpt == val,
+                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     cursor, cpt);
+  }
+  xbt_test_assert1(xbt_dynar_length(d) == 0,
+                   "There is still %d elements in the dynar after removing everything",
+                   xbt_dynar_length(d));
+  xbt_dynar_free(&d);
+
+  /* ********************* */
+  xbt_test_add1("==== Insert %d int in reverse order, traverse them, remove them",NB_ELEM);
+  d = xbt_dynar_new(sizeof(int), NULL);
+  for (cpt = NB_ELEM-1; cpt >=0; cpt--) {
+    xbt_dynar_replace(d, cpt, &cpt);
+    xbt_test_log2("Push %d, length=%lu", cpt, xbt_dynar_length(d));
+  }
+
+  /* 3. Traverse the dynar */
+  xbt_dynar_foreach(d, cursor, cpt) {
+    xbt_test_assert2(cursor == cpt,
+                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     cursor, cpt);
+  }
+  /* end_of_traversal */
+
+  for (cpt =NB_ELEM-1; cpt >=0; cpt--) {
+    int val;
+    xbt_dynar_remove_at(d,xbt_dynar_length(d)-1,&val);
+    xbt_test_assert2(cpt == val,
+                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     cursor, cpt);
+  }
+  xbt_test_assert1(xbt_dynar_length(d) == 0,
+                   "There is still %d elements in the dynar after removing everything",
+                   xbt_dynar_length(d));
+  xbt_dynar_free(&d);
 }
 
 /*******************************************************************************/
