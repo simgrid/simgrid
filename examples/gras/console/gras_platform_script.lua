@@ -42,8 +42,8 @@ require "simgrid"
    simgrid.gras_register_platform();
 
   --Set Application
-   simgrid.Host.setFunction("Tremblay","server",{"4000"});
-   simgrid.Host.setFunction("Fafard","client",{"Tremblay","4000"});
+   simgrid.Host.setFunction{host="Tremblay",fct="server",args="4000"};
+   simgrid.Host.setFunction{host="Fafard",fct="client",args="Tremblay,4000"};
 
   --Save Application 
    simgrid.gras_register_application(); 

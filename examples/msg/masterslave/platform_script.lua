@@ -42,11 +42,11 @@ require "simgrid"
    simgrid.msg_register_platform();
 
   --Set Application
-   simgrid.Host.setFunction("Tremblay","master",{"20","550000000","1000000","4"});
-   simgrid.Host.setFunction("Bourassa","slave",{"0"});
-   simgrid.Host.setFunction("Jupiter","slave",{"1"});
-   simgrid.Host.setFunction("Fafard","slave",{"2"});
-   simgrid.Host.setFunction("Ginette","slave",{"3"});
+   simgrid.Host.setFunction{host="Tremblay",fct="master",args="20,550000000,1000000,4"};
+   simgrid.Host.setFunction{host="Bourassa",fct="slave",args="0"};
+   simgrid.Host.setFunction{host="Jupiter",fct="slave",args="1"};
+   simgrid.Host.setFunction{host="Fafard",fct="slave",args="2"};
+   simgrid.Host.setFunction{host="Ginette",fct="slave",args="3"};
    
   --Save Application 
    simgrid.msg_register_application(); 
