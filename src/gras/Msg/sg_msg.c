@@ -97,6 +97,7 @@ gras_msg_t gras_msg_recv_any(void)
   xbt_dynar_get_cpy(comms, got, &(comm));
   msg = SIMIX_communication_get_data(comm);
   VERB1("Got something. Communication %p's over", comm);
+  SIMIX_communication_destroy(comm);
 
   /* Reinstall a waiting communication on that rdv */
   /* Get the sock again

@@ -135,8 +135,6 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   start_time = MSG_get_clock();
 #endif
 
-  memset(&comm, 0, sizeof(comm));
-
   /* Kept for compatibility with older implementation */
   xbt_assert1(!MSG_mailbox_get_cond(mailbox),
               "A process is already blocked on this channel %s",
@@ -187,6 +185,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 {
   xbt_ex_t e;
   MSG_error_t ret = MSG_OK;
+  smx_comm_t comm;
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
 #ifdef HAVE_TRACING
@@ -220,7 +219,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
     SIMIX_network_send(mailbox->rdv, t_simdata->message_size,
                        t_simdata->rate, timeout, task, sizeof(void *),
-                       &t_simdata->comm, task);
+                       &comm, task);
   }
 
   CATCH(e) {

@@ -554,10 +554,19 @@ XBT_INLINE void SIMIX_network_send(smx_rdv_t rdv, double task_size,
                                    void *src_buff, size_t src_buff_size,
                                    smx_comm_t * comm_ref, void *data)
 {
+  xbt_ex_t e;
   *comm_ref =
       SIMIX_network_isend(rdv, task_size, rate, src_buff, src_buff_size,
                           data);
-  SIMIX_network_wait(*comm_ref, timeout);
+  TRY {
+    SIMIX_network_wait(*comm_ref, timeout);
+  }
+  TRY_CLEANUP {
+    SIMIX_communication_destroy(*comm_ref);
+  }
+  CATCH(e) {
+    RETHROW;
+  }
 }
 
 /**
@@ -577,9 +586,18 @@ XBT_INLINE void SIMIX_network_recv(smx_rdv_t rdv, double timeout,
                                    void *dst_buff, size_t * dst_buff_size,
                                    smx_comm_t * comm_ref)
 {
+  xbt_ex_t e;
   *comm_ref =
       (smx_comm_t) SIMIX_network_irecv(rdv, dst_buff, dst_buff_size);
-  SIMIX_network_wait(*comm_ref, timeout);
+  TRY {
+    SIMIX_network_wait(*comm_ref, timeout);
+  }
+  TRY_CLEANUP {
+    SIMIX_communication_destroy(*comm_ref);
+  }
+  CATCH(e) {
+    RETHROW;
+  }
 }
 
 /******************************************************************************/
@@ -654,6 +672,7 @@ XBT_INLINE void SIMIX_network_wait(smx_comm_t comm, double timeout)
   if (_surf_do_model_check)
     MC_trans_intercept_wait(comm);
 #endif
+  SIMIX_communication_use(comm);
   /* Wait for communication completion */
   SIMIX_communication_wait_for_completion(comm, timeout);
 }
@@ -708,6 +727,7 @@ unsigned int SIMIX_network_waitany(xbt_dynar_t comms)
   /* let the regular code deal with the communication end (errors checking and cleanup).
    * A bit of useless work will be done, but that's good for source factorization */
   SIMIX_sem_release_forever(comm_finished->sem);
+  SIMIX_communication_use(comm_finished);
   SIMIX_communication_wait_for_completion(comm_finished, -1);
   return found_comm;
 }

@@ -215,6 +215,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     status->MPI_ERROR = MPI_SUCCESS;
     status->count = SIMIX_communication_get_dst_buf_size((*request)->pair);
   }
+  SIMIX_communication_destroy((*request)->pair);
   print_request("finishing wait", *request);
   if ((*request)->complete == 1) {
     SIMIX_rdv_destroy((*request)->rdv);
