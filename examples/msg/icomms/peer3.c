@@ -35,8 +35,7 @@ int sender(int argc, char *argv[])
   char mailbox[256];
   char sprintf_buffer[256];
   d = xbt_dynar_new(sizeof(msg_comm_t), NULL);
-  msg_comm_t *comm =
-      malloc((number_of_tasks + receivers_count) * sizeof(msg_comm_t));
+  msg_comm_t *comm = xbt_new(msg_comm_t, number_of_tasks + receivers_count);
   msg_comm_t res_irecv = NULL;
   for (i = 0; i < (number_of_tasks); i++) {
     task = NULL;
@@ -51,7 +50,6 @@ int sender(int argc, char *argv[])
         MSG_task_create(sprintf_buffer, task_comp_size,
                         task_comm_size / coef, NULL);
     comm[i] = MSG_task_isend(task, mailbox);
-    MSG_task_refcount_dec(task);
     xbt_dynar_push_as(d, msg_comm_t, comm[i]);
     INFO3("Send to receiver-%ld %s comm_size %f", i % receivers_count,
           sprintf_buffer, task_comm_size / coef);
@@ -60,9 +58,10 @@ int sender(int argc, char *argv[])
 
   while (d->used) {
     xbt_dynar_remove_at(d, MSG_comm_waitany(d), &res_irecv);
+    MSG_comm_destroy(res_irecv);
   }
   xbt_dynar_free(&d);
-
+  xbt_free(comm);
 
   /* Here we are waiting for the completion of all tasks */
   sprintf(mailbox, "finalize");
@@ -113,6 +112,7 @@ int receiver(int argc, char *argv[])
     int num = MSG_comm_waitany(comms);
     xbt_dynar_remove_at(comms, num, &res_irecv);
     task_com = MSG_comm_get_task(res_irecv);
+    MSG_comm_destroy(res_irecv);
     INFO1("Processing \"%s\"", MSG_task_get_name(task_com));
     MSG_task_execute(task_com);
     INFO1("\"%s\" done", MSG_task_get_name(task_com));

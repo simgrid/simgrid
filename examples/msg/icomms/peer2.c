@@ -28,8 +28,7 @@ int sender(int argc, char *argv[])
   double task_comm_size = atof(argv[3]);
   long receivers_count = atol(argv[4]);
 
-  msg_comm_t *comm =
-      malloc((number_of_tasks + receivers_count) * sizeof(msg_comm_t));
+  msg_comm_t *comm = xbt_new(msg_comm_t, number_of_tasks + receivers_count);
   int i;
   m_task_t task = NULL;
   for (i = 0; i < number_of_tasks; i++) {
@@ -55,6 +54,7 @@ int sender(int argc, char *argv[])
   MSG_comm_waitall(comm, (number_of_tasks + receivers_count), -1);
 
   INFO0("Goodbye now!");
+  xbt_free(comm);
   return 0;
 }                               /* end_of_sender */
 
