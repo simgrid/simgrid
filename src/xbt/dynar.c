@@ -441,7 +441,6 @@ xbt_dynar_replace(xbt_dynar_t dynar,
 {
   _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
-  _sanity_check_idx(idx);
 
   if (idx < dynar->used && dynar->free_f) {
     void *const old_object = _xbt_dynar_elm(dynar, idx);
