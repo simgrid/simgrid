@@ -49,10 +49,10 @@ static int gras_trp_file_my_port(gras_socket_t s) {
 static int gras_trp_file_peer_port(gras_socket_t s) {
   THROW_UNIMPLEMENTED;
 }
-static char* gras_trp_file_peer_name(gras_socket_t s) {
+static const char* gras_trp_file_peer_name(gras_socket_t s) {
   THROW_UNIMPLEMENTED;
 }
-static char* gras_trp_file_peer_proc(gras_socket_t s) {
+static const char* gras_trp_file_peer_proc(gras_socket_t s) {
   THROW_UNIMPLEMENTED;
 }
 static void gras_trp_file_peer_proc_set(gras_socket_t s,char *name) {

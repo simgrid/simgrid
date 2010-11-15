@@ -301,7 +301,6 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
   gras_trp_procdata_t trp_remote_proc;
   gras_msg_procdata_t msg_remote_proc;
   gras_msg_t msg;               /* message to send */
-#endif
 
   gras_trp_sg_sock_data_t sock_data = (gras_trp_sg_sock_data_t) sock->data;
   xbt_assert0(sock->meas,
@@ -317,6 +316,7 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
     smx_host_t remote_host = SIMIX_process_get_host(remote_dude);
   }
   //SIMIX_network_send(sock_data->rdv,size,1,-1,NULL,0,NULL,NULL);
+#endif
   THROW_UNIMPLEMENTED;
 }
 
