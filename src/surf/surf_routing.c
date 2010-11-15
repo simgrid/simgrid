@@ -2508,37 +2508,36 @@ static void generic_set_route(routing_component_t rc, const char *src,
               src, dst);
 
   route_t route_to_test = xbt_dict_get_or_null(_parse_routes, route_name);
-  if(route_to_test)
-  xbt_assert2(!xbt_dynar_compare(
-		  (void*)route->link_list,
-		  (void*)route_to_test->link_list,
-		  (int_f_cpvoid_cpvoid_t) strcmp),
-	  "The route between \"%s\" and \"%s\" already exist", src,dst);
-
-  xbt_dict_set(_parse_routes, route_name, route, NULL);
+  if (route_to_test)
+    xbt_assert2(!xbt_dynar_compare(
+	  (void*)route->link_list,
+	  (void*)route_to_test->link_list,
+	  (int_f_cpvoid_cpvoid_t) strcmp),
+	"The route between \"%s\" and \"%s\" already exists", src,dst);
+  else
+    xbt_dict_set(_parse_routes, route_name, route, NULL);
+  
   xbt_free(route_name);
 
-  if(A_surfxml_route_symetrical == A_surfxml_route_symetrical_YES)
-  {
-	  int i;
-	  route_t route_sym = xbt_new0(s_route_t, 1);
-	  route_sym->link_list = xbt_dynar_new(sizeof(char *),NULL);
-	  for(i=nb_links ; i>0 ; i--)
-	  {
-		 char *link_name = xbt_new0(char,strlen(xbt_dynar_get_as(route->link_list, i-1, char *)));
-		 link_name = xbt_strdup(xbt_dynar_get_as(route->link_list, i-1, char *));
-		 xbt_dynar_push_as(route_sym->link_list ,char *, link_name);
-	  }
-	  DEBUG2("Load Route from \"%s\" to \"%s\"", dst, src);
-	  route_to_test = xbt_dict_get_or_null(_parse_routes, bprintf("%d#%d",*dst_id, *src_id));
-	  if(route_to_test)
-	  xbt_assert2(!xbt_dynar_compare(
-			  (void*)route_sym->link_list,
-			  (void*)route_to_test->link_list,
-			  (int_f_cpvoid_cpvoid_t) strcmp),
-		  "The route between \"%s\" and \"%s\" already exist", dst,src);
-	  xbt_dict_set(_parse_routes, bprintf("%d#%d",*dst_id, *src_id), route_sym, NULL);
-   }
+  if (A_surfxml_route_symetrical == A_surfxml_route_symetrical_YES) {
+    int i;
+    route_t route_sym = xbt_new0(s_route_t, 1);
+    route_sym->link_list = xbt_dynar_new(sizeof(char *),NULL);
+    for(i=nb_links ; i>0 ; i--) {
+      char *link_name = xbt_strdup(xbt_dynar_get_as(route->link_list, i-1, char *));
+      xbt_dynar_push_as(route_sym->link_list ,char *, link_name);
+    }
+    DEBUG2("Load Route from \"%s\" to \"%s\"", dst, src);
+    route_to_test = xbt_dict_get_or_null(_parse_routes, bprintf("%d#%d",*dst_id, *src_id));
+    if (route_to_test)
+      xbt_assert2(!xbt_dynar_compare(
+	    (void*)route_sym->link_list,
+	    (void*)route_to_test->link_list,
+	    (int_f_cpvoid_cpvoid_t) strcmp),
+	  "The route between \"%s\" and \"%s\" already exists", dst,src);
+    else
+      xbt_dict_set(_parse_routes, bprintf("%d#%d",*dst_id, *src_id), route_sym, NULL);
+  }
 }
 
 static void generic_set_ASroute(routing_component_t rc, const char *src,
@@ -2567,46 +2566,44 @@ static void generic_set_ASroute(routing_component_t rc, const char *src,
               src, dst);
 
   route_t route_to_test = xbt_dict_get_or_null(_parse_routes, route_name);
-  if(route_to_test)
-  xbt_assert4(!xbt_dynar_compare(
-		  (void*) (&e_route->generic_route)->link_list,
-		  (void*) route_to_test->link_list,
-		  (int_f_cpvoid_cpvoid_t) strcmp),
-		  "The route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exist",
-		                src, e_route->src_gateway, dst, e_route->dst_gateway);
-
-  xbt_dict_set(_parse_routes, route_name, e_route, NULL);
+  if (route_to_test)
+    xbt_assert4(!xbt_dynar_compare(
+	  (void*) (&e_route->generic_route)->link_list,
+	  (void*) route_to_test->link_list,
+	  (int_f_cpvoid_cpvoid_t) strcmp),
+	"The route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exists",
+	src, e_route->src_gateway, dst, e_route->dst_gateway);
+  else
+    xbt_dict_set(_parse_routes, route_name, e_route, NULL);
+ 
   xbt_free(route_name);
 
   unsigned long nb_links = xbt_dynar_length(e_route->generic_route.link_list);
-  if(A_surfxml_ASroute_symetrical == A_surfxml_ASroute_symetrical_YES)
-  {
-	  int i;
-	  route_extended_t route_sym = xbt_new0(s_route_extended_t, 1);
-	  route_sym->generic_route.link_list = xbt_dynar_new(sizeof(char *),NULL);
-	  for(i=nb_links ; i>0 ; i--)
-	  {
-		 char *link_name = xbt_new0(char,strlen(xbt_dynar_get_as(e_route->generic_route.link_list, i-1, char *)));
-		 link_name = bprintf("%s",xbt_dynar_get_as(e_route->generic_route.link_list, i-1, char *));
-		 xbt_dynar_push_as(route_sym->generic_route.link_list ,char *, link_name);
-	  }
-	  route_sym->src_gateway = xbt_new0( char,strlen(e_route->dst_gateway) );
-	  route_sym->src_gateway = bprintf("%s",e_route->dst_gateway);
-	  route_sym->dst_gateway = xbt_new0( char,strlen(e_route->src_gateway) );
-	  route_sym->dst_gateway = bprintf("%s",e_route->src_gateway);
-	  DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",dst, route_sym->src_gateway,src,route_sym->dst_gateway);
+  if (A_surfxml_ASroute_symetrical == A_surfxml_ASroute_symetrical_YES) {
+    int i;
+    route_extended_t route_sym = xbt_new0(s_route_extended_t, 1);
+    route_sym->generic_route.link_list = xbt_dynar_new(sizeof(char *),NULL);
+    for(i=nb_links ; i>0 ; i--) {
+      char *link_name = bprintf("%s",xbt_dynar_get_as(e_route->generic_route.link_list, i-1, char *));
+      xbt_dynar_push_as(route_sym->generic_route.link_list ,char *, link_name);
+    }
+    route_sym->src_gateway = xbt_new0( char,strlen(e_route->dst_gateway) );
+    route_sym->src_gateway = bprintf("%s",e_route->dst_gateway);
+    route_sym->dst_gateway = xbt_new0( char,strlen(e_route->src_gateway) );
+    route_sym->dst_gateway = bprintf("%s",e_route->src_gateway);
+    DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",dst, route_sym->src_gateway,src,route_sym->dst_gateway);
 
-	  route_to_test = xbt_dict_get_or_null(_parse_routes, bprintf("%d#%d", *dst_id, *src_id));
-	  if(route_to_test)
-	  xbt_assert4(!xbt_dynar_compare(
-			  (void*) (&route_sym->generic_route)->link_list,
-			  (void*) route_to_test->link_list,
-			  (int_f_cpvoid_cpvoid_t) strcmp),
-			  "The route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exist",
-			  	              dst, route_sym->src_gateway, src, route_sym->dst_gateway);
-
-	  xbt_dict_set(_parse_routes, bprintf("%d#%d", *dst_id, *src_id), route_sym, NULL);
-   }
+    route_to_test = xbt_dict_get_or_null(_parse_routes, bprintf("%d#%d", *dst_id, *src_id));
+    if(route_to_test)
+      xbt_assert4(!xbt_dynar_compare(
+	    (void*) (&route_sym->generic_route)->link_list,
+	    (void*) route_to_test->link_list,
+	    (int_f_cpvoid_cpvoid_t) strcmp),
+	  "The route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exists",
+	  dst, route_sym->src_gateway, src, route_sym->dst_gateway);
+    else 
+      xbt_dict_set(_parse_routes, bprintf("%d#%d", *dst_id, *src_id), route_sym, NULL);
+  }
 }
 
 static void generic_set_bypassroute(routing_component_t rc,
