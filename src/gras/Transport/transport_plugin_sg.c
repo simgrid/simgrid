@@ -302,19 +302,21 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
   gras_msg_procdata_t msg_remote_proc;
   gras_msg_t msg;               /* message to send */
 
-  gras_trp_sg_sock_data_t sock_data = (gras_trp_sg_sock_data_t) sock->data;
+  //gras_trp_sg_sock_data_t sock_data = (gras_trp_sg_sock_data_t) sock->data;
   xbt_assert0(sock->meas,
               "SG chunk exchange shouldn't be used on non-measurement sockets");
 
 
   /* creates simix action and waits its ends, waits in the sender host
      condition */
+  /*
   if (XBT_LOG_ISENABLED(gras_trp_sg, xbt_log_priority_debug)) {
     smx_process_t remote_dude =
         (sock_data->server ==
          SIMIX_process_self())? (sock_data->client) : (sock_data->server);
     smx_host_t remote_host = SIMIX_process_get_host(remote_dude);
   }
+  */
   //SIMIX_network_send(sock_data->rdv,size,1,-1,NULL,0,NULL,NULL);
 #endif
   THROW_UNIMPLEMENTED;
