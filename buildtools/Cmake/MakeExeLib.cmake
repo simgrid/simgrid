@@ -4,11 +4,9 @@ if(enable_supernovae)
 	include(${PROJECT_DIRECTORY}/buildtools/Cmake/Supernovae.cmake)
 else(enable_supernovae)	
 	add_library(simgrid SHARED ${simgrid_sources})
-	add_library(simgrid_static STATIC ${simgrid_sources})
 	add_library(gras SHARED ${gras_sources})
 	if(enable_smpi)
 		add_library(smpi SHARED ${SMPI_SRC})
-		add_library(smpi_static STATIC ${SMPI_SRC})
 	endif(enable_smpi)
 endif(enable_supernovae)
 
@@ -91,16 +89,13 @@ if(HAVE_POSIX_GETTIME)
 endif(HAVE_POSIX_GETTIME)
 
 target_link_libraries(simgrid 	${SIMGRID_DEP})
-target_link_libraries(simgrid_static	${SIMGRID_DEP})
 target_link_libraries(gras 	${GRAS_DEP})
 
 add_dependencies(gras maintainer_files)
 add_dependencies(simgrid maintainer_files)
-add_dependencies(simgrid_static maintainer_files)
 				
 if(enable_smpi)
 	target_link_libraries(smpi 	simgrid ${SMPI_DEP})
-	target_link_libraries(smpi_static simgrid ${SMPI_DEP})
 endif(enable_smpi)
 
 ### Make EXEs
