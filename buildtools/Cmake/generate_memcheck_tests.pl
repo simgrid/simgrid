@@ -57,6 +57,10 @@ while(defined($line=<MAKETEST>)) {
 			$command =~ s/ \$ARGS//g;
 			$command =~ s/ \$@ //g;	
 			$command =~ s/..\/..\/bin\/smpirun/\${CMAKE_BINARY_DIR\}\/bin\/smpirun/g;
+                        if($command =~ /^[^\/\$\s]+\//) {
+                            $command = $path."/".$command;
+                            $command =~ s/\/(.?\/)+/\//g;
+                        }
 			print "ADD_TEST(memcheck-$name_test-$count $command --cd $path\/)\n";
 			#push @test_list, "memcheck-$name_test-$count";
 			$count++;
