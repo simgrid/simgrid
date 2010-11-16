@@ -72,6 +72,7 @@ static xbt_dynar_t get_ready_tasks(xbt_dynar_t dax)
 
 static double finish_on_at(SD_task_t task, SD_workstation_t workstation)
 {
+  volatile double result;
   unsigned int i;
   double data_available = 0.;
   double redist_time = 0;
@@ -126,17 +127,18 @@ static double finish_on_at(SD_task_t task, SD_workstation_t workstation)
 
     xbt_dynar_free_container(&parents);
 
-    return MAX(SD_workstation_get_available_at(workstation),
+    result = MAX(SD_workstation_get_available_at(workstation),
                last_data_available) +
         SD_workstation_get_computation_time(workstation,
                                             SD_task_get_amount(task));
   } else {
     xbt_dynar_free_container(&parents);
 
-    return SD_workstation_get_available_at(workstation) +
+    result = SD_workstation_get_available_at(workstation) +
         SD_workstation_get_computation_time(workstation,
                                             SD_task_get_amount(task));
   }
+  return result;
 }
 
 static SD_workstation_t SD_task_get_best_workstation(SD_task_t task)
