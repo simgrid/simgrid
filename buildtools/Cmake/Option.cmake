@@ -39,6 +39,7 @@ option(enable_coverage "Enable coverage." off)
 option(enable_memcheck "Enable memcheck." off)
 option(enable_print_message "Enable print message during config." off)
 option(enable_model-checking "" off)
+option(enable_lib_static "" off)
 
 if(WIN32) #actually not enable with windows
 	message("Mode supernovae and maintainer disable with Windows.")
@@ -89,3 +90,4 @@ mark_as_advanced(SED_EXE)
 mark_as_advanced(SVN)
 mark_as_advanced(GIT)
 mark_as_advanced(VALGRIND_PATH)
+mark_as_advanced(PATH_PCRE_H)

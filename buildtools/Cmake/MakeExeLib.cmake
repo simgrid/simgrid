@@ -5,14 +5,19 @@ if(enable_supernovae)
 else(enable_supernovae)	
 	add_library(simgrid SHARED ${simgrid_sources})
 	add_library(gras SHARED ${gras_sources})
+	if(enable_lib_static)
+		add_library(simgrid_static STATIC ${simgrid_sources})	
+	endif(enable_lib_static)
 	if(enable_smpi)
 		add_library(smpi SHARED ${SMPI_SRC})
+		if(enable_lib_static)
+			add_library(smpi_static STATIC ${SMPI_SRC})	
+		endif(enable_lib_static)
 	endif(enable_smpi)
 endif(enable_supernovae)
 
 set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 set_target_properties(gras PROPERTIES VERSION ${libgras_version})
-
 if(enable_smpi)
 	set_target_properties(smpi PROPERTIES VERSION ${libsmpi_version})
 endif(enable_smpi)
@@ -90,13 +95,21 @@ endif(HAVE_POSIX_GETTIME)
 
 target_link_libraries(simgrid 	${SIMGRID_DEP})
 target_link_libraries(gras 	${GRAS_DEP})
-
 add_dependencies(gras maintainer_files)
-add_dependencies(simgrid maintainer_files)
-				
+add_dependencies(simgrid maintainer_files)				
 if(enable_smpi)
 	target_link_libraries(smpi 	simgrid ${SMPI_DEP})
 endif(enable_smpi)
+
+if(enable_lib_static)
+	target_link_libraries(simgrid_static 	${SIMGRID_DEP})
+	add_dependencies(simgrid_static maintainer_files)
+	set_target_properties(simgrid_static PROPERTIES OUTPUT_NAME simgrid)
+	if(enable_smpi)
+		target_link_libraries(smpi_static 	simgrid ${SMPI_DEP})
+		set_target_properties(smpi_static PROPERTIES OUTPUT_NAME smpi)
+	endif(enable_smpi)
+endif(enable_lib_static)
 
 ### Make EXEs
 

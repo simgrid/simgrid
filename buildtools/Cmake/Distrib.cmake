@@ -38,7 +38,16 @@ install(TARGETS simgrid gras
 if(enable_smpi)	
   install(TARGETS smpi
           DESTINATION $ENV{DESTDIR}${prefix}/lib/)
-endif(enable_smpi)	
+endif(enable_smpi)
+
+if(enable_lib_static)
+	install(TARGETS simgrid_static 
+	        DESTINATION $ENV{DESTDIR}${prefix}/lib/)
+	if(enable_smpi)	
+  		install(TARGETS smpi_static
+          		DESTINATION $ENV{DESTDIR}${prefix}/lib/)
+	endif(enable_smpi)
+endif(enable_lib_static)
 
 # include files
 foreach(file ${install_HEADERS})
