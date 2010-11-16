@@ -1,24 +1,23 @@
 #!/usr/bin/perl -w
 use strict;
-my($arg)="";
-my($count)=0;
+my @argv = ("valgrind");
+my $count = 0;
 
-while($count!=$#ARGV+1)
-{
-	print "arg($count)$ARGV[$count]\n";
-	if($ARGV[$count] eq "--cd"){
-		print "cd $ARGV[$count+1]\n";
-		chdir ($ARGV[$count+1]);
-		$count++;
-	}
-	else{
-		$arg="$arg $ARGV[$count]";
-	}
-	$count++;
+while (my $arg = shift) {
+    print "arg($count)$arg\n";
+    if($arg eq "--cd"){
+        $arg = shift;
+        print "cd $arg\n";
+        chdir ($arg);
+        $count++;
+    } else{
+        push @argv, $arg;
+    }
+    $count++;
 }
 
 #print "COMMAND : $bin $option $cd $path\n";
 #print "cd $path\n";
 #print "valgrind --trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no $bin $option\n";
-print "valgrind $arg\n\n";
-system "valgrind $arg";
+print "@argv\n\n";
+system @argv;
