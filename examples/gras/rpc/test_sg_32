@@ -4,7 +4,7 @@
 # optimization level: if inlining, gcc changes it).
 # Trying to get it right would prevent me to ever submit that damn paper.
 
-$ $SG_TEST_EXENV ./rpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/rpc.xml --log=root.fmt:"'[%h:%P:(%i)] [%c/%p] %m%n'"
+$ $SG_TEST_EXENV ./rpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/rpc.xml "--log=root.fmt:'[%h:%P:(%i)] [%c/%p] %m%n'"
 > [Tremblay:server:(1)] [Rpc/INFO] Launch server (port=4000)
 > [Fafard:client:(3)] [Rpc/INFO] Launch client (server on Tremblay:4000)
 > [Ginette:forwarder:(2)] [Rpc/INFO] Launch forwarder (port=4000)
