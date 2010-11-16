@@ -18,15 +18,6 @@ int *id;                        /* to pass a pointer to the threads without race
 
 int more_info = 0;              /* SET IT TO TRUE TO GET MORE INFO */
 
-/*
- * Some additionnal code to let the father wait the childs
- */
-xbt_mutex_t mut_end;
-xbt_cond_t cond_end;
-int running_threads;
-
-xbt_mutex_t dead_end;
-
 /* Code ran by each thread */
 static void crasher_thread(void *arg)
 {
@@ -40,11 +31,6 @@ static void crasher_thread(void *arg)
     else
       INFO0("XXX (XX|XX|XX|XX|XX|XX|XX|XX|XX)");
   }
-
-  xbt_mutex_acquire(mut_end);
-  running_threads--;
-  xbt_cond_signal(cond_end);
-  xbt_mutex_release(mut_end);
 }
 
 int crasher(int argc, char *argv[]);
@@ -62,25 +48,20 @@ int crasher(int argc, char *argv[])
   for (i = 0; i < crasher_amount; i++)
     id[i] = i;
 
-  /* setup the ending mecanism */
-  running_threads = crasher_amount;
-  cond_end = xbt_cond_init();
-  mut_end = xbt_mutex_init();
-
   /* spawn threads */
   for (i = 0; i < crasher_amount; i++) {
     char *name = bprintf("thread %d", i);
     crashers[i] =
-        xbt_thread_create(name, &crasher_thread, &id[i],
-                          0 /*not joinable */ );
+        xbt_thread_create(name, &crasher_thread, &id[i], 1 /* joinable */ );
     free(name);
   }
 
   /* wait for them */
-  xbt_mutex_acquire(mut_end);
-  while (running_threads)
-    xbt_cond_wait(cond_end, mut_end);
-  xbt_mutex_release(mut_end);
+  for (i = 0; i < crasher_amount; i++)
+    xbt_thread_join(crashers[i]);
+
+  xbt_free(crashers);
+  xbt_free(id);
 
   gras_exit();
   return 0;
