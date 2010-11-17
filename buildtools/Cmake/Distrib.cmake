@@ -5,16 +5,19 @@ set(CMAKE_INSTALL_PREFIX "${prefix}" CACHE TYPE INTERNAL FORCE)
 #########################################
 	  
 # doc
-if(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
-	file(MAKE_DIRECTORY ${PROJECT_DIRECTORY}/doc/html/)
-endif(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
-	install(DIRECTORY "${PROJECT_DIRECTORY}/doc/html/"
-	  DESTINATION "$ENV{DESTDIR}${prefix}/doc/simgrid/html/"
-	  PATTERN ".svn" EXCLUDE 
-	  PATTERN ".git" EXCLUDE 
-	  PATTERN "*.o" EXCLUDE
-	  PATTERN "*~" EXCLUDE
-	)
+if(enable_doc)
+	if(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
+		file(MAKE_DIRECTORY ${PROJECT_DIRECTORY}/doc/html/)
+	endif(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
+		install(DIRECTORY "${PROJECT_DIRECTORY}/doc/html/"
+		  DESTINATION "$ENV{DESTDIR}${prefix}/doc/simgrid/html/"
+		  PATTERN ".svn" EXCLUDE 
+		  PATTERN ".git" EXCLUDE 
+		  PATTERN "*.o" EXCLUDE
+		  PATTERN "*~" EXCLUDE
+		)
+endif(enable_doc)
+
 # binaries
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
                  ${CMAKE_BINARY_DIR}/bin/smpirun
