@@ -237,8 +237,14 @@ if(HAVE_CGRAPH_LIB OR HAVE_AGRAPH_LIB)
     		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-L${lib_graphviz} ")
     	endif(NOT operation)
     	
+    else(HAVE_GRAPH_H OR HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
+        set(enable_graphviz "0")
     endif(HAVE_GRAPH_H OR HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
+    
+else(HAVE_CGRAPH_LIB OR HAVE_AGRAPH_LIB)
+    set(enable_graphviz "0")
 endif(HAVE_CGRAPH_LIB OR HAVE_AGRAPH_LIB)
+
 endif(enable_graphviz AND HAVE_CDT_LIB)
 #--------------------------------------------------------------------------------------------------
 ### Initialize of pcre
