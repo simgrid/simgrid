@@ -80,9 +80,19 @@ if(HAVE_LUA)
 	)
 endif(HAVE_LUA)
 
-if(HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
-	SET(SIMGRID_DEP "${SIMGRID_DEP} -lcgraph")
-endif(HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
+if(enable_graphviz AND HAVE_CDT_LIB)
+if(HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
+
+    if(HAVE_CGRAPH_LIB)
+	    SET(SIMGRID_DEP "${SIMGRID_DEP} -lcgraph")
+	else(HAVE_CGRAPH_LIB)
+        if(HAVE_AGRAPH_LIB)
+    	    SET(SIMGRID_DEP "${SIMGRID_DEP} -lagraph -lcdt")
+        endif(HAVE_AGRAPH_LIB)	
+    endif(HAVE_CGRAPH_LIB)
+    	    
+endif(HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
+endif(enable_graphviz AND HAVE_CDT_LIB)
 
 if(HAVE_GTNETS)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -lgtnets")

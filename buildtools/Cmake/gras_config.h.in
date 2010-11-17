@@ -39,6 +39,12 @@
 /* Set to true if lib pcre is present */
 #cmakedefine HAVE_PCRE_LIB @HAVE_PCRE_LIB@
 
+/* Some variable for graphviz */
+#cmakedefine HAVE_GRAPH_H @GRAPH_H@
+#cmakedefine HAVE_CGRAPH_H @CGRAPH_H@
+#cmakedefine HAVE_AGRAPH_H @AGRAPH_H@
+
+
 /* Define if building universal (internal helper macro) */
 #cmakedefine AC_APPLE_UNIVERSAL_BUILD @AC_APPLE_UNIVERSAL_BUILD@
 

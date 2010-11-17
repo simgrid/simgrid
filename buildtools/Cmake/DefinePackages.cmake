@@ -268,13 +268,12 @@ set(SIMDAG_SRC
 	src/simdag/sd_workstation.c
 	src/simdag/sd_daxloader.c
 )
-if(HAVE_CGRAPH_H)
-	set(SIMDAG_SRC
-		${SIMDAG_SRC}
+if(GRAPH_H OR AGRAPH_H OR CGRAPH_H)
+	set(SIMDAG_SRC 
+	    ${SIMDAG_SRC}
 		src/simdag/sd_dotloader.c
 	)
-
-endif(HAVE_CGRAPH_H)
+endif(GRAPH_H OR AGRAPH_H OR CGRAPH_H)
 
 set(GRAS_COMMON_SRC
 	src/gras/gras.c

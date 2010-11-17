@@ -12,7 +12,18 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 
 #undef CLEANUP
-#include <cgraph.h>
+
+#ifdef HAVE_AGRAPH_H
+	#include <graphviz/agraph.h>
+#else
+	#ifdef HAVE_GRAPH_H
+		#include <graphviz/graph.h>
+	#else
+		#ifdef HAVE_CGRAPH_H
+			#include <graphviz/cgraph.h>
+		#endif
+	#endif
+#endif
 
 void dot_add_task(Agnode_t * dag_node);
 void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge);
@@ -114,8 +125,13 @@ xbt_dynar_t SD_dotload_FILE(FILE * in_file)
 
   Agnode_t *dag_node = NULL;
   for (dag_node = agfstnode(dag_dot); dag_node;
+	#ifdef HAVE_CGRAPH_H
        dag_node = agnxtnode(dag_dot, dag_node)) {
-    dot_add_task(dag_node);
+    #endif
+	#ifdef HAVE_AGRAPH_H
+	   dag_node = agnxtnode(dag_node)) {
+	#endif
+  dot_add_task(dag_node);
   }
   agclose(dag_dot);
   xbt_dict_free(&jobs);
@@ -199,15 +215,27 @@ void dot_add_task(Agnode_t * dag_node)
   }
   Agedge_t *e;
   int count = 0;
-  for (e = agfstin(dag_dot, dag_node); e; e = agnxtin(dag_dot, e)) {
-    dot_add_input_dependencies(current_job, e);
-    count++;
+
+  #ifdef HAVE_CGRAPH_H
+	  for (e = agfstin(dag_dot, dag_node); e; e = agnxtin(dag_dot, e)) {
+  #endif
+  #ifdef HAVE_AGRAPH_H
+	  for (e = agfstin(dag_node); e; e = agnxtin(e)) {
+  #endif
+  dot_add_input_dependencies(current_job, e);
+  count++;
   }
   if (count == 0 && current_job != root_task) {
     SD_task_dependency_add(NULL, NULL, root_task, current_job);
   }
   count = 0;
-  for (e = agfstout(dag_dot, dag_node); e; e = agnxtout(dag_dot, e)) {
+  #ifdef HAVE_CGRAPH_H
+  	  for (e = agfstout(dag_dot, dag_node); e; e = agnxtout(dag_dot, e)) {
+  #endif
+  #ifdef HAVE_AGRAPH_H
+	  for (e = agfstout(dag_node); e; e = agnxtout(e)) {
+  #endif
+
     dot_add_output_dependencies(current_job, e);
     count++;
   }

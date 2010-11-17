@@ -1,16 +1,18 @@
+set(CMAKE_MODULE_PATH 
+${CMAKE_MODULE_PATH}
+${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
+)
 include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
 include(TestBigEndian)
-
+if(enable_graphviz)
+include(FindGraphviz)
+endif(enable_graphviz)
 TEST_BIG_ENDIAN(BIGENDIAN)
 
 # Checks for header libraries functions.
-
-find_library(HAVE_CGRAPH_LIB cgraph)
-find_file(HAVE_CGRAPH_H graphviz/cgraph.h)
-
 CHECK_LIBRARY_EXISTS(pthread 	pthread_create 		NO_DEFAULT_PATHS pthread)
 CHECK_LIBRARY_EXISTS(pthread 	sem_init 		NO_DEFAULT_PATHS HAVE_SEM_INIT_LIB)
 CHECK_LIBRARY_EXISTS(pthread 	sem_timedwait 		NO_DEFAULT_PATHS HAVE_SEM_TIMEDWAIT_LIB)
@@ -189,23 +191,52 @@ endif(NOT enable_gtnets OR enable_supernovae)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of cgraph
-mark_as_advanced(HAVE_CGRAPH_LIB)
-mark_as_advanced(HAVE_CGRAPH_H)
+if(enable_graphviz AND HAVE_CDT_LIB)
+if(HAVE_CGRAPH_LIB OR HAVE_AGRAPH_LIB)
 
-if(HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
-	string(REGEX REPLACE "/libcgraph.*" "" lib_cgraph ${HAVE_CGRAPH_LIB})
-	string(REPLACE "/cgraph.h" "" file_cgraph_h ${HAVE_CGRAPH_H})
-	string(REGEX MATCH "-I${file_cgraph_h} " operation "${CMAKE_C_FLAGS}")
-	if(NOT operation)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${file_cgraph_h} ")
-	endif(NOT operation)
-	string(REGEX MATCH "-L${lib_cgraph} " operation "${CMAKE_C_FLAGS}")
-	if(NOT operation)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-L${lib_cgraph} ")
-	endif(NOT operation)
-	
-endif(HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
-
+    if(HAVE_AGRAPH_LIB)
+     	string(REGEX REPLACE "/libagraph.*" "" lib_graphviz ${HAVE_AGRAPH_LIB})   
+    else(HAVE_AGRAPH_LIB)
+        if(HAVE_CGRAPH_LIB)
+     	    string(REGEX REPLACE "/libcgraph.*" "" lib_graphviz ${HAVE_CGRAPH_LIB})   
+        endif(HAVE_CGRAPH_LIB)
+    endif(HAVE_AGRAPH_LIB)
+      
+    if(HAVE_GRAPH_H OR HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
+    
+        if(HAVE_GRAPH_H)
+        	string(REPLACE "/graphviz" "" file_graphviz_h ${HAVE_GRAPH_H})
+        	set(GRAPH_H 1)
+        endif(HAVE_GRAPH_H)
+        
+        if(HAVE_AGRAPH_H)
+        	string(REPLACE "/graphviz" "" file_graphviz_h ${HAVE_AGRAPH_H})
+        	set(AGRAPH_H 1)
+        endif(HAVE_AGRAPH_H)
+        
+        if(HAVE_CGRAPH_H)
+        	string(REPLACE "/graphviz" "" file_graphviz_h ${HAVE_CGRAPH_H})
+        	set(CGRAPH_H 1)
+        endif(HAVE_CGRAPH_H)  
+         
+        string(REGEX MATCH "-I${file_graphviz_h} " operation "${CMAKE_C_FLAGS}")
+    	if(NOT operation)
+    		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${file_graphviz_h} ")
+    	endif(NOT operation)
+    	
+    	string(REGEX MATCH "-I${file_graphviz_h}/graphviz " operation "${CMAKE_C_FLAGS}")
+    	if(NOT operation)
+    		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${file_graphviz_h}/graphviz ")
+    	endif(NOT operation)
+    	
+    	string(REGEX MATCH "-L${lib_graphviz} " operation "${CMAKE_C_FLAGS}")
+    	if(NOT operation)
+    		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-L${lib_graphviz} ")
+    	endif(NOT operation)
+    	
+    endif(HAVE_GRAPH_H OR HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
+endif(HAVE_CGRAPH_LIB OR HAVE_AGRAPH_LIB)
+endif(enable_graphviz AND HAVE_CDT_LIB)
 #--------------------------------------------------------------------------------------------------
 ### Initialize of pcre
 find_library(PATH_PCRE_LIB pcre)
