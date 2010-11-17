@@ -13,16 +13,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 
 #undef CLEANUP
 
-#ifdef HAVE_AGRAPH_H
+#ifdef HAVE_CGRAPH_H
+	#include <graphviz/cgraph.h>
+#elif HAVE_AGRAPH_H
 	#include <graphviz/agraph.h>
-#else
-	#ifdef HAVE_GRAPH_H
-		#include <graphviz/graph.h>
-	#else
-		#ifdef HAVE_CGRAPH_H
-			#include <graphviz/cgraph.h>
-		#endif
-	#endif
 #endif
 
 void dot_add_task(Agnode_t * dag_node);
@@ -127,10 +121,10 @@ xbt_dynar_t SD_dotload_FILE(FILE * in_file)
   for (dag_node = agfstnode(dag_dot); dag_node;
 	#ifdef HAVE_CGRAPH_H
        dag_node = agnxtnode(dag_dot, dag_node)) {
-    #endif
-	#ifdef HAVE_AGRAPH_H
+    #elif HAVE_AGRAPH_H
 	   dag_node = agnxtnode(dag_node)) {
 	#endif
+
   dot_add_task(dag_node);
   }
   agclose(dag_dot);
@@ -218,8 +212,7 @@ void dot_add_task(Agnode_t * dag_node)
 
   #ifdef HAVE_CGRAPH_H
 	  for (e = agfstin(dag_dot, dag_node); e; e = agnxtin(dag_dot, e)) {
-  #endif
-  #ifdef HAVE_AGRAPH_H
+  #elif HAVE_AGRAPH_H
 	  for (e = agfstin(dag_node); e; e = agnxtin(e)) {
   #endif
   dot_add_input_dependencies(current_job, e);
@@ -231,8 +224,7 @@ void dot_add_task(Agnode_t * dag_node)
   count = 0;
   #ifdef HAVE_CGRAPH_H
   	  for (e = agfstout(dag_dot, dag_node); e; e = agnxtout(dag_dot, e)) {
-  #endif
-  #ifdef HAVE_AGRAPH_H
+  #elif HAVE_AGRAPH_H
 	  for (e = agfstout(dag_node); e; e = agnxtout(e)) {
   #endif
 

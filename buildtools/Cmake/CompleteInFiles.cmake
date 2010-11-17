@@ -205,17 +205,20 @@ if(HAVE_CGRAPH_LIB OR HAVE_AGRAPH_LIB)
     if(HAVE_GRAPH_H OR HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
     
         if(HAVE_GRAPH_H)
-        	string(REPLACE "/graphviz" "" file_graphviz_h ${HAVE_GRAPH_H})
+        	string(REPLACE "/graphviz/graph.h" "" file_graphviz_h ${HAVE_GRAPH_H})
+        	string(REPLACE "/graphviz" "" file_graphviz_h ${file_graphviz_h})
         	set(GRAPH_H 1)
         endif(HAVE_GRAPH_H)
         
         if(HAVE_AGRAPH_H)
-        	string(REPLACE "/graphviz" "" file_graphviz_h ${HAVE_AGRAPH_H})
+        	string(REPLACE "/graphviz/agraph.h" "" file_graphviz_h ${HAVE_AGRAPH_H})
+        	string(REPLACE "/graphviz" "" file_graphviz_h ${file_graphviz_h})
         	set(AGRAPH_H 1)
         endif(HAVE_AGRAPH_H)
         
         if(HAVE_CGRAPH_H)
-        	string(REPLACE "/graphviz" "" file_graphviz_h ${HAVE_CGRAPH_H})
+        	string(REPLACE "/graphviz/cgraph.h" "" file_graphviz_h ${HAVE_CGRAPH_H})
+        	string(REPLACE "/graphviz" "" file_graphviz_h ${file_graphviz_h})
         	set(CGRAPH_H 1)
         endif(HAVE_CGRAPH_H)  
          
