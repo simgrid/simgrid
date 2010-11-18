@@ -301,6 +301,7 @@ xbt_dynar_t SD_daxload(const char *filename)
               dax__parse_err_msg());
   dax__delete_buffer(input_buffer);
   fclose(in_file);
+  dax_lex_destroy();
   xbt_dict_free(&jobs);
 
   /* And now, post-process the files.
