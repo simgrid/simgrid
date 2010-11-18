@@ -102,6 +102,7 @@ if [ -z "${PLATFORM}" ]; then
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
+<AS id="AS0" routing="Full">
 PLATFORMHEAD
 
 for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
@@ -113,14 +114,15 @@ done
 for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
   for (( j=${NUMPROCS}; $j ; j=$j-1 )) do
     if [ $i -eq $j ]; then
-      echo "  <route src=\"host$i\" dst=\"host$j\"><link:ctn id=\"loop$i\"/></route>" >> ${PLATFORMTMP}
+      echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"loop$i\"/></route>" >> ${PLATFORMTMP}
     else
-      echo "  <route src=\"host$i\" dst=\"host$j\"><link:ctn id=\"link$i\"/><link:ctn id=\"link$j\"/></route>" >> ${PLATFORMTMP}
+      echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"link$i\"/><link_ctn id=\"link$j\"/></route>" >> ${PLATFORMTMP}
     fi
   done
 done
 
 cat >> ${PLATFORMTMP} <<PLATFORMFOOT
+</AS>
 </platform>
 PLATFORMFOOT
 
