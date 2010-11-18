@@ -1,7 +1,7 @@
 find_path(HAVE_LUA_H lua.h
     HINTS
     $ENV{LD_LIBRARY_PATH}
-    PATH_SUFFIXES lua/ lua/5.1/ include
+    PATH_SUFFIXES lua/ lua/5.1/ include/ include/lua5.1/
     PATHS
     /opt
     /opt/local
