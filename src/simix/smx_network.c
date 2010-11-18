@@ -185,6 +185,8 @@ void SIMIX_communication_destroy(smx_comm_t comm)
   comm->refcount--;
   if (comm->refcount > 0)
     return;
+  VERB2("Really free communication %p; refcount is now %d", comm,
+        comm->refcount);
 
   if (comm->sem) {
     SIMIX_sem_destroy(comm->sem);
