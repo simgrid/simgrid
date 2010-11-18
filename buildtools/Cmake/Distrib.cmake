@@ -78,13 +78,13 @@ if(HAVE_LUA)
 	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/lua/5.1")
 	add_custom_target(simgrid_lua ALL
   		DEPENDS simgrid 
-  				${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
+  				${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.so
 		)
 	add_custom_command(
-		OUTPUT ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
+		OUTPUT ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.so
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.so
 	)
-	install(FILES ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
+	install(FILES ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.so
 		DESTINATION $ENV{DESTDIR}${prefix}/lib/lua/5.1
 		)
 endif(HAVE_LUA)
@@ -94,13 +94,13 @@ if(HAVE_RUBY)
 	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}")
 	add_custom_target(ruby_simgrid ALL
 		DEPENDS simgrid
-				${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
+				${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.so
 	)
 	add_custom_command(
-		OUTPUT ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
-		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
+		OUTPUT ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.so
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.so
 	)
-	install(FILES ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
+	install(FILES ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.so
 		DESTINATION $ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/
 	)
 	install(FILES ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid.rb
@@ -151,7 +151,7 @@ endif(HAVE_JAVA)
 if(HAVE_LUA)
 	add_custom_command(TARGET uninstall
 	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding lua ok"
-	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/lua/5.1/simgrid.${LIB_EXE}	
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/lua/5.1/simgrid.so
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
 endif(HAVE_LUA)
@@ -160,7 +160,7 @@ if(HAVE_RUBY)
 	string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_ARCH_DIR}")
 	add_custom_command(TARGET uninstall
 	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding ruby ok"
-	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/ruby/${install_link_ruby}/libsimgrid.so
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/ruby/${install_link_ruby}/simgrid.rb
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
