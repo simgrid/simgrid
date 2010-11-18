@@ -886,7 +886,7 @@ void routing_model_create(size_t size_of_links, void *loopback)
   global_routing->finalize = finalize;
   global_routing->loopback = loopback;
   global_routing->size_of_link = size_of_links;
-  global_routing->last_route = xbt_dynar_new(size_of_links, NULL);
+  global_routing->last_route = NULL;
 
   /* no current routing at moment */
   current_routing = NULL;
