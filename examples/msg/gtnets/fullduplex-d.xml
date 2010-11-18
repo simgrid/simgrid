@@ -1,0 +1,46 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+
+  <process host="S1" function="master">
+      <argument value="1000000"/>
+      <argument value="C1"/>
+      <argument value="1"/>
+  </process>
+
+  <process host="C1" function="slave">
+    <argument value="1"/>
+  </process>
+
+  <process host="S1" function="master">
+      <argument value="1000000"/>
+      <argument value="C1"/>
+      <argument value="2"/>
+  </process>
+
+  <process host="C1" function="slave">
+    <argument value="2"/>
+  </process>
+ 
+  <process host="S1" function="master">
+      <argument value="1000000"/>
+      <argument value="C1"/>
+      <argument value="3"/>
+  </process>
+
+  <process host="C1" function="slave">
+    <argument value="3"/>
+  </process>
+
+
+  <process host="C1" function="master">
+      <argument value="1000000"/>
+      <argument value="S1"/>
+      <argument value="4"/>
+  </process>
+
+  <process host="S1" function="slave">
+    <argument value="4"/>
+  </process>
+ 
+</platform>
