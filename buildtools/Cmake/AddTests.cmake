@@ -204,6 +204,8 @@ ADD_TEST(msg-gtnets-onelink-lv08	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIR
   ADD_TEST(msg-tracing-gtnets-onelink			${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/tracing-gtnets-onelink-gtnets.tesh)
   ADD_TEST(msg-tracing-gtnets-dogbone-lv08	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/tracing-gtnets-dogbone-lv08.tesh)
   ADD_TEST(msg-tracing-gtnets-onelink-lv08	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/tracing-gtnets-onelink-lv08.tesh)
+  ADD_TEST(msg-gtnets-fullduplex	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-fullduplex.tesh)
+
   endif(HAVE_TRACING)
 endif(HAVE_GTNETS)
 

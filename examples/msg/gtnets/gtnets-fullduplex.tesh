@@ -1,0 +1,29 @@
+#! ./tesh
+
+p Testing fullduplex TCP option DISABLED
+
+$ gtnets/gtnets gtnets/fullduplex-p.xml gtnets/fullduplex-d.xml --cfg=fullduplex:0
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'fullduplex' to '0'
+> [C1:master:(7) 108.799652] [msg_test/INFO] Send completed (to S1). Transfer time: 108.799652	 Agregate bandwidth: 9191.205854
+> [C1:master:(7) 108.799652] [msg_test/INFO] Completed peer: S1 time: 108.799652
+> [S1:slave:(8) 108.799652] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 3063.735285 ;  message from S1 to C1  with remaining : 666666.666667
+> [S1:slave:(8) 108.799652] [msg_test/INFO] ===> Estimated Bw of FLOW[2] : 3063.735285 ;  message from S1 to C1  with remaining : 666666.666667
+> [S1:slave:(8) 108.799652] [msg_test/INFO] ===> Estimated Bw of FLOW[3] : 3063.735285 ;  message from S1 to C1  with remaining : 666666.666667
+> [S1:slave:(8) 108.799652] [msg_test/INFO] ===> Estimated Bw of FLOW[4] : 9191.205854 ;  message from C1 to S1  with remaining : 0.000000
+
+p Testing fullduplex TCP option ENABLED
+
+$ gtnets/gtnets gtnets/fullduplex-p.xml gtnets/fullduplex-d.xml --cfg=fullduplex:1
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'fullduplex' to '1'
+> [S1:master:(1) 331.625739] [msg_test/INFO] Send completed (to C1). Transfer time: 331.625739	 Agregate bandwidth: 3015.447482
+> [S1:master:(1) 331.625739] [msg_test/INFO] Completed peer: C1 time: 331.625739
+> [S1:master:(3) 331.625739] [msg_test/INFO] Send completed (to C1). Transfer time: 331.625739	 Agregate bandwidth: 3015.447482
+> [S1:master:(3) 331.625739] [msg_test/INFO] Completed peer: C1 time: 331.625739
+> [S1:master:(5) 331.625739] [msg_test/INFO] Send completed (to C1). Transfer time: 331.625739	 Agregate bandwidth: 3015.447482
+> [S1:master:(5) 331.625739] [msg_test/INFO] Completed peer: C1 time: 331.625739
+> [C1:master:(7) 331.625739] [msg_test/INFO] Send completed (to S1). Transfer time: 331.625739	 Agregate bandwidth: 3015.447482
+> [C1:master:(7) 331.625739] [msg_test/INFO] Completed peer: S1 time: 331.625739
+> [C1:slave:(2) 331.625739] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 3015.447482 ;  message from S1 to C1  with remaining : 0.000000
+> [C1:slave:(2) 331.625739] [msg_test/INFO] ===> Estimated Bw of FLOW[2] : 3015.447482 ;  message from S1 to C1  with remaining : 0.000000
+> [C1:slave:(2) 331.625739] [msg_test/INFO] ===> Estimated Bw of FLOW[3] : 3015.447482 ;  message from S1 to C1  with remaining : 0.000000
+> [C1:slave:(2) 331.625739] [msg_test/INFO] ===> Estimated Bw of FLOW[4] : 3015.447482 ;  message from C1 to S1  with remaining : 0.000000
