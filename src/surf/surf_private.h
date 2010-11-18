@@ -176,7 +176,8 @@ struct s_routing_global {
   xbt_dict_t where_network_elements;    /* char* -> network_element_info_t */
   void *loopback;
   size_t size_of_link;
-   xbt_dynar_t(*get_route) (const char *src, const char *dst);
+   const xbt_dynar_t(*get_route) (const char *src, const char *dst);
+   xbt_dynar_t(*get_route_no_cleanup) (const char *src, const char *dst);
    xbt_dynar_t(*get_onelink_routes) (void);
    e_surf_network_element_type_t(*get_network_element_type) (const char
                                                              *name);

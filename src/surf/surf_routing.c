@@ -728,9 +728,10 @@ static route_extended_t _get_route(const char *src, const char *dst)
  * \param dst the destination host name
  * 
  * walk through the routing components tree and find a route between hosts
- * by calling the differents "get_route" functions in each routing component
+ * by calling the differents "get_route" functions in each routing component.
+ * No need to free the returned dynar. It will be freed at the next call.
  */
-static xbt_dynar_t get_route(const char *src, const char *dst)
+static const xbt_dynar_t get_route(const char *src, const char *dst)
 {
 
   route_extended_t e_route;
@@ -761,6 +762,23 @@ static xbt_dynar_t get_route(const char *src, const char *dst)
     return NULL;
   else
     return global_routing->last_route;
+}
+
+/**
+ * \brief Generic method: find a route between hosts
+ *
+ * \param src the source host name
+ * \param dst the destination host name
+ *
+ * walk through the routing components tree and find a route between hosts
+ * by calling the differents "get_route" functions in each routing component.
+ * Leaves the caller the responsability to clean the returned dynar.
+ */
+static xbt_dynar_t get_route_no_cleanup(const char *src, const char *dst)
+{
+	xbt_dynar_t d = get_route(src,dst);
+	global_routing->last_route = NULL;
+	return d;
 }
 
 /**
@@ -862,6 +880,7 @@ void routing_model_create(size_t size_of_links, void *loopback)
   global_routing->where_network_elements = xbt_dict_new();
   global_routing->root = NULL;
   global_routing->get_route = get_route;
+  global_routing->get_route_no_cleanup = get_route_no_cleanup;
   global_routing->get_onelink_routes = get_onelink_routes;
   global_routing->get_network_element_type = get_network_element_type;
   global_routing->finalize = finalize;

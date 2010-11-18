@@ -539,7 +539,9 @@ static surf_action_t net_communicate(const char *src_name,
 
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
-  xbt_dynar_t route = global_routing->get_route(src_name, dst_name);
+  // I will need this route for some time so let's call get_route_no_cleanup
+  xbt_dynar_t route = global_routing->get_route_no_cleanup(src_name, dst_name);
+
 
   if (sg_network_fullduplex == 1) {
     back_route = global_routing->get_route(dst_name, src_name);
@@ -658,6 +660,7 @@ static surf_action_t net_communicate(const char *src_name,
   strncpy(action->dst_name, dst_name, strlen(dst_name) + 1);
 #endif
 
+  xbt_dynar_free(&route);
   XBT_OUT;
 
   return (surf_action_t) action;
