@@ -49,7 +49,7 @@ option(enable_print_message "Enable print message during config." off)
 option(enable_model-checking "" off)
 option(enable_lib_static "" off)
 option(enable_graphviz "" off)
-
+option(GRAS_IS_BROKEN "Set some tests are broken" off)
 if(WIN32 OR APPLE) #actually not enable with windows and Apple
 	message("-- Mode supernovae and maintainer are disabled.")
 	message("-- Smpi and GTnets are disabled.")
@@ -117,3 +117,4 @@ mark_as_advanced(HAVE_GRAPH_LIB)
 mark_as_advanced(HAVE_CGRAPH_LIB)
 mark_as_advanced(HAVE_AGRAPH_LIB)
 mark_as_advanced(HAVE_CDT_LIB)
+mark_as_advanced(GRAS_IS_BROKEN)
