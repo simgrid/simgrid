@@ -205,6 +205,7 @@ XBT_PUBLIC(int) MPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm);
 XBT_PUBLIC(int) MPI_Comm_create(MPI_Comm comm, MPI_Group group,
                                 MPI_Comm * newcomm);
 XBT_PUBLIC(int) MPI_Comm_free(MPI_Comm * comm);
+XBT_PUBLIC(int) MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out);
 
 XBT_PUBLIC(int) MPI_Send_init(void *buf, int count, MPI_Datatype datatype,
                               int dst, int tag, MPI_Comm comm,
@@ -299,11 +300,6 @@ XBT_PUBLIC(int) MPI_Alltoallv(void *sendbuf, int *sendcounts,
                               int *recvdisps, MPI_Datatype recvtype,
                               MPI_Comm comm);
 
-/*
-TODO
-XBT_PUBLIC(int) MPI_Comm_split(MPI_Comm comm, int color, int key,
-                               MPI_Comm* comm_out);
-*/
 // smpi functions
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);
 XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);

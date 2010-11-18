@@ -98,6 +98,9 @@ CREATE_MPI_DATATYPE(MPI_SHORT_INT, short_int);
 CREATE_MPI_DATATYPE(MPI_2INT, int_int);
 CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE_INT, long_double_int);
 
+// Internal use only
+CREATE_MPI_DATATYPE(MPI_PTR, void*);
+
 
 size_t smpi_datatype_size(MPI_Datatype datatype)
 {

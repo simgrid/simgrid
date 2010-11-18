@@ -762,6 +762,24 @@ int MPI_Comm_free(MPI_Comm * comm)
   return retval;
 }
 
+int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
+{
+  int retval;
+
+  smpi_bench_end(-1, NULL);
+  if (comm_out == NULL) {
+    retval = MPI_ERR_ARG;
+  } else if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else {
+    printf("[%d] gives %d, %d\n", smpi_comm_rank(comm), color, key);
+    *comm_out = smpi_comm_split(comm, color, key);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin(-1, NULL);
+  return retval;
+}
+
 int MPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst,
                   int tag, MPI_Comm comm, MPI_Request * request)
 {

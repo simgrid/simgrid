@@ -6,6 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SMPI_DT_PRIVATE_H
+#define SMPI_DT_PRIVATE_H
 
 #include "private.h"
 
@@ -27,3 +29,7 @@
  * datatypes. The DT_FLAG_BASIC is held by all predefined contiguous datatypes.
  */
 #define DT_FLAG_BASIC         (DT_FLAG_PREDEFINED | DT_FLAG_CONTIGUOUS | DT_FLAG_NO_GAPS | DT_FLAG_DATA | DT_FLAG_COMMITED)
+
+extern MPI_Datatype MPI_PTR;
+
+#endif
