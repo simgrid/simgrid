@@ -156,6 +156,8 @@ smx_comm_t SIMIX_communication_new(smx_comm_type_t type)
   comm->type = type;
   comm->sem = SIMIX_sem_init(0);
   comm->refcount = 1;
+  VERB2("Create communication %p; refcount initially %d", comm,
+         comm->refcount);
 
   return comm;
 }
@@ -168,6 +170,11 @@ void SIMIX_communication_destroy(smx_comm_t comm)
 {
   VERB2("Destroy communication %p; refcount initially %d", comm,
         comm->refcount);
+
+  if(!(comm->refcount>0)) {
+	  INFO1("There is no more reference to this comm (%p). Cannot destroy!",comm);
+  	  xbt_die("Argh.!");
+  }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   //save is latency limited flag to use afterwards
@@ -224,6 +231,9 @@ void SIMIX_communication_destroy(smx_comm_t comm)
 static XBT_INLINE void SIMIX_communication_use(smx_comm_t comm)
 {
   comm->refcount++;
+
+  VERB2("Use communication %p; refcount is now %d", comm,
+           comm->refcount);
 }
 
 /**
@@ -557,14 +567,14 @@ XBT_INLINE void SIMIX_network_send(smx_rdv_t rdv, double task_size,
                                    smx_comm_t * comm_ref, void *data)
 {
   xbt_ex_t e;
-  *comm_ref =
-      SIMIX_network_isend(rdv, task_size, rate, src_buff, src_buff_size,
-                          data);
+  smx_comm_t comm = *comm_ref =
+	      SIMIX_network_isend(rdv, task_size, rate, src_buff, src_buff_size,
+	                          data);
   TRY {
-    SIMIX_network_wait(*comm_ref, timeout);
+    SIMIX_network_wait(comm, timeout);
   }
   TRY_CLEANUP {
-    SIMIX_communication_destroy(*comm_ref);
+    SIMIX_communication_destroy(comm);
   }
   CATCH(e) {
     RETHROW;
@@ -589,13 +599,13 @@ XBT_INLINE void SIMIX_network_recv(smx_rdv_t rdv, double timeout,
                                    smx_comm_t * comm_ref)
 {
   xbt_ex_t e;
-  *comm_ref =
+  smx_comm_t comm = *comm_ref =
       (smx_comm_t) SIMIX_network_irecv(rdv, dst_buff, dst_buff_size);
   TRY {
-    SIMIX_network_wait(*comm_ref, timeout);
+    SIMIX_network_wait(comm, timeout);
   }
   TRY_CLEANUP {
-    SIMIX_communication_destroy(*comm_ref);
+    SIMIX_communication_destroy(comm);
   }
   CATCH(e) {
     RETHROW;
