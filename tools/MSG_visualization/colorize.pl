@@ -70,7 +70,7 @@ sub print_line {
     my($host,$procname,$pid,$date,$location,$xbt_channel,$message)=@_;
 
     print $col_norm;
-    printf "[% 10.3f]",$date;
+    printf "[% 10.6f]",$date;
 
     print pidcolor($pid);
 
