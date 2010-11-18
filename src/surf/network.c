@@ -537,12 +537,12 @@ static surf_action_t net_communicate(const char *src_name,
      Add a link_CM02_t *link and a int link_nb to network_card_CM02_t. It will represent local links for this node
      Use the cluster_id for ->id */
 
-  xbt_dynar_t route = global_routing->get_route(src_name, dst_name);
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
+  xbt_dynar_t route = global_routing->get_route(src_name, dst_name);
 
   if (sg_network_fullduplex == 1) {
-    back_route = global_routing->get_route(src_name, dst_name);
+    back_route = global_routing->get_route(dst_name, src_name);
   }
 
   /* LARGE PLATFORMS HACK:
