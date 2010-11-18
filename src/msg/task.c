@@ -276,8 +276,7 @@ double MSG_task_get_remaining_communication(m_task_t task)
               && (task->simdata != NULL), "Invalid parameter");
 
   if(!task->simdata->comm){
-	  DEBUG1("you are trying to retrive remaining information on a NULL action, assuming it is zero",
-	  			  0);
+	  DEBUG0("you are trying to retrive remaining information on a NULL action, assuming it is zero");
 	  return 0;
   }else{
 	  DEBUG1("calling SIMIX_communication_get_remains(%p)",
