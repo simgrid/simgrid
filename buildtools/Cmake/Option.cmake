@@ -1,8 +1,11 @@
 ### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see after)
 ### ex: cmake -Denable_java=ON -Denable_gtnets=ON ./
 
+
+
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib")
+
 set(custom_flags ${custom_flags} CACHE FORCE "Customers flags add to cmake_c_flag")
 
 if(NOT prefix)
@@ -42,21 +45,32 @@ option(enable_model-checking "" off)
 option(enable_lib_static "" off)
 option(enable_graphviz "" off)
 
-if(WIN32) #actually not enable with windows
-	message("Mode supernovae and maintainer disable with Windows.")
+if(WIN32 OR APPLE) #actually not enable with windows and Apple
+	message("-- Mode supernovae and maintainer are disabled.")
+    message("-- Model checking is disabled.")
+	message("-- Smpi, Ruby, Lua and GTnets are disabled.")
 	set(enable_supernovae false CACHE TYPE INTERNAL FORCE)
 	set(enable_maintainer_mode false CACHE TYPE INTERNAL FORCE)
-	set(enable_java false CACHE TYPE INTERNAL FORCE)
-	set(enable_lua false CACHE TYPE INTERNAL FORCE)
+  	set(enable_lua false CACHE TYPE INTERNAL FORCE)
 	set(enable_ruby false CACHE TYPE INTERNAL FORCE)
 	set(enable_smpi false CACHE TYPE INTERNAL FORCE)
-	set(enable_gtnets false CACHE TYPE INTERNAL FORCE)
-endif(WIN32)
+	set(enable_gtnets false CACHE TYPE INTERNAL FORCE) 
+	set(enable_model-checking false CACHE TYPE INTERNAL FORCE)
+	mark_as_advanced(enable_supernovae)
+    mark_as_advanced(enable_maintainer_mode)
+    mark_as_advanced(enable_lua)
+    mark_as_advanced(enable_ruby)
+    mark_as_advanced(enable_smpi)
+    mark_as_advanced(enable_gtnets)
+    mark_as_advanced(gtnets_path)
+    mark_as_advanced(enable_model-checking)
+endif(WIN32 OR APPLE)
 
 if(enable_supernovae AND enable_model-checking)
 	set(enable_model-checking false CACHE TYPE INTERNAL FORCE)
 	message("\n\nWith supernovae mode the model checking must be disable.!!!\n\n")
 endif(enable_supernovae AND enable_model-checking)
+
 mark_as_advanced(PATH_PCRE_LIB)
 mark_as_advanced(HAVE_SSH)
 mark_as_advanced(HAVE_RSYNC)
