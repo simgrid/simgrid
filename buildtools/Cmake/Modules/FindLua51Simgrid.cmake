@@ -33,3 +33,13 @@ if(HAVE_LUA_H AND HAVE_LUA51_LIB AND LIB_LUA_NAME)
  string(REPLACE "/lua.h" "" LUA_INCLUDE_DIR ${HAVE_LUA_H})
  string(REPLACE "/lib${LIB_LUA_NAME}.${LIB_EXE}" "" LUA_LIBRARY_DIR ${HAVE_LUA51_LIB})
 endif(HAVE_LUA_H AND HAVE_LUA51_LIB AND LIB_LUA_NAME)
+
+set(LUA_CPATH "$ENV{LUA_CPATH}")
+string(REGEX MATCH "${LIB_EXE}" LUA_CPATH "${LUA_CPATH}")
+
+if(LUA_CPATH AND APPLE)
+    message("-- LUA_CPATH have extension ${LIB_EXE}")
+else(DEFINED LUA_CPATH AND APPLE)
+    message("-- Please set LUA_CPATH with extension ${LIB_EXE}")
+    message("-- For example, execute command line : export LUA_CPATH=\"./?.dylib\"")
+endif(LUA_CPATH AND APPLE)
