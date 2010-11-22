@@ -134,6 +134,9 @@ static route_extended_t generic_get_bypassroute(routing_component_t rc,
 static route_extended_t
 generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
                            void *data, int order);
+static route_t
+generic_new_route(e_surf_routing_hierarchy_t hierarchy,
+                           void *data, int order);
 static void generic_free_route(route_t route);
 static void generic_free_extended_route(route_extended_t e_route);
 static routing_component_t
@@ -2815,6 +2818,44 @@ static route_extended_t generic_get_bypassroute(routing_component_t rc,
 
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
+
+static route_t
+generic_new_route(e_surf_routing_hierarchy_t hierarchy,
+                           void *data, int order)
+{
+
+  char *link_name;
+  route_t new_route;
+  unsigned int cpt;
+  xbt_dynar_t links = NULL, links_id = NULL;
+
+  new_route = xbt_new0(s_route_t, 1);
+  new_route->link_list =
+      xbt_dynar_new(global_routing->size_of_link, NULL);
+
+  xbt_assert0(hierarchy == SURF_ROUTING_BASE,
+              "the hierarchy type is not SURF_ROUTING_BASE");
+
+  links = ((route_t) data)->link_list;
+
+
+  links_id = new_route->link_list;
+
+  xbt_dynar_foreach(links, cpt, link_name) {
+
+    void *link =
+        xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+    if (link) {
+      if (order)
+        xbt_dynar_push(links_id, &link);
+      else
+        xbt_dynar_unshift(links_id, &link);
+    } else
+      THROW1(mismatch_error, 0, "Link %s not found", link_name);
+  }
+
+  return new_route;
+}
 
 static route_extended_t
 generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
