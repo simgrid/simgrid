@@ -1,0 +1,187 @@
+#! ./tesh
+
+$ ./basic_parsing_test ./four_hosts_floyd.xml FULL_LINK
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 4, link number: 5
+> Route between host1 and host1
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between host1 and host2
+> 	Route size 1
+> 	Link link1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host1 and host3
+> 	Route size 1
+> 	Link link2: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host1 and host4
+> 	Route size 2
+> 	Link link2: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host2 and host1
+> 	Route size 1
+> 	Link link1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host2 and host2
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between host2 and host3
+> 	Route size 1
+> 	Link link3: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host2 and host4
+> 	Route size 2
+> 	Link link3: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host3 and host1
+> 	Route size 1
+> 	Link link2: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host3 and host2
+> 	Route size 1
+> 	Link link3: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host3 and host3
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between host3 and host4
+> 	Route size 1
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host4 and host1
+> 	Route size 2
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link2: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host4 and host2
+> 	Route size 2
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link3: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host4 and host3
+> 	Route size 1
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host4 and host4
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
+
+
+
+$ ./basic_parsing_test ./four_hosts_floyd_bis.xml FULL_LINK
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 5, link number: 7
+> Route between host1 and host1
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between host1 and host2
+> 	Route size 1
+> 	Link link1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host1 and host3
+> 	Route size 1
+> 	Link link2: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host1 and host4
+> 	Route size 2
+> 	Link link2: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host1 and host5
+> 	Route size 2
+> 	Link link1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link5: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host2 and host1
+> 	Route size 1
+> 	Link link1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host2 and host2
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between host2 and host3
+> 	Route size 1
+> 	Link link3: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host2 and host4
+> 	Route size 2
+> 	Link link3: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host2 and host5
+> 	Route size 1
+> 	Link link5: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host3 and host1
+> 	Route size 1
+> 	Link link2: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host3 and host2
+> 	Route size 1
+> 	Link link3: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host3 and host3
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between host3 and host4
+> 	Route size 1
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host3 and host5
+> 	Route size 1
+> 	Link link6: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host4 and host1
+> 	Route size 2
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link2: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host4 and host2
+> 	Route size 2
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link3: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host4 and host3
+> 	Route size 1
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host4 and host4
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between host4 and host5
+> 	Route size 2
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link6: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host5 and host1
+> 	Route size 2
+> 	Link link5: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link1: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host5 and host2
+> 	Route size 1
+> 	Link link5: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host5 and host3
+> 	Route size 1
+> 	Link link6: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000050, route bandwidth = 125000000.000000
+> Route between host5 and host4
+> 	Route size 2
+> 	Link link6: latency = 0.000050, bandwidth = 125000000.000000
+> 	Link link4: latency = 0.000050, bandwidth = 125000000.000000
+> 	Route latency = 0.000100, route bandwidth = 125000000.000000
+> Route between host5 and host5
+> 	Route size 1
+> 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+> 	Route latency = 0.000015, route bandwidth = 498000000.000000

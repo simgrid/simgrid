@@ -91,6 +91,7 @@ ADD_TEST(tesh-simdag-parser		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTO
 ADD_TEST(tesh-simdag-parser-bogus-symmetric ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms two_hosts_asymetric.tesh)
 ADD_TEST(tesh-simdag-parser-sym-full		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test_sym_full.tesh)
 ADD_TEST(tesh-simdag-flatifier		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms flatifier.tesh)
+ADD_TEST(tesh-simdag-full_links		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms get_full_link.tesh)
 ADD_TEST(tesh-simdag-basic0	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic0.tesh)
 ADD_TEST(tesh-simdag-basic1	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic1.tesh)
 ADD_TEST(tesh-simdag-basic2	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/basic2.tesh)

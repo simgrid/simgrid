@@ -65,3 +65,11 @@ $ ./basic_parsing_test two_hosts_multi_hop.xml
 $ ./basic_parsing_test two_hosts_one_link.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > Workstation number: 2, link number: 2
+
+$ ./basic_parsing_test ./four_hosts_floyd.xml
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 4, link number: 5
+
+$ ./basic_parsing_test ./four_hosts_floyd_bis.xml
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 5, link number: 7
