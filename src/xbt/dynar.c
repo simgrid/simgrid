@@ -733,15 +733,28 @@ XBT_INLINE int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
 	int i ;
 	int size;
 	if((!d1) && (!d2)) return 0;
-	if((!d1) || (!d2)) return 1;
-	if((d1->elmsize)!=(d2->elmsize)) return 1; // xbt_die
-	if(xbt_dynar_length(d1) != xbt_dynar_length(d2)) return 1;
+	if((!d1) || (!d2))
+	{
+		DEBUG2("NULL dynar d1=%p d2=%p",d1,d2);
+		return 1;
+	}
+	if((d1->elmsize)!=(d2->elmsize))
+	{
+		DEBUG2("Size of elmsize d1=%ld d2=%ld",d1->elmsize,d2->elmsize);
+		return 1; // xbt_die
+	}
+	if(xbt_dynar_length(d1) != xbt_dynar_length(d2))
+	{
+		DEBUG2("Size of dynar d1=%ld d2=%ld",xbt_dynar_length(d1),xbt_dynar_length(d2));
+		return 1;
+	}
 
 	size = xbt_dynar_length(d1);
 	for(i=0;i<size;i++)
 	{
 		void *data1 = xbt_dynar_get_as(d1, i, void *);
 		void *data2 = xbt_dynar_get_as(d2, i, void *);
+		DEBUG3("link[%d] d1=%p d2=%p",i,data1,data2);
 		if(compar(data1,data2)) return 1;
 	}
 	return 0;
