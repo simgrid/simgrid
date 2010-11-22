@@ -1,13 +1,12 @@
 #!/usr/bin/perl -w
 use strict;
 
-if($#ARGV!=2) {
-    die "Usage: perl make_tesh.pl <directory> <old.tesh> <new.tesh>\n";
+if($#ARGV!=1) {
+    die "Usage: perl make_tesh.pl <directory> <old.tesh>\n";
 }
 
 my($directory)=$ARGV[0];
 my($old)=$ARGV[1];
-my($new)=$ARGV[2];
 
 chdir("$directory");
 
@@ -37,7 +36,7 @@ while(defined($line=<SH_LIGNE>))
 			$line =~ s/^\$\ */.\//g;
 			$line =~ s/^.\/lua/lua/g;
 			$line =~ s/^.\/ruby/ruby/g;
-			print "$line_exec\n";
+			print "\n$line_exec";
 			chomp $line;
 			open (FILE, "$line 2>&1|");
 			while(defined($l=<FILE>))
