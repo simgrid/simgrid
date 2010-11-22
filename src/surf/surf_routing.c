@@ -1115,6 +1115,7 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 
 	if(!routing->routing_table)
 		routing->routing_table = xbt_new0(route_extended_t, table_size * table_size);
+
 	if(TO_ROUTE_FULL(*src_id, *dst_id))
 	{
 		char * link_name;
@@ -1190,7 +1191,7 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 /* ************************************************************************** */
 /* *************************** FLOYD ROUTING ******************************** */
 
-#define TO_FLOYD_COST(i,j) cost_table[(i)+(j)*table_size]
+#define TO_FLOYD_COST(i,j) (routing->cost_table)[(i)+(j)*table_size]
 #define TO_FLOYD_PRED(i,j) (routing->predecessor_table)[(i)+(j)*table_size]
 #define TO_FLOYD_LINK(i,j) (routing->link_table)[(i)+(j)*table_size]
 
@@ -1200,6 +1201,7 @@ typedef struct {
   s_routing_component_t generic_routing;
   /* vars for calculate the floyd algorith. */
   int *predecessor_table;
+  double *cost_table;
   route_extended_t *link_table; /* char* -> int* */
 } s_routing_component_floyd_t, *routing_component_floyd_t;
 
@@ -1361,7 +1363,7 @@ static void *model_floyd_create(void)
   new_component->generic_routing.set_autonomous_system =
       generic_set_autonomous_system;
   new_component->generic_routing.set_route = model_floyd_set_route;
-  new_component->generic_routing.set_ASroute = NULL ; //TODO
+  new_component->generic_routing.set_ASroute = model_floyd_set_route;
   new_component->generic_routing.set_bypassroute = generic_set_bypassroute;
   new_component->generic_routing.get_route = floyd_get_route;
   new_component->generic_routing.get_onelink_routes =
@@ -1388,96 +1390,184 @@ static void model_floyd_unload(void)
 static void model_floyd_end(void)
 {
 
-  routing_component_floyd_t routing =
-      ((routing_component_floyd_t) current_routing);
-  xbt_dict_cursor_t cursor = NULL;
-  double *cost_table;
-  char *key, *data, *end;
-  const char *sep = "#";
-  xbt_dynar_t keys;
-  int src_id, dst_id;
-  unsigned int i, j, a, b, c;
+	routing_component_floyd_t routing =
+	  ((routing_component_floyd_t) current_routing);
 
-  /* set the size of inicial table */
-  size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
+	unsigned int i, j, a, b, c;
 
-  /* Create Cost, Predecessor and Link tables */
-  cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
-  routing->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
-  routing->link_table = xbt_new0(route_extended_t, table_size * table_size);    /* actual link between src and dst */
+	/* set the size of table routing */
+	size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
 
-  /* Initialize costs and predecessors */
-  for (i = 0; i < table_size; i++)
-    for (j = 0; j < table_size; j++) {
-      TO_FLOYD_COST(i, j) = DBL_MAX;
-      TO_FLOYD_PRED(i, j) = -1;
-      TO_FLOYD_LINK(i, j) = NULL;       /* fixed, missing in the previous version */
-    }
+	if(!routing->link_table)
+	{
+		/* Create Cost, Predecessor and Link tables */
+		routing->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
+		routing->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
+		routing->link_table = xbt_new0(route_extended_t, table_size * table_size);    /* actual link between src and dst */
 
-  /* Put the routes in position */
-  xbt_dict_foreach(routing->generic_routing.parse_routes, cursor, key, data) {
-    keys = xbt_str_split_str(key, sep);
-    src_id = strtol(xbt_dynar_get_as(keys, 0, char *), &end, 10);
-    dst_id = strtol(xbt_dynar_get_as(keys, 1, char *), &end, 10);
-    TO_FLOYD_LINK(src_id, dst_id) =
-        generic_new_extended_route(current_routing->hierarchy, data, 0);
-    TO_FLOYD_PRED(src_id, dst_id) = src_id;
-    /* set link cost */
-    TO_FLOYD_COST(src_id, dst_id) = ((TO_FLOYD_LINK(src_id, dst_id))->generic_route.link_list)->used;   /* count of links, old model assume 1 */
-    xbt_dynar_free(&keys);
-  }
+		/* Initialize costs and predecessors */
+		for (i = 0; i < table_size; i++)
+		for (j = 0; j < table_size; j++) {
+		  TO_FLOYD_COST(i, j) = DBL_MAX;
+		  TO_FLOYD_PRED(i, j) = -1;
+		  TO_FLOYD_LINK(i, j) = NULL;       /* fixed, missing in the previous version */
+		}
+	}
 
-  /* Add the loopback if needed */
-  if (current_routing->hierarchy == SURF_ROUTING_BASE) {
-    for (i = 0; i < table_size; i++) {
-      route_extended_t e_route = TO_FLOYD_LINK(i, i);
-      if (!e_route) {
-        e_route = xbt_new0(s_route_extended_t, 1);
-        e_route->src_gateway = NULL;
-        e_route->dst_gateway = NULL;
-        e_route->generic_route.link_list =
-            xbt_dynar_new(global_routing->size_of_link, NULL);
-        xbt_dynar_push(e_route->generic_route.link_list,
-                       &global_routing->loopback);
-        TO_FLOYD_LINK(i, i) = e_route;
-        TO_FLOYD_PRED(i, i) = i;
-        TO_FLOYD_COST(i, i) = 1;
-      }
-    }
-  }
-  /* Calculate path costs */
-  for (c = 0; c < table_size; c++) {
-    for (a = 0; a < table_size; a++) {
-      for (b = 0; b < table_size; b++) {
-        if (TO_FLOYD_COST(a, c) < DBL_MAX && TO_FLOYD_COST(c, b) < DBL_MAX) {
-          if (TO_FLOYD_COST(a, b) == DBL_MAX ||
-              (TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b) <
-               TO_FLOYD_COST(a, b))) {
-            TO_FLOYD_COST(a, b) =
-                TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b);
-            TO_FLOYD_PRED(a, b) = TO_FLOYD_PRED(c, b);
-          }
-        }
-      }
-    }
-  }
-
-  /* delete the parse table */
-  xbt_dict_foreach(routing->generic_routing.parse_routes, cursor, key, data) {
-    route_t route = (route_t) data;
-    xbt_dynar_free(&(route->link_list));
-    xbt_free(data);
-  }
-
-  /* delete parse dict */
-  xbt_dict_free(&(routing->generic_routing.parse_routes));
-
-  /* cleanup */
-  xbt_free(cost_table);
+	/* Add the loopback if needed */
+	if (current_routing->hierarchy == SURF_ROUTING_BASE) {
+		for (i = 0; i < table_size; i++) {
+		  route_extended_t e_route = TO_FLOYD_LINK(i, i);
+		  if (!e_route) {
+			e_route = xbt_new0(s_route_extended_t, 1);
+			e_route->src_gateway = NULL;
+			e_route->dst_gateway = NULL;
+			e_route->generic_route.link_list =
+				xbt_dynar_new(global_routing->size_of_link, NULL);
+			xbt_dynar_push(e_route->generic_route.link_list,
+						   &global_routing->loopback);
+			TO_FLOYD_LINK(i, i) = e_route;
+			TO_FLOYD_PRED(i, i) = i;
+			TO_FLOYD_COST(i, i) = 1;
+		  }
+		}
+	}
+	/* Calculate path costs */
+	for (c = 0; c < table_size; c++) {
+		for (a = 0; a < table_size; a++) {
+		  for (b = 0; b < table_size; b++) {
+			if (TO_FLOYD_COST(a, c) < DBL_MAX && TO_FLOYD_COST(c, b) < DBL_MAX) {
+			  if (TO_FLOYD_COST(a, b) == DBL_MAX ||
+				  (TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b) <
+				   TO_FLOYD_COST(a, b))) {
+				TO_FLOYD_COST(a, b) =
+					TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b);
+				TO_FLOYD_PRED(a, b) = TO_FLOYD_PRED(c, b);
+			  }
+			}
+		  }
+		}
+	}
 }
 
 static void model_floyd_set_route(routing_component_t rc, const char *src,
-        const char *dst, name_route_extended_t route){}
+        const char *dst, name_route_extended_t route)
+{
+	routing_component_floyd_t routing = (routing_component_floyd_t) rc;
+
+	/* set the size of table routing */
+	size_t table_size = xbt_dict_length(rc->to_index);
+	int *src_id, *dst_id;
+	int i,j;
+
+	src_id = xbt_dict_get_or_null(rc->to_index, src);
+	dst_id = xbt_dict_get_or_null(rc->to_index, dst);
+
+	if(!routing->link_table)
+	{
+		/* Create Cost, Predecessor and Link tables */
+		routing->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
+		routing->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
+		routing->link_table = xbt_new0(route_extended_t, table_size * table_size);    /* actual link between src and dst */
+
+		/* Initialize costs and predecessors */
+		for (i = 0; i < table_size; i++)
+		for (j = 0; j < table_size; j++) {
+		  TO_FLOYD_COST(i, j) = DBL_MAX;
+		  TO_FLOYD_PRED(i, j) = -1;
+		  TO_FLOYD_LINK(i, j) = NULL;       /* fixed, missing in the previous version */
+		}
+	}
+
+	if(TO_FLOYD_LINK(*src_id, *dst_id))
+	{
+		if(!route->dst_gateway && !route->src_gateway)
+			DEBUG2("See Route from \"%s\" to \"%s\"", src, dst);
+		else
+			DEBUG4("See ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
+				 route->src_gateway, dst, route->dst_gateway);
+		char * link_name;
+		unsigned int cpt;
+		xbt_dynar_t link_route_to_test = xbt_dynar_new(global_routing->size_of_link, NULL);
+		xbt_dynar_foreach(route->generic_route.link_list,cpt,link_name)
+		{
+			void *link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+			xbt_assert1(link,"Link : '%s' doesn't exists.",link_name);
+			xbt_dynar_push(link_route_to_test,&link);
+		}
+		xbt_assert2(!xbt_dynar_compare(
+			  (void*)TO_FLOYD_LINK(*src_id, *dst_id)->generic_route.link_list,
+			  (void*)link_route_to_test,
+			  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
+			  "The route between \"%s\" and \"%s\" already exist", src,dst);
+		xbt_free(link_route_to_test);
+	}
+	else
+	{
+		if(!route->dst_gateway && !route->src_gateway)
+		  DEBUG2("Load Route from \"%s\" to \"%s\"", src, dst);
+		else
+		  DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
+				 route->src_gateway, dst, route->dst_gateway);
+
+	    TO_FLOYD_LINK(*src_id, *dst_id) =
+	    		generic_new_extended_route(rc->hierarchy, route, 1);
+	    TO_FLOYD_PRED(*src_id, *dst_id) = *src_id;
+	    TO_FLOYD_COST(*src_id, *dst_id) =
+	    		((TO_FLOYD_LINK(*src_id, *dst_id))->generic_route.link_list)->used;   /* count of links, old model assume 1 */
+	}
+
+	if( A_surfxml_route_symetrical == A_surfxml_route_symetrical_YES
+		|| A_surfxml_ASroute_symetrical == A_surfxml_ASroute_symetrical_YES )
+	{
+		if(TO_FLOYD_LINK(*dst_id, *src_id))
+		{
+			if(!route->dst_gateway && !route->src_gateway)
+			  DEBUG2("See Route from \"%s\" to \"%s\"", dst, src);
+			else
+			  DEBUG4("See ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
+					 route->src_gateway, src, route->dst_gateway);
+			char * link_name;
+			unsigned int i;
+			xbt_dynar_t link_route_to_test = xbt_dynar_new(global_routing->size_of_link, NULL);
+			for(i=xbt_dynar_length(route->generic_route.link_list) ;i>0 ;i--)
+			{
+				link_name = xbt_dynar_get_as(route->generic_route.link_list,i-1,void *);
+				void *link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+				xbt_assert1(link,"Link : '%s' doesn't exists.",link_name);
+				xbt_dynar_push(link_route_to_test,&link);
+			}
+			xbt_assert2(!xbt_dynar_compare(
+				  (void*)TO_FLOYD_LINK(*dst_id, *src_id)->generic_route.link_list,
+			      (void*)link_route_to_test,
+				  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
+				  "The route between \"%s\" and \"%s\" already exist", src,dst);
+			xbt_free(link_route_to_test);
+		}
+		else
+		{
+			if(route->dst_gateway && route->src_gateway)
+			{
+				char * gw_src = bprintf("%s",route->src_gateway);
+				char * gw_dst = bprintf("%s",route->dst_gateway);
+				route->src_gateway = bprintf("%s",gw_dst);
+				route->dst_gateway = bprintf("%s",gw_src);
+			}
+
+			if(!route->dst_gateway && !route->src_gateway)
+			  DEBUG2("Load Route from \"%s\" to \"%s\"", dst, src);
+			else
+			  DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
+					 route->src_gateway, src, route->dst_gateway);
+
+		    TO_FLOYD_LINK(*dst_id, *src_id) =
+		    		generic_new_extended_route(rc->hierarchy, route, 0);
+		    TO_FLOYD_PRED(*dst_id, *src_id) = *dst_id;
+		    TO_FLOYD_COST(*dst_id, *src_id) =
+		    		((TO_FLOYD_LINK(*dst_id, *src_id))->generic_route.link_list)->used;   /* count of links, old model assume 1 */
+		}
+	}
+}
 
 /* ************************************************************************** */
 /* ********** Dijkstra & Dijkstra Cached ROUTING **************************** */
@@ -1983,7 +2073,11 @@ static void model_dijkstra_both_end(void)
 
 }
 static void model_dijkstra_both_set_route (routing_component_t rc, const char *src,
-                     const char *dst, name_route_extended_t route){};
+                     const char *dst, name_route_extended_t route)
+{
+
+
+}
 
 #ifdef HAVE_PCRE_LIB
 /* ************************************************** */
