@@ -1,8 +1,9 @@
 ### Make Libs
+include(FindSupernovae)
 
-if(enable_supernovae)
+if(enable_supernovae AND HAVE_SUPERNOVAE_TOOLS)
 	include(${PROJECT_DIRECTORY}/buildtools/Cmake/Supernovae.cmake)
-else(enable_supernovae)	
+else(enable_supernovae AND HAVE_SUPERNOVAE_TOOLS)	
 	add_library(simgrid SHARED ${simgrid_sources})
 	add_library(gras SHARED ${gras_sources})
 	if(enable_lib_static)
@@ -14,7 +15,7 @@ else(enable_supernovae)
 			add_library(smpi_static STATIC ${SMPI_SRC})	
 		endif(enable_lib_static)
 	endif(enable_smpi)
-endif(enable_supernovae)
+endif(enable_supernovae AND HAVE_SUPERNOVAE_TOOLS)
 
 set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 set_target_properties(gras PROPERTIES VERSION ${libgras_version})
