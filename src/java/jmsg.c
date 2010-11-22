@@ -251,7 +251,7 @@ Java_simgrid_msg_MsgNative_processFromPID(JNIEnv * env, jclass cls,
   m_process_t process = MSG_process_from_PID(PID);
 
   if (!process) {
-    jxbt_throw_process_not_found(env, bprintf("PID = %d", PID));
+    jxbt_throw_process_not_found(env, bprintf("PID = %d",(int) PID));
     return NULL;
   }
 

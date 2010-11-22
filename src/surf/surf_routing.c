@@ -731,7 +731,7 @@ static route_extended_t _get_route(const char *src, const char *dst)
  * by calling the differents "get_route" functions in each routing component.
  * No need to free the returned dynar. It will be freed at the next call.
  */
-static const xbt_dynar_t get_route(const char *src, const char *dst)
+static xbt_dynar_t get_route(const char *src, const char *dst)
 {
 
   route_extended_t e_route;
