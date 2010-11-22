@@ -111,6 +111,16 @@ typedef struct s_route {
   xbt_dynar_t link_list;
 } s_route_t, *route_t;
 
+typedef struct s_name_route {
+  xbt_dynar_t link_name_list;
+} s_name_route_t, *name_route_t;
+
+typedef struct s_name_route_extended {
+  s_route_t generic_route;
+  char *src_gateway;
+  char *dst_gateway;
+} s_name_route_extended_t, *name_route_extended_t;
+
 typedef struct s_route_limits {
   char *src_gateway;
   char *dst_gateway;
@@ -157,9 +167,9 @@ typedef struct s_routing_component {
   void (*set_processing_unit) (routing_component_t rc, const char *name);
   void (*set_autonomous_system) (routing_component_t rc, const char *name);
   void (*set_route) (routing_component_t rc, const char *src,
-                     const char *dst, route_t route);
+                     const char *dst, name_route_extended_t route);
   void (*set_ASroute) (routing_component_t rc, const char *src,
-                       const char *dst, route_extended_t route);
+                       const char *dst, name_route_extended_t route);
   void (*set_bypassroute) (routing_component_t rc, const char *src,
                            const char *dst, route_extended_t e_route);
 } s_routing_component_t;
