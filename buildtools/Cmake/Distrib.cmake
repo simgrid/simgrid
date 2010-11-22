@@ -220,7 +220,7 @@ COMMAND ${CMAKE_COMMAND} -E echo "Make the html doc"
 
 add_custom_target(dist-dir
   COMMAND test -e simgrid-${release_version}/ && chmod -R a+w simgrid-${release_version}/ || true
-  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}
+  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
   COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}
   COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/doc/html/
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_DIRECTORY}/doc/html/ simgrid-${release_version}/doc/html/
@@ -257,10 +257,10 @@ add_custom_target(dist
   DEPENDS ${CMAKE_BINARY_DIR}/simgrid-${release_version}.tar.gz
 )
 add_custom_command(
-	OUTPUT ${CMAKE_BINARY_DIR}/simgrid-${release_version}.tar.gz
+	OUTPUT ${CMAKE_BINARY_DIR}/simgrid-${release_version}.tar.gz	
 	COMMAND ${CMAKE_COMMAND} -E tar cf simgrid-${release_version}.tar simgrid-${release_version}/
   	COMMAND gzip -9v simgrid-${release_version}.tar
-  	COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}
+  	COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
 )
 add_dependencies(dist dist-dir)
 

@@ -746,6 +746,8 @@ file(GLOB_RECURSE CMAKE_SOURCE_FILES
 
 set(bin_files
 tools/MSG_visualization/colorize.pl
+tools/sg_unit_extractor.pl
+tools/simgrid_update_xml.pl
 )
 
 # This is the complete lise of what will be added to the source archive
