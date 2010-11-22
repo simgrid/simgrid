@@ -1,0 +1,28 @@
+#! /bin/bash
+prefix="@prefix@"
+
+ARGS="-DMAIN__=user_main -Diargc_=smpi_process_argc -Dgetarg_=smpi_process_getarg -lf2c"
+SRCFILES=""
+
+while [ -n "$1" ]; do
+  ARG="$1"
+  shift
+  case "${ARG}" in
+    *.f)
+      SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
+       if [ -z $SRCFILE ] ; then
+         SRCFILE="$ARG"
+       fi
+       SRCFILES="${SRCFILES} ${SRCFILE}"
+       ;;
+    *)
+      ARGS="${ARGS} ${ARG}"
+      ;;
+  esac
+done
+
+for SRCFILE in "${SRCFILES}"
+do
+   CFILE="${SRCFILE%.f}.c"
+   $prefix/bin/smpif2c ${SRCFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE}
+done

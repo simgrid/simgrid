@@ -11,6 +11,7 @@
 #include "xbt/xbt_os_time.h"
 #include "simix/simix.h"
 #include "smpi/smpi.h"
+#include "smpi/smpif.h"
 #include "instr/private.h"
 
 struct s_smpi_process_data;
@@ -49,6 +50,7 @@ int smpi_process_index(void);
 xbt_os_timer_t smpi_process_timer(void);
 void smpi_process_simulated_start(void);
 double smpi_process_simulated_elapsed(void);
+
 void print_request(const char *message, MPI_Request request);
 void smpi_process_post_send(MPI_Comm comm, MPI_Request request);
 void smpi_process_post_recv(MPI_Request request);
@@ -179,5 +181,17 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
 void smpi_bench_destroy(void);
 void smpi_bench_begin(int rank, const char *mpi_call);
 void smpi_bench_end(int rank, const char *mpi_call);
+
+// f77 wrappers
+void mpi_init__(int*);
+void mpi_finalize__(int*);
+void mpi_comm_rank__(MPI_Comm** comm, int* rank, int* ierr);
+void mpi_comm_size__(MPI_Comm** comm, int* size, int* ierr);
+double mpi_wtime__(void);
+
+void mpi_send__(void* buf, int* count, MPI_Datatype** datatype, int* dst,
+                int* tag, MPI_Comm** comm, int* ierr);
+void mpi_recv__(void* buf, int* count, MPI_Datatype** datatype, int* src,
+                int* tag, MPI_Comm** comm, MPI_Status* status, int* ierr);
 
 #endif

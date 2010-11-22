@@ -205,6 +205,7 @@ APPLICATIONFOOT
   fi
 ##---------------------- end SMPI TRACING OPTIONS ---------------------------------
 
+export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
   echo ${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
 fi

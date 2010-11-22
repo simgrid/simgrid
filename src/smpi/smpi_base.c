@@ -19,32 +19,6 @@ XBT_LOG_EXTERNAL_CATEGORY(smpi_receiver);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_sender);
 XBT_LOG_EXTERNAL_CATEGORY(smpi_util);
 
-void smpi_process_init(int *argc, char ***argv)
-{
-  int index;
-  smpi_process_data_t data;
-  smx_process_t proc;
-
-  proc = SIMIX_process_self();
-  index = atoi((*argv)[1]);
-  data = smpi_process_remote_data(index);
-  SIMIX_process_set_data(proc, data);
-  if (*argc > 2) {
-    free((*argv)[1]);
-    memmove(&(*argv)[1], &(*argv)[2], sizeof(char *) * (*argc - 2));
-    (*argv)[(*argc) - 1] = NULL;
-  }
-  (*argc)--;
-  DEBUG2("<%d> New process in the game: %p", index, proc);
-}
-
-void smpi_process_destroy(void)
-{
-  int index = smpi_process_index();
-
-  DEBUG1("<%d> Process left the game", index);
-}
-
 static MPI_Request build_request(void *buf, int count,
                                  MPI_Datatype datatype, int src, int dst,
                                  int tag, MPI_Comm comm, unsigned flags)

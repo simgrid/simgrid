@@ -2,6 +2,8 @@
 exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh" OUTPUT_VARIABLE "OKITOKI")
 if(enable_smpi)
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE "OKITOKI")
+	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE "OKITOKI")
+	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE "OKITOKI")
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE "OKITOKI")
 endif(enable_smpi)
 

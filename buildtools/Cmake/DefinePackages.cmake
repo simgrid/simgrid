@@ -105,6 +105,7 @@ set(SMPI_SRC
 	src/smpi/smpi_bench.c
 	src/smpi/smpi_global.c
 	src/smpi/smpi_mpi.c
+	src/smpi/smpi_f77.c
 	src/smpi/smpi_comm.c
 	src/smpi/smpi_group.c
 	src/smpi/smpi_util.c
@@ -399,7 +400,9 @@ include/msg/datatypes.h
 include/simdag/simdag.h
 include/simdag/datatypes.h
 include/smpi/smpi.h
+include/smpi/smpif.h
 include/smpi/mpi.h
+include/smpi/mpif.h
 include/surf/surfxml_parse.h
 include/surf/simgrid_dtd.h
 include/gras/datadesc.h
@@ -613,6 +616,8 @@ file(GLOB_RECURSE add_src_files
 set(add_src_files
 	${add_src_files}
 	src/smpi/smpicc.in
+	src/smpi/smpif2c.in
+	src/smpi/smpiff.in
 	src/smpi/smpirun.in
 	src/simix/smx_context_sysv_private.h
 	src/simgrid_units_main.c

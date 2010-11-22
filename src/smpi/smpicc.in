@@ -15,18 +15,22 @@ CMDLINE=""
 while [ -n "$1" ]; do
   ARG="$1"
   shift
-  if [ "${ARG}" = "-c" ]; then
+  case "${ARG}" in
+   -c)
       LINKARGS=""
       CMDLINE="${CMDLINE} -c "
-  elif [ "${ARG%.c}" != "${ARG}" ]; then
-    SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
-    if [ -z $SRCFILE ] ; then
-      SRCFILE="$ARG"
-    fi
-    CMDLINE="${CMDLINE} ${SRCFILE} "
-  else
-    CMDLINE="${CMDLINE} ${ARG} "
-  fi
+      ;;
+   *.c)
+      SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
+      if [ -z $SRCFILE ] ; then
+         SRCFILE="$ARG"
+      fi
+      CMDLINE="${CMDLINE} ${SRCFILE} "
+      ;;
+   *)
+      CMDLINE="${CMDLINE} ${ARG} "
+      ;;
+  esac
 done
 
 CMDLINE="${CC} ${INCLUDEARGS} ${CFLAGS} ${CMDLINE} ${CMAKE_LINKARGS} ${LINKARGS}"

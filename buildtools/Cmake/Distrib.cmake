@@ -20,6 +20,8 @@ endif(enable_doc)
 
 # binaries
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
+                 ${CMAKE_BINARY_DIR}/bin/smpif2c
+                 ${CMAKE_BINARY_DIR}/bin/smpiff
                  ${CMAKE_BINARY_DIR}/bin/smpirun
 		DESTINATION $ENV{DESTDIR}${prefix}/bin/)
 if(WIN32)
@@ -120,6 +122,8 @@ COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/lib/libsimgrid*
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/lib/libsmpi*
 COMMAND ${CMAKE_COMMAND} -E	echo "uninstall lib ok"
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/smpicc
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/smpif2c
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/smpiff
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/smpirun
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/tesh
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/simgrid-colorizer

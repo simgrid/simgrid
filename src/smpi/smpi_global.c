@@ -5,6 +5,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
@@ -17,6 +18,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi,
 
 typedef struct s_smpi_process_data {
   int index;
+  int* argc;
+  char*** argv;
   xbt_fifo_t pending_sent;
   xbt_fifo_t pending_recv;
   xbt_os_timer_t timer;
@@ -28,6 +31,74 @@ static smpi_process_data_t *process_data = NULL;
 static int process_count = 0;
 
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_NULL;
+
+void smpi_process_init(int *argc, char ***argv)
+{
+  int index;
+  smpi_process_data_t data;
+  smx_process_t proc;
+
+  if(argc && argv) {
+    proc = SIMIX_process_self();
+    index = atoi((*argv)[1]);
+    data = smpi_process_remote_data(index);
+    SIMIX_process_set_data(proc, data);
+    if (*argc > 2) {
+      free((*argv)[1]);
+      memmove(&(*argv)[1], &(*argv)[2], sizeof(char *) * (*argc - 2));
+      (*argv)[(*argc) - 1] = NULL;
+    }
+    (*argc)--;
+    data->argc = argc;
+    data->argv = argv;
+    DEBUG2("<%d> New process in the game: %p", index, proc);
+  }
+}
+
+void smpi_process_destroy(void)
+{
+  int index = smpi_process_index();
+
+  DEBUG1("<%d> Process left the game", index);
+}
+
+int smpi_process_argc(void) {
+  smpi_process_data_t data = smpi_process_data();
+
+  return data->argc ? *(data->argc) - 1 : 0;
+}
+
+int smpi_process_getarg(integer* index, char* dst, ftnlen len) {
+  smpi_process_data_t data = smpi_process_data();
+  char* arg;
+  size_t i;
+
+  if(!data->argc || !data->argv
+     || *index < 1 || *index >= *(data->argc)) {
+    return -1;
+  }
+  arg = (*data->argv)[*index];
+  for(i = 0; i < len && arg[i] != '\0'; i++) {
+    dst[i] = arg[i];
+  }
+  for(; i < len; i++) {
+    dst[i] = ' ';
+  }
+  return 0;
+}
+
+int smpi_global_rank(void) {
+   return smpi_process_index();
+}
+
+int smpi_global_size(void) {
+   char* value = getenv("SMPI_GLOBAL_SIZE");
+
+   if(!value) {
+      abort();
+   }
+   return atoi(value);
+}
 
 smpi_process_data_t smpi_process_data(void)
 {
@@ -157,6 +228,8 @@ void smpi_global_init(void)
   for (i = 0; i < process_count; i++) {
     process_data[i] = xbt_new(s_smpi_process_data_t, 1);
     process_data[i]->index = i;
+    process_data[i]->argc = NULL;
+    process_data[i]->argv = NULL;
     process_data[i]->pending_sent = xbt_fifo_new();
     process_data[i]->pending_recv = xbt_fifo_new();
     process_data[i]->timer = xbt_os_timer_new();
@@ -190,7 +263,19 @@ void smpi_global_destroy(void)
   process_data = NULL;
 }
 
-int main(int argc, char **argv)
+/* Fortran specific stuff */
+/* With smpicc, the following weak symbols are used */
+/* With smpiff, the following weak symbols are replaced by those in libf2c */
+int __attribute__((weak)) xargc;
+char** __attribute__((weak)) xargv;
+
+int __attribute__((weak)) main(int argc, char** argv) {
+   xargc = argc;
+   xargv = argv;
+   return MAIN__();
+}
+
+int MAIN__(void)
 {
   srand(SMPI_RAND_SEED);
 
@@ -219,20 +304,20 @@ int main(int argc, char **argv)
                    NULL);
 
 #ifdef HAVE_TRACING
-  TRACE_global_init(&argc, argv);
+  TRACE_global_init(&xargc, xargv);
 #endif
 
-  SIMIX_global_init(&argc, argv);
+  SIMIX_global_init(&xargc, xargv);
 
 #ifdef HAVE_TRACING
   TRACE_smpi_start();
 #endif
 
   // parse the platform file: get the host list
-  SIMIX_create_environment(argv[1]);
+  SIMIX_create_environment(xargv[1]);
 
   SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
-  SIMIX_launch_application(argv[2]);
+  SIMIX_launch_application(xargv[2]);
 
   smpi_global_init();
 

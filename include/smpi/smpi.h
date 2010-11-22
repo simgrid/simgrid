@@ -332,5 +332,8 @@ XBT_PUBLIC(void *) smpi_shared_malloc(size_t size, const char *file,
 XBT_PUBLIC(void) smpi_shared_free(void *data);
 #define SMPI_SHARED_FREE(data) smpi_shared_free(data)
 
+/* Fortran specific stuff */
+XBT_PUBLIC(int) MAIN__(void);
+
 SG_END_DECL()
 #endif

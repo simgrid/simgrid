@@ -1,0 +1,49 @@
+#! /usr/bin/env perl
+
+use warnings;
+use strict;
+use File::Temp;
+use File::Copy;
+
+my $include="-I@top_srcdir@/include -I@top_srcdir@/include/smpi -I@includedir@ -I@includedir@/smpi";
+
+foreach my $fortran (@ARGV) {
+   my $output = $fortran;
+   $output =~ s/.f$/.c/;
+   my $tmp = new File::Temp;
+   $tmp->autoflush(1);
+   `f2c $include -w -a $fortran`;
+   die "F2C failed\n" if $?;
+   open F2C,"<$output";
+   my $started = 0;
+   print $tmp "#include <stdlib.h>\n";
+   print $tmp "#include <smpif.h>\n";
+   while(<F2C>) {
+      chomp;
+      if(/\/\* Common Block Declarations \*\//) {
+         $started = 1;
+      }
+      if($started) {
+         if(/^} (.*?);/) {
+            $_ = "}* $1 = NULL;\n";
+         } elsif(/^#define\s*(\S*)\s*\(?([^.]*)(\..*?)?\)?$/) {
+            $_ = "#define $1 $2\[smpi_global_rank()\]";
+            if(defined $3) {
+               $_ .= $3;
+            }
+            $_ .= "\n";
+            $_ .= "\nvoid __attribute__((constructor)) __preinit_$1(void) {\n  if(!$2) $2 = malloc(smpi_global_size() * sizeof(*$2));\n}\n";
+            $_ .= "\nvoid __attribute__((destructor)) __postfini_$1(void) {\n  free($2);\n  $2 = NULL;\n}\n";
+         }
+      }
+      if(/\/\* Table of constant values \*\// || /MAIN__/) {
+         $started = 0;
+      }
+      if(/\/* Main program alias \*\/\s*int\s+.*\s*\(\s*\)\s*{(.*)}/) {
+         $_ = "int smpi_simulated_main(int argc, char** argv) { smpi_process_init(&argc, &argv); $1 }\n";
+      }
+      print $tmp "$_\n";
+   }
+   close F2C;
+   copy($tmp->filename,$output) or die "Copy failed: $!\n";
+}
