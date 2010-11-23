@@ -1,7 +1,0 @@
-<?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
-  <process host="Tremblay" function="toto"/>
-  <process host="Jupiter" function="tutu"/>
-  <process host="Fafard" function="titi"/>
-</platform>

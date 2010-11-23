@@ -1,15 +1,15 @@
 # sample action file
-tutu send toto 1e9
-tutu compute 1e9
-tutu recv
+p0 send p1 1e9
+p0 compute 1e9
+p0 recv
 
-toto Irecv 
-toto compute 1e9
-toto wait
-toto send titi 1e9
+p1 Irecv 
+p1 compute 1e9
+p1 wait
+p1 send p2 1e9
 
-titi Irecv
-titi compute 5e8
-titi wait
-titi Isend tutu 1e9
-titi compute 5e8
+p2 Irecv
+p2 compute 5e8
+p2 wait
+p2 Isend p0 1e9
+p2 compute 5e8

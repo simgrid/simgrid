@@ -1,4 +1,0 @@
-# sample action file (with only the actions for toto, 
-#                     to be launched by deployment file)
-toto recv tutu
-toto compute 12

@@ -2,16 +2,16 @@
      separate files, one per process.
      Launch it like this: 
      
-  ./actions ../small_platform.xml actions_deployment_split.xml 
+  ./actions homogeneous_3_hosts.xml deployment_split.xml 
 -->
 
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
-  <process host="Tremblay" function="toto">
-    <argument value="actions_toto.txt"/>
+  <process host="host0" function="p0">
+    <argument value="actions_p0.txt"/>
   </process>
-  <process host="Jupiter" function="tutu">
-    <argument value="actions_tutu.txt"/>
+  <process host="host1" function="p1">
+    <argument value="actions_p1.txt"/>
   </process>
 </platform>
