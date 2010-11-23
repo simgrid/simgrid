@@ -87,6 +87,10 @@ void SD_init(int *argc, char **argv)
 
   xbt_cfg_setdefault_string(_surf_cfg_set, "workstation/model",
                             "ptask_L07");
+
+#ifdef HAVE_TRACING
+  TRACE_start ();
+#endif
 }
 
 /**
@@ -404,6 +408,9 @@ void SD_exit(void)
     WARN0("SD_exit() called, but SimDag is not running");
     /* we cannot use exceptions here because xbt is not running! */
   }
+#ifdef HAVE_TRACING
+  TRACE_end();
+#endif
 }
 
 /**

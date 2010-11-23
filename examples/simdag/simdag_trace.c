@@ -30,8 +30,6 @@ int main(int argc, char **argv)
   /* initialisation of SD */
   SD_init(&argc, argv);
 
-  TRACE_start ();
-
   /*  xbt_log_control_set("sd.thres=debug"); */
 
   if (argc < 2) {
@@ -136,6 +134,5 @@ int main(int argc, char **argv)
   DEBUG0("Tasks destroyed. Exiting SimDag...");
 
   SD_exit();
-  TRACE_end();
   return 0;
 }
