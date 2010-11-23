@@ -191,7 +191,6 @@ void surf_network_model_init_Constant(const char *filename)
     return;
   surf_network_model = surf_model_init();
 
-  INFO0("Blah");
   surf_network_model->name = "constant time network";
   surf_network_model->action_unref = netcste_action_unref;
   surf_network_model->action_cancel = netcste_action_cancel;
