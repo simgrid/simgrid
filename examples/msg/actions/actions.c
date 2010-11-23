@@ -182,27 +182,40 @@ static void action_wait(xbt_dynar_t action)
 }
 
 /* FIXME: that's a poor man's implementation: we should take the message exchanges into account */
-smx_sem_t barrier_semaphore = NULL;
 static void barrier(xbt_dynar_t action)
 {
   char *name = NULL;
+  static smx_mutex_t mutex = NULL;
+  static smx_cond_t cond = NULL;
+  static int processes_arrived_sofar=0;
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
 
-  if (barrier_semaphore == NULL)        // first arriving on the barrier
-    barrier_semaphore = SIMIX_sem_init(0);
-  DEBUG2("Entering barrier: %s (capacity: %d)", name,SIMIX_sem_get_capacity(barrier_semaphore));
+  if (mutex == NULL) {       // first arriving on the barrier
+    mutex = SIMIX_mutex_init();
+    cond = SIMIX_cond_init();
+    processes_arrived_sofar=0;
+  }
+  DEBUG2("Entering barrier: %s (%d already there)", name,processes_arrived_sofar);
 
-  if (SIMIX_sem_get_capacity(barrier_semaphore) == -communicator_size + 1) {    // last arriving
-    SIMIX_sem_release_forever(barrier_semaphore);
-    SIMIX_sem_destroy(barrier_semaphore);
-    barrier_semaphore = NULL;
-  } else {                      // not last
-    SIMIX_sem_acquire(barrier_semaphore);
+  SIMIX_mutex_lock(mutex);
+  if (++processes_arrived_sofar == communicator_size) {
+    SIMIX_cond_broadcast(cond);
+    SIMIX_mutex_unlock(mutex);
+  } else {
+    SIMIX_cond_wait(cond,mutex);
+    SIMIX_mutex_unlock(mutex);
   }
 
   DEBUG1("Exiting barrier: %s", name);
+
+  processes_arrived_sofar--;
+  if (!processes_arrived_sofar) {
+    SIMIX_cond_destroy(cond);
+    SIMIX_mutex_destroy(mutex);
+    mutex=NULL;
+  }
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
