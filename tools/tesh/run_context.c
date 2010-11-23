@@ -180,6 +180,13 @@ void rctx_armageddon(rctx_t initiator, int exitcode)
     rctx_armageddon_kill_one(initiator, filepos, job);
   }
 
+  /* Give runner threads a chance to acknowledge the processes deaths */
+  usleep(10000);
+  /* Ensure that nobody is running rctx_wait on exit */
+  if (fg_job)
+    xbt_os_mutex_acquire(rctx->interruption);
+  xbt_dynar_foreach(bg_jobs, cursor, job)
+    xbt_os_mutex_acquire(job->interruption);
   VERB0("Shut everything down!");
   exit(exitcode);
 }
