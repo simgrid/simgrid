@@ -16,37 +16,40 @@ if [ -e /usr/bin/apt-get ] ; then
     sudo apt-get -y install perl
     sudo apt-get -y install graphviz-dev graphviz
     sudo apt-get -y install libpcre3-dev
-fi
-
-if [ -e /usr/bin/yum ] ; then
-	sudo yum -y update
-    sudo yum -y install subversion
-    sudo yum -y install gcc
-    sudo yum -y install make
-    sudo yum -y install java-1.6.0-openjdk
-    sudo yum -y install lua-devel lua
-    sudo yum -y install ruby-devel ruby
-    sudo yum -y install unzip
-    sudo yum -y install cmake
-    sudo yum -y install wget
-    sudo yum -y install perl
-    sudo yum -y install graphviz-dev graphviz
-    sudo yum -y install libpcre3-dev
-fi
-
-if [ x$arch = xDarwin ] ; then
-    sudo fink -y install svn
-    sudo fink -y install gcc42
-    sudo fink -y install make
-    sudo fink -y install java-1.6.0-openjdk
-    sudo fink -y install lua51-dev lua51
-    sudo fink -y install ruby18-dev ruby
-    sudo fink -y install unzip
-    sudo fink -y install cmake
-    sudo fink -y install wget
-    sudo fink -y install perl
-    sudo fink -y install graphviz-dev graphviz
-    sudo fink -y install pcre
+    sudo apt-get -y install f2c
+else
+	if [ -e /usr/bin/yum ] ; then
+		sudo yum -y update
+	    sudo yum -y install subversion
+	    sudo yum -y install gcc
+	    sudo yum -y install make
+	    sudo yum -y install java-1.6.0-openjdk
+	    sudo yum -y install lua-devel lua
+	    sudo yum -y install ruby-devel ruby
+	    sudo yum -y install unzip
+	    sudo yum -y install cmake
+	    sudo yum -y install wget
+	    sudo yum -y install perl
+	    sudo yum -y install graphviz-dev graphviz
+	    sudo yum -y install libpcre3-dev
+	    sudo yum -y install f2c
+	else
+		if [ x$arch = xDarwin ] ; then
+		    sudo fink -y install svn
+		    sudo fink -y install gcc42
+		    sudo fink -y install make
+		    sudo fink -y install java-1.6.0-openjdk
+		    sudo fink -y install lua51-dev lua51
+		    sudo fink -y install ruby18-dev ruby
+		    sudo fink -y install unzip
+		    sudo fink -y install cmake
+		    sudo fink -y install wget
+		    sudo fink -y install perl
+		    sudo fink -y install graphviz-dev graphviz
+		    sudo fink -y install pcre
+		    sudo fink -y install f2c
+		fi
+	fi
 fi
 
 which_svn=`which svn`		#svn necessary
@@ -61,6 +64,7 @@ which_unzip=`which unzip`	#unzip for gtnets
 which_wget=`which wget`		#wget for cmake
 which_dot=`which dot`		#dot for cgraph
 which_perl=`which perl`		#perl
+which_f2c=`which f2c`		#f2c
 echo $which_cmake
 echo $which_unzip
 echo $which_ruby
@@ -73,8 +77,4 @@ echo $which_svn
 echo $which_dot
 echo $which_wget
 echo $which_perl
-
-directory=`pwd`
-cd ../
-perl $directory/buildtools/pipol/cmake.pl
-cd $directory
+echo $which_f2c

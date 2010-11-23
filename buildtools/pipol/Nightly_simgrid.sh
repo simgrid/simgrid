@@ -2,8 +2,6 @@
 
 #PRE-PIPOL /home/mescal/navarro/pre-simgrid.sh
 
-#PIPOL esn i386_mac-mac-osx-server-leopard.dd.gz none 02:00  --user --silent
-
 #PIPOL esn i386-linux-ubuntu-intrepid.dd.gz none 02:00 --user --silent
 
 #PIPOL esn i386-linux-ubuntu-jaunty.dd.gz none 02:00 --user --silent
@@ -33,9 +31,11 @@ else
 fi
 cd ./pipol/$PIPOL_HOST
 
-sh /home/mescal/navarro/liste_install.sh
-
 svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid-trunk --quiet
+
+sh ./simgrid-trunk/buildtools/pipol/liste_install.sh
+perl ./simgrid-trunk/buildtools/pipol/cmake.pl
+
 cd simgrid-trunk
 
 #Make the ucontext mode

@@ -12,9 +12,11 @@ else
 fi
 cd ./pipol/$PIPOL_HOST
 
-sh /home/mescal/navarro/liste_install.sh
-
 svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid-trunk --quiet
+
+sh ./simgrid-trunk/buildtools/pipol/liste_install.sh
+perl ./simgrid-trunk/buildtools/pipol/cmake.pl
+
 cd simgrid-trunk
 
 #Make the ucontext mode
