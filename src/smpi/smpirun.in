@@ -199,7 +199,7 @@ APPLICATIONFOOT
 
 ##---------------------- SMPI TRACING OPTIONS ---------------------------------
   if [ -n "${TRACEOPT}" ]; then
-    TRACEOPTIONS="--cfg=tracing/filename:${TRACEOPT} --cfg=tracing/smpi:1 --cfg=tracing/platform:1"
+    TRACEOPTIONS="--cfg=tracing:1 --cfg=tracing/filename:${TRACEOPT} --cfg=tracing/smpi:1 --cfg=tracing/platform:1"
   else
     TRACEOPTIONS=""
   fi
