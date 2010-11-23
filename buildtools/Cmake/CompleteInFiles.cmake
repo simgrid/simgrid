@@ -141,6 +141,23 @@ if(enable_ruby)
 endif(enable_ruby)
 
 #--------------------------------------------------------------------------------------------------
+### Initialize of Smpi
+
+if(enable_smpi)
+	include(FindF2c)
+	if(HAVE_F2C_H)
+       string(REGEX MATCH "-I${HAVE_F2C_H} " operation "${CMAKE_C_FLAGS}")
+	   if(NOT operation)
+			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${HAVE_F2C_H} ")
+	   endif(NOT operation)
+	else(HAVE_F2C_H)
+		message("-- Smpi Need \"f2c.h\".")
+		message("-- Please install f2c before use smpi or set LD_LIBRARY_PATH to \"f2c.h\".")
+		message(FATAL_ERROR "SMPI DEPENDENCIES")
+	endif(HAVE_F2C_H)	
+endif(enable_smpi)
+
+#--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT JAVA
 
 if(enable_java)
