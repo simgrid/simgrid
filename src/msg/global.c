@@ -80,6 +80,9 @@ void MSG_global_init(int *argc, char **argv)
     SIMIX_function_register_process_cleanup(__MSG_process_cleanup);
     SIMIX_function_register_process_kill(_MSG_process_kill_from_SIMIX);
   }
+#ifdef HAVE_TRACING
+  TRACE_start();
+#endif
 }
 
 /** \defgroup m_channel_management    Understanding channels
@@ -213,6 +216,10 @@ MSG_error_t MSG_clean(void)
   _MSG_action_exit();
 
   SIMIX_clean();
+
+#ifdef HAVE_TRACING
+  TRACE_end();
+#endif
 
   return MSG_OK;
 }

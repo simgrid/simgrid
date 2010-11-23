@@ -113,8 +113,6 @@ int main(int argc, char *argv[])
     printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
     exit(1);
   }
-  //starting the simulation tracing
-  TRACE_start();
 
   //declaring user variables
   TRACE_host_variable_declare("is_slave");
@@ -131,9 +129,6 @@ int main(int argc, char *argv[])
 
   res = test_all(argv[1], argv[2]);
   MSG_clean();
-
-  //ending the simulation tracing
-  TRACE_end();
 
   if (res == MSG_OK)
     return 0;

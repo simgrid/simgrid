@@ -50,8 +50,6 @@ int main(int argc, char *argv[])
               argv[0]);
     exit(1);
   }
-  //starting the simulation trace
-  TRACE_start();
   TRACE_category("emigrant");
 
   /* Simulation setting */
@@ -66,9 +64,6 @@ int main(int argc, char *argv[])
   INFO1("Simulation time %g", MSG_get_clock());
   if (res == MSG_OK)
     res = MSG_clean();
-
-  //ending the simulation trace
-  TRACE_end();
 
   if (res == MSG_OK)
     return 0;

@@ -117,7 +117,6 @@ int main(int argc, char *argv[])
   // - the communication volume among processes expects that:
   //     - the processes involved have a category
   //     - the tasks sent have a category
-  TRACE_start();
 
   //declaring user categories (for tasks)
   TRACE_category("compute");
@@ -131,9 +130,6 @@ int main(int argc, char *argv[])
 
   res = test_all(argv[1], argv[2]);
   MSG_clean();
-
-  //ending the simulation tracing
-  TRACE_end();
 
   if (res == MSG_OK)
     return 0;
