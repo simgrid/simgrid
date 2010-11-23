@@ -85,3 +85,11 @@ find_library(HAVE_CDT_LIB
     /sw
     /usr
 )
+
+mark_as_advanced(HAVE_AGRAPH_H)
+mark_as_advanced(HAVE_CGRAPH_H)                                                                                
+mark_as_advanced(HAVE_GRAPH_H)                                                                                  
+mark_as_advanced(HAVE_GRAPH_LIB)
+mark_as_advanced(HAVE_CGRAPH_LIB)
+mark_as_advanced(HAVE_AGRAPH_LIB)
+mark_as_advanced(HAVE_CDT_LIB)
