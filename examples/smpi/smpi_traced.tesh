@@ -5,6 +5,7 @@ p Test instrumentation of SMPI
 $ ../../bin/smpirun -trace smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform_with_routers.xml -np 3 ./smpi_traced 
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
