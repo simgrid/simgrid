@@ -190,9 +190,9 @@ static void barrier(xbt_dynar_t action)
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
 
-  DEBUG1("Entering barrier: %s", name);
   if (barrier_semaphore == NULL)        // first arriving on the barrier
     barrier_semaphore = SIMIX_sem_init(0);
+  DEBUG2("Entering barrier: %s (capacity: %d)", name,SIMIX_sem_get_capacity(barrier_semaphore));
 
   if (SIMIX_sem_get_capacity(barrier_semaphore) == -communicator_size + 1) {    // last arriving
     SIMIX_sem_release_forever(barrier_semaphore);
