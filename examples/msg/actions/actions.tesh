@@ -1,0 +1,76 @@
+# A little tesh file testing most MPI-related actions
+
+
+$ ./actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment_split.xml
+> [host0:p0:(1) 500.005200] p0 recv p1 500.005200
+> [host1:p1:(2) 500.005200] p1 send p0 1e10 500.005200
+> [host0:p0:(1) 500.005201] p0 compute 12 0.000001
+> [host1:p1:(2) 512.005200] p1 sleep 12 12.000000 
+> [::(0) 512.005200] Simulation time 512.005
+
+$ ./actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment.xml actions_allReduce.txt
+> [host0:p0:(1) 0.000000] p0 comm_size 3 0.000000
+> [host1:p1:(2) 100.015912] p1 allReduce 5e8 5e8 100.015912
+> [host2:p2:(3) 100.021112] p2 allReduce 5e8 5e8 100.021112
+> [host0:p0:(1) 100.021112] p0 allReduce 5e8 5e8 100.021112
+> [host1:p1:(2) 150.015912] p1 compute 5e8 50.000000
+> [host0:p0:(1) 150.021112] p0 compute 5e8 50.000000
+> [host2:p2:(3) 150.021112] p2 compute 5e8 50.000000
+> [::(0) 150.021112] Simulation time 150.021
+
+$ ./actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment.xml actions_barrier.txt
+> [host0:p0:(1) 0.000000] p0 comm_size 3 0.000000
+> [host1:p1:(2) 0.000000] p1 comm_size 3 0.000000
+> [host2:p2:(3) 0.000000] p2 comm_size 3 0.000000
+> [host0:p0:(1) 0.505200] p0 send p1 1E7 0.505200
+> [host1:p1:(2) 0.505200] p1 recv p0 0.505200
+> [host1:p1:(2) 0.905200] p1 compute 4E6 0.400000
+> [host2:p2:(3) 0.905200] p2 compute 4E6 0.400000
+> [host0:p0:(1) 0.955200] p0 compute 4.5E6 0.450000
+> [::(0) 0.955200] Simulation time 0.9552
+
+$ ./actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment.xml actions_bcast.txt
+> [host0:p0:(1) 0.000000] p0 comm_size 3 0.000000
+> [host1:p1:(2) 25.010400] p1 bcast 5e8 25.010400
+> [host2:p2:(3) 25.015600] p2 bcast 5e8 25.015600
+> [host0:p0:(1) 25.015600] p0 bcast 5e8 25.015600
+> [host1:p1:(2) 45.010400] p1 compute 2e8 20.000000
+> [host0:p0:(1) 75.015600] p0 compute 5e8 50.000000
+> [host2:p2:(3) 75.015600] p2 compute 5e8 50.000000
+> [host1:p1:(2) 100.026000] p1 bcast 5e8 55.015600
+> [host2:p2:(3) 100.031200] p2 bcast 5e8 25.015600
+> [host0:p0:(1) 100.031200] p0 bcast 5e8 25.015600
+> [host1:p1:(2) 120.026000] p1 compute 2e8 20.000000
+> [host0:p0:(1) 150.031200] p0 compute 5e8 50.000000
+> [host2:p2:(3) 150.031200] p2 compute 5e8 50.000000
+> [host1:p1:(2) 175.036400] p1 reduce 5e8 5e8 55.010400
+> [host2:p2:(3) 175.036400] p2 reduce 5e8 5e8 25.005200
+> [host0:p0:(1) 225.036712] p0 reduce 5e8 5e8 75.005512
+> [::(0) 225.036712] Simulation time 225.037
+
+$ ./actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment.xml actions_reduce.txt
+> [host0:p0:(1) 0.000000] p0 comm_size 3 0.000000
+> [host1:p1:(2) 25.005200] p1 reduce 5e8 5e8 25.005200
+> [host2:p2:(3) 25.005200] p2 reduce 5e8 5e8 25.005200
+> [host1:p1:(2) 75.005200] p1 compute 5e8 50.000000
+> [host2:p2:(3) 75.005200] p2 compute 5e8 50.000000
+> [host0:p0:(1) 75.005512] p0 reduce 5e8 5e8 75.005512
+> [host0:p0:(1) 125.005512] p0 compute 5e8 50.000000
+> [::(0) 125.005512] Simulation time 125.006
+
+$ ./actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment.xml actions_with_isend.txt
+> [host1:p1:(2) 0.000000] p1 Irecv p0 0.000000
+> [host2:p2:(3) 0.000000] p2 Irecv p1 0.000000
+> [host2:p2:(3) 50.000000] p2 compute 5e8 50.000000
+> [host0:p0:(1) 50.005200] p0 send p1 1e9 50.005200
+> [host1:p1:(2) 100.000000] p1 compute 1e9 100.000000
+> [host1:p1:(2) 100.000156] p1 wait 0.000156
+> [host0:p0:(1) 150.005200] p0 compute 1e9 100.000000
+> [host1:p1:(2) 150.005356] p1 send p2 1e9 50.005200
+> [host2:p2:(3) 150.005512] p2 wait 100.005512
+> [host2:p2:(3) 150.005512] p2 Isend p0 1e9 0.000000
+> [host2:p2:(3) 200.005512] p2 compute 5e8 50.000000
+> [host0:p0:(1) 200.010712] p0 recv p2 50.005512
+> [::(0) 200.010712] Simulation time 200.011
+
+	   

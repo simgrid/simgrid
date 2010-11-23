@@ -142,6 +142,7 @@ ADD_TEST(msg-properties		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/
 ADD_TEST(msg-trace		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg trace/trace.tesh)
 ADD_TEST(msg-masterslave_cpu_ti	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti.tesh)
 ADD_TEST(msg_icomms ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/icomms peer.tesh)
+ADD_TEST(msg_actions ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/actions actions.tesh)
 
 IF(HAVE_TRACING)
   ADD_TEST(tracing-ms ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg tracing/ms.tesh)

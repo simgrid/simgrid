@@ -1,14 +1,14 @@
 # sample action file
 p0 send p1 1e9
 p0 compute 1e9
-p0 recv
+p0 recv p2
 
-p1 Irecv 
+p1 Irecv p0
 p1 compute 1e9
 p1 wait
 p1 send p2 1e9
 
-p2 Irecv
+p2 Irecv p1
 p2 compute 5e8
 p2 wait
 p2 Isend p0 1e9

@@ -9,9 +9,9 @@
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
   <process host="host0" function="p0">
-    <argument value="actions_p0.txt"/>
+    <argument value="actions_split_p0.txt"/>
   </process>
   <process host="host1" function="p1">
-    <argument value="actions_p1.txt"/>
+    <argument value="actions_split_p1.txt"/>
   </process>
 </platform>
