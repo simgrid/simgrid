@@ -168,6 +168,7 @@ void TRACE_smpi_send(int rank, int src, int dst);
 void TRACE_smpi_recv(int rank, int src, int dst);
 
 /* from instr_config.c */
+int TRACE_is_enabled(void);
 int TRACE_is_configured(void);
 int TRACE_smpi_is_enabled(void);
 int TRACE_smpi_is_grouped(void);

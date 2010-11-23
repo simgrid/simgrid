@@ -23,6 +23,10 @@ int TRACE_start()
     return 0;
   }
 
+  if (!TRACE_is_enabled()){
+    return 0;
+  }
+
   if (IS_TRACING) {             /* what? trace is already active... ignore.. */
     THROW0(tracing_error, TRACE_ERROR_START,
            "TRACE_start called, but tracing is already active.");

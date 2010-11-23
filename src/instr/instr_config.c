@@ -9,6 +9,7 @@
 
 #ifdef HAVE_TRACING
 
+#define OPT_TRACING               "tracing"
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
 #define OPT_TRACING_PLATFORM      "tracing/platform"
@@ -20,6 +21,11 @@
 #define OPT_TRACING_PLATFORM_METHOD "tracing/platform/method"
 
 static int trace_configured = 0;
+
+int TRACE_is_enabled(void)
+{
+  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING);
+}
 
 int TRACE_is_configured(void)
 {
@@ -78,6 +84,13 @@ void TRACE_global_init(int *argc, char **argv)
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_FILENAME,
                    "Trace file created by the instrumented SimGrid.",
                    xbt_cfgelm_string, &default_tracing_filename, 1, 1,
+                   NULL, NULL);
+
+  /* tracing */
+  int default_tracing = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING,
+                   "Enable Tracing.",
+                   xbt_cfgelm_int, &default_tracing, 0, 1,
                    NULL, NULL);
 
   /* smpi */
