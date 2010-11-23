@@ -705,6 +705,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
  *  @brief Log at TRACE priority that we entered in current function, appending a user specified format taking 5 args (XBT_INn exists for all n in [1,6])
  */
 #define XBT_IN5(fmt,a,b,c,d,e) LOG6(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c,d,e)
+#define XBT_IN6(fmt,a,b,c,d,e,f) LOG7(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c,d,e,f)
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log at TRACE priority that we exited the current function.
