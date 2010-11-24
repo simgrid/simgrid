@@ -173,6 +173,7 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
   data->client = SIMIX_process_self();
   data->server = pr->server;
   data->server_port = port;
+  data->client_port = gras_os_myport();
 
   /* initialize synchronization stuff on the socket */
   data->rdv_server = pr->rdv;
@@ -183,10 +184,10 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
   sock->data = data;
   sock->incoming = 1;
 
-  DEBUG5("%s (PID %d) connects in %s mode to %s:%d",
+  DEBUG8("%s (PID %d) connects in %s mode to %s:%d (rdv_ser:%p, rdv_cli:%p, comm:%p)",
          SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
-         sock->meas ? "meas" : "regular", host,
-         port);
+         sock->meas ? "meas" : "regular", host, port,
+         data->rdv_server,data->rdv_client,data->comm_recv);
 }
 
 void gras_trp_sg_socket_server(gras_trp_plugin_t self, int port, gras_socket_t sock)
