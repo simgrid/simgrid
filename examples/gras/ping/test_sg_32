@@ -10,7 +10,7 @@ $ $SG_TEST_EXENV ./ping_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platfo
 > [Fafard:client:(2) 0.000156] [Ping/INFO] Messages registered
 > [Fafard:client:(2) 0.000156] [Ping/INFO] >>>>>>>> Connected to server which is on Tremblay:4000 <<<<<<<<
 > [Fafard:client:(2) 0.020707] [Ping/INFO] >>>>>>>> Message PING(1234) sent to Tremblay:4000 <<<<<<<<
-> [Tremblay:server:(1) 0.020707] [Ping/INFO] >>>>>>>> Got message PING(1234) from Fafard:0 <<<<<<<<
+> [Tremblay:server:(1) 0.020707] [Ping/INFO] >>>>>>>> Got message PING(1234) from Fafard:5000 <<<<<<<<
 > [Tremblay:server:(1) 0.041259] [Ping/INFO] >>>>>>>> Answered with PONG(4321) <<<<<<<<
 > [Tremblay:server:(1) 0.041259] [Ping/INFO] Done.
 > [Tremblay:server:(1) 0.041259] [gras/INFO] Exiting GRAS
