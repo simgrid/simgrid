@@ -49,6 +49,8 @@ static void listener_function(void *p)
   while (1) {
     msg = gras_msg_recv_any();
     if (msg->type != msg_wakeup_listener_t) {
+		/* Cannot display who sent this since in SG, gras_socket_peer_* wont work:
+		   I'm not the user process but I'm just the listener. Too bad */
       VERB1("Got a '%s' message. Queue it for handling by main thread",
             gras_msgtype_get_name(msg->type));
       xbt_queue_push(me->incomming_messages, msg);
