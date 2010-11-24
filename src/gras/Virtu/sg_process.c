@@ -159,9 +159,9 @@ void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p)
 /** @brief retrieve the value of a given process property (or NULL if not defined) */
 const char *gras_process_property_value(const char *name)
 {
-  return
-      xbt_dict_get_or_null(SIMIX_process_get_properties
-                           (SIMIX_process_self()), name);
+  return xbt_dict_get_or_null(
+               SIMIX_process_get_properties(SIMIX_process_self()), 
+                                            name);
 }
 
 /** @brief retrieve the process properties dictionnary
