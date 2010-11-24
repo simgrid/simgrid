@@ -25,6 +25,7 @@
 #include <xbt/set.h>
 #include <xbt/swag.h>
 #include <xbt/heap.h>
+#include <xbt/queue.h>
 
 #include <xbt/peer.h>
 #include <xbt/config.h>
