@@ -92,10 +92,12 @@ int server(int argc, char *argv[])
 
   INFO0("Spawn the kids");
   for (i = 0; i < child_amount; i++) {
-    worker_args = xbt_new0(char *, 1);
+    char *name = bprintf("child%d",i);
+    worker_args = xbt_new0(char *, 2);
     worker_args[0] = xbt_strdup("child");
     worker_args[1] = NULL;
-    gras_agent_spawn(bprintf("child%d",i), NULL, worker, 1, worker_args, NULL);
+    gras_agent_spawn(name, worker, 1, worker_args, NULL);
+    free(name);
   }
 
   INFO0("Fetch their answers");
@@ -118,6 +120,7 @@ int server(int argc, char *argv[])
     INFO3("Primes in [%d,%d]: %s",chunk->min,chunk->max,buff->data);
     xbt_strbuff_free(buff);
   }
+  gras_os_sleep(.1);/* Let the childs detect that there is nothing more to do */
   xbt_queue_free(&todo);
   xbt_queue_free(&done);
 
