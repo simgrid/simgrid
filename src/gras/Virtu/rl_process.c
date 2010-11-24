@@ -9,6 +9,7 @@
 #include "gras_modinter.h"      /* module initialization interface */
 #include "gras/Virtu/virtu_rl.h"
 #include "portable.h"
+#include "xbt/xbt_os_thread.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu_process);
 
@@ -93,11 +94,28 @@ gras_procdata_t *gras_procdata_get(void)
   return _gras_procdata;
 }
 
-void gras_agent_spawn(const char *name, void *data,
+typedef struct {
+  xbt_main_func_t code;
+  int argc;
+  char **argv;
+} spawner_wrapper_args;
+
+static void *spawner_wrapper(void *data) {
+  spawner_wrapper_args *a = data;
+  (*(a->code))(a->argc,a->argv);
+  free(a);
+  return NULL;
+}
+
+void gras_agent_spawn(const char *name,
                       xbt_main_func_t code, int argc, char *argv[],
                       xbt_dict_t properties)
 {
-  THROW_UNIMPLEMENTED;
+  spawner_wrapper_args *args =malloc(sizeof(spawner_wrapper_args));
+  args->argc=argc;
+  args->argv=argv;
+  args->code=code;
+  xbt_os_thread_create(name,spawner_wrapper,args);
 }
 
 /* **************************************************************************

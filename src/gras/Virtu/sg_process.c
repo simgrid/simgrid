@@ -22,13 +22,13 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu_process);
 static long int PID = 1;
 
 
-void gras_agent_spawn(const char *name, void *data,
+void gras_agent_spawn(const char *name,
                       xbt_main_func_t code, int argc, char *argv[],
                       xbt_dict_t properties)
 {
 
-  SIMIX_process_create(name, code,
-                       data, gras_os_myname(), argc, argv, properties);
+  SIMIX_process_create(name, code, NULL,
+                       gras_os_myname(), argc, argv, properties);
 }
 
 /* **************************************************************************
