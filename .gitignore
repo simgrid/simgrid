@@ -173,8 +173,7 @@ examples/gras/properties/properties_slave
 examples/gras/rpc/rpc_client
 examples/gras/rpc/rpc_forwarder
 examples/gras/rpc/rpc_server
-examples/gras/spawn/spawn_child
-examples/gras/spawn/spawn_father
+examples/gras/spawn/spawn_server
 examples/gras/synchro/synchro_philosopher
 examples/gras/timer/timer_client
 examples/gras/replay/replay_simulator

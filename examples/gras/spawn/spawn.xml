@@ -1,8 +1,8 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 <platform version="2">
-  <process host="Tremblay" function="father">
-     <argument value="4000"/>       <!-- port number -->
+  <process host="Tremblay" function="server">
+     <argument value="100"/>        <!-- end of the search interval -->
      <argument value="5"/>          <!-- number of childs -->
   </process>
 </platform>

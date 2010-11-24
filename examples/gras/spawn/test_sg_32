@@ -1,31 +1,4 @@
 p Runs the 'spawn' test within the simulator (simulation times valid for 32bits architectures)
 
+! output ignore
 $ $SG_TEST_EXENV ./spawn_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/spawn.xml
-> [Tremblay:father:(1) 0.000156] [Spawn/INFO] Spawn the kids
-> [Tremblay:child:(2) 0.000468] [Spawn/INFO] I (Tremblay:4001) have found my dady on Tremblay:4000.
-> [Tremblay:child:(6) 0.000468] [Spawn/INFO] I (Tremblay:4002) have found my dady on Tremblay:4000.
-> [Tremblay:child:(3) 0.000468] [Spawn/INFO] I (Tremblay:4003) have found my dady on Tremblay:4000.
-> [Tremblay:child:(4) 0.000468] [Spawn/INFO] I (Tremblay:4004) have found my dady on Tremblay:4000.
-> [Tremblay:child:(5) 0.000468] [Spawn/INFO] I (Tremblay:4005) have found my dady on Tremblay:4000.
-> [Tremblay:father:(1) 0.000624] [Spawn/INFO] Kid Tremblay:4001 pinged me with 1234
-> [Tremblay:father:(1) 0.000780] [Spawn/INFO] Answered to Tremblay:4001's request
-> [Tremblay:father:(1) 0.000780] [Spawn/INFO] Kid Tremblay:4002 pinged me with 1234
-> [Tremblay:child:(2) 0.000780] [Spawn/INFO] Pinged dad with 1234, he answered with 4321; leaving now.
-> [Tremblay:child:(2) 0.000780] [gras/INFO] Exiting GRAS
-> [Tremblay:father:(1) 0.000936] [Spawn/INFO] Answered to Tremblay:4002's request
-> [Tremblay:father:(1) 0.000936] [Spawn/INFO] Kid Tremblay:4003 pinged me with 1234
-> [Tremblay:child:(6) 0.000936] [Spawn/INFO] Pinged dad with 1234, he answered with 4321; leaving now.
-> [Tremblay:child:(6) 0.000936] [gras/INFO] Exiting GRAS
-> [Tremblay:father:(1) 0.001092] [Spawn/INFO] Answered to Tremblay:4003's request
-> [Tremblay:father:(1) 0.001092] [Spawn/INFO] Kid Tremblay:4004 pinged me with 1234
-> [Tremblay:child:(3) 0.001092] [Spawn/INFO] Pinged dad with 1234, he answered with 4321; leaving now.
-> [Tremblay:child:(3) 0.001092] [gras/INFO] Exiting GRAS
-> [Tremblay:father:(1) 0.001248] [Spawn/INFO] Answered to Tremblay:4004's request
-> [Tremblay:father:(1) 0.001248] [Spawn/INFO] Kid Tremblay:4005 pinged me with 1234
-> [Tremblay:child:(4) 0.001248] [Spawn/INFO] Pinged dad with 1234, he answered with 4321; leaving now.
-> [Tremblay:child:(4) 0.001248] [gras/INFO] Exiting GRAS
-> [Tremblay:father:(1) 0.001404] [Spawn/INFO] Answered to Tremblay:4005's request
-> [Tremblay:father:(1) 0.001404] [Spawn/INFO] All kids gone. Leave now.
-> [Tremblay:father:(1) 0.001404] [gras/INFO] Exiting GRAS
-> [Tremblay:child:(5) 0.001404] [Spawn/INFO] Pinged dad with 1234, he answered with 4321; leaving now.
-> [Tremblay:child:(5) 0.001404] [gras/INFO] Exiting GRAS
