@@ -33,7 +33,8 @@ typedef struct s_xbt_queue_ {
 xbt_queue_t xbt_queue_new(int capacity, unsigned long elm_size)
 {
   xbt_queue_t res = xbt_new0(s_xbt_queue_t, 1);
-  xbt_assert0(capacity >= 0, "Capacity cannot be negative");
+  if (capacity<0)
+    capacity=0;
 
   res->capacity = capacity;
   res->data = xbt_dynar_new(elm_size, NULL);
