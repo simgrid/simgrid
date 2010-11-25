@@ -1,61 +1,61 @@
 $ $SG_TEST_EXENV ./all2all_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/all2all.xml
 > [Tremblay:sender:(1) 0.000000] [all2all/INFO] Launch current node
-> [Bourassa:sender:(9) 0.000000] [all2all/INFO] Launch current node
-> [Ginette:sender:(7) 0.000000] [all2all/INFO] Launch current node
-> [Fafard:sender:(5) 0.000000] [all2all/INFO] Launch current node
 > [Jupiter:sender:(3) 0.000000] [all2all/INFO] Launch current node
-> [Bourassa:receiver:(10) 0.000156] [all2all/INFO] Listening on port 4000 (expecting 4 messages)
-> [Ginette:receiver:(8) 0.000156] [all2all/INFO] Listening on port 4000 (expecting 4 messages)
-> [Fafard:receiver:(6) 0.000156] [all2all/INFO] Listening on port 4000 (expecting 4 messages)
-> [Jupiter:receiver:(4) 0.000156] [all2all/INFO] Listening on port 4000 (expecting 4 messages)
+> [Fafard:sender:(5) 0.000000] [all2all/INFO] Launch current node
+> [Ginette:sender:(7) 0.000000] [all2all/INFO] Launch current node
+> [Bourassa:sender:(9) 0.000000] [all2all/INFO] Launch current node
 > [Tremblay:receiver:(2) 0.000156] [all2all/INFO] Listening on port 4000 (expecting 4 messages)
+> [Jupiter:receiver:(4) 0.000156] [all2all/INFO] Listening on port 4000 (expecting 4 messages)
+> [Fafard:receiver:(6) 0.000156] [all2all/INFO] Listening on port 4000 (expecting 4 messages)
+> [Ginette:receiver:(8) 0.000156] [all2all/INFO] Listening on port 4000 (expecting 4 messages)
+> [Bourassa:receiver:(10) 0.000156] [all2all/INFO] Listening on port 4000 (expecting 4 messages)
+> [Jupiter:sender:(3) 0.015433] [all2all/INFO]   Sent Data from Jupiter to Tremblay
+> [Tremblay:receiver:(2) 0.015433] [all2all/INFO] Got Data from Jupiter:5000 (still 3 to go)
 > [Tremblay:sender:(1) 0.025433] [all2all/INFO]   Sent Data from Tremblay to Jupiter
-> [Jupiter:receiver:(4) 0.025433] [all2all/INFO] Got Data from Tremblay:0 (still 3 to go)
-> [Bourassa:sender:(9) 0.030592] [all2all/INFO]   Sent Data from Bourassa to Tremblay
-> [Tremblay:receiver:(2) 0.030592] [all2all/INFO] Got Data from Bourassa:0 (still 3 to go)
-> [Ginette:sender:(7) 0.043889] [all2all/INFO]   Sent Data from Ginette to Tremblay
-> [Tremblay:receiver:(2) 0.043889] [all2all/INFO] Got Data from Ginette:0 (still 2 to go)
-> [Tremblay:sender:(1) 0.046241] [all2all/INFO]   Sent Data from Tremblay to Fafard
-> [Fafard:receiver:(6) 0.046241] [all2all/INFO] Got Data from Tremblay:0 (still 3 to go)
-> [Tremblay:sender:(1) 0.059694] [all2all/INFO]   Sent Data from Tremblay to Ginette
-> [Ginette:receiver:(8) 0.059694] [all2all/INFO] Got Data from Tremblay:0 (still 3 to go)
-> [Fafard:sender:(5) 0.064541] [all2all/INFO]   Sent Data from Fafard to Tremblay
-> [Tremblay:receiver:(2) 0.064541] [all2all/INFO] Got Data from Fafard:0 (still 1 to go)
-> [Bourassa:sender:(9) 0.066459] [all2all/INFO]   Sent Data from Bourassa to Jupiter
-> [Jupiter:receiver:(4) 0.066459] [all2all/INFO] Got Data from Bourassa:0 (still 2 to go)
-> [Bourassa:sender:(9) 0.072096] [all2all/INFO]   Sent Data from Bourassa to Fafard
-> [Fafard:receiver:(6) 0.072096] [all2all/INFO] Got Data from Bourassa:0 (still 2 to go)
-> [Jupiter:sender:(3) 0.079818] [all2all/INFO]   Sent Data from Jupiter to Tremblay
-> [Tremblay:receiver:(2) 0.079818] [all2all/INFO] Got Data from Jupiter:0 (still 0 to go)
-> [Tremblay:receiver:(2) 0.079818] [gras/INFO] Exiting GRAS
-> [Tremblay:sender:(1) 0.080286] [all2all/INFO]   Sent Data from Tremblay to Bourassa
-> [Tremblay:sender:(1) 0.080286] [gras/INFO] Exiting GRAS
-> [Bourassa:receiver:(10) 0.080286] [all2all/INFO] Got Data from Tremblay:0 (still 3 to go)
-> [Bourassa:sender:(9) 0.085203] [all2all/INFO]   Sent Data from Bourassa to Ginette
-> [Bourassa:sender:(9) 0.085203] [gras/INFO] Exiting GRAS
-> [Ginette:receiver:(8) 0.085203] [all2all/INFO] Got Data from Bourassa:0 (still 2 to go)
-> [Ginette:sender:(7) 0.095031] [all2all/INFO]   Sent Data from Ginette to Jupiter
-> [Jupiter:receiver:(4) 0.095031] [all2all/INFO] Got Data from Ginette:0 (still 1 to go)
-> [Jupiter:sender:(3) 0.115901] [all2all/INFO]   Sent Data from Jupiter to Fafard
-> [Fafard:receiver:(6) 0.115901] [all2all/INFO] Got Data from Jupiter:0 (still 1 to go)
-> [Ginette:sender:(7) 0.129072] [all2all/INFO]   Sent Data from Ginette to Fafard
-> [Fafard:receiver:(6) 0.129072] [all2all/INFO] Got Data from Ginette:0 (still 0 to go)
-> [Fafard:receiver:(6) 0.129072] [gras/INFO] Exiting GRAS
-> [Fafard:sender:(5) 0.130957] [all2all/INFO]   Sent Data from Fafard to Jupiter
-> [Jupiter:receiver:(4) 0.130957] [all2all/INFO] Got Data from Fafard:0 (still 0 to go)
-> [Jupiter:receiver:(4) 0.130957] [gras/INFO] Exiting GRAS
-> [Ginette:sender:(7) 0.142180] [all2all/INFO]   Sent Data from Ginette to Bourassa
-> [Ginette:sender:(7) 0.142180] [gras/INFO] Exiting GRAS
-> [Bourassa:receiver:(10) 0.142180] [all2all/INFO] Got Data from Ginette:0 (still 2 to go)
-> [Jupiter:sender:(3) 0.144629] [all2all/INFO]   Sent Data from Jupiter to Ginette
-> [Ginette:receiver:(8) 0.144629] [all2all/INFO] Got Data from Jupiter:0 (still 1 to go)
-> [Fafard:sender:(5) 0.157800] [all2all/INFO]   Sent Data from Fafard to Ginette
-> [Ginette:receiver:(8) 0.157800] [all2all/INFO] Got Data from Fafard:0 (still 0 to go)
-> [Ginette:receiver:(8) 0.157800] [gras/INFO] Exiting GRAS
-> [Jupiter:sender:(3) 0.180496] [all2all/INFO]   Sent Data from Jupiter to Bourassa
-> [Jupiter:sender:(3) 0.180496] [gras/INFO] Exiting GRAS
-> [Bourassa:receiver:(10) 0.180496] [all2all/INFO] Got Data from Jupiter:0 (still 1 to go)
-> [Fafard:sender:(5) 0.185976] [all2all/INFO]   Sent Data from Fafard to Bourassa
-> [Fafard:sender:(5) 0.185976] [gras/INFO] Exiting GRAS
-> [Bourassa:receiver:(10) 0.185976] [all2all/INFO] Got Data from Fafard:0 (still 0 to go)
-> [Bourassa:receiver:(10) 0.185976] [gras/INFO] Exiting GRAS
+> [Jupiter:receiver:(4) 0.025433] [all2all/INFO] Got Data from Tremblay:5000 (still 3 to go)
+> [Fafard:sender:(5) 0.036085] [all2all/INFO]   Sent Data from Fafard to Tremblay
+> [Tremblay:receiver:(2) 0.036085] [all2all/INFO] Got Data from Fafard:5000 (still 2 to go)
+> [Ginette:sender:(7) 0.049382] [all2all/INFO]   Sent Data from Ginette to Tremblay
+> [Tremblay:receiver:(2) 0.049382] [all2all/INFO] Got Data from Ginette:5000 (still 1 to go)
+> [Jupiter:sender:(3) 0.051516] [all2all/INFO]   Sent Data from Jupiter to Fafard
+> [Fafard:receiver:(6) 0.051516] [all2all/INFO] Got Data from Jupiter:5000 (still 3 to go)
+> [Bourassa:sender:(9) 0.069818] [all2all/INFO]   Sent Data from Bourassa to Tremblay
+> [Tremblay:receiver:(2) 0.069818] [all2all/INFO] Got Data from Bourassa:5000 (still 0 to go)
+> [Tremblay:receiver:(2) 0.069818] [gras/INFO] Exiting GRAS
+> [Fafard:sender:(5) 0.072168] [all2all/INFO]   Sent Data from Fafard to Jupiter
+> [Jupiter:receiver:(4) 0.072168] [all2all/INFO] Got Data from Fafard:5000 (still 2 to go)
+> [Tremblay:sender:(1) 0.072177] [all2all/INFO]   Sent Data from Tremblay to Fafard
+> [Fafard:receiver:(6) 0.072177] [all2all/INFO] Got Data from Tremblay:5000 (still 2 to go)
+> [Jupiter:sender:(3) 0.080244] [all2all/INFO]   Sent Data from Jupiter to Ginette
+> [Ginette:receiver:(8) 0.080244] [all2all/INFO] Got Data from Jupiter:5000 (still 3 to go)
+> [Fafard:sender:(5) 0.093415] [all2all/INFO]   Sent Data from Fafard to Ginette
+> [Ginette:receiver:(8) 0.093415] [all2all/INFO] Got Data from Fafard:5000 (still 2 to go)
+> [Ginette:sender:(7) 0.100740] [all2all/INFO]   Sent Data from Ginette to Jupiter
+> [Jupiter:receiver:(4) 0.100740] [all2all/INFO] Got Data from Ginette:5000 (still 1 to go)
+> [Tremblay:sender:(1) 0.106712] [all2all/INFO]   Sent Data from Tremblay to Ginette
+> [Ginette:receiver:(8) 0.106712] [all2all/INFO] Got Data from Tremblay:5000 (still 1 to go)
+> [Ginette:sender:(7) 0.114067] [all2all/INFO]   Sent Data from Ginette to Fafard
+> [Fafard:receiver:(6) 0.114067] [all2all/INFO] Got Data from Ginette:5000 (still 1 to go)
+> [Jupiter:sender:(3) 0.116110] [all2all/INFO]   Sent Data from Jupiter to Bourassa
+> [Jupiter:sender:(3) 0.116110] [gras/INFO] Exiting GRAS
+> [Bourassa:receiver:(10) 0.116110] [all2all/INFO] Got Data from Jupiter:5000 (still 3 to go)
+> [Fafard:sender:(5) 0.121591] [all2all/INFO]   Sent Data from Fafard to Bourassa
+> [Fafard:sender:(5) 0.121591] [gras/INFO] Exiting GRAS
+> [Bourassa:receiver:(10) 0.121591] [all2all/INFO] Got Data from Fafard:5000 (still 2 to go)
+> [Bourassa:sender:(9) 0.136451] [all2all/INFO]   Sent Data from Bourassa to Jupiter
+> [Jupiter:receiver:(4) 0.136451] [all2all/INFO] Got Data from Bourassa:5000 (still 0 to go)
+> [Jupiter:receiver:(4) 0.136451] [gras/INFO] Exiting GRAS
+> [Tremblay:sender:(1) 0.142030] [all2all/INFO]   Sent Data from Tremblay to Bourassa
+> [Tremblay:sender:(1) 0.142030] [gras/INFO] Exiting GRAS
+> [Bourassa:receiver:(10) 0.142030] [all2all/INFO] Got Data from Tremblay:5000 (still 1 to go)
+> [Bourassa:sender:(9) 0.142088] [all2all/INFO]   Sent Data from Bourassa to Fafard
+> [Fafard:receiver:(6) 0.142088] [all2all/INFO] Got Data from Bourassa:5000 (still 0 to go)
+> [Fafard:receiver:(6) 0.142088] [gras/INFO] Exiting GRAS
+> [Ginette:sender:(7) 0.154982] [all2all/INFO]   Sent Data from Ginette to Bourassa
+> [Ginette:sender:(7) 0.154982] [gras/INFO] Exiting GRAS
+> [Bourassa:receiver:(10) 0.154982] [all2all/INFO] Got Data from Ginette:5000 (still 0 to go)
+> [Bourassa:receiver:(10) 0.154982] [gras/INFO] Exiting GRAS
+> [Bourassa:sender:(9) 0.155196] [all2all/INFO]   Sent Data from Bourassa to Ginette
+> [Bourassa:sender:(9) 0.155196] [gras/INFO] Exiting GRAS
+> [Ginette:receiver:(8) 0.155196] [all2all/INFO] Got Data from Bourassa:5000 (still 0 to go)
+> [Ginette:receiver:(8) 0.155196] [gras/INFO] Exiting GRAS
