@@ -162,6 +162,7 @@ void gras_trp_socket_new(int incoming, gras_socket_t * dst)
   sock->valid = 1;
   sock->moredata = 0;
 
+  sock->refcount = 1;
   sock->sd = -1;
 
   sock->data = NULL;
@@ -336,6 +337,9 @@ void gras_socket_close_voidp(void *sock)
 /** \brief Close socket */
 void gras_socket_close(gras_socket_t sock)
 {
+  if (--sock->refcount)
+    return;
+
   xbt_dynar_t sockets =
       ((gras_trp_procdata_t)
        gras_libdata_by_id(gras_trp_libdata_id))->sockets;
@@ -438,6 +442,7 @@ int gras_socket_peer_port(gras_socket_t sock)
 
 const char *gras_socket_peer_name(gras_socket_t sock)
 {
+  xbt_assert(sock->plugin);
   return (*sock->plugin->peer_name)(sock);
 }
 

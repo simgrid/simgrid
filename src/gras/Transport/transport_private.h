@@ -70,6 +70,8 @@ typedef struct s_gras_socket {
   int recvd:1;                  /* true if the recvd_val field contains one byte of the stream (that we peek'ed to check the socket validity) */
   char recvd_val;               /* what we peeked from the socket, if any */
 
+  int refcount;                 /* refcounting on shared sockets */
+
   unsigned long int buf_size;   /* what to say to the OS. 
                                    Field here to remember it when accepting */
 

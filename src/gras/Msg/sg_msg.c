@@ -47,7 +47,7 @@ gras_msg_t gras_msg_recv_any(void)
          rdv_client : sock_data->rdv_server, sock_data->comm_recv);
 
 
-    /* The following assert fails in some valid conditions, we need to
+    /* If the following assert fails in some valid conditions, we need to
      * change the code downward looking for the socket again.
      *
      * For now it relies on the facts (A) that sockets and comms are aligned
@@ -138,6 +138,7 @@ void gras_msg_send_ext(gras_socket_t sock,
 
   /*initialize gras message */
   msg = xbt_new(s_gras_msg_t, 1);
+  sock->refcount++;
   msg->expe = sock;
   msg->kind = kind;
   msg->type = msgtype;
