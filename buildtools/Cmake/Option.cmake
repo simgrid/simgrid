@@ -22,11 +22,8 @@ endif(NOT with_context)
 
 set(pipol_user ${pipol_user} CACHE TYPE INTERNAL FORCE)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-	option(enable_smpi "This variable set smpi lib." off) #for the moment it doesn't compil with MacOS
-else(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-	option(enable_smpi "This variable set smpi lib." on)
-endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+
+option(enable_smpi "This variable set smpi lib." on)
 option(enable_gtnets "Whether gtnets model is activated." on)
 option(enable_java "Whether the Java bindings are activated." on)
 if(WIN32 OR APPLE) 
