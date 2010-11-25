@@ -1,5 +1,3 @@
-### Be sure we can execut some launch file
-exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh" OUTPUT_VARIABLE "OKITOKI")
 if(enable_smpi)
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE "OKITOKI")
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE "OKITOKI")
@@ -247,6 +245,8 @@ ADD_TEST(mc-centralized		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/
 endif(HAVE_MC)
 
 if(HAVE_JAVA)
+### Be sure we can execut some launch file
+exec_program("chmod a=rwx ${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh" OUTPUT_VARIABLE "OKITOKI")
 # java examples
 ADD_TEST(java-basic 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/basic BasicTest ${simgrid_BINARY_DIR})
 ADD_TEST(java-pingpong 	${PROJECT_DIRECTORY}/buildtools/Cmake/test_java.sh ${PROJECT_DIRECTORY}/examples/java/ping_pong PingPongTest ${simgrid_BINARY_DIR})
