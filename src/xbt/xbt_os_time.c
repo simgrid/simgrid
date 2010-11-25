@@ -12,9 +12,9 @@
 #include "portable.h"
 #include <math.h>               /* floor */
 
-
 #ifdef _XBT_WIN32
 #include <sys/timeb.h>
+#include <windows.h>
 #endif
 
 double xbt_os_time(void)

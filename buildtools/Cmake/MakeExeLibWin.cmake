@@ -40,7 +40,7 @@ add_subdirectory(${PROJECT_DIRECTORY}/tools/gras)
 add_subdirectory(${PROJECT_DIRECTORY}/testsuite/xbt)
 
 #testsuite/surf
-#add_subdirectory(${PROJECT_DIRECTORY}/testsuite/surf)
+add_subdirectory(${PROJECT_DIRECTORY}/testsuite/surf)
 
 #testsuite/simdag
 add_subdirectory(${PROJECT_DIRECTORY}/testsuite/simdag)
@@ -71,6 +71,7 @@ add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/all2all)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/pmm)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/synchro)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/properties)
+add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/console)
 
 add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/properties)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/actions)
@@ -98,9 +99,9 @@ add_subdirectory(${PROJECT_DIRECTORY}/examples/amok/saturate)
 
 add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/dax)
-if(HAVE_CGRAPH_H)
+if(enable_graphviz)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/dot)
-endif(HAVE_CGRAPH_H)
+endif(enable_graphviz)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/metaxml)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/properties)
 add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/scheduling)
