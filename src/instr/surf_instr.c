@@ -65,8 +65,7 @@ static void TRACE_surf_set_resource_variable(double date,
       return;
     }
   }
-  if (IS_TRACING_PLATFORM)
-    pajeSetVariable(date, variable, resource, aux);
+  pajeSetVariable(date, variable, resource, aux);
   xbt_dict_set(resource_variables, xbt_strdup(key), xbt_strdup(aux),
                xbt_free);
 }
@@ -123,12 +122,16 @@ void TRACE_surf_host_declaration(const char *name, double power)
 void TRACE_surf_host_set_power(double date, const char *resource,
                                double power)
 {
+  if (!IS_TRACING)
+    return;
   TRACE_surf_set_resource_variable(date, "power", resource, power);
 }
 
 void TRACE_surf_link_set_bandwidth(double date, void *link,
                                    double bandwidth)
 {
+  if (!IS_TRACING)
+    return;
   if (!TRACE_surf_link_is_traced(link))
     return;
 
@@ -139,6 +142,8 @@ void TRACE_surf_link_set_bandwidth(double date, void *link,
 
 void TRACE_surf_link_set_latency(double date, void *link, double latency)
 {
+  if (!IS_TRACING)
+    return;
   if (!TRACE_surf_link_is_traced(link))
     return;
 

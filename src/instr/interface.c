@@ -52,17 +52,17 @@ int TRACE_start()
   pajeDefineContainerType("PLATFORM", "0", "platform");
   pajeDefineContainerType("HOST", "PLATFORM", "HOST");
   pajeDefineContainerType("LINK", "PLATFORM", "LINK");
+  pajeDefineVariableType("power", "HOST", "power");
+  pajeDefineVariableType("bandwidth", "LINK", "bandwidth");
+  pajeDefineVariableType("latency", "LINK", "latency");
+  pajeDefineEventType("source", "LINK", "source");
+  pajeDefineEventType("destination", "LINK", "destination");
 
   if (IS_TRACING_PLATFORM) {
-    pajeDefineVariableType("power", "HOST", "power");
     if (TRACE_uncategorized()){
       pajeDefineVariableType("power_used", "HOST", "power_used");
       pajeDefineVariableType("bandwidth_used", "LINK", "bandwidth_used");
     }
-    pajeDefineVariableType("bandwidth", "LINK", "bandwidth");
-    pajeDefineVariableType("latency", "LINK", "latency");
-    pajeDefineEventType("source", "LINK", "source");
-    pajeDefineEventType("destination", "LINK", "destination");
   }
 
   if (IS_TRACING_PROCESSES || IS_TRACING_VOLUME) {
