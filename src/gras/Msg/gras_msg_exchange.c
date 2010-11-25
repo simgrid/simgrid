@@ -153,11 +153,11 @@ gras_msg_wait_(double timeout,
 
   if (msgt_want->ctn_type) {
     xbt_assert1(payload,
-                "Message type '%s' convey a payload you must accept",
+                "Message type '%s' convey a payload that you must accept",
                 msgt_want->name);
   } else {
     xbt_assert1(!payload,
-                "No payload was declared for message type '%s'",
+                "No payload was declared for message type '%s' (don't expect one)",
                 msgt_want->name);
   }
 
