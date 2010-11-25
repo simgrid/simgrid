@@ -102,7 +102,7 @@ ADD_TEST(tesh-simdag-basic6	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTOR
 ADD_TEST(tesh-simdag-p2p-1	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency1.tesh)
 ADD_TEST(tesh-simdag-p2p-2	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency2.tesh)
 ADD_TEST(tesh-simdag-p2p-3	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency3.tesh)
-ADD_TEST(tesh-simdag-p2p-3	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency_bound.tesh)
+ADD_TEST(tesh-simdag-p2p-4	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency_bound.tesh)
 ADD_TEST(tesh-simdag-mxn-1	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/mxn/test_intra_all2all.tesh)
 ADD_TEST(tesh-simdag-mxn-2	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/mxn/test_intra_independent_comm.tesh)
 ADD_TEST(tesh-simdag-mxn-3	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/teshsuite simdag/network/mxn/test_intra_scatter.tesh)
@@ -207,7 +207,6 @@ ADD_TEST(msg-gtnets-onelink-lv08	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIR
   ADD_TEST(msg-tracing-gtnets-dogbone-lv08	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/tracing-gtnets-dogbone-lv08.tesh)
   ADD_TEST(msg-tracing-gtnets-onelink-lv08	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/tracing-gtnets-onelink-lv08.tesh)
   ADD_TEST(msg-gtnets-fullduplex	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg gtnets/gtnets-fullduplex.tesh)
-
   endif(HAVE_TRACING)
 endif(HAVE_GTNETS)
 

@@ -62,7 +62,7 @@ ADD_TEST(tesh-simdag-basic6	perl ${PROJECT_DIRECTORY}/buildtools/Cmake/tesh.pl $
 ADD_TEST(tesh-simdag-p2p-1	perl ${PROJECT_DIRECTORY}/buildtools/Cmake/tesh.pl ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency1.tesh)
 ADD_TEST(tesh-simdag-p2p-2	perl ${PROJECT_DIRECTORY}/buildtools/Cmake/tesh.pl ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency2.tesh)
 ADD_TEST(tesh-simdag-p2p-3	perl ${PROJECT_DIRECTORY}/buildtools/Cmake/tesh.pl ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency3.tesh)
-ADD_TEST(tesh-simdag-p2p-3	perl ${PROJECT_DIRECTORY}/buildtools/Cmake/tesh.pl ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency_bound.tesh)
+ADD_TEST(tesh-simdag-p2p-4	perl ${PROJECT_DIRECTORY}/buildtools/Cmake/tesh.pl ${PROJECT_DIRECTORY}/teshsuite simdag/network/p2p/test_latency_bound.tesh)
 ADD_TEST(tesh-simdag-mxn-1	perl ${PROJECT_DIRECTORY}/buildtools/Cmake/tesh.pl ${PROJECT_DIRECTORY}/teshsuite simdag/network/mxn/test_intra_all2all.tesh)
 ADD_TEST(tesh-simdag-mxn-2	perl ${PROJECT_DIRECTORY}/buildtools/Cmake/tesh.pl ${PROJECT_DIRECTORY}/teshsuite simdag/network/mxn/test_intra_independent_comm.tesh)
 ADD_TEST(tesh-simdag-mxn-3	perl ${PROJECT_DIRECTORY}/buildtools/Cmake/tesh.pl ${PROJECT_DIRECTORY}/teshsuite simdag/network/mxn/test_intra_scatter.tesh)
