@@ -1,5 +1,36 @@
+if(enable_memcheck)
+	exec_program("valgrind --version " OUTPUT_VARIABLE "VALGRIND_VERSION")
+	if(VALGRIND_VERSION AND PERL_EXECUTABLE)
+		string(REGEX MATCH "[0-9].[0-9].[0-9]" NEW_VALGRIND_VERSION "${VALGRIND_VERSION}")
+		if(NEW_VALGRIND_VERSION)
+			exec_program("${PROJECT_DIRECTORY}/buildtools/Cmake/generate_memcheck_tests.pl ${PROJECT_DIRECTORY} ${PROJECT_DIRECTORY}/buildtools/Cmake/AddTests.cmake > ${PROJECT_DIRECTORY}/buildtools/Cmake/memcheck_tests.cmake")
+		else(NEW_VALGRIND_VERSION)
+			set(enable_memcheck false)
+			message("Command valgrind not found --> enable_memcheck autoset to false.")
+		endif(NEW_VALGRIND_VERSION)
+	else(VALGRIND_VERSION AND PERL_EXECUTABLE)
+		set(enable_memcheck false)
+		message(FATAL_ERROR "Command valgrind or perl not found --> enable_memcheck autoset to false.")
+	endif(VALGRIND_VERSION AND PERL_EXECUTABLE)
+endif(enable_memcheck)
+
+### For code coverage
+### Set some variables
+SET(UPDATE_TYPE "svn")
+SET(DROP_METHOD "http")
+SET(DROP_SITE "cdash.inria.fr/CDash")
+SET(DROP_LOCATION "/submit.php?project=${PROJECT_NAME}")
+SET(DROP_SITE_CDASH TRUE)
+SET(TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-TestingResults.cgi")
+set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no")
+SET(VALGRIND_COMMAND "${PROJECT_DIRECTORY}/buildtools/Cmake/my_valgrind.pl")
+SET(MEMORYCHECK_COMMAND "${PROJECT_DIRECTORY}/buildtools/Cmake/my_valgrind.pl")
+#If you use the --read-var-info option Memcheck will run more slowly but may give a more detailed description of any illegal address.
+
 INCLUDE(CTest)
 ENABLE_TESTING()
+
+# BEGIN TESH TESTS
 
 # teshsuite/xbt
 IF(${ARCH_32_BITS})
