@@ -559,16 +559,15 @@ if(HAVE_MAKECONTEXT OR WIN32)
 		set(makecontext_CPPFLAGS_2 "-DOSX")
 	endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	
-    if(WIN32)
-        if(__VISUALC__)
-            set(makecontext_CPPFLAGS "/DTEST_makecontext")
-    	    set(makecontext_CPPFLAGS_2 "/D_XBT_WIN32 /I${PROJECT_DIRECTORY}/include/xbt /I${PROJECT_DIRECTORY}/src/xbt")
-    	endif(__VISUALC__)
-    	if(__GNUC__)
-    	    set(makecontext_CPPFLAGS "-DTEST_makecontext")
-    	    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt")
-    	endif(__GNUC__)
-    else(WIN32)
+    if(WIN32 AND __VISUALC__)
+        set(makecontext_CPPFLAGS "/DTEST_makecontext")
+	    set(makecontext_CPPFLAGS_2 "/D_XBT_WIN32 /I${PROJECT_DIRECTORY}/include/xbt /I${PROJECT_DIRECTORY}/src/xbt")
+	endif(WIN32 AND __VISUALC__)
+	if(WIN32 AND __GNUC__)
+	    set(makecontext_CPPFLAGS "-DTEST_makecontext")
+	    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt")
+	endif(WIN32 AND __GNUC__)
+	
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${simgrid_BINARY_DIR}
 		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
@@ -582,7 +581,7 @@ if(HAVE_MAKECONTEXT OR WIN32)
 	string(REPLACE "," "" makecontext_size "${MAKECONTEXT_SIZE}")	
 	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
 	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
-    endif(WIN32)
+	
 endif(HAVE_MAKECONTEXT OR WIN32)
 
 #--------------------------------------------------------------------------------------------------
