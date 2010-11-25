@@ -51,16 +51,6 @@ option(enable_lib_static "" off)
 option(enable_graphviz "" off)
 option(GRAS_IS_BROKEN "Set some tests are broken" off)
 
-if(WIN32 OR APPLE) #actually not enable with windows and Apple
-	message("-- Smpi and GTnets are disabled.")
-	set(enable_smpi false CACHE TYPE INTERNAL FORCE)
-	set(enable_gtnets false CACHE TYPE INTERNAL FORCE) 
-    mark_as_advanced(enable_smpi)
-    mark_as_advanced(enable_gtnets)
-    mark_as_advanced(gtnets_path)
-endif(WIN32 OR APPLE)
-
-
 if(enable_supernovae AND enable_model-checking)
 	set(enable_model-checking false CACHE TYPE INTERNAL FORCE)
 	message("\n\nWith supernovae mode the model checking must be disable.!!!\n\n")
