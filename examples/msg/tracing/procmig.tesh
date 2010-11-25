@@ -4,6 +4,7 @@ p Tracing processes
 
 $ $SG_TEST_EXENV tracing/procmig$EXEEXT --cfg=tracing:1 --cfg=tracing/platform:1 --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/procmig-deploy.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'procmig.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to '1'
 > [Fafard:emigrant:(1) 0.000000] [msg_test/INFO] Setting process category
