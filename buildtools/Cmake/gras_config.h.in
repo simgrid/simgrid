@@ -44,6 +44,8 @@
 #cmakedefine HAVE_CGRAPH_H @CGRAPH_H@
 #cmakedefine HAVE_AGRAPH_H @AGRAPH_H@
 
+/* Some variables needed for smpi */
+#cmakedefine HAVE_SMPI_F2C_H @HAVE_SMPI_F2C_H@
 
 /* Define if building universal (internal helper macro) */
 #cmakedefine AC_APPLE_UNIVERSAL_BUILD @AC_APPLE_UNIVERSAL_BUILD@

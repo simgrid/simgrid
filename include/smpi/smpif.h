@@ -7,7 +7,14 @@
 #ifndef SMPIF_H
 #define SMPIF_H
 
-#include <f2c.h>
+#include "gras_config.h" //For HAVE_SMPI_F2C_H
+
+#ifdef HAVE_SMPI_F2C_H
+	#undef min //Need because first def in xbt.h
+	#undef max //Need because first def in xbt.h
+	#include <f2c.h>
+#endif
+
 #include <xbt/misc.h>
 
 XBT_PUBLIC(int) smpi_process_argc(void);

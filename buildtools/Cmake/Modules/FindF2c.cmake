@@ -34,6 +34,10 @@ find_library(HAVE_F2C_LIB
     /usr
 )
 
+if(HAVE_F2C_H)
+set(HAVE_SMPI_F2C_H 1)
+endif(HAVE_F2C_H)
+
 mark_as_advanced(HAVE_F2C_H)
 mark_as_advanced(F2C_EXE)
 mark_as_advanced(HAVE_F2C_LIB)
