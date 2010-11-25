@@ -485,7 +485,6 @@ void SIMIX_sem_acquire_timeout(smx_sem_t sem, double max_duration)
     sem->capacity--;
     return;
   }
-  sem->capacity--;
 
   /* Always create an action null in case there is a host failure */
   act_sleep = SIMIX_action_sleep(SIMIX_host_self(), max_duration);
