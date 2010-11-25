@@ -45,14 +45,14 @@ if(enable_smpi)
           DESTINATION $ENV{DESTDIR}${prefix}/lib/)
 endif(enable_smpi)
 
-if(enable_lib_static)
+if(enable_lib_static AND NOT WIN32)
 	install(TARGETS simgrid_static 
 	        DESTINATION $ENV{DESTDIR}${prefix}/lib/)
 	if(enable_smpi)	
   		install(TARGETS smpi_static
           		DESTINATION $ENV{DESTDIR}${prefix}/lib/)
 	endif(enable_smpi)
-endif(enable_lib_static)
+endif(enable_lib_static AND NOT WIN32)
 
 # include files
 foreach(file ${install_HEADERS})
