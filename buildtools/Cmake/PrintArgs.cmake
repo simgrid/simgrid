@@ -108,6 +108,7 @@ if(enable_print_message)
     message("LUA_INCLUDE_DIR = ${LUA_INCLUDE_DIR}")
     message("LIB_LUA_NAME = ${LIB_LUA_NAME}")
     message("LUA_LIBRARY_DIR = ${LUA_LIBRARY_DIR}")
+    message("LUA_BIN = ${HAVE_LUA_BIN}")
     
 	endif(enable_lua)
 	if(enable_memcheck)

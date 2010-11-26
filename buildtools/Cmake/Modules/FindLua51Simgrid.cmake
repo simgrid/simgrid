@@ -23,16 +23,18 @@ find_library(HAVE_LUA51_LIB
     /usr
 )
 
+find_program(HAVE_LUA_BIN NAMES lua)
+
 set(LIB_LUA_NAME ${HAVE_LUA51_LIB})
 string(REGEX MATCH "liblua.*$" LIB_LUA_NAME "${LIB_LUA_NAME}")
 string(REPLACE ".${LIB_EXE}" "" LIB_LUA_NAME "${LIB_LUA_NAME}")
 string(REPLACE "lib" "" LIB_LUA_NAME "${LIB_LUA_NAME}")
 
-if(HAVE_LUA_H AND HAVE_LUA51_LIB AND LIB_LUA_NAME)
+if(HAVE_LUA_H AND HAVE_LUA51_LIB AND LIB_LUA_NAME AND HAVE_LUA_BIN)
  set(LUA51_FOUND 1)
  string(REPLACE "/lua.h" "" LUA_INCLUDE_DIR ${HAVE_LUA_H})
  string(REPLACE "/lib${LIB_LUA_NAME}.${LIB_EXE}" "" LUA_LIBRARY_DIR ${HAVE_LUA51_LIB})
-endif(HAVE_LUA_H AND HAVE_LUA51_LIB AND LIB_LUA_NAME)
+endif(HAVE_LUA_H AND HAVE_LUA51_LIB AND LIB_LUA_NAME AND HAVE_LUA_BIN)
 
 set(LUA_CPATH "$ENV{LUA_CPATH}")
 string(REGEX MATCH "${LIB_EXE}" LUA_CPATH "${LUA_CPATH}")
@@ -53,3 +55,4 @@ mark_as_advanced(HAVE_LUA5_1_LAUXLIB_H)
 mark_as_advanced(HAVE_LUA5_1_LUALIB_H)
 mark_as_advanced(HAVE_LUA51_LIB)                                                                                                                                                                             
 mark_as_advanced(HAVE_LUA_H)
+mark_as_advanced(HAVE_LUA_BIN)
