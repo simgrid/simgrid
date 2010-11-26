@@ -148,12 +148,15 @@ static VALUE msg_get_clock(VALUE class)
 
 }
 
-extern const char *xbt_ctx_factory_to_use;      /*Hack: let msg load directly the right factory */
+/*Hack: let msg load directly the right factory */
+typedef void (*SIMIX_ctx_factory_initializer_t)(smx_context_factory_t *);
+extern SIMIX_ctx_factory_initializer_t factory_initializer_to_use;
+
 
 typedef VALUE(*rb_meth) (ANYARGS);
 void Init_libsimgrid()
 {
-  xbt_ctx_factory_to_use = "ruby";
+  factory_initializer_to_use = SIMIX_ctx_ruby_factory_init;
 
   // Modules
   rb_msg = rb_define_module("MSG");

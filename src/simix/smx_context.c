@@ -15,25 +15,22 @@
 #include <lauxlib.h>
 #endif
 
-#ifdef HAVE_RUBY
-void SIMIX_ctx_ruby_factory_init(smx_context_factory_t * factory);
-#endif
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
                                 "Context switching mecanism");
 
 const char *xbt_ctx_factory_to_use = NULL;
+typedef void (*SIMIX_ctx_factory_initializer_t)(smx_context_factory_t *);
+SIMIX_ctx_factory_initializer_t factory_initializer_to_use = NULL;
 
 /** 
- * This function is call by SIMIX_global_init() to initialize the context module.
+ * This function is called by SIMIX_global_init() to initialize the context module.
  */
-
 void SIMIX_context_mod_init(void)
 {
   if (!simix_global->context_factory) {
     /* select context factory to use to create the context(depends of the macro definitions) */
-    if (xbt_ctx_factory_to_use) {
-      SIMIX_context_select_factory(xbt_ctx_factory_to_use);
+    if (factory_initializer_to_use) {
+      (*factory_initializer_to_use)(&(simix_global->context_factory));
     } else {
 #ifdef CONTEXT_THREADS
       /* context switch based os thread */
@@ -95,22 +92,7 @@ int SIMIX_context_select_factory(const char *name)
   }
 
   /* init the desired factory */
-  SIMIX_context_init_factory_by_name(&simix_global->context_factory, name);
-
-  SIMIX_create_maestro_process();
-
-
-
-  return 0;
-}
-
-/**
- * Initializes a context factory given by its name
- */
-void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory,
-                                        const char *name)
-{
-
+  smx_context_factory_t * factory = &simix_global->context_factory;
   if (!strcmp(name, "java"))
 #ifdef HAVE_JAVA
     SIMIX_ctx_java_factory_init(factory);
@@ -143,13 +125,14 @@ void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory,
            "Factory 'lua' does not exist: Lua support was not compiled in the SimGrid library");
 #endif                          /* HAVE_LUA */
 
-  else if (!strcmp(name, "ruby"))
-#ifdef HAVE_RUBY
-    SIMIX_ctx_ruby_factory_init(factory);
-#else
-    THROW0(not_found_error, 0,
-           "Factory 'ruby' does not exist: Ruby support was not compiled in the SimGrid library");
-#endif
   else
     THROW1(not_found_error, 0, "Factory '%s' does not exist", name);
+
+
+
+
+  SIMIX_create_maestro_process();
+
+  return 0;
 }
+

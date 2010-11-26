@@ -220,12 +220,6 @@ void SIMIX_context_mod_exit(void);
  */
 int SIMIX_context_select_factory(const char *name);
 
-/* Initializes a context factory from the name specified by the parameter name.
- * If the factory cannot be found, an exception is raised.
- */
-void SIMIX_context_init_factory_by_name(smx_context_factory_t * factory,
-                                        const char *name);
-
 /* All factories init */
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory);
 
