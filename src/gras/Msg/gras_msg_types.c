@@ -94,7 +94,7 @@ gras_msgtype_declare_ext(const char *name,
   }
 
   if (found) {
-    VERB2
+    DEBUG2
         ("Re-register version %d of message '%s' (same kind & payload, ignored).",
          version, name);
     xbt_assert3(msgtype->kind == kind,

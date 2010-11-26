@@ -175,7 +175,7 @@ gras_datadesc_type_t gras_datadesc_struct(const char *name)
     /* FIXME: Check that field redefinition matches */
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_struct,
                 "Redefinition of type %s does not match", name);
-    VERB1("Discarding redefinition of %s", name);
+    DEBUG1("Discarding redefinition of %s", name);
     return res;
   }
   res = gras_ddt_new(name);
@@ -208,7 +208,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
               name, struct_type->name);
   XBT_IN3("(%s %s.%s;)", field_type->name, struct_type->name, name);
   if (struct_type->category.struct_data.closed) {
-    VERB1
+    DEBUG1
         ("Ignoring request to add field to struct %s (closed. Redefinition?)",
          struct_type->name);
     return;
@@ -427,7 +427,7 @@ gras_datadesc_ref(const char *name, gras_datadesc_type_t referenced_type)
                 "Redefinition of %s does not match", name);
     xbt_assert1(res->category.ref_data.selector == NULL,
                 "Redefinition of %s does not match", name);
-    VERB1("Discarding redefinition of %s", name);
+    DEBUG1("Discarding redefinition of %s", name);
     return res;
   }
 
