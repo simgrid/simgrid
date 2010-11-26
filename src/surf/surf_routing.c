@@ -165,7 +165,7 @@ static void parse_S_host(char *host_id)
     current_routing->hierarchy = SURF_ROUTING_BASE;
   xbt_assert1(!xbt_dict_get_or_null
               (global_routing->where_network_elements, host_id),
-              "Reading a host, processing unit \"%s\" already exist",
+              "Reading a host, processing unit \"%s\" already exists",
               host_id);
   xbt_assert1(current_routing->set_processing_unit,
               "no defined method \"set_processing_unit\" in \"%s\"",
@@ -207,7 +207,7 @@ static void parse_S_router(void)
   xbt_assert1(!xbt_dict_get_or_null
               (global_routing->where_network_elements,
                A_surfxml_router_id),
-              "Reading a router, processing unit \"%s\" already exist",
+              "Reading a router, processing unit \"%s\" already exists",
               A_surfxml_router_id);
   xbt_assert1(current_routing->set_processing_unit,
               "no defined method \"set_processing_unit\" in \"%s\"",
@@ -429,7 +429,7 @@ static void parse_S_AS(char *AS_id, char *AS_routing)
 
     xbt_assert1(!xbt_dict_get_or_null
                 (current_routing->routing_sons, AS_id),
-                "The AS \"%s\" already exist", AS_id);
+                "The AS \"%s\" already exists", AS_id);
     /* it is a part of the tree */
     new_routing->routing_father = current_routing;
     /* set the father behavior */
@@ -484,7 +484,7 @@ static void parse_E_AS(char *AS_id)
     network_element_info_t info = NULL;
     xbt_assert1(!xbt_dict_get_or_null
                 (global_routing->where_network_elements,
-                 current_routing->name), "The AS \"%s\" already exist",
+                 current_routing->name), "The AS \"%s\" already exists",
                 current_routing->name);
     info = xbt_new0(s_network_element_info_t, 1);
     info->rc_component = current_routing->routing_father;
@@ -1130,7 +1130,7 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 			  (void*)TO_ROUTE_FULL(*src_id, *dst_id)->generic_route.link_list,
 			  (void*)link_route_to_test,
 			  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
-			  "The route between \"%s\" and \"%s\" already exist", src,dst);
+			  "The route between \"%s\" and \"%s\" already exists", src,dst);
 		xbt_free(link_route_to_test);
 	}
 	else
@@ -1170,7 +1170,7 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 				  (void*)TO_ROUTE_FULL(*dst_id, *src_id)->generic_route.link_list,
 			      (void*)link_route_to_test,
 				  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
-				  "The route between \"%s\" and \"%s\" already exist", src,dst);
+				  "The route between \"%s\" and \"%s\" already exists", src,dst);
 			xbt_free(link_route_to_test);
 		}
 		else
@@ -1497,7 +1497,7 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 			  (void*)TO_FLOYD_LINK(*src_id, *dst_id)->generic_route.link_list,
 			  (void*)link_route_to_test,
 			  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
-			  "The route between \"%s\" and \"%s\" already exist", src,dst);
+			  "The route between \"%s\" and \"%s\" already exists", src,dst);
 		xbt_free(link_route_to_test);
 	}
 	else
@@ -1539,7 +1539,7 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 				  (void*)TO_FLOYD_LINK(*dst_id, *src_id)->generic_route.link_list,
 			      (void*)link_route_to_test,
 				  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
-				  "The route between \"%s\" and \"%s\" already exist", src,dst);
+				  "The route between \"%s\" and \"%s\" already exists", src,dst);
 			xbt_free(link_route_to_test);
 		}
 		else
@@ -2662,7 +2662,7 @@ static void generic_set_bypassroute(routing_component_t rc,
               "Invalid count of links, must be greater than zero (%s,%s)",
               src, dst);
   xbt_assert4(!xbt_dict_get_or_null(dict_bypassRoutes, route_name),
-              "The bypass route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exist",
+              "The bypass route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exists",
               src, e_route->src_gateway, dst, e_route->dst_gateway);
 
   route_extended_t new_e_route =
