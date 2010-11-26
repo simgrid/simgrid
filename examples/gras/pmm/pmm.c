@@ -115,11 +115,11 @@ int master(int argc, char *argv[])
   /* friends, we're ready. Come and play */
   INFO0("Wait for peers for 2 sec");
   gras_msg_handleall(2);
-  while (xbt_dynar_length(peers) < 9) {
-    INFO1("Got only %ld pals. Wait 2 more seconds",
-          xbt_dynar_length(peers));
+  do {
+    INFO2("Got only %ld pals (of %d). Wait 2 more seconds",
+        xbt_dynar_length(peers),SLAVE_COUNT);
     gras_msg_handleall(2);
-  }
+  } while (xbt_dynar_length(peers) < SLAVE_COUNT);
   INFO1("Good. Got %ld pals", xbt_dynar_length(peers));
 
   for (i = 0; i < xbt_dynar_length(peers) && i < SLAVE_COUNT; i++) {
