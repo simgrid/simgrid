@@ -10,7 +10,7 @@
 #include "xbt/matrix.h"
 #include "amok/peermanagement.h"
 
-#define PROC_MATRIX_SIZE 3
+#define PROC_MATRIX_SIZE 2
 #define NEIGHBOR_COUNT PROC_MATRIX_SIZE - 1
 #define SLAVE_COUNT (PROC_MATRIX_SIZE*PROC_MATRIX_SIZE)
 
@@ -415,6 +415,7 @@ int slave(int argc, char *argv[])
       gras_os_sleep(0.5);
     }
   }
+  INFO2("Connected to master: %s:%d",gras_socket_peer_name(master),gras_socket_peer_port(master));
 
   /* Join and run the group */
   rank = amok_pm_group_join(master, "pmm");
