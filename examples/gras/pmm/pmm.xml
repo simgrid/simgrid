@@ -10,10 +10,9 @@
   <process host="Jean_Yves" function="slave"><argument value="Jacquelin:4242"/><argument value="1"/></process>
   <process host="TeX"       function="slave"><argument value="Jacquelin:4242"/><argument value="2"/></process>
   <process host="Geoff"     function="slave"><argument value="Jacquelin:4242"/><argument value="3"/></process>
-<!--  <process host="Disney"    function="slave"><argument value="Jacquelin:4242"/><argument value="4"/></process>
+  <process host="Disney"    function="slave"><argument value="Jacquelin:4242"/><argument value="4"/></process>
   <process host="iRMX"      function="slave"><argument value="Jacquelin:4242"/><argument value="5"/></process>
   <process host="McGee"     function="slave"><argument value="Jacquelin:4242"/><argument value="6"/></process>
   <process host="Gatien"    function="slave"><argument value="Jacquelin:4242"/><argument value="7"/></process>
   <process host="Laroche"   function="slave"><argument value="Jacquelin:4242"/><argument value="8"/></process>
--->
 </platform>

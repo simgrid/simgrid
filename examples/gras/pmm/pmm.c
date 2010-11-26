@@ -10,7 +10,7 @@
 #include "xbt/matrix.h"
 #include "amok/peermanagement.h"
 
-#define PROC_MATRIX_SIZE 2
+#define PROC_MATRIX_SIZE 3
 #define NEIGHBOR_COUNT PROC_MATRIX_SIZE - 1
 #define SLAVE_COUNT (PROC_MATRIX_SIZE*PROC_MATRIX_SIZE)
 
@@ -115,11 +115,11 @@ int master(int argc, char *argv[])
   /* friends, we're ready. Come and play */
   INFO0("Wait for peers for 2 sec");
   gras_msg_handleall(2);
-  do {
+  while (xbt_dynar_length(peers) < SLAVE_COUNT) {
     INFO2("Got only %ld pals (of %d). Wait 2 more seconds",
         xbt_dynar_length(peers),SLAVE_COUNT);
     gras_msg_handleall(2);
-  } while (xbt_dynar_length(peers) < SLAVE_COUNT);
+  }
   INFO1("Good. Got %ld pals", xbt_dynar_length(peers));
 
   for (i = 0; i < xbt_dynar_length(peers) && i < SLAVE_COUNT; i++) {
@@ -415,7 +415,6 @@ int slave(int argc, char *argv[])
       gras_os_sleep(0.5);
     }
   }
-  INFO2("Connected to master: %s:%d",gras_socket_peer_name(master),gras_socket_peer_port(master));
 
   /* Join and run the group */
   rank = amok_pm_group_join(master, "pmm");
