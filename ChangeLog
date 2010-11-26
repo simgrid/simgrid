@@ -55,6 +55,11 @@ SimGrid (3.5) unstable; urgency=low
    models. This problem was only visible with SIMDAG and you should
    thus disregard results produced with earlier versions if you
    relied on this feature (some tasks were blocked because of this).
+ * Fix a bunch of stuff that prevented to use classical models with SIMDAG
+   even though your applications were doing only point-to-point
+   communications and sequential computations. Now you can really use any
+   model you want (of course, if you create real parallel tasks, which are
+   not implemented in most models beside ptaskL07, this will abort).
  * Change the way a task is considered as ready. Instead of removing
    dependencies when a task is done, a counter is decreased. This way,
    it is always possible to reach ancestors thanks to the
