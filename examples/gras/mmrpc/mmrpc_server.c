@@ -42,7 +42,7 @@ int server(int argc, char *argv[])
 {
   xbt_ex_t e;
   gras_socket_t sock = NULL;
-  int port = 4000;
+  int port = 4002;
 
   /* 1. Init the GRAS infrastructure */
   gras_init(&argc, argv);

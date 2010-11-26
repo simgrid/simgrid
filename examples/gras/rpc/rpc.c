@@ -72,7 +72,7 @@ int client(int argc, char *argv[])
 
 
   const char *host = "127.0.0.1";
-  int port = 4000;
+  int port = 4001;
 
   memset(&e, 0, sizeof(xbt_ex_t));
 
@@ -337,7 +337,7 @@ int server(int argc, char *argv[])
   gras_socket_t mysock;
   server_data_t sdata;
 
-  int port = 4000;
+  int port = 4001;
 
   /* 1. Init the GRAS infrastructure */
   gras_init(&argc, argv);
