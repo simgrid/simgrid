@@ -676,7 +676,6 @@ static const luaL_Reg simgrid_funcs[] = {
 /*                       module management functions                                 */
 /* ********************************************************************************* */
 
-extern const char *xbt_ctx_factory_to_use;      /*Hack: let msg load directly the right factory */
 
 #define LUA_MAX_ARGS_COUNT 10   /* maximum amount of arguments we can get from lua on command line */
 #define TEST
@@ -684,7 +683,6 @@ int luaopen_simgrid(lua_State * L);     // Fuck gcc: we don't need that prototyp
 int luaopen_simgrid(lua_State * L)
 {
 
-  //xbt_ctx_factory_to_use = "lua";
   char **argv = malloc(sizeof(char *) * LUA_MAX_ARGS_COUNT);
   int argc = 1;
   argv[0] = (char *) "/usr/bin/lua";    /* Lie on the argv[0] so that the stack dumping facilities find the right binary. FIXME: what if lua is not in that location? */
