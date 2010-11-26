@@ -19,6 +19,70 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_msg);
 
 typedef void *gras_trp_bufdata_;
+#include "simix/datatypes.h"
+#include "simix/private.h"
+
+/* Yeah, the following is awfull, breaking the encapsulation of at least 3 modules
+ * at the same time, but I'm tracking this bug since too long now, I want it dead. now.
+ * Sorry, Mt.
+ */
+typedef struct {
+  xbt_thread_t listener;
+} *fake_gras_msg_listener_t;
+typedef struct {
+  smx_process_t s_process;
+} *fake_xbt_thread_t;
+
+int gras_socket_im_the_server(gras_socket_t sock) {
+  gras_trp_sg_sock_data_t sock_data = sock->data;
+  gras_procdata_t* pd;
+  gras_msg_listener_t l;
+  xbt_thread_t listener_thread;
+  smx_process_t server_listener_process=NULL;
+  smx_process_t client_listener_process = NULL;
+
+
+  if (sock_data->server == SIMIX_process_self())
+    return 1;
+  if (sock_data->client == SIMIX_process_self())
+    return 0;
+
+  /* neither the client nor the server. Check their respective listeners */
+  pd = ((gras_procdata_t*)SIMIX_process_get_data(sock_data->server));
+  l = pd->listener;
+  if (l) {
+    listener_thread = ((fake_gras_msg_listener_t)l)->listener;
+    server_listener_process = ((fake_xbt_thread_t)listener_thread)->s_process;
+    if (server_listener_process == SIMIX_process_self())
+      return 1;
+  }
+
+  if (sock_data->client) {
+    pd = ((gras_procdata_t*)SIMIX_process_get_data(sock_data->client));
+    l = pd->listener;
+    if (l) {
+      listener_thread = ((fake_gras_msg_listener_t)l)->listener;
+      client_listener_process = ((fake_xbt_thread_t)listener_thread)->s_process;
+      if (client_listener_process == SIMIX_process_self())
+        return 0;
+    }
+  }
+  /* THAT'S BAD! I should be either client or server of the sockets I get messages on!! */
+  /* This is where the bug is visible. Try to die as loudly as possible */
+  xbt_backtrace_display_current();
+  ((char*)sock)[sizeof(*sock)+1] = '0'; /* Try to make valgrind angry to see where that damn socket comes from */
+  system(bprintf("cat /proc/%d/maps 1>&2",getpid()));
+  INFO0(bprintf("I'm not the client in socket %p (comm:%p, rdvser=%p, rdvcli=%p) to %s, that's %s",
+      sock,sock_data->comm_recv,sock_data->rdv_server,sock_data->rdv_client,
+      SIMIX_host_get_name(SIMIX_process_get_host(sock_data->server)),
+      sock_data->client?SIMIX_host_get_name(SIMIX_process_get_host(sock_data->client)):"(no client)"));
+  INFO7("server:%s (%p) server_listener=%p client:%s (%p) client_listener=%p, I'm %p",
+      SIMIX_host_get_name(SIMIX_process_get_host(sock_data->server)), sock_data->server,server_listener_process,
+      sock_data->client?SIMIX_host_get_name(SIMIX_process_get_host(sock_data->client)):"(no client)", sock_data->client,client_listener_process,
+          SIMIX_process_self());
+  xbt_die("Bailing out after finding that damn bug");
+
+}
 
 gras_msg_t gras_msg_recv_any(void)
 {
@@ -39,12 +103,11 @@ gras_msg_t gras_msg_recv_any(void)
     DEBUG5
         ("Consider socket %p (data:%p; Here rdv: %p; Remote rdv: %p; Comm %p) to get a message",
          sock, sock_data,
-         (sock_data->server ==
-          SIMIX_process_self())? sock_data->
-         rdv_server : sock_data->rdv_client,
-         (sock_data->server ==
-          SIMIX_process_self())? sock_data->
-         rdv_client : sock_data->rdv_server, sock_data->comm_recv);
+         gras_socket_im_the_server(sock)?
+             sock_data->rdv_server : sock_data->rdv_client,
+         gras_socket_im_the_server(sock)?
+             sock_data->rdv_client : sock_data->rdv_server,
+         sock_data->comm_recv);
 
 
     /* If the following assert fails in some valid conditions, we need to
@@ -79,14 +142,12 @@ gras_msg_t gras_msg_recv_any(void)
                 sock);
     /* End of paranoia */
 
-    VERB3("Consider receiving messages from on comm_recv %p rdv:%p (other rdv:%p)",
-          sock_data->comm_recv,
-          (sock_data->server ==
-           SIMIX_process_self())? sock_data->
-          rdv_server : sock_data->rdv_client,
-          (sock_data->server ==
-           SIMIX_process_self())? sock_data->
-          rdv_client : sock_data->rdv_server);
+    VERB4("Consider receiving messages from on comm_recv %p (%s) rdv:%p (other rdv:%p)",
+          sock_data->comm_recv, sock_data->comm_recv->type == comm_send? "send":"recv",
+          gras_socket_im_the_server(sock)?
+              sock_data->rdv_server : sock_data->rdv_client,
+          gras_socket_im_the_server(sock)?
+              sock_data->rdv_client : sock_data->rdv_server);
     xbt_dynar_push(comms, &(sock_data->comm_recv));
   }
   VERB1("Wait on %ld 'sockets'", xbt_dynar_length(comms));
@@ -110,9 +171,9 @@ gras_msg_t gras_msg_recv_any(void)
   }
   */
   sock_data->comm_recv =
-      SIMIX_network_irecv(sock_data->rdv_server != NULL ?
-                          sock_data->rdv_server
-                          : sock_data->rdv_client, NULL, 0);
+      SIMIX_network_irecv(gras_socket_im_the_server(sock) ?
+                          sock_data->rdv_server : sock_data->rdv_client,
+                          NULL, 0);
 
   return msg;
 }
@@ -130,9 +191,9 @@ void gras_msg_send_ext(gras_socket_t sock,
   gras_trp_sg_sock_data_t sock_data = (gras_trp_sg_sock_data_t) sock->data;
 
   smx_rdv_t target_rdv =
-      (sock_data->server ==
-       SIMIX_process_self())? sock_data->
-      rdv_client : sock_data->rdv_server;
+      (sock_data->server == SIMIX_process_self())?
+          sock_data->rdv_client :
+          sock_data->rdv_server;
 
   /*initialize gras message */
   msg = xbt_new(s_gras_msg_t, 1);
@@ -173,6 +234,6 @@ void gras_msg_send_ext(gras_socket_t sock,
   SIMIX_network_send(target_rdv, whole_payload_size, -1, -1, &msg,
                      sizeof(void *), &comm, msg);
 
-  VERB0("Message sent");
+  VERB0("Message sent (and received)");
 
 }

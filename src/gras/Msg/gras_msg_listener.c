@@ -18,15 +18,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_msg_read, gras_msg,
 #include "gras/Transport/transport_interface.h" /* gras_select */
 
 typedef struct s_gras_msg_listener_ {
+  xbt_thread_t listener; /* keep this first, gras_socket_im_the_server() does funky transtyping in sg_msg.c */
   xbt_queue_t incomming_messages;       /* messages received from the wire and still to be used by master */
   xbt_queue_t socks_to_close;   /* let the listener close the sockets, since it may be selecting on them. Darwin don't like this trick */
   gras_socket_t wakeup_sock_listener_side;
   gras_socket_t wakeup_sock_master_side;
+  int port; /* The port on which the listener opened the command socket */
   xbt_mutex_t init_mutex;       /* both this mutex and condition are used at initialization to make sure that */
   xbt_cond_t init_cond;         /* the main thread speaks to the listener only once it is started (FIXME: It would be easier using a semaphore, if only semaphores were in xbt_synchro) */
-  xbt_thread_t listener;
 } s_gras_msg_listener_t;
 
+#include "gras/Virtu/virtu_private.h" /* gras_procdata_t */
 static void listener_function(void *p)
 {
   gras_msg_listener_t me = (gras_msg_listener_t) p;
@@ -37,8 +39,19 @@ static void listener_function(void *p)
   DEBUG0("I'm the listener");
 
   /* get a free socket for the receiving part of the listener */
-  me->wakeup_sock_listener_side =
-      gras_socket_server_range(5000, 6000, -1, 0);
+  me->wakeup_sock_listener_side =NULL;
+  for (me->port = 5000; me->port < 6000; me->port++) {
+    TRY {
+      me->wakeup_sock_listener_side = gras_socket_server_ext(me->port, -1, 0);
+    }
+    CATCH(e) {
+      if (me->port == 6000)
+        RETHROW;
+      xbt_ex_free(e);
+    }
+    if (me->wakeup_sock_listener_side)
+      break;
+  }
 
   /* wake up the launcher */
   xbt_mutex_acquire(me->init_mutex);
@@ -119,8 +132,7 @@ gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_received)
   /* Connect the other part of the socket */
   arg->wakeup_sock_master_side =
       gras_socket_client(gras_os_myname(),
-                         gras_socket_my_port
-                         (arg->wakeup_sock_listener_side));
+                         arg->port);
   return arg;
 }
 

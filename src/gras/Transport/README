@@ -66,17 +66,5 @@ created by gras_socket_client() and friends. So, they are created on
 client side, but the master side will see it as message expeditor when
 getting a message.
 
-When sending, you can see if the current process is the server by
-checking if data_sock->server == SMX_process_self(). If wrong, that
-means that we are the client process today.
-
-When receiving this won't work because SMX_process_self() is the
-listener associated to the user thread. So, when receiving, you can
-see if you are on the server side or by checking if rdv_client==NULL.
-If not that means that we are on the client side today.
-
-That's messy, and should probably be reworked a bit, but I feel like
-the main issue is the interface used. It's too close and too differnt
-from BSD at the same time. One day, I hope to find the time to redo
-everything with an interface similar to the one of the 0MQ project for
-example.
+You can see which side of the socket you are with the
+gras_socket_im_the_server() function, which is designed for that.

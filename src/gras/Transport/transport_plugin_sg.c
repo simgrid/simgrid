@@ -75,34 +75,23 @@ static gras_sg_portrec_t find_port(gras_hostdata_t * hd, int port)
  ***/
 static int gras_trp_sg_my_port(gras_socket_t s) {
   gras_trp_sg_sock_data_t sockdata = s->data;
-  if (sockdata->rdv_client == NULL) /* Master socket, I'm server */
+  if (gras_socket_im_the_server(s))
     return sockdata->server_port;
   else
     return sockdata->client_port;
 }
 static int gras_trp_sg_peer_port(gras_socket_t s) {
   gras_trp_sg_sock_data_t sockdata = s->data;
-  if (sockdata->server == SIMIX_process_self())
+  if (gras_socket_im_the_server(s))
     return sockdata->client_port;
   else
     return sockdata->server_port;
 }
 static const char* gras_trp_sg_peer_name(gras_socket_t s) {
   gras_trp_sg_sock_data_t sockdata = s->data;
-  if (sockdata->server == SIMIX_process_self())
+  if (gras_socket_im_the_server(s))
     return SIMIX_host_get_name(SIMIX_process_get_host(sockdata->client));
   else {
-    if (sockdata->client!=SIMIX_process_self()) {
-      /* THAT'S BAD! I should be either client or server of the sockets I get messages on!! */
-      /* This is where the bug is visible. Try to die as loudly as possible */
-      xbt_backtrace_display_current();
-      ((char*)s)[sizeof(*s)+1] = '0'; /* Try to make valgrind angry to see where that damn socket comes from */
-      xbt_die(bprintf("I'm not the client in socket %p (comm:%p, rdvser=%p, rdvcli=%p) to %s, that's %s",
-          socket,sockdata->comm_recv,sockdata->rdv_server,sockdata->rdv_client,
-          SIMIX_host_get_name(SIMIX_process_get_host(sockdata->server)),
-          SIMIX_host_get_name(SIMIX_process_get_host(sockdata->client))));
-    }
-    xbt_assert(sockdata->client_port==gras_os_myport());
     return SIMIX_host_get_name(SIMIX_process_get_host(sockdata->server));
   }
 }

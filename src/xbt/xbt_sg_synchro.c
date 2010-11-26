@@ -22,8 +22,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt,
 /* the implementation would be cleaner (and faster) with ELF symbol aliasing */
 
 typedef struct s_xbt_thread_ {
+  smx_process_t s_process; /* keep this first, gras_socket_im_the_server() does funky transtyping in sg_msg.c */
   char *name;
-  smx_process_t s_process;
   void_f_pvoid_t code;
   void *userparam;
   void *father_data;

@@ -43,6 +43,10 @@ typedef struct {
 } s_gras_trp_sg_sock_data_t, *gras_trp_sg_sock_data_t;
 
 
+/** \brief Returns if I am on the server side of this socket (either server or listener of server) */
+int gras_socket_im_the_server(gras_socket_t sock);
+
+
 void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p);
 /* The same function by id would be really dangerous.
  * 
