@@ -79,7 +79,7 @@ gras_msg_t gras_msg_recv_any(void)
                 sock);
     /* End of paranoia */
 
-    VERB3("Copy comm_recv %p rdv:%p (other rdv:%p)",
+    VERB3("Consider receiving messages from on comm_recv %p rdv:%p (other rdv:%p)",
           sock_data->comm_recv,
           (sock_data->server ==
            SIMIX_process_self())? sock_data->
@@ -96,23 +96,21 @@ gras_msg_t gras_msg_recv_any(void)
   /* retrieve the message sent in that communication */
   xbt_dynar_get_cpy(comms, got, &(comm));
   msg = SIMIX_communication_get_data(comm);
-  VERB1("Got something. Communication %p's over", comm);
+  sock = xbt_dynar_get_as(trp_proc->sockets, got, gras_socket_t);
+  sock_data = (gras_trp_sg_sock_data_t) sock->data;
+  VERB3("Got something. Communication %p's over rdv_server=%p, rdv_client=%p",
+      comm,sock_data->rdv_server,sock_data->rdv_client);
   SIMIX_communication_destroy(comm);
 
   /* Reinstall a waiting communication on that rdv */
-  /* Get the sock again
-   * For that, we use the fact that */
-  sock = xbt_dynar_get_as(trp_proc->sockets, got, gras_socket_t);
 /*  xbt_dynar_foreach(trp_proc->sockets,cursor,sock) {
     sock_data = (gras_trp_sg_sock_data_t) sock->data;
     if (sock_data->comm_recv && sock_data->comm_recv == comm)
       break;
   }
   */
-  sock_data = (gras_trp_sg_sock_data_t) sock->data;
   sock_data->comm_recv =
       SIMIX_network_irecv(sock_data->rdv_server != NULL ?
-                          //(sock_data->server==SIMIX_process_self())?
                           sock_data->rdv_server
                           : sock_data->rdv_client, NULL, 0);
 
@@ -144,7 +142,8 @@ void gras_msg_send_ext(gras_socket_t sock,
   msg->type = msgtype;
   msg->ID = ID;
 
-  VERB2("Send msg %s to rdv %p", msgtype->name, target_rdv);
+  VERB4("Send msg %s (%s) to rdv %p sock %p",
+      msgtype->name,  e_gras_msg_kind_names[kind], target_rdv, sock);
 
   if (kind == e_gras_msg_kind_rpcerror) {
     /* error on remote host, careful, payload is an exception */
