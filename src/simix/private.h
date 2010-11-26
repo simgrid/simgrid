@@ -224,7 +224,6 @@ int SIMIX_context_select_factory(const char *name);
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory);
 
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t * factory);
-void SIMIX_ctx_lua_factory_init(smx_context_factory_t * factory);
 
 
 void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory);

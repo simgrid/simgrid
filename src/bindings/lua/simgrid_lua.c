@@ -9,6 +9,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
+lua_State *simgrid_lua_state;
+
 #define TASK_MODULE_NAME "simgrid.Task"
 #define HOST_MODULE_NAME "simgrid.Host"
 // Surf ( bypass XML )

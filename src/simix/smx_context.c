@@ -11,10 +11,6 @@
 #include "xbt/swag.h"
 #include "private.h"
 
-#ifdef HAVE_LUA
-#include <lauxlib.h>
-#endif
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
                                 "Context switching mecanism");
 
@@ -116,14 +112,6 @@ int SIMIX_context_select_factory(const char *name)
     THROW0(not_found_error, 0,
            "Factory 'sysv' does not exist: no System V thread support under Windows");
 #endif
-  else if (!strcmp(name, "lua"))
-#ifdef HAVE_LUA
-    SIMIX_ctx_lua_factory_init(factory);
-#else
-
-    THROW0(not_found_error, 0,
-           "Factory 'lua' does not exist: Lua support was not compiled in the SimGrid library");
-#endif                          /* HAVE_LUA */
 
   else
     THROW1(not_found_error, 0, "Factory '%s' does not exist", name);
