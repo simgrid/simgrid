@@ -18,9 +18,6 @@ package simgrid.msg;
  */
 final class MsgNative {
 
-	final static native
-	void selectContextFactory(String name) throws NativeException;
-
 	/******************************************************************
 	 * The natively implemented methods connected to the MSG Process  *
 	 ******************************************************************/

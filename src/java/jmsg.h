@@ -324,9 +324,6 @@ Java_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls,
                                        jstring jplatformFile);
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_selectContextFactory(JNIEnv *, jclass, jstring);
-
-JNIEXPORT void JNICALL
 Java_simgrid_msg_MsgNative_taskSendBounded(JNIEnv *, jclass, jstring,
                                            jobject, jdouble);
 

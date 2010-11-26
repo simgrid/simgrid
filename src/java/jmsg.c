@@ -803,6 +803,9 @@ Java_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls)
   return (jdouble) MSG_get_clock();
 }
 
+/*Hack: let msg load directly the right factory */
+typedef void (*SIMIX_ctx_factory_initializer_t)(smx_context_factory_t *);
+extern SIMIX_ctx_factory_initializer_t factory_initializer_to_use;
 
 JNIEXPORT void JNICALL
 Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
@@ -812,6 +815,8 @@ Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   int argc = 0;
   jstring jval;
   const char *tmp;
+
+  factory_initializer_to_use = SIMIX_ctx_java_factory_init;
 
   if (jargs)
     argc = (int) (*env)->GetArrayLength(env, jargs);
@@ -828,7 +833,6 @@ Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   }
 
   MSG_global_init(&argc, argv);
-  SIMIX_context_select_factory("java");
 
   for (index = 0; index < argc; index++)
     free(argv[index]);
@@ -958,34 +962,6 @@ Java_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
   }
 
   return jtable;
-}
-
-
-JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_selectContextFactory(JNIEnv * env, jclass class,
-                                                jstring jname)
-{
-  char *errmsg = NULL;
-  xbt_ex_t e;
-
-  /* get the C string from the java string */
-  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
-
-  TRY {
-    SIMIX_context_select_factory(name);
-  } CATCH(e) {
-    errmsg = xbt_strdup(e.msg);
-    xbt_ex_free(e);
-  }
-
-  (*env)->ReleaseStringUTFChars(env, jname, name);
-
-  if (errmsg) {
-    char *thrown =
-        bprintf("xbt_select_context_factory() failed: %s", errmsg);
-    free(errmsg);
-    jxbt_throw_jni(env, thrown);
-  }
 }
 
 JNIEXPORT void JNICALL

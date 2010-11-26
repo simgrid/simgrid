@@ -84,15 +84,7 @@ int SIMIX_context_select_factory(const char *name)
 
   /* init the desired factory */
   smx_context_factory_t * factory = &simix_global->context_factory;
-  if (!strcmp(name, "java"))
-#ifdef HAVE_JAVA
-    SIMIX_ctx_java_factory_init(factory);
-#else
-    THROW0(not_found_error, 0,
-           "Factory 'Java' does not exist: Java support was not compiled in the SimGrid library");
-#endif                          /* HAVE_JAVA */
-
-  else if (!strcmp(name, "thread"))
+  if (!strcmp(name, "thread"))
 #ifdef CONTEXT_THREADS
     SIMIX_ctx_thread_factory_init(factory);
 #else
