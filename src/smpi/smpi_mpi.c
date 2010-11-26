@@ -772,7 +772,6 @@ int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else {
-    printf("[%d] gives %d, %d\n", smpi_comm_rank(comm), color, key);
     *comm_out = smpi_comm_split(comm, color, key);
     retval = MPI_SUCCESS;
   }
