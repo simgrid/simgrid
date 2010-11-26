@@ -6,60 +6,60 @@
 
 $ $SG_TEST_EXENV ./rpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/rpc.xml "--log=root.fmt:'[%h:%P:(%i)] [%c/%p] %m%n'"
 > [Tremblay:server:(1)] [Rpc/INFO] Launch server (port=4000)
-> [Fafard:client:(3)] [Rpc/INFO] Launch client (server on Tremblay:4000)
 > [Ginette:forwarder:(2)] [Rpc/INFO] Launch forwarder (port=4000)
+> [Fafard:client:(3)] [Rpc/INFO] Launch client (server on Tremblay:4000)
 > [Tremblay:server:(1)] [Rpc/INFO] Listening on port 4000
 > [Fafard:client:(3)] [Rpc/INFO] Connected to Tremblay:4000.
 > [Fafard:client:(3)] [Rpc/INFO] Connected to server which is on Tremblay:4000
-> [Tremblay:server:(1)] [Rpc/INFO] Got message PING(1234) from Fafard:0
+> [Tremblay:server:(1)] [Rpc/INFO] Got message PING(1234) from Fafard:5000
 > [Tremblay:server:(1)] [Rpc/INFO] Answered with PONG(4321)
 > [Fafard:client:(3)] [Rpc/INFO] The answer to PING(1234) on Tremblay:4000 is PONG(4321)
 > [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC
-> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
 > [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
 > [Fafard:client:(3)] [Rpc/INFO] Called the exception raising RPC
 > [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC (i=0)
-> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
 > [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC (i=1)
-> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
 > [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC (i=2)
-> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
 > [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC (i=3)
-> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
 > [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC (i=4)
-> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:0
+> [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
 > [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=0)
 > [Ginette:forwarder:(2)] [Rpc/INFO] Forward a request
 > [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:0
+> [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
 > [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
 > [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=1)
 > [Ginette:forwarder:(2)] [Rpc/INFO] Forward a request
 > [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:0
+> [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
 > [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
 > [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=2)
 > [Ginette:forwarder:(2)] [Rpc/INFO] Forward a request
 > [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:0
+> [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
 > [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
 > [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=3)
 > [Ginette:forwarder:(2)] [Rpc/INFO] Forward a request
 > [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:0
+> [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
 > [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
 > [Fafard:client:(3)] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=4)
 > [Ginette:forwarder:(2)] [Rpc/INFO] Forward a request
 > [Tremblay:server:(1)] [gras_msg/INFO] Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:0
+> [Ginette:forwarder:(2)] [gras_msg/INFO] Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
 > [Fafard:client:(3)] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
 > [Fafard:client:(3)] [Rpc/INFO] Ask Ginette:4000 to die
 > [Fafard:client:(3)] [Rpc/INFO] Ask Tremblay:4000 to die
-> [Ginette:forwarder:(2)] [Rpc/INFO] Asked to die by Fafard:0
+> [Ginette:forwarder:(2)] [Rpc/INFO] Asked to die by Fafard:5000
 > [Ginette:forwarder:(2)] [Rpc/INFO] Done.
 > [Ginette:forwarder:(2)] [gras/INFO] Exiting GRAS
 > [Fafard:client:(3)] [Rpc/INFO] Done.
 > [Fafard:client:(3)] [gras/INFO] Exiting GRAS
-> [Tremblay:server:(1)] [Rpc/INFO] Asked to die by Fafard:0
+> [Tremblay:server:(1)] [Rpc/INFO] Asked to die by Fafard:5000
 > [Tremblay:server:(1)] [Rpc/INFO] Done.
 > [Tremblay:server:(1)] [gras/INFO] Exiting GRAS
