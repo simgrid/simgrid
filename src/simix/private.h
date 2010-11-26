@@ -215,18 +215,10 @@ void SIMIX_context_mod_init(void);
 
 void SIMIX_context_mod_exit(void);
 
-/* Selects a context factory associated with the name specified by the parameter name.
- * If successful the function returns 0. Otherwise the function returns the error code.
- */
-int SIMIX_context_select_factory(const char *name);
 
 /* All factories init */
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory);
-
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t * factory);
-
-
-void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory);
 
 /* ****************************** */
 /* context manipulation functions */

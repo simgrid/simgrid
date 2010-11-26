@@ -21,6 +21,7 @@ typedef struct s_smx_ctx_java {
   jobject jprocess;             /* the java process instance binded with the msg process structure                                                      */
   JNIEnv *jenv;                 /* jni interface pointer associated to this thread                                                                                      */
 } s_smx_ctx_java_t, *smx_ctx_java_t;
+void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory);
 
 SG_END_DECL()
 #endif                          /* !_XBT_CONTEXT_JAVA_H */
