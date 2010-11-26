@@ -293,3 +293,6 @@ bin/
 lib/
 buildtools/Cmake/transfert.sh
 buildtools/pipol/install_cmake.sh
+.anjuta
+.anjuta_sym_db.db
+simgrid.anjuta
