@@ -9,12 +9,6 @@
 #include "mc/mc.h"
 #include "xbt/dict.h"
 
-/* Pimple to get an histogram of message sizes in the simulation */
-xbt_dict_t msg_sizes = NULL;
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-xbt_dict_t latency_limited_dict = NULL;
-#endif
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
                                 "Logging specific to SIMIX (network)");
 
@@ -176,13 +170,10 @@ void SIMIX_communication_destroy(smx_comm_t comm)
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   //save is latency limited flag to use afterwards
-  if (latency_limited_dict == NULL) {
-    latency_limited_dict = xbt_dict_new();
-  }
   if (comm->act) {
     DEBUG2("adding key %p with latency limited value %d to the dict", comm,
            SIMIX_action_is_latency_bounded(comm->act));
-    xbt_dicti_set(latency_limited_dict, (uintptr_t) comm,
+    xbt_dicti_set(simix_global->latency_limited_dict, (uintptr_t) comm,
                   SIMIX_action_is_latency_bounded(comm->act));
   }
 #endif
@@ -409,7 +400,7 @@ XBT_INLINE int SIMIX_communication_is_latency_bounded(smx_comm_t comm)
   uintptr_t key = 0;
   uintptr_t data = 0;
   xbt_dict_cursor_t cursor;
-  xbt_dict_foreach(latency_limited_dict, cursor, key, data) {
+  xbt_dict_foreach(simix_global->latency_limited_dict, cursor, key, data) {
     DEBUG2("comparing key=%p with comm=%p", (void *) key, (void *) comm);
     if ((void *) comm == (void *) key) {
       DEBUG2("key %p found, return value latency limited value %d",
@@ -483,13 +474,11 @@ void SIMIX_network_copy_data(smx_comm_t comm)
 
   /* pimple to display the message sizes */
   {
-    if (msg_sizes == NULL)
-      msg_sizes = xbt_dict_new();
     casted_size = comm->task_size;
-    amount = xbt_dicti_get(msg_sizes, casted_size);
+    amount = xbt_dicti_get(simix_global->msg_sizes, casted_size);
     amount++;
 
-    xbt_dicti_set(msg_sizes, casted_size, amount);
+    xbt_dicti_set(simix_global->msg_sizes, casted_size, amount);
   }
 }
 
@@ -504,7 +493,7 @@ void SIMIX_message_sizes_output(const char *filename)
   out = fopen(filename, "w");
   xbt_assert1(out, "Cannot open file %s", filename);
 
-  xbt_dict_foreach(msg_sizes, cursor, key, data) {
+  xbt_dict_foreach(simix_global->msg_sizes, cursor, key, data) {
     fprintf(out, "%zu %zu\n", key, data);
   }
   fclose(out);
