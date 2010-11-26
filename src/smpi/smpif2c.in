@@ -16,6 +16,9 @@ foreach my $fortran (@ARGV) {
    die "F2C failed\n" if $?;
    open F2C,"<$output";
    my $started = 0;
+   print $tmp "#ifndef INTEGER_STAR_8\n";
+   print $tmp "#define INTEGER_STAR_8\n";
+   print $tmp "#endif\n";
    print $tmp "#include <stdlib.h>\n";
    print $tmp "#include <smpif.h>\n";
    while(<F2C>) {
@@ -25,15 +28,15 @@ foreach my $fortran (@ARGV) {
       }
       if($started) {
          if(/^} (.*?);/) {
-            $_ = "}* $1 = NULL;\n";
+            $_ = "}* __attribute__((weak)) $1 = NULL;\n";
          } elsif(/^#define\s*(\S*)\s*\(?([^.]*)(\..*?)?\)?$/) {
             $_ = "#define $1 $2\[smpi_global_rank()\]";
             if(defined $3) {
                $_ .= $3;
             }
             $_ .= "\n";
-            $_ .= "\nvoid __attribute__((constructor)) __preinit_$1(void) {\n  if(!$2) $2 = malloc(smpi_global_size() * sizeof(*$2));\n}\n";
-            $_ .= "\nvoid __attribute__((destructor)) __postfini_$1(void) {\n  free($2);\n  $2 = NULL;\n}\n";
+            $_ .= "\nvoid __attribute__((weak,constructor)) __preinit_$1(void) {\n  if(!$2) $2 = malloc(smpi_global_size() * sizeof(*$2));\n}\n";
+            $_ .= "\nvoid __attribute__((weak,destructor)) __postfini_$1(void) {\n  free($2);\n  $2 = NULL;\n}\n";
          }
       }
       if(/\/\* Table of constant values \*\// || /MAIN__/) {

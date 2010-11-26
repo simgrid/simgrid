@@ -21,8 +21,15 @@ while [ -n "$1" ]; do
   esac
 done
 
-for SRCFILE in "${SRCFILES}"
-do
-   CFILE="${SRCFILE%.f}.c"
-   $prefix/bin/smpif2c ${SRCFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE}
-done
+if [ -n "${SRCFILES}" ]
+then
+   for SRCFILE in "${SRCFILES}"
+   do
+      CFILE="${SRCFILE%.f}.c"
+      #echo "$prefix/bin/smpif2c ${SRCFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE}"
+      $prefix/bin/smpif2c ${SRCFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE}
+   done
+else
+   #echo "$prefix/bin/smpicc ${ARGS}"
+   $prefix/bin/smpicc ${ARGS}
+fi
