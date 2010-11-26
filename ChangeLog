@@ -2,26 +2,26 @@ SimGrid (3.5) unstable; urgency=low
 
  Msg
  * New function: MSG_load_platform_script()
-   to make possible using a lua script instead of XML files to set up platforms 
+   to make possible using a lua script instead of XML files to set up platforms
  * New function: MSG_set_function
-  to associate functions to processes, used when bypassing the parser 
+  to associate functions to processes, used when bypassing the parser
  Lua Bindings
  * add layer to set up environment and bypass the XML surf parser
  * modify the entry point, to take into consideration when lua is used only as a platform generator
  SURF
- * add new callbacks to the CPU & netwok models to create resources 
+ * add new callbacks to the CPU & netwok models to create resources
    no need to pass through the parser callbacks to do so.
  * add new function to create routes table via the routing model
- * add generic functions in the public interface 
+ * add generic functions in the public interface
    that allows the user to call SURF 'create_resource' methods from a lua script.
  SIMIX :
  * New function: SIMIX_process_set_function()
    called by MSG_set_function
  SimDag
- * Change the way a task is considered as ready. Instead of removing 
+ * Change the way a task is considered as ready. Instead of removing
    dependencies when a task is done, a counter is decreased. This way,
-   it is always possible to reach ancestors thanks to the 
-   SD_taks_get_parents function (even after the end of the simulation.)	   
+   it is always possible to reach ancestors thanks to the
+   SD_taks_get_parents function (even after the end of the simulation.)
  * Change the level of some logs in sd_global from INFO to VERB. The
    corresponding tests are now less verbose
  * Change the return type of SD_Simulate from (SD_task_t*) into
@@ -29,7 +29,7 @@ SimGrid (3.5) unstable; urgency=low
    converted it into a NULL terminated array for historical reasons.
  * Rename the SD_READY (all dependencies are satisfied and task is
    scheduled) state in SD_RUNNABLE and define a new SD_SCHEDULABLE (all
-   dependencies are satisfied) state. 
+   dependencies are satisfied) state.
    This prevents a confusion between the notion of "ready to schedule"
    (SD_SCHEDULABLE) used in DAG scheduling and that of "ready to be
    simulated" (SD_RUNNABLE) used by the simulation kernel.
@@ -38,7 +38,7 @@ SimGrid (3.5) unstable; urgency=low
  * new function SD_dotload(char*) to load a DAG described in dot
    format. This loader and the corresponding examples require the
    installation of the graphviz library.
- 
+
  SIMIX
  * Change the underlying waiting queue in semaphores so that a process
    can wait on several of them simultaneously (as in waitany).
@@ -62,7 +62,7 @@ SimGrid (3.5) unstable; urgency=low
  * New function: gras_msgtype_get_name()
 
  Build chain: bug fixes and further polishing
- * Fix the 'make install' target. 
+ * Fix the 'make install' target.
    No need to use 'make install-simgrid' anymore
  * Introduce a 'make dist' target compiling a *source* archive
    'make package' compiles a binary archive (not well tested)
@@ -82,7 +82,7 @@ SimGrid (3.5) unstable; urgency=low
         --cfg=tracing/msg/volume:1    (volume of msg send/recv)
         --cfg=tracing/smpi:1          (smpi interface tracing)
    - examples of examples/msg/tracing updated
-    
+
  * Tracing the MPI interface implemented by SMPI
    - Collective operations are traced with states
    - Point-to-Point operations are traced with states/links
@@ -98,13 +98,13 @@ SimGrid (3.5) unstable; urgency=low
      with modifications regarding the fullduplex mode
    - new tesh files to check if gtnets tracing is ok
 
- -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> 
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.4.1) stable; urgency=low
 
  The "Polishing easter eggs is probably a good idea" release.
  This is a bug fixes release only.
- 
+
 
  Java Bindings
  * Fix a bug preventing the tasks from begin garbage collected.
@@ -119,7 +119,7 @@ SimGrid (3.4.1) stable; urgency=low
  * Obey the control-flow dependencies of DAX files
 
  Cmake
- * Add option "enable_smpi" allowing to not compile SMPI. 
+ * Add option "enable_smpi" allowing to not compile SMPI.
    Probably useful for the (Mac) users experiencing a build error here
  * Improve the detection of lua5.1 and ruby1.8
 
@@ -128,11 +128,11 @@ SimGrid (3.4.1) stable; urgency=low
 SimGrid (3.4) stable; urgency=low
 
  The "Easter in Cargese" release. Also known as (major changes):
- 
+
   * the "se habla Java, Ruby 話せます, fala-se Lua (and deaf-friendly)"
     ~> bindings were greatly improved
     ~> new tracing infrastructure for better visualization introduced
-    
+
   * the "Welcome to configury modernity" release.
     ~> we switched from autotools to cmake, and improved our cdash
 
@@ -145,7 +145,7 @@ SimGrid (3.4) stable; urgency=low
     Use send/receive instead.
   * Cleanup the examples and add a README per directory
   * Remove example autoDestination (that's the only way to go now)
-  * Remove example explicitDestination (was a plain copy of basic)  
+  * Remove example explicitDestination (was a plain copy of basic)
   * Make JniException a runtime exception, so that there is no need to
     declare the fact that you may encounter such a beast. I guess that
     nobody will ever want to survive such error.
@@ -155,7 +155,7 @@ SimGrid (3.4) stable; urgency=low
   * Other internal cleanups in Java bindings. Performance still bad :/
  Ruby and Lua Bindings: create them
   * (install ruby1.8-dev/liblua5.1-0-dev on debian-like to use them)
-  * That's new and great, you should try them out. 
+  * That's new and great, you should try them out.
     Same functionalities than Java bindings, only even less polished
  SimDag:
   * Kill the useless "rate" argument of SD_task_get_execution_time()
@@ -169,7 +169,7 @@ SimGrid (3.4) stable; urgency=low
   * Fix SD_task_get_execution_time() to return seconds, not flop*sec
   * In DAX loader, accept useless 'level' attributes to <job> since
     LIGO DAGs have them (seem to be to ease graphical representation).
- MSG: 
+ MSG:
   * Add an example masterslave_mailbox.c using send/receive and not
     the deprecated put/get interface.
   * Kill the MSG_paje_output() function. It's a noop since 2 years.
@@ -181,7 +181,7 @@ SimGrid (3.4) stable; urgency=low
   * About trace replay (see examples/msg/actions):
     - implement barrier
     - Allow to work with splitted trace files for each process
-      Give the specific trace file as argument of each process, 
+      Give the specific trace file as argument of each process,
         and call MSG_action_trace_run(NULL)
       You can still have one merged file for all processes.
     - Fix implementation of collective operations
@@ -192,7 +192,7 @@ SimGrid (3.4) stable; urgency=low
   * Port over the new SIMIX_network submodule (internal refactoring)
   * Basic support to log events as with SMPE (use --cfg=SMPE:1)
   * Implement more missing elements of the standard:
-    - MPI_COMM_SELF 
+    - MPI_COMM_SELF
     - MPI_MAXLOC MPI_MINLOC + all associated datatype MPI_DOUBLE_INT,
       MPI_FLOAT_INT, etc.
     - MPI_Address() MPI_Get_count() MPI_Type_free() MPI_Type_extent()
@@ -201,7 +201,7 @@ SimGrid (3.4) stable; urgency=low
       *not* the bruck variant from OpenMPI; based on Alltoallv instead)
     - SMPI_MPI_Gather() SMPI_MPI_Gatherv() SMPI_MPI_Scatterv()
       SMPI_MPI_Reduce_scatter() SMPI_MPI_Allgather()
-      SMPI_MPI_Allgatherv() 
+      SMPI_MPI_Allgatherv()
   * Bug fixes include:
     - MPI_Waitsome() was broken
     - Allow relative includes in smpicc
@@ -212,7 +212,7 @@ SimGrid (3.4) stable; urgency=low
   * add SIMIX_action_suspend() and SIMIX_action_resume() functions
   * Bug fixes about timeouts during communications
   * add SIMIX_message_sizes_output() as a pimple to write to file the
-    amount of messages per size. Use gnuplot to get histogram. 
+    amount of messages per size. Use gnuplot to get histogram.
     Pimple because that's the only user-visible function of simix,
      defined directly in xbt.h (irk, sorry)
   * About semaphores:
@@ -249,7 +249,7 @@ SimGrid (3.4) stable; urgency=low
      uintptr_t xbt_dicti_get(xbt_dict_t dict, uintptr_t key);
      void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
     In contrary to regular dicts, the key is not malloced before copy.
-    Mixing scalar and regular elements in the same dict is not tested 
+    Mixing scalar and regular elements in the same dict is not tested
       (but may work).
   * Allow to use xbt_dynar_shrink() to expend the dynar instead
  Tracing for Visualization:
@@ -270,9 +270,9 @@ SimGrid (3.4) stable; urgency=low
     Check http://cdash.inria.fr/CDash/index.php?project=Simgrid
   * Added memory checking tests with valgrind; lot of memleak fixing.
     This may be the first release of simgrid with so few memory issues
-  * Added code coverage tests. 
+  * Added code coverage tests.
     Our coverage is still improvable, but at least we see it on cdash.
-   
+
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Wed, 28 Apr 2010 28 17:11:16 +0100
 
 SimGrid (3.3.4) stable; urgency=low
@@ -281,50 +281,50 @@ SimGrid (3.3.4) stable; urgency=low
 
  Models improvements:
  * Major speedup in the maxmin system solving by using lazy evaluation
-   Instead of solving completely the maxmin system at each iteration, 
-     only invalidate (and recompute) the modified parts. 
+   Instead of solving completely the maxmin system at each iteration,
+     only invalidate (and recompute) the modified parts.
    This new feature is enabled in default models but you can try to
      turn it on with "--cfg:maxmin-selective-update=1" for other models.
  * Cas01 IMproved as default CPU model
    This CPU model is the same Cas01 model, but it uses the
      maxmin-selective-update flag and a heap structure to manage
-     actions on SURF kernel. 
+     actions on SURF kernel.
    It reduces the complexity to find the next action to finish and,
      consequently, it's faster than the old Cas01.
-   This is the new default CPU model (Cas01).   
+   This is the new default CPU model (Cas01).
  * Rename the old Cas01 model to Cas01_fullupdate
    Keep the old cpu model Cas01 with the new name of Cas01_fullupdate.
    Use "--cfg=cpu_model:Cas01_fullupdate" to use the old default CPU model.
  * CpuTI (CPU Trace Integration)
    A new CPU model whose objective is simulate faster when using
-     availability trace files. 
+     availability trace files.
    Instead of using a full featured, over engineered maxmin system for
      CPU modeling, this model does the pre-integration of traces files
      to calculate the amount of CPU power available, and so, executes
-     faster than the old CPU models. 
+     faster than the old CPU models.
    Use "--cfg=cpu_model:CpuTI" to change to this CPU model.
  * Use LV08 as default network model since it gives better accuracy
     for small messages and shouldn't change things for big ones.
    Use --cfg=network_model:CM02 to get the previous behavior.
-   
-   
+
+
          ******************************************
-         *DO NOT MIX 3.3.4 RESULTS WITH OLDER ONES* 
+         *DO NOT MIX 3.3.4 RESULTS WITH OLDER ONES*
          ******************************************
    * The new CPU model may changes simulations!
      The point is that events occurring at the exact same timestamp
-        are not scheduled in the same order with the old and new 
+        are not scheduled in the same order with the old and new
         version. This may be enough to completely change the execution
-        of simulations in some cases. 
+        of simulations in some cases.
    * The new network model will change simulations!
      This new model is more realistic than the previous one, so you
        should consider redoing your old experiments with this model.
      Sorry for the inconvenience.
-     
+
  Build System:
  * Introduce the supernovae compilation mode
    When compiled that way, the whole SimGrid (or almost) is put in a
-     single compilation unit and compiled in one shoot. 
+     single compilation unit and compiled in one shoot.
   This is to help gcc which has difficulties to inline stuff from one
      file into another.
   The speedup seem to be above 15%, althrough more tests are needed on
@@ -342,11 +342,11 @@ SimGrid (3.3.4) stable; urgency=low
    - Asynchronous send/recv: you dreamt of it? It's here now
      Too bad that nobody cared enough to propagate the change to MSG.
  * Add semaphores as SIMIX synchronization mechanism.
-   
+
  SimDag:
- * new function SD_daxload(char*) to load a DAX file 
+ * new function SD_daxload(char*) to load a DAX file
    (see http://vtcpc.isi.edu/pegasus/index.php/WorkflowGenerator)
- * Introduce typed tasks. Specify its kind and cost at creation. 
+ * Introduce typed tasks. Specify its kind and cost at creation.
    At scheduling, just give where it should be placed, and the cost
    for each involved resource is automatically computed.
    Existing constructors so far (more to come of course):
@@ -357,7 +357,7 @@ SimGrid (3.3.4) stable; urgency=low
  * new function SD_task_dotty(task,FILE*) writing to file the info
    about the task in dotty format
  * SD_task_dependency_exists() can now cope with having one of its
-   arguments NULL. If so, it tests whether the other argument has any 
+   arguments NULL. If so, it tests whether the other argument has any
    dependency.
  * Add getters on list of preceding/following tasks:
     SD_task_get_parents(task) and SD_task_get_children(task)
@@ -366,24 +366,24 @@ SimGrid (3.3.4) stable; urgency=low
  * Add getter on task kind: SD_task_get_kind(task)
  * Update the start_time and finish_time of tasks on completion/failure
  * Bugfix: Remove task from state swags when destroyed
- 
+
  GRAS:
  * New function: void gras_cpu_burn(double flops) -- a simple CPU burner
 
  XBT:
  * New function: xbt_dynar_dopar(dynar,fun) to map a function over the
    dynar with one separate thread per value of the dynar.
- * Change the prototype of xbt_thread_create(), sorry. 
+ * Change the prototype of xbt_thread_create(), sorry.
    Added a boolean parameter indicating whether we want to join this
    thread (used in SG only for now)
  * Implement xbt_thread_join and xbt_thread_yield in SG also.
-   
+
  Bug fixes:
  * GTNetS wrappers should now be usable again (and betterly tested too)
  * Fix a major regression from 3.2 where the timeout provided to
    MSG_task_put_with_timeout() was used as absolute time before which
    the comm should be done.
- * Start to fix the <cluster> tag. 
+ * Start to fix the <cluster> tag.
    - Internal links should be good now (beside of the loopback, which
      use the private link instead)
    - paths to the external world is still rather broken
@@ -406,13 +406,13 @@ SimGrid (3.3.4) stable; urgency=low
 
  Portability report of this version:
   * Main portability targets:
-    - linux (ubuntu (804/810/910) /debian (4/5/testing) /fedora (core11)) 
+    - linux (ubuntu (804/810/910) /debian (4/5/testing) /fedora (core11))
       on (amd64/i386/ia64)
     - mac leopard on i386
     Known problems: http://cdash.inria.fr/CDash/index.php?project=Simgrid
      but nothing critical.
   * Other platforms: windows, AIX and others were not tested for this release
-  
+
  Timing report of this version:
   * Lazy evaluation brings arbitrary speedup (ie, speedup depending on
     scenario parameters). From 8h to a few seconds in desktop grid settings.
@@ -423,12 +423,12 @@ SimGrid (3.3.4) stable; urgency=low
 SimGrid (3.3.3) stable; urgency=low
 
  The "Need for Speed" release.
- 
- The timings done to validate the 3.3.2 were faulty. 
+
+ The timings done to validate the 3.3.2 were faulty.
  Instead of being 5% faster, it was 15% slower (compared to 3.3.1).
-   
+
  The problem was a conversion from a manually handled vector to
-   xbt_dynar_t on the critical path. 
+   xbt_dynar_t on the critical path.
  xbt_dynar_foreach calls functions, inducing stack management crap.
 
  We inlined these functions and xbt_dynar_foreach is now breath taking.
@@ -440,7 +440,7 @@ SimGrid (3.3.3) stable; urgency=low
    3.3.2                   -> 3.3.3: 40% speedup
    3.3.1                   -> 3.3.3: 40% speedup
    3.3.1 with inline patch -> 3.3.3: 30% speedup
-   
+
  Our reading is that the refactoring which occurred in 3.3.2 made us
   suffer much more from the xbt_dynar_foreach low performance, but
   once we solved this, this refactoring proved to be very performance
@@ -451,7 +451,7 @@ SimGrid (3.3.3) stable; urgency=low
   alone. We have to choose between:
   - break the encapsulation (by putting private data structures and
     accessors in headers files to help gcc)
-  - live with low performance 
+  - live with low performance
   - switch to a decent compiler such as icc (not quite possible).
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Thu, 20 Aug 2009 21:21:33 +0200
@@ -462,8 +462,8 @@ SimGrid (3.3.2) stable; urgency=low
 
  The main contributors of this release were (lexical order):
    Silas De Munck, Stéphane Genaud, Martin Quinson, Cristian Rosa.
-       
- SURF: 
+
+ SURF:
   * Extract the routing logic into its own object.
     (was dupplicated in network.c and workstation_LV07.c;
      Allows to implement other ways of storing that info)
@@ -471,7 +471,7 @@ SimGrid (3.3.2) stable; urgency=low
     - Use dynar to represent routes (instead of void** + int*)
     - kill link_set (use surf_network_model->resource_set instead)
     - Add a command-line option to choose the routing schema to use
-    - Add three new models: 
+    - Add three new models:
       * Floyd (shortest path computed at initialization)
       * Dijikstra (shortest path recomputed all the time)
       * Cached Dijikstra (shortest path computed on need)
@@ -493,20 +493,20 @@ SimGrid (3.3.2) stable; urgency=low
       action_get_state    ~> action_state_get
     - Change model methods into functions :
       (model)->common_public->action_use  ~> surf_action_ref
-      
+
   * Implement a generic resource; use it as ancestor to specific ones
     (allows to kill duplicated code in models)
     Drawback: timer command don't need no name nor properties;
               workstation_CLM03 don't need no properties
     (but I guess we can live with those few bytes wasted)
-    
+
   * Improve the action object model
     - implement a constructor avoiding dupplicated code about field
       initialization in generic_action part.
-      
+
   * Kill the SDP model: it has an external dependency, is deprecated
     in flavor of modern lmm models, and didn't compile since a while
- 
+
  SIMIX:
   * Relocation of the context module from XBT to SIMIX.
     (the context were decoupled from the simix processes, duplicating a lot of code)
@@ -515,17 +515,17 @@ SimGrid (3.3.2) stable; urgency=low
     - simpler API for the context factory
     - the logic for process creation,destruction and manipulation was simplified
   * Simplification of the s_smx_process_t data structure.
-    => accesing the simix level data associated to a process is faster now, 
+    => accesing the simix level data associated to a process is faster now,
        and the code is a lot more readable.
-       
+
  SMPI:
-  * Implement some more MPI primitives: 
+  * Implement some more MPI primitives:
     MPI_Bcast, MPI_Waitany, MPI_Waitall, MPI_Reduce, MPI_Allreduce, MPI_Scatter, MPI_Sendrecv, MPI_Alltoall
-    -implementation: Bcast: flat or 2-ary tree (default), 
+    -implementation: Bcast: flat or 2-ary tree (default),
                      Barrier: 4-ary tree,
                      Reduce: flat tree
                      Allreduce: Reduce then Bcast
-                     Alltoall: "basic_linear" if data per proc < 3Kb, "otherwise pairwise". 
+                     Alltoall: "basic_linear" if data per proc < 3Kb, "otherwise pairwise".
                                Not yet implemented: "Bruck" for data per proc < 200b and comm size > 12
                      Alltoallv: flat tree, like ompi
                      Scatter: flat tree
@@ -535,7 +535,7 @@ SimGrid (3.3.2) stable; urgency=low
  SimDag:
   * Kill SD_link_get_properties: hard to maintain and makes very little sense
     Shout out if you used it.
-    
+
  GRAS:
   * Display the list of still queued messages in SG mode when existing
     the process.
@@ -545,31 +545,31 @@ SimGrid (3.3.2) stable; urgency=low
   * Add xbt_graph_node_get_outedges() [Silas De Munck]
   * Add xbt_str_from_file(FILE*)
   * Add xbt_dict_get_key achieving a linear reverse search
-  * Remove the context module 
+  * Remove the context module
 
  Portability report of this version:
   * Main portability targets:
-    - Linux(debian)/x86/context   
-    - Linux(debian)/x86/pthreads 
-    - Linux(debian)/amd64/context 
+    - Linux(debian)/x86/context
+    - Linux(debian)/x86/pthreads
+    - Linux(debian)/amd64/context
     - Linux(debian)/amd64/pthreads
-    On these, we still have the eratic breakages of gras/pmm and 
+    On these, we still have the eratic breakages of gras/pmm and
       amok/saturate_sg reported in previous version. We still think
       that the tests are the cause of the fault, not the tested code.
-      
+
     - Mac OSX Leopard/x86/context
     Still false negative in tesh autotesting.
     Smpi still fails, but this time because readlink does not accept -f
     Everything seems to work properly beside of that.
-    
+
   * Exotic platforms:
     - AIX version 5.3 (only tested contexts this time)
-      Smpi still fails there because mktemp is not installed. 
+      Smpi still fails there because mktemp is not installed.
       Everything seems to work properly beside of that.
     - OpenSolaris 11
       I managed to compile it for the first time, but several breakages.
       Won't delay the release for this exotic platform.
-    
+
   * Windows: it's still lagging behind. If you want to help, please
     stand up.
 
@@ -632,13 +632,13 @@ SimGrid (3.3.1) stable; urgency=low
  SIMDAG:
   * Move the configuration infrastructure to surf
 
- SMPI: 
+ SMPI:
   * Massive internal cleanups:
     - Store internal structures on processes instead of hosts (allows
-      to have more than one process per host, in addition of being more 
+      to have more than one process per host, in addition of being more
       logical)
     - Cleanup the initialization/finalization process
-    - Kill a whole bunch of unneeded synchronization: 
+    - Kill a whole bunch of unneeded synchronization:
       processes run in exclusive manner within the simulator
     - Move queues from global tables to process data fields
   * Improve smpirun:
@@ -647,43 +647,43 @@ SimGrid (3.3.1) stable; urgency=low
   * Compile the examples by default, and use them as regression tests
   * Implement MPI_Wtime()
   * Change the reference speed to a command line option
-  
+
  SURF:
   * TCP_gamma can now be specified as command line option using
     --cfg=TCP_gamma:10000000.0
   * Change the --surf-path cmd line option into --cfg=path:
-  
+
  XBT:
   * Also include strbuff from xbt.h public header
-  * xbt_ex_display(): do not free the exception after displaying 
+  * xbt_ex_display(): do not free the exception after displaying
     This allows to do more with the given exception afterward.
     Users should call xbt_ex_free() themselves.
-    
-    
+
+
 
  Portability report of this version:
   * Main portability targets:
-    - Linux(debian)/x86/context   
-    - Linux(debian)/x86/pthreads 
-    - Linux(debian)/amd64/context 
+    - Linux(debian)/x86/context
+    - Linux(debian)/x86/pthreads
+    - Linux(debian)/amd64/context
     - Linux(debian)/amd64/pthreads
     These targets fail about 1/10 of times on gras/pmm, but we believe
       that this is because of the test, not because of simgrid.
     amok/saturate_sg fails even more rarely, and the test may not be
       the problem.
-      
+
     - Mac OSX Leopard/x86/context
     The test suite still spits tons of errors because some obscure
       force prevents us from removing the temporary directories
       arguing that they still contain some metadata I've never heard of.
     Smpi fails because seq is not installed.
     Everything seems to work properly beside of that.
-    
+
   * Exotic platforms:
     - AIX version 5.3 (both contexts and pthread)
-      Smpi still fails there because mktemp is not installed. 
+      Smpi still fails there because mktemp is not installed.
       XML inclusions seems rosty on AIX.
-    
+
   * Windows: it's still lagging behind. If you want to help, please
     stand up.
 
@@ -698,15 +698,15 @@ SimGrid (3.3) stable; urgency=high
 
   * Introduce the SIMIX module: factorize code between MSG and GRAS.
     [Bruno Donassolo]
-  
+
     Until now, GRAS were using MSG as an interface to SURF. It was
     quite difficult because both interface have several differences
     (MSG channels vs GRAS sockets were the most notable point).
-   
+
     This also opens the gate to SMPI (which should occur soon) and speed
     up simulations by to 40% (even if it were not the main goal).
-  
-    ************************************** 
+
+    **************************************
     *DO NOT MIX 3.2 RESULTS WITH 3.3 ONES* Simix may changes simulations!
     **************************************
     The point is that events occuring at the exact same timestamp are
@@ -724,7 +724,7 @@ SimGrid (3.3) stable; urgency=high
   * Move on to FleXML v1.7 for the embeeded XML parsers. This version
     is really less memory-demanding, which should allow you to use
     larger files in SimGrid [AL].
-    
+
   * Inform valgrind about our contextes, so that it becomes usable
     with the default (and more effecient) version of SimGrid
     [contributed by Sékou Diakite, many thanks]
@@ -774,7 +774,7 @@ SimGrid (3.3) stable; urgency=high
     was thus designed [AL].
   * Add a new solver to lmm. Based on Lagrange optimization and
     gradient-based descent, it enables to efficiently maximise systems s.a
-  
+
      sum f_i(x_i) s.t Ax<= b  with A_{i,j}>=0 and f_i a concave function.
 
     This solver enables to propose two new network models for TCP Reno and
@@ -798,7 +798,7 @@ SimGrid (3.2) stable; urgency=high
      least MSG is usable.
 
   GRAS API BREAKAGE (for simplification purpose, sorry):
-   * the gras_msgtype_by_name is not used anymore. Instead of 
+   * the gras_msgtype_by_name is not used anymore. Instead of
        gras_msg_send(toserver, gras_msgtype_by_name("request"), &request);
      you can write (and must)
        gras_msg_send(toserver, "request", &request);
@@ -818,7 +818,7 @@ SimGrid (3.2) stable; urgency=high
       converted for now).
   * Fix a vicious bug in the TCP buffering mecanism which leaded to message
     loss when they were small enough to fit into the buffer and sent quickly
-    enough so that they can all get received in one shoot.   
+    enough so that they can all get received in one shoot.
   * gras_datadesc_by_name and gras_msgtype_by_name: now raise an exception
     if not found. Use the *_or_null() variant for the old semantic.
   * In gras_msg_handle, do not discard messages without callback.
@@ -829,7 +829,7 @@ SimGrid (3.2) stable; urgency=high
     The numerical arguments used to be (1) the total amount of data to send
     and (2) msg_size. This was changed to (1) msg_size and (2) amount of
     messages. This was need for the fool willing to send more than MAXINT
-    bytes on quite fat pipes.       
+    bytes on quite fat pipes.
 	
   AMOK:
   * Do really rename the hostmanagement module to peermanagement. [Mt]
@@ -838,7 +838,7 @@ SimGrid (3.2) stable; urgency=high
     documentation (poor excuses, I admit)
   * Bandwidth measurement semantic changed! This follows the changes to
     gras_socket_meas_send/recv explained above.
-    
+
   SIMDAG:
   * A sequential mode has been added to the workstations. When a workstation
     is in sequential mode, it can execute only one task, and the other tasks
@@ -890,7 +890,7 @@ SimGrid (3.2) stable; urgency=high
 	 . Recapping of message passing features in GRAS
      - A HOWTO section containing:
        o HOWTO design a GRAS application
-       More are due, of course. They will come latter. In the meanwhile, you can 
+       More are due, of course. They will come latter. In the meanwhile, you can
        check the examples which are still here.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Fri Mar 16 21:11:46 CET 2007
@@ -898,7 +898,7 @@ SimGrid (3.2) stable; urgency=high
 SimGrid (3.1) stable; urgency=high
 
   General:
-  * Port to gcc 4.x   
+  * Port to gcc 4.x
     There was a stack corruption somewhere, visible only when optimizing
     with these versions. [Vince]
 
@@ -914,14 +914,14 @@ SimGrid (3.1) stable; urgency=high
     extension of the classical CLM03 model that gracefully handles
     failures. This is now the default model for MSG and GRAS. It doesn't
     handle parallel tasks yet though. [AL]
-  * Bug fix: Weights were not correctly set in the network part. 
+  * Bug fix: Weights were not correctly set in the network part.
     WARNING: This may have resulted in incorrect results with simulations
     where there are more than one flow on a given link. [AL]
 
   SURF, MSG, GRAS:
   * After a (long ?) discussion on simgrid-devel, we have decided that the
     convention we had on units was stupid. That is why it has been decided
-    to move from (MBits, MFlops, seconds) to (Bits, Flops, seconds). 
+    to move from (MBits, MFlops, seconds) to (Bits, Flops, seconds).
     WARNING : This means that all previous platform files will not work as
     such with this version! A warning is issued to ask users to update
     their files. [AL]
@@ -942,7 +942,7 @@ SimGrid (3.1) stable; urgency=high
   GRAS:
   * New! a real RPC mecanism, as it ought to be since too long. [MQ]
       Exception occurring on server-side are propagated back to client (!).
-      
+
     API CHANGE: the callback changed their prototype. Change:
         int my_handler(gras_socket_t expeditor, void *payload_data) {
       to:
@@ -958,14 +958,14 @@ SimGrid (3.1) stable; urgency=high
       Sweet to debug RL processes [MQ]
 
   AMOK:
-  * Bandwidth module: 
+  * Bandwidth module:
     - Do not force experiment sizes to be expressed in kb, or it becomes
       impossible to measure the latency this way (needs one byte-long tests)
     WARNING: this changes the amok_bw_* function semantic. [MQ]
     - Implements the link saturation stuff. [MQ]
-  * Peer management module: 
+  * Peer management module:
     New! module factorizing code that we wrote over and over [MQ].
-      
+
   XBT:
   * New module: cunit (my jUnit implementation in ansi C) [MQ]
     - Test units are placed directly into the library code, they get extracted
@@ -1009,7 +1009,7 @@ SimGrid (3.0.1) stable; urgency=low
     [AL]
   * Bugfix: really disconnect fifo items which are remove_item()ed [AL]
   * Documentation: xbt_log module unmercifully reworked [MQ]
-  * Bugfix: there was a problem with the ending of contexts with 
+  * Bugfix: there was a problem with the ending of contexts with
     the pthread backend. It caused some weird deadlock or behavior
     depending on the pthread implementation. [AL]
   * Bugfix: get the exceptions raised in the simulator repport where
@@ -1018,7 +1018,7 @@ SimGrid (3.0.1) stable; urgency=low
   SURF:
   * Bugfix: Do repport the error when two non-connected hosts try to
     exchange data (Thanks to Flavien for stumbling into this one) [AL]
-  
+
   SURF:
   * Add additionnal checkings on communications. Assert that two
     communicating hosts are connected by a set of links... [AL]
@@ -1029,34 +1029,34 @@ SimGrid (3.0.1) stable; urgency=low
   * New: int MSG_task_probe_from_host(int channel, m_host_t host): returns
     the number of tasks waiting to be received on channel and sent
     by host. [AL]
-  * New: MSG_error_t MSG_task_get_from_host(m_task_t * task, int channel, m_host_t host); 
+  * New: MSG_error_t MSG_task_get_from_host(m_task_t * task, int channel, m_host_t host);
     waits for the first task coming from a given host.. [AL]
 	
   GRAS new functionnalities: [MQ]
   * Enhance the parsing macro to allow the size of multidimentional objects
     to be given thru annotations.
-  * New example (and documentation): Matrix Multiplication a la RPC 
+  * New example (and documentation): Matrix Multiplication a la RPC
     (as when I was young!) and fix a bunch of bugs found on the way.
 
   GRAS performance improvements: [MQ]
   [DataDesc]
-  * Reduce the amount of cbps creation/destruction by making it static to 
-    datadesc_send/recv() and using a (newly created) cbps_reset (based on 
+  * Reduce the amount of cbps creation/destruction by making it static to
+    datadesc_send/recv() and using a (newly created) cbps_reset (based on
     dynar_reset ())
   [Virtu]
-  * Change libdata to a set so that we can search for stuff by ID (and thus 
-    reduce the insane amount of dict lookups)     
-  
+  * Change libdata to a set so that we can search for stuff by ID (and thus
+    reduce the insane amount of dict lookups)
+
   [Transport]
   * Actually implement gras_datadesc_copy() so that we don't have to mimick
-    RL communication on top of SG since it's so uneffective. 
-    It may also be used for inter-thread communication in RL, one day. 
-  * Use gras_datadesc_copy() to exchange messages on top of SG 
+    RL communication on top of SG since it's so uneffective.
+    It may also be used for inter-thread communication in RL, one day.
+  * Use gras_datadesc_copy() to exchange messages on top of SG
     Allows to:
     - improve message exchange performance on top of SG
     - deprecate transport_plugin_sg.c:gras_trp_sg_chunk_send() & recv()
   * Don't exchange on the network the size of the used part of buffer,
-    instead, specify the possible buffer size to read(). 
+    instead, specify the possible buffer size to read().
     Advantages:
      - reduces the amount of read/write calls (one pair per exchange)
      - reduces the amount of exchanged data (the size)
@@ -1065,16 +1065,16 @@ SimGrid (3.0.1) stable; urgency=low
      - allows the receiver to proceed with the begining of the stream before
        everything is arrived
      - make it possible to build an iov transport (using readv/writev)
-    Extra difficulty: 
+    Extra difficulty:
      - take care of the data with non-stable storage (like stacked data),
        and bufferize them.
-  * If possible, TCP send uses vector I/O (when writev() is here) 
+  * If possible, TCP send uses vector I/O (when writev() is here)
      - Don't use it for receive since we send data sizes and data on the
        same stream, so we wouldn't be able to chain large amount of chunks
        before having to flush the stuff to read the size.
   * Rework the transport plugin mecanism to simplify it and reduce the
-    amount of pointer dereferencement when searching for the right function 
-    to use. 
+    amount of pointer dereferencement when searching for the right function
+    to use.
 
   * I guess that now, we do almost as few system calls as possible while
     doing as few data copy as possible.
@@ -1089,9 +1089,9 @@ SimGrid (3.0.1) stable; urgency=low
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>  Fri, 21 Oct 2005 14:42:20 +0200
 
 SimGrid (3.00) stable; urgency=high
-  
+
  SURF:
-  * New! Give the possibility to hijack the surf parser and thus bypass 
+  * New! Give the possibility to hijack the surf parser and thus bypass
     MSG_create_environment and MSG_launch_application. Have a look at
     examples/msg/msg_test_surfxml_bypassed.c to see how it can be done.
 	
@@ -1100,12 +1100,12 @@ SimGrid (3.00) stable; urgency=high
 SimGrid (2.96) unstable; urgency=low
 
   AKA SimGrid 3 rc 2.
-  
+
   XBT:
   * New! Exception handling with setjmp or such (code from OSSP ex) [MQ]
-    This deprecates the xbt_error_t mecanisms. 
+    This deprecates the xbt_error_t mecanisms.
     It modifies (simplifies) all XBT and GRAS API.
-    MSG API keeps unchanged (exceptions raised by XBT are catched from 
+    MSG API keeps unchanged (exceptions raised by XBT are catched from
      within MSG and masked with existing error handling facilities)
 
   SURF:
@@ -1115,7 +1115,7 @@ SimGrid (2.96) unstable; urgency=low
     network model) if none was precised.
 
   MSG
-  * Bugfix: MSG_process_resume now works with the current running process. 
+  * Bugfix: MSG_process_resume now works with the current running process.
     [AL]
   * New! Add MSG_parallel_task_create and MSG_parallel_task_execute. [AL]
   * Modification of MSG_task_get_compute_duration. Once a task has been
@@ -1128,17 +1128,17 @@ SimGrid (2.96) unstable; urgency=low
   * New! Add double MSG_get_host_speed(m_host_t h) that returns the speed
     of the processor (in Mflop/s) regardless of the current load on the
     machine. [AL]
-  * API Change: use proper naming convention for MSG_getClock and 
+  * API Change: use proper naming convention for MSG_getClock and
     MSG_process_isSuspended: MSG_get_clock and MSG_process_is_suspended.
     [AL]
-  * New! Add void MSG_task_set_priority(m_task_t task, double priority). 
+  * New! Add void MSG_task_set_priority(m_task_t task, double priority).
     This function changes the priority of a computation task. This priority
-    doesn't affect the transfer rate. A priority of 2 will make a task 
-    receive two times more cpu power than the other ones. This function 
+    doesn't affect the transfer rate. A priority of 2 will make a task
+    receive two times more cpu power than the other ones. This function
     has been added to suit the needs of Nguyen The Loc and hasn't been that
-    much tested yet. So if it fails, please report it and send me your code. 
+    much tested yet. So if it fails, please report it and send me your code.
     [AL]
-  * API Change: removed all functions and types that were marked "deprecated" 
+  * API Change: removed all functions and types that were marked "deprecated"
     since many months. Renamed MSG_global_init_args to MSG_global_init.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>  Mon,  8 Aug 2005 17:58:47 -0700
@@ -1152,8 +1152,8 @@ SimGrid (2.95) unstable; urgency=low
 
   SURF
   * Bugfix: Allow absolute paths for platform description files [MQ]
-  * Bugfix: do free the variables after use. Leads to drastic performance 
-    improvement [AL] 
+  * Bugfix: do free the variables after use. Leads to drastic performance
+    improvement [AL]
   * Implement max_duration (ie, timeouts) on resources [AL]
 
   MSG
@@ -1171,11 +1171,11 @@ SimGrid (2.95) unstable; urgency=low
   * simple/static token-ring example. [Alexandre Colucci and MQ]
   * Use MSG_channel_select_from() and remove the *slow* hack we had to put
     in place before [MQ]
-  
+
   GRAS (bug fixes)
   * Differentiate the types "char[22]" and "unsigned char[22]" in automatic
     type parsing. "short" and "long" modifiers were also ignored; other
-    modifier (such as reference level) are still ignored. [MQ] 
+    modifier (such as reference level) are still ignored. [MQ]
   * Embeed the buffer size within the buffer itself on SG. [MQ]
     That way, send() are atomic and cannot get intermixed anymore (at least
     the ones which are less than 100k; bigger messages still have the issue)
@@ -1194,13 +1194,13 @@ SimGrid (2.95) unstable; urgency=low
   * whether a type can cycle or not is now a flag, leaving room for more
     flags (as "ignored", if we feel the need one day ;)
   * Rename raw sockets to measurement sockets since "raw" has another
-    meaning in networking community. 
-  
-  AMOK 
+    meaning in networking community.
+
+  AMOK
   * Advanced Metacomputing Overlay Kit introduction. It is based over GRAS
     and offers features not belonging to GRAS but that most applications
     need. One day, it may be a set of plugins loadable at runtime.
-  * New module: bandwidth 
+  * New module: bandwidth
     bandwidth measurement between arbitrary nodes running this module. [MQ]
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>  Thu, 30 Jun 2005 16:29:20 -0700
@@ -1302,7 +1302,7 @@ SimGrid (2.93) unstable; urgency=low
 SimGrid (2.92) unstable; urgency=low
 
   Alpha 3 on the path to SimGrid 3
-  
+
   [Arnaud]
   (gras)
    - New! First try of benchmarking macros.
@@ -1327,27 +1327,27 @@ SimGrid (2.92) unstable; urgency=low
 SimGrid (2.91) unstable; urgency=low
 
   Alpha 2 on the path to SimGrid 3
-  
+
   [Arnaud]
   (surf)
    - Bug fix in the lmm_solver.
   (msg)
-   - New! Interface to Paje (see http://www-id.imag.fr/Logiciels/paje/) 
+   - New! Interface to Paje (see http://www-id.imag.fr/Logiciels/paje/)
      through the function MSG_paje_output.
    - New! Introducing two new functions MSG_process_kill() and MSG_process_killall().
-   - It is possible to bound the rate of a communication in MSG with 
-     MSG_task_put_bounded() (was already in the previous version but I had forgotten 
+   - It is possible to bound the rate of a communication in MSG with
+     MSG_task_put_bounded() (was already in the previous version but I had forgotten
      to write it in the changelog).
    - Bug fix to let GRAS run on top of MSG until we move it directly on top
      of the SURF.
-    
+
   [Martin]
   (infrastructure)
    - Various cleanups to the autotools stuff
    - Begin to move Gras examples to examples/gras/
    - Let make distcheck work again (yeah!)
   (documentation)
-   - documentation overhauled using doxygen. 
+   - documentation overhauled using doxygen.
      gtk-doc-tools is dead in SimGrid now.
    - Automatically extract all existing logging categories, and add the list
      to the documentation (long standing one, to say the less)
@@ -1356,13 +1356,13 @@ SimGrid (2.91) unstable; urgency=low
      should be, and use a more consistent naming scheme.
      (some of the test dataset are still to be regenerated)
    - New! Allow library to register globals on each process just as userdata
-     does. 
+     does.
       This is implemented using a xbt_dict and not a xbt_set, so we loose the
        lookup time (for now).
       Use it in msg and trp.
       This cleans a lot the internals and helps enforcing privacy of the
        headers between the gras components.
-   - New! Add a timer mechanism, not unlike cron(8) and at(1). 
+   - New! Add a timer mechanism, not unlike cron(8) and at(1).
    - Bugfix: gras_os_time was delirious in RL.
    - Bugfix: gras_trp_select/RL don't run into the wall when asked to select
      onto 0 sockets.
@@ -1375,42 +1375,42 @@ SimGrid (2.90) unstable; urgency=low
   Alpha 1 on the path to SimGrid 3
 
   * It is a long time since the last release of SimGrid. I'm sorry about
-    that but as I had told you, I was rewriting a lot of things. I apologize 
-    to those who had been reporting bugs to me and that I had not answered. 
-    If your bug is still in the new version, please tell me. Here is a 
+    that but as I had told you, I was rewriting a lot of things. I apologize
+    to those who had been reporting bugs to me and that I had not answered.
+    If your bug is still in the new version, please tell me. Here is a
     summary of the main changes.
 
   * REVOLUTION 1: The SimGrid project has merged with the GRAS project
     lead by Martin Quinson. As a consequence SimGrid gains a lot in
-    portability, speed, and a lot more but you'll figure it out later. 
-    SimGrid now comprises 3 different projects : MSG, GRAS and SMPI. 
-    I wanted to release the new MSG as soon as possible and I have 
-    broken GRAS, which is the reason why, for now, only MSG is fully 
-    functional. A laconic description of these projects is available 
+    portability, speed, and a lot more but you'll figure it out later.
+    SimGrid now comprises 3 different projects : MSG, GRAS and SMPI.
+    I wanted to release the new MSG as soon as possible and I have
+    broken GRAS, which is the reason why, for now, only MSG is fully
+    functional. A laconic description of these projects is available
     in the documentation.
-  
+
   * REVOLUTION 2: I have removed SG and I am now using a new simulation
     kernel optimized for our needs (called SURF but only the developers
     should use it). Hence, MSG is now roughly 30 times faster and I think
     that by rewriting a little bit MSG, I could event speed it up a little
     bit more. Beside the gain in speed, it is also much easier to encode a
     new platform model with SURF than it was with SG. More to come...
-  
+
   * REVOLUTION 3: I have tried to change a little as possible the API of
     MSG but a few things really had to disappear. The main differences
     with the previous version are :
        1) no more m_links_t and the corresponding functions. Platforms are
          directly read from a XML description and cannot be hard-coded
          anymore. The same format is used for application deployment
-         description. The new format is described in the documentation. 
-         Have a look in tools/platform_generation. There is a tiny script 
+         description. The new format is described in the documentation.
+         Have a look in tools/platform_generation. There is a tiny script
          that converts from the old platform format to the new one. Concerning
-         the application deployment format, parsing the old one is tricky.  
-         I think most of you should however be able to convert your files.  If 
-         it is really an issue, I can write a C code that does the conversion. 
+         the application deployment format, parsing the old one is tricky.
+         I think most of you should however be able to convert your files.  If
+         it is really an issue, I can write a C code that does the conversion.
          Let me know.
        2) the toolbox tbx does not exist anymore. We now have a library
-          with much more data-structures but without the hash-tables (we have 
+          with much more data-structures but without the hash-tables (we have
           dictionaries that are much faster).
 
  -- Arnaud Legrand <Arnaud.Legrand@imag.fr>  Mon, 31 Jan 2005 10:45:53 -0800
@@ -1442,7 +1442,7 @@ SimGrid (2.90) unstable; urgency=low
   - Trace manager now written. It uses a heap structure and is therefore
     expected to be efficient. It may however be speeded up (particularly
     when many events occur at the same date) by using red and black
-    trees. One day maybe... 
+    trees. One day maybe...
   - Max-min linear system solver written. It uses a sparse matrix
     structure taking advantage of its expected use. Most operations are
     O(1) and free/calloc are called as few as possible. The computation of
@@ -1461,12 +1461,12 @@ SimGrid (2.90) unstable; urgency=low
   SimGrid, and the version number is bumped to 2.x
 
 2004-10-29 Martin Quinson
-  - Introduction of the remote errors. 
+  - Introduction of the remote errors.
     They are the result of a RMI/RPC on the remote machine.
     ErrCodes being scalar values, you can't get the host on which those
     errors did happen. Extending the error mechanism as in Gnome is possible.
     No idea yet whether it is a good idea.
-    
+
 2004-10-28 Martin Quinson
   - Interface revolution: the Starred Structure Eradication.
     I used to do typedef struct {} toto_t; and then handle *toto_t.
@@ -1481,29 +1481,29 @@ SimGrid (2.90) unstable; urgency=low
       typedef enum {} e_toto_t;
     Moreover, only toto_t (and e_toto_t) are public. The rest (mainly
      s_toto_t) is private.
-    
+
   - While I was at it, all gras_<obj>_free() functions want a gras_<obj>_t*
     so that it can set the variable to NULL. It was so for dicts and sets,
     it changed for dynars.
-    
+
   - Fix a bunch of memleaks in dict_remove
   - Fix a bug in sg/server_socket opening: it failed all the time.
 
 2004-10-07 Martin Quinson
   - Speed up dynar lookup operation a bit.
-  
-    gras_dynar_get is dead. 
-    
+
+    gras_dynar_get is dead.
+
     Now, you can choose between gras_dynar_get_cpy (the old gras_dynar_get
     but should be avoided for efficiency reasons) and gras_dynar_get_ptr
     (which gives you the address of the stored data).
-    
+
     gras_dynar_get_as is an helpful macro which allows you to retrieve a
     copy of the data using an affectation to do the job and not a memcpy.
-    
+
     int toto = gras_dynar_get_as(dyn,0,int); rewrites itself to
     int toto = *(int*)gras_dynar_get_ptr(dyn,0);
-    
+
     It does not really speedup the dynar test because they are
     setting elements all the time (and look them seldom). But the dict does
     far more lookup than setting.
@@ -1512,31 +1512,31 @@ SimGrid (2.90) unstable; urgency=low
 
 2004-10-05 Martin Quinson
   - Allow to (en/dis)able the cycle detection at run time.
-  
+
     Whether we should check for cycle or not is now a property of each
     datatype. When you think there may be some cycle, use datadesc_cycle_set.
     datadesc_cycle_unset allow to remove this property when previously set.
-    
-    Note that the cycle detection is off by default since it impacts the 
+
+    Note that the cycle detection is off by default since it impacts the
     performance. Watch the data you feed GRAS with ;)
-    
+
     This property is hereditary. Any element embedded in a structure having it
     set have it set for the time of this data exchange.
-    
+
     You should set it both on sender and receiver side. If you don't set it on
     sender side, it will enter an endless loop. If you forget on receiver
     side, the cycles won't be recreated after communication.
-    
+
   - Header reorganization.
     Kill gras_private.h, each submodule must load the headers it needs.
 
 2004-10-04 Martin Quinson
   - Interface revolution: do not try to survive to malloc failure.
-  
+
     Now, gras_malloc and friends call gras_abort() on failure.
     As a conclusion, malloc_error is not a valid error anymore, and all
       functions for which it was the only gras_error_t return value are
-      changed. They now return void, or there result directly. 
+      changed. They now return void, or there result directly.
     This simplify the API a lot.
 
 2004-09-29 Martin Quinson
@@ -1544,25 +1544,25 @@ SimGrid (2.90) unstable; urgency=low
     Created by gras_socket_{client,server}_ext;
     Used with gras_raw_{send,recv}
     No select possible.
-    
+
     It should allow to kill the last bits of gras first version soon.
-  
+
     This is not completely satisfactory yet (duplicate code with
      chunk_{send,recv}; a bit out of the plugin mechanism), but it should
-     work. 
+     work.
 
   - Simplify transport plugin (internal) interface by not passing any
     argument to _server and _client, but embedding them in the socket
-    struct directly. 
+    struct directly.
 
 2004-09-28 Martin Quinson
   - Finish the port to AIX.
     autoconf was my problem (segfault within the malloc replacement
     function. No idea why)
-        
+
 2004-09-16 Martin Quinson
   - Fix some size_t madness on 64bit architectures.
-  
+
 2004-09-08 Martin Quinson
   - Reduce the number of system headers loaded, overload some more system
     calls (such as malloc to cast the result of the system one, and work
@@ -1603,17 +1603,17 @@ SimGrid (2.90) unstable; urgency=low
     keeping the subtype's ID, but store the type itself. This keeps sets out
     of the critical path, which is good since they rely on dynar and
     dictionnaries. The only loose of that is that we cannot detect the
-    redeclaration of a structure/union with another content (but I'm not sure 
+    redeclaration of a structure/union with another content (but I'm not sure
     the code detected well this error before anyway). We still can detect
     the redefinition discrepancy for the other types.
   - Use a whole bunch of optimisation flags (plus -fno-strict-aliasing since
     it breaks the code because of type-punning used all over the place).
     This breaks on all non-gcc architectures (for now).
-    
+
   All those changes (plus the buffer of last time) allow me to gain 2 order
   of magnitude on cruel tests consisting of 800000 array of integers on two
   level of a hierarchical structure (200 secondes -> 4 secondes)
-  
+
   API change:
     - the selector of reference must now return the type it points to, not
       the ID of this type.
@@ -1635,7 +1635,7 @@ SimGrid (2.90) unstable; urgency=low
      See comment in transport_private.h:71
   - do not include all the _interface headers in private but in the files
     which really need them (to cut the compilation time when they are
-    modified) 
+    modified)
 
 2004-07-26 Martin Quinson
   Version 0.3 (protocol not changed; ABI changed)
@@ -1649,7 +1649,7 @@ SimGrid (2.90) unstable; urgency=low
       most of the time: Declare a dynamic array (which pops its size of the
       stack) and declare a reference to it. Poor name, but anyway.
     - kill the post-send callback, add a post-receive one
-    
+
 2004-07-23 Martin Quinson
   Version 0.2 (protocol changed; ABI changed)
   - add some testing for cpbs in the test cases, and fix some more bugs.
@@ -1669,7 +1669,7 @@ SimGrid (2.90) unstable; urgency=low
   - Some documentation cleanups
   - remove the useless last argument of msgtype_declare
   - rename the Virtu functions to fit into the 'os' namespace
-  - move headers src/include -> src/include/gras/ and stop fooling with 
+  - move headers src/include -> src/include/gras/ and stop fooling with
     gras -> . symbolic link
   - make distcheck is now successful
 
@@ -1679,20 +1679,20 @@ SimGrid (2.90) unstable; urgency=low
   - Install html doc to the right location
   - stop removing maintainer files in make clean
   - build tests only on make check
-  
+
 2004-07-13 Martin Quinson
   version 0.1
   - No major issue in previous version => change versionning schema
   - Re-enable little64 convertion test now that Abdou kindly regenerated the
     corresponding dataset.
-  
+
 2004-07-11 Martin Quinson
   version 0.0.4
   - Get it working with any kind of structure (we can compute the padding
     bytes remotely for all the architectures I have access to)
   - Implement the structure parsing macro (still not quite robust/complete)
   - Improvement to the remote testing toysuite
-  
+
 2004-07-10 Martin Quinson
  [autoconf mechanism]
   - get ride of a bunch of deprecated macros
@@ -1710,7 +1710,7 @@ SimGrid (2.90) unstable; urgency=low
   - Given that padding size depend even on compiler options, keep track of
     alignment and aligned_size only for the current architecture. Not a big
     deal since we send structure fields one after the other (seems
-    reasonable).    
+    reasonable).
   - Add the datastructure used for IEEE paper by the PBIO guys to the test
     program, let it work on linux/gcc/little32. portability todo.
 
@@ -1729,14 +1729,14 @@ SimGrid (2.90) unstable; urgency=low
   - Let Tests/datadesc_usage write the architecture on which the file was
     generated as first byte.
   - Add PowerPC (being also IRIX64), SPARC (also power4) and ALPHA
-    architecture descriptions. 
+    architecture descriptions.
   - Add datadesc_usage.{i386,ppc,sparc} files being the result of execution
     on those architectures.
   - Optimization: send/recv array of scalar in one shoot
 
 2004-07-05 Martin Quinson
   - YEAH! GRAS/SG and GRAS/RL are both able to run the ping example !
-  
+
   - Plug a whole bunch of memleaks
   - each process now have to call gras_{init,exit}. One day, their log
     settings will be separated
@@ -1744,11 +1744,11 @@ SimGrid (2.90) unstable; urgency=low
 
 2004-07-04 Martin Quinson
  [Transport]
-  - Redistribution between SG and RL. 
+  - Redistribution between SG and RL.
     We wanna have to accept in SG, so move accepted related parts of RL in
     the common part. (more precisely, the dynar of all known sockets is no
     more a static in transport.c, but part of the process_data)
- [Core/module.c] 
+ [Core/module.c]
  [gras_stub_generator]
   - Bug fix: Do call gras_process_init from gras_init (wasnt called in RL).
 
@@ -1777,15 +1777,15 @@ SimGrid (2.90) unstable; urgency=low
  [Transport]
    - porting SG plugin and SG select to new standards (works almost).
    - plug memleaks and fix bugs around.
-   
- [DataDesc] 
-   - cleanup the prototype of data recv and force users to specify when they 
+
+ [DataDesc]
+   - cleanup the prototype of data recv and force users to specify when they
      want to handle references to objects. Test case working even for cycles.
    - plug memleaks. Valgrind is perfectly ok with this.
 
 2004-06-12 Martin Quinson
- [Transport] 
-   - cleanup the separation between plugin and main code in plugin creation 
+ [Transport]
+   - cleanup the separation between plugin and main code in plugin creation
 
 2004-06-11 Martin Quinson
  [Transport]
@@ -1799,16 +1799,16 @@ SimGrid (2.90) unstable; urgency=low
       two parameters were strings (field name, type name), leading to
       common errors.
  [Dicos] Interface cleanup
-   - gras_dico_retrieve -> gras_dico_get ; gras_dico_insert -> gras_dico_set 
+   - gras_dico_retrieve -> gras_dico_get ; gras_dico_insert -> gras_dico_set
      This is consistant with the dynar API.
 
 2004-04-21 Martin Quinson
  [Messaging]
    - Porting to new standards.
  [Data description]
-   - interface cleanup. 
+   - interface cleanup.
      There is no bag anymore, no need to take extra provision to mask the
-       pointers behind "ID". 
+       pointers behind "ID".
      Better splitup of functions between files create/exchange/convert.
        This is still a bit artificial since convert and receive are so
        interleaved, but anyway.
@@ -1822,11 +1822,11 @@ SimGrid (2.90) unstable; urgency=low
    - update run_test to integrate the lastest tests (datadesc)
  [Logging]
    - rename WARNINGn macros to WARNn since it prooved error-prone
-     
+
 2004-04-19 Martin Quinson
  [Data description]
-   - register init/exit functions within gras module mechanism   
-   - send/receive function. 
+   - register init/exit functions within gras module mechanism
+   - send/receive function.
    Convertion is not implemented, but short-cutted if not needed.
    struct/array elements are sent one by one (instead of block-wise), but
      nobody really cares (yet). Get a prototype before optimizing.
@@ -1839,7 +1839,7 @@ SimGrid (2.90) unstable; urgency=low
     cycle happily segfaults, but the others are ok. And I'm sick of pointers
     for now.
  [Transport]
-   [File plugin] 
+   [File plugin]
      - Bugfix when using a filename explicitely (instead of '-')
 
 2004-04-09 Martin Quinson
@@ -1848,12 +1848,12 @@ SimGrid (2.90) unstable; urgency=low
    - Complete the implementation and tests of:
      o TCP
      o file (only in RL, and mainly for debugging)
-     
+
      I lost 3 days to design a portable address resolver, and then decided
        that the prototype mainly have to run on my box.
      Addressing portability too early may be like optimizing too early :-/
  [Tests]
-   - use gras_init in the Tests instead of the crappy parse_log_opt 
+   - use gras_init in the Tests instead of the crappy parse_log_opt
      (the latter function is removed)
  [Conditional execution]
    - New functions: gras_if_RL/gras_if_SG (basic support for this)
