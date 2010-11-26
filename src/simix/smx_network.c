@@ -171,10 +171,8 @@ void SIMIX_communication_destroy(smx_comm_t comm)
   VERB2("Destroy communication %p; refcount initially %d", comm,
         comm->refcount);
 
-  if(!(comm->refcount>0)) {
-	  INFO1("There is no more reference to this comm (%p). Cannot destroy!",comm);
-  	  xbt_die("Argh.!");
-  }
+  if(!(comm->refcount>0))
+	  xbt_die(bprintf("the refcount of comm %p is already 0 before decreasing it. That's a bug!",comm));
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   //save is latency limited flag to use afterwards
