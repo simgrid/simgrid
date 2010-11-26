@@ -75,7 +75,7 @@ sub print_line {
     print pidcolor($pid);
 
     if(defined($location)) {
-	printf "[%10s:%-10s %s ]",$host,$procname,$location;
+	printf "[%10s:%-10s] %s ",$host,$procname,$location;
     } else {
 	printf "[%10s:%-10s]",$host,$procname;
     }

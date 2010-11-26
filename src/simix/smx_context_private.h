@@ -19,8 +19,6 @@ SG_BEGIN_DECL()
 /* *********************** */
 /* the following function pointers types describe the interface that all context
    concepts must implement */
-/* the following function pointers types describe the interface that all context
-   concepts must implement */
 /* each context type derive from this structure, so they must contain this structure
  * at their begining -- OOP in C :/ */
 typedef struct s_smx_context {
