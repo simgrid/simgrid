@@ -17,10 +17,10 @@
 struct s_smpi_process_data;
 typedef struct s_smpi_process_data *smpi_process_data_t;
 
-#define PERSISTENT     0x0
-#define NON_PERSISTENT 0x1
-#define SEND           0x0
-#define RECV           0x2
+#define PERSISTENT     0x1
+#define NON_PERSISTENT 0x2
+#define SEND           0x4
+#define RECV           0x8
 
 typedef struct s_smpi_mpi_request {
   void *buf;
@@ -185,13 +185,50 @@ void smpi_bench_end(int rank, const char *mpi_call);
 // f77 wrappers
 void mpi_init__(int*);
 void mpi_finalize__(int*);
-void mpi_comm_rank__(MPI_Comm** comm, int* rank, int* ierr);
-void mpi_comm_size__(MPI_Comm** comm, int* size, int* ierr);
+void mpi_abort__(int* comm, int* errorcode, int* ierr);
+void mpi_comm_rank__(int* comm, int* rank, int* ierr);
+void mpi_comm_size__(int* comm, int* size, int* ierr);
 double mpi_wtime__(void);
 
-void mpi_send__(void* buf, int* count, MPI_Datatype** datatype, int* dst,
-                int* tag, MPI_Comm** comm, int* ierr);
-void mpi_recv__(void* buf, int* count, MPI_Datatype** datatype, int* src,
-                int* tag, MPI_Comm** comm, MPI_Status* status, int* ierr);
+void mpi_comm_dup__(int* comm, int* newcomm, int* ierr);
+void mpi_comm_split__(int* comm, int* color, int* key, int* comm_out, int* ierr);
+
+void mpi_send_init__(void *buf, int* count, int* datatype, int* dst, int* tag,
+                     int* comm, int* request, int* ierr);
+void mpi_isend__(void *buf, int* count, int* datatype, int* dst,
+                 int* tag, int* comm, int* request, int* ierr);
+void mpi_send__(void* buf, int* count, int* datatype, int* dst,
+                int* tag, int* comm, int* ierr);
+void mpi_recv_init__(void *buf, int* count, int* datatype, int* src, int* tag,
+                     int* comm, int* request, int* ierr);
+void mpi_irecv__(void *buf, int* count, int* datatype, int* src, int* tag,
+                 int* comm, int* request, int* ierr);
+void mpi_recv__(void* buf, int* count, int* datatype, int* src,
+                int* tag, int* comm, MPI_Status* status, int* ierr);
+void mpi_start__(int* request, int* ierr);
+void mpi_startall__(int* count, int* requests, int* ierr);
+void mpi_wait__(int* request, MPI_Status* status, int* ierr);
+void mpi_waitany__(int* count, int* requests, int* index, MPI_Status* status, int* ierr);
+void mpi_waitall__(int* count, int* requests, MPI_Status* status, int* ierr);
+
+void mpi_barrier__(int* comm, int* ierr);
+void mpi_bcast__(void* buf, int* count, int* datatype, int* root, int* comm, int* ierr);
+void mpi_reduce__(void* sendbuf, void* recvbuf, int* count,
+                  int* datatype, int* op, int* root, int* comm, int* ierr);
+void mpi_allreduce__(void* sendbuf, void* recvbuf, int* count, int* datatype,
+                     int* op, int* comm, int* ierr);
+void mpi_scatter__(void* sendbuf, int* sendcount, int* sendtype,
+                   void* recvbuf, int* recvcount, int* recvtype, 
+                   int* root, int* comm, int* ierr);
+void mpi_gather__(void* sendbuf, int* sendcount, int* sendtype,
+                  void* recvbuf, int* recvcount, int* recvtype,
+                  int* root, int* comm, int* ierr);
+void mpi_allgather__(void* sendbuf, int* sendcount, int* sendtype,
+                     void* recvbuf, int* recvcount, int* recvtype,
+                     int* comm, int* ierr);
+void mpi_scan__(void* sendbuf, void* recvbuf, int* count, int* datatype,
+                int* op, int* comm, int* ierr);
+void mpi_alltoall__(void* sendbuf, int* sendcount, int* sendtype,
+                    void* recvbuf, int* recvcount, int* recvtype, int* comm, int* ierr);
 
 #endif
