@@ -1,23 +1,60 @@
 SimGrid (3.5) unstable; urgency=low
 
- Msg
+ MSG
  * New function: MSG_load_platform_script()
    to make possible using a lua script instead of XML files to set up platforms
  * New function: MSG_set_function
-  to associate functions to processes, used when bypassing the parser
- Lua Bindings
- * add layer to set up environment and bypass the XML surf parser
- * modify the entry point, to take into consideration when lua is used only as a platform generator
+   to associate functions to processes, used when bypassing the parser
+
+ LUA Bindings
+ * Add layer to set up environment and bypass the XML surf parser
+ * Modify the entry point, to take into consideration when lua is used only as a platform generator
+
  SURF
- * add new callbacks to the CPU & netwok models to create resources
+ * Change the XML format. This is a very important modification. SimGrid
+   3.5 introduces a new hierarchical format based on the notion of
+   Autonomous Systems. Compatibility with old format is ensured
+   through the perl script provided in the contrib section of the
+   svn. [PIERRE GIVE THE PATH]
+   It is now possible to build platforms with specific routing
+   mechanism (Full/Dijkstra/DijkstraCache/Floyd) and to easily
+   connect several platforms together. We will try to provide soon
+   set of realistic platforms exploiting these properties (have a
+   look at examples/platforms/ for the moment).
+ * Add a new routing scheme (rule-based) using regular expressions. It
+   enables to have an extremely low memory footprint when the
+   underlying routing is simple and can be compactly described. You
+   need to have libpcre4-dev (perl regular expressions) installed if
+   you want to use this routing scheme.
+ * Revive the cluster TAG and allow to easily and efficiently (both in
+   term of memory and speed) connect clusters together. Have a look
+   at teshsuite/simdag/platforms/ to see how this can be done. With
+   this tag, you can create clusters with thousands of tasks at no
+   cost (have a look at examples/platforms/).
+ * Add new callbacks to the CPU & netwok models to create resources
    no need to pass through the parser callbacks to do so.
- * add new function to create routes table via the routing model
- * add generic functions in the public interface
-   that allows the user to call SURF 'create_resource' methods from a lua script.
- SIMIX :
- * New function: SIMIX_process_set_function()
-   called by MSG_set_function
- SimDag
+ * Add new function to create routes table via the routing model
+ * Add generic functions in the public interface that allows the user to
+   call SURF 'create_resource' methods from a lua script.
+ * Add a new model (enabled through command line --cfg=network/model:SMPI)
+   that uses a piecewise linear approximation to produce better
+   results when exchanging small messages.
+ * Add a new parameter to handle correctly full duplex link and account
+   for interferences between uplink and downlink communications
+   (activate with --cfg=fullduplex:1).
+
+ SIMIX
+ * New function: SIMIX_process_set_function() called by MSG_set_function
+ * Change the underlying waiting queue in semaphores so that a process
+   can wait on several of them simultaneously (as in waitany).
+ * Fix the way to handle tokens in semaphores so that all access patterns
+   work: {acquire, acquire_timeout, waitany} / {release, release_forever}.
+
+ SIMDAG
+ * Fix a bug in the management of tasks of size 0 in the surf network
+   models. This problem was only visible with SIMDAG and you should
+   thus disregard results produced with earlier versions if you
+   relied on this feature (some tasks were blocked because of this).
  * Change the way a task is considered as ready. Instead of removing
    dependencies when a task is done, a counter is decreased. This way,
    it is always possible to reach ancestors thanks to the
@@ -38,12 +75,6 @@ SimGrid (3.5) unstable; urgency=low
  * new function SD_dotload(char*) to load a DAG described in dot
    format. This loader and the corresponding examples require the
    installation of the graphviz library.
-
- SIMIX
- * Change the underlying waiting queue in semaphores so that a process
-   can wait on several of them simultaneously (as in waitany).
- * Fix the way to handle tokens in semaphores so that all access patterns
-   work: {acquire, acquire_timeout, waitany} / {release, release_forever}.
 
  XBT
  * New data container: setset (set of sets of elements)
@@ -622,7 +653,7 @@ SimGrid (3.3.1) stable; urgency=low
   * Bug fixing in failure management:
     - trace could not start by a failure at time 0
     - failure during communications were not working
-	
+
  SIMIX:
   * Add SIMIX_process_set_name() to change the name of the current
     process in the log messages.
