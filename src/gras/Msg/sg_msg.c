@@ -72,10 +72,10 @@ int gras_socket_im_the_server(gras_socket_t sock) {
   xbt_backtrace_display_current();
   ((char*)sock)[sizeof(*sock)+1] = '0'; /* Try to make valgrind angry to see where that damn socket comes from */
   system(bprintf("cat /proc/%d/maps 1>&2",getpid()));
-  INFO0(bprintf("I'm not the client in socket %p (comm:%p, rdvser=%p, rdvcli=%p) to %s, that's %s",
+  INFO6("I'm not the client in socket %p (comm:%p, rdvser=%p, rdvcli=%p) to %s, that's %s",
       sock,sock_data->comm_recv,sock_data->rdv_server,sock_data->rdv_client,
       SIMIX_host_get_name(SIMIX_process_get_host(sock_data->server)),
-      sock_data->client?SIMIX_host_get_name(SIMIX_process_get_host(sock_data->client)):"(no client)"));
+      sock_data->client?SIMIX_host_get_name(SIMIX_process_get_host(sock_data->client)):"(no client)");
   INFO7("server:%s (%p) server_listener=%p client:%s (%p) client_listener=%p, I'm %p",
       SIMIX_host_get_name(SIMIX_process_get_host(sock_data->server)), sock_data->server,server_listener_process,
       sock_data->client?SIMIX_host_get_name(SIMIX_process_get_host(sock_data->client)):"(no client)", sock_data->client,client_listener_process,
