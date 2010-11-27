@@ -728,6 +728,7 @@ set(txt_files
 	AUTHORS
 	ChangeLog
 	COPYING
+	LICENSE-LGPL-2.1
 	missing
 	NEWS
 	README
