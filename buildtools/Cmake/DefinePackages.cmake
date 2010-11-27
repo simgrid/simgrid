@@ -269,14 +269,11 @@ set(SIMDAG_SRC
 	src/simdag/sd_workstation.c
 	src/simdag/sd_daxloader.c
 )
-if(enable_graphviz AND HAVE_CDT_LIB)
-if(HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
+if(HAVE_GRAPHVIZ)
 	set(SIMDAG_SRC 
-	    ${SIMDAG_SRC}
-		src/simdag/sd_dotloader.c
+	    ${SIMDAG_SRC} src/simdag/sd_dotloader.c
 	)
-endif(HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
-endif(enable_graphviz AND HAVE_CDT_LIB)
+endif(HAVE_GRAPHVIZ)
 
 set(GRAS_COMMON_SRC
 	src/gras/gras.c

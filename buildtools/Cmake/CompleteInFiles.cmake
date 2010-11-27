@@ -7,9 +7,7 @@ include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
 include(TestBigEndian)
-if(enable_graphviz)
 include(FindGraphviz)
-endif(enable_graphviz)
 TEST_BIG_ENDIAN(BIGENDIAN)
 
 # Checks for header libraries functions.
@@ -199,62 +197,6 @@ else(NOT enable_gtnets OR enable_supernovae)
 endif(NOT enable_gtnets OR enable_supernovae)
 
 #--------------------------------------------------------------------------------------------------
-### Initialize of cgraph
-if(enable_graphviz AND HAVE_CDT_LIB)
-if(HAVE_CGRAPH_LIB OR HAVE_AGRAPH_LIB)
-
-    if(HAVE_AGRAPH_LIB)
-     	string(REGEX REPLACE "/libagraph.*" "" lib_graphviz ${HAVE_AGRAPH_LIB})   
-    else(HAVE_AGRAPH_LIB)
-        if(HAVE_CGRAPH_LIB)
-     	    string(REGEX REPLACE "/libcgraph.*" "" lib_graphviz ${HAVE_CGRAPH_LIB})   
-        endif(HAVE_CGRAPH_LIB)
-    endif(HAVE_AGRAPH_LIB)
-      
-    if(HAVE_GRAPH_H OR HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
-    
-        if(HAVE_GRAPH_H)
-        	string(REPLACE "/graphviz/graph.h" "" file_graphviz_h ${HAVE_GRAPH_H})
-        	string(REPLACE "/graphviz" "" file_graphviz_h ${file_graphviz_h})
-        	set(GRAPH_H 1)
-        endif(HAVE_GRAPH_H)
-        
-        if(HAVE_AGRAPH_H)
-        	string(REPLACE "/graphviz/agraph.h" "" file_graphviz_h ${HAVE_AGRAPH_H})
-        	string(REPLACE "/graphviz" "" file_graphviz_h ${file_graphviz_h})
-        	set(AGRAPH_H 1)
-        endif(HAVE_AGRAPH_H)
-        
-        if(HAVE_CGRAPH_H)
-        	string(REPLACE "/graphviz/cgraph.h" "" file_graphviz_h ${HAVE_CGRAPH_H})
-        	string(REPLACE "/graphviz" "" file_graphviz_h ${file_graphviz_h})
-        	set(CGRAPH_H 1)
-        endif(HAVE_CGRAPH_H)  
-         
-        string(REGEX MATCH "-I${file_graphviz_h} " operation "${CMAKE_C_FLAGS}")
-    	if(NOT operation)
-    		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${file_graphviz_h} ")
-    	endif(NOT operation)
-    	
-    	string(REGEX MATCH "-I${file_graphviz_h}/graphviz " operation "${CMAKE_C_FLAGS}")
-    	if(NOT operation)
-    		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${file_graphviz_h}/graphviz ")
-    	endif(NOT operation)
-    	
-    	string(REGEX MATCH "-L${lib_graphviz} " operation "${CMAKE_C_FLAGS}")
-    	if(NOT operation)
-    		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-L${lib_graphviz} ")
-    	endif(NOT operation)
-    	
-    else(HAVE_GRAPH_H OR HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
-        set(enable_graphviz "0")
-    endif(HAVE_GRAPH_H OR HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
-    
-else(HAVE_CGRAPH_LIB OR HAVE_AGRAPH_LIB)
-    set(enable_graphviz "0")
-endif(HAVE_CGRAPH_LIB OR HAVE_AGRAPH_LIB)
-
-endif(enable_graphviz AND HAVE_CDT_LIB)
 #--------------------------------------------------------------------------------------------------
 ### Initialize of pcre
 find_library(PATH_PCRE_LIB pcre)
