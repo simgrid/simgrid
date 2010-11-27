@@ -74,6 +74,45 @@ from the iksemel one (http://code.google.com/p/iksemel/). Both the
 original and the current version of this code is distributed under the
 LGPL v2.1 license.
 
+========================================================================= 
+
+The xbt/mmalloc module was adapted from the mmalloc module of gdb.
+Both the simgrid version and the original version is distributed under
+the LGPL v2.1
+
+This affects the files in directory src/xbt/mmalloc and
+include/xbt/mmalloc.h
+
+=========================================================================
+
+In order to use ucontext with windows platform we had those files :
+	src/xbt/win32_ucontext.c
+	include/xbt/win32_ucontext.h
+
+Their copyright is the following:
+
+/*
+ *      win32-ucontext: Unix ucontext_t operations on Windows platforms
+ *      Copyright(C) 2007 Panagiotis E. Hadjidoukas
+ *
+ *      Contact Email: phadjido@cs.uoi.gr, xdoukas@ceid.upatras.gr
+ *
+ *      win32-ucontext is free software; you can redistribute it and/or
+ *      modify it under the terms of the GNU Lesser General Public
+ *      License as published by the Free Software Foundation; either
+ *      version 2 of the License, or (at your option) any later version.
+ *
+ *      win32-ucontext is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *      Lesser General Public License for more details.
+ *
+ *      You should have received a copy of the GNU Lesser General Public
+ *      License along with QueueUserAPCEx in the file COPYING.LIB;
+ *      if not, write to the Free Software Foundation, Inc.,
+ *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+ */
+ 
 =========================================================================
 
 Some examples for SMPI were borowed from an IBM test suite. 
@@ -108,30 +147,68 @@ List of files:
  examples/smpi/allreduce.c
  examples/smpi/alltoall2.c
  
-========================================================================= 
-
-The xbt/mmalloc module was adapted from the mmalloc module of gdb.
-Both the simgrid version and the original version is distributed under
-the LGPL v2.1
-
-This affects the files in directory src/xbt/mmalloc and
-include/xbt/mmalloc.h
 
 ========================================================================= 
 
-Some other examples for SMPI were borowed from an Argonne test suite. 
-Their copyright is the following (FIXME):
+examples/smpi/alltoallv.c was borowed from the MPICH2 test files. It
+can be found for example in mpich2 1.2.1.1 under the name
+test/mpi/coll/alltoallv.c The copyright mention is the following:
 /*
  *  (C) 2001 by Argonne National Laboratory.
  *      See COPYRIGHT in top-level directory.
  */
-List of files:
- examples/smpi/alltoallv.c   
+<------------- COPYRIGHT file in the top-level ----------------------->
 
-========================================================================= 
-Finally, some SMPI examples have unclear licence:
- examples/smpi/first.c
- examples/smpi/second.c
+				  COPYRIGHT
+
+The following is a notice of limited availability of the code, and disclaimer
+which must be included in the prologue of the code and in all source listings
+of the code.
+
+Copyright Notice
+ + 2002 University of Chicago
+
+Permission is hereby granted to use, reproduce, prepare derivative works, and
+to redistribute to others.  This software was authored by:
+
+Argonne National Laboratory Group
+W. Gropp: (630) 252-4318; FAX: (630) 252-5986; e-mail: gropp@mcs.anl.gov
+E. Lusk:  (630) 252-7852; FAX: (630) 252-5986; e-mail: lusk@mcs.anl.gov
+Mathematics and Computer Science Division
+Argonne National Laboratory, Argonne IL 60439
+
+
+			      GOVERNMENT LICENSE
+
+Portions of this material resulted from work developed under a U.S.
+Government Contract and are subject to the following license: the Government
+is granted for itself and others acting on its behalf a paid-up, nonexclusive,
+irrevocable worldwide license in this computer software to reproduce, prepare
+derivative works, and perform publicly and display publicly.
+
+				  DISCLAIMER
+
+This computer code material was prepared, in part, as an account of work
+sponsored by an agency of the United States Government.  Neither the United
+States, nor the University of Chicago, nor any of their employees, makes any
+warranty express or implied, or assumes any legal liability or responsibility
+for the accuracy, completeness, or usefulness of any information, apparatus,
+product, or process disclosed, or represents that its use would not infringe
+privately owned rights.
+
+Portions of this code were written by Microsoft. Those portions are
+Copyright (c) 2007 Microsoft Corporation. Microsoft grants permission to
+use, reproduce, prepare derivative works, and to redistribute to
+others. The code is licensed "as is." The User bears the risk of using
+it. Microsoft gives no express warranties, guarantees or
+conditions. To the extent permitted by law, Microsoft excludes the
+implied warranties of merchantability, fitness for a particular
+purpose and non-infringement.
+
+
+<-------------------- end of MPICH2 COPYRIGHT file -------------------->
+
+
 ========================================================================= 
  
 
@@ -150,32 +227,3 @@ licences, at your option.
 
 ==========================================================================
 
-In order to use ucontext with windows platform we had those files :
-	src/xbt/win32_ucontext.c
-	include/xbt/win32_ucontext.h
-
-Their copyright is the following:
-
-/*
- *      win32-ucontext: Unix ucontext_t operations on Windows platforms
- *      Copyright(C) 2007 Panagiotis E. Hadjidoukas
- *
- *      Contact Email: phadjido@cs.uoi.gr, xdoukas@ceid.upatras.gr
- *
- *      win32-ucontext is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU Lesser General Public
- *      License as published by the Free Software Foundation; either
- *      version 2 of the License, or (at your option) any later version.
- *
- *      win32-ucontext is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *      Lesser General Public License for more details.
- *
- *      You should have received a copy of the GNU Lesser General Public
- *      License along with QueueUserAPCEx in the file COPYING.LIB;
- *      if not, write to the Free Software Foundation, Inc.,
- *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
- */
- 
-=========================================================================
