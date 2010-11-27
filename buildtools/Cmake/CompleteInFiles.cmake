@@ -809,8 +809,8 @@ configure_file("${PROJECT_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_CUR
 set(top_srcdir "${PROJECT_DIRECTORY}")
 set(srcdir "${PROJECT_DIRECTORY}/src")
 
-set(exec_prefix ${prefix})
-set(includedir ${prefix}/include)
+set(exec_prefix ${CMAKE_INSTALL_PREFIX})
+set(includedir ${CMAKE_INSTALL_PREFIX}/include)
 set(top_builddir ${PROJECT_DIRECTORY})
 set(libdir ${exec_prefix}/lib)
 set(CMAKE_LINKARGS "${CMAKE_CURRENT_BINARY_DIR}/lib")

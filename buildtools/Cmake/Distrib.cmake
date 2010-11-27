@@ -1,5 +1,3 @@
-set(CMAKE_INSTALL_PREFIX "${prefix}" CACHE TYPE INTERNAL FORCE)
-
 #########################################
 ### Fill in the "make install" target ###
 #########################################
@@ -10,7 +8,7 @@ if(enable_doc)
 		file(MAKE_DIRECTORY ${PROJECT_DIRECTORY}/doc/html/)
 	endif(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
 		install(DIRECTORY "${PROJECT_DIRECTORY}/doc/html/"
-		  DESTINATION "$ENV{DESTDIR}${prefix}/doc/simgrid/html/"
+		  DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/html/"
 		  PATTERN ".svn" EXCLUDE 
 		  PATTERN ".git" EXCLUDE 
 		  PATTERN "*.o" EXCLUDE
@@ -23,34 +21,34 @@ install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
                  ${CMAKE_BINARY_DIR}/bin/smpif2c
                  ${CMAKE_BINARY_DIR}/bin/smpiff
                  ${CMAKE_BINARY_DIR}/bin/smpirun
-		DESTINATION $ENV{DESTDIR}${prefix}/bin/)
+		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 if(WIN32)
 	install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl
-	DESTINATION $ENV{DESTDIR}${prefix}/bin/)
+	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 else(WIN32)
 	install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh
-	DESTINATION $ENV{DESTDIR}${prefix}/bin/)
+	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 endif(WIN32)  
 	
 install(PROGRAMS tools/MSG_visualization/colorize.pl
-        DESTINATION $ENV{DESTDIR}${prefix}/bin/
+        DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/
 		RENAME simgrid-colorizer)
 
 # libraries
 install(TARGETS simgrid gras 
-        DESTINATION $ENV{DESTDIR}${prefix}/lib/)
+        DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
 	
 if(enable_smpi)	
   install(TARGETS smpi
-          DESTINATION $ENV{DESTDIR}${prefix}/lib/)
+          DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
 endif(enable_smpi)
 
 if(enable_lib_static AND NOT WIN32)
 	install(TARGETS simgrid_static 
-	        DESTINATION $ENV{DESTDIR}${prefix}/lib/)
+	        DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
 	if(enable_smpi)	
   		install(TARGETS smpi_static
-          		DESTINATION $ENV{DESTDIR}${prefix}/lib/)
+          		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
 	endif(enable_smpi)
 endif(enable_lib_static AND NOT WIN32)
 
@@ -59,7 +57,7 @@ foreach(file ${install_HEADERS})
   get_filename_component(location ${file} PATH)
   string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/" "" location "${location}")
   install(FILES ${file}
-          DESTINATION $ENV{DESTDIR}${prefix}/${location})
+          DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${location})
 endforeach(file ${install_HEADERS})
 
 # example files
@@ -67,13 +65,13 @@ foreach(file ${examples_to_install_in_doc})
   string(REPLACE "${PROJECT_DIRECTORY}/examples/" "" file ${file})
   get_filename_component(location ${file} PATH)
   install(FILES "examples/${file}"
-          DESTINATION $ENV{DESTDIR}${prefix}/doc/simgrid/examples/${location})
+          DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/examples/${location})
 endforeach(file ${examples_to_install_in_doc})
 
 # bindings cruft
 if(HAVE_JAVA)
   install(FILES ${CMAKE_BINARY_DIR}/simgrid.jar
-          DESTINATION $ENV{DESTDIR}${prefix}/share/)
+          DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/)
 endif(HAVE_JAVA)
 
 if(HAVE_LUA)
@@ -87,7 +85,7 @@ if(HAVE_LUA)
 		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
 	)
 	install(FILES ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-		DESTINATION $ENV{DESTDIR}${prefix}/lib/lua/5.1
+		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lua/5.1
 		)
 endif(HAVE_LUA)
 
@@ -103,10 +101,10 @@ if(HAVE_RUBY)
 		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
 	)
 	install(FILES ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
-		DESTINATION $ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/
+		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/
 	)
 	install(FILES ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid.rb
-		DESTINATION $ENV{DESTDIR}${prefix}/lib/ruby/${install_link_ruby}/)
+		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/)
 
 endif(HAVE_RUBY)
 
@@ -115,38 +113,38 @@ endif(HAVE_RUBY)
 ###########################################
 
 add_custom_target(uninstall
-COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/doc/simgrid
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/doc/simgrid
 COMMAND ${CMAKE_COMMAND} -E	echo "uninstall doc ok"
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/lib/libgras*
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/lib/libsimgrid*
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/lib/libsmpi*
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libgras*
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libsimgrid*
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libsmpi*
 COMMAND ${CMAKE_COMMAND} -E	echo "uninstall lib ok"
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/smpicc
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/smpif2c
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/smpiff
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/smpirun
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/tesh
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/bin/simgrid-colorizer
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicc
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif2c
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpiff
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpirun
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/tesh
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/simgrid-colorizer
 COMMAND ${CMAKE_COMMAND} -E	echo "uninstall bin ok"
-COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/amok
-COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/gras
-COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/instr
-COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/msg 
-COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/simdag
-COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/smpi
-COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/surf
-COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/xbt
-COMMAND ${CMAKE_COMMAND} -E	remove_directory ${prefix}/include/mc
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/include/simgrid_config.h
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/include/gras.h 
-COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/include/xbt.h
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/amok
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/gras
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/instr
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/msg 
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/simdag
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/smpi
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/surf
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/xbt
+COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/mc
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/simgrid_config.h
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/gras.h 
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/xbt.h
 COMMAND ${CMAKE_COMMAND} -E	echo "uninstal include ok"
-WORKING_DIRECTORY "${prefix}"
+WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
 )
 
 if(HAVE_JAVA)
 	add_custom_command(TARGET uninstall
-	COMMAND ${CMAKE_COMMAND} -E	remove -f ${prefix}/share/simgrid.jar
+	COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/share/simgrid.jar
 	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding java ok"
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)	
@@ -155,7 +153,7 @@ endif(HAVE_JAVA)
 if(HAVE_LUA)
 	add_custom_command(TARGET uninstall
 	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding lua ok"
-	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/lua/5.1/simgrid.${LIB_EXE}
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid.${LIB_EXE}
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
 endif(HAVE_LUA)
@@ -164,8 +162,8 @@ if(HAVE_RUBY)
 	string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_ARCH_DIR}")
 	add_custom_command(TARGET uninstall
 	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding ruby ok"
-	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
-	COMMAND ${CMAKE_COMMAND} -E remove -f ${prefix}/lib/ruby/${install_link_ruby}/simgrid.rb
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/simgrid.rb
 	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
 	)
 endif(HAVE_RUBY)
@@ -287,7 +285,7 @@ add_custom_target(distcheck
   COMMAND chmod -R a+w simgrid-${release_version}/_inst
   COMMAND chmod -R a+w simgrid-${release_version}/CMakeFiles
   
-  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ${CMAKE_COMMAND} build ..  -Dprefix=../_inst
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ${CMAKE_COMMAND} build ..  -CMAKE_INSTALL_PREFIX=../_inst
 #  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make dist-dir
   COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make
   
