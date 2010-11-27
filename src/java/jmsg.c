@@ -803,9 +803,6 @@ Java_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls)
   return (jdouble) MSG_get_clock();
 }
 
-/*Hack: let msg load directly the right factory */
-typedef void (*SIMIX_ctx_factory_initializer_t)(smx_context_factory_t *);
-extern SIMIX_ctx_factory_initializer_t factory_initializer_to_use;
 
 JNIEXPORT void JNICALL
 Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)

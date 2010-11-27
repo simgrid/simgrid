@@ -13,6 +13,9 @@
 #include "simix/private.h"
 
 SG_BEGIN_DECL()
+/*Hack: let msg load directly the right factory */
+typedef void (*SIMIX_ctx_factory_initializer_t)(smx_context_factory_t *);
+extern SIMIX_ctx_factory_initializer_t factory_initializer_to_use;
 
 /* *********************** */
 /* Context type definition */

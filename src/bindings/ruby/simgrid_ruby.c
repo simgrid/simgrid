@@ -8,6 +8,7 @@
 
 #include "xbt.h"
 #include "bindings/ruby_bindings.h"
+#include "simix/smx_context_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ruby);
 
@@ -147,11 +148,6 @@ static VALUE msg_get_clock(VALUE class)
   return rb_float_new(MSG_get_clock());
 
 }
-
-/*Hack: let msg load directly the right factory */
-typedef void (*SIMIX_ctx_factory_initializer_t)(smx_context_factory_t *);
-extern SIMIX_ctx_factory_initializer_t factory_initializer_to_use;
-
 
 typedef VALUE(*rb_meth) (ANYARGS);
 void Init_libsimgrid()

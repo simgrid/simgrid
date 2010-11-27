@@ -10,12 +10,11 @@
 #include "xbt/log.h"
 #include "xbt/swag.h"
 #include "private.h"
+#include "simix/smx_context_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
                                 "Context switching mecanism");
 
-const char *xbt_ctx_factory_to_use = NULL;
-typedef void (*SIMIX_ctx_factory_initializer_t)(smx_context_factory_t *);
 SIMIX_ctx_factory_initializer_t factory_initializer_to_use = NULL;
 
 /** 
