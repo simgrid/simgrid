@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/msg/masterslave/")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(masterslave_failure "masterslave_failure.c")
 add_executable(masterslave_forwarder "masterslave_forwarder.c")

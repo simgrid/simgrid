@@ -5,7 +5,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/_saturate_simulator.c
 							${CMAKE_CURRENT_BINARY_DIR}/_saturate_sensor.c
 							PROPERTIES GENERATED true)
 							
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(saturate_simulator 	${CMAKE_CURRENT_BINARY_DIR}/_saturate_simulator.c
 									${CMAKE_CURRENT_SOURCE_DIR}/saturate.c)

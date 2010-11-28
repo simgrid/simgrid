@@ -4,7 +4,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/_synchro_simulator.c
 							${CMAKE_CURRENT_BINARY_DIR}/_synchro_philosopher.c
 							PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(synchro_simulator 	${CMAKE_CURRENT_BINARY_DIR}/_synchro_simulator.c
 									${CMAKE_CURRENT_SOURCE_DIR}/philosopher.c)

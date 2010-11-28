@@ -5,7 +5,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_simulator.c
 							${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_server.c
 							PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(mmrpc_simulator 	${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_simulator.c 
 								${CMAKE_CURRENT_SOURCE_DIR}/mmrpc_common.c

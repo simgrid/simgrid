@@ -6,7 +6,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/_rpc_simulator.c
 			    			${CMAKE_CURRENT_BINARY_DIR}/_rpc_server.c
     						PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(rpc_simulator ${CMAKE_CURRENT_BINARY_DIR}/_rpc_simulator.c rpc.c)
 add_executable(rpc_client    ${CMAKE_CURRENT_BINARY_DIR}/_rpc_client.c    rpc.c)

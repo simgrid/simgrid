@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/examples/simdag/dot")			
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")			
 
 add_executable(dot_test dot_test.c)					#add_executable(<name_of_target> <src list>)
 
