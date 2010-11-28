@@ -419,20 +419,6 @@ set(install_HEADERS
 	include/xbt.h
 )
 
-set(TEST_UNITS
-	${PROJECT_DIRECTORY}/src/cunit_unit.c
-	${PROJECT_DIRECTORY}/src/ex_unit.c
-	${PROJECT_DIRECTORY}/src/dynar_unit.c
-	${PROJECT_DIRECTORY}/src/dict_unit.c
-	${PROJECT_DIRECTORY}/src/set_unit.c
-	${PROJECT_DIRECTORY}/src/swag_unit.c
-	${PROJECT_DIRECTORY}/src/xbt_str_unit.c
-	${PROJECT_DIRECTORY}/src/xbt_strbuff_unit.c
-	${PROJECT_DIRECTORY}/src/xbt_sha_unit.c
-	${PROJECT_DIRECTORY}/src/config_unit.c
-	${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c
-)
-
 set(TEST_CFILES
 	src/xbt/cunit.c
 	src/xbt/ex.c
