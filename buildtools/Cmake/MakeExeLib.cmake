@@ -125,9 +125,6 @@ endif(enable_lib_static)
 
 ### Make EXEs
 
-#src/testall
-add_subdirectory(${PROJECT_DIRECTORY}/src)
-
 #tools/gras
 add_subdirectory(${PROJECT_DIRECTORY}/tools/gras)
 

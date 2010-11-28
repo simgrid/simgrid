@@ -17,9 +17,12 @@ die "USAGE: $progname infile [infile+]\n"
 map {process_one($_)} @ARGV;
 
 sub process_one($) {
-    
     my $infile = shift;
     my $outfile;
+    
+    print "$progname: processing $infile...\n";
+
+    $infile =~ s|src/|| unless (-e $infile);
     
     $outfile =  $infile;
     $outfile =~ s/\.c$/_unit.c/;
@@ -32,7 +35,7 @@ sub process_one($) {
     my (@tests); # actual content
     
     open IN, "$infile" || die "$progname: Cannot open input file '$infile': $!\n";
-    
+
     my $takeit=0;
     my $line=0;
     my $beginline=0;
