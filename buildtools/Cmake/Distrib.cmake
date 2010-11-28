@@ -230,6 +230,7 @@ add_custom_target(dist-dir
 
 set(dirs_in_tarball "")
 foreach(file ${source_to_pack})
+  #message(${file})
   # This damn prefix is still set somewhere (seems to be in subdirs)
   string(REPLACE "${PROJECT_DIRECTORY}/" "" file "${file}")
   
@@ -272,22 +273,28 @@ add_dependencies(dist dist-dir)
 
 # Allow to test the "make dist"
 add_custom_target(distcheck
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX remove old copy"
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}.cpy 
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX copy again the source tree"
   COMMAND ${CMAKE_COMMAND} -E copy_directory simgrid-${release_version}/ simgrid-${release_version}.cpy 
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX create build and install subtrees"
   COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/_build
   COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/_inst
  
   # This stupid cmake creates a directory in source, killing the purpose of the chmod
   # (tricking around)
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX change the modes of directories"
   COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/CMakeFiles 
-#  COMMAND chmod -R a-w simgrid-${release_version}/ # FIXME: we should pass without commenting that line
+  COMMAND chmod -R a-w simgrid-${release_version}/ # FIXME: we should pass without commenting that line
   COMMAND chmod -R a+w simgrid-${release_version}/_build
   COMMAND chmod -R a+w simgrid-${release_version}/_inst
   COMMAND chmod -R a+w simgrid-${release_version}/CMakeFiles
   
-  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ${CMAKE_COMMAND} build ..  -CMAKE_INSTALL_PREFIX=../_inst
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Configure"
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ${CMAKE_COMMAND} build ..  -DCMAKE_INSTALL_PREFIX=../_inst -Wno-dev 
 #  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make dist-dir
-  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Build"
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make VERBOSE=1
   
   # This fails, unfortunately, because GRAS is broken for now
 #  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ctest -j5 --output-on-failure
@@ -296,7 +303,9 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make clean
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/_build
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/_inst
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX The output of the diff follows"
   COMMAND diff -ruN simgrid-${release_version}.cpy simgrid-${release_version}
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX end of the diff, random cleanups now"
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}.cpy 
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
 )
