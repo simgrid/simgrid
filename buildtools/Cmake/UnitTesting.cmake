@@ -41,7 +41,6 @@ if(PERL_EXECUTABLE)
 	
 	COMMAND chmod a=rwx ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl
 	
-	#$(TEST_UNITS): $(TEST_CFILES)
 	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/cunit.c
 	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/ex.c
 	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/dynar.c
@@ -54,8 +53,6 @@ if(PERL_EXECUTABLE)
 	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/config.c
 	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/xbt_synchro.c
 	
-	#@builddir@/simgrid_units_main.c: $(TEST_UNITS)
-	COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl xbt/cunit.c
 	
 	WORKING_DIRECTORY ${PROJECT_DIRECTORY}/src
 	
