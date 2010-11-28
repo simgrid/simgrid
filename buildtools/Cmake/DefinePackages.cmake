@@ -342,11 +342,11 @@ set(TRACING_SRC
 )
 
 set(RUBY_SRC
-src/simix/smx_context_ruby.c
-src/bindings/ruby/rb_msg_process.c
-src/bindings/ruby/rb_msg_host.c
-src/bindings/ruby/rb_msg_task.c
-src/bindings/ruby/rb_application_handler.c
+	src/simix/smx_context_ruby.c
+	src/bindings/ruby/rb_msg_process.c
+	src/bindings/ruby/rb_msg_host.c
+	src/bindings/ruby/rb_msg_task.c
+	src/bindings/ruby/rb_application_handler.c
 )
 
 set(MC_SRC
@@ -361,90 +361,90 @@ set(MC_SRC
 )
 
 set(install_HEADERS
-include/xbt/misc.h
-include/xbt/sysdep.h
-include/xbt/virtu.h
-include/xbt/str.h
-include/xbt/strbuff.h
-include/xbt/hash.h
-include/xbt/function_types.h
-include/xbt/asserts.h 
-include/xbt/ex.h
-include/xbt/log.h
-include/xbt/module.h
-include/xbt/mallocator.h
-include/xbt/dynar.h
-include/xbt/dict.h
-include/xbt/set.h
-include/xbt/heap.h
-include/xbt/graph.h
-include/xbt/fifo.h
-include/xbt/swag.h
-include/xbt/matrix.h
-include/xbt/peer.h
-include/xbt/config.h
-include/xbt/cunit.h
-include/xbt/graphxml_parse.h
-include/xbt/graphxml.h
-include/xbt/time.h
-include/xbt/synchro.h
-include/xbt/synchro_core.h
-include/xbt/queue.h
-include/xbt/setset.h
-include/xbt/mmalloc.h
-include/mc/modelchecker.h
-include/msg/msg.h
-include/msg/datatypes.h
-include/simdag/simdag.h
-include/simdag/datatypes.h
-include/smpi/smpi.h
-include/smpi/smpif.h
-include/smpi/mpi.h
-include/smpi/mpif.h
-include/surf/surfxml_parse.h
-include/surf/simgrid_dtd.h
-include/gras/datadesc.h
-include/gras/transport.h
-include/gras/virtu.h
-include/gras/emul.h
-include/gras/process.h
-include/gras/module.h
-include/gras/messages.h
-include/gras/timer.h
-include/amok/peermanagement.h
-include/amok/bandwidth.h
-include/instr/instr.h
-${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
-include/gras.h 
-include/xbt.h
+	include/xbt/misc.h
+	include/xbt/sysdep.h
+	include/xbt/virtu.h
+	include/xbt/str.h
+	include/xbt/strbuff.h
+	include/xbt/hash.h
+	include/xbt/function_types.h
+	include/xbt/asserts.h 
+	include/xbt/ex.h
+	include/xbt/log.h
+	include/xbt/module.h
+	include/xbt/mallocator.h
+	include/xbt/dynar.h
+	include/xbt/dict.h
+	include/xbt/set.h
+	include/xbt/heap.h
+	include/xbt/graph.h
+	include/xbt/fifo.h
+	include/xbt/swag.h
+	include/xbt/matrix.h
+	include/xbt/peer.h
+	include/xbt/config.h
+	include/xbt/cunit.h
+	include/xbt/graphxml_parse.h
+	include/xbt/graphxml.h
+	include/xbt/time.h
+	include/xbt/synchro.h
+	include/xbt/synchro_core.h
+	include/xbt/queue.h
+	include/xbt/setset.h
+	include/xbt/mmalloc.h
+	include/mc/modelchecker.h
+	include/msg/msg.h
+	include/msg/datatypes.h
+	include/simdag/simdag.h
+	include/simdag/datatypes.h
+	include/smpi/smpi.h
+	include/smpi/smpif.h
+	include/smpi/mpi.h
+	include/smpi/mpif.h
+	include/surf/surfxml_parse.h
+	include/surf/simgrid_dtd.h
+	include/gras/datadesc.h
+	include/gras/transport.h
+	include/gras/virtu.h
+	include/gras/emul.h
+	include/gras/process.h
+	include/gras/module.h
+	include/gras/messages.h
+	include/gras/timer.h
+	include/amok/peermanagement.h
+	include/amok/bandwidth.h
+	include/instr/instr.h
+	${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
+	include/gras.h 
+	include/xbt.h
 )
 
 set(TEST_UNITS
-${PROJECT_DIRECTORY}/src/cunit_unit.c
-${PROJECT_DIRECTORY}/src/ex_unit.c
-${PROJECT_DIRECTORY}/src/dynar_unit.c
-${PROJECT_DIRECTORY}/src/dict_unit.c
-${PROJECT_DIRECTORY}/src/set_unit.c
-${PROJECT_DIRECTORY}/src/swag_unit.c
-${PROJECT_DIRECTORY}/src/xbt_str_unit.c
-${PROJECT_DIRECTORY}/src/xbt_strbuff_unit.c
-${PROJECT_DIRECTORY}/src/xbt_sha_unit.c
-${PROJECT_DIRECTORY}/src/config_unit.c
-${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c
+	${PROJECT_DIRECTORY}/src/cunit_unit.c
+	${PROJECT_DIRECTORY}/src/ex_unit.c
+	${PROJECT_DIRECTORY}/src/dynar_unit.c
+	${PROJECT_DIRECTORY}/src/dict_unit.c
+	${PROJECT_DIRECTORY}/src/set_unit.c
+	${PROJECT_DIRECTORY}/src/swag_unit.c
+	${PROJECT_DIRECTORY}/src/xbt_str_unit.c
+	${PROJECT_DIRECTORY}/src/xbt_strbuff_unit.c
+	${PROJECT_DIRECTORY}/src/xbt_sha_unit.c
+	${PROJECT_DIRECTORY}/src/config_unit.c
+	${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c
 )
 
 set(TEST_CFILES
-src/xbt/cunit.c
-src/xbt/ex.c
-src/xbt/dynar.c
-src/xbt/dict.c
-src/xbt/set.c
-src/xbt/swag.c
-src/xbt/xbt_str.c
-src/xbt/xbt_strbuff.c
-src/xbt/xbt_sha.c
-src/xbt/config.c
-src/xbt/xbt_synchro.c
+	src/xbt/cunit.c
+	src/xbt/ex.c
+	src/xbt/dynar.c
+	src/xbt/dict.c
+	src/xbt/set.c
+	src/xbt/swag.c
+	src/xbt/xbt_str.c
+	src/xbt/xbt_strbuff.c
+	src/xbt/xbt_sha.c
+	src/xbt/config.c
+	src/xbt/xbt_synchro.c
 )
 
 ### depend of some variables setted upper
@@ -494,10 +494,6 @@ else(HAVE_GTNETS)
 	)
 endif(HAVE_GTNETS)
 
-set(EXTRA_DIST
-	${EXTRA_DIST}
-	${JMSG_JAVA_SRC}
-)
 
 ### Simgrid Lib sources
 set(simgrid_sources
@@ -540,6 +536,10 @@ elseif(${HAVE_LUA})
 	)
 endif(${HAVE_LUA})
 
+set(EXTRA_DIST
+	${EXTRA_DIST}
+	${JMSG_JAVA_SRC}
+)
 if(${HAVE_JAVA})
 	set(simgrid_sources
 		${simgrid_sources}
@@ -723,6 +723,7 @@ file(GLOB_RECURSE txt_files
 "examples/java/comm_time/CommTimeTest"
 "examples/java/suspend/SuspendTest"
 )
+
 set(txt_files
 	${txt_files}
 	AUTHORS
