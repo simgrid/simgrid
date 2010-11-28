@@ -1,5 +1,8 @@
 # compile the master_slave_bypass example
 
+# The setenv is mandatory until the make install only
+! setenv LUA_CPATH=../../lib/lua/5.1/?.so;
+
 $ lua master_slave.lua --log=surf_parse.thres:critical
 > [Tremblay:Master:(1) 0.000000] [lua/INFO] Hello from lua, I'm the master
 > [Tremblay:Master:(1) 0.000000] [lua/INFO] Got 20

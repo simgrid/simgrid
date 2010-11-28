@@ -1,5 +1,8 @@
 #PingPong Example
+
+# This setenv and the -I arg are mandatory until the make install only
 ! setenv RUBYLIB=../../lib
+
 $ ruby -I ../../src/bindings/ruby PingPong.rb
 > [Inmos:Sender:(1) 0.000000] [ruby/INFO] Hello from Sender
 > [Inmos:Sender:(1) 0.000000] [ruby/INFO] Host count :1

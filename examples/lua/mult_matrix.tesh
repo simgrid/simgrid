@@ -2,6 +2,9 @@
 
 # Later modify the commande and specify the platform and deployment path
 
+# The setenv is mandatory until the make install only
+! setenv LUA_CPATH=../../lib/lua/5.1/?.so;
+
 $ lua mult_matrix.lua
 > [Inmos:Sender:(1) 0.000000] [lua/INFO] Hello From Sender
 > [Inmos:Sender:(1) 0.000000] [lua/INFO] Argc=4 (should be 4)
