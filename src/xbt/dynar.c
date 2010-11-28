@@ -708,6 +708,7 @@ XBT_INLINE void xbt_dynar_cursor_unlock(xbt_dynar_t dynar)
 
 /** @brief Sorts a dynar according to the function <tt>compar_fn</tt>
  *
+ * \param dynar the dynar to sort
  * \param compar_fn comparison function of type (int (compar_fn*) (void*) (void*)).
  *
  * Remark: if the elements stored in the dynar are structures, the compar_fn

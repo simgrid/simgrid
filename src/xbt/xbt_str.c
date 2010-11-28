@@ -173,7 +173,7 @@ end:
  * @param str the string to modify
  * @param from char to search
  * @param to char to put instead
- * @param amount amount of changes to do (=0 means all)
+ * @param occurence number of changes to do (=0 means all)
  */
 void xbt_str_subst(char *str, char from, char to, int occurence)
 {
