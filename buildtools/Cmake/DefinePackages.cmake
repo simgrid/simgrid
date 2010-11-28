@@ -598,21 +598,25 @@ file(GLOB_RECURSE add_src_files
 "teshsuite/*.cxx"
 "testsuite/*.c"
 "testsuite/*.cxx"
+"testsuite/*CMakeLists.txt"
 "tools/*.c"
 "tools/*.cxx"
+"tools/*CMakeLists.txt"
 "examples/*.c"
 "examples/*.cxx"
 "examples/*.java"
 "examples/*.lua"
 "examples/*.rb"
+"examples/*CMakeLists.txt"
 "src/bindings/*.lua"
 "src/bindings/*.rb"
 "src/bindings/*.c"
 "src/bindings/*.h"
-"*CMakeLists.txt"
+"src/bindings/*CMakeLists.txt"
 )
 set(add_src_files
 	${add_src_files}
+        CMakeLists.txt
 	src/smpi/smpicc.in
 	src/smpi/smpif2c.in
 	src/smpi/smpiff.in
