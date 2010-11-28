@@ -33,8 +33,7 @@
 #ifndef _XBT_LOG_H_
 #define _XBT_LOG_H_
 
-#include "simgrid_config.h"
-
+#include "xbt/misc.h"
 #include <stdarg.h>
 SG_BEGIN_DECL()
 /**\brief Log priorities
