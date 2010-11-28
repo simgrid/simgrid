@@ -1,8 +1,19 @@
+@InProceedings{ cb11:pdp2011,
+  author = "Bogdan Florin Cornea and Julien Bourgeois",
+  title = "Performance Prediction of Distributed Applications Using Block Benchmarking Methods",
+  booktitle = "PDP '11: 19th International Euromicro Conference on Parallel, Distributed and Network-Based Processing",
+  abstract = "An ongoing work is presented for accurately predicting the performance of distributed applications in heterogeneous systems. We are developing dPerf, a tool built using the Rose framework for performing static analysis and an automatic instrumentation on the input source code of programs written in C, C++ or Fortran. The accuracy in predicting program computation time resides in using hardware counters, as well as in applying two block benchmarking techniques that we propose in this paper. The current work makes use of a network simulator in order to calculate the communication time used in our approach. Afterwards, the computation and communication times are being summed up obtaining an estimation of the distributed application execution time. The approach is proven experimentally using NAS Integer Sort benchmark, the communications being simulated with SimGrid.",
+  year = 2011,
+  keywords = "dPerf, performance prediction, block benchmarking, static analysis, trace-based simulation, heterogeneous systems, MPI, P2PSAP",
+  publisher = "IEEE Computer Society",
+  category = {extern}
+}
+
 @article{cds10_jpdc,
   title = {{On Cluster Resource Allocation for Multiple Parallel Task
   Graphs}},
   author = {Casanova, Henri and Desprez, Fr\'ed\'eric and
-                  Suter, Fr{\'e}d{'\e}ric},
+                  Suter, Fr{\'e}d{\'e}ric},
   JOURNAL={Journal of Parallel and Distributed Computing},
   VOLUME=70,
   NUMBER=12,
@@ -42,7 +53,6 @@
 
 
 @InProceedings{jedule,
-  category = {core},
   author = 	 {Hunold, Sascha and Hoffmann, Ralf and Suter, Fr\'ed\'eric},
   title = 	 {{Jedule: A Tool for Visualizing Schedules of
                   Parallel Applications}},
@@ -52,11 +62,11 @@
   year = 	 2010,
   address = 	 {San Diego, CA},
   pages = {169-178},
-  month = 	 Sep
+  month = 	 Sep,
+  category = {core}
 }
 
 @InProceedings{MAGS,
-  category = {core},
   author =       {Casanova, Henri and Desprez, Fr\'ed\'eric and Suter, Fr\'ed\'eric},
   title =        {{Minimizing Stretch and Makespan of Multiple
                   Parallel Task Graphs via Malleable Allocations}},
@@ -65,7 +75,8 @@
   year =         2010,
   address =      {San Diego, CA},
   pages  = {71-80},
-  month =        Sep
+  month =        Sep,
+  category = {core}
 }
 
 
@@ -137,7 +148,7 @@ category = {extern}
                   Parallel and Distributed Scientific and Engineering
                   Computing (PDSEC)},
   year =         2009,
-  adress = {Rome, Italy},
+  address = {Rome, Italy},
   month =        May,
   category = {intra}
 }
@@ -297,8 +308,7 @@ category = {extern}
   NUMBER=7,
   PAGES={940--952},
   YEAR=2009,
- category = {intra}
-
+  category = {intra}
 }
 
 @article{10.1109/TC.2009.117,
@@ -652,7 +662,7 @@ month = May,
                   (PPAM07)},
   pages = {1019-1028},
   year = {2008},
-  adress = {Gdansk, Poland},
+  address = {Gdansk, Poland},
   month = Sep,
   publisher = {Springer},
  series    = {Lecture Notes in Computer Science},
