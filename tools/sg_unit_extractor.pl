@@ -3,6 +3,9 @@
 use strict;
 use Fcntl ':flock';
 
+use strict;
+use Getopt::Long qw(GetOptions);
+
 open SELF, "< $0" or die "Cannot open the lock file";
 if (!flock SELF, LOCK_EX | LOCK_NB) {
     print STDERR "sg_unit_extractor already running. Cancelling...\n";
@@ -11,8 +14,26 @@ if (!flock SELF, LOCK_EX | LOCK_NB) {
 
 my $progname="sg_unit_extractor";
 # Get the args 
-die "USAGE: $progname infile [infile+]\n"
-  if (scalar @ARGV == 0);
+
+sub usage($) {
+    my $ret;
+    print "USAGE: $progname [--root=part/to/cut] [--path=where/to/search NOT WORKING] [--outdir=where/to/generate/files] infile [infile+]\n";
+    exit $ret;
+}
+
+my $path=undef;
+my $outdir=undef;
+my $root;
+my $help;
+
+Getopt::Long::config('permute','no_getopt_compat', 'no_auto_abbrev');
+GetOptions(
+        'help|h'                => sub {usage(0)},
+        'root=s' =>\$root,
+        'path=s' =>\$path,
+        'outdir=s' =>\$outdir) or usage(1);
+
+usage(1) if (scalar @ARGV == 0);
 
 map {process_one($_)} @ARGV;
 
@@ -20,14 +41,14 @@ sub process_one($) {
     my $infile = shift;
     my $outfile;
     
-    print "$progname: processing $infile...\n";
-
     $infile =~ s|src/|| unless (-e $infile);
     
     $outfile =  $infile;
     $outfile =~ s/\.c$/_unit.c/;
     $outfile =~ s|.*/([^/]*)$|$1| if $outfile =~ m|/|;
+    $outfile = "$outdir$outfile";
     
+    print "$progname: processing $infile (generating $outfile)...\n";    
     
     # Get the unit data
     my ($unit_source,$suite_name,$suite_title)=("","","");
@@ -35,7 +56,8 @@ sub process_one($) {
     my (@tests); # actual content
     
     open IN, "$infile" || die "$progname: Cannot open input file '$infile': $!\n";
-
+    $infile =~ s|$root|| if defined($root);
+    
     my $takeit=0;
     my $line=0;
     my $beginline=0;
@@ -101,8 +123,8 @@ sub process_one($) {
     close OUT || die "$progname: Cannot close output file '$outfile': $!\n";
 
     # write the main skeleton if needed
-    if (! -e "simgrid_units_main.c") {
-	open OUT,">simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid_units_main.c': $!\n";
+    if (! -e "${outdir}simgrid_units_main.c") {
+	open OUT,">${outdir}simgrid_units_main.c" || die "$progname: Cannot open main file '${outdir}simgrid_units_main.c': $!\n";
 	print OUT $GENERATED;
 	print OUT "#include <stdio.h>\n\n";
 	print OUT "#include \"xbt.h\"\n\n";
@@ -171,7 +193,7 @@ int main(int argc, char *argv[]) {
 }
 EOF
 	print OUT $GENERATED;
-	close OUT || die "$progname: Cannot close main file 'simgrid_units_main.c': $!\n";
+	close OUT || die "$progname: Cannot close main file '${outdir}simgrid_units_main.c': $!\n";
     }
 
    print "  Suite $suite_name: $suite_title (".(scalar @tests)." tests)\n";
@@ -184,7 +206,7 @@ EOF
 
    # add this suite to the main
    my $newmain="";
-   open IN,"simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid_units_main.c': $!\n";
+   open IN,"${outdir}simgrid_units_main.c" || die "$progname: Cannot open main file '${outdir}simgrid_units_main.c': $!\n";
     # search prototypes
        while (<IN>) {
 	   $newmain .= $_;
@@ -258,12 +280,12 @@ EOF
        while (<IN>) {
 	   $newmain .= $_;
        }
-       close IN || die "$progname: Cannot close main file 'simgrid_units_main.c': $!\n";
+       close IN || die "$progname: Cannot close main file '${outdir}simgrid_units_main.c': $!\n";
        
        # write it back to main
-       open OUT,">simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid_units_main.c': $!\n";
+       open OUT,">${outdir}simgrid_units_main.c" || die "$progname: Cannot open main file '${outdir}simgrid_units_main.c': $!\n";
        print OUT $newmain;
-       close OUT || die "$progname: Cannot close main file 'simgrid_units_main.c': $!\n";
+       close OUT || die "$progname: Cannot close main file '${outdir}simgrid_units_main.c': $!\n";
 } # end if process_one($)
 
 0;

@@ -15,19 +15,19 @@ set(TEST_CFILES
 	src/xbt/xbt_synchro.c
 )
 set(TEST_UNITS
-	${PROJECT_DIRECTORY}/src/cunit_unit.c
-	${PROJECT_DIRECTORY}/src/ex_unit.c
-	${PROJECT_DIRECTORY}/src/dynar_unit.c
-	${PROJECT_DIRECTORY}/src/dict_unit.c
-	${PROJECT_DIRECTORY}/src/set_unit.c
-	${PROJECT_DIRECTORY}/src/swag_unit.c
-	${PROJECT_DIRECTORY}/src/xbt_str_unit.c
-	${PROJECT_DIRECTORY}/src/xbt_strbuff_unit.c
-	${PROJECT_DIRECTORY}/src/xbt_sha_unit.c
-	${PROJECT_DIRECTORY}/src/config_unit.c
-	${PROJECT_DIRECTORY}/src/xbt_synchro_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/cunit_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/ex_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/dynar_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/dict_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/set_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/swag_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/xbt_str_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/xbt_strbuff_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/xbt_sha_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/config_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/xbt_synchro_unit.c
 	
-	${PROJECT_DIRECTORY}/src/simgrid_units_main.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_units_main.c
 )
 
 
@@ -42,18 +42,15 @@ if(PERL_EXECUTABLE)
   	
 		COMMAND	${CMAKE_COMMAND} -E remove -f ${TEST_UNITS}
 	
-		COMMAND chmod a=rwx ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl
+		COMMAND chmod +x ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl
 	
-		COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl ${TEST_CFILES}
+		COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl --root=src/ --outdir=${CMAKE_CURRENT_BINARY_DIR}/src/ ${TEST_CFILES}
 	
-		WORKING_DIRECTORY ${PROJECT_DIRECTORY}/src
+		WORKING_DIRECTORY ${PROJECT_DIRECTORY}
 	
 	        COMMENT "Generating *_units files for testall..."
 	)
 	
-#      	add_custom_target(units_files	
-#			DEPENDS ${TEST_UNITS}
-#	)
 	
 else(PERL_EXECUTABLE)
 	ADD_CUSTOM_COMMAND(
@@ -72,7 +69,7 @@ endif(PERL_EXECUTABLE)
 
 set_source_files_properties(${TEST_UNITS} PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_DIRECTORY}/src/")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}/src/")
 add_executable(testall ${TEST_UNITS})
 
 ### Add definitions for compile
