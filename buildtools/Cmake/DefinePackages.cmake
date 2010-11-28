@@ -87,7 +87,7 @@ set(EXTRA_DIST
 	src/smpi/smpi_coll_private.h
 	src/smpi/smpi_mpi_dt_private.h
 	src/smpi/README
-	src/mk_supernovae.sh
+	src/mk_supernovae.pl
 )
 
 set(XBT_RL_SRC 
