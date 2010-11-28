@@ -419,20 +419,6 @@ set(install_HEADERS
 	include/xbt.h
 )
 
-set(TEST_CFILES
-	src/xbt/cunit.c
-	src/xbt/ex.c
-	src/xbt/dynar.c
-	src/xbt/dict.c
-	src/xbt/set.c
-	src/xbt/swag.c
-	src/xbt/xbt_str.c
-	src/xbt/xbt_strbuff.c
-	src/xbt/xbt_sha.c
-	src/xbt/config.c
-	src/xbt/xbt_synchro.c
-)
-
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS
 if(${CONTEXT_THREADS}) #pthread
@@ -771,7 +757,6 @@ set(source_to_pack
 	${xml_files}
 	${tesh_files}
 	${txt_files}
-	${TEST_CFILES}
 	${EXTRA_DIST}
 	${CMAKE_SOURCE_FILES}
 	${bin_files}
