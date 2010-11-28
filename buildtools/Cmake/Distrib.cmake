@@ -168,48 +168,6 @@ if(HAVE_RUBY)
 	)
 endif(HAVE_RUBY)
 
-######################################
-### Fill in the "make html" target ###
-######################################
-
-add_custom_target(html
-DEPENDS ${PROJECT_DIRECTORY}/doc/all_bib.html
-COMMAND ${CMAKE_COMMAND} -E echo "cmake -DBIBTEX2HTML=${BIBTEX2HTML} ./"
-COMMAND ${CMAKE_COMMAND} -DBIBTEX2HTML=${BIBTEX2HTML} ./
-COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/CMakeFiles
-COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/CMakeCache.txt
-COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/cmake_install.cmake
-COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/buildtools/Cmake/doc/Makefile
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}/buildtools/Cmake/doc"
-)
-
-add_custom_command(
-OUTPUT 	${PROJECT_DIRECTORY}/doc/all_bib.html
-		${PROJECT_DIRECTORY}/doc/all_bib.latin1.html
-		${PROJECT_DIRECTORY}/doc/all_bib.latin1.html.tmp
-		${PROJECT_DIRECTORY}/doc/logcategories.sh
-		${PROJECT_DIRECTORY}/doc/publis_core.bib
-		${PROJECT_DIRECTORY}/doc/publis_core_bib.html
-		${PROJECT_DIRECTORY}/doc/publis_core_bib.latin1.html
-		${PROJECT_DIRECTORY}/doc/publis_core_bib.latin1.html.tmp
-		${PROJECT_DIRECTORY}/doc/publis_count.html
-		${PROJECT_DIRECTORY}/doc/publis_extern.bib
-		${PROJECT_DIRECTORY}/doc/publis_extern_bib.html
-		${PROJECT_DIRECTORY}/doc/publis_extern_bib.latin1.html
-		${PROJECT_DIRECTORY}/doc/publis_extern_bib.latin1.html.tmp
-		${PROJECT_DIRECTORY}/doc/publis_intra.bib
-		${PROJECT_DIRECTORY}/doc/publis_intra_bib.html
-		${PROJECT_DIRECTORY}/doc/publis_intra_bib.latin1.html
-		${PROJECT_DIRECTORY}/doc/publis_intra_bib.latin1.html.tmp
-		${PROJECT_DIRECTORY}/doc/tmp.realtoc
-		${PROJECT_DIRECTORY}/doc/using_bib.html
-		${PROJECT_DIRECTORY}/doc/using_bib.latin1.html
-		${PROJECT_DIRECTORY}/doc/using_bib.latin1.html.tmp
-		${PROJECT_DIRECTORY}/doc/realtoc.sh
-		${PROJECT_DIRECTORY}/doc/html
-COMMAND ${CMAKE_COMMAND} -E echo "Make the html doc"
-)
-
 ################################################################
 ## Build a sain "make dist" target to build a source package ###
 ##   containing only the files that I explicitely state      ###
@@ -291,23 +249,27 @@ add_custom_target(distcheck
   COMMAND chmod -R a+w simgrid-${release_version}/CMakeFiles
   
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Configure"
-  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ${CMAKE_COMMAND} build ..  -DCMAKE_INSTALL_PREFIX=../_inst -Wno-dev 
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ${CMAKE_COMMAND} build ..  -DCMAKE_INSTALL_PREFIX=../_inst -Wno-dev -Denable_doc=OFF
 #  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make dist-dir
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Build"
   COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make VERBOSE=1
   
   # This fails, unfortunately, because GRAS is broken for now
-#  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ctest -j5 --output-on-failure
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ctest -j5 --output-on-failure
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Check that cleaning works"
   COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make clean
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Display what is remaining after make clean"
+  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ls -lR
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove _build and _inst directories"
+  COMMAND chmod a+w simgrid-${release_version}/
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/_build
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/_inst
   COMMAND ${CMAKE_COMMAND} -E echo "XXX The output of the diff follows"
   COMMAND diff -ruN simgrid-${release_version}.cpy simgrid-${release_version}
   COMMAND ${CMAKE_COMMAND} -E echo "XXX end of the diff, random cleanups now"
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}.cpy 
-  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
+  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}
 )
 add_dependencies(distcheck dist-dir)
 

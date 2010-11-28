@@ -551,6 +551,53 @@ file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.xml"
 )
 
+set(DOC_SOURCES
+	doc/contrib.doc
+        doc/FAQ.doc
+	doc/gtut-howto-design.doc
+	doc/gtut-howto.doc
+	doc/gtut-introduction.doc
+	doc/gtut-main.doc
+	doc/gtut-tour-01-bones.doc
+	doc/gtut-tour-02-simple.doc
+	doc/gtut-tour-03-args.doc
+	doc/gtut-tour-04-callback.doc
+	doc/gtut-tour-05-globals.doc
+	doc/gtut-tour-06-logs.doc
+	doc/gtut-tour-07-timers.doc
+	doc/gtut-tour-08-exceptions.doc
+	doc/gtut-tour-09-simpledata.doc
+	doc/gtut-tour-10-rpc.doc
+	doc/gtut-tour-11-explicitwait.doc
+	doc/gtut-tour-12-staticstruct.doc
+	doc/gtut-tour-13-pointers.doc
+	doc/gtut-tour-14-dynar.doc
+	doc/gtut-tour-15-manualdatadef.doc
+	doc/gtut-tour-16-exchangecb.doc
+	doc/gtut-tour.doc
+	doc/gtut-tour-recap-messages.doc
+	doc/history.doc
+	doc/index-API.doc
+	doc/index.doc
+	doc/logcategories.doc
+	doc/module-amok.doc
+	doc/module-gras.doc
+	doc/module-msg.doc
+	doc/module-sd.doc
+	doc/modules.doc
+	doc/module-surf.doc
+	doc/module-xbt.doc
+	doc/people.doc	
+	doc/publis.doc
+)
+set(DOC_FIGS
+	${PROJECT_DIRECTORY}/doc/fig/simgrid_modules.fig
+	${PROJECT_DIRECTORY}/doc/fig/simgrid_modules2.fig
+	${PROJECT_DIRECTORY}/doc/fig/amok_bw_test.fig
+	${PROJECT_DIRECTORY}/doc/fig/amok_bw_sat.fig
+	${PROJECT_DIRECTORY}/doc/fig/gras_comm.fig
+)
+
 foreach(file ${examples_to_install_in_doc})
 	string(REGEX REPLACE "/[^/]*$" "" file "${file}")
 	set(new_examples_to_install_in_doc "${new_examples_to_install_in_doc}${file};")
@@ -760,4 +807,6 @@ set(source_to_pack
 	${EXTRA_DIST}
 	${CMAKE_SOURCE_FILES}
 	${bin_files}
+	${DOC_SOURCES}
+	${DOC_FIGS}
 )

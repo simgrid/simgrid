@@ -5,6 +5,9 @@ use warnings;
 
 my $debug = 0;
 
+print "/* Generated file, do not edit */\n";
+print "/** \\addtogroup XBT_log_cats\n";
+print '        @{'"\n";
 
 # Search for calls to macros defining new channels, and prepare the tree representation
 my %ancestor;
@@ -150,3 +153,6 @@ sub check_connection {
 }
 check_connection("XBT_LOG_ROOT_CAT");	
 map {warn "Category $_ does not seem to be connected to the root (anc=$ancestor{$_})\n";} grep {!defined $used{$_}} sort keys %ancestor;    
+
+	
+print "@}*/";

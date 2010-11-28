@@ -465,43 +465,43 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = @srcdir@/index.doc \
-                         @srcdir@/FAQ.doc \
-                         @srcdir@/contrib.doc \
-                         @srcdir@/publis.doc \
-                         @srcdir@/people.doc \
-                         @srcdir@/history.doc \
+INPUT                  = index.doc \
+                         FAQ.doc \
+                         contrib.doc \
+                         publis.doc \
+                         people.doc \
+                         history.doc \
                          ./index-API.doc \
 			 \
-                         @srcdir@/modules.doc \
-                         @srcdir@/module-xbt.doc \
-                         @srcdir@/module-msg.doc \
-                         @srcdir@/module-gras.doc @srcdir@/module-amok.doc \
-                         @srcdir@/module-sd.doc \
-                         @srcdir@/module-surf.doc \
+                         modules.doc \
+                         module-xbt.doc \
+                         module-msg.doc \
+                         module-gras.doc module-amok.doc \
+                         module-sd.doc \
+                         module-surf.doc \
 			 \
-			 @srcdir@/gtut-main.doc \
-			    @srcdir@/gtut-introduction.doc \
-			    @srcdir@/gtut-tour.doc \
-				@srcdir@/gtut-tour-01-bones.doc \
-				@srcdir@/gtut-tour-02-simple.doc \
-				@srcdir@/gtut-tour-03-args.doc \
-				@srcdir@/gtut-tour-04-callback.doc \
-				@srcdir@/gtut-tour-05-globals.doc \
-				@srcdir@/gtut-tour-06-logs.doc \
-				@srcdir@/gtut-tour-07-timers.doc \
-				@srcdir@/gtut-tour-08-exceptions.doc \
-				@srcdir@/gtut-tour-09-simpledata.doc \
-				@srcdir@/gtut-tour-10-rpc.doc \
-				@srcdir@/gtut-tour-11-explicitwait.doc \
-				@srcdir@/gtut-tour-recap-messages.doc \
-				@srcdir@/gtut-tour-12-staticstruct.doc \
-				@srcdir@/gtut-tour-13-pointers.doc \
-				@srcdir@/gtut-tour-14-dynar.doc \
-				@srcdir@/gtut-tour-15-manualdatadef.doc \
-				@srcdir@/gtut-tour-16-exchangecb.doc \
-			    @srcdir@/gtut-howto.doc \
-			        @srcdir@/gtut-howto-design.doc \
+			 gtut-main.doc \
+			    gtut-introduction.doc \
+			    gtut-tour.doc \
+				gtut-tour-01-bones.doc \
+				gtut-tour-02-simple.doc \
+				gtut-tour-03-args.doc \
+				gtut-tour-04-callback.doc \
+				gtut-tour-05-globals.doc \
+				gtut-tour-06-logs.doc \
+				gtut-tour-07-timers.doc \
+				gtut-tour-08-exceptions.doc \
+				gtut-tour-09-simpledata.doc \
+				gtut-tour-10-rpc.doc \
+				gtut-tour-11-explicitwait.doc \
+				gtut-tour-recap-messages.doc \
+				gtut-tour-12-staticstruct.doc \
+				gtut-tour-13-pointers.doc \
+				gtut-tour-14-dynar.doc \
+				gtut-tour-15-manualdatadef.doc \
+				gtut-tour-16-exchangecb.doc \
+			    gtut-howto.doc \
+			        gtut-howto-design.doc \
                          \
                          ./logcategories.doc \
 			 \
@@ -740,7 +740,7 @@ HTML_HEADER            =
 # each generated HTML page. If it is left blank doxygen will generate a 
 # standard footer.
 
-HTML_FOOTER            = @srcdir@/footer.html
+HTML_FOOTER            = footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading 
 # style sheet that is used by each HTML page. It can be used to 
