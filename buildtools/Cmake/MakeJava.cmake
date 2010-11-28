@@ -36,22 +36,22 @@ ADD_CUSTOM_COMMAND(
 )
 
 ADD_CUSTOM_COMMAND(
-	OUTPUT  ${PROJECT_DIRECTORY}/examples/java/basic/BasicTest.class
-			${PROJECT_DIRECTORY}/examples/java/basic/FinalizeTask.class
-			${PROJECT_DIRECTORY}/examples/java/basic/Forwarder.class
-			${PROJECT_DIRECTORY}/examples/java/basic/Slave.class
-			${PROJECT_DIRECTORY}/examples/java/basic/Master.class
-			${PROJECT_DIRECTORY}/examples/java/ping_pong/PingPongTest.class
-			${PROJECT_DIRECTORY}/examples/java/ping_pong/Sender.class
-			${PROJECT_DIRECTORY}/examples/java/ping_pong/PingPongTask.class
-			${PROJECT_DIRECTORY}/examples/java/ping_pong/Receiver.class
-			${PROJECT_DIRECTORY}/examples/java/comm_time/FinalizeTask.class
-			${PROJECT_DIRECTORY}/examples/java/comm_time/CommTimeTest.class
-			${PROJECT_DIRECTORY}/examples/java/comm_time/Slave.class
-			${PROJECT_DIRECTORY}/examples/java/comm_time/Master.class
-			${PROJECT_DIRECTORY}/examples/java/suspend/SuspendTest.class
-			${PROJECT_DIRECTORY}/examples/java/suspend/LazyGuy.class
-			${PROJECT_DIRECTORY}/examples/java/suspend/DreamMaster.class
+	OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic/BasicTest.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic/FinalizeTask.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic/Forwarder.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic/Slave.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic/Master.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong/PingPongTest.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong/Sender.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong/PingPongTask.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong/Receiver.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time/FinalizeTask.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time/CommTimeTest.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time/Slave.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time/Master.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/suspend/SuspendTest.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/suspend/LazyGuy.class
+			${CMAKE_CURRENT_BINARY_DIR}/examples/java/suspend/DreamMaster.class
 			
 	DEPENDS simgrid
             ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar
@@ -62,27 +62,32 @@ ADD_CUSTOM_COMMAND(
 			
 	COMMENT "Build examples for java"	
 	
-  	COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/basic -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java  
- 	COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/ping_pong -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java
-  	COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/comm_time -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java
-  	COMMAND ${JAVA_COMPILE} -d ${PROJECT_DIRECTORY}/examples/java/suspend -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/examples/java/suspend
+	
+  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java  
+ 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java
+  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java
+  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/suspend -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java
 )
 
 ADD_CUSTOM_TARGET(simgrid_java_examples ALL
-                  DEPENDS 	${PROJECT_DIRECTORY}/examples/java/basic/BasicTest.class
-							${PROJECT_DIRECTORY}/examples/java/basic/FinalizeTask.class
-							${PROJECT_DIRECTORY}/examples/java/basic/Forwarder.class
-							${PROJECT_DIRECTORY}/examples/java/basic/Slave.class
-							${PROJECT_DIRECTORY}/examples/java/basic/Master.class
-							${PROJECT_DIRECTORY}/examples/java/ping_pong/PingPongTest.class
-							${PROJECT_DIRECTORY}/examples/java/ping_pong/Sender.class
-							${PROJECT_DIRECTORY}/examples/java/ping_pong/PingPongTask.class
-							${PROJECT_DIRECTORY}/examples/java/ping_pong/Receiver.class
-							${PROJECT_DIRECTORY}/examples/java/comm_time/FinalizeTask.class
-							${PROJECT_DIRECTORY}/examples/java/comm_time/CommTimeTest.class
-							${PROJECT_DIRECTORY}/examples/java/comm_time/Slave.class
-							${PROJECT_DIRECTORY}/examples/java/comm_time/Master.class
-							${PROJECT_DIRECTORY}/examples/java/suspend/SuspendTest.class
-							${PROJECT_DIRECTORY}/examples/java/suspend/LazyGuy.class
-							${PROJECT_DIRECTORY}/examples/java/suspend/DreamMaster.class
+                  DEPENDS 	${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic/BasicTest.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic/FinalizeTask.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic/Forwarder.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic/Slave.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic/Master.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong/PingPongTest.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong/Sender.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong/PingPongTask.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong/Receiver.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time/FinalizeTask.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time/CommTimeTest.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time/Slave.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time/Master.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/suspend/SuspendTest.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/suspend/LazyGuy.class
+							${CMAKE_CURRENT_BINARY_DIR}/examples/java/suspend/DreamMaster.class
 )
