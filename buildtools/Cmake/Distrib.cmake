@@ -33,6 +33,9 @@ endif(WIN32)
 install(PROGRAMS tools/MSG_visualization/colorize.pl
         DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/
 		RENAME simgrid-colorizer)
+		
+install(PROGRAMS tools/simgrid_update_xml.pl
+		DESTINATION $ENV{DESTDIR}${prefix}/bin/)
 
 # libraries
 install(TARGETS simgrid gras 

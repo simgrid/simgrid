@@ -14,8 +14,8 @@ SimGrid (3.5) unstable; urgency=low
  * Change the XML format. This is a very important modification. SimGrid
    3.5 introduces a new hierarchical format based on the notion of
    Autonomous Systems. Compatibility with old format is ensured
-   through the perl script provided in the contrib section of the
-   svn. [PIERRE GIVE THE PATH]
+   through the perl script provided in the install bin directory 
+   bin/simgrid_update_xml.pl.
    It is now possible to build platforms with specific routing
    mechanism (Full/Dijkstra/DijkstraCache/Floyd) and to easily
    connect several platforms together. We will try to provide soon
