@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 
 use strict;
 use warnings;
@@ -7,7 +7,7 @@ my $debug = 0;
 
 print "/* Generated file, do not edit */\n";
 print "/** \\addtogroup XBT_log_cats\n";
-print '        @{'"\n";
+print "        \@{\n";
 
 # Search for calls to macros defining new channels, and prepare the tree representation
 my %ancestor;
@@ -114,7 +114,7 @@ sub parse_file {
 }
 # Retrieve all the file names, and add their content to $data
 my $data;
-open FILES, "find -name '*.c'|" || die "Cannot search for the source file names: $!\n";
+open FILES, "find src/ tools/ include/ -name '*.c'|" || die "Cannot search for the source file names: $!\n";
 while (my $file=<FILES>) {
     chomp $file;
     parse_file($file); 	

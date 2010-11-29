@@ -150,8 +150,8 @@ endif(WIN32)
 if(enable_doc)
 	include(${PROJECT_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
 
-	ADD_CUSTOM_TARGET(simgrid_documentation ALL
-	                  DEPENDS ${PROJECT_DIRECTORY}/doc/html/generated)
+	ADD_CUSTOM_TARGET(simgrid_documentation ALL)
+	add_dependencies(simgrid_documentation APPEND_DOC)
 endif(enable_doc)
 
 ### Make Simgrid.jar and Java examples
