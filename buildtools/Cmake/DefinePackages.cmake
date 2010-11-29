@@ -521,7 +521,6 @@ else(${HAVE_JAVA})
 	set(EXTRA_DIST
 		${EXTRA_DIST}
 		${JMSG_C_SRC}
-		${MSG_SRC}
 	)
 endif(${HAVE_JAVA})
 
