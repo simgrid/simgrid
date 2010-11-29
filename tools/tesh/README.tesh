@@ -25,6 +25,13 @@ blank and is ignored):
 If the expected output do not match what the command spits, TESH will produce
 an error showing the diff (see OUTPUT below).
 
+Command line arguments
+----------------------
+Tesh accepts several command line arguments:
+  --cd some/directory: ask tesh to switch the working directory before
+                       lauching the tests
+  --setenv var=value: set a specific environment variable		       
+
 IO orders
 ---------
 

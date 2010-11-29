@@ -103,6 +103,7 @@ SimGrid (3.5) unstable; urgency=low
  * Introduce a 'make dist' target compiling a *source* archive
    'make package' compiles a binary archive (not well tested)
  * Compile java files only on need
+ * Add --cd and --setenv command line options to tesh
 
  Tracing:
  * Tracing system
