@@ -230,8 +230,8 @@ int main(int argc, char *argv[])
       xbt_assert1(eq,"The argument of --setenv must contain a '=' (got %s instead)",argv[i+1]);
       char *key = bprintf("%.*s", (int) (eq - argv[i+1]), argv[i+1]);
       xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
+      INFO2("setting environment variable '%s' to '%s'", key, eq+1);
       free(key);
-      VERB1("setenv %s", argv[i+1]);
       memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));
       argc -= 2;
       i -= 2;
