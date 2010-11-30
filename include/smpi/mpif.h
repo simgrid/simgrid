@@ -32,7 +32,7 @@
 
       integer MPI_SUCCESS, MPI_ERR_COMM, MPI_ERR_ARG, MPI_ERR_TYPE,
      >        MPI_ERR_REQUEST, MPI_ERR_INTERN, MPI_ERR_COUNT,
-     >        MPI_ERR_RANK,
+     >        MPI_ERR_RANK, MPI_ERR_OTHER,
      >        MPI_ERR_TAG, MPI_ERR_TRUNCATE, MPI_ERR_GROUP, MPI_ERR_OP,
      >        MPI_IDENT, MPI_SIMILAR, MPI_UNEQUAL, MPI_CONGRUENT,
      >        MPI_WTIME_IS_GLOBAL
@@ -48,6 +48,7 @@
       parameter(MPI_ERR_TRUNCATE=9)
       parameter(MPI_ERR_GROUP=10)
       parameter(MPI_ERR_OP=11)
+      parameter(MPI_ERR_OTHER=12)
       parameter(MPI_IDENT=0)
       parameter(MPI_SIMILAR=1)
       parameter(MPI_UNEQUAL=2)
