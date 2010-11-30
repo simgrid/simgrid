@@ -1,17 +1,20 @@
 SimGrid (3.5) unstable; urgency=low
 
- Checked up to svn r7858 (Mt)
+ Checked up to svn r8318 (Mt)
 
  MSG
  * Asynchronous communications through the functions:
-   MSG_task_isend/irecv and MSG_comm_test/wait
+   MSG_task_isend/irecv and MSG_comm_test/wait/waitall
  * New function: MSG_load_platform_script()
    to make possible using a lua script instead of XML files to set up platforms
  * New function: MSG_set_function
    to associate functions to processes, used when bypassing the parser
+ * New functions: MSG_task_set_name(), MSG_task_set_compute_duration()
 
  LUA Bindings
  * Add layer to set up environment directly from lua, without XML
+ * In GRAS, the effect of gras_stub_generator can be achieved through
+   lua too (check examples/gras/console/ping_generator.lua)
  * Modify the entry point, to take into consideration when lua is used only as a platform generator
 
  SURF
@@ -19,7 +22,7 @@ SimGrid (3.5) unstable; urgency=low
    3.5 introduces a new hierarchical format based on the notion of
    Autonomous Systems. Compatibility with old format is ensured
    through the perl script provided in the install bin directory 
-   bin/simgrid_update_xml.pl.
+   bin/simgrid_update_xml.
    It is now possible to build platforms with specific routing
    mechanism (Full/Dijkstra/DijkstraCache/Floyd) and to easily
    connect several platforms together. We will try to provide soon
@@ -34,7 +37,9 @@ SimGrid (3.5) unstable; urgency=low
    term of memory and speed) connect clusters together. Have a look
    at teshsuite/simdag/platforms/ to see how this can be done. With
    this tag, you can create clusters with thousands of tasks at no
-   cost (have a look at examples/platforms/).
+   cost (have a look at examples/platforms/). 
+   Note: clusters are implemented as ASes, so there is no need for an
+   enclosing AS tag if you have only one cluster in your platform.
  * Add new callbacks to the CPU & netwok models to create resources
    no need to pass through the parser callbacks to do so.
  * Add new function to create routes table via the routing model
@@ -95,6 +100,7 @@ SimGrid (3.5) unstable; urgency=low
  * New function: xbt_dynar_is_empty()
  * New function: xbt_fifo_get_last_item()
  * Bug fix in xbt_dynar_shrink(): use the right element size
+ * Multiple bug fixes in semaphores which were wrongly implemented
  * Use library init/fini functions for our initialization.
    - you can use logs and other feature as soon as you want in your
      code (even before the xbt_init / MSG_init)
@@ -103,12 +109,20 @@ SimGrid (3.5) unstable; urgency=low
  GRAS:
  * New function: gras_msgtype_get_name()
  * Implement gras_agent_spawn in RL too (the prototype changed a bit)
+ * Port GRAS to new SIMIX deployments. This allows gras users to
+   benefit from the lastest improvement to the simulation kernel.
  * Kill measurement sockets for now. If you rely on them, sorry. This
    release is not for you. This feature will be reintroduced in the
    future, but we cannot delay the release any further.
+ * Finally fixed the pmm example. It should not randomly fail anymore
 
  SMPI
  * New Model SMPI (three-interval linear regression for correction factors)
+ * New functions:
+   - MPI_Get_count()
+ * New: RAM folding (see RR-7426, http://hal.inria.fr/inria-00527150)
+   and examples/smpi/NAS/DT-folding/
+ * New feature: execution sampling (see RR-7426)
 
  Build chain: bug fixes and overall polishing
  * Fix the 'make install' target.
@@ -118,6 +132,10 @@ SimGrid (3.5) unstable; urgency=low
  * Compile java files only on need
  * Add --cd and --setenv command line options to tesh
  * Port to windows
+ * Out of source builds are not supported yet
+
+ Platforms: Add some more examples in examples/platforms
+ * Grid'5000: see www.grid5000.fr
 
  Tracing:
  * Tracing system
