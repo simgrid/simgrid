@@ -482,23 +482,6 @@ void SIMIX_network_copy_data(smx_comm_t comm)
   }
 }
 
-#include "xbt.h"
-/* pimple to display the message sizes */
-void SIMIX_message_sizes_output(const char *filename)
-{
-  uintptr_t key = 0;
-  uintptr_t data = 0;
-  xbt_dict_cursor_t cursor;
-  FILE *out = NULL;
-  out = fopen(filename, "w");
-  xbt_assert1(out, "Cannot open file %s", filename);
-
-  xbt_dict_foreach(simix_global->msg_sizes, cursor, key, data) {
-    fprintf(out, "%zu %zu\n", key, data);
-  }
-  fclose(out);
-}
-
 /**
  *  \brief Return the user data associated to the communication
  *  \param comm The communication

@@ -60,6 +60,8 @@ SimGrid (3.5) unstable; urgency=low
    can wait on several of them simultaneously (as in waitany).
  * Fix the way to handle tokens in semaphores so that all access patterns
    work: {acquire, acquire_timeout, waitany} / {release, release_forever}.
+ * kill the dirty pimple SIMIX_message_sizes_output()
+   Please use (proper) visualization instead
 
  SIMDAG
  * Fix a bug in the management of tasks of size 0 in the surf network
