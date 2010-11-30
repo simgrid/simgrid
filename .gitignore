@@ -94,7 +94,6 @@ install_manifest.txt
 _CPack_Packages/
 
 examples/smpi/toto.txt
-tools/graspe_master
 examples/java/*/classnoinst.stamp
 buildtools/Cmake/test_prog/prog_va_copy.c
 ###
@@ -238,7 +237,6 @@ testsuite/xbt/graphxml_usage
 testsuite/xbt/heap_bench
 testsuite/xbt/log_usage
 tools/gras/gras_stub_generator
-tools/graspe-slave
 tools/tesh/tesh
 examples/msg/tracing/categories
 examples/msg/tracing/ms
