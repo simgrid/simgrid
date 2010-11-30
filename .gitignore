@@ -1,12 +1,14 @@
 checkall.log
 TAGS
 *output_tesh*.txt
+
 *.exe
 *.bpr
 *.bpf
 *.dsp
 *.ilk
 *.mk
+
 *.l[oa]
 *.loT
 *.[oa]
@@ -32,27 +34,6 @@ _*.c
 *.trace
 *.orig
 *.rej
-
-config.log
-config.status
-config.cache
-config.guess
-config.sub
-Makefile.in
-autom4te.cache
-aclocal.m4
-acmacro/libtool.m4
-acmacro/ltoptions.m4
-acmacro/ltsugar.m4
-acmacro/ltversion.m4
-acmacro/lt~obsolete.m4
-configure
-install-sh
-libtool
-ltmain.sh
-depcomp
-missing
-texinfo.tex
 
 simgrid.jar
 src/simgrid.jar
@@ -101,12 +82,8 @@ examples/msg/irc_isend/toto.txt
 examples/simdag/dot/dot_test
 
 src/simgrid_units_main.c
-*_unit.c
+src/*_unit.c
 src/supernovae_*.c
-
-buildtools/Cmake/tmp_gras_config.h.in
-buildtools/Cmake/tmp_tracing_config.h.in
-make_simgrid_java.sh
 
 testgraph.dot
 testgraph.xml
@@ -116,36 +93,23 @@ CMakeFiles
 install_manifest.txt
 _CPack_Packages/
 
-bibtex2html-1.02/
-
 examples/smpi/toto.txt
-src/gras_config.h.in
 tools/graspe_master
 examples/java/*/classnoinst.stamp
 buildtools/Cmake/test_prog/prog_va_copy.c
 ###
 doc/all_bib.html
-doc/all_bib.latin1.html
-doc/all_bib.latin1.html.tmp
 doc/logcategories.sh
 doc/publis_core.bib
 doc/publis_core_bib.html
-doc/publis_core_bib.latin1.html
-doc/publis_core_bib.latin1.html.tmp
 doc/publis_count.html
 doc/publis_extern.bib
 doc/publis_extern_bib.html
-doc/publis_extern_bib.latin1.html
-doc/publis_extern_bib.latin1.html.tmp
 doc/publis_intra.bib
 doc/publis_intra_bib.html
-doc/publis_intra_bib.latin1.html
-doc/publis_intra_bib.latin1.html.tmp
 doc/realtoc.sh
 doc/tmp.realtoc
 doc/using_bib.html
-doc/using_bib.latin1.html
-doc/using_bib.latin1.html.tmp
 
 doc/Doxyfile
 include/simgrid_config.h
@@ -223,12 +187,11 @@ examples/smpi/alltoall_basic
 examples/smpi/alltoallv
 examples/smpi/sendrecv
 examples/smpi/smpi_sendrecv
-simgrid-*-svn/*
+
 src/context_sysv_config.h
 src/gras_config.h
 src/smpi/smpicc
 src/smpi/smpirun
-src/bindings/lua/libsimgrid.so
 src/testall
 src/ucontext_stack.h
 teshsuite/datadesc_usage.out
@@ -290,13 +253,11 @@ examples/smpi/ttest01
 .cproject
 .project
 .settings/
+.anjuta
+.anjuta_sym_db.db
+simgrid.anjuta
 
 .externalToolBuilders/
 Debug/
 bin/
 lib/
-buildtools/Cmake/transfert.sh
-buildtools/pipol/install_cmake.sh
-.anjuta
-.anjuta_sym_db.db
-simgrid.anjuta
