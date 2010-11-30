@@ -75,16 +75,45 @@ set(SIMGRID_DEP "-lm")
 if(HAVE_PCRE_LIB)
        SET(SIMGRID_DEP "${SIMGRID_DEP} -lpcre")
 endif(HAVE_PCRE_LIB)
+
 if(HAVE_RUBY)
 	set(SIMGRID_DEP "${SIMGRID_DEP} -l${RUBY_LIBRARY_NAME}")
+	ADD_CUSTOM_TARGET(link_simgrid_ruby ALL
+		 DEPENDS simgrid ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
+	)
+	add_custom_command(
+		OUTPUT ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
+	        COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
+	)
 endif(HAVE_RUBY)
+
 if(pthread)
 	if(with_context MATCHES pthread)
 		SET(SIMGRID_DEP "${SIMGRID_DEP} -lpthread")
 	endif(with_context MATCHES pthread)	
 endif(pthread)
 
-if(HAVE_LUA)
+if(HAVE_LUA)	  
+    ADD_CUSTOM_TARGET(link_simgrid_lua ALL
+      DEPENDS 	simgrid
+      			${PROJECT_DIRECTORY}/examples/lua/simgrid.${LIB_EXE}
+				${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE}
+				${PROJECT_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE}
+	)
+	add_custom_command(
+		OUTPUT 	${PROJECT_DIRECTORY}/examples/lua/simgrid.${LIB_EXE}
+				${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE}
+				${PROJECT_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE}
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/examples/lua/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/examples/lua/simgrid.${LIB_EXE} #for test
+		
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE} #for test
+		
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE} #for test			
+	)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${LIB_LUA_NAME}")   	  
 endif(HAVE_LUA)
 
