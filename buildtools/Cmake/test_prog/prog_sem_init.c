@@ -9,5 +9,5 @@
 void main(void)
 {
   sem_t s;
-  sem_init(&s);
+  sem_init(&s, 0, 0);
 }

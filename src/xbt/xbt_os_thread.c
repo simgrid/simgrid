@@ -95,7 +95,7 @@ void xbt_os_thread_mod_preinit(void)
 
   thread_mod_inited = 1;
 
-#ifndef HAVE_SEM_WAIT
+#ifndef HAVE_SEM_INIT
   next_sem_ID_lock = xbt_os_mutex_init();
 #endif
 
@@ -113,7 +113,7 @@ void xbt_os_thread_mod_postexit(void)
   free(main_thread);
   main_thread = NULL;
   thread_mod_inited = 0;
-#ifndef HAVE_SEM_WAIT
+#ifndef HAVE_SEM_INIT
   xbt_os_mutex_destroy(next_sem_ID_lock);
 #endif
 
