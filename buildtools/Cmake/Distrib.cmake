@@ -24,7 +24,11 @@ install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
 		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 if(WIN32)
 	install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl
-	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/
+	RENAME tesh)
+	add_custom_target(tesh
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh
+	)
 else(WIN32)
 	install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh
 	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
@@ -34,7 +38,19 @@ install(PROGRAMS tools/MSG_visualization/colorize.pl
         DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/
 		RENAME simgrid-colorizer)
 		
+add_custom_target(simgrid-colorizer ALL
+COMMAND ${CMAKE_COMMAND} -E copy tools/MSG_visualization/colorize.pl ${CMAKE_BINARY_DIR}/bin/colorize
+)
+				
 install(PROGRAMS tools/simgrid_update_xml.pl
+		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/
+		RENAME simgrid_update_xml)
+		
+add_custom_target(simgrid_update_xml ALL
+COMMAND ${CMAKE_COMMAND} -E copy tools/simgrid_update_xml.pl ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml
+)
+		
+install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/gras_stub_generator
 		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 
 # libraries
@@ -128,6 +144,8 @@ COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpiff
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpirun
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/tesh
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/simgrid-colorizer
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/simgrid_update_xml
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/gras_stub_generator
 COMMAND ${CMAKE_COMMAND} -E	echo "uninstall bin ok"
 COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/amok
 COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/gras
