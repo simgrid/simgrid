@@ -10,12 +10,14 @@
 #include "simix/simix.h"        /* semaphores for the barrier */
 #include "xbt.h"                /* calloc, printf */
 #include "simgrid_config.h"     /* getline */
+#include "instr/private.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actions,
                              "Messages specific for this msg example");
 int communicator_size = 0;
 
 typedef struct coll_ctr_t {
+  int last_Irecv_sender_id;
   int bcast_counter;
   int reduce_counter;
   int allReduce_counter;
@@ -33,6 +35,10 @@ static double parse_double(const char *string)
   return value;
 }
 
+static int get_rank (const char *process_name)
+{
+  return atoi(&(process_name[1]));
+} 
 
 /* My actions */
 static void action_send(xbt_dynar_t action)
@@ -41,6 +47,7 @@ static void action_send(xbt_dynar_t action)
   char to[250];
   char *size = xbt_dynar_get_as(action, 3, char *);
   double clock = MSG_get_clock();
+ 
   sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()),
           xbt_dynar_get_as(action, 2, char *));
   //  char *to =  xbt_dynar_get_as(action, 2, char *);
@@ -48,12 +55,23 @@ static void action_send(xbt_dynar_t action)
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
 
+#ifdef HAVE_TRACING
+  int rank = get_rank(MSG_process_get_name(MSG_process_self()));
+  int dst_traced = get_rank(xbt_dynar_get_as(action, 2, char *));
+  TRACE_smpi_ptp_in(rank, rank, dst_traced, "send");
+  TRACE_smpi_send(rank, rank, dst_traced);
+#endif
+
   DEBUG2("Entering Send: %s (size: %lg)", name, parse_double(size));
   MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
   VERB2("%s %f", name, MSG_get_clock() - clock);
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
+
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out(rank, rank, dst_traced, "send");
+#endif  
 }
 
 
@@ -109,6 +127,12 @@ static void action_recv(xbt_dynar_t action)
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
 
+#ifdef HAVE_TRACING
+  int rank = get_rank(MSG_process_get_name(MSG_process_self()));
+  int src_traced = get_rank(xbt_dynar_get_as(action, 2, char *));
+  TRACE_smpi_ptp_in(rank, src_traced, rank, "recv");
+#endif
+
   DEBUG1("Receiving: %s", name);
   MSG_task_receive(&task, mailbox_name);
   //  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
@@ -117,6 +141,11 @@ static void action_recv(xbt_dynar_t action)
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out(rank, src_traced, rank, "recv");
+  TRACE_smpi_recv(rank, src_traced, rank);
+#endif
+
 }
 
 static int spawned_recv(int argc, char *argv[])
@@ -141,8 +170,22 @@ static void Irecv(xbt_dynar_t action)
   char mailbox_name[250];
   char **myargv;
   double clock = MSG_get_clock();
+
   DEBUG1("Irecv on %s: spawn process ",
          MSG_process_get_name(MSG_process_self()));
+#ifdef HAVE_TRACING
+  int rank = get_rank(MSG_process_get_name(MSG_process_self()));
+  int src_traced = get_rank(xbt_dynar_get_as(action, 2, char *));
+  coll_ctr counters = (coll_ctr) MSG_process_get_data(MSG_process_self());
+  if (!counters) {
+      DEBUG0("Initialize the counters");
+      counters = (coll_ctr) calloc(1, sizeof(struct coll_ctr_t));
+    }
+  counters->last_Irecv_sender_id = src_traced;
+  MSG_process_set_data(MSG_process_self(), (void *) counters);
+
+  TRACE_smpi_ptp_in(rank, src_traced, rank, "Irecv");
+#endif
 
   sprintf(mailbox_name, "%s_%s", xbt_dynar_get_as(action, 2, char *),
           MSG_process_get_name(MSG_process_self()));
@@ -158,6 +201,10 @@ static void Irecv(xbt_dynar_t action)
   VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
 
   free(name);
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out(rank, src_traced, rank, "Irecv");
+#endif
+
 }
 
 
@@ -170,6 +217,12 @@ static void action_wait(xbt_dynar_t action)
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
+#ifdef HAVE_TRACING
+  coll_ctr counters = (coll_ctr) MSG_process_get_data(MSG_process_self());
+  int src_traced = counters->last_Irecv_sender_id;
+  int rank = get_rank(MSG_process_get_name(MSG_process_self()));
+  TRACE_smpi_ptp_in(rank, src_traced, rank, "wait");
+#endif
 
   DEBUG1("Entering %s", name);
   sprintf(task_name, "%s_wait", MSG_process_get_name(MSG_process_self()));
@@ -179,6 +232,11 @@ static void action_wait(xbt_dynar_t action)
   VERB2("%s %f", name, MSG_get_clock() - clock);
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out(rank, src_traced, rank, "wait");
+  TRACE_smpi_recv(rank, src_traced, rank);
+#endif
+
 }
 
 /* FIXME: that's a poor man's implementation: we should take the message exchanges into account */
@@ -511,6 +569,23 @@ static void compute(xbt_dynar_t action)
     free(name);
 }
 
+static void init(xbt_dynar_t action)
+{ 
+#ifdef HAVE_TRACING
+  TRACE_smpi_init(get_rank(MSG_process_get_name(MSG_process_self())));
+#endif
+}
+
+static void finalize(xbt_dynar_t action)
+{
+#ifdef HAVE_TRACING
+  TRACE_smpi_finalize(get_rank(MSG_process_get_name(MSG_process_self())));
+#endif
+  coll_ctr counters = (coll_ctr) MSG_process_get_data(MSG_process_self());
+  if (counters)
+  	  free(counters);
+}
+
 /** Main function */
 int main(int argc, char *argv[])
 {
@@ -537,6 +612,8 @@ int main(int argc, char *argv[])
   MSG_launch_application(argv[2]);
 
   /*   Action registration */
+  MSG_action_register("init", init);
+  MSG_action_register("finalize", finalize);
   MSG_action_register("comm_size", comm_size);
   MSG_action_register("send", action_send);
   MSG_action_register("Isend", Isend);
@@ -550,7 +627,7 @@ int main(int argc, char *argv[])
   MSG_action_register("sleep", action_sleep);
   MSG_action_register("compute", compute);
 
-
+  
   /* Actually do the simulation using MSG_action_trace_run */
   res = MSG_action_trace_run(argv[3]);  // it's ok to pass a NULL argument here
 
