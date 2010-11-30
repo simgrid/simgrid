@@ -282,6 +282,10 @@ examples/msg/tracing/ms
 teshsuite/simdag/platforms/is_router_test
 examples/msg/masterslave/masterslave_cluster
 examples/simdag/simdag_tracing
+examples/gras/spawn/spawn_child
+examples/gras/spawn/spawn_father
+examples/smpi/smpi_traced
+examples/smpi/ttest01
 
 .cproject
 .project
