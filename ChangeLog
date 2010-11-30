@@ -102,7 +102,7 @@ SimGrid (3.5) unstable; urgency=low
 
  GRAS:
  * New function: gras_msgtype_get_name()
- * Implement gras_spawn_agent in RL too (the prototype changed a bit)
+ * Implement gras_agent_spawn in RL too (the prototype changed a bit)
  * Kill measurement sockets for now. If you rely on them, sorry. This
    release is not for you. This feature will be reintroduced in the
    future, but we cannot delay the release any further.

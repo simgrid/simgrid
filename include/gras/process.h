@@ -14,9 +14,14 @@
 
 SG_BEGIN_DECL()
 
+/** \addtogroup GRAS_globals
+ * @{ */
+
+/** \brief Create a new thread */
 void gras_agent_spawn(const char *name, xbt_main_func_t code,
                       int argc, char *argv[], xbt_dict_t properties);
 
+/** }@ */
 
 /****************************************************************************/
 /* Manipulating User Data                                                   */
