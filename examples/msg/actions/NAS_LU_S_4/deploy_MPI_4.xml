@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="3">
+  <process host="bordereau-1.bordeaux.grid5000.fr" function="p0">
+      <argument value="simgrid0.txt"/>
+   </process>
+  <process host="bordereau-2.bordeaux.grid5000.fr" function="p1">
+      <argument value="simgrid1.txt"/>
+   </process>
+  <process host="bordereau-3.bordeaux.grid5000.fr" function="p2">
+      <argument value="simgrid2.txt"/>
+   </process>
+  <process host="bordereau-4.bordeaux.grid5000.fr" function="p3">
+      <argument value="simgrid3.txt"/>
+   </process>
+</platform>

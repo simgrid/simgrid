@@ -1,0 +1,4631 @@
+p1 init
+p1 compute 4448
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 55
+p1 send p0 5760
+p1 compute 65080
+p1 send p3 5760
+p1 compute 55
+p1 Irecv p3
+p1 compute 55
+p1 wait
+p1 compute 128751
+p1 comm_size 4
+p1 allReduce 40 95
+p1 compute 126
+p1 comm_size 4
+p1 barrier
+p1 compute 23883
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 22558
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22604
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9055
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9063
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20193
+p1 recv p3
+p1 compute 9110
+p1 send p0 200
+p1 compute 20148
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20203
+p1 recv p3
+p1 compute 9090
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20184
+p1 recv p3
+p1 compute 9071
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9081
+p1 send p0 200
+p1 compute 20184
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7088
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65099
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152421
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22565
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22548
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22586
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9071
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22552
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20148
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9055
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20177
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7080
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65081
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152399
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22548
+p1 recv p0
+p1 compute 9055
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9070
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22562
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9100
+p1 send p3 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20196
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20150
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20180
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 7093
+p1 Irecv p0
+p1 compute 56
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65081
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152405
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20184
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20203
+p1 recv p3
+p1 compute 9111
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9085
+p1 send p0 200
+p1 compute 20203
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7084
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65080
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152402
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22563
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9107
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9062
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20183
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20181
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20181
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20204
+p1 recv p3
+p1 compute 9082
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9087
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7084
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65081
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152448
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9062
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9067
+p1 send p3 200
+p1 compute 20157
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20155
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20188
+p1 recv p3
+p1 compute 9094
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20212
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20196
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7088
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65081
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152391
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22582
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22560
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9091
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20157
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20181
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20181
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7080
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65081
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152381
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22576
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22593
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22579
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20153
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20183
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7084
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65141
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152391
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22601
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22564
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9054
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20182
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7080
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152406
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22559
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9069
+p1 send p3 200
+p1 compute 22549
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9078
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7084
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 55
+p1 Irecv p3
+p1 compute 55
+p1 wait
+p1 compute 152411
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22601
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20149
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20178
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20148
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20200
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7082
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65110
+p1 send p3 5760
+p1 compute 55
+p1 Irecv p3
+p1 compute 55
+p1 wait
+p1 compute 152398
+p1 recv p0
+p1 compute 9061
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9096
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20181
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20188
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7087
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65093
+p1 send p3 5760
+p1 compute 55
+p1 Irecv p3
+p1 compute 55
+p1 wait
+p1 compute 152385
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22576
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22563
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20193
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20153
+p1 recv p3
+p1 compute 9055
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9115
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 7086
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152391
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22557
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22560
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22552
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20197
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20188
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20184
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20187
+p1 recv p3
+p1 compute 9074
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20176
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7084
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65106
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152404
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22599
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9070
+p1 send p3 200
+p1 compute 22588
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9055
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20174
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20203
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20205
+p1 recv p3
+p1 compute 9054
+p1 send p0 200
+p1 compute 7090
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152430
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22599
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22553
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9072
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9066
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9063
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20171
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20194
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20215
+p1 recv p3
+p1 compute 9097
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20153
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7084
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152407
+p1 recv p0
+p1 compute 9061
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22547
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9084
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9067
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9066
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9054
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7091
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65111
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152400
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22582
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22580
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9085
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9067
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22548
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22592
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20154
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20203
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20202
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20198
+p1 recv p3
+p1 compute 9060
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20178
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7083
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65109
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152400
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22594
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22594
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20199
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20185
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20183
+p1 recv p3
+p1 compute 9055
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20179
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7082
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65098
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152400
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22589
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9071
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20213
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20173
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20189
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7084
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152408
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22591
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9079
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9079
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9069
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20192
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20155
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20195
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7085
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152412
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22576
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9065
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22560
+p1 recv p0
+p1 compute 9067
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20166
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20188
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20179
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20180
+p1 recv p3
+p1 compute 9091
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7084
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152390
+p1 recv p0
+p1 compute 9061
+p1 send p3 200
+p1 compute 22553
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9075
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9068
+p1 send p3 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20180
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20177
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20152
+p1 recv p3
+p1 compute 9075
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7086
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152382
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22547
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9076
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9071
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22547
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20155
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20192
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7084
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65098
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152400
+p1 recv p0
+p1 compute 9060
+p1 send p3 200
+p1 compute 22580
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22547
+p1 recv p0
+p1 compute 9080
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20191
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20198
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20155
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20155
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20155
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 7090
+p1 Irecv p0
+p1 compute 56
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65093
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152380
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22548
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9077
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9060
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9060
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20189
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20190
+p1 recv p3
+p1 compute 9070
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7085
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65098
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152361
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20187
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20202
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7089
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152374
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22596
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22595
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9073
+p1 send p3 200
+p1 compute 22560
+p1 recv p0
+p1 compute 9072
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9055
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20148
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20175
+p1 recv p3
+p1 compute 9081
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7084
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 55
+p1 Irecv p3
+p1 compute 55
+p1 wait
+p1 compute 152389
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22561
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9059
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9087
+p1 send p3 200
+p1 compute 20157
+p1 recv p3
+p1 compute 9054
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20181
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20193
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7085
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65094
+p1 send p3 5760
+p1 compute 55
+p1 Irecv p3
+p1 compute 55
+p1 wait
+p1 compute 152407
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22593
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22557
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9069
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22590
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20181
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20169
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 7086
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65093
+p1 send p3 5760
+p1 compute 55
+p1 Irecv p3
+p1 compute 55
+p1 wait
+p1 compute 152403
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22594
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22584
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22553
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22547
+p1 recv p0
+p1 compute 9081
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20181
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20196
+p1 recv p3
+p1 compute 9091
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9065
+p1 send p0 200
+p1 compute 20186
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 7096
+p1 Irecv p0
+p1 compute 56
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 57
+p1 wait
+p1 compute 152385
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22547
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9103
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9072
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20154
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20177
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20197
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9054
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20204
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 7085
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152392
+p1 recv p0
+p1 compute 9061
+p1 send p3 200
+p1 compute 22594
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9075
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9067
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9063
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9071
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9076
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9073
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20172
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20185
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20155
+p1 recv p3
+p1 compute 9062
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20154
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 7086
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 57
+p1 send p0 5760
+p1 compute 65111
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152387
+p1 recv p0
+p1 compute 9058
+p1 send p3 200
+p1 compute 22563
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9068
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9087
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9080
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9070
+p1 send p0 200
+p1 compute 20185
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20155
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20149
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9057
+p1 send p0 200
+p1 compute 20198
+p1 recv p3
+p1 compute 9061
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20194
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7085
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152387
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22560
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22548
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9068
+p1 send p3 200
+p1 compute 22560
+p1 recv p0
+p1 compute 9055
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22594
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20154
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20159
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20155
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20188
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7087
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152400
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22589
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9062
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20180
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20195
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20190
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7082
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152398
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22560
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22550
+p1 recv p0
+p1 compute 9075
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20185
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7087
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152395
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22563
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22597
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20189
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20178
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7083
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65099
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152410
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22560
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9074
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9079
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9069
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20187
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20181
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20202
+p1 recv p3
+p1 compute 9091
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9073
+p1 send p0 200
+p1 compute 20189
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7083
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152402
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 22573
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9084
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9067
+p1 send p3 200
+p1 compute 22547
+p1 recv p0
+p1 compute 9055
+p1 send p3 200
+p1 compute 22553
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20180
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20194
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9073
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7085
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152394
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22570
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9064
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9076
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20159
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20199
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20181
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7081
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152395
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22549
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22559
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22547
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9077
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9080
+p1 send p3 200
+p1 compute 22560
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20190
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7081
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152383
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22563
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9096
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9068
+p1 send p3 200
+p1 compute 20176
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20187
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9070
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9053
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7085
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152400
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 22582
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9074
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9080
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20182
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20194
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9065
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20178
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7082
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65111
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152357
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22592
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22582
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9082
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9065
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9068
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20152
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20183
+p1 recv p3
+p1 compute 9090
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 7089
+p1 Irecv p0
+p1 compute 56
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152389
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 22571
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22550
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9094
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9082
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20183
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20182
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20200
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7085
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65125
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 55
+p1 wait
+p1 compute 152403
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22558
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22560
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20152
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20173
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20148
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7088
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65096
+p1 send p3 5760
+p1 compute 55
+p1 Irecv p3
+p1 compute 55
+p1 wait
+p1 compute 152397
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22565
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9068
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22560
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20188
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20193
+p1 recv p3
+p1 compute 9073
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20171
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7087
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65093
+p1 send p3 5760
+p1 compute 55
+p1 Irecv p3
+p1 compute 55
+p1 wait
+p1 compute 152411
+p1 recv p0
+p1 compute 9057
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22555
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22553
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9053
+p1 send p3 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9066
+p1 send p0 200
+p1 compute 20153
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20147
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9093
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 20146
+p1 recv p3
+p1 compute 9052
+p1 send p0 200
+p1 compute 7084
+p1 Irecv p0
+p1 compute 55
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65099
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 152410
+p1 recv p0
+p1 compute 9060
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22554
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22556
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 22548
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22548
+p1 recv p0
+p1 compute 9068
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9054
+p1 send p3 200
+p1 compute 22546
+p1 recv p0
+p1 compute 9052
+p1 send p3 200
+p1 compute 22547
+p1 recv p0
+p1 compute 9056
+p1 send p3 200
+p1 compute 20169
+p1 recv p3
+p1 compute 9070
+p1 send p0 200
+p1 compute 20154
+p1 recv p3
+p1 compute 9070
+p1 send p0 200
+p1 compute 20202
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20202
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20155
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20193
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 20156
+p1 recv p3
+p1 compute 9088
+p1 send p0 200
+p1 compute 20204
+p1 recv p3
+p1 compute 9056
+p1 send p0 200
+p1 compute 2668
+p1 comm_size 4
+p1 allReduce 40 99
+p1 compute 4536
+p1 Irecv p0
+p1 compute 56
+p1 wait
+p1 compute 56
+p1 send p0 5760
+p1 compute 65097
+p1 send p3 5760
+p1 compute 56
+p1 Irecv p3
+p1 compute 56
+p1 wait
+p1 compute 128748
+p1 comm_size 4
+p1 allReduce 40 94
+p1 compute 232
+p1 comm_size 4
+p1 allReduce 8 81
+p1 compute 110
+p1 finalize
+

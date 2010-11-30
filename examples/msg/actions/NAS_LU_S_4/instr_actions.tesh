@@ -1,0 +1,8 @@
+# A little tesh file testing most MPI-related actions
+
+
+$ ../actions --cfg=tracing:1 --cfg=tracing/smpi:1 --log=surf_config.thresh:critical --cfg=network/model:SMPI platform.xml deploy_MPI_4.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.095453] [actions/INFO] Simulation time 0.095453
