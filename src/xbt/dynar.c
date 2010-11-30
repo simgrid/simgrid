@@ -419,7 +419,6 @@ _xbt_dynar_set(xbt_dynar_t dynar,
 {
 
   _sanity_check_dynar(dynar);
-  _sanity_check_idx(idx);
 
   _xbt_dynar_expand(dynar, idx + 1);
 
