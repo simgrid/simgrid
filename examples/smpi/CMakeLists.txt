@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/bin/smpicc")
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/examples/smpi/")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 set(flags "-Dmain=smpi_simulated_main")
 set(INCLUDES_bis "-I${PROJECT_DIRECTORY}/include/smpi")
 

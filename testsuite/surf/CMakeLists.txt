@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}/testsuite/surf/")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(lmm_usage "lmm_usage.c")
 add_executable(maxmin_bench "maxmin_bench.c")
