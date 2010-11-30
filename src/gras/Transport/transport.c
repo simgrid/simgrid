@@ -490,7 +490,8 @@ void gras_socket_meas_send(gras_socket_t peer,
   unsigned long int sent_sofar;
 
   XBT_IN;
-
+  THROW0(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
+      "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
   if (gras_if_RL())
     chunk = xbt_malloc0(msg_size);
 
@@ -537,6 +538,8 @@ void gras_socket_meas_recv(gras_socket_t peer,
   unsigned long int got_sofar;
 
   XBT_IN;
+  THROW0(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
+      "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
 
   if (gras_if_RL())
     chunk = xbt_malloc(msg_size);
@@ -577,6 +580,8 @@ void gras_socket_meas_recv(gras_socket_t peer,
 gras_socket_t gras_socket_meas_accept(gras_socket_t peer)
 {
   gras_socket_t res;
+  THROW0(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
+      "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
 
   xbt_assert0(peer->meas,
               "No need to accept on non-measurement sockets (it's automatic)");
