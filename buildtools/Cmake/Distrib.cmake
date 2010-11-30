@@ -207,13 +207,22 @@ endif(HAVE_RUBY)
 ### Fill in the "make dist-dir" target ###
 ##########################################
 
+if(enable_doc)
 add_custom_target(dist-dir
+  COMMENT "Generating the distribution directory"
   COMMAND test -e simgrid-${release_version}/ && chmod -R a+w simgrid-${release_version}/ || true
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
   COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}
   COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/doc/html/
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_DIRECTORY}/doc/html/ simgrid-${release_version}/doc/html/
 )
+add_dependencies(dist-dir simgrid_documentation)
+else(enable_doc)
+add_custom_target(dist-dir
+	COMMAND ${CMAKE_COMMAND} -E echo "Please enable the doc to generate the doc"
+	COMMAND I_said_PLEASE_ENABLE_THE_DOC_GENERATION_BEFORE_BUILDING_AN_ARCHIVE
+)
+endif(enable_doc)
 
 set(dirs_in_tarball "")
 foreach(file ${source_to_pack})
@@ -248,6 +257,7 @@ add_custom_target(dist
 )
 add_custom_command(
 	OUTPUT ${CMAKE_BINARY_DIR}/simgrid-${release_version}.tar.gz	
+	COMMENT "Compressing the archive from the distribution directory"
 	COMMAND ${CMAKE_COMMAND} -E tar cf simgrid-${release_version}.tar simgrid-${release_version}/
   	COMMAND gzip -9v simgrid-${release_version}.tar
   	COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/

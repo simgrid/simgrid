@@ -149,9 +149,6 @@ endif(WIN32)
 ### Build the doc
 if(enable_doc)
 	include(${PROJECT_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
-
-	ADD_CUSTOM_TARGET(simgrid_documentation ALL)
-	add_dependencies(simgrid_documentation APPEND_DOC)
 endif(enable_doc)
 
 ### Make Simgrid.jar and Java examples

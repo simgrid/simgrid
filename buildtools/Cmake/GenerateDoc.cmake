@@ -36,56 +36,62 @@ file(GLOB_RECURSE source_doxygen
 	"${PROJECT_DIRECTORY}/include/*.[chl]"
 )
 
-ADD_CUSTOM_TARGET(APPEND_DOC
-	COMMENT "Generating the SimGrid documentation..."
-	DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
-	COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_DIRECTORY}/doc/html
-	COMMAND ${CMAKE_COMMAND} -E make_directory   ${PROJECT_DIRECTORY}/doc/html
-	COMMAND ${CMAKE_COMMAND} -E make_directory   ${PROJECT_DIRECTORY}/doc/html/generated
-	COMMAND ${CMAKE_COMMAND} -E touch   ${PROJECT_DIRECTORY}/doc/html/generated
-	WORKING_DIRECTORY ${PROJECT_DIRECTORY}/doc
-)
 
-string(REGEX REPLACE ";.*logcategories.doc" "" LISTE_DEUX "${LISTE_DEUX}")
+if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH)
 
-#DOC_SOURCE=doc/*.doc, defined in DefinePackage
-set(DOCSSOURCES "${source_doxygen}\n${DOC_SOURCE}")
-string(REPLACE "\n" ";" DOCSSOURCES ${DOCSSOURCES})
+	string(REGEX REPLACE ";.*logcategories.doc" "" LISTE_DEUX "${LISTE_DEUX}")
+
+	#DOC_SOURCE=doc/*.doc, defined in DefinePackage
+	set(DOCSSOURCES "${source_doxygen}\n${DOC_SOURCE}")
+	string(REPLACE "\n" ";" DOCSSOURCES ${DOCSSOURCES})
 
 
-set(DOC_PNGS 
-	${PROJECT_DIRECTORY}/doc/webcruft/simgrid_logo.png
-	${PROJECT_DIRECTORY}/doc/webcruft/simgrid_logo_small.png
-	${PROJECT_DIRECTORY}/doc/webcruft/poster_thumbnail.png
-)
-
-if(DOXYGEN_PATH AND FIG2DEV_PATH)
-
-	ADD_CUSTOM_COMMAND(TARGET APPEND_DOC
-		COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${PROJECT_DIRECTORY}/doc/fig/simgrid_modules.fig |perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' > ${PROJECT_DIRECTORY}/doc/simgrid_modules.map
+	set(DOC_PNGS 
+		${PROJECT_DIRECTORY}/doc/webcruft/simgrid_logo.png
+		${PROJECT_DIRECTORY}/doc/webcruft/simgrid_logo_small.png
+		${PROJECT_DIRECTORY}/doc/webcruft/poster_thumbnail.png
 	)
 	
+	ADD_CUSTOM_TARGET(simgrid_documentation ALL
+		COMMENT "Generating the SimGrid documentation..."
+		DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen} 
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_DIRECTORY}/doc/html
+		COMMAND ${CMAKE_COMMAND} -E make_directory   ${PROJECT_DIRECTORY}/doc/html
+		
+		COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${PROJECT_DIRECTORY}/doc/fig/simgrid_modules.fig |perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' > ${PROJECT_DIRECTORY}/doc/simgrid_modules.map
+		
+		WORKING_DIRECTORY ${PROJECT_DIRECTORY}/doc
+	)
+
+	ADD_CUSTOM_COMMAND(
+		OUTPUT ${PROJECT_DIRECTORY}/doc/logcategories.doc
+		DEPENDS ${source_doxygen}
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_DIRECTORY}/doc/logcategories.doc
+		COMMAND ${PROJECT_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl > ${PROJECT_DIRECTORY}/doc/logcategories.doc
+		WORKING_DIRECTORY ${PROJECT_DIRECTORY}
+	)
+
 	foreach(file ${FIGS})
 		string(REPLACE ".fig" ".png" tmp_file ${file})
 		string(REPLACE "${PROJECT_DIRECTORY}/doc/fig/" "${PROJECT_DIRECTORY}/doc/html/" tmp_file ${tmp_file})
-		ADD_CUSTOM_COMMAND(TARGET APPEND_DOC
+		ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
 			COMMAND "${FIG2DEV_PATH}/fig2dev -Lpng ${file} ${tmp_file}"
 		)
 	endforeach(file ${FIGS})
 
 
-	ADD_CUSTOM_COMMAND(TARGET APPEND_DOC
+	ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
 		COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_DIRECTORY}/doc/index-API.doc ${PROJECT_DIRECTORY}/doc/.FAQ.doc.toc ${PROJECT_DIRECTORY}/doc/.index.doc.toc ${PROJECT_DIRECTORY}/doc/.contrib.doc.toc ${PROJECT_DIRECTORY}/doc/.history.doc.toc
 	)
 	
 
 	foreach(file ${DOC_PNGS})
-		ADD_CUSTOM_COMMAND(TARGET APPEND_DOC
+		ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
 			COMMAND ${CMAKE_COMMAND} -E copy ${file} ${PROJECT_DIRECTORY}/doc/html/
 		)
 	endforeach(file ${DOC_PNGS})
 
-	ADD_CUSTOM_COMMAND(TARGET APPEND_DOC
+	ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
 		COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg ${PROJECT_DIRECTORY}/doc/html/
 		COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg     ${PROJECT_DIRECTORY}/doc/html/
 		COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_DIRECTORY}/doc/triva-graph_configuration.png        ${PROJECT_DIRECTORY}/doc/html/
@@ -95,7 +101,7 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH)
 
 	configure_file(${PROJECT_DIRECTORY}/doc/Doxyfile.in ${PROJECT_DIRECTORY}/doc/Doxyfile @ONLY)
 
-	ADD_CUSTOM_COMMAND(TARGET APPEND_DOC
+	ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
 		WORKING_DIRECTORY ${PROJECT_DIRECTORY}/doc/
 		COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
 		COMMAND ${DOXYGEN_PATH}/doxygen ${PROJECT_DIRECTORY}/doc/Doxyfile
@@ -124,13 +130,12 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH)
 		COMMAND ${CMAKE_COMMAND} -E echo \"<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>DAG Simulator.</a></h2></center></html>\" >> ${PROJECT_DIRECTORY}/doc/html/simdag.html
 	)
 
-if(BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH)
 	ADD_CUSTOM_COMMAND(
 		OUTPUT ${PROJECT_DIRECTORY}/doc/publis_count.html
 		DEPENDS all.bib
 		COMMAND ${PROJECT_DIRECTORY}/tools/doxygen/bibtex2html_table_count.pl < ${PROJECT_DIRECTORY}/doc/all.bib > ${PROJECT_DIRECTORY}/doc/publis_count.html
 	)
-	add_dependencies(APPEND_DOC ${PROJECT_DIRECTORY}/doc/publis_count.html)
+	add_dependencies(simgrid_documentation ${PROJECT_DIRECTORY}/doc/publis_count.html)
 
 	ADD_CUSTOM_COMMAND(
 		OUTPUT publis_core.bib publis_extern.bib publis_intra.bib
@@ -149,21 +154,13 @@ if(BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH)
 			COMMAND ${PROJECT_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl ${file}
 		)
 
-		add_dependencies(APPEND_DOC ${PROJECT_DIRECTORY}/doc/${file}.html)
+		add_dependencies(simgrid_documentation ${PROJECT_DIRECTORY}/doc/${file}.html)
 	endforeach(file "publis_core publis_extern publis_intra")
 	
-endif(BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH)
+else(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH)
+	message(FATAL_ERROR "You asked to regenerate the documentation, but you are missing some build-dependencies. Please install them, or change enable_doc to OFF")
 
-endif(DOXYGEN_PATH AND FIG2DEV_PATH)
-
-ADD_CUSTOM_COMMAND(
-	OUTPUT ${PROJECT_DIRECTORY}/doc/logcategories.doc
-	DEPENDS ${source_doxygen}
-	COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_DIRECTORY}/doc/logcategories.doc
-	COMMAND ${PROJECT_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl > ${PROJECT_DIRECTORY}/doc/logcategories.doc
-	WORKING_DIRECTORY ${PROJECT_DIRECTORY}
-)
-
+endif(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH)
 
 message("Check individual TOCs")
 file(GLOB_RECURSE LISTE_GTUT
