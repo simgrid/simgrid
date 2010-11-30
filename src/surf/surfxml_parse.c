@@ -222,7 +222,7 @@ void STag_surfxml_platform(void)
               "SURF section of the ChangeLog for the 3.1 version. "
               "Last, do not forget to also update your values for "
               "the calls to MSG_task_create (if any).");
-  xbt_assert0((version >= 2.0), "******* BIG FAT WARNING *********\n "
+  xbt_assert0((version >= 3.0), "******* BIG FAT WARNING *********\n "
               "You're using an old XML file. "
               "A script (surfxml_update.pl) to help you convert your old "
               "platform files "
