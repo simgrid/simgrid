@@ -1,7 +1,5 @@
 SimGrid (3.5) unstable; urgency=low
 
- Checked up to svn r8722 (Mt)
-
  MSG
  * Asynchronous communications through the functions:
    MSG_task_isend/irecv and MSG_comm_test/wait/waitall
@@ -142,6 +140,7 @@ SimGrid (3.5) unstable; urgency=low
  * Port to windows
  * Out of source builds are not fully supported yet, but we are close
  * Enable supernovae and optimization flags by default for our users
+ * Cmake is now stable enough so that we killed the autotools
 
  Platforms: Add some more examples in examples/platforms
  * Grid'5000: see www.grid5000.fr
