@@ -390,6 +390,28 @@ XBT_INLINE void *xbt_dynar_get_ptr(const xbt_dynar_t dynar,
   return res;
 }
 
+XBT_INLINE void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
+                                      const unsigned long idx)
+{
+
+  void *res;
+  _dynar_lock(dynar);
+  _sanity_check_dynar(dynar);
+
+  _xbt_dynar_expand(dynar, idx + 1);
+
+  if (idx >= dynar->used) {
+    _xbt_clear_mem(((char * const)dynar->data) + dynar->used * dynar->elmsize,
+                   (idx + 1 - dynar->used)*dynar->elmsize);
+    dynar->used = idx + 1;
+  }
+  
+  _dynar_unlock(dynar);
+
+  res = _xbt_dynar_elm(dynar, idx);
+
+  return res;
+}
 
 static void XBT_INLINE          /* not synchronized */
 _xbt_dynar_set(xbt_dynar_t dynar,
@@ -402,6 +424,8 @@ _xbt_dynar_set(xbt_dynar_t dynar,
   _xbt_dynar_expand(dynar, idx + 1);
 
   if (idx >= dynar->used) {
+    _xbt_clear_mem(((char * const)dynar->data) + dynar->used * dynar->elmsize,
+                   (idx + 1 - dynar->used)*dynar->elmsize);
     dynar->used = idx + 1;
   }
 
