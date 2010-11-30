@@ -338,8 +338,6 @@ int MAIN__(void)
 
   smpi_global_destroy();
 
-  SIMIX_message_sizes_output("toto.txt");
-
 #ifdef HAVE_TRACING
   TRACE_smpi_release();
 #endif
