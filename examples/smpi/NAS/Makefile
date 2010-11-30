@@ -48,6 +48,10 @@ EP-trace: ep-trace
 ep-trace: header
 	cd EP-trace; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
 
+EP-folding: ep-folding
+ep-folding: header
+	cd EP-folding; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
+
 DT: dt
 dt: header
 	cd DT; $(MAKE) CLASS=$(CLASS)
