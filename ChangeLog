@@ -125,11 +125,11 @@ SimGrid (3.5) unstable; urgency=low
 
  SMPI
  * New Model SMPI (three-interval linear regression for correction factors)
+   See RR-7426, available at http://hal.inria.fr/inria-00527150
  * Ability to use fortran MPI code (through f2c, automatically privatized)
  * New MPI functions supported: MPI_Get_count(), MPI_Comm_split()
- * New: RAM folding (see RR-7426, http://hal.inria.fr/inria-00527150)
-   and examples/smpi/NAS/DT-folding/
- * New feature: execution sampling (see RR-7426)
+ * New: RAM folding (see RR-7426 and examples/smpi/NAS/DT-folding)
+ * New: execution sampling (see RR-7426 and examples/smpi/NAS/EP-sampling)
  * See also src/smpi/README
 
  Build chain: bug fixes and overall polishing
