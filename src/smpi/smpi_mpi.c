@@ -1713,3 +1713,255 @@ MPI_CALL_IMPLEM(int, MPI_Get_count, (MPI_Status * status, MPI_Datatype datatype,
   smpi_bench_begin(-1, NULL);
   return retval;
 }
+
+/* The following calls are not yet implemented and will fail at runtime. */
+/* Once implemented, please move them above this notice. */
+
+static int not_yet_implemented(void) {
+   xbt_die("Not yet implemented");
+   return MPI_ERR_OTHER;
+}
+
+MPI_CALL_IMPLEM(int, MPI_Pack_size, (int incount, MPI_Datatype datatype, MPI_Comm comm, int* size)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Cart_coords, (MPI_Comm comm, int rank, int maxdims, int* coords)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Cart_create, (MPI_Comm comm_old, int ndims, int* dims, int* periods, int reorder, MPI_Comm* comm_cart)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Cart_get, (MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Cart_map, (MPI_Comm comm_old, int ndims, int* dims, int* periods, int* newrank)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Cart_rank, (MPI_Comm comm, int* coords, int* rank)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Cart_shift, (MPI_Comm comm, int direction, int displ, int* source, int* dest)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Cart_sub, (MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Cartdim_get, (MPI_Comm comm, int* ndims)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Graph_create, (MPI_Comm comm_old, int nnodes, int* index, int* edges, int reorder, MPI_Comm* comm_graph)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Graph_get, (MPI_Comm comm, int maxindex, int maxedges, int* index, int* edges)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Graph_map, (MPI_Comm comm_old, int nnodes, int* index, int* edges, int* newrank)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Graph_neighbors, (MPI_Comm comm, int rank, int maxneighbors, int* neighbors)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Graph_neighbors_count, (MPI_Comm comm, int rank, int* nneighbors)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Graphdims_get, (MPI_Comm comm, int* nnodes, int* nedges)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Topo_test, (MPI_Comm comm, int* top_type)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Error_class, (int errorcode, int* errorclass)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Errhandler_create, (MPI_Handler_function* function, MPI_Errhandler* errhandler)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Errhandler_free, (MPI_Errhandler* errhandler)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Errhandler_get, (MPI_Comm comm, MPI_Errhandler* errhandler)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Error_string, (int errorcode, char* string, int* resultlen)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Errhandler_set, (MPI_Comm comm, MPI_Errhandler errhandler)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Type_contiguous, (int count, MPI_Datatype old_type, MPI_Datatype* newtype)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Cancel, (MPI_Request* request)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Buffer_attach, (void* buffer, int size)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Buffer_detach, (void* buffer, int* size)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Testsome, (int incount, MPI_Request* requests, int* outcount, int* indices, MPI_Status* statuses)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Comm_test_inter, (MPI_Comm comm, int* flag)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Unpack, (void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Type_commit, (MPI_Datatype* datatype)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Type_hindexed, (int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* newtype)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Type_hvector, (int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* newtype)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Type_indexed, (int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* newtype)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Type_struct, (int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* newtype)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Type_vector, (int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* newtype)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Ssend, (void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Ssend_init, (void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Intercomm_create, (MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, int remote_leader, int tag, MPI_Comm* comm_out)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Intercomm_merge, (MPI_Comm comm, int high, MPI_Comm* comm_out)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Bsend, (void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Bsend_init, (void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Ibsend, (void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Comm_remote_group, (MPI_Comm comm, MPI_Group* group)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Comm_remote_size, (MPI_Comm comm, int* size)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Issend, (void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Probe, (int source, int tag, MPI_Comm comm, MPI_Status* status)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Attr_delete, (MPI_Comm comm, int keyval)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Attr_get, (MPI_Comm comm, int keyval, void* attr_value, int* flag)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Attr_put, (MPI_Comm comm, int keyval, void* attr_value)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Rsend, (void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Rsend_init, (void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Irsend, (void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Keyval_create, (MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Keyval_free, (int* keyval)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Test_cancelled, (MPI_Status* status, int* flag)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Pack, (void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Testall, (int count, MPI_Request* requests, int* flag, MPI_Status* statuses)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Get_elements, (MPI_Status* status, MPI_Datatype datatype, int* elements)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Dims_create, (int nnodes, int ndims, int* dims)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Iprobe, (int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status)) {
+   return not_yet_implemented();
+}
+
+MPI_CALL_IMPLEM(int, MPI_Initialized, (int* flag)) {
+   return not_yet_implemented();
+}
