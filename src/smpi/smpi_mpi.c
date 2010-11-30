@@ -165,8 +165,9 @@ MPI_CALL_IMPLEM(int, MPI_Type_size, (MPI_Datatype datatype, int *size))
   return retval;
 }
 
-int MPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint * lb,
-                        MPI_Aint * extent)
+MPI_CALL_IMPLEM(int, MPI_Type_get_extent,
+                       (MPI_Datatype datatype, MPI_Aint * lb,
+                        MPI_Aint * extent))
 {
   int retval;
 
@@ -316,8 +317,9 @@ MPI_CALL_IMPLEM(int, MPI_Group_rank, (MPI_Group group, int *rank))
   return retval;
 }
 
-int MPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1,
-                              MPI_Group group2, int *ranks2)
+MPI_CALL_IMPLEM(int, MPI_Group_translate_ranks,
+                       (MPI_Group group1, int n, int *ranks1,
+                        MPI_Group group2, int *ranks2))
 {
   int retval, i, index;
 
@@ -352,8 +354,9 @@ MPI_CALL_IMPLEM(int, MPI_Group_compare, (MPI_Group group1, MPI_Group group2, int
   return retval;
 }
 
-int MPI_Group_union(MPI_Group group1, MPI_Group group2,
-                    MPI_Group * newgroup)
+MPI_CALL_IMPLEM(int, MPI_Group_union,
+                       (MPI_Group group1, MPI_Group group2,
+                        MPI_Group * newgroup))
 {
   int retval, i, proc1, proc2, size, size2;
 
@@ -393,8 +396,9 @@ int MPI_Group_union(MPI_Group group1, MPI_Group group2,
   return retval;
 }
 
-int MPI_Group_intersection(MPI_Group group1, MPI_Group group2,
-                           MPI_Group * newgroup)
+MPI_CALL_IMPLEM(int, MPI_Group_intersection,
+                       (MPI_Group group1, MPI_Group group2,
+                        MPI_Group * newgroup))
 {
   int retval, i, proc1, proc2, size, size2;
 
@@ -433,8 +437,9 @@ int MPI_Group_intersection(MPI_Group group1, MPI_Group group2,
   return retval;
 }
 
-int MPI_Group_difference(MPI_Group group1, MPI_Group group2,
-                         MPI_Group * newgroup)
+MPI_CALL_IMPLEM(int, MPI_Group_difference,
+                       (MPI_Group group1, MPI_Group group2,
+                        MPI_Group * newgroup))
 {
   int retval, i, proc1, proc2, size, size2;
 
@@ -471,8 +476,9 @@ int MPI_Group_difference(MPI_Group group1, MPI_Group group2,
   return retval;
 }
 
-int MPI_Group_incl(MPI_Group group, int n, int *ranks,
-                   MPI_Group * newgroup)
+MPI_CALL_IMPLEM(int, MPI_Group_incl,
+                       (MPI_Group group, int n, int *ranks,
+                        MPI_Group * newgroup))
 {
   int retval, i, index;
 
@@ -500,8 +506,9 @@ int MPI_Group_incl(MPI_Group group, int n, int *ranks,
   return retval;
 }
 
-int MPI_Group_excl(MPI_Group group, int n, int *ranks,
-                   MPI_Group * newgroup)
+MPI_CALL_IMPLEM(int, MPI_Group_excl,
+                       (MPI_Group group, int n, int *ranks,
+                        MPI_Group * newgroup))
 {
   int retval, i, size, rank, index;
 
@@ -539,8 +546,9 @@ int MPI_Group_excl(MPI_Group group, int n, int *ranks,
   return retval;
 }
 
-int MPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
-                         MPI_Group * newgroup)
+MPI_CALL_IMPLEM(int, MPI_Group_range_incl,
+                       (MPI_Group group, int n, int ranges[][3],
+                        MPI_Group * newgroup))
 {
   int retval, i, j, rank, size, index;
 
@@ -584,8 +592,9 @@ int MPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
   return retval;
 }
 
-int MPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
-                         MPI_Group * newgroup)
+MPI_CALL_IMPLEM(int, MPI_Group_range_excl,
+                       (MPI_Group group, int n, int ranges[][3],
+                        MPI_Group * newgroup))
 {
   int retval, i, newrank, rank, size, index, add;
 
@@ -783,8 +792,9 @@ MPI_CALL_IMPLEM(int, MPI_Comm_split, (MPI_Comm comm, int color, int key, MPI_Com
   return retval;
 }
 
-int MPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst,
-                  int tag, MPI_Comm comm, MPI_Request * request)
+MPI_CALL_IMPLEM(int, MPI_Send_init,
+                       (void *buf, int count, MPI_Datatype datatype, int dst,
+                        int tag, MPI_Comm comm, MPI_Request * request))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -802,8 +812,9 @@ int MPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst,
   return retval;
 }
 
-int MPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src,
-                  int tag, MPI_Comm comm, MPI_Request * request)
+MPI_CALL_IMPLEM(int, MPI_Recv_init,
+                       (void *buf, int count, MPI_Datatype datatype, int src,
+                        int tag, MPI_Comm comm, MPI_Request * request))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -873,8 +884,9 @@ MPI_CALL_IMPLEM(int, MPI_Request_free, (MPI_Request * request))
   return retval;
 }
 
-int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
-              int tag, MPI_Comm comm, MPI_Request * request)
+MPI_CALL_IMPLEM(int, MPI_Irecv,
+                       (void *buf, int count, MPI_Datatype datatype, int src,
+                        int tag, MPI_Comm comm, MPI_Request * request))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -900,8 +912,9 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
   return retval;
 }
 
-int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
-              int tag, MPI_Comm comm, MPI_Request * request)
+MPI_CALL_IMPLEM(int, MPI_Isend,
+                       (void *buf, int count, MPI_Datatype datatype, int dst,
+                        int tag, MPI_Comm comm, MPI_Request * request))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -928,8 +941,9 @@ int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
   return retval;
 }
 
-int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
-             MPI_Comm comm, MPI_Status * status)
+MPI_CALL_IMPLEM(int, MPI_Recv,
+                       (void *buf, int count, MPI_Datatype datatype, int src, int tag,
+                        MPI_Comm comm, MPI_Status * status))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -953,8 +967,9 @@ int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
   return retval;
 }
 
-int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
-             MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Send,
+                       (void *buf, int count, MPI_Datatype datatype, int dst, int tag,
+                        MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -978,10 +993,11 @@ int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
   return retval;
 }
 
-int MPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                 int dst, int sendtag, void *recvbuf, int recvcount,
-                 MPI_Datatype recvtype, int src, int recvtag,
-                 MPI_Comm comm, MPI_Status * status)
+MPI_CALL_IMPLEM(int, MPI_Sendrecv,
+                       (void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                        int dst, int sendtag, void *recvbuf, int recvcount,
+                        MPI_Datatype recvtype, int src, int recvtag,
+                        MPI_Comm comm, MPI_Status * status))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1013,9 +1029,10 @@ int MPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return retval;
 }
 
-int MPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
-                         int dst, int sendtag, int src, int recvtag,
-                         MPI_Comm comm, MPI_Status * status)
+MPI_CALL_IMPLEM(int, MPI_Sendrecv_replace,
+                       (void *buf, int count, MPI_Datatype datatype,
+                        int dst, int sendtag, int src, int recvtag,
+                        MPI_Comm comm, MPI_Status * status))
 {
   //TODO: suboptimal implementation
   void *recvbuf;
@@ -1051,8 +1068,9 @@ MPI_CALL_IMPLEM(int, MPI_Test, (MPI_Request * request, int *flag, MPI_Status * s
   return retval;
 }
 
-int MPI_Testany(int count, MPI_Request requests[], int *index, int *flag,
-                MPI_Status * status)
+MPI_CALL_IMPLEM(int, MPI_Testany,
+                       (int count, MPI_Request requests[], int *index, int *flag,
+                        MPI_Status * status))
 {
   int retval;
 
@@ -1100,8 +1118,9 @@ MPI_CALL_IMPLEM(int, MPI_Wait, (MPI_Request * request, MPI_Status * status))
   return retval;
 }
 
-int MPI_Waitany(int count, MPI_Request requests[], int *index,
-                MPI_Status * status)
+MPI_CALL_IMPLEM(int, MPI_Waitany,
+                       (int count, MPI_Request requests[], int *index,
+                        MPI_Status * status))
 {
   int retval;
 
@@ -1204,8 +1223,9 @@ MPI_CALL_IMPLEM(int, MPI_Waitall, (int count, MPI_Request requests[], MPI_Status
   return MPI_SUCCESS;
 }
 
-int MPI_Waitsome(int incount, MPI_Request requests[], int *outcount,
-                 int *indices, MPI_Status status[])
+MPI_CALL_IMPLEM(int, MPI_Waitsome,
+                       (int incount, MPI_Request requests[], int *outcount,
+                        int *indices, MPI_Status status[]))
 {
   int retval;
 
@@ -1220,8 +1240,9 @@ int MPI_Waitsome(int incount, MPI_Request requests[], int *outcount,
   return retval;
 }
 
-int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
-              MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Bcast,
+                       (void *buf, int count, MPI_Datatype datatype, int root,
+                        MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1266,9 +1287,10 @@ MPI_CALL_IMPLEM(int, MPI_Barrier, (MPI_Comm comm))
   return retval;
 }
 
-int MPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-               void *recvbuf, int recvcount, MPI_Datatype recvtype,
-               int root, MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Gather,
+                       (void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                        void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                        int root, MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1295,9 +1317,10 @@ int MPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return retval;
 }
 
-int MPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                void *recvbuf, int *recvcounts, int *displs,
-                MPI_Datatype recvtype, int root, MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Gatherv,
+                       (void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                        void *recvbuf, int *recvcounts, int *displs,
+                        MPI_Datatype recvtype, int root, MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1326,9 +1349,10 @@ int MPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return retval;
 }
 
-int MPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                  void *recvbuf, int recvcount, MPI_Datatype recvtype,
-                  MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Allgather,
+                       (void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                        void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                        MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1354,9 +1378,10 @@ int MPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return retval;
 }
 
-int MPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                   void *recvbuf, int *recvcounts, int *displs,
-                   MPI_Datatype recvtype, MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Allgatherv,
+                       (void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                        void *recvbuf, int *recvcounts, int *displs,
+                        MPI_Datatype recvtype, MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1384,9 +1409,10 @@ int MPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return retval;
 }
 
-int MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                void *recvbuf, int recvcount, MPI_Datatype recvtype,
-                int root, MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Scatter,
+                       (void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                        void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                        int root, MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1413,9 +1439,10 @@ int MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return retval;
 }
 
-int MPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
-                 MPI_Datatype sendtype, void *recvbuf, int recvcount,
-                 MPI_Datatype recvtype, int root, MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Scatterv,
+                       (void *sendbuf, int *sendcounts, int *displs,
+                        MPI_Datatype sendtype, void *recvbuf, int recvcount,
+                        MPI_Datatype recvtype, int root, MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1444,8 +1471,9 @@ int MPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
   return retval;
 }
 
-int MPI_Reduce(void *sendbuf, void *recvbuf, int count,
-               MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Reduce,
+                       (void *sendbuf, void *recvbuf, int count,
+                        MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1470,8 +1498,9 @@ int MPI_Reduce(void *sendbuf, void *recvbuf, int count,
   return retval;
 }
 
-int MPI_Allreduce(void *sendbuf, void *recvbuf, int count,
-                  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Allreduce,
+                       (void *sendbuf, void *recvbuf, int count,
+                        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1497,8 +1526,9 @@ int MPI_Allreduce(void *sendbuf, void *recvbuf, int count,
   return retval;
 }
 
-int MPI_Scan(void *sendbuf, void *recvbuf, int count,
-             MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Scan,
+                       (void *sendbuf, void *recvbuf, int count,
+                        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1524,8 +1554,9 @@ int MPI_Scan(void *sendbuf, void *recvbuf, int count,
   return retval;
 }
 
-int MPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
-                       MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Reduce_scatter,
+                       (void *sendbuf, void *recvbuf, int *recvcounts,
+                        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm))
 {
   int retval, i, size, count;
   int *displs;
@@ -1566,9 +1597,10 @@ int MPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
   return retval;
 }
 
-int MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                 void *recvbuf, int recvcount, MPI_Datatype recvtype,
-                 MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Alltoall,
+                       (void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                        void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                        MPI_Comm comm))
 {
   int retval, size, sendsize;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1609,9 +1641,10 @@ int MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return retval;
 }
 
-int MPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
-                  MPI_Datatype sendtype, void *recvbuf, int *recvcounts,
-                  int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Alltoallv,
+                       (void *sendbuf, int *sendcounts, int *senddisps,
+                        MPI_Datatype sendtype, void *recvbuf, int *recvcounts,
+                        int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
