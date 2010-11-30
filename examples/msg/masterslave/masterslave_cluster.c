@@ -145,9 +145,9 @@ static int bypass_deployment(void)
 	nb_host = MSG_get_host_number();
 
 	/* <platform> */
-	SURFXML_BUFFER_SET(platform_version, "2");
+	SURFXML_BUFFER_SET(platform_version, "3");
 	SURFXML_START_TAG(platform);
-	DEBUG0("<platform version=\"2\">");
+	DEBUG0("<platform version=\"3\">");
 
 	  DEBUG0("	<process host=\"c-0.me\" function=\"master\">");
 	  SURFXML_BUFFER_SET(process_host, "c-0.me");
