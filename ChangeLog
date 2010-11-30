@@ -1,6 +1,6 @@
 SimGrid (3.5) unstable; urgency=low
 
- Checked up to svn r8318 (Mt)
+ Checked up to svn r8722 (Mt)
 
  MSG
  * Asynchronous communications through the functions:
@@ -28,6 +28,8 @@ SimGrid (3.5) unstable; urgency=low
    connect several platforms together. We will try to provide soon
    set of realistic platforms exploiting these properties (have a
    look at examples/platforms/ for the moment).
+ * Take the opportunity to be a good XML citizen: rename link:ctn to
+   link_ctn and similar changes (also dealed with by simgrid_update_xml)
  * Add a new routing scheme (rule-based) using regular expressions. It
    enables to have an extremely low memory footprint when the
    underlying routing is simple and can be compactly described. You
@@ -90,13 +92,16 @@ SimGrid (3.5) unstable; urgency=low
    format. This loader and the corresponding examples require the
    installation of the graphviz library.
  * new function SD_workstation_get_current_task()
+ * Task rate should be -1 by default
+   Using 0 as before caused TCP_gamma bound to be ignored.
+   This change modifies (fixes) almost every simdag timings.
 
  XBT
  * New data container: setset (set of sets of elements)
  * New module: mmalloc (mapped malloc, allowing to have several
    independent segments of malloc)
  * New function: xbt_dict_cursor_set_data()
- * New function: xbt_dynar_sort()
+ * New functions: xbt_dynar_sort(), xbt_dynar_compare()
  * New function: xbt_dynar_is_empty()
  * New function: xbt_fifo_get_last_item()
  * Bug fix in xbt_dynar_shrink(): use the right element size
@@ -118,11 +123,12 @@ SimGrid (3.5) unstable; urgency=low
 
  SMPI
  * New Model SMPI (three-interval linear regression for correction factors)
- * New functions:
-   - MPI_Get_count()
+ * Ability to use fortran MPI code (through f2c, automatically privatized)
+ * New MPI functions supported: MPI_Get_count(), MPI_Comm_split()
  * New: RAM folding (see RR-7426, http://hal.inria.fr/inria-00527150)
    and examples/smpi/NAS/DT-folding/
  * New feature: execution sampling (see RR-7426)
+ * See also src/smpi/README
 
  Build chain: bug fixes and overall polishing
  * Fix the 'make install' target.
@@ -132,10 +138,12 @@ SimGrid (3.5) unstable; urgency=low
  * Compile java files only on need
  * Add --cd and --setenv command line options to tesh
  * Port to windows
- * Out of source builds are not supported yet
+ * Out of source builds are not fully supported yet, but we are close
+ * Enable supernovae and optimization flags by default for our users
 
  Platforms: Add some more examples in examples/platforms
  * Grid'5000: see www.grid5000.fr
+ * *_30000_hosts.xml: various huge files [mainly scalability testing]
 
  Tracing:
  * Tracing system
@@ -161,6 +169,7 @@ SimGrid (3.5) unstable; urgency=low
    - To run the simulation with gdb, the simulator
      accepts --cfg=tracing/smpi:1 to trace SMPI
    - tesh files to check if smpi tracing is ok
+   - See examples/smpi/NAS/DT-trace
 
  * GTNetS tracing re-worked
    - adaptation to the tracing system of GTNets to cope
