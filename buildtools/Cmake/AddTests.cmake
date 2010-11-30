@@ -189,7 +189,6 @@ ADD_TEST(simdag-test_simdag	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTOR
 ADD_TEST(simdag-test_simdag2	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag test_simdag2.tesh)
 ADD_TEST(simdag-test_simdag_seq_access	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag test_simdag_seq_access.tesh)
 ADD_TEST(simdag-test_prop	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag properties/test_prop.tesh)
-ADD_TEST(simdag-metaxml_test	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag metaxml/metaxml_test.tesh)
 ADD_TEST(simdag-minmin_test	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
 
 if(HAVE_GTNETS)
@@ -265,9 +264,6 @@ else(${ARCH_32_BITS})
 	set_tests_properties( amok-bandwidth-sg-64 PROPERTIES WILL_FAIL true)   
 	set_tests_properties( amok-saturate-sg-64 PROPERTIES WILL_FAIL true)  
 endif(${ARCH_32_BITS})
-
-# Expected to fail until the parser gets better (v3.3.5?)
-set_tests_properties(simdag-metaxml_test PROPERTIES WILL_FAIL true)
 
 if(HAVE_RUBY)
 set_tests_properties(ruby-quicksort PROPERTIES WILL_FAIL true)
