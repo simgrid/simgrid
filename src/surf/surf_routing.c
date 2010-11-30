@@ -3211,6 +3211,9 @@ static void routing_parse_Scluster(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
+  DEBUG0(" ");
+
+#ifdef HAVE_PCRE_LIB
   char *new_suffix = bprintf("%s", "");
 
   radical_elements = xbt_str_split(cluster_suffix, ".");
@@ -3220,10 +3223,6 @@ static void routing_parse_Scluster(void)
     }
   }
   route_src_dst = bprintf("%s(.*)%s", cluster_prefix, new_suffix);
-
-  DEBUG0(" ");
-
-#ifdef HAVE_PCRE_LIB
 
   DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", route_src_dst, route_src_dst);
   DEBUG0("symetrical=\"NO\">");
