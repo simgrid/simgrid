@@ -287,10 +287,6 @@ add_test(test-surf-usage	${CMAKE_HOME_DIRECTORY}/testsuite/surf/surf_usage  --cf
 add_test(test-surf_usage2	${CMAKE_HOME_DIRECTORY}/testsuite/surf/surf_usage2  --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/ platform.xml)
 add_test(test-surf-trace	${CMAKE_HOME_DIRECTORY}/testsuite/surf/trace_usage --cfg=path:${PROJECT_DIRECTORY}/testsuite/surf/)
 
-add_test(test-simdag-1 ${CMAKE_HOME_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag small_platform_variable.xml)
-add_test(test-simdag-2 ${CMAKE_HOME_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/small_platform.xml)
-add_test(test-simdag-3 ${CMAKE_HOME_DIRECTORY}/testsuite/simdag/sd_test --cfg=path:${PROJECT_DIRECTORY}/testsuite/simdag ${PROJECT_DIRECTORY}/examples/msg/msg_platform.xml)
-
 add_test(testall		${CMAKE_HOME_DIRECTORY}/src/testall)
 
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/memcheck_tests.cmake)

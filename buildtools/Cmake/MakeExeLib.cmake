@@ -167,7 +167,6 @@ add_subdirectory(${PROJECT_DIRECTORY}/tools/tesh)
 
 add_subdirectory(${PROJECT_DIRECTORY}/testsuite/xbt)
 add_subdirectory(${PROJECT_DIRECTORY}/testsuite/surf)
-add_subdirectory(${PROJECT_DIRECTORY}/testsuite/simdag)
 add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/xbt)
 add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/gras/datadesc)
 add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle)
