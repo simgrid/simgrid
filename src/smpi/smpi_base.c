@@ -286,10 +286,11 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
 void smpi_mpi_waitall(int count, MPI_Request requests[],
                       MPI_Status status[])
 {
-  int index;
+  int index, c;
   MPI_Status stat;
 
-  while (count > 0) {
+  c = count;
+  while (c > 0) {
     index = smpi_mpi_waitany(count, requests, &stat);
     if (index == MPI_UNDEFINED) {
       break;
@@ -297,11 +298,7 @@ void smpi_mpi_waitall(int count, MPI_Request requests[],
     if (status != MPI_STATUS_IGNORE) {
       memcpy(&status[index], &stat, sizeof(stat));
     }
-    // FIXME: check this -v
-    // Move the last request to the found position
-    requests[index] = requests[count - 1];
-    requests[count - 1] = MPI_REQUEST_NULL;
-    count--;
+    c--;
   }
 }
 
