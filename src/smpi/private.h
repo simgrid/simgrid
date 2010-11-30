@@ -179,8 +179,8 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
 
 // utilities
 void smpi_bench_destroy(void);
-void smpi_bench_begin(int rank, const char *mpi_call);
-void smpi_bench_end(int rank, const char *mpi_call);
+void smpi_bench_begin(void);
+void smpi_bench_end(void);
 
 // f77 wrappers
 void mpi_init__(int*);

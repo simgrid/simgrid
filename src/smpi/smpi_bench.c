@@ -74,27 +74,17 @@ static void smpi_execute(double duration)
   }
 }
 
-void smpi_bench_begin(int rank, const char *mpi_call)
+void smpi_bench_begin(void)
 {
-  if (mpi_call && rank >= 0
-      && xbt_cfg_get_int(_surf_cfg_set, "smpi/log_events")) {
-    INFO3("SMPE: ts=%f rank=%d type=end et=%s", SIMIX_get_clock(), rank,
-          mpi_call);
-  }
   xbt_os_timer_start(smpi_process_timer());
 }
 
-void smpi_bench_end(int rank, const char *mpi_call)
+void smpi_bench_end(void)
 {
   xbt_os_timer_t timer = smpi_process_timer();
 
   xbt_os_timer_stop(timer);
   smpi_execute(xbt_os_timer_elapsed(timer));
-  if (mpi_call && rank >= 0
-      && xbt_cfg_get_int(_surf_cfg_set, "smpi/log_events")) {
-    INFO3("SMPE: ts=%f rank=%d type=begin et=%s", SIMIX_get_clock(), rank,
-          mpi_call);
-  }
 }
 
 unsigned int smpi_sleep(unsigned int secs)
@@ -128,7 +118,7 @@ void smpi_sample_1(int global, const char *file, int line, int max)
   char *loc = sample_location(global, file, line);
   local_data_t *data;
 
-  smpi_bench_end(-1, NULL);     /* Take time from previous MPI call into account */
+  smpi_bench_end();     /* Take time from previous MPI call into account */
   if (!samples) {
     samples = xbt_dict_new();
   }
@@ -166,7 +156,7 @@ int smpi_sample_2(int global, const char *file, int line)
     data->started = 0;
   }
   free(loc);
-  smpi_bench_begin(-1, NULL);
+  smpi_bench_begin();
   smpi_process_simulated_start();
   return data->started;
 }
@@ -181,7 +171,7 @@ void smpi_sample_3(int global, const char *file, int line)
   if (!data || !data->started || data->count >= data->max) {
     xbt_assert0(data, "Please, do thing in order");
   }
-  smpi_bench_end(-1, NULL);
+  smpi_bench_end();
   data->time += smpi_process_simulated_elapsed();
   DEBUG2("Average mean after %d steps is %f", data->count,
          data->time / (double) data->count);

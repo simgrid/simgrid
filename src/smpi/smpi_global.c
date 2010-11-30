@@ -291,12 +291,6 @@ int MAIN__(void)
                    xbt_cfgelm_int, &default_display_timing, 1, 1, NULL,
                    NULL);
 
-  int default_display_smpe = 0;
-  xbt_cfg_register(&_surf_cfg_set, "smpi/log_events",
-                   "Boolean indicating whether we should display simulated time spent in MPI calls.",
-                   xbt_cfgelm_int, &default_display_smpe, 1, 1, NULL,
-                   NULL);
-
   double default_threshold = 1e-6;
   xbt_cfg_register(&_surf_cfg_set, "smpi/cpu_threshold",
                    "Minimal computation time (in seconds) not discarded.",
