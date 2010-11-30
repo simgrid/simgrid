@@ -550,6 +550,15 @@ file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.xml"
 )
 
+file(GLOB_RECURSE README_examples_files
+"examples/*README"
+)
+
+set(examples_to_install_in_doc
+${examples_to_install_in_doc}
+${README_examples_files}
+)
+
 set(DOC_SOURCES
 	doc/contrib.doc
         doc/FAQ.doc
@@ -740,14 +749,15 @@ set(txt_files
 	ChangeLog
 	COPYING
 	LICENSE-LGPL-2.1
-	missing
 	NEWS
-	README
-	README.IEEE
 	TODO
-	examples/lua/README
-	examples/ruby/README
 )
+
+file(GLOB_RECURSE README_files
+"*README"
+)
+	
+string(REPLACE "${CMAKE_HOME_DIRECTORY}/" "" README_files "${README_files}")
 
 file(GLOB_RECURSE CMAKE_SOURCE_FILES
 "buildtools/Cmake/test_java.sh"
@@ -796,4 +806,5 @@ set(source_to_pack
 	${bin_files}
 	${DOC_SOURCES}
 	${DOC_FIGS}
+	${README_files}
 )

@@ -87,6 +87,14 @@ foreach(file ${examples_to_install_in_doc})
           DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/examples/${location})
 endforeach(file ${examples_to_install_in_doc})
 
+# example README
+foreach(file ${README_examples_files})
+  string(REPLACE "${PROJECT_DIRECTORY}/examples/" "" file ${file})
+  get_filename_component(location ${file} PATH)
+  install(FILES "examples/${file}"
+          DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/examples/${location})
+endforeach(file ${README_examples_files})
+
 # bindings cruft
 if(HAVE_JAVA)
   install(FILES ${CMAKE_BINARY_DIR}/simgrid.jar
