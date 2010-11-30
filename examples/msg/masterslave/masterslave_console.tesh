@@ -1,8 +1,5 @@
 #! ./tesh
 
-# The setenv is mandatory until the make install only
-! setenv LUA_CPATH=../../../lib/lua/5.1/?.so;
-
 $ $SG_TEST_EXENV ./masterslave_console platform_script.lua --log=surf_parse.thres:critical
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 4 slaves and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" (of 20) to mailbox "slave-0"
