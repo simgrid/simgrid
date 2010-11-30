@@ -183,3 +183,14 @@ Since there is almost nothing in xbt_rl_module.c and xbt_sg_module.c,
 it'd be better to use symbol aliasing here (to declare in the object
 code that the same function have two names), but I'm still
 investigating the portability of the thing to windows.
+
+
+*
+* SimGrid Hacker Survival Guide (FIXME: should be betterly placed)
+********************************
+
+* If you break the logs (for example while hacking in the dynars), you
+  want to define XBT_LOG_MAYDAY at the beginning of log.h. It will
+  desactivate the whole logging mecanism, switching to printfs
+  instead. SimGrid becomes incredibly verbose when doing so, but it
+  you let you fixing the dynars.
