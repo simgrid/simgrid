@@ -1,13 +1,17 @@
 SimGrid (3.5) unstable; urgency=low
 
+ Checked up to svn r7858 (Mt)
+
  MSG
+ * Asynchronous communications through the functions:
+   MSG_task_isend/irecv and MSG_comm_test/wait
  * New function: MSG_load_platform_script()
    to make possible using a lua script instead of XML files to set up platforms
  * New function: MSG_set_function
    to associate functions to processes, used when bypassing the parser
 
  LUA Bindings
- * Add layer to set up environment and bypass the XML surf parser
+ * Add layer to set up environment directly from lua, without XML
  * Modify the entry point, to take into consideration when lua is used only as a platform generator
 
  SURF
@@ -80,10 +84,12 @@ SimGrid (3.5) unstable; urgency=low
  * new function SD_dotload(char*) to load a DAG described in dot
    format. This loader and the corresponding examples require the
    installation of the graphviz library.
+ * new function SD_workstation_get_current_task()
 
  XBT
  * New data container: setset (set of sets of elements)
- * New module: mmalloc (mapped malloc)
+ * New module: mmalloc (mapped malloc, allowing to have several
+   independent segments of malloc)
  * New function: xbt_dict_cursor_set_data()
  * New function: xbt_dynar_sort()
  * New function: xbt_dynar_is_empty()
@@ -97,13 +103,17 @@ SimGrid (3.5) unstable; urgency=low
  GRAS:
  * New function: gras_msgtype_get_name()
 
- Build chain: bug fixes and further polishing
+ SMPI
+ * New Model SMPI (three-interval linear regression for correction factors)
+
+ Build chain: bug fixes and overall polishing
  * Fix the 'make install' target.
    No need to use 'make install-simgrid' anymore
  * Introduce a 'make dist' target compiling a *source* archive
-   'make package' compiles a binary archive (not well tested)
+   'make package' compiles a binary archive
  * Compile java files only on need
  * Add --cd and --setenv command line options to tesh
+ * Port to windows
 
  Tracing:
  * Tracing system
@@ -134,6 +144,9 @@ SimGrid (3.5) unstable; urgency=low
    - adaptation to the tracing system of GTNets to cope
      with modifications regarding the fullduplex mode
    - new tesh files to check if gtnets tracing is ok
+
+ * New feature to any SimGrid-based simulator: Model-Checking
+   Check SIN#1 for more details.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
