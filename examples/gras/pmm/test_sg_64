@@ -1,44 +1,39 @@
-! timeout 30
+#! ./tesh
+
 $ $SG_TEST_EXENV ./pmm_simulator$EXEEXT ${srcdir:=.}/../../msg/msg_platform.xml ${srcdir:=.}/pmm.xml
 > [Jacquelin:master:(1) 0.000156] [pmm/INFO] Wait for peers for 2 sec
-> [Laroche:slave:(10) 0.000156] [pmm/INFO] Sensor 8 starting
-> [Gatien:slave:(9) 0.000156] [pmm/INFO] Sensor 7 starting
-> [McGee:slave:(8) 0.000156] [pmm/INFO] Sensor 6 starting
-> [iRMX:slave:(7) 0.000156] [pmm/INFO] Sensor 5 starting
-> [Disney:slave:(6) 0.000156] [pmm/INFO] Sensor 4 starting
-> [Geoff:slave:(5) 0.000156] [pmm/INFO] Sensor 3 starting
-> [TeX:slave:(4) 0.000156] [pmm/INFO] Sensor 2 starting
-> [Jean_Yves:slave:(3) 0.000156] [pmm/INFO] Sensor 1 starting
 > [Boivin:slave:(2) 0.000156] [pmm/INFO] Sensor 0 starting
-> [Jacquelin:master:(1) 2.879230] [pmm/INFO] Got only 1 pals. Wait 2 more seconds
-> [Jacquelin:master:(1) 4.879230] [pmm/INFO] Got only 3 pals. Wait 2 more seconds
-> [Jacquelin:master:(1) 8.035035] [pmm/INFO] Got only 4 pals. Wait 2 more seconds
-> [Jacquelin:master:(1) 10.946081] [pmm/INFO] Got only 7 pals. Wait 2 more seconds
-> [Jacquelin:master:(1) 12.946081] [pmm/INFO] Good. Got 9 pals
-> [Jacquelin:master:(1) 12.947485] [pmm/INFO] XXXXXXXXXXXXXXXXXXXXXX begin Multiplication
-> [Laroche:slave:(10) 15.396161] [pmm/INFO] Receive my pos (0,0) and assignment
-> [iRMX:slave:(7) 16.396673] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Laroche:3000. Queue it for later gras_msg_wait() use.
-> [Gatien:slave:(9) 16.421579] [pmm/INFO] Receive my pos (0,1) and assignment
-> [McGee:slave:(8) 17.136330] [pmm/INFO] Receive my pos (0,2) and assignment
-> [Disney:slave:(6) 17.505539] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Gatien:3000. Queue it for later gras_msg_wait() use.
-> [Geoff:slave:(5) 17.844938] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from McGee:3000. Queue it for later gras_msg_wait() use.
-> [Boivin:slave:(2) 17.928966] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from McGee:3000. Queue it for later gras_msg_wait() use.
-> [TeX:slave:(4) 17.959724] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Laroche:3000. Queue it for later gras_msg_wait() use.
-> [Jean_Yves:slave:(3) 19.252782] [gras_msg/INFO] No callback for message 'dataB' (type:ONEWAY) from Gatien:3000. Queue it for later gras_msg_wait() use.
-> [iRMX:slave:(7) 19.845472] [pmm/INFO] Receive my pos (1,0) and assignment
-> [Disney:slave:(6) 21.312656] [pmm/INFO] Receive my pos (1,1) and assignment
-> [Geoff:slave:(5) 21.317208] [pmm/INFO] Receive my pos (1,2) and assignment
-> [TeX:slave:(4) 22.775609] [pmm/INFO] Receive my pos (2,0) and assignment
-> [Jean_Yves:slave:(3) 23.519896] [pmm/INFO] Receive my pos (2,1) and assignment
-> [Boivin:slave:(2) 24.363790] [pmm/INFO] Receive my pos (2,2) and assignment
-> [Jacquelin:master:(1) 43.582752] [pmm/INFO] XXXXXXXXXXXXXXXXXXXXXX Ok, the result matches expectations
-> [Laroche:slave:(10) 45.022312] [gras/INFO] Exiting GRAS
-> [Gatien:slave:(9) 46.041233] [gras/INFO] Exiting GRAS
-> [McGee:slave:(8) 46.751525] [gras/INFO] Exiting GRAS
-> [iRMX:slave:(7) 49.184735] [gras/INFO] Exiting GRAS
-> [Disney:slave:(6) 50.642600] [gras/INFO] Exiting GRAS
-> [Geoff:slave:(5) 50.647025] [gras/INFO] Exiting GRAS
-> [TeX:slave:(4) 52.096135] [gras/INFO] Exiting GRAS
-> [Jean_Yves:slave:(3) 52.835793] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 53.674409] [gras/INFO] Exiting GRAS
-> [Boivin:slave:(2) 53.674409] [gras/INFO] Exiting GRAS
+> [Jean_Yves:slave:(3) 0.000156] [pmm/INFO] Sensor 1 starting
+> [TeX:slave:(4) 0.000156] [pmm/INFO] Sensor 2 starting
+> [Geoff:slave:(5) 0.000156] [pmm/INFO] Sensor 3 starting
+> [Disney:slave:(6) 0.000156] [pmm/INFO] Sensor 4 starting
+> [iRMX:slave:(7) 0.000156] [pmm/INFO] Sensor 5 starting
+> [McGee:slave:(8) 0.000156] [pmm/INFO] Sensor 6 starting
+> [Gatien:slave:(9) 0.000156] [pmm/INFO] Sensor 7 starting
+> [Laroche:slave:(10) 0.000156] [pmm/INFO] Sensor 8 starting
+> [Jacquelin:master:(1) 2.416827] [pmm/INFO] Got only 2 pals (of 9). Wait 2 more seconds
+> [Jacquelin:master:(1) 4.476356] [pmm/INFO] Got only 3 pals (of 9). Wait 2 more seconds
+> [Jacquelin:master:(1) 6.476356] [pmm/INFO] Got only 5 pals (of 9). Wait 2 more seconds
+> [Jacquelin:master:(1) 9.355676] [pmm/INFO] Got only 6 pals (of 9). Wait 2 more seconds
+> [Jacquelin:master:(1) 12.524103] [pmm/INFO] Good. Got 9 pals
+> [Jacquelin:master:(1) 12.525507] [pmm/INFO] XXXXXXXXXXXXXXXXXXXXXX begin Multiplication
+> [Boivin:slave:(2) 14.369401] [pmm/INFO] Receive my pos (0,0) and assignment
+> [Jean_Yves:slave:(3) 15.113688] [pmm/INFO] Receive my pos (0,1) and assignment
+> [TeX:slave:(4) 16.572089] [pmm/INFO] Receive my pos (0,2) and assignment
+> [Geoff:slave:(5) 16.576641] [pmm/INFO] Receive my pos (1,0) and assignment
+> [Disney:slave:(6) 18.043825] [pmm/INFO] Receive my pos (1,1) and assignment
+> [iRMX:slave:(7) 20.492624] [pmm/INFO] Receive my pos (1,2) and assignment
+> [McGee:slave:(8) 21.207375] [pmm/INFO] Receive my pos (2,0) and assignment
+> [Gatien:slave:(9) 22.232792] [pmm/INFO] Receive my pos (2,1) and assignment
+> [Laroche:slave:(10) 23.681469] [pmm/INFO] Receive my pos (2,2) and assignment
+> [Jacquelin:master:(1) 73.318369] [pmm/INFO] XXXXXXXXXXXXXXXXXXXXXX Ok, the result matches expectations
+> [Boivin:slave:(2) 74.156986] [gras/INFO] Exiting GRAS
+> [Jean_Yves:slave:(3) 74.896643] [gras/INFO] Exiting GRAS
+> [TeX:slave:(4) 76.345754] [gras/INFO] Exiting GRAS
+> [Geoff:slave:(5) 76.350179] [gras/INFO] Exiting GRAS
+> [Disney:slave:(6) 77.808044] [gras/INFO] Exiting GRAS
+> [iRMX:slave:(7) 80.241254] [gras/INFO] Exiting GRAS
+> [McGee:slave:(8) 80.951545] [gras/INFO] Exiting GRAS
+> [Gatien:slave:(9) 81.970467] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 83.410027] [gras/INFO] Exiting GRAS
+> [Laroche:slave:(10) 83.410027] [gras/INFO] Exiting GRAS
