@@ -640,18 +640,6 @@ set(add_src_files
 	src/smpi/smpiff.in
 	src/smpi/smpirun.in
 	src/simix/smx_context_sysv_private.h
-	src/simgrid_units_main.c
-	src/cunit_unit.c
-	src/ex_unit.c
-	src/dynar_unit.c
-	src/dict_unit.c
-	src/set_unit.c
-	src/swag_unit.c
-	src/xbt_str_unit.c
-	src/xbt_strbuff_unit.c
-	src/xbt_sha_unit.c
-	src/config_unit.c
-	src/xbt_synchro_unit.c
 )
 
 file(GLOB_RECURSE include_files
