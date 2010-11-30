@@ -12,6 +12,10 @@
 #include <xbt/misc.h>
 #include <xbt/function_types.h>
 
+#define MPI_CALL(type,name,args) \
+  type name args; \
+  type P##name args
+
 SG_BEGIN_DECL()
 #define MPI_THREAD_SINGLE     0
 #define MPI_THREAD_FUNNELED   1
@@ -144,161 +148,196 @@ typedef struct s_smpi_mpi_request *MPI_Request;
 
 #define MPI_REQUEST_NULL NULL
 
-XBT_PUBLIC(int) MPI_Init(int *argc, char ***argv);
-XBT_PUBLIC(int) MPI_Finalize(void);
-XBT_PUBLIC(int) MPI_Init_thread(int *argc, char ***argv, int required,
-                                int *provided);
-XBT_PUBLIC(int) MPI_Query_thread(int *provided);
-XBT_PUBLIC(int) MPI_Is_thread_main(int *flag);
-XBT_PUBLIC(int) MPI_Abort(MPI_Comm comm, int errorcode);
-XBT_PUBLIC(double) MPI_Wtime(void);
+MPI_CALL(XBT_PUBLIC(int), MPI_Init, (int *argc, char ***argv));
+MPI_CALL(XBT_PUBLIC(int), MPI_Finalize, (void));
+MPI_CALL(XBT_PUBLIC(int), MPI_Init_thread,
+                            (int *argc, char ***argv, int required,
+                             int *provided));
+MPI_CALL(XBT_PUBLIC(int), MPI_Query_thread, (int *provided));
+MPI_CALL(XBT_PUBLIC(int), MPI_Is_thread_main, (int *flag));
+MPI_CALL(XBT_PUBLIC(int), MPI_Abort, (MPI_Comm comm, int errorcode));
+MPI_CALL(XBT_PUBLIC(double), MPI_Wtime, (void));
 
-XBT_PUBLIC(int) MPI_Address(void *location, MPI_Aint * address);
+MPI_CALL(XBT_PUBLIC(int), MPI_Address, (void *location, MPI_Aint * address));
 
-XBT_PUBLIC(int) MPI_Type_free(MPI_Datatype * datatype);
-XBT_PUBLIC(int) MPI_Type_size(MPI_Datatype datatype, int *size);
-XBT_PUBLIC(int) MPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint * lb,
-                                    MPI_Aint * extent);
-XBT_PUBLIC(int) MPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent);
-XBT_PUBLIC(int) MPI_Type_lb(MPI_Datatype datatype, MPI_Aint * disp);
-XBT_PUBLIC(int) MPI_Type_ub(MPI_Datatype datatype, MPI_Aint * disp);
+MPI_CALL(XBT_PUBLIC(int), MPI_Type_free, (MPI_Datatype * datatype));
+MPI_CALL(XBT_PUBLIC(int), MPI_Type_size, (MPI_Datatype datatype, int *size));
+MPI_CALL(XBT_PUBLIC(int), MPI_Type_get_extent,
+                            (MPI_Datatype datatype, MPI_Aint * lb,
+                             MPI_Aint * extent));
+MPI_CALL(XBT_PUBLIC(int), MPI_Type_extent, (MPI_Datatype datatype, MPI_Aint * extent));
+MPI_CALL(XBT_PUBLIC(int), MPI_Type_lb, (MPI_Datatype datatype, MPI_Aint * disp));
+MPI_CALL(XBT_PUBLIC(int), MPI_Type_ub, (MPI_Datatype datatype, MPI_Aint * disp));
 
-XBT_PUBLIC(int) MPI_Op_create(MPI_User_function * function, int commute,
-                              MPI_Op * op);
-XBT_PUBLIC(int) MPI_Op_free(MPI_Op * op);
+MPI_CALL(XBT_PUBLIC(int), MPI_Op_create,
+                            (MPI_User_function * function, int commute,
+                             MPI_Op * op));
+MPI_CALL(XBT_PUBLIC(int), MPI_Op_free, (MPI_Op * op));
 
-XBT_PUBLIC(int) MPI_Group_free(MPI_Group * group);
-XBT_PUBLIC(int) MPI_Group_size(MPI_Group group, int *size);
-XBT_PUBLIC(int) MPI_Group_rank(MPI_Group group, int *rank);
-XBT_PUBLIC(int) MPI_Group_translate_ranks(MPI_Group group1, int n,
-                                          int *ranks1, MPI_Group group2,
-                                          int *ranks2);
-XBT_PUBLIC(int) MPI_Group_compare(MPI_Group group1, MPI_Group group2,
-                                  int *result);
-XBT_PUBLIC(int) MPI_Group_union(MPI_Group group1, MPI_Group group2,
-                                MPI_Group * newgroup);
-XBT_PUBLIC(int) MPI_Group_intersection(MPI_Group group1, MPI_Group group2,
-                                       MPI_Group * newgroup);
-XBT_PUBLIC(int) MPI_Group_difference(MPI_Group group1, MPI_Group group2,
-                                     MPI_Group * newgroup);
-XBT_PUBLIC(int) MPI_Group_incl(MPI_Group group, int n, int *ranks,
-                               MPI_Group * newgroup);
-XBT_PUBLIC(int) MPI_Group_excl(MPI_Group group, int n, int *ranks,
-                               MPI_Group * newgroup);
-XBT_PUBLIC(int) MPI_Group_range_incl(MPI_Group group, int n,
-                                     int ranges[][3],
-                                     MPI_Group * newgroup);
-XBT_PUBLIC(int) MPI_Group_range_excl(MPI_Group group, int n,
-                                     int ranges[][3],
-                                     MPI_Group * newgroup);
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_free, (MPI_Group * group));
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_size, (MPI_Group group, int *size));
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_rank, (MPI_Group group, int *rank));
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_translate_ranks,
+                            (MPI_Group group1, int n,
+                             int *ranks1, MPI_Group group2,
+                             int *ranks2));
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_compare,
+                            (MPI_Group group1, MPI_Group group2,
+                             int *result));
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_union,
+                            (MPI_Group group1, MPI_Group group2,
+                             MPI_Group * newgroup));
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_intersection,
+                            (MPI_Group group1, MPI_Group group2,
+                             MPI_Group * newgroup));
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_difference,
+                            (MPI_Group group1, MPI_Group group2,
+                             MPI_Group * newgroup));
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_incl,
+                            (MPI_Group group, int n, int *ranks,
+                             MPI_Group * newgroup));
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_excl,
+                            (MPI_Group group, int n, int *ranks,
+                             MPI_Group * newgroup));
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_range_incl,
+                            (MPI_Group group, int n, int ranges[][3],
+                             MPI_Group * newgroup));
+MPI_CALL(XBT_PUBLIC(int), MPI_Group_range_excl,
+                            (MPI_Group group, int n, int ranges[][3],
+                             MPI_Group * newgroup));
 
-XBT_PUBLIC(int) MPI_Comm_rank(MPI_Comm comm, int *rank);
-XBT_PUBLIC(int) MPI_Comm_size(MPI_Comm comm, int *size);
-XBT_PUBLIC(int) MPI_Get_processor_name(char *name, int *resultlen);
-XBT_PUBLIC(int) MPI_Get_count(MPI_Status * status, MPI_Datatype datatype,
-                              int *count);
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_rank, (MPI_Comm comm, int *rank));
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_size, (MPI_Comm comm, int *size));
+MPI_CALL(XBT_PUBLIC(int), MPI_Get_processor_name, (char *name, int *resultlen));
+MPI_CALL(XBT_PUBLIC(int), MPI_Get_count,
+                            (MPI_Status * status, MPI_Datatype datatype,
+                             int *count));
 
-XBT_PUBLIC(int) MPI_Comm_group(MPI_Comm comm, MPI_Group * group);
-XBT_PUBLIC(int) MPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2,
-                                 int *result);
-XBT_PUBLIC(int) MPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm);
-XBT_PUBLIC(int) MPI_Comm_create(MPI_Comm comm, MPI_Group group,
-                                MPI_Comm * newcomm);
-XBT_PUBLIC(int) MPI_Comm_free(MPI_Comm * comm);
-XBT_PUBLIC(int) MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out);
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_group, (MPI_Comm comm, MPI_Group * group));
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_compare,
+                            (MPI_Comm comm1, MPI_Comm comm2, int *result));
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_dup, (MPI_Comm comm, MPI_Comm * newcomm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_create,
+                            (MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_free, (MPI_Comm * comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_split, (MPI_Comm comm, int color, int key, MPI_Comm* comm_out));
 
-XBT_PUBLIC(int) MPI_Send_init(void *buf, int count, MPI_Datatype datatype,
-                              int dst, int tag, MPI_Comm comm,
-                              MPI_Request * request);
-XBT_PUBLIC(int) MPI_Recv_init(void *buf, int count, MPI_Datatype datatype,
-                              int src, int tag, MPI_Comm comm,
-                              MPI_Request * request);
-XBT_PUBLIC(int) MPI_Start(MPI_Request * request);
-XBT_PUBLIC(int) MPI_Startall(int count, MPI_Request * requests);
-XBT_PUBLIC(int) MPI_Request_free(MPI_Request * request);
-XBT_PUBLIC(int) MPI_Irecv(void *buf, int count, MPI_Datatype datatype,
-                          int src, int tag, MPI_Comm comm,
-                          MPI_Request * request);
-XBT_PUBLIC(int) MPI_Isend(void *buf, int count, MPI_Datatype datatype,
-                          int dst, int tag, MPI_Comm comm,
-                          MPI_Request * request);
-XBT_PUBLIC(int) MPI_Recv(void *buf, int count, MPI_Datatype datatype,
-                         int src, int tag, MPI_Comm comm,
-                         MPI_Status * status);
-XBT_PUBLIC(int) MPI_Send(void *buf, int count, MPI_Datatype datatype,
-                         int dst, int tag, MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Sendrecv(void *sendbuf, int sendcount,
+MPI_CALL(XBT_PUBLIC(int), MPI_Send_init,
+                            (void *buf, int count, MPI_Datatype datatype,
+                             int dst, int tag, MPI_Comm comm,
+                             MPI_Request * request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Recv_init,
+                            (void *buf, int count, MPI_Datatype datatype,
+                             int src, int tag, MPI_Comm comm,
+                             MPI_Request * request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Start, (MPI_Request * request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Startall, (int count, MPI_Request * requests));
+MPI_CALL(XBT_PUBLIC(int), MPI_Request_free, (MPI_Request * request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Irecv,
+                            (void *buf, int count, MPI_Datatype datatype,
+                             int src, int tag, MPI_Comm comm,
+                             MPI_Request * request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Isend,
+                            (void *buf, int count, MPI_Datatype datatype,
+                             int dst, int tag, MPI_Comm comm,
+                             MPI_Request * request));
+MPI_CALL(XBT_PUBLIC(int), MPI_Recv,
+                            (void *buf, int count, MPI_Datatype datatype,
+                             int src, int tag, MPI_Comm comm,
+                             MPI_Status * status));
+MPI_CALL(XBT_PUBLIC(int), MPI_Send,
+                            (void *buf, int count, MPI_Datatype datatype,
+                             int dst, int tag, MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Sendrecv,
+                            (void *sendbuf, int sendcount,
                              MPI_Datatype sendtype, int dst, int sendtag,
                              void *recvbuf, int recvcount,
                              MPI_Datatype recvtype, int src, int recvtag,
-                             MPI_Comm comm, MPI_Status * status);
-XBT_PUBLIC(int) MPI_Sendrecv_replace(void *buf, int count,
-                                     MPI_Datatype datatype, int dst,
-                                     int sendtag, int src, int recvtag,
-                                     MPI_Comm comm, MPI_Status * status);
+                             MPI_Comm comm, MPI_Status * status));
+MPI_CALL(XBT_PUBLIC(int), MPI_Sendrecv_replace,
+                            (void *buf, int count,
+                             MPI_Datatype datatype, int dst,
+                             int sendtag, int src, int recvtag,
+                             MPI_Comm comm, MPI_Status * status));
 
-
-XBT_PUBLIC(int) MPI_Test(MPI_Request * request, int *flag,
-                         MPI_Status * status);
-XBT_PUBLIC(int) MPI_Testany(int count, MPI_Request requests[], int *index,
-                            int *flag, MPI_Status * status);
-XBT_PUBLIC(int) MPI_Wait(MPI_Request * request, MPI_Status * status);
-XBT_PUBLIC(int) MPI_Waitany(int count, MPI_Request requests[], int *index,
-                            MPI_Status * status);
-XBT_PUBLIC(int) MPI_Waitall(int count, MPI_Request requests[],
-                            MPI_Status status[]);
-XBT_PUBLIC(int) MPI_Waitsome(int incount, MPI_Request requests[],
+MPI_CALL(XBT_PUBLIC(int), MPI_Test,
+                            (MPI_Request * request, int *flag, MPI_Status* status));
+MPI_CALL(XBT_PUBLIC(int), MPI_Testany,
+                            (int count, MPI_Request requests[], int *index,
+                             int *flag, MPI_Status * status));
+MPI_CALL(XBT_PUBLIC(int), MPI_Wait, (MPI_Request * request, MPI_Status * status));
+MPI_CALL(XBT_PUBLIC(int), MPI_Waitany,
+                            (int count, MPI_Request requests[], int *index,
+                             MPI_Status * status));
+MPI_CALL(XBT_PUBLIC(int), MPI_Waitall,
+                            (int count, MPI_Request requests[],
+                             MPI_Status status[]));
+MPI_CALL(XBT_PUBLIC(int), MPI_Waitsome,
+                            (int incount, MPI_Request requests[],
                              int *outcount, int *indices,
-                             MPI_Status status[]);
+                             MPI_Status status[]));
 
-XBT_PUBLIC(int) MPI_Bcast(void *buf, int count, MPI_Datatype datatype,
-                          int root, MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Barrier(MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Gather(void *sendbuf, int sendcount,
-                           MPI_Datatype sendtype, void *recvbuf,
-                           int recvcount, MPI_Datatype recvtype, int root,
-                           MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Gatherv(void *sendbuf, int sendcount,
-                            MPI_Datatype sendtype, void *recvbuf,
-                            int *recvcounts, int *displs,
-                            MPI_Datatype recvtype, int root,
-                            MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Allgather(void *sendbuf, int sendcount,
-                              MPI_Datatype sendtype, void *recvbuf,
-                              int recvcount, MPI_Datatype recvtype,
-                              MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Allgatherv(void *sendbuf, int sendcount,
-                               MPI_Datatype sendtype, void *recvbuf,
-                               int *recvcounts, int *displs,
-                               MPI_Datatype recvtype, MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Scatter(void *sendbuf, int sendcount,
-                            MPI_Datatype sendtype, void *recvbuf,
-                            int recvcount, MPI_Datatype recvtype, int root,
-                            MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
+MPI_CALL(XBT_PUBLIC(int), MPI_Bcast,
+                            (void *buf, int count, MPI_Datatype datatype,
+                             int root, MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Barrier, (MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Gather,
+                            (void *sendbuf, int sendcount,
+                             MPI_Datatype sendtype, void *recvbuf,
+                             int recvcount, MPI_Datatype recvtype, int root,
+                             MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Gatherv,
+                            (void *sendbuf, int sendcount,
+                             MPI_Datatype sendtype, void *recvbuf,
+                             int *recvcounts, int *displs,
+                             MPI_Datatype recvtype, int root,
+                             MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Allgather,
+                            (void *sendbuf, int sendcount,
                              MPI_Datatype sendtype, void *recvbuf,
                              int recvcount, MPI_Datatype recvtype,
-                             int root, MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Reduce(void *sendbuf, void *recvbuf, int count,
-                           MPI_Datatype datatype, MPI_Op op, int root,
-                           MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Allreduce(void *sendbuf, void *recvbuf, int count,
-                              MPI_Datatype datatype, MPI_Op op,
-                              MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Scan(void *sendbuf, void *recvbuf, int count,
-                         MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Reduce_scatter(void *sendbuf, void *recvbuf,
-                                   int *recvcounts, MPI_Datatype datatype,
-                                   MPI_Op op, MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Alltoall(void *sendbuf, int sendcount,
+                             MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Allgatherv,
+                            (void *sendbuf, int sendcount,
+                             MPI_Datatype sendtype, void *recvbuf,
+                             int *recvcounts, int *displs,
+                             MPI_Datatype recvtype, MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Scatter,
+                            (void *sendbuf, int sendcount,
+                             MPI_Datatype sendtype, void *recvbuf,
+                             int recvcount, MPI_Datatype recvtype, int root,
+                             MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Scatterv,
+                            (void *sendbuf, int *sendcounts, int *displs,
                              MPI_Datatype sendtype, void *recvbuf,
                              int recvcount, MPI_Datatype recvtype,
-                             MPI_Comm comm);
-XBT_PUBLIC(int) MPI_Alltoallv(void *sendbuf, int *sendcounts,
-                              int *senddisps, MPI_Datatype sendtype,
-                              void *recvbuf, int *recvcounts,
-                              int *recvdisps, MPI_Datatype recvtype,
-                              MPI_Comm comm);
+                             int root, MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Reduce,
+                            (void *sendbuf, void *recvbuf, int count,
+                             MPI_Datatype datatype, MPI_Op op, int root,
+                             MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Allreduce,
+                            (void *sendbuf, void *recvbuf, int count,
+                             MPI_Datatype datatype, MPI_Op op,
+                             MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Scan,
+                            (void *sendbuf, void *recvbuf, int count,
+                             MPI_Datatype datatype, MPI_Op op, MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Reduce_scatter,
+                            (void *sendbuf, void *recvbuf,
+                             int *recvcounts, MPI_Datatype datatype,
+                             MPI_Op op, MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Alltoall,
+                            (void *sendbuf, int sendcount,
+                             MPI_Datatype sendtype, void *recvbuf,
+                             int recvcount, MPI_Datatype recvtype,
+                             MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Alltoallv,
+                            (void *sendbuf, int *sendcounts,
+                             int *senddisps, MPI_Datatype sendtype,
+                             void *recvbuf, int *recvcounts,
+                             int *recvdisps, MPI_Datatype recvtype,
+                             MPI_Comm comm));
 
 // smpi functions
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);

@@ -8,6 +8,10 @@
 #include "smpi_coll_private.h"
 #include "smpi_mpi_dt_private.h"
 
+#define MPI_CALL_IMPLEM(type,name,args) \
+   type name args __attribute__((weak,alias("P"#name))); \
+   type P##name args
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi,
                                 "Logging specific to SMPI (mpi)");
 
@@ -38,7 +42,7 @@ int TRACE_smpi_set_category(const char *category)
 
 /* MPI User level calls */
 
-int MPI_Init(int *argc, char ***argv)
+MPI_CALL_IMPLEM(int, MPI_Init, (int *argc, char ***argv))
 {
   smpi_process_init(argc, argv);
 #ifdef HAVE_TRACING
@@ -48,7 +52,7 @@ int MPI_Init(int *argc, char ***argv)
   return MPI_SUCCESS;
 }
 
-int MPI_Finalize(void)
+MPI_CALL_IMPLEM(int, MPI_Finalize, (void))
 {
   smpi_bench_end(-1, NULL);
 #ifdef HAVE_TRACING
@@ -58,7 +62,7 @@ int MPI_Finalize(void)
   return MPI_SUCCESS;
 }
 
-int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
+MPI_CALL_IMPLEM(int, MPI_Init_thread, (int *argc, char ***argv, int required, int *provided))
 {
   if (provided != NULL) {
     *provided = MPI_THREAD_MULTIPLE;
@@ -66,7 +70,7 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
   return MPI_Init(argc, argv);
 }
 
-int MPI_Query_thread(int *provided)
+MPI_CALL_IMPLEM(int, MPI_Query_thread, (int *provided))
 {
   int retval;
 
@@ -81,7 +85,7 @@ int MPI_Query_thread(int *provided)
   return retval;
 }
 
-int MPI_Is_thread_main(int *flag)
+MPI_CALL_IMPLEM(int, MPI_Is_thread_main, (int *flag))
 {
   int retval;
 
@@ -96,7 +100,7 @@ int MPI_Is_thread_main(int *flag)
   return retval;
 }
 
-int MPI_Abort(MPI_Comm comm, int errorcode)
+MPI_CALL_IMPLEM(int, MPI_Abort, (MPI_Comm comm, int errorcode))
 {
   smpi_bench_end(-1, NULL);
   smpi_process_destroy();
@@ -115,7 +119,7 @@ double MPI_Wtime(void)
   return time;
 }
 
-int MPI_Address(void *location, MPI_Aint * address)
+MPI_CALL_IMPLEM(int, MPI_Address, (void *location, MPI_Aint * address))
 {
   int retval;
 
@@ -129,7 +133,7 @@ int MPI_Address(void *location, MPI_Aint * address)
   return retval;
 }
 
-int MPI_Type_free(MPI_Datatype * datatype)
+MPI_CALL_IMPLEM(int, MPI_Type_free, (MPI_Datatype * datatype))
 {
   int retval;
 
@@ -144,7 +148,7 @@ int MPI_Type_free(MPI_Datatype * datatype)
   return retval;
 }
 
-int MPI_Type_size(MPI_Datatype datatype, int *size)
+MPI_CALL_IMPLEM(int, MPI_Type_size, (MPI_Datatype datatype, int *size))
 {
   int retval;
 
@@ -178,7 +182,7 @@ int MPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint * lb,
   return retval;
 }
 
-int MPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent)
+MPI_CALL_IMPLEM(int, MPI_Type_extent, (MPI_Datatype datatype, MPI_Aint * extent))
 {
   int retval;
   MPI_Aint dummy;
@@ -195,7 +199,7 @@ int MPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent)
   return retval;
 }
 
-int MPI_Type_lb(MPI_Datatype datatype, MPI_Aint * disp)
+MPI_CALL_IMPLEM(int, MPI_Type_lb, (MPI_Datatype datatype, MPI_Aint * disp))
 {
   int retval;
 
@@ -212,7 +216,7 @@ int MPI_Type_lb(MPI_Datatype datatype, MPI_Aint * disp)
   return retval;
 }
 
-int MPI_Type_ub(MPI_Datatype datatype, MPI_Aint * disp)
+MPI_CALL_IMPLEM(int, MPI_Type_ub, (MPI_Datatype datatype, MPI_Aint * disp))
 {
   int retval;
 
@@ -229,7 +233,7 @@ int MPI_Type_ub(MPI_Datatype datatype, MPI_Aint * disp)
   return retval;
 }
 
-int MPI_Op_create(MPI_User_function * function, int commute, MPI_Op * op)
+MPI_CALL_IMPLEM(int, MPI_Op_create, (MPI_User_function * function, int commute, MPI_Op * op))
 {
   int retval;
 
@@ -244,7 +248,7 @@ int MPI_Op_create(MPI_User_function * function, int commute, MPI_Op * op)
   return retval;
 }
 
-int MPI_Op_free(MPI_Op * op)
+MPI_CALL_IMPLEM(int, MPI_Op_free, (MPI_Op * op))
 {
   int retval;
 
@@ -262,7 +266,7 @@ int MPI_Op_free(MPI_Op * op)
   return retval;
 }
 
-int MPI_Group_free(MPI_Group * group)
+MPI_CALL_IMPLEM(int, MPI_Group_free, (MPI_Group * group))
 {
   int retval;
 
@@ -278,7 +282,7 @@ int MPI_Group_free(MPI_Group * group)
   return retval;
 }
 
-int MPI_Group_size(MPI_Group group, int *size)
+MPI_CALL_IMPLEM(int, MPI_Group_size, (MPI_Group group, int *size))
 {
   int retval;
 
@@ -295,7 +299,7 @@ int MPI_Group_size(MPI_Group group, int *size)
   return retval;
 }
 
-int MPI_Group_rank(MPI_Group group, int *rank)
+MPI_CALL_IMPLEM(int, MPI_Group_rank, (MPI_Group group, int *rank))
 {
   int retval;
 
@@ -331,7 +335,7 @@ int MPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1,
   return retval;
 }
 
-int MPI_Group_compare(MPI_Group group1, MPI_Group group2, int *result)
+MPI_CALL_IMPLEM(int, MPI_Group_compare, (MPI_Group group1, MPI_Group group2, int *result))
 {
   int retval;
 
@@ -633,7 +637,7 @@ int MPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
   return retval;
 }
 
-int MPI_Comm_rank(MPI_Comm comm, int *rank)
+MPI_CALL_IMPLEM(int, MPI_Comm_rank, (MPI_Comm comm, int *rank))
 {
   int retval;
 
@@ -648,7 +652,7 @@ int MPI_Comm_rank(MPI_Comm comm, int *rank)
   return retval;
 }
 
-int MPI_Comm_size(MPI_Comm comm, int *size)
+MPI_CALL_IMPLEM(int, MPI_Comm_size, (MPI_Comm comm, int *size))
 {
   int retval;
 
@@ -665,7 +669,7 @@ int MPI_Comm_size(MPI_Comm comm, int *size)
   return retval;
 }
 
-int MPI_Comm_group(MPI_Comm comm, MPI_Group * group)
+MPI_CALL_IMPLEM(int, MPI_Comm_group, (MPI_Comm comm, MPI_Group * group))
 {
   int retval;
 
@@ -682,7 +686,7 @@ int MPI_Comm_group(MPI_Comm comm, MPI_Group * group)
   return retval;
 }
 
-int MPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
+MPI_CALL_IMPLEM(int, MPI_Comm_compare, (MPI_Comm comm1, MPI_Comm comm2, int *result))
 {
   int retval;
 
@@ -708,7 +712,7 @@ int MPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
   return retval;
 }
 
-int MPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
+MPI_CALL_IMPLEM(int, MPI_Comm_dup, (MPI_Comm comm, MPI_Comm * newcomm))
 {
   int retval;
 
@@ -725,7 +729,7 @@ int MPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
   return retval;
 }
 
-int MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
+MPI_CALL_IMPLEM(int, MPI_Comm_create, (MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm))
 {
   int retval;
 
@@ -744,7 +748,7 @@ int MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
   return retval;
 }
 
-int MPI_Comm_free(MPI_Comm * comm)
+MPI_CALL_IMPLEM(int, MPI_Comm_free, (MPI_Comm * comm))
 {
   int retval;
 
@@ -762,7 +766,7 @@ int MPI_Comm_free(MPI_Comm * comm)
   return retval;
 }
 
-int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
+MPI_CALL_IMPLEM(int, MPI_Comm_split, (MPI_Comm comm, int color, int key, MPI_Comm* comm_out))
 {
   int retval;
 
@@ -817,7 +821,7 @@ int MPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src,
   return retval;
 }
 
-int MPI_Start(MPI_Request * request)
+MPI_CALL_IMPLEM(int, MPI_Start, (MPI_Request * request))
 {
   int retval;
   MPI_Comm comm = (*request)->comm;
@@ -834,7 +838,7 @@ int MPI_Start(MPI_Request * request)
   return retval;
 }
 
-int MPI_Startall(int count, MPI_Request * requests)
+MPI_CALL_IMPLEM(int, MPI_Startall, (int count, MPI_Request * requests))
 {
   int retval;
   MPI_Comm comm = count > 0
@@ -852,7 +856,7 @@ int MPI_Startall(int count, MPI_Request * requests)
   return retval;
 }
 
-int MPI_Request_free(MPI_Request * request)
+MPI_CALL_IMPLEM(int, MPI_Request_free, (MPI_Request * request))
 {
   int retval;
   MPI_Comm comm = (*request)->comm;
@@ -1027,7 +1031,7 @@ int MPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
   return retval;
 }
 
-int MPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
+MPI_CALL_IMPLEM(int, MPI_Test, (MPI_Request * request, int *flag, MPI_Status * status))
 {
   int retval;
   int rank = request && (*request)->comm != MPI_COMM_NULL
@@ -1063,7 +1067,7 @@ int MPI_Testany(int count, MPI_Request requests[], int *index, int *flag,
   return retval;
 }
 
-int MPI_Wait(MPI_Request * request, MPI_Status * status)
+MPI_CALL_IMPLEM(int, MPI_Wait, (MPI_Request * request, MPI_Status * status))
 {
   int retval;
   int rank = request && (*request)->comm != MPI_COMM_NULL
@@ -1154,7 +1158,7 @@ int MPI_Waitany(int count, MPI_Request requests[], int *index,
   return retval;
 }
 
-int MPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
+MPI_CALL_IMPLEM(int, MPI_Waitall, (int count, MPI_Request requests[], MPI_Status status[]))
 {
 
   smpi_bench_end(-1, NULL);     //FIXME
@@ -1240,7 +1244,7 @@ int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root,
   return retval;
 }
 
-int MPI_Barrier(MPI_Comm comm)
+MPI_CALL_IMPLEM(int, MPI_Barrier, (MPI_Comm comm))
 {
   int retval;
   int rank = comm != MPI_COMM_NULL ? smpi_comm_rank(comm) : -1;
@@ -1638,7 +1642,7 @@ int MPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
 }
 
 
-int MPI_Get_processor_name(char *name, int *resultlen)
+MPI_CALL_IMPLEM(int, MPI_Get_processor_name, (char *name, int *resultlen))
 {
   int retval = MPI_SUCCESS;
 
@@ -1653,7 +1657,7 @@ int MPI_Get_processor_name(char *name, int *resultlen)
   return retval;
 }
 
-int MPI_Get_count(MPI_Status * status, MPI_Datatype datatype, int *count)
+MPI_CALL_IMPLEM(int, MPI_Get_count, (MPI_Status * status, MPI_Datatype datatype, int *count))
 {
   int retval = MPI_SUCCESS;
   size_t size;
