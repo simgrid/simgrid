@@ -98,7 +98,7 @@ static XBT_INLINE
     const unsigned long new_length = new_size * elmsize;
     char *const new_data = (char *) xbt_malloc0(elmsize * new_size);
 
-    DEBUG3("expend %p from %lu to %lu elements", (void *) dynar,
+    DEBUG3("expand %p from %lu to %lu elements", (void *) dynar,
            (unsigned long) old_size, nb);
 
     if (old_data) {
@@ -431,7 +431,7 @@ _xbt_dynar_set(xbt_dynar_t dynar,
   _xbt_dynar_put_elm(dynar, idx, src);
 }
 
-/** @brief Set the Nth element of a dynar (expended if needed). Previous value at this position is NOT freed
+/** @brief Set the Nth element of a dynar (expanded if needed). Previous value at this position is NOT freed
  *
  * \param dynar information dealer
  * \param idx index of the slot we want to modify
@@ -448,7 +448,7 @@ XBT_INLINE void xbt_dynar_set(xbt_dynar_t dynar, const int idx,
   _dynar_unlock(dynar);
 }
 
-/** @brief Set the Nth element of a dynar (expended if needed). Previous value is freed
+/** @brief Set the Nth element of a dynar (expanded if needed). Previous value is freed
  *
  * \param dynar
  * \param idx
@@ -518,7 +518,7 @@ void *xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar, const int idx)
   return res;
 }
 
-/** @brief Set the Nth dynar's element, expending the dynar and sliding the previous values to the right
+/** @brief Set the Nth dynar's element, expanding the dynar and sliding the previous values to the right
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, and
  * moving the previously existing value and all subsequent ones to one
