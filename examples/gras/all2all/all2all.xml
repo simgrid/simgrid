@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
   <!-- For each host, we have a sender and a receiver (because we use a
        1-port model and still don't want any deadlocks neither synchronization
        delays).

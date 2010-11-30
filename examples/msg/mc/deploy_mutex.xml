@@ -2,7 +2,7 @@
 
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
 
-<platform version="2">
+<platform version="3">
 
   <process host="Tremblay" function="coordinator" />
 

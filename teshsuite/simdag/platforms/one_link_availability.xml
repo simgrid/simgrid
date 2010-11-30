@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
 	 <AS  id="AS0"  routing="Full">
   <host id="bob" power="500000000"/>
   <link id="link1" bandwidth="80000000" latency="0.0001"

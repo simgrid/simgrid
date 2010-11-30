@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2"><graph>
+<platform version="3"><graph>
   <node id="A" label="A"/>
   <node id="B" label="B"/>
   <node id="C" label="C"/>

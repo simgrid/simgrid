@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
 
 
   <!-- The master process (with some arguments) --> 

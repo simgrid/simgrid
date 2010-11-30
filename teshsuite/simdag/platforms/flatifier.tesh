@@ -2,7 +2,7 @@ $ ./flatifier$EXEEXT one_cluster.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob0.hamburger.edu" power="1000000000"/>
 >   <host id="bob2.hamburger.edu" power="1000000000"/>
@@ -99,7 +99,7 @@ $ ./flatifier$EXEEXT one_host_availability.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="500000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -113,7 +113,7 @@ $ ./flatifier$EXEEXT one_host_properties.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="1000000000">
 >     <prop id="OS" value="Linux 2.6.22-14"/>
@@ -131,7 +131,7 @@ $ ./flatifier$EXEEXT one_host_state_file.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="500000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -145,7 +145,7 @@ $ ./flatifier$EXEEXT one_host_state_off.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="500000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -159,7 +159,7 @@ $ ./flatifier$EXEEXT one_host_state_on.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="500000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -173,7 +173,7 @@ $ ./flatifier$EXEEXT one_host_trace_file.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="1000000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -187,7 +187,7 @@ $ ./flatifier$EXEEXT one_host_trace_inside.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="1000000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -201,7 +201,7 @@ $ ./flatifier$EXEEXT one_host.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="500000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -215,7 +215,7 @@ $ ./flatifier$EXEEXT one_link_availability.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="500000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -230,7 +230,7 @@ $ ./flatifier$EXEEXT one_link_fatpipe.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="500000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -245,7 +245,7 @@ $ ./flatifier$EXEEXT one_link_shared.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="500000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -260,7 +260,7 @@ $ ./flatifier$EXEEXT one_link_state_file.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" power="500000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -275,7 +275,7 @@ $ ./flatifier$EXEEXT three_hosts_non_symmetric_route.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="alice" power="500000000"/>
 >   <host id="bob" power="1000000000"/>
@@ -318,7 +318,7 @@ $ ./flatifier$EXEEXT two_clusters.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="alice0.crepe.fr" power="1000000000"/>
 >   <host id="alice1.crepe.fr" power="1000000000"/>
@@ -653,7 +653,7 @@ $ ./flatifier$EXEEXT two_hosts_multi_hop.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="alice" power="500000000"/>
 >   <host id="bob" power="1000000000"/>
@@ -680,7 +680,7 @@ $ ./flatifier$EXEEXT two_hosts_one_link.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
-> <platform version="2">
+> <platform version="3">
 > <AS id="AS0" routing="Full">
 >   <host id="alice" power="500000000"/>
 >   <host id="bob" power="1000000000"/>

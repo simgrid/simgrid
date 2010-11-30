@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
   <process host="Tremblay" function="server">
      <argument value="4000"/>       <!-- my port number -->
      <argument value="Fafard:4000"/>   <!-- client location -->

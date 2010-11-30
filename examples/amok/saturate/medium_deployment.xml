@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
   <process host="Apple" function="maestro">
      <argument value="Anne_Marie:4000"/>
      <argument value="Audy:4000"/>

@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
   <process host="Inmos" function="Sender">
       <argument value ="Bellevue"/>
       <argument value="5000000"/>

@@ -11,7 +11,7 @@
       
       Of course, this restriction is not needed in your own platforms. -->
  
- <platform version="2">
+ <platform version="3">
  <AS  id="AS0"  routing="Full">
    <host id="host1" power="1000000000">
      <prop id="SG_TEST_Hdd" value="180"/>

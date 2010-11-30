@@ -3,7 +3,7 @@
  -->
  <?xml version='1.0'?>
  <!DOCTYPE platform SYSTEM "simgrid.dtd">
- <platform version="2">
+ <platform version="3">
  <AS  id="AS0"  routing="Full">
  
    <random id="rand_lyon" min="237333000" max="437333000" mean="337333000" std_deviation="100000000"/>

@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2"><!-- For using with ping_pong, platform_sendrecv.xml -->
+<platform version="3"><!-- For using with ping_pong, platform_sendrecv.xml -->
 
   <process host="Fafard" function="test">
 	<argument value="76296000"/>

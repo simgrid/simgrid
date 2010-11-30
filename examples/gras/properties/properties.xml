@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
   <process host="host1" function="alice">
     <prop id="SG_TEST_blah" value="blah"/>
   </process>

@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
  <AS  id="AS0"  routing="Full">
 	<host id="100030591" vivaldi="25.5 9.4 1.4" power="1500000000.0" />
 	<host id="100036570" vivaldi="-12.7 -9.9 2.1" power="730000000.0" />

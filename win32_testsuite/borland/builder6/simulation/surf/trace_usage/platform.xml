@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
  <!DOCTYPE platform SYSTEM "simgrid.dtd">
- <platform version="2">
+ <platform version="3">
  <AS  id="AS0"  routing="Full">
    <host id="Cpu A" power="100000000" availability_file="trace_A.txt" state_file="trace_A_failure.txt"/>
    <host id="Cpu B" power="100000000" availability_file="trace_B.txt"/>

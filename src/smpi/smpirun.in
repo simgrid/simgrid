@@ -101,7 +101,7 @@ if [ -z "${PLATFORM}" ]; then
 	cat > ${PLATFORMTMP} <<PLATFORMHEAD
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
 <AS id="AS0" routing="Full">
 PLATFORMHEAD
 
@@ -139,7 +139,7 @@ APPLICATIONTMP="$(mktemp tmpXXXXXX)"
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
 APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------

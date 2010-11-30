@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
   <process host="Dodge" function="master">
      <argument value="Montage_25.trace" /> <!-- trace file -->
      <argument value="4500"/>            <!-- port number -->

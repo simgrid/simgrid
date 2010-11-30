@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
 	 <AS  id="AS0"  routing="Full">
   <random id="myRandomGenerator" generator="DRAND48"
 	  min="1000000000" max="2000000000" mean="1600000000"

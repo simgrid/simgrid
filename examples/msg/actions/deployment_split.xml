@@ -7,7 +7,7 @@
 
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
   <process host="host0" function="p0">
     <argument value="actions_split_p0.txt"/>
   </process>

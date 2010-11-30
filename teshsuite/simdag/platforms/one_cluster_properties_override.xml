@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
   <set id="myCluster" prefix="bob" suffix=".hamburger.edu"
        radical="0,2-4,6"/>
 

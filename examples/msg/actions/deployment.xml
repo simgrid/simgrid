@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
   <process host="host0" function="p0"/>
   <process host="host1" function="p1"/>
   <process host="host2" function="p2"/>

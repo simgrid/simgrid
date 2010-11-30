@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
 <AS id="AS0" routing="Full">
   <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
    radical="0,2-4,6" power="1000000000.00" bw="125000000.00" lat="5e-5"

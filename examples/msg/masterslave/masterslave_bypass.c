@@ -95,7 +95,7 @@ static int surf_parse_bypass_application(void)
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 
   /* <platform> */
-  SURFXML_BUFFER_SET(platform_version, "2");
+  SURFXML_BUFFER_SET(platform_version, "3");
 
   SURFXML_START_TAG(platform);
 

@@ -81,7 +81,7 @@
         pastel     - toulouse | nodes=80    power=4.389E9
         violette   - toulouse | nodes=57    power=3.586E9
 -->
-<platform version="2">
+<platform version="3">
 <AS id="AS_grid5000" routing="Floyd" >
 
   <cluster id="AS_bordemer" prefix="bordemer-" suffix=".bordeaux.grid5000.fr"

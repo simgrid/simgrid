@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
  <!DOCTYPE platform SYSTEM "simgrid.dtd">
- <platform version="2">
+ <platform version="3">
  <AS  id="AS0"  routing="Full">
  	<host id="Jacquelin" power="137333000"/>
  	<host id="Boivin" power="98095000"/>
