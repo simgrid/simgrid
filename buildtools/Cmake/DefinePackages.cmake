@@ -622,6 +622,7 @@ endforeach(file ${new_examples_to_install_in_doc})
 file(GLOB_RECURSE add_src_files
 "teshsuite/*.c"
 "teshsuite/*.cxx"
+"teshsuite/*CMakeLists.txt"
 "testsuite/*.c"
 "testsuite/*.cxx"
 "testsuite/*CMakeLists.txt"
