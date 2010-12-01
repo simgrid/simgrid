@@ -268,7 +268,6 @@ set(SIMDAG_SRC
 	src/simdag/sd_task.c
 	src/simdag/sd_workstation.c
 	src/simdag/sd_daxloader.c
-	src/simdag/sd_dotloader.c
 )
 if(HAVE_GRAPHVIZ)
 	set(SIMDAG_SRC 
