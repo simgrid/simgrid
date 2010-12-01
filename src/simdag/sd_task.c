@@ -763,23 +763,29 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
   task->rate = rate;
 
   if (computation_amount) {
-    task->computation_amount = xbt_new(double, workstation_count);
+    task->computation_amount = xbt_realloc(task->computation_amount,
+                                           sizeof(double) * workstation_count);
     memcpy(task->computation_amount, computation_amount,
            sizeof(double) * workstation_count);
   } else {
+    xbt_free(task->computation_amount);
     task->computation_amount = NULL;
   }
 
   communication_nb = workstation_count * workstation_count;
   if (communication_amount) {
-    task->communication_amount = xbt_new(double, communication_nb);
+    task->communication_amount = xbt_realloc(task->communication_amount,
+                                             sizeof(double) * communication_nb);
     memcpy(task->communication_amount, communication_amount,
            sizeof(double) * communication_nb);
   } else {
+    xbt_free(task->communication_amount);
     task->communication_amount = NULL;
   }
 
-  task->workstation_list = xbt_new(SD_workstation_t, workstation_count);
+  task->workstation_list =
+    xbt_realloc(task->workstation_list,
+                sizeof(SD_workstation_t) * workstation_count);
   memcpy(task->workstation_list, workstation_list,
          sizeof(SD_workstation_t) * workstation_count);
 
