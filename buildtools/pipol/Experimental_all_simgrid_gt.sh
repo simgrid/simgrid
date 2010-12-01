@@ -62,48 +62,6 @@ ctest -D ExperimentalTest
 ctest -D ExperimentalSubmit
 make clean
 
-#gtnets
-cmake -Denable_lua=on \
--Denable_ruby=on \
--Denable_lib_static=on \
--Denable_graphviz=on \
--Denable_model-checking=off \
--Denable_tracing=on \
--Denable_latency_bound_tracking=on \
--Denable_gtnets=on \
--Dgtnets_path=/usr \
--Denable_java=on \
--Dwith_context=auto \
--Denable_smpi=on .
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalTest
-ctest -D ExperimentalSubmit
-make clean
-
-#full_flags
-cmake -Denable_lua=on \
--Denable_ruby=on \
--Denable_lib_static=on \
--Denable_graphviz=on \
--Denable_model-checking=off \
--Denable_tracing=on \
--Denable_latency_bound_tracking=on \
--Denable_gtnets=off \
--Dgtnets_path=/usr \
--Denable_java=on \
--Dwith_context=auto \
--Denable_compile_optimizations=on \
--Denable_compile_warnings=on \
--Denable_smpi=on .
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalTest
-ctest -D ExperimentalSubmit
-make clean
-
 #supernovae
 cmake -Denable_lua=on \
 -Denable_ruby=on \
@@ -202,8 +160,19 @@ if [ $SYSTEM = Linux ] ; then
 	cd simgrid-trunk
 	
 	if [ -e $userhome/usr/lib/libgtsim-opt.so ] ; then
-		#Make gtnets
-		cmake -Denable_supernovae=off -Denable_compile_warnings=off -Denable_compile_optimizations=off -Dgtnets_path=$absolute_path/usr ./
+		#gtnets
+		cmake -Denable_lua=on \
+		-Denable_ruby=on \
+		-Denable_lib_static=on \
+		-Denable_graphviz=on \
+		-Denable_model-checking=off \
+		-Denable_tracing=on \
+		-Denable_latency_bound_tracking=on \
+		-Denable_gtnets=on \
+		-Dgtnets_path=/usr \
+		-Denable_java=on \
+		-Dwith_context=auto \
+		-Denable_smpi=on .
 		ctest -D ExperimentalStart
 		ctest -D ExperimentalConfigure
 		ctest -D ExperimentalBuild
@@ -211,13 +180,26 @@ if [ $SYSTEM = Linux ] ; then
 		ctest -D ExperimentalSubmit
 		make clean
 	fi
+	
+	#full_flags
+	cmake -Denable_lua=on \
+	-Denable_ruby=on \
+	-Denable_lib_static=on \
+	-Denable_graphviz=on \
+	-Denable_model-checking=off \
+	-Denable_tracing=on \
+	-Denable_latency_bound_tracking=on \
+	-Denable_gtnets=off \
+	-Dgtnets_path=/usr \
+	-Denable_java=on \
+	-Dwith_context=auto \
+	-Denable_compile_optimizations=on \
+	-Denable_compile_warnings=on \
+	-Denable_smpi=on .
+	ctest -D ExperimentalStart
+	ctest -D ExperimentalConfigure
+	ctest -D ExperimentalBuild
+	ctest -D ExperimentalTest
+	ctest -D ExperimentalSubmit
+	make clean
 fi
-
-#Make the memcheck mode
-cmake -Denable_gtnets=off -Denable_memcheck=on ./
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalMemCheck
-ctest -D ExperimentalSubmit
-make clean
