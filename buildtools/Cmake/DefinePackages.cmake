@@ -268,6 +268,7 @@ set(SIMDAG_SRC
 	src/simdag/sd_task.c
 	src/simdag/sd_workstation.c
 	src/simdag/sd_daxloader.c
+	src/simdag/sd_dotloader.c
 )
 if(HAVE_GRAPHVIZ)
 	set(SIMDAG_SRC 
@@ -561,7 +562,7 @@ ${README_examples_files}
 
 set(DOC_SOURCES
 	doc/contrib.doc
-        doc/FAQ.doc
+    doc/FAQ.doc
 	doc/gtut-howto-design.doc
 	doc/gtut-howto.doc
 	doc/gtut-introduction.doc
@@ -596,6 +597,15 @@ set(DOC_SOURCES
 	doc/module-xbt.doc
 	doc/people.doc	
 	doc/publis.doc
+	doc/Doxyfile.in
+	tools/doxygen/bibtex2html_table_count.pl
+	tools/doxygen/doxygen_postprocesser.pl
+	tools/doxygen/index_create.pl
+	tools/doxygen/toc_create.pl
+	tools/doxygen/bibtex2html_wrapper.pl
+	tools/doxygen/fig2dev_postprocessor.pl
+	tools/doxygen/index_php.pl
+	tools/doxygen/xbt_log_extract_hierarchy.pl
 )
 set(DOC_FIGS
 	${PROJECT_DIRECTORY}/doc/fig/simgrid_modules.fig
