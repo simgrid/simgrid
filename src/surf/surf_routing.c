@@ -2774,16 +2774,14 @@ static void generic_set_autonomous_system(routing_component_t rc,
   xbt_dict_set(_to_index, name, id, xbt_free);
 }
 
-static int surf_pointer_resource_cmp(const void *a, const void *b) {
-	if(a == b)
-		return 0;
-	return 1;
+static int surf_pointer_resource_cmp(const void *a, const void *b)
+{
+  return a != b;
 }
 
-static int surf_link_resource_cmp(const void *a, const void *b) {
-	if( memcmp(a,b,global_routing->size_of_link) == 0 );
-		return 0;
-	return 1;
+static int surf_link_resource_cmp(const void *a, const void *b)
+{
+  return !!memcmp(a,b,global_routing->size_of_link);
 }
 
 static void generic_set_bypassroute(routing_component_t rc,
