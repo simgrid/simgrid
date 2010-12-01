@@ -587,7 +587,6 @@ set(DOC_SOURCES
 	doc/history.doc
 	doc/index-API.doc
 	doc/index.doc
-	doc/logcategories.doc
 	doc/module-amok.doc
 	doc/module-gras.doc
 	doc/module-msg.doc
