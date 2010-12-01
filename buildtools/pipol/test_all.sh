@@ -41,47 +41,49 @@ ctest -D ExperimentalTest
 ctest -D ExperimentalSubmit
 make clean
 
-#gtnets
-cmake -Denable_lua=on \
--Denable_ruby=on \
--Denable_lib_static=on \
--Denable_graphviz=on \
--Denable_model-checking=off \
--Denable_tracing=on \
--Denable_latency_bound_tracking=on \
--Denable_gtnets=on \
--Dgtnets_path=/usr \
--Denable_java=on \
--Dwith_context=auto \
--Denable_smpi=on .
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalTest
-ctest -D ExperimentalSubmit
-make clean
+if [ `uname` != Darwin ]
+	#gtnets
+	cmake -Denable_lua=on \
+	-Denable_ruby=on \
+	-Denable_lib_static=on \
+	-Denable_graphviz=on \
+	-Denable_model-checking=off \
+	-Denable_tracing=on \
+	-Denable_latency_bound_tracking=on \
+	-Denable_gtnets=on \
+	-Dgtnets_path=/usr \
+	-Denable_java=on \
+	-Dwith_context=auto \
+	-Denable_smpi=on .
+	ctest -D ExperimentalStart
+	ctest -D ExperimentalConfigure
+	ctest -D ExperimentalBuild
+	ctest -D ExperimentalTest
+	ctest -D ExperimentalSubmit
+	make clean
 
-#full_flags
-cmake -Denable_lua=on \
--Denable_ruby=on \
--Denable_lib_static=on \
--Denable_graphviz=on \
--Denable_model-checking=off \
--Denable_tracing=on \
--Denable_latency_bound_tracking=on \
--Denable_gtnets=off \
--Dgtnets_path=/usr \
--Denable_java=on \
--Dwith_context=auto \
--Denable_compile_optimizations=on \
--Denable_compile_warnings=on \
--Denable_smpi=on .
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalTest
-ctest -D ExperimentalSubmit
-make clean
+	#full_flags
+	cmake -Denable_lua=on \
+	-Denable_ruby=on \
+	-Denable_lib_static=on \
+	-Denable_graphviz=on \
+	-Denable_model-checking=off \
+	-Denable_tracing=on \
+	-Denable_latency_bound_tracking=on \
+	-Denable_gtnets=off \
+	-Dgtnets_path=/usr \
+	-Denable_java=on \
+	-Dwith_context=auto \
+	-Denable_compile_optimizations=on \
+	-Denable_compile_warnings=on \
+	-Denable_smpi=on .
+	ctest -D ExperimentalStart
+	ctest -D ExperimentalConfigure
+	ctest -D ExperimentalBuild
+	ctest -D ExperimentalTest
+	ctest -D ExperimentalSubmit
+	make clean
+fi
 
 #supernovae
 cmake -Denable_lua=on \
