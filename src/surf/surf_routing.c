@@ -3049,7 +3049,7 @@ static void routing_parse_Scluster(void)
   char *cluster_bb_bw = A_surfxml_cluster_bb_bw;
   char *cluster_bb_lat = A_surfxml_cluster_bb_lat;
   char *host_id, *groups, *link_id = NULL;
-  char *router_id, *link_router, *link_backbone, *route_src_dst;
+  char *router_id, *link_router, *link_backbone;
   unsigned int iter;
   int start, end, i;
   xbt_dynar_t radical_elements;
@@ -3215,6 +3215,7 @@ static void routing_parse_Scluster(void)
 
 #ifdef HAVE_PCRE_LIB
   char *new_suffix = bprintf("%s", "");
+  char *route_src_dst;
 
   radical_elements = xbt_str_split(cluster_suffix, ".");
   xbt_dynar_foreach(radical_elements, iter, groups) {
