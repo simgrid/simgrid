@@ -243,7 +243,7 @@ static void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_
 }
 
 /**
- * \breif Set the endpoints for a route from XML
+ * \brief Set the endpoints for a route from XML
  */
 static void parse_S_route_new_and_endpoints_XML(void)
 {
@@ -252,7 +252,7 @@ static void parse_S_route_new_and_endpoints_XML(void)
 }
 
 /**
- * \breif Set the endpoints for a route from lua
+ * \brief Set the endpoints for a route from lua
  */
 static void parse_S_route_new_and_endpoints_lua(const char *id_src, const char *id_dst)
 {
