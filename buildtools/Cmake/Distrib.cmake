@@ -3,18 +3,16 @@
 #########################################
 	  
 # doc
-if(enable_doc)
-	if(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
-		file(MAKE_DIRECTORY ${PROJECT_DIRECTORY}/doc/html/)
-	endif(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
-		install(DIRECTORY "${PROJECT_DIRECTORY}/doc/html/"
-		  DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/html/"
-		  PATTERN ".svn" EXCLUDE 
-		  PATTERN ".git" EXCLUDE 
-		  PATTERN "*.o" EXCLUDE
-		  PATTERN "*~" EXCLUDE
-		)
-endif(enable_doc)
+if(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
+	file(MAKE_DIRECTORY ${PROJECT_DIRECTORY}/doc/html/)
+endif(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
+install(DIRECTORY "${PROJECT_DIRECTORY}/doc/html/"
+  DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/html/"
+  PATTERN ".svn" EXCLUDE 
+  PATTERN ".git" EXCLUDE 
+  PATTERN "*.o" EXCLUDE
+  PATTERN "*~" EXCLUDE
+)
 
 # binaries
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
@@ -169,7 +167,7 @@ COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/mc
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/simgrid_config.h
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/gras.h 
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/xbt.h
-COMMAND ${CMAKE_COMMAND} -E	echo "uninstal include ok"
+COMMAND ${CMAKE_COMMAND} -E	echo "uninstall include ok"
 WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
 )
 
