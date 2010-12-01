@@ -469,7 +469,6 @@ static void parse_statement(char *definition,
 
         DEBUG2("Anotation: %s=%s", keyname, keyval);
         if (!strcmp(keyname, "size")) {
-          free(keyname);
           if (!identifier.tm.is_ref)
             PARSE_ERROR0
                 ("Size annotation for a field not being a reference");
@@ -530,6 +529,7 @@ static void parse_statement(char *definition,
           free(keyval);
           PARSE_ERROR1("Unknown annotation type: '%s'", keyname);
         }
+        free(keyname);
 
         /* Get all the multipliers */
         while (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_STAR) {
