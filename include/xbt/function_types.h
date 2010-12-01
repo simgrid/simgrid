@@ -28,6 +28,7 @@ typedef int (*int_f_cpvoid_cpvoid_t) (const void *, const void *);
 typedef int (*xbt_main_func_t) (int argc, char *argv[]);
 
 typedef double(*double_f_pvoid_t) (void *);
+typedef double(*double_f_cpvoid_t) (const void *);
 
 SG_END_DECL()
 #endif                          /* XBT_FUNCTION_TYPE_H */

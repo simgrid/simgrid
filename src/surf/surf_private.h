@@ -197,7 +197,7 @@ struct s_routing_global {
   xbt_dynar_t last_route;
 };
 
-XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback, double_f_pvoid_t get_link_latency_fun);
+XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback, double_f_cpvoid_t get_link_latency_fun);
 
 /**
  * Resource protected methods

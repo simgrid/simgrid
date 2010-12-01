@@ -25,7 +25,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 routing_global_t global_routing = NULL;
 routing_component_t current_routing = NULL;
 model_type_t current_routing_model = NULL;
-static double_f_pvoid_t get_link_latency = NULL;
+static double_f_cpvoid_t get_link_latency = NULL;
 
 /* Prototypes of each model */
 static void *model_full_create(void);   /* create structures for full routing model */
@@ -998,7 +998,7 @@ static e_surf_network_element_type_t get_network_element_type(const char
  * 
  * Make a global routing structure and set all the parsing functions.
  */
-void routing_model_create(size_t size_of_links, void *loopback, double_f_pvoid_t get_link_latency_fun	)
+void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_t get_link_latency_fun)
 {
 
   /* config the uniq global routing */

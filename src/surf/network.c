@@ -774,7 +774,7 @@ static void surf_network_model_init_internal(void)
                                     498000000, NULL, 0.000015, NULL,
                                     SURF_RESOURCE_ON, NULL,
                                     SURF_LINK_FATPIPE, NULL),
-                        (double_f_pvoid_t)net_get_link_latency);
+		       net_get_link_latency);
 }
 
 

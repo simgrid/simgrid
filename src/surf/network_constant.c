@@ -230,5 +230,5 @@ void surf_network_model_init_Constant(const char *filename)
                            "Constant", surf_network_model);
 
   xbt_cfg_set_string(_surf_cfg_set, "routing", "none");
-  routing_model_create(sizeof(double), NULL, (double_f_pvoid_t)netcste_get_link_latency);
+  routing_model_create(sizeof(double), NULL, netcste_get_link_latency);
 }
