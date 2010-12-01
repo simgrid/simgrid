@@ -64,7 +64,6 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   /* ignore first one, which is this xbt_backtrace_current() */
   e->used--;
   memmove(backtrace_syms, backtrace_syms + 1, sizeof(char *) * e->used);
-  addrs = xbt_new(char *, e->used);
 
   e->bt_strings = NULL;
 
@@ -91,10 +90,10 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
             /* Found. */
             DEBUG1("Looked in the PATH for the binary. Found %s",
                    binary_name);
-            xbt_dynar_free(&path);
             break;
           }
         }
+        xbt_dynar_free(&path);
         if (stat(binary_name, &stat_buf)) {
           /* not found */
           e->used = 1;
@@ -102,9 +101,9 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
 
           e->bt_strings[0] =
               bprintf("(binary '%s' not found the path)", xbt_binary_name);
+          free(backtrace_syms);
           return;
         }
-        xbt_dynar_free(&path);
         break;
       }
     }
@@ -118,6 +117,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   curr += sprintf(curr, "%s -f -e %s ", ADDR2LINE, binary_name);
   free(binary_name);
 
+  addrs = xbt_new(char *, e->used);
   for (i = 0; i < e->used; i++) {
     /* retrieve this address */
     DEBUG2("Retrieving address number %d from '%s'", i, backtrace_syms[i]);
@@ -215,6 +215,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
       }
       fclose(maps);
       free(maps_name);
+      free(addrs[i]);
 
       if (!found) {
         VERB0
@@ -228,7 +229,6 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
          We now need to substract this from the address we got from backtrace.
        */
 
-      free(addrs[i]);
       addrs[i] = bprintf("0x%0*lx", addr_len - 2, addr - offset);
       DEBUG2("offset=%#lx new addr=%s", offset, addrs[i]);
 
@@ -295,12 +295,12 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
 
       for (j = i + 1; j < e->used; j++)
         free(addrs[j]);
-      e->used = i;
+      e->used = i + 1;
 
       if (!strncmp
           ("xbt_thread_context_wrapper", line_func,
            strlen("xbt_thread_context_wrapper"))) {
-        e->used++;
+        free(e->bt_strings[i]);
         e->bt_strings[i] = bprintf("**   (in a separate thread)");
       }
     }
