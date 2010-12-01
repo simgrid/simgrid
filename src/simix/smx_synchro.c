@@ -547,7 +547,7 @@ unsigned int SIMIX_sem_acquire_any(xbt_dynar_t sems)
                                      xbt_dynar_get_as(sems, 0, smx_sem_t));
 
   /* Get listed as member of all the provided semaphores */
-  self->sem = (smx_sem_t) sems; /* FIXME: we pass a pointer to dynar where a pointer to sem is expected... */
+  self->sem = xbt_dynar_getfirst_as(sems, smx_sem_t);
   xbt_dynar_foreach(sems, counter, sem) {
     xbt_fifo_push(sem->sleeping, self);
   }
