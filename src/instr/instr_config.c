@@ -123,7 +123,7 @@ void TRACE_global_init(int *argc, char **argv)
                    NULL, NULL);
 
   /* platform method */
-  char *default_tracing_platform_method = xbt_strdup("b");
+  char *default_tracing_platform_method = xbt_strdup("a");
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM_METHOD,
                    "Tracing method used to register categorized resource behavior.",
                    xbt_cfgelm_string, &default_tracing_platform_method, 1,
