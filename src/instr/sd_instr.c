@@ -10,17 +10,12 @@
 
 void TRACE_sd_task_create(SD_task_t task)
 {
-  if (!IS_TRACING)
-    return;
   task->category = NULL;
 }
 
 void TRACE_sd_task_destroy(SD_task_t task)
 {
-  if (!IS_TRACING)
-    return;
-  if (task->category)
-    xbt_free(task->category);
+  xbt_free(task->category);
 }
 
 void TRACE_sd_set_task_category(SD_task_t task, const char *category)
