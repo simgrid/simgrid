@@ -1,5 +1,5 @@
 /* XML processor/application API for src/surf/simgrid.dtd.
- * Generated 2010/11/03 10:00:12.
+ * Generated 2010/12/01 17:15:43.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -94,9 +94,9 @@ typedef int AT_surfxml_prop_id;
 #define AU_surfxml_prop_id NULL
 typedef int AT_surfxml_host_id;
 #define AU_surfxml_host_id NULL
+typedef enum { AU_surfxml_ASroute_symmetrical, A_surfxml_ASroute_symmetrical_YES,A_surfxml_ASroute_symmetrical_NO } AT_surfxml_ASroute_symmetrical;
 typedef int AT_surfxml_link_latency_file;
 #define AU_surfxml_link_latency_file NULL
-typedef enum { AU_surfxml_ASroute_symmetrical, A_surfxml_ASroute_symmetrical_YES,A_surfxml_ASroute_symmetrical_NO } AT_surfxml_ASroute_symmetrical;
 typedef enum { AU_surfxml_link_ctn_direction, A_surfxml_link_ctn_direction_UP,A_surfxml_link_ctn_direction_DOWN,A_surfxml_link_ctn_direction_NONE } AT_surfxml_link_ctn_direction;
 typedef enum { AU_surfxml_host_state, A_surfxml_host_state_ON,A_surfxml_host_state_OFF } AT_surfxml_host_state;
 typedef int AT_surfxml_AS_id;
@@ -146,6 +146,7 @@ typedef int AT_surfxml_link_bandwidth_file;
 #define AU_surfxml_link_bandwidth_file NULL
 typedef int AT_surfxml_host_vivaldi;
 #define AU_surfxml_host_vivaldi NULL
+typedef enum { AU_surfxml_route_symmetrical, A_surfxml_route_symmetrical_YES,A_surfxml_route_symmetrical_NO } AT_surfxml_route_symmetrical;
 typedef int AT_surfxml_random_id;
 #define AU_surfxml_random_id NULL
 typedef int AT_surfxml_random_max;
@@ -173,7 +174,6 @@ typedef int AT_surfxml_cluster_power;
 #define AU_surfxml_cluster_power NULL
 typedef int AT_surfxml_process_function;
 #define AU_surfxml_process_function NULL
-typedef enum { AU_surfxml_route_symmetrical, A_surfxml_route_symmetrical_YES,A_surfxml_route_symmetrical_NO } AT_surfxml_route_symmetrical;
 typedef enum { AU_surfxml_cluster_sharing_policy, A_surfxml_cluster_sharing_policy_SHARED,A_surfxml_cluster_sharing_policy_FULLDUPLEX,A_surfxml_cluster_sharing_policy_FATPIPE } AT_surfxml_cluster_sharing_policy;
 typedef int AT_surfxml_bypassRoute_dst;
 #define AU_surfxml_bypassRoute_dst NULL
@@ -218,10 +218,10 @@ XBT_PUBLIC_DATA(AT_surfxml_prop_id ) AX_surfxml_prop_id;
 #define A_surfxml_prop_id (surfxml_bufferstack + AX_surfxml_prop_id)
 XBT_PUBLIC_DATA(AT_surfxml_host_id ) AX_surfxml_host_id;
 #define A_surfxml_host_id (surfxml_bufferstack + AX_surfxml_host_id)
-XBT_PUBLIC_DATA(AT_surfxml_link_latency_file ) AX_surfxml_link_latency_file;
-#define A_surfxml_link_latency_file (surfxml_bufferstack + AX_surfxml_link_latency_file)
 XBT_PUBLIC_DATA(AT_surfxml_ASroute_symmetrical ) AX_surfxml_ASroute_symmetrical;
 #define A_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical
+XBT_PUBLIC_DATA(AT_surfxml_link_latency_file ) AX_surfxml_link_latency_file;
+#define A_surfxml_link_latency_file (surfxml_bufferstack + AX_surfxml_link_latency_file)
 XBT_PUBLIC_DATA(AT_surfxml_link_ctn_direction ) AX_surfxml_link_ctn_direction;
 #define A_surfxml_link_ctn_direction AX_surfxml_link_ctn_direction
 XBT_PUBLIC_DATA(AT_surfxml_host_state ) AX_surfxml_host_state;
@@ -276,6 +276,8 @@ XBT_PUBLIC_DATA(AT_surfxml_link_bandwidth_file ) AX_surfxml_link_bandwidth_file;
 #define A_surfxml_link_bandwidth_file (surfxml_bufferstack + AX_surfxml_link_bandwidth_file)
 XBT_PUBLIC_DATA(AT_surfxml_host_vivaldi ) AX_surfxml_host_vivaldi;
 #define A_surfxml_host_vivaldi (surfxml_bufferstack + AX_surfxml_host_vivaldi)
+XBT_PUBLIC_DATA(AT_surfxml_route_symmetrical ) AX_surfxml_route_symmetrical;
+#define A_surfxml_route_symmetrical AX_surfxml_route_symmetrical
 XBT_PUBLIC_DATA(AT_surfxml_random_id ) AX_surfxml_random_id;
 #define A_surfxml_random_id (surfxml_bufferstack + AX_surfxml_random_id)
 XBT_PUBLIC_DATA(AT_surfxml_random_max ) AX_surfxml_random_max;
@@ -304,8 +306,6 @@ XBT_PUBLIC_DATA(AT_surfxml_cluster_power ) AX_surfxml_cluster_power;
 #define A_surfxml_cluster_power (surfxml_bufferstack + AX_surfxml_cluster_power)
 XBT_PUBLIC_DATA(AT_surfxml_process_function ) AX_surfxml_process_function;
 #define A_surfxml_process_function (surfxml_bufferstack + AX_surfxml_process_function)
-XBT_PUBLIC_DATA(AT_surfxml_route_symmetrical ) AX_surfxml_route_symmetrical;
-#define A_surfxml_route_symmetrical AX_surfxml_route_symmetrical
 XBT_PUBLIC_DATA(AT_surfxml_cluster_sharing_policy ) AX_surfxml_cluster_sharing_policy;
 #define A_surfxml_cluster_sharing_policy AX_surfxml_cluster_sharing_policy
 XBT_PUBLIC_DATA(AT_surfxml_bypassRoute_dst ) AX_surfxml_bypassRoute_dst;
