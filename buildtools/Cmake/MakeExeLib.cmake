@@ -63,10 +63,11 @@ endif(HAVE_POSIX_GETTIME)
 # GRAS_DEP (and is thus probably invalid).
 # My guess is that pthread is never true [Mt]
 # FIXME: KILLME if we get a working windows with that?
-if(pthread AND (with_context MATCHES windows))
+if(with_context MATCHES windows)
+if(pthread)
 		SET(GRAS_DEP "msg")
-endif(pthread AND (with_context MATCHES windows))
-
+endif(pthread)
+endif(with_context MATCHES windows)
 target_link_libraries(gras 	${GRAS_DEP})
 
 # Compute the dependencies of SimGrid
