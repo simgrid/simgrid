@@ -3218,7 +3218,6 @@ static void routing_parse_Scluster(void)
 
 #ifdef HAVE_PCRE_LIB
   char *new_suffix = bprintf("%s", "");
-  char *route_src_dst;
 
   radical_elements = xbt_str_split(cluster_suffix, ".");
   xbt_dynar_foreach(radical_elements, iter, groups) {
