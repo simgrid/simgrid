@@ -18,8 +18,6 @@ sh ./simgrid-trunk/buildtools/pipol/liste_install.sh
 perl ./simgrid-trunk/buildtools/pipol/cmake.pl
 
 cd simgrid-trunk
-mkdir tmp_build
-cd tmp_build
 
 #ucontext
 cmake -Denable_lua=on \
@@ -35,7 +33,7 @@ cmake -Denable_lua=on \
 -Denable_compile_optimizations=off \
 -Denable_compile_warnings=off \
 -Denable_supernovae=off \
--Denable_smpi=on ..
+-Denable_smpi=on .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
 ctest -D ExperimentalBuild
@@ -54,7 +52,7 @@ cmake -Denable_lua=on \
 -Denable_gtnets=off \
 -Denable_java=on \
 -Dwith_context=pthread \
--Denable_smpi=on ..
+-Denable_smpi=on .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
 ctest -D ExperimentalBuild
