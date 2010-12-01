@@ -14,12 +14,11 @@
 
 const char *gras_os_myname(void)
 {
-  static char *myname = NULL;
+  static char myname[255];
+  static int initialized = 0;
 
-  if (myname)
-    return (const char *) myname;
-
-  myname = xbt_new(char, 255);
+  if (initialized)
+    return myname;
 
   if (gethostname(myname, 255) == -1) {
 #ifdef HAVE_SYS_SOCKET_H
@@ -32,7 +31,7 @@ const char *gras_os_myname(void)
     endhostent();
 
     if (tmp) {
-      strncat(myname, tmp->h_name, 255);
+      strncpy(myname, tmp->h_name, 255);
     } else {
       /* Erm. localhost cannot be resolved. There's something wrong in the user DNS setting */
       sprintf(myname, "(misconfigured host)");
@@ -44,5 +43,6 @@ const char *gras_os_myname(void)
 
   myname[254] = '\0';
 
+  initialized = 1;
   return myname;
 }
