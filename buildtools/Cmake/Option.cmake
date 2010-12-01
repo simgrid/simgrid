@@ -22,14 +22,14 @@ endif(NOT with_context)
 
 set(pipol_user ${pipol_user} CACHE TYPE INTERNAL FORCE)
 
-
-option(enable_smpi "This variable set smpi lib." on)
 option(enable_gtnets "Whether gtnets model is activated." on)
 option(enable_java "Whether the Java bindings are activated." on)
 if(WIN32 OR APPLE) 
+option(enable_smpi "This variable set smpi lib." off)
 option(enable_lua "Whether the lua bindings are activated." off)
 option(enable_ruby "Whether the Ruby bindings are activated." off)
 else(WIN32 OR APPLE)
+option(enable_smpi "This variable set smpi lib." on)
 option(enable_lua "Whether the lua bindings are activated." on)
 option(enable_ruby "Whether the Ruby bindings are activated." on)
 endif(WIN32 OR APPLE) 
