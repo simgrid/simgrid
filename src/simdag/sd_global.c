@@ -201,8 +201,11 @@ void SD_create_environment(const char *platform_file)
  * \brief Launches the simulation.
  *
  * The function will execute the \ref SD_RUNNABLE runnable tasks.
- * The simulation will be stopped when its time reaches \a how_long,
- * when a watch point is reached, or when no more task can be executed.
+ * If \a how_long is positive, then the simulation will be stopped either
+ * when time reaches \a how_long or when a watch point is reached.
+ * A nonpositive value for \a how_long means no time limit, in which case
+ * the simulation will be stopped either when a watch point is reached or
+ * when no more task can be executed.
  * Then you can call SD_simulate() again.
  *
  * \param how_long maximum duration of the simulation (a negative value means no time limit)
