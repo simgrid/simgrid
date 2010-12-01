@@ -209,10 +209,10 @@ endif(HAVE_GTNETS)
 
 # Lua examples
 if(HAVE_LUA)
-ADD_TEST(lua-masterslave		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/lua master_slave.tesh --setenv LUA_CPATH=$ENV{LUA_CPATH}:${CMAKE_BINARY_DIR}/lib/lua/5.1/?.so)
-ADD_TEST(lua-mult_matrix		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/lua mult_matrix.tesh --setenv LUA_CPATH=$ENV{LUA_CPATH}:${CMAKE_BINARY_DIR}/lib/lua/5.1/?.so)
-ADD_TEST(lua-masterslave_bypass ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/lua master_slave_bypass.tesh --setenv LUA_CPATH=$ENV{LUA_CPATH}:${CMAKE_BINARY_DIR}/lib/lua/5.1/?.so)
-ADD_TEST(lua-msg-masterslave-console	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/masterslave/ masterslave_console.tesh --setenv LUA_CPATH=$ENV{LUA_CPATH}:${CMAKE_BINARY_DIR}/lib/lua/5.1/?.so)
+ADD_TEST(lua-masterslave		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/lua master_slave.tesh)
+ADD_TEST(lua-mult_matrix		${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/lua mult_matrix.tesh)
+ADD_TEST(lua-masterslave_bypass ${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/lua master_slave_bypass.tesh)
+ADD_TEST(lua-msg-masterslave-console	${CMAKE_BINARY_DIR}/bin/tesh --cd ${PROJECT_DIRECTORY}/examples/msg/masterslave/ masterslave_console.tesh)
 endif(HAVE_LUA)
 
 # Ruby examples
@@ -289,4 +289,6 @@ add_test(test-surf-trace	${CMAKE_HOME_DIRECTORY}/testsuite/surf/trace_usage --cf
 
 add_test(testall		${CMAKE_HOME_DIRECTORY}/src/testall)
 
+if(enable_memcheck)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/memcheck_tests.cmake)
+endif(enable_memcheck)

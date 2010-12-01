@@ -14,7 +14,6 @@ my(@test_list)=();
 
 my($line);
 my($dump)=0;
-print "if(enable_memcheck)\n";
 while(defined($line=<MAKETEST>)) {
     chomp $line;
     if($line =~ /BEGIN TESH TESTS/) {
@@ -84,7 +83,6 @@ while(defined($line=<MAKETEST>)) {
     }   
 }
 close(MAKETEST);
-print "endif(enable_memcheck)\n";
 #print "set(MEMCHECK_LIST\n";
 #print (join("\n", @test_list));
 #print ")\n";
