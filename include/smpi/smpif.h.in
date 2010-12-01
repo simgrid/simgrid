@@ -18,7 +18,7 @@
 #include <xbt/misc.h>
 
 XBT_PUBLIC(int) smpi_process_argc(void);
-XBT_PUBLIC(int) smpi_process_getarg(integer* index, char* dst, ftnlen len);
+XBT_PUBLIC(int) smpi_process_getarg(int* index, char* dst, size_t len);
 XBT_PUBLIC(int) smpi_global_rank(void);
 XBT_PUBLIC(int) smpi_global_size(void);
 

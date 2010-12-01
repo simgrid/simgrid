@@ -68,7 +68,7 @@ int smpi_process_argc(void) {
   return data->argc ? *(data->argc) - 1 : 0;
 }
 
-int smpi_process_getarg(integer* index, char* dst, ftnlen len) {
+int smpi_process_getarg(int* index, char* dst, size_t len) {
   smpi_process_data_t data = smpi_process_data();
   char* arg;
   size_t i;
