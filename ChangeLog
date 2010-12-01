@@ -7,26 +7,44 @@ SimGrid (3.5) unstable; urgency=low
  SMPI
  * New Model SMPI (three-interval linear regression for correction factors)
    See RR-7426, available at http://hal.inria.fr/inria-00527150
- * Ability to use fortran MPI code (through f2c, automatically privatized)
+ * Ability to use FORTRAN MPI code (through f2c, automatically privatized)
  * New MPI functions supported: MPI_Get_count(), MPI_Comm_split()
  * New: RAM folding (see RR-7426 and examples/smpi/NAS/DT-folding)
  * New: execution sampling (see RR-7426 and examples/smpi/NAS/EP-sampling)
  * See also src/smpi/README
 
  Tracing:
+ Tracing:
  * Tracing system
-   - tracing API for MSG changes: TRACE_start has no
-     longer parameters, the trace file is supplied through
-     an option passed to simulator. Categories declaration
-     and utilization remain the same. The following options
-     are supported:
+   - Tracing API changes: TRACE_start and TRACE_end should not be called
+     by user-code. They are automatically called by simulators created
+     with SimDAG, MSG and SMPI if the toolkit is compiled with
+     tracing_enabled=ON. Categories declaration and utilization remain the
+     same for MSG and SimDag.
+   - A function was added to the tracing API to declare categories with
+     colors:
+        - TRACE_category_with_color (char *category, char *color)
+                where color must be in the following format
+                    "%f %f %f", red, green, blue
+                and red, green, blue are float values in the interval [0, 1]
+        - User can specify NULL as color parameter, or continue calling
+            TRACE_category (cat)
+          On that case, the tracing system will define random colors
+   - The following command-line options are supported:
         --cfg=tracing/filename:msg.trace
+        --cfg=tracing:1               (activate tracing, needed to use others)
         --cfg=tracing/platform:1      (categorized resource use)
+        --cfg=tracing/uncategorized:1 (uncategorized resource use)
         --cfg=tracing/msg/task:1      (task creation)
         --cfg=tracing/msg/process:1   (process creation, migration)
-        --cfg=tracing/msg/volume:1    (volume of msg send/recv)
-        --cfg=tracing/smpi:1          (smpi interface tracing)
+        --cfg=tracing/msg/volume:1    (volume of MSG send/recv)
+        --cfg=tracing/smpi:1          (SMPI interface tracing)
+        --cfg=tracing/simdag:1        (allow SimDAG tasks receive categories)
    - examples of examples/msg/tracing updated
+ * Tracing SimDag
+   - DAXLoader and DOTLoader functions can generate tasks with categories
+   - A new function to attribute a category to SD tasks:
+        TRACE_sd_set_task_category (SD_task_t task, char *category)
  * Tracing the MPI interface implemented by SMPI
    - Collective operations are traced with states
    - Point-to-Point operations are traced with states/links
@@ -123,7 +141,7 @@ SimGrid (3.5) unstable; urgency=low
  * New function SD_workstation_get_current_task() that returns the kind
    of task currently running on a workstation in the sequential access
    mode.
- * Raise some warnings when unexecuted remains at the end of the
+ * Raise some warnings when unexecuted tasks remains at the end of the
    simulation. This is usually caused by cycles in the DAG.
 
  SIMIX
@@ -167,7 +185,7 @@ SimGrid (3.5) unstable; urgency=low
  * Port to windows ( TM :)
  * Fix the 'make install' target.
    No need to use 'make install-simgrid' anymore
- * Introduce a 'make dist' target compiling a *souce* archive
+ * Introduce a 'make dist' target compiling a *source* archive
    'make package' compiles a binary archive
  * Compile java files only on need
  * Add --cd and --setenv command line options to tesh
@@ -176,7 +194,7 @@ SimGrid (3.5) unstable; urgency=low
 
  LUA Bindings
  * Add layer to set up environment directly from lua, without XML.
- * The effect of gras_stub_generator can be achieved athrough
+ * The effect of gras_stub_generator can be achieved through
    lua too (check examples/gras/console/ping_generator.lua)
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
