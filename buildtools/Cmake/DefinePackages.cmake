@@ -274,6 +274,10 @@ if(HAVE_GRAPHVIZ)
 	set(SIMDAG_SRC 
 	    ${SIMDAG_SRC} src/simdag/sd_dotloader.c
 	)
+else(HAVE_GRAPHVIZ)
+	set(EXTRA_DIST
+	    ${EXTRA_DIST} src/simdag/sd_dotloader.c
+	)
 endif(HAVE_GRAPHVIZ)
 
 set(GRAS_COMMON_SRC
