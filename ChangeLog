@@ -1,129 +1,8 @@
 SimGrid (3.5) unstable; urgency=low
 
- MSG
- * Asynchronous communications through the functions:
-   MSG_task_isend/irecv and MSG_comm_test/wait/waitall
- * New function: MSG_load_platform_script()
-   to make possible using a lua script instead of XML files to set up platforms
- * New function: MSG_set_function
-   to associate functions to processes, used when bypassing the parser
- * New functions: MSG_task_set_name(), MSG_task_set_compute_duration()
-
- LUA Bindings
- * Add layer to set up environment directly from lua, without XML
- * In GRAS, the effect of gras_stub_generator can be achieved through
-   lua too (check examples/gras/console/ping_generator.lua)
- * Modify the entry point, to take into consideration when lua is used only as a platform generator
-
- SURF
- * Change the XML format. This is a very important modification. SimGrid
-   3.5 introduces a new hierarchical format based on the notion of
-   Autonomous Systems. Compatibility with old format is ensured
-   through the perl script provided in the install bin directory 
-   bin/simgrid_update_xml.
-   It is now possible to build platforms with specific routing
-   mechanism (Full/Dijkstra/DijkstraCache/Floyd) and to easily
-   connect several platforms together. We will try to provide soon
-   set of realistic platforms exploiting these properties (have a
-   look at examples/platforms/ for the moment).
- * Take the opportunity to be a good XML citizen: rename link:ctn to
-   link_ctn and similar changes (also dealed with by simgrid_update_xml)
- * Add a new routing scheme (rule-based) using regular expressions. It
-   enables to have an extremely low memory footprint when the
-   underlying routing is simple and can be compactly described. You
-   need to have libpcre4-dev (perl regular expressions) installed if
-   you want to use this routing scheme.
- * Revive the cluster TAG and allow to easily and efficiently (both in
-   term of memory and speed) connect clusters together. Have a look
-   at teshsuite/simdag/platforms/ to see how this can be done. With
-   this tag, you can create clusters with thousands of tasks at no
-   cost (have a look at examples/platforms/). 
-   Note: clusters are implemented as ASes, so there is no need for an
-   enclosing AS tag if you have only one cluster in your platform.
- * Add new callbacks to the CPU & netwok models to create resources
-   no need to pass through the parser callbacks to do so.
- * Add new function to create routes table via the routing model
- * Add generic functions in the public interface that allows the user to
-   call SURF 'create_resource' methods from a lua script.
- * Add a new model (enabled through command line --cfg=network/model:SMPI)
-   that uses a piecewise linear approximation to produce better
-   results when exchanging small messages.
- * Add a new parameter to handle correctly full duplex link and account
-   for interferences between uplink and downlink communications
-   (activate with --cfg=fullduplex:1).
-
- SIMIX
- * New function: SIMIX_process_set_function() called by MSG_set_function
- * Change the underlying waiting queue in semaphores so that a process
-   can wait on several of them simultaneously (as in waitany).
- * Fix the way to handle tokens in semaphores so that all access patterns
-   work: {acquire, acquire_timeout, waitany} / {release, release_forever}.
- * kill the dirty pimple SIMIX_message_sizes_output()
-   Please use (proper) visualization instead
-
- SIMDAG
- * Fix a bug in the management of tasks of size 0 in the surf network
-   models. This problem was only visible with SIMDAG and you should
-   thus disregard results produced with earlier versions if you
-   relied on this feature (some tasks were blocked because of this).
- * Fix a bunch of stuff that prevented to use classical models with SIMDAG
-   even though your applications were doing only point-to-point
-   communications and sequential computations. Now you can really use any
-   model you want (of course, if you create real parallel tasks, which are
-   not implemented in most models beside ptaskL07, this will abort).
- * Change the way a task is considered as ready. Instead of removing
-   dependencies when a task is done, a counter is decreased. This way,
-   it is always possible to reach ancestors thanks to the
-   SD_taks_get_parents function (even after the end of the simulation.)
- * Change the level of some logs in sd_global from INFO to VERB. The
-   corresponding tests are now less verbose
- * Change the return type of SD_Simulate from (SD_task_t*) into
-   xbt_dynar_t. This function was in handling a dynar internally and
-   converted it into a NULL terminated array for historical reasons.
- * Rename the SD_READY (all dependencies are satisfied and task is
-   scheduled) state in SD_RUNNABLE and define a new SD_SCHEDULABLE (all
-   dependencies are satisfied) state.
-   This prevents a confusion between the notion of "ready to schedule"
-   (SD_SCHEDULABLE) used in DAG scheduling and that of "ready to be
-   simulated" (SD_RUNNABLE) used by the simulation kernel.
- * Add an example that scheduling a DAX on an heterogeneous platform
-   using a Min-Min strategy
- * new function SD_dotload(char*) to load a DAG described in dot
-   format. This loader and the corresponding examples require the
-   installation of the graphviz library.
- * new function SD_workstation_get_current_task() that returns the kind
-   of task currently running on a workstation in the sequential access 
-   mode.
- * Task rate should be -1 by default
-   Using 0 as before caused TCP_gamma bound to be ignored.
-   This change modifies (fixes) almost every simdag timings.
- * Raise some warnings when unexecuted remains at the end of the
-   simulation. This is usually caused by cycles in the DAG. 
-
- XBT
- * New data container: setset (set of sets of elements)
- * New module: mmalloc (mapped malloc, allowing to have several
-   independent segments of malloc)
- * New function: xbt_dict_cursor_set_data()
- * New functions: xbt_dynar_sort(), xbt_dynar_compare()
- * New function: xbt_dynar_is_empty()
- * New function: xbt_fifo_get_last_item()
- * Bug fix in xbt_dynar_shrink(): use the right element size
- * Multiple bug fixes in semaphores which were wrongly implemented
- * Use library init/fini functions for our initialization.
-   - you can use logs and other feature as soon as you want in your
-     code (even before the xbt_init / MSG_init)
-   - xbt_exit is now a no-op and produce a warning when used.
-
- GRAS:
- * New function: gras_msgtype_get_name()
- * Implement gras_agent_spawn in RL too (the prototype changed a bit)
- * Port GRAS to new SIMIX deployments. This allows gras users to
-   benefit from the lastest improvement to the simulation kernel.
- * Kill measurement sockets for now. If you rely on them, sorry. This
-   release is not for you. This feature will be reintroduced in the
-   future, but we cannot delay the release any further.
- * Finally fixed the pmm example. It should not randomly fail anymore
+ Model Checking
+ * New feature to any SimGrid-based simulator: Model-Checking
+   Check SIN#1 for more details.
 
  SMPI
  * New Model SMPI (three-interval linear regression for correction factors)
@@ -133,22 +12,6 @@ SimGrid (3.5) unstable; urgency=low
  * New: RAM folding (see RR-7426 and examples/smpi/NAS/DT-folding)
  * New: execution sampling (see RR-7426 and examples/smpi/NAS/EP-sampling)
  * See also src/smpi/README
-
- Build chain: bug fixes and overall polishing
- * Fix the 'make install' target.
-   No need to use 'make install-simgrid' anymore
- * Introduce a 'make dist' target compiling a *source* archive
-   'make package' compiles a binary archive
- * Compile java files only on need
- * Add --cd and --setenv command line options to tesh
- * Port to windows
- * Out of source builds are not fully supported yet, but we are close
- * Enable supernovae and optimization flags by default for our users
- * Cmake is now stable enough so that we killed the autotools
-
- Platforms: Add some more examples in examples/platforms
- * Grid'5000: see www.grid5000.fr
- * *_30000_hosts.xml: various huge files [mainly scalability testing]
 
  Tracing:
  * Tracing system
@@ -164,7 +27,6 @@ SimGrid (3.5) unstable; urgency=low
         --cfg=tracing/msg/volume:1    (volume of msg send/recv)
         --cfg=tracing/smpi:1          (smpi interface tracing)
    - examples of examples/msg/tracing updated
-
  * Tracing the MPI interface implemented by SMPI
    - Collective operations are traced with states
    - Point-to-Point operations are traced with states/links
@@ -175,14 +37,147 @@ SimGrid (3.5) unstable; urgency=low
      accepts --cfg=tracing/smpi:1 to trace SMPI
    - tesh files to check if smpi tracing is ok
    - See examples/smpi/NAS/DT-trace
-
  * GTNetS tracing re-worked
    - adaptation to the tracing system of GTNets to cope
      with modifications regarding the fullduplex mode
    - new tesh files to check if gtnets tracing is ok
 
- * New feature to any SimGrid-based simulator: Model-Checking
-   Check SIN#1 for more details.
+ MSG
+ * Asynchronous communications through the functions:
+   MSG_task_isend/irecv and MSG_comm_test/wait/waitall
+ * New function: MSG_load_platform_script()
+   to make possible using a lua script instead of XML files to set up platforms
+ * New function: MSG_set_function
+   to associate functions to processes, used when bypassing the parser
+ * New functions: MSG_task_set_name(), MSG_task_set_compute_duration()
+
+ Platforms: Add some more examples in examples/platforms
+ * Grid'5000: see www.grid5000.fr
+ * *_30000_hosts.xml: various huge files [mainly scalability testing]
+
+ SURF
+ * Change the XML format. This is a very important modification. SimGrid
+   3.5 introduces a new hierarchical format based on the notion of
+   Autonomous Systems. Compatibility with old format is ensured
+   through the perl script provided in the install bin directory
+   bin/simgrid_update_xml.
+   It is now possible to build platforms with specific routing
+   mechanism (Full/Dijkstra/DijkstraCache/Floyd) and to easily
+   connect several platforms together. We will try to provide soon
+   set of realistic platforms exploiting these properties (have a
+   look at examples/platforms/ for the moment).
+ * Take the opportunity of the XML format change to be a good XML citizen:
+   rename link:ctn to link_ctn and similar changes (also dealed with by
+   simgrid_update_xml)
+ * Add a new routing scheme (rule-based) using regular expressions. It
+   enables to have an extremely low memory footprint when the
+   underlying routing is simple and can be compactly described. You
+   need to have libpcre4-dev (perl regular expressions) installed if
+   you want to use this routing scheme.
+ * Revive the cluster TAG and allow to easily and efficiently (both in
+   term of memory and speed) connect clusters together. Have a look
+   at teshsuite/simdag/platforms/ to see how this can be done. With
+   this tag, you can create clusters with thousands of tasks at no
+   cost (have a look at examples/platforms/).
+   Note: clusters are implemented as ASes, so there is no need for an
+   enclosing AS tag if you have only one cluster in your platform.
+ * Add new generic functions in the public interface that allows the user
+   to call SURF 'create_resource' methods from your code (same
+   functionality as the XML bypass mechanism but with a much lighter
+   burden).
+ * Add a new model (enabled through command line --cfg=network/model:SMPI)
+   that uses a piecewise linear approximation to produce better
+   results when exchanging small messages.
+ * Add a new parameter to handle correctly full duplex link and account
+   for interferences between uplink and downlink communications
+   (activate with --cfg=fullduplex:1).
+
+ SIMDAG
+ * Rename the SD_READY (all dependencies are satisfied and task is
+   scheduled) state in SD_RUNNABLE and define a new SD_SCHEDULABLE (all
+   dependencies are satisfied) state.
+   This prevents a confusion between the notion of "ready to schedule"
+   (SD_SCHEDULABLE) used in DAG scheduling and that of "ready to be
+   simulated" (SD_RUNNABLE) used by the simulation kernel.
+ * Change the way a task is considered as ready. Instead of removing
+   dependencies when a task is done, a counter is decreased. This way,
+   it is always possible to reach ancestors thanks to the
+   SD_taks_get_parents function (even after the end of the simulation.)
+ * Change the return type of SD_Simulate from (SD_task_t*) into
+   xbt_dynar_t. This function was in handling a dynar internally and
+   converted it into a NULL terminated array for historical reasons.
+ * New function SD_dotload(char*) to load a DAG described in dot
+   format. This loader and the corresponding examples require the
+   installation of the graphviz library.
+ * Fix a bug in the management of tasks of size 0 in the surf network
+   models. This problem was only visible with SIMDAG and you should
+   thus disregard results produced with earlier versions if you
+   relied on this feature (some tasks were blocked because of this).
+ * Fix a bunch of stuff that prevented to use classical models with SIMDAG
+   even though your applications were doing only point-to-point
+   communications and sequential computations. Now you can really use any
+   model you want (of course, if you create real parallel tasks, which are
+   not implemented in most models beside ptaskL07, this will abort).
+ * Add an example that schedules a DAX on an heterogeneous platform
+   using a Min-Min strategy.
+ * New function SD_workstation_get_current_task() that returns the kind
+   of task currently running on a workstation in the sequential access
+   mode.
+ * Raise some warnings when unexecuted remains at the end of the
+   simulation. This is usually caused by cycles in the DAG.
+
+ SIMIX
+ * New function: SIMIX_process_set_function() called by MSG_set_function
+ * Change the underlying waiting queue in semaphores so that a process
+   can wait on several of them simultaneously (as in waitany).
+ * Fix the way to handle tokens in semaphores so that all access patterns
+   work: {acquire, acquire_timeout, waitany} / {release, release_forever}.
+ * kill the dirty pimple SIMIX_message_sizes_output()
+   Please use (proper) visualization instead
+
+ XBT
+ * New data container: setset (set of sets of elements)
+ * New module: mmalloc (mapped malloc, allowing to have several
+   independent segments of malloc)
+ * New function: xbt_dict_cursor_set_data()
+ * New functions: xbt_dynar_sort(), xbt_dynar_compare()
+ * New function: xbt_dynar_is_empty()
+ * New function: xbt_fifo_get_last_item()
+ * Fix xbt_dynar_shrink(): use the right element size.
+ * Fix xbt_dynar_set*(): allow index larger than current size and memset 0
+   uninitialized areas during expand.
+ * Fix semaphores: previous implementation was severely broken.
+ * Use library init/fini functions for our initialization.
+   - you can use logs and other feature as soon as you want in your
+     code (even before the xbt_init / MSG_init)
+   - xbt_exit is now a no-op and produce a warning when used.
+
+ GRAS:
+ * Port GRAS to new SIMIX mechanisms. This allows gras users to
+   benefit from the latest improvement to the simulation kernel.
+ * Kill measurement sockets for now. If you rely on them, sorry. This
+   release is not for you. This feature will be reintroduced in the
+   future, but we cannot delay the release any further.
+ * New function: gras_msgtype_get_name().
+ * Implement gras_agent_spawn in RL too (the prototype changed a bit)
+ * Fix (at last) the pmm example: it should not randomly fail anymore.
+
+ Build chain: bug fixes and overall polishing
+ * Cmake is now stable enough. Hence, we killed the autotools.
+ * Port to windows ( TM :)
+ * Fix the 'make install' target.
+   No need to use 'make install-simgrid' anymore
+ * Introduce a 'make dist' target compiling a *souce* archive
+   'make package' compiles a binary archive
+ * Compile java files only on need
+ * Add --cd and --setenv command line options to tesh
+ * Out of source builds are not fully supported yet, but we are close
+ * Enable supernovae and optimization flags by default for our users
+
+ LUA Bindings
+ * Add layer to set up environment directly from lua, without XML.
+ * The effect of gras_stub_generator can be achieved athrough
+   lua too (check examples/gras/console/ping_generator.lua)
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
