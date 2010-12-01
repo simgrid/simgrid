@@ -38,8 +38,23 @@ perl ./simgrid-trunk/buildtools/pipol/cmake.pl
 
 cd simgrid-trunk
 
-#Make the ucontext mode
-cmake -Dwith_context=ucontext ./
+rm CMakeCache.txt
+
+#ucontext
+cmake -Denable_lua=on \
+-Denable_ruby=on \
+-Denable_lib_static=on \
+-Denable_graphviz=on \
+-Denable_model-checking=off \
+-Denable_tracing=on \
+-Denable_latency_bound_tracking=off \
+-Denable_gtnets=off \
+-Denable_java=on \
+-Dwith_context=auto \
+-Denable_compile_optimizations=off \
+-Denable_compile_warnings=off \
+-Denable_supernovae=off \
+-Denable_smpi=on .
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
@@ -47,8 +62,18 @@ ctest -D NightlyTest
 ctest -D NightlySubmit
 make clean
 
-#Make the pthread mode
-cmake -Dwith_context=pthread  ./
+#pthread
+cmake -Denable_lua=on \
+-Denable_ruby=on \
+-Denable_lib_static=on \
+-Denable_graphviz=on \
+-Denable_model-checking=off \
+-Denable_tracing=on \
+-Denable_latency_bound_tracking=off \
+-Denable_gtnets=off \
+-Denable_java=on \
+-Dwith_context=pthread \
+-Denable_smpi=on .
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
@@ -56,8 +81,19 @@ ctest -D NightlyTest
 ctest -D NightlySubmit
 make clean
 
-#Make the tracing mode
-cmake -Dwith_context=auto -Denable_tracing=on ./
+#gtnets
+cmake -Denable_lua=on \
+-Denable_ruby=on \
+-Denable_lib_static=on \
+-Denable_graphviz=on \
+-Denable_model-checking=off \
+-Denable_tracing=on \
+-Denable_latency_bound_tracking=on \
+-Denable_gtnets=on \
+-Dgtnets_path=/usr \
+-Denable_java=on \
+-Dwith_context=auto \
+-Denable_smpi=on .
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
@@ -65,31 +101,72 @@ ctest -D NightlyTest
 ctest -D NightlySubmit
 make clean
 
-#Make the model-checking mode
-cmake -Denable_model-checking=on -Denable_coverage=on ./
+#full_flags
+cmake -Denable_lua=on \
+-Denable_ruby=on \
+-Denable_lib_static=on \
+-Denable_graphviz=on \
+-Denable_model-checking=off \
+-Denable_tracing=on \
+-Denable_latency_bound_tracking=on \
+-Denable_gtnets=off \
+-Dgtnets_path=/usr \
+-Denable_java=on \
+-Dwith_context=auto \
+-Denable_compile_optimizations=on \
+-Denable_compile_warnings=on \
+-Denable_smpi=on .
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyTest
+ctest -D NightlySubmit
+make clean
+
+#supernovae
+cmake -Denable_lua=on \
+-Denable_ruby=on \
+-Denable_lib_static=on \
+-Denable_graphviz=on \
+-Denable_model-checking=off \
+-Denable_tracing=on \
+-Denable_latency_bound_tracking=on \
+-Denable_gtnets=off \
+-Dgtnets_path=/usr \
+-Denable_java=on \
+-Dwith_context=auto \
+-Denable_compile_optimizations=off \
+-Denable_compile_warnings=off \
+-Denable_supernovae=on \
+-Denable_smpi=on .
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyTest
+ctest -D NightlySubmit
+make clean
+
+#model checking
+cmake -Denable_lua=on \
+-Denable_ruby=on \
+-Denable_lib_static=on \
+-Denable_graphviz=on \
+-Denable_model-checking=on \
+-Denable_tracing=on \
+-Denable_latency_bound_tracking=on \
+-Denable_gtnets=on \
+-Dgtnets_path=/usr \
+-Denable_java=on \
+-Dwith_context=auto \
+-Denable_compile_optimizations=off \
+-Denable_compile_warnings=off \
+-Denable_supernovae=off \
+-Denable_smpi=on .
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
 ctest -D NightlyTest
 ctest -D NightlyCoverage
-ctest -D NightlySubmit
-make clean
-
-#Make the full flags mode
-cmake -Denable_model-checking=off -Denable_coverage=off -Denable_tracing=off -Denable_compile_warnings=on -Denable_compile_optimizations=on -Denable_lua=off -Denable_java=off -Denable_ruby=off ./
-ctest -D NightlyStart
-ctest -D NightlyConfigure
-ctest -D NightlyBuild
-ctest -D NightlyTest
-ctest -D NightlySubmit
-make clean
-
-#Make the supernovae mode
-cmake -Denable_supernovae=on ./
-ctest -D NightlyStart
-ctest -D NightlyConfigure
-ctest -D NightlyBuild
-ctest -D NightlyTest
 ctest -D NightlySubmit
 make clean
 
