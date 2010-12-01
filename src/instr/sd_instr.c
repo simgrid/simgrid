@@ -23,7 +23,7 @@ void TRACE_sd_set_task_category(SD_task_t task, const char *category)
   if (!IS_TRACING)
     return;
   task->category = xbt_new(char, strlen(category) + 1);
-  strncpy(task->category, category, strlen(category) + 1);
+  strcpy(task->category, category);
 }
 
 #endif
