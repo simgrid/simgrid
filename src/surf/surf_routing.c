@@ -571,8 +571,8 @@ static xbt_dynar_t elements_father(const char *src, const char *dst)
   }
 
   /* (3) find the common father */
-  index_src = (path_src->used) - 1;
-  index_dst = (path_dst->used) - 1;
+  index_src = path_src->used - 1;
+  index_dst = path_dst->used - 1;
   current_src = xbt_dynar_get_ptr(path_src, index_src);
   current_dst = xbt_dynar_get_ptr(path_dst, index_dst);
   while (index_src >= 0 && index_dst >= 0 && *current_src == *current_dst) {
@@ -2243,9 +2243,9 @@ static void rule_route_free(void *e)
     xbt_dynar_free(&(*elem)->re_str_link);
     pcre_free((*elem)->re_src);
     pcre_free((*elem)->re_dst);
-    xbt_free((*elem));
+    xbt_free(*elem);
   }
-  (*elem) = NULL;
+  *elem = NULL;
 }
 
 static void rule_route_extended_free(void *e)
@@ -2257,7 +2257,7 @@ static void rule_route_extended_free(void *e)
     pcre_free((*elem)->generic_rule_route.re_dst);
     xbt_free((*elem)->re_src_gateway);
     xbt_free((*elem)->re_dst_gateway);
-    xbt_free((*elem));
+    xbt_free(*elem);
   }
 }
 
@@ -2874,8 +2874,8 @@ static route_extended_t generic_get_bypassroute(routing_component_t rc,
   }
 
   /* (3) find the common father */
-  index_src = (path_src->used) - 1;
-  index_dst = (path_dst->used) - 1;
+  index_src = path_src->used - 1;
+  index_dst = path_dst->used - 1;
   current_src = xbt_dynar_get_ptr(path_src, index_src);
   current_dst = xbt_dynar_get_ptr(path_dst, index_dst);
   while (index_src >= 0 && index_dst >= 0 && *current_src == *current_dst) {
@@ -2888,8 +2888,8 @@ static route_extended_t generic_get_bypassroute(routing_component_t rc,
     current_dst = xbt_dynar_get_ptr(path_dst, index_dst);
   }
 
-  int max_index_src = (path_src->used) - 1;
-  int max_index_dst = (path_dst->used) - 1;
+  int max_index_src = path_src->used - 1;
+  int max_index_dst = path_dst->used - 1;
 
   int max_index = max(max_index_src, max_index_dst);
   int i, max;
