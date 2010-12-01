@@ -225,9 +225,9 @@ xbt_dynar_t SD_simulate(double how_long)
 
   SD_CHECK_INIT_DONE();
 
-  VERB0("Starting simulation...");
+   if (first_time) {
+    VERB0("Starting simulation...");
 
-  if (first_time) {
     surf_presolve();            /* Takes traces into account */
     first_time = 0;
   }
@@ -344,7 +344,21 @@ xbt_dynar_t SD_simulate(double how_long)
     }
   }
 
-  VERB0("Simulation finished");
+  if (!sd_global->watch_point_reached && how_long<0){
+    if (xbt_swag_size(sd_global->done_task_set) < sd_global->task_number){
+    	WARN0("Simulation is finished but some tasks are still not done");
+      	xbt_swag_foreach_safe (task, task_safe,sd_global->not_scheduled_task_set){
+       		WARN1("%s is in SD_NOT_SCHEDULED state", SD_task_get_name(task));
+		}
+    	xbt_swag_foreach_safe (task, task_safe,sd_global->schedulable_task_set){
+   		WARN1("%s is in SD_SCHEDULABLE state", SD_task_get_name(task));
+	}
+      	xbt_swag_foreach_safe (task, task_safe,sd_global->scheduled_task_set){
+       		WARN1("%s is in SD_SCHEDULED state", SD_task_get_name(task));
+       	}
+    }
+  }
+
   DEBUG3("elapsed_time = %f, total_time = %f, watch_point_reached = %d",
          elapsed_time, total_time, sd_global->watch_point_reached);
   DEBUG1("current time = %f", surf_get_clock());
