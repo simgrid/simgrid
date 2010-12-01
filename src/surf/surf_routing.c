@@ -150,8 +150,8 @@ static void generic_src_dst_check(routing_component_t rc, const char *src,
 /* **************************** GLOBAL FUNCTIONS **************************** */
 
 /* global parse functions */
-static char *src = NULL;        /* temporary store the source name of a route */
-static char *dst = NULL;        /* temporary store the destination name of a route */
+static const char *src = NULL;        /* temporary store the source name of a route */
+static const char *dst = NULL;        /* temporary store the destination name of a route */
 static char *gw_src = NULL;     /* temporary store the gateway source name of a route */
 static char *gw_dst = NULL;     /* temporary store the gateway destination name of a route */
 static xbt_dynar_t link_list = NULL;    /* temporary store of current list link of a route */
@@ -227,7 +227,7 @@ static void parse_S_router(void)
 /**
  * \brief Set the endponints for a route
  */
-static void parse_S_route_new_and_endpoints(char *src_id, char *dst_id)
+static void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_id)
 {
   if (src != NULL && dst != NULL && link_list != NULL)
     THROW2(arg_error, 0, "Route between %s to %s can not be defined",
@@ -252,7 +252,7 @@ static void parse_S_route_new_and_endpoints_XML(void)
 /**
  * \breif Set the endpoints for a route from lua
  */
-static void parse_S_route_new_and_endpoints_lua(char *id_src, char *id_dst)
+static void parse_S_route_new_and_endpoints_lua(const char *id_src, const char *id_dst)
 {
   parse_S_route_new_and_endpoints(id_src, id_dst);
 }
@@ -3378,7 +3378,7 @@ void routing_add_link(const char *link_id)
  */
 void routing_set_route(const char *src_id, const char *dst_id)
 {
-  parse_S_route_new_and_endpoints_lua((char *) src_id, (char *) dst_id);
+  parse_S_route_new_and_endpoints_lua(src_id, dst_id);
 }
 
 /*
