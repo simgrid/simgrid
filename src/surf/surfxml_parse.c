@@ -430,12 +430,12 @@ void parse_properties(void)
 
 static double trace_periodicity = -1.0;
 static char *trace_file = NULL;
-static char *trace_id;
+static char *trace_id = NULL;
 
 static void parse_Stag_trace(void)
 {
-  trace_id = strdup(A_surfxml_trace_id);
-  trace_file = strdup(A_surfxml_trace_file);
+  trace_id = xbt_strdup(A_surfxml_trace_id);
+  trace_file = xbt_strdup(A_surfxml_trace_file);
   surf_parse_get_double(&trace_periodicity, A_surfxml_trace_periodicity);
 }
 
@@ -453,6 +453,10 @@ static void parse_Etag_trace(void)
                                      trace_periodicity);
   }
   xbt_dict_set(traces_set_list, trace_id, (void *) trace, NULL);
+  xbt_free(trace_file);
+  trace_file = NULL;
+  xbt_free(trace_id);
+  trace_id = NULL;
 }
 
 static void parse_Stag_trace_connect(void)
