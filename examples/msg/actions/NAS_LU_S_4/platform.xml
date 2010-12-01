@@ -1,14 +1,14 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="2">
+<platform version="3">
  <AS id="AS_bordeaux" routing="Full">
 
   <cluster id="AS_bordereau-0" 
  	   prefix="bordereau-" suffix=".bordeaux.grid5000.fr"
 	   radical="1-4" 
-	   power="1.25E9" 
-	   bw="1.25E8" lat="16.67E-7" 
-	   bb_bw="1.25E9" bb_lat="16.67E-7">
+	   power="1.17E9" 
+	   bw="1.25E8" lat="16.67E-6" 
+	   bb_bw="1.25E9" bb_lat="16.67E-6">
   </cluster> 
  </AS>
 </platform>
