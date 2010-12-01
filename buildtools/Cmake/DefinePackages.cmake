@@ -549,6 +549,7 @@ file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.lua"
 "examples/*.java"
 "examples/*.xml"
+"examples/*.txt"
 )
 
 file(GLOB_RECURSE README_examples_files
@@ -695,6 +696,15 @@ file(GLOB_RECURSE txt_files
 "testsuite/simdag/availability_tremblay.txt"
 "examples/smpi/hostfile"
 "examples/msg/*.trace"
+"examples/msg/actions/actions_allReduce.txt"
+"examples/msg/actions/actions_reduce.txt"
+"examples/msg/actions/actions.txt"
+"examples/msg/actions/actions_barrier.txt"
+"examples/msg/actions/actions_split_p0.txt"
+"examples/msg/actions/actions_with_isend.txt"
+"examples/msg/actions/actions_bcast.txt"
+"examples/msg/actions/actions_split_p1.txt"
+"examples/msg/actions/CMakeLists.txt"
 "examples/msg/migration/migration.deploy"
 "examples/java/runtest"
 "teshsuite/gras/datadesc/datadesc.little32_4"
