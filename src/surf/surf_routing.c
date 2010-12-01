@@ -314,12 +314,18 @@ static void parse_E_link_ctn_new_elem(char *link_id)
 
 static void parse_E_link_ctn_new_elem_XML(void)
 {
-  if( A_surfxml_link_ctn_direction == A_surfxml_link_ctn_direction_NONE)
-	  parse_E_link_ctn_new_elem(A_surfxml_link_ctn_id);
-  if( A_surfxml_link_ctn_direction == A_surfxml_link_ctn_direction_UP)
-	  parse_E_link_ctn_new_elem(bprintf("%s_UP",A_surfxml_link_ctn_id));
-  if( A_surfxml_link_ctn_direction == A_surfxml_link_ctn_direction_DOWN)
-	  parse_E_link_ctn_new_elem(bprintf("%s_DOWN",A_surfxml_link_ctn_id));
+  if (A_surfxml_link_ctn_direction == A_surfxml_link_ctn_direction_NONE)
+    parse_E_link_ctn_new_elem(A_surfxml_link_ctn_id);
+  if (A_surfxml_link_ctn_direction == A_surfxml_link_ctn_direction_UP) {
+    char *link_id = bprintf("%s_UP", A_surfxml_link_ctn_id);
+    parse_E_link_ctn_new_elem(link_id);
+    free(link_id);
+  }
+  if (A_surfxml_link_ctn_direction == A_surfxml_link_ctn_direction_DOWN) {
+    char *link_id = bprintf("%s_DOWN", A_surfxml_link_ctn_id);
+    parse_E_link_ctn_new_elem(link_id);
+    free(link_id);
+  }
 }
 
 /**
@@ -1284,10 +1290,10 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 	{
 		if(route->dst_gateway && route->src_gateway)
 		{
-			char * gw_src = bprintf("%s",route->src_gateway);
-			char * gw_dst = bprintf("%s",route->dst_gateway);
-			route->src_gateway = bprintf("%s",gw_dst);
-			route->dst_gateway = bprintf("%s",gw_src);
+                  char *gw_src = xbt_strdup(route->src_gateway);
+                  char *gw_dst = xbt_strdup(route->dst_gateway);
+                  route->src_gateway = gw_dst;
+                  route->dst_gateway = gw_src;
 		}
 		if(TO_ROUTE_FULL(*dst_id, *src_id))
 		{
@@ -1682,10 +1688,10 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 		{
 			if(route->dst_gateway && route->src_gateway)
 			{
-				char * gw_src = bprintf("%s",route->src_gateway);
-				char * gw_dst = bprintf("%s",route->dst_gateway);
-				route->src_gateway = bprintf("%s",gw_dst);
-				route->dst_gateway = bprintf("%s",gw_src);
+                          char *gw_src = xbt_strdup(route->src_gateway);
+                          char *gw_dst = xbt_strdup(route->dst_gateway);
+                          route->src_gateway = gw_dst;
+                          route->dst_gateway = gw_src;
 			}
 
 			if(!route->dst_gateway && !route->src_gateway)
@@ -3271,6 +3277,8 @@ static void routing_parse_Scluster(void)
       SURFXML_START_TAG(link);
       SURFXML_END_TAG(link);
 
+      free(link_id);
+      free(host_id);
       break;
 
     case 2:
@@ -3311,6 +3319,9 @@ static void routing_parse_Scluster(void)
         SURFXML_BUFFER_SET(link_state_file, "");
         SURFXML_START_TAG(link);
         SURFXML_END_TAG(link);
+
+        free(link_id);
+        free(host_id);
       }
       break;
 
@@ -3320,6 +3331,7 @@ static void routing_parse_Scluster(void)
 
     xbt_dynar_free(&radical_ends);
   }
+  xbt_dynar_free(&radical_elements);
 
   DEBUG0(" ");
   router_id =
@@ -3363,18 +3375,29 @@ static void routing_parse_Scluster(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
+  free(link_backbone);
+  free(link_router);
+
   DEBUG0(" ");
 
 #ifdef HAVE_PCRE_LIB
-  char *new_suffix = bprintf("%s", "");
+  char *new_suffix = xbt_strdup("");
 
   radical_elements = xbt_str_split(cluster_suffix, ".");
   xbt_dynar_foreach(radical_elements, iter, groups) {
     if (strcmp(groups, "")) {
-      new_suffix = bprintf("%s\\.%s", new_suffix, groups);
+      char *old_suffix = new_suffix;
+      new_suffix = bprintf("%s\\.%s", old_suffix, groups);
+      free(old_suffix);
     }
   }
   route_src_dst = bprintf("%s(.*)%s", cluster_prefix, new_suffix);
+  xbt_dynar_free(&radical_elements);
+  free(new_suffix);
+
+  char *pcre_link_src = bprintf("%s_link_$1src", cluster_id);
+  char *pcre_link_backbone = bprintf("%s_backbone", cluster_id);
+  char *pcre_link_dst = bprintf("%s_link_$1dst", cluster_id);
 
   DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", route_src_dst, route_src_dst);
   DEBUG0("symmetrical=\"NO\">");
@@ -3383,22 +3406,22 @@ static void routing_parse_Scluster(void)
   A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
   SURFXML_START_TAG(route);
 
-  DEBUG1("<link_ctn\tid=\"%s_link_$1src\"/>", cluster_id);
-  SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_$1src", cluster_id));
+  DEBUG1("<link_ctn\tid=\"%s\"/>", pcre_link_src);
+  SURFXML_BUFFER_SET(link_ctn_id, pcre_link_src);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
   {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_UP;}
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
-  DEBUG1("<link_ctn\tid=\"%s_backbone\"/>", cluster_id);
-  SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_backbone", cluster_id));
+  DEBUG1("<link_ctn\tid=\"%s\"/>", pcre_link_backbone);
+  SURFXML_BUFFER_SET(link_ctn_id, pcre_link_backbone);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
-  DEBUG1("<link_ctn\tid=\"%s_link_$1dst\"/>", cluster_id);
-  SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_link_$1dst", cluster_id));
+  DEBUG1("<link_ctn\tid=\"%s\"/>", pcre_link_dst);
+  SURFXML_BUFFER_SET(link_ctn_id, pcre_link_dst);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
   {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_DOWN;}
@@ -3407,6 +3430,10 @@ static void routing_parse_Scluster(void)
 
   DEBUG0("</route>");
   SURFXML_END_TAG(route);
+
+  free(pcre_link_dst);
+  free(pcre_link_backbone);
+  free(pcre_link_src);
 #else
   for (i = 0; i <= xbt_dynar_length(tab_elements_num); i++) {
     for (j = 0; j <= xbt_dynar_length(tab_elements_num); j++) {
@@ -3479,6 +3506,9 @@ static void routing_parse_Scluster(void)
   }
   xbt_dynar_free(&tab_elements_num);
 #endif
+
+  free(route_src_dst);
+  free(router_id);
 
   DEBUG0("</AS>");
   SURFXML_END_TAG(AS);
