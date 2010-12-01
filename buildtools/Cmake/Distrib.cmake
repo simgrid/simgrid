@@ -39,6 +39,7 @@ install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl
 		RENAME simgrid-colorizer)
 		
 add_custom_target(simgrid-colorizer ALL
+COMMENT "Install ${CMAKE_BINARY_DIR}/bin/colorize"
 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl ${CMAKE_BINARY_DIR}/bin/colorize
 )
 				
@@ -47,6 +48,7 @@ install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl
 		RENAME simgrid_update_xml)
 		
 add_custom_target(simgrid_update_xml ALL
+COMMENT "Install ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml"
 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml
 )
 		
