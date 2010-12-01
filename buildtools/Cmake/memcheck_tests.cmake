@@ -1,4 +1,3 @@
-if(enable_memcheck)
 
 # teshsuite/xbt
 ADD_TEST(memcheck-tesh-log-large-0 ${PROJECT_DIRECTORY}/teshsuite/xbt/log_large_test --log=root.fmt:%m%n --cd ${PROJECT_DIRECTORY}/teshsuite/)
@@ -13,8 +12,6 @@ ADD_TEST(memcheck-tesh-gras-dd-rw-2 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc
 ADD_TEST(memcheck-tesh-gras-dd-r_little32_4-0 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.little32_4 --log=root.fmt:%m%n --cd ${PROJECT_DIRECTORY}/teshsuite/)
 ADD_TEST(memcheck-tesh-gras-dd-r_little64-0 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.little64 --log=root.fmt:%m%n --cd ${PROJECT_DIRECTORY}/teshsuite/)
 ADD_TEST(memcheck-tesh-gras-dd-r_big32_8_4-0 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.big32_8_4 --log=root.fmt:%m%n --cd ${PROJECT_DIRECTORY}/teshsuite/)
-ADD_TEST(memcheck-tesh-gras-dd-r_big32_8-0 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.big32_8 --log=root.fmt:%m%n --cd ${PROJECT_DIRECTORY}/teshsuite/)
-ADD_TEST(memcheck-tesh-gras-dd-r_big32_2-0 ${PROJECT_DIRECTORY}/teshsuite/gras/datadesc/datadesc_usage --read ./gras/datadesc/datadesc.big32_2 --log=root.fmt:%m%n --cd ${PROJECT_DIRECTORY}/teshsuite/)
 
 IF(${ARCH_32_BITS})
 ADD_TEST(memcheck-tesh-gras-msg_handle-sg-32-0 ${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle/msg_handle_simulator ./../examples/msg/small_platform.xml ./gras/msg_handle/msg_handle.xml --cd ${PROJECT_DIRECTORY}/teshsuite/)
@@ -54,7 +51,7 @@ ADD_TEST(memcheck-tesh-simdag-parser-bogus-symmetric-0 ${PROJECT_DIRECTORY}/tesh
 ADD_TEST(memcheck-tesh-simdag-parser-bogus-symmetric-1 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/flatifier two_hosts_asymetric_BOGUS2.xml --log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/)
 ADD_TEST(memcheck-tesh-simdag-parser-sym-full-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test one_cluster_fullduplex.xml FULL_LINK --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/)
 ADD_TEST(memcheck-tesh-simdag-parser-sym-full-1 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test two_clusters_symmetric.xml FULL_LINK --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/)
-ADD_TEST(memcheck-tesh-simdag-parser-sym-full-2 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test two_hosts_one_link_symetrical.xml FULL_LINK --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/)
+ADD_TEST(memcheck-tesh-simdag-parser-sym-full-2 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test two_hosts_one_link_symmetrical.xml FULL_LINK --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/)
 ADD_TEST(memcheck-tesh-simdag-parser-sym-full-3 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/basic_parsing_test two_hosts_one_link_fullduplex.xml FULL_LINK --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/)
 ADD_TEST(memcheck-tesh-simdag-flatifier-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/flatifier one_cluster.xml --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/)
 ADD_TEST(memcheck-tesh-simdag-flatifier-1 ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/flatifier one_host_availability.xml --cd ${PROJECT_DIRECTORY}/teshsuite/simdag/platforms/)
@@ -91,7 +88,7 @@ ADD_TEST(memcheck-tesh-simdag-p2p-2-2 ${PROJECT_DIRECTORY}/teshsuite/simdag/netw
 ADD_TEST(memcheck-tesh-simdag-p2p-3-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency3 ./simdag/network/p2p/platform_2p_1sl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ${PROJECT_DIRECTORY}/teshsuite/)
 ADD_TEST(memcheck-tesh-simdag-p2p-3-1 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency3 ./simdag/network/p2p/platform_2p_1fl.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ${PROJECT_DIRECTORY}/teshsuite/)
 ADD_TEST(memcheck-tesh-simdag-p2p-3-2 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency3 ./simdag/network/p2p/platform_2p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ${PROJECT_DIRECTORY}/teshsuite/)
-ADD_TEST(memcheck-tesh-simdag-p2p-3-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency_bound ./simdag/network/p2p/platform_2p_1bb.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ${PROJECT_DIRECTORY}/teshsuite/)
+ADD_TEST(memcheck-tesh-simdag-p2p-4-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency_bound ./simdag/network/p2p/platform_2p_1bb.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ${PROJECT_DIRECTORY}/teshsuite/)
 ADD_TEST(memcheck-tesh-simdag-mxn-1-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_all2all ./simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ${PROJECT_DIRECTORY}/teshsuite/)
 ADD_TEST(memcheck-tesh-simdag-mxn-2-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_independent_comm ./simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ${PROJECT_DIRECTORY}/teshsuite/)
 ADD_TEST(memcheck-tesh-simdag-mxn-3-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_scatter ./simdag/network/mxn/platform_4p_1switch.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ${PROJECT_DIRECTORY}/teshsuite/)
@@ -100,7 +97,7 @@ ADD_TEST(memcheck-tesh-simdag-par-2-0 ${PROJECT_DIRECTORY}/teshsuite/simdag/part
 ADD_TEST(memcheck-tesh-simdag-par-2-1 ${PROJECT_DIRECTORY}/teshsuite/simdag/partask/test_comp_only_par ./simdag/partask/platform_2p_1sl_hetero.xml --surf-path=${PROJECT_DIRECTORY}/src --log=sd_kernel.thres=warning --cd ${PROJECT_DIRECTORY}/teshsuite/)
 
 # GRAS examples
-ADD_TEST(memcheck-gras-spawn-rl-0 ${PROJECT_DIRECTORY}/examples/gras/spawn/spawn_father 4602 5 --log=root.fmt=%m%n --cd ${PROJECT_DIRECTORY}/examples/gras/spawn/)
+ADD_TEST(memcheck-gras-spawn-rl-0 ${PROJECT_DIRECTORY}/examples/gras/spawn/spawn_server --log=root.fmt=%m%n --cd ${PROJECT_DIRECTORY}/examples/gras/spawn/)
 ADD_TEST(memcheck-gras-timer-rl-0 ${PROJECT_DIRECTORY}/examples/gras/timer/timer_client --log=root.fmt:%m%n --cd ${PROJECT_DIRECTORY}/examples/gras/timer/)
 ADD_TEST(memcheck-gras-chrono-rl-0 ${PROJECT_DIRECTORY}/examples/gras/chrono/chrono_multiplier --log=root.fmt:%m%n --cd ${PROJECT_DIRECTORY}/examples/gras/chrono/)
 ADD_TEST(memcheck-gras-synchro-rl-0 ${PROJECT_DIRECTORY}/examples/gras/synchro/synchro_philosopher 4 --log=root.fmt=%m%n --cd ${PROJECT_DIRECTORY}/examples/gras/synchro/)
@@ -143,13 +140,19 @@ ADD_TEST(memcheck-msg_icomms-1 ${PROJECT_DIRECTORY}/examples/msg/icomms/peer sma
 ADD_TEST(memcheck-msg_icomms-2 ${PROJECT_DIRECTORY}/examples/msg/icomms/peer small_platform.xml deployment_peer03.xml --cd ${PROJECT_DIRECTORY}/examples/msg/icomms/)
 ADD_TEST(memcheck-msg_icomms-3 ${PROJECT_DIRECTORY}/examples/msg/icomms/peer small_platform.xml deployment_peer04.xml --cd ${PROJECT_DIRECTORY}/examples/msg/icomms/)
 ADD_TEST(memcheck-msg_icomms-4 ${PROJECT_DIRECTORY}/examples/msg/icomms/peer2 small_platform.xml deployment_peer.xml --cd ${PROJECT_DIRECTORY}/examples/msg/icomms/)
+ADD_TEST(memcheck-msg_actions-0 ${PROJECT_DIRECTORY}/examples/msg/actions/actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment_split.xml --cd ${PROJECT_DIRECTORY}/examples/msg/actions/)
+ADD_TEST(memcheck-msg_actions-1 ${PROJECT_DIRECTORY}/examples/msg/actions/actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment.xml actions_allReduce.txt --cd ${PROJECT_DIRECTORY}/examples/msg/actions/)
+ADD_TEST(memcheck-msg_actions-2 ${PROJECT_DIRECTORY}/examples/msg/actions/actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment.xml actions_barrier.txt --cd ${PROJECT_DIRECTORY}/examples/msg/actions/)
+ADD_TEST(memcheck-msg_actions-3 ${PROJECT_DIRECTORY}/examples/msg/actions/actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment.xml actions_bcast.txt --cd ${PROJECT_DIRECTORY}/examples/msg/actions/)
+ADD_TEST(memcheck-msg_actions-4 ${PROJECT_DIRECTORY}/examples/msg/actions/actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment.xml actions_reduce.txt --cd ${PROJECT_DIRECTORY}/examples/msg/actions/)
+ADD_TEST(memcheck-msg_actions-5 ${PROJECT_DIRECTORY}/examples/msg/actions/actions --log=actions.thres=verbose --log=root.fmt:[%h:%P:(%i)%e%r]%e%m%n homogeneous_3_hosts.xml deployment.xml actions_with_isend.txt --cd ${PROJECT_DIRECTORY}/examples/msg/actions/)
 
 IF(HAVE_TRACING)
-ADD_TEST(memcheck-tracing-ms-0 ${PROJECT_DIRECTORY}/examples/msg/tracing/ms --cfg=tracing/filename:ms.trace --cfg=tracing/platform:1 ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
-ADD_TEST(memcheck-tracing-categories-0 ${PROJECT_DIRECTORY}/examples/msg/tracing/categories --cfg=tracing/filename:categories.trace --cfg=tracing/platform:1 ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
-ADD_TEST(memcheck-tracing-volume-0 ${PROJECT_DIRECTORY}/examples/msg/tracing/volume --cfg=tracing/filename:volume.trace --cfg=tracing/msg/volume:1 ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
-ADD_TEST(memcheck-tracing-tasks-0 ${PROJECT_DIRECTORY}/examples/msg/tracing/tasks --cfg=tracing/msg/task:1 --cfg=tracing/filename:tasks.trace ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
-ADD_TEST(memcheck-tracing-process-migration-0 ${PROJECT_DIRECTORY}/examples/msg/tracing/procmig --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:1 ./tracing/platform.xml ./tracing/procmig-deploy.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-ms-0 ${PROJECT_DIRECTORY}/examples/msg/tracing/ms --cfg=tracing:1 --cfg=tracing/filename:ms.trace --cfg=tracing/platform:1 ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-categories-0 ${PROJECT_DIRECTORY}/examples/msg/tracing/categories --cfg=tracing:1 --cfg=tracing/filename:categories.trace --cfg=tracing/platform:1 ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-volume-0 ${PROJECT_DIRECTORY}/examples/msg/tracing/volume --cfg=tracing:1 --cfg=tracing/filename:volume.trace --cfg=tracing/msg/volume:1 ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-tasks-0 ${PROJECT_DIRECTORY}/examples/msg/tracing/tasks --cfg=tracing:1 --cfg=tracing/msg/task:1 --cfg=tracing/filename:tasks.trace ./tracing/platform.xml ./tracing/deployment.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-process-migration-0 ${PROJECT_DIRECTORY}/examples/msg/tracing/procmig --cfg=tracing:1 --cfg=tracing/platform:1 --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:1 ./tracing/platform.xml ./tracing/procmig-deploy.xml --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ENDIF(HAVE_TRACING)
 
 IF(${ARCH_32_BITS})
@@ -191,7 +194,6 @@ ADD_TEST(memcheck-simdag-test_simdag-0 ${PROJECT_DIRECTORY}/examples/simdag/sd_t
 ADD_TEST(memcheck-simdag-test_simdag2-0 ${PROJECT_DIRECTORY}/examples/simdag/sd_test2 ./2clusters.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/)
 ADD_TEST(memcheck-simdag-test_simdag_seq_access-0 ${PROJECT_DIRECTORY}/examples/simdag/sd_seq_access ./2clusters.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/)
 ADD_TEST(memcheck-simdag-test_prop-0 ${PROJECT_DIRECTORY}/examples/simdag/properties/sd_prop ./../platforms/prop.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/)
-ADD_TEST(memcheck-simdag-metaxml_test-0 ${PROJECT_DIRECTORY}/examples/simdag/metaxml/sd_meta ./../platforms/metaxml.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/)
 ADD_TEST(memcheck-simdag-minmin_test-0 ${PROJECT_DIRECTORY}/examples/simdag/scheduling/minmin_test --log=sd_daxparse.thresh:critical ./simulacrum_7_hosts.xml ./Montage_25.xml --cd ${PROJECT_DIRECTORY}/examples/simdag/scheduling/)
 
 if(HAVE_GTNETS)
@@ -208,7 +210,6 @@ ADD_TEST(memcheck-msg-tracing-gtnets-dogbone-lv08-0 ${PROJECT_DIRECTORY}/example
 ADD_TEST(memcheck-msg-tracing-gtnets-onelink-lv08-0 ${PROJECT_DIRECTORY}/examples/msg/gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=tracing/filename:onelink_lv08.trace --cfg=tracing/platform:1 --cfg=workstation/model:compound --cfg=cpu/model:Cas01  --cfg=network/model:LV08 2>&1 | grep --color=auto -v root/INFO | grep -v simix_network/INFO --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-gtnets-fullduplex-0 ${PROJECT_DIRECTORY}/examples/msg/gtnets/gtnets gtnets/fullduplex-p.xml gtnets/fullduplex-d.xml --cfg=fullduplex:0 --cd ${PROJECT_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-gtnets-fullduplex-1 ${PROJECT_DIRECTORY}/examples/msg/gtnets/gtnets gtnets/fullduplex-p.xml gtnets/fullduplex-d.xml --cfg=fullduplex:1 --cd ${PROJECT_DIRECTORY}/examples/msg/)
-
   endif(HAVE_TRACING)
 endif(HAVE_GTNETS)
 
@@ -217,14 +218,13 @@ if(HAVE_LUA)
 ADD_TEST(memcheck-lua-masterslave-0 lua master_slave.lua --cd ${PROJECT_DIRECTORY}/examples/lua/)
 ADD_TEST(memcheck-lua-mult_matrix-0 lua mult_matrix.lua --cd ${PROJECT_DIRECTORY}/examples/lua/)
 ADD_TEST(memcheck-lua-masterslave_bypass-0 lua master_slave.lua --log=surf_parse.thres:critical --cd ${PROJECT_DIRECTORY}/examples/lua/)
-ADD_TEST(memcheck-msg-masterslave-console-0 ${PROJECT_DIRECTORY}/examples/msg/masterslave/masterslave_console platform_script.lua --log=surf_parse.thres:critical --cd ${PROJECT_DIRECTORY}/examples/msg/masterslave//)
+ADD_TEST(memcheck-lua-msg-masterslave-console-0 ${PROJECT_DIRECTORY}/examples/msg/masterslave/masterslave_console platform_script.lua --log=surf_parse.thres:critical --cd ${PROJECT_DIRECTORY}/examples/msg/masterslave//)
 endif(HAVE_LUA)
 
 # Ruby examples
 if(HAVE_RUBY)
-ADD_TEST(memcheck-ruby-masterslave-0 ruby -I../../src/bindings/ruby MasterSlave.rb --cd ${PROJECT_DIRECTORY}/examples/ruby/)
+ADD_TEST(memcheck-ruby-masterslave-0 ruby -I ../../src/bindings/ruby MasterSlave.rb --cd ${PROJECT_DIRECTORY}/examples/ruby/)
 ADD_TEST(memcheck-ruby-ping_pong-0 ruby -I ../../src/bindings/ruby PingPong.rb --cd ${PROJECT_DIRECTORY}/examples/ruby/)
 ADD_TEST(memcheck-ruby-quicksort-0 ruby -I ../../src/bindings/ruby Quicksort.rb --cd ${PROJECT_DIRECTORY}/examples/ruby/)
 endif(HAVE_RUBY)
 
-endif(enable_memcheck)
