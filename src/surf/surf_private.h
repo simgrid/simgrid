@@ -157,6 +157,8 @@ typedef struct s_routing_component {
   xbt_dict_t routing_sons;
    route_extended_t(*get_route) (routing_component_t rc, const char *src,
                                  const char *dst);
+   double(*get_latency) (routing_component_t rc, const char *src,
+                                 const char *dst);
    xbt_dynar_t(*get_onelink_routes) (routing_component_t rc);
    e_surf_network_element_type_t(*get_network_element_type) (const char
                                                              *name);
@@ -188,13 +190,14 @@ struct s_routing_global {
    xbt_dynar_t(*get_route) (const char *src, const char *dst);
    xbt_dynar_t(*get_route_no_cleanup) (const char *src, const char *dst);
    xbt_dynar_t(*get_onelink_routes) (void);
+   double (*get_latency) (const char *src, const char *dst);
    e_surf_network_element_type_t(*get_network_element_type) (const char
                                                              *name);
   void (*finalize) (void);
   xbt_dynar_t last_route;
 };
 
-XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback);
+XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback, double_f_pvoid_t get_link_latency_fun);
 
 /**
  * Resource protected methods

@@ -292,5 +292,5 @@ void surf_network_model_init_Vivaldi(const char *filename)
 #endif
 
   xbt_cfg_set_string(_surf_cfg_set, "routing", "none");
-  routing_model_create(sizeof(double), NULL);
+  routing_model_create(sizeof(double), NULL, (double_f_pvoid_t)netviva_get_link_latency);
 }

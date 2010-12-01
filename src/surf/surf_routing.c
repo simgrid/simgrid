@@ -25,6 +25,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 routing_global_t global_routing = NULL;
 routing_component_t current_routing = NULL;
 model_type_t current_routing_model = NULL;
+static double_f_pvoid_t get_link_latency = NULL;
 
 /* Prototypes of each model */
 static void *model_full_create(void);   /* create structures for full routing model */
@@ -123,6 +124,7 @@ static int surf_pointer_resource_cmp(const void *a, const void *b);
 /* ************************************************************************** */
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
 
+static double generic_get_link_latency(routing_component_t rc, const char *src, const char *dst);
 static xbt_dynar_t generic_get_onelink_routes(routing_component_t rc);
 static route_extended_t generic_get_bypassroute(routing_component_t rc,
                                                 const char *src,
@@ -714,6 +716,121 @@ static route_extended_t _get_route(const char *src, const char *dst)
   return e_route;
 }
 
+static double _get_latency(const char *src, const char *dst)
+{
+
+  void *link;
+  unsigned int cpt = 0;
+  double latency, latency_src, latency_dst = 0.0;
+
+  DEBUG2("Solve route  \"%s\" to \"%s\"", src, dst);
+
+  xbt_assert0(src && dst, "bad parameters for \"_get_route\" method");
+
+  route_extended_t e_route, e_route_cnt, e_route_src = NULL, e_route_dst =
+      NULL;
+
+  xbt_dynar_t elem_father_list = elements_father(src, dst);
+
+  routing_component_t common_father =
+      xbt_dynar_get_as(elem_father_list, 0, routing_component_t);
+  routing_component_t src_father =
+      xbt_dynar_get_as(elem_father_list, 1, routing_component_t);
+  routing_component_t dst_father =
+      xbt_dynar_get_as(elem_father_list, 2, routing_component_t);
+
+  e_route = xbt_new0(s_route_extended_t, 1);
+  e_route->src_gateway = NULL;
+  e_route->dst_gateway = NULL;
+  e_route->generic_route.link_list =
+      xbt_dynar_new(global_routing->size_of_link, NULL);
+
+  if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
+
+    if (strcmp(src, dst)) {
+      latency =
+          (*(common_father->get_latency)) (common_father, src, dst);
+      xbt_assert2(latency>=0, "no route between \"%s\" and \"%s\"", src,
+                  dst);
+     } else latency = 0;
+  } else {                      /* SURF_ROUTING_RECURSIVE */
+     route_extended_t e_route_bypass = NULL;
+
+    if (common_father->get_bypass_route)
+      e_route_bypass =
+          (*(common_father->get_bypass_route)) (common_father, src, dst);
+
+    xbt_assert0(!e_route_bypass,"Bypass cannot work yet with get_latency"); 
+                                                 
+    e_route_cnt =
+          (*(common_father->get_route)) (common_father, src_father->name,
+                                         dst_father->name);
+
+    xbt_assert2(e_route_cnt, "no route between \"%s\" and \"%s\"",
+                src_father->name, dst_father->name);
+
+    xbt_assert2((e_route_cnt->src_gateway == NULL) ==
+                (e_route_cnt->dst_gateway == NULL),
+                "bad gateway for route between \"%s\" and \"%s\"", src,
+                dst);            
+    latency =
+          (*(common_father->get_latency)) (common_father, src_father->name,
+                                         dst_father->name);
+    xbt_assert2(latency>=0, "no route between \"%s\" and \"%s\"",
+                src_father->name, dst_father->name);
+    
+
+    if (src != e_route_cnt->src_gateway) {
+      /*
+      e_route_src = _get_route(src, e_route_cnt->src_gateway);
+      xbt_assert2(e_route_src, "no route between \"%s\" and \"%s\"", src,
+                  e_route_cnt->src_gateway);
+      xbt_dynar_foreach(e_route_src->generic_route.link_list, cpt, link) {
+        xbt_dynar_push(e_route->generic_route.link_list, &link);
+      }
+      */
+      latency_src = _get_latency(src, e_route_cnt->src_gateway);
+      xbt_assert2(latency_src>=0, "no route between \"%s\" and \"%s\"", src,
+                  e_route_cnt->src_gateway);
+      latency += latency_src;
+    }
+    
+    /*
+    xbt_dynar_foreach(e_route_cnt->generic_route.link_list, cpt, link) {
+      xbt_dynar_push(e_route->generic_route.link_list, &link);
+    }
+	*/
+	
+    if (e_route_cnt->dst_gateway != dst) {
+      /*
+      e_route_dst = _get_route(e_route_cnt->dst_gateway, dst);
+      xbt_assert2(e_route_dst, "no route between \"%s\" and \"%s\"",
+                  e_route_cnt->dst_gateway, dst);
+      xbt_dynar_foreach(e_route_dst->generic_route.link_list, cpt, link) {
+        xbt_dynar_push(e_route->generic_route.link_list, &link);
+      }
+      */
+      latency_dst = _get_latency(e_route_cnt->dst_gateway, dst);
+      xbt_assert2(latency_dst>=0, "no route between \"%s\" and \"%s\"",
+                  e_route_cnt->dst_gateway, dst);
+      latency += latency_dst;
+    }
+	
+	/*
+    e_route->src_gateway = xbt_strdup(e_route_cnt->src_gateway);
+    e_route->dst_gateway = xbt_strdup(e_route_cnt->dst_gateway);
+
+    generic_free_extended_route(e_route_src);
+    generic_free_extended_route(e_route_cnt);
+    generic_free_extended_route(e_route_dst);
+    */   
+  }
+
+  xbt_dynar_free(&elem_father_list);
+
+  return latency;
+}
+
 /**
  * \brief Generic method: find a route between hosts
  *
@@ -772,6 +889,25 @@ static xbt_dynar_t get_route_no_cleanup(const char *src, const char *dst)
 	xbt_dynar_t d = get_route(src,dst);
 	global_routing->last_route = NULL;
 	return d;
+}
+
+/*Get Latency*/
+static double get_latency(const char *src, const char *dst)
+{
+
+  double latency = -1.0;
+  xbt_dynar_t elem_father_list = elements_father(src, dst);
+  routing_component_t common_father =
+      xbt_dynar_get_as(elem_father_list, 0, routing_component_t);
+
+  if (strcmp(src, dst))
+    latency = _get_latency(src, dst);
+  else
+    latency = (*(common_father->get_latency)) (common_father, src, dst);
+
+  xbt_assert2(latency>=0.0, "no route between \"%s\" and \"%s\"", src, dst);
+
+  return latency;
 }
 
 /**
@@ -865,7 +1001,7 @@ static e_surf_network_element_type_t get_network_element_type(const char
  * 
  * Make a global routing structure and set all the parsing functions.
  */
-void routing_model_create(size_t size_of_links, void *loopback)
+void routing_model_create(size_t size_of_links, void *loopback, double_f_pvoid_t get_link_latency_fun	)
 {
 
   /* config the uniq global routing */
@@ -873,6 +1009,7 @@ void routing_model_create(size_t size_of_links, void *loopback)
   global_routing->where_network_elements = xbt_dict_new();
   global_routing->root = NULL;
   global_routing->get_route = get_route;
+  global_routing->get_latency = get_latency;
   global_routing->get_route_no_cleanup = get_route_no_cleanup;
   global_routing->get_onelink_routes = get_onelink_routes;
   global_routing->get_network_element_type = get_network_element_type;
@@ -880,7 +1017,7 @@ void routing_model_create(size_t size_of_links, void *loopback)
   global_routing->loopback = loopback;
   global_routing->size_of_link = size_of_links;
   global_routing->last_route = NULL;
-
+  get_link_latency = get_link_latency_fun;
   /* no current routing at moment */
   current_routing = NULL;
 
@@ -1044,6 +1181,7 @@ static void *model_full_create(void)
   new_component->generic_routing.set_ASroute = model_full_set_route;
   new_component->generic_routing.set_bypassroute = generic_set_bypassroute;
   new_component->generic_routing.get_route = full_get_route;
+  new_component->generic_routing.get_latency = generic_get_link_latency;
   new_component->generic_routing.get_onelink_routes =
       full_get_onelink_routes;
   new_component->generic_routing.get_bypass_route =
@@ -1365,6 +1503,7 @@ static void *model_floyd_create(void)
   new_component->generic_routing.set_ASroute = model_floyd_set_route;
   new_component->generic_routing.set_bypassroute = generic_set_bypassroute;
   new_component->generic_routing.get_route = floyd_get_route;
+  new_component->generic_routing.get_latency = generic_get_link_latency;
   new_component->generic_routing.get_onelink_routes =
       floyd_get_onelink_routes;
   new_component->generic_routing.get_bypass_route =
@@ -1983,6 +2122,7 @@ static void *model_dijkstra_both_create(int cached)
   new_component->generic_routing.set_ASroute = model_dijkstra_both_set_route; //TODO
   new_component->generic_routing.set_bypassroute = generic_set_bypassroute;
   new_component->generic_routing.get_route = dijkstra_get_route;
+  new_component->generic_routing.get_latency = generic_get_link_latency;
   new_component->generic_routing.get_onelink_routes =
       dijkstra_get_onelink_routes;
   new_component->generic_routing.get_bypass_route =
@@ -2677,6 +2817,20 @@ static void generic_set_bypassroute(routing_component_t rc,
 
 /* ************************************************************************** */
 /* *********************** GENERIC BUSINESS METHODS ************************* */
+
+static double generic_get_link_latency(routing_component_t rc,
+                                       const char *src, const char *dst)
+{
+	route_extended_t route = rc->get_route(rc,src,dst);
+	void * link;
+	unsigned int i;
+	double latency = 0.0;
+
+	xbt_dynar_foreach(route->generic_route.link_list,i,link) {
+		latency += get_link_latency(link);
+	}
+  return latency;
+}
 
 static xbt_dynar_t generic_get_onelink_routes(routing_component_t rc)
 {
