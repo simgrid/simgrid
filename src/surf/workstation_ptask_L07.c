@@ -754,14 +754,12 @@ static void ptask_parse_link_init(void)
   char *name_link_down = NULL;
   char *name_link = NULL;
 
-  if(A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-  {
-  name_link_up = xbt_strdup(bprintf("%s_UP",A_surfxml_link_id));
-  name_link_down = xbt_strdup(bprintf("%s_DOWN",A_surfxml_link_id));
-  }
-  else
-  {
-  name_link = xbt_strdup(A_surfxml_link_id);
+  if(A_surfxml_link_sharing_policy ==
+     A_surfxml_link_sharing_policy_FULLDUPLEX) {
+    name_link_up = bprintf("%s_UP", A_surfxml_link_id);
+    name_link_down = bprintf("%s_DOWN", A_surfxml_link_id);
+  } else {
+    name_link = xbt_strdup(A_surfxml_link_id);
   }
   surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
   bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
