@@ -1,4 +1,8 @@
-SimGrid (3.5) unstable; urgency=low
+SimGrid (3.6) unstable; urgency=low
+
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
+SimGrid (3.5) stable; urgency=medium
 
  Model Checking
  * New feature to any SimGrid-based simulator: Model-Checking
@@ -197,7 +201,7 @@ SimGrid (3.5) unstable; urgency=low
  * The effect of gras_stub_generator can be achieved through
    lua too (check examples/gras/console/ping_generator.lua)
 
- -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Wed, 01 Dec 2010 22:09:23 +0100 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.4.1) stable; urgency=low
 

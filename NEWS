@@ -5,7 +5,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / | ___|
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/
 
 The "Winter in Frejus" release. Also known as "ANR/ADT funding helps"
-(major changes):
+Major changes are:
 
  * New feature: Model check any simgrid simulation
  * SMPI: now considered stable
