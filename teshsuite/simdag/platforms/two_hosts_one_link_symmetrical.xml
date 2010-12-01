@@ -9,7 +9,7 @@
    <link id="link2" bandwidth="125000000" latency="5E-5"/>
    <link id="link3" bandwidth="125000000" latency="5E-5"/>
    
-   <route src="bob" dst="alice" symetrical="YES">
+   <route src="bob" dst="alice" symmetrical="YES">
      <link_ctn id="link1"/>
 	 <link_ctn id="link2"/>
 	 <link_ctn id="link3"/>

@@ -2913,8 +2913,8 @@ AT_surfxml_host_id AX_surfxml_host_id;
 #define A_surfxml_host_id (surfxml_bufferstack + AX_surfxml_host_id)
 AT_surfxml_link_latency_file AX_surfxml_link_latency_file;
 #define A_surfxml_link_latency_file (surfxml_bufferstack + AX_surfxml_link_latency_file)
-AT_surfxml_ASroute_symetrical AX_surfxml_ASroute_symetrical;
-#define A_surfxml_ASroute_symetrical AX_surfxml_ASroute_symetrical
+AT_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical;
+#define A_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical
 AT_surfxml_link_ctn_direction AX_surfxml_link_ctn_direction;
 #define A_surfxml_link_ctn_direction AX_surfxml_link_ctn_direction
 AT_surfxml_host_state AX_surfxml_host_state;
@@ -2997,8 +2997,8 @@ AT_surfxml_cluster_power AX_surfxml_cluster_power;
 #define A_surfxml_cluster_power (surfxml_bufferstack + AX_surfxml_cluster_power)
 AT_surfxml_process_function AX_surfxml_process_function;
 #define A_surfxml_process_function (surfxml_bufferstack + AX_surfxml_process_function)
-AT_surfxml_route_symetrical AX_surfxml_route_symetrical;
-#define A_surfxml_route_symetrical AX_surfxml_route_symetrical
+AT_surfxml_route_symmetrical AX_surfxml_route_symmetrical;
+#define A_surfxml_route_symmetrical AX_surfxml_route_symmetrical
 AT_surfxml_cluster_sharing_policy AX_surfxml_cluster_sharing_policy;
 #define A_surfxml_cluster_sharing_policy AX_surfxml_cluster_sharing_policy
 AT_surfxml_bypassRoute_dst AX_surfxml_bypassRoute_dst;
@@ -4957,7 +4957,7 @@ YY_RULE_SETUP
 {
   AX_surfxml_route_src = 0;
   AX_surfxml_route_dst = 0;
-  AX_surfxml_route_symetrical = A_surfxml_route_symetrical_YES;
+  AX_surfxml_route_symmetrical = A_surfxml_route_symmetrical_YES;
   ENTER(AL_surfxml_route); pushbuffer(0);
   }
 	YY_BREAK
@@ -4987,14 +4987,14 @@ case 210:
 case 211:
 /* rule 211 can match eol */
 YY_RULE_SETUP
-A_surfxml_route_symetrical = A_surfxml_route_symetrical_YES;
+A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_YES;
 	YY_BREAK
 case 212:
 /* rule 212 can match eol */
 case 213:
 /* rule 213 can match eol */
 YY_RULE_SETUP
-A_surfxml_route_symetrical = A_surfxml_route_symetrical_NO;
+A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
 	YY_BREAK
 case 214:
 YY_RULE_SETUP
@@ -5067,7 +5067,7 @@ YY_RULE_SETUP
   AX_surfxml_ASroute_dst = 0;
   AX_surfxml_ASroute_gw_src = 0;
   AX_surfxml_ASroute_gw_dst = 0;
-  AX_surfxml_ASroute_symetrical = A_surfxml_ASroute_symetrical_YES;
+  AX_surfxml_ASroute_symmetrical = A_surfxml_ASroute_symmetrical_YES;
   ENTER(AL_surfxml_ASroute); pushbuffer(0);
   }
 	YY_BREAK
@@ -5117,14 +5117,14 @@ case 231:
 case 232:
 /* rule 232 can match eol */
 YY_RULE_SETUP
-A_surfxml_ASroute_symetrical = A_surfxml_ASroute_symetrical_YES;
+A_surfxml_ASroute_symmetrical = A_surfxml_ASroute_symmetrical_YES;
 	YY_BREAK
 case 233:
 /* rule 233 can match eol */
 case 234:
 /* rule 234 can match eol */
 YY_RULE_SETUP
-A_surfxml_ASroute_symetrical = A_surfxml_ASroute_symetrical_NO;
+A_surfxml_ASroute_symmetrical = A_surfxml_ASroute_symmetrical_NO;
 	YY_BREAK
 case 235:
 YY_RULE_SETUP

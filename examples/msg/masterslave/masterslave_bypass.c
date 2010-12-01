@@ -66,7 +66,7 @@ static int surf_parse_bypass_platform(void)
   DEBUG0("<route src=\"host A\" dst=\"host B\">");
   SURFXML_BUFFER_SET(route_src, "host A");
   SURFXML_BUFFER_SET(route_dst, "host B");
-  A_surfxml_route_symetrical = A_surfxml_route_symetrical_YES;
+  A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_YES;
   SURFXML_START_TAG(route);
   DEBUG0("	<link:ctn id=\"LinkA\"/>");
   SURFXML_BUFFER_SET(link_ctn_id, "LinkA");

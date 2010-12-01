@@ -10,10 +10,10 @@
    <link id="link2" bandwidth="125000000" latency="5E-5"/>
    <link id="link3" bandwidth="125000000" latency="5E-5"/>
  
-   <route src="bob" dst="alice" symetrical="NO">
+   <route src="bob" dst="alice" symmetrical="NO">
      <link_ctn id="link1"/>
    </route>
-   <route src="alice" dst="bob" symetrical="NO">
+   <route src="alice" dst="bob" symmetrical="NO">
      <link_ctn id="link2"/>
      <link_ctn id="link3"/>
    </route>

@@ -285,7 +285,7 @@ $ ./basic_parsing_test two_clusters_symmetric.xml FULL_LINK
 > 	Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
 > 	Route latency = 0.000600, route bandwidth = 125000000.000000
 
-$ ./basic_parsing_test two_hosts_one_link_symetrical.xml FULL_LINK
+$ ./basic_parsing_test two_hosts_one_link_symmetrical.xml FULL_LINK
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > Workstation number: 2, link number: 4
 > Route between alice and alice

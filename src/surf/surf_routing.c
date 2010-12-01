@@ -1144,8 +1144,8 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 	      xbt_dynar_shrink(TO_ROUTE_FULL(*src_id, *dst_id)->generic_route.link_list, 0);
 	}
 
-	if( A_surfxml_route_symetrical == A_surfxml_route_symetrical_YES
-		|| A_surfxml_ASroute_symetrical == A_surfxml_ASroute_symetrical_YES )
+	if( A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES
+		|| A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES )
 	{
 		if(route->dst_gateway && route->src_gateway)
 		{
@@ -1515,8 +1515,8 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 	    		((TO_FLOYD_LINK(*src_id, *dst_id))->generic_route.link_list)->used;   /* count of links, old model assume 1 */
 	}
 
-	if( A_surfxml_route_symetrical == A_surfxml_route_symetrical_YES
-		|| A_surfxml_ASroute_symetrical == A_surfxml_ASroute_symetrical_YES )
+	if( A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES
+		|| A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES )
 	{
 		if(TO_FLOYD_LINK(*dst_id, *src_id))
 		{
@@ -2054,8 +2054,8 @@ static void model_dijkstra_both_set_route (routing_component_t rc, const char *s
 	if (routing->cached && !routing->route_cache)
 	routing->route_cache = xbt_dict_new();
 
-	if( A_surfxml_route_symetrical == A_surfxml_route_symetrical_YES
-		|| A_surfxml_ASroute_symetrical == A_surfxml_ASroute_symetrical_YES )
+	if( A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES
+		|| A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES )
 		xbt_die("Route symmetrical not supported on model dijkstra");
 
 	if(!route->dst_gateway && !route->src_gateway)
@@ -3228,10 +3228,10 @@ static void routing_parse_Scluster(void)
   route_src_dst = bprintf("%s(.*)%s", cluster_prefix, new_suffix);
 
   DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", route_src_dst, route_src_dst);
-  DEBUG0("symetrical=\"NO\">");
+  DEBUG0("symmetrical=\"NO\">");
   SURFXML_BUFFER_SET(route_src, route_src_dst);
   SURFXML_BUFFER_SET(route_dst, route_src_dst);
-  A_surfxml_route_symetrical = A_surfxml_route_symetrical_NO;
+  A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
   SURFXML_START_TAG(route);
 
   DEBUG1("<link_ctn\tid=\"%s_link_$1src\"/>", cluster_id);
@@ -3280,10 +3280,10 @@ static void routing_parse_Scluster(void)
       }
 
       DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", route_src, route_dst);
-      DEBUG0("symetrical=\"NO\">");
+      DEBUG0("symmetrical=\"NO\">");
       SURFXML_BUFFER_SET(route_src, route_src);
       SURFXML_BUFFER_SET(route_dst, route_dst);
-      A_surfxml_route_symetrical = A_surfxml_route_symetrical_NO;
+      A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
       SURFXML_START_TAG(route);
 
       if (i == xbt_dynar_length(tab_elements_num)) {

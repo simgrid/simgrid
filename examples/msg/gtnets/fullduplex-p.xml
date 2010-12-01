@@ -12,11 +12,11 @@
 
   <link id="1" bandwidth="10000" latency="0.01" sharing_policy="FULLDUPLEX"/>
 
-  <route src="S1" dst="C1" symetrical="NO">
+  <route src="S1" dst="C1" symmetrical="NO">
      <link_ctn id="1" direction="DOWN"/>
   </route>
 
-  <route src="C1" dst="S1" symetrical="NO">
+  <route src="C1" dst="S1" symmetrical="NO">
      <link_ctn id="1" direction="UP"/>
   </route>
 
