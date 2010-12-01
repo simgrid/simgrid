@@ -91,10 +91,14 @@ SimGrid (3.5) unstable; urgency=low
  * new function SD_dotload(char*) to load a DAG described in dot
    format. This loader and the corresponding examples require the
    installation of the graphviz library.
- * new function SD_workstation_get_current_task()
+ * new function SD_workstation_get_current_task() that returns the kind
+   of task currently running on a workstation in the sequential access 
+   mode.
  * Task rate should be -1 by default
    Using 0 as before caused TCP_gamma bound to be ignored.
    This change modifies (fixes) almost every simdag timings.
+ * Raise some warnings when unexecuted remains at the end of the
+   simulation. This is usually caused by cycles in the DAG. 
 
  XBT
  * New data container: setset (set of sets of elements)
