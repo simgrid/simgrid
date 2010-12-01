@@ -58,8 +58,8 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_DIRECTORY}/doc/html
 		COMMAND ${CMAKE_COMMAND} -E make_directory   ${PROJECT_DIRECTORY}/doc/html
 		
-		COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${PROJECT_DIRECTORY}/doc/fig/simgrid_modules.fig |perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' > ${PROJECT_DIRECTORY}/doc/simgrid_modules.map
-		
+		COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${PROJECT_DIRECTORY}/doc/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${PROJECT_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${PROJECT_DIRECTORY}/doc/simgrid_modules.map
+
 		WORKING_DIRECTORY ${PROJECT_DIRECTORY}/doc
 	)
 
@@ -71,13 +71,13 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 		WORKING_DIRECTORY ${PROJECT_DIRECTORY}
 	)
 
-	foreach(file ${FIGS})
+	foreach(file ${DOC_FIGS})
 		string(REPLACE ".fig" ".png" tmp_file ${file})
 		string(REPLACE "${PROJECT_DIRECTORY}/doc/fig/" "${PROJECT_DIRECTORY}/doc/html/" tmp_file ${tmp_file})
 		ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
-			COMMAND "${FIG2DEV_PATH}/fig2dev -Lpng ${file} ${tmp_file}"
+			COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng ${file} ${tmp_file}
 		)
-	endforeach(file ${FIGS})
+	endforeach(file ${DOC_FIGS})
 
 
 	ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
