@@ -288,15 +288,16 @@ void smpi_mpi_waitall(int count, MPI_Request requests[],
 {
   int index, c;
   MPI_Status stat;
+  MPI_Status *pstat = status == MPI_STATUS_IGNORE ? MPI_STATUS_IGNORE : &stat;
 
   c = count;
   while (c > 0) {
-    index = smpi_mpi_waitany(count, requests, &stat);
+    index = smpi_mpi_waitany(count, requests, pstat);
     if (index == MPI_UNDEFINED) {
       break;
     }
     if (status != MPI_STATUS_IGNORE) {
-      memcpy(&status[index], &stat, sizeof(stat));
+      memcpy(&status[index], pstat, sizeof *pstat);
     }
     c--;
   }
