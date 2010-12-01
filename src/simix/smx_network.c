@@ -405,6 +405,7 @@ XBT_INLINE int SIMIX_communication_is_latency_bounded(smx_comm_t comm)
     if ((void *) comm == (void *) key) {
       DEBUG2("key %p found, return value latency limited value %d",
              (void *) key, (int) data);
+      xbt_dict_cursor_free(&cursor);
       return (int) data;
     }
   }
