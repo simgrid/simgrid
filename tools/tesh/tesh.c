@@ -243,6 +243,7 @@ int main(int argc, char *argv[])
     INFO0("Test suite from stdin");
     testsuite_name = "(stdin)";
     handle_suite(testsuite_name, stdin);
+    rctx_wait_bg();
     INFO0("Test suite from stdin OK");
 
   } else {

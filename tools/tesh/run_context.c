@@ -101,21 +101,11 @@ void rctx_init(void)
 void rctx_exit(void)
 {
   int i;
-  if (bg_jobs) {
-    /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon from working */
-    while (xbt_dynar_length(bg_jobs)) {
-      rctx_t rctx = xbt_dynar_getlast_as(bg_jobs, rctx_t);
-      wait_it(rctx);
-      xbt_dynar_pop(bg_jobs, &rctx);
-      rctx_free(rctx);
-    }
-  }
   for (i = 0; i < 3; i++)
     sigaction(oldact[i].num, &oldact[i].act, NULL);
   xbt_os_cond_signal(sigwaiter_cond);
   xbt_os_thread_join(sigwaiter_thread, NULL);
-  if (bg_jobs)
-    xbt_dynar_free(&bg_jobs);
+  xbt_dynar_free(&bg_jobs);
   xbt_os_cond_destroy(sigwaiter_cond);
   xbt_os_mutex_destroy(sigwaiter_mutex);
   xbt_os_mutex_destroy(armageddon_mutex);
@@ -123,17 +113,15 @@ void rctx_exit(void)
 
 void rctx_wait_bg(void)
 {
-  if (bg_jobs) {
-    /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon from working */
-    while (xbt_dynar_length(bg_jobs)) {
-      rctx_t rctx = xbt_dynar_getlast_as(bg_jobs, rctx_t);
-      wait_it(rctx);
-      xbt_dynar_pop(bg_jobs, &rctx);
-      rctx_free(rctx);
-    }
-    xbt_dynar_free(&bg_jobs);
+  /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon
+   * from working */
+  while (xbt_dynar_length(bg_jobs)) {
+    rctx_t rctx = xbt_dynar_getlast_as(bg_jobs, rctx_t);
+    wait_it(rctx);
+    xbt_dynar_pop(bg_jobs, &rctx);
+    rctx_free(rctx);
   }
-  bg_jobs = xbt_dynar_new_sync(sizeof(rctx_t), kill_it);
+  xbt_dynar_reset(bg_jobs);
 }
 
 static void rctx_armageddon_kill_one(rctx_t initiator, const char *filepos,
