@@ -3050,6 +3050,9 @@ static void routing_parse_Scluster(void)
   char *cluster_bb_lat = A_surfxml_cluster_bb_lat;
   char *host_id, *groups, *link_id = NULL;
   char *router_id, *link_router, *link_backbone;
+#ifdef HAVE_PCRE_LIB
+  char *route_src_dst;
+#endif
   unsigned int iter;
   int start, end, i;
   xbt_dynar_t radical_elements;
