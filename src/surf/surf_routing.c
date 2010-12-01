@@ -719,16 +719,13 @@ static route_extended_t _get_route(const char *src, const char *dst)
 static double _get_latency(const char *src, const char *dst)
 {
 
-  void *link;
-  unsigned int cpt = 0;
   double latency, latency_src, latency_dst = 0.0;
 
   DEBUG2("Solve route  \"%s\" to \"%s\"", src, dst);
 
   xbt_assert0(src && dst, "bad parameters for \"_get_route\" method");
 
-  route_extended_t e_route, e_route_cnt, e_route_src = NULL, e_route_dst =
-      NULL;
+  route_extended_t e_route, e_route_cnt;
 
   xbt_dynar_t elem_father_list = elements_father(src, dst);
 
