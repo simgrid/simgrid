@@ -64,6 +64,7 @@ void gras_process_exit()
   gras_procdata_exit();
   free(_gras_procdata);
   xbt_dict_free(&_process_properties);
+  xbt_dict_free(&_host_properties);
 }
 
 const char *xbt_procname(void)
