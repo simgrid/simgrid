@@ -25,7 +25,7 @@ const char *signal_name(unsigned int got, char *expected);
 int timeout_value;              /* child timeout value */
 
 rctx_t rctx;
-char *testsuite_name;
+const char *testsuite_name;
 
 
 /* Environment related definitions */

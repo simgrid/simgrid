@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(tesh, "TEst SHell utility");
 /*** Options ***/
 int timeout_value = 5;          /* child timeout value */
 
-char *testsuite_name;
+const char *testsuite_name;
 static void handle_line(const char *filepos, char *line)
 {
   /* Search end */
@@ -241,8 +241,8 @@ int main(int argc, char *argv[])
   /* Find the description file */
   if (argc == 1) {
     INFO0("Test suite from stdin");
-    testsuite_name = xbt_strdup("(stdin)");
-    handle_suite("stdin", stdin);
+    testsuite_name = "(stdin)";
+    handle_suite(testsuite_name, stdin);
     INFO0("Test suite from stdin OK");
 
   } else {

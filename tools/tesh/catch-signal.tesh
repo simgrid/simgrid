@@ -19,9 +19,9 @@ $ gcc -o segfault segfault.c
 < $ ./segfault
 $ ../tesh --log='log.thresh:info tesh.fmt:%m%n'
 > Test suite from stdin
-> [stdin:1] ./segfault
-> Test suite `(stdin)': NOK (<stdin:1> got signal SIGSEGV)
-> Output of <stdin:1> so far: 
+> [(stdin):1] ./segfault
+> Test suite `(stdin)': NOK (<(stdin):1> got signal SIGSEGV)
+> Output of <(stdin):1> so far: 
 > ||
 
 $ cd ..

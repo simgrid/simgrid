@@ -8,6 +8,6 @@ p This tests whether TESH accepts to ignore command output
 < $ cat
 $ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
 > Test suite from stdin
-> [stdin:4] cat
-> (ignoring the output of <stdin:4> as requested)
+> [(stdin):4] cat
+> (ignoring the output of <(stdin):4> as requested)
 > Test suite from stdin OK
