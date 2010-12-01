@@ -377,20 +377,28 @@ if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 
 	exec_program("git --git-dir=${PROJECT_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
 	exec_program("git --git-dir=${PROJECT_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
-	exec_program("git svn info" ${PROJECT_DIRECTORY} OUTPUT_VARIABLE "GIT_SVN_VERSION")
 	
 	string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
-	string(REPLACE "\n" ";" GIT_SVN_VERSION ${GIT_SVN_VERSION})
 	STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
-	foreach(line ${GIT_SVN_VERSION})
-		string(REGEX MATCH "^Revision:.*" line_good ${line})
-		if(line_good)
-			string(REPLACE "Revision: " "" line_good ${line_good})
-			set(SVN_VERSION ${line_good})
-		endif(line_good)
-	endforeach(line ${GIT_SVN_VERSION})
+
+	exec_program("git config --get svn-remote.svn.url"
+		OUTPUT_VARIABLE url
+		RETURN_VALUE ret)
+	if(ret EQUAL 0)
+		exec_program("git svn info" ${PROJECT_DIRECTORY}
+			OUTPUT_VARIABLE "GIT_SVN_VERSION")
+		string(REPLACE "\n" ";" GIT_SVN_VERSION ${GIT_SVN_VERSION})
+		foreach(line ${GIT_SVN_VERSION})
+			string(REGEX MATCH "^Revision:.*" line_good ${line})
+			if(line_good)
+				string(REPLACE "Revision: " ""
+					line_good ${line_good})
+				set(SVN_VERSION ${line_good})
+			endif(line_good)
+		endforeach(line ${GIT_SVN_VERSION})
+	endif(ret EQUAL 0)
 endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 
 ###################################
