@@ -3,6 +3,12 @@ SimGrid (3.6) unstable; urgency=low
  Simix
  * completely rewrote this module to allow parallel execution.
 
+ XBT
+ * Add a new function xbt_dynar_to_array that transforms a dynar into a
+   NULL-terminated array. This may solve backward compatibility issues
+   due to the change to return type of SD_Simulate. See also:
+   http://lists.gforge.inria.fr/pipermail/simgrid-user/2010-December/002206.html
+
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.5) stable; urgency=medium

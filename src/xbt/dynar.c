@@ -748,6 +748,19 @@ XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
   _dynar_unlock(dynar);
 }
 
+/** @brief Transform a dynar into a NULL terminated array
+ *
+ * \param dynar the dynar to transform
+ */
+XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
+{
+	void * last = xbt_new0(char,dynar->elmsize);
+	xbt_dynar_push(dynar, last);
+	free(last);
+	dynar->used--;
+	return dynar->data;
+}
+
 /*
  * Return 0 if d1 and d2 are equal and 1 if not equal
  */
