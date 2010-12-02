@@ -126,7 +126,7 @@ void TRACE_msg_volume_start(m_task_t task);
 void TRACE_msg_volume_finish(m_task_t task);
 
 /* from smx.c */
-void TRACE_smx_action_execute(smx_action_t act);
+void TRACE_smx_host_execute(smx_action_t act);
 void TRACE_smx_action_communicate(smx_action_t act, smx_process_t proc);
 void TRACE_smx_action_destroy(smx_action_t act);
 
