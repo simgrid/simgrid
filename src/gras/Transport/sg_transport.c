@@ -41,8 +41,8 @@ gras_socket_t gras_trp_select(double timeout)
   unsigned int cursor;
 
   DEBUG3("select on %s@%s with timeout=%f",
-         SIMIX_process_get_name(SIMIX_process_self()),
-         SIMIX_host_get_name(SIMIX_host_self()), timeout);
+         SIMIX_process_self_get_name(),
+         SIMIX_host_self_get_name(), timeout);
   if (timeout >= 0) {
     xbt_queue_shift_timed(pd->msg_selectable_sockets,
                           &active_socket, timeout);
@@ -70,7 +70,7 @@ gras_socket_t gras_trp_select(double timeout)
 
     if ((sock_data->to_socket == active_socket) &&
         (sock_data->to_host ==
-         SIMIX_process_get_host(active_socket_data->from_process))) {
+         SIMIX_req_process_get_host(active_socket_data->from_process))) {
       xbt_dynar_cursor_unlock(pd->sockets);
       return sock_iter;
     }
@@ -107,21 +107,21 @@ gras_socket_t gras_trp_select(double timeout)
   sockdata->to_socket = active_socket;
   /*update the peer to_socket  variable */
   active_socket_data->to_socket = res;
-  sockdata->cond = SIMIX_cond_init();
-  sockdata->mutex = SIMIX_mutex_init();
+  sockdata->cond = SIMIX_req_cond_init();
+  sockdata->mutex = SIMIX_req_mutex_init();
 
   sockdata->to_host =
-      SIMIX_process_get_host(active_socket_data->from_process);
+      SIMIX_req_process_get_host(active_socket_data->from_process);
 
   res->data = sockdata;
-  res->peer_name = strdup(SIMIX_host_get_name(sockdata->to_host));
+  res->peer_name = strdup(SIMIX_req_host_get_name(sockdata->to_host));
 
   gras_trp_buf_init_sock(res);
 
   DEBUG4("Create socket to process:%s(Port %d) from process: %s(Port %d)",
-         SIMIX_process_get_name(sockdata->from_process),
+         SIMIX_req_process_get_name(sockdata->from_process),
          res->peer_port,
-         SIMIX_process_get_name(sockdata->to_process), res->port);
+         SIMIX_req_process_get_name(sockdata->to_process), res->port);
 
   return res;
 }

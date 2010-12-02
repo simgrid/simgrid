@@ -11,75 +11,170 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix,
                                 "Logging specific to SIMIX (synchronization)");
 
+static smx_action_t SIMIX_synchro_wait(smx_host_t smx_host, double timeout);
+static void SIMIX_synchro_finish(smx_action_t action);
+static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
+                             smx_process_t issuer, smx_req_t req);
+static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
+                            smx_req_t req);
+static void SIMIX_sem_block_onto(smx_sem_t sem);
 
-/****************************** Synchronization *******************************/
+/***************************** Synchro action *********************************/
 
+static smx_action_t SIMIX_synchro_wait(smx_host_t smx_host, double timeout)
+{
+  smx_action_t action;
+  action = xbt_new0(s_smx_action_t, 1);
+  action->type = SIMIX_ACTION_SYNCHRO;
+  action->request_list = xbt_fifo_new();
+  action->name = xbt_strdup("synchro");
+  action->synchro.sleep = 
+    surf_workstation_model->extension.workstation.sleep(smx_host->host, timeout);
+
+  surf_workstation_model->action_data_set(action->synchro.sleep, action);
+  return action;
+}
+
+void SIMIX_synchro_stop_waiting(smx_process_t process, smx_req_t req)
+{
+  switch (req->call) {
+
+    case REQ_MUTEX_LOCK:
+      xbt_swag_remove(process, req->mutex_lock.mutex->sleeping);
+      break;
+
+    case REQ_COND_WAIT:
+      xbt_swag_remove(process, req->cond_wait.cond->sleeping);
+      break;
+
+    case REQ_COND_WAIT_TIMEOUT:
+      xbt_swag_remove(process, req->cond_wait_timeout.cond->sleeping);
+      break;
+
+    case REQ_SEM_ACQUIRE:
+      xbt_swag_remove(process, req->sem_acquire.sem->sleeping);
+      break;
+
+    case REQ_SEM_ACQUIRE_TIMEOUT:
+      xbt_swag_remove(process, req->sem_acquire_timeout.sem->sleeping);
+      break;
+
+    default:
+      THROW_IMPOSSIBLE;
+  }
+}
+
+void SIMIX_synchro_destroy(smx_action_t action)
+{
+  DEBUG1("Destroying synchro %p", action);
+  action->synchro.sleep->model_type->action_unref(action->synchro.sleep);
+  xbt_fifo_free(action->request_list);
+  xbt_free(action->name);
+  xbt_free(action);
+}
+
+void SIMIX_post_synchro(smx_action_t action)
+{
+  if(surf_workstation_model->action_state_get(action->synchro.sleep) == SURF_ACTION_FAILED)
+     action->state = SIMIX_FAILED;
+  else if(surf_workstation_model->action_state_get(action->synchro.sleep) == SURF_ACTION_DONE)
+     action->state = SIMIX_SRC_TIMEOUT;
+
+  action->synchro.sleep->model_type->action_unref(action->synchro.sleep);
+
+  SIMIX_synchro_finish(action);  
+}
+
+static void SIMIX_synchro_finish(smx_action_t action)
+{
+  smx_req_t req = xbt_fifo_shift(action->request_list);
+  
+  switch(action->state){
+    case SIMIX_SRC_TIMEOUT:
+      TRY {
+        THROW0(timeout_error, 0, "Synchro's wait timeout");
+      } CATCH(req->issuer->running_ctx->exception) {
+        req->issuer->doexception = 1;
+      }
+      break;
+
+    case SIMIX_FAILED:
+      TRY {
+        THROW0(host_error, 0, "Host failed");
+      } CATCH(req->issuer->running_ctx->exception) {
+        req->issuer->doexception = 1;
+      }
+      break;
+      
+    default:
+      THROW_IMPOSSIBLE;
+      break;
+  }
+
+  SIMIX_synchro_stop_waiting(req->issuer, req);
+  SIMIX_synchro_destroy(action);
+  SIMIX_request_answer(req);
+}
 /*********************************** Mutex ************************************/
 
 /**
  * \brief Initialize a mutex.
  *
- * Allocs and creates the data for the mutex. It have to be called before the utilisation of the mutex.
+ * Allocs and creates the data for the mutex.
  * \return A mutex
  */
-smx_mutex_t SIMIX_mutex_init()
+smx_mutex_t SIMIX_mutex_init(void)
 {
-  smx_mutex_t m = xbt_new0(s_smx_mutex_t, 1);
   s_smx_process_t p;            /* useful to initialize sleeping swag */
-  /* structures initialization */
-  m->refcount = 0;
-  m->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
-  return m;
+
+  smx_mutex_t mutex = xbt_new0(s_smx_mutex_t, 1);
+  mutex->locked = 0;
+  mutex->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
+  return mutex;
 }
 
 /**
- * \brief Locks a mutex.
- *
- * Tries to lock a mutex, if the mutex isn't used yet, the process can continue its execution, else it'll be blocked here. You have to call #SIMIX_mutex_unlock to free the mutex.
- * \param mutex The mutex
+ * \brief Handle mutex lock request
+ * \param req The request
  */
-void SIMIX_mutex_lock(smx_mutex_t mutex)
+void SIMIX_pre_mutex_lock(smx_req_t req)
 {
-  smx_process_t self = SIMIX_process_self();
-  xbt_assert0((mutex != NULL), "Invalid parameters");
-
-
-  if (mutex->refcount) {
-    /* somebody using the mutex, block */
-    xbt_swag_insert(self, mutex->sleeping);
-    self->mutex = mutex;
-    /* wait for some process make the unlock and wake up me from mutex->sleeping */
-    SIMIX_process_yield();
-    self->mutex = NULL;
-
-    /* verify if the process was suspended */
-    while (self->suspended) {
-      SIMIX_process_yield();
-    }
-
-    mutex->refcount = 1;
+  /*FIXME: check where to validate the arguments */
+  smx_action_t sync_act = NULL;
+  smx_mutex_t mutex = req->mutex_lock.mutex;
+  smx_process_t process = req->issuer;
+  
+  if (mutex->locked) {
+    /* FIXME: check if the host is active ? */
+    /* Somebody using the mutex, use a synchro action to get host failures */
+    sync_act = SIMIX_synchro_wait(process->smx_host, -1);
+    xbt_fifo_push(sync_act->request_list, req);
+    req->issuer->waiting_action = sync_act;
+    xbt_swag_insert(req->issuer, mutex->sleeping);   
   } else {
     /* mutex free */
-    mutex->refcount = 1;
+    mutex->locked = 1;
+    mutex->owner = req->issuer;
+    SIMIX_request_answer(req);
   }
-  return;
 }
 
 /**
  * \brief Tries to lock a mutex.
  *
- * Tries to lock a mutex, return 1 if the mutex is free, 0 else. This function does not block the process if the mutex is used.
+ * Tries to lock a mutex, return 1 if the mutex is unlocked, else 0.
+ * This function does not block and wait for the mutex to be unlocked.
  * \param mutex The mutex
+ * \param issuer The process that tries to acquire the mutex
  * \return 1 - mutex free, 0 - mutex used
  */
-XBT_INLINE int SIMIX_mutex_trylock(smx_mutex_t mutex)
+int SIMIX_mutex_trylock(smx_mutex_t mutex, smx_process_t issuer)
 {
-  xbt_assert0((mutex != NULL), "Invalid parameters");
-
-  if (mutex->refcount)
+  if (mutex->locked)
     return 0;
   else {
-    mutex->refcount = 1;
+    mutex->locked = 1;
+    mutex->owner = issuer;
     return 1;
   }
 }
@@ -87,24 +182,31 @@ XBT_INLINE int SIMIX_mutex_trylock(smx_mutex_t mutex)
 /**
  * \brief Unlocks a mutex.
  *
- * Unlocks the mutex and wakes up a process blocked on it. If there are no process sleeping, only sets the mutex as free.
+ * Unlocks the mutex and gives it to a process waiting for it. 
+ * If the unlocker is not the owner of the mutex nothing happens.
+ * If there are no process waiting, it sets the mutex as free.
  * \param mutex The mutex
+ * \param issuer The process trying to unlock the mutex
  */
-void SIMIX_mutex_unlock(smx_mutex_t mutex)
+void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
 {
   smx_process_t p;              /*process to wake up */
 
-  xbt_assert0((mutex != NULL), "Invalid parameters");
-
+  /* If the mutex is not owned by the issuer do nothing */
+  if(issuer != mutex->owner)
+    return;
+  
   if (xbt_swag_size(mutex->sleeping) > 0) {
     p = xbt_swag_extract(mutex->sleeping);
-    mutex->refcount = 0;
-    xbt_swag_insert(p, simix_global->process_to_run);
+    SIMIX_synchro_destroy(p->waiting_action);
+    p->waiting_action = NULL;
+    mutex->owner = p;
+    SIMIX_request_answer(p->request);
   } else {
     /* nobody to wake up */
-    mutex->refcount = 0;
+    mutex->locked = 0;
+    mutex->owner = NULL;
   }
-  return;
 }
 
 /**
@@ -113,18 +215,15 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex)
  * Destroys and frees the mutex's memory. 
  * \param mutex A mutex
  */
-XBT_INLINE void SIMIX_mutex_destroy(smx_mutex_t mutex)
+void SIMIX_mutex_destroy(smx_mutex_t mutex)
 {
-  if (mutex == NULL)
-    return;
-  else {
+  if(mutex){
     xbt_swag_free(mutex->sleeping);
     xbt_free(mutex);
-    return;
   }
 }
 
-/******************************** Conditional *********************************/
+/********************************* Condition **********************************/
 
 /**
  * \brief Initialize a condition.
@@ -135,159 +234,112 @@ XBT_INLINE void SIMIX_mutex_destroy(smx_mutex_t mutex)
  */
 smx_cond_t SIMIX_cond_init()
 {
-  smx_cond_t cond = xbt_new0(s_smx_cond_t, 1);
   s_smx_process_t p;
-
+  smx_cond_t cond = xbt_new0(s_smx_cond_t, 1);
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
-  cond->actions = xbt_fifo_new();
   cond->mutex = NULL;
   return cond;
 }
 
 /**
+ * \brief Handle condition waiting requests without timeouts
+ * \param The request
+ */
+void SIMIX_pre_cond_wait(smx_req_t req)
+{
+  smx_process_t issuer = req->issuer;
+  smx_cond_t cond = req->cond_wait.cond;
+  smx_mutex_t mutex = req->cond_wait.mutex;
+
+  _SIMIX_cond_wait(cond, mutex, -1, issuer, req);
+}
+
+/**
+ * \brief Handle condition waiting requests with timeouts
+ * \param The request
+ */
+void SIMIX_pre_cond_wait_timeout(smx_req_t req)
+{
+  smx_process_t issuer = req->issuer;
+  smx_cond_t cond = req->cond_wait_timeout.cond;
+  smx_mutex_t mutex = req->cond_wait_timeout.mutex;
+  double timeout = req->cond_wait_timeout.timeout;
+  
+  _SIMIX_cond_wait(cond, mutex, timeout, issuer, req);
+}
+
+
+static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
+                             smx_process_t issuer, smx_req_t req)
+{
+  smx_action_t sync_act = NULL;
+  
+  DEBUG1("Wait condition %p", cond);
+  
+  /* If there is a mutex unlock it */
+  /* FIXME: what happen if the issuer is not the owner of the mutex ? */
+  if (mutex != NULL) {
+    cond->mutex = mutex;
+    SIMIX_mutex_unlock(mutex, issuer);
+  }
+
+  sync_act = SIMIX_synchro_wait(issuer->smx_host, timeout);
+  xbt_fifo_unshift(sync_act->request_list, req);
+  issuer->waiting_action = sync_act;
+  xbt_swag_insert(req->issuer, cond->sleeping);   
+}
+
+/**
  * \brief Signalizes a condition.
  *
- * Signalizes a condition and wakes up a sleeping process. If there are no process sleeping, no action is done.
+ * Signalizes a condition and wakes up a sleeping process. 
+ * If there are no process sleeping, no action is done.
  * \param cond A condition
  */
 void SIMIX_cond_signal(smx_cond_t cond)
 {
   smx_process_t proc = NULL;
+  smx_mutex_t mutex = NULL;
+  smx_req_t req = NULL;
+  
   DEBUG1("Signal condition %p", cond);
-  xbt_assert0((cond != NULL), "Invalid parameters");
 
+  /* If there are processes waiting for the condition choose one and try 
+     to make it acquire the mutex */
+  if ((proc = xbt_swag_extract(cond->sleeping))) {
+    
+    /* Destroy waiter's synchro action */
+    SIMIX_synchro_destroy(proc->waiting_action);
+    proc->waiting_action = NULL;
 
-  if (xbt_swag_size(cond->sleeping) >= 1) {
-    proc = xbt_swag_extract(cond->sleeping);
-    xbt_swag_insert(proc, simix_global->process_to_run);
+    /* Now transform the cond wait request into a mutex lock one */
+    req = proc->request;
+    if(req->call == REQ_COND_WAIT)
+      mutex = req->cond_wait.mutex;
+    else
+      mutex = req->cond_wait_timeout.mutex;
+
+    req->call = REQ_MUTEX_LOCK;
+    req->mutex_lock.mutex = mutex;
+    
+    SIMIX_pre_mutex_lock(req);
   }
-
-  return;
-}
-
-/**
- * \brief Waits on a condition.
- *
- * Blocks a process until the signal is called. This functions frees the mutex associated and locks it after its execution.
- * \param cond A condition
- * \param mutex A mutex
- */
-void SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
-{
-  smx_action_t act_sleep;
-
-  DEBUG1("Wait condition %p", cond);
-
-  /* If there is a mutex unlock it */
-  if (mutex != NULL) {
-    cond->mutex = mutex;
-    SIMIX_mutex_unlock(mutex);
-  }
-
-  /* Always create an action null in case there is a host failure */
-  act_sleep = SIMIX_action_sleep(SIMIX_host_self(), -1);
-  SIMIX_action_set_name(act_sleep, bprintf("Wait condition %p", cond));
-  SIMIX_process_self()->waiting_action = act_sleep;
-  SIMIX_register_action_to_condition(act_sleep, cond);
-  __SIMIX_cond_wait(cond);
-  SIMIX_process_self()->waiting_action = NULL;
-  SIMIX_unregister_action_to_condition(act_sleep, cond);
-  SIMIX_action_destroy(act_sleep);
-
-  /* get the mutex again if necessary */
-  if (mutex != NULL)
-    SIMIX_mutex_lock(cond->mutex);
-
-  return;
-}
-
-XBT_INLINE xbt_fifo_t SIMIX_cond_get_actions(smx_cond_t cond)
-{
-  xbt_assert0((cond != NULL), "Invalid parameters");
-  return cond->actions;
-}
-
-void __SIMIX_cond_wait(smx_cond_t cond)
-{
-  smx_process_t self = SIMIX_process_self();
-  xbt_assert0((cond != NULL), "Invalid parameters");
-
-  /* process status */
-
-  self->cond = cond;
-  xbt_swag_insert(self, cond->sleeping);
-  SIMIX_process_yield();
-  self->cond = NULL;
-  while (self->suspended) {
-    SIMIX_process_yield();
-  }
-  return;
-}
-
-/**
- * \brief Waits on a condition with timeout.
- *
- * Same behavior of #SIMIX_cond_wait, but waits a maximum time and throws an timeout_error if it happens.
- * \param cond A condition
- * \param mutex A mutex
- * \param max_duration Timeout time
- */
-void SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
-                             double max_duration)
-{
-  smx_action_t act_sleep;
-
-  DEBUG1("Timed wait condition %p", cond);
-
-  /* If there is a mutex unlock it */
-  if (mutex != NULL) {
-    cond->mutex = mutex;
-    SIMIX_mutex_unlock(mutex);
-  }
-
-  if (max_duration >= 0) {
-    act_sleep = SIMIX_action_sleep(SIMIX_host_self(), max_duration);
-    SIMIX_action_set_name(act_sleep,
-                          bprintf
-                          ("Timed wait condition %p (max_duration:%f)",
-                           cond, max_duration));
-    SIMIX_register_action_to_condition(act_sleep, cond);
-    SIMIX_process_self()->waiting_action = act_sleep;
-    __SIMIX_cond_wait(cond);
-    SIMIX_process_self()->waiting_action = NULL;
-    SIMIX_unregister_action_to_condition(act_sleep, cond);
-    if (SIMIX_action_get_state(act_sleep) == SURF_ACTION_DONE) {
-      SIMIX_action_destroy(act_sleep);
-      THROW1(timeout_error, 0, "Condition timeout after %f", max_duration);
-    } else {
-      SIMIX_action_destroy(act_sleep);
-    }
-
-  } else
-    SIMIX_cond_wait(cond, NULL);
-
-  /* get the mutex again if necessary */
-  if (mutex != NULL)
-    SIMIX_mutex_lock(cond->mutex);
 }
 
 /**
  * \brief Broadcasts a condition.
  *
- * Signalizes a condition and wakes up ALL sleping process. If there are no process sleeping, no action is done.
+ * Signal ALL processes waiting on a condition.
+ * If there are no process waiting, no action is done.
  * \param cond A condition
  */
 void SIMIX_cond_broadcast(smx_cond_t cond)
 {
-  smx_process_t proc = NULL;
-  smx_process_t proc_next = NULL;
-
-  xbt_assert0((cond != NULL), "Invalid parameters");
-
   DEBUG1("Broadcast condition %p", cond);
-  xbt_swag_foreach_safe(proc, proc_next, cond->sleeping) {
-    xbt_swag_remove(proc, cond->sleeping);
-    xbt_swag_insert(proc, simix_global->process_to_run);
+
+  /* Signal the condition until nobody is waiting on it */
+  while(xbt_swag_size(cond->sleeping)){
+    SIMIX_cond_signal(cond);
   }
 }
 
@@ -300,279 +352,104 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
 void SIMIX_cond_destroy(smx_cond_t cond)
 {
   DEBUG1("Destroy condition %p", cond);
-  if (cond == NULL)
-    return;
-  else {
-    xbt_fifo_item_t item = NULL;
-    smx_action_t action = NULL;
 
+  if (cond != NULL){
     xbt_assert0(xbt_swag_size(cond->sleeping) == 0,
                 "Cannot destroy conditional since someone is still using it");
+
     xbt_swag_free(cond->sleeping);
-
-    DEBUG1("%d actions registered", xbt_fifo_size(cond->actions));
-    __SIMIX_cond_display_actions(cond);
-    xbt_fifo_foreach(cond->actions, item, action, smx_action_t) {
-      SIMIX_unregister_action_to_condition(action, cond);
-    }
-    __SIMIX_cond_display_actions(cond);
-
-    xbt_fifo_free(cond->actions);
     xbt_free(cond);
     return;
   }
 }
 
-void SIMIX_cond_display_info(smx_cond_t cond)
-{
-  if (cond == NULL)
-    return;
-  else {
-    smx_process_t process = NULL;
-
-    INFO0("Blocked process on this condition:");
-    xbt_swag_foreach(process, cond->sleeping) {
-      INFO2("\t %s running on host %s", process->name,
-            process->smx_host->name);
-    }
-  }
-}
-
-/* ************************** Semaphores ************************************** */
+/******************************** Semaphores **********************************/
 #define SMX_SEM_NOLIMIT 99999
 /** @brief Initialize a semaphore */
-smx_sem_t SIMIX_sem_init(int capacity)
+smx_sem_t SIMIX_sem_init(unsigned int value)
 {
-  smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
+  s_smx_process_t p;
 
-  sem->sleeping = xbt_fifo_new();
-  sem->actions = xbt_fifo_new();
-  sem->capacity = capacity;
+  smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
+  sem->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
+  sem->value = value;
   return sem;
 }
 
 /** @brief Destroys a semaphore */
 void SIMIX_sem_destroy(smx_sem_t sem)
 {
-  smx_action_t action = NULL;
   DEBUG1("Destroy semaphore %p", sem);
-  if (sem == NULL)
-    return;
-
-  xbt_assert0(xbt_fifo_size(sem->sleeping) == 0,
-              "Cannot destroy semaphore since someone is still using it");
-  xbt_fifo_free(sem->sleeping);
-
-  DEBUG1("%d actions registered", xbt_fifo_size(sem->actions));
-  while ((action = xbt_fifo_pop(sem->actions)))
-    SIMIX_unregister_action_to_semaphore(action, sem);
-
-  xbt_fifo_free(sem->actions);
-  xbt_free(sem);
+  if (sem != NULL){
+    xbt_assert0(xbt_swag_size(sem->sleeping) == 0,
+                "Cannot destroy semaphore since someone is still using it");
+    xbt_swag_free(sem->sleeping);
+    xbt_free(sem);
+  }
 }
 
 /** @brief release the semaphore
  *
- * The first locked process on this semaphore is unlocked.
+ * Unlock a process waiting on the semaphore.
  * If no one was blocked, the semaphore capacity is increased by 1.
  * */
 void SIMIX_sem_release(smx_sem_t sem)
 {
   smx_process_t proc;
-
-  if (sem->capacity != SMX_SEM_NOLIMIT) {
-    sem->capacity++;
-  }
+  
   DEBUG1("Sem release semaphore %p", sem);
-  if ((proc = xbt_fifo_shift(sem->sleeping)) != NULL) {
-    xbt_swag_insert(proc, simix_global->process_to_run);
+  if ((proc = xbt_swag_extract(sem->sleeping))) {
+    proc = xbt_swag_extract(sem->sleeping);
+    SIMIX_synchro_destroy(proc->waiting_action);
+    proc->waiting_action = NULL;
+    SIMIX_request_answer(proc->request);
+  }else if(sem->value < SMX_SEM_NOLIMIT){
+    sem->value++;
   }
-}
-
-/** @brief make sure the semaphore will never be blocking again
- *
- * This function is not really in the semaphore spirit. It makes
- * sure that the semaphore will never be blocking anymore.
- *
- * Releasing and acquiring the semaphore after calling this
- * function is a noop. Such "broken" semaphores are useful to
- * implement something between condition variables (with broadcast)
- * and semaphore (with memory). It's like a semaphore signaled for ever.
- *
- * There is no way to reset the semaphore to a more regular state afterward.
- * */
-void SIMIX_sem_release_forever(smx_sem_t sem)
-{
-  smx_process_t proc;
-
-  sem->capacity = SMX_SEM_NOLIMIT;
-  DEBUG1("Broadcast semaphore %p", sem);
-  while ((proc = xbt_fifo_shift(sem->sleeping)) != NULL) {
-    xbt_swag_insert(proc, simix_global->process_to_run);
-  }
-}
-
-/**
- * \brief Low level wait on a semaphore
- *
- * This function does not test the capacity of the semaphore and direcly locks
- * the calling process on the semaphore (until someone call SIMIX_sem_release()
- * on this semaphore). Do not call this function if you did not attach any action
- * to this semaphore to be awaken. Note also that you may miss host failure if you
- * do not attach a dummy action beforehand. SIMIX_sem_acquire does all these
- * things for you so you it may be preferable to use.
- */
-void SIMIX_sem_block_onto(smx_sem_t sem)
-{
-  smx_process_t self = SIMIX_process_self();
-
-  /* process status */
-  self->sem = sem;
-  xbt_fifo_push(sem->sleeping, self);
-  SIMIX_process_yield();
-  self->sem = NULL;
-  while (self->suspended)
-    SIMIX_process_yield();
 }
 
 /** @brief Returns true if acquiring this semaphore would block */
 XBT_INLINE int SIMIX_sem_would_block(smx_sem_t sem)
 {
-  return (sem->capacity <= 0);
+  return (sem->value <= 0);
 }
 
-/** @brief Returns the current capacity of the semaphore
- *
- * If it's negative, that's the amount of processes locked on the semaphore
- */
+/** @brief Returns the current capacity of the semaphore */
 int SIMIX_sem_get_capacity(smx_sem_t sem)
 {
-  return sem->capacity;
+  return sem->value;
+}
+
+static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
+                            smx_req_t req)
+{
+  smx_action_t sync_act = NULL;
+  
+  DEBUG2("Wait semaphore %p (timeout:%f)", sem, timeout);
+  if(sem->value <= 0){
+    sync_act = SIMIX_synchro_wait(issuer->smx_host, timeout);
+    xbt_fifo_unshift(sync_act->request_list, req);
+    issuer->waiting_action = sync_act;
+    xbt_swag_insert(issuer, sem->sleeping);
+  }else{
+    sem->value--;
+    SIMIX_request_answer(req);
+  }
 }
 
 /**
- * \brief Waits on a semaphore
- *
- * If the capacity>0, decrease the capacity.
- *
- * If capacity==0, locks the current process
- * until someone call SIMIX_sem_release() on this semaphore
+ * \brief Handle sem acquire requests without timeouts
  */
-void SIMIX_sem_acquire(smx_sem_t sem)
+void SIMIX_pre_sem_acquire(smx_req_t req)
 {
-  SIMIX_sem_acquire_timeout(sem, -1);
+  _SIMIX_sem_wait(req->sem_acquire.sem, -1, req->issuer, req);
 }
 
 /**
- * \brief Tries to acquire a semaphore before a timeout
- *
- * Same behavior of #SIMIX_sem_acquire, but waits a maximum time and throws an timeout_error if it happens.
+ * \brief Handle sem acquire requests with timeouts
  */
-void SIMIX_sem_acquire_timeout(smx_sem_t sem, double max_duration)
+void SIMIX_pre_sem_acquire_timeout(smx_req_t req)
 {
-  smx_action_t act_sleep;
-
-  DEBUG2("Wait semaphore %p (timeout:%f)", sem, max_duration);
-
-  if (sem->capacity == SMX_SEM_NOLIMIT) {
-    DEBUG1("semaphore %p wide open", sem);
-    return;                     /* don't even decrease it if wide open */
-  }
-
-  /* If capacity sufficient, decrease it */
-  if (sem->capacity > 0) {
-    DEBUG1("semaphore %p has enough capacity", sem);
-    sem->capacity--;
-    return;
-  }
-
-  /* Always create an action null in case there is a host failure */
-  act_sleep = SIMIX_action_sleep(SIMIX_host_self(), max_duration);
-  SIMIX_action_set_name(act_sleep,
-                        bprintf("Locked in semaphore %p (max_duration:%f)",
-                                sem, max_duration));
-  SIMIX_process_self()->waiting_action = act_sleep;
-  SIMIX_register_action_to_semaphore(act_sleep, sem);
-  SIMIX_sem_block_onto(sem);
-  SIMIX_process_self()->waiting_action = NULL;
-  SIMIX_unregister_action_to_semaphore(act_sleep, sem);
-  if (max_duration >= 0
-      && SIMIX_action_get_state(act_sleep) == SURF_ACTION_DONE) {
-    SIMIX_action_destroy(act_sleep);
-    THROW1(timeout_error, 0, "Semaphore acquire timeouted after %f",
-           max_duration);
-  } else {
-    if (sem->capacity != SMX_SEM_NOLIMIT) {
-      /* Take the released token */
-      sem->capacity--;
-    }
-    SIMIX_action_destroy(act_sleep);
-  }
-  DEBUG1("End of Wait on semaphore %p", sem);
-}
-
-/**
- * \brief Blocks on a set of semaphore
- *
- * If any of the semaphores has some more capacity, it gets decreased.
- * If not, blocks until the capacity of one of the semaphores becomes more friendly.
- *
- * \return the rank in the dynar of the semaphore which just got locked from the set
- */
-unsigned int SIMIX_sem_acquire_any(xbt_dynar_t sems)
-{
-  smx_sem_t sem;
-  unsigned int counter, result = -1;
-  smx_action_t act_sleep;
-  smx_process_t self = SIMIX_process_self();
-
-  xbt_assert0(xbt_dynar_length(sems),
-              "I refuse to commit sucide by locking on an **empty** set of semaphores!!");
-  DEBUG2("Wait on semaphore set %p (containing %ld semaphores)", sems,
-         xbt_dynar_length(sems));
-
-  xbt_dynar_foreach(sems, counter, sem) {
-    if (!SIMIX_sem_would_block(sem)) {
-      DEBUG1("Semaphore %p wouldn't block; get it without waiting", sem);
-      SIMIX_sem_acquire(sem);
-      return counter;
-    }
-  }
-
-  /* Always create an action null in case there is a host failure */
-  act_sleep = SIMIX_action_sleep(SIMIX_host_self(), -1);
-  SIMIX_action_set_name(act_sleep, bprintf("Locked in semaphore %p", sem));
-  self->waiting_action = act_sleep;
-  SIMIX_register_action_to_semaphore(act_sleep,
-                                     xbt_dynar_get_as(sems, 0, smx_sem_t));
-
-  /* Get listed as member of all the provided semaphores */
-  self->sem = xbt_dynar_getfirst_as(sems, smx_sem_t);
-  xbt_dynar_foreach(sems, counter, sem) {
-    xbt_fifo_push(sem->sleeping, self);
-  }
-  SIMIX_process_yield();
-  self->sem = NULL;
-  while (self->suspended)
-    SIMIX_process_yield();
-
-  /* at least one of the semaphore unsuspended us -- great, let's search the first one (and get out of the others) */
-  xbt_dynar_foreach(sems, counter, sem) {
-    if (!xbt_fifo_remove(sem->sleeping, self) && result == -1) {
-      if (sem->capacity != SMX_SEM_NOLIMIT) {
-        /* Take the released token */
-        sem->capacity--;
-      }
-      result = counter;
-    }
-  }
-  xbt_assert0(result != -1, "Cannot find which semaphore unlocked me!");
-
-  /* Destroy the waiting action */
-  self->waiting_action = NULL;
-  SIMIX_unregister_action_to_semaphore(act_sleep,
-                                       xbt_dynar_get_as(sems, 0,
-                                                        smx_sem_t));
-  SIMIX_action_destroy(act_sleep);
-  return result;
+  _SIMIX_sem_wait(req->sem_acquire_timeout.sem,
+                  req->sem_acquire_timeout.timeout, req->issuer, req);  
 }

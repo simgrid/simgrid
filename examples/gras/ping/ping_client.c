@@ -67,8 +67,7 @@ int client(int argc, char *argv[])
     RETHROW0("Failed to send PING to server: %s");
   }
   INFO3(">>>>>>>> Message PING(%d) sent to %s:%d <<<<<<<<",
-        ping,
-        gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
+        ping, gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
 
   /* 7. Wait for the answer from the server, and deal with issues */
   TRY {

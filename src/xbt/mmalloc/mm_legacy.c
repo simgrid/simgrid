@@ -25,13 +25,14 @@ void mmalloc_set_current_heap(void *new_heap)
 #ifdef MMALLOC_WANT_OVERIDE_LEGACY
 void *malloc(size_t n)
 {
+  void *mdp = __mmalloc_current_heap;
 #ifdef HAVE_MMAP
-  if (!__mmalloc_current_heap)
+  if (!mdp)
     mmalloc_preinit();
 #endif
-  LOCK(__mmalloc_current_heap);
-  void *ret = mmalloc(__mmalloc_current_heap, n);
-  UNLOCK(__mmalloc_current_heap);
+  LOCK(mdp);
+  void *ret = mmalloc(mdp, n);
+  UNLOCK(mdp);
 
   return ret;
 }
@@ -39,13 +40,14 @@ void *malloc(size_t n)
 void *calloc(size_t nmemb, size_t size)
 {
   size_t total_size = nmemb * size;
+  void *mdp = __mmalloc_current_heap;
 #ifdef HAVE_MMAP
-  if (!__mmalloc_current_heap)
+  if (!mdp)
     mmalloc_preinit();
 #endif
-  LOCK(__mmalloc_current_heap);
-  void *ret = mmalloc(__mmalloc_current_heap, total_size);
-  UNLOCK(__mmalloc_current_heap);
+  LOCK(mdp);
+  void *ret = mmalloc(mdp, total_size);
+  UNLOCK(mdp);
 
   /* Fill the allocated memory with zeroes to mimic calloc behaviour */
   memset(ret, '\0', total_size);
@@ -56,30 +58,32 @@ void *calloc(size_t nmemb, size_t size)
 void *realloc(void *p, size_t s)
 {
   void *ret = NULL;
+  void *mdp = __mmalloc_current_heap;
 #ifdef HAVE_MMAP
-  if (!__mmalloc_current_heap)
+  if (!mdp)
     mmalloc_preinit();
 #endif
-  LOCK(__mmalloc_current_heap);
+  LOCK(mdp);
   if (s) {
     if (p)
-      ret = mrealloc(__mmalloc_current_heap, p, s);
+      ret = mrealloc(mdp, p, s);
     else
-      ret = mmalloc(__mmalloc_current_heap, s);
+      ret = mmalloc(mdp, s);
   } else {
     if (p)
-      mfree(__mmalloc_current_heap, p);
+      mfree(mdp, p);
   }
-  UNLOCK(__mmalloc_current_heap);
+  UNLOCK(mdp);
 
   return ret;
 }
 
 void free(void *p)
 {
-  LOCK(__mmalloc_current_heap);
-  mfree(__mmalloc_current_heap, p);
-  UNLOCK(__mmalloc_current_heap);
+  void *mdp = __mmalloc_current_heap;
+  LOCK(mdp);
+  mfree(mdp, p);
+  UNLOCK(mdp);
 }
 #endif
 
@@ -97,14 +101,39 @@ void *mmalloc_get_default_md(void)
 
 static void mmalloc_fork_prepare(void)
 {
-  if (__mmalloc_default_mdp)
-    LOCK(__mmalloc_default_mdp);
+  struct mdesc* mdp = NULL;
+  if ((mdp =__mmalloc_default_mdp)){
+    while(mdp){
+      LOCK(mdp);
+      if(mdp->fd >= 0){
+        mdp->refcount++;
+      }
+      mdp = mdp->next_mdesc;
+    }
+  }
 }
 
-static void mmalloc_fork_finish(void)
+static void mmalloc_fork_parent(void)
 {
-  if (__mmalloc_default_mdp)
-    UNLOCK(__mmalloc_default_mdp);
+  struct mdesc* mdp = NULL;
+  if ((mdp =__mmalloc_default_mdp)){
+    while(mdp){
+      if(mdp->fd < 0)
+        UNLOCK(mdp);
+      mdp = mdp->next_mdesc;
+    }
+  }
+}
+
+static void mmalloc_fork_child(void)
+{
+  struct mdesc* mdp = NULL;
+  if ((mdp =__mmalloc_default_mdp)){
+    while(mdp){
+      UNLOCK(mdp);
+      mdp = mdp->next_mdesc;
+    }
+  }
 }
 
 /* Initialize the default malloc descriptor. */
@@ -115,7 +144,7 @@ void mmalloc_preinit(void)
         mmalloc_attach(-1, (char *) sbrk(0) + HEAP_OFFSET);
     /* Fixme? only the default mdp in protected against forks */
     if (xbt_os_thread_atfork(mmalloc_fork_prepare,
-                             mmalloc_fork_finish, mmalloc_fork_finish) != 0)
+                             mmalloc_fork_parent, mmalloc_fork_child) != 0)
       abort();
   }
   xbt_assert(__mmalloc_default_mdp != NULL);

@@ -71,8 +71,6 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->refcount = 1;
   simdata->sender = NULL;
   simdata->receiver = NULL;
-  simdata->cond = SIMIX_cond_init();
-  simdata->mutex = SIMIX_mutex_init();
   simdata->compute = NULL;
   simdata->comm = NULL;
 
@@ -184,12 +182,9 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   if (task->name)
     free(task->name);
 
-  SIMIX_cond_destroy(task->simdata->cond);
-  SIMIX_mutex_destroy(task->simdata->mutex);
-
   action = task->simdata->compute;
   if (action)
-    SIMIX_action_destroy(action);
+    SIMIX_req_host_execution_destroy(action);
 
   /* parallel tasks only */
   if (task->simdata->host_list)
@@ -213,11 +208,11 @@ MSG_error_t MSG_task_cancel(m_task_t task)
   xbt_assert0((task != NULL), "Invalid parameter");
 
   if (task->simdata->compute) {
-    SIMIX_action_cancel(task->simdata->compute);
+    SIMIX_req_host_execution_cancel(task->simdata->compute);
     return MSG_OK;
   }
   if (task->simdata->comm) {
-    SIMIX_communication_cancel(task->simdata->comm);
+    SIMIX_req_comm_cancel(task->simdata->comm);
     return MSG_OK;
   }
   THROW_IMPOSSIBLE;
@@ -258,7 +253,7 @@ double MSG_task_get_remaining_computation(m_task_t task)
               && (task->simdata != NULL), "Invalid parameter");
 
   if (task->simdata->compute) {
-    return SIMIX_action_get_remains(task->simdata->compute);
+    return SIMIX_req_host_execution_get_remains(task->simdata->compute);
   } else {
     return task->simdata->computation_amount;
   }
@@ -274,16 +269,9 @@ double MSG_task_get_remaining_communication(m_task_t task)
 {
   xbt_assert0((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
-
-  if(!task->simdata->comm){
-	  DEBUG0("you are trying to retrive remaining information on a NULL action, assuming it is zero");
-	  return 0;
-  }else{
-	  DEBUG1("calling SIMIX_communication_get_remains(%p)",
-			  task->simdata->comm);
-  }
-
-  return SIMIX_communication_get_remains(task->simdata->comm);
+  DEBUG1("calling SIMIX_req_communication_get_remains(%p)",
+         task->simdata->comm);
+  return SIMIX_req_comm_get_remains(task->simdata->comm);
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
@@ -295,9 +283,9 @@ int MSG_task_is_latency_bounded(m_task_t task)
 {
   xbt_assert0((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
-  DEBUG1("calling SIMIX_communication_is_latency_bounded(%p)",
+  DEBUG1("calling SIMIX_req_communication_is_latency_bounded(%p)",
          task->simdata->comm);
-  return SIMIX_communication_is_latency_bounded(task->simdata->comm);
+  return SIMIX_req_comm_is_latency_bounded(task->simdata->comm);
 }
 #endif
 
@@ -328,6 +316,6 @@ void MSG_task_set_priority(m_task_t task, double priority)
 
   task->simdata->priority = 1 / priority;
   if (task->simdata->compute)
-    SIMIX_action_set_priority(task->simdata->compute,
-                              task->simdata->priority);
+    SIMIX_req_host_execution_set_priority(task->simdata->compute,
+                                      task->simdata->priority);
 }

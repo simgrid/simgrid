@@ -73,12 +73,12 @@ void smpi_mpi_start(MPI_Request request)
     smpi_process_post_recv(request);
     print_request("New recv", request);
     request->pair =
-        SIMIX_network_irecv(request->rdv, request->buf, &request->size);
+        SIMIX_req_comm_irecv(request->rdv, request->buf, &request->size);
   } else {
     smpi_process_post_send(request->comm, request);     // FIXME
     print_request("New send", request);
     request->pair =
-        SIMIX_network_isend(request->rdv, request->size, -1.0,
+        SIMIX_req_comm_isend(request->rdv, request->size, -1.0,
                             request->buf, request->size, NULL);
   }
 }
@@ -187,12 +187,12 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     status->MPI_SOURCE = (*request)->src;
     status->MPI_TAG = (*request)->tag;
     status->MPI_ERROR = MPI_SUCCESS;
-    status->count = SIMIX_communication_get_dst_buf_size((*request)->pair);
+    status->count = SIMIX_req_comm_get_dst_buff_size((*request)->pair);
   }
-  SIMIX_communication_destroy((*request)->pair);
+  SIMIX_req_comm_destroy((*request)->pair);
   print_request("finishing wait", *request);
   if ((*request)->complete == 1) {
-    SIMIX_rdv_destroy((*request)->rdv);
+    SIMIX_req_rdv_destroy((*request)->rdv);
   } else {
     (*request)->match->complete = 1;
     (*request)->match->match = MPI_REQUEST_NULL;
@@ -236,7 +236,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
 void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
 {
   print_request("wait", *request);
-  SIMIX_network_wait((*request)->pair, -1.0);
+  SIMIX_req_comm_wait((*request)->pair, -1.0);
   finish_wait(request, status);
 }
 
@@ -259,7 +259,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
     }
     if (index == MPI_UNDEFINED) {
       // Otherwise, wait for a request to complete
-      comms = xbt_dynar_new(sizeof(smx_comm_t), NULL);
+      comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
       map = xbt_new(int, count);
       size = 0;
       DEBUG0("Wait for one of");
@@ -272,7 +272,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
         }
       }
       if (size > 0) {
-        index = SIMIX_network_waitany(comms);
+        index = SIMIX_req_comm_waitany(comms);
         index = map[index];
         finish_wait(&requests[index], status);
       }

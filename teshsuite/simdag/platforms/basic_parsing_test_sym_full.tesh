@@ -1,6 +1,6 @@
 #! ./tesh
-$ ./basic_parsing_test one_cluster_fullduplex.xml FULL_LINK
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./basic_parsing_test one_cluster_fullduplex.xml FULL_LINK --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 5, link number: 14
 > Route between bob3.hamburger.edu and bob3.hamburger.edu
 > 	Route size 3
@@ -153,8 +153,8 @@ $ ./basic_parsing_test one_cluster_fullduplex.xml FULL_LINK
 > 	Link bob_cluster_link_6_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 > 	Route latency = 0.000600, route bandwidth = 125000000.000000
 
-$ ./basic_parsing_test two_clusters_symmetric.xml FULL_LINK
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./basic_parsing_test two_clusters_symmetric.xml FULL_LINK --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 4, link number: 10
 > Route between bob1.hamburger.edu and bob1.hamburger.edu
 > 	Route size 3
@@ -285,8 +285,8 @@ $ ./basic_parsing_test two_clusters_symmetric.xml FULL_LINK
 > 	Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
 > 	Route latency = 0.000600, route bandwidth = 125000000.000000
 
-$ ./basic_parsing_test two_hosts_one_link_symmetrical.xml FULL_LINK
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./basic_parsing_test two_hosts_one_link_symmetrical.xml FULL_LINK --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 2, link number: 4
 > Route between alice and alice
 > 	Route size 1
@@ -309,8 +309,8 @@ $ ./basic_parsing_test two_hosts_one_link_symmetrical.xml FULL_LINK
 > 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
 > 	Route latency = 0.000015, route bandwidth = 498000000.000000
 
-$ ./basic_parsing_test two_hosts_one_link_fullduplex.xml FULL_LINK
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./basic_parsing_test two_hosts_one_link_fullduplex.xml FULL_LINK --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 2, link number: 3
 > Route between alice and alice
 > 	Route size 1

@@ -27,8 +27,8 @@ void gras_agent_spawn(const char *name,
                       xbt_dict_t properties)
 {
 
-  SIMIX_process_create(name, code, NULL,
-                       gras_os_myname(), argc, argv, properties);
+  SIMIX_req_process_create(name, code, NULL,
+                           gras_os_myname(), argc, argv, properties);
 }
 
 /* **************************************************************************
@@ -38,27 +38,26 @@ void gras_agent_spawn(const char *name,
 void gras_process_init()
 {
   gras_hostdata_t *hd =
-      (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
+      (gras_hostdata_t *) SIMIX_host_self_get_data();
   gras_procdata_t *pd = xbt_new0(gras_procdata_t, 1);
   gras_trp_procdata_t trp_pd;
-
-  SIMIX_process_set_data(SIMIX_process_self(), (void *) pd);
-
-
-  gras_procdata_init();
+  long int pid = PID++; /* make sure the first process gets the first id */
 
   if (!hd) {
-    /* First process on this host */
+    /* First process on this host (FIXME: does not work if the SIMIX user contexts are truly parallel) */
     hd = xbt_new(gras_hostdata_t, 1);
     hd->refcount = 1;
     hd->ports = xbt_dynar_new(sizeof(gras_sg_portrec_t), NULL);
-    SIMIX_host_set_data(SIMIX_host_self(), (void *) hd);
+    SIMIX_host_self_set_data((void *) hd);
   } else {
     hd->refcount++;
   }
 
+  SIMIX_process_self_set_data((void *) pd);
+  gras_procdata_init();
+
   trp_pd = (gras_trp_procdata_t) gras_libdata_by_name("gras_trp");
-  pd->pid = PID++;
+  pd->pid = pid;
 
   if (SIMIX_process_self() != NULL) {
     pd->ppid = gras_os_getpid();
@@ -70,8 +69,8 @@ void gras_process_init()
   trp_pd->meas_selectable_sockets =
       xbt_queue_new(0, sizeof(gras_socket_t));
 
-  VERB2("Creating process '%s' (%d)",
-        SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid());
+  VERB2("Creating process '%s' (%d)", SIMIX_process_self_get_name(),
+      gras_os_getpid());
 }
 
 void gras_process_exit()
@@ -81,9 +80,9 @@ void gras_process_exit()
   gras_socket_t sock_iter;
   unsigned int cursor;
   gras_hostdata_t *hd =
-      (gras_hostdata_t *) SIMIX_host_get_data(SIMIX_host_self());
+      (gras_hostdata_t *) SIMIX_host_self_get_data();
   gras_procdata_t *pd =
-      (gras_procdata_t *) SIMIX_process_get_data(SIMIX_process_self());
+      (gras_procdata_t *) SIMIX_req_process_get_data(SIMIX_process_self());
 
   gras_msg_procdata_t msg_pd =
       (gras_msg_procdata_t) gras_libdata_by_name("gras_msg");
@@ -98,7 +97,7 @@ void gras_process_exit()
   xbt_assert0(hd, "Run gras_process_init (ie, gras_init)!!");
 
   VERB2("GRAS: Finalizing process '%s' (%d)",
-        SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid());
+        SIMIX_req_process_get_name(SIMIX_process_self()), gras_os_getpid());
 
   if (xbt_dynar_length(msg_pd->msg_queue)) {
     unsigned int cpt;
@@ -137,7 +136,7 @@ void gras_process_exit()
 gras_procdata_t *gras_procdata_get(void)
 {
   gras_procdata_t *pd =
-      (gras_procdata_t *) SIMIX_process_get_data(SIMIX_process_self());
+      (gras_procdata_t *) SIMIX_req_process_get_data(SIMIX_process_self());
 
   xbt_assert0(pd, "Run gras_process_init! (ie, gras_init)");
 
@@ -146,12 +145,12 @@ gras_procdata_t *gras_procdata_get(void)
 
 void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p)
 {
-  gras_procdata_t *pd = (gras_procdata_t *) SIMIX_process_get_data(p);
+  gras_procdata_t *pd = (gras_procdata_t *) SIMIX_req_process_get_data(p);
 
   xbt_assert2(pd,
               "process '%s' on '%s' didn't run gras_process_init! (ie, gras_init)",
-              SIMIX_process_get_name(p),
-              SIMIX_host_get_name(SIMIX_process_get_host(p)));
+              SIMIX_req_process_get_name(p),
+              SIMIX_req_host_get_name(SIMIX_req_process_get_host(p)));
 
   return gras_libdata_by_name_from_procdata(name, pd);
 }
@@ -159,9 +158,8 @@ void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p)
 /** @brief retrieve the value of a given process property (or NULL if not defined) */
 const char *gras_process_property_value(const char *name)
 {
-  return xbt_dict_get_or_null(
-               SIMIX_process_get_properties(SIMIX_process_self()), 
-                                            name);
+  return xbt_dict_get_or_null(SIMIX_req_process_get_properties
+                             (SIMIX_process_self()), name);
 }
 
 /** @brief retrieve the process properties dictionnary
@@ -169,40 +167,20 @@ const char *gras_process_property_value(const char *name)
  */
 xbt_dict_t gras_process_properties(void)
 {
-  return SIMIX_process_get_properties(SIMIX_process_self());
+  return SIMIX_req_process_get_properties(SIMIX_process_self());
 }
 
 /* **************************************************************************
  * OS virtualization function
  * **************************************************************************/
 
-const char *xbt_procname(void)
-{
-  smx_process_t process = SIMIX_process_self();
-  /*FIXME: maestro used not have a simix process, now it does so 
-     SIMIX_process_self will return something different to NULL. This breaks
-     the old xbt_log logic that assumed that NULL was equivalent to maestro,
-     thus when printing it searches for maestro host name (which doesn't exists)
-     and breaks the logging.
-     As a hack we check for maestro by looking to the assigned host, if it is
-     NULL then we are sure is maestro
-   */
-  if (process != NULL && SIMIX_process_get_host(process))
-    return SIMIX_process_get_name(process);
-
-  return "";
-}
 
 int gras_os_getpid(void)
 {
   gras_procdata_t *data;
-  smx_process_t process = SIMIX_process_self();
-
-  if (process != NULL) {
-    data = (gras_procdata_t *) SIMIX_process_get_data(process);
-    if (data != NULL)
-      return data->pid;
-  }
+  data = (gras_procdata_t *) SIMIX_process_self_get_data();
+  if (data != NULL)
+    return data->pid;
 
   return 0;
 }
@@ -211,8 +189,8 @@ int gras_os_getpid(void)
 const char *gras_os_host_property_value(const char *name)
 {
   return
-      xbt_dict_get_or_null(SIMIX_host_get_properties
-                           (SIMIX_process_get_host(SIMIX_process_self())),
+      xbt_dict_get_or_null(SIMIX_req_host_get_properties
+                           (SIMIX_req_process_get_host(SIMIX_process_self())),
                            name);
 }
 
@@ -222,7 +200,7 @@ const char *gras_os_host_property_value(const char *name)
 xbt_dict_t gras_os_host_properties(void)
 {
   return
-      SIMIX_host_get_properties(SIMIX_process_get_host
+      SIMIX_req_host_get_properties(SIMIX_req_process_get_host
                                 (SIMIX_process_self()));
 }
 
@@ -260,9 +238,7 @@ void gras_main()
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
-  SIMIX_init();
-
-  while (SIMIX_solve(NULL, NULL) != -1.0);
+  SIMIX_run();
 
   return;
 }

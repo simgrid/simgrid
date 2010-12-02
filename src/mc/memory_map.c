@@ -66,17 +66,31 @@ memory_map_t get_memory_map(void)
     if (strlen(lfields[1]) < 4)
       xbt_abort();
 
-    memreg.perms = 0;
+    memreg.prot = 0;
 
-    for (i = 0; i < 3; i++)
-      if (lfields[1][i] != '-')
-        memreg.perms |= 1 << i;
+    for (i = 0; i < 3; i++){
+      switch(lfields[1][i]){
+        case 'r':
+          memreg.prot |= PROT_READ;
+          break;
+        case 'w':
+          memreg.prot |= PROT_WRITE;
+          break;
+        case 'x':
+          memreg.prot |= PROT_EXEC;
+          break;
+        default:
+          break;
+      }
+    }
+    if (memreg.prot == 0)
+      memreg.prot |= PROT_NONE;
 
     if (lfields[1][4] == 'p')
-      memreg.perms |= MAP_PRIV;
+      memreg.flags |= MAP_PRIVATE;
 
     else if (lfields[1][4] == 's')
-      memreg.perms |= MAP_SHARED;
+      memreg.flags |= MAP_SHARED;
 
     /* Get the offset value */
     memreg.offset = (void *) strtoul(lfields[2], &endptr, 16);

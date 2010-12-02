@@ -66,7 +66,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mecanism");
 
 /* default __ex_ctx callback function */
-ex_ctx_t *__xbt_ex_ctx_default(void)
+xbt_running_ctx_t *__xbt_ex_ctx_default(void)
 {
   /* Don't scream: this is a default which is never used (so, yes,
      there is one setjump container by running entity).
@@ -78,7 +78,7 @@ ex_ctx_t *__xbt_ex_ctx_default(void)
      It also gets overriden in xbt/context.c when using ucontextes (as well as
      in Java for now, but after the java overhaul, it will get cleaned out)
    */
-  static ex_ctx_t ctx = XBT_CTX_INITIALIZER;
+  static xbt_running_ctx_t ctx = XBT_RUNNING_CTX_INITIALIZER;
 
   return &ctx;
 }
@@ -174,7 +174,7 @@ void __xbt_ex_terminate_default(xbt_ex_t * e)
 }
 
 /* the externally visible API */
-XBT_EXPORT_NO_IMPORT(ex_ctx_cb_t) __xbt_ex_ctx = &__xbt_ex_ctx_default;
+XBT_EXPORT_NO_IMPORT(xbt_running_ctx_fetcher_t) __xbt_running_ctx_fetch = &__xbt_ex_ctx_default;
 XBT_EXPORT_NO_IMPORT(ex_term_cb_t) __xbt_ex_terminate =
     &__xbt_ex_terminate_default;
 

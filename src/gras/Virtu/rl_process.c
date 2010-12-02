@@ -116,7 +116,7 @@ void gras_agent_spawn(const char *name,
   args->argc=argc;
   args->argv=argv;
   args->code=code;
-  xbt_os_thread_create(name,spawner_wrapper,args);
+  xbt_os_thread_create(name,spawner_wrapper,args, NULL);
 }
 
 /* **************************************************************************

@@ -1,5 +1,6 @@
-$ msg/get_sender ${srcdir:=.}/msg/get_sender.xml
-> [toto:send:(1) 0.000000] [test/INFO] Sending
-> [toto:receive:(2) 0.000000] [test/INFO] Receiving
-> [toto:receive:(2) 0.000000] [test/INFO] Got a message sent by 'send'
-> [toto:send:(1) 1.000000] [test/INFO] Exiting
+! output sort
+$ msg/get_sender ${srcdir:=.}/msg/get_sender.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (1:send@toto) Sending
+> [  0.000000] (2:receive@toto) Receiving
+> [  0.000000] (2:receive@toto) Got a message sent by 'send'
+> [  1.000000] (1:send@toto) Exiting

@@ -2,15 +2,16 @@
 
 p Testing a MSG application with properties in the XML for Hosts, Links and Processes
 
-$ $SG_TEST_EXENV properties/msg_prop$EXEEXT ${srcdir:=.}/../platforms/prop.xml ${srcdir:=.}/properties/deployment_properties.xml 
-> [host1:alice:(1) 0.000000] [test/INFO] == Print the properties of the host
-> [host1:alice:(1) 0.000000] [test/INFO]   Host property: 'SG_TEST_Hdd' -> '180'
-> [host1:alice:(1) 0.000000] [test/INFO]   Host property: 'SG_TEST_mem' -> '4'
-> [host1:alice:(1) 0.000000] [test/INFO] == Try to get a host property that does not exist
-> [host1:alice:(1) 0.000000] [test/INFO] == Try to get a host property that does exist
-> [host1:alice:(1) 0.000000] [test/INFO]    Property: SG_TEST_Hdd old value: 180
-> [host1:alice:(1) 0.000000] [test/INFO] == Trying to modify a host property
-> [host1:alice:(1) 0.000000] [test/INFO]    Property: SG_TEST_Hdd old value: 250
-> [host1:bob:(2) 0.000000] [test/INFO] == Print the properties of the process
-> [host1:bob:(2) 0.000000] [test/INFO]    Process property: SomeProp -> SomeValue
-> [host1:bob:(2) 0.000000] [test/INFO] == Try to get a process property that does not exist
+! output sort
+$ $SG_TEST_EXENV properties/msg_prop$EXEEXT ${srcdir:=.}/../platforms/prop.xml ${srcdir:=.}/properties/deployment_properties.xml  --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (1:alice@host1) == Print the properties of the host
+> [  0.000000] (1:alice@host1)   Host property: 'SG_TEST_Hdd' -> '180'
+> [  0.000000] (1:alice@host1)   Host property: 'SG_TEST_mem' -> '4'
+> [  0.000000] (1:alice@host1) == Try to get a host property that does not exist
+> [  0.000000] (1:alice@host1) == Try to get a host property that does exist
+> [  0.000000] (1:alice@host1)    Property: SG_TEST_Hdd old value: 180
+> [  0.000000] (1:alice@host1) == Trying to modify a host property
+> [  0.000000] (1:alice@host1)    Property: SG_TEST_Hdd old value: 250
+> [  0.000000] (2:bob@host1) == Print the properties of the process
+> [  0.000000] (2:bob@host1)    Process property: SomeProp -> SomeValue
+> [  0.000000] (2:bob@host1) == Try to get a process property that does not exist

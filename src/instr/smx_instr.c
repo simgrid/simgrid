@@ -10,7 +10,7 @@
 
 static long long int counter = 0;       /* to uniquely identify simix actions */
 
-void TRACE_smx_action_execute(smx_action_t act)
+void TRACE_smx_host_execute(smx_action_t act)
 {
   char *category = NULL;
   if (!IS_TRACING)

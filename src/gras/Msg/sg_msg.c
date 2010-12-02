@@ -41,11 +41,17 @@ int gras_socket_im_the_server(gras_socket_t sock) {
   smx_process_t server_listener_process=NULL;
   smx_process_t client_listener_process = NULL;
 
+  VERB4("Am I the server of socket %p (client = %p, server = %p) ? process self: %p", sock, sock_data->client, sock_data->server, SIMIX_process_self());
 
-  if (sock_data->server == SIMIX_process_self())
+  if (sock_data->server == SIMIX_process_self()) {
+    VERB0("I am the server");
     return 1;
-  if (sock_data->client == SIMIX_process_self())
+  }
+  if (sock_data->client == SIMIX_process_self()) {
+    VERB0("I am the client");
     return 0;
+  }
+  VERB0("I am neither the client nor the server, probably a listener");
 
   /* neither the client nor the server. Check their respective listeners */
   pd = ((gras_procdata_t*)SIMIX_process_get_data(sock_data->server));
@@ -53,8 +59,10 @@ int gras_socket_im_the_server(gras_socket_t sock) {
   if (l) {
     listener_thread = ((fake_gras_msg_listener_t)l)->listener;
     server_listener_process = ((fake_xbt_thread_t)listener_thread)->s_process;
-    if (server_listener_process == SIMIX_process_self())
+    if (server_listener_process == SIMIX_process_self()) {
+      VERB0("I am the listener of the server");
       return 1;
+    }
   }
 
   if (sock_data->client) {
@@ -63,8 +71,10 @@ int gras_socket_im_the_server(gras_socket_t sock) {
     if (l) {
       listener_thread = ((fake_gras_msg_listener_t)l)->listener;
       client_listener_process = ((fake_xbt_thread_t)listener_thread)->s_process;
-      if (client_listener_process == SIMIX_process_self())
+      if (client_listener_process == SIMIX_process_self()) {
+	VERB0("I am the listener of the client");
         return 0;
+      }
     }
   }
   /* THAT'S BAD! I should be either client or server of the sockets I get messages on!! */
@@ -90,10 +100,10 @@ gras_msg_t gras_msg_recv_any(void)
       (gras_trp_procdata_t) gras_libdata_by_name("gras_trp");
   gras_msg_t msg;
   /* Build a dynar of all communications I could get something from */
-  xbt_dynar_t comms = xbt_dynar_new(sizeof(smx_comm_t), NULL);
+  xbt_dynar_t comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
   unsigned int cursor = 0;
   int got = 0;
-  smx_comm_t comm = NULL;
+  smx_action_t comm = NULL;
   gras_socket_t sock = NULL;
   gras_trp_sg_sock_data_t sock_data;
   xbt_dynar_foreach(trp_proc->sockets, cursor, sock) {
@@ -142,8 +152,8 @@ gras_msg_t gras_msg_recv_any(void)
                 sock);
     /* End of paranoia */
 
-    VERB4("Consider receiving messages from on comm_recv %p (%s) rdv:%p (other rdv:%p)",
-          sock_data->comm_recv, sock_data->comm_recv->type == comm_send? "send":"recv",
+    VERB3("Consider receiving messages from on comm_recv %p rdv:%p (other rdv:%p)",
+          sock_data->comm_recv,
           gras_socket_im_the_server(sock)?
               sock_data->rdv_server : sock_data->rdv_client,
           gras_socket_im_the_server(sock)?
@@ -152,16 +162,16 @@ gras_msg_t gras_msg_recv_any(void)
   }
   VERB1("Wait on %ld 'sockets'", xbt_dynar_length(comms));
   /* Wait for the end of any of these communications */
-  got = SIMIX_network_waitany(comms);
+  got = SIMIX_req_comm_waitany(comms);
 
   /* retrieve the message sent in that communication */
   xbt_dynar_get_cpy(comms, got, &(comm));
-  msg = SIMIX_communication_get_data(comm);
+  msg = SIMIX_req_comm_get_data(comm);
   sock = xbt_dynar_get_as(trp_proc->sockets, got, gras_socket_t);
   sock_data = (gras_trp_sg_sock_data_t) sock->data;
   VERB3("Got something. Communication %p's over rdv_server=%p, rdv_client=%p",
       comm,sock_data->rdv_server,sock_data->rdv_client);
-  SIMIX_communication_destroy(comm);
+  SIMIX_req_comm_destroy(comm);
 
   /* Reinstall a waiting communication on that rdv */
 /*  xbt_dynar_foreach(trp_proc->sockets,cursor,sock) {
@@ -171,7 +181,7 @@ gras_msg_t gras_msg_recv_any(void)
   }
   */
   sock_data->comm_recv =
-      SIMIX_network_irecv(gras_socket_im_the_server(sock) ?
+      SIMIX_req_comm_irecv(gras_socket_im_the_server(sock) ?
                           sock_data->rdv_server : sock_data->rdv_client,
                           NULL, 0);
 
@@ -187,7 +197,7 @@ void gras_msg_send_ext(gras_socket_t sock,
   int whole_payload_size = 0;   /* msg->payload_size is used to memcpy the payload.
                                    This is used to report the load onto the simulator. It also counts the size of pointed stuff */
   gras_msg_t msg;               /* message to send */
-  smx_comm_t comm;
+  smx_action_t comm;
   gras_trp_sg_sock_data_t sock_data = (gras_trp_sg_sock_data_t) sock->data;
 
   smx_rdv_t target_rdv =
@@ -231,8 +241,8 @@ void gras_msg_send_ext(gras_socket_t sock,
                                                 payload, msg->payl);
   }
 
-  SIMIX_network_send(target_rdv, whole_payload_size, -1, -1, &msg,
-                     sizeof(void *), &comm, msg);
+  comm = SIMIX_req_comm_isend(target_rdv, whole_payload_size, -1, &msg, sizeof(void *), msg);
+  SIMIX_req_comm_wait(comm, -1);
 
   VERB0("Message sent (and received)");
 

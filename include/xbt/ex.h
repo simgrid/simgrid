@@ -259,6 +259,7 @@ typedef enum {
   system_error,   /**< a syscall did fail */
   network_error,  /**< error while sending/receiving data */
   timeout_error,  /**< not quick enough, dude */
+  cancel_error,   /**< an action was canceled */
   thread_error,    /**< error while [un]locking */
   host_error,                            /**< host failed */
   tracing_error   /**< error during the simulation tracing */
@@ -289,50 +290,53 @@ typedef struct {
   void *bt[XBT_BACKTRACE_SIZE];
 } xbt_ex_t;
 
-/* declare the context type (private) */
+/* declare the running context type
+ * (that's where we get the process name for the logs and the exception storage)
+ *  -- do not mess with it --
+ */
 typedef struct {
   __ex_mctx_t *ctx_mctx;        /* permanent machine context of enclosing try/catch */
   volatile int ctx_caught;      /* temporary flag whether exception was caught */
-  volatile xbt_ex_t ctx_ex;     /* temporary exception storage */
-} ex_ctx_t;
+  volatile xbt_ex_t exception;  /* temporary exception storage */
+} xbt_running_ctx_t;
 
 /* the static and dynamic initializers for a context structure */
-#define XBT_CTX_INITIALIZER \
+#define XBT_RUNNING_CTX_INITIALIZER \
     { NULL, 0, { /* content */ NULL, unknown_error, 0, \
                  /* throw point*/ 0,NULL, NULL,0, NULL, 0, NULL,\
                  /* backtrace */ 0,NULL,{NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL} } }
-#define XBT_CTX_INITIALIZE(ctx) \
+#define XBT_RUNNING_CTX_INITIALIZE(ctx) \
     do { \
         (ctx)->ctx_mctx          = NULL; \
         (ctx)->ctx_caught        = 0;    \
-        (ctx)->ctx_ex.msg        = NULL; \
-        (ctx)->ctx_ex.category   = 0;    \
-        (ctx)->ctx_ex.value      = 0;    \
-        (ctx)->ctx_ex.remote     = 0;    \
-        (ctx)->ctx_ex.host       = NULL; \
-        (ctx)->ctx_ex.procname   = NULL; \
-        (ctx)->ctx_ex.pid        = 0;    \
-        (ctx)->ctx_ex.file       = NULL; \
-        (ctx)->ctx_ex.line       = 0;    \
-        (ctx)->ctx_ex.func       = NULL; \
-        (ctx)->ctx_ex.bt[0]      = NULL; \
-        (ctx)->ctx_ex.bt[1]      = NULL; \
-        (ctx)->ctx_ex.bt[2]      = NULL; \
-        (ctx)->ctx_ex.bt[3]      = NULL; \
-        (ctx)->ctx_ex.bt[4]      = NULL; \
-        (ctx)->ctx_ex.bt[5]      = NULL; \
-        (ctx)->ctx_ex.bt[6]      = NULL; \
-        (ctx)->ctx_ex.bt[7]      = NULL; \
-        (ctx)->ctx_ex.bt[8]      = NULL; \
-        (ctx)->ctx_ex.bt[9]      = NULL; \
-        (ctx)->ctx_ex.used       = 0; \
-        (ctx)->ctx_ex.bt_strings = NULL; \
+        (ctx)->exception.msg        = NULL; \
+        (ctx)->exception.category   = 0;    \
+        (ctx)->exception.value      = 0;    \
+        (ctx)->exception.remote     = 0;    \
+        (ctx)->exception.host       = NULL; \
+        (ctx)->exception.procname   = NULL; \
+        (ctx)->exception.pid        = 0;    \
+        (ctx)->exception.file       = NULL; \
+        (ctx)->exception.line       = 0;    \
+        (ctx)->exception.func       = NULL; \
+        (ctx)->exception.bt[0]      = NULL; \
+        (ctx)->exception.bt[1]      = NULL; \
+        (ctx)->exception.bt[2]      = NULL; \
+        (ctx)->exception.bt[3]      = NULL; \
+        (ctx)->exception.bt[4]      = NULL; \
+        (ctx)->exception.bt[5]      = NULL; \
+        (ctx)->exception.bt[6]      = NULL; \
+        (ctx)->exception.bt[7]      = NULL; \
+        (ctx)->exception.bt[8]      = NULL; \
+        (ctx)->exception.bt[9]      = NULL; \
+        (ctx)->exception.used       = 0; \
+        (ctx)->exception.bt_strings = NULL; \
     } while (0)
 
 /* the exception context */
-typedef ex_ctx_t *(*ex_ctx_cb_t) (void);
-XBT_PUBLIC_DATA(ex_ctx_cb_t) __xbt_ex_ctx;
-extern ex_ctx_t *__xbt_ex_ctx_default(void);
+typedef xbt_running_ctx_t *(*xbt_running_ctx_fetcher_t) (void);
+XBT_PUBLIC_DATA(xbt_running_ctx_fetcher_t) __xbt_running_ctx_fetch;
+extern xbt_running_ctx_t *__xbt_ex_ctx_default(void);
 
 /* the termination handler */
 typedef void (*ex_term_cb_t) (xbt_ex_t *);
@@ -344,7 +348,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
  */
 #define TRY \
     { \
-        ex_ctx_t *__xbt_ex_ctx_ptr = __xbt_ex_ctx(); \
+        xbt_running_ctx_t *__xbt_ex_ctx_ptr = __xbt_running_ctx_fetch(); \
         int __ex_cleanup = 0; \
         __ex_mctx_t *__ex_mctx_en; \
         __ex_mctx_t __ex_mctx_me; \
@@ -393,18 +397,18 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
         } \
         __xbt_ex_ctx_ptr->ctx_mctx = __ex_mctx_en; \
     } \
-    if (   !(__xbt_ex_ctx()->ctx_caught) \
-        || ((e) = XBT_EX_T_CPLUSPLUSCAST __xbt_ex_ctx()->ctx_ex, MAYDAY_CATCH(e) 0)) { \
+    if (   !(__xbt_running_ctx_fetch()->ctx_caught) \
+        || ((e) = XBT_EX_T_CPLUSPLUSCAST __xbt_running_ctx_fetch()->exception, MAYDAY_CATCH(e) 0)) { \
     } \
     else
 
-#define DO_THROW(e) \
-     /* deal with the exception */                                             \
-     if (__xbt_ex_ctx()->ctx_mctx == NULL)                                     \
-       __xbt_ex_terminate((xbt_ex_t *)&(e)); /* not catched */\
-     else                                                                      \
-       __ex_mctx_restore(__xbt_ex_ctx()->ctx_mctx); /* catched somewhere */    \
-     abort()                    /* nope, stupid GCC, we won't survive a THROW (this won't be reached) */
+#define DO_THROW(running_ctx) \
+     /* deal with the exception */                                                     \
+     if (running_ctx->ctx_mctx == NULL)                                                \
+       __xbt_ex_terminate((xbt_ex_t*)&(running_ctx->exception)); /* not catched */     \
+     else                                                                              \
+       __ex_mctx_restore(running_ctx->ctx_mctx); /* catched somewhere */               \
+     abort()  /* nope, stupid GCC, we won't survive a THROW (this won't be reached) */
 
 /** @brief Helper macro for THROWS0-6
  *  @hideinitializer
@@ -425,24 +429,23 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
  */
 
 #define _THROW(c,v,m) \
-  do { /* change this sequence into one block */                          \
-     ex_ctx_t *_throw_ctx = __xbt_ex_ctx();                               \
-     /* build the exception */                                            \
-     _throw_ctx->ctx_ex.msg      = (m);                                   \
-     _throw_ctx->ctx_ex.category = (xbt_errcat_t)(c);                     \
-     _throw_ctx->ctx_ex.value    = (v);                                   \
-     _throw_ctx->ctx_ex.remote   = 0;                                     \
-     _throw_ctx->ctx_ex.host     = (char*)NULL;                           \
-     _throw_ctx->ctx_ex.procname = (char*)xbt_procname();                 \
-     _throw_ctx->ctx_ex.pid      = (*xbt_getpid)();                       \
-     _throw_ctx->ctx_ex.file     = (char*)__FILE__;                       \
-     _throw_ctx->ctx_ex.line     = __LINE__;                              \
-     _throw_ctx->ctx_ex.func     = (char*)_XBT_FUNCTION;                  \
-     _throw_ctx->ctx_ex.bt_strings = NULL;                                \
-     xbt_backtrace_current( (xbt_ex_t *) &(_throw_ctx->ctx_ex) );         \
-     DO_THROW(_throw_ctx->ctx_ex);                                        \
+  do { /* change this sequence into one block */                             \
+     xbt_running_ctx_t *_throw_ctx = __xbt_running_ctx_fetch();              \
+     /* build the exception */                                               \
+     _throw_ctx->exception.msg      = (m);                                   \
+     _throw_ctx->exception.category = (xbt_errcat_t)(c);                     \
+     _throw_ctx->exception.value    = (v);                                   \
+     _throw_ctx->exception.remote   = 0;                                     \
+     _throw_ctx->exception.host     = (char*)NULL;                           \
+     _throw_ctx->exception.procname = (char*)xbt_procname();                 \
+     _throw_ctx->exception.pid      = (*xbt_getpid)();                       \
+     _throw_ctx->exception.file     = (char*)__FILE__;                       \
+     _throw_ctx->exception.line     = __LINE__;                              \
+     _throw_ctx->exception.func     = (char*)_XBT_FUNCTION;                  \
+     _throw_ctx->exception.bt_strings = NULL;                                \
+     xbt_backtrace_current( (xbt_ex_t *) &(_throw_ctx->exception) );         \
+     DO_THROW(_throw_ctx);                                                   \
   } while (0)
-/*     __xbt_ex_ctx()->ctx_ex.used     = backtrace((void**)__xbt_ex_ctx()->ctx_ex.bt,XBT_BACKTRACE_SIZE); */
 
 /** @brief Builds and throws an exception with a string taking no arguments
     @hideinitializer */
@@ -483,10 +486,11 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
  */
 #define RETHROW \
   do { \
-   if (__xbt_ex_ctx()->ctx_mctx == NULL) \
-     __xbt_ex_terminate((xbt_ex_t *)&(__xbt_ex_ctx()->ctx_ex)); \
+   xbt_running_ctx_t *ctx = __xbt_running_ctx_fetch(); \
+   if (ctx->ctx_mctx == NULL) \
+     __xbt_ex_terminate((xbt_ex_t*)&(ctx->exception)); \
    else \
-     __ex_mctx_restore(__xbt_ex_ctx()->ctx_mctx); \
+     __ex_mctx_restore(ctx->ctx_mctx); \
    abort();\
   } while(0)
 
@@ -494,8 +498,8 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
 #ifndef DOXYGEN_SKIP
 #define _XBT_PRE_RETHROW \
   do {                                                               \
-    char *_xbt_ex_internal_msg = __xbt_ex_ctx()->ctx_ex.msg;         \
-    __xbt_ex_ctx()->ctx_ex.msg = bprintf(
+    char *_xbt_ex_internal_msg = __xbt_running_ctx_fetch()->exception.msg;         \
+    __xbt_running_ctx_fetch()->exception.msg = bprintf(
 #define _XBT_POST_RETHROW \
  _xbt_ex_internal_msg); \
     free(_xbt_ex_internal_msg);                                      \

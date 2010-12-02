@@ -168,6 +168,13 @@ static void _surf_cfg_cb_model_check(const char *name, int pos)
   xbt_dict_preinit();
 }
 
+int _surf_parallel_contexts = 0;
+
+static void _surf_cfg_cb_parallel_contexts(const char *name, int pos)
+{
+  _surf_parallel_contexts = 1;
+}
+
 static void _surf_cfg_cb__surf_network_fullduplex(const char *name,
                                                   int pos)
 {
@@ -297,6 +304,13 @@ void surf_config_init(int *argc, char **argv)
        _surf_cfg_cb_model_check which sets it's value to 1 (instead of the defalut value 0)
        xbt_cfg_set_int(_surf_cfg_set, "model-check", default_value_int); */
 
+    /* parallel contexts */
+    default_value_int = 0;
+    xbt_cfg_register(&_surf_cfg_set, "parallel-contexts",
+                     "Activate the parallel execution of user contexts (EXPERIMENTAL -- pthreads only)",
+                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     _surf_cfg_cb_parallel_contexts, NULL);
+
     default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "fullduplex",
                      "Update the constraint set propagating recursively to others constraints",
@@ -350,7 +364,6 @@ void surf_config_models_setup(const char *platform_file)
   int workstation_id = -1;
   char *network_model_name = NULL;
   char *cpu_model_name = NULL;
-  surf_timer_model_init(platform_file);
 
   workstation_model_name =
       xbt_cfg_get_string(_surf_cfg_set, "workstation/model");

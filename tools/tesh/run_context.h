@@ -46,6 +46,7 @@ typedef struct {
   int end_time;                 /* begin_time + timeout, as epoch */
   char *expected_signal;        /* name of signal to raise (or NULL if none) */
   int expected_return;          /* the exepeted return code of following command */
+  int output_sort:1;            /* whether the output must be sorted before comparison */
 
   /* buffers */
   xbt_strbuff_t input;

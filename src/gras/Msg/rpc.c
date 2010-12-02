@@ -189,23 +189,23 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer)
     xbt_ex_t e;
     memcpy(&e, received.payl, received.payl_size);
     free(received.payl);
-    VERB3("Raise a remote exception cat:%d comming from %s (%s)",
+    VERB3("Raise a remote exception cat:%d coming from %s (%s)",
           e.category, e.host, e.msg);
-    __xbt_ex_ctx()->ctx_ex.msg = e.msg;
-    __xbt_ex_ctx()->ctx_ex.category = e.category;
-    __xbt_ex_ctx()->ctx_ex.value = e.value;
-    __xbt_ex_ctx()->ctx_ex.remote = 1;
-    __xbt_ex_ctx()->ctx_ex.host = e.host;
-    __xbt_ex_ctx()->ctx_ex.procname = e.procname;
-    __xbt_ex_ctx()->ctx_ex.pid = e.pid;
-    __xbt_ex_ctx()->ctx_ex.file = e.file;
-    __xbt_ex_ctx()->ctx_ex.line = e.line;
-    __xbt_ex_ctx()->ctx_ex.func = e.func;
-    __xbt_ex_ctx()->ctx_ex.used = e.used;
-    __xbt_ex_ctx()->ctx_ex.bt_strings = e.bt_strings;
-    memset(&__xbt_ex_ctx()->ctx_ex.bt, 0,
-           sizeof(__xbt_ex_ctx()->ctx_ex.bt));
-    DO_THROW(__xbt_ex_ctx()->ctx_ex);
+    __xbt_running_ctx_fetch()->exception.msg = e.msg;
+    __xbt_running_ctx_fetch()->exception.category = e.category;
+    __xbt_running_ctx_fetch()->exception.value = e.value;
+    __xbt_running_ctx_fetch()->exception.remote = 1;
+    __xbt_running_ctx_fetch()->exception.host = e.host;
+    __xbt_running_ctx_fetch()->exception.procname = e.procname;
+    __xbt_running_ctx_fetch()->exception.pid = e.pid;
+    __xbt_running_ctx_fetch()->exception.file = e.file;
+    __xbt_running_ctx_fetch()->exception.line = e.line;
+    __xbt_running_ctx_fetch()->exception.func = e.func;
+    __xbt_running_ctx_fetch()->exception.used = e.used;
+    __xbt_running_ctx_fetch()->exception.bt_strings = e.bt_strings;
+    memset(&__xbt_running_ctx_fetch()->exception.bt, 0,
+           sizeof(__xbt_running_ctx_fetch()->exception.bt));
+    DO_THROW(__xbt_running_ctx_fetch());
   }
   memcpy(answer, received.payl, received.payl_size);
   free(received.payl);

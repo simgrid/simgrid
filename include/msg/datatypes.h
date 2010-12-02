@@ -65,7 +65,7 @@ typedef struct m_task *m_task_t;
 */
 #define MSG_TASK_UNINITIALIZED NULL
 
-typedef struct s_smx_comm *msg_comm_t;
+typedef struct s_smx_action *msg_comm_t;
 /** @} */
 
 
@@ -105,7 +105,7 @@ typedef int m_channel_t;
 
 /* ******************************** Mailbox ************************************ */
 
-typedef struct s_msg_mailbox *msg_mailbox_t;
+typedef struct s_smx_rvpoint *msg_mailbox_t;
 /** @brief Mailbox datatype
     @ingroup m_datatypes_management_details @{ */
 

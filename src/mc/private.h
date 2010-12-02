@@ -10,6 +10,7 @@
 #define MC_PRIVATE_H
 
 #include <stdio.h>
+#include <sys/mman.h>
 #include "mc/mc.h"
 #include "mc/datatypes.h"
 #include "xbt/fifo.h"
@@ -21,25 +22,16 @@
 
 /****************************** Snapshots ***********************************/
 
-/*typedef struct s_mc_process_checkpoint {
-	xbt_checkpoint_t machine_state;  Here we save the cpu + stack 
-} s_mc_process_checkpoint_t, *mc_process_checkpoint_t;*/
-
-typedef struct s_mc_snapshot {
-  size_t heap_size;
-  size_t data_size;
+typedef struct s_mc_mem_region{
+  void *start_addr;
   void *data;
-  void *heap;
+  size_t size;
+} s_mc_mem_region_t, *mc_mem_region_t;
 
+typedef struct s_mc_snapshot{
+  unsigned int num_reg;
+  mc_mem_region_t *regions;
 } s_mc_snapshot_t, *mc_snapshot_t;
-
-extern mc_snapshot_t initial_snapshot;
-
-size_t MC_save_heap(void **);
-void MC_restore_heap(void *, size_t);
-
-size_t MC_save_dataseg(void **);
-void MC_restore_dataseg(void *, size_t);
 
 void MC_take_snapshot(mc_snapshot_t);
 void MC_restore_snapshot(mc_snapshot_t);
@@ -50,91 +42,41 @@ void MC_free_snapshot(mc_snapshot_t);
 /* Bound of the MC depth-first search algorithm */
 #define MAX_DEPTH 1000
 
-extern char mc_replay_mode;
+typedef enum{MC_EXPLORE=0, MC_STOP, MC_DEADLOCK, MC_INVPROP} e_mc_exp_ctl_t;
+
+e_mc_exp_ctl_t *mc_exp_ctl;
 
 void MC_show_stack(xbt_fifo_t stack);
 void MC_dump_stack(xbt_fifo_t stack);
-void MC_execute_surf_actions(void);
 void MC_replay(xbt_fifo_t stack);
-void MC_schedule_enabled_processes(void);
-void MC_dfs_init(void);
+void MC_wait_for_requests(void);
+void MC_get_enabled_processes();
+void MC_show_deadlock(smx_req_t req);
+
+/********************************* Requests ***********************************/
+int MC_request_depend(smx_req_t req1, smx_req_t req2);
+char* MC_request_to_string(smx_req_t req);
+
+/********************************** DPOR **************************************/
 void MC_dpor_init(void);
-void MC_dfs(void);
 void MC_dpor(void);
-void MC_dfs_exit(void);
 void MC_dpor_exit(void);
-
-
-
-/******************************* Transitions **********************************/
-typedef enum {
-  mc_isend,
-  mc_irecv,
-  mc_test,
-  mc_wait,
-  mc_waitany,
-  mc_random
-} mc_trans_type_t;
-
-typedef struct s_mc_transition {
-  XBT_SETSET_HEADERS;
-  char *name;
-  smx_process_t process;
-  mc_trans_type_t type;
-
-  union {
-    struct {
-      smx_rdv_t rdv;
-    } isend;
-
-    struct {
-      smx_rdv_t rdv;
-    } irecv;
-
-    struct {
-      smx_comm_t comm;
-    } wait;
-
-    struct {
-      smx_comm_t comm;
-    } test;
-
-    struct {
-      xbt_dynar_t comms;
-    } waitany;
-
-    struct {
-      int value;
-    } random;
-  };
-} s_mc_transition_t;
-
-mc_transition_t MC_trans_isend_new(smx_rdv_t);
-mc_transition_t MC_trans_irecv_new(smx_rdv_t);
-mc_transition_t MC_trans_wait_new(smx_comm_t);
-mc_transition_t MC_trans_test_new(smx_comm_t);
-mc_transition_t MC_trans_waitany_new(xbt_dynar_t);
-mc_transition_t MC_trans_random_new(int);
-void MC_transition_delete(mc_transition_t);
-int MC_transition_depend(mc_transition_t, mc_transition_t);
-void MC_trans_compute_enabled(xbt_setset_set_t, xbt_setset_set_t);
 
 /******************************** States **************************************/
 typedef struct mc_state {
-  xbt_setset_set_t created_transitions; /* created in this state */
-  xbt_setset_set_t transitions; /* created in this state + inherited */
-  xbt_setset_set_t enabled_transitions; /* they can be executed by the mc */
-  xbt_setset_set_t interleave;  /* the ones to be executed by the mc */
-  xbt_setset_set_t done;        /* already executed transitions */
-  mc_transition_t executed_transition;  /* last executed transition */
+  xbt_setset_set_t interleave;  /* processes to interleave by the mc */
+  xbt_setset_set_t done;        /* already executed processes */
+  s_smx_req_t executed;
 } s_mc_state_t, *mc_state_t;
 
 extern xbt_fifo_t mc_stack;
 extern xbt_setset_t mc_setset;
-extern mc_state_t mc_current_state;
 
 mc_state_t MC_state_new(void);
-void MC_state_delete(mc_state_t);
+void MC_state_delete(mc_state_t state);
+void MC_state_set_executed_request(mc_state_t state, smx_req_t req);
+smx_req_t MC_state_get_executed_request(mc_state_t state);
+smx_req_t MC_state_get_request(mc_state_t state);
 
 /****************************** Statistics ************************************/
 typedef struct mc_stats {
@@ -155,8 +97,20 @@ void MC_print_statistics(mc_stats_t);
 
 extern void *std_heap;
 extern void *raw_heap;
-extern void *libsimgrid_data_addr_start;
-extern size_t libsimgrid_data_size;
+int raw_heap_fd;
+#define STD_HEAP_SIZE   20480000        /* Maximum size of the system's heap */
+
+/* FIXME: Horrible hack! because the mmalloc library doesn't provide yet of */
+/* an API to query about the status of a heap, we simply call mmstats and */
+/* because I now how does structure looks like, then I redefine it here */
+
+struct mstats {
+  size_t bytes_total;           /* Total size of the heap. */
+  size_t chunks_used;           /* Chunks allocated by the user. */
+  size_t bytes_used;            /* Byte total of user-allocated chunks. */
+  size_t chunks_free;           /* Chunks in the free list. */
+  size_t bytes_free;            /* Byte total of chunks in the free list. */
+};
 
 #define MC_SET_RAW_MEM    mmalloc_set_current_heap(raw_heap)
 #define MC_UNSET_RAW_MEM    mmalloc_set_current_heap(std_heap)
@@ -165,18 +119,13 @@ extern size_t libsimgrid_data_size;
 /* These functions and data structures implements a binary interface for   */
 /* the proc maps ascii interface                                           */
 
-#define MAP_READ   1 << 0
-#define MAP_WRITE  1 << 1
-#define MAP_EXEC   1 << 2
-#define MAP_SHARED 1 << 3
-#define MAP_PRIV   1 << 4
-
 /* Each field is defined as documented in proc's manual page  */
 typedef struct s_map_region {
 
   void *start_addr;             /* Start address of the map */
   void *end_addr;               /* End address of the map */
-  int perms;                    /* Set of permissions */
+  int prot;                     /* Memory protection */
+  int flags;                    /* Aditional memory flags */
   void *offset;                 /* Offset in the file/whatever */
   char dev_major;               /* Major of the device */
   char dev_minor;               /* Minor of the device */

@@ -2,22 +2,23 @@
 
 p Testing the surf network maxmin fairness model
 
-$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=workstation/model:CLM03 --cfg=cpu/model:Cas01 --cfg=network/model:CM02
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'CLM03'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'CM02'
-> [0.000000] [msg_test/INFO] test_all
-> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
-> [Inmos:sender:(1) 0.000000] [msg_test/INFO] sender
-> [Inmos:sender:(1) 0.000000] [msg_test/INFO] host = Bellevue
-> [Inmos:sender:(1) 0.000000] [msg_test/INFO] task_la->data = 0.000000e+00
-> [Bellevue:receiver:(2) 0.000000] [msg_test/INFO] receiver
-> [Inmos:sender:(1) 0.100100] [msg_test/INFO] task_bw->data = 1.001000e-01
-> [Bellevue:receiver:(2) 0.100100] [msg_test/INFO] Task received : latency task
-> [Bellevue:receiver:(2) 0.100100] [msg_test/INFO] Communic. time 1.001000e-01
-> [Bellevue:receiver:(2) 0.100100] [msg_test/INFO] --- la 0.100100 ----
-> [Bellevue:receiver:(2) 10000.200100] [msg_test/INFO] Task received : bandwidth task
-> [Bellevue:receiver:(2) 10000.200100] [msg_test/INFO] Communic. time 1.000010e+04
-> [Bellevue:receiver:(2) 10000.200100] [msg_test/INFO] --- bw 99999.000010 ----
-> [10000.200100] [msg_test/INFO] Total simulation time: 1.000020e+04
+! output sort
+$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=workstation/model:CLM03 --cfg=cpu/model:Cas01 --cfg=network/model:CM02 --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'CLM03'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'Cas01'
+> [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] (0:@) test_all
+> [  0.000000] (0:@) Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [  0.000000] (1:sender@Inmos) sender
+> [  0.000000] (1:sender@Inmos) host = Bellevue
+> [  0.000000] (1:sender@Inmos) task_la->data = 0.000000e+00
+> [  0.000000] (2:receiver@Bellevue) receiver
+> [  0.100100] (1:sender@Inmos) task_bw->data = 1.001000e-01
+> [  0.100100] (2:receiver@Bellevue) Task received : latency task
+> [  0.100100] (2:receiver@Bellevue) Communic. time 1.001000e-01
+> [  0.100100] (2:receiver@Bellevue) --- la 0.100100 ----
+> [10000.200100] (0:@) Total simulation time: 1.000020e+04
+> [10000.200100] (2:receiver@Bellevue) Task received : bandwidth task
+> [10000.200100] (2:receiver@Bellevue) Communic. time 1.000010e+04
+> [10000.200100] (2:receiver@Bellevue) --- bw 99999.000010 ----
 

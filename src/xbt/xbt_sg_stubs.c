@@ -22,7 +22,7 @@
 
 #ifndef CONTEXT_THREADS
 #ifndef WIN32
-
+#ifdef HAVE_PTHREAD_H
 /* xbt_threads is loaded in libsimgrid when they are used to implement the xbt_context.
  * The decision (and the loading) is made in xbt/context.c.
  */
@@ -47,7 +47,7 @@ void xbt_os_thread_mod_postexit(void)
 
 xbt_os_thread_t xbt_os_thread_create(const char *name,
                                      pvoid_f_pvoid_t start_routine,
-                                     void *param)
+                                     void *param, void *data)
 {
   xbt_backtrace_display_current();
   xbt_die
@@ -55,6 +55,13 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
 }
 
 void xbt_os_thread_exit(int *retcode)
+{
+  xbt_backtrace_display_current();
+  xbt_die
+      ("No pthread in SG when compiled against the ucontext (xbt_os_thread_exit)");
+}
+
+void xbt_os_thread_detach(xbt_os_thread_t worker)
 {
   xbt_backtrace_display_current();
   xbt_die
@@ -147,5 +154,6 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond)
   xbt_die
       ("No pthread in SG when compiled against the ucontext (xbt_os_cond_destroy)");
 }
+#endif
 #endif
 #endif

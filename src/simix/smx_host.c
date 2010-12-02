@@ -12,8 +12,16 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
                                 "Logging specific to SIMIX (hosts)");
 
-/********************************* Host **************************************/
-smx_host_t __SIMIX_host_create(const char *name,
+
+static void SIMIX_execution_finish(smx_action_t action);
+
+/**
+ * \brief Internal function to create a SIMIX host.
+ * \param name name of the host to create
+ * \param workstation the SURF workstation to encapsulate
+ * \param data some user data (may be NULL)
+ */
+smx_host_t SIMIX_host_create(const char *name,
                                void *workstation, void *data)
 {
   smx_host_t smx_host = xbt_new0(s_smx_host_t, 1);
@@ -28,76 +36,17 @@ smx_host_t __SIMIX_host_create(const char *name,
 
   /* Update global variables */
   xbt_dict_set(simix_global->host, smx_host->name, smx_host,
-               &__SIMIX_host_destroy);
+               &SIMIX_host_destroy);
 
   return smx_host;
 }
 
 /**
- * \brief Set the user data of a #smx_host_t.
+ * \brief Internal function to destroy a SIMIX host.
  *
- * This functions checks whether some data has already been associated to \a host or not and attach \a data to \a host if it is possible.
- *	\param host SIMIX host
- *	\param data User data
- *
+ * \param h the host to destroy (a smx_host_t)
  */
-XBT_INLINE void SIMIX_host_set_data(smx_host_t host, void *data)
-{
-  xbt_assert0((host != NULL), "Invalid parameters");
-  xbt_assert0((host->data == NULL), "Data already set");
-
-  /* Assign data */
-  host->data = data;
-
-  return;
-}
-
-/**
- * \brief Return the user data of a #smx_host_t.
- *
- * This functions checks whether \a host is a valid pointer or not and return the user data associated to \a host if it is possible.
- * \param host SIMIX host
- */
-XBT_INLINE void *SIMIX_host_get_data(smx_host_t host)
-{
-  xbt_assert0((host != NULL), "Invalid parameters");
-
-  /* Return data */
-  return host->data;
-}
-
-/**
- * \brief Return the name of the #smx_host_t.
- *
- * This functions checks whether \a host is a valid pointer or not and return its name.
- * \param host SIMIX host
- */
-XBT_INLINE const char *SIMIX_host_get_name(smx_host_t host)
-{
-
-  xbt_assert0((host != NULL), "Invalid parameters");
-
-  /* Return data */
-  return host->name;
-}
-
-/**
- * \brief Return the location on which the current process is executed.
- *
- * Return the host,  more details in #SIMIX_process_get_host
- * \return SIMIX host
- */
-XBT_INLINE smx_host_t SIMIX_host_self(void)
-{
-  return SIMIX_process_get_host(SIMIX_process_self());
-}
-
-/*
- * Real function for destroy a host.
- * MSG_host_destroy is just  a front_end that also removes it from
- * msg_global->host
- */
-void __SIMIX_host_destroy(void *h)
+void SIMIX_host_destroy(void *h)
 {
   smx_host_t host = (smx_host_t) h;
 
@@ -115,6 +64,7 @@ void __SIMIX_host_destroy(void *h)
       free(msg);
       msg = tmp;
     }
+    SIMIX_display_process_status();
     THROW1(arg_error, 0, "%s", msg);
   }
 
@@ -128,82 +78,16 @@ void __SIMIX_host_destroy(void *h)
 }
 
 /**
- * \brief Return the current number of #smx_host_t.
- *
- * \return Number of hosts
- */
-XBT_INLINE int SIMIX_host_get_number(void)
-{
-  return (xbt_dict_size(simix_global->host));
-}
-
-
-/**
- * \brief Return an array of all the #smx_host_t.
- *
- * \return List of all hosts (in a newly allocated table)
- */
-smx_host_t *SIMIX_host_get_table(void)
-{
-  smx_host_t *res = xbt_new(smx_host_t, xbt_dict_size(simix_global->host));
-  smx_host_t h;
-  xbt_dict_cursor_t c;
-  char *name;
-  int i = 0;
-
-  xbt_dict_foreach(simix_global->host, c, name, h)
-      res[i++] = h;
-
-  return res;
-}
-
-/**
- * \brief Return a dict of all the #smx_host_t.
+ * \brief Returns a dict of all hosts.
  *
  * \return List of all hosts (as a #xbt_dict_t)
  */
-XBT_INLINE xbt_dict_t SIMIX_host_get_dict(void)
+xbt_dict_t SIMIX_host_get_dict(void)
 {
   return simix_global->host;
 }
 
-/**
- * \brief Return the speed of the processor.
- *
- * Return the speed (in Mflop/s), regardless of the current load on the machine.
- * \param host SIMIX host
- * \return Speed
- */
-XBT_INLINE double SIMIX_host_get_speed(smx_host_t host)
-{
-  xbt_assert0((host != NULL), "Invalid parameters");
-
-  return (surf_workstation_model->extension.workstation.
-          get_speed(host->host, 1.0));
-}
-
-/**
- * \brief Return the available speed of the processor.
- *
- * Return the available speed (in Mflop/s).
- * \return Speed
- */
-XBT_INLINE double SIMIX_host_get_available_speed(smx_host_t host)
-{
-  xbt_assert0((host != NULL), "Invalid parameters");
-
-  return (surf_workstation_model->extension.workstation.
-          get_available_speed(host->host));
-}
-
-/**
- * \brief Return the host by its name
- *
- * Finds a smx_host_t using its name.
- * \param name The name of an host.
- * \return The corresponding host
- */
-XBT_INLINE smx_host_t SIMIX_host_get_by_name(const char *name)
+smx_host_t SIMIX_host_get_by_name(const char *name)
 {
   xbt_assert0(((simix_global != NULL)
                && (simix_global->host != NULL)),
@@ -212,32 +96,305 @@ XBT_INLINE smx_host_t SIMIX_host_get_by_name(const char *name)
   return xbt_dict_get_or_null(simix_global->host, name);
 }
 
-/**
- * \brief Returns a xbt_dynar_t consisting of the list of properties assigned to this host
- *
- * \param host a host
- * \return the dynamic array consisting of property names
- */
-XBT_INLINE xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
+smx_host_t SIMIX_host_self(void)
+{
+  smx_process_t process = SIMIX_process_self();
+  return (process == NULL) ? NULL : SIMIX_process_get_host(process);
+}
+
+/* needs to be public and without request because it is called
+   by exceptions and logging events */
+const char* SIMIX_host_self_get_name(void)
+{
+  smx_host_t host = SIMIX_host_self();
+  if (host == NULL || SIMIX_process_self() == simix_global->maestro_process)
+    return "";
+
+  return SIMIX_host_get_name(host);
+}
+
+const char* SIMIX_host_get_name(smx_host_t host)
+{
+  xbt_assert0((host != NULL), "Invalid parameters");
+
+  return host->name;
+}
+
+xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return surf_workstation_model->extension.
-      workstation.get_properties(host->host);
+  return surf_workstation_model->extension.workstation.get_properties(host->host);
 }
 
-
-/**
- * \brief Return the state of a workstation
- *
- * Return the state of a workstation. Two states are possible, 1 if the host is active or 0 if it has crashed.
- * \param host The SIMIX host
- * \return 1 if host is available or 0 if not.
- */
-XBT_INLINE int SIMIX_host_get_state(smx_host_t host)
+double SIMIX_host_get_speed(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return (surf_workstation_model->extension.workstation.
-          get_state(host->host));
+  return surf_workstation_model->extension.workstation.
+      get_speed(host->host, 1.0);
 }
+
+double SIMIX_host_get_available_speed(smx_host_t host)
+{
+  xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
+
+  return surf_workstation_model->extension.workstation.
+      get_available_speed(host->host);
+}
+
+int SIMIX_host_get_state(smx_host_t host)
+{
+  xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
+
+  return surf_workstation_model->extension.workstation.
+      get_state(host->host);
+}
+
+void* SIMIX_host_self_get_data(void)
+{
+  return SIMIX_host_get_data(SIMIX_host_self());
+}
+
+void SIMIX_host_self_set_data(void *data)
+{
+  SIMIX_host_set_data(SIMIX_host_self(), data);
+}
+
+void* SIMIX_host_get_data(smx_host_t host)
+{
+  xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
+
+  return host->data;
+}
+
+void SIMIX_host_set_data(smx_host_t host, void *data)
+{
+  xbt_assert0((host != NULL), "Invalid parameters");
+  xbt_assert0((host->data == NULL), "Data already set");
+
+  host->data = data;
+}
+
+smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
+                                double computation_amount)
+{
+  /* alloc structures and initialize */
+  smx_action_t action = xbt_new0(s_smx_action_t, 1);
+  action->type = SIMIX_ACTION_EXECUTE;
+  action->name = xbt_strdup(name);
+  action->request_list = xbt_fifo_new();
+  action->state = SIMIX_RUNNING;
+  action->execution.host = host;
+  
+#ifdef HAVE_TRACING
+  action->category = NULL;
+#endif
+
+#ifdef HAVE_MC
+  /* set surf's action */
+  if(!_surf_do_model_check)
+#endif
+  {
+  action->execution.surf_exec =
+    surf_workstation_model->extension.workstation.execute(host->host, 
+                                                          computation_amount);
+  surf_workstation_model->action_data_set(action->execution.surf_exec, action);
+  }
+  
+#ifdef HAVE_TRACING
+  TRACE_smx_host_execute(action);
+  TRACE_surf_action(action->execution.surf_exec, action->category);
+#endif
+
+  DEBUG1("Create execute action %p", action);
+  
+  return action;
+}
+
+smx_action_t SIMIX_host_parallel_execute( const char *name,
+    int host_nb, smx_host_t *host_list,
+    double *computation_amount, double *communication_amount,
+    double amount, double rate)
+{
+  void **workstation_list = NULL;
+  int i;
+
+  /* alloc structures and initialize */
+  smx_action_t action = xbt_new0(s_smx_action_t, 1);
+  action->type = SIMIX_ACTION_PARALLEL_EXECUTE;
+  action->name = xbt_strdup(name);
+  action->request_list = xbt_fifo_new();
+  action->state = SIMIX_RUNNING;
+  action->execution.host = NULL; /* FIXME: do we need the list of hosts? */
+ 
+#ifdef HAVE_TRACING
+  action->category = NULL;
+#endif
+
+  /* set surf's action */
+  workstation_list = xbt_new0(void *, host_nb);
+  for (i = 0; i < host_nb; i++)
+    workstation_list[i] = host_list[i]->host;
+
+#ifdef HAVE_MC
+  /* set surf's action */
+  if(!_surf_do_model_check)
+#endif  
+  {
+  action->execution.surf_exec = 
+    surf_workstation_model->extension.workstation.
+    execute_parallel_task(host_nb, workstation_list, computation_amount,
+                          communication_amount, amount, rate);
+
+  surf_workstation_model->action_data_set(action->execution.surf_exec, action);
+  }
+  DEBUG1("Create parallel execute action %p", action);
+
+  return action;
+}
+
+void SIMIX_host_execution_destroy(smx_action_t action)
+{
+  DEBUG1("Destroy action %p", action);
+
+  if (action->name)
+    xbt_free(action->name);
+
+  xbt_fifo_free(action->request_list);
+
+  if (action->execution.surf_exec){
+    surf_workstation_model->action_unref(action->execution.surf_exec);
+    action->execution.surf_exec = NULL;
+  }
+  
+#ifdef HAVE_TRACING
+  TRACE_smx_action_destroy(action);
+#endif
+  xbt_free(action);
+}
+
+void SIMIX_host_execution_cancel(smx_action_t action)
+{
+  DEBUG1("Cancel action %p", action);
+
+  if(action->execution.surf_exec) 
+    surf_workstation_model->action_cancel(action->execution.surf_exec);
+}
+
+double SIMIX_host_execution_get_remains(smx_action_t action)
+{
+  double result = 0;
+  
+  if(action->state == SIMIX_RUNNING)
+    result = surf_workstation_model->get_remains(action->execution.surf_exec);
+
+  return result;
+}
+
+e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action)
+{
+  return action->state;
+}
+
+void SIMIX_host_execution_set_priority(smx_action_t action, double priority)
+{
+  surf_workstation_model->set_priority(action->execution.surf_exec, priority);
+}
+
+void SIMIX_pre_host_execution_wait(smx_req_t req)
+{
+  smx_action_t action = req->host_execution_wait.execution;
+
+  DEBUG2("Wait for execution of action %p, state %d", action, action->state);
+
+  /* Associate this request to the action */
+  xbt_fifo_push(action->request_list, req);
+  req->issuer->waiting_action = action;
+
+#ifdef HAVE_MC
+  /* set surf's action */
+  if(_surf_do_model_check){
+    action->state = SIMIX_DONE;
+    SIMIX_execution_finish(action);
+  }
+#endif  
+    
+  /* If the action is already finished then perform the error handling */
+  if (action->state != SIMIX_RUNNING)
+    SIMIX_execution_finish(action);
+}
+
+void SIMIX_host_execution_suspend(smx_action_t action)
+{
+    surf_workstation_model->suspend(action->execution.surf_exec);
+}
+
+void SIMIX_host_execution_resume(smx_action_t action)
+{
+    surf_workstation_model->suspend(action->execution.surf_exec);
+}
+
+void SIMIX_execution_finish(smx_action_t action)
+{
+  xbt_fifo_item_t item;
+  smx_req_t req;
+
+  xbt_fifo_foreach(action->request_list, item, req, smx_req_t) {
+
+    switch (action->state) {
+
+      case SIMIX_DONE:
+        /* do nothing, action done*/
+	DEBUG0("SIMIX_execution_finished: execution successful");
+        break;
+        
+      case SIMIX_FAILED:
+        TRY {
+	  DEBUG1("SIMIX_execution_finished: host '%s' failed", req->issuer->smx_host->name);
+          THROW0(host_error, 0, "Host failed");
+        }
+	CATCH(req->issuer->running_ctx->exception) {
+	  req->issuer->doexception = 1;
+	}
+      break;
+        
+      case SIMIX_CANCELED:
+        TRY {
+	  DEBUG0("SIMIX_execution_finished: execution canceled");
+          THROW0(cancel_error, 0, "Canceled");
+        }
+	CATCH(req->issuer->running_ctx->exception) {
+	  req->issuer->doexception = 1;
+        }
+	break;
+        
+      default:
+        THROW_IMPOSSIBLE;
+    }
+    req->issuer->waiting_action = NULL;
+    SIMIX_request_answer(req);
+  }
+}
+
+void SIMIX_post_host_execute(smx_action_t action)
+{
+  /* FIXME: check if the host running the action failed or not*/
+  /*if(surf_workstation_model->extension.workstation.get_state(action->host->host))*/
+
+  /* If the host running the action didn't fail, then the action was cancelled */
+  if (surf_workstation_model->action_state_get(action->execution.surf_exec) == SURF_ACTION_FAILED)
+     action->state = SIMIX_CANCELED;
+  else
+     action->state = SIMIX_DONE;
+
+  if (action->execution.surf_exec){
+    surf_workstation_model->action_unref(action->execution.surf_exec);
+    action->execution.surf_exec = NULL;
+  }
+  
+  /* If there are requests associated with the action, then answer them */
+  if (xbt_fifo_size(action->request_list))
+    SIMIX_execution_finish(action);
+}
+

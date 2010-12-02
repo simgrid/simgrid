@@ -36,11 +36,15 @@ XBT_PUBLIC(int) xbt_os_thread_atfork(void (*prepare)(void),
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_create(const char *name,
                                                  pvoid_f_pvoid_t
                                                  start_routine,
-                                                 void *param);
+                                                 void *param,
+                                                 void *data);
 XBT_PUBLIC(void) xbt_os_thread_exit(int *retcode);
+XBT_PUBLIC(void) xbt_os_thread_detach(xbt_os_thread_t thread);
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_self(void);
 XBT_PUBLIC(const char *) xbt_os_thread_self_name(void);
 XBT_PUBLIC(const char *) xbt_os_thread_name(xbt_os_thread_t);
+XBT_PUBLIC(void) xbt_os_thread_set_extra_data(void *data);
+XBT_PUBLIC(void *) xbt_os_thread_get_extra_data(void);
   /* xbt_os_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */
 XBT_PUBLIC(void) xbt_os_thread_join(xbt_os_thread_t thread,
                                     void **thread_return);

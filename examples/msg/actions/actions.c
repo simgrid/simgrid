@@ -251,27 +251,27 @@ static void barrier(xbt_dynar_t action)
     name = xbt_str_join(action, " ");
 
   if (mutex == NULL) {       // first arriving on the barrier
-    mutex = SIMIX_mutex_init();
-    cond = SIMIX_cond_init();
+    mutex = SIMIX_req_mutex_init();
+    cond = SIMIX_req_cond_init();
     processes_arrived_sofar=0;
   }
   DEBUG2("Entering barrier: %s (%d already there)", name,processes_arrived_sofar);
 
-  SIMIX_mutex_lock(mutex);
+  SIMIX_req_mutex_lock(mutex);
   if (++processes_arrived_sofar == communicator_size) {
-    SIMIX_cond_broadcast(cond);
-    SIMIX_mutex_unlock(mutex);
+    SIMIX_req_cond_broadcast(cond);
+    SIMIX_req_mutex_unlock(mutex);
   } else {
-    SIMIX_cond_wait(cond,mutex);
-    SIMIX_mutex_unlock(mutex);
+    SIMIX_req_cond_wait(cond,mutex);
+    SIMIX_req_mutex_unlock(mutex);
   }
 
   DEBUG1("Exiting barrier: %s", name);
 
   processes_arrived_sofar--;
   if (!processes_arrived_sofar) {
-    SIMIX_cond_destroy(cond);
-    SIMIX_mutex_destroy(mutex);
+    SIMIX_req_cond_destroy(cond);
+    SIMIX_req_mutex_destroy(mutex);
     mutex=NULL;
   }
 

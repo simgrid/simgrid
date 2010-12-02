@@ -13,15 +13,18 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
                                 "Logging specific to SIMIX (process)");
 
+static unsigned long simix_process_count = 0;
+
 /**
- * \brief Move a process to the list of process to destroy. *
+ * \brief Move a process to the list of processes to destroy.
  */
-void SIMIX_process_cleanup(void *arg)
+void SIMIX_process_cleanup(smx_process_t process)
 {
-  xbt_swag_remove(arg, simix_global->process_to_run);
-  xbt_swag_remove(arg, simix_global->process_list);
-  xbt_swag_remove(arg, ((smx_process_t) arg)->smx_host->process_list);
-  xbt_swag_insert(arg, simix_global->process_to_destroy);
+  DEBUG1("Cleanup process %s", process->name);
+  xbt_swag_remove(process, simix_global->process_to_run);
+  xbt_swag_remove(process, simix_global->process_list);
+  xbt_swag_remove(process, process->smx_host->process_list);
+  xbt_swag_insert(process, simix_global->process_to_destroy);
 }
 
 /** 
@@ -38,8 +41,8 @@ void SIMIX_process_empty_trash(void)
     SIMIX_context_free(process->context);
 
     /* Free the exception allocated at creation time */
-    if (process->exception)
-      free(process->exception);
+    if (process->running_ctx)
+      free(process->running_ctx);
     if (process->properties)
       xbt_dict_free(&process->properties);
 
@@ -54,44 +57,70 @@ void SIMIX_process_empty_trash(void)
  */
 void SIMIX_create_maestro_process()
 {
-  smx_process_t process = NULL;
-  process = xbt_new0(s_smx_process_t, 1);
+  smx_process_t maestro = NULL;
+  
+  /* Create maestro process and intilialize it */
+  maestro = xbt_new0(s_smx_process_t, 1);
+  maestro->pid = simix_process_count++;
+  maestro->name = (char *) "";
+  maestro->running_ctx = xbt_new(xbt_running_ctx_t, 1);
+  XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
+  maestro->context = SIMIX_context_new(NULL, 0, NULL, NULL, maestro);
 
-  /* Process data */
-  process->name = (char *) "";
-
-  process->exception = xbt_new(ex_ctx_t, 1);
-  XBT_CTX_INITIALIZE(process->exception);
-
-  /* Create a dummy context for maestro */
-  process->context = SIMIX_context_new(NULL, 0, NULL, NULL, NULL);
-
-  /* Set it as the maestro process */
-  simix_global->maestro_process = process;
-  simix_global->current_process = process;
-
+  simix_global->maestro_process = maestro;
+  simix_global->current_process = maestro;
+  
   return;
 }
 
 /**
- * \brief Creates and runs a new #smx_process_t.
+ * \brief Same as SIMIX_process_create() but with only one argument (used by timers).
+ * \return the process created
+ */
+smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
+
+  smx_process_t process;
+
+  if (simix_global->create_process_function) {
+    process = simix_global->create_process_function(args->name,
+	args->code,
+	args->data,
+	args->hostname,
+	args->argc,
+	args->argv,
+	args->properties);
+  }
+  else {
+    process = SIMIX_process_create(args->name,
+	args->code,
+	args->data,
+	args->hostname,
+	args->argc,
+	args->argv,
+	args->properties);
+  }
+  // FIXME: to simplify this, simix_global->create_process_function could just
+  // be SIMIX_process_create() by default (and the same thing in smx_deployment.c)
+
+  return process;
+}
+
+/**
+ * \brief Internal function to create a process.
  *
- * A constructor for #m_process_t taking four arguments and returning the corresponding object. The structure (and the corresponding thread) is created, and put in the list of ready process.
+ * This function actually creates the process.
+ * It may be called when a REQ_PROCESS_CREATE request occurs,
+ * or directly for SIMIX internal purposes.
  *
- * \param name a name for the object. It is for user-level information and can be NULL.
- * \param data a pointer to any data one may want to attach to the new object.  It is for user-level information and can be NULL. It can be retrieved with the function \ref MSG_process_get_data.
- * \param host the location where the new agent is executed.
- * \param argc first argument passed to \a code
- * \param argv second argument passed to \a code
- * \param clean_process_function The cleanup function of user process. It will be called when the process finish. This function have to call the SIMIX_process_cleanup.
- * \see smx_process_t
- * \return The new corresponding object.
+ * \return the process created
  */
 smx_process_t SIMIX_process_create(const char *name,
-                                   xbt_main_func_t code, void *data,
-                                   const char *hostname, int argc,
-                                   char **argv, xbt_dict_t properties)
-{
+                                   xbt_main_func_t code,
+			                             void *data,
+				                           const char *hostname,
+                        				   int argc, char **argv,
+                        				   xbt_dict_t properties) {
+
   smx_process_t process = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
 
@@ -100,334 +129,114 @@ smx_process_t SIMIX_process_create(const char *name,
   if (!SIMIX_host_get_state(host)) {
     WARN2("Cannot launch process '%s' on failed host '%s'", name,
           hostname);
-    return NULL;
   }
-  process = xbt_new0(s_smx_process_t, 1);
+  else {
+    process = xbt_new0(s_smx_process_t, 1);
 
-  xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
+    xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
 
-  /* Process data */
-  process->name = xbt_strdup(name);
-  process->smx_host = host;
-  process->mutex = NULL;
-  process->cond = NULL;
-  process->iwannadie = 0;
-  process->data = data;
+    /* Process data */
+    process->pid = simix_process_count++;
+    process->name = xbt_strdup(name);
+    process->smx_host = host;
+    process->iwannadie = 0;
+    process->data = data;
 
-  VERB1("Create context %s", process->name);
-  process->context = SIMIX_context_new(code, argc, argv,
-                                       simix_global->cleanup_process_function,
-                                       process);
+    VERB1("Create context %s", process->name);
+    process->context = SIMIX_context_new(code, argc, argv,
+    	simix_global->cleanup_process_function, process);
 
-  process->exception = xbt_new(ex_ctx_t, 1);
-  XBT_CTX_INITIALIZE(process->exception);
+    process->running_ctx = xbt_new(xbt_running_ctx_t, 1);
+    XBT_RUNNING_CTX_INITIALIZE(process->running_ctx);
 
-  /* Add properties */
-  process->properties = properties;
+    /* Add properties */
+    process->properties = properties;
 
-  /* Add the process to it's host process list */
-  xbt_swag_insert(process, host->process_list);
+    /* Add the process to it's host process list */
+    xbt_swag_insert(process, host->process_list);
 
-  DEBUG1("Start context '%s'", process->name);
+    DEBUG1("Start context '%s'", process->name);
 
-  /* Now insert it in the global process list and in the process to run list */
-  xbt_swag_insert(process, simix_global->process_list);
-  DEBUG2("Inserting %s(%s) in the to_run list", process->name, host->name);
-  xbt_swag_insert(process, simix_global->process_to_run);
+    /* Now insert it in the global process list and in the process to run list */
+    xbt_swag_insert(process, simix_global->process_list);
+    DEBUG2("Inserting %s(%s) in the to_run list", process->name, host->name);
+    xbt_swag_insert(process, simix_global->process_to_run);
+  }
 
   return process;
 }
 
-/** \brief Kill a SIMIX process
+/**
+ * \brief Internal function to kill a SIMIX process.
  *
- * This function simply kills a \a process... scarry isn't it ? :).
+ * This function may be called when a REQ_PROCESS_KILL request occurs,
+ * or directly for SIMIX internal purposes.
+ *
  * \param process poor victim
- *
  */
-void SIMIX_process_kill(smx_process_t process)
-{
-  DEBUG2("Killing process %s on %s", process->name,
-         process->smx_host->name);
+void SIMIX_process_kill(smx_process_t process, smx_process_t killer) {
+
+  DEBUG2("Killing process %s on %s", process->name, process->smx_host->name);
 
   process->iwannadie = 1;
+  process->blocked = 0;
+  process->suspended = 0;
+  /* FIXME: set doexception to 0 also? */
+  
+  if (process->waiting_action) {
 
-  /* If I'm killing myself then stop otherwise schedule the process to kill
-   * Two different behaviors, if I'm killing my self, remove from mutex and condition and stop. Otherwise, first we must schedule the process, wait its ending and after remove it from mutex and condition */
-  if (process == SIMIX_process_self()) {
-    /* Cleanup if we were waiting for something */
-    if (process->mutex)
-      xbt_swag_remove(process, process->mutex->sleeping);
+    switch (process->waiting_action->type) {
 
-    if (process->cond)
-      xbt_swag_remove(process, process->cond->sleeping);
-    if (process->waiting_action) {
-      SIMIX_unregister_action_to_condition(process->waiting_action,
-                                           process->cond);
-      SIMIX_action_destroy(process->waiting_action);
+      case SIMIX_ACTION_EXECUTE:          
+      case SIMIX_ACTION_PARALLEL_EXECUTE:
+        SIMIX_host_execution_destroy(process->waiting_action);
+        break;
+
+      case SIMIX_ACTION_COMMUNICATE:
+        SIMIX_comm_destroy(process->waiting_action);
+        break;
+
+      case SIMIX_ACTION_SLEEP:
+	SIMIX_process_sleep_destroy(process->waiting_action);
+	break;
+
+      case SIMIX_ACTION_SYNCHRO:
+	SIMIX_synchro_stop_waiting(process, process->request);
+	SIMIX_synchro_destroy(process->waiting_action);
+	break;
+
+      case SIMIX_ACTION_IO:
+	THROW_UNIMPLEMENTED;
+	break;
     }
+  }
 
-    if (process->sem) {
-      xbt_fifo_remove(process->sem->sleeping, process);
-
-      if (process->waiting_action) {
-        SIMIX_unregister_action_to_semaphore(process->waiting_action,
-                                             process->sem);
-        SIMIX_action_destroy(process->waiting_action);
-      }
-    }
-
+  /* If I'm killing myself then stop, otherwise schedule the process to kill. */
+  if (process == killer) {
     SIMIX_context_stop(process->context);
-
-  } else {
-    DEBUG4("%s(%p) here! killing %s(%p)",
-           simix_global->current_process->name,
-           simix_global->current_process, process->name, process);
-
-    /* Cleanup if it were waiting for something */
-    if (process->mutex) {
-      xbt_swag_remove(process, process->mutex->sleeping);
-      process->mutex = NULL;
-    }
-
-    if (process->cond) {
-      xbt_swag_remove(process, process->cond->sleeping);
-
-      if (process->waiting_action) {
-        SIMIX_unregister_action_to_condition(process->waiting_action,
-                                             process->cond);
-        SIMIX_action_destroy(process->waiting_action);
-      }
-      process->cond = NULL;
-    }
-
-    if (process->sem) {
-      xbt_fifo_remove(process->sem->sleeping, process);
-
-      if (process->waiting_action) {
-        SIMIX_unregister_action_to_semaphore(process->waiting_action,
-                                             process->sem);
-        SIMIX_action_destroy(process->waiting_action);
-      }
-      process->sem = NULL;
-    }
-
-    /* make sure that the process gets awake soon enough, now that we've set its iwannadie to 1 */
-    process->blocked = 0;
-    process->suspended = 0;
+  }
+  else {
     xbt_swag_insert(process, simix_global->process_to_run);
   }
 }
 
 /**
- * \brief Return the user data of a #smx_process_t.
+ * \brief Kills all running processes.
  *
- * This functions checks whether \a process is a valid pointer or not and return the user data associated to \a process if it is possible.
- * \param process SIMIX process
- * \return A void pointer to the user data
+ * Only maestro can kill everyone.
  */
-XBT_INLINE void *SIMIX_process_get_data(smx_process_t process)
+void SIMIX_process_killall(void)
 {
-  xbt_assert0((process != NULL), "Invalid parameters");
-  return (process->data);
+  smx_process_t p = NULL;
+
+  while ((p = xbt_swag_extract(simix_global->process_list)))
+    SIMIX_process_kill(p, SIMIX_process_self());
+
+  SIMIX_process_empty_trash();
 }
 
-/**
- * \brief Set the user data of a #m_process_t.
- *
- * This functions checks whether \a process is a valid pointer or not and set the user data associated to \a process if it is possible.
- * \param process SIMIX process
- * \param data User data
- */
-XBT_INLINE void SIMIX_process_set_data(smx_process_t process, void *data)
-{
-  xbt_assert0((process != NULL), "Invalid parameters");
-
-  process->data = data;
-  return;
-}
-
-/**
- * \brief Return the location on which an agent is running.
- *
- * This functions checks whether \a process is a valid pointer or not and return the m_host_t corresponding to the location on which \a process is running.
- * \param process SIMIX process
- * \return SIMIX host
- */
-XBT_INLINE smx_host_t SIMIX_process_get_host(smx_process_t process)
-{
-  xbt_assert0((process != NULL), "Invalid parameters");
-  return (process->smx_host);
-}
-
-/**
- * \brief Return the name of an agent.
- *
- * This functions checks whether \a process is a valid pointer or not and return its name.
- * \param process SIMIX process
- * \return The process name
- */
-XBT_INLINE const char *SIMIX_process_get_name(smx_process_t process)
-{
-  xbt_assert0((process != NULL), "Invalid parameters");
-  return (process->name);
-}
-
-/**
- * \brief Changes the name of an agent.
- *
- * This functions checks whether \a process is a valid pointer or not and return its name.
- * \param process SIMIX process
- * \param name The new process name
- */
-XBT_INLINE void SIMIX_process_set_name(smx_process_t process, char *name)
-{
-  xbt_assert0((process != NULL), "Invalid parameters");
-  process->name = name;
-}
-
-/** \ingroup m_process_management
- * \brief Return the properties
- *
- * This functions returns the properties associated with this process
- */
-XBT_INLINE xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
-{
-  return process->properties;
-}
-
-/**
- * \brief Return the current agent.
- *
- * This functions returns the currently running #smx_process_t.
- * \return The SIMIX process
- */
-XBT_INLINE smx_process_t SIMIX_process_self(void)
-{
-  if (simix_global)
-    return simix_global->current_process;
-  return NULL;
-}
-
-/**
- * \brief Suspend the process.
- *
- * This functions suspend the process by suspending the action on
- * which it was waiting for the completion.
- *
- * \param process SIMIX process
- */
-void SIMIX_process_suspend(smx_process_t process)
-{
-  xbt_assert0(process, "Invalid parameters");
-
-  if (process != SIMIX_process_self()) {
-
-    if (process->mutex) {
-      /* process blocked on a mutex or sem, only set suspend=1 */
-      process->suspended = 1;
-    } else if (process->cond) {
-      /* process blocked cond, suspend all actions */
-
-      /* temporaries variables */
-      smx_cond_t c;
-      xbt_fifo_item_t i;
-      smx_action_t act;
-
-      process->suspended = 1;
-      c = process->cond;
-      xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
-        SIMIX_action_suspend(act);
-      }
-    } else if (process->sem) {
-      smx_sem_t s;
-      xbt_fifo_item_t i;
-      smx_action_t act;
-
-      process->suspended = 1;
-      s = process->sem;
-      xbt_fifo_foreach(s->actions, i, act, smx_action_t) {
-        SIMIX_action_suspend(act);
-      }
-    } else {
-      process->suspended = 1;
-    }
-  } else {
-    /* process executing, I can create an action and suspend it */
-    smx_action_t dummy;
-    smx_cond_t cond;
-    char name[] = "dummy";
-    process->suspended = 1;
-
-    cond = SIMIX_cond_init();
-    dummy = SIMIX_action_execute(SIMIX_process_get_host(process), name, 0);
-    SIMIX_process_self()->waiting_action = dummy;
-    SIMIX_action_suspend(dummy);
-    SIMIX_register_action_to_condition(dummy, cond);
-    __SIMIX_cond_wait(cond);
-    SIMIX_process_self()->waiting_action = NULL;
-    SIMIX_unregister_action_to_condition(dummy, cond);
-    SIMIX_action_destroy(dummy);
-    SIMIX_cond_destroy(cond);
-  }
-  return;
-}
-
-/**
- * \brief Resume a suspended process.
- *
- * This functions resume a suspended process by resuming the task on which it was waiting for the completion.
- * \param process SIMIX process
- */
-void SIMIX_process_resume(smx_process_t process)
-{
-  xbt_assert0((process != NULL), "Invalid parameters");
-  SIMIX_CHECK_HOST();
-
-  if (process == SIMIX_process_self())
-    return;
-
-  if (process->mutex) {
-    DEBUG0("Resume process blocked on a mutex or semaphore");
-    process->suspended = 0;     /* It'll wake up by itself when mutex releases */
-    return;
-  } else if (process->cond) {
-    /* temporaries variables */
-    smx_cond_t c;
-    xbt_fifo_item_t i;
-    smx_action_t act;
-    DEBUG0("Resume process blocked on a conditional");
-    process->suspended = 0;
-    c = process->cond;
-    xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
-      SIMIX_action_resume(act);
-    }
-    SIMIX_cond_signal(c);
-    return;
-  } else if (process->sem) {
-    /* temporaries variables */
-    smx_sem_t s;
-    xbt_fifo_item_t i;
-    smx_action_t act;
-    DEBUG0("Resume process blocked on a semaphore");
-    process->suspended = 0;
-    s = process->sem;
-    xbt_fifo_foreach(s->actions, i, act, smx_action_t) {
-      SIMIX_action_resume(act);
-    }
-    return;
-  } else {
-    process->suspended = 0;
-    xbt_swag_insert(process, simix_global->process_to_run);
-  }
-}
-
-/**
- * \brief Migrates an agent to another location.
- *
- * This function changes the value of the host on which \a process is running.
- */
-void SIMIX_process_change_host(smx_process_t process, char *source,
-                               char *dest)
+void SIMIX_process_change_host(smx_process_t process,
+    const char *source, const char *dest)
 {
   smx_host_t h1 = NULL;
   smx_host_t h2 = NULL;
@@ -439,76 +248,280 @@ void SIMIX_process_change_host(smx_process_t process, char *source,
   xbt_swag_insert(process, h2->process_list);
 }
 
-/**
- * \brief Returns true if the process is suspended .
- *
- * This checks whether a process is suspended or not by inspecting the task on which it was waiting for the completion.
- * \param process SIMIX process
- * \return 1, if the process is suspended, else 0.
- */
-XBT_INLINE int SIMIX_process_is_suspended(smx_process_t process)
+void SIMIX_pre_process_suspend(smx_req_t req)
+{
+  smx_process_t process = req->process_suspend.process;
+  SIMIX_process_suspend(process, req->issuer);
+
+  if (process != req->issuer) {
+    SIMIX_request_answer(req);
+  }
+  /* If we are suspending ourselves, then just do not replay the request. */
+}
+
+void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
+{
+  xbt_assert0(process, "Invalid parameters");
+
+  process->suspended = 1;
+
+  /* If we are suspending another process, and it is waiting on an action,
+     suspend it's action. */
+  if (process != issuer) {
+
+    if (process->waiting_action) {
+
+      switch (process->waiting_action->type) {
+
+        case SIMIX_ACTION_EXECUTE:
+        case SIMIX_ACTION_PARALLEL_EXECUTE:
+          SIMIX_host_execution_suspend(process->waiting_action);
+          break;
+
+        case SIMIX_ACTION_COMMUNICATE:
+          SIMIX_comm_suspend(process->waiting_action);
+          break;
+
+        case SIMIX_ACTION_SLEEP:
+          SIMIX_process_sleep_suspend(process->waiting_action);
+          break;
+
+        default:
+          THROW_IMPOSSIBLE;
+      }
+    }
+  }
+}
+
+void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 {
   xbt_assert0((process != NULL), "Invalid parameters");
 
-  return (process->suspended);
+  process->suspended = 0;
+
+  /* If we are resuming another process, resume the action it was waiting for
+     if any. Otherwise add it to the list of process to run in the next round. */
+  if (process != issuer) {
+
+    if (process->waiting_action) {
+
+      switch(process->waiting_action->type) {
+
+        case SIMIX_ACTION_EXECUTE:          
+        case SIMIX_ACTION_PARALLEL_EXECUTE:
+          SIMIX_host_execution_resume(process->waiting_action);
+          break;
+          
+        case SIMIX_ACTION_COMMUNICATE:
+          SIMIX_comm_resume(process->waiting_action);
+          break;
+          
+        case SIMIX_ACTION_SLEEP:
+          SIMIX_process_sleep_resume(process->waiting_action);
+          break;
+          
+        default:
+          THROW_IMPOSSIBLE;
+      }
+    } else {
+      xbt_swag_insert(process, simix_global->process_to_run);
+    }
+  }
 }
 
-/**
- * \brief Returns the amount of SIMIX processes in the system
- *
- * Maestro internal process is not counted, only user code processes are
- */
-XBT_INLINE int SIMIX_process_count()
+int SIMIX_process_count(void)
 {
   return xbt_swag_size(simix_global->process_list);
 }
 
+void* SIMIX_process_self_get_data(void)
+{
+  smx_process_t me = SIMIX_process_self();
+  if (!me) {
+    return NULL;
+  }
+  return SIMIX_process_get_data(me);
+}
+
+void SIMIX_process_self_set_data(void *data)
+{
+  SIMIX_process_set_data(SIMIX_process_self(), data);
+}
+
+void* SIMIX_process_get_data(smx_process_t process)
+{
+  return process->data;
+}
+
+void SIMIX_process_set_data(smx_process_t process, void *data)
+{
+  process->data = data;
+}
+
+smx_host_t SIMIX_process_get_host(smx_process_t process)
+{
+  return process->smx_host;
+}
+
+/* needs to be public and without request because it is called
+   by exceptions and logging events */
+const char* SIMIX_process_self_get_name(void) {
+
+  smx_process_t process = SIMIX_process_self();
+  if (process == NULL || process == simix_global->maestro_process)
+    return "";
+
+  return SIMIX_process_get_name(process);
+}
+
+const char* SIMIX_process_get_name(smx_process_t process)
+{
+  return process->name;
+}
+
+int SIMIX_process_is_suspended(smx_process_t process)
+{
+  return process->suspended;
+}
+
+int SIMIX_process_is_enabled(smx_process_t process)
+{
+  if(process->request && SIMIX_request_isEnabled(process->request))
+    return TRUE;
+
+  return FALSE;
+}
+
+xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
+{
+  return process->properties;
+}
+
+void SIMIX_pre_process_sleep(smx_req_t req)
+{
+#ifdef HAVE_MC
+  if(_surf_do_model_check){
+    req->process_sleep.result = SIMIX_DONE;
+    SIMIX_request_answer(req);
+  }
+#endif
+  smx_action_t action = SIMIX_process_sleep(req->issuer, req->process_sleep.duration);
+  xbt_fifo_push(action->request_list, req);
+  req->issuer->waiting_action = action;
+}
+
+smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
+{
+  smx_action_t action;
+  smx_host_t host = process->smx_host;
+
+  /* check if the host is active */
+  if (surf_workstation_model->extension.
+      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+    THROW1(host_error, 0, "Host %s failed, you cannot call this function",
+           host->name);
+  }
+
+  action = xbt_new0(s_smx_action_t, 1);
+  action->type = SIMIX_ACTION_SLEEP;
+  action->request_list = xbt_fifo_new();
+  action->name = xbt_strdup("sleep");
+#ifdef HAVE_TRACING
+  action->category = NULL;
+#endif
+
+  action->sleep.host = host;
+  action->sleep.surf_sleep =
+      surf_workstation_model->extension.workstation.sleep(host->host, duration);
+
+  surf_workstation_model->action_data_set(action->sleep.surf_sleep, action);
+  DEBUG1("Create sleep action %p", action);
+
+  return action;
+}
+
+void SIMIX_post_process_sleep(smx_action_t action)
+{
+  e_smx_state_t state = SIMIX_action_map_state(surf_workstation_model->action_state_get(action->sleep.surf_sleep));
+  smx_req_t req;
+
+  while ((req = xbt_fifo_shift(action->request_list))) {
+    req->process_sleep.result = state;
+    req->issuer->waiting_action = NULL;
+    SIMIX_request_answer(req);
+  }
+
+  SIMIX_process_sleep_destroy(action);
+}
+
+void SIMIX_process_sleep_destroy(smx_action_t action)
+{
+  DEBUG1("Destroy action %p", action);
+  if (action->name)
+    xbt_free(action->name);
+  if (action->sleep.surf_sleep)
+    action->sleep.surf_sleep->model_type->action_unref(action->sleep.surf_sleep);
+#ifdef HAVE_TRACING
+  TRACE_smx_action_destroy(act);
+#endif
+  xbt_fifo_free(action->request_list);
+  xbt_free(action);
+}
+
+void SIMIX_process_sleep_suspend(smx_action_t action)
+{
+  surf_workstation_model->suspend(action->sleep.surf_sleep);
+}
+
+void SIMIX_process_sleep_resume(smx_action_t action)
+{
+  surf_workstation_model->resume(action->sleep.surf_sleep);
+}
+
+/**
+ * \brief Returns the current agent.
+ *
+ * This functions returns the currently running SIMIX process.
+ *
+ * \return The SIMIX process
+ */
+XBT_INLINE smx_process_t SIMIX_process_self(void)
+{
+  if(simix_global)
+    return SIMIX_context_self();
+  return NULL;
+}
+
 /** 
- * Calling this function makes the process process to yield. The process
- * that scheduled it returns from __SIMIX_process_schedule as if nothing
- * had happened.
- * 
- * Only the processes can call this function, giving back the control
- * to the maestro
+ * Calling this function makes the process to yield.
+ * Only the processes can call this function, giving back the control to maestro
  */
 void SIMIX_process_yield(void)
 {
-  DEBUG1("Yield process '%s'", simix_global->current_process->name);
-  xbt_assert0((simix_global->current_process !=
-               simix_global->maestro_process),
-              "You are not supposed to run this function in maestro context!");
-
-
+  smx_process_t self = SIMIX_process_self();
+  
+  DEBUG1("Yield process '%s'", self->name);
+  
   /* Go into sleep and return control to maestro */
-  SIMIX_context_suspend(simix_global->current_process->context);
+  SIMIX_context_suspend(self->context);
+
   /* Ok, maestro returned control to us */
+  DEBUG1("Maestro returned control to me: '%s'", self->name);
+  
+  if (self->iwannadie)
+    SIMIX_context_stop(self->context);
 
-  if (simix_global->current_process->iwannadie)
-    SIMIX_context_stop(simix_global->current_process->context);
-}
-
-void SIMIX_process_schedule(smx_process_t new_process)
-{
-  xbt_assert0(simix_global->current_process ==
-              simix_global->maestro_process,
-              "This function can only be called from maestro context");
-  DEBUG1("Scheduling context: '%s'", new_process->name);
-
-  /* update the current process */
-  simix_global->current_process = new_process;
-
-  /* schedule the context */
-  SIMIX_context_resume(new_process->context);
-  DEBUG1("Resumed from scheduling context: '%s'", new_process->name);
-
-  /* restore the current process to the previously saved process */
-  simix_global->current_process = simix_global->maestro_process;
+  if (self->doexception) {
+    DEBUG0("Wait, maestro left me an exception");
+    self->doexception = 0;
+    RETHROW;
+  }
 }
 
 /* callback: context fetching */
-ex_ctx_t *SIMIX_process_get_exception(void)
+xbt_running_ctx_t *SIMIX_process_get_running_context(void)
 {
-  return simix_global->current_process->exception;
+  return simix_global->current_process->running_ctx;
 }
 
 /* callback: termination */

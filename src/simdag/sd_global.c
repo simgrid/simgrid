@@ -232,10 +232,6 @@ xbt_dynar_t SD_simulate(double how_long)
     first_time = 0;
   }
 
-  if (how_long > 0) {
-    surf_timer_model->extension.timer.set(surf_get_clock() + how_long,
-                                          NULL, NULL);
-  }
   sd_global->watch_point_reached = 0;
 
   /* explore the runnable tasks */
@@ -253,13 +249,11 @@ xbt_dynar_t SD_simulate(double how_long)
          !sd_global->watch_point_reached) {
     surf_model_t model = NULL;
     /* dumb variables */
-    void *fun = NULL;
-    void *arg = NULL;
 
 
     DEBUG1("Total time: %f", total_time);
 
-    elapsed_time = surf_solve();
+    elapsed_time = surf_solve(how_long > 0 ? surf_get_clock() + how_long : -1.0);
     DEBUG1("surf_solve() returns %f", elapsed_time);
     if (elapsed_time > 0.0)
       total_time += elapsed_time;
@@ -338,9 +332,6 @@ xbt_dynar_t SD_simulate(double how_long)
         if (!xbt_dynar_member(changed_tasks, &task))
           xbt_dynar_push(changed_tasks, &task);
       }
-    }
-
-    while (surf_timer_model->extension.timer.get(&fun, (void *) &arg)) {
     }
   }
 

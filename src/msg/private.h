@@ -20,28 +20,18 @@
 SG_BEGIN_DECL()
 
 /**************** datatypes **********************************/
-/* this structure represents a mailbox */
-typedef struct s_msg_mailbox {
-  char *alias;                  /* the key of the mailbox in the global dictionary */
-  smx_cond_t cond;              /* the condition on the mailbox */
-  smx_rdv_t rdv;                /* SIMIX rendez-vous point */
-} s_msg_mailbox_t;
-
 typedef struct simdata_host {
   smx_host_t smx_host;          /* SURF modeling                                                                */
-  struct s_msg_mailbox **mailboxes;     /* mailboxes to store msg tasks of of the host  */
-  smx_mutex_t mutex;            /* mutex to access the host                                     */
+  msg_mailbox_t *mailboxes;     /* mailboxes to store msg tasks of of the host  */
 } s_simdata_host_t;
 
 /********************************* Task **************************************/
 
 typedef struct simdata_task {
   smx_action_t compute;         /* SURF modeling of computation  */
-  smx_comm_t comm;              /* SIMIX communication  */
+  smx_action_t comm;            /* SIMIX communication  */
   double message_size;          /* Data size  */
   double computation_amount;    /* Computation size  */
-  smx_cond_t cond;
-  smx_mutex_t mutex;            /* Task mutex */
   m_process_t sender;
   m_process_t receiver;
   m_host_t source;
@@ -102,8 +92,8 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 #define MSG_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
 /* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
 
-#define CHECK_HOST()  xbt_assert1(SIMIX_host_get_state(SIMIX_host_self())==1,\
-                                  "Host failed, you cannot call this function. (state=%d)",SIMIX_host_get_state(SIMIX_host_self()))
+#define CHECK_HOST()  xbt_assert1(SIMIX_req_host_get_state(SIMIX_host_self())==1,\
+                                  "Host failed, you cannot call this function. (state=%d)",SIMIX_req_host_get_state(SIMIX_host_self()))
 
 m_host_t __MSG_host_create(smx_host_t workstation, void *data);
 
@@ -111,7 +101,7 @@ void __MSG_host_destroy(m_host_t host);
 
 void __MSG_display_process_status(void);
 
-void __MSG_process_cleanup(void *arg);
+void __MSG_process_cleanup(smx_process_t smx_proc);
 void *_MSG_process_create_from_SIMIX(const char *name,
                                      xbt_main_func_t code, void *data,
                                      char *hostname, int argc,

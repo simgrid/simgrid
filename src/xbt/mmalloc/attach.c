@@ -107,13 +107,19 @@ void *mmalloc_attach(int fd, void *baseaddr)
   mdp->morecore = __mmalloc_mmap_morecore;
   mdp->fd = fd;
   mdp->base = mdp->breakval = mdp->top = baseaddr;
-
+  mdp->next_mdesc = NULL;
+  mdp->refcount = 1;
+  
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then we go for an anonymous map */
 
-  if (mdp->fd < 0)
+  if (mdp->fd < 0){
     mdp->flags |= MMALLOC_ANONYMOUS;
-
+    sem_init(&mdp->sem, 0, 1);
+  }else{
+    sem_init(&mdp->sem, 1, 1);
+  }
+  
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then open /dev/zero and use that to map to. */
 
@@ -127,15 +133,18 @@ void *mmalloc_attach(int fd, void *baseaddr)
   } else {
     abort();
   }
-  mdp = (struct mdesc *) mbase;
 
-  {                             /* create the mutex within that heap */
-    void *old_heap = mmalloc_get_current_heap();
-    mmalloc_set_current_heap(mbase);
-    mdp->mutex = xbt_os_mutex_init();
-    mmalloc_set_current_heap(old_heap);
+  /* Add the new heap to the linked list of heaps attached by mmalloc */  
+  if(__mmalloc_default_mdp){
+    mdp = __mmalloc_default_mdp;
+    while(mdp->next_mdesc)
+      mdp = mdp->next_mdesc;
+
+    LOCK(mdp);
+      mdp->next_mdesc = (struct mdesc *)mbase;
+    UNLOCK(mdp);
   }
-
+  
   return ((void *) mbase);
 }
 
@@ -165,7 +174,7 @@ void *mmalloc_attach(int fd, void *baseaddr)
 static struct mdesc *reuse(int fd)
 {
   struct mdesc mtemp;
-  struct mdesc *mdp = NULL;
+  struct mdesc *mdp = NULL, *mdptemp = NULL;
 
   if (lseek(fd, 0L, SEEK_SET) != 0)
     return NULL;
@@ -183,18 +192,23 @@ static struct mdesc *reuse(int fd)
     mdp = (struct mdesc *) mtemp.base;
     mdp->fd = fd;
     mdp->morecore = __mmalloc_mmap_morecore;
-    mdp->mutex = xbt_os_mutex_init();
+    if(!mdp->refcount){
+      sem_init(&mdp->sem, 1, 1);
+      mdp->refcount++;
+    }
     if (mdp->mfree_hook != NULL) {
       mmcheckf((void *) mdp, (void (*)(void)) NULL, 1);
     }
   }
+  
+  /* Add the new heap to the linked list of heaps attached by mmalloc */  
+  mdptemp = __mmalloc_default_mdp;
+  while(mdptemp->next_mdesc)
+    mdptemp = mdptemp->next_mdesc;
 
-  {                             /* create the mutex within that heap */
-    void *old_heap = mmalloc_get_current_heap();
-    mmalloc_set_current_heap(mdp);
-    mdp->mutex = xbt_os_mutex_init();
-    mmalloc_set_current_heap(old_heap);
-  }
-
+  LOCK(mdptemp);
+    mdptemp->next_mdesc = mdp;
+  UNLOCK(mdptemp);
+  
   return (mdp);
 }

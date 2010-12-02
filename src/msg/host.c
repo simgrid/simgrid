@@ -50,12 +50,11 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
     sprintf(alias, "%s:%d", name, i);
 
     /* the key of the mailbox (in this case) is build from the name of the host and the channel number */
-    simdata->mailboxes[i] = MSG_mailbox_create(alias);
+    simdata->mailboxes[i] = MSG_mailbox_new(xbt_strdup(alias));
     memset(alias, 0, MAX_ALIAS_NAME + 1);
   }
 
-  simdata->mutex = SIMIX_mutex_init();
-  SIMIX_host_set_data(workstation, host);
+  SIMIX_req_host_set_data(workstation, host);
 
   /* Update global variables */
   xbt_fifo_unshift(msg_global->host, host);
@@ -148,7 +147,7 @@ void __MSG_host_destroy(m_host_t host)
 
   if (msg_global->max_channel > 0)
     free(simdata->mailboxes);
-  SIMIX_mutex_destroy(simdata->mutex);
+
   free(simdata);
 
   /* Clean host structure */
@@ -194,7 +193,7 @@ double MSG_get_host_speed(m_host_t h)
 {
   xbt_assert0((h != NULL), "Invalid parameters");
 
-  return (SIMIX_host_get_speed(h->simdata->smx_host));
+  return (SIMIX_req_host_get_speed(h->simdata->smx_host));
 }
 
 /** \ingroup m_host_management
@@ -219,7 +218,7 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters (host is NULL)");
 
-  return (SIMIX_host_get_properties(host->simdata->smx_host));
+  return (SIMIX_req_host_get_properties(host->simdata->smx_host));
 }
 
 
@@ -231,5 +230,5 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
 int MSG_host_is_avail(m_host_t h)
 {
   xbt_assert0((h != NULL), "Invalid parameters (host is NULL)");
-  return (SIMIX_host_get_state(h->simdata->smx_host));
+  return (SIMIX_req_host_get_state(h->simdata->smx_host));
 }

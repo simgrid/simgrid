@@ -15,6 +15,7 @@
 
 #include "simix/simix.h"        /* used implementation */
 #include "simix/datatypes.h"
+#include "../simix/private.h" /* FIXME */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt,
                                 "Synchronization mechanism");
@@ -61,11 +62,10 @@ xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
   res->userparam = param;
   res->code = code;
   res->father_data = SIMIX_process_get_data(SIMIX_process_self());
-  //   char*name = bprintf("%s#%p",SIMIX_process_get_name(SIMIX_process_self()), param);
+  /*   char*name = bprintf("%s#%p",SIMIX_process_self_get_name(), param); */
   res->s_process = SIMIX_process_create(name,
                                         xbt_thread_create_wrapper, res,
-                                        SIMIX_host_get_name(SIMIX_host_self
-                                                            ()), 0, NULL,
+                                        SIMIX_host_self_get_name(), 0, NULL,
                                         /*props */ NULL);
   res->joinable = joinable;
   res->done = 0;
@@ -106,14 +106,14 @@ void xbt_thread_join(xbt_thread_t thread)
 
 void xbt_thread_cancel(xbt_thread_t thread)
 {
-  SIMIX_process_kill(thread->s_process);
+  SIMIX_process_kill(thread->s_process, SIMIX_process_self());
   free(thread->name);
   free(thread);
 }
 
 void xbt_thread_exit()
 {
-  SIMIX_process_kill(SIMIX_process_self());
+  SIMIX_process_kill(SIMIX_process_self(), SIMIX_process_self());
 }
 
 xbt_thread_t xbt_thread_self(void)
@@ -134,22 +134,22 @@ struct s_xbt_mutex_ {
 
 xbt_mutex_t xbt_mutex_init(void)
 {
-  return (xbt_mutex_t) SIMIX_mutex_init();
+  return (xbt_mutex_t) SIMIX_req_mutex_init();
 }
 
 void xbt_mutex_acquire(xbt_mutex_t mutex)
 {
-  SIMIX_mutex_lock((smx_mutex_t) mutex);
+  SIMIX_req_mutex_lock((smx_mutex_t) mutex);
 }
 
 void xbt_mutex_release(xbt_mutex_t mutex)
 {
-  SIMIX_mutex_unlock((smx_mutex_t) mutex);
+  SIMIX_req_mutex_unlock((smx_mutex_t) mutex);
 }
 
 void xbt_mutex_destroy(xbt_mutex_t mutex)
 {
-  SIMIX_mutex_destroy((smx_mutex_t) mutex);
+  SIMIX_req_mutex_destroy((smx_mutex_t) mutex);
 }
 
 /***** condition related functions *****/
@@ -159,30 +159,30 @@ struct s_xbt_cond_ {
 
 xbt_cond_t xbt_cond_init(void)
 {
-  return (xbt_cond_t) SIMIX_cond_init();
+  return (xbt_cond_t) SIMIX_req_cond_init();
 }
 
 void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex)
 {
-  SIMIX_cond_wait((smx_cond_t) cond, (smx_mutex_t) mutex);
+  SIMIX_req_cond_wait((smx_cond_t) cond, (smx_mutex_t) mutex);
 }
 
 void xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay)
 {
-  SIMIX_cond_wait_timeout((smx_cond_t) cond, (smx_mutex_t) mutex, delay);
+  SIMIX_req_cond_wait_timeout((smx_cond_t) cond, (smx_mutex_t) mutex, delay);
 }
 
 void xbt_cond_signal(xbt_cond_t cond)
 {
-  SIMIX_cond_signal((smx_cond_t) cond);
+  SIMIX_req_cond_signal((smx_cond_t) cond);
 }
 
 void xbt_cond_broadcast(xbt_cond_t cond)
 {
-  SIMIX_cond_broadcast((smx_cond_t) cond);
+  SIMIX_req_cond_broadcast((smx_cond_t) cond);
 }
 
 void xbt_cond_destroy(xbt_cond_t cond)
 {
-  SIMIX_cond_destroy((smx_cond_t) cond);
+  SIMIX_req_cond_destroy((smx_cond_t) cond);
 }

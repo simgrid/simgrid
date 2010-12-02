@@ -23,14 +23,14 @@ static double format_begin_of_time = -1;
     if (precision == -1 && length == -1) { \
       tmp = bprintf("%" letter, data); \
     } else if (precision == -1) { \
-      sprintf(tmpfmt,"%% %d" letter,length); \
+      sprintf(tmpfmt,"%%%d" letter,length); \
       tmp = bprintf(tmpfmt, data); \
       length = -1; \
     } else if (length == -1) { \
       tmp = bprintf("%.*" letter, precision, data);\
       precision = -1; \
     } else { \
-      sprintf(tmpfmt,"%% %d.*" letter,length); \
+      sprintf(tmpfmt,"%%%d.*" letter,length); \
       tmp = bprintf(tmpfmt, precision, data); \
       length = precision = -1; \
     } \
@@ -214,7 +214,7 @@ static void xbt_log_layout_format_dynamic(xbt_log_layout_t l,
     if (precision == -1 && length == -1) { \
       p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%" letter, data); \
     } else if (precision == -1) { \
-      sprintf(tmpfmt,"%% %d" letter,length); \
+      sprintf(tmpfmt,"%%%d" letter,length); \
       p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), tmpfmt, data); \
       length = -1; \
     } else if (length == -1) { \
@@ -223,7 +223,7 @@ static void xbt_log_layout_format_dynamic(xbt_log_layout_t l,
                    data);\
       precision = -1; \
     } else { \
-      sprintf(tmpfmt,"%% %d.%d" letter,length, \
+      sprintf(tmpfmt,"%%%d.%d" letter,length, \
           (int) MIN(XBT_LOG_BUFF_SIZE - (p - ev->buffer), precision));\
       p += sprintf(p, tmpfmt, data);\
       length = precision = -1; \

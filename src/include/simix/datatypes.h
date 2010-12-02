@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMIX_DATATYPE_H
-#define SIMIX_DATATYPE_H
+#ifndef _SIMIX_DATATYPES_H
+#define _SIMIX_DATATYPES_H
 #include "xbt/misc.h"
 #include "xbt/swag.h"
 #include "xbt/fifo.h"
@@ -27,32 +27,34 @@ SG_BEGIN_DECL()
     \see m_host_management
   @{ */
 typedef struct s_smx_host *smx_host_t;
+typedef enum {
+  SIMIX_WAITING,
+  SIMIX_READY,
+  SIMIX_RUNNING,
+  SIMIX_DONE,
+  SIMIX_CANCELED,
+  SIMIX_FAILED,
+  SIMIX_SRC_HOST_FAILURE,
+  SIMIX_DST_HOST_FAILURE,
+  SIMIX_SRC_TIMEOUT,
+  SIMIX_DST_TIMEOUT,
+  SIMIX_LINK_FAILURE,
+} e_smx_state_t;
 /** @} */
 
 
-/* ******************************** Syncro ************************************ */
-typedef struct s_smx_mutex {
-  xbt_swag_t sleeping;          /* list of sleeping process */
-  int refcount;
-} s_smx_mutex_t;
-typedef s_smx_mutex_t *smx_mutex_t;
+typedef struct s_smx_timer* smx_timer_t;
 
-typedef struct s_smx_cond {
-  xbt_swag_t sleeping;          /* list of sleeping process */
-  smx_mutex_t mutex;
-  xbt_fifo_t actions;           /* list of actions */
-} s_smx_cond_t;
-typedef s_smx_cond_t *smx_cond_t;
 
-typedef struct s_smx_sem {
-  xbt_fifo_t sleeping;          /* list of sleeping process */
-  int capacity;
-  xbt_fifo_t actions;           /* list of actions */
-} s_smx_sem_t;
-typedef s_smx_sem_t *smx_sem_t;
+/* ******************************** Synchro ************************************ */
+typedef struct s_smx_mutex *smx_mutex_t;
+typedef struct s_smx_cond *smx_cond_t;
+typedef struct s_smx_sem *smx_sem_t;
 
 /********************************** Action *************************************/
-typedef struct s_smx_action *smx_action_t;
+typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized action handlers */
+
+
 
 /* ****************************** Process *********************************** */
 /** @brief Agent datatype  
@@ -67,13 +69,25 @@ typedef struct s_smx_process *smx_process_t;
 
 typedef struct s_smx_context *smx_context_t;
 
+/* User create and kill process, the function must accept the folling parameters:
+ * const char *name: a name for the object. It is for user-level information and can be NULL
+ * xbt_main_func_t code: is a function describing the behavior of the agent
+ * void *data: data a pointer to any data one may want to attach to the new object.
+ * smx_host_t host: the location where the new agent is executed
+ * int argc, char **argv: parameters passed to code
+ *
+ * */
+typedef void *(*smx_creation_func_t) ( /*name */ const char *,
+                                      /*code */ xbt_main_func_t,
+                                      /*userdata */ void *,
+                                      /*hostname */ char *,
+                                      /* argc */ int,
+                                      /* argv */ char **,
+                                      /* props */ xbt_dict_t);
+
+
 /******************************* Networking ***********************************/
 typedef struct s_smx_rvpoint *smx_rdv_t;
-typedef struct s_smx_comm *smx_comm_t;
-typedef enum { comm_send,
-  comm_recv
-} smx_comm_type_t;
-
 
 
 SG_END_DECL()

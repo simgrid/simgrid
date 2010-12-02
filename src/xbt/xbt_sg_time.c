@@ -7,12 +7,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras/Virtu/virtu_sg.h"
+#include "simix/simix.h"
 
 /*
  * Time elapsed since the begining of the simulation.
  */
 double xbt_time()
 {
+  /* FIXME: check if we should use the request mechanism or not */
   return SIMIX_get_clock();
 }
 
@@ -21,25 +23,11 @@ double xbt_time()
  */
 void xbt_sleep(double sec)
 {
-  smx_action_t act_sleep;
-  smx_process_t proc = SIMIX_process_self();
-  smx_mutex_t mutex;
-  smx_cond_t cond;
-  /* create action to sleep */
-  act_sleep = SIMIX_action_sleep(SIMIX_process_get_host(proc), sec);
-
-  mutex = SIMIX_mutex_init();
-  SIMIX_mutex_lock(mutex);
-  /* create conditional and register action to it */
-  cond = SIMIX_cond_init();
-
-  SIMIX_register_action_to_condition(act_sleep, cond);
-  SIMIX_cond_wait(cond, mutex);
-  SIMIX_mutex_unlock(mutex);
-
-  /* remove variables */
-  SIMIX_cond_destroy(cond);
-  SIMIX_mutex_destroy(mutex);
-  SIMIX_action_destroy(act_sleep);
-
+  SIMIX_req_process_sleep(sec);
 }
+
+const char *xbt_procname(void)
+{
+  return SIMIX_process_self_get_name();
+}
+

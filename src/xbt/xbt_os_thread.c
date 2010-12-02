@@ -43,7 +43,8 @@ typedef struct xbt_os_thread_ {
   char *name;
   void *param;
   pvoid_f_pvoid_t start_routine;
-  ex_ctx_t *exception;
+  xbt_running_ctx_t *running_ctx;
+  void *extra_data;
 } s_xbt_os_thread_t;
 static xbt_os_thread_t main_thread = NULL;
 
@@ -58,9 +59,9 @@ static void xbt_os_thread_free_thread_data(void *d)
 }
 
 /* callback: context fetching */
-static ex_ctx_t *_os_thread_ex_ctx(void)
+static xbt_running_ctx_t *_os_thread_get_running_ctx(void)
 {
-  return xbt_os_thread_self()->exception;
+  return xbt_os_thread_self()->running_ctx;
 }
 
 /* callback: termination */
@@ -82,15 +83,20 @@ void xbt_os_thread_mod_preinit(void)
   if ((errcode = pthread_key_create(&xbt_self_thread_key, NULL)))
     THROW0(system_error, errcode,
            "pthread_key_create failed for xbt_self_thread_key");
-
+  
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
   main_thread->name = (char *) "main";
   main_thread->start_routine = NULL;
   main_thread->param = NULL;
-  main_thread->exception = xbt_new(ex_ctx_t, 1);
-  XBT_CTX_INITIALIZE(main_thread->exception);
+  main_thread->running_ctx = xbt_new(xbt_running_ctx_t, 1);
+  XBT_RUNNING_CTX_INITIALIZE(main_thread->running_ctx);
 
-  __xbt_ex_ctx = _os_thread_ex_ctx;
+  if ((errcode = pthread_setspecific(xbt_self_thread_key, main_thread)))
+    THROW0(system_error, errcode,
+           "pthread_setspecific failed for xbt_self_thread_key");
+
+  
+  __xbt_running_ctx_fetch = _os_thread_get_running_ctx;
   __xbt_ex_terminate = _os_thread_ex_terminate;
 
   thread_mod_inited = 1;
@@ -109,7 +115,7 @@ void xbt_os_thread_mod_postexit(void)
 
   //   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
   //     THROW0(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
-  free(main_thread->exception);
+  free(main_thread->running_ctx);
   free(main_thread);
   main_thread = NULL;
   thread_mod_inited = 0;
@@ -118,7 +124,7 @@ void xbt_os_thread_mod_postexit(void)
 #endif
 
   /* Restore the default exception setup */
-  __xbt_ex_ctx = &__xbt_ex_ctx_default;
+  __xbt_running_ctx_fetch = &__xbt_ex_ctx_default;
   __xbt_ex_terminate = &__xbt_ex_terminate_default;
 }
 
@@ -142,7 +148,8 @@ static void *wrapper_start_routine(void *s)
 
 xbt_os_thread_t xbt_os_thread_create(const char *name,
                                      pvoid_f_pvoid_t start_routine,
-                                     void *param)
+                                     void *param,
+                                     void *extra_data)
 {
   int errcode;
 
@@ -150,9 +157,10 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
   res_thread->name = xbt_strdup(name);
   res_thread->start_routine = start_routine;
   res_thread->param = param;
-  res_thread->exception = xbt_new(ex_ctx_t, 1);
-  XBT_CTX_INITIALIZE(res_thread->exception);
-
+  res_thread->running_ctx = xbt_new(xbt_running_ctx_t, 1);
+  XBT_RUNNING_CTX_INITIALIZE(res_thread->running_ctx);
+  res_thread->extra_data = extra_data;
+  
   if ((errcode = pthread_create(&(res_thread->t), NULL,
                                 wrapper_start_routine, res_thread)))
     THROW1(system_error, errcode,
@@ -172,6 +180,16 @@ const char *xbt_os_thread_self_name(void)
   return me ? me->name : "main";
 }
 
+void xbt_os_thread_set_extra_data(void *data)
+{
+  xbt_os_thread_self()->extra_data = data;
+}
+
+void *xbt_os_thread_get_extra_data(void)
+{
+  return xbt_os_thread_self()->extra_data;
+}
+
 void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
 {
 
@@ -180,8 +198,8 @@ void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
   if ((errcode = pthread_join(thread->t, thread_return)))
     THROW1(system_error, errcode, "pthread_join failed: %s",
            strerror(errcode));
-  if (thread->exception)
-    free(thread->exception);
+  if (thread->running_ctx)
+    free(thread->running_ctx);
 
   if (thread->name)
     free(thread->name);
@@ -205,10 +223,13 @@ xbt_os_thread_t xbt_os_thread_self(void)
     return NULL;
 
   res = pthread_getspecific(xbt_self_thread_key);
-  if (!res)
-    res = main_thread;
 
   return res;
+}
+
+void xbt_os_thread_detach(xbt_os_thread_t thread)
+{
+  pthread_detach(thread->t);
 }
 
 #include <sched.h>
@@ -457,7 +478,7 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
 #else                           /* damn, no sem_init(). Reimplement it */
 
   xbt_os_mutex_acquire(next_sem_ID_lock);
-  res->name = bprintf("/%d.%d", (*xbt_getpid) (), ++next_sem_ID);
+  res->name = bprintf("/%d", ++next_sem_ID);
   xbt_os_mutex_release(next_sem_ID_lock);
 
   res->ps = sem_open(res->name, O_CREAT, 0644, value);
@@ -709,6 +730,12 @@ void xbt_os_thread_exit(int *retval)
   else
     ExitThread(0);
 }
+
+void xbt_os_thread_detach(xbt_os_thread_t thread)
+{
+  THROW_UNIMPLEMENTED;
+}
+
 
 xbt_os_thread_t xbt_os_thread_self(void)
 {

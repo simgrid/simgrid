@@ -42,7 +42,7 @@ void SIMIX_create_environment(const char *file)
   parse_platform_file(file);
   surf_config_models_create_elms();
   start = xbt_os_time();
-
+  /* FIXME: what time are we measuring ??? */
   end = xbt_os_time();
   DEBUG1("PARSE TIME: %lg", (end - start));
 
@@ -52,6 +52,7 @@ void SIMIX_create_environment(const char *file)
 
   xbt_dict_foreach(surf_model_resource_set(surf_workstation_model), cursor,
                    name, workstation) {
-    __SIMIX_host_create(name, workstation, NULL);
+    SIMIX_host_create(name, workstation, NULL);
   }
+  surf_presolve();
 }

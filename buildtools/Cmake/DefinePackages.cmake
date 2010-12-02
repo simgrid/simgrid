@@ -17,6 +17,7 @@ set(EXTRA_DIST
 	src/xbt/backtrace_windows.c
 	src/xbt/backtrace_dummy.c
 	src/xbt/setset_private.h
+	src/xbt/threadpool_private.h
 	src/xbt/mmalloc/attach.c
 	src/xbt/mmalloc/detach.c	
 	src/xbt/mmalloc/keys.c
@@ -197,6 +198,7 @@ set(XBT_SRC
 	src/xbt/cunit.c
 	src/xbt/graphxml_parse.c
 	src/xbt/setset.c
+	src/xbt/threadpool.c
 )
 
 if(HAVE_MMAP)
@@ -230,7 +232,6 @@ set(SURF_SRC
 	src/surf/network_vivaldi.c
 	src/surf/network_constant.c
 	src/surf/workstation.c
-	src/surf/surf_model_timer.c
 	src/surf/workstation_ptask_L07.c
 	src/surf/cpu_ti.c
 	src/surf/cpu_im.c
@@ -242,12 +243,13 @@ set(SIMIX_SRC
 	src/simix/smx_deployment.c
 	src/simix/smx_environment.c
 	src/simix/smx_host.c
-	src/simix/smx_action.c
 	src/simix/smx_process.c
 	src/simix/smx_context.c
 	src/simix/smx_synchro.c
 	src/simix/smx_network.c
 	src/simix/smx_context_base.c
+	src/simix/smx_user.c
+	src/simix/smx_smurf.c
 )
 
 set(MSG_SRC
@@ -357,11 +359,11 @@ set(RUBY_SRC
 set(MC_SRC
 	src/mc/mc_memory.c
 	src/mc/mc_checkpoint.c
+	src/mc/mc_state.c
 	src/mc/memory_map.c
 	src/mc/mc_global.c
-	src/mc/mc_dfs.c
 	src/mc/mc_dpor.c
-	src/mc/mc_transition.c
+	src/mc/mc_request.c
 	src/mc/private.h
 )
 

@@ -22,7 +22,8 @@ void smx_ctx_base_factory_init(smx_context_factory_t * factory)
   (*factory)->free = smx_ctx_base_free;
   (*factory)->stop = smx_ctx_base_stop;
   (*factory)->suspend = NULL;
-  (*factory)->resume = NULL;
+  (*factory)->runall = NULL;
+  (*factory)->self = smx_ctx_base_self;
 
   (*factory)->name = "base context factory";
 }
@@ -38,8 +39,8 @@ smx_context_t
 smx_ctx_base_factory_create_context_sized(size_t size,
                                           xbt_main_func_t code, int argc,
                                           char **argv,
-                                          void_f_pvoid_t cleanup_func,
-                                          void *cleanup_arg)
+                                          void_pfn_smxprocess_t cleanup_func,
+                                          smx_process_t process)
 {
   smx_context_t context = xbt_malloc0(size);
 
@@ -47,7 +48,7 @@ smx_ctx_base_factory_create_context_sized(size_t size,
      otherwise is the context for maestro */
   if (code) {
     context->cleanup_func = cleanup_func;
-    context->cleanup_arg = cleanup_arg;
+    context->process = process;
     context->argc = argc;
     context->argv = argv;
     context->code = code;
@@ -80,6 +81,11 @@ void smx_ctx_base_stop(smx_context_t context)
 {
 
   if (context->cleanup_func)
-    (*(context->cleanup_func)) (context->cleanup_arg);
+    (*(context->cleanup_func)) (context->process);
 
+}
+
+smx_process_t smx_ctx_base_self(void)
+{
+  return simix_global->current_process;
 }

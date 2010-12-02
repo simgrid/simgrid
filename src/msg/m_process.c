@@ -7,7 +7,6 @@
 #include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "../simix/private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
                                 "Logging specific to MSG (process)");
@@ -27,15 +26,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
  */
 
 /******************************** Process ************************************/
-void __MSG_process_cleanup(void *arg)
+void __MSG_process_cleanup(smx_process_t smx_proc)
 {
   /* arg is a pointer to a simix process, we can get the msg process with the field data */
-  m_process_t proc = ((smx_process_t) arg)->data;
+  m_process_t proc = SIMIX_req_process_get_data(smx_proc);
 #ifdef HAVE_TRACING
   TRACE_msg_process_end(proc);
 #endif
   xbt_fifo_remove(msg_global->process_list, proc);
-  SIMIX_process_cleanup(arg);
+  SIMIX_process_cleanup(smx_proc);
   if (proc->name) {
     free(proc->name);
     proc->name = NULL;
@@ -146,8 +145,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
   smx_process_t smx_process = NULL;
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
 
-  smx_process = SIMIX_process_create(name, code,
-                                     (void *) process, host->name,
+  smx_process = SIMIX_process_create(name, code, (void *) process, host->name,
                                      argc, argv, properties);
   if (!smx_process) {
     xbt_free(process);
@@ -166,7 +164,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
   simdata->s_process = smx_process;
 
   if (SIMIX_process_self()) {
-    simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
+    simdata->PPID = MSG_process_get_PID(SIMIX_process_self_get_data());
   } else {
     simdata->PPID = -1;
   }
@@ -209,17 +207,11 @@ void MSG_process_kill(m_process_t process)
          process->name, p_simdata->PID, p_simdata->m_host->name);
 
   if (p_simdata->waiting_task && p_simdata->waiting_task->simdata->comm) {
-    SIMIX_communication_cancel(p_simdata->waiting_task->simdata->comm);
+    SIMIX_req_comm_cancel(p_simdata->waiting_task->simdata->comm);
   }
-
-  if (p_simdata->waiting_action) {
-    DEBUG1("Canceling waiting task %s",
-           SIMIX_action_get_name(p_simdata->waiting_action));
-    SIMIX_action_cancel(p_simdata->waiting_action);
-  }
-
+ 
   xbt_fifo_remove(msg_global->process_list, process);
-  SIMIX_process_kill(process->simdata->s_process);
+  SIMIX_req_process_kill(process->simdata->s_process);
 
   return;
 }
@@ -238,7 +230,7 @@ MSG_error_t MSG_process_change_host(m_host_t host)
 #ifdef HAVE_TRACING
   TRACE_msg_process_change_host(process, now, host);
 #endif
-  SIMIX_process_change_host(process->simdata->s_process, now->name,
+  SIMIX_req_process_change_host(process->simdata->s_process, now->name,
                             host->name);
   return MSG_OK;
 }
@@ -374,7 +366,7 @@ xbt_dict_t MSG_process_get_properties(m_process_t process)
 {
   xbt_assert0((process != NULL), "Invalid parameters");
 
-  return (SIMIX_process_get_properties
+  return (SIMIX_req_process_get_properties
           (((simdata_process_t) process->simdata)->s_process));
 
 }
@@ -407,13 +399,9 @@ int MSG_process_self_PPID(void)
  */
 m_process_t MSG_process_self(void)
 {
-  smx_process_t proc = SIMIX_process_self();
-  if (proc != NULL) {
-    return (m_process_t) proc->data;
-  } else {
-    return NULL;
-  }
-
+  /* we cannot make a SIMIX request here because this may create an exception or a logging
+     event, and both mechanisms call MSG_process_self() again (via xbt_getpid()) */
+  return (m_process_t) SIMIX_process_self_get_data();
 }
 
 /** \ingroup m_process_management
@@ -432,7 +420,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
   TRACE_msg_process_suspend(process);
 #endif
 
-  SIMIX_process_suspend(process->simdata->s_process);
+  SIMIX_req_process_suspend(process->simdata->s_process);
   MSG_RETURN(MSG_OK);
 }
 
@@ -453,7 +441,7 @@ MSG_error_t MSG_process_resume(m_process_t process)
   TRACE_msg_process_resume(process);
 #endif
 
-  SIMIX_process_resume(process->simdata->s_process);
+  SIMIX_req_process_resume(process->simdata->s_process);
   MSG_RETURN(MSG_OK);
 }
 
@@ -467,5 +455,5 @@ int MSG_process_is_suspended(m_process_t process)
 {
   xbt_assert0(((process != NULL)
                && (process->simdata)), "Invalid parameters");
-  return SIMIX_process_is_suspended(process->simdata->s_process);
+  return SIMIX_req_process_is_suspended(process->simdata->s_process);
 }

@@ -949,7 +949,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 /*******************************************************************************/
 XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dynar_remove functions")
 {
-  xbt_dynar_t d = xbt_dynar_new(sizeof(int), NULL);
+  xbt_dynar_t d = xbt_dynar_new(sizeof(unsigned int), NULL);
   unsigned int cursor;
   int cpt;
 

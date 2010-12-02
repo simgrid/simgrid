@@ -85,7 +85,7 @@ void rctx_init(void)
   sigwaiter_cond = xbt_os_cond_init();
   xbt_os_mutex_acquire(sigwaiter_mutex);
   sigwaiter_thread = xbt_os_thread_create("Armaggedon request waiter",
-                                          armageddon_sigwaiter, NULL);
+                                          armageddon_sigwaiter, NULL, NULL);
   /* Wait for thread to start... */
   xbt_os_cond_wait(sigwaiter_cond, sigwaiter_mutex);
   xbt_os_mutex_release(sigwaiter_mutex);
@@ -211,6 +211,7 @@ void rctx_empty(rctx_t rc)
   rc->is_background = 0;
   rc->is_stoppable = 0;
   rc->output = e_output_check;
+  rc->output_sort = 0;
   rc->brokenpipe = 0;
   rc->timeout = 0;
   rc->interrupted = 0;
@@ -225,6 +226,7 @@ rctx_t rctx_new()
   rctx_t res = xbt_new0(s_rctx_t, 1);
 
   res->input = xbt_strbuff_new();
+  res->output_sort = 0;
   res->output_wanted = xbt_strbuff_new();
   res->output_got = xbt_strbuff_new();
   res->interruption = xbt_os_mutex_init();
@@ -338,6 +340,10 @@ void rctx_pushline(const char *filepos, char kind, char *line)
       rctx->expected_return = atoi(line + strlen("expect return "));
       VERB2("[%s] (next command must return code %d)",
             filepos, rctx->expected_return);
+
+    } else if (!strncmp(line, "output sort", strlen("output sort"))) {
+      rctx->output_sort = 1;
+      VERB1("[%s] (sort output of next command)", filepos);
 
     } else if (!strncmp(line, "output ignore", strlen("output ignore"))) {
       rctx->output = e_output_ignore;
@@ -592,9 +598,9 @@ void rctx_start(void)
 
     rctx->reader_done = 0;
     rctx->reader =
-        xbt_os_thread_create("reader", thread_reader, (void *) rctx);
+        xbt_os_thread_create("reader", thread_reader, (void *) rctx, NULL);
     rctx->writer =
-        xbt_os_thread_create("writer", thread_writer, (void *) rctx);
+        xbt_os_thread_create("writer", thread_writer, (void *) rctx, NULL);
 
   } else {                      /* child */
     close(child_in[1]);
@@ -625,7 +631,7 @@ void rctx_start(void)
     DEBUG2("RCTX: new bg=%p, new fg=%p", old, rctx);
 
     DEBUG2("Launch a thread to wait for %s %d", old->cmd, old->pid);
-    runner = xbt_os_thread_create(old->cmd, rctx_wait, (void *) old);
+    runner = xbt_os_thread_create(old->cmd, rctx_wait, (void *) old, NULL);
     old->runner = runner;
     VERB3("Launched thread %p to wait for %s %d", runner, old->cmd,
           old->pid);
@@ -633,6 +639,23 @@ void rctx_start(void)
     xbt_os_mutex_release(armageddon_mutex);
   }
 }
+
+/* Helper function to sort the output */
+static int cmpstringp(const void *p1, const void *p2) {
+  /* Sort only using the 19 first chars (date+pid)
+   * If the dates are the same, then, sort using pointer address (be stable wrt output of each process)
+   */
+  const char *s1 = *((const char**) p1);
+  const char *s2 = *((const char**) p2);
+
+  DEBUG2("Compare strings '%s' and '%s'", s1, s2);
+
+  int res = strncmp(s1, s2, 19);
+  if (res == 0)
+    return p1>p2;
+  return res;
+}
+
 
 /* Waits for the child to end (or to timeout), and check its
    ending conditions. This is launched from rctx_start but either in main
@@ -767,6 +790,20 @@ void *rctx_wait(void *r)
     errcode = 1;
   }
 
+  if (rctx->output_sort) {
+    xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
+    xbt_dynar_sort(a,cmpstringp);
+    char *sorted_output = xbt_str_join(a, "\n");
+    strcpy(rctx->output_got->data, sorted_output);
+    xbt_free(sorted_output);
+    xbt_dynar_free(&a);
+    /* If an empty line moved in first position, move it back to the end */
+    if (rctx->output_got->data[0]=='\n') {
+      fprintf(stderr,"XXX");
+      memmove(rctx->output_got->data,rctx->output_got->data+1,rctx->output_got->used-1);
+      rctx->output_got->data[rctx->output_got->used-1] = '\n';
+    }
+  }
   if ((errcode && errcode != 1) || rctx->interrupted) {
     /* checking output, and matching */
     xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");

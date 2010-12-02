@@ -18,13 +18,13 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ruby);
 
 static smx_context_t
 smx_ctx_ruby_create_context(xbt_main_func_t code, int argc, char **argv,
-                            void_f_pvoid_t cleanup_func,
-                            void *cleanup_arg);
+    void_pfn_smxprocess_t cleanup_func,
+    smx_process_t process);
 
 static void smx_ctx_ruby_stop(smx_context_t context);
 static void smx_ctx_ruby_suspend(smx_context_t context);
 static void smx_ctx_ruby_resume(smx_context_t new_context);
-
+static void smx_ctx_ruby_runall(xbt_swag_t processes);
 
 void SIMIX_ctx_ruby_factory_init(smx_context_factory_t * factory)
 {
@@ -35,21 +35,22 @@ void SIMIX_ctx_ruby_factory_init(smx_context_factory_t * factory)
   /* Do not overload that method (*factory)->free */
   (*factory)->stop = smx_ctx_ruby_stop;
   (*factory)->suspend = smx_ctx_ruby_suspend;
-  (*factory)->resume = smx_ctx_ruby_resume;
   (*factory)->name = "smx_ruby_context_factory";
+  (*factory)->runall = smx_ctx_ruby_runall;
   ruby_init();
   ruby_init_loadpath();
 }
 
 static smx_context_t
 smx_ctx_ruby_create_context(xbt_main_func_t code, int argc, char **argv,
-                            void_f_pvoid_t cleanup_func, void *cleanup_arg)
+    void_pfn_smxprocess_t cleanup_func,
+    smx_process_t process)
 {
 
   smx_ctx_ruby_t context = (smx_ctx_ruby_t)
       smx_ctx_base_factory_create_context_sized(sizeof(s_smx_ctx_ruby_t),
                                                 code, argc, argv,
-                                                cleanup_func, cleanup_arg);
+                                                cleanup_func, process);
 
   /* if the user provided a function for the process , then use it
      Otherwise it's the context for maestro */
@@ -109,4 +110,14 @@ static void smx_ctx_ruby_resume(smx_context_t new_context)
   smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) new_context;
   rb_process_schedule(ctx_ruby->process);
 
+}
+
+static void smx_ctx_ruby_runall(xbt_swag_t processes)
+{
+  smx_process_t process;
+  while((process = xbt_swag_extract(processes))){
+    simix_global->current_process = process;
+    smx_ctx_ruby_resume(process->context);
+    simix_global->current_process = simix_global->maestro_process;
+  } 
 }

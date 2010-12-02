@@ -20,26 +20,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_virtu_emul, gras_virtu,
 /*** CPU burning */
 void gras_cpu_burn(double flops)
 {
-  smx_action_t act;
-  smx_cond_t cond;
-  smx_mutex_t mutex;
+  smx_action_t execution;
 
-  if (flops > 0) {
-    cond = SIMIX_cond_init();
-    mutex = SIMIX_mutex_init();
-
-    SIMIX_mutex_lock(mutex);
-    act = SIMIX_action_execute(SIMIX_host_self(), "task", flops);
-
-    SIMIX_register_action_to_condition(act, cond);
-    SIMIX_cond_wait(cond, mutex);
-    SIMIX_unregister_action_to_condition(act, cond);
-
-    SIMIX_action_destroy(act);
-    SIMIX_mutex_unlock(mutex);
-
-    SIMIX_cond_destroy(cond);
-    SIMIX_mutex_destroy(mutex);
+  if (flops > 0){
+    execution = SIMIX_req_host_execute("task", SIMIX_host_self(), flops);
+    SIMIX_req_host_execution_wait(execution);
   }
 }
 

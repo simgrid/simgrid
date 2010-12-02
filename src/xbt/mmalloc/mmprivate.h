@@ -16,6 +16,7 @@
 #include "portable.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
+#include <semaphore.h>
 
 #ifdef HAVE_LIMITS_H
 #  include <limits.h>
@@ -140,7 +141,16 @@ struct mstats {
    if such a file exists. */
 
 struct mdesc {
-  xbt_os_mutex_t mutex;
+
+  /* Semaphore locking the access to the heap */
+  sem_t sem;
+
+  /* Number of processes that attached the heap */
+  unsigned int refcount;
+
+  /* Chained lists of mdescs */
+  struct mdesc *next_mdesc;
+  
   /* The "magic number" for an mmalloc file. */
   char magic[MMALLOC_MAGIC_SIZE];
 
@@ -298,19 +308,17 @@ extern void *__mmalloc_remap_core(struct mdesc *mdp);
    ? __mmalloc_default_mdp  \
    : (struct mdesc *) (md))
 
-/* Thread-safety (if the mutex is already created)*/
+/* Thread-safety (if the sem is already created)*/
 #define LOCK(md)                                        \
-  do {                                                  \
+  do {\
     struct mdesc *lock_local_mdp = MD_TO_MDP(md);       \
-    if (lock_local_mdp->mutex)                          \
-      xbt_os_mutex_acquire(lock_local_mdp->mutex);     \
+    sem_wait(&lock_local_mdp->sem);     \
   } while (0)
 
 #define UNLOCK(md)                                        \
   do {                                                  \
     struct mdesc *unlock_local_mdp = MD_TO_MDP(md);       \
-    if (unlock_local_mdp->mutex)                          \
-      xbt_os_mutex_release(unlock_local_mdp->mutex);     \
+    sem_post(&unlock_local_mdp->sem);     \
   } while (0)
 
 #endif                          /* __MMPRIVATE_H */

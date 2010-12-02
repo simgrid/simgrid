@@ -144,16 +144,6 @@ XBT_PUBLIC_DATA(routing_global_t) global_routing;
  */
 typedef struct surf_model_private *surf_model_private_t;
 
-     /** \brief Timer model extension public
-      * \ingroup SURF_model
-      *
-      * Additionnal functions specific to the timer model
-      */
-typedef struct surf_timer_model_extension_public {
-  void (*set) (double date, void *function, void *arg);
-  int (*get) (void **function, void **arg);
-} s_surf_model_extension_timer_t;
-
      /* Cpu model */
 
      /** \brief CPU model extension public
@@ -292,7 +282,6 @@ typedef struct surf_model {
 
 
   union extension {
-    s_surf_model_extension_timer_t timer;
     s_surf_model_extension_cpu_t cpu;
     s_surf_model_extension_network_t network;
     s_surf_model_extension_workstation_t workstation;
@@ -334,16 +323,6 @@ typedef struct surf_resource_lmm {
 /* Implementations of model object */
 /**************************************/
 
-
-/** \brief The timer model
- *  \ingroup SURF_models
- */
-XBT_PUBLIC_DATA(surf_model_t) surf_timer_model;
-
-/** \brief Initializes the timer model
- *  \ingroup SURF_models
- */
-XBT_PUBLIC(void) surf_timer_model_init(const char *filename);
 
 /** \brief The CPU model
  *  \ingroup SURF_models
@@ -607,11 +586,11 @@ XBT_PUBLIC_DATA(xbt_cfg_t) _surf_cfg_set;
  *
  *  This function has to be called to initialize the common
  *  structures.  Then you will have to create the environment by
- *  calling surf_timer_model_init() and
+ *  calling 
  *  e.g. surf_workstation_model_init_CLM03() or
  *  surf_workstation_model_init_KCCFLN05().
  *
- *  \see surf_timer_model_init(), surf_workstation_model_init_CLM03(),
+ *  \see surf_workstation_model_init_CLM03(),
  *  surf_workstation_model_init_KCCFLN05(), surf_workstation_model_init_compound(), surf_exit()
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common structures */
@@ -640,6 +619,7 @@ XBT_PUBLIC(void) surf_presolve(void);
 
 /** \brief Performs a part of the simulation
  *  \ingroup SURF_simulation
+ *  \param max_date Maximum date to update the simulation to, or -1
  *  \return the elapsed time, or -1.0 if no event could be executed
  *
  *  This function execute all possible events, update the action states
@@ -648,7 +628,7 @@ XBT_PUBLIC(void) surf_presolve(void);
  *  are not executed immediately but only when you call surf_solve.
  *  Note that the returned elapsed time can be zero.
  */
-XBT_PUBLIC(double) surf_solve(void);
+XBT_PUBLIC(double) surf_solve(double max_date);
 
 /** \brief Return the current time
  *  \ingroup SURF_simulation

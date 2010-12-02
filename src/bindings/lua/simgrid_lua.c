@@ -558,11 +558,17 @@ static int create_environment(lua_State * L)
   const char *file = luaL_checkstring(L, 1);
   DEBUG1("Loading environment file %s", file);
   MSG_create_environment(file);
-  smx_host_t *hosts = SIMIX_host_get_table();
-  int i;
-  for (i = 0; i < SIMIX_host_get_number(); i++) {
-    DEBUG1("We have an host %s", SIMIX_host_get_name(hosts[i]));
+
+/*
+  xbt_dict_t hosts = SIMIX_host_get_dict();
+  smx_host_t host;
+  xbt_dict_cursor_t c;
+  const char *name;
+
+  xbt_dict_foreach(hosts, c, name, host) {
+    DEBUG1("We have an host %s", SIMIX_host_get_name(host));
   }
+*/
 
   return 0;
 }

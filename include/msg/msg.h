@@ -155,9 +155,6 @@ XBT_PUBLIC(void) MSG_task_set_priority(m_task_t task, double priority);
 XBT_PUBLIC(int) MSG_task_Iprobe(m_channel_t channel);
 XBT_PUBLIC(int) MSG_task_probe_from(m_channel_t channel);
 XBT_PUBLIC(int) MSG_task_probe_from_host(int channel, m_host_t host);
-XBT_PUBLIC(MSG_error_t) MSG_channel_select_from(m_channel_t channel,
-                                                double max_duration,
-                                                int *PID);
 XBT_PUBLIC(MSG_error_t) MSG_process_sleep(double nb_sec);
 XBT_PUBLIC(MSG_error_t) MSG_get_errno(void);
 
@@ -195,9 +192,6 @@ XBT_PUBLIC(int) MSG_task_listen(const char *alias);
 
 XBT_PUBLIC(int) MSG_task_listen_from_host(const char *alias,
                                           m_host_t host);
-
-XBT_PUBLIC(MSG_error_t)
-    MSG_alias_select_from(const char *alias, double timeout, int *PID);
 
 XBT_PUBLIC(MSG_error_t)
     MSG_task_send_with_timeout(m_task_t task, const char *alias,

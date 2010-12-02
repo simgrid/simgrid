@@ -95,7 +95,7 @@ void test(char *platform)
       surf_network_model->extension.network.communicate("Cpu A", "Cpu B",
                                                         150.0, -1.0);
 
-  surf_solve();                 /* Takes traces into account. Returns 0.0 */
+  surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {
     surf_action_t action = NULL;
     now = surf_get_clock();
@@ -127,7 +127,7 @@ void test(char *platform)
 
   } while ((xbt_swag_size(surf_network_model->states.running_action_set) ||
             xbt_swag_size(surf_cpu_model->states.running_action_set)) &&
-           surf_solve() >= 0.0);
+           surf_solve(-1.0) >= 0.0);
 
   DEBUG0("Simulation Terminated");
 }

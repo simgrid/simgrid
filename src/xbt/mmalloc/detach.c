@@ -31,16 +31,25 @@
 void mmalloc_pre_detach(void *md)
 {
   struct mdesc *mdp = md;
-  xbt_os_mutex_t mutex = mdp->mutex;
-  mdp->mutex = NULL;
-  xbt_os_mutex_destroy(mutex);
+
+  if(--mdp->refcount == 0){
+    LOCK(mdp) ;
+    sem_destroy(&mdp->sem);
+  }
 }
 
 void *mmalloc_detach(void *md)
 {
-  struct mdesc mtemp;
+  struct mdesc *mdp = (struct mdesc *)md;
+  struct mdesc mtemp, *mdptemp;
 
-  if (md != NULL) {
+  if (mdp != NULL) {
+    /* Remove the heap from the linked list of heaps attached by mmalloc */
+    mdptemp = __mmalloc_default_mdp;
+    while(mdptemp->next_mdesc != mdp )
+      mdptemp = mdptemp->next_mdesc;
+
+    mdptemp->next_mdesc = mdp->next_mdesc;
 
     mmalloc_pre_detach(md);
     mtemp = *(struct mdesc *) md;

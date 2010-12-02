@@ -1,5 +1,5 @@
-$ ./flatifier$EXEEXT one_cluster.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_cluster.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -95,8 +95,8 @@ $ ./flatifier$EXEEXT one_cluster.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_host_availability.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_host_availability.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -109,8 +109,8 @@ $ ./flatifier$EXEEXT one_host_availability.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_host_properties.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_host_properties.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -127,8 +127,8 @@ $ ./flatifier$EXEEXT one_host_properties.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_host_state_file.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_host_state_file.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -141,8 +141,8 @@ $ ./flatifier$EXEEXT one_host_state_file.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_host_state_off.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_host_state_off.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -155,8 +155,8 @@ $ ./flatifier$EXEEXT one_host_state_off.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_host_state_on.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_host_state_on.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -169,8 +169,8 @@ $ ./flatifier$EXEEXT one_host_state_on.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_host_trace_file.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_host_trace_file.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -183,8 +183,8 @@ $ ./flatifier$EXEEXT one_host_trace_file.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_host_trace_inside.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_host_trace_inside.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -197,8 +197,8 @@ $ ./flatifier$EXEEXT one_host_trace_inside.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_host.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_host.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -211,8 +211,8 @@ $ ./flatifier$EXEEXT one_host.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_link_availability.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_link_availability.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -226,8 +226,8 @@ $ ./flatifier$EXEEXT one_link_availability.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_link_fatpipe.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_link_fatpipe.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -241,8 +241,8 @@ $ ./flatifier$EXEEXT one_link_fatpipe.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_link_shared.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_link_shared.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -256,8 +256,8 @@ $ ./flatifier$EXEEXT one_link_shared.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT one_link_state_file.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT one_link_state_file.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -271,8 +271,8 @@ $ ./flatifier$EXEEXT one_link_state_file.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT three_hosts_non_symmetric_route.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT three_hosts_non_symmetric_route.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -314,8 +314,8 @@ $ ./flatifier$EXEEXT three_hosts_non_symmetric_route.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT two_clusters.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT two_clusters.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -649,8 +649,8 @@ $ ./flatifier$EXEEXT two_clusters.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT two_hosts_multi_hop.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT two_hosts_multi_hop.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">
@@ -676,8 +676,8 @@ $ ./flatifier$EXEEXT two_hosts_multi_hop.xml
 > </AS>
 > </platform>
 
-$ ./flatifier$EXEEXT two_hosts_one_link.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ./flatifier$EXEEXT two_hosts_one_link.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "simgrid.dtd">
 > <platform version="3">

@@ -34,9 +34,9 @@ unsigned int smpi_sleep(unsigned int seconds)
 
   smpi_bench_end();
   host = SIMIX_host_self();
-  action = SIMIX_action_sleep(host, (double)seconds);
+  action = SIMIX_req_action_sleep(host, (double)seconds);
   smpi_process_wait_action(action);
-  SIMIX_action_destroy(action);
+  SIMIX_req_action_destroy(action);
   smpi_bench_begin();
   return 0;
 }
@@ -45,7 +45,7 @@ void smpi_exit(int status)
 {
   smpi_bench_end();
   smpi_process_finalize();
-  SIMIX_process_kill(SIMIX_process_self());
+  SIMIX_req_process_kill(SIMIX_process_self());
   return;
 }
 */

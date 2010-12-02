@@ -88,7 +88,8 @@ XBT_PUBLIC(void) xbt_dynar_dump(xbt_dynar_t dynar);
 XBT_PUBLIC(void) xbt_dynar_get_cpy(const xbt_dynar_t dynar,
                                    const unsigned long idx,
                                    void *const dst);
-
+XBT_INLINE void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
+                                      const unsigned long idx);
 XBT_PUBLIC(void) xbt_dynar_set(xbt_dynar_t dynar, const int idx,
                                const void *src);
 XBT_PUBLIC(void) xbt_dynar_replace(xbt_dynar_t dynar,

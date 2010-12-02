@@ -36,12 +36,12 @@
 m_host_t MSG_get_host_by_name(const char *name)
 {
   smx_host_t simix_h = NULL;
-  simix_h = SIMIX_host_get_by_name(name);
+  simix_h = SIMIX_req_host_get_by_name(name);
 
   if (simix_h == NULL)
     return NULL;
 
-  return (m_host_t) SIMIX_host_get_data(simix_h);
+  return (m_host_t) SIMIX_req_host_get_data(simix_h);
 }
 
 /** \ingroup msg_easier_life
@@ -67,7 +67,6 @@ void MSG_create_environment(const char *file)
   char *name;
 
   SIMIX_create_environment(file);
-  SIMIX_init();
 
   /* Initialize MSG hosts */
   xbt_dict_foreach(SIMIX_host_get_dict(), c, name, h) {

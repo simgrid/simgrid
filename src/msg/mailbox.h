@@ -14,16 +14,6 @@
 
 SG_BEGIN_DECL()
 #define MAX_ALIAS_NAME	((size_t)260)
-/*
- * Initialization of the mailbox module.
- */
-void MSG_mailbox_mod_init(void);
-
-/*
- * Terminaison of the mailbox module.
- */
-void MSG_mailbox_mod_exit(void);
-
 
 /*! \brief MSG_mailbox_new - create a new mailbox.
  *
@@ -90,41 +80,6 @@ XBT_PUBLIC(msg_mailbox_t)
  */
 XBT_PUBLIC(msg_mailbox_t)
     MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel);
-
-/*! \brief MSG_mailbox_get_alias - get the alias associated with the mailbox.
- *
- * The function MSG_mailbox_get_alias returns the alias of the mailbox specified
- * by the parameter mailbox.
- *
- * \param mailbox	The mailbox to get the alias.
- *
- * \return	The alias of the mailbox specified by the parameter mailbox.
- */
-XBT_PUBLIC(const char *) MSG_mailbox_get_alias(msg_mailbox_t mailbox);
-
-/*! \brief MSG_mailbox_get_cond - get the simix condition of a mailbox.
- *
- * The function MSG_mailbox_get_cond returns the condition of the
- * mailbox specified by the parameter mailbox.
- *
- * \param mailbox	The mailbox to get the condition.
- *
- * \return The simix condition of the mailbox specified by the parameter mailbox.
- */
-XBT_PUBLIC(smx_cond_t)
-    MSG_mailbox_get_cond(msg_mailbox_t mailbox);
-
-/*! \brief MSG_mailbox_set_cond - set the simix condition of a mailbox.
- *
- * The function MSG_mailbox_set_cond set the condition of the mailbox
- * specified by the parameter mailbox.
- *
- * \param mailbox	The mailbox to set the condition.
- * \param cond		The new simix condition of the mailbox.
- *
- */
-XBT_PUBLIC(void) MSG_mailbox_set_cond(msg_mailbox_t mailbox,
-                                      smx_cond_t cond);
 
 /*! \brief MSG_mailbox_is_empty - test if a mailbox is empty.
  *

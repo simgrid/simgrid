@@ -12,38 +12,87 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
                                 "Logging specific to SIMIX (network)");
 
+static xbt_dict_t rdv_points = NULL;
+
+static XBT_INLINE void SIMIX_comm_start(smx_action_t action);
+static void SIMIX_comm_finish(smx_action_t action);
+static void SIMIX_waitany_req_remove_from_actions(smx_req_t req);
+static void SIMIX_comm_copy_data(smx_action_t comm);
+static smx_action_t SIMIX_comm_new(e_smx_comm_type_t type);
+static XBT_INLINE void SIMIX_comm_wait_for_completion(smx_action_t comm,
+                                                      double timeout);
+static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm);
+static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm);
+static smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type);
+static void SIMIX_rdv_free(void *data);
+
+void SIMIX_network_init(void)
+{
+  rdv_points = xbt_dict_new();
+}
+
+void SIMIX_network_exit(void)
+{
+  xbt_dict_free(&rdv_points);
+}
+
 /******************************************************************************/
 /*                           Rendez-Vous Points                               */
 /******************************************************************************/
 
-/**
- *  \brief Creates a new rendez-vous point
- *  \param name The name of the rendez-vous point
- *  \return The created rendez-vous point
- */
 smx_rdv_t SIMIX_rdv_create(const char *name)
 {
-  smx_rdv_t rdv = xbt_new0(s_smx_rvpoint_t, 1);
-  rdv->name = name ? xbt_strdup(name) : NULL;
-  rdv->read = SIMIX_mutex_init();
-  rdv->write = SIMIX_mutex_init();
-  rdv->comm_fifo = xbt_fifo_new();
+  /* two processes may have pushed the same rdv_create request at the same time */
+  smx_rdv_t rdv = name ? xbt_dict_get_or_null(rdv_points, name) : NULL;
 
+  if (!rdv) {
+    rdv = xbt_new0(s_smx_rvpoint_t, 1);
+    rdv->name = name ? xbt_strdup(name) : NULL;
+    rdv->comm_fifo = xbt_fifo_new();
+
+    if (name)
+      xbt_dict_set(rdv_points, name, rdv, SIMIX_rdv_free);
+  }
   return rdv;
 }
 
-/**
- *  \brief Destroy a rendez-vous point
- *  \param name The rendez-vous point to destroy
- */
 void SIMIX_rdv_destroy(smx_rdv_t rdv)
 {
   if (rdv->name)
+    xbt_dict_remove(rdv_points, rdv->name); 
+}
+
+void SIMIX_rdv_free(void *data)
+{
+  smx_rdv_t rdv = (smx_rdv_t) data;
+  if (rdv->name)
     xbt_free(rdv->name);
-  SIMIX_mutex_destroy(rdv->read);
-  SIMIX_mutex_destroy(rdv->write);
   xbt_fifo_free(rdv->comm_fifo);
-  xbt_free(rdv);
+  xbt_free(rdv);  
+}
+
+smx_rdv_t SIMIX_rdv_get_by_name(const char *name)
+{
+  return xbt_dict_get_or_null(rdv_points, name);
+}
+
+int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
+{
+  smx_action_t comm = NULL;
+  xbt_fifo_item_t item = NULL;
+  int count = 0;
+
+  xbt_fifo_foreach(rdv->comm_fifo, item, comm, smx_action_t) {
+    if (comm->comm.src_proc->smx_host == host)
+      count++;
+  }
+
+  return count;
+}
+
+smx_action_t SIMIX_rdv_get_head(smx_rdv_t rdv)
+{
+  return xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
 }
 
 /**
@@ -51,10 +100,10 @@ void SIMIX_rdv_destroy(smx_rdv_t rdv)
  *  \param rdv The rendez-vous point
  *  \param comm The communication request
  */
-static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_comm_t comm)
+static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm)
 {
   xbt_fifo_push(rdv->comm_fifo, comm);
-  comm->rdv = rdv;
+  comm->comm.rdv = rdv;
 }
 
 /**
@@ -62,27 +111,27 @@ static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_comm_t comm)
  *  \param rdv The rendez-vous point
  *  \param comm The communication request
  */
-static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_comm_t comm)
+static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm)
 {
   xbt_fifo_remove(rdv->comm_fifo, comm);
-  comm->rdv = NULL;
+  comm->comm.rdv = NULL;
 }
 
 /**
  *  \brief Checks if there is a communication request queued in a rendez-vous matching our needs
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
- *  \return The communication request if found, NULL otherwise.
+ *  \return The communication request if found, NULL otherwise
  */
-smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type)
+smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type)
 {
-  smx_comm_t comm = (smx_comm_t)
+  smx_action_t comm = (smx_action_t)
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
 
-  if (comm && comm->type == type) {
+  if (comm && comm->comm.type == type) {
     DEBUG0("Communication request found!");
     xbt_fifo_shift(rdv->comm_fifo);
-    SIMIX_communication_use(comm);
-    comm->rdv = NULL;
+    comm->comm.refcount++;
+    comm->comm.rdv = NULL;
     return comm;
   }
 
@@ -90,303 +139,509 @@ smx_comm_t SIMIX_rdv_get_request(smx_rdv_t rdv, smx_comm_type_t type)
   return NULL;
 }
 
-/**
- *  \brief counts the number of communication requests of a given host pending
- *         on a rendez-vous point
- *  \param rdv The rendez-vous point
- *  \param host The host to be counted
- *  \return The number of comm request pending in the rdv
- */
-int SIMIX_rdv_get_count_waiting_comm(smx_rdv_t rdv, smx_host_t host)
-{
-  smx_comm_t comm = NULL;
-  xbt_fifo_item_t item = NULL;
-  int count = 0;
-
-  xbt_fifo_foreach(rdv->comm_fifo, item, comm, smx_comm_t) {
-    if (comm->src_proc->smx_host == host)
-      count++;
-  }
-
-  return count;
-}
-
-/**
- *  \brief returns the communication at the head of the rendez-vous
- *  \param rdv The rendez-vous point
- *  \return The communication or NULL if empty
- */
-XBT_INLINE smx_comm_t SIMIX_rdv_get_head(smx_rdv_t rdv)
-{
-  return (smx_comm_t)
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
-}
-
-/** @brief adds some API-related data to the rendez-vous point */
-XBT_INLINE void SIMIX_rdv_set_data(smx_rdv_t rdv, void *data)
-{
-  rdv->data = data;
-}
-
-/** @brief gets API-related data from the rendez-vous point */
-XBT_INLINE void *SIMIX_rdv_get_data(smx_rdv_t rdv)
-{
-  return rdv->data;
-}
-
 /******************************************************************************/
-/*                           Communication Requests                           */
+/*                            Comunication Actions                            */
 /******************************************************************************/
 
 /**
- *  \brief Creates a new communication request
- *  \param type The type of communication (comm_send, comm_recv)
- *  \return The new communication request
+ *  \brief Creates a new comunicate action
+ *  \param type The type of request (comm_send, comm_recv)
+ *  \return The new comunicate action
  */
-smx_comm_t SIMIX_communication_new(smx_comm_type_t type)
+smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
 {
+  smx_action_t act;
+
   /* alloc structures */
-  smx_comm_t comm = xbt_new0(s_smx_comm_t, 1);
-  comm->type = type;
-  comm->sem = SIMIX_sem_init(0);
-  comm->refcount = 1;
-  VERB2("Create communication %p; refcount initially %d", comm,
-         comm->refcount);
+  act = xbt_new0(s_smx_action_t, 1);
+  act->type = SIMIX_ACTION_COMMUNICATE;
+  act->state = SIMIX_WAITING;
+  act->request_list = xbt_fifo_new();
 
-  return comm;
+  /* set communication */
+  act->comm.type = type;
+  act->comm.refcount = 1;
+
+#ifdef HAVE_TRACING
+  act->category = NULL;
+#endif
+
+  DEBUG1("Create communicate action %p", act);
+  
+  return act;
 }
 
 /**
- *  \brief Destroy a communication request
- *  \param comm The request to be destroyed
+ *  \brief Destroy a communicate action
+ *  \param action The communicate action to be destroyed
  */
-void SIMIX_communication_destroy(smx_comm_t comm)
+void SIMIX_comm_destroy(smx_action_t action)
 {
-  VERB2("Destroy communication %p; refcount initially %d", comm,
-        comm->refcount);
+  DEBUG1("Destroy action %p", action);
 
-  if(!(comm->refcount>0))
-	  xbt_die(bprintf("the refcount of comm %p is already 0 before decreasing it. That's a bug!",comm));
+  if(!(action->comm.refcount > 0))
+	  xbt_die(bprintf("the refcount of comm %p is already 0 before decreasing it. That's a bug!",action));
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   //save is latency limited flag to use afterwards
-  if (comm->act) {
-    DEBUG2("adding key %p with latency limited value %d to the dict", comm,
-           SIMIX_action_is_latency_bounded(comm->act));
-    xbt_dicti_set(simix_global->latency_limited_dict, (uintptr_t) comm,
-                  SIMIX_action_is_latency_bounded(comm->act));
+  if (action->comm.surf_comm) {
+    DEBUG2("adding key %p with latency limited value %d to the dict", action,
+           SIMIX_comm_is_latency_bounded(action));
+    xbt_dicti_set(simix_global->latency_limited_dict, (uintptr_t) action,
+                  SIMIX_comm_is_latency_bounded(action));
   }
 #endif
 
-  comm->refcount--;
-  if (comm->refcount > 0)
+  action->comm.refcount--;
+  if (action->comm.refcount > 0)
     return;
-  VERB2("Really free communication %p; refcount is now %d", comm,
-        comm->refcount);
+  VERB2("Really free communication %p; refcount is now %d", action,
+        action->comm.refcount);
 
-  if (comm->sem) {
-    SIMIX_sem_destroy(comm->sem);
-    comm->sem = NULL;
-  }
+#ifdef HAVE_TRACING
+  TRACE_smx_action_destroy(action);
+#endif
 
-  if (comm->act) {
-    SIMIX_action_destroy(comm->act);
-    comm->act = NULL;
-  }
+  if (action->name)
+    xbt_free(action->name);
 
-  if (comm->src_timeout) {
-    SIMIX_action_destroy(comm->src_timeout);
-    comm->src_timeout = NULL;
-  }
+  xbt_fifo_free(action->request_list);
 
-  if (comm->dst_timeout) {
-    SIMIX_action_destroy(comm->dst_timeout);
-    comm->dst_timeout = NULL;
-  }
+  SIMIX_comm_destroy_internal_actions(action);
 
-
-
-  xbt_free(comm);
+  xbt_free(action);
 }
 
-/**
- *  \brief Increase the number of users of the communication.
- *  \param comm The communication request
- *  Each communication request can be used by more than one process, so it is
- *  necessary to know number of them at destroy time, to avoid freeing stuff that
- *  maybe is in use by others.
- *  \
- */
-static XBT_INLINE void SIMIX_communication_use(smx_comm_t comm)
+void SIMIX_comm_destroy_internal_actions(smx_action_t action)
 {
-  comm->refcount++;
+  if (action->comm.surf_comm){
+    action->comm.surf_comm->model_type->action_unref(action->comm.surf_comm);
+    action->comm.surf_comm = NULL;
+  }
 
-  VERB2("Use communication %p; refcount is now %d", comm,
-           comm->refcount);
+  if (action->comm.src_timeout){
+    action->comm.src_timeout->model_type->action_unref(action->comm.src_timeout);
+    action->comm.src_timeout = NULL;
+  }
+
+  if (action->comm.dst_timeout){
+    action->comm.dst_timeout->model_type->action_unref(action->comm.dst_timeout);
+    action->comm.dst_timeout = NULL;
+  }
+}
+
+smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
+                              double task_size, double rate,
+                              void *src_buff, size_t src_buff_size, void *data)
+{
+  smx_action_t action;
+
+  /* Look for communication request matching our needs.
+     If it is not found then create it and push it into the rendez-vous point */
+  action = SIMIX_rdv_get_request(rdv, SIMIX_COMM_RECEIVE);
+
+  if (!action) {
+    action = SIMIX_comm_new(SIMIX_COMM_SEND);
+    SIMIX_rdv_push(rdv, action);
+  }else{
+    action->state = SIMIX_READY;
+    action->comm.type = SIMIX_COMM_READY;
+  }
+
+  /* Setup the communication request */
+  action->comm.src_proc = src_proc;
+  action->comm.task_size = task_size;
+  action->comm.rate = rate;
+  action->comm.src_buff = src_buff;
+  action->comm.src_buff_size = src_buff_size;
+  action->comm.data = data;
+#ifdef HAVE_MC
+  if(_surf_do_model_check){
+    action->state = SIMIX_RUNNING;
+    return action;
+  }
+#endif
+  SIMIX_comm_start(action);
+  return action;
+}
+
+smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
+                      void *dst_buff, size_t *dst_buff_size)
+{
+  smx_action_t action;
+
+  /* Look for communication request matching our needs.
+   * If it is not found then create it and push it into the rendez-vous point
+   */
+  action = SIMIX_rdv_get_request(rdv, SIMIX_COMM_SEND);
+
+  if (!action) {
+    action = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
+    SIMIX_rdv_push(rdv, action);
+  } else {
+    action->state = SIMIX_READY;
+    action->comm.type = SIMIX_COMM_READY;
+  }
+
+  /* Setup communication request */
+  action->comm.dst_proc = dst_proc;
+  action->comm.dst_buff = dst_buff;
+  action->comm.dst_buff_size = dst_buff_size;
+
+#ifdef HAVE_MC
+  if(_surf_do_model_check){
+    action->state = SIMIX_RUNNING;
+    return action;
+  }
+#endif
+
+  SIMIX_comm_start(action);
+  return action;
+}
+
+void SIMIX_pre_comm_wait(smx_req_t req)
+{
+  smx_action_t action = req->comm_wait.comm;
+  double timeout = req->comm_wait.timeout;
+  surf_action_t sleep;
+
+  /* Associate this request to the action */
+  xbt_fifo_push(action->request_list, req);
+  req->issuer->waiting_action = action;
+
+#ifdef HAVE_MC
+  if(_surf_do_model_check){
+    action->state = SIMIX_DONE;
+    SIMIX_comm_finish(action);
+  }
+#endif
+
+  /* If the action has already finish perform the error handling, */
+  /* otherwise set up a waiting timeout on the right side         */
+  if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
+    SIMIX_comm_finish(action);
+  } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
+    sleep = surf_workstation_model->extension.workstation.sleep(req->issuer->smx_host->host, timeout);
+    surf_workstation_model->action_data_set(sleep, action);
+
+    if (req->issuer == action->comm.src_proc)
+      action->comm.src_timeout = sleep;
+    else
+      action->comm.dst_timeout = sleep;
+  }
+}
+
+void SIMIX_pre_comm_test(smx_req_t req)
+{
+  smx_action_t action = req->comm_test.comm;
+  req->comm_test.result = (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING);
+
+  if (req->comm_test.result) {
+    xbt_fifo_push(action->request_list, req);
+    SIMIX_comm_finish(action);
+  }
+  else {
+    SIMIX_request_answer(req);
+  }
+}
+
+void SIMIX_pre_comm_waitany(smx_req_t req)
+{
+  smx_action_t action;
+  unsigned int cursor = 0;
+  xbt_dynar_t actions = req->comm_waitany.comms;
+  xbt_dynar_foreach(actions, cursor, action){
+    /* Associate this request to the action */
+    xbt_fifo_push(action->request_list, req);
+    if(action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING){
+      SIMIX_comm_finish(action);
+      break;
+    }
+  }
+}
+
+void SIMIX_waitany_req_remove_from_actions(smx_req_t req)
+{
+  smx_action_t action;
+  unsigned int cursor = 0;
+  xbt_dynar_t actions = req->comm_waitany.comms;
+
+  xbt_dynar_foreach(actions, cursor, action){
+    xbt_fifo_remove(action->request_list, req);
+  }
 }
 
 /**
  *  \brief Start the simulation of a communication request
- *  \param comm The communication request
+ *  \param action The communication action
  */
-static XBT_INLINE void SIMIX_communication_start(smx_comm_t comm)
+static XBT_INLINE void SIMIX_comm_start(smx_action_t action)
 {
   /* If both the sender and the receiver are already there, start the communication */
-  if (comm->src_proc && comm->dst_proc) {
-    DEBUG1("Starting communication %p", comm);
-    comm->act = SIMIX_action_communicate(comm->src_proc->smx_host,
-                                         comm->dst_proc->smx_host, NULL,
-                                         comm->task_size, comm->rate);
+  if (action->state == SIMIX_READY) {
+    smx_host_t sender = action->comm.src_proc->smx_host;
+    smx_host_t receiver = action->comm.dst_proc->smx_host;
+
+    DEBUG3("Starting communication %p from '%s' to '%s'", action,
+	  SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
+
+    action->comm.surf_comm =
+      surf_workstation_model->extension.workstation.
+      communicate(sender->host, receiver->host, action->comm.task_size, action->comm.rate);
+
+    surf_workstation_model->action_data_set(action->comm.surf_comm, action);
+
+    action->state = SIMIX_RUNNING;
+
 #ifdef HAVE_TRACING
-    TRACE_smx_action_communicate(comm->act, comm->src_proc);
-    TRACE_surf_action(comm->act->surf_action, comm->act->category);
+    TRACE_smx_action_communicate(comm, comm->comm.src_proc);
+    TRACE_surf_action(comm->surf_action, comm->category);
 #endif
+
+    /* If a link is failed, detect it immediately */
+    if (surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED) {
+      DEBUG2("Communication from '%s' to '%s' failed to start because of a link failure",
+	  SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
+      action->state = SIMIX_LINK_FAILURE;
+      SIMIX_comm_destroy_internal_actions(action);
+    }
 
     /* If any of the process is suspend, create the action but stop its execution,
        it will be restarted when the sender process resume */
-    if (SIMIX_process_is_suspended(comm->src_proc) ||
-        SIMIX_process_is_suspended(comm->dst_proc)) {
-      SIMIX_action_suspend(comm->act);
+    if (SIMIX_process_is_suspended(action->comm.src_proc) ||
+        SIMIX_process_is_suspended(action->comm.dst_proc)) {
+      /* FIXME: check what should happen with the action state */
+      surf_workstation_model->suspend(action->comm.surf_comm);
+    }
+  }
+}
+
+void SIMIX_comm_finish(smx_action_t action)
+{
+  smx_req_t req;
+
+  while((req = xbt_fifo_shift(action->request_list))){
+
+    /* If a waitany request is waiting for this action to finish, then remove
+       it from the other actions in the waitany list. Afterwards, get the
+       position of the actual action in the waitany request's actions dynar and
+       return it as the result of the call */
+    if(req->call == REQ_COMM_WAITANY){
+      SIMIX_waitany_req_remove_from_actions(req);
+      req->comm_waitany.result = xbt_dynar_search(req->comm_waitany.comms, &action);
     }
 
-    /* Add the communication as user data of the action */
-    comm->act->data = comm;
+    /* If the action is still in a rendez-vous point then remove from it */
+    if(action->comm.rdv)
+      SIMIX_rdv_remove(action->comm.rdv, action);
 
-    /* The semaphore will only get signaled once, but since the first unlocked guy will
-     * release_forever() the semaphore, that will unlock the second (and any other)
-     * communication partner */
-    SIMIX_register_action_to_semaphore(comm->act, comm->sem);
+    DEBUG1("SIMIX_comm_finish: action state = %d", action->state);
+
+    /* Check out for errors */
+    switch (action->state) {
+
+      case SIMIX_DONE:
+        DEBUG1("Communication %p complete!", action);
+        SIMIX_comm_copy_data(action);
+        break;
+
+      case SIMIX_SRC_TIMEOUT:
+        TRY {
+          THROW0(timeout_error, 0, "Communication timeouted because of sender");
+        }
+	CATCH(req->issuer->running_ctx->exception) {
+          req->issuer->doexception = 1;
+        }
+        break;
+
+      case SIMIX_DST_TIMEOUT:
+        TRY {
+          THROW0(timeout_error, 0, "Communication timeouted because of receiver");
+        }
+	CATCH(req->issuer->running_ctx->exception) {
+          req->issuer->doexception = 1;
+        }
+        break;
+
+      case SIMIX_SRC_HOST_FAILURE:
+        TRY {
+          if(req->issuer == action->comm.src_proc)
+            THROW0(host_error, 0, "Host failed");
+          else
+            THROW0(network_error, 0, "Remote peer failed");
+        }
+	CATCH(req->issuer->running_ctx->exception) {
+          req->issuer->doexception = 1;
+        }
+        break;
+
+      case SIMIX_DST_HOST_FAILURE:
+        TRY {
+          if (req->issuer == action->comm.dst_proc)
+            THROW0(host_error, 0, "Host failed");
+          else
+            THROW0(network_error, 0, "Remote peer failed");
+        }
+	CATCH(req->issuer->running_ctx->exception) {
+          req->issuer->doexception = 1;
+        }
+        break;
+
+      case SIMIX_LINK_FAILURE:
+        TRY {
+	  DEBUG5("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p)",
+	      action, action->comm.src_proc->smx_host->name, action->comm.dst_proc->smx_host->name,
+	      req->issuer->name, req->issuer);
+          THROW0(network_error, 0, "Link failure");
+        }
+	CATCH(req->issuer->running_ctx->exception) {
+          req->issuer->doexception = 1;
+        }
+        break;
+
+      default:
+        THROW_IMPOSSIBLE;
+    }
+    req->issuer->waiting_action = NULL;
+    SIMIX_request_answer(req);
   }
 }
 
-/**
- * \brief Performs error checking and cleanup
- * \param comm The communication
- */
-static XBT_INLINE void SIMIX_communication_cleanup(smx_comm_t comm)
+void SIMIX_post_comm(smx_action_t action)
 {
-  DEBUG1("Checking errors and cleaning communication %p", comm);
+  /* Update action state */
+  if(action->comm.src_timeout &&
+     surf_workstation_model->action_state_get(action->comm.src_timeout) == SURF_ACTION_DONE)
+     action->state = SIMIX_SRC_TIMEOUT;
+  else if(action->comm.dst_timeout &&
+          surf_workstation_model->action_state_get(action->comm.dst_timeout) == SURF_ACTION_DONE)
+     action->state = SIMIX_DST_TIMEOUT;
+  else if(action->comm.src_timeout &&
+          surf_workstation_model->action_state_get(action->comm.src_timeout) == SURF_ACTION_FAILED)
+     action->state = SIMIX_SRC_HOST_FAILURE;
+  else if(action->comm.dst_timeout &&
+          surf_workstation_model->action_state_get(action->comm.dst_timeout) == SURF_ACTION_FAILED)
+     action->state = SIMIX_DST_HOST_FAILURE;
+  else if(action->comm.surf_comm &&
+          surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED)
+     action->state = SIMIX_LINK_FAILURE;
+  else
+    action->state = SIMIX_DONE;
 
-  /* Make sure that everyone sleeping on that semaphore is awake, and that nobody will ever block on it */
-  SIMIX_sem_release_forever(comm->sem);
+  DEBUG1("SIMIX_post_comm: action state = %d", action->state);
 
-  /* Check for errors other than timeouts */
-  if (!SIMIX_host_get_state(SIMIX_host_self())) {
-    if (comm->rdv)
-      SIMIX_rdv_remove(comm->rdv, comm);
-    SIMIX_communication_destroy(comm);
-    THROW0(host_error, 0, "Host failed");
-  } else if (SIMIX_action_get_state(comm->act) == SURF_ACTION_FAILED) {
-    SIMIX_communication_destroy(comm);
-    THROW0(network_error, 0, "Link failure");
-  } else if (!SIMIX_host_get_state(SIMIX_process_get_host(comm->dst_proc))
-             ||
-             !SIMIX_host_get_state(SIMIX_process_get_host(comm->src_proc)))
-  {
-    /* We test both src&dst because we dunno who we are today, and we already tested myself above.
-     *    So, at the end, we test the remote peer only
-     * Moreover, we have to test it because if the remote peer fails, the action comm->act is not done nor failed.
-     *    In that case, we got awaken by the little endless actions created in the SIMIX_sem_acquire(comm->sem)
-     *    at the beginning of this function. */
-    SIMIX_communication_destroy(comm);
-    THROW0(network_error, 0, "Remote peer failed");
+  /* After this point the surf actions associated with the simix communicate
+     action are no longer needed, thus we delete them. */
+  SIMIX_comm_destroy_internal_actions(action);
 
-  }
-  /* Copy network data */
-  SIMIX_network_copy_data(comm);
-
-  SIMIX_communication_destroy(comm);
+  /* If there are requests associated with the action, then answer them */
+  if(xbt_fifo_size(action->request_list))
+    SIMIX_comm_finish(action);
 }
 
-/**
- *  \brief Waits for communication completion
- *  \param comm The communication
- *  \param timeout The max amount of time to wait for the communication to finish
- *
- *  Throws:
- *   - host_error if local peer failed
- *   - timeout_error if communication reached the timeout specified (either because of local peer or remote peer)
- *   - network_error if network failed or remote peer failed
- */
-static XBT_INLINE void SIMIX_communication_wait_for_completion(smx_comm_t
-                                                               comm,
-                                                               double
-                                                               timeout)
+void SIMIX_comm_cancel(smx_action_t action)
 {
-  smx_action_t act_sleep = NULL;
-  int src_timeout = 0;
-  int dst_timeout = 0;
-
-  DEBUG1("Waiting for the completion of communication %p", comm);
-
-  if (timeout >= 0) {
-    act_sleep = SIMIX_action_sleep(SIMIX_host_self(), timeout);
-    if (SIMIX_process_self() == comm->src_proc)
-      comm->src_timeout = act_sleep;
-    else
-      comm->dst_timeout = act_sleep;
-    SIMIX_action_set_name(act_sleep,
-                          bprintf
-                          ("Timeout for comm %p and wait on semaphore %p (max_duration:%f)",
-                           comm, comm->sem, timeout));
-    SIMIX_register_action_to_semaphore(act_sleep, comm->sem);
-    SIMIX_process_self()->waiting_action = act_sleep;
-    SIMIX_sem_block_onto(comm->sem);
-    SIMIX_process_self()->waiting_action = NULL;
-    SIMIX_unregister_action_to_semaphore(act_sleep, comm->sem);
+  /* If the action is a waiting state means that it is still in a rdv */
+  /* so remove from it and delete it */
+  if (action->state == SIMIX_WAITING) {
+    SIMIX_rdv_remove(action->comm.rdv, action);
+    action->state = SIMIX_FAILED;
   } else {
-    SIMIX_sem_acquire(comm->sem);
+    surf_workstation_model->action_cancel(action->comm.surf_comm);
   }
-
-  /* Check for timeouts */
-  if ((src_timeout = ((comm->src_timeout)
-                      && (SIMIX_action_get_state(comm->src_timeout) ==
-                          SURF_ACTION_DONE)))
-      || (dst_timeout = ((comm->dst_timeout)
-                         && (SIMIX_action_get_state(comm->dst_timeout) ==
-                             SURF_ACTION_DONE)))) {
-    /* Somebody did a timeout! */
-    if (src_timeout)
-      DEBUG1("Communication timeout from the src! %p", comm);
-    if (dst_timeout)
-      DEBUG1("Communication timeout from the dst! %p", comm);
-
-    if (comm->act
-        && SIMIX_action_get_state(comm->act) == SURF_ACTION_RUNNING)
-      SIMIX_communication_cancel(comm);
-    else if (comm->rdv)
-      SIMIX_rdv_remove(comm->rdv, comm);
-
-    /* Make sure that everyone sleeping on that semaphore is awake, and that nobody will ever block on it */
-    SIMIX_sem_release_forever(comm->sem);
-    SIMIX_communication_destroy(comm);
-
-    THROW1(timeout_error, 0, "Communication timeouted because of %s",
-           src_timeout ? "the source" : "the destination");
-  }
-
-  DEBUG1("Communication %p complete!", comm);
-  SIMIX_communication_cleanup(comm);
 }
 
-/**
- *  \brief Cancels a communication
- *  \brief comm The communication to cancel
- */
-XBT_INLINE void SIMIX_communication_cancel(smx_comm_t comm)
+void SIMIX_comm_suspend(smx_action_t action)
 {
-  if (comm->act)
-    SIMIX_action_cancel(comm->act);
+  /*FIXME: shall we suspend also the timeout actions? */
+  surf_workstation_model->suspend(action->comm.surf_comm);
 }
+
+void SIMIX_comm_resume(smx_action_t action)
+{
+  /*FIXME: check what happen with the timeouts */
+  surf_workstation_model->resume(action->comm.surf_comm);
+}
+
+
+/************* Action Getters **************/
 
 /**
  *  \brief get the amount remaining from the communication
- *  \param comm The communication
+ *  \param action The communication
  */
-XBT_INLINE double SIMIX_communication_get_remains(smx_comm_t comm)
+double SIMIX_comm_get_remains(smx_action_t action)
 {
-  DEBUG1("calling SIMIX_action_get_remains(%p)", comm->act);
-  return SIMIX_action_get_remains(comm->act);
+  double remains;
+
+  switch (action->state) {
+
+    case SIMIX_RUNNING:
+      remains = surf_workstation_model->get_remains(action->comm.surf_comm);
+      break;
+
+    case SIMIX_WAITING:
+    case SIMIX_READY:
+      remains = 0; /*FIXME: check what should be returned */
+      break;
+
+    default:
+      remains = 0; /*FIXME: is this correct? */
+      break;
+  }
+  return remains;
+}
+
+e_smx_state_t SIMIX_comm_get_state(smx_action_t action)
+{
+  return action->state;
+}
+
+/**
+ *  \brief Return the user data associated to the communication
+ *  \param action The communication
+ *  \return the user data
+ */
+void* SIMIX_comm_get_data(smx_action_t action)
+{
+  return action->comm.data;
+}
+
+void* SIMIX_comm_get_src_buff(smx_action_t action)
+{
+  return action->comm.src_buff;
+}
+
+void* SIMIX_comm_get_dst_buff(smx_action_t action)
+{
+  return action->comm.dst_buff;
+}
+
+size_t SIMIX_comm_get_src_buff_size(smx_action_t action)
+{
+  return action->comm.src_buff_size;
+}
+
+size_t SIMIX_comm_get_dst_buff_size(smx_action_t action)
+{
+  size_t buff_size;
+
+  if (action->comm.dst_buff_size)
+    buff_size = *(action->comm.dst_buff_size);
+  else
+    buff_size = 0;
+
+  return buff_size;
+}
+
+smx_process_t SIMIX_comm_get_src_proc(smx_action_t action)
+{
+  return action->comm.src_proc;
+}
+
+smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action)
+{
+  return action->comm.dst_proc;
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
@@ -394,15 +649,15 @@ XBT_INLINE double SIMIX_communication_get_remains(smx_comm_t comm)
  *  \brief verify if communication is latency bounded
  *  \param comm The communication
  */
-XBT_INLINE int SIMIX_communication_is_latency_bounded(smx_comm_t comm)
+XBT_INLINE int SIMIX_comm_is_latency_bounded(smx_action_t action)
 {
   //try to find comm on the list of finished flows
   uintptr_t key = 0;
   uintptr_t data = 0;
   xbt_dict_cursor_t cursor;
   xbt_dict_foreach(simix_global->latency_limited_dict, cursor, key, data) {
-    DEBUG2("comparing key=%p with comm=%p", (void *) key, (void *) comm);
-    if ((void *) comm == (void *) key) {
+    DEBUG2("comparing key=%p with comm=%p", (void *) key, (void *) action);
+    if ((void *) action == (void *) key) {
       DEBUG2("key %p found, return value latency limited value %d",
              (void *) key, (int) data);
       xbt_dict_cursor_free(&cursor);
@@ -410,307 +665,63 @@ XBT_INLINE int SIMIX_communication_is_latency_bounded(smx_comm_t comm)
     }
   }
 
-  DEBUG1("calling SIMIX_action_is_latency_bounded(%p)", comm->act);
-  return SIMIX_action_is_latency_bounded(comm->act);
+  return surf_workstation_model->get_latency_limited(action->comm.surf_comm);
 }
 #endif
 
 /******************************************************************************/
-/*                    SIMIX_network_copy_data callbacks                       */
+/*                    SIMIX_comm_copy_data callbacks                       */
 /******************************************************************************/
-static void (*SIMIX_network_copy_data_callback) (smx_comm_t, size_t) =
-    &SIMIX_network_copy_pointer_callback;
+static void (*SIMIX_comm_copy_data_callback) (smx_action_t, size_t) =
+    &SIMIX_comm_copy_pointer_callback;
 
 void
-SIMIX_network_set_copy_data_callback(void (*callback) (smx_comm_t, size_t))
+SIMIX_comm_set_copy_data_callback(void (*callback) (smx_action_t, size_t))
 {
-  SIMIX_network_copy_data_callback = callback;
+  SIMIX_comm_copy_data_callback = callback;
 }
 
-void SIMIX_network_copy_pointer_callback(smx_comm_t comm, size_t buff_size)
+void SIMIX_comm_copy_pointer_callback(smx_action_t comm, size_t buff_size)
 {
   xbt_assert1((buff_size == sizeof(void *)),
               "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
-  *(void **) (comm->dst_buff) = comm->src_buff;
+  *(void **) (comm->comm.dst_buff) = comm->comm.src_buff;
 }
 
-void SIMIX_network_copy_buffer_callback(smx_comm_t comm, size_t buff_size)
+void SIMIX_comm_copy_buffer_callback(smx_action_t comm, size_t buff_size)
 {
-  memcpy(comm->dst_buff, comm->src_buff, buff_size);
+  memcpy(comm->comm.dst_buff, comm->comm.src_buff, buff_size);
 }
 
 /**
  *  \brief Copy the communication data from the sender's buffer to the receiver's one
  *  \param comm The communication
  */
-void SIMIX_network_copy_data(smx_comm_t comm)
+void SIMIX_comm_copy_data(smx_action_t comm)
 {
-  size_t buff_size = comm->src_buff_size;
-  uintptr_t casted_size = 0;
-  uintptr_t amount = 0;
+  size_t buff_size = comm->comm.src_buff_size;
   /* If there is no data to be copy then return */
-  if (!comm->src_buff || !comm->dst_buff || comm->copied == 1)
+  if (!comm->comm.src_buff || !comm->comm.dst_buff || comm->comm.copied == 1)
     return;
 
   DEBUG6("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
          comm,
-         comm->src_proc->smx_host->name, comm->src_buff,
-         comm->dst_proc->smx_host->name, comm->dst_buff, buff_size);
+         comm->comm.src_proc->smx_host->name, comm->comm.src_buff,
+         comm->comm.dst_proc->smx_host->name, comm->comm.dst_buff, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
-  if (comm->dst_buff_size)
-    buff_size = MIN(buff_size, *(comm->dst_buff_size));
+  if (comm->comm.dst_buff_size)
+    buff_size = MIN(buff_size, *(comm->comm.dst_buff_size));
 
   /* Update the receiver's buffer size to the copied amount */
-  if (comm->dst_buff_size)
-    *comm->dst_buff_size = buff_size;
+  if (comm->comm.dst_buff_size)
+    *comm->comm.dst_buff_size = buff_size;
 
   if (buff_size == 0)
     return;
-  (*SIMIX_network_copy_data_callback) (comm, buff_size);
+  (*SIMIX_comm_copy_data_callback) (comm, buff_size);
 
   /* Set the copied flag so we copy data only once */
   /* (this function might be called from both communication ends) */
-  comm->copied = 1;
-
-  /* pimple to display the message sizes */
-  {
-    casted_size = comm->task_size;
-    amount = xbt_dicti_get(simix_global->msg_sizes, casted_size);
-    amount++;
-
-    xbt_dicti_set(simix_global->msg_sizes, casted_size, amount);
-  }
-}
-
-/**
- *  \brief Return the user data associated to the communication
- *  \param comm The communication
- *  \return the user data
- */
-XBT_INLINE void *SIMIX_communication_get_data(smx_comm_t comm)
-{
-  return comm->data;
-}
-
-XBT_PUBLIC(void *) SIMIX_communication_get_src_buf(smx_comm_t comm)
-{
-  return comm->src_buff;
-}
-
-XBT_PUBLIC(void *) SIMIX_communication_get_dst_buf(smx_comm_t comm)
-{
-  return comm->dst_buff;
-}
-
-XBT_PUBLIC(size_t) SIMIX_communication_get_src_buf_size(smx_comm_t comm)
-{
-  return comm->src_buff_size;
-}
-
-XBT_PUBLIC(size_t) SIMIX_communication_get_dst_buf_size(smx_comm_t comm)
-{
-  return *(comm->dst_buff_size);
-}
-
-/******************************************************************************/
-/*                        Synchronous Communication                           */
-/******************************************************************************/
-/**
- *  \brief Put a send communication request in a rendez-vous point and waits for
- *         its completion (blocking)
- *  \param rdv The rendez-vous point
- *  \param task_size The size of the communication action (for surf simulation)
- *  \param rate The rate of the communication action (for surf)
- *  \param timeout The timeout used for the waiting the completion 
- *  \param src_buff The source buffer containing the message to be sent
- *  \param src_buff_size The size of the source buffer
- *  \param comm_ref The communication object used for the send  (useful if someone else wants to cancel this communication afterward)
- *  \param data User data associated to the communication object
- *  Throws:
- *   - host_error if peer failed
- *   - timeout_error if communication reached the timeout specified
- *   - network_error if network failed or peer issued a timeout
- */
-XBT_INLINE void SIMIX_network_send(smx_rdv_t rdv, double task_size,
-                                   double rate, double timeout,
-                                   void *src_buff, size_t src_buff_size,
-                                   smx_comm_t * comm_ref, void *data)
-{
-  xbt_ex_t e;
-  smx_comm_t comm = *comm_ref =
-	      SIMIX_network_isend(rdv, task_size, rate, src_buff, src_buff_size,
-	                          data);
-  TRY {
-    SIMIX_network_wait(comm, timeout);
-  }
-  TRY_CLEANUP {
-    SIMIX_communication_destroy(comm);
-  }
-  CATCH(e) {
-    RETHROW;
-  }
-}
-
-/**
- *  \brief Put a receive communication request in a rendez-vous point and waits
- *         for its completion (blocking)
- *  \param rdv The rendez-vous point
- *  \param timeout The timeout used for the waiting the completion 
- *  \param dst_buff The destination buffer to copy the received message
- *  \param src_buff_size The size of the destination buffer
- *  \param comm_ref The communication object used for the send (useful if someone else wants to cancel this communication afterward)
- *  Throws:
- *   - host_error if peer failed
- *   - timeout_error if communication reached the timeout specified
- *   - network_error if network failed or peer issued a timeout
- */
-XBT_INLINE void SIMIX_network_recv(smx_rdv_t rdv, double timeout,
-                                   void *dst_buff, size_t * dst_buff_size,
-                                   smx_comm_t * comm_ref)
-{
-  xbt_ex_t e;
-  smx_comm_t comm = *comm_ref =
-      (smx_comm_t) SIMIX_network_irecv(rdv, dst_buff, dst_buff_size);
-  TRY {
-    SIMIX_network_wait(comm, timeout);
-  }
-  TRY_CLEANUP {
-    SIMIX_communication_destroy(comm);
-  }
-  CATCH(e) {
-    RETHROW;
-  }
-}
-
-/******************************************************************************/
-/*                        Asynchronous Communication                          */
-/******************************************************************************/
-smx_comm_t SIMIX_network_isend(smx_rdv_t rdv, double task_size,
-                               double rate, void *src_buff,
-                               size_t src_buff_size, void *data)
-{
-  smx_comm_t comm;
-
-  /*If running in model-checking mode then intercept the communication action */
-#ifdef HAVE_MC
-  if (_surf_do_model_check)
-    MC_trans_intercept_isend(rdv);
-#endif
-  /* Look for communication request matching our needs.
-     If it is not found then create it and push it into the rendez-vous point */
-  comm = SIMIX_rdv_get_request(rdv, comm_recv);
-
-  if (!comm) {
-    comm = SIMIX_communication_new(comm_send);
-    SIMIX_rdv_push(rdv, comm);
-  }
-
-  /* Setup the communication request */
-  comm->src_proc = SIMIX_process_self();
-  comm->task_size = task_size;
-  comm->rate = rate;
-  comm->src_buff = src_buff;
-  comm->src_buff_size = src_buff_size;
-  comm->data = data;
-
-  SIMIX_communication_start(comm);
-  return comm;
-}
-
-smx_comm_t SIMIX_network_irecv(smx_rdv_t rdv, void *dst_buff,
-                               size_t * dst_buff_size)
-{
-  smx_comm_t comm;
-
-  /*If running in model-checking mode then intercept the communication action */
-#ifdef HAVE_MC
-  if (_surf_do_model_check)
-    MC_trans_intercept_irecv(rdv);
-#endif
-  /* Look for communication request matching our needs.
-   * If it is not found then create it and push it into the rendez-vous point
-   */
-  comm = SIMIX_rdv_get_request(rdv, comm_send);
-
-  if (!comm) {
-    comm = SIMIX_communication_new(comm_recv);
-    SIMIX_rdv_push(rdv, comm);
-  }
-
-  /* Setup communication request */
-  comm->dst_proc = SIMIX_process_self();
-  comm->dst_buff = dst_buff;
-  comm->dst_buff_size = dst_buff_size;
-
-  SIMIX_communication_start(comm);
-  return comm;
-}
-
-/** @brief blocks until the communication terminates or the timeout occurs */
-XBT_INLINE void SIMIX_network_wait(smx_comm_t comm, double timeout)
-{
-  /*If running in model-checking mode then intercept the communication action */
-#ifdef HAVE_MC
-  if (_surf_do_model_check)
-    MC_trans_intercept_wait(comm);
-#endif
-  SIMIX_communication_use(comm);
-  /* Wait for communication completion */
-  SIMIX_communication_wait_for_completion(comm, timeout);
-}
-
-/** @Returns whether the (asynchronous) communication is done yet or not */
-XBT_INLINE int SIMIX_network_test(smx_comm_t comm)
-{
-  /*If running in model-checking mode then intercept the communication action */
-#ifdef HAVE_MC
-  if (_surf_do_model_check)
-    MC_trans_intercept_test(comm);
-#endif
-
-  /* Copy data if the communication is done */
-  if (comm->sem && !SIMIX_sem_would_block(comm->sem)) {
-    /* Copy network data */
-    SIMIX_network_copy_data(comm);
-    return TRUE;
-  }
-  return FALSE;
-}
-
-/** @brief wait for the completion of any communication of a set
- *
- *  @Returns the rank in the dynar of communication which finished; destroy it after identifying which one it is
- */
-unsigned int SIMIX_network_waitany(xbt_dynar_t comms)
-{
-  xbt_dynar_t sems = xbt_dynar_new(sizeof(smx_sem_t), NULL);
-  unsigned int cursor, found_comm = -1;
-  smx_comm_t comm, comm_finished = NULL;
-
-  /*If running in model-checking mode then intercept the communication action */
-#ifdef HAVE_MC
-  if (_surf_do_model_check)
-    MC_trans_intercept_waitany(comms);
-#endif
-  xbt_dynar_foreach(comms, cursor, comm)
-      xbt_dynar_push(sems, &(comm->sem));
-
-  DEBUG1("Waiting for the completion of communication set %p", comms);
-
-  found_comm = SIMIX_sem_acquire_any(sems);
-  xbt_dynar_free_container(&sems);
-  xbt_assert0(found_comm != -1,
-              "Cannot find which communication finished");
-  xbt_dynar_get_cpy(comms, found_comm, &comm_finished);
-
-  DEBUG2("Communication %p of communication set %p finished",
-         comm_finished, comms);
-
-  /* let the regular code deal with the communication end (errors checking and cleanup).
-   * A bit of useless work will be done, but that's good for source factorization */
-  SIMIX_sem_release_forever(comm_finished->sem);
-  SIMIX_communication_use(comm_finished);
-  SIMIX_communication_wait_for_completion(comm_finished, -1);
-  return found_comm;
+  comm->comm.copied = 1;
 }

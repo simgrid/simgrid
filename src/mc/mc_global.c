@@ -1,7 +1,12 @@
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include "../surf/surf_private.h"
 #include "../simix/private.h"
 #include "xbt/fifo.h"
 #include "private.h"
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
@@ -17,8 +22,10 @@ char mc_replay_mode = FALSE;
 /**
  *  \brief Initialize the model-checker data structures
  */
-void MC_init(int method)
+void MC_init(void)
 {
+  smx_process_t process;
+  
   /* Check if MC is already initialized */
   if (initial_snapshot)
     return;
@@ -37,74 +44,94 @@ void MC_init(int method)
   /* Create the container for the sets */
   mc_setset = xbt_setset_new(20);
 
-  switch (method) {
-  case 0:
-    MC_dfs_init();
-    break;
-  case 1:
-    MC_dpor_init();
-    break;
-  default:
-    break;
+  /* Add the existing processes to mc's setset so they have an ID designated */
+  xbt_swag_foreach(process, simix_global->process_list){
+    xbt_setset_elm_add(mc_setset, process);
   }
+  
+  /* Initialize the control variable */
+  mc_exp_ctl = xbt_new0(e_mc_exp_ctl_t, 1);
+  *mc_exp_ctl = MC_EXPLORE;
+  
+  MC_UNSET_RAW_MEM;
+  
+
 
   /* Save the initial state */
-  MC_SET_RAW_MEM;
-  initial_snapshot = xbt_new(s_mc_snapshot_t, 1);
+/*  MC_SET_RAW_MEM;
+  initial_snapshot = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot(initial_snapshot);
-  MC_UNSET_RAW_MEM;
+  MC_UNSET_RAW_MEM;*/
 }
 
-void MC_modelcheck(int method)
+void MC_modelcheck(void)
 {
+  int status;
+  pid_t pid;
 
-  MC_init(method);
+  /* Compute initial state */
+  MC_init();
+  
+  /* Fork an mc's slave exploration process and wait for it. */
+  /* The forked process will explore a trace until:
+       - a back-tracking point is found (it sets mc_expl_ctl to MC_explore)
+       - there are no more states to explore (it sets mc_expl_ctl to MC_STOP)
+       - a property is invalid (or dead-lock)
+   */
+  while(*mc_exp_ctl == MC_EXPLORE){
+    if((pid = fork())){
+      waitpid(pid, &status, 0);
+      mmalloc_detach(raw_heap);
+      raw_heap = mmalloc_attach(raw_heap_fd, (char*)(std_heap) + STD_HEAP_SIZE + getpagesize());
 
-  switch (method) {
-  case 0:
-    MC_dfs();
-    break;
-  case 1:
-    MC_dpor();
-    break;
-  default:
-    break;
-  }
+    if (WIFSIGNALED(status)) {
+      INFO1("killed by signal %d\n", WTERMSIG(status));
+      break;
+    }else if (WIFSTOPPED(status)) {
+      INFO1("stopped by signal %d\n", WSTOPSIG(status));
+      break;
+    }else if (WIFCONTINUED(status)) {
+      INFO0("continued\n");
+      break;
+    }
+     
+    if(*mc_exp_ctl == MC_DEADLOCK){
+      INFO0("**************************");
+      INFO0("*** DEAD-LOCK DETECTED ***");
+      INFO0("**************************");
+      MC_dump_stack(mc_stack);
+      MC_print_statistics(mc_stats);
+      break;
+    }
+      
+    }else{
+      /* if mc_stack is empty then create first state, otherwise replay */
+      if(xbt_fifo_size(mc_stack) == 0)
+        MC_dpor_init();
+      else
+        MC_replay(mc_stack);
 
-  MC_exit(method);
+      MC_dpor();
+      MC_memory_exit();
+      break;
+    }
+  }    
+  
+  /* If we are the mc's master process then exit */
+  if(pid)
+    MC_exit();
 }
 
-void MC_exit(int method)
+void MC_exit(void)
 {
-  mc_state_t state;
-
-  switch (method) {
-  case 0:
-    //MC_dfs_exit();
-    break;
-  case 1:
-    //MC_dpor_exit();
-    break;
-  default:
-    break;
-  }
-
-  /* Destroy MC data structures (in RAW memory) */
-  MC_SET_RAW_MEM;
-  xbt_free(mc_stats);
-
-  while ((state = (mc_state_t) xbt_fifo_pop(mc_stack)) != NULL)
-    MC_state_delete(state);
-
-  xbt_fifo_free(mc_stack);
-  xbt_setset_destroy(mc_setset);
-  MC_UNSET_RAW_MEM;
+  mmalloc_detach(raw_heap);
+  shm_unlink("raw_heap");
 }
 
 int MC_random(int min, int max)
 {
-  MC_trans_intercept_random(min, max);
-  return mc_current_state->executed_transition->random.value;
+  /*FIXME: return mc_current_state->executed_transition->random.value;*/
+  return 0;
 }
 
 /**
@@ -114,40 +141,46 @@ int MC_random(int min, int max)
 */
 void MC_replay(xbt_fifo_t stack)
 {
+  char *req_str;
+  smx_req_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item;
-  mc_transition_t trans;
+  mc_state_t state;
 
   DEBUG0("**** Begin Replay ****");
 
   /* Restore the initial state */
-  MC_restore_snapshot(initial_snapshot);
+  /*MC_restore_snapshot(initial_snapshot);*/
 
-  mc_replay_mode = TRUE;
-
-  MC_UNSET_RAW_MEM;
+  MC_wait_for_requests();
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   for (item = xbt_fifo_get_last_item(stack);
        item != xbt_fifo_get_first_item(stack);
        item = xbt_fifo_get_prev_item(item)) {
 
-    mc_current_state = (mc_state_t) xbt_fifo_get_item_content(item);
-    trans = mc_current_state->executed_transition;
+    state = (mc_state_t) xbt_fifo_get_item_content(item);
+    saved_req = MC_state_get_executed_request(state);
+   
+    if(saved_req){
+      /* because we got a copy of the executed request, we have to fetch the  
+         real one, pointed by the request field of the issuer process */
+      req = saved_req->issuer->request;
 
+      /* Debug information */
+      if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
+        req_str = MC_request_to_string(req); 
+        DEBUG1("Replay: %s", req_str);
+        xbt_free(req_str);
+      }
+    }
+         
+    SIMIX_request_pre(req);
+    MC_wait_for_requests();
+         
     /* Update statistics */
     mc_stats->visited_states++;
     mc_stats->executed_transitions++;
-
-    DEBUG1("Executing transition %s", trans->name);
-    SIMIX_process_schedule(trans->process);
-
-    /* Do all surf's related black magic tricks to keep all working */
-    MC_execute_surf_actions();
-
-    /* Schedule every process that got enabled due to the executed transition */
-    MC_schedule_enabled_processes();
   }
-  mc_replay_mode = FALSE;
   DEBUG0("**** End Replay ****");
 }
 
@@ -171,125 +204,44 @@ void MC_dump_stack(xbt_fifo_t stack)
 void MC_show_stack(xbt_fifo_t stack)
 {
   mc_state_t state;
-  mc_transition_t trans;
   xbt_fifo_item_t item;
-
+  smx_req_t req;
+  char *req_str = NULL;
+  
   for (item = xbt_fifo_get_last_item(stack);
        (item ? (state = (mc_state_t) (xbt_fifo_get_item_content(item)))
         : (NULL)); item = xbt_fifo_get_prev_item(item)) {
-    trans = state->executed_transition;
-    if (trans) {
-      INFO1("%s", trans->name);
+    req = MC_state_get_executed_request(state);
+    if(req){
+      req_str = MC_request_to_string(req); 
+      INFO1("%s", req_str);
+      xbt_free(req_str);
     }
   }
 }
 
 /**
  * \brief Schedules all the process that are ready to run
- *        As a side effect it performs some clean-up required by SIMIX 
  */
-void MC_schedule_enabled_processes(void)
+void MC_wait_for_requests(void)
 {
-  smx_process_t process;
+  char *req_str = NULL;
+  smx_req_t req = NULL;
 
-  //SIMIX_process_empty_trash();
-
-  /* Schedule every process that is ready to run due to an finished action */
-  while ((process = xbt_swag_extract(simix_global->process_to_run))) {
-    DEBUG2("Scheduling %s on %s", process->name, process->smx_host->name);
-    SIMIX_process_schedule(process);
-  }
-}
-
-/******************************** States **************************************/
-
-/**
- * \brief Creates a state data structure used by the exploration algorithm
- */
-mc_state_t MC_state_new(void)
-{
-  mc_state_t state = NULL;
-
-  state = xbt_new0(s_mc_state_t, 1);
-  state->created_transitions = xbt_setset_new_set(mc_setset);
-  state->transitions = xbt_setset_new_set(mc_setset);
-  state->enabled_transitions = xbt_setset_new_set(mc_setset);
-  state->interleave = xbt_setset_new_set(mc_setset);
-  state->done = xbt_setset_new_set(mc_setset);
-  state->executed_transition = NULL;
-
-  mc_stats->expanded_states++;
-
-  return state;
-}
-
-/**
- * \brief Deletes a state data structure
- * \param trans The state to be deleted
- */
-void MC_state_delete(mc_state_t state)
-{
-  xbt_setset_cursor_t cursor;
-  mc_transition_t trans;
-
-  xbt_setset_foreach(state->created_transitions, cursor, trans) {
-    xbt_setset_elm_remove(mc_setset, trans);
-    MC_transition_delete(trans);
-  }
-
-  xbt_setset_destroy_set(state->created_transitions);
-  xbt_setset_destroy_set(state->transitions);
-  xbt_setset_destroy_set(state->enabled_transitions);
-  xbt_setset_destroy_set(state->interleave);
-  xbt_setset_destroy_set(state->done);
-
-  xbt_free(state);
-}
-
-/************************** SURF Emulation ************************************/
-
-/* Dirty hack, we manipulate surf's clock to simplify the integration of the
-   model-checker */
-extern double NOW;
-
-/**
- * \brief Executes all the actions at every model
- */
-void MC_execute_surf_actions(void)
-{
-  unsigned int iter;
-  surf_action_t action = NULL;
-  surf_model_t model = NULL;
-  smx_action_t smx_action = NULL;
-
-  /* Execute all the actions in every model */
-  xbt_dynar_foreach(model_list, iter, model) {
-    while ((action = xbt_swag_extract(model->states.running_action_set))) {
-      /* FIXME: timeouts are not calculated correctly */
-      if (NOW >= action->max_duration) {
-        surf_action_state_set(action, SURF_ACTION_DONE);
-        smx_action = action->data;
-        DEBUG5
-            ("Resource [%s] (%d): Executing RUNNING action \"%s\" (%p) MaxDuration %lf",
-             model->name, xbt_swag_size(model->states.running_action_set),
-             smx_action->name, smx_action, action->max_duration);
-
-        if (smx_action)
-          SIMIX_action_signal_all(smx_action);
+  do {
+    SIMIX_context_runall(simix_global->process_to_run);
+    while((req = SIMIX_request_pop())){
+      if(!SIMIX_request_isVisible(req))
+        SIMIX_request_pre(req);
+      else if(req->call == REQ_COMM_WAITANY)
+        THROW_UNIMPLEMENTED;
+      else if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
+        req_str = MC_request_to_string(req);
+        DEBUG1("Got: %s", req_str);
+        xbt_free(req_str);
       }
     }
-    /*FIXME: check if this is always empty or not */
-    while ((action = xbt_swag_extract(model->states.failed_action_set))) {
-      smx_action = action->data;
-      DEBUG4("Resource [%s] (%d): Executing FAILED action \"%s\" (%p)",
-             model->name, xbt_swag_size(model->states.running_action_set),
-             smx_action->name, smx_action);
-      if (smx_action)
-        SIMIX_action_signal_all(smx_action);
-    }
-  }
-  /* That's it, now go one step deeper into the model-checking process! */
-  NOW += 0.5;                   /* FIXME: Check time increases */
+  } while (xbt_swag_size(simix_global->process_to_run));
 }
 
 /****************************** Statistics ************************************/
@@ -308,7 +260,7 @@ void MC_print_statistics(mc_stats_t stats)
 /************************* Assertion Checking *********************************/
 void MC_assert(int prop)
 {
-  if (!prop) {
+  if (_surf_do_model_check && !prop) {
     INFO0("**************************");
     INFO0("*** PROPERTY NOT VALID ***");
     INFO0("**************************");
@@ -317,4 +269,18 @@ void MC_assert(int prop)
     MC_print_statistics(mc_stats);
     xbt_abort();
   }
+}
+
+void MC_show_deadlock(smx_req_t req)
+{
+  char *req_str = NULL;
+  INFO0("**************************");
+  INFO0("*** DEAD-LOCK DETECTED ***");
+  INFO0("**************************");
+  INFO0("Locked request:");
+  req_str = MC_request_to_string(req);
+  INFO1("%s", req_str);
+  xbt_free(req_str);
+  INFO0("Counter-example execution trace:");
+  MC_dump_stack(mc_stack);
 }

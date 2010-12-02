@@ -19,19 +19,11 @@
 SG_BEGIN_DECL()
 
 /********************************* Global *************************************/
-XBT_PUBLIC(void) MC_init(int);
-XBT_PUBLIC(void) MC_exit(int);
+XBT_PUBLIC(void) MC_init(void);
+XBT_PUBLIC(void) MC_exit(void);
 XBT_PUBLIC(void) MC_assert(int);
-XBT_PUBLIC(void) MC_modelcheck(int);
+XBT_PUBLIC(void) MC_modelcheck(void);
 XBT_PUBLIC(int) MC_random(int, int);
-
-/******************************* Transitions **********************************/
-XBT_PUBLIC(void) MC_trans_intercept_isend(smx_rdv_t);
-XBT_PUBLIC(void) MC_trans_intercept_irecv(smx_rdv_t);
-XBT_PUBLIC(void) MC_trans_intercept_wait(smx_comm_t);
-XBT_PUBLIC(void) MC_trans_intercept_test(smx_comm_t);
-XBT_PUBLIC(void) MC_trans_intercept_waitany(xbt_dynar_t);
-XBT_PUBLIC(void) MC_trans_intercept_random(int, int);
 
 /********************************* Memory *************************************/
 XBT_PUBLIC(void) MC_memory_init(void);  /* Initialize the memory subsystem */

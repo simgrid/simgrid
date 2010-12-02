@@ -84,7 +84,7 @@ void test(char *platform)
       surf_workstation_model->extension.workstation.
       communicate(workstationA, workstationB, 150.0, -1.0);
 
-  surf_solve();                 /* Takes traces into account. Returns 0.0 */
+  surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {
     surf_action_t action = NULL;
     unsigned int iter;
@@ -109,7 +109,7 @@ void test(char *platform)
         running = 1;
       }
     }
-  } while (running && surf_solve() >= 0.0);
+  } while (running && surf_solve(-1.0) >= 0.0);
 
   DEBUG0("Simulation Terminated");
 

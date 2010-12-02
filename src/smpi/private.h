@@ -30,7 +30,7 @@ typedef struct s_smpi_mpi_request {
   int tag;
   MPI_Comm comm;
   smx_rdv_t rdv;
-  smx_comm_t pair;
+  smx_action_t pair;
   int complete;
   MPI_Request match;
   unsigned flags;

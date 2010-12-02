@@ -15,44 +15,33 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
 void MC_dpor_init()
 {
   mc_state_t initial_state = NULL;
-  mc_transition_t trans, trans_tmp = NULL;
-  xbt_setset_cursor_t cursor = NULL;
-
+  smx_process_t process;
+  
   /* Create the initial state and push it into the exploration stack */
   MC_SET_RAW_MEM;
   initial_state = MC_state_new();
   xbt_fifo_unshift(mc_stack, initial_state);
   MC_UNSET_RAW_MEM;
 
-  /* Schedule all the processes to detect the transitions of the initial state */
   DEBUG0("**************************************************");
   DEBUG0("Initial state");
 
-  while (xbt_swag_size(simix_global->process_to_run)) {
-    MC_schedule_enabled_processes();
-    MC_execute_surf_actions();
-  }
+  /* Wait for requests (schedules processes) */
+  MC_wait_for_requests();
 
   MC_SET_RAW_MEM;
-  MC_trans_compute_enabled(initial_state->enabled_transitions,
-                           initial_state->transitions);
-
-  /* Fill the interleave set of the initial state with an enabled process */
-  trans = xbt_setset_set_choose(initial_state->enabled_transitions);
-  if (trans) {
-    DEBUG1("Choosing process %s for next interleave",
-           trans->process->name);
-    xbt_setset_foreach(initial_state->enabled_transitions, cursor,
-                       trans_tmp) {
-      if (trans_tmp->process == trans->process)
-        xbt_setset_set_insert(initial_state->interleave, trans_tmp);
+  /* Get an enabled process and insert it in the interleave set of the initial state */
+  xbt_swag_foreach(process, simix_global->process_list){
+    if(SIMIX_process_is_enabled(process)){
+      xbt_setset_set_insert(initial_state->interleave, process);
+      break;
     }
   }
   MC_UNSET_RAW_MEM;
-
-  /* Update Statistics */
+    
+  /* FIXME: Update Statistics 
   mc_stats->state_size +=
-      xbt_setset_set_size(initial_state->enabled_transitions);
+      xbt_setset_set_size(initial_state->enabled_transitions); */
 }
 
 
@@ -62,176 +51,134 @@ void MC_dpor_init()
  */
 void MC_dpor(void)
 {
-  mc_transition_t trans, trans_tmp = NULL;
-  mc_state_t next_state = NULL;
-  xbt_setset_cursor_t cursor = NULL;
+  char *req_str;
+  smx_req_t req = NULL;
+  mc_state_t state = NULL, prev_state = NULL, next_state = NULL;
+  smx_process_t process = NULL;
+  xbt_fifo_item_t item = NULL;
 
   while (xbt_fifo_size(mc_stack) > 0) {
 
     DEBUG0("**************************************************");
 
-    /* FIXME: Think about what happen if there are no transitions but there are
-       some actions on the models. (ex. all the processes do a sleep(0) in a round). */
-
     /* Get current state */
-    mc_current_state = (mc_state_t)
-        xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    state = (mc_state_t) 
+      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
 
-    /* If there are transitions to execute and the maximun depth has not been reached 
+    /* If there are processes to interleave and the maximun depth has not been reached 
        then perform one step of the exploration algorithm */
-    if (xbt_setset_set_size(mc_current_state->interleave) > 0
+    if (xbt_setset_set_size(state->interleave) > 0
         && xbt_fifo_size(mc_stack) < MAX_DEPTH) {
 
-      DEBUG4("Exploration detph=%d (state=%p)(%d interleave) (%d enabled)",
-             xbt_fifo_size(mc_stack), mc_current_state,
-             xbt_setset_set_size(mc_current_state->interleave),
-             xbt_setset_set_size(mc_current_state->enabled_transitions));
+      DEBUG3("Exploration detph=%d (state=%p)(%d interleave)",
+             xbt_fifo_size(mc_stack), state,
+             xbt_setset_set_size(state->interleave));
 
       /* Update statistics */
       mc_stats->visited_states++;
       mc_stats->executed_transitions++;
 
-      /* Choose a transition to execute from the interleave set of the current
-         state, and create the data structures for the new expanded state in the
-         exploration stack. */
       MC_SET_RAW_MEM;
-      trans = xbt_setset_set_extract(mc_current_state->interleave);
-
-      /* Add the transition in the done set of the current state */
-      xbt_setset_set_insert(mc_current_state->done, trans);
-
-      next_state = MC_state_new();
-      xbt_fifo_unshift(mc_stack, next_state);
-
-      /* Set it as the executed transition of the current state */
-      mc_current_state->executed_transition = trans;
+      /* Choose a request to execute from the the current state */
+      req = MC_state_get_request(state);
       MC_UNSET_RAW_MEM;
 
-      /* Execute the selected transition by scheduling it's associated process.
-         Then schedule every process that got ready to run due to the execution
-         of the transition */
-      DEBUG1("Executing transition %s", trans->name);
-      SIMIX_process_schedule(trans->process);
-      MC_execute_surf_actions();
-
-      while (xbt_swag_size(simix_global->process_to_run)) {
-        MC_schedule_enabled_processes();
-        MC_execute_surf_actions();
-      }
-
-      /* Calculate the enabled transitions set of the next state */
-      MC_SET_RAW_MEM;
-
-      xbt_setset_foreach(mc_current_state->transitions, cursor, trans_tmp) {
-        if (trans_tmp->process != trans->process) {
-          xbt_setset_set_insert(next_state->transitions, trans_tmp);
+      if(req){    
+        /* Answer the request */
+        /* Debug information */
+        if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
+          req_str = MC_request_to_string(req); 
+          DEBUG1("Execute: %s", req_str);
+          xbt_free(req_str);
         }
-      }
 
-      MC_trans_compute_enabled(next_state->enabled_transitions,
-                               next_state->transitions);
+        SIMIX_request_pre(req);
 
-      /* Choose one transition to interleave from the enabled transition set */
-      trans = xbt_setset_set_choose(next_state->enabled_transitions);
-      if (trans) {
-        DEBUG1("Choosing process %s for next interleave",
-               trans->process->name);
-        xbt_setset_foreach(next_state->enabled_transitions, cursor,
-                           trans_tmp) {
-          if (trans_tmp->process == trans->process)
-            xbt_setset_set_insert(next_state->interleave, trans_tmp);
+        MC_state_set_executed_request(state, req);
+        
+        /* Wait for requests (schedules processes) */
+        MC_wait_for_requests();
+
+        /* Create the new expanded state */
+        MC_SET_RAW_MEM;
+        next_state = MC_state_new();
+        xbt_fifo_unshift(mc_stack, next_state);
+        
+
+        /* Get an enabled process and insert it in the interleave set of the next state */
+        xbt_swag_foreach(process, simix_global->process_list){
+          if(SIMIX_process_is_enabled(process)){
+            xbt_setset_set_insert(next_state->interleave, process);
+            break;
+          }
         }
+        MC_UNSET_RAW_MEM;
+        
+        /* FIXME: Update Statistics
+        mc_stats->state_size +=
+            xbt_setset_set_size(next_state->enabled_transitions);*/
       }
-      MC_UNSET_RAW_MEM;
-
-      /* Update Statistics */
-      mc_stats->state_size +=
-          xbt_setset_set_size(next_state->enabled_transitions);
-
       /* Let's loop again */
 
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
-      DEBUG0("There are no more transitions to interleave.");
-
+      DEBUG0("There are no more processes to interleave.");
 
       /* Check for deadlocks */
-      xbt_setset_substract(mc_current_state->transitions,
-                           mc_current_state->done);
-      if (xbt_setset_set_size(mc_current_state->transitions) > 0) {
-        INFO0("**************************");
-        INFO0("*** DEAD-LOCK DETECTED ***");
-        INFO0("**************************");
-        INFO0("Locked transitions:");
-        xbt_setset_foreach(mc_current_state->transitions, cursor, trans) {
-          INFO3("%s [src=%p, dst=%p]", trans->name,
-                trans->wait.comm->src_proc, trans->wait.comm->dst_proc);
+      xbt_swag_foreach(process, simix_global->process_list){
+        if(process->request && !SIMIX_request_isEnabled(process->request)){
+          *mc_exp_ctl = MC_DEADLOCK;
+          return;
         }
-
-        INFO0("Counter-example execution trace:");
-        MC_dump_stack(mc_stack);
-
-        MC_print_statistics(mc_stats);
-        xbt_abort();
-      }
-
-      mc_transition_t q = NULL;
-      xbt_fifo_item_t item = NULL;
-      mc_state_t state = NULL;
+      }  
 
       /*
-         INFO0("*********************************");
-         MC_show_stack(mc_stack); */
+      INFO0("*********************************");
+      MC_show_stack(mc_stack); */
 
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
       xbt_fifo_shift(mc_stack);
-      MC_state_delete(mc_current_state);
+      MC_state_delete(state);
 
       /* Traverse the stack backwards until a state with a non empty interleave
          set is found, deleting all the states that have it empty in the way.
-         For each deleted state, check if the transition that has generated it 
-         (from it's predecesor state), depends on any other previous transition 
+         For each deleted state, check if the request that has generated it 
+         (from it's predecesor state), depends on any other previous request 
          executed before it. If it does then add it to the interleave set of the
-         state that executed that previous transition. */
-      while ((mc_current_state = xbt_fifo_shift(mc_stack)) != NULL) {
-        q = mc_current_state->executed_transition;
-        xbt_fifo_foreach(mc_stack, item, state, mc_state_t) {
-          if (MC_transition_depend(q, state->executed_transition)) {
-            xbt_setset_foreach(state->enabled_transitions, cursor, trans) {
-              if ((trans->process == q->process)
-                  && !xbt_setset_set_belongs(state->done, trans)) {
-                DEBUG3("%s depend with %s at %p", q->name,
-                       state->executed_transition->name, state);
-
-                xbt_setset_foreach(state->enabled_transitions, cursor,
-                                   trans) {
-                  if (trans->process == q->process)
-                    xbt_setset_set_insert(state->interleave, trans);
-                }
-                /* FIXME: hack to make it work */
-                trans = q;
-                break;
-              }
+         state that executed that previous request. */
+      while ((state = xbt_fifo_shift(mc_stack)) != NULL) {
+        req = MC_state_get_executed_request(state);
+        xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
+          if(MC_request_depend(req, MC_state_get_executed_request(prev_state))){
+            if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
+              DEBUG0("Dependent Transitions:");
+              req_str = MC_request_to_string(MC_state_get_executed_request(prev_state));
+              DEBUG1("%s", req_str);
+              xbt_free(req_str);
+              req_str = MC_request_to_string(req);
+              DEBUG1("%s", req_str);
+              xbt_free(req_str);              
             }
-            if (trans)
-              break;
+            xbt_setset_set_insert(prev_state->interleave, req->issuer);
+            break;
           }
         }
-        if (xbt_setset_set_size(mc_current_state->interleave) > 0) {
+        if (xbt_setset_set_size(state->interleave) > 0) {
           /* We found a back-tracking point, let's loop */
-          xbt_fifo_unshift(mc_stack, mc_current_state);
+          xbt_fifo_unshift(mc_stack, state);
           DEBUG1("Back-tracking to depth %d", xbt_fifo_size(mc_stack));
-          MC_replay(mc_stack);
+          *mc_exp_ctl = MC_EXPLORE;
           MC_UNSET_RAW_MEM;
+          return;
           break;
         } else {
-          MC_state_delete(mc_current_state);
+          MC_state_delete(state);
         }
       }
     }
   }
-  DEBUG0("We are done");
-  /* We are done, show the statistics and return */
-  MC_print_statistics(mc_stats);
+  MC_UNSET_RAW_MEM;
+  *mc_exp_ctl = MC_STOP;
+  return;
 }

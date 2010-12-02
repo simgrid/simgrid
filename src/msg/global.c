@@ -70,9 +70,6 @@ void MSG_global_init(int *argc, char **argv)
     msg_global->PID = 1;
     msg_global->sent_msg = 0;
 
-    /* initialization of the mailbox module */
-    MSG_mailbox_mod_init();
-
     /* initialization of the action module */
     _MSG_action_init();
 
@@ -145,15 +142,15 @@ MSG_error_t MSG_main(void)
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
-  SIMIX_init();
 
 #ifdef HAVE_MC
-  if (_surf_do_model_check)
-    MC_modelcheck(1);
-  else
+  if (_surf_do_model_check){
+    MC_modelcheck();
+  }else
 #endif
-    while (SIMIX_solve(NULL, NULL) != -1.0);
-
+  {
+    SIMIX_run();
+  }
   return MSG_OK;
 }
 
@@ -208,9 +205,6 @@ MSG_error_t MSG_clean(void)
 
   free(msg_global);
   msg_global = NULL;
-
-  /* cleanup all resources in the mailbox module */
-  MSG_mailbox_mod_exit();
 
   /* initialization of the action module */
   _MSG_action_exit();

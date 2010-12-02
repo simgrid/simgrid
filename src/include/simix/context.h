@@ -14,14 +14,16 @@
 SG_BEGIN_DECL()
 
 typedef struct s_xbt_context *xbt_context_t;
+typedef void (*void_pfn_smxprocess_t) (smx_process_t);
+
 
 XBT_PUBLIC(xbt_context_t) xbt_context_new(const char *name,
                                           xbt_main_func_t code,
                                           void_f_pvoid_t startup_func,
                                           void *startup_arg,
-                                          void_f_pvoid_t cleanup_func,
-                                          void *cleanup_arg, int argc,
-                                          char *argv[]);
+                                          void_pfn_smxprocess_t cleanup_func,
+                                          smx_process_t process,
+                                          int argc, char *argv[]);
 
 XBT_PUBLIC(void) xbt_context_kill(xbt_context_t context);
 

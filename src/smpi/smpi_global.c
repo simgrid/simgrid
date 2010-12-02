@@ -42,7 +42,7 @@ void smpi_process_init(int *argc, char ***argv)
     proc = SIMIX_process_self();
     index = atoi((*argv)[1]);
     data = smpi_process_remote_data(index);
-    SIMIX_process_set_data(proc, data);
+    SIMIX_req_process_set_data(proc, data);
     if (*argc > 2) {
       free((*argv)[1]);
       memmove(&(*argv)[1], &(*argv)[2], sizeof(char *) * (*argc - 2));
@@ -102,7 +102,7 @@ int smpi_global_size(void) {
 
 smpi_process_data_t smpi_process_data(void)
 {
-  return SIMIX_process_get_data(SIMIX_process_self());
+  return SIMIX_req_process_get_data(SIMIX_process_self());
 }
 
 smpi_process_data_t smpi_process_remote_data(int index)
@@ -186,7 +186,7 @@ void smpi_process_post_send(MPI_Comm comm, MPI_Request request)
       return;
     }
   }
-  request->rdv = SIMIX_rdv_create(NULL);
+  request->rdv = SIMIX_req_rdv_create(NULL);
   xbt_fifo_push(data->pending_sent, request);
 }
 
@@ -212,7 +212,7 @@ void smpi_process_post_recv(MPI_Request request)
       return;
     }
   }
-  request->rdv = SIMIX_rdv_create(NULL);
+  request->rdv = SIMIX_req_rdv_create(NULL);
   xbt_fifo_push(data->pending_recv, request);
 }
 
@@ -221,8 +221,8 @@ void smpi_global_init(void)
   int i;
   MPI_Group group;
 
-  SIMIX_network_set_copy_data_callback
-      (&SIMIX_network_copy_buffer_callback);
+  SIMIX_comm_set_copy_data_callback
+      (&SIMIX_comm_copy_buffer_callback);
   process_count = SIMIX_process_count();
   process_data = xbt_new(smpi_process_data_t, process_count);
   for (i = 0; i < process_count; i++) {
@@ -318,14 +318,13 @@ int MAIN__(void)
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
-  SIMIX_init();
 
 #ifdef HAVE_MC
   if (_surf_do_model_check)
-    MC_modelcheck(1);
+    MC_modelcheck();
   else
 #endif
-    while (SIMIX_solve(NULL, NULL) != -1.0);
+    SIMIX_run();
 
   if (xbt_cfg_get_int(_surf_cfg_set, "smpi/display_timing"))
     INFO1("simulation time %g", SIMIX_get_clock());

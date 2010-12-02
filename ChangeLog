@@ -1,5 +1,8 @@
 SimGrid (3.6) unstable; urgency=low
 
+ Simix
+ * completely rewrote this module to allow parallel execution.
+
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.5) stable; urgency=medium

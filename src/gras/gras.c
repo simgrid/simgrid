@@ -70,7 +70,7 @@ XBT_LOG_EXTERNAL_CATEGORY(gras_virtu_process);
 
 void gras_init(int *argc, char **argv)
 {
-
+  int first = 0;
   gras_procdata_t *pd;
   gras_msg_procdata_t msg_pd;
   VERB0("Initialize GRAS");
@@ -83,6 +83,7 @@ void gras_init(int *argc, char **argv)
    *    - declare process specific data we need (without creating them)
    */
   if (gras_running_process == 0) {
+    first = 1;
     /* Connect our log channels: that must be done manually under windows */
     XBT_LOG_CONNECT(gras_ddt, gras);
     XBT_LOG_CONNECT(gras_ddt_cbps, gras_ddt);
@@ -110,6 +111,7 @@ void gras_init(int *argc, char **argv)
     gras_trp_register();
     gras_msg_register();
   }
+  gras_running_process++;
 
   /*
    * Initialize the process specific stuff
@@ -119,7 +121,7 @@ void gras_init(int *argc, char **argv)
   /*
    * Initialize the global stuff if it's not the first process created
    */
-  if (gras_running_process++ == 0) {
+  if (first) {
     gras_emul_init();
     gras_msg_init();
     gras_trp_init();

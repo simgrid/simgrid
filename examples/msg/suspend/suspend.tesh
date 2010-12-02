@@ -2,12 +2,13 @@
 
 p Testing the suspend/resume feature of MSG
 
-$ $SG_TEST_EXENV suspend/suspend ${srcdir:=.}/msg_platform.xml ${srcdir:=.}/suspend/deployment_suspend.xml 
-> [Jacquelin:dream_master:(1) 0.000000] [msg_test/INFO] Let's create a lazy guy.
-> [Jacquelin:dream_master:(1) 0.000000] [msg_test/INFO] Let's wait a little bit...
-> [Jacquelin:Lazy:(2) 0.000000] [msg_test/INFO] Nobody's watching me ? Let's go to sleep.
-> [Jacquelin:dream_master:(1) 10.000000] [msg_test/INFO] Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!
-> [Jacquelin:dream_master:(1) 10.000000] [msg_test/INFO] OK, goodbye now.
-> [Jacquelin:Lazy:(2) 10.000000] [msg_test/INFO] Uuuh ? Did somebody call me ?
-> [Jacquelin:Lazy:(2) 10.000000] [msg_test/INFO] Mmmh, goodbye now.
-> [10.000000] [msg_test/INFO] Simulation time 10
+! output sort
+$ $SG_TEST_EXENV suspend/suspend ${srcdir:=.}/msg_platform.xml ${srcdir:=.}/suspend/deployment_suspend.xml  --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (1:dream_master@Jacquelin) Let's create a lazy guy.
+> [  0.000000] (1:dream_master@Jacquelin) Let's wait a little bit...
+> [  0.000000] (2:Lazy@Jacquelin) Nobody's watching me ? Let's go to sleep.
+> [ 10.000000] (0:@) Simulation time 10
+> [ 10.000000] (1:dream_master@Jacquelin) Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!
+> [ 10.000000] (1:dream_master@Jacquelin) OK, goodbye now.
+> [ 10.000000] (2:Lazy@Jacquelin) Uuuh ? Did somebody call me ?
+> [ 10.000000] (2:Lazy@Jacquelin) Mmmh, goodbye now.

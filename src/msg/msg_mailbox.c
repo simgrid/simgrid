@@ -8,95 +8,46 @@
 
 #include "mailbox.h"
 #include "msg/private.h"
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg,
                                 "Logging specific to MSG (mailbox)");
 
-static xbt_dict_t msg_mailboxes = NULL;
-
-void MSG_mailbox_mod_init(void)
-{
-  msg_mailboxes = xbt_dict_new();
-}
-
-void MSG_mailbox_mod_exit(void)
-{
-  xbt_dict_free(&msg_mailboxes);
-}
-
-msg_mailbox_t MSG_mailbox_create(const char *alias)
-{
-  msg_mailbox_t mailbox = xbt_new0(s_msg_mailbox_t, 1);
-
-  mailbox->cond = NULL;
-  mailbox->alias = alias ? xbt_strdup(alias) : NULL;
-  mailbox->rdv = SIMIX_rdv_create(alias);
-
-  return mailbox;
-}
-
 msg_mailbox_t MSG_mailbox_new(const char *alias)
 {
-  msg_mailbox_t mailbox = MSG_mailbox_create(alias);
-
-  /* add the mbox in the dictionary */
-  xbt_dict_set(msg_mailboxes, alias, mailbox, MSG_mailbox_free);
-
-  return mailbox;
+  return SIMIX_req_rdv_create(alias ? xbt_strdup(alias) : NULL);
 }
 
 void MSG_mailbox_free(void *mailbox)
 {
-  msg_mailbox_t _mailbox = (msg_mailbox_t) mailbox;
-
-  free(_mailbox->alias);
-  SIMIX_rdv_destroy(_mailbox->rdv);
-
-  free(_mailbox);
-}
-
-smx_cond_t MSG_mailbox_get_cond(msg_mailbox_t mailbox)
-{
-  return mailbox->cond;
+  SIMIX_req_rdv_destroy((msg_mailbox_t)mailbox);
 }
 
 int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 {
-  return (NULL == SIMIX_rdv_get_head(mailbox->rdv));
+  return (NULL == SIMIX_req_rdv_get_head(mailbox));
 }
 
 m_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
 {
-  smx_comm_t comm = SIMIX_rdv_get_head(mailbox->rdv);
+  smx_action_t comm = SIMIX_req_rdv_get_head(mailbox);
 
   if (!comm)
     return NULL;
 
-  return (m_task_t) SIMIX_communication_get_data(comm);
+  return (m_task_t) SIMIX_req_comm_get_data(comm);
 }
 
 int
 MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,
                                          m_host_t host)
 {
-  return SIMIX_rdv_get_count_waiting_comm(mailbox->rdv,
-                                          host->simdata->smx_host);
-}
-
-void MSG_mailbox_set_cond(msg_mailbox_t mailbox, smx_cond_t cond)
-{
-  mailbox->cond = cond;
-}
-
-const char *MSG_mailbox_get_alias(msg_mailbox_t mailbox)
-{
-  return mailbox->alias;
+  return SIMIX_req_rdv_comm_count_by_host(mailbox,
+                                      host->simdata->smx_host);
 }
 
 msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 {
 
-  msg_mailbox_t mailbox = xbt_dict_get_or_null(msg_mailboxes, alias);
+  msg_mailbox_t mailbox = SIMIX_req_rdv_get_by_name(alias);
 
   if (!mailbox)
     mailbox = MSG_mailbox_new(alias);
@@ -121,7 +72,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 {
   xbt_ex_t e;
   MSG_error_t ret = MSG_OK;
-  smx_comm_t comm;
+  smx_action_t comm = NULL;
 #ifdef HAVE_TRACING
   double start_time = 0;
 #endif
@@ -135,11 +86,6 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   start_time = MSG_get_clock();
 #endif
 
-  /* Kept for compatibility with older implementation */
-  xbt_assert1(!MSG_mailbox_get_cond(mailbox),
-              "A process is already blocked on this channel %s",
-              MSG_mailbox_get_alias(mailbox));
-
   /* Sanity check */
   xbt_assert0(task, "Null pointer for the task storage");
 
@@ -149,8 +95,9 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 
   /* Try to receive it by calling SIMIX network layer */
   TRY {
-    SIMIX_network_recv(mailbox->rdv, timeout, task, NULL, &comm);
-    //INFO2("Got task %s from %s",(*task)->name,mailbox->alias);
+    comm = SIMIX_req_comm_irecv(mailbox, task, NULL);
+    SIMIX_req_comm_wait(comm, timeout);
+    DEBUG2("Got task %s from %p",(*task)->name,mailbox);
     (*task)->simdata->refcount--;
   }
   CATCH(e) {
@@ -212,13 +159,9 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   /* Try to send it by calling SIMIX network layer */
   TRY {
-    /* Kept for semantical compatibility with older implementation */
-    if (mailbox->cond)
-      SIMIX_cond_signal(mailbox->cond);
-
-    SIMIX_network_send(mailbox->rdv, t_simdata->message_size,
-                       t_simdata->rate, timeout, task, sizeof(void *),
-                       &(t_simdata->comm), task);
+    t_simdata->comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
+                       t_simdata->rate, task, sizeof(void *), task);
+    SIMIX_req_comm_wait(t_simdata->comm, timeout);
   }
 
   CATCH(e) {

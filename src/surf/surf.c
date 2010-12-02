@@ -400,9 +400,9 @@ void surf_presolve(void)
       model->model_private->update_actions_state(NOW, 0.0);
 }
 
-double surf_solve(void)
+double surf_solve(double max_date)
 {
-  double min = -1.0;
+  double min = -1.0; /* duration */
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
@@ -411,7 +411,9 @@ double surf_solve(void)
   tmgr_trace_event_t event = NULL;
   unsigned int iter;
 
-  min = -1.0;
+  if (max_date != -1.0 && max_date != NOW) {
+    min = max_date - NOW;
+  }
 
   DEBUG0("Looking for next action end");
   xbt_dynar_foreach(model_list, iter, model) {
@@ -450,6 +452,7 @@ double surf_solve(void)
                                                             NOW + min);
     }
   }
+
 
   /* FIXME: Moved this test to here to avoid stoping simulation if there are actions running on cpus and all cpus are with availability = 0. 
    * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.

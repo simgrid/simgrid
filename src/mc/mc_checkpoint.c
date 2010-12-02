@@ -1,23 +1,74 @@
 #include "private.h"
 
+static mc_mem_region_t MC_region_new(void *start_addr, size_t size);
+static void MC_region_restore(mc_mem_region_t reg);
+static void MC_region_destroy(mc_mem_region_t reg);
+
+static void MC_snapshot_add_region(mc_snapshot_t snapshot, void *start_addr, size_t size);
+
+static mc_mem_region_t MC_region_new(void *start_addr, size_t size)
+{
+  mc_mem_region_t new_reg = xbt_new0(s_mc_mem_region_t, 1);
+  new_reg->start_addr = start_addr;
+  new_reg->size = size;
+  new_reg->data = xbt_malloc0(size);
+  memcpy(new_reg->data, start_addr, size);
+  return new_reg;
+}
+
+static void MC_region_restore(mc_mem_region_t reg)
+{
+  /*FIXME: check if start_addr is still mapped, if it is not, then map it
+    before copying the data */
+  memcpy(reg->start_addr, reg->data, reg->size);
+}
+
+static void MC_region_destroy(mc_mem_region_t reg)
+{
+  xbt_free(reg->data);
+  xbt_free(reg);
+}
+
+static void MC_snapshot_add_region(mc_snapshot_t snapshot, void *start_addr, size_t size)
+{
+  mc_mem_region_t new_reg = MC_region_new(start_addr, size);
+  snapshot->regions = xbt_realloc(snapshot->regions, (snapshot->num_reg + 1) * sizeof(mc_mem_region_t));
+  snapshot->regions[snapshot->num_reg] = new_reg;
+  snapshot->num_reg++;
+  return;
+} 
+
 void MC_take_snapshot(mc_snapshot_t snapshot)
 {
-/* Save the heap! */
-  snapshot->heap_size = MC_save_heap(&(snapshot->heap));
+  unsigned int i;
+  s_map_region reg;
+  memory_map_t maps = get_memory_map();
 
-/* Save data and bss that */
-  snapshot->data_size = MC_save_dataseg(&(snapshot->data));
+  /* Save all the writable mapped pages except the  and the stack */
+  for (i = 0; i < maps->mapsize; i++) {
+    reg = maps->regions[i];
+    if((reg.prot & PROT_WRITE)
+       && (reg.pathname == NULL
+           || (strncmp(reg.pathname, "/dev/zero", 9)
+               && strncmp(reg.pathname, "[stack]", 7)))){
+      MC_snapshot_add_region(snapshot, reg.start_addr,
+                             (char*)reg.end_addr - (char*)reg.start_addr);
+    }
+  }
 }
 
 void MC_restore_snapshot(mc_snapshot_t snapshot)
 {
-  MC_restore_heap(snapshot->heap, snapshot->heap_size);
-  MC_restore_dataseg(snapshot->data, snapshot->data_size);
+  unsigned int i;
+  for(i=0; i < snapshot->num_reg; i++)
+    MC_region_restore(snapshot->regions[i]);
 }
 
 void MC_free_snapshot(mc_snapshot_t snapshot)
 {
-  xbt_free(snapshot->heap);
-  xbt_free(snapshot->data);
+  unsigned int i;
+  for(i=0; i < snapshot->num_reg; i++)
+    MC_region_destroy(snapshot->regions[i]);
+
   xbt_free(snapshot);
 }
