@@ -144,9 +144,7 @@ else(WIN32)
 endif(WIN32)
 
 ### Build the doc
-if(enable_doc)
-	include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
-endif(enable_doc)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
 
 ### Make Simgrid.jar and Java examples
 if(HAVE_JAVA)

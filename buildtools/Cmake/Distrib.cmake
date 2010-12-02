@@ -207,7 +207,6 @@ endif(HAVE_RUBY)
 ### Fill in the "make dist-dir" target ###
 ##########################################
 
-if(enable_doc)
 add_custom_target(dist-dir
   COMMENT "Generating the distribution directory"
   COMMAND test -e simgrid-${release_version}/ && chmod -R a+w simgrid-${release_version}/ || true
@@ -217,12 +216,6 @@ add_custom_target(dist-dir
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ simgrid-${release_version}/doc/html/
 )
 add_dependencies(dist-dir simgrid_documentation)
-else(enable_doc)
-add_custom_target(dist-dir
-	COMMAND ${CMAKE_COMMAND} -E echo "Please enable the doc to generate the doc"
-	COMMAND I_said_PLEASE_ENABLE_THE_DOC_GENERATION_BEFORE_BUILDING_AN_ARCHIVE
-)
-endif(enable_doc)
 
 set(dirs_in_tarball "")
 foreach(file ${source_to_pack})

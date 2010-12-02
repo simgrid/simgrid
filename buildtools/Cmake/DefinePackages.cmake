@@ -601,7 +601,52 @@ set(DOC_SOURCES
 	doc/module-xbt.doc
 	doc/people.doc	
 	doc/publis.doc
+	
+	doc/gtut-files/01-bones.c
+	doc/gtut-files/01-bones.output
+	doc/gtut-files/02-simple.c
+	doc/gtut-files/02-simple.output
+	doc/gtut-files/03-args.c
+	doc/gtut-files/03-args.output
+	doc/gtut-files/03-args.xml
+	doc/gtut-files/04-callback.c
+	doc/gtut-files/04-callback.output
+	doc/gtut-files/05-globals.c
+	doc/gtut-files/05-globals.output
+	doc/gtut-files/06-logs.c
+	doc/gtut-files/06-logs.output
+	doc/gtut-files/06-logs.output.error
+	doc/gtut-files/06-logs.output.fmt
+	doc/gtut-files/06-logs.output.fmt-bt
+	doc/gtut-files/06-logs.output.verbose
+	doc/gtut-files/07-timers.c
+	doc/gtut-files/07-timers.output
+	doc/gtut-files/08-exceptions.c
+	doc/gtut-files/08-exceptions.output
+	doc/gtut-files/09-datatype-dump.c
+	doc/gtut-files/09-simpledata.c
+	doc/gtut-files/09-simpledata.output
+	doc/gtut-files/10-rpc.c
+	doc/gtut-files/10-rpc.output
+	doc/gtut-files/11-explicitwait.c
+	doc/gtut-files/11-explicitwait.output
+	doc/gtut-files/11-explicitwait.xml
+	doc/gtut-files/gtut-platform-3nodes.xml
+	doc/gtut-files/gtut-platform.xml
+	doc/gtut-files/Makefile
+	doc/gtut-files/README
+	doc/gtut-files/test.xml
+	
+	doc/webcruft/awstats_logo3.png
+	doc/webcruft/Paje_MSG_screenshot.jpg
+	doc/webcruft/Paje_MSG_screenshot_thn.jpg
+	doc/webcruft/poster_thumbnail.png
+	doc/webcruft/robots.txt
+	doc/webcruft/simgrid_logo.png
+	doc/webcruft/simgrid_logo_small.png
+	
 	doc/Doxyfile.in
+	
 	tools/doxygen/bibtex2html_table_count.pl
 	tools/doxygen/doxygen_postprocesser.pl
 	tools/doxygen/index_create.pl
@@ -611,6 +656,7 @@ set(DOC_SOURCES
 	tools/doxygen/index_php.pl
 	tools/doxygen/xbt_log_extract_hierarchy.pl
 )
+
 set(DOC_FIGS
 	${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules.fig
 	${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules2.fig

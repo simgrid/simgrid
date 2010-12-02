@@ -1,9 +1,7 @@
-message("\tBIBTEX2HTML  : ${BIBTEX2HTML}")
-
 if(BIBTEX2HTML)
-set(BIBTEX2HTML_PATH ${BIBTEX2HTML})
+	set(BIBTEX2HTML_PATH ${BIBTEX2HTML})
 else(BIBTEX2HTML)
-find_path(BIBTEX2HTML_PATH	NAMES bibtex2html	PATHS NO_DEFAULT_PATHS)
+	find_path(BIBTEX2HTML_PATH	NAMES bibtex2html	PATHS NO_DEFAULT_PATHS)
 endif(BIBTEX2HTML)
 
 find_path(FIG2DEV_PATH	NAMES fig2dev	PATHS NO_DEFAULT_PATHS)
@@ -11,24 +9,9 @@ find_path(DOXYGEN_PATH	NAMES doxygen	PATHS NO_DEFAULT_PATHS)
 find_path(BIBTOOL_PATH	NAMES bibtool	PATHS NO_DEFAULT_PATHS)
 find_path(ICONV_PATH	NAMES iconv	PATHS NO_DEFAULT_PATHS)
 
-message("\tFIG2DEV_PATH : ${FIG2DEV_PATH}")
-message("\tDOXYGEN_PATH : ${DOXYGEN_PATH}")
-message("\tBIBTOOL_PATH : ${BIBTOOL_PATH}")
-message("\tICONV_PATH   : ${ICONV_PATH}")
-message("\tBIBTEX2HTML_PATH   : ${BIBTEX2HTML_PATH}")
-
 ### Check whether the bibtex2html that we found is the one that Arnaud requires
 exec_program("${BIBTEX2HTML_PATH}/bibtex2html -version" OUTPUT_VARIABLE OUTPUT_BIBTEX2HTML_VERSION)
 STRING(REPLACE "[-bibtex]" "" OUTPUT_BIBTEX2HTML_VERSION_2 ${OUTPUT_BIBTEX2HTML_VERSION})
-
-if(BIBTEX2HTML_PATH)
-	if(${OUTPUT_BIBTEX2HTML_VERSION_2} STREQUAL ${OUTPUT_BIBTEX2HTML_VERSION}) # wrong version
-		message("\nERROR --> NEED to set bibtex2html path with \"ccmake ./\" or with \"cmake -DBIBTEX2HTML=<path_to> ./\"")
-		message("\nTake care having install the good bibtex2html \n\t(download it : ftp://ftp-sop.inria.fr/epidaure/Softs/bibtex2html/bibtex2html-1.02.tar.gz)")
-		message(FATAL_ERROR "\n")
-	endif(${OUTPUT_BIBTEX2HTML_VERSION_2} STREQUAL ${OUTPUT_BIBTEX2HTML_VERSION})
-endif(BIBTEX2HTML_PATH)
-
 
 file(GLOB_RECURSE source_doxygen
 	"${CMAKE_HOME_DIRECTORY}/tools/gras/*.[chl]"
@@ -36,8 +19,13 @@ file(GLOB_RECURSE source_doxygen
 	"${CMAKE_HOME_DIRECTORY}/include/*.[chl]"
 )
 
+if(${OUTPUT_BIBTEX2HTML_VERSION_2} STREQUAL ${OUTPUT_BIBTEX2HTML_VERSION}) # wrong version
+	SET(GOOD_BIBTEX2HTML_VERSION 0)
+else(${OUTPUT_BIBTEX2HTML_VERSION_2} STREQUAL ${OUTPUT_BIBTEX2HTML_VERSION}) # good version
+	SET(GOOD_BIBTEX2HTML_VERSION 1)
+endif(${OUTPUT_BIBTEX2HTML_VERSION_2} STREQUAL ${OUTPUT_BIBTEX2HTML_VERSION})
 
-if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH)
+if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH AND GOOD_BIBTEX2HTML_VERSION)
 
 	string(REGEX REPLACE ";.*logcategories.doc" "" LISTE_DEUX "${LISTE_DEUX}")
 
@@ -51,20 +39,15 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_small.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
 	)
-	message("WARNING = ${WARNING}")
-	message("srcdir = ${srcdir}")
-	message("top_srcdir = ${top_srcdir}")
 	
 	configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
 		
-	ADD_CUSTOM_TARGET(simgrid_documentation ALL
+	ADD_CUSTOM_TARGET(simgrid_documentation
 		COMMENT "Generating the SimGrid documentation..."
 		DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
 		COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/html
-		
 		COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
-
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
 	)
 
@@ -104,15 +87,15 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/toc_create.pl FAQ.doc index.doc contrib.doc gtut-introduction.doc history.doc
 		
-		COMMAND ${CMAKE_COMMAND} -E echo XX Second Doxygen pass
+		COMMAND ${CMAKE_COMMAND} -E echo "XX Second Doxygen pass"
 		COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
 		
-		COMMAND ${CMAKE_COMMAND} -E echo XX Post-processing Doxygen result
+		COMMAND ${CMAKE_COMMAND} -E echo "XX Post-processing Doxygen result"
 		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/html/dir*
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_php.pl index.php.in html/index.html index.php
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/doxygen_postprocesser.pl
 	
-		COMMAND ${CMAKE_COMMAND} -E echo XX Create shortcuts pages 
+		COMMAND ${CMAKE_COMMAND} -E echo "XX Create shortcuts pages"
 		COMMAND ${CMAKE_COMMAND} -E echo \"<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>\" > ${CMAKE_HOME_DIRECTORY}/doc/html/gras.html
 		COMMAND ${CMAKE_COMMAND} -E echo \"<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>Grid Reality And Simulation.</a></h2></center></html>\" >> ${CMAKE_HOME_DIRECTORY}/doc/html/gras.html
 		
@@ -155,10 +138,33 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 		add_dependencies(simgrid_documentation ${CMAKE_HOME_DIRECTORY}/doc/${file}.html)
 	endforeach(file "publis_core publis_extern publis_intra")
 	
-else(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH)
-	message(FATAL_ERROR "You asked to regenerate the documentation, but you are missing some build-dependencies. Please install them, or change enable_doc to OFF")
+else(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH AND GOOD_BIBTEX2HTML_VERSION)
 
-endif(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH)
+	ADD_CUSTOM_TARGET(simgrid_documentation
+			COMMENT "Generating the SimGrid documentation..."
+			)
+
+	if(NOT GOOD_BIBTEX2HTML_VERSION) # wrong version
+		ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
+			COMMAND ${CMAKE_COMMAND} -E echo "This is not the good bibtex2html program !!!"
+			COMMAND ${CMAKE_COMMAND} -E echo  "You can download it from : ftp://ftp-sop.inria.fr/epidaure/Softs/bibtex2html/bibtex2html-1.02.tar.gz"
+			)
+	endif(NOT GOOD_BIBTEX2HTML_VERSION)
+
+	ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
+			COMMAND ${CMAKE_COMMAND} -E echo "DOXYGEN_PATH 		= ${DOXYGEN_PATH}"
+			COMMAND ${CMAKE_COMMAND} -E echo "FIG2DEV_PATH 		= ${FIG2DEV_PATH}"
+			COMMAND ${CMAKE_COMMAND} -E echo "BIBTOOL_PATH 		= ${BIBTOOL_PATH}"
+			COMMAND ${CMAKE_COMMAND} -E echo "BIBTEX2HTML_PATH 	= ${BIBTEX2HTML_PATH}"
+			COMMAND ${CMAKE_COMMAND} -E echo "ICONV_PATH 		= ${ICONV_PATH}"
+			COMMAND ${CMAKE_COMMAND} -E echo "IN ORDER TO GENERATE THE DOCUMENTATION YOU NEED ALL TOOLS !!!"
+			COMMAND FAIL TO MAKE SIMGRID DOCUMENTATION see previous messages for details ...
+			)
+
+		
+endif(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH AND GOOD_BIBTEX2HTML_VERSION)
+
+##############################################################################"
 
 message("Check individual TOCs")
 file(GLOB_RECURSE LISTE_GTUT

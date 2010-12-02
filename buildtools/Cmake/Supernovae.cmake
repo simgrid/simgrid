@@ -66,7 +66,7 @@ if (PERL_EXECUTABLE AND enable_supernovae) # I need supernovae and can use it
 		${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
 else(PERL_EXECUTABLE AND enable_supernovae) # I need supernovae and can use it
 	if (enable_supernovae)
-		message(You need Perl to activate supernovae)
+		message("You need Perl to activate supernovae")
 		set(enable_supernovae 0)
 	endif(enable_supernovae)
 endif(PERL_EXECUTABLE AND enable_supernovae) # I need supernovae and can use it
