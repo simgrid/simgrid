@@ -1781,7 +1781,7 @@ of parallel applications and distributed algorithms. Usually, this is done in a
 two-step fashion: the user instruments the application and the traces are
 analyzed after the end of the execution. The visualization itself can highlights
 unexpected behaviors, bottlenecks and sometimes can be used to correct
-distributed algorithms. The SimGrid team is currently instrumenting the library
+distributed algorithms. The SimGrid team has instrumented the library
 in order to let users trace their simulations and analyze them. This part of the
 user manual explains how the tracing-related features can be enabled and used
 during the development of simulators using the SimGrid library.
@@ -1789,18 +1789,20 @@ during the development of simulators using the SimGrid library.
 \subsubsection faq_tracing_howitworks How it works
 
 For now, the SimGrid library is instrumented so users can trace the <b>platform
-utilization</b> using the MSG interface. This means that the tracing will
+utilization</b> using the MSG, SimDAG and SMPI interface. This means that the tracing will
 register how much power is used for each host and how much bandwidth is used for
 each link of the platform. The idea with this type of tracing is to observe the
 overall view of resources utilization in the first place, especially the
 identification of bottlenecks, load-balancing among hosts, and so on.
 
-The idea of the instrumentation is to classify the MSG tasks by category,
-and trace
-the platform utilization (hosts and links) for each of the categories. For that,
+The idea of the tracing facilities is to give SimGrid users to possibility to
+classify MSG and SimDAG tasks by category, tracing the platform utilization
+(hosts and links) for each of the categories. For that,
 the tracing interface enables the declaration of categories and a function to
 mark a task with a previously declared category. <em>The tasks that are not
-classified according to a category are not traced</em>.
+classified according to a category are not traced</em>. Even if the user
+does not specify any category, the simulations can still be traced in terms
+of resource utilization by using a special parameter that is detailed below.
 
 \subsubsection faq_tracing_enabling Enabling using CMake
 
@@ -1818,12 +1820,6 @@ $ make
 
 \subsubsection faq_tracing_functions Tracing Functions
 
-\subsubsubsection Mandatory Functions
-
-\li <b>\c TRACE_start ()</b>: This is the first function to
-be called. It returns 0 if everything was properly initialized, 1 otherwise. 
-All trace functions called before TRACE_start do nothing.
-
 \li <b>\c TRACE_category (const char *category)</b>: This function should be used
 to define a user category. The category can be used to differentiate the tasks
 that are created during the simulation (for example, tasks from server1,
@@ -1833,19 +1829,18 @@ classified according to the task category. Tasks that do not belong to a
 category are not traced.
 
 \li <b>\c TRACE_msg_set_task_category (m_task_t task, const char *category)</b>:
-This function should be called after the creation of a task, to define the
+This function should be called after the creation of a MSG task, to define the
 category of that task. The first parameter \c task must contain a task that was
 created with the function \c MSG_task_create. The second parameter
 \c category must contain a category that was previously defined by the function
 \c TRACE_category.
 
-\li <b>\c TRACE_end ()</b>: This is the last function to be called. It closes
-the trace file and stops the tracing of the simulation. All tracing will be
-completely disabled after the calling this function. Although we recommend
-the use of this function somewhere in the end of program, it can be used
-anywhere in the code. This function returns 0 if everything is ok, 1 otherwise.
-
-\subsubsubsection Optional Functions
+\li <b>\c TRACE_sd_set_task_category (SD_task_t task, const char *category)</b>:
+This function should be called after the creation of a SimDAG task, to define the
+category of that task. The first parameter \c task must contain a task that was
+created with the function \c MSG_task_create. The second parameter
+\c category must contain a category that was previously defined by the function
+\c TRACE_category.
 
 \li <b>\c TRACE_host_variable_declare (const char *variable)</b>:
 Declare a user variable that will be associated to hosts. A variable can
@@ -1863,22 +1858,80 @@ the function \c MSG_host_self().
 
 These are the options accepted by the tracing system of SimGrid:
 
-\li <b>\c tracing/filename</b>: use this to specify the name of the trace file
-that will be created during the simulation. For example, after the binary
-of your simulator, you can pass as parameter this: 
-\verbatim
---cfg=tracing/filename:mytracefile.trace
-\endverbatim
-in order to trace the behavior of the simulation in a file with the name
-mytracefile.trace.
+\li <b>\c 
+tracing
+</b>:
+  It activates the tracing system and register the simulation platform
+  in the trace file. You have to enable this option to others take effect.
 
-\li <b>\c tracing/platform</b>: use this to activate the tracing of the
-platform. For example, you can pass as parameter to your simulator:
-\verbatim
---cfg=tracing/platform:1
-\endverbatim
-to trace the platform utilization by the categories you declared in your
-simulator. By default, this options is set to 0.
+\li <b>\c 
+tracing/platform
+</b>:
+  It activates the categorized resource utilization tracing. It should
+  be enabled if tracing categories are used by this simulator.
+
+\li <b>\c 
+tracing/uncategorized
+</b>:
+  It activates the uncategorized resource utilization tracing. Use it if
+  this simulator do not use tracing categories and resource use have to be
+  traced.
+
+\li <b>\c 
+tracing/platform/method
+</b>:
+  It changes the way resource utilization (categorized or not) is traced
+  inside the simulation core. Method 'a' (default) traces all updates defined
+  by the CPU/network model of a given resource. Depending on the interface used
+  by this simulator (MSG, SMPI, SimDAG), the default method can generate large
+  trace files. Method 'b' tries to make smaller tracefiles using clever updates,
+  without losing details of resource utilization. Method 'c' generates even
+  smaller files by doing time integration during the simulation, but it loses
+  precision. If this last method is used, the smallest timeslice used in the
+  tracefile analysis must be bigger than the smaller resource utilization. If
+  unsure, do not change this option.
+
+\li <b>\c 
+tracing/filename
+</b>:
+  A file with this name will be created to register the simulation. The file
+  is in the Paje format and can be analyzed using Triva or Paje visualization
+  tools. More information can be found in these webpages:
+     <a href="http://triva.gforge.inria.fr/">http://triva.gforge.inria.fr/</a>
+     <a href="http://paje.sourceforge.net/">http://paje.sourceforge.net/</a>
+
+\li <b>\c 
+tracing/smpi
+</b>:
+  This option only has effect if this simulator is SMPI-based. Traces the MPI
+  interface and generates a trace that can be analyzed using Gantt-like
+  visualizations. Every MPI function (implemented by SMPI) is transformed in a
+  state, and point-to-point communications can be analyzed with arrows.
+
+\li <b>\c 
+tracing/smpi/group
+</b>:
+  This option only has effect if this simulator is SMPI-based. The processes
+  are grouped by the hosts where they were executed.
+
+\li <b>\c 
+tracing/msg/task
+</b>:
+  This option only has effect if this simulator is MSG-based. It traces the
+  behavior of all categorized MSG tasks, grouping them by hosts.
+
+\li <b>\c 
+tracing/msg/process
+</b>:
+  This option only has effect if this simulator is MSG-based. It traces the
+  behavior of all categorized MSG processes, grouping them by hosts. This option
+  can be used to track process location if this simulator has process migration.
+
+\li <b>\c 
+tracing/msg/volume
+</b>:
+  This experimental option only has effect if this simulator is MSG-based.
+  It traces the communication volume of MSG send/receive.
 
 \subsubsection faq_tracing_example Example of Instrumentation
 
@@ -1890,9 +1943,8 @@ int main (int argc, char **argv)
   MSG_global_init (&argc, &argv);
 
   //note that TRACE_start must be called after MSG_global_init
-  TRACE_start ();
-  TRACE_category ("request");
-  TRACE_category ("computation");
+  TRACE_category_with_color ("request", "1 0 0");
+  TRACE_category_with_color ("computation", "0.3 1 0.4");
   TRACE_category ("finalize");
 
   //(... after deployment ...)
@@ -1915,8 +1967,6 @@ int main (int argc, char **argv)
   //(...)
 
   MSG_clean();
- 
-  TRACE_end();
   return 0;
 }
 \endverbatim
@@ -1933,41 +1983,56 @@ explains how to configure and use Triva to analyse a SimGrid trace file.
 - <b>Installing Triva</b>: the tool is available in the INRIAGforge, 
 at <a href="http://triva.gforge.inria.fr">http://triva.gforge.inria.fr</a>.
 Use the following command to get the sources, and then check the file
-<i>INSTALL.simplified</i>. This file contains instructions to install
-the tool's dependencies in a Ubuntu/Debian Linux.
+<i>INSTALL</i>. This file contains instructions to install
+the tool's dependencies in a Ubuntu/Debian Linux. The tool can also
+be compiled in MacOSes natively, check <i>INSTALL.mac</i> file.
 \verbatim
 $ svn checkout svn://scm.gforge.inria.fr/svn/triva
 $ cd triva
-$ cat INSTALL.simplified
+$ cat INSTALL
 \endverbatim
 
 - <b>Executing Triva</b>: a binary called <i>Triva</i> is available after the
   installation (you can execute it passing <em>--help</em> to check its
 options). If the triva binary is not available after following the
 installation instructions, you may want to execute the following command to
-initialize the GNUstep environment variables (note that the location of the
-<i>GNUstep.sh</i> file may vary depending on your GNUstep installation - the
-command is known to work in Ubuntu and Debian Linux):
+initialize the GNUstep environment variables. We strongly recommend that you
+use the latest GNUstep packages, and not the packages available through apt-get
+in Ubuntu/Debian packaging systems. If you install GNUstep using the latest
+available packages, you can execute this command:
 \verbatim
-$ source /usr/share/GNUstep/Makefiles/GNUstep.sh
+$ source /usr/GNUstep/System/Library/Makefiles/GNUstep.sh
 \endverbatim
 You should be able to see this output after the installation of triva:
 \verbatim
 $ ./Triva.app/Triva --help
-Usage: Triva [OPTION...] TRACEFILE
+Usage: Triva [OPTIONS...] TRACE0 [TRACE1]
 Trace Analysis through Visualization
 
- You need to use one of the following options:
-  -g, --graph                Graph Analysis
-  -t, --treemap              Treemap Analysis
-
- Other auxiliary options to check the trace file:
-  -c, --check                Check the integrity of trace file
-  -h, --hierarchy            Export the trace type hierarchy
-  -l, --list                 List entity types
-
-  -?, --help                 Give this help list
-      --usage                Give a short usage message
+TimeInterval
+    --ti_frequency {double}    Animation: frequency of updates
+    --ti_hide                  Hide the TimeInterval window
+    --ti_forward {double}      Animation: value to move time-slice
+    --ti_apply                 Apply the configuration
+    --ti_update                Update on slider change
+    --ti_animate               Start animation
+    --ti_start {double}        Start of time slice
+    --ti_size {double}         Size of time slice
+Triva
+    --comparison               Compare Trace Files (Experimental)
+    --graph                    Configurable Graph
+    --list                     Print Trace Type Hierarchy
+    --hierarchy                Export Trace Type Hierarchy (dot)
+    --stat                     Trace Statistics and Memory Utilization
+    --instances                List All Trace Entities
+    --linkview                 Link View (Experimental)
+    --treemap                  Squarified Treemap
+    --merge                    Merge Trace Files (Experimental)
+    --check                    Check Trace File Integrity
+GraphConfiguration
+    --gc_conf {file}           Graph Configuration in Property List Format
+    --gc_apply                 Apply the configuration
+    --gc_hide                  Hide the GraphConfiguration window
 \endverbatim
 Triva expects that the user choose one of the available options 
 (currently <em>--graph</em> or <em>--treemap</em> for a visualization analysis)
