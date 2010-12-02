@@ -82,7 +82,6 @@ set(EXTRA_DIST
 	src/amok/Bandwidth/bandwidth_private.h
 	src/amok/amok_modinter.h
 	src/simix/private.h
-	src/simix/smx_context_private.h
 	src/smpi/private.h
 	src/smpi/smpi_coll_private.h
 	src/smpi/smpi_mpi_dt_private.h
@@ -389,6 +388,7 @@ set(install_HEADERS
 	${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
 	include/gras.h 
 	include/xbt.h
+	include/bindings/smx_context.h
 )
 
 ### depend of some variables setted upper

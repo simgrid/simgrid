@@ -11,7 +11,7 @@
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 
-#include "smx_context_private.h"
+#include "bindings/smx_context.h"
 #include "bindings/ruby_bindings.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ruby);

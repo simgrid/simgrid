@@ -6,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_CONTEXT_PRIVATE_H
-#define _XBT_CONTEXT_PRIVATE_H
+#ifndef _XBT_CONTEXT_H
+#define _XBT_CONTEXT_H
 
 #include "xbt/swag.h"
 #include "simix/private.h"
@@ -53,4 +53,4 @@ void *smx_ctx_base_get_data(smx_context_t context);
 
 SG_END_DECL()
 
-#endif                          /* !_XBT_CONTEXT_PRIVATE_H */
+#endif                          /* !_XBT_CONTEXT_H */

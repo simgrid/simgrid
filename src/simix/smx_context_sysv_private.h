@@ -10,7 +10,7 @@
 #define _XBT_CONTEXT_SYSV_PRIVATE_H
 
 #include "xbt/swag.h"
-#include "simix/smx_context_private.h"
+#include "bindings/smx_context.h"
 #include "portable.h"
 
 SG_BEGIN_DECL()
