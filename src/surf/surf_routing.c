@@ -103,6 +103,8 @@ struct s_model_type routing_models[] = { {"Full",
 #ifdef HAVE_PCRE_LIB
 {"RuleBased", "Rule-Based routing data (...)", model_rulebased_create,
  model_rulebased_load, model_rulebased_unload, model_rulebased_end},
+{"Vivaldi", "Vivaldi routing", model_rulebased_create,
+  model_rulebased_load, model_rulebased_unload, model_rulebased_end},
 #endif
 {NULL, NULL, NULL, NULL, NULL, NULL}
 };
@@ -159,6 +161,47 @@ static char *gw_dst = NULL;     /* temporary store the gateway destination name 
 static xbt_dynar_t link_list = NULL;    /* temporary store of current list link of a route */
 
 static xbt_dict_t coordinates = NULL;
+
+
+static double eculidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
+{
+	double src_coord, dst_coord;
+
+	src_coord = atof(xbt_dynar_get_as(src, index, char *));
+	dst_coord = atof(xbt_dynar_get_as(dst, index, char *));
+
+	return (src_coord-dst_coord)*(src_coord-dst_coord);
+
+}
+
+static double vivaldi_get_link_latency (routing_component_t rc,
+																				const char *src, const char *dst)
+{
+  double euclidean_dist;
+  xbt_dynar_t src_ctn, dst_ctn;
+  src_ctn = xbt_dict_get(coordinates, src);
+  dst_ctn = xbt_dict_get(coordinates, dst);
+
+  euclidean_dist = sqrt (eculidean_dist_comp(0,src_ctn,dst_ctn)+eculidean_dist_comp(1,src_ctn,dst_ctn))
+  								+fabs(atof(xbt_dynar_get_as(src_ctn, 2, char *)))+fabs(atof(xbt_dynar_get_as(dst_ctn, 2, char *)));
+
+  xbt_assert2(euclidean_dist>=0, "Euclidean Dist is less than 0\"%s\" and \"%.2f\"", src, euclidean_dist);
+
+  return euclidean_dist;
+
+  /*
+  x = atof(xbt_dynar_get_as(src_ctn, 0, char *))-atof(xbt_dynar_get_as(dst_ctn, 0, char *));
+  y = atof(xbt_dynar_get_as(src_ctn, 1, char *));
+  h = atof(xbt_dynar_get_as(ctn, 2, char *));
+  sqrt((c1->x - c2->x) * (c1->x - c2->x) + (c1->y - c2->y) * (c1->y - c2->y)) + fabs(c1->h) + fabs(c2->h);
+
+	  if (strcmp(coord,"")) {
+  	xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
+  	xbt_dynar_shrink(ctn,0);
+   	xbt_dict_set (coordinates,host_id,ctn,NULL);
+  }
+	*/
+}
 
 /**
  * \brief Add a "host" to the network element list
@@ -435,6 +478,10 @@ static void parse_S_AS(char *AS_id, char *AS_routing)
   new_routing->hierarchy = SURF_ROUTING_NULL;
   new_routing->name = xbt_strdup(AS_id);
   new_routing->routing_sons = xbt_dict_new();
+
+  /* Hack for Vivaldi */
+  if(!strcmp(model->name,"Vivaldi"))
+  	new_routing->get_latency = vivaldi_get_link_latency;
 
   if (current_routing == NULL && global_routing->root == NULL) {
 
@@ -733,7 +780,6 @@ static route_extended_t _get_route(const char *src, const char *dst)
 
 static double _get_latency(const char *src, const char *dst)
 {
-
   double latency, latency_src, latency_dst = 0.0;
 
   DEBUG2("Solve route  \"%s\" to \"%s\"", src, dst);
@@ -793,49 +839,21 @@ static double _get_latency(const char *src, const char *dst)
     
 
     if (src != e_route_cnt->src_gateway) {
-      /*
-      e_route_src = _get_route(src, e_route_cnt->src_gateway);
-      xbt_assert2(e_route_src, "no route between \"%s\" and \"%s\"", src,
-                  e_route_cnt->src_gateway);
-      xbt_dynar_foreach(e_route_src->generic_route.link_list, cpt, link) {
-        xbt_dynar_push(e_route->generic_route.link_list, &link);
-      }
-      */
+
       latency_src = _get_latency(src, e_route_cnt->src_gateway);
       xbt_assert2(latency_src>=0, "no route between \"%s\" and \"%s\"", src,
                   e_route_cnt->src_gateway);
       latency += latency_src;
     }
-    
-    /*
-    xbt_dynar_foreach(e_route_cnt->generic_route.link_list, cpt, link) {
-      xbt_dynar_push(e_route->generic_route.link_list, &link);
-    }
-	*/
-	
+
     if (e_route_cnt->dst_gateway != dst) {
-      /*
-      e_route_dst = _get_route(e_route_cnt->dst_gateway, dst);
-      xbt_assert2(e_route_dst, "no route between \"%s\" and \"%s\"",
-                  e_route_cnt->dst_gateway, dst);
-      xbt_dynar_foreach(e_route_dst->generic_route.link_list, cpt, link) {
-        xbt_dynar_push(e_route->generic_route.link_list, &link);
-      }
-      */
+    
       latency_dst = _get_latency(e_route_cnt->dst_gateway, dst);
       xbt_assert2(latency_dst>=0, "no route between \"%s\" and \"%s\"",
                   e_route_cnt->dst_gateway, dst);
       latency += latency_dst;
     }
 	
-	/*
-    e_route->src_gateway = xbt_strdup(e_route_cnt->src_gateway);
-    e_route->dst_gateway = xbt_strdup(e_route_cnt->dst_gateway);
-
-    generic_free_extended_route(e_route_src);
-    generic_free_extended_route(e_route_cnt);
-    generic_free_extended_route(e_route_dst);
-    */   
   }
 
   xbt_dynar_free(&elem_father_list);
@@ -880,9 +898,11 @@ static xbt_dynar_t get_route(const char *src, const char *dst)
   xbt_free(e_route);
   xbt_dynar_free(&elem_father_list);
 
+/*
   if (xbt_dynar_length(global_routing->last_route) == 0)
     return NULL;
   else
+*/
     return global_routing->last_route;
 }
 
@@ -2622,6 +2642,7 @@ static void *model_rulebased_create(void)
   new_component->generic_routing.set_bypassroute = model_rulebased_set_bypassroute;
   new_component->generic_routing.get_onelink_routes = rulebased_get_onelink_routes;
   new_component->generic_routing.get_route = rulebased_get_route;
+  new_component->generic_routing.get_latency = generic_get_link_latency;
   new_component->generic_routing.get_bypass_route = generic_get_bypassroute;       //rulebased_get_bypass_route;
   new_component->generic_routing.finalize = rulebased_finalize;
   /* initialization of internal structures */
