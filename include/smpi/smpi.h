@@ -13,7 +13,7 @@
 #include <xbt/function_types.h>
 
 #define MPI_CALL(type,name,args) \
-  type name args; \
+  type name args __attribute__((weak)); \
   type P##name args
 
 SG_BEGIN_DECL()
