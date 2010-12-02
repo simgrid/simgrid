@@ -12,7 +12,7 @@
 #include "xbt/dict.h"
 #include "xbt/function_types.h"
 #include "simix/datatypes.h"
-#include "surf/surf.h"
+#include "simix/context.h"
 
 SG_BEGIN_DECL()
 
@@ -21,8 +21,6 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(void) SIMIX_global_init(int *argc, char **argv);
 XBT_PUBLIC(void) SIMIX_clean(void);
 
-/* Process creation/destruction callbacks */
-typedef void (*void_pfn_smxprocess_t) (smx_process_t);
 
 XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function);
 XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
@@ -74,6 +72,8 @@ XBT_PUBLIC(smx_process_t) SIMIX_process_create(const char *name,
                         				               const char *hostname,
 				                                       int argc, char **argv,
 				                                       xbt_dict_t properties);
+XBT_PUBLIC(smx_context_t) SIMIX_process_get_context(smx_process_t);
+XBT_PUBLIC(void) SIMIX_process_set_context(smx_process_t p,smx_context_t c);
 
 /****************************** Communication *********************************/
 XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_action_t, size_t));

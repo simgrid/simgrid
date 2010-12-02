@@ -10,9 +10,48 @@
 #define _XBT_CONTEXT_H
 
 #include "xbt/swag.h"
-#include "simix/private.h"
+#include "simix/datatypes.h"
+#include "simix/context.h"
 
 SG_BEGIN_DECL()
+/******************************** Context *************************************/
+typedef struct s_smx_context *smx_context_t;
+typedef struct s_smx_context_factory *smx_context_factory_t;
+
+/* Process creation/destruction callbacks */
+typedef void (*void_pfn_smxprocess_t) (smx_process_t);
+
+
+/* The following function pointer types describe the interface that any context
+   factory should implement */
+
+
+typedef smx_context_t(*smx_pfn_context_factory_create_context_t)
+  (xbt_main_func_t, int, char **, void_pfn_smxprocess_t, void* data);
+typedef int (*smx_pfn_context_factory_finalize_t) (smx_context_factory_t*);
+typedef void (*smx_pfn_context_free_t) (smx_context_t);
+typedef void (*smx_pfn_context_start_t) (smx_context_t);
+typedef void (*smx_pfn_context_stop_t) (smx_context_t);
+typedef void (*smx_pfn_context_suspend_t) (smx_context_t context);
+typedef void (*smx_pfn_context_runall_t) (xbt_swag_t processes);
+typedef smx_context_t (*smx_pfn_context_self_t) (void);
+typedef void* (*smx_pfn_context_get_data_t) (smx_context_t context);
+
+/* interface of the context factories */
+typedef struct s_smx_context_factory {
+  const char *name;
+  smx_pfn_context_factory_create_context_t create_context;
+  smx_pfn_context_factory_finalize_t finalize;
+  smx_pfn_context_free_t free;
+  smx_pfn_context_stop_t stop;
+  smx_pfn_context_suspend_t suspend;
+  smx_pfn_context_runall_t runall;
+  smx_pfn_context_self_t self;
+  smx_pfn_context_get_data_t get_data;
+} s_smx_context_factory_t;
+
+
+
 /*Hack: let msg load directly the right factory */
 typedef void (*SIMIX_ctx_factory_initializer_t)(smx_context_factory_t*);
 extern SIMIX_ctx_factory_initializer_t factory_initializer_to_use;

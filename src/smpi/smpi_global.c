@@ -10,6 +10,7 @@
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
 #include "mc/mc.h"
+#include "surf/surf.h"
 
 XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories");
 

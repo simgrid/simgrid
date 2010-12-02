@@ -7,6 +7,7 @@
 #include "private.h"
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
+#include "surf/surf.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
                                 "Logging specific to SMPI (benchmarking)");

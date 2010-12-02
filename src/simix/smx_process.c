@@ -529,3 +529,10 @@ void SIMIX_process_exception_terminate(xbt_ex_t * e)
   xbt_ex_display(e);
   abort();
 }
+
+smx_context_t SIMIX_process_get_context(smx_process_t p) {
+  return p->context;
+}
+void SIMIX_process_set_context(smx_process_t p,smx_context_t c) {
+  p->context = c;
+}

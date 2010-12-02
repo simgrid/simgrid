@@ -8,7 +8,7 @@
 
 
 #include "xbt/function_types.h"
-#include "bindings/smx_context.h"
+#include "simix/context.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(bindings);
 

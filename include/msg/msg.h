@@ -232,5 +232,10 @@ MSG_error_t MSG_action_trace_run(char *path);
 
 #include "instr/instr.h"
 
+/* Used only by the bindings */
+#include "simix/simix.h"
+XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(m_process_t process);
+
+
 SG_END_DECL()
 #endif

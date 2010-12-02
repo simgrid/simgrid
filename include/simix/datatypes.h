@@ -9,6 +9,7 @@
 #include "xbt/misc.h"
 #include "xbt/swag.h"
 #include "xbt/fifo.h"
+#include "xbt/dict.h"
 
 SG_BEGIN_DECL()
 
@@ -67,7 +68,6 @@ typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized acti
 typedef struct s_smx_process *smx_process_t;
 /** @} */
 
-typedef struct s_smx_context *smx_context_t;
 
 /* User create and kill process, the function must accept the folling parameters:
  * const char *name: a name for the object. It is for user-level information and can be NULL

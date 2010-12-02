@@ -10,7 +10,7 @@
 #include "xbt/log.h"
 #include "xbt/swag.h"
 #include "private.h"
-#include "bindings/smx_context.h"
+#include "simix/context.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
                                 "Context switching mecanism");

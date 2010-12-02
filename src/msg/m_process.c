@@ -457,3 +457,8 @@ int MSG_process_is_suspended(m_process_t process)
                && (process->simdata)), "Invalid parameters");
   return SIMIX_req_process_is_suspended(process->simdata->s_process);
 }
+
+
+smx_context_t MSG_process_get_smx_ctx(m_process_t process) {
+  return SIMIX_process_get_context(process->simdata->s_process);
+}

@@ -62,8 +62,6 @@ set(EXTRA_DIST
 	src/include/xbt/xbt_os_thread.h
 	src/include/mc/datatypes.h
 	src/include/mc/mc.h
-	src/include/simix/simix.h
-	src/include/simix/datatypes.h
 	src/include/simix/context.h
 	src/msg/private.h
 	src/msg/mailbox.h
@@ -388,7 +386,9 @@ set(install_HEADERS
 	${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
 	include/gras.h 
 	include/xbt.h
-	include/bindings/smx_context.h
+	include/simix/simix.h
+	include/simix/datatypes.h
+	include/simix/context.h
 )
 
 ### depend of some variables setted upper
