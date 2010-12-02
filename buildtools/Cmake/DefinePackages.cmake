@@ -83,7 +83,6 @@ set(EXTRA_DIST
 	src/amok/amok_modinter.h
 	src/simix/private.h
 	src/simix/smx_context_private.h
-	src/simix/smx_context_java.h
 	src/smpi/private.h
 	src/smpi/smpi_coll_private.h
 	src/smpi/smpi_mpi_dt_private.h
@@ -115,40 +114,6 @@ set(SMPI_SRC
 	src/smpi/smpi_mpi_dt.c
 )
 
-set(JMSG_C_SRC
-	src/simix/smx_context_java.c
-	src/java/jxbt_utilities.c
-	src/java/jxbt_utilities.h
-	src/java/jmsg.c 
-	src/java/jmsg.h
-	src/java/jmsg_host.c
-	src/java/jmsg_host.h
-	src/java/jmsg_process.c
-	src/java/jmsg_process.h
-	src/java/jmsg_task.c
-	src/java/jmsg_task.h
-	src/java/jmsg_application_handler.c
-	src/java/jmsg_application_handler.h
-)
-
-set(JMSG_JAVA_SRC
-	src/java/simgrid/msg/ApplicationHandler.java
-	src/java/simgrid/msg/Host.java
-	src/java/simgrid/msg/HostFailureException.java	
-	src/java/simgrid/msg/HostNotFoundException.java	
-	src/java/simgrid/msg/JniException.java
-	src/java/simgrid/msg/Msg.java
-	src/java/simgrid/msg/MsgException.java
-	src/java/simgrid/msg/MsgNative.java
-	src/java/simgrid/msg/NativeException.java
-	src/java/simgrid/msg/Process.java
-	src/java/simgrid/msg/ProcessNotFoundException.java
-	src/java/simgrid/msg/Sem.java
-	src/java/simgrid/msg/Task.java
-	src/java/simgrid/msg/TaskCancelledException.java
-	src/java/simgrid/msg/TimeoutException.java
-	src/java/simgrid/msg/TransferFailureException.java	
-)
 
 set(GRAS_RL_SRC
 	src/gras/rl_stubs.c
@@ -515,21 +480,6 @@ elseif(${HAVE_LUA})
 	)
 endif(${HAVE_LUA})
 
-set(EXTRA_DIST
-	${EXTRA_DIST}
-	${JMSG_JAVA_SRC}
-)
-if(${HAVE_JAVA})
-	set(simgrid_sources
-		${simgrid_sources}
-		${JMSG_C_SRC} # add the binding support to the library
-	)
-else(${HAVE_JAVA})
-	set(EXTRA_DIST
-		${EXTRA_DIST}
-		${JMSG_C_SRC}
-	)
-endif(${HAVE_JAVA})
 
 if(${HAVE_RUBY})
 	set(simgrid_sources
@@ -695,7 +645,6 @@ file(GLOB_RECURSE add_src_files
 "tools/*CMakeLists.txt"
 "examples/*.c"
 "examples/*.cxx"
-"examples/*.java"
 "examples/*.lua"
 "examples/*.rb"
 "examples/*CMakeLists.txt"
@@ -759,7 +708,6 @@ file(GLOB_RECURSE txt_files
 "examples/msg/actions/actions_split_p1.txt"
 "examples/msg/actions/CMakeLists.txt"
 "examples/msg/migration/migration.deploy"
-"examples/java/runtest"
 "teshsuite/gras/datadesc/datadesc.little32_4"
 "teshsuite/gras/datadesc/datadesc.little64"
 "teshsuite/gras/datadesc/datadesc.big32_8"
@@ -810,10 +758,6 @@ file(GLOB_RECURSE txt_files
 "examples/gras/pmm/test_sg_64"
 "examples/gras/synchro/test_sg_64"
 "examples/gras/properties/test_sg"
-"examples/java/basic/BasicTest"
-"examples/java/ping_pong/PingPongTest"
-"examples/java/comm_time/CommTimeTest"
-"examples/java/suspend/SuspendTest"
 )
 
 set(txt_files
@@ -853,8 +797,6 @@ set(source_to_pack
 	${XBT_RL_SRC}
 	${EXTRA_DIST}
 	${SMPI_SRC}
-	${JMSG_C_SRC}
-	${JMSG_JAVA_SRC}
 	${GRAS_RL_SRC}
 	${XBT_SRC}
 	${GTNETS_SRC}

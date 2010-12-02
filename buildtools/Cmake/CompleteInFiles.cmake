@@ -68,7 +68,6 @@ set(CONTEXT_UCONTEXT 0)
 SET(CONTEXT_THREADS 0)
 SET(HAVE_RUBY 0)
 set(HAVE_LUA 0)
-SET(HAVE_JAVA 0)
 SET(HAVE_TRACING 0)
 
 if(enable_tracing)
@@ -152,26 +151,6 @@ if(enable_smpi)
 		message("-- You should install f2c before use smpi.")
 	endif(HAVE_F2C_H)	
 endif(enable_smpi)
-
-#--------------------------------------------------------------------------------------------------
-### Initialize of CONTEXT JAVA
-
-if(enable_java)
-	include(FindJava)
-	include(FindJNI)
-	if(JAVA_INCLUDE_PATH)
-		set(HAVE_JNI_H 1)
-	endif(JAVA_INCLUDE_PATH)	
-	if(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2)
-		SET(HAVE_JAVA 1)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${JAVA_INCLUDE_PATH} ")
-		if(NOT JAVA_INCLUDE_PATH STREQUAL JAVA_INCLUDE_PATH2)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${JAVA_INCLUDE_PATH2} ")			
-		endif(NOT JAVA_INCLUDE_PATH STREQUAL JAVA_INCLUDE_PATH2)
-	else(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2) 
-		SET(HAVE_JAVA 0)
-	endif(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2)
-endif(enable_java)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT GTNETS
