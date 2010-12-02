@@ -3,10 +3,10 @@
 #########################################
 	  
 # doc
-if(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
-	file(MAKE_DIRECTORY ${PROJECT_DIRECTORY}/doc/html/)
-endif(NOT EXISTS ${PROJECT_DIRECTORY}/doc/html/)
-install(DIRECTORY "${PROJECT_DIRECTORY}/doc/html/"
+if(NOT EXISTS ${CMAKE_HOME_DIRECTORY}/doc/html/)
+	file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html/)
+endif(NOT EXISTS ${CMAKE_HOME_DIRECTORY}/doc/html/)
+install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
   DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/html/"
   PATTERN ".svn" EXCLUDE 
   PATTERN ".git" EXCLUDE 
@@ -81,7 +81,7 @@ endforeach(file ${install_HEADERS})
 
 # example files
 foreach(file ${examples_to_install_in_doc})
-  string(REPLACE "${PROJECT_DIRECTORY}/examples/" "" file ${file})
+  string(REPLACE "${CMAKE_HOME_DIRECTORY}/examples/" "" file ${file})
   get_filename_component(location ${file} PATH)
   install(FILES "examples/${file}"
           DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/examples/${location})
@@ -89,7 +89,7 @@ endforeach(file ${examples_to_install_in_doc})
 
 # example README
 foreach(file ${README_examples_files})
-  string(REPLACE "${PROJECT_DIRECTORY}/examples/" "" file ${file})
+  string(REPLACE "${CMAKE_HOME_DIRECTORY}/examples/" "" file ${file})
   get_filename_component(location ${file} PATH)
   install(FILES "examples/${file}"
           DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/examples/${location})
@@ -130,7 +130,7 @@ if(HAVE_RUBY)
 	install(FILES ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
 		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/
 	)
-	install(FILES ${PROJECT_DIRECTORY}/src/bindings/ruby/simgrid.rb
+	install(FILES ${CMAKE_HOME_DIRECTORY}/src/bindings/ruby/simgrid.rb
 		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/)
 
 endif(HAVE_RUBY)
@@ -175,7 +175,7 @@ if(HAVE_JAVA)
 	add_custom_command(TARGET uninstall
 	COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/share/simgrid.jar
 	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding java ok"
-	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
+	WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/"
 	)	
 endif(HAVE_JAVA)
 
@@ -183,7 +183,7 @@ if(HAVE_LUA)
 	add_custom_command(TARGET uninstall
 	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding lua ok"
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid.${LIB_EXE}
-	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
+	WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/"
 	)
 endif(HAVE_LUA)
 
@@ -193,7 +193,7 @@ if(HAVE_RUBY)
 	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding ruby ok"
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/simgrid.rb
-	WORKING_DIRECTORY "${PROJECT_DIRECTORY}/"
+	WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/"
 	)
 endif(HAVE_RUBY)
 
@@ -214,7 +214,7 @@ add_custom_target(dist-dir
   COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
   COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}
   COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/doc/html/
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_DIRECTORY}/doc/html/ simgrid-${release_version}/doc/html/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ simgrid-${release_version}/doc/html/
 )
 add_dependencies(dist-dir simgrid_documentation)
 else(enable_doc)
@@ -228,7 +228,7 @@ set(dirs_in_tarball "")
 foreach(file ${source_to_pack})
   #message(${file})
   # This damn prefix is still set somewhere (seems to be in subdirs)
-  string(REPLACE "${PROJECT_DIRECTORY}/" "" file "${file}")
+  string(REPLACE "${CMAKE_HOME_DIRECTORY}/" "" file "${file}")
   
   # Create the directory on need
   get_filename_component(file_location ${file} PATH)
@@ -244,7 +244,7 @@ foreach(file ${source_to_pack})
    # Actually copy the file
    add_custom_command(
      TARGET dist-dir
-     COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_DIRECTORY}/${file} simgrid-${release_version}/${file_location}/
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} simgrid-${release_version}/${file_location}/
    )
 endforeach(file ${source_to_pack})
 
@@ -343,14 +343,14 @@ COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_sha_unit.c
 COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_str_unit.c
 COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_strbuff_unit.c
 COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_synchro_unit.c
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 
 add_custom_target(supernovae-clean
 COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_gras.c
 COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_sg.c
 COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_smpi.c
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 
 #############################################
@@ -363,7 +363,7 @@ COMMAND chmod a+rX -R doc/
 COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/doc/ || true
 COMMAND scp doc/index.php doc/webcruft/robots.txt scm.gforge.inria.fr:/home/groups/simgrid/htdocs/
 COMMAND scp doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/simgrid_logo.png doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/
-WORKING_DIRECTORY "${PROJECT_DIRECTORY}"
+WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 
 include(CPack)

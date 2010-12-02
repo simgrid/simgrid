@@ -4,7 +4,7 @@ set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/bin/smpicc")
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 set(flags "-Dmain=smpi_simulated_main")
-set(INCLUDES_bis "-I${PROJECT_DIRECTORY}/include/smpi")
+set(INCLUDES_bis "-I${CMAKE_HOME_DIRECTORY}/include/smpi")
 
 add_definitions (${INCLUDES_bis} ${flags})
 

@@ -13,9 +13,6 @@ FIND_PROGRAM(GCOV_PATH gcov)
 FIND_PROGRAM(VALGRIND_PATH valgrind)
 include(FindPerl)
 
-### SET THE PROJECT_DIRECTORY
-SET(PROJECT_DIRECTORY "${CMAKE_HOME_DIRECTORY}")
-
 ### SET THE LIBRARY EXTENSION
 if(APPLE)
 	set(LIB_EXE "dylib")
@@ -26,9 +23,9 @@ endif(APPLE)
 ### Set some variables for Cmake
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 set(INCLUDES ${PROJECT_BINARY_DIR} ${PROJECT_BINARY_DIR}/include ${PROJECT_BINARY_DIR}/src/include ${PROJECT_BINARY_DIR}/src)
-set(INCLUDES ${INCLUDES} ${PROJECT_DIRECTORY} ${PROJECT_DIRECTORY}/include ${PROJECT_DIRECTORY}/src/include ${PROJECT_DIRECTORY}/src ${CMAKE_CURRENT_BINARY_DIR}/src)
+set(INCLUDES ${INCLUDES} ${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/include ${CMAKE_HOME_DIRECTORY}/src/include ${CMAKE_HOME_DIRECTORY}/src ${CMAKE_CURRENT_BINARY_DIR}/src)
 if(WIN32)
-    set(INCLUDES ${INCLUDES} ${PROJECT_DIRECTORY}/include/xbt ${PROJECT_DIRECTORY}/src/xbt) #for win32_ucontext.[ch]
+    set(INCLUDES ${INCLUDES} ${CMAKE_HOME_DIRECTORY}/include/xbt ${CMAKE_HOME_DIRECTORY}/src/xbt) #for win32_ucontext.[ch]
 endif(WIN32)
 set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 
@@ -124,54 +121,54 @@ endif(WIN32)
 include_directories(${INCLUDES})
 
 ### Setup Options
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/Option.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Option.cmake)
 
 ### Make the *.h files with *.h.in files
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/CompleteInFiles.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CompleteInFiles.cmake)
 
 ### Define source packages for Libs 
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/DefinePackages.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/DefinePackages.cmake)
 
 ### Build some Maintainer files
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/MaintainerMode.cmake)
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/UnitTesting.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MaintainerMode.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/UnitTesting.cmake)
 
 ### Setup gcc flags
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/Flags.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Flags.cmake)
 
 ### Make Libs and Exes
 if(WIN32)
-    include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeExeLibWin.cmake)
+    include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExeLibWin.cmake)
 else(WIN32)
-    include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeExeLib.cmake)
+    include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExeLib.cmake)
 endif(WIN32)
 
 ### Build the doc
 if(enable_doc)
-	include(${PROJECT_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
+	include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
 endif(enable_doc)
 
 ### Make Simgrid.jar and Java examples
 if(HAVE_JAVA)
-	include(${PROJECT_DIRECTORY}/buildtools/Cmake/MakeJava.cmake)
+	include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeJava.cmake)
 endif(HAVE_JAVA)
 
 ### Make tests
 if(NOT WIN32)
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
 else(NOT WIN32)
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/AddTestsWin.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTestsWin.cmake)
 endif(NOT WIN32)
 
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
 
 ### Setup the distrib
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
 
 ### Pipol compilation
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/Pipol.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Pipol.cmake)
 
 ### Print ARGS
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)
 
 INCLUDE(Dart)

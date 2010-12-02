@@ -37,16 +37,16 @@ if(PERL_EXECUTABLE)
 	ADD_CUSTOM_COMMAND(
 	  	OUTPUT	${TEST_UNITS}
 			
-  		DEPENDS	${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl
+  		DEPENDS	${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl
 			${TEST_CFILES}
   	
 		COMMAND	${CMAKE_COMMAND} -E remove -f ${TEST_UNITS}
 	
-		COMMAND chmod +x ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl
+		COMMAND chmod +x ${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl
 	
-		COMMAND ${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl --root=src/ --outdir=${CMAKE_CURRENT_BINARY_DIR}/src/ ${TEST_CFILES}
+		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl --root=src/ --outdir=${CMAKE_CURRENT_BINARY_DIR}/src/ ${TEST_CFILES}
 	
-		WORKING_DIRECTORY ${PROJECT_DIRECTORY}
+		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
 	
 	        COMMENT "Generating *_units files for testall..."
 	)
@@ -56,7 +56,7 @@ else(PERL_EXECUTABLE)
 	ADD_CUSTOM_COMMAND(
   	OUTPUT	${TEST_UNITS}
 			
-  	DEPENDS	${PROJECT_DIRECTORY}/tools/sg_unit_extractor.pl
+  	DEPENDS	${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl
   		${TEST_CFILES}
 			
 	COMMAND	${CMAKE_COMMAND} message WARNING "Unit files need to be regenerated, but no Perl installed")

@@ -1,7 +1,7 @@
 set(JAVA_FILES ${JMSG_JAVA_SRC})
 set(JAVA_CLASSES ${JAVA_FILES})
 
-string(REPLACE "src/java/" "${PROJECT_DIRECTORY}/src/java/"
+string(REPLACE "src/java/" "${CMAKE_HOME_DIRECTORY}/src/java/"
                JAVA_FILES "${JAVA_FILES}")
 
 string(REPLACE "src/java/simgrid/msg" "${CMAKE_CURRENT_BINARY_DIR}/classes/simgrid/msg"
@@ -55,10 +55,10 @@ ADD_CUSTOM_COMMAND(
 			
 	DEPENDS simgrid
             ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar
-			${PROJECT_DIRECTORY}/examples/java/basic/*.java
-			${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java
-			${PROJECT_DIRECTORY}/examples/java/comm_time/*.java
-			${PROJECT_DIRECTORY}/examples/java/suspend/*.java
+			${CMAKE_HOME_DIRECTORY}/examples/java/basic/*.java
+			${CMAKE_HOME_DIRECTORY}/examples/java/ping_pong/*.java
+			${CMAKE_HOME_DIRECTORY}/examples/java/comm_time/*.java
+			${CMAKE_HOME_DIRECTORY}/examples/java/suspend/*.java
 			
 	COMMENT "Build examples for java"	
 	
@@ -67,10 +67,10 @@ ADD_CUSTOM_COMMAND(
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/examples/java/suspend
 	
-  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/basic/*.java  
- 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/ping_pong/*.java
-  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/comm_time/*.java
-  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/suspend -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${PROJECT_DIRECTORY}/examples/java/suspend/*.java
+  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/basic -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/java/basic/*.java  
+ 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/ping_pong -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/java/ping_pong/*.java
+  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/comm_time -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/java/comm_time/*.java
+  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_CURRENT_BINARY_DIR}/examples/java/suspend -cp ${CMAKE_CURRENT_BINARY_DIR}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/java/suspend/*.java
 )
 
 ADD_CUSTOM_TARGET(simgrid_java_examples ALL

@@ -10,7 +10,7 @@ endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 # Declare the library content #
 ###############################
 # If we want supernovae, rewrite the libs' content to use it
-include(${PROJECT_DIRECTORY}/buildtools/Cmake/Supernovae.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Supernovae.cmake)
 
 # Actually declare our libraries
 
@@ -80,12 +80,12 @@ endif(HAVE_PCRE_LIB)
 if(HAVE_RUBY)
 	set(SIMGRID_DEP "${SIMGRID_DEP} -l${RUBY_LIBRARY_NAME}")
 	ADD_CUSTOM_TARGET(link_simgrid_ruby ALL
-		 DEPENDS simgrid ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
+		 DEPENDS simgrid ${CMAKE_HOME_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
 	)
 	add_custom_command(
-		OUTPUT ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
-	        COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
-		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
+		OUTPUT ${CMAKE_HOME_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
+	        COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_HOME_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
 	)
 endif(HAVE_RUBY)
 
@@ -98,22 +98,22 @@ endif(pthread)
 if(HAVE_LUA)	  
     ADD_CUSTOM_TARGET(link_simgrid_lua ALL
       DEPENDS 	simgrid
-      			${PROJECT_DIRECTORY}/examples/lua/simgrid.${LIB_EXE}
-				${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE}
-				${PROJECT_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE}
+      			${CMAKE_HOME_DIRECTORY}/examples/lua/simgrid.${LIB_EXE}
+				${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE}
+				${CMAKE_HOME_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE}
 	)
 	add_custom_command(
-		OUTPUT 	${PROJECT_DIRECTORY}/examples/lua/simgrid.${LIB_EXE}
-				${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE}
-				${PROJECT_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE}
-		COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/examples/lua/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
-		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/examples/lua/simgrid.${LIB_EXE} #for test
+		OUTPUT 	${CMAKE_HOME_DIRECTORY}/examples/lua/simgrid.${LIB_EXE}
+				${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE}
+				${CMAKE_HOME_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE}
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/examples/lua/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_HOME_DIRECTORY}/examples/lua/simgrid.${LIB_EXE} #for test
 		
-		COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
-	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE} #for test
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE} #for test
 		
-		COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
-	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${PROJECT_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE} #for test			
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_HOME_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE} #for test			
 	)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${LIB_LUA_NAME}")   	  
 endif(HAVE_LUA)
@@ -163,70 +163,70 @@ endif(enable_lib_static)
 ###################################################################
 ### Load all files declaring binaries (tools, examples and tests) #
 ###################################################################
-add_subdirectory(${PROJECT_DIRECTORY}/tools/gras)
-add_subdirectory(${PROJECT_DIRECTORY}/tools/tesh)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/gras)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/tesh)
 
-add_subdirectory(${PROJECT_DIRECTORY}/testsuite/xbt)
-add_subdirectory(${PROJECT_DIRECTORY}/testsuite/surf)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/xbt)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/gras/datadesc)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/gras/msg_handle)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/gras/empty_main)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/gras/small_sleep)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag/network)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag/network/p2p)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag/network/mxn)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag/partask)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/simdag/platforms)
-add_subdirectory(${PROJECT_DIRECTORY}/teshsuite/msg)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/xbt)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/surf)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/gras/datadesc)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/gras/msg_handle)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/gras/empty_main)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/gras/small_sleep)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/mxn)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/partask)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg)
 
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/ping)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/rpc)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/spawn)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/timer)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/chrono)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/mutual_exclusion/simple_token)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/mmrpc)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/all2all)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/pmm)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/synchro)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/properties)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/gras/console)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/ping)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/rpc)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/spawn)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/timer)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/chrono)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/mutual_exclusion/simple_token)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/mmrpc)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/all2all)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/pmm)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/synchro)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/properties)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/console)
 
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/properties)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/actions)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/migration)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/sendrecv)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/suspend)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/parallel_task)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/priority)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/masterslave)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/trace)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/tracing)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/icomms)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/properties)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/actions)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/migration)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/suspend)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/parallel_task)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/priority)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/trace)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/icomms)
 
 if(HAVE_MC)
-	add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/mc)
+	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/mc)
 endif(HAVE_MC)
 
 if(HAVE_GTNETS)
 	add_definitions("-lgtnets -L${gtnets_path}/lib -I${gtnets_path}/include/gtnets")
-	add_subdirectory(${PROJECT_DIRECTORY}/examples/msg/gtnets)
+	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets)
 endif(HAVE_GTNETS)
 
-add_subdirectory(${PROJECT_DIRECTORY}/examples/amok/bandwidth)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/amok/saturate)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/amok/saturate)
 
-add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/dax)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dax)
 if(HAVE_GRAPHVIZ)
-  add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/dot)
+  add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dot)
 endif(HAVE_GRAPHVIZ)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/metaxml)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/properties)
-add_subdirectory(${PROJECT_DIRECTORY}/examples/simdag/scheduling)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/metaxml)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/properties)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling)
 
 if(enable_smpi)
-	add_subdirectory(${PROJECT_DIRECTORY}/examples/smpi)
+	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi)
 endif(enable_smpi)

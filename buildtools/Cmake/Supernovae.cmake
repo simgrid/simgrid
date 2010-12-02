@@ -22,34 +22,34 @@ set(gras_fragile_sources
 if (PERL_EXECUTABLE AND enable_supernovae) # I need supernovae and can use it
 
 	# supernovae files are generated. I promise
-	set_source_files_properties(${PROJECT_DIRECTORY}/src/supernovae_sg.c
+	set_source_files_properties(${CMAKE_HOME_DIRECTORY}/src/supernovae_sg.c
 				      PROPERTIES GENERATED true)
-	set_source_files_properties(${PROJECT_DIRECTORY}/src/supernovae_gras.c
+	set_source_files_properties(${CMAKE_HOME_DIRECTORY}/src/supernovae_gras.c
 				      PROPERTIES GENERATED true)
-	set_source_files_properties(${PROJECT_DIRECTORY}/src/supernovae_smpi.c
+	set_source_files_properties(${CMAKE_HOME_DIRECTORY}/src/supernovae_smpi.c
 				      PROPERTIES GENERATED true)
 
 	ADD_CUSTOM_COMMAND(
 		OUTPUT   ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c
-		DEPENDS  ${PROJECT_DIRECTORY}/src/mk_supernovae.pl ${simgrid_sources}
-		COMMAND  perl ${PROJECT_DIRECTORY}/src/mk_supernovae.pl --out=${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c '--fragile=${simgrid_fragile_sources}' '${simgrid_sources}'
-		WORKING_DIRECTORY ${PROJECT_DIRECTORY}
+		DEPENDS  ${CMAKE_HOME_DIRECTORY}/src/mk_supernovae.pl ${simgrid_sources}
+		COMMAND  perl ${CMAKE_HOME_DIRECTORY}/src/mk_supernovae.pl --out=${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c '--fragile=${simgrid_fragile_sources}' '${simgrid_sources}'
+		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
 		COMMENT "Generating supernovae_sg.c"
 	)
 
 	ADD_CUSTOM_COMMAND(
 		OUTPUT   ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c
-		DEPENDS  ${PROJECT_DIRECTORY}/src/mk_supernovae.pl ${gras_sources}
-		COMMAND  perl ${PROJECT_DIRECTORY}/src/mk_supernovae.pl --out=${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c '--fragile=${gras_fragile_sources}'    '${gras_sources}'
-		WORKING_DIRECTORY ${PROJECT_DIRECTORY}
+		DEPENDS  ${CMAKE_HOME_DIRECTORY}/src/mk_supernovae.pl ${gras_sources}
+		COMMAND  perl ${CMAKE_HOME_DIRECTORY}/src/mk_supernovae.pl --out=${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c '--fragile=${gras_fragile_sources}'    '${gras_sources}'
+		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
 		COMMENT "Generating supernovae_gras.c"
 	)
 
 	ADD_CUSTOM_COMMAND(
 		OUTPUT   ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c
-		DEPENDS  ${PROJECT_DIRECTORY}/src/mk_supernovae.pl ${SMPI_SRC}
-		COMMAND  perl ${PROJECT_DIRECTORY}/src/mk_supernovae.pl --out=${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c  '${SMPI_SRC}'
-		WORKING_DIRECTORY ${PROJECT_DIRECTORY}
+		DEPENDS  ${CMAKE_HOME_DIRECTORY}/src/mk_supernovae.pl ${SMPI_SRC}
+		COMMAND  perl ${CMAKE_HOME_DIRECTORY}/src/mk_supernovae.pl --out=${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c  '${SMPI_SRC}'
+		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
 		COMMENT "Generating supernovae_smpi.c"
 	)
 

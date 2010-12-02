@@ -4,7 +4,7 @@ use strict;
 # input file = AddTest.txt
 
 if($#ARGV!=1) {
-    die "Usage: generate_memcheck_tests.pl <project_directory> AddTests.cmake\n";
+    die "Usage: generate_memcheck_tests.pl <CMAKE_HOME_DIRECTORY> AddTests.cmake\n";
 }
 
 my($proj_dir)=$ARGV[0];
@@ -36,7 +36,7 @@ while(defined($line=<MAKETEST>)) {
 		my($count_first)=0;
 		my($count_second)=0;
 		$complete_tesh_file =~ s/\$\{CMAKE_BINARY_DIR\}/$proj_dir/g;
-		$complete_tesh_file =~ s/\$\{PROJECT_DIRECTORY\}/$proj_dir/g;
+		$complete_tesh_file =~ s/\$\{CMAKE_HOME_DIRECTORY\}/$proj_dir/g;
 		open TESH_FILE, $complete_tesh_file or die "Unable to open $complete_tesh_file $!\n";
 		my($l);
 		while(defined($l=<TESH_FILE>))
@@ -52,7 +52,7 @@ while(defined($line=<MAKETEST>)) {
 			$command =~ s/\$SG_EXENV_TEST //g; 
 			$command =~ s/\$EXEEXT//g;
 			$command =~ s/\${EXEEXT}//g;
-			$command =~ s/\${srcdir}/\${PROJECT_DIRECTORY}\/src/g;
+			$command =~ s/\${srcdir}/\${CMAKE_HOME_DIRECTORY}\/src/g;
 			$command =~ s/ \$ARGS//g;
 			$command =~ s/ \$@ //g;	
 			$command =~ s/..\/..\/bin\/smpirun/\${CMAKE_BINARY_DIR\}\/bin\/smpirun/g;

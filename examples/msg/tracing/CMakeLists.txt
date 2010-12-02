@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_DIRECTORY}/lib")
+set(LIBRARY_OUTPUT_PATH "${CMAKE_HOME_DIRECTORY}/lib")
 
 add_executable(ms         ${CMAKE_CURRENT_SOURCE_DIR}/ms.c)
 add_executable(categories ${CMAKE_CURRENT_SOURCE_DIR}/categories.c)

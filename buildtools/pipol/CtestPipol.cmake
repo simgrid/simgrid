@@ -5,10 +5,10 @@ find_path(VALGRIND_PATH	NAMES valgrind	PATHS NO_DEFAULT_PATHS)
 find_program(PWD_EXE NAMES pwd)
 find_program(SED_EXE NAMES sed)
 
-### AUTO DETECT THE PROJECT_DIRECTORY
-exec_program("${PWD_EXE}" ARGS "| ${SED_EXE} 's/\\/Cmake//g'" OUTPUT_VARIABLE PROJECT_DIRECTORY)
-### MANUAL PROJECT_DIRECTORY
-#set(PROJECT_DIRECTORY "")
+### AUTO DETECT THE CMAKE_HOME_DIRECTORY
+exec_program("${PWD_EXE}" ARGS "| ${SED_EXE} 's/\\/Cmake//g'" OUTPUT_VARIABLE CMAKE_HOME_DIRECTORY)
+### MANUAL CMAKE_HOME_DIRECTORY
+#set(CMAKE_HOME_DIRECTORY "")
 
 SET(CTEST_PROJECT_NAME "Simgrid")
 
@@ -29,13 +29,13 @@ SET(CTEST_VALGRIND_COMMAND "${VALGRIND_PATH}/valgrind")
 SET(CTEST_MEMORYCHECK_COMMAND "${VALGRIND_PATH}/valgrind")
 set(CTEST_MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no")
 
-if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
+if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
 	SET(CTEST_UPDATE_COMMAND "/usr/bin/svn")
-endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
+endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
 
-if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
+if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git)
 	SET(CTEST_UPDATE_COMMAND "/usr/bin/git")
-endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
+endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git)
 
 SET(CTEST_DROP_METHOD "http")
 SET(CTEST_DROP_SITE "cdash.inria.fr/CDash")
@@ -62,13 +62,13 @@ SET(CTEST_TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-Testin
 #CTEST_CUSTOM_COVERAGE_EXCLUDE 	 		Regular expression for excluding files from coverage testing 
 
 SET(CTEST_CUSTOM_COVERAGE_EXCLUDE
-"${PROJECT_DIRECTORY}/tools/*"
-"${PROJECT_DIRECTORY}/buildtools/*"
-"${PROJECT_DIRECTORY}/include/*"
-"${PROJECT_DIRECTORY}/examples/*"
-"${PROJECT_DIRECTORY}/testsuite/*"
-"${PROJECT_DIRECTORY}/teshsuite/*"
-"${PROJECT_DIRECTORY}/src/bindings/*"
+"${CMAKE_HOME_DIRECTORY}/tools/*"
+"${CMAKE_HOME_DIRECTORY}/buildtools/*"
+"${CMAKE_HOME_DIRECTORY}/include/*"
+"${CMAKE_HOME_DIRECTORY}/examples/*"
+"${CMAKE_HOME_DIRECTORY}/testsuite/*"
+"${CMAKE_HOME_DIRECTORY}/teshsuite/*"
+"${CMAKE_HOME_DIRECTORY}/src/bindings/*"
 )
 
 #ignore some memcheck tests

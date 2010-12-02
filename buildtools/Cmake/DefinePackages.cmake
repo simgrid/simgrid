@@ -612,11 +612,11 @@ set(DOC_SOURCES
 	tools/doxygen/xbt_log_extract_hierarchy.pl
 )
 set(DOC_FIGS
-	${PROJECT_DIRECTORY}/doc/fig/simgrid_modules.fig
-	${PROJECT_DIRECTORY}/doc/fig/simgrid_modules2.fig
-	${PROJECT_DIRECTORY}/doc/fig/amok_bw_test.fig
-	${PROJECT_DIRECTORY}/doc/fig/amok_bw_sat.fig
-	${PROJECT_DIRECTORY}/doc/fig/gras_comm.fig
+	${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules.fig
+	${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules2.fig
+	${CMAKE_HOME_DIRECTORY}/doc/fig/amok_bw_test.fig
+	${CMAKE_HOME_DIRECTORY}/doc/fig/amok_bw_sat.fig
+	${CMAKE_HOME_DIRECTORY}/doc/fig/gras_comm.fig
 )
 
 foreach(file ${examples_to_install_in_doc})

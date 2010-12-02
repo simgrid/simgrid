@@ -122,7 +122,7 @@ if(enable_ruby)
 			if(NOT operation)
 				SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${RUBY_INCLUDE_DIR} ") #path to ruby.h
 			endif(NOT operation)
-			ADD_DEFINITIONS("-I${PROJECT_DIRECTORY}/src/bindings/ruby -I${PROJECT_DIRECTORY}/src/simix")
+			ADD_DEFINITIONS("-I${CMAKE_HOME_DIRECTORY}/src/bindings/ruby -I${CMAKE_HOME_DIRECTORY}/src/simix")
 			SET(HAVE_RUBY 1)
 		else(RUBY_VERSION_MAJOR MATCHES "1" AND RUBY_VERSION_MINOR MATCHES "8")
 			message("Ruby binding need version 1.8.x actually version ${RUBY_VERSION_MAJOR}.${RUBY_VERSION_MINOR}.x")
@@ -180,7 +180,7 @@ if(NOT enable_gtnets OR enable_supernovae)
 else(NOT enable_gtnets OR enable_supernovae)
 	set(GTNETS_LDFLAGS "-L${gtnets_path}/lib")
 	set(GTNETS_CPPFLAGS "-I${gtnets_path}/include/gtnets")
-	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} -lgtnets ${GTNETS_LDFLAGS} ${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_gtnets.cpp " OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
+	exec_program("${CMAKE_CXX_COMPILER} ${GTNETS_CPPFLAGS} -lgtnets ${GTNETS_LDFLAGS} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_gtnets.cpp " OUTPUT_VARIABLE COMPILE_GTNETS_VAR)	
 	if(COMPILE_GTNETS_VAR)
 		SET(HAVE_GTNETS 0)
 	else(COMPILE_GTNETS_VAR)
@@ -229,7 +229,7 @@ if(pthread)
 	### HAVE_SEM_INIT
   	
   	if(HAVE_SEM_INIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
 	    	if(HAVE_SEM_INIT_run)
 			set(HAVE_SEM_INIT 0)
 	    	else(HAVE_SEM_INIT_run)
@@ -240,7 +240,7 @@ if(pthread)
 	### HAVE_SEM_TIMEDWAIT
 
 	if(HAVE_SEM_TIMEDWAIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
 		if(HAVE_SEM_TIMEDWAIT_run)
 			set(HAVE_SEM_TIMEDWAIT 0)
 		else(HAVE_SEM_TIMEDWAIT_run)
@@ -251,7 +251,7 @@ if(pthread)
 	### HAVE_MUTEX_TIMEDLOCK
 
 	if(HAVE_MUTEX_TIMEDLOCK_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
 		if(HAVE_MUTEX_TIMEDLOCK_run)
 			set(HAVE_MUTEX_TIMEDLOCK 0)
 		else(HAVE_MUTEX_TIMEDLOCK_run)
@@ -268,10 +268,10 @@ endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 if(WIN32)
     if(__VISUALC__)
-	set(mcsc_flags "/D_XBT_WIN32 /I${PROJECT_DIRECTORY}/include/xbt /I${PROJECT_DIRECTORY}/src/xbt")
+	set(mcsc_flags "/D_XBT_WIN32 /I${CMAKE_HOME_DIRECTORY}/include/xbt /I${CMAKE_HOME_DIRECTORY}/src/xbt")
 	endif(__VISUALC__)
 	if(__GNUC__)
-		set(mcsc_flags "-D_XBT_WIN32 -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt")
+		set(mcsc_flags "-D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
 	endif(__GNUC__)
 endif(WIN32)
 
@@ -283,7 +283,7 @@ IF(CMAKE_CROSSCOMPILING)
 ELSE(CMAKE_CROSSCOMPILING)
 	try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
 		${simgrid_BINARY_DIR}
-		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
+		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
 		COMPILE_DEFINITIONS "${mcsc_flags}"
 		OUTPUT_VARIABLE var_compil
 		)
@@ -367,16 +367,17 @@ endif(NOT with_context_ok)
 ###############
 ## SVN version check
 ##
-if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
-	find_file(SVN ".svn" ${PROJECT_DIRECTORY})
-	exec_program("svnversion ${PROJECT_DIRECTORY}" OUTPUT_VARIABLE "SVN_VERSION")
+if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
+	find_file(SVN ".svn" ${CMAKE_HOME_DIRECTORY})
+	exec_program("svnversion ${CMAKE_HOME_DIRECTORY}" OUTPUT_VARIABLE "SVN_VERSION")
 	message("SVN_VERSION : ${SVN_VERSION}")
-endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.svn)
+endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
 
-if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
+if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git)
 
-	exec_program("git --git-dir=${PROJECT_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
-	exec_program("git --git-dir=${PROJECT_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
+	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
+	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
+	exec_program("git svn info" ${CMAKE_HOME_DIRECTORY} OUTPUT_VARIABLE "GIT_SVN_VERSION")
 	
 	string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
 	STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
@@ -387,7 +388,7 @@ if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 		OUTPUT_VARIABLE url
 		RETURN_VALUE ret)
 	if(ret EQUAL 0)
-		exec_program("git svn info" ${PROJECT_DIRECTORY}
+		exec_program("git svn info" ${CMAKE_HOME_DIRECTORY}
 			OUTPUT_VARIABLE "GIT_SVN_VERSION")
 		string(REPLACE "\n" ";" GIT_SVN_VERSION ${GIT_SVN_VERSION})
 		foreach(line ${GIT_SVN_VERSION})
@@ -399,7 +400,7 @@ if(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
 			endif(line_good)
 		endforeach(line ${GIT_SVN_VERSION})
 	endif(ret EQUAL 0)
-endif(IS_DIRECTORY ${PROJECT_DIRECTORY}/.git)
+endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git)
 
 ###################################
 ## SimGrid and GRAS specific checks
@@ -409,7 +410,7 @@ IF(NOT CMAKE_CROSSCOMPILING)
 # Check architecture signature begin
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 	${simgrid_BINARY_DIR}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
+	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
 	RUN_OUTPUT_VARIABLE var1
 	)
 if(BIGENDIAN)
@@ -481,7 +482,7 @@ endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:")
 # Check architecture signature end
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
 	${simgrid_BINARY_DIR}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_CHECK_STRUCT_COMPACTION.c
+	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_CHECK_STRUCT_COMPACTION.c
 	RUN_OUTPUT_VARIABLE var2
 	)
 separate_arguments(var2)
@@ -492,7 +493,7 @@ endforeach(var_tmp ${var2})
 # Check for [SIZEOF_MAX]
 try_run(RUN_SM_VAR COMPILE_SM_VAR
 	${simgrid_BINARY_DIR}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_max_size.c
+	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_max_size.c
 	RUN_OUTPUT_VARIABLE var3
 	)
 SET(SIZEOF_MAX ${var3})
@@ -509,16 +510,16 @@ if(HAVE_MAKECONTEXT OR WIN32)
 	
     if(WIN32 AND __VISUALC__)
         set(makecontext_CPPFLAGS "/DTEST_makecontext")
-	    set(makecontext_CPPFLAGS_2 "/D_XBT_WIN32 /I${PROJECT_DIRECTORY}/include/xbt /I${PROJECT_DIRECTORY}/src/xbt")
+	    set(makecontext_CPPFLAGS_2 "/D_XBT_WIN32 /I${CMAKE_HOME_DIRECTORY}/include/xbt /I${CMAKE_HOME_DIRECTORY}/src/xbt")
 	endif(WIN32 AND __VISUALC__)
 	if(WIN32 AND __GNUC__)
 	    set(makecontext_CPPFLAGS "-DTEST_makecontext")
-	    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${PROJECT_DIRECTORY}/include/xbt -I${PROJECT_DIRECTORY}/src/xbt")
+	    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
 	endif(WIN32 AND __GNUC__)
 	
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${simgrid_BINARY_DIR}
-		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
+		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
 	file(READ ${simgrid_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
@@ -538,7 +539,7 @@ endif(HAVE_MAKECONTEXT OR WIN32)
 if (NOT CMAKE_CROSSCOMPILING)
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
 		${simgrid_BINARY_DIR}
-		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_stackgrowth.c
+		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_stackgrowth.c
 		)
 file(READ "${simgrid_BINARY_DIR}/conftestval" stack)
 if(stack MATCHES "down")
@@ -563,7 +564,7 @@ endif(NOT CMAKE_CROSSCOMPILING)
 #AC_PRINTF_NULL
 try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
 	${simgrid_BINARY_DIR}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_printf_null.c
+	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_printf_null.c
 	)
 
 if(RUN_PRINTF_NULL_VAR MATCHES "FAILED_TO_RUN")
@@ -585,7 +586,7 @@ set(diff_va "va_copy((d),(s))"
 )
 
 foreach(fct ${diff_va})
-	write_file("${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c" "#include <stdlib.h>
+	write_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c" "#include <stdlib.h>
 	#include <stdarg.h>
 	#include <string.h>
 	#define DO_VA_COPY(d,s) ${fct}
@@ -616,7 +617,7 @@ foreach(fct ${diff_va})
 	)
 	try_compile(COMPILE_VA_NULL_VAR
 	${simgrid_BINARY_DIR}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c
+	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c
 	)
 	if(COMPILE_VA_NULL_VAR)
 		string(REGEX REPLACE "\;" "" fctbis ${fct})
@@ -675,7 +676,7 @@ file(REMOVE "${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c")
 ### check for getline
 try_compile(COMPILE_RESULT_VAR
 	${simgrid_BINARY_DIR}
-	${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_getline.c
+	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_getline.c
 	)
 
 if(NOT COMPILE_RESULT_VAR)
@@ -699,7 +700,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
 	else(CMAKE_CROSSCOMPILING)
   	    try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
 	  	${simgrid_BINARY_DIR}
-		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_snprintf.c
+		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_snprintf.c
 	    )	
 	endif(CMAKE_CROSSCOMPILING)
 
@@ -709,7 +710,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
 	else(CMAKE_CROSSCOMPILING)
   	   try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
 		${simgrid_BINARY_DIR}
-		${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_vsnprintf.c
+		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_vsnprintf.c
 	   )
 	endif(CMAKE_CROSSCOMPILING)
 	
@@ -748,31 +749,31 @@ endif(ADDR2LINE)
 
 ### File to create
 
-configure_file("${PROJECT_DIRECTORY}/src/context_sysv_config.h.in" 			"${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/src/context_sysv_config.h.in" 			"${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${PROJECT_DIRECTORY}/buildtools/Cmake/gras_config.h.in" 	"${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/gras_config.h.in" 	"${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
 configure_file("${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h" 			"${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
-configure_file("${PROJECT_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
 
-set(top_srcdir "${PROJECT_DIRECTORY}")
-set(srcdir "${PROJECT_DIRECTORY}/src")
+set(top_srcdir "${CMAKE_HOME_DIRECTORY}")
+set(srcdir "${CMAKE_HOME_DIRECTORY}/src")
 
 set(exec_prefix ${CMAKE_INSTALL_PREFIX})
 set(includedir ${CMAKE_INSTALL_PREFIX}/include)
-set(top_builddir ${PROJECT_DIRECTORY})
+set(top_builddir ${CMAKE_HOME_DIRECTORY})
 set(libdir ${exec_prefix}/lib)
 set(CMAKE_LINKARGS "${CMAKE_CURRENT_BINARY_DIR}/lib")
 set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/lib:${gtnets_path}/lib:$LD_LIBRARY_PATH")
 
-configure_file(${PROJECT_DIRECTORY}/include/smpi/smpif.h.in ${PROJECT_DIRECTORY}/include/smpi/smpif.h @ONLY)
-configure_file(${PROJECT_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc @ONLY)
-configure_file(${PROJECT_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpif2c @ONLY)
-configure_file(${PROJECT_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpiff @ONLY)
-configure_file(${PROJECT_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun @ONLY)
-configure_file(${PROJECT_DIRECTORY}/examples/smpi/hostfile ${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/hostfile COPYONLY)
-configure_file(${PROJECT_DIRECTORY}/examples/msg/small_platform.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform.xml COPYONLY)
-configure_file(${PROJECT_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h.in ${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpif2c @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpiff @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/hostfile ${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/hostfile COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform.xml COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
 
 exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE OKITOKI)
 exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE OKITOKI)
