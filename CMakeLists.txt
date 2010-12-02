@@ -13,7 +13,7 @@ FIND_PROGRAM(GCOV_PATH gcov)
 FIND_PROGRAM(VALGRIND_PATH valgrind)
 include(FindPerl)
 if(NOT PERL_EXECUTABLE)
-	message(FATAL_ERROR "-- SIMGRID NEED PERL")
+	message(FATAL_ERROR "-- SimGrid cannot be compiled without Perl installed -- sorry. Bailling out.")
 endif(NOT PERL_EXECUTABLE)
 
 

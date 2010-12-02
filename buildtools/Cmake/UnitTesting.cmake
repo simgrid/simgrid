@@ -32,37 +32,22 @@ set(TEST_UNITS
 
 
 
-if(PERL_EXECUTABLE)
-	
-	ADD_CUSTOM_COMMAND(
-	  	OUTPUT	${TEST_UNITS}
-			
-  		DEPENDS	${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl
-			${TEST_CFILES}
-  	
-		COMMAND	${CMAKE_COMMAND} -E remove -f ${TEST_UNITS}
-	
-		COMMAND chmod +x ${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl
-	
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl --root=src/ --outdir=${CMAKE_CURRENT_BINARY_DIR}/src/ ${TEST_CFILES}
-	
-		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
-	
-	        COMMENT "Generating *_units files for testall..."
-	)
-	
-	
-else(PERL_EXECUTABLE)
-	ADD_CUSTOM_COMMAND(
+ADD_CUSTOM_COMMAND(
   	OUTPUT	${TEST_UNITS}
-			
-  	DEPENDS	${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl
-  		${TEST_CFILES}
-			
-	COMMAND	${CMAKE_COMMAND} message WARNING "Unit files need to be regenerated, but no Perl installed")
-endif(PERL_EXECUTABLE)
+		
+	DEPENDS	${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl
+		${TEST_CFILES}
 
+	COMMAND	${CMAKE_COMMAND} -E remove -f ${TEST_UNITS}
 
+	COMMAND chmod +x ${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl
+
+	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl --root=src/ --outdir=${CMAKE_CURRENT_BINARY_DIR}/src/ ${TEST_CFILES}
+
+	WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
+
+        COMMENT "Generating *_units files for testall..."
+)
 
 
 ### Ensure the build of testall

@@ -19,7 +19,7 @@ set(gras_fragile_sources
 #####################################################
 
 ### Rebuild the supernovae source files
-if (PERL_EXECUTABLE AND enable_supernovae) # I need supernovae and can use it
+if (enable_supernovae) # I need supernovae
 
 	# supernovae files are generated. I promise
 	set_source_files_properties(${CMAKE_HOME_DIRECTORY}/src/supernovae_sg.c
@@ -64,9 +64,4 @@ if (PERL_EXECUTABLE AND enable_supernovae) # I need supernovae and can use it
 
 	set(SMPI_SRC 
 		${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
-else(PERL_EXECUTABLE AND enable_supernovae) # I need supernovae and can use it
-	if (enable_supernovae)
-		message("You need Perl to activate supernovae")
-		set(enable_supernovae 0)
-	endif(enable_supernovae)
-endif(PERL_EXECUTABLE AND enable_supernovae) # I need supernovae and can use it
+endif(enable_supernovae) # I need supernovae
