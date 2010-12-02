@@ -41,7 +41,8 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 	)
 	
 	configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
-		
+	configure_file(${CMAKE_HOME_DIRECTORY}/doc/footer.html.in ${CMAKE_HOME_DIRECTORY}/doc/footer.html @ONLY)		
+	
 	ADD_CUSTOM_TARGET(simgrid_documentation
 		COMMENT "Generating the SimGrid documentation..."
 		DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}

@@ -7,6 +7,9 @@
 <a href="index.html"><b>
 Back to the main Simgrid Documentation page</b></a>
 </td>
+<td align=middle>
+<small>The version of Simgrid documented in this document is for v@release_version@.
+</td>
 <td align=right>
 <small>Generated for SimGridAPI by
 <a href="http://www.doxygen.org/index.html">

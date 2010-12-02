@@ -649,6 +649,7 @@ set(DOC_SOURCES
 	doc/webcruft/simgrid_logo_small.png
 	
 	doc/Doxyfile.in
+	doc/footer.html.in
 	
 	tools/doxygen/bibtex2html_table_count.pl
 	tools/doxygen/doxygen_postprocesser.pl
