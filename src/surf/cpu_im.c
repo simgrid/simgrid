@@ -26,6 +26,7 @@ typedef struct cpu_Cas01_im {
   double power_peak;
   double power_scale;
   tmgr_trace_event_t power_event;
+  int core;
   e_surf_resource_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
@@ -58,11 +59,6 @@ static cpu_Cas01_im_t cpu_im_new(char *name, double power_peak,
   s_surf_action_cpu_Cas01_im_t action;
   cpu = xbt_new0(s_cpu_Cas01_im_t, 1);
 
-  xbt_assert0(core==1,"Multi-core not handled with this model yet");
-#ifdef HAVE_TRACING
-  TRACE_surf_host_declaration(name, power_scale * power_peak);
-#endif
-
   xbt_assert1(!surf_model_resource_by_name(surf_cpu_model, name),
               "Host '%s' declared several times in the platform file",
               name);
@@ -75,6 +71,8 @@ static cpu_Cas01_im_t cpu_im_new(char *name, double power_peak,
   if (power_trace)
     cpu->power_event =
         tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
+  cpu->core = core;
+  xbt_assert1(core>0,"Invalid number of cores %d",core);
 
   cpu->state_current = state_initial;
   if (state_trace)
@@ -83,11 +81,15 @@ static cpu_Cas01_im_t cpu_im_new(char *name, double power_peak,
 
   cpu->constraint =
       lmm_constraint_new(cpu_im_maxmin_system, cpu,
-                         cpu->power_scale * cpu->power_peak);
+                         cpu->core * cpu->power_scale * cpu->power_peak);
 
   xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu,
                surf_resource_free);
   cpu->action_set = xbt_swag_new(xbt_swag_offset(action, cpu_list_hookup));
+
+#ifdef HAVE_TRACING
+  TRACE_surf_host_declaration(name, core * power_scale * power_peak);
+#endif
 
   return cpu;
 }
@@ -355,14 +357,23 @@ static void cpu_im_update_resource_state(void *id,
                                          double value, double date)
 {
   cpu_Cas01_im_t cpu = id;
+  lmm_variable_t var = NULL;
+  lmm_element_t elem = NULL;
+
   if (event_type == cpu->power_event) {
     cpu->power_scale = value;
     lmm_update_constraint_bound(cpu_im_maxmin_system, cpu->constraint,
-                                cpu->power_scale * cpu->power_peak);
+                                cpu->core * cpu->power_scale * cpu->power_peak);
 #ifdef HAVE_TRACING
     TRACE_surf_host_set_power(date, cpu->generic_resource.name,
-                              cpu->power_scale * cpu->power_peak);
+                              cpu->core * cpu->power_scale * cpu->power_peak);
 #endif
+    while ((var = lmm_get_var_from_cnst
+            (cpu_im_maxmin_system, cpu->constraint, &elem))) {
+    	surf_action_cpu_Cas01_im_t action = lmm_variable_id(var);
+    	lmm_update_variable_bound(cpu_im_maxmin_system, action->generic_lmm_action.variable,
+                                  cpu->power_scale * cpu->power_peak);
+    }
     xbt_swag_insert(cpu, cpu_im_modified_cpu);
     if (tmgr_trace_event_free(event_type))
       cpu->power_event = NULL;
@@ -415,7 +426,7 @@ static surf_action_t cpu_im_execute(void *cpu, double size)
 
   GENERIC_LMM_ACTION(action).variable =
       lmm_variable_new(cpu_im_maxmin_system, action,
-                       GENERIC_ACTION(action).priority, -1.0, 1);
+                       GENERIC_ACTION(action).priority, CPU->power_scale * CPU->power_peak, 1);
   action->index_heap = -1;
   action->cpu = CPU;
   xbt_swag_insert(CPU, cpu_im_modified_cpu);
