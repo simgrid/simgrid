@@ -80,6 +80,12 @@ set(EXTRA_DIST
 	src/amok/Bandwidth/bandwidth_private.h
 	src/amok/amok_modinter.h
 	src/simix/private.h
+	src/simix/process_private.h
+	src/simix/host_private.h
+	src/simix/network_private.h
+	src/simix/smurf_private.h
+	src/simix/synchro_private.h
+	
 	src/smpi/private.h
 	src/smpi/smpi_coll_private.h
 	src/smpi/smpi_mpi_dt_private.h
@@ -692,11 +698,20 @@ file(GLOB_RECURSE tesh_files
 "tools/*.tesh"
 )
 
-file(GLOB_RECURSE txt_files
-"testsuite/surf/trace*.txt"
-"testsuite/simdag/availability_tremblay.txt"
+set(txt_files
+"testsuite/surf/trace_A_failure.txt"
+"testsuite/surf/trace_A.txt"
+"testsuite/surf/trace_B.txt"
 "examples/smpi/hostfile"
-"examples/msg/*.trace"
+"examples/msg/procmig.trace"
+"examples/msg/volume.trace"
+"examples/msg/ms.trace"
+"examples/msg/trace/file.trace"
+"examples/msg/link5_state.trace"
+"examples/msg/categories.trace"
+"examples/msg/tasks.trace"
+"examples/msg/fafard_state.trace"
+"examples/msg/jupiter_state.trace"
 "examples/msg/actions/actions_allReduce.txt"
 "examples/msg/actions/actions_reduce.txt"
 "examples/msg/actions/actions.txt"
@@ -709,9 +724,7 @@ file(GLOB_RECURSE txt_files
 "examples/msg/migration/migration.deploy"
 "teshsuite/gras/datadesc/datadesc.little32_4"
 "teshsuite/gras/datadesc/datadesc.little64"
-"teshsuite/gras/datadesc/datadesc.big32_8"
 "teshsuite/gras/datadesc/datadesc.big32_8_4"
-"teshsuite/gras/datadesc/datadesc.big32_2"
 "teshsuite/gras/datadesc/mk_datadesc_structs.pl"
 "teshsuite/gras/msg_handle/test_rl"
 "teshsuite/gras/msg_handle/test_sg_32"
