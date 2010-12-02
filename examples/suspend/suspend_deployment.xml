@@ -1,5 +1,0 @@
-<?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
-<platform version="3">
-  <process host="Jacquelin" function="DreamMaster"/>
-</platform>
