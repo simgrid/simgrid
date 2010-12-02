@@ -23,7 +23,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 void dot_add_task(Agnode_t * dag_node);
 void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge);
 void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge);
-bool child_are_marked(SD_task_t task);
 xbt_dynar_t SD_dotload_FILE(FILE * in_file);
 
 static double dot_parse_double(const char *string)
@@ -70,91 +69,6 @@ static void dump_res()
   }
 }
 
-bool child_are_marked(SD_task_t task){
-  SD_task_t child_task = NULL;
-  bool all_marked = true;
-  SD_dependency_t depafter = NULL;
-  unsigned int count;
-  xbt_dynar_foreach(task->tasks_after,count,depafter){
-    child_task = depafter->dst;
-    //test marked
-    if(child_task->marked == 0) {
-      all_marked = false;
-      break;
-    }
-    child_task = NULL;
-  }
-  return all_marked;
-}
-
-bool acyclic_graph_detection(xbt_dynar_t dag){
-  unsigned int count=0, count_current=0;
-  bool all_marked = true;
-  SD_task_t task = NULL, parent_task = NULL;
-  SD_dependency_t depbefore = NULL;
-  xbt_dynar_t next = NULL, current = xbt_dynar_new(sizeof(SD_task_t),NULL);
-
-  xbt_dynar_foreach(dag,count,task){
-    if(task->kind == SD_TASK_COMM_E2E) continue;
-    task->marked = 0;
-    if(xbt_dynar_length(task->tasks_after) == 0){
-      xbt_dynar_push(current, &task);
-    }
-  }
-  task = NULL;
-  count = 0;
-  //test if something has to be done for the next iteration
-  while(xbt_dynar_length(current) != 0){
-    next = xbt_dynar_new(sizeof(SD_task_t),NULL);
-    //test if the current iteration is done
-    count_current=0;
-    xbt_dynar_foreach(current,count_current,task){
-      if (task == NULL) continue;
-      count = 0;
-      //push task in next
-      task->marked = 1;
-      count = 0;
-      xbt_dynar_foreach(task->tasks_before,count,depbefore){
-        parent_task = depbefore->src;
-        if(parent_task->kind == SD_TASK_COMM_E2E){
-          unsigned int j=0;
-          parent_task->marked = 1;
-          xbt_dynar_foreach(parent_task->tasks_before,j,depbefore){
-            parent_task = depbefore->src;
-            if(child_are_marked(parent_task))
-              xbt_dynar_push(next, &parent_task);
-          }
-        } else{
-          if(child_are_marked(parent_task))
-            xbt_dynar_push(next, &parent_task);
-        }
-        parent_task = NULL;
-      }
-      task = NULL;
-      count = 0;
-    }
-    xbt_dynar_free(&current);
-    current = next;
-    next = NULL;
-  }
-  xbt_dynar_free(&current);
-  current = NULL;
-  all_marked = true;
-  xbt_dynar_foreach(dag,count,task){
-    if(task->kind == SD_TASK_COMM_E2E) continue;
-    //test if all tasks are marked
-    if(task->marked == 0){
-      WARN1("the task %s is not marked",task->name);
-      all_marked = false;
-      break;
-    }
-  }
-  task = NULL;
-  if(!all_marked){
-    VERB0("there is at least one cycle in your task graph");
-  }
-  return all_marked;
-}
 
 static void dot_task_free(void *task)
 {
@@ -322,6 +236,7 @@ xbt_dynar_t SD_dotload_FILE(FILE * in_file)
   xbt_dict_free(&files);
   if(acyclic_graph_detection(result))
     return result;
+  acyclic_graph_detail(result);
   return NULL;
 }
 

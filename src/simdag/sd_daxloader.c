@@ -15,6 +15,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 #include "dax_dtd.h"
 #include "dax_dtd.c"
 
+bool children_are_marked(SD_task_t task);
+bool parents_are_marked(SD_task_t task);
 
 /* Parsing helpers */
 static void dax_parse_error(char *msg)
@@ -69,6 +71,238 @@ void uniq_transfer_task_name(SD_task_t task)
   xbt_dynar_free_container(&children);
   xbt_dynar_free_container(&parents);
   free(new_name);
+}
+
+bool children_are_marked(SD_task_t task){
+  SD_task_t child_task = NULL;
+  bool all_marked = true;
+  SD_dependency_t depafter = NULL;
+  unsigned int count;
+  xbt_dynar_foreach(task->tasks_after,count,depafter){
+    child_task = depafter->dst;
+    //test marked
+    if(child_task->marked == 0) {
+      all_marked = false;
+      break;
+    }
+    child_task = NULL;
+  }
+  return all_marked;
+}
+
+bool parents_are_marked(SD_task_t task){
+  SD_task_t parent_task = NULL;
+  bool all_marked = true;
+  SD_dependency_t depafter = NULL;
+  unsigned int count;
+  xbt_dynar_foreach(task->tasks_after,count,depafter){
+    parent_task = depafter->dst;
+    //test marked
+    if(parent_task->marked == 0) {
+      all_marked = false;
+      break;
+    }
+    parent_task = NULL;
+  }
+  return all_marked;
+}
+
+bool acyclic_graph_detail(xbt_dynar_t dag){
+  unsigned int count=0, count_current=0;
+  bool all_marked = true;
+  SD_task_t task = NULL, parent_task = NULL, child_task = NULL;
+  SD_dependency_t depbefore = NULL, depafter = NULL;
+  xbt_dynar_t next = NULL, current = xbt_dynar_new(sizeof(SD_task_t),NULL);
+
+  xbt_dynar_foreach(dag,count,task){
+    if(task->kind == SD_TASK_COMM_E2E) continue;
+    task->marked = 0;
+    if(xbt_dynar_length(task->tasks_after) == 0){
+      xbt_dynar_push(current, &task);
+    }
+  }
+  task = NULL;
+  count = 0;
+  //test if something has to be done for the next iteration
+  while(xbt_dynar_length(current) != 0){
+    next = xbt_dynar_new(sizeof(SD_task_t),NULL);
+    //test if the current iteration is done
+    count_current=0;
+    xbt_dynar_foreach(current,count_current,task){
+      if (task == NULL) continue;
+      count = 0;
+      //push task in next
+      task->marked = 1;
+      count = 0;
+      xbt_dynar_foreach(task->tasks_before,count,depbefore){
+        parent_task = depbefore->src;
+        if(parent_task->kind == SD_TASK_COMM_E2E){
+          unsigned int j=0;
+          parent_task->marked = 1;
+          SD_task_t parent_task_2 = NULL;
+          xbt_dynar_foreach(parent_task->tasks_before,j,depbefore){
+            parent_task_2 = depbefore->src;
+            if(children_are_marked(parent_task_2))
+              xbt_dynar_push(next, &parent_task_2);
+          }
+        } else{
+          if(children_are_marked(parent_task))
+            xbt_dynar_push(next, &parent_task);
+        }
+        parent_task = NULL;
+      }
+      task = NULL;
+      count = 0;
+    }
+    xbt_dynar_free(&current);
+    current = next;
+    next = NULL;
+  }
+  xbt_dynar_free(&current);
+  current = NULL;
+  all_marked = true;
+  xbt_dynar_foreach(dag,count,task){
+    if(task->kind == SD_TASK_COMM_E2E) continue;
+    //test if all tasks are marked
+    if(task->marked == 0){
+      WARN1("the task %s is not marked",task->name);
+      all_marked = false;
+      break;
+    }
+  }
+  task = NULL;
+  if(!all_marked){
+    VERB0("there is at least one cycle in your task graph");
+
+    count = 0;
+    task = NULL;
+    xbt_dynar_foreach(dag,count,task){
+      if(task->kind == SD_TASK_COMM_E2E) continue;
+      task->marked = 0;
+      if(xbt_dynar_length(task->tasks_before) == 0){
+        xbt_dynar_push(current, &task);
+      }
+    }
+    task = NULL;
+    count = 0;
+    //test if something has to be done for the next iteration
+    while(xbt_dynar_length(current) != 0){
+      next = xbt_dynar_new(sizeof(SD_task_t),NULL);
+      //test if the current iteration is done
+      count_current=0;
+      xbt_dynar_foreach(current,count_current,task){
+        if (task == NULL) continue;
+        count = 0;
+        //push task in next
+        task->marked = 1;
+        count = 0;
+        xbt_dynar_foreach(task->tasks_after,count,depafter){
+          child_task = depafter->dst;
+          if(child_task->kind == SD_TASK_COMM_E2E){
+            unsigned int j=0;
+            child_task->marked = 1;
+            SD_task_t child_task_2 = NULL;
+            xbt_dynar_foreach(child_task->tasks_after,j,depafter){
+              child_task_2 = depafter->src;
+              if(parents_are_marked(child_task_2))
+                xbt_dynar_push(next, &child_task_2);
+            }
+          } else{
+            if(parents_are_marked(child_task))
+              xbt_dynar_push(next, &child_task);
+          }
+          parent_task = NULL;
+        }
+        task = NULL;
+        count = 0;
+      }
+      xbt_dynar_free(&current);
+      current = next;
+      next = NULL;
+    }
+    xbt_dynar_free(&current);
+    current = NULL;
+    all_marked = true;
+    xbt_dynar_foreach(dag,count,task){
+      if(task->kind == SD_TASK_COMM_E2E) continue;
+      //test if all tasks are marked
+      if(task->marked == 0){
+        WARN1("the task %s is not marked",task->name);
+        all_marked = false;
+      }
+    }
+  }
+  return all_marked;
+}
+
+bool acyclic_graph_detection(xbt_dynar_t dag){
+  unsigned int count=0, count_current=0;
+  bool all_marked = true;
+  SD_task_t task = NULL, parent_task = NULL;
+  SD_dependency_t depbefore = NULL;
+  xbt_dynar_t next = NULL, current = xbt_dynar_new(sizeof(SD_task_t),NULL);
+
+  xbt_dynar_foreach(dag,count,task){
+    if(task->kind == SD_TASK_COMM_E2E) continue;
+    task->marked = 0;
+    if(xbt_dynar_length(task->tasks_after) == 0){
+      xbt_dynar_push(current, &task);
+    }
+  }
+  task = NULL;
+  count = 0;
+  //test if something has to be done for the next iteration
+  while(xbt_dynar_length(current) != 0){
+    next = xbt_dynar_new(sizeof(SD_task_t),NULL);
+    //test if the current iteration is done
+    count_current=0;
+    xbt_dynar_foreach(current,count_current,task){
+      if (task == NULL) continue;
+      count = 0;
+      //push task in next
+      task->marked = 1;
+      count = 0;
+      xbt_dynar_foreach(task->tasks_before,count,depbefore){
+        parent_task = depbefore->src;
+        if(parent_task->kind == SD_TASK_COMM_E2E){
+          unsigned int j=0;
+          parent_task->marked = 1;
+          SD_task_t parent_task_2 = NULL;
+          xbt_dynar_foreach(parent_task->tasks_before,j,depbefore){
+            parent_task_2 = depbefore->src;
+            if(children_are_marked(parent_task_2))
+              xbt_dynar_push(next, &parent_task_2);
+          }
+        } else{
+          if(children_are_marked(parent_task))
+            xbt_dynar_push(next, &parent_task);
+        }
+        parent_task = NULL;
+      }
+      task = NULL;
+      count = 0;
+    }
+    xbt_dynar_free(&current);
+    current = next;
+    next = NULL;
+  }
+  xbt_dynar_free(&current);
+  current = NULL;
+  all_marked = true;
+  xbt_dynar_foreach(dag,count,task){
+    if(task->kind == SD_TASK_COMM_E2E) continue;
+    //test if all tasks are marked
+    if(task->marked == 0){
+      WARN1("the task %s is not marked",task->name);
+      all_marked = false;
+      break;
+    }
+  }
+  task = NULL;
+  if(!all_marked){
+    VERB0("there is at least one cycle in your task graph");
+  }
+  return all_marked;
 }
 
 
