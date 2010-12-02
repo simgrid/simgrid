@@ -39,7 +39,6 @@ src/context_sysv_config.h
 src/gras_config.h
 src/smpi/smpicc
 src/smpi/smpirun
-include/smpi/smpif.h
 
 ################################################
 ### Cmake files

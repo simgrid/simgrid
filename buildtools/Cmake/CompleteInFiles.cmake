@@ -766,7 +766,6 @@ set(libdir ${exec_prefix}/lib)
 set(CMAKE_LINKARGS "${CMAKE_CURRENT_BINARY_DIR}/lib")
 set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/lib:${gtnets_path}/lib:$LD_LIBRARY_PATH")
 
-configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h.in ${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpif2c @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpiff @ONLY)
