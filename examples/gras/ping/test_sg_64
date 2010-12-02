@@ -10,8 +10,8 @@ $ $SG_TEST_EXENV ./ping_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platfo
 > [  0.000156] (2:client@Fafard) Connected to Tremblay:4000.
 > [  0.000156] (2:client@Fafard) Messages registered
 > [  0.000156] (2:client@Fafard) >>>>>>>> Connected to server which is on Tremblay:4000 <<<<<<<<
-> [  0.020707] (2:client@Fafard) >>>>>>>> Message PING(1234) sent to Tremblay:4000 <<<<<<<<
 > [  0.020707] (1:server@Tremblay) >>>>>>>> Got message PING(1234) from Fafard:5000 <<<<<<<<
+> [  0.020707] (2:client@Fafard) >>>>>>>> Message PING(1234) sent to Tremblay:4000 <<<<<<<<
 > [  0.041259] (1:server@Tremblay) >>>>>>>> Answered with PONG(4321) <<<<<<<<
 > [  0.041259] (1:server@Tremblay) Done.
 > [  0.041259] (1:server@Tremblay) Exiting GRAS
