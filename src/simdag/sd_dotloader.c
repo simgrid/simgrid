@@ -23,6 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 void dot_add_task(Agnode_t * dag_node);
 void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge);
 void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge);
+bool child_are_marked(SD_task_t task);
 xbt_dynar_t SD_dotload_FILE(FILE * in_file);
 
 static double dot_parse_double(const char *string)
@@ -73,7 +74,7 @@ bool child_are_marked(SD_task_t task){
   SD_task_t child_task = NULL;
   bool all_marked = true;
   SD_dependency_t depafter = NULL;
-  int count;
+  unsigned int count;
   xbt_dynar_foreach(task->tasks_after,count,depafter){
     child_task = depafter->dst;
     //test marked
@@ -87,7 +88,7 @@ bool child_are_marked(SD_task_t task){
 }
 
 bool acyclic_graph_detection(xbt_dynar_t dag){
-  int count=0, count_current=0;
+  unsigned int count=0, count_current=0;
   bool all_marked = true;
   SD_task_t task = NULL, parent_task = NULL;
   SD_dependency_t depbefore = NULL;
@@ -112,11 +113,11 @@ bool acyclic_graph_detection(xbt_dynar_t dag){
       count = 0;
       //push task in next
       task->marked = 1;
-      int count = 0;
+      count = 0;
       xbt_dynar_foreach(task->tasks_before,count,depbefore){
         parent_task = depbefore->src;
         if(parent_task->kind == SD_TASK_COMM_E2E){
-          int j=0;
+          unsigned int j=0;
           parent_task->marked = 1;
           xbt_dynar_foreach(parent_task->tasks_before,j,depbefore){
             parent_task = depbefore->src;
@@ -143,17 +144,16 @@ bool acyclic_graph_detection(xbt_dynar_t dag){
     if(task->kind == SD_TASK_COMM_E2E) continue;
     //test if all tasks are marked
     if(task->marked == 0){
-      WARN1("test %d",task->name);
+      WARN1("test %s",task->name);
       all_marked = false;
       break;
     }
   }
   task = NULL;
-  if(all_marked){
-    WARN0("there are no cycle in your DAG");
-  }else{
-    WARN0("there are a cycle in your DAG");
+  if(!all_marked){
+    DEBUG0("there are a cycle in your DAG");
   }
+  return all_marked;
 }
 
 static void dot_task_free(void *task)
@@ -187,7 +187,54 @@ xbt_dynar_t SD_dotload(const char *filename)
   xbt_assert1(in_file, "Unable to open \"%s\"\n", filename);
   SD_dotload_FILE(in_file);
   fclose(in_file);
+  xbt_dynar_t computer = NULL;
+  xbt_dict_cursor_t dict_cursor;
+  char *computer_name;
+  xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
+    xbt_dynar_free(&computer);
+  }
+  xbt_dict_free(&computers);
   return result;
+}
+
+xbt_dynar_t SD_dotload_with_sched(const char *filename){
+  FILE *in_file = fopen(filename, "r");
+  xbt_assert1(in_file, "Unable to open \"%s\"\n", filename);
+  SD_dotload_FILE(in_file);
+  fclose(in_file);
+
+  if(schedule == true){
+    xbt_dynar_t computer = NULL;
+    xbt_dict_cursor_t dict_cursor;
+    char *computer_name;
+    const SD_workstation_t *workstations = SD_workstation_get_list ();
+    xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
+      int count_computer = dot_parse_int(computer_name);
+      unsigned int count=0;
+      SD_task_t task;
+      SD_task_t task_previous = NULL;
+      xbt_dynar_foreach(computer,count,task){
+        // add dependency between the previous and the task to avoid
+        // parallel execution
+        if(task != NULL ){
+          if(task_previous != NULL &&
+             !SD_task_dependency_exists(task_previous, task))
+            SD_task_dependency_add(NULL, NULL, task_previous, task);
+          SD_task_schedulel(task, 1, workstations[count_computer]);
+          task_previous = task;
+        }
+      }
+      xbt_dynar_free(&computer);
+    }
+    xbt_dict_free(&computers);
+    if(acyclic_graph_detection(result))
+      return result;
+    else
+      WARN0("There are a cycle in your task graph");
+  }else{
+    WARN0("No scheduling provided");
+  }
+  return NULL;
 }
 
 xbt_dynar_t SD_dotload_FILE(FILE * in_file)
@@ -273,36 +320,9 @@ xbt_dynar_t SD_dotload_FILE(FILE * in_file)
 
   /* Free previous copy of the files */
   xbt_dict_free(&files);
-  if(schedule == false){
-    WARN0("No scheduling provided");
-  }else{
-    xbt_dynar_t computer = NULL;
-    xbt_dict_cursor_t dict_cursor;
-    char *computer_name;
-    const SD_workstation_t *workstations = SD_workstation_get_list ();
-    xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
-      int count_computer = dot_parse_int(computer_name);
-      int count=0;
-      SD_task_t task;
-      SD_task_t task_previous = NULL;
-      xbt_dynar_foreach(computer,count,task){
-        // add dependency between the previous and the task to avoid
-        // parallel execution
-        if(task != NULL ){
-          if(task_previous != NULL &&
-             !SD_task_dependency_exists(task_previous, task))
-            SD_task_dependency_add(NULL, NULL, task_previous, task);
-          SD_task_schedulel(task, 1, workstations[count_computer]);
-          task_previous = task;
-        }
-      }
-      xbt_dynar_free(&computer);
-    }
-    xbt_dict_free(&computers);
-  }
-  acyclic_graph_detection(result);
-
-  return result;
+  if(acyclic_graph_detection(result))
+    return result;
+  return NULL;
 }
 
 /* dot_add_task create a sd_task and all transfers required for this
@@ -356,7 +376,7 @@ void dot_add_task(Agnode_t * dag_node)
     SD_task_dependency_add(NULL, NULL, current_job, end_task);
   }
 
-  if(schedule || true){
+  if(schedule){
     /* try to take the information to schedule the task only if all is
      * right*/
     // performer is the computer which execute the task
@@ -387,7 +407,7 @@ void dot_add_task(Agnode_t * dag_node)
         if(task_test != NULL && *task_test != NULL && *task_test != current_job){
           /*the user gives the same order to several tasks*/
           schedule = false;
-          WARN0("scheduling does not take into account, several task has\
+          DEBUG0("scheduling does not take into account, several task has\
                 the same order");
         }else{
           //the parameter seems to be ok
@@ -397,14 +417,14 @@ void dot_add_task(Agnode_t * dag_node)
         /*the platform has not enough processors to schedule the DAG like
         *the user wants*/
         schedule = false;
-        WARN0("scheduling does not take into account, not enough computers");
+        DEBUG0("scheduling does not take into account, not enough computers");
       }
     }
     else if((performer == -1 && order != -1) ||
             (performer != -1 && order == -1)){
       //one of necessary parameters are not given
       schedule = false;
-      WARN0("scheduling does not take into account");
+      DEBUG0("scheduling does not take into account");
     } else {
       //No schedule available
       schedule = false;

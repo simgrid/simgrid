@@ -47,7 +47,11 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /* load the DOT file  and schedule tasks */
-  dot = SD_dotload(argv[2]);
+  dot = SD_dotload_with_sched(argv[2]);
+  if(dot == NULL){
+    INFO0("No dot load may be you have a cycle in your graph");
+    return -1;
+  }
 
   /* Display all the tasks */
   INFO0

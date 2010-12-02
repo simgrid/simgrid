@@ -48,6 +48,10 @@ int main(int argc, char **argv)
 
   /* load the DOT file */
   dot = SD_dotload(argv[2]);
+  if(dot == NULL){
+    INFO0("No dot load may be you have a cycle in your graph");
+    return -1;
+  }
 
   /* Display all the tasks */
   INFO0
