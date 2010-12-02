@@ -132,6 +132,7 @@ examples/simdag/scheduling/Montage_25.jed
 examples/msg/irc_isend/peer
 examples/msg/irc_isend/toto.txt
 examples/simdag/dot/dot_test
+examples/simdag/dot/dot_test2
 examples/smpi/toto.txt
 examples/java/*/classnoinst.stamp
 examples/amok/bandwidth/bandwidth_maestro
