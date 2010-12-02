@@ -82,7 +82,6 @@ void SIMIX_create_maestro_process()
   maestro->context = SIMIX_context_new(NULL, 0, NULL, NULL, maestro);
 
   simix_global->maestro_process = maestro;
-  simix_global->current_process = maestro;
   
   return;
 }
@@ -492,6 +491,21 @@ void SIMIX_process_sleep_resume(smx_action_t action)
   surf_workstation_model->resume(action->sleep.surf_sleep);
 }
 
+/**
+ * \brief Returns the current agent.
+ *
+ * This functions returns the currently running SIMIX process.
+ *
+ * \return The SIMIX process
+ */
+XBT_INLINE smx_process_t SIMIX_process_self(void)
+{
+  if(simix_global)
+    return SIMIX_context_get_data(SIMIX_context_self());
+
+  return NULL;
+}
+
 /** 
  * Calling this function makes the process to yield.
  * Only the processes can call this function, giving back the control to maestro
@@ -521,7 +535,7 @@ void SIMIX_process_yield(void)
 /* callback: context fetching */
 xbt_running_ctx_t *SIMIX_process_get_running_context(void)
 {
-  return simix_global->current_process->running_ctx;
+  return SIMIX_process_self()->running_ctx;
 }
 
 /* callback: termination */

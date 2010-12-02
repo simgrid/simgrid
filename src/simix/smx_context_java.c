@@ -16,7 +16,7 @@ static smx_context_t
 smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     char **argv,
                                     void_pfn_smxprocess_t cleanup_func,
-                                    smx_process_t process);
+                                    void *data);
 
 static void smx_ctx_java_free(smx_context_t context);
 static void smx_ctx_java_start(smx_context_t context);
@@ -43,7 +43,7 @@ static smx_context_t
 smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     char **argv,
                                     void_pfn_smxprocess_t cleanup_func,
-                                    smx_process_t process)
+                                    void* data)
 {
   smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
 
@@ -51,13 +51,15 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
      otherwise is the context for maestro */
   if (code) {
     context->super.cleanup_func = cleanup_func;
-    context->super.process = process;
     context->jprocess = (jobject) code;
     context->jenv = get_current_thread_env();
     jprocess_start(((smx_ctx_java_t) context)->jprocess,
                    get_current_thread_env());
+  }else{
+    smx_current_context = (smx_context_t)context;
   }
-
+  context->super.data = data;
+  
   return (smx_context_t) context;
 }
 
@@ -87,17 +89,17 @@ static void smx_ctx_java_stop(smx_context_t context)
   smx_ctx_java_t ctx_java;
 
   if (context->cleanup_func)
-    (*(context->cleanup_func)) (context->process);
+    (*(context->cleanup_func)) (context->data);
 
   ctx_java = (smx_ctx_java_t) context;
 
   /*FIXME: is this really necessary? */
-  if (simix_global->current_process->iwannadie) {
+  if (((smx_process_t)smx_current_context->data)->iwannadie) {
     /* The maestro call xbt_context_stop() with an exit code set to one */
     if (ctx_java->jprocess) {
       /* if the java process is alive schedule it */
       if (jprocess_is_alive(ctx_java->jprocess, get_current_thread_env())) {
-        jprocess_schedule(simix_global->current_process->context);
+        jprocess_schedule(smx_current_context);
         jprocess = ctx_java->jprocess;
         ctx_java->jprocess = NULL;
 
@@ -146,9 +148,12 @@ static void smx_ctx_java_resume(smx_context_t new_context)
 static void smx_ctx_java_runall(xbt_swag_t processes)
 {
   smx_process_t process;
+  smx_context_t old_context;
+  
   while((process = xbt_swag_extract(processes))){
-    simix_global->current_process = process;
-    smx_ctx_java_resume(process->context);
-    simix_global->current_process = simix_global->maestro_process;
+    old_context = smx_current_context;
+    smx_current_context = process->context;
+    smx_ctx_java_resume(smx_current_context);
+    smx_current_context = old_context;
   }
 }

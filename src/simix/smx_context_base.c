@@ -24,6 +24,7 @@ void smx_ctx_base_factory_init(smx_context_factory_t * factory)
   (*factory)->suspend = NULL;
   (*factory)->runall = NULL;
   (*factory)->self = smx_ctx_base_self;
+  (*factory)->get_data = smx_ctx_base_get_data;
 
   (*factory)->name = "base context factory";
 }
@@ -40,19 +41,22 @@ smx_ctx_base_factory_create_context_sized(size_t size,
                                           xbt_main_func_t code, int argc,
                                           char **argv,
                                           void_pfn_smxprocess_t cleanup_func,
-                                          smx_process_t process)
+                                          void *data)
 {
   smx_context_t context = xbt_malloc0(size);
 
   /* If the user provided a function for the process then use it
-     otherwise is the context for maestro */
+     otherwise is the context for maestro and we should set it as the
+     current context */
   if (code) {
     context->cleanup_func = cleanup_func;
-    context->process = process;
     context->argc = argc;
     context->argv = argv;
     context->code = code;
+  }else{
+    smx_current_context = context;
   }
+  context->data = data;
 
   return context;
 }
@@ -79,13 +83,16 @@ void smx_ctx_base_free(smx_context_t context)
 
 void smx_ctx_base_stop(smx_context_t context)
 {
-
   if (context->cleanup_func)
-    (*(context->cleanup_func)) (context->process);
-
+    (*(context->cleanup_func)) (context->data);
 }
 
-smx_process_t smx_ctx_base_self(void)
+smx_context_t smx_ctx_base_self(void)
 {
-  return simix_global->current_process;
+  return smx_current_context;
+}
+
+void *smx_ctx_base_get_data(smx_context_t context)
+{
+  return context->data;
 }

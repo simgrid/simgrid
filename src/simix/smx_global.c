@@ -73,7 +73,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->process_to_destroy =
         xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
 
-    simix_global->current_process = NULL;
     simix_global->maestro_process = NULL;
     simix_global->registered_functions = xbt_dict_new();
 

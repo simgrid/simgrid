@@ -77,7 +77,6 @@ smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc,
     context->begin = xbt_os_sem_init(0);
     context->end = xbt_os_sem_init(0);
 
-
     /* delay the thread creation until first run */
     context->thread = NULL;
  

@@ -9,6 +9,7 @@
 
 
 #include "smx_context_sysv_private.h"
+#include "xbt/threadpool.h"
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
@@ -23,33 +24,47 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
+static xbt_tpool_t tpool; 
+
 static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
-    void_pfn_smxprocess_t cleanup_func,
-    smx_process_t process);
+    void_pfn_smxprocess_t cleanup_func, void* data);
 
 
 static void smx_ctx_sysv_wrapper(smx_ctx_sysv_t context);
 
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t * factory)
 {
-
   smx_ctx_base_factory_init(factory);
 
+  (*factory)->finalize = smx_ctx_sysv_factory_finalize;
   (*factory)->create_context = smx_ctx_sysv_create_context;
   /* Do not overload that method (*factory)->finalize */
   (*factory)->free = smx_ctx_sysv_free;
   (*factory)->stop = smx_ctx_sysv_stop;
   (*factory)->suspend = smx_ctx_sysv_suspend;
-  (*factory)->runall = smx_ctx_sysv_runall;
   (*factory)->name = "smx_sysv_context_factory";
+
+  if(_surf_parallel_contexts){
+    tpool = xbt_tpool_new(2, 10);
+    (*factory)->runall = smx_ctx_sysv_runall_parallel;
+  }else{
+    (*factory)->runall = smx_ctx_sysv_runall;
+  }    
+}
+
+int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory)
+{ 
+  if(tpool)
+    xbt_tpool_destroy(tpool);
+  return smx_ctx_base_factory_finalize(factory);
 }
 
 smx_context_t
 smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                   int argc, char **argv,
                                   void_pfn_smxprocess_t cleanup_func,
-                                  smx_process_t process)
+                                  void *data)
 {
 
   smx_ctx_sysv_t context =
@@ -58,7 +73,7 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                                                  argc,
                                                                  argv,
                                                                  cleanup_func,
-                                                                 process);
+                                                                 data);
 
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
@@ -94,12 +109,12 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
 static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
     void_pfn_smxprocess_t cleanup_func,
-    smx_process_t process)
+    void *data)
 {
 
   return smx_ctx_sysv_create_context_sized(sizeof(s_smx_ctx_sysv_t),
                                            code, argc, argv, cleanup_func,
-                                           process);
+                                           data);
 
 }
 
@@ -154,10 +169,21 @@ void smx_ctx_sysv_resume(smx_context_t new_context)
 
 void smx_ctx_sysv_runall(xbt_swag_t processes)
 {
+  smx_context_t old_context;
+  smx_process_t process;
+  
+  while((process = xbt_swag_extract(processes))){
+    old_context = smx_current_context;
+    smx_current_context = process->context;
+    smx_ctx_sysv_resume(smx_current_context);
+    smx_current_context = old_context;
+  }
+}
+
+void smx_ctx_sysv_runall_parallel(xbt_swag_t processes)
+{
   smx_process_t process;
   while((process = xbt_swag_extract(processes))){
-    simix_global->current_process = process;
-    smx_ctx_sysv_resume(process->context);
-    simix_global->current_process = simix_global->maestro_process;
+    xbt_tpool_queue_job(tpool, (void_f_pvoid_t)smx_ctx_sysv_resume, process->context);
   }
 }
