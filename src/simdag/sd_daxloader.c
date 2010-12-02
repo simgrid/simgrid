@@ -205,6 +205,7 @@ xbt_dynar_t SD_daxload(const char *filename)
     }
   }
 
+  acyclic_graph_detection(result);
   return result;
 }
 

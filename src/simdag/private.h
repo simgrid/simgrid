@@ -13,6 +13,7 @@
 #include "simdag/simdag.h"
 #include "simdag/datatypes.h"
 #include "surf/surf.h"
+#include <stdbool.h>
 
 #define SD_INITIALISED() (sd_global != NULL)
 #define SD_CHECK_INIT_DONE() xbt_assert0(SD_INITIALISED(), "Call SD_init() first");
@@ -84,6 +85,7 @@ typedef struct SD_task {
 
   int fifo_checked;             /* used by SD_task_just_done to make sure we evaluate
                                    the task only once */
+  int marked;                   /* used to check if the task DAG has some cycle*/
 
   /* dependencies */
   xbt_dynar_t tasks_before;
@@ -126,6 +128,7 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
 void __SD_task_really_run(SD_task_t task);
 int __SD_task_try_to_run(SD_task_t task);
 void __SD_task_just_done(SD_task_t task);
+bool acyclic_graph_detection(xbt_dynar_t dag);
 
 /* Functions to test if the task is in a given state. */
 
