@@ -400,7 +400,7 @@ int SIMIX_process_is_suspended(smx_process_t process)
 
 int SIMIX_process_is_enabled(smx_process_t process)
 {
-  if (process->request && SIMIX_request_isEnabled(process->request))
+  if (process->request && SIMIX_request_is_enabled(process->request))
     return TRUE;
 
   return FALSE;

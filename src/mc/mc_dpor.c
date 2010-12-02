@@ -126,7 +126,7 @@ void MC_dpor(void)
 
       /* Check for deadlocks */
       xbt_swag_foreach(process, simix_global->process_list){
-        if(process->request && !SIMIX_request_isEnabled(process->request)){
+        if(process->request && !SIMIX_request_is_enabled(process->request)){
           *mc_exp_ctl = MC_DEADLOCK;
           return;
         }

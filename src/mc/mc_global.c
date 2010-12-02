@@ -231,7 +231,7 @@ void MC_wait_for_requests(void)
   do {
     SIMIX_context_runall(simix_global->process_to_run);
     while((req = SIMIX_request_pop())){
-      if(!SIMIX_request_isVisible(req))
+      if(!SIMIX_request_is_visible(req))
         SIMIX_request_pre(req);
       else if(req->call == REQ_COMM_WAITANY)
         THROW_UNIMPLEMENTED;

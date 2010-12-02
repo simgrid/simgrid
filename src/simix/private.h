@@ -28,7 +28,7 @@ extern int _surf_do_model_check;
 
 typedef struct s_smx_context_factory *smx_context_factory_t;
 
-typedef struct SIMIX_Global {
+typedef struct s_smx_global {
   smx_context_factory_t context_factory;
   xbt_dict_t host;
   xbt_swag_t process_to_run;
@@ -42,9 +42,9 @@ typedef struct SIMIX_Global {
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   xbt_dict_t latency_limited_dict;
 #endif
-} s_SIMIX_Global_t, *SIMIX_Global_t;
+} s_smx_global_t, *smx_global_t;
 
-extern SIMIX_Global_t simix_global;
+extern smx_global_t simix_global;
 
 
 /*********************************** Time ************************************/

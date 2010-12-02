@@ -56,7 +56,7 @@ void SIMIX_request_answer(smx_req_t req)
   }
 }
 
-int SIMIX_request_isVisible(smx_req_t req)
+int SIMIX_request_is_visible(smx_req_t req)
 {
   return req->call == REQ_COMM_ISEND
      || req->call == REQ_COMM_IRECV
@@ -65,7 +65,7 @@ int SIMIX_request_isVisible(smx_req_t req)
      || req->call == REQ_COMM_TEST;
 }
 
-int SIMIX_request_isEnabled(smx_req_t req)
+int SIMIX_request_is_enabled(smx_req_t req)
 {
   unsigned int index = 0;
   smx_action_t act;

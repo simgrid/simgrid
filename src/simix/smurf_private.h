@@ -450,8 +450,8 @@ smx_req_t SIMIX_request_pop(void);
 void SIMIX_request_answer(smx_req_t);
 void SIMIX_request_pre(smx_req_t);
 void SIMIX_request_post(smx_action_t);
-int SIMIX_request_isVisible(smx_req_t req);
-int SIMIX_request_isEnabled(smx_req_t req);
+int SIMIX_request_is_visible(smx_req_t req);
+int SIMIX_request_is_enabled(smx_req_t req);
 
 #endif
 

@@ -22,7 +22,7 @@ XBT_LOG_EXTERNAL_CATEGORY(simix_context);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
                                 "Logging specific to SIMIX (kernel)");
 
-SIMIX_Global_t simix_global = NULL;
+smx_global_t simix_global = NULL;
 static xbt_heap_t simix_timers = NULL;
 
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
@@ -63,7 +63,7 @@ void SIMIX_global_init(int *argc, char **argv)
     XBT_LOG_CONNECT(simix_synchro, simix);
     XBT_LOG_CONNECT(simix_context, simix);
 
-    simix_global = xbt_new0(s_SIMIX_Global_t, 1);
+    simix_global = xbt_new0(s_smx_global_t, 1);
 
     simix_global->host = xbt_dict_new();
     simix_global->process_to_run =
