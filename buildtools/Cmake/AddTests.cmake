@@ -240,15 +240,6 @@ ADD_TEST(mc-bugged2			${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/
 ADD_TEST(mc-centralized		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc centralized.tesh)
 endif(HAVE_MC)
 
-if(HAVE_JAVA)
-### Be sure we can execut some launch file
-exec_program("chmod a=rwx ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_java.sh" OUTPUT_VARIABLE "OKITOKI")
-# java examples
-ADD_TEST(java-basic 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_java.sh ${CMAKE_HOME_DIRECTORY}/examples/java/basic BasicTest ${simgrid_BINARY_DIR})
-ADD_TEST(java-pingpong 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_java.sh ${CMAKE_HOME_DIRECTORY}/examples/java/ping_pong PingPongTest ${simgrid_BINARY_DIR})
-ADD_TEST(java-comm_time ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_java.sh ${CMAKE_HOME_DIRECTORY}/examples/java/comm_time CommTimeTest ${simgrid_BINARY_DIR})
-ADD_TEST(java-suspend 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_java.sh ${CMAKE_HOME_DIRECTORY}/examples/java/suspend SuspendTest ${simgrid_BINARY_DIR})
-endif(HAVE_JAVA)
 
 ###
 ### Declare that we know that some tests are broken
