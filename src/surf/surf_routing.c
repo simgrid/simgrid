@@ -62,6 +62,7 @@ static void model_none_unload(void);    /* none routing model */
 static void model_none_end(void);       /* none routing model */
 
 static void routing_parse_Scluster(void);  /*cluster bypass */
+static void routing_parse_Speer(void);  	/*peer bypass */
 
 static void routing_parse_Sconfig(void);        /*config Tag */
 static void routing_parse_Econfig(void);        /*config Tag */
@@ -276,6 +277,11 @@ static void parse_S_router(void)
 #ifdef HAVE_TRACING
   TRACE_surf_host_declaration(A_surfxml_router_id, 0);
 #endif
+  if (strcmp(A_surfxml_router_coordinates,"")) {
+    	xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
+    	xbt_dynar_shrink(ctn,0);
+     	xbt_dict_set (coordinates,A_surfxml_router_id,ctn,NULL);
+  }
 }
 
 /**
@@ -832,8 +838,8 @@ static double _get_latency(const char *src, const char *dst)
                 "bad gateway for route between \"%s\" and \"%s\"", src,
                 dst);            
     latency =
-          (*(common_father->get_latency)) (common_father, src_father->name,
-                                         dst_father->name);
+          (*(common_father->get_latency)) (common_father, e_route_cnt->src_gateway,
+                                         e_route_cnt->src_gateway);
     xbt_assert2(latency>=0, "no route between \"%s\" and \"%s\"",
                 src_father->name, dst_father->name);
     
@@ -1082,6 +1088,9 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
 
   surfxml_add_callback(STag_surfxml_cluster_cb_list,
                        &routing_parse_Scluster);
+
+  surfxml_add_callback(STag_surfxml_peer_cb_list,
+                         &routing_parse_Speer);
 
   surfxml_add_callback(STag_surfxml_config_cb_list,
 					   &routing_parse_Sconfig);
@@ -2364,8 +2373,8 @@ static void model_rulebased_set_ASroute(routing_component_t rc,
   ruleroute_e->re_src_gateway = route->src_gateway;
   ruleroute_e->re_dst_gateway = route->dst_gateway;
   xbt_dynar_push(routing->list_ASroute, &ruleroute_e);
-  xbt_free(route->src_gateway);
-  xbt_free(route->dst_gateway);
+//  xbt_free(route->src_gateway);
+//  xbt_free(route->dst_gateway);
   xbt_free(route);
 }
 
@@ -2643,7 +2652,7 @@ static void *model_rulebased_create(void)
   new_component->generic_routing.get_onelink_routes = rulebased_get_onelink_routes;
   new_component->generic_routing.get_route = rulebased_get_route;
   new_component->generic_routing.get_latency = generic_get_link_latency;
-  new_component->generic_routing.get_bypass_route = generic_get_bypassroute;       //rulebased_get_bypass_route;
+  new_component->generic_routing.get_bypass_route = rulebased_get_bypass_route;
   new_component->generic_routing.finalize = rulebased_finalize;
   /* initialization of internal structures */
   new_component->dict_processing_units = xbt_dict_new();
@@ -3549,6 +3558,156 @@ static void routing_parse_Scluster(void)
 
   surfxml_bufferstack_pop(1);
 }
+
+static void routing_parse_Speer(void)
+{
+  static int AX_ptr = 0;
+
+  char *peer_id = A_surfxml_peer_id;
+  char *peer_power = A_surfxml_peer_power;
+  char *peer_bw_in = A_surfxml_peer_bw_in;
+  char *peer_bw_out = A_surfxml_peer_bw_out;
+  char *peer_lat = A_surfxml_peer_lat;
+  char *peer_coord = A_surfxml_peer_coordinates;
+
+  char *host_id = NULL;
+  char *router_id, *link_router, *link_backbone, *link_id_up, *link_id_down;
+
+#ifdef HAVE_PCRE_LIB
+
+#endif
+
+  int peer_sharing_policy = AX_surfxml_peer_sharing_policy;
+
+#ifndef HAVE_PCRE_LIB
+  //xbt_dynar_t tab_elements_num = xbt_dynar_new(sizeof(int), NULL);
+  //char *route_src, *route_dst;
+  //int j;
+#endif
+
+  static unsigned int surfxml_buffer_stack_stack_ptr = 1;
+  static unsigned int surfxml_buffer_stack_stack[1024];
+
+  surfxml_buffer_stack_stack[0] = 0;
+
+  surfxml_bufferstack_push(1);
+
+  SURFXML_BUFFER_SET(AS_id, peer_id);
+#ifdef HAVE_PCRE_LIB
+  SURFXML_BUFFER_SET(AS_routing, "RuleBased");
+  DEBUG1("<AS id=\"%s\"\trouting=\"RuleBased\">", peer_id);
+#else
+  SURFXML_BUFFER_SET(AS_routing, "Full");
+  DEBUG1("<AS id=\"%s\"\trouting=\"Full\">", peer_id);
+#endif
+  SURFXML_START_TAG(AS);
+
+  DEBUG0(" ");
+  host_id = bprintf("peer_%s", peer_id);
+  router_id = bprintf("router_%s", peer_id);
+  link_id_up = bprintf("link_%s_up", peer_id);
+  link_id_down = bprintf("link_%s_down", peer_id);
+
+  link_router = bprintf("%s_link_router", peer_id);
+  link_backbone = bprintf("%s_backbone", peer_id);
+
+  DEBUG2("<host\tid=\"%s\"\tpower=\"%s\"/>", host_id, peer_power);
+  A_surfxml_host_state = A_surfxml_host_state_ON;
+  SURFXML_BUFFER_SET(host_id, host_id);
+  SURFXML_BUFFER_SET(host_power, peer_power);
+  SURFXML_BUFFER_SET(host_availability, "1.0");
+  SURFXML_BUFFER_SET(host_availability_file, "");
+  SURFXML_BUFFER_SET(host_state_file, "");
+  SURFXML_START_TAG(host);
+  SURFXML_END_TAG(host);
+
+  DEBUG2("<router id=\"%s\"\tcoordinates=\"%s\"/>", router_id, peer_coord);
+  SURFXML_BUFFER_SET(router_id, router_id);
+  SURFXML_BUFFER_SET(router_coordinates, peer_coord);
+  SURFXML_START_TAG(router);
+  SURFXML_END_TAG(router);
+
+  DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_up, peer_bw_in, peer_lat);
+  A_surfxml_link_state = A_surfxml_link_state_ON;
+  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+  if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FULLDUPLEX)
+{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
+  if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FATPIPE)
+{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
+  SURFXML_BUFFER_SET(link_id, link_id_up);
+  SURFXML_BUFFER_SET(link_bandwidth, peer_bw_in);
+  SURFXML_BUFFER_SET(link_latency, peer_lat);
+  SURFXML_BUFFER_SET(link_bandwidth_file, "");
+  SURFXML_BUFFER_SET(link_latency_file, "");
+  SURFXML_BUFFER_SET(link_state_file, "");
+  SURFXML_START_TAG(link);
+  SURFXML_END_TAG(link);
+
+  DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_down, peer_bw_out, peer_lat);
+  A_surfxml_link_state = A_surfxml_link_state_ON;
+  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+  if(peer_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
+{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
+  if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FATPIPE)
+{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
+  SURFXML_BUFFER_SET(link_id, link_id_down);
+  SURFXML_BUFFER_SET(link_bandwidth, peer_bw_out);
+  SURFXML_BUFFER_SET(link_latency, peer_lat);
+  SURFXML_BUFFER_SET(link_bandwidth_file, "");
+  SURFXML_BUFFER_SET(link_latency_file, "");
+  SURFXML_BUFFER_SET(link_state_file, "");
+  SURFXML_START_TAG(link);
+  SURFXML_END_TAG(link);
+
+  DEBUG0(" ");
+
+  // begin here
+  DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", peer_id, router_id);
+  DEBUG0("symmetrical=\"NO\">");
+  SURFXML_BUFFER_SET(route_src, peer_id);
+  SURFXML_BUFFER_SET(route_dst, router_id);
+  A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
+  SURFXML_START_TAG(route);
+
+  DEBUG1("<link_ctn\tid=\"%s\"/>", link_id_up);
+  SURFXML_BUFFER_SET(link_ctn_id, link_id_up);
+  A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
+  if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FULLDUPLEX)
+  {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_UP;}
+  SURFXML_START_TAG(link_ctn);
+  SURFXML_END_TAG(link_ctn);
+
+  DEBUG0("</route>");
+  SURFXML_END_TAG(route);
+
+  //Opposite Route
+  DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", router_id, peer_id);
+  DEBUG0("symmetrical=\"NO\">");
+  SURFXML_BUFFER_SET(route_src, router_id);
+  SURFXML_BUFFER_SET(route_dst, peer_id);
+  A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
+  SURFXML_START_TAG(route);
+
+  DEBUG1("<link_ctn\tid=\"%s\"/>", link_id_down);
+  SURFXML_BUFFER_SET(link_ctn_id, link_id_down);
+  A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
+  if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FULLDUPLEX)
+  {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_DOWN;}
+  SURFXML_START_TAG(link_ctn);
+  SURFXML_END_TAG(link_ctn);
+
+  DEBUG0("</route>");
+  SURFXML_END_TAG(route);
+
+  DEBUG0("</AS>");
+  SURFXML_END_TAG(AS);
+  DEBUG0(" ");
+
+  //xbt_dynar_free(&tab_elements_num);
+
+  surfxml_bufferstack_pop(1);
+}
+
 
 /*
  * New methods to init the routing model component from the lua script
