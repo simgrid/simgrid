@@ -112,6 +112,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
       ret = MSG_TIMEOUT;
       break;
     default:
+    	xbt_backtrace_display(&e);
       xbt_die(bprintf("Unhandled SIMIX network exception: %s", e.msg));
     }
     xbt_ex_free(e);
