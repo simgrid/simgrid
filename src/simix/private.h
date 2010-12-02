@@ -122,7 +122,7 @@ typedef struct s_smx_action {
     struct {
       surf_action_t sleep;
     } synchro;
-    
+
   };
 
 #ifdef HAVE_TRACING
@@ -155,9 +155,8 @@ static XBT_INLINE e_smx_state_t SIMIX_action_map_state(e_surf_action_state_t sta
 
 
 typedef smx_context_t(*smx_pfn_context_factory_create_context_t)
- (xbt_main_func_t, int, char **, void_pfn_smxprocess_t, void* data);
-typedef int (*smx_pfn_context_factory_finalize_t) (smx_context_factory_t
-                                                   *);
+  (xbt_main_func_t, int, char **, void_pfn_smxprocess_t, void* data);
+typedef int (*smx_pfn_context_factory_finalize_t) (smx_context_factory_t*);
 typedef void (*smx_pfn_context_free_t) (smx_context_t);
 typedef void (*smx_pfn_context_start_t) (smx_context_t);
 typedef void (*smx_pfn_context_stop_t) (smx_context_t);
@@ -181,13 +180,12 @@ typedef struct s_smx_context_factory {
 
 
 void SIMIX_context_mod_init(void);
-
 void SIMIX_context_mod_exit(void);
 
 
 /* All factories init */
-void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory);
-void SIMIX_ctx_sysv_factory_init(smx_context_factory_t * factory);
+void SIMIX_ctx_thread_factory_init(smx_context_factory_t *factory);
+void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory);
 
 /* ****************************** */
 /* context manipulation functions */
@@ -278,6 +276,7 @@ static XBT_INLINE smx_context_t SIMIX_context_self(void)
   return (*(simix_global->context_factory->self))();
 }
 
+<<<<<<< HEAD
 /**
  \brief returns the data associated to a context
  \param context The context
@@ -289,4 +288,6 @@ static XBT_INLINE void* SIMIX_context_get_data(smx_context_t context)
 }
 
 
+=======
+>>>>>>> Clean indentation and coding style in SIMIX
 #endif

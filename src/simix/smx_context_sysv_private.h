@@ -15,8 +15,6 @@
 
 SG_BEGIN_DECL()
 
-
-
 /* lower this if you want to reduce the memory consumption  */
 #ifndef CONTEXT_STACK_SIZE      /* allow lua to override this */
 #define CONTEXT_STACK_SIZE 128*1024
@@ -27,6 +25,7 @@ SG_BEGIN_DECL()
 #else
 #include <ucontext.h>           /* context relative declarations */
 #endif
+
 typedef struct s_smx_ctx_sysv {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
   ucontext_t uc;                /* the thread that execute the code */
@@ -35,7 +34,6 @@ typedef struct s_smx_ctx_sysv {
 #endif
   char stack[CONTEXT_STACK_SIZE];       /* the thread stack size */
 } s_smx_ctx_sysv_t, *smx_ctx_sysv_t;
-
 
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory);
 int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory);
@@ -54,4 +52,5 @@ void smx_ctx_sysv_runall(xbt_swag_t processes);
 void smx_ctx_sysv_runall_parallel(xbt_swag_t processes);
 
 SG_END_DECL()
+
 #endif                          /* !_XBT_CONTEXT_SYSV_PRIVATE_H */

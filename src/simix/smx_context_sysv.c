@@ -6,8 +6,6 @@
  /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
-
 #include "smx_context_sysv_private.h"
 #include "xbt/threadpool.h"
 
@@ -33,7 +31,7 @@ smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
 
 static void smx_ctx_sysv_wrapper(smx_ctx_sysv_t context);
 
-void SIMIX_ctx_sysv_factory_init(smx_context_factory_t * factory)
+void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 {
   smx_ctx_base_factory_init(factory);
 
@@ -172,7 +170,7 @@ void smx_ctx_sysv_runall(xbt_swag_t processes)
   smx_context_t old_context;
   smx_process_t process;
   
-  while((process = xbt_swag_extract(processes))){
+  while ((process = xbt_swag_extract(processes))) {
     old_context = smx_current_context;
     smx_current_context = process->context;
     smx_ctx_sysv_resume(smx_current_context);

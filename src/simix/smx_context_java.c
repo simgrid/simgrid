@@ -105,7 +105,6 @@ static void smx_ctx_java_stop(smx_context_t context)
 
         /* interrupt the java process */
         jprocess_exit(jprocess, get_current_thread_env());
-
       }
     }
   } else {
@@ -150,7 +149,7 @@ static void smx_ctx_java_runall(xbt_swag_t processes)
   smx_process_t process;
   smx_context_t old_context;
   
-  while((process = xbt_swag_extract(processes))){
+  while ((process = xbt_swag_extract(processes))) {
     old_context = smx_current_context;
     smx_current_context = process->context;
     smx_ctx_java_resume(smx_current_context);

@@ -44,4 +44,5 @@ int SIMIX_sem_would_block(smx_sem_t sem);
 void SIMIX_pre_sem_acquire(smx_req_t req);
 void SIMIX_pre_sem_acquire_timeout(smx_req_t req);
 int SIMIX_sem_get_capacity(smx_sem_t sem);
+
 #endif

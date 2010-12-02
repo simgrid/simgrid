@@ -43,8 +43,7 @@ void SIMIX_ctx_ruby_factory_init(smx_context_factory_t * factory)
 
 static smx_context_t
 smx_ctx_ruby_create_context(xbt_main_func_t code, int argc, char **argv,
-    void_pfn_smxprocess_t cleanup_func,
-    smx_process_t process)
+    void_pfn_smxprocess_t cleanup_func, smx_process_t process)
 {
 
   smx_ctx_ruby_t context = (smx_ctx_ruby_t)
@@ -109,13 +108,12 @@ static void smx_ctx_ruby_resume(smx_context_t new_context)
 
   smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) new_context;
   rb_process_schedule(ctx_ruby->process);
-
 }
 
 static void smx_ctx_ruby_runall(xbt_swag_t processes)
 {
   smx_process_t process;
-  while((process = xbt_swag_extract(processes))){
+  while ((process = xbt_swag_extract(processes))) {
     simix_global->current_process = process;
     smx_ctx_ruby_resume(process->context);
     simix_global->current_process = simix_global->maestro_process;

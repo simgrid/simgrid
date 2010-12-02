@@ -186,14 +186,14 @@ smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
   action->request_list = xbt_fifo_new();
   action->state = SIMIX_RUNNING;
   action->execution.host = host;
-  
+
 #ifdef HAVE_TRACING
   action->category = NULL;
 #endif
 
 #ifdef HAVE_MC
   /* set surf's action */
-  if(!_surf_do_model_check)
+  if (!_surf_do_model_check)
 #endif
   {
   action->execution.surf_exec =
@@ -201,14 +201,14 @@ smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
                                                           computation_amount);
   surf_workstation_model->action_data_set(action->execution.surf_exec, action);
   }
-  
+
 #ifdef HAVE_TRACING
   TRACE_smx_host_execute(action);
   TRACE_surf_action(action->execution.surf_exec, action->category);
 #endif
 
   DEBUG1("Create execute action %p", action);
-  
+
   return action;
 }
 
@@ -227,7 +227,7 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
   action->request_list = xbt_fifo_new();
   action->state = SIMIX_RUNNING;
   action->execution.host = NULL; /* FIXME: do we need the list of hosts? */
- 
+
 #ifdef HAVE_TRACING
   action->category = NULL;
 #endif
@@ -239,13 +239,13 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
 
 #ifdef HAVE_MC
   /* set surf's action */
-  if(!_surf_do_model_check)
+  if (!_surf_do_model_check)
 #endif  
   {
-  action->execution.surf_exec = 
-    surf_workstation_model->extension.workstation.
-    execute_parallel_task(host_nb, workstation_list, computation_amount,
-                          communication_amount, amount, rate);
+    action->execution.surf_exec =
+      surf_workstation_model->extension.workstation.
+      execute_parallel_task(host_nb, workstation_list, computation_amount,
+	                    communication_amount, amount, rate);
 
   surf_workstation_model->action_data_set(action->execution.surf_exec, action);
   }
@@ -263,11 +263,11 @@ void SIMIX_host_execution_destroy(smx_action_t action)
 
   xbt_fifo_free(action->request_list);
 
-  if (action->execution.surf_exec){
+  if (action->execution.surf_exec) {
     surf_workstation_model->action_unref(action->execution.surf_exec);
     action->execution.surf_exec = NULL;
   }
-  
+
 #ifdef HAVE_TRACING
   TRACE_smx_action_destroy(action);
 #endif
@@ -278,15 +278,15 @@ void SIMIX_host_execution_cancel(smx_action_t action)
 {
   DEBUG1("Cancel action %p", action);
 
-  if(action->execution.surf_exec) 
+  if (action->execution.surf_exec) 
     surf_workstation_model->action_cancel(action->execution.surf_exec);
 }
 
 double SIMIX_host_execution_get_remains(smx_action_t action)
 {
-  double result = 0;
-  
-  if(action->state == SIMIX_RUNNING)
+  double result = 0.0;
+
+  if (action->state == SIMIX_RUNNING)
     result = surf_workstation_model->get_remains(action->execution.surf_exec);
 
   return result;
@@ -314,12 +314,12 @@ void SIMIX_pre_host_execution_wait(smx_req_t req)
 
 #ifdef HAVE_MC
   /* set surf's action */
-  if(_surf_do_model_check){
+  if (_surf_do_model_check){
     action->state = SIMIX_DONE;
     SIMIX_execution_finish(action);
   }
 #endif  
-    
+
   /* If the action is already finished then perform the error handling */
   if (action->state != SIMIX_RUNNING)
     SIMIX_execution_finish(action);
@@ -327,12 +327,12 @@ void SIMIX_pre_host_execution_wait(smx_req_t req)
 
 void SIMIX_host_execution_suspend(smx_action_t action)
 {
-    surf_workstation_model->suspend(action->execution.surf_exec);
+  surf_workstation_model->suspend(action->execution.surf_exec);
 }
 
 void SIMIX_host_execution_resume(smx_action_t action)
 {
-    surf_workstation_model->suspend(action->execution.surf_exec);
+  surf_workstation_model->suspend(action->execution.surf_exec);
 }
 
 void SIMIX_execution_finish(smx_action_t action)
@@ -348,7 +348,7 @@ void SIMIX_execution_finish(smx_action_t action)
         /* do nothing, action done*/
 	DEBUG0("SIMIX_execution_finished: execution successful");
         break;
-        
+
       case SIMIX_FAILED:
         TRY {
 	  DEBUG1("SIMIX_execution_finished: host '%s' failed", req->issuer->smx_host->name);
@@ -358,7 +358,7 @@ void SIMIX_execution_finish(smx_action_t action)
 	  req->issuer->doexception = 1;
 	}
       break;
-        
+
       case SIMIX_CANCELED:
         TRY {
 	  DEBUG0("SIMIX_execution_finished: execution canceled");
@@ -368,7 +368,7 @@ void SIMIX_execution_finish(smx_action_t action)
 	  req->issuer->doexception = 1;
         }
 	break;
-        
+
       default:
         THROW_IMPOSSIBLE;
     }
@@ -388,11 +388,11 @@ void SIMIX_post_host_execute(smx_action_t action)
   else
      action->state = SIMIX_DONE;
 
-  if (action->execution.surf_exec){
+  if (action->execution.surf_exec) {
     surf_workstation_model->action_unref(action->execution.surf_exec);
     action->execution.surf_exec = NULL;
   }
-  
+
   /* If there are requests associated with the action, then answer them */
   if (xbt_fifo_size(action->request_list))
     SIMIX_execution_finish(action);

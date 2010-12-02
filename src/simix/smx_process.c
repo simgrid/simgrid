@@ -24,8 +24,9 @@ static unsigned long simix_process_count = 0;
  */
 XBT_INLINE smx_process_t SIMIX_process_self(void)
 {
-  if(simix_global)
+  if (simix_global)
     return SIMIX_context_get_data(SIMIX_context_self());
+
   return NULL;
 }
 
@@ -72,7 +73,7 @@ void SIMIX_process_empty_trash(void)
 void SIMIX_create_maestro_process()
 {
   smx_process_t maestro = NULL;
-  
+
   /* Create maestro process and intilialize it */
   maestro = xbt_new0(s_smx_process_t, 1);
   maestro->pid = simix_process_count++;
@@ -82,7 +83,6 @@ void SIMIX_create_maestro_process()
   maestro->context = SIMIX_context_new(NULL, 0, NULL, NULL, maestro);
 
   simix_global->maestro_process = maestro;
-  
   return;
 }
 
@@ -129,10 +129,10 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
  */
 smx_process_t SIMIX_process_create(const char *name,
                                    xbt_main_func_t code,
-			                             void *data,
-				                           const char *hostname,
-                        				   int argc, char **argv,
-                        				   xbt_dict_t properties) {
+				   void *data,
+				   const char *hostname,
+				   int argc, char **argv,
+				   xbt_dict_t properties) {
 
   smx_process_t process = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
@@ -195,7 +195,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t killer) {
   process->blocked = 0;
   process->suspended = 0;
   /* FIXME: set doexception to 0 also? */
-  
+
   if (process->waiting_action) {
 
     switch (process->waiting_action->type) {
@@ -318,25 +318,26 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 
     if (process->waiting_action) {
 
-      switch(process->waiting_action->type) {
+      switch (process->waiting_action->type) {
 
         case SIMIX_ACTION_EXECUTE:          
         case SIMIX_ACTION_PARALLEL_EXECUTE:
           SIMIX_host_execution_resume(process->waiting_action);
           break;
-          
+
         case SIMIX_ACTION_COMMUNICATE:
           SIMIX_comm_resume(process->waiting_action);
           break;
-          
+
         case SIMIX_ACTION_SLEEP:
           SIMIX_process_sleep_resume(process->waiting_action);
           break;
-          
+
         default:
           THROW_IMPOSSIBLE;
       }
-    } else {
+    }
+    else {
       xbt_swag_insert(process, simix_global->process_to_run);
     }
   }
@@ -399,7 +400,7 @@ int SIMIX_process_is_suspended(smx_process_t process)
 
 int SIMIX_process_is_enabled(smx_process_t process)
 {
-  if(process->request && SIMIX_request_isEnabled(process->request))
+  if (process->request && SIMIX_request_isEnabled(process->request))
     return TRUE;
 
   return FALSE;
@@ -498,15 +499,15 @@ void SIMIX_process_sleep_resume(smx_action_t action)
 void SIMIX_process_yield(void)
 {
   smx_process_t self = SIMIX_process_self();
-  
+
   DEBUG1("Yield process '%s'", self->name);
-  
+
   /* Go into sleep and return control to maestro */
   SIMIX_context_suspend(self->context);
 
   /* Ok, maestro returned control to us */
   DEBUG1("Maestro returned control to me: '%s'", self->name);
-  
+
   if (self->iwannadie)
     SIMIX_context_stop(self->context);
 

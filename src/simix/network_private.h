@@ -52,5 +52,6 @@ size_t SIMIX_comm_get_src_buff_size(smx_action_t action);
 size_t SIMIX_comm_get_dst_buff_size(smx_action_t action);
 smx_process_t SIMIX_comm_get_src_proc(smx_action_t action);
 smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action);
+
 #endif
 

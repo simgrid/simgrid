@@ -167,7 +167,7 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
 #endif
 
   DEBUG1("Create communicate action %p", act);
-  
+
   return act;
 }
 
@@ -179,8 +179,8 @@ void SIMIX_comm_destroy(smx_action_t action)
 {
   DEBUG1("Destroy action %p", action);
 
-  if(!(action->comm.refcount > 0))
-	  xbt_die(bprintf("the refcount of comm %p is already 0 before decreasing it. That's a bug!",action));
+  if (action->comm.refcount <= 0)
+    xbt_die(bprintf("the refcount of comm %p is already 0 before decreasing it. That's a bug!",action));
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   //save is latency limited flag to use afterwards
@@ -243,7 +243,7 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
   if (!action) {
     action = SIMIX_comm_new(SIMIX_COMM_SEND);
     SIMIX_rdv_push(rdv, action);
-  }else{
+  } else {
     action->state = SIMIX_READY;
     action->comm.type = SIMIX_COMM_READY;
   }
@@ -256,7 +256,7 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
   action->comm.src_buff_size = src_buff_size;
   action->comm.data = data;
 #ifdef HAVE_MC
-  if(_surf_do_model_check){
+  if (_surf_do_model_check){
     action->state = SIMIX_RUNNING;
     return action;
   }
@@ -289,7 +289,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
   action->comm.dst_buff_size = dst_buff_size;
 
 #ifdef HAVE_MC
-  if(_surf_do_model_check){
+  if (_surf_do_model_check){
     action->state = SIMIX_RUNNING;
     return action;
   }
@@ -310,7 +310,7 @@ void SIMIX_pre_comm_wait(smx_req_t req)
   req->issuer->waiting_action = action;
 
 #ifdef HAVE_MC
-  if(_surf_do_model_check){
+  if (_surf_do_model_check){
     action->state = SIMIX_DONE;
     SIMIX_comm_finish(action);
   }
@@ -353,7 +353,7 @@ void SIMIX_pre_comm_waitany(smx_req_t req)
   xbt_dynar_foreach(actions, cursor, action){
     /* Associate this request to the action */
     xbt_fifo_push(action->request_list, req);
-    if(action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING){
+    if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING){
       SIMIX_comm_finish(action);
       break;
     }
@@ -383,11 +383,10 @@ static XBT_INLINE void SIMIX_comm_start(smx_action_t action)
     smx_host_t receiver = action->comm.dst_proc->smx_host;
 
     DEBUG3("Starting communication %p from '%s' to '%s'", action,
-	  SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
+           SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
 
-    action->comm.surf_comm =
-      surf_workstation_model->extension.workstation.
-      communicate(sender->host, receiver->host, action->comm.task_size, action->comm.rate);
+    action->comm.surf_comm = surf_workstation_model->extension.workstation.
+        communicate(sender->host, receiver->host, action->comm.task_size, action->comm.rate);
 
     surf_workstation_model->action_data_set(action->comm.surf_comm, action);
 
@@ -420,19 +419,19 @@ void SIMIX_comm_finish(smx_action_t action)
 {
   smx_req_t req;
 
-  while((req = xbt_fifo_shift(action->request_list))){
+  while ((req = xbt_fifo_shift(action->request_list))) {
 
     /* If a waitany request is waiting for this action to finish, then remove
        it from the other actions in the waitany list. Afterwards, get the
        position of the actual action in the waitany request's actions dynar and
        return it as the result of the call */
-    if(req->call == REQ_COMM_WAITANY){
+    if (req->call == REQ_COMM_WAITANY) {
       SIMIX_waitany_req_remove_from_actions(req);
       req->comm_waitany.result = xbt_dynar_search(req->comm_waitany.comms, &action);
     }
 
     /* If the action is still in a rendez-vous point then remove from it */
-    if(action->comm.rdv)
+    if (action->comm.rdv)
       SIMIX_rdv_remove(action->comm.rdv, action);
 
     DEBUG1("SIMIX_comm_finish: action state = %d", action->state);
@@ -465,7 +464,7 @@ void SIMIX_comm_finish(smx_action_t action)
 
       case SIMIX_SRC_HOST_FAILURE:
         TRY {
-          if(req->issuer == action->comm.src_proc)
+          if (req->issuer == action->comm.src_proc)
             THROW0(host_error, 0, "Host failed");
           else
             THROW0(network_error, 0, "Remote peer failed");
@@ -510,19 +509,19 @@ void SIMIX_comm_finish(smx_action_t action)
 void SIMIX_post_comm(smx_action_t action)
 {
   /* Update action state */
-  if(action->comm.src_timeout &&
+  if (action->comm.src_timeout &&
      surf_workstation_model->action_state_get(action->comm.src_timeout) == SURF_ACTION_DONE)
      action->state = SIMIX_SRC_TIMEOUT;
-  else if(action->comm.dst_timeout &&
+  else if (action->comm.dst_timeout &&
           surf_workstation_model->action_state_get(action->comm.dst_timeout) == SURF_ACTION_DONE)
      action->state = SIMIX_DST_TIMEOUT;
-  else if(action->comm.src_timeout &&
+  else if (action->comm.src_timeout &&
           surf_workstation_model->action_state_get(action->comm.src_timeout) == SURF_ACTION_FAILED)
      action->state = SIMIX_SRC_HOST_FAILURE;
-  else if(action->comm.dst_timeout &&
+  else if (action->comm.dst_timeout &&
           surf_workstation_model->action_state_get(action->comm.dst_timeout) == SURF_ACTION_FAILED)
      action->state = SIMIX_DST_HOST_FAILURE;
-  else if(action->comm.surf_comm &&
+  else if (action->comm.surf_comm &&
           surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED)
      action->state = SIMIX_LINK_FAILURE;
   else
@@ -535,7 +534,7 @@ void SIMIX_post_comm(smx_action_t action)
   SIMIX_comm_destroy_internal_actions(action);
 
   /* If there are requests associated with the action, then answer them */
-  if(xbt_fifo_size(action->request_list))
+  if (xbt_fifo_size(action->request_list))
     SIMIX_comm_finish(action);
 }
 
@@ -719,6 +718,7 @@ void SIMIX_comm_copy_data(smx_action_t comm)
 
   if (buff_size == 0)
     return;
+
   (*SIMIX_comm_copy_data_callback) (comm, buff_size);
 
   /* Set the copied flag so we copy data only once */

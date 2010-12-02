@@ -4,7 +4,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -212,7 +211,6 @@ void SIMIX_process_set_function(const char *process_host,
     parse_argv[(parse_argc) - 1] = xbt_strdup(arg);
   }
 
-  /*finalize */
+  /* finalize */
   parse_process_finalize();
-
 }

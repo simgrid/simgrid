@@ -14,7 +14,7 @@
 
 SG_BEGIN_DECL()
 /*Hack: let msg load directly the right factory */
-typedef void (*SIMIX_ctx_factory_initializer_t)(smx_context_factory_t *);
+typedef void (*SIMIX_ctx_factory_initializer_t)(smx_context_factory_t*);
 extern SIMIX_ctx_factory_initializer_t factory_initializer_to_use;
 
 extern int _surf_parallel_contexts;
@@ -35,9 +35,10 @@ typedef struct s_smx_context {
   void_pfn_smxprocess_t cleanup_func;
   void *data;   /* Here SIMIX stores the smx_process_t containing the context */
 } s_smx_ctx_base_t;
+
 /* methods of this class */
-void smx_ctx_base_factory_init(smx_context_factory_t * factory);
-int smx_ctx_base_factory_finalize(smx_context_factory_t * factory);
+void smx_ctx_base_factory_init(smx_context_factory_t *factory);
+int smx_ctx_base_factory_finalize(smx_context_factory_t *factory);
 
 smx_context_t
 smx_ctx_base_factory_create_context_sized(size_t size,
@@ -51,4 +52,5 @@ smx_context_t smx_ctx_base_self(void);
 void *smx_ctx_base_get_data(smx_context_t context);
 
 SG_END_DECL()
+
 #endif                          /* !_XBT_CONTEXT_PRIVATE_H */

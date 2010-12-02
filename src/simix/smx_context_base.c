@@ -12,7 +12,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(bindings);
 
-void smx_ctx_base_factory_init(smx_context_factory_t * factory)
+void smx_ctx_base_factory_init(smx_context_factory_t *factory)
 {
   /* instantiate the context factory */
   *factory = xbt_new0(s_smx_context_factory_t, 1);

@@ -96,7 +96,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
     /* Initialize the SIMIX network module */
     SIMIX_network_init();
-    
+
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
     surf_init(argc, argv);      /* Initialize SURF structures */
@@ -118,10 +118,10 @@ void SIMIX_clean(void)
 
   /* Exit the SIMIX network module */
   SIMIX_network_exit();
-  
+
   /* Exit request mechanism */
   SIMIX_request_destroy();
-  
+
   xbt_heap_free(simix_timers);
   /* Free the remaining data structures */
   xbt_swag_free(simix_global->process_to_run);
@@ -177,12 +177,12 @@ void SIMIX_run(void)
   smx_timer_t timer;
   surf_model_t model;
   unsigned int iter;
- 
+
   do {
     do {
       DEBUG0("New Schedule Round");
       SIMIX_context_runall(simix_global->process_to_run);
-      while((req = SIMIX_request_pop())){
+      while ((req = SIMIX_request_pop())) {
         DEBUG1("Handling request %p", req);
         SIMIX_request_pre(req);
       }
@@ -193,7 +193,7 @@ void SIMIX_run(void)
     /* Notify all the hosts that have failed */
     /* FIXME: iterate through the list of failed host and mark each of them */
     /* as failed. On each host, signal all the running processes with host_fail */
-    
+
     /* Handle any pending timer */
     while (xbt_heap_size(simix_timers) > 0 && SIMIX_get_clock() >= SIMIX_timer_next()) {
        //FIXME: make the timers being real callbacks
@@ -204,16 +204,16 @@ void SIMIX_run(void)
     }
     /* Wake up all process waiting for the action finish */
     xbt_dynar_foreach(model_list, iter, model) {
-      for(set = model->states.failed_action_set;
-          set;
-          set = (set == model->states.failed_action_set)
-                ? model->states.done_action_set
-                : NULL) {
+      for (set = model->states.failed_action_set;
+           set;
+           set = (set == model->states.failed_action_set)
+                 ? model->states.done_action_set
+                 : NULL) {
         while ((action = xbt_swag_extract(set)))
-          SIMIX_request_post((smx_action_t)action->data);
+          SIMIX_request_post((smx_action_t) action->data);
       }
     }
-  } while(time != -1.0);
+  } while (time != -1.0);
 
 }
 

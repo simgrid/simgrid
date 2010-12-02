@@ -18,7 +18,7 @@ typedef struct s_smx_process {
   s_xbt_swag_hookup_t synchro_hookup;   /* process_to_run or mutex->sleeping and co */
   s_xbt_swag_hookup_t host_proc_hookup;
   s_xbt_swag_hookup_t destroy_hookup;
-  
+
   unsigned long pid;
   char *name;                   /**< @brief process name if any */
   smx_host_t smx_host;          /* the host on which the process is running */

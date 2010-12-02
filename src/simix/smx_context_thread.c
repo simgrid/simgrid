@@ -8,7 +8,6 @@
 
 #include "xbt/function_types.h"
 #include "private.h"
-
 #include "portable.h"           /* loads context system definitions */
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
@@ -42,7 +41,6 @@ static void *smx_ctx_thread_wrapper(void *param);
 
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
 {
-
   smx_ctx_base_factory_init(factory);
 
   (*factory)->create_context = smx_ctx_thread_factory_create_context;
@@ -55,7 +53,7 @@ void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
     (*factory)->runall = smx_ctx_thread_runall_parallel;
   else
     (*factory)->runall = smx_ctx_thread_runall_serial;
-  
+
   (*factory)->self = smx_ctx_thread_self;
   (*factory)->name = "ctx_thread_factory";
 }
@@ -79,7 +77,7 @@ smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc,
 
     /* delay the thread creation until first run */
     context->thread = NULL;
- 
+
   } else {
     xbt_os_thread_set_extra_data(process);
   }
@@ -97,20 +95,19 @@ static void smx_ctx_thread_free(smx_context_t pcontext)
     /* wait about the thread terminason */
     xbt_os_thread_join(context->thread, NULL);
   }
-  
+
   /* destroy the synchronisation objects */
-  if(context->begin)
+  if (context->begin)
     xbt_os_sem_destroy(context->begin);
 
-  if(context->end)
+  if (context->end)
     xbt_os_sem_destroy(context->end);
-  
+
   smx_ctx_base_free(pcontext);
 }
 
 static void smx_ctx_thread_stop(smx_context_t pcontext)
 {
-
   smx_ctx_thread_t context = (smx_ctx_thread_t) pcontext;
 
   /* please no debug here: our procdata was already free'd */
@@ -140,7 +137,7 @@ static void *smx_ctx_thread_wrapper(void *param)
 
 static void smx_ctx_thread_suspend(smx_context_t context)
 {
-  if(((smx_ctx_thread_t) context)->thread){
+  if (((smx_ctx_thread_t) context)->thread) {
     xbt_os_sem_release(((smx_ctx_thread_t) context)->end);
     xbt_os_sem_acquire(((smx_ctx_thread_t) context)->begin);
   }
@@ -149,32 +146,33 @@ static void smx_ctx_thread_suspend(smx_context_t context)
 static void smx_ctx_thread_runall_serial(xbt_swag_t processes)
 {
   smx_process_t process;
-  while((process = xbt_swag_extract(processes))){
+  while ((process = xbt_swag_extract(processes))) {
     /* if the context has no thread associated, create one for it (first run) */
-    if(!(((smx_ctx_thread_t)process->context)->thread)){
-      ((smx_ctx_thread_t)process->context)->thread =
+    if (!(((smx_ctx_thread_t)process->context)->thread)) {
+      ((smx_ctx_thread_t) process->context)->thread =
         xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, process->context, process);
-      xbt_os_sem_acquire(((smx_ctx_thread_t)process->context)->end);
+      xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
     }
-    xbt_os_sem_release(((smx_ctx_thread_t) (process->context))->begin);
-    xbt_os_sem_acquire(((smx_ctx_thread_t) (process->context))->end);
+    xbt_os_sem_release(((smx_ctx_thread_t) process->context)->begin);
+    xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
   }  
 }
 
-static void smx_ctx_thread_runall_parallel(xbt_swag_t processes){
+static void smx_ctx_thread_runall_parallel(xbt_swag_t processes)
+{
   smx_process_t process, p_next;
-  xbt_swag_foreach_safe(process, p_next, processes){
+  xbt_swag_foreach_safe(process, p_next, processes) {
     /* if the context has no thread associated, create one for it (first run) */
-    if(!(((smx_ctx_thread_t)process->context)->thread)){
+    if (!(((smx_ctx_thread_t) process->context)->thread)) {
       ((smx_ctx_thread_t)process->context)->thread =
         xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, process->context, process);
-      xbt_os_sem_acquire(((smx_ctx_thread_t)process->context)->end);
+      xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
     }
-    xbt_os_sem_release(((smx_ctx_thread_t) (process->context))->begin);
+    xbt_os_sem_release(((smx_ctx_thread_t) process->context)->begin);
   }
 
-  while((process = xbt_swag_extract(processes))){
-    xbt_os_sem_acquire(((smx_ctx_thread_t) (process->context))->end);
+  while ((process = xbt_swag_extract(processes))) {
+    xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
   }
 }
 

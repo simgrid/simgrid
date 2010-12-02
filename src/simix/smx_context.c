@@ -26,7 +26,8 @@ void SIMIX_context_mod_init(void)
     /* select context factory to use to create the context(depends of the macro definitions) */
     if (factory_initializer_to_use) {
       (*factory_initializer_to_use)(&(simix_global->context_factory));
-    } else {
+    }
+    else {
 #ifdef CONTEXT_THREADS /* Use os threads (either pthreads or windows ones) */
       SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
 #elif defined(CONTEXT_UCONTEXT) /* use ucontext */

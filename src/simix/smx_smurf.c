@@ -23,14 +23,14 @@ void SIMIX_request_destroy(void)
 void SIMIX_request_push(smx_req_t req)
 {
   req->issuer = SIMIX_process_self();
-  if(req->issuer != simix_global->maestro_process){
+  if (req->issuer != simix_global->maestro_process){
     xbt_os_mutex_acquire(sync_req_vector);
     xbt_dynar_set_as(req_vector, req->issuer->pid, smx_req_t, req);
     xbt_os_mutex_release(sync_req_vector);
     req->issuer->request = req;
     DEBUG2("Yield process '%s' on request of type %d", req->issuer->name, req->call);
     SIMIX_process_yield();
-  }else{
+  } else {
     SIMIX_request_pre(req);
   }
 }
@@ -39,9 +39,9 @@ smx_req_t SIMIX_request_pop(void)
 {
   smx_req_t request = NULL;
   xbt_os_mutex_acquire(sync_req_vector);
-  while(xbt_dynar_length(req_vector)){
+  while (xbt_dynar_length(req_vector)){
     request = xbt_dynar_pop_as(req_vector, smx_req_t);
-    if(request)
+    if (request)
       break;
   }
   xbt_os_mutex_release(sync_req_vector);
@@ -50,7 +50,7 @@ smx_req_t SIMIX_request_pop(void)
 
 void SIMIX_request_answer(smx_req_t req)
 {
-  if(req->issuer != simix_global->maestro_process){
+  if (req->issuer != simix_global->maestro_process){
     req->issuer->request = NULL;    
     xbt_swag_insert(req->issuer, simix_global->process_to_run);
   }
@@ -58,27 +58,28 @@ void SIMIX_request_answer(smx_req_t req)
 
 int SIMIX_request_isVisible(smx_req_t req)
 {
-  if(req->call != REQ_COMM_ISEND && req->call != REQ_COMM_IRECV
-   && req->call != REQ_COMM_WAIT && req->call != REQ_COMM_WAITANY
-   && req->call != REQ_COMM_TEST)
-    return FALSE;
-  return TRUE;
+  return req->call == REQ_COMM_ISEND
+     || req->call == REQ_COMM_IRECV
+     || req->call == REQ_COMM_WAIT
+     || req->call == REQ_COMM_WAITANY
+     || req->call == REQ_COMM_TEST;
 }
 
 int SIMIX_request_isEnabled(smx_req_t req)
 {
   unsigned int index = 0;
   smx_action_t act;
-  
-  switch(req->call){
+
+  switch (req->call) {
+
     case REQ_COMM_WAIT:
-      /*FIXME: check also that src and dst processes are not suspended */
-      if(req->comm_wait.comm->comm.src_proc 
+      /* FIXME: check also that src and dst processes are not suspended */
+      if (req->comm_wait.comm->comm.src_proc 
          && req->comm_wait.comm->comm.dst_proc)
         return TRUE;
       return FALSE;
       break;
-      
+
     case REQ_COMM_WAITANY:
       xbt_dynar_foreach(req->comm_waitany.comms, index, act) {
         if (act->comm.src_proc && act->comm.dst_proc){
@@ -103,38 +104,46 @@ void SIMIX_request_pre(smx_req_t req)
         SIMIX_host_get_by_name(req->host_get_by_name.name);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_GET_NAME:
       req->host_get_name.result =	SIMIX_host_get_name(req->host_get_name.host);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_GET_PROPERTIES:
       req->host_get_properties.result =
         SIMIX_host_get_properties(req->host_get_properties.host);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_GET_SPEED:
       req->host_get_speed.result = 
         SIMIX_host_get_speed(req->host_get_speed.host);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_GET_AVAILABLE_SPEED:
       req->host_get_available_speed.result =
       	SIMIX_host_get_available_speed(req->host_get_available_speed.host);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_GET_STATE:
       req->host_get_state.result = 
         SIMIX_host_get_state(req->host_get_state.host);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_GET_DATA:
       req->host_get_data.result =	SIMIX_host_get_data(req->host_get_data.host);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_SET_DATA:
       SIMIX_host_set_data(req->host_set_data.host, req->host_set_data.data);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_EXECUTE:
       req->host_execute.result = SIMIX_host_execute(
 	  req->host_execute.name,
@@ -142,6 +151,7 @@ void SIMIX_request_pre(smx_req_t req)
 	  req->host_execute.computation_amount);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_PARALLEL_EXECUTE:
       req->host_parallel_execute.result = SIMIX_host_parallel_execute(
 	  req->host_parallel_execute.name,
@@ -153,33 +163,40 @@ void SIMIX_request_pre(smx_req_t req)
 	  req->host_parallel_execute.rate);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_EXECUTION_DESTROY:
       SIMIX_host_execution_destroy(req->host_execution_destroy.execution);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_EXECUTION_CANCEL:
       SIMIX_host_execution_cancel(req->host_execution_cancel.execution);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_EXECUTION_GET_REMAINS:
       req->host_execution_get_remains.result =
         SIMIX_host_execution_get_remains(req->host_execution_get_remains.execution);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_EXECUTION_GET_STATE:
       req->host_execution_get_state.result =
       	SIMIX_host_execution_get_state(req->host_execution_get_state.execution);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_EXECUTION_SET_PRIORITY:
       SIMIX_host_execution_set_priority(
 	  req->host_execution_set_priority.execution,
 	  req->host_execution_set_priority.priority);
       SIMIX_request_answer(req);
       break;
+
     case REQ_HOST_EXECUTION_WAIT:
       SIMIX_pre_host_execution_wait(req);
       break;
+
     case REQ_PROCESS_CREATE:
       req->process_create.result = SIMIX_process_create(
 	  req->process_create.name,
@@ -191,10 +208,12 @@ void SIMIX_request_pre(smx_req_t req)
 	  req->process_create.properties);
       SIMIX_request_answer(req);
       break;
+
     case REQ_PROCESS_KILL:
       SIMIX_process_kill(req->process_kill.process, req->issuer);
       SIMIX_request_answer(req);
       break;
+
     case REQ_PROCESS_CHANGE_HOST:
       SIMIX_process_change_host(
 	  req->process_change_host.process,
@@ -202,72 +221,88 @@ void SIMIX_request_pre(smx_req_t req)
 	  req->process_change_host.dest);
       SIMIX_request_answer(req);
       break;
+
     case REQ_PROCESS_SUSPEND:
       SIMIX_pre_process_suspend(req);
       break;
+
     case REQ_PROCESS_RESUME:
       SIMIX_process_resume(req->process_resume.process, req->issuer);
       SIMIX_request_answer(req);
       break;
+
     case REQ_PROCESS_COUNT:
       req->process_count.result = SIMIX_process_count();
       SIMIX_request_answer(req);
       break;
+
     case REQ_PROCESS_GET_DATA:
       req->process_get_data.result =
         SIMIX_process_get_data(req->process_get_data.process);
       SIMIX_request_answer(req);
       break;
+
     case REQ_PROCESS_SET_DATA:
       SIMIX_process_set_data(
 	  req->process_set_data.process,
 	  req->process_set_data.data);
       SIMIX_request_answer(req);
       break;
+
     case REQ_PROCESS_GET_HOST:
       req->process_get_host.result = SIMIX_process_get_host(req->process_get_host.process);
       SIMIX_request_answer(req);
       break;
+
     case REQ_PROCESS_GET_NAME:
       req->process_get_name.result = SIMIX_process_get_name(req->process_get_name.process);
       SIMIX_request_answer(req);
       break;
+
     case REQ_PROCESS_IS_SUSPENDED:
       req->process_is_suspended.result =
         SIMIX_process_is_suspended(req->process_is_suspended.process);
       SIMIX_request_answer(req);
       break;
+
     case REQ_PROCESS_GET_PROPERTIES:
       req->process_get_properties.result =
         SIMIX_process_get_properties(req->process_get_properties.process);
       SIMIX_request_answer(req);
       break;
+
     case REQ_PROCESS_SLEEP:
       SIMIX_pre_process_sleep(req);
       break;
+
     case REQ_RDV_CREATE:
       req->rdv_create.result = SIMIX_rdv_create(req->rdv_create.name);
       SIMIX_request_answer(req);
       break;
+
     case REQ_RDV_DESTROY:
       SIMIX_rdv_destroy(req->rdv_destroy.rdv);
       SIMIX_request_answer(req);
       break;
+
     case REQ_RDV_GEY_BY_NAME:
       req->rdv_get_by_name.result = 
         SIMIX_rdv_get_by_name(req->rdv_get_by_name.name);
       SIMIX_request_answer(req);
       break;
+
     case REQ_RDV_COMM_COUNT_BY_HOST:
       req->rdv_comm_count_by_host.result = SIMIX_rdv_comm_count_by_host(
 	  req->rdv_comm_count_by_host.rdv,
 	  req->rdv_comm_count_by_host.host);
       SIMIX_request_answer(req);
       break;
+
     case REQ_RDV_GET_HEAD:
       req->rdv_get_head.result =	SIMIX_rdv_get_head(req->rdv_get_head.rdv);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_ISEND:
       req->comm_isend.result = SIMIX_comm_isend(
 	  req->issuer,
@@ -279,6 +314,7 @@ void SIMIX_request_pre(smx_req_t req)
 	  req->comm_isend.data);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_IRECV:
       req->comm_irecv.result = SIMIX_comm_irecv(
 	  req->issuer,
@@ -287,67 +323,82 @@ void SIMIX_request_pre(smx_req_t req)
 	  req->comm_irecv.dst_buff_size);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_DESTROY:
       SIMIX_comm_destroy(req->comm_destroy.comm);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_CANCEL:
       SIMIX_comm_cancel(req->comm_cancel.comm);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_WAITANY:
       SIMIX_pre_comm_waitany(req);
       break;
+
     case REQ_COMM_WAIT:
       SIMIX_pre_comm_wait(req);
       break;
+
     case REQ_COMM_TEST:
       SIMIX_pre_comm_test(req);
       break;
+
     case REQ_COMM_GET_REMAINS:
       req->comm_get_remains.result = 
         SIMIX_comm_get_remains(req->comm_get_remains.comm);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_GET_STATE:
       req->comm_get_state.result = 
         SIMIX_comm_get_state(req->comm_get_state.comm);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_GET_DATA:
       req->comm_get_data.result = SIMIX_comm_get_data(req->comm_get_data.comm);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_GET_SRC_BUFF:
       req->comm_get_src_buff.result =
       	SIMIX_comm_get_src_buff(req->comm_get_src_buff.comm);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_GET_DST_BUFF:
       req->comm_get_dst_buff.result =
         SIMIX_comm_get_dst_buff(req->comm_get_dst_buff.comm);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_GET_SRC_BUFF_SIZE:
       req->comm_get_src_buff_size.result = 
         SIMIX_comm_get_src_buff_size(req->comm_get_src_buff_size.comm);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_GET_DST_BUFF_SIZE:
       req->comm_get_dst_buff_size.result =
       	SIMIX_comm_get_dst_buff_size(req->comm_get_dst_buff_size.comm);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_GET_SRC_PROC:
       req->comm_get_src_proc.result = 
         SIMIX_comm_get_src_proc(req->comm_get_src_proc.comm);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COMM_GET_DST_PROC:
       req->comm_get_dst_proc.result =
         SIMIX_comm_get_dst_proc(req->comm_get_dst_proc.comm);
       SIMIX_request_answer(req);
       break;
+
 #ifdef HAVE_LATENCY_BOUND_TRACKING
     case REQ_COMM_IS_LATENCY_BOUNDED:
       req->comm_is_latency_bounded.result =
@@ -355,71 +406,89 @@ void SIMIX_request_pre(smx_req_t req)
       SIMIX_request_answer(req);
       break;
 #endif
+
     case REQ_MUTEX_INIT:
       req->mutex_init.result = SIMIX_mutex_init();
       SIMIX_request_answer(req);
       break;
+
     case REQ_MUTEX_DESTROY:
       SIMIX_mutex_destroy(req->mutex_destroy.mutex);
       SIMIX_request_answer(req);
       break;
+
     case REQ_MUTEX_LOCK:
       SIMIX_pre_mutex_lock(req);
       break;
+
     case REQ_MUTEX_TRYLOCK:
       req->mutex_trylock.result =
 	      SIMIX_mutex_trylock(req->mutex_trylock.mutex, req->issuer);
       SIMIX_request_answer(req);
       break;
+
     case REQ_MUTEX_UNLOCK:
       SIMIX_mutex_unlock(req->mutex_unlock.mutex, req->issuer);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COND_INIT:
       req->cond_init.result = SIMIX_cond_init();
       SIMIX_request_answer(req);
       break;
+
     case REQ_COND_DESTROY:
       SIMIX_cond_destroy(req->cond_destroy.cond);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COND_SIGNAL:
       SIMIX_cond_signal(req->cond_signal.cond);
       SIMIX_request_answer(req);
       break;
+
     case REQ_COND_WAIT:
       SIMIX_pre_cond_wait(req);
       break;
+
     case REQ_COND_WAIT_TIMEOUT:
       SIMIX_pre_cond_wait_timeout(req);
       break;
+
     case REQ_COND_BROADCAST:
       SIMIX_cond_broadcast(req->cond_broadcast.cond);
       SIMIX_request_answer(req);
       break;
+
     case REQ_SEM_INIT:
       req->sem_init.result = SIMIX_sem_init(req->sem_init.capacity);
       SIMIX_request_answer(req);
       break;
+
     case REQ_SEM_DESTROY:
       SIMIX_sem_destroy(req->sem_destroy.sem);
       SIMIX_request_answer(req);
       break;
+
     case REQ_SEM_RELEASE:
       SIMIX_sem_release(req->sem_release.sem);
       SIMIX_request_answer(req);
       break;
+
     case REQ_SEM_WOULD_BLOCK:
       req->sem_would_block.result =
       	SIMIX_sem_would_block(req->sem_would_block.sem);
       SIMIX_request_answer(req);
       break;
+
     case REQ_SEM_ACQUIRE:
       SIMIX_pre_sem_acquire(req);
       break;
+
     case REQ_SEM_ACQUIRE_TIMEOUT:
       SIMIX_pre_sem_acquire_timeout(req);
       break;
+
     case REQ_SEM_GET_CAPACITY:
       req->sem_get_capacity.result = 
         SIMIX_sem_get_capacity(req->sem_get_capacity.sem);
@@ -430,20 +499,25 @@ void SIMIX_request_pre(smx_req_t req)
 
 void SIMIX_request_post(smx_action_t action)
 {
-  switch(action->type) {
+  switch (action->type) {
+
     case SIMIX_ACTION_EXECUTE:
     case SIMIX_ACTION_PARALLEL_EXECUTE:
       SIMIX_post_host_execute(action);
       break;
+
     case SIMIX_ACTION_COMMUNICATE:
       SIMIX_post_comm(action);
       break;
+
     case SIMIX_ACTION_SLEEP:
       SIMIX_post_process_sleep(action);
       break;
+
     case SIMIX_ACTION_SYNCHRO:
       SIMIX_post_synchro(action);
       break;
+
     case SIMIX_ACTION_IO:
       break;
   }

@@ -255,7 +255,7 @@ typedef struct s_smx_req {
       const char* name;
       smx_rdv_t result;
     } rdv_get_by_name;
-    
+
     struct {
       smx_rdv_t rdv;
       smx_host_t host;
@@ -266,7 +266,7 @@ typedef struct s_smx_req {
       smx_rdv_t rdv;
       smx_action_t result;
     } rdv_get_head;
- 
+
     struct {
       smx_rdv_t rdv;
       double task_size;
@@ -291,12 +291,12 @@ typedef struct s_smx_req {
     struct {
       smx_action_t comm;
     } comm_cancel;
- 
+
     struct {
       xbt_dynar_t comms;
       unsigned int result;
     } comm_waitany;
- 
+
     struct {
       smx_action_t comm;
       double timeout;
@@ -311,42 +311,42 @@ typedef struct s_smx_req {
       smx_action_t comm;
       double result;
     } comm_get_remains;
- 
+
     struct {
       smx_action_t comm;
       e_smx_state_t result;
     } comm_get_state;
- 
+
     struct {
       smx_action_t comm;
       void *result;    
     } comm_get_data;
- 
+
     struct {
       smx_action_t comm;
       void *result;
     } comm_get_src_buff;
- 
+
     struct {
       smx_action_t comm;
       void *result;
     } comm_get_dst_buff;
-    
+
     struct {
       smx_action_t comm;
       size_t result;
     } comm_get_src_buff_size;
-    
+
     struct {
       smx_action_t comm;
       size_t result;
     } comm_get_dst_buff_size;
-    
+
     struct {
       smx_action_t comm;
       smx_process_t result;
     } comm_get_src_proc;
-    
+
     struct {
       smx_action_t comm;
       smx_process_t result;
@@ -452,5 +452,6 @@ void SIMIX_request_pre(smx_req_t);
 void SIMIX_request_post(smx_action_t);
 int SIMIX_request_isVisible(smx_req_t req);
 int SIMIX_request_isEnabled(smx_req_t req);
+
 #endif
 
