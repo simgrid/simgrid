@@ -20,7 +20,7 @@ static VALUE rb_process_instance(VALUE fct_name, VALUE arguments,
 {
   ruby_init();
   ruby_init_loadpath();
-  char *p_className = RSTRING(fct_name)->ptr;   // name of process is the one of the class
+  char *p_className = RSTRING_PTR(fct_name);   // name of process is the one of the class
   return rb_funcall(rb_const_get(rb_cObject, rb_intern(p_className)),
                     rb_intern("new"), 3, fct_name, arguments, properties);
 }
@@ -39,18 +39,18 @@ static void rb_process_create_with_args(VALUE fct_name, VALUE arguments,
   if (!fct_name)
     rb_raise(rb_eRuntimeError,
              "Internal error: Process name cannot be NULL");
-  name = RSTRING(fct_name)->ptr;
+  name = RSTRING_PTR(fct_name);
   DEBUG1("Create native process %s", name);
 
   char **argv = xbt_new(char *, 2);
-  argv[0] = bprintf("%s@%s", name, RSTRING(ht_name)->ptr);
+  argv[0] = bprintf("%s@%s", name, RSTRING_PTR(ht_name));
   argv[1] = NULL;
 
   // Allocate the data for the simulation
   process = MSG_process_create_with_arguments(name,
       (xbt_main_func_t) ruby_process,
       process,
-      MSG_get_host_by_name(RSTRING(ht_name)->ptr),
+      MSG_get_host_by_name(RSTRING_PTR(ht_name)),
       1, argv);
 
   // Bind The Ruby Process instance to The Native Process

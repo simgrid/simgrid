@@ -21,7 +21,7 @@ void rb_task_free(m_task_t tk)
 VALUE rb_task_new(VALUE class, VALUE name, VALUE comp_size,
                   VALUE comm_size)
 {
-  m_task_t task = MSG_task_create(RSTRING(name)->ptr, NUM2INT(comp_size),
+  m_task_t task = MSG_task_create(RSTRING_PTR(name), NUM2INT(comp_size),
                                   NUM2INT(comm_size), NULL);
   rb_data_t data = malloc(sizeof(s_ruby_data_t));
   data->ruby_task = NULL;
@@ -75,7 +75,7 @@ void rb_task_send(VALUE class, VALUE task, VALUE mailbox)
   data->ruby_task = (void *) task;
   MSG_task_set_data(tk, (void *) data);
   DEBUG1("Sending task %p", tk);
-  rv = MSG_task_send(tk, RSTRING(mailbox)->ptr);
+  rv = MSG_task_send(tk, RSTRING_PTR(mailbox));
   if (rv != MSG_OK) {
     if (rv == MSG_TRANSFER_FAILURE)
       rb_raise(rb_eRuntimeError, "Transfer failure while Sending");
@@ -99,8 +99,8 @@ VALUE rb_task_receive(VALUE class, VALUE mailbox)
   *ptask = NULL;
   rb_data_t data = NULL;
   DEBUG2("Receiving a task on mailbox '%s', store it into %p",
-         RSTRING(mailbox)->ptr, &task);
-  MSG_task_receive(ptask, RSTRING(mailbox)->ptr);
+         RSTRING_PTR(mailbox), &task);
+  MSG_task_receive(ptask, RSTRING_PTR(mailbox));
   task = *ptask;
   free(ptask);
   data = MSG_task_get_data(task);
@@ -141,7 +141,7 @@ VALUE rb_task_listen(VALUE class, VALUE task, VALUE alias)
   int rv;
 
   Data_Get_Struct(task, s_m_task_t, tk);
-  p_alias = RSTRING(alias)->ptr;
+  p_alias = RSTRING_PTR(alias);
 
   rv = MSG_task_listen(p_alias);
 
@@ -162,7 +162,7 @@ VALUE rb_task_listen_host(VALUE class, VALUE task, VALUE alias, VALUE host)
 
   Data_Get_Struct(task, s_m_task_t, tk);
   Data_Get_Struct(host, s_m_host_t, ht);
-  p_alias = RSTRING(alias)->ptr;
+  p_alias = RSTRING_PTR(alias);
   rv = MSG_task_listen_from_host(p_alias, ht);
   if (rv)
     return Qtrue;

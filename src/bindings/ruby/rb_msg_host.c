@@ -18,12 +18,15 @@ void rb_host_free(m_host_t ht)
 VALUE rb_host_get_by_name(VALUE class, VALUE name)
 {
 
-  const char *h_name = RSTRING(name)->ptr;
+  const char *h_name = RSTRING_PTR(name);
   m_host_t host = MSG_get_host_by_name(h_name);
-  if (!host)
-    rb_raise(rb_eRuntimeError,
-             bprintf("No host called '%s' found", h_name));
 
+  if (!host){
+    char *message = bprintf("No host called '%s' found", h_name);
+    VALUE errorobj = rb_exc_new2(rb_eRuntimeError, message);
+    xbt_free(message);
+    rb_exc_raise(errorobj);
+  }
   return Data_Wrap_Struct(class, 0, rb_host_free, host);
 }
 

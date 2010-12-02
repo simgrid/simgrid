@@ -31,8 +31,8 @@ static void msg_init(VALUE Class, VALUE args)
              "Bad arguments to msg_init (expecting an array)");
     return;
   }
-  ptr = RARRAY(args)->ptr;
-  argc = RARRAY(args)->len;
+  ptr = RARRAY_PTR(args);
+  argc = RARRAY_LEN(args);
   //  Create C array to hold data_get_struct
   argc++;
   argv = xbt_new0(char *, argc);
@@ -41,7 +41,7 @@ static void msg_init(VALUE Class, VALUE args)
     VALUE value = ptr[i];
     type = TYPE(value);
     //  if (type == T_STRING)
-    tmp = RSTRING(value)->ptr;
+    tmp = RSTRING_PTR(value);
     argv[i + 1] = strdup(tmp);
   }
   // Calling C Msg_Init Method
@@ -91,7 +91,7 @@ static void msg_createEnvironment(VALUE class, VALUE plateformFile)
   int type = TYPE(plateformFile);
   if (type != T_STRING)
     rb_raise(rb_eRuntimeError, "Bad Argument's Type");
-  const char *platform = RSTRING(plateformFile)->ptr;
+  const char *platform = RSTRING_PTR(plateformFile);
   MSG_create_environment(platform);
   DEBUG1("Create Environment (%s)...Done", platform);
 }
@@ -104,7 +104,7 @@ static void msg_deployApplication(VALUE class, VALUE deploymentFile)
   if (type != T_STRING)
     rb_raise(rb_eRuntimeError,
              "Bad Argument's Type for deployApplication ");
-  const char *dep_file = RSTRING(deploymentFile)->ptr;
+  const char *dep_file = RSTRING_PTR(deploymentFile);
   surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_process_cb_list,
                        rb_application_handler_on_begin_process);
@@ -131,13 +131,13 @@ static void msg_deployApplication(VALUE class, VALUE deploymentFile)
 // INFO
 static void msg_info(VALUE class, VALUE msg)
 {
-  const char *s = RSTRING(msg)->ptr;
+  const char *s = RSTRING_PTR(msg);
   INFO1("%s", s);
 }
 
 static void msg_debug(VALUE class, VALUE msg)
 {
-  const char *s = RSTRING(msg)->ptr;
+  const char *s = RSTRING_PTR(msg);
   DEBUG1("%s", s);
 }
 
