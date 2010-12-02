@@ -288,8 +288,8 @@ void SIMIX_display_process_status(void)
     return;
   }
 
-  smx_process_t process = NULL;
-  /*xbt_fifo_item_t item = NULL;
+  /*smx_process_t process = NULL;
+  xbt_fifo_item_t item = NULL;
   smx_action_t act;*/
   int nbprocess = xbt_swag_size(simix_global->process_list);
 
