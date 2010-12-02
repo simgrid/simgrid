@@ -22,3 +22,11 @@ else(NOT WIN32)
 	 PROPERTIES
 	 ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/dot_test; ${CMAKE_CURRENT_BINARY_DIR}/simulate_dot;")
 endif(NOT WIN32)
+
+set(EXTRA_DIST
+	${EXTRA_DIST}
+	${CMAKE_CURRENT_BINARY_DIR}/dag_with_bad_schedule.dot
+	${CMAKE_CURRENT_BINARY_DIR}/dag_with_cycle.dot
+	${CMAKE_CURRENT_BINARY_DIR}/dag_with_good_schedule.dot
+	${CMAKE_CURRENT_BINARY_DIR}/simulate_dot.c
+)
