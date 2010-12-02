@@ -17,31 +17,6 @@ static xbt_dict_t method_b_dict;
 //C
 static xbt_dict_t method_c_dict;
 
-/* auxiliary function for resource utilization tracing */
-static char *strsplit(char *input, int field, char del) //caller should free the returned string
-{
-  char *ret = NULL;
-  int length = strlen(input), i;
-  int s = 0, e = length + 1;
-  int current_field = 0;
-  for (i = 0; i < length; i++) {
-    if (input[i] == del) {
-      if (current_field == field) {
-        e = i - 1;
-        break;
-      } else {
-        s = i + 1;
-        current_field++;
-      }
-    }
-  }
-  //copy string from s to e (with length equal to e-s) and return
-  ret = malloc((e - s + 2) * sizeof(char));
-  strncpy(ret, input + s, e - s + 1);
-  ret[e - s + 1] = '\0';
-  return ret;
-}
-
 //resource utilization tracing method
 static void (*TRACE_method_alloc) (void) = NULL;
 static void (*TRACE_method_release) (void) = NULL;
