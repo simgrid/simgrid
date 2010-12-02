@@ -27,7 +27,7 @@ static smx_context_t
 smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc,
                                       char **argv,
                                       void_pfn_smxprocess_t cleanup_func,
-                                      smx_process_t process);
+                                      void *data);
 
 static void smx_ctx_thread_free(smx_context_t context);
 static void smx_ctx_thread_stop(smx_context_t context);
@@ -35,7 +35,7 @@ static void smx_ctx_thread_suspend(smx_context_t context);
 static void smx_ctx_thread_resume(smx_context_t new_context);
 static void smx_ctx_thread_runall_serial(xbt_swag_t processes);
 static void smx_ctx_thread_runall_parallel(xbt_swag_t processes);
-static smx_process_t smx_ctx_thread_self(void);
+static smx_context_t smx_ctx_thread_self(void);
 
 static void *smx_ctx_thread_wrapper(void *param);
 
@@ -62,12 +62,12 @@ static smx_context_t
 smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc,
                                       char **argv,
                                       void_pfn_smxprocess_t cleanup_func,
-                                      smx_process_t process)
+                                      void *data)
 {
   smx_ctx_thread_t context = (smx_ctx_thread_t)
       smx_ctx_base_factory_create_context_sized(sizeof(s_smx_ctx_thread_t),
                                                 code, argc, argv,
-                                                cleanup_func, process);
+                                                cleanup_func, data);
 
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
@@ -79,7 +79,7 @@ smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc,
     context->thread = NULL;
 
   } else {
-    xbt_os_thread_set_extra_data(process);
+    xbt_os_thread_set_extra_data(context);
   }
 
   return (smx_context_t) context;
@@ -150,12 +150,12 @@ static void smx_ctx_thread_runall_serial(xbt_swag_t processes)
     /* if the context has no thread associated, create one for it (first run) */
     if (!(((smx_ctx_thread_t)process->context)->thread)) {
       ((smx_ctx_thread_t) process->context)->thread =
-        xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, process->context, process);
+        xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, process->context, process->context);
       xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
     }
     xbt_os_sem_release(((smx_ctx_thread_t) process->context)->begin);
     xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
-  }  
+  }
 }
 
 static void smx_ctx_thread_runall_parallel(xbt_swag_t processes)
@@ -165,7 +165,7 @@ static void smx_ctx_thread_runall_parallel(xbt_swag_t processes)
     /* if the context has no thread associated, create one for it (first run) */
     if (!(((smx_ctx_thread_t) process->context)->thread)) {
       ((smx_ctx_thread_t)process->context)->thread =
-        xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, process->context, process);
+        xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, process->context, process->context);
       xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
     }
     xbt_os_sem_release(((smx_ctx_thread_t) process->context)->begin);
@@ -176,7 +176,7 @@ static void smx_ctx_thread_runall_parallel(xbt_swag_t processes)
   }
 }
 
-static smx_process_t smx_ctx_thread_self(void)
+static smx_context_t smx_ctx_thread_self(void)
 {
-  return (smx_process_t) xbt_os_thread_get_extra_data();
+  return (smx_context_t) xbt_os_thread_get_extra_data();
 }
