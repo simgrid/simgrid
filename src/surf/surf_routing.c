@@ -3375,9 +3375,6 @@ static void routing_parse_Scluster(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
-  free(link_backbone);
-  free(link_router);
-
   DEBUG0(" ");
 
 #ifdef HAVE_PCRE_LIB
@@ -3510,6 +3507,8 @@ static void routing_parse_Scluster(void)
 
 #endif
 
+  free(link_backbone);
+  free(link_router);
 
   DEBUG0("</AS>");
   SURFXML_END_TAG(AS);
