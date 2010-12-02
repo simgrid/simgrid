@@ -1,7 +1,22 @@
 SimGrid (3.6) unstable; urgency=low
 
+ SURF
+ * New model for multi-core CPUs. You can now use the core attribute to
+   precise the number of cores of a host. This is a basic model. Every
+   process running on the host receive at most the power provided in
+   the DTD (throughput<=power). Total throughput of process cannot exceed
+   power * num_cores.
+ * New peer tag. This peer tag creates a tiny AS comprising a host and a
+   router linked by an up-link and a down-link (possibly asymmetrical).
+   This kind of pattern allows to easily build last-mile model style platforms.
+   Aggregating such patterns in a rule-based AS is thus the technique of
+   choice for modeling large peer-to-peer/volunteer computing/cloud platforms.
+ * New model for Vivaldi routing. We transformed the Vivaldi network model
+   into a Vivaldi routing model (based on the rule-based model). This allows to
+   combine Vivaldi based latencies with last-mile platforms.
+
  Simix
- * completely rewrote this module to allow parallel execution.
+ * Completely rewrote this module to allow parallel execution.
 
  XBT
  * Add a new function xbt_dynar_to_array that transforms a dynar into a
