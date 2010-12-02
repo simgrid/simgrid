@@ -2,10 +2,9 @@
 
 p Testing a simple master/slave example application
 
-$ $SG_TEST_EXENV ./masterslave/masterslave_mailbox  ../platforms/vivaldi.xml ./masterslave/deployment_masterslave_vivaldi.xml
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vivaldi'
-> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
-> [0.000000] [surf_network/INFO] Blih
+$ $SG_TEST_EXENV ./masterslave/masterslave_mailbox  ../platforms/vivaldi.xml ./masterslave/deployment_masterslave_vivaldi.xml --cfg=network/latency_factor:1.0 --cfg=network/bandwidth_factor:1.0
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/latency_factor' to '1.0'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/bandwidth_factor' to '1.0'
 > [100030591:master:(1) 0.000000] [msg_test/INFO] Got 39 slaves and 20 tasks to process
 > [100030591:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" (of 20) to mailbox "slave-0"
 > [100030591:master:(1) 46.298715] [msg_test/INFO] Sending "Task_1" (of 20) to mailbox "slave-1"
@@ -28,43 +27,43 @@ $ $SG_TEST_EXENV ./masterslave/masterslave_mailbox  ../platforms/vivaldi.xml ./m
 > [100030591:master:(1) 955.459779] [msg_test/INFO] Sending "Task_18" (of 20) to mailbox "slave-18"
 > [100030591:master:(1) 1125.325477] [msg_test/INFO] Sending "Task_19" (of 20) to mailbox "slave-19"
 > [100030591:master:(1) 1162.951807] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
-> [100036570:slave:(2) 1162.973547] [msg_test/INFO] I'm done. See you!
-> [100041334:slave:(3) 1220.276580] [msg_test/INFO] I'm done. See you!
-> [100055671:slave:(4) 1243.596875] [msg_test/INFO] I'm done. See you!
-> [100066658:slave:(5) 1283.956677] [msg_test/INFO] I'm done. See you!
-> [100090691:slave:(6) 1291.384678] [msg_test/INFO] I'm done. See you!
-> [100094952:slave:(7) 1423.848286] [msg_test/INFO] I'm done. See you!
-> [100117943:slave:(8) 1487.469281] [msg_test/INFO] I'm done. See you!
-> [100126290:slave:(9) 1529.881864] [msg_test/INFO] I'm done. See you!
-> [100144483:slave:(10) 1568.951575] [msg_test/INFO] I'm done. See you!
-> [100152889:slave:(11) 1603.880026] [msg_test/INFO] I'm done. See you!
-> [100178474:slave:(12) 1620.009556] [msg_test/INFO] I'm done. See you!
-> [100180261:slave:(13) 1640.722903] [msg_test/INFO] I'm done. See you!
-> [100185883:slave:(14) 1680.910130] [msg_test/INFO] I'm done. See you!
-> [100186365:slave:(15) 1898.312654] [msg_test/INFO] I'm done. See you!
-> [100200866:slave:(16) 1965.741241] [msg_test/INFO] I'm done. See you!
-> [100207885:slave:(17) 1991.961641] [msg_test/INFO] I'm done. See you!
-> [100224447:slave:(18) 2042.292857] [msg_test/INFO] I'm done. See you!
-> [100238799:slave:(19) 2072.134610] [msg_test/INFO] I'm done. See you!
-> [100273297:slave:(20) 2242.000308] [msg_test/INFO] I'm done. See you!
-> [100280711:slave:(21) 2279.626639] [msg_test/INFO] I'm done. See you!
-> [100284574:slave:(22) 2498.188051] [msg_test/INFO] I'm done. See you!
-> [100292843:slave:(23) 2583.831534] [msg_test/INFO] I'm done. See you!
-> [100309685:slave:(24) 2622.545655] [msg_test/INFO] I'm done. See you!
-> [100315281:slave:(25) 2673.840377] [msg_test/INFO] I'm done. See you!
-> [100317715:slave:(26) 2711.638506] [msg_test/INFO] I'm done. See you!
-> [100324694:slave:(27) 2797.178222] [msg_test/INFO] I'm done. See you!
-> [100326641:slave:(28) 2849.195200] [msg_test/INFO] I'm done. See you!
-> [100331484:slave:(29) 2887.510316] [msg_test/INFO] I'm done. See you!
-> [100347816:slave:(30) 3018.806394] [msg_test/INFO] I'm done. See you!
-> [100354536:slave:(31) 3056.674686] [msg_test/INFO] I'm done. See you!
-> [100355017:slave:(32) 3119.606511] [msg_test/INFO] I'm done. See you!
-> [100359203:slave:(33) 3137.814842] [msg_test/INFO] I'm done. See you!
-> [100379397:slave:(34) 3399.393230] [msg_test/INFO] I'm done. See you!
-> [100404046:slave:(35) 3413.993230] [msg_test/INFO] I'm done. See you!
-> [100413314:slave:(36) 3496.854152] [msg_test/INFO] I'm done. See you!
-> [100416828:slave:(37) 3512.443399] [msg_test/INFO] I'm done. See you!
-> [100422926:slave:(38) 3605.230874] [msg_test/INFO] I'm done. See you!
-> [100427449:slave:(39) 3804.154315] [msg_test/INFO] I'm done. See you!
-> [100429957:slave:(40) 3832.797656] [msg_test/INFO] I'm done. See you!
-> [3832.797656] [msg_test/INFO] Simulation time 3832.8
+> [100036570:slave:(2) 1209.250522] [msg_test/INFO] I'm done. See you!
+> [100041334:slave:(3) 1266.553556] [msg_test/INFO] I'm done. See you!
+> [100055671:slave:(4) 1289.873850] [msg_test/INFO] I'm done. See you!
+> [100066658:slave:(5) 1330.233653] [msg_test/INFO] I'm done. See you!
+> [100090691:slave:(6) 1337.661654] [msg_test/INFO] I'm done. See you!
+> [100094952:slave:(7) 1470.125262] [msg_test/INFO] I'm done. See you!
+> [100117943:slave:(8) 1533.746256] [msg_test/INFO] I'm done. See you!
+> [100126290:slave:(9) 1576.158840] [msg_test/INFO] I'm done. See you!
+> [100144483:slave:(10) 1615.228550] [msg_test/INFO] I'm done. See you!
+> [100152889:slave:(11) 1650.157002] [msg_test/INFO] I'm done. See you!
+> [100178474:slave:(12) 1666.286532] [msg_test/INFO] I'm done. See you!
+> [100180261:slave:(13) 1686.999878] [msg_test/INFO] I'm done. See you!
+> [100185883:slave:(14) 1727.187106] [msg_test/INFO] I'm done. See you!
+> [100186365:slave:(15) 1944.589630] [msg_test/INFO] I'm done. See you!
+> [100200866:slave:(16) 2012.018217] [msg_test/INFO] I'm done. See you!
+> [100207885:slave:(17) 2038.238617] [msg_test/INFO] I'm done. See you!
+> [100224447:slave:(18) 2088.569833] [msg_test/INFO] I'm done. See you!
+> [100238799:slave:(19) 2118.411586] [msg_test/INFO] I'm done. See you!
+> [100273297:slave:(20) 2288.277284] [msg_test/INFO] I'm done. See you!
+> [100280711:slave:(21) 2325.903615] [msg_test/INFO] I'm done. See you!
+> [100284574:slave:(22) 2544.465027] [msg_test/INFO] I'm done. See you!
+> [100292843:slave:(23) 2630.108510] [msg_test/INFO] I'm done. See you!
+> [100309685:slave:(24) 2668.822631] [msg_test/INFO] I'm done. See you!
+> [100315281:slave:(25) 2720.117353] [msg_test/INFO] I'm done. See you!
+> [100317715:slave:(26) 2757.915482] [msg_test/INFO] I'm done. See you!
+> [100324694:slave:(27) 2843.455198] [msg_test/INFO] I'm done. See you!
+> [100326641:slave:(28) 2895.472176] [msg_test/INFO] I'm done. See you!
+> [100331484:slave:(29) 2933.787292] [msg_test/INFO] I'm done. See you!
+> [100347816:slave:(30) 3065.083370] [msg_test/INFO] I'm done. See you!
+> [100354536:slave:(31) 3102.951662] [msg_test/INFO] I'm done. See you!
+> [100355017:slave:(32) 3165.883487] [msg_test/INFO] I'm done. See you!
+> [100359203:slave:(33) 3184.091818] [msg_test/INFO] I'm done. See you!
+> [100379397:slave:(34) 3445.670206] [msg_test/INFO] I'm done. See you!
+> [100404046:slave:(35) 3460.270206] [msg_test/INFO] I'm done. See you!
+> [100413314:slave:(36) 3543.131128] [msg_test/INFO] I'm done. See you!
+> [100416828:slave:(37) 3558.720375] [msg_test/INFO] I'm done. See you!
+> [100422926:slave:(38) 3651.507849] [msg_test/INFO] I'm done. See you!
+> [100427449:slave:(39) 3850.431291] [msg_test/INFO] I'm done. See you!
+> [100429957:slave:(40) 3879.074632] [msg_test/INFO] I'm done. See you!
+> [3879.074632] [msg_test/INFO] Simulation time 3879.07
