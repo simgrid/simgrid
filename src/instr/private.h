@@ -174,6 +174,7 @@ int TRACE_msg_volume_is_enabled(void);
 char *TRACE_get_filename(void);
 char *TRACE_get_platform_method(void);
 void TRACE_global_init(int *argc, char **argv);
+void TRACE_help(int detailed);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization(const char *name,

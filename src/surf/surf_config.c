@@ -38,6 +38,10 @@ static void surf_config_cmd_line(int *argc, char **argv)
       xbt_cfg_help(_surf_cfg_set);
       printf
           ("\nYou can also use --help-models to see the details of all models known by this simulator.\n");
+#ifdef HAVE_TRACING
+      printf
+          ("\nYou can also use --help-tracing to see the details of all tracing options known by this simulator.\n");
+#endif
       exit(0);
     } else
         if (!strncmp
@@ -46,6 +50,13 @@ static void surf_config_cmd_line(int *argc, char **argv)
       model_help("CPU", surf_cpu_model_description);
       model_help("network", surf_network_model_description);
       exit(0);
+#ifdef HAVE_TRACING
+    }else
+        if (!strncmp
+            (argv[i], "--help-tracing", strlen("--help-tracing") + 1)) {
+      TRACE_help (1);
+      exit(0);
+#endif
     }
     if (remove_it) {            /*remove this from argv */
       for (j = i + 1; j < *argc; j++) {

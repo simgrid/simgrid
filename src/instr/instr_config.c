@@ -154,6 +154,79 @@ void TRACE_global_init(int *argc, char **argv)
   trace_configured = 1;
 }
 
+static void print_line (const char *option, const char *desc, const char *longdesc, int detailed)
+{
+  char str[INSTR_DEFAULT_STR_SIZE];
+  snprintf (str, INSTR_DEFAULT_STR_SIZE, "--cfg=%s ", option);
+
+  int len = strlen (str);
+  printf ("%s%*.*s %s\n", str, 30-len, 30-len, "", desc);
+  if (!!longdesc && detailed){
+    printf ("%s\n\n", longdesc);
+  }
+}
+
+void TRACE_help (int detailed)
+{
+  printf(
+      "Description of the tracing options accepted by this simulator:\n\n");
+  print_line (OPT_TRACING, "Enable the tracing system",
+      "  It activates the tracing system and register the simulation platform\n"
+      "  in the trace file. You have to enable this option to others take effect.",
+      detailed);
+  print_line (OPT_TRACING_PLATFORM, "Trace categorized resource utilization",
+      "  It activates the categorized resource utilization tracing. It should\n"
+      "  be enabled if tracing categories are used by this simulator.",
+      detailed);
+  print_line (OPT_TRACING_UNCATEGORIZED, "Trace uncategorized resource utilization",
+      "  It activates the uncategorized resource utilization tracing. Use it if\n"
+      "  this simulator do not use tracing categories and resource use have to be\n"
+      "  traced.",
+      detailed);
+  print_line (OPT_TRACING_PLATFORM_METHOD, "Change the resource utilization tracing method",
+      "  It changes the way resource utilization (categorized or not) is traced\n"
+      "  inside the simulation core. Method 'a' (default) traces all updates defined\n"
+      "  by the CPU/network model of a given resource. Depending on the interface used\n"
+      "  by this simulator (MSG, SMPI, SimDAG), the default method can generate large\n"
+      "  trace files. Method 'b' tries to make smaller tracefiles using clever updates,\n"
+      "  without losing details of resource utilization. Method 'c' generates even\n"
+      "  smaller files by doing time integration during the simulation, but it loses\n"
+      "  precision. If this last method is used, the smallest timeslice used in the\n"
+      "  tracefile analysis must be bigger than the smaller resource utilization. If\n"
+      "  unsure, do not change this option.",
+      detailed);
+  print_line (OPT_TRACING_FILENAME, "Filename to register traces",
+      "  A file with this name will be created to register the simulation. The file\n"
+      "  is in the Paje format and can be analyzed using Triva or Paje visualization\n"
+      "  tools. More information can be found in these webpages:\n"
+      "     http://triva.gforge.inria.fr/\n"
+      "     http://paje.sourceforge.net/",
+      detailed);
+  print_line (OPT_TRACING_SMPI, "Trace the MPI Interface (SMPI)",
+      "  This option only has effect if this simulator is SMPI-based. Traces the MPI\n"
+      "  interface and generates a trace that can be analyzed using Gantt-like\n"
+      "  visualizations. Every MPI function (implemented by SMPI) is transformed in a\n"
+      "  state, and point-to-point communications can be analyzed with arrows.",
+      detailed);
+  print_line (OPT_TRACING_SMPI_GROUP, "Group MPI processes by host (SMPI)",
+      "  This option only has effect if this simulator is SMPI-based. The processes\n"
+      "  are grouped by the hosts where they were executed.",
+      detailed);
+  print_line (OPT_TRACING_MSG_TASK, "Trace task behavior (MSG)",
+      "  This option only has effect if this simulator is MSG-based. It traces the\n"
+      "  behavior of all categorized MSG tasks, grouping them by hosts.",
+      detailed);
+  print_line (OPT_TRACING_MSG_PROCESS, "Trace processes behavior (MSG)",
+      "  This option only has effect if this simulator is MSG-based. It traces the\n"
+      "  behavior of all categorized MSG processes, grouping them by hosts. This option\n"
+      "  can be used to track process location if this simulator has process migration.",
+      detailed);
+  print_line (OPT_TRACING_MSG_VOLUME, "Tracing of communication volume (MSG)",
+      "  This experimental option only has effect if this simulator is MSG-based.\n"
+      "  It traces the communication volume of MSG send/receive.",
+      detailed);
+}
+
 #undef OPT_TRACING
 #undef OPT_TRACING_SMPI
 #undef OPT_TRACING_SMPI_GROUP
