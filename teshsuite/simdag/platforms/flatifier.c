@@ -19,6 +19,8 @@
 #include "xbt/log.h"
 #include "xbt/dict.h"
 #include "xbt/ex.h"
+#include "surf/surf.h"
+#include "surf/surf_private.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(validator,
                              "Logging specific to this SimDag example");
@@ -45,10 +47,13 @@ int main(int argc, char **argv)
 {
   char *platformFile = NULL;
   int totalHosts, totalLinks, tmp_length;
-  int i, j, k;
+  int j, k;
+  unsigned int i;
   xbt_dict_t props = NULL;
   xbt_dict_cursor_t cursor = NULL;
-  char *key, *data;
+  xbt_dict_cursor_t cursor_src = NULL;
+  xbt_dict_cursor_t cursor_dst = NULL;
+  char *src,*dst,*key,*data;
   xbt_ex_t e;
 
   const SD_workstation_t *hosts;
@@ -63,13 +68,13 @@ int main(int argc, char **argv)
   } CATCH(e) {
     xbt_die(bprintf("Error while loading %s: %s",platformFile,e.msg));     
   }
-   
 
   printf("<?xml version='1.0'?>\n");
   printf("<!DOCTYPE platform SYSTEM \"simgrid.dtd\">\n");
   printf("<platform version=\"3\">\n");
   printf("<AS id=\"AS0\" routing=\"Full\">\n");
 
+  // Hosts
   totalHosts = SD_workstation_get_number();
   hosts = SD_workstation_get_list();
   qsort((void *) hosts, totalHosts, sizeof(SD_workstation_t),
@@ -91,6 +96,16 @@ int main(int argc, char **argv)
     }
   }
 
+  // Routers
+  xbt_dict_foreach(global_routing->where_network_elements, cursor, key, data) {
+	  if(((network_element_info_t)xbt_dict_get(global_routing->where_network_elements, key))->rc_type
+			  == SURF_NETWORK_ELEMENT_ROUTER)
+	  {
+		  printf("  <router id=\"%s\"/>\n",key);
+	  }
+  }
+
+  // Links
   totalLinks = SD_link_get_number();
   links = SD_link_get_list();
   qsort((void *) links, totalLinks, sizeof(SD_link_t), name_compare_links);
@@ -109,22 +124,39 @@ int main(int argc, char **argv)
     }
   }
 
-  for (i = 0; i < totalHosts; i++) {
-    for (j = 0; j < totalHosts; j++) {
-      tmp = SD_route_get_list(hosts[i], hosts[j]);
-      if (tmp) {
-        printf("  <route src=\"%s\" dst=\"%s\">\n    ",
-               SD_workstation_get_name(hosts[i]),
-               SD_workstation_get_name(hosts[j]));
+  // Routes
+  xbt_dict_foreach(global_routing->where_network_elements, cursor_src, src, data)
+  {
+	  if(((network_element_info_t)xbt_dict_get(global_routing->where_network_elements, src))->rc_type
+			  == SURF_NETWORK_ELEMENT_ROUTER ||
+			  ((network_element_info_t)xbt_dict_get(global_routing->where_network_elements, src))->rc_type
+			  == SURF_NETWORK_ELEMENT_HOST)
+	  {
+		  xbt_dict_foreach(global_routing->where_network_elements, cursor_dst, dst, data)
+		  {
+			  if(((network_element_info_t)xbt_dict_get(global_routing->where_network_elements, dst))->rc_type
+					  == SURF_NETWORK_ELEMENT_ROUTER ||
+					  ((network_element_info_t)xbt_dict_get(global_routing->where_network_elements, dst))->rc_type
+					  == SURF_NETWORK_ELEMENT_HOST)
+			  {
+				printf("  <route src=\"%s\" dst=\"%s\">\n	"
+					  ,src
+					  ,dst);
+				xbt_dynar_t route = global_routing->get_route(src,dst);
+				for(i=0;i<xbt_dynar_length(route) ;i++)
+				{
+					void *link = xbt_dynar_get_as(route,i,void *);
 
-        tmp_length = SD_route_get_size(hosts[i], hosts[j]);
-        for (k = 0; k < tmp_length; k++) {
-          printf("<link_ctn id=\"%s\"/>", SD_link_get_name(tmp[k]));
-        }
-        printf("\n  </route>\n");
-      }
-    }
+					char *link_name = bprintf("%s",((surf_resource_t) link)->name);
+					printf("<link_ctn id=\"%s\"/>",link_name);
+				}
+				printf("\n  </route>\n");
+
+			  }
+		  }
+	  }
   }
+
   printf("</AS>\n");
   printf("</platform>\n");
   SD_exit();
