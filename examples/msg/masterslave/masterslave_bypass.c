@@ -36,6 +36,7 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_power, "100000000.00");
   SURFXML_BUFFER_SET(host_availability, "1.0");
   SURFXML_BUFFER_SET(host_availability_file, "");
+  SURFXML_BUFFER_SET(host_core, "1");
   A_surfxml_host_state = A_surfxml_host_state_ON;
   SURFXML_BUFFER_SET(host_state_file, "");
   SURFXML_START_TAG(host);
@@ -46,6 +47,7 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_power, "100000000.00");
   SURFXML_BUFFER_SET(host_availability, "1.0");
   SURFXML_BUFFER_SET(host_availability_file, "");
+  SURFXML_BUFFER_SET(host_core, "1");
   A_surfxml_host_state = A_surfxml_host_state_ON;
   SURFXML_BUFFER_SET(host_state_file, "");
   SURFXML_START_TAG(host);
