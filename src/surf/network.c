@@ -392,6 +392,14 @@ static void net_update_actions_state(double now, double delta)
                                       delta);
     }
 #endif
+    if(!lmm_get_number_of_cnst_from_var(network_maxmin_system, action->variable)) {
+				/* There is actually no link used, hence an infinite bandwidth.
+				 * This happens often when using models like vivaldi.
+				 * In such case, just make sure that the action completes immediately.
+				 */
+    	double_update(&(action->generic_action.remains),
+    			action->generic_action.remains);
+    }
     double_update(&(action->generic_action.remains),
                   lmm_variable_getvalue(action->variable) * deltap);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
