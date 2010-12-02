@@ -10,7 +10,7 @@
 #include "jmsg.h"
 #include "jxbt_utilities.h"
 
-#include "simix/smx_context_java.h"
+#include "smx_context_java.h"  
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 

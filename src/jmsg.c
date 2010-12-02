@@ -7,9 +7,8 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg/msg.h"
-#include "msg/private.h"
-#include "simix/private.h"
-#include "simix/smx_context_java.h"
+#include "simix/context.h"
+#include "smx_context_java.h"
 
 #include "jmsg_process.h"
 #include "jmsg_host.h"
@@ -18,7 +17,6 @@
 #include "jxbt_utilities.h"
 
 #include "jmsg.h"
-#include "msg/mailbox.h"
 #include "surf/surfxml_parse.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
@@ -43,8 +41,7 @@ JNIEnv *get_current_thread_env(void)
 
 static jobject native_to_java_process(m_process_t process)
 {
-  return ((smx_ctx_java_t)
-          (process->simdata->s_process->context))->jprocess;
+  return ((smx_ctx_java_t)MSG_process_get_smx_ctx(process))->jprocess;
 }
 
 /*
@@ -56,93 +53,62 @@ Java_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
                                          jobject jprocess_arg,
                                          jobject jhost)
 {
+     
+   
   jobject jprocess;             /* the global reference to the java process instance    */
   jstring jname;                /* the name of the java process instance                */
   const char *name;             /* the C name of the process                            */
   m_process_t process;          /* the native process to create                         */
-  char alias[MAX_ALIAS_NAME + 1] = { 0 };
-  msg_mailbox_t mailbox;
-
-  DEBUG4
-      ("Java_simgrid_msg_MsgNative_processCreate(env=%p,cls=%p,jproc=%p,jhost=%p)",
-       env, cls, jprocess_arg, jhost);
+  m_host_t host;                /* Where that process lives */
+   
+  DEBUG4("Java_simgrid_msg_MsgNative_processCreate(env=%p,cls=%p,jproc=%p,jhost=%p)",
+	 env, cls, jprocess_arg, jhost);
+   
+   
   /* get the name of the java process */
   jname = jprocess_get_name(jprocess_arg, env);
-
   if (!jname) {
     jxbt_throw_null(env,
-                    xbt_strdup
-                    ("Internal error: Process name cannot be NULL"));
+            xbt_strdup("Internal error: Process name cannot be NULL"));
     return;
   }
 
-  /* allocate the data of the simulation */
-  process = xbt_new0(s_m_process_t, 1);
-  process->simdata = xbt_new0(s_simdata_process_t, 1);
+  /* bind/retrieve the msg host */
+  host = jhost_get_native(env, jhost);
+
+  if (!(host)) {    /* not binded */
+    jxbt_throw_notbound(env, "host", jhost);
+    return;
+  }
 
   /* create a global java process instance */
   jprocess = jprocess_new_global_ref(jprocess_arg, env);
-
   if (!jprocess) {
-    free(process->simdata);
-    free(process);
     jxbt_throw_jni(env, "Can't get a global ref to the java process");
     return;
   }
 
-  /* bind the java process instance to the native process */
-  jprocess_bind(jprocess, process, env);
-
   /* build the C name of the process */
   name = (*env)->GetStringUTFChars(env, jname, 0);
-  process->name = xbt_strdup(name);
+  name = xbt_strdup(name);
+  
+  /* Actually build the MSG process */
+  process = MSG_process_create_with_environment(name,
+						(xbt_main_func_t) jprocess,
+						/*data*/ NULL,
+						host,
+						/*argc, argv, properties*/
+						0,NULL,NULL);
+     
+  MSG_process_set_data(process,&process);
+   
+  /* release our reference to the process name (variable name becomes invalid) */
   (*env)->ReleaseStringUTFChars(env, jname, name);
-
-  process->simdata->m_host = jhost_get_native(env, jhost);
-
-
-  if (!(process->simdata->m_host)) {    /* not binded */
-    free(process->simdata);
-    free(process->data);
-    free(process);
-    jxbt_throw_notbound(env, "host", jhost);
-    return;
-  }
-  process->simdata->PID = msg_global->PID++;
-
-  /* create a new context */
-  DEBUG8
-      ("fill in process %s/%s (pid=%d) %p (sd=%p, host=%p, host->sd=%p); env=%p",
-       process->name, process->simdata->m_host->name,
-       process->simdata->PID, process, process->simdata,
-       process->simdata->m_host, process->simdata->m_host->simdata, env);
-
-  process->simdata->s_process =
-      SIMIX_process_create(process->name, (xbt_main_func_t) jprocess,
-                           /*data */ (void *) process,
-                           process->simdata->m_host->simdata->
-                           smx_host->name, 0, NULL, NULL);
-
-  DEBUG1("context created (s_process=%p)", process->simdata->s_process);
+   
 
 
-  if (SIMIX_process_self()) {   /* someone created me */
-    process->simdata->PPID =
-        MSG_process_get_PID(SIMIX_process_self()->data);
-  } else {
-    process->simdata->PPID = -1;
-  }
-
-  process->simdata->last_errno = MSG_OK;
-
-  /* add the process to the list of the processes of the simulation */
-  xbt_fifo_unshift(msg_global->process_list, process);
-
-  sprintf(alias, "%s:%s",
-          (process->simdata->m_host->simdata->smx_host)->name,
-          process->name);
-
-  mailbox = MSG_mailbox_new(alias);
+  /* bind the java process instance to the native process */
+  jprocess_bind(jprocess, process, env);
 
 }
 
@@ -907,7 +873,7 @@ Java_simgrid_msg_MsgNative_processExit(JNIEnv * env, jclass cls,
     return;
   }
 
-  SIMIX_context_stop(SIMIX_process_self()->context);
+  MSG_process_kill(process);
 }
 
 JNIEXPORT void JNICALL
