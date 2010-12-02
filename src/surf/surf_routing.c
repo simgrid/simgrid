@@ -157,10 +157,13 @@ static const char *dst = NULL;        /* temporary store the destination name of
 static char *gw_src = NULL;     /* temporary store the gateway source name of a route */
 static char *gw_dst = NULL;     /* temporary store the gateway destination name of a route */
 static xbt_dynar_t link_list = NULL;    /* temporary store of current list link of a route */
+
+static xbt_dict_t coordinates = NULL;
+
 /**
  * \brief Add a "host" to the network element list
  */
-static void parse_S_host(char *host_id)
+static void parse_S_host(char *host_id, char* coord)
 {
   network_element_info_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
@@ -178,6 +181,12 @@ static void parse_S_host(char *host_id)
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
   xbt_dict_set(global_routing->where_network_elements, host_id,
                (void *) info, NULL);
+
+  if (strcmp(coord,"")) {
+  	xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
+  	xbt_dynar_shrink(ctn,0);
+   	xbt_dict_set (coordinates,host_id,ctn,NULL);
+  }
 }
 
 /*
@@ -185,15 +194,15 @@ static void parse_S_host(char *host_id)
  */
 static void parse_S_host_XML(void)
 {
-  parse_S_host(A_surfxml_host_id);
+	parse_S_host(A_surfxml_host_id, A_surfxml_host_coordinates);
 }
 
 /*
  * \brief Add a host to the network element list from lua script
  */
-static void parse_S_host_lua(char *host_id)
+static void parse_S_host_lua(char *host_id, char *coord)
 {
-  parse_S_host(host_id);
+  parse_S_host(host_id, coord);
 }
 
 
@@ -952,6 +961,7 @@ static void finalize(void)
   _finalize(global_routing->root);
   /* delete "where" dict */
   xbt_dict_free(&(global_routing->where_network_elements));
+  xbt_dict_free(&(coordinates));
   /* delete last_route */
   xbt_dynar_free(&(global_routing->last_route));
   /* delete global routing structure */
@@ -1023,6 +1033,8 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   get_link_latency = get_link_latency_fun;
   /* no current routing at moment */
   current_routing = NULL;
+
+  coordinates = xbt_dict_new();
 
   /* parse generic elements */
   surfxml_add_callback(STag_surfxml_host_cb_list, &parse_S_host_XML);
@@ -3543,7 +3555,7 @@ void routing_AS_end(const char *AS_id)
 
 void routing_add_host(const char *host_id)
 {
-  parse_S_host_lua((char *) host_id);
+  parse_S_host_lua((char *) host_id, (char*)""); // FIXME propagate coordinate system to lua
 }
 
 /*
