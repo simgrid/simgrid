@@ -27,6 +27,7 @@
 <!ELEMENT host (prop*)>
 <!ATTLIST host id CDATA #REQUIRED>
 <!ATTLIST host power CDATA #REQUIRED>
+<!ATTLIST host core  CDATA "1">
 <!ATTLIST host availability CDATA "1.0">
 <!ATTLIST host availability_file CDATA "">
 <!ATTLIST host state (ON|OFF) "ON">
