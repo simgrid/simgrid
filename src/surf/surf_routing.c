@@ -3434,6 +3434,7 @@ static void routing_parse_Scluster(void)
   free(pcre_link_dst);
   free(pcre_link_backbone);
   free(pcre_link_src);
+  free(route_src_dst);
 #else
   for (i = 0; i <= xbt_dynar_length(tab_elements_num); i++) {
     for (j = 0; j <= xbt_dynar_length(tab_elements_num); j++) {
@@ -3505,11 +3506,10 @@ static void routing_parse_Scluster(void)
     }
   }
   xbt_dynar_free(&tab_elements_num);
+  free(router_id);
 
-  free(route_src_dst);
 #endif
 
-  free(router_id);
 
   DEBUG0("</AS>");
   SURFXML_END_TAG(AS);
