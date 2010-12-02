@@ -10,7 +10,7 @@
 #include "simix/simix.h"        /* semaphores for the barrier */
 #include "xbt.h"                /* calloc, printf */
 #include "simgrid_config.h"     /* getline */
-#include "instr/private.h"
+#include "instr/instr_private.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actions,
                              "Messages specific for this msg example");

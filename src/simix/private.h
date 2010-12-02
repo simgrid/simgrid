@@ -15,7 +15,7 @@
 #include "xbt/config.h"
 #include "xbt/function_types.h"
 #include "xbt/ex_interface.h"
-#include "instr/private.h"
+#include "instr/instr_private.h"
 #include "process_private.h"
 #include "host_private.h"
 #include "network_private.h"

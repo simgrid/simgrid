@@ -8,7 +8,7 @@
 
 #ifdef HAVE_TRACING
 
-#include "instr/private.h"
+#include "instr/instr_private.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(tracing, "Tracing Interface");
 

@@ -12,7 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/config.h"
-#include "instr/private.h"
+#include "instr/instr_private.h"
 #ifdef HAVE_LUA
 #include <lua.h>
 #include <lauxlib.h>

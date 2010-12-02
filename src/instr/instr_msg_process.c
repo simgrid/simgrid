@@ -4,11 +4,32 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "instr/private.h"
+#include "instr/instr_private.h"
 
 #ifdef HAVE_TRACING
 
 static xbt_dict_t process_containers = NULL;
+
+char *TRACE_process_alias_container(m_process_t process, m_host_t host,
+                                    char *output, int len)
+{
+  if (output) {
+    snprintf(output, len, "%p-%p", process, host);
+    return output;
+  } else {
+    return NULL;
+  }
+}
+
+char *TRACE_process_container(m_process_t process, char *output, int len)
+{
+  if (output) {
+    snprintf(output, len, "%s-%p", MSG_process_get_name(process), process);
+    return output;
+  } else {
+    return NULL;
+  }
+}
 
 void TRACE_msg_process_alloc(void)
 {

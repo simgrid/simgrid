@@ -12,7 +12,7 @@
 #include "simix/simix.h"
 #include "smpi/smpi.h"
 #include "smpi/smpif.h"
-#include "instr/private.h"
+#include "instr/instr_private.h"
 
 struct s_smpi_process_data;
 typedef struct s_smpi_process_data *smpi_process_data_t;

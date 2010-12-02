@@ -12,7 +12,7 @@
 #include "xbt/log.h"
 #include "surf/surfxml_parse_private.h"
 #include "surf/random_mgr.h"
-#include "instr/private.h"
+#include "instr/instr_private.h"
 
 #define NO_MAX_DURATION -1.0
 

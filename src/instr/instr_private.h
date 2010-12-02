@@ -74,15 +74,6 @@ void pajeSubVariable(double time, const char *entityType,
 void pajeNewEvent(double time, const char *entityType,
                   const char *container, const char *value);
 
-/* from general.c */
-char *TRACE_host_container(m_host_t host, char *output, int len);
-char *TRACE_task_container(m_task_t task, char *output, int len);
-char *TRACE_process_container(m_process_t process, char *output, int len);
-char *TRACE_process_alias_container(m_process_t process, m_host_t host,
-                                    char *output, int len);
-char *TRACE_task_alias_container(m_task_t task, m_process_t process,
-                                 m_host_t host, char *output, int len);
-
 /* from categories.c */
 void TRACE_category_alloc(void);
 void TRACE_category_release(void);
@@ -92,6 +83,7 @@ void TRACE_category_unset(smx_process_t proc);
 void TRACE_msg_category_set(smx_process_t proc, m_task_t task);
 
 /* declaration of instrumentation functions from msg_task_instr.c */
+char *TRACE_task_container(m_task_t task, char *output, int len);
 void TRACE_msg_task_alloc(void);
 void TRACE_msg_task_release(void);
 void TRACE_msg_task_create(m_task_t task);
@@ -104,6 +96,9 @@ int TRACE_msg_task_put_start(m_task_t task);    //returns TRUE if the task_put_e
 void TRACE_msg_task_put_end(void);
 
 /* declaration of instrumentation functions from msg_process_instr.c */
+char *TRACE_process_alias_container(m_process_t process, m_host_t host,
+                                    char *output, int len);
+char *TRACE_process_container(m_process_t process, char *output, int len);
 void TRACE_msg_process_alloc(void);
 void TRACE_msg_process_release(void);
 void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host,

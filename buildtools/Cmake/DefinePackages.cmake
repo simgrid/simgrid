@@ -299,20 +299,19 @@ set(LUA_SRC
 
 set(TRACING_SRC
 	src/instr/instr_config.c
-	src/instr/categories.c
-	src/instr/interface.c
-	src/instr/general.c
-	src/instr/paje.c
-	src/instr/msg_task_instr.c
-	src/instr/msg_process_instr.c
-	src/instr/msg_volume.c
-	src/instr/smx_instr.c
-	src/instr/surf_instr.c
-	src/instr/smpi_instr.c
-	src/instr/sd_instr.c
-	src/instr/variables_instr.c
-	src/instr/resource_utilization.c
-	src/instr/private.h
+	src/instr/instr_categories.c
+	src/instr/instr_interface.c
+	src/instr/instr_paje.c
+	src/instr/instr_msg_task.c
+	src/instr/instr_msg_process.c
+	src/instr/instr_msg_volume.c
+	src/instr/instr_smx.c
+	src/instr/instr_surf.c
+	src/instr/instr_smpi.c
+	src/instr/instr_simdag.c
+	src/instr/instr_variables.c
+	src/instr/instr_resource_utilization.c
+	src/instr/instr_private.h
 )
 
 set(RUBY_SRC
