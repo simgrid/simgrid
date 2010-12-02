@@ -3632,8 +3632,6 @@ static void routing_parse_Speer(void)
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
   if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FULLDUPLEX)
 {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
-  if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FATPIPE)
-{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
   SURFXML_BUFFER_SET(link_id, link_id_up);
   SURFXML_BUFFER_SET(link_bandwidth, peer_bw_in);
   SURFXML_BUFFER_SET(link_latency, peer_lat);
@@ -3648,8 +3646,6 @@ static void routing_parse_Speer(void)
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
   if(peer_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
 {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
-  if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FATPIPE)
-{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
   SURFXML_BUFFER_SET(link_id, link_id_down);
   SURFXML_BUFFER_SET(link_bandwidth, peer_bw_out);
   SURFXML_BUFFER_SET(link_latency, peer_lat);
