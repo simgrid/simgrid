@@ -41,6 +41,7 @@ src/smpi/smpicc
 src/smpi/smpirun
 include/smpi/smpif.h
 doc/footer.html
+simgrid-*.tar.gz
 
 ################################################
 ### Cmake files
@@ -265,3 +266,4 @@ teshsuite/datadesc_usage.out
 test_rl
 test_sg
 examples/smpi/smpi_traced.trace
+examples/simdag/dot/simulate_dot
