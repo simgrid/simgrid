@@ -8,6 +8,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
+#include "mc/mc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
                                 "Logging specific to SIMIX (hosts)");
@@ -191,15 +192,12 @@ smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
   action->category = NULL;
 #endif
 
-#ifdef HAVE_MC
   /* set surf's action */
-  if (!_surf_do_model_check)
-#endif
-  {
-  action->execution.surf_exec =
-    surf_workstation_model->extension.workstation.execute(host->host, 
-                                                          computation_amount);
-  surf_workstation_model->action_data_set(action->execution.surf_exec, action);
+  if (!MC_IS_ENABLED) {
+    action->execution.surf_exec =
+      surf_workstation_model->extension.workstation.execute(host->host,
+	  computation_amount);
+    surf_workstation_model->action_data_set(action->execution.surf_exec, action);
   }
 
 #ifdef HAVE_TRACING
@@ -237,17 +235,14 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
   for (i = 0; i < host_nb; i++)
     workstation_list[i] = host_list[i]->host;
 
-#ifdef HAVE_MC
   /* set surf's action */
-  if (!_surf_do_model_check)
-#endif  
-  {
+  if (!MC_IS_ENABLED) {
     action->execution.surf_exec =
       surf_workstation_model->extension.workstation.
       execute_parallel_task(host_nb, workstation_list, computation_amount,
 	                    communication_amount, amount, rate);
 
-  surf_workstation_model->action_data_set(action->execution.surf_exec, action);
+    surf_workstation_model->action_data_set(action->execution.surf_exec, action);
   }
   DEBUG1("Create parallel execute action %p", action);
 
@@ -278,7 +273,7 @@ void SIMIX_host_execution_cancel(smx_action_t action)
 {
   DEBUG1("Cancel action %p", action);
 
-  if (action->execution.surf_exec) 
+  if (action->execution.surf_exec)
     surf_workstation_model->action_cancel(action->execution.surf_exec);
 }
 
@@ -312,13 +307,11 @@ void SIMIX_pre_host_execution_wait(smx_req_t req)
   xbt_fifo_push(action->request_list, req);
   req->issuer->waiting_action = action;
 
-#ifdef HAVE_MC
   /* set surf's action */
-  if (_surf_do_model_check){
+  if (MC_IS_ENABLED){
     action->state = SIMIX_DONE;
     SIMIX_execution_finish(action);
   }
-#endif  
 
   /* If the action is already finished then perform the error handling */
   if (action->state != SIMIX_RUNNING)

@@ -319,11 +319,9 @@ int MAIN__(void)
   fflush(stdout);
   fflush(stderr);
 
-#ifdef HAVE_MC
-  if (_surf_do_model_check)
+  if (MC_IS_ENABLED)
     MC_modelcheck();
   else
-#endif
     SIMIX_run();
 
   if (xbt_cfg_get_int(_surf_cfg_set, "smpi/display_timing"))

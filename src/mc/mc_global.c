@@ -260,7 +260,7 @@ void MC_print_statistics(mc_stats_t stats)
 /************************* Assertion Checking *********************************/
 void MC_assert(int prop)
 {
-  if (_surf_do_model_check && !prop) {
+  if (MC_IS_ENABLED && !prop) {
     INFO0("**************************");
     INFO0("*** PROPERTY NOT VALID ***");
     INFO0("**************************");

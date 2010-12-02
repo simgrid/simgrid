@@ -143,12 +143,10 @@ MSG_error_t MSG_main(void)
   fflush(stdout);
   fflush(stderr);
 
-#ifdef HAVE_MC
-  if (_surf_do_model_check){
+  if (MC_IS_ENABLED) {
     MC_modelcheck();
-  }else
-#endif
-  {
+  }
+  else {
     SIMIX_run();
   }
   return MSG_OK;

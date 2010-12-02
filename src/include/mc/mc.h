@@ -16,6 +16,13 @@
 #include "mc/datatypes.h"
 #include "simix/datatypes.h"
 
+#ifdef HAVE_MC
+extern int _surf_do_model_check;
+#define MC_IS_ENABLED _surf_do_model_check
+#else
+#define MC_IS_ENABLED 0
+#endif
+
 SG_BEGIN_DECL()
 
 /********************************* Global *************************************/
@@ -29,11 +36,6 @@ XBT_PUBLIC(int) MC_random(int, int);
 XBT_PUBLIC(void) MC_memory_init(void);  /* Initialize the memory subsystem */
 XBT_PUBLIC(void) MC_memory_exit(void);
 
-/*
- * Boolean indicating whether we want to activate the model-checker
- */
-extern int _surf_do_model_check;
-
-
 SG_END_DECL()
+
 #endif                          /* _MC_MC_H */

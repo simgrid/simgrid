@@ -255,12 +255,12 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
   action->comm.src_buff = src_buff;
   action->comm.src_buff_size = src_buff_size;
   action->comm.data = data;
-#ifdef HAVE_MC
-  if (_surf_do_model_check){
+
+  if (MC_IS_ENABLED) {
     action->state = SIMIX_RUNNING;
     return action;
   }
-#endif
+
   SIMIX_comm_start(action);
   return action;
 }
@@ -288,12 +288,10 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
   action->comm.dst_buff = dst_buff;
   action->comm.dst_buff_size = dst_buff_size;
 
-#ifdef HAVE_MC
-  if (_surf_do_model_check){
+  if (MC_IS_ENABLED) {
     action->state = SIMIX_RUNNING;
     return action;
   }
-#endif
 
   SIMIX_comm_start(action);
   return action;
@@ -309,12 +307,10 @@ void SIMIX_pre_comm_wait(smx_req_t req)
   xbt_fifo_push(action->request_list, req);
   req->issuer->waiting_action = action;
 
-#ifdef HAVE_MC
-  if (_surf_do_model_check){
+  if (MC_IS_ENABLED){
     action->state = SIMIX_DONE;
     SIMIX_comm_finish(action);
   }
-#endif
 
   /* If the action has already finish perform the error handling, */
   /* otherwise set up a waiting timeout on the right side         */

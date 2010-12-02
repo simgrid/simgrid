@@ -9,6 +9,7 @@
 #include "xbt/log.h"
 #include "xbt/dict.h"
 #include "msg/mailbox.h"
+#include "mc/mc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
                                 "Logging specific to SIMIX (process)");
@@ -413,12 +414,10 @@ xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 
 void SIMIX_pre_process_sleep(smx_req_t req)
 {
-#ifdef HAVE_MC
-  if(_surf_do_model_check){
+  if (MC_IS_ENABLED) {
     req->process_sleep.result = SIMIX_DONE;
     SIMIX_request_answer(req);
   }
-#endif
   smx_action_t action = SIMIX_process_sleep(req->issuer, req->process_sleep.duration);
   xbt_fifo_push(action->request_list, req);
   req->issuer->waiting_action = action;

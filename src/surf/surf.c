@@ -308,10 +308,8 @@ void surf_init(int *argc, char **argv)
     history = tmgr_history_new();
 
   surf_config_init(argc, argv);
-#ifdef HAVE_MC
-  if (_surf_do_model_check)
+  if (MC_IS_ENABLED)
     MC_memory_init();
-#endif
 }
 
 #ifdef _XBT_WIN32

@@ -22,8 +22,6 @@
 #include "smurf_private.h"
 #include "synchro_private.h"
 
-extern int _surf_do_model_check;
-
 /********************************** Simix Global ******************************/
 
 typedef struct s_smx_context_factory *smx_context_factory_t;

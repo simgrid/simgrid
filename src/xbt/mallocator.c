@@ -9,10 +9,10 @@
 #include "xbt/mallocator.h"
 #include "xbt/asserts.h"
 #include "xbt/sysdep.h"
+#include "mc/mc.h" /* kill mallocators when model-checking is enabled */
 #include "mallocator_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
-extern int _surf_do_model_check;        /* kill mallocators when this is true */
 
 /**
  * \brief Constructor
@@ -50,7 +50,7 @@ xbt_mallocator_t xbt_mallocator_new(int size,
    *   The mallocator will give standard memory when we are using raw memory (so these blocks are killed on restore)
    *   and the contrary (so these blocks will leak accross restores)
    */
-  if (_surf_do_model_check)
+  if (MC_IS_ENABLED)
     size = 0;
 
   m = xbt_new0(s_xbt_mallocator_t, 1);
@@ -58,7 +58,7 @@ xbt_mallocator_t xbt_mallocator_new(int size,
   if (XBT_LOG_ISENABLED(xbt_mallocator, xbt_log_priority_verbose))
     xbt_backtrace_display_current();
 
-  m->objects = xbt_new0(void *, _surf_do_model_check ? 1 : size);
+  m->objects = xbt_new0(void *, MC_IS_ENABLED ? 1 : size);
   m->max_size = size;
   m->current_size = 0;
   m->new_f = new_f;
