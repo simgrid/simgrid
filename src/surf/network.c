@@ -533,6 +533,7 @@ static surf_action_t net_communicate(const char *src_name,
   int failed = 0;
   surf_action_network_CM02_t action = NULL;
   double bandwidth_bound;
+  double latency=0.0;
   /* LARGE PLATFORMS HACK:
      Add a link_CM02_t *link and a int link_nb to network_card_CM02_t. It will represent local links for this node
      Use the cluster_id for ->id */
@@ -553,8 +554,9 @@ static surf_action_t net_communicate(const char *src_name,
   XBT_IN4("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
-  xbt_assert2(xbt_dynar_length(route),
-              "You're trying to send data from %s to %s but there is no connection between these two hosts.",
+  latency = global_routing->get_latency(src_name,dst_name);
+  xbt_assert2(xbt_dynar_length(route) || latency,
+              "You're trying to send data from %s to %s but there is no connection at all between these two hosts.",
               src_name, dst_name);
 
   xbt_dynar_foreach(route, i, link) {
@@ -569,14 +571,12 @@ static surf_action_t net_communicate(const char *src_name,
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   (action->generic_action).latency_limited = 0;
 #endif
+  action->weight = action->latency = latency;
 
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
 
-  action->latency = 0.0;
-  action->weight = 0.0;
   bandwidth_bound = -1.0;
-  action->weight = action->latency = global_routing->get_latency(src,dst);
 
   xbt_dynar_foreach(route, i, link) {
     action->weight +=
