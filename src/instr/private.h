@@ -75,12 +75,6 @@ void pajeNewEvent(double time, const char *entityType,
                   const char *container, const char *value);
 
 /* from general.c */
-char *TRACE_paje_msg_container(m_task_t task, char *host, char *output,
-                               int len);
-char *TRACE_paje_smx_container(smx_action_t action, int seqnumber,
-                               char *host, char *output, int len);
-char *TRACE_paje_surf_container(void *action, int seqnumber, char *output,
-                                int len);
 char *TRACE_host_container(m_host_t host, char *output, int len);
 char *TRACE_task_container(m_task_t task, char *output, int len);
 char *TRACE_process_container(m_process_t process, char *output, int len);
