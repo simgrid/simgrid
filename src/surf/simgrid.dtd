@@ -55,7 +55,7 @@
 <!ATTLIST peer bw_out CDATA #REQUIRED>
 <!ATTLIST peer lat CDATA #REQUIRED>
 <!ATTLIST peer coordinates CDATA "">
-<!ATTLIST peer sharing_policy (SHARED|FULLDUPLEX|FATPIPE) "SHARED">
+<!ATTLIST peer sharing_policy (SHARED|FULLDUPLEX) "FULLDUPLEX">
 
 <!ELEMENT router EMPTY>
 <!ATTLIST router id CDATA #REQUIRED>
