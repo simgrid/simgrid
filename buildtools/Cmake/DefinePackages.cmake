@@ -505,7 +505,6 @@ file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.lua"
 "examples/*.java"
 "examples/*.xml"
-"examples/*.txt"
 )
 
 file(GLOB_RECURSE README_examples_files
