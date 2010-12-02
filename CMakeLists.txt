@@ -12,6 +12,10 @@ set(libsmpi_version "${release_version}")
 FIND_PROGRAM(GCOV_PATH gcov)
 FIND_PROGRAM(VALGRIND_PATH valgrind)
 include(FindPerl)
+if(NOT PERL_EXECUTABLE)
+	message(FATAL_ERROR "-- SIMGRID NEED PERL")
+endif(NOT PERL_EXECUTABLE)
+
 
 ### SET THE LIBRARY EXTENSION
 if(APPLE)
