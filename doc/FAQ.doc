@@ -1805,14 +1805,14 @@ classified according to a category are not traced</em>.
 \subsubsection faq_tracing_enabling Enabling using CMake
 
 With the sources of SimGrid, it is possible to enable the tracing 
-using the parameter <b>-Dtracing=on</b> when the cmake is executed.
+using the parameter <b>-Denable_tracing=ON</b> when the cmake is executed.
 The section \ref faq_tracing_functions describes all the functions available
 when this Cmake options is activated. These functions will have no effect
 if SimGrid is configured without this option (they are wiped-out by the
 C-preprocessor).
 
 \verbatim
-$ cmake -Dtracing=on .
+$ cmake -Denable_tracing=ON .
 $ make
 \endverbatim
 
