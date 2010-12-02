@@ -25,7 +25,7 @@ static unsigned long simix_process_count = 0;
 XBT_INLINE smx_process_t SIMIX_process_self(void)
 {
   if(simix_global)
-    return SIMIX_context_self();
+    return SIMIX_context_get_data(SIMIX_context_self());
   return NULL;
 }
 
@@ -489,21 +489,6 @@ void SIMIX_process_sleep_suspend(smx_action_t action)
 void SIMIX_process_sleep_resume(smx_action_t action)
 {
   surf_workstation_model->resume(action->sleep.surf_sleep);
-}
-
-/**
- * \brief Returns the current agent.
- *
- * This functions returns the currently running SIMIX process.
- *
- * \return The SIMIX process
- */
-XBT_INLINE smx_process_t SIMIX_process_self(void)
-{
-  if(simix_global)
-    return SIMIX_context_get_data(SIMIX_context_self());
-
-  return NULL;
 }
 
 /** 
