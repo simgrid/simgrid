@@ -576,10 +576,10 @@ static surf_action_t net_communicate(const char *src_name,
   action->latency = 0.0;
   action->weight = 0.0;
   bandwidth_bound = -1.0;
+  action->weight = action->latency = global_routing->get_latency(src,dst);
+
   xbt_dynar_foreach(route, i, link) {
-    action->latency += link->lat_current;
     action->weight +=
-        link->lat_current +
         sg_weight_S_parameter /
         (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
     if (bandwidth_bound < 0.0)
