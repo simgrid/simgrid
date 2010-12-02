@@ -1,0 +1,6 @@
+SimGrid-java (3.6) unstable; urgency=low
+
+ * Initial release.
+ * Split of every thing from simgrid v3.5 into a separate package.
+
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>

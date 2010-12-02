@@ -1,0 +1,15 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="2">
+  <process host="Host 0" function="Coordinator">
+      <argument value="2"/> <!-- Amount of CS to serve -->
+  </process>
+  <process host="Host 1" function="Node">
+      <argument value="2"/> <!-- initial sleep time -->
+      <argument value="5"/> <!-- CS time -->
+  </process>
+  <process host="Host 2" function="Node">
+      <argument value="2"/> <!-- initial sleep time -->
+      <argument value="5"/> <!-- CS time -->
+  </process>
+</platform>

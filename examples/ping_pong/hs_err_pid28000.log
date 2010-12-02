@@ -1,0 +1,256 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x7f1b56c3, pid=28000, tid=3063688048
+#
+# JRE version: 6.0_22-b04
+# Java VM: Java HotSpot(TM) Server VM (17.1-b03 mixed mode linux-x86 )
+# Problematic frame:
+# C  [libsimgrid.so.3.5+0x336c3]  xbt_fifo_push_item+0xc3
+#
+# If you would like to submit a bug report, please visit:
+#   http://java.sun.com/webapps/bugreport/crash.jsp
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x08168000):  JavaThread "main" [_thread_in_native, id=28001, stack(0xb6972000,0xb69c3000)]
+
+siginfo:si_signo=SIGSEGV: si_errno=0, si_code=1 (SEGV_MAPERR), si_addr=0x00000004
+
+Registers:
+EAX=0x08229d58, EBX=0x7f2a6d38, ECX=0x00000000, EDX=0x00000000
+ESP=0xb69c1640, EBP=0xb69c1668, ESI=0x00000000, EDI=0x7f4006e0
+EIP=0x7f1b56c3, CR2=0x00000004, EFLAGS=0x00010246
+
+Top of Stack: (sp=0xb69c1640)
+0xb69c1640:   b7154668 08168910 b69c1668 00000000
+0xb69c1650:   0000000e b69c1550 7f18a0d8 7f2a6d38
+0xb69c1660:   08229d58 7f4006e0 b69c1688 7f1e466b
+0xb69c1670:   00000000 08229d58 b771d5d6 7f2a6d38
+0xb69c1680:   7f2a6d38 7f400670 b69c16c8 7f1e47b0
+0xb69c1690:   00000000 7f4006e0 001259a8 7f182000
+0xb69c16a0:   00000000 bff00000 00000000 3ff00000
+0xb69c16b0:   b69c1708 b77232c0 08229f48 7f2a6d38 
+
+Instructions: (pc=0x7f1b56c3)
+0x7f1b56b3:   fe ff 8d 76 00 8b 48 08 85 c9 0f 85 68 ff ff ff
+0x7f1b56c3:   8b 7a 04 83 02 01 85 ff 74 2b 8b 4a 08 89 48 08 
+
+Stack: [0xb6972000,0xb69c3000],  sp=0xb69c1640,  free space=13db69c0fc0k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libsimgrid.so.3.5+0x336c3]  xbt_fifo_push_item+0xc3
+C  [libsimgrid.so.3.5+0x6266b]  xbt_fifo_push+0x3b
+C  [libsimgrid.so.3.5+0x627b0]  SIMIX_comm_isend+0xa0
+C  [libsimgrid.so.3.5+0x8c87a]  SIMIX_request_pre+0x1ea
+C  [libsimgrid.so.3.5+0x9581e]  SIMIX_run+0x3e
+C  [libsimgrid.so.3.5+0x959dc]  MSG_main+0x3c
+C  [libsimgrid.so.3.5+0x95a0f]  Java_simgrid_msg_Msg_run+0x1f
+j  simgrid.msg.Msg.run()V+0
+j  PingPongTest.main([Ljava/lang/String;)V+36
+v  ~StubRoutines::call_stub
+V  [libjvm.so+0x395980]
+V  [libjvm.so+0x579408]
+V  [libjvm.so+0x3957df]
+V  [libjvm.so+0x3c7c83]
+V  [libjvm.so+0x3b7edc]
+C  [java+0x1b98]  JavaMain+0x2c8
+C  [libpthread.so.0+0x5955]
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  simgrid.msg.Msg.run()V+0
+j  PingPongTest.main([Ljava/lang/String;)V+36
+v  ~StubRoutines::call_stub
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x08234800 JavaThread "Thread-1" [_thread_blocked, id=28013, stack(0x7ef92000,0x7efe3000)]
+  0x08233c00 JavaThread "Thread-0" [_thread_blocked, id=28012, stack(0x7efe3000,0x7f034000)]
+  0x08201400 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=28010, stack(0x7f32e000,0x7f37f000)]
+  0x081fe000 JavaThread "CompilerThread1" daemon [_thread_blocked, id=28009, stack(0x7f37f000,0x7f400000)]
+  0x081fc000 JavaThread "CompilerThread0" daemon [_thread_blocked, id=28008, stack(0x7f53d000,0x7f5be000)]
+  0x081fa800 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=28007, stack(0x7f5be000,0x7f60f000)]
+  0x081e7800 JavaThread "Finalizer" daemon [_thread_blocked, id=28006, stack(0x7f784000,0x7f7d5000)]
+  0x081e6000 JavaThread "Reference Handler" daemon [_thread_blocked, id=28005, stack(0x7f7d5000,0x7f826000)]
+=>0x08168000 JavaThread "main" [_thread_in_native, id=28001, stack(0xb6972000,0xb69c3000)]
+
+Other Threads:
+  0x081e3800 VMThread [stack: 0x7f826000,0x7f8a7000] [id=28004]
+  0x08203000 WatcherThread [stack: 0x7f2ad000,0x7f32e000] [id=28011]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ PSYoungGen      total 14208K, used 978K [0xa3a30000, 0xa4a00000, 0xb3830000)
+  eden space 12224K, 8% used [0xa3a30000,0xa3b24800,0xa4620000)
+  from space 1984K, 0% used [0xa4810000,0xa4810000,0xa4a00000)
+  to   space 1984K, 0% used [0xa4620000,0xa4620000,0xa4810000)
+ PSOldGen        total 32512K, used 0K [0x83e30000, 0x85df0000, 0xa3a30000)
+  object space 32512K, 0% used [0x83e30000,0x83e30000,0x85df0000)
+ PSPermGen       total 16384K, used 1943K [0x7fe30000, 0x80e30000, 0x83e30000)
+  object space 16384K, 11% used [0x7fe30000,0x80015f98,0x80e30000)
+
+Dynamic libraries:
+08048000-08052000 r-xp 00000000 08:01 9338       /usr/lib/jvm/java-6-sun-1.6.0.22/jre/bin/java
+08052000-08053000 rwxp 00009000 08:01 9338       /usr/lib/jvm/java-6-sun-1.6.0.22/jre/bin/java
+08162000-08259000 rwxp 00000000 00:00 0          [heap]
+10236000-10237000 rwxp 00000000 00:00 0 
+7ef92000-7ef95000 ---p 00000000 00:00 0 
+7ef95000-7efe3000 rwxp 00000000 00:00 0 
+7efe3000-7efe6000 ---p 00000000 00:00 0 
+7efe6000-7f034000 rwxp 00000000 00:00 0 
+7f129000-7f14e000 r-xp 00000000 08:01 147450     /usr/lib/liblua5.1.so.0.0.0
+7f14e000-7f14f000 rwxp 00024000 08:01 147450     /usr/lib/liblua5.1.so.0.0.0
+7f14f000-7f181000 r-xp 00000000 08:01 431643     /lib/libpcre.so.3.12.1
+7f181000-7f182000 rwxp 00031000 08:01 431643     /lib/libpcre.so.3.12.1
+7f182000-7f2a6000 r-xp 00000000 08:03 1933476    /home/mquinson/Code/simgrid/lib/libsimgrid.so.3.5
+7f2a6000-7f2aa000 rwxp 00124000 08:03 1933476    /home/mquinson/Code/simgrid/lib/libsimgrid.so.3.5
+7f2aa000-7f2ad000 rwxp 00000000 00:00 0 
+7f2ad000-7f2ae000 ---p 00000000 00:00 0 
+7f2ae000-7f32e000 rwxp 00000000 00:00 0 
+7f32e000-7f331000 ---p 00000000 00:00 0 
+7f331000-7f37f000 rwxp 00000000 00:00 0 
+7f37f000-7f382000 ---p 00000000 00:00 0 
+7f382000-7f400000 rwxp 00000000 00:00 0 
+7f400000-7f421000 rwxp 00000000 00:00 0 
+7f421000-7f500000 ---p 00000000 00:00 0 
+7f53d000-7f540000 ---p 00000000 00:00 0 
+7f540000-7f5be000 rwxp 00000000 00:00 0 
+7f5be000-7f5c1000 ---p 00000000 00:00 0 
+7f5c1000-7f60f000 rwxp 00000000 00:00 0 
+7f60f000-7f784000 r-xp 00000000 08:01 366595     /usr/lib/locale/locale-archive
+7f784000-7f787000 ---p 00000000 00:00 0 
+7f787000-7f7d5000 rwxp 00000000 00:00 0 
+7f7d5000-7f7d8000 ---p 00000000 00:00 0 
+7f7d8000-7f826000 rwxp 00000000 00:00 0 
+7f826000-7f827000 ---p 00000000 00:00 0 
+7f827000-7f8da000 rwxp 00000000 00:00 0 
+7f8da000-7fa72000 r-xs 03013000 08:01 255096     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/rt.jar
+7fa72000-7fa73000 ---p 00000000 00:00 0 
+7fa73000-7faf3000 rwxp 00000000 00:00 0 
+7faf3000-7faf4000 ---p 00000000 00:00 0 
+7faf4000-7fb7c000 rwxp 00000000 00:00 0 
+7fb7c000-7fb94000 rwxp 00000000 00:00 0 
+7fb94000-7fba4000 rwxp 00000000 00:00 0 
+7fba4000-7fc92000 rwxp 00000000 00:00 0 
+7fc92000-7fc9a000 rwxp 00000000 00:00 0 
+7fc9a000-7fcb2000 rwxp 00000000 00:00 0 
+7fcb2000-7fcc2000 rwxp 00000000 00:00 0 
+7fcc2000-7fdb0000 rwxp 00000000 00:00 0 
+7fdb0000-7fdb8000 rwxp 00000000 00:00 0 
+7fdb8000-7fe2f000 rwxp 00000000 00:00 0 
+7fe2f000-80e30000 rwxp 00000000 00:00 0 
+80e30000-83e30000 rwxp 00000000 00:00 0 
+83e30000-85df0000 rwxp 00000000 00:00 0 
+85df0000-a3a30000 rwxp 00000000 00:00 0 
+a3a30000-a4a00000 rwxp 00000000 00:00 0 
+a4a00000-b3830000 rwxp 00000000 00:00 0 
+b3836000-b383f000 rwxp 00000000 00:00 0 
+b383f000-b38f6000 rwxp 00000000 00:00 0 
+b38f6000-b3b36000 rwxp 00000000 00:00 0 
+b3b36000-b68f6000 rwxp 00000000 00:00 0 
+b68f6000-b6900000 r-xp 00000000 08:01 444869     /lib/i686/cmov/libnss_files-2.11.2.so
+b6900000-b6901000 r-xp 00009000 08:01 444869     /lib/i686/cmov/libnss_files-2.11.2.so
+b6901000-b6902000 rwxp 0000a000 08:01 444869     /lib/i686/cmov/libnss_files-2.11.2.so
+b6902000-b690a000 r-xp 00000000 08:01 444566     /lib/i686/cmov/libnss_nis-2.11.2.so
+b690a000-b690b000 r-xp 00008000 08:01 444566     /lib/i686/cmov/libnss_nis-2.11.2.so
+b690b000-b690c000 rwxp 00009000 08:01 444566     /lib/i686/cmov/libnss_nis-2.11.2.so
+b690c000-b6912000 r-xp 00000000 08:01 444559     /lib/i686/cmov/libnss_compat-2.11.2.so
+b6912000-b6913000 r-xp 00006000 08:01 444559     /lib/i686/cmov/libnss_compat-2.11.2.so
+b6913000-b6914000 rwxp 00007000 08:01 444559     /lib/i686/cmov/libnss_compat-2.11.2.so
+b6914000-b6927000 r-xp 00000000 08:01 444885     /lib/i686/cmov/libnsl-2.11.2.so
+b6927000-b6928000 r-xp 00012000 08:01 444885     /lib/i686/cmov/libnsl-2.11.2.so
+b6928000-b6929000 rwxp 00013000 08:01 444885     /lib/i686/cmov/libnsl-2.11.2.so
+b6929000-b692b000 rwxp 00000000 00:00 0 
+b692b000-b693a000 r-xp 00000000 08:01 104324     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/libzip.so
+b693a000-b693c000 rwxp 0000e000 08:01 104324     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/libzip.so
+b693c000-b6944000 rwxs 00000000 08:01 270801     /tmp/hsperfdata_mquinson/28000
+b6944000-b6967000 r-xp 00000000 08:01 104450     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/libjava.so
+b6967000-b6969000 rwxp 00023000 08:01 104450     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/libjava.so
+b6969000-b6970000 r-xp 00000000 08:01 444624     /lib/i686/cmov/librt-2.11.2.so
+b6970000-b6971000 r-xp 00006000 08:01 444624     /lib/i686/cmov/librt-2.11.2.so
+b6971000-b6972000 rwxp 00007000 08:01 444624     /lib/i686/cmov/librt-2.11.2.so
+b6972000-b6975000 ---p 00000000 00:00 0 
+b6975000-b69c3000 rwxp 00000000 00:00 0 
+b69c3000-b69e7000 r-xp 00000000 08:01 444560     /lib/i686/cmov/libm-2.11.2.so
+b69e7000-b69e8000 r-xp 00023000 08:01 444560     /lib/i686/cmov/libm-2.11.2.so
+b69e8000-b69e9000 rwxp 00024000 08:01 444560     /lib/i686/cmov/libm-2.11.2.so
+b69e9000-b7115000 r-xp 00000000 08:01 111331     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/server/libjvm.so
+b7115000-b7168000 rwxp 0072c000 08:01 111331     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/server/libjvm.so
+b7168000-b7588000 rwxp 00000000 00:00 0 
+b7588000-b76c8000 r-xp 00000000 08:01 444886     /lib/i686/cmov/libc-2.11.2.so
+b76c8000-b76ca000 r-xp 0013f000 08:01 444886     /lib/i686/cmov/libc-2.11.2.so
+b76ca000-b76cb000 rwxp 00141000 08:01 444886     /lib/i686/cmov/libc-2.11.2.so
+b76cb000-b76ce000 rwxp 00000000 00:00 0 
+b76ce000-b76d0000 r-xp 00000000 08:01 444649     /lib/i686/cmov/libdl-2.11.2.so
+b76d0000-b76d1000 r-xp 00001000 08:01 444649     /lib/i686/cmov/libdl-2.11.2.so
+b76d1000-b76d2000 rwxp 00002000 08:01 444649     /lib/i686/cmov/libdl-2.11.2.so
+b76d2000-b76d9000 r-xp 00000000 08:01 146798     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/jli/libjli.so
+b76d9000-b76db000 rwxp 00006000 08:01 146798     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/jli/libjli.so
+b76db000-b76dc000 rwxp 00000000 00:00 0 
+b76dc000-b76f1000 r-xp 00000000 08:01 444583     /lib/i686/cmov/libpthread-2.11.2.so
+b76f1000-b76f2000 r-xp 00014000 08:01 444583     /lib/i686/cmov/libpthread-2.11.2.so
+b76f2000-b76f3000 rwxp 00015000 08:01 444583     /lib/i686/cmov/libpthread-2.11.2.so
+b76f3000-b76f5000 rwxp 00000000 00:00 0 
+b76f7000-b76f9000 r-xs 00002000 08:03 9135067    /home/mquinson/Code/simgrid/simgrid.jar
+b76f9000-b76ff000 r-xp 00000000 08:01 187405     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/native_threads/libhpi.so
+b76ff000-b7700000 rwxp 00006000 08:01 187405     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/native_threads/libhpi.so
+b7700000-b7701000 rwxp 00000000 00:00 0 
+b7701000-b7702000 r-xp 00000000 00:00 0 
+b7702000-b770d000 r-xp 00000000 08:01 104465     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/libverify.so
+b770d000-b770e000 rwxp 0000b000 08:01 104465     /usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/libverify.so
+b770e000-b7710000 rwxp 00000000 00:00 0 
+b7710000-b772b000 r-xp 00000000 08:01 432710     /lib/ld-2.11.2.so
+b772b000-b772c000 r-xp 0001a000 08:01 432710     /lib/ld-2.11.2.so
+b772c000-b772d000 rwxp 0001b000 08:01 432710     /lib/ld-2.11.2.so
+bffba000-bffcf000 rwxp 00000000 00:00 0          [stack]
+
+VM Arguments:
+java_command: PingPongTest ping_pong_platform.xml ping_pong_deployment.xml
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/games:/home/mquinson/SCRIPTS:/usr/sbin:/sbin:/opt/simgrid/bin
+USERNAME=mquinson
+LD_LIBRARY_PATH=/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386/server:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/i386:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/../lib/i386:/opt/simgrid/lib:/opt/allegro5/lib:/home/mquinson/Code/simgrid/lib
+SHELL=/bin/bash
+DISPLAY=:0.0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0x6a9f20], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGBUS: [libjvm.so+0x6a9f20], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGFPE: [libjvm.so+0x5781e0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGPIPE: [libjvm.so+0x5781e0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGXFSZ: [libjvm.so+0x5781e0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGILL: [libjvm.so+0x5781e0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGUSR1: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGUSR2: [libjvm.so+0x57ae20], sa_mask[0]=0x00000000, sa_flags=0x10000004
+SIGHUP: [libjvm.so+0x57ab50], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGINT: [libsimgrid.so.3.5+0x4bb60], sa_mask[0]=0x00000002, sa_flags=0x10000000
+SIGTERM: [libjvm.so+0x57ab50], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGQUIT: [libjvm.so+0x57ab50], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+
+
+---------------  S Y S T E M  ---------------
+
+OS:squeeze/sid
+
+uname:Linux 2.6.32-5-686 #1 SMP Sat Oct 30 22:47:19 UTC 2010 i686
+libc:glibc 2.11.2 NPTL 2.11.2 
+rlimit: STACK 8192k, CORE 0k, NPROC infinity, NOFILE 1024, AS infinity
+load average:2.44 1.13 0.68
+
+CPU:total 2 (2 cores per cpu, 1 threads per core) family 6 model 15 stepping 11, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3
+
+Memory: 4k page, physical 3113680k(359884k free), swap 2931852k(2931728k free)
+
+vm_info: Java HotSpot(TM) Server VM (17.1-b03) for linux-x86 JRE (1.6.0_22-b04), built on Sep 15 2010 01:02:09 by "java_re" with gcc 3.2.1-7a (J2SE release)
+
+time: Tue Nov  9 22:13:02 2010
+elapsed time: 0 seconds
+
