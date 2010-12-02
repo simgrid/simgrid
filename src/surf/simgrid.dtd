@@ -32,7 +32,7 @@
 <!ATTLIST host availability_file CDATA "">
 <!ATTLIST host state (ON|OFF) "ON">
 <!ATTLIST host state_file CDATA "">
-<!ATTLIST host vivaldi  CDATA "0 0 0">
+<!ATTLIST host coordinates  CDATA "">
 
 <!ELEMENT cluster EMPTY>
 <!ATTLIST cluster id CDATA #REQUIRED>
@@ -49,6 +49,7 @@
 
 <!ELEMENT router EMPTY>
 <!ATTLIST router id CDATA #REQUIRED>
+<!ATTLIST router coordinates  CDATA "">
 
 <!ELEMENT link (prop*)>
 <!ATTLIST link id CDATA #REQUIRED>
