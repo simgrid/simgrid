@@ -131,6 +131,7 @@ ADD_TEST(msg-masterslave-failure	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_
 ADD_TEST(msg-masterslave-bypass	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_bypass.tesh)
 ADD_TEST(msg-masterslave-mailbox	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_mailbox.tesh)
 ADD_TEST(msg-masterslave-vivaldi	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_vivaldi.tesh)
+ADD_TEST(msg-masterslave-multicore	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_multicore.tesh)
 ADD_TEST(msg-migration		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/msg migration/migration.tesh)
 ADD_TEST(msg-ptask		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/msg parallel_task/parallel_task.tesh)
 ADD_TEST(msg-priority		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/msg priority/priority.tesh)
