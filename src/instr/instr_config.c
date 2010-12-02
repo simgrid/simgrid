@@ -154,4 +154,15 @@ void TRACE_global_init(int *argc, char **argv)
   trace_configured = 1;
 }
 
+#undef OPT_TRACING
+#undef OPT_TRACING_SMPI
+#undef OPT_TRACING_SMPI_GROUP
+#undef OPT_TRACING_PLATFORM
+#undef OPT_TRACING_UNCATEGORIZED
+#undef OPT_TRACING_MSG_TASK
+#undef OPT_TRACING_MSG_PROCESS
+#undef OPT_TRACING_MSG_VOLUME
+#undef OPT_TRACING_FILENAME
+#undef OPT_TRACING_PLATFORM_METHOD
+
 #endif
