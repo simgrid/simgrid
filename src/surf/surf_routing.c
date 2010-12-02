@@ -3505,9 +3505,10 @@ static void routing_parse_Scluster(void)
     }
   }
   xbt_dynar_free(&tab_elements_num);
-#endif
 
   free(route_src_dst);
+#endif
+
   free(router_id);
 
   DEBUG0("</AS>");
