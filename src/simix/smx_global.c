@@ -37,6 +37,11 @@ static void _XBT_CALL inthandler(int ignored)
 
 /********************************* SIMIX **************************************/
 
+XBT_INLINE double SIMIX_timer_next(void)
+{
+  return xbt_heap_size(simix_timers) > 0 ? xbt_heap_maxkey(simix_timers) : -1.0;
+}
+
 /**
  * \brief Initialize SIMIX internal data.
  *
@@ -230,11 +235,6 @@ XBT_INLINE void SIMIX_timer_set(double date, void *function, void *arg)
   timer->func = function;
   timer->args = arg;
   xbt_heap_push(simix_timers, timer, date);
-}
-
-XBT_INLINE double SIMIX_timer_next(void)
-{
-  return xbt_heap_size(simix_timers) > 0 ? xbt_heap_maxkey(simix_timers) : -1.0;
 }
 
 /**
