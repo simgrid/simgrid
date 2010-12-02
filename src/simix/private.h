@@ -274,7 +274,6 @@ static XBT_INLINE smx_context_t SIMIX_context_self(void)
   return (*(simix_global->context_factory->self))();
 }
 
-<<<<<<< HEAD
 /**
  \brief returns the data associated to a context
  \param context The context
@@ -285,7 +284,4 @@ static XBT_INLINE void* SIMIX_context_get_data(smx_context_t context)
   return (*(simix_global->context_factory->get_data))(context);
 }
 
-
-=======
->>>>>>> Clean indentation and coding style in SIMIX
 #endif
