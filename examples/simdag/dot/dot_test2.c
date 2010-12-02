@@ -26,7 +26,7 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
 
   /* Check our arguments */
-  if (argc < 1) {
+  if (argc < 2) {
     INFO1("Usage: %s dot_file", argv[0]);
     exit(1);
   }

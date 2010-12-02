@@ -23,7 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 void dot_add_task(Agnode_t * dag_node);
 void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge);
 void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge);
-xbt_dynar_t SD_dotload_FILE(FILE * in_file);
+xbt_dynar_t SD_dotload_generic(const char * filename);
 
 static double dot_parse_double(const char *string)
 {
@@ -97,10 +97,7 @@ static void TRACE_sd_dotloader (SD_task_t task, const char *category)
  */
 xbt_dynar_t SD_dotload(const char *filename)
 {
-  FILE *in_file = fopen(filename, "r");
-  xbt_assert1(in_file, "Unable to open \"%s\"\n", filename);
-  SD_dotload_FILE(in_file);
-  fclose(in_file);
+  SD_dotload_generic(filename);
   xbt_dynar_t computer = NULL;
   xbt_dict_cursor_t dict_cursor;
   char *computer_name;
@@ -112,10 +109,7 @@ xbt_dynar_t SD_dotload(const char *filename)
 }
 
 xbt_dynar_t SD_dotload_with_sched(const char *filename){
-  FILE *in_file = fopen(filename, "r");
-  xbt_assert1(in_file, "Unable to open \"%s\"\n", filename);
-  SD_dotload_FILE(in_file);
-  fclose(in_file);
+  SD_dotload_generic(filename);
 
   if(schedule == true){
     xbt_dynar_t computer = NULL;
@@ -151,10 +145,10 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename){
   return NULL;
 }
 
-xbt_dynar_t SD_dotload_FILE(FILE * in_file)
+xbt_dynar_t SD_dotload_generic(const char * filename)
 {
-  xbt_assert0(in_file, "Unable to use a null file descriptor\n");
-  dag_dot = agread(in_file, NIL(Agdisc_t *));
+  xbt_assert0(filename, "Unable to use a null file descriptor\n");
+  dag_dot =  agopen((char*)filename,Agstrictdirected,0);
 
   result = xbt_dynar_new(sizeof(SD_task_t), dot_task_free);
   files = xbt_dict_new();
@@ -237,6 +231,7 @@ xbt_dynar_t SD_dotload_FILE(FILE * in_file)
   if(acyclic_graph_detail(result))
     return result;
   acyclic_graph_detail(result);
+  free(dag_dot);
   return NULL;
 }
 
