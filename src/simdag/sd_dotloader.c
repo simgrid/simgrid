@@ -141,7 +141,7 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename){
       xbt_dynar_free(&computer);
     }
     xbt_dict_free(&computers);
-    if(acyclic_graph_detection(result))
+    if(acyclic_graph_detail(result))
       return result;
     else
       WARN0("There is at least one cycle in the provided task graph");
@@ -234,7 +234,7 @@ xbt_dynar_t SD_dotload_FILE(FILE * in_file)
 
   /* Free previous copy of the files */
   xbt_dict_free(&files);
-  if(acyclic_graph_detection(result))
+  if(acyclic_graph_detail(result))
     return result;
   acyclic_graph_detail(result);
   return NULL;

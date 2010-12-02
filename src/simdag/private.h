@@ -128,7 +128,6 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
 void __SD_task_really_run(SD_task_t task);
 int __SD_task_try_to_run(SD_task_t task);
 void __SD_task_just_done(SD_task_t task);
-bool acyclic_graph_detection(xbt_dynar_t dag);
 bool acyclic_graph_detail(xbt_dynar_t dag);
 
 /* Functions to test if the task is in a given state. */
