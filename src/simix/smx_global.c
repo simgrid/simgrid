@@ -295,6 +295,7 @@ void SIMIX_display_process_status(void)
 
   INFO1("%d processes are still running, waiting for something.", nbprocess);
   /*  List the process and their state */
+  /* FIXME: reimplement me
   INFO0
     ("Legend of the following listing: \"<process> on <host>: <status>.\"");
   xbt_swag_foreach(process, simix_global->process_list) {
@@ -310,7 +311,6 @@ void SIMIX_display_process_status(void)
       who2 = bprintf("Waiting for action %p to finish", process->waiting_action);
     }
 
-      /*
     if (process->mutex) {
       who2 =
         bprintf("%s Blocked on mutex %p", who,
@@ -360,8 +360,8 @@ void SIMIX_display_process_status(void)
       free(who);
       who = who2;
     }
-    */
     INFO1("%s.", who);
     free(who);
   }
+  */
 }
