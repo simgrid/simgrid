@@ -144,14 +144,14 @@ bool acyclic_graph_detection(xbt_dynar_t dag){
     if(task->kind == SD_TASK_COMM_E2E) continue;
     //test if all tasks are marked
     if(task->marked == 0){
-      WARN1("test %s",task->name);
+      WARN1("the task %s is not marked",task->name);
       all_marked = false;
       break;
     }
   }
   task = NULL;
   if(!all_marked){
-    DEBUG0("there are a cycle in your DAG");
+    VERB0("there is at least one cycle in your task graph");
   }
   return all_marked;
 }
@@ -230,9 +230,9 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename){
     if(acyclic_graph_detection(result))
       return result;
     else
-      WARN0("There are a cycle in your task graph");
+      WARN0("There is at least one cycle in the provided task graph");
   }else{
-    WARN0("No scheduling provided");
+    WARN0("The scheduling is ignored");
   }
   return NULL;
 }
@@ -376,7 +376,7 @@ void dot_add_task(Agnode_t * dag_node)
     SD_task_dependency_add(NULL, NULL, current_job, end_task);
   }
 
-  if(schedule){
+  if(schedule || XBT_LOG_ISENABLED(sd_dotparse, xbt_log_priority_verbose)){
     /* try to take the information to schedule the task only if all is
      * right*/
     // performer is the computer which execute the task
@@ -407,8 +407,8 @@ void dot_add_task(Agnode_t * dag_node)
         if(task_test != NULL && *task_test != NULL && *task_test != current_job){
           /*the user gives the same order to several tasks*/
           schedule = false;
-          DEBUG0("scheduling does not take into account, several task has\
-                the same order");
+          VERB4("The task %s starts on the computer %s at the position : %s like the task %s",
+                 (*task_test)->name, char_performer, char_order, current_job->name);
         }else{
           //the parameter seems to be ok
           xbt_dynar_set_as(computer, order, SD_task_t, current_job);
@@ -417,17 +417,13 @@ void dot_add_task(Agnode_t * dag_node)
         /*the platform has not enough processors to schedule the DAG like
         *the user wants*/
         schedule = false;
-        DEBUG0("scheduling does not take into account, not enough computers");
+        VERB0("The schedule is ignored, there are not enough computers");
       }
     }
-    else if((performer == -1 && order != -1) ||
-            (performer != -1 && order == -1)){
+    else {
       //one of necessary parameters are not given
       schedule = false;
-      DEBUG0("scheduling does not take into account");
-    } else {
-      //No schedule available
-      schedule = false;
+      VERB1("The schedule is ignored, the task %s is not correctly schedule", current_job->name);
     }
   }
 }
