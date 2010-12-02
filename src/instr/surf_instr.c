@@ -11,8 +11,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(tracing_surf, tracing, "Tracing Surf");
 
-#define VARIABLE_SEPARATOR '#'
-
 static xbt_dict_t created_links;
 static xbt_dict_t host_containers;
 static xbt_dict_t resource_variables;   /* (host|link)#variable -> value */
@@ -57,7 +55,7 @@ static void TRACE_surf_set_resource_variable(double date,
   if (!IS_TRACING)
     return;
   snprintf(aux, 100, "%f", value);
-  snprintf(key, 100, "%s%c%s", resource, VARIABLE_SEPARATOR, variable);
+  snprintf(key, 100, "%s#%s", resource, variable);
 
   last_value = xbt_dict_get_or_null(resource_variables, key);
   if (last_value) {

@@ -8,8 +8,6 @@
 
 #ifdef HAVE_TRACING
 
-#define VARIABLE_SEPARATOR '#'
-
 //to check if variables were previously set to 0, otherwise paje won't simulate them
 static xbt_dict_t platform_variables;   /* host or link name -> array of categories */
 
