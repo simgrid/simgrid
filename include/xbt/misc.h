@@ -45,7 +45,10 @@
 # define _XBT_FUNCTION "function"
 #endif
 
-#ifndef __cplusplus
+#ifdef DOXYGEN
+#  define XBT_INLINE
+#else
+#  ifndef __cplusplus
 #    if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
 #        define XBT_INLINE inline
 #    elif (defined(__STDC__) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
@@ -55,12 +58,13 @@
 #    else
 #        define XBT_INLINE
 #    endif
-#else
-#	 if defined (__VISUALC__)
-#		define XBT_INLINE __inline
-#	 else
-#    	define XBT_INLINE  inline
-#	 endif
+#  else
+#	   if defined (__VISUALC__)
+#		   define XBT_INLINE __inline
+#	   else
+#    	 define XBT_INLINE  inline
+#	   endif
+#  endif /* __cplusplus */
 #endif
 
 /* improvable on gcc (by evaluating arguments only once), but wouldn't be portable */
