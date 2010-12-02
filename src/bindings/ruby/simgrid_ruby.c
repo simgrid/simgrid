@@ -8,7 +8,6 @@
 
 #include "xbt.h"
 #include "bindings/ruby_bindings.h"
-#include "simix/smx_context_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ruby);
 
