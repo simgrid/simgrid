@@ -41,6 +41,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   task->state_hookup.next = NULL;
   task->state_set = sd_global->not_scheduled_task_set;
   task->state = SD_NOT_SCHEDULED;
+  task->marked = 0;
   xbt_swag_insert(task, task->state_set);
 
   task->amount = amount;

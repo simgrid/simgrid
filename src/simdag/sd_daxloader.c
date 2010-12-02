@@ -93,10 +93,10 @@ bool children_are_marked(SD_task_t task){
 bool parents_are_marked(SD_task_t task){
   SD_task_t parent_task = NULL;
   bool all_marked = true;
-  SD_dependency_t depafter = NULL;
+  SD_dependency_t depbefore = NULL;
   unsigned int count;
-  xbt_dynar_foreach(task->tasks_after,count,depafter){
-    parent_task = depafter->dst;
+  xbt_dynar_foreach(task->tasks_before,count,depbefore){
+    parent_task = depbefore->src;
     //test marked
     if(parent_task->marked == 0) {
       all_marked = false;
@@ -174,12 +174,20 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
   if(!all_marked){
     VERB0("there is at least one cycle in your task graph");
 
+    current = xbt_dynar_new(sizeof(SD_task_t),NULL);
+    xbt_dynar_foreach(dag,count,task){
+      if(task->kind == SD_TASK_COMM_E2E) continue;
+      if(xbt_dynar_length(task->tasks_before) == 0){
+        xbt_dynar_push(current, &task);
+      }
+    }
+
     count = 0;
     task = NULL;
     xbt_dynar_foreach(dag,count,task){
       if(task->kind == SD_TASK_COMM_E2E) continue;
-      task->marked = 0;
       if(xbt_dynar_length(task->tasks_before) == 0){
+        task->marked = 1;
         xbt_dynar_push(current, &task);
       }
     }
@@ -197,13 +205,13 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
         task->marked = 1;
         count = 0;
         xbt_dynar_foreach(task->tasks_after,count,depafter){
-          child_task = depafter->dst;
+          child_task = depbefore->dst;
           if(child_task->kind == SD_TASK_COMM_E2E){
             unsigned int j=0;
             child_task->marked = 1;
             SD_task_t child_task_2 = NULL;
             xbt_dynar_foreach(child_task->tasks_after,j,depafter){
-              child_task_2 = depafter->src;
+              child_task_2 = depbefore->dst;
               if(parents_are_marked(child_task_2))
                 xbt_dynar_push(next, &child_task_2);
             }
@@ -211,7 +219,7 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
             if(parents_are_marked(child_task))
               xbt_dynar_push(next, &child_task);
           }
-          parent_task = NULL;
+          child_task = NULL;
         }
         task = NULL;
         count = 0;
@@ -227,7 +235,7 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
       if(task->kind == SD_TASK_COMM_E2E) continue;
       //test if all tasks are marked
       if(task->marked == 0){
-        WARN1("the task %s is not marked",task->name);
+        WARN1("the task %s is in a cycle",task->name);
         all_marked = false;
       }
     }
