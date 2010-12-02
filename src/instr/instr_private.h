@@ -195,6 +195,5 @@ void TRACE_surf_resource_utilization_release(void);
 void TRACE_sd_task_create(SD_task_t task);
 void TRACE_sd_task_destroy(SD_task_t task);
 
-#endif
-
-#endif                          /* PRIVATE_H_ */
+#endif /* HAVE_TRACING */
+#endif /* INSTR_PRIVATE_H_ */

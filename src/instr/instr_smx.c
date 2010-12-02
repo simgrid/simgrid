@@ -50,4 +50,4 @@ void TRACE_smx_action_destroy(smx_action_t act)
   TRACE_surf_resource_utilization_end(act);
 }
 
-#endif
+#endif /* HAVE_TRACING */

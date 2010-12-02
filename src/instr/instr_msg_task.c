@@ -240,4 +240,4 @@ void TRACE_msg_task_put_end(void)
   TRACE_category_unset(SIMIX_process_self());
 }
 
-#endif
+#endif /* HAVE_TRACING */

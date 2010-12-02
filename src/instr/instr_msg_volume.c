@@ -65,4 +65,4 @@ void TRACE_msg_volume_finish(m_task_t task)
               process_alias, task_name);
 }
 
-#endif
+#endif /* HAVE_TRACING */

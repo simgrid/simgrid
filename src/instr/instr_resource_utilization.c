@@ -402,4 +402,4 @@ void TRACE_surf_resource_utilization_alloc()
   __TRACE_define_method(TRACE_get_platform_method());
   TRACE_method_alloc();
 }
-#endif
+#endif /* HAVE_TRACING */

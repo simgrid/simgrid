@@ -238,4 +238,4 @@ void TRACE_help (int detailed)
 #undef OPT_TRACING_FILENAME
 #undef OPT_TRACING_PLATFORM_METHOD
 
-#endif
+#endif /* HAVE_TRACING */

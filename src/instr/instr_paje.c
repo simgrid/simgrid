@@ -361,4 +361,4 @@ void pajeNewEvent(double time, const char *entityType,
           entityType, container, value);
 }
 
-#endif
+#endif /* HAVE_TRACING */

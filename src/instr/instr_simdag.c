@@ -26,4 +26,4 @@ void TRACE_sd_set_task_category(SD_task_t task, const char *category)
   strcpy(task->category, category);
 }
 
-#endif
+#endif /* HAVE_TRACING */

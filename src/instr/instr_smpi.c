@@ -157,4 +157,4 @@ void TRACE_smpi_recv(int rank, int src, int dst)
   pajeEndLink(SIMIX_get_clock(), "MPI_LINK", "0", "PTP",
               TRACE_smpi_container(dst, str, INSTR_DEFAULT_STR_SIZE), key);
 }
-#endif
+#endif /* HAVE_TRACING */

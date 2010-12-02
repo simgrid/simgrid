@@ -258,4 +258,4 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   pajeNewEvent(MSG_get_clock(), mark_type, "0", mark_value);
 }
 
-#endif                          /* HAVE_TRACING */
+#endif /* HAVE_TRACING */

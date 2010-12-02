@@ -51,4 +51,4 @@ void TRACE_msg_category_set(smx_process_t proc, m_task_t task)
 }
 
 
-#endif
+#endif /* HAVE_TRACING */

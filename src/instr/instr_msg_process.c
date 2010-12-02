@@ -186,4 +186,4 @@ void TRACE_msg_process_end(m_process_t process)
     pajeDestroyContainer(MSG_get_clock(), "PROCESS", alias);
 }
 
-#endif
+#endif /* HAVE_TRACING */

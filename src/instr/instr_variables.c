@@ -67,4 +67,4 @@ void TRACE_user_host_variable(double time, const char *variable,
   }
 }
 
-#endif                          /* HAVE_TRACING */
+#endif /* HAVE_TRACING */
