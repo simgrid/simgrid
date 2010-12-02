@@ -46,8 +46,7 @@ static int name_compare_links(const void *n1, const void *n2)
 int main(int argc, char **argv)
 {
   char *platformFile = NULL;
-  int totalHosts, totalLinks, tmp_length;
-  int j, k;
+  int totalHosts, totalLinks;
   unsigned int i;
   xbt_dict_t props = NULL;
   xbt_dict_cursor_t cursor = NULL;
@@ -57,7 +56,7 @@ int main(int argc, char **argv)
   xbt_ex_t e;
 
   const SD_workstation_t *hosts;
-  const SD_link_t *links, *tmp;
+  const SD_link_t *links;
 
   SD_init(&argc, argv);
 
