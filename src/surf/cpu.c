@@ -63,12 +63,12 @@ static cpu_Cas01_t cpu_new(char *name, double power_peak,
 
   cpu->constraint =
       lmm_constraint_new(cpu_maxmin_system, cpu,
-                         cpu->power_scale * cpu->power_peak);
+                         cpu->core * cpu->power_scale * cpu->power_peak);
 
   xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu,
                surf_resource_free);
 #ifdef HAVE_TRACING
-  TRACE_surf_host_declaration(name, cpu->power_scale * cpu->power_peak);
+  TRACE_surf_host_declaration(name, cpu->core * cpu->power_scale * cpu->power_peak);
 #endif
 
   return cpu;
@@ -241,15 +241,23 @@ static void cpu_update_resource_state(void *id,
                                       double value, double date)
 {
   cpu_Cas01_t cpu = id;
+  lmm_variable_t var = NULL;
+  lmm_element_t elem = NULL;
 
   if (event_type == cpu->power_event) {
     cpu->power_scale = value;
     lmm_update_constraint_bound(cpu_maxmin_system, cpu->constraint,
-                                cpu->power_scale * cpu->power_peak);
+                                cpu->core * cpu->power_scale * cpu->power_peak);
 #ifdef HAVE_TRACING
     TRACE_surf_host_set_power(date, cpu->generic_resource.name,
-                              cpu->power_scale * cpu->power_peak);
+                              cpu->core * cpu->power_scale * cpu->power_peak);
 #endif
+    while ((var = lmm_get_var_from_cnst
+            (cpu_maxmin_system, cpu->constraint, &elem))) {
+    	surf_action_cpu_Cas01_t action = lmm_variable_id(var);
+    	lmm_update_variable_bound(cpu_maxmin_system, action->variable,
+                                  cpu->power_scale * cpu->power_peak);
+    }
     if (tmgr_trace_event_free(event_type))
       cpu->power_event = NULL;
   } else if (event_type == cpu->state_event) {
@@ -300,7 +308,7 @@ static surf_action_t cpu_execute(void *cpu, double size)
 
   action->variable = lmm_variable_new(cpu_maxmin_system, action,
                                       action->generic_action.priority,
-                                      -1.0, 1);
+                                      CPU->power_scale * CPU->power_peak, 1);
   lmm_expand(cpu_maxmin_system, CPU->constraint, action->variable, 1.0);
   XBT_OUT;
   return (surf_action_t) action;
