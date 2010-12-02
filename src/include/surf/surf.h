@@ -160,6 +160,7 @@ typedef struct surf_cpu_model_extension_public {
   void (*create_resource) (char *name, double power_peak,
                            double power_scale,
                            tmgr_trace_t power_trace,
+                           int core,
                            e_surf_resource_state_t state_initial,
                            tmgr_trace_t state_trace,
                            xbt_dict_t cpu_properties);
@@ -674,6 +675,7 @@ XBT_PUBLIC(double) get_cpu_power(const char *power);
 XBT_PUBLIC(void) surf_host_create_resource(char *name, double power_peak,
                                            double power_scale,
                                            tmgr_trace_t power_trace,
+                                           int core,
                                            e_surf_resource_state_t
                                            state_initial,
                                            tmgr_trace_t state_trace,

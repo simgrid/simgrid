@@ -147,6 +147,7 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
 static cpu_ti_t cpu_ti_new(char *name, double power_peak,
                            double power_scale,
                            tmgr_trace_t power_trace,
+                           int core,
                            e_surf_resource_state_t state_initial,
                            tmgr_trace_t state_trace,
                            xbt_dict_t cpu_properties)
@@ -158,6 +159,7 @@ static cpu_ti_t cpu_ti_new(char *name, double power_peak,
   xbt_assert1(!surf_model_resource_by_name(surf_cpu_model, name),
               "Host '%s' declared several times in the platform file",
               name);
+  xbt_assert0(core==1,"Multi-core not handled with this model yet");
   cpu->action_set =
       xbt_swag_new(xbt_swag_offset(ti_action, cpu_list_hookup));
   cpu->generic_resource.model = surf_cpu_model;
@@ -194,6 +196,7 @@ static void parse_cpu_ti_init(void)
 {
   double power_peak = 0.0;
   double power_scale = 0.0;
+  int core = 0;
   tmgr_trace_t power_trace = NULL;
   e_surf_resource_state_t state_initial = SURF_RESOURCE_OFF;
   tmgr_trace_t state_trace = NULL;
@@ -201,6 +204,7 @@ static void parse_cpu_ti_init(void)
   power_peak = get_cpu_power(A_surfxml_host_power);
   surf_parse_get_double(&power_scale, A_surfxml_host_availability);
   power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
+  surf_parse_get_int(&core, A_surfxml_host_core);
 
   xbt_assert0((A_surfxml_host_state == A_surfxml_host_state_ON) ||
               (A_surfxml_host_state == A_surfxml_host_state_OFF),
@@ -213,7 +217,7 @@ static void parse_cpu_ti_init(void)
 
   current_property_set = xbt_dict_new();
   cpu_ti_new(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
-             power_trace, state_initial, state_trace,
+             power_trace, core, state_initial, state_trace,
              current_property_set);
 
 }
@@ -747,11 +751,13 @@ static double cpu_ti_get_available_speed(void *cpu)
 static void cpu_ti_create_resource(char *name, double power_peak,
                                    double power_scale,
                                    tmgr_trace_t power_trace,
+                                   int core,
                                    e_surf_resource_state_t state_initial,
                                    tmgr_trace_t state_trace,
                                    xbt_dict_t cpu_properties)
 {
-  cpu_ti_new(name, power_peak, power_scale, power_trace,
+	xbt_assert0(core==1,"Multi-core not handled with this model yet");
+  cpu_ti_new(name, power_peak, power_scale, power_trace, core,
              state_initial, state_trace, cpu_properties);
 }
 

@@ -554,7 +554,7 @@ static void add_randomness(void)
  */
 void surf_host_create_resource(char *name, double power_peak,
                                double power_scale,
-                               tmgr_trace_t power_trace,
+                               tmgr_trace_t power_trace, int core,
                                e_surf_resource_state_t state_initial,
                                tmgr_trace_t state_trace,
                                xbt_dict_t cpu_properties)
@@ -562,6 +562,7 @@ void surf_host_create_resource(char *name, double power_peak,
   return surf_cpu_model->extension.cpu.create_resource(name, power_peak,
                                                        power_scale,
                                                        power_trace,
+                                                       core,
                                                        state_initial,
                                                        state_trace,
                                                        cpu_properties);

@@ -13,6 +13,7 @@ typedef struct cpu_Cas01 {
   s_surf_resource_t generic_resource;
   double power_peak;
   double power_scale;
+  int core;
   tmgr_trace_event_t power_event;
   e_surf_resource_state_t state_current;
   tmgr_trace_event_t state_event;
@@ -34,6 +35,7 @@ static xbt_swag_t cpu_running_action_set_that_does_not_need_being_checked =
 static cpu_Cas01_t cpu_new(char *name, double power_peak,
                            double power_scale,
                            tmgr_trace_t power_trace,
+                           int core,
                            e_surf_resource_state_t state_initial,
                            tmgr_trace_t state_trace,
                            xbt_dict_t cpu_properties)
@@ -48,6 +50,8 @@ static cpu_Cas01_t cpu_new(char *name, double power_peak,
   cpu->power_peak = power_peak;
   xbt_assert0(cpu->power_peak > 0, "Power has to be >0");
   cpu->power_scale = power_scale;
+  cpu->core = core;
+  xbt_assert1(core>0,"Invalid number of cores %d",core);
   if (power_trace)
     cpu->power_event =
         tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
@@ -75,6 +79,7 @@ static void parse_cpu_init(void)
 {
   double power_peak = 0.0;
   double power_scale = 0.0;
+  int core = 0;
   tmgr_trace_t power_trace = NULL;
   e_surf_resource_state_t state_initial = SURF_RESOURCE_OFF;
   tmgr_trace_t state_trace = NULL;
@@ -82,6 +87,7 @@ static void parse_cpu_init(void)
   power_peak = get_cpu_power(A_surfxml_host_power);
   surf_parse_get_double(&power_scale, A_surfxml_host_availability);
   power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
+  surf_parse_get_int(&core, A_surfxml_host_core);
 
   xbt_assert0((A_surfxml_host_state == A_surfxml_host_state_ON) ||
               (A_surfxml_host_state == A_surfxml_host_state_OFF),
@@ -94,7 +100,7 @@ static void parse_cpu_init(void)
 
   current_property_set = xbt_dict_new();
   cpu_new(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
-          power_trace, state_initial, state_trace, current_property_set);
+          power_trace, core, state_initial, state_trace, current_property_set);
 
 }
 
@@ -399,11 +405,12 @@ static double cpu_get_available_speed(void *cpu)
 static void cpu_create_resource(char *name, double power_peak,
                                 double power_scale,
                                 tmgr_trace_t power_trace,
+                                int core,
                                 e_surf_resource_state_t state_initial,
                                 tmgr_trace_t state_trace,
                                 xbt_dict_t cpu_properties)
 {
-  cpu_new(name, power_peak, power_scale, power_trace,
+  cpu_new(name, power_peak, power_scale, power_trace, core,
           state_initial, state_trace, cpu_properties);
 }
 
