@@ -96,10 +96,6 @@ foreach(file ${README_examples_files})
 endforeach(file ${README_examples_files})
 
 # bindings cruft
-if(HAVE_JAVA)
-  install(FILES ${CMAKE_BINARY_DIR}/simgrid.jar
-          DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/)
-endif(HAVE_JAVA)
 
 if(HAVE_LUA)
 	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/lua/5.1")
@@ -170,14 +166,6 @@ COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/xbt.h
 COMMAND ${CMAKE_COMMAND} -E	echo "uninstall include ok"
 WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
 )
-
-if(HAVE_JAVA)
-	add_custom_command(TARGET uninstall
-	COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/share/simgrid.jar
-	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding java ok"
-	WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/"
-	)	
-endif(HAVE_JAVA)
 
 if(HAVE_LUA)
 	add_custom_command(TARGET uninstall
