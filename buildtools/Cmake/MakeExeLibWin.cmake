@@ -90,7 +90,6 @@ if(HAVE_MC)
 endif(HAVE_MC)
 
 if(HAVE_GTNETS)
-	add_definitions("-lgtnets -L${gtnets_path}/lib -I${gtnets_path}/include/gtnets")
 	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets)
 endif(HAVE_GTNETS)
 

@@ -682,7 +682,7 @@ set(includedir ${CMAKE_INSTALL_PREFIX}/include)
 set(top_builddir ${CMAKE_HOME_DIRECTORY})
 set(libdir ${exec_prefix}/lib)
 set(CMAKE_LINKARGS "${CMAKE_CURRENT_BINARY_DIR}/lib")
-set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/lib:${gtnets_path}/lib:$LD_LIBRARY_PATH")
+set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/lib:${GTNETS_LIB_PATH}:$LD_LIBRARY_PATH")
 
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpif2c @ONLY)

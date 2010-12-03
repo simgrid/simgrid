@@ -90,7 +90,6 @@ cmake -Denable_lua=on \
 -Denable_tracing=on \
 -Denable_latency_bound_tracking=on \
 -Denable_gtnets=on \
--Dgtnets_path=/usr \
 -Denable_java=on \
 -Dwith_context=auto \
 -Denable_smpi=on .
@@ -110,7 +109,6 @@ cmake -Denable_lua=on \
 -Denable_tracing=on \
 -Denable_latency_bound_tracking=on \
 -Denable_gtnets=off \
--Dgtnets_path=/usr \
 -Denable_java=on \
 -Dwith_context=auto \
 -Denable_compile_optimizations=on \
@@ -132,7 +130,6 @@ cmake -Denable_lua=on \
 -Denable_tracing=on \
 -Denable_latency_bound_tracking=on \
 -Denable_gtnets=off \
--Dgtnets_path=/usr \
 -Denable_java=on \
 -Dwith_context=auto \
 -Denable_compile_optimizations=off \
@@ -155,7 +152,6 @@ cmake -Denable_lua=on \
 -Denable_tracing=on \
 -Denable_latency_bound_tracking=on \
 -Denable_gtnets=on \
--Dgtnets_path=/usr \
 -Denable_java=on \
 -Dwith_context=auto \
 -Denable_compile_optimizations=off \
@@ -222,7 +218,7 @@ if [ $SYSTEM = Linux ] ; then
 	
 	if [ -e $userhome/usr/lib/libgtsim-opt.so ] ; then
 		#Make gtnets
-		cmake -Denable_supernovae=off -Denable_compile_warnings=off -Denable_compile_optimizations=off -Dgtnets_path=$absolute_path/usr ./
+		cmake -Denable_supernovae=off -Denable_compile_warnings=off -Denable_compile_optimizations=off ./
 		ctest -D NightlyStart
 		ctest -D NightlyConfigure
 		ctest -D NightlyBuild
