@@ -189,10 +189,12 @@ void jprocess_schedule(smx_context_t context)
 
   env = get_current_thread_env();
 
-  id = jxbt_get_smethod(env, "simgrid/msg/Process", "schedule", "()V");
+  id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "schedule", "()V");
 
-  if (!id)
+  if (!id) {
+    CRITICAL0("Cannot find java method org/simgrid/msg/Process/schedule()V");
     return;
+  }
 
   (*env)->CallVoidMethod(env, ((smx_ctx_java_t) context)->jprocess, id);
 }

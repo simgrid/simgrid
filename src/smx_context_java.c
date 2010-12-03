@@ -46,6 +46,7 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     void_pfn_smxprocess_t cleanup_func,
                                     void* data)
 {
+  fprintf(stderr,"XXXX Create Context\n");
   smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
 
   /* If the user provided a function for the process then use it
@@ -86,6 +87,7 @@ static void smx_ctx_java_free(smx_context_t context)
 static void smx_ctx_java_stop(smx_context_t context)
 {
   jobject jprocess = NULL;
+  fprintf(stderr,"XXXX Context Stop\n");
 
   smx_ctx_java_t ctx_java;
 
@@ -94,8 +96,9 @@ static void smx_ctx_java_stop(smx_context_t context)
 
   ctx_java = (smx_ctx_java_t) context;
 
-  /*FIXME: is this really necessary? DIRTY HACK: let's comment it and see*/
-//  if (((smx_process_t)smx_current_context->data)->iwannadie) {
+  /*FIXME: is this really necessary? Seems to. */
+  if (smx_current_context->iwannadie) {
+    INFO0("I wannadie");
     /* The maestro call xbt_context_stop() with an exit code set to one */
     if (ctx_java->jprocess) {
       /* if the java process is alive schedule it */
@@ -108,31 +111,15 @@ static void smx_ctx_java_stop(smx_context_t context)
         jprocess_exit(jprocess, get_current_thread_env());
       }
     }
-//  } else {
+  } else {
     /* the java process exits */
-//    jprocess = ctx_java->jprocess;
-//    ctx_java->jprocess = NULL;
-//  }
+    jprocess = ctx_java->jprocess;
+    ctx_java->jprocess = NULL;
+  }
 
   /* delete the global reference associated with the java process */
   jprocess_delete_global_ref(jprocess, get_current_thread_env());
 }
-
-/*static void smx_ctx_java_swap(smx_context_t context)
-{
-  if (context) {
-    smx_context_t self = current_context;
-
-    current_context = context;
-
-    jprocess_schedule(context);
-
-    current_context = self;
-  }
-
-  if (current_context->iwannadie)
-    smx_ctx_java_stop(1);
-}*/
 
 static void smx_ctx_java_suspend(smx_context_t context)
 {
@@ -142,6 +129,7 @@ static void smx_ctx_java_suspend(smx_context_t context)
 // FIXME: inline those functions
 static void smx_ctx_java_resume(smx_context_t new_context)
 {
+  fprintf(stderr,"XXXX Context Resume\n");
   jprocess_schedule(new_context);
 }
 
@@ -149,11 +137,13 @@ static void smx_ctx_java_runall(xbt_swag_t processes)
 {
   smx_process_t process;
   smx_context_t old_context;
-  
+  fprintf(stderr,"XXXX Run all\n");
+
   while ((process = xbt_swag_extract(processes))) {
     old_context = smx_current_context;
     smx_current_context = SIMIX_process_get_context(process);
     smx_ctx_java_resume(smx_current_context);
     smx_current_context = old_context;
   }
+  fprintf(stderr,"XXXX End of run all\n");
 }

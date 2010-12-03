@@ -6,8 +6,10 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg/msg.h"
-#include "simix/context.h"
+#include <msg/msg.h>
+#include <simix/context.h>
+#include <surf/surfxml_parse.h>
+
 #include "smx_context_java.h"
 
 #include "jmsg_process.h"
@@ -17,7 +19,6 @@
 #include "jxbt_utilities.h"
 
 #include "jmsg.h"
-#include "surf/surfxml_parse.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -323,17 +324,17 @@ Java_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
 
   /* get the C string from the java string */
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
-
+  DEBUG1("Looking for host '%s'",name);
   /* get the host by name       (the hosts are created during the grid resolution) */
   host = MSG_get_host_by_name(name);
-  DEBUG2("MSG gave %p as native host (simdata=%p)", host, host->simdata);
-
-  (*env)->ReleaseStringUTFChars(env, jname, name);
+  DEBUG2("MSG gave %p as native host (simdata=%p)", host,host? host->simdata:NULL);
 
   if (!host) {                  /* invalid name */
     jxbt_throw_host_not_found(env, name);
+    (*env)->ReleaseStringUTFChars(env, jname, name);
     return NULL;
   }
+  (*env)->ReleaseStringUTFChars(env, jname, name);
 
   if (!MSG_host_get_data(host)) {       /* native host not associated yet with java host */
 
@@ -814,15 +815,16 @@ JNIEXPORT void JNICALL
   jobject jhost;
 
   /* Run everything */
+  INFO0("Ready to run MSG_MAIN");
   rv = MSG_main();
+  INFO0("Done running MSG_MAIN");
   jxbt_check_res("MSG_main()", rv, MSG_OK,
                  bprintf
                  ("unexpected error : MSG_main() failed .. please report this bug "));
 
-  DEBUG0
-      ("MSG_main finished. Bail out before cleanup since there is a bug in this part.");
+  INFO0("MSG_main finished");
 
-  DEBUG0("Clean java world");
+  INFO0("Clean java world");
   /* Cleanup java hosts */
   hosts = MSG_get_host_table();
   for (index = 0; index < MSG_get_host_number() - 1; index++) {
@@ -832,7 +834,7 @@ JNIEXPORT void JNICALL
 
   }
 
-  DEBUG0("Clean native world");
+  INFO0("Clean native world");
   /* cleanup native stuff */
   rv = MSG_OK != MSG_clean();
   jxbt_check_res("MSG_clean()", rv, MSG_OK,
