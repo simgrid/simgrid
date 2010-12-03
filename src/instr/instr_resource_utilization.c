@@ -290,7 +290,7 @@ void TRACE_surf_link_set_utilization(void *link, smx_action_t smx_action,
   }
 
   //trace categorized utilization
-  if (!IS_TRACED(surf_action))
+  if (!surf_action->category)
     return;
   char type[100];
   snprintf(type, 100, "b%s", surf_action->category);
@@ -320,7 +320,7 @@ void TRACE_surf_host_set_utilization(const char *name,
   }
 
   //trace categorized utilization
-  if (!IS_TRACED(surf_action))
+  if (!surf_action->category)
     return;
   char type[100];
   snprintf(type, 100, "p%s", surf_action->category);

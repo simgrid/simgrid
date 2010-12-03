@@ -11,8 +11,6 @@
 
 #ifdef HAVE_TRACING
 
-#define IS_TRACED(n)          (n->category)
-
 #define INSTR_DEFAULT_STR_SIZE 500
 
 #include "instr/instr.h"

@@ -147,7 +147,7 @@ void TRACE_msg_task_execute_start(m_task_t task)
   if (!TRACE_is_active())
     return;
 
-  if (!IS_TRACED(task))
+  if (!task->category)
     return;
 
   TRACE_task_container(task, name, 200);
@@ -163,7 +163,7 @@ void TRACE_msg_task_execute_end(m_task_t task)
   if (!TRACE_is_active())
     return;
 
-  if (!IS_TRACED(task))
+  if (!task->category)
     return;
 
   TRACE_task_container(task, name, 200);
@@ -180,7 +180,7 @@ void TRACE_msg_task_destroy(m_task_t task)
   if (!TRACE_is_active())
     return;
 
-  if (!IS_TRACED(task))
+  if (!task->category)
     return;
 
   TRACE_task_container(task, name, 200);
@@ -208,7 +208,7 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
   if (!TRACE_is_active())
     return;
 
-  if (!IS_TRACED(task))
+  if (!task->category)
     return;
 
   TRACE_task_container(task, name, 200);
@@ -228,7 +228,7 @@ int TRACE_msg_task_put_start(m_task_t task)
   if (!TRACE_is_active())
     return 0;
 
-  if (!IS_TRACED(task))
+  if (!task->category)
     return 0;
 
   TRACE_task_container(task, name, 200);

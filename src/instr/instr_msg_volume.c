@@ -19,12 +19,12 @@ void TRACE_msg_volume_start(m_task_t task)
     return;
 
   /* check if task is traced */
-  if (!IS_TRACED(task))
+  if (!task->category)
     return;
 
   /* check if process is traced */
   process = MSG_process_self();
-  if (!IS_TRACED(process))
+  if (!process->category)
     return;
 
   host = MSG_process_get_host(process);
@@ -48,12 +48,12 @@ void TRACE_msg_volume_finish(m_task_t task)
     return;
 
   /* check if task is traced */
-  if (!IS_TRACED(task))
+  if (!task->category)
     return;
 
   /* check if process is traced */
   process = MSG_process_self();
-  if (!IS_TRACED(process))
+  if (!process->category)
     return;
 
   host = MSG_process_get_host(process);

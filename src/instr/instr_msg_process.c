@@ -108,7 +108,7 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host,
                                    m_host_t new_host)
 {
   char alias[200];
-  if (!(TRACE_msg_process_is_enabled() || TRACE_msg_volume_is_enabled()) || !IS_TRACED(process))
+  if (!(TRACE_msg_process_is_enabled() || TRACE_msg_volume_is_enabled()) || !process->category)
     return;
 
   //disabling presence in old_host (__TRACE_msg_process_not_present)
@@ -123,7 +123,7 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host,
 void TRACE_msg_process_kill(m_process_t process)
 {
   char name[200];
-  if (!TRACE_msg_process_is_enabled() || !IS_TRACED(process))
+  if (!TRACE_msg_process_is_enabled() || !process->category)
     return;
 
   TRACE_process_container(process, name, 200);
@@ -133,7 +133,7 @@ void TRACE_msg_process_kill(m_process_t process)
 void TRACE_msg_process_suspend(m_process_t process)
 {
   char name[200];
-  if (!TRACE_msg_process_is_enabled() || !IS_TRACED(process))
+  if (!TRACE_msg_process_is_enabled() || !process->category)
     return;
 
   TRACE_process_container(process, name, 200);
@@ -143,7 +143,7 @@ void TRACE_msg_process_suspend(m_process_t process)
 void TRACE_msg_process_resume(m_process_t process)
 {
   char name[200];
-  if (!TRACE_msg_process_is_enabled() || !IS_TRACED(process))
+  if (!TRACE_msg_process_is_enabled() || !process->category)
     return;
 
   TRACE_process_container(process, name, 200);
@@ -153,7 +153,7 @@ void TRACE_msg_process_resume(m_process_t process)
 void TRACE_msg_process_sleep_in(m_process_t process)
 {
   char name[200];
-  if (!TRACE_msg_process_is_enabled() || !IS_TRACED(process))
+  if (!TRACE_msg_process_is_enabled() || !process->category)
     return;
 
   TRACE_process_container(process, name, 200);
@@ -163,7 +163,7 @@ void TRACE_msg_process_sleep_in(m_process_t process)
 void TRACE_msg_process_sleep_out(m_process_t process)
 {
   char name[200];
-  if (!TRACE_msg_process_is_enabled() || !IS_TRACED(process))
+  if (!TRACE_msg_process_is_enabled() || !process->category)
     return;
 
   TRACE_process_container(process, name, 200);
@@ -174,7 +174,7 @@ void TRACE_msg_process_end(m_process_t process)
 {
   char name[200], alias[200];
   m_host_t host = NULL;
-  if (!IS_TRACED(process))
+  if (!!process->category)
     return;
 
   host = MSG_process_get_host(process);
