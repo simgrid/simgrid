@@ -3,21 +3,22 @@
 #PRE-PIPOL /home/mescal/navarro/pre-simgrid.sh
 
 #PIPOL esn i386-linux-ubuntu-intrepid.dd.gz none 02:00 --user --silent
+#PIPOL esn amd64-linux-ubuntu-intrepid.dd.gz none 02:00 --user --silent
 
 #PIPOL esn i386-linux-ubuntu-jaunty.dd.gz none 02:00 --user --silent
+#PIPOL esn amd64-linux-ubuntu-jaunty.dd.gz none 02:00 --user --silent
 
 #PIPOL esn i386-linux-ubuntu-karmic.dd.gz none 02:00 --user --silent
 #PIPOL esn amd64-linux-ubuntu-karmic.dd.gz none 02:00 --user --silent
 
-#PIPOL esn i386-linux-debian-lenny.dd.gz none 02:00 --user --silent
-#PIPOL esn amd64-linux-debian-lenny.dd.gz none 02:00 --user --silent
-
-#PIPOL esn i386-linux-debian-testing.dd none 02:00 --user --silent
-
 #PIPOL esn i386-linux-fedora-core11.dd.gz none 02:00 --user --silent
+#PIPOL esn amd64-linux-fedora-core11.dd.gz none 02:00 --user --silent
 
-#PIPOL esn i386-linux-fedora-core12.dd.gz none 02:00 --user --silent
-#PIPOL esn amd64-linux-fedora-core12.dd.gz none 02:00 --user --silent
+#PIPOL esn i386_kvm-linux-debian-lenny none 02:00 --user --silent
+#PIPOL esn i386_kvm-linux-debian-testing none 02:00 --user --silent
+
+#PIPOL esn amd64_kvm-linux-debian-lenny none 02:00 --user --silent
+#PIPOL esn amd64_kvm-linux-debian-testing none 02:00 --user --silent
 
 SYSTEM=`uname`
 
@@ -217,8 +218,18 @@ if [ $SYSTEM = Linux ] ; then
 	cd simgrid-trunk
 	
 	if [ -e $userhome/usr/lib/libgtsim-opt.so ] ; then
-		#Make gtnets
-		cmake -Denable_supernovae=off -Denable_compile_warnings=off -Denable_compile_optimizations=off ./
+		#gtnets
+		cmake -Denable_lua=on \
+		-Denable_ruby=on \
+		-Denable_lib_static=on \
+		-Denable_graphviz=on \
+		-Denable_model-checking=off \
+		-Denable_tracing=on \
+		-Denable_latency_bound_tracking=on \
+		-Denable_gtnets=on \
+		-Denable_java=on \
+		-Dwith_context=auto \
+		-Denable_smpi=on .
 		ctest -D NightlyStart
 		ctest -D NightlyConfigure
 		ctest -D NightlyBuild
@@ -230,7 +241,8 @@ fi
 
 if( $PIPOL_IMAGE = i386-linux-ubuntu-karmic.dd.gz )
 	#Make the memcheck mode
-	cmake -Denable_gtnets=off -Denable_memcheck=on ./
+	cmake -Denable_gtnets=off \
+	-Denable_memcheck=on ./
 	ctest -D NightlyStart
 	ctest -D NightlyConfigure
 	ctest -D NightlyBuild

@@ -83,8 +83,6 @@ endif(WIN32)
 
 set(CONTEXT_UCONTEXT 0)
 SET(CONTEXT_THREADS 0)
-SET(HAVE_RUBY 0)
-set(HAVE_LUA 0)
 SET(HAVE_TRACING 0)
 
 if(enable_tracing)
@@ -110,30 +108,6 @@ else(enable_model-checking AND HAVE_MMAP)
 	SET(HAVE_MC 0)
 	SET(MMALLOC_WANT_OVERIDE_LEGACY 0)
 endif(enable_model-checking AND HAVE_MMAP)
-
-if(enable_lua)
-	if(LUA51_FOUND)
-		set(HAVE_LUA 1)
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${LUA_INCLUDE_DIR} ")
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-L${LUA_LIBRARY_DIR} ")
-	else(LUA51_FOUND)
-		message(STATUS "Warning : Lua need version 5.1")
-	endif(LUA51_FOUND)
-endif(enable_lua)
-
-#--------------------------------------------------------------------------------------------------
-### Initialize of Smpi
-
-if(enable_smpi)
-	if(HAVE_F2C_H)
-       string(REGEX MATCH "-I${HAVE_F2C_H} " operation "${CMAKE_C_FLAGS}")
-	   if(NOT operation)
-			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${HAVE_F2C_H} ")
-	   endif(NOT operation)
-	else(HAVE_F2C_H)
-		message(STATUS "Warning : You should install f2c before use smpi.")
-	endif(HAVE_F2C_H)	
-endif(enable_smpi)
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
