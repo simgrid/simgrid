@@ -21,14 +21,14 @@ IF(FLEXML_EXE)
 	string(REGEX MATCH "[0-9]*$" FLEXML_MINOR_VERSION "${FLEXML_VERSION}")
 ENDIF(FLEXML_EXE)
 
-message("-- Found flex: ${FLEX_EXE}")
-message("-- Found flexml: ${FLEXML_EXE}")
-message("-- Found sed: ${SED_EXE}")
+message(STATUS "Found flex: ${FLEX_EXE}")
+message(STATUS "Found flexml: ${FLEXML_EXE}")
+message(STATUS "Found sed: ${SED_EXE}")
 
 if(HAVE_FLEXML AND HAVE_FLEX AND SED_EXE)
 
-message("-- Flex version: ${FLEX_MAJOR_VERSION}.${FLEX_MINOR_VERSION}.${FLEX_PATCH_VERSION}")
-message("-- Flexml version: ${FLEXML_MAJOR_VERSION}.${FLEXML_MINOR_VERSION}")
+message(STATUS "Flex version: ${FLEX_MAJOR_VERSION}.${FLEX_MINOR_VERSION}.${FLEX_PATCH_VERSION}")
+message(STATUS "Flexml version: ${FLEXML_MAJOR_VERSION}.${FLEXML_MINOR_VERSION}")
 
 set(string1  "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
 set(string2  "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")
@@ -124,16 +124,16 @@ ADD_CUSTOM_COMMAND(
 
 else(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
 	if(NOT HAVE_FLEXML)
-		message("-- Error : Install flexml before use maintainer mode.")
+		message(STATUS "Error : Install flexml before use maintainer mode.")
 	endif(NOT HAVE_FLEXML)
 	if(NOT HAVE_FLEX)
-		message("-- Error : Install flex before use maintainer mode.")
+		message(STATUS "Error : Install flex before use maintainer mode.")
 	endif(NOT HAVE_FLEX)
 	if(NOT SED_EXE)
-		message("-- Error : Install sed before use maintainer mode.")
+		message(STATUS "Error : Install sed before use maintainer mode.")
 	endif(NOT SED_EXE)
 	
-	message(FATAL_ERROR "-- Error : Need to install all tools for maintainer mode !!!")
+	message(FATAL_ERROR STATUS "Error : Need to install all tools for maintainer mode !!!")
 endif(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
 
 endif(enable_maintainer_mode AND NOT WIN32)

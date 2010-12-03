@@ -63,24 +63,24 @@ find_program(HAVE_GRAS_STUB
 	/usr
 )
 
-message("-- Looking for lib SimGrid")
+message(STATUS "Looking for lib SimGrid")
 if(HAVE_SIMGRID_LIB)
-message("-- Looking for lib SimGrid - found")
+message(STATUS "Looking for lib SimGrid - found")
 else(HAVE_SIMGRID_LIB)
-message("-- Looking for lib SimGrid - not found")
+message(STATUS "Looking for lib SimGrid - not found")
 endif(HAVE_SIMGRID_LIB)
 
-message("-- Looking for gras.h")
+message(STATUS "Looking for gras.h")
 if(HAVE_GRAS_H)
-message("-- Looking for gras.h - found")
+message(STATUS "Looking for gras.h - found")
 else(HAVE_GRAS_H)
-message("-- Looking for gras.h - not found")
+message(STATUS "Looking for gras.h - not found")
 endif(HAVE_GRAS_H)
 
 if(HAVE_TESH)
-message("-- Found Tesh: ${HAVE_TESH}")
+message(STATUS "Found Tesh: ${HAVE_TESH}")
 endif(HAVE_TESH)
 
 if(HAVE_GRAS_STUB)
-message("-- Found gras_stub_generator: ${HAVE_GRAS_STUB}")
+message(STATUS "Found gras_stub_generator: ${HAVE_GRAS_STUB}")
 endif(HAVE_GRAS_STUB)
