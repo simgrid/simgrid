@@ -113,7 +113,7 @@ static void TRACE_task_location_not_present(m_task_t task)
 void TRACE_msg_set_task_category(m_task_t task, const char *category)
 {
   char name[200];
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
 
   //set task category
@@ -144,7 +144,7 @@ void TRACE_msg_task_create(m_task_t task)
 void TRACE_msg_task_execute_start(m_task_t task)
 {
   char name[200];
-  if (!IS_TRACING || !IS_TRACED(task))
+  if (!TRACE_is_active() || !IS_TRACED(task))
     return;
 
   TRACE_task_container(task, name, 200);
@@ -157,7 +157,7 @@ void TRACE_msg_task_execute_start(m_task_t task)
 void TRACE_msg_task_execute_end(m_task_t task)
 {
   char name[200];
-  if (!IS_TRACING || !IS_TRACED(task))
+  if (!TRACE_is_active() || !IS_TRACED(task))
     return;
 
   TRACE_task_container(task, name, 200);
@@ -171,7 +171,7 @@ void TRACE_msg_task_execute_end(m_task_t task)
 void TRACE_msg_task_destroy(m_task_t task)
 {
   char name[200];
-  if (!IS_TRACING || !IS_TRACED(task))
+  if (!TRACE_is_active() || !IS_TRACED(task))
     return;
 
   TRACE_task_container(task, name, 200);
@@ -189,14 +189,14 @@ void TRACE_msg_task_destroy(m_task_t task)
 /* MSG_task_get related functions */
 void TRACE_msg_task_get_start(void)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
 }
 
 void TRACE_msg_task_get_end(double start_time, m_task_t task)
 {
   char name[200];
-  if (!IS_TRACING || !IS_TRACED(task))
+  if (!TRACE_is_active() || !IS_TRACED(task))
     return;
 
   TRACE_task_container(task, name, 200);
@@ -213,7 +213,7 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
 int TRACE_msg_task_put_start(m_task_t task)
 {
   char name[200];
-  if (!IS_TRACING || !IS_TRACED(task))
+  if (!TRACE_is_active() || !IS_TRACED(task))
     return 0;
 
   TRACE_task_container(task, name, 200);
@@ -234,7 +234,7 @@ int TRACE_msg_task_put_start(m_task_t task)
 
 void TRACE_msg_task_put_end(void)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
 
   TRACE_category_unset(SIMIX_process_self());

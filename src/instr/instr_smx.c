@@ -12,12 +12,11 @@ static long long int counter = 0;       /* to uniquely identify simix actions */
 
 void TRACE_smx_host_execute(smx_action_t act)
 {
-  char *category = NULL;
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
 
   act->counter = counter++;
-  category = TRACE_category_get(SIMIX_process_self());
+  char *category = TRACE_category_get(SIMIX_process_self());
   if (category) {
     act->category = xbt_new(char, strlen(category) + 1);
     strncpy(act->category, category, strlen(category) + 1);
@@ -27,12 +26,11 @@ void TRACE_smx_host_execute(smx_action_t act)
 
 void TRACE_smx_action_communicate(smx_action_t act, smx_process_t proc)
 {
-  char *category = NULL;
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
 
   act->counter = counter++;
-  category = TRACE_category_get(proc);
+  char *category = TRACE_category_get(proc);
   if (category) {
     act->category = xbt_strdup(category);
   }
@@ -41,7 +39,7 @@ void TRACE_smx_action_communicate(smx_action_t act, smx_process_t proc)
 
 void TRACE_smx_action_destroy(smx_action_t act)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
 
   if (act->category) {

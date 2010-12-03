@@ -52,7 +52,7 @@ static void TRACE_surf_set_resource_variable(double date,
 {
   char aux[100], key[100];
   char *last_value = NULL;
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   snprintf(aux, 100, "%f", value);
   snprintf(key, 100, "%s#%s", resource, variable);
@@ -80,7 +80,7 @@ static void TRACE_surf_set_resource_variable(double date,
 void TRACE_surf_link_declaration(void *link, char *name, double bw,
                                  double lat)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
 
   if (!link){
@@ -110,7 +110,7 @@ void TRACE_surf_link_declaration(void *link, char *name, double bw,
  */
 void TRACE_surf_host_declaration(const char *name, double power)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   pajeCreateContainer(SIMIX_get_clock(), name, "HOST", "platform", name);
   xbt_dict_set(host_containers, name, xbt_strdup("1"), xbt_free);
@@ -120,7 +120,7 @@ void TRACE_surf_host_declaration(const char *name, double power)
 void TRACE_surf_host_set_power(double date, const char *resource,
                                double power)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   TRACE_surf_set_resource_variable(date, "power", resource, power);
 }
@@ -128,7 +128,7 @@ void TRACE_surf_host_set_power(double date, const char *resource,
 void TRACE_surf_link_set_bandwidth(double date, void *link,
                                    double bandwidth)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   if (!TRACE_surf_link_is_traced(link))
     return;
@@ -140,7 +140,7 @@ void TRACE_surf_link_set_bandwidth(double date, void *link,
 
 void TRACE_surf_link_set_latency(double date, void *link, double latency)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   if (!TRACE_surf_link_is_traced(link))
     return;
@@ -154,7 +154,7 @@ void TRACE_surf_link_set_latency(double date, void *link, double latency)
 void TRACE_surf_gtnets_communicate(void *action, int src, int dst)
 {
   char key[100], aux[100];
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   snprintf(key, 100, "%p", action);
 
@@ -168,7 +168,7 @@ int TRACE_surf_gtnets_get_src(void *action)
 {
   char key[100];
   char *aux = NULL;
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return -1;
   snprintf(key, 100, "%p", action);
 
@@ -184,7 +184,7 @@ int TRACE_surf_gtnets_get_dst(void *action)
 {
   char key[100];
   char *aux = NULL;
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return -1;
   snprintf(key, 100, "%p", action);
 
@@ -199,7 +199,7 @@ int TRACE_surf_gtnets_get_dst(void *action)
 void TRACE_surf_gtnets_destroy(void *action)
 {
   char key[100];
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   snprintf(key, 100, "%p", action);
   xbt_dict_remove(gtnets_src, key);
@@ -210,7 +210,7 @@ void TRACE_surf_host_vivaldi_parse(char *host, double x, double y,
                                    double h)
 {
   char valuestr[100];
-  if (!IS_TRACING || !IS_TRACING_PLATFORM)
+  if (!TRACE_is_active() || !IS_TRACING_PLATFORM)
     return;
 
   snprintf(valuestr, 100, "%g", x);
@@ -224,7 +224,7 @@ void TRACE_surf_host_vivaldi_parse(char *host, double x, double y,
 extern routing_global_t global_routing;
 void TRACE_surf_save_onelink(void)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
 
   //get the onelinks from the parsed platform
@@ -263,7 +263,7 @@ int TRACE_surf_link_is_traced(void *link)
 
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   if (!IS_TRACING_PLATFORM)
     return;

@@ -83,7 +83,7 @@ void TRACE_msg_set_process_category(m_process_t process,
                                     const char *category)
 {
   char name[200];
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
 
   //set process category

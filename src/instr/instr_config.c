@@ -21,6 +21,26 @@
 #define OPT_TRACING_PLATFORM_METHOD "tracing/platform/method"
 
 static int trace_configured = 0;
+static int trace_active = 0;
+
+void TRACE_activate (void)
+{
+  if (trace_active){
+    THROW0(tracing_error, TRACE_ERROR_ALREADY_ACTIVE,
+           "Tracing is already active.");
+  }
+  trace_active = 1;
+}
+
+void TRACE_desactivate (void)
+{
+  trace_active = 0;
+}
+
+int TRACE_is_active (void)
+{
+  return trace_active;
+}
 
 int TRACE_is_enabled(void)
 {

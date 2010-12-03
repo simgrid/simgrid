@@ -11,9 +11,6 @@
 
 #ifdef HAVE_TRACING
 
-extern int tracing_active;      /* declared in paje.c */
-
-#define IS_TRACING			  (tracing_active)
 #define IS_TRACED(n)          (n->category)
 #define IS_TRACING_TASKS      (TRACE_msg_task_is_enabled())
 #define IS_TRACING_PLATFORM   (TRACE_platform_is_enabled())
@@ -157,6 +154,9 @@ void TRACE_smpi_send(int rank, int src, int dst);
 void TRACE_smpi_recv(int rank, int src, int dst);
 
 /* from instr_config.c */
+void TRACE_activate (void);
+void TRACE_desactivate (void);
+int TRACE_is_active (void);
 int TRACE_is_enabled(void);
 int TRACE_is_configured(void);
 int TRACE_smpi_is_enabled(void);

@@ -17,22 +17,14 @@ static xbt_dict_t created_categories;
 
 int TRACE_start()
 {
-  if (!TRACE_is_configured()) {
-    THROW0(tracing_error, TRACE_ERROR_START,
-           "TRACE_start should be called after SimGrid initialization functions.");
+  // tracing system must be:
+  //    - enabled (with --cfg=tracing:1)
+  //    - already configured (TRACE_global_init already called)
+  if (!(TRACE_is_enabled() && TRACE_is_configured())){
     return 0;
   }
 
-  if (!TRACE_is_enabled()){
-    return 0;
-  }
-
-  if (IS_TRACING) {             /* what? trace is already active... ignore.. */
-    THROW0(tracing_error, TRACE_ERROR_START,
-           "TRACE_start called, but tracing is already active.");
-    return 0;
-  }
-
+  /* open the trace file */
   char *filename = TRACE_get_filename();
   if (!filename) {
     THROW0(tracing_error, TRACE_ERROR_START,
@@ -46,6 +38,11 @@ int TRACE_start()
   } else {
     TRACE_paje_start(file);
   }
+
+  /* activate trace */
+  TRACE_activate ();
+
+  /* output header */
   TRACE_paje_create_header();
 
   /* define paje hierarchy for tracing */
@@ -109,17 +106,17 @@ int TRACE_start()
   TRACE_surf_alloc();
   TRACE_msg_process_alloc();
   TRACE_smpi_alloc();
-
   return 0;
 }
 
 int TRACE_end()
 {
-  FILE *file = NULL;
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return 1;
-  file = TRACE_paje_end();
+  FILE *file = TRACE_paje_end();
   fclose(file);
+
+  TRACE_desactivate ();
   return 0;
 }
 
@@ -131,7 +128,7 @@ int TRACE_category(const char *category)
 int TRACE_category_with_color (const char *category, const char *color)
 {
   static int first_time = 1;
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return 1;
 
   if (first_time) {
@@ -145,7 +142,7 @@ void TRACE_define_type(const char *type,
                        const char *parent_type, int final)
 {
   char *val_one = NULL;
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
 
   //check if type is already defined
@@ -190,7 +187,7 @@ int TRACE_create_category_with_color(const char *category,
 {
   char state[100];
   char *val_one = NULL;
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return 1;
 
   //check if type is defined
@@ -240,7 +237,7 @@ int TRACE_create_category_with_color(const char *category,
 
 void TRACE_declare_mark(const char *mark_type)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   if (!mark_type)
     return;
@@ -250,7 +247,7 @@ void TRACE_declare_mark(const char *mark_type)
 
 void TRACE_mark(const char *mark_type, const char *mark_value)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   if (!mark_type || !mark_value)
     return;

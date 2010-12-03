@@ -9,7 +9,6 @@
 #ifdef HAVE_TRACING
 
 static FILE *tracing_file = NULL;
-int tracing_active = 0;
 
 static int pajeDefineContainerTypeId = 0;
 static int pajeDefineStateTypeId = 1;
@@ -45,19 +44,17 @@ static int pajeNewEventId = 27;
 void TRACE_paje_start(FILE * file)
 {
   tracing_file = file;
-  tracing_active = 1;
 }
 
 FILE *TRACE_paje_end(void)
 {
-  tracing_active = 0;
   return tracing_file;
 }
 
 
 void TRACE_paje_create_header(void)
 {
-  if (!tracing_active)
+  if (!TRACE_is_active())
     return;
   fprintf(tracing_file, "\
 %%EventDef PajeDefineContainerType %d \n\

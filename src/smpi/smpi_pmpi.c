@@ -18,7 +18,7 @@ int TRACE_smpi_set_category(const char *category)
   //need to end bench otherwise categories for execution tasks are wrong
   smpi_bench_end();
   int ret;
-  if (!IS_TRACING){
+  if (!TRACE_is_enabled()){
     ret = 1;
   }else{
     if (category != NULL) {

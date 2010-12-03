@@ -279,7 +279,7 @@ void TRACE_surf_link_set_utilization(void *link, smx_action_t smx_action,
                                      double value, double now,
                                      double delta)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   if (!value)
     return;
@@ -317,7 +317,7 @@ void TRACE_surf_host_set_utilization(const char *name,
                                      double value, double now,
                                      double delta)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   if (!value)
     return;
@@ -343,7 +343,7 @@ void TRACE_surf_host_set_utilization(const char *name,
  */
 void TRACE_surf_resource_utilization_start(smx_action_t action)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   TRACE_method_start(action);
 }
@@ -354,21 +354,21 @@ void TRACE_surf_resource_utilization_event(smx_action_t action, double now,
                                            const char *resource,
                                            double value)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   TRACE_method_event(action, now, delta, variable, resource, value);
 }
 
 void TRACE_surf_resource_utilization_end(smx_action_t action)
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   TRACE_method_end(action);
 }
 
 void TRACE_surf_resource_utilization_release()
 {
-  if (!IS_TRACING)
+  if (!TRACE_is_active())
     return;
   TRACE_method_release();
 }
