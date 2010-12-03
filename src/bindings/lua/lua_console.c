@@ -56,7 +56,7 @@ static void create_host(const char *id, double power_peak, double power_sc,
     state_trace = tmgr_trace_new("");
   current_property_set = xbt_dict_new();
   surf_host_create_resource(xbt_strdup(id), power_peak, power_scale,
-                            power_trace, state_initial, state_trace,
+                            power_trace, 0, state_initial, state_trace,
                             current_property_set);
 
 }
