@@ -79,9 +79,6 @@ static void __TRACE_A_event(smx_action_t action, double now, double delta,
                             const char *variable, const char *resource,
                             double value)
 {
-  if (!TRACE_platform_is_enabled())
-    return;
-
   char valuestr[100];
   snprintf(valuestr, 100, "%f", value);
 
@@ -104,9 +101,6 @@ static void __TRACE_B_alloc(void)
 
 static void __TRACE_B_release(void)
 {
-  if (!TRACE_platform_is_enabled())
-    return;
-
   char *key, *time;
   xbt_dict_cursor_t cursor = NULL;
   xbt_dict_foreach(method_b_dict, cursor, key, time) {
@@ -132,9 +126,6 @@ static void __TRACE_B_event(smx_action_t action, double now, double delta,
                             const char *variable, const char *resource,
                             double value)
 {
-  if (!TRACE_platform_is_enabled())
-    return;
-
   char key_time[INSTR_DEFAULT_STR_SIZE];
   char key_value[INSTR_DEFAULT_STR_SIZE];
   char nowstr[INSTR_DEFAULT_STR_SIZE];
