@@ -144,7 +144,10 @@ void TRACE_msg_task_create(m_task_t task)
 void TRACE_msg_task_execute_start(m_task_t task)
 {
   char name[200];
-  if (!TRACE_is_active() || !IS_TRACED(task))
+  if (!TRACE_is_active())
+    return;
+
+  if (!IS_TRACED(task))
     return;
 
   TRACE_task_container(task, name, 200);
@@ -157,7 +160,10 @@ void TRACE_msg_task_execute_start(m_task_t task)
 void TRACE_msg_task_execute_end(m_task_t task)
 {
   char name[200];
-  if (!TRACE_is_active() || !IS_TRACED(task))
+  if (!TRACE_is_active())
+    return;
+
+  if (!IS_TRACED(task))
     return;
 
   TRACE_task_container(task, name, 200);
@@ -171,7 +177,10 @@ void TRACE_msg_task_execute_end(m_task_t task)
 void TRACE_msg_task_destroy(m_task_t task)
 {
   char name[200];
-  if (!TRACE_is_active() || !IS_TRACED(task))
+  if (!TRACE_is_active())
+    return;
+
+  if (!IS_TRACED(task))
     return;
 
   TRACE_task_container(task, name, 200);
@@ -196,7 +205,10 @@ void TRACE_msg_task_get_start(void)
 void TRACE_msg_task_get_end(double start_time, m_task_t task)
 {
   char name[200];
-  if (!TRACE_is_active() || !IS_TRACED(task))
+  if (!TRACE_is_active())
+    return;
+
+  if (!IS_TRACED(task))
     return;
 
   TRACE_task_container(task, name, 200);
@@ -213,7 +225,10 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
 int TRACE_msg_task_put_start(m_task_t task)
 {
   char name[200];
-  if (!TRACE_is_active() || !IS_TRACED(task))
+  if (!TRACE_is_active())
+    return 0;
+
+  if (!IS_TRACED(task))
     return 0;
 
   TRACE_task_container(task, name, 200);
