@@ -15,7 +15,7 @@ void TRACE_msg_volume_start(m_task_t task)
   char process_name[200], process_alias[200];
   char task_name[200];
   double volume = 0;
-  if (!IS_TRACING_VOLUME)
+  if (!TRACE_msg_volume_is_enabled())
     return;
 
   /* check if task is traced */
@@ -44,7 +44,7 @@ void TRACE_msg_volume_finish(m_task_t task)
   char task_name[200];
   m_process_t process = NULL;
   m_host_t host = NULL;
-  if (!IS_TRACING_VOLUME)
+  if (!TRACE_msg_volume_is_enabled())
     return;
 
   /* check if task is traced */

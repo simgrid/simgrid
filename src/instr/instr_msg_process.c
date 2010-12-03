@@ -45,7 +45,7 @@ static void TRACE_msg_process_location(m_process_t process)
 {
   char name[200], alias[200];
   m_host_t host = NULL;
-  if (!(IS_TRACING_PROCESSES || IS_TRACING_VOLUME))
+  if (!(TRACE_msg_process_is_enabled() || TRACE_msg_volume_is_enabled()))
     return;
 
   host = MSG_process_get_host(process);
@@ -56,7 +56,7 @@ static void TRACE_msg_process_location(m_process_t process)
   if (!xbt_dict_get_or_null(process_containers, alias)) {
     pajeCreateContainer(MSG_get_clock(), alias, "PROCESS",
                         MSG_host_get_name(host), name);
-    if (IS_TRACING_PROCESSES)
+    if (TRACE_msg_process_is_enabled())
       pajeSetState(MSG_get_clock(), "category", alias, process->category);
     xbt_dict_set(process_containers, xbt_strdup(alias), xbt_strdup("1"),
                  xbt_free);
@@ -67,7 +67,7 @@ static void TRACE_msg_process_present(m_process_t process)
 {
   char alias[200];
   m_host_t host = NULL;
-  if (!IS_TRACING_PROCESSES)
+  if (!TRACE_msg_process_is_enabled())
     return;
 
   //updating presence state of this process location
@@ -95,9 +95,9 @@ void TRACE_msg_set_process_category(m_process_t process,
 
   //create container of type "process" to indicate behavior
   TRACE_process_container(process, name, 200);
-  if (IS_TRACING_PROCESSES)
+  if (TRACE_msg_process_is_enabled())
     pajeCreateContainer(MSG_get_clock(), name, "process", category, name);
-  if (IS_TRACING_PROCESSES)
+  if (TRACE_msg_process_is_enabled())
     pajeSetState(MSG_get_clock(), "process-state", name, "executing");
 }
 
@@ -108,12 +108,12 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host,
                                    m_host_t new_host)
 {
   char alias[200];
-  if (!(IS_TRACING_PROCESSES || IS_TRACING_VOLUME) || !IS_TRACED(process))
+  if (!(TRACE_msg_process_is_enabled() || TRACE_msg_volume_is_enabled()) || !IS_TRACED(process))
     return;
 
   //disabling presence in old_host (__TRACE_msg_process_not_present)
   TRACE_process_alias_container(process, old_host, alias, 200);
-  if (IS_TRACING_PROCESSES)
+  if (TRACE_msg_process_is_enabled())
     pajePopState(MSG_get_clock(), "presence", alias);
 
   TRACE_msg_process_location(process);
@@ -123,7 +123,7 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host,
 void TRACE_msg_process_kill(m_process_t process)
 {
   char name[200];
-  if (!IS_TRACING_PROCESSES || !IS_TRACED(process))
+  if (!TRACE_msg_process_is_enabled() || !IS_TRACED(process))
     return;
 
   TRACE_process_container(process, name, 200);
@@ -133,7 +133,7 @@ void TRACE_msg_process_kill(m_process_t process)
 void TRACE_msg_process_suspend(m_process_t process)
 {
   char name[200];
-  if (!IS_TRACING_PROCESSES || !IS_TRACED(process))
+  if (!TRACE_msg_process_is_enabled() || !IS_TRACED(process))
     return;
 
   TRACE_process_container(process, name, 200);
@@ -143,7 +143,7 @@ void TRACE_msg_process_suspend(m_process_t process)
 void TRACE_msg_process_resume(m_process_t process)
 {
   char name[200];
-  if (!IS_TRACING_PROCESSES || !IS_TRACED(process))
+  if (!TRACE_msg_process_is_enabled() || !IS_TRACED(process))
     return;
 
   TRACE_process_container(process, name, 200);
@@ -153,7 +153,7 @@ void TRACE_msg_process_resume(m_process_t process)
 void TRACE_msg_process_sleep_in(m_process_t process)
 {
   char name[200];
-  if (!IS_TRACING_PROCESSES || !IS_TRACED(process))
+  if (!TRACE_msg_process_is_enabled() || !IS_TRACED(process))
     return;
 
   TRACE_process_container(process, name, 200);
@@ -163,7 +163,7 @@ void TRACE_msg_process_sleep_in(m_process_t process)
 void TRACE_msg_process_sleep_out(m_process_t process)
 {
   char name[200];
-  if (!IS_TRACING_PROCESSES || !IS_TRACED(process))
+  if (!TRACE_msg_process_is_enabled() || !IS_TRACED(process))
     return;
 
   TRACE_process_container(process, name, 200);
@@ -180,9 +180,9 @@ void TRACE_msg_process_end(m_process_t process)
   host = MSG_process_get_host(process);
   TRACE_process_container(process, name, 200);
   TRACE_process_alias_container(process, host, alias, 200);
-  if (IS_TRACING_PROCESSES)
+  if (TRACE_msg_process_is_enabled())
     pajeDestroyContainer(MSG_get_clock(), "process", name);
-  if (IS_TRACING_PROCESSES)
+  if (TRACE_msg_process_is_enabled())
     pajeDestroyContainer(MSG_get_clock(), "PROCESS", alias);
 }
 

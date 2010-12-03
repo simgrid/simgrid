@@ -12,11 +12,6 @@
 #ifdef HAVE_TRACING
 
 #define IS_TRACED(n)          (n->category)
-#define IS_TRACING_TASKS      (TRACE_msg_task_is_enabled())
-#define IS_TRACING_PLATFORM   (TRACE_platform_is_enabled())
-#define IS_TRACING_PROCESSES  (TRACE_msg_process_is_enabled())
-#define IS_TRACING_VOLUME     (TRACE_msg_volume_is_enabled())
-#define IS_TRACING_SMPI       (TRACE_smpi_is_enabled())
 
 #define INSTR_DEFAULT_STR_SIZE 500
 

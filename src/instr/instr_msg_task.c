@@ -59,7 +59,7 @@ static void TRACE_task_location(m_task_t task)
   char *val_one = NULL;
   m_process_t process = NULL;
   m_host_t host = NULL;
-  if (!IS_TRACING_TASKS)
+  if (!TRACE_msg_task_is_enabled())
     return;
   process = MSG_process_self();
   host = MSG_process_get_host(process);
@@ -82,7 +82,7 @@ static void TRACE_task_location_present(m_task_t task)
   char alias[200];
   m_process_t process = NULL;
   m_host_t host = NULL;
-  if (!IS_TRACING_TASKS)
+  if (!TRACE_msg_task_is_enabled())
     return;
   //updating presence state of this task location
   process = MSG_process_self();
@@ -97,7 +97,7 @@ static void TRACE_task_location_not_present(m_task_t task)
   char alias[200];
   m_process_t process = NULL;
   m_host_t host = NULL;
-  if (!IS_TRACING_TASKS)
+  if (!TRACE_msg_task_is_enabled())
     return;
   //updating presence state of this task location
   process = MSG_process_self();
@@ -126,9 +126,9 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
 
   TRACE_task_container(task, name, 200);
   //create container of type "task" to indicate behavior
-  if (IS_TRACING_TASKS)
+  if (TRACE_msg_task_is_enabled())
     pajeCreateContainer(MSG_get_clock(), name, "task", category, name);
-  if (IS_TRACING_TASKS)
+  if (TRACE_msg_task_is_enabled())
     pajePushState(MSG_get_clock(), "task-state", name, "created");
 }
 
@@ -151,7 +151,7 @@ void TRACE_msg_task_execute_start(m_task_t task)
     return;
 
   TRACE_task_container(task, name, 200);
-  if (IS_TRACING_TASKS)
+  if (TRACE_msg_task_is_enabled())
     pajePushState(MSG_get_clock(), "task-state", name, "execute");
 
   TRACE_msg_category_set(SIMIX_process_self(), task);
@@ -167,7 +167,7 @@ void TRACE_msg_task_execute_end(m_task_t task)
     return;
 
   TRACE_task_container(task, name, 200);
-  if (IS_TRACING_TASKS)
+  if (TRACE_msg_task_is_enabled())
     pajePopState(MSG_get_clock(), "task-state", name);
 
   TRACE_category_unset(SIMIX_process_self());
@@ -184,7 +184,7 @@ void TRACE_msg_task_destroy(m_task_t task)
     return;
 
   TRACE_task_container(task, name, 200);
-  if (IS_TRACING_TASKS)
+  if (TRACE_msg_task_is_enabled())
     pajeDestroyContainer(MSG_get_clock(), "task", name);
 
   //finish the location of this task
@@ -212,7 +212,7 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
     return;
 
   TRACE_task_container(task, name, 200);
-  if (IS_TRACING_TASKS)
+  if (TRACE_msg_task_is_enabled())
     pajePopState(MSG_get_clock(), "task-state", name);
 
   TRACE_msg_volume_finish(task);
@@ -232,9 +232,9 @@ int TRACE_msg_task_put_start(m_task_t task)
     return 0;
 
   TRACE_task_container(task, name, 200);
-  if (IS_TRACING_TASKS)
+  if (TRACE_msg_task_is_enabled())
     pajePopState(MSG_get_clock(), "task-state", name);
-  if (IS_TRACING_TASKS)
+  if (TRACE_msg_task_is_enabled())
     pajePushState(MSG_get_clock(), "task-state", name, "communicate");
 
   TRACE_msg_volume_start(task);

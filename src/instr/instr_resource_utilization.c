@@ -37,7 +37,7 @@ static void __TRACE_surf_check_variable_set_to_zero(double now,
     xbt_dynar_t array = xbt_dynar_new(sizeof(char *), xbt_free);
     char *var_cpy = xbt_strdup(variable);
     xbt_dynar_push(array, &var_cpy);
-    if (IS_TRACING_PLATFORM)
+    if (TRACE_platform_is_enabled())
       pajeSetVariable(now, variable, resource, "0");
     xbt_dict_set(platform_variables, resource, array,
                  xbt_dynar_free_voidp);
@@ -54,7 +54,7 @@ static void __TRACE_surf_check_variable_set_to_zero(double now,
     if (flag == 0) {
       char *var_cpy = xbt_strdup(variable);
       xbt_dynar_push(array, &var_cpy);
-      if (IS_TRACING_PLATFORM)
+      if (TRACE_platform_is_enabled())
         pajeSetVariable(now, variable, resource, "0");
     }
   }
@@ -79,7 +79,7 @@ static void __TRACE_A_event(smx_action_t action, double now, double delta,
                             const char *variable, const char *resource,
                             double value)
 {
-  if (!IS_TRACING_PLATFORM)
+  if (!TRACE_platform_is_enabled())
     return;
 
   char valuestr[100];
@@ -104,7 +104,7 @@ static void __TRACE_B_alloc(void)
 
 static void __TRACE_B_release(void)
 {
-  if (!IS_TRACING_PLATFORM)
+  if (!TRACE_platform_is_enabled())
     return;
 
   char *key, *time;
@@ -132,7 +132,7 @@ static void __TRACE_B_event(smx_action_t action, double now, double delta,
                             const char *variable, const char *resource,
                             double value)
 {
-  if (!IS_TRACING_PLATFORM)
+  if (!TRACE_platform_is_enabled())
     return;
 
   char key_time[INSTR_DEFAULT_STR_SIZE];

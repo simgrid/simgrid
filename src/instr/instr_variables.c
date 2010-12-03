@@ -16,7 +16,7 @@ void TRACE_user_link_variable(double time, const char *src,
                               const char *dst, const char *variable,
                               double value, const char *what)
 {
-  if (!TRACE_is_active() || !IS_TRACING_PLATFORM)
+  if (!TRACE_is_active() || !TRACE_platform_is_enabled())
     return;
 
   char valuestr[100];
@@ -51,7 +51,7 @@ void TRACE_user_host_variable(double time, const char *variable,
                               double value, const char *what)
 {
   char valuestr[100];
-  if (!TRACE_is_active() || !IS_TRACING_PLATFORM)
+  if (!TRACE_is_active() || !TRACE_platform_is_enabled())
     return;
 
   snprintf(valuestr, 100, "%g", value);

@@ -210,7 +210,7 @@ void TRACE_surf_host_vivaldi_parse(char *host, double x, double y,
                                    double h)
 {
   char valuestr[100];
-  if (!TRACE_is_active() || !IS_TRACING_PLATFORM)
+  if (!TRACE_is_active() || !TRACE_platform_is_enabled())
     return;
 
   snprintf(valuestr, 100, "%g", x);
@@ -265,7 +265,7 @@ void TRACE_surf_action(surf_action_t surf_action, const char *category)
 {
   if (!TRACE_is_active())
     return;
-  if (!IS_TRACING_PLATFORM)
+  if (!TRACE_platform_is_enabled())
     return;
   if (!category)
     return;

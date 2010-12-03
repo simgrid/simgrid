@@ -57,7 +57,7 @@ void TRACE_smpi_alloc()
 
 void TRACE_smpi_start(void)
 {
-  if (IS_TRACING_SMPI) {
+  if (TRACE_smpi_is_enabled()) {
     TRACE_start();
   }
 }
@@ -65,14 +65,14 @@ void TRACE_smpi_start(void)
 void TRACE_smpi_release(void)
 {
   TRACE_surf_release();
-  if (IS_TRACING_SMPI) {
+  if (TRACE_smpi_is_enabled()) {
     TRACE_end();
   }
 }
 
 void TRACE_smpi_init(int rank)
 {
-  if (!IS_TRACING_SMPI)
+  if (!TRACE_smpi_is_enabled())
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -88,7 +88,7 @@ void TRACE_smpi_init(int rank)
 
 void TRACE_smpi_finalize(int rank)
 {
-  if (!IS_TRACING_SMPI)
+  if (!TRACE_smpi_is_enabled())
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -98,7 +98,7 @@ void TRACE_smpi_finalize(int rank)
 
 void TRACE_smpi_collective_in(int rank, int root, const char *operation)
 {
-  if (!IS_TRACING_SMPI)
+  if (!TRACE_smpi_is_enabled())
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -108,7 +108,7 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation)
 
 void TRACE_smpi_collective_out(int rank, int root, const char *operation)
 {
-  if (!IS_TRACING_SMPI)
+  if (!TRACE_smpi_is_enabled())
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -118,7 +118,7 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation)
 
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
 {
-  if (!IS_TRACING_SMPI)
+  if (!TRACE_smpi_is_enabled())
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -128,7 +128,7 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
 
 void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
 {
-  if (!IS_TRACING_SMPI)
+  if (!TRACE_smpi_is_enabled())
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -138,7 +138,7 @@ void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
 
 void TRACE_smpi_send(int rank, int src, int dst)
 {
-  if (!IS_TRACING_SMPI)
+  if (!TRACE_smpi_is_enabled())
     return;
 
   char key[INSTR_DEFAULT_STR_SIZE], str[INSTR_DEFAULT_STR_SIZE];
@@ -149,7 +149,7 @@ void TRACE_smpi_send(int rank, int src, int dst)
 
 void TRACE_smpi_recv(int rank, int src, int dst)
 {
-  if (!IS_TRACING_SMPI)
+  if (!TRACE_smpi_is_enabled())
     return;
 
   char key[INSTR_DEFAULT_STR_SIZE], str[INSTR_DEFAULT_STR_SIZE];

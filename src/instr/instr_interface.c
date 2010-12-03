@@ -55,35 +55,35 @@ int TRACE_start()
   pajeDefineEventType("source", "LINK", "source");
   pajeDefineEventType("destination", "LINK", "destination");
 
-  if (IS_TRACING_PLATFORM) {
+  if (TRACE_platform_is_enabled()) {
     if (TRACE_uncategorized()){
       pajeDefineVariableType("power_used", "HOST", "power_used");
       pajeDefineVariableType("bandwidth_used", "LINK", "bandwidth_used");
     }
   }
 
-  if (IS_TRACING_PROCESSES || IS_TRACING_VOLUME) {
+  if (TRACE_msg_process_is_enabled() || TRACE_msg_volume_is_enabled()) {
     //processes grouped by host
     pajeDefineContainerType("PROCESS", "HOST", "PROCESS");
   }
 
-  if (IS_TRACING_PROCESSES) {
+  if (TRACE_msg_process_is_enabled()) {
     pajeDefineStateType("category", "PROCESS", "category");
     pajeDefineStateType("presence", "PROCESS", "presence");
   }
 
-  if (IS_TRACING_VOLUME) {
+  if (TRACE_msg_volume_is_enabled()) {
     pajeDefineLinkType("volume", "0", "PROCESS", "PROCESS", "volume");
   }
 
-  if (IS_TRACING_TASKS) {
+  if (TRACE_msg_task_is_enabled()) {
     //tasks grouped by host
     pajeDefineContainerType("TASK", "HOST", "TASK");
     pajeDefineStateType("category", "TASK", "category");
     pajeDefineStateType("presence", "TASK", "presence");
   }
 
-  if (IS_TRACING_SMPI) {
+  if (TRACE_smpi_is_enabled()) {
     if (TRACE_smpi_is_grouped()){
       pajeDefineContainerType("MPI_PROCESS", "HOST", "MPI_PROCESS");
     }else{
@@ -160,14 +160,14 @@ void TRACE_define_type(const char *type,
   pajeDefineContainerType(type, parent_type, type);
   if (final) {
     //for m_process_t
-    if (IS_TRACING_PROCESSES)
+    if (TRACE_msg_process_is_enabled())
       pajeDefineContainerType("process", type, "process");
-    if (IS_TRACING_PROCESSES)
+    if (TRACE_msg_process_is_enabled())
       pajeDefineStateType("process-state", "process", "process-state");
 
-    if (IS_TRACING_TASKS)
+    if (TRACE_msg_task_is_enabled())
       pajeDefineContainerType("task", type, "task");
-    if (IS_TRACING_TASKS)
+    if (TRACE_msg_task_is_enabled())
       pajeDefineStateType("task-state", "task", "task-state");
   }
   val_one = xbt_strdup("1");
@@ -224,10 +224,10 @@ int TRACE_create_category_with_color(const char *category,
 
   /* for registering application categories on top of platform */
   snprintf(state, 100, "b%s", category);
-  if (IS_TRACING_PLATFORM)
+  if (TRACE_platform_is_enabled())
     pajeDefineVariableTypeWithColor(state, "LINK", state, final_color);
   snprintf(state, 100, "p%s", category);
-  if (IS_TRACING_PLATFORM)
+  if (TRACE_platform_is_enabled())
     pajeDefineVariableTypeWithColor(state, "HOST", state, final_color);
 
   val_one = xbt_strdup("1");
