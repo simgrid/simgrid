@@ -72,6 +72,7 @@ typedef struct s_smx_context {
   int argc;
   char **argv;
   void_pfn_smxprocess_t cleanup_func;
+  int iwannadie:1;
   void *data;   /* Here SIMIX stores the smx_process_t containing the context */
 } s_smx_ctx_base_t;
 

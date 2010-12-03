@@ -153,7 +153,6 @@ smx_process_t SIMIX_process_create(const char *name,
     process->pid = simix_process_count++;
     process->name = xbt_strdup(name);
     process->smx_host = host;
-    process->iwannadie = 0;
     process->data = data;
 
     VERB1("Create context %s", process->name);
@@ -192,7 +191,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t killer) {
 
   DEBUG2("Killing process %s on %s", process->name, process->smx_host->name);
 
-  process->iwannadie = 1;
+  process->context->iwannadie = 1;
   process->blocked = 0;
   process->suspended = 0;
   /* FIXME: set doexception to 0 also? */
@@ -507,7 +506,7 @@ void SIMIX_process_yield(void)
   /* Ok, maestro returned control to us */
   DEBUG1("Maestro returned control to me: '%s'", self->name);
 
-  if (self->iwannadie)
+  if (self->context->iwannadie)
     SIMIX_context_stop(self->context);
 
   if (self->doexception) {

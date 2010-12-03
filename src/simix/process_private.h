@@ -27,7 +27,6 @@ typedef struct s_smx_process {
   int doexception:1;
   int blocked:1;
   int suspended:1;
-  int iwannadie:1;
   smx_action_t waiting_action;
   xbt_dict_t properties;
   smx_req_t request;
