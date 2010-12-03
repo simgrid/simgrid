@@ -649,7 +649,7 @@ foreach(fct ${diff_va})
 	endif(COMPILE_VA_NULL_VAR)
 	
 endforeach(fct ${diff_va})
-file(REMOVE "${PROJECT_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c")
+file(REMOVE "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c")
 
 #--------------------------------------------------------------------------------------------------
 ### check for getline
