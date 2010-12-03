@@ -147,9 +147,6 @@ else(WIN32)
     include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExeLib.cmake)
 endif(WIN32)
 
-### Build the doc
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
-
 ### Make Simgrid.jar and Java examples
 if(HAVE_JAVA)
 	include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeJava.cmake)
@@ -169,6 +166,9 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
 
 ### Pipol compilation
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Pipol.cmake)
+
+### Build the doc
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
 
 ### Print ARGS
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)

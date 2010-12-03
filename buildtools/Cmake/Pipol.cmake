@@ -65,10 +65,12 @@ IF(pipol_user)
 
     MESSAGE(STATUS "Pipol user is ${pipol_user}")
     IF(HAVE_SSH)
+    	message("-- Found ssh: ${HAVE_SSH}")
       # get pipol systems
       EXECUTE_PROCESS(COMMAND 
         ssh ${pipol_user}@pipol.inria.fr pipol-sub --query=systems 
         OUTPUT_VARIABLE PIPOL_SYSTEMS OUTPUT_STRIP_TRAILING_WHITESPACE)
+        
     ENDIF(HAVE_SSH)
   
 	ADD_CUSTOM_TARGET(pipol_test_list_images
@@ -88,7 +90,7 @@ IF(pipol_user)
 		)
   
     IF(HAVE_RSYNC)
-	      
+    	message("-- Found rsync: ${HAVE_RSYNC}")
 	      MACRO(PIPOL_TARGET
 	          SYSTEM_PATTERN)
 				  STRING(REPLACE ".dd.gz" "" SYSTEM_TARGET ${SYSTEM_PATTERN})
@@ -165,6 +167,7 @@ ADD_CUSTOM_TARGET(pipol_kill_all_jobs
 		COMMENT "PIPOL delete all jobs"
 		COMMAND ./pipol-sub --pipol-user=${pipol_user} deleteallmyjobs
 		)
-
-
+		
+message("-- Pipol options: ${CMAKE_OPTIONS}")
+		
 ENDIF(pipol_user)

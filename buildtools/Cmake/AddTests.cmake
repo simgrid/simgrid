@@ -1,25 +1,13 @@
+if(enable_memcheck)
+include(FindValgrind)
+endif(enable_memcheck)
+
 if(enable_smpi)
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE "OKITOKI")
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE "OKITOKI")
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE "OKITOKI")
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE "OKITOKI")
 endif(enable_smpi)
-
-if(enable_memcheck)
-	exec_program("valgrind --version " OUTPUT_VARIABLE "VALGRIND_VERSION")
-	if(VALGRIND_VERSION)
-		string(REGEX MATCH "[0-9].[0-9].[0-9]" NEW_VALGRIND_VERSION "${VALGRIND_VERSION}")
-		if(NEW_VALGRIND_VERSION)
-			exec_program("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/generate_memcheck_tests.pl ${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTests.cmake > ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/memcheck_tests.cmake")
-		else(NEW_VALGRIND_VERSION)
-			set(enable_memcheck false)
-			message("Command valgrind not found --> enable_memcheck autoset to false.")
-		endif(NEW_VALGRIND_VERSION)
-	else(VALGRIND_VERSION)
-		set(enable_memcheck false)
-		message(FATAL_ERROR "Command valgrind not found --> enable_memcheck autoset to false.")
-	endif(VALGRIND_VERSION)
-endif(enable_memcheck)
 
 ### For code coverage
 ### Set some variables
@@ -29,9 +17,6 @@ SET(DROP_SITE "cdash.inria.fr/CDash")
 SET(DROP_LOCATION "/submit.php?project=${PROJECT_NAME}")
 SET(DROP_SITE_CDASH TRUE)
 SET(TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-TestingResults.cgi")
-set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no")
-SET(VALGRIND_COMMAND "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/my_valgrind.pl")
-SET(MEMORYCHECK_COMMAND "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/my_valgrind.pl")
 #If you use the --read-var-info option Memcheck will run more slowly but may give a more detailed description of any illegal address.
 
 INCLUDE(CTest)

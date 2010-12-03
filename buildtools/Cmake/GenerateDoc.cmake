@@ -167,7 +167,7 @@ endif(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND IC
 
 ##############################################################################"
 
-message("Check individual TOCs")
+message("-- Check individual TOCs")
 file(GLOB_RECURSE LISTE_GTUT
 	"${CMAKE_HOME_DIRECTORY}/doc/gtut-tour-*.doc"
 )
@@ -204,7 +204,7 @@ foreach(file_name ${LISTE_GTUT})
 	
 	exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc" OUTPUT_VARIABLE compare_files)
 	if(compare_files)
-		message("Wrong toc for ${file_name}. Should be:")
+		message("-- Wrong toc for ${file_name}. Should be:")
 		file(READ "${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc" file_content)
 		message("${file_content}")
 		exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc")
@@ -214,7 +214,7 @@ endforeach(file_name ${LISTE_GTUT})
 file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc)
 file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc)
 
-message("Check main TOC")
+message("-- Check main TOC")
 
 foreach(file_name ${LISTE_GTUT})
 	file(READ "${file_name}" file_content)	
@@ -254,7 +254,7 @@ endforeach(line ${file_content})
 	
 exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc" OUTPUT_VARIABLE compare_files)
 if(compare_files)
-	message("Wrong toc for gtut-tour.doc Right one is in tmp.realtoc")
+	message("-- Wrong toc for gtut-tour.doc Right one is in tmp.realtoc")
 	exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc")
 else(compare_files)
 	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc)
