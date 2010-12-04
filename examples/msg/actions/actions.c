@@ -41,13 +41,22 @@ static int get_rank (const char *process_name)
 } 
 
 /* My actions */
+static int spawned_send(int argc, char *argv[])
+{
+  DEBUG3("%s: Sending %s on %s", MSG_process_get_name(MSG_process_self()),
+         argv[1], argv[0]);
+  MSG_task_send(MSG_task_create(argv[0], 0, parse_double(argv[1]), NULL),
+                argv[0]);
+  return 0;
+}
+
 static void action_send(xbt_dynar_t action)
 {
   char *name = NULL;
   char to[250];
   char *size = xbt_dynar_get_as(action, 3, char *);
   double clock = MSG_get_clock();
- 
+
   sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()),
           xbt_dynar_get_as(action, 2, char *));
   //  char *to =  xbt_dynar_get_as(action, 2, char *);
@@ -63,8 +72,27 @@ static void action_send(xbt_dynar_t action)
 #endif
 
   DEBUG2("Entering Send: %s (size: %lg)", name, parse_double(size));
-  MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
-  VERB2("%s %f", name, MSG_get_clock() - clock);
+   if (parse_double(size)<65536) {
+     char spawn_name[80];
+     char **myargv;
+     m_process_t comm_helper;
+     DEBUG1("Isend on %s: spawn process ",
+	    MSG_process_get_name(MSG_process_self()));
+     myargv = (char **) calloc(3, sizeof(char *));
+     myargv[0] = xbt_strdup(to);
+     myargv[1] = xbt_strdup(size);
+     myargv[2] = NULL;
+     
+     sprintf(spawn_name, "%s_wait", to);
+     comm_helper =
+       MSG_process_create_with_arguments(spawn_name, spawned_send,
+					 NULL, MSG_host_self(), 2, myargv);
+   }
+   else {
+     MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
+   }
+   
+   VERB2("%s %f", name, MSG_get_clock() - clock);
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
@@ -72,16 +100,6 @@ static void action_send(xbt_dynar_t action)
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out(rank, rank, dst_traced, "send");
 #endif  
-}
-
-
-static int spawned_send(int argc, char *argv[])
-{
-  DEBUG3("%s: Sending %s on %s", MSG_process_get_name(MSG_process_self()),
-         argv[1], argv[0]);
-  MSG_task_send(MSG_task_create(argv[0], 0, parse_double(argv[1]), NULL),
-                argv[0]);
-  return 0;
 }
 
 static void Isend(xbt_dynar_t action)
@@ -627,7 +645,7 @@ int main(int argc, char *argv[])
   MSG_action_register("sleep", action_sleep);
   MSG_action_register("compute", compute);
 
-  
+
   /* Actually do the simulation using MSG_action_trace_run */
   res = MSG_action_trace_run(argv[3]);  // it's ok to pass a NULL argument here
 
