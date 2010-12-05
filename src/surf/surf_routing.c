@@ -3241,6 +3241,7 @@ static void routing_parse_Scluster(void)
   char *cluster_suffix = A_surfxml_cluster_suffix;
   char *cluster_radical = A_surfxml_cluster_radical;
   char *cluster_power = A_surfxml_cluster_power;
+  char *cluster_core = A_surfxml_cluster_core;
   char *cluster_bw = A_surfxml_cluster_bw;
   char *cluster_lat = A_surfxml_cluster_lat;
   char *cluster_bb_bw = A_surfxml_cluster_bb_bw;
@@ -3297,6 +3298,7 @@ static void routing_parse_Scluster(void)
       A_surfxml_host_state = A_surfxml_host_state_ON;
       SURFXML_BUFFER_SET(host_id, host_id);
       SURFXML_BUFFER_SET(host_power, cluster_power);
+      SURFXML_BUFFER_SET(host_core, cluster_core);
       SURFXML_BUFFER_SET(host_availability, "1.0");
       SURFXML_BUFFER_SET(host_availability_file, "");
       SURFXML_BUFFER_SET(host_state_file, "");
@@ -3340,6 +3342,7 @@ static void routing_parse_Scluster(void)
         A_surfxml_host_state = A_surfxml_host_state_ON;
         SURFXML_BUFFER_SET(host_id, host_id);
         SURFXML_BUFFER_SET(host_power, cluster_power);
+        SURFXML_BUFFER_SET(host_core, cluster_core);
         SURFXML_BUFFER_SET(host_availability, "1.0");
         SURFXML_BUFFER_SET(host_availability_file, "");
         SURFXML_BUFFER_SET(host_state_file, "");

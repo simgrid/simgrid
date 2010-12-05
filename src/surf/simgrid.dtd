@@ -41,6 +41,7 @@
 <!ATTLIST cluster suffix CDATA #REQUIRED>
 <!ATTLIST cluster radical CDATA #REQUIRED>
 <!ATTLIST cluster power CDATA #REQUIRED>
+<!ATTLIST cluster core CDATA "1">
 <!ATTLIST cluster bw CDATA #REQUIRED>
 <!ATTLIST cluster lat CDATA #REQUIRED>
 <!ATTLIST cluster sharing_policy (SHARED|FULLDUPLEX|FATPIPE) "SHARED">

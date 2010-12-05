@@ -1,5 +1,5 @@
 /* Validating XML processor for src/surf/simgrid.dtd.
- * Generated 2010/12/02 23:27:41.
+ * Generated 2010/12/03 11:37:14.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -220,10 +220,12 @@ AT_surfxml_cluster_radical AX_surfxml_cluster_radical;
 #define A_surfxml_cluster_radical (surfxml_bufferstack + AX_surfxml_cluster_radical)
 AT_surfxml_config_id AX_surfxml_config_id;
 #define A_surfxml_config_id (surfxml_bufferstack + AX_surfxml_config_id)
-AT_surfxml_random_std_deviation AX_surfxml_random_std_deviation;
-#define A_surfxml_random_std_deviation (surfxml_bufferstack + AX_surfxml_random_std_deviation)
 AT_surfxml_bypassRoute_gw_src AX_surfxml_bypassRoute_gw_src;
 #define A_surfxml_bypassRoute_gw_src (surfxml_bufferstack + AX_surfxml_bypassRoute_gw_src)
+AT_surfxml_cluster_core AX_surfxml_cluster_core;
+#define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
+AT_surfxml_random_std_deviation AX_surfxml_random_std_deviation;
+#define A_surfxml_random_std_deviation (surfxml_bufferstack + AX_surfxml_random_std_deviation)
 AT_surfxml_host_state_file AX_surfxml_host_state_file;
 #define A_surfxml_host_state_file (surfxml_bufferstack + AX_surfxml_host_state_file)
 AT_surfxml_route_dst AX_surfxml_route_dst;
@@ -443,6 +445,7 @@ const char* *surfxml_statenames=NULL;
   surfxml_bufferliteral('\0', &bnext, "0.0");
   surfxml_bufferliteral('\0', &bnext, "1");
   surfxml_bufferliteral('\0', &bnext, "1.0");
+  surfxml_bufferliteral('\0', &bnext, "1");
   surfxml_bufferliteral('\0', &bnext, "0.0");
   surfxml_bufferliteral('\0', &bnext, "-1.0");
   surfxml_bufferliteral('\0', &bnext, "-1.0");
@@ -952,6 +955,7 @@ const char* *surfxml_statenames=NULL;
   AX_surfxml_cluster_suffix = 0;
   AX_surfxml_cluster_radical = 0;
   AX_surfxml_cluster_power = 0;
+  AX_surfxml_cluster_core = 11;
   AX_surfxml_cluster_bw = 0;
   AX_surfxml_cluster_lat = 0;
   AX_surfxml_cluster_sharing_policy = A_surfxml_cluster_sharing_policy_SHARED;
@@ -976,6 +980,9 @@ const char* *surfxml_statenames=NULL;
 
  "power"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_power);
  "power"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_power);
+
+ "core"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_core);
+ "core"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_core);
 
  "bw"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_bw);
  "bw"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_bw);
@@ -1177,7 +1184,7 @@ const char* *surfxml_statenames=NULL;
   AX_surfxml_link_id = 0;
   AX_surfxml_link_bandwidth = 0;
   AX_surfxml_link_bandwidth_file = 0;
-  AX_surfxml_link_latency = 11;
+  AX_surfxml_link_latency = 13;
   AX_surfxml_link_latency_file = 0;
   AX_surfxml_link_state = A_surfxml_link_state_ON;
   AX_surfxml_link_state_file = 0;
@@ -1485,8 +1492,8 @@ const char* *surfxml_statenames=NULL;
 <S_surfxml_platform_6,S_surfxml_platform_4,S_surfxml_platform_5,S_surfxml_platform_2,S_surfxml_platform_1,S_surfxml_platform>"<process"{s} {
   AX_surfxml_process_host = 0;
   AX_surfxml_process_function = 0;
-  AX_surfxml_process_start_time = 15;
-  AX_surfxml_process_kill_time = 20;
+  AX_surfxml_process_start_time = 17;
+  AX_surfxml_process_kill_time = 22;
   ENTER(AL_surfxml_process); pushbuffer(0);
   }
 
