@@ -1,13 +1,14 @@
+
 if(enable_memcheck)
 include(FindValgrind)
 endif(enable_memcheck)
 
-if(enable_smpi)
+if(enable_smpi AND NOT WIN32)
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE "OKITOKI")
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE "OKITOKI")
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE "OKITOKI")
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE "OKITOKI")
-endif(enable_smpi)
+endif(enable_smpi AND NOT WIN32)
 
 ### For code coverage
 ### Set some variables

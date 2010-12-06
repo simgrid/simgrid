@@ -164,7 +164,16 @@ endif(enable_lib_static)
 ### Load all files declaring binaries (tools, examples and tests) #
 ###################################################################
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/gras)
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/tesh)
+
+if(WIN32)
+	add_custom_target(tesh ALL
+	DEPENDS ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl
+	COMMENT "Install ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl"
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh
+	)
+else(WIN32)
+	add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/tesh)
+endif(WIN32)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/xbt)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/surf)

@@ -1,16 +1,26 @@
-#!perl -w
+#! /usr/bin/perl -w
+
 use strict;
 
-if($#ARGV!=1){die "Usage: perl tesh.pl <directory> <teshfile.tesh>\n";}
-my($directory)=$ARGV[0];
-my($file)=$ARGV[1];
+if($#ARGV!=2){die "Usage: tesh.pl --cd <directory> <teshfile.tesh>\n";}
 my($line1);
 my($line2);
 my($execline);
 my($ok)=0;
-chdir("$directory");
-print "Change directory to \"$directory\"\n";
+my($nb_arg)=0;
 
+do{
+	if($ARGV[$nb_arg] =~ /^--cd$/)
+	{
+		$nb_arg++;
+		my($directory)=$ARGV[$nb_arg];
+		chdir("$directory");
+		print "Change directory to \"$directory\"\n";	
+	}
+	$nb_arg++;
+}while(($nb_arg-1)!=$#ARGV);
+
+my($file)=$ARGV[$nb_arg-1];
 open SH_LIGNE, $file or die "Unable to open $file. $!\n";
 
 while(defined($line1=<SH_LIGNE>))
@@ -25,6 +35,8 @@ while(defined($line1=<SH_LIGNE>))
 			$line1 =~ s/^\$\ *//g;
 			$line1 =~ s/^.\/lua/lua/g;
 			$line1 =~ s/^.\/ruby/ruby/g;
+			
+			$line1 =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
 			chomp $line1;
 			$execline = $line1;
 			print "$execline\n";
@@ -56,10 +68,17 @@ while(defined($line1=<SH_LIGNE>))
 				{if(!defined($line2=<FILE_ERR>))
 					{	print "- $line1\n";
 						die;}}
-			else{if(!defined($line2=<FILE>))
+			elsif($line1 =~ /^.*\[.*\].*\[0\:\@\].*$/)
+				{if(!defined($line2=<FILE_ERR>))
 					{	print "- $line1\n";
 						die;}}
-			
+			elsif($line1 =~ /^.*\[.*\].*\(0\:\@\).*$/)
+				{if(!defined($line2=<FILE_ERR>))
+					{	print "- $line1\n";
+						die;}}
+			else{if(!defined($line2=<FILE>))
+					{	print "- $line1\n";
+						die;}}		
 			$line2 =~ s/\r//g;							
 			chomp $line2;
 			

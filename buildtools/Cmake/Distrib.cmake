@@ -20,17 +20,10 @@ install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
                  ${CMAKE_BINARY_DIR}/bin/smpiff
                  ${CMAKE_BINARY_DIR}/bin/smpirun
 		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
-if(WIN32)
-	install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl
-	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/
-	RENAME tesh)
-	add_custom_target(tesh
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh
-	)
-else(WIN32)
-	install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh
-	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
-endif(WIN32)  
+
+install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh
+DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+
 	
 install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl
         DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/
