@@ -22,6 +22,12 @@ else(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2)
 	SET(HAVE_JAVA 0)
 endif(JAVA_COMPILE AND JAVA_INCLUDE_PATH AND JAVA_INCLUDE_PATH2)
 
+        message("")
+	message("JNI.H :                        ${JAVA_INCLUDE_PATH}")
+	message("JNI_MD.H : 			${JAVA_INCLUDE_PATH2}")
+        message("JAVAC :                        ${JAVA_COMPILE}")
+        message("JAVA_ARCHIVE :                 ${JAVA_ARCHIVE}")
+	
 
 ###############################
 # Declare our package content #
