@@ -144,6 +144,11 @@ static void _surf_cfg_cb__maxmin_precision(const char* name, int pos)
   sg_maxmin_precision = xbt_cfg_get_double(_surf_cfg_set, name);
 }
 
+static void _surf_cfg_cb__sender_gap(const char* name, int pos)
+{
+  sg_sender_gap = xbt_cfg_get_double(_surf_cfg_set, name);
+}
+
 static void _surf_cfg_cb__latency_factor(const char *name, int pos)
 {
   sg_latency_factor = xbt_cfg_get_double(_surf_cfg_set, name);
@@ -285,6 +290,13 @@ void surf_config_init(int *argc, char **argv)
     xbt_cfg_set_double(_surf_cfg_set, "maxmin/precision", 0.00001);
 
     /* The parameters of network models */
+
+    double_default_value = 0.0;
+    xbt_cfg_register(&_surf_cfg_set, "network/sender_gap",
+                     "Minimum gap between two overlapping sends",
+                     xbt_cfgelm_double, &double_default_value, 1, 1,
+                     _surf_cfg_cb__sender_gap, NULL);
+
     double_default_value = 1.0;
     xbt_cfg_register(&_surf_cfg_set, "network/latency_factor",
                      "Correction factor to apply to the provided latency (default value set by network model)",

@@ -18,6 +18,7 @@
 
 /* user-visible parameters */
 extern double sg_tcp_gamma;
+extern double sg_sender_gap;
 extern double sg_latency_factor;
 extern double sg_bandwidth_factor;
 extern double sg_weight_S_parameter;

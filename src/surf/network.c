@@ -15,6 +15,7 @@ surf_model_t surf_network_model = NULL;
 static lmm_system_t network_maxmin_system = NULL;
 static void (*network_solve) (lmm_system_t) = NULL;
 
+double sg_sender_gap = 0.0;
 double sg_latency_factor = 1.0; /* default value; can be set by model or from command line */
 double sg_bandwidth_factor = 1.0;       /* default value; can be set by model or from command line */
 double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or from command line */
@@ -22,6 +23,59 @@ double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or
 double sg_tcp_gamma = 0.0;
 int sg_network_fullduplex = 0;
 
+xbt_dict_t gap_lookup = NULL;
+
+static double net_get_link_bandwidth(const void *link);
+
+static void gap_append(double size, const link_CM02_t link, surf_action_network_CM02_t action) {
+   const char* src = link->lmm_resource.generic_resource.name;
+   xbt_fifo_t fifo;
+   surf_action_network_CM02_t last_action;
+   double bw;
+
+   if(sg_sender_gap > 0.0) {
+      if(!gap_lookup) {
+         gap_lookup = xbt_dict_new();
+      }
+      fifo = (xbt_fifo_t)xbt_dict_get_or_null(gap_lookup, src);
+      action->sender.gap = 0.0;
+      if(fifo && xbt_fifo_size(fifo) > 0) {
+         /* Compute gap from last send */
+         last_action = (surf_action_network_CM02_t)xbt_fifo_get_item_content(xbt_fifo_get_last_item(fifo));
+         bw = net_get_link_bandwidth(link);
+         action->sender.gap = last_action->sender.gap + max(sg_sender_gap, last_action->sender.size / bw);
+         action->latency += action->sender.gap;
+      }
+      /* Append action as last send */
+      action->sender.link_name = link->lmm_resource.generic_resource.name;
+      fifo = (xbt_fifo_t)xbt_dict_get_or_null(gap_lookup, action->sender.link_name);
+      if(!fifo) {
+         fifo = xbt_fifo_new();
+         xbt_dict_set(gap_lookup, action->sender.link_name, fifo, NULL);
+      }
+      action->sender.fifo_item = xbt_fifo_push(fifo, action);
+      action->sender.size = size;
+   }
+}
+
+static void gap_remove(surf_action_network_CM02_t action) {
+   xbt_fifo_t fifo;
+   size_t size;
+
+   if(sg_sender_gap > 0.0) {
+      fifo = (xbt_fifo_t)xbt_dict_get_or_null(gap_lookup, action->sender.link_name);
+      xbt_fifo_remove_item(fifo, action->sender.fifo_item);
+      size = xbt_fifo_size(fifo);
+      if(size == 0) {
+         xbt_fifo_free(fifo);
+         xbt_dict_remove(gap_lookup, action->sender.link_name);
+         size = xbt_dict_size(gap_lookup);
+         if(size == 0) {
+            xbt_dict_free(&gap_lookup);
+         }
+      }
+   }
+}
 
 /******************************************************************************/
 /*                           Factors callbacks                                */
@@ -410,11 +464,13 @@ static void net_update_actions_state(double now, double delta)
       action->generic_action.finish = surf_get_clock();
       surf_network_model->action_state_set((surf_action_t) action,
                                            SURF_ACTION_DONE);
+      gap_remove(action);
     } else if ((action->generic_action.max_duration != NO_MAX_DURATION)
                && (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
       surf_network_model->action_state_set((surf_action_t) action,
                                            SURF_ACTION_DONE);
+      gap_remove(action);
     }
   }
 
@@ -608,6 +664,12 @@ static surf_action_t net_communicate(const char *src_name,
   action->rate =
       (*bandwidth_constraint_callback) (action->rate, bandwidth_bound,
                                         size);
+
+  link = *(link_CM02_t*)xbt_dynar_get_ptr(route, 0);
+  gap_append(size, link, action);
+  DEBUG5("Comm %p: %s -> %s gap=%f (lat=%f)",
+         action, src_name, dst_name, action->sender.gap, action->latency);
+
 
   /* LARGE PLATFORMS HACK:
      lmm_variable_new(..., total_route_size) */
@@ -803,6 +865,7 @@ void surf_network_model_init_SMPI(const char *filename)
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/sender_gap", 10e-6);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
 
   update_model_description(surf_network_model_description,

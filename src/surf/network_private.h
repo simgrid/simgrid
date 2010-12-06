@@ -9,6 +9,7 @@
 
 #include "surf_private.h"
 #include "xbt/dict.h"
+#include "xbt/fifo.h"
 
 typedef struct network_link_CM02 {
   s_surf_resource_lmm_t lmm_resource;   /* must remain first to be added to a trace */
@@ -27,6 +28,12 @@ typedef struct surf_action_network_CM02 {
   double weight;
   lmm_variable_t variable;
   double rate;
+  struct {
+     const char* link_name;
+     double gap;
+     double size;
+     xbt_fifo_item_t fifo_item;
+  } sender;
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int latency_limited;
 #endif
