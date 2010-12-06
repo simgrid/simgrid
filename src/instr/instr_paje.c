@@ -49,6 +49,9 @@ void TRACE_paje_start(void)
     THROW1(tracing_error, TRACE_ERROR_FILE_OPEN,
            "Tracefile %s could not be opened for writing.", filename);
   }
+
+  /* output header */
+  TRACE_paje_create_header();
 }
 
 void TRACE_paje_end(void)
@@ -58,8 +61,6 @@ void TRACE_paje_end(void)
 
 void TRACE_paje_create_header(void)
 {
-  if (!TRACE_is_active())
-    return;
   fprintf(tracing_file, "\
 %%EventDef PajeDefineContainerType %d \n\
 %%       Alias string \n\

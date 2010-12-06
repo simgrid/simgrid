@@ -30,9 +30,6 @@ int TRACE_start()
   /* activate trace */
   TRACE_activate ();
 
-  /* output header */
-  TRACE_paje_create_header();
-
   /* define paje hierarchy for tracing */
   pajeDefineContainerType("PLATFORM", "0", "platform");
   pajeDefineContainerType("HOST", "PLATFORM", "HOST");
