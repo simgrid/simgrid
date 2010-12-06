@@ -23,7 +23,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-static xbt_tpool_t tpool; 
+static xbt_tpool_t tpool;
 
 static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
@@ -99,6 +99,8 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
 
     makecontext(&((smx_ctx_sysv_t) context)->uc, (void (*)())smx_ctx_sysv_wrapper,
                 sizeof(void*)/sizeof(int), context);
+  }else{
+    maestro_context = context;
   }
 
   return (smx_context_t) context;
@@ -134,7 +136,6 @@ void smx_ctx_sysv_free(smx_context_t context)
 void smx_ctx_sysv_stop(smx_context_t context)
 {
   smx_ctx_base_stop(context);
-
   smx_ctx_sysv_suspend(context);
 }
 
@@ -147,36 +148,26 @@ void smx_ctx_sysv_wrapper(smx_ctx_sysv_t context)
 
 void smx_ctx_sysv_suspend(smx_context_t context)
 {
-  ucontext_t maestro_ctx =
-      ((smx_ctx_sysv_t) simix_global->maestro_process->context)->uc;
-
-  int rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &maestro_ctx);
+  smx_current_context = (smx_context_t)maestro_context;
+  int rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &maestro_context->uc);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }
 
-void smx_ctx_sysv_resume(smx_context_t new_context)
+void smx_ctx_sysv_resume(smx_context_t context)
 {
-  smx_ctx_sysv_t maestro =
-      (smx_ctx_sysv_t) simix_global->maestro_process->context;
-
-  int rv =
-      swapcontext(&(maestro->uc), &((smx_ctx_sysv_t) new_context)->uc);
+  smx_current_context = context; 
+  int rv = swapcontext(&maestro_context->uc, &((smx_ctx_sysv_t) context)->uc);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }
 
 void smx_ctx_sysv_runall(xbt_swag_t processes)
 {
-  smx_context_t old_context;
   smx_process_t process;
   
-  while ((process = xbt_swag_extract(processes))) {
-    old_context = smx_current_context;
-    smx_current_context = process->context;
-    smx_ctx_sysv_resume(smx_current_context);
-    smx_current_context = old_context;
-  }
+  while ((process = xbt_swag_extract(processes)))
+    smx_ctx_sysv_resume(process->context);
 }
 
 void smx_ctx_sysv_runall_parallel(xbt_swag_t processes)

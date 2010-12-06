@@ -35,6 +35,8 @@ typedef struct s_smx_ctx_sysv {
   char stack[CONTEXT_STACK_SIZE];       /* the thread stack size */
 } s_smx_ctx_sysv_t, *smx_ctx_sysv_t;
 
+smx_ctx_sysv_t maestro_context;
+
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory);
 int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory);
 
