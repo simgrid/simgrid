@@ -30,7 +30,9 @@ int TRACE_start()
   /* activate trace */
   TRACE_activate ();
 
-  /* define paje hierarchy for tracing */
+  /* base type hierarchy:
+   * --cfg=tracing
+   */
   pajeDefineContainerType("PLATFORM", "0", "platform");
   pajeDefineContainerType("HOST", "PLATFORM", "HOST");
   pajeDefineContainerType("LINK", "PLATFORM", "LINK");
@@ -40,6 +42,9 @@ int TRACE_start()
   pajeDefineEventType("source", "LINK", "source");
   pajeDefineEventType("destination", "LINK", "destination");
 
+  /* type hierarchy for:
+   * --cfg=tracing/uncategorized
+   */
   if (TRACE_platform_is_enabled()) {
     if (TRACE_uncategorized()){
       pajeDefineVariableType("power_used", "HOST", "power_used");
@@ -47,6 +52,10 @@ int TRACE_start()
     }
   }
 
+  /* type hierarchy for:
+   * --cfg=tracing/msg/process
+   * --cfg=tracing/msg/volume
+   */
   if (TRACE_msg_process_is_enabled() || TRACE_msg_volume_is_enabled()) {
     //processes grouped by host
     pajeDefineContainerType("PROCESS", "HOST", "PROCESS");
@@ -61,6 +70,9 @@ int TRACE_start()
     pajeDefineLinkType("volume", "0", "PROCESS", "PROCESS", "volume");
   }
 
+  /* type hierarchy for:
+   * --cfg=tracing/msg/task
+   */
   if (TRACE_msg_task_is_enabled()) {
     //tasks grouped by host
     pajeDefineContainerType("TASK", "HOST", "TASK");
@@ -68,6 +80,10 @@ int TRACE_start()
     pajeDefineStateType("presence", "TASK", "presence");
   }
 
+  /* type hierarchy for
+   * --cfg=tracing/smpi
+   * --cfg=tracing/smpi/group
+   */
   if (TRACE_smpi_is_enabled()) {
     if (TRACE_smpi_is_grouped()){
       pajeDefineContainerType("MPI_PROCESS", "HOST", "MPI_PROCESS");
