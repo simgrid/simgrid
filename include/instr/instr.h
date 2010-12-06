@@ -26,8 +26,6 @@
 #define TRACE_ERROR_START 500
 #define TRACE_ERROR_ALREADY_ACTIVE 501
 
-XBT_PUBLIC(int) TRACE_start(void);
-XBT_PUBLIC(int) TRACE_end(void);
 XBT_PUBLIC(int) TRACE_category(const char *category);
 XBT_PUBLIC(int) TRACE_category_with_color (const char *category, const char *color);
 XBT_PUBLIC(void) TRACE_define_type(const char *type,
@@ -101,8 +99,6 @@ XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task,
 
 #else                           /* HAVE_TRACING */
 
-#define TRACE_start()
-#define TRACE_end()
 #define TRACE_category(cat)
 #define TRACE_define_type(cat,supercat,final)
 #define TRACE_create_category(inst,cat)

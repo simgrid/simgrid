@@ -29,6 +29,127 @@ static int trace_configured = 0;
 static int trace_active = 0;
 
 extern xbt_dict_t created_categories; //declared in instr_interface.c
+extern xbt_dict_t defined_types; //declared in instr_interface.c
+
+int TRACE_start()
+{
+  // tracing system must be:
+  //    - enabled (with --cfg=tracing:1)
+  //    - already configured (TRACE_global_init already called)
+  if (!(TRACE_is_enabled() && TRACE_is_configured())){
+    return 0;
+  }
+
+  DEBUG0("Tracing starts");
+
+  /* open the trace file */
+  TRACE_paje_start();
+
+  /* activate trace */
+  TRACE_activate ();
+
+  /* base type hierarchy:
+   * --cfg=tracing
+   */
+  pajeDefineContainerType("PLATFORM", "0", "platform");
+  pajeDefineContainerType("HOST", "PLATFORM", "HOST");
+  pajeDefineContainerType("LINK", "PLATFORM", "LINK");
+  pajeDefineVariableType("power", "HOST", "power");
+  pajeDefineVariableType("bandwidth", "LINK", "bandwidth");
+  pajeDefineVariableType("latency", "LINK", "latency");
+  pajeDefineEventType("source", "LINK", "source");
+  pajeDefineEventType("destination", "LINK", "destination");
+
+  /* type hierarchy for:
+   * --cfg=tracing/uncategorized
+   */
+  if (TRACE_uncategorized()){
+    pajeDefineVariableTypeWithColor("power_used", "HOST", "power_used", "0.5 0.5 0.5");
+    pajeDefineVariableTypeWithColor("bandwidth_used", "LINK", "bandwidth_used", "0.5 0.5 0.5");
+  }
+
+  /* type hierarchy for:
+   * --cfg=tracing/msg/process
+   * --cfg=tracing/msg/volume
+   */
+  if (TRACE_msg_process_is_enabled() || TRACE_msg_volume_is_enabled()) {
+    //processes grouped by host
+    pajeDefineContainerType("PROCESS", "HOST", "PROCESS");
+  }
+
+  if (TRACE_msg_process_is_enabled()) {
+    pajeDefineStateType("category", "PROCESS", "category");
+    pajeDefineStateType("presence", "PROCESS", "presence");
+  }
+
+  if (TRACE_msg_volume_is_enabled()) {
+    pajeDefineLinkType("volume", "0", "PROCESS", "PROCESS", "volume");
+  }
+
+  /* type hierarchy for:
+   * --cfg=tracing/msg/task
+   */
+  if (TRACE_msg_task_is_enabled()) {
+    //tasks grouped by host
+    pajeDefineContainerType("TASK", "HOST", "TASK");
+    pajeDefineStateType("category", "TASK", "category");
+    pajeDefineStateType("presence", "TASK", "presence");
+  }
+
+  /* type hierarchy for
+   * --cfg=tracing/smpi
+   * --cfg=tracing/smpi/group
+   */
+  if (TRACE_smpi_is_enabled()) {
+    if (TRACE_smpi_is_grouped()){
+      pajeDefineContainerType("MPI_PROCESS", "HOST", "MPI_PROCESS");
+    }else{
+      pajeDefineContainerType("MPI_PROCESS", "PLATFORM", "MPI_PROCESS");
+    }
+    pajeDefineStateType("MPI_STATE", "MPI_PROCESS", "MPI_STATE");
+    pajeDefineLinkType("MPI_LINK", "0", "MPI_PROCESS", "MPI_PROCESS",
+                       "MPI_LINK");
+  }
+
+  /* creating the platform */
+  pajeCreateContainer(MSG_get_clock(), "platform", "PLATFORM", "0",
+                      "simgrid-platform");
+
+  /* other trace initialization */
+  defined_types = xbt_dict_new();
+  created_categories = xbt_dict_new();
+  TRACE_msg_task_alloc();
+  TRACE_category_alloc();
+  TRACE_surf_alloc();
+  TRACE_msg_process_alloc();
+  TRACE_smpi_alloc();
+  return 0;
+}
+
+int TRACE_end()
+{
+  if (!TRACE_is_active())
+    return 1;
+  XBT_IN;
+
+  /* close the trace file */
+  TRACE_paje_end();
+
+  /* generate uncategorized graph configuration for triva */
+  if (TRACE_get_triva_uncat_conf()){
+    TRACE_generate_triva_uncat_conf();
+  }
+
+  /* generate categorized graph configuration for triva */
+  if (TRACE_get_triva_cat_conf()){
+    TRACE_generate_triva_cat_conf();
+  }
+
+  /* activate trace */
+  TRACE_desactivate ();
+  DEBUG0("Tracing system is shutdown");
+  return 0;
+}
 
 void TRACE_activate (void)
 {
