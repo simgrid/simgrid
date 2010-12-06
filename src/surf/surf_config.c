@@ -139,6 +139,11 @@ static void _surf_cfg_cb__tcp_gamma(const char *name, int pos)
   sg_tcp_gamma = xbt_cfg_get_double(_surf_cfg_set, name);
 }
 
+static void _surf_cfg_cb__maxmin_precision(const char* name, int pos)
+{
+  sg_maxmin_precision = xbt_cfg_get_double(_surf_cfg_set, name);
+}
+
 static void _surf_cfg_cb__latency_factor(const char *name, int pos)
 {
   sg_latency_factor = xbt_cfg_get_double(_surf_cfg_set, name);
@@ -273,6 +278,11 @@ void surf_config_init(int *argc, char **argv)
                      xbt_cfgelm_double, NULL, 1, 1,
                      _surf_cfg_cb__tcp_gamma, NULL);
     xbt_cfg_set_double(_surf_cfg_set, "TCP_gamma", 20000.0);
+
+    xbt_cfg_register(&_surf_cfg_set, "maxmin/precision",
+                     "Minimum retained action value when updating simulation",
+                     xbt_cfgelm_double, NULL, 1, 1, _surf_cfg_cb__maxmin_precision, NULL);
+    xbt_cfg_set_double(_surf_cfg_set, "maxmin/precision", 0.00001);
 
     /* The parameters of network models */
     double_default_value = 1.0;

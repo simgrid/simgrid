@@ -15,6 +15,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf,
                                 "Logging specific to SURF (maxmin)");
 
+double sg_maxmin_precision = 0.00001;
+
 static void *lmm_variable_mallocator_new_f(void);
 static void lmm_variable_mallocator_free_f(void *var);
 static void lmm_variable_mallocator_reset_f(void *var);

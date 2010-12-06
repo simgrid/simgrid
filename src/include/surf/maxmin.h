@@ -12,7 +12,8 @@
 #include "xbt/misc.h"
 #include "surf/datatypes.h"
 
-#define MAXMIN_PRECISION 0.00001
+extern double sg_maxmin_precision;
+#define MAXMIN_PRECISION sg_maxmin_precision
 static XBT_INLINE void double_update(double *variable, double value)
 {
   *variable -= value;
