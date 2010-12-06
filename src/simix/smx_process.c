@@ -25,10 +25,9 @@ static unsigned long simix_process_count = 0;
  */
 XBT_INLINE smx_process_t SIMIX_process_self(void)
 {
-  if (simix_global)
-    return SIMIX_context_get_data(SIMIX_context_self());
+  smx_context_t self_context = SIMIX_context_self();
 
-  return NULL;
+  return self_context ? SIMIX_context_get_data(self_context) : NULL;
 }
 
 /**
