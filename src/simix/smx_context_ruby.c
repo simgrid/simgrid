@@ -71,7 +71,7 @@ static void smx_ctx_ruby_stop(smx_context_t context)
 
   ctx_ruby = (smx_ctx_ruby_t) context;
 
-  if (((smx_process_t)smx_current_context->data)->iwannadie) {
+  if (smx_current_context->iwannadie) {
     if (ctx_ruby->process) {
 
       //if the Ruby Process still Alive ,let's Schedule it
