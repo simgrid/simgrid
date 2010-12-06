@@ -8,6 +8,8 @@
 
 #ifdef HAVE_TRACING
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorized resource utilization");
+
 //to check if variables were previously set to 0, otherwise paje won't simulate them
 static xbt_dict_t platform_variables;   /* host or link name -> array of categories */
 
@@ -285,6 +287,7 @@ void TRACE_surf_link_set_utilization(void *link, smx_action_t smx_action,
 
   //trace uncategorized link utilization
   if (TRACE_uncategorized()){
+    DEBUG4("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now+delta, resource, value);
     TRACE_surf_resource_utilization_event(smx_action, now, delta,
                                         "bandwidth_used", resource, value);
   }
@@ -294,6 +297,7 @@ void TRACE_surf_link_set_utilization(void *link, smx_action_t smx_action,
     return;
   char type[100];
   snprintf(type, 100, "b%s", surf_action->category);
+  DEBUG5("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, type, value);
   TRACE_surf_resource_utilization_event(smx_action, now, delta, type,
                                         resource, value);
   return;
@@ -315,6 +319,7 @@ void TRACE_surf_host_set_utilization(const char *name,
 
   //trace uncategorized host utilization
   if (TRACE_uncategorized()){
+    DEBUG4("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, name, value);
     TRACE_surf_resource_utilization_event(smx_action, now, delta,
                                         "power_used", name, value);
   }
@@ -324,6 +329,7 @@ void TRACE_surf_host_set_utilization(const char *name,
     return;
   char type[100];
   snprintf(type, 100, "p%s", surf_action->category);
+  DEBUG5("CAT HOST [%f - %f] %s %s %f", now, now+delta, name, type, value);
   TRACE_surf_resource_utilization_event(smx_action, now, delta, type, name,
                                         value);
   return;
@@ -336,6 +342,7 @@ void TRACE_surf_resource_utilization_start(smx_action_t action)
 {
   if (!TRACE_is_active())
     return;
+  DEBUG1("START %p", action);
   TRACE_method_start(action);
 }
 
@@ -347,6 +354,7 @@ void TRACE_surf_resource_utilization_event(smx_action_t action, double now,
 {
   if (!TRACE_is_active())
     return;
+  DEBUG6("EVENT %p [%f - %f] %s %s %f", action, now, now+delta, resource, variable, value);
   TRACE_method_event(action, now, delta, variable, resource, value);
 }
 
@@ -355,6 +363,7 @@ void TRACE_surf_resource_utilization_end(smx_action_t action)
   if (!TRACE_is_active())
     return;
   TRACE_method_end(action);
+  DEBUG1("END %p", action);
 }
 
 void TRACE_surf_resource_utilization_release()
