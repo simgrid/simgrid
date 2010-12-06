@@ -13,7 +13,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(tracing, "Tracing Interface");
 
 static xbt_dict_t defined_types;
-static xbt_dict_t created_categories;
+xbt_dict_t created_categories;
 
 int TRACE_start()
 {
@@ -115,6 +115,16 @@ int TRACE_end()
 
   /* close the trace file */
   TRACE_paje_end();
+
+  /* generate uncategorized graph configuration for triva */
+  if (TRACE_get_triva_uncat_conf()){
+    TRACE_generate_triva_uncat_conf();
+  }
+
+  /* generate categorized graph configuration for triva */
+  if (TRACE_get_triva_cat_conf()){
+    TRACE_generate_triva_cat_conf();
+  }
 
   /* activate trace */
   TRACE_desactivate ();

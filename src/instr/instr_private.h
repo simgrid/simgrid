@@ -161,8 +161,12 @@ int TRACE_msg_process_is_enabled(void);
 int TRACE_msg_volume_is_enabled(void);
 char *TRACE_get_filename(void);
 char *TRACE_get_platform_method(void);
+char *TRACE_get_triva_uncat_conf (void);
+char *TRACE_get_triva_cat_conf (void);
 void TRACE_global_init(int *argc, char **argv);
 void TRACE_help(int detailed);
+void TRACE_generate_triva_uncat_conf (void);
+void TRACE_generate_triva_cat_conf (void);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization(const char *name,

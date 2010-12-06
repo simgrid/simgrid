@@ -19,9 +19,13 @@
 #define OPT_TRACING_MSG_VOLUME    "tracing/msg/volume"
 #define OPT_TRACING_FILENAME      "tracing/filename"
 #define OPT_TRACING_PLATFORM_METHOD "tracing/platform/method"
+#define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
+#define OPT_TRIVA_CAT_CONF        "triva/categorized"
 
 static int trace_configured = 0;
 static int trace_active = 0;
+
+extern xbt_dict_t created_categories; //declared in instr_interface.c
 
 void TRACE_activate (void)
 {
@@ -97,6 +101,16 @@ char *TRACE_get_platform_method(void)
   return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_PLATFORM_METHOD);
 }
 
+char *TRACE_get_triva_uncat_conf (void)
+{
+  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRIVA_UNCAT_CONF);
+}
+
+char *TRACE_get_triva_cat_conf (void)
+{
+  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRIVA_CAT_CONF);
+}
+
 void TRACE_global_init(int *argc, char **argv)
 {
   /* name of the tracefile */
@@ -168,6 +182,20 @@ void TRACE_global_init(int *argc, char **argv)
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_MSG_VOLUME,
                    "Tracing of MSG communication volume (experimental).",
                    xbt_cfgelm_int, &default_tracing_msg_volume, 0, 1,
+                   NULL, NULL);
+
+  /* Triva graph configuration for uncategorized tracing */
+  char *default_triva_uncat_conf_file = xbt_strdup ("");
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRIVA_UNCAT_CONF,
+                   "Triva Graph configuration file for uncategorized resource utilization traces.",
+                   xbt_cfgelm_string, &default_triva_uncat_conf_file, 1, 1,
+                   NULL, NULL);
+
+  /* Triva graph configuration for uncategorized tracing */
+  char *default_triva_cat_conf_file = xbt_strdup ("");
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRIVA_CAT_CONF,
+                   "Triva Graph configuration file for categorized resource utilization traces.",
+                   xbt_cfgelm_string, &default_triva_cat_conf_file, 1, 1,
                    NULL, NULL);
 
   /* instrumentation can be considered configured now */
@@ -247,6 +275,105 @@ void TRACE_help (int detailed)
       detailed);
 }
 
+void TRACE_generate_triva_uncat_conf (void)
+{
+  char *output = TRACE_get_triva_uncat_conf ();
+  if (output && strlen(output) > 0){
+    FILE *file = fopen (output, "w");
+    if (!file){
+      THROW1(tracing_error, TRACE_ERROR_FILE_OPEN,
+             "Unable to open file (%s) for writing triva graph configuration (uncategorized).", output);
+    }
+    fprintf (file,
+        "{\n"
+        "  node = (HOST);\n"
+        "  edge = (LINK);\n"
+        "\n"
+        "  HOST = {\n"
+        "    size = power;\n"
+        "    scale = global;\n"
+        "    host_sep = {\n"
+        "      type = separation;\n"
+        "      size = power;\n"
+        "      values = (power_used);\n"
+        "    };\n"
+        "  };\n"
+        "  LINK = {\n"
+        "    src = source;\n"
+        "    dst = destination;\n"
+        "    size = bandwidth;\n"
+        "    scale = global;\n"
+        "    link_sep = {\n"
+        "      type = separation;\n"
+        "      size = bandwidth;\n"
+        "      values = (bandwidth_used);\n"
+        "    };\n"
+        "  };\n"
+        "  graphviz-algorithm = neato;\n"
+        "}\n"
+        );
+    fclose (file);
+  }
+}
+
+void TRACE_generate_triva_cat_conf (void)
+{
+  char *output = TRACE_get_triva_cat_conf();
+  if (output && strlen(output) > 0){
+    //check if we do have categories declared
+    if (xbt_dict_length(created_categories) == 0){
+//      INFO0("No categories declared, ignoring generation of triva graph configuration");
+      return;
+    }
+    xbt_dict_cursor_t cursor=NULL;
+    char *key, *data;
+    FILE *file = fopen (output, "w");
+    if (!file){
+      THROW1(tracing_error, TRACE_ERROR_FILE_OPEN,
+             "Unable to open file (%s) for writing triva graph configuration (categorized).", output);
+    }
+    fprintf (file,
+        "{\n"
+        "  node = (HOST);\n"
+        "  edge = (LINK);\n"
+        "\n"
+        "  HOST = {\n"
+        "    size = power;\n"
+        "    scale = global;\n"
+        "    host_sep = {\n"
+        "      type = separation;\n"
+        "      size = power;\n"
+        "      values = (");
+    xbt_dict_foreach(created_categories,cursor,key,data) {
+      fprintf(file, "p%s, ",key);
+    }
+    fprintf (file,
+        ");\n"
+        "    };\n"
+        "  };\n"
+        "  LINK = {\n"
+        "    src = source;\n"
+        "    dst = destination;\n"
+        "    size = bandwidth;\n"
+        "    scale = global;\n"
+        "    link_sep = {\n"
+        "      type = separation;\n"
+        "      size = bandwidth;\n"
+        "      values = (");
+    xbt_dict_foreach(created_categories,cursor,key,data) {
+      fprintf(file, "b%s, ",key);
+    }
+    fprintf (file,
+        ");\n"
+        "    };\n"
+        "  };\n"
+        "  graphviz-algorithm = neato;\n"
+        "}\n"
+        );
+    fclose(file);
+  }
+}
+
 #undef OPT_TRACING
 #undef OPT_TRACING_SMPI
 #undef OPT_TRACING_SMPI_GROUP
@@ -257,5 +384,7 @@ void TRACE_help (int detailed)
 #undef OPT_TRACING_MSG_VOLUME
 #undef OPT_TRACING_FILENAME
 #undef OPT_TRACING_PLATFORM_METHOD
+#undef OPT_TRIVA_UNCAT_CONF
+#undef OPT_TRIVA_CAT_CONF
 
 #endif /* HAVE_TRACING */
