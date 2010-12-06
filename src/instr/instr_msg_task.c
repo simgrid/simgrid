@@ -118,9 +118,12 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
   if (!TRACE_is_active())
     return;
 
+  xbt_assert3(task->category == NULL, "Task %p(%s) already has a category (%s).",
+      task, task->name, task->category);
+
   //set task category
-  task->category = xbt_new(char, strlen(category) + 1);
-  strncpy(task->category, category, strlen(category) + 1);
+  task->category = xbt_strdup (category);
+  DEBUG3("MSG task %p(%s), category %s", task, task->name, task->category);
 
   //tracing task location based on host
   TRACE_task_location(task);
@@ -140,6 +143,7 @@ void TRACE_msg_task_create(m_task_t task)
   static long long counter = 0;
   task->counter = counter++;
   task->category = NULL;
+  DEBUG2("CREATE %p, %lld", task, task->counter);
 }
 
 /* MSG_task_execute related functions */
@@ -151,6 +155,8 @@ void TRACE_msg_task_execute_start(m_task_t task)
 
   if (!task->category)
     return;
+
+  DEBUG3("EXEC,in %p, %lld, %s", task, task->counter, task->category);
 
   TRACE_task_container(task, name, 200);
   if (TRACE_msg_task_is_enabled())
@@ -173,6 +179,8 @@ void TRACE_msg_task_execute_end(m_task_t task)
     pajePopState(MSG_get_clock(), "task-state", name);
 
   TRACE_category_unset(SIMIX_process_self());
+
+  DEBUG3("EXEC,out %p, %lld, %s", task, task->counter, task->category);
 }
 
 /* MSG_task_destroy related functions */
@@ -192,6 +200,8 @@ void TRACE_msg_task_destroy(m_task_t task)
   //finish the location of this task
   TRACE_task_location_not_present(task);
 
+  DEBUG3("DESTROY %p, %lld, %s", task, task->counter, task->category);
+
   //free category
   xbt_free(task->category);
   return;
@@ -202,6 +212,8 @@ void TRACE_msg_task_get_start(void)
 {
   if (!TRACE_is_active())
     return;
+
+  DEBUG0("GET,in");
 }
 
 void TRACE_msg_task_get_end(double start_time, m_task_t task)
@@ -221,6 +233,8 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
 
   TRACE_task_location(task);
   TRACE_task_location_present(task);
+
+  DEBUG3("GET,out %p, %lld, %s", task, task->counter, task->category);
 }
 
 /* MSG_task_put related functions */
@@ -232,6 +246,8 @@ int TRACE_msg_task_put_start(m_task_t task)
 
   if (!task->category)
     return 0;
+
+  DEBUG3("PUT,in %p, %lld, %s", task, task->counter, task->category);
 
   TRACE_task_container(task, name, 200);
   if (TRACE_msg_task_is_enabled())
@@ -255,6 +271,8 @@ void TRACE_msg_task_put_end(void)
     return;
 
   TRACE_category_unset(SIMIX_process_self());
+
+  DEBUG0("PUT,in");
 }
 
 #endif /* HAVE_TRACING */

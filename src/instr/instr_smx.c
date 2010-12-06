@@ -20,8 +20,8 @@ void TRACE_smx_host_execute(smx_action_t act)
   act->counter = counter++;
   char *category = TRACE_category_get(SIMIX_process_self());
   if (category) {
-    act->category = xbt_new(char, strlen(category) + 1);
-    strncpy(act->category, category, strlen(category) + 1);
+    act->category = xbt_strdup(category);
+    DEBUG2("Create Execute SMX action %p, category %s", act, act->category);
   }
   TRACE_surf_resource_utilization_start(act);
 }
@@ -35,6 +35,7 @@ void TRACE_smx_action_communicate(smx_action_t act, smx_process_t proc)
   char *category = TRACE_category_get(proc);
   if (category) {
     act->category = xbt_strdup(category);
+    DEBUG2("Create Communicate SMX action %p, category %s", act, act->category);
   }
   TRACE_surf_resource_utilization_start(act);
 }
@@ -45,6 +46,7 @@ void TRACE_smx_action_destroy(smx_action_t act)
     return;
 
   if (act->category) {
+    DEBUG2("Destroy SMX action %p, category %s", act, act->category);
     xbt_free(act->category);
   }
   TRACE_surf_resource_utilization_end(act);

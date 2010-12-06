@@ -32,16 +32,15 @@ extern xbt_dict_t created_categories; //declared in instr_interface.c
 
 void TRACE_activate (void)
 {
-  if (trace_active){
-    THROW0(tracing_error, TRACE_ERROR_ALREADY_ACTIVE,
-           "Tracing is already active.");
-  }
+  xbt_assert0 (trace_active==0, "Tracing is already active.");
   trace_active = 1;
+  DEBUG0 ("Tracing is on");
 }
 
 void TRACE_desactivate (void)
 {
   trace_active = 0;
+  DEBUG0 ("Tracing is off");
 }
 
 int TRACE_is_active (void)
@@ -297,10 +296,9 @@ void TRACE_generate_triva_uncat_conf (void)
   char *output = TRACE_get_triva_uncat_conf ();
   if (output && strlen(output) > 0){
     FILE *file = fopen (output, "w");
-    if (!file){
-      THROW1(tracing_error, TRACE_ERROR_FILE_OPEN,
-             "Unable to open file (%s) for writing triva graph configuration (uncategorized).", output);
-    }
+    xbt_assert1 (file != NULL,
+       "Unable to open file (%s) for writing triva graph "
+       "configuration (uncategorized).", output);
     fprintf (file,
         "{\n"
         "  node = (HOST);\n"
@@ -339,16 +337,15 @@ void TRACE_generate_triva_cat_conf (void)
   if (output && strlen(output) > 0){
     //check if we do have categories declared
     if (xbt_dict_length(created_categories) == 0){
-//      INFO0("No categories declared, ignoring generation of triva graph configuration");
+      INFO0("No categories declared, ignoring generation of triva graph configuration");
       return;
     }
     xbt_dict_cursor_t cursor=NULL;
     char *key, *data;
     FILE *file = fopen (output, "w");
-    if (!file){
-      THROW1(tracing_error, TRACE_ERROR_FILE_OPEN,
-             "Unable to open file (%s) for writing triva graph configuration (categorized).", output);
-    }
+    xbt_assert1 (file != NULL,
+       "Unable to open file (%s) for writing triva graph "
+       "configuration (categorized).", output);
     fprintf (file,
         "{\n"
         "  node = (HOST);\n"

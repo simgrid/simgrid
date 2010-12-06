@@ -8,6 +8,8 @@
 
 #ifdef HAVE_TRACING
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje, instr, "Paje tracing event system");
+
 static FILE *tracing_file = NULL;
 
 static int pajeDefineContainerTypeId = 0;
@@ -45,10 +47,9 @@ void TRACE_paje_start(void)
 {
   char *filename = TRACE_get_filename();
   tracing_file = fopen(filename, "w");
-  if (!tracing_file) {
-    THROW1(tracing_error, TRACE_ERROR_FILE_OPEN,
-           "Tracefile %s could not be opened for writing.", filename);
-  }
+  xbt_assert1 (tracing_file != NULL, "Tracefile %s could not be opened for writing.", filename);
+
+  DEBUG1("Filename %s is open for writing", filename);
 
   /* output header */
   TRACE_paje_create_header();
@@ -57,10 +58,13 @@ void TRACE_paje_start(void)
 void TRACE_paje_end(void)
 {
   fclose(tracing_file);
+  char *filename = TRACE_get_filename();
+  DEBUG1("Filename %s is closed", filename);
 }
 
 void TRACE_paje_create_header(void)
 {
+  DEBUG0 ("Define paje header");
   fprintf(tracing_file, "\
 %%EventDef PajeDefineContainerType %d \n\
 %%       Alias string \n\

@@ -24,6 +24,8 @@ int TRACE_start()
     return 0;
   }
 
+  DEBUG0("Tracing starts");
+
   /* open the trace file */
   TRACE_paje_start();
 
@@ -112,6 +114,7 @@ int TRACE_end()
 {
   if (!TRACE_is_active())
     return 1;
+  XBT_IN;
 
   /* close the trace file */
   TRACE_paje_end();
@@ -128,6 +131,7 @@ int TRACE_end()
 
   /* activate trace */
   TRACE_desactivate ();
+  DEBUG0("Tracing system is shutdown");
   return 0;
 }
 
@@ -156,17 +160,14 @@ void TRACE_define_type(const char *type,
   if (!TRACE_is_active())
     return;
 
-  //check if type is already defined
-  if (xbt_dict_get_or_null(defined_types, type)) {
-    THROW1(tracing_error, TRACE_ERROR_TYPE_ALREADY_DEFINED,
-           "Type %s is already defined", type);
-  }
-  //check if parent_type is already defined
-  if (strcmp(parent_type, "0")
-      && !xbt_dict_get_or_null(defined_types, parent_type)) {
-    THROW1(tracing_error, TRACE_ERROR_TYPE_NOT_DEFINED,
-           "Type (used as parent) %s is not defined", parent_type);
-  }
+  char *defined;
+  //type must not exist
+  defined = xbt_dict_get_or_null(defined_types, type);
+  xbt_assert1 (defined == NULL, "Type %s is already defined", type);
+  //parent_type must exist or be different of 0
+  defined = xbt_dict_get_or_null(defined_types, parent_type);
+  xbt_assert1 (defined != NULL || strcmp(parent_type, "0") == 0,
+      "Type (used as parent) %s is not defined", parent_type);
 
   pajeDefineContainerType(type, parent_type, type);
   if (final) {
@@ -201,23 +202,16 @@ int TRACE_create_category_with_color(const char *category,
   if (!TRACE_is_active())
     return 1;
 
+  char *defined = xbt_dict_get_or_null(defined_types, type);
   //check if type is defined
-  if (!xbt_dict_get_or_null(defined_types, type)) {
-    THROW1(tracing_error, TRACE_ERROR_TYPE_NOT_DEFINED,
-           "Type %s is not defined", type);
-    return 1;
-  }
+  xbt_assert1 (defined != NULL, "Type %s is not defined", type);
   //check if parent_category exists
-  if (strcmp(parent_category, "0")
-      && !xbt_dict_get_or_null(created_categories, parent_category)) {
-    THROW1(tracing_error, TRACE_ERROR_CATEGORY_NOT_DEFINED,
-           "Category (used as parent) %s is not created", parent_category);
-    return 1;
-  }
+  defined = xbt_dict_get_or_null(created_categories, parent_category);
+  xbt_assert1 (defined != NULL || strcmp(parent_category, "0") == 0,
+      "Category (used as parent) %s is not created", parent_category);
   //check if category is created
-  if (xbt_dict_get_or_null(created_categories, category)) {
-    return 1;
-  }
+  char *created = xbt_dict_get_or_null(created_categories, category);
+  xbt_assert1 (created == NULL, "Category %s is already defined", category);
 
   pajeCreateContainer(MSG_get_clock(), category, type, parent_category,
                       category);
@@ -232,6 +226,8 @@ int TRACE_create_category_with_color(const char *category,
   }else{
     snprintf (final_color, INSTR_DEFAULT_STR_SIZE, "%s", color);
   }
+
+  DEBUG2("CAT,declare %s, %s", category, final_color);
 
   /* for registering application categories on top of platform */
   snprintf(state, 100, "b%s", category);
@@ -253,6 +249,7 @@ void TRACE_declare_mark(const char *mark_type)
   if (!mark_type)
     return;
 
+  DEBUG1("MARK,declare %s", mark_type);
   pajeDefineEventType(mark_type, "0", mark_type);
 }
 
@@ -263,6 +260,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   if (!mark_type || !mark_value)
     return;
 
+  DEBUG2("MARK %s %s", mark_type, mark_value);
   pajeNewEvent(MSG_get_clock(), mark_type, "0", mark_value);
 }
 
