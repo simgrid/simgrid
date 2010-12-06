@@ -100,6 +100,7 @@ XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task,
 #else                           /* HAVE_TRACING */
 
 #define TRACE_category(cat)
+#define TRACE_category_with_color(cat,color)
 #define TRACE_define_type(cat,supercat,final)
 #define TRACE_create_category(inst,cat)
 #define TRACE_msg_set_task_category(task,cat)
