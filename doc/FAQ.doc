@@ -1865,7 +1865,7 @@ tracing
   in the trace file. You have to enable this option to others take effect.
 
 \li <b>\c 
-tracing/platform
+tracing/categorized
 </b>:
   It activates the categorized resource utilization tracing. It should
   be enabled if tracing categories are used by this simulator.

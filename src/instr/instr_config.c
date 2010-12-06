@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING               "tracing"
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
-#define OPT_TRACING_PLATFORM      "tracing/platform"
+#define OPT_TRACING_PLATFORM      "tracing/categorized"
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_TASK      "tracing/msg/task"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"

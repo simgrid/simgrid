@@ -2,9 +2,9 @@
 
 p Testing onelink communication pattern with LV08 model
 
-$ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=tracing/filename:onelink_lv08.trace --cfg=tracing/platform:1 --cfg=workstation/model:compound --cfg=cpu/model:Cas01  --cfg=network/model:LV08 2>&1 | grep --color=auto -v root/INFO | grep -v simix_network/INFO
+$ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=tracing/filename:onelink_lv08.trace --cfg=tracing/categorized:1 --cfg=workstation/model:compound --cfg=cpu/model:Cas01  --cfg=network/model:LV08 2>&1 | grep --color=auto -v root/INFO | grep -v simix_network/INFO
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'onelink_lv08.trace'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'LV08'
