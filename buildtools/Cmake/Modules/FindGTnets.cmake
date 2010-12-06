@@ -56,7 +56,7 @@ if(HAVE_GTNETS_LIB AND HAVE_RNGSTREAM_H)
 	endif(COMPILE_GTNETS_VAR)
 
 else(HAVE_GTNETS_LIB AND HAVE_RNGSTREAM_H)
-message(STATUS "Gtnets is enabled but can't find it. You should set LD_LIBRARY_PATH...")
+message(STATUS "Gtnets is enabled but can't find it.")
 endif(HAVE_GTNETS_LIB AND HAVE_RNGSTREAM_H)
 
 message(STATUS "Looking for RngStream.h")
