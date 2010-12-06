@@ -410,15 +410,16 @@ void SD_exit(void)
     xbt_free(sd_global);
     sd_global = NULL;
 
+#ifdef HAVE_TRACING
+  TRACE_end();
+#endif
+
     DEBUG0("Exiting Surf...");
     surf_exit();
   } else {
     WARN0("SD_exit() called, but SimDag is not running");
     /* we cannot use exceptions here because xbt is not running! */
   }
-#ifdef HAVE_TRACING
-  TRACE_end();
-#endif
 }
 
 /**

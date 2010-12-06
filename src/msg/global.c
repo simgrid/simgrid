@@ -207,11 +207,11 @@ MSG_error_t MSG_clean(void)
   /* initialization of the action module */
   _MSG_action_exit();
 
-  SIMIX_clean();
-
 #ifdef HAVE_TRACING
   TRACE_end();
 #endif
+
+  SIMIX_clean();
 
   return MSG_OK;
 }
