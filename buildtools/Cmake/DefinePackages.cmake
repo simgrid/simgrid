@@ -396,38 +396,32 @@ set(install_HEADERS
 )
 
 ### depend of some variables setted upper
-# -->CONTEXT_THREADS
+# -->CONTEXT_THREADS CONTEXT_UCONTEXT
 if(${CONTEXT_THREADS}) #pthread
 	set(SURF_SRC
 		${SURF_SRC}
 		src/xbt/xbt_os_thread.c
 		src/simix/smx_context_thread.c
-	)
+		)
+else(${CONTEXT_THREADS}) # NOT pthread
 	set(EXTRA_DIST
 		${EXTRA_DIST}
-		src/simix/smx_context_sysv.c
-	)
-else(${CONTEXT_THREADS}) #ucontext
+		src/xbt/xbt_os_thread.c
+		src/simix/smx_context_thread.c
+		)
+endif(${CONTEXT_THREADS})
+
+if(${CONTEXT_UCONTEXT}) #ucontext
 	set(SURF_SRC
 		${SURF_SRC}
 		src/simix/smx_context_sysv.c
 	)
-
-	if(WIN32)
-    	set(SURF_SRC
-    		${SURF_SRC}
-    		src/xbt/xbt_os_thread.c
-    		src/simix/smx_context_thread.c)
-    else(WIN32)
-    	set(EXTRA_DIST
-    		${EXTRA_DIST}
-    		src/xbt/xbt_os_thread.c
-    		src/simix/smx_context_thread.c)
-    endif(WIN32)
-endif(${CONTEXT_THREADS})
-
-
-
+else(${CONTEXT_UCONTEXT}) # NOT ucontext
+	set(EXTRA_DIST
+		${EXTRA_DIST}
+		src/simix/smx_context_sysv.c
+	)
+endif(${CONTEXT_UCONTEXT})
 
 # -->HAVE_GTNETS
 if(HAVE_GTNETS)

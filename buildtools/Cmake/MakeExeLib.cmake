@@ -90,9 +90,9 @@ if(HAVE_RUBY)
 endif(HAVE_RUBY)
 
 if(pthread)
-	if(with_context MATCHES pthread)
+	if(${CONTEXT_THREADS})
 		SET(SIMGRID_DEP "${SIMGRID_DEP} -lpthread")
-	endif(with_context MATCHES pthread)	
+	endif(${CONTEXT_THREADS})	
 endif(pthread)
 
 if(HAVE_LUA)	  

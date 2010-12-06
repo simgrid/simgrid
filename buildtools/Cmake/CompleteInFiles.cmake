@@ -207,55 +207,29 @@ if(with_context MATCHES "ucontext" AND mcsc MATCHES "no")
 	message(FATAL_ERROR "-Dwith-context=ucontext specified but ucontext unusable.")
 endif(with_context MATCHES "ucontext" AND mcsc MATCHES "no")
 
-set(with_context_ok 0)
+#Only windows
+
 if(with_context MATCHES "windows")
-	set(with_context_ok 1)
 	if(NOT HAVE_WINDOWS_H)
 		message(FATAL_ERROR "no appropriate backend found windows")
 	endif(NOT HAVE_WINDOWS_H)
 endif(with_context MATCHES "windows")
 
-if(with_context MATCHES "pthreads")
-	set(with_context_ok 1)
-	set(with_context "pthread")
-endif(with_context MATCHES "pthreads")
+if(windows_context MATCHES "yes")
+	set(with_context "windows")
+	message(STATUS "Context change to windows")
+endif(windows_context MATCHES "yes")
 
-if(with_context MATCHES "auto")
-	set(with_context_ok 1)
-	set(with_context "ucontext")
-	message(STATUS "With_context auto change to ucontext")
-endif(with_context MATCHES "auto")
+#If can have both context
 
-if(with_context MATCHES "ucontext")
-	set(with_context_ok 1)
-	if(mcsc)
-		set(CONTEXT_UCONTEXT 1)
-	else(mcsc)
-		if(windows_context MATCHES "yes")
-			set(with_context "windows")
-			message(STATUS "With_context ucontext change to windows")
-		else(windows_context MATCHES "yes")
-			set(with_context "pthread")
-			message(STATUS "With_context ucontext change to pthread")
-		endif(windows_context MATCHES "yes")
-	endif(mcsc)
-endif(with_context MATCHES "ucontext")
+if(mcsc)
+	set(CONTEXT_UCONTEXT 1)
+endif(mcsc)
 
-if(with_context MATCHES "pthread")
-	set(with_context_ok 1)
-	if(NOT pthread)
-		message(FATAL_ERROR "Cannot find pthreads (try -Dwith_context=ucontext if you haven't already tried).")
-	endif(NOT pthread)
-	SET(CONTEXT_THREADS 1)
-endif(with_context MATCHES "pthread")
+if(pthread)
+	set(CONTEXT_THREADS 1)
+endif(pthread)
 
-if(with_context MATCHES "ucontext")
-	SET(CONTEXT_THREADS 0)
-endif(with_context MATCHES "ucontext")
-
-if(NOT with_context_ok)
-	message(FATAL_ERROR "-Dwith-context must be either ucontext or pthread")
-endif(NOT with_context_ok)
 
 ###############
 ## SVN version check
