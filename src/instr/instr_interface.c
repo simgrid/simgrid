@@ -45,11 +45,9 @@ int TRACE_start()
   /* type hierarchy for:
    * --cfg=tracing/uncategorized
    */
-  if (TRACE_platform_is_enabled()) {
-    if (TRACE_uncategorized()){
-      pajeDefineVariableType("power_used", "HOST", "power_used");
-      pajeDefineVariableType("bandwidth_used", "LINK", "bandwidth_used");
-    }
+  if (TRACE_uncategorized()){
+    pajeDefineVariableTypeWithColor("power_used", "HOST", "power_used", "0.5 0.5 0.5");
+    pajeDefineVariableTypeWithColor("bandwidth_used", "LINK", "bandwidth_used", "0.5 0.5 0.5");
   }
 
   /* type hierarchy for:
