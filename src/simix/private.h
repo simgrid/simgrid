@@ -238,11 +238,11 @@ static XBT_INLINE void SIMIX_context_runall(xbt_swag_t processes)
  */
 static XBT_INLINE smx_context_t SIMIX_context_self(void)
 {
-  if (simix_global->context_factory == NULL) {
-    return NULL;
+  if (simix_global && simix_global->context_factory != NULL) {
+    return (*(simix_global->context_factory->self))();
   }
 
-  return (*(simix_global->context_factory->self))();
+  return NULL;
 }
 
 /**
