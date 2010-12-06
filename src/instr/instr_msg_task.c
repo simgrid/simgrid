@@ -8,6 +8,8 @@
 
 #ifdef HAVE_TRACING
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg, instr, "MSG");
+
 static xbt_dict_t task_containers = NULL;
 
 static char *TRACE_task_alias_container(m_task_t task, m_process_t process,

@@ -9,6 +9,9 @@
 
 #ifdef HAVE_TRACING
 
+XBT_LOG_NEW_CATEGORY(instr, "Logging the behavior of the tracing system (used for Visualization/Analysis of simulations)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
+
 #define OPT_TRACING               "tracing"
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"

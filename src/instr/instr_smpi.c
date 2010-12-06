@@ -8,6 +8,8 @@
 
 #ifdef HAVE_TRACING
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
+
 static xbt_dict_t keys;
 
 static char *TRACE_smpi_container(int rank, char *container, int n)

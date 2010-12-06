@@ -8,6 +8,8 @@
 
 #ifdef HAVE_TRACING
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_simix, instr, "Tracing Simix");
+
 static long long int counter = 0;       /* to uniquely identify simix actions */
 
 void TRACE_smx_host_execute(smx_action_t act)

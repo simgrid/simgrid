@@ -9,7 +9,7 @@
 
 #ifdef HAVE_TRACING
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(tracing_surf, tracing, "Tracing Surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_surf, instr, "Tracing Surf");
 
 static xbt_dict_t created_links;
 static xbt_dict_t host_containers;

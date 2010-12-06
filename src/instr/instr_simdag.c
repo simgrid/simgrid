@@ -8,6 +8,8 @@
 
 #ifdef HAVE_TRACING
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_simdag, instr, "Tracing SimDAG");
+
 void TRACE_sd_task_create(SD_task_t task)
 {
   task->category = NULL;

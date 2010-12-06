@@ -10,7 +10,7 @@
 
 #include "instr/instr_private.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(tracing, "Tracing Interface");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
 static xbt_dict_t defined_types;
 xbt_dict_t created_categories;
