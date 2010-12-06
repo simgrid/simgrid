@@ -273,6 +273,20 @@ void TRACE_help (int detailed)
       "  This experimental option only has effect if this simulator is MSG-based.\n"
       "  It traces the communication volume of MSG send/receive.",
       detailed);
+  print_line (OPT_TRIVA_UNCAT_CONF, "Generate graph configuration for Triva",
+      "  This option can be used in all types of simulators build with SimGrid\n"
+      "  to generate a uncategorized resource utilization graph to be used as\n"
+      "  configuration for the Triva visualization analysis. This option\n"
+      "  can be used with tracing/categorized:1 and tracing:1 options to\n"
+      "  analyze an unmodified simulator before changing it to contain\n"
+      "  categories.",
+      detailed);
+  print_line (OPT_TRIVA_CAT_CONF, "generate uncategorized graph configuration for Triva",
+      "  This option can be used if this simulator uses tracing categories\n"
+      "  in its code. The file specified by this option holds a graph configuration\n"
+      "  file for the Triva visualization tool that can be used to analyze a categorized\n"
+      "  resource utilization.",
+      detailed);
 }
 
 void TRACE_generate_triva_uncat_conf (void)
