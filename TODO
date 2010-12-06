@@ -1,3 +1,15 @@
+
+
+
+
+                ************************************************
+                ***  This file is a TODO. It is thus kinda   ***
+                ***  outdated. You know the story, right?    ***
+                ************************************************
+
+
+
+
 ###
 ### Ongoing stuff
 ###
@@ -9,9 +21,6 @@ Document host module
 int vasprintf  (char **ptr, const char *fmt, va_list ap);
 char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
 
-Module renamings:
- - rename SWAG to RING?
- - Rename cursor to iterator
 
 gras_socket_close should be blocking until all the data sent have been
 received by the other side (implemented with an ACK mechanism).
@@ -24,7 +33,7 @@ received by the other side (implemented with an ACK mechanism).
 * Infrastructure
 ****************
 
-[autoconf]
+[build chain]
   * Check the gcc version on powerpc. We disabled -floop-optimize on powerpc,
     but versions above 3.4.0 should be ok.
   * check whether we have better than jmp_buf to implement exceptions, and
@@ -33,13 +42,6 @@ received by the other side (implemented with an ACK mechanism).
 *
 * XBT
 *****
-
-[doc]
-  * graphic showing:
-    (errors, logs ; dynars, dicts, hooks, pools; config, rrdb)
-
-[portability layer]
-  * maybe a memory pool so that we can cleanly kill an actor
 
 [errors/exception]
   * Better split casual errors from programming errors.
@@ -52,7 +54,6 @@ received by the other side (implemented with an ACK mechanism).
   * Hijack message from a given category to another for a while (to mask
     initializations, and more)
   * Allow each actor to have its own setting
-  * a init/exit mecanism for logging appender
   * more logging appenders (take those from Ralf in l2)
 
 [modules]
@@ -62,7 +63,6 @@ received by the other side (implemented with an ACK mechanism).
 
 [other modules]
   * we may need a round-robin database module, and a statistical one
-  * a hook module *may* help cleaning up some parts. Not sure yet.
   * Some of the datacontainer modules seem to overlap. Kill some of them?
     - replace fifo with dynars
     - replace set with SWAG
@@ -113,7 +113,6 @@ received by the other side (implemented with an ACK mechanism).
     - Port to ARM
     - Convert in the same buffer when size increase
     - Exchange (on net) structures in one shoot when possible.
-    - Port to really exotic platforms (Cray is not IEEE ;)
   * datadesc_set_cste: give the value by default when receiving. 
     - It's not transfered anymore, which is good for functions pointer.
   * Parsing macro
@@ -133,8 +132,6 @@ received by the other side (implemented with an ACK mechanism).
     - Check short ***
     - Check struct { struct { int a } b; } 
 
-  * gras_datadesc_import_nws?
-
 [Messaging]
   * Other message types than oneway & RPC are possible:
      - forwarding request, group communication
@@ -143,23 +140,6 @@ received by the other side (implemented with an ACK mechanism).
   * Group communication
   * Message declarations in a tree manner (such as log channels)?
   
-[GRASPE] (platform expender) 
-  * Tool to visualize/deploy and manage in RL
-  * pull method of source diffusion in graspe-slave
-
-[Actors] (parallelism in GRAS)
-  * An actor is a user process. 
-    It has a highly sequential control flow from its birth until its death. 
-    The timers won't stop the current execution to branch elsewhere, they
-    will be delayed until the actor is ready to listen. Likewise, no signal
-    delivery. The goal is to KISS for users.
-  * You can fork a new actor, even on remote hosts. 
-  * They are implemented as threads in RL, but this is still a distributed
-    memory *model*. If you want to share data with another actor, send it
-    using the message interface to explicit who's responsible of this data.
-  * data exchange between actors placed within the same UNIX process is  
-    *implemented* by memcopy, but that's an implementation detail.
-
 [Other, more general issues]
   * watchdog in RL (ie, while (1) { fork; exec the child, wait in father })
   * Allow [homogeneous] dico to be sent
@@ -175,13 +155,3 @@ received by the other side (implemented with an ACK mechanism).
   * log control, management, dynamic token ring
   * a way using SSH to ask a remote host to open a socket back on me
  
-
-*
-* SURF
-******
-
-[maxmin]
-  * select portion of the system that changed instead of recomputing
-  * the whole system solution at each action change
- 
-
