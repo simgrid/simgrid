@@ -1,6 +1,6 @@
 find_path(HAVE_RNGSTREAM_H RngStream.h
     HINTS
-    $ENV{LD_LIBRARY_PATH}
+    $ENV{HOME}
     PATH_SUFFIXES include include/gtnets
     PATHS
     /opt
@@ -8,12 +8,14 @@ find_path(HAVE_RNGSTREAM_H RngStream.h
     /opt/csw
     /sw
     /usr
+    ${gtnets_path}
 )
 
 find_library(HAVE_GTNETS_LIB
     NAME gtnets
     HINTS
     $ENV{LD_LIBRARY_PATH}
+    $ENV{HOME}
     PATH_SUFFIXES lib64 lib lib64/gtnets lib/gtnets
     PATHS
     /opt
@@ -21,6 +23,7 @@ find_library(HAVE_GTNETS_LIB
     /opt/csw
     /sw
     /usr
+    ${gtnets_path}
 )
 
 string(REPLACE "/libgtnets.${LIB_EXE}" ""  GTNETS_LIB_PATH "${HAVE_GTNETS_LIB}")
@@ -53,7 +56,7 @@ if(HAVE_GTNETS_LIB AND HAVE_RNGSTREAM_H)
 	endif(COMPILE_GTNETS_VAR)
 
 else(HAVE_GTNETS_LIB AND HAVE_RNGSTREAM_H)
-message(STATUS "Gtnets is enable but can't find it. You should set LD_LIBRARY_PATH...")
+message(STATUS "Gtnets is enabled but can't find it. You should set LD_LIBRARY_PATH...")
 endif(HAVE_GTNETS_LIB AND HAVE_RNGSTREAM_H)
 
 message(STATUS "Looking for RngStream.h")

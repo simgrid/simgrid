@@ -82,25 +82,6 @@ ctest -D NightlyTest
 ctest -D NightlySubmit
 make clean
 
-#gtnets
-cmake -Denable_lua=on \
--Denable_ruby=on \
--Denable_lib_static=on \
--Denable_graphviz=on \
--Denable_model-checking=off \
--Denable_tracing=on \
--Denable_latency_bound_tracking=on \
--Denable_gtnets=on \
--Denable_java=on \
--Dwith_context=auto \
--Denable_smpi=on .
-ctest -D NightlyStart
-ctest -D NightlyConfigure
-ctest -D NightlyBuild
-ctest -D NightlyTest
-ctest -D NightlySubmit
-make clean
-
 #full_flags
 cmake -Denable_lua=on \
 -Denable_ruby=on \
@@ -152,7 +133,7 @@ cmake -Denable_lua=on \
 -Denable_model-checking=on \
 -Denable_tracing=on \
 -Denable_latency_bound_tracking=on \
--Denable_gtnets=on \
+-Denable_gtnets=off \
 -Denable_java=on \
 -Dwith_context=auto \
 -Denable_compile_optimizations=off \
