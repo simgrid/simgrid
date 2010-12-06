@@ -13,12 +13,6 @@ else(NOT CMAKE_INSTALL_PREFIX)
 	set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE PATH "Path where to install project")
 endif(NOT CMAKE_INSTALL_PREFIX)
 
-set(with_context ${with_context} CACHE TYPE INTERNAL FORCE)
-
-if(NOT with_context)
-	set(with_context "auto" CACHE TYPE INTERNAL FORCE)
-endif(NOT with_context)
-
 set(pipol_user ${pipol_user} CACHE TYPE INTERNAL FORCE)
 
 option(enable_gtnets "Whether gtnets model is activated." on)

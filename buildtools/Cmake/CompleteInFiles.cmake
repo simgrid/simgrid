@@ -203,20 +203,15 @@ if(mcsc MATCHES "no" AND pthread)
 	endif(HAVE_WINDOWS_H)
 endif(mcsc MATCHES "no" AND pthread)
 
-if(with_context MATCHES "ucontext" AND mcsc MATCHES "no")
-	message(FATAL_ERROR "-Dwith-context=ucontext specified but ucontext unusable.")
-endif(with_context MATCHES "ucontext" AND mcsc MATCHES "no")
-
 #Only windows
 
-if(with_context MATCHES "windows")
+if(WIN32)
 	if(NOT HAVE_WINDOWS_H)
 		message(FATAL_ERROR "no appropriate backend found windows")
 	endif(NOT HAVE_WINDOWS_H)
-endif(with_context MATCHES "windows")
+endif(WIN32)
 
 if(windows_context MATCHES "yes")
-	set(with_context "windows")
 	message(STATUS "Context change to windows")
 endif(windows_context MATCHES "yes")
 
