@@ -84,6 +84,7 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->latency_limited_dict = xbt_dict_new();
 #endif
 
+    surf_init(argc, argv);      /* Initialize SURF structures */
     SIMIX_context_mod_init();
     SIMIX_create_maestro_process();
 
@@ -99,7 +100,6 @@ void SIMIX_global_init(int *argc, char **argv)
 
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
-    surf_init(argc, argv);      /* Initialize SURF structures */
   }
   if (!simix_timers) {
     simix_timers = xbt_heap_new(8, &free);
