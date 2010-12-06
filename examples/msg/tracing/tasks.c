@@ -112,8 +112,8 @@ int main(int argc, char *argv[])
   }
 
   //declaring user categories
-  TRACE_category("compute");
-  TRACE_category("finalize");
+  TRACE_category_with_color ("compute", "1 0 0");  //compute is red
+  TRACE_category_with_color ("finalize", "0 1 0"); //finalize is green
 
   res = test_all(argv[1], argv[2]);
   MSG_clean();

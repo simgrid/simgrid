@@ -119,14 +119,14 @@ int main(int argc, char *argv[])
   //     - the tasks sent have a category
 
   //declaring user categories (for tasks)
-  TRACE_category("compute");
-  TRACE_category("request");
-  TRACE_category("data");
-  TRACE_category("finalize");
+  TRACE_category_with_color ("compute", "1 0 0"); //red
+  TRACE_category_with_color ("request", "0 1 0"); //green
+  TRACE_category_with_color ("data", "0 0 1");    //blue
+  TRACE_category_with_color ("finalize", "0 0 0");//black
 
   //declaring user categories (for processes)
-  TRACE_category("master");
-  TRACE_category("slave");
+  TRACE_category_with_color ("master", "1 0 0");
+  TRACE_category_with_color ("slave", "0 0 1");
 
   res = test_all(argv[1], argv[2]);
   MSG_clean();

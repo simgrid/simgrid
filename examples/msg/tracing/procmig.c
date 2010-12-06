@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
               argv[0]);
     exit(1);
   }
-  TRACE_category("emigrant");
+  TRACE_category_with_color ("emigrant", "1 0 0");
 
   /* Simulation setting */
   MSG_create_environment(argv[1]);
