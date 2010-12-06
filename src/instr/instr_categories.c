@@ -45,10 +45,4 @@ void TRACE_category_unset(smx_process_t proc)
   }
 }
 
-void TRACE_msg_category_set(smx_process_t proc, m_task_t task)
-{
-  TRACE_category_set(proc, task->category);
-}
-
-
 #endif /* HAVE_TRACING */

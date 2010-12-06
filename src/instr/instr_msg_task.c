@@ -156,7 +156,7 @@ void TRACE_msg_task_execute_start(m_task_t task)
   if (TRACE_msg_task_is_enabled())
     pajePushState(MSG_get_clock(), "task-state", name, "execute");
 
-  TRACE_msg_category_set(SIMIX_process_self(), task);
+  TRACE_category_set(SIMIX_process_self(), task->category);
 }
 
 void TRACE_msg_task_execute_end(m_task_t task)
@@ -245,7 +245,7 @@ int TRACE_msg_task_put_start(m_task_t task)
   TRACE_task_location_not_present(task);
 
   //set current category
-  TRACE_msg_category_set(SIMIX_process_self(), task);
+  TRACE_category_set(SIMIX_process_self(), task->category);
   return 1;
 }
 
