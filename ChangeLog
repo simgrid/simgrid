@@ -24,6 +24,13 @@ SimGrid (3.6) unstable; urgency=low
    due to the change to return type of SD_Simulate. See also:
    http://lists.gforge.inria.fr/pipermail/simgrid-user/2010-December/002206.html
 
+ INSTR
+ * New configuration options
+   Options triva/categorized and triva/uncategorized can be used to generate
+   graph configuration files for Triva visualization tool.
+ * Configuration option tracing/platform is renamed to tracing/categorized
+ * XBT logging makes tracing error checks easier, new root log hierarchy: instr
+
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.5) stable; urgency=medium
