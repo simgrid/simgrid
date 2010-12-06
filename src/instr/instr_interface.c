@@ -25,19 +25,7 @@ int TRACE_start()
   }
 
   /* open the trace file */
-  char *filename = TRACE_get_filename();
-  if (!filename) {
-    THROW0(tracing_error, TRACE_ERROR_START,
-           "Trace filename is not initialized.");
-    return 0;
-  }
-  FILE *file = fopen(filename, "w");
-  if (!file) {
-    THROW1(tracing_error, TRACE_ERROR_START,
-           "Tracefile %s could not be opened for writing.", filename);
-  } else {
-    TRACE_paje_start(file);
-  }
+  TRACE_paje_start();
 
   /* activate trace */
   TRACE_activate ();
@@ -113,9 +101,11 @@ int TRACE_end()
 {
   if (!TRACE_is_active())
     return 1;
-  FILE *file = TRACE_paje_end();
-  fclose(file);
 
+  /* close the trace file */
+  TRACE_paje_end();
+
+  /* activate trace */
   TRACE_desactivate ();
   return 0;
 }

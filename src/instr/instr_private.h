@@ -20,8 +20,8 @@
 
 /* from paje.c */
 void TRACE_paje_create_header(void);
-void TRACE_paje_start(FILE * file);
-FILE *TRACE_paje_end(void);
+void TRACE_paje_start(void);
+void TRACE_paje_end(void);
 void pajeDefineContainerType(const char *alias, const char *containerType,
                              const char *name);
 void pajeDefineStateType(const char *alias, const char *containerType,

@@ -41,16 +41,20 @@ static int pajeNewEventId = 27;
 
 #define TRACE_LINE_SIZE 1000
 
-void TRACE_paje_start(FILE * file)
+void TRACE_paje_start(void)
 {
-  tracing_file = file;
+  char *filename = TRACE_get_filename();
+  tracing_file = fopen(filename, "w");
+  if (!tracing_file) {
+    THROW1(tracing_error, TRACE_ERROR_FILE_OPEN,
+           "Tracefile %s could not be opened for writing.", filename);
+  }
 }
 
-FILE *TRACE_paje_end(void)
+void TRACE_paje_end(void)
 {
-  return tracing_file;
+  fclose(tracing_file);
 }
-
 
 void TRACE_paje_create_header(void)
 {
