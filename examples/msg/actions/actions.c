@@ -16,12 +16,12 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(actions,
                              "Messages specific for this msg example");
 int communicator_size = 0;
 
-typedef struct coll_ctr_t {
+typedef struct  {
   int last_Irecv_sender_id;
   int bcast_counter;
   int reduce_counter;
   int allReduce_counter;
-} *coll_ctr;
+} s_process_globals_t, *process_globals_t;
 
 /* Helper function */
 static double parse_double(const char *string)
@@ -54,8 +54,9 @@ static void action_send(xbt_dynar_t action)
 {
   char *name = NULL;
   char to[250];
-  char *size = xbt_dynar_get_as(action, 3, char *);
-  double clock = MSG_get_clock();
+  char *size_str = xbt_dynar_get_as(action, 3, char *);
+  double size=parse_double(size_str);
+  double clock = MSG_get_clock(); /* this "call" is free thanks to inlining */
 
   sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()),
           xbt_dynar_get_as(action, 2, char *));
@@ -71,8 +72,8 @@ static void action_send(xbt_dynar_t action)
   TRACE_smpi_send(rank, rank, dst_traced);
 #endif
 
-  DEBUG2("Entering Send: %s (size: %lg)", name, parse_double(size));
-   if (parse_double(size)<65536) {
+  DEBUG2("Entering Send: %s (size: %lg)", name, size);
+   if (size<65536) {
      char spawn_name[80];
      char **myargv;
      m_process_t comm_helper;
@@ -80,7 +81,7 @@ static void action_send(xbt_dynar_t action)
 	    MSG_process_get_name(MSG_process_self()));
      myargv = (char **) calloc(3, sizeof(char *));
      myargv[0] = xbt_strdup(to);
-     myargv[1] = xbt_strdup(size);
+     myargv[1] = xbt_strdup(size_str);
      myargv[2] = NULL;
      
      sprintf(spawn_name, "%s_wait", to);
@@ -89,7 +90,7 @@ static void action_send(xbt_dynar_t action)
 					 NULL, MSG_host_self(), 2, myargv);
    }
    else {
-     MSG_task_send(MSG_task_create(name, 0, parse_double(size), NULL), to);
+     MSG_task_send(MSG_task_create(name, 0, size, NULL), to);
    }
    
    VERB2("%s %f", name, MSG_get_clock() - clock);
@@ -102,7 +103,7 @@ static void action_send(xbt_dynar_t action)
 #endif  
 }
 
-static void Isend(xbt_dynar_t action)
+static void action_Isend(xbt_dynar_t action)
 {
   char spawn_name[80];
   char to[250];
@@ -181,7 +182,7 @@ static int spawned_recv(int argc, char *argv[])
 }
 
 
-static void Irecv(xbt_dynar_t action)
+static void action_Irecv(xbt_dynar_t action)
 {
   char *name;
   m_process_t comm_helper;
@@ -194,11 +195,7 @@ static void Irecv(xbt_dynar_t action)
 #ifdef HAVE_TRACING
   int rank = get_rank(MSG_process_get_name(MSG_process_self()));
   int src_traced = get_rank(xbt_dynar_get_as(action, 2, char *));
-  coll_ctr counters = (coll_ctr) MSG_process_get_data(MSG_process_self());
-  if (!counters) {
-      DEBUG0("Initialize the counters");
-      counters = (coll_ctr) calloc(1, sizeof(struct coll_ctr_t));
-    }
+  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
   counters->last_Irecv_sender_id = src_traced;
   MSG_process_set_data(MSG_process_self(), (void *) counters);
 
@@ -236,7 +233,7 @@ static void action_wait(xbt_dynar_t action)
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
 #ifdef HAVE_TRACING
-  coll_ctr counters = (coll_ctr) MSG_process_get_data(MSG_process_self());
+  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
   int src_traced = counters->last_Irecv_sender_id;
   int rank = get_rank(MSG_process_get_name(MSG_process_self()));
   TRACE_smpi_ptp_in(rank, src_traced, rank, "wait");
@@ -258,7 +255,7 @@ static void action_wait(xbt_dynar_t action)
 }
 
 /* FIXME: that's a poor man's implementation: we should take the message exchanges into account */
-static void barrier(xbt_dynar_t action)
+static void action_barrier(xbt_dynar_t action)
 {
   char *name = NULL;
   static smx_mutex_t mutex = NULL;
@@ -298,7 +295,7 @@ static void barrier(xbt_dynar_t action)
 
 }
 
-static void reduce(xbt_dynar_t action)
+static void action_reduce(xbt_dynar_t action)
 {
   int i;
   char *name;
@@ -312,17 +309,12 @@ static void reduce(xbt_dynar_t action)
   const char *process_name;
   double clock = MSG_get_clock();
 
-  coll_ctr counters = (coll_ctr) MSG_process_get_data(MSG_process_self());
+  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
   xbt_assert0(communicator_size, "Size of Communicator is not defined"
               ", can't use collective operations");
 
   process_name = MSG_process_get_name(MSG_process_self());
-
-  if (!counters) {
-    DEBUG0("Initialize the counters");
-    counters = (coll_ctr) calloc(1, sizeof(struct coll_ctr_t));
-  }
 
   name = bprintf("reduce_%d", counters->reduce_counter++);
 
@@ -369,7 +361,7 @@ static void reduce(xbt_dynar_t action)
   free(name);
 }
 
-static void bcast(xbt_dynar_t action)
+static void action_bcast(xbt_dynar_t action)
 {
   int i;
   char *name;
@@ -380,7 +372,7 @@ static void bcast(xbt_dynar_t action)
   m_process_t comm_helper = NULL;
   m_task_t task = NULL;
   char *size = xbt_dynar_get_as(action, 2, char *);
-  coll_ctr counters = (coll_ctr) MSG_process_get_data(MSG_process_self());
+  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
   double clock = MSG_get_clock();
 
   xbt_assert0(communicator_size, "Size of Communicator is not defined"
@@ -388,10 +380,6 @@ static void bcast(xbt_dynar_t action)
 
 
   process_name = MSG_process_get_name(MSG_process_self());
-  if (!counters) {
-    DEBUG0("Initialize the counters");
-    counters = (coll_ctr) calloc(1, sizeof(struct coll_ctr_t));
-  }
 
   name = bprintf("bcast_%d", counters->bcast_counter++);
   if (!strcmp(process_name, "p0")) {
@@ -452,7 +440,7 @@ static void action_sleep(xbt_dynar_t action)
     free(name);
 }
 
-static void allReduce(xbt_dynar_t action)
+static void action_allReduce(xbt_dynar_t action)
 {
   int i;
   char *name;
@@ -466,17 +454,12 @@ static void allReduce(xbt_dynar_t action)
   const char *process_name;
   double clock = MSG_get_clock();
 
-  coll_ctr counters = (coll_ctr) MSG_process_get_data(MSG_process_self());
+  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
   xbt_assert0(communicator_size, "Size of Communicator is not defined"
               ", can't use collective operations");
 
   process_name = MSG_process_get_name(MSG_process_self());
-
-  if (!counters) {
-    DEBUG0("Initialize the counters");
-    counters = (coll_ctr) calloc(1, sizeof(struct coll_ctr_t));
-  }
 
   name = bprintf("allReduce_%d", counters->allReduce_counter++);
 
@@ -556,7 +539,7 @@ static void allReduce(xbt_dynar_t action)
   free(name);
 }
 
-static void comm_size(xbt_dynar_t action)
+static void action_comm_size(xbt_dynar_t action)
 {
   char *name = NULL;
   char *size = xbt_dynar_get_as(action, 2, char *);
@@ -570,7 +553,7 @@ static void comm_size(xbt_dynar_t action)
     free(name);
 }
 
-static void compute(xbt_dynar_t action)
+static void action_compute(xbt_dynar_t action)
 {
   char *name = NULL;
   char *amout = xbt_dynar_get_as(action, 2, char *);
@@ -587,19 +570,21 @@ static void compute(xbt_dynar_t action)
     free(name);
 }
 
-static void init(xbt_dynar_t action)
+static void action_init(xbt_dynar_t action)
 { 
 #ifdef HAVE_TRACING
   TRACE_smpi_init(get_rank(MSG_process_get_name(MSG_process_self())));
 #endif
+  DEBUG0("Initialize the counters");
+  counters = (process_globals_t) calloc(1, sizeof(s_process_globals_t));
 }
 
-static void finalize(xbt_dynar_t action)
+static void action_finalize(xbt_dynar_t action)
 {
 #ifdef HAVE_TRACING
   TRACE_smpi_finalize(get_rank(MSG_process_get_name(MSG_process_self())));
 #endif
-  coll_ctr counters = (coll_ctr) MSG_process_get_data(MSG_process_self());
+  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
   if (counters)
   	  free(counters);
 }
@@ -630,20 +615,20 @@ int main(int argc, char *argv[])
   MSG_launch_application(argv[2]);
 
   /*   Action registration */
-  MSG_action_register("init", init);
-  MSG_action_register("finalize", finalize);
-  MSG_action_register("comm_size", comm_size);
-  MSG_action_register("send", action_send);
-  MSG_action_register("Isend", Isend);
-  MSG_action_register("recv", action_recv);
-  MSG_action_register("Irecv", Irecv);
-  MSG_action_register("wait", action_wait);
-  MSG_action_register("barrier", barrier);
-  MSG_action_register("bcast", bcast);
-  MSG_action_register("reduce", reduce);
-  MSG_action_register("allReduce", allReduce);
-  MSG_action_register("sleep", action_sleep);
-  MSG_action_register("compute", compute);
+  MSG_action_register("init",     action_init);
+  MSG_action_register("finalize", action_finalize);
+  MSG_action_register("comm_size",action_comm_size);
+  MSG_action_register("send",     action_send);
+  MSG_action_register("Isend",    action_Isend);
+  MSG_action_register("recv",     action_recv);
+  MSG_action_register("Irecv",    action_Irecv);
+  MSG_action_register("wait",     action_wait);
+  MSG_action_register("barrier",  action_barrier);
+  MSG_action_register("bcast",    action_bcast);
+  MSG_action_register("reduce",   action_reduce);
+  MSG_action_register("allReduce",action_allReduce);
+  MSG_action_register("sleep",    action_sleep);
+  MSG_action_register("compute",  action_compute);
 
 
   /* Actually do the simulation using MSG_action_trace_run */
