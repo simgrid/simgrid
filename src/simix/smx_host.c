@@ -202,7 +202,6 @@ smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
 
 #ifdef HAVE_TRACING
   TRACE_smx_host_execute(action);
-  TRACE_surf_action(action->execution.surf_exec, action->category);
 #endif
 
   DEBUG1("Create execute action %p", action);

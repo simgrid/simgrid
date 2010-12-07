@@ -390,7 +390,6 @@ static XBT_INLINE void SIMIX_comm_start(smx_action_t action)
 
 #ifdef HAVE_TRACING
     TRACE_smx_action_communicate(action, action->comm.src_proc);
-    TRACE_surf_action(action->comm.surf_comm, action->category);
 #endif
 
     /* If a link is failed, detect it immediately */
