@@ -129,8 +129,7 @@ static void action_recv(xbt_dynar_t action)
   char mailbox_name[250];
   m_task_t task = NULL;
   double clock = MSG_get_clock();
-  //FIXME: argument of action ignored so far; semantic not clear
-  //char *from=xbt_dynar_get_as(action,2,char*);
+
   sprintf(mailbox_name, "%s_%s", xbt_dynar_get_as(action, 2, char *),
           MSG_process_get_name(MSG_process_self()));
 
