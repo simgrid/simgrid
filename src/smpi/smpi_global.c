@@ -21,8 +21,7 @@ typedef struct s_smpi_process_data {
   int index;
   int* argc;
   char*** argv;
-  xbt_fifo_t pending_sent;
-  xbt_fifo_t pending_recv;
+  smx_rdv_t mailbox;
   xbt_os_timer_t timer;
   double simulated;
   MPI_Comm comm_self;
@@ -32,6 +31,13 @@ static smpi_process_data_t *process_data = NULL;
 static int process_count = 0;
 
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_NULL;
+
+#define MAILBOX_NAME_MAXLEN (5 + sizeof(int) * 2 + 1)
+
+static char* get_mailbox_name(char* str, int index) {
+  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", (int)(sizeof(int) * 2), index);
+  return str;
+}
 
 void smpi_process_init(int *argc, char ***argv)
 {
@@ -123,6 +129,18 @@ int smpi_process_index(void)
   return data->index;
 }
 
+smx_rdv_t smpi_process_mailbox(void) {
+  smpi_process_data_t data = smpi_process_data();
+
+  return data->mailbox;
+}
+
+smx_rdv_t smpi_process_remote_mailbox(int index) {
+  smpi_process_data_t data = smpi_process_remote_data(index);
+
+  return data->mailbox;
+}
+
 xbt_os_timer_t smpi_process_timer(void)
 {
   smpi_process_data_t data = smpi_process_data();
@@ -153,74 +171,16 @@ MPI_Comm smpi_process_comm_self(void)
 
 void print_request(const char *message, MPI_Request request)
 {
-  char *req =
-      bprintf
-      ("[buf = %p, size = %zu, src = %d, dst = %d, tag= %d, complete = %d, flags = %u]",
-       request->buf, request->size, request->src, request->dst,
-       request->tag, request->complete, request->flags);
-
-  DEBUG5("%s  (request %p with rdv %p and match %p) %s",
-         message, request, request->rdv, request->match, req);
-  free(req);
-}
-
-void smpi_process_post_send(MPI_Comm comm, MPI_Request request)
-{
-  int index = smpi_group_index(smpi_comm_group(comm), request->dst);
-  smpi_process_data_t data = smpi_process_remote_data(index);
-  xbt_fifo_item_t item;
-  MPI_Request req;
-
-  print_request("Isend", request);
-  xbt_fifo_foreach(data->pending_recv, item, req, MPI_Request) {
-    if (req->comm == request->comm
-        && (req->src == MPI_ANY_SOURCE || req->src == request->src)
-        && (req->tag == MPI_ANY_TAG || req->tag == request->tag)) {
-      print_request("Match found", req);
-      xbt_fifo_remove_item(data->pending_recv, item);
-      /* Materialize the *_ANY_* fields from corresponding irecv request */
-      req->src = request->src;
-      req->tag = request->tag;
-      req->match = request;
-      request->rdv = req->rdv;
-      request->match = req;
-      return;
-    }
-  }
-  request->rdv = SIMIX_req_rdv_create(NULL);
-  xbt_fifo_push(data->pending_sent, request);
-}
-
-void smpi_process_post_recv(MPI_Request request)
-{
-  smpi_process_data_t data = smpi_process_data();
-  xbt_fifo_item_t item;
-  MPI_Request req;
-
-  print_request("Irecv", request);
-  xbt_fifo_foreach(data->pending_sent, item, req, MPI_Request) {
-    if (req->comm == request->comm
-        && (request->src == MPI_ANY_SOURCE || req->src == request->src)
-        && (request->tag == MPI_ANY_TAG || req->tag == request->tag)) {
-      print_request("Match found", req);
-      xbt_fifo_remove_item(data->pending_sent, item);
-      /* Materialize the *_ANY_* fields from the irecv request */
-      req->match = request;
-      request->src = req->src;
-      request->tag = req->tag;
-      request->rdv = req->rdv;
-      request->match = req;
-      return;
-    }
-  }
-  request->rdv = SIMIX_req_rdv_create(NULL);
-  xbt_fifo_push(data->pending_recv, request);
+  DEBUG8("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
+         message, request, request->buf, request->size,
+         request->src, request->dst, request->tag, request->flags);
 }
 
 void smpi_global_init(void)
 {
   int i;
   MPI_Group group;
+  char name[MAILBOX_NAME_MAXLEN];
 
   SIMIX_comm_set_copy_data_callback
       (&SIMIX_comm_copy_buffer_callback);
@@ -231,8 +191,7 @@ void smpi_global_init(void)
     process_data[i]->index = i;
     process_data[i]->argc = NULL;
     process_data[i]->argv = NULL;
-    process_data[i]->pending_sent = xbt_fifo_new();
-    process_data[i]->pending_recv = xbt_fifo_new();
+    process_data[i]->mailbox = SIMIX_req_rdv_create(get_mailbox_name(name, i));
     process_data[i]->timer = xbt_os_timer_new();
     group = smpi_group_new(1);
     process_data[i]->comm_self = smpi_comm_new(group);
@@ -256,8 +215,7 @@ void smpi_global_destroy(void)
   for (i = 0; i < count; i++) {
     smpi_comm_destroy(process_data[i]->comm_self);
     xbt_os_timer_free(process_data[i]->timer);
-    xbt_fifo_free(process_data[i]->pending_recv);
-    xbt_fifo_free(process_data[i]->pending_sent);
+    SIMIX_req_rdv_destroy(process_data[i]->mailbox);
     xbt_free(process_data[i]);
   }
   xbt_free(process_data);

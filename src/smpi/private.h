@@ -29,10 +29,7 @@ typedef struct s_smpi_mpi_request {
   int dst;
   int tag;
   MPI_Comm comm;
-  smx_rdv_t rdv;
-  smx_action_t pair;
-  int complete;
-  MPI_Request match;
+  smx_action_t action;
   unsigned flags;
 #ifdef HAVE_TRACING
   int send;
@@ -47,13 +44,13 @@ smpi_process_data_t smpi_process_data(void);
 smpi_process_data_t smpi_process_remote_data(int index);
 int smpi_process_count(void);
 int smpi_process_index(void);
+smx_rdv_t smpi_process_mailbox(void);
+smx_rdv_t smpi_process_remote_mailbox(int index);
 xbt_os_timer_t smpi_process_timer(void);
 void smpi_process_simulated_start(void);
 double smpi_process_simulated_elapsed(void);
 
 void print_request(const char *message, MPI_Request request);
-void smpi_process_post_send(MPI_Comm comm, MPI_Request request);
-void smpi_process_post_recv(MPI_Request request);
 
 void smpi_global_init(void);
 void smpi_global_destroy(void);
