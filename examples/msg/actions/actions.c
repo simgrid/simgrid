@@ -23,7 +23,10 @@ typedef struct  {
   int bcast_counter;
   int reduce_counter;
   int allReduce_counter;
-  xbt_dynar_t isends;
+  xbt_dynar_t isends; /* of msg_comm_t */
+  /* Used to implement irecv+wait */
+  xbt_dynar_t irecvs; /* of msg_comm_t */
+  xbt_dynar_t tasks; /* of m_task_t */
 } s_process_globals_t, *process_globals_t;
 
 /* Helper function */
@@ -56,15 +59,6 @@ static void asynchronous_cleanup(void) {
 }
 
 /* My actions */
-static int spawned_send(int argc, char *argv[])
-{
-  DEBUG3("%s: Sending %s on %s", MSG_process_get_name(MSG_process_self()),
-         argv[1], argv[0]);
-  MSG_task_send(MSG_task_create(argv[0], 0, parse_double(argv[1]), NULL),
-                argv[0]);
-  return 0;
-}
-
 static void action_send(xbt_dynar_t action)
 {
   char *name = NULL;
@@ -165,55 +159,34 @@ static void action_recv(xbt_dynar_t action)
   asynchronous_cleanup();
 }
 
-static int spawned_recv(int argc, char *argv[])
-{
-  m_task_t task = NULL;
-  DEBUG1("Receiving on %s", argv[0]);
-  MSG_task_receive(&task, argv[0]);
-  DEBUG1("Received %s", MSG_task_get_name(task));
-  DEBUG1("waiter on %s", MSG_process_get_name(MSG_process_self()));
-  MSG_task_send(MSG_task_create("waiter", 0, 0, NULL),
-                MSG_process_get_name(MSG_process_self()));
-
-  MSG_task_destroy(task);
-  return 0;
-}
-
-
 static void action_Irecv(xbt_dynar_t action)
 {
-  char *name;
-  m_process_t comm_helper;
-  char mailbox_name[250];
-  char **myargv;
+  char mailbox[250];
   double clock = MSG_get_clock();
+  process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-  DEBUG1("Irecv on %s: spawn process ",
-         MSG_process_get_name(MSG_process_self()));
+  DEBUG1("Irecv on %s", MSG_process_get_name(MSG_process_self()));
 #ifdef HAVE_TRACING
   int rank = get_rank(MSG_process_get_name(MSG_process_self()));
   int src_traced = get_rank(xbt_dynar_get_as(action, 2, char *));
-  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
-  counters->last_Irecv_sender_id = src_traced;
-  MSG_process_set_data(MSG_process_self(), (void *) counters);
+  globals->last_Irecv_sender_id = src_traced;
+  MSG_process_set_data(MSG_process_self(), (void *) globals);
 
   TRACE_smpi_ptp_in(rank, src_traced, rank, "Irecv");
 #endif
 
-  sprintf(mailbox_name, "%s_%s", xbt_dynar_get_as(action, 2, char *),
+  sprintf(mailbox, "%s_%s", xbt_dynar_get_as(action, 2, char *),
           MSG_process_get_name(MSG_process_self()));
-  name = bprintf("%s_wait", MSG_process_get_name(MSG_process_self()));
-  myargv = (char **) calloc(2, sizeof(char *));
-
-  myargv[0] = xbt_strdup(mailbox_name);
-  myargv[1] = NULL;
-  comm_helper = MSG_process_create_with_arguments(name, spawned_recv,
-                                                  NULL, MSG_host_self(),
-                                                  1, myargv);
+  m_task_t t=NULL;
+  xbt_dynar_push(globals->tasks,&t);
+  msg_comm_t c =
+      MSG_task_irecv(
+          xbt_dynar_get_ptr(globals->tasks, xbt_dynar_length(globals->tasks)-1),
+          mailbox);
+  xbt_dynar_push(globals->irecvs,&c);
 
   VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
 
-  free(name);
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out(rank, src_traced, rank, "Irecv");
 #endif
@@ -225,9 +198,13 @@ static void action_Irecv(xbt_dynar_t action)
 static void action_wait(xbt_dynar_t action)
 {
   char *name = NULL;
-  char task_name[80];
   m_task_t task = NULL;
+  msg_comm_t comm;
   double clock = MSG_get_clock();
+  process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
+
+  xbt_assert1(xbt_dynar_length(globals->irecvs),
+      "action wait not preceeded by any irecv: %s", xbt_str_join(action," "));
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join(action, " ");
@@ -239,10 +216,11 @@ static void action_wait(xbt_dynar_t action)
 #endif
 
   DEBUG1("Entering %s", name);
-  sprintf(task_name, "%s_wait", MSG_process_get_name(MSG_process_self()));
-  DEBUG1("wait: %s", task_name);
-  MSG_task_receive(&task, task_name);
+  comm = xbt_dynar_pop_as(globals->irecvs,msg_comm_t);
+  MSG_comm_wait(comm,-1);
+  task = xbt_dynar_pop_as(globals->tasks,m_task_t);
   MSG_task_destroy(task);
+
   VERB2("%s %f", name, MSG_get_clock() - clock);
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
@@ -526,6 +504,8 @@ static void action_init(xbt_dynar_t action)
   DEBUG0("Initialize the counters");
   process_globals_t globals = (process_globals_t) calloc(1, sizeof(s_process_globals_t));
   globals->isends = xbt_dynar_new(sizeof(msg_comm_t),NULL);
+  globals->irecvs = xbt_dynar_new(sizeof(msg_comm_t),NULL);
+  globals->tasks  = xbt_dynar_new(sizeof(m_task_t),NULL);
   MSG_process_set_data(MSG_process_self(),globals);
 
 }
