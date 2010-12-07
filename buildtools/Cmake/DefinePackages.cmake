@@ -770,6 +770,7 @@ set(txt_files
 	NEWS
 	TODO
 	configure
+	INSTALL
 )
 
 file(GLOB_RECURSE README_files
