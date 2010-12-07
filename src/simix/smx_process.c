@@ -342,6 +342,9 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
   }
 }
 
+int SIMIX_process_get_maxpid(void) {
+  return simix_process_count;
+}
 int SIMIX_process_count(void)
 {
   return xbt_swag_size(simix_global->process_list);

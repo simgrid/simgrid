@@ -255,4 +255,5 @@ static XBT_INLINE void* SIMIX_context_get_data(smx_context_t context)
   return (*(simix_global->context_factory->get_data))(context);
 }
 
+XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);
 #endif
