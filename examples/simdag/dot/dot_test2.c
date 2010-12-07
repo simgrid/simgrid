@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     SD_task_destroy(task);
   }
 
-  free(&dot_as_array);
+  free(dot_as_array);
 
   /* exit */
   SD_exit();
