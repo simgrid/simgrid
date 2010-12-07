@@ -128,16 +128,21 @@ smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
 {
   smx_action_t req;
   xbt_fifo_item_t item;
+  void* req_data = NULL;
 
   xbt_fifo_foreach(rdv->comm_fifo, item, req, smx_action_t){
-	if(req->comm.type == type && (!match_fun || match_fun(data, req->comm.data))){
-	  xbt_fifo_remove_item(rdv->comm_fifo, item);
-	  req->comm.refcount++;
-	  req->comm.rdv = NULL;
-	  return req;
-	}
+    if(req->comm.type == SIMIX_COMM_SEND) {
+      req_data = req->comm.src_data;
+    } else if(req->comm.type == SIMIX_COMM_RECEIVE) {
+      req_data = req->comm.dst_data;
+    }
+	 if(req->comm.type == type && (!match_fun || match_fun(data, req_data))) {
+	   xbt_fifo_remove_item(rdv->comm_fifo, item);
+	   req->comm.refcount++;
+	   req->comm.rdv = NULL;
+	   return req;
+	 }
   }
-
   DEBUG0("Communication request not found");
   return NULL;
 }
@@ -258,7 +263,7 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
   action->comm.rate = rate;
   action->comm.src_buff = src_buff;
   action->comm.src_buff_size = src_buff_size;
-  action->comm.data = data;
+  action->comm.src_data = data;
 
   if (MC_IS_ENABLED) {
     action->state = SIMIX_RUNNING;
@@ -292,6 +297,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
   action->comm.dst_proc = dst_proc;
   action->comm.dst_buff = dst_buff;
   action->comm.dst_buff_size = dst_buff_size;
+  action->comm.dst_data = data;
 
   if (MC_IS_ENABLED) {
     action->state = SIMIX_RUNNING;
@@ -613,13 +619,23 @@ e_smx_state_t SIMIX_comm_get_state(smx_action_t action)
 }
 
 /**
- *  \brief Return the user data associated to the communication
+ *  \brief Return the user data associated to the sender of the communication
  *  \param action The communication
  *  \return the user data
  */
-void* SIMIX_comm_get_data(smx_action_t action)
+void* SIMIX_comm_get_src_data(smx_action_t action)
 {
-  return action->comm.data;
+  return action->comm.src_data;
+}
+
+/**
+ *  \brief Return the user data associated to the receiver of the communication
+ *  \param action The communication
+ *  \return the user data
+ */
+void* SIMIX_comm_get_dst_data(smx_action_t action)
+{
+  return action->comm.dst_data;
 }
 
 void* SIMIX_comm_get_src_buff(smx_action_t action)

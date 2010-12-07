@@ -166,7 +166,7 @@ gras_msg_t gras_msg_recv_any(void)
 
   /* retrieve the message sent in that communication */
   xbt_dynar_get_cpy(comms, got, &(comm));
-  msg = SIMIX_req_comm_get_data(comm);
+  msg = SIMIX_req_comm_get_src_data(comm);
   sock = xbt_dynar_get_as(trp_proc->sockets, got, gras_socket_t);
   sock_data = (gras_trp_sg_sock_data_t) sock->data;
   VERB3("Got something. Communication %p's over rdv_server=%p, rdv_client=%p",

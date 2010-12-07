@@ -33,7 +33,7 @@ m_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
   if (!comm)
     return NULL;
 
-  return (m_task_t) SIMIX_req_comm_get_data(comm);
+  return (m_task_t) SIMIX_req_comm_get_src_data(comm);
 }
 
 int

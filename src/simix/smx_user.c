@@ -743,15 +743,26 @@ e_smx_state_t SIMIX_req_comm_get_state(smx_action_t comm)
   return req.comm_get_state.result;
 }
 
-void *SIMIX_req_comm_get_data(smx_action_t comm)
+void *SIMIX_req_comm_get_src_data(smx_action_t comm)
 {
   s_smx_req_t req;
 
-  req.call = REQ_COMM_GET_DATA;
-  req.comm_get_data.comm = comm;
+  req.call = REQ_COMM_GET_SRC_DATA;
+  req.comm_get_src_data.comm = comm;
 
   SIMIX_request_push(&req);
-  return req.comm_get_data.result;
+  return req.comm_get_src_data.result;
+}
+
+void *SIMIX_req_comm_get_dst_data(smx_action_t comm)
+{
+  s_smx_req_t req;
+
+  req.call = REQ_COMM_GET_DST_DATA;
+  req.comm_get_dst_data.comm = comm;
+
+  SIMIX_request_push(&req);
+  return req.comm_get_dst_data.result;
 }
 
 void *SIMIX_req_comm_get_src_buff(smx_action_t comm)

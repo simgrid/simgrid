@@ -109,7 +109,8 @@ typedef struct s_smx_action {
       size_t *dst_buff_size;
       char copied;
 
-      void *data;                     /* User data associated to communication */
+      void* src_data;                     /* User data associated to communication */
+      void* dst_data;
     } comm;    
 
     struct {

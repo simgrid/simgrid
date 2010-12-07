@@ -366,8 +366,13 @@ void SIMIX_request_pre(smx_req_t req)
       SIMIX_request_answer(req);
       break;
 
-    case REQ_COMM_GET_DATA:
-      req->comm_get_data.result = SIMIX_comm_get_data(req->comm_get_data.comm);
+    case REQ_COMM_GET_SRC_DATA:
+      req->comm_get_src_data.result = SIMIX_comm_get_src_data(req->comm_get_src_data.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_GET_DST_DATA:
+      req->comm_get_dst_data.result = SIMIX_comm_get_dst_data(req->comm_get_dst_data.comm);
       SIMIX_request_answer(req);
       break;
 

@@ -186,7 +186,8 @@ XBT_PUBLIC(int) SIMIX_req_comm_testany(xbt_dynar_t comms);
 /* Getters and setters */
 XBT_PUBLIC(double) SIMIX_req_comm_get_remains(smx_action_t comm);
 XBT_PUBLIC(e_smx_state_t) SIMIX_req_comm_get_state(smx_action_t comm);
-XBT_PUBLIC(void *) SIMIX_req_comm_get_data(smx_action_t comm);
+XBT_PUBLIC(void *) SIMIX_req_comm_get_src_data(smx_action_t comm);
+XBT_PUBLIC(void *) SIMIX_req_comm_get_dst_data(smx_action_t comm);
 XBT_PUBLIC(void *) SIMIX_req_comm_get_src_buff(smx_action_t comm);
 XBT_PUBLIC(void *) SIMIX_req_comm_get_dst_buff(smx_action_t comm);
 XBT_PUBLIC(size_t) SIMIX_req_comm_get_src_buff_size(smx_action_t comm);

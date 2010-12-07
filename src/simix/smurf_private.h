@@ -53,7 +53,8 @@ typedef enum {
   REQ_COMM_TESTANY,
   REQ_COMM_GET_REMAINS,
   REQ_COMM_GET_STATE,
-  REQ_COMM_GET_DATA,
+  REQ_COMM_GET_SRC_DATA,
+  REQ_COMM_GET_DST_DATA,
   REQ_COMM_GET_SRC_BUFF,
   REQ_COMM_GET_DST_BUFF,
   REQ_COMM_GET_SRC_BUFF_SIZE,
@@ -331,8 +332,13 @@ typedef struct s_smx_req {
 
     struct {
       smx_action_t comm;
-      void *result;    
-    } comm_get_data;
+      void *result;
+    } comm_get_src_data;
+
+    struct {
+      smx_action_t comm;
+      void *result;
+    } comm_get_dst_data;
 
     struct {
       smx_action_t comm;
