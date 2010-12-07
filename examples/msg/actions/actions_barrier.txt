@@ -1,3 +1,7 @@
+p0 init
+p1 init
+p2 init
+
 p0 comm_size 3
 p0 send p1 1E7
 p0 barrier
@@ -11,3 +15,7 @@ p1 compute 4E6
 p2 comm_size 3
 p2 barrier
 p2 compute 4E6
+
+p0 finalize
+p1 finalize
+p2 finalize
