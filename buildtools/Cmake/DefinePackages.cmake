@@ -87,7 +87,6 @@ set(EXTRA_DIST
 	src/simix/synchro_private.h
 	
 	src/smpi/private.h
-	src/smpi/smpi_coll_private.h
 	src/smpi/smpi_mpi_dt_private.h
 	src/smpi/README
 	src/mk_supernovae.pl
@@ -112,7 +111,6 @@ set(SMPI_SRC
 	src/smpi/smpi_f77.c
 	src/smpi/smpi_comm.c
 	src/smpi/smpi_group.c
-	src/smpi/smpi_util.c
 	src/smpi/smpi_coll.c
 	src/smpi/smpi_mpi_dt.c
 )

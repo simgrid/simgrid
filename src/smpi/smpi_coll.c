@@ -11,7 +11,6 @@
 #include <assert.h>
 
 #include "private.h"
-#include "smpi_coll_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
                                 "Logging specific to SMPI (coll)");
