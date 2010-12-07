@@ -341,6 +341,22 @@ void SIMIX_pre_comm_test(smx_req_t req)
   }
 }
 
+void SIMIX_pre_comm_testany(smx_req_t req)
+{
+  unsigned int cursor;
+  smx_action_t action;
+  req->comm_testany.result = -1;
+  xbt_dynar_foreach(req->comm_testany.comms,cursor,action) {
+    if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
+      req->comm_testany.result = cursor;
+      xbt_fifo_push(action->request_list, req);
+      SIMIX_comm_finish(action);
+      break;
+    }
+  }
+  SIMIX_request_answer(req);
+}
+
 void SIMIX_pre_comm_waitany(smx_req_t req)
 {
   smx_action_t action;

@@ -50,6 +50,7 @@ typedef enum {
   REQ_COMM_WAITANY,
   REQ_COMM_WAIT,
   REQ_COMM_TEST,
+  REQ_COMM_TESTANY,
   REQ_COMM_GET_REMAINS,
   REQ_COMM_GET_STATE,
   REQ_COMM_GET_DATA,
@@ -309,6 +310,11 @@ typedef struct s_smx_req {
       smx_action_t comm;
       int result;
     } comm_test;
+
+    struct {
+      xbt_dynar_t comms;
+      int result;
+    } comm_testany;
 
     struct {
       smx_action_t comm;

@@ -667,12 +667,11 @@ int SIMIX_req_comm_testany(xbt_dynar_t comms)
   if (xbt_dynar_length(comms)==0)
     return -1;
 
-  WARN0("SIMIX_comm_testany is not implemented yet. Using waitany instead. This changes the semantic...");
-  req.call = REQ_COMM_WAITANY;
-  req.comm_waitany.comms = comms;
+  req.call = REQ_COMM_TESTANY;
+  req.comm_testany.comms = comms;
 
   SIMIX_request_push(&req);
-  return req.comm_waitany.result;
+  return req.comm_testany.result;
 }
 
 void SIMIX_req_comm_wait(smx_action_t comm, double timeout)

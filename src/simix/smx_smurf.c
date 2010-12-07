@@ -346,6 +346,10 @@ void SIMIX_request_pre(smx_req_t req)
       SIMIX_pre_comm_test(req);
       break;
 
+    case REQ_COMM_TESTANY:
+      SIMIX_pre_comm_testany(req);
+      break;
+
     case REQ_COMM_GET_REMAINS:
       req->comm_get_remains.result = 
         SIMIX_comm_get_remains(req->comm_get_remains.comm);
