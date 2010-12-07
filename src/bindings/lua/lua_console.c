@@ -32,16 +32,20 @@ static void create_AS(const char *id, const char *mode)
  */
 
 static void create_host(const char *id, double power_peak, double power_sc,
-                        const char *power_tr, int state_init,
+                        const char *power_tr,int core,int state_init,
                         const char *state_tr)
 {
 
   double power_scale = 1.0;
+  int core_nb = 1; //default value
   tmgr_trace_t power_trace = NULL;
   e_surf_resource_state_t state_initial;
   tmgr_trace_t state_trace;
   if (power_sc)                 // !=0
     power_scale = power_sc;
+  if (core)
+	  core_nb = core; //default value
+  else
   if (state_init == -1)
     state_initial = SURF_RESOURCE_OFF;
   else
@@ -56,7 +60,7 @@ static void create_host(const char *id, double power_peak, double power_sc,
     state_trace = tmgr_trace_new("");
   current_property_set = xbt_dict_new();
   surf_host_create_resource(xbt_strdup(id), power_peak, power_scale,
-                            power_trace, 0, state_initial, state_trace,
+                            power_trace, core_nb, state_initial, state_trace,
                             current_property_set);
 
 }
@@ -219,7 +223,7 @@ static int Host_new(lua_State * L)
   const char *power_trace;
   const char *state_trace;
   double power, power_scale;
-  int state_initial;
+  int state_initial,core;
   //get values from the table passed as argument
   if (lua_istable(L, -1)) {
 
@@ -247,6 +251,11 @@ static int Host_new(lua_State * L)
     power_trace = lua_tostring(L, -1);
     lua_pop(L, 1);
 
+    lua_pushstring(L, "core");
+    lua_gettable(L, -2);
+    core = lua_tonumber(L, -1);
+    lua_pop(L, 1);
+
     //get state initial
     lua_pushstring(L, "state_initial");
     lua_gettable(L, -2);
@@ -270,6 +279,7 @@ static int Host_new(lua_State * L)
   host->power_peak = power;
   host->power_scale = power_scale;
   host->power_trace = power_trace;
+  host->core = core;
   host->state_initial = state_initial;
   host->state_trace = state_trace;
   host->function = NULL;
@@ -505,7 +515,7 @@ static int surf_parse_bypass_platform()
   // Add Hosts
   xbt_dynar_foreach(host_list_d, i, p_host) {
     create_host(p_host->id, p_host->power_peak, p_host->power_scale,
-                p_host->power_trace, p_host->state_initial,
+                p_host->power_trace, p_host->core, p_host->state_initial,
                 p_host->state_trace);
     //add to routing model host list
     surf_route_add_host((char *) p_host->id);

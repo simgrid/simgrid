@@ -62,6 +62,7 @@ typedef struct t_host_attr {
   const char *power_trace;
   int state_initial;
   const char *state_trace;
+  int core;
   //deployment attribute
   const char *function;
   xbt_dynar_t args_list;
