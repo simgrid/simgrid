@@ -5,30 +5,24 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
                                 "Logging specific to SIMIX (SMURF)");
 
-static xbt_dynar_t req_vector;
-static xbt_os_mutex_t sync_req_vector;
+static smx_req_t* req_vector=NULL;
 
 void SIMIX_request_init(void)
 {
-  sync_req_vector = xbt_os_mutex_init();
-  req_vector = xbt_dynar_new(sizeof(void *), NULL);
+  req_vector = xbt_new0(smx_req_t,1);/* enough room for maestro's requests */
 }
 
 void SIMIX_request_destroy(void)
 {
-  xbt_os_mutex_destroy(sync_req_vector);
-  xbt_dynar_free(&req_vector);
+  free(req_vector);
+  req_vector = NULL;
 }
 
 void SIMIX_request_push(smx_req_t req)
 {
   req->issuer = SIMIX_process_self();
   if (req->issuer != simix_global->maestro_process){
-    if (_surf_parallel_contexts)
-      xbt_os_mutex_acquire(sync_req_vector);
-    xbt_dynar_set_as(req_vector, req->issuer->pid, smx_req_t, req);
-    if (_surf_parallel_contexts)
-      xbt_os_mutex_release(sync_req_vector);
+    req_vector[req->issuer->pid] = req;
     req->issuer->request = req;
     DEBUG2("Yield process '%s' on request of type %d", req->issuer->name, req->call);
     SIMIX_process_yield();
@@ -40,11 +34,13 @@ void SIMIX_request_push(smx_req_t req)
 smx_req_t SIMIX_request_pop(void)
 {
   smx_req_t request = NULL;
-  while (xbt_dynar_length(req_vector)){
-    request = xbt_dynar_pop_as(req_vector, smx_req_t);
-    if (request)
+  int i;
+  for (i=1;i<SIMIX_process_get_maxpid();i++)
+    if (req_vector[i]) {
+      request = req_vector[i];
+      req_vector[i]=NULL;
       break;
-  }
+    }
 
   return request;
 }
@@ -199,6 +195,7 @@ void SIMIX_request_pre(smx_req_t req)
       break;
 
     case REQ_PROCESS_CREATE:
+      req_vector = xbt_realloc(req_vector,sizeof(smx_req_t)*(SIMIX_process_get_maxpid()+2));
       req->process_create.result = SIMIX_process_create(
 	  req->process_create.name,
 	  req->process_create.code,
