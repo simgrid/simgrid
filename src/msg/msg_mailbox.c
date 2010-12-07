@@ -97,6 +97,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   TRY {
     comm = SIMIX_req_comm_irecv(mailbox, task, NULL);
     SIMIX_req_comm_wait(comm, timeout);
+    SIMIX_req_comm_destroy(comm);
     DEBUG2("Got task %s from %p",(*task)->name,mailbox);
     (*task)->simdata->refcount--;
   }
@@ -166,6 +167,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
     SIMIX_req_set_category(t_simdata->comm, task->category);
 #endif
     SIMIX_req_comm_wait(t_simdata->comm, timeout);
+    SIMIX_req_comm_destroy(t_simdata->comm);
   }
 
   CATCH(e) {

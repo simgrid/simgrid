@@ -863,6 +863,8 @@ static double _get_latency(const char *src, const char *dst)
   }
 
   xbt_dynar_free(&elem_father_list);
+  xbt_dynar_free(&e_route->generic_route.link_list);
+  xbt_free(e_route);
 
   return latency;
 }
@@ -944,6 +946,7 @@ static double get_latency(const char *src, const char *dst)
     latency = (*(common_father->get_latency)) (common_father, src, dst);
 
   xbt_assert2(latency>=0.0, "no route between \"%s\" and \"%s\"", src, dst);
+  xbt_dynar_free(&elem_father_list);
 
   return latency;
 }
@@ -2872,6 +2875,7 @@ static double generic_get_link_latency(routing_component_t rc,
 	xbt_dynar_foreach(route->generic_route.link_list,i,link) {
 		latency += get_link_latency(link);
 	}
+	generic_free_extended_route(route);
   return latency;
 }
 
