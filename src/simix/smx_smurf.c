@@ -5,17 +5,26 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
                                 "Logging specific to SIMIX (SMURF)");
 
+/* Array storing all requests to be handled in this scheduling round */
 static smx_req_t* req_vector=NULL;
+/* Positions of the previous array with non-null data */
+static xbt_heap_t req_positions;
+/* to protect the write actions in the heap */
+static xbt_os_mutex_t sync_req_positions;
 
 void SIMIX_request_init(void)
 {
   req_vector = xbt_new0(smx_req_t,1);/* enough room for maestro's requests */
+  req_positions = xbt_heap_new(5,NULL);
+  sync_req_positions = xbt_os_mutex_init();
 }
 
 void SIMIX_request_destroy(void)
 {
   free(req_vector);
   req_vector = NULL;
+  xbt_heap_free(req_positions);
+  xbt_os_mutex_destroy(sync_req_positions);
 }
 
 void SIMIX_request_push(smx_req_t req)
@@ -24,6 +33,13 @@ void SIMIX_request_push(smx_req_t req)
   if (req->issuer != simix_global->maestro_process){
     req_vector[req->issuer->pid] = req;
     req->issuer->request = req;
+
+    if (_surf_parallel_contexts)
+      xbt_os_mutex_acquire(sync_req_positions);
+    xbt_heap_push(req_positions,req,req->issuer->pid);
+    if (_surf_parallel_contexts)
+      xbt_os_mutex_release(sync_req_positions);
+
     DEBUG2("Yield process '%s' on request of type %d", req->issuer->name, req->call);
     SIMIX_process_yield();
   } else {
@@ -33,16 +49,7 @@ void SIMIX_request_push(smx_req_t req)
 
 smx_req_t SIMIX_request_pop(void)
 {
-  smx_req_t request = NULL;
-  int i;
-  for (i=1;i<SIMIX_process_get_maxpid();i++)
-    if (req_vector[i]) {
-      request = req_vector[i];
-      req_vector[i]=NULL;
-      break;
-    }
-
-  return request;
+  return xbt_heap_pop(req_positions);
 }
 
 void SIMIX_request_answer(smx_req_t req)
