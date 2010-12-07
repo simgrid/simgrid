@@ -1,4 +1,7 @@
 # sample action file (with only the actions for p1,
 #                     to be launched by deployment file)
+p0 init
 p0 recv p1
 p0 compute 12
+p0 finalize
+

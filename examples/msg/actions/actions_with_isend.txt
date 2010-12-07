@@ -1,4 +1,8 @@
 # sample action file
+p0 init
+p1 init
+p2 init
+
 p0 send p1 1e9
 p0 compute 1e9
 p0 recv p2
@@ -13,3 +17,8 @@ p2 compute 5e8
 p2 wait
 p2 Isend p0 1e9
 p2 compute 5e8
+
+p0 finalize
+p1 finalize
+p2 finalize
+
