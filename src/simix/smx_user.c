@@ -700,7 +700,7 @@ void SIMIX_req_set_category(smx_action_t action, const char *category)
 
   req.call = REQ_SET_CATEGORY;
   req.set_category.action = action;
-  req.set_category.category = xbt_strdup (category);
+  req.set_category.category = category;
 
   SIMIX_request_push(&req);
 }
