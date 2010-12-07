@@ -634,7 +634,7 @@ XBT_PUBLIC(double) surf_solve(double max_date);
  *
  *  Return the current time in millisecond.
  */
-XBT_PUBLIC(double) surf_get_clock(void);
+XBT_INLINE XBT_PUBLIC(double) surf_get_clock(void);
 
 /** \brief Exit SURF
  *  \ingroup SURF_simulation

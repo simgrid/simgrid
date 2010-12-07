@@ -466,7 +466,7 @@ double surf_solve(double max_date)
   return min;
 }
 
-double surf_get_clock(void)
+XBT_INLINE double surf_get_clock(void)
 {
   return NOW;
 }

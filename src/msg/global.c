@@ -220,7 +220,7 @@ MSG_error_t MSG_clean(void)
 /** \ingroup msg_easier_life
  * \brief A clock (in second).
  */
-double MSG_get_clock(void)
+XBT_INLINE double MSG_get_clock(void)
 {
   return SIMIX_get_clock();
 }

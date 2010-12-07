@@ -31,7 +31,7 @@ XBT_PUBLIC(void) MSG_set_function(const char *host_id,
                                   const char *function_name,
                                   xbt_dynar_t arguments);
 
-XBT_PUBLIC(double) MSG_get_clock(void);
+XBT_INLINE XBT_PUBLIC(double) MSG_get_clock(void);
 XBT_PUBLIC(unsigned long int) MSG_get_sent_msg(void);
 
 

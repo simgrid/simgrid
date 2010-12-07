@@ -87,7 +87,7 @@ XBT_PUBLIC(void) SIMIX_comm_copy_buffer_callback(smx_action_t comm, size_t buff_
 /* They cannot be called from maestro's context, and they are thread safe.    */
 /******************************************************************************/
 
-XBT_PUBLIC(double) SIMIX_get_clock(void);
+XBT_INLINE XBT_PUBLIC(double) SIMIX_get_clock(void);
 
 /******************************* Host Requests ********************************/
 /* FIXME: use handlers and keep smx_host_t hidden from higher levels */
