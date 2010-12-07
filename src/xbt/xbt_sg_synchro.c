@@ -37,8 +37,8 @@ typedef struct s_xbt_thread_ {
 static int xbt_thread_create_wrapper(int argc, char *argv[])
 {
   xbt_thread_t t =
-      (xbt_thread_t) SIMIX_process_get_data(SIMIX_process_self());
-  SIMIX_process_set_data(SIMIX_process_self(), t->father_data);
+      (xbt_thread_t) SIMIX_process_self_get_data();
+  SIMIX_req_process_set_data(SIMIX_process_self(), t->father_data);
   (*t->code) (t->userparam);
   if (t->joinable) {
     t->done = 1;
@@ -61,12 +61,12 @@ xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
   res->name = xbt_strdup(name);
   res->userparam = param;
   res->code = code;
-  res->father_data = SIMIX_process_get_data(SIMIX_process_self());
+  res->father_data = SIMIX_process_self_get_data();
   /*   char*name = bprintf("%s#%p",SIMIX_process_self_get_name(), param); */
-  res->s_process = SIMIX_process_create(name,
-                                        xbt_thread_create_wrapper, res,
-                                        SIMIX_host_self_get_name(), 0, NULL,
-                                        /*props */ NULL);
+  res->s_process = SIMIX_req_process_create(name,
+                                            xbt_thread_create_wrapper, res,
+                                            SIMIX_host_self_get_name(), 0, NULL,
+                                            /*props */ NULL);
   res->joinable = joinable;
   res->done = 0;
   res->cond = xbt_cond_init();
@@ -106,20 +106,19 @@ void xbt_thread_join(xbt_thread_t thread)
 
 void xbt_thread_cancel(xbt_thread_t thread)
 {
-  SIMIX_process_kill(thread->s_process, SIMIX_process_self());
+  SIMIX_req_process_kill(thread->s_process);
   free(thread->name);
   free(thread);
 }
 
 void xbt_thread_exit()
 {
-  SIMIX_process_kill(SIMIX_process_self(), SIMIX_process_self());
+  SIMIX_req_process_kill(SIMIX_process_self());
 }
 
 xbt_thread_t xbt_thread_self(void)
 {
-  smx_process_t p = SIMIX_process_self();
-  return p ? SIMIX_process_get_data(p) : NULL;
+  return SIMIX_process_self_get_data();
 }
 
 void xbt_thread_yield(void)
