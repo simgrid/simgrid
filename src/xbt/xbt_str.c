@@ -319,9 +319,10 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
 /** @brief Splits a string into a dynar of strings, taking quotes into account
  *
  * It basically does the same argument separation than the shell, where white
- * spaces can be escaped and where arguments are never splitted within a
+ * spaces can be escaped and where arguments are never split within a
  * quote group.
  * Several subsequent spaces are ignored (unless within quotes, of course).
+ * You may want to trim the input string, if you want to avoid empty entries
  *
  */
 
@@ -338,8 +339,7 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
     return res;
   beg = str_to_free = xbt_strdup(s);
 
-  /* trim leading spaces */
-  xbt_str_ltrim(beg, " ");
+  /* do not trim leading spaces: caller responsability to clean his cruft */
   end = beg;
 
   while (!done) {
@@ -403,7 +403,9 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
         }
 
         beg = ++end;
-        xbt_str_ltrim(beg, " ");
+        /* trim within the string, manually to speed things up */
+        while (*beg == ' ')
+          beg++;
         end = beg;
       }
       break;
