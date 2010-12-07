@@ -24,9 +24,11 @@ void SIMIX_request_push(smx_req_t req)
 {
   req->issuer = SIMIX_process_self();
   if (req->issuer != simix_global->maestro_process){
-    xbt_os_mutex_acquire(sync_req_vector);
+    if (_surf_parallel_contexts)
+      xbt_os_mutex_acquire(sync_req_vector);
     xbt_dynar_set_as(req_vector, req->issuer->pid, smx_req_t, req);
-    xbt_os_mutex_release(sync_req_vector);
+    if (_surf_parallel_contexts)
+      xbt_os_mutex_release(sync_req_vector);
     req->issuer->request = req;
     DEBUG2("Yield process '%s' on request of type %d", req->issuer->name, req->call);
     SIMIX_process_yield();
@@ -38,13 +40,15 @@ void SIMIX_request_push(smx_req_t req)
 smx_req_t SIMIX_request_pop(void)
 {
   smx_req_t request = NULL;
-  xbt_os_mutex_acquire(sync_req_vector);
+  if (_surf_parallel_contexts)
+    xbt_os_mutex_acquire(sync_req_vector);
   while (xbt_dynar_length(req_vector)){
     request = xbt_dynar_pop_as(req_vector, smx_req_t);
     if (request)
       break;
   }
-  xbt_os_mutex_release(sync_req_vector);
+  if (_surf_parallel_contexts)
+    xbt_os_mutex_release(sync_req_vector);
   return request;
 }
 
