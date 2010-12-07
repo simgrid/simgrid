@@ -395,7 +395,11 @@ void SIMIX_post_host_execute(smx_action_t action)
 #ifdef HAVE_TRACING
 void SIMIX_set_category(smx_action_t action, const char *category)
 {
-  surf_workstation_model->set_category(action->execution.surf_exec, category);
+  if (action->type == SIMIX_ACTION_EXECUTE){
+    surf_workstation_model->set_category(action->execution.surf_exec, category);
+  }else if (action->type == SIMIX_ACTION_COMMUNICATE){
+    surf_workstation_model->set_category(action->comm.surf_comm, category);
+  }
 }
 #endif
 
