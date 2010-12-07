@@ -11,7 +11,6 @@
 
 #include "xbt/swag.h"
 #include "simix/datatypes.h"
-#include "simix/context.h"
 
 SG_BEGIN_DECL()
 /******************************** Context *************************************/
