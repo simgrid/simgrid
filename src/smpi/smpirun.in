@@ -59,6 +59,11 @@ while true; do
    	  shift 2
    ;;
 
+   "-triva")
+   	TRIVA="true"
+   	  shift 1
+   ;;
+
    "-keep-temps")
 	KEEP="true"
       shift 1
@@ -203,13 +208,19 @@ APPLICATIONFOOT
   else
     TRACEOPTIONS=""
   fi
+
+  if [ -n "${TRIVA}" ]; then
+    TRIVAOPTIONS="--cfg=triva/categorized:smpi_cat.plist --cfg=triva/uncategorized:smpi_uncat.plist"
+  else
+    TRIVAOPTIONS=""
+  fi
 ##---------------------- end SMPI TRACING OPTIONS ---------------------------------
 
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
-  echo ${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
+  echo ${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${TRIVAOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
 fi
-${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
+${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${TRIVAOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
 
 if [ -z "${KEEP}" ] ; then
    if [ -z "${PLATFORM}" ]; then
