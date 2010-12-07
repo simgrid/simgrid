@@ -255,9 +255,6 @@ int TRACE_msg_task_put_start(m_task_t task)
 
   //trace task location grouped by host
   TRACE_task_location_not_present(task);
-
-  //set current category
-  TRACE_category_set(SIMIX_process_self(), task->category);
   return 1;
 }
 
@@ -265,9 +262,6 @@ void TRACE_msg_task_put_end(void)
 {
   if (!TRACE_is_active())
     return;
-
-  TRACE_category_unset(SIMIX_process_self());
-
   DEBUG0("PUT,in");
 }
 

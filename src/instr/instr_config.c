@@ -119,7 +119,6 @@ int TRACE_start()
   defined_types = xbt_dict_new();
   created_categories = xbt_dict_new();
   TRACE_msg_task_alloc();
-  TRACE_category_alloc();
   TRACE_surf_alloc();
   TRACE_msg_process_alloc();
   TRACE_smpi_alloc();

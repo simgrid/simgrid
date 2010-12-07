@@ -124,7 +124,6 @@ typedef struct s_smx_action {
   };
 
 #ifdef HAVE_TRACING
-  long long int counter;              /* simix action unique identifier for instrumentation */
   char *category;                     /* simix action category for instrumentation */
 #endif
 } s_smx_action_t;

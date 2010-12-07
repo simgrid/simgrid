@@ -10,46 +10,25 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_simix, instr, "Tracing Simix");
 
-static long long int counter = 0;       /* to uniquely identify simix actions */
-
 void TRACE_smx_host_execute(smx_action_t act)
 {
-  if (!TRACE_is_active())
-    return;
-
-  act->counter = counter++;
-  char *category = TRACE_category_get(SIMIX_process_self());
-  if (category) {
-    act->category = xbt_strdup(category);
-    DEBUG2("Create Execute SMX action %p, category %s", act, act->category);
-  }
+  if (!TRACE_is_active()) return;
   TRACE_surf_resource_utilization_start(act);
+  return;
 }
 
 void TRACE_smx_action_communicate(smx_action_t act, smx_process_t proc)
 {
-  if (!TRACE_is_active())
-    return;
-
-  act->counter = counter++;
-  char *category = TRACE_category_get(proc);
-  if (category) {
-    act->category = xbt_strdup(category);
-    DEBUG2("Create Communicate SMX action %p, category %s", act, act->category);
-  }
+  if (!TRACE_is_active()) return;
   TRACE_surf_resource_utilization_start(act);
+  return;
 }
 
 void TRACE_smx_action_destroy(smx_action_t act)
 {
-  if (!TRACE_is_active())
-    return;
-
-  if (act->category) {
-    DEBUG2("Destroy SMX action %p, category %s", act, act->category);
-    xbt_free(act->category);
-  }
+  if (!TRACE_is_active()) return;
   TRACE_surf_resource_utilization_end(act);
+  return;
 }
 
 #endif /* HAVE_TRACING */

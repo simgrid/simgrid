@@ -64,13 +64,6 @@ void pajeSubVariable(double time, const char *entityType,
 void pajeNewEvent(double time, const char *entityType,
                   const char *container, const char *value);
 
-/* from categories.c */
-void TRACE_category_alloc(void);
-void TRACE_category_release(void);
-void TRACE_category_set(smx_process_t proc, const char *category);
-char *TRACE_category_get(smx_process_t proc);
-void TRACE_category_unset(smx_process_t proc);
-
 /* declaration of instrumentation functions from msg_task_instr.c */
 char *TRACE_task_container(m_task_t task, char *output, int len);
 void TRACE_msg_task_alloc(void);
