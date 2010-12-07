@@ -129,7 +129,6 @@ int TRACE_end()
 {
   if (!TRACE_is_active())
     return 1;
-  XBT_IN;
 
   /* close the trace file */
   TRACE_paje_end();
