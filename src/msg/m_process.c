@@ -145,7 +145,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
   smx_process_t smx_process = NULL;
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
 
-  smx_process = SIMIX_process_create(name, code, (void *) process, host->name,
+  smx_process = SIMIX_req_process_create(name, code, (void *) process, host->name,
                                      argc, argv, properties);
   if (!smx_process) {
     xbt_free(process);
