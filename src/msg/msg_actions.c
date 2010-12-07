@@ -93,7 +93,7 @@ static int MSG_action_runner(int argc, char *argv[])
           *comment = '\0';
         xbt_str_trim(line, NULL);
       }
-      evt = xbt_str_split_quoted(line);
+      evt = xbt_str_split_quoted_in_place(line);
       if (xbt_dynar_length(evt)==0) {
         xbt_dynar_free(&evt);
         continue;
@@ -152,7 +152,7 @@ static xbt_dynar_t action_get_action(char *name)
       xbt_str_trim(action_line, NULL);
       if (action_line[0] == '\0')
         continue;
-      evt = xbt_str_split_quoted(action_line);
+      evt = xbt_str_split_quoted_in_place(action_line);
 
       // if it's for me, I'm done
       evtname = xbt_dynar_get_as(evt, 0, char *);
