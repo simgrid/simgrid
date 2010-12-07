@@ -183,7 +183,7 @@ gras_msg_t gras_msg_recv_any(void)
   sock_data->comm_recv =
       SIMIX_req_comm_irecv(gras_socket_im_the_server(sock) ?
                           sock_data->rdv_server : sock_data->rdv_client,
-                          NULL, 0);
+                          NULL, 0, NULL, NULL);
 
   return msg;
 }
@@ -241,7 +241,7 @@ void gras_msg_send_ext(gras_socket_t sock,
                                                 payload, msg->payl);
   }
 
-  comm = SIMIX_req_comm_isend(target_rdv, whole_payload_size, -1, &msg, sizeof(void *), msg);
+  comm = SIMIX_req_comm_isend(target_rdv, whole_payload_size, -1, &msg, sizeof(void *), NULL, msg);
   SIMIX_req_comm_wait(comm, -1);
 
   VERB0("Message sent (and received)");

@@ -73,13 +73,13 @@ void smpi_mpi_start(MPI_Request request)
     smpi_process_post_recv(request);
     print_request("New recv", request);
     request->pair =
-        SIMIX_req_comm_irecv(request->rdv, request->buf, &request->size);
+        SIMIX_req_comm_irecv(request->rdv, request->buf, &request->size, NULL, NULL);
   } else {
     smpi_process_post_send(request->comm, request);     // FIXME
     print_request("New send", request);
     request->pair =
         SIMIX_req_comm_isend(request->rdv, request->size, -1.0,
-                            request->buf, request->size, NULL);
+                            request->buf, request->size, NULL, NULL);
 #ifdef HAVE_TRACING
     SIMIX_req_set_category (request->pair, TRACE_internal_smpi_get_category());
 #endif

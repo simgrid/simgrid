@@ -277,14 +277,17 @@ typedef struct s_smx_req {
       double rate;
       void *src_buff;
       size_t src_buff_size;
+      int (*match_fun)(void *, void *);
       void *data;
-      smx_action_t result;      
+      smx_action_t result;
     } comm_isend;
 
     struct {
       smx_rdv_t rdv;
       void *dst_buff;
       size_t *dst_buff_size;
+      int (*match_fun)(void *, void *);
+	  void *data;
       smx_action_t result;
     } comm_irecv;
 

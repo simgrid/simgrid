@@ -311,6 +311,7 @@ void SIMIX_request_pre(smx_req_t req)
 	  req->comm_isend.rate,
 	  req->comm_isend.src_buff,
 	  req->comm_isend.src_buff_size,
+	  req->comm_isend.match_fun,
 	  req->comm_isend.data);
       SIMIX_request_answer(req);
       break;
@@ -320,7 +321,9 @@ void SIMIX_request_pre(smx_req_t req)
 	  req->issuer,
 	  req->comm_irecv.rdv,
 	  req->comm_irecv.dst_buff,
-	  req->comm_irecv.dst_buff_size);
+	  req->comm_irecv.dst_buff_size,
+	  req->comm_irecv.match_fun,
+	  req->comm_irecv.data);
       SIMIX_request_answer(req);
       break;
 

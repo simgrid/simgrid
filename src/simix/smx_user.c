@@ -597,7 +597,8 @@ smx_action_t SIMIX_req_rdv_get_head(smx_rdv_t rdv)
 }
 
 smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
-                              void *src_buff, size_t src_buff_size, void *data)
+                              void *src_buff, size_t src_buff_size,
+                              int (*match_fun)(void *, void *), void *data)
 {
   s_smx_req_t req;
 
@@ -609,13 +610,15 @@ smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
   req.comm_isend.rate = rate;
   req.comm_isend.src_buff = src_buff;
   req.comm_isend.src_buff_size = src_buff_size;
+  req.comm_isend.match_fun = match_fun;
   req.comm_isend.data = data;
 
   SIMIX_request_push(&req);
   return req.comm_isend.result;
 }
 
-smx_action_t SIMIX_req_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size)
+smx_action_t SIMIX_req_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
+								  int (*match_fun)(void *, void *), void *data)
 {
   s_smx_req_t req;
 
@@ -625,6 +628,8 @@ smx_action_t SIMIX_req_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_bu
   req.comm_irecv.rdv = rdv;
   req.comm_irecv.dst_buff = dst_buff;
   req.comm_irecv.dst_buff_size = dst_buff_size;
+  req.comm_irecv.match_fun = match_fun;
+  req.comm_irecv.data = data;
 
   SIMIX_request_push(&req);
   return req.comm_irecv.result;

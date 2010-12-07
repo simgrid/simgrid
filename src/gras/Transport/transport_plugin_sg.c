@@ -180,7 +180,7 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
   /* initialize synchronization stuff on the socket */
   data->rdv_server = pr->rdv;
   data->rdv_client = SIMIX_req_rdv_create(NULL);
-  data->comm_recv = SIMIX_req_comm_irecv(data->rdv_client, NULL, 0);
+  data->comm_recv = SIMIX_req_comm_irecv(data->rdv_client, NULL, 0, NULL, NULL);
 
   /* connect that simulation data to the socket */
   sock->data = data;
@@ -227,7 +227,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self, int port, gras_socket_t s
   data->client = NULL;
   data->rdv_server = pr->rdv;
   data->rdv_client = NULL;
-  data->comm_recv = SIMIX_req_comm_irecv(pr->rdv, NULL, 0);
+  data->comm_recv = SIMIX_req_comm_irecv(pr->rdv, NULL, 0, NULL, NULL);
 
   sock->data = data;
 

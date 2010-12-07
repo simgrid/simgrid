@@ -414,7 +414,7 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
   /* Send it by calling SIMIX network layer */
 
   return SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                             t_simdata->rate, task, sizeof(void *),
+                             t_simdata->rate, task, sizeof(void *), NULL,
                              &t_simdata->comm);
 }
 
@@ -444,7 +444,7 @@ msg_comm_t MSG_task_irecv(m_task_t * task, const char *alias)
         ("MSG_task_get() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
-  return SIMIX_req_comm_irecv(rdv, task, NULL);
+  return SIMIX_req_comm_irecv(rdv, task, NULL, NULL, NULL);
 }
 
 /** \ingroup msg_gos_functions

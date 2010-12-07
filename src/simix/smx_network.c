@@ -23,7 +23,8 @@ static XBT_INLINE void SIMIX_comm_wait_for_completion(smx_action_t comm,
                                                       double timeout);
 static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm);
 static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm);
-static smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type);
+static smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
+										  int (*match_fun)(void *, void *), void *);
 static void SIMIX_rdv_free(void *data);
 
 void SIMIX_network_init(void)
@@ -122,17 +123,19 @@ static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm)
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
  *  \return The communication request if found, NULL otherwise
  */
-smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type)
+smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
+								   int (*match_fun)(void *, void *), void *data)
 {
-  smx_action_t comm = (smx_action_t)
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
+  smx_action_t req;
+  xbt_fifo_item_t item;
 
-  if (comm && comm->comm.type == type) {
-    DEBUG0("Communication request found!");
-    xbt_fifo_shift(rdv->comm_fifo);
-    comm->comm.refcount++;
-    comm->comm.rdv = NULL;
-    return comm;
+  xbt_fifo_foreach(rdv->comm_fifo, item, req, smx_action_t){
+	if(req->comm.type == type && (!match_fun || match_fun(data, req->comm.data))){
+	  xbt_fifo_remove_item(rdv->comm_fifo, item);
+	  req->comm.refcount++;
+	  req->comm.rdv = NULL;
+	  return req;
+	}
   }
 
   DEBUG0("Communication request not found");
@@ -232,13 +235,14 @@ void SIMIX_comm_destroy_internal_actions(smx_action_t action)
 
 smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               double task_size, double rate,
-                              void *src_buff, size_t src_buff_size, void *data)
+                              void *src_buff, size_t src_buff_size,
+                              int (*match_fun)(void *, void *), void *data)
 {
   smx_action_t action;
 
   /* Look for communication request matching our needs.
      If it is not found then create it and push it into the rendez-vous point */
-  action = SIMIX_rdv_get_request(rdv, SIMIX_COMM_RECEIVE);
+  action = SIMIX_rdv_get_request(rdv, SIMIX_COMM_RECEIVE, match_fun, data);
 
   if (!action) {
     action = SIMIX_comm_new(SIMIX_COMM_SEND);
@@ -266,14 +270,15 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
 }
 
 smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
-                      void *dst_buff, size_t *dst_buff_size)
+                      void *dst_buff, size_t *dst_buff_size,
+                      int (*match_fun)(void *, void *), void *data)
 {
   smx_action_t action;
 
   /* Look for communication request matching our needs.
    * If it is not found then create it and push it into the rendez-vous point
    */
-  action = SIMIX_rdv_get_request(rdv, SIMIX_COMM_SEND);
+  action = SIMIX_rdv_get_request(rdv, SIMIX_COMM_SEND, match_fun, data);
 
   if (!action) {
     action = SIMIX_comm_new(SIMIX_COMM_RECEIVE);

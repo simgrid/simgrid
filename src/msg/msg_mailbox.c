@@ -95,7 +95,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 
   /* Try to receive it by calling SIMIX network layer */
   TRY {
-    comm = SIMIX_req_comm_irecv(mailbox, task, NULL);
+    comm = SIMIX_req_comm_irecv(mailbox, task, NULL, NULL, NULL);
     SIMIX_req_comm_wait(comm, timeout);
     SIMIX_req_comm_destroy(comm);
     DEBUG2("Got task %s from %p",(*task)->name,mailbox);
@@ -162,7 +162,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   /* Try to send it by calling SIMIX network layer */
   TRY {
     t_simdata->comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                       t_simdata->rate, task, sizeof(void *), task);
+                       t_simdata->rate, task, sizeof(void *), NULL, task);
 #ifdef HAVE_TRACING
     SIMIX_req_set_category(t_simdata->comm, task->category);
 #endif
