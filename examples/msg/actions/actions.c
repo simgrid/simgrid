@@ -469,7 +469,7 @@ static void action_allReduce(xbt_dynar_t action) {
     }
     MSG_comm_waitall(comms,communicator_size-1,-1);
     for (i = 1; i < communicator_size; i++) {
-      // MSG_comm_destroy(comms[i-1]);
+      MSG_comm_destroy(comms[i-1]);
       MSG_task_destroy(tasks[i-1]);
     }
     free(tasks);
@@ -488,7 +488,7 @@ static void action_allReduce(xbt_dynar_t action) {
     }
     MSG_comm_waitall(comms,communicator_size-1,-1);
     /* for (i = 1; i < communicator_size; i++) */
-    /*   MSG_comm_destroy(comms[i-1]); */
+    MSG_comm_destroy(comms[i-1]);
     free(comms);
 
     DEBUG2("%s: all messages sent by %s have been received",
