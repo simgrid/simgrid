@@ -570,7 +570,6 @@ static void cpu_im_create_resource(char *name, double power_peak,
                                    tmgr_trace_t state_trace,
                                    xbt_dict_t cpu_properties)
 {
-	xbt_assert0(core==1,"Multi-core not handled with this model yet");
   cpu_im_new(name, power_peak, power_scale, power_trace, core,
              state_initial, state_trace, cpu_properties);
 }
