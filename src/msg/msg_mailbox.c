@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg,
 
 msg_mailbox_t MSG_mailbox_new(const char *alias)
 {
-  return SIMIX_req_rdv_create(alias ? xbt_strdup(alias) : NULL);
+  return SIMIX_req_rdv_create(alias);
 }
 
 void MSG_mailbox_free(void *mailbox)
