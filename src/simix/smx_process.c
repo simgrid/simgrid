@@ -14,7 +14,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
                                 "Logging specific to SIMIX (process)");
 
-static unsigned long simix_process_count = 0;
+static unsigned long simix_process_maxpid = 0;
 
 /**
  * \brief Returns the current agent.
@@ -76,7 +76,7 @@ void SIMIX_create_maestro_process()
 
   /* Create maestro process and intilialize it */
   maestro = xbt_new0(s_smx_process_t, 1);
-  maestro->pid = simix_process_count++;
+  maestro->pid = simix_process_maxpid++;
   maestro->name = (char *) "";
   maestro->running_ctx = xbt_new(xbt_running_ctx_t, 1);
   XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
@@ -149,7 +149,7 @@ smx_process_t SIMIX_process_create(const char *name,
     xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
 
     /* Process data */
-    process->pid = simix_process_count++;
+    process->pid = simix_process_maxpid++;
     process->name = xbt_strdup(name);
     process->smx_host = host;
     process->data = data;
@@ -343,7 +343,7 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 }
 
 int SIMIX_process_get_maxpid(void) {
-  return simix_process_count;
+  return simix_process_maxpid;
 }
 int SIMIX_process_count(void)
 {
