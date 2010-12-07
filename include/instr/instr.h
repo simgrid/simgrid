@@ -15,17 +15,6 @@
 #include "msg/msg.h"
 #include "simdag/simdag.h"
 
-/* Trace error codes (used in exceptions) */
-#define TRACE_ERROR_COMPLEX_ROUTES 100
-#define TRACE_ERROR_TYPE_NOT_DEFINED 200
-#define TRACE_ERROR_TYPE_ALREADY_DEFINED 201
-#define TRACE_ERROR_CATEGORY_NOT_DEFINED 300
-#define TRACE_ERROR_CATEGORY_ALREADY_DEFINED 301
-#define TRACE_ERROR_MASK 400
-#define TRACE_ERROR_FILE_OPEN 401
-#define TRACE_ERROR_START 500
-#define TRACE_ERROR_ALREADY_ACTIVE 501
-
 XBT_PUBLIC(int) TRACE_category(const char *category);
 XBT_PUBLIC(int) TRACE_category_with_color (const char *category, const char *color);
 XBT_PUBLIC(void) TRACE_define_type(const char *type,
