@@ -207,7 +207,7 @@ static double vivaldi_get_link_latency (routing_component_t rc,
 /**
  * \brief Add a "host" to the network element list
  */
-static void parse_S_host(char *host_id, char* coord)
+static void parse_S_host(const char *host_id, const char* coord)
 {
   network_element_info_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
@@ -224,7 +224,7 @@ static void parse_S_host(char *host_id, char* coord)
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
   xbt_dict_set(global_routing->where_network_elements, host_id,
-               (void *) info, NULL);
+               (void *) info, xbt_free);
 
   if (strcmp(coord,"")) {
   	xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
@@ -244,7 +244,7 @@ static void parse_S_host_XML(void)
 /*
  * \brief Add a host to the network element list from lua script
  */
-static void parse_S_host_lua(char *host_id, char *coord)
+static void parse_S_host_lua(const char *host_id, const char *coord)
 {
   parse_S_host(host_id, coord);
 }
@@ -273,7 +273,7 @@ static void parse_S_router(void)
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_ROUTER;
   xbt_dict_set(global_routing->where_network_elements, A_surfxml_router_id,
-               (void *) info, NULL);
+               (void *) info, xbt_free);
 #ifdef HAVE_TRACING
   TRACE_surf_host_declaration(A_surfxml_router_id, 0);
 #endif
@@ -359,7 +359,7 @@ static void parse_S_bypassRoute_new_and_endpoints(void)
 /**
  * \brief Set a new link on the actual list of link for a route or ASroute
  */
-static void parse_E_link_ctn_new_elem(char *link_id)
+static void parse_E_link_ctn_new_elem(const char *link_id)
 {
   char *val;
   val = xbt_strdup(link_id);
@@ -389,7 +389,7 @@ static void parse_E_link_ctn_new_elem_XML(void)
 /**
  * \brief Set a new link on the actual list of link for a route or ASroute from lua
  */
-static void parse_E_link_c_ctn_new_elem_lua(char *link_id)
+static void parse_E_link_c_ctn_new_elem_lua(const char *link_id)
 {
   parse_E_link_ctn_new_elem(link_id);
 }
@@ -545,7 +545,7 @@ static void parse_S_AS_lua(char *id, char *mode)
  * When you finish to read the routing component, other structures must be created. 
  * the "end" method allow to do that for any routing model type
  */
-static void parse_E_AS(char *AS_id)
+static void parse_E_AS(const char *AS_id)
 {
 
   if (current_routing == NULL) {
@@ -560,7 +560,7 @@ static void parse_E_AS(char *AS_id)
     info->rc_component = current_routing->routing_father;
     info->rc_type = SURF_NETWORK_ELEMENT_AS;
     xbt_dict_set(global_routing->where_network_elements,
-                 current_routing->name, info, NULL);
+                 current_routing->name, info, xbt_free);
     (*(current_routing->routing->unload)) ();
     (*(current_routing->routing->end)) ();
     current_routing = current_routing->routing_father;
@@ -580,7 +580,7 @@ static void parse_E_AS_XML(void)
 /*
  * \brief Finish the creation of a new routing component from lua
  */
-static void parse_E_AS_lua(char *id)
+static void parse_E_AS_lua(const char *id)
 {
   parse_E_AS(id);
 }
@@ -792,7 +792,7 @@ static double _get_latency(const char *src, const char *dst)
 
   xbt_assert0(src && dst, "bad parameters for \"_get_route\" method");
 
-  route_extended_t e_route, e_route_cnt;
+  route_extended_t e_route_cnt;
 
   xbt_dynar_t elem_father_list = elements_father(src, dst);
 
@@ -802,12 +802,6 @@ static double _get_latency(const char *src, const char *dst)
       xbt_dynar_get_as(elem_father_list, 1, routing_component_t);
   routing_component_t dst_father =
       xbt_dynar_get_as(elem_father_list, 2, routing_component_t);
-
-  e_route = xbt_new0(s_route_extended_t, 1);
-  e_route->src_gateway = NULL;
-  e_route->dst_gateway = NULL;
-  e_route->generic_route.link_list =
-      xbt_dynar_new(global_routing->size_of_link, NULL);
 
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
@@ -863,8 +857,6 @@ static double _get_latency(const char *src, const char *dst)
   }
 
   xbt_dynar_free(&elem_father_list);
-  xbt_dynar_free(&e_route->generic_route.link_list);
-  xbt_free(e_route);
 
   return latency;
 }
@@ -1356,7 +1348,7 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 			      (void*)link_route_to_test,
 				  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
 				  "The route between \"%s\" and \"%s\" already exists", src,dst);
-			xbt_free(link_route_to_test);
+			xbt_dynar_free(&link_route_to_test);
 		}
 		else
 		{
