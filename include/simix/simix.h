@@ -117,9 +117,6 @@ XBT_PUBLIC(void) SIMIX_req_host_execution_cancel(smx_action_t execution);
 XBT_PUBLIC(double) SIMIX_req_host_execution_get_remains(smx_action_t execution);
 XBT_PUBLIC(e_smx_state_t) SIMIX_req_host_execution_get_state(smx_action_t execution);
 XBT_PUBLIC(void) SIMIX_req_host_execution_set_priority(smx_action_t execution, double priority);
-#ifdef HAVE_TRACING
-XBT_PUBLIC(void) SIMIX_req_host_execution_set_category(smx_action_t execution, const char *category);
-#endif
 XBT_PUBLIC(void) SIMIX_req_host_execution_wait(smx_action_t execution);
 
 
@@ -199,6 +196,11 @@ XBT_PUBLIC(void) SIMIX_req_comm_copy_buffer_callback(smx_action_t comm, size_t b
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 XBT_PUBLIC(int) SIMIX_req_comm_is_latency_bounded(smx_action_t comm);
+#endif
+
+#ifdef HAVE_TRACING
+/************************** Tracing handling **********************************/
+XBT_PUBLIC(void) SIMIX_req_set_category(smx_action_t action, const char *category);
 #endif
 
 /************************** Synchro handling **********************************/

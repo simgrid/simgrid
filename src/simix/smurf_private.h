@@ -24,9 +24,6 @@ typedef enum {
   REQ_HOST_EXECUTION_GET_REMAINS,
   REQ_HOST_EXECUTION_GET_STATE,
   REQ_HOST_EXECUTION_SET_PRIORITY,
-#ifdef HAVE_TRACING
-  REQ_HOST_EXECUTION_SET_CATEGORY,
-#endif
   REQ_HOST_EXECUTION_WAIT,
   REQ_PROCESS_CREATE,
   REQ_PROCESS_KILL,
@@ -64,6 +61,9 @@ typedef enum {
   REQ_COMM_GET_DST_PROC,
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   REQ_COMM_IS_LATENCY_BOUNDED,
+#endif
+#ifdef HAVE_TRACING
+  REQ_SET_CATEGORY,
 #endif
   REQ_MUTEX_INIT,
   REQ_MUTEX_DESTROY,
@@ -172,13 +172,6 @@ typedef struct s_smx_req {
       smx_action_t execution;
       double priority;
     } host_execution_set_priority;
-
-#ifdef HAVE_TRACING
-    struct {
-      smx_action_t execution;
-      const char *category;
-    } host_execution_set_category;
-#endif
 
     struct {
       smx_action_t execution;
@@ -367,6 +360,13 @@ typedef struct s_smx_req {
       smx_action_t comm;
       int result;
     } comm_is_latency_bounded;
+#endif
+
+#ifdef HAVE_TRACING
+    struct {
+      smx_action_t action;
+      const char *category;
+    } set_category;
 #endif
 
     struct {

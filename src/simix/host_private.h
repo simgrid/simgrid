@@ -37,15 +37,16 @@ void SIMIX_host_execution_cancel(smx_action_t action);
 double SIMIX_host_execution_get_remains(smx_action_t action);
 e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action);
 void SIMIX_host_execution_set_priority(smx_action_t action, double priority);
-#ifdef HAVE_TRACING
-void SIMIX_host_execution_set_category(smx_action_t action, const char *category);
-#endif
 void SIMIX_pre_host_execution_wait(smx_req_t req);
 
 void SIMIX_host_execution_suspend(smx_action_t action);
 void SIMIX_host_execution_resume(smx_action_t action);
 
 void SIMIX_post_host_execute(smx_action_t action);
+
+#ifdef HAVE_TRACING
+void SIMIX_set_category(smx_action_t action, const char *category);
+#endif
 
 #endif
 

@@ -193,15 +193,6 @@ void SIMIX_request_pre(smx_req_t req)
       SIMIX_request_answer(req);
       break;
 
-#ifdef HAVE_TRACING
-    case REQ_HOST_EXECUTION_SET_CATEGORY:
-      SIMIX_host_execution_set_category(
-          req->host_execution_set_category.execution,
-          req->host_execution_set_category.category);
-      SIMIX_request_answer(req);
-      break;
-#endif
-
     case REQ_HOST_EXECUTION_WAIT:
       SIMIX_pre_host_execution_wait(req);
       break;
@@ -412,6 +403,15 @@ void SIMIX_request_pre(smx_req_t req)
     case REQ_COMM_IS_LATENCY_BOUNDED:
       req->comm_is_latency_bounded.result =
 	SIMIX_comm_is_latency_bounded(req->comm_is_latency_bounded.comm);
+      SIMIX_request_answer(req);
+      break;
+#endif
+
+#ifdef HAVE_TRACING
+    case REQ_SET_CATEGORY:
+      SIMIX_set_category(
+          req->set_category.action,
+          req->set_category.category);
       SIMIX_request_answer(req);
       break;
 #endif

@@ -268,25 +268,6 @@ void SIMIX_req_host_execution_set_priority(smx_action_t execution, double priori
   SIMIX_request_push(&req);
 }
 
-#ifdef HAVE_TRACING
-/**
- * \brief Set the category of an execution action.
- *
- * This functions changes the priority only. It calls a surf function.
- * \param execution The execution action
- * \param priority The new priority
- */
-void SIMIX_req_host_execution_set_category(smx_action_t execution, const char *category)
-{
-  s_smx_req_t req;
-
-  req.call = REQ_HOST_EXECUTION_SET_CATEGORY;
-  req.host_execution_set_category.execution = execution;
-  req.host_execution_set_category.category = xbt_strdup (category);
-  SIMIX_request_push(&req);
-}
-#endif
-
 /**
  * \brief Waits for the completion of an execution action.
  *
@@ -704,6 +685,26 @@ void SIMIX_req_comm_wait(smx_action_t comm, double timeout)
 
   SIMIX_request_push(&req);
 }
+
+#ifdef HAVE_TRACING
+/**
+ * \brief Set the category of an action.
+ *
+ * This functions changes the category only. It calls a surf function.
+ * \param execution The execution action
+ * \param category The tracing category
+ */
+void SIMIX_req_set_category(smx_action_t action, const char *category)
+{
+  s_smx_req_t req;
+
+  req.call = REQ_SET_CATEGORY;
+  req.set_category.action = action;
+  req.set_category.category = xbt_strdup (category);
+
+  SIMIX_request_push(&req);
+}
+#endif
 
 int SIMIX_req_comm_test(smx_action_t comm)
 {
