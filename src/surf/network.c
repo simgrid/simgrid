@@ -823,7 +823,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model->suspend = net_action_suspend;
   surf_network_model->resume = net_action_resume;
   surf_network_model->is_suspended = net_action_is_suspended;
-  surf_cpu_model->set_max_duration = net_action_set_max_duration;
+  surf_network_model->set_max_duration = net_action_set_max_duration;
 
   surf_network_model->extension.network.communicate = net_communicate;
   surf_network_model->extension.network.get_route = net_get_route;
