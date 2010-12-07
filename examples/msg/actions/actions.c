@@ -219,6 +219,7 @@ static void action_wait(xbt_dynar_t action)
   comm = xbt_dynar_pop_as(globals->irecvs,msg_comm_t);
   MSG_comm_wait(comm,-1);
   task = xbt_dynar_pop_as(globals->tasks,m_task_t);
+  MSG_comm_destroy(comm);
   MSG_task_destroy(task);
 
   VERB2("%s %f", name, MSG_get_clock() - clock);
