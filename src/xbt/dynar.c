@@ -754,11 +754,14 @@ XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
  */
 XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
 {
+  void * res;
 	void * last = xbt_new0(char,dynar->elmsize);
 	xbt_dynar_push(dynar, last);
 	free(last);
 	dynar->used--;
-	return dynar->data;
+	res = dynar->data;
+	free(dynar);
+	return res;
 }
 
 /*
