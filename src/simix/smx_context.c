@@ -28,10 +28,10 @@ void SIMIX_context_mod_init(void)
       (*factory_initializer_to_use)(&(simix_global->context_factory));
     }
     else {
-#ifdef CONTEXT_THREADS /* Use os threads (either pthreads or windows ones) */
-      SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
-#elif defined(CONTEXT_UCONTEXT) /* use ucontext */
+#ifdef CONTEXT_UCONTEXT /* use ucontext */
       SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
+#elif defined(CONTEXT_THREADS) /* Use os threads (either pthreads or windows ones) */
+      SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
 #else
 #error ERROR [__FILE__, line __LINE__]: no context implementation specified.
 #endif

@@ -45,8 +45,13 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
   (*factory)->name = "smx_sysv_context_factory";
 
   if(_surf_parallel_contexts){
+#ifdef CONTEXT_THREADS	/* To use parallel ucontexts a thread pool is needed */
     tpool = xbt_tpool_new(2, 10);
     (*factory)->runall = smx_ctx_sysv_runall_parallel;
+    (*factory)->self = smx_ctx_sysv_self_parallel;
+#else
+    THROW0(arg_error, 0, "No thread support for parallel context execution");
+#endif
   }else{
     (*factory)->runall = smx_ctx_sysv_runall;
   }    
@@ -170,10 +175,24 @@ void smx_ctx_sysv_runall(xbt_swag_t processes)
     smx_ctx_sysv_resume(process->context);
 }
 
+void smx_ctx_sysv_resume_parallel(smx_context_t context)
+{
+  xbt_os_thread_set_extra_data(context);
+  int rv = swapcontext(&maestro_context->uc, &((smx_ctx_sysv_t) context)->uc);
+
+  xbt_assert0((rv == 0), "Context swapping failure");
+}
+
 void smx_ctx_sysv_runall_parallel(xbt_swag_t processes)
 {
   smx_process_t process;
   while((process = xbt_swag_extract(processes))){
-    xbt_tpool_queue_job(tpool, (void_f_pvoid_t)smx_ctx_sysv_resume, process->context);
+    xbt_tpool_queue_job(tpool, (void_f_pvoid_t)smx_ctx_sysv_resume_parallel, process->context);
   }
+}
+
+smx_context_t smx_ctx_sysv_self_parallel(void)
+{
+  smx_context_t self_context = (smx_context_t) xbt_os_thread_get_extra_data();
+  return self_context ? self_context : (smx_context_t) maestro_context;
 }

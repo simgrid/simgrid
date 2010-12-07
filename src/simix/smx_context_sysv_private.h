@@ -51,7 +51,9 @@ void smx_ctx_sysv_stop(smx_context_t context);
 void smx_ctx_sysv_suspend(smx_context_t context);
 void smx_ctx_sysv_resume(smx_context_t new_context);
 void smx_ctx_sysv_runall(xbt_swag_t processes);
+void smx_ctx_sysv_resume_parallel(smx_context_t new_context);
 void smx_ctx_sysv_runall_parallel(xbt_swag_t processes);
+smx_context_t smx_ctx_sysv_self_parallel(void);
 
 SG_END_DECL()
 
