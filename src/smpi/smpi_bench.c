@@ -45,6 +45,9 @@ static void smpi_execute_flops(double flops)
 
   DEBUG1("Handle real computation time: %f flops", flops);
   action = SIMIX_req_host_execute("computation", host, flops);
+#ifdef HAVE_TRACING
+  SIMIX_req_set_category (action, TRACE_internal_smpi_get_category());
+#endif
   SIMIX_req_host_execution_wait(action);
   SIMIX_req_host_execution_destroy(action);
 }

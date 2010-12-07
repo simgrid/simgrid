@@ -80,6 +80,9 @@ void smpi_mpi_start(MPI_Request request)
     request->pair =
         SIMIX_req_comm_isend(request->rdv, request->size, -1.0,
                             request->buf, request->size, NULL);
+#ifdef HAVE_TRACING
+    SIMIX_req_set_category (request->pair, TRACE_internal_smpi_get_category());
+#endif
   }
 }
 
