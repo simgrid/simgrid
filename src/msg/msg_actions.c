@@ -12,6 +12,14 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_action, msg,
                                 "MSG actions for trace driven simulation");
 
+static int paranoid_action_replayer=1;
+/** \ingroup msg_actions
+ *  \brief set the paranoid mode: true if we must check our input, false if it's well formated
+ */
+void MSG_action_paranoid_mode_set(int mode) {
+  paranoid_action_replayer = mode;
+}
+
 static xbt_dict_t action_funs;
 static xbt_dict_t action_queues;
 
@@ -79,13 +87,17 @@ static int MSG_action_runner(int argc, char *argv[])
     // Read lines and execute them until I reach the end of file
     while ((read = getline(&line, &line_len, fp)) != -1) {
       // cleanup and split the string I just read
-      comment = strchr(line, '#');
-      if (comment != NULL)
-        *comment = '\0';
-      xbt_str_trim(line, NULL);
-      if (line[0] == '\0')
-        continue;
+      if (paranoid_action_replayer) {
+        comment = strchr(line, '#');
+        if (comment != NULL)
+          *comment = '\0';
+        xbt_str_trim(line, NULL);
+      }
       evt = xbt_str_split_quoted(line);
+      if (xbt_dynar_length(evt)==0) {
+        xbt_dynar_free(&evt);
+        continue;
+      }
 
       evtname = xbt_dynar_get_as(evt, 0, char *);
       if (!strcmp(argv[0], evtname)) {

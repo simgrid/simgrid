@@ -217,6 +217,7 @@ XBT_PUBLIC(MSG_error_t)
 
 /************************** Action handling **********************************/
 typedef void (*msg_action_fun) (xbt_dynar_t args);
+XBT_PUBLIC(void) MSG_action_paranoid_mode_set(int mode);
 XBT_PUBLIC(void) MSG_action_register(const char *action_name,
                                      msg_action_fun function);
 XBT_PUBLIC(void) MSG_action_unregister(const char *action_name);
