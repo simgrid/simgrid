@@ -498,7 +498,6 @@ MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
       task = (m_task_t) SIMIX_req_comm_get_src_buff(comm);
       task->simdata->refcount--;
     }
-    SIMIX_req_comm_destroy(comm);
 
     /* FIXME: these functions are not tracable */
   }
