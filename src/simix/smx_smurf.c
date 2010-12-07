@@ -5,57 +5,57 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
                                 "Logging specific to SIMIX (SMURF)");
 
-/* Array storing all requests to be handled in this scheduling round */
-static smx_req_t* req_vector=NULL;
-/* Positions of the previous array with non-null data */
-static xbt_heap_t req_positions;
+/* Requests to handle at the end of this round of scheduling user processes */
+static xbt_heap_t req_todo;
 /* to protect the write actions in the heap */
 static xbt_os_mutex_t sync_req_positions;
 
 void SIMIX_request_init(void)
 {
-  req_vector = xbt_new0(smx_req_t,1);/* enough room for maestro's requests */
-  req_positions = xbt_heap_new(5,NULL);
+  req_todo = xbt_heap_new(5,NULL);
   sync_req_positions = xbt_os_mutex_init();
 }
 
 void SIMIX_request_destroy(void)
 {
-  free(req_vector);
-  req_vector = NULL;
-  xbt_heap_free(req_positions);
+  xbt_heap_free(req_todo);
   xbt_os_mutex_destroy(sync_req_positions);
 }
 
-void SIMIX_request_push(smx_req_t req)
+/* FIXME: we may want to save the initialization of issuer... */
+XBT_INLINE smx_req_t SIMIX_req_mine() {
+  smx_process_t issuer = SIMIX_process_self();
+  return &issuer->request;
+}
+
+void SIMIX_request_push()
 {
-  req->issuer = SIMIX_process_self();
-  if (req->issuer != simix_global->maestro_process){
-    req_vector[req->issuer->pid] = req;
-    req->issuer->request = req;
+  smx_process_t issuer = SIMIX_process_self();
+  if (issuer != simix_global->maestro_process){
+    issuer->request.issuer = issuer;
 
     if (_surf_parallel_contexts)
       xbt_os_mutex_acquire(sync_req_positions);
-    xbt_heap_push(req_positions,req,req->issuer->pid);
+    xbt_heap_push(req_todo,&issuer->request,issuer->pid);
     if (_surf_parallel_contexts)
       xbt_os_mutex_release(sync_req_positions);
 
-    DEBUG2("Yield process '%s' on request of type %d", req->issuer->name, req->call);
+    DEBUG2("Yield process '%s' on request of type %d", issuer->name, issuer->request.call);
     SIMIX_process_yield();
   } else {
-    SIMIX_request_pre(req);
+    SIMIX_request_pre(&issuer->request);
   }
 }
 
 smx_req_t SIMIX_request_pop(void)
 {
-  return xbt_heap_pop(req_positions);
+  return xbt_heap_pop(req_todo);
 }
 
 void SIMIX_request_answer(smx_req_t req)
 {
   if (req->issuer != simix_global->maestro_process){
-    req->issuer->request = NULL;    
+    req->issuer->request.call = REQ_NO_REQ;
     xbt_swag_insert(req->issuer, simix_global->process_to_run);
   }
 }
@@ -102,6 +102,9 @@ int SIMIX_request_is_enabled(smx_req_t req)
 void SIMIX_request_pre(smx_req_t req)
 {
   switch (req->call) {
+  case REQ_NO_REQ:
+    xbt_die("Asked to do the noop syscall");
+    break;
 
     case REQ_HOST_GET_BY_NAME:
       req->host_get_by_name.result =
@@ -202,7 +205,6 @@ void SIMIX_request_pre(smx_req_t req)
       break;
 
     case REQ_PROCESS_CREATE:
-      req_vector = xbt_realloc(req_vector,sizeof(smx_req_t)*(SIMIX_process_get_maxpid()+2));
       req->process_create.result = SIMIX_process_create(
 	  req->process_create.name,
 	  req->process_create.code,

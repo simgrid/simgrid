@@ -81,6 +81,7 @@ void SIMIX_create_maestro_process()
   maestro->running_ctx = xbt_new(xbt_running_ctx_t, 1);
   XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
   maestro->context = SIMIX_context_new(NULL, 0, NULL, NULL, maestro);
+  maestro->request.issuer = maestro;
 
   simix_global->maestro_process = maestro;
   return;
@@ -213,7 +214,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t killer) {
 	break;
 
       case SIMIX_ACTION_SYNCHRO:
-	SIMIX_synchro_stop_waiting(process, process->request);
+	SIMIX_synchro_stop_waiting(process, &process->request);
 	SIMIX_synchro_destroy(process->waiting_action);
 	break;
 
@@ -402,7 +403,7 @@ int SIMIX_process_is_suspended(smx_process_t process)
 
 int SIMIX_process_is_enabled(smx_process_t process)
 {
-  if (process->request && SIMIX_request_is_enabled(process->request))
+  if (process->request.call != REQ_NO_REQ && SIMIX_request_is_enabled(&process->request))
     return TRUE;
 
   return FALSE;

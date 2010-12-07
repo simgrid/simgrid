@@ -29,7 +29,7 @@ typedef struct s_smx_process {
   int suspended:1;
   smx_action_t waiting_action;
   xbt_dict_t properties;
-  smx_req_t request;
+  s_smx_req_t request;
   void *data;                   /* kept for compatibility, it should be replaced with moddata */
 
 } s_smx_process_t;

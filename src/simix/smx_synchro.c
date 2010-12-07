@@ -201,7 +201,7 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
     SIMIX_synchro_destroy(p->waiting_action);
     p->waiting_action = NULL;
     mutex->owner = p;
-    SIMIX_request_answer(p->request);
+    SIMIX_request_answer(&p->request);
   } else {
     /* nobody to wake up */
     mutex->locked = 0;
@@ -313,7 +313,7 @@ void SIMIX_cond_signal(smx_cond_t cond)
     proc->waiting_action = NULL;
 
     /* Now transform the cond wait request into a mutex lock one */
-    req = proc->request;
+    req = &proc->request;
     if(req->call == REQ_COND_WAIT)
       mutex = req->cond_wait.mutex;
     else
@@ -401,7 +401,7 @@ void SIMIX_sem_release(smx_sem_t sem)
     proc = xbt_swag_extract(sem->sleeping);
     SIMIX_synchro_destroy(proc->waiting_action);
     proc->waiting_action = NULL;
-    SIMIX_request_answer(proc->request);
+    SIMIX_request_answer(&proc->request);
   } else if (sem->value < SMX_SEM_NOLIMIT) {
     sem->value++;
   }

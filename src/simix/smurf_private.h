@@ -9,6 +9,7 @@
 
 /********************************* Requests ***********************************/
 typedef enum {
+  REQ_NO_REQ, /* Used when there is no ongoing request here */
   REQ_HOST_GET_BY_NAME,
   REQ_HOST_GET_NAME,
   REQ_HOST_GET_PROPERTIES,
@@ -470,13 +471,14 @@ typedef struct s_smx_req {
 
 void SIMIX_request_init(void);
 void SIMIX_request_destroy(void);
-void SIMIX_request_push(smx_req_t);
+void SIMIX_request_push(void);
 smx_req_t SIMIX_request_pop(void);
 void SIMIX_request_answer(smx_req_t);
 void SIMIX_request_pre(smx_req_t);
 void SIMIX_request_post(smx_action_t);
 int SIMIX_request_is_visible(smx_req_t req);
 int SIMIX_request_is_enabled(smx_req_t req);
+XBT_INLINE smx_req_t SIMIX_req_mine(void);
 
 #endif
 
