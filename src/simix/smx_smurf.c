@@ -40,15 +40,12 @@ void SIMIX_request_push(smx_req_t req)
 smx_req_t SIMIX_request_pop(void)
 {
   smx_req_t request = NULL;
-  if (_surf_parallel_contexts)
-    xbt_os_mutex_acquire(sync_req_vector);
   while (xbt_dynar_length(req_vector)){
     request = xbt_dynar_pop_as(req_vector, smx_req_t);
     if (request)
       break;
   }
-  if (_surf_parallel_contexts)
-    xbt_os_mutex_release(sync_req_vector);
+
   return request;
 }
 
