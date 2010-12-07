@@ -126,6 +126,8 @@ int TRACE_surf_gtnets_get_dst(void *action);
 void TRACE_surf_gtnets_destroy(void *action);
 
 /* from smpi_instr.c */
+void TRACE_internal_smpi_set_category (const char *category);
+const char *TRACE_internal_smpi_get_category (void);
 void TRACE_smpi_alloc(void);
 void TRACE_smpi_release(void);
 void TRACE_smpi_init(int rank);

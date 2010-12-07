@@ -52,9 +52,33 @@ static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
   return key;
 }
 
+static xbt_dict_t process_category;
+
+void TRACE_internal_smpi_set_category (const char *category)
+{
+  if (!TRACE_smpi_is_enabled()) return;
+
+  char processid[INSTR_DEFAULT_STR_SIZE];
+  snprintf (processid, INSTR_DEFAULT_STR_SIZE, "%p", SIMIX_process_self());
+  if (xbt_dict_get_or_null (process_category, processid))
+    xbt_dict_remove (process_category, processid);
+  if (category != NULL)
+    xbt_dict_set (process_category, processid, xbt_strdup(category), xbt_free);
+}
+
+const char *TRACE_internal_smpi_get_category (void)
+{
+  if (!TRACE_smpi_is_enabled()) return NULL;
+
+  char processid[INSTR_DEFAULT_STR_SIZE];
+  snprintf (processid, INSTR_DEFAULT_STR_SIZE, "%p", SIMIX_process_self());
+  return xbt_dict_get_or_null (process_category, processid);
+}
+
 void TRACE_smpi_alloc()
 {
   keys = xbt_dict_new();
+  process_category = xbt_dict_new();
 }
 
 void TRACE_smpi_start(void)

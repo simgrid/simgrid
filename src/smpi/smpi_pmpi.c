@@ -17,19 +17,7 @@ void TRACE_smpi_set_category(const char *category)
 {
   //need to end bench otherwise categories for execution tasks are wrong
   smpi_bench_end();
-  int ret;
-  if (!TRACE_is_enabled()){
-    ret = 1;
-  }else{
-    if (category != NULL) {
-      ret = TRACE_category(category);
-      TRACE_category_set(SIMIX_process_self(), category);
-    }else{
-      //if category is NULL, trace of platform is disabled for this process
-      TRACE_category_unset(SIMIX_process_self());
-      ret = 0;
-    }
-  }
+  TRACE_internal_smpi_set_category (category);
   //begin bench after changing process's category
   smpi_bench_begin();
 }
