@@ -60,6 +60,9 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
               && e->used,
               "Backtrace not setup yet, cannot set it up for display");
 
+  if (!xbt_binary_name) /* no binary name, nothing to do */
+    return;
+
   backtrace_syms = backtrace_symbols(e->bt, e->used);
   /* ignore first one, which is this xbt_backtrace_current() */
   e->used--;

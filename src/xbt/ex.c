@@ -153,6 +153,10 @@ void xbt_ex_display(xbt_ex_t * e)
   {
     int i;
 
+    if (!xbt_binary_name) {
+      fprintf(stderr, "variable 'xbt_binary_name' set to NULL. Cannot compute the backtrace\n");
+      return;
+    }
     fprintf(stderr, "\n");
     for (i = 0; i < e->used; i++)
       fprintf(stderr, "%s\n", e->bt_strings[i]);
