@@ -316,20 +316,18 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
   return res;
 }
 
-/** @brief Splits a string into a dynar of strings, taking quotes into account
+/** @brief Just like @xbt_str_split_quoted (Splits a string into a dynar of strings), but without memory allocation
  *
- * It basically does the same argument separation than the shell, where white
- * spaces can be escaped and where arguments are never split within a
- * quote group.
- * Several subsequent spaces are ignored (unless within quotes, of course).
- * You may want to trim the input string, if you want to avoid empty entries
+ * The string passed as argument must be writable (not const)
+ * The elements of the dynar are just parts of the string passed as argument.
  *
+ * To free the structure constructed by this function, free the first element and free the dynar:
+ *
+ * free(xbt_dynar_get_ptr(dynar,0));
+ * xbt_dynar_free(&dynar);
  */
-
-xbt_dynar_t xbt_str_split_quoted(const char *s)
-{
-  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-  char *str_to_free;            /* we have to copy the string before, to handle backslashes */
+xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
+  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), NULL);
   char *beg, *end;              /* pointers around the parsed chunk */
   int in_simple_quote = 0, in_double_quote = 0;
   int done = 0;
@@ -337,7 +335,8 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
 
   if (s[0] == '\0')
     return res;
-  beg = str_to_free = xbt_strdup(s);
+
+  beg = s;
 
   /* do not trim leading spaces: caller responsability to clean his cruft */
   end = beg;
@@ -388,19 +387,18 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
       if (in_simple_quote || in_double_quote) {
         end++;
       } else {
+        if (*end == '\0')
+          done = 1;
+
+        *end = '\0';
         if (ctn) {
           /* Found a separator. Push the string if contains something */
-          char *topush = xbt_malloc(end - beg + 1);
-          memcpy(topush, beg, end - beg);
-          topush[end - beg] = '\0';
-          xbt_dynar_push(res, &topush);
+          xbt_dynar_push(res, &beg);
         }
         ctn = 0;
 
-        if (*end == '\0') {
-          done = 1;
+        if (done)
           break;
-        }
 
         beg = ++end;
         /* trim within the string, manually to speed things up */
@@ -414,6 +412,36 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
       ctn = 1;
       end++;
     }
+  }
+  return res;
+}
+
+/** @brief Splits a string into a dynar of strings, taking quotes into account
+ *
+ * It basically does the same argument separation than the shell, where white
+ * spaces can be escaped and where arguments are never split within a
+ * quote group.
+ * Several subsequent spaces are ignored (unless within quotes, of course).
+ * You may want to trim the input string, if you want to avoid empty entries
+ *
+ */
+
+xbt_dynar_t xbt_str_split_quoted(const char *s)
+{
+  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+  xbt_dynar_t parsed;
+  char *str_to_free;            /* we have to copy the string before, to handle backslashes */
+  unsigned int cursor;
+  char *p;
+
+  if (s[0] == '\0')
+    return res;
+  str_to_free = xbt_strdup(s);
+
+  parsed = xbt_str_split_quoted_in_place(str_to_free);
+  xbt_dynar_foreach(parsed,cursor,p) {
+    char *q=xbt_strdup(p);
+    xbt_dynar_push(res,&q);
   }
   free(str_to_free);
   xbt_dynar_shrink(res, 0);
