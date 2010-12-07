@@ -772,6 +772,7 @@ set(txt_files
 	LICENSE-LGPL-2.1
 	NEWS
 	TODO
+	configure
 )
 
 file(GLOB_RECURSE README_files

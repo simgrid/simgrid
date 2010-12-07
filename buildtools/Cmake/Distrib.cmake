@@ -220,6 +220,11 @@ foreach(file ${source_to_pack})
      TARGET dist-dir
      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} simgrid-${release_version}/${file_location}/
    )
+   
+   add_custom_command(
+     TARGET dist-dir
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Makefile.default simgrid-${release_version}/Makefile
+   )
 endforeach(file ${source_to_pack})
 
 ######################################
