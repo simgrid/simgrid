@@ -24,8 +24,7 @@ void TRACE_sd_set_task_category(SD_task_t task, const char *category)
 {
   if (!TRACE_is_active())
     return;
-  task->category = xbt_new(char, strlen(category) + 1);
-  strcpy(task->category, category);
+  task->category = xbt_strdup (category);
 }
 
 #endif /* HAVE_TRACING */
