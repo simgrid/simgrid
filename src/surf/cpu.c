@@ -387,6 +387,15 @@ static void cpu_action_set_priority(surf_action_t action, double priority)
   XBT_OUT;
 }
 
+#ifdef HAVE_TRACING
+static void cpu_action_set_category(surf_action_t action, const char *category)
+{
+  XBT_IN2("(%p,%s)", action, category);
+  action->category = xbt_strdup (category);
+  XBT_OUT;
+}
+#endif
+
 static double cpu_action_get_remains(surf_action_t action)
 {
   XBT_IN1("(%p)", action);
@@ -462,6 +471,9 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->is_suspended = cpu_action_is_suspended;
   surf_cpu_model->set_max_duration = cpu_action_set_max_duration;
   surf_cpu_model->set_priority = cpu_action_set_priority;
+#ifdef HAVE_TRACING
+  surf_cpu_model->set_category = cpu_action_set_category;
+#endif
   surf_cpu_model->get_remains = cpu_action_get_remains;
 
   surf_cpu_model->extension.cpu.execute = cpu_execute;

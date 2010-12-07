@@ -297,6 +297,13 @@ void SIMIX_host_execution_set_priority(smx_action_t action, double priority)
   surf_workstation_model->set_priority(action->execution.surf_exec, priority);
 }
 
+#ifdef HAVE_TRACING
+void SIMIX_host_execution_set_category(smx_action_t action, const char *category)
+{
+  surf_workstation_model->set_category(action->execution.surf_exec, category);
+}
+#endif
+
 void SIMIX_pre_host_execution_wait(smx_req_t req)
 {
   smx_action_t action = req->host_execution_wait.execution;

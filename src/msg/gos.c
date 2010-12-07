@@ -66,6 +66,9 @@ MSG_error_t MSG_task_execute(m_task_t task)
       SIMIX_req_host_execute(task->name, SIMIX_host_self(),
                            simdata->computation_amount);
   SIMIX_req_host_execution_set_priority(simdata->compute, simdata->priority);
+#ifdef HAVE_TRACING
+  SIMIX_req_host_execution_set_category(simdata->compute, task->category);
+#endif
 
   self->simdata->waiting_action = simdata->compute;
   SIMIX_req_host_execution_wait(simdata->compute);

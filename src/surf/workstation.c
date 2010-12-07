@@ -179,6 +179,18 @@ static void ws_action_set_priority(surf_action_t action, double priority)
     DIE_IMPOSSIBLE;
 }
 
+#ifdef HAVE_TRACING
+static void ws_action_set_category(surf_action_t action, const char *category)
+{
+  if (action->model_type == surf_network_model)
+    surf_network_model->set_category(action, category);
+  else if (action->model_type == surf_cpu_model)
+    surf_cpu_model->set_category(action, category);
+  else
+    DIE_IMPOSSIBLE;
+}
+#endif
+
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 static int ws_get_latency_limited(surf_action_t action)
 {
@@ -295,6 +307,9 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->is_suspended = ws_action_is_suspended;
   surf_workstation_model->set_max_duration = ws_action_set_max_duration;
   surf_workstation_model->set_priority = ws_action_set_priority;
+#ifdef HAVE_TRACING
+  surf_workstation_model->set_category = ws_action_set_category;
+#endif
   surf_workstation_model->get_remains = ws_action_get_remains;
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   surf_workstation_model->get_latency_limited = ws_get_latency_limited;

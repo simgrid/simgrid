@@ -271,6 +271,9 @@ typedef struct surf_model {
   int (*is_suspended) (surf_action_t action);     /**< Return whether an action is suspended */
   void (*set_max_duration) (surf_action_t action, double duration);     /**< Set the max duration of an action*/
   void (*set_priority) (surf_action_t action, double priority);     /**< Set the priority of an action */
+#ifdef HAVE_TRACING
+  void (*set_category) (surf_action_t action, const char *category); /**< Set the category of an action */
+#endif
   double (*get_remains) (surf_action_t action);     /**< Get the remains of an action */
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int (*get_latency_limited) (surf_action_t action);     /**< Return 1 if action is limited by latency, 0 otherwise */
