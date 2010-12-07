@@ -788,6 +788,13 @@ void net_action_set_max_duration(surf_action_t action, double duration)
   action->max_duration = duration;
 }
 
+#ifdef HAVE_TRACING
+static void net_action_set_category(surf_action_t action, const char *category)
+{
+  action->category = xbt_strdup (category);
+}
+#endif
+
 static void net_finalize(void)
 {
   surf_model_exit(surf_network_model);
@@ -824,6 +831,9 @@ static void surf_network_model_init_internal(void)
   surf_network_model->resume = net_action_resume;
   surf_network_model->is_suspended = net_action_is_suspended;
   surf_network_model->set_max_duration = net_action_set_max_duration;
+#ifdef HAVE_TRACING
+  surf_network_model->set_category = net_action_set_category;
+#endif
 
   surf_network_model->extension.network.communicate = net_communicate;
   surf_network_model->extension.network.get_route = net_get_route;
