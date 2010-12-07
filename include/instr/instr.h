@@ -51,7 +51,7 @@ XBT_PUBLIC(void) TRACE_user_link_variable(double time, const char *src,
                                           double value, const char *what);
 XBT_PUBLIC(void) TRACE_declare_mark(const char *mark_type);
 XBT_PUBLIC(void) TRACE_mark(const char *mark_type, const char *mark_value);
-XBT_PUBLIC(int) TRACE_smpi_set_category(const char *category);
+XBT_PUBLIC(void) TRACE_smpi_set_category(const char *category);
 XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task,
                                             const char *category);
 

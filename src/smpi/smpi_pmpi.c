@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_pmpi, smpi,
 
 #ifdef HAVE_TRACING
 //this function need to be here because of the calls to smpi_bench
-int TRACE_smpi_set_category(const char *category)
+void TRACE_smpi_set_category(const char *category)
 {
   //need to end bench otherwise categories for execution tasks are wrong
   smpi_bench_end();
@@ -32,7 +32,6 @@ int TRACE_smpi_set_category(const char *category)
   }
   //begin bench after changing process's category
   smpi_bench_begin();
-  return ret;
 }
 #endif
 
