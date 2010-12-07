@@ -50,7 +50,7 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
     sprintf(alias, "%s:%d", name, i);
 
     /* the key of the mailbox (in this case) is build from the name of the host and the channel number */
-    simdata->mailboxes[i] = MSG_mailbox_new(xbt_strdup(alias));
+    simdata->mailboxes[i] = MSG_mailbox_new(alias);
     memset(alias, 0, MAX_ALIAS_NAME + 1);
   }
 
