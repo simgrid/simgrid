@@ -546,6 +546,18 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   return SIMIX_req_comm_waitany(comms);
 }
 
+/** \ingroup msg_gos_functions
+* \brief This function wait for the first completed communication
+*
+* It takes on parameter.
+* \param comms a vector of communication
+* \return the position of the completed communication, if any, or -1 if none was completed
+*/
+int MSG_comm_testany(xbt_dynar_t comms)
+{
+  return SIMIX_req_comm_testany(comms);
+}
+
 m_task_t MSG_comm_get_task(msg_comm_t comm)
 {
   xbt_assert0(comm, "Invalid parameters");

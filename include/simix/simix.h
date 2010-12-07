@@ -178,6 +178,7 @@ XBT_INLINE XBT_PUBLIC(void) SIMIX_req_comm_cancel(smx_action_t comm);
 XBT_PUBLIC(unsigned int) SIMIX_req_comm_waitany(xbt_dynar_t comms);
 XBT_PUBLIC(void) SIMIX_req_comm_wait(smx_action_t comm, double timeout);
 XBT_PUBLIC(int) SIMIX_req_comm_test(smx_action_t comm);
+XBT_PUBLIC(int) SIMIX_req_comm_testany(xbt_dynar_t comms);
 
 /* Getters and setters */
 XBT_PUBLIC(double) SIMIX_req_comm_get_remains(smx_action_t comm);

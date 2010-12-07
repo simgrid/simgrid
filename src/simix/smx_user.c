@@ -1,5 +1,6 @@
 #include "private.h"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 /**
  * \brief Returns a host given its name.
  *
@@ -653,6 +654,20 @@ unsigned int SIMIX_req_comm_waitany(xbt_dynar_t comms)
 {
   s_smx_req_t req;
 
+  req.call = REQ_COMM_WAITANY;
+  req.comm_waitany.comms = comms;
+
+  SIMIX_request_push(&req);
+  return req.comm_waitany.result;
+}
+
+int SIMIX_req_comm_testany(xbt_dynar_t comms)
+{
+  s_smx_req_t req;
+  if (xbt_dynar_length(comms)==0)
+    return -1;
+
+  WARN0("SIMIX_comm_testany is not implemented yet. Using waitany instead. This changes the semantic...");
   req.call = REQ_COMM_WAITANY;
   req.comm_waitany.comms = comms;
 
