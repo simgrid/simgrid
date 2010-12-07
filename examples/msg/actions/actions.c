@@ -469,8 +469,8 @@ static void action_allReduce(xbt_dynar_t action) {
     }
     MSG_comm_waitall(comms,communicator_size-1,-1);
     for (i = 1; i < communicator_size; i++) {
+      // MSG_comm_destroy(comms[i-1]);
       MSG_task_destroy(tasks[i-1]);
-      MSG_comm_destroy(comms[i-1]);
     }
     free(tasks);
 
@@ -487,8 +487,8 @@ static void action_allReduce(xbt_dynar_t action) {
               mailbox);
     }
     MSG_comm_waitall(comms,communicator_size-1,-1);
-    for (i = 1; i < communicator_size; i++)
-      MSG_comm_destroy(comms[i-1]);
+    /* for (i = 1; i < communicator_size; i++) */
+    /*   MSG_comm_destroy(comms[i-1]); */
     free(comms);
 
     DEBUG2("%s: all messages sent by %s have been received",
@@ -559,9 +559,11 @@ static void action_finalize(xbt_dynar_t action)
 #ifdef HAVE_TRACING
   TRACE_smpi_finalize(get_rank(MSG_process_get_name(MSG_process_self())));
 #endif
-  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
-  if (counters)
-  	  free(counters);
+  process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
+  if (globals){
+    xbt_dynar_free_container(&(globals->isends));
+    free(globals);
+  }
 }
 
 /** Main function */
