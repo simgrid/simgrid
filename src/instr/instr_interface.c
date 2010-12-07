@@ -91,7 +91,7 @@ int TRACE_create_category_with_color(const char *category,
       "Category (used as parent) %s is not created", parent_category);
   //check if category is created
   char *created = xbt_dict_get_or_null(created_categories, category);
-  xbt_assert1 (created == NULL, "Category %s is already defined", category);
+  if (created) return 0;
 
   pajeCreateContainer(MSG_get_clock(), category, type, parent_category,
                       category);

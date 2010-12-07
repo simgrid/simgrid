@@ -58,6 +58,9 @@ void TRACE_internal_smpi_set_category (const char *category)
 {
   if (!TRACE_smpi_is_enabled()) return;
 
+  //declare category
+  TRACE_category (category);
+
   char processid[INSTR_DEFAULT_STR_SIZE];
   snprintf (processid, INSTR_DEFAULT_STR_SIZE, "%p", SIMIX_process_self());
   if (xbt_dict_get_or_null (process_category, processid))
