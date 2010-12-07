@@ -45,6 +45,12 @@ typedef struct s_smx_process_arg {
   xbt_dict_t properties;
 } s_smx_process_arg_t, *smx_process_arg_t;
 
+smx_process_t SIMIX_process_create(const char *name,
+                                   xbt_main_func_t code,
+                                   void *data,
+                                   const char *hostname,
+                                   int argc, char **argv,
+                                   xbt_dict_t properties);
 void SIMIX_process_kill(smx_process_t process, smx_process_t killer);
 void SIMIX_process_killall(void);
 smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args);

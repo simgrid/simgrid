@@ -66,12 +66,6 @@ XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
 XBT_PUBLIC(const char*) SIMIX_process_self_get_name(void);
 XBT_PUBLIC(void) SIMIX_process_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_process_self_get_data(void);
-XBT_PUBLIC(smx_process_t) SIMIX_process_create(const char *name,
-                                               xbt_main_func_t code,
-				                                       void *data,
-                        				               const char *hostname,
-				                                       int argc, char **argv,
-				                                       xbt_dict_t properties);
 XBT_PUBLIC(smx_context_t) SIMIX_process_get_context(smx_process_t);
 XBT_PUBLIC(void) SIMIX_process_set_context(smx_process_t p,smx_context_t c);
 
