@@ -98,6 +98,7 @@ static int MSG_action_runner(int argc, char *argv[])
       }
       xbt_dynar_free(&evt);
     }
+    fclose(fp);
 
   }
   return 0;

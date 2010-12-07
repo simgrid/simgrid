@@ -518,6 +518,8 @@ static void action_finalize(xbt_dynar_t action)
   process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
   if (globals){
     xbt_dynar_free_container(&(globals->isends));
+    xbt_dynar_free_container(&(globals->irecvs));
+    xbt_dynar_free_container(&(globals->tasks));
     free(globals);
   }
 }
