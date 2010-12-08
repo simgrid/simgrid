@@ -11,6 +11,7 @@
 #include "xbt/xbt_os_thread.h"
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
+#include "xbt/log.h"
 
 typedef enum{
   TPOOL_WAIT = 0,
@@ -21,10 +22,11 @@ typedef struct s_xbt_tpool {
   xbt_os_mutex_t mutex;           /* pool's mutex */
   xbt_os_cond_t job_posted;       /* job is posted */
   xbt_os_cond_t job_taken;        /* job is taken */
-  xbt_os_cond_t all_jobs_done;    /* all jobs are finished */ 
+  xbt_os_cond_t job_done;         /* job is done */
   xbt_dynar_t jobs_queue;
   e_xbt_tpool_flag_t flags;
   unsigned int num_workers;
+  unsigned int num_idle_workers;
   unsigned int max_jobs;
 } s_xbt_tpool_t;
 

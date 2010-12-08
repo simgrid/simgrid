@@ -13,6 +13,7 @@ set(TEST_CFILES
 	src/xbt/xbt_sha.c
 	src/xbt/config.c
 	src/xbt/xbt_synchro.c
+	src/xbt/threadpool.c
 )
 set(TEST_UNITS
 	${CMAKE_CURRENT_BINARY_DIR}/src/cunit_unit.c
@@ -26,6 +27,7 @@ set(TEST_UNITS
 	${CMAKE_CURRENT_BINARY_DIR}/src/xbt_sha_unit.c
 	${CMAKE_CURRENT_BINARY_DIR}/src/config_unit.c
 	${CMAKE_CURRENT_BINARY_DIR}/src/xbt_synchro_unit.c
+	${CMAKE_CURRENT_BINARY_DIR}/src/threadpool_unit.c
 	
 	${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_units_main.c
 )
