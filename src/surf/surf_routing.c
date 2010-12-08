@@ -3266,8 +3266,6 @@ static void routing_parse_Scluster(void)
   char *cluster_state_file = A_surfxml_cluster_state_file;
   char *host_id, *groups, *link_id = NULL;
   char *router_id, *link_router, *link_backbone;
-  char *host_availability_file = NULL;
-  char *host_state_file = NULL;
   char *availability_file = bprintf("%s",cluster_availability_file);
   char *state_file = bprintf("%s",cluster_state_file);
 
