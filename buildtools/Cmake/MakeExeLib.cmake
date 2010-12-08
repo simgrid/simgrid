@@ -214,6 +214,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/trace)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/icomms)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/chord)
 
 if(HAVE_MC)
 	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/mc)
