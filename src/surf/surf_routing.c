@@ -749,7 +749,7 @@ static route_extended_t _get_route(const char *src, const char *dst)
                 "bad gateway for route between \"%s\" and \"%s\"", src,
                 dst);
 
-    if (src != e_route_cnt->src_gateway) {
+    if (strcmp(src, e_route_cnt->src_gateway)) {
       e_route_src = _get_route(src, e_route_cnt->src_gateway);
       xbt_assert2(e_route_src, "no route between \"%s\" and \"%s\"", src,
                   e_route_cnt->src_gateway);
@@ -762,7 +762,7 @@ static route_extended_t _get_route(const char *src, const char *dst)
       xbt_dynar_push(e_route->generic_route.link_list, &link);
     }
 
-    if (e_route_cnt->dst_gateway != dst) {
+    if (strcmp(e_route_cnt->dst_gateway, dst)) {
       e_route_dst = _get_route(e_route_cnt->dst_gateway, dst);
       xbt_assert2(e_route_dst, "no route between \"%s\" and \"%s\"",
                   e_route_cnt->dst_gateway, dst);
