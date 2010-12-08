@@ -1,5 +1,5 @@
 /* XML processor/application API for src/surf/simgrid.dtd.
- * Generated 2010/12/08 13:38:12.
+ * Generated 2010/12/08 16:11:56.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -101,6 +101,8 @@ typedef int AT_surfxml_peer_lat;
 #define AU_surfxml_peer_lat NULL
 typedef int AT_surfxml_link_latency_file;
 #define AU_surfxml_link_latency_file NULL
+typedef int AT_surfxml_peer_availability_file;
+#define AU_surfxml_peer_availability_file NULL
 typedef enum { AU_surfxml_link_ctn_direction, A_surfxml_link_ctn_direction_UP,A_surfxml_link_ctn_direction_DOWN,A_surfxml_link_ctn_direction_NONE } AT_surfxml_link_ctn_direction;
 typedef enum { AU_surfxml_host_state, A_surfxml_host_state_ON,A_surfxml_host_state_OFF } AT_surfxml_host_state;
 typedef int AT_surfxml_AS_id;
@@ -176,6 +178,8 @@ typedef int AT_surfxml_router_coordinates;
 #define AU_surfxml_router_coordinates NULL
 typedef int AT_surfxml_peer_coordinates;
 #define AU_surfxml_peer_coordinates NULL
+typedef int AT_surfxml_peer_state_file;
+#define AU_surfxml_peer_state_file NULL
 typedef int AT_surfxml_prop_value;
 #define AU_surfxml_prop_value NULL
 typedef int AT_surfxml_ASroute_dst;
@@ -249,6 +253,8 @@ XBT_PUBLIC_DATA(AT_surfxml_peer_lat ) AX_surfxml_peer_lat;
 #define A_surfxml_peer_lat (surfxml_bufferstack + AX_surfxml_peer_lat)
 XBT_PUBLIC_DATA(AT_surfxml_link_latency_file ) AX_surfxml_link_latency_file;
 #define A_surfxml_link_latency_file (surfxml_bufferstack + AX_surfxml_link_latency_file)
+XBT_PUBLIC_DATA(AT_surfxml_peer_availability_file ) AX_surfxml_peer_availability_file;
+#define A_surfxml_peer_availability_file (surfxml_bufferstack + AX_surfxml_peer_availability_file)
 XBT_PUBLIC_DATA(AT_surfxml_link_ctn_direction ) AX_surfxml_link_ctn_direction;
 #define A_surfxml_link_ctn_direction AX_surfxml_link_ctn_direction
 XBT_PUBLIC_DATA(AT_surfxml_host_state ) AX_surfxml_host_state;
@@ -331,6 +337,8 @@ XBT_PUBLIC_DATA(AT_surfxml_router_coordinates ) AX_surfxml_router_coordinates;
 #define A_surfxml_router_coordinates (surfxml_bufferstack + AX_surfxml_router_coordinates)
 XBT_PUBLIC_DATA(AT_surfxml_peer_coordinates ) AX_surfxml_peer_coordinates;
 #define A_surfxml_peer_coordinates (surfxml_bufferstack + AX_surfxml_peer_coordinates)
+XBT_PUBLIC_DATA(AT_surfxml_peer_state_file ) AX_surfxml_peer_state_file;
+#define A_surfxml_peer_state_file (surfxml_bufferstack + AX_surfxml_peer_state_file)
 XBT_PUBLIC_DATA(AT_surfxml_prop_value ) AX_surfxml_prop_value;
 #define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
 XBT_PUBLIC_DATA(AT_surfxml_ASroute_dst ) AX_surfxml_ASroute_dst;

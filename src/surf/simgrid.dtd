@@ -59,6 +59,8 @@
 <!ATTLIST peer lat CDATA #REQUIRED>
 <!ATTLIST peer coordinates CDATA "">
 <!ATTLIST peer sharing_policy (SHARED|FULLDUPLEX) "FULLDUPLEX">
+<!ATTLIST peer availability_file CDATA "">
+<!ATTLIST peer state_file CDATA "">
 
 <!ELEMENT router EMPTY>
 <!ATTLIST router id CDATA #REQUIRED>

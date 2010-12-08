@@ -3615,6 +3615,8 @@ static void routing_parse_Speer(void)
   char *peer_bw_out = A_surfxml_peer_bw_out;
   char *peer_lat = A_surfxml_peer_lat;
   char *peer_coord = A_surfxml_peer_coordinates;
+  char *peer_state_file = A_surfxml_peer_state_file;
+  char *peer_availability_file = A_surfxml_peer_availability_file;
 
   char *host_id = NULL;
   char *router_id, *link_router, *link_backbone, *link_id_up, *link_id_down;
@@ -3662,8 +3664,8 @@ static void routing_parse_Speer(void)
   SURFXML_BUFFER_SET(host_id, host_id);
   SURFXML_BUFFER_SET(host_power, peer_power);
   SURFXML_BUFFER_SET(host_availability, "1.0");
-  SURFXML_BUFFER_SET(host_availability_file, "");
-  SURFXML_BUFFER_SET(host_state_file, "");
+  SURFXML_BUFFER_SET(host_availability_file, peer_availability_file);
+  SURFXML_BUFFER_SET(host_state_file, peer_state_file);
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 
