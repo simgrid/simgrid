@@ -22,7 +22,7 @@ typedef struct s_xbt_tpool {
   xbt_os_mutex_t mutex;           /* pool's mutex */
   xbt_os_cond_t job_posted;       /* job is posted */
   xbt_os_cond_t job_taken;        /* job is taken */
-  xbt_os_cond_t job_done;         /* job is done */
+  xbt_os_cond_t idle_worker;      /* job is done */
   xbt_dynar_t jobs_queue;
   e_xbt_tpool_flag_t flags;
   unsigned int num_workers;
