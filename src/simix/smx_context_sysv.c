@@ -189,6 +189,7 @@ void smx_ctx_sysv_runall_parallel(xbt_swag_t processes)
   while((process = xbt_swag_extract(processes))){
     xbt_tpool_queue_job(tpool, (void_f_pvoid_t)smx_ctx_sysv_resume_parallel, process->context);
   }
+  xbt_tpool_wait_all(tpool);
 }
 
 smx_context_t smx_ctx_sysv_self_parallel(void)
