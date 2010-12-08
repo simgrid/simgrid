@@ -1,0 +1,112 @@
+This directory constitutes an attempt to code a new trace replayer for
+MPI actions, aiming at maximal performances. Modifying it is not for
+faint of heart, since it could be compared to a mixure of the assembly
+and basic programming philosophy (in worse) reserved to SimGrid experts.
+
+Shiny side: glance at interface
+===============================
+
+It uses a new simix context factory: state_machine. Each user process
+is a state machine. There is no system mystery such as pthread or
+ucontextes to save its stack. As a result, there is no stack. Each
+user process only have a user-provided structure describing its state,
+and only compute its next state based on that. Your main() can be as
+simple as:
+
+  #include "replay.h"
+  
+  int main() {
+    SG_replay_init(&argc,argv);
+    SG_replay_set_functions(init_fun, run_fun, fini_fun);
+    SG_replay("platform.xml","deployment.xml");
+    return 0;
+  }
+
+ * init_fun: user function in charge of creating the structure for
+             each process in the simulation.
+ * run_fun: user function called each time that a process must run. It 
+            takes as first argument the structure describing the
+            current process.
+ * fini_fun: user function in charge of freeing the memory allocated to
+             the structure describing a process.
+
+This way of organizing the code saves a *huge amount* of memory
+(regular contextes have 128kb stacks per user process, threads are
+even more expensive) and greatly speeds things up (there is absolutely
+no nothing to ask to the system, and everything can be done in user
+space).
+
+A simple to use and efficient trace parser is also provided:
+  /* constructor/destructor */
+  replay_trace_reader_t replay_trace_reader_new(const char*filename);
+  void replay_trace_reader_free(replay_trace_reader_t *reader);
+  /* get a new event. Don't free the content, strdup what you want to
+     keep after next call to reader_get() */
+  const char * const*replay_trace_reader_get(replay_trace_reader_t r);
+  /* return a "file:pos" description of the last thing we read. */
+  const char *replay_trace_reader_position(replay_trace_reader_t r);
+Check replay_trace_reader.c for souce code, and replay_MPI.c for
+example of use.
+
+
+
+Dark side: restrictions on user code
+====================================
+
+The incredible performance of this approach comes at a price: using
+SimGrid this way is a *real* pain in the ass. You cannot use MSG nor
+GRAS nor SMPI nor nothing (because none of these interfaces were coded
+with the *extrem* requirement of the state_machine in mind), and you
+can only rely on SIMIX. From SIMIX, you can only use requests (ie, the
+SIMIX_req_* functions). Moreover, you must know that each blocking
+request will result in an interruption of your execution flow. 
+
+Let's take an example: If your code contains:
+   smx_action_t act = SIMIX_req_comm_isend(......);
+   SIMIX_req_comm_wait(act);
+   SIMIX_req_comm_destroy(act);
+   
+The execution flow is interrupted brutally somewhere within
+SIMIX_req_comm_isend(), the variable act will never be set (and any
+code written after the first line is discarded).
+
+Indeed each SIMIX syscall results in an interruption of the calling
+process, but in state_machine there is only one system stack and the
+whole state describing the process is in the structure describing it.
+So, when we need to remove one process from the system, to pause it,
+we do it the hard way: the stack [of maestro] is restored to the state
+in which maestro put it, whatever what the user process put on it.
+
+In short, each time simix wants to interrupt a process, state_machine
+does a longjmp(2) to the point just before calling the user code. As a
+result, each time you do a syscall, your stack is destroyed to restore
+it in the state where maestro put it before calling your code.
+
+This means that you cannot do anything after a syscall, and that the
+stack is not a safe storing area for your data.
+
+So, you have to write your code as a state machine, with a big ugly
+switch. The previous code must be written something like:
+
+run_fun(globals, res) {
+
+  switch (globals->state) {
+  case l1: /* default value st. we take that branch the first time */
+    globals->state = l2;
+    SIMIX_req_comm_isend(....); /* syscall=>hard interrupt on our code*/
+  case l2: /* we'll take that branch the second time we're scheduled */
+    globals->comm = res;
+    globals->state = l3;
+    SIMIX_req_comm_wait(globals->comm); /* syscall=>interrupt */
+  case l3: 
+    globals->state = where_you_want_to_go_today;
+    SIMIX_req_comm_destroy(globals->comm);
+  }  
+}
+
+As you can see, the result of the /previous/ syscall is passed as second
+argument to the run_fun().
+
+
+Isn't all this beautifully awful?? A few gotos in your code are just
+what you need to go 20 years back to the good old time of gwbasic...

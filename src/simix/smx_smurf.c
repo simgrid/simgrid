@@ -37,6 +37,8 @@ void SIMIX_request_push()
     if (_surf_parallel_contexts)
       xbt_os_mutex_acquire(sync_req_positions);
     xbt_heap_push(req_todo,&issuer->request,issuer->pid);
+    DEBUG3("Pushed request %d of %s; now %d requests waiting",
+        issuer->request.call,issuer->name,xbt_heap_size(req_todo));
     if (_surf_parallel_contexts)
       xbt_os_mutex_release(sync_req_positions);
 

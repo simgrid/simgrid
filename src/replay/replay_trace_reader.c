@@ -1,0 +1,62 @@
+/* Copyright (c) 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include "replay.h"
+#include "xbt/str.h"
+
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(replay);
+
+typedef struct s_replay_trace_reader {
+  FILE *fp;
+  char *line;
+  size_t line_len;
+  char *position; /* stable storage */
+  char *filename; int linenum;
+} s_replay_trace_reader_t;
+
+replay_trace_reader_t replay_trace_reader_new(const char*filename) {
+  replay_trace_reader_t res = xbt_new0(s_replay_trace_reader_t,1);
+  res->fp = fopen(filename, "r");
+  xbt_assert2(res->fp != NULL, "Cannot open %s: %s", filename,
+      strerror(errno));
+  res->filename = xbt_strdup(filename);
+  return res;
+}
+
+const char *replay_trace_reader_position(replay_trace_reader_t reader) {
+  if (reader->position)
+    free(reader->position);
+  reader->position = bprintf("%s:%d",reader->filename,reader->linenum);
+  return (const char*)reader->position;
+}
+const char * const *replay_trace_reader_get(replay_trace_reader_t reader) {
+  ssize_t read;
+  read = getline(&reader->line, &reader->line_len, reader->fp);
+  //INFO1("got from trace: %s",reader->line);
+  reader->linenum++;
+  if (read==-1)
+    return NULL; /* end of file */
+  char *comment = strchr(reader->line, '#');
+  if (comment != NULL)
+    *comment = '\0';
+  xbt_str_trim(reader->line, NULL);
+  if (reader->line[0] == '\0')
+    return replay_trace_reader_get(reader); /* Get next line */
+
+  return xbt_dynar_to_array(xbt_str_split_quoted_in_place(reader->line));
+}
+
+void replay_trace_reader_free(replay_trace_reader_t *reader) {
+  free((*reader)->filename);
+  if ((*reader)->position)
+    free((*reader)->position);
+  fclose((*reader)->fp);
+  free((*reader)->line);
+  free(*reader);
+  *reader=NULL;
+}
