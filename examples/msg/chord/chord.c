@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
+#include "msg/msg.h"
 #include "xbt/sysdep.h"         /* calloc, printf */
 
 /* Create a log channel to have nice outputs. */
@@ -16,6 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 #define KEY_BITS  6
 #define CHORD_NB_KEYS 64
+
 /*
 * Finger Element
 */
@@ -23,7 +24,7 @@ typedef struct{
 	int id;
 	const char *host_name;
 	const char *mailbox;
-}finger_elem;
+} finger_elem;
 
 /*
  * Node Data
@@ -42,40 +43,34 @@ typedef struct{
 
 //global;
 
-int get_node_from_key(int key);
-int node(int argc, char *argv[]);
-int sender(int argc,char *argv[]);
-void find_successor_node(data_node *my_data, m_task_t join_task);
-finger_elem find_finger_elem(data_node* my_data, int id);
-const char* find_closest_preceding(data_node* n_node, int id); //return a mailbox
-int get_successor_id(m_host_t);
-//need by qsort function
-int compare (const void * a, const void * b)
-{
-  return ( *(int*)a - *(int*)b );
-}
+static int node(int argc, char *argv[]);
+static int sender(int argc,char *argv[]);
+static void find_successor_node(data_node *my_data, m_task_t join_task);
+static int find_successor(data_node* my_data, int id);
+static const char* find_closest_preceding(data_node* n_node, int id); //return a mailbox
+static int get_successor_id(m_host_t);
 
-MSG_error_t test_all(const char *platform_file,
-                     const char *application_file);
+static MSG_error_t test_all(const char *platform_file,
+                            const char *application_file);
+static void init_finger_table(data_node *data, int known_id);
 
 static int is_in_interval(unsigned int id, unsigned int start, unsigned int end) {
 
-id = id % CHORD_NB_KEYS;
-start = start % CHORD_NB_KEYS;
-end = end % CHORD_NB_KEYS;
+  id = id % CHORD_NB_KEYS;
+  start = start % CHORD_NB_KEYS;
+  end = end % CHORD_NB_KEYS;
 
-/* make sure end >= start and id >= start */
-if (end < start) {
-end += CHORD_NB_KEYS;
+  /* make sure end >= start and id >= start */
+  if (end < start) {
+    end += CHORD_NB_KEYS;
+  }
+
+  if (id < start) {
+    id += CHORD_NB_KEYS;
+  }
+
+  return id < end;
 }
-
-if (id < start) {
-id += CHORD_NB_KEYS;
-}
-
-return id < end;
-}
-
 
 /*
  * Node Function
@@ -102,8 +97,8 @@ int node(int argc, char *argv[])
 		create = 1;
 	}
 
-	int id = atoi(argv[1]);
-	int mailbox = atoi(argv[2]);
+	//int id = atoi(argv[1]);
+	//int mailbox = atoi(argv[2]);
 	// init data node
 	data_node *data = xbt_new(data_node,1);
 	data->host_name = MSG_host_get_name(MSG_host_self());
@@ -231,7 +226,7 @@ int node(int argc, char *argv[])
 				MSG_task_send(recv_request,data->pred_mailbox);
 				MSG_task_send(recv_request,data->fingers[0].mailbox);
 				*/
-				//init_finger_table(data,known_id);
+				init_finger_table(data, known_id);
 
 				//treatment
 			}
@@ -249,11 +244,21 @@ int node(int argc, char *argv[])
 				int i;
 				for(i = KEY_BITS -1 ; i>= 0;i--)
 				{
-					data->fingers[i] = find_finger_elem(data,(data->id)+pow(2,i-1));
+					//data->fingers[i] = find_finger_elem(data,(data->id)+pow(2,i-1));
 				}
 			}
 		}
 	}
+	return 0;
+}
+
+/*
+ * Initializes 
+ */
+void init_finger_table(data_node *node, int known_id) {
+
+  // ask known_id who is my immediate successor
+//  data->fingers[0].id = remote_find_successor(known_id, data->id + 1);
 }
 
 /*
@@ -309,13 +314,12 @@ const char* find_closest_preceding(data_node* n_node,int id)
 /*
  * Fin successor id : used to fix finger list
  */
-finger_elem find_finger_elem(data_node* n_data, int id)
+static int find_successor(data_node* n_data, int id)
 {
-	//if(id >= n_data->id && id <= n_data->fingers[0].id)
 	if (is_in_interval(id,n_data->id,n_data->fingers[0].id))
-		return n_data->fingers[0];
-	//else
-		//return find_finger_elem(...,id);
+		return n_data->fingers[0].id;
+	else
+	    return 0;
 
 }
 
