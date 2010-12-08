@@ -29,7 +29,6 @@ static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
     void_pfn_smxprocess_t cleanup_func, void* data);
 
-
 static void smx_ctx_sysv_wrapper(smx_ctx_sysv_t context);
 
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
@@ -154,7 +153,7 @@ void smx_ctx_sysv_wrapper(smx_ctx_sysv_t context)
 void smx_ctx_sysv_suspend(smx_context_t context)
 {
   smx_current_context = (smx_context_t)maestro_context;
-  int rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &maestro_context->uc);
+  int rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &((smx_ctx_sysv_t)context)->old_uc);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }
@@ -162,7 +161,7 @@ void smx_ctx_sysv_suspend(smx_context_t context)
 void smx_ctx_sysv_resume(smx_context_t context)
 {
   smx_current_context = context; 
-  int rv = swapcontext(&maestro_context->uc, &((smx_ctx_sysv_t) context)->uc);
+  int rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }
@@ -178,7 +177,8 @@ void smx_ctx_sysv_runall(xbt_swag_t processes)
 void smx_ctx_sysv_resume_parallel(smx_context_t context)
 {
   xbt_os_thread_set_extra_data(context);
-  int rv = swapcontext(&maestro_context->uc, &((smx_ctx_sysv_t) context)->uc);
+  int rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
+  xbt_os_thread_set_extra_data(NULL);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }

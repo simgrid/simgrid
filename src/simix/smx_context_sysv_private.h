@@ -29,6 +29,7 @@ SG_BEGIN_DECL()
 typedef struct s_smx_ctx_sysv {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
   ucontext_t uc;                /* the thread that execute the code */
+  ucontext_t old_uc;            /* the context that was swapped with */
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id;       /* the valgrind stack id */
 #endif
