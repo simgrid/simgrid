@@ -1,5 +1,5 @@
 /* XML processor/application API for src/surf/simgrid.dtd.
- * Generated 2010/12/03 11:37:15.
+ * Generated 2010/12/08 13:38:12.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -126,6 +126,8 @@ typedef int AT_surfxml_link_ctn_id;
 #define AU_surfxml_link_ctn_id NULL
 typedef int AT_surfxml_peer_bw_out;
 #define AU_surfxml_peer_bw_out NULL
+typedef int AT_surfxml_cluster_availability_file;
+#define AU_surfxml_cluster_availability_file NULL
 typedef int AT_surfxml_process_kill_time;
 #define AU_surfxml_process_kill_time NULL
 typedef int AT_surfxml_cluster_bb_bw;
@@ -150,6 +152,8 @@ typedef int AT_surfxml_cluster_bb_lat;
 typedef int AT_surfxml_link_latency;
 #define AU_surfxml_link_latency NULL
 typedef enum { AU_surfxml_trace_connect_kind, A_surfxml_trace_connect_kind_HOST_AVAIL,A_surfxml_trace_connect_kind_POWER,A_surfxml_trace_connect_kind_LINK_AVAIL,A_surfxml_trace_connect_kind_BANDWIDTH,A_surfxml_trace_connect_kind_LATENCY } AT_surfxml_trace_connect_kind;
+typedef int AT_surfxml_cluster_state_file;
+#define AU_surfxml_cluster_state_file NULL
 typedef int AT_surfxml_link_bandwidth_file;
 #define AU_surfxml_link_bandwidth_file NULL
 typedef enum { AU_surfxml_route_symmetrical, A_surfxml_route_symmetrical_YES,A_surfxml_route_symmetrical_NO } AT_surfxml_route_symmetrical;
@@ -273,6 +277,8 @@ XBT_PUBLIC_DATA(AT_surfxml_link_ctn_id ) AX_surfxml_link_ctn_id;
 #define A_surfxml_link_ctn_id (surfxml_bufferstack + AX_surfxml_link_ctn_id)
 XBT_PUBLIC_DATA(AT_surfxml_peer_bw_out ) AX_surfxml_peer_bw_out;
 #define A_surfxml_peer_bw_out (surfxml_bufferstack + AX_surfxml_peer_bw_out)
+XBT_PUBLIC_DATA(AT_surfxml_cluster_availability_file ) AX_surfxml_cluster_availability_file;
+#define A_surfxml_cluster_availability_file (surfxml_bufferstack + AX_surfxml_cluster_availability_file)
 XBT_PUBLIC_DATA(AT_surfxml_process_kill_time ) AX_surfxml_process_kill_time;
 #define A_surfxml_process_kill_time (surfxml_bufferstack + AX_surfxml_process_kill_time)
 XBT_PUBLIC_DATA(AT_surfxml_cluster_bb_bw ) AX_surfxml_cluster_bb_bw;
@@ -299,6 +305,8 @@ XBT_PUBLIC_DATA(AT_surfxml_link_latency ) AX_surfxml_link_latency;
 #define A_surfxml_link_latency (surfxml_bufferstack + AX_surfxml_link_latency)
 XBT_PUBLIC_DATA(AT_surfxml_trace_connect_kind ) AX_surfxml_trace_connect_kind;
 #define A_surfxml_trace_connect_kind AX_surfxml_trace_connect_kind
+XBT_PUBLIC_DATA(AT_surfxml_cluster_state_file ) AX_surfxml_cluster_state_file;
+#define A_surfxml_cluster_state_file (surfxml_bufferstack + AX_surfxml_cluster_state_file)
 XBT_PUBLIC_DATA(AT_surfxml_link_bandwidth_file ) AX_surfxml_link_bandwidth_file;
 #define A_surfxml_link_bandwidth_file (surfxml_bufferstack + AX_surfxml_link_bandwidth_file)
 XBT_PUBLIC_DATA(AT_surfxml_route_symmetrical ) AX_surfxml_route_symmetrical;

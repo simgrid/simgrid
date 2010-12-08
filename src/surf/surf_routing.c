@@ -233,12 +233,27 @@ static void parse_S_host(const char *host_id, const char* coord)
   }
 }
 
+static void parse_E_host(void)
+{
+	 xbt_dict_cursor_t cursor = NULL;
+	  char *key;
+	  char *elem;
+
+	  xbt_dict_foreach(current_property_set, cursor, key, elem) {
+		  DEBUG2("property : %s = %s",key,elem);
+		}
+}
+
 /*
  * \brief Add a host to the network element list from XML
  */
 static void parse_S_host_XML(void)
 {
 	parse_S_host(A_surfxml_host_id, A_surfxml_host_coordinates);
+}
+static void parse_E_host_XML(void)
+{
+	parse_E_host();
 }
 
 /*
@@ -1063,6 +1078,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
 
   /* parse generic elements */
   surfxml_add_callback(STag_surfxml_host_cb_list, &parse_S_host_XML);
+  surfxml_add_callback(ETag_surfxml_host_cb_list, &parse_E_host_XML);
   surfxml_add_callback(STag_surfxml_router_cb_list, &parse_S_router);
 
   surfxml_add_callback(STag_surfxml_route_cb_list,
@@ -3246,8 +3262,21 @@ static void routing_parse_Scluster(void)
   char *cluster_lat = A_surfxml_cluster_lat;
   char *cluster_bb_bw = A_surfxml_cluster_bb_bw;
   char *cluster_bb_lat = A_surfxml_cluster_bb_lat;
+  char *cluster_availability_file = A_surfxml_cluster_availability_file;
+  char *cluster_state_file = A_surfxml_cluster_state_file;
   char *host_id, *groups, *link_id = NULL;
   char *router_id, *link_router, *link_backbone;
+  char *host_availability_file = NULL;
+  char *host_state_file = NULL;
+  char *availability_file = bprintf("%s",cluster_availability_file);
+  char *state_file = bprintf("%s",cluster_state_file);
+
+  xbt_dict_t patterns = xbt_dict_new();
+  xbt_dict_set(patterns,"id",cluster_id,NULL);
+  xbt_dict_set(patterns,"prefix",cluster_prefix,NULL);
+  xbt_dict_set(patterns,"suffix",cluster_suffix,NULL);
+
+
 #ifdef HAVE_PCRE_LIB
   char *route_src_dst;
 #endif
@@ -3294,14 +3323,20 @@ static void routing_parse_Scluster(void)
 #endif
       link_id = bprintf("%s_link_%d", cluster_id, start);
 
-      DEBUG2("<host\tid=\"%s\"\tpower=\"%s\"/>", host_id, cluster_power);
+      DEBUG2("<host\tid=\"%s\"\tpower=\"%s\">", host_id, cluster_power);
       A_surfxml_host_state = A_surfxml_host_state_ON;
       SURFXML_BUFFER_SET(host_id, host_id);
       SURFXML_BUFFER_SET(host_power, cluster_power);
       SURFXML_BUFFER_SET(host_core, cluster_core);
       SURFXML_BUFFER_SET(host_availability, "1.0");
-      SURFXML_BUFFER_SET(host_availability_file, "");
-      SURFXML_BUFFER_SET(host_state_file, "");
+	  xbt_dict_set(patterns,"radical",bprintf("%d",start),NULL);
+	  availability_file = bprintf("%s",cluster_availability_file);
+	  state_file = bprintf("%s",cluster_state_file);
+	  DEBUG1("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
+	  DEBUG1("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
+	  SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(availability_file,patterns));
+	  SURFXML_BUFFER_SET(host_state_file, xbt_str_varsubst(state_file,patterns));
+	  DEBUG0("</host>");
       SURFXML_START_TAG(host);
       SURFXML_END_TAG(host);
 
@@ -3330,7 +3365,6 @@ static void routing_parse_Scluster(void)
       surf_parse_get_int(&start,
                          xbt_dynar_get_as(radical_ends, 0, char *));
       surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
-      DEBUG2("Create hosts and links from %d to %d", start, end);
       for (i = start; i <= end; i++) {
         host_id = bprintf("%s%d%s", cluster_prefix, i, cluster_suffix);
 #ifndef HAVE_PCRE_LIB
@@ -3338,14 +3372,20 @@ static void routing_parse_Scluster(void)
 #endif
         link_id = bprintf("%s_link_%d", cluster_id, i);
 
-        DEBUG2("<host\tid=\"%s\"\tpower=\"%s\"/>", host_id, cluster_power);
+        DEBUG2("<host\tid=\"%s\"\tpower=\"%s\"", host_id, cluster_power);
         A_surfxml_host_state = A_surfxml_host_state_ON;
         SURFXML_BUFFER_SET(host_id, host_id);
         SURFXML_BUFFER_SET(host_power, cluster_power);
         SURFXML_BUFFER_SET(host_core, cluster_core);
-        SURFXML_BUFFER_SET(host_availability, "1.0");
-        SURFXML_BUFFER_SET(host_availability_file, "");
-        SURFXML_BUFFER_SET(host_state_file, "");
+		SURFXML_BUFFER_SET(host_availability, "1.0");
+		xbt_dict_set(patterns,"radical",bprintf("%d",i),NULL);
+		availability_file = bprintf("%s",cluster_availability_file);
+		state_file = bprintf("%s",cluster_state_file);
+		DEBUG1("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
+		DEBUG1("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
+		SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(availability_file,patterns));
+		SURFXML_BUFFER_SET(host_state_file, xbt_str_varsubst(state_file,patterns));
+		DEBUG0("</host>");
         SURFXML_START_TAG(host);
         SURFXML_END_TAG(host);
 
@@ -3554,6 +3594,9 @@ static void routing_parse_Scluster(void)
 
   free(link_backbone);
   free(link_router);
+  xbt_dict_free(&patterns);
+  free(availability_file);
+  free(state_file);
 
   DEBUG0("</AS>");
   SURFXML_END_TAG(AS);

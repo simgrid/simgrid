@@ -48,6 +48,8 @@
 <!ATTLIST cluster bb_bw CDATA #REQUIRED>
 <!ATTLIST cluster bb_lat CDATA #REQUIRED>
 <!ATTLIST cluster bb_sharing_policy (SHARED|FATPIPE) "SHARED">
+<!ATTLIST cluster availability_file CDATA "">
+<!ATTLIST cluster state_file CDATA "">
 
 <!ELEMENT peer EMPTY>
 <!ATTLIST peer id CDATA #REQUIRED>
