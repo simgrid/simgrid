@@ -164,7 +164,7 @@ void MC_replay(xbt_fifo_t stack)
     if(saved_req){
       /* because we got a copy of the executed request, we have to fetch the  
          real one, pointed by the request field of the issuer process */
-      req = saved_req->issuer->request;
+      req = &saved_req->issuer->request;
 
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){

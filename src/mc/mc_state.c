@@ -47,7 +47,7 @@ smx_req_t MC_state_get_request(mc_state_t state)
     if(SIMIX_process_is_enabled(process)
        && !xbt_setset_set_belongs(state->done, process)){
       xbt_setset_set_insert(state->done, process);
-      return process->request;
+      return &process->request;
     }
   }
    
