@@ -1,0 +1,74 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<platform version="3">
+
+  <process host="Gatien" function="node">
+    <argument value="48"/>           <!-- my id -->
+    <argument value="40"/>         <!-- my mailbox -->
+    <argument value="Jacquelin"/>       <!-- known host -->
+    <argument value="48"/>         <!-- known mailbox -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="13"/>         <!--time to sleep before it starts-->
+
+  </process>
+
+  <process host="McGee" function="node">
+    <argument value="42"/>           <!-- my id -->
+    <argument value="41"/>         <!-- my mailbox -->
+    <argument value="Jacquelin"/>  	     <!-- known host -->
+    <argument value="48"/>         <!-- known mailbox -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="11"/>         <!--time to sleep before it starts-->
+  </process>
+
+  <process host="iRMX" function="node">
+    <argument value="38"/>       <!-- my id -->
+    <argument value="43"/>         <!-- my mailbox -->
+    <argument value="Jacquelin"/>  	     <!-- known host -->
+    <argument value="48"/>         <!-- known mailbox -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="9"/>         <!--time to sleep before it starts-->
+  </process>
+
+  <process host="Geoff" function="node">
+    <argument value="32"/>           <!-- my id -->
+    <argument value="44"/>         <!-- my mailbox -->
+    <argument value="Jacquelin"/>  	     <!-- known host -->
+    <argument value="48"/>         <!-- known mailbox -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="7"/>         <!--time to sleep before it starts-->
+  </process>
+
+  <process host="TeX" function="node">
+    <argument value="21"/>           <!-- my id -->
+    <argument value="45"/>         <!-- my mailbox -->
+    <argument value="Jacquelin"/>    <!-- known host -->
+    <argument value="48"/>         <!-- known mailbox -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="5"/>         <!--time to sleep before it starts-->
+  </process>
+
+  <process host="Jean_Yves" function="node">
+    <argument value="14"/>           <!-- my id -->
+    <argument value="46"/>         <!-- my mailbox -->
+    <argument value="Jacquelin"/>       <!-- known host -->
+    <argument value="48"/>         <!-- known mailbox -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="3"/>         <!--time to sleep before it starts-->
+  </process>
+
+  <process host="Boivin" function="node">
+    <argument value="8"/>            <!-- my id -->
+    <argument value="47"/>         <!-- my mailbox -->
+    <argument value="Jacquelin"/>    <!-- known host -->
+    <argument value="48"/>         <!-- known mailbox -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="1"/>         <!--time to sleep before it starts-->
+  </process>
+
+  <process host="Jacquelin" function="node">
+    <argument value="1"/>            <!-- my id -->
+    <argument value="48"/>         <!-- my mailbox -->
+  </process>
+
+</platform>
