@@ -5,38 +5,37 @@
   <process host="Gatien" function="node">
     <argument value="48"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
-    <argument value="13"/>        <!-- time to sleep before it starts-->
-
+    <argument value="400"/>        <!-- time to sleep before it starts-->
   </process>
 
   <process host="McGee" function="node">
     <argument value="42"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
-    <argument value="11"/>        <!-- time to sleep before it starts-->
+    <argument value="300"/>        <!-- time to sleep before it starts-->
   </process>
 
   <process host="iRMX" function="node">
     <argument value="38"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
-    <argument value="9"/>         <!-- time to sleep before it starts-->
+    <argument value="200"/>         <!-- time to sleep before it starts-->
   </process>
 
   <process host="Geoff" function="node">
     <argument value="32"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
-    <argument value="7"/>         <!-- time to sleep before it starts-->
+    <argument value="100"/>         <!-- time to sleep before it starts-->
   </process>
 
   <process host="TeX" function="node">
     <argument value="21"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
-    <argument value="5"/>         <!-- time to sleep before it starts-->
+    <argument value="40"/>        <!-- time to sleep before it starts-->
   </process>
 
   <process host="Jean_Yves" function="node">
     <argument value="14"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
-    <argument value="3"/>         <!-- time to sleep before it starts-->
+    <argument value="16"/>        <!-- time to sleep before it starts-->
   </process>
 
   <process host="Boivin" function="node">

@@ -1,3 +1,4 @@
+
 /* Copyright (c) 2010. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -31,6 +32,7 @@ typedef struct node {
   s_finger_t fingers[NB_BITS];            // finger table (fingers[0] is my successor)
   int pred_id;                            // predecessor id
   const char* pred_mailbox;
+  xbt_dynar_t comms;                      // current communications to finish
 } s_node_t, *node_t;
 
 /**
@@ -41,16 +43,17 @@ typedef struct task_data {
   int request_finger;
   int answer_id;
   const char* answer_to;
+  const char* issuer_host_name; // used for logging
 } s_task_data_t, *task_data_t;
 
 // utility functions
 static int normalize(int id);
 static int is_in_interval(int id, int start, int end);
 static char* get_mailbox(int host_id);
+static void print_finger_table(node_t node);
 
 // process functions
 static int node(int argc, char *argv[]);
-static int sender(int argc,char *argv[]);
 
 // initialization
 static void initialize_first_node(node_t node);
@@ -64,12 +67,13 @@ static int find_predecessor(node_t node, int id);
 static int remote_find_predecessor(node_t node, int ask_to_id, int id);
 static int closest_preceding_finger(node_t node, int id);
 static int remote_closest_preceding_finger(int ask_to_id, int id);
-static void notify(node_t);
+static void notify_predecessors(node_t node);
 static void remote_move_keys(node_t node, int take_from_id);
 static void update_finger_table(node_t node, int candidate_id, int finger_index);
-static void remote_update_finger_table(int ask_to_id, int candidate_id, int finger_index);
-
-//static void find_successor_node(node_t my_data, m_task_t join_task);
+static void remote_update_finger_table(node_t node, int ask_to_id, int candidate_id, int finger_index);
+static void notify(node_t node, int predecessor_candidate_id);
+static void remote_notify(node_t node, int notify_to, int predecessor_candidate_id);
+static void stabilize(node_t node);
 
 /**
  * \brief Turns an id into an equivalent id in [0, NB_KEYS[
@@ -135,6 +139,23 @@ static char* get_mailbox(int node_id) {
 }
 
 /**
+ * \brief Displays the finger table of a node.
+ * \param node a node
+ */
+static void print_finger_table(node_t node) {
+
+  int i;
+  int pow = 1;
+  INFO0("My finger table:");
+  INFO0("Start | Succ ");
+  for (i = 0; i < NB_BITS; i++) {
+    INFO2(" %4d | %4d ", (node->id + pow) % NB_KEYS, node->fingers[i].id);
+    pow = pow << 1;
+  }
+  INFO1("Predecessor: %d", node->pred_id);
+}
+
+/**
  * \brief Node Function
  * Arguments:
  * - my id
@@ -143,12 +164,15 @@ static char* get_mailbox(int node_id) {
  */
 int node(int argc, char *argv[])
 {
+  msg_comm_t comm = NULL;
+
   xbt_assert0(argc == 2 || argc == 4, "Wrong number of arguments for this node");
 
   // initialize my node
   s_node_t node = {0};
   node.id = atoi(argv[1]);
   node.mailbox = get_mailbox(node.id);
+  node.comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
 
   if (argc == 2) { // first ring
     initialize_first_node(&node);
@@ -167,6 +191,14 @@ int node(int argc, char *argv[])
 
   while (1) {
 
+    unsigned int cursor;
+    comm = NULL;
+    xbt_dynar_foreach(node.comms, cursor, comm) {
+      if (MSG_comm_test(comm)) { // FIXME: try with MSG_comm_testany instead
+        xbt_dynar_cursor_rm(node.comms, &cursor);
+      }
+    }
+
     m_task_t task = NULL;
     MSG_error_t res = MSG_task_receive(&task, node.mailbox);
 
@@ -177,17 +209,21 @@ int node(int argc, char *argv[])
     task_data_t task_data = (task_data_t) MSG_task_get_data(task);
 
     if (!strcmp(task_name, "Find Successor")) {
-
+      INFO2("Receiving a 'Find Successor' Request from %s for id %d", task_data->issuer_host_name, task_data->request_id);
       // is my successor the successor?
       if (is_in_interval(task_data->request_id, node.id + 1, node.fingers[0].id)) {
 	task_data->answer_id = node.fingers[0].id;
         MSG_task_set_name(task, "Find Successor Answer");
-        MSG_task_send(task, task_data->answer_to);
+        INFO3("Sending back a 'Find Successor' Answer to %s: the successor of %d is %d", task_data->issuer_host_name, task_data->request_id, task_data->answer_id);
+        comm = MSG_task_isend(task, task_data->answer_to);
+        xbt_dynar_push(node.comms, &comm);
       }
       else {
 	// otherwise, forward the request to the closest preceding finger in my table
 	int closest = closest_preceding_finger(&node, task_data->request_id);
-	MSG_task_send(task, get_mailbox(closest));
+	INFO2("Forwarding 'Find Successor' request for id %d to my closest preceding finger %d", task_data->request_id, closest);
+	comm = MSG_task_isend(task, get_mailbox(closest));
+        xbt_dynar_push(node.comms, &comm);
       }
     }
     /*
@@ -196,17 +232,21 @@ int node(int argc, char *argv[])
     }
     */
     else if (!strcmp(task_name, "Find Predecessor")) {
-
+      INFO2("Receiving a 'Find Predecessor' Request from %s for id %d", task_data->issuer_host_name, task_data->request_id);
       // am I the predecessor?
       if (is_in_interval(task_data->request_id, node.id + 1, node.fingers[0].id)) {
 	task_data->answer_id = node.id;
         MSG_task_set_name(task, "Find Predecessor Answer");
-        MSG_task_send(task, task_data->answer_to);
+        INFO3("Sending back a 'Find Predecessor' Answer to %s: the predecessor of %d is %d", task_data->issuer_host_name, task_data->request_id, task_data->answer_id);
+        comm = MSG_task_isend(task, task_data->answer_to);
+        xbt_dynar_push(node.comms, &comm);
       }
       else {
 	// otherwise, forward the request to the closest preceding finger in my table
 	int closest = closest_preceding_finger(&node, task_data->request_id);
-	MSG_task_send(task, get_mailbox(closest));
+	INFO2("Forwarding 'Find Predecessor' request for id %d to my closest preceding finger %d", task_data->request_id, closest);
+	comm = MSG_task_isend(task, get_mailbox(closest));
+        xbt_dynar_push(node.comms, &comm);
       }
     }
     /*
@@ -215,7 +255,14 @@ int node(int argc, char *argv[])
     }
     */
     else if (!strcmp(task_name, "Update Finger")) {
+      // someone is telling me that he may be my new finger
+      INFO1("Receving an 'Update Finger' from %s", task_data->issuer_host_name);
       update_finger_table(&node, task_data->request_id, task_data->request_finger);
+    }
+    else if (!strcmp(task_name, "Notify")) {
+      // someone is telling me that he may be my new predecessor
+      INFO1("Receving an 'Notify' from %s", task_data->issuer_host_name);
+      notify(&node, task_data->request_id);
     }
     /*
     else if (!strcmp(task_name, "Fix Fingers"))
@@ -228,6 +275,8 @@ int node(int argc, char *argv[])
     }
     */
   }
+
+  xbt_dynar_free(&node.comms);
 }
 
 /**
@@ -246,6 +295,7 @@ static void initialize_first_node(node_t node)
   }
   node->pred_id = node->id;
   node->pred_mailbox = node->mailbox;
+  print_finger_table(node);
 }
 
 /**
@@ -256,7 +306,8 @@ static void initialize_first_node(node_t node)
 static void join(node_t node, int known_id)
 {
   initialize_finger_table(node, known_id); // determine my fingers, asking to known_id
-  notify(node); // tell others that I may have became their finger
+  remote_notify(node, node->fingers[0].id, node->id); // tell my successor that I'm his new predecessor
+  notify_predecessors(node); // tell others that I may have became their finger
   remote_move_keys(node, node->fingers[0].id); // take some key-value pairs from my sucessor
 }
 
@@ -267,9 +318,11 @@ static void join(node_t node, int known_id)
  */
 static void initialize_finger_table(node_t node, int known_id)
 {
- int my_id = node->id;
- int i;
- int pow = 1; // 2^i
+  int my_id = node->id;
+  int i;
+  int pow = 1; // 2^i
+
+  INFO0("Initializing my finger table...");
 
   // ask known_id who is my immediate successor
   node->fingers[0].id = remote_find_successor(node, known_id, my_id + 1);
@@ -289,20 +342,28 @@ static void initialize_finger_table(node_t node, int known_id)
     }
     node->fingers[i + 1].mailbox = get_mailbox(node->fingers[i + 1].id);
   }
+
+  node->pred_id = find_predecessor(node, node->id);
+  node->pred_mailbox = get_mailbox(node->pred_id);
+
+  INFO0("Finger table initialized!");
+  print_finger_table(node);
 }
 
 /**
  * \brief Notifies some nodes that the current node may have became their finger.
  * \param node the current node, which has just joined the system
  */
-static void notify(node_t node)
+static void notify_predecessors(node_t node)
 {
   int i, pred_id;
   int pow = 1;
-  for (i = 0; i < NB_KEYS; i++) {
+  for (i = 0; i < NB_BITS; i++) {
     // find the closest node whose finger #i can be me
-    pred_id = find_predecessor(node, node->id - pow);
-    remote_update_finger_table(pred_id, node->id, i);
+    pred_id = find_predecessor(node, node->id - pow + 1); // note: no "+1" in the article!
+    if (pred_id != node->id) {
+      remote_update_finger_table(node, pred_id, node->id, i);
+    }
     pow = pow << 1; // pow = pow * 2
   }
 }
@@ -315,14 +376,25 @@ static void notify(node_t node)
  */
 static void update_finger_table(node_t node, int candidate_id, int finger_index)
 {
-  if (is_in_interval(candidate_id, node->id, node->fingers[finger_index].id - 1)) {
+  int pow = 1;
+  int i;
+  for (i = 0; i < finger_index; i++) {
+    pow = pow << 1;
+  }
 
+  //  if (is_in_interval(candidate_id, node->id + pow, node->fingers[finger_index].id - 1)) {
+  if (is_in_interval(candidate_id, node->id, node->fingers[finger_index].id - 1)) {
+//    INFO3("Candidate %d is between %d and %d!", candidate_id, node->id + pow, node->fingers[finger_index].id - 1);
     // candidate_id is my new finger
     node->fingers[finger_index].id = candidate_id;
     node->fingers[finger_index].mailbox = get_mailbox(candidate_id);
+    INFO2("My new finger #%d is %d", finger_index, candidate_id);
+    print_finger_table(node);
 
-    // my predecessor may be concerned too
-    remote_update_finger_table(node->pred_id, candidate_id, finger_index);
+    if (node->pred_id != node->id) { // FIXME: is this necessary?
+      // my predecessor may be concerned too
+      remote_update_finger_table(node, node->pred_id, candidate_id, finger_index);
+    }
   }
 }
 
@@ -332,54 +404,19 @@ static void update_finger_table(node_t node, int candidate_id, int finger_index)
  * \param candidate_id id of the node that may be a new finger of the remote node
  * \param finger_index index of the finger to update
  */
-static void remote_update_finger_table(int ask_to_id, int candidate_id, int finger_index)
+static void remote_update_finger_table(node_t node, int ask_to_id, int candidate_id, int finger_index)
 {
-  s_task_data_t req_data;
-  req_data.request_id = candidate_id;
-  req_data.request_finger = finger_index;
+  task_data_t req_data = xbt_new0(s_task_data_t, 1);
+  req_data->request_id = candidate_id;
+  req_data->request_finger = finger_index;
+  req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
 
   // send a "Update Finger" request to ask_to_id
-  m_task_t task = MSG_task_create("Update Finger", 1000, 5000, &req_data);
-  MSG_task_send(task, get_mailbox(ask_to_id));
+  INFO3("Sending an 'Update Finger' request to %d: his finger #%d may be %d now", ask_to_id, finger_index, candidate_id);
+  m_task_t task = MSG_task_create("Update Finger", 1000, 5000, req_data);
+  msg_comm_t comm = MSG_task_isend(task, get_mailbox(ask_to_id));
+  xbt_dynar_push(node->comms, &comm);
 }
-
-/* deprecated version where the remote host modifies the issuer's node data
-static void find_successor_node(node_t n_data,m_task_t join_task)  //use all data
-{
-	//get recv data
-	node_t recv_data = (node_t)MSG_task_get_data(join_task);
-	INFO3("recv_data->id : %i , n_data->id :%i , successor->id :%i",recv_data->id,n_data->id,n_data->fingers[0].id);
-	//if ((recv_data->id >= n_data->id) && (recv_data->id <= n_data->fingers[0].id))
-	if (is_in_interval(recv_data->id,n_data->id,n_data->fingers[0].id))
-	{
-		INFO1("Successor Is %s",n_data->fingers[0].host_name);
-		//predecessor(recv_data) >>>> n_data
-		recv_data->pred_host_name = n_data->host_name;
-		recv_data->pred_id = n_data->id;
-		recv_data->pred_mailbox = n_data->pred_mailbox;
-		// successor(recv_data) >>>> n_data.finger[0]
-		recv_data->fingers_nb = 1;
-		recv_data->fingers[0].host_name = n_data->fingers[0].host_name;
-		recv_data->fingers[0].id = n_data->fingers[0].id;
-		recv_data->fingers[0].mailbox = n_data->fingers[0].mailbox;
-		// successor(n_data) >>>> recv_sucessor
-		n_data->fingers[0].id = recv_data->id;
-		n_data->fingers[0].host_name = recv_data->host_name;
-		n_data->fingers[0].mailbox = recv_data->mailbox;
-		// Logs
-		INFO1("Sending back a Join Request to %s",recv_data->host_name);
-		MSG_task_set_name(join_task,"Join Response");
-		MSG_task_send(join_task,recv_data->mailbox);
-	}
-
-	else
-	{
-		const char* closest_preceding_mailbox = find_closest_preceding(n_data,recv_data->id);
-		INFO1("Forwarding Join Call to mailbox %s",closest_preceding_mailbox);
-		MSG_task_send(join_task,closest_preceding_mailbox);
-	}
-}
-*/
 
 /**
  * \brief Makes the current node find the successor node of an id.
@@ -409,19 +446,24 @@ static int find_successor(node_t node, int id)
 static int remote_find_successor(node_t node, int ask_to, int id)
 {
   s_task_data_t req_data;
+  char *mailbox = bprintf("%s Find Successor", node->mailbox);
   req_data.request_id = id;
-  req_data.answer_to = node->mailbox;
+  req_data.answer_to = mailbox;
+  req_data.issuer_host_name = MSG_host_get_name(MSG_host_self());
 
   // send a "Find Successor" request to ask_to_id
+  INFO2("Sending a 'Find Successor' request to %d for key %d", ask_to, id);
   m_task_t task = MSG_task_create("Find Successor", 1000, 5000, &req_data);
   MSG_task_send(task, get_mailbox(ask_to));
 
   // receive the answer
   task = NULL;
-  MSG_task_receive(&task, node->mailbox); // FIXME: don't receive here other messages than the excepted one
+  MSG_task_receive(&task, req_data.answer_to);
   task_data_t ans_data;
   ans_data = MSG_task_get_data(task);
   int successor = ans_data->answer_id;
+  xbt_free(mailbox);
+  INFO2("Received the answer to my Find Successor request: the successor of key %d is %d", id, successor);
 
   return successor;
 }
@@ -456,19 +498,24 @@ static int find_predecessor(node_t node, int id)
 static int remote_find_predecessor(node_t node, int ask_to, int id)
 {
   s_task_data_t req_data;
+  char *mailbox = bprintf("%s Find Predecessor", node->mailbox);
   req_data.request_id = id;
-  req_data.answer_to = node->mailbox;
+  req_data.answer_to = mailbox;
+  req_data.issuer_host_name = MSG_host_get_name(MSG_host_self());
 
   // send a "Find Predecessor" request to ask_to
+  INFO2("Sending a 'Find Predecessor' request to %d for key %d", ask_to, id);
   m_task_t task = MSG_task_create("Find Predecessor", 1000, 5000, &req_data);
   MSG_task_send(task, get_mailbox(ask_to));
 
   // receive the answer
   task = NULL;
-  MSG_task_receive(&task, node->mailbox); // FIXME: don't receive here other messages than the excepted one
+  MSG_task_receive(&task, req_data.answer_to);
   task_data_t ans_data;
   ans_data = MSG_task_get_data(task);
   int predecessor = ans_data->answer_id;
+  xbt_free(mailbox);
+  INFO2("Received the answer to my 'Find Predecessor' request: the predecessor of key %d is %d", id, predecessor);
 
   return predecessor;
 }
@@ -489,6 +536,61 @@ int closest_preceding_finger(node_t node, int id)
     }
   }
   return node->id;
+}
+
+/**
+ * \brief This function is called periodically. It checks the immediate
+ * successor of the current node.
+ * \param node the current node
+ */
+static void stabilize(node_t node) {
+
+  int x = find_predecessor(node, node->fingers[0].id);
+  if (is_in_interval(x, node->id + 1, node->fingers[0].id)) {
+    node->fingers[0].id = x;
+    node->fingers[0].mailbox = get_mailbox(x);
+  }
+  remote_notify(node, node->fingers[0].id, node->id);
+}
+
+/**
+ * \brief Notifies the current node that its predecessor may have changed.
+ * \param node the current node
+ * \param candidate_id the possible new predecessor
+ */
+static void notify(node_t node, int predecessor_candidate_id) {
+
+  if (node->pred_id == node->id
+    || is_in_interval(predecessor_candidate_id, node->pred_id, node->id)) {
+
+    node->pred_id = predecessor_candidate_id;
+    node->pred_mailbox = get_mailbox(predecessor_candidate_id);
+
+    INFO1("My new predecessor is %d", predecessor_candidate_id);
+    print_finger_table(node);
+  }
+  else {
+    INFO1("I don't have to change my predecessor to %d", predecessor_candidate_id);
+  }
+}
+
+/**
+ * \brief Notifies a remote node that its predecessor may have changed.
+ * \param node the current node
+ * \param notify_id id of the node to notify
+ * \param candidate_id the possible new predecessor
+ */
+static void remote_notify(node_t node, int notify_id, int predecessor_candidate_id) {
+
+  task_data_t req_data = xbt_new0(s_task_data_t, 1);
+  req_data->request_id = predecessor_candidate_id;
+  req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
+
+  // send a "Notify" request to notify_id
+  INFO1("Sending a 'Notify' request to %d", notify_id);
+  m_task_t task = MSG_task_create("Notify", 1000, 5000, req_data);
+  msg_comm_t comm = MSG_task_isend(task, get_mailbox(notify_id));
+  xbt_dynar_push(node->comms, &comm);
 }
 
 /**
