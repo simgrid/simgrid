@@ -215,6 +215,7 @@ set(SIMIX_SRC
 	src/simix/smx_context_base.c
 	src/simix/smx_user.c
 	src/simix/smx_smurf.c
+	src/simix/smx_context_raw.c
 	src/replay/replay.h
 	src/replay/replay.c
 	src/replay/state_machine_context.c

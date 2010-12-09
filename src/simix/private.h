@@ -155,6 +155,7 @@ void SIMIX_context_mod_exit(void);
 /* All factories init */
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t *factory);
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory);
+void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);
 
 /* ****************************** */
 /* context manipulation functions */
