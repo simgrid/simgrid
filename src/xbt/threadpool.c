@@ -150,15 +150,13 @@ static void *_xbt_tpool_worker_main(void *arg)
 
 XBT_TEST_SUITE("tpool", "Thread pool");
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_tpool_unit, xbt, "Unit test for tpool");
-
 xbt_tpool_t tpool;
 
 void job(void *arg);
 
 void job (void *arg)
 {
-  DEBUG1("I'm job %lu", (unsigned long)arg);
+  xbt_test_log1("I'm job %lu", (unsigned long)arg);
 }
 
 XBT_TEST_UNIT("basic", test_tpool_basic, "Basic usage")
@@ -170,10 +168,8 @@ XBT_TEST_UNIT("basic", test_tpool_basic, "Basic usage")
   tpool = xbt_tpool_new(5, 10);
 
   for(j=0; j < 10; j++){
-    DEBUG1("Round %lu", j);
     /* Queue some work */
     for(i=0; i < 20; i++){
-      DEBUG1("Queuing job %lu", i);
       xbt_tpool_queue_job(tpool, job, (void*)i);
     }
     /* Wait for everyone */
