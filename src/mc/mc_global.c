@@ -45,87 +45,29 @@ void MC_init(void)
   mc_setset = xbt_setset_new(20);
 
   /* Add the existing processes to mc's setset so they have an ID designated */
+  /* FIXME: check what happen if there are processes created during the exploration */
   xbt_swag_foreach(process, simix_global->process_list){
     xbt_setset_elm_add(mc_setset, process);
   }
   
-  /* Initialize the control variable */
-  mc_exp_ctl = xbt_new0(e_mc_exp_ctl_t, 1);
-  *mc_exp_ctl = MC_EXPLORE;
-  
-  MC_UNSET_RAW_MEM;
-  
-
+  MC_dpor_init();
 
   /* Save the initial state */
-/*  MC_SET_RAW_MEM;
   initial_snapshot = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot(initial_snapshot);
-  MC_UNSET_RAW_MEM;*/
+  MC_UNSET_RAW_MEM;
 }
 
 void MC_modelcheck(void)
 {
-  int status;
-  pid_t pid;
-
-  /* Compute initial state */
   MC_init();
-  
-  /* Fork an mc's slave exploration process and wait for it. */
-  /* The forked process will explore a trace until:
-       - a back-tracking point is found (it sets mc_expl_ctl to MC_explore)
-       - there are no more states to explore (it sets mc_expl_ctl to MC_STOP)
-       - a property is invalid (or dead-lock)
-   */
-  while(*mc_exp_ctl == MC_EXPLORE){
-    if((pid = fork())){
-      waitpid(pid, &status, 0);
-      mmalloc_detach(raw_heap);
-      raw_heap = mmalloc_attach(raw_heap_fd, (char*)(std_heap) + STD_HEAP_SIZE + getpagesize());
-
-    if (WIFSIGNALED(status)) {
-      INFO1("killed by signal %d\n", WTERMSIG(status));
-      break;
-    }else if (WIFSTOPPED(status)) {
-      INFO1("stopped by signal %d\n", WSTOPSIG(status));
-      break;
-    }else if (WIFCONTINUED(status)) {
-      INFO0("continued\n");
-      break;
-    }
-     
-    if(*mc_exp_ctl == MC_DEADLOCK){
-      INFO0("**************************");
-      INFO0("*** DEAD-LOCK DETECTED ***");
-      INFO0("**************************");
-      MC_dump_stack(mc_stack);
-      MC_print_statistics(mc_stats);
-      break;
-    }
-      
-    }else{
-      /* if mc_stack is empty then create first state, otherwise replay */
-      if(xbt_fifo_size(mc_stack) == 0)
-        MC_dpor_init();
-      else
-        MC_replay(mc_stack);
-
-      MC_dpor();
-      MC_memory_exit();
-      break;
-    }
-  }    
-  
-  /* If we are the mc's master process then exit */
-  if(pid)
-    MC_exit();
+  MC_dpor();
+  MC_exit();
 }
 
 void MC_exit(void)
 {
-  mmalloc_detach(raw_heap);
-  shm_unlink("raw_heap");
+  MC_memory_exit();
 }
 
 int MC_random(int min, int max)
@@ -149,9 +91,7 @@ void MC_replay(xbt_fifo_t stack)
   DEBUG0("**** Begin Replay ****");
 
   /* Restore the initial state */
-  /*MC_restore_snapshot(initial_snapshot);*/
-
-  MC_wait_for_requests();
+  MC_restore_snapshot(initial_snapshot);
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   for (item = xbt_fifo_get_last_item(stack);

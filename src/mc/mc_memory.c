@@ -23,8 +23,8 @@ void MC_memory_init()
   xbt_assert(std_heap != NULL);
 
 /* Create the second region a page after the first one ends + safety gap */
-  raw_heap_fd = shm_open("raw_heap", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-  raw_heap = mmalloc_attach(raw_heap_fd, (char*)(std_heap) + STD_HEAP_SIZE + getpagesize());
+/*  raw_heap_fd = shm_open("raw_heap", O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);*/
+  raw_heap = mmalloc_attach(-1, (char*)(std_heap) + STD_HEAP_SIZE + getpagesize());
   xbt_assert(raw_heap != NULL);
 }
 

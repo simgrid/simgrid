@@ -128,7 +128,7 @@ void MC_dpor(void)
       xbt_swag_foreach(process, simix_global->process_list){
       /* FIXME: use REQ_NO_REQ instead of NULL for comparison */
         if(&process->request && !SIMIX_request_is_enabled(&process->request)){
-          *mc_exp_ctl = MC_DEADLOCK;
+          MC_show_deadlock(&process->request);
           return;
         }
       }  
@@ -169,17 +169,16 @@ void MC_dpor(void)
           /* We found a back-tracking point, let's loop */
           xbt_fifo_unshift(mc_stack, state);
           DEBUG1("Back-tracking to depth %d", xbt_fifo_size(mc_stack));
-          *mc_exp_ctl = MC_EXPLORE;
           MC_UNSET_RAW_MEM;
-          return;
+          MC_replay(mc_stack);
           break;
         } else {
           MC_state_delete(state);
         }
       }
+      MC_UNSET_RAW_MEM;
     }
   }
   MC_UNSET_RAW_MEM;
-  *mc_exp_ctl = MC_STOP;
   return;
 }

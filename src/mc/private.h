@@ -42,10 +42,6 @@ void MC_free_snapshot(mc_snapshot_t);
 /* Bound of the MC depth-first search algorithm */
 #define MAX_DEPTH 1000
 
-typedef enum{MC_EXPLORE=0, MC_STOP, MC_DEADLOCK, MC_INVPROP} e_mc_exp_ctl_t;
-
-e_mc_exp_ctl_t *mc_exp_ctl;
-
 void MC_show_stack(xbt_fifo_t stack);
 void MC_dump_stack(xbt_fifo_t stack);
 void MC_replay(xbt_fifo_t stack);
