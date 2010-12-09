@@ -46,21 +46,21 @@ extern void raw_swapcontext(raw_stack_t* old, raw_stack_t* new);
 
 #ifdef PROCESSOR_i686
 __asm__ (
-".globl raw_makecontext\n"
-"raw_makecontext:\n"
-"   movl 4(%esp),%eax\n"  /* stack */
-"   addl 8(%esp),%eax\n"  /* size  */
-"   movl 12(%esp),%ecx\n" /* func  */
-"   movl 16(%esp),%edx\n" /* arg   */
-"   movl %edx, -4(%eax)\n"
-"   movl $0,   -8(%eax)\n"
-"   movl %ecx,-12(%eax)\n"
-"   movl $0,  -16(%eax)\n"
-"   movl $0,  -20(%eax)\n"
-"   movl $0,  -24(%eax)\n"
-"   movl $0,  -28(%eax)\n"
-"   subl $28,%eax\n"
-"   ret\n"
+   ".globl raw_makecontext\n"
+   "raw_makecontext:\n"
+   "   movl 4(%esp),%eax\n"   /* stack */
+   "   addl 8(%esp),%eax\n"   /* size  */
+   "   movl 12(%esp),%ecx\n"  /* func  */
+   "   movl 16(%esp),%edx\n"  /* arg   */
+   "   movl %edx, -4(%eax)\n"
+   "   movl $0,   -8(%eax)\n" /* @return for func */
+   "   movl %ecx,-12(%eax)\n"
+   "   movl $0,  -16(%eax)\n" /* ebp */
+   "   movl $0,  -20(%eax)\n" /* ebx */
+   "   movl $0,  -24(%eax)\n" /* esi */
+   "   movl $0,  -28(%eax)\n" /* edi */
+   "   subl $28,%eax\n"
+   "   retl\n"
 );
 
 __asm__ (
@@ -78,7 +78,62 @@ __asm__ (
    "   popl %esi\n"
    "   popl %ebx\n"
    "   popl %ebp\n"
-   "   ret\n"
+   "   retl\n"
+);
+#elif PROCESSOR_x86_64
+__asm__ (
+   ".globl raw_makecontext\n"
+   "raw_makecontext:\n" /* Calling convention sets the arguments in rdi, rsi, rdx and rcx, respectively */
+   "   movq %rdi,%rax\n"      /* stack */
+   "   addq %rsi,%rax\n"      /* size  */
+   "   movq $0,   -8(%rax)\n" /* @return for func */
+   "   movq %rdx,-16(%rax)\n" /* func */
+   "   movq %rcx,-24(%rax)\n" /* arg/rdi */
+   "   movq $0,  -32(%rax)\n" /* rsi */
+   "   movq $0,  -40(%rax)\n" /* rdx */
+   "   movq $0,  -48(%rax)\n" /* rcx */
+   "   movq $0,  -56(%rax)\n" /* r8  */
+   "   movq $0,  -64(%rax)\n" /* r9  */
+   "   movq $0,  -72(%rax)\n" /* rbp */
+   "   movq $0,  -80(%rax)\n" /* rbx */
+   "   movq $0,  -88(%rax)\n" /* r12 */
+   "   movq $0,  -96(%rax)\n" /* r13 */
+   "   movq $0, -104(%rax)\n" /* r14 */
+   "   movq $0, -112(%rax)\n" /* r15 */
+   "   subq $112,%rax\n"
+   "   retq\n"
+);
+
+__asm__ (
+   ".globl raw_swapcontext\n"
+   "raw_swapcontext:\n" /* Calling convention sets the arguments in rdi and rsi, respectively */
+   "   pushq %rdi\n"
+   "   pushq %rsi\n"
+   "   pushq %rdx\n"
+   "   pushq %rcx\n"
+   "   pushq %r8\n"
+   "   pushq %r9\n"
+   "   pushq %rbp\n"
+   "   pushq %rbx\n"
+   "   pushq %r12\n"
+   "   pushq %r13\n"
+   "   pushq %r14\n"
+   "   pushq %r15\n"
+   "   movq %rsp,(%rdi)\n" /* old */
+   "   movq (%rsi),%rsp\n" /* new */
+   "   popq %r15\n"
+   "   popq %r14\n"
+   "   popq %r13\n"
+   "   popq %r12\n"
+   "   popq %rbx\n"
+   "   popq %rbp\n"
+   "   popq %r9\n"
+   "   popq %r8\n"
+   "   popq %rcx\n"
+   "   popq %rdx\n"
+   "   popq %rsi\n"
+   "   popq %rdi\n"
+   "   retq\n"
 );
 #else
 raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
