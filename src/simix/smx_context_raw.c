@@ -81,7 +81,15 @@ __asm__ (
    "   ret\n"
 );
 #else
-#error "Cannot compile raw contexts for your architecture"
+raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
+                            rawctx_entry_point_t entry_point, void* arg) {
+   THROW_UNIMPLEMENTED;
+}
+
+void raw_swapcontext(raw_stack_t* old, raw_stack_t* new) {
+   THROW_UNIMPLEMENTED;
+}
+
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
