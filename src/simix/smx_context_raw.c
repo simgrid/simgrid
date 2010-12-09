@@ -42,7 +42,7 @@ smx_ctx_raw_t maestro_context;
 
 extern raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
                                    rawctx_entry_point_t entry_point, void* arg);
-extern void raw_swapcontext(raw_stack_t* old, raw_stack_t* new);
+extern void raw_swapcontext(raw_stack_t* old, raw_stack_t new);
 
 #ifdef PROCESSOR_i686
 __asm__ (
@@ -77,7 +77,7 @@ __asm__ (
    "   pushl %esi\n"
    "   pushl %edi\n"
    "   movl %esp,(%eax)\n"
-   "   movl (%edx),%esp\n"
+   "   movl %edx,%esp\n"
    "   popl %edi\n"
    "   popl %esi\n"
    "   popl %ebx\n"
@@ -128,7 +128,7 @@ __asm__ (
    "   pushq %r14\n"
    "   pushq %r15\n"
    "   movq %rsp,(%rdi)\n" /* old */
-   "   movq (%rsi),%rsp\n" /* new */
+   "   movq %rsi,%rsp\n" /* new */
    "   popq %r15\n"
    "   popq %r14\n"
    "   popq %r13\n"
@@ -149,7 +149,7 @@ raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
    THROW_UNIMPLEMENTED;
 }
 
-void raw_swapcontext(raw_stack_t* old, raw_stack_t* new) {
+void raw_swapcontext(raw_stack_t* old, raw_stack_t new) {
    THROW_UNIMPLEMENTED;
 }
 
@@ -235,7 +235,7 @@ static void smx_ctx_raw_free(smx_context_t context)
 static void smx_ctx_raw_suspend(smx_context_t context)
 {
   smx_current_context = (smx_context_t)maestro_context;
-  raw_swapcontext(&((smx_ctx_raw_t) context)->stack_top, &maestro_context->stack_top);
+  raw_swapcontext(&((smx_ctx_raw_t) context)->stack_top, maestro_context->stack_top);
 }
 
 static void smx_ctx_raw_stop(smx_context_t context)
@@ -254,7 +254,7 @@ static void smx_ctx_raw_wrapper(smx_ctx_raw_t context)
 static void smx_ctx_raw_resume(smx_context_t context)
 {
   smx_current_context = context; 
-  raw_swapcontext(&maestro_context->stack_top, &((smx_ctx_raw_t) context)->stack_top);
+  raw_swapcontext(&maestro_context->stack_top, ((smx_ctx_raw_t) context)->stack_top);
 }
 
 static void smx_ctx_raw_runall(xbt_swag_t processes)
@@ -268,7 +268,7 @@ static void smx_ctx_raw_runall(xbt_swag_t processes)
 static void smx_ctx_raw_resume_parallel(smx_context_t context)
 {
   xbt_os_thread_set_extra_data(context);
-  raw_swapcontext(&maestro_context->stack_top, &((smx_ctx_raw_t) context)->stack_top);
+  raw_swapcontext(&maestro_context->stack_top, ((smx_ctx_raw_t) context)->stack_top);
 }
 
 static void smx_ctx_raw_runall_parallel(xbt_swag_t processes)
