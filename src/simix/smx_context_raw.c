@@ -33,12 +33,13 @@ typedef struct s_smx_ctx_raw {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
   char *malloced_stack; /* malloced area containing the stack */
   raw_stack_t stack_top; /* pointer to stack top (within previous area) */
+  raw_stack_t old_stack_top; /* to whom I should return the control */
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id;       /* the valgrind stack id */
 #endif
 } s_smx_ctx_raw_t, *smx_ctx_raw_t;
 
-smx_ctx_raw_t maestro_context;
+smx_ctx_raw_t maestro_raw_context;
 
 extern raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
                                    rawctx_entry_point_t entry_point, void* arg);
@@ -199,7 +200,7 @@ smx_ctx_raw_create_context_sized(size_t size, xbt_main_func_t code,
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
 
      }else{
-       maestro_context = context;
+       maestro_raw_context = context;
      }
 
      return (smx_context_t) context;
@@ -234,8 +235,10 @@ static void smx_ctx_raw_free(smx_context_t context)
 
 static void smx_ctx_raw_suspend(smx_context_t context)
 {
-  smx_current_context = (smx_context_t)maestro_context;
-  raw_swapcontext(&((smx_ctx_raw_t) context)->stack_top, maestro_context->stack_top);
+  smx_current_context = (smx_context_t)maestro_raw_context;
+  raw_swapcontext(
+      &((smx_ctx_raw_t) context)->stack_top,
+      ((smx_ctx_raw_t) context)->old_stack_top);
 }
 
 static void smx_ctx_raw_stop(smx_context_t context)
@@ -254,7 +257,9 @@ static void smx_ctx_raw_wrapper(smx_ctx_raw_t context)
 static void smx_ctx_raw_resume(smx_context_t context)
 {
   smx_current_context = context; 
-  raw_swapcontext(&maestro_context->stack_top, ((smx_ctx_raw_t) context)->stack_top);
+  raw_swapcontext(
+      &((smx_ctx_raw_t) context)->old_stack_top,
+      ((smx_ctx_raw_t) context)->stack_top);
 }
 
 static void smx_ctx_raw_runall(xbt_swag_t processes)
@@ -268,7 +273,10 @@ static void smx_ctx_raw_runall(xbt_swag_t processes)
 static void smx_ctx_raw_resume_parallel(smx_context_t context)
 {
   xbt_os_thread_set_extra_data(context);
-  raw_swapcontext(&maestro_context->stack_top, ((smx_ctx_raw_t) context)->stack_top);
+  raw_swapcontext(
+      &((smx_ctx_raw_t) context)->old_stack_top,
+      ((smx_ctx_raw_t) context)->stack_top);
+  xbt_os_thread_set_extra_data(NULL);
 }
 
 static void smx_ctx_raw_runall_parallel(xbt_swag_t processes)
@@ -283,7 +291,7 @@ static void smx_ctx_raw_runall_parallel(xbt_swag_t processes)
 static smx_context_t smx_ctx_raw_self_parallel(void)
 {
   smx_context_t self_context = (smx_context_t) xbt_os_thread_get_extra_data();
-  return self_context ? self_context : (smx_context_t) maestro_context;
+  return self_context ? self_context : (smx_context_t) maestro_raw_context;
 }
 
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
