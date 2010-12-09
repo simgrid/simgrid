@@ -46,7 +46,9 @@ extern void raw_swapcontext(raw_stack_t* old, raw_stack_t* new);
 
 #ifdef PROCESSOR_i686
 __asm__ (
+   ".text\n"
    ".globl raw_makecontext\n"
+   ".type raw_makecontext,@function\n"
    "raw_makecontext:\n"
    "   movl 4(%esp),%eax\n"   /* stack */
    "   addl 8(%esp),%eax\n"   /* size  */
@@ -64,7 +66,9 @@ __asm__ (
 );
 
 __asm__ (
+   ".text\n"
    ".globl raw_swapcontext\n"
+   ".type raw_swapcontext,@function\n"
    "raw_swapcontext:\n"
    "   movl 4(%esp),%eax\n" /* old */
    "   movl 8(%esp),%edx\n" /* new */
@@ -82,7 +86,9 @@ __asm__ (
 );
 #elif PROCESSOR_x86_64
 __asm__ (
+   ".text\n"
    ".globl raw_makecontext\n"
+   ".type raw_makecontext,@function\n"
    "raw_makecontext:\n" /* Calling convention sets the arguments in rdi, rsi, rdx and rcx, respectively */
    "   movq %rdi,%rax\n"      /* stack */
    "   addq %rsi,%rax\n"      /* size  */
@@ -105,7 +111,9 @@ __asm__ (
 );
 
 __asm__ (
+   ".text\n"
    ".globl raw_swapcontext\n"
+   ".type raw_swapcontext,@function\n"
    "raw_swapcontext:\n" /* Calling convention sets the arguments in rdi and rsi, respectively */
    "   pushq %rdi\n"
    "   pushq %rsi\n"
