@@ -27,6 +27,7 @@
 
 
 typedef char * raw_stack_t;
+typedef void (*rawctx_entry_point_t)(void *);
 
 typedef struct s_smx_ctx_raw {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
@@ -39,19 +40,50 @@ typedef struct s_smx_ctx_raw {
 
 smx_ctx_raw_t maestro_context;
 
-static inline __attribute__((regparm(2))) void raw_swapcontext(raw_stack_t*old, raw_stack_t*new)  {
-  __asm__ __volatile__ (
-      "ret"
-      );
-}
-typedef void (*rawctx_entry_point_t)(void *);
-static inline raw_stack_t raw_makecontext(char*malloced_stack, int stack_size,
-    rawctx_entry_point_t entry_point, void *arg) {
-  __asm__ __volatile__ (
-      "popl  %ebx"
-  );
-  return NULL;
-}
+extern raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
+                                   rawctx_entry_point_t entry_point, void* arg);
+extern void raw_swapcontext(raw_stack_t* old, raw_stack_t* new);
+
+#ifdef PROCESSOR_i686
+__asm__ (
+".globl raw_makecontext\n"
+"raw_makecontext:\n"
+"   movl 4(%esp),%eax\n"  /* stack */
+"   addl 8(%esp),%eax\n"  /* size  */
+"   movl 12(%esp),%ecx\n" /* func  */
+"   movl 16(%esp),%edx\n" /* arg   */
+"   movl %edx, -4(%eax)\n"
+"   movl $0,   -8(%eax)\n"
+"   movl %ecx,-12(%eax)\n"
+"   movl $0,  -16(%eax)\n"
+"   movl $0,  -20(%eax)\n"
+"   movl $0,  -24(%eax)\n"
+"   movl $0,  -28(%eax)\n"
+"   subl $28,%eax\n"
+"   ret\n"
+);
+
+__asm__ (
+   ".globl raw_swapcontext\n"
+   "raw_swapcontext:\n"
+   "   movl 4(%esp),%eax\n" /* old */
+   "   movl 8(%esp),%edx\n" /* new */
+   "   pushl %ebp\n"
+   "   pushl %ebx\n"
+   "   pushl %esi\n"
+   "   pushl %edi\n"
+   "   movl %esp,(%eax)\n"
+   "   movl (%edx),%esp\n"
+   "   popl %edi\n"
+   "   popl %esi\n"
+   "   popl %ebx\n"
+   "   popl %ebp\n"
+   "   ret\n"
+);
+#else
+#error "Cannot compile raw contexts for your architecture"
+#endif
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 static xbt_tpool_t tpool;
