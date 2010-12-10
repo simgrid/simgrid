@@ -36,6 +36,7 @@ while(defined($line=<SH_LIGNE>))
 			$line =~ s/^\$\ */.\//g;
 			$line =~ s/^.\/lua/lua/g;
 			$line =~ s/^.\/ruby/ruby/g;
+			$line =~ s/--log=([^ ]*)/--log="$1"/g;
 			print "\n$line_exec";
 			chomp $line;
 			open (FILE, "$line 2>&1|");
