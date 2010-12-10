@@ -142,15 +142,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
 {
   simdata_process_t simdata = NULL;
   m_process_t process = xbt_new0(s_m_process_t, 1);
-  smx_process_t smx_process = NULL;
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
-
-  smx_process = SIMIX_req_process_create(name, code, (void *) process, host->name,
-                                     argc, argv, properties);
-  if (!smx_process) {
-    xbt_free(process);
-    return NULL;
-  }
 
   simdata = xbt_new0(s_simdata_process_t, 1);
 
@@ -161,7 +153,6 @@ m_process_t MSG_process_create_with_environment(const char *name,
   simdata->m_host = host;
   simdata->argc = argc;
   simdata->argv = argv;
-  simdata->s_process = smx_process;
 
   if (SIMIX_process_self()) {
     simdata->PPID = MSG_process_get_PID(SIMIX_process_self_get_data());
@@ -170,16 +161,27 @@ m_process_t MSG_process_create_with_environment(const char *name,
   }
   simdata->last_errno = MSG_OK;
 
-
   /* Process structure */
   process->name = xbt_strdup(name);
   process->simdata = simdata;
   process->data = data;
-
   xbt_fifo_unshift(msg_global->process_list, process);
 
-  return process;
+  /* Let's create the process (SIMIX may decide to start it right now) */
+  simdata->s_process = SIMIX_req_process_create(name, code, (void *) process, host->name,
+                                                argc, argv, properties);
 
+  if (!simdata->s_process) {
+    /* Undo everything we have just changed */
+    msg_global->PID--;
+    xbt_fifo_remove(msg_global->process_list, process);
+    xbt_free(process->name);
+    xbt_free(process);
+    xbt_free(simdata);
+    return NULL;
+  }
+
+  return process;
 }
 
 void _MSG_process_kill_from_SIMIX(void *p)
