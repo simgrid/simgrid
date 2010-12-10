@@ -378,6 +378,7 @@ static void quit_notify(node_t node, int to)
     m_task_t task = MSG_task_create(task_name, 1000, 5000, req_data);
     //char* mailbox = get_mailbox(to_mailbox);
 	msg_comm_t comm = MSG_task_isend(task, to_mailbox);
+	xbt_dynar_push(node->comms, &comm);
 }
 
 /*
