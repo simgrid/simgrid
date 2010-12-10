@@ -700,6 +700,10 @@ void SIMIX_req_comm_wait(smx_action_t comm, double timeout)
  */
 void SIMIX_req_set_category(smx_action_t action, const char *category)
 {
+  if (category == NULL) {
+    return;
+  }
+
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_SET_CATEGORY;
