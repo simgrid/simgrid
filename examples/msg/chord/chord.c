@@ -149,7 +149,7 @@ static void print_finger_table(node_t node) {
   INFO0("My finger table:");
   INFO0("Start | Succ ");
   for (i = 0; i < NB_BITS; i++) {
-    INFO2(" %4d | %4d ", (node->id + pow) % NB_KEYS, node->fingers[i].id);
+    INFO2(" %3d  | %3d ", (node->id + pow) % NB_KEYS, node->fingers[i].id);
     pow = pow << 1;
   }
   INFO1("Predecessor: %d", node->pred_id);
