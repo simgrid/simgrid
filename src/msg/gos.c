@@ -409,7 +409,7 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
 
   t_simdata->refcount++;
   msg_global->sent_msg++;
-  process->simdata->waiting_task = task;
+  //process->simdata->waiting_task = task;
 
   /* Send it by calling SIMIX network layer */
 
