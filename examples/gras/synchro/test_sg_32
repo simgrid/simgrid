@@ -1,211 +1,213 @@
+#! ./tesh
 p Runs the 'philosopher' test within the simulator
 
-$ $SG_TEST_EXENV ./synchro_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/synchro.xml
-> [Tremblay:philosopher:(1) 0.000000] [philo/INFO] Spawn the 5 threads (10 lunches scheduled)
-> [Tremblay:thread 0:(1) 0.000000] [philo/INFO] Thread 0 gets hungry (lunch #0)
-> [Tremblay:thread 0:(1) 0.000000] [philo/INFO] Thread 0 eats
-> [Tremblay:thread 1:(1) 0.000000] [philo/INFO] Thread 1 gets hungry (lunch #0)
-> [Tremblay:thread 2:(1) 0.000000] [philo/INFO] Thread 2 gets hungry (lunch #0)
-> [Tremblay:thread 2:(1) 0.000000] [philo/INFO] Thread 2 eats
-> [Tremblay:thread 3:(1) 0.000000] [philo/INFO] Thread 3 gets hungry (lunch #0)
-> [Tremblay:thread 4:(1) 0.000000] [philo/INFO] Thread 4 gets hungry (lunch #0)
-> [Tremblay:thread 0:(1) 0.000000] [philo/INFO] Thread 0 is full
-> [Tremblay:thread 0:(1) 0.000000] [philo/INFO] Thread 0 thinks
-> [Tremblay:thread 4:(1) 0.000000] [philo/INFO] Thread 4 eats
-> [Tremblay:thread 0:(1) 0.000000] [philo/INFO] Thread 0 gets hungry (lunch #1)
-> [Tremblay:thread 2:(1) 0.020000] [philo/INFO] Thread 2 is full
-> [Tremblay:thread 2:(1) 0.020000] [philo/INFO] Thread 2 thinks
-> [Tremblay:thread 1:(1) 0.020000] [philo/INFO] Thread 1 eats
-> [Tremblay:thread 1:(1) 0.030000] [philo/INFO] Thread 1 is full
-> [Tremblay:thread 1:(1) 0.030000] [philo/INFO] Thread 1 thinks
-> [Tremblay:thread 4:(1) 0.040000] [philo/INFO] Thread 4 is full
-> [Tremblay:thread 4:(1) 0.040000] [philo/INFO] Thread 4 thinks
-> [Tremblay:thread 1:(1) 0.040000] [philo/INFO] Thread 1 gets hungry (lunch #1)
-> [Tremblay:thread 1:(1) 0.040000] [philo/INFO] Thread 1 eats
-> [Tremblay:thread 2:(1) 0.040000] [philo/INFO] Thread 2 gets hungry (lunch #1)
-> [Tremblay:thread 3:(1) 0.040000] [philo/INFO] Thread 3 eats
-> [Tremblay:thread 1:(1) 0.050000] [philo/INFO] Thread 1 is full
-> [Tremblay:thread 1:(1) 0.050000] [philo/INFO] Thread 1 thinks
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #2)
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #3)
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #4)
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #5)
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #6)
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #7)
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #8)
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 gets hungry (lunch #9)
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 eats
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 is full
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 thinks
-> [Tremblay:thread 0:(1) 0.050000] [philo/INFO] Thread 0 tries to enter the dead-end; hopefully, the master will cancel it
-> [Tremblay:thread 1:(1) 0.060000] [philo/INFO] Thread 1 gets hungry (lunch #2)
-> [Tremblay:thread 1:(1) 0.060000] [philo/INFO] Thread 1 eats
-> [Tremblay:thread 3:(1) 0.070000] [philo/INFO] Thread 3 is full
-> [Tremblay:thread 3:(1) 0.070000] [philo/INFO] Thread 3 thinks
-> [Tremblay:thread 1:(1) 0.070000] [philo/INFO] Thread 1 is full
-> [Tremblay:thread 1:(1) 0.070000] [philo/INFO] Thread 1 thinks
-> [Tremblay:thread 2:(1) 0.070000] [philo/INFO] Thread 2 eats
-> [Tremblay:thread 4:(1) 0.080000] [philo/INFO] Thread 4 gets hungry (lunch #1)
-> [Tremblay:thread 4:(1) 0.080000] [philo/INFO] Thread 4 eats
-> [Tremblay:thread 1:(1) 0.080000] [philo/INFO] Thread 1 gets hungry (lunch #3)
-> [Tremblay:thread 2:(1) 0.090000] [philo/INFO] Thread 2 is full
-> [Tremblay:thread 2:(1) 0.090000] [philo/INFO] Thread 2 thinks
-> [Tremblay:thread 1:(1) 0.090000] [philo/INFO] Thread 1 eats
-> [Tremblay:thread 3:(1) 0.100000] [philo/INFO] Thread 3 gets hungry (lunch #1)
-> [Tremblay:thread 1:(1) 0.100000] [philo/INFO] Thread 1 is full
-> [Tremblay:thread 1:(1) 0.100000] [philo/INFO] Thread 1 thinks
-> [Tremblay:thread 1:(1) 0.110000] [philo/INFO] Thread 1 gets hungry (lunch #4)
-> [Tremblay:thread 1:(1) 0.110000] [philo/INFO] Thread 1 eats
-> [Tremblay:thread 2:(1) 0.110000] [philo/INFO] Thread 2 gets hungry (lunch #2)
-> [Tremblay:thread 4:(1) 0.120000] [philo/INFO] Thread 4 is full
-> [Tremblay:thread 4:(1) 0.120000] [philo/INFO] Thread 4 thinks
-> [Tremblay:thread 1:(1) 0.120000] [philo/INFO] Thread 1 is full
-> [Tremblay:thread 1:(1) 0.120000] [philo/INFO] Thread 1 thinks
-> [Tremblay:thread 3:(1) 0.120000] [philo/INFO] Thread 3 eats
-> [Tremblay:thread 1:(1) 0.130000] [philo/INFO] Thread 1 gets hungry (lunch #5)
-> [Tremblay:thread 1:(1) 0.130000] [philo/INFO] Thread 1 eats
-> [Tremblay:thread 1:(1) 0.140000] [philo/INFO] Thread 1 is full
-> [Tremblay:thread 1:(1) 0.140000] [philo/INFO] Thread 1 thinks
-> [Tremblay:thread 3:(1) 0.150000] [philo/INFO] Thread 3 is full
-> [Tremblay:thread 3:(1) 0.150000] [philo/INFO] Thread 3 thinks
-> [Tremblay:thread 1:(1) 0.150000] [philo/INFO] Thread 1 gets hungry (lunch #6)
-> [Tremblay:thread 1:(1) 0.150000] [philo/INFO] Thread 1 eats
-> [Tremblay:thread 4:(1) 0.160000] [philo/INFO] Thread 4 gets hungry (lunch #2)
-> [Tremblay:thread 4:(1) 0.160000] [philo/INFO] Thread 4 eats
-> [Tremblay:thread 1:(1) 0.160000] [philo/INFO] Thread 1 is full
-> [Tremblay:thread 1:(1) 0.160000] [philo/INFO] Thread 1 thinks
-> [Tremblay:thread 2:(1) 0.160000] [philo/INFO] Thread 2 eats
-> [Tremblay:thread 1:(1) 0.170000] [philo/INFO] Thread 1 gets hungry (lunch #7)
-> [Tremblay:thread 3:(1) 0.180000] [philo/INFO] Thread 3 gets hungry (lunch #2)
-> [Tremblay:thread 2:(1) 0.180000] [philo/INFO] Thread 2 is full
-> [Tremblay:thread 2:(1) 0.180000] [philo/INFO] Thread 2 thinks
-> [Tremblay:thread 1:(1) 0.180000] [philo/INFO] Thread 1 eats
-> [Tremblay:thread 1:(1) 0.190000] [philo/INFO] Thread 1 is full
-> [Tremblay:thread 1:(1) 0.190000] [philo/INFO] Thread 1 thinks
-> [Tremblay:thread 2:(1) 0.200000] [philo/INFO] Thread 2 gets hungry (lunch #3)
-> [Tremblay:thread 2:(1) 0.200000] [philo/INFO] Thread 2 eats
-> [Tremblay:thread 1:(1) 0.200000] [philo/INFO] Thread 1 gets hungry (lunch #8)
-> [Tremblay:thread 4:(1) 0.200000] [philo/INFO] Thread 4 is full
-> [Tremblay:thread 4:(1) 0.200000] [philo/INFO] Thread 4 thinks
-> [Tremblay:thread 2:(1) 0.220000] [philo/INFO] Thread 2 is full
-> [Tremblay:thread 2:(1) 0.220000] [philo/INFO] Thread 2 thinks
-> [Tremblay:thread 1:(1) 0.220000] [philo/INFO] Thread 1 eats
-> [Tremblay:thread 3:(1) 0.220000] [philo/INFO] Thread 3 eats
-> [Tremblay:thread 1:(1) 0.230000] [philo/INFO] Thread 1 is full
-> [Tremblay:thread 1:(1) 0.230000] [philo/INFO] Thread 1 thinks
-> [Tremblay:thread 2:(1) 0.240000] [philo/INFO] Thread 2 gets hungry (lunch #4)
-> [Tremblay:thread 1:(1) 0.240000] [philo/INFO] Thread 1 gets hungry (lunch #9)
-> [Tremblay:thread 1:(1) 0.240000] [philo/INFO] Thread 1 eats
-> [Tremblay:thread 4:(1) 0.240000] [philo/INFO] Thread 4 gets hungry (lunch #3)
-> [Tremblay:thread 3:(1) 0.250000] [philo/INFO] Thread 3 is full
-> [Tremblay:thread 3:(1) 0.250000] [philo/INFO] Thread 3 thinks
-> [Tremblay:thread 1:(1) 0.250000] [philo/INFO] Thread 1 is full
-> [Tremblay:thread 1:(1) 0.250000] [philo/INFO] Thread 1 thinks
-> [Tremblay:thread 2:(1) 0.250000] [philo/INFO] Thread 2 eats
-> [Tremblay:thread 4:(1) 0.250000] [philo/INFO] Thread 4 eats
-> [Tremblay:thread 1:(1) 0.260000] [philo/INFO] Thread 1 tries to enter the dead-end; hopefully, the master will cancel it
-> [Tremblay:thread 2:(1) 0.270000] [philo/INFO] Thread 2 is full
-> [Tremblay:thread 2:(1) 0.270000] [philo/INFO] Thread 2 thinks
-> [Tremblay:thread 3:(1) 0.280000] [philo/INFO] Thread 3 gets hungry (lunch #3)
-> [Tremblay:thread 4:(1) 0.290000] [philo/INFO] Thread 4 is full
-> [Tremblay:thread 4:(1) 0.290000] [philo/INFO] Thread 4 thinks
-> [Tremblay:thread 2:(1) 0.290000] [philo/INFO] Thread 2 gets hungry (lunch #5)
-> [Tremblay:thread 2:(1) 0.290000] [philo/INFO] Thread 2 eats
-> [Tremblay:thread 2:(1) 0.310000] [philo/INFO] Thread 2 is full
-> [Tremblay:thread 2:(1) 0.310000] [philo/INFO] Thread 2 thinks
-> [Tremblay:thread 3:(1) 0.310000] [philo/INFO] Thread 3 eats
-> [Tremblay:thread 4:(1) 0.330000] [philo/INFO] Thread 4 gets hungry (lunch #4)
-> [Tremblay:thread 2:(1) 0.330000] [philo/INFO] Thread 2 gets hungry (lunch #6)
-> [Tremblay:thread 3:(1) 0.340000] [philo/INFO] Thread 3 is full
-> [Tremblay:thread 3:(1) 0.340000] [philo/INFO] Thread 3 thinks
-> [Tremblay:thread 2:(1) 0.340000] [philo/INFO] Thread 2 eats
-> [Tremblay:thread 4:(1) 0.340000] [philo/INFO] Thread 4 eats
-> [Tremblay:thread 2:(1) 0.360000] [philo/INFO] Thread 2 is full
-> [Tremblay:thread 2:(1) 0.360000] [philo/INFO] Thread 2 thinks
-> [Tremblay:thread 3:(1) 0.370000] [philo/INFO] Thread 3 gets hungry (lunch #4)
-> [Tremblay:thread 4:(1) 0.380000] [philo/INFO] Thread 4 is full
-> [Tremblay:thread 4:(1) 0.380000] [philo/INFO] Thread 4 thinks
-> [Tremblay:thread 2:(1) 0.380000] [philo/INFO] Thread 2 gets hungry (lunch #7)
-> [Tremblay:thread 2:(1) 0.380000] [philo/INFO] Thread 2 eats
-> [Tremblay:thread 2:(1) 0.400000] [philo/INFO] Thread 2 is full
-> [Tremblay:thread 2:(1) 0.400000] [philo/INFO] Thread 2 thinks
-> [Tremblay:thread 3:(1) 0.400000] [philo/INFO] Thread 3 eats
-> [Tremblay:thread 4:(1) 0.420000] [philo/INFO] Thread 4 gets hungry (lunch #5)
-> [Tremblay:thread 2:(1) 0.420000] [philo/INFO] Thread 2 gets hungry (lunch #8)
-> [Tremblay:thread 3:(1) 0.430000] [philo/INFO] Thread 3 is full
-> [Tremblay:thread 3:(1) 0.430000] [philo/INFO] Thread 3 thinks
-> [Tremblay:thread 2:(1) 0.430000] [philo/INFO] Thread 2 eats
-> [Tremblay:thread 4:(1) 0.430000] [philo/INFO] Thread 4 eats
-> [Tremblay:thread 2:(1) 0.450000] [philo/INFO] Thread 2 is full
-> [Tremblay:thread 2:(1) 0.450000] [philo/INFO] Thread 2 thinks
-> [Tremblay:thread 3:(1) 0.460000] [philo/INFO] Thread 3 gets hungry (lunch #5)
-> [Tremblay:thread 4:(1) 0.470000] [philo/INFO] Thread 4 is full
-> [Tremblay:thread 4:(1) 0.470000] [philo/INFO] Thread 4 thinks
-> [Tremblay:thread 2:(1) 0.470000] [philo/INFO] Thread 2 gets hungry (lunch #9)
-> [Tremblay:thread 2:(1) 0.470000] [philo/INFO] Thread 2 eats
-> [Tremblay:thread 2:(1) 0.490000] [philo/INFO] Thread 2 is full
-> [Tremblay:thread 2:(1) 0.490000] [philo/INFO] Thread 2 thinks
-> [Tremblay:thread 3:(1) 0.490000] [philo/INFO] Thread 3 eats
-> [Tremblay:thread 4:(1) 0.510000] [philo/INFO] Thread 4 gets hungry (lunch #6)
-> [Tremblay:thread 2:(1) 0.510000] [philo/INFO] Thread 2 tries to enter the dead-end; hopefully, the master will cancel it
-> [Tremblay:thread 3:(1) 0.520000] [philo/INFO] Thread 3 is full
-> [Tremblay:thread 3:(1) 0.520000] [philo/INFO] Thread 3 thinks
-> [Tremblay:thread 4:(1) 0.520000] [philo/INFO] Thread 4 eats
-> [Tremblay:thread 3:(1) 0.550000] [philo/INFO] Thread 3 gets hungry (lunch #6)
-> [Tremblay:thread 4:(1) 0.560000] [philo/INFO] Thread 4 is full
-> [Tremblay:thread 4:(1) 0.560000] [philo/INFO] Thread 4 thinks
-> [Tremblay:thread 3:(1) 0.560000] [philo/INFO] Thread 3 eats
-> [Tremblay:thread 3:(1) 0.590000] [philo/INFO] Thread 3 is full
-> [Tremblay:thread 3:(1) 0.590000] [philo/INFO] Thread 3 thinks
-> [Tremblay:thread 4:(1) 0.600000] [philo/INFO] Thread 4 gets hungry (lunch #7)
-> [Tremblay:thread 4:(1) 0.600000] [philo/INFO] Thread 4 eats
-> [Tremblay:thread 3:(1) 0.620000] [philo/INFO] Thread 3 gets hungry (lunch #7)
-> [Tremblay:thread 4:(1) 0.640000] [philo/INFO] Thread 4 is full
-> [Tremblay:thread 4:(1) 0.640000] [philo/INFO] Thread 4 thinks
-> [Tremblay:thread 3:(1) 0.640000] [philo/INFO] Thread 3 eats
-> [Tremblay:thread 3:(1) 0.670000] [philo/INFO] Thread 3 is full
-> [Tremblay:thread 3:(1) 0.670000] [philo/INFO] Thread 3 thinks
-> [Tremblay:thread 4:(1) 0.680000] [philo/INFO] Thread 4 gets hungry (lunch #8)
-> [Tremblay:thread 4:(1) 0.680000] [philo/INFO] Thread 4 eats
-> [Tremblay:thread 3:(1) 0.700000] [philo/INFO] Thread 3 gets hungry (lunch #8)
-> [Tremblay:thread 4:(1) 0.720000] [philo/INFO] Thread 4 is full
-> [Tremblay:thread 4:(1) 0.720000] [philo/INFO] Thread 4 thinks
-> [Tremblay:thread 3:(1) 0.720000] [philo/INFO] Thread 3 eats
-> [Tremblay:thread 3:(1) 0.750000] [philo/INFO] Thread 3 is full
-> [Tremblay:thread 3:(1) 0.750000] [philo/INFO] Thread 3 thinks
-> [Tremblay:thread 4:(1) 0.760000] [philo/INFO] Thread 4 gets hungry (lunch #9)
-> [Tremblay:thread 4:(1) 0.760000] [philo/INFO] Thread 4 eats
-> [Tremblay:thread 3:(1) 0.780000] [philo/INFO] Thread 3 gets hungry (lunch #9)
-> [Tremblay:thread 4:(1) 0.800000] [philo/INFO] Thread 4 is full
-> [Tremblay:thread 4:(1) 0.800000] [philo/INFO] Thread 4 thinks
-> [Tremblay:thread 3:(1) 0.800000] [philo/INFO] Thread 3 eats
-> [Tremblay:thread 3:(1) 0.830000] [philo/INFO] Thread 3 is full
-> [Tremblay:thread 3:(1) 0.830000] [philo/INFO] Thread 3 thinks
-> [Tremblay:thread 4:(1) 0.840000] [philo/INFO] Thread 4 tries to enter the dead-end; hopefully, the master will cancel it
-> [Tremblay:thread 3:(1) 0.860000] [philo/INFO] Thread 3 tries to enter the dead-end; hopefully, the master will cancel it
-> [Tremblay:philosopher:(1) 0.860000] [philo/INFO] Cancel all childs
-> [Tremblay:philosopher:(1) 0.860000] [gras/INFO] Exiting GRAS
+! output sort 28
+$ $SG_TEST_EXENV ./synchro_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/synchro.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (1:philosopher@Tremblay) Spawn the 5 threads (10 lunches scheduled)
+> [  0.000000] (1:thread 0@Tremblay) Thread 0 gets hungry (lunch #0)
+> [  0.000000] (1:thread 0@Tremblay) Thread 0 eats
+> [  0.000000] (1:thread 0@Tremblay) Thread 0 is full
+> [  0.000000] (1:thread 0@Tremblay) Thread 0 thinks
+> [  0.000000] (1:thread 0@Tremblay) Thread 0 gets hungry (lunch #1)
+> [  0.000000] (1:thread 1@Tremblay) Thread 1 gets hungry (lunch #0)
+> [  0.000000] (1:thread 2@Tremblay) Thread 2 gets hungry (lunch #0)
+> [  0.000000] (1:thread 2@Tremblay) Thread 2 eats
+> [  0.000000] (1:thread 3@Tremblay) Thread 3 gets hungry (lunch #0)
+> [  0.000000] (1:thread 4@Tremblay) Thread 4 gets hungry (lunch #0)
+> [  0.000000] (1:thread 4@Tremblay) Thread 4 eats
+> [  0.020000] (1:thread 1@Tremblay) Thread 1 eats
+> [  0.020000] (1:thread 2@Tremblay) Thread 2 is full
+> [  0.020000] (1:thread 2@Tremblay) Thread 2 thinks
+> [  0.030000] (1:thread 1@Tremblay) Thread 1 is full
+> [  0.030000] (1:thread 1@Tremblay) Thread 1 thinks
+> [  0.040000] (1:thread 1@Tremblay) Thread 1 gets hungry (lunch #1)
+> [  0.040000] (1:thread 1@Tremblay) Thread 1 eats
+> [  0.040000] (1:thread 2@Tremblay) Thread 2 gets hungry (lunch #1)
+> [  0.040000] (1:thread 3@Tremblay) Thread 3 eats
+> [  0.040000] (1:thread 4@Tremblay) Thread 4 is full
+> [  0.040000] (1:thread 4@Tremblay) Thread 4 thinks
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 eats
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 is full
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 thinks
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 gets hungry (lunch #2)
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 eats
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 is full
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 thinks
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 gets hungry (lunch #3)
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 eats
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 is full
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 thinks
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 gets hungry (lunch #4)
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 eats
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 is full
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 thinks
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 gets hungry (lunch #5)
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 eats
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 is full
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 thinks
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 gets hungry (lunch #6)
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 eats
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 is full
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 thinks
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 gets hungry (lunch #7)
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 eats
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 is full
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 thinks
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 gets hungry (lunch #8)
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 eats
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 is full
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 thinks
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 gets hungry (lunch #9)
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 eats
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 is full
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 thinks
+> [  0.050000] (1:thread 0@Tremblay) Thread 0 tries to enter the dead-end; hopefully, the master will cancel it
+> [  0.050000] (1:thread 1@Tremblay) Thread 1 is full
+> [  0.050000] (1:thread 1@Tremblay) Thread 1 thinks
+> [  0.060000] (1:thread 1@Tremblay) Thread 1 gets hungry (lunch #2)
+> [  0.060000] (1:thread 1@Tremblay) Thread 1 eats
+> [  0.070000] (1:thread 1@Tremblay) Thread 1 is full
+> [  0.070000] (1:thread 1@Tremblay) Thread 1 thinks
+> [  0.070000] (1:thread 2@Tremblay) Thread 2 eats
+> [  0.070000] (1:thread 3@Tremblay) Thread 3 is full
+> [  0.070000] (1:thread 3@Tremblay) Thread 3 thinks
+> [  0.080000] (1:thread 1@Tremblay) Thread 1 gets hungry (lunch #3)
+> [  0.080000] (1:thread 4@Tremblay) Thread 4 gets hungry (lunch #1)
+> [  0.080000] (1:thread 4@Tremblay) Thread 4 eats
+> [  0.090000] (1:thread 1@Tremblay) Thread 1 eats
+> [  0.090000] (1:thread 2@Tremblay) Thread 2 is full
+> [  0.090000] (1:thread 2@Tremblay) Thread 2 thinks
+> [  0.100000] (1:thread 1@Tremblay) Thread 1 is full
+> [  0.100000] (1:thread 1@Tremblay) Thread 1 thinks
+> [  0.100000] (1:thread 3@Tremblay) Thread 3 gets hungry (lunch #1)
+> [  0.110000] (1:thread 1@Tremblay) Thread 1 gets hungry (lunch #4)
+> [  0.110000] (1:thread 1@Tremblay) Thread 1 eats
+> [  0.110000] (1:thread 2@Tremblay) Thread 2 gets hungry (lunch #2)
+> [  0.120000] (1:thread 1@Tremblay) Thread 1 is full
+> [  0.120000] (1:thread 1@Tremblay) Thread 1 thinks
+> [  0.120000] (1:thread 2@Tremblay) Thread 2 eats
+> [  0.120000] (1:thread 4@Tremblay) Thread 4 is full
+> [  0.120000] (1:thread 4@Tremblay) Thread 4 thinks
+> [  0.130000] (1:thread 1@Tremblay) Thread 1 gets hungry (lunch #5)
+> [  0.140000] (1:thread 1@Tremblay) Thread 1 eats
+> [  0.140000] (1:thread 2@Tremblay) Thread 2 is full
+> [  0.140000] (1:thread 2@Tremblay) Thread 2 thinks
+> [  0.140000] (1:thread 3@Tremblay) Thread 3 eats
+> [  0.150000] (1:thread 1@Tremblay) Thread 1 is full
+> [  0.150000] (1:thread 1@Tremblay) Thread 1 thinks
+> [  0.160000] (1:thread 1@Tremblay) Thread 1 gets hungry (lunch #6)
+> [  0.160000] (1:thread 1@Tremblay) Thread 1 eats
+> [  0.160000] (1:thread 2@Tremblay) Thread 2 gets hungry (lunch #3)
+> [  0.160000] (1:thread 4@Tremblay) Thread 4 gets hungry (lunch #2)
+> [  0.170000] (1:thread 1@Tremblay) Thread 1 is full
+> [  0.170000] (1:thread 1@Tremblay) Thread 1 thinks
+> [  0.170000] (1:thread 2@Tremblay) Thread 2 eats
+> [  0.170000] (1:thread 3@Tremblay) Thread 3 is full
+> [  0.170000] (1:thread 3@Tremblay) Thread 3 thinks
+> [  0.170000] (1:thread 4@Tremblay) Thread 4 eats
+> [  0.180000] (1:thread 1@Tremblay) Thread 1 gets hungry (lunch #7)
+> [  0.190000] (1:thread 1@Tremblay) Thread 1 eats
+> [  0.190000] (1:thread 2@Tremblay) Thread 2 is full
+> [  0.190000] (1:thread 2@Tremblay) Thread 2 thinks
+> [  0.200000] (1:thread 1@Tremblay) Thread 1 is full
+> [  0.200000] (1:thread 1@Tremblay) Thread 1 thinks
+> [  0.200000] (1:thread 3@Tremblay) Thread 3 gets hungry (lunch #2)
+> [  0.210000] (1:thread 1@Tremblay) Thread 1 gets hungry (lunch #8)
+> [  0.210000] (1:thread 1@Tremblay) Thread 1 eats
+> [  0.210000] (1:thread 2@Tremblay) Thread 2 gets hungry (lunch #4)
+> [  0.210000] (1:thread 3@Tremblay) Thread 3 eats
+> [  0.210000] (1:thread 4@Tremblay) Thread 4 is full
+> [  0.210000] (1:thread 4@Tremblay) Thread 4 thinks
+> [  0.220000] (1:thread 1@Tremblay) Thread 1 is full
+> [  0.220000] (1:thread 1@Tremblay) Thread 1 thinks
+> [  0.230000] (1:thread 1@Tremblay) Thread 1 gets hungry (lunch #9)
+> [  0.230000] (1:thread 1@Tremblay) Thread 1 eats
+> [  0.240000] (1:thread 1@Tremblay) Thread 1 is full
+> [  0.240000] (1:thread 1@Tremblay) Thread 1 thinks
+> [  0.240000] (1:thread 2@Tremblay) Thread 2 eats
+> [  0.240000] (1:thread 3@Tremblay) Thread 3 is full
+> [  0.240000] (1:thread 3@Tremblay) Thread 3 thinks
+> [  0.250000] (1:thread 1@Tremblay) Thread 1 tries to enter the dead-end; hopefully, the master will cancel it
+> [  0.250000] (1:thread 4@Tremblay) Thread 4 gets hungry (lunch #3)
+> [  0.250000] (1:thread 4@Tremblay) Thread 4 eats
+> [  0.260000] (1:thread 2@Tremblay) Thread 2 is full
+> [  0.260000] (1:thread 2@Tremblay) Thread 2 thinks
+> [  0.270000] (1:thread 3@Tremblay) Thread 3 gets hungry (lunch #3)
+> [  0.280000] (1:thread 2@Tremblay) Thread 2 gets hungry (lunch #5)
+> [  0.280000] (1:thread 2@Tremblay) Thread 2 eats
+> [  0.290000] (1:thread 4@Tremblay) Thread 4 is full
+> [  0.290000] (1:thread 4@Tremblay) Thread 4 thinks
+> [  0.300000] (1:thread 2@Tremblay) Thread 2 is full
+> [  0.300000] (1:thread 2@Tremblay) Thread 2 thinks
+> [  0.300000] (1:thread 3@Tremblay) Thread 3 eats
+> [  0.320000] (1:thread 2@Tremblay) Thread 2 gets hungry (lunch #6)
+> [  0.330000] (1:thread 2@Tremblay) Thread 2 eats
+> [  0.330000] (1:thread 3@Tremblay) Thread 3 is full
+> [  0.330000] (1:thread 3@Tremblay) Thread 3 thinks
+> [  0.330000] (1:thread 4@Tremblay) Thread 4 gets hungry (lunch #4)
+> [  0.330000] (1:thread 4@Tremblay) Thread 4 eats
+> [  0.350000] (1:thread 2@Tremblay) Thread 2 is full
+> [  0.350000] (1:thread 2@Tremblay) Thread 2 thinks
+> [  0.360000] (1:thread 3@Tremblay) Thread 3 gets hungry (lunch #4)
+> [  0.370000] (1:thread 2@Tremblay) Thread 2 gets hungry (lunch #7)
+> [  0.370000] (1:thread 2@Tremblay) Thread 2 eats
+> [  0.370000] (1:thread 4@Tremblay) Thread 4 is full
+> [  0.370000] (1:thread 4@Tremblay) Thread 4 thinks
+> [  0.390000] (1:thread 2@Tremblay) Thread 2 is full
+> [  0.390000] (1:thread 2@Tremblay) Thread 2 thinks
+> [  0.390000] (1:thread 3@Tremblay) Thread 3 eats
+> [  0.410000] (1:thread 2@Tremblay) Thread 2 gets hungry (lunch #8)
+> [  0.410000] (1:thread 4@Tremblay) Thread 4 gets hungry (lunch #5)
+> [  0.420000] (1:thread 2@Tremblay) Thread 2 eats
+> [  0.420000] (1:thread 3@Tremblay) Thread 3 is full
+> [  0.420000] (1:thread 3@Tremblay) Thread 3 thinks
+> [  0.420000] (1:thread 4@Tremblay) Thread 4 eats
+> [  0.440000] (1:thread 2@Tremblay) Thread 2 is full
+> [  0.440000] (1:thread 2@Tremblay) Thread 2 thinks
+> [  0.450000] (1:thread 3@Tremblay) Thread 3 gets hungry (lunch #5)
+> [  0.460000] (1:thread 2@Tremblay) Thread 2 gets hungry (lunch #9)
+> [  0.460000] (1:thread 2@Tremblay) Thread 2 eats
+> [  0.460000] (1:thread 4@Tremblay) Thread 4 is full
+> [  0.460000] (1:thread 4@Tremblay) Thread 4 thinks
+> [  0.480000] (1:thread 2@Tremblay) Thread 2 is full
+> [  0.480000] (1:thread 2@Tremblay) Thread 2 thinks
+> [  0.480000] (1:thread 3@Tremblay) Thread 3 eats
+> [  0.500000] (1:thread 2@Tremblay) Thread 2 tries to enter the dead-end; hopefully, the master will cancel it
+> [  0.500000] (1:thread 4@Tremblay) Thread 4 gets hungry (lunch #6)
+> [  0.510000] (1:thread 3@Tremblay) Thread 3 is full
+> [  0.510000] (1:thread 3@Tremblay) Thread 3 thinks
+> [  0.510000] (1:thread 4@Tremblay) Thread 4 eats
+> [  0.540000] (1:thread 3@Tremblay) Thread 3 gets hungry (lunch #6)
+> [  0.550000] (1:thread 3@Tremblay) Thread 3 eats
+> [  0.550000] (1:thread 4@Tremblay) Thread 4 is full
+> [  0.550000] (1:thread 4@Tremblay) Thread 4 thinks
+> [  0.580000] (1:thread 3@Tremblay) Thread 3 is full
+> [  0.580000] (1:thread 3@Tremblay) Thread 3 thinks
+> [  0.590000] (1:thread 4@Tremblay) Thread 4 gets hungry (lunch #7)
+> [  0.590000] (1:thread 4@Tremblay) Thread 4 eats
+> [  0.610000] (1:thread 3@Tremblay) Thread 3 gets hungry (lunch #7)
+> [  0.630000] (1:thread 3@Tremblay) Thread 3 eats
+> [  0.630000] (1:thread 4@Tremblay) Thread 4 is full
+> [  0.630000] (1:thread 4@Tremblay) Thread 4 thinks
+> [  0.660000] (1:thread 3@Tremblay) Thread 3 is full
+> [  0.660000] (1:thread 3@Tremblay) Thread 3 thinks
+> [  0.670000] (1:thread 4@Tremblay) Thread 4 gets hungry (lunch #8)
+> [  0.670000] (1:thread 4@Tremblay) Thread 4 eats
+> [  0.690000] (1:thread 3@Tremblay) Thread 3 gets hungry (lunch #8)
+> [  0.710000] (1:thread 3@Tremblay) Thread 3 eats
+> [  0.710000] (1:thread 4@Tremblay) Thread 4 is full
+> [  0.710000] (1:thread 4@Tremblay) Thread 4 thinks
+> [  0.740000] (1:thread 3@Tremblay) Thread 3 is full
+> [  0.740000] (1:thread 3@Tremblay) Thread 3 thinks
+> [  0.750000] (1:thread 4@Tremblay) Thread 4 gets hungry (lunch #9)
+> [  0.750000] (1:thread 4@Tremblay) Thread 4 eats
+> [  0.770000] (1:thread 3@Tremblay) Thread 3 gets hungry (lunch #9)
+> [  0.790000] (1:thread 3@Tremblay) Thread 3 eats
+> [  0.790000] (1:thread 4@Tremblay) Thread 4 is full
+> [  0.790000] (1:thread 4@Tremblay) Thread 4 thinks
+> [  0.820000] (1:thread 3@Tremblay) Thread 3 is full
+> [  0.820000] (1:thread 3@Tremblay) Thread 3 thinks
+> [  0.830000] (1:thread 4@Tremblay) Thread 4 tries to enter the dead-end; hopefully, the master will cancel it
+> [  0.850000] (1:philosopher@Tremblay) Cancel all childs
+> [  0.850000] (1:philosopher@Tremblay) Exiting GRAS
+> [  0.850000] (1:thread 3@Tremblay) Thread 3 tries to enter the dead-end; hopefully, the master will cancel it
