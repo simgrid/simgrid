@@ -215,6 +215,12 @@ void SIMIX_run(void)
     }
   } while (time != -1.0);
 
+  if (xbt_swag_size(simix_global->process_list) != 0) {
+
+    WARN0("Oops ! Deadlock or code not perfectly clean.");
+    SIMIX_display_process_status();
+    xbt_abort();
+  }
 }
 
 /**
@@ -288,80 +294,45 @@ void SIMIX_display_process_status(void)
     return;
   }
 
-  /*smx_process_t process = NULL;
-  xbt_fifo_item_t item = NULL;
-  smx_action_t act;*/
+  smx_process_t process = NULL;
   int nbprocess = xbt_swag_size(simix_global->process_list);
 
   INFO1("%d processes are still running, waiting for something.", nbprocess);
   /*  List the process and their state */
-  /* FIXME: reimplement me
   INFO0
     ("Legend of the following listing: \"<process> on <host>: <status>.\"");
   xbt_swag_foreach(process, simix_global->process_list) {
-    char *who, *who2;
-
-    asprintf(&who, "%s on %s: %s",
-             process->name,
-             process->smx_host->name,
-             (process->blocked) ? "[BLOCKED] "
-             : ((process->suspended) ? "[SUSPENDED] " : ""));
 
     if (process->waiting_action) {
-      who2 = bprintf("Waiting for action %p to finish", process->waiting_action);
-    }
 
-    if (process->mutex) {
-      who2 =
-        bprintf("%s Blocked on mutex %p", who,
-                (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose)) ?
-                process->mutex : (void *) 0xdead);
-      free(who);
-      who = who2;
-    } else if (process->cond) {
-      who2 =
-        bprintf
-        ("%s Blocked on condition %p; Waiting for the following actions:",
-         who,
-         (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose)) ?
-         process->cond : (void *) 0xdead);
-      free(who);
-      who = who2;
-      xbt_fifo_foreach(process->cond->actions, item, act, smx_action_t) {
-        who2 =
-          bprintf("%s '%s'(%p)", who, act->name,
-                  (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose))
-                  ? act : (void *) 0xdead);
-        free(who);
-        who = who2;
-      }
-    } else if (process->sem) {
-      who2 =
-        bprintf
-        ("%s Blocked on semaphore %p; Waiting for the following actions:",
-         who,
-         (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose)) ?
-         process->sem : (void *) 0xdead);
-      free(who);
-      who = who2;
-      xbt_fifo_foreach(process->sem->actions, item, act, smx_action_t) {
-        who2 =
-          bprintf("%s '%s'(%p)", who, act->name,
-                  (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_verbose))
-                  ? act : (void *) 0xdead);
-        free(who);
-        who = who2;
-      }
+      const char* action_description = "unknown";
+      switch (process->waiting_action->type) {
 
-    } else {
-      who2 =
-        bprintf
-        ("%s Blocked in an unknown status (please report this bug)", who);
-      free(who);
-      who = who2;
+	case SIMIX_ACTION_EXECUTE:
+	  action_description = "execution";
+	  break;
+
+	case SIMIX_ACTION_PARALLEL_EXECUTE:
+	  action_description = "parallel execution";
+	  break;
+
+	case SIMIX_ACTION_COMMUNICATE:
+	  action_description = "communication";
+	  break;
+
+	case SIMIX_ACTION_SLEEP:
+	  action_description = "sleeping";
+	  break;
+
+	case SIMIX_ACTION_SYNCHRO:
+	  action_description = "synchronization";
+	  break;
+
+	case SIMIX_ACTION_IO:
+	  action_description = "I/O";
+	  break;
+      }
+      INFO2("Waiting for %s action %p to finish", action_description, process->waiting_action);
     }
-    INFO1("%s.", who);
-    free(who);
   }
-  */
 }
