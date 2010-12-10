@@ -802,7 +802,6 @@ void *rctx_wait(void *r)
     xbt_dynar_free(&a);
     /* If an empty line moved in first position, move it back to the end */
     if (rctx->output_got->data[0]=='\n') {
-      fprintf(stderr,"XXX");
       memmove(rctx->output_got->data,rctx->output_got->data+1,rctx->output_got->used-1);
       rctx->output_got->data[rctx->output_got->used-1] = '\n';
     }
