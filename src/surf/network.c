@@ -58,11 +58,18 @@ static void gap_append(double size, const link_CM02_t link, surf_action_network_
    }
 }
 
+static void gap_unknown(surf_action_network_CM02_t action) {
+   action->sender.gap = 0.0;
+   action->sender.link_name = NULL;
+   action->sender.fifo_item = NULL;
+   action->sender.size = 0.0;
+}
+
 static void gap_remove(surf_action_network_CM02_t action) {
    xbt_fifo_t fifo;
    size_t size;
 
-   if(sg_sender_gap > 0.0) {
+   if(sg_sender_gap > 0.0 && action->sender.link_name && action->sender.fifo_item) {
       fifo = (xbt_fifo_t)xbt_dict_get_or_null(gap_lookup, action->sender.link_name);
       xbt_fifo_remove_item(fifo, action->sender.fifo_item);
       size = xbt_fifo_size(fifo);
@@ -665,10 +672,14 @@ static surf_action_t net_communicate(const char *src_name,
       (*bandwidth_constraint_callback) (action->rate, bandwidth_bound,
                                         size);
 
-  link = *(link_CM02_t*)xbt_dynar_get_ptr(route, 0);
-  gap_append(size, link, action);
-  DEBUG5("Comm %p: %s -> %s gap=%f (lat=%f)",
-         action, src_name, dst_name, action->sender.gap, action->latency);
+  if(xbt_dynar_length(route) > 0) {
+    link = *(link_CM02_t*)xbt_dynar_get_ptr(route, 0);
+    gap_append(size, link, action);
+    DEBUG5("Comm %p: %s -> %s gap=%f (lat=%f)",
+           action, src_name, dst_name, action->sender.gap, action->latency);
+  } else {
+    gap_unknown(action);
+  }
 
 
   /* LARGE PLATFORMS HACK:
