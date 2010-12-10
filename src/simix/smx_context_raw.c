@@ -296,7 +296,7 @@ static smx_context_t smx_ctx_raw_self_parallel(void)
 
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 {
-  INFO0("Using raw contexts. Because the glibc is just not good enough for us.");
+  VERB0("Using raw contexts. Because the glibc is just not good enough for us.");
   smx_ctx_base_factory_init(factory);
 
   (*factory)->finalize  = smx_ctx_raw_factory_finalize;
