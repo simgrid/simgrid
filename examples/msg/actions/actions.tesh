@@ -3,6 +3,7 @@
 
 ! output sort
 $ ./actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment_split.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) Using raw contexts. Because the glibc is just not good enough for us.
 > [500.005200] (1:p0@host0) p0 recv p1 500.005200
 > [500.005200] (2:p1@host1) p1 send p0 1e10 500.005200
 > [500.005201] (1:p0@host0) p0 compute 12 0.000001
@@ -11,6 +12,7 @@ $ ./actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment_split
 
 ! output sort
 $ ./actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_allReduce.txt --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) Using raw contexts. Because the glibc is just not good enough for us.
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
 > [100.010400] (1:p0@host0) p0 allReduce 5e8 5e8 100.010400
 > [100.010400] (2:p1@host1) p1 allReduce 5e8 5e8 100.010400
@@ -22,6 +24,7 @@ $ ./actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml a
 
 ! output sort
 $ ./actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_barrier.txt --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) Using raw contexts. Because the glibc is just not good enough for us.
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
 > [  0.000000] (2:p1@host1) p1 comm_size 3 0.000000
 > [  0.000000] (3:p2@host2) p2 comm_size 3 0.000000
@@ -34,6 +37,7 @@ $ ./actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml a
 
 ! output sort
 $ ./actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_bcast.txt --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) Using raw contexts. Because the glibc is just not good enough for us.
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
 > [ 25.005200] (1:p0@host0) p0 bcast 5e8 25.005200
 > [ 25.005200] (2:p1@host1) p1 bcast 5e8 25.005200
@@ -54,6 +58,7 @@ $ ./actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml a
 
 ! output sort
 $ ./actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_reduce.txt --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) Using raw contexts. Because the glibc is just not good enough for us.
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
 > [ 25.005200] (2:p1@host1) p1 reduce 5e8 5e8 25.005200
 > [ 25.005200] (3:p2@host2) p2 reduce 5e8 5e8 25.005200
@@ -65,6 +70,7 @@ $ ./actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml a
 
 ! output sort
 $ ./actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_with_isend.txt --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) Using raw contexts. Because the glibc is just not good enough for us.
 > [  0.000000] (2:p1@host1) p1 Irecv p0 0.000000
 > [  0.000000] (3:p2@host2) p2 Irecv p1 0.000000
 > [ 50.000000] (3:p2@host2) p2 compute 5e8 50.000000
