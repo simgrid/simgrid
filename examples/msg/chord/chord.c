@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
  */
 typedef struct finger {
   int id;
-  const char* mailbox;
+  char* mailbox;
 } s_finger_t, *finger_t;
 
 /**
@@ -28,10 +28,10 @@ typedef struct finger {
  */
 typedef struct node {
   int id;                                 // my id
-  const char* mailbox;
+  char* mailbox;
   s_finger_t fingers[NB_BITS];            // finger table (fingers[0] is my successor)
   int pred_id;                            // predecessor id
-  const char* pred_mailbox;
+  char* pred_mailbox;
   xbt_dynar_t comms;                      // current communications to finish
 } s_node_t, *node_t;
 
@@ -165,6 +165,8 @@ static void print_finger_table(node_t node) {
 int node(int argc, char *argv[])
 {
   msg_comm_t comm = NULL;
+  int i;
+  char* mailbox;
 
   xbt_assert0(argc == 2 || argc == 4, "Wrong number of arguments for this node");
 
@@ -196,6 +198,7 @@ int node(int argc, char *argv[])
     xbt_dynar_foreach(node.comms, cursor, comm) {
       if (MSG_comm_test(comm)) { // FIXME: try with MSG_comm_testany instead
         xbt_dynar_cursor_rm(node.comms, &cursor);
+	MSG_comm_destroy(comm);
       }
     }
 
@@ -222,8 +225,10 @@ int node(int argc, char *argv[])
 	// otherwise, forward the request to the closest preceding finger in my table
 	int closest = closest_preceding_finger(&node, task_data->request_id);
 	INFO2("Forwarding 'Find Successor' request for id %d to my closest preceding finger %d", task_data->request_id, closest);
-	comm = MSG_task_isend(task, get_mailbox(closest));
+	mailbox = get_mailbox(closest);
+	comm = MSG_task_isend(task, mailbox);
         xbt_dynar_push(node.comms, &comm);
+        xbt_free(mailbox);
       }
     }
     /*
@@ -245,8 +250,10 @@ int node(int argc, char *argv[])
 	// otherwise, forward the request to the closest preceding finger in my table
 	int closest = closest_preceding_finger(&node, task_data->request_id);
 	INFO2("Forwarding 'Find Predecessor' request for id %d to my closest preceding finger %d", task_data->request_id, closest);
-	comm = MSG_task_isend(task, get_mailbox(closest));
+	mailbox = get_mailbox(closest);
+	comm = MSG_task_isend(task, mailbox);
         xbt_dynar_push(node.comms, &comm);
+        xbt_free(mailbox);
       }
     }
     /*
@@ -256,12 +263,12 @@ int node(int argc, char *argv[])
     */
     else if (!strcmp(task_name, "Update Finger")) {
       // someone is telling me that he may be my new finger
-      INFO1("Receving an 'Update Finger' from %s", task_data->issuer_host_name);
+      INFO1("Receiving an 'Update Finger' request from %s", task_data->issuer_host_name);
       update_finger_table(&node, task_data->request_id, task_data->request_finger);
     }
     else if (!strcmp(task_name, "Notify")) {
       // someone is telling me that he may be my new predecessor
-      INFO1("Receving an 'Notify' from %s", task_data->issuer_host_name);
+      INFO1("Receiving a 'Notify' request from %s", task_data->issuer_host_name);
       notify(&node, task_data->request_id);
     }
     /*
@@ -277,6 +284,11 @@ int node(int argc, char *argv[])
   }
 
   xbt_dynar_free(&node.comms);
+  xbt_free(node.mailbox);
+  xbt_free(node.pred_mailbox);
+  for (i = 0; i < NB_BITS - 1; i++) {
+    xbt_free(node.fingers[i].mailbox);
+  }
 }
 
 /**
@@ -291,7 +303,7 @@ static void initialize_first_node(node_t node)
   int i;
   for (i = 0; i < NB_BITS; i++) {
     node->fingers[i].id = node->id;
-    node->fingers[i].mailbox = node->mailbox;
+    node->fingers[i].mailbox = xbt_strdup(node->mailbox);
   }
   node->pred_id = node->id;
   node->pred_mailbox = node->mailbox;
@@ -386,6 +398,7 @@ static void update_finger_table(node_t node, int candidate_id, int finger_index)
   if (is_in_interval(candidate_id, node->id, node->fingers[finger_index].id - 1)) {
 //    INFO3("Candidate %d is between %d and %d!", candidate_id, node->id + pow, node->fingers[finger_index].id - 1);
     // candidate_id is my new finger
+    xbt_free(node->fingers[finger_index].mailbox);
     node->fingers[finger_index].id = candidate_id;
     node->fingers[finger_index].mailbox = get_mailbox(candidate_id);
     INFO2("My new finger #%d is %d", finger_index, candidate_id);
@@ -414,8 +427,10 @@ static void remote_update_finger_table(node_t node, int ask_to_id, int candidate
   // send a "Update Finger" request to ask_to_id
   INFO3("Sending an 'Update Finger' request to %d: his finger #%d may be %d now", ask_to_id, finger_index, candidate_id);
   m_task_t task = MSG_task_create("Update Finger", 1000, 5000, req_data);
-  msg_comm_t comm = MSG_task_isend(task, get_mailbox(ask_to_id));
+  char* mailbox = get_mailbox(ask_to_id);
+  msg_comm_t comm = MSG_task_isend(task, mailbox);
   xbt_dynar_push(node->comms, &comm);
+  xbt_free(mailbox);
 }
 
 /**
@@ -446,7 +461,7 @@ static int find_successor(node_t node, int id)
 static int remote_find_successor(node_t node, int ask_to, int id)
 {
   s_task_data_t req_data;
-  char *mailbox = bprintf("%s Find Successor", node->mailbox);
+  char* mailbox = bprintf("%s Find Successor", node->mailbox);
   req_data.request_id = id;
   req_data.answer_to = mailbox;
   req_data.issuer_host_name = MSG_host_get_name(MSG_host_self());
@@ -498,7 +513,7 @@ static int find_predecessor(node_t node, int id)
 static int remote_find_predecessor(node_t node, int ask_to, int id)
 {
   s_task_data_t req_data;
-  char *mailbox = bprintf("%s Find Predecessor", node->mailbox);
+  char* mailbox = bprintf("%s Find Predecessor", node->mailbox);
   req_data.request_id = id;
   req_data.answer_to = mailbox;
   req_data.issuer_host_name = MSG_host_get_name(MSG_host_self());
@@ -547,6 +562,7 @@ static void stabilize(node_t node) {
 
   int x = find_predecessor(node, node->fingers[0].id);
   if (is_in_interval(x, node->id + 1, node->fingers[0].id)) {
+    xbt_free(node->fingers[0].mailbox);
     node->fingers[0].id = x;
     node->fingers[0].mailbox = get_mailbox(x);
   }
@@ -589,8 +605,10 @@ static void remote_notify(node_t node, int notify_id, int predecessor_candidate_
   // send a "Notify" request to notify_id
   INFO1("Sending a 'Notify' request to %d", notify_id);
   m_task_t task = MSG_task_create("Notify", 1000, 5000, req_data);
-  msg_comm_t comm = MSG_task_isend(task, get_mailbox(notify_id));
+  char* mailbox = get_mailbox(notify_id);
+  msg_comm_t comm = MSG_task_isend(task, mailbox);
   xbt_dynar_push(node->comms, &comm);
+  xbt_free(mailbox);
 }
 
 /**
