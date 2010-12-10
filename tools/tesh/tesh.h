@@ -23,6 +23,8 @@ const char *signal_name(unsigned int got, char *expected);
 
 /*** Options ***/
 int timeout_value;              /* child timeout value */
+int sort_len;                   /* length of the prefix to sort */
+#define SORT_LEN_DEFAULT 19
 
 rctx_t rctx;
 const char *testsuite_name;

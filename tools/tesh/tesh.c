@@ -20,6 +20,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(tesh, "TEst SHell utility");
 
 /*** Options ***/
 int timeout_value = 5;          /* child timeout value */
+int sort_len = 19;              /* length of the prefix to sort */
 
 const char *testsuite_name;
 static void handle_line(const char *filepos, char *line)

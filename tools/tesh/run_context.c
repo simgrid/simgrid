@@ -342,6 +342,9 @@ void rctx_pushline(const char *filepos, char kind, char *line)
             filepos, rctx->expected_return);
 
     } else if (!strncmp(line, "output sort", strlen("output sort"))) {
+      sort_len = atoi(line + strlen("output sort"));
+      if (sort_len==0)
+        sort_len=SORT_LEN_DEFAULT;
       rctx->output_sort = 1;
       VERB1("[%s] (sort output of next command)", filepos);
 
@@ -650,7 +653,7 @@ static int cmpstringp(const void *p1, const void *p2) {
 
   DEBUG2("Compare strings '%s' and '%s'", s1, s2);
 
-  int res = strncmp(s1, s2, 19);
+  int res = strncmp(s1, s2, sort_len);
   if (res == 0)
     return p1>p2;
   return res;

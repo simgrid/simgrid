@@ -124,7 +124,7 @@ to sort the output back before comparing it.
 
 We expect the simulators to run with that log formating argument:
    -log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
-Then, tesh sorts string on the 20 first lines only, and is stable when
+Then, tesh sorts string on the 19 first chars only, and is stable when
 line beginings are equal. This should ensure that:
  (1) tesh is effective (no false positive, no false negative)
  (2) scheduling points are separated from each other 
@@ -134,6 +134,11 @@ line beginings are equal. This should ensure that:
      
 This is of course very SimGrid oriented, breaking the generality of
 tesh, but who cares, actually?     
+
+If you want to change the length of the prefix used for the sort,
+simply specify it after the output sort directive, like this:
+
+! output sort 22
  
 ENVIRONMENT
 -----------
