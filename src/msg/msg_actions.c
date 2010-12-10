@@ -152,7 +152,9 @@ static xbt_dynar_t action_get_action(char *name)
       xbt_str_trim(action_line, NULL);
       if (action_line[0] == '\0')
         continue;
-      evt = xbt_str_split_quoted_in_place(action_line);
+      /* we cannot split in place here because we parse&store several lines for
+       * the colleagues... */
+      evt = xbt_str_split_quoted(action_line);
 
       // if it's for me, I'm done
       evtname = xbt_dynar_get_as(evt, 0, char *);
