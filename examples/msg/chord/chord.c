@@ -304,6 +304,7 @@ int node(int argc, char *argv[])
   for (i = 0; i < NB_BITS - 1; i++) {
     xbt_free(node.fingers[i].mailbox);
   }
+  return 1;
 }
 
 /**
@@ -361,7 +362,7 @@ static void quit_notify(node_t node, int to)
 	req_data->pred_id = node->pred_id;
 	req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
 	const char *task_name = NULL;
-	const char* to_mailbox;
+	const char* to_mailbox = NULL;
 	if( to == 1)    // notify my successor
 	{
 		to_mailbox = node->fingers[0].mailbox;
