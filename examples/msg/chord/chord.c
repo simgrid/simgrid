@@ -44,6 +44,8 @@ typedef struct task_data {
   int answer_id;
   const char* answer_to;
   const char* issuer_host_name; // used for logging
+  int successor_id;				// used when quitting
+  int pred_id;  				// used when quitting
 } s_task_data_t, *task_data_t;
 
 // utility functions
@@ -59,6 +61,7 @@ static int node(int argc, char *argv[]);
 static void initialize_first_node(node_t node);
 static void initialize_finger_table(node_t data, int known_id);
 static void join(node_t node, int known_id);
+static void leave(node_t node);
 
 // Chord core
 static int find_successor(node_t node, int id);
@@ -74,6 +77,7 @@ static void remote_update_finger_table(node_t node, int ask_to_id, int candidate
 static void notify(node_t node, int predecessor_candidate_id);
 static void remote_notify(node_t node, int notify_to, int predecessor_candidate_id);
 static void stabilize(node_t node);
+static void quit_notify(node_t node, int to);
 
 /**
  * \brief Turns an id into an equivalent id in [0, NB_KEYS[
@@ -86,7 +90,6 @@ static int normalize(int id) {
   while (id < 0) {
     id += NB_KEYS;
   }
-
   // make sure id < NB_KEYS
   id = id % NB_KEYS;
 
@@ -164,11 +167,13 @@ static void print_finger_table(node_t node) {
  */
 int node(int argc, char *argv[])
 {
+  double init_time = MSG_get_clock();
   msg_comm_t comm = NULL;
   int i;
   char* mailbox;
+  double deadline;
 
-  xbt_assert0(argc == 2 || argc == 4, "Wrong number of arguments for this node");
+  xbt_assert0(argc == 3 || argc == 5, "Wrong number of arguments for this node");
 
   // initialize my node
   s_node_t node = {0};
@@ -176,12 +181,15 @@ int node(int argc, char *argv[])
   node.mailbox = get_mailbox(node.id);
   node.comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
 
-  if (argc == 2) { // first ring
+
+  if (argc == 3) { // first ring
     initialize_first_node(&node);
+    deadline = atof(argv[2]);
   }
   else {
     int known_id = atoi(argv[2]);
     double sleep_time = atof(argv[3]);
+    deadline = atof(argv[4]);
 
     // sleep before starting
     INFO1("Let's sleep >>%f", sleep_time);
@@ -191,7 +199,7 @@ int node(int argc, char *argv[])
     join(&node, known_id);
   }
 
-  while (1) {
+  while ((MSG_get_clock( )- init_time) < deadline) {
 
     unsigned int cursor;
     comm = NULL;
@@ -203,9 +211,10 @@ int node(int argc, char *argv[])
     }
 
     m_task_t task = NULL;
-    MSG_error_t res = MSG_task_receive(&task, node.mailbox);
+    MSG_error_t res = MSG_task_receive_with_timeout(&task, node.mailbox,45); // FIXME >> find the right timeout !!
 
-    xbt_assert0(res == MSG_OK, "MSG_task_receive failed");
+    if(res == MSG_OK)  			 // else check deadline condition and keep waiting for a task
+    {
 
     // get data
     const char* task_name = MSG_task_get_name(task);
@@ -231,11 +240,7 @@ int node(int argc, char *argv[])
         xbt_free(mailbox);
       }
     }
-    /*
-    else if (!strcmp(task_name, "Find Successor Answer")) {
 
-    }
-    */
     else if (!strcmp(task_name, "Find Predecessor")) {
       INFO2("Receiving a 'Find Predecessor' Request from %s for id %d", task_data->issuer_host_name, task_data->request_id);
       // am I the predecessor?
@@ -256,11 +261,7 @@ int node(int argc, char *argv[])
         xbt_free(mailbox);
       }
     }
-    /*
-    else if (!strcmp(task_name, "Find Predecessor Answer")) {
 
-    }
-    */
     else if (!strcmp(task_name, "Update Finger")) {
       // someone is telling me that he may be my new finger
       INFO1("Receiving an 'Update Finger' request from %s", task_data->issuer_host_name);
@@ -271,18 +272,32 @@ int node(int argc, char *argv[])
       INFO1("Receiving a 'Notify' request from %s", task_data->issuer_host_name);
       notify(&node, task_data->request_id);
     }
-    /*
-    else if (!strcmp(task_name, "Fix Fingers"))
-    {
-      int i;
-      for (i = KEY_BITS - 1 ; i >= 0; i--)
-      {
-	data->fingers[i] = find_finger_elem(data,(data->id)+pow(2,i-1));
-      }
-    }
-    */
-  }
+    else if (!strcmp(task_name, "Predecessor Leaving")) {
+          // my predecessor is about quitting
+          INFO1("Receiving a 'quite notify' from %s", task_data->issuer_host_name);
+          // modify my predecessor
+          node.pred_id = task_data->pred_id;
+          node.pred_mailbox = get_mailbox(node.id);
+          /*TODO :
+          >> notify my new predecessor
+          >> send a notify_predecessors !!
+          */
 
+        }
+    else if (!strcmp(task_name, "Successor Leaving")) {
+          // my successor is about quitting
+          INFO1("Receiving a 'quite notify' from %s", task_data->issuer_host_name);
+          // modify my successor FIXME : this should be implicit ?
+          node.fingers[0].id = task_data->successor_id;
+          node.fingers[0].mailbox = get_mailbox(node.fingers[0].id);
+          /* TODO
+          >> notify my new successor
+          >> update my table & predecessors table */
+        }
+    }
+  }
+  // leave the ring and quit simulation
+  leave(&node);
   xbt_dynar_free(&node.comms);
   xbt_free(node.mailbox);
   xbt_free(node.pred_mailbox);
@@ -320,7 +335,49 @@ static void join(node_t node, int known_id)
   initialize_finger_table(node, known_id); // determine my fingers, asking to known_id
   remote_notify(node, node->fingers[0].id, node->id); // tell my successor that I'm his new predecessor
   notify_predecessors(node); // tell others that I may have became their finger
-  remote_move_keys(node, node->fingers[0].id); // take some key-value pairs from my sucessor
+  remote_move_keys(node, node->fingers[0].id); // take some key-value pairs from my successor
+}
+
+/**
+ * \brief Makes the current node quit the system
+ * \param node the current node
+ */
+static void leave(node_t node)
+{
+	INFO0("Well Guys! I Think it's time for me to quit ;)");
+	quit_notify(node,1); 		// notify to my successor ( >>> 1 );
+	quit_notify(node,-1); 		// notify my predecessor  ( >>> -1);
+    // TODO ...
+}
+/*
+ * \brief Notify msg to tell my successor||predecessor about my departure
+ * \param node the current node
+ */
+static void quit_notify(node_t node, int to)
+{
+	task_data_t req_data = xbt_new0(s_task_data_t, 1);
+	req_data->request_id = node->id;
+	req_data->successor_id = node->fingers[0].id;
+	req_data->pred_id = node->pred_id;
+	req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
+	const char *task_name = NULL;
+	const char* to_mailbox;
+	if( to == 1)    // notify my successor
+	{
+		to_mailbox = node->fingers[0].mailbox;
+	    INFO1("Telling my Successor about my departure via mailbox %s", to_mailbox);
+		task_name = "Predecessor Leaving";
+
+	}
+	else if(to == -1)    // notify my predecessor
+	{
+		to_mailbox = node->pred_mailbox;
+	    INFO1("Telling my Predecessor about my departure via mailbox %s",to_mailbox);
+		task_name = "Predecessor Leaving";
+	}
+    m_task_t task = MSG_task_create(task_name, 1000, 5000, req_data);
+    //char* mailbox = get_mailbox(to_mailbox);
+	msg_comm_t comm = MSG_task_isend(task, to_mailbox);
 }
 
 /*
@@ -482,6 +539,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
 
   return successor;
 }
+
 
 /**
  * \brief Makes the current node find the predecessor node of an id.
