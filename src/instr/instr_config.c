@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING               "tracing"
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
-#define OPT_TRACING_PLATFORM      "tracing/categorized"
+#define OPT_TRACING_CATEGORIZED   "tracing/categorized"
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_TASK      "tracing/msg/task"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
@@ -187,9 +187,9 @@ int TRACE_smpi_is_grouped(void)
   return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
 }
 
-int TRACE_platform_is_enabled(void)
+int TRACE_categorized (void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_PLATFORM);
+  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_CATEGORIZED);
 }
 
 int TRACE_uncategorized (void)
@@ -265,7 +265,7 @@ void TRACE_global_init(int *argc, char **argv)
 
   /* platform */
   int default_tracing_platform = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM,
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_CATEGORIZED,
                    "Tracing of categorized platform (host and link) utilization.",
                    xbt_cfgelm_int, &default_tracing_platform, 0, 1,
                    NULL, NULL);
@@ -343,7 +343,7 @@ void TRACE_help (int detailed)
       "  It activates the tracing system and register the simulation platform\n"
       "  in the trace file. You have to enable this option to others take effect.",
       detailed);
-  print_line (OPT_TRACING_PLATFORM, "Trace categorized resource utilization",
+  print_line (OPT_TRACING_CATEGORIZED, "Trace categorized resource utilization",
       "  It activates the categorized resource utilization tracing. It should\n"
       "  be enabled if tracing categories are used by this simulator.",
       detailed);
@@ -510,7 +510,7 @@ void TRACE_generate_triva_cat_conf (void)
 #undef OPT_TRACING
 #undef OPT_TRACING_SMPI
 #undef OPT_TRACING_SMPI_GROUP
-#undef OPT_TRACING_PLATFORM
+#undef OPT_TRACING_CATEGORIZED
 #undef OPT_TRACING_UNCATEGORIZED
 #undef OPT_TRACING_MSG_TASK
 #undef OPT_TRACING_MSG_PROCESS

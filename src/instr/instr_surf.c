@@ -265,7 +265,7 @@ void TRACE_surf_action(surf_action_t surf_action, const char *category)
 {
   if (!TRACE_is_active())
     return;
-  if (!TRACE_platform_is_enabled())
+  if (!TRACE_categorized ())
     return;
   if (!category)
     return;

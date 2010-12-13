@@ -111,10 +111,10 @@ int TRACE_create_category_with_color(const char *category,
 
   /* for registering application categories on top of platform */
   snprintf(state, 100, "b%s", category);
-  if (TRACE_platform_is_enabled())
+  if (TRACE_categorized ())
     pajeDefineVariableTypeWithColor(state, "LINK", state, final_color);
   snprintf(state, 100, "p%s", category);
-  if (TRACE_platform_is_enabled())
+  if (TRACE_categorized ())
     pajeDefineVariableTypeWithColor(state, "HOST", state, final_color);
 
   val_one = xbt_strdup("1");
