@@ -18,6 +18,8 @@
 #include "simdag/private.h"
 #include "simix/private.h"
 
+extern xbt_dict_t created_categories;
+
 /* from paje.c */
 void TRACE_paje_create_header(void);
 void TRACE_paje_start(void);

@@ -28,7 +28,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 static int trace_configured = 0;
 static int trace_active = 0;
 
-extern xbt_dict_t created_categories; //declared in instr_interface.c
+xbt_dict_t created_categories; //declared in instr_interface.c
 
 int TRACE_start()
 {

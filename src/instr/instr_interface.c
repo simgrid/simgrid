@@ -12,8 +12,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
-xbt_dict_t created_categories;
-
 void TRACE_category(const char *category)
 {
   TRACE_category_with_color (category, NULL);
