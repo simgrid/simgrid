@@ -28,6 +28,13 @@ void TRACE_msg_set_process_category(m_process_t process, const char *category, c
       "Process %p(%s). Tracing already knows a process with name %s."
       "The name of each process must be unique.", process, process->name, process->name);
 
+  if (category == NULL) {
+    //if user provides a NULL category, process is no longer traced
+    xbt_free (process->category);
+    process->category = NULL;
+    return;
+  }
+
   //set process category
   process->category = xbt_strdup(category);
   DEBUG3("MSG process %p(%s), category %s", process, process->name, process->category);
