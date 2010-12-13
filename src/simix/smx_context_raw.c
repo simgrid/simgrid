@@ -6,7 +6,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/threadpool.h"
 #include "simix/private.h"
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
@@ -158,15 +157,11 @@ void raw_swapcontext(raw_stack_t* old, raw_stack_t new) {
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-static xbt_tpool_t tpool;
-
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
 
 
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 { 
-  if(tpool)
-    xbt_tpool_destroy(tpool);
   return smx_ctx_base_factory_finalize(factory);
 }
 
@@ -283,9 +278,8 @@ static void smx_ctx_raw_runall_parallel(xbt_swag_t processes)
 {
   smx_process_t process;
   while((process = xbt_swag_extract(processes))){
-    xbt_tpool_queue_job(tpool, (void_f_pvoid_t)smx_ctx_raw_resume_parallel, process->context);
+    /* FIXME */
   }
-  xbt_tpool_wait_all(tpool);
 }
 
 static smx_context_t smx_ctx_raw_self_parallel(void)
@@ -309,7 +303,6 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 
   if(_surf_parallel_contexts){
 #ifdef CONTEXT_THREADS  /* To use parallel ucontexts a thread pool is needed */
-    tpool = xbt_tpool_new(2, 10);
     (*factory)->runall = smx_ctx_raw_runall_parallel;
     (*factory)->self = smx_ctx_raw_self_parallel;
 #else

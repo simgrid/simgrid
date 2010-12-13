@@ -7,7 +7,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smx_context_sysv_private.h"
-#include "xbt/threadpool.h"
+//#include "xbt/threadpool.h"
 #include "simix/private.h"
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
@@ -23,7 +23,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-static xbt_tpool_t tpool;
+//static xbt_parmap_t tpool;
 
 static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
@@ -45,7 +45,7 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 
   if(_surf_parallel_contexts){
 #ifdef CONTEXT_THREADS	/* To use parallel ucontexts a thread pool is needed */
-    tpool = xbt_tpool_new(2, 10);
+//    tpool = xbt_parmap_new(2, 10);
     (*factory)->runall = smx_ctx_sysv_runall_parallel;
     (*factory)->self = smx_ctx_sysv_self_parallel;
 #else
@@ -58,8 +58,8 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 
 int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory)
 { 
-  if(tpool)
-    xbt_tpool_destroy(tpool);
+/*  if(tpool)
+    xbt_parmap_destroy(tpool);*/
   return smx_ctx_base_factory_finalize(factory);
 }
 
@@ -187,9 +187,9 @@ void smx_ctx_sysv_runall_parallel(xbt_swag_t processes)
 {
   smx_process_t process;
   while((process = xbt_swag_extract(processes))){
-    xbt_tpool_queue_job(tpool, (void_f_pvoid_t)smx_ctx_sysv_resume_parallel, process->context);
+  //  xbt_parmap_apply(tpool, (void_f_pvoid_t)smx_ctx_sysv_resume_parallel, process->context);
   }
-  xbt_tpool_wait_all(tpool);
+  /*xbt_tpool_wait_all(tpool);*/
 }
 
 smx_context_t smx_ctx_sysv_self_parallel(void)
