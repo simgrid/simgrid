@@ -37,6 +37,11 @@ SimGrid (3.6) unstable; urgency=low
     TRACE_category or TRACE_category_with_color, it is up to you
  * links in the trace file are again identified by their names
  * trace contains the full platform hierarchy exactly as declared using the ASes
+ * Options tracing/msg/[task|process]:1 groups the process by hosts
+   for both cases, tasks and processes must have names that are unique during the simulation
+   these options generate traces that are suited to gantt-charts, such as the space-time view of Paje
+ * The experimental option tracing/msg/volume is deprecated
+   its functionality may be reincorporated if needed
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
