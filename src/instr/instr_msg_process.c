@@ -15,8 +15,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
  */
 void TRACE_msg_set_process_category(m_process_t process, const char *category, const char *color)
 {
-  if (!TRACE_is_active())
-    return;
+  if (!(TRACE_is_enabled() &&
+      TRACE_msg_process_is_enabled())) return;
 
   xbt_assert3(process->category == NULL,
       "Process %p(%s) already has a category (%s).",
