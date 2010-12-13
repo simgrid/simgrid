@@ -153,7 +153,10 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
   type = getType ("MSG_TASK_STATE");
   pajePushState (MSG_get_clock(), type->id, msg->id, "created");
 
-  //FIXME: pajeEndLink
+  type = getType ("MSG_TASK_LINK");
+  char key[INSTR_DEFAULT_STR_SIZE];
+  snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", task->counter);
+  pajeEndLink(MSG_get_clock(), type->id, "0", "SR", msg->id, key);
 }
 
 /* MSG_task_put related functions */
@@ -169,7 +172,10 @@ int TRACE_msg_task_put_start(m_task_t task)
   type_t type = getType ("MSG_TASK_STATE");
   pajePopState (MSG_get_clock(), type->id, msg->id);
 
-  //FIXME: pajeStartLink
+  type = getType ("MSG_TASK_LINK");
+  char key[INSTR_DEFAULT_STR_SIZE];
+  snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", task->counter);
+  pajeStartLink(MSG_get_clock(), type->id, "0", "SR", msg->id, key);
 
   destroyContainer (msg);
 

@@ -521,6 +521,7 @@ static void instr_routing_parse_start_host ()
   if (TRACE_msg_task_is_enabled()) {
     type_t msg_task = getContainerType ("MSG_TASK", new->type);
     getStateType ("MSG_TASK_STATE", msg_task);
+    getLinkType ("MSG_TASK_LINK", rootType, msg_task, msg_task);
   }
 }
 
