@@ -276,7 +276,7 @@ char *instr_host_type (const char *name)
 
 void instr_destroy_platform ()
 {
-  recursiveDestroyContainer (rootContainer);
+  if (rootContainer) recursiveDestroyContainer (rootContainer);
 }
 
 #endif /* HAVE_TRACING */
