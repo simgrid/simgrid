@@ -190,6 +190,7 @@ static container_t newContainer (const char *name, e_container_types kind, conta
       case INSTR_HOST: new->type = getContainerType ("HOST", new->father->type); break;
       case INSTR_LINK: new->type = getContainerType ("LINK", new->father->type); break;
       case INSTR_ROUTER: new->type = getContainerType ("ROUTER", new->father->type); break;
+      case INSTR_SMPI: new->type = getContainerType ("MPI", new->father->type); break;
       default: xbt_die ("Congratulations, you have found a bug on newContainer function of instr_routing.c"); break;
     }
   }
@@ -377,7 +378,7 @@ static void instr_routing_parse_start_AS ()
     if (TRACE_smpi_is_enabled()) {
       if (!TRACE_smpi_is_grouped()){
         container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-        type_t mpi = getContainerType("MPI_PROCESS", father->type);
+        type_t mpi = getContainerType("MPI", father->type);
         getStateType ("MPI_STATE", mpi);
         getLinkType ("MPI_LINK", rootType, mpi, mpi);
       }
@@ -426,7 +427,7 @@ static void instr_routing_parse_start_host ()
 
   if (TRACE_smpi_is_enabled()) {
     if (TRACE_smpi_is_grouped()){
-      type_t mpi = getContainerType("MPI_PROCESS", new->type);
+      type_t mpi = getContainerType("MPI", new->type);
       getStateType ("MPI_STATE", mpi);
       getLinkType ("MPI_LINK", rootType, mpi, mpi);
     }
