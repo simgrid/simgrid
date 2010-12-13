@@ -161,12 +161,12 @@ void TRACE_generate_triva_uncat_conf (void);
 void TRACE_generate_triva_cat_conf (void);
 
 /* from resource_utilization.c */
-void TRACE_surf_host_set_utilization(const char *name,
+void TRACE_surf_host_set_utilization(const char *resource,
                                      smx_action_t smx_action,
                                      surf_action_t surf_action,
                                      double value, double now,
                                      double delta);
-void TRACE_surf_link_set_utilization(void *link, smx_action_t smx_action,
+void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_action,
                                      surf_action_t surf_action,
                                      double value, double now,
                                      double delta);

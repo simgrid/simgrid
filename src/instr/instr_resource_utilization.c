@@ -267,7 +267,7 @@ static void __TRACE_C_end(smx_action_t action)
 /*
  * TRACE_surf_link_set_utilization: entry point from SimGrid
  */
-void TRACE_surf_link_set_utilization(void *link, smx_action_t smx_action,
+void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_action,
                                      surf_action_t surf_action,
                                      double value, double now,
                                      double delta)
@@ -277,36 +277,42 @@ void TRACE_surf_link_set_utilization(void *link, smx_action_t smx_action,
   if (!value)
     return;
   //only trace link utilization if link is known by tracing mechanism
-  if (!TRACE_surf_link_is_traced(link))
+  if (!instr_link_is_traced(resource))
     return;
   if (!value)
     return;
 
-  char resource[100];
-  snprintf(resource, 100, "%p", link);
+  //get link type
+  char *link_type = instr_link_type (resource);
 
   //trace uncategorized link utilization
   if (TRACE_uncategorized()){
     DEBUG4("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now+delta, resource, value);
+    char bandwidth_used_type[INSTR_DEFAULT_STR_SIZE];
+    snprintf (bandwidth_used_type, INSTR_DEFAULT_STR_SIZE, "bandwidth_used-%s", link_type);
     TRACE_surf_resource_utilization_event(smx_action, now, delta,
-                                        "bandwidth_used", resource, value);
+        bandwidth_used_type, resource, value);
   }
 
   //trace categorized utilization
-  if (!surf_action->category)
-    return;
-  char type[100];
-  snprintf(type, 100, "b%s", surf_action->category);
-  DEBUG5("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, type, value);
-  TRACE_surf_resource_utilization_event(smx_action, now, delta, type,
-                                        resource, value);
+  if (TRACE_categorized()){
+    if (!surf_action->category)
+      return;
+
+    char cat_bw_used_type[INSTR_DEFAULT_STR_SIZE];
+    snprintf (cat_bw_used_type, INSTR_DEFAULT_STR_SIZE, "%s-%s", surf_action->category, link_type);
+
+    DEBUG5("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, cat_bw_used_type, value);
+    TRACE_surf_resource_utilization_event(smx_action, now, delta, cat_bw_used_type,
+        resource, value);
+  }
   return;
 }
 
 /*
  * TRACE_surf_host_set_utilization: entry point from SimGrid
  */
-void TRACE_surf_host_set_utilization(const char *name,
+void TRACE_surf_host_set_utilization(const char *resource,
                                      smx_action_t smx_action,
                                      surf_action_t surf_action,
                                      double value, double now,
@@ -317,21 +323,30 @@ void TRACE_surf_host_set_utilization(const char *name,
   if (!value)
     return;
 
+  //get host type
+  char *host_type = instr_host_type (resource);
+
   //trace uncategorized host utilization
   if (TRACE_uncategorized()){
-    DEBUG4("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, name, value);
+    DEBUG4("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
+    char power_used_type[INSTR_DEFAULT_STR_SIZE];
+    snprintf (power_used_type, INSTR_DEFAULT_STR_SIZE, "power_used-%s", host_type);
     TRACE_surf_resource_utilization_event(smx_action, now, delta,
-                                        "power_used", name, value);
+        power_used_type, resource, value);
   }
 
   //trace categorized utilization
-  if (!surf_action->category)
-    return;
-  char type[100];
-  snprintf(type, 100, "p%s", surf_action->category);
-  DEBUG5("CAT HOST [%f - %f] %s %s %f", now, now+delta, name, type, value);
-  TRACE_surf_resource_utilization_event(smx_action, now, delta, type, name,
-                                        value);
+  if (TRACE_categorized()){
+    if (!surf_action->category)
+      return;
+
+    char cat_p_used_type[INSTR_DEFAULT_STR_SIZE];
+    snprintf (cat_p_used_type, INSTR_DEFAULT_STR_SIZE, "%s-%s", surf_action->category, host_type);
+
+    DEBUG5("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, cat_p_used_type, value);
+    TRACE_surf_resource_utilization_event(smx_action, now, delta, cat_p_used_type, resource,
+        value);
+  }
   return;
 }
 
