@@ -233,7 +233,10 @@ static void instr_routing_parse_start_router ()
   container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   char type[INSTR_DEFAULT_STR_SIZE];
   snprintf (type, INSTR_DEFAULT_STR_SIZE, "ROUTER-%s", father->type);
-  newContainer (A_surfxml_router_id, type, "ROUTER");
+  container_t new = newContainer (A_surfxml_router_id, type, "ROUTER");
+
+  //register created host on the dictionary
+  xbt_dict_set (allContainers, A_surfxml_router_id, new, NULL);
 }
 
 static void instr_routing_parse_end_router ()
