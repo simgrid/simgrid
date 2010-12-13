@@ -112,7 +112,6 @@ void TRACE_surf_host_vivaldi_parse(char *host, double x, double y,
 void TRACE_surf_link_set_bandwidth(double date, void *link,
                                    double bandwidth);
 void TRACE_surf_link_set_latency(double date, void *link, double latency);
-void TRACE_surf_save_onelink(void);
 void TRACE_surf_action(surf_action_t surf_action, const char *category);
 
 //for tracing gtnets

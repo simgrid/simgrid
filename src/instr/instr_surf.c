@@ -159,35 +159,6 @@ void TRACE_surf_host_vivaldi_parse(char *host, double x, double y,
   pajeSetVariable(0, "vivaldi_h", host, valuestr);
 }
 
-extern routing_global_t global_routing;
-void TRACE_surf_save_onelink(void)
-{
-  if (!TRACE_is_active())
-    return;
-
-  //get the onelinks from the parsed platform
-  xbt_dynar_t onelink_routes = global_routing->get_onelink_routes();
-  if (!onelink_routes)
-    return;
-
-  //save them in trace file
-  onelink_t onelink;
-  unsigned int iter;
-  xbt_dynar_foreach(onelink_routes, iter, onelink) {
-    char *src = onelink->src;
-    char *dst = onelink->dst;
-    void *link = onelink->link_ptr;
-
-    if (TRACE_surf_link_is_traced(link)) {
-      char resource[100];
-      snprintf(resource, 100, "%p", link);
-
-      pajeNewEvent(0, "source", resource, src);
-      pajeNewEvent(0, "destination", resource, dst);
-    }
-  }
-}
-
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
 {
   if (!TRACE_is_active())

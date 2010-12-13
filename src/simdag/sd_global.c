@@ -191,10 +191,6 @@ void SD_create_environment(const char *platform_file)
 
   DEBUG2("Workstation number: %d, link number: %d",
          SD_workstation_get_number(), SD_link_get_number());
-
-#ifdef HAVE_TRACING
-  TRACE_surf_save_onelink();
-#endif
 }
 
 /**
