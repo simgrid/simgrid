@@ -266,7 +266,7 @@ void TRACE_msg_task_put_end(void)
 {
   if (!TRACE_is_active())
     return;
-  DEBUG0("PUT,in");
+  DEBUG0("PUT,out");
 }
 
 #endif /* HAVE_TRACING */
