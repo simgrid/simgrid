@@ -136,12 +136,13 @@ smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
     } else if(req->comm.type == SIMIX_COMM_RECEIVE) {
       req_data = req->comm.dst_data;
     }
-	 if(req->comm.type == type && (!match_fun || match_fun(data, req_data))) {
-	   xbt_fifo_remove_item(rdv->comm_fifo, item);
-	   req->comm.refcount++;
-	   req->comm.rdv = NULL;
-	   return req;
-	 }
+    if (req->comm.type == type && (!match_fun || match_fun(data, req_data))) {
+      xbt_fifo_remove_item(rdv->comm_fifo, item);
+      xbt_fifo_free_item(item);
+      req->comm.refcount++;
+      req->comm.rdv = NULL;
+      return req;
+    }
   }
   DEBUG0("Communication request not found");
   return NULL;
