@@ -105,7 +105,10 @@ void SIMIX_request_pre(smx_req_t req)
 {
   switch (req->call) {
   case REQ_NO_REQ:
-    xbt_die("Asked to do the noop syscall");
+    THROW2(arg_error,0,"Asked to do the noop syscall on %s@%s",
+        SIMIX_process_get_name(req->issuer),
+        SIMIX_host_get_name(SIMIX_process_get_host(req->issuer))
+        );
     break;
 
     case REQ_HOST_GET_BY_NAME:
