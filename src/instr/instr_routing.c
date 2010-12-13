@@ -236,6 +236,25 @@ container_t getContainer (const char *name)
   return recursiveGetContainer(name, rootContainer);
 }
 
+static type_t recursiveGetType (const char *name, type_t root)
+{
+  if (strcmp (root->name, name) == 0) return root;
+
+  xbt_dict_cursor_t cursor = NULL;
+  type_t child;
+  char *child_name;
+  xbt_dict_foreach(root->children, cursor, child_name, child) {
+    type_t ret = recursiveGetType(name, child);
+    if (ret) return ret;
+  }
+  return NULL;
+}
+
+type_t getType (const char *name)
+{
+  return recursiveGetType (name, rootType);
+}
+
 void destroyContainer (container_t container)
 {
   //remove me from my father
