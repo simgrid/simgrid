@@ -190,8 +190,13 @@ static void __pajeCreateContainer(char *output, int len, int eventid,
                                   const char *type, const char *container,
                                   const char *name)
 {
-  snprintf(output, len, "%d %lf %s %s %s %s", eventid, time,
+  if (time == 0){
+    snprintf(output, len, "%d 0 %s %s %s %s", eventid,
            alias, type, container, name);
+  }else{
+    snprintf(output, len, "%d %lf %s %s %s %s", eventid, time,
+           alias, type, container, name);
+  }
 }
 
 static void __pajeSetState(char *output, int len, int eventid, double time,
@@ -215,8 +220,13 @@ static void __pajeStartLink(char *output, int len, int eventid,
                             const char *container, const char *value,
                             const char *sourceContainer, const char *key)
 {
-  snprintf(output, len, "%d %lf %s %s %s %s %s", eventid, time, entityType,
+  if (time == 0){
+    snprintf(output, len, "%d 0 %s %s %s %s %s", eventid, entityType,
            container, value, sourceContainer, key);
+  }else{
+    snprintf(output, len, "%d %lf %s %s %s %s %s", eventid, time, entityType,
+           container, value, sourceContainer, key);
+  }
 }
 
 /* internal do the instrumentation module */
@@ -261,8 +271,13 @@ void pajeCreateContainer(double time, const char *alias, const char *type,
 void pajeDestroyContainer(double time, const char *type,
                           const char *container)
 {
-  fprintf(tracing_file, "%d %lf %s %s\n", pajeDestroyContainerId, time,
+  if (time == 0){
+    fprintf(tracing_file, "%d 0 %s %s\n", pajeDestroyContainerId,
           type, container);
+  }else{
+    fprintf(tracing_file, "%d %lf %s %s\n", pajeDestroyContainerId, time,
+          type, container);
+  }
 }
 
 void pajeSetState(double time, const char *entityType,
@@ -315,8 +330,13 @@ void pajeEndLink(double time, const char *entityType,
                  const char *container, const char *value,
                  const char *destContainer, const char *key)
 {
-  fprintf(tracing_file, "%d %lf %s %s %s %s %s\n", pajeEndLinkId, time,
+  if (time == 0){
+    fprintf(tracing_file, "%d 0 %s %s %s %s %s\n", pajeEndLinkId,
+            entityType, container, value, destContainer, key);
+  }else {
+    fprintf(tracing_file, "%d %lf %s %s %s %s %s\n", pajeEndLinkId, time,
           entityType, container, value, destContainer, key);
+  }
 }
 
 void pajeDefineVariableType(const char *alias, const char *containerType,
