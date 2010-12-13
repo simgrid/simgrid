@@ -32,8 +32,10 @@ int master(int argc, char *argv[])
 
   int i;
   for (i = 0; i < number_of_tasks; i++) {
+    char task_name[100];
+    snprintf (task_name, 100, "task-%d", i);
     m_task_t task = NULL;
-    task = MSG_task_create("task", task_comp_size, task_comm_size, NULL);
+    task = MSG_task_create(task_name, task_comp_size, task_comm_size, NULL);
 
     //setting the category of task to "compute"
     //the category of a task must be defined before it is sent or executed
@@ -42,7 +44,9 @@ int master(int argc, char *argv[])
   }
 
   for (i = 0; i < slaves_count; i++) {
-    m_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
+    char task_name[100];
+    snprintf (task_name, 100, "task-%d", i);
+    m_task_t finalize = MSG_task_create(task_name, 0, 0, xbt_strdup("finalize"));
     TRACE_msg_set_task_category(finalize, "finalize");
     MSG_task_send(finalize, "master_mailbox");
   }
@@ -63,7 +67,8 @@ int slave(int argc, char *argv[])
       break;
     }
 
-    if (!strcmp(MSG_task_get_name(task), "finalize")) {
+    char *data = MSG_task_get_data(task);
+    if (data && !strcmp(data, "finalize")) {
       MSG_task_destroy(task);
       break;
     }

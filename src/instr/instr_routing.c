@@ -213,6 +213,7 @@ container_t newContainer (const char *name, e_container_types kind, container_t 
       case INSTR_ROUTER: new->type = getContainerType ("ROUTER", new->father->type); break;
       case INSTR_SMPI: new->type = getContainerType ("MPI", new->father->type); break;
       case INSTR_MSG_PROCESS: new->type = getContainerType ("MSG_PROCESS", new->father->type); break;
+      case INSTR_MSG_TASK: new->type = getContainerType ("MSG_TASK", new->father->type); break;
       default: xbt_die ("Congratulations, you have found a bug on newContainer function of instr_routing.c"); break;
     }
   }
@@ -513,6 +514,10 @@ static void instr_routing_parse_start_host ()
 
   if (TRACE_msg_process_is_enabled()) {
     getContainerType("MSG_PROCESS", new->type);
+  }
+
+  if (TRACE_msg_task_is_enabled()) {
+    getContainerType ("MSG_TASK", new->type);
   }
 }
 

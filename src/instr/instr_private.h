@@ -42,6 +42,7 @@ typedef enum {
   INSTR_AS,
   INSTR_SMPI,
   INSTR_MSG_PROCESS,
+  INSTR_MSG_TASK,
 } e_container_types;
 
 typedef struct s_container *container_t;
@@ -107,8 +108,6 @@ void pajeNewEvent(double time, const char *entityType,
 
 /* declaration of instrumentation functions from msg_task_instr.c */
 char *TRACE_task_container(m_task_t task, char *output, int len);
-void TRACE_msg_task_alloc(void);
-void TRACE_msg_task_release(void);
 void TRACE_msg_task_create(m_task_t task);
 void TRACE_msg_task_execute_start(m_task_t task);
 void TRACE_msg_task_execute_end(m_task_t task);
@@ -122,8 +121,6 @@ void TRACE_msg_task_put_end(void);
 char *TRACE_process_alias_container(m_process_t process, m_host_t host,
                                     char *output, int len);
 char *TRACE_process_container(m_process_t process, char *output, int len);
-void TRACE_msg_process_alloc(void);
-void TRACE_msg_process_release(void);
 void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host,
                                    m_host_t new_host);
 void TRACE_msg_process_kill(m_process_t process);

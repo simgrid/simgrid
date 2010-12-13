@@ -87,7 +87,6 @@ int TRACE_start()
   }
   /* other trace initialization */
   created_categories = xbt_dict_new();
-  TRACE_msg_task_alloc();
   TRACE_surf_alloc();
   TRACE_smpi_alloc();
   return 0;
