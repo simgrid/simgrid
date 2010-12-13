@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 static int emigrant(int argc, char *argv[])
 {
   INFO0("Setting process category");
-  TRACE_msg_set_process_category(MSG_process_self(), "emigrant");
+  TRACE_msg_set_process_category(MSG_process_self(), "emigrant", "1 0 0");
   MSG_process_sleep(2);
   INFO0("Migrating to Tremblay");
   MSG_process_change_host(MSG_get_host_by_name("Tremblay"));
@@ -53,9 +53,6 @@ int main(int argc, char *argv[])
 
   /* Simulation setting */
   MSG_create_environment(argv[1]);
-
-  /* declaring tracing category for the process (after environment creation) */
-  TRACE_category_with_color ("emigrant", "1 0 0");
 
   /* Application deployment */
   MSG_function_register("emigrant", emigrant);

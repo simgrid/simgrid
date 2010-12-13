@@ -41,6 +41,7 @@ typedef enum {
   INSTR_ROUTER,
   INSTR_AS,
   INSTR_SMPI,
+  INSTR_MSG,
 } e_container_types;
 
 typedef struct s_container *container_t;

@@ -19,8 +19,7 @@ XBT_PUBLIC(void) TRACE_category(const char *category);
 XBT_PUBLIC(void) TRACE_category_with_color (const char *category, const char *color);
 XBT_PUBLIC(void) TRACE_msg_set_task_category(m_task_t task,
                                              const char *category);
-XBT_PUBLIC(void) TRACE_msg_set_process_category(m_process_t process,
-                                                const char *category);
+void TRACE_msg_set_process_category(m_process_t process, const char *category, const char *color);
 XBT_PUBLIC(void) TRACE_user_host_variable(double time,
                                           const char *variable,
                                           double value, const char *what);
@@ -80,7 +79,7 @@ XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task,
 #define TRACE_category(cat)
 #define TRACE_category_with_color(cat,color)
 #define TRACE_msg_set_task_category(task,cat)
-#define TRACE_msg_set_process_category(proc,cat)
+#define TRACE_msg_set_process_category(proc,cat,color)
 #define TRACE_set_mask(mask)
 
 #define TRACE_host_variable_declare(var)

@@ -24,7 +24,7 @@ MSG_error_t test_all(const char *platform_file,
 int master(int argc, char *argv[])
 {
   //defining the category of the master process
-  TRACE_msg_set_process_category(MSG_process_self(), "master");
+  TRACE_msg_set_process_category(MSG_process_self(), "master", "1 0 0");
 
   long number_of_tasks = atol(argv[1]);
   long slaves_count = atol(argv[4]);
@@ -60,7 +60,7 @@ int master(int argc, char *argv[])
 int slave(int argc, char *argv[])
 {
   //defining the category of this slave process
-  TRACE_msg_set_process_category(MSG_process_self(), "slave");
+  TRACE_msg_set_process_category(MSG_process_self(), "slave", "0 0 1");
 
   m_task_t task = NULL;
   int res;
@@ -101,10 +101,6 @@ MSG_error_t test_all(const char *platform_file,
     TRACE_category_with_color ("request", "0 1 0"); //green
     TRACE_category_with_color ("data", "0 0 1");    //blue
     TRACE_category_with_color ("finalize", "0 0 0");//black
-
-    //declaring user categories (for processes)
-    TRACE_category_with_color ("master", "1 0 0");
-    TRACE_category_with_color ("slave", "0 0 1");
   }
   {                             /*   Application deployment */
     MSG_function_register("master", master);
