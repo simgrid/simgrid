@@ -11,12 +11,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_surf, instr, "Tracing Surf");
 
-static xbt_dict_t resource_variables;   /* (host|link)#variable -> value */
-
 void TRACE_surf_alloc(void)
 {
-  resource_variables = xbt_dict_new();
-
   TRACE_surf_resource_utilization_alloc();
 }
 
@@ -36,8 +32,7 @@ static void TRACE_surf_set_resource_variable(double date,
   pajeSetVariable(date, variable, resource, value_str);
 }
 
-void TRACE_surf_host_set_power(double date, const char *resource,
-                               double power)
+void TRACE_surf_host_set_power(double date, const char *resource, double power)
 {
   if (!TRACE_is_active())
     return;
