@@ -76,6 +76,8 @@ static void newVariableType (const char *type, const char *parentType, const cha
 
 void instr_routing_define_callbacks ()
 {
+  if (!TRACE_is_active())
+    return;
   surfxml_add_callback(STag_surfxml_AS_cb_list, &instr_routing_parse_start_AS);
   surfxml_add_callback(ETag_surfxml_AS_cb_list, &instr_routing_parse_end_AS);
   surfxml_add_callback(STag_surfxml_link_cb_list, &instr_routing_parse_start_link);
