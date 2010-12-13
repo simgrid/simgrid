@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
 static xbt_dict_t keys;
 
-static char *TRACE_smpi_container(int rank, char *container, int n)
+static char *smpi_container(int rank, char *container, int n)
 {
   snprintf(container, n, "rank-%d", rank);
   return container;
@@ -105,14 +105,17 @@ void TRACE_smpi_init(int rank)
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
-  TRACE_smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+
+  container_t father;
   if (TRACE_smpi_is_grouped()){
-    pajeCreateContainer(SIMIX_get_clock(), str, "MPI_PROCESS",
-                      SIMIX_host_self_get_name(), str);
+    father = getContainer (SIMIX_host_self_get_name());
   }else{
-    pajeCreateContainer(SIMIX_get_clock(), str, "MPI_PROCESS",
-                      "platform", str);
+    father = getContainer ("0");
   }
+  xbt_assert2(father!=NULL,
+      "Could not find a parent for mpi rank %s at function %s", str, __FUNCTION__);
+  newContainer(str, INSTR_SMPI, father);
 }
 
 void TRACE_smpi_finalize(int rank)
@@ -121,8 +124,8 @@ void TRACE_smpi_finalize(int rank)
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
-  pajeDestroyContainer(SIMIX_get_clock(), "MPI_PROCESS",
-                       TRACE_smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE));
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  destroyContainer(getContainer (str));
 }
 
 void TRACE_smpi_collective_in(int rank, int root, const char *operation)
@@ -131,8 +134,11 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation)
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
-  pajePushState(SIMIX_get_clock(), "MPI_STATE",
-                TRACE_smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE), operation);
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = getContainer (str);
+  type_t type = getType ("MPI_STATE");
+
+  pajePushState(SIMIX_get_clock(), type->id, container->id, operation);
 }
 
 void TRACE_smpi_collective_out(int rank, int root, const char *operation)
@@ -141,8 +147,11 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation)
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
-  pajePopState(SIMIX_get_clock(), "MPI_STATE",
-               TRACE_smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE));
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = getContainer (str);
+  type_t type = getType ("MPI_STATE");
+
+  pajePopState(SIMIX_get_clock(), type->id, container->id);
 }
 
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
@@ -151,8 +160,11 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
-  pajePushState(SIMIX_get_clock(), "MPI_STATE",
-                TRACE_smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE), operation);
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = getContainer (str);
+  type_t type = getType ("MPI_STATE");
+
+  pajePushState(SIMIX_get_clock(), type->id, container->id, operation);
 }
 
 void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
@@ -161,8 +173,11 @@ void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
-  pajePopState(SIMIX_get_clock(), "MPI_STATE",
-               TRACE_smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE));
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = getContainer (str);
+  type_t type = getType ("MPI_STATE");
+
+  pajePopState(SIMIX_get_clock(), type->id, container->id);
 }
 
 void TRACE_smpi_send(int rank, int src, int dst)
@@ -170,10 +185,15 @@ void TRACE_smpi_send(int rank, int src, int dst)
   if (!TRACE_smpi_is_enabled())
     return;
 
-  char key[INSTR_DEFAULT_STR_SIZE], str[INSTR_DEFAULT_STR_SIZE];
+  char key[INSTR_DEFAULT_STR_SIZE];
   TRACE_smpi_put_key(src, dst, key, INSTR_DEFAULT_STR_SIZE);
-  pajeStartLink(SIMIX_get_clock(), "MPI_LINK", "0", "PTP",
-                TRACE_smpi_container(src, str, INSTR_DEFAULT_STR_SIZE), key);
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(src, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = getContainer (str);
+  type_t type = getType ("MPI_LINK");
+
+  pajeStartLink(SIMIX_get_clock(), type->id, type->father->id, "PTP", container->id, key);
 }
 
 void TRACE_smpi_recv(int rank, int src, int dst)
@@ -181,9 +201,14 @@ void TRACE_smpi_recv(int rank, int src, int dst)
   if (!TRACE_smpi_is_enabled())
     return;
 
-  char key[INSTR_DEFAULT_STR_SIZE], str[INSTR_DEFAULT_STR_SIZE];
+  char key[INSTR_DEFAULT_STR_SIZE];
   TRACE_smpi_get_key(src, dst, key, INSTR_DEFAULT_STR_SIZE);
-  pajeEndLink(SIMIX_get_clock(), "MPI_LINK", "0", "PTP",
-              TRACE_smpi_container(dst, str, INSTR_DEFAULT_STR_SIZE), key);
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(dst, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = getContainer (str);
+  type_t type = getType ("MPI_LINK");
+
+  pajeEndLink(SIMIX_get_clock(), type->id, type->father->id, "PTP", container->id, key);
 }
 #endif /* HAVE_TRACING */
