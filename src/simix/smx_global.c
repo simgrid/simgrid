@@ -179,7 +179,8 @@ void SIMIX_run(void)
 
   do {
     do {
-      DEBUG0("New Schedule Round");
+      DEBUG1("New Schedule Round; size(queue)=%lu",
+          xbt_dynar_length(simix_global->process_to_run));
       SIMIX_context_runall(simix_global->process_to_run);
       while ((req = SIMIX_request_pop())) {
         DEBUG1("Handling request %p", req);
