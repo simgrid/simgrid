@@ -87,6 +87,11 @@ MSG_error_t test_all(const char *platform_file,
     MSG_set_channel_number(0);
     MSG_create_environment(platform_file);
   }
+  {
+    //declaring user categories
+    TRACE_category_with_color ("compute", "1 0 0");  //compute is red
+    TRACE_category_with_color ("finalize", "0 1 0"); //finalize is green
+  }
   {                             /*   Application deployment */
     MSG_function_register("master", master);
     MSG_function_register("slave", slave);
@@ -110,10 +115,6 @@ int main(int argc, char *argv[])
     printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
     exit(1);
   }
-
-  //declaring user categories
-  TRACE_category_with_color ("compute", "1 0 0");  //compute is red
-  TRACE_category_with_color ("finalize", "0 1 0"); //finalize is green
 
   res = test_all(argv[1], argv[2]);
   MSG_clean();

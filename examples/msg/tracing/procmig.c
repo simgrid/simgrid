@@ -50,10 +50,12 @@ int main(int argc, char *argv[])
               argv[0]);
     exit(1);
   }
-  TRACE_category_with_color ("emigrant", "1 0 0");
 
   /* Simulation setting */
   MSG_create_environment(argv[1]);
+
+  /* declaring tracing category for the process (after environment creation) */
+  TRACE_category_with_color ("emigrant", "1 0 0");
 
   /* Application deployment */
   MSG_function_register("emigrant", emigrant);
