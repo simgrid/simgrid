@@ -263,6 +263,7 @@ static void smx_ctx_raw_runall(xbt_dynar_t processes)
   unsigned int cursor;
 
   xbt_dynar_foreach(processes, cursor, process) {
+    DEBUG2("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
     smx_ctx_raw_resume(process->context);
   }
   xbt_dynar_reset(processes);
