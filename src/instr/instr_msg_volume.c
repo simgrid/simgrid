@@ -10,59 +10,61 @@
 
 void TRACE_msg_volume_start(m_task_t task)
 {
-  m_process_t process = NULL;
-  m_host_t host = NULL;
-  char process_name[200], process_alias[200];
-  char task_name[200];
-  double volume = 0;
-  if (!TRACE_msg_volume_is_enabled())
-    return;
-
-  /* check if task is traced */
-  if (!task->category)
-    return;
-
-  /* check if process is traced */
-  process = MSG_process_self();
-  if (!process->category)
-    return;
-
-  host = MSG_process_get_host(process);
-  TRACE_process_container(process, process_name, 200);
-  TRACE_process_alias_container(process, host, process_alias, 200);
-  TRACE_task_container(task, task_name, 200);
-
-  volume = MSG_task_get_data_size(task);
-
-  pajeStartLinkWithVolume(MSG_get_clock(), "volume", "0", task->category,
-                          process_alias, task_name, volume);
+  xbt_die ("tracing/msg/volume:1 is deprecated.");
+//  m_process_t process = NULL;
+//  m_host_t host = NULL;
+//  char process_name[200], process_alias[200];
+//  char task_name[200];
+//  double volume = 0;
+//  if (!TRACE_msg_volume_is_enabled())
+//    return;
+//
+//  /* check if task is traced */
+//  if (!task->category)
+//    return;
+//
+//  /* check if process is traced */
+//  process = MSG_process_self();
+//  if (!process->category)
+//    return;
+//
+//  host = MSG_process_get_host(process);
+//  TRACE_process_container(process, process_name, 200);
+//  TRACE_process_alias_container(process, host, process_alias, 200);
+//  TRACE_task_container(task, task_name, 200);
+//
+//  volume = MSG_task_get_data_size(task);
+//
+//  pajeStartLinkWithVolume(MSG_get_clock(), "volume", "0", task->category,
+//                          process_alias, task_name, volume);
 }
 
 void TRACE_msg_volume_finish(m_task_t task)
 {
-  char process_name[200], process_alias[200];
-  char task_name[200];
-  m_process_t process = NULL;
-  m_host_t host = NULL;
-  if (!TRACE_msg_volume_is_enabled())
-    return;
-
-  /* check if task is traced */
-  if (!task->category)
-    return;
-
-  /* check if process is traced */
-  process = MSG_process_self();
-  if (!process->category)
-    return;
-
-  host = MSG_process_get_host(process);
-  TRACE_process_container(process, process_name, 200);
-  TRACE_process_alias_container(process, host, process_alias, 200);
-  TRACE_task_container(task, task_name, 200);
-
-  pajeEndLink(MSG_get_clock(), "volume", "0", task->category,
-              process_alias, task_name);
+  xbt_die ("tracing/msg/volume:1 is deprecated.");
+//  char process_name[200], process_alias[200];
+//  char task_name[200];
+//  m_process_t process = NULL;
+//  m_host_t host = NULL;
+//  if (!TRACE_msg_volume_is_enabled())
+//    return;
+//
+//  /* check if task is traced */
+//  if (!task->category)
+//    return;
+//
+//  /* check if process is traced */
+//  process = MSG_process_self();
+//  if (!process->category)
+//    return;
+//
+//  host = MSG_process_get_host(process);
+//  TRACE_process_container(process, process_name, 200);
+//  TRACE_process_alias_container(process, host, process_alias, 200);
+//  TRACE_task_container(task, task_name, 200);
+//
+//  pajeEndLink(MSG_get_clock(), "volume", "0", task->category,
+//              process_alias, task_name);
 }
 
 #endif /* HAVE_TRACING */

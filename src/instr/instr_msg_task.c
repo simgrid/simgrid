@@ -225,7 +225,9 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
   if (TRACE_msg_task_is_enabled())
     pajePopState(MSG_get_clock(), "task-state", name);
 
-  TRACE_msg_volume_finish(task);
+  if (TRACE_msg_volume_is_enabled()){
+    TRACE_msg_volume_finish(task);
+  }
 
   TRACE_task_location(task);
   TRACE_task_location_present(task);
@@ -251,7 +253,9 @@ int TRACE_msg_task_put_start(m_task_t task)
   if (TRACE_msg_task_is_enabled())
     pajePushState(MSG_get_clock(), "task-state", name, "communicate");
 
-  TRACE_msg_volume_start(task);
+  if (TRACE_msg_volume_is_enabled()){
+    TRACE_msg_volume_start(task);
+  }
 
   //trace task location grouped by host
   TRACE_task_location_not_present(task);
