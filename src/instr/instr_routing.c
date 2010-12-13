@@ -8,6 +8,7 @@
 
 #ifdef HAVE_TRACING
 #include "surf/surf_private.h"
+#include "surf/network_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
@@ -149,6 +150,79 @@ static void recursiveDestroyContainer (container_t container)
   container = NULL;
 }
 
+static void linkContainers (container_t container, const char *a1, const char *a2)
+{
+  //ignore loopback
+  if (strcmp (a1, "__loopback__") == 0 || strcmp (a2, "__loopback__") == 0)
+    return;
+
+  char *a1_type = ((container_t)xbt_dict_get (allContainers, a1))->type;
+  char *a1_typename = ((container_t)xbt_dict_get (allContainers, a1))->typename;
+
+  char *a2_type = ((container_t)xbt_dict_get (allContainers, a2))->type;
+  char *a2_typename = ((container_t)xbt_dict_get (allContainers, a2))->typename;
+
+  //declare type
+  char new_link_type[INSTR_DEFAULT_STR_SIZE], new_link_typename[INSTR_DEFAULT_STR_SIZE];
+  snprintf (new_link_type, INSTR_DEFAULT_STR_SIZE, "%s-%s", a1_type, a2_type);
+  snprintf (new_link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s", a1_typename, a2_typename);
+  newLinkType (new_link_type, container->type, a1_type, a2_type, new_link_typename);
+
+  //create the link
+  static long long counter = 0;
+  char key[INSTR_DEFAULT_STR_SIZE];
+  snprintf (key, INSTR_DEFAULT_STR_SIZE, "G%lld", counter++);
+  pajeStartLink(SIMIX_get_clock(), new_link_type, container->name, "graph", a1, key);
+  pajeEndLink(SIMIX_get_clock(), new_link_type, container->name, "graph", a2, key);
+}
+
+static void recursiveGraphExtraction (container_t container)
+{
+  if (xbt_dict_length(container->children)){
+    xbt_dict_cursor_t cursor = NULL;
+    container_t child;
+    char *child_name;
+    //bottom-up recursion
+    xbt_dict_foreach(container->children, cursor, child_name, child) {
+      recursiveGraphExtraction (child);
+    }
+
+    //let's get routes
+    xbt_dict_cursor_t cursor1 = NULL, cursor2 = NULL;
+    container_t child1, child2;
+    const char *child_name1, *child_name2;
+
+    xbt_dict_foreach(container->children, cursor1, child_name1, child1) {
+      xbt_dict_foreach(container->children, cursor2, child_name2, child2) {
+        if ((child1->kind == INSTR_HOST || child1->kind == INSTR_ROUTER) &&
+            (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER)){
+
+          //getting route
+          xbt_dynar_t route;
+          xbt_ex_t exception;
+          TRY {
+            route = global_routing->get_route (child_name1, child_name2);
+          }CATCH(exception) {
+            //no route between them, that's possible
+            continue;
+          }
+
+          //link the route members
+          unsigned int cpt;
+          void *link;
+          char *previous_entity_name = (char*)child_name1;
+          xbt_dynar_foreach (route, cpt, link) {
+            char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+            linkContainers (container, previous_entity_name, link_name);
+            previous_entity_name = link_name;
+          }
+          linkContainers (container, previous_entity_name, child_name2);
+        }
+      }
+    }
+  }
+}
+
 /*
  * Callbacks
  */
@@ -278,6 +352,7 @@ static void instr_routing_parse_end_router ()
 static void instr_routing_parse_end_platform ()
 {
   currentContainer = NULL;
+  recursiveGraphExtraction (rootContainer);
 }
 
 /*
