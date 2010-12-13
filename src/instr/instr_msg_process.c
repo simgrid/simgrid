@@ -61,13 +61,27 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
       TRACE_msg_process_is_enabled() &&
       process->category)) return;
 
+  static long long int counter = 0;
+  char key[INSTR_DEFAULT_STR_SIZE];
+  snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
+
+  //start link
+  container_t msg = getContainer(process->name);
+  type_t type = getType ("MSG_PROCESS_LINK");
+  pajeStartLink (MSG_get_clock(), type->id, "0", "M", msg->id, key);
+
   //destroy existing container of this process
   destroyContainer(getContainer(process->name));
 
   //create new container on the new_host location
-  container_t msg = newContainer(process->name, INSTR_MSG_PROCESS, getContainer(new_host->name));
-  type_t type = getType (process->category);
+  msg = newContainer(process->name, INSTR_MSG_PROCESS, getContainer(new_host->name));
+  type = getType (process->category);
   pajeSetVariable(SIMIX_get_clock(), type->id, msg->id, "1");
+
+  //end link
+  msg = getContainer(process->name);
+  type = getType ("MSG_PROCESS_LINK");
+  pajeEndLink (MSG_get_clock(), type->id, "0", "M", msg->id, key);
 }
 
 void TRACE_msg_process_kill(m_process_t process)
