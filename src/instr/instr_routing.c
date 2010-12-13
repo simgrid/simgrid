@@ -13,11 +13,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarc
 
 extern xbt_dict_t defined_types; /* from instr_interface.c */
 
+typedef enum {
+  INSTR_HOST,
+  INSTR_LINK,
+  INSTR_ROUTER,
+  INSTR_AS,
+} e_container_types;
+
 typedef struct s_container *container_t;
 typedef struct s_container {
   char *name;     /* Unique id of this container */
   char *type;     /* Type of this container */
+  char *typename; /* Type name of this container */
   int level;      /* Level in the hierarchy, root level is 0 */
+  e_container_types kind; /* This container is of what kind */
   struct s_container *father;
   xbt_dict_t children;
 }s_container_t;
@@ -98,17 +107,25 @@ void instr_routing_define_callbacks ()
 }
 
 
-static container_t newContainer (const char *name, const char *type, const char *typename)
+static container_t newContainer (const char *name, const char *type, e_container_types kind)
 {
   container_t newContainer = xbt_new0(s_container_t, 1);
   newContainer->name = xbt_strdup (name);
   newContainer->father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   newContainer->level = newContainer->father->level+1;
   newContainer->type = xbt_strdup (type);
+  switch (kind){
+    case INSTR_HOST: newContainer->typename = xbt_strdup ("HOST"); break;
+    case INSTR_LINK: newContainer->typename = xbt_strdup ("LINK"); break;
+    case INSTR_ROUTER: newContainer->typename = xbt_strdup ("ROUTER"); break;
+    case INSTR_AS: newContainer->typename = xbt_strdup ("AS"); break;
+    default: xbt_die ("Congratulations, you have found a bug on newContainer function of instr_routing.c"); break;
+  }
+  newContainer->kind = kind;
   newContainer->children = xbt_dict_new();
   xbt_dict_set(newContainer->father->children, newContainer->name, newContainer, NULL);
 
-  newContainerType (newContainer->type, newContainer->father->type, typename);
+  newContainerType (newContainer->type, newContainer->father->type, newContainer->typename);
   pajeCreateContainer (0, newContainer->name, newContainer->type, newContainer->father->name, newContainer->name);
 
   return newContainer;
@@ -141,9 +158,11 @@ static void instr_routing_parse_start_AS ()
     rootContainer = xbt_new0(s_container_t, 1);
     rootContainer->name = xbt_strdup ("0");
     rootContainer->type = xbt_strdup ("0");
+    rootContainer->typename = xbt_strdup ("0");
     rootContainer->level = 0;
     rootContainer->father = NULL;
     rootContainer->children = xbt_dict_new();
+    rootContainer->kind = INSTR_AS;
 
     currentContainer = xbt_dynar_new (sizeof(s_container_t), NULL);
     xbt_dynar_push (currentContainer, rootContainer);
@@ -158,7 +177,9 @@ static void instr_routing_parse_start_AS ()
   newContainer->father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   newContainer->level = newContainer->father->level+1;
   newContainer->type = instr_AS_type (newContainer->level);
+  newContainer->typename = instr_AS_type (newContainer->level);
   newContainer->children = xbt_dict_new();
+  newContainer->kind = INSTR_AS;
   xbt_dict_set(newContainer->father->children, newContainer->name, newContainer, NULL);
 
   //trace
@@ -179,7 +200,7 @@ static void instr_routing_parse_start_link ()
   container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   char type[INSTR_DEFAULT_STR_SIZE];
   snprintf (type, INSTR_DEFAULT_STR_SIZE, "LINK-%s", father->type);
-  container_t new = newContainer (A_surfxml_link_id, type, "LINK");
+  container_t new = newContainer (A_surfxml_link_id, type, INSTR_LINK);
 
   //bandwidth and latency
   char bandwidth_type[INSTR_DEFAULT_STR_SIZE], latency_type[INSTR_DEFAULT_STR_SIZE];
@@ -213,7 +234,7 @@ static void instr_routing_parse_start_host ()
   container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   char type[INSTR_DEFAULT_STR_SIZE];
   snprintf (type, INSTR_DEFAULT_STR_SIZE, "HOST-%s", father->type);
-  container_t new = newContainer (A_surfxml_host_id, type, "HOST");
+  container_t new = newContainer (A_surfxml_host_id, type, INSTR_HOST);
 
   //power
   char power_type[INSTR_DEFAULT_STR_SIZE];
@@ -244,7 +265,7 @@ static void instr_routing_parse_start_router ()
   container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   char type[INSTR_DEFAULT_STR_SIZE];
   snprintf (type, INSTR_DEFAULT_STR_SIZE, "ROUTER-%s", father->type);
-  container_t new = newContainer (A_surfxml_router_id, type, "ROUTER");
+  container_t new = newContainer (A_surfxml_router_id, type, INSTR_ROUTER);
 
   //register created host on the dictionary
   xbt_dict_set (allContainers, A_surfxml_router_id, new, NULL);
