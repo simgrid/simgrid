@@ -56,7 +56,10 @@ static xbt_dict_t process_category;
 
 void TRACE_internal_smpi_set_category (const char *category)
 {
-  if (!TRACE_smpi_is_enabled()) return;
+  if (!TRACE_is_active())
+    return;
+  if (!TRACE_smpi_is_enabled())
+    return;
 
   //declare category
   TRACE_category (category);
@@ -71,7 +74,10 @@ void TRACE_internal_smpi_set_category (const char *category)
 
 const char *TRACE_internal_smpi_get_category (void)
 {
-  if (!TRACE_smpi_is_enabled()) return NULL;
+  if (!TRACE_is_active())
+    return NULL;
+  if (!TRACE_smpi_is_enabled())
+    return NULL;
 
   char processid[INSTR_DEFAULT_STR_SIZE];
   snprintf (processid, INSTR_DEFAULT_STR_SIZE, "%p", SIMIX_process_self());
@@ -86,22 +92,22 @@ void TRACE_smpi_alloc()
 
 void TRACE_smpi_start(void)
 {
-  if (TRACE_smpi_is_enabled()) {
+  if (TRACE_is_enabled()) {
     TRACE_start();
   }
 }
 
 void TRACE_smpi_release(void)
 {
-  TRACE_surf_release();
-  if (TRACE_smpi_is_enabled()) {
+  if (TRACE_is_enabled()) {
+    TRACE_surf_release();
     TRACE_end();
   }
 }
 
 void TRACE_smpi_init(int rank)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (!(TRACE_is_active() && TRACE_smpi_is_enabled()))
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -120,7 +126,7 @@ void TRACE_smpi_init(int rank)
 
 void TRACE_smpi_finalize(int rank)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (!(TRACE_is_active() && TRACE_smpi_is_enabled()))
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -130,7 +136,7 @@ void TRACE_smpi_finalize(int rank)
 
 void TRACE_smpi_collective_in(int rank, int root, const char *operation)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (!(TRACE_is_active() && TRACE_smpi_is_enabled()))
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -143,7 +149,7 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation)
 
 void TRACE_smpi_collective_out(int rank, int root, const char *operation)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (!(TRACE_is_active() && TRACE_smpi_is_enabled()))
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -156,7 +162,7 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation)
 
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (!(TRACE_is_active() && TRACE_smpi_is_enabled()))
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -169,7 +175,7 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
 
 void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (!(TRACE_is_active() && TRACE_smpi_is_enabled()))
     return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -182,7 +188,7 @@ void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
 
 void TRACE_smpi_send(int rank, int src, int dst)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (!(TRACE_is_active() && TRACE_smpi_is_enabled()))
     return;
 
   char key[INSTR_DEFAULT_STR_SIZE];
@@ -198,7 +204,7 @@ void TRACE_smpi_send(int rank, int src, int dst)
 
 void TRACE_smpi_recv(int rank, int src, int dst)
 {
-  if (!TRACE_smpi_is_enabled())
+  if (!(TRACE_is_active() && TRACE_smpi_is_enabled()))
     return;
 
   char key[INSTR_DEFAULT_STR_SIZE];
