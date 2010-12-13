@@ -144,21 +144,6 @@ void TRACE_surf_gtnets_destroy(void *action)
   xbt_dict_remove(gtnets_dst, key);
 }
 
-void TRACE_surf_host_vivaldi_parse(char *host, double x, double y,
-                                   double h)
-{
-  char valuestr[100];
-  if (!TRACE_is_active() || !TRACE_platform_is_enabled())
-    return;
-
-  snprintf(valuestr, 100, "%g", x);
-  pajeSetVariable(0, "vivaldi_x", host, valuestr);
-  snprintf(valuestr, 100, "%g", y);
-  pajeSetVariable(0, "vivaldi_y", host, valuestr);
-  snprintf(valuestr, 100, "%g", h);
-  pajeSetVariable(0, "vivaldi_h", host, valuestr);
-}
-
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
 {
   if (!TRACE_is_active())
