@@ -190,6 +190,10 @@ void TRACE_sd_task_destroy(SD_task_t task);
 
 /* instr_routing.c */
 void instr_routing_define_callbacks (void);
+int instr_link_is_traced (const char *name);
+char *instr_link_type (const char *name);
+char *instr_host_type (const char *name);
+void instr_destroy_platform (void);
 
 #endif /* HAVE_TRACING */
 #endif /* INSTR_PRIVATE_H_ */
