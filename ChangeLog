@@ -30,6 +30,13 @@ SimGrid (3.6) unstable; urgency=low
    graph configuration files for Triva visualization tool.
  * Configuration option tracing/platform is renamed to tracing/categorized
  * XBT logging makes tracing error checks easier, new root log hierarchy: instr
+ * New TRACE_user_link_variable interface:
+   User provides the name of the link and the tracing variable to attach to it
+ * the declaration of tracing categories must be done after the environment creation
+ * simpler tracing interface, just one way to declare categories
+    TRACE_category or TRACE_category_with_color, it is up to you
+ * links in the trace file are again identified by their names
+ * trace contains the full platform hierarchy exactly as declared using the ASes
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
