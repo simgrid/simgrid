@@ -347,8 +347,7 @@ void SIMIX_pre_comm_test(smx_req_t req)
   if (req->comm_test.result) {
     xbt_fifo_push(action->request_list, req);
     SIMIX_comm_finish(action);
-  }
-  else {
+  } else {
     SIMIX_request_answer(req);
   }
 }
@@ -363,7 +362,7 @@ void SIMIX_pre_comm_testany(smx_req_t req)
       req->comm_testany.result = cursor;
       xbt_fifo_push(action->request_list, req);
       SIMIX_comm_finish(action);
-      break;
+      return;
     }
   }
   SIMIX_request_answer(req);
