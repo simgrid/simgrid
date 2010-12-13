@@ -7,6 +7,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simix/private.h"
+#include "xbt/parmap.h"
+
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
@@ -157,11 +159,14 @@ void raw_swapcontext(raw_stack_t* old, raw_stack_t new) {
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
+static xbt_parmap_t parmap;
 
+static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
 
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 { 
+  if(parmap)
+      xbt_parmap_destroy(parmap);
   return smx_ctx_base_factory_finalize(factory);
 }
 
@@ -269,18 +274,20 @@ static void smx_ctx_raw_runall(xbt_dynar_t processes)
   xbt_dynar_reset(processes);
 }
 
-static void smx_ctx_raw_resume_parallel(smx_context_t context)
+static void smx_ctx_raw_resume_parallel(smx_process_t process)
 {
+  smx_ctx_raw_t context = (smx_ctx_raw_t)process->context;
   xbt_os_thread_set_extra_data(context);
   raw_swapcontext(
-      &((smx_ctx_raw_t) context)->old_stack_top,
-      ((smx_ctx_raw_t) context)->stack_top);
+      &context->old_stack_top,
+      context->stack_top);
   xbt_os_thread_set_extra_data(NULL);
 }
 
 static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
 {
-  return;
+  xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_raw_resume_parallel, processes);
+    xbt_dynar_reset(processes);
 }
 
 static smx_context_t smx_ctx_raw_self_parallel(void)
@@ -304,6 +311,7 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 
   if(_surf_parallel_contexts){
 #ifdef CONTEXT_THREADS  /* To use parallel ucontexts a thread pool is needed */
+    parmap = xbt_parmap_new(2);
     (*factory)->runall = smx_ctx_raw_runall_parallel;
     (*factory)->self = smx_ctx_raw_self_parallel;
 #else
