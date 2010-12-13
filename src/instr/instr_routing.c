@@ -57,7 +57,7 @@ static type_t newType (const char *typename, e_entity_types kind, type_t father)
   return ret;
 }
 
-static type_t newContainerType (const char *typename, e_entity_types kind, type_t father)
+type_t newContainerType (const char *typename, e_entity_types kind, type_t father)
 {
   type_t ret = newType (typename, kind, father);
 //  if (father) INFO4("ContainerType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
@@ -65,7 +65,19 @@ static type_t newContainerType (const char *typename, e_entity_types kind, type_
   return ret;
 }
 
-static type_t newVariableType (const char *typename, e_entity_types kind, const char *color, type_t father)
+type_t newEventType (const char *typename, e_entity_types kind, const char *color, type_t father)
+{
+  type_t ret = newType (typename, kind, father);
+//  INFO4("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+  if (color){
+    pajeDefineEventTypeWithColor (ret->id, ret->father->id, ret->name, color);
+  }else{
+    pajeDefineEventType(ret->id, ret->father->id, ret->name);
+  }
+  return ret;
+}
+
+type_t newVariableType (const char *typename, e_entity_types kind, const char *color, type_t father)
 {
   type_t ret = newType (typename, kind, father);
 //  INFO4("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
@@ -77,7 +89,7 @@ static type_t newVariableType (const char *typename, e_entity_types kind, const 
   return ret;
 }
 
-static type_t newLinkType (const char *typename, e_entity_types kind, type_t father, type_t source, type_t dest)
+type_t newLinkType (const char *typename, e_entity_types kind, type_t father, type_t source, type_t dest)
 {
   type_t ret = newType (typename, kind, father);
 //  INFO8("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id, source->name, source->id, dest->name, dest->id);
@@ -85,7 +97,7 @@ static type_t newLinkType (const char *typename, e_entity_types kind, type_t fat
   return ret;
 }
 
-static type_t newStateType (const char *typename, e_entity_types kind, type_t father)
+type_t newStateType (const char *typename, e_entity_types kind, type_t father)
 {
   type_t ret = newType (typename, kind, father);
 //  INFO4("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
@@ -105,6 +117,15 @@ static type_t getContainerType (const char *typename, type_t father)
     if (ret == NULL){
       ret = newContainerType (typename, TYPE_CONTAINER, father);
     }
+  }
+  return ret;
+}
+
+static type_t getEventType (const char *typename, const char *color, type_t father)
+{
+  type_t ret = xbt_dict_get_or_null (father->children, typename);
+  if (ret == NULL){
+    ret = newEventType (typename, TYPE_EVENT, color, father);
   }
   return ret;
 }

@@ -23,6 +23,7 @@ typedef enum {
   TYPE_LINK,
   TYPE_CONTAINER,
   TYPE_STATE,
+  TYPE_EVENT,
 } e_entity_types;
 
 typedef struct s_type *type_t;
@@ -63,6 +64,8 @@ void pajeDefineContainerType(const char *alias, const char *containerType,
                              const char *name);
 void pajeDefineStateType(const char *alias, const char *containerType,
                          const char *name);
+void pajeDefineEventTypeWithColor(const char *alias, const char *containerType,
+                         const char *name, const char *color);
 void pajeDefineEventType(const char *alias, const char *containerType,
                          const char *name);
 void pajeDefineLinkType(const char *alias, const char *containerType,
@@ -218,6 +221,11 @@ void TRACE_sd_task_destroy(SD_task_t task);
 /* instr_routing.c */
 container_t newContainer (const char *name, e_container_types kind, container_t father);
 container_t getContainer (const char *name);
+type_t newContainerType (const char *typename, e_entity_types kind, type_t father);
+type_t newEventType (const char *typename, e_entity_types kind, const char *color, type_t father);
+type_t newVariableType (const char *typename, e_entity_types kind, const char *color, type_t father);
+type_t newLinkType (const char *typename, e_entity_types kind, type_t father, type_t source, type_t dest);
+type_t newStateType (const char *typename, e_entity_types kind, type_t father);
 type_t getType (const char *name);
 void destroyContainer (container_t container);
 void instr_routing_define_callbacks (void);

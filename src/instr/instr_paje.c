@@ -32,7 +32,7 @@ static int pajeEndLinkId = 13;
 #define UNUSED009 17
 #define UNUSED005 18
 static int pajePushStateId = 19;
-#define UNUSED001 20
+static int pajeDefineEventTypeWithColorId = 20;
 static int pajeDefineVariableTypeWithColorId = 21;
 static int pajeSetVariableId = 22;
 static int pajeAddVariableId = 23;
@@ -80,6 +80,12 @@ void TRACE_paje_create_header(void)
 %%       Alias string \n\
 %%       EntityType string \n\
 %%       Name string \n\
+%%EndEventDef \n\
+%%EventDef PajeDefineEventType %d \n\
+%%       Alias string \n\
+%%       EntityType string \n\
+%%       Name string \n\
+%%       Color color \n\
 %%EndEventDef \n\
 %%EventDef PajeDefineEventType %d \n\
 %%       Alias string \n\
@@ -181,7 +187,7 @@ void TRACE_paje_create_header(void)
 %%       EntityType string \n\
 %%       Container string \n\
 %%       Value string \n\
-%%EndEventDef\n", pajeDefineContainerTypeId, pajeDefineStateTypeId, pajeDefineEntityValueId, pajeDefineEventTypeId, pajeDefineLinkTypeId, pajeCreateContainerId, pajeDestroyContainerId, pajeSetStateId, pajePopStateId, pajeStartLinkId, pajeEndLinkId, pajePushStateId, pajeSetVariableId, pajeAddVariableId, pajeSubVariableId, pajeDefineVariableTypeId, pajeDefineVariableTypeWithColorId, pajeStartLinkWithVolumeId, pajeNewEventId);
+%%EndEventDef\n", pajeDefineContainerTypeId, pajeDefineStateTypeId, pajeDefineEntityValueId, pajeDefineEventTypeWithColorId, pajeDefineEventTypeId, pajeDefineLinkTypeId, pajeCreateContainerId, pajeDestroyContainerId, pajeSetStateId, pajePopStateId, pajeStartLinkId, pajeEndLinkId, pajePushStateId, pajeSetVariableId, pajeAddVariableId, pajeSubVariableId, pajeDefineVariableTypeId, pajeDefineVariableTypeWithColorId, pajeStartLinkWithVolumeId, pajeNewEventId);
 }
 
 /* internal to this file */
@@ -252,6 +258,13 @@ void pajeDefineStateType(const char *alias, const char *containerType,
 {
   fprintf(tracing_file, "%d %s %s %s\n", pajeDefineStateTypeId, alias,
           containerType, name);
+}
+
+void pajeDefineEventTypeWithColor(const char *alias, const char *containerType,
+                         const char *name, const char *color)
+{
+  fprintf(tracing_file, "%d %s %s %s %s\n", pajeDefineEventTypeWithColorId, alias,
+          containerType, name, color);
 }
 
 void pajeDefineEventType(const char *alias, const char *containerType,
