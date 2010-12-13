@@ -28,6 +28,12 @@ void TRACE_category_with_color (const char *category, const char *color)
   if (!TRACE_is_active())
     return;
 
+  {
+    //check if hosts have been created
+    xbt_assert1 (hosts_types != NULL && xbt_dict_length(hosts_types) != 0,
+        "%s must be called after environment creation", __FUNCTION__);
+  }
+
   //check if category is already created
   char *created = xbt_dict_get_or_null(created_categories, category);
   if (created) return;

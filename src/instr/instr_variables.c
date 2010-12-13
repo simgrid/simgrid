@@ -61,6 +61,12 @@ void TRACE_user_host_variable(double time, const char *variable,
   snprintf(valuestr, 100, "%g", value);
 
   if (strcmp(what, "declare") == 0) {
+    {
+      //check if hosts have been created
+      xbt_assert1 (hosts_types != NULL && xbt_dict_length(hosts_types) != 0,
+          "%s must be called after environment creation", __FUNCTION__);
+    }
+
     char new_type[INSTR_DEFAULT_STR_SIZE];
     xbt_dict_cursor_t cursor = NULL;
     char *type;
