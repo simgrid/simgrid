@@ -92,6 +92,7 @@ XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task,
 #define TRACE_category_with_color(cat,color)
 #define TRACE_define_type(cat,supercat,final)
 #define TRACE_create_category(inst,cat)
+#define TRACE_create_category_with_color(inst,cat,supercat,color)
 #define TRACE_msg_set_task_category(task,cat)
 #define TRACE_msg_set_process_category(proc,cat)
 #define TRACE_set_mask(mask)
