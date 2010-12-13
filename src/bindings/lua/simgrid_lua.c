@@ -412,25 +412,33 @@ static int gras_generate(lua_State * L)
  **********************************/
 static int trace_start(lua_State *L)
 {
+#ifdef HAVE_TRACING
   TRACE_start();
+#endif
   return 1;
 }
 
 static int trace_category(lua_State * L)
 {
+#ifdef HAVE_TRACING
   TRACE_category(luaL_checkstring(L, 1));
+#endif
   return 1;
 }
 
 static int trace_set_task_category(lua_State *L)
 {
+#ifdef HAVE_TRACING
   TRACE_msg_set_task_category(checkTask(L, -2), luaL_checkstring(L, -1));
+#endif
   return 1;
 }
 
 static int trace_end(lua_State *L)
 {
+#ifdef HAVE_TRACING
   TRACE_end();
+#endif
   return 1;
 }
 //***********Register Methods *******************************************//
