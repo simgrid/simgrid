@@ -206,8 +206,21 @@ static void recursiveGraphExtraction (container_t container)
     container_t child1, child2;
     const char *child_name1, *child_name2;
 
+    xbt_dict_t filter = xbt_dict_new ();
+
     xbt_dict_foreach(container->children, cursor1, child_name1, child1) {
       xbt_dict_foreach(container->children, cursor2, child_name2, child2) {
+        //check if we already register this pair (we only need one direction)
+        char aux1[INSTR_DEFAULT_STR_SIZE], aux2[INSTR_DEFAULT_STR_SIZE];
+        snprintf (aux1, INSTR_DEFAULT_STR_SIZE, "%s%s", child_name1, child_name2);
+        snprintf (aux2, INSTR_DEFAULT_STR_SIZE, "%s%s", child_name2, child_name1);
+        if (xbt_dict_get_or_null (filter, aux1)) continue;
+        if (xbt_dict_get_or_null (filter, aux2)) continue;
+
+        //ok, not found, register it
+        xbt_dict_set (filter, aux1, xbt_strdup ("1"), xbt_free);
+        xbt_dict_set (filter, aux2, xbt_strdup ("1"), xbt_free);
+
         if ((child1->kind == INSTR_HOST || child1->kind == INSTR_ROUTER) &&
             (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER)){
 
@@ -257,6 +270,7 @@ static void recursiveGraphExtraction (container_t container)
         }
       }
     }
+    xbt_dict_free(&filter);
   }
 }
 
