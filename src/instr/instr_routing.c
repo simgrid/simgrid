@@ -217,6 +217,29 @@ static void recursiveGraphExtraction (container_t container)
             previous_entity_name = link_name;
           }
           linkContainers (container, previous_entity_name, child_name2);
+        }else if (child1->kind == INSTR_AS &&
+                  child2->kind == INSTR_AS &&
+                  strcmp(child_name1, child_name2) != 0){
+
+          //getting route
+          routing_component_t root = global_routing->root;
+          route_extended_t route;
+          xbt_ex_t exception;
+          TRY {
+            route = root->get_route (root, child_name1, child_name2);
+          }CATCH(exception) {
+            //no route between them, that's possible
+            continue;
+          }
+          unsigned int cpt;
+          void *link;
+          char *previous_entity_name = route->src_gateway;
+          xbt_dynar_foreach (route->generic_route.link_list, cpt, link) {
+            char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+            linkContainers (container, previous_entity_name, link_name);
+            previous_entity_name = link_name;
+          }
+          linkContainers (container, previous_entity_name, route->dst_gateway);
         }
       }
     }
