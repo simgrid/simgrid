@@ -370,7 +370,7 @@ void TRACE_surf_resource_utilization_event(smx_action_t action, double now,
   if (!TRACE_is_active())
     return;
   DEBUG6("EVENT %p [%f - %f] %s %s %f", action, now, now+delta, resource, variable, value);
-  TRACE_method_event(action, now, delta, variable, resource, value);
+  TRACE_method_event(action, now, delta, variable, instr_id(resource), value);
 }
 
 void TRACE_surf_resource_utilization_end(smx_action_t action)

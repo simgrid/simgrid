@@ -47,11 +47,11 @@ void TRACE_user_link_variable(double time, const char *resource,
     snprintf (variable_type, INSTR_DEFAULT_STR_SIZE, "%s-%s", variable, link_type);
 
     if (strcmp(what, "set") == 0) {
-      pajeSetVariable(time, variable_type, resource, valuestr);
+      pajeSetVariable(time, variable_type, instr_id(resource), valuestr);
     } else if (strcmp(what, "add") == 0) {
-      pajeAddVariable(time, variable_type, resource, valuestr);
+      pajeAddVariable(time, variable_type, instr_id(resource), valuestr);
     } else if (strcmp(what, "sub") == 0) {
-      pajeSubVariable(time, variable_type, resource, valuestr);
+      pajeSubVariable(time, variable_type, instr_id(resource), valuestr);
     }
   }
 }
@@ -87,11 +87,11 @@ void TRACE_user_host_variable(double time, const char *variable,
     snprintf (variable_type, INSTR_DEFAULT_STR_SIZE, "%s-%s", variable, host_type);
 
     if (strcmp(what, "set") == 0) {
-      pajeSetVariable(time, variable_type, host_name, valuestr);
+      pajeSetVariable(time, variable_type, instr_id(host_name), valuestr);
     } else if (strcmp(what, "add") == 0) {
-      pajeAddVariable(time, variable_type, host_name, valuestr);
+      pajeAddVariable(time, variable_type, instr_id(host_name), valuestr);
     } else if (strcmp(what, "sub") == 0) {
-      pajeSubVariable(time, variable_type, host_name, valuestr);
+      pajeSubVariable(time, variable_type, instr_id(host_name), valuestr);
     }
   }
 }
