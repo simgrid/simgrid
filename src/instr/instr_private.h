@@ -104,19 +104,15 @@ void TRACE_smx_action_destroy(smx_action_t act);
 /* from surf_instr.c */
 void TRACE_surf_alloc(void);
 void TRACE_surf_release(void);
-void TRACE_surf_host_declaration(const char *name, double power);
 void TRACE_surf_host_set_power(double date, const char *resource,
                                double power);
 void TRACE_surf_host_define_id(const char *name, int host_id);
 void TRACE_surf_host_vivaldi_parse(char *host, double x, double y,
                                    double h);
-void TRACE_surf_link_declaration(void *link, char *name, double bw,
-                                 double lat);
 void TRACE_surf_link_set_bandwidth(double date, void *link,
                                    double bandwidth);
 void TRACE_surf_link_set_latency(double date, void *link, double latency);
 void TRACE_surf_save_onelink(void);
-int TRACE_surf_link_is_traced(void *link);
 void TRACE_surf_action(surf_action_t surf_action, const char *category);
 
 //for tracing gtnets
