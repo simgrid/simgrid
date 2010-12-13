@@ -197,7 +197,7 @@ container_t newContainer (const char *name, e_container_types kind, container_t 
   new->children = xbt_dict_new();
   if (new->father){
     xbt_dict_set(new->father->children, new->name, new, NULL);
-    pajeCreateContainer (0, new->id, new->type->id, new->father->id, new->name);
+    pajeCreateContainer (SIMIX_get_clock(), new->id, new->type->id, new->father->id, new->name);
   }
 
   //register hosts, routers, links containers
