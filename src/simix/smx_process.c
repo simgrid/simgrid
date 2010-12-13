@@ -36,7 +36,7 @@ XBT_INLINE smx_process_t SIMIX_process_self(void)
 void SIMIX_process_cleanup(smx_process_t process)
 {
   DEBUG1("Cleanup process %s", process->name);
-  xbt_swag_remove(process, simix_global->process_to_run);
+  /*xbt_swag_remove(process, simix_global->process_to_run);*/
   xbt_swag_remove(process, simix_global->process_list);
   xbt_swag_remove(process, process->smx_host->process_list);
   xbt_swag_insert(process, simix_global->process_to_destroy);
@@ -173,7 +173,7 @@ smx_process_t SIMIX_process_create(const char *name,
     /* Now insert it in the global process list and in the process to run list */
     xbt_swag_insert(process, simix_global->process_list);
     DEBUG2("Inserting %s(%s) in the to_run list", process->name, host->name);
-    xbt_swag_insert(process, simix_global->process_to_run);
+    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
   }
 
   return process;
@@ -229,7 +229,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t killer) {
     SIMIX_context_stop(process->context);
   }
   else {
-    xbt_swag_insert(process, simix_global->process_to_run);
+    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
   }
 }
 
@@ -338,7 +338,7 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
       }
     }
     else {
-      xbt_swag_insert(process, simix_global->process_to_run);
+      xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
     }
   }
 }

@@ -181,7 +181,7 @@ void MC_wait_for_requests(void)
         xbt_free(req_str);
       }
     }
-  } while (xbt_swag_size(simix_global->process_to_run));
+  } while (xbt_dynar_length(simix_global->process_to_run));
 }
 
 /****************************** Statistics ************************************/

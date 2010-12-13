@@ -33,8 +33,8 @@ static void smx_ctx_thread_free(smx_context_t context);
 static void smx_ctx_thread_stop(smx_context_t context);
 static void smx_ctx_thread_suspend(smx_context_t context);
 static void smx_ctx_thread_resume(smx_context_t new_context);
-static void smx_ctx_thread_runall_serial(xbt_swag_t processes);
-static void smx_ctx_thread_runall_parallel(xbt_swag_t processes);
+static void smx_ctx_thread_runall_serial(xbt_dynar_t processes);
+static void smx_ctx_thread_runall_parallel(xbt_dynar_t processes);
 static smx_context_t smx_ctx_thread_self(void);
 
 static void *smx_ctx_thread_wrapper(void *param);
@@ -142,23 +142,28 @@ static void smx_ctx_thread_suspend(smx_context_t context)
   xbt_os_sem_acquire(((smx_ctx_thread_t) context)->begin);
 }
 
-static void smx_ctx_thread_runall_serial(xbt_swag_t processes)
+static void smx_ctx_thread_runall_serial(xbt_dynar_t processes)
 {
   smx_process_t process;
-  while ((process = xbt_swag_extract(processes))) {
+  while (xbt_dynar_length(processes)){
+    process = xbt_dynar_pop_as(processes,smx_process_t);
     xbt_os_sem_release(((smx_ctx_thread_t) process->context)->begin);
     xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
   }
 }
 
-static void smx_ctx_thread_runall_parallel(xbt_swag_t processes)
+static void smx_ctx_thread_runall_parallel(xbt_dynar_t processes)
 {
-  smx_process_t process, p_next;
-  xbt_swag_foreach_safe(process, p_next, processes)
+  unsigned int index;
+  smx_process_t process;
+
+  xbt_dynar_foreach(processes, index, process)
     xbt_os_sem_release(((smx_ctx_thread_t) process->context)->begin);
 
-  while ((process = xbt_swag_extract(processes)))
-    xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
+  while(xbt_dynar_length(processes)){
+     process = xbt_dynar_pop_as(processes,smx_process_t);
+     xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
+  }
 }
 
 static smx_context_t smx_ctx_thread_self(void)

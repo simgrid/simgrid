@@ -66,7 +66,7 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global = xbt_new0(s_smx_global_t, 1);
 
     simix_global->host = xbt_dict_new();
-    simix_global->process_to_run =
+    simix_global->process_to_run = xbt_dynar_new(sizeof(void *), NULL);
         xbt_swag_new(xbt_swag_offset(proc, synchro_hookup));
     simix_global->process_list =
         xbt_swag_new(xbt_swag_offset(proc, process_hookup));
@@ -124,7 +124,7 @@ void SIMIX_clean(void)
 
   xbt_heap_free(simix_timers);
   /* Free the remaining data structures */
-  xbt_swag_free(simix_global->process_to_run);
+  xbt_dynar_free(&simix_global->process_to_run);
   xbt_swag_free(simix_global->process_to_destroy);
   xbt_swag_free(simix_global->process_list);
   simix_global->process_list = NULL;
@@ -186,7 +186,7 @@ void SIMIX_run(void)
         DEBUG1("Handling request %p", req);
         SIMIX_request_pre(req);
       }
-    } while (xbt_swag_size(simix_global->process_to_run));
+    } while (xbt_dynar_length(simix_global->process_to_run));
 
     time = surf_solve(SIMIX_timer_next());
 

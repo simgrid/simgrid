@@ -7,7 +7,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smx_context_sysv_private.h"
-//#include "xbt/threadpool.h"
+#include "xbt/parmap.h"
 #include "simix/private.h"
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
@@ -23,7 +23,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-//static xbt_parmap_t tpool;
+static xbt_parmap_t parmap;
 
 static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
@@ -45,7 +45,7 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 
   if(_surf_parallel_contexts){
 #ifdef CONTEXT_THREADS	/* To use parallel ucontexts a thread pool is needed */
-//    tpool = xbt_parmap_new(2, 10);
+    parmap = xbt_parmap_new(2);
     (*factory)->runall = smx_ctx_sysv_runall_parallel;
     (*factory)->self = smx_ctx_sysv_self_parallel;
 #else
@@ -58,8 +58,8 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 
 int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory)
 { 
-/*  if(tpool)
-    xbt_parmap_destroy(tpool);*/
+  if(parmap)
+    xbt_parmap_destroy(parmap);
   return smx_ctx_base_factory_finalize(factory);
 }
 
@@ -166,16 +166,19 @@ void smx_ctx_sysv_resume(smx_context_t context)
   xbt_assert0((rv == 0), "Context swapping failure");
 }
 
-void smx_ctx_sysv_runall(xbt_swag_t processes)
+void smx_ctx_sysv_runall(xbt_dynar_t processes)
 {
   smx_process_t process;
   
-  while ((process = xbt_swag_extract(processes)))
+  while (xbt_dynar_length(processes)){
+    process = xbt_dynar_pop_as(processes,smx_process_t);
     smx_ctx_sysv_resume(process->context);
+  }
 }
 
-void smx_ctx_sysv_resume_parallel(smx_context_t context)
+void smx_ctx_sysv_resume_parallel(smx_process_t process)
 {
+  smx_context_t context = process->context;
   xbt_os_thread_set_extra_data(context);
   int rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
   xbt_os_thread_set_extra_data(NULL);
@@ -183,13 +186,10 @@ void smx_ctx_sysv_resume_parallel(smx_context_t context)
   xbt_assert0((rv == 0), "Context swapping failure");
 }
 
-void smx_ctx_sysv_runall_parallel(xbt_swag_t processes)
+void smx_ctx_sysv_runall_parallel(xbt_dynar_t processes)
 {
-  smx_process_t process;
-  while((process = xbt_swag_extract(processes))){
-  //  xbt_parmap_apply(tpool, (void_f_pvoid_t)smx_ctx_sysv_resume_parallel, process->context);
-  }
-  /*xbt_tpool_wait_all(tpool);*/
+  xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_sysv_resume_parallel, processes);
+  xbt_dynar_reset(processes);
 }
 
 smx_context_t smx_ctx_sysv_self_parallel(void)

@@ -58,7 +58,7 @@ void SIMIX_request_answer(smx_req_t req)
 {
   if (req->issuer != simix_global->maestro_process){
     req->issuer->request.call = REQ_NO_REQ;
-    xbt_swag_insert(req->issuer, simix_global->process_to_run);
+    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, req->issuer);
   }
 }
 

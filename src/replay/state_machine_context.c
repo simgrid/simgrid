@@ -22,7 +22,7 @@ statem_create_context(xbt_main_func_t code, int argc, char **argv,
 static void statem_ctx_free(smx_context_t context);
 static void statem_ctx_suspend(smx_context_t context);
 static void statem_ctx_resume(smx_context_t new_context);
-static void statem_ctx_runall(xbt_swag_t processes);
+static void statem_ctx_runall(xbt_dynar_t processes);
 static smx_context_t statem_ctx_self(void);
 
 void statem_factory_init(smx_context_factory_t * factory) {
@@ -73,12 +73,14 @@ static void statem_ctx_suspend(smx_context_t context) {
 static void statem_ctx_resume(smx_context_t new_context) {
   THROW_UNIMPLEMENTED;
 }
-static void statem_ctx_runall(xbt_swag_t processes) {
+static void statem_ctx_runall(xbt_dynar_t processes) {
   smx_context_t old_context;
   smx_process_t process;
 
   INFO0("Run all");
-  while ((process = xbt_swag_extract(processes))) {
+
+  while (xbt_dynar_length(processes)){
+    process = xbt_dynar_pop_as(processes,smx_process_t);
     statem_context_t ctx = (statem_context_t)SIMIX_process_get_context(process);
     old_context = smx_current_context;
     smx_current_context = SIMIX_process_get_context(process);

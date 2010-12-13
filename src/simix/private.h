@@ -29,7 +29,7 @@
 typedef struct s_smx_global {
   smx_context_factory_t context_factory;
   xbt_dict_t host;
-  xbt_swag_t process_to_run;
+  xbt_dynar_t process_to_run;
   xbt_swag_t process_list;
   xbt_swag_t process_to_destroy;
   smx_process_t maestro_process;
@@ -227,9 +227,9 @@ static XBT_INLINE void SIMIX_context_suspend(smx_context_t context)
 
 /**
  \brief executes all the processes (in parallel if possible)
- \param processes the swag of processes to execute
+ \param processes the dynar of processes to execute
  */
-static XBT_INLINE void SIMIX_context_runall(xbt_swag_t processes)
+static XBT_INLINE void SIMIX_context_runall(xbt_dynar_t processes)
 {
   (*(simix_global->context_factory->runall)) (processes);
 }

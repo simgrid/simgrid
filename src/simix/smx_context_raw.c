@@ -257,12 +257,14 @@ static void smx_ctx_raw_resume(smx_context_t context)
       ((smx_ctx_raw_t) context)->stack_top);
 }
 
-static void smx_ctx_raw_runall(xbt_swag_t processes)
+static void smx_ctx_raw_runall(xbt_dynar_t processes)
 {
   smx_process_t process;
 
-  while ((process = xbt_swag_extract(processes)))
+  while (xbt_dynar_length(processes)){
+    process = xbt_dynar_pop_as(processes,smx_process_t);
     smx_ctx_raw_resume(process->context);
+  }
 }
 
 static void smx_ctx_raw_resume_parallel(smx_context_t context)
@@ -274,12 +276,9 @@ static void smx_ctx_raw_resume_parallel(smx_context_t context)
   xbt_os_thread_set_extra_data(NULL);
 }
 
-static void smx_ctx_raw_runall_parallel(xbt_swag_t processes)
+static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
 {
-  smx_process_t process;
-  while((process = xbt_swag_extract(processes))){
-    /* FIXME */
-  }
+  return;
 }
 
 static smx_context_t smx_ctx_raw_self_parallel(void)

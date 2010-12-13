@@ -23,7 +23,7 @@ smx_ctx_ruby_create_context(xbt_main_func_t code, int argc, char **argv,
 static void smx_ctx_ruby_stop(smx_context_t context);
 static void smx_ctx_ruby_suspend(smx_context_t context);
 static void smx_ctx_ruby_resume(smx_context_t new_context);
-static void smx_ctx_ruby_runall(xbt_swag_t processes);
+static void smx_ctx_ruby_runall(xbt_dynar_t processes);
 
 void SIMIX_ctx_ruby_factory_init(smx_context_factory_t * factory)
 {
@@ -110,11 +110,12 @@ static void smx_ctx_ruby_resume(smx_context_t new_context)
   rb_process_schedule(ctx_ruby->process);
 }
 
-static void smx_ctx_ruby_runall(xbt_swag_t processes)
+static void smx_ctx_ruby_runall(xbt_dynar_t processes)
 {
   smx_process_t process;
   smx_context_t old_context;
-  while ((process = xbt_swag_extract(processes))) {
+  while (xbt_dynar_length(processes)){
+    process = xbt_dynar_pop_as(processes,smx_process_t);
     old_context = smx_current_context;
     smx_current_context = process->context;
     smx_ctx_ruby_resume(smx_current_context);
