@@ -301,6 +301,7 @@ set(LUA_SRC
 )
 
 set(TRACING_SRC
+	src/instr/instr_routing.c
 	src/instr/instr_config.c
 	src/instr/instr_interface.c
 	src/instr/instr_paje.c

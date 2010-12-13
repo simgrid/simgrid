@@ -1111,6 +1111,10 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
 					   &routing_parse_Sconfig);
   surfxml_add_callback(ETag_surfxml_config_cb_list,
 					   &routing_parse_Econfig);
+
+#ifdef HAVE_TRACING
+  instr_routing_define_callbacks();
+#endif
 }
 
 /* ************************************************************************** */
