@@ -36,6 +36,7 @@ static void instr_routing_parse_start_host (void);
 static void instr_routing_parse_end_host (void);
 static void instr_routing_parse_start_router (void);
 static void instr_routing_parse_end_router (void);
+static void instr_routing_parse_end_platform (void);
 static char *instr_AS_type (int level);
 
 static char *instr_AS_type (int level)
@@ -84,6 +85,7 @@ void instr_routing_define_callbacks ()
   surfxml_add_callback(ETag_surfxml_host_cb_list, &instr_routing_parse_end_host);
   surfxml_add_callback(STag_surfxml_router_cb_list, &instr_routing_parse_start_router);
   surfxml_add_callback(ETag_surfxml_router_cb_list, &instr_routing_parse_end_router);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &instr_routing_parse_end_platform);
 }
 
 
@@ -241,6 +243,11 @@ static void instr_routing_parse_start_router ()
 
 static void instr_routing_parse_end_router ()
 {
+}
+
+static void instr_routing_parse_end_platform ()
+{
+  currentContainer = NULL;
 }
 
 /*
