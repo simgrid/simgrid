@@ -17,6 +17,9 @@ void TRACE_user_link_variable(double time, const char *resource,
   if (!TRACE_is_active())
     return;
 
+  xbt_assert1 (instr_platform_traced(),
+      "%s must be called after environment creation", __FUNCTION__);
+
   char valuestr[100];
   snprintf(valuestr, 100, "%g", value);
 
@@ -40,6 +43,9 @@ void TRACE_user_host_variable(double time, const char *variable,
 {
   if (!TRACE_is_active())
     return;
+
+  xbt_assert1 (instr_platform_traced(),
+      "%s must be called after environment creation", __FUNCTION__);
 
   char valuestr[100];
   snprintf(valuestr, 100, "%g", value);

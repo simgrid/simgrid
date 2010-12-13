@@ -47,6 +47,7 @@ typedef struct s_container {
   xbt_dict_t children;
 }s_container_t;
 
+static int platform_created = 0;            /* indicate whether the platform file has been traced */
 static type_t rootType = NULL;              /* the root type */
 static container_t rootContainer = NULL;    /* the root container */
 static xbt_dynar_t currentContainer = NULL; /* push and pop, used only in creation */
@@ -456,6 +457,7 @@ static void instr_routing_parse_end_platform ()
 {
   currentContainer = NULL;
   recursiveGraphExtraction (rootContainer);
+  platform_created = 1;
 }
 
 /*
@@ -582,6 +584,11 @@ static void recursiveNewUserHostVariableType (const char *new_typename, const ch
 void instr_new_user_host_variable_type  (const char *new_typename, const char *color)
 {
   recursiveNewUserHostVariableType (new_typename, color, rootType);
+}
+
+int instr_platform_traced ()
+{
+  return platform_created;
 }
 
 #endif /* HAVE_TRACING */

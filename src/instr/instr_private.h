@@ -187,6 +187,7 @@ void instr_destroy_platform (void);
 void instr_new_user_variable_type (const char *new_typename, const char *color);
 void instr_new_user_link_variable_type  (const char *new_typename, const char *color);
 void instr_new_user_host_variable_type  (const char *new_typename, const char *color);
+int instr_platform_traced (void);
 
 #endif /* HAVE_TRACING */
 #endif /* INSTR_PRIVATE_H_ */
