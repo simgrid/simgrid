@@ -34,7 +34,7 @@ void TRACE_msg_set_process_category(m_process_t process, const char *category, c
 
   m_host_t host = MSG_process_get_host(process);
   container_t host_container = getContainer(host->name);
-  container_t msg = newContainer(process->name, INSTR_MSG, host_container);
+  container_t msg = newContainer(process->name, INSTR_MSG_PROCESS, host_container);
   type_t type = getType (category);
   if (!type){
     type = newVariableType(category, TYPE_VARIABLE, color, msg->type);
@@ -55,7 +55,7 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
   destroyContainer(getContainer(process->name));
 
   //create new container on the new_host location
-  container_t msg = newContainer(process->name, INSTR_MSG, getContainer(new_host->name));
+  container_t msg = newContainer(process->name, INSTR_MSG_PROCESS, getContainer(new_host->name));
   type_t type = getType (process->category);
   pajeSetVariable(SIMIX_get_clock(), type->id, msg->id, "1");
 }
