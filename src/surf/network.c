@@ -506,7 +506,7 @@ static void net_update_resource_state(void *id,
                                 (nw_link->lmm_resource.power.peak *
                                  nw_link->lmm_resource.power.scale));
 #ifdef HAVE_TRACING
-    TRACE_surf_link_set_bandwidth(date, nw_link,
+    TRACE_surf_link_set_bandwidth(date, nw_link->lmm_resource.generic_resource.name,
                                   sg_bandwidth_factor *
                                   (nw_link->lmm_resource.power.peak *
                                    nw_link->lmm_resource.power.scale));

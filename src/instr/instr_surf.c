@@ -37,22 +37,9 @@ static void TRACE_surf_set_resource_variable(double date,
                                              const char *resource,
                                              double value)
 {
-  char aux[100], key[100];
-  char *last_value = NULL;
-  if (!TRACE_is_active())
-    return;
-  snprintf(aux, 100, "%f", value);
-  snprintf(key, 100, "%s#%s", resource, variable);
-
-  last_value = xbt_dict_get_or_null(resource_variables, key);
-  if (last_value) {
-    if (atof(last_value) == value) {
-      return;
-    }
-  }
-  pajeSetVariable(date, variable, resource, aux);
-  xbt_dict_set(resource_variables, xbt_strdup(key), xbt_strdup(aux),
-               xbt_free);
+  char value_str[INSTR_DEFAULT_STR_SIZE];
+  snprintf(value_str, 100, "%f", value);
+  pajeSetVariable(date, variable, resource, value_str);
 }
 
 void TRACE_surf_host_set_power(double date, const char *resource,
@@ -60,32 +47,37 @@ void TRACE_surf_host_set_power(double date, const char *resource,
 {
   if (!TRACE_is_active())
     return;
-  TRACE_surf_set_resource_variable(date, "power", resource, power);
+
+  char *host_type = instr_host_type (resource);
+  char variable_type[INSTR_DEFAULT_STR_SIZE];
+  snprintf (variable_type, INSTR_DEFAULT_STR_SIZE, "power-%s", host_type);
+
+  TRACE_surf_set_resource_variable(date, variable_type, resource, power);
 }
 
-void TRACE_surf_link_set_bandwidth(double date, void *link,
-                                   double bandwidth)
+void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth)
 {
   if (!TRACE_is_active())
     return;
-  if (!TRACE_surf_link_is_traced(link))
-    return;
 
-  char resource[100];
-  snprintf(resource, 100, "%p", link);
-  TRACE_surf_set_resource_variable(date, "bandwidth", resource, bandwidth);
+  char *link_type = instr_link_type (resource);
+  char variable_type[INSTR_DEFAULT_STR_SIZE];
+  snprintf (variable_type, INSTR_DEFAULT_STR_SIZE, "bandwidth-%s", link_type);
+
+  TRACE_surf_set_resource_variable(date, variable_type, resource, bandwidth);
 }
 
-void TRACE_surf_link_set_latency(double date, void *link, double latency)
+//FIXME: this function is not used (latency availability traces support exists in surf network models?)
+void TRACE_surf_link_set_latency(double date, const char *resource, double latency)
 {
   if (!TRACE_is_active())
     return;
-  if (!TRACE_surf_link_is_traced(link))
-    return;
 
-  char resource[100];
-  snprintf(resource, 100, "%p", link);
-  TRACE_surf_set_resource_variable(date, "latency", resource, latency);
+  char *link_type = instr_link_type (resource);
+  char variable_type[INSTR_DEFAULT_STR_SIZE];
+  snprintf (variable_type, INSTR_DEFAULT_STR_SIZE, "latency-%s", link_type);
+
+  TRACE_surf_set_resource_variable(date, variable_type, resource, latency);
 }
 
 /* to trace gtnets */
