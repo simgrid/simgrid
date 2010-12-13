@@ -47,6 +47,9 @@ void TRACE_msg_set_process_category(m_process_t process, const char *category, c
     type = newVariableType(category, TYPE_VARIABLE, color, msg->type);
   }
   pajeSetVariable(SIMIX_get_clock(), type->id, msg->id, "1");
+
+  type = getType ("MSG_PROCESS_STATE");
+  pajeSetState (MSG_get_clock(), type->id, msg->id, "executing");
 }
 
 /*
@@ -83,8 +86,9 @@ void TRACE_msg_process_suspend(m_process_t process)
       TRACE_msg_process_is_enabled() &&
       process->category)) return;
 
-  //FIXME
-  //pajeSetState(MSG_get_clock(), "process-state", name, "suspend");
+  container_t process_container = getContainer (process->name);
+  type_t type = getType ("MSG_PROCESS_STATE");
+  pajePushState (MSG_get_clock(), type->id, process_container->id, "suspend");
 }
 
 void TRACE_msg_process_resume(m_process_t process)
@@ -93,8 +97,9 @@ void TRACE_msg_process_resume(m_process_t process)
       TRACE_msg_process_is_enabled() &&
       process->category)) return;
 
-  //FIXME
-  //pajeSetState(MSG_get_clock(), "process-state", name, "executing");
+  container_t process_container = getContainer (process->name);
+  type_t type = getType ("MSG_PROCESS_STATE");
+  pajePopState (MSG_get_clock(), type->id, process_container->id);
 }
 
 void TRACE_msg_process_sleep_in(m_process_t process)
@@ -103,8 +108,9 @@ void TRACE_msg_process_sleep_in(m_process_t process)
       TRACE_msg_process_is_enabled() &&
       process->category)) return;
 
-  //FIXME
-  //pajeSetState(MSG_get_clock(), "process-state", name, "sleep");
+  container_t process_container = getContainer (process->name);
+  type_t type = getType ("MSG_PROCESS_STATE");
+  pajePushState (MSG_get_clock(), type->id, process_container->id, "sleep");
 }
 
 void TRACE_msg_process_sleep_out(m_process_t process)
@@ -113,8 +119,9 @@ void TRACE_msg_process_sleep_out(m_process_t process)
       TRACE_msg_process_is_enabled() &&
       process->category)) return;
 
-  //FIXME
-  //pajeSetState(MSG_get_clock(), "process-state", name, "executing");
+  container_t process_container = getContainer (process->name);
+  type_t type = getType ("MSG_PROCESS_STATE");
+  pajePopState (MSG_get_clock(), type->id, process_container->id);
 }
 
 void TRACE_msg_process_end(m_process_t process)

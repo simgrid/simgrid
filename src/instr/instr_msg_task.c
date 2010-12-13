@@ -58,8 +58,9 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
     }
     pajeSetVariable(SIMIX_get_clock(), type->id, msg->id, "1");
 
-    //FIXME
-    //pajePushState(MSG_get_clock(), "task-state", name, "created");
+    type = getType ("MSG_TASK_STATE");
+    pajePushState (MSG_get_clock(), type->id, msg->id, "created");
+
     xbt_dict_set (tasks_created, task->name, xbt_strdup("1"), xbt_free);
   }
 }
@@ -82,8 +83,9 @@ void TRACE_msg_task_execute_start(m_task_t task)
 
   DEBUG3("EXEC,in %p, %lld, %s", task, task->counter, task->category);
 
-  //FIXME
-  //pajePushState(MSG_get_clock(), "task-state", name, "execute");
+  container_t task_container = getContainer (task->name);
+  type_t type = getType ("MSG_TASK_STATE");
+  pajePushState (MSG_get_clock(), type->id, task_container->id, "MSG_task_execute");
 }
 
 void TRACE_msg_task_execute_end(m_task_t task)
@@ -94,8 +96,9 @@ void TRACE_msg_task_execute_end(m_task_t task)
 
   DEBUG3("EXEC,out %p, %lld, %s", task, task->counter, task->category);
 
-  //FIXME
-  //pajePopState(MSG_get_clock(), "task-state", name);
+  container_t task_container = getContainer (task->name);
+  type_t type = getType ("MSG_TASK_STATE");
+  pajePopState (MSG_get_clock(), type->id, task_container->id);
 }
 
 /* MSG_task_destroy related functions */
@@ -137,9 +140,6 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
   DEBUG3("GET,out %p, %lld, %s", task, task->counter, task->category);
 
   //FIXME
-  //pajePopState(MSG_get_clock(), "task-state", name);
-
-  //FIXME
   //if (TRACE_msg_volume_is_enabled()){
   //  TRACE_msg_volume_end(task);
   //}
@@ -149,6 +149,11 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
   container_t msg = newContainer(task->name, INSTR_MSG_TASK, host_container);
   type_t type = getType (task->category);
   pajeSetVariable(SIMIX_get_clock(), type->id, msg->id, "1");
+
+  type = getType ("MSG_TASK_STATE");
+  pajePushState (MSG_get_clock(), type->id, msg->id, "created");
+
+  //FIXME: pajeEndLink
 }
 
 /* MSG_task_put related functions */
@@ -160,11 +165,13 @@ int TRACE_msg_task_put_start(m_task_t task)
 
   DEBUG3("PUT,in %p, %lld, %s", task, task->counter, task->category);
 
-  destroyContainer (getContainer(task->name));
+  container_t msg = getContainer (task->name);
+  type_t type = getType ("MSG_TASK_STATE");
+  pajePopState (MSG_get_clock(), type->id, msg->id);
 
-  //FIXME
-  //pajePopState(MSG_get_clock(), "task-state", name);
-  //pajePushState(MSG_get_clock(), "task-state", name, "communicate");
+  //FIXME: pajeStartLink
+
+  destroyContainer (msg);
 
   //FIXME
   //if (TRACE_msg_volume_is_enabled()){
