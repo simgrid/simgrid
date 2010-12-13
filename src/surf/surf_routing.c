@@ -289,9 +289,6 @@ static void parse_S_router(void)
   info->rc_type = SURF_NETWORK_ELEMENT_ROUTER;
   xbt_dict_set(global_routing->where_network_elements, A_surfxml_router_id,
                (void *) info, xbt_free);
-#ifdef HAVE_TRACING
-  TRACE_surf_host_declaration(A_surfxml_router_id, 0);
-#endif
   if (strcmp(A_surfxml_router_coordinates,"")) {
     	xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
     	xbt_dynar_shrink(ctn,0);

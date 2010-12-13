@@ -188,9 +188,6 @@ static link_CM02_t net_link_new(char *name,
 
   xbt_dict_set(surf_network_model->resource_set, name, nw_link,
                surf_resource_free);
-#ifdef HAVE_TRACING
-  TRACE_surf_link_declaration(nw_link, name, bw_initial, lat_initial);
-#endif
 
   return nw_link;
 }

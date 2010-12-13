@@ -87,10 +87,6 @@ static cpu_Cas01_im_t cpu_im_new(char *name, double power_peak,
                surf_resource_free);
   cpu->action_set = xbt_swag_new(xbt_swag_offset(action, cpu_list_hookup));
 
-#ifdef HAVE_TRACING
-  TRACE_surf_host_declaration(name, core * power_scale * power_peak);
-#endif
-
   return cpu;
 }
 

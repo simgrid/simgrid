@@ -48,10 +48,6 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
 
   xbt_dict_set(surf_network_model->resource_set, name, gtnets_link,
                surf_resource_free);
-
-#ifdef HAVE_TRACING
-  TRACE_surf_link_declaration(gtnets_link, name, bw, lat);
-#endif
 }
 
 static void route_new(int src_id, int dst_id, xbt_dynar_t links,
