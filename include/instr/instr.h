@@ -21,7 +21,6 @@ XBT_PUBLIC(void) TRACE_msg_set_task_category(m_task_t task,
                                              const char *category);
 XBT_PUBLIC(void) TRACE_msg_set_process_category(m_process_t process,
                                                 const char *category);
-XBT_PUBLIC(void) TRACE_set_mask(int mask);
 XBT_PUBLIC(void) TRACE_user_host_variable(double time,
                                           const char *variable,
                                           double value, const char *what);
