@@ -312,7 +312,6 @@ set(TRACING_SRC
 	src/instr/instr_surf.c
 	src/instr/instr_smpi.c
 	src/instr/instr_simdag.c
-	src/instr/instr_variables.c
 	src/instr/instr_resource_utilization.c
 	src/instr/instr_private.h
 )

@@ -88,4 +88,62 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   pajeNewEvent(MSG_get_clock(), mark_type, "0", mark_value);
 }
 
+
+void TRACE_user_link_variable(double time, const char *resource,
+                              const char *variable,
+                              double value, const char *what)
+{
+  if (!TRACE_is_active())
+    return;
+
+  xbt_assert1 (instr_platform_traced(),
+      "%s must be called after environment creation", __FUNCTION__);
+
+  char valuestr[100];
+  snprintf(valuestr, 100, "%g", value);
+
+  if (strcmp(what, "declare") == 0) {
+    instr_new_user_link_variable_type (variable, NULL);
+  } else{
+    char *variable_id = instr_variable_type(variable, resource);
+    char *resource_id = instr_resource_type(resource);
+    if (strcmp(what, "set") == 0) {
+      pajeSetVariable(time, variable_id, resource_id, valuestr);
+    } else if (strcmp(what, "add") == 0) {
+      pajeAddVariable(time, variable_id, resource_id, valuestr);
+    } else if (strcmp(what, "sub") == 0) {
+      pajeSubVariable(time, variable_id, resource_id, valuestr);
+    }
+  }
+}
+
+void TRACE_user_host_variable(double time, const char *variable,
+                              double value, const char *what)
+{
+  if (!TRACE_is_active())
+    return;
+
+  xbt_assert1 (instr_platform_traced(),
+      "%s must be called after environment creation", __FUNCTION__);
+
+  char valuestr[100];
+  snprintf(valuestr, 100, "%g", value);
+
+  if (strcmp(what, "declare") == 0) {
+    instr_new_user_host_variable_type (variable, NULL);
+  } else{
+    char *host_name = MSG_host_self()->name;
+    char *variable_id = instr_variable_type(variable, host_name);
+    char *resource_id = instr_resource_type(host_name);
+    if (strcmp(what, "set") == 0) {
+      pajeSetVariable(time, variable_id, resource_id, valuestr);
+    } else if (strcmp(what, "add") == 0) {
+      pajeAddVariable(time, variable_id, resource_id, valuestr);
+    } else if (strcmp(what, "sub") == 0) {
+      pajeSubVariable(time, variable_id, resource_id, valuestr);
+    }
+  }
+}
+
+
 #endif /* HAVE_TRACING */
