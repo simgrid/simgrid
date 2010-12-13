@@ -24,8 +24,7 @@ typedef struct s_container {
 
 static container_t rootContainer = NULL;
 static xbt_dynar_t currentContainer = NULL;
-static xbt_dict_t created_links = NULL;
-static xbt_dict_t created_hosts = NULL;
+static xbt_dict_t allContainers = NULL;     /* all created containers indexed by name */
 xbt_dict_t hosts_types = NULL;
 xbt_dict_t links_types = NULL;
 
@@ -138,8 +137,7 @@ static void instr_routing_parse_start_AS ()
     currentContainer = xbt_dynar_new (sizeof(s_container_t), NULL);
     xbt_dynar_push (currentContainer, rootContainer);
 
-    created_links = xbt_dict_new ();
-    created_hosts = xbt_dict_new ();
+    allContainers = xbt_dict_new ();
     hosts_types = xbt_dict_new ();
     links_types = xbt_dict_new ();
   }
@@ -189,7 +187,7 @@ static void instr_routing_parse_start_link ()
   }
 
   //register created link on the dictionary
-  xbt_dict_set (created_links, A_surfxml_link_id, new, NULL);
+  xbt_dict_set (allContainers, A_surfxml_link_id, new, NULL);
 
   //register this link type
   xbt_dict_set (links_types, type, xbt_strdup("1"), xbt_free);
@@ -220,7 +218,7 @@ static void instr_routing_parse_start_host ()
   }
 
   //register created host on the dictionary
-  xbt_dict_set (created_hosts, A_surfxml_host_id, new, NULL);
+  xbt_dict_set (allContainers, A_surfxml_host_id, new, NULL);
 
   //register this link type
   xbt_dict_set (hosts_types, type, xbt_strdup("1"), xbt_free);
@@ -247,7 +245,7 @@ static void instr_routing_parse_end_router ()
  */
 int instr_link_is_traced (const char *name)
 {
-  if (xbt_dict_get_or_null(created_links, name)) {
+  if (((container_t)xbt_dict_get_or_null (allContainers, name))){
     return 1;
   } else {
     return 0;
@@ -256,23 +254,12 @@ int instr_link_is_traced (const char *name)
 
 char *instr_link_type (const char *name)
 {
-  container_t created_link = xbt_dict_get_or_null(created_links, name);
-  if (created_link){
-    return created_link->type;
-  }else{
-    return NULL;
-  }
+  return ((container_t)xbt_dict_get (allContainers, name))->type;
 }
-
 
 char *instr_host_type (const char *name)
 {
-  container_t created_host = xbt_dict_get_or_null(created_hosts, name);
-  if (created_host){
-    return created_host->type;
-  }else{
-    return NULL;
-  }
+  return ((container_t)xbt_dict_get (allContainers, name))->type;
 }
 
 void instr_destroy_platform ()
