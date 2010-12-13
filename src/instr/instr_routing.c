@@ -157,7 +157,7 @@ static long long int newContainedId ()
   return counter++;
 }
 
-static container_t newContainer (const char *name, e_container_types kind, container_t father)
+container_t newContainer (const char *name, e_container_types kind, container_t father)
 {
   long long int counter = newContainedId();
   char id_str[INSTR_DEFAULT_STR_SIZE];
@@ -215,6 +215,43 @@ static container_t newContainer (const char *name, e_container_types kind, conta
     xbt_dynar_push_as(allLinkTypes, type_t, new->type);
   }
   return new;
+}
+
+static container_t recursiveGetContainer (const char *name, container_t root)
+{
+  if (strcmp (root->name, name) == 0) return root;
+
+  xbt_dict_cursor_t cursor = NULL;
+  container_t child;
+  char *child_name;
+  xbt_dict_foreach(root->children, cursor, child_name, child) {
+    container_t ret = recursiveGetContainer(name, child);
+    if (ret) return ret;
+  }
+  return NULL;
+}
+
+container_t getContainer (const char *name)
+{
+  return recursiveGetContainer(name, rootContainer);
+}
+
+void destroyContainer (container_t container)
+{
+  //remove me from my father
+  if (container->father){
+    xbt_dict_remove(container->father->children, container->name);
+  }
+
+  //trace my destruction
+  pajeDestroyContainer(SIMIX_get_clock(), container->type->id, container->id);
+
+  //free
+  xbt_free (container->name);
+  xbt_free (container->id);
+  xbt_free (container->children);
+  xbt_free (container);
+  container = NULL;
 }
 
 static container_t findChild (container_t root, container_t a1)
@@ -492,14 +529,7 @@ static void recursiveDestroyContainer (container_t container)
   xbt_dict_foreach(container->children, cursor, child_name, child) {
     recursiveDestroyContainer (child);
   }
-
-  pajeDestroyContainer(SIMIX_get_clock(), container->type->id, container->id);
-
-  xbt_free (container->name);
-  xbt_free (container->id);
-  xbt_free (container->children);
-  xbt_free (container);
-  container = NULL;
+  destroyContainer (container);
 }
 
 static void recursiveDestroyType (type_t type)

@@ -216,6 +216,9 @@ void TRACE_sd_task_create(SD_task_t task);
 void TRACE_sd_task_destroy(SD_task_t task);
 
 /* instr_routing.c */
+container_t newContainer (const char *name, e_container_types kind, container_t father);
+container_t getContainer (const char *name);
+void destroyContainer (container_t container);
 void instr_routing_define_callbacks (void);
 int instr_link_is_traced (const char *name);
 char *instr_variable_type (const char *name, const char *resource);
