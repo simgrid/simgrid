@@ -29,7 +29,6 @@ static int trace_configured = 0;
 static int trace_active = 0;
 
 extern xbt_dict_t created_categories; //declared in instr_interface.c
-extern xbt_dict_t defined_types; //declared in instr_interface.c
 
 int TRACE_start()
 {
@@ -103,7 +102,6 @@ int TRACE_start()
 //  }
   }
   /* other trace initialization */
-  defined_types = xbt_dict_new();
   created_categories = xbt_dict_new();
   TRACE_msg_task_alloc();
   TRACE_surf_alloc();

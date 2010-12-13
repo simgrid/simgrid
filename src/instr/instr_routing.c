@@ -15,6 +15,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarc
 extern xbt_dict_t defined_types; /* from instr_interface.c */
 
 typedef enum {
+  TYPE_VARIABLE,
+  TYPE_LINK,
+  TYPE_CONTAINER,
+} e_entity_types;
+
+typedef struct s_type *type_t;
+typedef struct s_type {
+  char *id;
+  char *name;
+  e_entity_types kind;
+  struct s_type *father;
+  xbt_dict_t children;
+}s_type_t;
+
+typedef enum {
   INSTR_HOST,
   INSTR_LINK,
   INSTR_ROUTER,
@@ -25,19 +40,19 @@ typedef struct s_container *container_t;
 typedef struct s_container {
   char *name;     /* Unique name of this container */
   char *id;       /* Unique id of this container */
-  char *type;     /* Type of this container */
-  char *typename; /* Type name of this container */
+  type_t type;    /* Type of this container */
   int level;      /* Level in the hierarchy, root level is 0 */
   e_container_types kind; /* This container is of what kind */
   struct s_container *father;
   xbt_dict_t children;
 }s_container_t;
 
+static type_t rootType = NULL;              /* the root type */
 static container_t rootContainer = NULL;    /* the root container */
 static xbt_dynar_t currentContainer = NULL; /* push and pop, used only in creation */
 static xbt_dict_t allContainers = NULL;     /* all created containers indexed by name */
-xbt_dict_t hosts_types = NULL;
-xbt_dict_t links_types = NULL;
+xbt_dynar_t allLinkTypes = NULL;     /* all link types defined */
+xbt_dynar_t allHostTypes = NULL;     /* all host types defined */
 
 static void instr_routing_parse_start_AS (void);
 static void instr_routing_parse_end_AS (void);
@@ -48,49 +63,92 @@ static void instr_routing_parse_end_host (void);
 static void instr_routing_parse_start_router (void);
 static void instr_routing_parse_end_router (void);
 static void instr_routing_parse_end_platform (void);
-static char *instr_AS_type (int level);
 
-static char *instr_AS_type (int level)
+static long long int newTypeId ()
 {
-  char *ret = xbt_new (char, INSTR_DEFAULT_STR_SIZE);
-  if (level == 0){
-    snprintf (ret, INSTR_DEFAULT_STR_SIZE, "0");
-  }else{
-    snprintf (ret, INSTR_DEFAULT_STR_SIZE, "L%d", level);
+  static long long int counter = 0;
+  return counter++;
+}
+
+static type_t newType (const char *typename, e_entity_types kind, type_t father)
+{
+  type_t ret = xbt_new0(s_type_t, 1);
+  ret->name = xbt_strdup (typename);
+  ret->father = father;
+  ret->kind = kind;
+  ret->children = xbt_dict_new ();
+
+  long long int id = newTypeId();
+  char str_id[INSTR_DEFAULT_STR_SIZE];
+  snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", id);
+  ret->id = xbt_strdup (str_id);
+
+  if (father != NULL){
+    xbt_dict_set (father->children, typename, ret, NULL);
   }
   return ret;
 }
 
-static void newContainerType (const char *type, const char *parentType, const char *name)
+static type_t newContainerType (const char *typename, e_entity_types kind, type_t father)
 {
-  char *defined = xbt_dict_get_or_null (defined_types, type);
-  if (!defined){
-    pajeDefineContainerType(type, parentType, name);
-    xbt_dict_set(defined_types, type, xbt_strdup("1"), xbt_free);
-  }
+  type_t ret = newType (typename, kind, father);
+//  if (father) INFO4("ContainerType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+  if (father) pajeDefineContainerType(ret->id, ret->father->id, ret->name);
+  return ret;
 }
 
-
-static void newVariableType (const char *type, const char *parentType, const char *name, const char *color)
+static type_t newVariableType (const char *typename, e_entity_types kind, const char *color, type_t father)
 {
-  char *defined = xbt_dict_get_or_null (defined_types, type);
-  if (!defined){
-    if (color){
-      pajeDefineVariableTypeWithColor(type, parentType, name, color);
-    }else{
-      pajeDefineVariableType(type, parentType, name);
+  type_t ret = newType (typename, kind, father);
+//  INFO4("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+  if (color){
+    pajeDefineVariableTypeWithColor(ret->id, ret->father->id, ret->name, color);
+  }else{
+    pajeDefineVariableType(ret->id, ret->father->id, ret->name);
+  }
+  return ret;
+}
+
+static type_t newLinkType (const char *typename, e_entity_types kind, type_t father, type_t source, type_t dest)
+{
+  type_t ret = newType (typename, kind, father);
+//  INFO8("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id, source->name, source->id, dest->name, dest->id);
+  pajeDefineLinkType(ret->id, ret->father->id, source->id, dest->id, ret->name);
+  return ret;
+}
+
+static type_t getContainerType (const char *typename, type_t father)
+{
+  type_t ret;
+  if (father == NULL){
+    ret = newContainerType (typename, TYPE_CONTAINER, father);
+    rootType = ret;
+  }else{
+    //check if my father type already has my typename
+    ret = (type_t)xbt_dict_get_or_null (father->children, typename);
+    if (ret == NULL){
+      ret = newContainerType (typename, TYPE_CONTAINER, father);
     }
-    xbt_dict_set(defined_types, type, xbt_strdup("1"), xbt_free);
   }
+  return ret;
 }
 
-static void newLinkType (const char *type, const char *parentType, const char *sourceType, const char *destType, const char *name)
+static type_t getVariableType (const char *typename, const char *color, type_t father)
 {
-  char *defined = xbt_dict_get_or_null (defined_types, type);
-  if (!defined){
-    pajeDefineLinkType(type, parentType, sourceType, destType, name);
-    xbt_dict_set(defined_types, type, xbt_strdup("1"), xbt_free);
+  type_t ret = xbt_dict_get_or_null (father->children, typename);
+  if (ret == NULL){
+    ret = newVariableType (typename, TYPE_VARIABLE, color, father);
   }
+  return ret;
+}
+
+static type_t getLinkType (const char *typename, type_t father, type_t source, type_t dest)
+{
+  type_t ret = xbt_dict_get_or_null (father->children, typename);
+  if (ret == NULL){
+    ret = newLinkType (typename, TYPE_LINK, father, source, dest);
+  }
+  return ret;
 }
 
 void instr_routing_define_callbacks ()
@@ -114,80 +172,127 @@ static long long int newContainedId ()
   return counter++;
 }
 
-static container_t newContainer (const char *name, const char *type, e_container_types kind)
+static container_t newContainer (const char *name, e_container_types kind, container_t father)
 {
   long long int counter = newContainedId();
   char id_str[INSTR_DEFAULT_STR_SIZE];
   snprintf (id_str, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
 
-  container_t newContainer = xbt_new0(s_container_t, 1);
-  newContainer->name = xbt_strdup (name);
-  newContainer->id = xbt_strdup (id_str);
-  newContainer->father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  newContainer->level = newContainer->father->level+1;
-  newContainer->type = xbt_strdup (type);
-  switch (kind){
-    case INSTR_HOST: newContainer->typename = xbt_strdup ("HOST"); break;
-    case INSTR_LINK: newContainer->typename = xbt_strdup ("LINK"); break;
-    case INSTR_ROUTER: newContainer->typename = xbt_strdup ("ROUTER"); break;
-    case INSTR_AS: newContainer->typename = xbt_strdup ("AS"); break;
-    default: xbt_die ("Congratulations, you have found a bug on newContainer function of instr_routing.c"); break;
+  container_t new = xbt_new0(s_container_t, 1);
+  new->name = xbt_strdup (name); // name of the container
+  new->id = xbt_strdup (id_str); // id (or alias) of the container
+  new->father = father;
+  // father of this container
+  if (new->father){
+    new->father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+  }else{
+    new->father = NULL;
   }
-  newContainer->kind = kind;
-  newContainer->children = xbt_dict_new();
-  xbt_dict_set(newContainer->father->children, newContainer->name, newContainer, NULL);
+  // level depends on level of father
+  if (new->father){
+    new->level = new->father->level+1;
+  }else{
+    new->level = 0;
+  }
+  // type definition (method depends on kind of this new container)
+  new->kind = kind;
+  if (new->kind == INSTR_AS){
+    //if this container is of an AS, its type name depends on its level
+    char as_typename[INSTR_DEFAULT_STR_SIZE];
+    snprintf (as_typename, INSTR_DEFAULT_STR_SIZE, "L%d", new->level);
+    if (new->father){
+      new->type = getContainerType (as_typename, new->father->type);
+    }else{
+      new->type = getContainerType ("0", NULL);
+    }
+  }else{
+    //otherwise, the name is its kind
+    switch (new->kind){
+      case INSTR_HOST: new->type = getContainerType ("HOST", new->father->type); break;
+      case INSTR_LINK: new->type = getContainerType ("LINK", new->father->type); break;
+      case INSTR_ROUTER: new->type = getContainerType ("ROUTER", new->father->type); break;
+      default: xbt_die ("Congratulations, you have found a bug on newContainer function of instr_routing.c"); break;
+    }
+  }
+  new->children = xbt_dict_new();
+  if (new->father){
+    xbt_dict_set(new->father->children, new->name, new, NULL);
+    pajeCreateContainer (0, new->id, new->type->id, new->father->id, new->name);
+  }
 
-  newContainerType (newContainer->type, newContainer->father->type, newContainer->typename);
-  pajeCreateContainer (0, newContainer->id, newContainer->type, newContainer->father->id, newContainer->name);
+  //register hosts, routers, links containers
+  if (new->kind == INSTR_HOST || new->kind == INSTR_LINK || new->kind == INSTR_ROUTER) {
+    xbt_dict_set (allContainers, new->name, new, NULL);
+  }
 
-  return newContainer;
+  //register the host container types
+  if (new->kind == INSTR_HOST){
+    xbt_dynar_push_as (allHostTypes, type_t, new->type);
+  }
+
+  //register the link container types
+  if (new->kind == INSTR_LINK){
+    xbt_dynar_push_as(allLinkTypes, type_t, new->type);
+  }
+  return new;
 }
 
-static void recursiveDestroyContainer (container_t container)
+static container_t findChild (container_t root, container_t a1)
 {
+  if (root == a1) return root;
+
   xbt_dict_cursor_t cursor = NULL;
   container_t child;
   char *child_name;
-  xbt_dict_foreach(container->children, cursor, child_name, child) {
-    recursiveDestroyContainer (child);
+  xbt_dict_foreach(root->children, cursor, child_name, child) {
+    if (findChild (child, a1)) return child;
   }
-
-  pajeDestroyContainer(SIMIX_get_clock(), container->type, container->id);
-
-  xbt_free (container->name);
-  xbt_free (container->id);
-  xbt_free (container->type);
-  xbt_free (container->children);
-  xbt_free (container);
-  container = NULL;
+  return NULL;
 }
 
-static void linkContainers (container_t container, const char *a1, const char *a2)
+static container_t findCommonFather (container_t root, container_t a1, container_t a2)
+{
+  if (a1->father == a2->father) return a1->father;
+
+  xbt_dict_cursor_t cursor = NULL;
+  container_t child;
+  char *child_name;
+  container_t a1_try = NULL;
+  container_t a2_try = NULL;
+  xbt_dict_foreach(root->children, cursor, child_name, child) {
+    a1_try = findChild (child, a1);
+    a2_try = findChild (child, a2);
+    if (a1_try && a2_try) return child;
+  }
+  return NULL;
+}
+
+static void linkContainers (const char *a1, const char *a2)
 {
   //ignore loopback
   if (strcmp (a1, "__loopback__") == 0 || strcmp (a2, "__loopback__") == 0)
     return;
 
-  char *a1_id = ((container_t)xbt_dict_get (allContainers, a1))->id;
-  char *a1_type = ((container_t)xbt_dict_get (allContainers, a1))->type;
-  char *a1_typename = ((container_t)xbt_dict_get (allContainers, a1))->typename;
+  container_t a1_container = ((container_t)xbt_dict_get (allContainers, a1));
+  type_t a1_type = a1_container->type;
 
-  char *a2_id = ((container_t)xbt_dict_get (allContainers, a2))->id;
-  char *a2_type = ((container_t)xbt_dict_get (allContainers, a2))->type;
-  char *a2_typename = ((container_t)xbt_dict_get (allContainers, a2))->typename;
+  container_t a2_container = ((container_t)xbt_dict_get (allContainers, a2));
+  type_t a2_type = a2_container->type;
+
+  container_t container = findCommonFather (rootContainer, a1_container, a2_container);
+  xbt_assert0 (container != NULL, "common father not found");
 
   //declare type
-  char new_link_type[INSTR_DEFAULT_STR_SIZE], new_link_typename[INSTR_DEFAULT_STR_SIZE];
-  snprintf (new_link_type, INSTR_DEFAULT_STR_SIZE, "%s-%s", a1_type, a2_type);
-  snprintf (new_link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s", a1_typename, a2_typename);
-  newLinkType (new_link_type, container->type, a1_type, a2_type, new_link_typename);
+  char link_typename[INSTR_DEFAULT_STR_SIZE];
+  snprintf (link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s", a1_type->name, a2_type->name);
+  type_t link_type = getLinkType (link_typename, container->type, a1_type, a2_type);
 
   //create the link
   static long long counter = 0;
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
-  pajeStartLink(SIMIX_get_clock(), new_link_type, container->id, "G", a1_id, key);
-  pajeEndLink(SIMIX_get_clock(), new_link_type, container->id, "G", a2_id, key);
+  pajeStartLink(SIMIX_get_clock(), link_type->id, container->id, "G", a1_container->id, key);
+  pajeEndLink(SIMIX_get_clock(), link_type->id, container->id, "G", a2_container->id, key);
 }
 
 static void recursiveGraphExtraction (container_t container)
@@ -240,10 +345,10 @@ static void recursiveGraphExtraction (container_t container)
           char *previous_entity_name = (char*)child_name1;
           xbt_dynar_foreach (route, cpt, link) {
             char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-            linkContainers (container, previous_entity_name, link_name);
+            linkContainers (previous_entity_name, link_name);
             previous_entity_name = link_name;
           }
-          linkContainers (container, previous_entity_name, child_name2);
+          linkContainers (previous_entity_name, child_name2);
         }else if (child1->kind == INSTR_AS &&
                   child2->kind == INSTR_AS &&
                   strcmp(child_name1, child_name2) != 0){
@@ -258,15 +363,17 @@ static void recursiveGraphExtraction (container_t container)
             //no route between them, that's possible
             continue;
           }
+          xbt_assert2(route!=NULL,
+              "there is no ASroute between %s and %s", child_name1, child_name2);
           unsigned int cpt;
           void *link;
           char *previous_entity_name = route->src_gateway;
           xbt_dynar_foreach (route->generic_route.link_list, cpt, link) {
             char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-            linkContainers (container, previous_entity_name, link_name);
+            linkContainers (previous_entity_name, link_name);
             previous_entity_name = link_name;
           }
-          linkContainers (container, previous_entity_name, route->dst_gateway);
+          linkContainers (previous_entity_name, route->dst_gateway);
         }
       }
     }
@@ -280,45 +387,20 @@ static void recursiveGraphExtraction (container_t container)
 static void instr_routing_parse_start_AS ()
 {
   if (rootContainer == NULL){
-    rootContainer = xbt_new0(s_container_t, 1);
-    rootContainer->name = xbt_strdup ("0");
-    rootContainer->id = xbt_strdup (rootContainer->name);
-    rootContainer->type = xbt_strdup ("0");
-    rootContainer->typename = xbt_strdup ("0");
-    rootContainer->level = 0;
-    rootContainer->father = NULL;
-    rootContainer->children = xbt_dict_new();
-    rootContainer->kind = INSTR_AS;
-
     currentContainer = xbt_dynar_new (sizeof(s_container_t), NULL);
+    allContainers = xbt_dict_new ();
+    allLinkTypes = xbt_dynar_new (sizeof(s_type_t), NULL);
+    allHostTypes = xbt_dynar_new (sizeof(s_type_t), NULL);
+
+    rootContainer = newContainer ("0", INSTR_AS, NULL);
     xbt_dynar_push (currentContainer, rootContainer);
 
-    allContainers = xbt_dict_new ();
-    hosts_types = xbt_dict_new ();
-    links_types = xbt_dict_new ();
   }
-
-  long long int counter = newContainedId();
-  char id_str[INSTR_DEFAULT_STR_SIZE];
-  snprintf (id_str, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
-
-  container_t newContainer = xbt_new0(s_container_t, 1);
-  newContainer->name = xbt_strdup (A_surfxml_AS_id);
-  newContainer->id = xbt_strdup (id_str);
-  newContainer->father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  newContainer->level = newContainer->father->level+1;
-  newContainer->type = instr_AS_type (newContainer->level);
-  newContainer->typename = instr_AS_type (newContainer->level);
-  newContainer->children = xbt_dict_new();
-  newContainer->kind = INSTR_AS;
-  xbt_dict_set(newContainer->father->children, newContainer->name, newContainer, NULL);
-
-  //trace
-  newContainerType (newContainer->type, newContainer->father->type, newContainer->type);
-  pajeCreateContainer (0, newContainer->id, newContainer->type, newContainer->father->id, newContainer->name);
+  container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+  container_t new = newContainer (A_surfxml_AS_id, INSTR_AS, father);
 
   //push
-  xbt_dynar_push (currentContainer, newContainer);
+  xbt_dynar_push (currentContainer, new);
 }
 
 static void instr_routing_parse_end_AS ()
@@ -329,31 +411,15 @@ static void instr_routing_parse_end_AS ()
 static void instr_routing_parse_start_link ()
 {
   container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  char type[INSTR_DEFAULT_STR_SIZE];
-  snprintf (type, INSTR_DEFAULT_STR_SIZE, "LINK-%s", father->type);
-  container_t new = newContainer (A_surfxml_link_id, type, INSTR_LINK);
+  container_t new = newContainer (A_surfxml_link_id, INSTR_LINK, father);
 
-  //bandwidth and latency
-  char bandwidth_type[INSTR_DEFAULT_STR_SIZE], latency_type[INSTR_DEFAULT_STR_SIZE];
-  snprintf (bandwidth_type, INSTR_DEFAULT_STR_SIZE, "bandwidth-%s", type);
-  snprintf (latency_type, INSTR_DEFAULT_STR_SIZE, "latency-%s", type);
-  newVariableType (bandwidth_type, type, "bandwidth", NULL);
-  newVariableType (latency_type, type, "latency", NULL);
-  pajeSetVariable(0, bandwidth_type, new->id, A_surfxml_link_bandwidth);
-  pajeSetVariable(0, latency_type, new->id, A_surfxml_link_latency);
-
+  type_t bandwidth = getVariableType ("bandwidth", NULL, new->type);
+  type_t latency = getVariableType ("latency", NULL, new->type);
+  pajeSetVariable (0, bandwidth->id, new->id, A_surfxml_link_bandwidth);
+  pajeSetVariable (0, latency->id, new->id, A_surfxml_link_latency);
   if (TRACE_uncategorized()){
-    //bandwidth_used
-    char bandwidth_used_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (bandwidth_used_type, INSTR_DEFAULT_STR_SIZE, "bandwidth_used-%s", type);
-    newVariableType (bandwidth_used_type, type, "bandwidth_used", "0.5 0.5 0.5");
+    getVariableType ("bandwidth_used", "0.5 0.5 0.5", new->type);
   }
-
-  //register created link on the dictionary
-  xbt_dict_set (allContainers, A_surfxml_link_id, new, NULL);
-
-  //register this link type
-  xbt_dict_set (links_types, type, xbt_strdup("1"), xbt_free);
 }
 
 static void instr_routing_parse_end_link ()
@@ -363,28 +429,13 @@ static void instr_routing_parse_end_link ()
 static void instr_routing_parse_start_host ()
 {
   container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  char type[INSTR_DEFAULT_STR_SIZE];
-  snprintf (type, INSTR_DEFAULT_STR_SIZE, "HOST-%s", father->type);
-  container_t new = newContainer (A_surfxml_host_id, type, INSTR_HOST);
+  container_t new = newContainer (A_surfxml_host_id, INSTR_HOST, father);
 
-  //power
-  char power_type[INSTR_DEFAULT_STR_SIZE];
-  snprintf (power_type, INSTR_DEFAULT_STR_SIZE, "power-%s", type);
-  newVariableType (power_type, type, "power", NULL);
-  pajeSetVariable(0, power_type, new->id, A_surfxml_host_power);
-
+  type_t power = getVariableType ("power", NULL, new->type);
+  pajeSetVariable (0, power->id, new->id, A_surfxml_host_power);
   if (TRACE_uncategorized()){
-    //power_used
-    char power_used_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (power_used_type, INSTR_DEFAULT_STR_SIZE, "power_used-%s", type);
-    newVariableType (power_used_type, type, "power_used", "0.5 0.5 0.5");
+    getVariableType ("power_used", "0.5 0.5 0.5", new->type);
   }
-
-  //register created host on the dictionary
-  xbt_dict_set (allContainers, A_surfxml_host_id, new, NULL);
-
-  //register this link type
-  xbt_dict_set (hosts_types, type, xbt_strdup("1"), xbt_free);
 }
 
 static void instr_routing_parse_end_host ()
@@ -394,12 +445,7 @@ static void instr_routing_parse_end_host ()
 static void instr_routing_parse_start_router ()
 {
   container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  char type[INSTR_DEFAULT_STR_SIZE];
-  snprintf (type, INSTR_DEFAULT_STR_SIZE, "ROUTER-%s", father->type);
-  container_t new = newContainer (A_surfxml_router_id, type, INSTR_ROUTER);
-
-  //register created host on the dictionary
-  xbt_dict_set (allContainers, A_surfxml_router_id, new, NULL);
+  newContainer (A_surfxml_router_id, INSTR_ROUTER, father);
 }
 
 static void instr_routing_parse_end_router ()
@@ -424,24 +470,118 @@ int instr_link_is_traced (const char *name)
   }
 }
 
-char *instr_link_type (const char *name)
+char *instr_variable_type (const char *name, const char *resource)
 {
-  return ((container_t)xbt_dict_get (allContainers, name))->type;
+  container_t container = (container_t)xbt_dict_get (allContainers, resource);
+  xbt_dict_cursor_t cursor = NULL;
+  type_t type;
+  char *type_name;
+  xbt_dict_foreach(container->type->children, cursor, type_name, type) {
+    if (strcmp (name, type->name) == 0) return type->id;
+  }
+  return NULL;
 }
 
-char *instr_host_type (const char *name)
+char *instr_resource_type (const char *resource_name)
 {
-  return ((container_t)xbt_dict_get (allContainers, name))->type;
+  return ((container_t)xbt_dict_get_or_null (allContainers, resource_name))->id;
 }
 
-char *instr_id (const char *name)
+static void recursiveDestroyContainer (container_t container)
 {
-  return ((container_t)xbt_dict_get (allContainers, name))->id;
+  xbt_dict_cursor_t cursor = NULL;
+  container_t child;
+  char *child_name;
+  xbt_dict_foreach(container->children, cursor, child_name, child) {
+    recursiveDestroyContainer (child);
+  }
+
+  pajeDestroyContainer(SIMIX_get_clock(), container->type->id, container->id);
+
+  xbt_free (container->name);
+  xbt_free (container->id);
+  xbt_free (container->children);
+  xbt_free (container);
+  container = NULL;
+}
+
+static void recursiveDestroyType (type_t type)
+{
+  xbt_dict_cursor_t cursor = NULL;
+  type_t child;
+  char *child_name;
+  xbt_dict_foreach(type->children, cursor, child_name, child) {
+    recursiveDestroyType (child);
+  }
+  xbt_free (type->name);
+  xbt_free (type->id);
+  xbt_free (type->children);
+  xbt_free (type);
+  type = NULL;
 }
 
 void instr_destroy_platform ()
 {
   if (rootContainer) recursiveDestroyContainer (rootContainer);
+  if (rootType) recursiveDestroyType (rootType);
+}
+
+/*
+ * user categories support
+ */
+static void recursiveNewUserVariableType (const char *new_typename, const char *color, type_t root)
+{
+  if (!strcmp (root->name, "HOST") || !strcmp (root->name, "LINK")){
+    newVariableType(new_typename, TYPE_VARIABLE, color, root);
+  }
+  xbt_dict_cursor_t cursor = NULL;
+  type_t child_type;
+  char *name;
+  xbt_dict_foreach(root->children, cursor, name, child_type) {
+    recursiveNewUserVariableType (new_typename, color, child_type);
+  }
+}
+
+void instr_new_user_variable_type (const char *new_typename, const char *color)
+{
+  recursiveNewUserVariableType (new_typename, color, rootType);
+}
+
+static void recursiveNewUserLinkVariableType (const char *new_typename, const char *color, type_t root)
+{
+  if (!strcmp (root->name, "LINK")){
+    newVariableType(new_typename, TYPE_VARIABLE, color, root);
+  }
+  xbt_dict_cursor_t cursor = NULL;
+  type_t child_type;
+  char *name;
+  xbt_dict_foreach(root->children, cursor, name, child_type) {
+    recursiveNewUserLinkVariableType (new_typename, color, child_type);
+  }
+}
+
+void instr_new_user_link_variable_type  (const char *new_typename, const char *color)
+{
+  recursiveNewUserLinkVariableType (new_typename, color, rootType);
+}
+
+
+static void recursiveNewUserHostVariableType (const char *new_typename, const char *color, type_t root)
+{
+  if (!strcmp (root->name, "HOST")){
+    newVariableType(new_typename, TYPE_VARIABLE, color, root);
+  }
+  xbt_dict_cursor_t cursor = NULL;
+  type_t child_type;
+  char *name;
+  xbt_dict_foreach(root->children, cursor, name, child_type) {
+    recursiveNewUserHostVariableType (new_typename, color, child_type);
+  }
+}
+
+void instr_new_user_host_variable_type  (const char *new_typename, const char *color)
+{
+  recursiveNewUserHostVariableType (new_typename, color, rootType);
 }
 
 #endif /* HAVE_TRACING */

@@ -282,29 +282,22 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
   if (!value)
     return;
 
-  //get link type
-  char *link_type = instr_link_type (resource);
-
   //trace uncategorized link utilization
   if (TRACE_uncategorized()){
     DEBUG4("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now+delta, resource, value);
-    char bandwidth_used_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (bandwidth_used_type, INSTR_DEFAULT_STR_SIZE, "bandwidth_used-%s", link_type);
-    TRACE_surf_resource_utilization_event(smx_action, now, delta,
-        bandwidth_used_type, resource, value);
+    char *variable_type = instr_variable_type ("bandwidth_used", resource);
+    char *resource_id = instr_resource_type (resource);
+    TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
   }
 
   //trace categorized utilization
   if (TRACE_categorized()){
     if (!surf_action->category)
       return;
-
-    char cat_bw_used_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (cat_bw_used_type, INSTR_DEFAULT_STR_SIZE, "%s-%s", surf_action->category, link_type);
-
-    DEBUG5("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, cat_bw_used_type, value);
-    TRACE_surf_resource_utilization_event(smx_action, now, delta, cat_bw_used_type,
-        resource, value);
+    DEBUG5("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
+    char *variable_type = instr_variable_type (surf_action->category, resource);
+    char *resource_id = instr_resource_type (resource);
+    TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
   }
   return;
 }
@@ -323,29 +316,22 @@ void TRACE_surf_host_set_utilization(const char *resource,
   if (!value)
     return;
 
-  //get host type
-  char *host_type = instr_host_type (resource);
-
   //trace uncategorized host utilization
   if (TRACE_uncategorized()){
     DEBUG4("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
-    char power_used_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (power_used_type, INSTR_DEFAULT_STR_SIZE, "power_used-%s", host_type);
-    TRACE_surf_resource_utilization_event(smx_action, now, delta,
-        power_used_type, resource, value);
+    char *variable_type = instr_variable_type ("power_used", resource);
+    char *resource_id = instr_resource_type (resource);
+    TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
   }
 
   //trace categorized utilization
   if (TRACE_categorized()){
     if (!surf_action->category)
       return;
-
-    char cat_p_used_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (cat_p_used_type, INSTR_DEFAULT_STR_SIZE, "%s-%s", surf_action->category, host_type);
-
-    DEBUG5("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, cat_p_used_type, value);
-    TRACE_surf_resource_utilization_event(smx_action, now, delta, cat_p_used_type, resource,
-        value);
+    DEBUG5("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
+    char *variable_type = instr_variable_type (surf_action->category, resource);
+    char *resource_id = instr_resource_type (resource);
+    TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
   }
   return;
 }
@@ -370,7 +356,7 @@ void TRACE_surf_resource_utilization_event(smx_action_t action, double now,
   if (!TRACE_is_active())
     return;
   DEBUG6("EVENT %p [%f - %f] %s %s %f", action, now, now+delta, resource, variable, value);
-  TRACE_method_event(action, now, delta, variable, instr_id(resource), value);
+  TRACE_method_event(action, now, delta, variable, resource, value);
 }
 
 void TRACE_surf_resource_utilization_end(smx_action_t action)

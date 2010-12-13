@@ -29,7 +29,8 @@ static void TRACE_surf_set_resource_variable(double date,
 {
   char value_str[INSTR_DEFAULT_STR_SIZE];
   snprintf(value_str, 100, "%f", value);
-  pajeSetVariable(date, variable, instr_id(resource), value_str);
+  char *variable_type = instr_variable_type(variable, resource);
+  pajeSetVariable(date, variable, variable_type, value_str);
 }
 
 void TRACE_surf_host_set_power(double date, const char *resource, double power)
@@ -37,10 +38,7 @@ void TRACE_surf_host_set_power(double date, const char *resource, double power)
   if (!TRACE_is_active())
     return;
 
-  char *host_type = instr_host_type (resource);
-  char variable_type[INSTR_DEFAULT_STR_SIZE];
-  snprintf (variable_type, INSTR_DEFAULT_STR_SIZE, "power-%s", host_type);
-
+  char *variable_type = instr_variable_type("power", resource);
   TRACE_surf_set_resource_variable(date, variable_type, resource, power);
 }
 
@@ -49,10 +47,7 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
   if (!TRACE_is_active())
     return;
 
-  char *link_type = instr_link_type (resource);
-  char variable_type[INSTR_DEFAULT_STR_SIZE];
-  snprintf (variable_type, INSTR_DEFAULT_STR_SIZE, "bandwidth-%s", link_type);
-
+  char *variable_type = instr_variable_type("bandwidth", resource);
   TRACE_surf_set_resource_variable(date, variable_type, resource, bandwidth);
 }
 
@@ -62,10 +57,7 @@ void TRACE_surf_link_set_latency(double date, const char *resource, double laten
   if (!TRACE_is_active())
     return;
 
-  char *link_type = instr_link_type (resource);
-  char variable_type[INSTR_DEFAULT_STR_SIZE];
-  snprintf (variable_type, INSTR_DEFAULT_STR_SIZE, "latency-%s", link_type);
-
+  char *variable_type = instr_variable_type("latency", resource);
   TRACE_surf_set_resource_variable(date, variable_type, resource, latency);
 }
 

@@ -12,11 +12,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
-xbt_dict_t defined_types;
 xbt_dict_t created_categories;
-
-extern xbt_dict_t hosts_types;
-extern xbt_dict_t links_types;
 
 void TRACE_category(const char *category)
 {
@@ -27,12 +23,12 @@ void TRACE_category_with_color (const char *category, const char *color)
 {
   if (!TRACE_is_active())
     return;
-
-  {
-    //check if hosts have been created
-    xbt_assert1 (hosts_types != NULL && xbt_dict_length(hosts_types) != 0,
-        "%s must be called after environment creation", __FUNCTION__);
-  }
+//
+//  {
+//    //check if hosts have been created
+//    xbt_assert1 (allHostTypes != NULL && xbt_dict_length(allHostTypes) != 0,
+//        "%s must be called after environment creation", __FUNCTION__);
+//  }
 
   //check if category is already created
   char *created = xbt_dict_get_or_null(created_categories, category);
@@ -69,19 +65,7 @@ void TRACE_category_with_color (const char *category, const char *color)
 
   //define the type of this category on top of hosts and links
   if (TRACE_categorized ()){
-    char new_type[INSTR_DEFAULT_STR_SIZE];
-    xbt_dict_cursor_t cursor = NULL;
-    char *type;
-    void *data;
-    xbt_dict_foreach(links_types, cursor, type, data) {
-      snprintf (new_type, INSTR_DEFAULT_STR_SIZE, "%s-%s", category, type);
-      pajeDefineVariableTypeWithColor(new_type, type, category, final_color);
-    }
-    cursor = NULL;
-    xbt_dict_foreach(hosts_types, cursor, type, data) {
-      snprintf (new_type, INSTR_DEFAULT_STR_SIZE, "%s-%s", category, type);
-      pajeDefineVariableTypeWithColor(new_type, type, category, final_color);
-    }
+    instr_new_user_variable_type (category, final_color);
   }
 }
 

@@ -181,10 +181,12 @@ void TRACE_sd_task_destroy(SD_task_t task);
 /* instr_routing.c */
 void instr_routing_define_callbacks (void);
 int instr_link_is_traced (const char *name);
-char *instr_link_type (const char *name);
-char *instr_host_type (const char *name);
-char *instr_id (const char *name);
+char *instr_variable_type (const char *name, const char *resource);
+char *instr_resource_type (const char *resource_name);
 void instr_destroy_platform (void);
+void instr_new_user_variable_type (const char *new_typename, const char *color);
+void instr_new_user_link_variable_type  (const char *new_typename, const char *color);
+void instr_new_user_host_variable_type  (const char *new_typename, const char *color);
 
 #endif /* HAVE_TRACING */
 #endif /* INSTR_PRIVATE_H_ */
