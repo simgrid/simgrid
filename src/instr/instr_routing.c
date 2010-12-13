@@ -167,12 +167,6 @@ static container_t newContainer (const char *name, e_container_types kind, conta
   new->name = xbt_strdup (name); // name of the container
   new->id = xbt_strdup (id_str); // id (or alias) of the container
   new->father = father;
-  // father of this container
-  if (new->father){
-    new->father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  }else{
-    new->father = NULL;
-  }
   // level depends on level of father
   if (new->father){
     new->level = new->father->level+1;
