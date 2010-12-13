@@ -14,40 +14,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarc
 
 extern xbt_dict_t defined_types; /* from instr_interface.c */
 
-typedef enum {
-  TYPE_VARIABLE,
-  TYPE_LINK,
-  TYPE_CONTAINER,
-  TYPE_STATE,
-} e_entity_types;
-
-typedef struct s_type *type_t;
-typedef struct s_type {
-  char *id;
-  char *name;
-  e_entity_types kind;
-  struct s_type *father;
-  xbt_dict_t children;
-}s_type_t;
-
-typedef enum {
-  INSTR_HOST,
-  INSTR_LINK,
-  INSTR_ROUTER,
-  INSTR_AS,
-} e_container_types;
-
-typedef struct s_container *container_t;
-typedef struct s_container {
-  char *name;     /* Unique name of this container */
-  char *id;       /* Unique id of this container */
-  type_t type;    /* Type of this container */
-  int level;      /* Level in the hierarchy, root level is 0 */
-  e_container_types kind; /* This container is of what kind */
-  struct s_container *father;
-  xbt_dict_t children;
-}s_container_t;
-
 static int platform_created = 0;            /* indicate whether the platform file has been traced */
 static type_t rootType = NULL;              /* the root type */
 static container_t rootContainer = NULL;    /* the root container */

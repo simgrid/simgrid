@@ -18,6 +18,40 @@
 #include "simdag/private.h"
 #include "simix/private.h"
 
+typedef enum {
+  TYPE_VARIABLE,
+  TYPE_LINK,
+  TYPE_CONTAINER,
+  TYPE_STATE,
+} e_entity_types;
+
+typedef struct s_type *type_t;
+typedef struct s_type {
+  char *id;
+  char *name;
+  e_entity_types kind;
+  struct s_type *father;
+  xbt_dict_t children;
+}s_type_t;
+
+typedef enum {
+  INSTR_HOST,
+  INSTR_LINK,
+  INSTR_ROUTER,
+  INSTR_AS,
+} e_container_types;
+
+typedef struct s_container *container_t;
+typedef struct s_container {
+  char *name;     /* Unique name of this container */
+  char *id;       /* Unique id of this container */
+  type_t type;    /* Type of this container */
+  int level;      /* Level in the hierarchy, root level is 0 */
+  e_container_types kind; /* This container is of what kind */
+  struct s_container *father;
+  xbt_dict_t children;
+}s_container_t;
+
 extern xbt_dict_t created_categories;
 
 /* from paje.c */
