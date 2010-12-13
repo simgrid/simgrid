@@ -15,15 +15,15 @@ extern xbt_dict_t defined_types; /* from instr_interface.c */
 
 typedef struct s_container *container_t;
 typedef struct s_container {
-  char *name;
-  char *type;
-  int level;
+  char *name;     /* Unique id of this container */
+  char *type;     /* Type of this container */
+  int level;      /* Level in the hierarchy, root level is 0 */
   struct s_container *father;
   xbt_dict_t children;
 }s_container_t;
 
-static container_t rootContainer = NULL;
-static xbt_dynar_t currentContainer = NULL;
+static container_t rootContainer = NULL;    /* the root container */
+static xbt_dynar_t currentContainer = NULL; /* push and pop, used only in creation */
 static xbt_dict_t allContainers = NULL;     /* all created containers indexed by name */
 xbt_dict_t hosts_types = NULL;
 xbt_dict_t links_types = NULL;
