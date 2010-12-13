@@ -73,6 +73,15 @@ static void newVariableType (const char *type, const char *parentType, const cha
   }
 }
 
+static void newLinkType (const char *type, const char *parentType, const char *sourceType, const char *destType, const char *name)
+{
+  char *defined = xbt_dict_get_or_null (defined_types, type);
+  if (!defined){
+    pajeDefineLinkType(type, parentType, sourceType, destType, name);
+    xbt_dict_set(defined_types, type, xbt_strdup("1"), xbt_free);
+  }
+}
+
 void instr_routing_define_callbacks ()
 {
   if (!TRACE_is_active())
