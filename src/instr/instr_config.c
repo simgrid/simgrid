@@ -47,44 +47,6 @@ int TRACE_start()
   /* activate trace */
   TRACE_activate ();
 
-  /* base type hierarchy:
-   * --cfg=tracing
-   */
-  if(0){
-//  FIXME
-//  pajeDefineEventType("source", "LINK", "source");
-//  pajeDefineEventType("destination", "LINK", "destination");
-
-  /* type hierarchy for:
-   * --cfg=tracing/msg/process
-   * --cfg=tracing/msg/volume
-   */
-//  FIXME
-//  if (TRACE_msg_process_is_enabled() || TRACE_msg_volume_is_enabled()) {
-//    //processes grouped by host
-//    pajeDefineContainerType("PROCESS", "HOST", "PROCESS");
-//  }
-//
-//  if (TRACE_msg_process_is_enabled()) {
-//    pajeDefineStateType("category", "PROCESS", "category");
-//    pajeDefineStateType("presence", "PROCESS", "presence");
-//  }
-//
-//  if (TRACE_msg_volume_is_enabled()) {
-//    pajeDefineLinkType("volume", "0", "PROCESS", "PROCESS", "volume");
-//  }
-
-  /* type hierarchy for:
-   * --cfg=tracing/msg/task
-   */
-//  FIXME
-//  if (TRACE_msg_task_is_enabled()) {
-//    //tasks grouped by host
-//    pajeDefineContainerType("TASK", "HOST", "TASK");
-//    pajeDefineStateType("category", "TASK", "category");
-//    pajeDefineStateType("presence", "TASK", "presence");
-//  }
-  }
   /* other trace initialization */
   created_categories = xbt_dict_new();
   TRACE_surf_alloc();
