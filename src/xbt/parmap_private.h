@@ -7,32 +7,28 @@
 #ifndef _XBT_THREADPOOL_PRIVATE_H
 #define _XBT_THREADPOOL_PRIVATE_H
 
-#include "xbt/threadpool.h"
+#include "xbt/parmap.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 #include "xbt/log.h"
 
 typedef enum{
-  TPOOL_WAIT = 0,
-  TPOOL_DESTROY
-} e_xbt_tpool_flag_t;
+  PARMAP_WAIT = 0,
+  PARMAP_WORK,
+  PARMAP_DESTROY,
+} e_xbt_parmap_flag_t;
 
-typedef struct s_xbt_tpool {
+typedef struct s_xbt_parmap {
   xbt_os_mutex_t mutex;           /* pool's mutex */
   xbt_os_cond_t job_posted;       /* job is posted */
-  xbt_os_cond_t job_taken;        /* job is taken */
-  xbt_os_cond_t idle_worker;      /* job is done */
-  xbt_dynar_t jobs_queue;
-  e_xbt_tpool_flag_t flags;
+  xbt_os_cond_t all_done;         /* job is done */
+  e_xbt_parmap_flag_t *flags;     /* Per thread flag + lastone for the parmap */
   unsigned int num_workers;
   unsigned int num_idle_workers;
-  unsigned int max_jobs;
-} s_xbt_tpool_t;
-
-typedef struct s_xbt_tpool_job {
+  unsigned int workers_max_id;
   void_f_pvoid_t fun;
-  void *fun_arg;
-} s_xbt_tpool_job_t, *xbt_tpool_job_t;
+  xbt_dynar_t data;
+} s_xbt_parmap_t;
 
 #endif

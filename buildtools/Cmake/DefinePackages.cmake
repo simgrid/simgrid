@@ -17,7 +17,7 @@ set(EXTRA_DIST
 	src/xbt/backtrace_windows.c
 	src/xbt/backtrace_dummy.c
 	src/xbt/setset_private.h
-	src/xbt/threadpool_private.h
+	src/xbt/parmap_private.h
 	src/xbt/mmalloc/attach.c
 	src/xbt/mmalloc/detach.c	
 	src/xbt/mmalloc/keys.c
@@ -164,7 +164,7 @@ set(XBT_SRC
 	src/xbt/cunit.c
 	src/xbt/graphxml_parse.c
 	src/xbt/setset.c
-	src/xbt/threadpool.c
+	src/xbt/parmap.c
 )
 
 if(HAVE_MMAP)
