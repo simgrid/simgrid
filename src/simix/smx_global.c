@@ -67,7 +67,6 @@ void SIMIX_global_init(int *argc, char **argv)
 
     simix_global->host = xbt_dict_new();
     simix_global->process_to_run = xbt_dynar_new(sizeof(void *), NULL);
-        xbt_swag_new(xbt_swag_offset(proc, synchro_hookup));
     simix_global->process_list =
         xbt_swag_new(xbt_swag_offset(proc, process_hookup));
     simix_global->process_to_destroy =
