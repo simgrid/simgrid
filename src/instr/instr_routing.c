@@ -7,11 +7,10 @@
 #include "instr/instr_private.h"
 
 #ifdef HAVE_TRACING
-#include "surf/surfxml_parse_private.h"
+#include "surf/surf_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
-extern routing_global_t global_routing; /* from surf/surf_routing.c */
 extern xbt_dict_t defined_types; /* from instr_interface.c */
 
 typedef struct s_container *container_t;
