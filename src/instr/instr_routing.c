@@ -534,7 +534,7 @@ void instr_destroy_platform ()
 static void recursiveNewUserVariableType (const char *new_typename, const char *color, type_t root)
 {
   if (!strcmp (root->name, "HOST") || !strcmp (root->name, "LINK")){
-    newVariableType(new_typename, TYPE_VARIABLE, color, root);
+    getVariableType(new_typename, color, root);
   }
   xbt_dict_cursor_t cursor = NULL;
   type_t child_type;
@@ -552,7 +552,7 @@ void instr_new_user_variable_type (const char *new_typename, const char *color)
 static void recursiveNewUserLinkVariableType (const char *new_typename, const char *color, type_t root)
 {
   if (!strcmp (root->name, "LINK")){
-    newVariableType(new_typename, TYPE_VARIABLE, color, root);
+    getVariableType(new_typename, color, root);
   }
   xbt_dict_cursor_t cursor = NULL;
   type_t child_type;
@@ -571,7 +571,7 @@ void instr_new_user_link_variable_type  (const char *new_typename, const char *c
 static void recursiveNewUserHostVariableType (const char *new_typename, const char *color, type_t root)
 {
   if (!strcmp (root->name, "HOST")){
-    newVariableType(new_typename, TYPE_VARIABLE, color, root);
+    getVariableType(new_typename, color, root);
   }
   xbt_dict_cursor_t cursor = NULL;
   type_t child_type;
