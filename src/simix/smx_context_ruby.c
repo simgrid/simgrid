@@ -114,11 +114,13 @@ static void smx_ctx_ruby_runall(xbt_dynar_t processes)
 {
   smx_process_t process;
   smx_context_t old_context;
-  while (xbt_dynar_length(processes)){
-    process = xbt_dynar_pop_as(processes,smx_process_t);
+  unsigned int cursor;
+
+  xbt_dynar_foreach(processes, cursor, process) {
     old_context = smx_current_context;
     smx_current_context = process->context;
     smx_ctx_ruby_resume(smx_current_context);
     smx_current_context = old_context;
-  } 
+  }
+  xbt_dynar_reset(processes);
 }

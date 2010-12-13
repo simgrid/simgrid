@@ -76,11 +76,11 @@ static void statem_ctx_resume(smx_context_t new_context) {
 static void statem_ctx_runall(xbt_dynar_t processes) {
   smx_context_t old_context;
   smx_process_t process;
+  unsigned int cursor;
 
   INFO0("Run all");
 
-  while (xbt_dynar_length(processes)){
-    process = xbt_dynar_pop_as(processes,smx_process_t);
+  xbt_dynar_foreach(processes, cursor, process) {
     statem_context_t ctx = (statem_context_t)SIMIX_process_get_context(process);
     old_context = smx_current_context;
     smx_current_context = SIMIX_process_get_context(process);
@@ -89,5 +89,6 @@ static void statem_ctx_runall(xbt_dynar_t processes) {
           ctx->syscall_id==0?NULL:SIMIX_request_get_result(ctx->syscall_id));
     smx_current_context = old_context;
   }
+  xbt_dynar_reset(processes);
 }
 

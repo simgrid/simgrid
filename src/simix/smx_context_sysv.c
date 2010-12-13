@@ -169,11 +169,12 @@ void smx_ctx_sysv_resume(smx_context_t context)
 void smx_ctx_sysv_runall(xbt_dynar_t processes)
 {
   smx_process_t process;
-  
-  while (xbt_dynar_length(processes)){
-    process = xbt_dynar_pop_as(processes,smx_process_t);
+  unsigned int cursor;
+
+  xbt_dynar_foreach(processes, cursor, process) {
     smx_ctx_sysv_resume(process->context);
   }
+  xbt_dynar_reset(processes);
 }
 
 void smx_ctx_sysv_resume_parallel(smx_process_t process)

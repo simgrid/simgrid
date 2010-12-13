@@ -260,11 +260,12 @@ static void smx_ctx_raw_resume(smx_context_t context)
 static void smx_ctx_raw_runall(xbt_dynar_t processes)
 {
   smx_process_t process;
+  unsigned int cursor;
 
-  while (xbt_dynar_length(processes)){
-    process = xbt_dynar_pop_as(processes,smx_process_t);
+  xbt_dynar_foreach(processes, cursor, process) {
     smx_ctx_raw_resume(process->context);
   }
+  xbt_dynar_reset(processes);
 }
 
 static void smx_ctx_raw_resume_parallel(smx_context_t context)
