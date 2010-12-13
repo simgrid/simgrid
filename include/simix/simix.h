@@ -230,6 +230,8 @@ XBT_PUBLIC(void) SIMIX_req_sem_acquire_timeout(smx_sem_t sem,
 XBT_PUBLIC(unsigned int) SIMIX_req_sem_acquire_any(xbt_dynar_t sems);
 XBT_PUBLIC(int) SIMIX_req_sem_get_capacity(smx_sem_t sem);
 
+const char *SIMIX_request_name(int kind);
+
 /* functions to let the state machine context factory mess with simix flow */
 XBT_PUBLIC(void*) SIMIX_request_get_result(int id);
 XBT_PUBLIC(int) SIMIX_request_last_id(void);

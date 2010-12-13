@@ -37,12 +37,14 @@ void SIMIX_request_push()
     if (_surf_parallel_contexts)
       xbt_os_mutex_acquire(sync_req_positions);
     xbt_heap_push(req_todo,&issuer->request,issuer->pid);
-    DEBUG3("Pushed request %d of %s; now %d requests waiting",
-        issuer->request.call,issuer->name,xbt_heap_size(req_todo));
+    DEBUG4("Pushed request %s (%d) of %s; now %d requests waiting",
+        SIMIX_request_name(issuer->request.call), issuer->request.call,
+        issuer->name,xbt_heap_size(req_todo));
     if (_surf_parallel_contexts)
       xbt_os_mutex_release(sync_req_positions);
 
-    DEBUG2("Yield process '%s' on request of type %d", issuer->name, issuer->request.call);
+    DEBUG3("Yield process '%s' on request of type %s (%d)", issuer->name,
+        SIMIX_request_name(issuer->request.call), issuer->request.call);
     SIMIX_process_yield();
   } else {
     SIMIX_request_pre(&issuer->request);
