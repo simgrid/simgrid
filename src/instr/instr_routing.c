@@ -18,6 +18,7 @@ typedef enum {
   TYPE_VARIABLE,
   TYPE_LINK,
   TYPE_CONTAINER,
+  TYPE_STATE,
 } e_entity_types;
 
 typedef struct s_type *type_t;
@@ -118,6 +119,14 @@ static type_t newLinkType (const char *typename, e_entity_types kind, type_t fat
   return ret;
 }
 
+static type_t newStateType (const char *typename, e_entity_types kind, type_t father)
+{
+  type_t ret = newType (typename, kind, father);
+//  INFO4("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+  pajeDefineStateType(ret->id, ret->father->id, ret->name);
+  return ret;
+}
+
 static type_t getContainerType (const char *typename, type_t father)
 {
   type_t ret;
@@ -148,6 +157,15 @@ static type_t getLinkType (const char *typename, type_t father, type_t source, t
   type_t ret = xbt_dict_get_or_null (father->children, typename);
   if (ret == NULL){
     ret = newLinkType (typename, TYPE_LINK, father, source, dest);
+  }
+  return ret;
+}
+
+static type_t getStateType (const char *typename, type_t father)
+{
+  type_t ret = xbt_dict_get_or_null (father->children, typename);
+  if (ret == NULL){
+    ret = newStateType (typename, TYPE_STATE, father);
   }
   return ret;
 }
@@ -396,6 +414,14 @@ static void instr_routing_parse_start_AS ()
     rootContainer = newContainer ("0", INSTR_AS, NULL);
     xbt_dynar_push (currentContainer, rootContainer);
 
+    if (TRACE_smpi_is_enabled()) {
+      if (!TRACE_smpi_is_grouped()){
+        container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+        type_t mpi = getContainerType("MPI_PROCESS", father->type);
+        getStateType ("MPI_STATE", mpi);
+        getLinkType ("MPI_LINK", rootType, mpi, mpi);
+      }
+    }
   }
   container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   container_t new = newContainer (A_surfxml_AS_id, INSTR_AS, father);
@@ -436,6 +462,14 @@ static void instr_routing_parse_start_host ()
   pajeSetVariable (0, power->id, new->id, A_surfxml_host_power);
   if (TRACE_uncategorized()){
     getVariableType ("power_used", "0.5 0.5 0.5", new->type);
+  }
+
+  if (TRACE_smpi_is_enabled()) {
+    if (TRACE_smpi_is_grouped()){
+      type_t mpi = getContainerType("MPI_PROCESS", new->type);
+      getStateType ("MPI_STATE", mpi);
+      getLinkType ("MPI_LINK", rootType, mpi, mpi);
+    }
   }
 }
 

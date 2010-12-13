@@ -84,22 +84,6 @@ int TRACE_start()
 //    pajeDefineStateType("category", "TASK", "category");
 //    pajeDefineStateType("presence", "TASK", "presence");
 //  }
-
-  /* type hierarchy for
-   * --cfg=tracing/smpi
-   * --cfg=tracing/smpi/group
-   */
-//  FIXME
-//  if (TRACE_smpi_is_enabled()) {
-//    if (TRACE_smpi_is_grouped()){
-//      pajeDefineContainerType("MPI_PROCESS", "HOST", "MPI_PROCESS");
-//    }else{
-//      pajeDefineContainerType("MPI_PROCESS", "PLATFORM", "MPI_PROCESS");
-//    }
-//    pajeDefineStateType("MPI_STATE", "MPI_PROCESS", "MPI_STATE");
-//    pajeDefineLinkType("MPI_LINK", "0", "MPI_PROCESS", "MPI_PROCESS",
-//                       "MPI_LINK");
-//  }
   }
   /* other trace initialization */
   created_categories = xbt_dict_new();
