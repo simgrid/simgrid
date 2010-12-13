@@ -203,16 +203,26 @@ static void __pajeSetState(char *output, int len, int eventid, double time,
                            const char *entityType, const char *container,
                            const char *value)
 {
-  snprintf(output, len, "%d %lf %s %s %s", eventid, time, entityType,
+  if (time == 0){
+    snprintf(output, len, "%d 0 %s %s %s", eventid, entityType,
            container, value);
+  }else{
+    snprintf(output, len, "%d %lf %s %s %s", eventid, time, entityType,
+           container, value);
+  }
 }
 
 static void __pajeSetVariable(char *output, int len, int eventid,
                               double time, const char *entityType,
                               const char *container, const char *value)
 {
-  snprintf(output, len, "%d %lf %s %s %s", eventid, time, entityType,
+  if (time == 0){
+    snprintf(output, len, "%d 0 %s %s %s", eventid, entityType,
            container, value);
+  }else{
+    snprintf(output, len, "%d %lf %s %s %s", eventid, time, entityType,
+           container, value);
+  }
 }
 
 static void __pajeStartLink(char *output, int len, int eventid,
@@ -383,8 +393,13 @@ void pajeSubVariable(double time, const char *entityType,
 void pajeNewEvent(double time, const char *entityType,
                   const char *container, const char *value)
 {
-  fprintf(tracing_file, "%d %lf %s %s %s\n", pajeNewEventId, time,
+  if (time == 0){
+    fprintf(tracing_file, "%d 0 %s %s %s\n", pajeNewEventId,
           entityType, container, value);
+  }else{
+    fprintf(tracing_file, "%d %lf %s %s %s\n", pajeNewEventId, time,
+          entityType, container, value);
+  }
 }
 
 #endif /* HAVE_TRACING */
