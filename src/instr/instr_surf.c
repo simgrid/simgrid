@@ -13,15 +13,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_surf, instr, "Tracing Surf");
 
 static xbt_dict_t resource_variables;   /* (host|link)#variable -> value */
 
-/* to trace gtnets */
-static xbt_dict_t gtnets_src;   /* %p (action) -> %s */
-static xbt_dict_t gtnets_dst;   /* %p (action) -> %s */
-
 void TRACE_surf_alloc(void)
 {
   resource_variables = xbt_dict_new();
-  gtnets_src = xbt_dict_new();
-  gtnets_dst = xbt_dict_new();
 
   TRACE_surf_resource_utilization_alloc();
 }
@@ -83,57 +77,22 @@ void TRACE_surf_link_set_latency(double date, const char *resource, double laten
 /* to trace gtnets */
 void TRACE_surf_gtnets_communicate(void *action, int src, int dst)
 {
-  char key[100], aux[100];
-  if (!TRACE_is_active())
-    return;
-  snprintf(key, 100, "%p", action);
-
-  snprintf(aux, 100, "%d", src);
-  xbt_dict_set(gtnets_src, key, xbt_strdup(aux), xbt_free);
-  snprintf(aux, 100, "%d", dst);
-  xbt_dict_set(gtnets_dst, key, xbt_strdup(aux), xbt_free);
+  xbt_die ("gtnets tracing is to be udpated");
 }
 
 int TRACE_surf_gtnets_get_src(void *action)
 {
-  char key[100];
-  char *aux = NULL;
-  if (!TRACE_is_active())
-    return -1;
-  snprintf(key, 100, "%p", action);
-
-  aux = xbt_dict_get_or_null(gtnets_src, key);
-  if (aux) {
-    return atoi(aux);
-  } else {
-    return -1;
-  }
+  xbt_die ("gtnets tracing is to be udpated");
 }
 
 int TRACE_surf_gtnets_get_dst(void *action)
 {
-  char key[100];
-  char *aux = NULL;
-  if (!TRACE_is_active())
-    return -1;
-  snprintf(key, 100, "%p", action);
-
-  aux = xbt_dict_get_or_null(gtnets_dst, key);
-  if (aux) {
-    return atoi(aux);
-  } else {
-    return -1;
-  }
+  xbt_die ("gtnets tracing is to be udpated");
 }
 
 void TRACE_surf_gtnets_destroy(void *action)
 {
-  char key[100];
-  if (!TRACE_is_active())
-    return;
-  snprintf(key, 100, "%p", action);
-  xbt_dict_remove(gtnets_src, key);
-  xbt_dict_remove(gtnets_dst, key);
+  xbt_die ("gtnets tracing is to be udpated");
 }
 
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
