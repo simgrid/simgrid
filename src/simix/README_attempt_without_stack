@@ -1,7 +1,11 @@
-This directory constitutes an attempt to code a new trace replayer for
-MPI actions, aiming at maximal performances. Modifying it is not for
-faint of heart, since it could be compared to a mixure of the assembly
-and basic programming philosophy (in worse) reserved to SimGrid experts.
+This file was the README in a directory constituting an attempt to
+code a new trace replayer for MPI actions, aiming at maximal
+performances. Modifying it is not for faint of heart, since it could
+be compared to a mixure of the assembly and basic programming
+philosophy (in worse) reserved to SimGrid experts.
+
+It was so difficult to use that this has been removed from the SVN.
+This file is thus mainly for history.
 
 Shiny side: glance at interface
 ===============================
