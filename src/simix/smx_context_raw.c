@@ -217,6 +217,7 @@ static void smx_ctx_raw_free(smx_context_t context)
         context)->valgrind_stack_id);
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
 
+    free(((smx_ctx_raw_t)context)->malloced_stack);
   }
   smx_ctx_base_free(context);
 }
