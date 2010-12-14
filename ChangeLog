@@ -17,6 +17,9 @@ SimGrid (3.6) unstable; urgency=low
 
  Simix
  * Completely rewrote this module to allow parallel execution.
+ * Introduce a new context factory "raw", highly inspirated from the
+   context factory, but using manually crafted functions in assembly to
+   do the work in an efficient manner.
 
  XBT
  * Add a new function xbt_dynar_to_array that transforms a dynar into a
