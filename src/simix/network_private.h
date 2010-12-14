@@ -21,7 +21,7 @@ void SIMIX_network_init(void);
 void SIMIX_network_exit(void);
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-XBT_PUBLIC(int) SIMIX_comm_is_latency_bounded(smx_action_t comm);
+XBT_INLINE XBT_PUBLIC(int) SIMIX_comm_is_latency_bounded(smx_action_t comm);
 #endif
 
 smx_rdv_t SIMIX_rdv_create(const char *name);
