@@ -275,7 +275,7 @@ static void smx_ctx_raw_resume_parallel(smx_process_t process)
 static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
 {
   xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_raw_resume_parallel, processes);
-    xbt_dynar_reset(processes);
+  xbt_dynar_reset(processes);
 }
 
 static smx_context_t smx_ctx_raw_self_parallel(void)
