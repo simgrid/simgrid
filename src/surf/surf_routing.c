@@ -2225,6 +2225,15 @@ static void model_dijkstra_both_end(void)
   unsigned int cursor2;
   xbt_dynar_t nodes = NULL;
 
+  /* Create the topology graph */
+  if(!routing->route_graph)
+  routing->route_graph = xbt_graph_new_graph(1, NULL);
+  if(!routing->graph_node_map)
+  routing->graph_node_map = xbt_dict_new();
+
+  if (routing->cached && !routing->route_cache)
+  routing->route_cache = xbt_dict_new();
+
   /* Add the loopback if needed */
   if (current_routing->hierarchy == SURF_ROUTING_BASE)
     add_loopback_dijkstra(routing);
@@ -2247,7 +2256,7 @@ static void model_dijkstra_both_set_route (routing_component_t rc, const char *s
 	dst_id = xbt_dict_get_or_null(rc->to_index, dst);
 
     /* Create the topology graph */
-	if(!routing->route_cache)
+	if(!routing->route_graph)
 	routing->route_graph = xbt_graph_new_graph(1, NULL);
 	if(!routing->graph_node_map)
 	routing->graph_node_map = xbt_dict_new();
