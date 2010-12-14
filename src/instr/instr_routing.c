@@ -389,7 +389,7 @@ static void recursiveGraphExtraction (container_t container)
             (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER)){
 
           //getting route
-          xbt_dynar_t route;
+          xbt_dynar_t route = NULL;
           xbt_ex_t exception;
           TRY {
             route = global_routing->get_route (child_name1, child_name2);
@@ -414,7 +414,7 @@ static void recursiveGraphExtraction (container_t container)
 
           //getting route
           routing_component_t root = global_routing->root;
-          route_extended_t route;
+          route_extended_t route = NULL;
           xbt_ex_t exception;
           TRY {
             route = root->get_route (root, child_name1, child_name2);
