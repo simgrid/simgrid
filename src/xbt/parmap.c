@@ -6,8 +6,8 @@
 
 #include "parmap_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_parmap, xbt,
-                                "parmap: parallel map");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_parmap, xbt, "parmap: parallel map");
+XBT_LOG_NEW_SUBCATEGORY(xbt_parmap_unit, xbt_parmap, "parmap unit testing");
 
 static void *_xbt_parmap_worker_main(void *parmap);
 
@@ -176,9 +176,8 @@ static void *_xbt_parmap_worker_main(void *arg)
 #include "xbt/ex.h"
 
 XBT_TEST_SUITE("parmap", "Parallel Map");
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_parmap_unit);
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_parmap_unit, xbt,
-                                "unit parmap");
 
 
 xbt_parmap_t parmap;

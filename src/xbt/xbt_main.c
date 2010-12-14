@@ -46,6 +46,8 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_matrix);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_queue);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_set);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_sync_os);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_parmap);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_parmap_unit);
 
 
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
@@ -117,6 +119,8 @@ static void xbt_preinit(void)
   XBT_LOG_CONNECT(xbt_queue, xbt);
   XBT_LOG_CONNECT(xbt_set, xbt);
   XBT_LOG_CONNECT(xbt_sync_os, xbt);
+  XBT_LOG_CONNECT(xbt_parmap,xbt);
+  XBT_LOG_CONNECT(xbt_parmap_unit,xbt_parmap);
 
   xbt_fifo_preinit();
   xbt_dict_preinit();
