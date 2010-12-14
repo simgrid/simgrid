@@ -170,15 +170,16 @@ static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
   return smx_ctx_base_factory_finalize(factory);
 }
 
+
 static smx_context_t
-smx_ctx_raw_create_context_sized(size_t size, xbt_main_func_t code,
-    int argc, char **argv,
+smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
     void_pfn_smxprocess_t cleanup_func,
     void *data)
 {
 
   smx_ctx_raw_t context =
-      (smx_ctx_raw_t) smx_ctx_base_factory_create_context_sized(size,
+      (smx_ctx_raw_t) smx_ctx_base_factory_create_context_sized(
+          sizeof(s_smx_ctx_raw_t),
           code,
           argc,
           argv,
@@ -204,19 +205,6 @@ smx_ctx_raw_create_context_sized(size_t size, xbt_main_func_t code,
      }
 
      return (smx_context_t) context;
-
-}
-
-static smx_context_t
-smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
-    void_pfn_smxprocess_t cleanup_func,
-    void *data)
-{
-
-  return smx_ctx_raw_create_context_sized(sizeof(s_smx_ctx_raw_t),
-      code, argc, argv, cleanup_func,
-      data);
-
 }
 
 static void smx_ctx_raw_free(smx_context_t context)

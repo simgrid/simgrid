@@ -204,7 +204,7 @@ void SIMIX_comm_destroy(smx_action_t action)
   action->comm.refcount--;
   if (action->comm.refcount > 0)
     return;
-  VERB2("Really free communication %p; refcount is now %d", action,
+  DEBUG2("Really free communication %p; refcount is now %d", action,
         action->comm.refcount);
 
 #ifdef HAVE_TRACING
