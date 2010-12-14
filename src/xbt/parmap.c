@@ -124,13 +124,13 @@ static void *_xbt_parmap_worker_main(void *arg)
 static void futex_wait(int *uaddr, int val)
 {
   DEBUG1("Waiting on futex %d", *uaddr);
-  syscall(SYS_futex, uaddr, FUTEX_WAIT, val, NULL, NULL, 0);
+  syscall(SYS_futex, uaddr, FUTEX_WAIT_PRIVATE, val, NULL, NULL, 0);
 }
 
 static void futex_wake(int *uaddr, int val)
 {
   DEBUG1("Waking futex %d", *uaddr);
-  syscall(SYS_futex, uaddr, FUTEX_WAKE, val, NULL, NULL, 0);
+  syscall(SYS_futex, uaddr, FUTEX_WAKE_PRIVATE, val, NULL, NULL, 0);
 }
 
 /* Futex based implementation of the barrier */
