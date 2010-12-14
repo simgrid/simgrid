@@ -1864,9 +1864,10 @@ static void route_new_dijkstra(routing_component_dijkstra_t rc, int src_id,
                                int dst_id, route_extended_t e_route)
 {
   routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
-
+  DEBUG2("Load Route from \"%d\" to \"%d\"", src_id, dst_id);
   xbt_node_t src = NULL;
   xbt_node_t dst = NULL;
+
   graph_node_map_element_t src_elm = (graph_node_map_element_t)
       xbt_dict_get_or_null_ext(routing->graph_node_map,
                                (char *) (&src_id),
@@ -1875,6 +1876,7 @@ static void route_new_dijkstra(routing_component_dijkstra_t rc, int src_id,
       xbt_dict_get_or_null_ext(routing->graph_node_map,
                                (char *) (&dst_id),
                                sizeof(int));
+
 
   if (src_elm)
     src = src_elm->node;
@@ -2223,13 +2225,6 @@ static void model_dijkstra_both_end(void)
   unsigned int cursor2;
   xbt_dynar_t nodes = NULL;
 
-  /* Create the topology graph */
-  routing->route_graph = xbt_graph_new_graph(1, NULL);
-  routing->graph_node_map = xbt_dict_new();
-
-  if (routing->cached && !routing->route_cache)
-    routing->route_cache = xbt_dict_new();
-
   /* Add the loopback if needed */
   if (current_routing->hierarchy == SURF_ROUTING_BASE)
     add_loopback_dijkstra(routing);
@@ -2250,6 +2245,12 @@ static void model_dijkstra_both_set_route (routing_component_t rc, const char *s
 	int *src_id, *dst_id;
 	src_id = xbt_dict_get_or_null(rc->to_index, src);
 	dst_id = xbt_dict_get_or_null(rc->to_index, dst);
+
+    /* Create the topology graph */
+	if(!routing->route_cache)
+	routing->route_graph = xbt_graph_new_graph(1, NULL);
+	if(!routing->graph_node_map)
+	routing->graph_node_map = xbt_dict_new();
 
 	if (routing->cached && !routing->route_cache)
 	routing->route_cache = xbt_dict_new();
