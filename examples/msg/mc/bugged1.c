@@ -58,8 +58,6 @@ int main(int argc, char *argv[])
 
   MSG_main();
 
-  INFO0("MSG_main finished");
-  
   MSG_clean();
 
   return 0;

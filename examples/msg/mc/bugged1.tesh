@@ -1,7 +1,8 @@
 #! ./tesh
 
-$ ./bugged1
-> [HostB:client:(2) 0.008753] [example/INFO] Sent!
-> [HostC:client:(3) 0.017506] [example/INFO] Sent!
-> [HostD:client:(4) 0.026259] [example/INFO] Sent!
-> [HostA:server:(1) 0.026259] [example/INFO] OK
+! output sort
+$ ./bugged1 --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.008753] (2:client@HostB) Sent!
+> [  0.017506] (3:client@HostC) Sent!
+> [  0.026259] (1:server@HostA) OK
+> [  0.026259] (4:client@HostD) Sent!
