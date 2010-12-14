@@ -8,17 +8,10 @@
 #include "msg/private.h"
 #include "xbt/str.h"
 #include "xbt/dynar.h"
+#include "xbt/replay_trace_reader.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_action, msg,
                                 "MSG actions for trace driven simulation");
-
-static int paranoid_action_replayer=1;
-/** \ingroup msg_actions
- *  \brief set the paranoid mode: true if we must check our input, false if it's well formated
- */
-void MSG_action_paranoid_mode_set(int mode) {
-  paranoid_action_replayer = mode;
-}
 
 static xbt_dict_t action_funs;
 static xbt_dict_t action_queues;
@@ -28,7 +21,7 @@ static FILE *action_fp = NULL;
 static char *action_line = NULL;
 static size_t action_len = 0;
 
-static xbt_dynar_t action_get_action(char *name);
+static char*const* action_get_action(char *name);
 
 /** \ingroup msg_actions
  * \brief Registers a function to handle a kind of action
@@ -58,20 +51,13 @@ void MSG_action_unregister(const char *action_name)
 
 static int MSG_action_runner(int argc, char *argv[])
 {
-  xbt_dynar_t evt = NULL;
-  char *line = NULL;
-  size_t line_len = 0;
-  FILE *fp = NULL;
-  char *comment = NULL;
-  char *evtname = NULL;
-  ssize_t read;
+  char *const*evt;
   if (action_fp) {              // A unique trace file
 
     while ((evt = action_get_action(argv[0]))) {
-      msg_action_fun function =
-          xbt_dict_get(action_funs, xbt_dynar_get_as(evt, 1, char *));
+      msg_action_fun function = xbt_dict_get(action_funs, evt[1]);
       (*function) (evt);
-      xbt_dynar_free(&evt);
+      free((char**)evt);
     }
   } else {                      // Should have got my trace file in argument
     xbt_assert1(argc >= 2,
@@ -79,39 +65,18 @@ static int MSG_action_runner(int argc, char *argv[])
                 "and no process-wide trace file provided in deployment file. Aborting.",
                 argv[0]
         );
-
-    fp = fopen(argv[1], "r");
-    xbt_assert2(fp != NULL, "Cannot open %s: %s", argv[1],
-                strerror(errno));
-
-    // Read lines and execute them until I reach the end of file
-    while ((read = getline(&line, &line_len, fp)) != -1) {
-      // cleanup and split the string I just read
-      if (paranoid_action_replayer) {
-        comment = strchr(line, '#');
-        if (comment != NULL)
-          *comment = '\0';
-        xbt_str_trim(line, NULL);
-      }
-      evt = xbt_str_split_quoted_in_place(line);
-      if (xbt_dynar_length(evt)==0) {
-        xbt_dynar_free(&evt);
-        continue;
-      }
-
-      evtname = xbt_dynar_get_as(evt, 0, char *);
-      if (!strcmp(argv[0], evtname)) {
-        msg_action_fun function =
-            xbt_dict_get(action_funs, xbt_dynar_get_as(evt, 1, char *));
+    xbt_replay_trace_reader_t reader = xbt_replay_trace_reader_new(argv[1]);
+    while ((evt=xbt_replay_trace_reader_get(reader))) {
+      if (!strcmp(argv[0],evt[0])) {
+        msg_action_fun function = xbt_dict_get(action_funs, evt[1]);
         (*function) (evt);
+        free((char**)evt);
       } else {
-        WARN1("Ignore trace element not for me: %s",
-              xbt_str_join(evt, " "));
+        WARN1("%s: Ignore trace element not for me",
+              xbt_replay_trace_reader_position(reader));
       }
-      xbt_dynar_free(&evt);
     }
-    fclose(fp);
-
+    xbt_replay_trace_reader_free(&reader);
   }
   return 0;
 }
@@ -130,7 +95,7 @@ void _MSG_action_exit()
 }
 
 
-static xbt_dynar_t action_get_action(char *name)
+static char*const* action_get_action(char *name)
 {
   ssize_t read;
   xbt_dynar_t evt = NULL;
@@ -159,7 +124,7 @@ static xbt_dynar_t action_get_action(char *name)
       // if it's for me, I'm done
       evtname = xbt_dynar_get_as(evt, 0, char *);
       if (!strcmp(name, evtname)) {
-        return evt;
+        return xbt_dynar_to_array(evt);
       } else {
         // Else, I have to store it for the relevant colleague
         xbt_dynar_t otherqueue =
@@ -176,7 +141,7 @@ static xbt_dynar_t action_get_action(char *name)
   } else {
     // Get something from my queue and return it
     xbt_dynar_shift(myqueue, &evt);
-    return evt;
+    return xbt_dynar_to_array(evt);
   }
 
 

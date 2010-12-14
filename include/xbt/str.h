@@ -37,6 +37,7 @@ XBT_PUBLIC(xbt_dynar_t) xbt_str_split_quoted_in_place(char *s);
 XBT_PUBLIC(xbt_dynar_t) xbt_str_split_str(const char *s, const char *sep);
 
 XBT_PUBLIC(char *) xbt_str_join(xbt_dynar_t dynar, const char *sep);
+XBT_PUBLIC(char *) xbt_str_join_array(char*const* strs, const char *sep);
 
 /* */
 XBT_PUBLIC(void) xbt_str_subst(char *str, char from, char to, int amount);

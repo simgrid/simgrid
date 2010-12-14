@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(actions,
                              "Messages specific for this msg example");
 int communicator_size = 0;
 
-static void action_Isend(xbt_dynar_t action);
+static void action_Isend(char*const* action);
 
 typedef struct  {
   int last_Irecv_sender_id;
@@ -61,20 +61,18 @@ static void asynchronous_cleanup(void) {
 }
 
 /* My actions */
-static void action_send(xbt_dynar_t action)
+static void action_send(char*const* action)
 {
   char *name = NULL;
   char to[250];
-  char *size_str = xbt_dynar_get_as(action, 3, char *);
+  const char *size_str = action[3];
   double size=parse_double(size_str);
   double clock = MSG_get_clock(); /* this "call" is free thanks to inlining */
 
-  sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()),
-          xbt_dynar_get_as(action, 2, char *));
-  //  char *to =  xbt_dynar_get_as(action, 2, char *);
+  sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()),action[2]);
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join(action, " ");
+    name = xbt_str_join_array(action, " ");
 
 #ifdef HAVE_TRACING
   int rank = get_rank(MSG_process_get_name(MSG_process_self()));
@@ -102,41 +100,38 @@ static void action_send(xbt_dynar_t action)
   asynchronous_cleanup();
 }
 
-static void action_Isend(xbt_dynar_t action)
+static void action_Isend(char*const* action)
 {
   char to[250];
-  //  char *to = xbt_dynar_get_as(action, 2, char *);
-  char *size = xbt_dynar_get_as(action, 3, char *);
+  const char *size = action[3];
   double clock = MSG_get_clock();
   process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
 
-  sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()),
-          xbt_dynar_get_as(action, 2, char *));
-
+  sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()),action[2]);
   msg_comm_t comm =
       MSG_task_isend( MSG_task_create(to,0,parse_double(size),NULL), to);
   xbt_dynar_push(globals->isends,&comm);
 
   DEBUG1("Isend on %s", MSG_process_get_name(MSG_process_self()));
-  VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
+  VERB2("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
 
   asynchronous_cleanup();
 }
 
 
-static void action_recv(xbt_dynar_t action)
+static void action_recv(char*const* action)
 {
   char *name = NULL;
   char mailbox_name[250];
   m_task_t task = NULL;
   double clock = MSG_get_clock();
 
-  sprintf(mailbox_name, "%s_%s", xbt_dynar_get_as(action, 2, char *),
+  sprintf(mailbox_name, "%s_%s", action[2],
           MSG_process_get_name(MSG_process_self()));
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join(action, " ");
+    name = xbt_str_join_array(action, " ");
 
 #ifdef HAVE_TRACING
   int rank = get_rank(MSG_process_get_name(MSG_process_self()));
@@ -160,7 +155,7 @@ static void action_recv(xbt_dynar_t action)
   asynchronous_cleanup();
 }
 
-static void action_Irecv(xbt_dynar_t action)
+static void action_Irecv(char*const* action)
 {
   char mailbox[250];
   double clock = MSG_get_clock();
@@ -176,7 +171,7 @@ static void action_Irecv(xbt_dynar_t action)
   TRACE_smpi_ptp_in(rank, src_traced, rank, "Irecv");
 #endif
 
-  sprintf(mailbox, "%s_%s", xbt_dynar_get_as(action, 2, char *),
+  sprintf(mailbox, "%s_%s", action[2],
           MSG_process_get_name(MSG_process_self()));
   m_task_t t=NULL;
   xbt_dynar_push(globals->tasks,&t);
@@ -186,7 +181,7 @@ static void action_Irecv(xbt_dynar_t action)
           mailbox);
   xbt_dynar_push(globals->irecvs,&c);
 
-  VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
+  VERB2("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
 
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out(rank, src_traced, rank, "Irecv");
@@ -196,7 +191,7 @@ static void action_Irecv(xbt_dynar_t action)
 }
 
 
-static void action_wait(xbt_dynar_t action)
+static void action_wait(char*const* action)
 {
   char *name = NULL;
   m_task_t task = NULL;
@@ -205,10 +200,10 @@ static void action_wait(xbt_dynar_t action)
   process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
   xbt_assert1(xbt_dynar_length(globals->irecvs),
-      "action wait not preceeded by any irecv: %s", xbt_str_join(action," "));
+      "action wait not preceded by any irecv: %s", xbt_str_join_array(action," "));
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join(action, " ");
+    name = xbt_str_join_array(action, " ");
 #ifdef HAVE_TRACING
   process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
   int src_traced = counters->last_Irecv_sender_id;
@@ -234,7 +229,7 @@ static void action_wait(xbt_dynar_t action)
 }
 
 /* FIXME: that's a poor man's implementation: we should take the message exchanges into account */
-static void action_barrier(xbt_dynar_t action)
+static void action_barrier(char*const* action)
 {
   char *name = NULL;
   static smx_mutex_t mutex = NULL;
@@ -242,7 +237,7 @@ static void action_barrier(xbt_dynar_t action)
   static int processes_arrived_sofar=0;
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join(action, " ");
+    name = xbt_str_join_array(action, " ");
 
   if (mutex == NULL) {       // first arriving on the barrier
     mutex = SIMIX_req_mutex_init();
@@ -274,13 +269,13 @@ static void action_barrier(xbt_dynar_t action)
 
 }
 
-static void action_reduce(xbt_dynar_t action)
+static void action_reduce(char*const* action)
 {
 	int i;
 	char *reduce_identifier;
 	char mailbox[80];
-	double comm_size = parse_double(xbt_dynar_get_as(action, 2, char *));
-	double comp_size = parse_double(xbt_dynar_get_as(action, 3, char *));
+	double comm_size = parse_double(action[2]);
+	double comp_size = parse_double(action[3]);
 	m_task_t comp_task = NULL;
 	const char *process_name;
 	double clock = MSG_get_clock();
@@ -324,16 +319,16 @@ static void action_reduce(xbt_dynar_t action)
 	                  mailbox);
 	}
 
-	VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
+	VERB2("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
 	free(reduce_identifier);
 }
 
-static void action_bcast(xbt_dynar_t action)
+static void action_bcast(char*const* action)
 {
 	int i;
 	char *bcast_identifier;
 	char mailbox[80];
-	double comm_size = parse_double(xbt_dynar_get_as(action, 2, char *));
+	double comm_size = parse_double(action[2]);
 	m_task_t task = NULL;
 	const char *process_name;
 	double clock = MSG_get_clock();
@@ -373,19 +368,19 @@ static void action_bcast(xbt_dynar_t action)
 	    DEBUG2("%s: %s has received", bcast_identifier, process_name);
 	}
 
-	VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
+	VERB2("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
 	free(bcast_identifier);
 }
 
 
-static void action_sleep(xbt_dynar_t action)
+static void action_sleep(char*const* action)
 {
   char *name = NULL;
-  char *duration = xbt_dynar_get_as(action, 2, char *);
+  const char *duration = action[2];
   double clock = MSG_get_clock();
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join(action, " ");
+    name = xbt_str_join_array(action, " ");
 
   DEBUG1("Entering %s", name);
   MSG_process_sleep(parse_double(duration));
@@ -395,12 +390,12 @@ static void action_sleep(xbt_dynar_t action)
     free(name);
 }
 
-static void action_allReduce(xbt_dynar_t action) {
+static void action_allReduce(char*const* action) {
   int i;
   char *allreduce_identifier;
   char mailbox[80];
-  double comm_size = parse_double(xbt_dynar_get_as(action, 2, char *));
-  double comp_size = parse_double(xbt_dynar_get_as(action, 3, char *));
+  double comm_size = parse_double(action[2]);
+  double comp_size = parse_double(action[3]);
   m_task_t task = NULL, comp_task = NULL;
   const char *process_name;
   double clock = MSG_get_clock();
@@ -463,33 +458,33 @@ static void action_allReduce(xbt_dynar_t action) {
     DEBUG2("%s: %s has received", allreduce_identifier, process_name);
   }
 
-  VERB2("%s %f", xbt_str_join(action, " "), MSG_get_clock() - clock);
+  VERB2("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
   free(allreduce_identifier);
 }
 
-static void action_comm_size(xbt_dynar_t action)
+static void action_comm_size(char*const* action)
 {
   char *name = NULL;
-  char *size = xbt_dynar_get_as(action, 2, char *);
+  const char *size = action[2];
   double clock = MSG_get_clock();
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join(action, " ");
+    name = xbt_str_join_array(action, " ");
   communicator_size = parse_double(size);
   VERB2("%s %f", name, MSG_get_clock() - clock);
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
 }
 
-static void action_compute(xbt_dynar_t action)
+static void action_compute(char*const* action)
 {
   char *name = NULL;
-  char *amout = xbt_dynar_get_as(action, 2, char *);
+  const char *amout = action[2];
   m_task_t task = MSG_task_create(name, parse_double(amout), 0, NULL);
   double clock = MSG_get_clock();
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join(action, " ");
+    name = xbt_str_join_array(action, " ");
   DEBUG1("Entering %s", name);
   MSG_task_execute(task);
   MSG_task_destroy(task);
@@ -498,7 +493,7 @@ static void action_compute(xbt_dynar_t action)
     free(name);
 }
 
-static void action_init(xbt_dynar_t action)
+static void action_init(char*const* action)
 { 
 #ifdef HAVE_TRACING
   TRACE_smpi_init(get_rank(MSG_process_get_name(MSG_process_self())));
@@ -512,7 +507,7 @@ static void action_init(xbt_dynar_t action)
 
 }
 
-static void action_finalize(xbt_dynar_t action)
+static void action_finalize(char*const* action)
 {
 #ifdef HAVE_TRACING
   TRACE_smpi_finalize(get_rank(MSG_process_get_name(MSG_process_self())));

@@ -165,6 +165,7 @@ set(XBT_SRC
 	src/xbt/graphxml_parse.c
 	src/xbt/setset.c
 	src/xbt/parmap.c
+	src/xbt/xbt_replay_trace_reader.c
 )
 
 if(HAVE_MMAP)
@@ -216,10 +217,6 @@ set(SIMIX_SRC
 	src/simix/smx_user.c
 	src/simix/smx_smurf.c
 	src/simix/smx_context_raw.c
-	src/replay/replay.h
-	src/replay/replay.c
-	src/replay/state_machine_context.c
-	src/replay/replay_trace_reader.c
 )
 
 set(MSG_SRC
@@ -367,6 +364,7 @@ set(install_HEADERS
 	include/xbt/queue.h
 	include/xbt/setset.h
 	include/xbt/mmalloc.h
+	include/xbt/replay_trace_reader.h
 	include/mc/modelchecker.h
 	include/msg/msg.h
 	include/msg/datatypes.h

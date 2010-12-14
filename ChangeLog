@@ -1,5 +1,9 @@
 SimGrid (3.6) unstable; urgency=low
 
+ MSG
+ * Change the prototypes of action replay. Sorry for inconvenience,
+   but this is really more efficient this way.
+
  SURF
  * New model for multi-core CPUs. You can now use the core attribute to
    precise the number of cores of a host. This is a basic model. Every

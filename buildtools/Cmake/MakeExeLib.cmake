@@ -239,5 +239,3 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling)
 if(enable_smpi)
 	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi)
 endif(enable_smpi)
-
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/src/replay)

@@ -445,6 +445,7 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
   }
   free(str_to_free);
   xbt_dynar_shrink(res, 0);
+  xbt_dynar_free(&parsed);
   return res;
 }
 
@@ -509,7 +510,6 @@ XBT_TEST_UNIT("xbt_str_split_str", test_split_str, "test the function xbt_str_sp
 #endif                          /* SIMGRID_TEST */
 
 /** @brief Join a set of strings as a single string */
-
 char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
 {
   int len = 1, dyn_len = xbt_dynar_length(dyn);
@@ -533,6 +533,39 @@ char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
       p += sprintf(p, "%s%s", cursor, sep);
     else
       p += sprintf(p, "%s", cursor);
+  }
+  return res;
+}
+/** @brief Join a set of strings as a single string
+ *
+ * The parameter must be a NULL-terminated array of chars,
+ * just like xbt_dynar_to_array() produces
+ */
+char *xbt_str_join_array(char*const* strs, const char *sep)
+{
+  char *res,*q;
+  int amount_strings=0;
+  int len=0;
+  int i;
+
+  if ((!strs) || (!strs[0]))
+    return xbt_strdup("");
+
+  /* compute the length before malloc */
+  for (i=0;strs[i];i++) {
+    len += strlen(strs[i]);
+    amount_strings++;
+  }
+  len += strlen(sep) * amount_strings;
+
+  /* Do the job */
+  q = res = xbt_malloc(len);
+  for (i=0;strs[i];i++) {
+    if (i!=0) { // not first loop
+      q += sprintf(q, "%s%s", sep, strs[i]);
+    } else {
+      q += sprintf(q,"%s",strs[i]);
+    }
   }
   return res;
 }
