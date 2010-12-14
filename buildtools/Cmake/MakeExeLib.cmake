@@ -175,6 +175,8 @@ else(WIN32)
 	add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/tesh)
 endif(WIN32)
 
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/graphicator/)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/xbt)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/surf)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt)
