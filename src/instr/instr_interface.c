@@ -19,7 +19,7 @@ void TRACE_category(const char *category)
 
 void TRACE_category_with_color (const char *category, const char *color)
 {
-  if (!TRACE_is_active())
+  if (!(TRACE_is_active() && category != NULL))
     return;
 
   xbt_assert1 (instr_platform_traced(),
