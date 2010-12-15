@@ -406,6 +406,21 @@ XBT_PUBLIC(void) surf_network_model_init_SMPI(const char *filename);
 XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(const char
                                                       *filename);
 
+
+/** \brief Initializes the platform with the network model 'LV08_im'
+ *  \ingroup SURF_models
+ *  \param filename XML platform file name
+ *
+ * This model is adds the lazy management improvement to Legrand and
+ * Velho model. This improvement essentially replaces the list of actions
+ * inside the simulation kernel by a heap in order to reduce the complexity
+ * at each iteration of the simulation kernel.
+ *
+ *  \see surf_workstation_model_init_LegrandVelho()
+ */
+XBT_PUBLIC(void) im_surf_network_model_init_LegrandVelho(const char
+                                                      *filename);
+
 /** \brief Initializes the platform with the network model 'Constant'
  *  \ingroup SURF_models
  *  \param filename XML platform file name
