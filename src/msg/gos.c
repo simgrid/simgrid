@@ -49,9 +49,9 @@ MSG_error_t MSG_task_execute(m_task_t task)
   TRACE_msg_task_execute_start(task);
 #endif
 
-  xbt_assert1((!simdata->compute) && (task->simdata->refcount == 1),
+  xbt_assert1((!simdata->compute) && (task->simdata->isused == 0),
               "This task is executed somewhere else. Go fix your code! %d",
-              task->simdata->refcount);
+              task->simdata->isused);
 
   DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
 
@@ -61,7 +61,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
 #endif
     return MSG_OK;
   }
-  simdata->refcount++;
+  simdata->isused=1;
   simdata->compute =
       SIMIX_req_host_execute(task->name, SIMIX_host_self(),
                            simdata->computation_amount);
@@ -74,7 +74,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
   SIMIX_req_host_execution_wait(simdata->compute);
   self->simdata->waiting_action = NULL;
 
-  simdata->refcount--;
+  simdata->isused=0;
 
   DEBUG2("Execution task '%s' finished in state %d", task->name, SIMIX_req_host_execution_get_state(task->simdata->compute));
   if (SIMIX_req_host_execution_get_state(task->simdata->compute) == SIMIX_DONE) {
@@ -148,7 +148,7 @@ MSG_parallel_task_create(const char *name, int host_nb,
   simdata->compute = NULL;
   simdata->comm = NULL;
   simdata->rate = -1.0;
-  simdata->refcount = 1;
+  simdata->isused = 0;
   simdata->sender = NULL;
   simdata->receiver = NULL;
   simdata->source = NULL;
@@ -173,7 +173,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   simdata = task->simdata;
 
   xbt_assert0((!simdata->compute)
-              && (task->simdata->refcount == 1),
+              && (task->simdata->isused == 0),
               "This task is executed somewhere else. Go fix your code!");
 
   xbt_assert0(simdata->host_nb,
@@ -181,7 +181,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
 
   DEBUG1("Parallel computing on %s", MSG_process_self()->simdata->m_host->name);
 
-  simdata->refcount++;
+  simdata->isused=1;
 
   simdata->compute =
       SIMIX_req_host_parallel_execute(task->name, simdata->host_nb,
@@ -196,7 +196,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
 
   DEBUG2("Finished waiting for execution of action %p, state = %d", simdata->compute, SIMIX_req_host_execution_get_state(task->simdata->compute));
 
-  simdata->refcount--;
+  simdata->isused=0;
 
   if (SIMIX_req_host_execution_get_state(task->simdata->compute) == SIMIX_DONE) {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
@@ -404,12 +404,11 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
   t_simdata->sender = process;
   t_simdata->source = MSG_host_self();
 
-  xbt_assert0(t_simdata->refcount == 1,
+  xbt_assert0(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
 
-  t_simdata->refcount++;
+  t_simdata->isused=1;
   msg_global->sent_msg++;
-  //process->simdata->waiting_task = task;
 
   /* Send it by calling SIMIX network layer */
 
@@ -473,7 +472,7 @@ void MSG_comm_destroy(msg_comm_t comm)
   if (SIMIX_req_comm_get_src_proc(comm) != SIMIX_process_self()) {
     m_task_t task;
     task = (m_task_t) SIMIX_req_comm_get_src_buff(comm);
-    task->simdata->refcount--;
+    task->simdata->isused=0;
   }
   SIMIX_req_comm_destroy(comm);
 }
@@ -496,7 +495,7 @@ MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
     if (SIMIX_req_comm_get_src_proc(comm) != SIMIX_process_self()) {
       m_task_t task;
       task = (m_task_t) SIMIX_req_comm_get_src_buff(comm);
-      task->simdata->refcount--;
+      task->simdata->isused=0;
     }
 
     /* FIXME: these functions are not tracable */

@@ -37,7 +37,7 @@ typedef struct simdata_task {
   m_host_t source;
   double priority;
   double rate;
-  int refcount;
+  int isused;  /* Indicates whether the task is used in SIMIX currently */
   int host_nb;                  /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/
   smx_host_t *host_list;

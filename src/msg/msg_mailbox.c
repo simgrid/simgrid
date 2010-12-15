@@ -99,7 +99,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
     SIMIX_req_comm_wait(comm, timeout);
     SIMIX_req_comm_destroy(comm);
     DEBUG2("Got task %s from %p",(*task)->name,mailbox);
-    (*task)->simdata->refcount--;
+    (*task)->simdata->isused=0;
   }
   CATCH(e) {
     switch (e.category) {
@@ -151,10 +151,10 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   t_simdata->sender = process;
   t_simdata->source = MSG_host_self();
 
-  xbt_assert0(t_simdata->refcount == 1,
+  xbt_assert0(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
 
-  t_simdata->refcount++;
+  t_simdata->isused=1;
   msg_global->sent_msg++;
 
   process->simdata->waiting_task = task;
@@ -186,8 +186,8 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
     }
     xbt_ex_free(e);
 
-    /* Decrement the refcount only on failure */
-    t_simdata->refcount--;
+    /* If the send failed, it is not used anymore */
+    t_simdata->isused=0;
   }
 
   process->simdata->waiting_task = NULL;

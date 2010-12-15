@@ -68,7 +68,7 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->message_size = message_size;
   simdata->rate = -1.0;
   simdata->priority = 1.0;
-  simdata->refcount = 1;
+  simdata->isused = 0;
   simdata->sender = NULL;
   simdata->receiver = NULL;
   simdata->compute = NULL;
@@ -166,8 +166,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   xbt_assert0((task != NULL), "Invalid parameter");
 
   /* why? if somebody is using, then you can't free! ok... but will return MSG_OK? when this task will be destroyed? isn't the user code wrong? */
-  task->simdata->refcount--;
-  if (task->simdata->refcount > 0)
+  if (task->simdata->isused > 0)
     return MSG_OK;
 #ifdef HAVE_TRACING
   TRACE_msg_task_destroy(task);
