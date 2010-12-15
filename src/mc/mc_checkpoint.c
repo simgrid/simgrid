@@ -44,13 +44,11 @@ void MC_take_snapshot(mc_snapshot_t snapshot)
   s_map_region reg;
   memory_map_t maps = get_memory_map();
 
-  /* Save all the writable mapped pages except the  and the stack */
+  /* Save all the writable mapped pages except the raw_heap and the stack */
   for (i = 0; i < maps->mapsize; i++) {
     reg = maps->regions[i];
-    if((reg.prot & PROT_WRITE)
-       && (reg.pathname == NULL
-           || (strncmp(reg.pathname, "/dev/zero", 9)
-               && strncmp(reg.pathname, "[stack]", 7)))){
+    if((reg.prot & PROT_WRITE) && reg.start_addr != raw_heap
+       && (reg.pathname == NULL || strncmp(reg.pathname, "[stack]", 7))){
       MC_snapshot_add_region(snapshot, reg.start_addr,
                              (char*)reg.end_addr - (char*)reg.start_addr);
     }
