@@ -8,10 +8,13 @@ my($line2);
 my($execline);
 my($ok)=0;
 my($ok1)=0;
+my($sort)=0;
 my($nb_arg)=0;
 my($result);
 my(@list1)=();
 my(@list2)=();
+my(@list3)=();
+my(@buffer)=();
 
 #options
 do{
@@ -56,10 +59,23 @@ if(!$ARGV[$nb_arg]){die "tesh.pl <options> <teshfile.tesh>\n";}
 print "-- Tesh load file : $ARGV[$nb_arg]\n";
 my($file)=$ARGV[$nb_arg];
 open SH_LIGNE, $file or die "Unable to open $file. $!\n";
-print "\n";
+
 while(defined($line1=<SH_LIGNE>))
 {
-		if($line1 =~ /^\$/){  	#command line
+		if($line1 =~ /^\$ mkfile/){  	#command line
+			$line1 =~ s/\$ //g;
+			chomp $line1;
+			print "-- Tesh exec_line : $line1\n";
+			$line1 =~ s/mkfile//g;
+			`rm -f $line1`;
+			foreach(@buffer)
+			{
+				`echo $_ >> $line1`;
+			}
+			$execline = $line1;
+			@buffer = ();		
+		}
+		elsif($line1 =~ /^\$/){  	#command line
 			$ok = 1;
 			$line1 =~ s/\$\{srcdir\:\=\.\}/./g;
 			$line1 =~ s/\$SG_TEST_EXENV//g;
@@ -86,16 +102,48 @@ while(defined($line1=<SH_LIGNE>))
 			chomp $line1;
 			push @list2, $line1;
 		}
+		elsif($line1 =~ /^\</){	#need to buffer
+			$line1 =~ s/^\< //g;
+			$line1 =~ s/\r//g;
+			chomp $line1;
+			push @buffer, $line1;
+		}
+		elsif($line1 =~ /^p/){	#comment
+			$line1 =~ s/^p //g;
+			$line1 =~ s/\r//g;
+			chomp $line1;
+			print "-- Tesh comment_line :$line1\n";
+		}
+		elsif($line1 =~ /^! output sort/){	#output sort
+			$sort=1;
+		}
+		elsif($line1 =~ /^! include/){	#output sort
+			die "-- Tesh need include\n";
+		}
 		elsif($ok == 1 and $ok1 == 1)
 		{
+			if($sort == 1)
+			{
+				@list3 = sort @list1;
+				@list1=();
+				@list1=@list3;
+				@list3=();
+				
+				@list3 = sort @list2;
+				@list2=();
+				@list2=@list3;
+				@list3=();
+				
+				$sort=0;
+			}
 			while(@list1 or @list2)
 			{
 				$line1 = shift (@list1);
 				$line2 = shift (@list2);
 				if($line1 eq $line2){}
 				else
-				{	print "- $line1\n";
-					print "+ $line2\n";
+				{	print "- $line2\n";
+					print "+ $line1\n";
 					die;}
 			}
 			$ok = 0;
