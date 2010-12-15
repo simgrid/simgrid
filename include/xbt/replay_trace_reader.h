@@ -6,6 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef XBT_REPLAY_TRACE_READER_H
+#define XBT_REPLAY_TRACE_READER_H
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
 
 SG_BEGIN_DECL()
@@ -18,3 +20,5 @@ void xbt_replay_trace_reader_free(xbt_replay_trace_reader_t *reader);
 const char *xbt_replay_trace_reader_position(xbt_replay_trace_reader_t reader);
 
 SG_END_DECL()
+
+#endif /* XBT_REPLAY_TRACE_READER_H */
