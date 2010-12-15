@@ -44,7 +44,7 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
   (*factory)->suspend = smx_ctx_sysv_suspend;
   (*factory)->name = "smx_sysv_context_factory";
 
-  if(_surf_parallel_contexts){
+  if (smx_parallel_contexts) {
 #ifdef CONTEXT_THREADS	/* To use parallel ucontexts a thread pool is needed */
     parmap = xbt_parmap_new(2);
     (*factory)->runall = smx_ctx_sysv_runall_parallel;

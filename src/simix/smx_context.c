@@ -15,7 +15,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
                                 "Context switching mecanism");
 
-SIMIX_ctx_factory_initializer_t factory_initializer_to_use = NULL;
+char* smx_context_factory_name = NULL; /* factory name specified by --cfg=simix/context=value */
+smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
 
 /** 
  * This function is called by SIMIX_global_init() to initialize the context module.
@@ -23,18 +24,26 @@ SIMIX_ctx_factory_initializer_t factory_initializer_to_use = NULL;
 void SIMIX_context_mod_init(void)
 {
   if (!simix_global->context_factory) {
-    /* select context factory to use to create the context(depends of the macro definitions) */
-    if (factory_initializer_to_use) {
-      (*factory_initializer_to_use)(&(simix_global->context_factory));
+    /* select the context factory to use to create the contexts */
+    if (smx_factory_initializer_to_use) {
+      (*smx_factory_initializer_to_use)(&(simix_global->context_factory));
     }
-    else {
-#ifdef CONTEXT_UCONTEXT /* use ucontext */
-      SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
-#elif defined(CONTEXT_THREADS) /* Use os threads (either pthreads or windows ones) */
-      SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
-#else
-#error ERROR [__FILE__, line __LINE__]: no context implementation specified.
-#endif
+    else { /* use the factory specified by --cfg=simix/ctx:value */
+      if (smx_context_factory_name == NULL || !strcmp(smx_context_factory_name, "ucontext")) {
+        /* use ucontext */
+        SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
+      }
+      else if (!strcmp(smx_context_factory_name, "thread")) {
+	/* use os threads (either pthreads or windows ones) */
+        SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
+      }
+      else if (!strcmp(smx_context_factory_name, "raw")) {
+	/* use raw contexts */
+	SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
+      }
+      else {
+        xbt_die("Invalid context factory specified");
+      }
     }
   }
 }
@@ -51,4 +60,5 @@ void SIMIX_context_mod_exit(void)
     finalize_factory = simix_global->context_factory->finalize;
     (*finalize_factory) (&simix_global->context_factory);
   }
+  xbt_free(smx_context_factory_name);
 }

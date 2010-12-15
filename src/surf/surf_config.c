@@ -9,12 +9,12 @@
 #include "xbt/config.h"
 #include "xbt/str.h"
 #include "surf/surf_private.h"
+#include "simix/context.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of surf (and the rest of the simulation)");
 
 xbt_cfg_t _surf_cfg_set = NULL;
-
 
 /* Parse the command line, looking for options */
 static void surf_config_cmd_line(int *argc, char **argv)
@@ -189,11 +189,14 @@ static void _surf_cfg_cb_model_check(const char *name, int pos)
   xbt_dict_preinit();
 }
 
-int _surf_parallel_contexts = 0;
+static void _surf_cfg_cb_context_factory(const char *name, int pos)
+{
+  smx_context_factory_name = xbt_cfg_get_string(_surf_cfg_set, name);
+}
 
 static void _surf_cfg_cb_parallel_contexts(const char *name, int pos)
 {
-  _surf_parallel_contexts = 1;
+  smx_parallel_contexts = 1;
 }
 
 static void _surf_cfg_cb__surf_network_fullduplex(const char *name,
@@ -336,6 +339,12 @@ void surf_config_init(int *argc, char **argv)
        internally it calls to variable->cb_set that in this case is the function 
        _surf_cfg_cb_model_check which sets it's value to 1 (instead of the defalut value 0)
        xbt_cfg_set_int(_surf_cfg_set, "model-check", default_value_int); */
+
+    /* context factory */
+    default_value = xbt_strdup("ucontext");
+    xbt_cfg_register(&_surf_cfg_set, "simix/context",
+                     "Context factory to use in SIMIX (ucontext, thread or raw)",
+                     xbt_cfgelm_string, &default_value, 1, 1, _surf_cfg_cb_context_factory, NULL);
 
     /* parallel contexts */
     default_value_int = 0;

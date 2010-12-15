@@ -34,13 +34,13 @@ void SIMIX_request_push()
   if (issuer != simix_global->maestro_process){
     issuer->request.issuer = issuer;
 
-    if (_surf_parallel_contexts)
+    if (smx_parallel_contexts)
       xbt_os_mutex_acquire(sync_req_positions);
     xbt_heap_push(req_todo,&issuer->request,issuer->pid);
     DEBUG4("Pushed request %s (%d) of %s; now %d requests waiting",
         SIMIX_request_name(issuer->request.call), issuer->request.call,
         issuer->name,xbt_heap_size(req_todo));
-    if (_surf_parallel_contexts)
+    if (smx_parallel_contexts)
       xbt_os_mutex_release(sync_req_positions);
 
     DEBUG3("Yield process '%s' on request of type %s (%d)", issuer->name,

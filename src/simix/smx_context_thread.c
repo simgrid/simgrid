@@ -16,6 +16,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
+int smx_parallel_contexts = 0;
+
 typedef struct s_smx_ctx_thread {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
   xbt_os_thread_t thread;       /* a plain dumb thread (portable to posix or windows) */
@@ -50,7 +52,7 @@ void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
   (*factory)->stop = smx_ctx_thread_stop;
   (*factory)->suspend = smx_ctx_thread_suspend;
 
-  if(_surf_parallel_contexts)
+  if (smx_parallel_contexts)
     (*factory)->runall = smx_ctx_thread_runall_parallel;
   else
     (*factory)->runall = smx_ctx_thread_runall_serial;

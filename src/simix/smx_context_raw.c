@@ -298,7 +298,7 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
   (*factory)->suspend = smx_ctx_raw_suspend;
   (*factory)->name = "smx_raw_context_factory";
 
-  if(_surf_parallel_contexts){
+  if (smx_parallel_contexts) {
 #ifdef CONTEXT_THREADS  /* To use parallel ucontexts a thread pool is needed */
     parmap = xbt_parmap_new(2);
     (*factory)->runall = smx_ctx_raw_runall_parallel;

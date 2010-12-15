@@ -11,8 +11,8 @@
 #include "xbt.h"                /* calloc, printf */
 #include "simgrid_config.h"     /* getline */
 #include "instr/instr_private.h"
-void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);
 
+void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actions,
                              "Messages specific for this msg example");
@@ -526,7 +526,8 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
-  factory_initializer_to_use = SIMIX_ctx_raw_factory_init;
+  smx_factory_initializer_to_use = SIMIX_ctx_raw_factory_init;
+
   /* Check the given arguments */
   MSG_global_init(&argc, argv);
   if (argc < 3) {
