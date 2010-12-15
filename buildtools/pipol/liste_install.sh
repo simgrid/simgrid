@@ -17,7 +17,7 @@ if [ -e /usr/bin/apt-get ] ; then
     sudo apt-get -y install graphviz-dev graphviz
     sudo apt-get -y install libpcre3-dev
     sudo apt-get -y install f2c
-    if [ x$PIPOL_IMAGE = xi386-linux-ubuntu-karmic.dd.gz ]
+    if [ x$PIPOL_IMAGE = xi386-linux-ubuntu-karmic.dd.gz ] ; then
     	sudo apt-get -y install valgrind
     fi
 else
