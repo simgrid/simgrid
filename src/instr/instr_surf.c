@@ -64,22 +64,20 @@ void TRACE_surf_link_set_latency(double date, const char *resource, double laten
 /* to trace gtnets */
 void TRACE_surf_gtnets_communicate(void *action, int src, int dst)
 {
-  xbt_die ("gtnets tracing is to be udpated");
 }
 
 int TRACE_surf_gtnets_get_src(void *action)
 {
-  xbt_die ("gtnets tracing is to be udpated");
+  return -1;
 }
 
 int TRACE_surf_gtnets_get_dst(void *action)
 {
-  xbt_die ("gtnets tracing is to be udpated");
+  return -1;
 }
 
 void TRACE_surf_gtnets_destroy(void *action)
 {
-  xbt_die ("gtnets tracing is to be udpated");
 }
 
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
