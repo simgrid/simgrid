@@ -97,6 +97,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   TRY {
     comm = SIMIX_req_comm_irecv(mailbox, task, NULL, NULL, NULL);
     SIMIX_req_comm_wait(comm, timeout);
+    (*task)->simdata->comm = comm;
     SIMIX_req_comm_destroy(comm);
     DEBUG2("Got task %s from %p",(*task)->name,mailbox);
     (*task)->simdata->isused=0;
@@ -136,6 +137,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   MSG_error_t ret = MSG_OK;
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
+  smx_action_t comm;
 #ifdef HAVE_TRACING
   int call_end = 0;
 #endif
@@ -161,13 +163,14 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   /* Try to send it by calling SIMIX network layer */
   TRY {
-    t_simdata->comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                       t_simdata->rate, task, sizeof(void *), NULL, NULL);
+    comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
+             t_simdata->rate, task, sizeof(void *), NULL, NULL);
+    t_simdata->comm = comm;
 #ifdef HAVE_TRACING
-    SIMIX_req_set_category(t_simdata->comm, task->category);
+    SIMIX_req_set_category(comm, task->category);
 #endif
-    SIMIX_req_comm_wait(t_simdata->comm, timeout);
-    SIMIX_req_comm_destroy(t_simdata->comm);
+    SIMIX_req_comm_wait(comm, timeout);
+    SIMIX_req_comm_destroy(comm);
   }
 
   CATCH(e) {
