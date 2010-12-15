@@ -154,12 +154,6 @@ void MSG_task_set_name(m_task_t task, const char *name)
   task->name = xbt_strdup(name);
 }
 
-
-void MSG_task_refcount_dec(m_task_t task)
-{
-  task->simdata->refcount--;
-}
-
 /** \ingroup m_task_management
  * \brief Destroy a #m_task_t.
  *

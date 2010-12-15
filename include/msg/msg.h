@@ -123,7 +123,6 @@ XBT_PUBLIC(const char *) MSG_task_get_name(m_task_t task);
 XBT_PUBLIC(void) MSG_task_set_name(m_task_t task, const char *name);
 XBT_PUBLIC(MSG_error_t) MSG_task_cancel(m_task_t task);
 XBT_PUBLIC(MSG_error_t) MSG_task_destroy(m_task_t task);
-XBT_PUBLIC(void) MSG_task_refcount_dec(m_task_t task);
 
 XBT_PUBLIC(MSG_error_t) MSG_task_get(m_task_t * task, m_channel_t channel);
 XBT_PUBLIC(MSG_error_t) MSG_task_get_with_timeout(m_task_t * task,

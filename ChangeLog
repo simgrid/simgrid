@@ -3,6 +3,8 @@ SimGrid (3.6) unstable; urgency=low
  MSG
  * Change the prototypes of action replay. Sorry for inconvenience,
    but this is really more efficient this way.
+ * Kill the braindead MSG_task_refcount_dec() function. I guess nobody
+   ever managed to do anything useful with it.
 
  SURF
  * New model for multi-core CPUs. You can now use the core attribute to
