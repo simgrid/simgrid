@@ -73,6 +73,7 @@ cmake -Denable_lua=on \
 -Denable_compile_optimizations=off \
 -Denable_compile_warnings=off \
 -Denable_supernovae=off \
+-Denable_coverage=on \
 -Denable_smpi=on .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
@@ -143,6 +144,7 @@ if [ $SYSTEM = Linux ] ; then
 		-Denable_gtnets=on \
 		-Dgtnets_path=$userhome/usr \
 		-Denable_java=on \
+		-Denable_coverage=off \
 		-Denable_smpi=on .
 		ctest -D ExperimentalStart
 		ctest -D ExperimentalConfigure
