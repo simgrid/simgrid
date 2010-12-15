@@ -112,6 +112,7 @@ cmake -Denable_lua=on \
 -Denable_compile_optimizations=off \
 -Denable_compile_warnings=off \
 -Denable_supernovae=off \
+-Denable_coverage=on \
 -Denable_smpi=on .
 ctest -D NightlyStart
 ctest -D NightlyConfigure
@@ -182,6 +183,7 @@ if [ $SYSTEM = Linux ] ; then
 		-Denable_gtnets=on \
 		-Denable_java=on \
 		-Dgtnets_path=$userhome/usr \
+		-Denable_coverage=off \
 		-Denable_smpi=on .
 		ctest -D NightlyStart
 		ctest -D NightlyConfigure
