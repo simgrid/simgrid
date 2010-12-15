@@ -171,6 +171,11 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
   act->comm.type = type;
   act->comm.refcount = 1;
 
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+  //initialize with unknown value
+  act->latency_limited = -1;
+#endif
+
 #ifdef HAVE_TRACING
   act->category = NULL;
 #endif
@@ -191,21 +196,15 @@ void SIMIX_comm_destroy(smx_action_t action)
   if (action->comm.refcount <= 0)
     xbt_die(bprintf("the refcount of comm %p is already 0 before decreasing it. That's a bug!",action));
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  //save is latency limited flag to use afterwards
-  if (action->comm.surf_comm) {
-    DEBUG2("adding key %p with latency limited value %d to the dict", action,
-           SIMIX_comm_is_latency_bounded(action));
-    xbt_dicti_set(simix_global->latency_limited_dict, (uintptr_t) action,
-                  SIMIX_comm_is_latency_bounded(action));
-  }
-#endif
-
   action->comm.refcount--;
   if (action->comm.refcount > 0)
     return;
   DEBUG2("Really free communication %p; refcount is now %d", action,
         action->comm.refcount);
+
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+    action->latency_limited = SIMIX_comm_is_latency_bounded( action ) ;
+#endif
 
 #ifdef HAVE_TRACING
   TRACE_smx_action_destroy(action);
@@ -224,6 +223,9 @@ void SIMIX_comm_destroy(smx_action_t action)
 void SIMIX_comm_destroy_internal_actions(smx_action_t action)
 {
   if (action->comm.surf_comm){
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+    action->latency_limited = SIMIX_comm_is_latency_bounded(action);
+#endif
     action->comm.surf_comm->model_type->action_unref(action->comm.surf_comm);
     action->comm.surf_comm = NULL;
   }
@@ -683,21 +685,12 @@ smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action)
  */
 XBT_INLINE int SIMIX_comm_is_latency_bounded(smx_action_t action)
 {
-  //try to find comm on the list of finished flows
-  uintptr_t key = 0;
-  uintptr_t data = 0;
-  xbt_dict_cursor_t cursor;
-  xbt_dict_foreach(simix_global->latency_limited_dict, cursor, key, data) {
-    DEBUG2("comparing key=%p with comm=%p", (void *) key, (void *) action);
-    if ((void *) action == (void *) key) {
-      DEBUG2("key %p found, return value latency limited value %d",
-             (void *) key, (int) data);
-      xbt_dict_cursor_free(&cursor);
-      return (int) data;
-    }
+  if (action->comm.surf_comm){
+      DEBUG1("Getting latency limited for surf_action (%p)", action->comm.surf_comm);
+      action->latency_limited = surf_workstation_model->get_latency_limited(action->comm.surf_comm);
+      DEBUG1("Action limited is %d", action->latency_limited);
   }
-
-  return surf_workstation_model->get_latency_limited(action->comm.surf_comm);
+  return action->latency_limited;
 }
 #endif
 

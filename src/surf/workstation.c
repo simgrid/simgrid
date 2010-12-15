@@ -196,9 +196,8 @@ static int ws_get_latency_limited(surf_action_t action)
 {
   if (action->model_type == surf_network_model)
     return surf_network_model->get_latency_limited(action);
-  INFO0
-      ("You tried to ask if a non network action is limited by latency, aborting...");
-  DIE_IMPOSSIBLE;
+  else
+    return 0;
 }
 #endif
 

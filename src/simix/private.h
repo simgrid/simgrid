@@ -124,6 +124,10 @@ typedef struct s_smx_action {
 
   };
 
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+  int latency_limited;
+#endif
+
 #ifdef HAVE_TRACING
   char *category;                     /* simix action category for instrumentation */
 #endif
