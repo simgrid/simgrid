@@ -411,10 +411,10 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-
-  return SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                             t_simdata->rate, task, sizeof(void *), NULL,
-                             &t_simdata->comm);
+  t_simdata->comm =
+    SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
+                         t_simdata->rate, task, sizeof(void *), NULL, NULL);
+  return t_simdata->comm;
 }
 
 /** \ingroup msg_gos_functions
