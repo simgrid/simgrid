@@ -11,4 +11,3 @@ $ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation/mode
 > [S1:master:(1) 0.300171] [msg_test/INFO] Completed peer: C1 time: 0.300171
 > [C1:slave:(3) 0.300171] [msg_test/INFO] ===> Estimated Bw of FLOW[0] : 33314.335278 ;  message from S1 to C1  with remaining : 0.000000
 > [C1:slave:(3) 0.300171] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 33314.335278 ;  message from S2 to C2  with remaining : 0.000000
-

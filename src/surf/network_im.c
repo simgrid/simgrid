@@ -185,9 +185,7 @@ static link_CM02_im_t im_net_link_new(char *name,
 
   xbt_dict_set(surf_network_model->resource_set, name, nw_link,
                surf_resource_free);
-#ifdef HAVE_TRACING
-  TRACE_surf_link_declaration(nw_link, name, bw_initial, lat_initial);
-#endif
+
 
   return nw_link;
 }
@@ -558,7 +556,7 @@ static void im_net_update_resource_state(void *id,
                                 (nw_link->lmm_resource.power.peak *
                                  nw_link->lmm_resource.power.scale));
 #ifdef HAVE_TRACING
-    TRACE_surf_link_set_bandwidth(date, nw_link,
+    TRACE_surf_link_set_bandwidth(date, (char *)(((nw_link->lmm_resource).generic_resource).name),
                                   sg_bandwidth_factor *
                                   (nw_link->lmm_resource.power.peak *
                                    nw_link->lmm_resource.power.scale));
@@ -924,11 +922,11 @@ static void im_surf_network_model_init_internal(void)
 
   xbt_heap_set_update_callback(im_net_action_heap, im_net_action_update_index_heap);
 
-  routing_model_create(sizeof(link_CM02_im_t),
-                       (void *) im_net_link_new(xbt_strdup("__loopback__"),
-                                    498000000, NULL, 0.000015, NULL,
-                                    SURF_RESOURCE_ON, NULL,
-                                    SURF_LINK_FATPIPE, NULL));
+  routing_model_create(sizeof(link_CM02_im_t),        im_net_link_new(xbt_strdup("__loopback__"),
+                                                                      498000000, NULL, 0.000015, NULL,
+                                                                      SURF_RESOURCE_ON, NULL,
+                                                                      SURF_LINK_FATPIPE, NULL),
+                              im_net_get_link_latency);
   im_net_modified_set =
       xbt_swag_new(xbt_swag_offset(comm, action_list_hookup));
   keep_track = im_net_modified_set;
