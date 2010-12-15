@@ -76,7 +76,7 @@ static void action_send(char*const* action)
 
 #ifdef HAVE_TRACING
   int rank = get_rank(MSG_process_get_name(MSG_process_self()));
-  int dst_traced = get_rank(xbt_dynar_get_as(action, 2, char *));
+  int dst_traced = get_rank(action[2]);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, "send");
   TRACE_smpi_send(rank, rank, dst_traced);
 #endif
@@ -135,7 +135,7 @@ static void action_recv(char*const* action)
 
 #ifdef HAVE_TRACING
   int rank = get_rank(MSG_process_get_name(MSG_process_self()));
-  int src_traced = get_rank(xbt_dynar_get_as(action, 2, char *));
+  int src_traced = get_rank(action[2]);
   TRACE_smpi_ptp_in(rank, src_traced, rank, "recv");
 #endif
 
@@ -164,7 +164,7 @@ static void action_Irecv(char*const* action)
   DEBUG1("Irecv on %s", MSG_process_get_name(MSG_process_self()));
 #ifdef HAVE_TRACING
   int rank = get_rank(MSG_process_get_name(MSG_process_self()));
-  int src_traced = get_rank(xbt_dynar_get_as(action, 2, char *));
+  int src_traced = get_rank(action[2]);
   globals->last_Irecv_sender_id = src_traced;
   MSG_process_set_data(MSG_process_self(), (void *) globals);
 
