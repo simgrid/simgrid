@@ -92,9 +92,9 @@ void MC_dpor(void)
           xbt_free(req_str);
         }
 
-        SIMIX_request_pre(req);
-
         MC_state_set_executed_request(state, req);
+
+        SIMIX_request_pre(req); /* After this call req is no longer usefull */
         
         /* Wait for requests (schedules processes) */
         MC_wait_for_requests();
