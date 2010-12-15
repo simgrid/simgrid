@@ -79,10 +79,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->kill_process_function = NULL;
     simix_global->cleanup_process_function = SIMIX_process_cleanup;
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-    simix_global->latency_limited_dict = xbt_dict_new();
-#endif
-
     surf_init(argc, argv);      /* Initialize SURF structures */
     SIMIX_context_mod_init();
     SIMIX_create_maestro_process();
@@ -130,10 +126,6 @@ void SIMIX_clean(void)
   simix_global->process_to_destroy = NULL;
   xbt_dict_free(&(simix_global->registered_functions));
   xbt_dict_free(&(simix_global->host));
-
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  xbt_dict_free(&(simix_global->latency_limited_dict));
-#endif
 
   /* Let's free maestro now */
   SIMIX_context_free(simix_global->maestro_process->context);
