@@ -151,7 +151,7 @@ static VALUE msg_get_clock(VALUE class)
 typedef VALUE(*rb_meth) (ANYARGS);
 void Init_libsimgrid()
 {
-  factory_initializer_to_use = SIMIX_ctx_ruby_factory_init;
+  smx_factory_initializer_to_use = SIMIX_ctx_ruby_factory_init;
 
   // Modules
   rb_msg = rb_define_module("MSG");
