@@ -49,9 +49,11 @@ void MC_init(void)
   xbt_swag_foreach(process, simix_global->process_list){
     xbt_setset_elm_add(mc_setset, process);
   }
-  
+  MC_UNSET_RAW_MEM;
+
   MC_dpor_init();
 
+  MC_SET_RAW_MEM;
   /* Save the initial state */
   initial_snapshot = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot(initial_snapshot);
@@ -92,6 +94,9 @@ void MC_replay(xbt_fifo_t stack)
 
   /* Restore the initial state */
   MC_restore_snapshot(initial_snapshot);
+  /* At the moment of taking the snapshot the raw heap was set, so restoring
+   * it will set it back again, we have to unset it to continue  */
+  MC_UNSET_RAW_MEM;
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   for (item = xbt_fifo_get_last_item(stack);
@@ -109,7 +114,7 @@ void MC_replay(xbt_fifo_t stack)
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
         req_str = MC_request_to_string(req); 
-        DEBUG1("Replay: %s", req_str);
+        DEBUG2("Replay: %s (%p)", req_str, state);
         xbt_free(req_str);
       }
     }
