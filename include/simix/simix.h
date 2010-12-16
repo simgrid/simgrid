@@ -62,7 +62,7 @@ XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
 /********************************* Process ************************************/
 XBT_PUBLIC(void) SIMIX_process_cleanup(smx_process_t arg);
 XBT_PUBLIC(int) SIMIX_process_count(void);
-XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
+XBT_INLINE XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
 XBT_PUBLIC(const char*) SIMIX_process_self_get_name(void);
 XBT_PUBLIC(void) SIMIX_process_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_process_self_get_data(void);
