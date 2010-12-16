@@ -119,32 +119,36 @@ static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm)
 }
 
 /**
- *  \brief Checks if there is a communication request queued in a rendez-vous matching our needs
+ *  \brief Checks if there is a communication action queued in a rendez-vous matching our needs
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
- *  \return The communication request if found, NULL otherwise
+ *  \return The communication action if found, NULL otherwise
  */
 smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
-								   int (*match_fun)(void *, void *), void *data)
+                                   int (*match_fun)(void *, void *), void *data)
 {
-  smx_action_t req;
+  smx_action_t action;
   xbt_fifo_item_t item;
   void* req_data = NULL;
 
-  xbt_fifo_foreach(rdv->comm_fifo, item, req, smx_action_t){
-    if(req->comm.type == SIMIX_COMM_SEND) {
-      req_data = req->comm.src_data;
-    } else if(req->comm.type == SIMIX_COMM_RECEIVE) {
-      req_data = req->comm.dst_data;
+  xbt_fifo_foreach(rdv->comm_fifo, item, action, smx_action_t){
+    if (action->comm.type == SIMIX_COMM_SEND) {
+      req_data = action->comm.src_data;
+    } else if (action->comm.type == SIMIX_COMM_RECEIVE) {
+      req_data = action->comm.dst_data;
     }
-    if (req->comm.type == type && (!match_fun || match_fun(data, req_data))) {
+    if (action->comm.type == type && (!match_fun || match_fun(data, req_data))) {
+      DEBUG1("Found a matching communication action %p", action);
       xbt_fifo_remove_item(rdv->comm_fifo, item);
       xbt_fifo_free_item(item);
-      req->comm.refcount++;
-      req->comm.rdv = NULL;
-      return req;
+      action->comm.refcount++;
+      action->comm.rdv = NULL;
+      return action;
     }
+    DEBUG3("Sorry, communication action %p does not match our needs:"
+           " its type is %d but we are looking for a comm of type %d",
+           action, action->comm.type, type);
   }
-  DEBUG0("Communication request not found");
+  DEBUG0("No matching communication action found");
   return NULL;
 }
 
