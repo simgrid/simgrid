@@ -51,7 +51,7 @@ void MC_dpor_init()
  */
 void MC_dpor(void)
 {
-  char *req_str;
+  char *req_str, deadlock;
   smx_req_t req = NULL;
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL;
   smx_process_t process = NULL;
@@ -125,13 +125,21 @@ void MC_dpor(void)
       DEBUG0("There are no more processes to interleave.");
 
       /* Check for deadlocks */
-      xbt_swag_foreach(process, simix_global->process_list){
-      /* FIXME: use REQ_NO_REQ instead of NULL for comparison */
-        if(&process->request && !SIMIX_request_is_enabled(&process->request)){
+      if(xbt_swag_size(simix_global->process_list)){
+        deadlock = TRUE;
+        xbt_swag_foreach(process, simix_global->process_list){
+          if(process->request.call != REQ_NO_REQ
+             && SIMIX_request_is_enabled(&process->request)){
+            deadlock = FALSE;
+            break;
+          }
+        }
+
+        if(deadlock){
           MC_show_deadlock(&process->request);
           return;
         }
-      }  
+      }
 
       /*
       INFO0("*********************************");
@@ -155,13 +163,18 @@ void MC_dpor(void)
             if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
               DEBUG0("Dependent Transitions:");
               req_str = MC_request_to_string(MC_state_get_executed_request(prev_state));
-              DEBUG1("%s", req_str);
+              DEBUG2("%s (state=%p)", req_str, prev_state);
               xbt_free(req_str);
               req_str = MC_request_to_string(req);
-              DEBUG1("%s", req_str);
+              DEBUG2("%s (state=%p)", req_str, state);
               xbt_free(req_str);              
             }
-            xbt_setset_set_insert(prev_state->interleave, req->issuer);
+
+            if(!xbt_setset_set_belongs(prev_state->done, req->issuer))
+              xbt_setset_set_insert(prev_state->interleave, req->issuer);
+            else
+              DEBUG1("Process %p is in done set", req->issuer);
+
             break;
           }
         }
