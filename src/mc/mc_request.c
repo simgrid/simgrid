@@ -54,9 +54,11 @@ char *MC_request_to_string(smx_req_t req)
     case REQ_COMM_WAIT:
       act = req->comm_wait.comm;
       type = bprintf("Wait");
-      args  = bprintf("%p [%s -> %s]", act, 
+      args  = bprintf("%p [%s(%lu) -> %s(%lu)]", act,
                       act->comm.src_proc ? act->comm.src_proc->name : "",
-                      act->comm.dst_proc ? act->comm.dst_proc->name : "");
+                      act->comm.src_proc ? act->comm.src_proc->pid : 0,
+                      act->comm.dst_proc ? act->comm.dst_proc->name : "",
+                      act->comm.dst_proc ? act->comm.dst_proc->pid : 0);
       break;
     case REQ_COMM_TEST:
       act = req->comm_test.comm;
@@ -68,7 +70,7 @@ char *MC_request_to_string(smx_req_t req)
     default:
       THROW_UNIMPLEMENTED;
   }
-  str = bprintf("[%s] %s (%s)", req->issuer->name, type, args);
+  str = bprintf("[(%lu)%s] %s (%s)", req->issuer->pid ,req->issuer->name, type, args);
   xbt_free(type);
   xbt_free(args);
   return str;
