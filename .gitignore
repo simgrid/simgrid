@@ -260,7 +260,6 @@ tools/gras/gras_stub_generator
 tools/tesh/tesh
 examples/msg/tracing/categories
 examples/msg/tracing/ms
-examples/msg/chord/chord
 teshsuite/simdag/platforms/is_router_test
 examples/msg/masterslave/masterslave_cluster
 examples/simdag/simdag_tracing
