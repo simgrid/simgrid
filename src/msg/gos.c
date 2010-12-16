@@ -447,22 +447,70 @@ msg_comm_t MSG_task_irecv(m_task_t * task, const char *alias)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Test the status of a communication.
- *
- * It takes one parameter.
- * \param comm the communication to test.
- * \return the status of the communication:
- * 		TRUE : the communication is completed
- * 		FALSE: the communication is incompleted
+ * \brief Returns whether a communication is finished.
+ * \param comm the communication to test
+ * \return TRUE if the communication is finished
+ * (but it may have failed, use MSG_comm_get_status() to know its status)
+ * or FALSE if the communication is not finished yet
  * If the status is FALSE, don't forget to use MSG_process_sleep() after the test.
  */
 int MSG_comm_test(msg_comm_t comm)
 {
-  return SIMIX_req_comm_test(comm);
+  xbt_ex_t e;
+  int finished = 0;
+  TRY {
+    finished = SIMIX_req_comm_test(comm);
+  }
+  CATCH(e) {
+    switch (e.category) {
+
+      case host_error:
+      case network_error:
+      case timeout_error:
+        finished = 1;
+        break;
+
+      default:
+        RETHROW;
+    }
+    xbt_ex_free(e);
+  }
+  return finished;
 }
 
 /** \ingroup msg_gos_functions
- * \brief After received TRUE to MSG_comm_test(), the communication must be destroyed.
+ * \brief This function checks if a communication is finished
+ * \param comms a vector of communications
+ * \return the position of the finished communication if any
+ * (but it may have failed, use MSG_comm_get_status() to know its status),
+ * or -1 if none is finished
+ */
+int MSG_comm_testany(xbt_dynar_t comms)
+{
+  xbt_ex_t e;
+  int finished_index = -1;
+  TRY {
+    finished_index = SIMIX_req_comm_testany(comms);
+  }
+  CATCH(e) {
+    switch (e.category) {
+
+      case host_error:
+      case network_error:
+      case timeout_error:
+        finished_index = e.value;
+        break;
+
+      default:
+        RETHROW;
+    }
+    xbt_ex_free(e);
+  }
+  return finished_index;
+}
+
+/** \ingroup msg_gos_functions
+ * \brief After received TRUE to MSG_comm_test(), the communication should be destroyed.
  *
  * It takes one parameter.
  * \param comm the communication to destroy.
@@ -512,7 +560,7 @@ MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
       res = MSG_TIMEOUT;
       break;
     default:
-      xbt_die(bprintf("Unhandled SIMIX network exception: %s", e.msg));
+      RETHROW;
     }
     xbt_ex_free(e);
   }
@@ -544,19 +592,64 @@ void MSG_comm_waitall(msg_comm_t * comm, int nb_elem, double timeout)
 */
 int MSG_comm_waitany(xbt_dynar_t comms)
 {
-  return SIMIX_req_comm_waitany(comms);
+  xbt_ex_t e;
+  int finished_index = -1;
+  TRY {
+    finished_index = SIMIX_req_comm_waitany(comms);
+  }
+  CATCH(e) {
+    switch (e.category) {
+
+      case host_error:
+      case network_error:
+      case timeout_error:
+        finished_index = e.value;
+      default:
+        RETHROW;
+    }
+    xbt_ex_free(e);
+  }
+  return finished_index;
 }
 
-/** \ingroup msg_gos_functions
-* \brief This function wait for the first completed communication
-*
-* It takes on parameter.
-* \param comms a vector of communication
-* \return the position of the completed communication, if any, or -1 if none was completed
-*/
-int MSG_comm_testany(xbt_dynar_t comms)
-{
-  return SIMIX_req_comm_testany(comms);
+/**
+ * \ingroup msg_gos_functions
+ * \brief Returns the error (if any) that occured during a finished communication.
+ * \param comm a finished communication
+ * \return the status of the communication, or MSG_OK if the communication
+ * was successfully completed
+ */
+MSG_error_t MSG_comm_get_status(msg_comm_t comm) {
+
+  MSG_error_t result;
+  e_smx_state_t smx_state = SIMIX_req_comm_get_state(comm);
+
+  switch (smx_state) {
+
+    case SIMIX_CANCELED:
+      result = MSG_TASK_CANCELLED;
+      break;
+
+    case SIMIX_FAILED:
+    case SIMIX_SRC_HOST_FAILURE:
+    case SIMIX_DST_HOST_FAILURE:
+      result = MSG_HOST_FAILURE;
+      break;
+
+    case SIMIX_LINK_FAILURE:
+      result = MSG_TRANSFER_FAILURE;
+      break;
+
+    case SIMIX_SRC_TIMEOUT:
+    case SIMIX_DST_TIMEOUT:
+      result = MSG_TIMEOUT;
+      break;
+
+    default:
+      result = MSG_OK;
+      break;
+  }
+  return result;
 }
 
 m_task_t MSG_comm_get_task(msg_comm_t comm)

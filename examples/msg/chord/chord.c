@@ -14,6 +14,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
 
 #define NB_BITS 6
 #define NB_KEYS 64
+#define COMM_SIZE 10
+#define COMP_SIZE 0
 
 /**
  * Finger element.
@@ -303,47 +305,54 @@ int node(int argc, char *argv[])
       }
     }
     else {
-      // a task was received
+      // a transfer has occured
 
+      MSG_error_t status = MSG_comm_get_status(comm_receive);
       MSG_comm_destroy(comm_receive);
       comm_receive = NULL;
-      const char* task_name = MSG_task_get_name(task);
-      task_data_t task_data = (task_data_t) MSG_task_get_data(task);
 
-      if (!strcmp(task_name, "Find Successor")) {
-        INFO2("Receiving a 'Find Successor' Request from %s for id %d",
+      if (status != MSG_OK) {
+        INFO0("Failed to receive a task. Nevermind.");
+      }
+      else {
+        // the task was successfully received
+        const char* task_name = MSG_task_get_name(task);
+        task_data_t task_data = (task_data_t) MSG_task_get_data(task);
+
+        if (!strcmp(task_name, "Find Successor")) {
+          INFO2("Receiving a 'Find Successor' request from %s for id %d",
               task_data->issuer_host_name, task_data->request_id);
-	// is my successor the successor?
-	if (is_in_interval(task_data->request_id, node.id + 1, node.fingers[0].id)) {
-	  task_data->answer_id = node.fingers[0].id;
-	  MSG_task_set_name(task, "Find Successor Answer");
-	  INFO3("Sending back a 'Find Successor Answer' to %s: the successor of %d is %d",
-	        task_data->issuer_host_name, task_data->request_id, task_data->answer_id);
-	  comm_send = MSG_task_isend(task, task_data->answer_to);
-	  xbt_dynar_push(node.comms, &comm_send);
-	}
-	else {
-	  // otherwise, forward the request to the closest preceding finger in my table
-	  int closest = closest_preceding_node(&node, task_data->request_id);
-	  INFO2("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
-	        task_data->request_id, closest);
-	  mailbox = get_mailbox(closest);
-	  comm_send = MSG_task_isend(task, mailbox);
-	  xbt_dynar_push(node.comms, &comm_send);
-	  xbt_free(mailbox);
-	}
-      }
+          // is my successor the successor?
+          if (is_in_interval(task_data->request_id, node.id + 1, node.fingers[0].id)) {
+            task_data->answer_id = node.fingers[0].id;
+            MSG_task_set_name(task, "Find Successor Answer");
+            INFO3("Sending back a 'Find Successor Answer' to %s: the successor of %d is %d",
+                task_data->issuer_host_name, task_data->request_id, task_data->answer_id);
+            comm_send = MSG_task_isend(task, task_data->answer_to);
+            xbt_dynar_push(node.comms, &comm_send);
+          }
+          else {
+            // otherwise, forward the request to the closest preceding finger in my table
+            int closest = closest_preceding_node(&node, task_data->request_id);
+            INFO2("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
+                task_data->request_id, closest);
+            mailbox = get_mailbox(closest);
+            comm_send = MSG_task_isend(task, mailbox);
+            xbt_dynar_push(node.comms, &comm_send);
+            xbt_free(mailbox);
+          }
+        }
 
-      else if (!strcmp(task_name, "Get Predecessor")) {
-	INFO1("Receiving a 'Get Predecessor' Request from %s", task_data->issuer_host_name);
-	task_data->answer_id = node.pred_id;
-	MSG_task_set_name(task, "Get Predecessor Answer");
-	INFO2("Sending back a 'Get Predecessor Answer' to %s: my predecessor is %d",
-	      task_data->issuer_host_name, task_data->answer_id);
-	comm_send = MSG_task_isend(task, task_data->answer_to);
-	xbt_dynar_push(node.comms, &comm_send);
-      }
-      /*
+        else if (!strcmp(task_name, "Get Predecessor")) {
+          INFO1("Receiving a 'Get Predecessor' request from %s", task_data->issuer_host_name);
+          task_data->answer_id = node.pred_id;
+          MSG_task_set_name(task, "Get Predecessor Answer");
+          INFO2("Sending back a 'Get Predecessor Answer' to %s: my predecessor is %d",
+              task_data->issuer_host_name, task_data->answer_id);
+          comm_send = MSG_task_isend(task, task_data->answer_to);
+          xbt_dynar_push(node.comms, &comm_send);
+        }
+        /*
       else if (!strcmp(task_name, "Find Predecessor")) {
 	INFO2("Receiving a 'Find Predecessor' Request from %s for id %d", task_data->issuer_host_name, task_data->request_id);
 	// am I the predecessor?
@@ -364,9 +373,9 @@ int node(int argc, char *argv[])
 	  xbt_free(mailbox);
 	}
       }
-      */
+         */
 
-      /*
+        /*
       else if (!strcmp(task_name, "Notify Node Joined")) {
 	// someone may be my new neighboor
 	INFO1("Receiving a 'Notify Node Joine' request from %s", task_data->issuer_host_name);
@@ -377,30 +386,31 @@ int node(int argc, char *argv[])
 	INFO1("Receiving an 'Update Finger' request from %s", task_data->issuer_host_name);
 	update_finger_table(&node, task_data->request_id, task_data->request_finger);
       }
-      */
-      else if (!strcmp(task_name, "Notify")) {
-	// someone is telling me that he may be my new predecessor
-	INFO1("Receiving a 'Notify' request from %s", task_data->issuer_host_name);
-	notify(&node, task_data->request_id);
-      }
-      else if (!strcmp(task_name, "Predecessor Leaving")) {
-	// my predecessor is about to quit
-	INFO1("Receiving a 'Predecessor Leaving' message from %s", task_data->issuer_host_name);
-	// modify my predecessor
-	set_predecessor(&node, task_data->pred_id);
-	/*TODO :
+         */
+        else if (!strcmp(task_name, "Notify")) {
+          // someone is telling me that he may be my new predecessor
+          INFO1("Receiving a 'Notify' request from %s", task_data->issuer_host_name);
+          notify(&node, task_data->request_id);
+        }
+        else if (!strcmp(task_name, "Predecessor Leaving")) {
+          // my predecessor is about to quit
+          INFO1("Receiving a 'Predecessor Leaving' message from %s", task_data->issuer_host_name);
+          // modify my predecessor
+          set_predecessor(&node, task_data->pred_id);
+          /*TODO :
           >> notify my new predecessor
           >> send a notify_predecessors !!
-	 */
-      }
-      else if (!strcmp(task_name, "Successor Leaving")) {
-	// my successor is about to quit
-	INFO1("Receiving a 'Successor Leaving' message from %s", task_data->issuer_host_name);
-	// modify my successor FIXME : this should be implicit ?
-	set_finger(&node, 0, task_data->successor_id);
-	/* TODO
+           */
+        }
+        else if (!strcmp(task_name, "Successor Leaving")) {
+          // my successor is about to quit
+          INFO1("Receiving a 'Successor Leaving' message from %s", task_data->issuer_host_name);
+          // modify my successor FIXME : this should be implicit ?
+          set_finger(&node, 0, task_data->successor_id);
+          /* TODO
           >> notify my new successor
           >> update my table & predecessors table */
+        }
       }
     }
   }
@@ -441,7 +451,9 @@ static void join(node_t node, int known_id)
   int successor_id;
   do {
     successor_id = remote_find_successor(node, known_id, node->id);
-    INFO0("My 'Find Successor' request has failed, let's try again");
+    if (successor_id == -1) {
+      INFO0("I really want to join the ring. Let's try again.");
+    }
   } while (successor_id == -1);
 
   set_finger(node, 0, successor_id);
@@ -486,7 +498,7 @@ static void remote_notify_node_joined(node_t node, int notify_id)
 
   // send a "Notify" request to notify_id
   INFO2("Sending a 'Notify' request to %d because I have joined the network with id %d", notify_id, node->id);
-  m_task_t task = MSG_task_create("Notify", 1000, 5000, req_data);
+  m_task_t task = MSG_task_create("Notify", COMP_SIZE, COMM_SIZE, req_data);
   char* mailbox = get_mailbox(notify_id);
   msg_comm_t comm = MSG_task_isend(task, mailbox);
   xbt_dynar_push(node->comms, &comm);
@@ -568,7 +580,7 @@ static void quit_notify(node_t node, int to)
     task_name = "Predecessor Leaving";
 
   }
-  m_task_t task = MSG_task_create(task_name, 1000, 5000, req_data);
+  m_task_t task = MSG_task_create(task_name, COMP_SIZE, COMM_SIZE, req_data);
   //char* mailbox = get_mailbox(to_mailbox);
   msg_comm_t comm = MSG_task_isend(task, to_mailbox);
   xbt_dynar_push(node->comms, &comm);
@@ -681,7 +693,7 @@ static void remote_update_finger_table(node_t node, int ask_to_id, int candidate
 
   // send a "Update Finger" request to ask_to_id
   INFO3("Sending an 'Update Finger' request to %d: his finger #%d may be %d now", ask_to_id, finger_index, candidate_id);
-  m_task_t task = MSG_task_create("Update Finger", 1000, 5000, req_data);
+  m_task_t task = MSG_task_create("Update Finger", COMP_SIZE, COMM_SIZE, req_data);
   char* mailbox = get_mailbox(ask_to_id);
   msg_comm_t comm = MSG_task_isend(task, mailbox);
   xbt_dynar_push(node->comms, &comm);
@@ -725,13 +737,13 @@ static int remote_find_successor(node_t node, int ask_to, int id)
 
   // send a "Find Successor" request to ask_to_id
   INFO2("Sending a 'Find Successor' request to %d for key %d", ask_to, id);
-  m_task_t task = MSG_task_create("Find Successor", 1000, 5000, &req_data);
-  MSG_error_t res = MSG_task_send_with_timeout(task, get_mailbox(ask_to), 20);
+  m_task_t task = MSG_task_create("Find Successor", COMP_SIZE, COMM_SIZE, &req_data);
+  MSG_error_t res = MSG_task_send_with_timeout(task, get_mailbox(ask_to), 200);
   if (res == MSG_OK) {
 
     // receive the answer
     task = NULL;
-    res = MSG_task_receive_with_timeout(&task, req_data.answer_to, 20);
+    res = MSG_task_receive_with_timeout(&task, req_data.answer_to, 200);
 
     if (res == MSG_OK) {
 
@@ -742,6 +754,9 @@ static int remote_find_successor(node_t node, int ask_to, int id)
     }
   }
 
+  if (res != MSG_OK) {
+    INFO2("My 'Find Successor' request to node %d for key %d has failed", ask_to, id);
+  }
   xbt_free(mailbox);
   return successor;
 }
@@ -763,7 +778,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
 
   // send a "Get Predecessor" request to ask_to_id
   INFO1("Sending a 'Get Predecessor' request to %d", ask_to);
-  m_task_t task = MSG_task_create("Get Predecessor", 1000, 5000, &req_data);
+  m_task_t task = MSG_task_create("Get Predecessor", COMP_SIZE, COMM_SIZE, &req_data);
   MSG_error_t res = MSG_task_send_with_timeout(task, get_mailbox(ask_to), 20);
 
   if (res == MSG_OK) {
@@ -779,6 +794,10 @@ static int remote_get_predecessor(node_t node, int ask_to)
       predecessor_id = ans_data->answer_id;
       INFO2("Received the answer to my 'Get Predecessor' request: the predecessor of node %d is %d", ask_to, predecessor_id);
     }
+  }
+
+  if (res != MSG_OK) {
+    INFO1("My 'Get Predecessor' request to node %d has failed", ask_to);
   }
 
   xbt_free(mailbox);
@@ -825,7 +844,7 @@ static int remote_find_predecessor(node_t node, int ask_to, int id)
 
   // send a "Find Predecessor" request to ask_to
   INFO2("Sending a 'Find Predecessor' request to %d for key %d", ask_to, id);
-  m_task_t task = MSG_task_create("Find Predecessor", 1000, 5000, &req_data);
+  m_task_t task = MSG_task_create("Find Predecessor", COMP_SIZE, COMM_SIZE, &req_data);
   MSG_task_send(task, get_mailbox(ask_to));
 
   // receive the answer
@@ -920,7 +939,7 @@ static void remote_notify(node_t node, int notify_id, int predecessor_candidate_
 
   // send a "Notify" request to notify_id
   INFO1("Sending a 'Notify' request to %d", notify_id);
-  m_task_t task = MSG_task_create("Notify", 1000, 5000, req_data);
+  m_task_t task = MSG_task_create("Notify", COMP_SIZE, COMM_SIZE, req_data);
   char* mailbox = get_mailbox(notify_id);
   msg_comm_t comm = MSG_task_isend(task, mailbox);
   xbt_dynar_push(node->comms, &comm);

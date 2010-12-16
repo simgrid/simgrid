@@ -187,6 +187,7 @@ XBT_PUBLIC(void) MSG_comm_waitall(msg_comm_t * comm, int nb_elem,
                                   double timeout);
 XBT_PUBLIC(int) MSG_comm_waitany(xbt_dynar_t comms);
 XBT_PUBLIC(m_task_t) MSG_comm_get_task(msg_comm_t comm);
+XBT_PUBLIC(MSG_error_t) MSG_comm_get_status(msg_comm_t comm);
 
 XBT_PUBLIC(int) MSG_task_listen(const char *alias);
 

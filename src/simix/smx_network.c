@@ -526,6 +526,17 @@ void SIMIX_comm_finish(smx_action_t action)
       default:
         THROW_IMPOSSIBLE;
     }
+
+    /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
+    if (req->issuer->doexception) {
+      if (req->call == REQ_COMM_WAITANY) {
+        req->issuer->running_ctx->exception.value = xbt_dynar_search(req->comm_waitany.comms, &action);
+      }
+      else if (req->call == REQ_COMM_TESTANY) {
+        req->issuer->running_ctx->exception.value = xbt_dynar_search(req->comm_testany.comms, &action);
+      }
+    }
+
     req->issuer->waiting_action = NULL;
     SIMIX_request_answer(req);
   }
