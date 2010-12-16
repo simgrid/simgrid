@@ -212,6 +212,7 @@ examples/smpi/alltoall_basic
 examples/smpi/alltoallv
 examples/smpi/sendrecv
 examples/smpi/smpi_sendrecv
+src/replay/replay
 src/testall
 teshsuite/gras/datadesc/datadesc_usage
 teshsuite/gras/empty_main/empty_main_function
