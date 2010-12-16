@@ -15,6 +15,7 @@
 #include "xbt/function_types.h"
 #include "mc/datatypes.h"
 #include "simix/datatypes.h"
+#include "gras_config.h" /* Definition of HAVE_MC */
 
 #ifdef HAVE_MC
 extern int _surf_do_model_check;
