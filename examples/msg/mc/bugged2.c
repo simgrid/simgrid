@@ -19,13 +19,27 @@ int server(int argc, char *argv[])
 
   MSG_task_receive(&task1, "mymailbox");
   val1 = (long) MSG_task_get_data(task1);
+  MSG_task_destroy(task1);
+  task1 = NULL;
   INFO1("Received %lu", val1);
 
   MSG_task_receive(&task2, "mymailbox");
   val2 = (long) MSG_task_get_data(task2);
+  MSG_task_destroy(task2);
+  task2 = NULL;
   INFO1("Received %lu", val2);
 
   MC_assert(min(val1, val2) == 1);
+
+  MSG_task_receive(&task1, "mymailbox");
+  val1 = (long) MSG_task_get_data(task1);
+  MSG_task_destroy(task1);
+  INFO1("Received %lu", val1);
+
+  MSG_task_receive(&task2, "mymailbox");
+  val2 = (long) MSG_task_get_data(task2);
+  MSG_task_destroy(task2);
+  INFO1("Received %lu", val2);
 
   INFO0("OK");
   return 0;
