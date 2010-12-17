@@ -72,8 +72,8 @@ typedef struct network_link_CM02_im {
 
 
 extern surf_model_t surf_network_model;
-static lmm_system_t network_maxmin_system = NULL;
-static void (*network_solve) (lmm_system_t) = NULL;
+static lmm_system_t network_im_maxmin_system = NULL;
+static void (*network_im_solve) (lmm_system_t) = NULL;
 
 extern double sg_latency_factor;
 extern double sg_bandwidth_factor;
@@ -142,11 +142,11 @@ static double im_constant_bandwidth_constraint(double rate, double bound,
 }
 
 
-static double (*latency_factor_callback) (double) =
+static double (*im_latency_factor_callback) (double) =
     &im_constant_latency_factor;
-static double (*bandwidth_factor_callback) (double) =
+static double (*im_bandwidth_factor_callback) (double) =
     &im_constant_bandwidth_factor;
-static double (*bandwidth_constraint_callback) (double, double, double) =
+static double (*im_bandwidth_constraint_callback) (double, double, double) =
     &im_constant_bandwidth_constraint;
 
 
@@ -164,7 +164,7 @@ static link_CM02_im_t im_net_link_new(char *name,
   link_CM02_im_t nw_link = (link_CM02_im_t)
       surf_resource_lmm_new(sizeof(s_link_CM02_im_t),
                             surf_network_model, name, properties,
-                            network_maxmin_system,
+                            network_im_maxmin_system,
                             sg_bandwidth_factor * bw_initial,
                             history,
                             state_initial, state_trace,
@@ -326,7 +326,7 @@ static void im_net_define_callbacks(const char *file)
 
 static int im_net_resource_used(void *resource_id)
 {
-  return lmm_constraint_used(network_maxmin_system,
+  return lmm_constraint_used(network_im_maxmin_system,
                              ((surf_resource_lmm_t)
                               resource_id)->constraint);
 }
@@ -337,7 +337,7 @@ static int im_net_action_unref(surf_action_t action)
   if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
     if (((surf_action_network_CM02_im_t) action)->variable){
-      lmm_variable_free(network_maxmin_system,
+      lmm_variable_free(network_im_maxmin_system,
                         ((surf_action_network_CM02_im_t) action)->variable);
     }
     // remove action from the heap
@@ -432,7 +432,7 @@ static double im_net_share_resources(double now)
   DEBUG1("Before share resources, the size of modified actions set is %d", xbt_swag_size(im_net_modified_set));
   update_action_remaining(now);
 
-  lmm_solve(network_maxmin_system);
+  lmm_solve(network_im_maxmin_system);
 
   DEBUG1("After share resources, The size of modified actions set is %d", xbt_swag_size(im_net_modified_set));
 
@@ -507,7 +507,7 @@ static void im_net_update_actions_state(double now, double delta)
 
     // if I am wearing a latency heat
     if( action->hat ==  LATENCY){
-        lmm_update_variable_weight(network_maxmin_system, action->variable,
+        lmm_update_variable_weight(network_im_maxmin_system, action->variable,
                                            action->weight);
         heap_remove(action);
         action->last_update = surf_get_clock();
@@ -550,7 +550,7 @@ static void im_net_update_resource_state(void *id,
     surf_action_network_CM02_im_t action = NULL;
 
     nw_link->lmm_resource.power.peak = value;
-    lmm_update_constraint_bound(network_maxmin_system,
+    lmm_update_constraint_bound(network_im_maxmin_system,
                                 nw_link->lmm_resource.constraint,
                                 sg_bandwidth_factor *
                                 (nw_link->lmm_resource.power.peak *
@@ -563,12 +563,12 @@ static void im_net_update_resource_state(void *id,
 #endif
     if (sg_weight_S_parameter > 0) {
       while ((var = lmm_get_var_from_cnst
-              (network_maxmin_system, nw_link->lmm_resource.constraint,
+              (network_im_maxmin_system, nw_link->lmm_resource.constraint,
                &elem))) {
         action = lmm_variable_id(var);
         action->weight += delta;
         if (!(action->suspended))
-          lmm_update_variable_weight(network_maxmin_system,
+          lmm_update_variable_weight(network_im_maxmin_system,
                                      action->variable, action->weight);
       }
     }
@@ -582,17 +582,17 @@ static void im_net_update_resource_state(void *id,
 
     nw_link->lat_current = value;
     while ((var = lmm_get_var_from_cnst
-            (network_maxmin_system, nw_link->lmm_resource.constraint,
+            (network_im_maxmin_system, nw_link->lmm_resource.constraint,
              &elem))) {
       action = lmm_variable_id(var);
       action->lat_current += delta;
       action->weight += delta;
       if (action->rate < 0)
-        lmm_update_variable_bound(network_maxmin_system, action->variable,
+        lmm_update_variable_bound(network_im_maxmin_system, action->variable,
                                   sg_tcp_gamma / (2.0 *
                                                   action->lat_current));
       else {
-        lmm_update_variable_bound(network_maxmin_system, action->variable,
+        lmm_update_variable_bound(network_im_maxmin_system, action->variable,
                                   min(action->rate,
                                       sg_tcp_gamma / (2.0 *
                                                       action->lat_current)));
@@ -605,7 +605,7 @@ static void im_net_update_resource_state(void *id,
         }
       }
       if (!(action->suspended))
-        lmm_update_variable_weight(network_maxmin_system, action->variable,
+        lmm_update_variable_weight(network_im_maxmin_system, action->variable,
                                    action->weight);
 
     }
@@ -621,7 +621,7 @@ static void im_net_update_resource_state(void *id,
 
       nw_link->lmm_resource.state_current = SURF_RESOURCE_OFF;
       while ((var = lmm_get_var_from_cnst
-              (network_maxmin_system, cnst, &elem))) {
+              (network_im_maxmin_system, cnst, &elem))) {
         surf_action_t action = lmm_variable_id(var);
 
         if (surf_action_state_get(action) == SURF_ACTION_RUNNING ||
@@ -707,21 +707,21 @@ static surf_action_t im_net_communicate(const char *src_name,
         (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
     if (bandwidth_bound < 0.0)
       bandwidth_bound =
-          (*bandwidth_factor_callback) (size) *
+          (*im_bandwidth_factor_callback) (size) *
           (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
     else
       bandwidth_bound =
           min(bandwidth_bound,
-              (*bandwidth_factor_callback) (size) *
+              (*im_bandwidth_factor_callback) (size) *
               (link->lmm_resource.power.peak *
                link->lmm_resource.power.scale));
   }
   /* LARGE PLATFORMS HACK:
      Add src->link and dst->link latencies */
   action->lat_current = action->latency;
-  action->latency *= (*latency_factor_callback) (size);
+  action->latency *= (*im_latency_factor_callback) (size);
   action->rate =
-      (*bandwidth_constraint_callback) (action->rate, bandwidth_bound,
+      (*im_bandwidth_constraint_callback) (action->rate, bandwidth_bound,
                                         size);
 
   /* LARGE PLATFORMS HACK:
@@ -735,7 +735,7 @@ static surf_action_t im_net_communicate(const char *src_name,
 
   if (action->latency > 0){
       action->variable =
-        lmm_variable_new(network_maxmin_system, action, 0.0, -1.0,
+        lmm_variable_new(network_im_maxmin_system, action, 0.0, -1.0,
                          constraints_per_variable);
     // add to the heap the event when the latency is payed
     DEBUG2("Added action (%p) one latency event at date %f", action, action->latency + action->last_update);
@@ -746,37 +746,37 @@ static surf_action_t im_net_communicate(const char *src_name,
   }
   else
     action->variable =
-        lmm_variable_new(network_maxmin_system, action, 1.0, -1.0,
+        lmm_variable_new(network_im_maxmin_system, action, 1.0, -1.0,
                          constraints_per_variable);
 
   if (action->rate < 0) {
     if (action->lat_current > 0)
-      lmm_update_variable_bound(network_maxmin_system, action->variable,
+      lmm_update_variable_bound(network_im_maxmin_system, action->variable,
                                 sg_tcp_gamma / (2.0 *
                                                 action->lat_current));
     else
-      lmm_update_variable_bound(network_maxmin_system, action->variable,
+      lmm_update_variable_bound(network_im_maxmin_system, action->variable,
                                 -1.0);
   } else {
     if (action->lat_current > 0)
-      lmm_update_variable_bound(network_maxmin_system, action->variable,
+      lmm_update_variable_bound(network_im_maxmin_system, action->variable,
                                 min(action->rate,
                                     sg_tcp_gamma / (2.0 *
                                                     action->lat_current)));
     else
-      lmm_update_variable_bound(network_maxmin_system, action->variable,
+      lmm_update_variable_bound(network_im_maxmin_system, action->variable,
                                 action->rate);
   }
 
   xbt_dynar_foreach(route, i, link) {
-    lmm_expand(network_maxmin_system, link->lmm_resource.constraint,
+    lmm_expand(network_im_maxmin_system, link->lmm_resource.constraint,
                action->variable, 1.0);
   }
 
   if (sg_network_fullduplex == 1) {
     DEBUG1("Fullduplex active adding backward flow using 5%c", '%');
     xbt_dynar_foreach(back_route, i, link) {
-      lmm_expand(network_maxmin_system, link->lmm_resource.constraint,
+      lmm_expand(network_im_maxmin_system, link->lmm_resource.constraint,
                  action->variable, .05);
     }
   }
@@ -822,7 +822,7 @@ static int im_net_link_shared(const void *link)
 static void im_net_action_suspend(surf_action_t action)
 {
   ((surf_action_network_CM02_im_t) action)->suspended = 1;
-  lmm_update_variable_weight(network_maxmin_system,
+  lmm_update_variable_weight(network_im_maxmin_system,
                              ((surf_action_network_CM02_im_t)
                               action)->variable, 0.0);
 
@@ -833,7 +833,7 @@ static void im_net_action_suspend(surf_action_t action)
 static void im_net_action_resume(surf_action_t action)
 {
   if (((surf_action_network_CM02_im_t) action)->suspended) {
-    lmm_update_variable_weight(network_maxmin_system,
+    lmm_update_variable_weight(network_im_maxmin_system,
                                ((surf_action_network_CM02_im_t)
                                 action)->variable,
                                ((surf_action_network_CM02_im_t)
@@ -864,8 +864,8 @@ static void im_net_finalize(void)
 
   global_routing->finalize();
 
-  lmm_system_free(network_maxmin_system);
-  network_maxmin_system = NULL;
+  lmm_system_free(network_im_maxmin_system);
+  network_im_maxmin_system = NULL;
 
   xbt_heap_free(im_net_action_heap);
   xbt_swag_free(im_net_modified_set);
@@ -914,9 +914,9 @@ static void im_surf_network_model_init_internal(void)
 		  im_net_create_resource;
 
 
-  if (!network_maxmin_system){
+  if (!network_im_maxmin_system){
 	sg_maxmin_selective_update = 1;
-    network_maxmin_system = lmm_system_new();
+    network_im_maxmin_system = lmm_system_new();
   }
   im_net_action_heap = xbt_heap_new(8,NULL);
 
@@ -945,7 +945,7 @@ void im_surf_network_model_init_LegrandVelho(const char *filename)
   im_surf_network_model_init_internal();
   im_net_define_callbacks(filename);
   xbt_dynar_push(model_list, &surf_network_model);
-  network_solve = lmm_solve;
+  network_im_solve = lmm_solve;
 
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor", 10.4);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
