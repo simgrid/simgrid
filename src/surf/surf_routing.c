@@ -1328,7 +1328,7 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 			  (void*)TO_ROUTE_FULL(*src_id, *dst_id)->generic_route.link_list,
 			  (void*)link_route_to_test,
 			  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
-			  "The route between \"%s\" and \"%s\" already exists", src,dst);
+			  "The route between \"%s\" and \"%s\" already exists. If you are trying to define a reverse route, you must set the symmetrical=no attribute to your routes tags.", src,dst);
 		xbt_dynar_free(&link_route_to_test);
 	}
 	else
