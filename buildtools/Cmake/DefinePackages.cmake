@@ -366,6 +366,7 @@ set(install_HEADERS
 	include/xbt/setset.h
 	include/xbt/mmalloc.h
 	include/xbt/replay_trace_reader.h
+	include/xbt/parmap.h
 	include/mc/modelchecker.h
 	include/msg/msg.h
 	include/msg/datatypes.h
