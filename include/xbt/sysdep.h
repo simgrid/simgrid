@@ -101,7 +101,7 @@ void *xbt_malloc0(size_t n)
 static inline __attribute__ ((always_inline))
 void *xbt_realloc(void *p, size_t s)
 {
-  void *res = res;
+  void *res = NULL;
   //if (s==0) xbt_die("realloc(0) is not portable");
   if (s) {
     if (p) {
