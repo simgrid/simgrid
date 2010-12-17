@@ -6,6 +6,7 @@
  /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <stdarg.h>
 #include "smx_context_sysv_private.h"
 #include "xbt/parmap.h"
 #include "simix/private.h"
@@ -29,7 +30,7 @@ static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
     void_pfn_smxprocess_t cleanup_func, void* data);
 
-static void smx_ctx_sysv_wrapper(smx_ctx_sysv_t context);
+static void smx_ctx_sysv_wrapper(int count, ...);
 
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 {
@@ -70,7 +71,7 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                   void_pfn_smxprocess_t cleanup_func,
                                   void *data)
 {
-
+  uintptr_t ctx_addr;
   smx_ctx_sysv_t context =
       (smx_ctx_sysv_t) smx_ctx_base_factory_create_context_sized(size,
                                                                  code,
@@ -101,9 +102,21 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                 ((char *) context->uc.uc_stack.ss_sp) +
                                 context->uc.uc_stack.ss_size);
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
-
-    makecontext(&((smx_ctx_sysv_t) context)->uc, (void (*)())smx_ctx_sysv_wrapper,
-                sizeof(void*)/sizeof(int), context);
+    ctx_addr = (uintptr_t)context;
+    /* This switch select a case base on a static value: the compiler optimizes it out */
+    /* It could be replaced by a set of #ifdef/#else/#endif blocks */
+    switch(sizeof(uintptr_t) / sizeof(int)) {
+      case 1:
+        makecontext(&((smx_ctx_sysv_t) context)->uc, (void (*)())smx_ctx_sysv_wrapper,
+                    2, 1, (int)ctx_addr);
+        break;
+      case 2:
+        makecontext(&((smx_ctx_sysv_t) context)->uc, (void (*)())smx_ctx_sysv_wrapper,
+                    3, 2, (int)(ctx_addr >> (8 * sizeof(int))), (int)(ctx_addr));
+        break;
+      default:
+        THROW_IMPOSSIBLE;
+    }
   }else{
     maestro_context = context;
   }
@@ -144,8 +157,20 @@ void smx_ctx_sysv_stop(smx_context_t context)
   smx_ctx_sysv_suspend(context);
 }
 
-void smx_ctx_sysv_wrapper(smx_ctx_sysv_t context)
+void smx_ctx_sysv_wrapper(int count, ...)
 { 
+  uintptr_t ctx_addr = 0;
+  va_list ap;
+  smx_ctx_sysv_t context;
+  int i;
+
+  va_start(ap, count);
+  for(i = 0; i < count; i++) {
+     ctx_addr <<= 8*sizeof(int);
+     ctx_addr |= (uintptr_t)va_arg(ap, int);
+  }
+  va_end(ap);
+  context = (smx_ctx_sysv_t)ctx_addr;
   (context->super.code) (context->super.argc, context->super.argv);
 
   smx_ctx_sysv_stop((smx_context_t) context);
