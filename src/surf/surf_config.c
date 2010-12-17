@@ -179,7 +179,7 @@ static void _surf_cfg_cb__surf_path(const char *name, int pos)
 
 /* callback to decide if we want to use the model-checking */
 #include "xbt_modinter.h"
-int _surf_do_model_check = 0;   /* this variable is used accros the lib */
+extern int _surf_do_model_check;   /* this variable lives in xbt_main until I find a right location for it */
 
 static void _surf_cfg_cb_model_check(const char *name, int pos)
 {

@@ -49,6 +49,7 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_sync_os);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_parmap);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_parmap_unit);
 
+int _surf_do_model_check = 0;   /* this variable is used accros the libraries, and must be declared in XBT so that it's also defined in GRAS (not only in libsimgrid) */
 
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
