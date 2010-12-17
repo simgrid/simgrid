@@ -6,6 +6,7 @@ ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
 
 include(CheckFunctionExists)
+include(CheckTypeSize)
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
@@ -110,6 +111,12 @@ else(enable_model-checking AND HAVE_MMAP)
 	SET(HAVE_MC 0)
 	SET(MMALLOC_WANT_OVERIDE_LEGACY 0)
 endif(enable_model-checking AND HAVE_MMAP)
+
+#--------------------------------------------------------------------------------------------------
+### Check for some architecture dependent values
+CHECK_TYPE_SIZE(int SIZEOF_INT)
+CHECK_TYPE_SIZE(void* SIZEOF_VOIDP)
+
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS

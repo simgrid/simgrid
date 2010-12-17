@@ -13,6 +13,9 @@
 	#endif
 #endif
 
+#cmakedefine SIZEOF_INT @SIZEOF_INT@
+#cmakedefine SIZEOF_VOIDP @SIZEOF_VOIDP@
+
 #ifndef __STRICT_ANSI__
 	#cmakedefine __STRICT_ANSI__ @__STRICT_ANSI__@
 #endif

@@ -7,9 +7,11 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdarg.h>
+
 #include "smx_context_sysv_private.h"
 #include "xbt/parmap.h"
 #include "simix/private.h"
+#include "gras_config.h"
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
@@ -103,20 +105,17 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                 context->uc.uc_stack.ss_size);
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
     ctx_addr = (uintptr_t)context;
-    /* This switch select a case base on a static value: the compiler optimizes it out */
-    /* It could be replaced by a set of #ifdef/#else/#endif blocks */
-    switch(sizeof(uintptr_t) / sizeof(int)) {
-      case 1:
-        makecontext(&((smx_ctx_sysv_t) context)->uc, (void (*)())smx_ctx_sysv_wrapper,
-                    2, 1, (int)ctx_addr);
-        break;
-      case 2:
-        makecontext(&((smx_ctx_sysv_t) context)->uc, (void (*)())smx_ctx_sysv_wrapper,
-                    3, 2, (int)(ctx_addr >> (8 * sizeof(int))), (int)(ctx_addr));
-        break;
-      default:
-        THROW_IMPOSSIBLE;
-    }
+    makecontext(&((smx_ctx_sysv_t) context)->uc, (void (*)())smx_ctx_sysv_wrapper,
+                SIZEOF_VOIDP / SIZEOF_INT + 1, SIZEOF_VOIDP / SIZEOF_INT,
+#if (SIZEOF_VOIDP == SIZEOF_INT)
+                (int)ctx_addr
+#elif (SIZEOF_VOIDP == 2 * SIZEOF_INT)
+                (int)(ctx_addr >> (8 * sizeof(int))),
+                (int)(ctx_addr)
+#else
+#error Your architecture is not supported yet
+#endif
+   );
   }else{
     maestro_context = context;
   }
