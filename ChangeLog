@@ -26,6 +26,8 @@ SimGrid (3.6) unstable; urgency=low
  * Introduce a new context factory "raw", highly inspirated from the
    context factory, but using manually crafted functions in assembly to
    do the work in an efficient manner.
+ * Allow to change the used context factory at run time, not only at
+   compilation time. Use --cfg=simix/context:raw for maximal speed.
 
  XBT
  * Add a new function xbt_dynar_to_array that transforms a dynar into a
