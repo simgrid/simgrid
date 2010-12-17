@@ -272,3 +272,4 @@ test_rl
 test_sg
 examples/smpi/smpi_traced.trace
 examples/simdag/dot/simulate_dot
+teshsuite/simdag/platforms/graphicator
