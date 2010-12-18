@@ -161,13 +161,17 @@ void smx_ctx_sysv_wrapper(int count, ...)
   uintptr_t ctx_addr = 0;
   va_list ap;
   smx_ctx_sysv_t context;
-  int i;
 
   va_start(ap, count);
+#if (SIZEOF_VOIDP <= SIZEOF_INT)
+  ctx_addr = (uintptr_t)va_arg(ap, int);
+#else
+  int i;
   for(i = 0; i < count; i++) {
      ctx_addr <<= 8*sizeof(int);
      ctx_addr |= (uintptr_t)va_arg(ap, int);
   }
+#endif
   va_end(ap);
   context = (smx_ctx_sysv_t)ctx_addr;
   (context->super.code) (context->super.argc, context->super.argv);
