@@ -311,6 +311,7 @@ void SIMIX_pre_host_execution_wait(smx_req_t req)
   if (MC_IS_ENABLED){
     action->state = SIMIX_DONE;
     SIMIX_execution_finish(action);
+    return;
   }
 
   /* If the action is already finished then perform the error handling */
