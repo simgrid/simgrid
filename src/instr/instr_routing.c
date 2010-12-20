@@ -446,28 +446,28 @@ static void recursiveGraphExtraction (container_t container)
 static void instr_routing_parse_start_AS ()
 {
   if (rootContainer == NULL){
-    currentContainer = xbt_dynar_new (sizeof(s_container_t), NULL);
+    currentContainer = xbt_dynar_new (sizeof(container_t), NULL);
     allContainers = xbt_dict_new ();
     allLinkTypes = xbt_dynar_new (sizeof(s_type_t), NULL);
     allHostTypes = xbt_dynar_new (sizeof(s_type_t), NULL);
 
     rootContainer = newContainer ("0", INSTR_AS, NULL);
-    xbt_dynar_push (currentContainer, rootContainer);
+    xbt_dynar_push (currentContainer, &rootContainer);
 
     if (TRACE_smpi_is_enabled()) {
       if (!TRACE_smpi_is_grouped()){
-        container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+        container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
         type_t mpi = getContainerType("MPI", father->type);
         getStateType ("MPI_STATE", mpi);
         getLinkType ("MPI_LINK", rootType, mpi, mpi);
       }
     }
   }
-  container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+  container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   container_t new = newContainer (A_surfxml_AS_id, INSTR_AS, father);
 
   //push
-  xbt_dynar_push (currentContainer, new);
+  xbt_dynar_push (currentContainer, &new);
 }
 
 static void instr_routing_parse_end_AS ()
@@ -477,7 +477,7 @@ static void instr_routing_parse_end_AS ()
 
 static void instr_routing_parse_start_link ()
 {
-  container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+  container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   container_t new = newContainer (A_surfxml_link_id, INSTR_LINK, father);
 
   type_t bandwidth = getVariableType ("bandwidth", NULL, new->type);
@@ -495,7 +495,7 @@ static void instr_routing_parse_end_link ()
 
 static void instr_routing_parse_start_host ()
 {
-  container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+  container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   container_t new = newContainer (A_surfxml_host_id, INSTR_HOST, father);
 
   type_t power = getVariableType ("power", NULL, new->type);
@@ -531,7 +531,7 @@ static void instr_routing_parse_end_host ()
 
 static void instr_routing_parse_start_router ()
 {
-  container_t father = xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+  container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   newContainer (A_surfxml_router_id, INSTR_ROUTER, father);
 }
 
@@ -541,6 +541,7 @@ static void instr_routing_parse_end_router ()
 
 static void instr_routing_parse_end_platform ()
 {
+  xbt_dynar_free(&currentContainer);
   currentContainer = NULL;
   recursiveGraphExtraction (rootContainer);
   platform_created = 1;
