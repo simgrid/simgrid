@@ -318,10 +318,12 @@ xbt_dynar_t SD_daxload(const char *filename)
         SD_task_dependency_add(NULL, NULL, root_task, newfile);
         SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
 #ifdef HAVE_TRACING
-        const char *category = depbefore->src->category;
-        if (category){
-          TRACE_category (category);
-          TRACE_sd_set_task_category (newfile, category);
+        if (depbefore->src){
+          const char *category = depbefore->src->category;
+          if (category){
+            TRACE_category (category);
+            TRACE_sd_set_task_category (newfile, category);
+          }
         }
 #endif
         xbt_dynar_push(result, &newfile);
@@ -333,10 +335,12 @@ xbt_dynar_t SD_daxload(const char *filename)
         SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
         SD_task_dependency_add(NULL, NULL, newfile, end_task);
 #ifdef HAVE_TRACING
-        const char *category = depbefore->src->category;
-        if (category){
-          TRACE_category (category);
-          TRACE_sd_set_task_category (newfile, category);
+        if (depbefore->src){
+          const char *category = depbefore->src->category;
+          if (category){
+            TRACE_category (category);
+            TRACE_sd_set_task_category (newfile, category);
+          }
         }
 #endif
         xbt_dynar_push(result, &newfile);
@@ -354,10 +358,12 @@ xbt_dynar_t SD_daxload(const char *filename)
           SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
           SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
 #ifdef HAVE_TRACING
-          const char *category = depbefore->src->category;
-          if (category){
-            TRACE_category (category);
-            TRACE_sd_set_task_category (newfile, category);
+          if (depbefore->src){
+            const char *category = depbefore->src->category;
+            if (category){
+              TRACE_category (category);
+              TRACE_sd_set_task_category (newfile, category);
+            }
           }
 #endif
           xbt_dynar_push(result, &newfile);
