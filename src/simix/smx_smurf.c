@@ -53,12 +53,19 @@ void SIMIX_request_push()
 
 smx_req_t SIMIX_request_pop(void)
 {
-  return xbt_heap_pop(req_todo);
+  smx_req_t req = xbt_heap_pop(req_todo);
+  if(req)
+    DEBUG4("Popped request %s (%d) of %s; now %d requests waiting",
+        SIMIX_request_name(req->issuer->request.call),
+        req->issuer->request.call,
+        req->issuer->name,xbt_heap_size(req_todo));
+  return req;
 }
 
 void SIMIX_request_answer(smx_req_t req)
 {
   if (req->issuer != simix_global->maestro_process){
+    DEBUG2("Answer request %s (%d)", SIMIX_request_name(req->call), req->call);
     req->issuer->request.call = REQ_NO_REQ;
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, req->issuer);
   }
