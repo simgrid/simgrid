@@ -293,7 +293,8 @@ e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action)
 
 void SIMIX_host_execution_set_priority(smx_action_t action, double priority)
 {
-  surf_workstation_model->set_priority(action->execution.surf_exec, priority);
+  if(action->execution.surf_exec)
+    surf_workstation_model->set_priority(action->execution.surf_exec, priority);
 }
 
 void SIMIX_pre_host_execution_wait(smx_req_t req)
@@ -319,12 +320,14 @@ void SIMIX_pre_host_execution_wait(smx_req_t req)
 
 void SIMIX_host_execution_suspend(smx_action_t action)
 {
-  surf_workstation_model->suspend(action->execution.surf_exec);
+  if(action->execution.surf_exec)
+    surf_workstation_model->suspend(action->execution.surf_exec);
 }
 
 void SIMIX_host_execution_resume(smx_action_t action)
 {
-  surf_workstation_model->suspend(action->execution.surf_exec);
+  if(action->execution.surf_exec)
+    surf_workstation_model->suspend(action->execution.surf_exec);
 }
 
 void SIMIX_execution_finish(smx_action_t action)
