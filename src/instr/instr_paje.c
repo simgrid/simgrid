@@ -115,7 +115,6 @@ char *getVariableTypeIdByName (const char *name, type_t father)
 
 type_t getLinkType (const char *typename, type_t father, type_t source, type_t dest)
 {
-  //FIXME should check using source and dest here and not by the typename (g5k example)
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", typename, source->id, dest->id);
   type_t ret = xbt_dict_get_or_null (father->children, key);
