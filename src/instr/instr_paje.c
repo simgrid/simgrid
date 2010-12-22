@@ -102,6 +102,17 @@ type_t getVariableType (const char *typename, const char *color, type_t father)
   return ret;
 }
 
+char *getVariableTypeIdByName (const char *name, type_t father)
+{
+  xbt_dict_cursor_t cursor = NULL;
+  type_t type;
+  char *key;
+  xbt_dict_foreach(father->children, cursor, key, type) {
+    if (strcmp (name, type->name) == 0) return type->id;
+  }
+  return NULL;
+}
+
 type_t getLinkType (const char *typename, type_t father, type_t source, type_t dest)
 {
   //FIXME should check using source and dest here and not by the typename (g5k example)
@@ -220,6 +231,11 @@ container_t getContainerByName (const char *name)
   return (container_t)xbt_dict_get (allContainers, name);
 }
 
+char *getContainerIdByName (const char *name)
+{
+  return getContainerByName(name)->id;
+}
+
 container_t getRootContainer ()
 {
   return rootContainer;
@@ -260,6 +276,40 @@ void destroyContainer (container_t container)
   xbt_free (container->children);
   xbt_free (container);
   container = NULL;
+}
+
+static void recursiveDestroyContainer (container_t container)
+{
+  xbt_dict_cursor_t cursor = NULL;
+  container_t child;
+  char *child_name;
+  xbt_dict_foreach(container->children, cursor, child_name, child) {
+    recursiveDestroyContainer (child);
+  }
+  destroyContainer (container);
+}
+
+static void recursiveDestroyType (type_t type)
+{
+  xbt_dict_cursor_t cursor = NULL;
+  type_t child;
+  char *child_name;
+  xbt_dict_foreach(type->children, cursor, child_name, child) {
+    recursiveDestroyType (child);
+  }
+  xbt_free (type->name);
+  xbt_free (type->id);
+  xbt_free (type->children);
+  xbt_free (type);
+  type = NULL;
+}
+
+void destroyAllContainers ()
+{
+  if (getRootContainer()) recursiveDestroyContainer (getRootContainer());
+  if (getRootType()) recursiveDestroyType (getRootType());
+  rootContainer = NULL;
+  rootType = NULL;
 }
 
 

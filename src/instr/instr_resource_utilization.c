@@ -277,7 +277,7 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
   if (!value)
     return;
   //only trace link utilization if link is known by tracing mechanism
-  if (!instr_link_is_traced(resource))
+  if (!getContainerByName(resource))
     return;
   if (!value)
     return;
@@ -285,8 +285,8 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
   //trace uncategorized link utilization
   if (TRACE_uncategorized()){
     DEBUG4("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now+delta, resource, value);
-    char *variable_type = instr_variable_type ("bandwidth_used", resource);
-    char *resource_id = instr_resource_type (resource);
+    char *variable_type = getVariableTypeIdByName("bandwidth_used", getContainerByName(resource)->type);
+    char *resource_id = getContainerIdByName (resource);
     TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
   }
 
@@ -295,8 +295,8 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
     if (!surf_action->category)
       return;
     DEBUG5("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
-    char *variable_type = instr_variable_type (surf_action->category, resource);
-    char *resource_id = instr_resource_type (resource);
+    char *variable_type = getVariableTypeIdByName(surf_action->category, getContainerByName(resource)->type);
+    char *resource_id = getContainerIdByName (resource);
     TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
   }
   return;
@@ -319,8 +319,8 @@ void TRACE_surf_host_set_utilization(const char *resource,
   //trace uncategorized host utilization
   if (TRACE_uncategorized()){
     DEBUG4("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
-    char *variable_type = instr_variable_type ("power_used", resource);
-    char *resource_id = instr_resource_type (resource);
+    char *variable_type = getVariableTypeIdByName ("power_used", getContainerByName(resource)->type);
+    char *resource_id = getContainerIdByName (resource);
     TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
   }
 
@@ -329,8 +329,8 @@ void TRACE_surf_host_set_utilization(const char *resource,
     if (!surf_action->category)
       return;
     DEBUG5("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
-    char *variable_type = instr_variable_type (surf_action->category, resource);
-    char *resource_id = instr_resource_type (resource);
+    char *variable_type = getVariableTypeIdByName (surf_action->category, getContainerByName(resource)->type);
+    char *resource_id = getContainerIdByName (resource);
     TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
   }
   return;

@@ -216,10 +216,12 @@ void TRACE_surf_resource_utilization_release(void);
 void TRACE_sd_task_create(SD_task_t task);
 void TRACE_sd_task_destroy(SD_task_t task);
 
-/* instr_routing.c */
+/* instr_paje.c */
 container_t newContainer (const char *name, e_container_types kind, container_t father);
 container_t getContainer (const char *name);
 container_t getContainerByName (const char *name);
+char *getContainerIdByName (const char *name);
+char *getVariableTypeIdByName (const char *name, type_t father);
 container_t getRootContainer (void);
 void instr_paje_init (container_t root);
 type_t getRootType (void);
@@ -230,11 +232,10 @@ type_t getLinkType (const char *name, type_t father, type_t source, type_t dest)
 type_t getStateType (const char *name, type_t father);
 type_t getType (const char *name);
 void destroyContainer (container_t container);
+void destroyAllContainers (void);
+
+/* instr_routing.c */
 void instr_routing_define_callbacks (void);
-int instr_link_is_traced (const char *name);
-char *instr_variable_type (const char *name, const char *resource);
-char *instr_resource_type (const char *resource_name);
-void instr_destroy_platform (void);
 void instr_new_user_variable_type (const char *new_typename, const char *color);
 void instr_new_user_link_variable_type  (const char *new_typename, const char *color);
 void instr_new_user_host_variable_type  (const char *new_typename, const char *color);

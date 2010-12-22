@@ -19,7 +19,7 @@ void TRACE_surf_alloc(void)
 void TRACE_surf_release(void)
 {
   TRACE_surf_resource_utilization_release();
-  instr_destroy_platform();
+  destroyAllContainers();
 }
 
 static void TRACE_surf_set_resource_variable(double date,
@@ -29,7 +29,7 @@ static void TRACE_surf_set_resource_variable(double date,
 {
   char value_str[INSTR_DEFAULT_STR_SIZE];
   snprintf(value_str, 100, "%f", value);
-  char *variable_type = instr_variable_type(variable, resource);
+  char *variable_type = getVariableTypeIdByName(variable, getContainerByName(resource)->type);
   pajeSetVariable(date, variable, variable_type, value_str);
 }
 
@@ -38,7 +38,7 @@ void TRACE_surf_host_set_power(double date, const char *resource, double power)
   if (!TRACE_is_active())
     return;
 
-  char *variable_type = instr_variable_type("power", resource);
+  char *variable_type = getVariableTypeIdByName("power", getContainerByName(resource)->type);
   TRACE_surf_set_resource_variable(date, variable_type, resource, power);
 }
 
@@ -47,7 +47,7 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
   if (!TRACE_is_active())
     return;
 
-  char *variable_type = instr_variable_type("bandwidth", resource);
+  char *variable_type = getVariableTypeIdByName("bandwidth", getContainerByName(resource)->type);
   TRACE_surf_set_resource_variable(date, variable_type, resource, bandwidth);
 }
 
@@ -57,7 +57,7 @@ void TRACE_surf_link_set_latency(double date, const char *resource, double laten
   if (!TRACE_is_active())
     return;
 
-  char *variable_type = instr_variable_type("latency", resource);
+  char *variable_type = getVariableTypeIdByName("latency", getContainerByName(resource)->type);
   TRACE_surf_set_resource_variable(date, variable_type, resource, latency);
 }
 

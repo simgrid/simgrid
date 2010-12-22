@@ -17,31 +17,6 @@ extern xbt_dict_t defined_types; /* from instr_interface.c */
 static int platform_created = 0;            /* indicate whether the platform file has been traced */
 static xbt_dynar_t currentContainer = NULL; /* push and pop, used only in creation */
 
-static void instr_routing_parse_start_AS (void);
-static void instr_routing_parse_end_AS (void);
-static void instr_routing_parse_start_link (void);
-static void instr_routing_parse_end_link (void);
-static void instr_routing_parse_start_host (void);
-static void instr_routing_parse_end_host (void);
-static void instr_routing_parse_start_router (void);
-static void instr_routing_parse_end_router (void);
-static void instr_routing_parse_end_platform (void);
-
-void instr_routing_define_callbacks ()
-{
-  if (!TRACE_is_active())
-    return;
-  surfxml_add_callback(STag_surfxml_AS_cb_list, &instr_routing_parse_start_AS);
-  surfxml_add_callback(ETag_surfxml_AS_cb_list, &instr_routing_parse_end_AS);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &instr_routing_parse_start_link);
-  surfxml_add_callback(ETag_surfxml_link_cb_list, &instr_routing_parse_end_link);
-  surfxml_add_callback(STag_surfxml_host_cb_list, &instr_routing_parse_start_host);
-  surfxml_add_callback(ETag_surfxml_host_cb_list, &instr_routing_parse_end_host);
-  surfxml_add_callback(STag_surfxml_router_cb_list, &instr_routing_parse_start_router);
-  surfxml_add_callback(ETag_surfxml_router_cb_list, &instr_routing_parse_end_router);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &instr_routing_parse_end_platform);
-}
-
 static container_t findChild (container_t root, container_t a1)
 {
   if (root == a1) return root;
@@ -291,65 +266,19 @@ static void instr_routing_parse_end_platform ()
   platform_created = 1;
 }
 
-/*
- * Support functions
- */
-int instr_link_is_traced (const char *name)
+void instr_routing_define_callbacks ()
 {
-  if (getContainerByName(name)){
-    return 1;
-  } else {
-    return 0;
-  }
-}
-
-char *instr_variable_type (const char *name, const char *resource)
-{
-  container_t container = getContainerByName(resource);
-  xbt_dict_cursor_t cursor = NULL;
-  type_t type;
-  char *type_name;
-  xbt_dict_foreach(container->type->children, cursor, type_name, type) {
-    if (strcmp (name, type->name) == 0) return type->id;
-  }
-  return NULL;
-}
-
-char *instr_resource_type (const char *resource_name)
-{
-  return getContainerByName(resource_name)->id;
-}
-
-static void recursiveDestroyContainer (container_t container)
-{
-  xbt_dict_cursor_t cursor = NULL;
-  container_t child;
-  char *child_name;
-  xbt_dict_foreach(container->children, cursor, child_name, child) {
-    recursiveDestroyContainer (child);
-  }
-  destroyContainer (container);
-}
-
-static void recursiveDestroyType (type_t type)
-{
-  xbt_dict_cursor_t cursor = NULL;
-  type_t child;
-  char *child_name;
-  xbt_dict_foreach(type->children, cursor, child_name, child) {
-    recursiveDestroyType (child);
-  }
-  xbt_free (type->name);
-  xbt_free (type->id);
-  xbt_free (type->children);
-  xbt_free (type);
-  type = NULL;
-}
-
-void instr_destroy_platform ()
-{
-  if (getRootContainer()) recursiveDestroyContainer (getRootContainer());
-  if (getRootType()) recursiveDestroyType (getRootType());
+  if (!TRACE_is_active())
+    return;
+  surfxml_add_callback(STag_surfxml_AS_cb_list, &instr_routing_parse_start_AS);
+  surfxml_add_callback(ETag_surfxml_AS_cb_list, &instr_routing_parse_end_AS);
+  surfxml_add_callback(STag_surfxml_link_cb_list, &instr_routing_parse_start_link);
+  surfxml_add_callback(ETag_surfxml_link_cb_list, &instr_routing_parse_end_link);
+  surfxml_add_callback(STag_surfxml_host_cb_list, &instr_routing_parse_start_host);
+  surfxml_add_callback(ETag_surfxml_host_cb_list, &instr_routing_parse_end_host);
+  surfxml_add_callback(STag_surfxml_router_cb_list, &instr_routing_parse_start_router);
+  surfxml_add_callback(ETag_surfxml_router_cb_list, &instr_routing_parse_end_router);
+  surfxml_add_callback(ETag_surfxml_platform_cb_list, &instr_routing_parse_end_platform);
 }
 
 /*
