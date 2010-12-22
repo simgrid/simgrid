@@ -38,7 +38,7 @@ static long long int newTypeId ()
   return counter++;
 }
 
-static type_t newType (const char *typename, e_entity_types kind, type_t father)
+static type_t newType (const char *typename, const char *key, e_entity_types kind, type_t father)
 {
   type_t ret = xbt_new0(s_type_t, 1);
   ret->name = xbt_strdup (typename);
@@ -52,107 +52,80 @@ static type_t newType (const char *typename, e_entity_types kind, type_t father)
   ret->id = xbt_strdup (str_id);
 
   if (father != NULL){
-    xbt_dict_set (father->children, typename, ret, NULL);
+    xbt_dict_set (father->children, key, ret, NULL);
   }
   return ret;
 }
 
-type_t newContainerType (const char *typename, e_entity_types kind, type_t father)
-{
-  type_t ret = newType (typename, kind, father);
-//  if (father) INFO4("ContainerType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-  if (father) pajeDefineContainerType(ret->id, ret->father->id, ret->name);
-  return ret;
-}
-
-type_t newEventType (const char *typename, e_entity_types kind, const char *color, type_t father)
-{
-  type_t ret = newType (typename, kind, father);
-//  INFO4("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-  if (color){
-    pajeDefineEventTypeWithColor (ret->id, ret->father->id, ret->name, color);
-  }else{
-    pajeDefineEventType(ret->id, ret->father->id, ret->name);
-  }
-  return ret;
-}
-
-type_t newVariableType (const char *typename, e_entity_types kind, const char *color, type_t father)
-{
-  type_t ret = newType (typename, kind, father);
-//  INFO4("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-  if (color){
-    pajeDefineVariableTypeWithColor(ret->id, ret->father->id, ret->name, color);
-  }else{
-    pajeDefineVariableType(ret->id, ret->father->id, ret->name);
-  }
-  return ret;
-}
-
-type_t newLinkType (const char *typename, e_entity_types kind, type_t father, type_t source, type_t dest)
-{
-  type_t ret = newType (typename, kind, father);
-//  INFO8("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id, source->name, source->id, dest->name, dest->id);
-  pajeDefineLinkType(ret->id, ret->father->id, source->id, dest->id, ret->name);
-  return ret;
-}
-
-type_t newStateType (const char *typename, e_entity_types kind, type_t father)
-{
-  type_t ret = newType (typename, kind, father);
-//  INFO4("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-  pajeDefineStateType(ret->id, ret->father->id, ret->name);
-  return ret;
-}
-
-static type_t getContainerType (const char *typename, type_t father)
+type_t getContainerType (const char *typename, type_t father)
 {
   type_t ret;
   if (father == NULL){
-    ret = newContainerType (typename, TYPE_CONTAINER, father);
+    ret = newType (typename, typename, TYPE_CONTAINER, father);
+    if (father) pajeDefineContainerType(ret->id, ret->father->id, ret->name);
     rootType = ret;
   }else{
     //check if my father type already has my typename
     ret = (type_t)xbt_dict_get_or_null (father->children, typename);
     if (ret == NULL){
-      ret = newContainerType (typename, TYPE_CONTAINER, father);
+      ret = newType (typename, typename, TYPE_CONTAINER, father);
+      pajeDefineContainerType(ret->id, ret->father->id, ret->name);
     }
   }
   return ret;
 }
 
-static type_t getEventType (const char *typename, const char *color, type_t father)
+type_t getEventType (const char *typename, const char *color, type_t father)
 {
   type_t ret = xbt_dict_get_or_null (father->children, typename);
   if (ret == NULL){
-    ret = newEventType (typename, TYPE_EVENT, color, father);
+    ret = newType (typename, typename, TYPE_EVENT, father);
+    //INFO4("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+    if (color){
+      pajeDefineEventTypeWithColor (ret->id, ret->father->id, ret->name, color);
+    }else{
+      pajeDefineEventType(ret->id, ret->father->id, ret->name);
+    }
   }
   return ret;
 }
 
-static type_t getVariableType (const char *typename, const char *color, type_t father)
+type_t getVariableType (const char *typename, const char *color, type_t father)
 {
   type_t ret = xbt_dict_get_or_null (father->children, typename);
   if (ret == NULL){
-    ret = newVariableType (typename, TYPE_VARIABLE, color, father);
+    ret = newType (typename, typename, TYPE_VARIABLE, father);
+    //INFO4("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+    if (color){
+      pajeDefineVariableTypeWithColor(ret->id, ret->father->id, ret->name, color);
+    }else{
+      pajeDefineVariableType(ret->id, ret->father->id, ret->name);
+    }
   }
   return ret;
 }
 
-static type_t getLinkType (const char *typename, type_t father, type_t source, type_t dest)
+type_t getLinkType (const char *typename, type_t father, type_t source, type_t dest)
 {
-  type_t ret = xbt_dict_get_or_null (father->children, typename);
+  //FIXME should check using source and dest here and not by the typename (g5k example)
+  char key[INSTR_DEFAULT_STR_SIZE];
+  snprintf (key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", typename, source->id, dest->id);
+  type_t ret = xbt_dict_get_or_null (father->children, key);
   if (ret == NULL){
-    ret = newLinkType (typename, TYPE_LINK, father, source, dest);
+    ret = newType (typename, key, TYPE_LINK, father);
+    //INFO8("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id, source->name, source->id, dest->name, dest->id);
+    pajeDefineLinkType(ret->id, ret->father->id, source->id, dest->id, ret->name);
   }
   return ret;
 }
 
-static type_t getStateType (const char *typename, type_t father)
+type_t getStateType (const char *typename, type_t father)
 {
   type_t ret = xbt_dict_get_or_null (father->children, typename);
   if (ret == NULL){
-    ret = newStateType (typename, TYPE_STATE, father);
+    ret = newType (typename, typename, TYPE_STATE, father);
+    //INFO4("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+    pajeDefineStateType(ret->id, ret->father->id, ret->name);
   }
   return ret;
 }

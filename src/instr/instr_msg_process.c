@@ -44,7 +44,7 @@ void TRACE_msg_set_process_category(m_process_t process, const char *category, c
   container_t msg = newContainer(process->name, INSTR_MSG_PROCESS, host_container);
   type_t type = getType (category);
   if (!type){
-    type = newVariableType(category, TYPE_VARIABLE, color, msg->type);
+    type = getVariableType(category, color, msg->type);
   }
   pajeSetVariable(SIMIX_get_clock(), type->id, msg->id, "1");
 

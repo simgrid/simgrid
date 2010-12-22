@@ -219,11 +219,11 @@ void TRACE_sd_task_destroy(SD_task_t task);
 /* instr_routing.c */
 container_t newContainer (const char *name, e_container_types kind, container_t father);
 container_t getContainer (const char *name);
-type_t newContainerType (const char *typename, e_entity_types kind, type_t father);
-type_t newEventType (const char *typename, e_entity_types kind, const char *color, type_t father);
-type_t newVariableType (const char *typename, e_entity_types kind, const char *color, type_t father);
-type_t newLinkType (const char *typename, e_entity_types kind, type_t father, type_t source, type_t dest);
-type_t newStateType (const char *typename, e_entity_types kind, type_t father);
+type_t getContainerType (const char *name, type_t father);
+type_t getEventType (const char *name, const char *color, type_t father);
+type_t getVariableType (const char *name, const char *color, type_t father);
+type_t getLinkType (const char *name, type_t father, type_t source, type_t dest);
+type_t getStateType (const char *name, type_t father);
 type_t getType (const char *name);
 void destroyContainer (container_t container);
 void instr_routing_define_callbacks (void);

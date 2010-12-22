@@ -54,7 +54,7 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
     msg = newContainer(task->name, INSTR_MSG_TASK, host_container);
     type_t type = getType (task->category);
     if (!type){
-      type = newVariableType(task->category, TYPE_VARIABLE, NULL, msg->type);
+      type = getVariableType(task->category, NULL, msg->type);
     }
     pajeSetVariable(SIMIX_get_clock(), type->id, msg->id, "1");
 
