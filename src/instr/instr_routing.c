@@ -67,6 +67,9 @@ static void linkContainers (const char *a1, const char *a2)
   snprintf (link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s", a1_type->name, a2_type->name);
   type_t link_type = getLinkType (link_typename, container->type, a1_type, a2_type);
 
+  //register EDGE types for triva configuration
+  xbt_dict_set (trivaEdgeTypes, link_type->name, xbt_strdup("1"), xbt_free);
+
   //create the link
   static long long counter = 0;
   char key[INSTR_DEFAULT_STR_SIZE];

@@ -217,6 +217,8 @@ void TRACE_sd_task_create(SD_task_t task);
 void TRACE_sd_task_destroy(SD_task_t task);
 
 /* instr_paje.c */
+extern xbt_dict_t trivaNodeTypes;
+extern xbt_dict_t trivaEdgeTypes;
 container_t newContainer (const char *name, e_container_types kind, container_t father);
 container_t getContainer (const char *name);
 container_t getContainerByName (const char *name);

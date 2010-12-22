@@ -13,14 +13,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje, instr, "Paje tracing event system (
 static type_t rootType = NULL;              /* the root type */
 static container_t rootContainer = NULL;    /* the root container */
 static xbt_dict_t allContainers = NULL;     /* all created containers indexed by name */
-xbt_dynar_t allLinkTypes = NULL;     /* all link types defined */
-xbt_dynar_t allHostTypes = NULL;     /* all host types defined */
+xbt_dict_t trivaNodeTypes = NULL;     /* all link types defined */
+xbt_dict_t trivaEdgeTypes = NULL;     /* all host types defined */
 
 void instr_paje_init (container_t root)
 {
   allContainers = xbt_dict_new ();
-  allLinkTypes = xbt_dynar_new (sizeof(s_type_t), NULL);
-  allHostTypes = xbt_dynar_new (sizeof(s_type_t), NULL);
+  trivaNodeTypes = xbt_dict_new ();
+  trivaEdgeTypes = xbt_dict_new ();
   rootContainer = root;
 }
 
@@ -192,16 +192,9 @@ container_t newContainer (const char *name, e_container_types kind, container_t 
   //register hosts, routers, links containers
   if (new->kind == INSTR_HOST || new->kind == INSTR_LINK || new->kind == INSTR_ROUTER) {
     xbt_dict_set (allContainers, new->name, new, NULL);
-  }
 
-  //register the host container types
-  if (new->kind == INSTR_HOST){
-    xbt_dynar_push_as (allHostTypes, type_t, new->type);
-  }
-
-  //register the link container types
-  if (new->kind == INSTR_LINK){
-    xbt_dynar_push_as(allLinkTypes, type_t, new->type);
+    //register NODE types for triva configuration
+    xbt_dict_set (trivaNodeTypes, new->type->name, xbt_strdup("1"), xbt_free);
   }
   return new;
 }
