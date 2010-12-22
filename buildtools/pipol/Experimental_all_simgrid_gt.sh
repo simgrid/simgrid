@@ -84,56 +84,10 @@ ctest -D ExperimentalSubmit
 make clean
 
 if [ $SYSTEM = Linux ] ; then
-	cd ..
-	home_dir=`pwd`
 
-	svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/GTNetS/ --quiet
-	cd GTNetS
-	unzip gtnets-current.zip > /dev/null
-	tar zxvf gtnets-current-patch.tgz  > /dev/null
-	cd gtnets-current
-	cat ../00*.patch | patch -p1 > /dev/null
-
-	ARCH_32=`uname -m | cut -d'_' -f2`
-
-	if [ x$ARCH_32 = x64 ] ; then #only if 64 bit processor family
-	cat ../AMD64-FATAL-Removed-DUL_SIZE_DIFF-Added-fPIC-compillin.patch | patch -p1 > /dev/null
-	fi
-
-	ln -sf Makefile.linux Makefile
-	make -j 3 depend > /dev/null
-	make -j 3 debug > /dev/null 2>&1
-	make -j 3 opt > /dev/null 2>&1
-	wait
-	cd $home_dir
-	absolute_path=`pwd`
-	userhome=$absolute_path
-
-	if [ -e $userhome/usr/lib ] ; then
-		echo ""
-	else
-		mkdir $userhome/usr	
-		mkdir $userhome/usr/lib
-	fi
-
-	if [ -e $userhome/usr/include ] ; then
-		echo ""
-	else	
-		mkdir $userhome/usr/include 
-	fi
-
-	cp -fr $absolute_path/GTNetS/gtnets-current/*.so $userhome/usr/lib/
-	ln -sf $userhome/usr/lib/libgtsim-opt.so $userhome/usr/lib/libgtnets.so
-
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$userhome/usr/lib/
-	mkdir $userhome/usr/include/gtnets
-	cp -fr $absolute_path/GTNetS/gtnets-current/SRC/*.h $userhome/usr/include/gtnets
-	wait
-	cd $home_dir
-	rm -rf $absolute_path/GTNetS
-	cd simgrid-trunk
+sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install/
 	
-	if [ -e $userhome/usr/lib/libgtsim-opt.so ] ; then
+	if [ -e ./gtnets_install/lib/libgtsim-opt.so ] ; then
 		#gtnets
 		cmake -Denable_lua=on \
 		-Denable_ruby=on \
@@ -142,7 +96,7 @@ if [ $SYSTEM = Linux ] ; then
 		-Denable_tracing=on \
 		-Denable_latency_bound_tracking=on \
 		-Denable_gtnets=on \
-		-Dgtnets_path=$userhome/usr \
+		-Dgtnets_path=./gtnets_install/ \
 		-Denable_java=on \
 		-Denable_coverage=off \
 		-Denable_smpi=on .
