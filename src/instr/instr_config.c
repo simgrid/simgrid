@@ -59,9 +59,6 @@ int TRACE_end()
   if (!TRACE_is_active())
     return 1;
 
-  /* close the trace file */
-  TRACE_paje_end();
-
   /* generate uncategorized graph configuration for triva */
   if (TRACE_get_triva_uncat_conf()){
     TRACE_generate_triva_uncat_conf();
@@ -71,6 +68,12 @@ int TRACE_end()
   if (TRACE_get_triva_cat_conf()){
     TRACE_generate_triva_cat_conf();
   }
+
+  /* destroy all data structures of tracing (and free) */
+  destroyAllContainers();
+
+  /* close the trace file */
+  TRACE_paje_end();
 
   /* activate trace */
   TRACE_desactivate ();

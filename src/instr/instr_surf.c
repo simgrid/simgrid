@@ -19,7 +19,6 @@ void TRACE_surf_alloc(void)
 void TRACE_surf_release(void)
 {
   TRACE_surf_resource_utilization_release();
-  destroyAllContainers();
 }
 
 static void TRACE_surf_set_resource_variable(double date,
