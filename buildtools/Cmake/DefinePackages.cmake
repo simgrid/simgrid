@@ -302,6 +302,7 @@ set(TRACING_SRC
 	src/instr/instr_routing.c
 	src/instr/instr_config.c
 	src/instr/instr_interface.c
+	src/instr/instr_paje.c
 	src/instr/instr_paje_trace.c
 	src/instr/instr_msg_task.c
 	src/instr/instr_msg_process.c

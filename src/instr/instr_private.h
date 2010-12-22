@@ -219,6 +219,10 @@ void TRACE_sd_task_destroy(SD_task_t task);
 /* instr_routing.c */
 container_t newContainer (const char *name, e_container_types kind, container_t father);
 container_t getContainer (const char *name);
+container_t getContainerByName (const char *name);
+container_t getRootContainer (void);
+void instr_paje_init (container_t root);
+type_t getRootType (void);
 type_t getContainerType (const char *name, type_t father);
 type_t getEventType (const char *name, const char *color, type_t father);
 type_t getVariableType (const char *name, const char *color, type_t father);
