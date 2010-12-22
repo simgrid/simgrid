@@ -8,6 +8,8 @@
 
 #ifdef HAVE_TRACING
 
+#define INSTR_PAJE_ASSERT(str) {xbt_assert1(str!=NULL&&strlen(str)>0, "'%s' is NULL or length is zero", #str);}
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje, instr, "Paje tracing event system");
 
 static FILE *tracing_file = NULL;
@@ -249,6 +251,10 @@ static void __pajeStartLink(char *output, int len, int eventid,
 void pajeDefineContainerType(const char *alias, const char *containerType,
                              const char *name)
 {
+  INSTR_PAJE_ASSERT(alias);
+  INSTR_PAJE_ASSERT(containerType);
+  INSTR_PAJE_ASSERT(name);
+
   fprintf(tracing_file, "%d %s %s %s\n", pajeDefineContainerTypeId, alias,
           containerType, name);
 }
@@ -256,6 +262,10 @@ void pajeDefineContainerType(const char *alias, const char *containerType,
 void pajeDefineStateType(const char *alias, const char *containerType,
                          const char *name)
 {
+  INSTR_PAJE_ASSERT(alias);
+  INSTR_PAJE_ASSERT(containerType);
+  INSTR_PAJE_ASSERT(name);
+
   fprintf(tracing_file, "%d %s %s %s\n", pajeDefineStateTypeId, alias,
           containerType, name);
 }
@@ -263,6 +273,11 @@ void pajeDefineStateType(const char *alias, const char *containerType,
 void pajeDefineEventTypeWithColor(const char *alias, const char *containerType,
                          const char *name, const char *color)
 {
+  INSTR_PAJE_ASSERT(alias);
+  INSTR_PAJE_ASSERT(containerType);
+  INSTR_PAJE_ASSERT(name);
+  INSTR_PAJE_ASSERT(name);
+
   fprintf(tracing_file, "%d %s %s %s %s\n", pajeDefineEventTypeWithColorId, alias,
           containerType, name, color);
 }
@@ -270,6 +285,10 @@ void pajeDefineEventTypeWithColor(const char *alias, const char *containerType,
 void pajeDefineEventType(const char *alias, const char *containerType,
                          const char *name)
 {
+  INSTR_PAJE_ASSERT(alias);
+  INSTR_PAJE_ASSERT(containerType);
+  INSTR_PAJE_ASSERT(name);
+
   fprintf(tracing_file, "%d %s %s %s\n", pajeDefineEventTypeId, alias,
           containerType, name);
 }
@@ -278,6 +297,12 @@ void pajeDefineLinkType(const char *alias, const char *containerType,
                         const char *sourceContainerType,
                         const char *destContainerType, const char *name)
 {
+  INSTR_PAJE_ASSERT(alias);
+  INSTR_PAJE_ASSERT(containerType);
+  INSTR_PAJE_ASSERT(sourceContainerType);
+  INSTR_PAJE_ASSERT(destContainerType);
+  INSTR_PAJE_ASSERT(name);
+
   fprintf(tracing_file, "%d %s %s %s %s %s\n", pajeDefineLinkTypeId, alias,
           containerType, sourceContainerType, destContainerType, name);
 }
@@ -285,6 +310,11 @@ void pajeDefineLinkType(const char *alias, const char *containerType,
 void pajeCreateContainer(double time, const char *alias, const char *type,
                          const char *container, const char *name)
 {
+  INSTR_PAJE_ASSERT(alias);
+  INSTR_PAJE_ASSERT(type);
+  INSTR_PAJE_ASSERT(container);
+  INSTR_PAJE_ASSERT(name);
+
   char line[TRACE_LINE_SIZE];
   __pajeCreateContainer(line, TRACE_LINE_SIZE, pajeCreateContainerId, time,
                         alias, type, container, name);
@@ -294,6 +324,9 @@ void pajeCreateContainer(double time, const char *alias, const char *type,
 void pajeDestroyContainer(double time, const char *type,
                           const char *container)
 {
+  INSTR_PAJE_ASSERT(type);
+  INSTR_PAJE_ASSERT(container);
+
   if (time == 0){
     fprintf(tracing_file, "%d 0 %s %s\n", pajeDestroyContainerId,
           type, container);
@@ -306,6 +339,10 @@ void pajeDestroyContainer(double time, const char *type,
 void pajeSetState(double time, const char *entityType,
                   const char *container, const char *value)
 {
+  INSTR_PAJE_ASSERT(entityType);
+  INSTR_PAJE_ASSERT(container);
+  INSTR_PAJE_ASSERT(value);
+
   char line[TRACE_LINE_SIZE];
   __pajeSetState(line, TRACE_LINE_SIZE, pajeSetStateId, time, entityType,
                  container, value);
@@ -315,6 +352,10 @@ void pajeSetState(double time, const char *entityType,
 void pajePushState(double time, const char *entityType,
                    const char *container, const char *value)
 {
+  INSTR_PAJE_ASSERT(entityType);
+  INSTR_PAJE_ASSERT(container);
+  INSTR_PAJE_ASSERT(value);
+
   char line[TRACE_LINE_SIZE];
   __pajeSetState(line, TRACE_LINE_SIZE, pajePushStateId, time, entityType,
                  container, value);
@@ -324,6 +365,9 @@ void pajePushState(double time, const char *entityType,
 void pajePopState(double time, const char *entityType,
                   const char *container)
 {
+  INSTR_PAJE_ASSERT(entityType);
+  INSTR_PAJE_ASSERT(container);
+
   fprintf(tracing_file, "%d %lf %s %s\n", pajePopStateId, time, entityType,
           container);
 }
@@ -332,6 +376,12 @@ void pajeStartLink(double time, const char *entityType,
                    const char *container, const char *value,
                    const char *sourceContainer, const char *key)
 {
+  INSTR_PAJE_ASSERT(entityType);
+  INSTR_PAJE_ASSERT(container);
+  INSTR_PAJE_ASSERT(value);
+  INSTR_PAJE_ASSERT(sourceContainer);
+  INSTR_PAJE_ASSERT(key);
+
   char line[TRACE_LINE_SIZE];
   __pajeStartLink(line, TRACE_LINE_SIZE, pajeStartLinkId, time, entityType,
                   container, value, sourceContainer, key);
@@ -343,6 +393,12 @@ void pajeStartLinkWithVolume(double time, const char *entityType,
                              const char *sourceContainer, const char *key,
                              double volume)
 {
+  INSTR_PAJE_ASSERT(entityType);
+  INSTR_PAJE_ASSERT(container);
+  INSTR_PAJE_ASSERT(value);
+  INSTR_PAJE_ASSERT(sourceContainer);
+  INSTR_PAJE_ASSERT(key);
+
   char line[TRACE_LINE_SIZE];
   __pajeStartLink(line, TRACE_LINE_SIZE, pajeStartLinkWithVolumeId, time,
                   entityType, container, value, sourceContainer, key);
@@ -353,6 +409,12 @@ void pajeEndLink(double time, const char *entityType,
                  const char *container, const char *value,
                  const char *destContainer, const char *key)
 {
+  INSTR_PAJE_ASSERT(entityType);
+  INSTR_PAJE_ASSERT(container);
+  INSTR_PAJE_ASSERT(value);
+  INSTR_PAJE_ASSERT(destContainer);
+  INSTR_PAJE_ASSERT(key);
+
   if (time == 0){
     fprintf(tracing_file, "%d 0 %s %s %s %s %s\n", pajeEndLinkId,
             entityType, container, value, destContainer, key);
@@ -365,6 +427,10 @@ void pajeEndLink(double time, const char *entityType,
 void pajeDefineVariableType(const char *alias, const char *containerType,
                             const char *name)
 {
+  INSTR_PAJE_ASSERT(alias);
+  INSTR_PAJE_ASSERT(containerType);
+  INSTR_PAJE_ASSERT(name);
+
   fprintf(tracing_file, "%d %s %s %s\n", pajeDefineVariableTypeId, alias,
           containerType, name);
 }
@@ -372,6 +438,11 @@ void pajeDefineVariableType(const char *alias, const char *containerType,
 void pajeDefineVariableTypeWithColor(const char *alias, const char *containerType,
                             const char *name, const char *color)
 {
+  INSTR_PAJE_ASSERT(alias);
+  INSTR_PAJE_ASSERT(containerType);
+  INSTR_PAJE_ASSERT(name);
+  INSTR_PAJE_ASSERT(color);
+
   fprintf(tracing_file, "%d %s %s %s \"%s\"\n", pajeDefineVariableTypeWithColorId, alias,
           containerType, name, color);
 }
@@ -379,6 +450,10 @@ void pajeDefineVariableTypeWithColor(const char *alias, const char *containerTyp
 void pajeSetVariable(double time, const char *entityType,
                      const char *container, const char *value)
 {
+  INSTR_PAJE_ASSERT(entityType);
+  INSTR_PAJE_ASSERT(container);
+  INSTR_PAJE_ASSERT(value);
+
   char line[TRACE_LINE_SIZE];
   __pajeSetVariable(line, TRACE_LINE_SIZE, pajeSetVariableId, time,
                     entityType, container, value);
@@ -388,6 +463,10 @@ void pajeSetVariable(double time, const char *entityType,
 void pajeAddVariable(double time, const char *entityType,
                      const char *container, const char *value)
 {
+  INSTR_PAJE_ASSERT(entityType);
+  INSTR_PAJE_ASSERT(container);
+  INSTR_PAJE_ASSERT(value);
+
   char line[TRACE_LINE_SIZE];
   __pajeSetVariable(line, TRACE_LINE_SIZE, pajeAddVariableId, time,
                     entityType, container, value);
@@ -397,6 +476,10 @@ void pajeAddVariable(double time, const char *entityType,
 void pajeSubVariable(double time, const char *entityType,
                      const char *container, const char *value)
 {
+  INSTR_PAJE_ASSERT(entityType);
+  INSTR_PAJE_ASSERT(container);
+  INSTR_PAJE_ASSERT(value);
+
   char line[TRACE_LINE_SIZE];
   __pajeSetVariable(line, TRACE_LINE_SIZE, pajeSubVariableId, time,
                     entityType, container, value);
@@ -406,6 +489,10 @@ void pajeSubVariable(double time, const char *entityType,
 void pajeNewEvent(double time, const char *entityType,
                   const char *container, const char *value)
 {
+  INSTR_PAJE_ASSERT(entityType);
+  INSTR_PAJE_ASSERT(container);
+  INSTR_PAJE_ASSERT(value);
+
   if (time == 0){
     fprintf(tracing_file, "%d 0 %s %s %s\n", pajeNewEventId,
           entityType, container, value);
