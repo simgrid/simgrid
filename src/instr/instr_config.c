@@ -346,38 +346,75 @@ void TRACE_generate_triva_uncat_conf (void)
 {
   char *output = TRACE_get_triva_uncat_conf ();
   if (output && strlen(output) > 0){
+    xbt_dict_cursor_t cursor=NULL;
+    char *name, *value;
+
     FILE *file = fopen (output, "w");
     xbt_assert1 (file != NULL,
        "Unable to open file (%s) for writing triva graph "
        "configuration (uncategorized).", output);
+
+    //open
+    fprintf (file, "{\n");
+
+    //register NODE types
+    fprintf (file, "  node = (");
+    xbt_dict_foreach(trivaNodeTypes, cursor, name, value) {
+      fprintf (file, "%s, ", name);
+    }
+
+    //register EDGE types
     fprintf (file,
-        "{\n"
-        "  node = (HOST);\n"
-        "  edge = (LINK);\n"
-        "\n"
-        "  HOST = {\n"
-        "    size = power;\n"
-        "    scale = global;\n"
-        "    host_sep = {\n"
-        "      type = separation;\n"
-        "      size = power;\n"
-        "      values = (power_used);\n"
-        "    };\n"
-        "  };\n"
-        "  LINK = {\n"
-        "    src = source;\n"
-        "    dst = destination;\n"
-        "    size = bandwidth;\n"
-        "    scale = global;\n"
-        "    link_sep = {\n"
-        "      type = separation;\n"
-        "      size = bandwidth;\n"
-        "      values = (bandwidth_used);\n"
-        "    };\n"
-        "  };\n"
-        "  graphviz-algorithm = neato;\n"
-        "}\n"
-        );
+        ");\n"
+        "  edge = (");
+    xbt_dict_foreach(trivaEdgeTypes, cursor, name, value) {
+      fprintf (file, "%s, ", name);
+    }
+    fprintf (file,
+        ");\n"
+        "\n");
+
+    //register each NODE type layout
+    xbt_dict_foreach(trivaNodeTypes, cursor, name, value) {
+      fprintf (file, "  %s = {\n", name);
+      if (strcmp (name, "HOST") == 0){
+        fprintf (file,
+            "    type = node;\n"
+            "    size = power;\n"
+            "    host_sep = {\n"
+            "      type = separation;\n"
+            "      size = power;\n"
+            "      values = (power_used);\n"
+            "    };\n");
+      }else if (strcmp (name, "ROUTER") == 0){
+        fprintf (file,
+            "    type = node;\n"
+            "    size = 10;\n");
+      }else if (strcmp (name, "LINK") == 0){
+        fprintf (file,
+            "    type = edge;\n"
+            "    size = bandwidth;\n"
+            "    scale = global;\n"
+            "    link_sep = {\n"
+            "      type = separation;\n"
+            "      size = bandwidth;\n"
+            "      values = (bandwidth_used);\n"
+            "    };\n");
+      }
+      fprintf (file, "  };\n\n");
+    }
+
+    //EDGE configuration
+    xbt_dict_foreach(trivaEdgeTypes, cursor, name, value) {
+      fprintf (file, "  %s = { size = 1; };\n", name);
+    }
+
+    //graphviz configuration
+    fprintf (file, "\n");
+    fprintf (file, "  graphviz-algorithm = neato;\n");
+
+    //close
+    fprintf (file, "}\n");
     fclose (file);
   }
 }
@@ -386,56 +423,92 @@ void TRACE_generate_triva_cat_conf (void)
 {
   char *output = TRACE_get_triva_cat_conf();
   if (output && strlen(output) > 0){
+    xbt_dict_cursor_t cursor=NULL, cursor2=NULL;
+    char *name, *name2, *value, *value2;
+
     //check if we do have categories declared
     if (xbt_dict_length(created_categories) == 0){
       INFO0("No categories declared, ignoring generation of triva graph configuration");
       return;
     }
-    xbt_dict_cursor_t cursor=NULL;
-    char *key, *data;
+
     FILE *file = fopen (output, "w");
     xbt_assert1 (file != NULL,
        "Unable to open file (%s) for writing triva graph "
        "configuration (categorized).", output);
+
+    //open
+    fprintf (file, "{\n");
+
+    //register NODE types
+    fprintf (file, "  node = (");
+    xbt_dict_foreach(trivaNodeTypes, cursor, name, value) {
+      fprintf (file, "%s, ", name);
+    }
+
+    //register EDGE types
     fprintf (file,
-        "{\n"
-        "  node = (HOST);\n"
-        "  edge = (LINK);\n"
-        "\n"
-        "  HOST = {\n"
-        "    size = power;\n"
-        "    scale = global;\n"
-        "    host_sep = {\n"
-        "      type = separation;\n"
-        "      size = power;\n"
-        "      values = (");
-    xbt_dict_foreach(created_categories,cursor,key,data) {
-      fprintf(file, "%s, ",key);
+        ");\n"
+        "  edge = (");
+    xbt_dict_foreach(trivaEdgeTypes, cursor, name, value) {
+      fprintf (file, "%s, ", name);
     }
     fprintf (file,
         ");\n"
-        "    };\n"
-        "  };\n"
-        "  LINK = {\n"
-        "    src = source;\n"
-        "    dst = destination;\n"
-        "    size = bandwidth;\n"
-        "    scale = global;\n"
-        "    link_sep = {\n"
-        "      type = separation;\n"
-        "      size = bandwidth;\n"
-        "      values = (");
-    xbt_dict_foreach(created_categories,cursor,key,data) {
-      fprintf(file, "%s, ",key);
+        "\n");
+
+    //register each NODE type layout
+    xbt_dict_foreach(trivaNodeTypes, cursor, name, value) {
+      fprintf (file, "  %s = {\n", name);
+      if (strcmp (name, "HOST") == 0){
+        fprintf (file,
+            "    type = node;\n"
+            "    size = power;\n"
+            "    host_sep = {\n"
+            "      type = separation;\n"
+            "      size = power;\n"
+            "      values = (");
+        xbt_dict_foreach(created_categories,cursor2,name2,value2) {
+          fprintf (file, "%s, ", name2);
+        }
+        fprintf (file,
+            ");\n"
+            "    };\n");
+      }else if (strcmp (name, "ROUTER") == 0){
+        fprintf (file,
+            "    type = node;\n"
+            "    size = 10;\n");
+      }else if (strcmp (name, "LINK") == 0){
+        fprintf (file,
+            "    type = edge;\n"
+            "    size = bandwidth;\n"
+            "    scale = global;\n"
+            "    link_sep = {\n"
+            "      type = separation;\n"
+            "      size = bandwidth;\n"
+            "      values = (");
+        xbt_dict_foreach(created_categories,cursor2,name2,value2) {
+          fprintf (file, "%s, ", name2);
+        }
+        fprintf (file,
+            ");\n"
+            "    };\n");
+      }
+      fprintf (file, "  };\n\n");
     }
-    fprintf (file,
-        ");\n"
-        "    };\n"
-        "  };\n"
-        "  graphviz-algorithm = neato;\n"
-        "}\n"
-        );
-    fclose(file);
+
+    //EDGE configuration
+    xbt_dict_foreach(trivaEdgeTypes, cursor, name, value) {
+      fprintf (file, "  %s = { size = 1; };\n", name);
+    }
+
+    //graphviz configuration
+    fprintf (file, "\n");
+    fprintf (file, "  graphviz-algorithm = neato;\n");
+
+    //close
+    fprintf (file, "}\n");
+    fclose (file);
   }
 }
 
