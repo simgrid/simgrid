@@ -26,10 +26,9 @@ static void TRACE_surf_set_resource_variable(double date,
                                              const char *resource,
                                              double value)
 {
-  char value_str[INSTR_DEFAULT_STR_SIZE];
-  snprintf(value_str, 100, "%f", value);
-  char *variable_type = getVariableTypeIdByName(variable, getContainerByName(resource)->type);
-  pajeSetVariable(date, variable, variable_type, value_str);
+  container_t container = getContainerByName(resource);
+  type_t type = getVariableType(variable, NULL, container->type);
+  new_pajeSetVariable(date, container, type, value);
 }
 
 void TRACE_surf_host_set_power(double date, const char *resource, double power)

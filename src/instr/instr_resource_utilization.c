@@ -39,8 +39,11 @@ static void __TRACE_surf_check_variable_set_to_zero(double now,
     xbt_dynar_t array = xbt_dynar_new(sizeof(char *), xbt_free);
     char *var_cpy = xbt_strdup(variable);
     xbt_dynar_push(array, &var_cpy);
-    if (TRACE_categorized ())
-      pajeSetVariable(now, variable, resource, "0");
+    if (TRACE_categorized ()){
+      container_t container = getContainerByName (resource);
+      type_t type = getVariableType (variable, NULL, container->type);
+      new_pajeSetVariable (now, container, type, 0);
+    }
     xbt_dict_set(platform_variables, resource, array,
                  xbt_dynar_free_voidp);
   } else {
@@ -56,8 +59,11 @@ static void __TRACE_surf_check_variable_set_to_zero(double now,
     if (flag == 0) {
       char *var_cpy = xbt_strdup(variable);
       xbt_dynar_push(array, &var_cpy);
-      if (TRACE_categorized ())
-        pajeSetVariable(now, variable, resource, "0");
+      if (TRACE_categorized ()){
+        container_t container = getContainerByName (resource);
+        type_t type = getVariableType (variable, NULL, container->type);
+        new_pajeSetVariable (now, container, type, 0);
+      }
     }
   }
   /* end of check */
@@ -85,8 +91,10 @@ static void __TRACE_A_event(smx_action_t action, double now, double delta,
   snprintf(valuestr, 100, "%f", value);
 
   __TRACE_surf_check_variable_set_to_zero(now, variable, resource);
-  pajeAddVariable(now, variable, resource, valuestr);
-  pajeSubVariable(now + delta, variable, resource, valuestr);
+  container_t container = getContainerByName (resource);
+  type_t type = getVariableType (variable, NULL, container->type);
+  new_pajeAddVariable(now, container, type, value);
+  new_pajeSubVariable(now + delta, container, type, value);
 }
 
 static void __TRACE_A_end(smx_action_t action)
@@ -114,7 +122,9 @@ static void __TRACE_B_release(void)
       char key_value[INSTR_DEFAULT_STR_SIZE];
       snprintf (key_value, INSTR_DEFAULT_STR_SIZE, "%s %s value", resource, variable);
       char *value = xbt_dict_get_or_null (method_b_dict, key_value);
-      pajeSubVariable(atof(time), variable, resource, value);
+      container_t container = getContainerByName (resource);
+      type_t type = getVariableType (variable, NULL, container->type);
+      new_pajeSubVariable(atof(time), container, type, atof(value));
     }
   }
   xbt_dict_free(&method_b_dict);
@@ -144,7 +154,9 @@ static void __TRACE_B_event(smx_action_t action, double now, double delta,
   char *lastvaluestr = xbt_dict_get_or_null(method_b_dict, key_value);
   if (lasttimestr == NULL){
     __TRACE_surf_check_variable_set_to_zero(now, variable, resource);
-    pajeAddVariable(now, variable, resource, valuestr);
+    container_t container = getContainerByName (resource);
+    type_t type = getVariableType (variable, NULL, container->type);
+    new_pajeAddVariable(now, container, type, value);
     xbt_dict_set(method_b_dict, key_time, xbt_strdup(nowdeltastr), xbt_free);
     xbt_dict_set(method_b_dict, key_value, xbt_strdup(valuestr), xbt_free);
   }else{
@@ -157,13 +169,17 @@ static void __TRACE_B_event(smx_action_t action, double now, double delta,
         //perfect, just go on
       }else{
         //time changed, have to update
-        pajeSubVariable(lasttime, variable, resource, lastvaluestr);
-        pajeAddVariable(now, variable, resource, valuestr);
+        container_t container = getContainerByName (resource);
+        type_t type = getVariableType (variable, NULL, container->type);
+        new_pajeSubVariable(lasttime, container, type, lastvalue);
+        new_pajeAddVariable(now, container, type, value);
       }
     }else{
       //value changed, have to update
-      pajeSubVariable(lasttime, variable, resource, lastvaluestr);
-      pajeAddVariable(now, variable, resource, valuestr);
+      container_t container = getContainerByName (resource);
+      type_t type = getVariableType (variable, NULL, container->type);
+      new_pajeSubVariable(lasttime, container, type, lastvalue);
+      new_pajeAddVariable(now, container, type, value);
     }
     xbt_dict_set(method_b_dict, key_time, xbt_strdup(nowdeltastr), xbt_free);
     xbt_dict_set(method_b_dict, key_value, xbt_strdup(valuestr), xbt_free);
@@ -252,12 +268,12 @@ static void __TRACE_C_end(smx_action_t action)
       continue;
     __TRACE_surf_check_variable_set_to_zero(start_time, variable,
                                             resource);
-    char value_str[100];
     if (end_time - start_time != 0) {
-      snprintf(value_str, 100, "%f",
-               atof(action_dict_value) / (end_time - start_time));
-      pajeAddVariable(start_time, variable, resource, value_str);
-      pajeSubVariable(end_time, variable, resource, value_str);
+      container_t container = getContainerByName (resource);
+      type_t type = getVariableType (variable, NULL, container->type);
+      double val = atof(action_dict_value) / (end_time - start_time);
+      new_pajeSubVariable(start_time, container, type, val);
+      new_pajeAddVariable(end_time, container, type, val);
     }
   }
   xbt_dict_remove(method_c_dict, key);
@@ -285,9 +301,9 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
   //trace uncategorized link utilization
   if (TRACE_uncategorized()){
     DEBUG4("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now+delta, resource, value);
-    char *variable_type = getVariableTypeIdByName("bandwidth_used", getContainerByName(resource)->type);
-    char *resource_id = getContainerIdByName (resource);
-    TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
+    container_t container = getContainerByName (resource);
+    type_t type = getVariableType("bandwidth_used", NULL, container->type);
+    TRACE_surf_resource_utilization_event(smx_action, now, delta, type->name, container->name, value);
   }
 
   //trace categorized utilization
@@ -295,9 +311,9 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
     if (!surf_action->category)
       return;
     DEBUG5("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
-    char *variable_type = getVariableTypeIdByName(surf_action->category, getContainerByName(resource)->type);
-    char *resource_id = getContainerIdByName (resource);
-    TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
+    container_t container = getContainerByName (resource);
+    type_t type = getVariableType(surf_action->category, NULL, container->type);
+    TRACE_surf_resource_utilization_event(smx_action, now, delta, type->name, container->name, value);
   }
   return;
 }
@@ -319,9 +335,9 @@ void TRACE_surf_host_set_utilization(const char *resource,
   //trace uncategorized host utilization
   if (TRACE_uncategorized()){
     DEBUG4("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
-    char *variable_type = getVariableTypeIdByName ("power_used", getContainerByName(resource)->type);
-    char *resource_id = getContainerIdByName (resource);
-    TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
+    container_t container = getContainerByName (resource);
+    type_t type = getVariableType("power_used", NULL, container->type);
+    TRACE_surf_resource_utilization_event(smx_action, now, delta, type->name, container->name, value);
   }
 
   //trace categorized utilization
@@ -329,9 +345,9 @@ void TRACE_surf_host_set_utilization(const char *resource,
     if (!surf_action->category)
       return;
     DEBUG5("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
-    char *variable_type = getVariableTypeIdByName (surf_action->category, getContainerByName(resource)->type);
-    char *resource_id = getContainerIdByName (resource);
-    TRACE_surf_resource_utilization_event(smx_action, now, delta, variable_type, resource_id, value);
+    container_t container = getContainerByName (resource);
+    type_t type = getVariableType(surf_action->category, NULL, container->type);
+    TRACE_surf_resource_utilization_event(smx_action, now, delta, type->name, container->name, value);
   }
   return;
 }

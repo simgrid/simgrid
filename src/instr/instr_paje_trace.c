@@ -12,6 +12,150 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "Paje tracing event system");
 
+typedef struct paje_event *paje_event_t;
+typedef struct paje_event {
+  char *name;
+  char *header;
+  unsigned int id;
+  double timestamp;
+} s_paje_event_t;
+
+typedef struct s_defineContainerType *defineContainerType_t;
+typedef struct s_defineContainerType {
+  s_paje_event_t event;
+  type_t type;
+  void (*print) (defineContainerType_t event);
+}s_defineContainerType_t;
+
+typedef struct s_defineVariableType *defineVariableType_t;
+typedef struct s_defineVariableType {
+  s_paje_event_t event;
+  type_t type;
+  void (*print) (defineVariableType_t event);
+}s_defineVariableType_t;
+
+typedef struct s_defineStateType *defineStateType_t;
+typedef struct s_defineStateType {
+  s_paje_event_t event;
+  type_t type;
+  void (*print) (defineStateType_t event);
+}s_defineStateType_t;
+
+typedef struct s_defineEventType *defineEventType_t;
+typedef struct s_defineEventType {
+  s_paje_event_t event;
+  type_t type;
+  void (*print) (defineEventType_t event);
+}s_defineEventType_t;
+
+typedef struct s_defineLinkType *defineLinkType_t;
+typedef struct s_defineLinkType {
+  s_paje_event_t event;
+  type_t type;
+  type_t source;
+  type_t dest;
+  void (*print) (defineLinkType_t event);
+}s_defineLinkType_t;
+
+typedef struct s_createContainer *createContainer_t;
+typedef struct s_createContainer {
+  s_paje_event_t event;
+  container_t container;
+  void (*print) (createContainer_t event);
+}s_createContainer_t;
+
+typedef struct s_destroyContainer *destroyContainer_t;
+typedef struct s_destroyContainer {
+  s_paje_event_t event;
+  container_t container;
+  void (*print) (destroyContainer_t event);
+}s_destroyContainer_t;
+
+typedef struct s_setVariable *setVariable_t;
+typedef struct s_setVariable {
+  s_paje_event_t event;
+  container_t container;
+  type_t type;
+  double value;
+  void (*print) (setVariable_t event);
+}s_setVariable_t;
+
+typedef struct s_addVariable *addVariable_t;
+typedef struct s_addVariable {
+  s_paje_event_t event;
+  container_t container;
+  type_t type;
+  double value;
+  void (*print) (addVariable_t event);
+}s_addVariable_t;
+
+typedef struct s_subVariable *subVariable_t;
+typedef struct s_subVariable {
+  s_paje_event_t event;
+  container_t container;
+  type_t type;
+  double value;
+  void (*print) (subVariable_t event);
+}s_subVariable_t;
+
+typedef struct s_setState *setState_t;
+typedef struct s_setState {
+  s_paje_event_t event;
+  container_t container;
+  type_t type;
+  char *value;
+  void (*print) (setState_t event);
+}s_setState_t;
+
+typedef struct s_pushState *pushState_t;
+typedef struct s_pushState {
+  s_paje_event_t event;
+  container_t container;
+  type_t type;
+  char *value;
+  void (*print) (pushState_t event);
+}s_pushState_t;
+
+typedef struct s_popState *popState_t;
+typedef struct s_popState {
+  s_paje_event_t event;
+  container_t container;
+  type_t type;
+  char *value;
+  void (*print) (popState_t event);
+}s_popState_t;
+
+typedef struct s_startLink *startLink_t;
+typedef struct s_startLink {
+  s_paje_event_t event;
+  type_t type;
+  container_t container;
+  container_t sourceContainer;
+  char *value;
+  char *key;
+  void (*print) (startLink_t event);
+}s_startLink_t;
+
+typedef struct s_endLink *endLink_t;
+typedef struct s_endLink {
+  s_paje_event_t event;
+  type_t type;
+  container_t container;
+  container_t destContainer;
+  char *value;
+  char *key;
+  void (*print) (endLink_t event);
+}s_endLink_t;
+
+typedef struct s_newEvent *newEvent_t;
+typedef struct s_newEvent {
+  s_paje_event_t event;
+  type_t type;
+  container_t container;
+  char *value;
+  void (*print) (newEvent_t event);
+}s_newEvent_t;
+
 static FILE *tracing_file = NULL;
 
 static int pajeDefineContainerTypeId = 0;
@@ -40,7 +184,7 @@ static int pajeSetVariableId = 22;
 static int pajeAddVariableId = 23;
 static int pajeSubVariableId = 24;
 static int pajeDefineVariableTypeId = 25;
-static int pajeStartLinkWithVolumeId = 26;
+#define UNUSED001 26
 static int pajeNewEventId = 27;
 
 #define TRACE_LINE_SIZE 1000
@@ -175,331 +319,637 @@ void TRACE_paje_create_header(void)
 %%       Name string \n\
 %%       Color color \n\
 %%EndEventDef \n\
-%%EventDef PajeStartLink %d \n\
-%%       Time date \n\
-%%       EntityType string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%       SourceContainer string \n\
-%%       Key string \n\
-%%       Volume string \n\
-%%EndEventDef\n\
 %%EventDef PajeNewEvent %d \n\
 %%       Time date \n\
 %%       EntityType string \n\
 %%       Container string \n\
 %%       Value string \n\
-%%EndEventDef\n", pajeDefineContainerTypeId, pajeDefineStateTypeId, pajeDefineEntityValueId, pajeDefineEventTypeWithColorId, pajeDefineEventTypeId, pajeDefineLinkTypeId, pajeCreateContainerId, pajeDestroyContainerId, pajeSetStateId, pajePopStateId, pajeStartLinkId, pajeEndLinkId, pajePushStateId, pajeSetVariableId, pajeAddVariableId, pajeSubVariableId, pajeDefineVariableTypeId, pajeDefineVariableTypeWithColorId, pajeStartLinkWithVolumeId, pajeNewEventId);
-}
-
-/* internal to this file */
-static void __pajeCreateContainer(char *output, int len, int eventid,
-                                  double time, const char *alias,
-                                  const char *type, const char *container,
-                                  const char *name)
-{
-  if (time == 0){
-    snprintf(output, len, "%d 0 %s %s %s %s", eventid,
-           alias, type, container, name);
-  }else{
-    snprintf(output, len, "%d %lf %s %s %s %s", eventid, time,
-           alias, type, container, name);
-  }
-}
-
-static void __pajeSetState(char *output, int len, int eventid, double time,
-                           const char *entityType, const char *container,
-                           const char *value)
-{
-  if (time == 0){
-    snprintf(output, len, "%d 0 %s %s %s", eventid, entityType,
-           container, value);
-  }else{
-    snprintf(output, len, "%d %lf %s %s %s", eventid, time, entityType,
-           container, value);
-  }
-}
-
-static void __pajeSetVariable(char *output, int len, int eventid,
-                              double time, const char *entityType,
-                              const char *container, const char *value)
-{
-  if (time == 0){
-    snprintf(output, len, "%d 0 %s %s %s", eventid, entityType,
-           container, value);
-  }else{
-    snprintf(output, len, "%d %lf %s %s %s", eventid, time, entityType,
-           container, value);
-  }
-}
-
-static void __pajeStartLink(char *output, int len, int eventid,
-                            double time, const char *entityType,
-                            const char *container, const char *value,
-                            const char *sourceContainer, const char *key)
-{
-  if (time == 0){
-    snprintf(output, len, "%d 0 %s %s %s %s %s", eventid, entityType,
-           container, value, sourceContainer, key);
-  }else{
-    snprintf(output, len, "%d %lf %s %s %s %s %s", eventid, time, entityType,
-           container, value, sourceContainer, key);
-  }
+%%EndEventDef\n", pajeDefineContainerTypeId, pajeDefineStateTypeId, pajeDefineEntityValueId, pajeDefineEventTypeWithColorId, pajeDefineEventTypeId, pajeDefineLinkTypeId, pajeCreateContainerId, pajeDestroyContainerId, pajeSetStateId, pajePopStateId, pajeStartLinkId, pajeEndLinkId, pajePushStateId, pajeSetVariableId, pajeAddVariableId, pajeSubVariableId, pajeDefineVariableTypeId, pajeDefineVariableTypeWithColorId, pajeNewEventId);
 }
 
 /* internal do the instrumentation module */
-void pajeDefineContainerType(const char *alias, const char *containerType,
-                             const char *name)
+static void print_pajeDefineContainerType(defineContainerType_t event)
 {
-  INSTR_PAJE_ASSERT(alias);
-  INSTR_PAJE_ASSERT(containerType);
-  INSTR_PAJE_ASSERT(name);
-
-  fprintf(tracing_file, "%d %s %s %s\n", pajeDefineContainerTypeId, alias,
-          containerType, name);
+  fprintf(tracing_file, "%d %s %s %s\n",
+      event->event.id,
+      event->type->id,
+      event->type->father->id,
+      event->type->name);
 }
 
-void pajeDefineStateType(const char *alias, const char *containerType,
-                         const char *name)
+static void print_pajeDefineVariableType(defineVariableType_t event)
 {
-  INSTR_PAJE_ASSERT(alias);
-  INSTR_PAJE_ASSERT(containerType);
-  INSTR_PAJE_ASSERT(name);
-
-  fprintf(tracing_file, "%d %s %s %s\n", pajeDefineStateTypeId, alias,
-          containerType, name);
+  fprintf(tracing_file, "%d %s %s %s \"%s\"\n",
+      event->event.id,
+      event->type->id,
+      event->type->father->id,
+      event->type->name,
+      event->type->color);
 }
 
-void pajeDefineEventTypeWithColor(const char *alias, const char *containerType,
-                         const char *name, const char *color)
+static void print_pajeDefineStateType(defineStateType_t event)
 {
-  INSTR_PAJE_ASSERT(alias);
-  INSTR_PAJE_ASSERT(containerType);
-  INSTR_PAJE_ASSERT(name);
-  INSTR_PAJE_ASSERT(name);
-
-  fprintf(tracing_file, "%d %s %s %s %s\n", pajeDefineEventTypeWithColorId, alias,
-          containerType, name, color);
+  fprintf(tracing_file, "%d %s %s %s\n",
+      event->event.id,
+      event->type->id,
+      event->type->father->id,
+      event->type->name);
 }
 
-void pajeDefineEventType(const char *alias, const char *containerType,
-                         const char *name)
+static void print_pajeDefineEventType(defineEventType_t event)
 {
-  INSTR_PAJE_ASSERT(alias);
-  INSTR_PAJE_ASSERT(containerType);
-  INSTR_PAJE_ASSERT(name);
-
-  fprintf(tracing_file, "%d %s %s %s\n", pajeDefineEventTypeId, alias,
-          containerType, name);
+  fprintf(tracing_file, "%d %s %s %s \"%s\"\n",
+      event->event.id,
+      event->type->id,
+      event->type->father->id,
+      event->type->name,
+      event->type->color);
 }
 
-void pajeDefineLinkType(const char *alias, const char *containerType,
-                        const char *sourceContainerType,
-                        const char *destContainerType, const char *name)
+static void print_pajeDefineLinkType(defineLinkType_t event)
 {
-  INSTR_PAJE_ASSERT(alias);
-  INSTR_PAJE_ASSERT(containerType);
-  INSTR_PAJE_ASSERT(sourceContainerType);
-  INSTR_PAJE_ASSERT(destContainerType);
-  INSTR_PAJE_ASSERT(name);
-
-  fprintf(tracing_file, "%d %s %s %s %s %s\n", pajeDefineLinkTypeId, alias,
-          containerType, sourceContainerType, destContainerType, name);
+  fprintf(tracing_file, "%d %s %s %s %s %s\n",
+      event->event.id,
+      event->type->id,
+      event->type->father->id,
+      event->source->id,
+      event->dest->id,
+      event->type->name);
 }
 
-void pajeCreateContainer(double time, const char *alias, const char *type,
-                         const char *container, const char *name)
+static void print_pajeCreateContainer(createContainer_t event)
 {
-  INSTR_PAJE_ASSERT(alias);
-  INSTR_PAJE_ASSERT(type);
-  INSTR_PAJE_ASSERT(container);
-  INSTR_PAJE_ASSERT(name);
-
-  char line[TRACE_LINE_SIZE];
-  __pajeCreateContainer(line, TRACE_LINE_SIZE, pajeCreateContainerId, time,
-                        alias, type, container, name);
-  fprintf(tracing_file, "%s\n", line);
-}
-
-void pajeDestroyContainer(double time, const char *type,
-                          const char *container)
-{
-  INSTR_PAJE_ASSERT(type);
-  INSTR_PAJE_ASSERT(container);
-
-  if (time == 0){
-    fprintf(tracing_file, "%d 0 %s %s\n", pajeDestroyContainerId,
-          type, container);
+  if (event->event.timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s %s %s\n",
+        event->event.id,
+        event->container->id,
+        event->container->type->id,
+        event->container->father->id,
+        event->container->name);
   }else{
-    fprintf(tracing_file, "%d %lf %s %s\n", pajeDestroyContainerId, time,
-          type, container);
+    fprintf(tracing_file, "%d %lf %s %s %s %s\n",
+        event->event.id,
+        event->event.timestamp,
+        event->container->id,
+        event->container->type->id,
+        event->container->father->id,
+        event->container->name);
   }
 }
 
-void pajeSetState(double time, const char *entityType,
-                  const char *container, const char *value)
+static void print_pajeDestroyContainer(destroyContainer_t event)
 {
-  INSTR_PAJE_ASSERT(entityType);
-  INSTR_PAJE_ASSERT(container);
-  INSTR_PAJE_ASSERT(value);
-
-  char line[TRACE_LINE_SIZE];
-  __pajeSetState(line, TRACE_LINE_SIZE, pajeSetStateId, time, entityType,
-                 container, value);
-  fprintf(tracing_file, "%s\n", line);
+  if (event->event.timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s\n",
+        event->event.id,
+        event->container->type->id,
+        event->container->id);
+  }else{
+    fprintf(tracing_file, "%d %lf %s %s\n",
+        event->event.id,
+        event->event.timestamp,
+        event->container->type->id,
+        event->container->id);
+  }
 }
 
-void pajePushState(double time, const char *entityType,
-                   const char *container, const char *value)
+static void print_pajeSetVariable(setVariable_t event)
 {
-  INSTR_PAJE_ASSERT(entityType);
-  INSTR_PAJE_ASSERT(container);
-  INSTR_PAJE_ASSERT(value);
-
-  char line[TRACE_LINE_SIZE];
-  __pajeSetState(line, TRACE_LINE_SIZE, pajePushStateId, time, entityType,
-                 container, value);
-  fprintf(tracing_file, "%s\n", line);
+  if (event->event.timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s %f\n",
+        event->event.id,
+        event->type->id,
+        event->container->id,
+        event->value);
+  }else{
+    fprintf(tracing_file, "%d %lf %s %s %f\n",
+        event->event.id,
+        event->event.timestamp,
+        event->type->id,
+        event->container->id,
+        event->value);
+  }
 }
 
-void pajePopState(double time, const char *entityType,
-                  const char *container)
+static void print_pajeAddVariable(addVariable_t event)
 {
-  INSTR_PAJE_ASSERT(entityType);
-  INSTR_PAJE_ASSERT(container);
-
-  fprintf(tracing_file, "%d %lf %s %s\n", pajePopStateId, time, entityType,
-          container);
+  if (event->event.timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s %f\n",
+        event->event.id,
+        event->type->id,
+        event->container->id,
+        event->value);
+  }else{
+    fprintf(tracing_file, "%d %lf %s %s %f\n",
+        event->event.id,
+        event->event.timestamp,
+        event->type->id,
+        event->container->id,
+        event->value);
+  }
 }
 
-void pajeStartLink(double time, const char *entityType,
-                   const char *container, const char *value,
-                   const char *sourceContainer, const char *key)
+static void print_pajeSubVariable(subVariable_t event)
 {
-  INSTR_PAJE_ASSERT(entityType);
-  INSTR_PAJE_ASSERT(container);
-  INSTR_PAJE_ASSERT(value);
-  INSTR_PAJE_ASSERT(sourceContainer);
-  INSTR_PAJE_ASSERT(key);
-
-  char line[TRACE_LINE_SIZE];
-  __pajeStartLink(line, TRACE_LINE_SIZE, pajeStartLinkId, time, entityType,
-                  container, value, sourceContainer, key);
-  fprintf(tracing_file, "%s\n", line);
+  if (event->event.timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s %f\n",
+        event->event.id,
+        event->type->id,
+        event->container->id,
+        event->value);
+  }else{
+    fprintf(tracing_file, "%d %lf %s %s %f\n",
+        event->event.id,
+        event->event.timestamp,
+        event->type->id,
+        event->container->id,
+        event->value);
+  }
 }
 
-void pajeStartLinkWithVolume(double time, const char *entityType,
-                             const char *container, const char *value,
-                             const char *sourceContainer, const char *key,
-                             double volume)
+static void print_pajeSetState(setState_t event)
 {
-  INSTR_PAJE_ASSERT(entityType);
-  INSTR_PAJE_ASSERT(container);
-  INSTR_PAJE_ASSERT(value);
-  INSTR_PAJE_ASSERT(sourceContainer);
-  INSTR_PAJE_ASSERT(key);
-
-  char line[TRACE_LINE_SIZE];
-  __pajeStartLink(line, TRACE_LINE_SIZE, pajeStartLinkWithVolumeId, time,
-                  entityType, container, value, sourceContainer, key);
-  fprintf(tracing_file, "%s %f\n", line, volume);
+  if (event->event.timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s %s\n",
+        event->event.id,
+        event->type->id,
+        event->container->id,
+        event->value);
+  }else{
+    fprintf(tracing_file, "%d %lf %s %s %s\n",
+        event->event.id,
+        event->event.timestamp,
+        event->type->id,
+        event->container->id,
+        event->value);
+  }
 }
 
-void pajeEndLink(double time, const char *entityType,
-                 const char *container, const char *value,
-                 const char *destContainer, const char *key)
+static void print_pajePushState(pushState_t event)
 {
-  INSTR_PAJE_ASSERT(entityType);
-  INSTR_PAJE_ASSERT(container);
-  INSTR_PAJE_ASSERT(value);
-  INSTR_PAJE_ASSERT(destContainer);
-  INSTR_PAJE_ASSERT(key);
+  if (event->event.timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s %s\n",
+        event->event.id,
+        event->type->id,
+        event->container->id,
+        event->value);
+  }else{
+    fprintf(tracing_file, "%d %lf %s %s %s\n",
+        event->event.id,
+        event->event.timestamp,
+        event->type->id,
+        event->container->id,
+        event->value);
+  }
+}
 
-  if (time == 0){
-    fprintf(tracing_file, "%d 0 %s %s %s %s %s\n", pajeEndLinkId,
-            entityType, container, value, destContainer, key);
+static void print_pajePopState(popState_t event)
+{
+  if (event->event.timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s\n",
+        event->event.id,
+        event->type->id,
+        event->container->id);
+  }else{
+    fprintf(tracing_file, "%d %lf %s %s\n",
+        event->event.id,
+        event->event.timestamp,
+        event->type->id,
+        event->container->id);
+  }
+}
+
+static void print_pajeStartLink(startLink_t event)
+{
+  if (event->event.timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s %s %s %s\n",
+        event->event.id,
+        event->type->id,
+        event->container->id,
+        event->value,
+        event->sourceContainer->id,
+        event->key);
   }else {
-    fprintf(tracing_file, "%d %lf %s %s %s %s %s\n", pajeEndLinkId, time,
-          entityType, container, value, destContainer, key);
+    fprintf(tracing_file, "%d %lf %s %s %s %s %s\n",
+        event->event.id,
+        event->event.timestamp,
+        event->type->id,
+        event->container->id,
+        event->value,
+        event->sourceContainer->id,
+        event->key);
   }
 }
 
-void pajeDefineVariableType(const char *alias, const char *containerType,
-                            const char *name)
+static void print_pajeEndLink(endLink_t event)
 {
-  INSTR_PAJE_ASSERT(alias);
-  INSTR_PAJE_ASSERT(containerType);
-  INSTR_PAJE_ASSERT(name);
-
-  fprintf(tracing_file, "%d %s %s %s\n", pajeDefineVariableTypeId, alias,
-          containerType, name);
+  if (event->event.timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s %s %s %s\n",
+        event->event.id,
+        event->type->id,
+        event->container->id,
+        event->value,
+        event->destContainer->id,
+        event->key);
+  }else {
+    fprintf(tracing_file, "%d %lf %s %s %s %s %s\n",
+        event->event.id,
+        event->event.timestamp,
+        event->type->id,
+        event->container->id,
+        event->value,
+        event->destContainer->id,
+        event->key);
+  }
 }
 
-void pajeDefineVariableTypeWithColor(const char *alias, const char *containerType,
-                            const char *name, const char *color)
+static void print_pajeNewEvent (newEvent_t event)
 {
-  INSTR_PAJE_ASSERT(alias);
-  INSTR_PAJE_ASSERT(containerType);
-  INSTR_PAJE_ASSERT(name);
-  INSTR_PAJE_ASSERT(color);
-
-  fprintf(tracing_file, "%d %s %s %s \"%s\"\n", pajeDefineVariableTypeWithColorId, alias,
-          containerType, name, color);
-}
-
-void pajeSetVariable(double time, const char *entityType,
-                     const char *container, const char *value)
-{
-  INSTR_PAJE_ASSERT(entityType);
-  INSTR_PAJE_ASSERT(container);
-  INSTR_PAJE_ASSERT(value);
-
-  char line[TRACE_LINE_SIZE];
-  __pajeSetVariable(line, TRACE_LINE_SIZE, pajeSetVariableId, time,
-                    entityType, container, value);
-  fprintf(tracing_file, "%s\n", line);
-}
-
-void pajeAddVariable(double time, const char *entityType,
-                     const char *container, const char *value)
-{
-  INSTR_PAJE_ASSERT(entityType);
-  INSTR_PAJE_ASSERT(container);
-  INSTR_PAJE_ASSERT(value);
-
-  char line[TRACE_LINE_SIZE];
-  __pajeSetVariable(line, TRACE_LINE_SIZE, pajeAddVariableId, time,
-                    entityType, container, value);
-  fprintf(tracing_file, "%s\n", line);
-}
-
-void pajeSubVariable(double time, const char *entityType,
-                     const char *container, const char *value)
-{
-  INSTR_PAJE_ASSERT(entityType);
-  INSTR_PAJE_ASSERT(container);
-  INSTR_PAJE_ASSERT(value);
-
-  char line[TRACE_LINE_SIZE];
-  __pajeSetVariable(line, TRACE_LINE_SIZE, pajeSubVariableId, time,
-                    entityType, container, value);
-  fprintf(tracing_file, "%s\n", line);
-}
-
-void pajeNewEvent(double time, const char *entityType,
-                  const char *container, const char *value)
-{
-  INSTR_PAJE_ASSERT(entityType);
-  INSTR_PAJE_ASSERT(container);
-  INSTR_PAJE_ASSERT(value);
-
-  if (time == 0){
-    fprintf(tracing_file, "%d 0 %s %s %s\n", pajeNewEventId,
-          entityType, container, value);
+  if (event->event.timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s %s\n",
+        event->event.id,
+        event->type->id,
+        event->container->id,
+        event->value);
   }else{
-    fprintf(tracing_file, "%d %lf %s %s %s\n", pajeNewEventId, time,
-          entityType, container, value);
+    fprintf(tracing_file, "%d %lf %s %s %s\n",
+        event->event.id,
+        event->event.timestamp,
+        event->type->id,
+        event->container->id,
+        event->value);
   }
 }
+
+void new_pajeDefineContainerType(type_t type)
+{
+  defineContainerType_t event = xbt_new0(s_defineContainerType_t, 1);
+  event->type = type;
+  event->print = print_pajeDefineContainerType;
+  event->event.name = xbt_strdup("PajeDefineContainerType");
+  event->event.id = pajeDefineContainerTypeId;
+  event->event.timestamp = 0;
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+void new_pajeDefineVariableType(type_t type)
+{
+  defineVariableType_t event = xbt_new0(s_defineVariableType_t, 1);
+  event->type = type;
+  event->print = print_pajeDefineVariableType;
+  event->event.name = xbt_strdup("PajeDefineVariableType");
+  event->event.id = pajeDefineVariableTypeWithColorId;
+  event->event.timestamp = 0;
+  event->event.header = xbt_strdup ("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+void new_pajeDefineStateType(type_t type)
+{
+  defineStateType_t event = xbt_new0(s_defineStateType_t, 1);
+  event->type = type;
+  event->print = print_pajeDefineStateType;
+  event->event.name = xbt_strdup("PajeDefineStateType");
+  event->event.id = pajeDefineStateTypeId;
+  event->event.timestamp = 0;
+  event->event.header = xbt_strdup ("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+void new_pajeDefineEventType(type_t type)
+{
+  defineEventType_t event = xbt_new0(s_defineEventType_t, 1);
+  event->type = type;
+  event->print = print_pajeDefineEventType;
+  event->event.name = xbt_strdup("PajeDefineEventType");
+  event->event.id = pajeDefineEventTypeWithColorId;
+  event->event.timestamp = 0;
+  event->event.header = xbt_strdup ("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+void new_pajeDefineLinkType(type_t type, type_t source, type_t dest)
+{
+  defineLinkType_t event = xbt_new0(s_defineLinkType_t, 1);
+  event->type = type;
+  event->source = source;
+  event->dest = dest;
+  event->print = print_pajeDefineLinkType;
+  event->event.name = xbt_strdup("PajeDefineLinkType");
+  event->event.id = pajeDefineLinkTypeId;
+  event->event.timestamp = 0;
+  event->event.header = xbt_strdup ("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+void new_pajeCreateContainer (container_t container)
+{
+  createContainer_t event = xbt_new0(s_createContainer_t, 1);
+  event->container = container;
+  event->print = print_pajeCreateContainer;
+  event->event.name = xbt_strdup("PajeCreateContainer");
+  event->event.id = pajeCreateContainerId;
+  event->event.timestamp = SIMIX_get_clock();
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+void new_pajeDestroyContainer (container_t container)
+{
+  destroyContainer_t event = xbt_new0(s_destroyContainer_t, 1);
+  event->container = container;
+  event->print = print_pajeDestroyContainer;
+  event->event.name = xbt_strdup("PajeDestroyContainer");
+  event->event.id = pajeDestroyContainerId;
+  event->event.timestamp = SIMIX_get_clock();
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+
+  fflush (tracing_file);
+}
+
+void new_pajeSetVariable (double timestamp, container_t container, type_t type, double value)
+{
+  setVariable_t event = xbt_new0(s_setVariable_t, 1);
+  event->type = type;
+  event->container = container;
+  event->value = value;
+  event->print = print_pajeSetVariable;
+  event->event.name = xbt_strdup("PajeSetVariable");
+  event->event.id = pajeSetVariableId;
+  event->event.timestamp = timestamp;
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+
+void new_pajeAddVariable (double timestamp, container_t container, type_t type, double value)
+{
+  addVariable_t event = xbt_new0(s_addVariable_t, 1);
+  event->type = type;
+  event->container = container;
+  event->value = value;
+  event->print = print_pajeAddVariable;
+  event->event.name = xbt_strdup("PajeAddVariable");
+  event->event.id = pajeAddVariableId;
+  event->event.timestamp = timestamp;
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+void new_pajeSubVariable (double timestamp, container_t container, type_t type, double value)
+{
+  subVariable_t event = xbt_new0(s_subVariable_t, 1);
+  event->type = type;
+  event->container = container;
+  event->value = value;
+  event->print = print_pajeSubVariable;
+  event->event.name = xbt_strdup("PajeSubVariable");
+  event->event.id = pajeSubVariableId;
+  event->event.timestamp = timestamp;
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+void new_pajeSetState (double timestamp, container_t container, type_t type, const char *value)
+{
+  setState_t event = xbt_new0(s_setState_t, 1);
+  event->type = type;
+  event->container = container;
+  event->value = xbt_strdup(value);
+  event->print = print_pajeSetState;
+  event->event.name = xbt_strdup("PajeSetState");
+  event->event.id = pajeSetStateId;
+  event->event.timestamp = timestamp;
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->value);
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+
+void new_pajePushState (double timestamp, container_t container, type_t type, const char *value)
+{
+  pushState_t event = xbt_new0(s_pushState_t, 1);
+  event->type = type;
+  event->container = container;
+  event->value = xbt_strdup(value);
+  event->print = print_pajePushState;
+  event->event.name = xbt_strdup("PajePushState");
+  event->event.id = pajePushStateId;
+  event->event.timestamp = timestamp;
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->value);
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+
+void new_pajePopState (double timestamp, container_t container, type_t type)
+{
+  popState_t event = xbt_new0(s_popState_t, 1);
+  event->type = type;
+  event->container = container;
+  event->print = print_pajePopState;
+  event->event.name = xbt_strdup("PajePopState");
+  event->event.id = pajePopStateId;
+  event->event.timestamp = timestamp;
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+void new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key)
+{
+  startLink_t event = xbt_new0(s_startLink_t, 1);
+  event->type = type;
+  event->container = container;
+  event->sourceContainer = sourceContainer;
+  event->value = xbt_strdup (value);
+  event->key = xbt_strdup (key);
+  event->print = print_pajeStartLink;
+  event->event.name = xbt_strdup("PajeStartLink");
+  event->event.id = pajeStartLinkId;
+  event->event.timestamp = timestamp;
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->value);
+  xbt_free (event->key);
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+void new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key)
+{
+  endLink_t event = xbt_new0(s_endLink_t, 1);
+  event->type = type;
+  event->container = container;
+  event->destContainer = destContainer;
+  event->value = xbt_strdup (value);
+  event->key = xbt_strdup (key);
+  event->print = print_pajeEndLink;
+  event->event.name = xbt_strdup("PajeEndLink");
+  event->event.id = pajeEndLinkId;
+  event->event.timestamp = timestamp;
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->value);
+  xbt_free (event->key);
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+
+void new_pajeNewEvent (double timestamp, container_t container, type_t type, const char *value)
+{
+  newEvent_t event = xbt_new0(s_newEvent_t, 1);
+  event->type = type;
+  event->container = container;
+  event->value = xbt_strdup (value);
+  event->print = print_pajeNewEvent;
+  event->event.name = xbt_strdup("PajeNewEvent");
+  event->event.id = pajeNewEventId;
+  event->event.timestamp = timestamp;
+  event->event.header = xbt_strdup("");
+
+  //print it
+  event->print (event);
+
+  //destroy it
+  xbt_free (event->value);
+  xbt_free (event->event.name);
+  xbt_free (event->event.header);
+  xbt_free (event);
+  event = NULL;
+}
+//
+//void pajeNewEvent(double time, const char *entityType,
+//                  const char *container, const char *value)
+//{
+//  INSTR_PAJE_ASSERT(entityType);
+//  INSTR_PAJE_ASSERT(container);
+//  INSTR_PAJE_ASSERT(value);
+//
+//  if (time == 0){
+//    fprintf(tracing_file, "%d 0 %s %s %s\n", pajeNewEventId,
+//          entityType, container, value);
+//  }else{
+//    fprintf(tracing_file, "%d %lf %s %s %s\n", pajeNewEventId, time,
+//          entityType, container, value);
+//  }
+//}
 
 #endif /* HAVE_TRACING */

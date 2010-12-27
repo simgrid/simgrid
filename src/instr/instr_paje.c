@@ -59,14 +59,14 @@ type_t getContainerType (const char *typename, type_t father)
   type_t ret;
   if (father == NULL){
     ret = newType (typename, typename, TYPE_CONTAINER, father);
-    if (father) pajeDefineContainerType(ret->id, ret->father->id, ret->name);
+    if (father) new_pajeDefineContainerType (ret);
     rootType = ret;
   }else{
     //check if my father type already has my typename
     ret = (type_t)xbt_dict_get_or_null (father->children, typename);
     if (ret == NULL){
       ret = newType (typename, typename, TYPE_CONTAINER, father);
-      pajeDefineContainerType(ret->id, ret->father->id, ret->name);
+      new_pajeDefineContainerType (ret);
     }
   }
   return ret;
@@ -77,12 +77,9 @@ type_t getEventType (const char *typename, const char *color, type_t father)
   type_t ret = xbt_dict_get_or_null (father->children, typename);
   if (ret == NULL){
     ret = newType (typename, typename, TYPE_EVENT, father);
+    ret->color = xbt_strdup (color);
     //INFO4("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-    if (color){
-      pajeDefineEventTypeWithColor (ret->id, ret->father->id, ret->name, color);
-    }else{
-      pajeDefineEventType(ret->id, ret->father->id, ret->name);
-    }
+    new_pajeDefineEventType(ret);
   }
   return ret;
 }
@@ -92,12 +89,9 @@ type_t getVariableType (const char *typename, const char *color, type_t father)
   type_t ret = xbt_dict_get_or_null (father->children, typename);
   if (ret == NULL){
     ret = newType (typename, typename, TYPE_VARIABLE, father);
+    ret->color = xbt_strdup (color);
     //INFO4("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-    if (color){
-      pajeDefineVariableTypeWithColor(ret->id, ret->father->id, ret->name, color);
-    }else{
-      pajeDefineVariableType(ret->id, ret->father->id, ret->name);
-    }
+    new_pajeDefineVariableType (ret);
   }
   return ret;
 }
@@ -121,7 +115,7 @@ type_t getLinkType (const char *typename, type_t father, type_t source, type_t d
   if (ret == NULL){
     ret = newType (typename, key, TYPE_LINK, father);
     //INFO8("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id, source->name, source->id, dest->name, dest->id);
-    pajeDefineLinkType(ret->id, ret->father->id, source->id, dest->id, ret->name);
+    new_pajeDefineLinkType(ret, source, dest);
   }
   return ret;
 }
@@ -132,7 +126,7 @@ type_t getStateType (const char *typename, type_t father)
   if (ret == NULL){
     ret = newType (typename, typename, TYPE_STATE, father);
     //INFO4("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
-    pajeDefineStateType(ret->id, ret->father->id, ret->name);
+    new_pajeDefineStateType(ret);
   }
   return ret;
 }
@@ -186,7 +180,7 @@ container_t newContainer (const char *name, e_container_types kind, container_t 
   new->children = xbt_dict_new();
   if (new->father){
     xbt_dict_set(new->father->children, new->name, new, NULL);
-    pajeCreateContainer (SIMIX_get_clock(), new->id, new->type->id, new->father->id, new->name);
+    new_pajeCreateContainer (new);
   }
 
   //register hosts, routers, links containers
@@ -260,7 +254,7 @@ void destroyContainer (container_t container)
   }
 
   //trace my destruction
-  pajeDestroyContainer(SIMIX_get_clock(), container->type->id, container->id);
+  new_pajeDestroyContainer(container);
 
   //free
   xbt_free (container->name);

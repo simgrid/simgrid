@@ -30,6 +30,7 @@ typedef struct s_type *type_t;
 typedef struct s_type {
   char *id;
   char *name;
+  char *color;
   e_entity_types kind;
   struct s_type *father;
   xbt_dict_t children;
@@ -62,49 +63,22 @@ extern xbt_dict_t created_categories;
 void TRACE_paje_create_header(void);
 void TRACE_paje_start(void);
 void TRACE_paje_end(void);
-void pajeDefineContainerType(const char *alias, const char *containerType,
-                             const char *name);
-void pajeDefineStateType(const char *alias, const char *containerType,
-                         const char *name);
-void pajeDefineEventTypeWithColor(const char *alias, const char *containerType,
-                         const char *name, const char *color);
-void pajeDefineEventType(const char *alias, const char *containerType,
-                         const char *name);
-void pajeDefineLinkType(const char *alias, const char *containerType,
-                        const char *sourceContainerType,
-                        const char *destContainerType, const char *name);
-void pajeCreateContainer(double time, const char *alias, const char *type,
-                         const char *container, const char *name);
-void pajeDestroyContainer(double time, const char *type,
-                          const char *container);
-void pajeSetState(double time, const char *entityType,
-                  const char *container, const char *value);
-void pajePushState(double time, const char *entityType,
-                   const char *container, const char *value);
-void pajePopState(double time, const char *entityType,
-                  const char *container);
-void pajeStartLink(double time, const char *entityType,
-                   const char *container, const char *value,
-                   const char *sourceContainer, const char *key);
-void pajeStartLinkWithVolume(double time, const char *entityType,
-                             const char *container, const char *value,
-                             const char *sourceContainer, const char *key,
-                             double volume);
-void pajeEndLink(double time, const char *entityType,
-                 const char *container, const char *value,
-                 const char *destContainer, const char *key);
-void pajeDefineVariableType(const char *alias, const char *containerType,
-                            const char *name);
-void pajeDefineVariableTypeWithColor(const char *alias, const char *containerType,
-                            const char *name, const char *color);
-void pajeSetVariable(double time, const char *entityType,
-                     const char *container, const char *value);
-void pajeAddVariable(double time, const char *entityType,
-                     const char *container, const char *value);
-void pajeSubVariable(double time, const char *entityType,
-                     const char *container, const char *value);
-void pajeNewEvent(double time, const char *entityType,
-                  const char *container, const char *value);
+void new_pajeDefineContainerType(type_t type);
+void new_pajeDefineVariableType(type_t type);
+void new_pajeDefineStateType(type_t type);
+void new_pajeDefineEventType(type_t type);
+void new_pajeDefineLinkType(type_t type, type_t source, type_t dest);
+void new_pajeCreateContainer (container_t container);
+void new_pajeDestroyContainer (container_t container);
+void new_pajeSetVariable (double timestamp, container_t container, type_t type, double value);
+void new_pajeAddVariable (double timestamp, container_t container, type_t type, double value);
+void new_pajeSubVariable (double timestamp, container_t container, type_t type, double value);
+void new_pajeSetState (double timestamp, container_t container, type_t type, const char *value);
+void new_pajePushState (double timestamp, container_t container, type_t type, const char *value);
+void new_pajePopState (double timestamp, container_t container, type_t type);
+void new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key);
+void new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key);
+void new_pajeNewEvent (double timestamp, container_t container, type_t type, const char *value);
 
 /* declaration of instrumentation functions from msg_task_instr.c */
 char *TRACE_task_container(m_task_t task, char *output, int len);

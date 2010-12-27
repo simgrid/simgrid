@@ -144,7 +144,7 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation)
   container_t container = getContainer (str);
   type_t type = getType ("MPI_STATE");
 
-  pajePushState(SIMIX_get_clock(), type->id, container->id, operation);
+  new_pajePushState (SIMIX_get_clock(), container, type, operation);
 }
 
 void TRACE_smpi_collective_out(int rank, int root, const char *operation)
@@ -157,7 +157,7 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation)
   container_t container = getContainer (str);
   type_t type = getType ("MPI_STATE");
 
-  pajePopState(SIMIX_get_clock(), type->id, container->id);
+  new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
@@ -170,7 +170,7 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
   container_t container = getContainer (str);
   type_t type = getType ("MPI_STATE");
 
-  pajePushState(SIMIX_get_clock(), type->id, container->id, operation);
+  new_pajePushState (SIMIX_get_clock(), container, type, operation);
 }
 
 void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
@@ -183,7 +183,7 @@ void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
   container_t container = getContainer (str);
   type_t type = getType ("MPI_STATE");
 
-  pajePopState(SIMIX_get_clock(), type->id, container->id);
+  new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
 void TRACE_smpi_send(int rank, int src, int dst)
@@ -199,7 +199,7 @@ void TRACE_smpi_send(int rank, int src, int dst)
   container_t container = getContainer (str);
   type_t type = getType ("MPI_LINK");
 
-  pajeStartLink(SIMIX_get_clock(), type->id, type->father->id, "PTP", container->id, key);
+  new_pajeStartLink (SIMIX_get_clock(), getRootContainer(), type, container, "PTP", key);
 }
 
 void TRACE_smpi_recv(int rank, int src, int dst)
@@ -215,6 +215,6 @@ void TRACE_smpi_recv(int rank, int src, int dst)
   container_t container = getContainer (str);
   type_t type = getType ("MPI_LINK");
 
-  pajeEndLink(SIMIX_get_clock(), type->id, type->father->id, "PTP", container->id, key);
+  new_pajeEndLink (SIMIX_get_clock(), getRootContainer(), type, container, "PTP", key);
 }
 #endif /* HAVE_TRACING */

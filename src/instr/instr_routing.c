@@ -74,8 +74,8 @@ static void linkContainers (const char *a1, const char *a2)
   static long long counter = 0;
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
-  pajeStartLink(SIMIX_get_clock(), link_type->id, container->id, "G", a1_container->id, key);
-  pajeEndLink(SIMIX_get_clock(), link_type->id, container->id, "G", a2_container->id, key);
+  new_pajeStartLink(SIMIX_get_clock(), container, link_type, a1_container, "G", key);
+  new_pajeEndLink(SIMIX_get_clock(), container, link_type, a2_container, "G", key);
 }
 
 static void recursiveGraphExtraction (container_t container)
@@ -204,8 +204,8 @@ static void instr_routing_parse_start_link ()
 
   type_t bandwidth = getVariableType ("bandwidth", NULL, new->type);
   type_t latency = getVariableType ("latency", NULL, new->type);
-  pajeSetVariable (0, bandwidth->id, new->id, A_surfxml_link_bandwidth);
-  pajeSetVariable (0, latency->id, new->id, A_surfxml_link_latency);
+  new_pajeSetVariable (0, new, bandwidth, atof(A_surfxml_link_bandwidth));
+  new_pajeSetVariable (0, new, latency, atof(A_surfxml_link_latency));
   if (TRACE_uncategorized()){
     getVariableType ("bandwidth_used", "0.5 0.5 0.5", new->type);
   }
@@ -221,7 +221,7 @@ static void instr_routing_parse_start_host ()
   container_t new = newContainer (A_surfxml_host_id, INSTR_HOST, father);
 
   type_t power = getVariableType ("power", NULL, new->type);
-  pajeSetVariable (0, power->id, new->id, A_surfxml_host_power);
+  new_pajeSetVariable (0, new, power, atof(A_surfxml_host_power));
   if (TRACE_uncategorized()){
     getVariableType ("power_used", "0.5 0.5 0.5", new->type);
   }

@@ -46,10 +46,10 @@ void TRACE_msg_set_process_category(m_process_t process, const char *category, c
   if (!type){
     type = getVariableType(category, color, msg->type);
   }
-  pajeSetVariable(SIMIX_get_clock(), type->id, msg->id, "1");
+  new_pajeSetVariable (SIMIX_get_clock(), msg, type, 1);
 
   type = getType ("MSG_PROCESS_STATE");
-  pajeSetState (MSG_get_clock(), type->id, msg->id, "executing");
+  new_pajeSetState (MSG_get_clock(), msg, type, "executing");
 }
 
 /*
@@ -68,7 +68,7 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
   //start link
   container_t msg = getContainer(process->name);
   type_t type = getType ("MSG_PROCESS_LINK");
-  pajeStartLink (MSG_get_clock(), type->id, "0", "M", msg->id, key);
+  new_pajeStartLink (MSG_get_clock(), getRootContainer(), type, msg, "M", key);
 
   //destroy existing container of this process
   destroyContainer(getContainer(process->name));
@@ -76,12 +76,12 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
   //create new container on the new_host location
   msg = newContainer(process->name, INSTR_MSG_PROCESS, getContainer(new_host->name));
   type = getType (process->category);
-  pajeSetVariable(SIMIX_get_clock(), type->id, msg->id, "1");
+  new_pajeSetVariable (MSG_get_clock(), msg, type, 1);
 
   //end link
   msg = getContainer(process->name);
   type = getType ("MSG_PROCESS_LINK");
-  pajeEndLink (MSG_get_clock(), type->id, "0", "M", msg->id, key);
+  new_pajeEndLink (MSG_get_clock(), getRootContainer(), type, msg, "M", key);
 }
 
 void TRACE_msg_process_kill(m_process_t process)
@@ -102,7 +102,7 @@ void TRACE_msg_process_suspend(m_process_t process)
 
   container_t process_container = getContainer (process->name);
   type_t type = getType ("MSG_PROCESS_STATE");
-  pajePushState (MSG_get_clock(), type->id, process_container->id, "suspend");
+  new_pajePushState (MSG_get_clock(), process_container, type, "suspend");
 }
 
 void TRACE_msg_process_resume(m_process_t process)
@@ -113,7 +113,7 @@ void TRACE_msg_process_resume(m_process_t process)
 
   container_t process_container = getContainer (process->name);
   type_t type = getType ("MSG_PROCESS_STATE");
-  pajePopState (MSG_get_clock(), type->id, process_container->id);
+  new_pajePopState (MSG_get_clock(), process_container, type);
 }
 
 void TRACE_msg_process_sleep_in(m_process_t process)
@@ -124,7 +124,7 @@ void TRACE_msg_process_sleep_in(m_process_t process)
 
   container_t process_container = getContainer (process->name);
   type_t type = getType ("MSG_PROCESS_STATE");
-  pajePushState (MSG_get_clock(), type->id, process_container->id, "sleep");
+  new_pajePushState (MSG_get_clock(), process_container, type, "sleep");
 }
 
 void TRACE_msg_process_sleep_out(m_process_t process)
@@ -135,7 +135,7 @@ void TRACE_msg_process_sleep_out(m_process_t process)
 
   container_t process_container = getContainer (process->name);
   type_t type = getType ("MSG_PROCESS_STATE");
-  pajePopState (MSG_get_clock(), type->id, process_container->id);
+  new_pajePopState (MSG_get_clock(), process_container, type);
 }
 
 void TRACE_msg_process_end(m_process_t process)

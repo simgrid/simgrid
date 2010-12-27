@@ -72,7 +72,7 @@ void TRACE_declare_mark(const char *mark_type)
     return;
 
   DEBUG1("MARK,declare %s", mark_type);
-  pajeDefineEventType(mark_type, "0", mark_type);
+  getEventType(mark_type, NULL, getRootType());
 }
 
 void TRACE_mark(const char *mark_type, const char *mark_value)
@@ -83,7 +83,8 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
     return;
 
   DEBUG2("MARK %s %s", mark_type, mark_value);
-  pajeNewEvent(MSG_get_clock(), mark_type, "0", mark_value);
+  type_t type = getEventType (mark_type, NULL, getRootContainer()->type);
+  new_pajeNewEvent (MSG_get_clock(), getRootContainer(), type, mark_value);
 }
 
 
@@ -103,14 +104,14 @@ void TRACE_user_link_variable(double time, const char *resource,
   if (strcmp(what, "declare") == 0) {
     instr_new_user_link_variable_type (variable, NULL);
   } else{
-    char *variable_id = getVariableTypeIdByName(variable, getContainerByName(resource)->type);
-    char *resource_id = getContainerIdByName(resource);
+    container_t container = getContainerByName (resource);
+    type_t type = getVariableType (variable, NULL, container->type);
     if (strcmp(what, "set") == 0) {
-      pajeSetVariable(time, variable_id, resource_id, valuestr);
+      new_pajeSetVariable(time, container, type, value);
     } else if (strcmp(what, "add") == 0) {
-      pajeAddVariable(time, variable_id, resource_id, valuestr);
+      new_pajeAddVariable(time, container, type, value);
     } else if (strcmp(what, "sub") == 0) {
-      pajeSubVariable(time, variable_id, resource_id, valuestr);
+      new_pajeSubVariable(time, container, type, value);
     }
   }
 }
@@ -131,17 +132,16 @@ void TRACE_user_host_variable(double time, const char *variable,
     instr_new_user_host_variable_type (variable, NULL);
   } else{
     char *host_name = MSG_host_self()->name;
-    char *variable_id = getVariableTypeIdByName(variable, getContainerByName(host_name)->type);
-    char *resource_id = getContainerIdByName(host_name);
+    container_t container = getContainerByName(host_name);
+    type_t type = getVariableType (variable, NULL, container->type);
     if (strcmp(what, "set") == 0) {
-      pajeSetVariable(time, variable_id, resource_id, valuestr);
+      new_pajeSetVariable(time, container, type, value);
     } else if (strcmp(what, "add") == 0) {
-      pajeAddVariable(time, variable_id, resource_id, valuestr);
+      new_pajeAddVariable(time, container, type, value);
     } else if (strcmp(what, "sub") == 0) {
-      pajeSubVariable(time, variable_id, resource_id, valuestr);
+      new_pajeSubVariable(time, container, type, value);
     }
   }
 }
-
 
 #endif /* HAVE_TRACING */
