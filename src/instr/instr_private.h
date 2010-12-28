@@ -63,6 +63,7 @@ extern xbt_dict_t created_categories;
 void TRACE_paje_create_header(void);
 void TRACE_paje_start(void);
 void TRACE_paje_end(void);
+void TRACE_paje_dump_buffer (void);
 void new_pajeDefineContainerType(type_t type);
 void new_pajeDefineVariableType(type_t type);
 void new_pajeDefineStateType(type_t type);

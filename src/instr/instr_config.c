@@ -69,6 +69,9 @@ int TRACE_end()
     TRACE_generate_triva_cat_conf();
   }
 
+  /* dump trace buffer */
+  TRACE_paje_dump_buffer();
+
   /* destroy all data structures of tracing (and free) */
   destroyAllContainers();
 

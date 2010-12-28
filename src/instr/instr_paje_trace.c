@@ -145,6 +145,7 @@ typedef struct s_newEvent {
 
 static FILE *tracing_file = NULL;
 
+static xbt_dynar_t buffer = NULL;
 
 void TRACE_paje_start(void)
 {
@@ -156,6 +157,8 @@ void TRACE_paje_start(void)
 
   /* output header */
   TRACE_paje_create_header();
+
+  buffer = xbt_dynar_new (sizeof(paje_event_t), NULL);
 }
 
 void TRACE_paje_end(void)
@@ -163,6 +166,15 @@ void TRACE_paje_end(void)
   fclose(tracing_file);
   char *filename = TRACE_get_filename();
   DEBUG1("Filename %s is closed", filename);
+}
+
+void TRACE_paje_dump_buffer (void)
+{
+  paje_event_t event;
+  while (xbt_dynar_length (buffer) > 0){
+    xbt_dynar_remove_at (buffer, 0, &event);
+    event->print (event);
+  }
 }
 
 void TRACE_paje_create_header(void)
@@ -286,6 +298,27 @@ void TRACE_paje_create_header(void)
 }
 
 /* internal do the instrumentation module */
+static void insert_into_buffer (paje_event_t tbi)
+{
+  unsigned int i;
+  if (xbt_dynar_length(buffer) == 0){
+    xbt_dynar_push (buffer, &tbi);
+  }else{
+    int inserted = 0;
+    for (i = 0; i < xbt_dynar_length(buffer); i++){
+      paje_event_t e1 = *(paje_event_t*)xbt_dynar_get_ptr(buffer, i);
+      if (e1->timestamp > tbi->timestamp){
+        xbt_dynar_insert_at (buffer, i, &tbi);
+        inserted = 1;
+        break;
+      }
+    }
+    if (!inserted){
+      xbt_dynar_push (buffer, &tbi);
+    }
+  }
+}
+
 static void print_pajeDefineContainerType(paje_event_t event)
 {
   fprintf(tracing_file, "%d %s %s %s\n",
@@ -678,6 +711,9 @@ void new_pajeSetVariable (double timestamp, container_t container, type_t type, 
   ((setVariable_t)(event->data))->container = container;
   ((setVariable_t)(event->data))->value = value;
 
+  insert_into_buffer (event);
+  return;
+
   //print it
   event->print (event);
 
@@ -699,6 +735,9 @@ void new_pajeAddVariable (double timestamp, container_t container, type_t type, 
   ((addVariable_t)(event->data))->container = container;
   ((addVariable_t)(event->data))->value = value;
 
+  insert_into_buffer (event);
+  return;
+
   //print it
   event->print (event);
 
@@ -719,6 +758,9 @@ void new_pajeSubVariable (double timestamp, container_t container, type_t type, 
   ((subVariable_t)(event->data))->container = container;
   ((subVariable_t)(event->data))->value = value;
 
+  insert_into_buffer (event);
+  return;
+
   //print it
   event->print (event);
 
@@ -738,6 +780,9 @@ void new_pajeSetState (double timestamp, container_t container, type_t type, con
   ((setState_t)(event->data))->type = type;
   ((setState_t)(event->data))->container = container;
   ((setState_t)(event->data))->value = xbt_strdup(value);
+
+  insert_into_buffer (event);
+  return;
 
   //print it
   event->print (event);
@@ -761,6 +806,9 @@ void new_pajePushState (double timestamp, container_t container, type_t type, co
   ((pushState_t)(event->data))->container = container;
   ((pushState_t)(event->data))->value = xbt_strdup(value);
 
+  insert_into_buffer (event);
+  return;
+
   //print it
   event->print (event);
 
@@ -781,6 +829,9 @@ void new_pajePopState (double timestamp, container_t container, type_t type)
   event->data = xbt_new0(s_popState_t, 1);
   ((popState_t)(event->data))->type = type;
   ((popState_t)(event->data))->container = container;
+
+  insert_into_buffer (event);
+  return;
 
   //print it
   event->print (event);
@@ -803,6 +854,9 @@ void new_pajeStartLink (double timestamp, container_t container, type_t type, co
   ((startLink_t)(event->data))->sourceContainer = sourceContainer;
   ((startLink_t)(event->data))->value = xbt_strdup(value);
   ((startLink_t)(event->data))->key = xbt_strdup(key);
+
+  insert_into_buffer (event);
+  return;
 
   //print it
   event->print (event);
@@ -828,6 +882,9 @@ void new_pajeEndLink (double timestamp, container_t container, type_t type, cont
   ((endLink_t)(event->data))->value = xbt_strdup(value);
   ((endLink_t)(event->data))->key = xbt_strdup(key);
 
+  insert_into_buffer (event);
+  return;
+
   //print it
   event->print (event);
 
@@ -849,6 +906,9 @@ void new_pajeNewEvent (double timestamp, container_t container, type_t type, con
   ((newEvent_t)(event->data))->type = type;
   ((newEvent_t)(event->data))->container = container;
   ((newEvent_t)(event->data))->value = xbt_strdup(value);
+
+  insert_into_buffer (event);
+  return;
 
   //print it
   event->print (event);
