@@ -36,6 +36,7 @@ typedef struct paje_event {
   double timestamp;
   e_event_type event_type;
   void (*print) (paje_event_t event);
+  void (*free) (paje_event_t event);
   void *data;
 } s_paje_event_t;
 
@@ -173,6 +174,7 @@ void TRACE_paje_dump_buffer (void)
   while (xbt_dynar_length (buffer) > 0){
     xbt_dynar_remove_at (buffer, 0, &event);
     event->print (event);
+    event->free (event);
   }
 }
 
@@ -571,22 +573,38 @@ static void print_pajeNewEvent (paje_event_t event)
   }
 }
 
+static void free_paje_event (paje_event_t event)
+{
+  if (event->event_type == PAJE_SetState) {
+    xbt_free (((setState_t)(event->data))->value);
+  }else if (event->event_type == PAJE_PushState) {
+    xbt_free (((pushState_t)(event->data))->value);
+  }else if (event->event_type == PAJE_NewEvent){
+    xbt_free (((newEvent_t)(event->data))->value);
+  }else if (event->event_type == PAJE_StartLink){
+    xbt_free (((startLink_t)(event->data))->value);
+    xbt_free (((startLink_t)(event->data))->key);
+  }else if (event->event_type == PAJE_EndLink){
+    xbt_free (((endLink_t)(event->data))->value);
+    xbt_free (((endLink_t)(event->data))->key);
+  }
+  xbt_free (event->data);
+  xbt_free (event);
+}
+
 void new_pajeDefineContainerType(type_t type)
 {
   paje_event_t event = xbt_new0(s_paje_event_t, 1);
   event->event_type = PAJE_DefineContainerType;
   event->timestamp = 0;
   event->print = print_pajeDefineContainerType;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_defineContainerType_t, 1);
   ((defineContainerType_t)(event->data))->type = type;
 
   //print it
   event->print (event);
-
-  //destroy it
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
+  event->free (event);
 }
 
 void new_pajeDefineVariableType(type_t type)
@@ -595,16 +613,13 @@ void new_pajeDefineVariableType(type_t type)
   event->event_type = PAJE_DefineVariableType;
   event->timestamp = 0;
   event->print = print_pajeDefineVariableType;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_defineVariableType_t, 1);
   ((defineVariableType_t)(event->data))->type = type;
 
   //print it
   event->print (event);
-
-  //destroy it
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
+  event->free (event);
 }
 
 void new_pajeDefineStateType(type_t type)
@@ -613,16 +628,13 @@ void new_pajeDefineStateType(type_t type)
   event->event_type = PAJE_DefineStateType;
   event->timestamp = 0;
   event->print = print_pajeDefineStateType;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_defineStateType_t, 1);
   ((defineStateType_t)(event->data))->type = type;
 
   //print it
   event->print (event);
-
-  //destroy it
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
+  event->free (event);
 }
 
 void new_pajeDefineEventType(type_t type)
@@ -631,16 +643,13 @@ void new_pajeDefineEventType(type_t type)
   event->event_type = PAJE_DefineEventType;
   event->timestamp = 0;
   event->print = print_pajeDefineEventType;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_defineEventType_t, 1);
   ((defineEventType_t)(event->data))->type = type;
 
   //print it
   event->print (event);
-
-  //destroy it
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
+  event->free (event);
 }
 
 void new_pajeDefineLinkType(type_t type, type_t source, type_t dest)
@@ -649,6 +658,7 @@ void new_pajeDefineLinkType(type_t type, type_t source, type_t dest)
   event->event_type = PAJE_DefineLinkType;
   event->timestamp = 0;
   event->print = print_pajeDefineLinkType;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_defineLinkType_t, 1);
   ((defineLinkType_t)(event->data))->type = type;
   ((defineLinkType_t)(event->data))->source = source;
@@ -656,11 +666,7 @@ void new_pajeDefineLinkType(type_t type, type_t source, type_t dest)
 
   //print it
   event->print (event);
-
-  //destroy it
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
+  event->free (event);
 }
 
 void new_pajeCreateContainer (container_t container)
@@ -669,16 +675,13 @@ void new_pajeCreateContainer (container_t container)
   event->event_type = PAJE_CreateContainer;
   event->timestamp = SIMIX_get_clock();
   event->print = print_pajeCreateContainer;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_createContainer_t, 1);
   ((createContainer_t)(event->data))->container = container;
 
   //print it
   event->print (event);
-
-  //destroy it
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
+  event->free (event);
 }
 
 void new_pajeDestroyContainer (container_t container)
@@ -687,16 +690,13 @@ void new_pajeDestroyContainer (container_t container)
   event->event_type = PAJE_DestroyContainer;
   event->timestamp = SIMIX_get_clock();
   event->print = print_pajeDestroyContainer;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_destroyContainer_t, 1);
   ((destroyContainer_t)(event->data))->container = container;
 
   //print it
   event->print (event);
-
-  //destroy it
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
+  event->free (event);
 }
 
 void new_pajeSetVariable (double timestamp, container_t container, type_t type, double value)
@@ -705,21 +705,13 @@ void new_pajeSetVariable (double timestamp, container_t container, type_t type, 
   event->event_type = PAJE_SetVariable;
   event->timestamp = timestamp;
   event->print = print_pajeSetVariable;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_setVariable_t, 1);
   ((setVariable_t)(event->data))->type = type;
   ((setVariable_t)(event->data))->container = container;
   ((setVariable_t)(event->data))->value = value;
 
   insert_into_buffer (event);
-  return;
-
-  //print it
-  event->print (event);
-
-  //destroy it
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
 }
 
 
@@ -729,21 +721,13 @@ void new_pajeAddVariable (double timestamp, container_t container, type_t type, 
   event->event_type = PAJE_AddVariable;
   event->timestamp = timestamp;
   event->print = print_pajeAddVariable;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_addVariable_t, 1);
   ((addVariable_t)(event->data))->type = type;
   ((addVariable_t)(event->data))->container = container;
   ((addVariable_t)(event->data))->value = value;
 
   insert_into_buffer (event);
-  return;
-
-  //print it
-  event->print (event);
-
-  //destroy it
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
 }
 
 void new_pajeSubVariable (double timestamp, container_t container, type_t type, double value)
@@ -752,21 +736,13 @@ void new_pajeSubVariable (double timestamp, container_t container, type_t type, 
   event->event_type = PAJE_SubVariable;
   event->timestamp = timestamp;
   event->print = print_pajeSubVariable;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_subVariable_t, 1);
   ((subVariable_t)(event->data))->type = type;
   ((subVariable_t)(event->data))->container = container;
   ((subVariable_t)(event->data))->value = value;
 
   insert_into_buffer (event);
-  return;
-
-  //print it
-  event->print (event);
-
-  //destroy it
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
 }
 
 void new_pajeSetState (double timestamp, container_t container, type_t type, const char *value)
@@ -775,22 +751,13 @@ void new_pajeSetState (double timestamp, container_t container, type_t type, con
   event->event_type = PAJE_SetState;
   event->timestamp = timestamp;
   event->print = print_pajeSetState;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_setState_t, 1);
   ((setState_t)(event->data))->type = type;
   ((setState_t)(event->data))->container = container;
   ((setState_t)(event->data))->value = xbt_strdup(value);
 
   insert_into_buffer (event);
-  return;
-
-  //print it
-  event->print (event);
-
-  //destroy it
-  xbt_free (((setState_t)(event->data))->value);
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
 }
 
 
@@ -800,22 +767,13 @@ void new_pajePushState (double timestamp, container_t container, type_t type, co
   event->event_type = PAJE_PushState;
   event->timestamp = timestamp;
   event->print = print_pajePushState;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_pushState_t, 1);
   ((pushState_t)(event->data))->type = type;
   ((pushState_t)(event->data))->container = container;
   ((pushState_t)(event->data))->value = xbt_strdup(value);
 
   insert_into_buffer (event);
-  return;
-
-  //print it
-  event->print (event);
-
-  //destroy it
-  xbt_free (((pushState_t)(event->data))->value);
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
 }
 
 
@@ -825,20 +783,12 @@ void new_pajePopState (double timestamp, container_t container, type_t type)
   event->event_type = PAJE_PopState;
   event->timestamp = timestamp;
   event->print = print_pajePopState;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_popState_t, 1);
   ((popState_t)(event->data))->type = type;
   ((popState_t)(event->data))->container = container;
 
   insert_into_buffer (event);
-  return;
-
-  //print it
-  event->print (event);
-
-  //destroy it
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
 }
 
 void new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key)
@@ -847,6 +797,7 @@ void new_pajeStartLink (double timestamp, container_t container, type_t type, co
   event->event_type = PAJE_StartLink;
   event->timestamp = timestamp;
   event->print = print_pajeStartLink;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_startLink_t, 1);
   ((startLink_t)(event->data))->type = type;
   ((startLink_t)(event->data))->container = container;
@@ -855,17 +806,6 @@ void new_pajeStartLink (double timestamp, container_t container, type_t type, co
   ((startLink_t)(event->data))->key = xbt_strdup(key);
 
   insert_into_buffer (event);
-  return;
-
-  //print it
-  event->print (event);
-
-  //destroy it
-  xbt_free (((startLink_t)(event->data))->value);
-  xbt_free (((startLink_t)(event->data))->key);
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
 }
 
 void new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key)
@@ -874,6 +814,7 @@ void new_pajeEndLink (double timestamp, container_t container, type_t type, cont
   event->event_type = PAJE_EndLink;
   event->timestamp = timestamp;
   event->print = print_pajeEndLink;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_endLink_t, 1);
   ((endLink_t)(event->data))->type = type;
   ((endLink_t)(event->data))->container = container;
@@ -882,17 +823,6 @@ void new_pajeEndLink (double timestamp, container_t container, type_t type, cont
   ((endLink_t)(event->data))->key = xbt_strdup(key);
 
   insert_into_buffer (event);
-  return;
-
-  //print it
-  event->print (event);
-
-  //destroy it
-  xbt_free (((endLink_t)(event->data))->value);
-  xbt_free (((endLink_t)(event->data))->key);
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
 }
 
 void new_pajeNewEvent (double timestamp, container_t container, type_t type, const char *value)
@@ -901,22 +831,13 @@ void new_pajeNewEvent (double timestamp, container_t container, type_t type, con
   event->event_type = PAJE_NewEvent;
   event->timestamp = timestamp;
   event->print = print_pajeNewEvent;
+  event->free = free_paje_event;
   event->data = xbt_new0(s_newEvent_t, 1);
   ((newEvent_t)(event->data))->type = type;
   ((newEvent_t)(event->data))->container = container;
   ((newEvent_t)(event->data))->value = xbt_strdup(value);
 
   insert_into_buffer (event);
-  return;
-
-  //print it
-  event->print (event);
-
-  //destroy it
-  xbt_free (((newEvent_t)(event->data))->value);
-  xbt_free (event->data);
-  xbt_free (event);
-  event = NULL;
 }
 //
 //void pajeNewEvent(double time, const char *entityType,
