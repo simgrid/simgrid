@@ -21,23 +21,14 @@ void TRACE_surf_release(void)
   TRACE_surf_resource_utilization_release();
 }
 
-static void TRACE_surf_set_resource_variable(double date,
-                                             const char *variable,
-                                             const char *resource,
-                                             double value)
-{
-  container_t container = getContainerByName(resource);
-  type_t type = getVariableType(variable, NULL, container->type);
-  new_pajeSetVariable(date, container, type, value);
-}
-
 void TRACE_surf_host_set_power(double date, const char *resource, double power)
 {
   if (!TRACE_is_active())
     return;
 
-  char *variable_type = getVariableTypeIdByName("power", getContainerByName(resource)->type);
-  TRACE_surf_set_resource_variable(date, variable_type, resource, power);
+  container_t container = getContainerByName(resource);
+  type_t type = getVariableType("power", NULL, container->type);
+  new_pajeSetVariable(date, container, type, power);
 }
 
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth)
@@ -45,8 +36,9 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
   if (!TRACE_is_active())
     return;
 
-  char *variable_type = getVariableTypeIdByName("bandwidth", getContainerByName(resource)->type);
-  TRACE_surf_set_resource_variable(date, variable_type, resource, bandwidth);
+  container_t container = getContainerByName(resource);
+  type_t type = getVariableType("bandwidth", NULL, container->type);
+  new_pajeSetVariable(date, container, type, bandwidth);
 }
 
 //FIXME: this function is not used (latency availability traces support exists in surf network models?)
@@ -55,8 +47,9 @@ void TRACE_surf_link_set_latency(double date, const char *resource, double laten
   if (!TRACE_is_active())
     return;
 
-  char *variable_type = getVariableTypeIdByName("latency", getContainerByName(resource)->type);
-  TRACE_surf_set_resource_variable(date, variable_type, resource, latency);
+  container_t container = getContainerByName(resource);
+  type_t type = getVariableType("latency", NULL, container->type);
+  new_pajeSetVariable(date, container, type, latency);
 }
 
 /* to trace gtnets */
