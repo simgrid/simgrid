@@ -39,11 +39,9 @@ static void __TRACE_surf_check_variable_set_to_zero(double now,
     xbt_dynar_t array = xbt_dynar_new(sizeof(char *), xbt_free);
     char *var_cpy = xbt_strdup(variable);
     xbt_dynar_push(array, &var_cpy);
-    if (TRACE_categorized ()){
-      container_t container = getContainerByName (resource);
-      type_t type = getVariableType (variable, NULL, container->type);
-      new_pajeSetVariable (now, container, type, 0);
-    }
+    container_t container = getContainerByName (resource);
+    type_t type = getVariableType (variable, NULL, container->type);
+    new_pajeSetVariable (now, container, type, 0);
     xbt_dict_set(platform_variables, resource, array,
                  xbt_dynar_free_voidp);
   } else {
