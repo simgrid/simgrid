@@ -14,8 +14,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "Paje tracing event sys
 
 typedef struct paje_event *paje_event_t;
 typedef struct paje_event {
-  char *name;
-  char *header;
   unsigned int id;
   double timestamp;
 } s_paje_event_t;
@@ -586,17 +584,13 @@ void new_pajeDefineContainerType(type_t type)
   defineContainerType_t event = xbt_new0(s_defineContainerType_t, 1);
   event->type = type;
   event->print = print_pajeDefineContainerType;
-  event->event.name = xbt_strdup("PajeDefineContainerType");
   event->event.id = pajeDefineContainerTypeId;
   event->event.timestamp = 0;
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
 
   //destroy it
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -606,17 +600,13 @@ void new_pajeDefineVariableType(type_t type)
   defineVariableType_t event = xbt_new0(s_defineVariableType_t, 1);
   event->type = type;
   event->print = print_pajeDefineVariableType;
-  event->event.name = xbt_strdup("PajeDefineVariableType");
   event->event.id = pajeDefineVariableTypeWithColorId;
   event->event.timestamp = 0;
-  event->event.header = xbt_strdup ("");
 
   //print it
   event->print (event);
 
   //destroy it
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -626,17 +616,13 @@ void new_pajeDefineStateType(type_t type)
   defineStateType_t event = xbt_new0(s_defineStateType_t, 1);
   event->type = type;
   event->print = print_pajeDefineStateType;
-  event->event.name = xbt_strdup("PajeDefineStateType");
   event->event.id = pajeDefineStateTypeId;
   event->event.timestamp = 0;
-  event->event.header = xbt_strdup ("");
 
   //print it
   event->print (event);
 
   //destroy it
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -646,17 +632,13 @@ void new_pajeDefineEventType(type_t type)
   defineEventType_t event = xbt_new0(s_defineEventType_t, 1);
   event->type = type;
   event->print = print_pajeDefineEventType;
-  event->event.name = xbt_strdup("PajeDefineEventType");
   event->event.id = pajeDefineEventTypeWithColorId;
   event->event.timestamp = 0;
-  event->event.header = xbt_strdup ("");
 
   //print it
   event->print (event);
 
   //destroy it
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -668,17 +650,13 @@ void new_pajeDefineLinkType(type_t type, type_t source, type_t dest)
   event->source = source;
   event->dest = dest;
   event->print = print_pajeDefineLinkType;
-  event->event.name = xbt_strdup("PajeDefineLinkType");
   event->event.id = pajeDefineLinkTypeId;
   event->event.timestamp = 0;
-  event->event.header = xbt_strdup ("");
 
   //print it
   event->print (event);
 
   //destroy it
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -688,17 +666,13 @@ void new_pajeCreateContainer (container_t container)
   createContainer_t event = xbt_new0(s_createContainer_t, 1);
   event->container = container;
   event->print = print_pajeCreateContainer;
-  event->event.name = xbt_strdup("PajeCreateContainer");
   event->event.id = pajeCreateContainerId;
   event->event.timestamp = SIMIX_get_clock();
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
 
   //destroy it
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -708,17 +682,13 @@ void new_pajeDestroyContainer (container_t container)
   destroyContainer_t event = xbt_new0(s_destroyContainer_t, 1);
   event->container = container;
   event->print = print_pajeDestroyContainer;
-  event->event.name = xbt_strdup("PajeDestroyContainer");
   event->event.id = pajeDestroyContainerId;
   event->event.timestamp = SIMIX_get_clock();
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
 
   //destroy it
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 
@@ -732,17 +702,13 @@ void new_pajeSetVariable (double timestamp, container_t container, type_t type, 
   event->container = container;
   event->value = value;
   event->print = print_pajeSetVariable;
-  event->event.name = xbt_strdup("PajeSetVariable");
   event->event.id = pajeSetVariableId;
   event->event.timestamp = timestamp;
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
 
   //destroy it
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -755,17 +721,13 @@ void new_pajeAddVariable (double timestamp, container_t container, type_t type, 
   event->container = container;
   event->value = value;
   event->print = print_pajeAddVariable;
-  event->event.name = xbt_strdup("PajeAddVariable");
   event->event.id = pajeAddVariableId;
   event->event.timestamp = timestamp;
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
 
   //destroy it
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -777,17 +739,13 @@ void new_pajeSubVariable (double timestamp, container_t container, type_t type, 
   event->container = container;
   event->value = value;
   event->print = print_pajeSubVariable;
-  event->event.name = xbt_strdup("PajeSubVariable");
   event->event.id = pajeSubVariableId;
   event->event.timestamp = timestamp;
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
 
   //destroy it
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -799,18 +757,14 @@ void new_pajeSetState (double timestamp, container_t container, type_t type, con
   event->container = container;
   event->value = xbt_strdup(value);
   event->print = print_pajeSetState;
-  event->event.name = xbt_strdup("PajeSetState");
   event->event.id = pajeSetStateId;
   event->event.timestamp = timestamp;
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
 
   //destroy it
   xbt_free (event->value);
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -823,18 +777,14 @@ void new_pajePushState (double timestamp, container_t container, type_t type, co
   event->container = container;
   event->value = xbt_strdup(value);
   event->print = print_pajePushState;
-  event->event.name = xbt_strdup("PajePushState");
   event->event.id = pajePushStateId;
   event->event.timestamp = timestamp;
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
 
   //destroy it
   xbt_free (event->value);
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -846,17 +796,13 @@ void new_pajePopState (double timestamp, container_t container, type_t type)
   event->type = type;
   event->container = container;
   event->print = print_pajePopState;
-  event->event.name = xbt_strdup("PajePopState");
   event->event.id = pajePopStateId;
   event->event.timestamp = timestamp;
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
 
   //destroy it
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -870,10 +816,8 @@ void new_pajeStartLink (double timestamp, container_t container, type_t type, co
   event->value = xbt_strdup (value);
   event->key = xbt_strdup (key);
   event->print = print_pajeStartLink;
-  event->event.name = xbt_strdup("PajeStartLink");
   event->event.id = pajeStartLinkId;
   event->event.timestamp = timestamp;
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
@@ -881,8 +825,6 @@ void new_pajeStartLink (double timestamp, container_t container, type_t type, co
   //destroy it
   xbt_free (event->value);
   xbt_free (event->key);
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -896,10 +838,8 @@ void new_pajeEndLink (double timestamp, container_t container, type_t type, cont
   event->value = xbt_strdup (value);
   event->key = xbt_strdup (key);
   event->print = print_pajeEndLink;
-  event->event.name = xbt_strdup("PajeEndLink");
   event->event.id = pajeEndLinkId;
   event->event.timestamp = timestamp;
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
@@ -907,8 +847,6 @@ void new_pajeEndLink (double timestamp, container_t container, type_t type, cont
   //destroy it
   xbt_free (event->value);
   xbt_free (event->key);
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
@@ -920,18 +858,14 @@ void new_pajeNewEvent (double timestamp, container_t container, type_t type, con
   event->container = container;
   event->value = xbt_strdup (value);
   event->print = print_pajeNewEvent;
-  event->event.name = xbt_strdup("PajeNewEvent");
   event->event.id = pajeNewEventId;
   event->event.timestamp = timestamp;
-  event->event.header = xbt_strdup("");
 
   //print it
   event->print (event);
 
   //destroy it
   xbt_free (event->value);
-  xbt_free (event->event.name);
-  xbt_free (event->event.header);
   xbt_free (event);
   event = NULL;
 }
