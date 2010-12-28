@@ -265,6 +265,8 @@ void destroyContainer (container_t container)
   //trace my destruction
   new_pajeDestroyContainer(container);
 
+  TRACE_paje_dump_buffer();
+
   //free
   xbt_free (container->name);
   xbt_free (container->id);
