@@ -115,13 +115,12 @@ typedef struct s_popState *popState_t;
 typedef struct s_popState {
   container_t container;
   type_t type;
-  char *value;
 }s_popState_t;
 
 typedef struct s_startLink *startLink_t;
 typedef struct s_startLink {
-  type_t type;
   container_t container;
+  type_t type;
   container_t sourceContainer;
   char *value;
   char *key;
@@ -129,8 +128,8 @@ typedef struct s_startLink {
 
 typedef struct s_endLink *endLink_t;
 typedef struct s_endLink {
-  type_t type;
   container_t container;
+  type_t type;
   container_t destContainer;
   char *value;
   char *key;
@@ -138,8 +137,8 @@ typedef struct s_endLink {
 
 typedef struct s_newEvent *newEvent_t;
 typedef struct s_newEvent {
-  type_t type;
   container_t container;
+  type_t type;
   char *value;
 }s_newEvent_t;
 
