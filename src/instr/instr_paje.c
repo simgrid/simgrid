@@ -30,13 +30,14 @@ static long long int newTypeId ()
   return counter++;
 }
 
-static type_t newType (const char *typename, const char *key, e_entity_types kind, type_t father)
+static type_t newType (const char *typename, const char *key, const char *color, e_entity_types kind, type_t father)
 {
   type_t ret = xbt_new0(s_type_t, 1);
   ret->name = xbt_strdup (typename);
   ret->father = father;
   ret->kind = kind;
   ret->children = xbt_dict_new ();
+  ret->color = xbt_strdup (color);
 
   long long int id = newTypeId();
   char str_id[INSTR_DEFAULT_STR_SIZE];
@@ -58,14 +59,14 @@ type_t getContainerType (const char *typename, type_t father)
 {
   type_t ret;
   if (father == NULL){
-    ret = newType (typename, typename, TYPE_CONTAINER, father);
+    ret = newType (typename, typename, NULL, TYPE_CONTAINER, father);
     if (father) new_pajeDefineContainerType (ret);
     rootType = ret;
   }else{
     //check if my father type already has my typename
     ret = (type_t)xbt_dict_get_or_null (father->children, typename);
     if (ret == NULL){
-      ret = newType (typename, typename, TYPE_CONTAINER, father);
+      ret = newType (typename, typename, NULL, TYPE_CONTAINER, father);
       new_pajeDefineContainerType (ret);
     }
   }
@@ -76,8 +77,12 @@ type_t getEventType (const char *typename, const char *color, type_t father)
 {
   type_t ret = xbt_dict_get_or_null (father->children, typename);
   if (ret == NULL){
-    ret = newType (typename, typename, TYPE_EVENT, father);
-    ret->color = xbt_strdup (color);
+    char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
+    if (!color){
+      ret = newType (typename, typename, white, TYPE_EVENT, father);
+    }else{
+      ret = newType (typename, typename, color, TYPE_EVENT, father);
+    }
     //INFO4("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
     new_pajeDefineEventType(ret);
   }
@@ -88,8 +93,12 @@ type_t getVariableType (const char *typename, const char *color, type_t father)
 {
   type_t ret = xbt_dict_get_or_null (father->children, typename);
   if (ret == NULL){
-    ret = newType (typename, typename, TYPE_VARIABLE, father);
-    ret->color = xbt_strdup (color);
+    char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
+    if (!color){
+      ret = newType (typename, typename, white, TYPE_VARIABLE, father);
+    }else{
+      ret = newType (typename, typename, color, TYPE_VARIABLE, father);
+    }
     //INFO4("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
     new_pajeDefineVariableType (ret);
   }
@@ -113,7 +122,7 @@ type_t getLinkType (const char *typename, type_t father, type_t source, type_t d
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", typename, source->id, dest->id);
   type_t ret = xbt_dict_get_or_null (father->children, key);
   if (ret == NULL){
-    ret = newType (typename, key, TYPE_LINK, father);
+    ret = newType (typename, key, NULL, TYPE_LINK, father);
     //INFO8("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id, source->name, source->id, dest->name, dest->id);
     new_pajeDefineLinkType(ret, source, dest);
   }
@@ -124,7 +133,7 @@ type_t getStateType (const char *typename, type_t father)
 {
   type_t ret = xbt_dict_get_or_null (father->children, typename);
   if (ret == NULL){
-    ret = newType (typename, typename, TYPE_STATE, father);
+    ret = newType (typename, typename, NULL, TYPE_STATE, father);
     //INFO4("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
     new_pajeDefineStateType(ret);
   }
