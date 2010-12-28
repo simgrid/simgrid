@@ -839,21 +839,5 @@ void new_pajeNewEvent (double timestamp, container_t container, type_t type, con
 
   insert_into_buffer (event);
 }
-//
-//void pajeNewEvent(double time, const char *entityType,
-//                  const char *container, const char *value)
-//{
-//  INSTR_PAJE_ASSERT(entityType);
-//  INSTR_PAJE_ASSERT(container);
-//  INSTR_PAJE_ASSERT(value);
-//
-//  if (time == 0){
-//    fprintf(tracing_file, "%d 0 %s %s %s\n", pajeNewEventId,
-//          entityType, container, value);
-//  }else{
-//    fprintf(tracing_file, "%d %lf %s %s %s\n", pajeNewEventId, time,
-//          entityType, container, value);
-//  }
-//}
 
 #endif /* HAVE_TRACING */
