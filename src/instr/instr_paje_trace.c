@@ -8,8 +8,6 @@
 
 #ifdef HAVE_TRACING
 
-#define INSTR_PAJE_ASSERT(str) {xbt_assert1(str!=NULL&&strlen(str)>0, "'%s' is NULL or length is zero", #str);}
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "Paje tracing event system");
 
 typedef enum {
