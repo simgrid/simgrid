@@ -414,12 +414,6 @@ double surf_solve(double max_date)
     min = max_date - NOW;
   }
 
-
-#ifdef HAVE_TRACING
-  //NOW changed, dump buffer
-  TRACE_paje_dump_buffer ();
-#endif
-
   DEBUG0("Looking for next action end");
   xbt_dynar_foreach(model_list, iter, model) {
     DEBUG1("Running for Resource [%s]", model->name);
@@ -471,6 +465,10 @@ double surf_solve(double max_date)
 
   xbt_dynar_foreach(model_list, iter, model)
       model->model_private->update_actions_state(NOW, min);
+
+#ifdef HAVE_TRACING
+  TRACE_paje_dump_buffer ();
+#endif
 
   return min;
 }
