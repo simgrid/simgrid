@@ -10,14 +10,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg, instr, "MSG");
 
-xbt_dict_t tasks_created = NULL;
-
 /*
  * TRACE_msg_set_task_category: tracing interface function
  */
 void TRACE_msg_set_task_category(m_task_t task, const char *category)
 {
-  if (!tasks_created) tasks_created = xbt_dict_new();
   if (!TRACE_is_active())
     return;
 
@@ -47,11 +44,10 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
     m_host_t host = MSG_host_self();
     container_t host_container = getContainer(host->name);
     //check to see if there is a container with the task->name
-    container_t msg = getContainer(task->name);
-    xbt_assert3(xbt_dict_get_or_null (tasks_created, task->name) == NULL,
+    xbt_assert3(getContainer(task->name) == NULL,
         "Task %p(%s). Tracing already knows a task with name %s."
         "The name of each task must be unique, if --cfg=tracing/msg/task:1 is used.", task, task->name, task->name);
-    msg = newContainer(task->name, INSTR_MSG_TASK, host_container);
+    container_t msg = newContainer(task->name, INSTR_MSG_TASK, host_container);
     type_t type = getType (task->category);
     if (!type){
       type = getVariableType(task->category, NULL, msg->type);
@@ -60,8 +56,6 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
 
     type = getType ("MSG_TASK_STATE");
     new_pajePushState (MSG_get_clock(), msg, type, "created");
-
-    xbt_dict_set (tasks_created, task->name, xbt_strdup("1"), xbt_free);
   }
 }
 
@@ -104,7 +98,6 @@ void TRACE_msg_task_execute_end(m_task_t task)
 /* MSG_task_destroy related functions */
 void TRACE_msg_task_destroy(m_task_t task)
 {
-  if (!tasks_created) tasks_created = xbt_dict_new();
   if (!(TRACE_is_enabled() &&
       TRACE_msg_task_is_enabled() &&
       task->category)) return;
@@ -117,8 +110,6 @@ void TRACE_msg_task_destroy(m_task_t task)
   //free category
   xbt_free(task->category);
   task->category = NULL;
-
-  xbt_dict_remove (tasks_created, task->name);
   return;
 }
 
