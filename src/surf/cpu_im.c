@@ -345,6 +345,28 @@ static void cpu_im_update_actions_state(double now, double delta)
     cpu_im_cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
     cpu_im_update_remains(action->cpu, surf_get_clock());
   }
+#ifdef HAVE_TRACING
+  {
+    //defining the last timestamp that we can safely dump to trace file
+    //without losing the event ascending order (considering all CPU's)
+    cpu_Cas01_im_t cpu;
+    xbt_dict_cursor_t cursor;
+    char *key;
+    double smaller = -1;
+    xbt_dict_foreach(surf_model_resource_set(surf_cpu_model), cursor, key, cpu){
+      if (smaller < 0){
+        smaller = cpu->last_update;
+        continue;
+      }
+      if (cpu->last_update < smaller){
+        smaller = cpu->last_update;
+      }
+    }
+    if (smaller > 0) {
+      TRACE_last_timestamp_to_dump = smaller;
+    }
+  }
+#endif
   return;
 }
 

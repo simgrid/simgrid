@@ -214,6 +214,7 @@ static void cpu_update_actions_state(double now, double delta)
                                     lmm_variable_getvalue
                                     (action->variable), now - delta,
                                     delta);
+    TRACE_last_timestamp_to_dump = now-delta;
 #endif
     double_update(&(action->generic_action.remains),
                   lmm_variable_getvalue(action->variable) * delta);
