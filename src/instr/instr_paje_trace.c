@@ -170,6 +170,7 @@ double TRACE_last_timestamp_to_dump = 0;
 //dumps the trace file until the timestamp TRACE_last_timestamp_to_dump
 void TRACE_paje_dump_buffer (void)
 {
+  DEBUG2("%s: dump until %f. starts", __FUNCTION__, TRACE_last_timestamp_to_dump);
   paje_event_t event;
   while (xbt_dynar_length (buffer) > 0){
     double head_timestamp = (*(paje_event_t*)xbt_dynar_get_ptr(buffer, 0))->timestamp;
@@ -180,6 +181,7 @@ void TRACE_paje_dump_buffer (void)
     event->print (event);
     event->free (event);
   }
+  DEBUG1("%s: ends", __FUNCTION__);
 }
 
 void TRACE_paje_create_header(void)
@@ -305,27 +307,33 @@ void TRACE_paje_create_header(void)
 /* internal do the instrumentation module */
 static void insert_into_buffer (paje_event_t tbi)
 {
+  DEBUG4("%s: insert event_type=%d, timestamp=%f, buffersize=%ld)", __FUNCTION__, tbi->event_type, tbi->timestamp, xbt_dynar_length(buffer));
+
   unsigned int i;
   if (xbt_dynar_length(buffer) == 0){
     xbt_dynar_push (buffer, &tbi);
+    DEBUG1("%s: inserted at beginning", __FUNCTION__);
   }else{
     int inserted = 0;
     for (i = 0; i < xbt_dynar_length(buffer); i++){
       paje_event_t e1 = *(paje_event_t*)xbt_dynar_get_ptr(buffer, i);
       if (e1->timestamp > tbi->timestamp){
         xbt_dynar_insert_at (buffer, i, &tbi);
+        DEBUG2("%s: inserted at %d", __FUNCTION__, i);
         inserted = 1;
         break;
       }
     }
     if (!inserted){
       xbt_dynar_push (buffer, &tbi);
+      DEBUG1("%s: inserted at end", __FUNCTION__);
     }
   }
 }
 
 static void print_pajeDefineContainerType(paje_event_t event)
 {
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
   fprintf(tracing_file, "%d %s %s %s\n",
       event->event_type,
       ((defineContainerType_t)event->data)->type->id,
@@ -335,6 +343,7 @@ static void print_pajeDefineContainerType(paje_event_t event)
 
 static void print_pajeDefineVariableType(paje_event_t event)
 {
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
   fprintf(tracing_file, "%d %s %s %s \"%s\"\n",
       event->event_type,
       ((defineVariableType_t)event->data)->type->id,
@@ -345,6 +354,7 @@ static void print_pajeDefineVariableType(paje_event_t event)
 
 static void print_pajeDefineStateType(paje_event_t event)
 {
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
   fprintf(tracing_file, "%d %s %s %s\n",
       event->event_type,
       ((defineStateType_t)event->data)->type->id,
@@ -354,6 +364,7 @@ static void print_pajeDefineStateType(paje_event_t event)
 
 static void print_pajeDefineEventType(paje_event_t event)
 {
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
   fprintf(tracing_file, "%d %s %s %s \"%s\"\n",
       event->event_type,
       ((defineEventType_t)event->data)->type->id,
@@ -364,6 +375,7 @@ static void print_pajeDefineEventType(paje_event_t event)
 
 static void print_pajeDefineLinkType(paje_event_t event)
 {
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
   fprintf(tracing_file, "%d %s %s %s %s %s\n",
       event->event_type,
       ((defineLinkType_t)event->data)->type->id,
@@ -375,6 +387,7 @@ static void print_pajeDefineLinkType(paje_event_t event)
 
 static void print_pajeCreateContainer(paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
     fprintf(tracing_file, "%d 0 %s %s %s %s\n",
         event->event_type,
@@ -395,6 +408,7 @@ static void print_pajeCreateContainer(paje_event_t event)
 
 static void print_pajeDestroyContainer(paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
     fprintf(tracing_file, "%d 0 %s %s\n",
         event->event_type,
@@ -411,6 +425,7 @@ static void print_pajeDestroyContainer(paje_event_t event)
 
 static void print_pajeSetVariable(paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
     fprintf(tracing_file, "%d 0 %s %s %f\n",
         event->event_type,
@@ -429,6 +444,7 @@ static void print_pajeSetVariable(paje_event_t event)
 
 static void print_pajeAddVariable(paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
     fprintf(tracing_file, "%d 0 %s %s %f\n",
         event->event_type,
@@ -447,6 +463,7 @@ static void print_pajeAddVariable(paje_event_t event)
 
 static void print_pajeSubVariable(paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
     fprintf(tracing_file, "%d 0 %s %s %f\n",
         event->event_type,
@@ -465,6 +482,7 @@ static void print_pajeSubVariable(paje_event_t event)
 
 static void print_pajeSetState(paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
     fprintf(tracing_file, "%d 0 %s %s %s\n",
         event->event_type,
@@ -483,6 +501,7 @@ static void print_pajeSetState(paje_event_t event)
 
 static void print_pajePushState(paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
     fprintf(tracing_file, "%d 0 %s %s %s\n",
         event->event_type,
@@ -501,6 +520,7 @@ static void print_pajePushState(paje_event_t event)
 
 static void print_pajePopState(paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
     fprintf(tracing_file, "%d 0 %s %s\n",
         event->event_type,
@@ -517,6 +537,7 @@ static void print_pajePopState(paje_event_t event)
 
 static void print_pajeStartLink(paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
     fprintf(tracing_file, "%d 0 %s %s %s %s %s\n",
         event->event_type,
@@ -539,6 +560,7 @@ static void print_pajeStartLink(paje_event_t event)
 
 static void print_pajeEndLink(paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
     fprintf(tracing_file, "%d 0 %s %s %s %s %s\n",
         event->event_type,
@@ -561,6 +583,7 @@ static void print_pajeEndLink(paje_event_t event)
 
 static void print_pajeNewEvent (paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
     fprintf(tracing_file, "%d 0 %s %s %s\n",
         event->event_type,
@@ -579,6 +602,7 @@ static void print_pajeNewEvent (paje_event_t event)
 
 static void free_paje_event (paje_event_t event)
 {
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->event_type == PAJE_SetState) {
     xbt_free (((setState_t)(event->data))->value);
   }else if (event->event_type == PAJE_PushState) {
@@ -606,6 +630,8 @@ void new_pajeDefineContainerType(type_t type)
   event->data = xbt_new0(s_defineContainerType_t, 1);
   ((defineContainerType_t)(event->data))->type = type;
 
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
+
   //print it
   event->print (event);
   event->free (event);
@@ -620,6 +646,8 @@ void new_pajeDefineVariableType(type_t type)
   event->free = free_paje_event;
   event->data = xbt_new0(s_defineVariableType_t, 1);
   ((defineVariableType_t)(event->data))->type = type;
+
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
 
   //print it
   event->print (event);
@@ -636,6 +664,8 @@ void new_pajeDefineStateType(type_t type)
   event->data = xbt_new0(s_defineStateType_t, 1);
   ((defineStateType_t)(event->data))->type = type;
 
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
+
   //print it
   event->print (event);
   event->free (event);
@@ -650,6 +680,8 @@ void new_pajeDefineEventType(type_t type)
   event->free = free_paje_event;
   event->data = xbt_new0(s_defineEventType_t, 1);
   ((defineEventType_t)(event->data))->type = type;
+
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
 
   //print it
   event->print (event);
@@ -668,6 +700,8 @@ void new_pajeDefineLinkType(type_t type, type_t source, type_t dest)
   ((defineLinkType_t)(event->data))->source = source;
   ((defineLinkType_t)(event->data))->dest = dest;
 
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
+
   //print it
   event->print (event);
   event->free (event);
@@ -683,6 +717,8 @@ void new_pajeCreateContainer (container_t container)
   event->data = xbt_new0(s_createContainer_t, 1);
   ((createContainer_t)(event->data))->container = container;
 
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
+
   //print it
   event->print (event);
   event->free (event);
@@ -697,6 +733,8 @@ void new_pajeDestroyContainer (container_t container)
   event->free = free_paje_event;
   event->data = xbt_new0(s_destroyContainer_t, 1);
   ((destroyContainer_t)(event->data))->container = container;
+
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
 
   //print it
   event->print (event);
@@ -715,6 +753,8 @@ void new_pajeSetVariable (double timestamp, container_t container, type_t type, 
   ((setVariable_t)(event->data))->container = container;
   ((setVariable_t)(event->data))->value = value;
 
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
+
   insert_into_buffer (event);
 }
 
@@ -731,6 +771,8 @@ void new_pajeAddVariable (double timestamp, container_t container, type_t type, 
   ((addVariable_t)(event->data))->container = container;
   ((addVariable_t)(event->data))->value = value;
 
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
+
   insert_into_buffer (event);
 }
 
@@ -746,6 +788,8 @@ void new_pajeSubVariable (double timestamp, container_t container, type_t type, 
   ((subVariable_t)(event->data))->container = container;
   ((subVariable_t)(event->data))->value = value;
 
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
+
   insert_into_buffer (event);
 }
 
@@ -760,6 +804,8 @@ void new_pajeSetState (double timestamp, container_t container, type_t type, con
   ((setState_t)(event->data))->type = type;
   ((setState_t)(event->data))->container = container;
   ((setState_t)(event->data))->value = xbt_strdup(value);
+
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
 
   insert_into_buffer (event);
 }
@@ -777,6 +823,8 @@ void new_pajePushState (double timestamp, container_t container, type_t type, co
   ((pushState_t)(event->data))->container = container;
   ((pushState_t)(event->data))->value = xbt_strdup(value);
 
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
+
   insert_into_buffer (event);
 }
 
@@ -791,6 +839,8 @@ void new_pajePopState (double timestamp, container_t container, type_t type)
   event->data = xbt_new0(s_popState_t, 1);
   ((popState_t)(event->data))->type = type;
   ((popState_t)(event->data))->container = container;
+
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
 
   insert_into_buffer (event);
 }
@@ -809,6 +859,8 @@ void new_pajeStartLink (double timestamp, container_t container, type_t type, co
   ((startLink_t)(event->data))->value = xbt_strdup(value);
   ((startLink_t)(event->data))->key = xbt_strdup(key);
 
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
+
   insert_into_buffer (event);
 }
 
@@ -826,6 +878,8 @@ void new_pajeEndLink (double timestamp, container_t container, type_t type, cont
   ((endLink_t)(event->data))->value = xbt_strdup(value);
   ((endLink_t)(event->data))->key = xbt_strdup(key);
 
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
+
   insert_into_buffer (event);
 }
 
@@ -840,6 +894,8 @@ void new_pajeNewEvent (double timestamp, container_t container, type_t type, con
   ((newEvent_t)(event->data))->type = type;
   ((newEvent_t)(event->data))->container = container;
   ((newEvent_t)(event->data))->value = xbt_strdup(value);
+
+  DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
 
   insert_into_buffer (event);
 }
