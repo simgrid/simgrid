@@ -58,6 +58,7 @@ typedef struct s_container {
 }s_container_t;
 
 extern xbt_dict_t created_categories;
+extern double TRACE_last_timestamp_to_dump;
 
 /* from paje.c */
 void TRACE_paje_create_header(void);
