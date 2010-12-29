@@ -71,9 +71,8 @@ void TRACE_msg_task_create(m_task_t task)
 /* MSG_task_execute related functions */
 void TRACE_msg_task_execute_start(m_task_t task)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_task_is_enabled() &&
-      task->category)) return;
+  if (!(TRACE_msg_task_is_enabled() &&
+        task->category)) return;
 
   DEBUG3("EXEC,in %p, %lld, %s", task, task->counter, task->category);
 
@@ -84,9 +83,8 @@ void TRACE_msg_task_execute_start(m_task_t task)
 
 void TRACE_msg_task_execute_end(m_task_t task)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_task_is_enabled() &&
-      task->category)) return;
+  if (!(TRACE_msg_task_is_enabled() &&
+        task->category)) return;
 
   DEBUG3("EXEC,out %p, %lld, %s", task, task->counter, task->category);
 
@@ -98,9 +96,8 @@ void TRACE_msg_task_execute_end(m_task_t task)
 /* MSG_task_destroy related functions */
 void TRACE_msg_task_destroy(m_task_t task)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_task_is_enabled() &&
-      task->category)) return;
+  if (!(TRACE_msg_task_is_enabled() &&
+        task->category)) return;
 
   //that's the end, let's destroy it
   destroyContainer (getContainer(task->name));
@@ -116,17 +113,15 @@ void TRACE_msg_task_destroy(m_task_t task)
 /* MSG_task_get related functions */
 void TRACE_msg_task_get_start(void)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_task_is_enabled())) return;
+  if (!TRACE_msg_task_is_enabled()) return;
 
   DEBUG0("GET,in");
 }
 
 void TRACE_msg_task_get_end(double start_time, m_task_t task)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_task_is_enabled() &&
-      task->category)) return;
+  if (!(TRACE_msg_task_is_enabled() &&
+        task->category)) return;
 
   DEBUG3("GET,out %p, %lld, %s", task, task->counter, task->category);
 
@@ -153,9 +148,8 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
 /* MSG_task_put related functions */
 int TRACE_msg_task_put_start(m_task_t task)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_task_is_enabled() &&
-      task->category)) return 0;
+  if (!(TRACE_msg_task_is_enabled() &&
+        task->category)) return 0;
 
   DEBUG3("PUT,in %p, %lld, %s", task, task->counter, task->category);
 
@@ -180,8 +174,7 @@ int TRACE_msg_task_put_start(m_task_t task)
 
 void TRACE_msg_task_put_end(void)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_task_is_enabled())) return;
+  if (!TRACE_msg_task_is_enabled()) return;
 
   DEBUG0("PUT,out");
 }

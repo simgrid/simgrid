@@ -115,7 +115,8 @@ int TRACE_is_configured(void)
 
 int TRACE_smpi_is_enabled(void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
+  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI) &&
+      TRACE_is_enabled();
 }
 
 int TRACE_smpi_is_grouped(void)
@@ -135,17 +136,20 @@ int TRACE_uncategorized (void)
 
 int TRACE_msg_task_is_enabled(void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_TASK);
+  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_TASK) &&
+      TRACE_is_enabled();
 }
 
 int TRACE_msg_process_is_enabled(void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
+  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS) &&
+      TRACE_is_enabled();
 }
 
 int TRACE_msg_volume_is_enabled(void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_VOLUME);
+  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_VOLUME) &&
+      TRACE_is_enabled();
 }
 
 char *TRACE_get_filename(void)

@@ -15,8 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
  */
 void TRACE_msg_set_process_category(m_process_t process, const char *category, const char *color)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_process_is_enabled())) return;
+  if (!TRACE_msg_process_is_enabled()) return;
 
   xbt_assert3(process->category == NULL,
       "Process %p(%s) already has a category (%s).",
@@ -57,9 +56,8 @@ void TRACE_msg_set_process_category(m_process_t process, const char *category, c
  */
 void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_host_t new_host)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_process_is_enabled() &&
-      process->category)) return;
+  if (!(TRACE_msg_process_is_enabled() &&
+        process->category)) return;
 
   static long long int counter = 0;
   char key[INSTR_DEFAULT_STR_SIZE];
@@ -86,9 +84,8 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
 
 void TRACE_msg_process_kill(m_process_t process)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_process_is_enabled() &&
-      process->category)) return;
+  if (!(TRACE_msg_process_is_enabled() &&
+        process->category)) return;
 
   //kill means that this process no longer exists, let's destroy it
   destroyContainer (getContainer(process->name));
@@ -96,8 +93,7 @@ void TRACE_msg_process_kill(m_process_t process)
 
 void TRACE_msg_process_suspend(m_process_t process)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_process_is_enabled() &&
+  if (!(TRACE_msg_process_is_enabled() &&
       process->category)) return;
 
   container_t process_container = getContainer (process->name);
@@ -107,9 +103,8 @@ void TRACE_msg_process_suspend(m_process_t process)
 
 void TRACE_msg_process_resume(m_process_t process)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_process_is_enabled() &&
-      process->category)) return;
+  if (!(TRACE_msg_process_is_enabled() &&
+        process->category)) return;
 
   container_t process_container = getContainer (process->name);
   type_t type = getType ("MSG_PROCESS_STATE");
@@ -118,9 +113,8 @@ void TRACE_msg_process_resume(m_process_t process)
 
 void TRACE_msg_process_sleep_in(m_process_t process)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_process_is_enabled() &&
-      process->category)) return;
+  if (!(TRACE_msg_process_is_enabled() &&
+        process->category)) return;
 
   container_t process_container = getContainer (process->name);
   type_t type = getType ("MSG_PROCESS_STATE");
@@ -129,9 +123,8 @@ void TRACE_msg_process_sleep_in(m_process_t process)
 
 void TRACE_msg_process_sleep_out(m_process_t process)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_process_is_enabled() &&
-      process->category)) return;
+  if (!(TRACE_msg_process_is_enabled() &&
+        process->category)) return;
 
   container_t process_container = getContainer (process->name);
   type_t type = getType ("MSG_PROCESS_STATE");
@@ -140,9 +133,8 @@ void TRACE_msg_process_sleep_out(m_process_t process)
 
 void TRACE_msg_process_end(m_process_t process)
 {
-  if (!(TRACE_is_enabled() &&
-      TRACE_msg_process_is_enabled() &&
-      process->category)) return;
+  if (!(TRACE_msg_process_is_enabled() &&
+        process->category)) return;
 
   //that's the end, let's destroy it
   destroyContainer (getContainer(process->name));
