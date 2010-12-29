@@ -168,10 +168,16 @@ void TRACE_paje_end(void)
   DEBUG1("Filename %s is closed", filename);
 }
 
+double TRACE_last_timestamp_to_dump = 0;
+//dumps the trace file until the timestamp TRACE_last_timestamp_to_dump
 void TRACE_paje_dump_buffer (void)
 {
   paje_event_t event;
   while (xbt_dynar_length (buffer) > 0){
+    double head_timestamp = (*(paje_event_t*)xbt_dynar_get_ptr(buffer, 0))->timestamp;
+    if (head_timestamp > TRACE_last_timestamp_to_dump){
+      break;
+    }
     xbt_dynar_remove_at (buffer, 0, &event);
     event->print (event);
     event->free (event);
