@@ -808,6 +808,426 @@ $ $SG_TEST_EXENV tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/filename:tracin
 > [  0.000000] (0:@) new_pajeEndLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=208)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end
+> [  0.000000] (0:@) TRACE_paje_dump_buffer: dump until 0.000000. starts
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=7, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=13, timestamp=0.000000
+> [  0.000000] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
+> [  0.000000] (0:@) TRACE_paje_dump_buffer: ends
 > [  0.000000] (0:@) new type is_slave, child of HOST
 > [  0.000000] (0:@) VariableType is_slave(15), child of HOST(2)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
@@ -874,448 +1294,30 @@ $ $SG_TEST_EXENV tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/filename:tracin
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000000] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=209)
-> [  0.000000] (1:master@Tremblay) insert_into_buffer: inserted at end
+> [  0.000000] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=0)
+> [  0.000000] (1:master@Tremblay) insert_into_buffer: inserted at beginning
 > [  0.000000] (1:master@Tremblay) new_pajeNewEvent: event_type=15, timestamp=0.000000
-> [  0.000000] (1:master@Tremblay) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=210)
+> [  0.000000] (1:master@Tremblay) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=1)
 > [  0.000000] (1:master@Tremblay) insert_into_buffer: inserted at end
 > [  0.000000] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000000] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=211)
+> [  0.000000] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=2)
 > [  0.000000] (1:master@Tremblay) insert_into_buffer: inserted at end
 > [  0.000000] (2:slave@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000000] (2:slave@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=212)
+> [  0.000000] (2:slave@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=3)
 > [  0.000000] (2:slave@Tremblay) insert_into_buffer: inserted at end
 > [  0.000000] (3:slave@Jupiter) new_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000000] (3:slave@Jupiter) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=213)
+> [  0.000000] (3:slave@Jupiter) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=4)
 > [  0.000000] (3:slave@Jupiter) insert_into_buffer: inserted at end
 > [  0.000000] (4:slave@Fafard) new_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000000] (4:slave@Fafard) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=214)
+> [  0.000000] (4:slave@Fafard) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=5)
 > [  0.000000] (4:slave@Fafard) insert_into_buffer: inserted at end
 > [  0.000000] (5:slave@Ginette) new_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000000] (5:slave@Ginette) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=215)
+> [  0.000000] (5:slave@Ginette) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=6)
 > [  0.000000] (5:slave@Ginette) insert_into_buffer: inserted at end
 > [  0.000000] (6:slave@Bourassa) new_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000000] (6:slave@Bourassa) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=216)
+> [  0.000000] (6:slave@Bourassa) insert_into_buffer: insert event_type=7, timestamp=0.000000, buffersize=7)
 > [  0.000000] (6:slave@Bourassa) insert_into_buffer: inserted at end
 > [  0.000156] (0:@) TRACE_paje_dump_buffer: dump until 0.000000. starts
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeStartLink: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=13, timestamp=0.000000
-> [  0.000156] (0:@) print_pajeEndLink: event_type=14, timestamp=0.000000
-> [  0.000156] (0:@) free_paje_event: event_type=14, timestamp=0.000000
 > [  0.000156] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000000
 > [  0.000156] (0:@) free_paje_event: event_type=7, timestamp=0.000000
 > [  0.000156] (0:@) print_pajeNewEvent: event_type=15, timestamp=0.000000
@@ -4178,7 +4180,6 @@ $ $SG_TEST_EXENV tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/filename:tracin
 > [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) Filename tracing/ms.trace is closed
 
-
 $ $SG_TEST_EXENV cat tracing/ms.trace
 > %EventDef PajeDefineContainerType 0 
 > %       Alias string 
@@ -4318,19 +4319,6 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 4 12 1 6 5 LINK-ROUTER
 > 4 13 1 6 6 LINK-LINK
 > 4 14 1 5 6 ROUTER-LINK
-> 1 15 2 is_slave "1 1 1"
-> 1 16 2 is_master "1 1 1"
-> 1 17 2 task_creation "1 1 1"
-> 1 18 2 task_computation "1 1 1"
-> 3 19 0 msmark "1 1 1"
-> 1 20 6 compute "1 0 0"
-> 1 21 2 compute "1 0 0"
-> 1 22 6 finalize "0 1 0"
-> 1 23 2 finalize "0 1 0"
-> 1 24 6 request "0.000000 0.000985 0.041631"
-> 1 25 2 request "0.000000 0.000985 0.041631"
-> 1 26 6 report "0.176643 0.364602 0.091331"
-> 1 27 2 report "0.176643 0.364602 0.091331"
 > 7 0 3 2 98095000.000000
 > 7 0 3 3 76296000.000000
 > 7 0 3 4 76296000.000000
@@ -4540,6 +4528,19 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 14 0 10 1 G 26 86
 > 13 0 11 1 G 26 87
 > 14 0 11 1 G 5 87
+> 1 15 2 is_slave "1 1 1"
+> 1 16 2 is_master "1 1 1"
+> 1 17 2 task_creation "1 1 1"
+> 1 18 2 task_computation "1 1 1"
+> 3 19 0 msmark "1 1 1"
+> 1 20 6 compute "1 0 0"
+> 1 21 2 compute "1 0 0"
+> 1 22 6 finalize "0 1 0"
+> 1 23 2 finalize "0 1 0"
+> 1 24 6 request "0.000000 0.000985 0.041631"
+> 1 25 2 request "0.000000 0.000985 0.041631"
+> 1 26 6 report "0.176643 0.364602 0.091331"
+> 1 27 2 report "0.176643 0.364602 0.091331"
 > 7 0 16 2 1.000000
 > 15 0 19 0 start_send_tasks
 > 7 0 17 2 0.000000
@@ -5085,46 +5086,6 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 6 4.441598 2 5
 > 6 4.441598 1 1
 > 6 4.441598 0 0
-
-$ $SG_TEST_EXENV cat tracing/ms.cat.plist
-> {
->   node = (LINK, HOST, ROUTER, );
->   edge = (ROUTER-LINK, HOST-LINK, LINK-HOST, LINK-ROUTER, LINK-LINK, );
-> 
->   LINK = {
->     type = edge;
->     size = bandwidth;
->     scale = global;
->     link_sep = {
->       type = separation;
->       size = bandwidth;
->       values = (request, finalize, report, compute, );
->     };
->   };
-> 
->   HOST = {
->     type = node;
->     size = power;
->     host_sep = {
->       type = separation;
->       size = power;
->       values = (request, finalize, report, compute, );
->     };
->   };
-> 
->   ROUTER = {
->     type = node;
->     size = 10;
->   };
-> 
->   ROUTER-LINK = { size = 1; };
->   HOST-LINK = { size = 1; };
->   LINK-HOST = { size = 1; };
->   LINK-ROUTER = { size = 1; };
->   LINK-LINK = { size = 1; };
-> 
->   graphviz-algorithm = neato;
-> }
 
 $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 > {

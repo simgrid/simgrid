@@ -154,8 +154,6 @@ $ cat tracing/procmig.trace
 > 4 13 1 8 7 LINK-ROUTER
 > 4 14 1 8 8 LINK-LINK
 > 4 15 1 7 8 ROUTER-LINK
-> 5 0 27 4 4 emigrant
-> 1 16 4 emigrant "1 0 0"
 > 7 0 3 2 98095000.000000
 > 7 0 3 3 76296000.000000
 > 7 0 3 4 76296000.000000
@@ -365,6 +363,8 @@ $ cat tracing/procmig.trace
 > 14 0 11 1 G 26 86
 > 13 0 12 1 G 26 87
 > 14 0 12 1 G 5 87
+> 5 0 27 4 4 emigrant
+> 1 16 4 emigrant "1 0 0"
 > 7 0 16 27 1.000000
 > 10 0 5 27 executing
 > 11 0 5 27 sleep

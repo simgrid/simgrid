@@ -150,14 +150,6 @@ $ cat tracing/categories.trace
 > 4 12 1 6 5 LINK-ROUTER
 > 4 13 1 6 6 LINK-LINK
 > 4 14 1 5 6 ROUTER-LINK
-> 1 15 6 compute "1 0 0"
-> 1 16 2 compute "1 0 0"
-> 1 17 6 request "0 1 0"
-> 1 18 2 request "0 1 0"
-> 1 19 6 data "0 0 1"
-> 1 20 2 data "0 0 1"
-> 1 21 6 finalize "0 0 0"
-> 1 22 2 finalize "0 0 0"
 > 7 0 3 2 98095000.000000
 > 7 0 3 3 76296000.000000
 > 7 0 3 4 76296000.000000
@@ -367,6 +359,14 @@ $ cat tracing/categories.trace
 > 14 0 10 1 G 26 86
 > 13 0 11 1 G 26 87
 > 14 0 11 1 G 5 87
+> 1 15 6 compute "1 0 0"
+> 1 16 2 compute "1 0 0"
+> 1 17 6 request "0 1 0"
+> 1 18 2 request "0 1 0"
+> 1 19 6 data "0 0 1"
+> 1 20 2 data "0 0 1"
+> 1 21 6 finalize "0 0 0"
+> 1 22 2 finalize "0 0 0"
 > 7 0.000156 9 26 0.000000
 > 8 0.000156 9 26 458160000.000000
 > 7 0.000156 19 26 0.000000
