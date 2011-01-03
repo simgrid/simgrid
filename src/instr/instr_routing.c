@@ -238,6 +238,7 @@ static void instr_routing_parse_start_host ()
     type_t msg_process = getContainerType("MSG_PROCESS", new->type);
     getStateType ("MSG_PROCESS_STATE", msg_process);
     getLinkType ("MSG_PROCESS_LINK", getRootType(), msg_process, msg_process);
+    getLinkType ("MSG_PROCESS_TASK_LINK", getRootType(), msg_process, msg_process);
   }
 
   if (TRACE_msg_task_is_enabled()) {
