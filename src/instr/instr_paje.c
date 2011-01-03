@@ -272,7 +272,7 @@ void destroyContainer (container_t container)
   //obligation to dump previous events because they might
   //reference the container that is about to be destroyed
   TRACE_last_timestamp_to_dump = surf_get_clock();
-  TRACE_paje_dump_buffer();
+  TRACE_paje_dump_buffer(0);
 
   //free
   xbt_free (container->name);

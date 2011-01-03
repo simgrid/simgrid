@@ -168,18 +168,29 @@ void TRACE_paje_end(void)
 
 double TRACE_last_timestamp_to_dump = 0;
 //dumps the trace file until the timestamp TRACE_last_timestamp_to_dump
-void TRACE_paje_dump_buffer (void)
+void TRACE_paje_dump_buffer (int force)
 {
   DEBUG2("%s: dump until %f. starts", __FUNCTION__, TRACE_last_timestamp_to_dump);
-  paje_event_t event;
-  while (xbt_dynar_length (buffer) > 0){
-    double head_timestamp = (*(paje_event_t*)xbt_dynar_get_ptr(buffer, 0))->timestamp;
-    if (head_timestamp > TRACE_last_timestamp_to_dump){
-      break;
+  if (force){
+    paje_event_t event;
+    unsigned int i;
+    xbt_dynar_foreach(buffer, i, event){
+      event->print (event);
+      event->free (event);
     }
-    xbt_dynar_remove_at (buffer, 0, &event);
-    event->print (event);
-    event->free (event);
+    xbt_dynar_free (&buffer);
+    buffer = xbt_dynar_new (sizeof(paje_event_t), NULL);
+  }else{
+    paje_event_t event;
+    while (xbt_dynar_length (buffer) > 0){
+      double head_timestamp = (*(paje_event_t*)xbt_dynar_get_ptr(buffer, 0))->timestamp;
+      if (head_timestamp > TRACE_last_timestamp_to_dump){
+        break;
+      }
+      xbt_dynar_remove_at (buffer, 0, &event);
+      event->print (event);
+      event->free (event);
+    }
   }
   DEBUG1("%s: ends", __FUNCTION__);
 }

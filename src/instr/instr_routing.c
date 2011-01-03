@@ -267,6 +267,7 @@ static void instr_routing_parse_end_platform ()
   currentContainer = NULL;
   recursiveGraphExtraction (getRootContainer());
   platform_created = 1;
+  TRACE_paje_dump_buffer(1);
 }
 
 void instr_routing_define_callbacks ()

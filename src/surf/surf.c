@@ -467,7 +467,7 @@ double surf_solve(double max_date)
       model->model_private->update_actions_state(NOW, min);
 
 #ifdef HAVE_TRACING
-  TRACE_paje_dump_buffer ();
+  TRACE_paje_dump_buffer (0);
 #endif
 
   return min;

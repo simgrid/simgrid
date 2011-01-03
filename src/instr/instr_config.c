@@ -71,7 +71,7 @@ int TRACE_end()
 
   /* dump trace buffer */
   TRACE_last_timestamp_to_dump = surf_get_clock();
-  TRACE_paje_dump_buffer();
+  TRACE_paje_dump_buffer(1);
 
   /* destroy all data structures of tracing (and free) */
   destroyAllContainers();
