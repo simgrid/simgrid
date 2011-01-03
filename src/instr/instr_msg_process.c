@@ -76,6 +76,10 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
   type = getType (process->category);
   new_pajeSetVariable (MSG_get_clock(), msg, type, 1);
 
+  //set the state of this new container
+  type = getType ("MSG_PROCESS_STATE");
+  new_pajeSetState (MSG_get_clock(), msg, type, "executing");
+
   //end link
   msg = getContainer(process->name);
   type = getType ("MSG_PROCESS_LINK");
