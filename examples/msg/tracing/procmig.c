@@ -16,24 +16,57 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 /** The guy we will move from host to host. It move alone and then is moved by policeman back  */
 static int emigrant(int argc, char *argv[])
 {
+  m_task_t task = NULL;
+  char *destination = NULL;
+
   INFO0("Setting process category");
   TRACE_msg_set_process_category(MSG_process_self(), "emigrant", "1 0 0");
   MSG_process_sleep(2);
-  INFO0("Migrating to Tremblay");
-  MSG_process_change_host(MSG_get_host_by_name("Tremblay"));
-  MSG_process_sleep(2);
-  INFO0("Migrating to Jupiter");
-  MSG_process_change_host(MSG_get_host_by_name("Jupiter"));
-  MSG_process_sleep(2);
-  INFO0("Migrating to Fafard");
-  MSG_process_change_host(MSG_get_host_by_name("Fafard"));
-  MSG_process_sleep(2);
-  INFO0("Migrating to Ginette");
-  MSG_process_change_host(MSG_get_host_by_name("Ginette"));
-  MSG_process_sleep(2);
-  INFO0("Migrating to Bourassa");
-  MSG_process_change_host(MSG_get_host_by_name("Bourassa"));
-  MSG_process_sleep(2);
+
+  while (1){ // I am an eternal emigrant
+    MSG_task_receive(&(task), "master_mailbox");
+    destination = (char*)MSG_task_get_data (task);
+    if (!destination) break; //there is no destination, die
+    INFO1("Migrating to %s", destination);
+    MSG_process_change_host(MSG_get_host_by_name(destination));
+    MSG_process_sleep(2); // I am tired, have to sleep for 2 seconds
+    xbt_free (destination);
+    MSG_task_destroy (task);
+    task = NULL;
+  }
+  return 0;
+}
+
+static int master(int argc, char *argv[])
+{
+  m_task_t task = NULL;
+
+  TRACE_msg_set_process_category(MSG_process_self(), "master", "1 0 0");
+
+  // I am the master of emigrant process,
+  // I tell it where it must emigrate to.
+  xbt_dynar_t destinations = xbt_dynar_new (sizeof(char*), xbt_free);
+  xbt_dynar_push_as (destinations, char*, xbt_strdup ("Tremblay"));
+  xbt_dynar_push_as (destinations, char*, xbt_strdup ("Jupiter"));
+  xbt_dynar_push_as (destinations, char*, xbt_strdup ("Fafard"));
+  xbt_dynar_push_as (destinations, char*, xbt_strdup ("Ginette"));
+  xbt_dynar_push_as (destinations, char*, xbt_strdup ("Bourassa"));
+  xbt_dynar_push_as (destinations, char*, xbt_strdup ("Fafard"));
+  xbt_dynar_push_as (destinations, char*, xbt_strdup ("Tremblay"));
+  xbt_dynar_push_as (destinations, char*, xbt_strdup ("Ginette"));
+  xbt_dynar_push_as (destinations, char*, NULL);
+
+  char *destination;
+  unsigned int i;
+  xbt_dynar_foreach(destinations, i, destination){
+    task = MSG_task_create("task", 0, 0, NULL);
+    if (destination){
+      MSG_task_set_data(task, xbt_strdup (destination));
+    }
+    TRACE_msg_set_task_category(task, "migration_order");
+    MSG_task_send (task, "master_mailbox");
+    task = NULL;
+  }
   return 0;
 }
 
@@ -54,8 +87,11 @@ int main(int argc, char *argv[])
   /* Simulation setting */
   MSG_create_environment(argv[1]);
 
+  TRACE_category ("migration_order");
+
   /* Application deployment */
   MSG_function_register("emigrant", emigrant);
+  MSG_function_register("master", master);
   MSG_launch_application(argv[2]);
 
   /* Run the simulation */
