@@ -4017,167 +4017,167 @@ $ $SG_TEST_EXENV tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/filename:tracin
 > [  4.441598] (0:@) free_paje_event: event_type=9, timestamp=4.421262
 > [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container Fafard
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container R.2-0
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container R.4-3
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container R.3-2-5
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container R.1-8-6
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container R.6-7
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container Tremblay
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 10
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 11
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 12
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container loopback
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container R.1-0
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 0
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 1
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 2
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 3
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 4
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 5
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 6
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 7
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 8
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 9
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container Bourassa
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container Jupiter
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container Ginette
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container AS0
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) destroy container 0
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
+> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) new_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) print_pajeDestroyContainer: event_type=6, timestamp=4.441598
 > [  4.441598] (0:@) free_paje_event: event_type=6, timestamp=4.441598
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: dump until 4.441598. starts
-> [  4.441598] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441598] (0:@) Filename tracing/ms.trace is closed
 
 $ $SG_TEST_EXENV cat tracing/ms.trace
