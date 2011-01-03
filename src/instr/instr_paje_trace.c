@@ -321,12 +321,21 @@ static void insert_into_buffer (paje_event_t tbi)
   DEBUG4("%s: insert event_type=%d, timestamp=%f, buffersize=%ld)", __FUNCTION__, tbi->event_type, tbi->timestamp, xbt_dynar_length(buffer));
 
   unsigned int i;
-  if (xbt_dynar_length(buffer) == 0){
+  unsigned long len = xbt_dynar_length(buffer);
+  if (len == 0){
     xbt_dynar_push (buffer, &tbi);
     DEBUG1("%s: inserted at beginning", __FUNCTION__);
   }else{
+    //check if last event has the same timestamp that tbi event
+    paje_event_t e2 = *(paje_event_t*)xbt_dynar_get_ptr (buffer, len-1);
+    if (e2->timestamp == tbi->timestamp){
+      //insert at the end
+      DEBUG2("%s: inserted at end, pos = %ld", __FUNCTION__, len);
+      xbt_dynar_insert_at (buffer, len, &tbi);
+      return;
+    }
     int inserted = 0;
-    for (i = 0; i < xbt_dynar_length(buffer); i++){
+    for (i = 0; i < len; i++){
       paje_event_t e1 = *(paje_event_t*)xbt_dynar_get_ptr(buffer, i);
       if (e1->timestamp > tbi->timestamp){
         xbt_dynar_insert_at (buffer, i, &tbi);
