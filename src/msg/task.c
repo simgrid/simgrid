@@ -166,8 +166,10 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   xbt_assert0((task != NULL), "Invalid parameter");
 
   /* why? if somebody is using, then you can't free! ok... but will return MSG_OK? when this task will be destroyed? isn't the user code wrong? */
-  if (task->simdata->isused > 0)
+  if (task->simdata->isused > 0) {
+    DEBUG1("Cannot destroy task %p since somebody is using it", task);
     return MSG_OK;
+  }
 #ifdef HAVE_TRACING
   TRACE_msg_task_destroy(task);
 #endif
