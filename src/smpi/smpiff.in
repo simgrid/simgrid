@@ -1,5 +1,5 @@
 #! /bin/bash
-prefix="@prefix@"
+prefix="@exec_prefix@"
 
 ARGS="-DMAIN__=user_main -Diargc_=smpi_process_argc -Dgetarg_=smpi_process_getarg -lf2c"
 SRCFILES=""

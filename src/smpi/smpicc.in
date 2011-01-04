@@ -1,7 +1,4 @@
 #! /bin/bash
-#FIXME: .. paths...
-prefix="@prefix@"
-exec_prefix="@exec_prefix@"
 
 CC="gcc"
 CFLAGS="-O2 -Dmain=smpi_simulated_main"
