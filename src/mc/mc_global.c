@@ -14,7 +14,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
 /* MC global data structures */
 mc_snapshot_t initial_snapshot = NULL;
 xbt_fifo_t mc_stack = NULL;
-xbt_setset_t mc_setset = NULL;
 mc_stats_t mc_stats = NULL;
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
@@ -24,8 +23,6 @@ char mc_replay_mode = FALSE;
  */
 void MC_init(void)
 {
-  smx_process_t process;
-  
   /* Check if MC is already initialized */
   if (initial_snapshot)
     return;
@@ -41,14 +38,6 @@ void MC_init(void)
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
 
-  /* Create the container for the sets */
-  mc_setset = xbt_setset_new(20);
-
-  /* Add the existing processes to mc's setset so they have an ID designated */
-  /* FIXME: check what happen if there are processes created during the exploration */
-  xbt_swag_foreach(process, simix_global->process_list){
-    xbt_setset_elm_add(mc_setset, process);
-  }
   MC_UNSET_RAW_MEM;
 
   MC_dpor_init();
@@ -76,6 +65,47 @@ int MC_random(int min, int max)
 {
   /*FIXME: return mc_current_state->executed_transition->random.value;*/
   return 0;
+}
+
+/**
+ * \brief Schedules all the process that are ready to run
+ */
+void MC_wait_for_requests(void)
+{
+  char *req_str = NULL;
+  smx_req_t req = NULL;
+
+  do {
+    SIMIX_context_runall(simix_global->process_to_run);
+    while((req = SIMIX_request_pop())){
+      if(!SIMIX_request_is_visible(req))
+        SIMIX_request_pre(req);
+      else if(req->call == REQ_COMM_WAITANY)
+        THROW_UNIMPLEMENTED;
+      else if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
+        req_str = MC_request_to_string(req);
+        DEBUG1("Got: %s", req_str);
+        xbt_free(req_str);
+      }
+    }
+  } while (xbt_dynar_length(simix_global->process_to_run));
+}
+
+int MC_deadlock_check()
+{
+  int deadlock = FALSE;
+  smx_process_t process;
+  if(xbt_swag_size(simix_global->process_list)){
+    deadlock = TRUE;
+    xbt_swag_foreach(process, simix_global->process_list){
+      if(process->request.call != REQ_NO_REQ
+         && SIMIX_request_is_enabled(&process->request)){
+        deadlock = FALSE;
+        break;
+      }
+    }
+  }
+  return deadlock;
 }
 
 /**
@@ -165,57 +195,6 @@ void MC_show_stack(xbt_fifo_t stack)
   }
 }
 
-/**
- * \brief Schedules all the process that are ready to run
- */
-void MC_wait_for_requests(void)
-{
-  char *req_str = NULL;
-  smx_req_t req = NULL;
-
-  do {
-    SIMIX_context_runall(simix_global->process_to_run);
-    while((req = SIMIX_request_pop())){
-      if(!SIMIX_request_is_visible(req))
-        SIMIX_request_pre(req);
-      else if(req->call == REQ_COMM_WAITANY)
-        THROW_UNIMPLEMENTED;
-      else if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
-        req_str = MC_request_to_string(req);
-        DEBUG1("Got: %s", req_str);
-        xbt_free(req_str);
-      }
-    }
-  } while (xbt_dynar_length(simix_global->process_to_run));
-}
-
-/****************************** Statistics ************************************/
-void MC_print_statistics(mc_stats_t stats)
-{
-  INFO1("State space size ~= %lu", stats->state_size);
-  INFO1("Expanded states = %lu", stats->expanded_states);
-  INFO1("Visited states = %lu", stats->visited_states);
-  INFO1("Executed transitions = %lu", stats->executed_transitions);
-  INFO1("Expanded / Visited = %lf",
-        (double) stats->visited_states / stats->expanded_states);
-  /*INFO1("Exploration coverage = %lf", 
-     (double)stats->expanded_states / stats->state_size); */
-}
-
-/************************* Assertion Checking *********************************/
-void MC_assert(int prop)
-{
-  if (MC_IS_ENABLED && !prop) {
-    INFO0("**************************");
-    INFO0("*** PROPERTY NOT VALID ***");
-    INFO0("**************************");
-    INFO0("Counter-example execution trace:");
-    MC_dump_stack(mc_stack);
-    MC_print_statistics(mc_stats);
-    xbt_abort();
-  }
-}
-
 void MC_show_deadlock(smx_req_t req)
 {
   char *req_str = NULL;
@@ -229,3 +208,29 @@ void MC_show_deadlock(smx_req_t req)
   INFO0("Counter-example execution trace:");
   MC_dump_stack(mc_stack);
 }
+
+void MC_print_statistics(mc_stats_t stats)
+{
+  INFO1("State space size ~= %lu", stats->state_size);
+  INFO1("Expanded states = %lu", stats->expanded_states);
+  INFO1("Visited states = %lu", stats->visited_states);
+  INFO1("Executed transitions = %lu", stats->executed_transitions);
+  INFO1("Expanded / Visited = %lf",
+        (double) stats->visited_states / stats->expanded_states);
+  /*INFO1("Exploration coverage = %lf", 
+     (double)stats->expanded_states / stats->state_size); */
+}
+
+void MC_assert(int prop)
+{
+  if (MC_IS_ENABLED && !prop) {
+    INFO0("**************************");
+    INFO0("*** PROPERTY NOT VALID ***");
+    INFO0("**************************");
+    INFO0("Counter-example execution trace:");
+    MC_dump_stack(mc_stack);
+    MC_print_statistics(mc_stats);
+    xbt_abort();
+  }
+}
+

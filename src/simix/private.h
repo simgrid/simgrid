@@ -40,7 +40,7 @@ typedef struct s_smx_global {
 } s_smx_global_t, *smx_global_t;
 
 extern smx_global_t simix_global;
-
+extern unsigned long simix_process_maxpid;
 
 /*********************************** Time ************************************/
 

@@ -33,7 +33,7 @@ void MC_dpor_init()
   /* Get an enabled process and insert it in the interleave set of the initial state */
   xbt_swag_foreach(process, simix_global->process_list){
     if(SIMIX_process_is_enabled(process)){
-      xbt_setset_set_insert(initial_state->interleave, process);
+      MC_state_add_to_interleave(initial_state, process);
       break;
     }
   }
@@ -51,7 +51,8 @@ void MC_dpor_init()
  */
 void MC_dpor(void)
 {
-  char *req_str, deadlock;
+  char *req_str;
+  char value;
   smx_req_t req = NULL;
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL;
   smx_process_t process = NULL;
@@ -59,65 +60,58 @@ void MC_dpor(void)
 
   while (xbt_fifo_size(mc_stack) > 0) {
 
-    DEBUG0("**************************************************");
-
     /* Get current state */
     state = (mc_state_t) 
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
 
-    /* If there are processes to interleave and the maximun depth has not been reached 
+    DEBUG0("**************************************************");
+    DEBUG3("Exploration detph=%d (state=%p)(%u interleave)",
+           xbt_fifo_size(mc_stack), state,
+           MC_state_interleave_size(state));
+
+    /* Update statistics */
+    mc_stats->visited_states++;
+
+    /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (xbt_setset_set_size(state->interleave) > 0
-        && xbt_fifo_size(mc_stack) < MAX_DEPTH) {
+    if (xbt_fifo_size(mc_stack) < MAX_DEPTH &&
+        (req = MC_state_get_request(state, &value))) {
 
-      DEBUG3("Exploration detph=%d (state=%p)(%d interleave)",
-             xbt_fifo_size(mc_stack), state,
-             xbt_setset_set_size(state->interleave));
+      /* Debug information */
+      if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
+        req_str = MC_request_to_string(req);
+        DEBUG1("Execute: %s", req_str);
+        xbt_free(req_str);
+      }
 
-      /* Update statistics */
-      mc_stats->visited_states++;
+      MC_state_set_executed_request(state, req);
       mc_stats->executed_transitions++;
 
+      /* Answer the request */
+      SIMIX_request_pre(req); /* After this call req is no longer usefull */
+
+      /* Wait for requests (schedules processes) */
+      MC_wait_for_requests();
+
+      /* Create the new expanded state */
       MC_SET_RAW_MEM;
-      /* Choose a request to execute from the the current state */
-      req = MC_state_get_request(state);
+      next_state = MC_state_new();
+      xbt_fifo_unshift(mc_stack, next_state);
+
+
+      /* Get an enabled process and insert it in the interleave set of the next state */
+      xbt_swag_foreach(process, simix_global->process_list){
+        if(SIMIX_process_is_enabled(process)){
+          MC_state_add_to_interleave(next_state, process);
+          break;
+        }
+      }
       MC_UNSET_RAW_MEM;
 
-      if(req){    
-        /* Answer the request */
-        /* Debug information */
-        if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
-          req_str = MC_request_to_string(req); 
-          DEBUG1("Execute: %s", req_str);
-          xbt_free(req_str);
-        }
+      /* FIXME: Update Statistics
+      mc_stats->state_size +=
+          xbt_setset_set_size(next_state->enabled_transitions);*/
 
-        MC_state_set_executed_request(state, req);
-
-        SIMIX_request_pre(req); /* After this call req is no longer usefull */
-        
-        /* Wait for requests (schedules processes) */
-        MC_wait_for_requests();
-
-        /* Create the new expanded state */
-        MC_SET_RAW_MEM;
-        next_state = MC_state_new();
-        xbt_fifo_unshift(mc_stack, next_state);
-        
-
-        /* Get an enabled process and insert it in the interleave set of the next state */
-        xbt_swag_foreach(process, simix_global->process_list){
-          if(SIMIX_process_is_enabled(process)){
-            xbt_setset_set_insert(next_state->interleave, process);
-            break;
-          }
-        }
-        MC_UNSET_RAW_MEM;
-        
-        /* FIXME: Update Statistics
-        mc_stats->state_size +=
-            xbt_setset_set_size(next_state->enabled_transitions);*/
-      }
       /* Let's loop again */
 
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
@@ -125,25 +119,10 @@ void MC_dpor(void)
       DEBUG0("There are no more processes to interleave.");
 
       /* Check for deadlocks */
-      if(xbt_swag_size(simix_global->process_list)){
-        deadlock = TRUE;
-        xbt_swag_foreach(process, simix_global->process_list){
-          if(process->request.call != REQ_NO_REQ
-             && SIMIX_request_is_enabled(&process->request)){
-            deadlock = FALSE;
-            break;
-          }
-        }
-
-        if(deadlock){
-          MC_show_deadlock(&process->request);
-          return;
-        }
+      if(MC_deadlock_check()){
+        MC_show_deadlock(&process->request);
+        return;
       }
-
-      /*
-      INFO0("*********************************");
-      MC_show_stack(mc_stack); */
 
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
@@ -170,15 +149,15 @@ void MC_dpor(void)
               xbt_free(req_str);              
             }
 
-            if(!xbt_setset_set_belongs(prev_state->done, req->issuer))
-              xbt_setset_set_insert(prev_state->interleave, req->issuer);
+            if(!MC_state_process_is_done(prev_state, req->issuer))
+              MC_state_add_to_interleave(prev_state, req->issuer);
             else
               DEBUG1("Process %p is in done set", req->issuer);
 
             break;
           }
         }
-        if (xbt_setset_set_size(state->interleave) > 0) {
+        if (MC_state_interleave_size(state)) {
           /* We found a back-tracking point, let's loop */
           xbt_fifo_unshift(mc_stack, state);
           DEBUG1("Back-tracking to depth %d", xbt_fifo_size(mc_stack));

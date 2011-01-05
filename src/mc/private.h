@@ -14,7 +14,6 @@
 #include "mc/mc.h"
 #include "mc/datatypes.h"
 #include "xbt/fifo.h"
-#include "xbt/setset.h"
 #include "xbt/config.h"
 #include "xbt/function_types.h"
 #include "xbt/mmalloc.h"
@@ -42,12 +41,13 @@ void MC_free_snapshot(mc_snapshot_t);
 /* Bound of the MC depth-first search algorithm */
 #define MAX_DEPTH 1000
 
-void MC_show_stack(xbt_fifo_t stack);
-void MC_dump_stack(xbt_fifo_t stack);
+int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack);
 void MC_wait_for_requests(void);
 void MC_get_enabled_processes();
 void MC_show_deadlock(smx_req_t req);
+void MC_show_stack(xbt_fifo_t stack);
+void MC_dump_stack(xbt_fifo_t stack);
 
 /********************************* Requests ***********************************/
 int MC_request_depend(smx_req_t req1, smx_req_t req2);
@@ -60,19 +60,21 @@ void MC_dpor_exit(void);
 
 /******************************** States **************************************/
 typedef struct mc_state {
-  xbt_setset_set_t interleave;  /* processes to interleave by the mc */
-  xbt_setset_set_t done;        /* already executed processes */
+  char *interleave;         /* processes to interleave by the mc */
+  unsigned long max_pid;
   s_smx_req_t executed;
 } s_mc_state_t, *mc_state_t;
 
 extern xbt_fifo_t mc_stack;
-extern xbt_setset_t mc_setset;
 
 mc_state_t MC_state_new(void);
 void MC_state_delete(mc_state_t state);
+void MC_state_add_to_interleave(mc_state_t state, smx_process_t process);
+unsigned int MC_state_interleave_size(mc_state_t state);
+int MC_state_process_is_done(mc_state_t state, smx_process_t process);
 void MC_state_set_executed_request(mc_state_t state, smx_req_t req);
 smx_req_t MC_state_get_executed_request(mc_state_t state);
-smx_req_t MC_state_get_request(mc_state_t state);
+smx_req_t MC_state_get_request(mc_state_t state, char *value);
 
 /****************************** Statistics ************************************/
 typedef struct mc_stats {

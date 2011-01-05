@@ -14,7 +14,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
                                 "Logging specific to SIMIX (process)");
 
-static unsigned long simix_process_maxpid = 0;
+unsigned long simix_process_maxpid = 0;
 
 /**
  * \brief Returns the current agent.
