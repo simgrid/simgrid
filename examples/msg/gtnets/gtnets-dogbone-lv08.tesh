@@ -2,7 +2,7 @@
 
 p Testing dogbone communication pattern with LV08 model
 
-$ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:LV08
+$ gtnets/gtnets ${srcdir:=.}/gtnets/dogbone-p.xml ${srcdir:=.}/gtnets/dogbone-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:LV08
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'LV08'

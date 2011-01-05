@@ -2,7 +2,7 @@
 
 p Testing onelink communication pattern with GTNets model
 
-$ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=tracing/filename:onelink_gtnets.trace --cfg=tracing/categorized:1 --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets
+$ gtnets/gtnets ${srcdir:=.}/gtnets/onelink-p.xml ${srcdir:=.}/gtnets/onelink-d.xml --cfg=tracing/filename:onelink_gtnets.trace --cfg=tracing/categorized:1 --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'onelink_gtnets.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'

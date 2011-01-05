@@ -80,12 +80,13 @@ endif(HAVE_PCRE_LIB)
 if(HAVE_RUBY)
 	set(SIMGRID_DEP "${SIMGRID_DEP} -l${RUBY_LIBRARY_NAME}")
 	ADD_CUSTOM_TARGET(link_simgrid_ruby ALL
-		 DEPENDS simgrid ${CMAKE_HOME_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
+		 DEPENDS simgrid ${CMAKE_BINARY_DIR}/src/bindings/ruby/libsimgrid.${LIB_EXE}
 	)
 	add_custom_command(
-		OUTPUT ${CMAKE_HOME_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
-	        COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
-		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_HOME_DIRECTORY}/src/bindings/ruby/libsimgrid.${LIB_EXE}
+		OUTPUT ${CMAKE_BINARY_DIR}/src/bindings/ruby/libsimgrid.${LIB_EXE}
+	        COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_BINARY_DIR}/src/bindings/ruby/libsimgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+			COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/src/bindings/ruby/
+			COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/src/bindings/ruby/libsimgrid.${LIB_EXE}
 	)
 endif(HAVE_RUBY)
 
@@ -98,22 +99,25 @@ endif(pthread)
 if(HAVE_LUA)	  
     ADD_CUSTOM_TARGET(link_simgrid_lua ALL
       DEPENDS 	simgrid
-      			${CMAKE_HOME_DIRECTORY}/examples/lua/simgrid.${LIB_EXE}
-				${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE}
-				${CMAKE_HOME_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE}
+      			${CMAKE_BINARY_DIR}/examples/lua/simgrid.${LIB_EXE}
+				${CMAKE_BINARY_DIR}/examples/msg/masterslave/simgrid.${LIB_EXE}
+				${CMAKE_BINARY_DIR}/examples/simdag/simgrid.${LIB_EXE}
 	)
 	add_custom_command(
-		OUTPUT 	${CMAKE_HOME_DIRECTORY}/examples/lua/simgrid.${LIB_EXE}
-				${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE}
-				${CMAKE_HOME_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE}
-		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/examples/lua/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
-		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_HOME_DIRECTORY}/examples/lua/simgrid.${LIB_EXE} #for test
+		OUTPUT 	${CMAKE_BINARY_DIR}/examples/lua/simgrid.${LIB_EXE}
+				${CMAKE_BINARY_DIR}/examples/msg/masterslave/simgrid.${LIB_EXE}
+				${CMAKE_BINARY_DIR}/examples/simdag/simgrid.${LIB_EXE}
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_BINARY_DIR}/examples/lua/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/examples/lua/
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/examples/lua/simgrid.${LIB_EXE} #for test
 		
-		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
-	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/simgrid.${LIB_EXE} #for test
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_BINARY_DIR}/examples/msg/masterslave/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+	  	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/examples/msg/masterslave/
+	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/examples/msg/masterslave/simgrid.${LIB_EXE} #for test
 		
-		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
-	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_HOME_DIRECTORY}/examples/simdag/simgrid.${LIB_EXE} #for test			
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_BINARY_DIR}/examples/simdag/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+	  	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/examples/simdag/
+	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/examples/simdag/simgrid.${LIB_EXE} #for test			
 	)
 	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${LIB_LUA_NAME}")   	  
 endif(HAVE_LUA)

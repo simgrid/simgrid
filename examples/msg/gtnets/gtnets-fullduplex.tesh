@@ -2,7 +2,7 @@
 
 p Testing fullduplex TCP option DISABLED
 
-$ gtnets/gtnets gtnets/fullduplex-p.xml gtnets/fullduplex-d.xml --cfg=fullduplex:0
+$ gtnets/gtnets ${srcdir:=.}/gtnets/fullduplex-p.xml ${srcdir:=.}/gtnets/fullduplex-d.xml --cfg=fullduplex:0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'fullduplex' to '0'
 > [C1:master:(7) 108.799652] [msg_test/INFO] Send completed (to S1). Transfer time: 108.799652	 Agregate bandwidth: 9191.205854
 > [C1:master:(7) 108.799652] [msg_test/INFO] Completed peer: S1 time: 108.799652
@@ -14,7 +14,7 @@ $ gtnets/gtnets gtnets/fullduplex-p.xml gtnets/fullduplex-d.xml --cfg=fullduplex
 
 p Testing fullduplex TCP option ENABLED
 
-$ gtnets/gtnets gtnets/fullduplex-p.xml gtnets/fullduplex-d.xml --cfg=fullduplex:1
+$ gtnets/gtnets ${srcdir:=.}/gtnets/fullduplex-p.xml ${srcdir:=.}/gtnets/fullduplex-d.xml --cfg=fullduplex:1
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'fullduplex' to '1'
 > [S1:master:(1) 331.625739] [msg_test/INFO] Send completed (to C1). Transfer time: 331.625739	 Agregate bandwidth: 3015.447482
 > [S1:master:(1) 331.625739] [msg_test/INFO] Completed peer: C1 time: 331.625739

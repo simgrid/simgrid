@@ -61,6 +61,7 @@ Testing/
 Makefile
 bin/
 lib/
+build_dir/
 buildtools/Cmake/test_prog/prog_va_copy.c
 
 

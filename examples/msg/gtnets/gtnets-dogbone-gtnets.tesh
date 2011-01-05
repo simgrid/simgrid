@@ -2,7 +2,7 @@
 
 p Testing dogbone communication pattern with GTNets model
 
-$ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets
+$ gtnets/gtnets ${srcdir:=.}/gtnets/dogbone-p.xml ${srcdir:=.}/gtnets/dogbone-d.xml --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:GTNets
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'GTNets'

@@ -2,7 +2,7 @@
 
 p Testing dogbone communication pattern with LV08 model
 
-$ gtnets/gtnets gtnets/dogbone-p.xml gtnets/dogbone-d.xml --cfg=tracing/filename:dogbone_lv08.trace --cfg=tracing/categorized:1 --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:LV08
+$ gtnets/gtnets ${srcdir:=.}/gtnets/dogbone-p.xml ${srcdir:=.}/gtnets/dogbone-d.xml --cfg=tracing/filename:dogbone_lv08.trace --cfg=tracing/categorized:1 --cfg=workstation/model:compound --cfg=cpu/model:Cas01 --cfg=network/model:LV08
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'dogbone_lv08.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'

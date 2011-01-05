@@ -2,7 +2,7 @@
 
 p Tracing tasks
 
-$ $SG_TEST_EXENV tracing/tasks$EXEEXT --cfg=tracing:1 --cfg=tracing/msg/task:1 --cfg=tracing/filename:tracing/tasks.trace ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/tasks$EXEEXT --cfg=tracing:1 --cfg=tracing/msg/task:1 --cfg=tracing/filename:tracing/tasks.trace ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/task' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/tasks.trace'

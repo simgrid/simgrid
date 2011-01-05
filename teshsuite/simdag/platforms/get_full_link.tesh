@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ ./basic_parsing_test ./four_hosts_floyd.xml FULL_LINK
+$ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd.xml FULL_LINK
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > Workstation number: 4, link number: 5
 > Route between host1 and host1
@@ -74,7 +74,7 @@ $ ./basic_parsing_test ./four_hosts_floyd.xml FULL_LINK
 
 
 
-$ ./basic_parsing_test ./four_hosts_floyd_bis.xml FULL_LINK
+$ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd_bis.xml FULL_LINK
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > Workstation number: 5, link number: 7
 > Route between host1 and host1

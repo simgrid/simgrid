@@ -1,8 +1,5 @@
 # MasterSlave Ruby Example
 
-# This setenv and the -I arg are mandatory until the make install only
-! setenv RUBYLIB=../../lib
-
 $ ruby -I ../../src/bindings/ruby MasterSlave.rb
 > [Tremblay:Master:(1) 0.000000] [ruby/INFO] args[0]=20
 > [Tremblay:Master:(1) 0.000000] [ruby/INFO] args[1]=50000000

@@ -2,7 +2,7 @@
 
 p Tracing multiple categories master/slave application
 
-$ $SG_TEST_EXENV tracing/categories$EXEEXT --cfg=tracing:1 --cfg=tracing/filename:tracing/categories.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=triva/categorized:tracing/categories.cat.plist --cfg=triva/uncategorized:tracing/categories.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/categories$EXEEXT --cfg=tracing:1 --cfg=tracing/filename:tracing/categories.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=triva/categorized:tracing/categories.cat.plist --cfg=triva/uncategorized:tracing/categories.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/categories.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
