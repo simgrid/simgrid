@@ -359,11 +359,25 @@ void SIMIX_pre_comm_test(smx_req_t req)
   }
 }
 
-void SIMIX_pre_comm_testany(smx_req_t req)
+void SIMIX_pre_comm_testany(smx_req_t req, unsigned int idx)
 {
   unsigned int cursor;
   smx_action_t action;
+  xbt_dynar_t actions = req->comm_testany.comms;
   req->comm_testany.result = -1;
+
+  if (MC_IS_ENABLED){
+    if((int)idx == -1){
+      SIMIX_request_answer(req);
+    }else{
+      action = xbt_dynar_get_as(actions, idx, smx_action_t);
+      xbt_fifo_push(action->request_list, req);
+      action->state = SIMIX_DONE;
+      SIMIX_comm_finish(action);
+    }
+    return;
+  }
+
   xbt_dynar_foreach(req->comm_testany.comms,cursor,action) {
     if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
       req->comm_testany.result = cursor;
@@ -375,15 +389,26 @@ void SIMIX_pre_comm_testany(smx_req_t req)
   SIMIX_request_answer(req);
 }
 
-void SIMIX_pre_comm_waitany(smx_req_t req)
+void SIMIX_pre_comm_waitany(smx_req_t req, unsigned int idx)
 {
   smx_action_t action;
   unsigned int cursor = 0;
   xbt_dynar_t actions = req->comm_waitany.comms;
+
+  if (MC_IS_ENABLED){
+    action = xbt_dynar_get_as(actions, idx, smx_action_t);
+    xbt_fifo_push(action->request_list, req);
+    req->comm_waitany.result = idx;
+    action->state = SIMIX_DONE;
+    SIMIX_comm_finish(action);
+    return;
+  }
+
   xbt_dynar_foreach(actions, cursor, action){
     /* Associate this request to the action */
     xbt_fifo_push(action->request_list, req);
     if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING){
+      req->comm_waitany.result = cursor;
       SIMIX_comm_finish(action);
       break;
     }
@@ -456,7 +481,6 @@ void SIMIX_comm_finish(smx_action_t action)
        return it as the result of the call */
     if (req->call == REQ_COMM_WAITANY) {
       SIMIX_waitany_req_remove_from_actions(req);
-      req->comm_waitany.result = xbt_dynar_search(req->comm_waitany.comms, &action);
     }
 
     /* If the action is still in a rendez-vous point then remove from it */

@@ -79,9 +79,7 @@ void MC_wait_for_requests(void)
     SIMIX_context_runall(simix_global->process_to_run);
     while((req = SIMIX_request_pop())){
       if(!SIMIX_request_is_visible(req))
-        SIMIX_request_pre(req);
-      else if(req->call == REQ_COMM_WAITANY)
-        THROW_UNIMPLEMENTED;
+        SIMIX_request_pre(req, 0);
       else if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
         req_str = MC_request_to_string(req);
         DEBUG1("Got: %s", req_str);
@@ -115,6 +113,7 @@ int MC_deadlock_check()
 */
 void MC_replay(xbt_fifo_t stack)
 {
+  unsigned int value;
   char *req_str;
   smx_req_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item;
@@ -134,7 +133,7 @@ void MC_replay(xbt_fifo_t stack)
        item = xbt_fifo_get_prev_item(item)) {
 
     state = (mc_state_t) xbt_fifo_get_item_content(item);
-    saved_req = MC_state_get_executed_request(state);
+    saved_req = MC_state_get_executed_request(state, &value);
    
     if(saved_req){
       /* because we got a copy of the executed request, we have to fetch the  
@@ -149,7 +148,7 @@ void MC_replay(xbt_fifo_t stack)
       }
     }
          
-    SIMIX_request_pre(req);
+    SIMIX_request_pre(req, value);
     MC_wait_for_requests();
          
     /* Update statistics */
@@ -178,6 +177,7 @@ void MC_dump_stack(xbt_fifo_t stack)
 
 void MC_show_stack(xbt_fifo_t stack)
 {
+  unsigned int value;
   mc_state_t state;
   xbt_fifo_item_t item;
   smx_req_t req;
@@ -186,7 +186,7 @@ void MC_show_stack(xbt_fifo_t stack)
   for (item = xbt_fifo_get_last_item(stack);
        (item ? (state = (mc_state_t) (xbt_fifo_get_item_content(item)))
         : (NULL)); item = xbt_fifo_get_prev_item(item)) {
-    req = MC_state_get_executed_request(state);
+    req = MC_state_get_executed_request(state, &value);
     if(req){
       req_str = MC_request_to_string(req); 
       INFO1("%s", req_str);

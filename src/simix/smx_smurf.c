@@ -47,7 +47,7 @@ void SIMIX_request_push()
         SIMIX_request_name(issuer->request.call), issuer->request.call);
     SIMIX_process_yield();
   } else {
-    SIMIX_request_pre(&issuer->request);
+    SIMIX_request_pre(&issuer->request, 0);
   }
 }
 
@@ -77,7 +77,8 @@ int SIMIX_request_is_visible(smx_req_t req)
      || req->call == REQ_COMM_IRECV
      || req->call == REQ_COMM_WAIT
      || req->call == REQ_COMM_WAITANY
-     || req->call == REQ_COMM_TEST;
+     || req->call == REQ_COMM_TEST
+     || req->call == REQ_COMM_TESTANY;
 }
 
 int SIMIX_request_is_enabled(smx_req_t req)
@@ -89,10 +90,8 @@ int SIMIX_request_is_enabled(smx_req_t req)
 
     case REQ_COMM_WAIT:
       /* FIXME: check also that src and dst processes are not suspended */
-      if (req->comm_wait.comm->comm.src_proc 
-         && req->comm_wait.comm->comm.dst_proc)
-        return TRUE;
-      return FALSE;
+      act = req->comm_wait.comm;
+      return (act->comm.src_proc && act->comm.dst_proc);
       break;
 
     case REQ_COMM_WAITANY:
@@ -109,8 +108,29 @@ int SIMIX_request_is_enabled(smx_req_t req)
   }
 }
 
+int SIMIX_request_is_enabled_by_idx(smx_req_t req, unsigned int idx)
+{
+  smx_action_t act;
 
-void SIMIX_request_pre(smx_req_t req)
+  switch (req->call) {
+
+    case REQ_COMM_WAIT:
+      /* FIXME: check also that src and dst processes are not suspended */
+      act = req->comm_wait.comm;
+      return (act->comm.src_proc && act->comm.dst_proc);
+      break;
+
+    case REQ_COMM_WAITANY:
+      act = xbt_dynar_get_as(req->comm_waitany.comms, idx, smx_action_t);
+      return (act->comm.src_proc && act->comm.dst_proc);
+      break;
+
+    default:
+      return TRUE;
+  }
+}
+
+void SIMIX_request_pre(smx_req_t req, unsigned int value)
 {
   switch (req->call) {
   case REQ_NO_REQ:
@@ -359,7 +379,7 @@ void SIMIX_request_pre(smx_req_t req)
       break;
 
     case REQ_COMM_WAITANY:
-      SIMIX_pre_comm_waitany(req);
+      SIMIX_pre_comm_waitany(req, value);
       break;
 
     case REQ_COMM_WAIT:
@@ -371,7 +391,7 @@ void SIMIX_request_pre(smx_req_t req)
       break;
 
     case REQ_COMM_TESTANY:
-      SIMIX_pre_comm_testany(req);
+      SIMIX_pre_comm_testany(req, value);
       break;
 
     case REQ_COMM_GET_REMAINS:

@@ -67,11 +67,38 @@ char *MC_request_to_string(smx_req_t req)
                       act->comm.src_proc ? act->comm.src_proc->name : "",
                       act->comm.dst_proc ? act->comm.dst_proc->name : "");
       break;
+
+    case REQ_COMM_WAITANY:
+      type = bprintf("WaitAny");
+      args = bprintf("-");
+      /* FIXME: improve output */
+      break;
+
+    case REQ_COMM_TESTANY:
+       type = bprintf("TestAny");
+       args = bprintf("-");
+       /* FIXME: improve output */
+       break;
+
     default:
       THROW_UNIMPLEMENTED;
   }
+
   str = bprintf("[(%lu)%s] %s (%s)", req->issuer->pid ,req->issuer->name, type, args);
   xbt_free(type);
   xbt_free(args);
   return str;
+}
+
+unsigned int MC_request_testany_fail(smx_req_t req)
+{
+  unsigned int cursor;
+  smx_action_t action;
+
+  xbt_dynar_foreach(req->comm_testany.comms, cursor, action){
+    if(action->comm.src_proc && action->comm.dst_proc)
+      return FALSE;
+  }
+
+  return TRUE;
 }

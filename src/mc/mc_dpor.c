@@ -33,7 +33,7 @@ void MC_dpor_init()
   /* Get an enabled process and insert it in the interleave set of the initial state */
   xbt_swag_foreach(process, simix_global->process_list){
     if(SIMIX_process_is_enabled(process)){
-      MC_state_add_to_interleave(initial_state, process);
+      MC_state_interleave_process(initial_state, process);
       break;
     }
   }
@@ -52,7 +52,7 @@ void MC_dpor_init()
 void MC_dpor(void)
 {
   char *req_str;
-  char value;
+  unsigned int value;
   smx_req_t req = NULL;
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL;
   smx_process_t process = NULL;
@@ -80,15 +80,15 @@ void MC_dpor(void)
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
         req_str = MC_request_to_string(req);
-        DEBUG1("Execute: %s", req_str);
+        DEBUG2("Execute: %s (%u)", req_str, value);
         xbt_free(req_str);
       }
 
-      MC_state_set_executed_request(state, req);
+      MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
 
       /* Answer the request */
-      SIMIX_request_pre(req); /* After this call req is no longer usefull */
+      SIMIX_request_pre(req, value); /* After this call req is no longer usefull */
 
       /* Wait for requests (schedules processes) */
       MC_wait_for_requests();
@@ -102,7 +102,7 @@ void MC_dpor(void)
       /* Get an enabled process and insert it in the interleave set of the next state */
       xbt_swag_foreach(process, simix_global->process_list){
         if(SIMIX_process_is_enabled(process)){
-          MC_state_add_to_interleave(next_state, process);
+          MC_state_interleave_process(next_state, process);
           break;
         }
       }
@@ -136,12 +136,12 @@ void MC_dpor(void)
          executed before it. If it does then add it to the interleave set of the
          state that executed that previous request. */
       while ((state = xbt_fifo_shift(mc_stack)) != NULL) {
-        req = MC_state_get_executed_request(state);
+        req = MC_state_get_executed_request(state, &value);
         xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
-          if(MC_request_depend(req, MC_state_get_executed_request(prev_state))){
+          if(MC_request_depend(req, MC_state_get_executed_request(prev_state, &value))){
             if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
               DEBUG0("Dependent Transitions:");
-              req_str = MC_request_to_string(MC_state_get_executed_request(prev_state));
+              req_str = MC_request_to_string(MC_state_get_executed_request(prev_state, &value));
               DEBUG2("%s (state=%p)", req_str, prev_state);
               xbt_free(req_str);
               req_str = MC_request_to_string(req);
@@ -150,7 +150,7 @@ void MC_dpor(void)
             }
 
             if(!MC_state_process_is_done(prev_state, req->issuer))
-              MC_state_add_to_interleave(prev_state, req->issuer);
+              MC_state_interleave_process(prev_state, req->issuer);
             else
               DEBUG1("Process %p is in done set", req->issuer);
 

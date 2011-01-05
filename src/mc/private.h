@@ -52,6 +52,8 @@ void MC_dump_stack(xbt_fifo_t stack);
 /********************************* Requests ***********************************/
 int MC_request_depend(smx_req_t req1, smx_req_t req2);
 char* MC_request_to_string(smx_req_t req);
+unsigned int MC_request_testany_fail(smx_req_t req);
+int MC_waitany_is_enabled_by_comm(smx_req_t req, unsigned int comm);
 
 /********************************** DPOR **************************************/
 void MC_dpor_init(void);
@@ -61,7 +63,7 @@ void MC_dpor_exit(void);
 /******************************** States **************************************/
 /* Possible exploration status of a process in a state */
 typedef enum {
-  MC_NOT_INTERLEAVE = 0,    /* Do not interleave (do not execute) */
+  MC_NOT_INTERLEAVE=0,      /* Do not interleave (do not execute) */
   MC_INTERLEAVE,            /* Interleave the process (one or more request) */
   MC_DONE                   /* Already interleaved */
 } e_mc_process_state_t;
@@ -69,11 +71,8 @@ typedef enum {
 /* On every state, each process has an entry of the following type */
 typedef struct mc_procstate{
   e_mc_process_state_t state;       /* Exploration control information */
-  unsigned int num_to_interleave;   /* Number of request to interleave */
-  /* If a process has a request with multiple possible responses like a */
-  /* "WaitAny", then the following vector with the indexes to interleave */
-  /* is additionally used. */
-  unsigned int *requests_indexes;   /* Indexes of the requests to interleave */
+  unsigned int interleave_count;    /* Number of times that the process was
+                                       interleaved */
 } s_mc_procstate_t, *mc_procstate_t;
 
 /* An exploration state is composed of: */
@@ -81,18 +80,19 @@ typedef struct mc_state {
   unsigned long max_pid;            /* Maximum pid at state's creation time */
   mc_procstate_t proc_status;       /* State's exploration status by process */
   s_smx_req_t executed;             /* The executed request of the state */
+  unsigned int executed_value;      /* The value associated to the request */
 } s_mc_state_t, *mc_state_t;
 
 extern xbt_fifo_t mc_stack;
 
 mc_state_t MC_state_new(void);
 void MC_state_delete(mc_state_t state);
-void MC_state_add_to_interleave(mc_state_t state, smx_process_t process);
+void MC_state_interleave_process(mc_state_t state, smx_process_t process);
 unsigned int MC_state_interleave_size(mc_state_t state);
 int MC_state_process_is_done(mc_state_t state, smx_process_t process);
-void MC_state_set_executed_request(mc_state_t state, smx_req_t req);
-smx_req_t MC_state_get_executed_request(mc_state_t state);
-smx_req_t MC_state_get_request(mc_state_t state, char *value);
+void MC_state_set_executed_request(mc_state_t state, smx_req_t req, unsigned int value);
+smx_req_t MC_state_get_executed_request(mc_state_t state, unsigned int *value);
+smx_req_t MC_state_get_request(mc_state_t state, unsigned int *value);
 
 /****************************** Statistics ************************************/
 typedef struct mc_stats {

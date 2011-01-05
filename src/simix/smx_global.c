@@ -176,7 +176,7 @@ void SIMIX_run(void)
       SIMIX_context_runall(simix_global->process_to_run);
       while ((req = SIMIX_request_pop())) {
         DEBUG1("Handling request %p", req);
-        SIMIX_request_pre(req);
+        SIMIX_request_pre(req, 0);
       }
     } while (xbt_dynar_length(simix_global->process_to_run));
 
