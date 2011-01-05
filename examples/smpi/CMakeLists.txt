@@ -44,8 +44,4 @@ target_link_libraries(smpi_sendrecv m simgrid smpi )
 target_link_libraries(smpi_traced m simgrid smpi )
 target_link_libraries(ttest01 m simgrid smpi )
 
-add_custom_command(TARGET smpi_sendrecv
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy ./smpi_sendrecv ./sendrecv
-  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-)
+set_target_properties(smpi_sendrecv PROPERTIES RENAME sendrecv)
