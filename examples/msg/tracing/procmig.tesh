@@ -6,7 +6,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/procmig$EXEEXT --cfg=tracing:1 --cfg=traci
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/procmig.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to '1'
-> [Fafard:emigrant:(1) 0.000000] [msg_test/INFO] Setting process category
 > [Fafard:emigrant:(1) 2.020551] [msg_test/INFO] Migrating to Tremblay
 > [Tremblay:emigrant:(1) 4.020707] [msg_test/INFO] Migrating to Jupiter
 > [Jupiter:emigrant:(1) 6.035906] [msg_test/INFO] Migrating to Fafard
@@ -367,15 +366,11 @@ $ cat tracing/procmig.trace
 > 14 0 12 1 G 26 86
 > 13 0 13 1 G 26 87
 > 14 0 13 1 G 5 87
-> 5 0 27 4 4 emigrant
-> 1 17 4 emigrant "1 0 0"
-> 5 0 28 4 2 master
-> 1 18 4 master "1 0 0"
-> 7 0 17 27 1.000000
+> 5 0 27 4 4 emigrant-1
+> 5 0 28 4 2 master-2
 > 10 0 5 27 executing
-> 11 0 5 27 sleep
-> 7 0 18 28 1.000000
 > 10 0 5 28 executing
+> 11 0 5 27 sleep
 > 11 0 5 28 send
 > 13 0 7 0 SR 28 p0
 > 12 2.000000 5 27
@@ -385,8 +380,7 @@ $ cat tracing/procmig.trace
 > 12 2.020551 5 28
 > 13 2.020551 6 0 M 27 0
 > 6 2.020551 4 27
-> 5 2.020551 29 4 2 emigrant
-> 7 2.020551 17 29 1.000000
+> 5 2.020551 29 4 2 emigrant-1
 > 10 2.020551 5 29 executing
 > 14 2.020551 6 0 M 29 0
 > 11 2.020551 5 28 send
@@ -399,8 +393,7 @@ $ cat tracing/procmig.trace
 > 12 4.020707 5 28
 > 13 4.020707 6 0 M 29 1
 > 6 4.020707 4 29
-> 5 4.020707 30 4 3 emigrant
-> 7 4.020707 17 30 1.000000
+> 5 4.020707 30 4 3 emigrant-1
 > 10 4.020707 5 30 executing
 > 14 4.020707 6 0 M 30 1
 > 11 4.020707 5 28 send
@@ -413,8 +406,7 @@ $ cat tracing/procmig.trace
 > 12 6.035906 5 28
 > 13 6.035906 6 0 M 30 2
 > 6 6.035906 4 30
-> 5 6.035906 31 4 4 emigrant
-> 7 6.035906 17 31 1.000000
+> 5 6.035906 31 4 4 emigrant-1
 > 10 6.035906 5 31 executing
 > 14 6.035906 6 0 M 31 2
 > 11 6.035906 5 28 send
@@ -427,8 +419,7 @@ $ cat tracing/procmig.trace
 > 12 8.056457 5 28
 > 13 8.056457 6 0 M 31 3
 > 6 8.056457 4 31
-> 5 8.056457 32 4 5 emigrant
-> 7 8.056457 17 32 1.000000
+> 5 8.056457 32 4 5 emigrant-1
 > 10 8.056457 5 32 executing
 > 14 8.056457 6 0 M 32 3
 > 11 8.056457 5 28 send
@@ -441,8 +432,7 @@ $ cat tracing/procmig.trace
 > 12 10.069689 5 28
 > 13 10.069689 6 0 M 32 4
 > 6 10.069689 4 32
-> 5 10.069689 33 4 6 emigrant
-> 7 10.069689 17 33 1.000000
+> 5 10.069689 33 4 6 emigrant-1
 > 10 10.069689 5 33 executing
 > 14 10.069689 6 0 M 33 4
 > 11 10.069689 5 28 send
@@ -455,8 +445,7 @@ $ cat tracing/procmig.trace
 > 12 12.090025 5 28
 > 13 12.090025 6 0 M 33 5
 > 6 12.090025 4 33
-> 5 12.090025 34 4 4 emigrant
-> 7 12.090025 17 34 1.000000
+> 5 12.090025 34 4 4 emigrant-1
 > 10 12.090025 5 34 executing
 > 14 12.090025 6 0 M 34 5
 > 11 12.090025 5 28 send
@@ -469,8 +458,7 @@ $ cat tracing/procmig.trace
 > 12 14.110575 5 28
 > 13 14.110575 6 0 M 34 6
 > 6 14.110575 4 34
-> 5 14.110575 35 4 2 emigrant
-> 7 14.110575 17 35 1.000000
+> 5 14.110575 35 4 2 emigrant-1
 > 10 14.110575 5 35 executing
 > 14 14.110575 6 0 M 35 6
 > 11 14.110575 5 28 send
@@ -483,8 +471,7 @@ $ cat tracing/procmig.trace
 > 12 16.110731 5 28
 > 13 16.110731 6 0 M 35 7
 > 6 16.110731 4 35
-> 5 16.110731 36 4 5 emigrant
-> 7 16.110731 17 36 1.000000
+> 5 16.110731 36 4 5 emigrant-1
 > 10 16.110731 5 36 executing
 > 14 16.110731 6 0 M 36 7
 > 11 16.110731 5 28 send
