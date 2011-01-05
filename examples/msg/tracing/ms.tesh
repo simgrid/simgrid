@@ -5126,3 +5126,5 @@ $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 > 
 >   graphviz-algorithm = neato;
 > }
+
+$ rm -rf tracing/ms.trace tracing/ms.cat.plist tracing/ms.uncat.plist

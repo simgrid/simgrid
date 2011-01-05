@@ -524,3 +524,5 @@ $ cat tracing/procmig.trace
 > 6 18.123963 2 5
 > 6 18.123963 1 1
 > 6 18.123963 0 0
+
+$ rm -rf tracing/procmig.trace

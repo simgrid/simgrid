@@ -381,3 +381,5 @@ $ cat tracing/volume.trace
 > 6 206.703278 2 5
 > 6 206.703278 1 1
 > 6 206.703278 0 0
+
+$ rm -rf tracing/volume.trace

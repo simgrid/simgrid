@@ -789,3 +789,5 @@ $ cat tracing/categories.trace
 > 6 4.018878 2 5
 > 6 4.018878 1 1
 > 6 4.018878 0 0
+
+$ rm -rf tracing/categories.trace tracing/categories.cat.plist tracing/categories.uncat.plist
