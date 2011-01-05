@@ -31,10 +31,6 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
 
   /* Initialize the thread pool data structure */
   xbt_parmap_t parmap = xbt_new0(s_xbt_parmap_t, 1);
-  #ifndef HAVE_FUTEX_H
-	  parmap->workers_ready->mutex = xbt_os_mutex_init();
-	  parmap->workers_ready->cond = xbt_os_cond_init();
-  #endif
   parmap->num_workers = num_workers;
   parmap->status = PARMAP_WORK;
 
@@ -42,7 +38,10 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
   xbt_barrier_init(parmap->workers_ready, num_workers + 1);
   parmap->workers_done = xbt_new0(s_xbt_barrier_t, 1);
   xbt_barrier_init(parmap->workers_done, num_workers + 1);
-
+#ifndef HAVE_FUTEX_H
+  parmap->workers_ready->mutex = xbt_os_mutex_init();
+  parmap->workers_ready->cond = xbt_os_cond_init();
+#endif
   /* Create the pool of worker threads */
   for(i=0; i < num_workers; i++){
     worker = xbt_os_thread_create(NULL, _xbt_parmap_worker_main, parmap, NULL);
@@ -61,7 +60,10 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
   xbt_barrier_wait(parmap->workers_ready);
   DEBUG0("Kill job sent");
   xbt_barrier_wait(parmap->workers_done);
-
+#ifndef HAVE_FUTEX_H
+  xbt_os_mutex_destroy(parmap->workers_ready->mutex);
+  xbt_os_cond_destroy(parmap->workers_ready->cond);
+#endif
   xbt_free(parmap->workers_ready);
   xbt_free(parmap->workers_done);
   xbt_free(parmap);
