@@ -23,9 +23,6 @@ MSG_error_t test_all(const char *platform_file,
 /** Emitter function  */
 int master(int argc, char *argv[])
 {
-  //defining the category of the master process
-  TRACE_msg_set_process_category(MSG_process_self(), "master", "1 0 0");
-
   long number_of_tasks = atol(argv[1]);
   long slaves_count = atol(argv[4]);
   int p = 1000000000;
@@ -59,9 +56,6 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  //defining the category of this slave process
-  TRACE_msg_set_process_category(MSG_process_self(), "slave", "0 0 1");
-
   m_task_t task = NULL;
   int res;
 

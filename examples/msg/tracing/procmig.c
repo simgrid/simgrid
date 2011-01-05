@@ -19,8 +19,6 @@ static int emigrant(int argc, char *argv[])
   m_task_t task = NULL;
   char *destination = NULL;
 
-  INFO0("Setting process category");
-  TRACE_msg_set_process_category(MSG_process_self(), "emigrant", "1 0 0");
   MSG_process_sleep(2);
 
   while (1){ // I am an eternal emigrant
@@ -40,8 +38,6 @@ static int emigrant(int argc, char *argv[])
 static int master(int argc, char *argv[])
 {
   m_task_t task = NULL;
-
-  TRACE_msg_set_process_category(MSG_process_self(), "master", "1 0 0");
 
   // I am the master of emigrant process,
   // I tell it where it must emigrate to.
