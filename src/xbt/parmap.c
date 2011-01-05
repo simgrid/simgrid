@@ -174,19 +174,15 @@ void xbt_barrier_init(xbt_barrier_t barrier, unsigned int threads_to_wait)
 	  unsigned int mycount = 0;
 
 	  xbt_os_mutex_acquire(barrier->mutex);
-	  //pthread_mutex_lock(&barrier->mutex);
 
 	  barrier->thread_count++;
 	  if(barrier->thread_count < barrier->threads_to_wait){
 		  xbt_os_cond_wait(barrier->cond,barrier->mutex);
-		  //pthread_cond_wait(&barrier->mutex,&barrier->cond);
 	  }else{
 		barrier->thread_count = 0;
 		xbt_os_cond_broadcast(barrier->cond);
-		//pthread_cond_broadcast(&barrier->mutex, &barrier->cond);
 	  }
 	  xbt_os_mutex_release(barrier->mutex);
-	  //pthread_mutex_unlock(&barrier->mutex);
 	}
 #endif
 
