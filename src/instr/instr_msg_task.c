@@ -82,7 +82,10 @@ void TRACE_msg_task_execute_start(m_task_t task)
   }
 
   if (TRACE_msg_process_is_enabled()){
-    container_t process_container = getContainer (MSG_process_self()->name);
+    int len = INSTR_DEFAULT_STR_SIZE;
+    char str[INSTR_DEFAULT_STR_SIZE];
+
+    container_t process_container = getContainer (instr_process_id(MSG_process_self(), str, len));
     type_t type = getType ("MSG_PROCESS_STATE");
     new_pajePushState (MSG_get_clock(), process_container, type, "task_execute");
   }
@@ -101,7 +104,10 @@ void TRACE_msg_task_execute_end(m_task_t task)
   }
 
   if (TRACE_msg_process_is_enabled()){
-    container_t process_container = getContainer (MSG_process_self()->name);
+    int len = INSTR_DEFAULT_STR_SIZE;
+    char str[INSTR_DEFAULT_STR_SIZE];
+
+    container_t process_container = getContainer (instr_process_id(MSG_process_self(), str, len));
     type_t type = getType ("MSG_PROCESS_STATE");
     new_pajePopState (MSG_get_clock(), process_container, type);
   }
@@ -134,7 +140,10 @@ void TRACE_msg_task_get_start(void)
   }
 
   if (TRACE_msg_process_is_enabled()){
-    container_t process_container = getContainer (MSG_process_self()->name);
+    int len = INSTR_DEFAULT_STR_SIZE;
+    char str[INSTR_DEFAULT_STR_SIZE];
+
+    container_t process_container = getContainer (instr_process_id(MSG_process_self(), str, len));
     type_t type = getType ("MSG_PROCESS_STATE");
     new_pajePushState (MSG_get_clock(), process_container, type, "receive");
   }
@@ -169,7 +178,10 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
   }
 
   if (TRACE_msg_process_is_enabled()){
-    container_t process_container = getContainer (MSG_process_self()->name);
+    int len = INSTR_DEFAULT_STR_SIZE;
+    char str[INSTR_DEFAULT_STR_SIZE];
+
+    container_t process_container = getContainer (instr_process_id(MSG_process_self(), str, len));
     type_t type = getType ("MSG_PROCESS_STATE");
     new_pajePopState (MSG_get_clock(), process_container, type);
 
@@ -207,7 +219,10 @@ int TRACE_msg_task_put_start(m_task_t task)
   }
 
   if (TRACE_msg_process_is_enabled()){
-    container_t process_container = getContainer (MSG_process_self()->name);
+    int len = INSTR_DEFAULT_STR_SIZE;
+    char str[INSTR_DEFAULT_STR_SIZE];
+
+    container_t process_container = getContainer (instr_process_id(MSG_process_self(), str, len));
     type_t type = getType ("MSG_PROCESS_STATE");
     new_pajePushState (MSG_get_clock(), process_container, type, "send");
 
@@ -229,7 +244,10 @@ void TRACE_msg_task_put_end(void)
   }
 
   if (TRACE_msg_process_is_enabled()){
-    container_t process_container = getContainer (MSG_process_self()->name);
+    int len = INSTR_DEFAULT_STR_SIZE;
+    char str[INSTR_DEFAULT_STR_SIZE];
+
+    container_t process_container = getContainer (instr_process_id(MSG_process_self(), str, len));
     type_t type = getType ("MSG_PROCESS_STATE");
     new_pajePopState (MSG_get_clock(), process_container, type);
   }

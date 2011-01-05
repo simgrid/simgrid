@@ -181,6 +181,10 @@ m_process_t MSG_process_create_with_environment(const char *name,
     return NULL;
   }
 
+#ifdef HAVE_TRACING
+  TRACE_msg_process_create (process);
+#endif
+
   return process;
 }
 

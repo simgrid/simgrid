@@ -79,9 +79,6 @@ typedef struct m_process {
   simdata_process_t simdata;
                                 /**< @brief simulator data */
   void *data;                   /**< @brief user data */
-#ifdef HAVE_TRACING
-  char *category;               /* process category for instrumentation */
-#endif
 } s_m_process_t;
 /** @} */
 /** @brief Agent datatype  

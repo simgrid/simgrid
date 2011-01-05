@@ -94,11 +94,10 @@ int TRACE_msg_task_put_start(m_task_t task);    //returns TRUE if the task_put_e
 void TRACE_msg_task_put_end(void);
 
 /* declaration of instrumentation functions from msg_process_instr.c */
-char *TRACE_process_alias_container(m_process_t process, m_host_t host,
-                                    char *output, int len);
-char *TRACE_process_container(m_process_t process, char *output, int len);
+char *instr_process_id (m_process_t proc, char *str, int len);
 void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host,
                                    m_host_t new_host);
+void TRACE_msg_process_create (m_process_t process);
 void TRACE_msg_process_kill(m_process_t process);
 void TRACE_msg_process_suspend(m_process_t process);
 void TRACE_msg_process_resume(m_process_t process);
