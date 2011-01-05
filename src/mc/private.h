@@ -59,10 +59,28 @@ void MC_dpor(void);
 void MC_dpor_exit(void);
 
 /******************************** States **************************************/
+/* Possible exploration status of a process in a state */
+typedef enum {
+  MC_NOT_INTERLEAVE = 0,    /* Do not interleave (do not execute) */
+  MC_INTERLEAVE,            /* Interleave the process (one or more request) */
+  MC_DONE                   /* Already interleaved */
+} e_mc_process_state_t;
+
+/* On every state, each process has an entry of the following type */
+typedef struct mc_procstate{
+  e_mc_process_state_t state;       /* Exploration control information */
+  unsigned int num_to_interleave;   /* Number of request to interleave */
+  /* If a process has a request with multiple possible responses like a */
+  /* "WaitAny", then the following vector with the indexes to interleave */
+  /* is additionally used. */
+  unsigned int *requests_indexes;   /* Indexes of the requests to interleave */
+} s_mc_procstate_t, *mc_procstate_t;
+
+/* An exploration state is composed of: */
 typedef struct mc_state {
-  char *interleave;         /* processes to interleave by the mc */
-  unsigned long max_pid;
-  s_smx_req_t executed;
+  unsigned long max_pid;            /* Maximum pid at state's creation time */
+  mc_procstate_t proc_status;       /* State's exploration status by process */
+  s_smx_req_t executed;             /* The executed request of the state */
 } s_mc_state_t, *mc_state_t;
 
 extern xbt_fifo_t mc_stack;

@@ -13,7 +13,7 @@ mc_state_t MC_state_new(void)
   
   state = xbt_new0(s_mc_state_t, 1);
   state->max_pid = simix_process_maxpid;
-  state->interleave = xbt_new0(char, state->max_pid);
+  state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
   
   mc_stats->expanded_states++;
   return state;
@@ -25,13 +25,14 @@ mc_state_t MC_state_new(void)
  */
 void MC_state_delete(mc_state_t state)
 {
-  xbt_free(state->interleave);
+  xbt_free(state->proc_status);
   xbt_free(state);
 }
 
 void MC_state_add_to_interleave(mc_state_t state, smx_process_t process)
 {
-  state->interleave[process->pid] = 1;
+  state->proc_status[process->pid].state = MC_INTERLEAVE;
+  state->proc_status[process->pid].num_to_interleave = 1;
 }
 
 unsigned int MC_state_interleave_size(mc_state_t state)
@@ -39,7 +40,7 @@ unsigned int MC_state_interleave_size(mc_state_t state)
   unsigned int i, size=0;
 
   for(i=0; i < state->max_pid; i++){
-    if(state->interleave[i] != 0 && state->interleave[i] != -1)
+    if(state->proc_status[i].state == MC_INTERLEAVE)
       size++;
   }
 
@@ -47,7 +48,7 @@ unsigned int MC_state_interleave_size(mc_state_t state)
 }
 
 int MC_state_process_is_done(mc_state_t state, smx_process_t process){
-  return state->interleave[process->pid] == -1 ? TRUE : FALSE;
+  return state->proc_status[process->pid].state == MC_DONE ? TRUE : FALSE;
 }
 
 void MC_state_set_executed_request(mc_state_t state, smx_req_t req)
@@ -64,15 +65,19 @@ smx_req_t MC_state_get_request(mc_state_t state, char *value)
 {
   unsigned int i;
   smx_process_t process = NULL;
+  mc_procstate_t procstate = NULL;
 
   for(i=0; i < state->max_pid; i++){
-    if(state->interleave[i] > 0){
-      *value = state->interleave[i]--;
+    procstate = &state->proc_status[i];
 
-      /* If 0 was reached means that the process is done, so we
-       * set it's value to -1 (the "done" value) */
-      if(state->interleave[i] == 0)
-        state->interleave[i]--;
+    if(procstate->state == MC_INTERLEAVE){
+
+      if(procstate->num_to_interleave-- > 1)
+        *value = procstate->requests_indexes[procstate->num_to_interleave];
+
+      /* If the are no more requests to interleave for process i then it is done */
+      if(procstate->num_to_interleave == 0)
+        procstate->state = MC_DONE;
 
       /* FIXME: SIMIX should implement a process table indexed by pid */
       /* So we should use that instead of traversing the swag */
