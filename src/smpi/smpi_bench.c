@@ -21,9 +21,13 @@ typedef struct {
 } shared_data_t;
 
 typedef struct {
-  double time;
   int count;
-  int max;
+  double sum;
+  double sum_pow2;
+  double mean;
+  double relstderr;
+  int iters;
+  double threshold;
   int started;
 } local_data_t;
 
@@ -101,7 +105,7 @@ static char *sample_location(int global, const char *file, int line)
   }
 }
 
-void smpi_sample_1(int global, const char *file, int line, int max)
+void smpi_sample_1(int global, const char *file, int line, int iters, double threshold)
 {
   char *loc = sample_location(global, file, line);
   local_data_t *data;
@@ -113,9 +117,11 @@ void smpi_sample_1(int global, const char *file, int line, int max)
   data = xbt_dict_get_or_null(samples, loc);
   if (!data) {
     data = (local_data_t *) xbt_new(local_data_t, 1);
-    data->time = 0.0;
     data->count = 0;
-    data->max = max;
+    data->sum = 0.0;
+    data->sum_pow2 = 0.0;
+    data->iters = iters;
+    data->threshold = threshold;
     data->started = 0;
     xbt_dict_set(samples, loc, data, &free);
   }
@@ -133,12 +139,13 @@ int smpi_sample_2(int global, const char *file, int line)
     xbt_assert0(data, "Please, do thing in order");
   }
   if (!data->started) {
-    if (data->count < data->max) {
+    if ((data->iters > 0 && data->count >= data->iters)
+        || (data->count > 1 && data->threshold > 0.0 && data->relstderr <= data->threshold)) {
+      DEBUG1("Perform some wait of %f", data->mean);
+      smpi_execute(data->mean);
+    } else {
       data->started = 1;
       data->count++;
-    } else {
-      DEBUG1("Perform some wait of %f", data->time / (double) data->count);
-      smpi_execute(data->time / (double) data->count);
     }
   } else {
     data->started = 0;
@@ -153,16 +160,22 @@ void smpi_sample_3(int global, const char *file, int line)
 {
   char *loc = sample_location(global, file, line);
   local_data_t *data;
+  double sample, n;
 
   xbt_assert0(samples, "You did something very inconsistent, didn't you?");
   data = xbt_dict_get_or_null(samples, loc);
-  if (!data || !data->started || data->count >= data->max) {
+  if (!data || !data->started || data->count >= data->iters) {
     xbt_assert0(data, "Please, do thing in order");
   }
   smpi_bench_end();
-  data->time += smpi_process_simulated_elapsed();
-  DEBUG2("Average mean after %d steps is %f", data->count,
-         data->time / (double) data->count);
+  sample = smpi_process_simulated_elapsed();
+  data->sum += sample;
+  data->sum_pow2 += sample * sample;
+  n = (double)data->count;
+  data->mean = data->sum / n;
+  data->relstderr = sqrt((data->sum_pow2 / n - data->mean * data->mean) / n) / data->mean;
+  DEBUG4("Average mean after %d steps is %f, relative standard error is %f (sample was %f)", data->count,
+         data->mean, data->relstderr, sample);
 }
 
 void smpi_sample_flops(double flops)
