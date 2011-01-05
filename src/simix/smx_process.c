@@ -245,6 +245,7 @@ void SIMIX_process_killall(void)
   while ((p = xbt_swag_extract(simix_global->process_list)))
     SIMIX_process_kill(p, SIMIX_process_self());
 
+  SIMIX_context_runall(simix_global->process_to_run);
   SIMIX_process_empty_trash();
 }
 
