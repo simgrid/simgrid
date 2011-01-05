@@ -24,12 +24,6 @@ void instr_paje_init (container_t root)
   rootContainer = root;
 }
 
-static long long int newTypeId ()
-{
-  static long long int counter = 0;
-  return counter++;
-}
-
 static type_t newType (const char *typename, const char *key, const char *color, e_entity_types kind, type_t father)
 {
   type_t ret = xbt_new0(s_type_t, 1);
@@ -39,9 +33,9 @@ static type_t newType (const char *typename, const char *key, const char *color,
   ret->children = xbt_dict_new ();
   ret->color = xbt_strdup (color);
 
-  long long int id = newTypeId();
+  static long long int type_id = 0;
   char str_id[INSTR_DEFAULT_STR_SIZE];
-  snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", id);
+  snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", type_id++);
   ret->id = xbt_strdup (str_id);
 
   if (father != NULL){
@@ -141,18 +135,11 @@ type_t getStateType (const char *typename, type_t father)
   return ret;
 }
 
-
-static long long int newContainedId ()
-{
-  static long long counter = 0;
-  return counter++;
-}
-
 container_t newContainer (const char *name, e_container_types kind, container_t father)
 {
-  long long int counter = newContainedId();
+  static long long int container_id = 0;
   char id_str[INSTR_DEFAULT_STR_SIZE];
-  snprintf (id_str, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
+  snprintf (id_str, INSTR_DEFAULT_STR_SIZE, "%lld", container_id++);
 
   container_t new = xbt_new0(s_container_t, 1);
   new->name = xbt_strdup (name); // name of the container
