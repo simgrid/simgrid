@@ -42,6 +42,9 @@
 /* Set to true if lib pcre is present */
 #cmakedefine HAVE_PCRE_LIB @HAVE_PCRE_LIB@
 
+/* If have linux_futex.h */
+#cmakedefine HAVE_FUTEX_H @HAVE_FUTEX_H@
+
 /* Some variable for graphviz */
 #cmakedefine HAVE_GRAPH_H @GRAPH_H@
 #cmakedefine HAVE_CGRAPH_H @CGRAPH_H@

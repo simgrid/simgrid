@@ -18,9 +18,13 @@ typedef enum{
   PARMAP_WORK = 0,
   PARMAP_DESTROY
 } e_xbt_parmap_flag_t;
-
 typedef struct s_xbt_barrier{
-  int futex;
+#ifdef HAVE_FUTEX_H
+	int futex;
+#else
+	xbt_os_mutex_t mutex;
+	xbt_os_cond_t cond;
+#endif
   unsigned int thread_count;
   unsigned int threads_to_wait;
 } s_xbt_barrier_t, *xbt_barrier_t;

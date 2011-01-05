@@ -3,9 +3,14 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+#include "gras_config.h"
 #include <unistd.h>
 #include <sys/syscall.h>
-#include <linux/futex.h>
+#ifdef HAVE_FUTEX_H
+	#include <linux/futex.h>
+#else
+	#include "xbt/xbt_os_thread.h"
+#endif
 #include <errno.h>
 #include "parmap_private.h"
 
@@ -13,10 +18,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_parmap, xbt, "parmap: parallel map");
 XBT_LOG_NEW_SUBCATEGORY(xbt_parmap_unit, xbt_parmap, "parmap unit testing");
 
 static void *_xbt_parmap_worker_main(void *parmap);
-
-static void futex_wait(int *uaddr, int val);
-static void futex_wake(int *uaddr, int val);
-
+#ifdef HAVE_FUTEX_H
+	static void futex_wait(int *uaddr, int val);
+	static void futex_wake(int *uaddr, int val);
+#endif
 xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
 {
   unsigned int i;
@@ -26,6 +31,10 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
 
   /* Initialize the thread pool data structure */
   xbt_parmap_t parmap = xbt_new0(s_xbt_parmap_t, 1);
+  #ifndef HAVE_FUTEX_H
+	  parmap->workers_ready->mutex = xbt_os_mutex_init();
+	  parmap->workers_ready->cond = xbt_os_cond_init();
+  #endif
   parmap->num_workers = num_workers;
   parmap->status = PARMAP_WORK;
 
@@ -121,17 +130,19 @@ static void *_xbt_parmap_worker_main(void *arg)
   }
 }
 
-static void futex_wait(int *uaddr, int val)
-{
-  DEBUG1("Waiting on futex %d", *uaddr);
-  syscall(SYS_futex, uaddr, FUTEX_WAIT_PRIVATE, val, NULL, NULL, 0);
-}
+#ifdef HAVE_FUTEX_H
+	static void futex_wait(int *uaddr, int val)
+	{
+	  DEBUG1("Waiting on futex %d", *uaddr);
+	  syscall(SYS_futex, uaddr, FUTEX_WAIT_PRIVATE, val, NULL, NULL, 0);
+	}
 
-static void futex_wake(int *uaddr, int val)
-{
-  DEBUG1("Waking futex %d", *uaddr);
-  syscall(SYS_futex, uaddr, FUTEX_WAKE_PRIVATE, val, NULL, NULL, 0);
-}
+	static void futex_wake(int *uaddr, int val)
+	{
+	  DEBUG1("Waking futex %d", *uaddr);
+	  syscall(SYS_futex, uaddr, FUTEX_WAKE_PRIVATE, val, NULL, NULL, 0);
+	}
+#endif
 
 /* Futex based implementation of the barrier */
 void xbt_barrier_init(xbt_barrier_t barrier, unsigned int threads_to_wait)
@@ -140,21 +151,44 @@ void xbt_barrier_init(xbt_barrier_t barrier, unsigned int threads_to_wait)
   barrier->thread_count = 0;
 }
 
-void xbt_barrier_wait(xbt_barrier_t barrier)
-{
-  int myflag = 0;
-  unsigned int mycount = 0;
+#ifdef HAVE_FUTEX_H
+	void xbt_barrier_wait(xbt_barrier_t barrier)
+	{
+	  int myflag = 0;
+	  unsigned int mycount = 0;
 
-  myflag = barrier->futex;
-  mycount = __sync_add_and_fetch(&barrier->thread_count, 1);
-  if(mycount < barrier->threads_to_wait){
-    futex_wait(&barrier->futex, myflag);
-  }else{
-    barrier->futex = __sync_add_and_fetch(&barrier->futex, 1);
-    barrier->thread_count = 0;
-    futex_wake(&barrier->futex, barrier->threads_to_wait);
-  }
-}
+	  myflag = barrier->futex;
+	  mycount = __sync_add_and_fetch(&barrier->thread_count, 1);
+	  if(mycount < barrier->threads_to_wait){
+		futex_wait(&barrier->futex, myflag);
+	  }else{
+		barrier->futex = __sync_add_and_fetch(&barrier->futex, 1);
+		barrier->thread_count = 0;
+		futex_wake(&barrier->futex, barrier->threads_to_wait);
+	  }
+	}
+#else
+	void xbt_barrier_wait(xbt_barrier_t barrier)
+	{
+	  int myflag = 0;
+	  unsigned int mycount = 0;
+
+	  xbt_os_mutex_acquire(barrier->mutex);
+	  //pthread_mutex_lock(&barrier->mutex);
+
+	  barrier->thread_count++;
+	  if(barrier->thread_count < barrier->threads_to_wait){
+		  xbt_os_cond_wait(barrier->cond,barrier->mutex);
+		  //pthread_cond_wait(&barrier->mutex,&barrier->cond);
+	  }else{
+		barrier->thread_count = 0;
+		xbt_os_cond_broadcast(barrier->cond);
+		//pthread_cond_broadcast(&barrier->mutex, &barrier->cond);
+	  }
+	  xbt_os_mutex_release(barrier->mutex);
+	  //pthread_mutex_unlock(&barrier->mutex);
+	}
+#endif
 
 #ifdef SIMGRID_TEST
 #include "xbt.h"
