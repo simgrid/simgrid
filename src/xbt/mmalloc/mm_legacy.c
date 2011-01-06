@@ -7,6 +7,7 @@
 /* Redefine the classical malloc/free/realloc functions so that they fit well in the mmalloc framework */
 
 #include "mmprivate.h"
+#include "gras_config.h"
 
 static void *__mmalloc_current_heap = NULL;     /* The heap we are currently using. */
 
@@ -81,6 +82,9 @@ void *realloc(void *p, size_t s)
 void free(void *p)
 {
   void *mdp = __mmalloc_current_heap;
+#ifdef HAVE_GTNETS
+  if(!mdp) return;
+#endif
   LOCK(mdp);
   mfree(mdp, p);
   UNLOCK(mdp);
