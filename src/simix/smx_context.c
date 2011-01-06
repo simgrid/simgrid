@@ -60,5 +60,5 @@ void SIMIX_context_mod_exit(void)
     finalize_factory = simix_global->context_factory->finalize;
     (*finalize_factory) (&simix_global->context_factory);
   }
-  xbt_free(smx_context_factory_name);
+  xbt_dict_remove((xbt_dict_t) _surf_cfg_set,"simix/context");
 }
