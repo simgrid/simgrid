@@ -5,7 +5,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/_msg_handle_simulator.c
 							${CMAKE_CURRENT_BINARY_DIR}/_msg_handle_server.c
 							PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(msg_handle_simulator ${CMAKE_CURRENT_SOURCE_DIR}/msg_handle.c
 									${CMAKE_CURRENT_BINARY_DIR}/_msg_handle_simulator.c)
@@ -20,6 +20,7 @@ add_custom_command(
 							${CMAKE_CURRENT_BINARY_DIR}/_msg_handle_server.c
   					DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/msg_handle.xml
   					COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator msg_handle ${CMAKE_CURRENT_SOURCE_DIR}/msg_handle.xml
+  					WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					)
 
 ### Add definitions for compile
