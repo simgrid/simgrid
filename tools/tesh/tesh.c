@@ -194,7 +194,6 @@ int main(int argc, char *argv[])
   int i;
   char *suitename = NULL;
   struct sigaction newact;
-
   xbt_init(&argc, argv);
   rctx_init();
   parse_environ();
@@ -233,6 +232,20 @@ int main(int argc, char *argv[])
       xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
       INFO2("setting environment variable '%s' to '%s'", key, eq+1);
       free(key);
+      memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));
+      argc -= 2;
+      i -= 2;
+    } else if (!strcmp(argv[i], "--cfg" )) {
+      if (i == argc - 1) {
+            ERROR0("--cfg argument requires an argument");
+            exit(1);
+      }
+      if(!option){ //if option is NULL
+    	option = bprintf("--cfg=%s",argv[i+1]);
+      }else{
+    	option = bprintf("%s --cfg=%s",option,argv[i+1]);
+      }
+      INFO1("Add option \'--cfg=%s\' to command line",argv[i+1]);
       memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));
       argc -= 2;
       i -= 2;
@@ -275,5 +288,6 @@ int main(int argc, char *argv[])
 
   rctx_exit();
   xbt_dict_free(&env);
+  xbt_free_f(option);
   return 0;
 }

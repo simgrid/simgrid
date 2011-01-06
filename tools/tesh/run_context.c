@@ -302,6 +302,9 @@ void rctx_pushline(const char *filepos, char kind, char *line)
 
     rctx->cmd = xbt_strdup(line);
     rctx->filepos = xbt_strdup(filepos);
+    if(option){
+    	rctx->cmd = bprintf("%s %s",rctx->cmd,option);
+    }
     INFO3("[%s] %s%s", filepos, rctx->cmd,
           ((rctx->is_background) ? " (background command)" : ""));
 
