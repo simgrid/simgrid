@@ -37,6 +37,7 @@ src/supernovae_*.c
 _*.c
 include/simgrid_config.h
 include/instr/tracing_config.h
+include/smpi/smpif.h
 src/context_sysv_config.h
 src/gras_config.h
 src/smpi/smpicc

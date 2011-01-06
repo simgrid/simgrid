@@ -75,10 +75,10 @@ int smpi_process_argc(void) {
   return data->argc ? *(data->argc) - 1 : 0;
 }
 
-int smpi_process_getarg(int* index, char* dst, size_t len) {
+int smpi_process_getarg(integer* index, char* dst, ftnlen len) {
   smpi_process_data_t data = smpi_process_data();
   char* arg;
-  size_t i;
+  ftnlen i;
 
   if(!data->argc || !data->argv
      || *index < 1 || *index >= *(data->argc)) {
