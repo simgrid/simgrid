@@ -229,9 +229,9 @@ endif(enable_smpi)
 								
 # examples/msg/mc
 if(HAVE_MC)
-ADD_TEST(mc-bugged1			${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1.tesh)
-ADD_TEST(mc-bugged2			${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged2.tesh)
-ADD_TEST(mc-centralized		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc centralized.tesh)
+ADD_TEST(mc-bugged1			${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1.tesh)
+ADD_TEST(mc-bugged2			${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged2.tesh)
+ADD_TEST(mc-centralized		${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc centralized.tesh)
 endif(HAVE_MC)
 
 
