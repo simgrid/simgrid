@@ -172,9 +172,6 @@ void xbt_barrier_init(xbt_barrier_t barrier, unsigned int threads_to_wait)
 #else
 	void xbt_barrier_wait(xbt_barrier_t barrier)
 	{
-	  int myflag = 0;
-	  unsigned int mycount = 0;
-
 	  xbt_os_mutex_acquire(barrier->mutex);
 
 	  barrier->thread_count++;
