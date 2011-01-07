@@ -227,10 +227,12 @@ void smpi_global_destroy(void)
 /* With smpiff, the following weak symbols are replaced by those in libf2c */
 int __attribute__((weak)) xargc;
 char** __attribute__((weak)) xargv;
+int fortran = 1;
 
 int __attribute__((weak)) main(int argc, char** argv) {
    xargc = argc;
    xargv = argv;
+   fortran = 0;
    return MAIN__();
 }
 
@@ -255,6 +257,12 @@ int MAIN__(void)
                    "Minimal computation time (in seconds) not discarded.",
                    xbt_cfgelm_double, &default_threshold, 1, 1, NULL,
                    NULL);
+
+  if(fortran) {
+    /* Force thread contexts with fortran code */
+    extern void SIMIX_ctx_thread_factory_init(smx_context_factory_t *factory);
+    smx_factory_initializer_to_use = SIMIX_ctx_thread_factory_init;
+  }
 
 #ifdef HAVE_TRACING
   TRACE_global_init(&xargc, xargv);
