@@ -20,7 +20,8 @@ foreach my $fortran (@ARGV) {
    print $tmp "#define INTEGER_STAR_8\n";
    print $tmp "#endif\n";
    print $tmp "#include <stdlib.h>\n";
-   print $tmp "#include <smpif.h>\n";
+   print $tmp "#include <smpif.h>\n\n";
+   print $tmp "int __attribute__((weak)) __rank(void) {\n  static __thread int rank = -1;\n\n  if(rank < 0) {\n    rank = smpi_global_rank();\n  }\n  return rank;\n}\n\n";
    while(<F2C>) {
       chomp;
       if(/\/\* Common Block Declarations \*\//) {
@@ -30,7 +31,7 @@ foreach my $fortran (@ARGV) {
          if(/^} (.*?);/) {
             $_ = "}* __attribute__((weak)) $1 = NULL;\n";
          } elsif(/^#define\s*(\S*)\s*\(?([^.]*)(\..*?)?\)?$/) {
-            $_ = "#define $1 $2\[smpi_global_rank()\]";
+            $_ = "#define $1 $2\[__rank()\]";
             if(defined $3) {
                $_ .= $3;
             }
