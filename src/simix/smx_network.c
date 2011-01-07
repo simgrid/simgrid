@@ -408,7 +408,6 @@ void SIMIX_pre_comm_waitany(smx_req_t req, unsigned int idx)
     /* Associate this request to the action */
     xbt_fifo_push(action->request_list, req);
     if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING){
-      req->comm_waitany.result = cursor;
       SIMIX_comm_finish(action);
       break;
     }
@@ -481,6 +480,8 @@ void SIMIX_comm_finish(smx_action_t action)
        return it as the result of the call */
     if (req->call == REQ_COMM_WAITANY) {
       SIMIX_waitany_req_remove_from_actions(req);
+      if(!MC_IS_ENABLED)
+        req->comm_waitany.result = xbt_dynar_search(req->comm_waitany.comms, &action);
     }
 
     /* If the action is still in a rendez-vous point then remove from it */
