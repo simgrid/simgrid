@@ -622,6 +622,8 @@ int PMPI_Comm_rank(MPI_Comm comm, int *rank)
   smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
+  } else if (rank == NULL) {
+    retval = MPI_ERR_ARG;
   } else {
     *rank = smpi_comm_rank(comm);
     retval = MPI_SUCCESS;
