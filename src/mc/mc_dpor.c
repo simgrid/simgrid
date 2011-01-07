@@ -118,17 +118,19 @@ void MC_dpor(void)
     } else {
       DEBUG0("There are no more processes to interleave.");
 
-      /* Check for deadlocks */
-      if(MC_deadlock_check()){
-        MC_show_deadlock(&process->request);
-        return;
-      }
-
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
       xbt_fifo_shift(mc_stack);
       MC_state_delete(state);
+      MC_UNSET_RAW_MEM;
 
+      /* Check for deadlocks */
+      if(MC_deadlock_check()){
+        MC_show_deadlock(NULL);
+        return;
+      }
+
+      MC_SET_RAW_MEM;
       /* Traverse the stack backwards until a state with a non empty interleave
          set is found, deleting all the states that have it empty in the way.
          For each deleted state, check if the request that has generated it 

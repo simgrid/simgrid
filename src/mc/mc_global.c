@@ -197,14 +197,14 @@ void MC_show_stack(xbt_fifo_t stack)
 
 void MC_show_deadlock(smx_req_t req)
 {
-  char *req_str = NULL;
+  /*char *req_str = NULL;*/
   INFO0("**************************");
   INFO0("*** DEAD-LOCK DETECTED ***");
   INFO0("**************************");
   INFO0("Locked request:");
-  req_str = MC_request_to_string(req);
+  /*req_str = MC_request_to_string(req);
   INFO1("%s", req_str);
-  xbt_free(req_str);
+  xbt_free(req_str);*/
   INFO0("Counter-example execution trace:");
   MC_dump_stack(mc_stack);
 }

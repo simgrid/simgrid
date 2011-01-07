@@ -103,6 +103,11 @@ int SIMIX_request_is_enabled(smx_req_t req)
       return FALSE;
       break;
 
+    case REQ_COMM_TEST:
+      act = req->comm_test.comm;
+      return (act->comm.src_proc && act->comm.dst_proc);
+      break;
+
     default:    
       return TRUE;
   }

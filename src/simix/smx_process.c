@@ -246,6 +246,7 @@ void SIMIX_process_killall(void)
     SIMIX_process_kill(p, SIMIX_process_self());
 
   SIMIX_context_runall(simix_global->process_to_run);
+  SIMIX_context_runall(simix_global->process_to_run);
   SIMIX_process_empty_trash();
 }
 
