@@ -4,7 +4,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/_small_sleep_function.c
 							${CMAKE_CURRENT_BINARY_DIR}/_small_sleep_simulator.c
 							PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(small_sleep_function 	${CMAKE_CURRENT_SOURCE_DIR}/small_sleep.c
 										${CMAKE_CURRENT_BINARY_DIR}/_small_sleep_function.c)

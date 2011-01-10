@@ -4,7 +4,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/_empty_main_function.c
 							${CMAKE_CURRENT_BINARY_DIR}/_empty_main_simulator.c
 							PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(empty_main_function 	${CMAKE_CURRENT_SOURCE_DIR}/empty_main.c
 									${CMAKE_CURRENT_BINARY_DIR}/_empty_main_function.c)
