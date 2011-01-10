@@ -56,7 +56,7 @@ typedef void (*smx_ctx_factory_initializer_t)(smx_context_factory_t*);
 extern smx_ctx_factory_initializer_t smx_factory_initializer_to_use;
 extern char* smx_context_factory_name;
 extern int smx_parallel_contexts;
-smx_context_t smx_current_context;
+extern smx_context_t smx_current_context;
 
 /* *********************** */
 /* Context type definition */

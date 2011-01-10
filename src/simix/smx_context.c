@@ -17,6 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
 
 char* smx_context_factory_name = NULL; /* factory name specified by --cfg=simix/context=value */
 smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
+smx_context_t smx_current_context;
 
 /** 
  * This function is called by SIMIX_global_init() to initialize the context module.
