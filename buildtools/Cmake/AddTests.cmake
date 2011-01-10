@@ -107,7 +107,9 @@ ADD_TEST(gras-synchro-rl		${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}
 ADD_TEST(gras-properties-rl		${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/properties ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/test_rl)
 
 # MSG examples
-ADD_TEST(msg-sendrecv-CLM03			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_CLM03.tesh)
+ADD_TEST(msg-sendrecv-CLM03-raw			${CMAKE_BINARY_DIR}/bin/tesh --cfg simix/context:raw		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_CLM03.tesh)
+ADD_TEST(msg-sendrecv-CLM03-thread		${CMAKE_BINARY_DIR}/bin/tesh --cfg simix/context:thread		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_CLM03.tesh)
+ADD_TEST(msg-sendrecv-CLM03-ucontext	${CMAKE_BINARY_DIR}/bin/tesh --cfg simix/context:ucontext	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_CLM03.tesh)
 ADD_TEST(msg-sendrecv-Vegas			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_Vegas.tesh)
 ADD_TEST(msg-sendrecv-Reno			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_Reno.tesh)
 ADD_TEST(msg-suspend				${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/suspend/suspend.tesh)
@@ -181,7 +183,9 @@ ADD_TEST(simdag-test-prop				${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAK
 ADD_TEST(simdag-minmin-test				${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/scheduling	--cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
 
 if(HAVE_GTNETS)
-ADD_TEST(msg-gtnets-waxman			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-waxman.tesh)
+ADD_TEST(msg-gtnets-waxman-raw			${CMAKE_BINARY_DIR}/bin/tesh --cfg simix/context:raw		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-waxman.tesh)
+ADD_TEST(msg-gtnets-waxman-thread		${CMAKE_BINARY_DIR}/bin/tesh --cfg simix/context:thread		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-waxman.tesh)
+ADD_TEST(msg-gtnets-waxman-ucontext		${CMAKE_BINARY_DIR}/bin/tesh --cfg simix/context:ucontext	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-waxman.tesh)
 ADD_TEST(msg-gtnets-dogbone			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-dogbone-gtnets.tesh)
 ADD_TEST(msg-gtnets-onelink			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-onelink-gtnets.tesh)
 ADD_TEST(msg-gtnets-dogbone-lv08	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-dogbone-lv08.tesh)
