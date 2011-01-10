@@ -643,9 +643,6 @@ configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_CURRENT_BINARY
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpif2c @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpiff @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/hostfile ${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/hostfile COPYONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform.xml COPYONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
 
 exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE OKITOKI)
 exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE OKITOKI)
@@ -662,11 +659,22 @@ ${CMAKE_CURRENT_BINARY_DIR}/bin/smpiff
 ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun
 ${CMAKE_CURRENT_BINARY_DIR}/bin/colorize
 ${CMAKE_CURRENT_BINARY_DIR}/bin/simgrid_update_xml
-${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/hostfile
 ${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/smpi_traced.trace
-${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform.xml
-${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform_with_routers.xml
 )
+
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
+else("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
+	configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/hostfile ${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/hostfile COPYONLY)
+	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform.xml COPYONLY)
+	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
+	
+	set(generate_files_to_clean
+		${generate_files_to_clean}
+		${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/hostfile
+		${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform.xml
+		${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform_with_routers.xml
+		)
+endif("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 "${generate_files_to_clean}")
