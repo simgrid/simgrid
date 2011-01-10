@@ -19,7 +19,6 @@ perl ./simgrid-trunk/buildtools/pipol/cmake.pl
 
 cd simgrid-trunk
 
-#ucontext and pthread
 cmake -Denable_lua=on \
 -Denable_ruby=on \
 -Denable_lib_static=on \

@@ -21,19 +21,40 @@ cd simgrid-trunk
 
 rm CMakeCache.txt
 
-#ucontext and pthread
-cmake -Denable_lua=on \
+cmake \
+-Denable_lua=on \
 -Denable_ruby=on \
--Denable_lib_static=on \
--Denable_model-checking=off \
+-Denable_java=on \
 -Denable_tracing=on \
+-Denable_smpi=on \
+-Denable_lib_static=off \
+-Denable_model-checking=off \
 -Denable_latency_bound_tracking=off \
 -Denable_gtnets=off \
--Denable_java=on \
 -Denable_compile_optimizations=off \
 -Denable_compile_warnings=off \
--Denable_supernovae=off \
--Denable_smpi=on .
+-Denable_supernovae=off .
+ctest -D ExperimentalStart
+ctest -D ExperimentalConfigure
+ctest -D ExperimentalBuild
+ctest -D ExperimentalTest
+ctest -D ExperimentalSubmit
+make clean
+
+#full_flags
+cmake \
+-Denable_lua=on \
+-Denable_ruby=on \
+-Denable_java=on \
+-Denable_tracing=on \
+-Denable_smpi=on \
+-Denable_compile_optimizations=on \
+-Denable_compile_warnings=on \
+-Denable_lib_static=off \
+-Denable_model-checking=off \
+-Denable_latency_bound_tracking=off \
+-Denable_gtnets=off \
+-Denable_supernovae=off .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
 ctest -D ExperimentalBuild
@@ -42,18 +63,19 @@ ctest -D ExperimentalSubmit
 make clean
 
 #supernovae
-cmake -Denable_lua=on \
+cmake \
+-Denable_lua=on \
 -Denable_ruby=on \
--Denable_lib_static=on \
--Denable_model-checking=off \
--Denable_tracing=on \
--Denable_latency_bound_tracking=on \
--Denable_gtnets=off \
 -Denable_java=on \
+-Denable_tracing=on \
+-Denable_smpi=on \
+-Denable_supernovae=on \
 -Denable_compile_optimizations=off \
 -Denable_compile_warnings=off \
--Denable_supernovae=on \
--Denable_smpi=on .
+-Denable_lib_static=off \
+-Denable_model-checking=off \
+-Denable_latency_bound_tracking=off \
+-Denable_gtnets=off .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
 ctest -D ExperimentalBuild
@@ -62,18 +84,19 @@ ctest -D ExperimentalSubmit
 make clean
 
 #model checking
-cmake -Denable_lua=on \
+cmake \
+-Denable_coverage=on \
+-Denable_lua=on \
 -Denable_ruby=on \
--Denable_lib_static=on \
+-Denable_java=on \
 -Denable_model-checking=on \
 -Denable_tracing=on \
 -Denable_latency_bound_tracking=on \
 -Denable_gtnets=off \
--Denable_java=on \
 -Denable_compile_optimizations=off \
 -Denable_compile_warnings=off \
 -Denable_supernovae=off \
--Denable_coverage=on \
+-Denable_lib_static=off \
 -Denable_smpi=on .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
@@ -85,19 +108,20 @@ make clean
 
 if [ $SYSTEM = Linux ] ; then
 
-sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install/
+	sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install/
 	
 	if [ -e ./gtnets_install/lib/libgtsim-opt.so ] ; then
 		#gtnets
-		cmake -Denable_lua=on \
+		cmake \
+		-Denable_lua=on \
 		-Denable_ruby=on \
 		-Denable_lib_static=on \
 		-Denable_model-checking=off \
 		-Denable_tracing=on \
 		-Denable_latency_bound_tracking=on \
 		-Denable_gtnets=on \
-		-Dgtnets_path=./gtnets_install/ \
 		-Denable_java=on \
+		-Dgtnets_path=$userhome/usr \
 		-Denable_coverage=off \
 		-Denable_smpi=on .
 		ctest -D ExperimentalStart
@@ -107,23 +131,25 @@ sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install/
 		ctest -D ExperimentalSubmit
 		make clean
 	fi
-	
-	#full_flags
-	cmake -Denable_lua=on \
-	-Denable_ruby=on \
-	-Denable_lib_static=on \
+fi
+
+if[ x$PIPOL_IMAGE = xi386-linux-ubuntu-karmic.dd.gz ]
+	#Make the memcheck mode
+	cmake \
+	-Denable_lua=off \
+	-Denable_ruby=off \
+	-Denable_lib_static=off \
 	-Denable_model-checking=off \
-	-Denable_tracing=on \
-	-Denable_latency_bound_tracking=on \
+	-Denable_tracing=off \
+	-Denable_latency_bound_tracking=off \
+	-Denable_coverage=off \
 	-Denable_gtnets=off \
-	-Denable_java=on \
-	-Denable_compile_optimizations=on \
-	-Denable_compile_warnings=on \
-	-Denable_smpi=on .
+	-Denable_java=off \
+	-Denable_memcheck=on ./
 	ctest -D ExperimentalStart
 	ctest -D ExperimentalConfigure
 	ctest -D ExperimentalBuild
-	ctest -D ExperimentalTest
+	ctest -D ExperimentalMemCheck
 	ctest -D ExperimentalSubmit
 	make clean
 fi

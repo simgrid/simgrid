@@ -68,6 +68,7 @@ which_wget=`which wget`		#wget for cmake
 which_dot=`which dot`		#dot for cgraph
 which_perl=`which perl`		#perl
 which_f2c=`which f2c`		#f2c
+which_gcov=`which gcov`     #gcov
 echo $which_cmake
 echo $which_unzip
 echo $which_ruby
@@ -81,3 +82,4 @@ echo $which_dot
 echo $which_wget
 echo $which_perl
 echo $which_f2c
+echo $which_gcov
