@@ -1,14 +1,26 @@
 if [ x$1 != x ]  ; then
-	echo "Install to prefix=$1";
 	prefix=$1;
 fi
 
-if [ -e $prefix ] ; then
+if [ -e $prefix/lib ] ; then
 	echo -n ""
 else	
-	echo "Creating directory $prefix";
-	mkdir -p $prefix;
+	echo "Creating directory $prefix/lib";
+	mkdir -p $prefix/lib;
 fi
+
+if [ -e $prefix/include/gtnets ] ; then
+	echo -n "";
+else	
+	echo "Creating directory $prefix/include/gtnets";
+	mkdir -p $prefix/include/gtnets;
+fi
+
+localdir=`pwd`;
+cd $prefix;
+prefix=`pwd`;
+cd $localdir;
+echo "Install to prefix = $prefix";
 
 echo "Downloading GTNetS from SVN SimGrid's repository";
 svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/GTNetS/ --quiet
@@ -34,34 +46,15 @@ echo "Compiling GTNetS optimal libs";
 make -j 3 opt > /dev/null 2>&1
 wait
 
-if [ -e $prefix/lib ] ; then
-	echo -n ""
-else	
-	echo "Creating directory $prefix/lib";
-	mkdir $prefix/lib;
-fi
-
-if [ -e $prefix/include ] ; then
-	echo -n "";
-else	
-	echo "Creating directory $prefix/include";
-	mkdir $prefix/include;
-fi
-
-if [ -e $prefix/include/gtnets ] ; then
-	echo -n "";
-else	
-	echo "Creating directory $prefix/include/gtnets";
-	mkdir $prefix/include/gtnets;
-fi
+cd ../../
 
 echo "Copying files to $prefix/lib";
-cp -fr ./*.so $prefix/lib/
+cp -fr ./GTNetS/gtnets-current/*.so $prefix/lib/
 ln -sf $prefix/lib/libgtsim-opt.so $prefix/lib/libgtnets.so
 
 echo "Copying files to $prefix/include/gtnets";
-cp -fr ./SRC/*.h $prefix/include/gtnets
+cp -fr ./GTNetS/gtnets-current/SRC/*.h $prefix/include/gtnets
 wait
 
 echo "Done with gtnets installation";
-
+rm -rf ./GTNetS
