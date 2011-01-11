@@ -28,12 +28,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
 /******************************** Process ************************************/
 void __MSG_process_cleanup(smx_process_t smx_proc)
 {
-  /* arg is a pointer to a simix process, we can get the msg process with the field data */
-  m_process_t proc = SIMIX_req_process_get_data(smx_proc);
+  /* This function should be always be executed by the process being
+   * cleaned up */
+  if(smx_proc != SIMIX_process_self())
+    THROW_IMPOSSIBLE;
+
+  /* arg is no longer used, just kept to avoid changing the interface */
+  m_process_t proc = SIMIX_process_self_get_data();
+
 #ifdef HAVE_TRACING
   TRACE_msg_process_end(proc);
 #endif
-  xbt_fifo_remove(msg_global->process_list, proc);
+
+  if(msg_global)
+    xbt_fifo_remove(msg_global->process_list, proc);
+
   SIMIX_process_cleanup(smx_proc);
   if (proc->name) {
     free(proc->name);
