@@ -128,7 +128,7 @@ make clean
 
 if [ $SYSTEM = Linux ] ; then
 
-	sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install/
+	sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install
 	
 	if [ -e ./gtnets_install/lib/libgtsim-opt.so ] ; then
 		#gtnets
@@ -163,7 +163,7 @@ if[ x$PIPOL_IMAGE = xi386-linux-ubuntu-karmic.dd.gz ]
 	-Denable_coverage=off \
 	-Denable_gtnets=off \
 	-Denable_java=off \
-	-Denable_memcheck=on ./
+	-Denable_memcheck=on .
 	ctest -D NightlyStart
 	ctest -D NightlyConfigure
 	ctest -D NightlyBuild

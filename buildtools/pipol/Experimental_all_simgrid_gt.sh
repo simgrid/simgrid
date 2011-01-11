@@ -108,7 +108,7 @@ make clean
 
 if [ $SYSTEM = Linux ] ; then
 
-	sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install/
+	sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install
 	
 	if [ -e ./gtnets_install/lib/libgtsim-opt.so ] ; then
 		#gtnets
