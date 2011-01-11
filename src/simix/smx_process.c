@@ -246,7 +246,7 @@ void SIMIX_process_killall(void)
     SIMIX_process_kill(p, SIMIX_process_self());
 
   SIMIX_context_runall(simix_global->process_to_run);
-  SIMIX_context_runall(simix_global->process_to_run);
+
   SIMIX_process_empty_trash();
 }
 
@@ -511,8 +511,10 @@ void SIMIX_process_yield(void)
   /* Ok, maestro returned control to us */
   DEBUG1("Maestro returned control to me: '%s'", self->name);
 
-  if (self->context->iwannadie)
+  if (self->context->iwannadie){
+    DEBUG0("I wanna die!");
     SIMIX_context_stop(self->context);
+  }
 
   if (self->doexception) {
     DEBUG0("Wait, maestro left me an exception");
