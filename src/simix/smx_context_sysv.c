@@ -34,6 +34,21 @@ smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
 
 static void smx_ctx_sysv_wrapper(int count, ...);
 
+/* This is a bit paranoid about SIZEOF_VOIDP not being a multiple of SIZEOF_INT,
+ * but it doesn't harm. */
+#define CTX_ADDR_LEN (SIZEOF_VOIDP / SIZEOF_INT + !!(SIZEOF_VOIDP % SIZEOF_INT))
+union u_ctx_addr {
+  void *addr;
+  int intv[CTX_ADDR_LEN];
+};
+#if (CTX_ADDR_LEN == 1)
+#  define CTX_ADDR_SPLIT(u) (u).intv[0]
+#elif (CTX_ADDR_LEN == 2)
+#  define CTX_ADDR_SPLIT(u) (u).intv[0], (u).intv[1]
+#else
+#  error Your architecture is not supported yet
+#endif
+
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 {
   smx_ctx_base_factory_init(factory);
@@ -73,7 +88,7 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                   void_pfn_smxprocess_t cleanup_func,
                                   void *data)
 {
-  uintptr_t ctx_addr;
+  union u_ctx_addr ctx_addr;
   smx_ctx_sysv_t context =
       (smx_ctx_sysv_t) smx_ctx_base_factory_create_context_sized(size,
                                                                  code,
@@ -104,18 +119,9 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                 ((char *) context->uc.uc_stack.ss_sp) +
                                 context->uc.uc_stack.ss_size);
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
-    ctx_addr = (uintptr_t)context;
-    makecontext(&((smx_ctx_sysv_t) context)->uc, (void (*)())smx_ctx_sysv_wrapper,
-                SIZEOF_VOIDP / SIZEOF_INT + 1, SIZEOF_VOIDP / SIZEOF_INT,
-#if (SIZEOF_VOIDP == SIZEOF_INT)
-                (int)ctx_addr
-#elif (SIZEOF_VOIDP == 2 * SIZEOF_INT)
-                (int)(ctx_addr >> (8 * sizeof(int))),
-                (int)(ctx_addr)
-#else
-#error Your architecture is not supported yet
-#endif
-   );
+    ctx_addr.addr = context;
+    makecontext(&context->uc, (void (*)())smx_ctx_sysv_wrapper,
+                CTX_ADDR_LEN, CTX_ADDR_SPLIT(ctx_addr));
   }else{
     maestro_context = context;
   }
@@ -156,24 +162,21 @@ void smx_ctx_sysv_stop(smx_context_t context)
   smx_ctx_sysv_suspend(context);
 }
 
-void smx_ctx_sysv_wrapper(int count, ...)
+void smx_ctx_sysv_wrapper(int first, ...)
 { 
-  uintptr_t ctx_addr = 0;
-  va_list ap;
+  union u_ctx_addr ctx_addr;
   smx_ctx_sysv_t context;
 
-  va_start(ap, count);
-#if (SIZEOF_VOIDP <= SIZEOF_INT)
-  ctx_addr = (uintptr_t)va_arg(ap, int);
-#else
-  int i;
-  for(i = 0; i < count; i++) {
-     ctx_addr <<= 8*sizeof(int);
-     ctx_addr |= (uintptr_t)va_arg(ap, int);
+  ctx_addr.intv[0] = first;
+  if (CTX_ADDR_LEN > 1) {
+    va_list ap;
+    int i;
+    va_start(ap, first);
+    for(i = 1; i < CTX_ADDR_LEN; i++)
+      ctx_addr.intv[i] = va_arg(ap, int);
+    va_end(ap);
   }
-#endif
-  va_end(ap);
-  context = (smx_ctx_sysv_t)ctx_addr;
+  context = ctx_addr.addr;
   (context->super.code) (context->super.argc, context->super.argv);
 
   smx_ctx_sysv_stop((smx_context_t) context);
