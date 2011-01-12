@@ -443,6 +443,7 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
     char *q=xbt_strdup(p);
     xbt_dynar_push(res,&q);
   }
+  xbt_dynar_free(&parsed);
   free(str_to_free);
   xbt_dynar_shrink(res, 0);
   xbt_dynar_free(&parsed);
