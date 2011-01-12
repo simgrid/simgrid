@@ -250,7 +250,6 @@ if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git)
 
 	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
 	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
-	exec_program("git svn info" ${CMAKE_HOME_DIRECTORY} OUTPUT_VARIABLE "GIT_SVN_VERSION")
 	
 	string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
 	STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
