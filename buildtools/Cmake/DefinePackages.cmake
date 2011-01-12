@@ -374,7 +374,7 @@ set(install_HEADERS
 	include/simdag/simdag.h
 	include/simdag/datatypes.h
 	include/smpi/smpi.h
-	include/smpi/smpif.h
+	${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
 	include/smpi/mpi.h
 	include/smpi/mpif.h
 	include/surf/surfxml_parse.h
