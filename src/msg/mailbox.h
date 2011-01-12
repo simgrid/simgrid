@@ -27,19 +27,6 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(msg_mailbox_t)
     MSG_mailbox_new(const char *alias);
 
-/*! \brief MSG_mailbox_create - create a new mailbox.
- *
- * The function MSG_mailbox_new creates a new mailbox identified by
- * the key specified by the parameter alias and add it in the global
- * dictionary but doesn't add it in the global dictionary. Typicaly,
- * this type of mailbox is associated with a channel.
- *
- * \param alias		The alias of the mailbox to create.
- *
- * \return		The newly created mailbox.
- */
-msg_mailbox_t MSG_mailbox_create(const char *alias);
-
 /* \brief MSG_mailbox_free - release a mailbox from the memory.
  *
  * The function MSG_mailbox_free release a mailbox from the memory but does

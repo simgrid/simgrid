@@ -108,7 +108,6 @@ typedef struct s_smx_rvpoint *msg_mailbox_t;
 /** @brief Mailbox datatype
     @ingroup m_datatypes_management_details @{ */
 
-msg_mailbox_t MSG_mailbox_create(const char *alias);
 void MSG_mailbox_free(void *mailbox);
 
 
