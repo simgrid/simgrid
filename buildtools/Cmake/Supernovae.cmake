@@ -8,6 +8,7 @@ set(simgrid_fragile_sources
 	src/surf/surfxml_parse.c
 	src/xbt/graphxml_parse.c
 	src/simdag/sd_daxloader.c
+	${GTNETS_USED}
 )
 set(gras_fragile_sources
 	src/gras/DataDesc/ddt_parse.yy.c
