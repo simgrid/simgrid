@@ -22,11 +22,11 @@ set(gras_fragile_sources
 if (enable_supernovae) # I need supernovae
 
 	# supernovae files are generated. I promise
-	set_source_files_properties(${CMAKE_HOME_DIRECTORY}/src/supernovae_sg.c
+	set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c
 				      PROPERTIES GENERATED true)
-	set_source_files_properties(${CMAKE_HOME_DIRECTORY}/src/supernovae_gras.c
+	set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c
 				      PROPERTIES GENERATED true)
-	set_source_files_properties(${CMAKE_HOME_DIRECTORY}/src/supernovae_smpi.c
+	set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c
 				      PROPERTIES GENERATED true)
 
 	ADD_CUSTOM_COMMAND(
@@ -64,4 +64,5 @@ if (enable_supernovae) # I need supernovae
 
 	set(SMPI_SRC 
 		${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
+				
 endif(enable_supernovae) # I need supernovae

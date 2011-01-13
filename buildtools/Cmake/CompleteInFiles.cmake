@@ -652,6 +652,7 @@ set(generate_files_to_clean
 ${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h
 ${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h
 ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
+${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
 ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc
 ${CMAKE_CURRENT_BINARY_DIR}/bin/smpif2c
 ${CMAKE_CURRENT_BINARY_DIR}/bin/smpiff
@@ -659,6 +660,9 @@ ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun
 ${CMAKE_CURRENT_BINARY_DIR}/bin/colorize
 ${CMAKE_CURRENT_BINARY_DIR}/bin/simgrid_update_xml
 ${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/smpi_traced.trace
+${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c
+${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c
+${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c
 )
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
