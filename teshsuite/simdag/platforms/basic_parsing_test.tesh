@@ -81,3 +81,7 @@ $ ${bindir:=.}/basic_parsing_test ./properties.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to '~/'
 > Workstation number: 1, link number: 1
+
+$ ${bindir:=.}/basic_parsing_test ./one_cluster_file.xml
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 2, link number: 5
