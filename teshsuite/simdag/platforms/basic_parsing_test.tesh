@@ -73,3 +73,11 @@ $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd.xml
 $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd_bis.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > Workstation number: 5, link number: 7
+
+$ ${bindir:=.}/basic_parsing_test ./properties.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '0.000010'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'CpuTI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to '~/'
+> Workstation number: 1, link number: 1

@@ -620,6 +620,7 @@ XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common str
  * its code between, say, MSG_init and MSG_create_environment using MSG_config
  */
 XBT_PUBLIC(void) surf_config_models_setup(const char *platform_file);
+XBT_PUBLIC(void) surf_config_add_callback(void);
 
 /** \brief create the elements of the models
  *

@@ -207,8 +207,10 @@ void surf_parse_reset_parser(void)
       xbt_dynar_new(sizeof(void_f_void_t), NULL);
   ETag_surfxml_peer_cb_list =
       xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_config_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_config_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+  STag_surfxml_config_cb_list =
+		  xbt_dynar_new(sizeof(void_f_void_t), NULL);
+  ETag_surfxml_config_cb_list =
+		  xbt_dynar_new(sizeof(void_f_void_t), NULL);
 }
 
 /* Stag and Etag parse functions */
@@ -387,13 +389,16 @@ static void init_data(void)
   trace_connect_list_bandwidth = xbt_dict_new();
   trace_connect_list_latency = xbt_dict_new();
 
-  surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
-  surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
-  surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);
-  surfxml_add_callback(STag_surfxml_trace_connect_cb_list,
-                       &parse_Stag_trace_connect);
+  if(xbt_dynar_is_empty(STag_surfxml_config_cb_list))
+  {
+	  surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
+	  surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
+	  surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
+	  surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);
+	  surfxml_add_callback(STag_surfxml_trace_connect_cb_list,
+						   &parse_Stag_trace_connect);
+  }
 }
 
 static void free_data(void)
@@ -409,7 +414,6 @@ static void free_data(void)
 }
 
 /* Here start parse */
-
 void parse_platform_file(const char *file)
 {
   int parse_status;

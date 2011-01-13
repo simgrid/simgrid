@@ -1,11 +1,6 @@
 <?xml version='1.0'?>
  <!DOCTYPE platform SYSTEM "simgrid.dtd">
  <platform version="3">
- <config id="general">
- 	<prop id="test" value="retest"></prop>
- 	<prop id="test" value="retest"></prop>
- 	<prop id="test" value="retest"></prop>
- </config>
 	
  <AS  id="AS0"  routing="Full">
    	

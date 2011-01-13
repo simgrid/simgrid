@@ -170,10 +170,12 @@ void SD_create_environment(const char *platform_file)
   void *surf_workstation = NULL;
   void *surf_link = NULL;
 
+  //First pass of platform file
+  surf_config_add_callback();
+  parse_platform_file(platform_file);
+
   SD_CHECK_INIT_DONE();
-
   DEBUG0("SD_create_environment");
-
   surf_config_models_setup(platform_file);
   parse_platform_file(platform_file);
   surf_config_models_create_elms();

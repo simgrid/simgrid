@@ -1053,7 +1053,6 @@ static e_surf_network_element_type_t get_network_element_type(const char
  */
 void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_t get_link_latency_fun)
 {
-
   /* config the uniq global routing */
   global_routing = xbt_new0(s_routing_global_t, 1);
   global_routing->where_network_elements = xbt_dict_new();
@@ -1104,14 +1103,17 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   surfxml_add_callback(STag_surfxml_peer_cb_list,
                          &routing_parse_Speer);
 
-  surfxml_add_callback(STag_surfxml_config_cb_list,
-					   &routing_parse_Sconfig);
-  surfxml_add_callback(ETag_surfxml_config_cb_list,
-					   &routing_parse_Econfig);
-
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();
 #endif
+}
+
+void surf_config_add_callback(void)
+{
+	surf_parse_reset_parser();
+	surfxml_add_callback(STag_surfxml_config_cb_list, &routing_parse_Sconfig);
+	surfxml_add_callback(ETag_surfxml_config_cb_list, &routing_parse_Econfig);
+	surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
 }
 
 /* ************************************************************************** */
@@ -3243,20 +3245,20 @@ static void generic_src_dst_check(routing_component_t rc, const char *src,
 
 static void routing_parse_Sconfig(void)
 {
-  //TODO
-  DEBUG0("WARNING tag config not yet implemented.");
-  DEBUG1("Configuration name = %s",A_surfxml_config_id);
+  DEBUG1("START configuration name = %s",A_surfxml_config_id);
 }
 
 static void routing_parse_Econfig(void)
 {
-  //TODO
   xbt_dict_cursor_t cursor = NULL;
   char *key;
   char *elem;
+  char *cfg;
   xbt_dict_foreach(current_property_set, cursor, key, elem) {
-	  DEBUG2("property : %s = %s",key,elem);
+	  cfg = bprintf("%s:%s",key,elem);
+	  xbt_cfg_set_parse(_surf_cfg_set, cfg);
 	}
+  DEBUG1("End configuration name = %s",A_surfxml_config_id);
 }
 
 static void routing_parse_Scluster(void)

@@ -38,6 +38,10 @@ void SIMIX_create_environment(const char *file)
 
   double start, end;
 
+  //First pass of platform file
+  surf_config_add_callback();
+  parse_platform_file(file);
+
   surf_config_models_setup(file);
   parse_platform_file(file);
   surf_config_models_create_elms();
