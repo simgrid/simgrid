@@ -55,9 +55,9 @@ ADD_TEST(tesh-gras-dd-r-little64	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${
 ADD_TEST(tesh-gras-dd-r-big32-8-4	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/datadesc/datadesc_r_big32_8_4.tesh)
 
 IF(${ARCH_32_BITS})
-  ADD_TEST(tesh-gras-msg-handle-sg-32	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/msg_handle/test_sg_32)
+  ADD_TEST(tesh-gras-msg-handle-sg-32	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/msg_handle/test_sg_32)
 ELSE(${ARCH_32_BITS})
-  ADD_TEST(tesh-gras-msg-handle-sg-64	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/msg_handle/test_sg_64)
+  ADD_TEST(tesh-gras-msg-handle-sg-64	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/msg_handle/test_sg_64)
 ENDIF(${ARCH_32_BITS})
 
 ADD_TEST(tesh-gras-empty-main-rl	${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/gras/empty_main	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/empty_main/test_rl)
