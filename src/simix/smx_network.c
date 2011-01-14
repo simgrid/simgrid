@@ -51,8 +51,8 @@ smx_rdv_t SIMIX_rdv_create(const char *name)
     rdv->name = name ? xbt_strdup(name) : NULL;
     rdv->comm_fifo = xbt_fifo_new();
 
-    if (name)
-      xbt_dict_set(rdv_points, name, rdv, SIMIX_rdv_free);
+    if (rdv->name)
+      xbt_dict_set(rdv_points, rdv->name, rdv, SIMIX_rdv_free);
   }
   return rdv;
 }
@@ -60,7 +60,7 @@ smx_rdv_t SIMIX_rdv_create(const char *name)
 void SIMIX_rdv_destroy(smx_rdv_t rdv)
 {
   if (rdv->name)
-    xbt_dict_remove(rdv_points, rdv->name); 
+    xbt_dict_remove(rdv_points, rdv->name);
 }
 
 void SIMIX_rdv_free(void *data)
