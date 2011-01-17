@@ -1,7 +1,5 @@
 // FIXME: problems
-//   - cannot change type on multiple variable declaration
 //   - does not match array initializers
-//   - dereferencing outside access macro? (maybe not an issue...)
 
 // Function prototype looks like variable dec, but has parentheses
 @funcproto@
@@ -42,14 +40,13 @@ expression E;
 @@
 (
 T@p 
-var
-+ = SMPI_INITIALIZE_GLOBAL(T)
+- var
++ *var = SMPI_INITIALIZE_GLOBAL(T)
 ;
 |
 T@p
-var = 
-- E
-+ SMPI_INITIALIZE_AND_SET_GLOBAL(T, E)
+- var = E
++ *var = SMPI_INITIALIZE_AND_SET_GLOBAL(T, E)
 ;
 )
 
