@@ -94,10 +94,6 @@ int smpi_process_getarg(integer* index, char* dst, ftnlen len) {
   return 0;
 }
 
-int smpi_global_rank(void) {
-   return smpi_process_index();
-}
-
 int smpi_global_size(void) {
    char* value = getenv("SMPI_GLOBAL_SIZE");
 
@@ -109,7 +105,7 @@ int smpi_global_size(void) {
 
 smpi_process_data_t smpi_process_data(void)
 {
-  return SIMIX_req_process_get_data(SIMIX_process_self());
+  return SIMIX_process_self_get_data();
 }
 
 smpi_process_data_t smpi_process_remote_data(int index)
@@ -227,12 +223,10 @@ void smpi_global_destroy(void)
 /* With smpiff, the following weak symbols are replaced by those in libf2c */
 int __attribute__((weak)) xargc;
 char** __attribute__((weak)) xargv;
-int fortran = 1;
 
 int __attribute__((weak)) main(int argc, char** argv) {
    xargc = argc;
    xargv = argv;
-   fortran = 0;
    return MAIN__();
 }
 
@@ -257,12 +251,6 @@ int MAIN__(void)
                    "Minimal computation time (in seconds) not discarded.",
                    xbt_cfgelm_double, &default_threshold, 1, 1, NULL,
                    NULL);
-
-  if(fortran) {
-    /* Force thread contexts with fortran code */
-    extern void SIMIX_ctx_thread_factory_init(smx_context_factory_t *factory);
-    smx_factory_initializer_to_use = SIMIX_ctx_thread_factory_init;
-  }
 
 #ifdef HAVE_TRACING
   TRACE_global_init(&xargc, xargv);

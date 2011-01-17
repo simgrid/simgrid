@@ -38,17 +38,6 @@ void __attribute__((weak,destructor)) __postfini_##name(void) { \
    name = NULL;                                                 \
 }
 
-#define SMPI_GLOBAL_VAR_LOCAL_ACCESS(name) name[__rank()]
-
-/* This function stores the rank locally, so that a request in
-   SIMIX is not created each time */
-int __attribute__((weak)) __rank(void) {
-   static __thread int rank = -1;
-
-   if(rank < 0) {
-      rank = smpi_global_rank();
-   }
-   return rank;
-}
+#define SMPI_GLOBAL_VAR_LOCAL_ACCESS(name) name[smpi_process_index()]
 
 #endif

@@ -43,7 +43,6 @@ void smpi_process_destroy(void);
 smpi_process_data_t smpi_process_data(void);
 smpi_process_data_t smpi_process_remote_data(int index);
 int smpi_process_count(void);
-int smpi_process_index(void);
 smx_rdv_t smpi_process_mailbox(void);
 smx_rdv_t smpi_process_remote_mailbox(int index);
 xbt_os_timer_t smpi_process_timer(void);

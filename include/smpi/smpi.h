@@ -444,5 +444,7 @@ XBT_PUBLIC(void) smpi_shared_free(void *data);
 /* Fortran specific stuff */
 XBT_PUBLIC(int) MAIN__(void);
 
+XBT_PUBLIC(int) smpi_process_index(void);
+
 SG_END_DECL()
 #endif
