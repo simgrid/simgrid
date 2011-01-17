@@ -33,11 +33,13 @@ expression E;
 @@
 (
 T 
++ *
 b@p
 + = SMPI_INITIALIZE_GLOBAL(b, T)
 ;
 |
-T 
+T
++ *
 b@p = 
 + SMPI_INITIALIZE_AND_SET_GLOBAL(b, T,
 E
