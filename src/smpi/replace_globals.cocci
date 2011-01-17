@@ -43,12 +43,12 @@ constant size;
 (
 T@p 
 - var
-+ *var = SMPI_INITIALIZE_GLOBAL(T)
++ *var = SMPI_INITIALIZE_GLOBAL(var, T)
 ;
 |
 T@p
 - var = value 
-+ *var = SMPI_INITIALIZE_AND_SET_GLOBAL(T, value)
++ *var = SMPI_INITIALIZE_AND_SET_GLOBAL(var, T, value)
 ;
 |
 T@p
