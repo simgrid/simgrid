@@ -1,4 +1,5 @@
 // FIXME: problems
+//   - does not want to match dynamic arrays...
 //   - does not match array initializers
 
 // Function prototype looks like variable dec, but has parentheses
@@ -36,7 +37,8 @@ var = E
 type T;
 identifier var;
 position p != { localvardecl.p, funcproto.p };
-expression E;
+expression value;
+constant size;
 @@
 (
 T@p 
@@ -45,19 +47,34 @@ T@p
 ;
 |
 T@p
-- var = E
-+ *var = SMPI_INITIALIZE_AND_SET_GLOBAL(T, E)
+- var = value 
++ *var = SMPI_INITIALIZE_AND_SET_GLOBAL(T, value)
+;
+|
+T@p
+- var[]
++ *var[] = SMPI_INITIALIZE_GLOBAL_ARRAY(T, size)
+;
+|
+T@p
+- var[size]
++ *var[] = SMPI_INITIALIZE_GLOBAL_STATIC_ARRAY(T, size)
+;
+|
+T@p
+- var[size] = { ... }
++ *var[] = SMPI_INITIALIZE_AND_SET_GLOBAL_STATIC_ARRAY(T, size)
 ;
 )
 
 @rewritelocalaccess@
-local idexpression x;
+local idexpression lvar;
 identifier globalvardecl.var;
 @@
 {
 <...
 (
-x
+lvar
 |
 +SMPI_GLOBAL_VAR_LOCAL_ACCESS(
 var
