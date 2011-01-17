@@ -16,10 +16,7 @@ all_ids = [42]
 sys.stdout.write("<?xml version='1.0'?>\n"
 "<!DOCTYPE platform SYSTEM \"simgrid.dtd\">\n"
 "<platform version=\"3\">\n"
-"  <process host=\"c-0.me\" function=\"node\">\n"
-"    <argument value=\"42\"/>\n"
-"    <argument value=\"10000\"/>\n"
-"  </process>\n")
+"  <process host=\"c-0.me\" function=\"node\"><argument value=\"42\"/><argument value=\"%d\"/></process>\n" % end_date)
 
 for i in range(1, nb_nodes):
 

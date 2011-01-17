@@ -1,0 +1,8 @@
+#!/bin/bash
+
+nb_lines=$[$1 + 3]
+head -n $nb_lines chord100000.xml > tmp_depl.xml
+echo "</platform>" >> tmp_depl.xml
+./chord -nb_bits=24 -timeout=200 ../../platforms/cluster_with_300000_hosts.xml tmp_depl.xml
+#rm tmp_depl.xml
+
