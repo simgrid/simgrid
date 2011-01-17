@@ -32,16 +32,14 @@ position p != { localvardecl.p, funcproto.p };
 expression E;
 @@
 (
--T 
-+T*
+T 
 b@p
-+ = SMPI_INITIALIZE_GLOBAL(T)
++ = SMPI_INITIALIZE_GLOBAL(b, T)
 ;
 |
--T 
-+T*
+T 
 b@p = 
-+ SMPI_INITIALIZE_AND_SET_GLOBAL(T,
++ SMPI_INITIALIZE_AND_SET_GLOBAL(b, T,
 E
 +)
 ;
@@ -51,6 +49,8 @@ E
 local idexpression x;
 identifier globalvardecl.b;
 @@
+{
+<...
 (
 x
 |
@@ -58,3 +58,5 @@ x
 b
 +)
 )
+...>
+}
