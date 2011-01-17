@@ -1,24 +1,33 @@
+// FIXME: problems
+//   - cannot change type on multiple variable declaration
+//   - does not match array initializers
+//   - dereferencing outside access macro? (maybe not an issue...)
+
 // Function prototype looks like variable dec, but has parentheses
 @funcproto@
 type T;
-identifier f;
+identifier func;
 position p;
 @@
-T f@p(...);
+T@p func(...);
 
 // Define a local variable as one whose declaration is encased in brackets
 @localvardecl@
 type T;
-identifier a;
+identifier var;
 position p;
 expression E;
 @@
 {
 <...
 (
- T a@p;
+T@p
+var
+;
 |
- T a@p = E;
+T@p
+var = E
+;
 )
 ...>
 }
@@ -27,29 +36,26 @@ expression E;
 // prototype
 @globalvardecl@
 type T;
-identifier b;
+identifier var;
 position p != { localvardecl.p, funcproto.p };
 expression E;
 @@
 (
-T 
-+ *
-b@p
-+ = SMPI_INITIALIZE_GLOBAL(b, T)
+T@p 
+var
++ = SMPI_INITIALIZE_GLOBAL(T)
 ;
 |
-T
-+ *
-b@p = 
-+ SMPI_INITIALIZE_AND_SET_GLOBAL(b, T,
-E
-+)
+T@p
+var = 
+- E
++ SMPI_INITIALIZE_AND_SET_GLOBAL(T, E)
 ;
 )
 
 @rewritelocalaccess@
 local idexpression x;
-identifier globalvardecl.b;
+identifier globalvardecl.var;
 @@
 {
 <...
@@ -57,7 +63,7 @@ identifier globalvardecl.b;
 x
 |
 +SMPI_GLOBAL_VAR_LOCAL_ACCESS(
-b
+var
 +)
 )
 ...>
