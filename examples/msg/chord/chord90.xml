@@ -4,7 +4,7 @@
 
   <process host="Jacquelin" function="node">
     <argument value="42"/>               <!-- my id -->
-    <argument value ="600"/>             <!-- quit date -->
+    <argument value ="10000"/>             <!-- quit date -->
   </process>
 
   <process host="Boivin" function="node"><argument value="45743" /><argument value="42" /><argument value="10" /><argument value="10000" /></process>

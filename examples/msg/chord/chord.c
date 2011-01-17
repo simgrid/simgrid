@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
 #define NB_KEYS 65536
 #define COMM_SIZE 10
 #define COMP_SIZE 0
-#define TIMEOUT 100
+#define TIMEOUT 50
 
 /**
  * Finger element.
@@ -187,15 +187,17 @@ static void task_data_destroy(task_data_t task_data)
  */
 static void print_finger_table(node_t node)
 {
-  int i;
-  int pow = 1;
-  INFO0("My finger table:");
-  INFO0("Start | Succ ");
-  for (i = 0; i < NB_BITS; i++) {
-    INFO2(" %3d  | %3d ", (node->id + pow) % NB_KEYS, node->fingers[i].id);
-    pow = pow << 1;
+  if (XBT_LOG_ISENABLED(msg_chord, xbt_log_priority_verbose)) {
+    int i;
+    int pow = 1;
+    VERB0("My finger table:");
+    VERB0("Start | Succ ");
+    for (i = 0; i < NB_BITS; i++) {
+      VERB2(" %3d  | %3d ", (node->id + pow) % NB_KEYS, node->fingers[i].id);
+      pow = pow << 1;
+    }
+    VERB1("Predecessor: %d", node->pred_id);
   }
-  INFO1("Predecessor: %d", node->pred_id);
 }
 
 /**
@@ -480,7 +482,7 @@ static int join(node_t node, int known_id)
 
   int successor_id = remote_find_successor(node, known_id, node->id);
   if (successor_id == -1) {
-    DEBUG0("Cannot join the ring.");
+    INFO0("Cannot join the ring.");
   }
   else {
     set_finger(node, 0, successor_id);
@@ -583,7 +585,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
   // send a "Find Successor" request to ask_to_id
   m_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   DEBUG3("Sending a 'Find Successor' request (task %p) to %d for id %d", task_sent, ask_to, id);
-  MSG_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, 50);
+  MSG_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, TIMEOUT);
 
   if (res != MSG_OK) {
     DEBUG3("Failed to send the 'Find Successor' request (task %p) to %d for id %d",
@@ -603,7 +605,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         node->comm_receive = MSG_task_irecv(&task_received, node->mailbox);
       }
 
-      res = MSG_comm_wait(node->comm_receive, 50);
+      res = MSG_comm_wait(node->comm_receive, TIMEOUT);
 
       if (res != MSG_OK) {
         DEBUG2("Failed to receive the answer to my 'Find Successor' request (task %p): %d",
@@ -658,7 +660,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
   // send a "Get Predecessor" request to ask_to_id
   DEBUG1("Sending a 'Get Predecessor' request to %d", ask_to);
   m_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
-  MSG_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, 50);
+  MSG_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, TIMEOUT);
 
   if (res != MSG_OK) {
     DEBUG2("Failed to send the 'Get Predecessor' request (task %p) to %d",
@@ -678,7 +680,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
         node->comm_receive = MSG_task_irecv(&task_received, node->mailbox);
       }
 
-      res = MSG_comm_wait(node->comm_receive, 50);
+      res = MSG_comm_wait(node->comm_receive, TIMEOUT);
 
       if (res != MSG_OK) {
         DEBUG2("Failed to receive the answer to my 'Get Predecessor' request (task %p): %d",
