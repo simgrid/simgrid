@@ -2,7 +2,8 @@ find_library(PATH_PCRE_LIB
 	NAMES pcre
     HINTS
     $ENV{LD_LIBRARY_PATH}
-    PATH_SUFFIXES lib/
+    $ENV{PCRE_LIBRARY_PATH}
+    PATH_SUFFIXES lib/ GnuWin32/lib
     PATHS
     /opt
     /opt/local
@@ -13,7 +14,8 @@ find_library(PATH_PCRE_LIB
 find_path(PATH_PCRE_H "pcre.h"
     HINTS
     $ENV{LD_LIBRARY_PATH}
-    PATH_SUFFIXES include/
+    $ENV{PCRE_LIBRARY_PATH}
+    PATH_SUFFIXES include/ GnuWin32/include
     PATHS
     /opt
     /opt/local
