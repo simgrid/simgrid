@@ -9,8 +9,8 @@
 
 /* Macros used by coccinelle-generated code */
 
-#define SMPI_INITIALIZE_GLOBAL(name,type)                       \
-   NULL;                                                        \
+#define SMPI_VARINIT_GLOBAL(name,type)                       \
+type *name = NULL;                                                        \
 void __attribute__((weak,constructor)) __preinit_##name(void) { \
    if(!name)                                                    \
       name = (type*)malloc(smpi_global_size() * sizeof(type));  \
@@ -20,8 +20,8 @@ void __attribute__((weak,destructor)) __postfini_##name(void) { \
    name = NULL;                                                 \
 }
 
-#define SMPI_INITIALIZE_AND_SET_GLOBAl(name,type,expr)          \
-   NULL;                                                        \
+#define SMPI_VARINIT_GLOBAL_AND_SET(name,type,expr)          \
+type *name = NULL;                                                        \
 void __attribute__((weak,constructor)) __preinit_##name(void) { \
    size_t size = smpi_global_size();                            \
    size_t i;                                                    \
@@ -38,6 +38,6 @@ void __attribute__((weak,destructor)) __postfini_##name(void) { \
    name = NULL;                                                 \
 }
 
-#define SMPI_GLOBAL_VAR_LOCAL_ACCESS(name) name[smpi_process_index()]
+#define SMPI_VARGET_GLOBAL(name) name[smpi_process_index()]
 
 #endif

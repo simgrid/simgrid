@@ -1,6 +1,14 @@
+// FIXME: seems like cocci has problems manipulating the declarations, at least
+// when there is more than one on the same line. We already need perl to split
+// up the declarations after the fact, is there another tool we can use to patch
+// up and match the declarations? In that case we could consider dropping cocci,
+// or just using it to alter global variable accesses.
+//
 // FIXME: problems
-//   - does not want to match dynamic arrays...
+//   - array declarations not properly matched...can fix, but then can't have
+//   multiple declarations on one line
 //   - does not match array initializers
+//   - probably won't fix structure declarations with initialization either
 
 // Function prototype looks like variable dec, but has parentheses
 @funcproto@
@@ -38,33 +46,33 @@ type T;
 identifier var;
 position p != { localvardecl.p, funcproto.p };
 expression value;
-constant size;
+expression size;
 @@
 (
 T@p 
 - var
-+ *var = SMPI_INITIALIZE_GLOBAL(var, T)
++ *var = SMPI_VARINIT_GLOBAL(var, T)
 ;
 |
 T@p
 - var = value 
-+ *var = SMPI_INITIALIZE_AND_SET_GLOBAL(var, T, value)
++ *var = SMPI_VARINIT_GLOBAL_AND_SET(var, T, value)
 ;
-|
-T@p
-- var[]
-+ *var[] = SMPI_INITIALIZE_GLOBAL_ARRAY(T, size)
-;
-|
-T@p
-- var[size]
-+ *var[] = SMPI_INITIALIZE_GLOBAL_STATIC_ARRAY(T, size)
-;
-|
-T@p
-- var[size] = { ... }
-+ *var[] = SMPI_INITIALIZE_AND_SET_GLOBAL_STATIC_ARRAY(T, size)
-;
+//|
+//T@p // FIXME: matches, but complains if more than one decl on a line...
+//- var[size]
+//+ *var[size] = SMPI_VARINIT_GLOBAL_ARRAY(T, size)
+//;
+//|
+//T@p // FIXME: how to match initializer?
+//- var[size] = { ... }
+//+ *var[] = SMPI_VARINIT_GLOBAL_ARRAY_AND_SET(T, size, { ... })
+//;
+//|
+//T@p // FIXME: how to match initializer? how to figure out size?
+//- var[] = { ... }
+//+ *var[] = SMPI_VARINIT_GLOBAL_ARRAY_AND_SET(T, size, { ... }) // size = ?
+//;
 )
 
 @rewritelocalaccess@
@@ -76,7 +84,7 @@ identifier globalvardecl.var;
 (
 lvar
 |
-+SMPI_GLOBAL_VAR_LOCAL_ACCESS(
++SMPI_VARGET_GLOBAL(
 var
 +)
 )
