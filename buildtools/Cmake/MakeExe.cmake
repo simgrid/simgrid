@@ -1,53 +1,24 @@
-### Make Libs
-#>gcc c:\simgrid-trunk\examples\msg\icomms\peer.c -static -Lc:\simgrid-trunk\lib -lsimgrid -Ic:\simgrid-trunk\include -lwsock32	
-add_library(simgrid STATIC ${simgrid_sources})
-add_library(gras STATIC ${gras_sources})
-
-if(MSVC)
-    set_target_properties(gras     PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_STATIC"
-                                                     OUTPUT_NAME   "gras")
-    set_target_properties(simgrid  PROPERTIES COMPILE_FLAGS "/D _XBT_DLL_STATIC"
-                                                     OUTPUT_NAME   "simgrid")
-else(MSVC)
-    if(CMAKE_COMPILER_IS_GNUCC)
-        set_target_properties(gras     PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_STATIC"
-                                                         OUTPUT_NAME   "gras")
-        set_target_properties(simgrid  PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_STATIC"
-                                                         OUTPUT_NAME   "simgrid")
-    else(CMAKE_COMPILER_IS_GNUCC)
-        message(FATAL_ERROR "Compilateur non connu!!!")
-    endif(CMAKE_COMPILER_IS_GNUCC)
-endif(MSVC)
-
-set(GRAS_DEP "wsock32")
-set(SIMGRID_DEP "wsock32")
-
-target_link_libraries(simgrid 	${SIMGRID_DEP})
-target_link_libraries(gras 	${GRAS_DEP})
-
-### Make EXEs
-
-#src/testall
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/src)
-
-#tools/gras
+###################################################################
+### Load all files declaring binaries (tools, examples and tests) #
+###################################################################
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/gras)
 
-#tools/tesh
-#add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/tesh)
+if(WIN32)
+	add_custom_target(tesh ALL
+	DEPENDS ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl
+	COMMENT "Install ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl"
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh
+	)
+else(WIN32)
+	add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/tesh)
+endif(WIN32)
 
-#testsuite/xbt
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/graphicator/)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/xbt)
-
-#testsuite/surf
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/surf)
-
-#testsuite/simdag
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/simdag)
-
-#teshsuite
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt)
-#add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/gras/datadesc)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/gras/datadesc)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/gras/msg_handle)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/gras/empty_main)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/gras/small_sleep)
@@ -59,7 +30,6 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/partask)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg)
 
-#examples
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/ping)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/rpc)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/gras/spawn)
@@ -105,6 +75,7 @@ endif(HAVE_GRAPHVIZ)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/metaxml)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/properties)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling)
+
 if(enable_smpi)
 	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi)
 endif(enable_smpi)

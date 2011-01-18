@@ -21,7 +21,11 @@ endif(NOT PERL_EXECUTABLE)
 if(APPLE)
 	set(LIB_EXE "dylib")
 else(APPLE)
-	set(LIB_EXE "so")
+    if(WIN32)
+        set(LIB_EXE "a")
+    else(WIN32)
+	    set(LIB_EXE "so")
+    endif(WIN32)
 endif(APPLE)
 
 ### Set some variables for Cmake
@@ -125,20 +129,18 @@ if(WIN32)
     
     set(_XBT_WIN32 1)
     
-    message("Be sure all those variables are correctely set.")
-    message("	-- C_COMPILER			$ENV{CC}")
-    message("	-- CXX_COMPILER			$ENV{CXX}")    
-    message("	-- INCLUDE			$ENV{INCLUDE}")
-    message("	-- LIB				$ENV{LIB}")
-    message("	-- MAKE_PROGRAM			${CMAKE_MAKE_PROGRAM}")
-    message("	-- CMAKE_BUILD_TOOL		${CMAKE_BUILD_TOOL}")
-    message("	-- LINKER			${CMAKE_LINKER}")
-    message("	-- CMAKE_GENERATOR		${CMAKE_GENERATOR}")
-    message("	-- INCLUDES			${INCLUDES}")
-    message("	-- BORLAND			${BORLAND}")
-    message("	-- VISUALC			${MSVC}")
-    message("	-- GNUC			        ${CMAKE_COMPILER_IS_GNUCC}\n\n")
-    
+    message(STATUS "C_COMPILER			$ENV{CC}")
+    message(STATUS "CXX_COMPILER			$ENV{CXX}")    
+    message(STATUS "INCLUDE			$ENV{INCLUDE}")
+    message(STATUS "LIB				$ENV{LIB}")
+    message(STATUS "MAKE_PROGRAM			${CMAKE_MAKE_PROGRAM}")
+    message(STATUS "CMAKE_BUILD_TOOL		${CMAKE_BUILD_TOOL}")
+    message(STATUS "LINKER			${CMAKE_LINKER}")
+    message(STATUS "CMAKE_GENERATOR		${CMAKE_GENERATOR}")
+    message(STATUS "BORLAND			${BORLAND}")
+    message(STATUS "VISUALC			${MSVC}")
+    message(STATUS "GNUC			        ${CMAKE_COMPILER_IS_GNUCC}")
+   
 endif(WIN32)
 
 include_directories(${INCLUDES})
@@ -159,17 +161,22 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/DefinePackages.cmake)
 
 ### Build some Maintainer files
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MaintainerMode.cmake)
+if(NOT WIN32)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/UnitTesting.cmake)
+endif(NOT WIN32)
 
 ### Setup gcc flags
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Flags.cmake)
 
-### Make Libs and Exes
-if(WIN32)
-    include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExeLibWin.cmake)
-else(WIN32)
-    include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExeLib.cmake)
-endif(WIN32)
+### Make Libs
+if(NOT WIN32)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeLib.cmake)
+else(NOT WIN32)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeLibWin.cmake)
+endif(NOT WIN32)
+
+### Make Exes
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExe.cmake)
 
 ### Make Simgrid.jar and Java examples
 if(HAVE_JAVA)
@@ -180,7 +187,7 @@ endif(HAVE_JAVA)
 if(NOT WIN32)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
 else(NOT WIN32)
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTestsWin.cmake)
+
 endif(NOT WIN32)
 
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
@@ -191,9 +198,10 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
 ### Pipol compilation
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Pipol.cmake)
 
+if(NOT WIN32)
 ### Build the doc
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
-
+endif(NOT WIN32)
 ### Print ARGS
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)
 
