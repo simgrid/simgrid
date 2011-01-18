@@ -1,16 +1,9 @@
 #! /usr/bin/perl
 
 use strict;
-use Fcntl ':flock';
 
 use strict;
 use Getopt::Long qw(GetOptions);
-
-open SELF, "< $0" or die "Cannot open the lock file";
-if (!flock SELF, LOCK_EX | LOCK_NB) {
-    print STDERR "sg_unit_extractor already running. Cancelling...\n";
-    exit;
-}
 
 my $progname="sg_unit_extractor";
 # Get the args 
