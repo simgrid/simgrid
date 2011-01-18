@@ -46,7 +46,7 @@ type T;
 identifier var;
 position p != { localvardecl.p, funcproto.p };
 expression value;
-expression size;
+// expression size;
 @@
 (
 T@p 
