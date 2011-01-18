@@ -5,7 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 #include "gras_config.h"
 #include <unistd.h>
+#ifndef _XBT_WIN32
 #include <sys/syscall.h>
+#endif
+
 #ifdef HAVE_FUTEX_H
 	#include <linux/futex.h>
 #else
