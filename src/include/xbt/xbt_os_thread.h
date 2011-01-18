@@ -33,11 +33,12 @@ XBT_PUBLIC(int) xbt_os_thread_atfork(void (*prepare)(void),
                                      void (*parent)(void),
                                      void (*child)(void));
 
+
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_create(const char *name,
-                                                 pvoid_f_pvoid_t
-                                                 start_routine,
+                                                 pvoid_f_pvoid_t start_routine,
                                                  void *param,
                                                  void *data);
+
 XBT_PUBLIC(void) xbt_os_thread_exit(int *retcode);
 XBT_PUBLIC(void) xbt_os_thread_detach(xbt_os_thread_t thread);
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_self(void);

@@ -620,6 +620,7 @@ typedef struct xbt_os_thread_ {
   unsigned long id;             /* the win thread id            */
   pvoid_f_pvoid_t start_routine;
   void *param;
+  void *extra_data;
 } s_xbt_os_thread_t;
 
 /* so we can specify the size of the stack of the threads */
@@ -670,7 +671,8 @@ static DWORD WINAPI wrapper_start_routine(void *s)
 
 xbt_os_thread_t xbt_os_thread_create(const char *name,
                                      pvoid_f_pvoid_t start_routine,
-                                     void *param)
+                                     void *param,
+                                     void *extra_data)
 {
 
   xbt_os_thread_t t = xbt_new(s_xbt_os_thread_t, 1);
@@ -678,7 +680,7 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
   t->name = xbt_strdup(name);
   t->start_routine = start_routine;
   t->param = param;
-
+  t->extra_data = extra_data;
   t->handle = CreateThread(NULL, XBT_DEFAULT_THREAD_STACK_SIZE,
                            (LPTHREAD_START_ROUTINE) wrapper_start_routine,
                            t, STACK_SIZE_PARAM_IS_A_RESERVATION, &(t->id));
