@@ -14,7 +14,7 @@ cmake \
 -Denable_gtnets=off \
 -Denable_compile_optimizations=off \
 -Denable_compile_warnings=off \
--Denable_supernovae=off . \
+-Denable_supernovae=off $1 \
 2>&1 | grep -i 'BUILDNAME'
 
 cmake \

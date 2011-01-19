@@ -21,6 +21,7 @@ cd simgrid-trunk
 
 rm CMakeCache.txt
 
+#Unix
 cmake \
 -Denable_lua=on \
 -Denable_ruby=on \
@@ -131,9 +132,7 @@ if [ $SYSTEM = Linux ] ; then
 		ctest -D ExperimentalSubmit
 		make clean
 	fi
-fi
 
-if[ x$PIPOL_IMAGE = xi386-linux-ubuntu-karmic.dd.gz ]
 	#Make the memcheck mode
 	cmake \
 	-Denable_lua=off \
