@@ -18,6 +18,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
 static int nb_bits = 16;
 static int nb_keys = 0;
 static int timeout = 50;
+static int max_simulation_time = 1000;
+static int periodic_stabilize_delay = 20;
+static int periodic_fix_fingers_delay = 120;
+static int periodic_check_predecessor_delay = 120;
 
 /**
  * Finger element.
@@ -285,12 +289,14 @@ int node(int argc, char *argv[])
   }
   else {
     int known_id = atoi(argv[2]);
-    double sleep_time = atof(argv[3]);
+    //double sleep_time = atof(argv[3]);
     deadline = atof(argv[4]);
 
+    /*
     // sleep before starting
     DEBUG1("Let's sleep during %f", sleep_time);
     MSG_process_sleep(sleep_time);
+    */
     DEBUG0("Hey! Let's join the system.");
 
     join_success = join(&node, known_id);
@@ -298,7 +304,8 @@ int node(int argc, char *argv[])
 
   if (join_success) {
     while (MSG_get_clock() < init_time + deadline
-	&& MSG_get_clock() < node.last_change_date + 1000) {
+//	&& MSG_get_clock() < node.last_change_date + 1000
+	&& MSG_get_clock() < max_simulation_time) {
 
       if (node.comm_receive == NULL) {
         task_received = NULL;
@@ -311,15 +318,15 @@ int node(int argc, char *argv[])
         // no task was received: make some periodic calls
         if (MSG_get_clock() >= next_stabilize_date) {
           stabilize(&node);
-          next_stabilize_date = MSG_get_clock() + 8;
+          next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
         }
         else if (MSG_get_clock() >= next_fix_fingers_date) {
           fix_fingers(&node);
-          next_fix_fingers_date = MSG_get_clock() + 8;
+          next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
         }
         else if (MSG_get_clock() >= next_check_predecessor_date) {
           check_predecessor(&node);
-          next_check_predecessor_date = MSG_get_clock() + 8;
+          next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
         }
         else {
           // nothing to do: sleep for a while
