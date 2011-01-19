@@ -3,52 +3,52 @@
 arch=`uname`
 
 if [ -e /usr/bin/apt-get ] ; then
-    sudo apt-get -y install subversion
-    sudo apt-get -y install gcc
-    sudo apt-get -y install g++
-    sudo apt-get -y install make
-    sudo apt-get -y install openjdk-6-jdk
-    sudo apt-get -y install liblua5.1-dev lua5.1
-    sudo apt-get -y install ruby1.8-dev ruby
-    sudo apt-get -y install unzip
-    sudo apt-get -y install cmake
-    sudo apt-get -y install wget
-    sudo apt-get -y install perl
-    sudo apt-get -y install graphviz-dev graphviz
-    sudo apt-get -y install libpcre3-dev
-    sudo apt-get -y install f2c
-   	sudo apt-get -y install valgrind
+    sudo apt-get -y -qq install subversion
+    sudo apt-get -y -qq install gcc
+    sudo apt-get -y -qq install g++
+    sudo apt-get -y -qq install make
+    sudo apt-get -y -qq install openjdk-6-jdk
+    sudo apt-get -y -qq install liblua5.1-dev lua5.1
+    sudo apt-get -y -qq install ruby1.8-dev ruby
+    sudo apt-get -y -qq install unzip
+    sudo apt-get -y -qq install cmake
+    sudo apt-get -y -qq install wget
+    sudo apt-get -y -qq install perl
+    sudo apt-get -y -qq install graphviz-dev graphviz
+    sudo apt-get -y -qq install libpcre3-dev
+    sudo apt-get -y -qq install f2c
+   	sudo apt-get -y -qq install valgrind
 else
 	if [ -e /usr/bin/yum ] ; then
-		sudo yum -y update
-	    sudo yum -y install subversion
-	    sudo yum -y install gcc
-	    sudo yum -y install make
-	    sudo yum -y install java-1.6.0-openjdk
-	    sudo yum -y install lua-devel lua
-	    sudo yum -y install ruby-devel ruby
-	    sudo yum -y install unzip
-	    sudo yum -y install cmake
-	    sudo yum -y install wget
-	    sudo yum -y install perl
-	    sudo yum -y install graphviz-dev graphviz
-	    sudo yum -y install libpcre3-dev
-	    sudo yum -y install f2c
+		sudo yum -y -q update
+	    sudo yum -y -q install subversion
+	    sudo yum -y -q install gcc
+	    sudo yum -y -q install make
+	    sudo yum -y -q install java-1.6.0-openjdk
+	    sudo yum -y -q install lua-devel lua
+	    sudo yum -y -q install ruby-devel ruby
+	    sudo yum -y -q install unzip
+	    sudo yum -y -q install cmake
+	    sudo yum -y -q install wget
+	    sudo yum -y -q install perl
+	    sudo yum -y -q install graphviz-dev graphviz
+	    sudo yum -y -q install libpcre3-dev
+	    sudo yum -y -q install f2c
 	else
 		if [ x$arch = xDarwin ] ; then
-		    sudo fink -y install svn
-		    sudo fink -y install gcc42
-		    sudo fink -y install make
-		    sudo fink -y install java-1.6.0-openjdk
-		    sudo fink -y install lua51-dev lua51
-		    sudo fink -y install ruby18-dev ruby
-		    sudo fink -y install unzip
-		    sudo fink -y install cmake
-		    sudo fink -y install wget
-		    sudo fink -y install perl
-		    sudo fink -y install graphviz-dev graphviz
-		    sudo fink -y install pcre
-		    sudo fink -y install f2c
+			sudo fink -y -q -b selfupdate
+		    sudo fink -y -q -b install svn
+		    sudo fink -y -q -b install gcc42
+		    sudo fink -y -q -b install make
+		    sudo fink -y -q -b install lua51-dev lua51
+		    sudo fink -y -q -b install ruby18-dev ruby
+		    sudo fink -y -q -b install unzip
+		    sudo fink -y -q -b install cmake
+		    sudo fink -y -q -b install wget
+		    sudo fink -y -q -b install perl
+		    sudo fink -y -q -b install gd2 graphviz graphviz-dev
+		    sudo fink -y -q -b install pcre
+		    sudo fink -y -q -b install f2c
 		fi
 	fi
 fi
@@ -67,6 +67,7 @@ which_dot=`which dot`		#dot for cgraph
 which_perl=`which perl`		#perl
 which_f2c=`which f2c`		#f2c
 which_gcov=`which gcov`     #gcov
+echo "DEBUT----------------------------------"
 echo $which_cmake
 echo $which_unzip
 echo $which_ruby
@@ -81,3 +82,4 @@ echo $which_wget
 echo $which_perl
 echo $which_f2c
 echo $which_gcov
+echo "FIN------------------------------------"
