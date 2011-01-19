@@ -15,13 +15,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
 #define COMM_SIZE 10
 #define COMP_SIZE 0
 
-static int nb_bits = 16;
+static int nb_bits = 24;
 static int nb_keys = 0;
 static int timeout = 50;
 static int max_simulation_time = 1000;
 static int periodic_stabilize_delay = 20;
 static int periodic_fix_fingers_delay = 120;
 static int periodic_check_predecessor_delay = 120;
+static int periodic_lookup_delay = 10;
 
 /**
  * Finger element.
@@ -100,6 +101,7 @@ static void notify(node_t node, int predecessor_candidate_id);
 static void remote_notify(node_t node, int notify_to, int predecessor_candidate_id);
 static void fix_fingers(node_t node);
 static void check_predecessor(node_t node);
+static void random_lookup(node_t);
 static void quit_notify(node_t node, int to);
 
 /**
@@ -263,9 +265,10 @@ int node(int argc, char *argv[])
   int index;
   int join_success = 0;
   double deadline;
-  double next_stabilize_date = init_time + 10;
-  double next_fix_fingers_date = init_time + 10;
-  double next_check_predecessor_date = init_time + 10;
+  double next_stabilize_date = init_time + periodic_stabilize_delay;
+  double next_fix_fingers_date = init_time + periodic_fix_fingers_delay;
+  double next_check_predecessor_date = init_time + periodic_check_predecessor_delay;
+  double next_lookup_date = init_time + periodic_lookup_delay;
 
   xbt_assert0(argc == 3 || argc == 5, "Wrong number of arguments for this node");
 
@@ -276,7 +279,7 @@ int node(int argc, char *argv[])
   node.next_finger_to_fix = 0;
   node.comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   node.fingers = xbt_new0(s_finger_t, nb_bits);
-  node.last_change_date = MSG_get_clock();
+  node.last_change_date = init_time;
 
   for (i = 0; i < nb_bits; i++) {
     set_finger(&node, i, node.id);
@@ -328,6 +331,10 @@ int node(int argc, char *argv[])
           check_predecessor(&node);
           next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
         }
+	else if (MSG_get_clock() >= next_lookup_date) {
+	  random_lookup(&node);
+	  next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
+	}
         else {
           // nothing to do: sleep for a while
           MSG_process_sleep(5);
@@ -851,6 +858,17 @@ static void check_predecessor(node_t node)
 {
   DEBUG0("Checking whether my predecessor is alive");
   // TODO
+}
+
+/**
+ * \brief Performs a find successor request to a random id.
+ * \param node the current node
+ */
+static void random_lookup(node_t node)
+{
+  int id = 1337; // TODO pick a pseudorandom id
+  DEBUG1("Making a lookup request for id %d", id);
+  find_successor(node, id);
 }
 
 /**
