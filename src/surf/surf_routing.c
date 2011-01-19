@@ -3251,12 +3251,17 @@ static void routing_parse_Sconfig(void)
 static void routing_parse_Econfig(void)
 {
   xbt_dict_cursor_t cursor = NULL;
+  xbt_cfgelm_t variable;
   char *key;
   char *elem;
   char *cfg;
   xbt_dict_foreach(current_property_set, cursor, key, elem) {
 	  cfg = bprintf("%s:%s",key,elem);
-	  xbt_cfg_set_parse(_surf_cfg_set, cfg);
+	  variable = xbt_cfgelm_get(_surf_cfg_set, key, xbt_cfgelm_any);
+	  if(variable->isdefault)
+		  xbt_cfg_set_parse(_surf_cfg_set, cfg);
+	  else
+		  INFO1("The custom configuration '%s' is already define by user!",key);
 	}
   DEBUG1("End configuration name = %s",A_surfxml_config_id);
 }

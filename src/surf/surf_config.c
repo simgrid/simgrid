@@ -285,12 +285,12 @@ void surf_config_init(int *argc, char **argv)
                      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)",
                      xbt_cfgelm_double, NULL, 1, 1,
                      _surf_cfg_cb__tcp_gamma, NULL);
-    xbt_cfg_set_double(_surf_cfg_set, "TCP_gamma", 20000.0);
+    xbt_cfg_setdefault_double(_surf_cfg_set, "TCP_gamma", 20000.0);
 
     xbt_cfg_register(&_surf_cfg_set, "maxmin/precision",
                      "Minimum retained action value when updating simulation",
                      xbt_cfgelm_double, NULL, 1, 1, _surf_cfg_cb__maxmin_precision, NULL);
-    xbt_cfg_set_double(_surf_cfg_set, "maxmin/precision", 0.00001);
+    xbt_cfg_setdefault_double(_surf_cfg_set, "maxmin/precision", 0.00001); // FIXME use setdefault everywhere here!
 
     /* The parameters of network models */
 
@@ -358,14 +358,14 @@ void surf_config_init(int *argc, char **argv)
                      "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM03)",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
                      _surf_cfg_cb__surf_network_fullduplex, NULL);
-    xbt_cfg_set_int(_surf_cfg_set, "fullduplex", default_value_int);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "fullduplex", default_value_int);
 
 #ifdef HAVE_GTNETS
     xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter",
                      "Double value to oscillate the link latency, uniformly in random interval [-latency*gtnets_jitter,latency*gtnets_jitter)",
                      xbt_cfgelm_double, NULL, 1, 1,
                      _surf_cfg_cb__gtnets_jitter, NULL);
-    xbt_cfg_set_double(_surf_cfg_set, "gtnets_jitter", 0.0);
+    xbt_cfg_setdefault_double(_surf_cfg_set, "gtnets_jitter", 0.0);
 
     default_value_int = 10;
     xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter_seed",
@@ -381,7 +381,7 @@ void surf_config_init(int *argc, char **argv)
                   "__surf_get_initial_path() failed! Can't resolves current Windows directory");
 
       surf_path = xbt_dynar_new(sizeof(char *), NULL);
-      xbt_cfg_set_string(_surf_cfg_set, "path", initial_path);
+      xbt_cfg_setdefault_string(_surf_cfg_set, "path", initial_path);
     }
 
 

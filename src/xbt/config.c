@@ -21,38 +21,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
-/* xbt_cfgelm_t: the typedef corresponding to a config variable.
-
-   Both data and DTD are mixed, but fixing it now would prevent me to ever
-   defend my thesis. */
-
-typedef struct {
-  /* Description */
-  char *desc;
-
-  /* Allowed type of the variable */
-  e_xbt_cfgelm_type_t type;
-  int min, max;
-  int isdefault:1;
-
-  /* Callbacks */
-  xbt_cfg_cb_t cb_set;
-  xbt_cfg_cb_t cb_rm;
-
-  /* actual content
-     (cannot be an union because type peer uses both str and i) */
-  xbt_dynar_t content;
-} s_xbt_cfgelm_t, *xbt_cfgelm_t;
-
 static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count] =
     { "int", "double", "string", "peer", "any" };
 
 /* Internal stuff used in cache to free a variable */
 static void xbt_cfgelm_free(void *data);
-
-/* Retrieve the variable we'll modify */
-static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
-                                   e_xbt_cfgelm_type_t type);
 
 /*----[ Memory management ]-----------------------------------------------*/
 
@@ -434,7 +407,7 @@ void xbt_cfg_check(xbt_cfg_t cfg)
   xbt_dict_cursor_free(&cursor);
 }
 
-static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg,
+xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg,
                                    const char *name,
                                    e_xbt_cfgelm_type_t type)
 {
@@ -729,9 +702,11 @@ void xbt_cfg_setdefault_int(xbt_cfg_t cfg, const char *name, int val)
 {
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
 
-  if (variable->isdefault)
+  if (variable->isdefault){
     xbt_cfg_set_int(cfg, name, val);
-  else
+    variable->isdefault = 1;
+  }
+   else
     DEBUG2
         ("Do not override configuration variable '%s' with value '%d' because it was already set.",
          name, val);
@@ -746,8 +721,10 @@ void xbt_cfg_setdefault_double(xbt_cfg_t cfg, const char *name, double val)
 {
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_double);
 
-  if (variable->isdefault)
+  if (variable->isdefault) {
     xbt_cfg_set_double(cfg, name, val);
+    variable->isdefault = 1;
+  }
   else
     DEBUG2
         ("Do not override configuration variable '%s' with value '%lf' because it was already set.",
@@ -764,8 +741,10 @@ void xbt_cfg_setdefault_string(xbt_cfg_t cfg, const char *name,
 {
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
 
-  if (variable->isdefault)
+  if (variable->isdefault){
     xbt_cfg_set_string(cfg, name, val);
+    variable->isdefault = 1;
+  }
   else
     DEBUG2
         ("Do not override configuration variable '%s' with value '%s' because it was already set.",
@@ -782,8 +761,10 @@ void xbt_cfg_setdefault_peer(xbt_cfg_t cfg, const char *name,
 {
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_peer);
 
-  if (variable->isdefault)
+  if (variable->isdefault){
     xbt_cfg_set_peer(cfg, name, host, port);
+    variable->isdefault = 1;
+  }
   else
     DEBUG3
         ("Do not override configuration variable '%s' with value '%s:%d' because it was already set.",

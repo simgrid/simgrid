@@ -163,8 +163,31 @@ typedef enum {
   xbt_cfgelm_type_count
 } e_xbt_cfgelm_type_t;
 
-  /** \brief Callback types. They get the name of the modified entry, and the position of the changed value */
+/** \brief Callback types. They get the name of the modified entry, and the position of the changed value */
 typedef void (*xbt_cfg_cb_t) (const char *, int);
+
+/* xbt_cfgelm_t: the typedef corresponding to a config variable.
+
+   Both data and DTD are mixed, but fixing it now would prevent me to ever
+   defend my thesis. */
+
+typedef struct {
+  /* Description */
+  char *desc;
+
+  /* Allowed type of the variable */
+  e_xbt_cfgelm_type_t type;
+  int min, max;
+  int isdefault:1;
+
+  /* Callbacks */
+  xbt_cfg_cb_t cb_set;
+  xbt_cfg_cb_t cb_rm;
+
+  /* actual content
+     (cannot be an union because type peer uses both str and i) */
+  xbt_dynar_t content;
+} s_xbt_cfgelm_t, *xbt_cfgelm_t;
 
 XBT_PUBLIC(xbt_cfg_t) xbt_cfg_new(void);
 XBT_PUBLIC(void) xbt_cfg_cpy(xbt_cfg_t tocopy,  /* OUT */
@@ -173,6 +196,9 @@ XBT_PUBLIC(void) xbt_cfg_free(xbt_cfg_t * cfg);
 XBT_PUBLIC(void) xbt_cfg_dump(const char *name, const char *indent,
                               xbt_cfg_t cfg);
 
+/* Retrieve the variable we'll modify */
+XBT_PUBLIC(xbt_cfgelm_t) xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
+                                   e_xbt_cfgelm_type_t type);
  /** @} */
 
 /** @defgroup XBT_cfg_register  Registering stuff
