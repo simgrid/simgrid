@@ -119,29 +119,42 @@ smx_req_t MC_state_get_request(mc_state_t state, int *value)
       if(SIMIX_process_is_enabled(process)){
         switch(process->request.call){
           case REQ_COMM_WAITANY:
+            *value = -1;
             while(procstate->interleave_count < xbt_dynar_length(process->request.comm_waitany.comms)){
               if(SIMIX_request_is_enabled_by_idx(&process->request, procstate->interleave_count++)){
-                *value = procstate->interleave_count - 1;
-                return &process->request;
+                *value = procstate->interleave_count-1;
+                break;
               }
             }
-            procstate->state = MC_DONE;
+
+            if(procstate->interleave_count >= xbt_dynar_length(process->request.comm_waitany.comms))
+              procstate->state = MC_DONE;
+
+            if(*value != -1)
+              return &process->request;
+
             break;
 
           case REQ_COMM_TESTANY:
+            *value = -1;
             if(MC_request_testany_fail(&process->request)){
               procstate->state = MC_DONE;
-              *value = -1;
               return &process->request;
             }
 
-            while(procstate->interleave_count < xbt_dynar_length(process->request.comm_waitany.comms)){
+            while(procstate->interleave_count < xbt_dynar_length(process->request.comm_testany.comms)){
               if(SIMIX_request_is_enabled_by_idx(&process->request, procstate->interleave_count++)){
                 *value = procstate->interleave_count - 1;
-                return &process->request;
+                break;
               }
             }
-            procstate->state = MC_DONE;
+
+            if(procstate->interleave_count >= xbt_dynar_length(process->request.comm_testany.comms))
+              procstate->state = MC_DONE;
+
+            if(*value != -1)
+              return &process->request;
+
             break;
 
           default:
