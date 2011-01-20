@@ -80,7 +80,12 @@ void MC_dpor(void)
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
         req_str = MC_request_to_string(req);
-        DEBUG2("Execute: %s (%u)", req_str, value);
+        if(req->call == REQ_COMM_WAITANY)
+          DEBUG3("Execute: %s (%u of %lu)", req_str, value, xbt_dynar_length(req->comm_waitany.comms));
+        else if(req->call == REQ_COMM_TESTANY)
+          DEBUG3("Execute: %s (%u of %lu)", req_str, value, xbt_dynar_length(req->comm_testany.comms));
+        else
+          DEBUG1("Execute: %s", req_str);
         xbt_free(req_str);
       }
 
