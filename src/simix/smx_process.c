@@ -424,6 +424,7 @@ void SIMIX_pre_process_sleep(smx_req_t req)
     NOW += req->process_sleep.duration;
     req->process_sleep.result = SIMIX_DONE;
     SIMIX_request_answer(req);
+    return;
   }
   smx_action_t action = SIMIX_process_sleep(req->issuer, req->process_sleep.duration);
   xbt_fifo_push(action->request_list, req);
