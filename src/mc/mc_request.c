@@ -5,16 +5,40 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
   if (r1->issuer == r2->issuer)
     return FALSE;
 
-  if (r1->call == REQ_COMM_ISEND && r2->call == REQ_COMM_ISEND
+  if(r1->call == REQ_COMM_ISEND && r2->call == REQ_COMM_IRECV)
+    return FALSE;
+
+  if(r1->call == REQ_COMM_IRECV && r2->call == REQ_COMM_ISEND)
+    return FALSE;
+
+  /* FIXME: the following rule assumes that the result of the
+   * isend/irecv call is not stored in a buffer used in the
+   * wait/test call. */
+  if(   (r1->call == REQ_COMM_ISEND || r1->call == REQ_COMM_IRECV)
+     && (r2->call == REQ_COMM_WAIT || r2->call == REQ_COMM_TEST))
+    return FALSE;
+
+  /* FIXME: the following rule assumes that the result of the
+   * isend/irecv call is not stored in a buffer used in the
+   * wait/test call. */
+  if(   (r2->call == REQ_COMM_ISEND || r2->call == REQ_COMM_IRECV)
+     && (r1->call == REQ_COMM_WAIT || r1->call == REQ_COMM_TEST))
+    return FALSE;
+
+  if(r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_IRECV)
+    return FALSE;
+
+  if(r1->call == REQ_COMM_ISEND && r2->call == REQ_COMM_ISEND
       && r1->comm_isend.rdv != r2->comm_isend.rdv)
     return FALSE;
 
-  if (r1->call == REQ_COMM_IRECV && r2->call == REQ_COMM_IRECV
+  if(r1->call == REQ_COMM_IRECV && r2->call == REQ_COMM_IRECV
       && r1->comm_irecv.rdv != r2->comm_irecv.rdv)
     return FALSE;
 
-  if (r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_WAIT
-      && r1->comm_wait.comm == r2->comm_wait.comm)
+  if(r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_WAIT
+      && r1->comm_wait.comm->comm.src_buff == r2->comm_wait.comm->comm.src_buff
+      && r1->comm_wait.comm->comm.dst_buff == r2->comm_wait.comm->comm.dst_buff)
     return FALSE;
 
   if (r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_WAIT
@@ -39,12 +63,14 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
        || r2->comm_test.comm->comm.dst_buff == NULL))
     return FALSE;
 
-  if (r1->call == REQ_COMM_TEST && r2->call == REQ_COMM_WAIT
-      && r1->comm_test.comm == r2->comm_wait.comm)
+  if(r1->call == REQ_COMM_TEST && r2->call == REQ_COMM_WAIT
+      && r1->comm_test.comm->comm.src_buff == r2->comm_wait.comm->comm.src_buff
+      && r1->comm_test.comm->comm.dst_buff == r2->comm_wait.comm->comm.dst_buff)
     return FALSE;
 
-  if (r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_TEST
-      && r1->comm_wait.comm == r2->comm_test.comm)
+  if(r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_TEST
+      && r1->comm_wait.comm->comm.src_buff == r2->comm_test.comm->comm.src_buff
+      && r1->comm_wait.comm->comm.dst_buff == r2->comm_test.comm->comm.dst_buff)
     return FALSE;
 
   return TRUE;
