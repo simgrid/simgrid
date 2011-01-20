@@ -256,7 +256,6 @@ static void set_predecessor(node_t node, int predecessor_id)
 int node(int argc, char *argv[])
 {
   double init_time = MSG_get_clock();
-  /*m_task_t task = NULL;*/
   m_task_t task_received = NULL;
   msg_comm_t comm_send = NULL;
   int i;
@@ -363,14 +362,19 @@ int node(int argc, char *argv[])
         xbt_dynar_remove_at(node.comms, index, &comm_send);
         DEBUG3("Communication %p is finished with status %d, dynar size is now %lu",
             comm_send, status, xbt_dynar_length(node.comms));
+	m_task_t task = MSG_comm_get_task(comm_send);
         MSG_comm_destroy(comm_send);
+	if (status != MSG_OK) {
+	  task_data_destroy(MSG_task_get_data(task));
+	  MSG_task_destroy(task);
+	}
       }
     }
 
     // clean unfinished comms sent
    /* unsigned int cursor;
     xbt_dynar_foreach(node.comms, cursor, comm_send) {
-      task = MSG_comm_get_task(comm_send);
+      m_task_t task = MSG_comm_get_task(comm_send);
       MSG_task_cancel(task);
       task_data_destroy(MSG_task_get_data(task));
       MSG_task_destroy(task);
@@ -398,7 +402,7 @@ static void handle_task(node_t node, m_task_t task) {
 
   DEBUG1("Handling task %p", task);
   msg_comm_t comm = NULL;
-  char* mailbox = NULL;
+  char mailbox[MAILBOX_NAME_SIZE];
   task_data_t task_data = (task_data_t) MSG_task_get_data(task);
   e_task_type_t type = task_data->type;
 
@@ -411,8 +415,9 @@ static void handle_task(node_t node, m_task_t task) {
       if (is_in_interval(task_data->request_id, node->id + 1, node->fingers[0].id)) {
         task_data->type = TASK_FIND_SUCCESSOR_ANSWER;
         task_data->answer_id = node->fingers[0].id;
-        DEBUG3("Sending back a 'Find Successor Answer' to %s: the successor of %d is %d",
+        DEBUG4("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
             task_data->issuer_host_name,
+	    task_data->answer_to,
             task_data->request_id, task_data->answer_id);
         comm = MSG_task_isend(task, task_data->answer_to);
         xbt_dynar_push(node->comms, &comm);
@@ -425,7 +430,6 @@ static void handle_task(node_t node, m_task_t task) {
         get_mailbox(closest, mailbox);
         comm = MSG_task_isend(task, mailbox);
         xbt_dynar_push(node->comms, &comm);
-        xbt_free(mailbox);
       }
       break;
 
@@ -476,6 +480,8 @@ static void handle_task(node_t node, m_task_t task) {
     case TASK_FIND_SUCCESSOR_ANSWER:
     case TASK_GET_PREDECESSOR_ANSWER:
       DEBUG2("Ignoring unexpected task of type %d (%p)", type, task);
+      task_data_destroy(task_data);
+      MSG_task_destroy(task);
       break;
   }
 }
@@ -635,7 +641,8 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         DEBUG2("Failed to receive the answer to my 'Find Successor' request (task %p): %d",
             task_sent, res);
         stop = 1;
-        //MSG_comm_destroy(node->comm_receive);
+	MSG_comm_destroy(node->comm_receive);
+	node->comm_receive = NULL;
       }
       else {
         m_task_t task_received = MSG_comm_get_task(node->comm_receive);
@@ -646,6 +653,8 @@ static int remote_find_successor(node_t node, int ask_to, int id)
 
         if (task_received != task_sent) {
           // this is not the expected answer
+	  MSG_comm_destroy(node->comm_receive);
+	  node->comm_receive = NULL;
           handle_task(node, task_received);
         }
         else {
@@ -654,12 +663,12 @@ static int remote_find_successor(node_t node, int ask_to, int id)
               ans_data->request_id, task_received, id, ans_data->answer_id);
           successor = ans_data->answer_id;
           stop = 1;
+	  MSG_comm_destroy(node->comm_receive);
+	  node->comm_receive = NULL;
           MSG_task_destroy(task_received);
           task_data_destroy(req_data);
         }
       }
-      MSG_comm_destroy(node->comm_receive);
-      node->comm_receive = NULL;
     } while (!stop);
   }
 
@@ -713,7 +722,8 @@ static int remote_get_predecessor(node_t node, int ask_to)
         DEBUG2("Failed to receive the answer to my 'Get Predecessor' request (task %p): %d",
             task_sent, res);
         stop = 1;
-        //MSG_comm_destroy(node->comm_receive);
+	MSG_comm_destroy(node->comm_receive);
+	node->comm_receive = NULL;
       }
       else {
         m_task_t task_received = MSG_comm_get_task(node->comm_receive);
@@ -722,6 +732,8 @@ static int remote_get_predecessor(node_t node, int ask_to)
         MC_assert(task_received == task_sent);
 
         if (task_received != task_sent) {
+	  MSG_comm_destroy(node->comm_receive);
+	  node->comm_receive = NULL;
           handle_task(node, task_received);
         }
         else {
@@ -729,12 +741,12 @@ static int remote_get_predecessor(node_t node, int ask_to)
               task_received, ask_to, ans_data->answer_id);
           predecessor_id = ans_data->answer_id;
           stop = 1;
+	  MSG_comm_destroy(node->comm_receive);
+	  node->comm_receive = NULL;
           MSG_task_destroy(task_received);
           task_data_destroy(req_data);
         }
       }
-      MSG_comm_destroy(node->comm_receive);
-      node->comm_receive = NULL;
     } while (!stop);
   }
 
