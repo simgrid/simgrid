@@ -517,7 +517,8 @@ int MSG_comm_testany(xbt_dynar_t comms)
  */
 void MSG_comm_destroy(msg_comm_t comm)
 {
-  if (SIMIX_req_comm_get_src_proc(comm) != SIMIX_process_self()) {
+  if (SIMIX_req_comm_get_src_proc(comm) != SIMIX_process_self()
+      && MSG_comm_get_status(comm) == MSG_OK) {
     m_task_t task;
     task = (m_task_t) SIMIX_req_comm_get_src_buff(comm);
     task->simdata->isused=0;
