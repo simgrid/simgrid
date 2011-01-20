@@ -90,6 +90,12 @@ int SIMIX_request_is_enabled(smx_req_t req)
 
     case REQ_COMM_WAIT:
       /* FIXME: check also that src and dst processes are not suspended */
+      /* If there is a timeout it will be always enabled because, if the
+       * communication is not ready, it can timeout.
+       * This avoids false positives on dead-locks */
+      if(req->comm_wait.timeout >= 0)
+        return TRUE;
+
       act = req->comm_wait.comm;
       return (act->comm.src_proc && act->comm.dst_proc);
       break;
@@ -101,11 +107,6 @@ int SIMIX_request_is_enabled(smx_req_t req)
         }
       }
       return FALSE;
-      break;
-
-    case REQ_COMM_TEST:
-      act = req->comm_test.comm;
-      return (act->comm.src_proc && act->comm.dst_proc);
       break;
 
     default:    

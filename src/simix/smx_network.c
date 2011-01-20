@@ -326,7 +326,20 @@ void SIMIX_pre_comm_wait(smx_req_t req)
   req->issuer->waiting_action = action;
 
   if (MC_IS_ENABLED){
-    action->state = SIMIX_DONE;
+    if(action->comm.src_proc && action->comm.dst_proc){
+      action->state = SIMIX_DONE;
+    }else{
+      /* If we reached this point, the wait request must have a timeout */
+      /* Otherwise it shouldn't be enabled and executed by the MC */
+      if(timeout == -1)
+        THROW_IMPOSSIBLE;
+
+      if(action->comm.src_proc == req->issuer)
+        action->state = SIMIX_SRC_TIMEOUT;
+      else
+        action->state = SIMIX_DST_TIMEOUT;
+    }
+
     SIMIX_comm_finish(action);
     return;
   }
@@ -611,7 +624,9 @@ void SIMIX_comm_cancel(smx_action_t action)
     SIMIX_rdv_remove(action->comm.rdv, action);
     action->state = SIMIX_FAILED;
   } else {
-    surf_workstation_model->action_cancel(action->comm.surf_comm);
+    /* When running the MC there are no surf actions */
+    if(!MC_IS_ENABLED)
+      surf_workstation_model->action_cancel(action->comm.surf_comm);
   }
 }
 
