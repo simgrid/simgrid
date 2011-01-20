@@ -108,6 +108,7 @@ set(SMPI_SRC
 	src/smpi/smpi_global.c
 	src/smpi/smpi_mpi.c
 	src/smpi/smpi_pmpi.c
+	src/smpi/smpi_c99.c
 	src/smpi/smpi_f77.c
 	src/smpi/smpi_comm.c
 	src/smpi/smpi_group.c
