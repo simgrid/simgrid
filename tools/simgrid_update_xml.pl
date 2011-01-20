@@ -19,10 +19,12 @@ my($output_string);
 $ARGV[0] or die "simgrid_update_xml.pl <platform.xml>\n";
 open INPUT, "$ARGV[0]" or die "Cannot open input file $ARGV[0]: $!\n";
 
-$output_string .=  "<?xml version='1.0'?>\n";
-$output_string .=  "<!DOCTYPE platform SYSTEM \"simgrid.dtd\">\n";
-$output_string .=  "<platform version=\"$toversion\">\n";
-$output_string .=  " <AS  id=\"AS0\"  routing=\"Full\">\n";
+$output_string = "<?xml version='1.0'?>\n".
+    "<!DOCTYPE platform SYSTEM \"simgrid.dtd\">\n".
+    "<platform version=\"$toversion\">\n";
+
+
+my($AS_opened)=0;
 
 my $line;
 while (defined($line = <INPUT>)) {
@@ -74,7 +76,21 @@ while (defined($line = <INPUT>)) {
     if ($fromversion < 3)  {
 	$line =~ s/\blink:ctn\b/link_ctn/g;
 	$line =~ s/\btrace:connect\b/trace_connect/g;
-	$line =~ s/^(.*)<\/platform>(.*)$/ <\/AS>\n<\/platform>/;
+
+	if($AS_opened && (($line=~ /<\/platform>/) || ($line=~ /<process/))) {
+	    $output_string .= "</AS>\n";
+	    $AS_opened = 0;
+	}
+
+	if( (!$AS_opened) && (
+		($line =~ /<host/)    ||
+		($line =~ /<link/)    ||
+		($line =~ /<cluster/) ||
+		($line =~ /<router/)
+	    )) {
+	    $output_string .=  " <AS  id=\"AS0\"  routing=\"Full\">\n";
+	    $AS_opened=1;
+	}
     }
 
     $output_string .= "$line\n";
