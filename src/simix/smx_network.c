@@ -315,7 +315,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
   return action;
 }
 
-void SIMIX_pre_comm_wait(smx_req_t req)
+void SIMIX_pre_comm_wait(smx_req_t req, int idx)
 {
   smx_action_t action = req->comm_wait.comm;
   double timeout = req->comm_wait.timeout;
@@ -326,7 +326,7 @@ void SIMIX_pre_comm_wait(smx_req_t req)
   req->issuer->waiting_action = action;
 
   if (MC_IS_ENABLED){
-    if(action->comm.src_proc && action->comm.dst_proc){
+    if(idx == 0){
       action->state = SIMIX_DONE;
     }else{
       /* If we reached this point, the wait request must have a timeout */

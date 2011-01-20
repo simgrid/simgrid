@@ -157,6 +157,18 @@ smx_req_t MC_state_get_request(mc_state_t state, int *value)
 
             break;
 
+          case REQ_COMM_WAIT:
+            if(process->request.comm_wait.comm->comm.src_proc
+               && process->request.comm_wait.comm->comm.dst_proc){
+              *value = 0;
+            }else{
+              *value = -1;
+            }
+            procstate->state = MC_DONE;
+            return &process->request;
+
+            break;
+
           default:
             procstate->state = MC_DONE;
             *value = 0;

@@ -13,20 +13,17 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
 
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
-   * wait/test call. */
+   * wait/test call.
   if(   (r1->call == REQ_COMM_ISEND || r1->call == REQ_COMM_IRECV)
      && (r2->call == REQ_COMM_WAIT || r2->call == REQ_COMM_TEST))
-    return FALSE;
+    return FALSE;*/
 
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
-   * wait/test call. */
+   * wait/test call.
   if(   (r2->call == REQ_COMM_ISEND || r2->call == REQ_COMM_IRECV)
      && (r1->call == REQ_COMM_WAIT || r1->call == REQ_COMM_TEST))
-    return FALSE;
-
-  if(r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_IRECV)
-    return FALSE;
+    return FALSE;*/
 
   if(r1->call == REQ_COMM_ISEND && r2->call == REQ_COMM_ISEND
       && r1->comm_isend.rdv != r2->comm_isend.rdv)
@@ -166,17 +163,19 @@ int MC_request_is_enabled(smx_req_t req)
     case REQ_COMM_WAIT:
       /* FIXME: check also that src and dst processes are not suspended */
 
-      /* If there is a timeout it will be always enabled because, if the
-       * communication is not ready, it can timeout.
-       * This avoids false positives on dead-locks */
-      if(req->comm_wait.timeout >= 0)
+      /* If it has a timeout it will be always be enabled, because even if the
+       * communication is not ready, it can timeout and won't block.
+       * On the other hand if it hasn't a timeout, check if the comm is ready.*/
+      if(req->comm_wait.timeout >= 0){
         return TRUE;
-
-      act = req->comm_wait.comm;
-      return (act->comm.src_proc && act->comm.dst_proc);
+      }else{
+        act = req->comm_wait.comm;
+        return (act->comm.src_proc && act->comm.dst_proc);
+      }
       break;
 
     case REQ_COMM_WAITANY:
+      /* Check if it has at least one communication ready */
       xbt_dynar_foreach(req->comm_waitany.comms, index, act) {
         if (act->comm.src_proc && act->comm.dst_proc){
           return TRUE;
@@ -186,6 +185,7 @@ int MC_request_is_enabled(smx_req_t req)
       break;
 
     default:
+      /* The rest of the request are always enabled */
       return TRUE;
   }
 }

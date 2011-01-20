@@ -38,7 +38,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               int (*)(void *, void *), void *data);
 void SIMIX_comm_destroy(smx_action_t action);
 void SIMIX_comm_destroy_internal_actions(smx_action_t action);
-void SIMIX_pre_comm_wait(smx_req_t req);
+void SIMIX_pre_comm_wait(smx_req_t req, int idx);
 void SIMIX_pre_comm_waitany(smx_req_t req, int idx);
 void SIMIX_post_comm(smx_action_t action);
 void SIMIX_pre_comm_test(smx_req_t req);

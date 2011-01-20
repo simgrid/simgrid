@@ -324,7 +324,7 @@ void SIMIX_request_pre(smx_req_t req, int value)
       break;
 
     case REQ_COMM_WAIT:
-      SIMIX_pre_comm_wait(req);
+      SIMIX_pre_comm_wait(req, value);
       break;
 
     case REQ_COMM_TEST:
