@@ -21,11 +21,38 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
+/* xbt_cfgelm_t: the typedef corresponding to a config variable.
+
+   Both data and DTD are mixed, but fixing it now would prevent me to ever
+   defend my thesis. */
+
+typedef struct {
+  /* Description */
+  char *desc;
+
+  /* Allowed type of the variable */
+  e_xbt_cfgelm_type_t type;
+  int min, max;
+  int isdefault:1;
+
+  /* Callbacks */
+  xbt_cfg_cb_t cb_set;
+  xbt_cfg_cb_t cb_rm;
+
+  /* actual content
+     (cannot be an union because type peer uses both str and i) */
+  xbt_dynar_t content;
+} s_xbt_cfgelm_t, *xbt_cfgelm_t;
+
 static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count] =
     { "int", "double", "string", "peer", "any" };
 
 /* Internal stuff used in cache to free a variable */
 static void xbt_cfgelm_free(void *data);
+
+/* Retrieve the variable we'll modify */
+static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
+                                   e_xbt_cfgelm_type_t type);
 
 /*----[ Memory management ]-----------------------------------------------*/
 
@@ -407,7 +434,7 @@ void xbt_cfg_check(xbt_cfg_t cfg)
   xbt_dict_cursor_free(&cursor);
 }
 
-xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg,
+static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg,
                                    const char *name,
                                    e_xbt_cfgelm_type_t type)
 {
@@ -1117,6 +1144,14 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name)
     }
     xbt_dynar_reset(variable->content);
   }
+}
+/*
+ * Say if the value is the default value
+ */
+int xbt_cfg_is_default_value(xbt_cfg_t cfg, const char *name)
+{
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_any);
+  return variable->isdefault;
 }
 
 /*----[ Getting ]---------------------------------------------------------*/
