@@ -9,6 +9,7 @@
 #include "msg/msg.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
+#include "mc/modelchecker.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
                              "Messages specific for this msg example");
 
@@ -641,6 +642,8 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         DEBUG1("Received a task (%p)", task_received);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
+        MC_assert(task_received == task_sent);
+
         if (task_received != task_sent) {
           // this is not the expected answer
           handle_task(node, task_received);
@@ -715,6 +718,8 @@ static int remote_get_predecessor(node_t node, int ask_to)
       else {
         m_task_t task_received = MSG_comm_get_task(node->comm_receive);
         task_data_t ans_data = MSG_task_get_data(task_received);
+
+        MC_assert(task_received == task_sent);
 
         if (task_received != task_sent) {
           handle_task(node, task_received);
