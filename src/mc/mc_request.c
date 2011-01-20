@@ -2,10 +2,7 @@
 
 int MC_request_depend(smx_req_t r1, smx_req_t r2)
 {
-    if (r1->issuer == r2->issuer)
-    return FALSE;
-
-  if (r1->call != r2->call)
+  if (r1->issuer == r2->issuer)
     return FALSE;
 
   if (r1->call == REQ_COMM_ISEND && r2->call == REQ_COMM_ISEND
