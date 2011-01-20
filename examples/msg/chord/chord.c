@@ -14,6 +14,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
 
 #define COMM_SIZE 10
 #define COMP_SIZE 0
+#define MAILBOX_NAME_SIZE 10
 
 static int nb_bits = 24;
 static int nb_keys = 0;
@@ -29,7 +30,7 @@ static int periodic_lookup_delay = 10;
  */
 typedef struct finger {
   int id;
-  char* mailbox;
+  char mailbox[MAILBOX_NAME_SIZE]; // string representation of the id
 } s_finger_t, *finger_t;
 
 /**
@@ -37,10 +38,10 @@ typedef struct finger {
  */
 typedef struct node {
   int id;                                 // my id
-  char* mailbox;                          // my usual mailbox name
+  char mailbox[MAILBOX_NAME_SIZE];        // my mailbox name (string representation of the id)
   s_finger_t *fingers;                    // finger table, of size nb_bits (fingers[0] is my successor)
   int pred_id;                            // predecessor id
-  char* pred_mailbox;                     // predecessor's mailbox name
+  char pred_mailbox[MAILBOX_NAME_SIZE];   // predecessor's mailbox name
   int next_finger_to_fix;                 // index of the next finger to fix in fix_fingers()
   msg_comm_t comm_receive;                // current communication to receive
   xbt_dynar_t comms;                      // current communications being sent
@@ -68,7 +69,7 @@ typedef struct task_data {
   int request_id;                         // id paramater (used by some types of tasks)
   int request_finger;                     // finger parameter (used by some types of tasks)
   int answer_id;                          // answer (used by some types of tasks)
-  char* answer_to;                        // mailbox to send an answer to (or NULL)
+  char answer_to[MAILBOX_NAME_SIZE];      // mailbox to send an answer to (if any)
   const char* issuer_host_name;           // used for logging
 } s_task_data_t, *task_data_t;
 
@@ -78,7 +79,7 @@ static int *powers2;
 static void chord_initialize(void);
 static int normalize(int id);
 static int is_in_interval(int id, int start, int end);
-static char* get_mailbox(int host_id);
+static void get_mailbox(int host_id, char* mailbox);
 static void task_data_destroy(task_data_t task_data);
 static void print_finger_table(node_t node);
 static void set_finger(node_t node, int finger_index, int id);
@@ -175,11 +176,12 @@ static int is_in_interval(int id, int start, int end)
 /**
  * \brief Gets the mailbox name of a host given its chord id.
  * \param node_id id of a node
- * \return the name of its mailbox
+ * \param mailbox pointer to where the mailbox name should be written
+ * (there must be enough space)
  */
-static char* get_mailbox(int node_id)
+static void get_mailbox(int node_id, char* mailbox)
 {
-  return bprintf("mailbox%d", node_id);
+  snprintf(mailbox, MAILBOX_NAME_SIZE - 1, "%d", node_id);
 }
 
 /**
@@ -188,7 +190,6 @@ static char* get_mailbox(int node_id)
  */
 static void task_data_destroy(task_data_t task_data)
 {
-  xbt_free(task_data->answer_to);
   xbt_free(task_data);
 }
 
@@ -200,12 +201,10 @@ static void print_finger_table(node_t node)
 {
   if (XBT_LOG_ISENABLED(msg_chord, xbt_log_priority_verbose)) {
     int i;
-    int pow = 1;
     VERB0("My finger table:");
     VERB0("Start | Succ ");
     for (i = 0; i < nb_bits; i++) {
-      VERB2(" %3d  | %3d ", (node->id + pow) % nb_keys, node->fingers[i].id);
-      pow = pow << 1;
+      VERB2(" %3d  | %3d ", (node->id + powers2[i]) % nb_keys, node->fingers[i].id);
     }
     VERB1("Predecessor: %d", node->pred_id);
   }
@@ -221,8 +220,7 @@ static void set_finger(node_t node, int finger_index, int id)
 {
   if (id != node->fingers[finger_index].id) {
     node->fingers[finger_index].id = id;
-    xbt_free(node->fingers[finger_index].mailbox);
-    node->fingers[finger_index].mailbox = get_mailbox(id);
+    get_mailbox(id, node->fingers[finger_index].mailbox);
     node->last_change_date = MSG_get_clock();
     DEBUG2("My new finger #%d is %d", finger_index, id);
   }
@@ -237,10 +235,9 @@ static void set_predecessor(node_t node, int predecessor_id)
 {
   if (predecessor_id != node->pred_id) {
     node->pred_id = predecessor_id;
-    xbt_free(node->pred_mailbox);
 
     if (predecessor_id != -1) {
-      node->pred_mailbox = get_mailbox(predecessor_id);
+      get_mailbox(predecessor_id, node->pred_mailbox);
     }
     node->last_change_date = MSG_get_clock();
 
@@ -275,13 +272,14 @@ int node(int argc, char *argv[])
   // initialize my node
   s_node_t node = {0};
   node.id = atoi(argv[1]);
-  node.mailbox = get_mailbox(node.id);
+  get_mailbox(node.id, node.mailbox);
   node.next_finger_to_fix = 0;
   node.comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   node.fingers = xbt_new0(s_finger_t, nb_bits);
   node.last_change_date = init_time;
 
   for (i = 0; i < nb_bits; i++) {
+    node.fingers[i].id = -1;
     set_finger(&node, i, node.id);
   }
 
@@ -385,11 +383,6 @@ int node(int argc, char *argv[])
 
   // stop the simulation
   xbt_dynar_free(&node.comms);
-  xbt_free(node.mailbox);
-  xbt_free(node.pred_mailbox);
-  for (i = 0; i < nb_bits - 1; i++) {
-    xbt_free(node.fingers[i].mailbox);
-  }
   xbt_free(node.fingers);
   return 0;
 }
@@ -428,7 +421,7 @@ static void handle_task(node_t node, m_task_t task) {
         int closest = closest_preceding_node(node, task_data->request_id);
         DEBUG2("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
             task_data->request_id, closest);
-        mailbox = get_mailbox(closest);
+        get_mailbox(closest, mailbox);
         comm = MSG_task_isend(task, mailbox);
         xbt_dynar_push(node->comms, &comm);
         xbt_free(mailbox);
@@ -604,11 +597,12 @@ static int remote_find_successor(node_t node, int ask_to, int id)
 {
   int successor = -1;
   int stop = 0;
-  char* mailbox = get_mailbox(ask_to);
+  char mailbox[MAILBOX_NAME_SIZE];
+  get_mailbox(ask_to, mailbox);
   task_data_t req_data = xbt_new0(s_task_data_t, 1);
   req_data->type = TASK_FIND_SUCCESSOR;
   req_data->request_id = id;
-  req_data->answer_to = xbt_strdup(node->mailbox);
+  get_mailbox(node->id, req_data->answer_to);
   req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
 
   // send a "Find Successor" request to ask_to_id
@@ -661,11 +655,11 @@ static int remote_find_successor(node_t node, int ask_to, int id)
           task_data_destroy(req_data);
         }
       }
+      MSG_comm_destroy(node->comm_receive);
       node->comm_receive = NULL;
     } while (!stop);
   }
 
-  xbt_free(mailbox);
   return successor;
 }
 
@@ -680,10 +674,11 @@ static int remote_get_predecessor(node_t node, int ask_to)
 {
   int predecessor_id = -1;
   int stop = 0;
-  char* mailbox = get_mailbox(ask_to);
+  char mailbox[MAILBOX_NAME_SIZE];
+  get_mailbox(ask_to, mailbox);
   task_data_t req_data = xbt_new0(s_task_data_t, 1);
   req_data->type = TASK_GET_PREDECESSOR;
-  req_data->answer_to = xbt_strdup(node->mailbox);
+  get_mailbox(node->id, req_data->answer_to);
   req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
 
   // send a "Get Predecessor" request to ask_to_id
@@ -733,11 +728,11 @@ static int remote_get_predecessor(node_t node, int ask_to)
           task_data_destroy(req_data);
         }
       }
+      MSG_comm_destroy(node->comm_receive);
       node->comm_receive = NULL;
     } while (!stop);
   }
 
-  xbt_free(mailbox);
   return predecessor_id;
 }
 
@@ -818,15 +813,14 @@ static void remote_notify(node_t node, int notify_id, int predecessor_candidate_
   req_data->type = TASK_NOTIFY;
   req_data->request_id = predecessor_candidate_id;
   req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
-  req_data->answer_to = NULL;
 
   // send a "Notify" request to notify_id
   m_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   DEBUG2("Sending a 'Notify' request (task %p) to %d", task, notify_id);
-  char* mailbox = get_mailbox(notify_id);
+  char mailbox[MAILBOX_NAME_SIZE];
+  get_mailbox(notify_id, mailbox);
   msg_comm_t comm = MSG_task_isend(task, mailbox);
   xbt_dynar_push(node->comms, &comm);
-  xbt_free(mailbox);
 }
 
 /**
