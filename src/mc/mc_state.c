@@ -58,8 +58,8 @@ void MC_state_set_executed_request(mc_state_t state, smx_req_t req, int value)
     case REQ_COMM_WAITANY:
       state->internal_req.call = REQ_COMM_WAIT;
       state->internal_req.issuer = req->issuer;
-      state->internal_req.comm_wait.comm =
-        xbt_dynar_get_as(req->comm_waitany.comms, value, smx_action_t);
+      state->internal_comm = *xbt_dynar_get_as(req->comm_waitany.comms, value, smx_action_t);
+      state->internal_req.comm_wait.comm = &state->internal_comm;
       state->internal_req.comm_wait.timeout = 0;
       break;
 
@@ -68,12 +68,22 @@ void MC_state_set_executed_request(mc_state_t state, smx_req_t req, int value)
       state->internal_req.issuer = req->issuer;
 
       if(value > 0)
-        state->internal_req.comm_test.comm =
-          xbt_dynar_get_as(req->comm_testany.comms, value, smx_action_t);
-      else
-        state->internal_req.comm_test.comm = NULL;
+        state->internal_comm = *xbt_dynar_get_as(req->comm_testany.comms, value, smx_action_t);
 
+      state->internal_req.comm_wait.comm = &state->internal_comm;
       state->internal_req.comm_test.result = value;
+      break;
+
+    case REQ_COMM_WAIT:
+      state->internal_req = *req;
+      state->internal_comm = *req->comm_wait.comm;
+      state->internal_req.comm_wait.comm = &state->internal_comm;
+      break;
+
+    case REQ_COMM_TEST:
+      state->internal_req = *req;
+      state->internal_comm = *req->comm_test.comm;
+      state->internal_req.comm_test.comm = &state->internal_comm;
       break;
 
     default:

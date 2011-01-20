@@ -79,6 +79,7 @@ typedef struct mc_procstate{
 typedef struct mc_state {
   unsigned long max_pid;            /* Maximum pid at state's creation time */
   mc_procstate_t proc_status;       /* State's exploration status by process */
+  s_smx_action_t internal_comm;     /* To be referenced by the internal_req */
   s_smx_req_t internal_req;         /* Internal translation of request */
   s_smx_req_t executed_req;         /* The executed request of the state */
   int req_num;                      /* The request number (in the case of a
