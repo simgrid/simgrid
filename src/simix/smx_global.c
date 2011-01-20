@@ -10,6 +10,7 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
+#include "mc/mc.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(simix);
 XBT_LOG_EXTERNAL_CATEGORY(simix_action);
@@ -156,7 +157,11 @@ void SIMIX_clean(void)
  */
 XBT_INLINE double SIMIX_get_clock(void)
 {
-  return surf_get_clock();
+  if(MC_IS_ENABLED){
+    return MC_process_clock_get(SIMIX_process_self());
+  }else{
+    return surf_get_clock();
+  }
 }
 
 void SIMIX_run(void)

@@ -17,7 +17,7 @@ xbt_fifo_t mc_stack = NULL;
 mc_stats_t mc_stats = NULL;
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
-
+double *mc_time = NULL;
 /**
  *  \brief Initialize the model-checker data structures
  */
@@ -26,6 +26,8 @@ void MC_init(void)
   /* Check if MC is already initialized */
   if (initial_snapshot)
     return;
+
+  mc_time = xbt_new0(double, simix_process_maxpid);
 
   /* Initialize the data structures that must be persistent across every
      iteration of the model-checker (in RAW memory) */
@@ -58,6 +60,7 @@ void MC_modelcheck(void)
 
 void MC_exit(void)
 {
+  xbt_free(mc_time);
   MC_memory_exit();
 }
 
@@ -234,3 +237,15 @@ void MC_assert(int prop)
   }
 }
 
+void MC_process_clock_add(smx_process_t process, double amount)
+{
+  mc_time[process->pid] += amount;
+}
+
+double MC_process_clock_get(smx_process_t process)
+{
+  if(mc_time)
+    return mc_time[process->pid];
+  else
+    return 0;
+}

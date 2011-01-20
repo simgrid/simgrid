@@ -15,8 +15,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
                                 "Logging specific to SIMIX (process)");
 
 unsigned long simix_process_maxpid = 0;
-/* FIXME: Ugly hack!*/
-extern double NOW;
 
 /**
  * \brief Returns the current agent.
@@ -413,7 +411,7 @@ xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 void SIMIX_pre_process_sleep(smx_req_t req)
 {
   if (MC_IS_ENABLED) {
-    NOW += req->process_sleep.duration;
+    MC_process_clock_add(req->issuer, req->process_sleep.duration);
     req->process_sleep.result = SIMIX_DONE;
     SIMIX_request_answer(req);
     return;

@@ -37,6 +37,7 @@ void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 
 /********************************* MC Global **********************************/
+extern double *mc_time;
 
 /* Bound of the MC depth-first search algorithm */
 #define MAX_DEPTH 1000

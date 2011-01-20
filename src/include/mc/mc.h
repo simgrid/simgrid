@@ -32,6 +32,8 @@ XBT_PUBLIC(void) MC_exit(void);
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(void) MC_modelcheck(void);
 XBT_PUBLIC(int) MC_random(int, int);
+XBT_PUBLIC(void) MC_process_clock_add(smx_process_t, double);
+XBT_PUBLIC(double) MC_process_clock_get(smx_process_t);
 
 /********************************* Memory *************************************/
 XBT_PUBLIC(void) MC_memory_init(void);  /* Initialize the memory subsystem */
