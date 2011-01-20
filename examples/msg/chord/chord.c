@@ -255,7 +255,7 @@ static void set_predecessor(node_t node, int predecessor_id)
 int node(int argc, char *argv[])
 {
   double init_time = MSG_get_clock();
-  m_task_t task = NULL;
+  /*m_task_t task = NULL;*/
   m_task_t task_received = NULL;
   msg_comm_t comm_send = NULL;
   int i;
@@ -367,7 +367,7 @@ int node(int argc, char *argv[])
     }
 
     // clean unfinished comms sent
-    unsigned int cursor;
+   /* unsigned int cursor;
     xbt_dynar_foreach(node.comms, cursor, comm_send) {
       task = MSG_comm_get_task(comm_send);
       MSG_task_cancel(task);
@@ -375,7 +375,7 @@ int node(int argc, char *argv[])
       MSG_task_destroy(task);
       MSG_comm_destroy(comm_send);
       // FIXME: the task is actually not destroyed because MSG thinks that the other side (whose process is dead) is still using it
-    }
+    }*/
 
     // leave the ring
     leave(&node);
