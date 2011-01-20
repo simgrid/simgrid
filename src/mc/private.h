@@ -79,8 +79,10 @@ typedef struct mc_procstate{
 typedef struct mc_state {
   unsigned long max_pid;            /* Maximum pid at state's creation time */
   mc_procstate_t proc_status;       /* State's exploration status by process */
-  s_smx_req_t executed;             /* The executed request of the state */
-  unsigned int executed_value;      /* The value associated to the request */
+  s_smx_req_t internal_req;         /* Internal translation of request */
+  s_smx_req_t executed_req;         /* The executed request of the state */
+  int req_num;                      /* The request number (in the case of a
+                                       multi-request like waitany ) */
 } s_mc_state_t, *mc_state_t;
 
 extern xbt_fifo_t mc_stack;
@@ -90,9 +92,10 @@ void MC_state_delete(mc_state_t state);
 void MC_state_interleave_process(mc_state_t state, smx_process_t process);
 unsigned int MC_state_interleave_size(mc_state_t state);
 int MC_state_process_is_done(mc_state_t state, smx_process_t process);
-void MC_state_set_executed_request(mc_state_t state, smx_req_t req, unsigned int value);
-smx_req_t MC_state_get_executed_request(mc_state_t state, unsigned int *value);
-smx_req_t MC_state_get_request(mc_state_t state, unsigned int *value);
+void MC_state_set_executed_request(mc_state_t state, smx_req_t req, int value);
+smx_req_t MC_state_get_executed_request(mc_state_t state, int *value);
+smx_req_t MC_state_get_internal_request(mc_state_t state);
+smx_req_t MC_state_get_request(mc_state_t state, int *value);
 
 /****************************** Statistics ************************************/
 typedef struct mc_stats {

@@ -113,7 +113,7 @@ int MC_deadlock_check()
 */
 void MC_replay(xbt_fifo_t stack)
 {
-  unsigned int value;
+  int value;
   char *req_str;
   smx_req_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item;
@@ -177,7 +177,7 @@ void MC_dump_stack(xbt_fifo_t stack)
 
 void MC_show_stack(xbt_fifo_t stack)
 {
-  unsigned int value;
+  int value;
   mc_state_t state;
   xbt_fifo_item_t item;
   smx_req_t req;

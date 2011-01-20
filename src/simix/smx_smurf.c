@@ -136,7 +136,7 @@ int SIMIX_request_is_enabled_by_idx(smx_req_t req, unsigned int idx)
   }
 }
 
-void SIMIX_request_pre(smx_req_t req, unsigned int value)
+void SIMIX_request_pre(smx_req_t req, int value)
 {
   switch (req->call) {
   case REQ_NO_REQ:

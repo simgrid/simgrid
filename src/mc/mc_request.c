@@ -27,6 +27,26 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
       && r2->comm_wait.comm->comm.dst_buff != r1->comm_wait.comm->comm.src_buff)
     return FALSE;
 
+  if(r1->call == REQ_COMM_TEST &&
+      (r1->comm_test.comm == NULL
+       || r1->comm_test.comm->comm.src_buff == NULL
+       || r1->comm_test.comm->comm.dst_buff == NULL))
+    return FALSE;
+
+  if(r2->call == REQ_COMM_TEST &&
+      (r2->comm_test.comm == NULL
+       || r2->comm_test.comm->comm.src_buff == NULL
+       || r2->comm_test.comm->comm.dst_buff == NULL))
+    return FALSE;
+
+  if (r1->call == REQ_COMM_TEST && r2->call == REQ_COMM_WAIT
+      && r1->comm_test.comm == r2->comm_wait.comm)
+    return FALSE;
+
+  if (r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_TEST
+      && r1->comm_wait.comm == r2->comm_test.comm)
+    return FALSE;
+
   return TRUE;
 }
 

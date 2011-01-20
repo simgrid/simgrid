@@ -52,7 +52,7 @@ void MC_dpor_init()
 void MC_dpor(void)
 {
   char *req_str;
-  unsigned int value;
+  int value;
   smx_req_t req = NULL;
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL;
   smx_process_t process = NULL;
@@ -98,7 +98,6 @@ void MC_dpor(void)
       next_state = MC_state_new();
       xbt_fifo_unshift(mc_stack, next_state);
 
-
       /* Get an enabled process and insert it in the interleave set of the next state */
       xbt_swag_foreach(process, simix_global->process_list){
         if(SIMIX_process_is_enabled(process)){
@@ -138,15 +137,15 @@ void MC_dpor(void)
          executed before it. If it does then add it to the interleave set of the
          state that executed that previous request. */
       while ((state = xbt_fifo_shift(mc_stack)) != NULL) {
-        req = MC_state_get_executed_request(state, &value);
+        req = MC_state_get_internal_request(state);
         xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
-          if(MC_request_depend(req, MC_state_get_executed_request(prev_state, &value))){
+          if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
             if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
               DEBUG0("Dependent Transitions:");
               req_str = MC_request_to_string(MC_state_get_executed_request(prev_state, &value));
               DEBUG2("%s (state=%p)", req_str, prev_state);
               xbt_free(req_str);
-              req_str = MC_request_to_string(req);
+              req_str = MC_request_to_string(MC_state_get_executed_request(state, &value));
               DEBUG2("%s (state=%p)", req_str, state);
               xbt_free(req_str);              
             }

@@ -49,19 +49,54 @@ int MC_state_process_is_done(mc_state_t state, smx_process_t process){
   return state->proc_status[process->pid].state == MC_DONE ? TRUE : FALSE;
 }
 
-void MC_state_set_executed_request(mc_state_t state, smx_req_t req, unsigned int value)
+void MC_state_set_executed_request(mc_state_t state, smx_req_t req, int value)
 {
-  state->executed_value = value;
-  state->executed = *req;
+  /* The waitany and testany request are transformed into a wait or test request over the
+   * corresponding communication action so it can be treated later by the dependence
+   * function. */
+  switch(req->call){
+    case REQ_COMM_WAITANY:
+      state->internal_req.call = REQ_COMM_WAIT;
+      state->internal_req.issuer = req->issuer;
+      state->internal_req.comm_wait.comm =
+        xbt_dynar_get_as(req->comm_waitany.comms, value, smx_action_t);
+      state->internal_req.comm_wait.timeout = 0;
+      break;
+
+    case REQ_COMM_TESTANY:
+      state->internal_req.call = REQ_COMM_TEST;
+      state->internal_req.issuer = req->issuer;
+
+      if(value > 0)
+        state->internal_req.comm_test.comm =
+          xbt_dynar_get_as(req->comm_testany.comms, value, smx_action_t);
+      else
+        state->internal_req.comm_test.comm = NULL;
+
+      state->internal_req.comm_test.result = value;
+      break;
+
+    default:
+      state->internal_req = *req;
+      break;
+  }
+
+  state->executed_req = *req;
+  state->req_num = value;
 }
 
-smx_req_t MC_state_get_executed_request(mc_state_t state, unsigned int *value)
+smx_req_t MC_state_get_executed_request(mc_state_t state, int *value)
 {
-  *value = state->executed_value;
-  return &state->executed;
+  *value = state->req_num;
+  return &state->executed_req;
 }
 
-smx_req_t MC_state_get_request(mc_state_t state, unsigned int *value)
+smx_req_t MC_state_get_internal_request(mc_state_t state)
+{
+  return &state->internal_req;
+}
+
+smx_req_t MC_state_get_request(mc_state_t state, int *value)
 {
   smx_process_t process = NULL;
   mc_procstate_t procstate = NULL;
@@ -86,7 +121,7 @@ smx_req_t MC_state_get_request(mc_state_t state, unsigned int *value)
           case REQ_COMM_TESTANY:
             if(MC_request_testany_fail(&process->request)){
               procstate->state = MC_DONE;
-              *value = (unsigned int)-1;
+              *value = -1;
               return &process->request;
             }
 
