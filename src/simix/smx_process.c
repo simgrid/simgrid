@@ -405,14 +405,6 @@ int SIMIX_process_is_suspended(smx_process_t process)
   return process->suspended;
 }
 
-int SIMIX_process_is_enabled(smx_process_t process)
-{
-  if (process->request.call != REQ_NO_REQ && SIMIX_request_is_enabled(&process->request))
-    return TRUE;
-
-  return FALSE;
-}
-
 xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 {
   return process->properties;

@@ -78,7 +78,7 @@ void MC_wait_for_requests(void)
   do {
     SIMIX_context_runall(simix_global->process_to_run);
     while((req = SIMIX_request_pop())){
-      if(!SIMIX_request_is_visible(req))
+      if(!MC_request_is_visible(req))
         SIMIX_request_pre(req, 0);
       else if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
         req_str = MC_request_to_string(req);
@@ -97,7 +97,7 @@ int MC_deadlock_check()
     deadlock = TRUE;
     xbt_swag_foreach(process, simix_global->process_list){
       if(process->request.call != REQ_NO_REQ
-         && SIMIX_request_is_enabled(&process->request)){
+         && MC_request_is_enabled(&process->request)){
         deadlock = FALSE;
         break;
       }

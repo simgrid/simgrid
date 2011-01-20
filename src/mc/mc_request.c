@@ -145,3 +145,77 @@ unsigned int MC_request_testany_fail(smx_req_t req)
 
   return TRUE;
 }
+
+int MC_request_is_visible(smx_req_t req)
+{
+  return req->call == REQ_COMM_ISEND
+     || req->call == REQ_COMM_IRECV
+     || req->call == REQ_COMM_WAIT
+     || req->call == REQ_COMM_WAITANY
+     || req->call == REQ_COMM_TEST
+     || req->call == REQ_COMM_TESTANY;
+}
+
+int MC_request_is_enabled(smx_req_t req)
+{
+  unsigned int index = 0;
+  smx_action_t act;
+
+  switch (req->call) {
+
+    case REQ_COMM_WAIT:
+      /* FIXME: check also that src and dst processes are not suspended */
+
+      /* If there is a timeout it will be always enabled because, if the
+       * communication is not ready, it can timeout.
+       * This avoids false positives on dead-locks */
+      if(req->comm_wait.timeout >= 0)
+        return TRUE;
+
+      act = req->comm_wait.comm;
+      return (act->comm.src_proc && act->comm.dst_proc);
+      break;
+
+    case REQ_COMM_WAITANY:
+      xbt_dynar_foreach(req->comm_waitany.comms, index, act) {
+        if (act->comm.src_proc && act->comm.dst_proc){
+          return TRUE;
+        }
+      }
+      return FALSE;
+      break;
+
+    default:
+      return TRUE;
+  }
+}
+
+int MC_request_is_enabled_by_idx(smx_req_t req, unsigned int idx)
+{
+  smx_action_t act;
+
+  switch (req->call) {
+
+    case REQ_COMM_WAIT:
+      /* FIXME: check also that src and dst processes are not suspended */
+      act = req->comm_wait.comm;
+      return (act->comm.src_proc && act->comm.dst_proc);
+      break;
+
+    case REQ_COMM_WAITANY:
+      act = xbt_dynar_get_as(req->comm_waitany.comms, idx, smx_action_t);
+      return (act->comm.src_proc && act->comm.dst_proc);
+      break;
+
+    default:
+      return TRUE;
+  }
+}
+
+int MC_process_is_enabled(smx_process_t process)
+{
+  if (process->request.call != REQ_NO_REQ && MC_request_is_enabled(&process->request))
+    return TRUE;
+
+  return FALSE;
+}

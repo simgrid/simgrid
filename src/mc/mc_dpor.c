@@ -32,7 +32,7 @@ void MC_dpor_init()
   MC_SET_RAW_MEM;
   /* Get an enabled process and insert it in the interleave set of the initial state */
   xbt_swag_foreach(process, simix_global->process_list){
-    if(SIMIX_process_is_enabled(process)){
+    if(MC_process_is_enabled(process)){
       MC_state_interleave_process(initial_state, process);
       break;
     }
@@ -105,7 +105,7 @@ void MC_dpor(void)
 
       /* Get an enabled process and insert it in the interleave set of the next state */
       xbt_swag_foreach(process, simix_global->process_list){
-        if(SIMIX_process_is_enabled(process)){
+        if(MC_process_is_enabled(process)){
           MC_state_interleave_process(next_state, process);
           break;
         }

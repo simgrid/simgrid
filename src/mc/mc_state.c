@@ -116,12 +116,12 @@ smx_req_t MC_state_get_request(mc_state_t state, int *value)
     procstate = &state->proc_status[process->pid];
 
     if(procstate->state == MC_INTERLEAVE){
-      if(SIMIX_process_is_enabled(process)){
+      if(MC_process_is_enabled(process)){
         switch(process->request.call){
           case REQ_COMM_WAITANY:
             *value = -1;
             while(procstate->interleave_count < xbt_dynar_length(process->request.comm_waitany.comms)){
-              if(SIMIX_request_is_enabled_by_idx(&process->request, procstate->interleave_count++)){
+              if(MC_request_is_enabled_by_idx(&process->request, procstate->interleave_count++)){
                 *value = procstate->interleave_count-1;
                 break;
               }
@@ -143,7 +143,7 @@ smx_req_t MC_state_get_request(mc_state_t state, int *value)
             }
 
             while(procstate->interleave_count < xbt_dynar_length(process->request.comm_testany.comms)){
-              if(SIMIX_request_is_enabled_by_idx(&process->request, procstate->interleave_count++)){
+              if(MC_request_is_enabled_by_idx(&process->request, procstate->interleave_count++)){
                 *value = procstate->interleave_count - 1;
                 break;
               }

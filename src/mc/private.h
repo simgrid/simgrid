@@ -53,7 +53,11 @@ void MC_dump_stack(xbt_fifo_t stack);
 int MC_request_depend(smx_req_t req1, smx_req_t req2);
 char* MC_request_to_string(smx_req_t req);
 unsigned int MC_request_testany_fail(smx_req_t req);
-int MC_waitany_is_enabled_by_comm(smx_req_t req, unsigned int comm);
+/*int MC_waitany_is_enabled_by_comm(smx_req_t req, unsigned int comm);*/
+int MC_request_is_visible(smx_req_t req);
+int MC_request_is_enabled(smx_req_t req);
+int MC_request_is_enabled_by_idx(smx_req_t req, unsigned int idx);
+int MC_process_is_enabled(smx_process_t process);
 
 /********************************** DPOR **************************************/
 void MC_dpor_init(void);

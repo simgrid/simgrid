@@ -69,7 +69,6 @@ void SIMIX_process_set_data(smx_process_t process, void *data);
 smx_host_t SIMIX_process_get_host(smx_process_t process);
 const char* SIMIX_process_get_name(smx_process_t process);
 int SIMIX_process_is_suspended(smx_process_t process);
-int SIMIX_process_is_enabled(smx_process_t process);
 xbt_dict_t SIMIX_process_get_properties(smx_process_t process);
 void SIMIX_pre_process_sleep(smx_req_t req);
 smx_action_t SIMIX_process_sleep(smx_process_t process, double duration);
