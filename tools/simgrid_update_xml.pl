@@ -20,7 +20,7 @@ $ARGV[0] or die "simgrid_update_xml.pl <platform.xml>\n";
 open INPUT, "$ARGV[0]" or die "Cannot open input file $ARGV[0]: $!\n";
 
 $output_string = "<?xml version='1.0'?>\n".
-    "<!DOCTYPE platform SYSTEM \"simgrid.dtd\">\n".
+    "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n".
     "<platform version=\"$toversion\">\n";
 
 

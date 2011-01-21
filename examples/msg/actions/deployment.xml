@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
   <process host="host0" function="p0"/>
   <process host="host1" function="p1"/>

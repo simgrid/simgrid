@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <!-- ...................................................................... -->
 <!-- ... Platform description file for GRID5000 ........................... -->
 <!-- ....................................................... 24/09/2010 ... -->

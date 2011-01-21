@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
- <!DOCTYPE platform SYSTEM "simgrid.dtd">
+ <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
  
  <!-- This file describe a super simple platform which main interest is
       to define some properties on hosts, processes and links. 
