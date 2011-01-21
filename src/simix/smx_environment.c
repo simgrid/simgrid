@@ -9,6 +9,7 @@
 #include "xbt/log.h"
 #include "xbt/xbt_os_time.h"
 #include "xbt/config.h"
+#include "surf/surfxml_parse.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
                                 "Logging specific to SIMIX (environment)");
@@ -38,13 +39,16 @@ void SIMIX_create_environment(const char *file)
 
   double start, end;
 
-  //First pass of platform file
-  surf_config_add_callback();
-  parse_platform_file(file);
+  platform_filename = bprintf("%s",file);
 
-  surf_config_models_setup(file);
+  // Reset callbacks
+  surf_parse_reset_callbacks();
+  // Add config callbacks
+  surf_parse_add_callback_config();
+
   parse_platform_file(file);
   surf_config_models_create_elms();
+
   start = xbt_os_time();
   /* FIXME: what time are we measuring ??? */
   end = xbt_os_time();

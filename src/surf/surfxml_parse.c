@@ -215,7 +215,7 @@ void surf_parse_init_callbacks(void)
 			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
 }
 
-void surf_parse_reset_callbacks(void) // FIXME free + init
+void surf_parse_reset_callbacks(void)
 {
 	surf_parse_free_callbacks();
 	surf_parse_init_callbacks();
@@ -259,67 +259,6 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_peer_cb_list);
   xbt_dynar_free(&STag_surfxml_config_cb_list);
   xbt_dynar_free(&ETag_surfxml_config_cb_list);
-}
-
-void surf_parse_reset_parser(void)
-{
-  surf_parse_free_callbacks();
-  STag_surfxml_platform_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_platform_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_link_ctn_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_link_ctn_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_process_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_process_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_argument_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_argument_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_prop_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_prop_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_trace_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_trace_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_trace_connect_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_trace_connect_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_random_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_random_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_AS_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_AS_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_ASroute_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_ASroute_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_bypassRoute_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_bypassRoute_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_cluster_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_cluster_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_peer_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_peer_cb_list =
-      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  STag_surfxml_config_cb_list =
-		  xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  ETag_surfxml_config_cb_list =
-		  xbt_dynar_new(sizeof(void_f_void_t), NULL);
 }
 
 /* Stag and Etag parse functions */
@@ -461,17 +400,23 @@ void surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function)
   xbt_dynar_push(cb_list, &function);
 }
 
-void surfxml_del_callback(xbt_dynar_t * p_cb_list, void_f_void_t function)
+void surfxml_del_callback(xbt_dynar_t cb_list, void_f_void_t function)
 {
-  xbt_dynar_t new_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-  unsigned int it;
-  void_f_void_t func;
-  xbt_dynar_foreach(*p_cb_list, it, func) {
-    if (func != function)
-      xbt_dynar_push(new_cb_list, &func);
+  xbt_ex_t e;
+  unsigned int it=0;
+  void_f_void_t null_f=NULL;
+
+  TRY {
+    it = xbt_dynar_search(cb_list,&function);
+  } CATCH(e) {
+    if (e.category == not_found_error) {
+      xbt_ex_free(e);
+      xbt_die("Trying to remove a callback that is not here! This should not happen");
+    }
+    RETHROW;
   }
-  xbt_dynar_free(p_cb_list);
-  *p_cb_list = new_cb_list;
+
+  xbt_dynar_replace(cb_list, it,&null_f);
 }
 
 static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
@@ -479,7 +424,7 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
   unsigned int iterator;
   void_f_void_t fun;
   xbt_dynar_foreach(cb_list, iterator, fun) {
-    (*fun) ();
+    if (fun) (*fun) ();
   }
 }
 
@@ -499,15 +444,12 @@ static void init_data(void)
   trace_connect_list_latency = xbt_dict_new();
 
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  if(xbt_dynar_is_empty(STag_surfxml_config_cb_list))
-  {
-	  surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
-	  surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
-	  surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
-	  surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);
-	  surfxml_add_callback(STag_surfxml_trace_connect_cb_list,
-						   &parse_Stag_trace_connect);
-  }
+  surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
+  surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
+  surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
+  surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);
+  surfxml_add_callback(STag_surfxml_trace_connect_cb_list,
+					   &parse_Stag_trace_connect);
 }
 
 static void free_data(void)

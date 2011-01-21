@@ -892,7 +892,6 @@ static void ptask_add_traces(void)
 static void ptask_define_callbacks(const char *file)
 {
   /* Adding callback functions */
-  surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, &ptask_parse_cpu_init);
   surfxml_add_callback(STag_surfxml_link_cb_list, &ptask_parse_link_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &ptask_add_traces);

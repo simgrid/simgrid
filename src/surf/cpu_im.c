@@ -156,8 +156,6 @@ static void cpu_im_add_traces_cpu(void)
 
 static void cpu_im_define_callbacks(const char *file)
 {
-
-  surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_im_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list,
                        &cpu_im_add_traces_cpu);

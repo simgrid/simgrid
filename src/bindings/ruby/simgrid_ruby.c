@@ -105,7 +105,7 @@ static void msg_deployApplication(VALUE class, VALUE deploymentFile)
     rb_raise(rb_eRuntimeError,
              "Bad Argument's Type for deployApplication ");
   const char *dep_file = RSTRING_PTR(deploymentFile);
-  surf_parse_reset_parser();
+  surf_parse_reset_callbacks();
   surfxml_add_callback(STag_surfxml_process_cb_list,
                        rb_application_handler_on_begin_process);
   surfxml_add_callback(ETag_surfxml_argument_cb_list,

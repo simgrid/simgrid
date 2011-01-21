@@ -12,10 +12,12 @@
 #include "xbt/function_types.h"
 #include "xbt/dict.h"
 
+char * platform_filename;
+
 SG_BEGIN_DECL()
 
 /* Hook for the different tags. All the functions which pointer to are push into here are run when the tag is encountered */
-    XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_platform_cb_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_platform_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_platform_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_host_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_host_cb_list;
@@ -54,14 +56,14 @@ XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_config_cb_list;
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);
-XBT_PUBLIC(void) surf_parse_reset_parser(void);
 XBT_PUBLIC(int)  surf_parse_no_callbacks(void);
 XBT_PUBLIC(void) surf_parse_init_callbacks(void);
 XBT_PUBLIC(void) surf_parse_reset_callbacks(void);
 XBT_PUBLIC(void) surf_parse_free_callbacks(void);
 XBT_PUBLIC(void) surf_parse_get_double(double *value, const char *string);
 XBT_PUBLIC(void) surf_parse_get_int(int *value, const char *string);
-
+XBT_PUBLIC(void) surf_parse_add_callback_config(void);
+XBT_PUBLIC(void) surf_parse_models_setup(void);
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC(int) surf_parse_lex(void);
 XBT_PUBLIC(int) surf_parse_get_lineno(void);
@@ -75,7 +77,6 @@ XBT_PUBLIC(void) surf_parse_set_out(FILE * out_str);
 XBT_PUBLIC(int) surf_parse_get_debug(void);
 XBT_PUBLIC(void) surf_parse_set_debug(int bdebug);
 XBT_PUBLIC(int) surf_parse_lex_destroy(void);
-
 
 /* What is needed to bypass the parser. */
 XBT_PUBLIC_DATA(int_f_void_t) surf_parse;       /* Entry-point to the parser. Set this to your function. */
@@ -109,7 +110,7 @@ extern unsigned int surfxml_buffer_stack_stack[1024];
 
 XBT_PUBLIC(void) surfxml_add_callback(xbt_dynar_t cb_list,
                                       void_f_void_t function);
-XBT_PUBLIC(void) surfxml_del_callback(xbt_dynar_t * cb_list,
+XBT_PUBLIC(void) surfxml_del_callback(xbt_dynar_t cb_list,
                                       void_f_void_t function);
 
 SG_END_DECL()

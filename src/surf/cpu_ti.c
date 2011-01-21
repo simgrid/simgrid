@@ -281,7 +281,6 @@ static void add_traces_cpu_ti(void)
 
 static void cpu_ti_define_callbacks(const char *file)
 {
-  surf_parse_reset_parser();
   surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_ti_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces_cpu_ti);
 }

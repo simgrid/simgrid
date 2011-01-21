@@ -18,6 +18,7 @@
 #include "xbt/config.h"
 #include "xbt/graph.h"
 #include "xbt/set.h"
+#include "surf/surfxml_parse.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
@@ -1108,12 +1109,19 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
 #endif
 }
 
-void surf_config_add_callback(void)
+void surf_parse_add_callback_config(void)
 {
-	surf_parse_reset_parser();
 	surfxml_add_callback(STag_surfxml_config_cb_list, &routing_parse_Sconfig);
 	surfxml_add_callback(ETag_surfxml_config_cb_list, &routing_parse_Econfig);
 	surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+	surfxml_add_callback(STag_surfxml_AS_cb_list, &surf_parse_models_setup);
+}
+
+void surf_parse_models_setup()
+{
+	surfxml_del_callback(STag_surfxml_AS_cb_list, surf_parse_models_setup);
+	surf_config_models_setup(platform_filename);
+	free(platform_filename);
 }
 
 /* ************************************************************************** */

@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include "surf/surf.h"
+#include "surf/surfxml_parse.h" // for reset callback
 
 #include "xbt/log.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
@@ -51,10 +52,9 @@ void test(char *platform)
   e_surf_action_state_t stateActionB;
   e_surf_action_state_t stateActionC;
   double now = -1.0;
-
+  surf_parse_reset_callbacks();
   surf_cpu_model_init_Cas01(platform);  /* Now it is possible to use CPUs */
   surf_network_model_init_CM02(platform);       /* Now it is possible to use eth0 */
-
   parse_platform_file(platform);
 
   /*********************** CPU ***********************************/
