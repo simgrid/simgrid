@@ -95,10 +95,11 @@ var
 // starting with the word static (exceptions?)
 @staticvardecl@
 type T;
-identifier var;
+identifier func, var;
 expression value;
 @@
-<...
+func(...) {
+...
 ( // default case
 static T
 - var
@@ -110,13 +111,16 @@ T
 + *var = SMPI_VARINIT_STATIC_AND_SET(var, T, value)
 ;
 )
-...>
+...
+}
 
 // 
 @rewritestaticaccess@
 type T;
-identifier staticvardecl.var;
+identifier staticvardecl.func, staticvardecl.var;
 @@
+func(...) {
+<...
 ( // declaration
 T
 var
@@ -126,3 +130,5 @@ var
 var
 +)
 )
+...>
+}
