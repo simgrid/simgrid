@@ -55,7 +55,7 @@ sub generate_random_deployment{
 
     print OUTPUT <<EOF;
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="2">
 EOF
 
@@ -101,7 +101,7 @@ sub generate_random_deployment2{
 
     print OUTPUT <<EOF;
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="2">
 EOF
 
