@@ -69,7 +69,7 @@ int main(int argc, char **argv)
   }
 
   printf("<?xml version='1.0'?>\n");
-  printf("<!DOCTYPE platform SYSTEM \"simgrid.dtd\">\n");
+  printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n");
   printf("<platform version=\"3\">\n");
   printf("<AS id=\"AS0\" routing=\"Full\">\n");
 
