@@ -131,14 +131,8 @@ static void chord_initialize(void)
  */
 static int normalize(int id)
 {
-  // make sure id >= 0
-  while (id < 0) {
-    id += nb_keys;
-  }
-  // make sure id < nb_keys
-  id = id % nb_keys;
-
-  return id;
+  // like id % nb_keys, but works with negatives numbers (and faster)
+  return id & (nb_keys - 1);
 }
 
 /**
