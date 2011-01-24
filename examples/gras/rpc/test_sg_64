@@ -13,50 +13,50 @@ $ $SG_TEST_EXENV ./rpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xm
 > [  2.041415] (3:client@Fafard) The answer to PING(1234) on Tremblay:4000 is PONG(4321)
 > [  2.041415] (3:client@Fafard) Call the exception raising RPC
 > [  2.061966] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [  2.082607] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
-> [  2.082607] (3:client@Fafard) Called the exception raising RPC
-> [  2.082607] (3:client@Fafard) Call the exception raising RPC (i=0)
-> [  2.103157] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [  2.123799] (3:client@Fafard) Call the exception raising RPC (i=1)
-> [  2.144349] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [  2.164990] (3:client@Fafard) Call the exception raising RPC (i=2)
-> [  2.185541] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [  2.206182] (3:client@Fafard) Call the exception raising RPC (i=3)
-> [  2.226733] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [  2.247374] (3:client@Fafard) Call the exception raising RPC (i=4)
-> [  2.267925] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [  2.288566] (3:client@Fafard) Call the exception raising RPC on the forwarder (i=0)
-> [  2.301669] (2:forwarder@Ginette) Forward a request
-> [  2.314900] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [  2.328190] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
-> [  2.341354] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
-> [  2.341354] (3:client@Fafard) Call the exception raising RPC on the forwarder (i=1)
-> [  2.354457] (2:forwarder@Ginette) Forward a request
-> [  2.367688] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [  2.380978] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
-> [  2.394142] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
-> [  2.394142] (3:client@Fafard) Call the exception raising RPC on the forwarder (i=2)
-> [  2.407245] (2:forwarder@Ginette) Forward a request
-> [  2.420477] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [  2.433767] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
-> [  2.446930] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
-> [  2.446930] (3:client@Fafard) Call the exception raising RPC on the forwarder (i=3)
-> [  2.460033] (2:forwarder@Ginette) Forward a request
-> [  2.473265] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [  2.486555] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
-> [  2.499718] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
-> [  2.499718] (3:client@Fafard) Call the exception raising RPC on the forwarder (i=4)
-> [  2.512821] (2:forwarder@Ginette) Forward a request
-> [  2.526053] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [  2.539343] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
-> [  2.552507] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
-> [  2.552507] (3:client@Fafard) Ask Ginette:4000 to die
-> [  2.565609] (2:forwarder@Ginette) Asked to die by Fafard:5000
-> [  2.565609] (2:forwarder@Ginette) Done.
-> [  2.565609] (2:forwarder@Ginette) Exiting GRAS
-> [  2.565609] (3:client@Fafard) Ask Tremblay:4000 to die
-> [  2.586160] (1:server@Tremblay) Asked to die by Fafard:5000
-> [  2.586160] (1:server@Tremblay) Done.
-> [  2.586160] (1:server@Tremblay) Exiting GRAS
-> [  2.586160] (3:client@Fafard) Done.
-> [  2.586160] (3:client@Fafard) Exiting GRAS
+> [  2.082632] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
+> [  2.082632] (3:client@Fafard) Called the exception raising RPC
+> [  2.082632] (3:client@Fafard) Call the exception raising RPC (i=0)
+> [  2.103182] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
+> [  2.123849] (3:client@Fafard) Call the exception raising RPC (i=1)
+> [  2.144399] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
+> [  2.165066] (3:client@Fafard) Call the exception raising RPC (i=2)
+> [  2.185616] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
+> [  2.206283] (3:client@Fafard) Call the exception raising RPC (i=3)
+> [  2.226833] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
+> [  2.247499] (3:client@Fafard) Call the exception raising RPC (i=4)
+> [  2.268050] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
+> [  2.288716] (3:client@Fafard) Call the exception raising RPC on the forwarder (i=0)
+> [  2.301819] (2:forwarder@Ginette) Forward a request
+> [  2.315051] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
+> [  2.328357] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
+> [  2.341538] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
+> [  2.341538] (3:client@Fafard) Call the exception raising RPC on the forwarder (i=1)
+> [  2.354640] (2:forwarder@Ginette) Forward a request
+> [  2.367872] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
+> [  2.381178] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
+> [  2.394359] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
+> [  2.394359] (3:client@Fafard) Call the exception raising RPC on the forwarder (i=2)
+> [  2.407462] (2:forwarder@Ginette) Forward a request
+> [  2.420693] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
+> [  2.433999] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
+> [  2.447180] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
+> [  2.447180] (3:client@Fafard) Call the exception raising RPC on the forwarder (i=3)
+> [  2.460283] (2:forwarder@Ginette) Forward a request
+> [  2.473515] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
+> [  2.486821] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
+> [  2.500001] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
+> [  2.500001] (3:client@Fafard) Call the exception raising RPC on the forwarder (i=4)
+> [  2.513104] (2:forwarder@Ginette) Forward a request
+> [  2.526336] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
+> [  2.539642] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
+> [  2.552823] (3:client@Fafard) Got the expected exception when calling the exception raising RPC
+> [  2.552823] (3:client@Fafard) Ask Ginette:4000 to die
+> [  2.565925] (2:forwarder@Ginette) Asked to die by Fafard:5000
+> [  2.565925] (2:forwarder@Ginette) Done.
+> [  2.565925] (2:forwarder@Ginette) Exiting GRAS
+> [  2.565925] (3:client@Fafard) Ask Tremblay:4000 to die
+> [  2.586476] (1:server@Tremblay) Asked to die by Fafard:5000
+> [  2.586476] (1:server@Tremblay) Done.
+> [  2.586476] (1:server@Tremblay) Exiting GRAS
+> [  2.586476] (3:client@Fafard) Done.
+> [  2.586476] (3:client@Fafard) Exiting GRAS
