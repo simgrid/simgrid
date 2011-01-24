@@ -74,12 +74,150 @@ void SIMIX_request_answer(smx_req_t req)
 void SIMIX_request_pre(smx_req_t req, int value)
 {
   switch (req->call) {
-  case REQ_NO_REQ:
-    THROW2(arg_error,0,"Asked to do the noop syscall on %s@%s",
-        SIMIX_process_get_name(req->issuer),
-        SIMIX_host_get_name(SIMIX_process_get_host(req->issuer))
-        );
-    break;
+
+    case REQ_COMM_TEST:
+      SIMIX_pre_comm_test(req);
+      break;
+
+    case REQ_COMM_TESTANY:
+      SIMIX_pre_comm_testany(req, value);
+      break;
+
+    case REQ_COMM_WAIT:
+      SIMIX_pre_comm_wait(req, value);
+      break;
+
+    case REQ_COMM_WAITANY:
+      SIMIX_pre_comm_waitany(req, value);
+      break;
+
+    case REQ_COMM_ISEND:
+      req->comm_isend.result = SIMIX_comm_isend(
+          req->issuer,
+          req->comm_isend.rdv,
+          req->comm_isend.task_size,
+          req->comm_isend.rate,
+          req->comm_isend.src_buff,
+          req->comm_isend.src_buff_size,
+          req->comm_isend.match_fun,
+          req->comm_isend.data);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_IRECV:
+      req->comm_irecv.result = SIMIX_comm_irecv(
+          req->issuer,
+          req->comm_irecv.rdv,
+          req->comm_irecv.dst_buff,
+          req->comm_irecv.dst_buff_size,
+          req->comm_irecv.match_fun,
+          req->comm_irecv.data);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_DESTROY:
+      SIMIX_comm_destroy(req->comm_destroy.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_CANCEL:
+      SIMIX_comm_cancel(req->comm_cancel.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_GET_REMAINS:
+      req->comm_get_remains.result =
+          SIMIX_comm_get_remains(req->comm_get_remains.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_GET_STATE:
+      req->comm_get_state.result =
+          SIMIX_comm_get_state(req->comm_get_state.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_GET_SRC_DATA:
+      req->comm_get_src_data.result = SIMIX_comm_get_src_data(req->comm_get_src_data.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_GET_DST_DATA:
+      req->comm_get_dst_data.result = SIMIX_comm_get_dst_data(req->comm_get_dst_data.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_GET_SRC_BUFF:
+      req->comm_get_src_buff.result =
+          SIMIX_comm_get_src_buff(req->comm_get_src_buff.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_GET_DST_BUFF:
+      req->comm_get_dst_buff.result =
+          SIMIX_comm_get_dst_buff(req->comm_get_dst_buff.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_GET_SRC_BUFF_SIZE:
+      req->comm_get_src_buff_size.result =
+          SIMIX_comm_get_src_buff_size(req->comm_get_src_buff_size.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_GET_DST_BUFF_SIZE:
+      req->comm_get_dst_buff_size.result =
+          SIMIX_comm_get_dst_buff_size(req->comm_get_dst_buff_size.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_GET_SRC_PROC:
+      req->comm_get_src_proc.result =
+          SIMIX_comm_get_src_proc(req->comm_get_src_proc.comm);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_COMM_GET_DST_PROC:
+      req->comm_get_dst_proc.result =
+          SIMIX_comm_get_dst_proc(req->comm_get_dst_proc.comm);
+      SIMIX_request_answer(req);
+      break;
+
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+    case REQ_COMM_IS_LATENCY_BOUNDED:
+      req->comm_is_latency_bounded.result =
+          SIMIX_comm_is_latency_bounded(req->comm_is_latency_bounded.comm);
+      SIMIX_request_answer(req);
+      break;
+#endif
+
+    case REQ_RDV_CREATE:
+      req->rdv_create.result = SIMIX_rdv_create(req->rdv_create.name);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_RDV_DESTROY:
+      SIMIX_rdv_destroy(req->rdv_destroy.rdv);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_RDV_GEY_BY_NAME:
+      req->rdv_get_by_name.result =
+        SIMIX_rdv_get_by_name(req->rdv_get_by_name.name);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_RDV_COMM_COUNT_BY_HOST:
+      req->rdv_comm_count_by_host.result = SIMIX_rdv_comm_count_by_host(
+          req->rdv_comm_count_by_host.rdv,
+          req->rdv_comm_count_by_host.host);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_RDV_GET_HEAD:
+      req->rdv_get_head.result =        SIMIX_rdv_get_head(req->rdv_get_head.rdv);
+      SIMIX_request_answer(req);
+      break;
 
     case REQ_HOST_GET_BY_NAME:
       req->host_get_by_name.result =
@@ -257,150 +395,6 @@ void SIMIX_request_pre(smx_req_t req, int value)
       SIMIX_pre_process_sleep(req);
       break;
 
-    case REQ_RDV_CREATE:
-      req->rdv_create.result = SIMIX_rdv_create(req->rdv_create.name);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_RDV_DESTROY:
-      SIMIX_rdv_destroy(req->rdv_destroy.rdv);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_RDV_GEY_BY_NAME:
-      req->rdv_get_by_name.result = 
-        SIMIX_rdv_get_by_name(req->rdv_get_by_name.name);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_RDV_COMM_COUNT_BY_HOST:
-      req->rdv_comm_count_by_host.result = SIMIX_rdv_comm_count_by_host(
-	  req->rdv_comm_count_by_host.rdv,
-	  req->rdv_comm_count_by_host.host);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_RDV_GET_HEAD:
-      req->rdv_get_head.result =	SIMIX_rdv_get_head(req->rdv_get_head.rdv);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_ISEND:
-      req->comm_isend.result = SIMIX_comm_isend(
-	  req->issuer,
-	  req->comm_isend.rdv,
-	  req->comm_isend.task_size,
-	  req->comm_isend.rate,
-	  req->comm_isend.src_buff,
-	  req->comm_isend.src_buff_size,
-	  req->comm_isend.match_fun,
-	  req->comm_isend.data);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_IRECV:
-      req->comm_irecv.result = SIMIX_comm_irecv(
-	  req->issuer,
-	  req->comm_irecv.rdv,
-	  req->comm_irecv.dst_buff,
-	  req->comm_irecv.dst_buff_size,
-	  req->comm_irecv.match_fun,
-	  req->comm_irecv.data);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_DESTROY:
-      SIMIX_comm_destroy(req->comm_destroy.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_CANCEL:
-      SIMIX_comm_cancel(req->comm_cancel.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_WAITANY:
-      SIMIX_pre_comm_waitany(req, value);
-      break;
-
-    case REQ_COMM_WAIT:
-      SIMIX_pre_comm_wait(req, value);
-      break;
-
-    case REQ_COMM_TEST:
-      SIMIX_pre_comm_test(req);
-      break;
-
-    case REQ_COMM_TESTANY:
-      SIMIX_pre_comm_testany(req, value);
-      break;
-
-    case REQ_COMM_GET_REMAINS:
-      req->comm_get_remains.result = 
-        SIMIX_comm_get_remains(req->comm_get_remains.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_STATE:
-      req->comm_get_state.result = 
-        SIMIX_comm_get_state(req->comm_get_state.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_SRC_DATA:
-      req->comm_get_src_data.result = SIMIX_comm_get_src_data(req->comm_get_src_data.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_DST_DATA:
-      req->comm_get_dst_data.result = SIMIX_comm_get_dst_data(req->comm_get_dst_data.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_SRC_BUFF:
-      req->comm_get_src_buff.result =
-      	SIMIX_comm_get_src_buff(req->comm_get_src_buff.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_DST_BUFF:
-      req->comm_get_dst_buff.result =
-        SIMIX_comm_get_dst_buff(req->comm_get_dst_buff.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_SRC_BUFF_SIZE:
-      req->comm_get_src_buff_size.result = 
-        SIMIX_comm_get_src_buff_size(req->comm_get_src_buff_size.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_DST_BUFF_SIZE:
-      req->comm_get_dst_buff_size.result =
-      	SIMIX_comm_get_dst_buff_size(req->comm_get_dst_buff_size.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_SRC_PROC:
-      req->comm_get_src_proc.result = 
-        SIMIX_comm_get_src_proc(req->comm_get_src_proc.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_DST_PROC:
-      req->comm_get_dst_proc.result =
-        SIMIX_comm_get_dst_proc(req->comm_get_dst_proc.comm);
-      SIMIX_request_answer(req);
-      break;
-
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-    case REQ_COMM_IS_LATENCY_BOUNDED:
-      req->comm_is_latency_bounded.result =
-	SIMIX_comm_is_latency_bounded(req->comm_is_latency_bounded.comm);
-      SIMIX_request_answer(req);
-      break;
-#endif
-
 #ifdef HAVE_TRACING
     case REQ_SET_CATEGORY:
       SIMIX_set_category(
@@ -496,6 +490,13 @@ void SIMIX_request_pre(smx_req_t req, int value)
       req->sem_get_capacity.result = 
         SIMIX_sem_get_capacity(req->sem_get_capacity.sem);
       SIMIX_request_answer(req);
+      break;
+
+    case REQ_NO_REQ:
+      THROW2(arg_error,0,"Asked to do the noop syscall on %s@%s",
+          SIMIX_process_get_name(req->issuer),
+          SIMIX_host_get_name(SIMIX_process_get_host(req->issuer))
+          );
       break;
   }
 }
