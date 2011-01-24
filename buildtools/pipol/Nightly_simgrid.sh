@@ -42,6 +42,7 @@ svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid-trunk -
 
 sh ./simgrid-trunk/buildtools/pipol/liste_install.sh
 perl ./simgrid-trunk/buildtools/pipol/cmake.pl
+perl ./simgrid-trunk/buildtools/pipol/ruby.pl
 
 cd simgrid-trunk
 

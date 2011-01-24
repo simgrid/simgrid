@@ -9,7 +9,6 @@ if [ -e /usr/bin/apt-get ] ; then
     sudo apt-get -y -qq install make
     sudo apt-get -y -qq install openjdk-6-jdk
     sudo apt-get -y -qq install liblua5.1-dev lua5.1
-    sudo apt-get -y -qq install ruby1.8-dev ruby
     sudo apt-get -y -qq install unzip
     sudo apt-get -y -qq install cmake
     sudo apt-get -y -qq install wget
@@ -26,7 +25,6 @@ else
 	    sudo yum -y -q install make
 	    sudo yum -y -q install java-1.6.0-openjdk
 	    sudo yum -y -q install lua-devel lua
-	    sudo yum -y -q install ruby-devel ruby
 	    sudo yum -y -q install unzip
 	    sudo yum -y -q install cmake
 	    sudo yum -y -q install wget
@@ -41,7 +39,6 @@ else
 		    sudo fink -y -q -b install gcc42
 		    sudo fink -y -q -b install make
 		    sudo fink -y -q -b install lua51-dev lua51
-		    sudo fink -y -q -b install ruby18-dev ruby
 		    sudo fink -y -q -b install unzip
 		    sudo fink -y -q -b install cmake
 		    sudo fink -y -q -b install wget
@@ -59,7 +56,6 @@ which_gpp=`which g++`		#gcc g++ necessary
 which_make=`which make`		#make necessary
 which_java=`which java`		#java optional
 which_lua=`which lua`		#lua
-which_ruby=`which ruby`		#ruby
 which_cmake=`which cmake`	#cmake necessary
 which_unzip=`which unzip`	#unzip for gtnets
 which_wget=`which wget`		#wget for cmake
@@ -70,7 +66,6 @@ which_gcov=`which gcov`     #gcov
 echo "DEBUT----------------------------------"
 echo $which_cmake
 echo $which_unzip
-echo $which_ruby
 echo $which_lua
 echo $which_java
 echo $which_make

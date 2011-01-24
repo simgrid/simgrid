@@ -116,7 +116,6 @@ For Windows :
   \li Dev-c++ <a href="http://sourceforge.net/projects/dev-cpp/files/Binaries/Dev-C%2B%2B%204.9.9.2/devcpp-4.9.9.2_nomingw_setup.exe/download">(download page)</a>
   \li perl strawberry <a href="http://www.strawberryperl.com/download/5.12.2.0/strawberry-perl-5.12.2.0.msi">(download page)</a>
   \li pcre-7.0 <a href="http://sourceforge.net/projects/gnuwin32/files/pcre/7.0/pcre-7.0.exe/download">(download page)</a>
-
   \li Set environment variables.
 
 \verbatim
