@@ -620,12 +620,12 @@ endif(ADDR2LINE)
 
 ### File to create
 
-configure_file("${CMAKE_HOME_DIRECTORY}/src/context_sysv_config.h.in" 			"${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/src/context_sysv_config.h.in" 			"${CMAKE_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/gras_config.h.in" 	"${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
-configure_file("${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h" 			"${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
-configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/gras_config.h.in" 	"${CMAKE_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_BINARY_DIR}/src/gras_config.h" 			"${CMAKE_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
 
 set(top_srcdir "${CMAKE_HOME_DIRECTORY}")
 set(srcdir "${CMAKE_HOME_DIRECTORY}/src")
@@ -634,48 +634,48 @@ set(exec_prefix ${CMAKE_INSTALL_PREFIX})
 set(includedir ${CMAKE_INSTALL_PREFIX}/include)
 set(top_builddir ${CMAKE_HOME_DIRECTORY})
 set(libdir ${exec_prefix}/lib)
-set(CMAKE_LINKARGS "${CMAKE_CURRENT_BINARY_DIR}/lib")
-set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/lib:${GTNETS_LIB_PATH}:$LD_LIBRARY_PATH")
+set(CMAKE_LINKARGS "${CMAKE_BINARY_DIR}/lib")
+set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib:${GTNETS_LIB_PATH}:$LD_LIBRARY_PATH")
 
-configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpif2c @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpiff @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/smpif.h @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/bin/smpicc @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_BINARY_DIR}/bin/smpif2c @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_BINARY_DIR}/bin/smpiff @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_BINARY_DIR}/bin/smpirun @ONLY)
 
-exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE OKITOKI)
-exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE OKITOKI)
-exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE OKITOKI)
-exec_program("chmod a=rwx ${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE OKITOKI)
+exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE OKITOKI)
+exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE OKITOKI)
+exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE OKITOKI)
+exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE OKITOKI)
 
 set(generate_files_to_clean
-${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h
-${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h
-${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
-${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
-${CMAKE_CURRENT_BINARY_DIR}/bin/smpicc
-${CMAKE_CURRENT_BINARY_DIR}/bin/smpif2c
-${CMAKE_CURRENT_BINARY_DIR}/bin/smpiff
-${CMAKE_CURRENT_BINARY_DIR}/bin/smpirun
-${CMAKE_CURRENT_BINARY_DIR}/bin/colorize
-${CMAKE_CURRENT_BINARY_DIR}/bin/simgrid_update_xml
-${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/smpi_traced.trace
-${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c
-${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c
-${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c
+${CMAKE_BINARY_DIR}/src/context_sysv_config.h
+${CMAKE_BINARY_DIR}/src/gras_config.h
+${CMAKE_BINARY_DIR}/include/simgrid_config.h
+${CMAKE_BINARY_DIR}/include/smpi/smpif.h
+${CMAKE_BINARY_DIR}/bin/smpicc
+${CMAKE_BINARY_DIR}/bin/smpif2c
+${CMAKE_BINARY_DIR}/bin/smpiff
+${CMAKE_BINARY_DIR}/bin/smpirun
+${CMAKE_BINARY_DIR}/bin/colorize
+${CMAKE_BINARY_DIR}/bin/simgrid_update_xml
+${CMAKE_BINARY_DIR}/examples/smpi/smpi_traced.trace
+${CMAKE_BINARY_DIR}/src/supernovae_sg.c
+${CMAKE_BINARY_DIR}/src/supernovae_gras.c
+${CMAKE_BINARY_DIR}/src/supernovae_smpi.c
 )
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 else("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
-	configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/hostfile ${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/hostfile COPYONLY)
-	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform.xml COPYONLY)
-	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
+	configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/hostfile ${CMAKE_BINARY_DIR}/examples/smpi/hostfile COPYONLY)
+	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform.xml ${CMAKE_BINARY_DIR}/examples/msg/small_platform.xml COPYONLY)
+	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
 	
 	set(generate_files_to_clean
 		${generate_files_to_clean}
-		${CMAKE_CURRENT_BINARY_DIR}/examples/smpi/hostfile
-		${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform.xml
-		${CMAKE_CURRENT_BINARY_DIR}/examples/msg/small_platform_with_routers.xml
+		${CMAKE_BINARY_DIR}/examples/smpi/hostfile
+		${CMAKE_BINARY_DIR}/examples/msg/small_platform.xml
+		${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml
 		)
 endif("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 
