@@ -15,8 +15,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
                                 "Context switching mecanism");
 
-char* smx_context_factory_name = NULL; /* factory name specified by --cfg=simix/context=value */
+char* smx_context_factory_name = NULL; /* factory name specified by --cfg=contexts/factory:value */
 smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
+int smx_context_stack_size = 128 * 1024;
 smx_context_t smx_current_context;
 
 /** 
@@ -29,7 +30,7 @@ void SIMIX_context_mod_init(void)
     if (smx_factory_initializer_to_use) {
       (*smx_factory_initializer_to_use)(&(simix_global->context_factory));
     }
-    else { /* use the factory specified by --cfg=simix/ctx:value */
+    else { /* use the factory specified by --cfg=contexts/factory:value */
       if (smx_context_factory_name == NULL || !strcmp(smx_context_factory_name, "ucontext")) {
         /* use ucontext */
         SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
@@ -61,5 +62,5 @@ void SIMIX_context_mod_exit(void)
     finalize_factory = simix_global->context_factory->finalize;
     (*finalize_factory) (&simix_global->context_factory);
   }
-  xbt_dict_remove((xbt_dict_t) _surf_cfg_set,"simix/context");
+  xbt_dict_remove((xbt_dict_t) _surf_cfg_set,"contexts/factory");
 }

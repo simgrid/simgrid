@@ -636,8 +636,8 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
     }
     *(val++) = '\0';
 
-    if(strcmp(name,"simix/context"))
-    INFO2("Configuration change: Set '%s' to '%s'", name, val);
+    if (strcmp(name,"contexts/factory"))
+      INFO2("Configuration change: Set '%s' to '%s'", name, val);
 
     TRY {
       variable = xbt_dict_get((xbt_dict_t) cfg, name);

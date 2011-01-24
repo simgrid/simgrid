@@ -21,12 +21,6 @@
 #include "ucontext.h"
 #endif
 
-/* lower this if you want to reduce the memory consumption  */
-#ifndef CONTEXT_STACK_SIZE      /* allow lua to override this */
-#define CONTEXT_STACK_SIZE 128*1024
-#endif                          /*CONTEXT_STACK_SIZE */
-
-
 typedef char * raw_stack_t;
 typedef void (*rawctx_entry_point_t)(void *);
 
@@ -189,15 +183,15 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
      if (code) {
-       context->malloced_stack = xbt_malloc0(CONTEXT_STACK_SIZE);
+       context->malloced_stack = xbt_malloc0(smx_context_stack_size);
        context->stack_top =
-           raw_makecontext(context->malloced_stack,CONTEXT_STACK_SIZE,
+           raw_makecontext(context->malloced_stack, smx_context_stack_size,
                (void(*)(void*))smx_ctx_raw_wrapper,context);
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
        context->valgrind_stack_id =
            VALGRIND_STACK_REGISTER(context->malloced_stack,
-               context->malloced_stack + CONTEXT_STACK_SIZE);
+               context->malloced_stack + smx_context_stack_size);
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
 
      }else{

@@ -194,6 +194,11 @@ static void _surf_cfg_cb_context_factory(const char *name, int pos)
   smx_context_factory_name = xbt_cfg_get_string(_surf_cfg_set, name);
 }
 
+static void _surf_cfg_cb_context_stack_size(const char *name, int pos)
+{
+  smx_context_stack_size = xbt_cfg_get_int(_surf_cfg_set, name) * 1024;
+}
+
 static void _surf_cfg_cb_parallel_contexts(const char *name, int pos)
 {
   smx_parallel_contexts = 1;
@@ -342,13 +347,20 @@ void surf_config_init(int *argc, char **argv)
 
     /* context factory */
     default_value = xbt_strdup("ucontext");
-    xbt_cfg_register(&_surf_cfg_set, "simix/context",
+    xbt_cfg_register(&_surf_cfg_set, "contexts/factory",
                      "Context factory to use in SIMIX (ucontext, thread or raw)",
                      xbt_cfgelm_string, &default_value, 1, 1, _surf_cfg_cb_context_factory, NULL);
 
+    /* stack size of contexts in Ko */
+    default_value_int = 128;
+    xbt_cfg_register(&_surf_cfg_set, "contexts/stack_size",
+                     "Stack size of contexts in Ko (ucontext or raw only)",
+                     xbt_cfgelm_int, &default_value_int, 1, 1,
+                     _surf_cfg_cb_context_stack_size, NULL);
+
     /* parallel contexts */
     default_value_int = 0;
-    xbt_cfg_register(&_surf_cfg_set, "parallel-contexts",
+    xbt_cfg_register(&_surf_cfg_set, "contexts/parallel",
                      "Activate the parallel execution of user contexts (EXPERIMENTAL -- pthreads only)",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
                      _surf_cfg_cb_parallel_contexts, NULL);

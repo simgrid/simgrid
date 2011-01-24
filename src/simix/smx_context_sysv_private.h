@@ -16,9 +16,6 @@
 SG_BEGIN_DECL()
 
 /* lower this if you want to reduce the memory consumption  */
-#ifndef CONTEXT_STACK_SIZE      /* allow lua to override this */
-#define CONTEXT_STACK_SIZE 128*1024
-#endif                          /*CONTEXT_STACK_SIZE */
 #include "context_sysv_config.h"        /* loads context system definitions */
 #ifdef _XBT_WIN32
 #include <win32_ucontext.h>     /* context relative declarations */
@@ -33,7 +30,7 @@ typedef struct s_smx_ctx_sysv {
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id;       /* the valgrind stack id */
 #endif
-  char stack[CONTEXT_STACK_SIZE];       /* the thread stack size */
+  char stack[0];                /* the thread stack (must remain the last element of the structure) */
 } s_smx_ctx_sysv_t, *smx_ctx_sysv_t;
 
 smx_ctx_sysv_t maestro_context;

@@ -6,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_CONTEXT_H
-#define _XBT_CONTEXT_H
+#ifndef _SIMIX_CONTEXT_H
+#define _SIMIX_CONTEXT_H
 
 #include "xbt/swag.h"
 #include "simix/datatypes.h"
@@ -55,6 +55,7 @@ typedef struct s_smx_context_factory {
 typedef void (*smx_ctx_factory_initializer_t)(smx_context_factory_t*);
 extern smx_ctx_factory_initializer_t smx_factory_initializer_to_use;
 extern char* smx_context_factory_name;
+extern int smx_context_stack_size;
 extern int smx_parallel_contexts;
 extern smx_context_t smx_current_context;
 

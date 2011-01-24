@@ -108,10 +108,10 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
     context->uc.uc_link = NULL;
 
     context->uc.uc_stack.ss_sp =
-        pth_skaddr_makecontext(context->stack, CONTEXT_STACK_SIZE);
+        pth_skaddr_makecontext(context->stack, smx_context_stack_size);
 
     context->uc.uc_stack.ss_size =
-        pth_sksize_makecontext(context->stack, CONTEXT_STACK_SIZE);
+        pth_sksize_makecontext(context->stack, smx_context_stack_size);
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
     context->valgrind_stack_id =
@@ -136,7 +136,7 @@ smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
     void *data)
 {
 
-  return smx_ctx_sysv_create_context_sized(sizeof(s_smx_ctx_sysv_t),
+  return smx_ctx_sysv_create_context_sized(sizeof(s_smx_ctx_sysv_t) + smx_context_stack_size,
                                            code, argc, argv, cleanup_func,
                                            data);
 
