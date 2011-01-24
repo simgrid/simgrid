@@ -6,6 +6,7 @@
 
 #include "private.h"
 #include "xbt/time.h"
+#include "mc/mc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi,
                                 "Logging specific to SMPI (base)");
@@ -313,16 +314,19 @@ void smpi_mpi_waitall(int count, MPI_Request requests[],
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUS_IGNORE ? MPI_STATUS_IGNORE : &stat;
 
-  c = count;
-  while(c > 0) {
-    index = smpi_mpi_waitany(count, requests, pstat);
-    if(index == MPI_UNDEFINED) {
-      break;
+  for(c = 0; c < count; c++) {
+    if(MC_IS_ENABLED) {
+      smpi_mpi_wait(&requests[c], pstat);
+      index = c;
+    } else {
+      index = smpi_mpi_waitany(count, requests, pstat);
+      if(index == MPI_UNDEFINED) {
+        break;
+      }
     }
     if(status != MPI_STATUS_IGNORE) {
-      memcpy(&status[index], pstat, sizeof *pstat);
+      memcpy(&status[index], pstat, sizeof(*pstat));
     }
-    c--;
   }
 }
 
