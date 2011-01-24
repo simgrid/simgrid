@@ -215,7 +215,7 @@ void SIMIX_request_pre(smx_req_t req, int value)
       break;
 
     case REQ_RDV_GET_HEAD:
-      req->rdv_get_head.result =        SIMIX_rdv_get_head(req->rdv_get_head.rdv);
+      req->rdv_get_head.result = SIMIX_rdv_get_head(req->rdv_get_head.rdv);
       SIMIX_request_answer(req);
       break;
 
