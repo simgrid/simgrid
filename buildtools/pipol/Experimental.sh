@@ -43,7 +43,7 @@ ctest -D ExperimentalTest
 ctest -D ExperimentalSubmit
 make clean
 
-#gtnets
+#MC
 cmake \
 -Denable_latency_bound_tracking=on \
 -Denable_gtnets=on \
