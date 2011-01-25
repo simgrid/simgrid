@@ -3,8 +3,9 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 static const char* request_names[] = {
+#undef SIMIX_REQ_ENUM_ELEMENT
 #define SIMIX_REQ_ENUM_ELEMENT(x) #x /* generate strings from the enumeration values */
-#include "smx_req_enum.h"
+SIMIX_REQ_LIST
 #undef SIMIX_REQ_ENUM_ELEMENT
 };
 
