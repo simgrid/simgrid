@@ -448,6 +448,10 @@ add_test(test-surf-trace	${CMAKE_BINARY_DIR}/testsuite/surf/trace_usage --cfg=pa
 
 add_test(testall		${CMAKE_BINARY_DIR}/src/testall)
 
+if(enable_auto_install)
+add_test(simgrid_install		make install)
+endif(enable_auto_install)
+
 if(enable_memcheck)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/memcheck_tests.cmake)
 endif(enable_memcheck)

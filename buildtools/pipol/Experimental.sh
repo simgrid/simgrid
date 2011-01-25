@@ -51,6 +51,8 @@ cmake \
 -Denable_coverage=on \
 -Denable_model-checking=on \
 -Denable_compile_optimizations=off \
+-Denable_auto_install=on \
+-DCMAKE_INSTALL_PREFIX=./simgrid_install \
 -Denable_supernovae=off .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
