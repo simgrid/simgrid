@@ -30,7 +30,7 @@ else
 	    sudo yum -y -q install wget
 	    sudo yum -y -q install perl
 	    sudo yum -y -q install graphviz-dev graphviz
-	    sudo yum -y -q install libpcre3-dev
+	    sudo yum -y -q install pcre-devel pcre-static
 	    sudo yum -y -q install f2c
 	else
 		if [ x$arch = xDarwin ] ; then

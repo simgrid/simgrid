@@ -9,7 +9,8 @@ find_library(PATH_PCRE_LIB
     /opt/local
     /opt/csw
     /sw
-    /usr)
+    /usr
+    /lib)
     
 find_path(PATH_PCRE_H "pcre.h"
     HINTS
