@@ -618,6 +618,8 @@ static int msg_register_platform(lua_State * L)
 {
   /* Tell Simgrid we dont wanna use its parser */
   surf_parse = console_parse_platform;
+  surf_parse_reset_callbacks();
+  surf_config_models_setup(NULL);
   MSG_create_environment(NULL);
   return 0;
 }
@@ -629,6 +631,8 @@ static int msg_register_platform(lua_State * L)
 static int sd_register_platform(lua_State * L)
 {
   surf_parse = console_parse_platform_wsL07;
+  surf_parse_reset_callbacks();
+  surf_config_models_setup(NULL);
   SD_create_environment(NULL);
   return 0;
 }
@@ -640,6 +644,8 @@ static int gras_register_platform(lua_State * L)
 {
   /* Tell Simgrid we dont wanna use surf parser */
   surf_parse = console_parse_platform;
+  surf_parse_reset_callbacks();
+  surf_config_models_setup(NULL);
   gras_create_environment(NULL);
   return 0;
 }
