@@ -13,11 +13,11 @@ cd ./pipol/$PIPOL_HOST
 svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid-trunk --quiet
 cd simgrid-trunk
 
-sh ./simgrid-trunk/buildtools/pipol/liste_install.sh
+sh ./buildtools/pipol/liste_install.sh
 sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install
 
-perl ./simgrid-trunk/buildtools/pipol/cmake.pl
-perl ./simgrid-trunk/buildtools/pipol/ruby.pl
+perl ./buildtools/pipol/cmake.pl
+perl ./buildtools/pipol/ruby.pl
 
 rm CMakeCache.txt
 
