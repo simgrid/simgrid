@@ -48,6 +48,8 @@ cmake \
 -Denable_gtnets=on \
 -Dgtnets_path=./gtnets_install \
 -Denable_coverage=on \
+-Denable_compile_optimizations=off \
+-Denable_supernovae=off .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
 ctest -D ExperimentalBuild
