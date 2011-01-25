@@ -1,0 +1,283 @@
+
+if(enable_memcheck)
+include(FindValgrind)
+endif(enable_memcheck)
+
+if(enable_smpi AND NOT WIN32)
+	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE "OKITOKI")
+	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE "OKITOKI")
+	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE "OKITOKI")
+	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE "OKITOKI")
+endif(enable_smpi AND NOT WIN32)
+
+### For code coverage
+### Set some variables
+SET(UPDATE_TYPE "svn")
+SET(DROP_METHOD "http")
+SET(DROP_SITE "cdash.inria.fr/CDash")
+SET(DROP_LOCATION "/submit.php?project=${PROJECT_NAME}")
+SET(DROP_SITE_CDASH TRUE)
+SET(TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-TestingResults.cgi")
+#If you use the --read-var-info option Memcheck will run more slowly but may give a more detailed description of any illegal address.
+
+INCLUDE(CTest)
+ENABLE_TESTING()
+
+if(NOT enable_memcheck)
+ADD_TEST(tesh-self-basic 		${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" basic.tesh)
+ADD_TEST(tesh-self-cd			${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/cd.tesh)
+ADD_TEST(tesh-self-IO-broken-pipe	${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" IO-broken-pipe.tesh)
+ADD_TEST(tesh-self-IO-orders		${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/IO-orders.tesh)
+ADD_TEST(tesh-self-IO-bigsize		${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" IO-bigsize.tesh)
+ADD_TEST(tesh-self-set-return		${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" set-return.tesh)
+ADD_TEST(tesh-self-set-signal		${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" set-signal.tesh)
+ADD_TEST(tesh-self-set-timeout		${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" set-timeout.tesh)
+ADD_TEST(tesh-self-set-ignore-output	${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/set-ignore-output.tesh)
+ADD_TEST(tesh-self-catch-return		${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-return.tesh)
+ADD_TEST(tesh-self-catch-signal		${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-signal.tesh)
+ADD_TEST(tesh-self-catch-timeout	${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-timeout.tesh)
+ADD_TEST(tesh-self-catch-wrong-output	${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-wrong-output.tesh)
+ADD_TEST(tesh-self-bg-basic		${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" bg-basic.tesh)
+ADD_TEST(tesh-self-bg-set-signal	${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" bg-set-signal.tesh)
+ADD_TEST(tesh-self-background		${CMAKE_BINARY_DIR}/bin/tesh --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" background.tesh)
+
+# BEGIN TESH TESTS
+
+# teshsuite/xbt
+ADD_TEST(tesh-log-large		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_large_test.tesh)
+ADD_TEST(tesh-log-parallel	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parallel_log_crashtest.tesh)
+
+# teshsuite/gras/datadesc directory
+ADD_TEST(tesh-gras-dd-mem	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/datadesc/datadesc_mem.tesh)
+ADD_TEST(tesh-gras-dd-rw 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/datadesc/datadesc_rw.tesh)
+ADD_TEST(tesh-gras-dd-r-little32-4	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/datadesc/datadesc_r_little32_4.tesh)
+ADD_TEST(tesh-gras-dd-r-little64	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/datadesc/datadesc_r_little64.tesh)
+ADD_TEST(tesh-gras-dd-r-big32-8-4	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/datadesc/datadesc_r_big32_8_4.tesh)
+
+IF(${ARCH_32_BITS})
+  ADD_TEST(tesh-gras-msg-handle-sg-32	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/msg_handle/test_sg_32)
+ELSE(${ARCH_32_BITS})
+  ADD_TEST(tesh-gras-msg-handle-sg-64	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/msg_handle/test_sg_64)
+ENDIF(${ARCH_32_BITS})
+
+ADD_TEST(tesh-gras-empty-main-rl	${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/gras/empty_main	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/empty_main/test_rl)
+ADD_TEST(tesh-gras-empty-main-sg	${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/gras/empty_main	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/empty_main/test_sg)
+
+IF(${ARCH_32_BITS})
+  ADD_TEST(tesh-gras-small-sleep-sg-32	${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/gras/small_sleep	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite gras/small_sleep/test_sg_32)
+ELSE(${ARCH_32_BITS})
+  ADD_TEST(tesh-gras-small-sleep-sg-64	${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/gras/small_sleep	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite gras/small_sleep/test_sg_64)
+ENDIF(${ARCH_32_BITS})
+
+# GRAS examples
+ADD_TEST(gras-ping-rl			${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/ping 	${CMAKE_HOME_DIRECTORY}/examples/gras/ping/test_rl)
+ADD_TEST(gras-rpc-rl			${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/rpc 		${CMAKE_HOME_DIRECTORY}/examples/gras/rpc/test_rl)
+ADD_TEST(gras-spawn-rl			${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/spawn 	${CMAKE_HOME_DIRECTORY}/examples/gras/spawn/test_rl)
+ADD_TEST(gras-timer-rl			${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/timer 	${CMAKE_HOME_DIRECTORY}/examples/gras/timer/test_rl)
+ADD_TEST(gras-chrono-rl			${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/chrono 	${CMAKE_HOME_DIRECTORY}/examples/gras/chrono/test_rl)
+ADD_TEST(gras-simple-token-rl	${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/mutual_exclusion/simple_token ${CMAKE_HOME_DIRECTORY}/examples/gras/mutual_exclusion/simple_token/test_rl)
+ADD_TEST(gras-mmrpc-rl			${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/mmrpc 	${CMAKE_HOME_DIRECTORY}/examples/gras/mmrpc/test_rl)
+ADD_TEST(gras-all2all-rl		${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/all2all 	${CMAKE_HOME_DIRECTORY}/examples/gras/all2all/test_rl)
+ADD_TEST(gras-pmm-rl			${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/pmm 		${CMAKE_HOME_DIRECTORY}/examples/gras/pmm/test_rl)
+ADD_TEST(gras-synchro-rl		${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/synchro 	${CMAKE_HOME_DIRECTORY}/examples/gras/synchro/test_rl)
+ADD_TEST(gras-properties-rl		${CMAKE_BINARY_DIR}/bin/tesh 	--cd ${CMAKE_BINARY_DIR}/examples/gras/properties ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/test_rl)
+
+# BEGIN CONTEXTS FACTORY
+ADD_TEST(tesh-msg-get-sender				${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite	${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender.tesh)
+ADD_TEST(tesh-simdag-reinit-costs			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite	${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/test_reinit_costs.tesh)
+ADD_TEST(tesh-simdag-parser					${CMAKE_BINARY_DIR}/bin/tesh 	--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test.tesh)
+ADD_TEST(tesh-simdag-parser-bogus-symmetric ${CMAKE_BINARY_DIR}/bin/tesh 	--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms two_hosts_asymetric.tesh)
+ADD_TEST(tesh-simdag-parser-sym-full		${CMAKE_BINARY_DIR}/bin/tesh 	--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test_sym_full.tesh)
+ADD_TEST(tesh-simdag-flatifier				${CMAKE_BINARY_DIR}/bin/tesh 	--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms flatifier.tesh)
+ADD_TEST(tesh-simdag-full-links				${CMAKE_BINARY_DIR}/bin/tesh 	--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms get_full_link.tesh)
+ADD_TEST(tesh-simdag-basic0	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic0.tesh)
+ADD_TEST(tesh-simdag-basic1	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic1.tesh)
+ADD_TEST(tesh-simdag-basic2	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic2.tesh)
+ADD_TEST(tesh-simdag-basic3	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic3.tesh)
+ADD_TEST(tesh-simdag-basic4	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic4.tesh)
+ADD_TEST(tesh-simdag-basic5	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic5.tesh)
+ADD_TEST(tesh-simdag-basic6	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic6.tesh)
+ADD_TEST(tesh-simdag-p2p-1	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency1.tesh)
+ADD_TEST(tesh-simdag-p2p-2	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency2.tesh)
+ADD_TEST(tesh-simdag-p2p-3	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency3.tesh)
+ADD_TEST(tesh-simdag-p2p-4	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency_bound.tesh)
+ADD_TEST(tesh-simdag-mxn-1	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_all2all.tesh)
+ADD_TEST(tesh-simdag-mxn-2	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_independent_comm.tesh)
+ADD_TEST(tesh-simdag-mxn-3	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_scatter.tesh)
+ADD_TEST(tesh-simdag-par-1	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/partask/test_comp_only_seq.tesh)
+ADD_TEST(tesh-simdag-par-2	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/partask/test_comp_only_par.tesh)
+
+# MSG examples
+ADD_TEST(msg-sendrecv-CLM03			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_CLM03.tesh)
+ADD_TEST(msg-sendrecv-Vegas			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_Vegas.tesh)
+ADD_TEST(msg-sendrecv-Reno			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_Reno.tesh)
+ADD_TEST(msg-suspend				${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/suspend/suspend.tesh)
+ADD_TEST(msg-masterslave			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave.tesh)
+ADD_TEST(msg-masterslave-forwarder	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_forwarder.tesh)
+ADD_TEST(msg-masterslave-failure	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_failure.tesh)
+ADD_TEST(msg-masterslave-bypass		${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_bypass.tesh)
+ADD_TEST(msg-masterslave-mailbox	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_mailbox.tesh)
+ADD_TEST(msg-masterslave-vivaldi	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_vivaldi.tesh)
+ADD_TEST(msg-masterslave-multicore	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_multicore.tesh)
+ADD_TEST(msg-migration				${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/migration/migration.tesh)
+ADD_TEST(msg-ptask					${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/parallel_task/parallel_task.tesh)
+ADD_TEST(msg-priority				${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/priority/priority.tesh)
+ADD_TEST(msg-properties				${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/properties/msg_prop.tesh)
+ADD_TEST(msg-icomms		 			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/icomms --cd ${CMAKE_BINARY_DIR}/examples/msg/icomms ${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/peer.tesh)
+ADD_TEST(msg-actions 				${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/actions 		--cd ${CMAKE_HOME_DIRECTORY}/examples/msg/actions 		actions.tesh)
+ADD_TEST(msg-masterslave-cpu-ti		${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/masterslave 	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg 	masterslave/masterslave_cpu_ti.tesh)
+ADD_TEST(msg-trace					${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg 			--cd ${CMAKE_HOME_DIRECTORY}/examples/msg 	trace/trace.tesh)
+
+IF(${ARCH_32_BITS})
+  ADD_TEST(gras-ping-sg-32			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/ping	--cd ${CMAKE_BINARY_DIR}/examples/gras/ping 	${CMAKE_HOME_DIRECTORY}/examples/gras/ping/test_sg_32)
+  ADD_TEST(gras-rpc-sg-32			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/rpc	--cd ${CMAKE_BINARY_DIR}/examples/gras/rpc 		${CMAKE_HOME_DIRECTORY}/examples/gras/rpc/test_sg_32)
+  ADD_TEST(gras-spawn-sg-32			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/spawn	--cd ${CMAKE_BINARY_DIR}/examples/gras/spawn 	${CMAKE_HOME_DIRECTORY}/examples/gras/spawn/test_sg_32)
+  ADD_TEST(gras-timer-sg-32			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/timer 	--cd ${CMAKE_BINARY_DIR}/examples/gras/timer 	${CMAKE_HOME_DIRECTORY}/examples/gras/timer/test_sg_32)
+  ADD_TEST(gras-chrono-sg-32		${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/chrono	--cd ${CMAKE_BINARY_DIR}/examples/gras/chrono 	${CMAKE_HOME_DIRECTORY}/examples/gras/chrono/test_sg_32)
+  ADD_TEST(gras-simple-token-sg-32	${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/mutual_exclusion/simple_token	--cd ${CMAKE_BINARY_DIR}/examples/gras/mutual_exclusion/simple_token 	${CMAKE_HOME_DIRECTORY}/examples/gras/mutual_exclusion/simple_token/test_sg_32)
+  ADD_TEST(gras-mmrpc-sg-32			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/mmrpc		--cd ${CMAKE_BINARY_DIR}/examples/gras/mmrpc 	${CMAKE_HOME_DIRECTORY}/examples/gras/mmrpc/test_sg_32)
+  ADD_TEST(gras-all2all-sg-32		${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/all2all	--cd ${CMAKE_BINARY_DIR}/examples/gras/all2all 	${CMAKE_HOME_DIRECTORY}/examples/gras/all2all/test_sg_32)
+  ADD_TEST(gras-pmm-sg-32			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/pmm		--cd ${CMAKE_BINARY_DIR}/examples/gras/pmm 		${CMAKE_HOME_DIRECTORY}/examples/gras/pmm/test_sg_32)
+  ADD_TEST(gras-synchro-sg-32		${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/synchro 	--cd ${CMAKE_BINARY_DIR}/examples/gras/synchro 	${CMAKE_HOME_DIRECTORY}/examples/gras/synchro/test_sg_32)
+ELSE(${ARCH_32_BITS})
+  ADD_TEST(gras-ping-sg-64			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/ping	--cd ${CMAKE_BINARY_DIR}/examples/gras/ping 	${CMAKE_HOME_DIRECTORY}/examples/gras/ping/test_sg_64)
+  ADD_TEST(gras-rpc-sg-64			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/rpc	--cd ${CMAKE_BINARY_DIR}/examples/gras/rpc 		${CMAKE_HOME_DIRECTORY}/examples/gras/rpc/test_sg_64)
+  ADD_TEST(gras-spawn-sg-64			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/spawn	--cd ${CMAKE_BINARY_DIR}/examples/gras/spawn 	${CMAKE_HOME_DIRECTORY}/examples/gras/spawn/test_sg_64)
+  ADD_TEST(gras-timer-sg-64			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/timer 	--cd ${CMAKE_BINARY_DIR}/examples/gras/timer 	${CMAKE_HOME_DIRECTORY}/examples/gras/timer/test_sg_64)
+  ADD_TEST(gras-chrono-sg-64		${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/chrono	--cd ${CMAKE_BINARY_DIR}/examples/gras/chrono 	${CMAKE_HOME_DIRECTORY}/examples/gras/chrono/test_sg_64)
+  ADD_TEST(gras-simple-token-sg-64	${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/mutual_exclusion/simple_token	--cd ${CMAKE_BINARY_DIR}/examples/gras/mutual_exclusion/simple_token 	${CMAKE_HOME_DIRECTORY}/examples/gras/mutual_exclusion/simple_token/test_sg_64)
+  ADD_TEST(gras-mmrpc-sg-64			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/mmrpc		--cd ${CMAKE_BINARY_DIR}/examples/gras/mmrpc 	${CMAKE_HOME_DIRECTORY}/examples/gras/mmrpc/test_sg_64)
+  ADD_TEST(gras-all2all-sg-64		${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/all2all	--cd ${CMAKE_BINARY_DIR}/examples/gras/all2all 	${CMAKE_HOME_DIRECTORY}/examples/gras/all2all/test_sg_64)
+  ADD_TEST(gras-pmm-sg-64			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/pmm		--cd ${CMAKE_BINARY_DIR}/examples/gras/pmm 		${CMAKE_HOME_DIRECTORY}/examples/gras/pmm/test_sg_64)
+  ADD_TEST(gras-synchro-sg-64		${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/synchro 	--cd ${CMAKE_BINARY_DIR}/examples/gras/synchro 	${CMAKE_HOME_DIRECTORY}/examples/gras/synchro/test_sg_64)
+ENDIF(${ARCH_32_BITS})
+ADD_TEST(gras-properties-sg			${CMAKE_BINARY_DIR}/bin/tesh 	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/properties	--cd ${CMAKE_BINARY_DIR}/examples/gras/properties ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/test_sg)
+
+# amok examples
+ADD_TEST(amok-bandwidth-rl	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth/bandwidth_rl.tesh)
+ADD_TEST(amok-saturate-rl	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/saturate/saturate_rl.tesh)
+IF(${ARCH_32_BITS})
+  ADD_TEST(amok-bandwidth-sg-32	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/amok	--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth/bandwidth_sg_32.tesh)
+  ADD_TEST(amok-saturate-sg-32	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/amok	--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/saturate/saturate_sg_32.tesh)
+ELSE(${ARCH_32_BITS})
+  ADD_TEST(amok-bandwidth-sg-64	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/amok	--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth/bandwidth_sg_64.tesh)
+  ADD_TEST(amok-saturate-sg-64	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/amok	--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/saturate/saturate_sg_64.tesh)
+ENDIF(${ARCH_32_BITS})
+
+# simdag examples
+ADD_TEST(simdag-test-simdag				${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag	--cd ${CMAKE_BINARY_DIR}/examples/simdag 			${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag.tesh)
+ADD_TEST(simdag-test-simdag2			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag	--cd ${CMAKE_BINARY_DIR}/examples/simdag 			${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag2.tesh)
+ADD_TEST(simdag-test-simdag-seq-access	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag	--cd ${CMAKE_BINARY_DIR}/examples/simdag 			${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_seq_access.tesh)
+ADD_TEST(simdag-test-prop				${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag	--cd ${CMAKE_BINARY_DIR}/examples/simdag 			${CMAKE_HOME_DIRECTORY}/examples/simdag/properties/test_prop.tesh)
+ADD_TEST(simdag-minmin-test				${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/scheduling	--cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
+
+if(HAVE_GTNETS)
+ADD_TEST(msg-gtnets-waxman			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-waxman.tesh)
+ADD_TEST(msg-gtnets-dogbone			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-dogbone-gtnets.tesh)
+ADD_TEST(msg-gtnets-onelink			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-onelink-gtnets.tesh)
+ADD_TEST(msg-gtnets-dogbone-lv08	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-dogbone-lv08.tesh)
+ADD_TEST(msg-gtnets-onelink-lv08	${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-onelink-lv08.tesh)
+ADD_TEST(msg-gtnets-fullduplex		${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-fullduplex.tesh)
+  if(HAVE_TRACING)
+  ADD_TEST(msg-tracing-gtnets-waxman			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/tracing-gtnets-waxman.tesh)
+  ADD_TEST(msg-tracing-gtnets-dogbone			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/tracing-gtnets-dogbone-gtnets.tesh)
+  ADD_TEST(msg-tracing-gtnets-onelink			${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/tracing-gtnets-onelink-gtnets.tesh)
+  ADD_TEST(msg-tracing-gtnets-dogbone-lv08		${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/tracing-gtnets-dogbone-lv08.tesh)
+  ADD_TEST(msg-tracing-gtnets-onelink-lv08		${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/tracing-gtnets-onelink-lv08.tesh)
+  endif(HAVE_TRACING)
+endif(HAVE_GTNETS)
+
+IF(HAVE_TRACING)
+  ADD_TEST(tracing-ms 				${CMAKE_BINARY_DIR}/bin/tesh	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/ms.tesh)
+  ADD_TEST(tracing-categories 		${CMAKE_BINARY_DIR}/bin/tesh	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/categories.tesh)
+  ADD_TEST(tracing-volume 			${CMAKE_BINARY_DIR}/bin/tesh	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/volume.tesh)
+  ADD_TEST(tracing-tasks 			${CMAKE_BINARY_DIR}/bin/tesh	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/tasks.tesh)
+  ADD_TEST(tracing-process-migration ${CMAKE_BINARY_DIR}/bin/tesh	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/procmig.tesh)
+ENDIF(HAVE_TRACING)
+
+# Lua examples
+if(HAVE_LUA)
+ADD_TEST(lua-masterslave				${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/lua master_slave.tesh)
+ADD_TEST(lua-mult-matrix				${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/lua mult_matrix.tesh)
+ADD_TEST(lua-masterslave-bypass 		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/lua master_slave_bypass.tesh)
+ADD_TEST(lua-msg-masterslave-console	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/msg/masterslave --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave	${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_console.tesh)
+set_tests_properties(lua-masterslave 				PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
+set_tests_properties(lua-mult-matrix  				PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
+set_tests_properties(lua-masterslave-bypass  		PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
+set_tests_properties(lua-msg-masterslave-console  	PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
+endif(HAVE_LUA)
+
+# Ruby examples
+if(HAVE_RUBY)
+ADD_TEST(ruby-masterslave	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/ruby MasterSlave.tesh)
+ADD_TEST(ruby-ping-pong		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/ruby PingPong.tesh)
+ADD_TEST(ruby-quicksort		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/ruby Quicksort.tesh)
+set_tests_properties(ruby-masterslave				PROPERTIES ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/lib")
+set_tests_properties(ruby-ping-pong  				PROPERTIES ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/lib")
+set_tests_properties(ruby-quicksort			 		PROPERTIES ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/lib")
+endif(HAVE_RUBY)
+
+# END TESH TESTS
+
+if(enable_smpi)
+# smpi examples
+ADD_TEST(smpi-bcast 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/bcast.tesh)
+ADD_TEST(smpi-reduce 	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/reduce.tesh)
+if(HAVE_TRACING)
+  ADD_TEST(smpi-tracing-ptp ${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/smpi_traced.tesh)
+endif(HAVE_TRACING)
+endif(enable_smpi)
+								
+# examples/msg/mc
+if(HAVE_MC)
+ADD_TEST(mc-bugged1			${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1.tesh)
+ADD_TEST(mc-bugged2			${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged2.tesh)
+ADD_TEST(mc-centralized		${CMAKE_BINARY_DIR}/bin/tesh --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc centralized.tesh)
+endif(HAVE_MC)
+
+
+###
+### Declare that we know that some tests are broken
+###
+
+# Amok is broken in RL since before v3.3 (should fix it one day)
+set_tests_properties(amok-bandwidth-rl PROPERTIES WILL_FAIL true)
+set_tests_properties(amok-saturate-rl PROPERTIES WILL_FAIL true)
+if(${ARCH_32_BITS})
+set_tests_properties(amok-bandwidth-sg-32 PROPERTIES WILL_FAIL true)   
+set_tests_properties(amok-saturate-sg-32 PROPERTIES WILL_FAIL true)  
+else(${ARCH_32_BITS})
+set_tests_properties(amok-bandwidth-sg-64 PROPERTIES WILL_FAIL true)   
+set_tests_properties(amok-saturate-sg-64 PROPERTIES WILL_FAIL true)  
+endif(${ARCH_32_BITS})
+
+if(HAVE_RUBY)
+# for the moment with ruby 1.9 -> undefined method `release'
+set_tests_properties(ruby-quicksort PROPERTIES WILL_FAIL true)
+set_tests_properties(ruby-ping-pong PROPERTIES WILL_FAIL true)
+set_tests_properties(ruby-masterslave PROPERTIES WILL_FAIL true)
+endif(HAVE_RUBY)
+
+endif(NOT enable_memcheck)
+
+ADD_TEST(tesh-simdag-full-links01		${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters.xml FULL_LINK)
+ADD_TEST(tesh-simdag-full-links02		${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters_one_name.xml FULL_LINK)
+ADD_TEST(tesh-simdag-one-link-g5k		${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/examples/platforms/g5k.xml ONE_LINK)
+ADD_TEST(msg-icomms-waitany 			${CMAKE_BINARY_DIR}/examples/msg/icomms/peer3 ${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/small_platform.xml ${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/deployment_peer05.xml)
+
+# testsuite directory
+add_test(test-xbt-log		${CMAKE_BINARY_DIR}/testsuite/xbt/log_usage)
+add_test(test-xbt-graphxml	${CMAKE_BINARY_DIR}/testsuite/xbt/graphxml_usage ${CMAKE_HOME_DIRECTORY}/testsuite/xbt/graph.xml)
+add_test(test-xbt-heap		${CMAKE_BINARY_DIR}/testsuite/xbt/heap_bench)
+
+add_test(test-surf-lmm		${CMAKE_BINARY_DIR}/testsuite/surf/lmm_usage)
+add_test(test-surf-maxmin	${CMAKE_BINARY_DIR}/testsuite/surf/maxmin_bench)
+add_test(test-surf-usage	${CMAKE_BINARY_DIR}/testsuite/surf/surf_usage  --cfg=path:${CMAKE_HOME_DIRECTORY}/testsuite/surf/ platform.xml)
+add_test(test-surf-usage2	${CMAKE_BINARY_DIR}/testsuite/surf/surf_usage2  --cfg=path:${CMAKE_HOME_DIRECTORY}/testsuite/surf/ platform.xml)
+add_test(test-surf-trace	${CMAKE_BINARY_DIR}/testsuite/surf/trace_usage --cfg=path:${CMAKE_HOME_DIRECTORY}/testsuite/surf/)
+
+add_test(testall		${CMAKE_BINARY_DIR}/src/testall)
+
+if(enable_memcheck)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/memcheck_tests.cmake)
+endif(enable_memcheck)
