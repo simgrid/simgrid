@@ -72,7 +72,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 {
   xbt_ex_t e;
   MSG_error_t ret = MSG_OK;
-  smx_action_t comm = NULL;
+  volatile smx_action_t comm = NULL;
 #ifdef HAVE_TRACING
   double start_time = 0;
 #endif
@@ -98,7 +98,6 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
     comm = SIMIX_req_comm_irecv(mailbox, task, NULL, NULL, NULL);
     SIMIX_req_comm_wait(comm, timeout);
     (*task)->simdata->comm = comm;
-    SIMIX_req_comm_destroy(comm);
     DEBUG2("Got task %s from %p",(*task)->name,mailbox);
     (*task)->simdata->isused=0;
   }
@@ -114,10 +113,12 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
       ret = MSG_TIMEOUT;
       break;
     default:
-    	xbt_backtrace_display(&e);
-      xbt_die(bprintf("Unhandled SIMIX network exception: %s", e.msg));
+      RETHROW;
     }
     xbt_ex_free(e);
+  }
+  if (comm != NULL) {
+    SIMIX_req_comm_destroy(comm);
   }
 
   if (ret != MSG_HOST_FAILURE &&
@@ -137,7 +138,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   MSG_error_t ret = MSG_OK;
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
-  smx_action_t comm;
+  volatile smx_action_t comm = NULL;
 #ifdef HAVE_TRACING
   int call_end = 0;
 #endif
@@ -146,7 +147,6 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 #ifdef HAVE_TRACING
   call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
 #endif
-
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
@@ -170,7 +170,6 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
     SIMIX_req_set_category(comm, task->category);
 #endif
     SIMIX_req_comm_wait(comm, timeout);
-    SIMIX_req_comm_destroy(comm);
   }
 
   CATCH(e) {
@@ -185,12 +184,16 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
       ret = MSG_TIMEOUT;
       break;
     default:
-      xbt_die(bprintf("Unhandled SIMIX network exception: %s", e.msg));
+      RETHROW;
     }
     xbt_ex_free(e);
 
     /* If the send failed, it is not used anymore */
     t_simdata->isused=0;
+  }
+
+  if (comm != NULL) {
+    SIMIX_req_comm_destroy(comm);
   }
 
   process->simdata->waiting_task = NULL;

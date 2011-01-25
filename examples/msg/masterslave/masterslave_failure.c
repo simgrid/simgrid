@@ -78,17 +78,21 @@ int master(int argc, char *argv[])
     } else if (a == MSG_HOST_FAILURE) {
       INFO0
           ("Gloups. The cpu on which I'm running just turned off!. See you!");
+      free(task->data);
+      MSG_task_destroy(task);
       free(slaves);
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
       INFO1
           ("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!",
            slaves[i % slaves_count]->name);
+      free(task->data);
       MSG_task_destroy(task);
     } else if (a == MSG_TIMEOUT) {
       INFO1
           ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
            slaves[i % slaves_count]->name);
+      free(task->data);
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
@@ -106,6 +110,8 @@ int master(int argc, char *argv[])
     if (a == MSG_HOST_FAILURE) {
       INFO0
           ("Gloups. The cpu on which I'm running just turned off!. See you!");
+      MSG_task_destroy(task);
+      free(slaves);
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
       INFO1("Mmh. Can't reach '%s'! Nevermind. Let's keep going!",
