@@ -2,9 +2,6 @@
 
 #PRE-PIPOL /home/mescal/navarro/pre-simgrid.sh
 
-
-#PIPOL esn i386-linux-ubuntu-jaunty.dd.gz none 02:00 --user --silent
-#PIPOL esn amd64-linux-ubuntu-jaunty.dd.gz none 02:00 --user --silent
 #PIPOL esn i386-linux-ubuntu-karmic.dd.gz none 02:00 --user --silent
 #PIPOL esn amd64-linux-ubuntu-karmic.dd.gz none 02:00 --user --silent
 #PIPOL esn i386-linux-ubuntu-lucid.dd.gz none 02:00 --user --silent
@@ -77,6 +74,8 @@ cmake \
 -Denable_coverage=on \
 -Denable_model-checking=on \
 -Denable_compile_optimizations=off \
+-Denable_auto_install=on \
+-DCMAKE_INSTALL_PREFIX=./simgrid_install \
 -Denable_supernovae=off .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
