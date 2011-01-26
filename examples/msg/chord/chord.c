@@ -252,9 +252,9 @@ int node(int argc, char *argv[])
 {
   /* Reduce the run size for the MC */
   if(MC_IS_ENABLED){
-    periodic_stabilize_delay = 3;
-    periodic_fix_fingers_delay = 3;
-    periodic_check_predecessor_delay = 3;
+    periodic_stabilize_delay = 8;
+    periodic_fix_fingers_delay = 8;
+    periodic_check_predecessor_delay = 8;
   }
 
   double init_time = MSG_get_clock();
@@ -337,7 +337,7 @@ int node(int argc, char *argv[])
 	}
         else {
           // nothing to do: sleep for a while
-          MSG_process_sleep(3);
+          MSG_process_sleep(5);
         }
       }
       else {
