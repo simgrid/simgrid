@@ -51,6 +51,9 @@ int MC_state_process_is_done(mc_state_t state, smx_process_t process){
 
 void MC_state_set_executed_request(mc_state_t state, smx_req_t req, int value)
 {
+  state->executed_req = *req;
+  state->req_num = value;
+
   /* The waitany and testany request are transformed into a wait or test request over the
    * corresponding communication action so it can be treated later by the dependence
    * function. */
@@ -76,13 +79,15 @@ void MC_state_set_executed_request(mc_state_t state, smx_req_t req, int value)
 
     case REQ_COMM_WAIT:
       state->internal_req = *req;
-      state->internal_comm = *req->comm_wait.comm;
+      state->internal_comm = *(req->comm_wait.comm);
+      state->executed_req.comm_wait.comm = &state->internal_comm;
       state->internal_req.comm_wait.comm = &state->internal_comm;
       break;
 
     case REQ_COMM_TEST:
       state->internal_req = *req;
       state->internal_comm = *req->comm_test.comm;
+      state->executed_req.comm_test.comm = &state->internal_comm;
       state->internal_req.comm_test.comm = &state->internal_comm;
       break;
 
@@ -90,9 +95,6 @@ void MC_state_set_executed_request(mc_state_t state, smx_req_t req, int value)
       state->internal_req = *req;
       break;
   }
-
-  state->executed_req = *req;
-  state->req_num = value;
 }
 
 smx_req_t MC_state_get_executed_request(mc_state_t state, int *value)

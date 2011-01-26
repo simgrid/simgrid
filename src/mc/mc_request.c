@@ -11,19 +11,55 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
   if(r1->call == REQ_COMM_IRECV && r2->call == REQ_COMM_ISEND)
     return FALSE;
 
-  /* FIXME: the following rule assumes that the result of the
-   * isend/irecv call is not stored in a buffer used in the
-   * wait/test call.
   if(   (r1->call == REQ_COMM_ISEND || r1->call == REQ_COMM_IRECV)
-     && (r2->call == REQ_COMM_WAIT || r2->call == REQ_COMM_TEST))
-    return FALSE;*/
+       &&  r2->call == REQ_COMM_WAIT){
+
+    if(r2->comm_wait.comm->comm.rdv == NULL)
+      return FALSE;
+
+    smx_rdv_t rdv = r1->call == REQ_COMM_ISEND ? r1->comm_isend.rdv : r1->comm_irecv.rdv;
+
+    if(r2->comm_wait.comm->comm.rdv != rdv)
+      return FALSE;
+
+    if(r2->comm_wait.comm->type == SIMIX_COMM_SEND && r1->call == REQ_COMM_ISEND)
+      return FALSE;
+
+    if(r2->comm_wait.comm->type == SIMIX_COMM_RECEIVE && r1->call == REQ_COMM_IRECV)
+      return FALSE;
+  }
+
+  if(   (r2->call == REQ_COMM_ISEND || r2->call == REQ_COMM_IRECV)
+       &&  r1->call == REQ_COMM_WAIT){
+
+    if(r1->comm_wait.comm->comm.rdv == NULL)
+      return FALSE;
+
+    smx_rdv_t rdv = r2->call == REQ_COMM_ISEND ? r2->comm_isend.rdv : r2->comm_irecv.rdv;
+
+    if(r1->comm_wait.comm->comm.rdv != rdv)
+      return FALSE;
+
+    if(r1->comm_wait.comm->type == SIMIX_COMM_SEND && r2->call == REQ_COMM_ISEND)
+      return FALSE;
+
+    if(r1->comm_wait.comm->type == SIMIX_COMM_RECEIVE && r2->call == REQ_COMM_IRECV)
+      return FALSE;
+  }
 
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
-   * wait/test call.
+   * test call. */
+  if(   (r1->call == REQ_COMM_ISEND || r1->call == REQ_COMM_IRECV)
+     &&  r2->call == REQ_COMM_TEST)
+    return FALSE;
+
+  /* FIXME: the following rule assumes that the result of the
+   * isend/irecv call is not stored in a buffer used in the
+   * test call.*/
   if(   (r2->call == REQ_COMM_ISEND || r2->call == REQ_COMM_IRECV)
-     && (r1->call == REQ_COMM_WAIT || r1->call == REQ_COMM_TEST))
-    return FALSE;*/
+     && r1->call == REQ_COMM_TEST)
+    return FALSE;
 
   if(r1->call == REQ_COMM_ISEND && r2->call == REQ_COMM_ISEND
       && r1->comm_isend.rdv != r2->comm_isend.rdv)
@@ -31,6 +67,18 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
 
   if(r1->call == REQ_COMM_IRECV && r2->call == REQ_COMM_IRECV
       && r1->comm_irecv.rdv != r2->comm_irecv.rdv)
+    return FALSE;
+
+  /* If any of the request is a timeout wait, and it reached
+   * this point, it won't be dependent with any other request. */
+  if(r1->call == REQ_COMM_WAIT && (r2->call == REQ_COMM_WAIT || r2->call == REQ_COMM_TEST)
+     && (r1->comm_wait.comm->comm.src_proc == NULL
+         || r1->comm_wait.comm->comm.dst_proc == NULL))
+    return FALSE;
+
+  if(r2->call == REQ_COMM_WAIT && (r1->call == REQ_COMM_WAIT || r1->call == REQ_COMM_TEST)
+     && (r2->comm_wait.comm->comm.src_proc == NULL
+         || r2->comm_wait.comm->comm.dst_proc == NULL))
     return FALSE;
 
   if(r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_WAIT
@@ -70,10 +118,30 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
       && r1->comm_wait.comm->comm.dst_buff == r2->comm_test.comm->comm.dst_buff)
     return FALSE;
 
+  if (r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_TEST
+        && r1->comm_wait.comm->comm.src_buff != NULL
+        && r1->comm_wait.comm->comm.dst_buff != NULL
+        && r2->comm_test.comm->comm.src_buff != NULL
+        && r2->comm_test.comm->comm.dst_buff != NULL
+        && r1->comm_wait.comm->comm.dst_buff != r2->comm_test.comm->comm.src_buff
+        && r1->comm_wait.comm->comm.dst_buff != r2->comm_test.comm->comm.dst_buff
+        && r2->comm_test.comm->comm.dst_buff != r1->comm_wait.comm->comm.src_buff)
+    return FALSE;
+
+  if (r1->call == REQ_COMM_TEST && r2->call == REQ_COMM_WAIT
+          && r1->comm_test.comm->comm.src_buff != NULL
+          && r1->comm_test.comm->comm.dst_buff != NULL
+          && r2->comm_wait.comm->comm.src_buff != NULL
+          && r2->comm_wait.comm->comm.dst_buff != NULL
+          && r1->comm_test.comm->comm.dst_buff != r2->comm_wait.comm->comm.src_buff
+          && r1->comm_test.comm->comm.dst_buff != r2->comm_wait.comm->comm.dst_buff
+          && r2->comm_wait.comm->comm.dst_buff != r1->comm_test.comm->comm.src_buff)
+      return FALSE;
+
   return TRUE;
 }
 
-char *MC_request_to_string(smx_req_t req)
+char *MC_request_to_string(smx_req_t req, int value)
 {
   char *type = NULL, *args = NULL, *str = NULL; 
   smx_action_t act = NULL;
@@ -93,19 +161,29 @@ char *MC_request_to_string(smx_req_t req)
       break;
     case REQ_COMM_WAIT:
       act = req->comm_wait.comm;
-      type = bprintf("Wait");
-      args  = bprintf("comm=%p [%s(%lu) -> %s(%lu)]", act,
-                      act->comm.src_proc ? act->comm.src_proc->name : "",
-                      act->comm.src_proc ? act->comm.src_proc->pid : 0,
-                      act->comm.dst_proc ? act->comm.dst_proc->name : "",
-                      act->comm.dst_proc ? act->comm.dst_proc->pid : 0);
+      if(value == -1){
+        type = bprintf("Wait Timeout");
+        args = bprintf("comm=%p", act);
+      }else{
+        type = bprintf("Wait");
+        args  = bprintf("comm=%p [%s(%lu) -> %s(%lu)]", act,
+                        act->comm.src_proc ? act->comm.src_proc->name : "",
+                        act->comm.src_proc ? act->comm.src_proc->pid : 0,
+                        act->comm.dst_proc ? act->comm.dst_proc->name : "",
+                        act->comm.dst_proc ? act->comm.dst_proc->pid : 0);
+      }
       break;
     case REQ_COMM_TEST:
       act = req->comm_test.comm;
-      type = bprintf("Test");
-      args  = bprintf("comm=%p [%s -> %s]", act,
-                      act->comm.src_proc ? act->comm.src_proc->name : "",
-                      act->comm.dst_proc ? act->comm.dst_proc->name : "");
+      if(act->comm.src_proc == NULL || act->comm.src_proc == NULL){
+        type = bprintf("Test FALSE");
+        args = bprintf("comm=%p", act);
+      }else{
+        type = bprintf("Test TRUE");
+        args  = bprintf("comm=%p [%s -> %s]", act,
+                        act->comm.src_proc ? act->comm.src_proc->name : "",
+                        act->comm.dst_proc ? act->comm.dst_proc->name : "");
+      }
       break;
 
     case REQ_COMM_WAITANY:

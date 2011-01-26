@@ -53,7 +53,7 @@ void MC_dpor(void)
 {
   char *req_str;
   int value;
-  smx_req_t req = NULL;
+  smx_req_t req = NULL, prev_req = NULL;
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
@@ -79,7 +79,7 @@ void MC_dpor(void)
 
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
-        req_str = MC_request_to_string(req);
+        req_str = MC_request_to_string(req, value);
         if(req->call == REQ_COMM_WAITANY)
           DEBUG3("Execute: %s (%u of %lu)", req_str, value, xbt_dynar_length(req->comm_waitany.comms));
         else if(req->call == REQ_COMM_TESTANY)
@@ -147,10 +147,12 @@ void MC_dpor(void)
           if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
             if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
               DEBUG0("Dependent Transitions:");
-              req_str = MC_request_to_string(MC_state_get_executed_request(prev_state, &value));
+              prev_req = MC_state_get_executed_request(prev_state, &value);
+              req_str = MC_request_to_string(prev_req, value);
               DEBUG2("%s (state=%p)", req_str, prev_state);
               xbt_free(req_str);
-              req_str = MC_request_to_string(MC_state_get_executed_request(state, &value));
+              prev_req = MC_state_get_executed_request(state, &value);
+              req_str = MC_request_to_string(prev_req, value);
               DEBUG2("%s (state=%p)", req_str, state);
               xbt_free(req_str);              
             }

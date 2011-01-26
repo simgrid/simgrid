@@ -75,7 +75,6 @@ int MC_random(int min, int max)
  */
 void MC_wait_for_requests(void)
 {
-  char *req_str = NULL;
   smx_req_t req = NULL;
 
   do {
@@ -83,11 +82,6 @@ void MC_wait_for_requests(void)
     while((req = SIMIX_request_pop())){
       if(!MC_request_is_visible(req))
         SIMIX_request_pre(req, 0);
-      else if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
-        req_str = MC_request_to_string(req);
-        DEBUG1("Got: %s", req_str);
-        xbt_free(req_str);
-      }
     }
   } while (xbt_dynar_length(simix_global->process_to_run));
 }
@@ -145,7 +139,7 @@ void MC_replay(xbt_fifo_t stack)
 
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
-        req_str = MC_request_to_string(req); 
+        req_str = MC_request_to_string(req, value);
         DEBUG2("Replay: %s (%p)", req_str, state);
         xbt_free(req_str);
       }
@@ -191,14 +185,9 @@ void MC_show_stack(xbt_fifo_t stack)
         : (NULL)); item = xbt_fifo_get_prev_item(item)) {
     req = MC_state_get_executed_request(state, &value);
     if(req){
-      if(req->call == REQ_COMM_WAIT && value == -1)
-        INFO3("[(%lu)%s] Wait Timeout (comm=%p)",
-            req->issuer->pid, req->issuer->name, req->comm_wait.comm);
-      else{
-        req_str = MC_request_to_string(req);
-        INFO1("%s", req_str);
-        xbt_free(req_str);
-      }
+      req_str = MC_request_to_string(req, value);
+      INFO1("%s", req_str);
+      xbt_free(req_str);
     }
   }
 }
