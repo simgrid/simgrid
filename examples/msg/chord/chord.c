@@ -250,6 +250,13 @@ static void set_predecessor(node_t node, int predecessor_id)
  */
 int node(int argc, char *argv[])
 {
+  /* Reduce the run size for the MC */
+  if(MC_IS_ENABLED){
+    periodic_stabilize_delay = 8;
+    periodic_fix_fingers_delay = 8;
+    periodic_check_predecessor_delay = 8;
+  }
+
   double init_time = MSG_get_clock();
   m_task_t task_received = NULL;
   msg_comm_t comm_send = NULL;
