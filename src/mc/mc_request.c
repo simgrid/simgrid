@@ -69,8 +69,6 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
       && r1->comm_irecv.rdv != r2->comm_irecv.rdv)
     return FALSE;
 
-  /* If any of the request is a timeout wait, and it reached
-   * this point, it won't be dependent with any other request. */
   if(r1->call == REQ_COMM_WAIT && (r2->call == REQ_COMM_WAIT || r2->call == REQ_COMM_TEST)
      && (r1->comm_wait.comm->comm.src_proc == NULL
          || r1->comm_wait.comm->comm.dst_proc == NULL))
@@ -180,23 +178,29 @@ char *MC_request_to_string(smx_req_t req, int value)
         args = bprintf("comm=%p", act);
       }else{
         type = bprintf("Test TRUE");
-        args  = bprintf("comm=%p [%s -> %s]", act,
-                        act->comm.src_proc ? act->comm.src_proc->name : "",
-                        act->comm.dst_proc ? act->comm.dst_proc->name : "");
+        args  = bprintf("comm=%p [(%lu)%s -> (%lu)%s]", act,
+                          act->comm.src_proc ? act->comm.src_proc->pid : 0,
+                          act->comm.src_proc ? act->comm.src_proc->name : "",
+                          act->comm.dst_proc ? act->comm.dst_proc->pid : 0,
+                          act->comm.dst_proc ? act->comm.dst_proc->name : "");
       }
       break;
 
     case REQ_COMM_WAITANY:
       type = bprintf("WaitAny");
-      args = bprintf("-");
-      /* FIXME: improve output */
+      args = bprintf("comm=%p (%d of %lu)", xbt_dynar_get_as(req->comm_waitany.comms, value, smx_action_t),
+                     value+1, xbt_dynar_length(req->comm_waitany.comms));
       break;
 
     case REQ_COMM_TESTANY:
-       type = bprintf("TestAny");
-       args = bprintf("-");
-       /* FIXME: improve output */
-       break;
+      if(value == -1){
+        type = bprintf("TestAny FALSE");
+        args = bprintf("-");
+      }else{
+        type = bprintf("TestAny");
+        args = bprintf("(%d of %lu)", value+1, xbt_dynar_length(req->comm_testany.comms));
+      }
+      break;
 
     default:
       THROW_UNIMPLEMENTED;
@@ -282,6 +286,11 @@ int MC_request_is_enabled_by_idx(smx_req_t req, unsigned int idx)
 
     case REQ_COMM_WAITANY:
       act = xbt_dynar_get_as(req->comm_waitany.comms, idx, smx_action_t);
+      return (act->comm.src_proc && act->comm.dst_proc);
+      break;
+
+    case REQ_COMM_TESTANY:
+      act = xbt_dynar_get_as(req->comm_testany.comms, idx, smx_action_t);
       return (act->comm.src_proc && act->comm.dst_proc);
       break;
 

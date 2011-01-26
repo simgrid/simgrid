@@ -396,6 +396,7 @@ void SIMIX_pre_comm_testany(smx_req_t req, int idx)
       SIMIX_request_answer(req);
     }else{
       action = xbt_dynar_get_as(actions, idx, smx_action_t);
+      req->comm_testany.result = idx;
       xbt_fifo_push(action->request_list, req);
       action->state = SIMIX_DONE;
       SIMIX_comm_finish(action);

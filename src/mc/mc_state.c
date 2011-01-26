@@ -112,7 +112,7 @@ smx_req_t MC_state_get_request(mc_state_t state, int *value)
 {
   smx_process_t process = NULL;
   mc_procstate_t procstate = NULL;
-
+  unsigned int start_count;
 
   xbt_swag_foreach(process, simix_global->process_list){
     procstate = &state->proc_status[process->pid];
@@ -138,12 +138,8 @@ smx_req_t MC_state_get_request(mc_state_t state, int *value)
             break;
 
           case REQ_COMM_TESTANY:
+            start_count = procstate->interleave_count;
             *value = -1;
-            if(MC_request_testany_fail(&process->request)){
-              procstate->state = MC_DONE;
-              return &process->request;
-            }
-
             while(procstate->interleave_count < xbt_dynar_length(process->request.comm_testany.comms)){
               if(MC_request_is_enabled_by_idx(&process->request, procstate->interleave_count++)){
                 *value = procstate->interleave_count - 1;
@@ -154,7 +150,7 @@ smx_req_t MC_state_get_request(mc_state_t state, int *value)
             if(procstate->interleave_count >= xbt_dynar_length(process->request.comm_testany.comms))
               procstate->state = MC_DONE;
 
-            if(*value != -1)
+            if(*value != -1 || start_count == 0)
               return &process->request;
 
             break;
