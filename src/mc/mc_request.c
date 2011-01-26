@@ -32,7 +32,7 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
   if(   (r2->call == REQ_COMM_ISEND || r2->call == REQ_COMM_IRECV)
        &&  r1->call == REQ_COMM_WAIT){
 
-    if(r1->comm_wait.comm->comm.rdv == NULL)
+    if(r1->comm_wait.comm->comm.rdv != NULL)
       return FALSE;
 
     smx_rdv_t rdv = r2->call == REQ_COMM_ISEND ? r2->comm_isend.rdv : r2->comm_irecv.rdv;
