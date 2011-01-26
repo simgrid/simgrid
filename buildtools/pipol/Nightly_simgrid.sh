@@ -59,11 +59,11 @@ cmake \
 -Denable_model-checking=off \
 -Denable_latency_bound_tracking=off \
 -Denable_gtnets=off .
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalTest
-ctest -D ExperimentalSubmit
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyTest
+ctest -D NightlySubmit
 make clean
 
 #MC
@@ -77,10 +77,10 @@ cmake \
 -Denable_auto_install=on \
 -DCMAKE_INSTALL_PREFIX=./simgrid_install \
 -Denable_supernovae=off .
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalTest
-ctest -D ExperimentalCoverage
-ctest -D ExperimentalSubmit
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyTest
+ctest -D NightlyCoverage
+ctest -D NightlySubmit
 make clean

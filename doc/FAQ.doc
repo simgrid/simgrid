@@ -113,7 +113,7 @@ For Unix and MacOS:
 
 For Windows :
   \li cmake 2.8.3 <a href="http://www.cmake.org/files/v2.8/cmake-2.8.3-win32-x86.exe">(download page)</a>
-  \li Dev-c++ <a href="http://sourceforge.net/projects/dev-cpp/files/Binaries/Dev-C%2B%2B%204.9.9.2/devcpp-4.9.9.2_nomingw_setup.exe/download">(download page)</a>
+  \li Dev-c++ <a href="ftp://75d353a9ed4a246611464e0cb31af917:1296070940@ftpclubic22.clubic.com/logiciel/dev-c-_dev-c_5.0_beta_9.2_anglais_9832.exe">(download page)</a>
   \li perl strawberry <a href="http://www.strawberryperl.com/download/5.12.2.0/strawberry-perl-5.12.2.0.msi">(download page)</a>
   \li pcre-7.0 <a href="http://sourceforge.net/projects/gnuwin32/files/pcre/7.0/pcre-7.0.exe/download">(download page)</a>
   \li Set environment variables.
