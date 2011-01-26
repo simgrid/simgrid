@@ -362,8 +362,20 @@ void SIMIX_pre_comm_wait(smx_req_t req, int idx)
 void SIMIX_pre_comm_test(smx_req_t req)
 {
   smx_action_t action = req->comm_test.comm;
-  req->comm_test.result = (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING);
 
+  if(MC_IS_ENABLED){
+    req->comm_test.result = action->comm.src_proc && action->comm.dst_proc;
+    if(req->comm_test.result){
+      action->state = SIMIX_DONE;
+      xbt_fifo_push(action->request_list, req);
+      SIMIX_comm_finish(action);
+    }else{
+      SIMIX_request_answer(req);
+    }
+    return;
+  }
+
+  req->comm_test.result = (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING);
   if (req->comm_test.result) {
     xbt_fifo_push(action->request_list, req);
     SIMIX_comm_finish(action);
