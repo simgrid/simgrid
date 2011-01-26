@@ -94,7 +94,7 @@ char *MC_request_to_string(smx_req_t req)
     case REQ_COMM_WAIT:
       act = req->comm_wait.comm;
       type = bprintf("Wait");
-      args  = bprintf("%p [%s(%lu) -> %s(%lu)]", act,
+      args  = bprintf("comm=%p [%s(%lu) -> %s(%lu)]", act,
                       act->comm.src_proc ? act->comm.src_proc->name : "",
                       act->comm.src_proc ? act->comm.src_proc->pid : 0,
                       act->comm.dst_proc ? act->comm.dst_proc->name : "",
@@ -103,7 +103,7 @@ char *MC_request_to_string(smx_req_t req)
     case REQ_COMM_TEST:
       act = req->comm_test.comm;
       type = bprintf("Test");
-      args  = bprintf("%p [%s -> %s]", act, 
+      args  = bprintf("comm=%p [%s -> %s]", act,
                       act->comm.src_proc ? act->comm.src_proc->name : "",
                       act->comm.dst_proc ? act->comm.dst_proc->name : "");
       break;

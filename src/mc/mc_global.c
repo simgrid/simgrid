@@ -191,9 +191,14 @@ void MC_show_stack(xbt_fifo_t stack)
         : (NULL)); item = xbt_fifo_get_prev_item(item)) {
     req = MC_state_get_executed_request(state, &value);
     if(req){
-      req_str = MC_request_to_string(req); 
-      INFO1("%s", req_str);
-      xbt_free(req_str);
+      if(req->call == REQ_COMM_WAIT && value == -1)
+        INFO3("[(%lu)%s] Wait Timeout (comm=%p)",
+            req->issuer->pid, req->issuer->name, req->comm_wait.comm);
+      else{
+        req_str = MC_request_to_string(req);
+        INFO1("%s", req_str);
+        xbt_free(req_str);
+      }
     }
   }
 }
