@@ -76,7 +76,7 @@ endforeach(file ${install_HEADERS})
 
 # example files
 foreach(file ${examples_to_install_in_doc})
-  string(REPLACE "${CMAKE_HOME_DIRECTORY}/examples/" "" file ${file})
+  string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/examples/" "" file ${file})
   get_filename_component(location ${file} PATH)
   install(FILES "examples/${file}"
           DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/examples/${location})
