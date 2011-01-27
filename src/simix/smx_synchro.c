@@ -80,8 +80,6 @@ void SIMIX_post_synchro(smx_action_t action)
   else if(surf_workstation_model->action_state_get(action->synchro.sleep) == SURF_ACTION_DONE)
     action->state = SIMIX_SRC_TIMEOUT;
 
-  action->synchro.sleep->model_type->action_unref(action->synchro.sleep);
-
   SIMIX_synchro_finish(action);  
 }
 
