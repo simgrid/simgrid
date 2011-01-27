@@ -1060,13 +1060,11 @@ void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
          cat->name);
     xbt_log_appender_set(cat, xbt_log_appender_file_new(NULL));
   }
-  if (cat->layout && cat != &_XBT_LOGV(root)) {
-    /* better leak the default layout than check every categories to
-       change it */
+  if (cat->layout) {
     if (cat->layout->free_) {
       cat->layout->free_(cat->layout);
-      free(cat->layout);
     }
+    free(cat->layout);
   }
   cat->layout = lay;
   xbt_log_additivity_set(cat, 0);
