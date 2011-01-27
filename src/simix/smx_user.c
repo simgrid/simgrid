@@ -296,8 +296,9 @@ e_smx_state_t SIMIX_req_host_execution_wait(smx_action_t execution)
 /**
  * \brief Creates and runs a new SIMIX process.
  *
- * The structure and the corresponding threada are created and put in the list of ready processes.
+ * The structure and the corresponding thread are created and put in the list of ready processes.
  *
+ * \param process the process created will be stored in this pointer
  * \param name a name for the process. It is for user-level information and can be NULL.
  * \param code the main function of the process
  * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can be NULL.
@@ -306,18 +307,18 @@ e_smx_state_t SIMIX_req_host_execution_wait(smx_action_t execution)
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
  * \param properties the properties of the process
- * \return The new process
  */
-smx_process_t SIMIX_req_process_create(const char *name,
-                                   xbt_main_func_t code,
-                                   void *data,
-                                   const char *hostname,
-                                   int argc, char **argv,
-                                   xbt_dict_t properties)
+void SIMIX_req_process_create(smx_process_t *process, const char *name,
+                              xbt_main_func_t code,
+                              void *data,
+                              const char *hostname,
+                              int argc, char **argv,
+                              xbt_dict_t properties)
 {
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_PROCESS_CREATE;
+  req->process_create.process = process;
   req->process_create.name = name;
   req->process_create.code = code;
   req->process_create.data = data;
@@ -326,7 +327,6 @@ smx_process_t SIMIX_req_process_create(const char *name,
   req->process_create.argv = argv;
   req->process_create.properties = properties;
   SIMIX_request_push();
-  return req->process_create.result;
 }
 
 /** \brief Kills a SIMIX process.
@@ -374,6 +374,8 @@ void SIMIX_req_process_change_host(smx_process_t process, const char *source, co
  */
 void SIMIX_req_process_suspend(smx_process_t process)
 {
+  xbt_assert0(process, "Invalid parameters");
+
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_PROCESS_SUSPEND;

@@ -117,12 +117,13 @@ XBT_PUBLIC(e_smx_state_t) SIMIX_req_host_execution_wait(smx_action_t execution);
 
 /**************************** Process Requests ********************************/
 /* Constructor and Destructor */
-XBT_PUBLIC(smx_process_t) SIMIX_req_process_create(const char *name,
-                                               xbt_main_func_t code,
-                                               void *data,
-                                               const char *hostname,
-                                               int argc, char **argv,
-                                               xbt_dict_t properties);
+XBT_PUBLIC(void) SIMIX_req_process_create(smx_process_t *process,
+                                          const char *name,
+                                          xbt_main_func_t code,
+                                          void *data,
+                                          const char *hostname,
+                                          int argc, char **argv,
+                                          xbt_dict_t properties);
 
 XBT_PUBLIC(void) SIMIX_req_process_kill(smx_process_t process);
 

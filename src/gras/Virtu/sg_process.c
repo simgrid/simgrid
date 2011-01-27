@@ -27,7 +27,8 @@ void gras_agent_spawn(const char *name,
                       xbt_dict_t properties)
 {
 
-  SIMIX_req_process_create(name, code, NULL,
+  smx_process_t process;
+  SIMIX_req_process_create(&process, name, code, NULL,
                            gras_os_myname(), argc, argv, properties);
 }
 

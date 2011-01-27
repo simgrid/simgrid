@@ -213,6 +213,7 @@ typedef struct s_smx_req {
     } host_execution_wait;
 
     struct {
+      smx_process_t *process;
       const char *name;
       xbt_main_func_t code;
       void *data;
@@ -220,7 +221,6 @@ typedef struct s_smx_req {
       int argc;
       char **argv;
       xbt_dict_t properties;
-      smx_process_t result;
     } process_create;
 
     struct {

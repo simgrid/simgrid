@@ -319,7 +319,8 @@ void SIMIX_request_pre(smx_req_t req, int value)
       break;
 
     case REQ_PROCESS_CREATE:
-      req->process_create.result = SIMIX_process_create(
+      SIMIX_process_create(
+          req->process_create.process,
 	  req->process_create.name,
 	  req->process_create.code,
 	  req->process_create.data,

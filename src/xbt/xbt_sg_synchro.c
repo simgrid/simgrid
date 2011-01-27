@@ -63,10 +63,10 @@ xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
   res->code = code;
   res->father_data = SIMIX_process_self_get_data();
   /*   char*name = bprintf("%s#%p",SIMIX_process_self_get_name(), param); */
-  res->s_process = SIMIX_req_process_create(name,
-                                            xbt_thread_create_wrapper, res,
-                                            SIMIX_host_self_get_name(), 0, NULL,
-                                            /*props */ NULL);
+  SIMIX_req_process_create(&res->s_process, name,
+                           xbt_thread_create_wrapper, res,
+                           SIMIX_host_self_get_name(), 0, NULL,
+                           /*props */ NULL);
   res->joinable = joinable;
   res->done = 0;
   res->cond = xbt_cond_init();

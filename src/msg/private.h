@@ -104,10 +104,10 @@ void __MSG_host_destroy(m_host_t host);
 void __MSG_display_process_status(void);
 
 void __MSG_process_cleanup(smx_process_t smx_proc);
-void *_MSG_process_create_from_SIMIX(const char *name,
-                                     xbt_main_func_t code, void *data,
-                                     char *hostname, int argc,
-                                     char **argv, xbt_dict_t properties);
+void _MSG_process_create_from_SIMIX(void *process, const char *name,
+                                    xbt_main_func_t code, void *data,
+                                    char *hostname, int argc,
+                                    char **argv, xbt_dict_t properties);
 void _MSG_process_kill_from_SIMIX(void *p);
 
 void _MSG_action_init(void);

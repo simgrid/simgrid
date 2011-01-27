@@ -96,7 +96,9 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
   smx_process_t process;
 
   if (simix_global->create_process_function) {
-    process = simix_global->create_process_function(args->name,
+    simix_global->create_process_function(
+        &process,
+        args->name,
 	args->code,
 	args->data,
 	args->hostname,
@@ -105,7 +107,9 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
 	args->properties);
   }
   else {
-    process = SIMIX_process_create(args->name,
+    SIMIX_process_create(
+        &process,
+        args->name,
 	args->code,
 	args->data,
 	args->hostname,
@@ -128,14 +132,15 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
  *
  * \return the process created
  */
-smx_process_t SIMIX_process_create(const char *name,
-                                   xbt_main_func_t code,
-				   void *data,
-				   const char *hostname,
-				   int argc, char **argv,
-				   xbt_dict_t properties) {
+void SIMIX_process_create(smx_process_t *process,
+                          const char *name,
+                          xbt_main_func_t code,
+                          void *data,
+                          const char *hostname,
+                          int argc, char **argv,
+                          xbt_dict_t properties) {
 
-  smx_process_t process = NULL;
+  *process = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
 
   DEBUG2("Start process %s on host %s", name, hostname);
@@ -145,38 +150,36 @@ smx_process_t SIMIX_process_create(const char *name,
           hostname);
   }
   else {
-    process = xbt_new0(s_smx_process_t, 1);
+    *process = xbt_new0(s_smx_process_t, 1);
 
     xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
 
     /* Process data */
-    process->pid = simix_process_maxpid++;
-    process->name = xbt_strdup(name);
-    process->smx_host = host;
-    process->data = data;
+    (*process)->pid = simix_process_maxpid++;
+    (*process)->name = xbt_strdup(name);
+    (*process)->smx_host = host;
+    (*process)->data = data;
 
-    VERB1("Create context %s", process->name);
-    process->context = SIMIX_context_new(code, argc, argv,
-    	simix_global->cleanup_process_function, process);
+    VERB1("Create context %s", (*process)->name);
+    (*process)->context = SIMIX_context_new(code, argc, argv,
+    	simix_global->cleanup_process_function, *process);
 
-    process->running_ctx = xbt_new(xbt_running_ctx_t, 1);
-    XBT_RUNNING_CTX_INITIALIZE(process->running_ctx);
+    (*process)->running_ctx = xbt_new(xbt_running_ctx_t, 1);
+    XBT_RUNNING_CTX_INITIALIZE((*process)->running_ctx);
 
     /* Add properties */
-    process->properties = properties;
+    (*process)->properties = properties;
 
     /* Add the process to it's host process list */
-    xbt_swag_insert(process, host->process_list);
+    xbt_swag_insert(*process, host->process_list);
 
-    DEBUG1("Start context '%s'", process->name);
+    DEBUG1("Start context '%s'", (*process)->name);
 
     /* Now insert it in the global process list and in the process to run list */
-    xbt_swag_insert(process, simix_global->process_list);
-    DEBUG2("Inserting %s(%s) in the to_run list", process->name, host->name);
-    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
+    xbt_swag_insert(*process, simix_global->process_list);
+    DEBUG2("Inserting %s(%s) in the to_run list", (*process)->name, host->name);
+    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, *process);
   }
-
-  return process;
 }
 
 /**
@@ -276,8 +279,6 @@ void SIMIX_pre_process_suspend(smx_req_t req)
 
 void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 {
-  xbt_assert0(process, "Invalid parameters");
-
   process->suspended = 1;
 
   /* If we are suspending another process, and it is waiting on an action,

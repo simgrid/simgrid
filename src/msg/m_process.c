@@ -58,15 +58,16 @@ void __MSG_process_cleanup(smx_process_t smx_proc)
 }
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
-void *_MSG_process_create_from_SIMIX(const char *name,
-                                     xbt_main_func_t code, void *data,
-                                     char *hostname, int argc, char **argv,
-                                     xbt_dict_t properties)
+void _MSG_process_create_from_SIMIX(void* process, const char *name,
+                                    xbt_main_func_t code, void *data,
+                                    char *hostname, int argc, char **argv,
+                                    xbt_dict_t properties)
 {
   m_host_t host = MSG_get_host_by_name(hostname);
-  return (void *) MSG_process_create_with_environment(name, code, data,
+  m_process_t p = MSG_process_create_with_environment(name, code, data,
                                                       host, argc, argv,
                                                       properties);
+  *((m_process_t*) process) = p;
 }
 
 /** \ingroup m_process_management
@@ -176,9 +177,10 @@ m_process_t MSG_process_create_with_environment(const char *name,
   process->data = data;
   xbt_fifo_unshift(msg_global->process_list, process);
 
-  /* Let's create the process (SIMIX may decide to start it right now) */
-  simdata->s_process = SIMIX_req_process_create(name, code, (void *) process, host->name,
-                                                argc, argv, properties);
+  /* Let's create the process: SIMIX may decide to start it right now,
+   * even before returning the flow control to us */
+  SIMIX_req_process_create(&simdata->s_process, name, code, (void *) process, host->name,
+                           argc, argv, properties);
 
   if (!simdata->s_process) {
     /* Undo everything we have just changed */

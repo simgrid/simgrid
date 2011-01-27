@@ -48,7 +48,7 @@ static void parse_argument(void)
 static void parse_process_finalize(void)
 {
   smx_process_arg_t arg = NULL;
-  void *process = NULL;
+  smx_process_t process = NULL;
   if (start_time > SIMIX_get_clock()) {
     arg = xbt_new0(s_smx_process_arg_t, 1);
     arg->name = parse_argv[0];
@@ -67,16 +67,15 @@ static void parse_process_finalize(void)
     DEBUG2("Starting Process %s(%s) right now", parse_argv[0], parse_host);
 
     if (simix_global->create_process_function)
-      process =
-          (*simix_global->create_process_function) (parse_argv[0],
-                                                    parse_code, NULL,
-                                                    parse_host, parse_argc,
-                                                    parse_argv,
-                                                    /*the props */
-                                                    current_property_set);
+      (*simix_global->create_process_function) (&process,
+                                                parse_argv[0],
+                                                parse_code, NULL,
+                                                parse_host, parse_argc,
+                                                parse_argv,
+                                                current_property_set);
     else
-      process = SIMIX_req_process_create(parse_argv[0], parse_code, NULL, parse_host, parse_argc, parse_argv,       /*the props */
-                                         current_property_set);
+      SIMIX_req_process_create(&process, parse_argv[0], parse_code, NULL, parse_host, parse_argc, parse_argv,
+                               current_property_set);
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
     if (!process) {
       xbt_free(parse_host);
