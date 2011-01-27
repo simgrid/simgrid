@@ -92,8 +92,10 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 #define MSG_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
 /* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
 
-#define CHECK_HOST()  xbt_assert1(SIMIX_req_host_get_state(SIMIX_host_self())==1,\
-                                  "Host failed, you cannot call this function. (state=%d)",SIMIX_req_host_get_state(SIMIX_host_self()))
+/*#define CHECK_HOST()  xbt_assert1(SIMIX_req_host_get_state(SIMIX_host_self())==1,\
+                                  "Host failed, you cannot call this function. (state=%d)",SIMIX_req_host_get_state(SIMIX_host_self()))*/
+#define CHECK_HOST()
+
 
 m_host_t __MSG_host_create(smx_host_t workstation, void *data);
 
