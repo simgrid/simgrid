@@ -502,20 +502,11 @@ file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.h"
 "examples/*.cxx"
 "examples/*.hpp"
-"examples/*.c"
 "examples/*.rb"
 "examples/*.lua"
 "examples/*.java"
 "examples/*.xml"
-)
-
-file(GLOB_RECURSE README_examples_files
 "examples/*README"
-)
-
-set(examples_to_install_in_doc
-${examples_to_install_in_doc}
-${README_examples_files}
 )
 
 set(DOC_SOURCES
@@ -619,20 +610,6 @@ set(DOC_FIGS
 	${CMAKE_HOME_DIRECTORY}/doc/fig/amok_bw_sat.fig
 	${CMAKE_HOME_DIRECTORY}/doc/fig/gras_comm.fig
 )
-
-foreach(file ${examples_to_install_in_doc})
-	string(REGEX REPLACE "/[^/]*$" "" file "${file}")
-	set(new_examples_to_install_in_doc "${new_examples_to_install_in_doc}${file};")
-endforeach(file ${examples_to_install_in_doc})
-
-set(directory_to_create "")
-
-foreach(file ${new_examples_to_install_in_doc})
-	string(REGEX MATCH "${file};" OPERATION "${directory_to_create}")
-	if(NOT OPERATION)
-		set(directory_to_create "${directory_to_create}${file};")
-	endif(NOT OPERATION)
-endforeach(file ${new_examples_to_install_in_doc})
 
 file(GLOB_RECURSE add_src_files
 "teshsuite/*.c"
