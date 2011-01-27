@@ -80,7 +80,6 @@ MSG_error_t MSG_task_execute(m_task_t task)
   DEBUG2("Execution task '%s' finished in state %d", task->name, comp_state);
   if (comp_state == SIMIX_DONE) {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    SIMIX_req_host_execution_destroy(task->simdata->compute);
     simdata->computation_amount = 0.0;
     simdata->comm = NULL;
     simdata->compute = NULL;
@@ -90,7 +89,6 @@ MSG_error_t MSG_task_execute(m_task_t task)
     MSG_RETURN(MSG_OK);
   } else if (SIMIX_req_host_get_state(SIMIX_host_self()) == 0) {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    SIMIX_req_host_execution_destroy(task->simdata->compute);
     simdata->comm = NULL;
     simdata->compute = NULL;
 #ifdef HAVE_TRACING
@@ -99,7 +97,6 @@ MSG_error_t MSG_task_execute(m_task_t task)
     MSG_RETURN(MSG_HOST_FAILURE);
   } else {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    SIMIX_req_host_execution_destroy(task->simdata->compute);
     simdata->comm = NULL;
     simdata->compute = NULL;
 #ifdef HAVE_TRACING
@@ -168,6 +165,7 @@ MSG_parallel_task_create(const char *name, int host_nb,
 MSG_error_t MSG_parallel_task_execute(m_task_t task)
 {
   simdata_task_t simdata = NULL;
+  e_smx_state_t comp_state;
   m_process_t self = MSG_process_self();
   CHECK_HOST();
 
@@ -192,29 +190,26 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   DEBUG1("Parallel execution action created: %p", simdata->compute);
 
   self->simdata->waiting_action = simdata->compute;
-  SIMIX_req_host_execution_wait(simdata->compute);
+  comp_state = SIMIX_req_host_execution_wait(simdata->compute);
   self->simdata->waiting_action = NULL;
 
-  DEBUG2("Finished waiting for execution of action %p, state = %d", simdata->compute, SIMIX_req_host_execution_get_state(task->simdata->compute));
+  DEBUG2("Finished waiting for execution of action %p, state = %d", simdata->compute, comp_state);
 
   simdata->isused=0;
 
-  if (SIMIX_req_host_execution_get_state(task->simdata->compute) == SIMIX_DONE) {
+  if (comp_state == SIMIX_DONE) {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    SIMIX_req_host_execution_destroy(task->simdata->compute);
     simdata->computation_amount = 0.0;
     simdata->comm = NULL;
     simdata->compute = NULL;
     MSG_RETURN(MSG_OK);
   } else if (SIMIX_req_host_get_state(SIMIX_host_self()) == 0) {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    SIMIX_req_host_execution_destroy(task->simdata->compute);
     simdata->comm = NULL;
     simdata->compute = NULL;
     MSG_RETURN(MSG_HOST_FAILURE);
   } else {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    SIMIX_req_host_execution_destroy(task->simdata->compute);
     simdata->comm = NULL;
     simdata->compute = NULL;
     MSG_RETURN(MSG_TASK_CANCELLED);

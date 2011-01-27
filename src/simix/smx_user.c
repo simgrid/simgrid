@@ -279,7 +279,7 @@ void SIMIX_req_host_execution_set_priority(smx_action_t execution, double priori
 }
 
 /**
- * \brief Waits for the completion of an execution action.
+ * \brief Waits for the completion of an execution action and destroy it.
  *
  * \param execution The execution action
  */

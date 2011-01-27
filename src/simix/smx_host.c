@@ -374,6 +374,9 @@ void SIMIX_execution_finish(smx_action_t action)
     req->host_execution_wait.result = action->state;
     SIMIX_request_answer(req);
   }
+
+  /* We no longer need it */
+  SIMIX_host_execution_destroy(action);
 }
 
 void SIMIX_post_host_execute(smx_action_t action)
