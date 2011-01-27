@@ -97,6 +97,7 @@ int receiver(int argc, char *argv[])
     time = sender_time;
     communication_time = time1 - time;
     INFO1("Task received : %s", task_la->name);
+    xbt_free(task_la->data);
     MSG_task_destroy(task_la);
     INFO1("Communic. time %le", communication_time);
     INFO1("--- la %f ----", communication_time);
@@ -113,6 +114,7 @@ int receiver(int argc, char *argv[])
     time = sender_time;
     communication_time = time1 - time;
     INFO1("Task received : %s", task_bw->name);
+    xbt_free(task_bw->data);
     MSG_task_destroy(task_bw);
     INFO1("Communic. time %le", communication_time);
     INFO1("--- bw %f ----", task_comm_size_bw / communication_time);

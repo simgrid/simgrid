@@ -39,6 +39,7 @@ int test_trace(int argc, char *argv[])
   task = MSG_task_create("proc 0", task_comp_size, 0, NULL);
   MSG_task_set_priority(task, task_prio);
   MSG_task_execute(task);
+  MSG_task_destroy(task);
 
   INFO0("Test finished");
 

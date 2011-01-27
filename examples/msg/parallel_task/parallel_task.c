@@ -48,6 +48,7 @@ int test(int argc, char *argv[])
                                    communication_amount, NULL);
   MSG_parallel_task_execute(ptask);
 
+  MSG_task_destroy(ptask);
   /* There is no need to free that! */
 /*   free(communication_amount); */
 /*   free(computation_amount); */
@@ -61,13 +62,16 @@ int test(int argc, char *argv[])
 MSG_error_t test_all(const char *platform_file)
 {
   MSG_error_t res = MSG_OK;
+  m_host_t *hosts;
 
   MSG_config("workstation/model", "ptask_L07");
   MSG_set_channel_number(1);
   MSG_create_environment(platform_file);
 
-  MSG_process_create("test", test, NULL, MSG_get_host_table()[0]);
+  hosts = MSG_get_host_table();
+  MSG_process_create("test", test, NULL, hosts[0]);
   res = MSG_main();
+  xbt_free(hosts);
 
   INFO1("Simulation time %g", MSG_get_clock());
   return res;

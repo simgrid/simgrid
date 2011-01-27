@@ -72,6 +72,8 @@ int execute(int argc, char *argv[])
 
   execution_time = MSG_get_clock();
   MSG_parallel_task_execute(task);
+  MSG_task_destroy(task);
+  xbt_free(m_host_list);
   execution_time = MSG_get_clock() - execution_time;
 
   INFO1("execution_time=%g ", execution_time);
@@ -122,6 +124,8 @@ int redistribute(int argc, char *argv[])
 
   redistribution_time = MSG_get_clock();
   MSG_parallel_task_execute(task);
+  MSG_task_destroy(task);
+  xbt_free(m_host_list);
   redistribution_time = MSG_get_clock() - redistribution_time;
 
   INFO1("redistribution_time=%g ", redistribution_time);

@@ -32,7 +32,7 @@ static int test(int argc, char *argv[])
   MSG_task_set_priority(task, priority);
 
   MSG_task_execute(task);
-
+  MSG_task_destroy(task);
 
   INFO0("Goodbye now!");
   return 0;
