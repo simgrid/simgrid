@@ -278,6 +278,9 @@ XBT_TEST_UNIT("basic", test_swag_basic, "Basic usage")
 
   xbt_swag_free(setA);
   xbt_swag_free(setB);
+
+  xbt_free(obj1);
+  xbt_free(obj2);
 }
 
 #endif                          /* SIMGRID_TEST */

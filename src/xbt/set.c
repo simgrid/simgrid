@@ -527,7 +527,6 @@ XBT_TEST_UNIT("remove", test_set_remove, "Removing some values")
 {
   my_elem_t elm;
 
-  xbt_set_free(&set);
   fill(&set);
 
   xbt_set_remove_by_name(set, "12a");
@@ -550,6 +549,8 @@ XBT_TEST_UNIT("remove", test_set_remove, "Removing some values")
   debuged_add(set, "12anew", "12anew");
   elm = (my_elem_t) xbt_set_get_by_id(set, 1);
   xbt_test_assert1(elm->ID == 1, "elm->ID is %d but should be 1", elm->ID);
+
+  xbt_set_free(&set);
 }
 
 #endif                          /* SIMGRID_TEST */
