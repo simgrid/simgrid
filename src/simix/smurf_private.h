@@ -169,6 +169,7 @@ typedef struct s_smx_req {
       const char* name;
       smx_host_t host;
       double computation_amount;
+      double priority;
       smx_action_t result;
     } host_execute;
 

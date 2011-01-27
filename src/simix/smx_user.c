@@ -150,7 +150,8 @@ void SIMIX_req_host_set_data(smx_host_t host, void *data)
  * \return A new SIMIX execution action
  */
 smx_action_t SIMIX_req_host_execute(const char *name, smx_host_t host,
-                                double computation_amount)
+                                    double computation_amount,
+                                    double priority)
 {
   smx_req_t req = SIMIX_req_mine();
 
@@ -158,6 +159,7 @@ smx_action_t SIMIX_req_host_execute(const char *name, smx_host_t host,
   req->host_execute.name = name;
   req->host_execute.host = host;
   req->host_execute.computation_amount = computation_amount;
+  req->host_execute.priority = priority;
   SIMIX_request_push();
   return req->host_execute.result;
 }

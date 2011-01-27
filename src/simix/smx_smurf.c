@@ -268,7 +268,8 @@ void SIMIX_request_pre(smx_req_t req, int value)
       req->host_execute.result = SIMIX_host_execute(
 	  req->host_execute.name,
 	  req->host_execute.host,
-	  req->host_execute.computation_amount);
+	  req->host_execute.computation_amount,
+	  req->host_execute.priority);
       SIMIX_request_answer(req);
       break;
 

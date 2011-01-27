@@ -178,7 +178,8 @@ void SIMIX_host_set_data(smx_host_t host, void *data)
 }
 
 smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
-                                double computation_amount)
+                                double computation_amount,
+                                double priority)
 {
   /* alloc structures and initialize */
   smx_action_t action = xbt_new0(s_smx_action_t, 1);
@@ -198,6 +199,7 @@ smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
       surf_workstation_model->extension.workstation.execute(host->host,
 	  computation_amount);
     surf_workstation_model->action_data_set(action->execution.surf_exec, action);
+    surf_workstation_model->set_priority(action->execution.surf_exec, priority);
   }
 
 #ifdef HAVE_TRACING

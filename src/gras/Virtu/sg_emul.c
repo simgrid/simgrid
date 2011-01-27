@@ -23,7 +23,7 @@ void gras_cpu_burn(double flops)
   smx_action_t execution;
 
   if (flops > 0){
-    execution = SIMIX_req_host_execute("task", SIMIX_host_self(), flops);
+    execution = SIMIX_req_host_execute("task", SIMIX_host_self(), flops, 1);
     SIMIX_req_host_execution_wait(execution);
   }
 }

@@ -98,7 +98,8 @@ XBT_PUBLIC(void *) SIMIX_req_host_get_data(smx_host_t host);
 XBT_PUBLIC(void) SIMIX_req_host_set_data(smx_host_t host, void *data);
 
 XBT_PUBLIC(smx_action_t) SIMIX_req_host_execute(const char *name, smx_host_t host,
-                                            double computation_amount);
+                                                double computation_amount,
+                                                double priority);
 XBT_PUBLIC(smx_action_t) SIMIX_req_host_parallel_execute(const char *name,
                                                      int host_nb,
                                                      smx_host_t *host_list,
