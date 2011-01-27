@@ -112,7 +112,7 @@ XBT_PUBLIC(void) SIMIX_req_host_execution_cancel(smx_action_t execution);
 XBT_PUBLIC(double) SIMIX_req_host_execution_get_remains(smx_action_t execution);
 XBT_PUBLIC(e_smx_state_t) SIMIX_req_host_execution_get_state(smx_action_t execution);
 XBT_PUBLIC(void) SIMIX_req_host_execution_set_priority(smx_action_t execution, double priority);
-XBT_PUBLIC(void) SIMIX_req_host_execution_wait(smx_action_t execution);
+XBT_PUBLIC(e_smx_state_t) SIMIX_req_host_execution_wait(smx_action_t execution);
 
 
 /**************************** Process Requests ********************************/

@@ -209,6 +209,7 @@ typedef struct s_smx_req {
 
     struct {
       smx_action_t execution;
+      e_smx_state_t result;
     } host_execution_wait;
 
     struct {

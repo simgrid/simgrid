@@ -371,6 +371,7 @@ void SIMIX_execution_finish(smx_action_t action)
         THROW_IMPOSSIBLE;
     }
     req->issuer->waiting_action = NULL;
+    req->host_execution_wait.result = action->state;
     SIMIX_request_answer(req);
   }
 }

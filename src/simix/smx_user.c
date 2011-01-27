@@ -283,13 +283,14 @@ void SIMIX_req_host_execution_set_priority(smx_action_t execution, double priori
  *
  * \param execution The execution action
  */
-void SIMIX_req_host_execution_wait(smx_action_t execution)
+e_smx_state_t SIMIX_req_host_execution_wait(smx_action_t execution)
 {
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_HOST_EXECUTION_WAIT;
   req->host_execution_wait.execution = execution;
   SIMIX_request_push();
+  return req->host_execution_wait.result;
 }
 
 /**

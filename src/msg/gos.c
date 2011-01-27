@@ -38,6 +38,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
 {
   simdata_task_t simdata = NULL;
   m_process_t self = MSG_process_self();
+  e_smx_state_t comp_state;
   CHECK_HOST();
 
   simdata = task->simdata;
@@ -71,13 +72,13 @@ MSG_error_t MSG_task_execute(m_task_t task)
 #endif
 
   self->simdata->waiting_action = simdata->compute;
-  SIMIX_req_host_execution_wait(simdata->compute);
+  comp_state = SIMIX_req_host_execution_wait(simdata->compute);
   self->simdata->waiting_action = NULL;
 
   simdata->isused=0;
 
-  DEBUG2("Execution task '%s' finished in state %d", task->name, SIMIX_req_host_execution_get_state(task->simdata->compute));
-  if (SIMIX_req_host_execution_get_state(task->simdata->compute) == SIMIX_DONE) {
+  DEBUG2("Execution task '%s' finished in state %d", task->name, comp_state);
+  if (comp_state == SIMIX_DONE) {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
     SIMIX_req_host_execution_destroy(task->simdata->compute);
     simdata->computation_amount = 0.0;
