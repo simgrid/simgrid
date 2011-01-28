@@ -243,22 +243,16 @@ MSG_error_t MSG_process_sleep(double nb_sec)
   proc->simdata->waiting_action = NULL;*/
   
   if (state == SIMIX_DONE) {
-    if (SIMIX_req_host_get_state(SIMIX_host_self()) == SURF_RESOURCE_OFF) {
 #ifdef HAVE_TRACING
-      TRACE_msg_process_sleep_out(MSG_process_self());
+  TRACE_msg_process_sleep_out(MSG_process_self());
 #endif
-      MSG_RETURN(MSG_HOST_FAILURE);
-    }
+    MSG_RETURN(MSG_OK);
   } else {
 #ifdef HAVE_TRACING
     TRACE_msg_process_sleep_out(MSG_process_self());
 #endif
     MSG_RETURN(MSG_HOST_FAILURE);
   }
-#ifdef HAVE_TRACING
-  TRACE_msg_process_sleep_out(MSG_process_self());
-#endif
-  MSG_RETURN(MSG_OK);
 }
 
 /** \ingroup msg_gos_functions

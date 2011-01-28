@@ -454,15 +454,28 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
 
 void SIMIX_post_process_sleep(smx_action_t action)
 {
-  e_smx_state_t state = SIMIX_action_map_state(surf_workstation_model->action_state_get(action->sleep.surf_sleep));
   smx_req_t req;
+  e_smx_state_t state;
 
   while ((req = xbt_fifo_shift(action->request_list))) {
+
+    switch(surf_workstation_model->action_state_get(action->sleep.surf_sleep)){
+      case SURF_ACTION_FAILED:
+        state = SIMIX_SRC_HOST_FAILURE;
+        break;
+
+      case SURF_ACTION_DONE:
+        state = SIMIX_DONE;
+        break;
+
+      default:
+        THROW_IMPOSSIBLE;
+        break;
+    }
     req->process_sleep.result = state;
     req->issuer->waiting_action = NULL;
     SIMIX_request_answer(req);
   }
-
   SIMIX_process_sleep_destroy(action);
 }
 
