@@ -4,8 +4,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
-#define MAX_ITER 1
-#define WORK 0
+#define MAX_ITER 200000
+#define WORK 100000
 
 int master(int argc, char **argv);
 int slave(int argc, char **argv);
@@ -47,6 +47,7 @@ int slave(int argc, char **argv)
     MSG_task_receive(&task, mailbox);
     INFO1("Task received to %s", mailbox);
     MSG_task_destroy(task);
+    task=NULL;
   }
 
   return 0;
