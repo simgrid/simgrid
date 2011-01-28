@@ -60,12 +60,20 @@ typedef struct m_task {
   @{ */
 typedef struct m_task *m_task_t;
 
+/**
+ * \brief @brief Communication action
+ * \ingroup m_datatypes_management
+ *
+ * Communication actions transfer tasks between processes.
+ * For a given task, the sender and the receiver have distinct objects.
+ */
+typedef struct msg_comm_t *msg_comm_t;
+
 /** \brief Default value for an uninitialized #m_task_t.
     \ingroup m_datatypes_management 
 */
 #define MSG_TASK_UNINITIALIZED NULL
 
-typedef struct s_smx_action *msg_comm_t;
 /** @} */
 
 

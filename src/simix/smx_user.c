@@ -656,6 +656,9 @@ smx_action_t SIMIX_req_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_bu
 
 void SIMIX_req_comm_destroy(smx_action_t comm)
 {
+  xbt_assert0(comm, "Invalid parameter");
+
+  /* FIXME remove this request type (auto-destroy finished comms) */
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_COMM_DESTROY;

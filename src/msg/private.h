@@ -28,10 +28,10 @@ typedef struct simdata_host {
 /********************************* Task **************************************/
 
 typedef struct simdata_task {
-  smx_action_t compute;         /* SURF modeling of computation  */
-  smx_action_t comm;            /* SIMIX communication  */
-  double message_size;          /* Data size  */
-  double computation_amount;    /* Computation size  */
+  smx_action_t compute;         /* SIMIX modeling of computation */
+  smx_action_t comm;            /* SIMIX modeling of communication */
+  double message_size;          /* Data size */
+  double computation_amount;    /* Computation size */
   m_process_t sender;
   m_process_t receiver;
   m_host_t source;
@@ -70,6 +70,13 @@ typedef struct process_arg {
   char **argv;
   double kill_time;
 } s_process_arg_t, *process_arg_t;
+
+typedef struct msg_comm_t {
+  smx_action_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
+  m_task_t task_sent;           /* task sent (NULL for the receiver) */
+  m_task_t *task_received;      /* where the task will be received (NULL for the sender) */
+  MSG_error_t status;           /* status of the communication once finished */
+} s_msg_comm_t;
 
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
