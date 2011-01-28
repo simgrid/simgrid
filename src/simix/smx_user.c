@@ -567,12 +567,17 @@ void SIMIX_req_rdv_destroy(smx_rdv_t rdv)
 smx_rdv_t SIMIX_req_rdv_get_by_name(const char *name)
 {
   xbt_assert0(name != NULL, "Invalid parameter for SIMIX_req_rdv_get_by_name (name is NULL)");
-  smx_req_t req = SIMIX_req_mine();
 
+  /* FIXME: this is a horrible lost of performance, so we hack it out by
+   * skipping the request (for now). It won't work on distributed but
+   * probably we will change MSG for that. */
+  return SIMIX_rdv_get_by_name(name);
+/*
+  smx_req_t req = SIMIX_req_mine();
   req->call = REQ_RDV_GEY_BY_NAME;
   req->rdv_get_by_name.name = name;
   SIMIX_request_push();
-  return req->rdv_get_by_name.result;
+  return req->rdv_get_by_name.result;*/
 }
 
 /**
