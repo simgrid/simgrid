@@ -303,8 +303,7 @@ static void gras_trp_sock_socket_close(gras_socket_t sock)
   if (!sock)
     return;                     /* close only once */
 
-  if (((gras_trp_tcp_sock_data_t)sock->data)->peer_name)
-    free(((gras_trp_tcp_sock_data_t)sock->data)->peer_name);
+  free(((gras_trp_tcp_sock_data_t)sock->data)->peer_name);
   free(sock->data);
 
   XBT_VERB("close tcp connection %d", sock->sd);
@@ -757,16 +756,14 @@ void gras_trp_buf_socket_close(gras_socket_t sock)
           data->in_buf.size - data->in_buf.pos,
           data->in_buf.size, data->in_buf.pos);
   }
-  if (data->in_buf.data)
-    free(data->in_buf.data);
+  free(data->in_buf.data);
 
   if (data->out_buf.size != data->out_buf.pos) {
     XBT_DEBUG("Flush the socket before closing (in=%d,out=%d)",
            data->in_buf.size, data->out_buf.size);
     gras_trp_bufiov_flush(sock);
   }
-  if (data->out_buf.data)
-    free(data->out_buf.data);
+  free(data->out_buf.data);
 
 #ifdef HAVE_READV
   if (data->in_buf_v) {

@@ -282,8 +282,7 @@ void gras_cbps_block_end(gras_cbps_t ps)
       xbt_dynar_free_container(&varstack);      /*already empty, save a test ;) */
     }
 
-    if (var->data)
-      free(var->data);
+    free(var->data);
     free(var);
     free(name);
   }

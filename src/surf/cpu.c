@@ -144,8 +144,7 @@ static int cpu_action_unref(surf_action_t action)
       lmm_variable_free(cpu_maxmin_system,
                         ((surf_action_cpu_Cas01_t) action)->variable);
 #ifdef HAVE_TRACING
-    if (action->category)
-      xbt_free(action->category);
+    xbt_free(action->category);
 #endif
     surf_action_free(&action);
     return 1;

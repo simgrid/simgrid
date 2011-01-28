@@ -71,12 +71,9 @@ void xbt_workload_elm_free(xbt_workload_elm_t cmd)
 {
   if (!cmd)
     return;
-  if (cmd->who)
-    free(cmd->who);
-  if (cmd->comment)
-    free(cmd->comment);
-  if (cmd->str_arg)
-    free(cmd->str_arg);
+  free(cmd->who);
+  free(cmd->comment);
+  free(cmd->str_arg);
   free(cmd);
 }
 

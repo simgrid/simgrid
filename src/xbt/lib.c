@@ -445,10 +445,8 @@ int xbt_lib_cursor_get_or_free(xbt_lib_cursor_t * cursor,
 
 static void xbt_lib_cursor_free(xbt_lib_cursor_t * cursor)
 {
-  if (*cursor) {
-    xbt_free(*cursor);
-    *cursor = NULL;
-  }
+  xbt_free(*cursor);
+  *cursor = NULL;
 }
 
 void xbt_lib_cursor_step(xbt_lib_cursor_t cursor)

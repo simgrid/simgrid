@@ -172,8 +172,7 @@ static void handle_suite(const char *filename, FILE * IN)
   rctx_free(rctx);
 
   /* Clear buffers */
-  if (line)
-    free(line);
+  free(line);
   xbt_strbuff_free(buff);
 
 }

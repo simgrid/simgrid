@@ -50,9 +50,7 @@ static void route_cache_elem_free(void *e)
 static void graph_node_map_elem_free(void *e)
 {
   graph_node_map_element_t elm = (graph_node_map_element_t) e;
-  if (elm) {
-    xbt_free(elm);
-  }
+  xbt_free(elm);
 }
 
 static void graph_edge_data_free(void *e)
@@ -60,10 +58,8 @@ static void graph_edge_data_free(void *e)
   route_extended_t e_route = (route_extended_t) e;
   if (e_route) {
     xbt_dynar_free(&(e_route->generic_route.link_list));
-    if (e_route->src_gateway)
-      xbt_free(e_route->src_gateway);
-    if (e_route->dst_gateway)
-      xbt_free(e_route->dst_gateway);
+    xbt_free(e_route->src_gateway);
+    xbt_free(e_route->dst_gateway);
     xbt_free(e_route);
   }
 }

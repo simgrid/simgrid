@@ -413,8 +413,7 @@ void SD_task_dotty(SD_task_t task, void *out)
  */
 static void __SD_task_dependency_destroy(void *dependency)
 {
-  if (((SD_dependency_t) dependency)->name != NULL)
-    xbt_free(((SD_dependency_t) dependency)->name);
+  xbt_free(((SD_dependency_t)dependency)->name);
   xbt_free(dependency);
 }
 

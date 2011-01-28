@@ -60,8 +60,7 @@ XBT_INLINE void xbt_strbuff_free_container(xbt_strbuff_t b)
 XBT_INLINE void xbt_strbuff_free(xbt_strbuff_t b)
 {
   if (b) {
-    if (b->data)
-      free(b->data);
+    free(b->data);
     free(b);
   }
 }
@@ -272,8 +271,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
         }
         free(value);
 
-        if (default_value)
-          free(default_value);
+        free(default_value);
 
         end--;                  /* compensate the next end++ */
       }

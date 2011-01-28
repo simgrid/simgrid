@@ -92,8 +92,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
         char *data;
 
         xbt_dynar_foreach(path, cpt, data) {
-          if (binary_name)
-            free(binary_name);
+          free(binary_name);
           binary_name = bprintf("%s/%s", data, xbt_binary_name);
           if (!stat(binary_name, &stat_buf)) {
             /* Found. */

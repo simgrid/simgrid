@@ -50,10 +50,8 @@ static int surf_cpu_ti_binary_search(double *array, double a, int low,
 
 static void surf_cpu_ti_free_trace(surf_cpu_ti_trace_t trace)
 {
-  if (trace->time_points)
-    xbt_free(trace->time_points);
-  if (trace->integral)
-    xbt_free(trace->integral);
+  xbt_free(trace->time_points);
+  xbt_free(trace->integral);
   xbt_free(trace);
 }
 

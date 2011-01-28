@@ -128,9 +128,7 @@ void *xbt_realloc(void *p, size_t s)
       res = xbt_malloc(s);
     }
   } else {
-    if (p) {
-      free(p);
-    }
+    free(p);
   }
   return res;
 }

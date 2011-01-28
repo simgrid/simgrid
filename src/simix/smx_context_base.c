@@ -72,8 +72,7 @@ void smx_ctx_base_free(smx_context_t context)
     /* free argv */
     if (context->argv) {
       for (i = 0; i < context->argc; i++)
-        if (context->argv[i])
-          free(context->argv[i]);
+        free(context->argv[i]);
 
       free(context->argv);
     }

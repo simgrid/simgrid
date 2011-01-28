@@ -67,7 +67,9 @@ const char *SIM_MAIN_POSTEMBULE = "\n"
     "\n"
     "  /* cleanup the place */\n"
     "  gras_clean();\n"
-    "  if (gras_log)\n" "    free(gras_log);\n" "  return 0;\n" "}\n";
+    "  free(gras_log);\n"
+    "  return 0;\n"
+    "}\n";
 
 
 /***************************************

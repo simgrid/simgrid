@@ -103,10 +103,8 @@ void xbt_graph_parse_open(const char *file)
 
 void xbt_graph_parse_close(void)
 {
-  if (xbt_graph_input_buffer_stack)
-    xbt_dynar_free(&xbt_graph_input_buffer_stack);
-  if (xbt_graph_file_to_parse_stack)
-    xbt_dynar_free(&xbt_graph_file_to_parse_stack);
+  xbt_dynar_free(&xbt_graph_input_buffer_stack);
+  xbt_dynar_free(&xbt_graph_file_to_parse_stack);
 
   if (xbt_graph_file_to_parse) {
     xbt_graph_parse__delete_buffer(xbt_graph_input_buffer);

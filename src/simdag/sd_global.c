@@ -395,15 +395,10 @@ void SD_exit(void)
 
   xbt_mallocator_free(sd_global->task_mallocator);
 
-  XBT_DEBUG("Destroying workstation and link arrays if necessary...");
-  if (sd_global->workstation_list != NULL)
-    xbt_free(sd_global->workstation_list);
-
-  if (sd_global->link_list != NULL)
-    xbt_free(sd_global->link_list);
-
-  if (sd_global->recyclable_route != NULL)
-    xbt_free(sd_global->recyclable_route);
+  XBT_DEBUG("Destroying workstation and link arrays...");
+  xbt_free(sd_global->workstation_list);
+  xbt_free(sd_global->link_list);
+  xbt_free(sd_global->recyclable_route);
 
   XBT_DEBUG("Destroying the swags...");
   xbt_swag_free(sd_global->not_scheduled_task_set);

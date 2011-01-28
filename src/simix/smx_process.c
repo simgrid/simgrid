@@ -100,15 +100,12 @@ void SIMIX_process_empty_trash(void)
     SIMIX_context_free(process->context);
 
     /* Free the exception allocated at creation time */
-    if (process->running_ctx)
-      free(process->running_ctx);
-    if (process->properties)
-      xbt_dict_free(&process->properties);
+    free(process->running_ctx);
+    xbt_dict_free(&process->properties);
 
     xbt_fifo_free(process->comms);
 
     free(process->name);
-    process->name = NULL;
     free(process);
   }
 }

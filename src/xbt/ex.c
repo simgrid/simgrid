@@ -187,8 +187,7 @@ void xbt_ex_free(xbt_ex_t e)
 {
   int i;
 
-  if (e.msg)
-    free(e.msg);
+  free(e.msg);
   if (e.remote) {
     free(e.procname);
     free(e.file);
@@ -198,8 +197,8 @@ void xbt_ex_free(xbt_ex_t e)
 
   if (e.bt_strings) {
     for (i = 0; i < e.used; i++)
-      free((char *) e.bt_strings[i]);
-    free((char **) e.bt_strings);
+      free(e.bt_strings[i]);
+    free(e.bt_strings);
   }
   /* memset(e,0,sizeof(xbt_ex_t)); */
 }
@@ -393,12 +392,9 @@ static void bad_example(void)
     strcpy(cp2, "bar");
   }
   TRY_CLEANUP {
-    if (cp3 != NULL)
-      free(cp3);
-    if (cp2 != NULL)
-      free(cp2);
-    if (cp1 != NULL)
-      free(cp1);
+    free(cp3);
+    free(cp2);
+    free(cp1);
   }
   CATCH_ANONYMOUS {
     printf("cp3=%s", cp3);
@@ -431,10 +427,8 @@ static void good_example(void)
     }
     TRY_CLEANUP {               /*04 */
       printf("cp3=%s", cp3 == NULL /*02 */ ? "" : cp3);
-      if (cp3 != NULL)
-        free(cp3);
-      if (cp2 != NULL)
-        free(cp2);
+      free(cp3);
+      free(cp2);
       /*05 cp1 was given away */
     }
     CATCH_ANONYMOUS {

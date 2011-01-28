@@ -241,10 +241,8 @@ void ThreadDynarray_clear(ThreadDynarray_t ptr)
 {
   ThreadDynarray_lock(ptr);
 
-  if (ptr->threads) {
-    free(ptr->threads);
-    ptr->threads = NULL;
-  }
+  free(ptr->threads);
+  ptr->threads = NULL;
 
   ptr->count = 0;
   ptr->capacity = 0;

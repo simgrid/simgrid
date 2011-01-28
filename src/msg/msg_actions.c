@@ -186,8 +186,7 @@ MSG_error_t MSG_action_trace_run(char *path)
     }
   }
 
-  if (action_line)
-    free(action_line);
+  free(action_line);
   if (path)
     fclose(action_fp);
   xbt_dict_free(&action_queues);

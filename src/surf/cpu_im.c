@@ -162,8 +162,7 @@ static int cpu_im_action_unref(surf_action_t action)
                     ((cpu_Cas01_im_t) ACTION_GET_CPU(action))->action_set);
     xbt_swag_insert(ACTION_GET_CPU(action), cpu_im_modified_cpu);
 #ifdef HAVE_TRACING
-    if (action->category)
-      xbt_free(action->category);
+    xbt_free(action->category);
 #endif
     surf_action_free(&action);
     return 1;

@@ -274,10 +274,8 @@ void gras_trp_sg_socket_close(gras_socket_t sock)
         ("socket_close called on the unknown incoming socket %p (port=%d)",
          sock, sockdata->server_port);
   }
-  if (sock->data) {
-    /* FIXME: kill the rdv point if receiver side */
-    free(sock->data);
-  }
+  /* FIXME: kill the rdv point if receiver side */
+  free(sock->data);
   XBT_OUT();
 }
 
@@ -373,8 +371,7 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
   if (data)
     memcpy(data, msg_got->payl, size);
 
-  if (msg_got->payl)
-    xbt_free(msg_got->payl);
+  xbt_free(msg_got->payl);
 
   xbt_free(msg_got);
   SIMIX_req_mutex_unlock(remote_sock_data->mutex);

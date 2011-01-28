@@ -729,8 +729,7 @@ void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
 
   CloseHandle(thread->handle);
 
-  if (thread->name)
-    free(thread->name);
+  free(thread->name);
 
   free(thread);
 }

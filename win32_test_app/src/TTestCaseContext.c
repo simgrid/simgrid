@@ -253,9 +253,7 @@ void TestCaseContext_setName(TestCaseContext_t context, char *name)
 {
   size_t size;
 
-  if (NULL != context->name) {
-    free(context->name);
-  }
+  free(context->name);
 
   context->name = strdup(name);
   size = strlen(name);

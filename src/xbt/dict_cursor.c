@@ -51,10 +51,8 @@ XBT_INLINE xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict)
  */
 XBT_INLINE void xbt_dict_cursor_free(xbt_dict_cursor_t * cursor)
 {
-  if (*cursor) {
-    xbt_free(*cursor);
-    *cursor = NULL;
-  }
+  xbt_free(*cursor);
+  *cursor = NULL;
 }
 
 /*

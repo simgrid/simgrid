@@ -170,8 +170,7 @@ static int action_unref(surf_action_t action)
   if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
 #ifdef HAVE_TRACING
-    if (action->category)
-      xbt_free(action->category);
+    xbt_free(action->category);
 #endif
     surf_action_free(&action);
     return 1;

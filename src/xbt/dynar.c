@@ -259,7 +259,6 @@ XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
     _dynar_map(dynar, dynar->free_f);
   }
   /*
-     if (dynar->data)
      free(dynar->data);
 
      dynar->size = 0;

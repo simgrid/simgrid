@@ -404,8 +404,7 @@ static void ptask_update_resource_state(void *id,
 
 static void ptask_finalize(void)
 {
-  if (ptask_parallel_task_link_set != NULL)
-    xbt_dict_free(&ptask_parallel_task_link_set);
+  xbt_dict_free(&ptask_parallel_task_link_set);
 
   surf_model_exit(surf_workstation_model);
   surf_workstation_model = NULL;

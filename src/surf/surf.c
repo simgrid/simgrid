@@ -387,8 +387,7 @@ void surf_exit(void)
   }
   surf_action_exit();
 
-  if (surf_path)
-    xbt_dynar_free(&surf_path);
+  xbt_dynar_free(&surf_path);
 
   xbt_lib_free(&host_lib);
   xbt_lib_free(&link_lib);

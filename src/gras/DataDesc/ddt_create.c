@@ -158,8 +158,7 @@ void gras_dd_cat_field_free(void *f)
   gras_dd_cat_field_t field = *(gras_dd_cat_field_t *) f;
   XBT_IN("");
   if (field) {
-    if (field->name)
-      free(field->name);
+    free(field->name);
     free(field);
   }
   XBT_OUT();

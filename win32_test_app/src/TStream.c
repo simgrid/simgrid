@@ -209,8 +209,7 @@ void Stream_free(Stream_t ptr)
   if ((NULL != ptr->file) && (stdin != ptr->file))
     fclose(ptr->file);
 
-  if (NULL != ptr->line)
-    free(ptr->line);
+  free(ptr->line);
 
   DeleteCriticalSection(&cs);
 
@@ -483,8 +482,7 @@ void Stream_printLine(Stream_t stream, line_type_t line_type)
      */
   }
 
-  if (__date)
-    free(__date);
+  free(__date);
 
   Stream_unlock(stream);
 }

@@ -79,8 +79,7 @@ void parse_ns3_add_host(void)
 }
 
 static void ns3_free_dynar(void * elmts){
-	if(elmts)
-		free(elmts);
+	free(elmts);
 	return;
 }
 
@@ -548,8 +547,7 @@ static int action_unref(surf_action_t action)
 #ifdef HAVE_TRACING
     xbt_free(((surf_action_network_ns3_t)action)->src_name);
     xbt_free(((surf_action_network_ns3_t)action)->dst_name);
-    if (action->category)
-      xbt_free(action->category);
+    xbt_free(action->category);
 #endif
     XBT_DEBUG ("Removing action %p", action);
     surf_action_free(&action);

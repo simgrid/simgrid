@@ -87,8 +87,7 @@ static void action_send(const char *const *action)
    
    XBT_VERB("%s %f", name, MSG_get_clock() - clock);
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    free(name);
+  free(name);
 
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out(rank, rank, dst_traced, "send");
@@ -145,8 +144,7 @@ static void action_recv(const char *const *action)
     MSG_task_destroy(task);
   }
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    free(name);
+  free(name);
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out(rank, src_traced, rank, "recv");
   TRACE_smpi_recv(rank, src_traced, rank);
@@ -219,8 +217,7 @@ static void action_wait(const char *const *action)
   MSG_task_destroy(task);
 
   XBT_VERB("%s %f", name, MSG_get_clock() - clock);
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    free(name);
+  free(name);
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out(rank, src_traced, rank, "wait");
   TRACE_smpi_recv(rank, src_traced, rank);
@@ -264,8 +261,7 @@ static void action_barrier(const char *const *action)
     mutex=NULL;
   }
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    free(name);
+  free(name);
 
 }
 
@@ -386,8 +382,7 @@ static void action_sleep(const char *const *action)
   MSG_process_sleep(parse_double(duration));
   XBT_VERB("%s %f ", name, MSG_get_clock() - clock);
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    free(name);
+  free(name);
 }
 
 static void action_allReduce(const char *const *action) {
@@ -472,8 +467,7 @@ static void action_comm_size(const char *const *action)
     name = xbt_str_join_array(action, " ");
   communicator_size = parse_double(size);
   XBT_VERB("%s %f", name, MSG_get_clock() - clock);
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    free(name);
+  free(name);
 }
 
 static void action_compute(const char *const *action)
@@ -489,8 +483,7 @@ static void action_compute(const char *const *action)
   MSG_task_execute(task);
   MSG_task_destroy(task);
   XBT_VERB("%s %f", name, MSG_get_clock() - clock);
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    free(name);
+  free(name);
 }
 
 static void action_init(const char *const *action)

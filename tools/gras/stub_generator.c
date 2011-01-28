@@ -169,8 +169,7 @@ int main(int argc, char *argv[])
   generate_simulation_dsp_file(project_name);
   generate_real_live_dsp_file(project_name);
 
-  if (__gras_path)
-    xbt_free(__gras_path);
+  xbt_free(__gras_path);
 #endif
 
   free(warning);

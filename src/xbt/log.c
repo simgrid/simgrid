@@ -486,8 +486,7 @@ static void _free_setting(void *s)
   xbt_log_setting_t set = *(xbt_log_setting_t *) s;
   if (set) {
     free(set->catname);
-    if (set->fmt)
-      free(set->fmt);
+    free(set->fmt);
     free(set);
   }
 }

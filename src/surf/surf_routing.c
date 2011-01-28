@@ -1197,10 +1197,8 @@ void generic_free_extended_route(route_extended_t e_route)
 {
   if (e_route) {
     xbt_dynar_free(&(e_route->generic_route.link_list));
-    if (e_route->src_gateway)
-      xbt_free(e_route->src_gateway);
-    if (e_route->dst_gateway)
-      xbt_free(e_route->dst_gateway);
+    xbt_free(e_route->src_gateway);
+    xbt_free(e_route->dst_gateway);
     xbt_free(e_route);
   }
 }
@@ -1437,8 +1435,7 @@ static void routing_parse_cluster(void)
         bprintf("%s%s_router%s", struct_cluster->prefix, struct_cluster->id,
                 struct_cluster->suffix);
   sg_platf_new_router(&router);
-  if (newid)
-    free(newid);
+  free(newid);
 
   //Make the backbone
   if ((struct_cluster->bb_bw != 0) && (struct_cluster->bb_lat != 0)) {
