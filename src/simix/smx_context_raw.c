@@ -200,6 +200,7 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
 
      }else{
        maestro_raw_context = context;
+       current_context = (smx_context_t) maestro_raw_context;
      }
 
      return (smx_context_t) context;
