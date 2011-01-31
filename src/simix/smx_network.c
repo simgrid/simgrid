@@ -508,6 +508,7 @@ static XBT_INLINE void SIMIX_comm_start(smx_action_t action)
 
 void SIMIX_comm_finish(smx_action_t action)
 {
+  unsigned int destroy_count = 0;
   smx_req_t req;
 
   while ((req = xbt_fifo_shift(action->request_list))) {
@@ -606,7 +607,11 @@ void SIMIX_comm_finish(smx_action_t action)
 
     req->issuer->waiting_action = NULL;
     SIMIX_request_answer(req);
+    destroy_count++;
   }
+
+  while(destroy_count-- > 0)
+    SIMIX_comm_destroy(action);
 }
 
 void SIMIX_post_comm(smx_action_t action)

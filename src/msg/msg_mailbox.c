@@ -118,7 +118,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
     xbt_ex_free(e);
   }
   if (comm != NULL) {
-    SIMIX_req_comm_destroy(comm);
+    //SIMIX_req_comm_destroy(comm);
   }
 
   if (ret != MSG_HOST_FAILURE &&
@@ -193,7 +193,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   }
 
   if (comm != NULL) {
-    SIMIX_req_comm_destroy(comm);
+    //SIMIX_req_comm_destroy(comm);
   }
 
   process->simdata->waiting_task = NULL;

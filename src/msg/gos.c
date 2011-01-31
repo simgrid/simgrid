@@ -604,7 +604,7 @@ void MSG_comm_destroy(msg_comm_t comm)
   }
 
   /* FIXME auto-destroy comms from SIMIX to avoid this request */
-  SIMIX_req_comm_destroy(comm->s_comm);
+  /*SIMIX_req_comm_destroy(comm->s_comm);*/
   free(comm);
 }
 
