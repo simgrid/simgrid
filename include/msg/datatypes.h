@@ -67,7 +67,7 @@ typedef struct m_task *m_task_t;
  * Communication actions transfer tasks between processes.
  * For a given task, the sender and the receiver have distinct objects.
  */
-typedef struct msg_comm_t *msg_comm_t;
+typedef struct msg_comm *msg_comm_t;
 
 /** \brief Default value for an uninitialized #m_task_t.
     \ingroup m_datatypes_management 

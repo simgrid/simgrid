@@ -71,7 +71,7 @@ typedef struct process_arg {
   double kill_time;
 } s_process_arg_t, *process_arg_t;
 
-typedef struct msg_comm_t {
+typedef struct msg_comm {
   smx_action_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
   m_task_t task_sent;           /* task sent (NULL for the receiver) */
   m_task_t *task_received;      /* where the task will be received (NULL for the sender) */
