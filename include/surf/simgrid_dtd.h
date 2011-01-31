@@ -1,5 +1,5 @@
 /* XML processor/application API for src/surf/simgrid.dtd.
- * Generated 2010/12/08 16:11:56.
+ * Generated 2011/01/31 15:35:49.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -226,6 +226,8 @@ typedef int AT_surfxml_random_std_deviation;
 #define AU_surfxml_random_std_deviation NULL
 typedef int AT_surfxml_host_state_file;
 #define AU_surfxml_host_state_file NULL
+typedef int AT_surfxml_AS_coordinates;
+#define AU_surfxml_AS_coordinates NULL
 typedef int AT_surfxml_route_dst;
 #define AU_surfxml_route_dst NULL
 typedef int AT_surfxml_cluster_bw;
@@ -387,6 +389,8 @@ XBT_PUBLIC_DATA(AT_surfxml_random_std_deviation ) AX_surfxml_random_std_deviatio
 #define A_surfxml_random_std_deviation (surfxml_bufferstack + AX_surfxml_random_std_deviation)
 XBT_PUBLIC_DATA(AT_surfxml_host_state_file ) AX_surfxml_host_state_file;
 #define A_surfxml_host_state_file (surfxml_bufferstack + AX_surfxml_host_state_file)
+XBT_PUBLIC_DATA(AT_surfxml_AS_coordinates ) AX_surfxml_AS_coordinates;
+#define A_surfxml_AS_coordinates (surfxml_bufferstack + AX_surfxml_AS_coordinates)
 XBT_PUBLIC_DATA(AT_surfxml_route_dst ) AX_surfxml_route_dst;
 #define A_surfxml_route_dst (surfxml_bufferstack + AX_surfxml_route_dst)
 XBT_PUBLIC_DATA(AT_surfxml_cluster_bw ) AX_surfxml_cluster_bw;

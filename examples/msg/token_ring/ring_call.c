@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "simdag/simdag.h"
 #include "surf/surf_private.h"
 
 extern routing_global_t global_routing;
@@ -18,15 +17,6 @@ int slave(int argc, char *argv[]);
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(ring,
                              "Messages specific for this msg example");
-
-static int name_compare_hosts(const void *n1, const void *n2)
-{
-  char name1[80], name2[80];
-  strcpy(name1, SD_workstation_get_name(*((SD_workstation_t *) n1)));
-  strcpy(name2, SD_workstation_get_name(*((SD_workstation_t *) n2)));
-
-  return strcmp(name1, name2);
-}
 
 int master(int argc, char *argv[])
 {
@@ -41,7 +31,7 @@ int master(int argc, char *argv[])
     sprintf(mailbox, "host%d", num+1);
     if(num == totalHosts-1)
     	sprintf(mailbox, "host%d", 0);
-    sprintf(buffer, "Hello");
+    sprintf(buffer, "Token");
 
     task_s = MSG_task_create(buffer,
 							task_comp_size,
@@ -80,7 +70,7 @@ int slave(int argc, char *argv[])
 	sprintf(mailbox, "host%d", num+1);
 	if(num == totalHosts-1)
 		sprintf(mailbox, "host%d", 0);
-	sprintf(buffer, "Hello");
+	sprintf(buffer, "Token");
 	task_s = MSG_task_create(buffer,
 							task_comp_size,
 							task_comm_size,
@@ -110,7 +100,7 @@ static int surf_parse_bypass_application(void)
 
 	SURFXML_START_TAG(platform);
 
-	INFO1("process : %s en master",MSG_host_get_name(hosts[0]));
+	DEBUG1("process : %s en master",MSG_host_get_name(hosts[0]));
 	/*   <process host="host A" function="master"> */
 	SURFXML_BUFFER_SET(process_host, MSG_host_get_name(hosts[0]));
 	SURFXML_BUFFER_SET(process_function, "master");
@@ -126,7 +116,7 @@ static int surf_parse_bypass_application(void)
 
 	for(i=1;i<totalHosts;i++)
 	{
-		INFO1("process : %s en slave",MSG_host_get_name(hosts[i]));
+	DEBUG1("process : %s en slave",MSG_host_get_name(hosts[i]));
 	/*   <process host="host A" function="slave"> */
 	SURFXML_BUFFER_SET(process_host,MSG_host_get_name(hosts[i]) );
 	SURFXML_BUFFER_SET(process_function, "slave");

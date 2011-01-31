@@ -56,6 +56,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/icomms)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/chord)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/parallel_contexts)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring)
 
 if(HAVE_MC)
 	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/mc)

@@ -176,8 +176,7 @@ static double eculidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
 
 }
 
-static double vivaldi_get_link_latency (routing_component_t rc,
-																				const char *src, const char *dst)
+static double vivaldi_get_link_latency (routing_component_t rc,const char *src, const char *dst)
 {
   double euclidean_dist;
   xbt_dynar_t src_ctn, dst_ctn;
@@ -541,6 +540,13 @@ static void parse_S_AS(char *AS_id, char *AS_routing)
 static void parse_S_AS_XML(void)
 {
   parse_S_AS(A_surfxml_AS_id, A_surfxml_AS_routing);
+
+  if (strcmp(A_surfxml_AS_coordinates,"")) {
+	DEBUG2("%s coordinates : %s",A_surfxml_AS_id,A_surfxml_AS_coordinates);
+  	xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_AS_coordinates, " ");
+  	xbt_dynar_shrink(ctn,0);
+   	xbt_dict_set (coordinates,A_surfxml_AS_id,ctn,NULL);
+  }
 }
 
 /*
@@ -599,6 +605,24 @@ static void parse_E_AS_lua(const char *id)
 }
 
 /* Aux Business methods */
+
+/**
+ * \brief Get the AS name of the element
+ *
+ * \param name the host name
+ *
+ */
+static char* elements_As_name(const char *name)
+{
+  routing_component_t as_comp;
+
+  /* (1) find the as where the host is located */
+  as_comp = ((network_element_info_t)
+            xbt_dict_get_or_null(global_routing->where_network_elements,
+                                 name))->rc_component;
+  return as_comp->name;
+}
+
 
 /**
  * \brief Get the AS father and the first elements of the chain
@@ -802,7 +826,6 @@ static double _get_latency(const char *src, const char *dst)
   double latency, latency_src, latency_dst = 0.0;
 
   DEBUG2("Solve route  \"%s\" to \"%s\"", src, dst);
-
   xbt_assert0(src && dst, "bad parameters for \"_get_route\" method");
 
   route_extended_t e_route_cnt;
@@ -826,7 +849,6 @@ static double _get_latency(const char *src, const char *dst)
      } else latency = 0;
   } else {                      /* SURF_ROUTING_RECURSIVE */
      route_extended_t e_route_bypass = NULL;
-
     if (common_father->get_bypass_route)
       e_route_bypass =
           (*(common_father->get_bypass_route)) (common_father, src, dst);
@@ -845,8 +867,9 @@ static double _get_latency(const char *src, const char *dst)
                 "bad gateway for route between \"%s\" and \"%s\"", src,
                 dst);            
     latency =
-          (*(common_father->get_latency)) (common_father, e_route_cnt->src_gateway,
-                                         e_route_cnt->src_gateway);
+          (*(common_father->get_latency)) (common_father, elements_As_name(src),
+        		  elements_As_name(dst));
+
     xbt_assert2(latency>=0, "no route between \"%s\" and \"%s\"",
                 src_father->name, dst_father->name);
     
@@ -3663,6 +3686,7 @@ static void routing_parse_Speer(void)
   surfxml_bufferstack_push(1);
 
   SURFXML_BUFFER_SET(AS_id, peer_id);
+  SURFXML_BUFFER_SET(AS_coordinates, peer_coord);
 #ifdef HAVE_PCRE_LIB
   SURFXML_BUFFER_SET(AS_routing, "RuleBased");
   DEBUG1("<AS id=\"%s\"\trouting=\"RuleBased\">", peer_id);

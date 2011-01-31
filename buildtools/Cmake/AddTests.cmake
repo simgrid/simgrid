@@ -211,6 +211,9 @@ ADD_TEST(msg-masterslave-cpu-ti-ucontext	${CMAKE_BINARY_DIR}/bin/tesh	--cfg cont
 ADD_TEST(msg-trace-raw		${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:raw		--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg 	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg trace/trace.tesh)
 ADD_TEST(msg-trace-thread	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:thread		--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg 	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg trace/trace.tesh)
 ADD_TEST(msg-trace-ucontext	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:ucontext		--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg 	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg trace/trace.tesh)
+ADD_TEST(msg-token-ring-raw		${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:raw		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring 	--cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/token_ring.tesh)
+ADD_TEST(msg-token-ring-thread	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:thread		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring 	--cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/token_ring.tesh)
+ADD_TEST(msg-token-ring-ucontext	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:ucontext		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring 	--cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/token_ring.tesh)
 
 IF(${ARCH_32_BITS})
 ADD_TEST(gras-ping-sg-32-raw		${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:raw		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/gras/ping 	--cd ${CMAKE_BINARY_DIR}/examples/gras/ping ${CMAKE_HOME_DIRECTORY}/examples/gras/ping/test_sg_32)

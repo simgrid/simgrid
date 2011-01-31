@@ -24,6 +24,7 @@
 
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing CDATA #REQUIRED>
+<!ATTLIST AS coordinates  CDATA "">
 
 <!ELEMENT host (prop*)>
 <!ATTLIST host id CDATA #REQUIRED>
