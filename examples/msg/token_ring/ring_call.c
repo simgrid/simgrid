@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "msg/msg.h"
 #include "surf/surf_private.h"
 
 extern routing_global_t global_routing;
