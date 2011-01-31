@@ -46,7 +46,6 @@ typedef struct node {
   char pred_mailbox[MAILBOX_NAME_SIZE];   // predecessor's mailbox name
   int next_finger_to_fix;                 // index of the next finger to fix in fix_fingers()
   msg_comm_t comm_receive;                // current communication to receive
-  xbt_dynar_t comms;                      // current communications being sent
   double last_change_date;                // last time I changed a finger or my predecessor
 } s_node_t, *node_t;
 
@@ -259,9 +258,7 @@ int node(int argc, char *argv[])
 
   double init_time = MSG_get_clock();
   m_task_t task_received = NULL;
-  msg_comm_t comm_send = NULL;
   int i;
-  int index;
   int join_success = 0;
   double deadline;
   double next_stabilize_date = init_time + periodic_stabilize_delay;
@@ -276,7 +273,6 @@ int node(int argc, char *argv[])
   node.id = atoi(argv[1]);
   get_mailbox(node.id, node.mailbox);
   node.next_finger_to_fix = 0;
-  node.comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   node.fingers = xbt_new0(s_finger_t, nb_bits);
   node.last_change_date = init_time;
 
@@ -358,6 +354,7 @@ int node(int argc, char *argv[])
       }
 
       // see if some communications are finished
+      /*
       while ((index = MSG_comm_testany(node.comms)) != -1) {
         comm_send = xbt_dynar_get_as(node.comms, index, msg_comm_t);
         MSG_error_t status = MSG_comm_get_status(comm_send);
@@ -371,6 +368,7 @@ int node(int argc, char *argv[])
 	  MSG_task_destroy(task);
 	}
       }
+      */
     }
 
     // clean unfinished comms sent
@@ -389,7 +387,6 @@ int node(int argc, char *argv[])
   }
 
   // stop the simulation
-  xbt_dynar_free(&node.comms);
   xbt_free(node.fingers);
   return 0;
 }
@@ -403,7 +400,6 @@ int node(int argc, char *argv[])
 static void handle_task(node_t node, m_task_t task) {
 
   DEBUG1("Handling task %p", task);
-  msg_comm_t comm = NULL;
   char mailbox[MAILBOX_NAME_SIZE];
   task_data_t task_data = (task_data_t) MSG_task_get_data(task);
   e_task_type_t type = task_data->type;
@@ -421,8 +417,7 @@ static void handle_task(node_t node, m_task_t task) {
             task_data->issuer_host_name,
 	    task_data->answer_to,
             task_data->request_id, task_data->answer_id);
-        comm = MSG_task_isend(task, task_data->answer_to);
-        xbt_dynar_push(node->comms, &comm);
+        MSG_task_dsend(task, task_data->answer_to);
       }
       else {
         // otherwise, forward the request to the closest preceding finger in my table
@@ -430,8 +425,7 @@ static void handle_task(node_t node, m_task_t task) {
         DEBUG2("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
             task_data->request_id, closest);
         get_mailbox(closest, mailbox);
-        comm = MSG_task_isend(task, mailbox);
-        xbt_dynar_push(node->comms, &comm);
+        MSG_task_dsend(task, mailbox);
       }
       break;
 
@@ -442,8 +436,7 @@ static void handle_task(node_t node, m_task_t task) {
       DEBUG3("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
           task_data->issuer_host_name,
           task_data->answer_to, task_data->answer_id);
-      comm = MSG_task_isend(task, task_data->answer_to);
-      xbt_dynar_push(node->comms, &comm);
+      MSG_task_dsend(task, task_data->answer_to);
       break;
 
     case TASK_NOTIFY:
@@ -842,8 +835,7 @@ static void remote_notify(node_t node, int notify_id, int predecessor_candidate_
   DEBUG2("Sending a 'Notify' request (task %p) to %d", task, notify_id);
   char mailbox[MAILBOX_NAME_SIZE];
   get_mailbox(notify_id, mailbox);
-  msg_comm_t comm = MSG_task_isend(task, mailbox);
-  xbt_dynar_push(node->comms, &comm);
+  MSG_task_dsend(task, mailbox);
 }
 
 /**
