@@ -24,7 +24,7 @@ $ $SG_TEST_EXENV token_ring ${srcdir:=.}/two_clusters.xml --log=root.fmt:[%10.6r
 > [  1.148160] [10:slave@bob1.hamburger.edu] Send Data to "host0"
 > [  1.148160] [0:@] Simulation time 1.14816
 
-$ $SG_TEST_EXENV token_ring ${srcdir:=.}/two_peer.xml --log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n
+$ $SG_TEST_EXENV token_ring ${srcdir:=.}/two_peers.xml --log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n
 > [  0.000000] [0:@] Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
 > [5111.488529] [1:master@peer_100036570] Send Data to "host1"
 > [5111.488529] [2:slave@peer_100030591] Received "Token"
