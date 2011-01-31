@@ -89,6 +89,7 @@ typedef struct s_smx_action {
       e_smx_comm_type_t type;         /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
       smx_rdv_t rdv;                  /* Rendez-vous where the comm is queued */
       int refcount;                   /* Number of processes involved in the cond */
+      int detached;                   /* If detached or not */
 
       /* Surf action data */
       surf_action_t surf_comm;        /* The Surf communication action encapsulated */

@@ -219,6 +219,9 @@ void SIMIX_comm_destroy(smx_action_t action)
 
   SIMIX_comm_destroy_internal_actions(action);
 
+  if(action->comm.detached)
+    ((void_f_pvoid_t)action->comm.src_data)(action->comm.src_buff);
+
   xbt_free(action);
 }
 
@@ -265,8 +268,10 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
 
   /* If the communication action is detached then decrease the refcount
    * by one, so it will be eliminated by the receivers destroy call */
-  if(detached)
+  if(detached){
+    action->comm.detached = 1;
     action->comm.refcount--;
+  }
 
   /* Setup the communication request */
   action->comm.src_proc = src_proc;

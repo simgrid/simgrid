@@ -423,7 +423,7 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
  */
-void MSG_task_dsend(m_task_t task, const char *alias)
+void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
@@ -445,13 +445,8 @@ void MSG_task_dsend(m_task_t task, const char *alias)
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  msg_comm_t comm = xbt_new0(s_msg_comm_t, 1);
-  comm->task_sent = task;
-  comm->task_received = NULL;
-  comm->status = MSG_OK;
-    SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                         t_simdata->rate, task, sizeof(void *), NULL, NULL, 1);
-    /*t_simdata->comm = comm->s_comm;  FIXME: is the field t_simdata->comm still useful? */
+  SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
+                       t_simdata->rate, task, sizeof(void *), NULL, cleanup, 1);
 }
 
 /** \ingroup msg_gos_functions
