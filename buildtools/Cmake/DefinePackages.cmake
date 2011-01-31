@@ -399,6 +399,33 @@ set(install_HEADERS
 	include/simix/context.h
 )
 
+if(enable_java)
+set(install_HEADERS
+	${install_HEADERS}
+	#Those src files are necessary for binding java 
+	src/portable.h
+	src/msg/private.h
+	src/simix/private.h
+	src/msg/mailbox.h
+	src/include/surf/surf.h
+	src/instr/instr_private.h
+	src/include/surf/datatypes.h
+	src/include/surf/surf_resource_lmm.h
+	src/include/surf/surf_resource.h
+	src/simdag/private.h
+	src/xbt/ex_interface.h
+	src/simix/process_private.h
+	src/simix/host_private.h
+	src/simix/network_private.h
+	src/simix/smurf_private.h
+	src/simix/synchro_private.h
+	src/include/surf/trace_mgr.h
+	src/include/xbt/xbt_os_thread.h
+	src/include/surf/maxmin.h
+	include/xbt/swag.h
+	${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h)
+endif(enable_java)
+
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS CONTEXT_UCONTEXT
 if(${CONTEXT_THREADS}) #pthread
