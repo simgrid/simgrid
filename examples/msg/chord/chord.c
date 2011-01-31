@@ -81,7 +81,7 @@ static void chord_initialize(void);
 static int normalize(int id);
 static int is_in_interval(int id, int start, int end);
 static void get_mailbox(int host_id, char* mailbox);
-static void task_data_destroy(task_data_t task_data);
+static void task_free(void* task);
 static void print_finger_table(node_t node);
 static void set_finger(node_t node, int finger_index, int id);
 static void set_predecessor(node_t node, int predecessor_id);
@@ -180,12 +180,14 @@ static void get_mailbox(int node_id, char* mailbox)
 }
 
 /**
- * \brief Frees the memory used by some task data.
- * \param task_data the task data to destroy
+ * \brief Frees the memory used by a task.
+ * \param task the MSG task to destroy
  */
-static void task_data_destroy(task_data_t task_data)
+static void task_free(void* task)
 {
-  xbt_free(task_data);
+  // TODO add a parameter data_free_function to MSG_task_create?
+  xbt_free(MSG_task_get_data(task));
+  MSG_task_destroy(task);
 }
 
 /**
@@ -417,7 +419,7 @@ static void handle_task(node_t node, m_task_t task) {
             task_data->issuer_host_name,
 	    task_data->answer_to,
             task_data->request_id, task_data->answer_id);
-        MSG_task_dsend(task, task_data->answer_to);
+        MSG_task_dsend(task, task_data->answer_to, task_free);
       }
       else {
         // otherwise, forward the request to the closest preceding finger in my table
@@ -425,7 +427,7 @@ static void handle_task(node_t node, m_task_t task) {
         DEBUG2("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
             task_data->request_id, closest);
         get_mailbox(closest, mailbox);
-        MSG_task_dsend(task, mailbox);
+        MSG_task_dsend(task, mailbox, task_free);
       }
       break;
 
@@ -436,15 +438,14 @@ static void handle_task(node_t node, m_task_t task) {
       DEBUG3("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
           task_data->issuer_host_name,
           task_data->answer_to, task_data->answer_id);
-      MSG_task_dsend(task, task_data->answer_to);
+      MSG_task_dsend(task, task_data->answer_to, task_free);
       break;
 
     case TASK_NOTIFY:
       // someone is telling me that he may be my new predecessor
       DEBUG1("Receiving a 'Notify' request from %s", task_data->issuer_host_name);
       notify(node, task_data->request_id);
-      task_data_destroy(task_data);
-      MSG_task_destroy(task);
+      task_free(task);
       break;
 
     case TASK_PREDECESSOR_LEAVING:
@@ -452,8 +453,7 @@ static void handle_task(node_t node, m_task_t task) {
       DEBUG1("Receiving a 'Predecessor Leaving' message from %s", task_data->issuer_host_name);
       // modify my predecessor
       set_predecessor(node, task_data->request_id);
-      task_data_destroy(task_data);
-      MSG_task_destroy(task);
+      task_free(task);
       /*TODO :
       >> notify my new predecessor
       >> send a notify_predecessors !!
@@ -465,8 +465,7 @@ static void handle_task(node_t node, m_task_t task) {
       DEBUG1("Receiving a 'Successor Leaving' message from %s", task_data->issuer_host_name);
       // modify my successor FIXME : this should be implicit ?
       set_finger(node, 0, task_data->request_id);
-      task_data_destroy(task_data);
-      MSG_task_destroy(task);
+      task_free(task);
       /* TODO
       >> notify my new successor
       >> update my table & predecessors table */
@@ -475,8 +474,7 @@ static void handle_task(node_t node, m_task_t task) {
     case TASK_FIND_SUCCESSOR_ANSWER:
     case TASK_GET_PREDECESSOR_ANSWER:
       DEBUG2("Ignoring unexpected task of type %d (%p)", type, task);
-      task_data_destroy(task_data);
-      MSG_task_destroy(task);
+      task_free(task);
       break;
   }
 }
@@ -615,8 +613,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
   if (res != MSG_OK) {
     DEBUG3("Failed to send the 'Find Successor' request (task %p) to %d for id %d",
         task_sent, ask_to, id);
-    MSG_task_destroy(task_sent);
-    task_data_destroy(req_data);
+    task_free(task_sent);
   }
   else {
 
@@ -662,8 +659,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
           stop = 1;
 	  MSG_comm_destroy(node->comm_receive);
 	  node->comm_receive = NULL;
-          MSG_task_destroy(task_received);
-          task_data_destroy(req_data);
+          task_free(task_received);
         }
       }
     } while (!stop);
@@ -698,8 +694,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
   if (res != MSG_OK) {
     DEBUG2("Failed to send the 'Get Predecessor' request (task %p) to %d",
         task_sent, ask_to);
-    MSG_task_destroy(task_sent);
-    task_data_destroy(req_data);
+    task_free(task_sent);
   }
   else {
 
@@ -742,8 +737,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
           stop = 1;
 	  MSG_comm_destroy(node->comm_receive);
 	  node->comm_receive = NULL;
-          MSG_task_destroy(task_received);
-          task_data_destroy(req_data);
+          task_free(task_received);
         }
       }
     } while (!stop);
@@ -835,7 +829,7 @@ static void remote_notify(node_t node, int notify_id, int predecessor_candidate_
   DEBUG2("Sending a 'Notify' request (task %p) to %d", task, notify_id);
   char mailbox[MAILBOX_NAME_SIZE];
   get_mailbox(notify_id, mailbox);
-  MSG_task_dsend(task, mailbox);
+  MSG_task_dsend(task, mailbox, task_free);
 }
 
 /**

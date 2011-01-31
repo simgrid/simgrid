@@ -219,8 +219,11 @@ void SIMIX_comm_destroy(smx_action_t action)
 
   SIMIX_comm_destroy_internal_actions(action);
 
-  if(action->comm.detached)
-    ((void_f_pvoid_t)action->comm.src_data)(action->comm.src_buff);
+  if (action->comm.detached && action->state != SIMIX_DONE) {
+    /* the communication has failed and was detached:
+     * we have to free the buffer */
+    ((void_f_pvoid_t) action->comm.src_data)(action->comm.src_buff);
+  }
 
   xbt_free(action);
 }

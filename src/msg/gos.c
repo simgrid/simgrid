@@ -422,6 +422,9 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
  *
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
+ * \param cleanup a function to destroy the task if the
+ * communication fails (if NULL, MSG_task_destroy() will
+ * be used by default)
  */
 void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
@@ -430,6 +433,10 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
   CHECK_HOST();
+
+  if (cleanup == NULL) {
+    cleanup = (void_f_pvoid_t) MSG_task_destroy;
+  }
 
   /* FIXME: these functions are not traceable */
 
