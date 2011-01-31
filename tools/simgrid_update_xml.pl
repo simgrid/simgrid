@@ -92,7 +92,8 @@ while (defined($line = <INPUT>)) {
 	    $AS_opened=1;
 	}
     }
-
+	
+	if($line=~/<route /){$line =~ s/\<route/\<route symmetrical=\"NO\"/g;}
     $output_string .= "$line\n";
 }
 
