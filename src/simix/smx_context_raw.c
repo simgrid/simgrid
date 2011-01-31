@@ -155,6 +155,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 static xbt_parmap_t parmap;
 
+#ifdef CONTEXT_THREADS
+static __thread smx_context_t current_context;
+#endif
+
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
 
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
@@ -260,11 +264,13 @@ static void smx_ctx_raw_runall(xbt_dynar_t processes)
 static void smx_ctx_raw_resume_parallel(smx_process_t process)
 {
   smx_ctx_raw_t context = (smx_ctx_raw_t)process->context;
-  xbt_os_thread_set_extra_data(context);
+  /*xbt_os_thread_set_extra_data(context);*/
+  current_context = (smx_context_t)context;
   raw_swapcontext(
       &context->old_stack_top,
       context->stack_top);
-  xbt_os_thread_set_extra_data(NULL);
+  current_context = (smx_context_t)maestro_raw_context;
+  /*xbt_os_thread_set_extra_data(NULL);*/
 }
 
 static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
@@ -275,8 +281,9 @@ static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
 
 static smx_context_t smx_ctx_raw_self_parallel(void)
 {
-  smx_context_t self_context = (smx_context_t) xbt_os_thread_get_extra_data();
-  return self_context ? self_context : (smx_context_t) maestro_raw_context;
+  /*smx_context_t self_context = (smx_context_t) xbt_os_thread_get_extra_data();
+  return self_context ? self_context : (smx_context_t) maestro_raw_context;*/
+  return current_context;
 }
 
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
