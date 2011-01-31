@@ -100,7 +100,8 @@ void SIMIX_request_pre(smx_req_t req, int value)
           req->comm_isend.src_buff,
           req->comm_isend.src_buff_size,
           req->comm_isend.match_fun,
-          req->comm_isend.data);
+          req->comm_isend.data,
+          req->comm_isend.detached);
       SIMIX_request_answer(req);
       break;
 

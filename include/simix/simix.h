@@ -161,7 +161,7 @@ XBT_PUBLIC(smx_action_t) SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size,
                                            double rate, void *src_buff,
                                            size_t src_buff_size,
                                            int (*match_fun)(void *, void *),
-                                           void *data);
+                                           void *data, int detached);
 
 XBT_PUBLIC(smx_action_t) SIMIX_req_comm_irecv(smx_rdv_t rdv, void *dst_buff,
                                            size_t * dst_buff_size,

@@ -32,7 +32,8 @@ smx_action_t SIMIX_rdv_get_head(smx_rdv_t rdv);
 smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
-                              int (*)(void *, void *), void *data);
+                              int (*)(void *, void *), void *data,
+                              int detached);
 smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               void *dst_buff, size_t *dst_buff_size,
                               int (*)(void *, void *), void *data);

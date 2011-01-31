@@ -618,7 +618,8 @@ smx_action_t SIMIX_req_rdv_get_head(smx_rdv_t rdv)
 
 smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
-                              int (*match_fun)(void *, void *), void *data)
+                              int (*match_fun)(void *, void *), void *data,
+                              int detached)
 {
   smx_req_t req = SIMIX_req_mine();
 
@@ -632,6 +633,7 @@ smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
   req->comm_isend.src_buff_size = src_buff_size;
   req->comm_isend.match_fun = match_fun;
   req->comm_isend.data = data;
+  req->comm_isend.detached = detached;
 
   SIMIX_request_push();
   return req->comm_isend.result;

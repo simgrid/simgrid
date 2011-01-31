@@ -313,6 +313,7 @@ typedef struct s_smx_req {
       size_t src_buff_size;
       int (*match_fun)(void *, void *);
       void *data;
+      int detached;
       smx_action_t result;
     } comm_isend;
 

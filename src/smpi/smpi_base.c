@@ -99,7 +99,7 @@ void smpi_mpi_start(MPI_Request request)
     print_request("New send", request);
     mailbox = smpi_process_remote_mailbox(request->dst);
     request->action = SIMIX_req_comm_isend(mailbox, request->size, -1.0,
-                                           request->buf, request->size, &match_send, request);
+                                           request->buf, request->size, &match_send, request, 0);
 #ifdef HAVE_TRACING
     SIMIX_req_set_category (request->action, TRACE_internal_smpi_get_category());
 #endif
