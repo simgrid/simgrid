@@ -19,7 +19,7 @@ char* smx_context_factory_name = NULL; /* factory name specified by --cfg=contex
 smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
 int smx_context_stack_size = 128 * 1024;
 smx_context_t smx_current_context;
-static int smx_parallel_contexts;
+static int smx_parallel_contexts = 1;
 
 /** 
  * This function is called by SIMIX_global_init() to initialize the context module.
