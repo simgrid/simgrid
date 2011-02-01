@@ -12,7 +12,7 @@ static xbt_swag_t *req_lists;
 void SIMIX_request_init(void)
 {
   s_smx_req_t req;
-  int i, nthreads = SIMIX_context_get_parallel_threads();
+  int i, nthreads = SIMIX_context_get_nthreads();
 
   req_lists = xbt_new0(xbt_swag_t, nthreads);
   for(i=0; i < nthreads; i++)
@@ -22,7 +22,7 @@ void SIMIX_request_init(void)
 
 void SIMIX_request_destroy(void)
 {
-  int i, nthreads = SIMIX_context_get_parallel_threads();
+  int i, nthreads = SIMIX_context_get_nthreads();
 
   for(i=0; i < nthreads; i++)
     xbt_swag_free(req_lists[i]);
@@ -68,7 +68,7 @@ smx_req_t SIMIX_request_pop(void)
 {
   int i;
   smx_req_t req = NULL;
-  int nthreads = SIMIX_context_get_parallel_threads();
+  int nthreads = SIMIX_context_get_nthreads();
 
   for(i=0; i < nthreads; i++){
     if((req = xbt_swag_extract(req_lists[i]))){
