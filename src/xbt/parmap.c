@@ -95,6 +95,7 @@ static void *_xbt_parmap_worker_main(void *arg)
 
   /* Fetch a worker id */
   worker_id = __sync_fetch_and_add(&parmap->workers_max_id, 1);
+  xbt_os_thread_set_extra_data((void *)(unsigned long)worker_id);
 
   DEBUG1("New worker thread created (%u)", worker_id);
   
