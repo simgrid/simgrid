@@ -11,6 +11,7 @@
 #include "xbt/swag.h"
 #include "private.h"
 #include "simix/context.h"
+#include "gras_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
                                 "Context switching mecanism");
@@ -18,7 +19,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
 char* smx_context_factory_name = NULL; /* factory name specified by --cfg=contexts/factory:value */
 smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
 int smx_context_stack_size = 128 * 1024;
+
+#ifdef CONTEXT_THREADS
+__thread smx_context_t smx_current_context;
+#else
 smx_context_t smx_current_context;
+#endif
+
 static int smx_parallel_contexts = 1;
 
 /** 

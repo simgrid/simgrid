@@ -51,6 +51,7 @@ void smx_ctx_sysv_resume(smx_context_t new_context);
 void smx_ctx_sysv_runall(xbt_dynar_t processes);
 void smx_ctx_sysv_resume_parallel(smx_process_t new_context);
 void smx_ctx_sysv_runall_parallel(xbt_dynar_t processes);
+int smx_ctx_sysv_get_thread_id(void);
 smx_context_t smx_ctx_sysv_self_parallel(void);
 
 SG_END_DECL()

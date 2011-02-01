@@ -26,7 +26,9 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
+#ifdef CONTEXT_THREADS
 static xbt_parmap_t parmap;
+#endif
 
 static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
@@ -67,6 +69,7 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
     parmap = xbt_parmap_new(2);
     (*factory)->runall = smx_ctx_sysv_runall_parallel;
     (*factory)->self = smx_ctx_sysv_self_parallel;
+    (*factory)->get_thread_id = smx_ctx_sysv_get_thread_id;
 #else
     THROW0(arg_error, 0, "No thread support for parallel context execution");
 #endif
@@ -213,9 +216,9 @@ void smx_ctx_sysv_runall(xbt_dynar_t processes)
 void smx_ctx_sysv_resume_parallel(smx_process_t process)
 {
   smx_context_t context = process->context;
-  xbt_os_thread_set_extra_data(context);
+  smx_current_context = (smx_context_t)context;
   int rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
-  xbt_os_thread_set_extra_data(NULL);
+  smx_current_context = (smx_context_t)maestro_context;
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }
@@ -228,6 +231,12 @@ void smx_ctx_sysv_runall_parallel(xbt_dynar_t processes)
 
 smx_context_t smx_ctx_sysv_self_parallel(void)
 {
-  smx_context_t self_context = (smx_context_t) xbt_os_thread_get_extra_data();
-  return self_context ? self_context : (smx_context_t) maestro_context;
+  /*smx_context_t self_context = (smx_context_t) xbt_os_thread_get_extra_data();
+  return self_context ? self_context : (smx_context_t) maestro_context;*/
+  return smx_current_context;
+}
+
+int smx_ctx_sysv_get_thread_id(void)
+{
+  return (int)(unsigned long)xbt_os_thread_get_extra_data();
 }

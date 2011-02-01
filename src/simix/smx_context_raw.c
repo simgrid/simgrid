@@ -153,10 +153,8 @@ void raw_swapcontext(raw_stack_t* old, raw_stack_t new) {
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-static xbt_parmap_t parmap;
-
 #ifdef CONTEXT_THREADS
-static __thread smx_context_t current_context;
+static xbt_parmap_t parmap;
 #endif
 
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
@@ -200,7 +198,6 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
 
      }else{
        maestro_raw_context = context;
-       current_context = (smx_context_t) maestro_raw_context;
      }
 
      return (smx_context_t) context;
@@ -265,11 +262,11 @@ static void smx_ctx_raw_runall(xbt_dynar_t processes)
 static void smx_ctx_raw_resume_parallel(smx_process_t process)
 {
   smx_ctx_raw_t context = (smx_ctx_raw_t)process->context;
-  current_context = (smx_context_t)context;
+  smx_current_context = (smx_context_t)context;
   raw_swapcontext(
       &context->old_stack_top,
       context->stack_top);
-  current_context = (smx_context_t)maestro_raw_context;
+  smx_current_context = (smx_context_t)maestro_raw_context;
 }
 
 static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
@@ -280,7 +277,7 @@ static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
 
 static smx_context_t smx_ctx_raw_self_parallel(void)
 {
-  return current_context;
+  return smx_current_context;
 }
 
 static int smx_ctx_raw_get_thread_id(){
