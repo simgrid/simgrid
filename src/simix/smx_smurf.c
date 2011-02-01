@@ -5,21 +5,34 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
                                 "Logging specific to SIMIX (SMURF)");
 
-/* Requests to handle at the end of this round of scheduling user processes */
-static xbt_heap_t req_todo;
-/* to protect the write actions in the heap */
-static xbt_os_mutex_t sync_req_positions;
+/* Tables with the requests to handle at the end of this round of scheduling
+ * user processes. There is one for each thread of execution. */
+static xbt_swag_t *req_lists;
 
 void SIMIX_request_init(void)
 {
-  req_todo = xbt_heap_new(5,NULL);
-  sync_req_positions = xbt_os_mutex_init();
+  s_smx_req_t req;
+  int i, nthreads = SIMIX_context_get_parallel_threads();
+
+  req_lists = xbt_new0(xbt_swag_t, nthreads);
+  for(i=0; i < nthreads; i++)
+    req_lists[i] = xbt_swag_new(xbt_swag_offset(req, reqtable_hookup));
+
 }
 
 void SIMIX_request_destroy(void)
 {
-  xbt_heap_free(req_todo);
-  xbt_os_mutex_destroy(sync_req_positions);
+  int i, nthreads = SIMIX_context_get_parallel_threads();
+
+  for(i=0; i < nthreads; i++)
+    xbt_swag_free(req_lists[i]);
+
+  xbt_free(req_lists);
+}
+
+xbt_swag_t SIMIX_request_get_reqlist(int thread_pid)
+{
+  return req_lists[thread_pid];
 }
 
 /* FIXME: we may want to save the initialization of issuer... */
@@ -30,18 +43,18 @@ XBT_INLINE smx_req_t SIMIX_req_mine() {
 
 void SIMIX_request_push()
 {
+  xbt_swag_t req_table;
   smx_process_t issuer = SIMIX_process_self();
+
   if (issuer != simix_global->maestro_process){
     issuer->request.issuer = issuer;
+    req_table = SIMIX_request_get_reqlist(SIMIX_context_get_thread_id());
 
-    if (SIMIX_context_is_parallel())
-      xbt_os_mutex_acquire(sync_req_positions);
-    xbt_heap_push(req_todo,&issuer->request,issuer->pid);
-    DEBUG4("Pushed request %s (%d) of %s; now %d requests waiting",
+    xbt_swag_insert_at_tail(&issuer->request, req_table);
+
+    DEBUG3("Pushed request %s (%d) of %s",
         SIMIX_request_name(issuer->request.call), issuer->request.call,
-        issuer->name,xbt_heap_size(req_todo));
-    if (SIMIX_context_is_parallel())
-      xbt_os_mutex_release(sync_req_positions);
+        issuer->name);
 
     DEBUG3("Yield process '%s' on request of type %s (%d)", issuer->name,
         SIMIX_request_name(issuer->request.call), issuer->request.call);
@@ -53,13 +66,21 @@ void SIMIX_request_push()
 
 smx_req_t SIMIX_request_pop(void)
 {
-  smx_req_t req = xbt_heap_pop(req_todo);
-  if(req)
-    DEBUG4("Popped request %s (%d) of %s; now %d requests waiting",
-        SIMIX_request_name(req->issuer->request.call),
-        req->issuer->request.call,
-        req->issuer->name,xbt_heap_size(req_todo));
-  return req;
+  int i;
+  smx_req_t req = NULL;
+  int nthreads = SIMIX_context_get_parallel_threads();
+
+  for(i=0; i < nthreads; i++){
+    if((req = xbt_swag_extract(req_lists[i]))){
+      DEBUG3("Popped request %s (%d) of %s",
+          SIMIX_request_name(req->issuer->request.call),
+          req->issuer->request.call,
+          req->issuer->name);
+      return req;
+    }
+  }
+
+  return NULL;
 }
 
 void SIMIX_request_answer(smx_req_t req)
