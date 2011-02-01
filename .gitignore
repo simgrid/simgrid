@@ -187,6 +187,8 @@ examples/msg/trace/test_trace_integration
 examples/msg/mc/centralized
 examples/msg/mc/bugged2
 examples/msg/mc/bugged1
+examples/msg/parallel_contexts/pcontexts
+examples/msg/parallel_contexts/pcontexts2
 examples/simdag/ex_sd_test
 examples/simdag/ex_sd_test2
 examples/simdag/metaxml/sd_meta
