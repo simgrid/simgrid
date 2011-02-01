@@ -169,30 +169,6 @@ void SIMIX_request_pre(smx_req_t req, int value)
       SIMIX_request_answer(req);
       break;
 
-    case REQ_COMM_GET_SRC_BUFF:
-      req->comm_get_src_buff.result =
-          SIMIX_comm_get_src_buff(req->comm_get_src_buff.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_DST_BUFF:
-      req->comm_get_dst_buff.result =
-          SIMIX_comm_get_dst_buff(req->comm_get_dst_buff.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_SRC_BUFF_SIZE:
-      req->comm_get_src_buff_size.result =
-          SIMIX_comm_get_src_buff_size(req->comm_get_src_buff_size.comm);
-      SIMIX_request_answer(req);
-      break;
-
-    case REQ_COMM_GET_DST_BUFF_SIZE:
-      req->comm_get_dst_buff_size.result =
-          SIMIX_comm_get_dst_buff_size(req->comm_get_dst_buff_size.comm);
-      SIMIX_request_answer(req);
-      break;
-
     case REQ_COMM_GET_SRC_PROC:
       req->comm_get_src_proc.result =
           SIMIX_comm_get_src_proc(req->comm_get_src_proc.comm);

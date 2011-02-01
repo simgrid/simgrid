@@ -798,50 +798,6 @@ void *SIMIX_req_comm_get_dst_data(smx_action_t comm)
   return req->comm_get_dst_data.result;
 }
 
-void *SIMIX_req_comm_get_src_buff(smx_action_t comm)
-{
-  smx_req_t req = SIMIX_req_mine();
-
-  req->call = REQ_COMM_GET_SRC_BUFF;
-  req->comm_get_src_buff.comm = comm;
-
-  SIMIX_request_push();
-  return req->comm_get_src_buff.result;
-}
-
-void *SIMIX_req_comm_get_dst_buff(smx_action_t comm)
-{
-  smx_req_t req = SIMIX_req_mine();
-
-  req->call = REQ_COMM_GET_DST_BUFF;
-  req->comm_get_dst_buff.comm = comm;
-
-  SIMIX_request_push();
-  return req->comm_get_dst_buff.result;
-}
-
-size_t SIMIX_req_comm_get_src_buff_size(smx_action_t comm)
-{
-  smx_req_t req = SIMIX_req_mine();
-
-  req->call = REQ_COMM_GET_SRC_BUFF_SIZE;
-  req->comm_get_src_buff_size.comm = comm;
-
-  SIMIX_request_push();
-  return req->comm_get_src_buff_size.result;
-}
-
-size_t SIMIX_req_comm_get_dst_buff_size(smx_action_t comm)
-{
-  smx_req_t req = SIMIX_req_mine();
-
-  req->call = REQ_COMM_GET_DST_BUFF_SIZE;
-  req->comm_get_dst_buff_size.comm = comm;
-
-  SIMIX_request_push();
-  return req->comm_get_dst_buff_size.result;
-}
-
 smx_process_t SIMIX_req_comm_get_src_proc(smx_action_t comm)
 {
   smx_req_t req = SIMIX_req_mine();

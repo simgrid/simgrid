@@ -60,10 +60,6 @@ SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_GET_REMAINS),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_GET_STATE),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_GET_SRC_DATA),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_GET_DST_DATA),\
-SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_GET_SRC_BUFF),\
-SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_GET_DST_BUFF),\
-SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_GET_SRC_BUFF_SIZE),\
-SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_GET_DST_BUFF_SIZE),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_GET_SRC_PROC),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_GET_DST_PROC),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_MUTEX_INIT),\
@@ -373,26 +369,6 @@ typedef struct s_smx_req {
       smx_action_t comm;
       void *result;
     } comm_get_dst_data;
-
-    struct {
-      smx_action_t comm;
-      void *result;
-    } comm_get_src_buff;
-
-    struct {
-      smx_action_t comm;
-      void *result;
-    } comm_get_dst_buff;
-
-    struct {
-      smx_action_t comm;
-      size_t result;
-    } comm_get_src_buff_size;
-
-    struct {
-      smx_action_t comm;
-      size_t result;
-    } comm_get_dst_buff_size;
 
     struct {
       smx_action_t comm;

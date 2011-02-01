@@ -726,33 +726,6 @@ void* SIMIX_comm_get_dst_data(smx_action_t action)
   return action->comm.dst_data;
 }
 
-void* SIMIX_comm_get_src_buff(smx_action_t action)
-{
-  return action->comm.src_buff;
-}
-
-void* SIMIX_comm_get_dst_buff(smx_action_t action)
-{
-  return action->comm.dst_buff;
-}
-
-size_t SIMIX_comm_get_src_buff_size(smx_action_t action)
-{
-  return action->comm.src_buff_size;
-}
-
-size_t SIMIX_comm_get_dst_buff_size(smx_action_t action)
-{
-  size_t buff_size;
-
-  if (action->comm.dst_buff_size)
-    buff_size = *(action->comm.dst_buff_size);
-  else
-    buff_size = 0;
-
-  return buff_size;
-}
-
 smx_process_t SIMIX_comm_get_src_proc(smx_action_t action)
 {
   return action->comm.src_proc;
