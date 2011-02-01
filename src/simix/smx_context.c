@@ -94,7 +94,7 @@ void SIMIX_context_set_nthreads(int nb_threads) {
  * for the user contexts.
  * \return the number of threads (1 means no parallelism)
  */
-int SIMIX_context_get_nthreads() {
+int SIMIX_context_get_nthreads(void) {
   return smx_parallel_contexts;
 }
 
@@ -103,7 +103,7 @@ int SIMIX_context_get_nthreads() {
  * for the user contexts.
  * \return 1 if parallelism is used
  */
-int SIMIX_context_is_parallel() {
+int SIMIX_context_is_parallel(void) {
   return smx_parallel_contexts > 1;
 }
 
