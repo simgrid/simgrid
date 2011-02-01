@@ -661,13 +661,17 @@ void SIMIX_req_comm_destroy(smx_action_t comm)
 {
   xbt_assert0(comm, "Invalid parameter");
 
-  /* FIXME remove this request type (auto-destroy finished comms) */
+  /* FIXME remove this request type: comms are auto-destroyed now,
+   * but what happens with unfinished comms? */
+
+  /*
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_COMM_DESTROY;
   req->comm_destroy.comm = comm;
 
   SIMIX_request_push();
+  */
 }
 
 void SIMIX_req_comm_cancel(smx_action_t comm)

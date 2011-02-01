@@ -103,7 +103,6 @@ gras_msg_t gras_msg_recv_any(void)
   xbt_dynar_t comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
   unsigned int cursor = 0;
   int got = 0;
-  smx_action_t comm = NULL;
   gras_socket_t sock = NULL;
   gras_trp_sg_sock_data_t sock_data;
   xbt_dynar_foreach(trp_proc->sockets, cursor, sock) {
@@ -165,13 +164,11 @@ gras_msg_t gras_msg_recv_any(void)
   got = SIMIX_req_comm_waitany(comms);
 
   /* retrieve the message sent in that communication */
-  xbt_dynar_get_cpy(comms, got, &(comm));
-  msg = SIMIX_req_comm_get_src_data(comm);
   sock = xbt_dynar_get_as(trp_proc->sockets, got, gras_socket_t);
   sock_data = (gras_trp_sg_sock_data_t) sock->data;
-  VERB3("Got something. Communication %p's over rdv_server=%p, rdv_client=%p",
-      comm,sock_data->rdv_server,sock_data->rdv_client);
-  SIMIX_req_comm_destroy(comm);
+  msg = sock_data->msg;
+  VERB2("Got something. Communication over rdv_server=%p, rdv_client=%p",
+      sock_data->rdv_server,sock_data->rdv_client);
 
   /* Reinstall a waiting communication on that rdv */
 /*  xbt_dynar_foreach(trp_proc->sockets,cursor,sock) {
@@ -183,7 +180,7 @@ gras_msg_t gras_msg_recv_any(void)
   sock_data->comm_recv =
       SIMIX_req_comm_irecv(gras_socket_im_the_server(sock) ?
                           sock_data->rdv_server : sock_data->rdv_client,
-                          NULL, 0, NULL, NULL);
+                          &sock_data->msg, NULL, NULL, NULL);
 
   return msg;
 }
@@ -241,7 +238,7 @@ void gras_msg_send_ext(gras_socket_t sock,
                                                 payload, msg->payl);
   }
 
-  comm = SIMIX_req_comm_isend(target_rdv, whole_payload_size, -1, &msg, sizeof(void *), NULL, msg, 0);
+  comm = SIMIX_req_comm_isend(target_rdv, whole_payload_size, -1, msg, sizeof(void *), NULL, msg, 0);
   SIMIX_req_comm_wait(comm, -1);
 
   VERB0("Message sent (and received)");

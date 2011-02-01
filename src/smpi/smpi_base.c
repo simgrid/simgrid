@@ -212,9 +212,8 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     status->MPI_SOURCE = req->src;
     status->MPI_TAG = req->tag;
     status->MPI_ERROR = MPI_SUCCESS;
-    status->count = SIMIX_req_comm_get_dst_buff_size(req->action);
+    status->count = req->size;
   }
-  SIMIX_req_comm_destroy(req->action);
   print_request("Finishing", req);
   if(req->flags & NON_PERSISTENT) {
     smpi_mpi_request_free(request);

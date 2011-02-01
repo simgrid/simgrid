@@ -36,7 +36,8 @@ typedef struct {
 
   smx_rdv_t rdv_server;         /* The rendez-vous point to use */
   smx_rdv_t rdv_client;         /* The rendez-vous point to use */
-  smx_action_t comm_recv;         /* The comm of irecv on receiver side */
+  smx_action_t comm_recv;       /* The comm of irecv on receiver side */
+  gras_msg_t msg;               /* The destination buffer of the comm data */
 
   int server_port;
   int client_port;

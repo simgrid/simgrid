@@ -22,7 +22,7 @@ static smx_action_t SIMIX_comm_new(e_smx_comm_type_t type);
 static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm);
 static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm);
 static smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
-										  int (*match_fun)(void *, void *), void *);
+					  int (*match_fun)(void *, void *), void *);
 static void SIMIX_rdv_free(void *data);
 
 void SIMIX_network_init(void)
@@ -271,7 +271,7 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
 
   /* If the communication action is detached then decrease the refcount
    * by one, so it will be eliminated by the receivers destroy call */
-  if(detached){
+  if (detached) {
     action->comm.detached = 1;
     action->comm.refcount--;
   }
