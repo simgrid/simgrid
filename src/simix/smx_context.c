@@ -76,7 +76,7 @@ void SIMIX_context_mod_exit(void)
  *
  * \param nb_threads the number of threads to use
  */
-void SIMIX_context_set_parallel_threads(int nb_threads) {
+void SIMIX_context_set_nthreads(int nb_threads) {
 
   xbt_assert1(nb_threads > 0, "Invalid number of parallel threads: %d", nb_threads);
   smx_parallel_contexts = nb_threads;
@@ -87,7 +87,7 @@ void SIMIX_context_set_parallel_threads(int nb_threads) {
  * for the user contexts.
  * \return the number of threads (1 means no parallelism)
  */
-int SIMIX_context_get_parallel_threads() {
+int SIMIX_context_get_nthreads() {
   return smx_parallel_contexts;
 }
 

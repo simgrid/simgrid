@@ -91,8 +91,8 @@ smx_context_t smx_ctx_base_self(void);
 void *smx_ctx_base_get_data(smx_context_t context);
 
 /* parallelism */
-void SIMIX_context_set_parallel_threads(int nb_threads);
-int SIMIX_context_get_parallel_threads(void);
+void SIMIX_context_set_nthreads(int nb_threads);
+int SIMIX_context_get_nthreads(void);
 int SIMIX_context_is_parallel(void);
 
 SG_END_DECL()
