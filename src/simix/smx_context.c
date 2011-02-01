@@ -19,6 +19,7 @@ char* smx_context_factory_name = NULL; /* factory name specified by --cfg=contex
 smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
 int smx_context_stack_size = 128 * 1024;
 smx_context_t smx_current_context;
+static int smx_parallel_contexts;
 
 /** 
  * This function is called by SIMIX_global_init() to initialize the context module.
@@ -64,3 +65,38 @@ void SIMIX_context_mod_exit(void)
   }
   xbt_dict_remove((xbt_dict_t) _surf_cfg_set,"contexts/factory");
 }
+
+/**
+ * \brief Sets the number of parallel threads to use
+ * for the user contexts.
+ *
+ * This function should be called before initializing SIMIX.
+ * A value of 1 means no parallelism.
+ * If the value is greater than 1, the thread support must be enabled.
+ *
+ * \param nb_threads the number of threads to use
+ */
+void SIMIX_context_set_parallel_threads(int nb_threads) {
+
+  xbt_assert1(nb_threads > 0, "Invalid number of parallel threads: %d", nb_threads);
+  smx_parallel_contexts = nb_threads;
+}
+
+/**
+ * \brief Returns the number of parallel threads used
+ * for the user contexts.
+ * \return the number of threads (1 means no parallelism)
+ */
+int SIMIX_context_get_parallel_threads() {
+  return smx_parallel_contexts;
+}
+
+/**
+ * \brief Returns whether some parallel threads are used
+ * for the user contexts.
+ * \return 1 if parallelism is used
+ */
+int SIMIX_context_is_parallel() {
+  return smx_parallel_contexts > 1;
+}
+

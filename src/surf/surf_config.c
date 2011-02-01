@@ -201,7 +201,7 @@ static void _surf_cfg_cb_context_stack_size(const char *name, int pos)
 
 static void _surf_cfg_cb_parallel_contexts(const char *name, int pos)
 {
-  smx_parallel_contexts = 1;
+  SIMIX_context_set_parallel_threads(xbt_cfg_get_int(_surf_cfg_set, name));
 }
 
 static void _surf_cfg_cb__surf_network_fullduplex(const char *name,
@@ -358,11 +358,11 @@ void surf_config_init(int *argc, char **argv)
                      xbt_cfgelm_int, &default_value_int, 1, 1,
                      _surf_cfg_cb_context_stack_size, NULL);
 
-    /* parallel contexts */
-    default_value_int = 0;
+    /* number of parallel threads for user processes */
+    default_value_int = 1;
     xbt_cfg_register(&_surf_cfg_set, "contexts/parallel",
-                     "Activate the parallel execution of user contexts (EXPERIMENTAL -- pthreads only)",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     "Number of parallel threads for user contexts (EXPERIMENTAL)",
+                     xbt_cfgelm_int, &default_value_int, 1, 1,
                      _surf_cfg_cb_parallel_contexts, NULL);
 
     default_value_int = 0;

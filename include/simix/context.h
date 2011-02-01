@@ -56,7 +56,6 @@ typedef void (*smx_ctx_factory_initializer_t)(smx_context_factory_t*);
 extern smx_ctx_factory_initializer_t smx_factory_initializer_to_use;
 extern char* smx_context_factory_name;
 extern int smx_context_stack_size;
-extern int smx_parallel_contexts;
 extern smx_context_t smx_current_context;
 
 /* *********************** */
@@ -90,6 +89,11 @@ void smx_ctx_base_free(smx_context_t context);
 void smx_ctx_base_stop(smx_context_t context);
 smx_context_t smx_ctx_base_self(void);
 void *smx_ctx_base_get_data(smx_context_t context);
+
+/* parallelism */
+void SIMIX_context_set_parallel_threads(int nb_threads);
+int SIMIX_context_get_parallel_threads(void);
+int SIMIX_context_is_parallel(void);
 
 SG_END_DECL()
 
