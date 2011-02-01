@@ -305,18 +305,18 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
   (*factory)->stop = smx_ctx_raw_stop;
   (*factory)->suspend = smx_ctx_raw_suspend;
   (*factory)->name = "smx_raw_context_factory";
-  (*factory)->runall = smx_ctx_raw_runall;
 
   if (SIMIX_context_is_parallel()) {
 #ifdef CONTEXT_THREADS  /* To use parallel ucontexts a thread pool is needed */
     parmap = xbt_parmap_new(2);
     (*factory)->self = smx_ctx_raw_self_parallel;
     (*factory)->get_thread_id = smx_ctx_raw_get_thread_id;
+    (*factory)->runall = smx_ctx_raw_runall;
 #else
     THROW0(arg_error, 0, "No thread support for parallel context execution");
 #endif
   } else {
-    (*factory)->runall = smx_ctx_raw_runall;
+    (*factory)->runall = smx_ctx_raw_runall_serial;
   }
 
   raw_factory = *factory;
