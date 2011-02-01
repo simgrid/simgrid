@@ -280,12 +280,12 @@ static int smx_ctx_raw_get_thread_id(){
 
 static void smx_ctx_raw_runall(xbt_dynar_t processes)
 {
-  if(xbt_dynar_length(processes) > 10){
+  if (xbt_dynar_length(processes) > SIMIX_context_get_parallel_threshold()) {
     DEBUG1("Runall // %lu", xbt_dynar_length(processes));
     raw_factory->self = smx_ctx_raw_self_parallel;
     raw_factory->get_thread_id = smx_ctx_raw_get_thread_id;
     smx_ctx_raw_runall_parallel(processes);
-  }else{
+  } else {
     DEBUG1("Runall serial %lu", xbt_dynar_length(processes));
     raw_factory->self = smx_ctx_base_self;
     raw_factory->get_thread_id = smx_ctx_base_get_thread_id;

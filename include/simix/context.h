@@ -100,9 +100,11 @@ void *smx_ctx_base_get_data(smx_context_t context);
 int smx_ctx_base_get_thread_id(void);
 
 /* parallelism */
-void SIMIX_context_set_nthreads(int nb_threads);
-int SIMIX_context_get_nthreads(void);
-int SIMIX_context_is_parallel(void);
+XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads);
+XBT_INLINE int SIMIX_context_get_nthreads(void);
+XBT_INLINE int SIMIX_context_is_parallel(void);
+XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold);
+XBT_INLINE int SIMIX_context_get_parallel_threshold(void);
 
 SG_END_DECL()
 

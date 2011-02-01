@@ -27,6 +27,7 @@ smx_context_t smx_current_context;
 #endif
 
 static int smx_parallel_contexts = 1;
+static int smx_parallel_threshold = 20;
 
 /** 
  * This function is called by SIMIX_global_init() to initialize the context module.
@@ -83,7 +84,7 @@ void SIMIX_context_mod_exit(void)
  *
  * \param nb_threads the number of threads to use
  */
-void SIMIX_context_set_nthreads(int nb_threads) {
+XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
 
   xbt_assert1(nb_threads > 0, "Invalid number of parallel threads: %d", nb_threads);
   smx_parallel_contexts = nb_threads;
@@ -94,7 +95,7 @@ void SIMIX_context_set_nthreads(int nb_threads) {
  * for the user contexts.
  * \return the number of threads (1 means no parallelism)
  */
-int SIMIX_context_get_nthreads(void) {
+XBT_INLINE int SIMIX_context_get_nthreads(void) {
   return smx_parallel_contexts;
 }
 
@@ -103,7 +104,33 @@ int SIMIX_context_get_nthreads(void) {
  * for the user contexts.
  * \return 1 if parallelism is used
  */
-int SIMIX_context_is_parallel(void) {
+XBT_INLINE int SIMIX_context_is_parallel(void) {
   return smx_parallel_contexts > 1;
+}
+
+/**
+ * \brief Sets the threshold above which user processes are run in parallel.
+ *
+ * If the number of threads is set to 1, there is no parallelism and this
+ * threshold has no effect.
+ *
+ * \param threshold when the number of user processes ready to run is above
+ * this threshold, they are run in parallel
+ */
+XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold) {
+  smx_parallel_threshold = threshold;
+}
+
+/**
+ * \brief Returns the threshold above which user processes are run in parallel.
+ *
+ * If the number of threads is set to 1, there is no parallelism and this
+ * threshold has no effect.
+ *
+ * \return when the number of user processes ready to run is above
+ * this threshold, they are run in parallel
+ */
+XBT_INLINE int SIMIX_context_get_parallel_threshold(void) {
+  return smx_parallel_threshold;
 }
 
