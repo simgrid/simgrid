@@ -309,6 +309,7 @@ void surf_init(int *argc, char **argv)
     history = tmgr_history_new();
 
   surf_config_init(argc, argv);
+  surf_action_init();
   if (MC_IS_ENABLED)
     MC_memory_init();
 }
@@ -362,6 +363,7 @@ void surf_exit(void)
     tmgr_history_free(history);
     history = NULL;
   }
+  surf_action_exit();
 
   if (surf_path)
     xbt_dynar_free(&surf_path);

@@ -5,6 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_private.h"
+#include "network_private.h"
+#include "xbt/mallocator.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 
@@ -21,10 +23,54 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
+/* Surf actions mallocator */
+static xbt_mallocator_t action_mallocator = NULL;
+static int action_mallocator_allocated_size = 0;
+static void* action_mallocator_new_f(void);
+static void action_mallocator_free_f(void* action);
+static void action_mallocator_reset_f(void* action);
+
+/**
+ * \brief Initializes the action module of Surf.
+ */
+void surf_action_init(void) {
+
+  /* the action mallocator will always provide actions of the following size,
+   * so this size should be set to the maximum size of the surf action structures
+   */
+  action_mallocator_allocated_size = sizeof(s_surf_action_network_CM02_t);
+  action_mallocator = xbt_mallocator_new(128, action_mallocator_new_f,
+      action_mallocator_free_f, action_mallocator_reset_f);
+}
+
+/**
+ * \brief Uninitializes the action module of Surf.
+ */
+void surf_action_exit(void) {
+
+  xbt_mallocator_free(action_mallocator);
+}
+
+static void* action_mallocator_new_f(void) {
+  return xbt_malloc0(action_mallocator_allocated_size);
+}
+
+static void action_mallocator_free_f(void* action) {
+  xbt_free(action);
+}
+
+static void action_mallocator_reset_f(void* action) {
+  memset(action, 0, action_mallocator_allocated_size);
+}
+
 void *surf_action_new(size_t size, double cost, surf_model_t model,
                       int failed)
 {
-  surf_action_t action = xbt_malloc0(size);
+  xbt_assert2(size <= action_mallocator_allocated_size,
+      "Cannot create a surf action of size %d: the mallocator only provides actions of size %d",
+      size, action_mallocator_allocated_size);
+
+  surf_action_t action = xbt_mallocator_get(action_mallocator);
   action->refcount = 1;
   action->cost = cost;
   action->remains = cost;
@@ -75,8 +121,7 @@ double surf_action_get_finish_time(surf_action_t action)
 
 XBT_INLINE void surf_action_free(surf_action_t * action)
 {
-  (*action)->model_type->action_cancel(*action);
-  free(*action);
+  xbt_mallocator_release(action_mallocator, *action);
   *action = NULL;
 }
 

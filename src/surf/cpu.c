@@ -161,7 +161,7 @@ static int cpu_action_unref(surf_action_t action)
     if (action->category)
       xbt_free(action->category);
 #endif
-    free(action);
+    surf_action_free(&action);
     return 1;
   }
   return 0;

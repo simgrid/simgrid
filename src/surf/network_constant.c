@@ -41,7 +41,7 @@ static int netcste_action_unref(surf_action_t action)
   action->refcount--;
   if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
-    free(action);
+    surf_action_free(&action);
     return 1;
   }
   return 0;

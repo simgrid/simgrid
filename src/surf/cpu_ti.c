@@ -302,7 +302,7 @@ static int cpu_ti_action_unref(surf_action_t action)
     xbt_heap_remove(cpu_ti_action_heap,
                     ((surf_action_cpu_ti_t) action)->index_heap);
     xbt_swag_insert(ACTION_GET_CPU(action), cpu_ti_modified_cpu);
-    free(action);
+    surf_action_free(&action);
     return 1;
   }
   return 0;

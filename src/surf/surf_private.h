@@ -50,6 +50,8 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
                                       void (*solve) (lmm_system_t));
 
 /* Generic functions common to all models */
+void surf_action_init(void);
+void surf_action_exit(void);
 e_surf_action_state_t surf_action_state_get(surf_action_t action);      /* cannot declare inline since we use a pointer to it */
 double surf_action_get_start_time(surf_action_t action);        /* cannot declare inline since we use a pointer to it */
 double surf_action_get_finish_time(surf_action_t action);       /* cannot declare inline since we use a pointer to it */
