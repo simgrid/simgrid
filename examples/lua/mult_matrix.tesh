@@ -3,7 +3,7 @@
 # Later modify the commande and specify the platform and deployment path
 
 ! output sort
-$ lua mult_matrix.lua --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ lua mult_matrix.lua "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:Sender@Inmos) Hello From Sender
 > [  0.000000] (1:Sender@Inmos) Argc=4 (should be 4)
 > [  0.000000] (1:Sender@Inmos) Sending matrix_task to Bellevue

@@ -1,6 +1,6 @@
 
 p Check the marshaling facilities (trying to to do a in-memory copy)
-$ gras/datadesc/datadesc_usage --copy --log=root.fmt:%m%n
+$ gras/datadesc/datadesc_usage --copy "--log=root.fmt:%m%n"
 > Memory copy
 > ---- Test on integer ----
 > ---- Test on float ----

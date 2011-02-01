@@ -1,7 +1,7 @@
 #! ./tesh
 
 ! output sort
-$ ${bindir:=.}/bugged1 --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/bugged1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.008753] (2:client@HostB) Sent!
 > [  0.017506] (3:client@HostC) Sent!
 > [  0.026259] (1:server@HostA) OK

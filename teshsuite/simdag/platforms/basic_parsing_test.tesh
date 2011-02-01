@@ -1,68 +1,68 @@
-$ ${bindir:=.}/basic_parsing_test one_cluster.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 5, link number: 8
 
-$ ${bindir:=.}/basic_parsing_test one_host_availability.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_host_availability.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test one_host_properties.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_host_properties.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test one_host_state_file.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_host_state_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test one_host_state_off.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_host_state_off.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test one_host_state_on.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_host_state_on.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test one_host_trace_file.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_host_trace_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test one_host_trace_inside.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_host_trace_inside.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test one_host.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_host.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test one_link_availability.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_link_availability.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 2
 
-$ ${bindir:=.}/basic_parsing_test one_link_fatpipe.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_link_fatpipe.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 2
 
-$ ${bindir:=.}/basic_parsing_test one_link_shared.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_link_shared.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 2
 
-$ ${bindir:=.}/basic_parsing_test one_link_state_file.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test one_link_state_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 1, link number: 2
 
-$ ${bindir:=.}/basic_parsing_test three_hosts_non_symmetric_route.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 3, link number: 4
 
-$ ${bindir:=.}/basic_parsing_test two_clusters.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test two_clusters.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 10, link number: 16
 
-$ ${bindir:=.}/basic_parsing_test two_hosts_multi_hop.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 2, link number: 4
 
-$ ${bindir:=.}/basic_parsing_test two_hosts_one_link.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 2, link number: 2
 

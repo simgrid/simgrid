@@ -5,7 +5,7 @@
 p Test1 MSG_comm_test() with Sleep_sender > Sleep_receiver
 
 ! output sort
-$ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer01.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer01.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) sleep_start_time : 5.000000 , sleep_test_time : 0.100000
 > [  0.000000] (2:receiver@Ruby) sleep_start_time : 1.000000 , sleep_test_time : 0.100000
 > [  1.000000] (2:receiver@Ruby) Wait to receive a task
@@ -34,7 +34,7 @@ $ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer01.xml --lo
 p Test2 MSG_comm_test() with Sleep_sender < Sleep_receiver
 
 ! output sort
-$ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer02.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer02.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) sleep_start_time : 1.000000 , sleep_test_time : 0.100000
 > [  0.000000] (2:receiver@Ruby) sleep_start_time : 5.000000 , sleep_test_time : 0.100000
 > [  1.000000] (1:sender@Tremblay) Send to receiver-0 Task_0
@@ -63,7 +63,7 @@ $ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer02.xml --lo
 p Test1 MSG_comm_wait() with Sleep_sender > Sleep_receiver
 
 ! output sort
-$ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer03.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer03.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) sleep_start_time : 5.000000 , sleep_test_time : 0.000000
 > [  0.000000] (2:receiver@Ruby) sleep_start_time : 1.000000 , sleep_test_time : 0.000000
 > [  1.000000] (2:receiver@Ruby) Wait to receive a task
@@ -92,7 +92,7 @@ $ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer03.xml --lo
 p Test2 MSG_comm_wait() with Sleep_sender < Sleep_receiver
 
 ! output sort
-$ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer04.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer04.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) sleep_start_time : 1.000000 , sleep_test_time : 0.000000
 > [  0.000000] (2:receiver@Ruby) sleep_start_time : 5.000000 , sleep_test_time : 0.000000
 > [  1.000000] (1:sender@Tremblay) Send to receiver-0 Task_0
@@ -121,7 +121,7 @@ $ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer04.xml --lo
 p Test1 MSG_comm_waitall() for sender 
 
 ! output sort
-$ ./peer2 ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ./peer2 ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_0
 > [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_1
 > [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_2

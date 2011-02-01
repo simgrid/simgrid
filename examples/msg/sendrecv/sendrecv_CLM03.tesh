@@ -3,7 +3,7 @@
 p Testing the surf network maxmin fairness model
 
 ! output sort
-$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=workstation/model:CLM03 --cfg=cpu/model:Cas01 --cfg=network/model:CM02 --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=workstation/model:CLM03 --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'CLM03'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
