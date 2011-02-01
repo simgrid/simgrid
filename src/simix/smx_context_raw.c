@@ -157,6 +157,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 static xbt_parmap_t parmap;
 #endif
 
+static smx_context_factory_t raw_factory;
+
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
 
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
@@ -239,39 +241,31 @@ static void smx_ctx_raw_wrapper(smx_ctx_raw_t context)
   smx_ctx_raw_stop((smx_context_t) context);
 }
 
-static void smx_ctx_raw_resume(smx_context_t context)
+static void smx_ctx_raw_resume(smx_process_t process)
 {
-  smx_current_context = context; 
+  smx_ctx_raw_t context = (smx_ctx_raw_t)process->context;
+  smx_current_context = (smx_context_t)context;
   raw_swapcontext(
       &((smx_ctx_raw_t) context)->old_stack_top,
       ((smx_ctx_raw_t) context)->stack_top);
 }
 
-static void smx_ctx_raw_runall(xbt_dynar_t processes)
+
+static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
 {
   smx_process_t process;
   unsigned int cursor;
 
   xbt_dynar_foreach(processes, cursor, process) {
     DEBUG2("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
-    smx_ctx_raw_resume(process->context);
+    smx_ctx_raw_resume(process);
   }
   xbt_dynar_reset(processes);
 }
 
-static void smx_ctx_raw_resume_parallel(smx_process_t process)
-{
-  smx_ctx_raw_t context = (smx_ctx_raw_t)process->context;
-  smx_current_context = (smx_context_t)context;
-  raw_swapcontext(
-      &context->old_stack_top,
-      context->stack_top);
-  smx_current_context = (smx_context_t)maestro_raw_context;
-}
-
 static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
 {
-  xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_raw_resume_parallel, processes);
+  xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_raw_resume, processes);
   xbt_dynar_reset(processes);
 }
 
@@ -282,6 +276,21 @@ static smx_context_t smx_ctx_raw_self_parallel(void)
 
 static int smx_ctx_raw_get_thread_id(){
   return (int)(unsigned long)xbt_os_thread_get_extra_data();
+}
+
+static void smx_ctx_raw_runall(xbt_dynar_t processes)
+{
+  if(xbt_dynar_length(processes) > 10){
+    DEBUG1("Runall // %lu", xbt_dynar_length(processes));
+    raw_factory->self = smx_ctx_raw_self_parallel;
+    raw_factory->get_thread_id = smx_ctx_raw_get_thread_id;
+    smx_ctx_raw_runall_parallel(processes);
+  }else{
+    DEBUG1("Runall serial %lu", xbt_dynar_length(processes));
+    raw_factory->self = smx_ctx_base_self;
+    raw_factory->get_thread_id = smx_ctx_base_get_thread_id;
+    smx_ctx_raw_runall_serial(processes);
+  }
 }
 
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
@@ -296,11 +305,11 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
   (*factory)->stop = smx_ctx_raw_stop;
   (*factory)->suspend = smx_ctx_raw_suspend;
   (*factory)->name = "smx_raw_context_factory";
+  (*factory)->runall = smx_ctx_raw_runall;
 
   if (SIMIX_context_is_parallel()) {
 #ifdef CONTEXT_THREADS  /* To use parallel ucontexts a thread pool is needed */
     parmap = xbt_parmap_new(2);
-    (*factory)->runall = smx_ctx_raw_runall_parallel;
     (*factory)->self = smx_ctx_raw_self_parallel;
     (*factory)->get_thread_id = smx_ctx_raw_get_thread_id;
 #else
@@ -309,4 +318,6 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
   } else {
     (*factory)->runall = smx_ctx_raw_runall;
   }
+
+  raw_factory = *factory;
 }
