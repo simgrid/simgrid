@@ -1,5 +1,5 @@
 ! output sort
-$ $SG_TEST_EXENV ./simple_token_simulator$EXEEXT ${srcdir:=.}/../../../msg/small_platform.xml ${srcdir:=.}/simple_token.xml  --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ $SG_TEST_EXENV ./simple_token_simulator$EXEEXT ${srcdir:=.}/../../../msg/small_platform.xml ${srcdir:=.}/simple_token.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  1.000312] (1:node@Tremblay) Create the token (with value 0) and send it to Fafard:4000
 > [  1.118273] (1:node@Tremblay) Begin a new loop. Still to do: 2
 > [  1.236234] (1:node@Tremblay) Begin a new loop. Still to do: 1

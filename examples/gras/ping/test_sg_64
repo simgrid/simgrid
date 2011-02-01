@@ -1,7 +1,7 @@
 p Runs the 'ping' test within the simulator (simulation times valid for 64bits architectures)
 
 ! output sort
-$ $SG_TEST_EXENV ./ping_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/ping.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ $SG_TEST_EXENV ./ping_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/ping.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:server@Tremblay) Launch server (port=4000)
 > [  0.000000] (2:client@Fafard) Launch client (server on Tremblay:4000)
 > [  0.000156] (1:server@Tremblay) Messages registered

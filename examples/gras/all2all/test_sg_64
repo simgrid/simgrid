@@ -1,7 +1,7 @@
 #! ./tesh
 
 ! output sort
-$ $SG_TEST_EXENV ./all2all_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/all2all.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ $SG_TEST_EXENV ./all2all_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/all2all.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) Launch current node
 > [  0.000000] (3:sender@Jupiter) Launch current node
 > [  0.000000] (5:sender@Fafard) Launch current node
