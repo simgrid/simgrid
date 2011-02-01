@@ -25,6 +25,7 @@ void smx_ctx_base_factory_init(smx_context_factory_t *factory)
   (*factory)->runall = NULL;
   (*factory)->self = smx_ctx_base_self;
   (*factory)->get_data = smx_ctx_base_get_data;
+  (*factory)->get_thread_id = smx_ctx_base_get_thread_id;
 
   (*factory)->name = "base context factory";
 }
@@ -95,4 +96,9 @@ smx_context_t smx_ctx_base_self(void)
 void *smx_ctx_base_get_data(smx_context_t context)
 {
   return context->data;
+}
+
+int smx_ctx_base_get_thread_id()
+{
+  return 0;
 }

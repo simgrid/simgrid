@@ -258,5 +258,14 @@ static XBT_INLINE void* SIMIX_context_get_data(smx_context_t context)
   return (*(simix_global->context_factory->get_data))(context);
 }
 
+/**
+ \brief returns the thread's pid running the current context
+ \return The pid
+ */
+static XBT_INLINE int SIMIX_context_get_thread_id(void)
+{
+  return (*(simix_global->context_factory->get_thread_id))();
+}
+
 XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);
 #endif
