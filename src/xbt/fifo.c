@@ -37,12 +37,23 @@ xbt_fifo_t xbt_fifo_new(void)
  */
 void xbt_fifo_free(xbt_fifo_t l)
 {
+  xbt_fifo_reset(l);
+  xbt_free(l);
+}
+
+/**
+ * \brief Makes a fifo empty.
+ * \param l a fifo
+ *
+ * None of the objects that was in the fifo is however modified.
+ */
+void xbt_fifo_reset(xbt_fifo_t l)
+{
   xbt_fifo_item_t b, tmp;
 
   for (b = xbt_fifo_get_first_item(l); b;
        tmp = b, b = b->next, xbt_fifo_free_item(tmp));
-  xbt_free(l);
-  return;
+  l->head = l->tail = NULL;
 }
 
 /** Push

@@ -31,6 +31,7 @@ typedef struct xbt_fifo *xbt_fifo_t;
 
 XBT_PUBLIC(xbt_fifo_t) xbt_fifo_new(void);
 XBT_PUBLIC(void) xbt_fifo_free(xbt_fifo_t);
+XBT_PUBLIC(void) xbt_fifo_reset(xbt_fifo_t);
 /** @} */
 
 /** @defgroup XBT_fifo_perl Fifo perl-like functions

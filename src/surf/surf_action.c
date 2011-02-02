@@ -26,9 +26,9 @@ const char *surf_action_state_names[6] = {
 /* Surf actions mallocator */
 static xbt_mallocator_t action_mallocator = NULL;
 static int action_mallocator_allocated_size = 0;
-static void* action_mallocator_new_f(void);
-static void action_mallocator_free_f(void* action);
-static void action_mallocator_reset_f(void* action);
+static void* surf_action_mallocator_new_f(void);
+static void surf_action_mallocator_free_f(void* action);
+static void surf_action_mallocator_reset_f(void* action);
 
 /**
  * \brief Initializes the action module of Surf.
@@ -39,8 +39,8 @@ void surf_action_init(void) {
    * so this size should be set to the maximum size of the surf action structures
    */
   action_mallocator_allocated_size = sizeof(s_surf_action_network_CM02_t);
-  action_mallocator = xbt_mallocator_new(128, action_mallocator_new_f,
-      action_mallocator_free_f, action_mallocator_reset_f);
+  action_mallocator = xbt_mallocator_new(65536, surf_action_mallocator_new_f,
+      surf_action_mallocator_free_f, surf_action_mallocator_reset_f);
 }
 
 /**
@@ -51,15 +51,15 @@ void surf_action_exit(void) {
   xbt_mallocator_free(action_mallocator);
 }
 
-static void* action_mallocator_new_f(void) {
-  return xbt_malloc0(action_mallocator_allocated_size);
+static void* surf_action_mallocator_new_f(void) {
+  return xbt_malloc(action_mallocator_allocated_size);
 }
 
-static void action_mallocator_free_f(void* action) {
+static void surf_action_mallocator_free_f(void* action) {
   xbt_free(action);
 }
 
-static void action_mallocator_reset_f(void* action) {
+static void surf_action_mallocator_reset_f(void* action) {
   memset(action, 0, action_mallocator_allocated_size);
 }
 

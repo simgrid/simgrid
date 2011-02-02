@@ -434,9 +434,8 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
            host->name);
   }
 
-  action = xbt_new0(s_smx_action_t, 1);
+  action = xbt_mallocator_get(simix_global->action_mallocator);
   action->type = SIMIX_ACTION_SLEEP;
-  action->request_list = xbt_fifo_new();
   action->name = xbt_strdup("sleep");
 #ifdef HAVE_TRACING
   action->category = NULL;
@@ -482,15 +481,13 @@ void SIMIX_post_process_sleep(smx_action_t action)
 void SIMIX_process_sleep_destroy(smx_action_t action)
 {
   DEBUG1("Destroy action %p", action);
-  if (action->name)
-    xbt_free(action->name);
+  xbt_free(action->name);
   if (action->sleep.surf_sleep)
     action->sleep.surf_sleep->model_type->action_unref(action->sleep.surf_sleep);
 #ifdef HAVE_TRACING
   TRACE_smx_action_destroy(action);
 #endif
-  xbt_fifo_free(action->request_list);
-  xbt_free(action);
+  xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
 void SIMIX_process_sleep_suspend(smx_action_t action)

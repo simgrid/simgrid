@@ -24,9 +24,8 @@ static void SIMIX_sem_block_onto(smx_sem_t sem);
 static smx_action_t SIMIX_synchro_wait(smx_host_t smx_host, double timeout)
 {
   smx_action_t action;
-  action = xbt_new0(s_smx_action_t, 1);
+  action = xbt_mallocator_get(simix_global->action_mallocator);
   action->type = SIMIX_ACTION_SYNCHRO;
-  action->request_list = xbt_fifo_new();
   action->name = xbt_strdup("synchro");
   action->synchro.sleep = 
     surf_workstation_model->extension.workstation.sleep(smx_host->host, timeout);
@@ -68,9 +67,8 @@ void SIMIX_synchro_destroy(smx_action_t action)
 {
   DEBUG1("Destroying synchro %p", action);
   action->synchro.sleep->model_type->action_unref(action->synchro.sleep);
-  xbt_fifo_free(action->request_list);
   xbt_free(action->name);
-  xbt_free(action);
+  xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
 void SIMIX_post_synchro(smx_action_t action)

@@ -12,6 +12,7 @@
 #include "xbt/fifo.h"
 #include "xbt/swag.h"
 #include "xbt/dict.h"
+#include "xbt/mallocator.h"
 #include "xbt/config.h"
 #include "xbt/function_types.h"
 #include "xbt/ex_interface.h"
@@ -37,6 +38,7 @@ typedef struct s_smx_global {
   smx_creation_func_t create_process_function;
   void_f_pvoid_t kill_process_function;
   void_pfn_smxprocess_t cleanup_process_function;
+  xbt_mallocator_t action_mallocator;
 } s_smx_global_t, *smx_global_t;
 
 extern smx_global_t simix_global;

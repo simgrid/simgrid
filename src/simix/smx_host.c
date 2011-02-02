@@ -182,10 +182,9 @@ smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
                                 double priority)
 {
   /* alloc structures and initialize */
-  smx_action_t action = xbt_new0(s_smx_action_t, 1);
+  smx_action_t action = xbt_mallocator_get(simix_global->action_mallocator);
   action->type = SIMIX_ACTION_EXECUTE;
   action->name = xbt_strdup(name);
-  action->request_list = xbt_fifo_new();
   action->state = SIMIX_RUNNING;
   action->execution.host = host;
 
@@ -220,10 +219,9 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
   int i;
 
   /* alloc structures and initialize */
-  smx_action_t action = xbt_new0(s_smx_action_t, 1);
+  smx_action_t action = xbt_mallocator_get(simix_global->action_mallocator);
   action->type = SIMIX_ACTION_PARALLEL_EXECUTE;
   action->name = xbt_strdup(name);
-  action->request_list = xbt_fifo_new();
   action->state = SIMIX_RUNNING;
   action->execution.host = NULL; /* FIXME: do we need the list of hosts? */
 
@@ -254,10 +252,7 @@ void SIMIX_host_execution_destroy(smx_action_t action)
 {
   DEBUG1("Destroy action %p", action);
 
-  if (action->name)
-    xbt_free(action->name);
-
-  xbt_fifo_free(action->request_list);
+  xbt_free(action->name);
 
   if (action->execution.surf_exec) {
     surf_workstation_model->action_unref(action->execution.surf_exec);
@@ -267,7 +262,7 @@ void SIMIX_host_execution_destroy(smx_action_t action)
 #ifdef HAVE_TRACING
   TRACE_smx_action_destroy(action);
 #endif
-  xbt_free(action);
+  xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
 void SIMIX_host_execution_cancel(smx_action_t action)

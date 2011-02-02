@@ -26,6 +26,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
 smx_global_t simix_global = NULL;
 static xbt_heap_t simix_timers = NULL;
 
+static void* SIMIX_action_mallocator_new_f(void);
+static void SIMIX_action_mallocator_free_f(void* action);
+static void SIMIX_action_mallocator_reset_f(void* action);
+
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
 
@@ -79,6 +83,9 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->create_process_function = NULL;
     simix_global->kill_process_function = NULL;
     simix_global->cleanup_process_function = SIMIX_process_cleanup;
+    simix_global->action_mallocator = xbt_mallocator_new(65536,
+        SIMIX_action_mallocator_new_f, SIMIX_action_mallocator_free_f,
+        SIMIX_action_mallocator_reset_f);
 
     surf_init(argc, argv);      /* Initialize SURF structures */
     SIMIX_context_mod_init();
@@ -332,4 +339,24 @@ void SIMIX_display_process_status(void)
       INFO2("Waiting for %s action %p to finish", action_description, process->waiting_action);
     }
   }
+}
+
+static void* SIMIX_action_mallocator_new_f(void) {
+  smx_action_t action = xbt_new(s_smx_action_t, 1);
+  action->request_list = xbt_fifo_new();
+  return action;
+}
+
+static void SIMIX_action_mallocator_free_f(void* action) {
+  xbt_fifo_free(((smx_action_t) action)->request_list);
+  xbt_free(action);
+}
+
+static void SIMIX_action_mallocator_reset_f(void* action) {
+
+  // we also recycle the request list
+  xbt_fifo_t fifo = ((smx_action_t) action)->request_list;
+  xbt_fifo_reset(fifo);
+  memset(action, 0, sizeof(s_smx_action_t));
+  ((smx_action_t) action)->request_list = fifo;
 }

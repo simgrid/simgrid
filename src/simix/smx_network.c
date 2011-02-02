@@ -164,10 +164,9 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
   smx_action_t act;
 
   /* alloc structures */
-  act = xbt_new0(s_smx_action_t, 1);
+  act = xbt_mallocator_get(simix_global->action_mallocator);
   act->type = SIMIX_ACTION_COMMUNICATE;
   act->state = SIMIX_WAITING;
-  act->request_list = xbt_fifo_new();
 
   /* set communication */
   act->comm.type = type;
@@ -212,11 +211,7 @@ void SIMIX_comm_destroy(smx_action_t action)
   TRACE_smx_action_destroy(action);
 #endif
 
-  if (action->name)
-    xbt_free(action->name);
-
-  xbt_fifo_free(action->request_list);
-
+  xbt_free(action->name);
   SIMIX_comm_destroy_internal_actions(action);
 
   if (action->comm.detached && action->state != SIMIX_DONE) {
@@ -225,7 +220,7 @@ void SIMIX_comm_destroy(smx_action_t action)
     ((void_f_pvoid_t) action->comm.src_data)(action->comm.src_buff);
   }
 
-  xbt_free(action);
+  xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
 void SIMIX_comm_destroy_internal_actions(smx_action_t action)
