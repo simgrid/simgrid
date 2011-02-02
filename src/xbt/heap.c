@@ -12,6 +12,8 @@
 
 #include <stdio.h>
 
+static void xbt_heap_max_heapify(xbt_heap_t H);
+static void xbt_heap_increase_key(xbt_heap_t H, int i);
 
 /** @addtogroup XBT_heap
  *  \brief This section describes the API to generic heap with O(log(n)) access.
@@ -31,7 +33,7 @@ XBT_INLINE xbt_heap_t xbt_heap_new(int init_size,
   xbt_heap_t H = xbt_new0(struct xbt_heap, 1);
   H->size = init_size;
   H->count = 0;
-  H->items = (xbt_heapItem_t) xbt_new0(struct xbt_heapItem, init_size);
+  H->items = (xbt_heap_item_t) xbt_new0(struct xbt_heap_item, init_size);
   H->free = free_func;
   return H;
 }
@@ -88,19 +90,19 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
   int count = ++(H->count);
 
   int size = H->size;
-  xbt_heapItem_t item;
+  xbt_heap_item_t item;
 
   if (count > size) {
-    H->size = 2 * size + 1;
+    H->size = (size << 1) + 1;
     H->items =
         (void *) realloc(H->items,
-                         (H->size) * sizeof(struct xbt_heapItem));
+                         (H->size) * sizeof(struct xbt_heap_item));
   }
 
   item = &(H->items[count - 1]);
   item->key = key;
   item->content = content;
-  xbt_heap_increaseKey(H, count - 1);
+  xbt_heap_increase_key(H, count - 1);
   return;
 }
 
@@ -115,6 +117,8 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
  */
 void *xbt_heap_pop(xbt_heap_t H)
 {
+  xbt_heap_item_t items = H->items;
+  int size = H->size;
   void *max;
 
   if (H->count == 0)
@@ -122,14 +126,15 @@ void *xbt_heap_pop(xbt_heap_t H)
 
   max = CONTENT(H, 0);
 
-  H->items[0] = H->items[(H->count) - 1];
+  items[0] = items[(H->count) - 1];
   (H->count)--;
-  xbt_heap_maxHeapify(H);
-  if (H->count < H->size / 4 && H->size > 16) {
-    H->size = H->size / 2 + 1;
+  xbt_heap_max_heapify(H);
+  if (H->count < size >> 2 && size > 16) {
+    size = (size >> 1) + 1;
     H->items =
-        (void *) realloc(H->items,
-                         (H->size) * sizeof(struct xbt_heapItem));
+        (void *) realloc(items,
+                         size * sizeof(struct xbt_heap_item));
+    H->size = size;
   }
 
   if (H->update_callback)
@@ -152,7 +157,7 @@ void *xbt_heap_remove(xbt_heap_t H, int i)
   /* put element i at head */
   if (i > 0) {
     KEY(H, i) = MIN_KEY_VALUE;
-    xbt_heap_increaseKey(H, i);
+    xbt_heap_increase_key(H, i);
   }
 
   return xbt_heap_pop(H);
@@ -188,28 +193,30 @@ void *xbt_heap_maxcontent(xbt_heap_t H)
  *
  * Restores the heap property once an element has been deleted.
  */
-static void xbt_heap_maxHeapify(xbt_heap_t H)
+static void xbt_heap_max_heapify(xbt_heap_t H)
 {
   int i = 0;
+  int count = H->count;
+  xbt_heap_item_t items = H->items;
+
   while (1) {
     int greatest = i;
     int l = LEFT(i);
-    int r = RIGHT(i);
-    int count = H->count;
-    if (l < count && KEY(H, l) < KEY(H, i))
+    int r = l + 1;
+    if (l < count && items[l].key < items[i].key)
       greatest = l;
-    if (r < count && KEY(H, r) < KEY(H, greatest))
+    if (r < count && items[r].key < items[greatest].key)
       greatest = r;
     if (greatest != i) {
-      struct xbt_heapItem tmp = H->items[i];
-      H->items[i] = H->items[greatest];
-      H->items[greatest] = tmp;
+      struct xbt_heap_item tmp = items[i];
+      items[i] = items[greatest];
+      items[greatest] = tmp;
       if (H->update_callback)
-        H->update_callback(CONTENT(H, i), i);
+        H->update_callback(items[i].content, i);
       i = greatest;
     } else {
       if (H->update_callback)
-        H->update_callback(CONTENT(H, i), i);
+        H->update_callback(items[i].content, i);
       return;
     }
   }
@@ -222,17 +229,20 @@ static void xbt_heap_maxHeapify(xbt_heap_t H)
  * Moves up an item at position i to its correct position. Works only
  * when called from xbt_heap_push. Do not use otherwise.
  */
-static void xbt_heap_increaseKey(xbt_heap_t H, int i)
+static void xbt_heap_increase_key(xbt_heap_t H, int i)
 {
-  while (i > 0 && KEY(H, PARENT(i)) > KEY(H, i)) {
-    struct xbt_heapItem tmp = H->items[i];
-    H->items[i] = H->items[PARENT(i)];
-    H->items[PARENT(i)] = tmp;
+  xbt_heap_item_t items = H->items;
+  int p = PARENT(i);
+  while (i > 0 && items[p].key > items[i].key) {
+    struct xbt_heap_item tmp = items[i];
+    items[i] = items[p];
+    items[p] = tmp;
     if (H->update_callback)
-      H->update_callback(CONTENT(H, i), i);
-    i = PARENT(i);
+      H->update_callback(items[i].content, i);
+    i = p;
+    p = PARENT(i);
   }
   if (H->update_callback)
-    H->update_callback(CONTENT(H, i), i);
+    H->update_callback(items[i].content, i);
   return;
 }

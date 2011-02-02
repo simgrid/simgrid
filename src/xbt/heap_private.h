@@ -10,29 +10,26 @@
 #include "xbt/dynar.h"          /* void_f_pvoid_t */
 #include "xbt/heap.h"
 
-typedef struct xbt_heapItem {
+typedef struct xbt_heap_item {
   void *content;
   double key;
-} s_xbt_heapItem_t, *xbt_heapItem_t;
+} s_xbt_heap_item_t, *xbt_heap_item_t;
 
 typedef struct xbt_heap {
   int size;
   int count;
-  xbt_heapItem_t items;
+  xbt_heap_item_t items;
   void_f_pvoid_t free;
   void (*update_callback) (void *, int);
 } s_xbt_heap_t;
 
-#define PARENT(i)  i/2
-#define LEFT(i)    2*i
-#define RIGHT(i)   2*i+1
+#define PARENT(i)  (i >> 1)
+#define LEFT(i)    (i << 1)
+#define RIGHT(i)   ((i << 1) + 1)
 
 #define KEY(H,i)     ((H->items)[i]).key
 #define CONTENT(H,i) ((H->items)[i]).content
 
 #define MIN_KEY_VALUE -10000
-
-static void xbt_heap_maxHeapify(xbt_heap_t H);
-static void xbt_heap_increaseKey(xbt_heap_t H, int i);
 
 #endif                          /* _XBT_HEAP_PRIVATE_H */
