@@ -139,6 +139,13 @@ static surf_action_t netcste_communicate(const char *src_name,
   return (surf_action_t) action;
 }
 
+#ifdef HAVE_TRACING
+static void netcste_action_set_category(surf_action_t action, const char *category)
+{
+  //ignore completely the categories in constant model, they are not traced
+}
+#endif
+
 /* returns an array of link_Constant_t */
 static xbt_dynar_t netcste_get_route(void *src, void *dst)
 {
@@ -220,6 +227,9 @@ void surf_network_model_init_Constant(const char *filename)
   surf_network_model->extension.network.get_link_latency =
       netcste_get_link_latency;
   surf_network_model->extension.network.link_shared = link_shared;
+#ifdef HAVE_TRACING
+  surf_network_model->set_category = netcste_action_set_category;
+#endif
 
   if (!random_latency)
     random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);
