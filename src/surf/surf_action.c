@@ -68,7 +68,7 @@ void *surf_action_new(size_t size, double cost, surf_model_t model,
 {
   xbt_assert2(size <= action_mallocator_allocated_size,
       "Cannot create a surf action of size %lu: the mallocator only provides actions of size %d",
-      size, action_mallocator_allocated_size);
+      (long unsigned) size, action_mallocator_allocated_size);
 
   surf_action_t action = xbt_mallocator_get(action_mallocator);
   action->refcount = 1;
