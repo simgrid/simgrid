@@ -1355,12 +1355,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.002339] (0:@) insert_into_buffer: inserted at end, pos = 5
 > [  0.002339] (0:@) TRACE_paje_dump_buffer: dump until 0.000000. starts
 > [  0.002339] (0:@) TRACE_paje_dump_buffer: ends
-> [  0.002339] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.002339
-> [  0.002339] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.002339, buffersize=6)
-> [  0.002339] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 6
 > [  0.002339] (2:slave@Tremblay) new_pajeAddVariable: event_type=8, timestamp=0.002339
-> [  0.002339] (2:slave@Tremblay) insert_into_buffer: insert event_type=8, timestamp=0.002339, buffersize=7)
-> [  0.002339] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 7
+> [  0.002339] (2:slave@Tremblay) insert_into_buffer: insert event_type=8, timestamp=0.002339, buffersize=6)
+> [  0.002339] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 6
+> [  0.002339] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.002339
+> [  0.002339] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.002339, buffersize=7)
+> [  0.002339] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 7
 > [  0.017538] (0:@) TRACE_paje_dump_buffer: dump until 0.000000. starts
 > [  0.017538] (0:@) TRACE_paje_dump_buffer: ends
 > [  0.168300] (0:@) new_pajeSetVariable: event_type=7, timestamp=0.017538
@@ -1383,12 +1383,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.168300] (0:@) insert_into_buffer: inserted at end, pos = 13
 > [  0.168300] (0:@) TRACE_paje_dump_buffer: dump until 0.000000. starts
 > [  0.168300] (0:@) TRACE_paje_dump_buffer: ends
-> [  0.168300] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.168300
-> [  0.168300] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.168300, buffersize=14)
-> [  0.168300] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 14
 > [  0.168300] (3:slave@Jupiter) new_pajeAddVariable: event_type=8, timestamp=0.168300
-> [  0.168300] (3:slave@Jupiter) insert_into_buffer: insert event_type=8, timestamp=0.168300, buffersize=15)
-> [  0.168300] (3:slave@Jupiter) insert_into_buffer: inserted at end, pos = 15
+> [  0.168300] (3:slave@Jupiter) insert_into_buffer: insert event_type=8, timestamp=0.168300, buffersize=14)
+> [  0.168300] (3:slave@Jupiter) insert_into_buffer: inserted at end, pos = 14
+> [  0.168300] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.168300
+> [  0.168300] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.168300, buffersize=15)
+> [  0.168300] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 15
 > [  0.168300] (0:@) new_pajeSetVariable: event_type=7, timestamp=0.002339
 > [  0.168300] (0:@) insert_into_buffer: insert event_type=7, timestamp=0.002339, buffersize=16)
 > [  0.168300] (0:@) insert_into_buffer: inserted at 8
@@ -1519,12 +1519,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.386454] (0:@) insert_into_buffer: inserted at end, pos = 57
 > [  0.386454] (0:@) TRACE_paje_dump_buffer: dump until 0.000000. starts
 > [  0.386454] (0:@) TRACE_paje_dump_buffer: ends
-> [  0.386454] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.386454
-> [  0.386454] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.386454, buffersize=58)
-> [  0.386454] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 58
 > [  0.386454] (4:slave@Fafard) new_pajeAddVariable: event_type=8, timestamp=0.386454
-> [  0.386454] (4:slave@Fafard) insert_into_buffer: insert event_type=8, timestamp=0.386454, buffersize=59)
-> [  0.386454] (4:slave@Fafard) insert_into_buffer: inserted at end, pos = 59
+> [  0.386454] (4:slave@Fafard) insert_into_buffer: insert event_type=8, timestamp=0.386454, buffersize=58)
+> [  0.386454] (4:slave@Fafard) insert_into_buffer: inserted at end, pos = 58
+> [  0.386454] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.386454
+> [  0.386454] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.386454, buffersize=59)
+> [  0.386454] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 59
 > [  0.386454] (0:@) new_pajeAddVariable: event_type=8, timestamp=0.168300
 > [  0.386454] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.168300, buffersize=60)
 > [  0.386454] (0:@) insert_into_buffer: inserted at 22
@@ -1633,12 +1633,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.526913] (0:@) insert_into_buffer: inserted at end, pos = 93
 > [  0.526913] (0:@) TRACE_paje_dump_buffer: dump until 0.000000. starts
 > [  0.526913] (0:@) TRACE_paje_dump_buffer: ends
-> [  0.526913] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.526913
-> [  0.526913] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.526913, buffersize=94)
-> [  0.526913] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 94
 > [  0.526913] (5:slave@Ginette) new_pajeAddVariable: event_type=8, timestamp=0.526913
-> [  0.526913] (5:slave@Ginette) insert_into_buffer: insert event_type=8, timestamp=0.526913, buffersize=95)
-> [  0.526913] (5:slave@Ginette) insert_into_buffer: inserted at end, pos = 95
+> [  0.526913] (5:slave@Ginette) insert_into_buffer: insert event_type=8, timestamp=0.526913, buffersize=94)
+> [  0.526913] (5:slave@Ginette) insert_into_buffer: inserted at end, pos = 94
+> [  0.526913] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.526913
+> [  0.526913] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.526913, buffersize=95)
+> [  0.526913] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 95
 > [  0.547249] (0:@) TRACE_paje_dump_buffer: dump until 0.000000. starts
 > [  0.547249] (0:@) TRACE_paje_dump_buffer: ends
 > [  0.742786] (0:@) new_pajeAddVariable: event_type=8, timestamp=0.547249
@@ -1739,12 +1739,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.742786] (0:@) insert_into_buffer: inserted at end, pos = 127
 > [  0.742786] (0:@) TRACE_paje_dump_buffer: dump until 0.000000. starts
 > [  0.742786] (0:@) TRACE_paje_dump_buffer: ends
-> [  0.742786] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.742786
-> [  0.742786] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.742786, buffersize=128)
-> [  0.742786] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 128
 > [  0.742786] (6:slave@Bourassa) new_pajeAddVariable: event_type=8, timestamp=0.742786
-> [  0.742786] (6:slave@Bourassa) insert_into_buffer: insert event_type=8, timestamp=0.742786, buffersize=129)
-> [  0.742786] (6:slave@Bourassa) insert_into_buffer: inserted at end, pos = 129
+> [  0.742786] (6:slave@Bourassa) insert_into_buffer: insert event_type=8, timestamp=0.742786, buffersize=128)
+> [  0.742786] (6:slave@Bourassa) insert_into_buffer: inserted at end, pos = 128
+> [  0.742786] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.742786
+> [  0.742786] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.742786, buffersize=129)
+> [  0.742786] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 129
 > [  0.742942] (0:@) TRACE_paje_dump_buffer: dump until 0.168300. starts
 > [  0.742942] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.000156
 > [  0.742942] (0:@) free_paje_event: event_type=7, timestamp=0.000156
@@ -1758,10 +1758,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.742942] (0:@) free_paje_event: event_type=9, timestamp=0.002339
 > [  0.742942] (0:@) print_pajeSubVariable: event_type=9, timestamp=0.002339
 > [  0.742942] (0:@) free_paje_event: event_type=9, timestamp=0.002339
-> [  0.742942] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.002339
-> [  0.742942] (0:@) free_paje_event: event_type=7, timestamp=0.002339
 > [  0.742942] (0:@) print_pajeAddVariable: event_type=8, timestamp=0.002339
 > [  0.742942] (0:@) free_paje_event: event_type=8, timestamp=0.002339
+> [  0.742942] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.002339
+> [  0.742942] (0:@) free_paje_event: event_type=7, timestamp=0.002339
 > [  0.742942] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.002339
 > [  0.742942] (0:@) free_paje_event: event_type=7, timestamp=0.002339
 > [  0.742942] (0:@) print_pajeAddVariable: event_type=8, timestamp=0.002339
@@ -1782,10 +1782,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.742942] (0:@) free_paje_event: event_type=9, timestamp=0.168300
 > [  0.742942] (0:@) print_pajeSubVariable: event_type=9, timestamp=0.168300
 > [  0.742942] (0:@) free_paje_event: event_type=9, timestamp=0.168300
-> [  0.742942] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.168300
-> [  0.742942] (0:@) free_paje_event: event_type=7, timestamp=0.168300
 > [  0.742942] (0:@) print_pajeAddVariable: event_type=8, timestamp=0.168300
 > [  0.742942] (0:@) free_paje_event: event_type=8, timestamp=0.168300
+> [  0.742942] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.168300
+> [  0.742942] (0:@) free_paje_event: event_type=7, timestamp=0.168300
 > [  0.742942] (0:@) print_pajeSubVariable: event_type=9, timestamp=0.168300
 > [  0.742942] (0:@) free_paje_event: event_type=9, timestamp=0.168300
 > [  0.742942] (0:@) print_pajeSubVariable: event_type=9, timestamp=0.168300
@@ -1809,12 +1809,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.745124] (0:@) insert_into_buffer: inserted at end, pos = 109
 > [  0.745124] (0:@) TRACE_paje_dump_buffer: dump until 0.168300. starts
 > [  0.745124] (0:@) TRACE_paje_dump_buffer: ends
-> [  0.745124] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.745124
-> [  0.745124] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.745124, buffersize=110)
-> [  0.745124] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 110
 > [  0.745124] (2:slave@Tremblay) new_pajeAddVariable: event_type=8, timestamp=0.745124
-> [  0.745124] (2:slave@Tremblay) insert_into_buffer: insert event_type=8, timestamp=0.745124, buffersize=111)
-> [  0.745124] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 111
+> [  0.745124] (2:slave@Tremblay) insert_into_buffer: insert event_type=8, timestamp=0.745124, buffersize=110)
+> [  0.745124] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 110
+> [  0.745124] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=0.745124
+> [  0.745124] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=0.745124, buffersize=111)
+> [  0.745124] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 111
 > [  0.823643] (0:@) new_pajeSetVariable: event_type=7, timestamp=0.168300
 > [  0.823643] (0:@) insert_into_buffer: insert event_type=7, timestamp=0.168300, buffersize=112)
 > [  0.823643] (0:@) insert_into_buffer: inserted at 0
@@ -1914,10 +1914,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.823643] (0:@) free_paje_event: event_type=9, timestamp=0.386454
 > [  0.823643] (0:@) print_pajeSubVariable: event_type=9, timestamp=0.386454
 > [  0.823643] (0:@) free_paje_event: event_type=9, timestamp=0.386454
-> [  0.823643] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.386454
-> [  0.823643] (0:@) free_paje_event: event_type=7, timestamp=0.386454
 > [  0.823643] (0:@) print_pajeAddVariable: event_type=8, timestamp=0.386454
 > [  0.823643] (0:@) free_paje_event: event_type=8, timestamp=0.386454
+> [  0.823643] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.386454
+> [  0.823643] (0:@) free_paje_event: event_type=7, timestamp=0.386454
 > [  0.823643] (0:@) print_pajeSubVariable: event_type=9, timestamp=0.386454
 > [  0.823643] (0:@) free_paje_event: event_type=9, timestamp=0.386454
 > [  0.823643] (0:@) print_pajeSubVariable: event_type=9, timestamp=0.386454
@@ -2038,10 +2038,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  1.041796] (0:@) free_paje_event: event_type=9, timestamp=0.526913
 > [  1.041796] (0:@) print_pajeSubVariable: event_type=9, timestamp=0.526913
 > [  1.041796] (0:@) free_paje_event: event_type=9, timestamp=0.526913
-> [  1.041796] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.526913
-> [  1.041796] (0:@) free_paje_event: event_type=7, timestamp=0.526913
 > [  1.041796] (0:@) print_pajeAddVariable: event_type=8, timestamp=0.526913
 > [  1.041796] (0:@) free_paje_event: event_type=8, timestamp=0.526913
+> [  1.041796] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.526913
+> [  1.041796] (0:@) free_paje_event: event_type=7, timestamp=0.526913
 > [  1.041796] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.062347] (0:@) TRACE_paje_dump_buffer: dump until 0.526913. starts
 > [  1.062347] (0:@) TRACE_paje_dump_buffer: ends
@@ -2155,12 +2155,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  1.262288] (0:@) insert_into_buffer: inserted at end, pos = 85
 > [  1.262288] (0:@) TRACE_paje_dump_buffer: dump until 0.526913. starts
 > [  1.262288] (0:@) TRACE_paje_dump_buffer: ends
-> [  1.262288] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=1.262288
-> [  1.262288] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=1.262288, buffersize=86)
-> [  1.262288] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 86
 > [  1.262288] (2:slave@Tremblay) new_pajeAddVariable: event_type=8, timestamp=1.262288
-> [  1.262288] (2:slave@Tremblay) insert_into_buffer: insert event_type=8, timestamp=1.262288, buffersize=87)
-> [  1.262288] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 87
+> [  1.262288] (2:slave@Tremblay) insert_into_buffer: insert event_type=8, timestamp=1.262288, buffersize=86)
+> [  1.262288] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 86
+> [  1.262288] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=1.262288
+> [  1.262288] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=1.262288, buffersize=87)
+> [  1.262288] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 87
 > [  1.558011] (0:@) new_pajeSetVariable: event_type=7, timestamp=0.526913
 > [  1.558011] (0:@) insert_into_buffer: insert event_type=7, timestamp=0.526913, buffersize=88)
 > [  1.558011] (0:@) insert_into_buffer: inserted at 0
@@ -2252,10 +2252,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  1.558011] (0:@) free_paje_event: event_type=9, timestamp=0.742786
 > [  1.558011] (0:@) print_pajeSubVariable: event_type=9, timestamp=0.742786
 > [  1.558011] (0:@) free_paje_event: event_type=9, timestamp=0.742786
-> [  1.558011] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.742786
-> [  1.558011] (0:@) free_paje_event: event_type=7, timestamp=0.742786
 > [  1.558011] (0:@) print_pajeAddVariable: event_type=8, timestamp=0.742786
 > [  1.558011] (0:@) free_paje_event: event_type=8, timestamp=0.742786
+> [  1.558011] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.742786
+> [  1.558011] (0:@) free_paje_event: event_type=7, timestamp=0.742786
 > [  1.558011] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.571243] (0:@) TRACE_paje_dump_buffer: dump until 0.742786. starts
 > [  1.571243] (0:@) TRACE_paje_dump_buffer: ends
@@ -2404,10 +2404,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  1.773883] (0:@) free_paje_event: event_type=9, timestamp=0.745124
 > [  1.773883] (0:@) print_pajeSubVariable: event_type=9, timestamp=0.745124
 > [  1.773883] (0:@) free_paje_event: event_type=9, timestamp=0.745124
-> [  1.773883] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.745124
-> [  1.773883] (0:@) free_paje_event: event_type=7, timestamp=0.745124
 > [  1.773883] (0:@) print_pajeAddVariable: event_type=8, timestamp=0.745124
 > [  1.773883] (0:@) free_paje_event: event_type=8, timestamp=0.745124
+> [  1.773883] (0:@) print_pajeSetVariable: event_type=7, timestamp=0.745124
+> [  1.773883] (0:@) free_paje_event: event_type=7, timestamp=0.745124
 > [  1.773883] (0:@) print_pajeAddVariable: event_type=8, timestamp=0.745124
 > [  1.773883] (0:@) free_paje_event: event_type=8, timestamp=0.745124
 > [  1.773883] (0:@) print_pajeAddVariable: event_type=8, timestamp=0.745124
@@ -2511,12 +2511,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  1.864433] (0:@) insert_into_buffer: inserted at end, pos = 45
 > [  1.864433] (0:@) TRACE_paje_dump_buffer: dump until 1.259949. starts
 > [  1.864433] (0:@) TRACE_paje_dump_buffer: ends
-> [  1.864433] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=1.864433
-> [  1.864433] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=1.864433, buffersize=46)
-> [  1.864433] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 46
 > [  1.864433] (3:slave@Jupiter) new_pajeAddVariable: event_type=8, timestamp=1.864433
-> [  1.864433] (3:slave@Jupiter) insert_into_buffer: insert event_type=8, timestamp=1.864433, buffersize=47)
-> [  1.864433] (3:slave@Jupiter) insert_into_buffer: inserted at end, pos = 47
+> [  1.864433] (3:slave@Jupiter) insert_into_buffer: insert event_type=8, timestamp=1.864433, buffersize=46)
+> [  1.864433] (3:slave@Jupiter) insert_into_buffer: inserted at end, pos = 46
+> [  1.864433] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=1.864433
+> [  1.864433] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=1.864433, buffersize=47)
+> [  1.864433] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 47
 > [  1.864589] (0:@) TRACE_paje_dump_buffer: dump until 1.259949. starts
 > [  1.864589] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.866771] (0:@) new_pajeAddVariable: event_type=8, timestamp=1.864589
@@ -2533,12 +2533,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  1.866771] (0:@) insert_into_buffer: inserted at end, pos = 51
 > [  1.866771] (0:@) TRACE_paje_dump_buffer: dump until 1.259949. starts
 > [  1.866771] (0:@) TRACE_paje_dump_buffer: ends
-> [  1.866771] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=1.866771
-> [  1.866771] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=1.866771, buffersize=52)
-> [  1.866771] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 52
 > [  1.866771] (2:slave@Tremblay) new_pajeAddVariable: event_type=8, timestamp=1.866771
-> [  1.866771] (2:slave@Tremblay) insert_into_buffer: insert event_type=8, timestamp=1.866771, buffersize=53)
-> [  1.866771] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 53
+> [  1.866771] (2:slave@Tremblay) insert_into_buffer: insert event_type=8, timestamp=1.866771, buffersize=52)
+> [  1.866771] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 52
+> [  1.866771] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=1.866771
+> [  1.866771] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=1.866771, buffersize=53)
+> [  1.866771] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 53
 > [  1.887107] (0:@) TRACE_paje_dump_buffer: dump until 1.259949. starts
 > [  1.887107] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.915291] (0:@) new_pajeAddVariable: event_type=8, timestamp=1.259949
@@ -2650,10 +2650,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  1.915291] (0:@) free_paje_event: event_type=9, timestamp=1.262288
 > [  1.915291] (0:@) print_pajeSubVariable: event_type=9, timestamp=1.262288
 > [  1.915291] (0:@) free_paje_event: event_type=9, timestamp=1.262288
-> [  1.915291] (0:@) print_pajeSetVariable: event_type=7, timestamp=1.262288
-> [  1.915291] (0:@) free_paje_event: event_type=7, timestamp=1.262288
 > [  1.915291] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.262288
 > [  1.915291] (0:@) free_paje_event: event_type=8, timestamp=1.262288
+> [  1.915291] (0:@) print_pajeSetVariable: event_type=7, timestamp=1.262288
+> [  1.915291] (0:@) free_paje_event: event_type=7, timestamp=1.262288
 > [  1.915291] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.262288
 > [  1.915291] (0:@) free_paje_event: event_type=8, timestamp=1.262288
 > [  1.915291] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.262288
@@ -2789,12 +2789,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  2.082643] (0:@) insert_into_buffer: inserted at end, pos = 81
 > [  2.082643] (0:@) TRACE_paje_dump_buffer: dump until 1.698471. starts
 > [  2.082643] (0:@) TRACE_paje_dump_buffer: ends
-> [  2.082643] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=2.082643
-> [  2.082643] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=2.082643, buffersize=82)
-> [  2.082643] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 82
 > [  2.082643] (6:slave@Bourassa) new_pajeAddVariable: event_type=8, timestamp=2.082643
-> [  2.082643] (6:slave@Bourassa) insert_into_buffer: insert event_type=8, timestamp=2.082643, buffersize=83)
-> [  2.082643] (6:slave@Bourassa) insert_into_buffer: inserted at end, pos = 83
+> [  2.082643] (6:slave@Bourassa) insert_into_buffer: insert event_type=8, timestamp=2.082643, buffersize=82)
+> [  2.082643] (6:slave@Bourassa) insert_into_buffer: inserted at end, pos = 82
+> [  2.082643] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=2.082643
+> [  2.082643] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=2.082643, buffersize=83)
+> [  2.082643] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 83
 > [  2.082643] (0:@) new_pajeAddVariable: event_type=8, timestamp=1.866771
 > [  2.082643] (0:@) insert_into_buffer: insert event_type=8, timestamp=1.866771, buffersize=84)
 > [  2.082643] (0:@) insert_into_buffer: inserted at 24
@@ -2883,12 +2883,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  2.300797] (0:@) insert_into_buffer: inserted at end, pos = 111
 > [  2.300797] (0:@) TRACE_paje_dump_buffer: dump until 1.698471. starts
 > [  2.300797] (0:@) TRACE_paje_dump_buffer: ends
-> [  2.300797] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=2.300797
-> [  2.300797] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=2.300797, buffersize=112)
-> [  2.300797] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 112
 > [  2.300797] (4:slave@Fafard) new_pajeAddVariable: event_type=8, timestamp=2.300797
-> [  2.300797] (4:slave@Fafard) insert_into_buffer: insert event_type=8, timestamp=2.300797, buffersize=113)
-> [  2.300797] (4:slave@Fafard) insert_into_buffer: inserted at end, pos = 113
+> [  2.300797] (4:slave@Fafard) insert_into_buffer: insert event_type=8, timestamp=2.300797, buffersize=112)
+> [  2.300797] (4:slave@Fafard) insert_into_buffer: inserted at end, pos = 112
+> [  2.300797] (1:master@Tremblay) new_pajeSetVariable: event_type=7, timestamp=2.300797
+> [  2.300797] (1:master@Tremblay) insert_into_buffer: insert event_type=7, timestamp=2.300797, buffersize=113)
+> [  2.300797] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 113
 > [  2.300797] (0:@) new_pajeAddVariable: event_type=8, timestamp=2.082643
 > [  2.300797] (0:@) insert_into_buffer: insert event_type=8, timestamp=2.082643, buffersize=114)
 > [  2.300797] (0:@) insert_into_buffer: inserted at 88
@@ -3022,14 +3022,14 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  2.729569] (0:@) free_paje_event: event_type=9, timestamp=1.864433
 > [  2.729569] (0:@) print_pajeSubVariable: event_type=9, timestamp=1.864433
 > [  2.729569] (0:@) free_paje_event: event_type=9, timestamp=1.864433
+> [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.864433
+> [  2.729569] (0:@) free_paje_event: event_type=8, timestamp=1.864433
 > [  2.729569] (0:@) print_pajeSetVariable: event_type=7, timestamp=1.864433
 > [  2.729569] (0:@) free_paje_event: event_type=7, timestamp=1.864433
 > [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.864433
 > [  2.729569] (0:@) free_paje_event: event_type=8, timestamp=1.864433
 > [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.864433
 > [  2.729569] (0:@) free_paje_event: event_type=8, timestamp=1.864433
-> [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.864433
-> [  2.729569] (0:@) free_paje_event: event_type=8, timestamp=1.864433
 > [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.864589
 > [  2.729569] (0:@) free_paje_event: event_type=8, timestamp=1.864589
 > [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.864589
@@ -3038,14 +3038,14 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  2.729569] (0:@) free_paje_event: event_type=9, timestamp=1.866771
 > [  2.729569] (0:@) print_pajeSubVariable: event_type=9, timestamp=1.866771
 > [  2.729569] (0:@) free_paje_event: event_type=9, timestamp=1.866771
+> [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.866771
+> [  2.729569] (0:@) free_paje_event: event_type=8, timestamp=1.866771
 > [  2.729569] (0:@) print_pajeSetVariable: event_type=7, timestamp=1.866771
 > [  2.729569] (0:@) free_paje_event: event_type=7, timestamp=1.866771
 > [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.866771
 > [  2.729569] (0:@) free_paje_event: event_type=8, timestamp=1.866771
 > [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.866771
 > [  2.729569] (0:@) free_paje_event: event_type=8, timestamp=1.866771
-> [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.866771
-> [  2.729569] (0:@) free_paje_event: event_type=8, timestamp=1.866771
 > [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.887107
 > [  2.729569] (0:@) free_paje_event: event_type=8, timestamp=1.887107
 > [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=1.887107
@@ -3162,10 +3162,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  2.729569] (0:@) free_paje_event: event_type=9, timestamp=2.082643
 > [  2.729569] (0:@) print_pajeSubVariable: event_type=9, timestamp=2.082643
 > [  2.729569] (0:@) free_paje_event: event_type=9, timestamp=2.082643
-> [  2.729569] (0:@) print_pajeSetVariable: event_type=7, timestamp=2.082643
-> [  2.729569] (0:@) free_paje_event: event_type=7, timestamp=2.082643
 > [  2.729569] (0:@) print_pajeAddVariable: event_type=8, timestamp=2.082643
 > [  2.729569] (0:@) free_paje_event: event_type=8, timestamp=2.082643
+> [  2.729569] (0:@) print_pajeSetVariable: event_type=7, timestamp=2.082643
+> [  2.729569] (0:@) free_paje_event: event_type=7, timestamp=2.082643
 > [  2.729569] (0:@) print_pajeSubVariable: event_type=9, timestamp=2.082643
 > [  2.729569] (0:@) free_paje_event: event_type=9, timestamp=2.082643
 > [  2.729569] (0:@) print_pajeSubVariable: event_type=9, timestamp=2.082643
@@ -3362,10 +3362,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  3.113741] (0:@) free_paje_event: event_type=9, timestamp=2.300797
 > [  3.113741] (0:@) print_pajeSubVariable: event_type=9, timestamp=2.300797
 > [  3.113741] (0:@) free_paje_event: event_type=9, timestamp=2.300797
-> [  3.113741] (0:@) print_pajeSetVariable: event_type=7, timestamp=2.300797
-> [  3.113741] (0:@) free_paje_event: event_type=7, timestamp=2.300797
 > [  3.113741] (0:@) print_pajeAddVariable: event_type=8, timestamp=2.300797
 > [  3.113741] (0:@) free_paje_event: event_type=8, timestamp=2.300797
+> [  3.113741] (0:@) print_pajeSetVariable: event_type=7, timestamp=2.300797
+> [  3.113741] (0:@) free_paje_event: event_type=7, timestamp=2.300797
 > [  3.113741] (0:@) print_pajeSubVariable: event_type=9, timestamp=2.300797
 > [  3.113741] (0:@) free_paje_event: event_type=9, timestamp=2.300797
 > [  3.113741] (0:@) print_pajeSubVariable: event_type=9, timestamp=2.300797
@@ -3689,12 +3689,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  3.390164] (0:@) insert_into_buffer: inserted at end, pos = 97
 > [  3.390164] (0:@) TRACE_paje_dump_buffer: dump until 2.870028. starts
 > [  3.390164] (0:@) TRACE_paje_dump_buffer: ends
-> [  3.390164] (1:master@Tremblay) new_pajeNewEvent: event_type=15, timestamp=3.390164
-> [  3.390164] (1:master@Tremblay) insert_into_buffer: insert event_type=15, timestamp=3.390164, buffersize=98)
-> [  3.390164] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 98
 > [  3.390164] (6:slave@Bourassa) new_pajeAddVariable: event_type=8, timestamp=3.390164
-> [  3.390164] (6:slave@Bourassa) insert_into_buffer: insert event_type=8, timestamp=3.390164, buffersize=99)
-> [  3.390164] (6:slave@Bourassa) insert_into_buffer: inserted at end, pos = 99
+> [  3.390164] (6:slave@Bourassa) insert_into_buffer: insert event_type=8, timestamp=3.390164, buffersize=98)
+> [  3.390164] (6:slave@Bourassa) insert_into_buffer: inserted at end, pos = 98
+> [  3.390164] (1:master@Tremblay) new_pajeNewEvent: event_type=15, timestamp=3.390164
+> [  3.390164] (1:master@Tremblay) insert_into_buffer: insert event_type=15, timestamp=3.390164, buffersize=99)
+> [  3.390164] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 99
 > [  3.390164] (0:@) new_pajeAddVariable: event_type=8, timestamp=3.174292
 > [  3.390164] (0:@) insert_into_buffer: insert event_type=8, timestamp=3.174292, buffersize=100)
 > [  3.390164] (0:@) insert_into_buffer: inserted at 40
@@ -3962,10 +3962,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  3.901126] (0:@) free_paje_event: event_type=9, timestamp=3.390164
 > [  3.901126] (0:@) print_pajeSubVariable: event_type=9, timestamp=3.390164
 > [  3.901126] (0:@) free_paje_event: event_type=9, timestamp=3.390164
-> [  3.901126] (0:@) print_pajeNewEvent: event_type=15, timestamp=3.390164
-> [  3.901126] (0:@) free_paje_event: event_type=15, timestamp=3.390164
 > [  3.901126] (0:@) print_pajeAddVariable: event_type=8, timestamp=3.390164
 > [  3.901126] (0:@) free_paje_event: event_type=8, timestamp=3.390164
+> [  3.901126] (0:@) print_pajeNewEvent: event_type=15, timestamp=3.390164
+> [  3.901126] (0:@) free_paje_event: event_type=15, timestamp=3.390164
 > [  3.901126] (0:@) print_pajeSubVariable: event_type=9, timestamp=3.390164
 > [  3.901126] (0:@) free_paje_event: event_type=9, timestamp=3.390164
 > [  3.901126] (0:@) print_pajeSubVariable: event_type=9, timestamp=3.390164
@@ -4555,8 +4555,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 8 0.000156 20 26 458160000.000000
 > 9 0.002339 9 26 458160000.000000
 > 9 0.002339 20 26 458160000.000000
-> 7 0.002339 17 2 1.000000
 > 8 0.002339 18 2 50000000.000000
+> 7 0.002339 17 2 1.000000
 > 7 0.002339 4 2 0.000000
 > 8 0.002339 4 2 98095000.000000
 > 7 0.002339 21 2 0.000000
@@ -4567,8 +4567,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 8 0.017538 20 17 6632970.000000
 > 9 0.168300 9 17 6632970.000000
 > 9 0.168300 20 17 6632970.000000
-> 7 0.168300 17 2 2.000000
 > 8 0.168300 18 3 50000000.000000
+> 7 0.168300 17 2 2.000000
 > 9 0.168300 4 2 98095000.000000
 > 9 0.168300 21 2 98095000.000000
 > 8 0.168300 4 2 98095000.000000
@@ -4613,8 +4613,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 9 0.386454 20 21 5060664.718311
 > 9 0.386454 9 20 5060664.718311
 > 9 0.386454 20 20 5060664.718311
-> 7 0.386454 17 2 3.000000
 > 8 0.386454 18 4 50000000.000000
+> 7 0.386454 17 2 3.000000
 > 9 0.386454 4 2 98095000.000000
 > 9 0.386454 21 2 98095000.000000
 > 8 0.386454 4 2 98095000.000000
@@ -4651,8 +4651,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 9 0.526913 20 15 7859911.230163
 > 9 0.526913 9 25 7859911.230163
 > 9 0.526913 20 25 7859911.230163
-> 7 0.526913 17 2 4.000000
 > 8 0.526913 18 5 50000000.000000
+> 7 0.526913 17 2 4.000000
 > 7 0.526913 4 5 0.000000
 > 8 0.526913 4 5 48492000.000000
 > 7 0.526913 21 5 0.000000
@@ -4689,8 +4689,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 9 0.742786 20 13 5114134.701194
 > 9 0.742786 9 16 5114134.701194
 > 9 0.742786 20 16 5114134.701194
-> 7 0.742786 17 2 5.000000
 > 8 0.742786 18 6 50000000.000000
+> 7 0.742786 17 2 5.000000
 > 7 0.742786 4 6 0.000000
 > 8 0.742786 4 6 48492000.000000
 > 7 0.742786 21 6 0.000000
@@ -4699,8 +4699,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 8 0.742942 20 26 458160000.000000
 > 9 0.745124 9 26 458160000.000000
 > 9 0.745124 20 26 458160000.000000
-> 7 0.745124 17 2 6.000000
 > 8 0.745124 18 2 50000000.000000
+> 7 0.745124 17 2 6.000000
 > 8 0.745124 4 2 98095000.000000
 > 8 0.745124 21 2 98095000.000000
 > 9 0.823643 4 3 76296000.000000
@@ -4751,8 +4751,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 8 1.260105 20 26 458160000.000000
 > 9 1.262288 9 26 458160000.000000
 > 9 1.262288 20 26 458160000.000000
-> 7 1.262288 17 2 9.000000
 > 8 1.262288 18 2 50000000.000000
+> 7 1.262288 17 2 9.000000
 > 8 1.262288 4 2 98095000.000000
 > 8 1.262288 21 2 98095000.000000
 > 9 1.558011 4 5 48492000.000000
@@ -4795,16 +4795,16 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 8 1.773883 20 17 6632970.000000
 > 9 1.864433 9 17 6632970.000000
 > 9 1.864433 20 17 6632970.000000
-> 7 1.864433 17 2 11.000000
 > 8 1.864433 18 3 50000000.000000
+> 7 1.864433 17 2 11.000000
 > 8 1.864433 4 3 76296000.000000
 > 8 1.864433 21 3 76296000.000000
 > 8 1.864589 9 26 458160000.000000
 > 8 1.864589 20 26 458160000.000000
 > 9 1.866771 9 26 458160000.000000
 > 9 1.866771 20 26 458160000.000000
-> 7 1.866771 17 2 12.000000
 > 8 1.866771 18 2 50000000.000000
+> 7 1.866771 17 2 12.000000
 > 8 1.866771 4 2 98095000.000000
 > 8 1.866771 21 2 98095000.000000
 > 8 1.887107 9 22 5114134.701194
@@ -4865,8 +4865,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 9 2.082643 20 13 5114134.701194
 > 9 2.082643 9 16 5114134.701194
 > 9 2.082643 20 16 5114134.701194
-> 7 2.082643 17 2 13.000000
 > 8 2.082643 18 6 50000000.000000
+> 7 2.082643 17 2 13.000000
 > 9 2.082643 4 2 98095000.000000
 > 9 2.082643 21 2 98095000.000000
 > 8 2.082643 4 2 98095000.000000
@@ -4897,8 +4897,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 9 2.300797 20 21 5060664.718311
 > 9 2.300797 9 20 5060664.718311
 > 9 2.300797 20 20 5060664.718311
-> 7 2.300797 17 2 14.000000
 > 8 2.300797 18 4 50000000.000000
+> 7 2.300797 17 2 14.000000
 > 9 2.300797 4 2 98095000.000000
 > 9 2.300797 21 2 98095000.000000
 > 8 2.300797 4 2 98095000.000000
@@ -5043,8 +5043,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 9 3.390164 20 13 5114134.701194
 > 9 3.390164 9 16 5114134.701194
 > 9 3.390164 20 16 5114134.701194
-> 15 3.390164 19 0 finish_send_tasks
 > 8 3.390164 18 6 50000000.000000
+> 15 3.390164 19 0 finish_send_tasks
 > 9 3.390164 4 2 98095000.000000
 > 9 3.390164 21 2 98095000.000000
 > 8 3.390164 4 2 98095000.000000
