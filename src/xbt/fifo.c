@@ -527,7 +527,7 @@ void xbt_fifo_preinit(void)
     xbt_mallocator_free(item_mallocator);
   }
 
-  item_mallocator = xbt_mallocator_new(256,
+  item_mallocator = xbt_mallocator_new(65536,
                                        fifo_item_mallocator_new_f,
                                        fifo_item_mallocator_free_f,
                                        fifo_item_mallocator_reset_f);

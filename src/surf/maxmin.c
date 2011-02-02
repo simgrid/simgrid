@@ -57,7 +57,7 @@ lmm_system_t lmm_system_new(void)
   xbt_swag_init(&(l->saturated_constraint_set),
                 xbt_swag_offset(cnst, saturated_constraint_set_hookup));
 
-  l->variable_mallocator = xbt_mallocator_new(64,
+  l->variable_mallocator = xbt_mallocator_new(65536,
                                               lmm_variable_mallocator_new_f,
                                               lmm_variable_mallocator_free_f,
                                               lmm_variable_mallocator_reset_f);
