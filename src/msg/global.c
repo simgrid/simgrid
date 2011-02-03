@@ -64,8 +64,9 @@ void MSG_global_init(int *argc, char **argv)
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
 
+    s_m_process_t p;
+    msg_global->process_list = xbt_swag_new(xbt_swag_offset(p, process_list_hookup));
     msg_global->host = xbt_fifo_new();
-    msg_global->process_list = xbt_fifo_new();
     msg_global->max_channel = 0;
     msg_global->PID = 1;
     msg_global->sent_msg = 0;
@@ -164,7 +165,7 @@ int MSG_process_killall(int reset_PIDs)
   m_process_t p = NULL;
   m_process_t self = MSG_process_self();
 
-  while ((p = xbt_fifo_pop(msg_global->process_list))) {
+  while ((p = xbt_swag_extract(msg_global->process_list))) {
     if (p != self)
       MSG_process_kill(p);
   }
@@ -191,7 +192,7 @@ MSG_error_t MSG_clean(void)
   TRACE_surf_release();
 #endif
 
-  while ((p = xbt_fifo_pop(msg_global->process_list))) {
+  while ((p = xbt_swag_extract(msg_global->process_list))) {
     MSG_process_kill(p);
   }
 
@@ -199,7 +200,7 @@ MSG_error_t MSG_clean(void)
     __MSG_host_destroy(h);
   }
   xbt_fifo_free(msg_global->host);
-  xbt_fifo_free(msg_global->process_list);
+  xbt_swag_free(msg_global->process_list);
 
   free(msg_global);
   msg_global = NULL;

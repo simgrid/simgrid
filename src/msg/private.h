@@ -81,7 +81,7 @@ typedef struct msg_comm {
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
   xbt_fifo_t host;
-  xbt_fifo_t process_list;
+  xbt_swag_t process_list;
   int max_channel;
   int PID;
   int session;

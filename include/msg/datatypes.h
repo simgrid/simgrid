@@ -83,6 +83,7 @@ typedef struct simdata_process *simdata_process_t;
 /** @brief Process datatype 
     @ingroup m_datatypes_management_details @{ */
 typedef struct m_process {
+  s_xbt_swag_hookup_t process_list_hookup;
   char *name;                   /**< @brief process name if any */
   simdata_process_t simdata;
                                 /**< @brief simulator data */

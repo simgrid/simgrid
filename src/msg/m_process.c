@@ -40,8 +40,8 @@ void __MSG_process_cleanup(smx_process_t smx_proc)
   TRACE_msg_process_end(proc);
 #endif
 
-  if(msg_global)
-    xbt_fifo_remove(msg_global->process_list, proc);
+  if (msg_global)
+    xbt_swag_remove(proc, msg_global->process_list);
 
   SIMIX_process_cleanup(smx_proc);
   if (proc->name) {
@@ -175,7 +175,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
   process->name = xbt_strdup(name);
   process->simdata = simdata;
   process->data = data;
-  xbt_fifo_unshift(msg_global->process_list, process);
+  xbt_swag_insert(process, msg_global->process_list);
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
@@ -185,7 +185,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
   if (!simdata->s_process) {
     /* Undo everything we have just changed */
     msg_global->PID--;
-    xbt_fifo_remove(msg_global->process_list, process);
+    xbt_swag_remove(process, msg_global->process_list);
     xbt_free(process->name);
     xbt_free(process);
     xbt_free(simdata);
@@ -227,7 +227,7 @@ void MSG_process_kill(m_process_t process)
     SIMIX_req_comm_cancel(p_simdata->waiting_task->simdata->comm);
   }
  
-  xbt_fifo_remove(msg_global->process_list, process);
+  xbt_swag_remove(process, msg_global->process_list);
   SIMIX_req_process_kill(process->simdata->s_process);
 
   return;
@@ -305,10 +305,9 @@ m_host_t MSG_process_get_host(m_process_t process)
  */
 m_process_t MSG_process_from_PID(int PID)
 {
-  xbt_fifo_item_t i = NULL;
   m_process_t process = NULL;
 
-  xbt_fifo_foreach(msg_global->process_list, i, process, m_process_t) {
+  xbt_swag_foreach(process, msg_global->process_list) {
     if (MSG_process_get_PID(process) == PID)
       return process;
   }
