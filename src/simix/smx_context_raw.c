@@ -280,8 +280,7 @@ static int smx_ctx_raw_get_thread_id(){
 
 static void smx_ctx_raw_runall(xbt_dynar_t processes)
 {
-  if (SIMIX_context_is_parallel()
-      && xbt_dynar_length(processes) >= SIMIX_context_get_parallel_threshold()) {
+  if (xbt_dynar_length(processes) >= SIMIX_context_get_parallel_threshold()) {
     DEBUG1("Runall // %lu", xbt_dynar_length(processes));
     raw_factory->self = smx_ctx_raw_self_parallel;
     raw_factory->get_thread_id = smx_ctx_raw_get_thread_id;
@@ -308,9 +307,25 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
   (*factory)->name = "smx_raw_context_factory";
 
   parmap = xbt_parmap_new(2);
-  (*factory)->self = smx_ctx_raw_self_parallel;
-  (*factory)->get_thread_id = smx_ctx_raw_get_thread_id;
-  (*factory)->runall = smx_ctx_raw_runall;
+
+  if (SIMIX_context_is_parallel()) {
+    if (SIMIX_context_get_parallel_threshold() > 1) {
+      /* choose dynamically */
+      (*factory)->runall = smx_ctx_raw_runall;
+    }
+    else {
+      /* always parallel */
+      (*factory)->self = smx_ctx_raw_self_parallel;
+      (*factory)->get_thread_id = smx_ctx_raw_get_thread_id;
+      (*factory)->runall = smx_ctx_raw_runall_parallel;
+    }
+  }
+  else {
+    /* always serial */
+    (*factory)->self = smx_ctx_base_self;
+    (*factory)->get_thread_id = smx_ctx_base_get_thread_id;
+    (*factory)->runall = smx_ctx_raw_runall_serial;
+  }
 
   raw_factory = *factory;
 }
