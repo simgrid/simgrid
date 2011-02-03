@@ -27,7 +27,7 @@ smx_context_t smx_current_context;
 #endif
 
 static int smx_parallel_contexts = 1;
-static int smx_parallel_threshold = 20;
+static int smx_parallel_threshold = 1;
 
 /** 
  * This function is called by SIMIX_global_init() to initialize the context module.
@@ -87,6 +87,13 @@ void SIMIX_context_mod_exit(void)
 XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
 
   xbt_assert1(nb_threads > 0, "Invalid number of parallel threads: %d", nb_threads);
+
+  if (nb_threads > 1) {
+#ifndef CONTEXT_THREADS
+    THROW0(arg_error, 0, "No thread support for parallel context execution");
+#endif
+  }
+
   smx_parallel_contexts = nb_threads;
 }
 

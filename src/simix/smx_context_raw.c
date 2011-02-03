@@ -280,7 +280,8 @@ static int smx_ctx_raw_get_thread_id(){
 
 static void smx_ctx_raw_runall(xbt_dynar_t processes)
 {
-  if (xbt_dynar_length(processes) > SIMIX_context_get_parallel_threshold()) {
+  if (SIMIX_context_is_parallel()
+      && xbt_dynar_length(processes) >= SIMIX_context_get_parallel_threshold()) {
     DEBUG1("Runall // %lu", xbt_dynar_length(processes));
     raw_factory->self = smx_ctx_raw_self_parallel;
     raw_factory->get_thread_id = smx_ctx_raw_get_thread_id;
@@ -306,18 +307,10 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
   (*factory)->suspend = smx_ctx_raw_suspend;
   (*factory)->name = "smx_raw_context_factory";
 
-  if (SIMIX_context_is_parallel()) {
-#ifdef CONTEXT_THREADS  /* To use parallel ucontexts a thread pool is needed */
-    parmap = xbt_parmap_new(2);
-    (*factory)->self = smx_ctx_raw_self_parallel;
-    (*factory)->get_thread_id = smx_ctx_raw_get_thread_id;
-    (*factory)->runall = smx_ctx_raw_runall;
-#else
-    THROW0(arg_error, 0, "No thread support for parallel context execution");
-#endif
-  } else {
-    (*factory)->runall = smx_ctx_raw_runall_serial;
-  }
+  parmap = xbt_parmap_new(2);
+  (*factory)->self = smx_ctx_raw_self_parallel;
+  (*factory)->get_thread_id = smx_ctx_raw_get_thread_id;
+  (*factory)->runall = smx_ctx_raw_runall;
 
   raw_factory = *factory;
 }

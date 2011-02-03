@@ -481,7 +481,6 @@ void SIMIX_post_process_sleep(smx_action_t action)
 void SIMIX_process_sleep_destroy(smx_action_t action)
 {
   DEBUG1("Destroy action %p", action);
-  xbt_free(action->name);
   if (action->sleep.surf_sleep)
     action->sleep.surf_sleep->model_type->action_unref(action->sleep.surf_sleep);
 #ifdef HAVE_TRACING

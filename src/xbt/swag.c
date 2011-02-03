@@ -78,9 +78,7 @@ XBT_INLINE void xbt_swag_insert(void *obj, xbt_swag_t swag)
   }
 
   xbt_swag_getPrev(obj, swag->offset) = swag->tail;
-  xbt_swag_getNext(xbt_swag_getPrev(obj, swag->offset), swag->offset) =
-      obj;
-
+  xbt_swag_getNext(swag->tail, swag->offset) = obj;
   swag->tail = obj;
 }
 
@@ -106,9 +104,7 @@ XBT_INLINE void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
   }
 
   xbt_swag_getNext(obj, swag->offset) = swag->head;
-  xbt_swag_getPrev(xbt_swag_getNext(obj, swag->offset), swag->offset) =
-      obj;
-
+  xbt_swag_getPrev(swag->head, swag->offset) = obj;
   swag->head = obj;
 }
 
@@ -134,9 +130,7 @@ XBT_INLINE void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
   }
 
   xbt_swag_getPrev(obj, swag->offset) = swag->tail;
-  xbt_swag_getNext(xbt_swag_getPrev(obj, swag->offset), swag->offset) =
-      obj;
-
+  xbt_swag_getNext(swag->tail, swag->offset) = obj;
   swag->tail = obj;
 }
 
