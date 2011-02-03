@@ -109,7 +109,6 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
 {
 
   lmm_variable_disable(sys, var);
-  free(var->cnsts);
   xbt_mallocator_release(sys->variable_mallocator, var);
 }
 
@@ -163,18 +162,20 @@ XBT_INLINE void lmm_constraint_free(lmm_system_t sys,
 
 static void *lmm_variable_mallocator_new_f(void)
 {
-  return xbt_new(s_lmm_variable_t, 1);
+  lmm_variable_t var = xbt_new(s_lmm_variable_t, 1);
+  var->cnsts = NULL; /* will be created by realloc */
+  return var;
 }
 
 static void lmm_variable_mallocator_free_f(void *var)
 {
+  xbt_free(((lmm_variable_t) var)->cnsts);
   xbt_free(var);
 }
 
 static void lmm_variable_mallocator_reset_f(void *var)
 {
-  /* memset to zero like calloc */
-  memset(var, 0, sizeof(s_lmm_variable_t));
+  /* lmm_variable_new() initializes everything */
 }
 
 lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
@@ -190,10 +191,8 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   var = xbt_mallocator_get(sys->variable_mallocator);
   var->id = id;
   var->id_int = Global_debug_id++;
-  var->cnsts = xbt_new0(s_lmm_element_t, number_of_constraints);
+  var->cnsts = xbt_realloc(var->cnsts, number_of_constraints * sizeof(s_lmm_element_t));
   for (i = 0; i < number_of_constraints; i++) {
-    /* Should be useless because of the 
-       calloc but it seems to help valgrind... */
     var->cnsts[i].element_set_hookup.next = NULL;
     var->cnsts[i].element_set_hookup.prev = NULL;
     var->cnsts[i].active_element_set_hookup.next = NULL;
@@ -203,16 +202,21 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
     var->cnsts[i].value = 0.0;
   }
   var->cnsts_size = number_of_constraints;
-  var->cnsts_number = 0;        /* Should be useless because of the 
-                                   calloc but it seems to help valgrind... */
+  var->cnsts_number = 0;
   var->weight = weight;
   var->bound = bound;
   var->value = 0.0;
 
-
+  var->mu = 0.0;
+  var->new_mu = 0.0;
   var->func_f = func_f_def;
   var->func_fp = func_fp_def;
   var->func_fpi = func_fpi_def;
+
+  var->variable_set_hookup.next = NULL;
+  var->variable_set_hookup.prev = NULL;
+  var->saturated_variable_set_hookup.next = NULL;
+  var->saturated_variable_set_hookup.prev = NULL;
 
   if (weight)
     xbt_swag_insert_at_head(var, &(sys->variable_set));
