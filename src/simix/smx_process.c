@@ -436,7 +436,7 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
 
   action = xbt_mallocator_get(simix_global->action_mallocator);
   action->type = SIMIX_ACTION_SLEEP;
-  action->name = xbt_strdup("sleep");
+  action->name = NULL;
 #ifdef HAVE_TRACING
   action->category = NULL;
 #endif
