@@ -73,9 +73,6 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   xbt_ex_t e;
   MSG_error_t ret = MSG_OK;
   volatile smx_action_t comm = NULL;
-#ifdef HAVE_TRACING
-  double start_time = 0;
-#endif
   /* We no longer support getting a task from a specific host */
   if (host)
     THROW_UNIMPLEMENTED;
@@ -83,7 +80,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   CHECK_HOST();
 #ifdef HAVE_TRACING
   TRACE_msg_task_get_start();
-  start_time = MSG_get_clock();
+  double start_time = MSG_get_clock();
 #endif
 
   /* Sanity check */
@@ -121,12 +118,13 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
     //SIMIX_req_comm_destroy(comm);
   }
 
-  if (ret != MSG_HOST_FAILURE &&
-      ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
 #ifdef HAVE_TRACING
+  if (ret != MSG_HOST_FAILURE &&
+      ret != MSG_TRANSFER_FAILURE &&
+      ret != MSG_TIMEOUT) {
     TRACE_msg_task_get_end(start_time, *task);
-#endif
   }
+#endif
   MSG_RETURN(ret);
 }
 
