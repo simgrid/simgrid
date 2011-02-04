@@ -11,7 +11,7 @@
 
 #include "xbt/swag.h"
 #include "simix/datatypes.h"
-#include "gras_config.h"
+#include "simgrid_config.h"
 
 SG_BEGIN_DECL()
 /******************************** Context *************************************/
