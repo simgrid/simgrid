@@ -160,15 +160,15 @@ char *MC_request_to_string(smx_req_t req, int value)
     case REQ_COMM_WAIT:
       act = req->comm_wait.comm;
       if(value == -1){
-        type = bprintf("Wait Timeout");
+        type = bprintf("WaitTimeout");
         args = bprintf("comm=%p", act);
       }else{
         type = bprintf("Wait");
-        args  = bprintf("comm=%p [%s(%lu) -> %s(%lu)]", act,
-                        act->comm.src_proc ? act->comm.src_proc->name : "",
+        args  = bprintf("comm=%p [(%lu)%s -> (%lu)%s]", act,
                         act->comm.src_proc ? act->comm.src_proc->pid : 0,
-                        act->comm.dst_proc ? act->comm.dst_proc->name : "",
-                        act->comm.dst_proc ? act->comm.dst_proc->pid : 0);
+                        act->comm.src_proc ? act->comm.src_proc->name : "",
+                        act->comm.dst_proc ? act->comm.dst_proc->pid : 0,
+                        act->comm.dst_proc ? act->comm.dst_proc->name : "");
       }
       break;
     case REQ_COMM_TEST:
