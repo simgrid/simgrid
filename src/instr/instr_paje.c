@@ -239,9 +239,9 @@ static type_t recursiveGetType (const char *name, type_t root)
   return NULL;
 }
 
-type_t getType (const char *name)
+type_t getType (const char *name, type_t father)
 {
-  return recursiveGetType (name, rootType);
+  return recursiveGetType (name, father);
 }
 
 void destroyContainer (container_t container)

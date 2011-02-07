@@ -207,7 +207,7 @@ type_t getEventType (const char *name, const char *color, type_t father);
 type_t getVariableType (const char *name, const char *color, type_t father);
 type_t getLinkType (const char *name, type_t father, type_t source, type_t dest);
 type_t getStateType (const char *name, type_t father);
-type_t getType (const char *name);
+type_t getType (const char *name, type_t father);
 void destroyContainer (container_t container);
 void destroyAllContainers (void);
 

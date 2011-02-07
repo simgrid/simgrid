@@ -133,7 +133,7 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = getContainer (str);
-  type_t type = getType ("MPI_STATE");
+  type_t type = getType ("MPI_STATE", container->type);
 
   new_pajePushState (SIMIX_get_clock(), container, type, operation);
 }
@@ -145,7 +145,7 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = getContainer (str);
-  type_t type = getType ("MPI_STATE");
+  type_t type = getType ("MPI_STATE", container->type);
 
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
@@ -157,7 +157,7 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = getContainer (str);
-  type_t type = getType ("MPI_STATE");
+  type_t type = getType ("MPI_STATE", container->type);
 
   new_pajePushState (SIMIX_get_clock(), container, type, operation);
 }
@@ -169,7 +169,7 @@ void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = getContainer (str);
-  type_t type = getType ("MPI_STATE");
+  type_t type = getType ("MPI_STATE", container->type);
 
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
@@ -184,7 +184,7 @@ void TRACE_smpi_send(int rank, int src, int dst)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(src, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = getContainer (str);
-  type_t type = getType ("MPI_LINK");
+  type_t type = getType ("MPI_LINK", getRootType());
 
   new_pajeStartLink (SIMIX_get_clock(), getRootContainer(), type, container, "PTP", key);
 }
@@ -199,7 +199,7 @@ void TRACE_smpi_recv(int rank, int src, int dst)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(dst, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = getContainer (str);
-  type_t type = getType ("MPI_LINK");
+  type_t type = getType ("MPI_LINK", getRootType());
 
   new_pajeEndLink (SIMIX_get_clock(), getRootContainer(), type, container, "PTP", key);
 }
