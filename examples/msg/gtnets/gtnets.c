@@ -83,14 +83,6 @@ int master(int argc, char *argv[])
   end_time = MSG_get_clock();
 
 
-  if (!bool_printed) {
-    INFO3
-        ("Send completed (to %s). Transfer time: %f\t Agregate bandwidth: %f",
-         slave->name, (end_time - start_time),
-         task_comm_size / (end_time - start_time));
-    INFO2("Completed peer: %s time: %f", slave->name,
-          (end_time - start_time));
-  }
   return 0;
 }                               /* end_of_master */
 
@@ -123,9 +115,11 @@ int slave(int argc, char *argv[])
   }
 
   elapsed_time = MSG_get_clock() - start_time;
-
+  
+  
   if (!bool_printed) {
     bool_printed = 1;
+    
     for (id = 0; id < NTASKS; id++) {
       if (gl_task_array[id] == NULL) {
       } else if (gl_task_array[id] == task) {
