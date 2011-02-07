@@ -177,6 +177,10 @@ m_process_t MSG_process_create_with_environment(const char *name,
   process->data = data;
   xbt_swag_insert(process, msg_global->process_list);
 
+#ifdef HAVE_TRACING
+  TRACE_msg_process_create (process);
+#endif
+
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
   SIMIX_req_process_create(&simdata->s_process, name, code, (void *) process, host->name,
@@ -191,10 +195,6 @@ m_process_t MSG_process_create_with_environment(const char *name,
     xbt_free(simdata);
     return NULL;
   }
-
-#ifdef HAVE_TRACING
-  TRACE_msg_process_create (process);
-#endif
 
   return process;
 }
