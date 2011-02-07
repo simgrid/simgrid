@@ -327,6 +327,7 @@ static void recursiveDestroyType (type_t type)
   xbt_free (type->name);
   xbt_free (type->id);
   xbt_free (type->children);
+  xbt_free (type->values);
   xbt_free (type);
   type = NULL;
 }
