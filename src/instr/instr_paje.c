@@ -24,6 +24,12 @@ void instr_paje_init (container_t root)
   rootContainer = root;
 }
 
+static long long int new_type_id (void)
+{
+  static long long int type_id = 0;
+  return type_id++;
+}
+
 static val_t newValue (const char *valuename, const char *color, type_t father)
 {
   val_t ret = xbt_new0(s_val_t, 1);
@@ -31,9 +37,8 @@ static val_t newValue (const char *valuename, const char *color, type_t father)
   ret->father = father;
   ret->color = xbt_strdup (color);
 
-  static long long int type_id = 0;
   char str_id[INSTR_DEFAULT_STR_SIZE];
-  snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "v%lld", type_id++);
+  snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", new_type_id());
   ret->id = xbt_strdup (str_id);
 
   xbt_dict_set (father->values, valuename, ret, NULL);
@@ -69,9 +74,8 @@ static type_t newType (const char *typename, const char *key, const char *color,
   ret->values = xbt_dict_new ();
   ret->color = xbt_strdup (color);
 
-  static long long int type_id = 0;
   char str_id[INSTR_DEFAULT_STR_SIZE];
-  snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", type_id++);
+  snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", new_type_id());
   ret->id = xbt_strdup (str_id);
 
   if (father != NULL){
