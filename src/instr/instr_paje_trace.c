@@ -16,6 +16,7 @@ typedef enum {
   PAJE_DefineStateType,
   PAJE_DefineEventType,
   PAJE_DefineLinkType,
+  PAJE_DefineEntityValue,
   PAJE_CreateContainer,
   PAJE_DestroyContainer,
   PAJE_SetVariable,
@@ -65,6 +66,11 @@ typedef struct s_defineLinkType {
   type_t dest;
 }s_defineLinkType_t;
 
+typedef struct s_defineEntityValue *defineEntityValue_t;
+typedef struct s_defineEntityValue {
+  val_t value;
+}s_defineEntityValue_t;
+
 typedef struct s_createContainer *createContainer_t;
 typedef struct s_createContainer {
   container_t container;
@@ -100,14 +106,14 @@ typedef struct s_setState *setState_t;
 typedef struct s_setState {
   container_t container;
   type_t type;
-  char *value;
+  val_t value;
 }s_setState_t;
 
 typedef struct s_pushState *pushState_t;
 typedef struct s_pushState {
   container_t container;
   type_t type;
-  char *value;
+  val_t value;
 }s_pushState_t;
 
 typedef struct s_popState *popState_t;
@@ -138,7 +144,7 @@ typedef struct s_newEvent *newEvent_t;
 typedef struct s_newEvent {
   container_t container;
   type_t type;
-  char *value;
+  val_t value;
 }s_newEvent_t;
 
 static FILE *tracing_file = NULL;
@@ -228,6 +234,12 @@ void TRACE_paje_create_header(void)
 %%       DestContainerType string \n\
 %%       Name string \n\
 %%EndEventDef \n\
+%%EventDef PajeDefineEntityValue %d \n\
+%%       Alias string \n\
+%%       EntityType string \n\
+%%       Name string \n\
+%%       Color color \n\
+%%EndEventDef \n\
 %%EventDef PajeCreateContainer %d \n\
 %%       Time date \n\
 %%       Alias string \n\
@@ -302,6 +314,7 @@ void TRACE_paje_create_header(void)
   PAJE_DefineStateType,
   PAJE_DefineEventType,
   PAJE_DefineLinkType,
+  PAJE_DefineEntityValue,
   PAJE_CreateContainer,
   PAJE_DestroyContainer,
   PAJE_SetVariable,
@@ -403,6 +416,17 @@ static void print_pajeDefineLinkType(paje_event_t event)
       ((defineLinkType_t)event->data)->source->id,
       ((defineLinkType_t)event->data)->dest->id,
       ((defineLinkType_t)event->data)->type->name);
+}
+
+static void print_pajeDefineEntityValue (paje_event_t event)
+{
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
+  fprintf(tracing_file, "%d %s %s %s \"%s\"\n",
+      event->event_type,
+      ((defineEntityValue_t)event->data)->value->id,
+      ((defineEntityValue_t)event->data)->value->father->id,
+      ((defineEntityValue_t)event->data)->value->name,
+      ((defineEntityValue_t)event->data)->value->color);
 }
 
 static void print_pajeCreateContainer(paje_event_t event)
@@ -508,14 +532,14 @@ static void print_pajeSetState(paje_event_t event)
         event->event_type,
         ((setState_t)event->data)->type->id,
         ((setState_t)event->data)->container->id,
-        ((setState_t)event->data)->value);
+        ((setState_t)event->data)->value->id);
   }else{
     fprintf(tracing_file, "%d %lf %s %s %s\n",
         event->event_type,
         event->timestamp,
         ((setState_t)event->data)->type->id,
         ((setState_t)event->data)->container->id,
-        ((setState_t)event->data)->value);
+        ((setState_t)event->data)->value->id);
   }
 }
 
@@ -527,14 +551,14 @@ static void print_pajePushState(paje_event_t event)
         event->event_type,
         ((pushState_t)event->data)->type->id,
         ((pushState_t)event->data)->container->id,
-        ((pushState_t)event->data)->value);
+        ((pushState_t)event->data)->value->id);
   }else{
     fprintf(tracing_file, "%d %lf %s %s %s\n",
         event->event_type,
         event->timestamp,
         ((pushState_t)event->data)->type->id,
         ((pushState_t)event->data)->container->id,
-        ((pushState_t)event->data)->value);
+        ((pushState_t)event->data)->value->id);
   }
 }
 
@@ -609,27 +633,21 @@ static void print_pajeNewEvent (paje_event_t event)
         event->event_type,
         ((newEvent_t)event->data)->type->id,
         ((newEvent_t)event->data)->container->id,
-        ((newEvent_t)event->data)->value);
+        ((newEvent_t)event->data)->value->id);
   }else{
     fprintf(tracing_file, "%d %lf %s %s %s\n",
         event->event_type,
         event->timestamp,
         ((newEvent_t)event->data)->type->id,
         ((newEvent_t)event->data)->container->id,
-        ((newEvent_t)event->data)->value);
+        ((newEvent_t)event->data)->value->id);
   }
 }
 
 static void free_paje_event (paje_event_t event)
 {
   DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
-  if (event->event_type == PAJE_SetState) {
-    xbt_free (((setState_t)(event->data))->value);
-  }else if (event->event_type == PAJE_PushState) {
-    xbt_free (((pushState_t)(event->data))->value);
-  }else if (event->event_type == PAJE_NewEvent){
-    xbt_free (((newEvent_t)(event->data))->value);
-  }else if (event->event_type == PAJE_StartLink){
+  if (event->event_type == PAJE_StartLink){
     xbt_free (((startLink_t)(event->data))->value);
     xbt_free (((startLink_t)(event->data))->key);
   }else if (event->event_type == PAJE_EndLink){
@@ -727,6 +745,23 @@ void new_pajeDefineLinkType(type_t type, type_t source, type_t dest)
   event->free (event);
 }
 
+void new_pajeDefineEntityValue (val_t value)
+{
+  paje_event_t event = xbt_new0(s_paje_event_t, 1);
+  event->event_type = PAJE_DefineEntityValue;
+  event->timestamp = 0;
+  event->print = print_pajeDefineEntityValue;
+  event->free = free_paje_event;
+  event->data = xbt_new0(s_defineEntityValue_t, 1);
+  ((defineEntityValue_t)(event->data))->value = value;
+
+  DEBUG2("%s: event_type=%d", __FUNCTION__, event->event_type);
+
+  //print it
+  event->print (event);
+  event->free (event);
+}
+
 void new_pajeCreateContainer (container_t container)
 {
   paje_event_t event = xbt_new0(s_paje_event_t, 1);
@@ -813,7 +848,7 @@ void new_pajeSubVariable (double timestamp, container_t container, type_t type, 
   insert_into_buffer (event);
 }
 
-void new_pajeSetState (double timestamp, container_t container, type_t type, const char *value)
+void new_pajeSetState (double timestamp, container_t container, type_t type, val_t value)
 {
   paje_event_t event = xbt_new0(s_paje_event_t, 1);
   event->event_type = PAJE_SetState;
@@ -823,7 +858,7 @@ void new_pajeSetState (double timestamp, container_t container, type_t type, con
   event->data = xbt_new0(s_setState_t, 1);
   ((setState_t)(event->data))->type = type;
   ((setState_t)(event->data))->container = container;
-  ((setState_t)(event->data))->value = xbt_strdup(value);
+  ((setState_t)(event->data))->value = value;
 
   DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
 
@@ -831,7 +866,7 @@ void new_pajeSetState (double timestamp, container_t container, type_t type, con
 }
 
 
-void new_pajePushState (double timestamp, container_t container, type_t type, const char *value)
+void new_pajePushState (double timestamp, container_t container, type_t type, val_t value)
 {
   paje_event_t event = xbt_new0(s_paje_event_t, 1);
   event->event_type = PAJE_PushState;
@@ -841,7 +876,7 @@ void new_pajePushState (double timestamp, container_t container, type_t type, co
   event->data = xbt_new0(s_pushState_t, 1);
   ((pushState_t)(event->data))->type = type;
   ((pushState_t)(event->data))->container = container;
-  ((pushState_t)(event->data))->value = xbt_strdup(value);
+  ((pushState_t)(event->data))->value = value;
 
   DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
 
@@ -903,7 +938,7 @@ void new_pajeEndLink (double timestamp, container_t container, type_t type, cont
   insert_into_buffer (event);
 }
 
-void new_pajeNewEvent (double timestamp, container_t container, type_t type, const char *value)
+void new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value)
 {
   paje_event_t event = xbt_new0(s_paje_event_t, 1);
   event->event_type = PAJE_NewEvent;
@@ -913,7 +948,7 @@ void new_pajeNewEvent (double timestamp, container_t container, type_t type, con
   event->data = xbt_new0(s_newEvent_t, 1);
   ((newEvent_t)(event->data))->type = type;
   ((newEvent_t)(event->data))->container = container;
-  ((newEvent_t)(event->data))->value = xbt_strdup(value);
+  ((newEvent_t)(event->data))->value = value;
 
   DEBUG3("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
 

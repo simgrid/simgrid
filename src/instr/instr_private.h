@@ -34,7 +34,16 @@ typedef struct s_type {
   e_entity_types kind;
   struct s_type *father;
   xbt_dict_t children;
+  xbt_dict_t values; //valid for all types except variable and container
 }s_type_t;
+
+typedef struct s_val *val_t;
+typedef struct s_val {
+  char *id;
+  char *name;
+  char *color;
+  type_t father;
+}s_val_t;
 
 typedef enum {
   INSTR_HOST,
@@ -70,17 +79,18 @@ void new_pajeDefineVariableType(type_t type);
 void new_pajeDefineStateType(type_t type);
 void new_pajeDefineEventType(type_t type);
 void new_pajeDefineLinkType(type_t type, type_t source, type_t dest);
+void new_pajeDefineEntityValue (val_t type);
 void new_pajeCreateContainer (container_t container);
 void new_pajeDestroyContainer (container_t container);
 void new_pajeSetVariable (double timestamp, container_t container, type_t type, double value);
 void new_pajeAddVariable (double timestamp, container_t container, type_t type, double value);
 void new_pajeSubVariable (double timestamp, container_t container, type_t type, double value);
-void new_pajeSetState (double timestamp, container_t container, type_t type, const char *value);
-void new_pajePushState (double timestamp, container_t container, type_t type, const char *value);
+void new_pajeSetState (double timestamp, container_t container, type_t type, val_t value);
+void new_pajePushState (double timestamp, container_t container, type_t type, val_t value);
 void new_pajePopState (double timestamp, container_t container, type_t type);
 void new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key);
 void new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key);
-void new_pajeNewEvent (double timestamp, container_t container, type_t type, const char *value);
+void new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);
 
 /* declaration of instrumentation functions from msg_task_instr.c */
 char *TRACE_task_container(m_task_t task, char *output, int len);
@@ -208,6 +218,8 @@ type_t getVariableType (const char *name, const char *color, type_t father);
 type_t getLinkType (const char *name, type_t father, type_t source, type_t dest);
 type_t getStateType (const char *name, type_t father);
 type_t getType (const char *name, type_t father);
+val_t getValue (const char *valuename, const char *color, type_t father);
+val_t getValueByName (const char *valuename, type_t father);
 void destroyContainer (container_t container);
 void destroyAllContainers (void);
 

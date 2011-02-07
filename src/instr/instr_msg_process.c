@@ -50,7 +50,8 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
 
     //set the state of this new container
     type = getType ("MSG_PROCESS_STATE", msg->type);
-    new_pajeSetState (MSG_get_clock(), msg, type, "executing");
+    val_t value = getValueByName ("executing", type);
+    new_pajeSetState (MSG_get_clock(), msg, type, value);
 
     //end link
     msg = getContainer(instr_process_id(process, str, len));
@@ -70,7 +71,8 @@ void TRACE_msg_process_create (m_process_t process)
     container_t msg = newContainer(instr_process_id(process, str, len), INSTR_MSG_PROCESS, host_container);
 
     type_t type = getType ("MSG_PROCESS_STATE", msg->type);
-    new_pajeSetState (MSG_get_clock(), msg, type, "executing");
+    val_t value = getValueByName ("executing", type);
+    new_pajeSetState (MSG_get_clock(), msg, type, value);
   }
 }
 
@@ -93,7 +95,8 @@ void TRACE_msg_process_suspend(m_process_t process)
 
     container_t process_container = getContainer (instr_process_id(process, str, len));
     type_t type = getType ("MSG_PROCESS_STATE", process_container->type);
-    new_pajePushState (MSG_get_clock(), process_container, type, "suspend");
+    val_t value = getValueByName ("suspend", type);
+    new_pajePushState (MSG_get_clock(), process_container, type, value);
   }
 }
 
@@ -117,7 +120,8 @@ void TRACE_msg_process_sleep_in(m_process_t process)
 
     container_t process_container = getContainer (instr_process_id(process, str, len));
     type_t type = getType ("MSG_PROCESS_STATE", process_container->type);
-    new_pajePushState (MSG_get_clock(), process_container, type, "sleep");
+    val_t value = getValueByName ("sleep", type);
+    new_pajePushState (MSG_get_clock(), process_container, type, value);
   }
 }
 

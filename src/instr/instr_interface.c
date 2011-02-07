@@ -84,7 +84,8 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
 
   DEBUG2("MARK %s %s", mark_type, mark_value);
   type_t type = getEventType (mark_type, NULL, getRootContainer()->type);
-  new_pajeNewEvent (MSG_get_clock(), getRootContainer(), type, mark_value);
+  val_t value = getValue (mark_value, NULL, type);
+  new_pajeNewEvent (MSG_get_clock(), getRootContainer(), type, value);
 }
 
 

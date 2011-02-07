@@ -236,14 +236,22 @@ static void instr_routing_parse_start_host ()
 
   if (TRACE_msg_process_is_enabled()) {
     type_t msg_process = getContainerType("MSG_PROCESS", new->type);
-    getStateType ("MSG_PROCESS_STATE", msg_process);
+    type_t state = getStateType ("MSG_PROCESS_STATE", msg_process);
+    getValue ("executing", "0 1 0", state);
+    getValue ("suspend", "1 0 1", state);
+    getValue ("sleep", "1 1 0", state);
+    getValue ("receive", "1 0 0", state);
+    getValue ("send", "0 0 1", state);
+    getValue ("task_execute", "0 1 1", state);
     getLinkType ("MSG_PROCESS_LINK", getRootType(), msg_process, msg_process);
     getLinkType ("MSG_PROCESS_TASK_LINK", getRootType(), msg_process, msg_process);
   }
 
   if (TRACE_msg_task_is_enabled()) {
     type_t msg_task = getContainerType ("MSG_TASK", new->type);
-    getStateType ("MSG_TASK_STATE", msg_task);
+    type_t state = getStateType ("MSG_TASK_STATE", msg_task);
+    getValue ("MSG_task_execute", "0 1 0", state);
+    getValue ("created", "1 1 0", state);
     getLinkType ("MSG_TASK_LINK", getRootType(), msg_task, msg_task);
   }
 }

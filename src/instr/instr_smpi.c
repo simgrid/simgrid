@@ -134,8 +134,9 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation)
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = getContainer (str);
   type_t type = getType ("MPI_STATE", container->type);
+  val_t value = getValue (operation, "1 1 1", type);
 
-  new_pajePushState (SIMIX_get_clock(), container, type, operation);
+  new_pajePushState (SIMIX_get_clock(), container, type, value);
 }
 
 void TRACE_smpi_collective_out(int rank, int root, const char *operation)
@@ -158,8 +159,9 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = getContainer (str);
   type_t type = getType ("MPI_STATE", container->type);
+  val_t value = getValue (operation, "1 1 1", type);
 
-  new_pajePushState (SIMIX_get_clock(), container, type, operation);
+  new_pajePushState (SIMIX_get_clock(), container, type, value);
 }
 
 void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)

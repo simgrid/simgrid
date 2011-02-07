@@ -24,6 +24,41 @@ void instr_paje_init (container_t root)
   rootContainer = root;
 }
 
+static val_t newValue (const char *valuename, const char *color, type_t father)
+{
+  val_t ret = xbt_new0(s_val_t, 1);
+  ret->name = xbt_strdup (valuename);
+  ret->father = father;
+  ret->color = xbt_strdup (color);
+
+  static long long int type_id = 0;
+  char str_id[INSTR_DEFAULT_STR_SIZE];
+  snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "v%lld", type_id++);
+  ret->id = xbt_strdup (str_id);
+
+  xbt_dict_set (father->values, valuename, ret, NULL);
+  DEBUG2("new value %s, child of %s", ret->name, ret->father->name);
+  return ret;
+}
+
+val_t getValue (const char *valuename, const char *color, type_t father)
+{
+  if (father->kind == TYPE_VARIABLE) return NULL; //Variables can't have different values
+
+  val_t ret = (val_t)xbt_dict_get_or_null (father->values, valuename);
+  if (ret == NULL){
+    ret = newValue (valuename, color, father);
+    DEBUG4("EntityValue %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+    new_pajeDefineEntityValue(ret);
+  }
+  return ret;
+}
+
+val_t getValueByName (const char *valuename, type_t father)
+{
+  return getValue (valuename, NULL, father);
+}
+
 static type_t newType (const char *typename, const char *key, const char *color, e_entity_types kind, type_t father)
 {
   type_t ret = xbt_new0(s_type_t, 1);
@@ -31,6 +66,7 @@ static type_t newType (const char *typename, const char *key, const char *color,
   ret->father = father;
   ret->kind = kind;
   ret->children = xbt_dict_new ();
+  ret->values = xbt_dict_new ();
   ret->color = xbt_strdup (color);
 
   static long long int type_id = 0;

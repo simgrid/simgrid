@@ -55,7 +55,8 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
     new_pajeSetVariable (SIMIX_get_clock(), msg, type, 1);
 
     type = getType ("MSG_TASK_STATE", msg->type);
-    new_pajePushState (MSG_get_clock(), msg, type, "created");
+    val_t value = getValueByName ("created", type);
+    new_pajePushState (MSG_get_clock(), msg, type, value);
   }
 }
 
@@ -76,7 +77,8 @@ void TRACE_msg_task_execute_start(m_task_t task)
   if (TRACE_msg_task_is_enabled()){
     container_t task_container = getContainer (task->name);
     type_t type = getType ("MSG_TASK_STATE", task_container->type);
-    new_pajePushState (MSG_get_clock(), task_container, type, "MSG_task_execute");
+    val_t value = getValueByName ("MSG_task_execute", type);
+    new_pajePushState (MSG_get_clock(), task_container, type, value);
   }
 
   if (TRACE_msg_process_is_enabled()){
@@ -85,7 +87,8 @@ void TRACE_msg_task_execute_start(m_task_t task)
 
     container_t process_container = getContainer (instr_process_id(MSG_process_self(), str, len));
     type_t type = getType ("MSG_PROCESS_STATE", process_container->type);
-    new_pajePushState (MSG_get_clock(), process_container, type, "task_execute");
+    val_t value = getValueByName ("task_execute", type);
+    new_pajePushState (MSG_get_clock(), process_container, type, value);
   }
 }
 
@@ -140,7 +143,8 @@ void TRACE_msg_task_get_start(void)
 
     container_t process_container = getContainer (instr_process_id(MSG_process_self(), str, len));
     type_t type = getType ("MSG_PROCESS_STATE", process_container->type);
-    new_pajePushState (MSG_get_clock(), process_container, type, "receive");
+    val_t value = getValueByName ("receive", type);
+    new_pajePushState (MSG_get_clock(), process_container, type, value);
   }
 }
 
@@ -162,7 +166,8 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
     new_pajeSetVariable (SIMIX_get_clock(), msg, type, 1);
 
     type = getType ("MSG_TASK_STATE", msg->type);
-    new_pajePushState (MSG_get_clock(), msg, type, "created");
+    val_t value = getValueByName ("created", type);
+    new_pajePushState (MSG_get_clock(), msg, type, value);
 
     type = getType ("MSG_TASK_LINK", getRootType());
     char key[INSTR_DEFAULT_STR_SIZE];
@@ -215,7 +220,8 @@ int TRACE_msg_task_put_start(m_task_t task)
 
     container_t process_container = getContainer (instr_process_id(MSG_process_self(), str, len));
     type_t type = getType ("MSG_PROCESS_STATE", process_container->type);
-    new_pajePushState (MSG_get_clock(), process_container, type, "send");
+    val_t value = getValueByName ("send", type);
+    new_pajePushState (MSG_get_clock(), process_container, type, value);
 
     char key[INSTR_DEFAULT_STR_SIZE];
     snprintf (key, INSTR_DEFAULT_STR_SIZE, "p%lld", task->counter);
