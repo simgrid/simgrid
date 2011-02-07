@@ -47,8 +47,6 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
 
     //create new container on the new_host location
     msg = newContainer(instr_process_id(process, str, len), INSTR_MSG_PROCESS, getContainer(new_host->name));
-//    type = getType (process->category);
-//    new_pajeSetVariable (MSG_get_clock(), msg, type, 1);
 
     //set the state of this new container
     type = getType ("MSG_PROCESS_STATE", msg->type);
@@ -70,11 +68,6 @@ void TRACE_msg_process_create (m_process_t process)
     m_host_t host = MSG_process_get_host(process);
     container_t host_container = getContainer(host->name);
     container_t msg = newContainer(instr_process_id(process, str, len), INSTR_MSG_PROCESS, host_container);
-//    type_t type = getType (category);
-//    if (!type){
-//      type = getVariableType(category, color, msg->type);
-//    }
-//    new_pajeSetVariable (SIMIX_get_clock(), msg, type, 1);
 
     type_t type = getType ("MSG_PROCESS_STATE", msg->type);
     new_pajeSetState (MSG_get_clock(), msg, type, "executing");
