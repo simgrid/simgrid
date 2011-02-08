@@ -94,3 +94,32 @@ $ ${bindir:=.}/basic_parsing_test ./properties.xml --cfg=cpu/model:CpuTI
 $ ${bindir:=.}/basic_parsing_test ./one_cluster_file.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > Workstation number: 2, link number: 5
+
+$ ${bindir:=.}/is_router_test ./test_of_is_router.xml
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 12, link number: 1, elmts number: 25
+>    - Seen: "host01" is type : 1
+>    - Seen: "host02" is type : 1
+>    - Seen: "host03" is type : 1
+>    - Seen: "host04" is type : 1
+>    - Seen: "host05" is type : 1
+>    - Seen: "host06" is type : 1
+>    - Seen: "host07" is type : 1
+>    - Seen: "host08" is type : 1
+>    - Seen: "host09" is type : 1
+>    - Seen: "router1" is type : 2
+>    - Seen: "router2" is type : 2
+>    - Seen: "router3" is type : 2
+>    - Seen: "router4" is type : 2
+>    - Seen: "router5" is type : 2
+>    - Seen: "router6" is type : 2
+>    - Seen: "host10" is type : 1
+>    - Seen: "host11" is type : 1
+>    - Seen: "host12" is type : 1
+>    - Seen: "AS0" is type : 3
+>    - Seen: "AS1" is type : 3
+>    - Seen: "AS2" is type : 3
+>    - Seen: "AS3" is type : 3
+>    - Seen: "AS4" is type : 3
+>    - Seen: "AS5" is type : 3
+>    - Seen: "AS" is type : 3

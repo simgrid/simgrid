@@ -1,0 +1,32 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+
+ <AS  id="AS0"  routing="Dijkstra">
+
+   <host id="NODO01" power="10000000"/>
+   <host id="NODO02" power="10000000"/>
+   
+   <router id="ROUTER" />
+   
+   <link id="1" bandwidth="1000000" latency="1.0e-03"/>
+   <link id="2" bandwidth="1000000" latency="1.0e-03"/>
+   
+   <link id="10" bandwidth="1000000" latency="1.0e-03"/>
+   <link id="11" bandwidth="1000000" latency="1.0e-03"/>
+   <link id="12" bandwidth="1000000" latency="1.0e-03"/>
+      
+   <route src="NODO01" dst="ROUTER" symmetrical="NO"><link_ctn id="1"/></route>
+   <route src="NODO02" dst="ROUTER" symmetrical="NO"><link_ctn id="2"/></route>
+   
+   <route src="ROUTER" dst="NODO01" symmetrical="NO"><link_ctn id="1"/></route>
+   <route src="ROUTER" dst="NODO02" symmetrical="NO"><link_ctn id="2"/></route>
+
+   <route src="NODO01" dst="NODO02" symmetrical="NO">
+   	<link_ctn id="10"/>
+	<link_ctn id="11"/>
+	<link_ctn id="12"/>
+   </route>
+
+ </AS>
+</platform>

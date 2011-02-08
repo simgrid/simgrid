@@ -33,8 +33,6 @@ int main(int argc, char **argv)
     printf("   - Seen: \"%s\" is type : %d\n", key,
            (int) global_routing->get_network_element_type(key));
   }
-  //printf("%s is router : %d\n",name1,global_routing->is_router(name1));
-  xbt_dict_free(&eltms);
   SD_exit();
   return 0;
 }
