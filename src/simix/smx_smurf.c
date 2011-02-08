@@ -105,12 +105,31 @@ void SIMIX_request_pre(smx_req_t req, int value)
       break;
 
     case REQ_COMM_WAIT:
-      SIMIX_pre_comm_wait(req, value);
+      SIMIX_pre_comm_wait(req,
+          req->comm_wait.comm,
+          req->comm_wait.timeout,
+          value);
       break;
 
     case REQ_COMM_WAITANY:
       SIMIX_pre_comm_waitany(req, value);
       break;
+
+    case REQ_COMM_SEND:
+    {
+      smx_action_t comm = SIMIX_comm_isend(
+          req->issuer,
+          req->comm_send.rdv,
+          req->comm_send.task_size,
+          req->comm_send.rate,
+          req->comm_send.src_buff,
+          req->comm_send.src_buff_size,
+          req->comm_send.match_fun,
+          req->comm_send.data,
+          0);
+      SIMIX_pre_comm_wait(req, comm, req->comm_send.timeout, 0);
+      break;
+    }
 
     case REQ_COMM_ISEND:
       req->comm_isend.result = SIMIX_comm_isend(
@@ -125,6 +144,19 @@ void SIMIX_request_pre(smx_req_t req, int value)
           req->comm_isend.detached);
       SIMIX_request_answer(req);
       break;
+
+    case REQ_COMM_RECV:
+    {
+      smx_action_t comm = SIMIX_comm_irecv(
+          req->issuer,
+          req->comm_recv.rdv,
+          req->comm_recv.dst_buff,
+          req->comm_recv.dst_buff_size,
+          req->comm_recv.match_fun,
+          req->comm_recv.data);
+      SIMIX_pre_comm_wait(req, comm, req->comm_recv.timeout, 0);
+      break;
+    }
 
     case REQ_COMM_IRECV:
       req->comm_irecv.result = SIMIX_comm_irecv(

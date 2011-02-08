@@ -324,26 +324,25 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
   return action;
 }
 
-void SIMIX_pre_comm_wait(smx_req_t req, int idx)
+void SIMIX_pre_comm_wait(smx_req_t req, smx_action_t action, double timeout, int idx)
 {
-  smx_action_t action = req->comm_wait.comm;
-  double timeout = req->comm_wait.timeout;
+  /* the request may be a wait, a send or a recv */
   surf_action_t sleep;
 
   /* Associate this request to the action */
   xbt_fifo_push(action->request_list, req);
   req->issuer->waiting_action = action;
 
-  if (MC_IS_ENABLED){
-    if(idx == 0){
+  if (MC_IS_ENABLED) {
+    if (idx == 0) {
       action->state = SIMIX_DONE;
-    }else{
+    } else {
       /* If we reached this point, the wait request must have a timeout */
       /* Otherwise it shouldn't be enabled and executed by the MC */
-      if(timeout == -1)
+      if (timeout == -1)
         THROW_IMPOSSIBLE;
 
-      if(action->comm.src_proc == req->issuer)
+      if (action->comm.src_proc == req->issuer)
         action->state = SIMIX_SRC_TIMEOUT;
       else
         action->state = SIMIX_DST_TIMEOUT;
@@ -516,7 +515,7 @@ void SIMIX_comm_finish(smx_action_t action)
        return it as the result of the call */
     if (req->call == REQ_COMM_WAITANY) {
       SIMIX_waitany_req_remove_from_actions(req);
-      if(!MC_IS_ENABLED)
+      if (!MC_IS_ENABLED)
         req->comm_waitany.result = xbt_dynar_search(req->comm_waitany.comms, &action);
     }
 
@@ -607,7 +606,7 @@ void SIMIX_comm_finish(smx_action_t action)
     destroy_count++;
   }
 
-  while(destroy_count-- > 0)
+  while (destroy_count-- > 0)
     SIMIX_comm_destroy(action);
 }
 

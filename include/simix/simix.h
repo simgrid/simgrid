@@ -156,21 +156,30 @@ XBT_PUBLIC(smx_action_t) SIMIX_req_rdv_get_head(smx_rdv_t rdv);
 
 /***** Communication Requests *****/
 
-/* Constructors and Destructor */
+XBT_PUBLIC(void) SIMIX_req_comm_send(smx_rdv_t rdv, double task_size,
+                                     double rate, void *src_buff,
+                                     size_t src_buff_size,
+                                     int (*match_fun)(void *, void *),
+                                     void *data, double timeout);
+
 XBT_PUBLIC(smx_action_t) SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size,
-                                           double rate, void *src_buff,
-                                           size_t src_buff_size,
-                                           int (*match_fun)(void *, void *),
-                                           void *data, int detached);
+                                              double rate, void *src_buff,
+                                              size_t src_buff_size,
+                                              int (*match_fun)(void *, void *),
+                                              void *data, int detached);
+
+XBT_PUBLIC(void) SIMIX_req_comm_recv(smx_rdv_t rdv, void *dst_buff,
+                                     size_t * dst_buff_size,
+                                     int (*match_fun)(void *, void *),
+                                     void *data, double timeout);
 
 XBT_PUBLIC(smx_action_t) SIMIX_req_comm_irecv(smx_rdv_t rdv, void *dst_buff,
-                                           size_t * dst_buff_size,
-                                           int (*match_fun)(void *, void *),
-                                           void *data);
+                                              size_t * dst_buff_size,
+                                              int (*match_fun)(void *, void *),
+                                              void *data);
 
 XBT_PUBLIC(void) SIMIX_req_comm_destroy(smx_action_t comm);
 
-/* Communication handling */
 XBT_INLINE XBT_PUBLIC(void) SIMIX_req_comm_cancel(smx_action_t comm);
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */

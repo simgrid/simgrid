@@ -48,7 +48,9 @@ SIMIX_REQ_ENUM_ELEMENT(REQ_RDV_DESTROY),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_RDV_GEY_BY_NAME),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_RDV_COMM_COUNT_BY_HOST),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_RDV_GET_HEAD),\
+SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_SEND),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_ISEND),\
+SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_RECV),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_IRECV),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_DESTROY),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_COMM_CANCEL),\
@@ -309,6 +311,17 @@ typedef struct s_smx_req {
       size_t src_buff_size;
       int (*match_fun)(void *, void *);
       void *data;
+      double timeout;
+    } comm_send;
+
+    struct {
+      smx_rdv_t rdv;
+      double task_size;
+      double rate;
+      void *src_buff;
+      size_t src_buff_size;
+      int (*match_fun)(void *, void *);
+      void *data;
       int detached;
       smx_action_t result;
     } comm_isend;
@@ -318,7 +331,16 @@ typedef struct s_smx_req {
       void *dst_buff;
       size_t *dst_buff_size;
       int (*match_fun)(void *, void *);
-	  void *data;
+      void *data;
+      double timeout;
+    } comm_recv;
+
+    struct {
+      smx_rdv_t rdv;
+      void *dst_buff;
+      size_t *dst_buff_size;
+      int (*match_fun)(void *, void *);
+          void *data;
       smx_action_t result;
     } comm_irecv;
 

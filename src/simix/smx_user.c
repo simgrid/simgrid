@@ -1,4 +1,5 @@
 #include "private.h"
+#include "mc/mc.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
@@ -616,14 +617,44 @@ smx_action_t SIMIX_req_rdv_get_head(smx_rdv_t rdv)
   return req->rdv_get_head.result;
 }
 
+void SIMIX_req_comm_send(smx_rdv_t rdv, double task_size, double rate,
+                         void *src_buff, size_t src_buff_size,
+                         int (*match_fun)(void *, void *), void *data,
+                         double timeout)
+{
+  xbt_assert0(rdv, "No rendez-vous point defined for send");
+
+  if (MC_IS_ENABLED) {
+    /* the model-checker wants two separate requests */
+    smx_action_t comm = SIMIX_req_comm_isend(rdv, task_size, rate,
+        src_buff, src_buff_size, match_fun, data, 0);
+    SIMIX_req_comm_wait(comm, timeout);
+  }
+  else {
+    smx_req_t req = SIMIX_req_mine();
+
+    req->call = REQ_COMM_SEND;
+    req->comm_send.rdv = rdv;
+    req->comm_send.task_size = task_size;
+    req->comm_send.rate = rate;
+    req->comm_send.src_buff = src_buff;
+    req->comm_send.src_buff_size = src_buff_size;
+    req->comm_send.match_fun = match_fun;
+    req->comm_send.data = data;
+    req->comm_send.timeout = timeout;
+
+    SIMIX_request_push();
+  }
+}
+
 smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
                               int (*match_fun)(void *, void *), void *data,
                               int detached)
 {
-  smx_req_t req = SIMIX_req_mine();
-
   xbt_assert0(rdv, "No rendez-vous point defined for isend");
+
+  smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_COMM_ISEND;
   req->comm_isend.rdv = rdv;
@@ -639,12 +670,38 @@ smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
   return req->comm_isend.result;
 }
 
-smx_action_t SIMIX_req_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
-								  int (*match_fun)(void *, void *), void *data)
+void SIMIX_req_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
+                         int (*match_fun)(void *, void *), void *data, double timeout)
 {
-  smx_req_t req = SIMIX_req_mine();
+  xbt_assert0(rdv, "No rendez-vous point defined for recv");
 
-  xbt_assert0(rdv, "No rendez-vous point defined for isend");
+  if (MC_IS_ENABLED) {
+    /* the model-checker wants two separate requests */
+    smx_action_t comm = SIMIX_req_comm_irecv(rdv, dst_buff, dst_buff_size,
+        match_fun, data);
+    SIMIX_req_comm_wait(comm, timeout);
+  }
+  else {
+    smx_req_t req = SIMIX_req_mine();
+
+    req->call = REQ_COMM_RECV;
+    req->comm_recv.rdv = rdv;
+    req->comm_recv.dst_buff = dst_buff;
+    req->comm_recv.dst_buff_size = dst_buff_size;
+    req->comm_recv.match_fun = match_fun;
+    req->comm_recv.data = data;
+    req->comm_recv.timeout = timeout;
+
+    SIMIX_request_push();
+  }
+}
+
+smx_action_t SIMIX_req_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
+                                  int (*match_fun)(void *, void *), void *data)
+{
+  xbt_assert0(rdv, "No rendez-vous point defined for irecv");
+
+  smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_COMM_IRECV;
   req->comm_irecv.rdv = rdv;

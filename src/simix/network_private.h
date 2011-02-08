@@ -29,17 +29,26 @@ void SIMIX_rdv_destroy(smx_rdv_t rdv);
 smx_rdv_t SIMIX_rdv_get_by_name(const char *name);
 int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host);
 smx_action_t SIMIX_rdv_get_head(smx_rdv_t rdv);
+void SIMIX_comm_send(smx_process_t src_proc, smx_rdv_t rdv,
+                     double task_size, double rate,
+                     void *src_buff, size_t src_buff_size,
+                     int (*)(void *, void *), void *data,
+                     double timeout);
 smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
                               int (*)(void *, void *), void *data,
                               int detached);
+void SIMIX_comm_recv(smx_process_t dst_proc, smx_rdv_t rdv,
+                     void *dst_buff, size_t *dst_buff_size,
+                     int (*)(void *, void *), void *data,
+                     double timeout);
 smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               void *dst_buff, size_t *dst_buff_size,
                               int (*)(void *, void *), void *data);
 void SIMIX_comm_destroy(smx_action_t action);
 void SIMIX_comm_destroy_internal_actions(smx_action_t action);
-void SIMIX_pre_comm_wait(smx_req_t req, int idx);
+void SIMIX_pre_comm_wait(smx_req_t req, smx_action_t action, double timeout, int idx);
 void SIMIX_pre_comm_waitany(smx_req_t req, int idx);
 void SIMIX_post_comm(smx_action_t action);
 void SIMIX_pre_comm_test(smx_req_t req);
