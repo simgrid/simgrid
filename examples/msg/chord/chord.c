@@ -27,6 +27,8 @@ static int periodic_fix_fingers_delay = 120;
 static int periodic_check_predecessor_delay = 120;
 static int periodic_lookup_delay = 10;
 
+extern long int smx_total_comms;
+
 /**
  * Finger element.
  */
@@ -390,6 +392,7 @@ int node(int argc, char *argv[])
 
   // stop the simulation
   xbt_free(node.fingers);
+  INFO1("Messages created: %lu", smx_total_comms);
   return 0;
 }
 
@@ -501,6 +504,11 @@ static int join(node_t node, int known_id)
 {
   INFO2("Joining the ring with id %d, knowing node %d", node->id, known_id);
   set_predecessor(node, -1); // no predecessor (yet)
+
+  int i;
+  for (i = 0; i < nb_bits; i++) {
+    set_finger(node, i, known_id);
+  }
 
   int successor_id = remote_find_successor(node, known_id, node->id);
   if (successor_id == -1) {
@@ -921,7 +929,7 @@ int main(int argc, char *argv[])
   MSG_launch_application(application_file);
 
   MSG_error_t res = MSG_main();
-  INFO1("Simulation time: %g", MSG_get_clock());
+  INFO1("Simulated time: %g", MSG_get_clock());
 
   MSG_clean();
 

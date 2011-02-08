@@ -13,6 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
                                 "Logging specific to SIMIX (network)");
 
 static xbt_dict_t rdv_points = NULL;
+unsigned long int smx_total_comms = 0;
 
 static XBT_INLINE void SIMIX_comm_start(smx_action_t action);
 static void SIMIX_comm_finish(smx_action_t action);
@@ -182,6 +183,7 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
 #endif
 
   DEBUG1("Create communicate action %p", act);
+  ++smx_total_comms;
 
   return act;
 }
