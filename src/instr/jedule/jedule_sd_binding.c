@@ -21,6 +21,10 @@
 
 #ifdef HAVE_JEDULE
 
+XBT_LOG_NEW_CATEGORY(jedule, "Logging specific to Jedule");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_sd, jedule,
+                                "Logging specific to Jedule SD binding");
+
 jedule_t jedule;
 
 void jedule_log_sd_event(SD_task_t task) {
@@ -33,12 +37,12 @@ void jedule_log_sd_event(SD_task_t task) {
 	host_list = xbt_dynar_new(sizeof(char*), NULL);
 
 	for(i=0; i<task->workstation_nb; i++) {
-		char *hostname = surf_resource_name(task->workstation_list[i]->surf_workstation);
+		char *hostname = (char*)surf_resource_name(task->workstation_list[i]->surf_workstation);
 		xbt_dynar_push(host_list, &hostname);
 	}
 
 	create_jed_event(&event,
-			SD_task_get_name(task),
+			(char*)SD_task_get_name(task),
 			task->start_time,
 			task->finish_time,
 			"SD");
@@ -65,7 +69,7 @@ static void create_hierarchy(routing_component_t current_comp,
 
 		xbt_dict_foreach(current_comp->to_index, cursor, key, network_elem) {
 			char *hostname;
-			printf("key %s value %d\n", key, network_elem);
+			DEBUG2("key %s value %d\n", key, network_elem);
 			//xbt_dynar_push_as(hosts, char*, key);
 			hostname = strdup(key);
 			xbt_dynar_push(hosts, &hostname);
@@ -78,7 +82,7 @@ static void create_hierarchy(routing_component_t current_comp,
 			jed_simgrid_container_t child_container;
 			jed_simgrid_create_container(&child_container, elem->name);
 			jed_simgrid_add_container(current_container, child_container);
-			printf("name : %s\n", elem->name);
+			DEBUG1("name : %s\n", elem->name);
 			create_hierarchy(elem, child_container);
 		}
 	}
@@ -95,7 +99,7 @@ void jedule_setup_platform() {
 	jed_create_jedule(&jedule);
 
 	root_comp = global_routing->root;
-	printf("root name %s\n", root_comp->name);
+	DEBUG1("root name %s\n", root_comp->name);
 
 	// that doesn't work
 	type = root_comp->get_network_element_type(root_comp->name);
@@ -115,12 +119,20 @@ void jedule_sd_cleanup() {
 
 void jedule_sd_init() {
 
+	XBT_LOG_CONNECT(jed_sd, jedule);
+
 	jedule_init_output();
 }
 
 void jedule_sd_dump() {
+	FILE *fh;
 
-	write_jedule_output(stdout, jedule, jedule_event_list, NULL);
+	fh = fopen("simgrid.jed", "w");
+
+	write_jedule_output(fh, jedule, jedule_event_list, NULL);
+
+	fclose(fh);
+
 }
 
 #endif
