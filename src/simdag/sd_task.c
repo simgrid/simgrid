@@ -961,6 +961,10 @@ void __SD_task_really_run(SD_task_t task)
     TRACE_surf_action(task->surf_action, task->category);
 #endif
 
+#ifdef HAVE_JEDULE
+  jedule_log_sd_event(task);
+#endif
+
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   __SD_task_set_state(task, SD_RUNNING);
   xbt_assert2(__SD_task_is_running(task), "Bad state of task '%s': %d",

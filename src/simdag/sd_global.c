@@ -20,6 +20,10 @@
 #include <lualib.h>
 #endif
 
+#ifdef HAVE_JEDULE
+#include "instr/jedule/jedule_output.h"
+#endif
+
 XBT_LOG_NEW_CATEGORY(sd, "Logging specific to SimDag");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd,
                                 "Logging specific to SimDag (kernel)");
@@ -92,6 +96,10 @@ void SD_init(int *argc, char **argv)
 #ifdef HAVE_TRACING
   TRACE_start ();
 #endif
+
+#ifdef HAVE_JEDULE
+  init_jedule_output();
+#endif
 }
 
 /**
@@ -139,6 +147,12 @@ void SD_application_reinit(void)
     sd_global->failed_task_set =
         xbt_swag_new(xbt_swag_offset(task, state_hookup));
     sd_global->task_number = 0;
+
+#ifdef HAVE_JEDULE
+    cleanup_jedule();
+    init_jedule_output();
+#endif
+
   } else {
     WARN0("SD_application_reinit called before initialization of SimDag");
     /* we cannot use exceptions here because xbt is not running! */
@@ -194,6 +208,9 @@ void SD_create_environment(const char *platform_file)
 
   DEBUG2("Workstation number: %d, link number: %d",
          SD_workstation_get_number(), SD_link_get_number());
+#ifdef HAVE_JEDULE
+  jedule_setup_platform();
+#endif
 }
 
 /**
@@ -411,6 +428,9 @@ void SD_exit(void)
 
 #ifdef HAVE_TRACING
   TRACE_end();
+#endif
+#ifdef HAVE_JEDULE
+  cleanup_jedule();
 #endif
 
     DEBUG0("Exiting Surf...");

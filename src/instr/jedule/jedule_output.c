@@ -1,0 +1,231 @@
+/*
+ * jedule_output.c
+ *
+ *  Created on: Dec 1, 2010
+ *      Author: sascha
+ */
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "jedule_output.h"
+
+#include "xbt/dynar.h"
+#include "xbt/asserts.h"
+
+/*********************************************************/
+
+static FILE *jed_file;
+
+static void print_platform(jed_simgrid_container_t root_container);
+static void print_container(jed_simgrid_container_t container);
+static void print_resources(jed_simgrid_container_t resource_parent);
+static void print_key_value_dict(xbt_dict_t meta_info_dict);
+static void print_events(xbt_dynar_t event_list);
+static void get_hierarchy_list(xbt_dynar_t hier_list, jed_simgrid_container_t container);
+
+/*********************************************************/
+
+
+static void get_hierarchy_list(xbt_dynar_t hier_list, jed_simgrid_container_t container) {
+
+	xbt_assert( container != NULL );
+
+	if( container->parent != NULL ) {
+
+		if( container->parent->container_children == NULL ) {
+			// we are in the last level
+			get_hierarchy_list(hier_list, container->parent);
+
+		} else {
+			unsigned int i;
+			int child_nb = -1;
+			jed_simgrid_container_t child_container;
+
+			xbt_dynar_foreach(container->parent->container_children, i, child_container) {
+				if( child_container == container ) {
+					child_nb = i;
+					break;
+				}
+			}
+
+			xbt_assert( child_nb > - 1);
+
+			xbt_dynar_insert_at(hier_list, 0, &child_nb);
+
+			get_hierarchy_list(hier_list, container->parent);
+		}
+	} else {
+		int top_level = 0;
+		xbt_dynar_insert_at(hier_list, 0, &top_level);
+	}
+
+}
+
+static void print_key_value_dict(xbt_dict_t key_value_dict) {
+	xbt_dict_cursor_t cursor=NULL;
+	char *key,*data;
+
+	xbt_dict_foreach(key_value_dict,cursor,key,data) {
+	    fprintf(jed_file, "<prop key=\"%s\" values=\"%s\" />\n",key,data);
+	}
+}
+
+static void print_container(jed_simgrid_container_t container) {
+	unsigned int i;
+	jed_simgrid_container_t child_container;
+
+	xbt_assert( container != NULL );
+
+	fprintf(jed_file, "<res name=\"%s\">\n", container->name);
+	if( container->container_children != NULL ) {
+		xbt_dynar_foreach(container->container_children, i, child_container) {
+			print_container(child_container);
+		}
+	} else {
+		print_resources(container);
+	}
+	fprintf(jed_file, "</res>\n");
+}
+
+static void print_resources(jed_simgrid_container_t resource_parent) {
+	int res_nb;
+	unsigned int i;
+	char *res_name;
+	xbt_assert( resource_parent->resource_list != NULL );
+
+	res_nb = xbt_dynar_length(resource_parent->resource_list);
+
+	fprintf(jed_file, "<rset nb=\"%d\" names=\"", res_nb);
+	xbt_dynar_foreach(resource_parent->resource_list, i, res_name) {
+		fprintf(jed_file, "%s", res_name);
+		if( i != res_nb-1 ) {
+			fprintf(jed_file, "|");
+		}
+	}
+	fprintf(jed_file, "\" />\n");
+}
+
+
+static void print_platform(jed_simgrid_container_t root_container) {
+
+	fprintf(jed_file, "<platform>\n");
+	print_container(root_container);
+	fprintf(jed_file, "</platform>\n");
+}
+
+static void print_event(jed_event_t event) {
+	unsigned int i;
+	jed_res_subset_t subset;
+
+
+	xbt_assert( event != NULL );
+	xbt_assert( event->resource_subsets != NULL );
+
+	fprintf(jed_file, "<event>\n");
+
+
+	fprintf(jed_file, "<prop value=\"name\" value=\"%s\" />\n", event->name);
+	fprintf(jed_file, "<prop value=\"start\" value=\"%g\" />\n", event->start_time);
+	fprintf(jed_file, "<prop value=\"end\" value=\"%g\" />\n", event->end_time);
+	fprintf(jed_file, "<prop value=\"type\" value=\"%s\" />\n", event->type);
+
+	fprintf(jed_file, "<res_util>\n");
+
+	xbt_dynar_foreach(event->resource_subsets, i, subset) {
+
+		int start = subset->start_idx;
+		int end   = subset->start_idx + subset->nres - 1;
+		xbt_dynar_t hier_list;
+		unsigned int iter;
+		int number;
+
+		hier_list = xbt_dynar_new(sizeof(int), NULL);
+
+		//printf("subset start %d nres %d\n", subset->start_idx, subset->nres);
+
+		//printf("parent %s\n", event->resource_selection[i]->parent->name);
+		get_hierarchy_list(hier_list, subset->parent);
+
+		fprintf(jed_file, "<select resources=\"");
+
+		xbt_dynar_foreach(hier_list, iter, number) {
+			fprintf(jed_file, "%d.", number);
+		}
+		fprintf(jed_file, "[%d-%d]", start, end);
+		fprintf(jed_file, "\" />\n");
+
+		xbt_dynar_free(&hier_list);
+	}
+
+	fprintf(jed_file, "</res_util>\n");
+
+	fprintf(jed_file, "<characteristics>\n");
+	{
+		char *ch;
+		unsigned int iter;
+		xbt_dynar_foreach(event->characteristics_list, iter, ch) {
+			fprintf(jed_file, "<characteristic name=\"%s\" />\n", ch);
+		}
+	}
+	fprintf(jed_file, "</characteristics>\n");
+
+	fprintf(jed_file, "<info>\n");
+	print_key_value_dict(event->info_hash);
+	fprintf(jed_file, "</info>\n");
+
+	fprintf(jed_file, "</event>\n");
+}
+
+static void print_events(xbt_dynar_t event_list)  {
+	unsigned int i;
+	jed_event_t event;
+
+	fprintf(jed_file, "<events>\n");
+	xbt_dynar_foreach(event_list, i, event) {
+		print_event(event);
+	}
+	fprintf(jed_file, "</events>\n");
+}
+
+
+void write_jedule_output(char *filename, jedule_t jedule,
+		xbt_dynar_t event_list, xbt_dict_t meta_info_dict) {
+
+	xbt_assert( filename != NULL );
+
+	jed_file = fopen(filename, "w");
+	xbt_assert( jed_file != NULL );
+
+	fprintf(jed_file, "<jedule>\n");
+
+	fprintf(jed_file, "<jedule_meta>\n");
+	print_key_value_dict(jedule->jedule_meta_info);
+	fprintf(jed_file, "</jedule_meta>\n");
+
+	print_platform(jedule->root_container);
+
+	print_events(event_list);
+
+	fprintf(jed_file, "</jedule>\n");
+
+	fclose(jed_file);
+
+}
+
+void init_jedule_output() {
+	jedule_event_list = xbt_dynar_new(sizeof(jed_event_t), NULL);
+}
+
+void cleanup_jedule() {
+	xbt_dynar_free(&jedule_event_list);
+}
+
+void jedule_store_event(jed_event_t event) {
+	xbt_assert(event != NULL);
+	xbt_dynar_push(jedule_event_list, &event);
+}
+
+
