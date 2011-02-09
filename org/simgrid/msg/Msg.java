@@ -15,12 +15,12 @@ public final class Msg {
 	/* Statically load the library which contains all native functions used in here */
 	static {
 		try {
-			System.loadLibrary("simgrid-java");
+			System.loadLibrary("SG_java");
 		} catch(UnsatisfiedLinkError e) {
 			System.err.println("Cannot load the bindings to the simgrid library: ");
 			e.printStackTrace();
 			System.err.println(
-					"Please check your LD_LIBRARY_PATH, or copy the simgrid and simgrid-java libraries to the current directory");
+					"Please check your LD_LIBRARY_PATH, or copy the simgrid and SG_java libraries to the current directory");
 			System.exit(1);
 		}
 	}

@@ -36,7 +36,7 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
   (*factory)->free = smx_ctx_java_free;
   (*factory)->stop = smx_ctx_java_stop;
   (*factory)->suspend = smx_ctx_java_suspend;
-  (*factory)->runall = smx_ctx_java_runall;
+  (*factory)->runall = (smx_pfn_context_runall_t)smx_ctx_java_runall;
   (*factory)->name = "ctx_java_factory";
 }
 

@@ -50,7 +50,7 @@ static jobject native_to_java_process(m_process_t process)
  */
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
                                          jobject jprocess_arg,
                                          jobject jhost)
 {
@@ -62,7 +62,7 @@ Java_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
   m_process_t process;          /* the native process to create                         */
   m_host_t host;                /* Where that process lives */
    
-  DEBUG4("Java_simgrid_msg_MsgNative_processCreate(env=%p,cls=%p,jproc=%p,jhost=%p)",
+  DEBUG4("Java_org_simgrid_msg_MsgNative_processCreate(env=%p,cls=%p,jproc=%p,jhost=%p)",
 	 env, cls, jprocess_arg, jhost);
    
    
@@ -114,7 +114,7 @@ Java_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_processSuspend(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processSuspend(JNIEnv * env, jclass cls,
                                           jobject jprocess)
 {
   m_process_t process = jprocess_to_native_process(jprocess, env);
@@ -133,7 +133,7 @@ Java_simgrid_msg_MsgNative_processSuspend(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_processResume(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processResume(JNIEnv * env, jclass cls,
                                          jobject jprocess)
 {
   m_process_t process = jprocess_to_native_process(jprocess, env);
@@ -151,7 +151,7 @@ Java_simgrid_msg_MsgNative_processResume(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jboolean JNICALL
-Java_simgrid_msg_MsgNative_processIsSuspended(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processIsSuspended(JNIEnv * env, jclass cls,
                                               jobject jprocess)
 {
   m_process_t process = jprocess_to_native_process(jprocess, env);
@@ -166,7 +166,7 @@ Java_simgrid_msg_MsgNative_processIsSuspended(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_processKill(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processKill(JNIEnv * env, jclass cls,
                                        jobject jprocess)
 {
   /* get the native instances from the java ones */
@@ -187,7 +187,7 @@ Java_simgrid_msg_MsgNative_processKill(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_processGetHost(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processGetHost(JNIEnv * env, jclass cls,
                                           jobject jprocess)
 {
   /* get the native instances from the java ones */
@@ -212,7 +212,7 @@ Java_simgrid_msg_MsgNative_processGetHost(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_processFromPID(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processFromPID(JNIEnv * env, jclass cls,
                                           jint PID)
 {
   m_process_t process = MSG_process_from_PID(PID);
@@ -232,7 +232,7 @@ Java_simgrid_msg_MsgNative_processFromPID(JNIEnv * env, jclass cls,
 
 
 JNIEXPORT jint JNICALL
-Java_simgrid_msg_MsgNative_processGetPID(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processGetPID(JNIEnv * env, jclass cls,
                                          jobject jprocess)
 {
   m_process_t process = jprocess_to_native_process(jprocess, env);
@@ -247,7 +247,7 @@ Java_simgrid_msg_MsgNative_processGetPID(JNIEnv * env, jclass cls,
 
 
 JNIEXPORT jint JNICALL
-Java_simgrid_msg_MsgNative_processGetPPID(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processGetPPID(JNIEnv * env, jclass cls,
                                           jobject jprocess)
 {
   m_process_t process = jprocess_to_native_process(jprocess, env);
@@ -261,7 +261,7 @@ Java_simgrid_msg_MsgNative_processGetPPID(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_processSelf(JNIEnv * env, jclass cls)
+Java_org_simgrid_msg_MsgNative_processSelf(JNIEnv * env, jclass cls)
 {
   m_process_t process = MSG_process_self();
   jobject jprocess;
@@ -280,7 +280,7 @@ Java_simgrid_msg_MsgNative_processSelf(JNIEnv * env, jclass cls)
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_processChangeHost(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processChangeHost(JNIEnv * env, jclass cls,
                                              jobject jhost)
 {
   m_host_t host = jhost_get_native(env, jhost);
@@ -299,7 +299,7 @@ Java_simgrid_msg_MsgNative_processChangeHost(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_processWaitFor(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processWaitFor(JNIEnv * env, jclass cls,
                                           jdouble seconds)
 {
   MSG_error_t rv = MSG_process_sleep((double) seconds);
@@ -316,7 +316,7 @@ Java_simgrid_msg_MsgNative_processWaitFor(JNIEnv * env, jclass cls,
  ***************************************************************************************/
 
 JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
                                          jstring jname)
 {
   m_host_t host;                /* native host                                          */
@@ -368,7 +368,7 @@ Java_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jstring JNICALL
-Java_simgrid_msg_MsgNative_hostGetName(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_hostGetName(JNIEnv * env, jclass cls,
                                        jobject jhost)
 {
   m_host_t host = jhost_get_native(env, jhost);
@@ -382,13 +382,13 @@ Java_simgrid_msg_MsgNative_hostGetName(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jint JNICALL
-Java_simgrid_msg_MsgNative_hostGetNumber(JNIEnv * env, jclass cls)
+Java_org_simgrid_msg_MsgNative_hostGetNumber(JNIEnv * env, jclass cls)
 {
   return (jint) MSG_get_host_number();
 }
 
 JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_hostSelf(JNIEnv * env, jclass cls)
+Java_org_simgrid_msg_MsgNative_hostSelf(JNIEnv * env, jclass cls)
 {
   jobject jhost;
 
@@ -424,7 +424,7 @@ Java_simgrid_msg_MsgNative_hostSelf(JNIEnv * env, jclass cls)
 }
 
 JNIEXPORT jdouble JNICALL
-Java_simgrid_msg_MsgNative_hostGetSpeed(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_hostGetSpeed(JNIEnv * env, jclass cls,
                                         jobject jhost)
 {
   m_host_t host = jhost_get_native(env, jhost);
@@ -438,7 +438,7 @@ Java_simgrid_msg_MsgNative_hostGetSpeed(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jint JNICALL
-Java_simgrid_msg_MsgNative_hostGetLoad(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_hostGetLoad(JNIEnv * env, jclass cls,
                                        jobject jhost)
 {
   m_host_t host = jhost_get_native(env, jhost);
@@ -453,7 +453,7 @@ Java_simgrid_msg_MsgNative_hostGetLoad(JNIEnv * env, jclass cls,
 
 
 JNIEXPORT jboolean JNICALL
-Java_simgrid_msg_MsgNative_hostIsAvail(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_hostIsAvail(JNIEnv * env, jclass cls,
                                        jobject jhost)
 {
   m_host_t host = jhost_get_native(env, jhost);
@@ -472,7 +472,7 @@ Java_simgrid_msg_MsgNative_hostIsAvail(JNIEnv * env, jclass cls,
  ***************************************************************************************/
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_taskCreate(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskCreate(JNIEnv * env, jclass cls,
                                       jobject jtask, jstring jname,
                                       jdouble jcomputeDuration,
                                       jdouble jmessageSize)
@@ -515,7 +515,7 @@ Java_simgrid_msg_MsgNative_taskCreate(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_parallel_taskCreate(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_parallel_taskCreate(JNIEnv * env, jclass cls,
                                                jobject jtask,
                                                jstring jname,
                                                jobjectArray jhosts,
@@ -603,7 +603,7 @@ Java_simgrid_msg_MsgNative_parallel_taskCreate(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_taskGetSender(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskGetSender(JNIEnv * env, jclass cls,
                                          jobject jtask)
 {
   m_process_t process;
@@ -620,7 +620,7 @@ Java_simgrid_msg_MsgNative_taskGetSender(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_taskGetSource(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskGetSource(JNIEnv * env, jclass cls,
                                          jobject jtask)
 {
   m_host_t host;
@@ -643,7 +643,7 @@ Java_simgrid_msg_MsgNative_taskGetSource(JNIEnv * env, jclass cls,
 
 
 JNIEXPORT jstring JNICALL
-Java_simgrid_msg_MsgNative_taskGetName(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskGetName(JNIEnv * env, jclass cls,
                                        jobject jtask)
 {
   m_task_t task = jtask_to_native_task(jtask, env);
@@ -657,7 +657,7 @@ Java_simgrid_msg_MsgNative_taskGetName(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_taskCancel(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskCancel(JNIEnv * env, jclass cls,
                                       jobject jtask)
 {
   m_task_t ptask = jtask_to_native_task(jtask, env);
@@ -674,7 +674,7 @@ Java_simgrid_msg_MsgNative_taskCancel(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jdouble JNICALL
-Java_simgrid_msg_MsgNative_taskGetComputeDuration(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskGetComputeDuration(JNIEnv * env, jclass cls,
                                                   jobject jtask)
 {
   m_task_t ptask = jtask_to_native_task(jtask, env);
@@ -687,7 +687,7 @@ Java_simgrid_msg_MsgNative_taskGetComputeDuration(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jdouble JNICALL
-Java_simgrid_msg_MsgNative_taskGetRemainingDuration(JNIEnv * env,
+Java_org_simgrid_msg_MsgNative_taskGetRemainingDuration(JNIEnv * env,
                                                     jclass cls,
                                                     jobject jtask)
 {
@@ -701,7 +701,7 @@ Java_simgrid_msg_MsgNative_taskGetRemainingDuration(JNIEnv * env,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_taskSetPriority(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskSetPriority(JNIEnv * env, jclass cls,
                                            jobject jtask, jdouble priority)
 {
   m_task_t task = jtask_to_native_task(jtask, env);
@@ -714,7 +714,7 @@ Java_simgrid_msg_MsgNative_taskSetPriority(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_taskDestroy(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskDestroy(JNIEnv * env, jclass cls,
                                        jobject jtask_arg)
 {
 
@@ -735,7 +735,7 @@ Java_simgrid_msg_MsgNative_taskDestroy(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_taskExecute(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskExecute(JNIEnv * env, jclass cls,
                                        jobject jtask)
 {
   m_task_t task = jtask_to_native_task(jtask, env);
@@ -759,20 +759,19 @@ Java_simgrid_msg_MsgNative_taskExecute(JNIEnv * env, jclass cls,
 
 
 JNIEXPORT jint JNICALL
-Java_simgrid_msg_Msg_getErrCode(JNIEnv * env, jclass cls)
+Java_org_simgrid_msg_Msg_getErrCode(JNIEnv * env, jclass cls)
 {
   return (jint) MSG_get_errno();
 }
 
 JNIEXPORT jdouble JNICALL
-Java_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls)
+Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls)
 {
   return (jdouble) MSG_get_clock();
 }
 
-
 JNIEXPORT void JNICALL
-Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
+Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
   char **argv = NULL;
   int index;
@@ -780,7 +779,7 @@ Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   jstring jval;
   const char *tmp;
 
-  factory_initializer_to_use = SIMIX_ctx_java_factory_init;
+  smx_factory_initializer_to_use = SIMIX_ctx_java_factory_init;
 
   if (jargs)
     argc = (int) (*env)->GetArrayLength(env, jargs);
@@ -793,6 +792,7 @@ Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
     jval = (jstring) (*env)->GetObjectArrayElement(env, jargs, index);
     tmp = (*env)->GetStringUTFChars(env, jval, 0);
     argv[index + 1] = strdup(tmp);
+    //argv[index] = strdup(tmp);
     (*env)->ReleaseStringUTFChars(env, jval, tmp);
   }
 
@@ -807,7 +807,7 @@ Java_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 }
 
 JNIEXPORT void JNICALL
-    JNICALL Java_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)
+    JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)
 {
   MSG_error_t rv;
   int index;                    //xbt_fifo_item_t item = NULL;
@@ -844,14 +844,14 @@ JNIEXPORT void JNICALL
 }
 
 JNIEXPORT jint JNICALL
-Java_simgrid_msg_MsgNative_processKillAll(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processKillAll(JNIEnv * env, jclass cls,
                                           jint jresetPID)
 {
   return (jint) MSG_process_killall((int) jresetPID);
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls,
                                        jstring jplatformFile)
 {
 
@@ -864,7 +864,7 @@ Java_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_processExit(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processExit(JNIEnv * env, jclass cls,
                                        jobject jprocess)
 {
 
@@ -879,7 +879,7 @@ Java_simgrid_msg_MsgNative_processExit(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_Msg_info(JNIEnv * env, jclass cls, jstring js)
+Java_org_simgrid_msg_Msg_info(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = (*env)->GetStringUTFChars(env, js, 0);
   INFO1("%s", s);
@@ -887,7 +887,7 @@ Java_simgrid_msg_Msg_info(JNIEnv * env, jclass cls, jstring js)
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
+Java_org_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
 {
   int index;
   jobjectArray jtable;
@@ -898,7 +898,7 @@ Java_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
   int count = MSG_get_host_number();
   m_host_t *table = MSG_get_host_table();
 
-  jclass cls = jxbt_get_class(env, "simgrid/msg/Host");
+  jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
 
   if (!cls) {
     return NULL;
@@ -919,7 +919,7 @@ Java_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
       jname = (*env)->NewStringUTF(env, MSG_host_get_name(host));
 
       jhost =
-          Java_simgrid_msg_MsgNative_hostGetByName(env, cls_arg, jname);
+          Java_org_simgrid_msg_MsgNative_hostGetByName(env, cls_arg, jname);
       /* FIXME: leak of jname ? */
     }
 
@@ -930,7 +930,7 @@ Java_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
                                     jstring jalias, jobject jtask,
                                     jdouble jtimeout)
 {
@@ -960,7 +960,7 @@ Java_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_MsgNative_taskSendBounded(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskSendBounded(JNIEnv * env, jclass cls,
                                            jstring jalias, jobject jtask,
                                            jdouble jmaxRate)
 {
@@ -990,7 +990,7 @@ Java_simgrid_msg_MsgNative_taskSendBounded(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jobject JNICALL
-Java_simgrid_msg_MsgNative_taskReceive(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskReceive(JNIEnv * env, jclass cls,
                                        jstring jalias, jdouble jtimeout,
                                        jobject jhost)
 {
@@ -1029,7 +1029,7 @@ Java_simgrid_msg_MsgNative_taskReceive(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jboolean JNICALL
-Java_simgrid_msg_MsgNative_taskListen(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskListen(JNIEnv * env, jclass cls,
                                       jstring jalias)
 {
 
@@ -1046,7 +1046,7 @@ Java_simgrid_msg_MsgNative_taskListen(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jint JNICALL
-Java_simgrid_msg_MsgNative_taskListenFromHost(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskListenFromHost(JNIEnv * env, jclass cls,
                                               jstring jalias,
                                               jobject jhost)
 {
@@ -1069,7 +1069,7 @@ Java_simgrid_msg_MsgNative_taskListenFromHost(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT jint JNICALL
-Java_simgrid_msg_MsgNative_taskListenFrom(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_taskListenFrom(JNIEnv * env, jclass cls,
                                           jstring jalias)
 {
 
@@ -1084,14 +1084,14 @@ Java_simgrid_msg_MsgNative_taskListenFrom(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
-Java_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
                                        jstring jdeploymentFile)
 {
 
   const char *deploymentFile =
       (*env)->GetStringUTFChars(env, jdeploymentFile, 0);
 
-  surf_parse_reset_parser();
+  surf_parse_reset_callbacks();
 
   surfxml_add_callback(STag_surfxml_process_cb_list,
                        japplication_handler_on_begin_process);

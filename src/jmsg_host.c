@@ -14,7 +14,7 @@
 jobject jhost_new_instance(JNIEnv * env)
 {
 
-  jclass cls = jxbt_get_class(env, "simgrid/msg/Host");
+  jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
   jmethodID constructor = jxbt_get_jmethod(env, cls, "<init>", "()V");
 
   if (!constructor)
@@ -35,7 +35,7 @@ void jhost_unref(JNIEnv * env, jobject jhost)
 
 void jhost_bind(jobject jhost, m_host_t host, JNIEnv * env)
 {
-  jfieldID id = jxbt_get_sfield(env, "simgrid/msg/Host", "bind", "J");
+  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Host", "bind", "J");
 
   if (!id)
     return;
@@ -45,7 +45,7 @@ void jhost_bind(jobject jhost, m_host_t host, JNIEnv * env)
 
 m_host_t jhost_get_native(JNIEnv * env, jobject jhost)
 {
-  jfieldID id = jxbt_get_sfield(env, "simgrid/msg/Host", "bind", "J");
+  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Host", "bind", "J");
 
   if (!id)
     return NULL;
@@ -75,7 +75,7 @@ void jhost_set_name(jobject jhost, jstring jname, JNIEnv * env)
 
 jboolean jhost_is_valid(jobject jhost, JNIEnv * env)
 {
-  jfieldID id = jxbt_get_sfield(env, "simgrid/msg/Host", "bind", "J");
+  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Host", "bind", "J");
 
   if (!id)
     return 0;

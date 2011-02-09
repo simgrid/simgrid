@@ -1,8 +1,8 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "simgrid.dtd">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
-  <process host="Jacquelin" function="Sender">
+  <process host="Jacquelin" function="pingPong.Sender">
       <argument value="Bellevue"/>
   </process>
-<process host="Boivin" function="Receiver"/>
+<process host="Boivin" function="pingPong.Receiver"/>
 </platform>

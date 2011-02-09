@@ -1,5 +1,5 @@
-#IF YOU HAVE INSTALL SIMGRID LIBRARIES AND SIMGRID BINARIES IN A SPECIAL DIRECTORY
-#YOU CAN SPECIFY SIMGRID_LIBRARY_PAT AND SIMGRID_BIN_PATH OR SIMPLY LD_LIBRARY_PATH
+#IF YOU HAVE INSTALL SIMGRID IN A SPECIAL DIRECTORY
+#YOU CAN SPECIFY SIMGRID_ROOT OR GRAS_ROOT
 
 # TO CALL THIS FILE USE
 	#set(CMAKE_MODULE_PATH 
@@ -7,17 +7,13 @@
 	#${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
 	#)
 
-message("SIMGRID_LIBRARY_PATH	= $ENV{SIMGRID_LIBRARY_PATH}")
-message("SIMGRID_BIN_PATH	= $ENV{SIMGRID_BIN_PATH}")
-message("LD_LIBRARY_PATH	= $ENV{LD_LIBRARY_PATH}")
-
 find_library(HAVE_SIMGRID_LIB
     NAME simgrid
     HINTS
-    $ENV{LIBRARIES}
     $ENV{LD_LIBRARY_PATH}
-    $ENV{SIMGRID_LIBRARY_PATH}
-    PATH_SUFFIXES lib64 lib simgrid/lib64 simgrid/lib
+    $ENV{GRAS_ROOT}
+	$ENV{SIMGRID_ROOT}
+    PATH_SUFFIXES lib64 lib
     PATHS
     /opt
     /opt/local
@@ -28,10 +24,9 @@ find_library(HAVE_SIMGRID_LIB
 
 find_path(HAVE_GRAS_H gras.h
     HINTS
-    $ENV{INCLUDES}
-    $ENV{LD_LIBRARY_PATH}
-    $ENV{SIMGRID_LIBRARY_PATH}
-    PATH_SUFFIXES include simgrid/include
+    $ENV{GRAS_ROOT}
+	$ENV{SIMGRID_ROOT}
+    PATH_SUFFIXES include
     PATHS
     /opt
     /opt/local
@@ -40,38 +35,52 @@ find_path(HAVE_GRAS_H gras.h
     /usr
 )
 
-string(REPLACE "/include" "/bin" OPTIONAL_BIN_PATH "HAVE_GRAS_H")
-
 find_program(HAVE_TESH
-NAMES tesh
-HINTS
-$ENV{SIMGRID_BIN_PATH}
-$ENV{LD_LIBRARY_PATH}
-PATH_SUFFIXES bin simgrid/bin
-PATHS
-${OPTIONAL_BIN_PATH}
-/opt
-/opt/local
-/opt/csw
-/sw
-/usr
+	NAMES tesh
+	HINTS
+	$ENV{GRAS_ROOT}
+	$ENV{SIMGRID_ROOT}
+	PATH_SUFFIXES bin
+	PATHS
+	/opt
+	/opt/local
+	/opt/csw
+	/sw
+	/usr
 )
 
 find_program(HAVE_GRAS_STUB
-NAMES gras_stub_generator
-HINTS
-$ENV{SIMGRID_BIN_PATH}
-$ENV{LD_LIBRARY_PATH}
-PATH_SUFFIXES bin simgrid/bin
-PATHS
-/opt
-/opt/local
-/opt/csw
-/sw
-/usr
+	NAMES gras_stub_generator
+	HINTS
+	$ENV{GRAS_ROOT}
+	$ENV{SIMGRID_ROOT}
+	PATH_SUFFIXES bin
+	PATHS
+	/opt
+	/opt/local
+	/opt/csw
+	/sw
+	/usr
 )
 
-message("HAVE_SIMGRID_LIB 	= ${HAVE_SIMGRID_LIB}")
-message("HAVE_GRAS_H 		= ${HAVE_GRAS_H}")
-message("HAVE_TESH 		= ${HAVE_TESH}")
-message("HAVE_GRAS_STUB 		= ${HAVE_GRAS_STUB}")
+message(STATUS "Looking for lib SimGrid")
+if(HAVE_SIMGRID_LIB)
+message(STATUS "Looking for lib SimGrid - found")
+else(HAVE_SIMGRID_LIB)
+message(STATUS "Looking for lib SimGrid - not found")
+endif(HAVE_SIMGRID_LIB)
+
+message(STATUS "Looking for gras.h")
+if(HAVE_GRAS_H)
+message(STATUS "Looking for gras.h - found")
+else(HAVE_GRAS_H)
+message(STATUS "Looking for gras.h - not found")
+endif(HAVE_GRAS_H)
+
+if(HAVE_TESH)
+message(STATUS "Found Tesh: ${HAVE_TESH}")
+endif(HAVE_TESH)
+
+if(HAVE_GRAS_STUB)
+message(STATUS "Found gras_stub_generator: ${HAVE_GRAS_STUB}")
+endif(HAVE_GRAS_STUB)

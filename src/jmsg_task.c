@@ -12,7 +12,7 @@
 
 void jtask_bind(jobject jtask, m_task_t task, JNIEnv * env)
 {
-  jfieldID id = jxbt_get_sfield(env, "simgrid/msg/Task", "bind", "J");
+  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Task", "bind", "J");
 
   if (!id)
     return;
@@ -22,7 +22,7 @@ void jtask_bind(jobject jtask, m_task_t task, JNIEnv * env)
 
 m_task_t jtask_to_native_task(jobject jtask, JNIEnv * env)
 {
-  jfieldID id = jxbt_get_sfield(env, "simgrid/msg/Task", "bind", "J");
+  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Task", "bind", "J");
 
   if (!id)
     return NULL;
@@ -32,7 +32,7 @@ m_task_t jtask_to_native_task(jobject jtask, JNIEnv * env)
 
 jboolean jtask_is_valid(jobject jtask, JNIEnv * env)
 {
-  jfieldID id = jxbt_get_sfield(env, "simgrid/msg/Task", "bind", "J");
+  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Task", "bind", "J");
 
   if (!id)
     return JNI_FALSE;

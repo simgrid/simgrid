@@ -218,21 +218,21 @@ static void jxbt_throw_by_name(JNIEnv * env, const char *name, char *msg)
 void jxbt_throw_jni(JNIEnv * env, const char *msg)
 {
   jxbt_throw_by_name(env,
-                     "simgrid/msg/JniException",
+                     "org/simgrid/msg/JniException",
                      bprintf("Internal or JNI error: %s", msg));
 }
 
 void jxbt_throw_notbound(JNIEnv * env, const char *kind, void *pointer)
 {
   jxbt_throw_by_name(env,
-                     "simgrid/msg/JniException",
+                     "org/simgrid/msg/JniException",
                      bprintf("Internal error: %s %p not bound", kind,
                              pointer));
 }
 
 void jxbt_throw_native(JNIEnv * env, char *msg)
 {
-  jxbt_throw_by_name(env, "simgrid/msg/NativeException", msg);
+  jxbt_throw_by_name(env, "org/simgrid/msg/NativeException", msg);
 }
 
 /* *** */
@@ -250,14 +250,14 @@ void jxbt_throw_illegal(JNIEnv * env, char *msg)
 void jxbt_throw_host_not_found(JNIEnv * env, const char *invalid_name)
 {
   jxbt_throw_by_name(env,
-                     "simgrid/msg/HostNotFoundException",
+                     "org/simgrid/msg/HostNotFoundException",
                      bprintf("No such host: %s", invalid_name));
 }
 
 void jxbt_throw_process_not_found(JNIEnv * env, const char *invalid_name)
 {
   jxbt_throw_by_name(env,
-                     "simgrid/msg/ProcessNotFoundException",
+                     "org/simgrid/msg/ProcessNotFoundException",
                      bprintf("No such process: %s", invalid_name));
 }
 
@@ -265,7 +265,7 @@ void jxbt_throw_process_not_found(JNIEnv * env, const char *invalid_name)
 void jxbt_throw_transfer_failure(JNIEnv * env, char *details)
 {
 
-  jxbt_throw_by_name(env, "simgrid/msg/TransferFailureException", details);
+  jxbt_throw_by_name(env, "org/simgrid/msg/TransferFailureException", details);
 
 }
 
@@ -274,7 +274,7 @@ void jxbt_throw_host_failure(JNIEnv * env, char *details)
 {
 
   jxbt_throw_by_name(env,
-                     "simgrid/msg/HostFailureException",
+                     "org/simgrid/msg/HostFailureException",
                      bprintf("Host Failure %s", details));
 
 }
@@ -283,7 +283,7 @@ void jxbt_throw_host_failure(JNIEnv * env, char *details)
 void jxbt_throw_time_out_failure(JNIEnv * env, char *details)
 {
 
-  jxbt_throw_by_name(env, "simgrid/msg/TimeoutException", details);
+  jxbt_throw_by_name(env, "org/simgrid/msg/TimeoutException", details);
 
 }
 
@@ -291,6 +291,6 @@ void jxbt_throw_time_out_failure(JNIEnv * env, char *details)
 void jxbt_throw_task_cancelled(JNIEnv * env, char *details)
 {
 
-  jxbt_throw_by_name(env, "simgrid/msg/TaskCancelledException", details);
+  jxbt_throw_by_name(env, "org/simgrid/msg/TaskCancelledException", details);
 
 }

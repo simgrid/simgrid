@@ -83,7 +83,7 @@ public final class ApplicationHandler {
 
 				 Process process = cls.newInstance();
 				 process.name = function;
-				 process.id = simgrid.msg.Process.nextProcessId++;
+				 process.id = org.simgrid.msg.Process.nextProcessId++;
 				 Host host = Host.getByName(hostName);
 
 				 MsgNative.processCreate(process, host);

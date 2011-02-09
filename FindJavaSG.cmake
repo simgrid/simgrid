@@ -1,0 +1,30 @@
+include(FindJava)
+include(FindJNI)
+	
+if(JAVA_COMPILE AND JAVA_INCLUDE_PATH)
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${JAVA_INCLUDE_PATH} ")
+else(JAVA_COMPILE AND JAVA_INCLUDE_PATH) 
+	message(FATAL_ERROR "Can't compile java!!!")
+endif(JAVA_COMPILE AND JAVA_INCLUDE_PATH)
+
+message(STATUS "Looking for jni.h")
+if(JAVA_INCLUDE_PATH)
+message(STATUS "Looking for jni.h - found")
+else(JAVA_INCLUDE_PATH)
+message(STATUS "Looking for ljni.h - not found")
+endif(JAVA_INCLUDE_PATH)
+
+message(STATUS "Looking for jni_md.h")
+if(JAVA_INCLUDE_PATH2)
+message(STATUS "Looking for jni_md.h - found")
+else(JAVA_INCLUDE_PATH2)
+message(STATUS "Looking for jni_md.h - found")
+endif(JAVA_INCLUDE_PATH2)
+
+if(JAVA_COMPILE)
+message(STATUS "Found javac: ${JAVA_COMPILE}")
+endif(JAVA_COMPILE)
+
+if(JAVA_ARCHIVE)
+message(STATUS "Found jar: ${JAVA_ARCHIVE}")
+endif(JAVA_ARCHIVE)
