@@ -316,6 +316,18 @@ set(TRACING_SRC
 	src/instr/instr_private.h
 )
 
+
+set(JEDULE_SRC
+	include/instr/jedule/jedule_events.h
+	include/instr/jedule/jedule_output.h
+	include/instr/jedule/jedule_platform.h
+	include/instr/jedule/jedule_sd_binding.h
+	src/instr/jedule/jedule_events.c
+	src/instr/jedule/jedule_output.c
+	src/instr/jedule/jedule_platform.c
+	src/instr/jedule/jedule_sd_binding.c
+)
+
 set(RUBY_SRC
 	src/simix/smx_context_ruby.c
 	src/bindings/ruby/rb_msg_process.c
@@ -480,6 +492,7 @@ set(simgrid_sources
 	${GRAS_COMMON_SRC}
 	${GRAS_SG_SRC}
 	${AMOK_SRC}
+	${JEDULE_SRC}
 )
 
 if(HAVE_MC)

@@ -150,6 +150,9 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     task->finish_time =
         surf_workstation_model->action_get_finish_time(task->surf_action);
     task->remains = 0;
+#ifdef HAVE_JEDULE
+    jedule_log_sd_event(task);
+#endif
     break;
   case SD_FAILED:
     task->state_set = sd_global->failed_task_set;
@@ -959,10 +962,6 @@ void __SD_task_really_run(SD_task_t task)
 #ifdef HAVE_TRACING
   if (task->category)
     TRACE_surf_action(task->surf_action, task->category);
-#endif
-
-#ifdef HAVE_JEDULE
-  jedule_log_sd_event(task);
 #endif
 
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */

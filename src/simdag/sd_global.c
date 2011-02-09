@@ -21,7 +21,7 @@
 #endif
 
 #ifdef HAVE_JEDULE
-#include "instr/jedule/jedule_output.h"
+#include "instr/jedule/jedule_sd_binding.h"
 #endif
 
 XBT_LOG_NEW_CATEGORY(sd, "Logging specific to SimDag");
@@ -98,7 +98,7 @@ void SD_init(int *argc, char **argv)
 #endif
 
 #ifdef HAVE_JEDULE
-  init_jedule_output();
+  jedule_sd_init();
 #endif
 }
 
@@ -149,8 +149,8 @@ void SD_application_reinit(void)
     sd_global->task_number = 0;
 
 #ifdef HAVE_JEDULE
-    cleanup_jedule();
-    init_jedule_output();
+    jedule_sd_cleanup();
+    jedule_sd_init();
 #endif
 
   } else {
@@ -430,7 +430,8 @@ void SD_exit(void)
   TRACE_end();
 #endif
 #ifdef HAVE_JEDULE
-  cleanup_jedule();
+  jedule_sd_dump();
+  jedule_sd_cleanup();
 #endif
 
     DEBUG0("Exiting Surf...");

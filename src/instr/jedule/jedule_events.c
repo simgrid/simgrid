@@ -9,12 +9,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "jedule_events.h"
-#include "jedule_platform.h"
-
 #include "xbt/dict.h"
 #include "xbt/dynar.h"
 #include "xbt/asserts.h"
+
+#include "instr/jedule/jedule_events.h"
+#include "instr/jedule/jedule_platform.h"
+
+#ifdef HAVE_JEDULE
 
 void jed_event_add_resources(jed_event_t event, xbt_dynar_t host_selection) {
 	xbt_dynar_t resource_subset_list;
@@ -80,3 +82,5 @@ void jed_event_free(jed_event_t event) {
 
 	free(event);
 }
+
+#endif

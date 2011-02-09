@@ -8,8 +8,12 @@
 #ifndef JED_SIMGRID_PLATFORM_H_
 #define JED_SIMGRID_PLATFORM_H_
 
+#include "simgrid_config.h"
+
 #include "xbt/dynar.h"
 #include "xbt/hash.h"
+
+#ifdef HAVE_JEDULE
 
 typedef struct jed_simgrid_container s_jed_simgrid_container_t,
 		*jed_simgrid_container_t;
@@ -85,6 +89,8 @@ void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list,
   	  list_chunks <- chunk( list )   -> [ 1, 3-5, 7-9 ]
 
 */
+
+#endif
 
 
 #endif /* JED_SIMGRID_PLATFORM_H_ */

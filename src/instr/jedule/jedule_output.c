@@ -10,12 +10,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "jedule_output.h"
+#include "instr/jedule/jedule_output.h"
 
 #include "xbt/dynar.h"
 #include "xbt/asserts.h"
 
+#ifdef HAVE_JEDULE
+
 /*********************************************************/
+
+xbt_dynar_t jedule_event_list;
 
 static FILE *jed_file;
 
@@ -68,8 +72,10 @@ static void print_key_value_dict(xbt_dict_t key_value_dict) {
 	xbt_dict_cursor_t cursor=NULL;
 	char *key,*data;
 
-	xbt_dict_foreach(key_value_dict,cursor,key,data) {
-	    fprintf(jed_file, "<prop key=\"%s\" values=\"%s\" />\n",key,data);
+	if( key_value_dict != NULL ) {
+		xbt_dict_foreach(key_value_dict,cursor,key,data) {
+			fprintf(jed_file, "<prop key=\"%s\" values=\"%s\" />\n",key,data);
+		}
 	}
 }
 
@@ -191,13 +197,12 @@ static void print_events(xbt_dynar_t event_list)  {
 }
 
 
-void write_jedule_output(char *filename, jedule_t jedule,
+void write_jedule_output(FILE *file, jedule_t jedule,
 		xbt_dynar_t event_list, xbt_dict_t meta_info_dict) {
 
-	xbt_assert( filename != NULL );
+//	xbt_assert( jed_file != NULL );
 
-	jed_file = fopen(filename, "w");
-	xbt_assert( jed_file != NULL );
+	jed_file = file;
 
 	fprintf(jed_file, "<jedule>\n");
 
@@ -211,15 +216,13 @@ void write_jedule_output(char *filename, jedule_t jedule,
 
 	fprintf(jed_file, "</jedule>\n");
 
-	fclose(jed_file);
-
 }
 
-void init_jedule_output() {
+void jedule_init_output() {
 	jedule_event_list = xbt_dynar_new(sizeof(jed_event_t), NULL);
 }
 
-void cleanup_jedule() {
+void jedule_cleanup_output() {
 	xbt_dynar_free(&jedule_event_list);
 }
 
@@ -228,4 +231,4 @@ void jedule_store_event(jed_event_t event) {
 	xbt_dynar_push(jedule_event_list, &event);
 }
 
-
+#endif

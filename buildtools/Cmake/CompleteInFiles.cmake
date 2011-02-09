@@ -94,6 +94,10 @@ if(enable_tracing)
 	SET(HAVE_TRACING 1)
 endif(enable_tracing)
 
+if(enable_jedule)
+	SET(HAVE_JEDULE 1)
+endif(enable_jedule)
+
 if(enable_latency_bound_tracking)
 	SET(HAVE_LATENCY_BOUND_TRACKING 1)
 else(enable_latency_bound_tracking)

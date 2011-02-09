@@ -101,6 +101,9 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 /* Tracing SimGrid */
 #cmakedefine HAVE_TRACING @HAVE_TRACING@
 
+/* Jedule output  */
+#cmakedefine HAVE_JEDULE @HAVE_JEDULE@
+
 /* Tracking of latency bound */
 #cmakedefine HAVE_LATENCY_BOUND_TRACKING @HAVE_LATENCY_BOUND_TRACKING@
 

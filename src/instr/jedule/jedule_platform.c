@@ -10,7 +10,9 @@
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
 
-#include "jedule_platform.h"
+#include "instr/jedule/jedule_platform.h"
+
+#ifdef HAVE_JEDULE
 
 /********************************************************************/
 
@@ -30,7 +32,9 @@ static void jed_free_container(jed_simgrid_container_t container);
 /********************************************************************/
 
 static int compare_hostnames(const void *host1, const void *host2) {
-	return strcmp ((char*)host1, (char*)host2);
+	const char *hp1 = *((const char**) host1);
+	const char *hp2 = *((const char**) host2);
+	return strcmp (hp1, hp2);
 }
 
 static int compare_ids(const void *num1, const void *num2) {
@@ -94,7 +98,6 @@ void jed_simgrid_add_resources(jed_simgrid_container_t parent,
 	parent->name2id = xbt_dict_new();
 	parent->last_id = 0;
 	parent->resource_list = xbt_dynar_new(sizeof(char *), NULL);
-
 
 	xbt_dynar_sort (host_names,	&compare_hostnames);
 
@@ -280,4 +283,4 @@ void jed_free_jedule(jedule_t jedule) {
 	xbt_dict_free(&container_name2container);
 }
 
-
+#endif

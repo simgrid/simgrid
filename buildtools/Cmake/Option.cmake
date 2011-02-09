@@ -39,6 +39,7 @@ option(enable_memcheck "Enable memcheck." off)
 option(enable_print_message "Enable print message during config." off)
 option(enable_model-checking "" off)
 option(enable_lib_static "" off)
+option(enable_jedule "Jedule output of SimDAG." off)
 
 if(enable_supernovae AND enable_model-checking)
 	set(enable_model-checking false CACHE TYPE INTERNAL FORCE)

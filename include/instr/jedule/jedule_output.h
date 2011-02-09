@@ -8,18 +8,26 @@
 #ifndef JEDULE_OUTPUT_H_
 #define JEDULE_OUTPUT_H_
 
+#include "simgrid_config.h"
+
+#include <stdio.h>
+
 #include "jedule_events.h"
 #include "jedule_platform.h"
 
-xbt_dynar_t jedule_event_list;
+#ifdef HAVE_JEDULE
 
-void init_jedule_output();
+extern xbt_dynar_t jedule_event_list;
 
-void cleanup_jedule();
+void jedule_init_output();
+
+void jedule_cleanup_output();
 
 void jedule_store_event(jed_event_t event);
 
-void write_jedule_output(char *filename, jedule_t jedule,
+void write_jedule_output(FILE *file, jedule_t jedule,
 		xbt_dynar_t event_list, xbt_dict_t meta_info_dict);
+
+#endif
 
 #endif /* JEDULE_OUTPUT_H_ */

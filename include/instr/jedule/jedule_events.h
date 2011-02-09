@@ -8,10 +8,15 @@
 #ifndef JEDULE_EVENTS_H_
 #define JEDULE_EVENTS_H_
 
-#include "jedule_platform.h"
+#include "simgrid_config.h"
 
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
+
+#include "instr/jedule/jedule_platform.h"
+
+
+#ifdef HAVE_JEDULE
 
 struct jed_event {
 	int event_id;
@@ -37,5 +42,7 @@ void jed_event_add_resources(jed_event_t event, xbt_dynar_t host_selection);
 void jed_event_add_characteristic(jed_event_t event, char *characteristic);
 
 void jed_event_add_info(jed_event_t event, char *key, char *value);
+
+#endif
 
 #endif /* JEDULE_EVENTS_H_ */

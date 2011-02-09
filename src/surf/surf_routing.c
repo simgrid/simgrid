@@ -1282,6 +1282,7 @@ static void *model_full_create(void)
   new_component->generic_routing.finalize = full_finalize;
   new_component->generic_routing.to_index = xbt_dict_new();
   new_component->generic_routing.bypassRoutes = xbt_dict_new();
+  new_component->generic_routing.get_network_element_type = get_network_element_type;
   return new_component;
 }
 
@@ -1604,6 +1605,7 @@ static void *model_floyd_create(void)
   new_component->generic_routing.finalize = floyd_finalize;
   new_component->generic_routing.to_index = xbt_dict_new();
   new_component->generic_routing.bypassRoutes = xbt_dict_new();
+  new_component->generic_routing.get_network_element_type = get_network_element_type;
   return new_component;
 }
 
@@ -2226,6 +2228,7 @@ static void *model_dijkstra_both_create(int cached)
   new_component->cached = cached;
   new_component->generic_routing.to_index = xbt_dict_new();
   new_component->generic_routing.bypassRoutes = xbt_dict_new();
+  new_component->generic_routing.get_network_element_type = get_network_element_type;
   return new_component;
 }
 
@@ -2713,6 +2716,7 @@ static void *model_rulebased_create(void)
   new_component->generic_routing.get_latency = generic_get_link_latency;
   new_component->generic_routing.get_bypass_route = rulebased_get_bypass_route;
   new_component->generic_routing.finalize = rulebased_finalize;
+  new_component->generic_routing.get_network_element_type = get_network_element_type;
   /* initialization of internal structures */
   new_component->dict_processing_units = xbt_dict_new();
   new_component->dict_autonomous_systems = xbt_dict_new();
