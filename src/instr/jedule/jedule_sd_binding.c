@@ -69,7 +69,7 @@ static void create_hierarchy(routing_component_t current_comp,
 
 		xbt_dict_foreach(current_comp->to_index, cursor, key, network_elem) {
 			char *hostname;
-			DEBUG2("key %s value %d\n", key, network_elem);
+			DEBUG2("key %s value %p\n", key, network_elem);
 			//xbt_dynar_push_as(hosts, char*, key);
 			hostname = strdup(key);
 			xbt_dynar_push(hosts, &hostname);

@@ -21,7 +21,7 @@
 void jed_event_add_resources(jed_event_t event, xbt_dynar_t host_selection) {
 	xbt_dynar_t resource_subset_list;
 	jed_res_subset_t res_set;
-	int i;
+	unsigned int i;
 
 	resource_subset_list = xbt_dynar_new(sizeof(jed_res_subset_t), NULL);
 
@@ -51,7 +51,7 @@ void jed_event_add_info(jed_event_t event, char *key, char *value) {
 
 
 void create_jed_event(jed_event_t *event, char *name, double start_time,
-		double end_time, char *type) {
+		double end_time, const char *type) {
 
 	*event = (jed_event_t) calloc(1, sizeof(s_jed_event_t));
 	(*event)->name = (char*) calloc(strlen(name) + 1, sizeof(char));

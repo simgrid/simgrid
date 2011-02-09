@@ -19,9 +19,9 @@
 
 extern xbt_dynar_t jedule_event_list;
 
-void jedule_init_output();
+void jedule_init_output(void);
 
-void jedule_cleanup_output();
+void jedule_cleanup_output(void);
 
 void jedule_store_event(jed_event_t event);
 

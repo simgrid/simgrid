@@ -33,7 +33,7 @@ typedef struct jed_event s_jed_event_t, *jed_event_t;
 
 /************************************************************/
 
-void create_jed_event(jed_event_t *event, char *name, double start_time, double end_time, char *type);
+void create_jed_event(jed_event_t *event, char *name, double start_time, double end_time, const char *type);
 
 void jed_event_free(jed_event_t event);
 

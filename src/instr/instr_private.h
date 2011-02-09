@@ -231,4 +231,9 @@ void instr_new_user_host_variable_type  (const char *new_typename, const char *c
 int instr_platform_traced (void);
 
 #endif /* HAVE_TRACING */
+
+#ifdef HAVE_JEDULE
+#include "instr/jedule/jedule_sd_binding.h"
+#endif
+
 #endif /* INSTR_PRIVATE_H_ */

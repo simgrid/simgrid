@@ -18,13 +18,13 @@
 
 void jedule_log_sd_event(SD_task_t task);
 
-void jedule_setup_platform();
+void jedule_setup_platform(void);
 
-void jedule_sd_init();
+void jedule_sd_init(void);
 
-void jedule_sd_cleanup();
+void jedule_sd_cleanup(void);
 
-void jedule_sd_dump();
+void jedule_sd_dump(void);
 
 #endif /* JEDULE_SD_BINDING_H_ */
 
