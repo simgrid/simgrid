@@ -7,6 +7,39 @@ set(release_version "3.5")
 set(libsimgrid_version "${release_version}")
 set(libgras_version "${release_version}")
 set(libsmpi_version "${release_version}")
+set(GCC_NEED_VERSION "4.0")
+
+### SET THE LIBRARY EXTENSION AND GCC VERSION
+if(APPLE) #MAC
+    set(GCC_NEED_VERSION "4.5")
+	set(LIB_EXE "dylib")
+else(APPLE)
+    if(WIN32) #WINDOWS
+        set(LIB_EXE "a")
+    else(WIN32) #UNIX
+	    set(LIB_EXE "so")
+    endif(WIN32)
+endif(APPLE)
+
+string(REGEX MATCH "gcc" GCC "${CMAKE_C_COMPILER}")
+if(GCC)
+	exec_program("${CMAKE_C_COMPILER} --version" OUTPUT_VARIABLE "COMPILER_C_VERSION")
+	exec_program("${CMAKE_CXX_COMPILER} --version" OUTPUT_VARIABLE "COMPILER_CXX_VERSION")
+	string(REGEX MATCH "[0-9].[0-9].[0-9]" COMPILER_C_VERSION "${COMPILER_C_VERSION}")
+	string(REGEX MATCH "[0-9].[0-9].[0-9]" COMPILER_CXX_VERSION "${COMPILER_CXX_VERSION}")
+	
+	string(REGEX MATCH "^[0-9].[0-9]" COMPILER_C_VERSION_MAJOR_MINOR "${COMPILER_C_VERSION}")
+	string(REPLACE "${COMPILER_C_VERSION_MAJOR_MINOR}." "" COMPILER_C_VERSION_PATCH "${COMPILER_C_VERSION}")
+	
+	if(${GCC_NEED_VERSION} GREATER  COMPILER_C_VERSION_MAJOR_MINOR)
+	    message(FATAL_ERROR "Gcc must be to version ${GCC_NEED_VERSION} current version ${COMPILER_C_VERSION_MAJOR_MINOR}")
+	endif(${GCC_NEED_VERSION} GREATER  COMPILER_C_VERSION_MAJOR_MINOR)
+endif(GCC)
+
+string(REGEX MATCH "cl.exe" VBC "${CMAKE_C_COMPILER}")
+if(VBC)
+    message(FATAL_ERROR "VB is not yet supported by Simgrid.")
+endif(VBC)
 
 ### Find programs and paths
 FIND_PROGRAM(GCOV_PATH gcov)
@@ -32,17 +65,6 @@ if(UNIX AND NOT APPLE)
 		set(CMAKE_BINARY_DIR "${TRUE_CMAKE_BINARY_DIR}" CACHE TYPE INTERNAL FORCE)
 	endif(${TRUE_CMAKE_BINARY_DIR} STREQUAL ${CMAKE_BINARY_DIR})	
 endif(UNIX AND NOT APPLE)
-
-### SET THE LIBRARY EXTENSION
-if(APPLE)
-	set(LIB_EXE "dylib")
-else(APPLE)
-    if(WIN32)
-        set(LIB_EXE "a")
-    else(WIN32)
-	    set(LIB_EXE "so")
-    endif(WIN32)
-endif(APPLE)
 
 ### Set some variables for Cmake
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
