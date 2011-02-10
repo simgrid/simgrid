@@ -140,7 +140,6 @@ m_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env)
 void jprocess_bind(jobject jprocess, m_process_t process, JNIEnv * env)
 {
   jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Process", "bind", "J");
-
   if (!id)
     return;
 
@@ -189,10 +188,10 @@ void jprocess_schedule(smx_context_t context)
 
   env = get_current_thread_env();
 
-  id = jxbt_get_smethod(env, "org/org/simgrid/msg/Process", "schedule", "()V");
+  id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "schedule", "()V");
 
   if (!id) {
-    CRITICAL0("Cannot find java method org/org/simgrid/msg/Process/schedule()V");
+    CRITICAL0("Cannot find java method org/simgrid/msg/Process/schedule()V");
     return;
   }
 

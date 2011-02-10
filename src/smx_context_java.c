@@ -10,9 +10,12 @@
 #include <xbt/function_types.h>
 #include <simix/simix.h>
 #include "smx_context_java.h"
+#include "simix/process_private.h"
+#include "xbt/dynar.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");
 
+static smx_context_t smx_ctx_java_self(void);
 static smx_context_t
 smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     char **argv,
@@ -24,7 +27,8 @@ static void smx_ctx_java_start(smx_context_t context);
 static void smx_ctx_java_stop(smx_context_t context);
 static void smx_ctx_java_suspend(smx_context_t context);
 static void smx_ctx_java_resume(smx_context_t new_context);
-static void smx_ctx_java_runall(xbt_swag_t processes);
+static void smx_ctx_java_runall(xbt_dynar_t processes);
+static void* smx_ctx_java_get_data(smx_context_t context);
 
 void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
 {
@@ -36,8 +40,17 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
   (*factory)->free = smx_ctx_java_free;
   (*factory)->stop = smx_ctx_java_stop;
   (*factory)->suspend = smx_ctx_java_suspend;
-  (*factory)->runall = (smx_pfn_context_runall_t)smx_ctx_java_runall;
+  (*factory)->runall = smx_ctx_java_runall;
   (*factory)->name = "ctx_java_factory";
+  //(*factory)->finalize = smx_ctx_base_factory_finalize;
+  (*factory)->self = smx_ctx_base_self;
+  (*factory)->get_data = smx_ctx_base_get_data;
+  (*factory)->get_thread_id = smx_ctx_base_get_thread_id;
+}
+
+static void* smx_ctx_java_get_data(smx_context_t context)
+{
+	return context->data;
 }
 
 static smx_context_t
@@ -133,17 +146,22 @@ static void smx_ctx_java_resume(smx_context_t new_context)
   jprocess_schedule(new_context);
 }
 
-static void smx_ctx_java_runall(xbt_swag_t processes)
+static void smx_ctx_java_runall(xbt_dynar_t processes)
 {
+  fprintf(stderr,"XXXX Run all\n");
+  printf("Affiche les %ld elements\n",xbt_dynar_length(processes));
   smx_process_t process;
   smx_context_t old_context;
-  fprintf(stderr,"XXXX Run all\n");
+  unsigned int cursor;
 
-  while ((process = xbt_swag_extract(processes))) {
+  xbt_dynar_foreach(processes, cursor, process) {
+	printf("process_name : %s\n",process->name);
     old_context = smx_current_context;
-    smx_current_context = SIMIX_process_get_context(process);
+    smx_current_context = process->context;
     smx_ctx_java_resume(smx_current_context);
     smx_current_context = old_context;
   }
+  xbt_dynar_reset(processes);
+
   fprintf(stderr,"XXXX End of run all\n");
 }
