@@ -168,7 +168,7 @@ static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
 
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 { 
-  INFO1("Total User Time: %lf", totaltime);
+  VERB1("Total User Time: %lf", totaltime);
   if(parmap)
       xbt_parmap_destroy(parmap);
   return smx_ctx_base_factory_finalize(factory);
