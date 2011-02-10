@@ -182,9 +182,11 @@ void SIMIX_run(void)
   unsigned int iter;
 
   do {
+    DEBUG1("New Schedule Round; size(queue)=%lu",
+        xbt_dynar_length(simix_global->process_to_run));
     do {
-      DEBUG1("New Schedule Round; size(queue)=%lu",
-          xbt_dynar_length(simix_global->process_to_run));
+      DEBUG1("New Sub-Schedule Round; size(queue)=%lu",
+              xbt_dynar_length(simix_global->process_to_run));
       SIMIX_context_runall(simix_global->process_to_run);
       while ((req = SIMIX_request_pop())) {
         DEBUG1("Handling request %p", req);
