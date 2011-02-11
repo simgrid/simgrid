@@ -21,7 +21,8 @@ typedef struct s_replay_trace_reader {
   char *filename; int linenum;
 } s_xbt_replay_trace_reader_t;
 
-xbt_replay_trace_reader_t xbt_replay_trace_reader_new(const char*filename) {
+xbt_replay_trace_reader_t xbt_replay_trace_reader_new(const char *filename)
+{
   xbt_replay_trace_reader_t res = xbt_new0(s_xbt_replay_trace_reader_t,1);
   res->fp = fopen(filename, "r");
   xbt_assert2(res->fp != NULL, "Cannot open %s: %s", filename,
@@ -30,13 +31,16 @@ xbt_replay_trace_reader_t xbt_replay_trace_reader_new(const char*filename) {
   return res;
 }
 
-const char *xbt_replay_trace_reader_position(xbt_replay_trace_reader_t reader) {
+const char *xbt_replay_trace_reader_position(xbt_replay_trace_reader_t reader)
+{
   if (reader->position)
     free(reader->position);
   reader->position = bprintf("%s:%d",reader->filename,reader->linenum);
   return (const char*)reader->position;
 }
-char * const *xbt_replay_trace_reader_get(xbt_replay_trace_reader_t reader) {
+
+char * const *xbt_replay_trace_reader_get(xbt_replay_trace_reader_t reader)
+{
   ssize_t read;
   xbt_dynar_t d;
   read = getline(&reader->line, &reader->line_len, reader->fp);
@@ -59,7 +63,8 @@ char * const *xbt_replay_trace_reader_get(xbt_replay_trace_reader_t reader) {
   return xbt_dynar_to_array(d);
 }
 
-void xbt_replay_trace_reader_free(xbt_replay_trace_reader_t *reader) {
+void xbt_replay_trace_reader_free(xbt_replay_trace_reader_t *reader)
+{
   free((*reader)->filename);
   if ((*reader)->position)
     free((*reader)->position);
