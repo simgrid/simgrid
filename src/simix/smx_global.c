@@ -150,6 +150,7 @@ void SIMIX_clean(void)
 
   surf_exit();
 
+  xbt_mallocator_free(simix_global->action_mallocator);
   xbt_free(simix_global);
   simix_global = NULL;
 
