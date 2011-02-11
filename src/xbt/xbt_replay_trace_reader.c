@@ -36,7 +36,7 @@ const char *xbt_replay_trace_reader_position(xbt_replay_trace_reader_t reader)
   if (reader->position)
     free(reader->position);
   reader->position = bprintf("%s:%d",reader->filename,reader->linenum);
-  return (const char*)reader->position;
+  return reader->position;
 }
 
 char * const *xbt_replay_trace_reader_get(xbt_replay_trace_reader_t reader)
