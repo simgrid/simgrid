@@ -39,7 +39,7 @@ const char *xbt_replay_trace_reader_position(xbt_replay_trace_reader_t reader)
   return reader->position;
 }
 
-char * const *xbt_replay_trace_reader_get(xbt_replay_trace_reader_t reader)
+const char **xbt_replay_trace_reader_get(xbt_replay_trace_reader_t reader)
 {
   ssize_t read;
   xbt_dynar_t d;

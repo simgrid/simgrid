@@ -541,7 +541,7 @@ char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
  * The parameter must be a NULL-terminated array of chars,
  * just like xbt_dynar_to_array() produces
  */
-char *xbt_str_join_array(char*const* strs, const char *sep)
+char *xbt_str_join_array(const char *const *strs, const char *sep)
 {
   char *res,*q;
   int amount_strings=0;

@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(actions,
                              "Messages specific for this msg example");
 int communicator_size = 0;
 
-static void action_Isend(char*const* action);
+static void action_Isend(const char *const *action);
 
 typedef struct  {
   int last_Irecv_sender_id;
@@ -61,7 +61,7 @@ static void asynchronous_cleanup(void) {
 }
 
 /* My actions */
-static void action_send(char*const* action)
+static void action_send(const char *const *action)
 {
   char *name = NULL;
   char to[250];
@@ -100,7 +100,7 @@ static void action_send(char*const* action)
   asynchronous_cleanup();
 }
 
-static void action_Isend(char*const* action)
+static void action_Isend(const char *const *action)
 {
   char to[250];
   const char *size = action[3];
@@ -120,7 +120,7 @@ static void action_Isend(char*const* action)
 }
 
 
-static void action_recv(char*const* action)
+static void action_recv(const char *const *action)
 {
   char *name = NULL;
   char mailbox_name[250];
@@ -155,7 +155,7 @@ static void action_recv(char*const* action)
   asynchronous_cleanup();
 }
 
-static void action_Irecv(char*const* action)
+static void action_Irecv(const char *const *action)
 {
   char mailbox[250];
   double clock = MSG_get_clock();
@@ -191,7 +191,7 @@ static void action_Irecv(char*const* action)
 }
 
 
-static void action_wait(char*const* action)
+static void action_wait(const char *const *action)
 {
   char *name = NULL;
   m_task_t task = NULL;
@@ -229,7 +229,7 @@ static void action_wait(char*const* action)
 }
 
 /* FIXME: that's a poor man's implementation: we should take the message exchanges into account */
-static void action_barrier(char*const* action)
+static void action_barrier(const char *const *action)
 {
   char *name = NULL;
   static smx_mutex_t mutex = NULL;
@@ -269,7 +269,7 @@ static void action_barrier(char*const* action)
 
 }
 
-static void action_reduce(char*const* action)
+static void action_reduce(const char *const *action)
 {
 	int i;
 	char *reduce_identifier;
@@ -323,7 +323,7 @@ static void action_reduce(char*const* action)
 	free(reduce_identifier);
 }
 
-static void action_bcast(char*const* action)
+static void action_bcast(const char *const *action)
 {
 	int i;
 	char *bcast_identifier;
@@ -373,7 +373,7 @@ static void action_bcast(char*const* action)
 }
 
 
-static void action_sleep(char*const* action)
+static void action_sleep(const char *const *action)
 {
   char *name = NULL;
   const char *duration = action[2];
@@ -390,7 +390,7 @@ static void action_sleep(char*const* action)
     free(name);
 }
 
-static void action_allReduce(char*const* action) {
+static void action_allReduce(const char *const *action) {
   int i;
   char *allreduce_identifier;
   char mailbox[80];
@@ -462,7 +462,7 @@ static void action_allReduce(char*const* action) {
   free(allreduce_identifier);
 }
 
-static void action_comm_size(char*const* action)
+static void action_comm_size(const char *const *action)
 {
   char *name = NULL;
   const char *size = action[2];
@@ -476,7 +476,7 @@ static void action_comm_size(char*const* action)
     free(name);
 }
 
-static void action_compute(char*const* action)
+static void action_compute(const char *const *action)
 {
   char *name = NULL;
   const char *amout = action[2];
@@ -493,7 +493,7 @@ static void action_compute(char*const* action)
     free(name);
 }
 
-static void action_init(char*const* action)
+static void action_init(const char *const *action)
 { 
 #ifdef HAVE_TRACING
   TRACE_smpi_init(get_rank(MSG_process_get_name(MSG_process_self())));
@@ -507,7 +507,7 @@ static void action_init(char*const* action)
 
 }
 
-static void action_finalize(char*const* action)
+static void action_finalize(const char *const *action)
 {
 #ifdef HAVE_TRACING
   TRACE_smpi_finalize(get_rank(MSG_process_get_name(MSG_process_self())));

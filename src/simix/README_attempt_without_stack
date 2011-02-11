@@ -46,7 +46,7 @@ A simple to use and efficient trace parser is also provided:
   void replay_trace_reader_free(replay_trace_reader_t *reader);
   /* get a new event. Don't free the content, strdup what you want to
      keep after next call to reader_get() */
-  const char * const*replay_trace_reader_get(replay_trace_reader_t r);
+  const char **replay_trace_reader_get(replay_trace_reader_t r);
   /* return a "file:pos" description of the last thing we read. */
   const char *replay_trace_reader_position(replay_trace_reader_t r);
 Check replay_trace_reader.c for souce code, and replay_MPI.c for

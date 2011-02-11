@@ -21,7 +21,7 @@ static FILE *action_fp = NULL;
 static char *action_line = NULL;
 static size_t action_len = 0;
 
-static char*const* action_get_action(char *name);
+static const char **action_get_action(char *name);
 
 /** \ingroup msg_actions
  * \brief Registers a function to handle a kind of action
@@ -51,13 +51,13 @@ void MSG_action_unregister(const char *action_name)
 
 static int MSG_action_runner(int argc, char *argv[])
 {
-  char *const*evt;
+  const char **evt;
   if (action_fp) {              // A unique trace file
 
     while ((evt = action_get_action(argv[0]))) {
       msg_action_fun function = xbt_dict_get(action_funs, evt[1]);
       (*function) (evt);
-      free((char**)evt);
+      free(evt);
     }
   } else {                      // Should have got my trace file in argument
     xbt_assert1(argc >= 2,
@@ -70,7 +70,7 @@ static int MSG_action_runner(int argc, char *argv[])
       if (!strcmp(argv[0],evt[0])) {
         msg_action_fun function = xbt_dict_get(action_funs, evt[1]);
         (*function) (evt);
-        free((char**)evt);
+        free(evt);
       } else {
         WARN1("%s: Ignore trace element not for me",
               xbt_replay_trace_reader_position(reader));
@@ -95,7 +95,7 @@ void _MSG_action_exit()
 }
 
 
-static char*const* action_get_action(char *name)
+static const char **action_get_action(char *name)
 {
   ssize_t read;
   xbt_dynar_t evt = NULL;
