@@ -51,6 +51,28 @@ set(JMSG_JAVA_SRC
 	org/simgrid/msg/TransferFailureException.java	
 )
 
+set(JAVA_EXAMPLES
+	examples/mutualExclusion/centralized/MutexCentral.java
+	examples/mutualExclusion/centralized/GrantTask.java
+	examples/mutualExclusion/centralized/Coordinator.java
+	examples/mutualExclusion/centralized/ReleaseTask.java
+	examples/mutualExclusion/centralized/Node.java
+	examples/mutualExclusion/centralized/RequestTask.java
+	examples/basic/FinalizeTask.java
+	examples/basic/Forwarder.java
+	examples/basic/Master.java
+	examples/basic/BasicTest.java
+	examples/basic/Slave.java
+	examples/commTime/FinalizeTask.java
+	examples/commTime/Master.java
+	examples/commTime/Slave.java
+	examples/commTime/CommTimeTest.java
+	examples/pingPong/PingPongTask.java
+	examples/pingPong/Sender.java
+	examples/pingPong/Receiver.java
+	examples/pingPong/PingPongTest.java
+)
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
 
 set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I$ENV{SIMGRID_ROOT}/include -I$ENV{SIMGRID_ROOT}/src -I$ENV{SIMGRID_ROOT}/src/include")
@@ -58,85 +80,59 @@ set(LIB_PATH "-L$ENV{SIMGRID_ROOT}/lib")
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${INCLUDE_PATH} ${LIB_PATH}")
 
+string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/org/" JAVA_FILES "${JMSG_JAVA_SRC}") 
+
+string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/classes/org/" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC}")
+string(REPLACE ".java" ".class" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC_CLASS}")
+
+string(REPLACE "examples/" "${CMAKE_HOME_DIRECTORY}/examples/" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES}") 
+string(REPLACE ".java" ".class" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES_CLASS}")
+
+# TARGET SG_java
 add_library(SG_java SHARED ${JMSG_C_SRC})
 target_link_libraries(SG_java -lsimgrid)
 set_target_properties(SG_java PROPERTIES VERSION ${soversion})
-
-set(JAVA_FILES ${JMSG_JAVA_SRC})
-set(JAVA_CLASSES ${JAVA_FILES})
-
-string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/org/"
-               JAVA_FILES "${JAVA_FILES}")
-
-string(REPLACE "org/simgrid/msg" "${CMAKE_BINARY_DIR}/classes/simgrid/msg"
-               JAVA_CLASSES "${JAVA_CLASSES}")
-string(REPLACE ".java" ".class;" 
-               JAVA_CLASSES "${JAVA_CLASSES}")	       
-
-add_custom_command(
-  OUTPUT  ${CMAKE_HOME_DIRECTORY}/classes/
-  COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
-  )
   
-# compile all .java files with javac to .class
-ADD_CUSTOM_COMMAND(
-  OUTPUT ${JAVA_CLASSES}
-  DEPENDS ${JMSG_JAVA_SRC} ${CMAKE_HOME_DIRECTORY}/classes/
-  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
-                          -cp ${CMAKE_HOME_DIRECTORY}/classes/
-			  ${JAVA_FILES}
-  COMMENT "Compiling java sources of core library..."
+# TARGET java_classes
+add_custom_command(
+	OUTPUT 	${JMSG_JAVA_SRC_CLASS}
+	DEPENDS ${JMSG_JAVA_SRC}
+	COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
+	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
+  					-cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_FILES}
+	COMMENT "Compiling java sources of core library..."					
+)
+add_custom_target(java_classes ALL
+  DEPENDS ${JMSG_JAVA_SRC_CLASS}		
 )
 
-ADD_CUSTOM_COMMAND(
-  OUTPUT ${CMAKE_HOME_DIRECTORY}/simgrid.jar
-  DEPENDS ${JAVA_CLASSES}
-  WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/classes  
+# TARGET simgrid_jar
+add_custom_target(simgrid_jar ALL
   COMMAND ${JAVA_ARCHIVE} -cvf ${CMAKE_HOME_DIRECTORY}/simgrid.jar .
   COMMENT "Building simgrid.jar..."
+  WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/classes 
 )
 
-ADD_CUSTOM_COMMAND(
-	OUTPUT  ${CMAKE_HOME_DIRECTORY}/examples/basic/BasicTest.class
-			${CMAKE_HOME_DIRECTORY}/examples/basic/FinalizeTask.class
-			${CMAKE_HOME_DIRECTORY}/examples/basic/Forwarder.class
-			${CMAKE_HOME_DIRECTORY}/examples/basic/Slave.class
-			${CMAKE_HOME_DIRECTORY}/examples/basic/Master.class
-			${CMAKE_HOME_DIRECTORY}/examples/pingPong/PingPongTest.class
-			${CMAKE_HOME_DIRECTORY}/examples/pingPong/Sender.class
-			${CMAKE_HOME_DIRECTORY}/examples/pingPong/PingPongTask.class
-			${CMAKE_HOME_DIRECTORY}/examples/pingPong/Receiver.class
-			${CMAKE_HOME_DIRECTORY}/examples/pingPong/FinalizeTask.class
-			${CMAKE_HOME_DIRECTORY}/examples/pingPong/CommTimeTest.class
-			${CMAKE_HOME_DIRECTORY}/examples/pingPong/Slave.class
-			${CMAKE_HOME_DIRECTORY}/examples/pingPong/Master.class
-			${CMAKE_HOME_DIRECTORY}/lib/libsimgrid.so
-			
-	DEPENDS SG_java
-            ${CMAKE_HOME_DIRECTORY}/simgrid.jar
-			
-	COMMENT "Build examples for java"	
+# TARGET simgrid_java_examples
+add_custom_command(
+	COMMENT "Build examples for java"
+	OUTPUT	${JAVA_EXAMPLES_CLASS}
 	
   	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/basic/*.java  
  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/pingPong/*.java
-  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/pingPong/*.java
+  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/commTime/*.java
+  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/*.java              			
+)
+add_custom_target(simgrid_java_examples ALL
+	DEPENDS ${JAVA_EXAMPLES_CLASS}
 )
 
-ADD_CUSTOM_TARGET(simgrid_java_examples ALL
-                  DEPENDS 	${CMAKE_HOME_DIRECTORY}/examples/basic/BasicTest.class
-							${CMAKE_HOME_DIRECTORY}/examples/basic/FinalizeTask.class
-							${CMAKE_HOME_DIRECTORY}/examples/basic/Forwarder.class
-							${CMAKE_HOME_DIRECTORY}/examples/basic/Slave.class
-							${CMAKE_HOME_DIRECTORY}/examples/basic/Master.class
-							${CMAKE_HOME_DIRECTORY}/examples/pingPong/PingPongTest.class
-							${CMAKE_HOME_DIRECTORY}/examples/pingPong/Sender.class
-							${CMAKE_HOME_DIRECTORY}/examples/pingPong/PingPongTask.class
-							${CMAKE_HOME_DIRECTORY}/examples/pingPong/Receiver.class
-							${CMAKE_HOME_DIRECTORY}/examples/pingPong/FinalizeTask.class
-							${CMAKE_HOME_DIRECTORY}/examples/pingPong/CommTimeTest.class
-							${CMAKE_HOME_DIRECTORY}/examples/pingPong/Slave.class
-							${CMAKE_HOME_DIRECTORY}/examples/pingPong/Master.class
-                  			
+# Declare dependencies
+add_dependencies(simgrid_jar java_classes)
+add_dependencies(simgrid_java_examples simgrid_jar SG_java)
+
+SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
+${CMAKE_HOME_DIRECTORY}/simgrid.jar
 )
 
 #####################

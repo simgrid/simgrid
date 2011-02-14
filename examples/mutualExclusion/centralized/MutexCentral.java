@@ -12,7 +12,7 @@ package mutualExclusion.centralized;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
 
-import simgrid.msg.*;
+import org.simgrid.msg.*;
 
 public class MutexCentral {
 
