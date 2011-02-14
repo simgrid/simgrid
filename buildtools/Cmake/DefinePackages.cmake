@@ -347,6 +347,10 @@ set(MC_SRC
 	src/mc/private.h
 )
 
+set(RNGSTREAM_SRC
+	src/rngstreams/RngStream.c
+)
+
 set(install_HEADERS
 	include/xbt/misc.h
 	include/xbt/sysdep.h
@@ -493,6 +497,7 @@ set(simgrid_sources
 	${GRAS_SG_SRC}
 	${AMOK_SRC}
 	${JEDULE_SRC}
+	${RNGSTREAM_SRC}
 )
 
 if(HAVE_MC)

@@ -1,5 +1,5 @@
 /* XML processor/application API for src/surf/simgrid.dtd.
- * Generated 2011/02/10 16:57:45.
+ * Generated 2011/02/14 15:04:45.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -87,7 +87,7 @@ XBT_PUBLIC(void ) STag_surfxml_prop(void);
 XBT_PUBLIC(void ) ETag_surfxml_prop(void);
 
 /* XML application data. */
-typedef enum { AU_surfxml_random_generator, A_surfxml_random_generator_DRAND48,A_surfxml_random_generator_RAND } AT_surfxml_random_generator;
+typedef enum { AU_surfxml_random_generator, A_surfxml_random_generator_DRAND48,A_surfxml_random_generator_RAND,A_surfxml_random_generator_RNGSTREAM,A_surfxml_random_generator_NONE } AT_surfxml_random_generator;
 typedef int AT_surfxml_ASroute_gw_dst;
 #define AU_surfxml_ASroute_gw_dst NULL
 typedef int AT_surfxml_trace_connect_element;

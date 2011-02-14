@@ -15,7 +15,7 @@
 <!ATTLIST random std_deviation CDATA #REQUIRED>
 <!ATTLIST random seed CDATA "2147483647">
 <!ATTLIST random radical CDATA "">
-<!ATTLIST random generator (DRAND48|RAND) "DRAND48">
+<!ATTLIST random generator (DRAND48|RAND|RNGSTREAM|NONE) "DRAND48">
 
 <!ELEMENT trace_connect EMPTY>
 <!ATTLIST trace_connect kind (HOST_AVAIL|POWER|LINK_AVAIL|BANDWIDTH|LATENCY) "HOST_AVAIL">
