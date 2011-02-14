@@ -39,7 +39,7 @@ int master(int argc, char *argv[])
 							task_comm_size,
 							NULL);
     MSG_task_send(task_s,mailbox);
-
+    MSG_process_sleep(1);
     //MSG_comm_wait(comm, -1);
     INFO1("Send Data to \"%s\"", mailbox);
 
@@ -65,6 +65,7 @@ int slave(int argc, char *argv[])
 	MSG_task_receive(&(task_r), mailbox);
 	//res = MSG_comm_wait(res_irecv, -1);
 	INFO1("Received \"%s\"", MSG_task_get_name(task_r));
+	MSG_process_sleep(1);
 	//MSG_comm_destroy(res_irecv);
 	//Receive something now need to tell it!
 

@@ -1,33 +1,33 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV token_ring ${srcdir:=.}/two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
-> [  0.000000] [0:@] Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
-> [  0.066240] [1:master@alice1.crepe.fr] Send Data to "host1"
-> [  0.066240] [2:slave@alice4.crepe.fr] Received "Token"
-> [  0.132480] [2:slave@alice4.crepe.fr] Send Data to "host2"
-> [  0.132480] [3:slave@alice0.crepe.fr] Received "Token"
-> [  0.320160] [3:slave@alice0.crepe.fr] Send Data to "host3"
-> [  0.320160] [4:slave@bob4.hamburger.edu] Received "Token"
-> [  0.386400] [4:slave@bob4.hamburger.edu] Send Data to "host4"
-> [  0.386400] [5:slave@bob2.hamburger.edu] Received "Token"
-> [  0.452640] [5:slave@bob2.hamburger.edu] Send Data to "host5"
-> [  0.452640] [6:slave@bob0.hamburger.edu] Received "Token"
-> [  0.640320] [6:slave@bob0.hamburger.edu] Send Data to "host6"
-> [  0.640320] [7:slave@alice3.crepe.fr] Received "Token"
-> [  0.706560] [7:slave@alice3.crepe.fr] Send Data to "host7"
-> [  0.706560] [8:slave@alice2.crepe.fr] Received "Token"
-> [  0.894240] [8:slave@alice2.crepe.fr] Send Data to "host8"
-> [  0.894240] [9:slave@bob3.hamburger.edu] Received "Token"
-> [  0.960480] [9:slave@bob3.hamburger.edu] Send Data to "host9"
-> [  0.960480] [10:slave@bob1.hamburger.edu] Received "Token"
-> [  1.148160] [1:master@alice1.crepe.fr] Received "Token"
-> [  1.148160] [10:slave@bob1.hamburger.edu] Send Data to "host0"
-> [  1.148160] [0:@] Simulation time 1.14816
+$ $SG_TEST_EXENV token_ring ${srcdir:=.}/two_clusters.xml
+> [0.000000] /home/navarrop/Developments/simgrid/src/surf/surfxml_parse.c:345: [surf_parse/WARNING] Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
+> [alice4.crepe.fr:slave:(2) 0.066240] [ring/INFO] Received "Token"
+> [alice1.crepe.fr:master:(1) 1.066240] [ring/INFO] Send Data to "host1"
+> [alice0.crepe.fr:slave:(3) 1.132480] [ring/INFO] Received "Token"
+> [alice4.crepe.fr:slave:(2) 1.132480] [ring/INFO] Send Data to "host2"
+> [bob4.hamburger.edu:slave:(4) 2.320160] [ring/INFO] Received "Token"
+> [alice0.crepe.fr:slave:(3) 2.320160] [ring/INFO] Send Data to "host3"
+> [bob2.hamburger.edu:slave:(5) 3.386400] [ring/INFO] Received "Token"
+> [bob4.hamburger.edu:slave:(4) 3.386400] [ring/INFO] Send Data to "host4"
+> [bob0.hamburger.edu:slave:(6) 4.452640] [ring/INFO] Received "Token"
+> [bob2.hamburger.edu:slave:(5) 4.452640] [ring/INFO] Send Data to "host5"
+> [alice3.crepe.fr:slave:(7) 5.640320] [ring/INFO] Received "Token"
+> [bob0.hamburger.edu:slave:(6) 5.640320] [ring/INFO] Send Data to "host6"
+> [alice2.crepe.fr:slave:(8) 6.706560] [ring/INFO] Received "Token"
+> [alice3.crepe.fr:slave:(7) 6.706560] [ring/INFO] Send Data to "host7"
+> [bob3.hamburger.edu:slave:(9) 7.894240] [ring/INFO] Received "Token"
+> [alice2.crepe.fr:slave:(8) 7.894240] [ring/INFO] Send Data to "host8"
+> [bob1.hamburger.edu:slave:(10) 8.960480] [ring/INFO] Received "Token"
+> [bob3.hamburger.edu:slave:(9) 8.960480] [ring/INFO] Send Data to "host9"
+> [alice1.crepe.fr:master:(1) 10.148160] [ring/INFO] Received "Token"
+> [bob1.hamburger.edu:slave:(10) 10.148160] [ring/INFO] Send Data to "host0"
+> [10.148160] [ring/INFO] Simulation time 10.1482
 
 $ $SG_TEST_EXENV token_ring ${srcdir:=.}/two_peers.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:@] Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
-> [5111.488529] [1:master@peer_100036570] Send Data to "host1"
 > [5111.488529] [2:slave@peer_100030591] Received "Token"
-> [10222.977057] [1:master@peer_100036570] Received "Token"
-> [10222.977057] [2:slave@peer_100030591] Send Data to "host0"
-> [10222.977057] [0:@] Simulation time 10223
+> [5112.488529] [1:master@peer_100036570] Send Data to "host1"
+> [10223.977057] [1:master@peer_100036570] Received "Token"
+> [10223.977057] [2:slave@peer_100030591] Send Data to "host0"
+> [10223.977057] [0:@] Simulation time 10224
