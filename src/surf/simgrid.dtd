@@ -1,5 +1,5 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform ((config)?,(include|cluster|peer|AS|trace|trace_connect)*,(include|process)*)>
+<!ELEMENT platform ((config|random)*,(include|cluster|peer|AS|trace|trace_connect)*,(include|process)*)>
 <!ATTLIST platform version CDATA "0.0">
 
 <!ELEMENT trace (#PCDATA)>
@@ -13,6 +13,8 @@
 <!ATTLIST random max CDATA #REQUIRED>
 <!ATTLIST random mean CDATA #REQUIRED>
 <!ATTLIST random std_deviation CDATA #REQUIRED>
+<!ATTLIST random seed CDATA "2147483647">
+<!ATTLIST random radical CDATA "">
 <!ATTLIST random generator (DRAND48|RAND) "DRAND48">
 
 <!ELEMENT trace_connect EMPTY>
@@ -108,7 +110,7 @@
 <!ELEMENT argument EMPTY>
 <!ATTLIST argument value CDATA #REQUIRED>
 
-<!ELEMENT config (prop*|random)>
+<!ELEMENT config (prop*)>
 <!ATTLIST config id CDATA "">
 
 <!ELEMENT prop EMPTY>

@@ -1,5 +1,5 @@
 /* XML processor/application API for src/surf/simgrid.dtd.
- * Generated 2011/01/31 15:35:49.
+ * Generated 2011/02/10 16:57:45.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -154,6 +154,8 @@ typedef int AT_surfxml_cluster_bb_lat;
 typedef int AT_surfxml_link_latency;
 #define AU_surfxml_link_latency NULL
 typedef enum { AU_surfxml_trace_connect_kind, A_surfxml_trace_connect_kind_HOST_AVAIL,A_surfxml_trace_connect_kind_POWER,A_surfxml_trace_connect_kind_LINK_AVAIL,A_surfxml_trace_connect_kind_BANDWIDTH,A_surfxml_trace_connect_kind_LATENCY } AT_surfxml_trace_connect_kind;
+typedef int AT_surfxml_random_seed;
+#define AU_surfxml_random_seed NULL
 typedef int AT_surfxml_cluster_state_file;
 #define AU_surfxml_cluster_state_file NULL
 typedef int AT_surfxml_link_bandwidth_file;
@@ -184,6 +186,8 @@ typedef int AT_surfxml_prop_value;
 #define AU_surfxml_prop_value NULL
 typedef int AT_surfxml_ASroute_dst;
 #define AU_surfxml_ASroute_dst NULL
+typedef int AT_surfxml_random_radical;
+#define AU_surfxml_random_radical NULL
 typedef int AT_surfxml_link_state_file;
 #define AU_surfxml_link_state_file NULL
 typedef int AT_surfxml_trace_connect_trace;
@@ -313,6 +317,8 @@ XBT_PUBLIC_DATA(AT_surfxml_link_latency ) AX_surfxml_link_latency;
 #define A_surfxml_link_latency (surfxml_bufferstack + AX_surfxml_link_latency)
 XBT_PUBLIC_DATA(AT_surfxml_trace_connect_kind ) AX_surfxml_trace_connect_kind;
 #define A_surfxml_trace_connect_kind AX_surfxml_trace_connect_kind
+XBT_PUBLIC_DATA(AT_surfxml_random_seed ) AX_surfxml_random_seed;
+#define A_surfxml_random_seed (surfxml_bufferstack + AX_surfxml_random_seed)
 XBT_PUBLIC_DATA(AT_surfxml_cluster_state_file ) AX_surfxml_cluster_state_file;
 #define A_surfxml_cluster_state_file (surfxml_bufferstack + AX_surfxml_cluster_state_file)
 XBT_PUBLIC_DATA(AT_surfxml_link_bandwidth_file ) AX_surfxml_link_bandwidth_file;
@@ -345,6 +351,8 @@ XBT_PUBLIC_DATA(AT_surfxml_prop_value ) AX_surfxml_prop_value;
 #define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
 XBT_PUBLIC_DATA(AT_surfxml_ASroute_dst ) AX_surfxml_ASroute_dst;
 #define A_surfxml_ASroute_dst (surfxml_bufferstack + AX_surfxml_ASroute_dst)
+XBT_PUBLIC_DATA(AT_surfxml_random_radical ) AX_surfxml_random_radical;
+#define A_surfxml_random_radical (surfxml_bufferstack + AX_surfxml_random_radical)
 XBT_PUBLIC_DATA(AT_surfxml_link_state_file ) AX_surfxml_link_state_file;
 #define A_surfxml_link_state_file (surfxml_bufferstack + AX_surfxml_link_state_file)
 XBT_PUBLIC_DATA(AT_surfxml_trace_connect_trace ) AX_surfxml_trace_connect_trace;

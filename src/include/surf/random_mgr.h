@@ -14,7 +14,7 @@
 
 SG_BEGIN_DECL()
 
-typedef enum { NONE, DRAND48, RAND } Generator;
+typedef enum { NONE, DRAND48, RAND, RNGSTREAM } Generator;
 
 typedef struct random_data_desc {
   long int seed;

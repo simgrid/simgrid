@@ -197,6 +197,9 @@ static double custom_random(Generator generator, long int *seed)
     return drand48();
   case RAND:
     return (double) rand_r((unsigned int *) seed) / RAND_MAX;
+  case RNGSTREAM :
+	  printf("Seen RNGSTREAM");
+	  return 0.0;
   default:
     return drand48();
   }
