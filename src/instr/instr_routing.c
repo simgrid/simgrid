@@ -47,11 +47,22 @@ static container_t findCommonFather (container_t root, container_t a1, container
   return NULL;
 }
 
-static void linkContainers (const char *a1, const char *a2)
+static void linkContainers (const char *a1, const char *a2, xbt_dict_t filter)
 {
   //ignore loopback
   if (strcmp (a1, "__loopback__") == 0 || strcmp (a2, "__loopback__") == 0)
     return;
+
+  //check if we already register this pair (we only need one direction)
+  char aux1[INSTR_DEFAULT_STR_SIZE], aux2[INSTR_DEFAULT_STR_SIZE];
+  snprintf (aux1, INSTR_DEFAULT_STR_SIZE, "%s%s", a1, a2);
+  snprintf (aux2, INSTR_DEFAULT_STR_SIZE, "%s%s", a2, a1);
+  if (xbt_dict_get_or_null (filter, aux1)) return;
+  if (xbt_dict_get_or_null (filter, aux2)) return;
+
+  //ok, not found, register it
+  xbt_dict_set (filter, aux1, xbt_strdup ("1"), xbt_free);
+  xbt_dict_set (filter, aux2, xbt_strdup ("1"), xbt_free);
 
   container_t a1_container = getContainerByName (a1);
   type_t a1_type = a1_container->type;
@@ -78,7 +89,7 @@ static void linkContainers (const char *a1, const char *a2)
   new_pajeEndLink(SIMIX_get_clock(), container, link_type, a2_container, "G", key);
 }
 
-static void recursiveGraphExtraction (container_t container)
+static void recursiveGraphExtraction (container_t container, xbt_dict_t filter)
 {
   if (xbt_dict_length(container->children)){
     xbt_dict_cursor_t cursor = NULL;
@@ -86,7 +97,7 @@ static void recursiveGraphExtraction (container_t container)
     char *child_name;
     //bottom-up recursion
     xbt_dict_foreach(container->children, cursor, child_name, child) {
-      recursiveGraphExtraction (child);
+      recursiveGraphExtraction (child, filter);
     }
 
     //let's get routes
@@ -94,21 +105,8 @@ static void recursiveGraphExtraction (container_t container)
     container_t child1, child2;
     const char *child_name1, *child_name2;
 
-    xbt_dict_t filter = xbt_dict_new ();
-
     xbt_dict_foreach(container->children, cursor1, child_name1, child1) {
       xbt_dict_foreach(container->children, cursor2, child_name2, child2) {
-        //check if we already register this pair (we only need one direction)
-        char aux1[INSTR_DEFAULT_STR_SIZE], aux2[INSTR_DEFAULT_STR_SIZE];
-        snprintf (aux1, INSTR_DEFAULT_STR_SIZE, "%s%s", child_name1, child_name2);
-        snprintf (aux2, INSTR_DEFAULT_STR_SIZE, "%s%s", child_name2, child_name1);
-        if (xbt_dict_get_or_null (filter, aux1)) continue;
-        if (xbt_dict_get_or_null (filter, aux2)) continue;
-
-        //ok, not found, register it
-        xbt_dict_set (filter, aux1, xbt_strdup ("1"), xbt_free);
-        xbt_dict_set (filter, aux2, xbt_strdup ("1"), xbt_free);
-
         if ((child1->kind == INSTR_HOST || child1->kind == INSTR_ROUTER) &&
             (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER)){
 
@@ -128,10 +126,10 @@ static void recursiveGraphExtraction (container_t container)
           char *previous_entity_name = (char*)child_name1;
           xbt_dynar_foreach (route, cpt, link) {
             char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-            linkContainers (previous_entity_name, link_name);
+            linkContainers (previous_entity_name, link_name, filter);
             previous_entity_name = link_name;
           }
-          linkContainers (previous_entity_name, child_name2);
+          linkContainers (previous_entity_name, child_name2, filter);
         }else if (child1->kind == INSTR_AS &&
                   child2->kind == INSTR_AS &&
                   strcmp(child_name1, child_name2) != 0){
@@ -153,14 +151,13 @@ static void recursiveGraphExtraction (container_t container)
           char *previous_entity_name = route->src_gateway;
           xbt_dynar_foreach (route->generic_route.link_list, cpt, link) {
             char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-            linkContainers (previous_entity_name, link_name);
+            linkContainers (previous_entity_name, link_name, filter);
             previous_entity_name = link_name;
           }
-          linkContainers (previous_entity_name, route->dst_gateway);
+          linkContainers (previous_entity_name, route->dst_gateway, filter);
         }
       }
     }
-    xbt_dict_free(&filter);
   }
 }
 
@@ -274,7 +271,9 @@ static void instr_routing_parse_end_platform ()
 {
   xbt_dynar_free(&currentContainer);
   currentContainer = NULL;
-  recursiveGraphExtraction (getRootContainer());
+  xbt_dict_t filter = xbt_dict_new ();
+  recursiveGraphExtraction (getRootContainer(), filter);
+  xbt_dict_free(&filter);
   platform_created = 1;
   TRACE_paje_dump_buffer(1);
 }
