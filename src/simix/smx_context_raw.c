@@ -161,7 +161,7 @@ static smx_context_factory_t raw_factory;
 
 #include "xbt/xbt_os_time.h"
 static xbt_os_timer_t timer;
-static double totaltime;
+static double totaltime = 0;
 
 
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
@@ -229,11 +229,9 @@ static void smx_ctx_raw_free(smx_context_t context)
 static void smx_ctx_raw_suspend(smx_context_t context)
 {
   smx_current_context = (smx_context_t)maestro_raw_context;
-  xbt_os_timer_stop(timer);
   raw_swapcontext(
       &((smx_ctx_raw_t) context)->stack_top,
       ((smx_ctx_raw_t) context)->old_stack_top);
-  xbt_os_timer_start(timer);
 }
 
 static void smx_ctx_raw_stop(smx_context_t context)
@@ -244,7 +242,6 @@ static void smx_ctx_raw_stop(smx_context_t context)
 
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context)
 { 
-  xbt_os_timer_start(timer);
   (context->super.code) (context->super.argc, context->super.argv);
 
   smx_ctx_raw_stop((smx_context_t) context);
@@ -257,9 +254,7 @@ static void smx_ctx_raw_resume(smx_process_t process)
   raw_swapcontext(
       &((smx_ctx_raw_t) context)->old_stack_top,
       ((smx_ctx_raw_t) context)->stack_top);
-  totaltime += xbt_os_timer_elapsed(timer);
 }
-
 
 static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
 {
@@ -268,7 +263,10 @@ static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
 
   xbt_dynar_foreach(processes, cursor, process) {
     DEBUG2("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
+    xbt_os_timer_start(timer);
     smx_ctx_raw_resume(process);
+    xbt_os_timer_stop(timer);
+    totaltime += xbt_os_timer_elapsed(timer);
   }
   xbt_dynar_reset(processes);
 }
