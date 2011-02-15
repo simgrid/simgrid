@@ -73,7 +73,7 @@ set(JAVA_EXAMPLES
 	examples/pingPong/PingPongTest.java
 )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
 
 set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I$ENV{SIMGRID_ROOT}/include -I$ENV{SIMGRID_ROOT}/src -I$ENV{SIMGRID_ROOT}/src/include")
 set(LIB_PATH "-L$ENV{SIMGRID_ROOT}/lib")
