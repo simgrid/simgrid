@@ -15,6 +15,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");
 
+static smx_context_t my_current_context = NULL;
+
 static smx_context_t smx_ctx_java_self(void);
 static smx_context_t
 smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
@@ -43,9 +45,14 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
   (*factory)->runall = smx_ctx_java_runall;
   (*factory)->name = "ctx_java_factory";
   //(*factory)->finalize = smx_ctx_base_factory_finalize;
-  (*factory)->self = smx_ctx_base_self;
+  (*factory)->self = smx_ctx_java_self;
   (*factory)->get_data = smx_ctx_base_get_data;
   (*factory)->get_thread_id = smx_ctx_base_get_thread_id;
+}
+
+static smx_context_t smx_ctx_java_self(void)
+{
+	return my_current_context;
 }
 
 static void* smx_ctx_java_get_data(smx_context_t context)
@@ -71,7 +78,7 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
     jprocess_start(((smx_ctx_java_t) context)->jprocess,
                    get_current_thread_env());
   }else{
-    smx_current_context = (smx_context_t)context;
+    my_current_context = (smx_context_t)context;
   }
   context->super.data = data;
   
@@ -110,13 +117,13 @@ static void smx_ctx_java_stop(smx_context_t context)
   ctx_java = (smx_ctx_java_t) context;
 
   /*FIXME: is this really necessary? Seems to. */
-  if (smx_current_context->iwannadie) {
+  if (my_current_context->iwannadie) {
     INFO0("I wannadie");
     /* The maestro call xbt_context_stop() with an exit code set to one */
     if (ctx_java->jprocess) {
       /* if the java process is alive schedule it */
       if (jprocess_is_alive(ctx_java->jprocess, get_current_thread_env())) {
-        jprocess_schedule(smx_current_context);
+        jprocess_schedule(my_current_context);
         jprocess = ctx_java->jprocess;
         ctx_java->jprocess = NULL;
 
@@ -149,17 +156,15 @@ static void smx_ctx_java_resume(smx_context_t new_context)
 static void smx_ctx_java_runall(xbt_dynar_t processes)
 {
   fprintf(stderr,"XXXX Run all\n");
-  printf("Affiche les %ld elements\n",xbt_dynar_length(processes));
   smx_process_t process;
   smx_context_t old_context;
   unsigned int cursor;
 
   xbt_dynar_foreach(processes, cursor, process) {
-	printf("process_name : %s\n",process->name);
-    old_context = smx_current_context;
-    smx_current_context = process->context;
-    smx_ctx_java_resume(smx_current_context);
-    smx_current_context = old_context;
+    old_context = my_current_context;
+    my_current_context = process->context;
+    smx_ctx_java_resume(my_current_context);
+    my_current_context = old_context;
   }
   xbt_dynar_reset(processes);
 
