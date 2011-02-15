@@ -183,10 +183,13 @@ extern int _surf_do_model_check;   /* this variable lives in xbt_main until I fi
 
 static void _surf_cfg_cb_model_check(const char *name, int pos)
 {
-  _surf_do_model_check = 1;
-  /* Tell modules using mallocators that they shouldn't. MC don't like them */
-  xbt_fifo_preinit();
-  xbt_dict_preinit();
+  _surf_do_model_check = xbt_cfg_get_int(_surf_cfg_set, name);
+
+  if (_surf_do_model_check) {
+    /* Tell modules using mallocators that they shouldn't. MC don't like them */
+    xbt_fifo_preinit();
+    xbt_dict_preinit();
+  }
 }
 
 static void _surf_cfg_cb_context_factory(const char *name, int pos)
