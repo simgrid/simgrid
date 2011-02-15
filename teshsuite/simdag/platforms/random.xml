@@ -2,19 +2,15 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 
-<random id="MyCustomRandomBW" generator="DRAND48"
+<random id="CustomBandwidth" generator="DRAND48"
   min="1000000000" max="2000000000" mean="1600000000"
   std_deviation="12" seed="2147483647" radical="0-1"/>
   
-<random id="MyCustomRandomPW" generator="DRAND48"
+<random id="CustomPower" generator="DRAND48"
   min="0900000000.00" max="1100000000.00" mean="1000000000.00"
   std_deviation="12" seed="2147483647" radical="0-1"/>
-
-<random id="MyCustomRandomBW" generator="RAND"
-  min="1000000000" max="2000000000" mean="1600000000"
-  std_deviation="12" seed="2147483647"/>
   
-<random id="MyCustomRandomVALUE" generator="RNGSTREAM"
+<random id="RandomVALUE" generator="RNGSTREAM"
   min="1000000000" max="2000000000" mean="1600000000"
   std_deviation="12" seed="2147483647"/>
 
@@ -24,8 +20,8 @@
 				prefix="bob"
 				suffix=".hamburger.edu"
 				radical="0-1"
-				power="MyCustomRandomPW${radical}"
-				bw="MyCustomRandomBW${radical}"
+				power="CustomPower${radical}"
+				bw="CustomBandwidth${radical}"
 				lat="5e-5"
 				bb_bw="2250000000.00"
 				bb_lat="5e-4"
@@ -36,7 +32,7 @@
 				suffix=".crepe.fr"
 				radical="0-1"
 				power="1000000000.00"
-				bw="MyCustomRandomBW"
+				bw="1600000000"
 				lat="5e-5"
 				bb_bw="2250000000.00"
 				bb_lat="5e-4"/>

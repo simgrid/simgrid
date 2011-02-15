@@ -3699,9 +3699,9 @@ static char* replace_random_parameter(char * string)
 		return string;
 
     temp_string = bprintf("%s",string);
-	xbt_str_varsubst(temp_string,patterns); // for patterns of cluster
+    temp_string = xbt_str_varsubst(temp_string,patterns); // for patterns of cluster
 	test_string = bprintf("${%s}",temp_string);
-	xbt_str_varsubst(test_string,random_value); //Add ${xxxxx} for random Generator
+	test_string = xbt_str_varsubst(test_string,random_value); //Add ${xxxxx} for random Generator
 
 	if(strcmp(test_string,"")) //if not empty, keep this value.
 		string = bprintf("%s",test_string);
@@ -3861,13 +3861,15 @@ static void routing_parse_Speer(void)
 
 static void routing_parse_Srandom(void)
 {
+	  double mean, std, min, max, seed;
 	  char *random_id = A_surfxml_random_id;
-	  double mean = atol(A_surfxml_random_mean);
-	  double std = atol(A_surfxml_random_std_deviation);
-	  double min = atol(A_surfxml_random_min);
-	  double max = atol(A_surfxml_random_max);
-	  double seed = atol(A_surfxml_random_seed);
 	  char *random_radical = A_surfxml_random_radical;
+	  surf_parse_get_double(&mean,A_surfxml_random_mean);
+	  surf_parse_get_double(&std,A_surfxml_random_std_deviation);
+	  surf_parse_get_double(&min,A_surfxml_random_min);
+	  surf_parse_get_double(&max,A_surfxml_random_max);
+	  surf_parse_get_double(&seed,A_surfxml_random_seed);
+
 	  double res = 0;
 	  int i = 0;
 	  random_data_t random = xbt_new0(s_random_data_t, 1);
