@@ -435,7 +435,6 @@ static void init_data(void)
   if (!surfxml_bufferstack_stack)
     surfxml_bufferstack_stack = xbt_dynar_new(sizeof(char *), NULL);
 
-  random_data_list = xbt_dict_new();
   traces_set_list = xbt_dict_new();
   trace_connect_list_host_avail = xbt_dict_new();
   trace_connect_list_power = xbt_dict_new();
@@ -443,9 +442,6 @@ static void init_data(void)
   trace_connect_list_bandwidth = xbt_dict_new();
   trace_connect_list_latency = xbt_dict_new();
 
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  surfxml_add_callback(STag_surfxml_random_cb_list, &init_randomness);
-  surfxml_add_callback(ETag_surfxml_random_cb_list, &add_randomness);
   surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
   surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);
   surfxml_add_callback(STag_surfxml_trace_connect_cb_list,
