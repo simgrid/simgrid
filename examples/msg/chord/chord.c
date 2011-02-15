@@ -11,6 +11,8 @@
 #include "xbt/asserts.h"
 #include "mc/modelchecker.h"
 #include "mc/mc.h"
+#include "xbt/xbt_os_time.h"
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
                              "Messages specific for this msg example");
 
@@ -887,6 +889,8 @@ static void random_lookup(node_t node)
  */
 int main(int argc, char *argv[])
 {
+  xbt_os_timer_t timer = xbt_os_timer_new();
+
   if (argc < 3) {
     printf("Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n", argv[0]);
     printf("example: %s ../msg_platform.xml chord.xml\n", argv[0]);
@@ -928,7 +932,10 @@ int main(int argc, char *argv[])
   MSG_function_register("node", node);
   MSG_launch_application(application_file);
 
+  xbt_os_timer_start(timer);
   MSG_error_t res = MSG_main();
+  xbt_os_timer_stop(timer);
+  CRITICAL1("Simulation time %lf", xbt_os_timer_elapsed(timer));
   INFO1("Simulated time: %g", MSG_get_clock());
 
   MSG_clean();
