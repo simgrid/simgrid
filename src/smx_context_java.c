@@ -66,7 +66,7 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     void_pfn_smxprocess_t cleanup_func,
                                     void* data)
 {
-  fprintf(stderr,"XXXX Create Context\n");
+  DEBUG0("XXXX Create Context\n");
   smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
 
   /* If the user provided a function for the process then use it
@@ -107,7 +107,7 @@ static void smx_ctx_java_free(smx_context_t context)
 static void smx_ctx_java_stop(smx_context_t context)
 {
   jobject jprocess = NULL;
-  fprintf(stderr,"XXXX Context Stop\n");
+  DEBUG0("XXXX Context Stop\n");
 
   smx_ctx_java_t ctx_java;
 
@@ -149,13 +149,13 @@ static void smx_ctx_java_suspend(smx_context_t context)
 // FIXME: inline those functions
 static void smx_ctx_java_resume(smx_context_t new_context)
 {
-  fprintf(stderr,"XXXX Context Resume\n");
+  DEBUG0("XXXX Context Resume\n");
   jprocess_schedule(new_context);
 }
 
 static void smx_ctx_java_runall(xbt_dynar_t processes)
 {
-  fprintf(stderr,"XXXX Run all\n");
+  DEBUG0("XXXX Run all\n");
   smx_process_t process;
   smx_context_t old_context;
   unsigned int cursor;
@@ -168,5 +168,5 @@ static void smx_ctx_java_runall(xbt_dynar_t processes)
   }
   xbt_dynar_reset(processes);
 
-  fprintf(stderr,"XXXX End of run all\n");
+  DEBUG0("XXXX End of run all\n");
 }
