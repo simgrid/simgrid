@@ -10,7 +10,6 @@
 #include <xbt/function_types.h>
 #include <simix/simix.h>
 #include "smx_context_java.h"
-#include "simix/process_private.h"
 #include "xbt/dynar.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");
@@ -162,7 +161,7 @@ static void smx_ctx_java_runall(xbt_dynar_t processes)
 
   xbt_dynar_foreach(processes, cursor, process) {
     old_context = my_current_context;
-    my_current_context = process->context;
+    my_current_context = SIMIX_process_get_context(process);
     smx_ctx_java_resume(my_current_context);
     my_current_context = old_context;
   }
