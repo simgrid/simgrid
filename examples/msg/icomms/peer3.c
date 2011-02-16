@@ -64,11 +64,12 @@ int sender(int argc, char *argv[])
   sprintf(mailbox, "finalize");
 
   msg_comm_t res_irecv;
+  MSG_error_t res_wait;
   for (i = 0; i < receivers_count; i++) {
     task = NULL;
     res_irecv = MSG_task_irecv(&(task), mailbox);
-    xbt_assert0(MSG_comm_wait(res_irecv, -1) == MSG_OK,
-                "MSG_comm_wait failed");
+    res_wait = MSG_comm_wait(res_irecv, -1);
+    xbt_assert0(res == MSG_OK, "MSG_comm_wait failed");
     MSG_comm_destroy(res_irecv);
     MSG_task_destroy(task);
   }
@@ -87,8 +88,8 @@ int receiver(int argc, char *argv[])
   int tasks = atof(argv[2]);
   m_task_t *task = xbt_new(m_task_t, tasks);
 
-  xbt_assert1(sscanf(argv[1], "%d", &id),
-              "Invalid argument %s\n", argv[1]);
+  int read = sscanf(argv[1], "%d", &id);
+  xbt_assert1(read, "Invalid argument %s\n", argv[1]);
   sprintf(mailbox, "receiver-%d", id);
   MSG_process_sleep(10);
   msg_comm_t res_irecv;

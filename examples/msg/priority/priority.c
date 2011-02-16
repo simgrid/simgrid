@@ -20,11 +20,10 @@ static int test(int argc, char *argv[])
   double priority = 1.0;
   m_task_t task = NULL;
 
-
-  xbt_assert1(sscanf(argv[1], "%lg", &computation_amount),
-              "Invalid argument %s\n", argv[1]);
-  xbt_assert1(sscanf(argv[2], "%lg", &priority),
-              "Invalid argument %s\n", argv[2]);
+  int res = sscanf(argv[1], "%lg", &computation_amount);
+  xbt_assert1(res, "Invalid argument %s\n", argv[1]);
+  res = sscanf(argv[2], "%lg", &priority);
+  xbt_assert1(res, "Invalid argument %s\n", argv[2]);
 
   INFO2("Hello! Running a task of size %g with priority %g",
         computation_amount, priority);

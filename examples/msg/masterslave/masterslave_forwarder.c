@@ -39,12 +39,12 @@ int master(int argc, char *argv[])
 
   int i;
 
-  xbt_assert1(sscanf(argv[1], "%d", &number_of_tasks),
-              "Invalid argument %s\n", argv[1]);
-  xbt_assert1(sscanf(argv[2], "%lg", &task_comp_size),
-              "Invalid argument %s\n", argv[2]);
-  xbt_assert1(sscanf(argv[3], "%lg", &task_comm_size),
-              "Invalid argument %s\n", argv[3]);
+  int res = sscanf(argv[1], "%d", &number_of_tasks);
+  xbt_assert1("Invalid argument %s\n", argv[1]);
+  res = sscanf(argv[2], "%lg", &task_comp_size);
+  xbt_assert1(res, "Invalid argument %s\n", argv[2]);
+  res = sscanf(argv[3], "%lg", &task_comm_size);
+  xbt_assert1(res, "Invalid argument %s\n", argv[3]);
 
   {                             /*  Task creation */
     char sprintf_buffer[64];

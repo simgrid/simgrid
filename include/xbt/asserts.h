@@ -19,8 +19,12 @@ SG_BEGIN_DECL()
  * @addtogroup XBT_error
  * @brief Those are the SimGrid version of the good ol' assert macro.
  *
- * You can pass them a format message and arguments, just as if it where a printf.
+ * You can pass them a format message and arguments, just as if it where a
+ * printf.
  * It is converted to a CRITICALn logging request.
+ * Be careful: the boolean expression that you want to test should not have
+ * side effects, because assertions are disabled at compile time if NDEBUG
+ * is set.
  *
  * @{
  */
