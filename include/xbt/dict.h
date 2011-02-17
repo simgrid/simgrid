@@ -14,7 +14,7 @@
 #include "xbt/dynar.h"          /* void_f_pvoid_t */
 #include <stdint.h>             /* uintptr_t */
 
-SG_BEGIN_DECL();
+SG_BEGIN_DECL()
 
 /** @addtogroup XBT_dict
  *  @brief The dictionary data structure (comparable to hash tables)
