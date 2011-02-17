@@ -252,15 +252,15 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
         value = 0.0;
       if (value < min) {
         min = value;
-        DEBUG2("Updating min (value) with %p: %f", action, min);
+        XBT_DEBUG("Updating min (value) with %p: %f", action, min);
       }
     }
     if ((action->max_duration >= 0) && (action->max_duration < min)) {
       min = action->max_duration;
-      DEBUG2("Updating min (duration) with %p: %f", action, min);
+      XBT_DEBUG("Updating min (duration) with %p: %f", action, min);
     }
   }
-  DEBUG1("min value : %f", min);
+  XBT_DEBUG("min value : %f", min);
 
 #undef VARIABLE
   return min;
@@ -384,7 +384,7 @@ void surf_presolve(void)
   surf_model_t model = NULL;
   unsigned int iter;
 
-  DEBUG0
+  XBT_DEBUG
       ("First Run! Let's \"purge\" events and put models in the right state");
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
     if (next_event_date > NOW)
@@ -417,37 +417,37 @@ double surf_solve(double max_date)
     min = max_date - NOW;
   }
 
-  DEBUG0("Looking for next action end");
+  XBT_DEBUG("Looking for next action end");
   xbt_dynar_foreach(model_list, iter, model) {
-    DEBUG1("Running for Resource [%s]", model->name);
+    XBT_DEBUG("Running for Resource [%s]", model->name);
     model_next_action_end = model->model_private->share_resources(NOW);
-    DEBUG2("Resource [%s] : next action end = %f",
+    XBT_DEBUG("Resource [%s] : next action end = %f",
            model->name, model_next_action_end);
     if (((min < 0.0) || (model_next_action_end < min))
         && (model_next_action_end >= 0.0))
       min = model_next_action_end;
   }
-  DEBUG1("Next action end : %f", min);
+  XBT_DEBUG("Next action end : %f", min);
 
-  DEBUG0("Looking for next event");
+  XBT_DEBUG("Looking for next event");
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
-    DEBUG1("Next TRACE event : %f", next_event_date);
+    XBT_DEBUG("Next TRACE event : %f", next_event_date);
     if ((min != -1.0) && (next_event_date > NOW + min))
       break;
-    DEBUG0("Updating models");
+    XBT_DEBUG("Updating models");
     while ((event =
             tmgr_history_get_next_event_leq(history, next_event_date,
                                             &value,
                                             (void **) &resource))) {
       if (resource->model->model_private->resource_used(resource)) {
         min = next_event_date - NOW;
-        DEBUG1
+        XBT_DEBUG
             ("This event will modify model state. Next event set to %f",
              min);
       }
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      DEBUG2("Calling update_resource_state for resource %s with min %lf",
+      XBT_DEBUG("Calling update_resource_state for resource %s with min %lf",
              resource->model->name, min);
       resource->model->model_private->update_resource_state(resource,
                                                             event, value,
@@ -462,7 +462,7 @@ double surf_solve(double max_date)
   if (min < 0.0)
     return -1.0;
 
-  DEBUG1("Duration set to %f", min);
+  XBT_DEBUG("Duration set to %f", min);
 
   NOW = NOW + min;
 

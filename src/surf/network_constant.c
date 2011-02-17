@@ -117,7 +117,7 @@ static surf_action_t netcste_communicate(const char *src_name,
 {
   surf_action_network_Constant_t action = NULL;
 
-  XBT_IN4("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
+  XBT_IN_F("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
 
   action =
       surf_action_new(sizeof(s_surf_action_network_Constant_t), size,

@@ -528,7 +528,6 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define XBT_HERE             XBT_LOG(xbt_log_priority_trace, "-- was here")
 
-#define XBT_LOG_OLD_STYLE
 #ifdef XBT_LOG_OLD_STYLE
 
 /* Kept for backward compatibility. */

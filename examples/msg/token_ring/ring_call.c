@@ -39,11 +39,11 @@ int master(int argc, char *argv[])
 							task_comm_size,
 							NULL);
     MSG_task_send(task_s,mailbox);
-    INFO1("Send Data to \"%s\"", mailbox);
+    XBT_INFO("Send Data to \"%s\"", mailbox);
 
 	sprintf(mailbox, "host%d", num);
 	MSG_task_receive(&(task_r), mailbox);
-	INFO1("Received \"%s\"", MSG_task_get_name(task_r));
+	XBT_INFO("Received \"%s\"", MSG_task_get_name(task_r));
 	return 0;
 }
 
@@ -59,7 +59,7 @@ int slave(int argc, char *argv[])
 
 	sprintf(mailbox, "host%d", num);
 	MSG_task_receive(&(task_r), mailbox);
-	INFO1("Received \"%s\"", MSG_task_get_name(task_r));
+	XBT_INFO("Received \"%s\"", MSG_task_get_name(task_r));
 	sprintf(mailbox, "host%d", num+1);
 	if(num == totalHosts-1)
 		sprintf(mailbox, "host%d", 0);
@@ -69,7 +69,7 @@ int slave(int argc, char *argv[])
 							task_comm_size,
 							NULL);
 	MSG_task_send(task_s, mailbox);
-	INFO1("Send Data to \"%s\"", mailbox);
+	XBT_INFO("Send Data to \"%s\"", mailbox);
 
 	return 0;
 }
@@ -92,7 +92,7 @@ static int surf_parse_bypass_application(void)
 
 	SURFXML_START_TAG(platform);
 
-	DEBUG1("process : %s en master",MSG_host_get_name(hosts[0]));
+	XBT_DEBUG("process : %s en master",MSG_host_get_name(hosts[0]));
 	/*   <process host="host A" function="master"> */
 	SURFXML_BUFFER_SET(process_host, MSG_host_get_name(hosts[0]));
 	SURFXML_BUFFER_SET(process_function, "master");
@@ -108,7 +108,7 @@ static int surf_parse_bypass_application(void)
 
 	for(i=1;i<totalHosts;i++)
 	{
-	DEBUG1("process : %s en slave",MSG_host_get_name(hosts[i]));
+	XBT_DEBUG("process : %s en slave",MSG_host_get_name(hosts[i]));
 	/*   <process host="host A" function="slave"> */
 	SURFXML_BUFFER_SET(process_host,MSG_host_get_name(hosts[i]) );
 	SURFXML_BUFFER_SET(process_function, "slave");
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
 
   MSG_clean();
 

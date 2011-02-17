@@ -44,7 +44,7 @@ const char **xbt_replay_trace_reader_get(xbt_replay_trace_reader_t reader)
   ssize_t read;
   xbt_dynar_t d;
   read = getline(&reader->line, &reader->line_len, reader->fp);
-  //INFO1("got from trace: %s",reader->line);
+  //XBT_INFO("got from trace: %s",reader->line);
   reader->linenum++;
   if (read==-1)
     return NULL; /* end of file */

@@ -21,7 +21,7 @@ gras_msg_t gras_msg_recv_any(void)
 {
   gras_msg_t msg = xbt_new0(s_gras_msg_t, 1);
   msg->expe = gras_trp_select(-1);
-  DEBUG0("Select returned something");
+  XBT_DEBUG("Select returned something");
   gras_msg_recv(msg->expe, msg);
   return msg;
 }
@@ -47,7 +47,7 @@ void gras_msg_send_ext(gras_socket_t sock,
     xbt_assert(ulong_type);
   }
 
-  DEBUG3("send '%s' to %s:%d", msgtype->name,
+  XBT_DEBUG("send '%s' to %s:%d", msgtype->name,
          gras_socket_peer_name(sock), gras_socket_peer_port(sock));
   gras_trp_send(sock, _GRAS_header, 6, 1 /* stable */ );
   gras_trp_send(sock, &c_kind, 1, 1 /* stable */ );
@@ -147,7 +147,7 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
   }
 
   gras_datadesc_recv(sock, string_type, r_arch, &msg_name);
-  DEBUG4
+  XBT_DEBUG
       ("Handle an incoming message '%s' (%s) using protocol %d (remote is %s)",
        msg_name, e_gras_msg_kind_names[msg->kind], (int) header[4],
        gras_datadesc_arch_name(r_arch));

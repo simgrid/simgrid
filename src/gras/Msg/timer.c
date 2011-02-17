@@ -23,7 +23,7 @@ void gras_timer_delay(double delay, void_f_void_t action)
 
   gras_timer_t timer = xbt_dynar_push_ptr(pd->timers);
 
-  VERB1("Register delayed action %p", action);
+  XBT_VERB("Register delayed action %p", action);
   timer->period = delay;
   timer->expiry = delay + gras_os_time();
   timer->action = action;
@@ -38,7 +38,7 @@ void gras_timer_repeat(double interval, void_f_void_t action)
 
   gras_timer_t timer = xbt_dynar_push_ptr(pd->timers);
 
-  VERB1("Register repetitive action %p", action);
+  XBT_VERB("Register repetitive action %p", action);
   timer->period = interval;
   timer->expiry = interval + gras_os_time();
   timer->action = action;
@@ -166,22 +166,22 @@ double gras_msg_timer_handle(void)
     timer = xbt_dynar_get_ptr(pd->timers, cursor);
     untilthis = timer->expiry - now;
 
-    DEBUG2("Action %p expires in %f", timer->action, untilthis);
+    XBT_DEBUG("Action %p expires in %f", timer->action, untilthis);
 
     if (untilthis <= 0.0) {
       void_f_void_t action = timer->action;
 
-      DEBUG5("[%.0f] Serve %s action %p (%f<%f)", gras_os_time(),
+      XBT_DEBUG("[%.0f] Serve %s action %p (%f<%f)", gras_os_time(),
              timer->repeat ? "repetitive" : "delayed", timer->action,
              timer->expiry, now);
 
       if (timer->repeat) {
         timer->expiry = now + timer->period;
-        DEBUG4("[%.0f] Re-arm repetitive action %p for %f (period=%f)",
+        XBT_DEBUG("[%.0f] Re-arm repetitive action %p for %f (period=%f)",
                gras_os_time(), timer->action, timer->expiry,
                timer->period);
       } else {
-        DEBUG2("[%.0f] Remove %p now that it's done", gras_os_time(),
+        XBT_DEBUG("[%.0f] Remove %p now that it's done", gras_os_time(),
                timer->action);
         xbt_dynar_cursor_rm(pd->timers, &cursor);
       }

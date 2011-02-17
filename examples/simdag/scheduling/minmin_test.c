@@ -65,7 +65,7 @@ static xbt_dynar_t get_ready_tasks(xbt_dynar_t dax)
       xbt_dynar_push(ready_tasks, &task);
     }
   }
-  DEBUG1("There are %lu ready tasks", xbt_dynar_length(ready_tasks));
+  XBT_DEBUG("There are %lu ready tasks", xbt_dynar_length(ready_tasks));
 
   return ready_tasks;
 }
@@ -95,7 +95,7 @@ static double finish_on_at(SD_task_t task, SD_workstation_t workstation)
         grand_parents = SD_task_get_parents(parent);
 
         if (xbt_dynar_length(grand_parents) > 1) {
-          ERROR1("Warning: transfer %s has 2 parents",
+          XBT_ERROR("Warning: transfer %s has 2 parents",
                  SD_task_get_name(parent));
         }
         xbt_dynar_get_cpy(grand_parents, 0, &grand_parent);
@@ -154,7 +154,7 @@ static SD_workstation_t SD_task_get_best_workstation(SD_task_t task)
 
   for (i = 1; i < nworkstations; i++) {
     EFT = finish_on_at(task, workstations[i]);
-    DEBUG3("%s finishes on %s at %f",
+    XBT_DEBUG("%s finishes on %s at %f",
            SD_task_get_name(task),
            SD_workstation_get_name(workstations[i]), EFT);
 
@@ -251,8 +251,8 @@ int main(int argc, char **argv)
 
   /* Check our arguments */
   if (argc < 3) {
-    INFO1("Usage: %s platform_file dax_file [jedule_file]", argv[0]);
-    INFO1
+    XBT_INFO("Usage: %s platform_file dax_file [jedule_file]", argv[0]);
+    XBT_INFO
         ("example: %s simulacrum_7_hosts.xml Montage_25.xml Montage_25.jed",
          argv[0]);
     exit(1);
@@ -307,7 +307,7 @@ int main(int argc, char **argv)
      * its best workstation.
      */
     xbt_dynar_foreach(ready_tasks, cursor, task) {
-      DEBUG1("%s is ready", SD_task_get_name(task));
+      XBT_DEBUG("%s is ready", SD_task_get_name(task));
       workstation = SD_task_get_best_workstation(task);
       finish_time = finish_on_at(task, workstation);
       if (min_finish_time == -1. || finish_time < min_finish_time) {
@@ -318,7 +318,7 @@ int main(int argc, char **argv)
       }
     }
 
-    INFO2("Schedule %s on %s", SD_task_get_name(selected_task),
+    XBT_INFO("Schedule %s on %s", SD_task_get_name(selected_task),
           SD_workstation_get_name(selected_workstation));
 
     SD_task_schedulel(selected_task, 1, selected_workstation);
@@ -330,14 +330,14 @@ int main(int argc, char **argv)
     xbt_dynar_free_container(&changed);
   }
 
-  INFO1("Simulation Time: %f", SD_get_clock());
+  XBT_INFO("Simulation Time: %f", SD_get_clock());
 
 
 
 
-  INFO0
+  XBT_INFO
       ("------------------- Produce the trace file---------------------------");
-  INFO1("Producing the trace of the run into %s", tracefilename);
+  XBT_INFO("Producing the trace of the run into %s", tracefilename);
   out = fopen(tracefilename, "w");
   xbt_assert1(out, "Cannot write to %s", tracefilename);
   free(tracefilename);

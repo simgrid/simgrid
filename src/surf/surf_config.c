@@ -29,7 +29,7 @@ static void surf_config_cmd_line(int *argc, char **argv)
       opt++;
 
       xbt_cfg_set_parse(_surf_cfg_set, opt);
-      DEBUG1("Did apply '%s' as config setting", opt);
+      XBT_DEBUG("Did apply '%s' as config setting", opt);
       remove_it = 1;
     } else if (!strncmp(argv[i], "--cfg-help", strlen("--cfg-help") + 1) ||
                !strncmp(argv[i], "--help", strlen("--help") + 1)) {
@@ -414,7 +414,7 @@ void surf_config_init(int *argc, char **argv)
 
     surf_config_cmd_line(argc, argv);
   } else {
-    WARN0("Call to surf_config_init() after initialization ignored");
+    XBT_WARN("Call to surf_config_init() after initialization ignored");
   }
 }
 
@@ -447,13 +447,13 @@ void surf_config_models_setup(const char *platform_file)
        || strcmp(cpu_model_name, "Cas01"))
       && !strcmp(workstation_model_name, "CLM03")) {
     const char *val = "compound";
-    INFO0
+    XBT_INFO
         ("Switching workstation model to compound since you changed the network and/or cpu model(s)");
     xbt_cfg_set_string(_surf_cfg_set, "workstation/model", val);
     workstation_model_name = (char *) "compound";
   }
 
-  DEBUG1("Workstation model: %s", workstation_model_name);
+  XBT_DEBUG("Workstation model: %s", workstation_model_name);
   workstation_id =
       find_model_description(surf_workstation_model_description,
                              workstation_model_name);
@@ -478,7 +478,7 @@ void surf_config_models_setup(const char *platform_file)
         (platform_file);
   }
 
-  DEBUG0("Call workstation_model_init");
+  XBT_DEBUG("Call workstation_model_init");
   surf_workstation_model_description[workstation_id].model_init_preparse
       (platform_file);
 }

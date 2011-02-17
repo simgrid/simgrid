@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
   xbt_os_sem_destroy(sem);
 
-  INFO1("sem_basic terminated with exit code %d (success)", EXIT_SUCCESS);
+  XBT_INFO("sem_basic terminated with exit code %d (success)", EXIT_SUCCESS);
 
   return EXIT_SUCCESS;
 
@@ -76,9 +76,9 @@ void *thread_routine(void *param)
   int exit_code = 0;
 
   xbt_os_sem_acquire(sem);
-  INFO1("Hello i'm the thread %d", thread_index);
+  XBT_INFO("Hello i'm the thread %d", thread_index);
   value++;
-  INFO1("The new value of the global variable is %d, bye", value);
+  XBT_INFO("The new value of the global variable is %d, bye", value);
   xbt_os_sem_release(sem);
 
   xbt_os_thread_exit(&exit_code);

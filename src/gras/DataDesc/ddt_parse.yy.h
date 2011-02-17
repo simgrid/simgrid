@@ -58,11 +58,11 @@ int gras_ddt_parse_lex_destroy(void);
 #define PARSE_ERROR_POST xbt_abort();} while (0)
 
 #define PARSE_ERROR0(fmt)     PARSE_ERROR_PRE \
-                              ERROR3(fmt " at %d:%d of :\n%s", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,definition);\
+                              XBT_ERROR(fmt " at %d:%d of :\n%s", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,definition);\
                               PARSE_ERROR_POST
 #define PARSE_ERROR1(fmt,a)   PARSE_ERROR_PRE \
-                              ERROR4(fmt " at %d:%d of :\n%s",a, gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,definition);\
+                              XBT_ERROR(fmt " at %d:%d of :\n%s",a, gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,definition);\
                               PARSE_ERROR_POST
 #define PARSE_ERROR2(fmt,a,b) PARSE_ERROR_PRE \
-                              ERROR5(fmt " at %d:%d of :\n%s",a,b, gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,definition);\
+                              XBT_ERROR(fmt " at %d:%d of :\n%s",a,b, gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,definition);\
                               PARSE_ERROR_POST

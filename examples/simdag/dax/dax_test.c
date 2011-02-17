@@ -36,8 +36,8 @@ int main(int argc, char **argv)
 
   /* Check our arguments */
   if (argc < 3) {
-    INFO1("Usage: %s platform_file dax_file [trace_file]", argv[0]);
-    INFO1
+    XBT_INFO("Usage: %s platform_file dax_file [trace_file]", argv[0]);
+    XBT_INFO
         ("example: %s ../sd_platform.xml Montage_50.xml Montage_50.mytrace",
          argv[0]);
     exit(1);
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
   dax = SD_daxload(argv[2]);
 
   /* Display all the tasks */
-  INFO0
+  XBT_INFO
       ("------------------- Display all tasks of the loaded DAG ---------------------------");
   xbt_dynar_foreach(dax, cursor, task) {
     SD_task_dump(task);
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
   fclose(dotout);
 
   /* Schedule them all on the first workstation */
-  INFO0("------------------- Schedule tasks ---------------------------");
+  XBT_INFO("------------------- Schedule tasks ---------------------------");
   const SD_workstation_t *ws_list = SD_workstation_get_list();
   int totalHosts = SD_workstation_get_number();
   qsort((void *) ws_list, totalHosts, sizeof(SD_workstation_t),
@@ -92,13 +92,13 @@ int main(int argc, char **argv)
     }
   }
 
-  INFO0
+  XBT_INFO
       ("------------------- Run the schedule ---------------------------");
   changed = SD_simulate(-1);
   xbt_dynar_free_container(&changed);
-  INFO0
+  XBT_INFO
       ("------------------- Produce the trace file---------------------------");
-  INFO1("Producing the trace of the run into %s", tracefilename);
+  XBT_INFO("Producing the trace of the run into %s", tracefilename);
   FILE *out = fopen(tracefilename, "w");
   xbt_assert1(out, "Cannot write to %s", tracefilename);
   free(tracefilename);

@@ -30,7 +30,7 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
   unsigned int i;
   xbt_os_thread_t worker = NULL;
 
-  DEBUG1("Create new parmap (%u workers)", num_workers);
+  XBT_DEBUG("Create new parmap (%u workers)", num_workers);
 
   /* Initialize the thread pool data structure */
   xbt_parmap_t parmap = xbt_new0(s_xbt_parmap_t, 1);
@@ -56,12 +56,12 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
 
 void xbt_parmap_destroy(xbt_parmap_t parmap)
 { 
-  DEBUG1("Destroy parmap %p", parmap);
+  XBT_DEBUG("Destroy parmap %p", parmap);
 
   parmap->status = PARMAP_DESTROY;
 
   xbt_barrier_wait(parmap->workers_ready);
-  DEBUG0("Kill job sent");
+  XBT_DEBUG("Kill job sent");
   xbt_barrier_wait(parmap->workers_done);
 #ifndef HAVE_FUTEX_H
   xbt_os_mutex_destroy(parmap->workers_ready->mutex);
@@ -80,10 +80,10 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
 
   /* Notify workers that there is a job */
   xbt_barrier_wait(parmap->workers_ready);
-  DEBUG0("Job dispatched, lets wait...");
+  XBT_DEBUG("Job dispatched, lets wait...");
   xbt_barrier_wait(parmap->workers_done);
 
-  DEBUG0("Job done");
+  XBT_DEBUG("Job done");
   parmap->fun = NULL;
   parmap->data = NULL;
 }
@@ -97,14 +97,14 @@ static void *_xbt_parmap_worker_main(void *arg)
   worker_id = __sync_fetch_and_add(&parmap->workers_max_id, 1);
   xbt_os_thread_set_extra_data((void *)(unsigned long)worker_id);
 
-  DEBUG1("New worker thread created (%u)", worker_id);
+  XBT_DEBUG("New worker thread created (%u)", worker_id);
   
   /* Worker's main loop */
   while(1){
     xbt_barrier_wait(parmap->workers_ready);
 
     if(parmap->status == PARMAP_WORK){
-      DEBUG1("Worker %u got a job", worker_id);
+      XBT_DEBUG("Worker %u got a job", worker_id);
 
       /* Compute how much data does every worker gets */
       data_size = (xbt_dynar_length(parmap->data) / parmap->num_workers)
@@ -116,7 +116,7 @@ static void *_xbt_parmap_worker_main(void *arg)
       /* The end of the worker data segment must be bounded by the end of the data vector */
       data_end = MIN(data_start + data_size, xbt_dynar_length(parmap->data));
 
-      DEBUG4("Worker %u: data_start=%u data_end=%u (data_size=%u)",
+      XBT_DEBUG("Worker %u: data_start=%u data_end=%u (data_size=%u)",
           worker_id, data_start, data_end, data_size);
 
       /* While the worker don't pass the end of it data segment apply the function */
@@ -130,7 +130,7 @@ static void *_xbt_parmap_worker_main(void *arg)
     /* We are destroying the parmap */
     }else{
       xbt_barrier_wait(parmap->workers_done);
-      DEBUG1("Shutting down worker %u", worker_id);
+      XBT_DEBUG("Shutting down worker %u", worker_id);
       return NULL;
     }
   }
@@ -139,13 +139,13 @@ static void *_xbt_parmap_worker_main(void *arg)
 #ifdef HAVE_FUTEX_H
 	static void futex_wait(int *uaddr, int val)
 	{
-	  DEBUG1("Waiting on futex %d", *uaddr);
+	  XBT_DEBUG("Waiting on futex %d", *uaddr);
 	  syscall(SYS_futex, uaddr, FUTEX_WAIT_PRIVATE, val, NULL, NULL, 0);
 	}
 
 	static void futex_wake(int *uaddr, int val)
 	{
-	  DEBUG1("Waking futex %d", *uaddr);
+	  XBT_DEBUG("Waking futex %d", *uaddr);
 	  syscall(SYS_futex, uaddr, FUTEX_WAKE_PRIVATE, val, NULL, NULL, 0);
 	}
 #endif
@@ -204,7 +204,7 @@ void fun(void *arg);
 
 void fun(void *arg)
 {
-  //INFO1("I'm job %lu", (unsigned long)arg);
+  //XBT_INFO("I'm job %lu", (unsigned long)arg);
 }
 
 XBT_TEST_UNIT("basic", test_parmap_basic, "Basic usage")

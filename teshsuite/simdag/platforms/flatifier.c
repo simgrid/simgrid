@@ -61,7 +61,7 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
 
   platformFile = argv[1];
-  DEBUG1("%s", platformFile);
+  XBT_DEBUG("%s", platformFile);
   TRY {
     SD_create_environment(platformFile);
   } CATCH(e) {

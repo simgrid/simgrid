@@ -27,8 +27,8 @@ int main(int argc, char **argv)
 
   /* Check our arguments */
   if (argc < 3) {
-    INFO1("Usage: %s platform_file dot_file [trace_file]", argv[0]);
-    INFO1("example: %s ../2clusters.xml dag.dot dag.mytrace", argv[0]);
+    XBT_INFO("Usage: %s platform_file dot_file [trace_file]", argv[0]);
+    XBT_INFO("example: %s ../2clusters.xml dag.dot dag.mytrace", argv[0]);
     exit(1);
   }
   char *tracefilename;
@@ -49,12 +49,12 @@ int main(int argc, char **argv)
   /* load the DOT file  and schedule tasks */
   dot = SD_dotload_with_sched(argv[2]);
   if(dot == NULL){
-    INFO0("The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose");
+    XBT_INFO("The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose");
     return -1;
   }
 
   /* Display all the tasks */
-  INFO0
+  XBT_INFO
       ("------------------- Display all tasks of the loaded DAG ---------------------------");
   xbt_dynar_foreach(dot, cursor, task) {
     SD_task_dump(task);
@@ -68,13 +68,13 @@ int main(int argc, char **argv)
   fprintf(dotout, "}\n");
   fclose(dotout);
 
-  INFO0
+  XBT_INFO
       ("------------------- Run the schedule ---------------------------");
   changed = SD_simulate(-1);
   xbt_dynar_free_container(&changed);
-  INFO0
+  XBT_INFO
       ("------------------- Produce the trace file---------------------------");
-  INFO1("Producing the trace of the run into %s", tracefilename);
+  XBT_INFO("Producing the trace of the run into %s", tracefilename);
   FILE *out = fopen(tracefilename, "w");
   xbt_assert1(out, "Cannot write to %s", tracefilename);
   free(tracefilename);

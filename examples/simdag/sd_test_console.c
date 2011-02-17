@@ -43,8 +43,8 @@ int main(int argc, char **argv)
   /*  xbt_log_control_set("sd.thres=debug"); */
 
   if (argc < 2) {
-    INFO1("Usage: %s script_file", argv[0]);
-    INFO1("example: %s sd_platform_script.lua", argv[0]);
+    XBT_INFO("Usage: %s script_file", argv[0]);
+    XBT_INFO("example: %s sd_platform_script.lua", argv[0]);
     exit(1);
   }
 
@@ -63,29 +63,29 @@ int main(int argc, char **argv)
   computation_amount2 = 1000000;
   communication_amount12 = 2000000;
   communication_amount21 = 3000000;
-  INFO3("Computation time for %f flops on %s: %f", computation_amount1,
+  XBT_INFO("Computation time for %f flops on %s: %f", computation_amount1,
         name1, SD_workstation_get_computation_time(w1,
                                                    computation_amount1));
-  INFO3("Computation time for %f flops on %s: %f", computation_amount2,
+  XBT_INFO("Computation time for %f flops on %s: %f", computation_amount2,
         name2, SD_workstation_get_computation_time(w2,
                                                    computation_amount2));
 
-  INFO2("Route between %s and %s:", name1, name2);
+  XBT_INFO("Route between %s and %s:", name1, name2);
   route = SD_route_get_list(w1, w2);
   route_size = SD_route_get_size(w1, w2);
   for (i = 0; i < route_size; i++) {
-    INFO3("   Link %s: latency = %f, bandwidth = %f",
+    XBT_INFO("   Link %s: latency = %f, bandwidth = %f",
           SD_link_get_name(route[i]),
           SD_link_get_current_latency(route[i]),
           SD_link_get_current_bandwidth(route[i]));
   }
-  INFO2("Route latency = %f, route bandwidth = %f",
+  XBT_INFO("Route latency = %f, route bandwidth = %f",
         SD_route_get_current_latency(w1, w2),
         SD_route_get_current_bandwidth(w1, w2));
-  INFO4("Communication time for %f bytes between %s and %s: %f",
+  XBT_INFO("Communication time for %f bytes between %s and %s: %f",
         communication_amount12, name1, name2,
         SD_route_get_communication_time(w1, w2, communication_amount12));
-  INFO4("Communication time for %f bytes between %s and %s: %f",
+  XBT_INFO("Communication time for %f bytes between %s and %s: %f",
         communication_amount21, name2, name1,
         SD_route_get_communication_time(w2, w1, communication_amount21));
 
@@ -164,7 +164,7 @@ int main(int argc, char **argv)
 
   /* estimated time */
   task = taskD;
-  INFO2("Estimated time for '%s': %f", SD_task_get_name(task),
+  XBT_INFO("Estimated time for '%s': %f", SD_task_get_name(task),
         SD_task_get_execution_time(task, workstation_number,
                                    workstation_list, computation_amount,
                                    communication_amount));
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
 
   changed_tasks = SD_simulate(-1.0);
   xbt_dynar_foreach(changed_tasks, ctr, task) {
-    INFO3("Task '%s' start time: %f, finish time: %f",
+    XBT_INFO("Task '%s' start time: %f, finish time: %f",
           SD_task_get_name(task),
           SD_task_get_start_time(task), SD_task_get_finish_time(task));
   }
@@ -195,14 +195,14 @@ int main(int argc, char **argv)
 
   xbt_dynar_free_container(&changed_tasks);
 
-  DEBUG0("Destroying tasks...");
+  XBT_DEBUG("Destroying tasks...");
 
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);
   SD_task_destroy(taskC);
   SD_task_destroy(taskD);
 
-  DEBUG0("Tasks destroyed. Exiting SimDag...");
+  XBT_DEBUG("Tasks destroyed. Exiting SimDag...");
 
   SD_exit();
   return 0;

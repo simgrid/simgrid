@@ -65,7 +65,7 @@ static void parse_process_init(void)
   process.argv = xbt_new(char *, 1);
   process.argv[0] = xbt_strdup(A_surfxml_process_function);
   process.host = strdup(A_surfxml_process_host);
-  /*VERB1("Function: %s",A_surfxml_process_function); */
+  /*XBT_VERB("Function: %s",A_surfxml_process_function); */
 }
 
 static void parse_argument(void)
@@ -79,7 +79,7 @@ static void parse_argument(void)
 static void parse_process_finalize(void)
 {
   xbt_dynar_push(process_list, &process);
-  /*VERB1("Function: %s",process.argv[0]); */
+  /*XBT_VERB("Function: %s",process.argv[0]); */
 }
 
 /*FIXME Defined in surfxml_parse.c*/
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
   project_name = argv[1];
 
   surf_parse_reset_callbacks();
-  DEBUG2("%p %p", parse_process_init, &parse_process_init);
+  XBT_DEBUG("%p %p", parse_process_init, &parse_process_init);
   surfxml_add_callback(STag_surfxml_process_cb_list, &parse_process_init);
   surfxml_add_callback(ETag_surfxml_argument_cb_list, &parse_argument);
   surfxml_add_callback(ETag_surfxml_process_cb_list,
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
      for (cursor=NULL, xbt_dict_cursor_first((process_function_set),&(cursor)) ;
      xbt_dict_cursor_get_or_free(&(cursor),&(key),(void**)(&data));
      xbt_dict_cursor_step(cursor) ) {
-     DEBUG1("Function %s", key);      
+     XBT_DEBUG("Function %s", key);
      }
 
      xbt_dict_dump(process_function_set,print);

@@ -75,7 +75,7 @@ static int msgfilter_rpcID(gras_msg_t msg, void *ctx)
   gras_msg_cb_ctx_t rpc_ctx;
 
 
-  DEBUG5
+  XBT_DEBUG
       ("Filter a message of ID %lu, type '%s' and kind '%s'. Waiting for ID=%lu. %s",
        msg->ID, msg->type->name, e_gras_msg_kind_names[msg->kind], ID,
        res ? "take it" : "reject");
@@ -86,7 +86,7 @@ static int msgfilter_rpcID(gras_msg_t msg, void *ctx)
   /* Check whether it is an old answer to a message we already canceled */
   xbt_dynar_foreach(_gras_rpc_cancelled, cursor, rpc_ctx) {
     if (msg->ID == rpc_ctx->ID && msg->kind == e_gras_msg_kind_rpcanswer) {
-      VERB1
+      XBT_VERB
           ("Got an answer to the already canceled (timeouted?) RPC %ld. Ignore it (leaking the payload!).",
            msg->ID);
       xbt_dynar_cursor_rm(_gras_rpc_cancelled, &cursor);
@@ -137,7 +137,7 @@ gras_msg_rpc_async_call_(gras_socket_t server,
   ctx->msgtype = msgtype;
   ctx->timeout = timeOut;
 
-  VERB4("Send to %s:%d a RPC of type '%s' (ID=%lu)",
+  XBT_VERB("Send to %s:%d a RPC of type '%s' (ID=%lu)",
         gras_socket_peer_name(server),
         gras_socket_peer_port(server), msgtype->name, ctx->ID);
 
@@ -176,7 +176,7 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer)
     if (!_gras_rpc_cancelled)
       _gras_rpc_cancelled = xbt_dynar_new(sizeof(ctx), NULL);
     xbt_dynar_push(_gras_rpc_cancelled, &ctx);
-    INFO5
+    XBT_INFO
         ("canceled RPC %ld pushed onto the stack (%s from %s:%d) Reason: %s",
          ctx->ID, ctx->msgtype->name,
          gras_socket_peer_name(ctx->expeditor),
@@ -189,7 +189,7 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer)
     xbt_ex_t e;
     memcpy(&e, received.payl, received.payl_size);
     free(received.payl);
-    VERB3("Raise a remote exception cat:%d coming from %s (%s)",
+    XBT_VERB("Raise a remote exception cat:%d coming from %s (%s)",
           e.category, e.host, e.msg);
     __xbt_running_ctx_fetch()->exception.msg = e.msg;
     __xbt_running_ctx_fetch()->exception.category = e.category;
@@ -236,7 +236,7 @@ void gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,
   xbt_assert0(ctx->answer_due,
               "RPC return not allowed here. Either not a RPC message or already returned a result");
   ctx->answer_due = 0;
-  DEBUG5("Return to RPC '%s' from %s:%d (tOut=%f, payl=%p)",
+  XBT_DEBUG("Return to RPC '%s' from %s:%d (tOut=%f, payl=%p)",
          ctx->msgtype->name,
          gras_socket_peer_name(ctx->expeditor),
          gras_socket_peer_port(ctx->expeditor), timeOut, answer);

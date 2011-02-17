@@ -46,7 +46,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
   if (trace_list) {
     trace = xbt_dict_get_or_null(trace_list, id);
     if (trace) {
-      WARN1("Ignoring redefinition of trace %s", id);
+      XBT_WARN("Ignoring redefinition of trace %s", id);
       return trace;
     }
   }
@@ -110,7 +110,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   if (trace_list) {
     trace = xbt_dict_get_or_null(trace_list, filename);
     if (trace) {
-      WARN1("Ignoring redefinition of trace %s", filename);
+      XBT_WARN("Ignoring redefinition of trace %s", filename);
       return trace;
     }
   }

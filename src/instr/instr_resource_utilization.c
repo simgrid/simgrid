@@ -298,7 +298,7 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
 
   //trace uncategorized link utilization
   if (TRACE_uncategorized()){
-    DEBUG4("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now+delta, resource, value);
+    XBT_DEBUG("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now+delta, resource, value);
     container_t container = getContainerByName (resource);
     type_t type = getVariableType("bandwidth_used", NULL, container->type);
     TRACE_surf_resource_utilization_event(smx_action, now, delta, type->name, container->name, value);
@@ -308,7 +308,7 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
   if (TRACE_categorized()){
     if (!surf_action->category)
       return;
-    DEBUG5("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
+    XBT_DEBUG("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
     container_t container = getContainerByName (resource);
     type_t type = getVariableType(surf_action->category, NULL, container->type);
     TRACE_surf_resource_utilization_event(smx_action, now, delta, type->name, container->name, value);
@@ -332,7 +332,7 @@ void TRACE_surf_host_set_utilization(const char *resource,
 
   //trace uncategorized host utilization
   if (TRACE_uncategorized()){
-    DEBUG4("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
+    XBT_DEBUG("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
     container_t container = getContainerByName (resource);
     type_t type = getVariableType("power_used", NULL, container->type);
     TRACE_surf_resource_utilization_event(smx_action, now, delta, type->name, container->name, value);
@@ -342,7 +342,7 @@ void TRACE_surf_host_set_utilization(const char *resource,
   if (TRACE_categorized()){
     if (!surf_action->category)
       return;
-    DEBUG5("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
+    XBT_DEBUG("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
     container_t container = getContainerByName (resource);
     type_t type = getVariableType(surf_action->category, NULL, container->type);
     TRACE_surf_resource_utilization_event(smx_action, now, delta, type->name, container->name, value);
@@ -357,7 +357,7 @@ void TRACE_surf_resource_utilization_start(smx_action_t action)
 {
   if (!TRACE_is_active())
     return;
-  DEBUG1("START %p", action);
+  XBT_DEBUG("START %p", action);
   TRACE_method_start(action);
 }
 
@@ -369,7 +369,7 @@ void TRACE_surf_resource_utilization_event(smx_action_t action, double now,
 {
   if (!TRACE_is_active())
     return;
-  DEBUG6("EVENT %p [%f - %f] %s %s %f", action, now, now+delta, resource, variable, value);
+  XBT_DEBUG("EVENT %p [%f - %f] %s %s %f", action, now, now+delta, resource, variable, value);
   TRACE_method_event(action, now, delta, variable, resource, value);
 }
 
@@ -378,7 +378,7 @@ void TRACE_surf_resource_utilization_end(smx_action_t action)
   if (!TRACE_is_active())
     return;
   TRACE_method_end(action);
-  DEBUG1("END %p", action);
+  XBT_DEBUG("END %p", action);
 }
 
 void TRACE_surf_resource_utilization_release()

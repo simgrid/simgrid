@@ -550,14 +550,14 @@ void xbt_log_init(int *argc, char **argv)
         !strncmp(argv[i], "--xbt-log=", strlen("--xbt-log="))) {
 
       if (strncmp(argv[i], "--log=", strlen("--log=")))
-        WARN2
+        XBT_WARN
             ("Option %.*s is deprecated and will disapear in the future. Use --log instead.",
              (int) (strchr(argv[i], '=') - argv[i]), argv[i]);
 
       opt = strchr(argv[i], '=');
       opt++;
       xbt_log_control_set(opt);
-      DEBUG1("Did apply '%s' as log setting", opt);
+      XBT_DEBUG("Did apply '%s' as log setting", opt);
       /*remove this from argv */
 
       for (j = i + 1; j < *argc; j++) {
@@ -592,7 +592,7 @@ static void log_cat_exit(xbt_log_category_t cat)
 
 void xbt_log_postexit(void)
 {
-  VERB0("Exiting log");
+  XBT_VERB("Exiting log");
   xbt_dynar_free(&xbt_log_settings);
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
 }
@@ -645,7 +645,7 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category,
   if (setting->thresh != xbt_log_priority_uninitialized) {
     xbt_log_threshold_set(category, setting->thresh);
 
-    DEBUG3("Apply settings for category '%s': set threshold to %s (=%d)",
+    XBT_DEBUG("Apply settings for category '%s': set threshold to %s (=%d)",
            category->name, xbt_log_priority_names[category->threshold],
            category->threshold);
   }
@@ -653,14 +653,14 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category,
   if (setting->fmt) {
     xbt_log_layout_set(category, xbt_log_layout_format_new(setting->fmt));
 
-    DEBUG2("Apply settings for category '%s': set format to %s",
+    XBT_DEBUG("Apply settings for category '%s': set format to %s",
            category->name, setting->fmt);
   }
 
   if (setting->additivity != -1) {
     xbt_log_additivity_set(category, setting->additivity);
 
-    DEBUG2("Apply settings for category '%s': set additivity to %s",
+    XBT_DEBUG("Apply settings for category '%s': set additivity to %s",
            category->name, (setting->additivity ? "on" : "off"));
   }
   if (setting->appender) {
@@ -668,7 +668,7 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category,
     if (!category->layout)
       xbt_log_layout_set(category, xbt_log_layout_simple_new(NULL));
     category->additivity = 0;
-    DEBUG2("Set %p as appender of category '%s'",
+    XBT_DEBUG("Set %p as appender of category '%s'",
            setting->appender, category->name);
   }
 #undef _xbt_log_cat_init
@@ -688,7 +688,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   xbt_log_setting_t setting = NULL;
   int found = 0;
 
-  DEBUG3("Initializing category '%s' (firstChild=%s, nextSibling=%s)",
+  XBT_DEBUG("Initializing category '%s' (firstChild=%s, nextSibling=%s)",
          category->name,
          (category->firstChild ? category->firstChild->name : "none"),
          (category->nextSibling ? category->nextSibling->name : "none"));
@@ -703,7 +703,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
     if (!category->parent)
       category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
 
-    DEBUG3("Set %s (%s) as father of %s ",
+    XBT_DEBUG("Set %s (%s) as father of %s ",
            category->parent->name,
            (category->parent->threshold == xbt_log_priority_uninitialized ?
             "uninited" : xbt_log_priority_names[category->
@@ -725,7 +725,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
         cpp = cpp->nextSibling;
       }
 
-      DEBUG3("Childs of %s: %s; nextSibling: %s",
+      XBT_DEBUG("Childs of %s: %s; nextSibling: %s",
              category->parent->name, res,
              (category->parent->nextSibling ?
               category->parent->nextSibling->name : "none"));
@@ -758,7 +758,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   }
 
   if (!found)
-    DEBUG3("Category '%s': inherited threshold = %s (=%d)",
+    XBT_DEBUG("Category '%s': inherited threshold = %s (=%d)",
            category->name, xbt_log_priority_names[category->threshold],
            category->threshold);
 
@@ -814,7 +814,7 @@ static void _set_inherited_thresholds(xbt_log_category_t cat)
   for (; child != NULL; child = child->nextSibling) {
     if (child->isThreshInherited) {
       if (cat != &_XBT_LOGV(log))
-        VERB3("Set category threshold of %s to %s (=%d)",
+        XBT_VERB("Set category threshold of %s to %s (=%d)",
               child->name, xbt_log_priority_names[cat->threshold],
               cat->threshold);
       child->threshold = cat->threshold;
@@ -849,7 +849,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
 
   if (!*control_string)
     return set;
-  DEBUG1("Parse log setting '%s'", control_string);
+  XBT_DEBUG("Parse log setting '%s'", control_string);
 
   control_string += strspn(control_string, " ");
   name = control_string;
@@ -873,10 +873,10 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
       }
     }
 
-    DEBUG1("New priority name = %s", neweq);
+    XBT_DEBUG("New priority name = %s", neweq);
     for (i = 0; i < xbt_log_priority_infinite; i++) {
       if (!strncmp(xbt_log_priority_names[i], neweq, p - eq)) {
-        DEBUG1("This is priority %d", i);
+        XBT_DEBUG("This is priority %d", i);
         break;
       }
     }
@@ -929,7 +929,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
 
   memcpy(set->catname, name, dot - name);
   set->catname[dot - name] = '\0';      /* Just in case */
-  DEBUG1("This is for cat '%s'", set->catname);
+  XBT_DEBUG("This is for cat '%s'", set->catname);
 
   return set;
 }
@@ -939,14 +939,14 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,
 {
   xbt_log_category_t child, res;
 
-  DEBUG4("Search '%s' into '%s' (firstChild='%s'; nextSibling='%s')", name,
+  XBT_DEBUG("Search '%s' into '%s' (firstChild='%s'; nextSibling='%s')", name,
          cat->name, (cat->firstChild ? cat->firstChild->name : "none"),
          (cat->nextSibling ? cat->nextSibling->name : "none"));
   if (!strcmp(cat->name, name))
     return cat;
 
   for (child = cat->firstChild; child != NULL; child = child->nextSibling) {
-    DEBUG1("Dig into %s", child->name);
+    XBT_DEBUG("Dig into %s", child->name);
     res = _xbt_log_cat_searchsub(child, name);
     if (res)
       return res;
@@ -989,7 +989,7 @@ void xbt_log_control_set(const char *control_string)
 
   if (!control_string)
     return;
-  DEBUG1("Parse log settings '%s'", control_string);
+  XBT_DEBUG("Parse log settings '%s'", control_string);
 
   /* Special handling of no_loc request, which asks for any file localization to be omitted (for tesh runs) */
   if (!strcmp(control_string, "no_loc")) {
@@ -1019,13 +1019,13 @@ void xbt_log_control_set(const char *control_string)
         _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT), set->catname);
 
     if (cat) {
-      DEBUG0("Apply directly");
+      XBT_DEBUG("Apply directly");
       _xbt_log_cat_apply_set(cat, set);
       _free_setting((void *) &set);
     } else {
 
-      DEBUG0("Store for further application");
-      DEBUG1("push %p to the settings", (void *) set);
+      XBT_DEBUG("Store for further application");
+      XBT_DEBUG("push %p to the settings", (void *) set);
       xbt_dynar_push(xbt_log_settings, &set);
     }
   }
@@ -1045,7 +1045,7 @@ void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app)
 void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
 {
   if (!cat->appender) {
-    VERB1
+    XBT_VERB
         ("No appender to category %s. Setting the file appender as default",
          cat->name);
     xbt_log_appender_set(cat, xbt_log_appender_file_new(NULL));

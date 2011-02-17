@@ -46,45 +46,45 @@ static void parse_type_modifier(type_modifier_t type_modifier)
   do {
     if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_STAR) {
       /* This only used when parsing 'short *' since this function returns when int, float, double,... is encountered */
-      DEBUG0("This is a reference");
+      XBT_DEBUG("This is a reference");
       type_modifier->is_ref++;
 
     } else if (!strcmp(gras_ddt_parse_text, "unsigned")) {
-      DEBUG0("This is an unsigned");
+      XBT_DEBUG("This is an unsigned");
       type_modifier->is_unsigned = 1;
 
     } else if (!strcmp(gras_ddt_parse_text, "short")) {
-      DEBUG0("This is short");
+      XBT_DEBUG("This is short");
       type_modifier->is_short = 1;
 
     } else if (!strcmp(gras_ddt_parse_text, "long")) {
-      DEBUG0("This is long");
+      XBT_DEBUG("This is long");
       type_modifier->is_long++; /* handle "long long" */
 
     } else if (!strcmp(gras_ddt_parse_text, "struct")) {
-      DEBUG0("This is a struct");
+      XBT_DEBUG("This is a struct");
       type_modifier->is_struct = 1;
 
     } else if (!strcmp(gras_ddt_parse_text, "union")) {
-      DEBUG0("This is an union");
+      XBT_DEBUG("This is an union");
       type_modifier->is_union = 1;
 
     } else if (!strcmp(gras_ddt_parse_text, "enum")) {
-      DEBUG0("This is an enum");
+      XBT_DEBUG("This is an enum");
       type_modifier->is_enum = 1;
 
     } else if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_EMPTY) {
-      DEBUG0("Pass space");
+      XBT_DEBUG("Pass space");
 
     } else {
-      DEBUG1("Done with modifiers (got %s)", gras_ddt_parse_text);
+      XBT_DEBUG("Done with modifiers (got %s)", gras_ddt_parse_text);
       break;
     }
 
     gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
     if ((gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD) &&
         (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_STAR)) {
-      DEBUG2("Done with modifiers (got %s,%d)", gras_ddt_parse_text,
+      XBT_DEBUG("Done with modifiers (got %s,%d)", gras_ddt_parse_text,
              gras_ddt_parse_tok_num);
       break;
     }
@@ -124,7 +124,7 @@ static void change_to_fixed_array(xbt_dynar_t dynar, long int size)
   XBT_IN;
   xbt_dynar_pop(dynar, &former);
   array.type_name = (char *) xbt_malloc(strlen(former.type->name) + 48);
-  DEBUG2("Array specification (size=%ld, elm='%s'), change pushed type",
+  XBT_DEBUG("Array specification (size=%ld, elm='%s'), change pushed type",
          size, former.type_name);
   sprintf(array.type_name, "%s%s%s%s[%ld]",
           (former.tm.is_unsigned ? "u " : ""),
@@ -147,7 +147,7 @@ static void change_to_ref(xbt_dynar_t dynar)
   XBT_IN;
   xbt_dynar_pop(dynar, &former);
   ref.type_name = (char *) xbt_malloc(strlen(former.type->name) + 2);
-  DEBUG1("Ref specification (elm='%s'), change pushed type",
+  XBT_DEBUG("Ref specification (elm='%s'), change pushed type",
          former.type_name);
   sprintf(ref.type_name, "%s*", former.type_name);
   free(former.type_name);
@@ -248,7 +248,7 @@ static void parse_statement(char *definition,
     for (colon_pos = gras_ddt_parse_col_pos;
          definition[colon_pos] != ';'; colon_pos++);
     definition[colon_pos] = '\0';
-    DEBUG3("Parse the statement \"%s%s;\" (col_pos=%d)",
+    XBT_DEBUG("Parse the statement \"%s%s;\" (col_pos=%d)",
            gras_ddt_parse_text,
            definition + gras_ddt_parse_col_pos, gras_ddt_parse_col_pos);
     definition[colon_pos] = ';';
@@ -280,10 +280,10 @@ static void parse_statement(char *definition,
 
     /* bastard user, they omited "int" ! */
     identifier.type_name = (char *) strdup("int");
-    DEBUG0("the base type is 'int', which were omited (you vicious user)");
+    XBT_DEBUG("the base type is 'int', which were omited (you vicious user)");
   } else {
     identifier.type_name = (char *) strdup(gras_ddt_parse_text);
-    DEBUG1("the base type is '%s'", identifier.type_name);
+    XBT_DEBUG("the base type is '%s'", identifier.type_name);
     gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
   }
 
@@ -345,7 +345,7 @@ static void parse_statement(char *definition,
       identifier.type = gras_datadesc_by_name("char");
 
     } else {
-      DEBUG1("Base type is a constructed one (%s)", identifier.type_name);
+      XBT_DEBUG("Base type is a constructed one (%s)", identifier.type_name);
       if (!strcmp(identifier.type_name, "xbt_matrix_t")) {
         identifier.tm.is_matrix = 1;
       } else if (!strcmp(identifier.type_name, "xbt_dynar_t")) {
@@ -406,7 +406,7 @@ static void parse_statement(char *definition,
           gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
           if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_RB)
             PARSE_ERROR0("Unparsable size of array");
-          DEBUG1("Fixed size array, size=%ld", size);
+          XBT_DEBUG("Fixed size array, size=%ld", size);
           continue;
         } else {
           PARSE_ERROR0("Unparsable size of array");
@@ -467,7 +467,7 @@ static void parse_statement(char *definition,
 
         /* Done with parsing the annotation. Now deal with it by replacing previously pushed type with the right one */
 
-        DEBUG2("Anotation: %s=%s", keyname, keyval);
+        XBT_DEBUG("Anotation: %s=%s", keyname, keyval);
         if (!strcmp(keyname, "size")) {
           if (!identifier.tm.is_ref)
             PARSE_ERROR0
@@ -578,10 +578,10 @@ static void parse_statement(char *definition,
     if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
 
       identifier.name = (char *) strdup(gras_ddt_parse_text);
-      DEBUG1("Found the identifier \"%s\"", identifier.name);
+      XBT_DEBUG("Found the identifier \"%s\"", identifier.name);
 
       xbt_dynar_push(identifiers, &identifier);
-      DEBUG1("Dynar_len=%lu", xbt_dynar_length(identifiers));
+      XBT_DEBUG("Dynar_len=%lu", xbt_dynar_length(identifiers));
       expect_id_separator = 1;
       continue;
     }
@@ -623,11 +623,11 @@ static gras_datadesc_type_t parse_struct(char *definition)
   /* Create the struct descriptor */
   if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
     struct_type = gras_datadesc_struct(gras_ddt_parse_text);
-    VERB1("Parse the struct '%s'", gras_ddt_parse_text);
+    XBT_VERB("Parse the struct '%s'", gras_ddt_parse_text);
     gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
   } else {
     sprintf(buffname, "anonymous struct %d", anonymous_struct++);
-    VERB1("Parse the anonymous struct nb %d", anonymous_struct);
+    XBT_VERB("Parse the anonymous struct nb %d", anonymous_struct);
     struct_type = gras_datadesc_struct(buffname);
   }
 
@@ -649,7 +649,7 @@ static gras_datadesc_type_t parse_struct(char *definition)
       done = 1;
     }
 
-    DEBUG1("This statement contained %lu identifiers",
+    XBT_DEBUG("This statement contained %lu identifiers",
            xbt_dynar_length(identifiers));
     /* append the identifiers we've found */
     xbt_dynar_foreach(identifiers, iter, field) {
@@ -658,24 +658,24 @@ static gras_datadesc_type_t parse_struct(char *definition)
             ("Not enough GRAS_ANNOTATE to deal with all dereferencing levels of %s (%d '*' left)",
              field.name, field.tm.is_ref);
 
-      VERB2("Append field '%s' to %p", field.name, (void *) struct_type);
+      XBT_VERB("Append field '%s' to %p", field.name, (void *) struct_type);
       gras_datadesc_struct_append(struct_type, field.name, field.type);
       free(field.name);
       free(field.type_name);
 
     }
     xbt_dynar_reset(identifiers);
-    DEBUG1("struct_type=%p", (void *) struct_type);
+    XBT_DEBUG("struct_type=%p", (void *) struct_type);
 
     /* Make sure that all fields declaring a size push it into the cbps */
     xbt_dynar_foreach(fields_to_push, iter, name) {
-      DEBUG1("struct_type=%p", (void *) struct_type);
+      XBT_DEBUG("struct_type=%p", (void *) struct_type);
       if (name[0] == '*') {
-        VERB2("Push field '%s' as a multiplier into size stack of %p",
+        XBT_VERB("Push field '%s' as a multiplier into size stack of %p",
               name + 1, (void *) struct_type);
         gras_datadesc_cb_field_push_multiplier(struct_type, name + 1);
       } else {
-        VERB2("Push field '%s' into size stack of %p",
+        XBT_VERB("Push field '%s' into size stack of %p",
               name, (void *) struct_type);
         gras_datadesc_cb_field_push(struct_type, name);
       }
@@ -767,7 +767,7 @@ gras_datadesc_parse(const char *name, const char *C_statement)
   definition[def_count] = '\0';
 
   /* init */
-  VERB2("_gras_ddt_type_parse(%s) -> %d chars", definition, def_count);
+  XBT_VERB("_gras_ddt_type_parse(%s) -> %d chars", definition, def_count);
   gras_ddt_parse_pointer_string_init(definition);
 
   /* Do I have a typedef, or a raw struct ? */
@@ -784,18 +784,18 @@ gras_datadesc_parse(const char *name, const char *C_statement)
     res = parse_typedef(definition);
 
   } else {
-    ERROR1
+    XBT_ERROR
         ("Failed to parse the following symbol (not a struct neither a typedef) :\n%s",
          definition);
     xbt_abort();
   }
 
   gras_ddt_parse_pointer_string_close();
-  VERB0("end of _gras_ddt_type_parse()");
+  XBT_VERB("end of _gras_ddt_type_parse()");
   free(definition);
   /* register it under the name provided as symbol */
   if (strcmp(res->name, name)) {
-    ERROR2
+    XBT_ERROR
         ("In GRAS_DEFINE_TYPE, the provided symbol (here %s) must be the C type name (here %s)",
          name, res->name);
     xbt_abort();

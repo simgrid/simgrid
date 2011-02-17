@@ -103,7 +103,7 @@ int node(int argc, char **argv);
 
   node_data_t *globals=(node_data_t*)gras_userdata_get();
 
-  INFO4(">>> %d : received %d message from %s to %d <<<",globals->id,pbio_i.type,gras_socket_peer_name(expeditor),pbio_i.dest);
+  XBT_INFO(">>> %d : received %d message from %s to %d <<<",globals->id,pbio_i.type,gras_socket_peer_name(expeditor),pbio_i.dest);
 
 
 
@@ -117,7 +117,7 @@ static int node_cb_get_suc_handler(gras_msg_cb_ctx_t ctx,
   get_suc_t incoming = *(get_suc_t *) payload_data;
   rep_suc_t outgoing;
   node_data_t *globals = (node_data_t *) gras_userdata_get();
-  INFO2("Received a get_successor message from %s for %d",
+  XBT_INFO("Received a get_successor message from %s for %d",
         gras_socket_peer_name(expeditor), incoming.id);
   if ((globals->id == globals->finger[0].id) ||
       (incoming.id > globals->id
@@ -125,7 +125,7 @@ static int node_cb_get_suc_handler(gras_msg_cb_ctx_t ctx,
     outgoing.id = globals->finger[0].id;
     snprintf(outgoing.host, 1024, globals->finger[0].host);
     outgoing.port = globals->finger[0].port;
-    INFO0("My successor is his successor!");
+    XBT_INFO("My successor is his successor!");
   } else {
     gras_socket_t temp_sock;
     int contact = closest_preceding_node(incoming.id);
@@ -133,7 +133,7 @@ static int node_cb_get_suc_handler(gras_msg_cb_ctx_t ctx,
       outgoing.id = globals->finger[0].id;
       snprintf(outgoing.host, 1024, globals->finger[0].host);
       outgoing.port = globals->finger[0].port;
-      INFO0("My successor is his successor!");
+      XBT_INFO("My successor is his successor!");
     } else {
       get_suc_t asking;
       asking.id = incoming.id;
@@ -156,7 +156,7 @@ static int node_cb_get_suc_handler(gras_msg_cb_ctx_t ctx,
 
   TRY {
     gras_msg_send(expeditor, "chord_rep_suc", &outgoing);
-    INFO0("Successor information sent!");
+    XBT_INFO("Successor information sent!");
   }
   CATCH(e) {
     RETHROW2("%s:Timeout sending successor information to %s: %s",
@@ -186,14 +186,14 @@ static int node_cb_notify_handler(gras_msg_cb_ctx_t ctx,
   /*xbt_ex_t e; */
   notify_t incoming = *(notify_t *) payload_data;
   node_data_t *globals = (node_data_t *) gras_userdata_get();
-  INFO2("Received a notifying message from %s as %d",
+  XBT_INFO("Received a notifying message from %s as %d",
         gras_socket_peer_name(expeditor), incoming.id);
   if (globals->pre_id == -1 ||
       (incoming.id > globals->pre_id && incoming.id < globals->id)) {
     globals->pre_id = incoming.id;
     snprintf(globals->pre_host, 1024, incoming.host);
     globals->pre_port = incoming.port;
-    INFO0("Set as my new predecessor!");
+    XBT_INFO("Set as my new predecessor!");
   }
   return 0;
 }
@@ -222,7 +222,7 @@ static void fix_fingers()
   }
 
   TRY {
-    INFO0("Waiting for reply!");
+    XBT_INFO("Waiting for reply!");
     gras_msg_wait(6000, "chord_rep_suc", &temp_sock2, &rep_suc_msg);
   } CATCH(e) {
     RETHROW1("%s: Error waiting for successor:%s", globals->host);
@@ -230,7 +230,7 @@ static void fix_fingers()
   globals->finger[0].id = rep_suc_msg.id;
   snprintf(globals->finger[0].host, 1024, rep_suc_msg.host);
   globals->finger[0].port = rep_suc_msg.port;
-  INFO1("→ Finger %d fixed!", globals->next_to_fix);
+  XBT_INFO("→ Finger %d fixed!", globals->next_to_fix);
   gras_socket_close(temp_sock);
 
   globals->next_to_fix = (++globals->next_to_fix == globals->fingers) ?
@@ -322,15 +322,15 @@ int node(int argc, char **argv)
   register_messages();
 
   globals->finger = (finger_elem *) calloc(1, sizeof(finger_elem));
-  INFO2("Launching node %s:%d", globals->host, globals->port);
+  XBT_INFO("Launching node %s:%d", globals->host, globals->port);
   if (create) {
-    INFO0("→Creating ring");
+    XBT_INFO("→Creating ring");
     globals->finger[0].id = globals->id;
     snprintf(globals->finger[0].host, 1024, globals->host);
     globals->finger[0].port = globals->port;
   } else {
-    INFO2("→Known node %s:%d", other_host, other_port);
-    INFO0("→Contacting to determine successor");
+    XBT_INFO("→Known node %s:%d", other_host, other_port);
+    XBT_INFO("→Contacting to determine successor");
     TRY {
       temp_sock = gras_socket_client(other_host, other_port);
     }
@@ -348,7 +348,7 @@ int node(int argc, char **argv)
     }
 
     TRY {
-      INFO0("Waiting for reply!");
+      XBT_INFO("Waiting for reply!");
       gras_msg_wait(10., "chord_rep_suc", &temp_sock2, &rep_suc_msg);
     }
     CATCH(e) {
@@ -357,7 +357,7 @@ int node(int argc, char **argv)
     globals->finger[0].id = rep_suc_msg.id;
     snprintf(globals->finger[0].host, 1024, rep_suc_msg.host);
     globals->finger[0].port = rep_suc_msg.port;
-    INFO3("→Got successor : %d-%s:%d", globals->finger[0].id,
+    XBT_INFO("→Got successor : %d-%s:%d", globals->finger[0].id,
           globals->finger[0].host, globals->finger[0].port);
     gras_socket_close(temp_sock);
     TRY {
@@ -397,6 +397,6 @@ int node(int argc, char **argv)
   gras_socket_close(globals->sock);
   free(globals);
   gras_exit();
-  INFO0("Done");
+  XBT_INFO("Done");
   return (0);
 }

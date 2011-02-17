@@ -39,9 +39,9 @@ void gras_msgtype_dumpall(void)
   xbt_set_cursor_t cursor;
   gras_msgtype_t msgtype = NULL;
 
-  INFO0("Dump of all registered messages:");
+  XBT_INFO("Dump of all registered messages:");
   xbt_set_foreach(_gras_msgtype_set, cursor, msgtype) {
-    INFO6("  Message name: %s (v%d) %s; %s%s%s",
+    XBT_INFO("  Message name: %s (v%d) %s; %s%s%s",
           msgtype->name, msgtype->version,
           e_gras_msg_kind_names[msgtype->kind],
           gras_datadesc_get_name(msgtype->ctn_type),
@@ -94,7 +94,7 @@ gras_msgtype_declare_ext(const char *name,
   }
 
   if (found) {
-    DEBUG2
+    XBT_DEBUG
         ("Re-register version %d of message '%s' (same kind & payload, ignored).",
          version, name);
     xbt_assert3(msgtype->kind == kind,
@@ -117,7 +117,7 @@ gras_msgtype_declare_ext(const char *name,
     return;                     /* do really ignore it */
   }
 
-  VERB4("Register version %d of message '%s' "
+  XBT_VERB("Register version %d of message '%s' "
         "(payload: %s; answer payload: %s).",
         version, name, gras_datadesc_get_name(payload_request),
         gras_datadesc_get_name(payload_answer));
@@ -254,7 +254,7 @@ void gras_cb_register_(gras_msgtype_t msgtype, gras_msg_cb_t cb)
   gras_cblist_t *list = NULL;
   unsigned int cpt;
 
-  DEBUG2("Register %p as callback to '%s'", cb, msgtype->name);
+  XBT_DEBUG("Register %p as callback to '%s'", cb, msgtype->name);
 
   /* search the list of cb for this message on this host (creating if NULL) */
   xbt_dynar_foreach(pd->cbl_list, cpt, list) {
@@ -306,7 +306,7 @@ void gras_cb_unregister_(gras_msgtype_t msgtype, gras_msg_cb_t cb)
     }
   }
   if (!found)
-    VERB1("Ignoring removal of unexisting callback to msg id %d",
+    XBT_VERB("Ignoring removal of unexisting callback to msg id %d",
           msgtype->code);
 }
 

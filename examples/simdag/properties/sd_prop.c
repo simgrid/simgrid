@@ -31,8 +31,8 @@ int main(int argc, char **argv)
   /* initialisation of SD */
   SD_init(&argc, argv);
   if (argc < 2) {
-    INFO1("Usage: %s platform_file", argv[0]);
-    INFO1("example: %s sd_platform.xml", argv[0]);
+    XBT_INFO("Usage: %s platform_file", argv[0]);
+    XBT_INFO("example: %s sd_platform.xml", argv[0]);
     exit(1);
   }
   SD_create_environment(argv[1]);
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 
   /* The host properties can be retrived from all interfaces */
 
-  INFO1("Property list for workstation %s", name1);
+  XBT_INFO("Property list for workstation %s", name1);
   /* Get the property list of the workstation 1 */
   props = SD_workstation_get_properties(w1);
 
@@ -58,45 +58,45 @@ int main(int argc, char **argv)
 
   /* Print the properties of the workstation 1 */
   xbt_dict_foreach(props, cursor, key, data) {
-    INFO2("\tProperty: %s has value: %s", key, data);
+    XBT_INFO("\tProperty: %s has value: %s", key, data);
   }
 
   /* Try to get a property that does not exist */
 
   value = SD_workstation_get_property_value(w1, noexist);
   if (value == NULL)
-    INFO1("\tProperty: %s is undefined", noexist);
+    XBT_INFO("\tProperty: %s is undefined", noexist);
   else
-    INFO2("\tProperty: %s has value: %s", noexist, value);
+    XBT_INFO("\tProperty: %s has value: %s", noexist, value);
 
 
-  INFO1("Property list for workstation %s", name2);
+  XBT_INFO("Property list for workstation %s", name2);
   /* Get the property list of the workstation 2 */
   props = SD_workstation_get_properties(w2);
   cursor = NULL;
 
   /* Print the properties of the workstation 2 */
   xbt_dict_foreach(props, cursor, key, data) {
-    INFO2("\tProperty: %s on host: %s", key, data);
+    XBT_INFO("\tProperty: %s on host: %s", key, data);
   }
 
   /* Modify an existing property test. First check it exists */
-  INFO0("Modify an existing property");
+  XBT_INFO("Modify an existing property");
 
   value = SD_workstation_get_property_value(w2, exist);
   if (value == NULL)
-    INFO1("\tProperty: %s is undefined", exist);
+    XBT_INFO("\tProperty: %s is undefined", exist);
   else {
-    INFO2("\tProperty: %s old value: %s", exist, value);
+    XBT_INFO("\tProperty: %s old value: %s", exist, value);
     xbt_dict_set(props, exist, strdup("250"), free);
   }
 
   /* Test if we have changed the value */
   value = SD_workstation_get_property_value(w2, exist);
   if (value == NULL)
-    INFO1("\tProperty: %s is undefined", exist);
+    XBT_INFO("\tProperty: %s is undefined", exist);
   else
-    INFO2("\tProperty: %s new value: %s", exist, value);
+    XBT_INFO("\tProperty: %s new value: %s", exist, value);
 
   SD_exit();
   return 0;

@@ -13,21 +13,21 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific to this example");
 
 static int send(int argc, char *argv[])
 {
-  INFO0("Sending");
+  XBT_INFO("Sending");
   MSG_task_put(MSG_task_create("Blah", 0.0, 0.0, NULL), MSG_host_self(),
                0);
   MSG_process_sleep(1.);        /* FIXME: if the sender exits before the receiver calls get_sender(), bad thing happens */
-  INFO0("Exiting");
+  XBT_INFO("Exiting");
   return 0;
 }
 
 static int receive(int argc, char *argv[])
 {
-  INFO0("Receiving");
+  XBT_INFO("Receiving");
   m_task_t task = NULL;
   MSG_task_get_with_timeout(&task, 0, DBL_MAX);
   xbt_assert0(MSG_task_get_sender(task), "No sender received");
-  INFO1("Got a message sent by '%s'",
+  XBT_INFO("Got a message sent by '%s'",
         MSG_process_get_name(MSG_task_get_sender(task)));
   return 0;
 }

@@ -113,14 +113,14 @@ int master(int argc, char *argv[])
   peers = amok_pm_group_new("pmm");
 
   /* friends, we're ready. Come and play */
-  INFO0("Wait for peers for 2 sec");
+  XBT_INFO("Wait for peers for 2 sec");
   gras_msg_handleall(2);
   while (xbt_dynar_length(peers) < SLAVE_COUNT) {
-    INFO2("Got only %ld pals (of %d). Wait 2 more seconds",
+    XBT_INFO("Got only %ld pals (of %d). Wait 2 more seconds",
         xbt_dynar_length(peers),SLAVE_COUNT);
     gras_msg_handleall(2);
   }
-  INFO1("Good. Got %ld pals", xbt_dynar_length(peers));
+  XBT_INFO("Good. Got %ld pals", xbt_dynar_length(peers));
 
   for (i = 0; i < xbt_dynar_length(peers) && i < SLAVE_COUNT; i++) {
     xbt_dynar_get_cpy(peers, i, &grid[i]);
@@ -135,7 +135,7 @@ int master(int argc, char *argv[])
     xbt_peer_t h;
 
     xbt_dynar_remove_at(peers, i, &h);
-    INFO2("Too much slaves. Killing %s:%d", h->name, h->port);
+    XBT_INFO("Too much slaves. Killing %s:%d", h->name, h->port);
     amok_pm_kill_hp(h->name, h->port);
     free(h);
   }
@@ -143,7 +143,7 @@ int master(int argc, char *argv[])
 
   /* Assign job to slaves */
   int row = 0, line = 0;
-  INFO0("XXXXXXXXXXXXXXXXXXXXXX begin Multiplication");
+  XBT_INFO("XXXXXXXXXXXXXXXXXXXXXX begin Multiplication");
   for (i = 0; i < SLAVE_COUNT; i++) {
     s_pmm_assignment_t assignment;
     int j, k;
@@ -196,7 +196,7 @@ int master(int argc, char *argv[])
   /* Retrieve the results */
   for (i = 0; i < SLAVE_COUNT; i++) {
     gras_msg_wait(6000, "result", &from, &result);
-    VERB2("%d slaves are done already. Waiting for %d", i + 1,
+    XBT_VERB("%d slaves are done already. Waiting for %d", i + 1,
           SLAVE_COUNT);
     xbt_matrix_copy_values(C, result.C, submatrix_size, submatrix_size,
                            submatrix_size * result.linepos,
@@ -206,14 +206,14 @@ int master(int argc, char *argv[])
   /*    end of gather   */
 
   if (xbt_matrix_double_is_seq(C))
-    INFO0("XXXXXXXXXXXXXXXXXXXXXX Ok, the result matches expectations");
+    XBT_INFO("XXXXXXXXXXXXXXXXXXXXXX Ok, the result matches expectations");
   else {
-    WARN0("the result seems wrong");
+    XBT_WARN("the result seems wrong");
     if (DATA_MATRIX_SIZE < 30) {
-      INFO0("The Result of Multiplication is :");
+      XBT_INFO("The Result of Multiplication is :");
       xbt_matrix_dump(C, "C:res", 0, xbt_matrix_dump_display_double);
     } else {
-      INFO1("Matrix size too big (%d>30) to be displayed here",
+      XBT_INFO("Matrix size too big (%d>30) to be displayed here",
             DATA_MATRIX_SIZE);
     }
   }
@@ -273,9 +273,9 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
   mydataB = assignment.B;
 
   if (gras_if_RL())
-    INFO0("Receive my pos and assignment");
+    XBT_INFO("Receive my pos and assignment");
   else
-    INFO2("Receive my pos (%d,%d) and assignment", myline, myrow);
+    XBT_INFO("Receive my pos (%d,%d) and assignment", myline, myrow);
 
   /* Get my neighborhood from the assignment message (skipping myself) */
   for (i = 0; i < PROC_MATRIX_SIZE - 1; i++) {
@@ -295,10 +295,10 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
 
     /* a line brodcast */
     if (myline == step) {
-      VERB2("LINE: step(%d) = Myline(%d). Broadcast my data.", step,
+      XBT_VERB("LINE: step(%d) = Myline(%d). Broadcast my data.", step,
             myline);
       for (l = 0; l < PROC_MATRIX_SIZE - 1; l++) {
-        VERB1("LINE:   Send to %s", gras_socket_peer_name(socket_row[l]));
+        XBT_VERB("LINE:   Send to %s", gras_socket_peer_name(socket_row[l]));
         gras_msg_send(socket_row[l], "dataB", &mydataB);
       }
 
@@ -314,15 +314,15 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
       CATCH(e) {
         RETHROW0("Can't get a data message from line : %s");
       }
-      VERB3("LINE: step(%d) <> Myline(%d). Receive data from %s", step,
+      XBT_VERB("LINE: step(%d) <> Myline(%d). Receive data from %s", step,
             myline, gras_socket_peer_name(from));
     }
 
     /* a row brodcast */
     if (myrow == step) {
-      VERB2("ROW: step(%d)=myrow(%d). Broadcast my data.", step, myrow);
+      XBT_VERB("ROW: step(%d)=myrow(%d). Broadcast my data.", step, myrow);
       for (l = 1; l < PROC_MATRIX_SIZE; l++) {
-        VERB1("ROW:   Send to %s",
+        XBT_VERB("ROW:   Send to %s",
               gras_socket_peer_name(socket_line[l - 1]));
         gras_msg_send(socket_line[l - 1], "dataA", &mydataA);
       }
@@ -337,7 +337,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
       CATCH(e) {
         RETHROW0("Can't get a data message from row : %s");
       }
-      VERB3("ROW: step(%d)<>myrow(%d). Receive data from %s", step, myrow,
+      XBT_VERB("ROW: step(%d)<>myrow(%d). Receive data from %s", step, myrow,
             gras_socket_peer_name(from));
     }
     xbt_matrix_double_addmult(bA, bB, bC);
@@ -355,7 +355,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
   CATCH(e) {
     RETHROW0("Failed to send answer to server: %s");
   }
-  VERB2(">>>>>>>> Result sent to %s:%d <<<<<<<<",
+  XBT_VERB(">>>>>>>> Result sent to %s:%d <<<<<<<<",
         gras_socket_peer_name(master), gras_socket_peer_port(master));
   /*  Free the allocated resources, and shut GRAS down */
 
@@ -401,7 +401,7 @@ int slave(int argc, char *argv[])
 
   /* Create the connexions */
   mysock = gras_socket_server_range(3000, 9999, 0, 0);
-  INFO1("Sensor %d starting", rank);
+  XBT_INFO("Sensor %d starting", rank);
   while (!connected) {
     xbt_ex_t e;
     TRY {

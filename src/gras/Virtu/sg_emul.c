@@ -110,7 +110,7 @@ int gras_bench_once_begin(const char *location, int line)
 
   ir = xbt_dict_get_or_null(benchmark_set, locbuf);
   if (!ir) {
-    DEBUG1("%s", locbuf);
+    XBT_DEBUG("%s", locbuf);
     duration = 1;
     xbt_os_timer_start(timer);
     return 1;
@@ -131,7 +131,7 @@ int gras_bench_once_end(void)
   } else {
     duration = get_from_dict(benchmark_set, locbuf);
   }
-  DEBUG2("Simulate the run of a task of %f sec for %s", duration, locbuf);
+  XBT_DEBUG("Simulate the run of a task of %f sec for %s", duration, locbuf);
   gras_cpu_burn(duration / reference);
   return 0;
 }

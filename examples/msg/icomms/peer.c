@@ -30,7 +30,7 @@ int sender(int argc, char *argv[])
   double sleep_start_time = atof(argv[5]);
   double sleep_test_time = atof(argv[6]);
 
-  INFO2("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time,
+  XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time,
         sleep_test_time);
 
   msg_comm_t comm = NULL;
@@ -48,7 +48,7 @@ int sender(int argc, char *argv[])
         MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size,
                         NULL);
     comm = MSG_task_isend(task, mailbox);
-    INFO2("Send to receiver-%ld Task_%d", i % receivers_count, i);
+    XBT_INFO("Send to receiver-%ld Task_%d", i % receivers_count, i);
 
     if (sleep_test_time == 0) {
       MSG_comm_wait(comm, -1);
@@ -66,7 +66,7 @@ int sender(int argc, char *argv[])
     sprintf(mailbox, "receiver-%ld", i % receivers_count);
     task = MSG_task_create("finalize", 0, 0, 0);
     comm = MSG_task_isend(task, mailbox);
-    INFO1("Send to receiver-%ld finalize", i % receivers_count);
+    XBT_INFO("Send to receiver-%ld finalize", i % receivers_count);
     if (sleep_test_time == 0) {
       MSG_comm_wait(comm, -1);
     } else {
@@ -78,7 +78,7 @@ int sender(int argc, char *argv[])
 
   }
 
-  INFO0("Goodbye now!");
+  XBT_INFO("Goodbye now!");
   return 0;
 }                               /* end_of_sender */
 
@@ -92,7 +92,7 @@ int receiver(int argc, char *argv[])
   msg_comm_t res_irecv;
   double sleep_start_time = atof(argv[2]);
   double sleep_test_time = atof(argv[3]);
-  INFO2("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time,
+  XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time,
         sleep_test_time);
 
   xbt_assert1(sscanf(argv[1], "%d", &id),
@@ -103,7 +103,7 @@ int receiver(int argc, char *argv[])
   sprintf(mailbox, "receiver-%d", id);
   while (1) {
     res_irecv = MSG_task_irecv(&(task), mailbox);
-    INFO0("Wait to receive a task");
+    XBT_INFO("Wait to receive a task");
 
     if (sleep_test_time == 0) {
       res = MSG_comm_wait(res_irecv, -1);
@@ -115,19 +115,19 @@ int receiver(int argc, char *argv[])
       MSG_comm_destroy(res_irecv);
     }
 
-    INFO1("Received \"%s\"", MSG_task_get_name(task));
+    XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
     if (!strcmp(MSG_task_get_name(task), "finalize")) {
       MSG_task_destroy(task);
       break;
     }
 
-    INFO1("Processing \"%s\"", MSG_task_get_name(task));
+    XBT_INFO("Processing \"%s\"", MSG_task_get_name(task));
     MSG_task_execute(task);
-    INFO1("\"%s\" done", MSG_task_get_name(task));
+    XBT_INFO("\"%s\" done", MSG_task_get_name(task));
     MSG_task_destroy(task);
     task = NULL;
   }
-  INFO0("I'm done. See you!");
+  XBT_INFO("I'm done. See you!");
   return 0;
 }                               /* end_of_receiver */
 
@@ -149,7 +149,7 @@ MSG_error_t test_all(const char *platform_file,
   }
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }                               /* end_of_test_all */
 

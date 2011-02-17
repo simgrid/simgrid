@@ -85,13 +85,13 @@ xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src,
   unsigned int cursor;
 
   xbt_dynar_foreach(src->out, cursor, edge) {
-    DEBUG3("%p = %p--%p", edge, edge->src, edge->dst);
+    XBT_DEBUG("%p = %p--%p", edge, edge->src, edge->dst);
     if ((edge->src == src) && (edge->dst == dst))
       return edge;
   }
   if (!g->directed) {
     xbt_dynar_foreach(src->out, cursor, edge) {
-      DEBUG3("%p = %p--%p", edge, edge->src, edge->dst);
+      XBT_DEBUG("%p = %p--%p", edge, edge->src, edge->dst);
       if ((edge->dst == src) && (edge->src == dst))
         return edge;
     }
@@ -552,7 +552,7 @@ static void *(*__parse_edge_label_and_data) (xbt_edge_t, const char *,
 
 static void __parse_graph_begin(void)
 {
-  DEBUG0("<graph>");
+  XBT_DEBUG("<graph>");
   if (A_graphxml_graph_isDirected == A_graphxml_graph_isDirected_true)
     parsed_graph = xbt_graph_new_graph(1, NULL);
   else
@@ -564,14 +564,14 @@ static void __parse_graph_begin(void)
 static void __parse_graph_end(void)
 {
   xbt_dict_free(&parsed_nodes);
-  DEBUG0("</graph>");
+  XBT_DEBUG("</graph>");
 }
 
 static void __parse_node(void)
 {
   xbt_node_t node = xbt_graph_new_node(parsed_graph, NULL);
 
-  DEBUG1("<node name=\"%s\"/>", A_graphxml_node_name);
+  XBT_DEBUG("<node name=\"%s\"/>", A_graphxml_node_name);
   if (__parse_node_label_and_data)
     node->data = __parse_node_label_and_data(node, A_graphxml_node_label,
                                              A_graphxml_node_data);
@@ -598,7 +598,7 @@ static void __parse_edge(void)
 
   xbt_graph_parse_get_double(&(edge->length), A_graphxml_edge_length);
 
-  DEBUG3("<edge  source=\"%s\" target=\"%s\" length=\"%f\"/>",
+  XBT_DEBUG("<edge  source=\"%s\" target=\"%s\" length=\"%f\"/>",
          (char *) (edge->src)->data,
          (char *) (edge->dst)->data, xbt_graph_edge_get_length(edge));
 }

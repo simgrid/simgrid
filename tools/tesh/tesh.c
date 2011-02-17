@@ -29,13 +29,13 @@ static void handle_line(const char *filepos, char *line)
   xbt_str_rtrim(line + 2, "\n");
 
   /*
-     DEBUG7("rctx={%s,in={%d,>>%10s<<},exp={%d,>>%10s<<},got={%d,>>%10s<<}}",
+     XBT_DEBUG("rctx={%s,in={%d,>>%10s<<},exp={%d,>>%10s<<},got={%d,>>%10s<<}}",
      rctx->cmd,
      rctx->input->used,        rctx->input->data,
      rctx->output_wanted->used,rctx->output_wanted->data,
      rctx->output_got->used,   rctx->output_got->data);
    */
-  DEBUG2("[%s] %s", filepos, line);
+  XBT_DEBUG("[%s] %s", filepos, line);
 
   switch (line[0]) {
   case '#':
@@ -55,10 +55,10 @@ static void handle_line(const char *filepos, char *line)
       /* search beginning */
       while (*(dir++) == ' ');
       dir--;
-      VERB1("Saw cd '%s'", dir);
+      XBT_VERB("Saw cd '%s'", dir);
       if (chdir(dir)) {
-        ERROR2("Chdir to %s failed: %s", dir, strerror(errno));
-        ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
+        XBT_ERROR("Chdir to %s failed: %s", dir, strerror(errno));
+        XBT_ERROR("Test suite `%s': NOK (system error)", testsuite_name);
         rctx_armageddon(rctx, 4);
       }
       break;
@@ -71,15 +71,15 @@ static void handle_line(const char *filepos, char *line)
     break;
 
   case 'p':
-    INFO2("[%s] %s", filepos, line + 2);
+    XBT_INFO("[%s] %s", filepos, line + 2);
     break;
   case 'P':
-    CRITICAL2("[%s] %s", filepos, line + 2);
+    XBT_CRITICAL("[%s] %s", filepos, line + 2);
     break;
 
   default:
-    ERROR2("[%s] Syntax error: %s", filepos, line);
-    ERROR1("Test suite `%s': NOK (syntax error)", testsuite_name);
+    XBT_ERROR("[%s] Syntax error: %s", filepos, line);
+    XBT_ERROR("Test suite `%s': NOK (syntax error)", testsuite_name);
     rctx_armageddon(rctx, 1);
     break;
   }
@@ -116,9 +116,9 @@ static void handle_suite(const char *filename, FILE * FICIN)
 
     if (blankline) {
       if (!rctx->cmd && !rctx->is_empty) {
-        ERROR1("[%d] Error: no command found in this chunk of lines.",
+        XBT_ERROR("[%d] Error: no command found in this chunk of lines.",
                buffbegin);
-        ERROR1("Test suite `%s': NOK (syntax error)", testsuite_name);
+        XBT_ERROR("Test suite `%s': NOK (syntax error)", testsuite_name);
         rctx_armageddon(rctx, 1);
       }
       if (rctx->cmd)
@@ -209,35 +209,35 @@ int main(int argc, char *argv[])
   for (i = 1; i < argc; i++) {
     if (!strcmp(argv[i], "--cd")) {
       if (i == argc - 1) {
-        ERROR0("--cd argument requires an argument");
+        XBT_ERROR("--cd argument requires an argument");
         exit(1);
       }
       if (chdir(argv[i + 1])) {
-        ERROR2("Cannot change directory to %s: %s", argv[i + 1],
+        XBT_ERROR("Cannot change directory to %s: %s", argv[i + 1],
                strerror(errno));
         exit(1);
       }
-      INFO1("Change directory to %s", argv[i + 1]);
+      XBT_INFO("Change directory to %s", argv[i + 1]);
       memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));
       argc -= 2;
       i -= 2;
     } else if (!strcmp(argv[i], "--setenv" )) {
       if (i == argc - 1) {
-        ERROR0("--setenv argument requires an argument");
+        XBT_ERROR("--setenv argument requires an argument");
         exit(1);
       }
       char *eq = strchr(argv[i+1], '=');
       xbt_assert1(eq,"The argument of --setenv must contain a '=' (got %s instead)",argv[i+1]);
       char *key = bprintf("%.*s", (int) (eq - argv[i+1]), argv[i+1]);
       xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
-      INFO2("setting environment variable '%s' to '%s'", key, eq+1);
+      XBT_INFO("setting environment variable '%s' to '%s'", key, eq+1);
       free(key);
       memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));
       argc -= 2;
       i -= 2;
     } else if (!strcmp(argv[i], "--cfg" )) {
       if (i == argc - 1) {
-            ERROR0("--cfg argument requires an argument");
+            XBT_ERROR("--cfg argument requires an argument");
             exit(1);
       }
       if(!option){ //if option is NULL
@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
       }else{
     	option = bprintf("%s --cfg=%s",option,argv[i+1]);
       }
-      INFO1("Add option \'--cfg=%s\' to command line",argv[i+1]);
+      XBT_INFO("Add option \'--cfg=%s\' to command line",argv[i+1]);
       memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));
       argc -= 2;
       i -= 2;
@@ -254,11 +254,11 @@ int main(int argc, char *argv[])
 
   /* Find the description file */
   if (argc == 1) {
-    INFO0("Test suite from stdin");
+    XBT_INFO("Test suite from stdin");
     testsuite_name = "(stdin)";
     handle_suite(testsuite_name, stdin);
     rctx_wait_bg();
-    INFO0("Test suite from stdin OK");
+    XBT_INFO("Test suite from stdin OK");
 
   } else {
     for (i = 1; i < argc; i++) {
@@ -270,18 +270,18 @@ int main(int argc, char *argv[])
           !strcmp(".tesh", suitename + strlen(suitename) - 5))
         suitename[strlen(suitename) - 5] = '\0';
 
-      INFO1("Test suite `%s'", suitename);
+      XBT_INFO("Test suite `%s'", suitename);
       testsuite_name = suitename;
       FICIN = fopen(argv[i], "r");
       if (!FICIN) {
         perror(bprintf("Impossible to open the suite file `%s'", argv[i]));
-        ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
+        XBT_ERROR("Test suite `%s': NOK (system error)", testsuite_name);
         rctx_armageddon(rctx, 1);
       }
       handle_suite(suitename, FICIN);
       rctx_wait_bg();
       fclose(FICIN);
-      INFO1("Test suite `%s' OK", suitename);
+      XBT_INFO("Test suite `%s' OK", suitename);
       free(suitename);
     }
   }

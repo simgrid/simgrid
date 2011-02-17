@@ -34,7 +34,7 @@ static double dot_parse_double(const char *string)
 
   ret = sscanf(string, "%lg", &value);
   if (ret != 1)
-    WARN1("%s is not a double", string);
+    XBT_WARN("%s is not a double", string);
   return value;
 }
 
@@ -47,7 +47,7 @@ static int dot_parse_int(const char *string)
 
   ret = sscanf(string, "%d", &value);
   if (ret != 1)
-    WARN1("%s is not an integer", string);
+    XBT_WARN("%s is not an integer", string);
   return value;
 }
 
@@ -64,7 +64,7 @@ static void dump_res()
   unsigned int cursor;
   SD_task_t task;
   xbt_dynar_foreach(result, cursor, task) {
-    INFO1("Task %d", cursor);
+    XBT_INFO("Task %d", cursor);
     SD_task_dump(task);
   }
 }
@@ -138,9 +138,9 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename){
     if(acyclic_graph_detail(result))
       return result;
     else
-      WARN0("There is at least one cycle in the provided task graph");
+      XBT_WARN("There is at least one cycle in the provided task graph");
   }else{
-    WARN0("The scheduling is ignored");
+    XBT_WARN("The scheduling is ignored");
   }
   return NULL;
 }
@@ -209,7 +209,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
       xbt_dynar_foreach(file->tasks_before, cpt1, depbefore) {
         xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
           if (depbefore->src == depafter->dst) {
-            WARN2
+            XBT_WARN
                 ("File %s is produced and consumed by task %s. This loop dependency will prevent the execution of the task.",
                  file->name, depbefore->src->name);
           }
@@ -244,7 +244,7 @@ void dot_add_task(Agnode_t * dag_node)
   SD_task_t current_job;
   double runtime = dot_parse_double(agget(dag_node, (char *) "size"));
 
-  DEBUG3("See <job id=%s runtime=%s %.0f>", name,
+  XBT_DEBUG("See <job id=%s runtime=%s %.0f>", name,
         agget(dag_node, (char *) "size"), runtime);
   current_job = xbt_dict_get_or_null(jobs, name);
   if (current_job == NULL) {
@@ -301,7 +301,7 @@ void dot_add_task(Agnode_t * dag_node)
     if (char_order != NULL)
       order = (long) dot_parse_int(char_order);
     xbt_dynar_t computer = NULL;
-    //INFO2("performer = %d, order=%d",performer,order);
+    //XBT_INFO("performer = %d, order=%d",performer,order);
     if(performer != -1 && order != -1){
       //necessary parameters are given
       computer = xbt_dict_get_or_null(computers, char_performer);
@@ -317,7 +317,7 @@ void dot_add_task(Agnode_t * dag_node)
         if(task_test != NULL && *task_test != NULL && *task_test != current_job){
           /*the user gives the same order to several tasks*/
           schedule = false;
-          VERB4("The task %s starts on the computer %s at the position : %s like the task %s",
+          XBT_VERB("The task %s starts on the computer %s at the position : %s like the task %s",
                  (*task_test)->name, char_performer, char_order, current_job->name);
         }else{
           //the parameter seems to be ok
@@ -327,13 +327,13 @@ void dot_add_task(Agnode_t * dag_node)
         /*the platform has not enough processors to schedule the DAG like
         *the user wants*/
         schedule = false;
-        VERB0("The schedule is ignored, there are not enough computers");
+        XBT_VERB("The schedule is ignored, there are not enough computers");
       }
     }
     else {
       //one of necessary parameters are not given
       schedule = false;
-      VERB1("The schedule is ignored, the task %s is not correctly schedule", current_job->name);
+      XBT_VERB("The schedule is ignored, the task %s is not correctly schedule", current_job->name);
     }
   }
 }
@@ -349,7 +349,7 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
   char name[80];
   sprintf(name, "%s->%s", agnameof(agtail(edge)), agnameof(aghead(edge)));
   double size = dot_parse_double(agget(edge, (char *) "size"));
-  DEBUG2("size : %e, get size : %s", size, agget(edge, (char *) "size"));
+  XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
 
   if (size > 0) {
     file = xbt_dict_get_or_null(files, name);
@@ -361,7 +361,7 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
       xbt_dict_set(files, name, file, &dot_task_free);
     } else {
       if (SD_task_get_amount(file) != size) {
-        WARN3("Ignoring file %s size redefinition from %.0f to %.0f",
+        XBT_WARN("Ignoring file %s size redefinition from %.0f to %.0f",
               name, SD_task_get_amount(file), size);
       }
     }
@@ -384,7 +384,7 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
   char name[80];
   sprintf(name, "%s->%s", agnameof(agtail(edge)), agnameof(aghead(edge)));
   double size = dot_parse_double(agget(edge, (char *) "size"));
-  DEBUG2("size : %e, get size : %s", size, agget(edge, (char *) "size"));
+  XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
 
   if (size > 0) {
     file = xbt_dict_get_or_null(files, name);
@@ -396,13 +396,13 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
       xbt_dict_set(files, name, file, &dot_task_free);
     } else {
       if (SD_task_get_amount(file) != size) {
-        WARN3("Ignoring file %s size redefinition from %.0f to %.0f",
+        XBT_WARN("Ignoring file %s size redefinition from %.0f to %.0f",
               name, SD_task_get_amount(file), size);
       }
     }
     SD_task_dependency_add(NULL, NULL, current_job, file);
     if (xbt_dynar_length(file->tasks_before) > 1) {
-      WARN1("File %s created at more than one location...", file->name);
+      XBT_WARN("File %s created at more than one location...", file->name);
     }
   } else {
     file = xbt_dict_get_or_null(jobs, agnameof(aghead(edge)));

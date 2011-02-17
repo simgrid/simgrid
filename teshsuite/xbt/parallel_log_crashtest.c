@@ -26,10 +26,10 @@ static void crasher_thread(void *arg)
 
   for (i = 0; i < test_amount; i++) {
     if (more_info)
-      INFO10("%03d (%02d|%02d|%02d|%02d|%02d|%02d|%02d|%02d|%02d)",
+      XBT_INFO("%03d (%02d|%02d|%02d|%02d|%02d|%02d|%02d|%02d|%02d)",
              test_amount - i, id, id, id, id, id, id, id, id, id);
     else
-      INFO0("XXX (XX|XX|XX|XX|XX|XX|XX|XX|XX)");
+      XBT_INFO("XXX (XX|XX|XX|XX|XX|XX|XX|XX|XX)");
   }
 }
 

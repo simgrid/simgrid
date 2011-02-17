@@ -53,17 +53,17 @@ int master(int argc, char *argv[])
     for (i = 4; i < argc; i++) {
       slaves[i - 4] = MSG_get_host_by_name(argv[i]);
       if (slaves[i - 4] == NULL) {
-        INFO1("Unknown host %s. Stopping Now! ", argv[i]);
+        XBT_INFO("Unknown host %s. Stopping Now! ", argv[i]);
         abort();
       }
     }
   }
 
-  INFO1("Got %d slave(s) :", slaves_count);
+  XBT_INFO("Got %d slave(s) :", slaves_count);
   for (i = 0; i < slaves_count; i++)
-    INFO1("%s", slaves[i]->name);
+    XBT_INFO("%s", slaves[i]->name);
 
-  INFO1("Got %d task to process :", number_of_tasks);
+  XBT_INFO("Got %d task to process :", number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++) {
     m_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size,
@@ -74,33 +74,33 @@ int master(int argc, char *argv[])
     a = MSG_task_put_with_timeout(task, slaves[i % slaves_count], PORT_22,
                                   10.0);
     if (a == MSG_OK) {
-      INFO0("Send completed");
+      XBT_INFO("Send completed");
     } else if (a == MSG_HOST_FAILURE) {
-      INFO0
+      XBT_INFO
           ("Gloups. The cpu on which I'm running just turned off!. See you!");
       free(task->data);
       MSG_task_destroy(task);
       free(slaves);
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
-      INFO1
+      XBT_INFO
           ("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!",
            slaves[i % slaves_count]->name);
       free(task->data);
       MSG_task_destroy(task);
     } else if (a == MSG_TIMEOUT) {
-      INFO1
+      XBT_INFO
           ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
            slaves[i % slaves_count]->name);
       free(task->data);
       MSG_task_destroy(task);
     } else {
-      INFO0("Hey ?! What's up ? ");
+      XBT_INFO("Hey ?! What's up ? ");
       xbt_assert0(0, "Unexpected behavior");
     }
   }
 
-  INFO0
+  XBT_INFO
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++) {
     m_task_t task = MSG_task_create("finalize", 0, 0, FINALIZE);
@@ -108,28 +108,28 @@ int master(int argc, char *argv[])
     if (a == MSG_OK)
       continue;
     if (a == MSG_HOST_FAILURE) {
-      INFO0
+      XBT_INFO
           ("Gloups. The cpu on which I'm running just turned off!. See you!");
       MSG_task_destroy(task);
       free(slaves);
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
-      INFO1("Mmh. Can't reach '%s'! Nevermind. Let's keep going!",
+      XBT_INFO("Mmh. Can't reach '%s'! Nevermind. Let's keep going!",
             slaves[i]->name);
       MSG_task_destroy(task);
     } else if (a == MSG_TIMEOUT) {
-      INFO1
+      XBT_INFO
           ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
            slaves[i % slaves_count]->name);
       MSG_task_destroy(task);
     } else {
-      INFO0("Hey ?! What's up ? ");
+      XBT_INFO("Hey ?! What's up ? ");
       xbt_assert2(0, "Unexpected behavior with '%s': %d", slaves[i]->name,
                   a);
     }
   }
 
-  INFO0("Goodbye now!");
+  XBT_INFO("Goodbye now!");
   free(slaves);
   return 0;
 }                               /* end_of_master */
@@ -146,40 +146,40 @@ int slave(int argc, char *argv[])
     a = MSG_task_get(&(task), PORT_22);
     time2 = MSG_get_clock();
     if (a == MSG_OK) {
-      INFO1("Received \"%s\"", MSG_task_get_name(task));
+      XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {
         MSG_task_destroy(task);
         break;
       }
       if (time1 < *((double *) task->data))
         time1 = *((double *) task->data);
-      INFO1("Communication time : \"%f\"", time2 - time1);
-      INFO1("Processing \"%s\"", MSG_task_get_name(task));
+      XBT_INFO("Communication time : \"%f\"", time2 - time1);
+      XBT_INFO("Processing \"%s\"", MSG_task_get_name(task));
       a = MSG_task_execute(task);
       if (a == MSG_OK) {
-        INFO1("\"%s\" done", MSG_task_get_name(task));
+        XBT_INFO("\"%s\" done", MSG_task_get_name(task));
         free(task->data);
         MSG_task_destroy(task);
       } else if (a == MSG_HOST_FAILURE) {
-        INFO0
+        XBT_INFO
             ("Gloups. The cpu on which I'm running just turned off!. See you!");
         return 0;
       } else {
-        INFO0("Hey ?! What's up ? ");
+        XBT_INFO("Hey ?! What's up ? ");
         xbt_assert0(0, "Unexpected behavior");
       }
     } else if (a == MSG_HOST_FAILURE) {
-      INFO0
+      XBT_INFO
           ("Gloups. The cpu on which I'm running just turned off!. See you!");
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
-      INFO0("Mmh. Something went wrong. Nevermind. Let's keep going!");
+      XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
     } else {
-      INFO0("Hey ?! What's up ? ");
+      XBT_INFO("Hey ?! What's up ? ");
       xbt_assert0(0, "Unexpected behavior");
     }
   }
-  INFO0("I'm done. See you!");
+  XBT_INFO("I'm done. See you!");
   return 0;
 }                               /* end_of_slave */
 
@@ -201,7 +201,7 @@ MSG_error_t test_all(const char *platform_file,
   }
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }                               /* end_of_test_all */
 

@@ -157,7 +157,7 @@ void xbt_init(int *argc, char **argv)
 
   xbt_binary_name = xbt_strdup(argv[0]);
   srand((unsigned int) time(NULL));
-  VERB0("Initialize XBT");
+  XBT_VERB("Initialize XBT");
 
   xbt_log_init(argc, argv);
 }
@@ -165,7 +165,7 @@ void xbt_init(int *argc, char **argv)
 /** @brief Finalize the xbt mechanisms. */
 void xbt_exit()
 {
-  WARN0("This function is deprecated, you shouldn't use it");
+  XBT_WARN("This function is deprecated, you shouldn't use it");
 }
 
 

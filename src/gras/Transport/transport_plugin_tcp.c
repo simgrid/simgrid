@@ -113,7 +113,7 @@ void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
       (sock->sd, SOL_SOCKET, SO_RCVBUF, (char *) &size, sizeof(size))
       || setsockopt(sock->sd, SOL_SOCKET, SO_SNDBUF, (char *) &size,
                     sizeof(size))) {
-    VERB1("setsockopt failed, cannot set buffer size: %s",
+    XBT_VERB("setsockopt failed, cannot set buffer size: %s",
           sock_errstr(sock_errno));
   }
 
@@ -138,9 +138,9 @@ void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
   }
 
   gras_trp_tcp_send(sock, (char *) &myport, sizeof(uint32_t));
-  DEBUG1("peerport sent to %d", sockdata->peer_port);
+  XBT_DEBUG("peerport sent to %d", sockdata->peer_port);
 
-  VERB4("Connect to %s:%d (sd=%d, port %d here)",
+  XBT_VERB("Connect to %s:%d (sd=%d, port %d here)",
         sockdata->peer_name, sockdata->peer_port, sock->sd, sockdata->port);
 }
 
@@ -184,7 +184,7 @@ void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
                  (char *) &size, sizeof(size))
       || setsockopt(sock->sd, SOL_SOCKET, SO_SNDBUF,
                     (char *) &size, sizeof(size))) {
-    VERB1("setsockopt failed, cannot set buffer size: %s",
+    XBT_VERB("setsockopt failed, cannot set buffer size: %s",
           sock_errstr(sock_errno));
   }
 
@@ -195,7 +195,7 @@ void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
            sock_errstr(sock_errno));
   }
 
-  DEBUG2("Listen on port %d (sd=%d)", sockdata->port, sock->sd);
+  XBT_DEBUG("Listen on port %d (sd=%d)", sockdata->port, sock->sd);
   if (listen(sock->sd, 5) < 0) {
     tcp_close(sock->sd);
     THROW2(system_error, 0,
@@ -203,7 +203,7 @@ void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
            sockdata->port, sock_errstr(sock_errno));
   }
 
-  VERB2("Openned a server socket on port %d (sd=%d)", sockdata->port,
+  XBT_VERB("Openned a server socket on port %d (sd=%d)", sockdata->port,
         sock->sd);
 }
 
@@ -248,7 +248,7 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
   if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (char *) &size, sizeof(size))
       || setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (char *) &size,
                     sizeof(size)))
-    VERB1("setsockopt failed, cannot set buffer size: %s",
+    XBT_VERB("setsockopt failed, cannot set buffer size: %s",
           sock_errstr(tmp_errno));
 
   res->plugin = sock->plugin;
@@ -263,7 +263,7 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
 
   gras_trp_tcp_recv(res, (char *) &hisport, sizeof(hisport));
   sockdata->peer_port = ntohl(hisport);
-  DEBUG1("peerport %d received", sockdata->peer_port);
+  XBT_DEBUG("peerport %d received", sockdata->peer_port);
 
   /* FIXME: Lock to protect inet_ntoa */
   if (((struct sockaddr *) &peer_in)->sa_family != AF_INET) {
@@ -282,7 +282,7 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
     }
   }
 
-  VERB3("Accepted from %s:%d (sd=%d)", sockdata->peer_name, sockdata->peer_port, sd);
+  XBT_VERB("Accepted from %s:%d (sd=%d)", sockdata->peer_name, sockdata->peer_port, sd);
   xbt_dynar_push(((gras_trp_procdata_t)
                   gras_libdata_by_id(gras_trp_libdata_id))->sockets, &res);
 
@@ -300,7 +300,7 @@ static void gras_trp_sock_socket_close(gras_socket_t sock)
     free(((gras_trp_tcp_sock_data_t)sock->data)->peer_name);
   free(sock->data);
 
-  VERB1("close tcp connection %d", sock->sd);
+  XBT_VERB("close tcp connection %d", sock->sd);
 
   /* ask the listener to close the socket */
   gras_msg_listener_close_socket(sock->sd);
@@ -325,7 +325,7 @@ static XBT_INLINE void gras_trp_tcp_send(gras_socket_t sock,
     int status = 0;
 
     status = tcp_write(sock->sd, data, (size_t) size);
-    DEBUG3("write(%d, %p, %ld);", sock->sd, data, size);
+    XBT_DEBUG("write(%d, %p, %ld);", sock->sd, data, size);
 
     if (status < 0) {
 #ifdef EWOULDBLOCK
@@ -368,7 +368,7 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
   while (size > got) {
     int status = 0;
 
-    DEBUG5("read(%d, %p, %ld) got %d so far (%s)",
+    XBT_DEBUG("read(%d, %p, %ld) got %d so far (%s)",
            sock->sd, data + got, bufsize, got,
            hexa_str((unsigned char *) data, got, 0));
     status = tcp_read(sock->sd, data + got, (size_t) bufsize);
@@ -379,7 +379,7 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
              sock->sd, data + got, (int) size, gras_socket_peer_name(sock),
              gras_socket_peer_port(sock), sock_errstr(sock_errno), got);
     }
-    DEBUG2("Got %d more bytes (%s)", status,
+    XBT_DEBUG("Got %d more bytes (%s)", status,
            hexa_str((unsigned char *) data + got, status, 0));
 
     if (status) {
@@ -420,25 +420,25 @@ static void gras_trp_bufiov_flush(gras_socket_t sock)
   gras_trp_bufdata_t *data = sock->bufdata;
   XBT_IN;
 
-  DEBUG0("Flush");
+  XBT_DEBUG("Flush");
   if (data->out == buffering_buf) {
     if (XBT_LOG_ISENABLED(gras_trp_tcp, xbt_log_priority_debug))
       hexa_print("chunk to send ",
                  (unsigned char *) data->out_buf.data, data->out_buf.size);
     if ((data->out_buf.size - data->out_buf.pos) != 0) {
-      DEBUG3("Send the chunk (size=%d) to %s:%d", data->out_buf.size,
+      XBT_DEBUG("Send the chunk (size=%d) to %s:%d", data->out_buf.size,
              gras_socket_peer_name(sock), gras_socket_peer_port(sock));
       gras_trp_tcp_send(sock, data->out_buf.data, data->out_buf.size);
-      VERB1("Chunk sent (size=%d)", data->out_buf.size);
+      XBT_VERB("Chunk sent (size=%d)", data->out_buf.size);
       data->out_buf.size = 0;
     }
   }
 #ifdef HAVE_READV
   if (data->out == buffering_iov) {
-    DEBUG0("Flush out iov");
+    XBT_DEBUG("Flush out iov");
     vect = sock->bufdata->out_buf_v;
     if ((size = xbt_dynar_length(vect))) {
-      DEBUG1("Flush %d chunks out of this socket", size);
+      XBT_DEBUG("Flush %d chunks out of this socket", size);
       writev(sock->sd, xbt_dynar_get_ptr(vect, 0), size);
       xbt_dynar_reset(vect);
     }
@@ -446,10 +446,10 @@ static void gras_trp_bufiov_flush(gras_socket_t sock)
   }
 
   if (data->in == buffering_iov) {
-    DEBUG0("Flush in iov");
+    XBT_DEBUG("Flush in iov");
     vect = sock->bufdata->in_buf_v;
     if ((size = xbt_dynar_length(vect))) {
-      DEBUG1("Get %d chunks from of this socket", size);
+      XBT_DEBUG("Get %d chunks from of this socket", size);
       readv(sock->sd, xbt_dynar_get_ptr(vect, 0), size);
       xbt_dynar_reset(vect);
     }
@@ -472,7 +472,7 @@ gras_trp_buf_send(gras_socket_t sock,
     /* size of the chunk to receive in that shot */
     long int thissize =
         min(size - chunk_pos, data->buffsize - data->out_buf.size);
-    DEBUG4("Set the chars %d..%ld into the buffer; size=%ld, ctn=(%s)",
+    XBT_DEBUG("Set the chars %d..%ld into the buffer; size=%ld, ctn=(%s)",
            (int) data->out_buf.size,
            ((int) data->out_buf.size) + thissize - 1, size,
            hexa_str((unsigned char *) chunk, thissize, 0));
@@ -482,7 +482,7 @@ gras_trp_buf_send(gras_socket_t sock,
 
     data->out_buf.size += thissize;
     chunk_pos += thissize;
-    DEBUG4("New pos = %d; Still to send = %ld of %ld; ctn sofar=(%s)",
+    XBT_DEBUG("New pos = %d; Still to send = %ld of %ld; ctn sofar=(%s)",
            data->out_buf.size, size - chunk_pos, size,
            hexa_str((unsigned char *) chunk, chunk_pos, 0));
 
@@ -508,7 +508,7 @@ gras_trp_buf_recv(gras_socket_t sock, char *chunk, unsigned long int size)
 
     if (data->in_buf.size == data->in_buf.pos) {        /* out of data. Get more */
 
-      DEBUG2("Get more data (size=%d,bufsize=%d)",
+      XBT_DEBUG("Get more data (size=%d,bufsize=%d)",
              (int) MIN(size - chunk_pos, data->buffsize),
              (int) data->buffsize);
 
@@ -528,13 +528,13 @@ gras_trp_buf_recv(gras_socket_t sock, char *chunk, unsigned long int size)
 
     data->in_buf.pos += thissize;
     chunk_pos += thissize;
-    DEBUG4("New pos = %d; Still to receive = %ld of %ld. Ctn so far=(%s)",
+    XBT_DEBUG("New pos = %d; Still to receive = %ld of %ld. Ctn so far=(%s)",
            data->in_buf.pos, size - chunk_pos, size,
            hexa_str((unsigned char *) chunk, chunk_pos, 0));
   }
   /* indicate on need to the gras_select function that there is more to read on this socket so that it does not actually select */
   sock->moredata = (data->in_buf.size > data->in_buf.pos);
-  DEBUG1("There is %smore data", (sock->moredata ? "" : "no "));
+  XBT_DEBUG("There is %smore data", (sock->moredata ? "" : "no "));
 
   XBT_OUT;
   return chunk_pos;
@@ -556,7 +556,7 @@ gras_trp_iov_send(gras_socket_t sock,
   gras_trp_bufdata_t *data = (gras_trp_bufdata_t *) sock->bufdata;
 
 
-  DEBUG1("Buffer one chunk to be sent later (%s)",
+  XBT_DEBUG("Buffer one chunk to be sent later (%s)",
          hexa_str((char *) chunk, size, 0));
 
   elm.iov_len = (size_t) size;
@@ -595,7 +595,7 @@ gras_trp_iov_recv(gras_socket_t sock, char *chunk, unsigned long int size)
 {
   struct iovec elm;
 
-  DEBUG0("Buffer one chunk to be received later");
+  XBT_DEBUG("Buffer one chunk to be received later");
   elm.iov_base = (void *) chunk;
   elm.iov_len = (size_t) size;
   xbt_dynar_push(sock->bufdata->in_buf_v, &elm);
@@ -746,7 +746,7 @@ void gras_trp_buf_socket_close(gras_socket_t sock)
   gras_trp_bufdata_t *data = sock->bufdata;
 
   if (data->in_buf.size != data->in_buf.pos) {
-    WARN3("Socket closed, but %d bytes were unread (size=%d,pos=%d)",
+    XBT_WARN("Socket closed, but %d bytes were unread (size=%d,pos=%d)",
           data->in_buf.size - data->in_buf.pos,
           data->in_buf.size, data->in_buf.pos);
   }
@@ -754,7 +754,7 @@ void gras_trp_buf_socket_close(gras_socket_t sock)
     free(data->in_buf.data);
 
   if (data->out_buf.size != data->out_buf.pos) {
-    DEBUG2("Flush the socket before closing (in=%d,out=%d)",
+    XBT_DEBUG("Flush the socket before closing (in=%d,out=%d)",
            data->in_buf.size, data->out_buf.size);
     gras_trp_bufiov_flush(sock);
   }
@@ -764,12 +764,12 @@ void gras_trp_buf_socket_close(gras_socket_t sock)
 #ifdef HAVE_READV
   if (data->in_buf_v) {
     if (xbt_dynar_length(data->in_buf_v))
-      WARN0("Socket closed, but some bytes were unread");
+      XBT_WARN("Socket closed, but some bytes were unread");
     xbt_dynar_free(&data->in_buf_v);
   }
   if (data->out_buf_v) {
     if (xbt_dynar_length(data->out_buf_v)) {
-      DEBUG0("Flush the socket before closing");
+      XBT_DEBUG("Flush the socket before closing");
       gras_trp_bufiov_flush(sock);
     }
     xbt_dynar_free(&data->out_buf_v);

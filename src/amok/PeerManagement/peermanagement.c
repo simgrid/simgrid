@@ -64,7 +64,7 @@ static int amok_pm_cb_join(gras_msg_cb_ctx_t ctx, void *payload)
 
   rank = xbt_dynar_length(group);
   xbt_dynar_push(group, &dude);
-  VERB3("Contacted by %s:%d. Give it rank #%d", dude->name, dude->port,
+  XBT_VERB("Contacted by %s:%d. Give it rank #%d", dude->name, dude->port,
         rank);
 
   gras_msg_rpcreturn(10, ctx, &rank);
@@ -91,7 +91,7 @@ static int amok_pm_cb_leave(gras_msg_cb_ctx_t ctx, void *payload)
       goto end;
     }
   }
-  WARN3("Asked to remove %s:%d from group '%s', but not found. Ignoring",
+  XBT_WARN("Asked to remove %s:%d from group '%s', but not found. Ignoring",
         dude->name, dude->port, name);
 
 end:
@@ -152,10 +152,10 @@ xbt_dynar_t amok_pm_group_new(const char *group_name)
   xbt_assert0(amok_pm_moddata_id != -1, "Run amok_pm_init first!");
   g = gras_moddata_by_id(amok_pm_moddata_id);
 
-  DEBUG1("retrieved groups=%p", g->groups);
+  XBT_DEBUG("retrieved groups=%p", g->groups);
 
   xbt_dict_set(g->groups, group_name, res, NULL);       /*FIXME: leaking xbt_dynar_free_voidp); */
-  VERB1("Group %s created", group_name);
+  XBT_VERB("Group %s created", group_name);
 
   return res;
 }
@@ -176,11 +176,11 @@ xbt_dynar_t amok_pm_group_get(gras_socket_t master, const char *group_name)
 int amok_pm_group_join(gras_socket_t master, const char *group_name)
 {
   int rank;
-  VERB3("Join group '%s' on %s:%d",
+  XBT_VERB("Join group '%s' on %s:%d",
         group_name, gras_socket_peer_name(master),
         gras_socket_peer_port(master));
   gras_msg_rpccall(master, 30, "amok_pm_join", &group_name, &rank);
-  VERB4("Joined group '%s' on %s:%d. Got rank %d",
+  XBT_VERB("Joined group '%s' on %s:%d. Got rank %d",
         group_name, gras_socket_peer_name(master),
         gras_socket_peer_port(master), rank);
   return rank;
@@ -193,7 +193,7 @@ int amok_pm_group_join(gras_socket_t master, const char *group_name)
 void amok_pm_group_leave(gras_socket_t master, const char *group_name)
 {
   gras_msg_rpccall(master, 30, "amok_pm_leave", &group_name, NULL);
-  VERB3("Leaved group '%s' on %s:%d",
+  XBT_VERB("Leaved group '%s' on %s:%d",
         group_name, gras_socket_peer_name(master),
         gras_socket_peer_port(master));
 }

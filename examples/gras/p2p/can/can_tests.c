@@ -67,7 +67,7 @@ static int send_nuke(nuke_t * msg, int xId, int yId)
 
   if (xId >= globals->x1 && xId <= globals->x2 && yId >= globals->y1
       && yId <= globals->y2) {
-    INFO0("Nuclear launch missed");
+    XBT_INFO("Nuclear launch missed");
     return 0;
   } else {
     char host[1024];
@@ -98,7 +98,7 @@ static int send_nuke(nuke_t * msg, int xId, int yId)
     CATCH(e) {
       RETHROW0("Unable to connect the nuke!: %s");
     }
-    //INFO4("%s ON %s %d %d <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",globals->host,host,xId,yId);
+    //XBT_INFO("%s ON %s %d %d <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",globals->host,host,xId,yId);
     TRY {
       gras_msg_send(temp_sock, "can_nuke", msg);
     }
@@ -106,7 +106,7 @@ static int send_nuke(nuke_t * msg, int xId, int yId)
       RETHROW0("Unable to send the nuke!: %s");
     }
     gras_socket_close(temp_sock);
-    INFO4("Nuke launched by %s to %s for (%d;%d)", globals->host, host,
+    XBT_INFO("Nuke launched by %s to %s for (%d;%d)", globals->host, host,
           msg->xId, msg->yId);
     return 1;
   }
@@ -127,7 +127,7 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
 
 
   if (incoming->xId == -1) {    // i must start the War
-    INFO2("%s:%d declare the WAR!!!!!!!!!!!!!!!!!", globals->host,
+    XBT_INFO("%s:%d declare the WAR!!!!!!!!!!!!!!!!!", globals->host,
           globals->port);
     srand((unsigned int) time((time_t *) NULL));
 
@@ -139,13 +139,13 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
 
   } else if (incoming->xId >= globals->x1 && incoming->xId <= globals->x2 && incoming->yId >= globals->y1 && incoming->yId <= globals->y2) {    // the nuke crash on my area..
     if (globals->version == incoming->version)  // ..but i'm dead.
-      INFO0("I'm already dead :p");
+      XBT_INFO("I'm already dead :p");
     else if ((incoming->xId - globals->xId) / 60 == 0 && (incoming->yId - globals->yId) / 60 == 0) {    // ..and it's on me, so i die :X.
       globals->version = incoming->version;
-      INFO2("Euuuaarrrgghhhh...   %s killed %s !!!!!!!!!!!!!!!!!",
+      XBT_INFO("Euuuaarrrgghhhh...   %s killed %s !!!!!!!!!!!!!!!!!",
             incoming->host, globals->host);
     } else {                    // and it miss me, i angry and i send my own nuke!
-      INFO1("%s was missed, and counteract!", globals->host);
+      XBT_INFO("%s was missed, and counteract!", globals->host);
       /*int x1=(int)(1000.0*rand()/(RAND_MAX+1.0));
          int y1=(int)(1000.0*rand()/(RAND_MAX+1.0));
          int x2=(int)(1000.0*rand()/(RAND_MAX+1.0));
@@ -199,7 +199,7 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
     CATCH(e) {
       RETHROW0("Unable to send the nuke!: %s");
     }
-    INFO4("Nuke re-aimed by %s to %s for (%d;%d)", globals->host, host,
+    XBT_INFO("Nuke re-aimed by %s to %s for (%d;%d)", globals->host, host,
           incoming->xId, incoming->yId);
     gras_socket_close(temp_sock);
   }
@@ -209,9 +209,9 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
     gras_msg_handle(10000.0);   // wait a bit, in case of..
   }
   CATCH(e) {
-    INFO4("My area is [%d;%d;%d;%d]", globals->x1, globals->x2,
+    XBT_INFO("My area is [%d;%d;%d;%d]", globals->x1, globals->x2,
           globals->y1, globals->y2);
-    //INFO0("Closing node, all has been done!");
+    //XBT_INFO("Closing node, all has been done!");
   }
   return 0;
 }

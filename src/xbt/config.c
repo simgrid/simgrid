@@ -81,7 +81,7 @@ void xbt_cfg_cpy(xbt_cfg_t tocopy, xbt_cfg_t * whereto)
   xbt_cfgelm_t variable = NULL;
   char *name = NULL;
 
-  DEBUG1("Copy cfg set %p", tocopy);
+  XBT_DEBUG("Copy cfg set %p", tocopy);
   *whereto = NULL;
   xbt_assert0(tocopy, "cannot copy NULL config");
 
@@ -95,7 +95,7 @@ void xbt_cfg_cpy(xbt_cfg_t tocopy, xbt_cfg_t * whereto)
 /** @brief Destructor */
 void xbt_cfg_free(xbt_cfg_t * cfg)
 {
-  DEBUG1("Frees cfg set %p", cfg);
+  XBT_DEBUG("Frees cfg set %p", cfg);
   xbt_dict_free((xbt_dict_t *) cfg);
 }
 
@@ -183,7 +183,7 @@ void xbt_cfgelm_free(void *data)
 {
   xbt_cfgelm_t c = (xbt_cfgelm_t) data;
 
-  DEBUG1("Frees cfgelm %p", c);
+  XBT_DEBUG("Frees cfgelm %p", c);
   if (!c)
     return;
   xbt_free(c->desc);
@@ -217,12 +217,12 @@ xbt_cfg_register(xbt_cfg_t * cfg,
   res = xbt_dict_get_or_null((xbt_dict_t) * cfg, name);
 
   if (res) {
-    WARN1("Config elem %s registered twice.", name);
+    XBT_WARN("Config elem %s registered twice.", name);
     /* Will be removed by the insertion of the new one */
   }
 
   res = xbt_new(s_xbt_cfgelm_t, 1);
-  DEBUG8("Register cfg elm %s (%s) (%d to %d %s (=%d) @%p in set %p)",
+  XBT_DEBUG("Register cfg elm %s (%s) (%d to %d %s (=%d) @%p in set %p)",
          name, desc, min, max, xbt_cfgelm_type_name[type], type, res,
          *cfg);
 
@@ -260,7 +260,7 @@ xbt_cfg_register(xbt_cfg_t * cfg,
     break;
 
   default:
-    ERROR1("%d is an invalide type code", type);
+    XBT_ERROR("%d is an invalide type code", type);
   }
 
   xbt_dict_set((xbt_dict_t) * cfg, name, res, &xbt_cfgelm_free);
@@ -277,7 +277,7 @@ xbt_cfg_register(xbt_cfg_t * cfg,
 
 void xbt_cfg_unregister(xbt_cfg_t cfg, const char *name)
 {
-  DEBUG2("Unregister elm '%s' from set %p", name, cfg);
+  XBT_DEBUG("Unregister elm '%s' from set %p", name, cfg);
   xbt_dict_remove((xbt_dict_t) cfg, name);
 }
 
@@ -301,7 +301,7 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
 
   int min, max;
   e_xbt_cfgelm_type_t type;
-  DEBUG1("Register string '%s'", entry);
+  XBT_DEBUG("Register string '%s'", entry);
 
   tok = strchr(entrycpy, ':');
   xbt_assert2(tok, "Invalid config element descriptor: %s%s",
@@ -425,7 +425,7 @@ void xbt_cfg_check(xbt_cfg_t cfg)
   int size;
 
   xbt_assert0(cfg, "NULL config set.");
-  DEBUG1("Check cfg set %p", cfg);
+  XBT_DEBUG("Check cfg set %p", cfg);
 
   xbt_dict_foreach((xbt_dict_t) cfg, cursor, name, variable) {
     size = xbt_dynar_length(variable->content);
@@ -489,7 +489,7 @@ e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name)
            "Can't get the type of '%s' since this variable does not exist",
            name);
 
-  INFO1("type in variable = %d", variable->type);
+  XBT_INFO("type in variable = %d", variable->type);
 
   return variable->type;
 }
@@ -600,7 +600,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
   }
   optionlist_cpy = xbt_strdup(options);
 
-  DEBUG1("List to parse and set:'%s'", options);
+  XBT_DEBUG("List to parse and set:'%s'", options);
   option = optionlist_cpy;
   while (1) {                   /* breaks in the code */
 
@@ -608,21 +608,21 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
       break;
     name = option;
     len = strlen(name);
-    DEBUG3("Still to parse and set: '%s'. len=%d; option-name=%ld",
+    XBT_DEBUG("Still to parse and set: '%s'. len=%d; option-name=%ld",
            name, len, (long) (option - name));
 
     /* Pass the value */
     while (option - name <= (len - 1) && *option != ' ' && *option != '\n'
            && *option != '\t' && *option != ',') {
-      DEBUG1("Take %c.", *option);
+      XBT_DEBUG("Take %c.", *option);
       option++;
     }
     if (option - name == len) {
-      DEBUG0("Boundary=EOL");
+      XBT_DEBUG("Boundary=EOL");
       option = NULL;            /* don't do next iteration */
 
     } else {
-      DEBUG3("Boundary on '%c'. len=%d;option-name=%ld",
+      XBT_DEBUG("Boundary on '%c'. len=%d;option-name=%ld",
              *option, len, (long) (option - name));
 
       /* Pass the following blank chars */
@@ -635,7 +635,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
       if (option - name == len - 1)
         option = NULL;          /* don't do next iteration */
     }
-    DEBUG2("parse now:'%s'; parse later:'%s'", name, option);
+    XBT_DEBUG("parse now:'%s'; parse later:'%s'", name, option);
 
     if (name[0] == ' ' || name[0] == '\n' || name[0] == '\t')
       continue;
@@ -652,7 +652,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
     *(val++) = '\0';
 
     if (strcmp(name,"contexts/factory"))
-      INFO2("Configuration change: Set '%s' to '%s'", name, val);
+      XBT_INFO("Configuration change: Set '%s' to '%s'", name, val);
 
     TRY {
       variable = xbt_dict_get((xbt_dict_t) cfg, name);
@@ -749,7 +749,7 @@ void xbt_cfg_setdefault_int(xbt_cfg_t cfg, const char *name, int val)
     variable->isdefault = 1;
   }
    else
-    DEBUG2
+    XBT_DEBUG
         ("Do not override configuration variable '%s' with value '%d' because it was already set.",
          name, val);
 }
@@ -768,7 +768,7 @@ void xbt_cfg_setdefault_double(xbt_cfg_t cfg, const char *name, double val)
     variable->isdefault = 1;
   }
   else
-    DEBUG2
+    XBT_DEBUG
         ("Do not override configuration variable '%s' with value '%lf' because it was already set.",
          name, val);
 }
@@ -788,7 +788,7 @@ void xbt_cfg_setdefault_string(xbt_cfg_t cfg, const char *name,
     variable->isdefault = 1;
   }
   else
-    DEBUG2
+    XBT_DEBUG
         ("Do not override configuration variable '%s' with value '%s' because it was already set.",
          name, val);
 }
@@ -808,7 +808,7 @@ void xbt_cfg_setdefault_peer(xbt_cfg_t cfg, const char *name,
     variable->isdefault = 1;
   }
   else
-    DEBUG3
+    XBT_DEBUG
         ("Do not override configuration variable '%s' with value '%s:%d' because it was already set.",
          name, host, port);
 }
@@ -823,7 +823,7 @@ void xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val)
 {
   xbt_cfgelm_t variable;
 
-  VERB2("Configuration setting: %s=%d", name, val);
+  XBT_VERB("Configuration setting: %s=%d", name, val);
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
 
   if (variable->max == 1) {
@@ -858,7 +858,7 @@ void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val)
 {
   xbt_cfgelm_t variable;
 
-  VERB2("Configuration setting: %s=%f", name, val);
+  XBT_VERB("Configuration setting: %s=%f", name, val);
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_double);
 
   if (variable->max == 1) {
@@ -894,9 +894,9 @@ void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val)
   xbt_cfgelm_t variable;
   char *newval = xbt_strdup(val);
 
-  VERB2("Configuration setting: %s=%s", name, val);
+  XBT_VERB("Configuration setting: %s=%s", name, val);
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
-  DEBUG5("Variable: %d to %d %s (=%d) @%p",
+  XBT_DEBUG("Variable: %d to %d %s (=%d) @%p",
          variable->min, variable->max,
          xbt_cfgelm_type_name[variable->type], variable->type, variable);
 
@@ -943,7 +943,7 @@ xbt_cfg_set_peer(xbt_cfg_t cfg, const char *name, const char *peer,
   xbt_cfgelm_t variable;
   xbt_peer_t val = xbt_peer_new(peer, port);
 
-  VERB3("Configuration setting: %s=%s:%d", name, peer, port);
+  XBT_VERB("Configuration setting: %s=%s:%d", name, peer, port);
 
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_peer);
 
@@ -1188,7 +1188,7 @@ int xbt_cfg_get_int(xbt_cfg_t cfg, const char *name)
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
 
   if (xbt_dynar_length(variable->content) > 1) {
-    WARN2
+    XBT_WARN
         ("You asked for the first value of the config element '%s', but there is %lu values",
          name, xbt_dynar_length(variable->content));
   }
@@ -1214,7 +1214,7 @@ double xbt_cfg_get_double(xbt_cfg_t cfg, const char *name)
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_double);
 
   if (xbt_dynar_length(variable->content) > 1) {
-    WARN2
+    XBT_WARN
         ("You asked for the first value of the config element '%s', but there is %lu values\n",
          name, xbt_dynar_length(variable->content));
   }
@@ -1240,7 +1240,7 @@ char *xbt_cfg_get_string(xbt_cfg_t cfg, const char *name)
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
 
   if (xbt_dynar_length(variable->content) > 1) {
-    WARN2
+    XBT_WARN
         ("You asked for the first value of the config element '%s', but there is %lu values\n",
          name, xbt_dynar_length(variable->content));
   } else if (xbt_dynar_length(variable->content) == 0) {
@@ -1273,7 +1273,7 @@ void xbt_cfg_get_peer(xbt_cfg_t cfg, const char *name, char **peer,
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_peer);
 
   if (xbt_dynar_length(variable->content) > 1) {
-    WARN2
+    XBT_WARN
         ("You asked for the first value of the config element '%s', but there is %lu values\n",
          name, xbt_dynar_length(variable->content));
   }

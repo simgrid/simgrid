@@ -286,7 +286,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
     comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
     map = xbt_new(int, count);
     size = 0;
-    DEBUG0("Wait for one of");
+    XBT_DEBUG("Wait for one of");
     for(i = 0; i < count; i++) {
       if(requests[i] != MPI_REQUEST_NULL) {
         print_request("   ", requests[i]);

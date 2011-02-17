@@ -120,7 +120,7 @@ void SD_application_reinit(void)
   s_SD_task_t task;
 
   if (SD_INITIALISED()) {
-    DEBUG0("Recreating the swags...");
+    XBT_DEBUG("Recreating the swags...");
     xbt_swag_free(sd_global->not_scheduled_task_set);
     xbt_swag_free(sd_global->schedulable_task_set);
     xbt_swag_free(sd_global->scheduled_task_set);
@@ -154,7 +154,7 @@ void SD_application_reinit(void)
 #endif
 
   } else {
-    WARN0("SD_application_reinit called before initialization of SimDag");
+    XBT_WARN("SD_application_reinit called before initialization of SimDag");
     /* we cannot use exceptions here because xbt is not running! */
   }
 
@@ -206,7 +206,7 @@ void SD_create_environment(const char *platform_file)
     __SD_link_create(surf_link, NULL);
   }
 
-  DEBUG2("Workstation number: %d, link number: %d",
+  XBT_DEBUG("Workstation number: %d, link number: %d",
          SD_workstation_get_number(), SD_link_get_number());
 #ifdef HAVE_JEDULE
   jedule_setup_platform();
@@ -242,7 +242,7 @@ xbt_dynar_t SD_simulate(double how_long)
   SD_CHECK_INIT_DONE();
 
    if (first_time) {
-    VERB0("Starting simulation...");
+    XBT_VERB("Starting simulation...");
 
     surf_presolve();            /* Takes traces into account */
     first_time = 0;
@@ -252,7 +252,7 @@ xbt_dynar_t SD_simulate(double how_long)
 
   /* explore the runnable tasks */
   xbt_swag_foreach_safe(task, task_safe, sd_global->runnable_task_set) {
-    VERB1("Executing task '%s'", SD_task_get_name(task));
+    XBT_VERB("Executing task '%s'", SD_task_get_name(task));
     if (__SD_task_try_to_run(task)
         && !xbt_dynar_member(changed_tasks, &task))
       xbt_dynar_push(changed_tasks, &task);
@@ -267,10 +267,10 @@ xbt_dynar_t SD_simulate(double how_long)
     /* dumb variables */
 
 
-    DEBUG1("Total time: %f", total_time);
+    XBT_DEBUG("Total time: %f", total_time);
 
     elapsed_time = surf_solve(how_long > 0 ? surf_get_clock() + how_long : -1.0);
-    DEBUG1("surf_solve() returns %f", elapsed_time);
+    XBT_DEBUG("surf_solve() returns %f", elapsed_time);
     if (elapsed_time > 0.0)
       total_time += elapsed_time;
 
@@ -282,10 +282,10 @@ xbt_dynar_t SD_simulate(double how_long)
             surf_workstation_model->
             action_get_start_time(task->surf_action);
         task->finish_time = surf_get_clock();
-        VERB1("Task '%s' done", SD_task_get_name(task));
-        DEBUG0("Calling __SD_task_just_done");
+        XBT_VERB("Task '%s' done", SD_task_get_name(task));
+        XBT_DEBUG("Calling __SD_task_just_done");
         __SD_task_just_done(task);
-        DEBUG1("__SD_task_just_done called on task '%s'",
+        XBT_DEBUG("__SD_task_just_done called on task '%s'",
                SD_task_get_name(task));
 
         /* the state has changed */
@@ -325,7 +325,7 @@ xbt_dynar_t SD_simulate(double how_long)
           /* is dst runnable now? */
           if (__SD_task_is_runnable(dst)
               && !sd_global->watch_point_reached) {
-            VERB1("Executing task '%s'", SD_task_get_name(dst));
+            XBT_VERB("Executing task '%s'", SD_task_get_name(dst));
             if (__SD_task_try_to_run(dst) &&
                 !xbt_dynar_member(changed_tasks, &task))
               xbt_dynar_push(changed_tasks, &task);
@@ -340,7 +340,7 @@ xbt_dynar_t SD_simulate(double how_long)
             surf_workstation_model->
             action_get_start_time(task->surf_action);
         task->finish_time = surf_get_clock();
-        VERB1("Task '%s' failed", SD_task_get_name(task));
+        XBT_VERB("Task '%s' failed", SD_task_get_name(task));
         __SD_task_set_state(task, SD_FAILED);
         surf_workstation_model->action_unref(action);
         task->surf_action = NULL;
@@ -353,22 +353,22 @@ xbt_dynar_t SD_simulate(double how_long)
 
   if (!sd_global->watch_point_reached && how_long<0){
     if (xbt_swag_size(sd_global->done_task_set) < sd_global->task_number){
-    	WARN0("Simulation is finished but some tasks are still not done");
+        XBT_WARN("Simulation is finished but some tasks are still not done");
       	xbt_swag_foreach_safe (task, task_safe,sd_global->not_scheduled_task_set){
-       		WARN1("%s is in SD_NOT_SCHEDULED state", SD_task_get_name(task));
+                XBT_WARN("%s is in SD_NOT_SCHEDULED state", SD_task_get_name(task));
 		}
     	xbt_swag_foreach_safe (task, task_safe,sd_global->schedulable_task_set){
-   		WARN1("%s is in SD_SCHEDULABLE state", SD_task_get_name(task));
+                XBT_WARN("%s is in SD_SCHEDULABLE state", SD_task_get_name(task));
 	}
       	xbt_swag_foreach_safe (task, task_safe,sd_global->scheduled_task_set){
-       		WARN1("%s is in SD_SCHEDULED state", SD_task_get_name(task));
+                XBT_WARN("%s is in SD_SCHEDULED state", SD_task_get_name(task));
        	}
     }
   }
 
-  DEBUG3("elapsed_time = %f, total_time = %f, watch_point_reached = %d",
+  XBT_DEBUG("elapsed_time = %f, total_time = %f, watch_point_reached = %d",
          elapsed_time, total_time, sd_global->watch_point_reached);
-  DEBUG1("current time = %f", surf_get_clock());
+  XBT_DEBUG("current time = %f", surf_get_clock());
 
   return changed_tasks;
 }
@@ -399,11 +399,11 @@ void SD_exit(void)
   TRACE_surf_release();
 #endif
   if (SD_INITIALISED()) {
-    DEBUG0("Destroying workstation and link dictionaries...");
+    XBT_DEBUG("Destroying workstation and link dictionaries...");
     xbt_dict_free(&sd_global->workstations);
     xbt_dict_free(&sd_global->links);
 
-    DEBUG0("Destroying workstation and link arrays if necessary...");
+    XBT_DEBUG("Destroying workstation and link arrays if necessary...");
     if (sd_global->workstation_list != NULL)
       xbt_free(sd_global->workstation_list);
 
@@ -413,7 +413,7 @@ void SD_exit(void)
     if (sd_global->recyclable_route != NULL)
       xbt_free(sd_global->recyclable_route);
 
-    DEBUG0("Destroying the swags...");
+    XBT_DEBUG("Destroying the swags...");
     xbt_swag_free(sd_global->not_scheduled_task_set);
     xbt_swag_free(sd_global->schedulable_task_set);
     xbt_swag_free(sd_global->scheduled_task_set);
@@ -434,10 +434,10 @@ void SD_exit(void)
   jedule_sd_cleanup();
 #endif
 
-    DEBUG0("Exiting Surf...");
+    XBT_DEBUG("Exiting Surf...");
     surf_exit();
   } else {
-    WARN0("SD_exit() called, but SimDag is not running");
+    XBT_WARN("SD_exit() called, but SimDag is not running");
     /* we cannot use exceptions here because xbt is not running! */
   }
 }

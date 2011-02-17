@@ -35,7 +35,7 @@ static void SIMIX_action_mallocator_reset_f(void* action);
 
 static void _XBT_CALL inthandler(int ignored)
 {
-  INFO0("CTRL-C pressed. Displaying status and bailing out");
+  XBT_INFO("CTRL-C pressed. Displaying status and bailing out");
   SIMIX_display_process_status();
   exit(1);
 }
@@ -183,14 +183,14 @@ void SIMIX_run(void)
   unsigned int iter;
 
   do {
-    DEBUG1("New Schedule Round; size(queue)=%lu",
+    XBT_DEBUG("New Schedule Round; size(queue)=%lu",
         xbt_dynar_length(simix_global->process_to_run));
     do {
-      DEBUG1("New Sub-Schedule Round; size(queue)=%lu",
+      XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu",
               xbt_dynar_length(simix_global->process_to_run));
       SIMIX_context_runall(simix_global->process_to_run);
       while ((req = SIMIX_request_pop())) {
-        DEBUG1("Handling request %p", req);
+        XBT_DEBUG("Handling request %p", req);
         SIMIX_request_pre(req, 0);
       }
     } while (xbt_dynar_length(simix_global->process_to_run));
@@ -224,7 +224,7 @@ void SIMIX_run(void)
 
   if (xbt_swag_size(simix_global->process_list) != 0) {
 
-    WARN0("Oops ! Deadlock or code not perfectly clean.");
+    XBT_WARN("Oops ! Deadlock or code not perfectly clean.");
     SIMIX_display_process_status();
     xbt_abort();
   }
@@ -304,9 +304,9 @@ void SIMIX_display_process_status(void)
   smx_process_t process = NULL;
   int nbprocess = xbt_swag_size(simix_global->process_list);
 
-  INFO1("%d processes are still running, waiting for something.", nbprocess);
+  XBT_INFO("%d processes are still running, waiting for something.", nbprocess);
   /*  List the process and their state */
-  INFO0
+  XBT_INFO
     ("Legend of the following listing: \"<process> on <host>: <status>.\"");
   xbt_swag_foreach(process, simix_global->process_list) {
 
@@ -339,7 +339,7 @@ void SIMIX_display_process_status(void)
 	  action_description = "I/O";
 	  break;
       }
-      INFO2("Waiting for %s action %p to finish", action_description, process->waiting_action);
+      XBT_INFO("Waiting for %s action %p to finish", action_description, process->waiting_action);
     }
   }
 }

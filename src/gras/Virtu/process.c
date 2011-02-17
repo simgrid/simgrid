@@ -137,15 +137,15 @@ void gras_procdata_init()
     volatile int found = 0;
 
     if (cursor + 1 <= xbt_set_length(pd->libdata)) {
-      DEBUG2("Skip fabric %d: there is already %ld libdata",
+      XBT_DEBUG("Skip fabric %d: there is already %ld libdata",
              cursor, xbt_set_length(pd->libdata));
       continue;                 /* allow to recall this function to get recently added fabrics */
     }
-    DEBUG2("Go ahead for cursor %d, there is %ld libdata",
+    XBT_DEBUG("Go ahead for cursor %d, there is %ld libdata",
            cursor, xbt_set_length(pd->libdata));
 
     xbt_assert1(fab.name, "Name of fabric #%d is NULL!", cursor);
-    DEBUG1("Create the procdata for %s", fab.name);
+    XBT_DEBUG("Create the procdata for %s", fab.name);
     /* Check for our own errors */
     TRY {
       xbt_set_get_by_name(pd->libdata, fab.name);
@@ -163,7 +163,7 @@ void gras_procdata_init()
     elem = (*(fab.constructor)) ();
     if (elem->name_len && elem->name_len != strlen(elem->name)) {
       elem->name_len = strlen(elem->name);
-      WARN1
+      XBT_WARN
           ("Module '%s' constructor is borken: it does not set elem->name_len",
            fab.name);
     }

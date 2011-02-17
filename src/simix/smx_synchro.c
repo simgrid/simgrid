@@ -65,7 +65,7 @@ void SIMIX_synchro_stop_waiting(smx_process_t process, smx_req_t req)
 
 void SIMIX_synchro_destroy(smx_action_t action)
 {
-  DEBUG1("Destroying synchro %p", action);
+  XBT_DEBUG("Destroying synchro %p", action);
   action->synchro.sleep->model_type->action_unref(action->synchro.sleep);
   xbt_free(action->name);
   xbt_mallocator_release(simix_global->action_mallocator, action);
@@ -270,7 +270,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
 {
   smx_action_t sync_act = NULL;
 
-  DEBUG1("Wait condition %p", cond);
+  XBT_DEBUG("Wait condition %p", cond);
 
   /* If there is a mutex unlock it */
   /* FIXME: what happens if the issuer is not the owner of the mutex? */
@@ -298,7 +298,7 @@ void SIMIX_cond_signal(smx_cond_t cond)
   smx_mutex_t mutex = NULL;
   smx_req_t req = NULL;
 
-  DEBUG1("Signal condition %p", cond);
+  XBT_DEBUG("Signal condition %p", cond);
 
   /* If there are processes waiting for the condition choose one and try 
      to make it acquire the mutex */
@@ -331,7 +331,7 @@ void SIMIX_cond_signal(smx_cond_t cond)
  */
 void SIMIX_cond_broadcast(smx_cond_t cond)
 {
-  DEBUG1("Broadcast condition %p", cond);
+  XBT_DEBUG("Broadcast condition %p", cond);
 
   /* Signal the condition until nobody is waiting on it */
   while (xbt_swag_size(cond->sleeping)) {
@@ -347,7 +347,7 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
  */
 void SIMIX_cond_destroy(smx_cond_t cond)
 {
-  DEBUG1("Destroy condition %p", cond);
+  XBT_DEBUG("Destroy condition %p", cond);
 
   if (cond != NULL) {
     xbt_assert0(xbt_swag_size(cond->sleeping) == 0,
@@ -374,7 +374,7 @@ smx_sem_t SIMIX_sem_init(unsigned int value)
 /** @brief Destroys a semaphore */
 void SIMIX_sem_destroy(smx_sem_t sem)
 {
-  DEBUG1("Destroy semaphore %p", sem);
+  XBT_DEBUG("Destroy semaphore %p", sem);
   if (sem != NULL) {
     xbt_assert0(xbt_swag_size(sem->sleeping) == 0,
                 "Cannot destroy semaphore since someone is still using it");
@@ -392,7 +392,7 @@ void SIMIX_sem_release(smx_sem_t sem)
 {
   smx_process_t proc;
 
-  DEBUG1("Sem release semaphore %p", sem);
+  XBT_DEBUG("Sem release semaphore %p", sem);
   if ((proc = xbt_swag_extract(sem->sleeping))) {
     proc = xbt_swag_extract(sem->sleeping);
     SIMIX_synchro_destroy(proc->waiting_action);
@@ -420,7 +420,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
 {
   smx_action_t sync_act = NULL;
 
-  DEBUG2("Wait semaphore %p (timeout:%f)", sem, timeout);
+  XBT_DEBUG("Wait semaphore %p (timeout:%f)", sem, timeout);
   if (sem->value <= 0) {
     sync_act = SIMIX_synchro_wait(issuer->smx_host, timeout);
     xbt_fifo_unshift(sync_act->request_list, req);

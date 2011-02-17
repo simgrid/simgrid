@@ -72,7 +72,7 @@ void gras_msg_init(void)
   if (_gras_msgtype_set != NULL)
     return;
 
-  VERB0("Initializing Msg");
+  XBT_VERB("Initializing Msg");
 
   _gras_msgtype_set = xbt_set_new();
 
@@ -92,7 +92,7 @@ void gras_msg_init(void)
  */
 void gras_msg_exit(void)
 {
-  VERB0("Exiting Msg");
+  XBT_VERB("Exiting Msg");
   xbt_set_free(&_gras_msgtype_set);
 
   xbt_mallocator_free(gras_msg_ctx_mallocator);

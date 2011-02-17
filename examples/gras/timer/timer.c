@@ -26,7 +26,7 @@ static void repetitive_action(void)
 
   /* Stop if nothing to do yet */
   if (globals->still_to_do <= 0) {
-    INFO0("Repetitive_action has nothing to do yet");
+    XBT_INFO("Repetitive_action has nothing to do yet");
     return;
   }
 
@@ -35,7 +35,7 @@ static void repetitive_action(void)
     gras_timer_cancel_repeat(REPEAT_INTERVAL, repetitive_action);
   }
 
-  INFO1
+  XBT_INFO
       ("repetitive_action decrementing globals->still_to_do. New value: %d",
        globals->still_to_do - 1);
 
@@ -46,7 +46,7 @@ static void delayed_action(void)
 {
   my_globals *globals = (my_globals *) gras_userdata_get();
 
-  INFO1("delayed_action setting globals->still_to_do to %d", LOOP_COUNT);
+  XBT_INFO("delayed_action setting globals->still_to_do to %d", LOOP_COUNT);
 
   globals->still_to_do = LOOP_COUNT;
 }                               /* end_of_delayed_action */
@@ -59,20 +59,20 @@ int client(int argc, char *argv[])
   globals = gras_userdata_new(my_globals);
   globals->still_to_do = -1;
 
-  INFO1("Programming the repetitive_action with a frequency of %f sec",
+  XBT_INFO("Programming the repetitive_action with a frequency of %f sec",
         REPEAT_INTERVAL);
   gras_timer_repeat(REPEAT_INTERVAL, repetitive_action);
 
-  INFO1("Programming the delayed_action for after %f sec", DELAY_INTERVAL);
+  XBT_INFO("Programming the delayed_action for after %f sec", DELAY_INTERVAL);
   gras_timer_delay(REPEAT_INTERVAL, delayed_action);
 
-  INFO0("Have a rest");
+  XBT_INFO("Have a rest");
   gras_os_sleep(DELAY_INTERVAL / 2.0);
 
-  INFO0("Canceling the delayed_action.");
+  XBT_INFO("Canceling the delayed_action.");
   gras_timer_cancel_delay(REPEAT_INTERVAL, delayed_action);
 
-  INFO1("Re-programming the delayed_action for after %f sec",
+  XBT_INFO("Re-programming the delayed_action for after %f sec",
         DELAY_INTERVAL);
   gras_timer_delay(REPEAT_INTERVAL, delayed_action);
 
@@ -80,7 +80,7 @@ int client(int argc, char *argv[])
          globals->still_to_do >
          0 /* after delayed_action, and not enough repetitive_action */ ) {
 
-    DEBUG1("Prepare to handle messages for 5 sec (still_to_do=%d)",
+    XBT_DEBUG("Prepare to handle messages for 5 sec (still_to_do=%d)",
            globals->still_to_do);
     gras_msg_handle(5.0);
   }

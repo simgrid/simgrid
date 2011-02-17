@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_multi, xbt_dict,
 
 static void _free_dict(void *d)
 {
-  VERB1("free dict %p", d);
+  XBT_VERB("free dict %p", d);
   xbt_dict_free((xbt_dict_t *) & d);
 }
 
@@ -44,7 +44,7 @@ xbt_multidict_set_ext(xbt_dict_t mdict,
   xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
   xbt_assert0(keys_len, "Can't set a zero-long key set in a multidict");
 
-  DEBUG2("xbt_multidict_set(%p,%d)", mdict, keys_len);
+  XBT_DEBUG("xbt_multidict_set(%p,%d)", mdict, keys_len);
 
   for (i = 0, thislevel = mdict; i < keys_len - 1;
        i++, thislevel = nextlevel) {
@@ -52,7 +52,7 @@ xbt_multidict_set_ext(xbt_dict_t mdict,
     xbt_dynar_get_cpy(keys, i, &thiskey);
     xbt_dynar_get_cpy(lens, i, &thislen);
 
-    DEBUG5("multi_set: at level %d, len=%ld, key=%p |%*s|", i, thislen,
+    XBT_DEBUG("multi_set: at level %d, len=%ld, key=%p |%*s|", i, thislen,
            thiskey, (int) thislen, thiskey);
 
     /* search the dict of next level */
@@ -60,7 +60,7 @@ xbt_multidict_set_ext(xbt_dict_t mdict,
     if (nextlevel == NULL) {
       /* make sure the dict of next level exists */
       nextlevel = xbt_dict_new();
-      VERB1("Create a dict (%p)", nextlevel);
+      XBT_VERB("Create a dict (%p)", nextlevel);
       xbt_dict_set_ext(thislevel, thiskey, thislen, nextlevel,
                        &_free_dict);
     }
@@ -90,7 +90,7 @@ xbt_multidict_set(xbt_dict_t mdict,
   for (i = 0; i < xbt_dynar_length(keys); i++) {
     char *thiskey = xbt_dynar_get_as(keys, i, char *);
     unsigned long int thislen = (unsigned long int) strlen(thiskey);
-    DEBUG2("Push %ld as level %lu length", thislen, i);
+    XBT_DEBUG("Push %ld as level %lu length", thislen, i);
     xbt_dynar_push(lens, &thislen);
   }
 
@@ -127,7 +127,7 @@ void *xbt_multidict_get_ext(xbt_dict_t mdict,
   xbt_assert0(xbt_dynar_length(keys) >= 1,
               "Can't get a zero-long key set in a multidict");
 
-  DEBUG2("xbt_multidict_get(%p, %ld)", mdict, xbt_dynar_length(keys));
+  XBT_DEBUG("xbt_multidict_get(%p, %ld)", mdict, xbt_dynar_length(keys));
 
   for (i = 0, thislevel = mdict; i < keys_len - 1;
        i++, thislevel = nextlevel) {
@@ -135,7 +135,7 @@ void *xbt_multidict_get_ext(xbt_dict_t mdict,
     xbt_dynar_get_cpy(keys, i, &thiskey);
     xbt_dynar_get_cpy(lens, i, &thislen);
 
-    DEBUG6("multi_get: at level %d (%p), len=%ld, key=%p |%*s|",
+    XBT_DEBUG("multi_get: at level %d (%p), len=%ld, key=%p |%*s|",
            i, thislevel, thislen, thiskey, (int) thislen, thiskey);
 
     /* search the dict of next level: let mismatch raise if not found */

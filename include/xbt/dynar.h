@@ -230,7 +230,7 @@ _xbt_dynar_cursor_first(const xbt_dynar_t dynar,
   if (dynar->mutex)             /* ie _dynar_lock(dynar) but not public */
     xbt_mutex_acquire(dynar->mutex);
 
-  //DEBUG1("Set cursor on %p to the first position", (void *) dynar);
+  //XBT_DEBUG("Set cursor on %p to the first position", (void *) dynar);
   *cursor = 0;
 }
 
@@ -240,12 +240,12 @@ _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
 {
 
   if (idx >= dynar->used) {
-    //DEBUG1("Cursor on %p already on last elem", (void *) dynar);
+    //XBT_DEBUG("Cursor on %p already on last elem", (void *) dynar);
     if (dynar->mutex)           /* unlock */
       xbt_mutex_release(dynar->mutex);
     return FALSE;
   }
-  //  DEBUG2("Cash out cursor on %p at %u", (void *) dynar, *idx);
+  //  XBT_DEBUG("Cash out cursor on %p at %u", (void *) dynar, *idx);
 
   memcpy(dst, ((char *) dynar->data) + idx * dynar->elmsize,
          dynar->elmsize);

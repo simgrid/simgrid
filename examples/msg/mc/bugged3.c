@@ -27,11 +27,11 @@ int server(int argc, char *argv[])
   MSG_comm_wait(comm2, -1);
 
   val1 = (long) MSG_task_get_data(task1);
-  INFO1("Received %lu", val1);
+  XBT_INFO("Received %lu", val1);
 
   MC_assert(val1 == 2);
 
-  INFO0("OK");
+  XBT_INFO("OK");
   return 0;
 }
 
@@ -44,7 +44,7 @@ int client(int argc, char *argv[])
 
   mbox = bprintf("mymailbox%s", argv[1]);
 
-  INFO1("Send %d!", atoi(argv[1]));
+  XBT_INFO("Send %d!", atoi(argv[1]));
   comm = MSG_task_isend(task1, mbox);
   MSG_comm_wait(comm, -1);
 

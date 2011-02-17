@@ -58,7 +58,7 @@ void smpi_process_init(int *argc, char ***argv)
     (*argc)--;
     data->argc = argc;
     data->argv = argv;
-    DEBUG2("<%d> New process in the game: %p", index, proc);
+    XBT_DEBUG("<%d> New process in the game: %p", index, proc);
   }
 }
 
@@ -66,7 +66,7 @@ void smpi_process_destroy(void)
 {
   int index = smpi_process_index();
 
-  DEBUG1("<%d> Process left the game", index);
+  XBT_DEBUG("<%d> Process left the game", index);
 }
 
 int smpi_process_argc(void) {
@@ -167,7 +167,7 @@ MPI_Comm smpi_process_comm_self(void)
 
 void print_request(const char *message, MPI_Request request)
 {
-  DEBUG8("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
+  XBT_DEBUG("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
          message, request, request->buf, request->size,
          request->src, request->dst, request->tag, request->flags);
 }
@@ -280,7 +280,7 @@ int MAIN__(void)
     SIMIX_run();
 
   if (xbt_cfg_get_int(_surf_cfg_set, "smpi/display_timing"))
-    INFO1("simulation time %g", SIMIX_get_clock());
+    XBT_INFO("simulation time %g", SIMIX_get_clock());
 
   smpi_global_destroy();
 

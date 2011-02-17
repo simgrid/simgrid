@@ -28,7 +28,7 @@ int master(int argc, char** argv)
     for(j=0; j < WORK; j++);
 
     MSG_task_send(task, mailbox);
-    INFO1("Task sent to %s", mailbox);
+    XBT_INFO("Task sent to %s", mailbox);
   }
 
   return 0;
@@ -45,7 +45,7 @@ int slave(int argc, char **argv)
 
   for(i=0; i < MAX_ITER; i++){
     MSG_task_receive(&task, mailbox);
-    INFO1("Task received to %s", mailbox);
+    XBT_INFO("Task received to %s", mailbox);
     MSG_task_destroy(task);
     task=NULL;
   }
@@ -71,7 +71,7 @@ MSG_error_t test_all(const char *platform_file,
   }
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }                               /* end_of_test_all */
 

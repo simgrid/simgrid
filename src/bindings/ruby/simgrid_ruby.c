@@ -56,7 +56,7 @@ static void msg_init(VALUE Class, VALUE args)
 //Init Msg_Run From Ruby
 static void msg_run(VALUE class)
 {
-  DEBUG0("Start Running...");
+  XBT_DEBUG("Start Running...");
   m_host_t *hosts;
   int cpt, host_count;
   VALUE rbHost;
@@ -66,10 +66,10 @@ static void msg_run(VALUE class)
     rb_raise(rb_eRuntimeError, "MSG_main() failed");
   }
 
-  DEBUG0
+  XBT_DEBUG
       ("MSG_main finished. Bail out before cleanup since there is a bug in this part.");
   /* Cleanup Ruby hosts */
-  DEBUG0("Clean Ruby World  ");
+  XBT_DEBUG("Clean Ruby World  ");
   hosts = MSG_get_host_table();
   host_count = MSG_get_host_number();
   for (cpt = 0; cpt < host_count; cpt++) {
@@ -93,7 +93,7 @@ static void msg_createEnvironment(VALUE class, VALUE plateformFile)
     rb_raise(rb_eRuntimeError, "Bad Argument's Type");
   const char *platform = RSTRING_PTR(plateformFile);
   MSG_create_environment(platform);
-  DEBUG1("Create Environment (%s)...Done", platform);
+  XBT_DEBUG("Create Environment (%s)...Done", platform);
 }
 
 //deploy Application
@@ -125,20 +125,20 @@ static void msg_deployApplication(VALUE class, VALUE deploymentFile)
 
   rb_application_handler_on_end_document();
 
-  DEBUG1("Deploy Application(%s)...Done", dep_file);
+  XBT_DEBUG("Deploy Application(%s)...Done", dep_file);
 }
 
 // INFO
 static void msg_info(VALUE class, VALUE msg)
 {
   const char *s = RSTRING_PTR(msg);
-  INFO1("%s", s);
+  XBT_INFO("%s", s);
 }
 
 static void msg_debug(VALUE class, VALUE msg)
 {
   const char *s = RSTRING_PTR(msg);
-  DEBUG1("%s", s);
+  XBT_DEBUG("%s", s);
 }
 
 // get Clock

@@ -167,7 +167,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
 
   /* why? if somebody is using, then you can't free! ok... but will return MSG_OK? when this task will be destroyed? isn't the user code wrong? */
   if (task->simdata->isused > 0) {
-    DEBUG1("Cannot destroy task %p since somebody is using it", task);
+    XBT_DEBUG("Cannot destroy task %p since somebody is using it", task);
     return MSG_OK;
   }
 #ifdef HAVE_TRACING
@@ -264,7 +264,7 @@ double MSG_task_get_remaining_communication(m_task_t task)
 {
   xbt_assert0((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
-  DEBUG1("calling SIMIX_req_communication_get_remains(%p)",
+  XBT_DEBUG("calling SIMIX_req_communication_get_remains(%p)",
          task->simdata->comm);
   return SIMIX_req_comm_get_remains(task->simdata->comm);
 }
@@ -278,7 +278,7 @@ int MSG_task_is_latency_bounded(m_task_t task)
 {
   xbt_assert0((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
-  DEBUG1("calling SIMIX_req_communication_is_latency_bounded(%p)",
+  XBT_DEBUG("calling SIMIX_req_communication_is_latency_bounded(%p)",
          task->simdata->comm);
   return SIMIX_req_comm_is_latency_bounded(task->simdata->comm);
 }

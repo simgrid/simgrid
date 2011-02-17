@@ -27,7 +27,7 @@ int *id;                        /* to pass a pointer to the threads without race
 
 static void pickup(int id, int lunch)
 {
-  INFO2("Thread %d gets hungry (lunch #%d)", id, lunch);
+  XBT_INFO("Thread %d gets hungry (lunch #%d)", id, lunch);
   xbt_mutex_acquire(mutex);
   while (state[(id + (philosopher_amount - 1)) % philosopher_amount] ==
          EATING || state[(id + 1) % philosopher_amount] == EATING) {
@@ -42,12 +42,12 @@ static void pickup(int id, int lunch)
               id);
 
   xbt_mutex_release(mutex);
-  INFO1("Thread %d eats", id);
+  XBT_INFO("Thread %d eats", id);
 }
 
 static void putdown(int id)
 {
-  INFO1("Thread %d is full", id);
+  XBT_INFO("Thread %d is full", id);
   xbt_mutex_acquire(mutex);
   state[id] = THINKING;
   xbt_cond_signal(forks
@@ -55,7 +55,7 @@ static void putdown(int id)
   xbt_cond_signal(forks[(id + 1) % philosopher_amount]);
 
   xbt_mutex_release(mutex);
-  INFO1("Thread %d thinks", id);
+  XBT_INFO("Thread %d thinks", id);
 }
 
 /*
@@ -86,11 +86,11 @@ static void philo_thread(void *arg)
   xbt_mutex_release(mut_end);
 
   /* Enter an endless loop to test the killing facilities */
-  INFO1
+  XBT_INFO
       ("Thread %d tries to enter the dead-end; hopefully, the master will cancel it",
        id);
   xbt_mutex_acquire(dead_end);
-  INFO1("Oops, thread %d reached the dead-end. Cancelation failed", id);
+  XBT_INFO("Oops, thread %d reached the dead-end. Cancelation failed", id);
 }
 
 int philosopher(int argc, char *argv[]);
@@ -124,7 +124,7 @@ int philosopher(int argc, char *argv[])
   dead_end = xbt_mutex_init();
   xbt_mutex_acquire(dead_end);
 
-  INFO2("Spawn the %d threads (%d lunches scheduled)", philosopher_amount,
+  XBT_INFO("Spawn the %d threads (%d lunches scheduled)", philosopher_amount,
         lunch_amount);
   /* spawn threads */
   for (i = 0; i < philosopher_amount; i++) {
@@ -141,7 +141,7 @@ int philosopher(int argc, char *argv[])
     xbt_cond_wait(cond_end, mut_end);
   xbt_mutex_release(mut_end);
 
-  INFO0("Cancel all childs");
+  XBT_INFO("Cancel all childs");
   /* nuke them threads */
   for (i = 0; i < philosopher_amount; i++) {
     xbt_thread_cancel(philosophers[i]);

@@ -198,7 +198,7 @@ static int AS_new(lua_State * L)
     mode = lua_tostring(L, -1);
     lua_pop(L, 1);
   } else {
-    ERROR0
+    XBT_ERROR
         ("Bad Arguments to AS.new, Should be a table with named arguments");
     return -1;
   }
@@ -269,7 +269,7 @@ static int Host_new(lua_State * L)
     lua_pop(L, 1);
 
   } else {
-    ERROR0
+    XBT_ERROR
         ("Bad Arguments to create host, Should be a table with named arguments");
     return -1;
   }
@@ -358,7 +358,7 @@ static int Link_new(lua_State * L)      // (id,bandwidth,latency)
     lua_pop(L, 1);
 
   } else {
-    ERROR0
+    XBT_ERROR
         ("Bad Arguments to create link, Should be a table with named arguments");
     return -1;
   }
@@ -433,7 +433,7 @@ static int Route_new(lua_State * L)     // (src_id,dest_id,links_number,link_tab
 		{
     	 link_id = lua_tostring(L, -1);
     	 xbt_dynar_push(route->links_id, &link_id);
-    	 DEBUG2("index = %f , Link_id = %s \n", lua_tonumber(L, -2),
+         XBT_DEBUG("index = %f , Link_id = %s \n", lua_tonumber(L, -2),
     	 lua_tostring(L, -1));
     	 lua_pop(L, 1);
     	}
@@ -475,7 +475,7 @@ static int Host_set_function(lua_State * L)     //(host,function,nb_args,list_ar
      lua_pop(L, 1);
    }
    else {
-	   ERROR0("Bad Arguments to create link, Should be a table with named arguments");
+	   XBT_ERROR("Bad Arguments to create link, Should be a table with named arguments");
 	   return -1;
    }
 
@@ -493,7 +493,7 @@ static int Host_set_function(lua_State * L)     //(host,function,nb_args,list_ar
       return 0;
 	   }
       }
-	  ERROR1("Host : %s Not Found !!", host);
+	  XBT_ERROR("Host : %s Not Found !!", host);
 	  return 1;
 
 }

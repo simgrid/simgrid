@@ -31,9 +31,9 @@ int test_trace(int argc, char *argv[])
   task_comp_size = atof(argv[1]);
   task_prio = atof(argv[2]);
 
-  INFO0("Testing the trace integration cpu model: CpuTI");
-  INFO1("Task size: %lf", task_comp_size);
-  INFO1("Task prio: %lf", task_prio);
+  XBT_INFO("Testing the trace integration cpu model: CpuTI");
+  XBT_INFO("Task size: %lf", task_comp_size);
+  XBT_INFO("Task prio: %lf", task_prio);
 
   /* Create and execute a single task. */
   task = MSG_task_create("proc 0", task_comp_size, 0, NULL);
@@ -41,7 +41,7 @@ int test_trace(int argc, char *argv[])
   MSG_task_execute(task);
   MSG_task_destroy(task);
 
-  INFO0("Test finished");
+  XBT_INFO("Test finished");
 
 
   return 0;

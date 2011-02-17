@@ -9,8 +9,8 @@ int server(int argc, char *argv[])
 {
   int val;
   val = MC_random(3, 6);
-  INFO1("val=%d", val);
-  INFO0("OK");
+  XBT_INFO("val=%d", val);
+  XBT_INFO("OK");
   return 0;
 }
 

@@ -99,20 +99,20 @@ static void tree_bcast(void *buf, int count, MPI_Datatype datatype,
   rank = smpi_comm_rank(comm);
   /* wait for data from my parent in the tree */
   if (!tree->isRoot) {
-    DEBUG3("<%d> tree_bcast(): i am not root: recv from %d, tag=%d)",
+    XBT_DEBUG("<%d> tree_bcast(): i am not root: recv from %d, tag=%d)",
            rank, tree->parent, system_tag + rank);
     smpi_mpi_recv(buf, count, datatype, tree->parent, system_tag + rank,
                   comm, MPI_STATUS_IGNORE);
   }
   requests = xbt_new(MPI_Request, tree->numChildren);
-  DEBUG2("<%d> creates %d requests (1 per child)", rank,
+  XBT_DEBUG("<%d> creates %d requests (1 per child)", rank,
          tree->numChildren);
   /* iniates sends to ranks lower in the tree */
   for (i = 0; i < tree->numChildren; i++) {
     if (tree->child[i] == -1) {
       requests[i] = MPI_REQUEST_NULL;
     } else {
-      DEBUG3("<%d> send to <%d>, tag=%d", rank, tree->child[i],
+      XBT_DEBUG("<%d> send to <%d>, tag=%d", rank, tree->child[i],
              system_tag + tree->child[i]);
       requests[i] =
           smpi_isend_init(buf, count, datatype, tree->child[i],
@@ -137,20 +137,20 @@ static void tree_antibcast(void *buf, int count, MPI_Datatype datatype,
   rank = smpi_comm_rank(comm);
   // everyone sends to its parent, except root.
   if (!tree->isRoot) {
-    DEBUG3("<%d> tree_antibcast(): i am not root: send to %d, tag=%d)",
+    XBT_DEBUG("<%d> tree_antibcast(): i am not root: send to %d, tag=%d)",
            rank, tree->parent, system_tag + rank);
     smpi_mpi_send(buf, count, datatype, tree->parent, system_tag + rank,
                   comm);
   }
   //every one receives as many messages as it has children
   requests = xbt_new(MPI_Request, tree->numChildren);
-  DEBUG2("<%d> creates %d requests (1 per child)", rank,
+  XBT_DEBUG("<%d> creates %d requests (1 per child)", rank,
          tree->numChildren);
   for (i = 0; i < tree->numChildren; i++) {
     if (tree->child[i] == -1) {
       requests[i] = MPI_REQUEST_NULL;
     } else {
-      DEBUG3("<%d> recv from <%d>, tag=%d", rank, tree->child[i],
+      XBT_DEBUG("<%d> recv from <%d>, tag=%d", rank, tree->child[i],
              system_tag + tree->child[i]);
       requests[i] =
           smpi_irecv_init(buf, count, datatype, tree->child[i],
@@ -215,7 +215,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
   // FIXME: check implementation
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
-  DEBUG1("<%d> algorithm alltoall_bruck() called.", rank);
+  XBT_DEBUG("<%d> algorithm alltoall_bruck() called.", rank);
   err = smpi_datatype_extent(sendtype, &lb, &sendextent);
   err = smpi_datatype_extent(recvtype, &lb, &recvextent);
   /* Local copy from self */
@@ -230,7 +230,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
     /* Create all receives that will be posted first */
     for (i = 0; i < size; ++i) {
       if (i == rank) {
-        DEBUG3("<%d> skip request creation [src = %d, recvcount = %d]",
+        XBT_DEBUG("<%d> skip request creation [src = %d, recvcount = %d]",
                rank, i, recvcount);
         continue;
       }
@@ -242,7 +242,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
     /* Now create all sends  */
     for (i = 0; i < size; ++i) {
       if (i == rank) {
-        DEBUG3("<%d> skip request creation [dst = %d, sendcount = %d]",
+        XBT_DEBUG("<%d> skip request creation [dst = %d, sendcount = %d]",
                rank, i, sendcount);
         continue;
       }
@@ -253,7 +253,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
     }
     /* Wait for them all. */
     smpi_mpi_startall(count, requests);
-    DEBUG2("<%d> wait for %d requests", rank, count);
+    XBT_DEBUG("<%d> wait for %d requests", rank, count);
     smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
     xbt_free(requests);
   }
@@ -279,7 +279,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
   /* Initialize. */
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
-  DEBUG1("<%d> algorithm alltoall_basic_linear() called.", rank);
+  XBT_DEBUG("<%d> algorithm alltoall_basic_linear() called.", rank);
   err = smpi_datatype_extent(sendtype, &lb, &sendinc);
   err = smpi_datatype_extent(recvtype, &lb, &recvinc);
   sendinc *= sendcount;
@@ -314,7 +314,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
     }
     /* Wait for them all. */
     smpi_mpi_startall(count, requests);
-    DEBUG2("<%d> wait for %d requests", rank, count);
+    XBT_DEBUG("<%d> wait for %d requests", rank, count);
     smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
     xbt_free(requests);
   }
@@ -341,7 +341,7 @@ int smpi_coll_tuned_alltoall_pairwise(void *sendbuf, int sendcount,
 
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
-  DEBUG1("<%d> algorithm alltoall_pairwise() called.", rank);
+  XBT_DEBUG("<%d> algorithm alltoall_pairwise() called.", rank);
   sendsize = smpi_datatype_size(sendtype);
   recvsize = smpi_datatype_size(recvtype);
   /* Perform pairwise exchange - starting from 1 so the local copy is last */
@@ -375,7 +375,7 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
   /* Initialize. */
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
-  DEBUG1("<%d> algorithm basic_alltoallv() called.", rank);
+  XBT_DEBUG("<%d> algorithm basic_alltoallv() called.", rank);
   err = smpi_datatype_extent(sendtype, &lb, &sendextent);
   err = smpi_datatype_extent(recvtype, &lb, &recvextent);
   /* Local copy from self */
@@ -391,7 +391,7 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
     /* Create all receives that will be posted first */
     for (i = 0; i < size; ++i) {
       if (i == rank || recvcounts[i] == 0) {
-        DEBUG3
+        XBT_DEBUG
             ("<%d> skip request creation [src = %d, recvcounts[src] = %d]",
              rank, i, recvcounts[i]);
         continue;
@@ -404,7 +404,7 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
     /* Now create all sends  */
     for (i = 0; i < size; ++i) {
       if (i == rank || sendcounts[i] == 0) {
-        DEBUG3
+        XBT_DEBUG
             ("<%d> skip request creation [dst = %d, sendcounts[dst] = %d]",
              rank, i, sendcounts[i]);
         continue;
@@ -416,7 +416,7 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
     }
     /* Wait for them all. */
     smpi_mpi_startall(count, requests);
-    DEBUG2("<%d> wait for %d requests", rank, count);
+    XBT_DEBUG("<%d> wait for %d requests", rank, count);
     smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
     xbt_free(requests);
   }

@@ -188,7 +188,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   memset(&currcell[oldsize], 0, oldsize * sizeof(xbt_dictelm_t));       /* zero second half */
   dict->table_size = --newsize;
   dict->table = currcell;
-  DEBUG2("REHASH (%d->%d)", oldsize, newsize);
+  XBT_DEBUG("REHASH (%d->%d)", oldsize, newsize);
 
   for (i = 0; i < oldsize; i++, currcell++) {
     if (!*currcell)             /* empty cell */
@@ -239,7 +239,7 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
   xbt_dictelm_t current, previous = NULL;
   xbt_assert(dict);
 
-  DEBUG5("ADD %.*s hash = %d, size = %d, & = %d", key_len, key, hash_code,
+  XBT_DEBUG("ADD %.*s hash = %d, size = %d, & = %d", key_len, key, hash_code,
          dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
@@ -263,7 +263,7 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
     }
   } else {
 
-    DEBUG6("Replace %.*s by %.*s under key %.*s",
+    XBT_DEBUG("Replace %.*s by %.*s under key %.*s",
            key_len, (char *) current->content,
            key_len, (char *) data, key_len, (char *) key);
     /* there is already an element with the same key: overwrite it */
@@ -506,7 +506,7 @@ XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
   xbt_dictelm_t current, previous = NULL;
   xbt_assert(dict);
 
-  DEBUG5("ADD %zu->%zu; hash = %d, size = %d, & = %d", key, data,
+  XBT_DEBUG("ADD %zu->%zu; hash = %d, size = %d, & = %d", key, data,
          hash_code, dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
@@ -1379,7 +1379,7 @@ XBT_TEST_UNIT("multicrash", test_dict_multicrash, "Multi-dict crash test")
 
   for (i = 0; i < NB_TEST; i++) {
     mdict = xbt_dict_new();
-    VERB1("mdict=%p", mdict);
+    XBT_VERB("mdict=%p", mdict);
     if (verbose > 0)
       printf("Test %d\n", i);
     /* else if (i%10) printf("."); else printf("%d",i/10); */

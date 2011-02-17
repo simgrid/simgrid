@@ -58,13 +58,13 @@ void test(char *platform)
   parse_platform_file(platform);
 
   /*********************** CPU ***********************************/
-  DEBUG1("%p", surf_cpu_model);
+  XBT_DEBUG("%p", surf_cpu_model);
   cpuA = surf_model_resource_by_name(surf_cpu_model, "Cpu A");
   cpuB = surf_model_resource_by_name(surf_cpu_model, "Cpu B");
 
   /* Let's check that those two processors exist */
-  DEBUG2("%s : %p", surf_resource_name(cpuA), cpuA);
-  DEBUG2("%s : %p", surf_resource_name(cpuB), cpuB);
+  XBT_DEBUG("%s : %p", surf_resource_name(cpuA), cpuA);
+  XBT_DEBUG("%s : %p", surf_resource_name(cpuB), cpuB);
 
   /* Let's do something on it */
   actionA = surf_cpu_model->extension.cpu.execute(cpuA, 1000.0);
@@ -77,18 +77,18 @@ void test(char *platform)
   stateActionC = surf_cpu_model->action_state_get(actionC);     /* When you know actionA model type */
 
   /* And just look at the state of these tasks */
-  DEBUG2("actionA : %p (%s)", actionA, string_action(stateActionA));
-  DEBUG2("actionB : %p (%s)", actionB, string_action(stateActionB));
-  DEBUG2("actionC : %p (%s)", actionB, string_action(stateActionC));
+  XBT_DEBUG("actionA : %p (%s)", actionA, string_action(stateActionA));
+  XBT_DEBUG("actionB : %p (%s)", actionB, string_action(stateActionB));
+  XBT_DEBUG("actionC : %p (%s)", actionB, string_action(stateActionC));
 
   /*********************** Network *******************************/
-  DEBUG1("%p", surf_network_model);
+  XBT_DEBUG("%p", surf_network_model);
   cardA = surf_model_resource_by_name(surf_network_model, "Cpu A");
   cardB = surf_model_resource_by_name(surf_network_model, "Cpu B");
 
   /* Let's check that those two processors exist */
-  DEBUG2("%s : %p", surf_resource_name(cardA), cardA);
-  DEBUG2("%s : %p", surf_resource_name(cardB), cardB);
+  XBT_DEBUG("%s : %p", surf_resource_name(cardA), cardA);
+  XBT_DEBUG("%s : %p", surf_resource_name(cardB), cardB);
 
   /* Let's do something on it */
   commAB =
@@ -99,29 +99,29 @@ void test(char *platform)
   do {
     surf_action_t action = NULL;
     now = surf_get_clock();
-    DEBUG1("Next Event : %g", now);
-    DEBUG0("\t CPU actions");
+    XBT_DEBUG("Next Event : %g", now);
+    XBT_DEBUG("\t CPU actions");
     while ((action =
             xbt_swag_extract(surf_cpu_model->states.failed_action_set))) {
-      DEBUG1("\t * Failed : %p", action);
+      XBT_DEBUG("\t * Failed : %p", action);
       action->model_type->action_unref(action);
     }
     while ((action =
             xbt_swag_extract(surf_cpu_model->states.done_action_set))) {
-      DEBUG1("\t * Done : %p", action);
+      XBT_DEBUG("\t * Done : %p", action);
       action->model_type->action_unref(action);
     }
-    DEBUG0("\t Network actions");
+    XBT_DEBUG("\t Network actions");
     while ((action =
             xbt_swag_extract(surf_network_model->states.
                              failed_action_set))) {
-      DEBUG1("\t * Failed : %p", action);
+      XBT_DEBUG("\t * Failed : %p", action);
       action->model_type->action_unref(action);
     }
     while ((action =
             xbt_swag_extract(surf_network_model->states.
                              done_action_set))) {
-      DEBUG1("\t * Done : %p", action);
+      XBT_DEBUG("\t * Done : %p", action);
       action->model_type->action_unref(action);
     }
 
@@ -129,7 +129,7 @@ void test(char *platform)
             xbt_swag_size(surf_cpu_model->states.running_action_set)) &&
            surf_solve(-1.0) >= 0.0);
 
-  DEBUG0("Simulation Terminated");
+  XBT_DEBUG("Simulation Terminated");
 }
 
 #ifdef __BORLANDC__

@@ -136,18 +136,18 @@ smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
       req_data = action->comm.dst_data;
     }
     if (action->comm.type == type && (!match_fun || match_fun(data, req_data))) {
-      DEBUG1("Found a matching communication action %p", action);
+      XBT_DEBUG("Found a matching communication action %p", action);
       xbt_fifo_remove_item(rdv->comm_fifo, item);
       xbt_fifo_free_item(item);
       action->comm.refcount++;
       action->comm.rdv = NULL;
       return action;
     }
-    DEBUG3("Sorry, communication action %p does not match our needs:"
+    XBT_DEBUG("Sorry, communication action %p does not match our needs:"
            " its type is %d but we are looking for a comm of type %d",
            action, action->comm.type, type);
   }
-  DEBUG0("No matching communication action found");
+  XBT_DEBUG("No matching communication action found");
   return NULL;
 }
 
@@ -182,7 +182,7 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
   act->category = NULL;
 #endif
 
-  DEBUG1("Create communicate action %p", act);
+  XBT_DEBUG("Create communicate action %p", act);
   ++smx_total_comms;
 
   return act;
@@ -194,7 +194,7 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
  */
 void SIMIX_comm_destroy(smx_action_t action)
 {
-  DEBUG2("Destroy action %p (refcount:%d)", action, action->comm.refcount);
+  XBT_DEBUG("Destroy action %p (refcount:%d)", action, action->comm.refcount);
 
   if (action->comm.refcount <= 0)
     xbt_die(bprintf("the refcount of comm %p is already 0 before decreasing it. That's a bug!",action));
@@ -202,7 +202,7 @@ void SIMIX_comm_destroy(smx_action_t action)
   action->comm.refcount--;
   if (action->comm.refcount > 0)
     return;
-  DEBUG2("Really free communication %p; refcount is now %d", action,
+  XBT_DEBUG("Really free communication %p; refcount is now %d", action,
         action->comm.refcount);
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
@@ -470,7 +470,7 @@ static XBT_INLINE void SIMIX_comm_start(smx_action_t action)
     smx_host_t sender = action->comm.src_proc->smx_host;
     smx_host_t receiver = action->comm.dst_proc->smx_host;
 
-    DEBUG3("Starting communication %p from '%s' to '%s'", action,
+    XBT_DEBUG("Starting communication %p from '%s' to '%s'", action,
            SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
 
     action->comm.surf_comm = surf_workstation_model->extension.workstation.
@@ -486,7 +486,7 @@ static XBT_INLINE void SIMIX_comm_start(smx_action_t action)
 
     /* If a link is failed, detect it immediately */
     if (surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED) {
-      DEBUG2("Communication from '%s' to '%s' failed to start because of a link failure",
+      XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure",
 	  SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
       action->state = SIMIX_LINK_FAILURE;
       SIMIX_comm_destroy_internal_actions(action);
@@ -523,13 +523,13 @@ void SIMIX_comm_finish(smx_action_t action)
     if (action->comm.rdv)
       SIMIX_rdv_remove(action->comm.rdv, action);
 
-    DEBUG1("SIMIX_comm_finish: action state = %d", action->state);
+    XBT_DEBUG("SIMIX_comm_finish: action state = %d", action->state);
 
     /* Check out for errors */
     switch (action->state) {
 
       case SIMIX_DONE:
-        DEBUG1("Communication %p complete!", action);
+        XBT_DEBUG("Communication %p complete!", action);
         SIMIX_comm_copy_data(action);
         break;
 
@@ -577,7 +577,7 @@ void SIMIX_comm_finish(smx_action_t action)
 
       case SIMIX_LINK_FAILURE:
         TRY {
-	  DEBUG5("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p)",
+	  XBT_DEBUG("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p)",
 	      action, action->comm.src_proc->smx_host->name, action->comm.dst_proc->smx_host->name,
 	      req->issuer->name, req->issuer);
           THROW0(network_error, 0, "Link failure");
@@ -631,7 +631,7 @@ void SIMIX_post_comm(smx_action_t action)
   else
     action->state = SIMIX_DONE;
 
-  DEBUG1("SIMIX_post_comm: action state = %d", action->state);
+  XBT_DEBUG("SIMIX_post_comm: action state = %d", action->state);
 
   /* After this point the surf actions associated with the simix communicate
      action are no longer needed, thus we delete them. */
@@ -740,9 +740,9 @@ smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action)
 XBT_INLINE int SIMIX_comm_is_latency_bounded(smx_action_t action)
 {
   if (action->comm.surf_comm){
-      DEBUG1("Getting latency limited for surf_action (%p)", action->comm.surf_comm);
+      XBT_DEBUG("Getting latency limited for surf_action (%p)", action->comm.surf_comm);
       action->latency_limited = surf_workstation_model->get_latency_limited(action->comm.surf_comm);
-      DEBUG1("Action limited is %d", action->latency_limited);
+      XBT_DEBUG("Action limited is %d", action->latency_limited);
   }
   return action->latency_limited;
 }
@@ -783,7 +783,7 @@ void SIMIX_comm_copy_data(smx_action_t comm)
   if (!comm->comm.src_buff || !comm->comm.dst_buff || comm->comm.copied == 1)
     return;
 
-  DEBUG6("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
+  XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
          comm,
          comm->comm.src_proc->smx_host->name, comm->comm.src_buff,
          comm->comm.dst_proc->smx_host->name, comm->comm.dst_buff, buff_size);

@@ -42,7 +42,7 @@ static val_t newValue (const char *valuename, const char *color, type_t father)
   ret->id = xbt_strdup (str_id);
 
   xbt_dict_set (father->values, valuename, ret, NULL);
-  DEBUG2("new value %s, child of %s", ret->name, ret->father->name);
+  XBT_DEBUG("new value %s, child of %s", ret->name, ret->father->name);
   return ret;
 }
 
@@ -53,7 +53,7 @@ val_t getValue (const char *valuename, const char *color, type_t father)
   val_t ret = (val_t)xbt_dict_get_or_null (father->values, valuename);
   if (ret == NULL){
     ret = newValue (valuename, color, father);
-    DEBUG4("EntityValue %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+    XBT_DEBUG("EntityValue %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
     new_pajeDefineEntityValue(ret);
   }
   return ret;
@@ -80,7 +80,7 @@ static type_t newType (const char *typename, const char *key, const char *color,
 
   if (father != NULL){
     xbt_dict_set (father->children, key, ret, NULL);
-    DEBUG2("new type %s, child of %s", typename, father->name);
+    XBT_DEBUG("new type %s, child of %s", typename, father->name);
   }
   return ret;
 }
@@ -118,7 +118,7 @@ type_t getEventType (const char *typename, const char *color, type_t father)
     }else{
       ret = newType (typename, typename, color, TYPE_EVENT, father);
     }
-    DEBUG4("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+    XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
     new_pajeDefineEventType(ret);
   }
   return ret;
@@ -134,7 +134,7 @@ type_t getVariableType (const char *typename, const char *color, type_t father)
     }else{
       ret = newType (typename, typename, color, TYPE_VARIABLE, father);
     }
-    DEBUG4("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+    XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
     new_pajeDefineVariableType (ret);
   }
   return ret;
@@ -158,7 +158,7 @@ type_t getLinkType (const char *typename, type_t father, type_t source, type_t d
   type_t ret = xbt_dict_get_or_null (father->children, key);
   if (ret == NULL){
     ret = newType (typename, key, NULL, TYPE_LINK, father);
-    DEBUG8("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id, source->name, source->id, dest->name, dest->id);
+    XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id, source->name, source->id, dest->name, dest->id);
     new_pajeDefineLinkType(ret, source, dest);
   }
   return ret;
@@ -169,7 +169,7 @@ type_t getStateType (const char *typename, type_t father)
   type_t ret = xbt_dict_get_or_null (father->children, typename);
   if (ret == NULL){
     ret = newType (typename, typename, NULL, TYPE_STATE, father);
-    DEBUG4("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+    XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
     new_pajeDefineStateType(ret);
   }
   return ret;
@@ -188,7 +188,7 @@ container_t newContainer (const char *name, e_container_types kind, container_t 
   // level depends on level of father
   if (new->father){
     new->level = new->father->level+1;
-    DEBUG2("new container %s, child of %s", name, father->name);
+    XBT_DEBUG("new container %s, child of %s", name, father->name);
   }else{
     new->level = 0;
   }
@@ -291,7 +291,7 @@ void destroyContainer (container_t container)
     xbt_dict_remove(container->father->children, container->name);
   }
 
-  DEBUG1("destroy container %s", container->name);
+  XBT_DEBUG("destroy container %s", container->name);
 
   //obligation to dump previous events because they might
   //reference the container that is about to be destroyed

@@ -42,7 +42,7 @@ int worker(int argc, char *argv[]) {
     if (!moretodo)
       break; // Do not break from within the CATCH, exceptions don't like it.
 
-    INFO2("Got [%d;%d] to do",chunk->min,chunk->max);
+    XBT_INFO("Got [%d;%d] to do",chunk->min,chunk->max);
     GRAS_BENCH_ALWAYS_BEGIN();
     int i;
     for (i=chunk->min;i<chunk->max;i++) {
@@ -57,7 +57,7 @@ int worker(int argc, char *argv[]) {
     GRAS_BENCH_ALWAYS_END();
     xbt_queue_push(done,&chunk);
   }
-  INFO0("No more work for me; bailing out");
+  XBT_INFO("No more work for me; bailing out");
 
   return 0;
 }
@@ -81,7 +81,7 @@ int server(int argc, char *argv[])
   done = xbt_queue_new(-1,sizeof(work_chunk_t));
 
 
-  INFO0("Prepare some work");
+  XBT_INFO("Prepare some work");
   for (i=0;i<maxint/perchunk;i++) {
     chunk = xbt_new0(s_work_chunk_t,1);
     chunk->min = i*perchunk;
@@ -90,7 +90,7 @@ int server(int argc, char *argv[])
     xbt_queue_push(todo,&chunk);
   }
 
-  INFO0("Spawn the kids");
+  XBT_INFO("Spawn the kids");
   for (i = 0; i < child_amount; i++) {
     char *name = bprintf("child%d",i);
     worker_args = xbt_new0(char *, 2);
@@ -100,7 +100,7 @@ int server(int argc, char *argv[])
     free(name);
   }
 
-  INFO0("Fetch their answers");
+  XBT_INFO("Fetch their answers");
   for (i=0;i<maxint/perchunk;i++) {
     work_chunk_t chunk;
     xbt_strbuff_t buff = xbt_strbuff_new();
@@ -117,7 +117,7 @@ int server(int argc, char *argv[])
         xbt_strbuff_append(buff,",");
       xbt_strbuff_append(buff,number);
     }
-    INFO3("Primes in [%d,%d]: %s",chunk->min,chunk->max,buff->data);
+    XBT_INFO("Primes in [%d,%d]: %s",chunk->min,chunk->max,buff->data);
     xbt_strbuff_free(buff);
   }
   gras_os_sleep(.1);/* Let the childs detect that there is nothing more to do */

@@ -41,17 +41,17 @@ int gras_socket_im_the_server(gras_socket_t sock) {
   smx_process_t server_listener_process=NULL;
   smx_process_t client_listener_process = NULL;
 
-  VERB4("Am I the server of socket %p (client = %p, server = %p) ? process self: %p", sock, sock_data->client, sock_data->server, SIMIX_process_self());
+  XBT_VERB("Am I the server of socket %p (client = %p, server = %p) ? process self: %p", sock, sock_data->client, sock_data->server, SIMIX_process_self());
 
   if (sock_data->server == SIMIX_process_self()) {
-    VERB0("I am the server");
+    XBT_VERB("I am the server");
     return 1;
   }
   if (sock_data->client == SIMIX_process_self()) {
-    VERB0("I am the client");
+    XBT_VERB("I am the client");
     return 0;
   }
-  VERB0("I am neither the client nor the server, probably a listener");
+  XBT_VERB("I am neither the client nor the server, probably a listener");
 
   /* neither the client nor the server. Check their respective listeners */
   pd = ((gras_procdata_t*)SIMIX_process_get_data(sock_data->server));
@@ -60,7 +60,7 @@ int gras_socket_im_the_server(gras_socket_t sock) {
     listener_thread = ((fake_gras_msg_listener_t)l)->listener;
     server_listener_process = ((fake_xbt_thread_t)listener_thread)->s_process;
     if (server_listener_process == SIMIX_process_self()) {
-      VERB0("I am the listener of the server");
+      XBT_VERB("I am the listener of the server");
       return 1;
     }
   }
@@ -72,7 +72,7 @@ int gras_socket_im_the_server(gras_socket_t sock) {
       listener_thread = ((fake_gras_msg_listener_t)l)->listener;
       client_listener_process = ((fake_xbt_thread_t)listener_thread)->s_process;
       if (client_listener_process == SIMIX_process_self()) {
-	VERB0("I am the listener of the client");
+	XBT_VERB("I am the listener of the client");
         return 0;
       }
     }
@@ -82,11 +82,11 @@ int gras_socket_im_the_server(gras_socket_t sock) {
   xbt_backtrace_display_current();
   ((char*)sock)[sizeof(*sock)+1] = '0'; /* Try to make valgrind angry to see where that damn socket comes from */
   if(system(bprintf("cat /proc/%d/maps 1>&2",getpid()))){}
-  INFO6("I'm not the client in socket %p (comm:%p, rdvser=%p, rdvcli=%p) to %s, that's %s",
+  XBT_INFO("I'm not the client in socket %p (comm:%p, rdvser=%p, rdvcli=%p) to %s, that's %s",
       sock,sock_data->comm_recv,sock_data->rdv_server,sock_data->rdv_client,
       SIMIX_host_get_name(SIMIX_process_get_host(sock_data->server)),
       sock_data->client?SIMIX_host_get_name(SIMIX_process_get_host(sock_data->client)):"(no client)");
-  INFO7("server:%s (%p) server_listener=%p client:%s (%p) client_listener=%p, I'm %p",
+  XBT_INFO("server:%s (%p) server_listener=%p client:%s (%p) client_listener=%p, I'm %p",
       SIMIX_host_get_name(SIMIX_process_get_host(sock_data->server)), sock_data->server,server_listener_process,
       sock_data->client?SIMIX_host_get_name(SIMIX_process_get_host(sock_data->client)):"(no client)", sock_data->client,client_listener_process,
           SIMIX_process_self());
@@ -109,7 +109,7 @@ gras_msg_t gras_msg_recv_any(void)
     sock_data = (gras_trp_sg_sock_data_t) sock->data;
 
 
-    DEBUG5
+    XBT_DEBUG
         ("Consider socket %p (data:%p; Here rdv: %p; Remote rdv: %p; Comm %p) to get a message",
          sock, sock_data,
          gras_socket_im_the_server(sock)?
@@ -151,7 +151,7 @@ gras_msg_t gras_msg_recv_any(void)
                 sock);
     /* End of paranoia */
 
-    VERB3("Consider receiving messages from on comm_recv %p rdv:%p (other rdv:%p)",
+    XBT_VERB("Consider receiving messages from on comm_recv %p rdv:%p (other rdv:%p)",
           sock_data->comm_recv,
           gras_socket_im_the_server(sock)?
               sock_data->rdv_server : sock_data->rdv_client,
@@ -159,7 +159,7 @@ gras_msg_t gras_msg_recv_any(void)
               sock_data->rdv_client : sock_data->rdv_server);
     xbt_dynar_push(comms, &(sock_data->comm_recv));
   }
-  VERB1("Wait on %ld 'sockets'", xbt_dynar_length(comms));
+  XBT_VERB("Wait on %ld 'sockets'", xbt_dynar_length(comms));
   /* Wait for the end of any of these communications */
   got = SIMIX_req_comm_waitany(comms);
 
@@ -167,7 +167,7 @@ gras_msg_t gras_msg_recv_any(void)
   sock = xbt_dynar_get_as(trp_proc->sockets, got, gras_socket_t);
   sock_data = (gras_trp_sg_sock_data_t) sock->data;
   msg = sock_data->msg;
-  VERB2("Got something. Communication over rdv_server=%p, rdv_client=%p",
+  XBT_VERB("Got something. Communication over rdv_server=%p, rdv_client=%p",
       sock_data->rdv_server,sock_data->rdv_client);
 
   /* Reinstall a waiting communication on that rdv */
@@ -210,7 +210,7 @@ void gras_msg_send_ext(gras_socket_t sock,
   msg->type = msgtype;
   msg->ID = ID;
 
-  VERB4("Send msg %s (%s) to rdv %p sock %p",
+  XBT_VERB("Send msg %s (%s) to rdv %p sock %p",
       msgtype->name,  e_gras_msg_kind_names[kind], target_rdv, sock);
 
   if (kind == e_gras_msg_kind_rpcerror) {
@@ -241,6 +241,6 @@ void gras_msg_send_ext(gras_socket_t sock,
   comm = SIMIX_req_comm_isend(target_rdv, whole_payload_size, -1, msg, sizeof(void *), NULL, msg, 0);
   SIMIX_req_comm_wait(comm, -1);
 
-  VERB0("Message sent (and received)");
+  XBT_VERB("Message sent (and received)");
 
 }

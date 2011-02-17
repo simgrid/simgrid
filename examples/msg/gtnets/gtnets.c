@@ -47,7 +47,7 @@ int master(int argc, char *argv[])
   int id = -1;
 
   if (argc != 4) {
-    INFO1("Strange number of arguments expected 3 got %d", argc - 1);
+    XBT_INFO("Strange number of arguments expected 3 got %d", argc - 1);
   }
 
   /* data size */
@@ -100,7 +100,7 @@ int slave(int argc, char *argv[])
   char id_alias[10];
 
   if (argc != 2) {
-    INFO1("Strange number of arguments expected 1 got %d", argc - 1);
+    XBT_INFO("Strange number of arguments expected 1 got %d", argc - 1);
   }
 
   id = atoi(argv[1]);
@@ -110,7 +110,7 @@ int slave(int argc, char *argv[])
   a = MSG_task_receive(&(task), id_alias);
 
   if (a != MSG_OK) {
-    INFO0("Hey?! What's up?");
+    XBT_INFO("Hey?! What's up?");
     xbt_assert0(0, "Unexpected behavior.");
   }
 
@@ -126,10 +126,10 @@ int slave(int argc, char *argv[])
 #ifdef HAVE_LATENCY_BOUND_TRACKING
         limited_latency = MSG_task_is_latency_bounded(gl_task_array[id]);
         if (limited_latency) {
-          INFO1("WARNING FLOW[%d] is limited by latency!!", id);
+          XBT_INFO("WARNING FLOW[%d] is limited by latency!!", id);
         }
 #endif
-        INFO5
+        XBT_INFO
             ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
              id, gl_data_size[id] / elapsed_time, masternames[id],
              slavenames[id], 0.0);
@@ -140,10 +140,10 @@ int slave(int argc, char *argv[])
         limited_latency = MSG_task_is_latency_bounded(gl_task_array[id]);
 
         if (limited_latency) {
-          INFO1("WARNING FLOW[%d] is limited by latency!!", id);
+          XBT_INFO("WARNING FLOW[%d] is limited by latency!!", id);
         }
 #endif
-        INFO5
+        XBT_INFO
             ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
              id, (gl_data_size[id] - remaining) / elapsed_time,
              masternames[id], slavenames[id], remaining);

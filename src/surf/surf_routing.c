@@ -247,7 +247,7 @@ static void parse_E_host(void)
 	  char *elem;
 
 	  xbt_dict_foreach(current_property_set, cursor, key, elem) {
-		  DEBUG2("property : %s = %s",key,elem);
+		  XBT_DEBUG("property : %s = %s",key,elem);
 		}
 }
 
@@ -549,7 +549,7 @@ static void parse_S_AS_XML(void)
   parse_S_AS(A_surfxml_AS_id, A_surfxml_AS_routing);
 
   if (strcmp(A_surfxml_AS_coordinates,"")) {
-	DEBUG2("%s coordinates : %s",A_surfxml_AS_id,A_surfxml_AS_coordinates);
+	XBT_DEBUG("%s coordinates : %s",A_surfxml_AS_id,A_surfxml_AS_coordinates);
   	xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_AS_coordinates, " ");
   	xbt_dynar_shrink(ctn,0);
    	xbt_dict_set (coordinates,A_surfxml_AS_id,ctn,NULL);
@@ -735,7 +735,7 @@ static route_extended_t _get_route(const char *src, const char *dst)
   void *link;
   unsigned int cpt = 0;
 
-  DEBUG2("Solve route  \"%s\" to \"%s\"", src, dst);
+  XBT_DEBUG("Solve route  \"%s\" to \"%s\"", src, dst);
 
   xbt_assert0(src && dst, "bad parameters for \"_get_route\" method");
 
@@ -832,7 +832,7 @@ static double _get_latency(const char *src, const char *dst)
 {
   double latency, latency_src, latency_dst = 0.0;
 
-  DEBUG2("Solve route  \"%s\" to \"%s\"", src, dst);
+  XBT_DEBUG("Solve route  \"%s\" to \"%s\"", src, dst);
   xbt_assert0(src && dst, "bad parameters for \"_get_route\" method");
 
   route_extended_t e_route_cnt;
@@ -1378,9 +1378,9 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 	else
 	{
 		  if(!route->dst_gateway && !route->src_gateway)
-			  DEBUG2("Load Route from \"%s\" to \"%s\"", src, dst);
+			  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
 		  else
-			  DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
+			  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
 			         route->src_gateway, dst, route->dst_gateway);
 	      TO_ROUTE_FULL(*src_id, *dst_id) = generic_new_extended_route(rc->hierarchy,route,1);
 	      xbt_dynar_shrink(TO_ROUTE_FULL(*src_id, *dst_id)->generic_route.link_list, 0);
@@ -1418,9 +1418,9 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 		else
 		{
 			  if(!route->dst_gateway && !route->src_gateway)
-				  DEBUG2("Load Route from \"%s\" to \"%s\"", dst, src);
+				  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
 			  else
-				  DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
+				  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
 				         route->src_gateway, src, route->dst_gateway);
 		      TO_ROUTE_FULL(*dst_id, *src_id) = generic_new_extended_route(rc->hierarchy,route,0);
 		      xbt_dynar_shrink(TO_ROUTE_FULL(*dst_id, *src_id)->generic_route.link_list, 0);
@@ -1724,9 +1724,9 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 	if(TO_FLOYD_LINK(*src_id, *dst_id))
 	{
 		if(!route->dst_gateway && !route->src_gateway)
-			DEBUG2("See Route from \"%s\" to \"%s\"", src, dst);
+			XBT_DEBUG("See Route from \"%s\" to \"%s\"", src, dst);
 		else
-			DEBUG4("See ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
+			XBT_DEBUG("See ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
 				 route->src_gateway, dst, route->dst_gateway);
 		char * link_name;
 		unsigned int cpt;
@@ -1747,9 +1747,9 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 	else
 	{
 		if(!route->dst_gateway && !route->src_gateway)
-		  DEBUG2("Load Route from \"%s\" to \"%s\"", src, dst);
+		  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
 		else
-		  DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
+		  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
 				 route->src_gateway, dst, route->dst_gateway);
 
 	    TO_FLOYD_LINK(*src_id, *dst_id) =
@@ -1765,9 +1765,9 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 		if(TO_FLOYD_LINK(*dst_id, *src_id))
 		{
 			if(!route->dst_gateway && !route->src_gateway)
-			  DEBUG2("See Route from \"%s\" to \"%s\"", dst, src);
+			  XBT_DEBUG("See Route from \"%s\" to \"%s\"", dst, src);
 			else
-			  DEBUG4("See ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
+			  XBT_DEBUG("See ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
 					 route->src_gateway, src, route->dst_gateway);
 			char * link_name;
 			unsigned int i;
@@ -1797,9 +1797,9 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 			}
 
 			if(!route->dst_gateway && !route->src_gateway)
-			  DEBUG2("Load Route from \"%s\" to \"%s\"", dst, src);
+			  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
 			else
-			  DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
+			  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
 					 route->src_gateway, src, route->dst_gateway);
 
 		    TO_FLOYD_LINK(*dst_id, *src_id) =
@@ -1909,7 +1909,7 @@ static void route_new_dijkstra(routing_component_dijkstra_t rc, int src_id,
                                int dst_id, route_extended_t e_route)
 {
   routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
-  DEBUG2("Load Route from \"%d\" to \"%d\"", src_id, dst_id);
+  XBT_DEBUG("Load Route from \"%d\" to \"%d\"", src_id, dst_id);
   xbt_node_t src = NULL;
   xbt_node_t dst = NULL;
 
@@ -2315,9 +2315,9 @@ static void model_dijkstra_both_set_route (routing_component_t rc, const char *s
 		xbt_die("Route symmetrical not supported on model dijkstra");
 
 	if(!route->dst_gateway && !route->src_gateway)
-	  DEBUG2("Load Route from \"%s\" to \"%s\"", src, dst);
+	  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
 	else
-	  DEBUG4("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
+	  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
 			 route->src_gateway, dst, route->dst_gateway);
 
 	route_extended_t e_route =
@@ -2876,7 +2876,7 @@ static void model_none_end(void)
 static void generic_set_processing_unit(routing_component_t rc,
                                         const char *name)
 {
-  DEBUG1("Load process unit \"%s\"", name);
+  XBT_DEBUG("Load process unit \"%s\"", name);
   int *id = xbt_new0(int, 1);
   xbt_dict_t _to_index;
   _to_index = current_routing->to_index;
@@ -2887,7 +2887,7 @@ static void generic_set_processing_unit(routing_component_t rc,
 static void generic_set_autonomous_system(routing_component_t rc,
                                           const char *name)
 {
-  DEBUG1("Load Autonomous system \"%s\"", name);
+  XBT_DEBUG("Load Autonomous system \"%s\"", name);
   int *id = xbt_new0(int, 1);
   xbt_dict_t _to_index;
   _to_index = current_routing->to_index;
@@ -2909,7 +2909,7 @@ static void generic_set_bypassroute(routing_component_t rc,
                                     const char *src, const char *dst,
                                     route_extended_t e_route)
 {
-  DEBUG2("Load bypassRoute from \"%s\" to \"%s\"", src, dst);
+  XBT_DEBUG("Load bypassRoute from \"%s\" to \"%s\"", src, dst);
   xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
   char *route_name;
 
@@ -3291,7 +3291,7 @@ static void generic_src_dst_check(routing_component_t rc, const char *src,
 
 static void routing_parse_Sconfig(void)
 {
-  DEBUG1("START configuration name = %s",A_surfxml_config_id);
+  XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
 }
 
 static void routing_parse_Econfig(void)
@@ -3305,9 +3305,9 @@ static void routing_parse_Econfig(void)
 	  if(xbt_cfg_is_default_value(_surf_cfg_set, key))
 		  xbt_cfg_set_parse(_surf_cfg_set, cfg);
 	  else
-		  INFO1("The custom configuration '%s' is already define by user!",key);
+		  XBT_INFO("The custom configuration '%s' is already define by user!",key);
 	}
-  DEBUG1("End configuration name = %s",A_surfxml_config_id);
+  XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 }
 
 static void routing_parse_Scluster(void)
@@ -3367,10 +3367,10 @@ static void routing_parse_Scluster(void)
   SURFXML_BUFFER_SET(AS_id, cluster_id);
 #ifdef HAVE_PCRE_LIB
   SURFXML_BUFFER_SET(AS_routing, "RuleBased");
-  DEBUG1("<AS id=\"%s\"\trouting=\"RuleBased\">", cluster_id);
+  XBT_DEBUG("<AS id=\"%s\"\trouting=\"RuleBased\">", cluster_id);
 #else
   SURFXML_BUFFER_SET(AS_routing, "Full");
-  DEBUG1("<AS id=\"%s\"\trouting=\"Full\">", cluster_id);
+  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", cluster_id);
 #endif
   SURFXML_START_TAG(AS);
 
@@ -3390,7 +3390,7 @@ static void routing_parse_Scluster(void)
       xbt_dict_set(patterns,"radical",bprintf("%d",start),NULL);
       temp_cluster_power = bprintf("%s",cluster_power);
       temp_cluster_power = bprintf("%s",replace_random_parameter(temp_cluster_power));
-      DEBUG2("<host\tid=\"%s\"\tpower=\"%s\">", host_id, temp_cluster_power);
+      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, temp_cluster_power);
       A_surfxml_host_state = A_surfxml_host_state_ON;
       SURFXML_BUFFER_SET(host_id, host_id);
       SURFXML_BUFFER_SET(host_power, temp_cluster_power);
@@ -3398,11 +3398,11 @@ static void routing_parse_Scluster(void)
       SURFXML_BUFFER_SET(host_availability, "1.0");
 	  availability_file = bprintf("%s",cluster_availability_file);
 	  state_file = bprintf("%s",cluster_state_file);
-	  DEBUG1("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
-	  DEBUG1("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
+	  XBT_DEBUG("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
+	  XBT_DEBUG("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
 	  SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(availability_file,patterns));
 	  SURFXML_BUFFER_SET(host_state_file, xbt_str_varsubst(state_file,patterns));
-	  DEBUG0("</host>");
+	  XBT_DEBUG("</host>");
       SURFXML_START_TAG(host);
       SURFXML_END_TAG(host);
 
@@ -3411,7 +3411,7 @@ static void routing_parse_Scluster(void)
       temp_cluster_bw = bprintf("%s",replace_random_parameter(temp_cluster_bw));
       temp_cluster_lat = bprintf("%s",cluster_lat);
       temp_cluster_lat = bprintf("%s",replace_random_parameter(temp_cluster_lat));
-      DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,temp_cluster_bw, cluster_lat);
+      XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,temp_cluster_bw, cluster_lat);
       A_surfxml_link_state = A_surfxml_link_state_ON;
       A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
       if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
@@ -3446,7 +3446,7 @@ static void routing_parse_Scluster(void)
         xbt_dict_set(patterns,"radical",bprintf("%d",i),NULL);
         temp_cluster_power = bprintf("%s",cluster_power);
         temp_cluster_power = bprintf("%s",replace_random_parameter(temp_cluster_power));
-        DEBUG2("<host\tid=\"%s\"\tpower=\"%s\">", host_id, temp_cluster_power);
+        XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, temp_cluster_power);
         A_surfxml_host_state = A_surfxml_host_state_ON;
         SURFXML_BUFFER_SET(host_id, host_id);
         SURFXML_BUFFER_SET(host_power, temp_cluster_power);
@@ -3454,11 +3454,11 @@ static void routing_parse_Scluster(void)
 		SURFXML_BUFFER_SET(host_availability, "1.0");
 		availability_file = bprintf("%s",cluster_availability_file);
 		state_file = bprintf("%s",cluster_state_file);
-		DEBUG1("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
-		DEBUG1("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
+		XBT_DEBUG("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
+		XBT_DEBUG("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
 		SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(availability_file,patterns));
 		SURFXML_BUFFER_SET(host_state_file, xbt_str_varsubst(state_file,patterns));
-		DEBUG0("</host>");
+		XBT_DEBUG("</host>");
         SURFXML_START_TAG(host);
         SURFXML_END_TAG(host);
 
@@ -3466,7 +3466,7 @@ static void routing_parse_Scluster(void)
         temp_cluster_bw = bprintf("%s",replace_random_parameter(temp_cluster_bw));
         temp_cluster_lat = bprintf("%s",cluster_lat);
         temp_cluster_lat = bprintf("%s",replace_random_parameter(temp_cluster_lat));
-        DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,temp_cluster_bw, cluster_lat);
+        XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,temp_cluster_bw, cluster_lat);
         A_surfxml_link_state = A_surfxml_link_state_ON;
         A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
         if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
@@ -3488,21 +3488,21 @@ static void routing_parse_Scluster(void)
       break;
 
     default:
-      DEBUG0("Malformed radical");
+      XBT_DEBUG("Malformed radical");
     }
 
     xbt_dynar_free(&radical_ends);
   }
   xbt_dynar_free(&radical_elements);
 
-  DEBUG0(" ");
+  XBT_DEBUG(" ");
   router_id =
       bprintf("%s%s_router%s", cluster_prefix, cluster_id,
               cluster_suffix);
   link_router = bprintf("%s_link_%s_router", cluster_id, cluster_id);
   link_backbone = bprintf("%s_backbone", cluster_id);
 
-  DEBUG1("<router id=\"%s\"/>", router_id);
+  XBT_DEBUG("<router id=\"%s\"/>", router_id);
   SURFXML_BUFFER_SET(router_id, router_id);
   SURFXML_START_TAG(router);
   SURFXML_END_TAG(router);
@@ -3513,7 +3513,7 @@ static void routing_parse_Scluster(void)
   temp_cluster_bw = bprintf("%s",replace_random_parameter(temp_cluster_bw));
   temp_cluster_lat = bprintf("%s",cluster_lat);
   temp_cluster_lat = bprintf("%s",replace_random_parameter(temp_cluster_lat));
-  DEBUG3("<link\tid=\"%s\" bw=\"%s\" lat=\"%s\"/>", link_router,temp_cluster_bw, temp_cluster_lat);
+  XBT_DEBUG("<link\tid=\"%s\" bw=\"%s\" lat=\"%s\"/>", link_router,temp_cluster_bw, temp_cluster_lat);
   A_surfxml_link_state = A_surfxml_link_state_ON;
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
   if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
@@ -3529,7 +3529,7 @@ static void routing_parse_Scluster(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
-  DEBUG3("<link\tid=\"%s\" bw=\"%s\" lat=\"%s\"/>", link_backbone,cluster_bb_bw, cluster_bb_lat);
+  XBT_DEBUG("<link\tid=\"%s\" bw=\"%s\" lat=\"%s\"/>", link_backbone,cluster_bb_bw, cluster_bb_lat);
   A_surfxml_link_state = A_surfxml_link_state_ON;
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
   if(cluster_bb_sharing_policy == A_surfxml_cluster_bb_sharing_policy_FATPIPE)
@@ -3543,7 +3543,7 @@ static void routing_parse_Scluster(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
-  DEBUG0(" ");
+  XBT_DEBUG(" ");
 
 #ifdef HAVE_PCRE_LIB
   char *new_suffix = xbt_strdup("");
@@ -3564,14 +3564,14 @@ static void routing_parse_Scluster(void)
   char *pcre_link_backbone = bprintf("%s_backbone", cluster_id);
   char *pcre_link_dst = bprintf("%s_link_$1dst", cluster_id);
 
-  DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", route_src_dst, route_src_dst);
-  DEBUG0("symmetrical=\"NO\">");
+  XBT_DEBUG("<route\tsrc=\"%s\"\tdst=\"%s\"", route_src_dst, route_src_dst);
+  XBT_DEBUG("symmetrical=\"NO\">");
   SURFXML_BUFFER_SET(route_src, route_src_dst);
   SURFXML_BUFFER_SET(route_dst, route_src_dst);
   A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
   SURFXML_START_TAG(route);
 
-  DEBUG1("<link_ctn\tid=\"%s\"/>", pcre_link_src);
+  XBT_DEBUG("<link_ctn\tid=\"%s\"/>", pcre_link_src);
   SURFXML_BUFFER_SET(link_ctn_id, pcre_link_src);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
@@ -3579,13 +3579,13 @@ static void routing_parse_Scluster(void)
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
-  DEBUG1("<link_ctn\tid=\"%s\"/>", pcre_link_backbone);
+  XBT_DEBUG("<link_ctn\tid=\"%s\"/>", pcre_link_backbone);
   SURFXML_BUFFER_SET(link_ctn_id, pcre_link_backbone);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
-  DEBUG1("<link_ctn\tid=\"%s\"/>", pcre_link_dst);
+  XBT_DEBUG("<link_ctn\tid=\"%s\"/>", pcre_link_dst);
   SURFXML_BUFFER_SET(link_ctn_id, pcre_link_dst);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
@@ -3593,7 +3593,7 @@ static void routing_parse_Scluster(void)
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
-  DEBUG0("</route>");
+  XBT_DEBUG("</route>");
   SURFXML_END_TAG(route);
 
   free(pcre_link_dst);
@@ -3621,8 +3621,8 @@ static void routing_parse_Scluster(void)
                     cluster_suffix);
       }
 
-      DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", route_src, route_dst);
-      DEBUG0("symmetrical=\"NO\">");
+      XBT_DEBUG("<route\tsrc=\"%s\"\tdst=\"%s\"", route_src, route_dst);
+      XBT_DEBUG("symmetrical=\"NO\">");
       SURFXML_BUFFER_SET(route_src, route_src);
       SURFXML_BUFFER_SET(route_dst, route_dst);
       A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
@@ -3644,7 +3644,7 @@ static void routing_parse_Scluster(void)
                     xbt_dynar_get_as(tab_elements_num, j, int));
       }
 
-      DEBUG1("<link_ctn\tid=\"%s\"/>", route_src);
+      XBT_DEBUG("<link_ctn\tid=\"%s\"/>", route_src);
       SURFXML_BUFFER_SET(link_ctn_id, route_src);
       A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
       if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
@@ -3652,13 +3652,13 @@ static void routing_parse_Scluster(void)
       SURFXML_START_TAG(link_ctn);
       SURFXML_END_TAG(link_ctn);
 
-      DEBUG1("<link_ctn\tid=\"%s_backbone\"/>", cluster_id);
+      XBT_DEBUG("<link_ctn\tid=\"%s_backbone\"/>", cluster_id);
       SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_backbone", cluster_id));
       A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
       SURFXML_START_TAG(link_ctn);
       SURFXML_END_TAG(link_ctn);
 
-      DEBUG1("<link_ctn\tid=\"%s\"/>", route_dst);
+      XBT_DEBUG("<link_ctn\tid=\"%s\"/>", route_dst);
       SURFXML_BUFFER_SET(link_ctn_id, route_dst);
       A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
       if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
@@ -3666,7 +3666,7 @@ static void routing_parse_Scluster(void)
       SURFXML_START_TAG(link_ctn);
       SURFXML_END_TAG(link_ctn);
 
-      DEBUG0("</route>");
+      XBT_DEBUG("</route>");
       SURFXML_END_TAG(route);
     }
   }
@@ -3681,9 +3681,9 @@ static void routing_parse_Scluster(void)
   free(availability_file);
   free(state_file);
 
-  DEBUG0("</AS>");
+  XBT_DEBUG("</AS>");
   SURFXML_END_TAG(AS);
-  DEBUG0(" ");
+  XBT_DEBUG(" ");
 
   surfxml_bufferstack_pop(1);
 }
@@ -3751,14 +3751,14 @@ static void routing_parse_Speer(void)
   SURFXML_BUFFER_SET(AS_coordinates, peer_coord);
 #ifdef HAVE_PCRE_LIB
   SURFXML_BUFFER_SET(AS_routing, "RuleBased");
-  DEBUG1("<AS id=\"%s\"\trouting=\"RuleBased\">", peer_id);
+  XBT_DEBUG("<AS id=\"%s\"\trouting=\"RuleBased\">", peer_id);
 #else
   SURFXML_BUFFER_SET(AS_routing, "Full");
-  DEBUG1("<AS id=\"%s\"\trouting=\"Full\">", peer_id);
+  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", peer_id);
 #endif
   SURFXML_START_TAG(AS);
 
-  DEBUG0(" ");
+  XBT_DEBUG(" ");
   host_id = bprintf("peer_%s", peer_id);
   router_id = bprintf("router_%s", peer_id);
   link_id_up = bprintf("link_%s_up", peer_id);
@@ -3767,7 +3767,7 @@ static void routing_parse_Speer(void)
   link_router = bprintf("%s_link_router", peer_id);
   link_backbone = bprintf("%s_backbone", peer_id);
 
-  DEBUG2("<host\tid=\"%s\"\tpower=\"%s\"/>", host_id, peer_power);
+  XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\"/>", host_id, peer_power);
   A_surfxml_host_state = A_surfxml_host_state_ON;
   SURFXML_BUFFER_SET(host_id, host_id);
   SURFXML_BUFFER_SET(host_power, peer_power);
@@ -3777,13 +3777,13 @@ static void routing_parse_Speer(void)
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 
-  DEBUG2("<router id=\"%s\"\tcoordinates=\"%s\"/>", router_id, peer_coord);
+  XBT_DEBUG("<router id=\"%s\"\tcoordinates=\"%s\"/>", router_id, peer_coord);
   SURFXML_BUFFER_SET(router_id, router_id);
   SURFXML_BUFFER_SET(router_coordinates, peer_coord);
   SURFXML_START_TAG(router);
   SURFXML_END_TAG(router);
 
-  DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_up, peer_bw_in, peer_lat);
+  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_up, peer_bw_in, peer_lat);
   A_surfxml_link_state = A_surfxml_link_state_ON;
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
   if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FULLDUPLEX)
@@ -3797,7 +3797,7 @@ static void routing_parse_Speer(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
-  DEBUG3("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_down, peer_bw_out, peer_lat);
+  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_down, peer_bw_out, peer_lat);
   A_surfxml_link_state = A_surfxml_link_state_ON;
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
   if(peer_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
@@ -3811,17 +3811,17 @@ static void routing_parse_Speer(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
-  DEBUG0(" ");
+  XBT_DEBUG(" ");
 
   // begin here
-  DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", peer_id, router_id);
-  DEBUG0("symmetrical=\"NO\">");
+  XBT_DEBUG("<route\tsrc=\"%s\"\tdst=\"%s\"", peer_id, router_id);
+  XBT_DEBUG("symmetrical=\"NO\">");
   SURFXML_BUFFER_SET(route_src, peer_id);
   SURFXML_BUFFER_SET(route_dst, router_id);
   A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
   SURFXML_START_TAG(route);
 
-  DEBUG1("<link_ctn\tid=\"%s\"/>", link_id_up);
+  XBT_DEBUG("<link_ctn\tid=\"%s\"/>", link_id_up);
   SURFXML_BUFFER_SET(link_ctn_id, link_id_up);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FULLDUPLEX)
@@ -3829,18 +3829,18 @@ static void routing_parse_Speer(void)
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
-  DEBUG0("</route>");
+  XBT_DEBUG("</route>");
   SURFXML_END_TAG(route);
 
   //Opposite Route
-  DEBUG2("<route\tsrc=\"%s\"\tdst=\"%s\"", router_id, peer_id);
-  DEBUG0("symmetrical=\"NO\">");
+  XBT_DEBUG("<route\tsrc=\"%s\"\tdst=\"%s\"", router_id, peer_id);
+  XBT_DEBUG("symmetrical=\"NO\">");
   SURFXML_BUFFER_SET(route_src, router_id);
   SURFXML_BUFFER_SET(route_dst, peer_id);
   A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
   SURFXML_START_TAG(route);
 
-  DEBUG1("<link_ctn\tid=\"%s\"/>", link_id_down);
+  XBT_DEBUG("<link_ctn\tid=\"%s\"/>", link_id_down);
   SURFXML_BUFFER_SET(link_ctn_id, link_id_down);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FULLDUPLEX)
@@ -3848,12 +3848,12 @@ static void routing_parse_Speer(void)
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
-  DEBUG0("</route>");
+  XBT_DEBUG("</route>");
   SURFXML_END_TAG(route);
 
-  DEBUG0("</AS>");
+  XBT_DEBUG("</AS>");
   SURFXML_END_TAG(AS);
-  DEBUG0(" ");
+  XBT_DEBUG(" ");
 
   //xbt_dynar_free(&tab_elements_num);
 
@@ -3904,7 +3904,7 @@ static void routing_parse_Srandom(void)
 	    THROW2(arg_error, 0, "Invalid mean and standard deviation (%f and %f)",
 		   random->mean, random->std);
 
-	  DEBUG8("id = '%s' min = '%f' max = '%f' mean = '%f' std_deviatinon = '%f' generator = '%d' seed = '%ld' radical = '%s'",
+	  XBT_DEBUG("id = '%s' min = '%f' max = '%f' mean = '%f' std_deviatinon = '%f' generator = '%d' seed = '%ld' radical = '%s'",
 	  random_id,
 	  random->min,
 	  random->max,
@@ -3944,7 +3944,7 @@ static void routing_parse_Srandom(void)
 					  }
 					  break;
 			default:
-				INFO0("Malformed radical");
+				XBT_INFO("Malformed radical");
 			}
 			res = random_generate(random);
 			xbt_dict_set(random_value, bprintf("%s_router",random_id), bprintf("%f",res), free);
@@ -3962,7 +3962,7 @@ static void routing_parse_Erandom(void)
 	char *elem;
 
 	xbt_dict_foreach(random_value, cursor, key, elem) {
-	  DEBUG2("%s = %s",key,elem);
+	  XBT_DEBUG("%s = %s",key,elem);
 	}
 
 }

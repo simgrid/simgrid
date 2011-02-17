@@ -168,7 +168,7 @@ static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
 
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 { 
-  VERB1("Total User Time: %lf", totaltime);
+  XBT_VERB("Total User Time: %lf", totaltime);
   if(parmap)
       xbt_parmap_destroy(parmap);
   return smx_ctx_base_factory_finalize(factory);
@@ -262,7 +262,7 @@ static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
   unsigned int cursor;
 
   xbt_dynar_foreach(processes, cursor, process) {
-    DEBUG2("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
+    XBT_DEBUG("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
     xbt_os_timer_start(timer);
     smx_ctx_raw_resume(process);
     xbt_os_timer_stop(timer);
@@ -289,12 +289,12 @@ static int smx_ctx_raw_get_thread_id(){
 static void smx_ctx_raw_runall(xbt_dynar_t processes)
 {
   if (xbt_dynar_length(processes) >= SIMIX_context_get_parallel_threshold()) {
-    DEBUG1("Runall // %lu", xbt_dynar_length(processes));
+    XBT_DEBUG("Runall // %lu", xbt_dynar_length(processes));
     raw_factory->self = smx_ctx_raw_self_parallel;
     raw_factory->get_thread_id = smx_ctx_raw_get_thread_id;
     smx_ctx_raw_runall_parallel(processes);
   } else {
-    DEBUG1("Runall serial %lu", xbt_dynar_length(processes));
+    XBT_DEBUG("Runall serial %lu", xbt_dynar_length(processes));
     raw_factory->self = smx_ctx_base_self;
     raw_factory->get_thread_id = smx_ctx_base_get_thread_id;
     smx_ctx_raw_runall_serial(processes);
@@ -303,7 +303,7 @@ static void smx_ctx_raw_runall(xbt_dynar_t processes)
 
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 {
-  VERB0("Using raw contexts. Because the glibc is just not good enough for us.");
+  XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
   smx_ctx_base_factory_init(factory);
 
   (*factory)->finalize  = smx_ctx_raw_factory_finalize;

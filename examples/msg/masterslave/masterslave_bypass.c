@@ -22,16 +22,16 @@ static int surf_parse_bypass_platform(void)
   /* allocating memory for the buffer, I think 2kB should be enough */
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 
-  DEBUG0("<platform>");
+  XBT_DEBUG("<platform>");
   SURFXML_BUFFER_SET(platform_version, "3");
   SURFXML_START_TAG(platform);
 
-  DEBUG0("<AS>");
+  XBT_DEBUG("<AS>");
   SURFXML_BUFFER_SET(AS_id, "AS0");
   SURFXML_BUFFER_SET(AS_routing, "Full");
   SURFXML_START_TAG(AS);
 
-  DEBUG0("<host id=\"host A\" power=\"100000000.00\"/>");
+  XBT_DEBUG("<host id=\"host A\" power=\"100000000.00\"/>");
   SURFXML_BUFFER_SET(host_id, "host A");
   SURFXML_BUFFER_SET(host_power, "100000000.00");
   SURFXML_BUFFER_SET(host_availability, "1.0");
@@ -42,7 +42,7 @@ static int surf_parse_bypass_platform(void)
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 
-  DEBUG0("<host id=\"host B\" power=\"100000000.00\"/>");
+  XBT_DEBUG("<host id=\"host B\" power=\"100000000.00\"/>");
   SURFXML_BUFFER_SET(host_id, "host B");
   SURFXML_BUFFER_SET(host_power, "100000000.00");
   SURFXML_BUFFER_SET(host_availability, "1.0");
@@ -53,7 +53,7 @@ static int surf_parse_bypass_platform(void)
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 
-  DEBUG0("<link id=\"LinkA\" bandwidth=\"10000000.0\" latency=\"0.2\"/>");
+  XBT_DEBUG("<link id=\"LinkA\" bandwidth=\"10000000.0\" latency=\"0.2\"/>");
   SURFXML_BUFFER_SET(link_id, "LinkA");
   SURFXML_BUFFER_SET(link_bandwidth, "10000000.0");
   SURFXML_BUFFER_SET(link_bandwidth_file, "");
@@ -65,22 +65,22 @@ static int surf_parse_bypass_platform(void)
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
-  DEBUG0("<route src=\"host A\" dst=\"host B\">");
+  XBT_DEBUG("<route src=\"host A\" dst=\"host B\">");
   SURFXML_BUFFER_SET(route_src, "host A");
   SURFXML_BUFFER_SET(route_dst, "host B");
   A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_YES;
   SURFXML_START_TAG(route);
-  DEBUG0("	<link:ctn id=\"LinkA\"/>");
+  XBT_DEBUG("	<link:ctn id=\"LinkA\"/>");
   SURFXML_BUFFER_SET(link_ctn_id, "LinkA");
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
-  DEBUG0("</route>");
+  XBT_DEBUG("</route>");
   SURFXML_END_TAG(route);
 
-  DEBUG0("</AS>");
+  XBT_DEBUG("</AS>");
   SURFXML_END_TAG(AS);
-  DEBUG0("</platfrom>");
+  XBT_DEBUG("</platfrom>");
   SURFXML_END_TAG(platform);
 
   free(surfxml_bufferstack);
@@ -195,38 +195,38 @@ int master(int argc, char *argv[])
     for (i = 4; i < argc; i++) {
       slaves[i - 4] = MSG_get_host_by_name(argv[i]);
       if (slaves[i - 4] == NULL) {
-        INFO1("Unknown host %s. Stopping Now! ", argv[i]);
+        XBT_INFO("Unknown host %s. Stopping Now! ", argv[i]);
         abort();
       }
     }
   }
 
-  INFO1("Got %d slave(s) :", slaves_count);
+  XBT_INFO("Got %d slave(s) :", slaves_count);
   for (i = 0; i < slaves_count; i++)
-    INFO1("\t %s", slaves[i]->name);
+    XBT_INFO("\t %s", slaves[i]->name);
 
-  INFO1("Got %d task to process :", number_of_tasks);
+  XBT_INFO("Got %d task to process :", number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++)
-    INFO1("\t\"%s\"", todo[i]->name);
+    XBT_INFO("\t\"%s\"", todo[i]->name);
 
   for (i = 0; i < number_of_tasks; i++) {
-    INFO2("Sending \"%s\" to \"%s\"",
+    XBT_INFO("Sending \"%s\" to \"%s\"",
           todo[i]->name, slaves[i % slaves_count]->name);
     if (MSG_host_self() == slaves[i % slaves_count]) {
-      INFO0("Hey ! It's me ! :)");
+      XBT_INFO("Hey ! It's me ! :)");
     }
     MSG_task_put(todo[i], slaves[i % slaves_count], PORT_22);
-    INFO0("Send completed");
+    XBT_INFO("Send completed");
   }
 
-  INFO0
+  XBT_INFO
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++)
     MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
                  slaves[i], PORT_22);
 
-  INFO0("Goodbye now!");
+  XBT_INFO("Goodbye now!");
   free(slaves);
   free(todo);
   return 0;
@@ -235,27 +235,27 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  INFO0("I'm a slave");
+  XBT_INFO("I'm a slave");
   while (1) {
     m_task_t task = NULL;
     int a;
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
-      INFO1("Received \"%s\" ", MSG_task_get_name(task));
+      XBT_INFO("Received \"%s\" ", MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {
         MSG_task_destroy(task);
         break;
       }
-      INFO1("Processing \"%s\" ", MSG_task_get_name(task));
+      XBT_INFO("Processing \"%s\" ", MSG_task_get_name(task));
       MSG_task_execute(task);
-      INFO1("\"%s\" done ", MSG_task_get_name(task));
+      XBT_INFO("\"%s\" done ", MSG_task_get_name(task));
       MSG_task_destroy(task);
     } else {
-      INFO0("Hey ?! What's up ? ");
+      XBT_INFO("Hey ?! What's up ? ");
       xbt_assert0(0, "Unexpected behavior");
     }
   }
-  INFO0("I'm done. See you!");
+  XBT_INFO("I'm done. See you!");
   return 0;
 }                               /* end_of_slave */
 
@@ -277,7 +277,7 @@ MSG_error_t test_all(void)
 
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }                               /* end_of_test_all */
 

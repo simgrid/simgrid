@@ -35,8 +35,8 @@ static int mat_mult(int n)
 
   start = now = gras_os_time();
 
-  INFO1("Matrix size: %d", n);
-/*   INFO1("Before computation: %lg", start); */
+  XBT_INFO("Matrix size: %d", n);
+/*   XBT_INFO("Before computation: %lg", start); */
 
   for (l = 0; l < 40; l++) {
     now = gras_os_time();
@@ -53,11 +53,11 @@ static int mat_mult(int n)
                 1.0, A, n, B, n, 0.0, C, n);
     GRAS_BENCH_ONCE_RUN_ONCE_END();
     now = gras_os_time() - now;
-/*     INFO2("Iteration %d : %lg ", l, now); */
+/*     XBT_INFO("Iteration %d : %lg ", l, now); */
   }
 
   now = gras_os_time() - start;
-  INFO1("Duration: %lg ", now);
+  XBT_INFO("Duration: %lg ", now);
 
   free(A);
   free(B);

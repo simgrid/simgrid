@@ -609,7 +609,7 @@ void test_structures(gras_socket_t * sock, int direction)
   struct dcdc my_dcdc =
       { 1424420.11331 + (double) 1, 'w' + (char) 2,
 1424420.11331 + (double) 3, 'w' + (char) 4 }, my_dcdc2;
-  INFO0
+  XBT_INFO
       ("---- Test on all possible struct having 3 fields (49 structs) ----");
   write_read("cccc", &my_cccc, &my_cccc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -619,7 +619,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_cccc.c == my_cccc2.c);
     test(my_cccc.d == my_cccc2.d);
     if (!failed)
-      VERB0("Passed cccc");
+      XBT_VERB("Passed cccc");
   }
   write_read("ccsc", &my_ccsc, &my_ccsc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -629,7 +629,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_ccsc.c == my_ccsc2.c);
     test(my_ccsc.d == my_ccsc2.d);
     if (!failed)
-      VERB0("Passed ccsc");
+      XBT_VERB("Passed ccsc");
   }
   write_read("ccic", &my_ccic, &my_ccic2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -639,7 +639,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_ccic.c == my_ccic2.c);
     test(my_ccic.d == my_ccic2.d);
     if (!failed)
-      VERB0("Passed ccic");
+      XBT_VERB("Passed ccic");
   }
   write_read("cclc", &my_cclc, &my_cclc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -649,7 +649,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_cclc.c == my_cclc2.c);
     test(my_cclc.d == my_cclc2.d);
     if (!failed)
-      VERB0("Passed cclc");
+      XBT_VERB("Passed cclc");
   }
   write_read("ccLc", &my_ccLc, &my_ccLc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -659,7 +659,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_ccLc.c == my_ccLc2.c);
     test(my_ccLc.d == my_ccLc2.d);
     if (!failed)
-      VERB0("Passed ccLc");
+      XBT_VERB("Passed ccLc");
   }
   write_read("ccfc", &my_ccfc, &my_ccfc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -669,7 +669,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_ccfc.c == my_ccfc2.c);
     test(my_ccfc.d == my_ccfc2.d);
     if (!failed)
-      VERB0("Passed ccfc");
+      XBT_VERB("Passed ccfc");
   }
   write_read("ccdc", &my_ccdc, &my_ccdc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -679,7 +679,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_ccdc.c == my_ccdc2.c);
     test(my_ccdc.d == my_ccdc2.d);
     if (!failed)
-      VERB0("Passed ccdc");
+      XBT_VERB("Passed ccdc");
   }
   write_read("sccc", &my_sccc, &my_sccc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -689,7 +689,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_sccc.c == my_sccc2.c);
     test(my_sccc.d == my_sccc2.d);
     if (!failed)
-      VERB0("Passed sccc");
+      XBT_VERB("Passed sccc");
   }
   write_read("scsc", &my_scsc, &my_scsc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -699,7 +699,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_scsc.c == my_scsc2.c);
     test(my_scsc.d == my_scsc2.d);
     if (!failed)
-      VERB0("Passed scsc");
+      XBT_VERB("Passed scsc");
   }
   write_read("scic", &my_scic, &my_scic2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -709,7 +709,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_scic.c == my_scic2.c);
     test(my_scic.d == my_scic2.d);
     if (!failed)
-      VERB0("Passed scic");
+      XBT_VERB("Passed scic");
   }
   write_read("sclc", &my_sclc, &my_sclc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -719,7 +719,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_sclc.c == my_sclc2.c);
     test(my_sclc.d == my_sclc2.d);
     if (!failed)
-      VERB0("Passed sclc");
+      XBT_VERB("Passed sclc");
   }
   write_read("scLc", &my_scLc, &my_scLc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -729,7 +729,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_scLc.c == my_scLc2.c);
     test(my_scLc.d == my_scLc2.d);
     if (!failed)
-      VERB0("Passed scLc");
+      XBT_VERB("Passed scLc");
   }
   write_read("scfc", &my_scfc, &my_scfc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -739,7 +739,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_scfc.c == my_scfc2.c);
     test(my_scfc.d == my_scfc2.d);
     if (!failed)
-      VERB0("Passed scfc");
+      XBT_VERB("Passed scfc");
   }
   write_read("scdc", &my_scdc, &my_scdc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -749,7 +749,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_scdc.c == my_scdc2.c);
     test(my_scdc.d == my_scdc2.d);
     if (!failed)
-      VERB0("Passed scdc");
+      XBT_VERB("Passed scdc");
   }
   write_read("iccc", &my_iccc, &my_iccc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -759,7 +759,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_iccc.c == my_iccc2.c);
     test(my_iccc.d == my_iccc2.d);
     if (!failed)
-      VERB0("Passed iccc");
+      XBT_VERB("Passed iccc");
   }
   write_read("icsc", &my_icsc, &my_icsc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -769,7 +769,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_icsc.c == my_icsc2.c);
     test(my_icsc.d == my_icsc2.d);
     if (!failed)
-      VERB0("Passed icsc");
+      XBT_VERB("Passed icsc");
   }
   write_read("icic", &my_icic, &my_icic2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -779,7 +779,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_icic.c == my_icic2.c);
     test(my_icic.d == my_icic2.d);
     if (!failed)
-      VERB0("Passed icic");
+      XBT_VERB("Passed icic");
   }
   write_read("iclc", &my_iclc, &my_iclc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -789,7 +789,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_iclc.c == my_iclc2.c);
     test(my_iclc.d == my_iclc2.d);
     if (!failed)
-      VERB0("Passed iclc");
+      XBT_VERB("Passed iclc");
   }
   write_read("icLc", &my_icLc, &my_icLc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -799,7 +799,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_icLc.c == my_icLc2.c);
     test(my_icLc.d == my_icLc2.d);
     if (!failed)
-      VERB0("Passed icLc");
+      XBT_VERB("Passed icLc");
   }
   write_read("icfc", &my_icfc, &my_icfc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -809,7 +809,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_icfc.c == my_icfc2.c);
     test(my_icfc.d == my_icfc2.d);
     if (!failed)
-      VERB0("Passed icfc");
+      XBT_VERB("Passed icfc");
   }
   write_read("icdc", &my_icdc, &my_icdc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -819,7 +819,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_icdc.c == my_icdc2.c);
     test(my_icdc.d == my_icdc2.d);
     if (!failed)
-      VERB0("Passed icdc");
+      XBT_VERB("Passed icdc");
   }
   write_read("lccc", &my_lccc, &my_lccc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -829,7 +829,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_lccc.c == my_lccc2.c);
     test(my_lccc.d == my_lccc2.d);
     if (!failed)
-      VERB0("Passed lccc");
+      XBT_VERB("Passed lccc");
   }
   write_read("lcsc", &my_lcsc, &my_lcsc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -839,7 +839,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_lcsc.c == my_lcsc2.c);
     test(my_lcsc.d == my_lcsc2.d);
     if (!failed)
-      VERB0("Passed lcsc");
+      XBT_VERB("Passed lcsc");
   }
   write_read("lcic", &my_lcic, &my_lcic2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -849,7 +849,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_lcic.c == my_lcic2.c);
     test(my_lcic.d == my_lcic2.d);
     if (!failed)
-      VERB0("Passed lcic");
+      XBT_VERB("Passed lcic");
   }
   write_read("lclc", &my_lclc, &my_lclc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -859,7 +859,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_lclc.c == my_lclc2.c);
     test(my_lclc.d == my_lclc2.d);
     if (!failed)
-      VERB0("Passed lclc");
+      XBT_VERB("Passed lclc");
   }
   write_read("lcLc", &my_lcLc, &my_lcLc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -869,7 +869,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_lcLc.c == my_lcLc2.c);
     test(my_lcLc.d == my_lcLc2.d);
     if (!failed)
-      VERB0("Passed lcLc");
+      XBT_VERB("Passed lcLc");
   }
   write_read("lcfc", &my_lcfc, &my_lcfc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -879,7 +879,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_lcfc.c == my_lcfc2.c);
     test(my_lcfc.d == my_lcfc2.d);
     if (!failed)
-      VERB0("Passed lcfc");
+      XBT_VERB("Passed lcfc");
   }
   write_read("lcdc", &my_lcdc, &my_lcdc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -889,7 +889,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_lcdc.c == my_lcdc2.c);
     test(my_lcdc.d == my_lcdc2.d);
     if (!failed)
-      VERB0("Passed lcdc");
+      XBT_VERB("Passed lcdc");
   }
   write_read("Lccc", &my_Lccc, &my_Lccc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -899,7 +899,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_Lccc.c == my_Lccc2.c);
     test(my_Lccc.d == my_Lccc2.d);
     if (!failed)
-      VERB0("Passed Lccc");
+      XBT_VERB("Passed Lccc");
   }
   write_read("Lcsc", &my_Lcsc, &my_Lcsc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -909,7 +909,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_Lcsc.c == my_Lcsc2.c);
     test(my_Lcsc.d == my_Lcsc2.d);
     if (!failed)
-      VERB0("Passed Lcsc");
+      XBT_VERB("Passed Lcsc");
   }
   write_read("Lcic", &my_Lcic, &my_Lcic2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -919,7 +919,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_Lcic.c == my_Lcic2.c);
     test(my_Lcic.d == my_Lcic2.d);
     if (!failed)
-      VERB0("Passed Lcic");
+      XBT_VERB("Passed Lcic");
   }
   write_read("Lclc", &my_Lclc, &my_Lclc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -929,7 +929,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_Lclc.c == my_Lclc2.c);
     test(my_Lclc.d == my_Lclc2.d);
     if (!failed)
-      VERB0("Passed Lclc");
+      XBT_VERB("Passed Lclc");
   }
   write_read("LcLc", &my_LcLc, &my_LcLc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -939,7 +939,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_LcLc.c == my_LcLc2.c);
     test(my_LcLc.d == my_LcLc2.d);
     if (!failed)
-      VERB0("Passed LcLc");
+      XBT_VERB("Passed LcLc");
   }
   write_read("Lcfc", &my_Lcfc, &my_Lcfc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -949,7 +949,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_Lcfc.c == my_Lcfc2.c);
     test(my_Lcfc.d == my_Lcfc2.d);
     if (!failed)
-      VERB0("Passed Lcfc");
+      XBT_VERB("Passed Lcfc");
   }
   write_read("Lcdc", &my_Lcdc, &my_Lcdc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -959,7 +959,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_Lcdc.c == my_Lcdc2.c);
     test(my_Lcdc.d == my_Lcdc2.d);
     if (!failed)
-      VERB0("Passed Lcdc");
+      XBT_VERB("Passed Lcdc");
   }
   write_read("fccc", &my_fccc, &my_fccc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -969,7 +969,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_fccc.c == my_fccc2.c);
     test(my_fccc.d == my_fccc2.d);
     if (!failed)
-      VERB0("Passed fccc");
+      XBT_VERB("Passed fccc");
   }
   write_read("fcsc", &my_fcsc, &my_fcsc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -979,7 +979,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_fcsc.c == my_fcsc2.c);
     test(my_fcsc.d == my_fcsc2.d);
     if (!failed)
-      VERB0("Passed fcsc");
+      XBT_VERB("Passed fcsc");
   }
   write_read("fcic", &my_fcic, &my_fcic2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -989,7 +989,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_fcic.c == my_fcic2.c);
     test(my_fcic.d == my_fcic2.d);
     if (!failed)
-      VERB0("Passed fcic");
+      XBT_VERB("Passed fcic");
   }
   write_read("fclc", &my_fclc, &my_fclc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -999,7 +999,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_fclc.c == my_fclc2.c);
     test(my_fclc.d == my_fclc2.d);
     if (!failed)
-      VERB0("Passed fclc");
+      XBT_VERB("Passed fclc");
   }
   write_read("fcLc", &my_fcLc, &my_fcLc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -1009,7 +1009,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_fcLc.c == my_fcLc2.c);
     test(my_fcLc.d == my_fcLc2.d);
     if (!failed)
-      VERB0("Passed fcLc");
+      XBT_VERB("Passed fcLc");
   }
   write_read("fcfc", &my_fcfc, &my_fcfc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -1019,7 +1019,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_fcfc.c == my_fcfc2.c);
     test(my_fcfc.d == my_fcfc2.d);
     if (!failed)
-      VERB0("Passed fcfc");
+      XBT_VERB("Passed fcfc");
   }
   write_read("fcdc", &my_fcdc, &my_fcdc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -1029,7 +1029,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_fcdc.c == my_fcdc2.c);
     test(my_fcdc.d == my_fcdc2.d);
     if (!failed)
-      VERB0("Passed fcdc");
+      XBT_VERB("Passed fcdc");
   }
   write_read("dccc", &my_dccc, &my_dccc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -1039,7 +1039,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_dccc.c == my_dccc2.c);
     test(my_dccc.d == my_dccc2.d);
     if (!failed)
-      VERB0("Passed dccc");
+      XBT_VERB("Passed dccc");
   }
   write_read("dcsc", &my_dcsc, &my_dcsc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -1049,7 +1049,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_dcsc.c == my_dcsc2.c);
     test(my_dcsc.d == my_dcsc2.d);
     if (!failed)
-      VERB0("Passed dcsc");
+      XBT_VERB("Passed dcsc");
   }
   write_read("dcic", &my_dcic, &my_dcic2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -1059,7 +1059,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_dcic.c == my_dcic2.c);
     test(my_dcic.d == my_dcic2.d);
     if (!failed)
-      VERB0("Passed dcic");
+      XBT_VERB("Passed dcic");
   }
   write_read("dclc", &my_dclc, &my_dclc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -1069,7 +1069,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_dclc.c == my_dclc2.c);
     test(my_dclc.d == my_dclc2.d);
     if (!failed)
-      VERB0("Passed dclc");
+      XBT_VERB("Passed dclc");
   }
   write_read("dcLc", &my_dcLc, &my_dcLc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -1079,7 +1079,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_dcLc.c == my_dcLc2.c);
     test(my_dcLc.d == my_dcLc2.d);
     if (!failed)
-      VERB0("Passed dcLc");
+      XBT_VERB("Passed dcLc");
   }
   write_read("dcfc", &my_dcfc, &my_dcfc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -1089,7 +1089,7 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_dcfc.c == my_dcfc2.c);
     test(my_dcfc.d == my_dcfc2.d);
     if (!failed)
-      VERB0("Passed dcfc");
+      XBT_VERB("Passed dcfc");
   }
   write_read("dcdc", &my_dcdc, &my_dcdc2, sock, direction);
   if (direction == READ || direction == RW) {
@@ -1099,6 +1099,6 @@ void test_structures(gras_socket_t * sock, int direction)
     test(my_dcdc.c == my_dcdc2.c);
     test(my_dcdc.d == my_dcdc2.d);
     if (!failed)
-      VERB0("Passed dcdc");
+      XBT_VERB("Passed dcdc");
   }
 }

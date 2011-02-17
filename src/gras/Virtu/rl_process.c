@@ -46,7 +46,7 @@ void gras_process_init()
     char *equal, *buf = xbt_strdup(*env_iter);
     equal = strchr(buf, '=');
     if (!equal) {
-      WARN1
+      XBT_WARN
           ("The environment contains an entry without '=' char: %s (ignore it)",
            *env_iter);
       continue;

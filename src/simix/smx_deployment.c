@@ -60,11 +60,11 @@ static void parse_process_finalize(void)
     arg->kill_time = kill_time;
     arg->properties = current_property_set;
 
-    DEBUG3("Process %s(%s) will be started at time %f", arg->name,
+    XBT_DEBUG("Process %s(%s) will be started at time %f", arg->name,
            arg->hostname, start_time);
     SIMIX_timer_set(start_time, &SIMIX_process_create_from_wrapper, arg);
   } else {                      // start_time <= SIMIX_get_clock()
-    DEBUG2("Starting Process %s(%s) right now", parse_argv[0], parse_host);
+    XBT_DEBUG("Starting Process %s(%s) right now", parse_argv[0], parse_host);
 
     if (simix_global->create_process_function)
       (*simix_global->create_process_function) (&process,

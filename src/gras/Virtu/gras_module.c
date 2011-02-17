@@ -144,11 +144,11 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
                 "Module %s reregistered with a different p_id field!",
                 name);
 
-    DEBUG1("Module %s already registered. Ignoring re-registration", name);
+    XBT_DEBUG("Module %s already registered. Ignoring re-registration", name);
     return;
   }
 
-  VERB1("Register module %s", name);
+  XBT_VERB("Register module %s", name);
   mod = xbt_new(s_gras_module_t, 1);
   mod->name = xbt_strdup(name);
   mod->name_len = strlen(name);
@@ -197,16 +197,16 @@ void gras_module_join(const char *name)
   gras_module_t mod =
       (gras_module_t) xbt_set_get_by_name(_gras_modules, name);
 
-  VERB2("Join to module %s (%p)", name, mod);
+  XBT_VERB("Join to module %s (%p)", name, mod);
 
   /* NEW */
   if (mod->refcount == 0) {
-    VERB1("Init module %s", name);
+    XBT_VERB("Init module %s", name);
     mod->name = xbt_strdup(name);
 
     (*mod->init_f) ();
   } else {
-    DEBUG3("Module %s already inited. Refcount=%d ID=%d",
+    XBT_DEBUG("Module %s already inited. Refcount=%d ID=%d",
            mod->name, mod->refcount, *(mod->p_id));
   }
   mod->refcount++;
@@ -223,7 +223,7 @@ void gras_module_join(const char *name)
 
   (*mod->join_f) (moddata);
 
-  DEBUG2("Module %s joined successfully (ID=%d)", name, *(mod->p_id));
+  XBT_DEBUG("Module %s joined successfully (ID=%d)", name, *(mod->p_id));
 }
 
 void gras_module_leave(const char *name)
@@ -232,7 +232,7 @@ void gras_module_leave(const char *name)
   gras_module_t mod =
       (gras_module_t) xbt_set_get_by_name(_gras_modules, name);
 
-  VERB1("Leave module %s", name);
+  XBT_VERB("Leave module %s", name);
 
   /* LEAVE */
   moddata = gras_moddata_by_id(*(mod->p_id));
@@ -241,7 +241,7 @@ void gras_module_leave(const char *name)
   /* EXIT */
   mod->refcount--;
   if (!mod->refcount) {
-    VERB1("Exit module %s", name);
+    XBT_VERB("Exit module %s", name);
 
     (*mod->exit_f) ();
 

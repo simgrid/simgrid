@@ -27,7 +27,7 @@ int master(int argc, char *argv[])
   double task_comp_size = atof(argv[2]);
   double task_comm_size = atof(argv[3]);
   long slaves_count = atol(argv[4]);
-  INFO4("master %ld %f %f %ld", number_of_tasks, task_comp_size,
+  XBT_INFO("master %ld %f %f %ld", number_of_tasks, task_comp_size,
         task_comm_size, slaves_count);
 
   int i;
@@ -63,7 +63,7 @@ int slave(int argc, char *argv[])
   while (1) {
     res = MSG_task_receive(&(task), "master_mailbox");
     if (res != MSG_OK) {
-      INFO0("error");
+      XBT_INFO("error");
       break;
     }
 
@@ -73,9 +73,9 @@ int slave(int argc, char *argv[])
       break;
     }
 
-    INFO1("Executing task %f", MSG_task_get_compute_duration(task));
+    XBT_INFO("Executing task %f", MSG_task_get_compute_duration(task));
     MSG_task_execute(task);
-    INFO0("End of execution");
+    XBT_INFO("End of execution");
     MSG_task_destroy(task);
     task = NULL;
   }
@@ -104,7 +104,7 @@ MSG_error_t test_all(const char *platform_file,
   }
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }
 

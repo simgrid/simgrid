@@ -83,7 +83,7 @@ void ETag_graphxml_edge(void)
 void xbt_graph_parse_open(const char *file)
 {
   if (!file) {
-    WARN0
+    XBT_WARN
         ("I hope you know what you're doing... you just gave me a NULL pointer!");
     return;
   }

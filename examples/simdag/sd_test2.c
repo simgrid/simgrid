@@ -199,7 +199,7 @@ int main(int argc, char **argv)
   /* let's launch the simulation! */
   changed_tasks = SD_simulate(-1.0);
 
-  INFO1("Simulation time: %f", SD_get_clock());
+  XBT_INFO("Simulation time: %f", SD_get_clock());
 
   xbt_dynar_free_container(&changed_tasks);
 

@@ -85,7 +85,7 @@ void xbt_set_add(xbt_set_t set, xbt_set_elm_t elm,
   xbt_set_elm_t found_in_dict = NULL;
   xbt_ex_t e;
 
-  VERB1("add %s to the set", elm->name);
+  XBT_VERB("add %s to the set", elm->name);
 
   if (elm->name_len <= 0) {
     elm->name_len = strlen(elm->name);
@@ -101,19 +101,19 @@ void xbt_set_add(xbt_set_t set, xbt_set_elm_t elm,
     elm->ID = _xbt_set_get_id(set);
     xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
     xbt_dynar_set(set->dynar, elm->ID, &elm);
-    DEBUG2("Insertion of key '%s' (id %d)", elm->name, elm->ID);
+    XBT_DEBUG("Insertion of key '%s' (id %d)", elm->name, elm->ID);
     xbt_ex_free(e);
   }
 
   if (found) {
     if (elm == found_in_dict) {
-      DEBUG2
+      XBT_DEBUG
           ("Ignoring request to insert the same element twice (key %s ; id %d)",
            elm->name, elm->ID);
       return;
     } else {
       elm->ID = found_in_dict->ID;
-      DEBUG2("Reinsertion of key %s (id %d)", elm->name, elm->ID);
+      XBT_DEBUG("Reinsertion of key %s (id %d)", elm->name, elm->ID);
       xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm,
                        free_func);
       xbt_dynar_set(set->dynar, elm->ID, &elm);
@@ -180,7 +180,7 @@ void xbt_set_remove_by_id(xbt_set_t set, int id)
  */
 xbt_set_elm_t xbt_set_get_by_name(xbt_set_t set, const char *name)
 {
-  DEBUG1("Lookup key %s", name);
+  XBT_DEBUG("Lookup key %s", name);
   return xbt_dict_get(set->dict, name);
 }
 
@@ -192,7 +192,7 @@ xbt_set_elm_t xbt_set_get_by_name(xbt_set_t set, const char *name)
  */
 xbt_set_elm_t xbt_set_get_by_name_or_null(xbt_set_t set, const char *name)
 {
-  DEBUG1("Lookup key %s", name);
+  XBT_DEBUG("Lookup key %s", name);
   return xbt_dict_get_or_null(set->dict, name);
 }
 
@@ -231,7 +231,7 @@ xbt_set_elm_t xbt_set_get_by_id(xbt_set_t set, int id)
   if (res == NULL) {
     THROW1(not_found_error, 0, "Invalid id: %d", id);
   }
-  DEBUG3("Lookup type of id %d (of %lu): %s",
+  XBT_DEBUG("Lookup type of id %d (of %lu): %s",
          id, xbt_dynar_length(set->dynar), res->name);
 
   return res;
@@ -262,7 +262,7 @@ void xbt_set_cursor_first(xbt_set_t set, xbt_set_cursor_t * cursor)
 
   if (set != NULL) {
     if (!*cursor) {
-      DEBUG0("Create the cursor on first use");
+      XBT_DEBUG("Create the cursor on first use");
       *cursor = xbt_new(s_xbt_set_cursor_t, 1);
       xbt_assert0(*cursor,
                   "Malloc error during the creation of the cursor");

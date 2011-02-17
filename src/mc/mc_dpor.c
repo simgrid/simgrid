@@ -23,8 +23,8 @@ void MC_dpor_init()
   xbt_fifo_unshift(mc_stack, initial_state);
   MC_UNSET_RAW_MEM;
 
-  DEBUG0("**************************************************");
-  DEBUG0("Initial state");
+  XBT_DEBUG("**************************************************");
+  XBT_DEBUG("Initial state");
 
   /* Wait for requests (schedules processes) */
   MC_wait_for_requests();
@@ -64,8 +64,8 @@ void MC_dpor(void)
     state = (mc_state_t) 
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
 
-    DEBUG0("**************************************************");
-    DEBUG3("Exploration detph=%d (state=%p)(%u interleave)",
+    XBT_DEBUG("**************************************************");
+    XBT_DEBUG("Exploration detph=%d (state=%p)(%u interleave)",
            xbt_fifo_size(mc_stack), state,
            MC_state_interleave_size(state));
 
@@ -80,7 +80,7 @@ void MC_dpor(void)
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
         req_str = MC_request_to_string(req, value);
-        DEBUG1("Execute: %s", req_str);
+        XBT_DEBUG("Execute: %s", req_str);
         xbt_free(req_str);
       }
 
@@ -115,7 +115,7 @@ void MC_dpor(void)
 
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
-      DEBUG0("There are no more processes to interleave.");
+      XBT_DEBUG("There are no more processes to interleave.");
 
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
@@ -141,21 +141,21 @@ void MC_dpor(void)
         xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
           if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
             if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
-              DEBUG0("Dependent Transitions:");
+              XBT_DEBUG("Dependent Transitions:");
               prev_req = MC_state_get_executed_request(prev_state, &value);
               req_str = MC_request_to_string(prev_req, value);
-              DEBUG2("%s (state=%p)", req_str, prev_state);
+              XBT_DEBUG("%s (state=%p)", req_str, prev_state);
               xbt_free(req_str);
               prev_req = MC_state_get_executed_request(state, &value);
               req_str = MC_request_to_string(prev_req, value);
-              DEBUG2("%s (state=%p)", req_str, state);
+              XBT_DEBUG("%s (state=%p)", req_str, state);
               xbt_free(req_str);              
             }
 
             if(!MC_state_process_is_done(prev_state, req->issuer))
               MC_state_interleave_process(prev_state, req->issuer);
             else
-              DEBUG1("Process %p is in done set", req->issuer);
+              XBT_DEBUG("Process %p is in done set", req->issuer);
 
             break;
           }
@@ -163,7 +163,7 @@ void MC_dpor(void)
         if (MC_state_interleave_size(state)) {
           /* We found a back-tracking point, let's loop */
           xbt_fifo_unshift(mc_stack, state);
-          DEBUG1("Back-tracking to depth %d", xbt_fifo_size(mc_stack));
+          XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack));
           MC_UNSET_RAW_MEM;
           MC_replay(mc_stack);
           break;

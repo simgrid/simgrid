@@ -42,7 +42,7 @@ void TRACE_category_with_color (const char *category, const char *color)
     snprintf (final_color, INSTR_DEFAULT_STR_SIZE, "%s", color);
   }
 
-  DEBUG2("CAT,declare %s, %s", category, final_color);
+  XBT_DEBUG("CAT,declare %s, %s", category, final_color);
 
 //FIXME
 //  -  if (final) {
@@ -71,7 +71,7 @@ void TRACE_declare_mark(const char *mark_type)
   if (!mark_type)
     return;
 
-  DEBUG1("MARK,declare %s", mark_type);
+  XBT_DEBUG("MARK,declare %s", mark_type);
   getEventType(mark_type, NULL, getRootType());
 }
 
@@ -82,7 +82,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   if (!mark_type || !mark_value)
     return;
 
-  DEBUG2("MARK %s %s", mark_type, mark_value);
+  XBT_DEBUG("MARK %s %s", mark_type, mark_value);
   type_t type = getEventType (mark_type, NULL, getRootContainer()->type);
   val_t value = getValue (mark_value, NULL, type);
   new_pajeNewEvent (MSG_get_clock(), getRootContainer(), type, value);

@@ -220,7 +220,7 @@ void MSG_process_kill(m_process_t process)
   TRACE_msg_process_kill(process);
 #endif
 
-  DEBUG3("Killing %s(%d) on %s",
+  XBT_DEBUG("Killing %s(%d) on %s",
          process->name, p_simdata->PID, p_simdata->m_host->name);
 
   if (p_simdata->waiting_task && p_simdata->waiting_task->simdata->comm) {

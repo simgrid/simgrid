@@ -50,7 +50,7 @@ gras_socket_t gras_trp_select(double timeout)
      This can happen with tcp buffered sockets since we try to get as much data as we can for them */
   if (_gras_lastly_selected_socket
       && _gras_lastly_selected_socket->moredata) {
-    VERB0
+    XBT_VERB
         ("Returning _gras_lastly_selected_socket since there is more data on it");
     return _gras_lastly_selected_socket;
   }
@@ -71,7 +71,7 @@ gras_socket_t gras_trp_select(double timeout)
   while (done == -1) {
     if (timeout > 0) {          /* did we timeout already? */
       now = gras_os_time();
-      DEBUG2("wakeup=%f now=%f", wakeup, now);
+      XBT_DEBUG("wakeup=%f now=%f", wakeup, now);
       if (now == -1 || now >= wakeup) {
         /* didn't find anything; no need to update _gras_lastly_selected_socket since its moredata is 0 (or we would have returned it directly) */
         THROW1(timeout_error, 0,
@@ -88,7 +88,7 @@ gras_socket_t gras_trp_select(double timeout)
         continue;
 
       if (sock_iter->incoming) {
-        DEBUG1("Considering socket %d for select", sock_iter->sd);
+        XBT_DEBUG("Considering socket %d for select", sock_iter->sd);
 #ifndef HAVE_WINSOCK_H
         if (max_fds < sock_iter->sd)
           max_fds = sock_iter->sd;
@@ -98,19 +98,19 @@ gras_socket_t gras_trp_select(double timeout)
 #endif
         FD_SET(sock_iter->sd, &FDS);
       } else {
-        DEBUG1("Not considering socket %d for select", sock_iter->sd);
+        XBT_DEBUG("Not considering socket %d for select", sock_iter->sd);
       }
     }
 
 
     if (max_fds == -1) {
       if (timeout > 0) {
-        DEBUG1("No socket to select onto. Sleep %f sec instead.", timeout);
+        XBT_DEBUG("No socket to select onto. Sleep %f sec instead.", timeout);
         gras_os_sleep(timeout);
         THROW1(timeout_error, 0,
                "No socket to select onto. Sleep %f sec instead", timeout);
       } else {
-        DEBUG0("No socket to select onto. Return directly.");
+        XBT_DEBUG("No socket to select onto. Return directly.");
         THROW0(timeout_error, 0,
                "No socket to select onto. Return directly.");
       }
@@ -119,7 +119,7 @@ gras_socket_t gras_trp_select(double timeout)
     /* we cannot have more than FD_SETSIZE sockets 
        ... but with WINSOCK which returns sockets higher than the limit (killing this optim) */
     if (++max_fds > fd_setsize && fd_setsize > 0) {
-      WARN1("too many open sockets (%d).", max_fds);
+      XBT_WARN("too many open sockets (%d).", max_fds);
       done = 0;
       break;
     }
@@ -146,10 +146,10 @@ gras_socket_t gras_trp_select(double timeout)
       p_tout = NULL;
     }
 
-    DEBUG2("Selecting over %d socket(s); timeout=%f", max_fds - 1,
+    XBT_DEBUG("Selecting over %d socket(s); timeout=%f", max_fds - 1,
            timeout);
     ready = select(max_fds, &FDS, NULL, NULL, p_tout);
-    DEBUG1("select returned %d", ready);
+    XBT_DEBUG("select returned %d", ready);
     if (ready == -1) {
       switch (errno) {
       case EINTR:              /* a signal we don't care about occured. we don't care */
@@ -186,7 +186,7 @@ gras_socket_t gras_trp_select(double timeout)
         xbt_dynar_cursor_unlock(sockets);
         accepted = (sock_iter->plugin->socket_accept) (sock_iter);
 
-        DEBUG2("accepted=%p,&accepted=%p", accepted, &accepted);
+        XBT_DEBUG("accepted=%p,&accepted=%p", accepted, &accepted);
         accepted->meas = sock_iter->meas;
         break;
 
@@ -202,20 +202,20 @@ gras_socket_t gras_trp_select(double timeout)
         }
 
         if (recvd < 0) {
-          WARN2("socket %d failed: %s", sock_iter->sd, strerror(errno));
+          XBT_WARN("socket %d failed: %s", sock_iter->sd, strerror(errno));
           /* done with this socket; remove it and break the foreach since it will change the dynar */
           xbt_dynar_cursor_unlock(sockets);
           gras_socket_close(sock_iter);
           break;
         } else if (recvd == 0) {
           /* Connection reset (=closed) by peer. */
-          DEBUG1("Connection %d reset by peer", sock_iter->sd);
+          XBT_DEBUG("Connection %d reset by peer", sock_iter->sd);
           sock_iter->valid = 0; /* don't close it. User may keep references to it */
         } else {
           /* Got a suited socket ! */
           XBT_OUT;
           sock_iter->recvd = 1;
-          DEBUG3("Filled little buffer (%c %x %d)", sock_iter->recvd_val,
+          XBT_DEBUG("Filled little buffer (%c %x %d)", sock_iter->recvd_val,
                  sock_iter->recvd_val, recvd);
           _gras_lastly_selected_socket = sock_iter;
           /* break sync dynar iteration */
@@ -235,7 +235,7 @@ gras_socket_t gras_trp_select(double timeout)
   }
 
   /* No socket found. Maybe we had timeout=0 and nothing to do */
-  DEBUG0("TIMEOUT");
+  XBT_DEBUG("TIMEOUT");
   THROW0(timeout_error, 0, "Timeout");
 }
 

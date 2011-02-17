@@ -47,7 +47,7 @@ static void smpi_execute_flops(double flops)
   smx_host_t host;
   host = SIMIX_host_self();
 
-  DEBUG1("Handle real computation time: %f flops", flops);
+  XBT_DEBUG("Handle real computation time: %f flops", flops);
   action = SIMIX_req_host_execute("computation", host, flops, 1);
 #ifdef HAVE_TRACING
   SIMIX_req_set_category (action, TRACE_internal_smpi_get_category());
@@ -58,7 +58,7 @@ static void smpi_execute_flops(double flops)
 static void smpi_execute(double duration)
 {
   if (duration >= xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold")) {
-    DEBUG1("Sleep for %f to handle real computation time", duration);
+    XBT_DEBUG("Sleep for %f to handle real computation time", duration);
     smpi_execute_flops(duration *
                        xbt_cfg_get_double(_surf_cfg_set,
                                           "smpi/running_power"));
@@ -140,7 +140,7 @@ int smpi_sample_2(int global, const char *file, int line)
   if (!data->started) {
     if ((data->iters > 0 && data->count >= data->iters)
         || (data->count > 1 && data->threshold > 0.0 && data->relstderr <= data->threshold)) {
-      DEBUG1("Perform some wait of %f", data->mean);
+      XBT_DEBUG("Perform some wait of %f", data->mean);
       smpi_execute(data->mean);
     } else {
       data->started = 1;
@@ -173,7 +173,7 @@ void smpi_sample_3(int global, const char *file, int line)
   n = (double)data->count;
   data->mean = data->sum / n;
   data->relstderr = sqrt((data->sum_pow2 / n - data->mean * data->mean) / n) / data->mean;
-  DEBUG4("Average mean after %d steps is %f, relative standard error is %f (sample was %f)", data->count,
+  XBT_DEBUG("Average mean after %d steps is %f, relative standard error is %f (sample was %f)", data->count,
          data->mean, data->relstderr, sample);
 }
 
@@ -208,12 +208,12 @@ void smpi_shared_free(void *ptr)
   char *loc;
 
   if (!allocs) {
-    WARN0("Cannot free: nothing was allocated");
+    XBT_WARN("Cannot free: nothing was allocated");
     return;
   }
   loc = xbt_dict_get_key(allocs, data);
   if (!loc) {
-    WARN1("Cannot free: %p was not shared-allocated by SMPI", ptr);
+    XBT_WARN("Cannot free: %p was not shared-allocated by SMPI", ptr);
     return;
   }
   data->count--;

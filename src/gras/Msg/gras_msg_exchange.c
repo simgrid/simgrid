@@ -49,7 +49,7 @@ gras_msg_wait_ext_(double timeout,
   xbt_assert0(msg_got, "msg_got is an output parameter");
 
   start = gras_os_time();
-  VERB2("Waiting for message '%s' for %fs",
+  XBT_VERB("Waiting for message '%s' for %fs",
         msgt_want ? msgt_want->name : "(any)", timeout);
 
   xbt_dynar_foreach(pd->msg_waitqueue, cpt, msg) {
@@ -60,7 +60,7 @@ gras_msg_wait_ext_(double timeout,
 
       memcpy(msg_got, &msg, sizeof(s_gras_msg_t));
       xbt_dynar_cursor_rm(pd->msg_waitqueue, &cpt);
-      VERB0("The waited message was queued");
+      XBT_VERB("The waited message was queued");
       return;
     }
   }
@@ -73,7 +73,7 @@ gras_msg_wait_ext_(double timeout,
 
       memcpy(msg_got, &msg, sizeof(s_gras_msg_t));
       xbt_dynar_cursor_rm(pd->msg_queue, &cpt);
-      VERB0("The waited message was queued");
+      XBT_VERB("The waited message was queued");
       return;
     }
   }
@@ -104,7 +104,7 @@ gras_msg_wait_ext_(double timeout,
     if (need_restart)
       goto restart_receive;
 
-    DEBUG0("Got a message from the socket");
+    XBT_DEBUG("Got a message from the socket");
 
     if ((!msgt_want || (msg.type->code == msgt_want->code))
         && (!expe_want || (!strcmp(gras_socket_peer_name(msg.expe),
@@ -112,10 +112,10 @@ gras_msg_wait_ext_(double timeout,
         && (!filter || filter(&msg, filter_ctx))) {
 
       memcpy(msg_got, &msg, sizeof(s_gras_msg_t));
-      DEBUG0("Message matches expectations. Use it.");
+      XBT_DEBUG("Message matches expectations. Use it.");
       return;
     }
-    DEBUG0("Message does not match expectations. Queue it.");
+    XBT_DEBUG("Message does not match expectations. Queue it.");
 
     /* not expected msg type. Queue it for later */
     xbt_dynar_push(pd->msg_queue, &msg);
@@ -175,9 +175,9 @@ static int gras_msg_wait_or_filter(gras_msg_t msg, void *ctx)
   xbt_dynar_t dyn = (xbt_dynar_t) ctx;
   int res = xbt_dynar_member(dyn, msg->type);
   if (res)
-    VERB1("Got matching message (type=%s)", msg->type->name);
+    XBT_VERB("Got matching message (type=%s)", msg->type->name);
   else
-    VERB0("Got message not matching our expectations");
+    XBT_VERB("Got message not matching our expectations");
   return res;
 }
 
@@ -203,7 +203,7 @@ void gras_msg_wait_or(double timeout,
 {
   s_gras_msg_t msg;
 
-  VERB1("Wait %f seconds for several message types", timeout);
+  XBT_VERB("Wait %f seconds for several message types", timeout);
   gras_msg_wait_ext_(timeout,
                      NULL, NULL,
                      &gras_msg_wait_or_filter, (void *) msgt_want, &msg);
@@ -244,10 +244,10 @@ void gras_msg_send_(gras_socket_t sock, gras_msgtype_t msgtype,
                 msgtype->name);
   }
 
-  DEBUG2("Send a oneway message of type '%s'. Payload=%p",
+  XBT_DEBUG("Send a oneway message of type '%s'. Payload=%p",
          msgtype->name, payload);
   gras_msg_send_ext(sock, e_gras_msg_kind_oneway, 0, msgtype, payload);
-  VERB2("Sent a oneway message of type '%s'. Payload=%p",
+  XBT_VERB("Sent a oneway message of type '%s'. Payload=%p",
         msgtype->name, payload);
 }
 
@@ -309,10 +309,10 @@ void gras_msg_handle(double timeOut)
   int timerexpected, timeouted;
   xbt_ex_t e;
 
-  VERB1("Handling message within the next %.2fs", timeOut);
+  XBT_VERB("Handling message within the next %.2fs", timeOut);
 
   untiltimer = gras_msg_timer_handle();
-  DEBUG1("Next timer in %f sec", untiltimer);
+  XBT_DEBUG("Next timer in %f sec", untiltimer);
   if (untiltimer == 0.0) {
     /* A timer was already elapsed and handled */
     return;
@@ -327,7 +327,7 @@ void gras_msg_handle(double timeOut)
   /* get a message (from the queue or from the net) */
   timeouted = 0;
   if (xbt_dynar_length(pd->msg_queue)) {
-    DEBUG0("Get a message from the queue");
+    XBT_DEBUG("Get a message from the queue");
     xbt_dynar_shift(pd->msg_queue, &msg);
   } else {
     TRY {
@@ -337,7 +337,7 @@ void gras_msg_handle(double timeOut)
     CATCH(e) {
       if (e.category != timeout_error)
         RETHROW;
-      DEBUG0("Damn. Timeout while getting a message from the queue");
+      XBT_DEBUG("Damn. Timeout while getting a message from the queue");
       xbt_ex_free(e);
       timeouted = 1;
     }
@@ -354,7 +354,7 @@ void gras_msg_handle(double timeOut)
       } else {
         xbt_assert1(untiltimer > 0, "Negative timer (%f). I'm 'puzzeled'",
                     untiltimer);
-        WARN1
+        XBT_WARN
             ("No timer elapsed, in contrary to expectations (next in %f sec)",
              untiltimer);
         THROW1(timeout_error, 0,
@@ -379,7 +379,7 @@ void gras_msg_handle(double timeOut)
     }
   }
   if (!list) {
-    INFO4
+    XBT_INFO
         ("No callback for message '%s' (type:%s) from %s:%d. Queue it for later gras_msg_wait() use.",
          msg.type->name, e_gras_msg_kind_names[msg.kind],
          gras_socket_peer_name(msg.expe), gras_socket_peer_port(msg.expe));
@@ -399,7 +399,7 @@ void gras_msg_handle(double timeOut)
     TRY {
       xbt_dynar_foreach(list->cbs, cpt, cb) {
         if (!ran_ok) {
-          DEBUG4
+          XBT_DEBUG
               ("Use the callback #%d (@%p) for incomming msg '%s' (payload_size=%d)",
                cpt + 1, cb, msg.type->name, msg.payl_size);
           if (!(*cb) (&ctx, msg.payl)) {
@@ -424,7 +424,7 @@ void gras_msg_handle(double timeOut)
           e.host = (char *) gras_os_myname();
           xbt_ex_setup_backtrace(&e);
         }
-        INFO5
+        XBT_INFO
             ("Propagate %s exception ('%s') from '%s' RPC cb back to %s:%d",
              (e.remote ? "remote" : "local"), e.msg, msg.type->name,
              gras_socket_peer_name(msg.expe),
@@ -448,7 +448,7 @@ void gras_msg_handle(double timeOut)
                 "Bug in user code: RPC callback to message '%s' didn't call gras_msg_rpcreturn",
                 msg.type->name);
     if (ctx.answer_due)
-      CRITICAL1
+      XBT_CRITICAL
           ("BUGS BOTH IN USER CODE (RPC callback to message '%s' didn't call gras_msg_rpcreturn) "
            "AND IN SIMGRID (process wasn't killed by an assert)",
            msg.type->name);
@@ -461,18 +461,18 @@ void gras_msg_handle(double timeOut)
 
 
   case e_gras_msg_kind_rpcanswer:
-    INFO3("Unexpected RPC answer discarded (type: %s; from:%s:%d)",
+    XBT_INFO("Unexpected RPC answer discarded (type: %s; from:%s:%d)",
           msg.type->name, gras_socket_peer_name(msg.expe),
           gras_socket_peer_port(msg.expe));
-    WARN0
+    XBT_WARN
         ("FIXME: gras_datadesc_free not implemented => leaking the payload");
     return;
 
   case e_gras_msg_kind_rpcerror:
-    INFO3("Unexpected RPC error discarded (type: %s; from:%s:%d)",
+    XBT_INFO("Unexpected RPC error discarded (type: %s; from:%s:%d)",
           msg.type->name, gras_socket_peer_name(msg.expe),
           gras_socket_peer_port(msg.expe));
-    WARN0
+    XBT_WARN
         ("FIXME: gras_datadesc_free not implemented => leaking the payload");
     return;
 

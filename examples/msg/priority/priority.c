@@ -25,7 +25,7 @@ static int test(int argc, char *argv[])
   res = sscanf(argv[2], "%lg", &priority);
   xbt_assert1(res, "Invalid argument %s\n", argv[2]);
 
-  INFO2("Hello! Running a task of size %g with priority %g",
+  XBT_INFO("Hello! Running a task of size %g with priority %g",
         computation_amount, priority);
   task = MSG_task_create("Task", computation_amount, 0.0, NULL);
   MSG_task_set_priority(task, priority);
@@ -33,7 +33,7 @@ static int test(int argc, char *argv[])
   MSG_task_execute(task);
   MSG_task_destroy(task);
 
-  INFO0("Goodbye now!");
+  XBT_INFO("Goodbye now!");
   return 0;
 }
 
@@ -52,7 +52,7 @@ static MSG_error_t test_all(const char *platform_file,
   }
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }
 

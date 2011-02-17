@@ -305,7 +305,7 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
 
     ts_end.tv_sec = (time_t) floor(end);
     ts_end.tv_nsec = (long) ((end - ts_end.tv_sec) * 1000000000);
-    DEBUG2("pthread_mutex_timedlock(%p,%p)", &(mutex->m), &ts_end);
+    XBT_DEBUG("pthread_mutex_timedlock(%p,%p)", &(mutex->m), &ts_end);
 
     errcode = pthread_mutex_timedlock(&(mutex->m), &ts_end);
 
@@ -398,7 +398,7 @@ void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex,
   } else {
     ts_end.tv_sec = (time_t) floor(end);
     ts_end.tv_nsec = (long) ((end - ts_end.tv_sec) * 1000000000);
-    DEBUG3("pthread_cond_timedwait(%p,%p,%p)", &(cond->c), &(mutex->m),
+    XBT_DEBUG("pthread_cond_timedwait(%p,%p,%p)", &(cond->c), &(mutex->m),
            &ts_end);
     switch ((errcode =
              pthread_cond_timedwait(&(cond->c), &(mutex->m), &ts_end))) {
@@ -539,7 +539,7 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
 
     ts_end.tv_sec = (time_t) floor(end);
     ts_end.tv_nsec = (long) ((end - ts_end.tv_sec) * 1000000000);
-    DEBUG2("sem_timedwait(%p,%p)", sem->ps, &ts_end);
+    XBT_DEBUG("sem_timedwait(%p,%p)", sem->ps, &ts_end);
     errcode = sem_timedwait(sem->s, &ts_end);
 
 #else                           /* Okay, reimplement this function then */
@@ -911,7 +911,7 @@ void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex,
   if (delay < 0) {
     xbt_os_cond_wait(cond, mutex);
   } else {
-    DEBUG3("xbt_cond_timedwait(%p,%p,%lu)", &(cond->events),
+    XBT_DEBUG("xbt_cond_timedwait(%p,%p,%lu)", &(cond->events),
            &(mutex->lock), end);
 
     /* lock the threads counter and increment it */

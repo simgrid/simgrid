@@ -46,7 +46,7 @@ void xbt_dynar_dopar(xbt_dynar_t datas, void_f_int_pvoid_t function)
     return;
   }
   /* Start all workers */
-  INFO1("Dopar for %ld elements", xbt_dynar_length(datas));
+  XBT_INFO("Dopar for %ld elements", xbt_dynar_length(datas));
   xbt_dynar_foreach(datas, cursor, data) {
     worker_data_t w = xbt_new0(s_worker_data_t, 1);
     w->data = datas;
@@ -71,7 +71,7 @@ XBT_LOG_DEFAULT_CATEGORY(xbt_dyn);
 
 static void add100(int rank, void *data)
 {
-  //INFO2("Thread%d: Add 100 to %d",rank,*(int*)data);
+  //XBT_INFO("Thread%d: Add 100 to %d",rank,*(int*)data);
   *(int *) data += 100;
 }
 

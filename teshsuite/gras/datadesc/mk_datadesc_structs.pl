@@ -45,7 +45,7 @@ for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l
       "};)\n";
 }}}}
 
-# print "\n#define test(a) do {if (!(a)) { failed = 1; ERROR1(\"%s failed\",#a);}} while (0)\n";
+# print "\n#define test(a) do {if (!(a)) { failed = 1; XBT_ERROR(\"%s failed\",#a);}} while (0)\n";
  print "\n#define test(a) xbt_assert(a)\n";
 
 print "void register_structures(void);\n";
@@ -66,7 +66,7 @@ for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l
                                            .$val[$l]."+(".$types[$l].")4}, my_${struct}2;\n";
 }}}}
 
-print "  INFO0(\"---- Test on all possible struct having 3 fields (".(($max_i+1)*($max_j+1)*($max_k+1)*($max_l+1))." structs) ----\");\n";
+print "  XBT_INFO(\"---- Test on all possible struct having 3 fields (".(($max_i+1)*($max_j+1)*($max_k+1)*($max_l+1))." structs) ----\");\n";
 for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
     print "  write_read(\"$struct\", &my_$struct, &my_${struct}2, sock,direction);\n";
@@ -76,7 +76,7 @@ for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l
     print "     test(my_$struct.b == my_${struct}2.b);\n";
     print "     test(my_$struct.c == my_${struct}2.c);\n";
     print "     test(my_$struct.d == my_${struct}2.d);\n";
-    print "     if (!failed) VERB0(\"Passed $struct\");\n";
+    print "     if (!failed) XBT_VERB(\"Passed $struct\");\n";
     print "  }\n";
 }}}}
     print "}\n";

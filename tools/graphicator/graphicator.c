@@ -91,7 +91,7 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
 
   if (argc < 3){
-    INFO1("Usage: %s <platform_file.xml> <graphviz_file.dot>", argv[0]);
+    XBT_INFO("Usage: %s <platform_file.xml> <graphviz_file.dot>", argv[0]);
     return 1;
   }
   platformFile = argv[1];
@@ -139,14 +139,14 @@ int main(int argc, char **argv)
           }
           xbt_edge_t edge = xbt_graph_search_edge (graph, previous, link_node);
           if (!edge){
-            DEBUG2("\%s %s", (char*)xbt_graph_node_get_data(previous), (char*)xbt_graph_node_get_data(link_node));
+            XBT_DEBUG("\%s %s", (char*)xbt_graph_node_get_data(previous), (char*)xbt_graph_node_get_data(link_node));
             xbt_graph_new_edge (graph, previous, link_node, NULL);
           }
           previous = link_node;
         }
         xbt_edge_t edge = xbt_graph_search_edge (graph, previous, dst_node);
         if (!edge){
-          DEBUG2("\%s %s", (char*)xbt_graph_node_get_data(previous), (char*)xbt_graph_node_get_data(dst_node));
+          XBT_DEBUG("\%s %s", (char*)xbt_graph_node_get_data(previous), (char*)xbt_graph_node_get_data(dst_node));
           xbt_graph_new_edge (graph, previous, dst_node, NULL);
         }
       } CATCH(e) {}

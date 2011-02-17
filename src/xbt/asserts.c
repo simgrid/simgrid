@@ -26,7 +26,7 @@ XBT_LOG_DEFAULT_CATEGORY(xbt);
  */
 void xbt_die(const char *msg)
 {
-  CRITICAL1("%s", msg);
+  XBT_CRITICAL("%s", msg);
   xbt_abort();
 }
 

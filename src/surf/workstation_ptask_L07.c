@@ -100,7 +100,7 @@ static void ptask_update_action_bound(surf_action_workstation_L07_t action)
     }
   }
   lat_bound = sg_tcp_gamma / (2.0 * lat_current);
-  DEBUG2("action (%p) : lat_bound = %g", action, lat_bound);
+  XBT_DEBUG("action (%p) : lat_bound = %g", action, lat_bound);
   if ((action->latency == 0.0) && (action->suspended == 0)) {
     if (action->rate < 0)
       lmm_update_variable_bound(ptask_maxmin_system, action->variable,
@@ -145,7 +145,7 @@ static void ptask_action_cancel(surf_action_t action)
 
 static void ptask_action_suspend(surf_action_t action)
 {
-  XBT_IN1("(%p))", action);
+  XBT_IN_F("(%p))", action);
   if (((surf_action_workstation_L07_t) action)->suspended != 2) {
     ((surf_action_workstation_L07_t) action)->suspended = 1;
     lmm_update_variable_weight(ptask_maxmin_system,
@@ -160,7 +160,7 @@ static void ptask_action_resume(surf_action_t action)
   surf_action_workstation_L07_t act =
       (surf_action_workstation_L07_t) action;
 
-  XBT_IN1("(%p)", act);
+  XBT_IN_F("(%p)", act);
   if (act->suspended != 2) {
     lmm_update_variable_weight(ptask_maxmin_system, act->variable, 1.0);
     act->suspended = 0;
@@ -176,7 +176,7 @@ static int ptask_action_is_suspended(surf_action_t action)
 static void ptask_action_set_max_duration(surf_action_t action,
                                           double duration)
 {                               /* FIXME: should inherit */
-  XBT_IN2("(%p,%g)", action, duration);
+  XBT_IN_F("(%p,%g)", action, duration);
   action->max_duration = duration;
   XBT_OUT;
 }
@@ -185,14 +185,14 @@ static void ptask_action_set_max_duration(surf_action_t action,
 static void ptask_action_set_priority(surf_action_t action,
                                       double priority)
 {                               /* FIXME: should inherit */
-  XBT_IN2("(%p,%g)", action, priority);
+  XBT_IN_F("(%p,%g)", action, priority);
   action->priority = priority;
   XBT_OUT;
 }
 
 static double ptask_action_get_remains(surf_action_t action)
 {
-  XBT_IN1("(%p)", action);
+  XBT_IN_F("(%p)", action);
   return action->remains;
   XBT_OUT;
 }
@@ -227,17 +227,17 @@ static double ptask_share_resources(double now)
     if (action->latency > 0) {
       if (min < 0) {
         min = action->latency;
-        DEBUG3("Updating min (value) with %p (start %f): %f", action,
+        XBT_DEBUG("Updating min (value) with %p (start %f): %f", action,
                action->generic_action.start, min);
       } else if (action->latency < min) {
         min = action->latency;
-        DEBUG3("Updating min (latency) with %p (start %f): %f", action,
+        XBT_DEBUG("Updating min (latency) with %p (start %f): %f", action,
                action->generic_action.start, min);
       }
     }
   }
 
-  DEBUG1("min value : %f", min);
+  XBT_DEBUG("min value : %f", min);
 
   return min;
 }
@@ -266,7 +266,7 @@ static void ptask_update_actions_state(double now, double delta)
                                    1.0);
       }
     }
-    DEBUG3("Action (%p) : remains (%g) updated by %g.",
+    XBT_DEBUG("Action (%p) : remains (%g) updated by %g.",
            action, action->generic_action.remains,
            lmm_variable_getvalue(action->variable) * delta);
     double_update(&(action->generic_action.remains),
@@ -275,7 +275,7 @@ static void ptask_update_actions_state(double now, double delta)
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(action->generic_action.max_duration), delta);
 
-    DEBUG2("Action (%p) : remains (%g).",
+    XBT_DEBUG("Action (%p) : remains (%g).",
            action, action->generic_action.remains);
     if ((action->generic_action.remains <= 0) &&
         (lmm_get_variable_weight(action->variable) > 0)) {
@@ -298,13 +298,13 @@ static void ptask_update_actions_state(double now, double delta)
 
 /* 	if(((link_L07_t)constraint_id)->type== */
 /* 	   SURF_WORKSTATION_RESOURCE_LINK) { */
-/* 	  DEBUG2("Checking for link %s (%p)", */
+/* 	  XBT_DEBUG("Checking for link %s (%p)", */
 /* 		 ((link_L07_t)constraint_id)->name, */
 /* 		 ((link_L07_t)constraint_id)); */
 /* 	} */
 /* 	if(((cpu_L07_t)constraint_id)->type== */
 /* 	   SURF_WORKSTATION_RESOURCE_CPU) { */
-/* 	  DEBUG3("Checking for cpu %s (%p) : %s", */
+/* 	  XBT_DEBUG("Checking for cpu %s (%p) : %s", */
 /* 		 ((cpu_L07_t)constraint_id)->name, */
 /* 		 ((cpu_L07_t)constraint_id), */
 /* 		 ((cpu_L07_t)constraint_id)->state_current==SURF_CPU_OFF?"Off":"On"); */
@@ -318,7 +318,7 @@ static void ptask_update_actions_state(double now, double delta)
               SURF_WORKSTATION_RESOURCE_CPU) &&
              (((cpu_L07_t) constraint_id)->state_current ==
               SURF_RESOURCE_OFF))) {
-          DEBUG1("Action (%p) Failed!!", action);
+          XBT_DEBUG("Action (%p) Failed!!", action);
           action->generic_action.finish = surf_get_clock();
           surf_action_state_set((surf_action_t) action,
                                 SURF_ACTION_FAILED);
@@ -338,7 +338,7 @@ static void ptask_update_resource_state(void *id,
   link_L07_t nw_link = id;
 
   if (nw_link->type == SURF_WORKSTATION_RESOURCE_LINK) {
-    DEBUG2("Updating link %s (%p)", surf_resource_name(nw_link), nw_link);
+    XBT_DEBUG("Updating link %s (%p)", surf_resource_name(nw_link), nw_link);
     if (event_type == nw_link->bw_event) {
       nw_link->bw_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, nw_link->constraint,
@@ -369,12 +369,12 @@ static void ptask_update_resource_state(void *id,
       if (tmgr_trace_event_free(event_type))
         nw_link->state_event = NULL;
     } else {
-      CRITICAL0("Unknown event ! \n");
+      XBT_CRITICAL("Unknown event ! \n");
       xbt_abort();
     }
     return;
   } else if (cpu->type == SURF_WORKSTATION_RESOURCE_CPU) {
-    DEBUG3("Updating cpu %s (%p) with value %g", surf_resource_name(cpu),
+    XBT_DEBUG("Updating cpu %s (%p) with value %g", surf_resource_name(cpu),
            cpu, value);
     if (event_type == cpu->power_event) {
       cpu->power_current = value;
@@ -390,7 +390,7 @@ static void ptask_update_resource_state(void *id,
       if (tmgr_trace_event_free(event_type))
         cpu->state_event = NULL;
     } else {
-      CRITICAL0("Unknown event ! \n");
+      XBT_CRITICAL("Unknown event ! \n");
       xbt_abort();
     }
     return;
@@ -489,7 +489,7 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
   action =
       surf_action_new(sizeof(s_surf_action_workstation_L07_t), amount,
                       surf_workstation_model, 0);
-  DEBUG3("Creating a parallel task (%p) with %d cpus and %d links.",
+  XBT_DEBUG("Creating a parallel task (%p) with %d cpus and %d links.",
          action, workstation_nb, nb_link);
   action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
@@ -578,7 +578,7 @@ static surf_action_t ptask_action_sleep(void *cpu, double duration)
 {
   surf_action_workstation_L07_t action = NULL;
 
-  XBT_IN2("(%s,%g)", surf_resource_name(cpu), duration);
+  XBT_IN_F("(%s,%g)", surf_resource_name(cpu), duration);
 
   action = (surf_action_workstation_L07_t) ptask_execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
@@ -973,7 +973,7 @@ static void ptask_model_init_internal(void)
 /**************************************/
 void surf_workstation_model_init_ptask_L07(const char *filename)
 {
-  INFO0("surf_workstation_model_init_ptask_L07");
+  XBT_INFO("surf_workstation_model_init_ptask_L07");
   xbt_assert0(!surf_cpu_model, "CPU model type already defined");
   xbt_assert0(!surf_network_model, "network model type already defined");
   surf_network_model = surf_model_init();

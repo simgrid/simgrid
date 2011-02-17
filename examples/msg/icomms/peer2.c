@@ -40,20 +40,20 @@ int sender(int argc, char *argv[])
         MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size,
                         NULL);
     comm[i] = MSG_task_isend(task, mailbox);
-    INFO2("Send to receiver-%ld Task_%d", i % receivers_count, i);
+    XBT_INFO("Send to receiver-%ld Task_%d", i % receivers_count, i);
   }
   for (i = 0; i < receivers_count; i++) {
     char mailbox[80];
     sprintf(mailbox, "receiver-%ld", i % receivers_count);
     task = MSG_task_create("finalize", 0, 0, 0);
     comm[i + number_of_tasks] = MSG_task_isend(task, mailbox);
-    INFO1("Send to receiver-%ld finalize", i % receivers_count);
+    XBT_INFO("Send to receiver-%ld finalize", i % receivers_count);
 
   }
   /* Here we are waiting for the completion of all communications */
   MSG_comm_waitall(comm, (number_of_tasks + receivers_count), -1);
 
-  INFO0("Goodbye now!");
+  XBT_INFO("Goodbye now!");
   xbt_free(comm);
   return 0;
 }                               /* end_of_sender */
@@ -73,22 +73,22 @@ int receiver(int argc, char *argv[])
   sprintf(mailbox, "receiver-%d", id);
   while (1) {
     res_irecv = MSG_task_irecv(&(task), mailbox);
-    INFO0("Wait to receive a task");
+    XBT_INFO("Wait to receive a task");
     res = MSG_comm_wait(res_irecv, -1);
     xbt_assert0(res == MSG_OK, "MSG_task_get failed");
-    INFO1("Received \"%s\"", MSG_task_get_name(task));
+    XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
     if (!strcmp(MSG_task_get_name(task), "finalize")) {
       MSG_task_destroy(task);
       break;
     }
 
-    INFO1("Processing \"%s\"", MSG_task_get_name(task));
+    XBT_INFO("Processing \"%s\"", MSG_task_get_name(task));
     MSG_task_execute(task);
-    INFO1("\"%s\" done", MSG_task_get_name(task));
+    XBT_INFO("\"%s\" done", MSG_task_get_name(task));
     MSG_task_destroy(task);
     task = NULL;
   }
-  INFO0("I'm done. See you!");
+  XBT_INFO("I'm done. See you!");
   return 0;
 }                               /* end_of_receiver */
 
@@ -110,7 +110,7 @@ MSG_error_t test_all(const char *platform_file,
   }
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }                               /* end_of_test_all */
 

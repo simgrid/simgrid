@@ -53,7 +53,7 @@ int test(int argc, char *argv[])
 /*   free(communication_amount); */
 /*   free(computation_amount); */
 
-  INFO0("Goodbye now!");
+  XBT_INFO("Goodbye now!");
   free(slaves);
   return 0;
 }
@@ -73,7 +73,7 @@ MSG_error_t test_all(const char *platform_file)
   res = MSG_main();
   xbt_free(hosts);
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }
 

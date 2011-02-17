@@ -24,12 +24,12 @@ XBT_LOG_NEW_CATEGORY(top, "Useless test channel");
 
 static void dolog(const char *settings)
 {
-  INFO1("Test with the settings '%s'", settings);
+  XBT_INFO("Test with the settings '%s'", settings);
   xbt_log_control_set(settings);
-  DEBUG1("val=%d", 1);
-  WARN1("val=%d", 2);
-  CDEBUG2(top, "val=%d%s", 3, "!");
-  CRITICAL6("false alarm%s%s%s%s%s%s", "", "", "", "", "", "!");
+  XBT_DEBUG("val=%d", 1);
+  XBT_WARN("val=%d", 2);
+  XBT_CDEBUG(top, "val=%d%s", 3, "!");
+  XBT_CRITICAL("false alarm%s%s%s%s%s%s", "", "", "", "", "", "!");
 }
 
 

@@ -16,19 +16,19 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 static int emigrant(int argc, char *argv[])
 {
   m_task_t task;
-  INFO0
+  XBT_INFO
       ("I'll look for a new job on another machine where the grass is greener.");
   MSG_process_change_host(MSG_get_host_by_name("Boivin"));
-  INFO0("Yeah, found something to do");
+  XBT_INFO("Yeah, found something to do");
   task = MSG_task_create("job", 98095000, 0, NULL);
   MSG_task_execute(task);
   MSG_task_destroy(task);
   MSG_process_sleep(2);
-  INFO0("Moving back home after work");
+  XBT_INFO("Moving back home after work");
   MSG_process_change_host(MSG_get_host_by_name("Jacquelin"));
   MSG_process_change_host(MSG_get_host_by_name("Boivin"));
   MSG_process_sleep(4);
-  INFO0("Uh, nothing to do here. Stopping now");
+  XBT_INFO("Uh, nothing to do here. Stopping now");
   return 0;
 }                               /* end_of_emigrant */
 
@@ -37,7 +37,7 @@ static int emigrant(int argc, char *argv[])
  */
 static int policeman(int argc, char *argv[])
 {
-  INFO0
+  XBT_INFO
       ("No function in the API to move the emigrant back, so do nothing.");
   return 0;
 }                               /* end_of_policeman */
@@ -51,8 +51,8 @@ int main(int argc, char *argv[])
   /* Argument checking */
   MSG_global_init(&argc, argv);
   if (argc < 3) {
-    CRITICAL1("Usage: %s platform_file deployment_file\n", argv[0]);
-    CRITICAL1("example: %s msg_platform.xml msg_deployment_suspend.xml\n",
+    XBT_CRITICAL("Usage: %s platform_file deployment_file\n", argv[0]);
+    XBT_CRITICAL("example: %s msg_platform.xml msg_deployment_suspend.xml\n",
               argv[0]);
     exit(1);
   }
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
   /* Run the simulation */
   res = MSG_main();
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   if (res == MSG_OK)
     res = MSG_clean();
 

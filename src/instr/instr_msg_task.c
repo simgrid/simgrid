@@ -38,7 +38,7 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
 
   //set task category
   task->category = xbt_strdup (category);
-  DEBUG3("MSG task %p(%s), category %s", task, task->name, task->category);
+  XBT_DEBUG("MSG task %p(%s), category %s", task, task->name, task->category);
 
   if (TRACE_msg_task_is_enabled()){
     m_host_t host = MSG_host_self();
@@ -66,13 +66,13 @@ void TRACE_msg_task_create(m_task_t task)
   static long long counter = 0;
   task->counter = counter++;
   task->category = NULL;
-  DEBUG2("CREATE %p, %lld", task, task->counter);
+  XBT_DEBUG("CREATE %p, %lld", task, task->counter);
 }
 
 /* MSG_task_execute related functions */
 void TRACE_msg_task_execute_start(m_task_t task)
 {
-  DEBUG3("EXEC,in %p, %lld, %s", task, task->counter, task->category);
+  XBT_DEBUG("EXEC,in %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_task_is_enabled()){
     container_t task_container = getContainer (task->name);
@@ -94,7 +94,7 @@ void TRACE_msg_task_execute_start(m_task_t task)
 
 void TRACE_msg_task_execute_end(m_task_t task)
 {
-  DEBUG3("EXEC,out %p, %lld, %s", task, task->counter, task->category);
+  XBT_DEBUG("EXEC,out %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_task_is_enabled()){
     container_t task_container = getContainer (task->name);
@@ -115,7 +115,7 @@ void TRACE_msg_task_execute_end(m_task_t task)
 /* MSG_task_destroy related functions */
 void TRACE_msg_task_destroy(m_task_t task)
 {
-  DEBUG3("DESTROY %p, %lld, %s", task, task->counter, task->category);
+  XBT_DEBUG("DESTROY %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_task_is_enabled()){
     //that's the end, let's destroy it
@@ -131,7 +131,7 @@ void TRACE_msg_task_destroy(m_task_t task)
 /* MSG_task_get related functions */
 void TRACE_msg_task_get_start(void)
 {
-  DEBUG0("GET,in");
+  XBT_DEBUG("GET,in");
 
   if (TRACE_msg_task_is_enabled()){
     //task not received yet, nothing to do
@@ -150,7 +150,7 @@ void TRACE_msg_task_get_start(void)
 
 void TRACE_msg_task_get_end(double start_time, m_task_t task)
 {
-  DEBUG3("GET,out %p, %lld, %s", task, task->counter, task->category);
+  XBT_DEBUG("GET,out %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_task_is_enabled()){
 
@@ -193,7 +193,7 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
 /* MSG_task_put related functions */
 int TRACE_msg_task_put_start(m_task_t task)
 {
-  DEBUG3("PUT,in %p, %lld, %s", task, task->counter, task->category);
+  XBT_DEBUG("PUT,in %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_task_is_enabled()){
 
@@ -234,7 +234,7 @@ int TRACE_msg_task_put_start(m_task_t task)
 
 void TRACE_msg_task_put_end(void)
 {
-  DEBUG0("PUT,out");
+  XBT_DEBUG("PUT,out");
 
   if (TRACE_msg_task_is_enabled()){
     //task no longer exists here

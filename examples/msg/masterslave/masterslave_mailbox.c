@@ -30,7 +30,7 @@ int master(int argc, char *argv[])
 
   int i;
 
-  INFO2("Got %ld slaves and %ld tasks to process", slaves_count,
+  XBT_INFO("Got %ld slaves and %ld tasks to process", slaves_count,
         number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++) {
@@ -44,13 +44,13 @@ int master(int argc, char *argv[])
         MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size,
                         NULL);
     if (number_of_tasks < 10000 || i % 10000 == 0)
-      INFO3("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name,
+      XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name,
             number_of_tasks, mailbox);
 
     MSG_task_send(task, mailbox);
   }
 
-  INFO0
+  XBT_INFO
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++) {
     char mailbox[80];
@@ -60,7 +60,7 @@ int master(int argc, char *argv[])
     MSG_task_send(finalize, mailbox);
   }
 
-//  INFO0("Goodbye now!");
+//  XBT_INFO("Goodbye now!");
   return 0;
 }                               /* end_of_master */
 
@@ -81,18 +81,18 @@ int slave(int argc, char *argv[])
     res = MSG_task_receive(&(task), mailbox);
     xbt_assert0(res == MSG_OK, "MSG_task_get failed");
 
-//  INFO1("Received \"%s\"", MSG_task_get_name(task));
+//  XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
     if (!strcmp(MSG_task_get_name(task), "finalize")) {
       MSG_task_destroy(task);
       break;
     }
-//    INFO1("Processing \"%s\"", MSG_task_get_name(task));
+//    XBT_INFO("Processing \"%s\"", MSG_task_get_name(task));
     MSG_task_execute(task);
-//    INFO1("\"%s\" done", MSG_task_get_name(task));
+//    XBT_INFO("\"%s\" done", MSG_task_get_name(task));
     MSG_task_destroy(task);
     task = NULL;
   }
-  INFO0("I'm done. See you!");
+  XBT_INFO("I'm done. See you!");
   return 0;
 }                               /* end_of_slave */
 
@@ -114,7 +114,7 @@ MSG_error_t test_all(const char *platform_file,
   }
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }                               /* end_of_test_all */
 

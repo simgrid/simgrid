@@ -54,7 +54,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
               "This task is executed somewhere else. Go fix your code! %d",
               task->simdata->isused);
 
-  DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
+  XBT_DEBUG("Computing on %s", MSG_process_self()->simdata->m_host->name);
 
   if (simdata->computation_amount == 0) {
 #ifdef HAVE_TRACING
@@ -77,7 +77,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
 
   simdata->isused=0;
 
-  DEBUG2("Execution task '%s' finished in state %d", task->name, comp_state);
+  XBT_DEBUG("Execution task '%s' finished in state %d", task->name, comp_state);
   if (comp_state == SIMIX_DONE) {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
     simdata->computation_amount = 0.0;
@@ -178,7 +178,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   xbt_assert0(simdata->host_nb,
               "This is not a parallel task. Go to hell.");
 
-  DEBUG1("Parallel computing on %s", MSG_process_self()->simdata->m_host->name);
+  XBT_DEBUG("Parallel computing on %s", MSG_process_self()->simdata->m_host->name);
 
   simdata->isused=1;
 
@@ -187,13 +187,13 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
                                   simdata->host_list,
                                   simdata->comp_amount,
                                   simdata->comm_amount, 1.0, -1.0);
-  DEBUG1("Parallel execution action created: %p", simdata->compute);
+  XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
 
   self->simdata->waiting_action = simdata->compute;
   comp_state = SIMIX_req_host_execution_wait(simdata->compute);
   self->simdata->waiting_action = NULL;
 
-  DEBUG2("Finished waiting for execution of action %p, state = %d", simdata->compute, comp_state);
+  XBT_DEBUG("Finished waiting for execution of action %p, state = %d", simdata->compute, comp_state);
 
   simdata->isused=0;
 
@@ -362,7 +362,7 @@ MSG_error_t
 MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
                      m_host_t host)
 {
-  DEBUG1
+  XBT_DEBUG
       ("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'",
        alias);
   return MSG_mailbox_get_task_ext(MSG_mailbox_get_by_alias(alias), task,
@@ -478,7 +478,7 @@ msg_comm_t MSG_task_irecv(m_task_t *task, const char *alias)
   xbt_assert0(task, "Null pointer for the task storage");
 
   if (*task)
-    CRITICAL0
+    XBT_CRITICAL
         ("MSG_task_get() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
@@ -822,7 +822,7 @@ MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
-  DEBUG1("MSG_task_put_with_timout: Trying to send a task to '%s'", dest->name);
+  XBT_DEBUG("MSG_task_put_with_timout: Trying to send a task to '%s'", dest->name);
   return
       MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_channel
                                    (dest, channel), task, timeout);
@@ -830,7 +830,7 @@ MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
 
 MSG_error_t MSG_task_send(m_task_t task, const char *alias)
 {
-  DEBUG1("MSG_task_send: Trying to send a message on mailbox '%s'", alias);
+  XBT_DEBUG("MSG_task_send: Trying to send a message on mailbox '%s'", alias);
   return MSG_task_send_with_timeout(task, alias, -1);
 }
 

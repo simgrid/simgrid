@@ -73,32 +73,32 @@ int master(int argc, char *argv[])
     }
   }
 
-  INFO2("Got %d aliases and %d tasks to process", alias_count,
+  XBT_INFO("Got %d aliases and %d tasks to process", alias_count,
         number_of_tasks);
 
   for (i = 0; i < alias_count; i++)
-    DEBUG1("%s", aliases[i]);
+    XBT_DEBUG("%s", aliases[i]);
 
   for (i = 0; i < number_of_tasks; i++) {
-    INFO2("Sending \"%s\" to \"%s\"", todo[i]->name,
+    XBT_INFO("Sending \"%s\" to \"%s\"", todo[i]->name,
           aliases[i % alias_count]);
 
     if (!strcmp
         (MSG_host_get_name(MSG_host_self()), aliases[i % alias_count])) {
-      INFO0("Hey ! It's me ! :)");
+      XBT_INFO("Hey ! It's me ! :)");
     }
 
     MSG_task_send(todo[i], aliases[i % alias_count]);
-    INFO0("Sent");
+    XBT_INFO("Sent");
   }
 
-  INFO0
+  XBT_INFO
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
 
   for (i = 0; i < alias_count; i++)
     MSG_task_send(MSG_task_create("finalize", 0, 0, FINALIZE), aliases[i]);
 
-  INFO0("Goodbye now!");
+  XBT_INFO("Goodbye now!");
 
   for (i = 0; i < alias_count; i++)
     free(aliases[i]);
@@ -118,21 +118,21 @@ int slave(int argc, char *argv[])
     res = MSG_task_receive(&(task), MSG_host_get_name(MSG_host_self()));
     xbt_assert0(res == MSG_OK, "MSG_task_receive failed");
 
-    INFO1("Received \"%s\"", MSG_task_get_name(task));
+    XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
 
     if (!strcmp(MSG_task_get_name(task), "finalize")) {
       MSG_task_destroy(task);
       break;
     }
 
-    INFO1("Processing \"%s\"", MSG_task_get_name(task));
+    XBT_INFO("Processing \"%s\"", MSG_task_get_name(task));
     MSG_task_execute(task);
-    INFO1("\"%s\" done", MSG_task_get_name(task));
+    XBT_INFO("\"%s\" done", MSG_task_get_name(task));
     MSG_task_destroy(task);
     task = NULL;
   }
 
-  INFO0("I'm done. See you!");
+  XBT_INFO("I'm done. See you!");
   return 0;
 }                               /* end_of_slave */
 
@@ -160,10 +160,10 @@ int forwarder(int argc, char *argv[])
     a = MSG_task_receive(&(task), MSG_host_get_name(MSG_host_self()));
 
     if (a == MSG_OK) {
-      INFO1("Received \"%s\"", MSG_task_get_name(task));
+      XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
 
       if (MSG_task_get_data(task) == FINALIZE) {
-        INFO0
+        XBT_INFO
             ("All tasks have been dispatched. Let's tell everybody the computation is over.");
 
         for (i = 0; i < alias_count; i++)
@@ -174,12 +174,12 @@ int forwarder(int argc, char *argv[])
         break;
       }
 
-      INFO2("Sending \"%s\" to \"%s\"", MSG_task_get_name(task),
+      XBT_INFO("Sending \"%s\" to \"%s\"", MSG_task_get_name(task),
             aliases[i % alias_count]);
       MSG_task_send(task, aliases[i % alias_count]);
       i++;
     } else {
-      INFO0("Hey ?! What's up ? ");
+      XBT_INFO("Hey ?! What's up ? ");
       xbt_assert0(0, "Unexpected behavior");
     }
   }
@@ -187,7 +187,7 @@ int forwarder(int argc, char *argv[])
   for (i = 0; i < alias_count; i++)
     free(aliases[i]);
 
-  INFO0("I'm done. See you!");
+  XBT_INFO("I'm done. See you!");
   return 0;
 
 }                               /* end_of_forwarder */
@@ -214,7 +214,7 @@ MSG_error_t test_all(const char *platform_file,
 
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }                               /* end_of_test_all */
 

@@ -466,7 +466,7 @@ int __SD_workstation_is_busy(SD_workstation_t workstation)
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
 
-  DEBUG4
+  XBT_DEBUG
       ("Workstation '%s' access mode: '%s', current task: %s, fifo size: %d",
        SD_workstation_get_name(workstation),
        (workstation->access_mode ==

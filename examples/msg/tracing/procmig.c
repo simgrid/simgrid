@@ -25,7 +25,7 @@ static int emigrant(int argc, char *argv[])
     MSG_task_receive(&(task), "master_mailbox");
     destination = (char*)MSG_task_get_data (task);
     if (!destination) break; //there is no destination, die
-    INFO1("Migrating to %s", destination);
+    XBT_INFO("Migrating to %s", destination);
     MSG_process_change_host(MSG_get_host_by_name(destination));
     MSG_process_sleep(2); // I am tired, have to sleep for 2 seconds
     xbt_free (destination);
@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
   /* Argument checking */
   MSG_global_init(&argc, argv);
   if (argc < 3) {
-    CRITICAL1("Usage: %s platform_file deployment_file\n", argv[0]);
-    CRITICAL1("example: %s msg_platform.xml msg_deployment_suspend.xml\n",
+    XBT_CRITICAL("Usage: %s platform_file deployment_file\n", argv[0]);
+    XBT_CRITICAL("example: %s msg_platform.xml msg_deployment_suspend.xml\n",
               argv[0]);
     exit(1);
   }
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 
   /* Run the simulation */
   res = MSG_main();
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   if (res == MSG_OK)
     res = MSG_clean();
 

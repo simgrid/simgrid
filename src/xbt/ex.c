@@ -108,7 +108,7 @@ void xbt_backtrace_display(xbt_ex_t * e)
   xbt_ex_free(*e);
 #else
 
-  ERROR0("No backtrace on this arch");
+  XBT_ERROR("No backtrace on this arch");
 #endif
 }
 
@@ -143,7 +143,7 @@ void xbt_ex_display(xbt_ex_t * e)
           gras_os_myname(), (*xbt_getpid) (),
           xbt_ex_catname(e->category), e->value, e->msg,
           e->procname, thrower ? thrower : " in this process");
-  CRITICAL1("%s", e->msg);
+  XBT_CRITICAL("%s", e->msg);
 
   if (!e->remote && !e->bt_strings)
     xbt_ex_setup_backtrace(e);

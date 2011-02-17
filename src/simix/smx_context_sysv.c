@@ -54,7 +54,7 @@ union u_ctx_addr {
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 {
   smx_ctx_base_factory_init(factory);
-  VERB0("Activating SYSV context factory");
+  XBT_VERB("Activating SYSV context factory");
 
   (*factory)->finalize = smx_ctx_sysv_factory_finalize;
   (*factory)->create_context = smx_ctx_sysv_create_context;
@@ -209,7 +209,7 @@ void smx_ctx_sysv_runall(xbt_dynar_t processes)
   unsigned int cursor;
 
   xbt_dynar_foreach(processes, cursor, process) {
-    DEBUG2("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
+    XBT_DEBUG("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
     smx_ctx_sysv_resume(process->context);
   }
   xbt_dynar_reset(processes);

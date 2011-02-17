@@ -72,7 +72,7 @@ static int MSG_action_runner(int argc, char *argv[])
         (*function) (evt);
         free(evt);
       } else {
-        WARN1("%s: Ignore trace element not for me",
+        XBT_WARN("%s: Ignore trace element not for me",
               xbt_replay_trace_reader_position(reader));
       }
     }
@@ -176,12 +176,12 @@ MSG_error_t MSG_action_trace_run(char *path)
   res = MSG_main();
 
   if (xbt_dict_size(action_queues)) {
-    WARN0
+    XBT_WARN
         ("Not all actions got consumed. If the simulation ended successfully (without deadlock), you may want to add new processes to your deployment file.");
 
 
     xbt_dict_foreach(action_queues, cursor, name, todo) {
-      WARN2("Still %lu actions for %s", xbt_dynar_length(todo), name);
+      XBT_WARN("Still %lu actions for %s", xbt_dynar_length(todo), name);
     }
   }
 

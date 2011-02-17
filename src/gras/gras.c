@@ -29,7 +29,7 @@ static int gras_running_process = 0;
 #if defined(HAVE_SIGNAL) && defined(HAVE_SIGNAL_H)
 static void gras_sigusr_handler(int sig)
 {
-  INFO0("SIGUSR1 received. Display the backtrace");
+  XBT_INFO("SIGUSR1 received. Display the backtrace");
   xbt_backtrace_display_current();
 }
 
@@ -73,7 +73,7 @@ void gras_init(int *argc, char **argv)
   int first = 0;
   gras_procdata_t *pd;
   gras_msg_procdata_t msg_pd;
-  VERB0("Initialize GRAS");
+  XBT_VERB("Initialize GRAS");
 
   xbt_getpid = gras_os_getpid;
   /* First initialize the XBT */
@@ -146,7 +146,7 @@ void gras_init(int *argc, char **argv)
 void gras_exit(void)
 {
   gras_procdata_t *pd;
-  INFO0("Exiting GRAS");
+  XBT_INFO("Exiting GRAS");
   amok_exit();
   gras_moddata_leave();
   pd = gras_procdata_get();

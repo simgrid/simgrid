@@ -55,7 +55,7 @@ smx_ctx_ruby_create_context(xbt_main_func_t code, int argc, char **argv,
   if (code) {
     context->process = (VALUE) code;
 
-    DEBUG1("smx_ctx_ruby_create_context(%s)...Done", argv[0]);
+    XBT_DEBUG("smx_ctx_ruby_create_context(%s)...Done", argv[0]);
   }
   
   return (smx_context_t) context;
@@ -63,7 +63,7 @@ smx_ctx_ruby_create_context(xbt_main_func_t code, int argc, char **argv,
 
 static void smx_ctx_ruby_stop(smx_context_t context)
 {
-  DEBUG0("smx_ctx_ruby_stop()");
+  XBT_DEBUG("smx_ctx_ruby_stop()");
   VALUE process = Qnil;
   smx_ctx_ruby_t ctx_ruby, current;
 
@@ -95,7 +95,7 @@ static void smx_ctx_ruby_stop(smx_context_t context)
 static void smx_ctx_ruby_suspend(smx_context_t context)
 {
 
-  DEBUG1("smx_ctx_ruby_suspend(%s)", context->argv[0]);
+  XBT_DEBUG("smx_ctx_ruby_suspend(%s)", context->argv[0]);
   smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) context;
   if (ctx_ruby->process)
     rb_process_unschedule(ctx_ruby->process);
@@ -103,7 +103,7 @@ static void smx_ctx_ruby_suspend(smx_context_t context)
 
 static void smx_ctx_ruby_resume(smx_context_t new_context)
 {
-  DEBUG1("smx_ctx_ruby_resume(%s)",
+  XBT_DEBUG("smx_ctx_ruby_resume(%s)",
          (new_context->argc ? new_context->argv[0] : "maestro"));
 
   smx_ctx_ruby_t ctx_ruby = (smx_ctx_ruby_t) new_context;

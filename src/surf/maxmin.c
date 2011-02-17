@@ -39,7 +39,7 @@ lmm_system_t lmm_system_new(void)
   l->modified = 0;
   l->selective_update_active = sg_maxmin_selective_update;
 
-  DEBUG1("Setting selective_update_active flag to %d\n",
+  XBT_DEBUG("Setting selective_update_active flag to %d\n",
          l->selective_update_active);
 
   xbt_swag_init(&(l->variable_set),
@@ -71,7 +71,7 @@ void lmm_system_free(lmm_system_t sys)
   lmm_constraint_t cnst = NULL;
 
   while ((var = extract_variable(sys))) {
-    WARN2
+    XBT_WARN
         ("Variable %p (%d) still in LMM system when freing it: this may be a bug",
          var, var->id_int);
     lmm_var_free(sys, var);
@@ -89,7 +89,7 @@ XBT_INLINE void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
   int i;
   lmm_element_t elem = NULL;
 
-  XBT_IN2("(sys=%p, var=%p)", sys, var);
+  XBT_IN_F("(sys=%p, var=%p)", sys, var);
   sys->modified = 1;
 
   for (i = 0; i < var->cnsts_number; i++) {
@@ -185,7 +185,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   lmm_variable_t var = NULL;
   int i;
 
-  XBT_IN5("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)",
+  XBT_IN_F("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)",
           sys, id, weight, bound, number_of_constraints);
 
   var = xbt_mallocator_get(sys->variable_mallocator);
@@ -350,7 +350,7 @@ static XBT_INLINE void saturated_constraint_set_update(lmm_system_t sys,
 {
   lmm_constraint_t useless_cnst = NULL;
 
-  XBT_IN3("sys=%p, cnst=%p, min_usage=%f", sys, cnst, *min_usage);
+  XBT_IN_F("sys=%p, cnst=%p, min_usage=%f", sys, cnst, *min_usage);
   if (cnst->usage <= 0) {
     XBT_OUT;
     return;
@@ -361,7 +361,7 @@ static XBT_INLINE void saturated_constraint_set_update(lmm_system_t sys,
   }
   if ((*min_usage < 0) || (*min_usage > cnst->remaining / cnst->usage)) {
     *min_usage = cnst->remaining / cnst->usage;
-    LOG3(xbt_log_priority_trace,
+    XBT_LOG(xbt_log_priority_trace,
          "min_usage=%f (cnst->remaining=%f, cnst->usage=%f)", *min_usage,
          cnst->remaining, cnst->usage);
     while ((useless_cnst =
@@ -424,10 +424,10 @@ void lmm_print(lmm_system_t sys)
       xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
   strcat(trace_buf, print_buf);
   fprintf(stderr, "%s", trace_buf);
-  //DEBUG1("%20s", trace_buf); FIXME
+  //XBT_DEBUG("%20s", trace_buf); FIXME
   trace_buf[0] = '\000';
 
-  DEBUG0("Constraints");
+  XBT_DEBUG("Constraints");
   /* Printing Constraints */
   cnst_list = &(sys->active_constraint_set);
   xbt_swag_foreach(cnst, cnst_list) {
@@ -466,7 +466,7 @@ void lmm_print(lmm_system_t sys)
                       strlen(trace_buf) + strlen(print_buf) + 1);
       strcat(trace_buf, print_buf);
     }
-    //   DEBUG1("%s", trace_buf);
+    //   XBT_DEBUG("%s", trace_buf);
     fprintf(stderr, "%s\n", trace_buf);
     trace_buf[0] = '\000';
     xbt_assert3(!double_positive(sum - cnst->bound),
@@ -474,17 +474,17 @@ void lmm_print(lmm_system_t sys)
                 sum, cnst->bound, sum - cnst->bound);
   }
 
-  DEBUG0("Variables");
+  XBT_DEBUG("Variables");
   /* Printing Result */
   xbt_swag_foreach(var, var_list) {
     if (var->bound > 0) {
-      DEBUG4("'%d'(%f) : %f (<=%f)", var->id_int, var->weight, var->value,
+      XBT_DEBUG("'%d'(%f) : %f (<=%f)", var->id_int, var->weight, var->value,
              var->bound);
       xbt_assert2(!double_positive(var->value - var->bound),
                   "Incorrect value (%f is not smaller than %f",
                   var->value, var->bound);
     } else {
-      DEBUG3("'%d'(%f) : %f", var->id_int, var->weight, var->value);
+      XBT_DEBUG("'%d'(%f) : %f", var->id_int, var->weight, var->value);
     }
   }
 
@@ -505,7 +505,7 @@ void lmm_solve(lmm_system_t sys)
   if (!(sys->modified))
     return;
 
-  XBT_IN1("(sys=%p)", sys);
+  XBT_IN_F("(sys=%p)", sys);
 
   /*
    * Compute Usage and store the variables that reach the maximum.
@@ -515,11 +515,11 @@ void lmm_solve(lmm_system_t sys)
       selective_update_active ? &(sys->modified_constraint_set) :
       &(sys->active_constraint_set);
 
-  DEBUG1("Active constraints : %d", xbt_swag_size(cnst_list));
+  XBT_DEBUG("Active constraints : %d", xbt_swag_size(cnst_list));
   /* Init: Only modified code portions */
   xbt_swag_foreach(cnst, cnst_list) {
     elem_list = &(cnst->element_set);
-    //DEBUG1("Variable set : %d", xbt_swag_size(elem_list));
+    //XBT_DEBUG("Variable set : %d", xbt_swag_size(elem_list));
     xbt_swag_foreach(elem, elem_list) {
       var = elem->variable;
       if (var->weight <= 0.0)
@@ -551,7 +551,7 @@ void lmm_solve(lmm_system_t sys)
         }
       }
     }
-    DEBUG2("Constraint Usage '%d' : %f", cnst->id_int, cnst->usage);
+    XBT_DEBUG("Constraint Usage '%d' : %f", cnst->id_int, cnst->usage);
     /* Saturated constraints update */
     saturated_constraint_set_update(sys, cnst, &min_usage);
   }
@@ -568,7 +568,7 @@ void lmm_solve(lmm_system_t sys)
         DIE_IMPOSSIBLE;
       /* First check if some of these variables have reach their upper
          bound and update min_usage accordingly. */
-      DEBUG5
+      XBT_DEBUG
           ("var=%d, var->bound=%f, var->weight=%f, min_usage=%f, var->bound*var->weight=%f",
            var->id_int, var->bound, var->weight, min_usage,
            var->bound * var->weight);
@@ -577,7 +577,7 @@ void lmm_solve(lmm_system_t sys)
           min_bound = var->bound;
         else
           min_bound = MIN(min_bound, var->bound);
-        DEBUG1("Updated min_bound=%f", min_bound);
+        XBT_DEBUG("Updated min_bound=%f", min_bound);
       }
     }
 
@@ -595,7 +595,7 @@ void lmm_solve(lmm_system_t sys)
           continue;
         }
       }
-      DEBUG5("Min usage: %f, Var(%d)->weight: %f, Var(%d)->value: %f ",
+      XBT_DEBUG("Min usage: %f, Var(%d)->weight: %f, Var(%d)->value: %f ",
              min_usage, var->id_int, var->weight, var->id_int, var->value);
 
 
@@ -620,7 +620,7 @@ void lmm_solve(lmm_system_t sys)
             if ((elem->value > 0)) {
               cnst->usage =
                   MAX(cnst->usage, elem->value / elem->variable->weight);
-              DEBUG2("Constraint Usage %d : %f", cnst->id_int,
+              XBT_DEBUG("Constraint Usage %d : %f", cnst->id_int,
                      cnst->usage);
               make_elem_active(elem);
             }
@@ -703,7 +703,7 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
 
   if (weight == var->weight)
     return;
-  XBT_IN3("(sys=%p, var=%p, weight=%f)", sys, var, weight);
+  XBT_IN_F("(sys=%p, var=%p, weight=%f)", sys, var, weight);
   sys->modified = 1;
   var->weight = weight;
   xbt_swag_remove(var, &(sys->variable_set));
@@ -791,12 +791,12 @@ static void lmm_update_modified_set(lmm_system_t sys,
   if (!sys->selective_update_active)
     return;
 
-  //DEBUG1("Updating modified constraint set with constraint %d", cnst->id_int);
+  //XBT_DEBUG("Updating modified constraint set with constraint %d", cnst->id_int);
 
   if (xbt_swag_belongs(cnst, &(sys->modified_constraint_set)))
     return;
 
-  //DEBUG1("Inserting into modified constraint set %d", cnst->id_int);
+  //XBT_DEBUG("Inserting into modified constraint set %d", cnst->id_int);
 
   /* add to modified set */
   xbt_swag_insert(cnst, &(sys->modified_constraint_set));
@@ -806,7 +806,7 @@ static void lmm_update_modified_set(lmm_system_t sys,
     var = elem->variable;
     for (i = 0; i < var->cnsts_number; i++)
       if (cnst != var->cnsts[i].constraint) {
-        //DEBUG2("Updating modified %d calling for %d", cnst->id_int, var->cnsts[i].constraint->id_int);
+        //XBT_DEBUG("Updating modified %d calling for %d", cnst->id_int, var->cnsts[i].constraint->id_int);
         lmm_update_modified_set(sys, var->cnsts[i].constraint);
       }
   }

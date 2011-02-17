@@ -67,38 +67,38 @@ int master(int argc, char *argv[])
     for (i = 4; i < argc; i++) {
       slaves[i - 4] = MSG_get_host_by_name(argv[i]);
       if (slaves[i - 4] == NULL) {
-        INFO1("Unknown host %s. Stopping Now! ", argv[i]);
+        XBT_INFO("Unknown host %s. Stopping Now! ", argv[i]);
         abort();
       }
     }
   }
 
-  INFO1("Got %d slave(s) :", slaves_count);
+  XBT_INFO("Got %d slave(s) :", slaves_count);
   for (i = 0; i < slaves_count; i++)
-    INFO1("\t %s", slaves[i]->name);
+    XBT_INFO("\t %s", slaves[i]->name);
 
-  INFO1("Got %d task to process :", number_of_tasks);
+  XBT_INFO("Got %d task to process :", number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++)
-    INFO1("\t\"%s\"", todo[i]->name);
+    XBT_INFO("\t\"%s\"", todo[i]->name);
 
   for (i = 0; i < number_of_tasks; i++) {
-    INFO2("Sending \"%s\" to \"%s\"",
+    XBT_INFO("Sending \"%s\" to \"%s\"",
           todo[i]->name, slaves[i % slaves_count]->name);
     if (MSG_host_self() == slaves[i % slaves_count]) {
-      INFO0("Hey ! It's me ! :)");
+      XBT_INFO("Hey ! It's me ! :)");
     }
     MSG_task_put(todo[i], slaves[i % slaves_count], PORT_22);
-    INFO0("Send completed");
+    XBT_INFO("Send completed");
   }
 
-  INFO0
+  XBT_INFO
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++)
     MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
                  slaves[i], PORT_22);
 
-  INFO0("Goodbye now!");
+  XBT_INFO("Goodbye now!");
   free(slaves);
   free(todo);
   return 0;
@@ -107,27 +107,27 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  INFO0("I'm a slave");
+  XBT_INFO("I'm a slave");
   while (1) {
     m_task_t task = NULL;
     int a;
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
-      INFO1("Received \"%s\" ", MSG_task_get_name(task));
+      XBT_INFO("Received \"%s\" ", MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {
         MSG_task_destroy(task);
         break;
       }
-      INFO1("Processing \"%s\" ", MSG_task_get_name(task));
+      XBT_INFO("Processing \"%s\" ", MSG_task_get_name(task));
       MSG_task_execute(task);
-      INFO1("\"%s\" done ", MSG_task_get_name(task));
+      XBT_INFO("\"%s\" done ", MSG_task_get_name(task));
       MSG_task_destroy(task);
     } else {
-      INFO0("Hey ?! What's up ? ");
+      XBT_INFO("Hey ?! What's up ? ");
       xbt_assert0(0, "Unexpected behavior");
     }
   }
-  INFO0("I'm done. See you!");
+  XBT_INFO("I'm done. See you!");
   return 0;
 }                               /* end_of_slave */
 
@@ -147,43 +147,43 @@ static int bypass_deployment(void)
 	/* <platform> */
 	SURFXML_BUFFER_SET(platform_version, "3");
 	SURFXML_START_TAG(platform);
-	DEBUG0("<platform version=\"3\">");
+	XBT_DEBUG("<platform version=\"3\">");
 
-	  DEBUG0("	<process host=\"c-0.me\" function=\"master\">");
+	  XBT_DEBUG("	<process host=\"c-0.me\" function=\"master\">");
 	  SURFXML_BUFFER_SET(process_host, "c-0.me");
 	  SURFXML_BUFFER_SET(process_function, "master");
 	  SURFXML_BUFFER_SET(process_start_time, "-1.0");
 	  SURFXML_BUFFER_SET(process_kill_time, "-1.0");
 	  SURFXML_START_TAG(process);
 
-	  DEBUG1("		<argument value=\"%s\"/>",bprintf("%d",nb_host-1));
+	  XBT_DEBUG("		<argument value=\"%s\"/>",bprintf("%d",nb_host-1));
 	  SURFXML_BUFFER_SET(argument_value, bprintf("%d",nb_host-1));
 	  SURFXML_START_TAG(argument);
 	  SURFXML_END_TAG(argument);
 
-	  DEBUG0("		<argument value=\"5000000\"/>");
+	  XBT_DEBUG("		<argument value=\"5000000\"/>");
 	  SURFXML_BUFFER_SET(argument_value, "5000000");
 	  SURFXML_START_TAG(argument);
 	  SURFXML_END_TAG(argument);
 
-	  DEBUG0("		<argument value=\"100000\"/>");
+	  XBT_DEBUG("		<argument value=\"100000\"/>");
 	  SURFXML_BUFFER_SET(argument_value, "100000");
 	  SURFXML_START_TAG(argument);
 	  SURFXML_END_TAG(argument);
 
 	for(i=1 ; i<nb_host ; i++)
 	{
-	  DEBUG1("		<argument value=\"%s.me\"/>",bprintf("c-%d",i));
+	  XBT_DEBUG("		<argument value=\"%s.me\"/>",bprintf("c-%d",i));
 	  SURFXML_BUFFER_SET(argument_value, bprintf("c-%d.me",i));
 	  SURFXML_START_TAG(argument);
 	  SURFXML_END_TAG(argument);
 	}
-	DEBUG0("	</process>");
+	XBT_DEBUG("	</process>");
 	SURFXML_END_TAG(process);
 
 	for(i=1 ; i<nb_host ; i++)
 	{
-	  DEBUG1("	<process host=\"%s.me\" function=\"slave\"/>",bprintf("c-%d",i));
+	  XBT_DEBUG("	<process host=\"%s.me\" function=\"slave\"/>",bprintf("c-%d",i));
 	  SURFXML_BUFFER_SET(process_host, bprintf("c-%d.me",i));
 	  SURFXML_BUFFER_SET(process_function, "slave");
 	  SURFXML_BUFFER_SET(process_start_time, "-1.0");
@@ -192,7 +192,7 @@ static int bypass_deployment(void)
 	  SURFXML_END_TAG(process);
 	}
 
-	DEBUG0("</platform>");
+	XBT_DEBUG("</platform>");
 	SURFXML_END_TAG(platform);
 
 	free(surfxml_bufferstack);
@@ -212,7 +212,7 @@ MSG_error_t test_all(const char *platform_file)
 
 	res = MSG_main();
 
-	INFO1("Simulation time %g", MSG_get_clock());
+	XBT_INFO("Simulation time %g", MSG_get_clock());
 	return res;
 }                               /* end_of_test_all */
 

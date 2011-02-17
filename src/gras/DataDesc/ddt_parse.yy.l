@@ -19,7 +19,7 @@
   int gras_ddt_parse_tok_num = 0;
   const char *definition;
   XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_lexer,gras_ddt_parse,"The crude internals of the lexer used for type parsing");
-#define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,yytext)
+#define SHOW_WHERE XBT_DEBUG("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,yytext)
 %}
 
 %x annotate comment foo
@@ -34,14 +34,14 @@ digit           [0-9]
 "//"[^\n]*
 
 "/*g"{space}* { /****************** ANNOTATION ************************/
-  DEBUG0("Begin annotation");
+  XBT_DEBUG("Begin annotation");
   annotate_caller = INITIAL;
   gras_ddt_parse_char_pos+= strlen(yytext);
   gras_ddt_parse_col_pos+= strlen(yytext);
   BEGIN(annotate);
 }
 <foo>"/*g"{space}* { /* trim annotation */
-  DEBUG0("Begin annotation");
+  XBT_DEBUG("Begin annotation");
   annotate_caller = foo;
   gras_ddt_parse_char_pos+= strlen(yytext);
   gras_ddt_parse_col_pos+= strlen(yytext);
@@ -49,7 +49,7 @@ digit           [0-9]
 }
 
 <annotate>{space}*"g*/" {
-  DEBUG0("End annotation");
+  XBT_DEBUG("End annotation");
   gras_ddt_parse_char_pos+= strlen(yytext);
   gras_ddt_parse_col_pos+= strlen(yytext);
   BEGIN(annotate_caller);

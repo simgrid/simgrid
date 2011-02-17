@@ -74,7 +74,7 @@ void rb_task_send(VALUE class, VALUE task, VALUE mailbox)
   data = MSG_task_get_data(tk);
   data->ruby_task = (void *) task;
   MSG_task_set_data(tk, (void *) data);
-  DEBUG1("Sending task %p", tk);
+  XBT_DEBUG("Sending task %p", tk);
   rv = MSG_task_send(tk, RSTRING_PTR(mailbox));
   if (rv != MSG_OK) {
     if (rv == MSG_TRANSFER_FAILURE)
@@ -98,7 +98,7 @@ VALUE rb_task_receive(VALUE class, VALUE mailbox)
   m_task_t task;
   *ptask = NULL;
   rb_data_t data = NULL;
-  DEBUG2("Receiving a task on mailbox '%s', store it into %p",
+  XBT_DEBUG("Receiving a task on mailbox '%s', store it into %p",
          RSTRING_PTR(mailbox), &task);
   MSG_task_receive(ptask, RSTRING_PTR(mailbox));
   task = *ptask;
@@ -207,7 +207,7 @@ VALUE rb_task_get_data(VALUE class, VALUE task)
   Data_Get_Struct(task, s_m_task_t, tk);
   rb_data_t rb_data = MSG_task_get_data(tk);
   if (!rb_data->user_data)
-    ERROR1("the task %s contain no user data", MSG_task_get_name(tk));
+    XBT_ERROR("the task %s contain no user data", MSG_task_get_name(tk));
 
   return (VALUE) rb_data->user_data;
 }

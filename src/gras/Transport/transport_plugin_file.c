@@ -116,7 +116,7 @@ gras_socket_t gras_socket_client_from_file(const char *path)
     res->sd = 1;                /* stdout */
   }
 
-  DEBUG5("sock_client_from_file(%s): sd=%d in=%c out=%c accept=%c",
+  XBT_DEBUG("sock_client_from_file(%s): sd=%d in=%c out=%c accept=%c",
          path,
          res->sd,
          res->incoming ? 'y' : 'n',
@@ -157,7 +157,7 @@ gras_socket_t gras_socket_server_from_file(const char *path)
     res->sd = 0;                /* stdin */
   }
 
-  DEBUG4("sd=%d in=%c out=%c accept=%c",
+  XBT_DEBUG("sd=%d in=%c out=%c accept=%c",
          res->sd,
          res->incoming ? 'y' : 'n',
          res->outgoing ? 'y' : 'n', res->accepting ? 'y' : 'n');
@@ -177,18 +177,18 @@ void gras_trp_file_close(gras_socket_t sock)
   data = sock->plugin->data;
 
   if (sock->sd == 0) {
-    DEBUG0("Do not close stdin");
+    XBT_DEBUG("Do not close stdin");
   } else if (sock->sd == 1) {
-    DEBUG0("Do not close stdout");
+    XBT_DEBUG("Do not close stdout");
   } else {
-    DEBUG1("close file connection %d", sock->sd);
+    XBT_DEBUG("close file connection %d", sock->sd);
 
     /* forget about the socket */
     FD_CLR(sock->sd, &(data->incoming_socks));
 
     /* close the socket */
     if (close(sock->sd) < 0) {
-      WARN2("error while closing file %d: %s", sock->sd, strerror(errno));
+      XBT_WARN("error while closing file %d: %s", sock->sd, strerror(errno));
     }
   }
 }
@@ -217,7 +217,7 @@ gras_trp_file_chunk_send_raw(gras_socket_t sock,
   while (size) {
     int status = 0;
 
-    DEBUG3("write(%d, %p, %ld);", sock->sd, data, (long int) size);
+    XBT_DEBUG("write(%d, %p, %ld);", sock->sd, data, (long int) size);
     status = write(sock->sd, data, (long int) size);
 
     if (status == -1) {
@@ -261,7 +261,7 @@ gras_trp_file_chunk_recv(gras_socket_t sock,
     int status = 0;
 
     status = read(sock->sd, data + got, (long int) size);
-    DEBUG3("read(%d, %p, %ld);", sock->sd, data + got, size);
+    XBT_DEBUG("read(%d, %p, %ld);", sock->sd, data + got, size);
 
     if (status < 0) {
       THROW4(system_error, 0, "read(%d,%p,%d) failed: %s",

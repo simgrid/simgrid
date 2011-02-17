@@ -59,7 +59,7 @@ static void test_int(gras_socket_t sock, int direction)
 {
   int i = 5, j;
 
-  INFO0("---- Test on integer ----");
+  XBT_INFO("---- Test on integer ----");
   write_read("int", &i, &j, sock, direction);
   if (direction == READ || direction == COPY)
     xbt_assert(i == j);
@@ -69,7 +69,7 @@ static void test_float(gras_socket_t sock, int direction)
 {
   float i = 5.0, j;
 
-  INFO0("---- Test on float ----");
+  XBT_INFO("---- Test on float ----");
   write_read("float", &i, &j, sock, direction);
   if (direction == READ || direction == COPY)
     xbt_assert2(i == j, "%f != %f", i, j);
@@ -79,7 +79,7 @@ static void test_double(gras_socket_t sock, int direction)
 {
   double i = -3252355.1234, j;
 
-  INFO0("---- Test on double ----");
+  XBT_INFO("---- Test on double ----");
   write_read("double", &i, &j, sock, direction);
   if (direction == READ || direction == COPY)
     xbt_assert2(i == j, "%f != %f", i, j);
@@ -93,12 +93,12 @@ static void test_array(gras_socket_t sock, int direction)
   array j;
   int cpt;
 
-  INFO0("---- Test on fixed array ----");
+  XBT_INFO("---- Test on fixed array ----");
 
   write_read("fixed int array", &i, &j, sock, direction);
   if (direction == READ || direction == COPY) {
     for (cpt = 0; cpt < FIXED_ARRAY_SIZE; cpt++) {
-      DEBUG1("Test spot %d", cpt);
+      XBT_DEBUG("Test spot %d", cpt);
       xbt_assert4(i[cpt] == j[cpt], "i[%d]=%d  !=  j[%d]=%d",
                   cpt, i[cpt], cpt, j[cpt]);
     }
@@ -112,11 +112,11 @@ static void test_dynar_scal(gras_socket_t sock, int direction)
   xbt_dynar_t i, j;
   int cpt;
 
-  INFO0("---- Test on dynar containing integers ----");
+  XBT_INFO("---- Test on dynar containing integers ----");
   i = xbt_dynar_new(sizeof(int), NULL);
   for (cpt = 0; cpt < 64; cpt++) {
     xbt_dynar_push_as(i, int, cpt);
-    DEBUG2("Push %d, length=%lu", cpt, xbt_dynar_length(i));
+    XBT_DEBUG("Push %d, length=%lu", cpt, xbt_dynar_length(i));
   }
   /*  xbt_dynar_dump(i); */
   write_read("xbt_dynar_of_int", &i, &j, sock, direction);
@@ -125,7 +125,7 @@ static void test_dynar_scal(gras_socket_t sock, int direction)
     for (cpt = 0; cpt < 64; cpt++) {
       int ret = xbt_dynar_get_as(j, cpt, int);
       if (cpt != ret) {
-        CRITICAL3
+        XBT_CRITICAL
             ("The retrieved value for cpt=%d is not the same than the injected one (%d!=%d)",
              cpt, ret, cpt);
         xbt_abort();
@@ -142,7 +142,7 @@ static void test_dynar_empty(gras_socket_t sock, int direction)
 {
   xbt_dynar_t i, j;
 
-  INFO0("---- Test on empty dynar of integers ----");
+  XBT_INFO("---- Test on empty dynar of integers ----");
   i = xbt_dynar_new(sizeof(int), NULL);
   write_read("xbt_dynar_of_int", &i, &j, sock, direction);
   /*  xbt_dynar_dump(j); */
@@ -160,7 +160,7 @@ static void test_intref(gras_socket_t sock, int direction)
   i = xbt_new(int, 1);
   *i = 12345;
 
-  INFO0("---- Test on a reference to an integer ----");
+  XBT_INFO("---- Test on a reference to an integer ----");
 
   write_read("int*", &i, &j, sock, direction);
   if (direction == READ || direction == COPY) {
@@ -178,7 +178,7 @@ static void test_string(gras_socket_t sock, int direction)
   char *i = xbt_strdup("Some data"), *j = NULL;
   int cpt;
 
-  INFO0("---- Test on string (ref to dynamic array) ----");
+  XBT_INFO("---- Test on string (ref to dynamic array) ----");
   write_read("string", &i, &j, sock, direction);
   if (direction == READ || direction == COPY) {
     for (cpt = 0; cpt < strlen(i); cpt++) {
@@ -201,7 +201,7 @@ static void test_homostruct(gras_socket_t sock, int direction)
 {
   homostruct *i, *j;
 
-  INFO0("---- Test on homogeneous structure ----");
+  XBT_INFO("---- Test on homogeneous structure ----");
   /* init a value, exchange it and check its validity */
   i = xbt_new(homostruct, 1);
   i->a = 2235;
@@ -233,7 +233,7 @@ static void test_hetestruct(gras_socket_t sock, int direction)
 {
   hetestruct *i, *j;
 
-  INFO0("---- Test on heterogeneous structure ----");
+  XBT_INFO("---- Test on heterogeneous structure ----");
   /* init a value, exchange it and check its validity */
   i = xbt_new(hetestruct, 1);
   i->c1 = 's';
@@ -258,7 +258,7 @@ static void test_hetestruct_array(gras_socket_t sock, int direction)
   hetestruct *i, *j, *p, *q;
   int cpt;
 
-  INFO0("---- Test on heterogeneous structure arrays ----");
+  XBT_INFO("---- Test on heterogeneous structure arrays ----");
   /* init a value, exchange it and check its validity */
   i = xbt_malloc(sizeof(hetestruct) * 10);
   for (cpt = 0, p = i; cpt < 10; cpt++, p++) {
@@ -294,7 +294,7 @@ static void test_nestedstruct(gras_socket_t sock, int direction)
 {
   nestedstruct *i, *j;
 
-  INFO0("---- Test on nested structures ----");
+  XBT_INFO("---- Test on nested structures ----");
   /* init a value, exchange it and check its validity */
   i = xbt_new(nestedstruct, 1);
   i->homo.a = 235231;
@@ -364,7 +364,7 @@ static void test_chain_list(gras_socket_t sock, int direction)
 {
   chained_list_t *i, *j;
 
-  INFO0("---- Test on chained list ----");
+  XBT_INFO("---- Test on chained list ----");
 
   /* init a value, exchange it and check its validity */
   i = cons(12355, cons(246264, cons(23263, NULL)));
@@ -386,7 +386,7 @@ static void test_graph(gras_socket_t sock, int direction)
 {
   chained_list_t *i, *j;
 
-  INFO0("---- Test on graph (cyclique chained list of 3 items) ----");
+  XBT_INFO("---- Test on graph (cyclique chained list of 3 items) ----");
   /* init a value, exchange it and check its validity */
   i = cons(1151515, cons(-232362, cons(222552, NULL)));
   i->l->l->l = i;
@@ -395,14 +395,14 @@ static void test_graph(gras_socket_t sock, int direction)
   write_read("chained_list_t*", &i, &j, sock, direction);
   if (direction == READ || direction == COPY) {
 
-    DEBUG1("i=%p", i);
-    DEBUG1("i->l=%p", i->l);
-    DEBUG1("i->l->l=%p", i->l->l);
-    DEBUG1("i->l->l->l=%p", i->l->l->l);
-    DEBUG1("j=%p", j);
-    DEBUG1("j->l=%p", j->l);
-    DEBUG1("j->l->l=%p", j->l->l);
-    DEBUG1("j->l->l->l=%p", j->l->l->l);
+    XBT_DEBUG("i=%p", i);
+    XBT_DEBUG("i->l=%p", i->l);
+    XBT_DEBUG("i->l->l=%p", i->l->l);
+    XBT_DEBUG("i->l->l->l=%p", i->l->l->l);
+    XBT_DEBUG("j=%p", j);
+    XBT_DEBUG("j->l=%p", j->l);
+    XBT_DEBUG("j->l->l=%p", j->l->l);
+    XBT_DEBUG("j->l->l->l=%p", j->l->l->l);
     xbt_assert4(j->l->l->l == j,
                 "Received list is not cyclic. j=%p != j->l->l->l=%p\n"
                 "j=%p; &j=%p", j, j->l->l->l, j, &j);
@@ -430,7 +430,7 @@ static void test_dynar_ref(gras_socket_t sock, int direction)
   char *s1, *s2;
   int cpt;
 
-  INFO0("---- Test on dynar containing integers ----");
+  XBT_INFO("---- Test on dynar containing integers ----");
 
   i = xbt_dynar_new(sizeof(char *), &free_string);
   for (cpt = 0; cpt < 64; cpt++) {
@@ -478,7 +478,7 @@ static void test_pbio(gras_socket_t sock, int direction)
   gras_datadesc_type_t pbio_type;
   pbio_t i, j;
 
-  INFO0
+  XBT_INFO
       ("---- Test on the PBIO IEEE struct (also tests GRAS DEFINE TYPE) ----");
   pbio_type = gras_datadesc_by_symbol(s_pbio);
 
@@ -556,7 +556,7 @@ static void test_clause(gras_socket_t sock, int direction)
   Clause *i, *j;
   int cpt;
 
-  INFO0
+  XBT_INFO
       ("---- Test on struct containing dynamic array and its size (cbps test) ----");
 
   /* create and fill the struct */
@@ -566,8 +566,8 @@ static void test_clause(gras_socket_t sock, int direction)
   i->literals = xbt_new(int, i->num_lits);
   for (cpt = 0; cpt < i->num_lits; cpt++)
     i->literals[cpt] = cpt * cpt - ((cpt * cpt) / 2);
-  DEBUG3("created data=%p (within %p @%p)", &(i->num_lits), i, &i);
-  DEBUG1("created count=%d", i->num_lits);
+  XBT_DEBUG("created data=%p (within %p @%p)", &(i->num_lits), i, &i);
+  XBT_DEBUG("created count=%d", i->num_lits);
 
   write_read("Clause*", &i, &j, sock, direction);
   if (direction == READ || direction == COPY) {
@@ -586,7 +586,7 @@ static void test_clause_empty(gras_socket_t sock, int direction)
 {
   Clause *i, *j;
 
-  INFO0
+  XBT_INFO
       ("---- Test on struct containing dynamic array and its size when size=0 (cbps test) ----");
 
   /* create and fill the struct */
@@ -594,8 +594,8 @@ static void test_clause_empty(gras_socket_t sock, int direction)
 
   i->num_lits = 0;
   i->literals = NULL;
-  DEBUG3("created data=%p (within %p @%p)", &(i->num_lits), i, &i);
-  DEBUG1("created count=%d", i->num_lits);
+  XBT_DEBUG("created data=%p (within %p @%p)", &(i->num_lits), i, &i);
+  XBT_DEBUG("created count=%d", i->num_lits);
 
   write_read("Clause*", &i, &j, sock, direction);
   if (direction == READ || direction == COPY) {
@@ -713,7 +713,7 @@ int main(int argc, char *argv[])
 
   for (cpt = 1; cpt < argc; cpt++) {
     if (!strcmp(argv[cpt], "--arch")) {
-      INFO2("We are on %s (#%d)",
+      XBT_INFO("We are on %s (#%d)",
             gras_datadesc_arch_name(gras_arch_selfid()),
             (int) gras_arch_selfid());
       exit(0);
@@ -744,23 +744,23 @@ int main(int argc, char *argv[])
   }
 
   if (direction == WRITE) {
-    INFO1("Write to file %s",
+    XBT_INFO("Write to file %s",
           strrchr(filename, '/') ? strrchr(filename, '/') + 1 : filename);
     sock = gras_socket_client_from_file(filename);
   }
   if (direction == READ) {
-    INFO1("Read from file %s",
+    XBT_INFO("Read from file %s",
           strrchr(filename, '/') ? strrchr(filename, '/') + 1 : filename);
     sock = gras_socket_server_from_file(filename);
   }
   if (direction == COPY) {
-    INFO0("Memory copy");
+    XBT_INFO("Memory copy");
   }
 
   local_arch = gras_arch_selfid();
   write_read("char", &local_arch, &remote_arch, sock, direction);
   if (direction == READ)
-    VERB2("This file was generated on %s (%d)",
+    XBT_VERB("This file was generated on %s (%d)",
           gras_datadesc_arch_name(remote_arch), (int) remote_arch);
 
 

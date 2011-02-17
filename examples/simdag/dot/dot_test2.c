@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 
   /* Check our arguments */
   if (argc < 2) {
-    INFO1("Usage: %s dot_file", argv[0]);
+    XBT_INFO("Usage: %s dot_file", argv[0]);
     exit(1);
   }
 
@@ -35,17 +35,17 @@ int main(int argc, char **argv)
   dot = SD_dotload(argv[1]);
 
   /* Display all the tasks */
-  INFO0
+  XBT_INFO
       ("------------------- Display all tasks of the loaded DAG ---------------------------");
   xbt_dynar_foreach(dot, cursor, task) {
       SD_task_dump(task);
     }
 
-  INFO0
+  XBT_INFO
       ("--------------------- Transform the dynar into an array ---------------------------");
   cursor=0;
   dot_as_array = (SD_task_t*) xbt_dynar_to_array(dot);
-  INFO0
+  XBT_INFO
       ("----------------------------- dump tasks again ------------------------------------");
   while ((task=dot_as_array[cursor++])){
     SD_task_dump(task);

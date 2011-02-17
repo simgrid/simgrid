@@ -40,7 +40,7 @@ gras_socket_t gras_trp_select(double timeout)
   gras_socket_t sock_iter;      /* iterating over all sockets */
   unsigned int cursor;
 
-  DEBUG3("select on %s@%s with timeout=%f",
+  XBT_DEBUG("select on %s@%s with timeout=%f",
          SIMIX_process_self_get_name(),
          SIMIX_host_self_get_name(), timeout);
   if (timeout >= 0) {
@@ -51,7 +51,7 @@ gras_socket_t gras_trp_select(double timeout)
   }
 
   if (active_socket == NULL) {
-    DEBUG0("TIMEOUT");
+    XBT_DEBUG("TIMEOUT");
     THROW0(timeout_error, 0, "Timeout");
   }
   active_socket_data = (gras_trp_sg_sock_data_t *) active_socket->data;
@@ -59,10 +59,10 @@ gras_socket_t gras_trp_select(double timeout)
   /* Ok, got something. Open a socket back to the expeditor */
 
   /* Try to reuse an already openned socket to that expeditor */
-  DEBUG1("Open sockets size %lu", xbt_dynar_length(pd->sockets));
+  XBT_DEBUG("Open sockets size %lu", xbt_dynar_length(pd->sockets));
   xbt_dynar_foreach(pd->sockets, cursor, sock_iter) {
     gras_trp_sg_sock_data_t *sock_data;
-    DEBUG1("Consider %p as outgoing socket to expeditor", sock_iter);
+    XBT_DEBUG("Consider %p as outgoing socket to expeditor", sock_iter);
 
     if (sock_iter->meas || !sock_iter->outgoing)
       continue;
@@ -77,7 +77,7 @@ gras_socket_t gras_trp_select(double timeout)
   }
 
   /* Socket to expeditor not created yet */
-  DEBUG0("Create a socket to the expeditor");
+  XBT_DEBUG("Create a socket to the expeditor");
 
   trp = gras_trp_plugin_get_by_name("sg");
 
@@ -118,7 +118,7 @@ gras_socket_t gras_trp_select(double timeout)
 
   gras_trp_buf_init_sock(res);
 
-  DEBUG4("Create socket to process:%s(Port %d) from process: %s(Port %d)",
+  XBT_DEBUG("Create socket to process:%s(Port %d) from process: %s(Port %d)",
          SIMIX_req_process_get_name(sockdata->from_process),
          res->peer_port,
          SIMIX_req_process_get_name(sockdata->to_process), res->port);

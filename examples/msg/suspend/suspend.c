@@ -21,10 +21,10 @@ typedef enum {
 /** Lazy guy function. This process suspends itself asap.  */
 static int lazy_guy(int argc, char *argv[])
 {
-  INFO0("Nobody's watching me ? Let's go to sleep.");
+  XBT_INFO("Nobody's watching me ? Let's go to sleep.");
   MSG_process_suspend(MSG_process_self());
-  INFO0("Uuuh ? Did somebody call me ?");
-  INFO0("Mmmh, goodbye now.");
+  XBT_INFO("Uuuh ? Did somebody call me ?");
+  XBT_INFO("Mmmh, goodbye now.");
   return 0;
 }                               /* end_of_lazy_guy */
 
@@ -34,13 +34,13 @@ static int dream_master(int argc, char *argv[])
 {
   m_process_t lazy = NULL;
 
-  INFO0("Let's create a lazy guy.");
+  XBT_INFO("Let's create a lazy guy.");
   lazy = MSG_process_create("Lazy", lazy_guy, NULL, MSG_host_self());
-  INFO0("Let's wait a little bit...");
+  XBT_INFO("Let's wait a little bit...");
   MSG_process_sleep(10.0);
-  INFO0("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");
+  XBT_INFO("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");
   MSG_process_resume(lazy);
-  INFO0("OK, goodbye now.");
+  XBT_INFO("OK, goodbye now.");
   return 0;
 }                               /* end_of_dram_master */
 
@@ -60,7 +60,7 @@ static MSG_error_t test_all(const char *platform_file,
   }
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }                               /* end_of_test_all */
 
@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
 
   MSG_global_init(&argc, argv);
   if (argc < 3) {
-    CRITICAL1("Usage: %s platform_file deployment_file\n", argv[0]);
-    CRITICAL1("example: %s msg_platform.xml msg_deployment_suspend.xml\n",
+    XBT_CRITICAL("Usage: %s platform_file deployment_file\n", argv[0]);
+    XBT_CRITICAL("example: %s msg_platform.xml msg_deployment_suspend.xml\n",
               argv[0]);
     exit(1);
   }

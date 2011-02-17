@@ -531,7 +531,7 @@ char *gras_ddt_parse_text;
   int gras_ddt_parse_tok_num = 0;
   const char *definition;
   XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_lexer,gras_ddt_parse,"The crude internals of the lexer used for type parsing");
-#define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,gras_ddt_parse_text)
+#define SHOW_WHERE XBT_DEBUG("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,gras_ddt_parse_text)
 
 #define INITIAL 0
 #define annotate 1
@@ -812,7 +812,7 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 { /****************** ANNOTATION ************************/
-  DEBUG0("Begin annotation");
+  XBT_DEBUG("Begin annotation");
   annotate_caller = INITIAL;
   gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
   gras_ddt_parse_col_pos+= strlen(gras_ddt_parse_text);
@@ -822,7 +822,7 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 { /* trim annotation */
-  DEBUG0("Begin annotation");
+  XBT_DEBUG("Begin annotation");
   annotate_caller = foo;
   gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
   gras_ddt_parse_col_pos+= strlen(gras_ddt_parse_text);
@@ -832,7 +832,7 @@ YY_RULE_SETUP
 case 4:
 YY_RULE_SETUP
 {
-  DEBUG0("End annotation");
+  XBT_DEBUG("End annotation");
   gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
   gras_ddt_parse_col_pos+= strlen(gras_ddt_parse_text);
   BEGIN(annotate_caller);

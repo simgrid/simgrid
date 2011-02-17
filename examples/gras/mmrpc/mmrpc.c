@@ -68,7 +68,7 @@ int server(int argc, char *argv[])
   }
 
   /* 3. Create my master socket */
-  INFO1("Launch server (port=%d)", port);
+  XBT_INFO("Launch server (port=%d)", port);
   TRY {
     sock = gras_socket_server(port);
   }
@@ -89,7 +89,7 @@ int server(int argc, char *argv[])
   gras_socket_close(sock);
   gras_exit();
 
-  INFO0("Done.");
+  XBT_INFO("Done.");
   return 0;
 }                               /* end_of_server */
 
@@ -116,7 +116,7 @@ int client(int argc, char *argv[])
     port = atoi(argv[2]);
   }
 
-  INFO2("Launch client (server on %s:%d)", host, port);
+  XBT_INFO("Launch client (server on %s:%d)", host, port);
 
   /* 3. Wait for the server startup */
   gras_os_sleep(1);
@@ -128,14 +128,14 @@ int client(int argc, char *argv[])
   CATCH(e) {
     RETHROW0("Unable to connect to the server: %s");
   }
-  INFO2("Connected to %s:%d.", host, port);
+  XBT_INFO("Connected to %s:%d.", host, port);
 
 
   /* 5. Register the messages (before use) */
   mmrpc_register_messages();
 
   /* 6. Keep the user informed of what's going on */
-  INFO2(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<",
+  XBT_INFO(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<",
         gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
 
   /* 7. Prepare and send the request to the server */
@@ -152,7 +152,7 @@ int client(int argc, char *argv[])
 
   xbt_matrix_free(request[0]);
 
-  INFO2(">>>>>>>> Request sent to %s:%d <<<<<<<<",
+  XBT_INFO(">>>>>>>> Request sent to %s:%d <<<<<<<<",
         gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
 
   /* 8. Wait for the answer from the server, and deal with issues */
@@ -170,7 +170,7 @@ int client(int argc, char *argv[])
                   xbt_matrix_get_as(request[1], i, j, double));
 
   /* 9. Keep the user informed of what's going on, again */
-  INFO2(">>>>>>>> Got answer from %s:%d (values are right) <<<<<<<<",
+  XBT_INFO(">>>>>>>> Got answer from %s:%d (values are right) <<<<<<<<",
         gras_socket_peer_name(from), gras_socket_peer_port(from));
 
   /* 10. Free the allocated resources, and shut GRAS down */
@@ -178,6 +178,6 @@ int client(int argc, char *argv[])
   xbt_matrix_free(answer);
   gras_socket_close(toserver);
   gras_exit();
-  INFO0("Done.");
+  XBT_INFO("Done.");
   return 0;
 }                               /* end_of_client */

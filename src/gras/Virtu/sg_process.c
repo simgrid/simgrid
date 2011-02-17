@@ -70,7 +70,7 @@ void gras_process_init()
   trp_pd->meas_selectable_sockets =
       xbt_queue_new(0, sizeof(gras_socket_t));
 
-  VERB2("Creating process '%s' (%d)", SIMIX_process_self_get_name(),
+  XBT_VERB("Creating process '%s' (%d)", SIMIX_process_self_get_name(),
       gras_os_getpid());
 }
 
@@ -97,17 +97,17 @@ void gras_process_exit()
 
   xbt_assert0(hd, "Run gras_process_init (ie, gras_init)!!");
 
-  VERB2("GRAS: Finalizing process '%s' (%d)",
+  XBT_VERB("GRAS: Finalizing process '%s' (%d)",
         SIMIX_req_process_get_name(SIMIX_process_self()), gras_os_getpid());
 
   if (xbt_dynar_length(msg_pd->msg_queue)) {
     unsigned int cpt;
     s_gras_msg_t msg;
-    WARN2
+    XBT_WARN
         ("process %d terminated, but %ld messages are still queued. Message list:",
          gras_os_getpid(), xbt_dynar_length(msg_pd->msg_queue));
     xbt_dynar_foreach(msg_pd->msg_queue, cpt, msg) {
-      WARN5("   Message %s (%s) from %s@%s:%d", msg.type->name,
+      XBT_WARN("   Message %s (%s) from %s@%s:%d", msg.type->name,
             e_gras_msg_kind_names[msg.kind],
             gras_socket_peer_proc(msg.expe),
             gras_socket_peer_name(msg.expe),
@@ -118,7 +118,7 @@ void gras_process_exit()
   /* if each process has its sockets list, we need to close them when the
      process finish */
   xbt_dynar_foreach(sockets, cursor, sock_iter) {
-    VERB1("Closing the socket %p left open on exit. Maybe a socket leak?",
+    XBT_VERB("Closing the socket %p left open on exit. Maybe a socket leak?",
           sock_iter);
     gras_socket_close(sock_iter);
   }

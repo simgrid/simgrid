@@ -165,14 +165,14 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
     if(task->kind == SD_TASK_COMM_E2E) continue;
     //test if all tasks are marked
     if(task->marked == 0){
-      WARN1("the task %s is not marked",task->name);
+      XBT_WARN("the task %s is not marked",task->name);
       all_marked = false;
       break;
     }
   }
   task = NULL;
   if(!all_marked){
-    VERB0("there is at least one cycle in your task graph");
+    XBT_VERB("there is at least one cycle in your task graph");
 
     current = xbt_dynar_new(sizeof(SD_task_t),NULL);
     xbt_dynar_foreach(dag,count,task){
@@ -235,7 +235,7 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
       if(task->kind == SD_TASK_COMM_E2E) continue;
       //test if all tasks are marked
       if(task->marked == 0){
-        WARN1("the task %s is in a cycle",task->name);
+        XBT_WARN("the task %s is in a cycle",task->name);
         all_marked = false;
       }
     }
@@ -258,7 +258,7 @@ static void dump_res()
   unsigned int cursor;
   SD_task_t task;
   xbt_dynar_foreach(result, cursor, task) {
-    INFO1("Task %d", cursor);
+    XBT_INFO("Task %d", cursor);
     SD_task_dump(task);
   }
 }
@@ -349,7 +349,7 @@ xbt_dynar_t SD_daxload(const char *filename)
       xbt_dynar_foreach(file->tasks_before, cpt1, depbefore) {
         xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
           if (depbefore->src == depafter->dst) {
-            WARN2
+            XBT_WARN
                 ("File %s is produced and consumed by task %s. This loop dependency will prevent the execution of the task.",
                  file->name, depbefore->src->name);
           }
@@ -403,7 +403,7 @@ void STag_dax__job(void)
   double runtime = dax_parse_double(A_dax__job_runtime);
   char *name = bprintf("%s@%s", A_dax__job_id, A_dax__job_name);
   runtime *= 4200000000.;       /* Assume that timings were done on a 4.2GFlops machine. I mean, why not? */
-//  INFO3("See <job id=%s runtime=%s %.0f>",A_dax__job_id,A_dax__job_runtime,runtime);
+//  XBT_INFO("See <job id=%s runtime=%s %.0f>",A_dax__job_id,A_dax__job_runtime,runtime);
   current_job = SD_task_create_comp_seq(name, NULL, runtime);
 #ifdef HAVE_TRACING
   char *category = A_dax__job_name;
@@ -423,14 +423,14 @@ void STag_dax__uses(void)
   double size = dax_parse_double(A_dax__uses_size);
   int is_input = (A_dax__uses_link == A_dax__uses_link_input);
 
-//  INFO2("See <uses file=%s %s>",A_dax__uses_file,(is_input?"in":"out"));
+//  XBT_INFO("See <uses file=%s %s>",A_dax__uses_file,(is_input?"in":"out"));
   file = xbt_dict_get_or_null(files, A_dax__uses_file);
   if (file == NULL) {
     file = SD_task_create_comm_e2e(A_dax__uses_file, NULL, size);
     xbt_dict_set(files, A_dax__uses_file, file, &dax_task_free);
   } else {
     if (SD_task_get_amount(file) != size) {
-      WARN3("Ignoring file %s size redefinition from %.0f to %.0f",
+      XBT_WARN("Ignoring file %s size redefinition from %.0f to %.0f",
             A_dax__uses_file, SD_task_get_amount(file), size);
     }
   }
@@ -439,7 +439,7 @@ void STag_dax__uses(void)
   } else {
     SD_task_dependency_add(NULL, NULL, current_job, file);
     if (xbt_dynar_length(file->tasks_before) > 1) {
-      WARN1("File %s created at more than one location...", file->name);
+      XBT_WARN("File %s created at more than one location...", file->name);
     }
   }
 }
@@ -468,27 +468,27 @@ void STag_dax__parent(void)
                      current_child->name, A_dax__parent_ref,
                      A_dax__parent_ref));
   SD_task_dependency_add(NULL, NULL, parent, current_child);
-  DEBUG2("Control-flow dependency from %s to %s", current_child->name,
+  XBT_DEBUG("Control-flow dependency from %s to %s", current_child->name,
          parent->name);
 }
 
 void ETag_dax__adag(void)
 {
-//  INFO0("See </adag>");
+//  XBT_INFO("See </adag>");
 }
 
 void ETag_dax__job(void)
 {
   current_job = NULL;
-//  INFO0("See </job>");
+//  XBT_INFO("See </job>");
 }
 
 void ETag_dax__parent(void)
 {
-//  INFO0("See </parent>");
+//  XBT_INFO("See </parent>");
 }
 
 void ETag_dax__uses(void)
 {
-//  INFO0("See </uses>");
+//  XBT_INFO("See </uses>");
 }

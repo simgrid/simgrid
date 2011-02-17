@@ -30,7 +30,7 @@ gras_dd_send_int(gras_socket_t sock, int *i, int stable)
     xbt_assert(int_type);
   }
 
-  DEBUG1("send_int(%u)", *i);
+  XBT_DEBUG("send_int(%u)", *i);
   gras_trp_send(sock, (char *) i, int_type->size[GRAS_THISARCH], stable);
 }
 
@@ -55,7 +55,7 @@ gras_dd_recv_int(gras_socket_t sock, int r_arch, int *i)
       gras_dd_convert_elm(int_type, 1, r_arch, ptr, i);
     free(ptr);
   }
-  DEBUG1("recv_int(%u)", *i);
+  XBT_DEBUG("recv_int(%u)", *i);
 }
 
 /*
@@ -85,7 +85,7 @@ static XBT_INLINE void gras_dd_alloc_ref(xbt_dict_t refs, long int size, char **
   l_data = xbt_malloc((size_t) size);
 
   *l_ref = l_data;
-  DEBUG5
+  XBT_DEBUG
       ("alloc_ref: l_data=%p, &l_data=%p; r_ref=%p; *r_ref=%p, r_len=%ld",
        (void *) l_data, (void *) &l_data, (void *) r_ref,
        (void *) (r_ref ? *r_ref : NULL), r_len);
@@ -94,7 +94,7 @@ static XBT_INLINE void gras_dd_alloc_ref(xbt_dict_t refs, long int size, char **
 
     memcpy(ptr, l_ref, sizeof(void *));
 
-    DEBUG2("Insert l_ref=%p under r_ref=%p", *(void **) ptr,
+    XBT_DEBUG("Insert l_ref=%p under r_ref=%p", *(void **) ptr,
            *(void **) r_ref);
 
     if (detect_cycle)
@@ -115,7 +115,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
   gras_datadesc_type_t sub_type;        /* type on which we recurse */
   int count = 0;
 
-  VERB5("Copy a %s (%s) from %p to %p (local sizeof=%ld)",
+  XBT_VERB("Copy a %s (%s) from %p to %p (local sizeof=%ld)",
         type->name, gras_datadesc_cat_names[type->category_code],
         src, dst, type->size[GRAS_THISARCH]);
 
@@ -139,7 +139,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
       xbt_assert1(struct_data.closed,
                   "Please call gras_datadesc_declare_struct_close on %s before copying it",
                   type->name);
-      VERB1(">> Copy all fields of the structure %s", type->name);
+      XBT_VERB(">> Copy all fields of the structure %s", type->name);
       xbt_dynar_foreach(struct_data.fields, cpt, field) {
         field_src = src + field->offset[GRAS_THISARCH];
         field_dst = dst + field->offset[GRAS_THISARCH];
@@ -149,7 +149,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
         if (field->send)
           field->send(type, state, field_src);
 
-        DEBUG1("Copy field %s", field->name);
+        XBT_DEBUG("Copy field %s", field->name);
         count +=
             gras_datadesc_memcpy_rec(state, refs, sub_type, field_src,
                                      field_dst, 0, detect_cycle
@@ -157,32 +157,32 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
 
         if (XBT_LOG_ISENABLED(gras_ddt_exchange, xbt_log_priority_verbose)) {
           if (sub_type == gras_datadesc_by_name("unsigned int")) {
-            VERB2("Copied value for field '%s': %d (type: unsigned int)",
+            XBT_VERB("Copied value for field '%s': %d (type: unsigned int)",
                   field->name, *(unsigned int *) field_dst);
           } else if (sub_type == gras_datadesc_by_name("int")) {
-            VERB2("Copied value for field '%s': %d (type: int)",
+            XBT_VERB("Copied value for field '%s': %d (type: int)",
                   field->name, *(int *) field_dst);
 
           } else if (sub_type ==
                      gras_datadesc_by_name("unsigned long int")) {
-            VERB2
+            XBT_VERB
                 ("Copied value for field '%s': %ld (type: unsigned long int)",
                  field->name, *(unsigned long int *) field_dst);
           } else if (sub_type == gras_datadesc_by_name("long int")) {
-            VERB2("Copied value for field '%s': %ld (type: long int)",
+            XBT_VERB("Copied value for field '%s': %ld (type: long int)",
                   field->name, *(long int *) field_dst);
 
           } else if (sub_type == gras_datadesc_by_name("string")) {
-            VERB2("Copied value for field '%s': '%s' (type: string)",
+            XBT_VERB("Copied value for field '%s': '%s' (type: string)",
                   field->name, *(char **) field_dst);
           } else {
-            VERB1("Copied a value for field '%s' (type not scalar?)",
+            XBT_VERB("Copied a value for field '%s' (type not scalar?)",
                   field->name);
           }
         }
 
       }
-      VERB1("<< Copied all fields of the structure %s", type->name);
+      XBT_VERB("<< Copied all fields of the structure %s", type->name);
 
       break;
     }
@@ -240,7 +240,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
 
       /* Send the pointed data only if not already sent */
       if (*(void **) src == NULL) {
-        VERB0("Not copying NULL referenced data");
+        XBT_VERB("Not copying NULL referenced data");
         *(void **) dst = NULL;
         break;
       }
@@ -252,14 +252,14 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
            xbt_dict_get_or_null_ext(refs, (char *) o_ref,
                                     sizeof(char *)))) {
         /* already known, no need to copy it */
-        //INFO0("Cycle detected");
+        //XBT_INFO("Cycle detected");
         reference_is_to_cpy = 0;
       }
 
       if (reference_is_to_cpy) {
         int subsubcount = -1;
         void *l_referenced = NULL;
-        VERB2("Copy a ref to '%s' referenced at %p", sub_type->name,
+        XBT_VERB("Copy a ref to '%s' referenced at %p", sub_type->name,
               (void *) *o_ref);
 
         if (!pointer_type) {
@@ -296,11 +296,11 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
                                           || sub_type->cycle);
 
         *(void **) dst = l_referenced;
-        VERB3("'%s' previously referenced at %p now at %p",
+        XBT_VERB("'%s' previously referenced at %p now at %p",
               sub_type->name, *(void **) o_ref, l_referenced);
 
       } else {
-        VERB2
+        XBT_VERB
             ("NOT copying data previously referenced @%p (already done, @%p now)",
              *(void **) o_ref, *(void **) n_ref);
 
@@ -334,7 +334,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
       sub_type = array_data.type;
       elm_size = sub_type->aligned_size[GRAS_THISARCH];
       if (sub_type->category_code == e_gras_datadesc_type_cat_scalar) {
-        VERB1("Array of %ld scalars, copy it in one shot", array_count);
+        XBT_VERB("Array of %ld scalars, copy it in one shot", array_count);
         memcpy(dst, src,
                sub_type->aligned_size[GRAS_THISARCH] * array_count);
         count += sub_type->aligned_size[GRAS_THISARCH] * array_count;
@@ -343,7 +343,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
                  && sub_type->category.array_data.type->category_code ==
                  e_gras_datadesc_type_cat_scalar) {
 
-        VERB1("Array of %ld fixed array of scalars, copy it in one shot",
+        XBT_VERB("Array of %ld fixed array of scalars, copy it in one shot",
               array_count);
         memcpy(dst, src,
                sub_type->category.array_data.
@@ -354,10 +354,10 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
             * array_count * sub_type->category.array_data.fixed_size;
 
       } else {
-        VERB1("Array of %ld stuff, copy it in one after the other",
+        XBT_VERB("Array of %ld stuff, copy it in one after the other",
               array_count);
         for (cpt = 0; cpt < array_count; cpt++) {
-          VERB2("Copy the %dth stuff out of %ld", cpt, array_count);
+          XBT_VERB("Copy the %dth stuff out of %ld", cpt, array_count);
           count +=
               gras_datadesc_memcpy_rec(state, refs, sub_type, src_ptr,
                                        dst_ptr, 0, detect_cycle
@@ -392,7 +392,7 @@ int gras_datadesc_memcpy(gras_datadesc_type_t type, void *src, void *dst)
 
   xbt_assert0(type, "called with NULL type descriptor");
 
-  DEBUG3("Memcopy a %s from %p to %p", gras_datadesc_get_name(type), src,
+  XBT_DEBUG("Memcopy a %s from %p to %p", gras_datadesc_get_name(type), src,
          dst);
   if (!state) {
     state = gras_cbps_new();
@@ -427,15 +427,15 @@ gras_datadesc_send_rec(gras_socket_t sock,
   unsigned int cpt;
   gras_datadesc_type_t sub_type;        /* type on which we recurse */
 
-  VERB2("Send a %s (%s)",
+  XBT_VERB("Send a %s (%s)",
         type->name, gras_datadesc_cat_names[type->category_code]);
 
   if (!strcmp(type->name, "string"))
-    VERB1("value: '%s'", *(char **) data);
+    XBT_VERB("value: '%s'", *(char **) data);
 
   if (type->send) {
     type->send(type, state, data);
-    DEBUG0("Run the emission callback");
+    XBT_DEBUG("Run the emission callback");
   }
 
   switch (type->category_code) {
@@ -452,7 +452,7 @@ gras_datadesc_send_rec(gras_socket_t sock,
       xbt_assert1(struct_data.closed,
                   "Please call gras_datadesc_declare_struct_close on %s before sending it",
                   type->name);
-      VERB1(">> Send all fields of the structure %s", type->name);
+      XBT_VERB(">> Send all fields of the structure %s", type->name);
       xbt_dynar_foreach(struct_data.fields, cpt, field) {
         field_data = data;
         field_data += field->offset[GRAS_THISARCH];
@@ -460,16 +460,16 @@ gras_datadesc_send_rec(gras_socket_t sock,
         sub_type = field->type;
 
         if (field->send) {
-          DEBUG1("Run the emission callback of field %s", field->name);
+          XBT_DEBUG("Run the emission callback of field %s", field->name);
           field->send(type, state, field_data);
         }
 
-        VERB1("Send field %s", field->name);
+        XBT_VERB("Send field %s", field->name);
         gras_datadesc_send_rec(sock, state, refs, sub_type, field_data,
                                detect_cycle || sub_type->cycle);
 
       }
-      VERB1("<< Sent all fields of the structure %s", type->name);
+      XBT_VERB("<< Sent all fields of the structure %s", type->name);
 
       break;
     }
@@ -539,7 +539,7 @@ gras_datadesc_send_rec(gras_socket_t sock,
 
       /* Send the pointed data only if not already sent */
       if (*(void **) data == NULL) {
-        VERB0("Not sending NULL referenced data");
+        XBT_VERB("Not sending NULL referenced data");
         break;
       }
 
@@ -548,19 +548,19 @@ gras_datadesc_send_rec(gras_socket_t sock,
       if (detect_cycle
           && xbt_dict_get_or_null_ext(refs, (char *) ref,
                                       sizeof(char *))) {
-        //INFO0("Cycle detected");
+        //XBT_INFO("Cycle detected");
         reference_is_to_send = 0;
       }
 
       if (reference_is_to_send) {
-        VERB1("Sending data referenced at %p", (void *) *ref);
+        XBT_VERB("Sending data referenced at %p", (void *) *ref);
         if (detect_cycle)
           xbt_dict_set_ext(refs, (char *) ref, sizeof(void *), ref, NULL);
         gras_datadesc_send_rec(sock, state, refs, sub_type, *ref,
                                detect_cycle || sub_type->cycle);
 
       } else {
-        VERB1("Not sending data referenced at %p (already done)",
+        XBT_VERB("Not sending data referenced at %p (already done)",
               (void *) *ref);
       }
 
@@ -589,7 +589,7 @@ gras_datadesc_send_rec(gras_socket_t sock,
       sub_type = array_data.type;
       elm_size = sub_type->aligned_size[GRAS_THISARCH];
       if (sub_type->category_code == e_gras_datadesc_type_cat_scalar) {
-        VERB1("Array of %d scalars, send it in one shot", count);
+        XBT_VERB("Array of %d scalars, send it in one shot", count);
         gras_trp_send(sock, data,
                       sub_type->aligned_size[GRAS_THISARCH] * count,
                       0 /* not stable */ );
@@ -598,7 +598,7 @@ gras_datadesc_send_rec(gras_socket_t sock,
                  && sub_type->category.array_data.type->category_code ==
                  e_gras_datadesc_type_cat_scalar) {
 
-        VERB1("Array of %d fixed array of scalars, send it in one shot",
+        XBT_VERB("Array of %d fixed array of scalars, send it in one shot",
               count);
         gras_trp_send(sock, data,
                       sub_type->category.array_data.
@@ -679,7 +679,7 @@ gras_datadesc_recv_rec(gras_socket_t sock,
   unsigned int cpt;
   gras_datadesc_type_t sub_type;
 
-  VERB2("Recv a %s @%p", type->name, (void *) l_data);
+  XBT_VERB("Recv a %s @%p", type->name, (void *) l_data);
   xbt_assert(l_data);
 
   switch (type->category_code) {
@@ -707,7 +707,7 @@ gras_datadesc_recv_rec(gras_socket_t sock,
       xbt_assert1(struct_data.closed,
                   "Please call gras_datadesc_declare_struct_close on %s before receiving it",
                   type->name);
-      VERB1(">> Receive all fields of the structure %s", type->name);
+      XBT_VERB(">> Receive all fields of the structure %s", type->name);
       xbt_dynar_foreach(struct_data.fields, cpt, field) {
         char *field_data = l_data + field->offset[GRAS_THISARCH];
 
@@ -719,12 +719,12 @@ gras_datadesc_recv_rec(gras_socket_t sock,
                                detect_cycle || sub_type->cycle);
 
         if (field->recv) {
-          DEBUG1("Run the reception callback of field %s", field->name);
+          XBT_DEBUG("Run the reception callback of field %s", field->name);
           field->recv(type, state, (void *) l_data);
         }
 
       }
-      VERB1("<< Received all fields of the structure %s", type->name);
+      XBT_VERB("<< Received all fields of the structure %s", type->name);
 
       break;
     }
@@ -792,7 +792,7 @@ gras_datadesc_recv_rec(gras_socket_t sock,
 
       /* Receive the pointed data only if not already sent */
       if (gras_dd_is_r_null(r_ref, pointer_type->size[r_arch])) {
-        VERB1("Not receiving data remotely referenced @%p since it's NULL",
+        XBT_VERB("Not receiving data remotely referenced @%p since it's NULL",
               *(void **) r_ref);
         *(void **) l_data = NULL;
         free(r_ref);
@@ -805,14 +805,14 @@ gras_datadesc_recv_rec(gras_socket_t sock,
                                                     pointer_type->size
                                                     [r_arch]))) {
         reference_is_to_recv = 0;
-        //INFO0("Cycle detected");
+        //XBT_INFO("Cycle detected");
       }
 
       if (reference_is_to_recv) {
         int subsubcount = -1;
         void *l_referenced = NULL;
 
-        VERB2("Receiving a ref to '%s', remotely @%p",
+        XBT_VERB("Receiving a ref to '%s', remotely @%p",
               sub_type->name, *(void **) r_ref);
         if (sub_type->category_code == e_gras_datadesc_type_cat_array) {
           /* Damn. Reference to a dynamic array. Allocating the space for it is more complicated */
@@ -846,11 +846,11 @@ gras_datadesc_recv_rec(gras_socket_t sock,
                                  detect_cycle || sub_type->cycle);
 
         *(void **) l_data = l_referenced;
-        VERB3("'%s' remotely referenced at %p locally at %p",
+        XBT_VERB("'%s' remotely referenced at %p locally at %p",
               sub_type->name, *(void **) r_ref, l_referenced);
 
       } else {
-        VERB2
+        XBT_VERB
             ("NOT receiving data remotely referenced @%p (already done, @%p here)",
              *(void **) r_ref, *(void **) l_ref);
 
@@ -881,7 +881,7 @@ gras_datadesc_recv_rec(gras_socket_t sock,
       /* receive the content */
       sub_type = array_data.type;
       if (sub_type->category_code == e_gras_datadesc_type_cat_scalar) {
-        VERB1("Array of %d scalars, get it in one shoot", count);
+        XBT_VERB("Array of %d scalars, get it in one shoot", count);
         if (sub_type->aligned_size[GRAS_THISARCH] >=
             sub_type->aligned_size[r_arch]) {
           gras_trp_recv(sock, (char *) l_data,
@@ -905,7 +905,7 @@ gras_datadesc_recv_rec(gras_socket_t sock,
         array_data = sub_type->category.array_data;
         subsub_type = array_data.type;
 
-        VERB1("Array of %d fixed array of scalars, get it in one shot",
+        XBT_VERB("Array of %d fixed array of scalars, get it in one shot",
               count);
         if (subsub_type->aligned_size[GRAS_THISARCH] >=
             subsub_type->aligned_size[r_arch]) {
@@ -933,7 +933,7 @@ gras_datadesc_recv_rec(gras_socket_t sock,
       } else {
         /* not scalar content, get it recursively (may contain pointers) */
         elm_size = sub_type->aligned_size[GRAS_THISARCH];
-        VERB2("Receive a %d-long array of %s", count, sub_type->name);
+        XBT_VERB("Receive a %d-long array of %s", count, sub_type->name);
 
         ptr = l_data;
         for (cpt = 0; cpt < count; cpt++) {
@@ -955,7 +955,7 @@ gras_datadesc_recv_rec(gras_socket_t sock,
     type->recv(type, state, l_data);
 
   if (!strcmp(type->name, "string"))
-    VERB1("value: '%s'", *(char **) l_data);
+    XBT_VERB("value: '%s'", *(char **) l_data);
 
 }
 

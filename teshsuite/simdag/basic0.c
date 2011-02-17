@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 
   SD_simulate(-1.0);
 
-  INFO1("Simulation time: %f", SD_get_clock());
+  XBT_INFO("Simulation time: %f", SD_get_clock());
 
   SD_exit();
   return 0;

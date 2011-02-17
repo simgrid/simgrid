@@ -32,7 +32,7 @@ static void gras_trp_plugin_new(const char *name, gras_trp_setup_t setup)
 
   gras_trp_plugin_t plug = xbt_new0(s_gras_trp_plugin_t, 1);
 
-  DEBUG1("Create plugin %s", name);
+  XBT_DEBUG("Create plugin %s", name);
 
   plug->name = xbt_strdup(name);
 
@@ -79,14 +79,14 @@ void gras_trp_init(void)
       xbt_assert0(LOBYTE(wsaData.wVersion) == 2 &&
                   HIBYTE(wsaData.wVersion) == 0,
                   "Cannot find a usable WinSock DLL");
-      INFO0("Found and initialized winsock2");
+      XBT_INFO("Found and initialized winsock2");
     }                           /* The WinSock DLL is acceptable. Proceed. */
 #elif HAVE_WINSOCK_H
     {
       WSADATA wsaData;
       xbt_assert0(WSAStartup(0x0101, &wsaData) == 0,
                   "Cannot find a usable WinSock DLL");
-      INFO0("Found and initialized winsock");
+      XBT_INFO("Found and initialized winsock");
     }
 #endif
 
@@ -101,7 +101,7 @@ void gras_trp_init(void)
 
 void gras_trp_exit(void)
 {
-  DEBUG1("gras_trp value %d", _gras_trp_started);
+  XBT_DEBUG("gras_trp value %d", _gras_trp_started);
   if (_gras_trp_started == 0) {
     return;
   }
@@ -130,7 +130,7 @@ void gras_trp_plugin_free(void *p)
     if (plug->exit) {
       plug->exit(plug);
     } else if (plug->data) {
-      DEBUG1("Plugin %s lacks exit(). Free data anyway.", plug->name);
+      XBT_DEBUG("Plugin %s lacks exit(). Free data anyway.", plug->name);
       free(plug->data);
     }
 
@@ -150,7 +150,7 @@ void gras_trp_socket_new(int incoming, gras_socket_t * dst)
 
   gras_socket_t sock = xbt_new0(s_gras_socket_t, 1);
 
-  VERB1("Create a new socket (%p)", (void *) sock);
+  XBT_VERB("Create a new socket (%p)", (void *) sock);
 
   sock->plugin = NULL;
 
@@ -190,7 +190,7 @@ gras_socket_server_ext(unsigned short port,
   gras_trp_plugin_t trp;
   gras_socket_t sock;
 
-  DEBUG2("Create a server socket from plugin %s on port %d",
+  XBT_DEBUG("Create a server socket from plugin %s on port %d",
          gras_if_RL()? "tcp" : "sg", port);
   trp = gras_trp_plugin_get_by_name(gras_if_SG()? "sg" : "tcp");
 
@@ -201,10 +201,10 @@ gras_socket_server_ext(unsigned short port,
   sock->meas = measurement;
 
   /* Call plugin socket creation function */
-  DEBUG1("Prepare socket with plugin (fct=%p)", trp->socket_server);
+  XBT_DEBUG("Prepare socket with plugin (fct=%p)", trp->socket_server);
   TRY {
     trp->socket_server(trp, port, sock);
-    DEBUG3("in=%c out=%c accept=%c",
+    XBT_DEBUG("in=%c out=%c accept=%c",
            sock->incoming ? 'y' : 'n',
            sock->outgoing ? 'y' : 'n', sock->accepting ? 'y' : 'n');
   } CATCH(e) {
@@ -279,7 +279,7 @@ gras_socket_client_ext(const char *host,
 
   trp = gras_trp_plugin_get_by_name(gras_if_SG()? "sg" : "tcp");
 
-  DEBUG1("Create a client socket from plugin %s",
+  XBT_DEBUG("Create a client socket from plugin %s",
          gras_if_RL()? "tcp" : "sg");
   /* defaults settings */
   gras_trp_socket_new(0, &sock);
@@ -290,7 +290,7 @@ gras_socket_client_ext(const char *host,
   /* plugin-specific */
   TRY {
     (*trp->socket_client) (trp,host,port,sock);
-    DEBUG3("in=%c out=%c accept=%c",
+    XBT_DEBUG("in=%c out=%c accept=%c",
            sock->incoming ? 'y' : 'n',
            sock->outgoing ? 'y' : 'n', sock->accepting ? 'y' : 'n');
   } CATCH(e) {
@@ -347,26 +347,26 @@ void gras_socket_close(gras_socket_t sock)
   unsigned int cursor;
 
   XBT_IN;
-  VERB1("Close %p", sock);
+  XBT_VERB("Close %p", sock);
   if (sock == _gras_lastly_selected_socket) {
     xbt_assert0(!gras_opt_trp_nomoredata_on_close || !sock->moredata,
                 "Closing a socket having more data in buffer while the nomoredata_on_close option is activated");
 
     if (sock->moredata)
-      CRITICAL0
+      XBT_CRITICAL
           ("Closing a socket having more data in buffer. Option nomoredata_on_close disabled, so continuing.");
     _gras_lastly_selected_socket = NULL;
   }
 
   /* FIXME: Issue an event when the socket is closed */
-  DEBUG1("sockets pointer before %p", sockets);
+  XBT_DEBUG("sockets pointer before %p", sockets);
   if (sock) {
     /* FIXME: Cannot get the dynar mutex, because it can be already locked */
 //              _xbt_dynar_foreach(sockets,cursor,sock_iter) {
     for (cursor = 0; cursor < xbt_dynar_length(sockets); cursor++) {
       _xbt_dynar_cursor_get(sockets, cursor, &sock_iter);
       if (sock == sock_iter) {
-        DEBUG2("remove sock cursor %d dize %lu\n", cursor,
+        XBT_DEBUG("remove sock cursor %d dize %lu\n", cursor,
                xbt_dynar_length(sockets));
         xbt_dynar_cursor_rm(sockets, &cursor);
         if (sock->plugin->socket_close)
@@ -378,7 +378,7 @@ void gras_socket_close(gras_socket_t sock)
         return;
       }
     }
-    WARN1
+    XBT_WARN
         ("Ignoring request to free an unknown socket (%p). Execution stack:",
          sock);
     xbt_backtrace_display_current();
@@ -501,13 +501,13 @@ void gras_socket_meas_send(gras_socket_t peer,
               "Socket not suited for data send (was created with gras_socket_server(), not gras_socket_client())");
 
   for (sent_sofar = 0; sent_sofar < msg_amount; sent_sofar++) {
-    CDEBUG5(gras_trp_meas,
+    XBT_CDEBUG(gras_trp_meas,
             "Sent %lu msgs of %lu (size of each: %ld) to %s:%d",
             sent_sofar, msg_amount, msg_size, gras_socket_peer_name(peer),
             gras_socket_peer_port(peer));
     (*peer->plugin->raw_send) (peer, chunk, msg_size);
   }
-  CDEBUG5(gras_trp_meas,
+  XBT_CDEBUG(gras_trp_meas,
           "Sent %lu msgs of %lu (size of each: %ld) to %s:%d", sent_sofar,
           msg_amount, msg_size, gras_socket_peer_name(peer),
           gras_socket_peer_port(peer));
@@ -549,13 +549,13 @@ void gras_socket_meas_recv(gras_socket_t peer,
   xbt_assert0(peer->incoming, "Socket not suited for data receive");
 
   for (got_sofar = 0; got_sofar < msg_amount; got_sofar++) {
-    CDEBUG5(gras_trp_meas,
+    XBT_CDEBUG(gras_trp_meas,
             "Recvd %ld msgs of %lu (size of each: %ld) from %s:%d",
             got_sofar, msg_amount, msg_size, gras_socket_peer_name(peer),
             gras_socket_peer_port(peer));
     (peer->plugin->raw_recv) (peer, chunk, msg_size);
   }
-  CDEBUG5(gras_trp_meas,
+  XBT_CDEBUG(gras_trp_meas,
           "Recvd %ld msgs of %lu (size of each: %ld) from %s:%d",
           got_sofar, msg_amount, msg_size, gras_socket_peer_name(peer),
           gras_socket_peer_port(peer));
@@ -594,7 +594,7 @@ gras_socket_t gras_socket_meas_accept(gras_socket_t peer)
 
   res = (peer->plugin->socket_accept) (peer);
   res->meas = peer->meas;
-  CDEBUG1(gras_trp_meas, "meas_accepted onto %d", res->sd);
+  XBT_CDEBUG(gras_trp_meas, "meas_accepted onto %d", res->sd);
 
   return res;
 }
@@ -635,13 +635,13 @@ void gras_trp_socketset_dump(const char *name)
   unsigned int it;
   gras_socket_t s;
 
-  INFO1("** Dump the socket set %s", name);
+  XBT_INFO("** Dump the socket set %s", name);
   xbt_dynar_foreach(procdata->sockets, it, s) {
-    INFO4("  %p -> %s:%d %s",
+    XBT_INFO("  %p -> %s:%d %s",
           s, gras_socket_peer_name(s), gras_socket_peer_port(s),
           s->valid ? "(valid)" : "(peer dead)");
   }
-  INFO1("** End of socket set %s", name);
+  XBT_INFO("** End of socket set %s", name);
 }
 
 /*

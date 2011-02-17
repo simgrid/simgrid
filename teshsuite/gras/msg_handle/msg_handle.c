@@ -19,7 +19,7 @@ int client(int argc, char *argv[]);
 static int server_cb_hello_handler(gras_msg_cb_ctx_t ctx,
                                    void *payload_data)
 {
-  INFO0("Got the message");
+  XBT_INFO("Got the message");
   return 0;
 }
 
@@ -43,7 +43,7 @@ int server(int argc, char *argv[])
   gras_msgtype_declare("hello", NULL);
   gras_cb_register("hello", &server_cb_hello_handler);
 
-  INFO1("Launch server (port=%d)", myport);
+  XBT_INFO("Launch server (port=%d)", myport);
   TRY {
     me = gras_socket_server(myport);
   } CATCH(e) {
@@ -55,7 +55,7 @@ int server(int argc, char *argv[])
   } CATCH(e) {
     RETHROW1("Unable to establish a socket to %s: %s", palstr);
   }
-  INFO0("Initialization done.");
+  XBT_INFO("Initialization done.");
   now = gras_os_time();
 
   /* Launch handle(0) when there is no message. Timeout expected */
@@ -75,7 +75,7 @@ int server(int argc, char *argv[])
   xbt_assert1(gras_os_time() - now < 0.01,
               "gras_msg_handle(0) do not anwser immediately (%.4fsec)",
               gras_os_time() - now);
-  INFO0("gras_msg_handle(0) works as expected (immediate timeout)");
+  XBT_INFO("gras_msg_handle(0) works as expected (immediate timeout)");
   /* Launch handle(0) when there is no message. Timeout expected */
   got_expected = 0;
   TRY {
@@ -97,11 +97,11 @@ int server(int argc, char *argv[])
   xbt_assert1(gras_os_time() - now >= 1.0,
               "gras_msg_handle(1) answers in less than one second (%.4fsec)",
               gras_os_time() - now);
-  INFO0("gras_msg_handle(1) works as expected (delayed timeout)");
+  XBT_INFO("gras_msg_handle(1) works as expected (delayed timeout)");
   gras_os_sleep(3);
 
   /* Send an hello to the client to unlock it */
-  INFO0("Unlock pal");
+  XBT_INFO("Unlock pal");
   gras_msg_send(pal, "hello", NULL);
 
   /* Frees the allocated resources, and shut GRAS down */
@@ -129,7 +129,7 @@ int client(int argc, char *argv[])
   gras_msgtype_declare("hello", NULL);
   gras_cb_register("hello", &server_cb_hello_handler);
 
-  INFO1("Launch client (port=%d)", myport);
+  XBT_INFO("Launch client (port=%d)", myport);
   TRY {
     me = gras_socket_server(myport);
   } CATCH(e) {
@@ -141,7 +141,7 @@ int client(int argc, char *argv[])
   } CATCH(e) {
     RETHROW1("Unable to establish a socket to %s: %s", palstr);
   }
-  INFO0("Initialization done.");
+  XBT_INFO("Initialization done.");
 
   /* Launch handle(-1). Lock until message from server expected */
   got_expected = 0;
@@ -150,7 +150,7 @@ int client(int argc, char *argv[])
   } CATCH(e) {
     RETHROW0("No exception expected during handle(-1), but got %s");
   }
-  INFO0("gras_msg_handle(-1) works as expected (locked)");
+  XBT_INFO("gras_msg_handle(-1) works as expected (locked)");
 
   /* Frees the allocated resources, and shut GRAS down */
   gras_socket_close(me);

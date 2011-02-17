@@ -36,7 +36,7 @@ static void listener_function(void *p)
   xbt_ex_t e;
   gras_msgtype_t msg_wakeup_listener_t =
       gras_msgtype_by_name("_wakeup_listener");
-  DEBUG0("I'm the listener");
+  XBT_DEBUG("I'm the listener");
 
   /* get a free socket for the receiving part of the listener */
   me->wakeup_sock_listener_side =NULL;
@@ -64,17 +64,17 @@ static void listener_function(void *p)
     if (msg->type != msg_wakeup_listener_t) {
 		/* Cannot display who sent this since in SG, gras_socket_peer_* wont work:
 		   I'm not the user process but I'm just the listener. Too bad */
-      VERB3("Got a '%s' message (%s) from sock %p. Queue it for handling by main thread",
+      XBT_VERB("Got a '%s' message (%s) from sock %p. Queue it for handling by main thread",
             gras_msgtype_get_name(msg->type),e_gras_msg_kind_names[msg->kind],msg->expe);
       xbt_queue_push(me->incomming_messages, msg);
     } else {
       char got = *(char *) msg->payl;
       if (got == '1') {
-        VERB0("Asked to get awake");
+        XBT_VERB("Asked to get awake");
         free(msg->payl);
         free(msg);
       } else {
-        VERB0("Asked to die");
+        XBT_VERB("Asked to die");
         //gras_socket_close(me->wakeup_sock_listener_side);
         free(msg->payl);
         free(msg);
@@ -88,10 +88,10 @@ static void listener_function(void *p)
         xbt_queue_shift_timed(me->socks_to_close, &sock, 0);
         if (tcp_close(sock) < 0) {
 #ifdef _XBT_WIN32
-          WARN2("error while closing tcp socket %d: %d\n", sock,
+          XBT_WARN("error while closing tcp socket %d: %d\n", sock,
                 sock_errno);
 #else
-          WARN3("error while closing tcp socket %d: %d (%s)\n",
+          XBT_WARN("error while closing tcp socket %d: %d (%s)\n",
                 sock, sock_errno, sock_errstr(sock_errno));
 #endif
         }
@@ -109,7 +109,7 @@ gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_received)
 {
   gras_msg_listener_t arg = xbt_new0(s_gras_msg_listener_t, 1);
 
-  VERB0("Launch listener");
+  XBT_VERB("Launch listener");
   arg->incomming_messages = msg_received;
   arg->socks_to_close = xbt_queue_new(0, sizeof(int));
   arg->init_mutex = xbt_mutex_init();
@@ -141,7 +141,7 @@ void gras_msg_listener_shutdown()
 {
   gras_procdata_t *pd = gras_procdata_get();
   char kill = '0';
-  DEBUG0("Listener quit");
+  XBT_DEBUG("Listener quit");
 
   if (pd->listener)
     gras_msg_send(pd->listener->wakeup_sock_master_side,
@@ -160,7 +160,7 @@ void gras_msg_listener_awake()
   gras_procdata_t *pd;
   char c = '1';
 
-  DEBUG0("Awaking the listener");
+  XBT_DEBUG("Awaking the listener");
   pd = gras_procdata_get();
   if (pd->listener) {
     gras_msg_send(pd->listener->wakeup_sock_master_side,

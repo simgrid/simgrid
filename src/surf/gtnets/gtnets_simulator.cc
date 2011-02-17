@@ -8,8 +8,8 @@
 #include "gtnets_topology.h"
 #include <map>
 #include <vector>
-#ifdef DEBUG0
-	#undef DEBUG0
+#ifdef XBT_DEBUG
+	#undef XBT_DEBUG
 #endif
 #include "xbt/log.h"
 #include "xbt/asserts.h"
@@ -220,10 +220,10 @@ int GTSim::add_router(int id){
 int GTSim::add_link(int id, double bandwidth, double latency){
   double bw = bandwidth * 8; //Bandwidth in bits (used in GTNETS).
   xbt_assert1(!(topo_->add_link(id) < 0),"Can't add link %d. already exists", id);
-  DEBUG3("Creating a new P2P, linkid %d, bandwidth %gl, latency %gl", id, bandwidth, latency);
+  XBT_DEBUG("Creating a new P2P, linkid %d, bandwidth %gl, latency %gl", id, bandwidth, latency);
   gtnets_links_[id] = new Linkp2p(bw, latency);
   if(jitter_ > 0){
-	DEBUG2("Using jitter %f, and seed %u", jitter_, jitter_seed_);
+	XBT_DEBUG("Using jitter %f, and seed %u", jitter_, jitter_seed_);
 	double min = -1*jitter_*latency;
 	double max = jitter_*latency;
 	uniform_jitter_generator_[id] = new Uniform(min,max);
@@ -260,7 +260,7 @@ void GTSim::add_nodes(){
     id = (*it)->id();
     gtnets_nodes_[id] = new Node();
     gtnets_nodes_[id]->SetIPAddr(address++);
-    DEBUG2("In GTSim, add_node: %d, with IPAddr %s", id, helper.ToDotted(address-1));
+    XBT_DEBUG("In GTSim, add_node: %d, with IPAddr %s", id, helper.ToDotted(address-1));
 
   }
 }
@@ -280,7 +280,7 @@ void GTSim::node_connect(){
 
       gtnets_nodes_[srcid]->
 	AddDuplexLink(gtnets_nodes_[dstid], *(gtnets_links_[linkid]));
-    DEBUG3("Setting DuplexLink, src %d, dst %d, linkid %d", srcid, dstid, linkid);
+    XBT_DEBUG("Setting DuplexLink, src %d, dst %d, linkid %d", srcid, dstid, linkid);
     }
   }
 }
@@ -438,7 +438,7 @@ void GTSim::set_jitter_seed(int s){
   jitter_seed_ = s;
 
   if(jitter_seed_ > 0.0){
-    INFO1("Setting the jitter_seed with %d", jitter_seed_ );
+    XBT_INFO("Setting the jitter_seed with %d", jitter_seed_ );
     Random::GlobalSeed(jitter_seed_  , jitter_seed_  , jitter_seed_  ,jitter_seed_  ,jitter_seed_  ,jitter_seed_);
   }
 }

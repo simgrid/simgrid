@@ -19,8 +19,8 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
                              "Messages specific for surf example");
 
-#define PRINT_VAR(var) DEBUG1(#var " = %g",lmm_variable_getvalue(var));
-#define SHOW_EXPR(expr) DEBUG1(#expr " = %g",expr);
+#define PRINT_VAR(var) XBT_DEBUG(#var " = %g",lmm_variable_getvalue(var));
+#define SHOW_EXPR(expr) XBT_DEBUG(#expr " = %g",expr);
 
 /*                               */
 /*        ______                 */
@@ -174,15 +174,15 @@ void test1(method_t method)
         MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
 
     if (max_deviation > MAXMIN_PRECISION) {
-      WARN1("Max Deviation from optimal solution : %g", max_deviation);
-      WARN1("Found x = %1.20f", x);
-      WARN2("Deviation from optimal solution (R_1 = %g): %1.20f", x,
+      XBT_WARN("Max Deviation from optimal solution : %g", max_deviation);
+      XBT_WARN("Found x = %1.20f", x);
+      XBT_WARN("Deviation from optimal solution (R_1 = %g): %1.20f", x,
             lmm_variable_getvalue(R_1) - x);
-      WARN2("Deviation from optimal solution (R_2 = %g): %1.20f",
+      XBT_WARN("Deviation from optimal solution (R_2 = %g): %1.20f",
             b - a + x, lmm_variable_getvalue(R_2) - (b - a + x));
-      WARN2("Deviation from optimal solution (R_3 = %g): %1.20f", x,
+      XBT_WARN("Deviation from optimal solution (R_3 = %g): %1.20f", x,
             lmm_variable_getvalue(R_3) - x);
-      WARN2("Deviation from optimal solution (R_1_2_3 = %g): %1.20f",
+      XBT_WARN("Deviation from optimal solution (R_1_2_3 = %g): %1.20f",
             a - x, lmm_variable_getvalue(R_1_2_3) - (a - x));
     }
   } else if (method == LAGRANGE_RENO) {
@@ -209,15 +209,15 @@ void test1(method_t method)
         MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
 
     if (max_deviation > MAXMIN_PRECISION) {
-      WARN1("Max Deviation from optimal solution : %g", max_deviation);
-      WARN1("Found x = %1.20f", x);
-      WARN2("Deviation from optimal solution (R_1 = %g): %1.20f", x,
+      XBT_WARN("Max Deviation from optimal solution : %g", max_deviation);
+      XBT_WARN("Found x = %1.20f", x);
+      XBT_WARN("Deviation from optimal solution (R_1 = %g): %1.20f", x,
             lmm_variable_getvalue(R_1) - x);
-      WARN2("Deviation from optimal solution (R_2 = %g): %1.20f",
+      XBT_WARN("Deviation from optimal solution (R_2 = %g): %1.20f",
             b - a + x, lmm_variable_getvalue(R_2) - (b - a + x));
-      WARN2("Deviation from optimal solution (R_3 = %g): %1.20f", x,
+      XBT_WARN("Deviation from optimal solution (R_3 = %g): %1.20f", x,
             lmm_variable_getvalue(R_3) - x);
-      WARN2("Deviation from optimal solution (R_1_2_3 = %g): %1.20f",
+      XBT_WARN("Deviation from optimal solution (R_1_2_3 = %g): %1.20f",
             a - x, lmm_variable_getvalue(R_1_2_3) - (a - x));
     }
   } else {
@@ -466,28 +466,28 @@ int main(int argc, char **argv)
 {
   xbt_init(&argc, argv);
 
-  INFO0("***** Test 1 (Max-Min)");
+  XBT_INFO("***** Test 1 (Max-Min)");
   test1(MAXMIN);
-  INFO0("***** Test 1 (Lagrange - Vegas)");
+  XBT_INFO("***** Test 1 (Lagrange - Vegas)");
   test1(LAGRANGE_VEGAS);
-  INFO0("***** Test 1 (Lagrange - Reno)");
+  XBT_INFO("***** Test 1 (Lagrange - Reno)");
   test1(LAGRANGE_RENO);
 
 
 
-  INFO0("***** Test 2 (Max-Min)");
+  XBT_INFO("***** Test 2 (Max-Min)");
   test2(MAXMIN);
-  INFO0("***** Test 2 (Lagrange - Vegas)");
+  XBT_INFO("***** Test 2 (Lagrange - Vegas)");
   test2(LAGRANGE_VEGAS);
-  INFO0("***** Test 2 (Lagrange - Reno)");
+  XBT_INFO("***** Test 2 (Lagrange - Reno)");
   test2(LAGRANGE_RENO);
 
 
-  INFO0("***** Test 3 (Max-Min)");
+  XBT_INFO("***** Test 3 (Max-Min)");
   test3(MAXMIN);
-  INFO0("***** Test 3 (Lagrange - Vegas)");
+  XBT_INFO("***** Test 3 (Lagrange - Vegas)");
   test3(LAGRANGE_VEGAS);
-  INFO0("***** Test 3 (Lagrange - Reno)");
+  XBT_INFO("***** Test 3 (Lagrange - Reno)");
   test3(LAGRANGE_RENO);
 
   return 0;

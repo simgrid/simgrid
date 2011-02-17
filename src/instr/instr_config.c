@@ -39,7 +39,7 @@ int TRACE_start()
     return 0;
   }
 
-  DEBUG0("Tracing starts");
+  XBT_DEBUG("Tracing starts");
 
   /* open the trace file */
   TRACE_paje_start();
@@ -81,7 +81,7 @@ int TRACE_end()
 
   /* activate trace */
   TRACE_desactivate ();
-  DEBUG0("Tracing system is shutdown");
+  XBT_DEBUG("Tracing system is shutdown");
   return 0;
 }
 
@@ -89,13 +89,13 @@ void TRACE_activate (void)
 {
   xbt_assert0 (trace_active==0, "Tracing is already active.");
   trace_active = 1;
-  DEBUG0 ("Tracing is on");
+  XBT_DEBUG ("Tracing is on");
 }
 
 void TRACE_desactivate (void)
 {
   trace_active = 0;
-  DEBUG0 ("Tracing is off");
+  XBT_DEBUG ("Tracing is off");
 }
 
 int TRACE_is_active (void)
@@ -436,7 +436,7 @@ void TRACE_generate_triva_cat_conf (void)
 
     //check if we do have categories declared
     if (xbt_dict_length(created_categories) == 0){
-      INFO0("No categories declared, ignoring generation of triva graph configuration");
+      XBT_INFO("No categories declared, ignoring generation of triva graph configuration");
       return;
     }
 

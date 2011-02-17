@@ -42,18 +42,18 @@ static void env_hosttohost_bw(int argc, char *argv[])
     xbt_host_t host = xbt_new(s_xbt_host_t, 1);
     host->name = strdup(argv[i]);
     host->port = atoi(argv[i + 1]);
-    INFO2("New sensor: %s:%d", host->name, host->port);
+    XBT_INFO("New sensor: %s:%d", host->name, host->port);
     xbt_dynar_push(hosts, &host);
   }
   nb_hosts = xbt_dynar_length(hosts);
 
-  INFO0(">>> start Test1: ENV end to end mesurements");
+  XBT_INFO(">>> start Test1: ENV end to end mesurements");
 
   xbt_dynar_foreach(hosts, i, h1) {
     peer = gras_socket_client(h1->name, h1->port);
     amok_bw_test(peer, buf_size, exp_size, msg_size, min_duration, &sec,
                  &bw);
-    INFO6
+    XBT_INFO
         ("Bandwidth between me and %s:%d (%d bytes in msgs of %d bytes) took %f sec, achieving %.3f kb/s",
          h1->name, h1->port, exp_size, msg_size, sec,
          ((double) bw) / 1024.0);
@@ -89,18 +89,18 @@ static void env_Pairwisehost_bw(int argc, char *argv[])
   /* wait to ensure that all server sockets are there before starting the experiment */
   gras_os_sleep(0.5);
 
-  INFO1(">>>>>< le maestro est: %s ", argv[0]);
+  XBT_INFO(">>>>>< le maestro est: %s ", argv[0]);
   /* Get the sensor location from argc/argv */
   for (i = 1; i < argc - 1; i += 2) {
     xbt_host_t host = xbt_new(s_xbt_host_t, 1);
     host->name = strdup(argv[i]);
     host->port = atoi(argv[i + 1]);
-    INFO2("New sensor: %s:%d", host->name, host->port);
+    XBT_INFO("New sensor: %s:%d", host->name, host->port);
     xbt_dynar_push(hosts, &host);
   }
   nb_hosts = xbt_dynar_length(hosts);
 
-  INFO0(">>> start Test2: ENV pairwise host bandwidth mesurements");
+  XBT_INFO(">>> start Test2: ENV pairwise host bandwidth mesurements");
   xbt_dynar_foreach(hosts, i, h1) {
 
     TRY {
@@ -119,7 +119,7 @@ static void env_Pairwisehost_bw(int argc, char *argv[])
       peer = gras_socket_client(h2->name, h2->port);
       amok_bw_test(peer, buf_size, exp_size, msg_size, min_duration, &sec,
                    &bw);
-      INFO6
+      XBT_INFO
           ("Bandwidth between me and %s // measurement between me and %s (%d bytes in msgs of %d bytes) took %f sec, achieving %.3f kb/s",
            h2->name, h1->name, exp_size, msg_size, sec,
            ((double) bw) / 1024.0);

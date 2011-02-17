@@ -205,7 +205,7 @@ smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
   TRACE_smx_host_execute(action);
 #endif
 
-  DEBUG1("Create execute action %p", action);
+  XBT_DEBUG("Create execute action %p", action);
 
   return action;
 }
@@ -243,14 +243,14 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
 
     surf_workstation_model->action_data_set(action->execution.surf_exec, action);
   }
-  DEBUG1("Create parallel execute action %p", action);
+  XBT_DEBUG("Create parallel execute action %p", action);
 
   return action;
 }
 
 void SIMIX_host_execution_destroy(smx_action_t action)
 {
-  DEBUG1("Destroy action %p", action);
+  XBT_DEBUG("Destroy action %p", action);
 
   xbt_free(action->name);
 
@@ -267,7 +267,7 @@ void SIMIX_host_execution_destroy(smx_action_t action)
 
 void SIMIX_host_execution_cancel(smx_action_t action)
 {
-  DEBUG1("Cancel action %p", action);
+  XBT_DEBUG("Cancel action %p", action);
 
   if (action->execution.surf_exec)
     surf_workstation_model->action_cancel(action->execution.surf_exec);
@@ -298,7 +298,7 @@ void SIMIX_pre_host_execution_wait(smx_req_t req)
 {
   smx_action_t action = req->host_execution_wait.execution;
 
-  DEBUG2("Wait for execution of action %p, state %d", action, action->state);
+  XBT_DEBUG("Wait for execution of action %p, state %d", action, action->state);
 
   /* Associate this request to the action */
   xbt_fifo_push(action->request_list, req);
@@ -339,12 +339,12 @@ void SIMIX_execution_finish(smx_action_t action)
 
       case SIMIX_DONE:
         /* do nothing, action done*/
-	DEBUG0("SIMIX_execution_finished: execution successful");
+	XBT_DEBUG("SIMIX_execution_finished: execution successful");
         break;
 
       case SIMIX_FAILED:
         TRY {
-	  DEBUG1("SIMIX_execution_finished: host '%s' failed", req->issuer->smx_host->name);
+	  XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", req->issuer->smx_host->name);
           THROW0(host_error, 0, "Host failed");
         }
 	CATCH(req->issuer->running_ctx->exception) {
@@ -354,7 +354,7 @@ void SIMIX_execution_finish(smx_action_t action)
 
       case SIMIX_CANCELED:
         TRY {
-	  DEBUG0("SIMIX_execution_finished: execution canceled");
+	  XBT_DEBUG("SIMIX_execution_finished: execution canceled");
           THROW0(cancel_error, 0, "Canceled");
         }
 	CATCH(req->issuer->running_ctx->exception) {

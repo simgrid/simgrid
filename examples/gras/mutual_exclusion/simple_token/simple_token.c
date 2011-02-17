@@ -57,9 +57,9 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload)
     supersteps = 1;
   }
   if (globals->create && (!(globals->remaining_loop % supersteps))) {
-    INFO1("Begin a new loop. Still to do: %d", globals->remaining_loop);
+    XBT_INFO("Begin a new loop. Still to do: %d", globals->remaining_loop);
   } else if (!(globals->remaining_loop % supersteps)) {
-    VERB3("Got token(%d) from %s remaining_loop=%d",
+    XBT_VERB("Got token(%d) from %s remaining_loop=%d",
           msg, gras_socket_peer_name(expeditor), globals->remaining_loop);
   }
 
@@ -67,7 +67,7 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload)
   if (globals->remaining_loop > 0) {
     msg += 1;
 
-    DEBUG3("Send token(%d) to %s:%d", msg,
+    XBT_DEBUG("Send token(%d) to %s:%d", msg,
            gras_socket_peer_name(globals->tosuccessor),
            gras_socket_peer_port(globals->tosuccessor));
 
@@ -94,8 +94,8 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload)
   /* 8. Repport the hop number to the user at the end */
   if (globals->remaining_loop == -1 && globals->create) {
     double elapsed = gras_os_time() - globals->start_time;
-    INFO1("Shut down the token-ring. There was %d hops.", msg);
-    VERB1("Elapsed time: %g", elapsed);
+    XBT_INFO("Shut down the token-ring. There was %d hops.", msg);
+    XBT_VERB("Elapsed time: %g", elapsed);
   }
 
   /* 9. Tell GRAS that we consummed this message */
@@ -134,7 +134,7 @@ int node(int argc, char *argv[])
   globals->tosuccessor = NULL;
 
   if (!gras_os_getpid() % 100 || gras_if_RL())
-    INFO3("Launch node listening on %d (successor on %s:%d)",
+    XBT_INFO("Launch node listening on %d (successor on %s:%d)",
           myport, host, peerport);
 
   /* 4. Register the known messages.  */
@@ -145,7 +145,7 @@ int node(int argc, char *argv[])
   gras_os_sleep(1.0);           /* Make sure all server sockets are created */
 
   /* 6. Create socket to the successor on the ring */
-  DEBUG2("Connect to my successor on %s:%d", host, peerport);
+  XBT_DEBUG("Connect to my successor on %s:%d", host, peerport);
 
   globals->tosuccessor = gras_socket_client(host, peerport);
 
@@ -165,7 +165,7 @@ int node(int argc, char *argv[])
 
     globals->remaining_loop = NBLOOPS - 1;
 
-    INFO3("Create the token (with value %d) and send it to %s:%d",
+    XBT_INFO("Create the token (with value %d) and send it to %s:%d",
           token, host, peerport);
 
     TRY {
@@ -179,7 +179,7 @@ int node(int argc, char *argv[])
   while (globals->remaining_loop > (globals->create ? -1 : 0)) {
     gras_msg_handle(-1);
 
-    DEBUG1("looping (remaining_loop=%d)", globals->remaining_loop);
+    XBT_DEBUG("looping (remaining_loop=%d)", globals->remaining_loop);
   }
 
   gras_os_sleep(1.0);           /* FIXME: if the sender quited, receive fail */

@@ -22,7 +22,7 @@ int node(int argc, char** argv)
     for(j=0; j < WORK; j++);
 
     MSG_task_execute(task);
-    INFO0("Task successfully executed");
+    XBT_INFO("Task successfully executed");
     MSG_task_destroy(task);
   }
 
@@ -46,7 +46,7 @@ MSG_error_t test_all(const char *platform_file,
   }
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }                               /* end_of_test_all */
 

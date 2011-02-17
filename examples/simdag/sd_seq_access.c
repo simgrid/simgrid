@@ -33,8 +33,8 @@ int main(int argc, char **argv)
   /*  xbt_log_control_set("sd.thres=debug"); */
 
   if (argc < 2) {
-    INFO1("Usage: %s platform_file", argv[0]);
-    INFO1("example: %s sd_platform.xml", argv[0]);
+    XBT_INFO("Usage: %s platform_file", argv[0]);
+    XBT_INFO("example: %s sd_platform.xml", argv[0]);
     exit(1);
   }
 
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
   for (i = 0; i < 2; i++) {
     SD_workstation_set_access_mode(workstations[i],
                                    SD_WORKSTATION_SEQUENTIAL_ACCESS);
-    INFO2("Access mode of %s is %s",
+    XBT_INFO("Access mode of %s is %s",
           SD_workstation_get_name(workstations[i]),
           (SD_workstation_get_access_mode(workstations[i]) ==
            SD_WORKSTATION_SEQUENTIAL_ACCESS) ? "sequential" : "shared");
@@ -92,40 +92,40 @@ int main(int argc, char **argv)
       if (task)
         kind = SD_task_get_kind(task);
       else {
-        INFO1("There is no task running on %s",
+        XBT_INFO("There is no task running on %s",
               SD_workstation_get_name(workstations[i]));
         continue;
       }
 
       switch (kind) {
       case SD_TASK_COMP_SEQ:
-        INFO2("%s is currently running on %s (SD_TASK_COMP_SEQ)",
+        XBT_INFO("%s is currently running on %s (SD_TASK_COMP_SEQ)",
               SD_task_get_name(task),
               SD_workstation_get_name(workstations[i]));
         break;
       case SD_TASK_COMM_E2E:
-        INFO2("%s is currently running on %s (SD_TASK_COMM_E2E)",
+        XBT_INFO("%s is currently running on %s (SD_TASK_COMM_E2E)",
               SD_task_get_name(task),
               SD_workstation_get_name(workstations[i]));
         break;
       case SD_TASK_NOT_TYPED:
-        INFO1("Task running on %s has no type",
+        XBT_INFO("Task running on %s has no type",
               SD_workstation_get_name(workstations[i]));
         break;
       default:
-        ERROR0("Shouldn't be here");
+        XBT_ERROR("Shouldn't be here");
       }
     }
     xbt_dynar_free_container(&changed_tasks);
   }
 
-  DEBUG0("Destroying tasks...");
+  XBT_DEBUG("Destroying tasks...");
 
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);
   SD_task_destroy(taskC);
 
-  DEBUG0("Tasks destroyed. Exiting SimDag...");
+  XBT_DEBUG("Tasks destroyed. Exiting SimDag...");
 
   SD_exit();
   return 0;

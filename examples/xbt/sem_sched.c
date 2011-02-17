@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   xbt_init(&argc, argv);
 
   if (argc != 2) {
-    INFO1("Usage: %s job count", argv[0]);
+    XBT_INFO("Usage: %s job count", argv[0]);
     exit(EXIT_FAILURE);
   }
 
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
   sched = sched_new(size);
 
   if (!sched) {
-    INFO1("sched_new() failed : errno %d", errno);
+    XBT_INFO("sched_new() failed : errno %d", errno);
     exit(EXIT_FAILURE);
   }
 
@@ -126,28 +126,28 @@ int main(int argc, char *argv[])
   /* initialize the scheduler */
   if (sched_init(sched) < 0) {
     sched_free(&sched);
-    INFO1("sched_init() failed : errno %d\n", errno);
+    XBT_INFO("sched_init() failed : errno %d\n", errno);
     exit(EXIT_FAILURE);
   }
 
   /* schedule the jobs */
   if (sched_schedule(sched) < 0) {
     sched_free(&sched);
-    INFO1("sched_init() failed : errno %d", errno);
+    XBT_INFO("sched_init() failed : errno %d", errno);
     exit(EXIT_FAILURE);
   }
 
   /* cleanup */
   if (sched_clean(sched) < 0) {
     sched_free(&sched);
-    INFO1("sched_init() failed : errno %d", errno);
+    XBT_INFO("sched_init() failed : errno %d", errno);
     exit(EXIT_FAILURE);
   }
 
   /* destroy the scheduler */
   sched_free(&sched);
 
-  INFO1("sem_sched terminated with exit code %d (success)", EXIT_SUCCESS);
+  XBT_INFO("sem_sched terminated with exit code %d (success)", EXIT_SUCCESS);
 
   return EXIT_SUCCESS;
 
@@ -159,24 +159,24 @@ void *ctx_function(void *param)
   int exit_code = 1;
   ctx_t ctx = (ctx_t) param;
 
-  INFO1("Hello i'm the owner of the context %d, i'm waiting for starting",
+  XBT_INFO("Hello i'm the owner of the context %d, i'm waiting for starting",
         ctx->index);
 
   unschedule(ctx);
 
   if (ctx->failure) {
-    INFO1("0ups the scheduler initialization failed bye {%d}.",
+    XBT_INFO("0ups the scheduler initialization failed bye {%d}.",
           ctx->index);
     xbt_os_thread_exit(&exit_code);
   }
 
-  INFO1("I'm the owner of the context %d : I'm started", ctx->index);
-  INFO0("Wait a minute, I do my job");
+  XBT_INFO("I'm the owner of the context %d : I'm started", ctx->index);
+  XBT_INFO("Wait a minute, I do my job");
 
   /* do its job */
   exit_code = job_execute(ctx->job);
 
-  INFO1("Have finished my job, bye {%d}\n", ctx->index);
+  XBT_INFO("Have finished my job, bye {%d}\n", ctx->index);
 
   xbt_os_sem_release(ctx->end);
 
@@ -348,13 +348,13 @@ int job(int argc, char **argv)
 {
   int i = 0;
 
-  INFO0
+  XBT_INFO
       ("I'm the job : I'm going to print all the args of my commande line");
 
-  INFO1("-- Arguments (%d):", argc);
+  XBT_INFO("-- Arguments (%d):", argc);
 
   for (i = 0; i < argc; i++)
-    INFO2("  ---- [%i] %s", i, argv[i]);
+    XBT_INFO("  ---- [%i] %s", i, argv[i]);
 
   return 0;
 }

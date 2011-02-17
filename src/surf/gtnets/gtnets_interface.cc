@@ -7,8 +7,8 @@
 
 #include "gtnets_simulator.h"
 #include "gtnets_interface.h"
-#ifdef DEBUG0
-	#undef DEBUG0
+#ifdef XBT_DEBUG
+	#undef XBT_DEBUG
 #endif
 #include "xbt/log.h"
 #include "xbt/asserts.h"
@@ -23,11 +23,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets_interface, surf_network_gtne
 
 // initialize the GTNetS interface and environment
 int gtnets_initialize(int wsize){
-  DEBUG0("Using logging.");
+  XBT_DEBUG("Using logging.");
   xbt_assert0(!gtnets_sim, "gtnets already initialized");
 
   if(wsize > 0){
-	INFO1("TCP window maximum size : %d", wsize);
+	XBT_INFO("TCP window maximum size : %d", wsize);
 	gtnets_sim = new GTSim(wsize);
   }else{
 	gtnets_sim = new GTSim(wsize);
@@ -78,9 +78,9 @@ double gtnets_get_time_to_next_flow_completion(){
 	  file.open ("/dev/null");
 	  sbuf = cout.rdbuf();
 	  cout.rdbuf(file.rdbuf());
-	  DEBUG0("Enable GTNetS library quite mode");
+	  XBT_DEBUG("Enable GTNetS library quite mode");
   }else {
-	  DEBUG0("Disable GTNetS library quite mode");
+	  XBT_DEBUG("Disable GTNetS library quite mode");
   }
 
   value = gtnets_sim->get_time_to_next_flow_completion();
@@ -102,9 +102,9 @@ double gtnets_run_until_next_flow_completion(void ***metadata, int *number_of_fl
 	  file.open ("/dev/null");
 	  sbuf = cout.rdbuf();
 	  cout.rdbuf(file.rdbuf());
-	  DEBUG0("Enable GTNetS library quite mode");
+	  XBT_DEBUG("Enable GTNetS library quite mode");
   }else {
-	  DEBUG0("Disable GTNetS library quite mode");
+	  XBT_DEBUG("Disable GTNetS library quite mode");
   }
 
   value = gtnets_sim->run_until_next_flow_completion(metadata, number_of_flows);

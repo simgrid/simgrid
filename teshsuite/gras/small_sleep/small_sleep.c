@@ -20,15 +20,15 @@ int function(int argc, char *argv[])
 {
   gras_init(&argc, argv);
   gras_msg_handleall(100);
-  INFO0("Let's go 1E-5");
+  XBT_INFO("Let's go 1E-5");
   gras_msg_handleall(1E-5);
-  INFO0("Let's go 1E-10");
+  XBT_INFO("Let's go 1E-10");
   gras_msg_handleall(1E-10);
-  INFO0("Let's go 1E-15");
+  XBT_INFO("Let's go 1E-15");
   gras_msg_handleall(1E-15);
-  INFO0("Let's go 1E-20");
+  XBT_INFO("Let's go 1E-20");
   gras_msg_handleall(1E-20);
-  INFO0("done");
+  XBT_INFO("done");
   gras_exit();
   return 0;
 }

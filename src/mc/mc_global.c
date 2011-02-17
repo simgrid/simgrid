@@ -117,7 +117,7 @@ void MC_replay(xbt_fifo_t stack)
   xbt_fifo_item_t item;
   mc_state_t state;
 
-  DEBUG0("**** Begin Replay ****");
+  XBT_DEBUG("**** Begin Replay ****");
 
   /* Restore the initial state */
   MC_restore_snapshot(initial_snapshot);
@@ -141,7 +141,7 @@ void MC_replay(xbt_fifo_t stack)
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
         req_str = MC_request_to_string(req, value);
-        DEBUG2("Replay: %s (%p)", req_str, state);
+        XBT_DEBUG("Replay: %s (%p)", req_str, state);
         xbt_free(req_str);
       }
     }
@@ -153,7 +153,7 @@ void MC_replay(xbt_fifo_t stack)
     mc_stats->visited_states++;
     mc_stats->executed_transitions++;
   }
-  DEBUG0("**** End Replay ****");
+  XBT_DEBUG("**** End Replay ****");
 }
 
 /**
@@ -187,7 +187,7 @@ void MC_show_stack(xbt_fifo_t stack)
     req = MC_state_get_executed_request(state, &value);
     if(req){
       req_str = MC_request_to_string(req, value);
-      INFO1("%s", req_str);
+      XBT_INFO("%s", req_str);
       xbt_free(req_str);
     }
   }
@@ -196,36 +196,36 @@ void MC_show_stack(xbt_fifo_t stack)
 void MC_show_deadlock(smx_req_t req)
 {
   /*char *req_str = NULL;*/
-  INFO0("**************************");
-  INFO0("*** DEAD-LOCK DETECTED ***");
-  INFO0("**************************");
-  INFO0("Locked request:");
+  XBT_INFO("**************************");
+  XBT_INFO("*** DEAD-LOCK DETECTED ***");
+  XBT_INFO("**************************");
+  XBT_INFO("Locked request:");
   /*req_str = MC_request_to_string(req);
-  INFO1("%s", req_str);
+  XBT_INFO("%s", req_str);
   xbt_free(req_str);*/
-  INFO0("Counter-example execution trace:");
+  XBT_INFO("Counter-example execution trace:");
   MC_dump_stack(mc_stack);
 }
 
 void MC_print_statistics(mc_stats_t stats)
 {
-  INFO1("State space size ~= %lu", stats->state_size);
-  INFO1("Expanded states = %lu", stats->expanded_states);
-  INFO1("Visited states = %lu", stats->visited_states);
-  INFO1("Executed transitions = %lu", stats->executed_transitions);
-  INFO1("Expanded / Visited = %lf",
+  XBT_INFO("State space size ~= %lu", stats->state_size);
+  XBT_INFO("Expanded states = %lu", stats->expanded_states);
+  XBT_INFO("Visited states = %lu", stats->visited_states);
+  XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
+  XBT_INFO("Expanded / Visited = %lf",
         (double) stats->visited_states / stats->expanded_states);
-  /*INFO1("Exploration coverage = %lf", 
+  /*XBT_INFO("Exploration coverage = %lf",
      (double)stats->expanded_states / stats->state_size); */
 }
 
 void MC_assert(int prop)
 {
   if (MC_IS_ENABLED && !prop) {
-    INFO0("**************************");
-    INFO0("*** PROPERTY NOT VALID ***");
-    INFO0("**************************");
-    INFO0("Counter-example execution trace:");
+    XBT_INFO("**************************");
+    XBT_INFO("*** PROPERTY NOT VALID ***");
+    XBT_INFO("**************************");
+    XBT_INFO("Counter-example execution trace:");
     MC_dump_stack(mc_stack);
     MC_print_statistics(mc_stats);
     xbt_abort();

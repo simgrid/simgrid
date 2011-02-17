@@ -67,8 +67,8 @@ void test(char *platform)
       surf_model_resource_by_name(surf_workstation_model, "Cpu B");
 
   /* Let's check that those two processors exist */
-  DEBUG2("%s : %p", surf_resource_name(workstationA), workstationA);
-  DEBUG2("%s : %p", surf_resource_name(workstationB), workstationB);
+  XBT_DEBUG("%s : %p", surf_resource_name(workstationA), workstationA);
+  XBT_DEBUG("%s : %p", surf_resource_name(workstationB), workstationB);
 
   /* Let's do something on it */
   actionA =
@@ -93,26 +93,26 @@ void test(char *platform)
     running = 0;
 
     now = surf_get_clock();
-    DEBUG1("Next Event : %g", now);
+    XBT_DEBUG("Next Event : %g", now);
 
     xbt_dynar_foreach(model_list, iter, model) {
-      DEBUG1("\t %s actions", model->name);
+      XBT_DEBUG("\t %s actions", model->name);
       while ((action = xbt_swag_extract(model->states.failed_action_set))) {
-        DEBUG1("\t * Failed : %p", action);
+        XBT_DEBUG("\t * Failed : %p", action);
         model->action_unref(action);
       }
       while ((action = xbt_swag_extract(model->states.done_action_set))) {
-        DEBUG1("\t * Done : %p", action);
+        XBT_DEBUG("\t * Done : %p", action);
         model->action_unref(action);
       }
       if (xbt_swag_size(model->states.running_action_set)) {
-        DEBUG1("running %s", model->name);
+        XBT_DEBUG("running %s", model->name);
         running = 1;
       }
     }
   } while (running && surf_solve(-1.0) >= 0.0);
 
-  DEBUG0("Simulation Terminated");
+  XBT_DEBUG("Simulation Terminated");
 
 }
 

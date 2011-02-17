@@ -40,7 +40,7 @@ static void rb_process_create_with_args(VALUE fct_name, VALUE arguments,
     rb_raise(rb_eRuntimeError,
              "Internal error: Process name cannot be NULL");
   name = RSTRING_PTR(fct_name);
-  DEBUG1("Create native process %s", name);
+  XBT_DEBUG("Create native process %s", name);
 
   char **argv = xbt_new(char *, 2);
   argv[0] = bprintf("%s@%s", name, RSTRING_PTR(ht_name));

@@ -80,7 +80,7 @@ void xbt_queue_push(xbt_queue_t queue, const void *src)
   xbt_mutex_acquire(queue->mutex);
   while (queue->capacity != 0
          && queue->capacity == xbt_dynar_length(queue->data)) {
-    DEBUG2("Capacity of %p exceded (=%d). Waiting", queue,
+    XBT_DEBUG("Capacity of %p exceded (=%d). Waiting", queue,
            queue->capacity);
     xbt_cond_wait(queue->not_full, queue->mutex);
   }
@@ -101,7 +101,7 @@ void xbt_queue_pop(xbt_queue_t queue, void *const dst)
 {
   xbt_mutex_acquire(queue->mutex);
   while (xbt_dynar_length(queue->data) == 0) {
-    DEBUG1("Queue %p empty. Waiting", queue);
+    XBT_DEBUG("Queue %p empty. Waiting", queue);
     xbt_cond_wait(queue->not_empty, queue->mutex);
   }
   xbt_dynar_pop(queue->data, dst);
@@ -120,7 +120,7 @@ void xbt_queue_unshift(xbt_queue_t queue, const void *src)
   xbt_mutex_acquire(queue->mutex);
   while (queue->capacity != 0
          && queue->capacity == xbt_dynar_length(queue->data)) {
-    DEBUG2("Capacity of %p exceded (=%d). Waiting", queue,
+    XBT_DEBUG("Capacity of %p exceded (=%d). Waiting", queue,
            queue->capacity);
     xbt_cond_wait(queue->not_full, queue->mutex);
   }
@@ -141,7 +141,7 @@ void xbt_queue_shift(xbt_queue_t queue, void *const dst)
 {
   xbt_mutex_acquire(queue->mutex);
   while (xbt_dynar_length(queue->data) == 0) {
-    DEBUG1("Queue %p empty. Waiting", queue);
+    XBT_DEBUG("Queue %p empty. Waiting", queue);
     xbt_cond_wait(queue->not_empty, queue->mutex);
   }
   xbt_dynar_shift(queue->data, dst);
@@ -177,7 +177,7 @@ void xbt_queue_push_timed(xbt_queue_t queue, const void *src, double delay)
            queue->capacity == xbt_dynar_length(queue->data) &&
            (delay < 0 || (xbt_time() - begin) <= delay)) {
 
-      DEBUG2("Capacity of %p exceded (=%d). Waiting", queue,
+      XBT_DEBUG("Capacity of %p exceded (=%d). Waiting", queue,
              queue->capacity);
       TRY {
         xbt_cond_timedwait(queue->not_full, queue->mutex,
@@ -216,7 +216,7 @@ void xbt_queue_pop_timed(xbt_queue_t queue, void *const dst, double delay)
   } else {
     while ((xbt_dynar_length(queue->data) == 0) &&
            (delay < 0 || (xbt_time() - begin) <= delay)) {
-      DEBUG1("Queue %p empty. Waiting", queue);
+      XBT_DEBUG("Queue %p empty. Waiting", queue);
       TRY {
         xbt_cond_timedwait(queue->not_empty, queue->mutex,
                            delay < 0 ? -1 : delay - (xbt_time() - begin));
@@ -259,7 +259,7 @@ void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src,
            queue->capacity == xbt_dynar_length(queue->data) &&
            (delay < 0 || (xbt_time() - begin) <= delay)) {
 
-      DEBUG2("Capacity of %p exceded (=%d). Waiting", queue,
+      XBT_DEBUG("Capacity of %p exceded (=%d). Waiting", queue,
              queue->capacity);
       TRY {
         xbt_cond_timedwait(queue->not_full, queue->mutex,
@@ -299,7 +299,7 @@ void xbt_queue_shift_timed(xbt_queue_t queue, void *const dst,
   } else {
     while ((xbt_dynar_length(queue->data) == 0) &&
            (delay < 0 || (xbt_time() - begin) <= delay)) {
-      DEBUG1("Queue %p empty. Waiting", queue);
+      XBT_DEBUG("Queue %p empty. Waiting", queue);
       TRY {
         xbt_cond_timedwait(queue->not_empty, queue->mutex,
                            delay < 0 ? -1 : delay - (xbt_time() - begin));

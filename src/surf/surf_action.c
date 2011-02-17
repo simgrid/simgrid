@@ -129,7 +129,7 @@ void surf_action_state_set(surf_action_t action,
                            e_surf_action_state_t state)
 {
   surf_action_state_t action_state = &(action->model_type->states);
-  XBT_IN2("(%p,%s)", action, surf_action_state_names[state]);
+  XBT_IN_F("(%p,%s)", action, surf_action_state_names[state]);
   xbt_swag_remove(action, action->state_set);
 
   if (state == SURF_ACTION_READY)

@@ -98,7 +98,7 @@ static XBT_INLINE
     const unsigned long new_length = new_size * elmsize;
     char *const new_data = (char *) xbt_malloc0(elmsize * new_size);
 
-    DEBUG3("expand %p from %lu to %lu elements", (void *) dynar,
+    XBT_DEBUG("expand %p from %lu to %lu elements", (void *) dynar,
            (unsigned long) old_size, nb);
 
     if (old_data) {
@@ -183,7 +183,7 @@ _xbt_dynar_remove_at(xbt_dynar_t const dynar,
 
 void xbt_dynar_dump(xbt_dynar_t dynar)
 {
-  INFO5("Dynar dump: size=%lu; used=%lu; elmsize=%lu; data=%p; free_f=%p",
+  XBT_INFO("Dynar dump: size=%lu; used=%lu; elmsize=%lu; data=%p; free_f=%p",
         dynar->size, dynar->used, dynar->elmsize, dynar->data,
         dynar->free_f);
 }
@@ -263,7 +263,7 @@ XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
 
   _sanity_check_dynar(dynar);
 
-  DEBUG1("Reset the dynar %p", (void *) dynar);
+  XBT_DEBUG("Reset the dynar %p", (void *) dynar);
   if (dynar->free_f) {
     _dynar_map(dynar, dynar->free_f);
   }
@@ -632,7 +632,7 @@ XBT_INLINE void *xbt_dynar_pop_ptr(xbt_dynar_t const dynar)
 
   _dynar_lock(dynar);
   _check_populated_dynar(dynar);
-  DEBUG1("Pop %p", (void *) dynar);
+  XBT_DEBUG("Pop %p", (void *) dynar);
   dynar->used--;
   res = _xbt_dynar_elm(dynar, dynar->used);
   _dynar_unlock(dynar);
@@ -644,7 +644,7 @@ XBT_INLINE void xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst)
 {
 
   /* sanity checks done by remove_at */
-  DEBUG1("Pop %p", (void *) dynar);
+  XBT_DEBUG("Pop %p", (void *) dynar);
   _dynar_lock(dynar);
   _xbt_dynar_remove_at(dynar, dynar->used - 1, dst);
   _dynar_unlock(dynar);
@@ -774,17 +774,17 @@ XBT_INLINE int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
 	if((!d1) && (!d2)) return 0;
 	if((!d1) || (!d2))
 	{
-		DEBUG2("NULL dynar d1=%p d2=%p",d1,d2);
+		XBT_DEBUG("NULL dynar d1=%p d2=%p",d1,d2);
 		return 1;
 	}
 	if((d1->elmsize)!=(d2->elmsize))
 	{
-		DEBUG2("Size of elmsize d1=%ld d2=%ld",d1->elmsize,d2->elmsize);
+		XBT_DEBUG("Size of elmsize d1=%ld d2=%ld",d1->elmsize,d2->elmsize);
 		return 1; // xbt_die
 	}
 	if(xbt_dynar_length(d1) != xbt_dynar_length(d2))
 	{
-		DEBUG2("Size of dynar d1=%ld d2=%ld",xbt_dynar_length(d1),xbt_dynar_length(d2));
+		XBT_DEBUG("Size of dynar d1=%ld d2=%ld",xbt_dynar_length(d1),xbt_dynar_length(d2));
 		return 1;
 	}
 
@@ -793,7 +793,7 @@ XBT_INLINE int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
 	{
 		void *data1 = xbt_dynar_get_as(d1, i, void *);
 		void *data2 = xbt_dynar_get_as(d2, i, void *);
-		DEBUG3("link[%d] d1=%p d2=%p",i,data1,data2);
+		XBT_DEBUG("link[%d] d1=%p d2=%p",i,data1,data2);
 		if(compar(data1,data2)) return 1;
 	}
 	return 0;
@@ -892,7 +892,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   d = xbt_dynar_new(sizeof(int), NULL);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     xbt_dynar_unshift(d, &cpt);
-    DEBUG2("Push %d, length=%lu", cpt, xbt_dynar_length(d));
+    XBT_DEBUG("Push %d, length=%lu", cpt, xbt_dynar_length(d));
   }
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     i = xbt_dynar_pop_as(d, int);
@@ -912,11 +912,11 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   d = xbt_dynar_new(sizeof(int), NULL);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     xbt_dynar_push_as(d, int, cpt);
-    DEBUG2("Push %d, length=%lu", cpt, xbt_dynar_length(d));
+    XBT_DEBUG("Push %d, length=%lu", cpt, xbt_dynar_length(d));
   }
   for (cpt = 0; cpt < NB_ELEM/5; cpt++) {
     xbt_dynar_insert_at_as(d, NB_ELEM/2, int, cpt);
-    DEBUG2("Push %d, length=%lu", cpt, xbt_dynar_length(d));
+    XBT_DEBUG("Push %d, length=%lu", cpt, xbt_dynar_length(d));
   }
 
   for (cpt = 0; cpt < NB_ELEM/2; cpt++) {
@@ -924,7 +924,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
     xbt_test_assert2(i == cpt,
                      "The retrieved value is not the same than the injected one at the begining (%d!=%d)",
                      i, cpt);
-    DEBUG2("Pop %d, length=%lu", cpt, xbt_dynar_length(d));
+    XBT_DEBUG("Pop %d, length=%lu", cpt, xbt_dynar_length(d));
   }
   for (cpt = 999; cpt >= 0; cpt--) {
     xbt_dynar_shift(d, &i);
@@ -952,7 +952,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
     xbt_dynar_remove_at(d, 2000, &i);
     xbt_test_assert2(i == cpt,
                      "Remove a bad value. Got %d, expected %d", i, cpt);
-    DEBUG2("remove %d, length=%lu", cpt, xbt_dynar_length(d));
+    XBT_DEBUG("remove %d, length=%lu", cpt, xbt_dynar_length(d));
   }
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
   xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
@@ -1113,7 +1113,7 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
     xbt_test_assert2(d1 == d2,
                      "The retrieved value is not the same than the injected one at the begining (%f!=%f)",
                      d1, d2);
-    DEBUG2("Pop %d, length=%lu", cpt, xbt_dynar_length(d));
+    XBT_DEBUG("Pop %d, length=%lu", cpt, xbt_dynar_length(d));
   }
   for (cpt = 999; cpt >= 0; cpt--) {
     d1 = (double) cpt;

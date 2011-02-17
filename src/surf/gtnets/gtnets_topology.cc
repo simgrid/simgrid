@@ -9,8 +9,8 @@
 //Temporary classes for generating GTNetS topology
 
 #include "gtnets_topology.h"
-#ifdef DEBUG0
-	#undef DEBUG0
+#ifdef XBT_DEBUG
+	#undef XBT_DEBUG
 #endif
 #include "xbt/log.h"
 #include "xbt/asserts.h"
@@ -68,7 +68,7 @@ bool GTNETS_Node::include(int hostid){
 void GTNETS_Node::print_hosts(){
   set<int>::iterator it;
   for (it = hosts_.begin(); it != hosts_.end(); it++){
-    DEBUG1("host id %d", *it);
+    XBT_DEBUG("host id %d", *it);
   }
 }
 
@@ -96,13 +96,13 @@ GTNETS_Link::~GTNETS_Link(){
 }
 
 void GTNETS_Link::print_link_status(){
-  DEBUG1("****** link id: %d", ID_);
+  XBT_DEBUG("****** link id: %d", ID_);
   if (src_node_){
-    DEBUG2("[src] id: %d, is it router?: %d",src_node_->id(), src_node_->is_router());
+    XBT_DEBUG("[src] id: %d, is it router?: %d",src_node_->id(), src_node_->is_router());
   }
 
   if (dst_node_){
-    DEBUG2("[dst] id: %d, is it router?: %d",dst_node_->id(), dst_node_->is_router());
+    XBT_DEBUG("[dst] id: %d, is it router?: %d",dst_node_->id(), dst_node_->is_router());
   }
 }
 
@@ -182,7 +182,7 @@ int GTNETS_Topology::add_router(int id){
   if(iter == routers_.end()){
 	  routers_.insert(id);
   }else{
-	  DEBUG1("Router (#%d) already exists", id);
+	  XBT_DEBUG("Router (#%d) already exists", id);
   }
   return 0;
 }
@@ -213,7 +213,7 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
   xbt_assert1(!(iter == links_.end()), "Link %d not found", linkid);
   link = iter->second;
 
-  DEBUG4("Add onehop route, src (#%d), dst (#%d), linkid %d:(#%d)",src, dst, linkid, link->id());
+  XBT_DEBUG("Add onehop route, src (#%d), dst (#%d), linkid %d:(#%d)",src, dst, linkid, link->id());
 
   GTNETS_Node *src_node, *dst_node;
   src_node = link->src_node();
@@ -372,13 +372,13 @@ int GTNETS_Topology::nodeid_from_hostid(int hostid){
 }
 
 void GTNETS_Topology::print_topology(){
-  DEBUG0("<<<<<================================>>>>>");
-  DEBUG0("Dumping GTNETS topollogy information");
+  XBT_DEBUG("<<<<<================================>>>>>");
+  XBT_DEBUG("Dumping GTNETS topollogy information");
   map<int, GTNETS_Link*>::iterator it;
   for (it = links_.begin(); it != links_.end(); it++){
     it->second->print_link_status();
   }
-  DEBUG0(">>>>>================================<<<<<");
+  XBT_DEBUG(">>>>>================================<<<<<");
   fflush(NULL);
 }
 

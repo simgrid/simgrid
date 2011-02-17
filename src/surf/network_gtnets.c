@@ -27,7 +27,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
     return;
   }
 
-  DEBUG1("Scanning link name %s", name);
+  XBT_DEBUG("Scanning link name %s", name);
 
 
   gtnets_link = xbt_new0(s_network_link_GTNETS_t, 1);
@@ -38,7 +38,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
 
   link_count++;
 
-  DEBUG4("Adding new link, linkid %d, name %s, latency %g, bandwidth %g",
+  XBT_DEBUG("Adding new link, linkid %d, name %s, latency %g, bandwidth %g",
            link_count, name, lat, bw);
 
   if (gtnets_add_link(link_count, bw, lat)) {
@@ -58,7 +58,7 @@ static void route_new(int src_id, int dst_id, xbt_dynar_t links,
   int i = 0;
   int *gtnets_links;
 
-  XBT_IN4("(src_id=%d, dst_id=%d, links=%p, nb_link=%d)",
+  XBT_IN_F("(src_id=%d, dst_id=%d, links=%p, nb_link=%d)",
           src_id, dst_id, links, nb_link);
 
   /* Build the list of gtnets link IDs */
@@ -93,7 +93,7 @@ static void parse_link_init(void)
   surf_parse_get_double(&bw, A_surfxml_link_bandwidth);
   surf_parse_get_double(&lat, A_surfxml_link_latency);
   state = SURF_RESOURCE_ON;
-  DEBUG0("link_gtnets");
+  XBT_DEBUG("link_gtnets");
   tmgr_trace_t bw_trace;
   tmgr_trace_t state_trace;
   tmgr_trace_t lat_trace;
@@ -103,12 +103,12 @@ static void parse_link_init(void)
   state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
   if (bw_trace)
-    INFO0
+    XBT_INFO
         ("The GTNetS network model doesn't support bandwidth state traces");
   if (lat_trace)
-    INFO0("The GTNetS network model doesn't support latency state traces");
+    XBT_INFO("The GTNetS network model doesn't support latency state traces");
   if (state_trace)
-    INFO0("The GTNetS network model doesn't support link state traces");
+    XBT_INFO("The GTNetS network model doesn't support link state traces");
 
   current_property_set = xbt_dict_new();
   if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
@@ -125,7 +125,7 @@ static void create_gtnets_topology()
 {
   int src_id,dst_id;
 
-   DEBUG0("Starting topology generation");
+   XBT_DEBUG("Starting topology generation");
 // À refaire plus tard. Il faut prendre la liste des hôtes/routeurs (dans routing)
 // À partir de cette liste, on les numérote.
 // Ensuite, on peut utiliser les id pour refaire les appels GTNets qui suivent.
@@ -146,8 +146,8 @@ static void create_gtnets_topology()
      dst_id = *((int *) xbt_dict_get_or_null(global_routing->root->to_index,dst));
 
      if(src_id != dst_id){
-     DEBUG5("Link (#%p), src (#%s), dst (#%s), src_id = %d, dst_id = %d", link,src,dst, src_id, dst_id);
-     DEBUG0("Calling one link route");
+     XBT_DEBUG("Link (#%p), src (#%s), dst (#%s), src_id = %d, dst_id = %d", link,src,dst, src_id, dst_id);
+     XBT_DEBUG("Calling one link route");
         if(global_routing->get_network_element_type(src) == SURF_NETWORK_ELEMENT_ROUTER){
         	gtnets_add_router(src_id);
         }
@@ -228,9 +228,9 @@ static double share_resources(double now)
   xbt_assert0(time_to_next_flow_completion,
               "Time to next flow completion not initialized!\n");
 
-  DEBUG0("Calling gtnets_get_time_to_next_flow_completion");
+  XBT_DEBUG("Calling gtnets_get_time_to_next_flow_completion");
   time_to_next_flow_completion = gtnets_get_time_to_next_flow_completion();
-  DEBUG1("gtnets_get_time_to_next_flow_completion received %lg",
+  XBT_DEBUG("gtnets_get_time_to_next_flow_completion received %lg",
          time_to_next_flow_completion);
 
   return time_to_next_flow_completion;
@@ -264,7 +264,7 @@ static void update_actions_state(double now, double delta)
     }
 
     xbt_swag_foreach(action, running_actions) {
-      DEBUG2("Action (%p) remains old value: %f", action,
+      XBT_DEBUG("Action (%p) remains old value: %f", action,
              action->generic_action.remains);
       double sent = gtnets_get_flow_rx(action);
 
@@ -289,7 +289,7 @@ static void update_actions_state(double now, double delta)
 //       }
 #endif
 
-      DEBUG1("Sent value returned by GTNetS : %f", sent);
+      XBT_DEBUG("Sent value returned by GTNetS : %f", sent);
       //need to trust this remain value
       if (sent == 0) {
         action->generic_action.remains = 0;
@@ -297,7 +297,7 @@ static void update_actions_state(double now, double delta)
         action->generic_action.remains =
             action->generic_action.cost - sent;
       }
-      DEBUG2("Action (%p) remains new value: %f", action,
+      XBT_DEBUG("Action (%p) remains new value: %f", action,
              action->generic_action.remains);
     }
 
@@ -309,7 +309,7 @@ static void update_actions_state(double now, double delta)
       TRACE_surf_gtnets_destroy(action);
 #endif
       action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-      DEBUG1("----> Action (%p) just terminated", action);
+      XBT_DEBUG("----> Action (%p) just terminated", action);
     }
 
 
@@ -345,7 +345,7 @@ static surf_action_t communicate(const char *src_name,
   xbt_assert0((src >= 0
                && dst >= 0), "Either src or dst have invalid id (id<0)");
 
-  DEBUG4("Setting flow src %d \"%s\", dst %d \"%s\"", src, src_name, dst,
+  XBT_DEBUG("Setting flow src %d \"%s\", dst %d \"%s\"", src, src_name, dst,
          dst_name);
 
   xbt_dynar_t links = global_routing->get_route(src_name, dst_name);

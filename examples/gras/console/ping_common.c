@@ -14,5 +14,5 @@ void ping_register_messages(void)
 {
   gras_msgtype_declare("ping", gras_datadesc_by_name("int"));
   gras_msgtype_declare("pong", gras_datadesc_by_name("int"));
-  INFO0("Messages registered");
+  XBT_INFO("Messages registered");
 }

@@ -68,7 +68,7 @@ int master(int argc, char *argv[])
   }
 
   /* friends, we're ready. Come and play */
-  INFO1("Wait for peers for a while. I need %d peers",
+  XBT_INFO("Wait for peers for a while. I need %d peers",
         xbt_dict_size(pals_int));
   while (xbt_dynar_length(peers) < xbt_dict_size(pals_int)) {
     TRY {
@@ -81,19 +81,19 @@ int master(int argc, char *argv[])
       char *peer_name;
       void *data;
       xbt_dict_foreach(pals_int, dict_cursor, peer_name, data) {
-        INFO1("Peer %s didn't showed up", peer_name);
+        XBT_INFO("Peer %s didn't showed up", peer_name);
       }
       RETHROW;
     }
   }
-  INFO1("Got my %ld peers", xbt_dynar_length(peers));
+  XBT_INFO("Got my %ld peers", xbt_dynar_length(peers));
   xbt_dict_free(&pals_int);
 
   /* Check who came */
   xbt_dict_t pals = xbt_dict_new();
   gras_socket_t pal;
   xbt_dynar_foreach(peers, cursor, peer) {
-    //INFO1("%s is here",peer->name);
+    //XBT_INFO("%s is here",peer->name);
     gras_socket_t sock = gras_socket_client(peer->name, peer->port);
     xbt_dict_set(pals, peer->name, sock, NULL);
   }
@@ -101,7 +101,7 @@ int master(int argc, char *argv[])
   xbt_dynar_foreach(cmds, cursor, cmd) {
     pal = xbt_dict_get_or_null(pals, cmd->who);
     if (!pal) {
-      CRITICAL1("Process %s didn't came! Abording!", cmd->who);
+      XBT_CRITICAL("Process %s didn't came! Abording!", cmd->who);
       amok_pm_group_shutdown("replay");
       xbt_dynar_free(&cmds);
       gras_exit();
@@ -113,12 +113,12 @@ int master(int argc, char *argv[])
   xbt_dict_foreach(pals, dict_cursor, pal_name, pal) {
     gras_msg_send(pal, "commands", &cmds);
   }
-  INFO0("Sent commands to every processes. Let them start now");
+  XBT_INFO("Sent commands to every processes. Let them start now");
   xbt_dict_cursor_t dict_it;
   xbt_dict_foreach(pals, dict_it, pal_name, pal) {
     gras_msg_send(pal, "go", NULL);
   }
-  INFO0("They should be started by now. Wait for their completion.");
+  XBT_INFO("They should be started by now. Wait for their completion.");
 
   for (cursor = 0; cursor < xbt_dynar_length(peers); cursor++) {
     gras_msg_wait(-1, "go", NULL, NULL);
@@ -143,7 +143,7 @@ static gras_socket_t get_peer_sock(char *peer)
   worker_data_t g = gras_userdata_get();
   gras_socket_t peer_sock = xbt_dict_get_or_null(g->peers, peer);
   if (!peer_sock) {
-    INFO1("Create a socket to %s", peer);
+    XBT_INFO("Create a socket to %s", peer);
     peer_sock = gras_socket_client(peer, 4000);
     xbt_dict_set(g->peers, peer, peer_sock, NULL);      //gras_socket_close_voidp);
   }
@@ -166,13 +166,13 @@ static void do_command(int rank, void *c)
   if (cmd->action == XBT_WORKLOAD_SEND) {
     gras_socket_t sock = get_peer_sock(cmd->str_arg);
     chunk = xbt_workload_data_chunk_new((int) (cmd->d_arg));
-    INFO4("Send %.f bytes to %s %s:%d", cmd->d_arg, cmd->str_arg,
+    XBT_INFO("Send %.f bytes to %s %s:%d", cmd->d_arg, cmd->str_arg,
           gras_socket_peer_name(sock), gras_socket_peer_port(sock));
     gras_msg_send_(sock, gras_msgtype_by_name("chunk"), &chunk);
-    INFO2("Done sending %.f bytes to %s", cmd->d_arg, cmd->str_arg);
+    XBT_INFO("Done sending %.f bytes to %s", cmd->d_arg, cmd->str_arg);
 
   } else if (cmd->action == XBT_WORKLOAD_RECV) {
-    INFO2("Recv %.f bytes from %s", cmd->d_arg, cmd->str_arg);
+    XBT_INFO("Recv %.f bytes from %s", cmd->d_arg, cmd->str_arg);
     TRY {
       gras_msg_wait(1000000, "chunk", NULL, &chunk);
     }
@@ -182,7 +182,7 @@ static void do_command(int rank, void *c)
                cmd->d_arg, cmd->str_arg);
     }
     xbt_workload_data_chunk_free(chunk);
-    INFO2("Done receiving %.f bytes from %s", cmd->d_arg, cmd->str_arg);
+    XBT_INFO("Done receiving %.f bytes from %s", cmd->d_arg, cmd->str_arg);
 
   } else {
     xbt_die(bprintf
@@ -206,7 +206,7 @@ int worker(int argc, char *argv[])
   globals->peers = xbt_dict_new();
 
   if (gras_if_RL())
-    INFO2("Sensor %s starting. Connecting to master on %s",
+    XBT_INFO("Sensor %s starting. Connecting to master on %s",
           gras_os_myname(), argv[1]);
   while (!connected) {
     xbt_ex_t e;
@@ -218,7 +218,7 @@ int worker(int argc, char *argv[])
       if (e.category != system_error)
         RETHROW;
       xbt_ex_free(e);
-      INFO0("Failed to connect. Retry in 0.5 second");
+      XBT_INFO("Failed to connect. Retry in 0.5 second");
       gras_os_sleep(0.5);
     }
   }
@@ -237,7 +237,7 @@ int worker(int argc, char *argv[])
     xbt_dynar_foreach(g->commands, cursor, cmd) {
       if (!strcmp(cmd->who, myname)) {
         char *c = xbt_workload_elm_to_string(cmd);
-        //      INFO1("TODO: %s",c);
+        //      XBT_INFO("TODO: %s",c);
         free(c);
 
         switch (cmd->action) {
@@ -251,12 +251,12 @@ int worker(int argc, char *argv[])
             CATCH(e) {
               SIMIX_display_process_status();
             }
-            INFO0("Communications all done");
+            XBT_INFO("Communications all done");
             xbt_dynar_reset(cmd_to_go);
           }
-          INFO1("Compute %.f flops", cmd->d_arg);
+          XBT_INFO("Compute %.f flops", cmd->d_arg);
           gras_cpu_burn(cmd->d_arg);
-          INFO1("Done computing %.f flops", cmd->d_arg);
+          XBT_INFO("Done computing %.f flops", cmd->d_arg);
           break;
         case XBT_WORKLOAD_SEND:
           /* Create the socket from main thread since it seems to fails when done from dopar thread */
@@ -269,7 +269,7 @@ int worker(int argc, char *argv[])
       }
     }
     /* do in parallel any communication still queued */
-    INFO1("Do %ld pending communications after end of TODO list",
+    XBT_INFO("Do %ld pending communications after end of TODO list",
           xbt_dynar_length(cmd_to_go));
     if (xbt_dynar_length(cmd_to_go)) {
       xbt_dynar_dopar(cmd_to_go, do_command);

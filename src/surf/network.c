@@ -202,7 +202,7 @@ static void net_parse_link_init(void)
   e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
   e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
   tmgr_trace_t state_trace;
-  DEBUG0("link_CM02");
+  XBT_DEBUG("link_CM02");
   name_link = xbt_strdup(A_surfxml_link_id);
   surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
   bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
@@ -407,7 +407,7 @@ static double net_share_resources(double now)
     }
   }
 
-  DEBUG1("Min of share resources %f", min);
+  XBT_DEBUG("Min of share resources %f", min);
 
   return min;
 }
@@ -550,9 +550,9 @@ static void net_update_resource_state(void *id,
                                                       action->lat_current)));
 
         if (action->rate < sg_tcp_gamma / (2.0 * action->lat_current)) {
-          INFO0("Flow is limited BYBANDWIDTH");
+          XBT_INFO("Flow is limited BYBANDWIDTH");
         } else {
-          INFO1("Flow is limited BYLATENCY, latency of flow is %f",
+          XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f",
                 action->lat_current);
         }
       }
@@ -586,7 +586,7 @@ static void net_update_resource_state(void *id,
     if (tmgr_trace_event_free(event_type))
       nw_link->lmm_resource.state_event = NULL;
   } else {
-    CRITICAL0("Unknown event ! \n");
+    XBT_CRITICAL("Unknown event ! \n");
     xbt_abort();
   }
 
@@ -621,7 +621,7 @@ static surf_action_t net_communicate(const char *src_name,
   /* LARGE PLATFORMS HACK:
      total_route_size = route_size + src->link_nb + dst->nb */
 
-  XBT_IN4("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
+  XBT_IN_F("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
   latency = global_routing->get_latency(src_name,dst_name);
@@ -674,7 +674,7 @@ static surf_action_t net_communicate(const char *src_name,
   if(xbt_dynar_length(route) > 0) {
     link = *(link_CM02_t*)xbt_dynar_get_ptr(route, 0);
     gap_append(size, link, action);
-    DEBUG5("Comm %p: %s -> %s gap=%f (lat=%f)",
+    XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)",
            action, src_name, dst_name, action->sender.gap, action->latency);
   } else {
     gap_unknown(action);
@@ -724,7 +724,7 @@ static surf_action_t net_communicate(const char *src_name,
   }
 
   if (sg_network_fullduplex == 1) {
-    DEBUG1("Fullduplex active adding backward flow using 5%c", '%');
+    XBT_DEBUG("Fullduplex active adding backward flow using 5%c", '%');
     xbt_dynar_foreach(back_route, i, link) {
       lmm_expand(network_maxmin_system, link->lmm_resource.constraint,
                  action->variable, .05);

@@ -26,7 +26,7 @@ int server(int argc, char *argv[])
   }
   MC_assert(atoi(MSG_task_get_name(task)) == 3);
 
-  INFO0("OK");
+  XBT_INFO("OK");
   return 0;
 }
 
@@ -39,7 +39,7 @@ int client(int argc, char *argv[])
 
   MSG_task_send(task, "mymailbox");
 
-  INFO0("Sent!");
+  XBT_INFO("Sent!");
   return 0;
 }
 

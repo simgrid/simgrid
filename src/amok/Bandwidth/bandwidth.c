@@ -167,7 +167,7 @@ void amok_bw_test(gras_socket_t peer,
   request->msg_amount = msg_amount;
   request->peer.name = NULL;
   request->peer.port = gras_socket_my_port(measMasterIn);
-  DEBUG6
+  XBT_DEBUG
       ("Handshaking with %s:%d to connect it back on my %d (bufsize=%ld, msg_size=%ld, msg_amount=%ld)",
        gras_socket_peer_name(peer), gras_socket_peer_port(peer),
        request->peer.port, request->buf_size, request->msg_size,
@@ -191,7 +191,7 @@ void amok_bw_test(gras_socket_t peer,
         ("Error encountered while opening the measurement socket to %s:%d for BW test: %s",
          gras_socket_peer_name(peer), request_ack->peer.port);
   }
-  DEBUG2
+  XBT_DEBUG
       ("Got ACK; conduct the experiment (msg_size = %ld, msg_amount=%ld)",
        request->msg_size, request->msg_amount);
 
@@ -227,7 +227,7 @@ void amok_bw_test(gras_socket_t peer,
         request->msg_size = 64 * 1024 * 1024;
       }
 
-      VERB5
+      XBT_VERB
           ("The experiment was too short (%f sec<%f sec). Redo it with msg_size=%lu (nb_messages=%lu) (got %fMb/s)",
            meas_duration, min_duration, request->msg_size,
            request->msg_amount,
@@ -242,7 +242,7 @@ void amok_bw_test(gras_socket_t peer,
     TRY {
       gras_socket_meas_send(measOut, 120, request->msg_size,
                             request->msg_amount);
-      DEBUG0("Data sent. Wait ACK");
+      XBT_DEBUG("Data sent. Wait ACK");
       gras_socket_meas_recv(measIn, 120, 1, 1);
     } CATCH(e) {
       gras_socket_close(measOut);
@@ -256,14 +256,14 @@ void amok_bw_test(gras_socket_t peer,
           ((double) request->msg_size) * ((double) request->msg_amount) /
           (*sec);
     }
-    DEBUG1("Experiment done ; it took %f sec", *sec);
+    XBT_DEBUG("Experiment done ; it took %f sec", *sec);
     if (*sec <= 0) {
-      CRITICAL1("Nonpositive value (%f) found for BW test time.", *sec);
+      XBT_CRITICAL("Nonpositive value (%f) found for BW test time.", *sec);
     }
 
   } while (*sec < min_duration);
 
-  DEBUG2
+  XBT_DEBUG
       ("This measurement was long enough (%f sec; found %f b/s). Stop peer",
        *sec, *bw);
   gras_msg_send(peer, "BW stop", NULL);
@@ -297,7 +297,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
   gras_msg_cb_ctx_t ctx_reask;
   static xbt_dynar_t msgtwaited = NULL;
 
-  DEBUG5
+  XBT_DEBUG
       ("Handshaked to connect to %s:%d (sizes: buf=%lu msg=%lu msg_amount=%lu)",
        gras_socket_peer_name(expeditor), request->peer.port,
        request->buf_size, request->msg_size, request->msg_amount);
@@ -350,7 +350,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
 
   TRY {
     measIn = gras_socket_meas_accept(measMasterIn);
-    DEBUG4
+    XBT_DEBUG
         ("BW handshake answered. buf_size=%lu msg_size=%lu msg_amount=%lu port=%d",
          answer->buf_size, answer->msg_size, answer->msg_amount,
          answer->peer.port);
@@ -392,7 +392,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
       tooshort = 1;
       free(request);
       request = (bw_request_t) payload;
-      VERB0("Return the reasking RPC");
+      XBT_VERB("Return the reasking RPC");
       gras_msg_rpcreturn(60, ctx_reask, NULL);
     }
     gras_msg_cb_ctx_free(ctx_reask);
@@ -404,7 +404,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
   gras_socket_close(measOut);
   free(answer);
   free(request);
-  VERB0("BW experiment done.");
+  XBT_VERB("BW experiment done.");
   return 0;
 }
 
@@ -460,7 +460,7 @@ void amok_bw_request(const char *from_name, unsigned int from_port,
 
 
 
-  DEBUG4("Ask for a BW test between %s:%d and %s:%d", from_name, from_port,
+  XBT_DEBUG("Ask for a BW test between %s:%d and %s:%d", from_name, from_port,
          to_name, to_port);
   gras_msg_rpccall(sock, 20 * 60, "BW request", &request, &result);
 
@@ -469,7 +469,7 @@ void amok_bw_request(const char *from_name, unsigned int from_port,
   if (bw)
     *bw = result->bw;
 
-  VERB6("BW test (%s:%d -> %s:%d) took %f sec (%f kb/s)",
+  XBT_VERB("BW test (%s:%d -> %s:%d) took %f sec (%f kb/s)",
         from_name, from_port, to_name, to_port,
         result->sec, ((double) result->bw) / 1024.0);
 
@@ -487,7 +487,7 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx, void *payload)
   gras_socket_t peer, asker;
 
   asker = gras_msg_cb_ctx_from(ctx);
-  VERB6("Asked by %s:%d to conduct a bw XP with %s:%d (request: %ld %ld)",
+  XBT_VERB("Asked by %s:%d to conduct a bw XP with %s:%d (request: %ld %ld)",
         gras_socket_peer_name(asker), gras_socket_peer_port(asker),
         request->peer.name, request->peer.port,
         request->msg_size, request->msg_amount);

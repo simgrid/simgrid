@@ -37,8 +37,8 @@ int main(int argc, char **argv)
   /*  xbt_log_control_set("sd.thres=debug"); */
 
   if (argc < 2) {
-    INFO1("Usage: %s platform_file", argv[0]);
-    INFO1("example: %s sd_platform.xml", argv[0]);
+    XBT_INFO("Usage: %s platform_file", argv[0]);
+    XBT_INFO("example: %s sd_platform.xml", argv[0]);
     exit(1);
   }
 
@@ -61,11 +61,11 @@ int main(int argc, char **argv)
       w2 = workstations[j];
       name1 = SD_workstation_get_name(w1);
       name2 = SD_workstation_get_name(w2);
-      INFO2("Route between %s and %s:", name1, name2);
+      XBT_INFO("Route between %s and %s:", name1, name2);
       route = SD_route_get_list(w1, w2);
       route_size = SD_route_get_size(w1, w2);
       for (k = 0; k < route_size; k++) {
-        INFO3("\tLink %s: latency = %f, bandwidth = %f",
+        XBT_INFO("\tLink %s: latency = %f, bandwidth = %f",
               SD_link_get_name(route[k]),
               SD_link_get_current_latency(route[k]),
               SD_link_get_current_bandwidth(route[k]));

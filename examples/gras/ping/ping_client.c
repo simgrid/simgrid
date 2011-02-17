@@ -30,7 +30,7 @@ int client(int argc, char *argv[])
     port = atoi(argv[2]);
   }
 
-  INFO2("Launch client (server on %s:%d)", host, port);
+  XBT_INFO("Launch client (server on %s:%d)", host, port);
 
   /* 3. Create a socket to speak to the server */
   while (!connected) {
@@ -47,14 +47,14 @@ int client(int argc, char *argv[])
     }
   }
 
-  INFO2("Connected to %s:%d.", host, port);
+  XBT_INFO("Connected to %s:%d.", host, port);
 
   /* 4. Register the messages.
      See, it doesn't have to be done completely at the beginning, only before use */
   ping_register_messages();
 
   /* 5. Keep the user informed of what's going on */
-  INFO2(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<",
+  XBT_INFO(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<",
         gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
 
   /* 6. Prepare and send the ping message to the server */
@@ -66,7 +66,7 @@ int client(int argc, char *argv[])
     gras_socket_close(toserver);
     RETHROW0("Failed to send PING to server: %s");
   }
-  INFO3(">>>>>>>> Message PING(%d) sent to %s:%d <<<<<<<<",
+  XBT_INFO(">>>>>>>> Message PING(%d) sent to %s:%d <<<<<<<<",
         ping, gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
 
   /* 7. Wait for the answer from the server, and deal with issues */
@@ -79,12 +79,12 @@ int client(int argc, char *argv[])
   }
 
   /* 8. Keep the user informed of what's going on, again */
-  INFO3(">>>>>>>> Got PONG(%d) from %s:%d <<<<<<<<",
+  XBT_INFO(">>>>>>>> Got PONG(%d) from %s:%d <<<<<<<<",
         pong, gras_socket_peer_name(from), gras_socket_peer_port(from));
 
   /* 9. Free the allocated resources, and shut GRAS down */
   gras_socket_close(toserver);
-  INFO0("Done.");
+  XBT_INFO("Done.");
   gras_exit();
   return 0;
 }                               /* end_of_client */

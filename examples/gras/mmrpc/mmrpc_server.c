@@ -53,7 +53,7 @@ int server(int argc, char *argv[])
   }
 
   /* 3. Create my master socket */
-  INFO1("Launch server (port=%d)", port);
+  XBT_INFO("Launch server (port=%d)", port);
   TRY {
     sock = gras_socket_server(port);
   }

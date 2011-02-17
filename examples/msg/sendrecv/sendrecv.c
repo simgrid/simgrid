@@ -40,16 +40,16 @@ int sender(int argc, char *argv[])
   char sprintf_buffer_la[64];
   char sprintf_buffer_bw[64];
 
-  INFO0("sender");
+  XBT_INFO("sender");
 
   /*host = xbt_new0(m_host_t,1); */
 
-  INFO1("host = %s", argv[1]);
+  XBT_INFO("host = %s", argv[1]);
 
   host = MSG_get_host_by_name(argv[1]);
 
   if (host == NULL) {
-    INFO1("Unknown host %s. Stopping Now! ", argv[1]);
+    XBT_INFO("Unknown host %s. Stopping Now! ", argv[1]);
     abort();
   }
 
@@ -60,7 +60,7 @@ int sender(int argc, char *argv[])
       MSG_task_create(sprintf_buffer_la, 0.0, task_comm_size_lat, NULL);
   task_la->data = xbt_new(double, 1);
   *(double *) task_la->data = time;
-  INFO1("task_la->data = %le", *((double *) task_la->data));
+  XBT_INFO("task_la->data = %le", *((double *) task_la->data));
   MSG_task_put(task_la, host, PORT_22);
 
   /* Bandwidth */
@@ -70,7 +70,7 @@ int sender(int argc, char *argv[])
       MSG_task_create(sprintf_buffer_bw, 0.0, task_comm_size_bw, NULL);
   task_bw->data = xbt_new(double, 1);
   *(double *) task_bw->data = time;
-  INFO1("task_bw->data = %le", *((double *) task_bw->data));
+  XBT_INFO("task_bw->data = %le", *((double *) task_bw->data));
   MSG_task_put(task_bw, host, PORT_22);
 
   return 0;
@@ -85,7 +85,7 @@ int receiver(int argc, char *argv[])
   int a;
   double communication_time = 0;
 
-  INFO0("receiver");
+  XBT_INFO("receiver");
 
   time = MSG_get_clock();
 
@@ -96,11 +96,11 @@ int receiver(int argc, char *argv[])
     sender_time = *((double *) (task_la->data));
     time = sender_time;
     communication_time = time1 - time;
-    INFO1("Task received : %s", task_la->name);
+    XBT_INFO("Task received : %s", task_la->name);
     xbt_free(task_la->data);
     MSG_task_destroy(task_la);
-    INFO1("Communic. time %le", communication_time);
-    INFO1("--- la %f ----", communication_time);
+    XBT_INFO("Communic. time %le", communication_time);
+    XBT_INFO("--- la %f ----", communication_time);
   } else {
     xbt_assert0(0, "Unexpected behavior");
   }
@@ -113,11 +113,11 @@ int receiver(int argc, char *argv[])
     sender_time = *((double *) (task_bw->data));
     time = sender_time;
     communication_time = time1 - time;
-    INFO1("Task received : %s", task_bw->name);
+    XBT_INFO("Task received : %s", task_bw->name);
     xbt_free(task_bw->data);
     MSG_task_destroy(task_bw);
-    INFO1("Communic. time %le", communication_time);
-    INFO1("--- bw %f ----", task_comm_size_bw / communication_time);
+    XBT_INFO("Communic. time %le", communication_time);
+    XBT_INFO("--- bw %f ----", task_comm_size_bw / communication_time);
   } else {
     xbt_assert0(0, "Unexpected behavior");
   }
@@ -136,7 +136,7 @@ MSG_error_t test_all(const char *platform_file,
 
 
 
-  INFO0("test_all");
+  XBT_INFO("test_all");
 
   /*  Simulation setting */
   MSG_set_channel_number(MAX_CHANNEL);
@@ -168,9 +168,9 @@ int main(int argc, char *argv[])
 
 
   if (argc != 3) {
-    CRITICAL1("Usage: %s platform_file deployment_file <model>\n",
+    XBT_CRITICAL("Usage: %s platform_file deployment_file <model>\n",
               argv[0]);
-    CRITICAL1
+    XBT_CRITICAL
         ("example: %s msg_platform.xml msg_deployment.xml KCCFLN05_Vegas\n",
          argv[0]);
     exit(1);
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
 
   res = test_all(argv[1], argv[2]);
 
-  INFO1("Total simulation time: %le", MSG_get_clock());
+  XBT_INFO("Total simulation time: %le", MSG_get_clock());
 
   MSG_clean();
 

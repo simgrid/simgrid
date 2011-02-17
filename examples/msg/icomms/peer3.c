@@ -49,7 +49,7 @@ int sender(int argc, char *argv[])
                         task_comm_size / coef, NULL);
     comm = MSG_task_isend(task, mailbox);
     xbt_dynar_push_as(d, msg_comm_t, comm);
-    INFO3("Send to receiver-%ld %s comm_size %f", i % receivers_count,
+    XBT_INFO("Send to receiver-%ld %s comm_size %f", i % receivers_count,
           sprintf_buffer, task_comm_size / coef);
   }
   /* Here we are waiting for the completion of all communications */
@@ -74,7 +74,7 @@ int sender(int argc, char *argv[])
     MSG_task_destroy(task);
   }
 
-  INFO0("Goodbye now!");
+  XBT_INFO("Goodbye now!");
   return 0;
 }                               /* end_of_sender */
 
@@ -95,7 +95,7 @@ int receiver(int argc, char *argv[])
   MSG_process_sleep(10);
   msg_comm_t res_irecv;
   for (i = 0; i < tasks; i++) {
-    INFO1("Wait to receive task %d", i);
+    XBT_INFO("Wait to receive task %d", i);
     task[i] = NULL;
     res_irecv = MSG_task_irecv(&task[i], mailbox);
     xbt_dynar_push_as(comms, msg_comm_t, res_irecv);
@@ -108,9 +108,9 @@ int receiver(int argc, char *argv[])
     xbt_dynar_remove_at(comms, MSG_comm_waitany(comms), &res_irecv);
     task_com = MSG_comm_get_task(res_irecv);
     MSG_comm_destroy(res_irecv);
-    INFO1("Processing \"%s\"", MSG_task_get_name(task_com));
+    XBT_INFO("Processing \"%s\"", MSG_task_get_name(task_com));
     MSG_task_execute(task_com);
-    INFO1("\"%s\" done", MSG_task_get_name(task_com));
+    XBT_INFO("\"%s\" done", MSG_task_get_name(task_com));
     err = MSG_task_destroy(task_com);
     xbt_assert0(err == MSG_OK, "MSG_task_destroy failed");
   }
@@ -122,7 +122,7 @@ int receiver(int argc, char *argv[])
   res_irecv = MSG_task_isend(MSG_task_create(NULL, 0, 0, NULL), mailbox);
   MSG_comm_wait(res_irecv, -1);
   MSG_comm_destroy(res_irecv);
-  INFO0("I'm done. See you!");
+  XBT_INFO("I'm done. See you!");
   return 0;
 }                               /* end_of_receiver */
 
@@ -144,7 +144,7 @@ MSG_error_t test_all(const char *platform_file,
   }
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }                               /* end_of_test_all */
 

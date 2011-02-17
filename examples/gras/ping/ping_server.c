@@ -31,7 +31,7 @@ static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload)
   globals->endcondition = 0;
 
   /* 3. Log which client connected */
-  INFO3(">>>>>>>> Got message PING(%d) from %s:%d <<<<<<<<",
+  XBT_INFO(">>>>>>>> Got message PING(%d) from %s:%d <<<<<<<<",
         msg,
         gras_socket_peer_name(expeditor),
         gras_socket_peer_port(expeditor));
@@ -48,7 +48,7 @@ static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload)
     RETHROW0("Unable answer with PONG: %s");
   }
 
-  INFO0(">>>>>>>> Answered with PONG(4321) <<<<<<<<");
+  XBT_INFO(">>>>>>>> Answered with PONG(4321) <<<<<<<<");
 
   /* 7. Set the endcondition boolean to true (and make sure the server stops after receiving it). */
   globals->endcondition = 1;
@@ -72,7 +72,7 @@ int server(int argc, char *argv[])
     port = atoi(argv[1]);
   }
 
-  INFO1("Launch server (port=%d)", port);
+  XBT_INFO("Launch server (port=%d)", port);
 
   /* 3. Create my master socket */
   globals->sock = gras_socket_server(port);
@@ -85,7 +85,7 @@ int server(int argc, char *argv[])
   /* 5. Register my callback */
   gras_cb_register("ping", &server_cb_ping_handler);
 
-  INFO1(">>>>>>>> Listening on port %d <<<<<<<<",
+  XBT_INFO(">>>>>>>> Listening on port %d <<<<<<<<",
         gras_socket_my_port(globals->sock));
   globals->endcondition = 0;
 
@@ -94,13 +94,13 @@ int server(int argc, char *argv[])
 
   /* 7. Housekeeping */
   if (!globals->endcondition)
-    WARN0
+    XBT_WARN
         ("An error occured, the endcondition was not set by the callback");
 
   /* 8. Free the allocated resources, and shut GRAS down */
   gras_socket_close(globals->sock);
   free(globals);
-  INFO0("Done.");
+  XBT_INFO("Done.");
   gras_exit();
 
   return 0;

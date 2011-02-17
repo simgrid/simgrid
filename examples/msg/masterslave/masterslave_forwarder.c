@@ -70,30 +70,30 @@ int master(int argc, char *argv[])
     }
   }
 
-  INFO2("Got %d slaves and %d tasks to process", slaves_count,
+  XBT_INFO("Got %d slaves and %d tasks to process", slaves_count,
         number_of_tasks);
   for (i = 0; i < slaves_count; i++)
-    DEBUG1("%s", slaves[i]->name);
+    XBT_DEBUG("%s", slaves[i]->name);
 
   for (i = 0; i < number_of_tasks; i++) {
-    INFO2("Sending \"%s\" to \"%s\"",
+    XBT_INFO("Sending \"%s\" to \"%s\"",
           todo[i]->name, slaves[i % slaves_count]->name);
     if (MSG_host_self() == slaves[i % slaves_count]) {
-      INFO0("Hey ! It's me ! :)");
+      XBT_INFO("Hey ! It's me ! :)");
     }
 
     MSG_task_put(todo[i], slaves[i % slaves_count], PORT_22);
-    INFO0("Sent");
+    XBT_INFO("Sent");
   }
 
-  INFO0
+  XBT_INFO
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++) {
     m_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
     MSG_task_put(finalize, slaves[i], PORT_22);
   }
 
-  INFO0("Goodbye now!");
+  XBT_INFO("Goodbye now!");
   free(slaves);
   free(todo);
   return 0;
@@ -108,19 +108,19 @@ int slave(int argc, char *argv[])
     res = MSG_task_get(&(task), PORT_22);
     xbt_assert0(res == MSG_OK, "MSG_task_get failed");
 
-    INFO1("Received \"%s\"", MSG_task_get_name(task));
+    XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
     if (!strcmp(MSG_task_get_name(task), "finalize")) {
       MSG_task_destroy(task);
       break;
     }
 
-    INFO1("Processing \"%s\"", MSG_task_get_name(task));
+    XBT_INFO("Processing \"%s\"", MSG_task_get_name(task));
     MSG_task_execute(task);
-    INFO1("\"%s\" done", MSG_task_get_name(task));
+    XBT_INFO("\"%s\" done", MSG_task_get_name(task));
     MSG_task_destroy(task);
     task = NULL;
   }
-  INFO0("I'm done. See you!");
+  XBT_INFO("I'm done. See you!");
   return 0;
 }                               /* end_of_slave */
 
@@ -138,7 +138,7 @@ int forwarder(int argc, char *argv[])
     for (i = 1; i < argc; i++) {
       slaves[i - 1] = MSG_get_host_by_name(argv[i]);
       if (slaves[i - 1] == NULL) {
-        INFO1("Unknown host %s. Stopping Now! ", argv[i]);
+        XBT_INFO("Unknown host %s. Stopping Now! ", argv[i]);
         abort();
       }
     }
@@ -150,9 +150,9 @@ int forwarder(int argc, char *argv[])
     int a;
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
-      INFO1("Received \"%s\"", MSG_task_get_name(task));
+      XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {
-        INFO0
+        XBT_INFO
             ("All tasks have been dispatched. Let's tell everybody the computation is over.");
         for (i = 0; i < slaves_count; i++)
           MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
@@ -160,18 +160,18 @@ int forwarder(int argc, char *argv[])
         MSG_task_destroy(task);
         break;
       }
-      INFO2("Sending \"%s\" to \"%s\"",
+      XBT_INFO("Sending \"%s\" to \"%s\"",
             MSG_task_get_name(task), slaves[i % slaves_count]->name);
       MSG_task_put(task, slaves[i % slaves_count], PORT_22);
       i++;
     } else {
-      INFO0("Hey ?! What's up ? ");
+      XBT_INFO("Hey ?! What's up ? ");
       xbt_assert0(0, "Unexpected behavior");
     }
   }
   xbt_free(slaves);
 
-  INFO0("I'm done. See you!");
+  XBT_INFO("I'm done. See you!");
   return 0;
 }                               /* end_of_forwarder */
 
@@ -194,7 +194,7 @@ MSG_error_t test_all(const char *platform_file,
   }
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }                               /* end_of_test_all */
 

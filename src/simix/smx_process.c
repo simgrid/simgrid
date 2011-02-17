@@ -35,7 +35,7 @@ XBT_INLINE smx_process_t SIMIX_process_self(void)
  */
 void SIMIX_process_cleanup(smx_process_t process)
 {
-  DEBUG1("Cleanup process %s", process->name);
+  XBT_DEBUG("Cleanup process %s", process->name);
   /*xbt_swag_remove(process, simix_global->process_to_run);*/
   xbt_swag_remove(process, simix_global->process_list);
   xbt_swag_remove(process, process->smx_host->process_list);
@@ -143,10 +143,10 @@ void SIMIX_process_create(smx_process_t *process,
   *process = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
 
-  DEBUG2("Start process %s on host %s", name, hostname);
+  XBT_DEBUG("Start process %s on host %s", name, hostname);
 
   if (!SIMIX_host_get_state(host)) {
-    WARN2("Cannot launch process '%s' on failed host '%s'", name,
+    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name,
           hostname);
   }
   else {
@@ -160,7 +160,7 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->smx_host = host;
     (*process)->data = data;
 
-    VERB1("Create context %s", (*process)->name);
+    XBT_VERB("Create context %s", (*process)->name);
     (*process)->context = SIMIX_context_new(code, argc, argv,
     	simix_global->cleanup_process_function, *process);
 
@@ -173,11 +173,11 @@ void SIMIX_process_create(smx_process_t *process,
     /* Add the process to it's host process list */
     xbt_swag_insert(*process, host->process_list);
 
-    DEBUG1("Start context '%s'", (*process)->name);
+    XBT_DEBUG("Start context '%s'", (*process)->name);
 
     /* Now insert it in the global process list and in the process to run list */
     xbt_swag_insert(*process, simix_global->process_list);
-    DEBUG2("Inserting %s(%s) in the to_run list", (*process)->name, host->name);
+    XBT_DEBUG("Inserting %s(%s) in the to_run list", (*process)->name, host->name);
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, *process);
   }
 }
@@ -192,7 +192,7 @@ void SIMIX_process_create(smx_process_t *process,
  */
 void SIMIX_process_kill(smx_process_t process, smx_process_t killer) {
 
-  DEBUG2("Killing process %s on %s", process->name, process->smx_host->name);
+  XBT_DEBUG("Killing process %s on %s", process->name, process->smx_host->name);
 
   process->context->iwannadie = 1;
   process->blocked = 0;
@@ -446,7 +446,7 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
       surf_workstation_model->extension.workstation.sleep(host->host, duration);
 
   surf_workstation_model->action_data_set(action->sleep.surf_sleep, action);
-  DEBUG1("Create sleep action %p", action);
+  XBT_DEBUG("Create sleep action %p", action);
 
   return action;
 }
@@ -480,7 +480,7 @@ void SIMIX_post_process_sleep(smx_action_t action)
 
 void SIMIX_process_sleep_destroy(smx_action_t action)
 {
-  DEBUG1("Destroy action %p", action);
+  XBT_DEBUG("Destroy action %p", action);
   if (action->sleep.surf_sleep)
     action->sleep.surf_sleep->model_type->action_unref(action->sleep.surf_sleep);
 #ifdef HAVE_TRACING
@@ -507,21 +507,21 @@ void SIMIX_process_yield(void)
 {
   smx_process_t self = SIMIX_process_self();
 
-  DEBUG1("Yield process '%s'", self->name);
+  XBT_DEBUG("Yield process '%s'", self->name);
 
   /* Go into sleep and return control to maestro */
   SIMIX_context_suspend(self->context);
 
   /* Ok, maestro returned control to us */
-  DEBUG1("Maestro returned control to me: '%s'", self->name);
+  XBT_DEBUG("Maestro returned control to me: '%s'", self->name);
 
   if (self->context->iwannadie){
-    DEBUG0("I wanna die!");
+    XBT_DEBUG("I wanna die!");
     SIMIX_context_stop(self->context);
   }
 
   if (self->doexception) {
-    DEBUG0("Wait, maestro left me an exception");
+    XBT_DEBUG("Wait, maestro left me an exception");
     self->doexception = 0;
     RETHROW;
   }

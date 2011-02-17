@@ -108,7 +108,7 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
 {
   unsigned int i, j;
 
-  DEBUG10
+  XBT_DEBUG
       ("Copy a %dx%d submatrix from %dx%d(of %dx%d) to %dx%d (of %dx%d)",
        lsize, rsize, lpos_src, rpos_src, src->lines, src->rows, lpos_dst,
        rpos_dst, dst->lines, dst->rows);

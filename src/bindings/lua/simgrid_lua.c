@@ -64,7 +64,7 @@ static void stackDump(const char *msg, lua_State * L)
     }
     p += sprintf(p, "  ");      /* put a separator */
   }
-  INFO2("%s%s", msg, buff);
+  XBT_INFO("%s%s", msg, buff);
 }
 
 /** @brief ensures that a userdata on the stack is a task and returns the pointer inside the userdata */
@@ -173,16 +173,16 @@ static int Task_send(lua_State * L)
   if (res != MSG_OK)
     switch (res) {
     case MSG_TIMEOUT:
-      ERROR0("MSG_task_send failed : Timeout");
+      XBT_ERROR("MSG_task_send failed : Timeout");
       break;
     case MSG_TRANSFER_FAILURE:
-      ERROR0("MSG_task_send failed : Transfer Failure");
+      XBT_ERROR("MSG_task_send failed : Transfer Failure");
       break;
     case MSG_HOST_FAILURE:
-      ERROR0("MSG_task_send failed : Host Failure ");
+      XBT_ERROR("MSG_task_send failed : Host Failure ");
       break;
     default:
-      ERROR0
+      XBT_ERROR
           ("MSG_task_send failed : Unexpected error , please report this bug");
       break;
     }
@@ -202,16 +202,16 @@ static int Task_recv(lua_State * L)
   if (res != MSG_OK)
     switch (res) {
     case MSG_TIMEOUT:
-      ERROR0("MSG_task_receive failed : Timeout");
+      XBT_ERROR("MSG_task_receive failed : Timeout");
       break;
     case MSG_TRANSFER_FAILURE:
-      ERROR0("MSG_task_receive failed : Transfer Failure");
+      XBT_ERROR("MSG_task_receive failed : Transfer Failure");
       break;
     case MSG_HOST_FAILURE:
-      ERROR0("MSG_task_receive failed : Host Failure ");
+      XBT_ERROR("MSG_task_receive failed : Host Failure ");
       break;
     default:
-      ERROR0
+      XBT_ERROR
           ("MSG_task_receive failed : Unexpected error , please report this bug");
       break;
     }
@@ -271,7 +271,7 @@ static m_host_t checkHost(lua_State * L, int index)
 static int Host_get_by_name(lua_State * L)
 {
   const char *name = luaL_checkstring(L, 1);
-  DEBUG0("Getting Host from name...");
+  XBT_DEBUG("Getting Host from name...");
   m_host_t msg_host = MSG_get_host_by_name(name);
   if (!msg_host) {
     luaL_error(L, "null Host : MSG_get_host_by_name failled");
@@ -385,7 +385,7 @@ static int gras_add_process_function(lua_State * L)
         xbt_realloc(process.argv, (process.argc) * sizeof(char *));
     process.argv[(process.argc) - 1] = xbt_strdup(arg);
 
-    DEBUG2("index = %f , arg = %s \n", lua_tonumber(L, -2),
+    XBT_DEBUG("index = %f , arg = %s \n", lua_tonumber(L, -2),
            lua_tostring(L, -1));
     lua_pop(L, 1);
   }
@@ -521,7 +521,7 @@ extern lua_State *simgrid_lua_state;
 
 static int run_lua_code(int argc, char **argv)
 {
-  DEBUG1("Run lua code %s", argv[0]);
+  XBT_DEBUG("Run lua code %s", argv[0]);
   lua_State *L = lua_newthread(simgrid_lua_state);
   int ref = luaL_ref(simgrid_lua_state, LUA_REGISTRYINDEX);     // protect the thread from being garbage collected
   int res = 1;
@@ -548,7 +548,7 @@ static int run_lua_code(int argc, char **argv)
   }
   // cleanups
   luaL_unref(simgrid_lua_state, LUA_REGISTRYINDEX, ref);
-  DEBUG1("Execution of lua code %s is over", (argv ? argv[0] : "(null)"));
+  XBT_DEBUG("Execution of lua code %s is over", (argv ? argv[0] : "(null)"));
   return res;
 }
 
@@ -564,7 +564,7 @@ static int launch_application(lua_State * L)
 static int create_environment(lua_State * L)
 {
   const char *file = luaL_checkstring(L, 1);
-  DEBUG1("Loading environment file %s", file);
+  XBT_DEBUG("Loading environment file %s", file);
   MSG_create_environment(file);
 
 /*
@@ -574,7 +574,7 @@ static int create_environment(lua_State * L)
   const char *name;
 
   xbt_dict_foreach(hosts, c, name, host) {
-    DEBUG1("We have an host %s", SIMIX_host_get_name(host));
+    XBT_DEBUG("We have an host %s", SIMIX_host_get_name(host));
   }
 */
 
@@ -584,14 +584,14 @@ static int create_environment(lua_State * L)
 static int debug(lua_State * L)
 {
   const char *str = luaL_checkstring(L, 1);
-  DEBUG1("%s", str);
+  XBT_DEBUG("%s", str);
   return 0;
 }
 
 static int info(lua_State * L)
 {
   const char *str = luaL_checkstring(L, 1);
-  INFO1("%s", str);
+  XBT_INFO("%s", str);
   return 0;
 }
 
@@ -729,14 +729,14 @@ int luaopen_simgrid(lua_State * L)
                     __FILE__, LUA_MAX_ARGS_COUNT - 1);
         argv[argc - 1] = (char *) luaL_checkstring(L, -1);
         lua_pop(L, 1);
-        DEBUG1("Got command line argument %s from lua", argv[argc - 1]);
+        XBT_DEBUG("Got command line argument %s from lua", argv[argc - 1]);
       }
     }
     argv[argc--] = NULL;
 
     /* Initialize the MSG core */
     MSG_global_init(&argc, argv);
-    DEBUG1("Still %d arguments on command line", argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
+    XBT_DEBUG("Still %d arguments on command line", argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
   }
   /* register the core C functions to lua */
   luaL_register(L, "simgrid", simgrid_funcs);

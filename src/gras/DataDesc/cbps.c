@@ -83,7 +83,7 @@ gras_cbps_v_push(gras_cbps_t ps,
   char *varname = (char *) xbt_strdup(name);
   xbt_ex_t e;
 
-  DEBUG2("push(%s,%p)", name, (void *) data);
+  XBT_DEBUG("push(%s,%p)", name, (void *) data);
 
   TRY {
     varstack = xbt_dict_get(ps->space, name);
@@ -91,7 +91,7 @@ gras_cbps_v_push(gras_cbps_t ps,
     if (e.category != mismatch_error)
       RETHROW;
 
-    DEBUG1("Create a new variable stack for '%s' into the space", name);
+    XBT_DEBUG("Create a new variable stack for '%s' into the space", name);
     varstack = xbt_dynar_new(sizeof(gras_cbps_elm_t *), NULL);
     xbt_dict_set(ps->space, varname, (void **) varstack, NULL);
     xbt_ex_free(e);
@@ -105,7 +105,7 @@ gras_cbps_v_push(gras_cbps_t ps,
   xbt_dynar_push(varstack, &var);
 
   xbt_dynar_pop(ps->frames, &frame);
-  DEBUG4("Push %s (%p @%p) into frame %p", varname, (void *) varname,
+  XBT_DEBUG("Push %s (%p @%p) into frame %p", varname, (void *) varname,
          (void *) &varname, (void *) frame);
   xbt_dynar_push(frame, &varname);
   xbt_dynar_push(ps->frames, &frame);
@@ -125,7 +125,7 @@ gras_cbps_v_pop(gras_cbps_t ps,
   void *data = NULL;
   xbt_ex_t e;
 
-  DEBUG1("pop(%s)", name);
+  XBT_DEBUG("pop(%s)", name);
   TRY {
     varstack = xbt_dict_get(ps->space, name);
   } CATCH(e) {
@@ -138,7 +138,7 @@ gras_cbps_v_pop(gras_cbps_t ps,
   xbt_dynar_pop(varstack, &var);
 
   if (!xbt_dynar_length(varstack)) {
-    DEBUG1("Last incarnation of %s poped. Kill it", name);
+    XBT_DEBUG("Last incarnation of %s poped. Kill it", name);
     xbt_dict_remove(ps->space, name);
     xbt_dynar_free(&varstack);
   }
@@ -186,7 +186,7 @@ gras_cbps_v_set(gras_cbps_t ps,
   xbt_dynar_t dynar = NULL;
   gras_cbps_elm_t elm = NULL;
 
-  DEBUG1("set(%s)", name);
+  XBT_DEBUG("set(%s)", name);
   dynar = xbt_dict_get_or_null(ps->space, name);
 
   if (dynar == NULL) {
@@ -220,7 +220,7 @@ void *gras_cbps_v_get(gras_cbps_t ps, const char *name,
   xbt_dynar_t dynar = NULL;
   gras_cbps_elm_t elm = NULL;
 
-  DEBUG1("get(%s)", name);
+  XBT_DEBUG("get(%s)", name);
   dynar = xbt_dict_get(ps->space, name);
   xbt_dynar_pop(dynar, &elm);
   xbt_dynar_push(dynar, &elm);
@@ -249,7 +249,7 @@ void gras_cbps_block_begin(gras_cbps_t ps)
 
   xbt_dynar_t dynar = NULL;
 
-  DEBUG0(">>> Block begin");
+  XBT_DEBUG(">>> Block begin");
   dynar = xbt_dynar_new(sizeof(char *), NULL);
   xbt_dynar_push(ps->frames, &dynar);
 }
@@ -271,7 +271,7 @@ void gras_cbps_block_end(gras_cbps_t ps)
     xbt_dynar_t varstack = NULL;
     gras_cbps_elm_t var = NULL;
 
-    DEBUG2("Get ride of %s (%p)", name, (void *) name);
+    XBT_DEBUG("Get ride of %s (%p)", name, (void *) name);
     varstack = xbt_dict_get(ps->space, name);
     xbt_dynar_pop(varstack, &var);
 
@@ -286,14 +286,14 @@ void gras_cbps_block_end(gras_cbps_t ps)
     free(name);
   }
   xbt_dynar_free_container(&frame);     /* we just emptied it */
-  DEBUG0("<<< Block end");
+  XBT_DEBUG("<<< Block end");
 }
 
 
 /** \brief Push a new integer value into the cbps. */
 void gras_cbps_i_push(gras_cbps_t ps, int val)
 {
-  DEBUG1("push %d as a size", val);
+  XBT_DEBUG("push %d as a size", val);
   xbt_dynar_push_as(ps->lints, int, val);
 }
 
@@ -305,7 +305,7 @@ int gras_cbps_i_pop(gras_cbps_t ps)
   xbt_assert0(xbt_dynar_length(ps->lints) > 0,
               "gras_cbps_i_pop: no value to pop");
   ret = xbt_dynar_pop_as(ps->lints, int);
-  DEBUG1("pop %d as a size", ret);
+  XBT_DEBUG("pop %d as a size", ret);
   return ret;
 }
 
@@ -366,7 +366,7 @@ void gras_datadesc_cb_push_int_mult(gras_datadesc_type_t ignored,
 {
   int old = *(int *) data;
   int new = gras_cbps_i_pop(vars);
-  DEBUG2("push %d x %d as a size", old, new);
+  XBT_DEBUG("push %d x %d as a size", old, new);
   gras_cbps_i_push(vars, old * new);
 }
 
@@ -377,7 +377,7 @@ void gras_datadesc_cb_push_uint_mult(gras_datadesc_type_t ignored,
   unsigned int old = *(unsigned int *) data;
   unsigned int new = gras_cbps_i_pop(vars);
 
-  DEBUG2("push %d x %d as a size", old, new);
+  XBT_DEBUG("push %d x %d as a size", old, new);
   gras_cbps_i_push(vars, (int) (old * new));
 }
 
@@ -399,6 +399,6 @@ void gras_datadesc_cb_push_ulint_mult(gras_datadesc_type_t ignored,
   unsigned long int old = *(unsigned long int *) data;
   unsigned long int new = gras_cbps_i_pop(vars);
 
-  DEBUG2("push %ld x %ld as a size", old, new);
+  XBT_DEBUG("push %ld x %ld as a size", old, new);
   gras_cbps_i_push(vars, (int) (old * new));
 }

@@ -54,7 +54,7 @@ static void forward_get_suc(get_suc_t msg, char host[1024], int port)
 {
   gras_socket_t temp_sock = NULL;
   xbt_ex_t e;                   // the error variable used in TRY.. CATCH tokens.
-  //INFO2("Transmiting message to %s:%d",host,port);      
+  //XBT_INFO("Transmiting message to %s:%d",host,port);
   TRY {
     temp_sock = gras_socket_client(host, port);
   } CATCH(e) {
@@ -65,7 +65,7 @@ static void forward_get_suc(get_suc_t msg, char host[1024], int port)
   } CATCH(e) {
     RETHROW0("Unable to send!: %s");
   }
-  INFO3("Forwarding a get_successor message to %s for (%d;%d)", host,
+  XBT_INFO("Forwarding a get_successor message to %s for (%d;%d)", host,
         msg.xId, msg.yId);
   gras_socket_close(temp_sock);
 }
@@ -78,9 +78,9 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
   xbt_ex_t e;                   // the error variable used in TRY.. CATCH tokens.
   node_data_t *globals = (node_data_t *) gras_userdata_get();
   gras_socket_t temp_sock = NULL;
-  INFO3("Received a get_successor message from %s for (%d;%d)",
+  XBT_INFO("Received a get_successor message from %s for (%d;%d)",
         gras_socket_peer_name(expeditor), incoming->xId, incoming->yId);
-  //INFO4("My area is [%d;%d;%d;%d]",globals->x1,globals->x2,globals->y1,globals->y2);
+  //XBT_INFO("My area is [%d;%d;%d;%d]",globals->x1,globals->x2,globals->y1,globals->y2);
   if (incoming->xId < globals->x1)      // test if the message must be forwarded to a neighbour.
     forward_get_suc(*incoming, globals->west_host, globals->west_port);
   else if (incoming->xId > globals->x2)
@@ -92,7 +92,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
   else {                        // if the message must not be forwarded, then the area is splitted in half and one half is assignated to the new node.
     rep_suc_t outgoing;
     int validate = 0;
-    INFO4
+    XBT_INFO
         ("Spliting my area between me (%d;%d) and the inserting node (%d;%d)!",
          globals->xId, globals->yId, incoming->xId, incoming->yId);
     if ((globals->x2 - globals->x1) > (globals->y2 - globals->y1)) {    // the height of the area is smaller than its width.
@@ -173,7 +173,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
       }
     }
     if (validate == 1) {        // the area for the new node has been defined, then send theses informations to the new node.
-      INFO2("Sending environment informations to node %s:%d",
+      XBT_INFO("Sending environment informations to node %s:%d",
             incoming->host, incoming->port);
 
       TRY {
@@ -185,7 +185,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
       }
       TRY {
         gras_msg_send(temp_sock, "can_rep_suc", &outgoing);
-        INFO0("Environment informations sent!");
+        XBT_INFO("Environment informations sent!");
       }
       CATCH(e) {
         RETHROW2("%s:Timeout sending environment informations to %s: %s",
@@ -193,7 +193,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
       }
       gras_socket_close(temp_sock);
     } else                      // we have a problem!
-      INFO0("An error occurded!!!!!!!!!!!!!");
+      XBT_INFO("An error occurded!!!!!!!!!!!!!");
 
   }
   gras_socket_close(expeditor); // spare
@@ -201,9 +201,9 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
     gras_msg_handle(10000.0);   // wait a bit in case of someone want to ask me for something.
   }
   CATCH(e) {
-    INFO4("My area is [%d;%d;%d;%d]", globals->x1, globals->x2,
+    XBT_INFO("My area is [%d;%d;%d;%d]", globals->x1, globals->x2,
           globals->y1, globals->y2);
-    //INFO0("Closing node, all has been done!");
+    //XBT_INFO("Closing node, all has been done!");
   }
   return 0;
 }
@@ -223,7 +223,7 @@ int node(int argc, char **argv)
   get_suc_t get_suc_msg;        // building the "get_suc" message.
   gras_socket_t temp_sock2 = NULL;
 
-  INFO0("Starting");
+  XBT_INFO("Starting");
 
   /* 1. Init the GRAS infrastructure and declare my globals */
   gras_init(&argc, argv);
@@ -239,14 +239,14 @@ int node(int argc, char **argv)
   globals->version = 0;         // node version (used for fun)
 
   /* 2. Inserting the Node */
-  INFO2("Inserting node %s:%d", globals->host, globals->port);
+  XBT_INFO("Inserting node %s:%d", globals->host, globals->port);
   if (argc == 4) {              // the node is a server, then he has the whole area.
     globals->x1 = 0;
     globals->x2 = 1000;
     globals->y1 = 0;
     globals->y2 = 1000;
   } else {                      // asking for an area.
-    INFO1("Contacting %s so as to request for an area", argv[4]);
+    XBT_INFO("Contacting %s so as to request for an area", argv[4]);
 
     TRY {
       temp_sock = gras_socket_client(argv[4], atoi(argv[5]));
@@ -272,7 +272,7 @@ int node(int argc, char **argv)
 
 
     TRY {                       // waiting for a reply.
-      INFO0("Waiting for reply!");
+      XBT_INFO("Waiting for reply!");
       gras_msg_wait(6000, "can_rep_suc", &temp_sock2, &rep_suc_msg);
     }
     CATCH(e) {
@@ -295,7 +295,7 @@ int node(int argc, char **argv)
 
     gras_socket_close(temp_sock);       // spare
   }
-  INFO2("Node %s:%d inserted", globals->host, globals->port);
+  XBT_INFO("Node %s:%d inserted", globals->host, globals->port);
 
   // associating messages to handlers.
   register_messages();
@@ -306,9 +306,9 @@ int node(int argc, char **argv)
     gras_msg_handle(10000.0);   // waiting.. in case of someone has something to say.
   }
   CATCH(e) {
-    INFO4("My area is [%d;%d;%d;%d]", globals->x1, globals->x2,
+    XBT_INFO("My area is [%d;%d;%d;%d]", globals->x1, globals->x2,
           globals->y1, globals->y2);
-    //INFO0("Closing node, all has been done!");
+    //XBT_INFO("Closing node, all has been done!");
   }
 
   gras_socket_close(globals->sock);     // spare.

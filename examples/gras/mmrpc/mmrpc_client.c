@@ -35,7 +35,7 @@ int client(int argc, char *argv[])
     port = atoi(argv[2]);
   }
 
-  INFO2("Launch client (server on %s:%d)", host, port);
+  XBT_INFO("Launch client (server on %s:%d)", host, port);
 
   /* 3. Create a socket to speak to the server */
   while (!connected) {
@@ -50,14 +50,14 @@ int client(int argc, char *argv[])
       gras_os_sleep(0.05);
     }
   }
-  INFO2("Connected to %s:%d.", host, port);
+  XBT_INFO("Connected to %s:%d.", host, port);
 
 
   /* 4. Register the messages (before use) */
   mmrpc_register_messages();
 
   /* 5. Keep the user informed of what's going on */
-  INFO2(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<",
+  XBT_INFO(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<",
         gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
 
   /* 6. Prepare and send the request to the server */
@@ -74,7 +74,7 @@ int client(int argc, char *argv[])
 
   xbt_matrix_free(request[0]);
 
-  INFO2(">>>>>>>> Request sent to %s:%d <<<<<<<<",
+  XBT_INFO(">>>>>>>> Request sent to %s:%d <<<<<<<<",
         gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
 
   /* 7. Wait for the answer from the server, and deal with issues */
@@ -92,7 +92,7 @@ int client(int argc, char *argv[])
                   xbt_matrix_get_as(request[1], i, j, double));
 
   /* 8. Keep the user informed of what's going on, again */
-  INFO2(">>>>>>>> Got answer from %s:%d (values are right) <<<<<<<<",
+  XBT_INFO(">>>>>>>> Got answer from %s:%d (values are right) <<<<<<<<",
         gras_socket_peer_name(from), gras_socket_peer_port(from));
 
   /* 9. Free the allocated resources, and shut GRAS down */

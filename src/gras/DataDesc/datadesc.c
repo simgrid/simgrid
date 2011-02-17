@@ -37,7 +37,7 @@ void gras_datadesc_init(void)
   if (gras_datadesc_set_local != NULL)
     return;
 
-  VERB0("Initializing DataDesc");
+  XBT_VERB("Initializing DataDesc");
 
   gras_datadesc_set_local = xbt_set_new();
 
@@ -169,10 +169,10 @@ void gras_datadesc_init(void)
  **/
 void gras_datadesc_exit(void)
 {
-  VERB0("Exiting DataDesc");
+  XBT_VERB("Exiting DataDesc");
   xbt_set_free(&gras_datadesc_set_local);
   xbt_dict_free(&gras_dd_constants);
-  DEBUG0("Exited DataDesc");
+  XBT_DEBUG("Exited DataDesc");
 }
 
 /** This is mainly to debug */

@@ -200,7 +200,7 @@ static void im_net_parse_link_init(void)
   e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
   e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
   tmgr_trace_t state_trace;
-  DEBUG0("link_CM02_im");
+  XBT_DEBUG("link_CM02_im");
   name_link = xbt_strdup(A_surfxml_link_id);
   surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
   bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
@@ -428,12 +428,12 @@ static double im_net_share_resources(double now)
   double min=-1;
   double value;
 
-  DEBUG1("Before share resources, the size of modified actions set is %d", xbt_swag_size(im_net_modified_set));
+  XBT_DEBUG("Before share resources, the size of modified actions set is %d", xbt_swag_size(im_net_modified_set));
   update_action_remaining(now);
 
   lmm_solve(network_im_maxmin_system);
 
-  DEBUG1("After share resources, The size of modified actions set is %d", xbt_swag_size(im_net_modified_set));
+  XBT_DEBUG("After share resources, The size of modified actions set is %d", xbt_swag_size(im_net_modified_set));
 
    xbt_swag_foreach(action, im_net_modified_set) {
      if (GENERIC_ACTION(action).state_set != surf_network_model->states.running_action_set){
@@ -465,7 +465,7 @@ static double im_net_share_resources(double now)
                GENERIC_ACTION(action).max_duration;
      }
 
-     DEBUG4("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
+     XBT_DEBUG("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
                 GENERIC_ACTION(action).start, now + value,
                 GENERIC_ACTION(action).max_duration);
 
@@ -477,7 +477,7 @@ static double im_net_share_resources(double now)
 
      if (min != -1) {
          heap_insert((surf_action_network_CM02_im_t) action, min, NORMAL);
-         DEBUG3("Insert at heap action(%p) min %lf now %lf", action, min, now);
+         XBT_DEBUG("Insert at heap action(%p) min %lf now %lf", action, min, now);
      }
    }
 
@@ -488,7 +488,7 @@ static double im_net_share_resources(double now)
        min = -1;
    }
 
-   DEBUG1("The minimum with the HEAP %lf", min);
+   XBT_DEBUG("The minimum with the HEAP %lf", min);
 
 
   return min;
@@ -501,7 +501,7 @@ static void im_net_update_actions_state(double now, double delta)
   while ((xbt_heap_size(im_net_action_heap) > 0)
          && (double_equals(xbt_heap_maxkey(im_net_action_heap), now))) {
     action = xbt_heap_pop(im_net_action_heap);
-    DEBUG1("Action %p: finish", action);
+    XBT_DEBUG("Action %p: finish", action);
     GENERIC_ACTION(action).finish = surf_get_clock();
 
     // if I am wearing a latency heat
@@ -511,7 +511,7 @@ static void im_net_update_actions_state(double now, double delta)
         heap_remove(action);
         action->last_update = surf_get_clock();
 
-        DEBUG1("Action (%p) is not limited by latency anymore", action);
+        XBT_DEBUG("Action (%p) is not limited by latency anymore", action);
 #ifdef HAVE_LATENCY_BOUND_TRACKING
           GENERIC_ACTION(action).latency_limited = 0;
 #endif
@@ -597,9 +597,9 @@ static void im_net_update_resource_state(void *id,
                                                       action->lat_current)));
 
         if (action->rate < sg_tcp_gamma / (2.0 * action->lat_current)) {
-          INFO0("Flow is limited BYBANDWIDTH");
+          XBT_INFO("Flow is limited BYBANDWIDTH");
         } else {
-          INFO1("Flow is limited BYLATENCY, latency of flow is %f",
+          XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f",
                 action->lat_current);
         }
       }
@@ -633,11 +633,11 @@ static void im_net_update_resource_state(void *id,
     if (tmgr_trace_event_free(event_type))
       nw_link->lmm_resource.state_event = NULL;
   } else {
-    CRITICAL0("Unknown event ! \n");
+    XBT_CRITICAL("Unknown event ! \n");
     xbt_abort();
   }
 
-  DEBUG1("There were a resource state event, need to update actions related to the constraint (%p)", nw_link->lmm_resource.constraint);
+  XBT_DEBUG("There were a resource state event, need to update actions related to the constraint (%p)", nw_link->lmm_resource.constraint);
   return;
 }
 
@@ -668,7 +668,7 @@ static surf_action_t im_net_communicate(const char *src_name,
   /* LARGE PLATFORMS HACK:
      total_route_size = route_size + src->link_nb + dst->nb */
 
-  XBT_IN4("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
+  XBT_IN_F("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
   xbt_assert2(xbt_dynar_length(route),
@@ -737,7 +737,7 @@ static surf_action_t im_net_communicate(const char *src_name,
         lmm_variable_new(network_im_maxmin_system, action, 0.0, -1.0,
                          constraints_per_variable);
     // add to the heap the event when the latency is payed
-    DEBUG2("Added action (%p) one latency event at date %f", action, action->latency + action->last_update);
+    XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency + action->last_update);
     heap_insert(action, action->latency + action->last_update, LATENCY);
 #ifdef HAVE_LATENCY_BOUND_TRACKING
         (action->generic_action).latency_limited = 1;
@@ -773,7 +773,7 @@ static surf_action_t im_net_communicate(const char *src_name,
   }
 
   if (sg_network_fullduplex == 1) {
-    DEBUG1("Fullduplex active adding backward flow using 5%c", '%');
+    XBT_DEBUG("Fullduplex active adding backward flow using 5%c", '%');
     xbt_dynar_foreach(back_route, i, link) {
       lmm_expand(network_im_maxmin_system, link->lmm_resource.constraint,
                  action->variable, .05);
@@ -874,8 +874,8 @@ static void im_net_finalize(void)
 static void im_surf_network_model_init_internal(void)
 {
   s_surf_action_network_CM02_im_t comm;
-  INFO0("You are using the UNSAFE lazy management optimization, I hope you know what you are doing.");
-  INFO0("====> For now this optimization is only available for LV08_im network model.");
+  XBT_INFO("You are using the UNSAFE lazy management optimization, I hope you know what you are doing.");
+  XBT_INFO("====> For now this optimization is only available for LV08_im network model.");
 
   surf_network_model = surf_model_init();
 

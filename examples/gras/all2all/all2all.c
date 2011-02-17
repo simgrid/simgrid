@@ -48,7 +48,7 @@ int receiver(int argc, char *argv[])
   mysock = gras_socket_server(myport);
 
   /* Get the data */
-  INFO2("Listening on port %d (expecting %d messages)",
+  XBT_INFO("Listening on port %d (expecting %d messages)",
         gras_socket_my_port(mysock), todo);
   while (todo > 0) {
     gras_msg_wait(60 /* wait up to one minute */ ,
@@ -56,7 +56,7 @@ int receiver(int argc, char *argv[])
     todo--;
     free(data);
 
-    INFO3("Got Data from %s:%d (still %d to go)",
+    XBT_INFO("Got Data from %s:%d (still %d to go)",
           gras_socket_peer_name(expeditor),
           gras_socket_peer_port(expeditor), todo);
 
@@ -104,7 +104,7 @@ int sender(int argc, char *argv[])
   memset(data, 32, datasize);
   data[datasize] = '\0';
 
-  INFO0("Launch current node");
+  XBT_INFO("Launch current node");
 
   /* Register the known messages */
   gras_msgtype_declare("data", gras_datadesc_by_name("string"));
@@ -129,9 +129,9 @@ int sender(int argc, char *argv[])
     }
     gras_msg_send(peer, "data", &data);
     if (gras_if_SG()) {
-      INFO2("  Sent Data from %s to %s", gras_os_myname(), h->name);
+      XBT_INFO("  Sent Data from %s to %s", gras_os_myname(), h->name);
     } else {
-      INFO0("  Sent Data");
+      XBT_INFO("  Sent Data");
     }
 
     gras_socket_close(peer);

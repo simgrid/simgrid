@@ -33,7 +33,7 @@ int sensor(int argc, char *argv[])
   amok_pm_init();
 
   mysock = gras_socket_server_range(3000, 9999, 0, 0);
-  INFO1("Sensor starting (on port %d)", gras_os_myport());
+  XBT_INFO("Sensor starting (on port %d)", gras_os_myport());
   while (connection_try > 0 && master == NULL) {
     int connected = 0;
     TRY {
@@ -81,14 +81,14 @@ int maestro(int argc, char *argv[])
   amok_bw_init();
   amok_pm_init();
 
-  INFO0("Maestro starting");
+  XBT_INFO("Maestro starting");
   if (argc != 2) {
-    ERROR0("Usage: maestro port\n");
+    XBT_ERROR("Usage: maestro port\n");
     return 1;
   }
   mysock = gras_socket_server(atoi(argv[1]));
   group = amok_pm_group_new("bandwidth");
-  INFO0("Wait for peers for 5 sec");
+  XBT_INFO("Wait for peers for 5 sec");
   gras_msg_handleall(5);        /* friends, we're ready. Come and play */
 
   if (xbt_dynar_length(group) < 2) {
@@ -106,22 +106,22 @@ int maestro(int argc, char *argv[])
     h2 = h_temp;
   }
 
-  INFO2("Contact %s:%d", h1->name, h1->port);
+  XBT_INFO("Contact %s:%d", h1->name, h1->port);
   peer = gras_socket_client(h1->name, h1->port);
 
-  INFO0("Test the BW between me and one of the sensors");
+  XBT_INFO("Test the BW between me and one of the sensors");
   amok_bw_test(peer, buf_size, msg_size, msg_amount, min_duration, &sec,
                &bw);
-  INFO7
+  XBT_INFO
       ("Experience between me and %s:%d (initially %d msgs of %d bytes, maybe modified to fill the pipe at least %.1fs) took %f sec, achieving %f kb/s",
        h1->name, h1->port, msg_amount, msg_size, min_duration, sec,
        ((double) bw) / 1024.0);
 
-  INFO4("Test the BW between %s:%d and %s:%d", h1->name, h1->port,
+  XBT_INFO("Test the BW between %s:%d and %s:%d", h1->name, h1->port,
         h2->name, h2->port);
   amok_bw_request(h1->name, h1->port, h2->name, h2->port, buf_size,
                   msg_size, msg_amount, min_duration, &sec, &bw);
-  INFO6
+  XBT_INFO
       ("Experience between %s:%d and %s:%d took took %f sec, achieving %f kb/s",
        h1->name, h1->port, h2->name, h2->port, sec,
        ((double) bw) / 1024.0);

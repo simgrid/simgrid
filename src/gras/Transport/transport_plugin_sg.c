@@ -186,7 +186,7 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
   sock->data = data;
   sock->incoming = 1;
 
-  DEBUG8("%s (PID %d) connects in %s mode to %s:%d (rdv_ser:%p, rdv_cli:%p, comm:%p)",
+  XBT_DEBUG("%s (PID %d) connects in %s mode to %s:%d (rdv_ser:%p, rdv_cli:%p, comm:%p)",
          SIMIX_req_process_get_name(SIMIX_process_self()), gras_os_getpid(),
          sock->meas ? "meas" : "regular", host, port,
          data->rdv_server,data->rdv_client,data->comm_recv);
@@ -231,7 +231,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self, int port, gras_socket_t s
 
   sock->data = data;
 
-  VERB10
+  XBT_VERB
       ("'%s' (%d) ears on %s:%d%s (%p; data:%p); Here rdv: %p; Remote rdv: %p; Comm %p",
        SIMIX_req_process_get_name(SIMIX_process_self()), gras_os_getpid(),
        SIMIX_host_self_get_name(), port,
@@ -251,7 +251,7 @@ void gras_trp_sg_socket_close(gras_socket_t sock)
   unsigned int cpt;
   gras_sg_portrec_t pr;
 
-  XBT_IN1(" (sock=%p)", sock);
+  XBT_IN_F(" (sock=%p)", sock);
 
   if (!sock)
     return;
@@ -263,14 +263,14 @@ void gras_trp_sg_socket_close(gras_socket_t sock)
   if (sock->incoming && !sock->outgoing && sockdata->server_port >= 0) {
     /* server mode socket. Unregister it from 'OS' tables */
     xbt_dynar_foreach(hd->ports, cpt, pr) {
-      DEBUG2("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));
+      XBT_DEBUG("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));
       if (pr->port == sockdata->server_port) {
         xbt_dynar_cursor_rm(hd->ports, &cpt);
         XBT_OUT;
         return;
       }
     }
-    WARN2
+    XBT_WARN
         ("socket_close called on the unknown incoming socket %p (port=%d)",
          sock, sockdata->server_port);
   }

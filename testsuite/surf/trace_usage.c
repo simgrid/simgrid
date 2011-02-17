@@ -35,10 +35,10 @@ void test(void)
   tmgr_history_add_trace(history, trace_B, 0.0, 0, host_B);
 
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
-    DEBUG1("%g" " : \n", next_event_date);
+    XBT_DEBUG("%g" " : \n", next_event_date);
     while (tmgr_history_get_next_event_leq(history, next_event_date,
                                            &value, (void **) &resource)) {
-      DEBUG2("\t %s : " "%g" "\n", resource, value);
+      XBT_DEBUG("\t %s : " "%g" "\n", resource, value);
     }
     if (next_event_date > 1000)
       break;

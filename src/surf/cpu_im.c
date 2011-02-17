@@ -245,7 +245,7 @@ static void cpu_im_update_remains(cpu_Cas01_im_t cpu, double now)
                                       cpu->last_update,
                                       now - cpu->last_update);
 #endif
-      DEBUG2("Update action(%p) remains %lf", action,
+      XBT_DEBUG("Update action(%p) remains %lf", action,
              GENERIC_ACTION(action).remains);
     }
   }
@@ -294,7 +294,7 @@ static double cpu_im_share_resources(double now)
             GENERIC_ACTION(action).start +
             GENERIC_ACTION(action).max_duration;
 
-      DEBUG4("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
+      XBT_DEBUG("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
              GENERIC_ACTION(action).start, now + value,
              GENERIC_ACTION(action).max_duration);
 
@@ -306,7 +306,7 @@ static double cpu_im_share_resources(double now)
       }
       if (min != -1) {
         xbt_heap_push(cpu_im_action_heap, action, min);
-        DEBUG2("Insert at heap action(%p) min %lf", action, min);
+        XBT_DEBUG("Insert at heap action(%p) min %lf", action, min);
       }
     }
     xbt_swag_remove(cpu, cpu_im_modified_cpu);
@@ -322,7 +322,7 @@ static void cpu_im_update_actions_state(double now, double delta)
   while ((xbt_heap_size(cpu_im_action_heap) > 0)
          && (double_equals(xbt_heap_maxkey(cpu_im_action_heap), now))) {
     action = xbt_heap_pop(cpu_im_action_heap);
-    DEBUG1("Action %p: finish", action);
+    XBT_DEBUG("Action %p: finish", action);
     GENERIC_ACTION(action).finish = surf_get_clock();
     /* set the remains to 0 due to precision problems when updating the remaining amount */
 #ifdef HAVE_TRACING
@@ -416,7 +416,7 @@ static void cpu_im_update_resource_state(void *id,
     if (tmgr_trace_event_free(event_type))
       cpu->state_event = NULL;
   } else {
-    CRITICAL0("Unknown event ! \n");
+    XBT_CRITICAL("Unknown event ! \n");
     xbt_abort();
   }
 
@@ -428,7 +428,7 @@ static surf_action_t cpu_im_execute(void *cpu, double size)
   surf_action_cpu_Cas01_im_t action = NULL;
   cpu_Cas01_im_t CPU = cpu;
 
-  XBT_IN2("(%s,%g)", surf_resource_name(CPU), size);
+  XBT_IN_F("(%s,%g)", surf_resource_name(CPU), size);
   action =
       surf_action_new(sizeof(s_surf_action_cpu_Cas01_im_t), size,
                       surf_cpu_model,
@@ -457,7 +457,7 @@ static surf_action_t cpu_im_action_sleep(void *cpu, double duration)
   if (duration > 0)
     duration = MAX(duration, MAXMIN_PRECISION);
 
-  XBT_IN2("(%s,%g)", surf_resource_name(cpu), duration);
+  XBT_IN_F("(%s,%g)", surf_resource_name(cpu), duration);
   action = (surf_action_cpu_Cas01_im_t) cpu_im_execute(cpu, 1.0);
   GENERIC_ACTION(action).max_duration = duration;
   GENERIC_LMM_ACTION(action).suspended = 2;
@@ -479,7 +479,7 @@ static surf_action_t cpu_im_action_sleep(void *cpu, double duration)
 
 static void cpu_im_action_suspend(surf_action_t action)
 {
-  XBT_IN1("(%p)", action);
+  XBT_IN_F("(%p)", action);
   if (((surf_action_lmm_t) action)->suspended != 2) {
     lmm_update_variable_weight(cpu_im_maxmin_system,
                                ((surf_action_lmm_t) action)->variable,
@@ -495,7 +495,7 @@ static void cpu_im_action_suspend(surf_action_t action)
 static void cpu_im_action_resume(surf_action_t action)
 {
 
-  XBT_IN1("(%p)", action);
+  XBT_IN_F("(%p)", action);
   if (((surf_action_lmm_t) action)->suspended != 2) {
     lmm_update_variable_weight(cpu_im_maxmin_system,
                                ((surf_action_lmm_t) action)->variable,
@@ -514,7 +514,7 @@ static int cpu_im_action_is_suspended(surf_action_t action)
 static void cpu_im_action_set_max_duration(surf_action_t action,
                                            double duration)
 {
-  XBT_IN2("(%p,%g)", action, duration);
+  XBT_IN_F("(%p,%g)", action, duration);
 
   action->max_duration = duration;
   /* insert cpu in modified_cpu set to notice the max duration change */
@@ -525,7 +525,7 @@ static void cpu_im_action_set_max_duration(surf_action_t action,
 static void cpu_im_action_set_priority(surf_action_t action,
                                        double priority)
 {
-  XBT_IN2("(%p,%g)", action, priority);
+  XBT_IN_F("(%p,%g)", action, priority);
   action->priority = priority;
   lmm_update_variable_weight(cpu_im_maxmin_system,
                              ((surf_action_lmm_t) action)->variable,
@@ -539,7 +539,7 @@ static void cpu_im_action_set_priority(surf_action_t action,
 static void cpu_im_action_set_category(surf_action_t action,
                                        const char *category)
 {
-  XBT_IN2("(%p,%s)", action, category);
+  XBT_IN_F("(%p,%s)", action, category);
   action->category = xbt_strdup (category);
   XBT_OUT;
 }
@@ -547,7 +547,7 @@ static void cpu_im_action_set_category(surf_action_t action,
 
 static double cpu_im_action_get_remains(surf_action_t action)
 {
-  XBT_IN1("(%p)", action);
+  XBT_IN_F("(%p)", action);
   /* update remains before return it */
   cpu_im_update_remains(ACTION_GET_CPU(action), surf_get_clock());
   return action->remains;

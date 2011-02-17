@@ -32,24 +32,24 @@ int alice(int argc, char *argv[])
   const char *value;
   char exist[] = "SG_TEST_Hdd";
 
-  INFO0("== Print the properties of the host");
+  XBT_INFO("== Print the properties of the host");
   xbt_dict_foreach(props, cursor, key, data)
-      INFO2("  Host property: '%s' -> '%s'", key, data);
+      XBT_INFO("  Host property: '%s' -> '%s'", key, data);
 
-  INFO0("== Try to get a host property that does not exist");
+  XBT_INFO("== Try to get a host property that does not exist");
   value = MSG_host_get_property_value(host1, noexist);
   xbt_assert0(!value, "The key exists (it's not supposed to)");
 
-  INFO0("== Try to get a host property that does exist");
+  XBT_INFO("== Try to get a host property that does exist");
   value = MSG_host_get_property_value(host1, exist);
   xbt_assert1(value, "\tProperty %s is undefined (where it should)",
               exist);
   xbt_assert2(!strcmp(value, "180"),
               "\tValue of property %s is defined to %s (where it should be 180)",
               exist, value);
-  INFO2("   Property: %s old value: %s", exist, value);
+  XBT_INFO("   Property: %s old value: %s", exist, value);
 
-  INFO0("== Trying to modify a host property");
+  XBT_INFO("== Trying to modify a host property");
   xbt_dict_set(props, exist, xbt_strdup("250"), xbt_free_f);
 
   /* Test if we have changed the value */
@@ -58,7 +58,7 @@ int alice(int argc, char *argv[])
   xbt_assert2(!strcmp(value, "250"),
               "Value of property %s is defined to %s (where it should be 250)",
               exist, value);
-  INFO2("   Property: %s old value: %s", exist, value);
+  XBT_INFO("   Property: %s old value: %s", exist, value);
 
   return 0;
 }
@@ -72,11 +72,11 @@ int bob(int argc, char *argv[])
   const char *noexist = "UnknownProcessProp";
   const char *value;
 
-  INFO0("== Print the properties of the process");
+  XBT_INFO("== Print the properties of the process");
   xbt_dict_foreach(props, cursor, key, data)
-      INFO2("   Process property: %s -> %s", key, data);
+      XBT_INFO("   Process property: %s -> %s", key, data);
 
-  INFO0("== Try to get a process property that does not exist");
+  XBT_INFO("== Try to get a process property that does not exist");
 
   value = MSG_process_get_property_value(MSG_process_self(), noexist);
   xbt_assert0(!value, "The property is defined (it shouldnt)");

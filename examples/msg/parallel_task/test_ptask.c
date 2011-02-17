@@ -41,7 +41,7 @@ int execute(int argc, char *argv[])
 
 
   host_list_size = argc - 3;
-  DEBUG1("host_list_size=%d", host_list_size);
+  XBT_DEBUG("host_list_size=%d", host_list_size);
   m_host_list = calloc(host_list_size, sizeof(m_host_t));
   for (i = 1; i <= host_list_size; i++) {
     m_host_list[i - 1] = MSG_get_host_by_name(argv[i]);
@@ -76,7 +76,7 @@ int execute(int argc, char *argv[])
   xbt_free(m_host_list);
   execution_time = MSG_get_clock() - execution_time;
 
-  INFO1("execution_time=%g ", execution_time);
+  XBT_INFO("execution_time=%g ", execution_time);
 
   return 0;
 }
@@ -96,7 +96,7 @@ int redistribute(int argc, char *argv[])
 
 
   host_list_size = argc - 2;
-  DEBUG1("host_list_size=%d", host_list_size);
+  XBT_DEBUG("host_list_size=%d", host_list_size);
   m_host_list = calloc(host_list_size, sizeof(m_host_t));
   for (i = 1; i <= host_list_size; i++) {
     m_host_list[i - 1] = MSG_get_host_by_name(argv[i]);
@@ -128,7 +128,7 @@ int redistribute(int argc, char *argv[])
   xbt_free(m_host_list);
   redistribution_time = MSG_get_clock() - redistribution_time;
 
-  INFO1("redistribution_time=%g ", redistribution_time);
+  XBT_INFO("redistribution_time=%g ", redistribution_time);
 
   return 0;
 }
@@ -153,7 +153,7 @@ MSG_error_t test_all(const char *platform_file,
 
   res = MSG_main();
 
-  INFO1("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;
 }
 

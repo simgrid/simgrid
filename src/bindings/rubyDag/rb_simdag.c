@@ -54,7 +54,7 @@ static void sd_init(VALUE Class, VALUE args)
   }
   SD_init(&argc, argv);
   free(argv);
-//   INFO0("SD Init...Done");
+//   XBT_INFO("SD Init...Done");
   printf("SD Init...Done\n");
   return;
 
@@ -84,7 +84,7 @@ static void sd_createEnvironment(VALUE class, VALUE plateformFile)
 static void sd_info(VALUE class, VALUE msg)
 {
   const char *s = RSTRING(msg)->ptr;
-//  INFO1("%s",s);
+//  XBT_INFO("%s",s);
   printf("%s\n", s);
 }
 

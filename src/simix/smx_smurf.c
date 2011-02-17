@@ -52,11 +52,11 @@ void SIMIX_request_push()
 
     xbt_swag_insert_at_tail(&issuer->request, req_table);
 
-    DEBUG3("Pushed request %s (%d) of %s",
+    XBT_DEBUG("Pushed request %s (%d) of %s",
         SIMIX_request_name(issuer->request.call), issuer->request.call,
         issuer->name);
 
-    DEBUG3("Yield process '%s' on request of type %s (%d)", issuer->name,
+    XBT_DEBUG("Yield process '%s' on request of type %s (%d)", issuer->name,
         SIMIX_request_name(issuer->request.call), issuer->request.call);
     SIMIX_process_yield();
   } else {
@@ -72,7 +72,7 @@ smx_req_t SIMIX_request_pop(void)
 
   for(i=0; i < nthreads; i++){
     if((req = xbt_swag_extract(req_lists[i]))){
-      DEBUG3("Popped request %s (%d) of %s",
+      XBT_DEBUG("Popped request %s (%d) of %s",
           SIMIX_request_name(req->issuer->request.call),
           req->issuer->request.call,
           req->issuer->name);
@@ -86,7 +86,7 @@ smx_req_t SIMIX_request_pop(void)
 void SIMIX_request_answer(smx_req_t req)
 {
   if (req->issuer != simix_global->maestro_process){
-    DEBUG2("Answer request %s (%d)", SIMIX_request_name(req->call), req->call);
+    XBT_DEBUG("Answer request %s (%d)", SIMIX_request_name(req->call), req->call);
     req->issuer->request.call = REQ_NO_REQ;
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, req->issuer);
   }

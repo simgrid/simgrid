@@ -110,10 +110,10 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 
   r_size = type->size[r_arch];
   l_size = type->size[GRAS_THISARCH];
-  DEBUG4("r_size=%lu l_size=%lu,    src=%p dst=%p", r_size, l_size, src,
+  XBT_DEBUG("r_size=%lu l_size=%lu,    src=%p dst=%p", r_size, l_size, src,
          dst);
 
-  DEBUG2("remote=%c local=%c", gras_arches[r_arch].endian ? 'B' : 'l',
+  XBT_DEBUG("remote=%c local=%c", gras_arches[r_arch].endian ? 'B' : 'l',
          gras_arches[GRAS_THISARCH].endian ? 'B' : 'l');
 
   if (r_size != l_size) {
@@ -141,12 +141,12 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
       int lowOrderFirst = !gras_arches[r_arch].endian ||
           gras_arches[r_arch].endian == gras_arches[GRAS_THISARCH].endian;
 
-      DEBUG5("Resize integer %d from %lu @%p to %lu @%p",
+      XBT_DEBUG("Resize integer %d from %lu @%p to %lu @%p",
              cpt, r_size, r_data, l_size, l_data);
       xbt_assert0(r_data != l_data, "Impossible to resize in place");
 
       if (sizeChange < 0) {
-        DEBUG3("Truncate %d bytes (%s,%s)", -sizeChange,
+        XBT_DEBUG("Truncate %d bytes (%s,%s)", -sizeChange,
                lowOrderFirst ? "lowOrderFirst" : "bigOrderFirst",
                scal.encoding ==
                e_gras_dd_scalar_encoding_sint ? "signed" : "unsigned");
@@ -156,7 +156,7 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
                : r_data, l_size);
 
         if (scal.encoding == e_gras_dd_scalar_encoding_sint) {
-          DEBUG0("This is signed");
+          XBT_DEBUG("This is signed");
           /* Make sure the high order bit of r_data and l_data are the same */
           l_sign = gras_arches[GRAS_THISARCH].endian
               ? ((unsigned char *) l_data + l_size - 1)
@@ -164,7 +164,7 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
           r_sign = gras_arches[r_arch].endian
               ? ((unsigned char *) r_data + r_size - 1)
               : (unsigned char *) r_data;
-          DEBUG2("This is signed (r_sign=%c l_sign=%c", *r_sign, *l_sign);
+          XBT_DEBUG("This is signed (r_sign=%c l_sign=%c", *r_sign, *l_sign);
 
           if ((*r_sign > 127) != (*l_sign > 127)) {
             if (*r_sign > 127)
@@ -174,9 +174,9 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
           }
         }
       } else {
-        DEBUG1("Extend %d bytes", sizeChange);
+        XBT_DEBUG("Extend %d bytes", sizeChange);
         if (scal.encoding != e_gras_dd_scalar_encoding_sint) {
-          DEBUG0("This is signed");
+          XBT_DEBUG("This is signed");
           padding = 0;          /* pad unsigned with 0 */
         } else {
           /* extend sign */
@@ -218,7 +218,7 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
     for (cpt = 0, r_data = dst, l_data = dst; cpt < count; cpt++, r_data = (char *) r_data + l_size,    /* resizing already done */
          l_data = (char *) l_data + l_size) {
 
-      DEBUG1("Flip elm %d", cpt);
+      XBT_DEBUG("Flip elm %d", cpt);
       gras_dd_reverse_bytes(l_data, r_data, l_size);
     }
   }

@@ -42,7 +42,7 @@ static void *smx_ctx_thread_wrapper(void *param);
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
 {
   smx_ctx_base_factory_init(factory);
-  VERB0("Activating thread context factory");
+  XBT_VERB("Activating thread context factory");
 
   (*factory)->create_context = smx_ctx_thread_factory_create_context;
   /* Do not overload that method (*factory)->finalize */
