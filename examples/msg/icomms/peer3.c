@@ -88,7 +88,8 @@ int receiver(int argc, char *argv[])
   int tasks = atof(argv[2]);
   m_task_t *task = xbt_new(m_task_t, tasks);
 
-  int read = sscanf(argv[1], "%d", &id);
+  int read;
+  read = sscanf(argv[1], "%d", &id);
   xbt_assert1(read, "Invalid argument %s\n", argv[1]);
   sprintf(mailbox, "receiver-%d", id);
   MSG_process_sleep(10);

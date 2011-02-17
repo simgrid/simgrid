@@ -66,7 +66,8 @@ int receiver(int argc, char *argv[])
   int id = -1;
   char mailbox[80];
   msg_comm_t res_irecv;
-  int read = sscanf(argv[1], "%d", &id);
+  int read;
+  read = sscanf(argv[1], "%d", &id);
   xbt_assert1(read, "Invalid argument %s\n", argv[1]);
   MSG_process_sleep(10);
   sprintf(mailbox, "receiver-%d", id);

@@ -188,7 +188,8 @@ void smx_ctx_sysv_wrapper(int first, ...)
 void smx_ctx_sysv_suspend(smx_context_t context)
 {
   smx_current_context = (smx_context_t)maestro_context;
-  int rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &((smx_ctx_sysv_t)context)->old_uc);
+  int rv;
+  rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &((smx_ctx_sysv_t)context)->old_uc);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }
@@ -196,7 +197,8 @@ void smx_ctx_sysv_suspend(smx_context_t context)
 void smx_ctx_sysv_resume(smx_context_t context)
 {
   smx_current_context = context; 
-  int rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
+  int rv;
+  rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
 
   xbt_assert0((rv == 0), "Context swapping failure");
 }
@@ -217,7 +219,8 @@ void smx_ctx_sysv_resume_parallel(smx_process_t process)
 {
   smx_context_t context = process->context;
   smx_current_context = (smx_context_t)context;
-  int rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
+  int rv;
+  rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
   smx_current_context = (smx_context_t)maestro_context;
 
   xbt_assert0((rv == 0), "Context swapping failure");

@@ -35,8 +35,8 @@ int execute(int argc, char *argv[])
   int host_list_size;
   double *computation_duration = NULL;
   double *communication_table = NULL;
-  double communication_amount;
-  double computation_amount;
+  double communication_amount = 0;
+  double computation_amount = 0;
   double execution_time;
 
 
@@ -91,7 +91,7 @@ int redistribute(int argc, char *argv[])
   int host_list_size;
   double *computation_duration = NULL;
   double *communication_table = NULL;
-  double communication_amount;
+  double communication_amount = 0;
   double redistribution_time;
 
 

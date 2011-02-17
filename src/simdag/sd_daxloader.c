@@ -390,7 +390,8 @@ xbt_dynar_t SD_daxload(const char *filename)
 
 void STag_dax__adag(void)
 {
-  double version = dax_parse_double(A_dax__adag_version);
+  double version;
+  version = dax_parse_double(A_dax__adag_version);
 
   xbt_assert1((version == 2.1),
               "Expected version 2.1 in <adag> tag, got %f. Fix the parser or your file",

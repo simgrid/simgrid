@@ -3267,7 +3267,7 @@ generic_processing_units_exist(routing_component_t rc, char *element)
 static void generic_src_dst_check(routing_component_t rc, const char *src,
                                   const char *dst)
 {
-
+ #ifndef NDEBUG
   routing_component_t src_as = ((network_element_info_t)
                                 xbt_dict_get_or_null
                                 (global_routing->where_network_elements,
@@ -3286,6 +3286,7 @@ static void generic_src_dst_check(routing_component_t rc, const char *src,
   xbt_assert2(rc == dst_as,
               "The routing component of src and dst is not the same as the network elements belong (%s==%s)",
               rc->name, dst_as->name);
+#endif
 }
 
 static void routing_parse_Sconfig(void)

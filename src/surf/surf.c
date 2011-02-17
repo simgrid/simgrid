@@ -205,6 +205,7 @@ int find_model_description(s_surf_model_description_t * table,
   }
   xbt_assert2(0, "Model '%s' is invalid! Valid models are: %s.", name,
               name_list);
+  return -1;
 }
 
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
