@@ -203,8 +203,8 @@ int find_model_description(s_surf_model_description_t * table,
     strcat(name_list, ", ");
     strcat(name_list, table[i].name);
   }
-  xbt_assert2(0, "Model '%s' is invalid! Valid models are: %s.", name,
-              name_list);
+  xbt_die(bprintf("Model '%s' is invalid! Valid models are: %s.", name,
+              name_list));
   return -1;
 }
 

@@ -180,7 +180,7 @@ int forwarder(int argc, char *argv[])
       i++;
     } else {
       XBT_INFO("Hey ?! What's up ? ");
-      xbt_assert0(0, "Unexpected behavior");
+      xbt_die( "Unexpected behavior");
     }
   }
 

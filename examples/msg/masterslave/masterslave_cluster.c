@@ -124,8 +124,8 @@ int slave(int argc, char *argv[])
       MSG_task_destroy(task);
     } else {
       XBT_INFO("Hey ?! What's up ? ");
-      xbt_assert0(0, "Unexpected behavior");
-    }
+      xbt_die("Unexpected behavior");
+				    }
   }
   XBT_INFO("I'm done. See you!");
   return 0;

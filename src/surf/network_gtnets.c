@@ -42,7 +42,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
            link_count, name, lat, bw);
 
   if (gtnets_add_link(link_count, bw, lat)) {
-	  xbt_assert0(0, "Cannot create GTNetS link");
+	  xbt_die("Cannot create GTNetS link");
   }
   gtnets_link->id = link_count;
 
@@ -69,7 +69,7 @@ static void route_new(int src_id, int dst_id, xbt_dynar_t links,
   }
 
   if (gtnets_add_route(src_id, dst_id, gtnets_links, nb_link)) {
-    xbt_assert0(0, "Cannot create GTNetS route");
+    xbt_die("Cannot create GTNetS route");
   }
   XBT_OUT();
 }
@@ -78,7 +78,7 @@ static void route_onehop_new(int src_id, int dst_id,
                              network_link_GTNETS_t link)
 {
   if (gtnets_add_onehop_route(src_id, dst_id, link->id)) {
-    xbt_assert0(0, "Cannot create GTNetS route");
+    xbt_die("Cannot create GTNetS route");
   }
 }
 
@@ -174,8 +174,7 @@ static void define_callbacks(const char *file)
 
 static int resource_used(void *resource_id)
 {
-  xbt_assert0(0,
-              "The resource_used feature is not implemented in GTNets model");
+  xbt_die("The resource_used feature is not implemented in GTNets model");
 }
 
 static int action_unref(surf_action_t action)
@@ -195,13 +194,13 @@ static int action_unref(surf_action_t action)
 
 static void action_cancel(surf_action_t action)
 {
-  xbt_assert0(0, "Cannot cancel GTNetS flow");
+  xbt_die("Cannot cancel GTNetS flow");
   return;
 }
 
 static void action_recycle(surf_action_t action)
 {
-  xbt_assert0(0, "Cannot recycle GTNetS flow");
+  xbt_die("Cannot recycle GTNetS flow");
   return;
 }
 
@@ -255,12 +254,10 @@ static void update_actions_state(double now, double delta)
     num_flows = 0;
 
     if (gtnets_run_until_next_flow_completion(&metadata, &num_flows)) {
-      xbt_assert0(0,
-                  "Cannot run GTNetS simulation until next flow completion");
+      xbt_die("Cannot run GTNetS simulation until next flow completion");
     }
     if (num_flows < 1) {
-      xbt_assert0(0,
-                  "GTNetS simulation couldn't find a flow that would complete");
+      xbt_die("GTNetS simulation couldn't find a flow that would complete");
     }
 
     xbt_swag_foreach(action, running_actions) {
@@ -315,7 +312,7 @@ static void update_actions_state(double now, double delta)
 
   } else {                      /* run for a given number of seconds */
     if (gtnets_run(delta)) {
-      xbt_assert0(0, "Cannot run GTNetS simulation");
+      xbt_die("Cannot run GTNetS simulation");
     }
   }
 
@@ -326,7 +323,7 @@ static void update_resource_state(void *id,
                                   tmgr_trace_event_t event_type,
                                   double value, double date)
 {
-  xbt_assert0(0, "Cannot update model state for GTNetS simulation");
+  xbt_die("Cannot update model state for GTNetS simulation");
 }
 
 /* Max durations are not supported */
@@ -357,8 +354,8 @@ static surf_action_t communicate(const char *src_name,
 
   /* Add a flow to the GTNets Simulation, associated to this action */
   if (gtnets_create_flow(src, dst, size, (void *) action) < 0) {
-    xbt_assert2(0, "Not route between host %s and host %s", src_name,
-                dst_name);
+    xbt_die(bprintf("Not route between host %s and host %s", src_name,
+                dst_name));
   }
 #ifdef HAVE_TRACING
   TRACE_surf_gtnets_communicate(action, src, dst);
@@ -417,7 +414,7 @@ static void surf_network_model_init_internal(void)
 
   /* Added the initialization for GTNetS interface */
   if (gtnets_initialize(sg_tcp_gamma)) {
-    xbt_assert0(0, "Impossible to initialize GTNetS interface");
+    xbt_die("Impossible to initialize GTNetS interface");
   }
 
   routing_model_create(sizeof(network_link_GTNETS_t), NULL, NULL);

@@ -358,7 +358,7 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
       
   }
   else{
-    xbt_assert0(0, "Shouldn't be here");
+    xbt_die("Shouldn't be here");
   }
 
   return 0;

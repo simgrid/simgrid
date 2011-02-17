@@ -221,7 +221,7 @@ void test1(method_t method)
             a - x, lmm_variable_getvalue(R_1_2_3) - (a - x));
     }
   } else {
-    xbt_assert0(0, "Invalid method");
+    xbt_die( "Invalid method");
   }
 
   PRINT_VAR(R_1_2_3);
@@ -273,7 +273,7 @@ void test2(method_t method)
   } else if (method == LAGRANGE_RENO) {
     lagrange_solve(Sys);
   } else {
-    xbt_assert0(0, "Invalid method");
+    xbt_die("Invalid method");
   }
 
   PRINT_VAR(T1);
@@ -445,7 +445,7 @@ void test3(method_t method)
   } else if (method == LAGRANGE_RENO) {
     lagrange_solve(Sys);
   } else {
-    xbt_assert0(0, "Invalid method");
+    xbt_die("Invalid method");
   }
 
   for (j = 0; j < 16; j++) {

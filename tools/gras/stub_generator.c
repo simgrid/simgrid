@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
     deployment_file = argv[i];
     surf_parse_open(deployment_file);
     if (surf_parse())
-      xbt_assert1(0, "Parse error in %s", deployment_file);
+      xbt_die(bprintf("Parse error in %s", deployment_file));
 
     surf_parse_close();
   }

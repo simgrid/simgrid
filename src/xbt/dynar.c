@@ -818,7 +818,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   xbt_test_add0("==== Traverse the empty dynar");
   d = xbt_dynar_new(sizeof(int), NULL);
   xbt_dynar_foreach(d, cursor, i) {
-    xbt_assert0(0, "Damnit, there is something in the empty dynar");
+    xbt_die( "Damnit, there is something in the empty dynar");
   }
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
   xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */

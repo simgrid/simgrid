@@ -102,7 +102,7 @@ int receiver(int argc, char *argv[])
     XBT_INFO("Communic. time %le", communication_time);
     XBT_INFO("--- la %f ----", communication_time);
   } else {
-    xbt_assert0(0, "Unexpected behavior");
+    xbt_die("Unexpected behavior");
   }
 
 
@@ -119,7 +119,7 @@ int receiver(int argc, char *argv[])
     XBT_INFO("Communic. time %le", communication_time);
     XBT_INFO("--- bw %f ----", task_comm_size_bw / communication_time);
   } else {
-    xbt_assert0(0, "Unexpected behavior");
+    xbt_die("Unexpected behavior");
   }
 
 

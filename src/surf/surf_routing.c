@@ -2504,9 +2504,9 @@ static char *remplace(char *value, const char **src_list, int src_size,
         param_list = dst_list;
         param_size = dst_size;
       } else {
-        xbt_assert2(0,
+        xbt_die(bprintf(
                     "bad string parameter, support only \"src\" and \"dst\", at offset: %d (\"%s\")",
-                    i, value);
+                    i, value));
       }
       i = i + 3;
 
@@ -2594,7 +2594,7 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
       (routing_component_rulebased_t) rc;
 
   int are_processing_units=0;
-  xbt_dynar_t rule_list = NULL;
+  xbt_dynar_t rule_list;
   if (xbt_dict_get_or_null(routing->dict_processing_units, src)
       && xbt_dict_get_or_null(routing->dict_processing_units, dst)) {
     are_processing_units = 1;
@@ -2605,9 +2605,8 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
     are_processing_units = 0;
     rule_list = routing->list_ASroute;
   } else
-    xbt_assert2(NULL,
-                "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
-                src, dst);
+    xbt_die(bprintf("Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
+                src, dst));
 
   int rc_src = -1;
   int rc_dst = -1;

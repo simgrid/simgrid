@@ -180,7 +180,7 @@ m_host_t *MSG_get_host_table(void)
 int MSG_get_host_msgload(m_host_t h)
 {
   xbt_assert0((h != NULL), "Invalid parameters");
-  xbt_assert0(0, "Not implemented yet");
+  xbt_die( "Not implemented yet");
 
   return (0);
 }

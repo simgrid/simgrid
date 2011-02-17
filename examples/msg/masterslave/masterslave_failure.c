@@ -96,7 +96,7 @@ int master(int argc, char *argv[])
       MSG_task_destroy(task);
     } else {
       XBT_INFO("Hey ?! What's up ? ");
-      xbt_assert0(0, "Unexpected behavior");
+      xbt_die( "Unexpected behavior");
     }
   }
 
@@ -124,8 +124,8 @@ int master(int argc, char *argv[])
       MSG_task_destroy(task);
     } else {
       XBT_INFO("Hey ?! What's up ? ");
-      xbt_assert2(0, "Unexpected behavior with '%s': %d", slaves[i]->name,
-                  a);
+      xbt_die(bprintf("Unexpected behavior with '%s': %d", slaves[i]->name,
+                  a));
     }
   }
 
@@ -166,7 +166,7 @@ int slave(int argc, char *argv[])
         return 0;
       } else {
         XBT_INFO("Hey ?! What's up ? ");
-        xbt_assert0(0, "Unexpected behavior");
+        xbt_die("Unexpected behavior");
       }
     } else if (a == MSG_HOST_FAILURE) {
       XBT_INFO
@@ -176,7 +176,7 @@ int slave(int argc, char *argv[])
       XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
     } else {
       XBT_INFO("Hey ?! What's up ? ");
-      xbt_assert0(0, "Unexpected behavior");
+      xbt_die("Unexpected behavior");
     }
   }
   XBT_INFO("I'm done. See you!");

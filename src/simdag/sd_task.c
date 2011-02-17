@@ -158,7 +158,7 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     task->state_set = sd_global->failed_task_set;
     break;
   default:
-    xbt_assert0(0, "Invalid state");
+    xbt_die( "Invalid state");
   }
   xbt_swag_insert(task, task->state_set);
   task->state = new_state;

@@ -111,7 +111,7 @@ int slave(int argc, char *argv[])
 
   if (a != MSG_OK) {
     XBT_INFO("Hey?! What's up?");
-    xbt_assert0(0, "Unexpected behavior.");
+    xbt_die("Unexpected behavior.");
   }
 
   elapsed_time = MSG_get_clock() - start_time;

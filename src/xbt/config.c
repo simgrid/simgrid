@@ -547,8 +547,8 @@ void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa)
     break;
 
   default:
-    xbt_assert2(0, "Config element variable %s not valid (type=%d)", name,
-                type);
+    xbt_die(bprintf("Config element variable %s not valid (type=%d)", name,
+                type));
   }
 }
 
@@ -645,9 +645,9 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
     val = strchr(name, ':');
     if (!val) {
       free(optionlist_cpy);
-      xbt_assert1(FALSE,
+      xbt_die(bprintf(
                   "Option '%s' badly formated. Should be of the form 'name:value'",
-                  name);
+                  name));
     }
     *(val++) = '\0';
 
@@ -679,9 +679,9 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
         i = strtol(val, &val, 0);
         if (val == NULL) {
           free(optionlist_cpy);
-          xbt_assert1(FALSE,
+          xbt_die(bprintf(
                       "Value of option %s not valid. Should be an integer",
-                      name);
+                      name));
         }
 
         xbt_cfg_set_int(cfg, name, i);  /* throws */
@@ -691,9 +691,9 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
         d = strtod(val, &val);
         if (val == NULL) {
           free(optionlist_cpy);
-          xbt_assert1(FALSE,
+          xbt_die(bprintf(
                       "Value of option %s not valid. Should be a double",
-                      name);
+                      name));
         }
 
         xbt_cfg_set_double(cfg, name, d);       /* throws */
@@ -704,18 +704,18 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
         val = strchr(val, ':');
         if (!val) {
           free(optionlist_cpy);
-          xbt_assert1(FALSE,
+          xbt_die(bprintf(
                       "Value of option %s not valid. Should be an peer (machine:port)",
-                      name);
+                      name));
         }
 
         *(val++) = '\0';
         i = strtol(val, &val, 0);
         if (val == NULL) {
           free(optionlist_cpy);
-          xbt_assert1(FALSE,
+          xbt_die(bprintf(
                       "Value of option %s not valid. Should be an peer (machine:port)",
-                      name);
+                      name));
         }
 
         xbt_cfg_set_peer(cfg, name, str, i);    /* throws */
