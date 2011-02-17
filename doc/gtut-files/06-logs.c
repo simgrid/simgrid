@@ -18,7 +18,7 @@ int server_kill_cb(gras_msg_cb_ctx_t ctx, void *payload)
   gras_socket_t client = gras_msg_cb_ctx_from(ctx);
   server_data_t *globals = (server_data_t *) gras_userdata_get();
 
-  CRITICAL2("Argh, killed by %s:%d! Bye folks...",
+  XBT_CRITICAL("Argh, killed by %s:%d! Bye folks...",
             gras_socket_peer_name(client), gras_socket_peer_port(client));
 
   globals->killed = 1;
@@ -30,7 +30,7 @@ int server_hello_cb(gras_msg_cb_ctx_t ctx, void *payload)
 {
   gras_socket_t client = gras_msg_cb_ctx_from(ctx);
 
-  INFO2("Cool, we received the message from %s:%d.",
+  XBT_INFO("Cool, we received the message from %s:%d.",
         gras_socket_peer_name(client), gras_socket_peer_port(client));
 
   return 0;
@@ -72,17 +72,17 @@ int client(int argc, char *argv[])
   gras_msgtype_declare("kill", NULL);
   mysock = gras_socket_server_range(1024, 10000, 0, 0);
 
-  VERB1("Client ready; listening on %d", gras_socket_my_port(mysock));
+  XBT_VERB("Client ready; listening on %d", gras_socket_my_port(mysock));
 
   gras_os_sleep(1.5);           /* sleep 1 second and half */
   toserver = gras_socket_client(argv[1], atoi(argv[2]));
 
   gras_msg_send(toserver, "hello", NULL);
-  INFO1("we sent the data to the server on %s. Let's do it again for fun",
+  XBT_INFO("we sent the data to the server on %s. Let's do it again for fun",
         gras_socket_peer_name(toserver));
   gras_msg_send(toserver, "hello", NULL);
 
-  INFO0("Ok. Enough. Have a rest, and then kill the server");
+  XBT_INFO("Ok. Enough. Have a rest, and then kill the server");
   gras_os_sleep(5);             /* sleep 1 second and half */
   gras_msg_send(toserver, "kill", NULL);
 

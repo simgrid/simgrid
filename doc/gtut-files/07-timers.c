@@ -18,7 +18,7 @@ int server_kill_cb(gras_msg_cb_ctx_t ctx, void *payload)
   gras_socket_t client = gras_msg_cb_ctx_from(ctx);
   server_data_t *globals = (server_data_t *) gras_userdata_get();
 
-  CRITICAL2("Argh, killed by %s:%d! Bye folks...",
+  XBT_CRITICAL("Argh, killed by %s:%d! Bye folks...",
             gras_socket_peer_name(client), gras_socket_peer_port(client));
 
   globals->killed = 1;
@@ -30,7 +30,7 @@ int server_hello_cb(gras_msg_cb_ctx_t ctx, void *payload)
 {
   gras_socket_t client = gras_msg_cb_ctx_from(ctx);
 
-  INFO2("Cool, we received the message from %s:%d.",
+  XBT_INFO("Cool, we received the message from %s:%d.",
         gras_socket_peer_name(client), gras_socket_peer_port(client));
 
   return 0;
@@ -74,7 +74,7 @@ void client_do_hello(void)
   client_data_t *globals = (client_data_t *) gras_userdata_get();
 
   gras_msg_send(globals->toserver, "hello", NULL);
-  INFO0("Hello sent to server");
+  XBT_INFO("Hello sent to server");
 }                               /* end_of_client_do_hello */
 
 void client_do_stop(void)
@@ -82,12 +82,12 @@ void client_do_stop(void)
   client_data_t *globals = (client_data_t *) gras_userdata_get();
 
   gras_msg_send(globals->toserver, "kill", NULL);
-  INFO0("Kill sent to server");
+  XBT_INFO("Kill sent to server");
 
   gras_timer_cancel_repeat(0.5, client_do_hello);
 
   globals->done = 1;
-  INFO0("Break the client's while loop");
+  XBT_INFO("Break the client's while loop");
 }                               /* end_of_client_do_stop */
 
 int client(int argc, char *argv[])
@@ -101,7 +101,7 @@ int client(int argc, char *argv[])
   gras_msgtype_declare("kill", NULL);
   mysock = gras_socket_server_range(1024, 10000, 0, 0);
 
-  VERB1("Client ready; listening on %d", gras_socket_my_port(mysock));
+  XBT_VERB("Client ready; listening on %d", gras_socket_my_port(mysock));
 
   globals = gras_userdata_new(client_data_t *);
   globals->done = 0;
@@ -109,10 +109,10 @@ int client(int argc, char *argv[])
   gras_os_sleep(1.5);           /* sleep 1 second and half */
   globals->toserver = gras_socket_client(argv[1], atoi(argv[2]));
 
-  INFO0("Programming the repetitive action with a frequency of 0.5 sec");
+  XBT_INFO("Programming the repetitive action with a frequency of 0.5 sec");
   gras_timer_repeat(0.5, client_do_hello);
 
-  INFO0("Programming the delayed action in 5 secs");
+  XBT_INFO("Programming the delayed action in 5 secs");
   gras_timer_delay(5, client_do_stop);
 
   while (!globals->done) {

@@ -18,7 +18,7 @@ int server_kill_cb(gras_msg_cb_ctx_t ctx, void *payload)
   gras_socket_t client = gras_msg_cb_ctx_from(ctx);
   server_data_t *globals = (server_data_t *) gras_userdata_get();
 
-  CRITICAL2("Argh, killed by %s:%d! Bye folks, I'm out of here...",
+  XBT_CRITICAL("Argh, killed by %s:%d! Bye folks, I'm out of here...",
             gras_socket_peer_name(client), gras_socket_peer_port(client));
 
   globals->killed = 1;
@@ -41,10 +41,10 @@ int server(int argc, char *argv[])
 
   if (argc > 1 && !strcmp(argv[1], "--cheat")) {
     mysock = gras_socket_server(9999);
-    INFO0("Hi! hi! I'm not in the search range, but in 9999...");
+    XBT_INFO("Hi! hi! I'm not in the search range, but in 9999...");
   } else {
     mysock = gras_socket_server((rand() % 10) + 3000);
-    INFO1("Ok, I'm hidden on port %d. Hope for the best.",
+    XBT_INFO("Ok, I'm hidden on port %d. Hope for the best.",
           gras_socket_my_port(mysock));
   }
 
@@ -69,7 +69,7 @@ int client(int argc, char *argv[])
   gras_msgtype_declare("kill", NULL);
   mysock = gras_socket_server_range(1024, 10000, 0, 0);
 
-  VERB0("Run little server, run. I'll get you. (sleep 1.5 sec)");
+  XBT_VERB("Run little server, run. I'll get you. (sleep 1.5 sec)");
   gras_os_sleep(1.5);
 
   for (port = 3000, found = 0; port < 3010 && !found; port++) {
@@ -78,14 +78,14 @@ int client(int argc, char *argv[])
       gras_msg_send(toserver, "kill", NULL);
       gras_socket_close(toserver);
       found = 1;
-      INFO1("Yeah! I found the server on %d! It's eradicated by now.",
+      XBT_INFO("Yeah! I found the server on %d! It's eradicated by now.",
             port);
     }
     CATCH(e) {
       xbt_ex_free(e);
     }
     if (!found)
-      INFO1("Damn, the server is not on %d", port);
+      XBT_INFO("Damn, the server is not on %d", port);
   }                             /* end_of_loop */
 
   if (!found)

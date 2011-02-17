@@ -182,14 +182,10 @@ compile with the -Wall option, gcc will warn you for unmatched arguments, ie
 when you pass a pointer to a string where an integer was specified by the
 format. This is usually a good idea.
 
-Because some C compilers do not support vararg macros, there is a version of
-the macro for any number of arguments from 0 to 6. The macro name ends with
-the total number of arguments.
-
 Here is an example of the most basic type of macro. This is a logging
 request with priority <i>warning</i>.
 
-<code>CLOG5(MyCat, gras_log_priority_warning, "Values are: %d and '%s'", 5,
+<code>XBT_CLOG(MyCat, gras_log_priority_warning, "Values are: %d and '%s'", 5,
 "oops");</code>
 
 A logging request is said to be enabled if its priority is higher than or
@@ -202,7 +198,7 @@ example, one of the standard priorities is used, then there is a convenience
 macro that is typically used instead. For example, the above example is
 equivalent to the shorter:
 
-<code>CWARN4(MyCat, "Values are: %d and '%s'", 5, "oops");</code>
+<code>XBT_CWARN(MyCat, "Values are: %d and '%s'", 5, "oops");</code>
 
 \section log_API_isenabled 2.3 Checking if a particular category/priority is enabled
 
@@ -220,7 +216,7 @@ If \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, Parent) or
 \ref XBT_LOG_NEW_DEFAULT_CATEGORY(MyCat) is used to create the
 category, then the even shorter form can be used:
 
-<code>WARN3("Values are: %s and '%d'", 5, "oops");</code>
+<code>XBT_WARN("Values are: %s and '%d'", 5, "oops");</code>
 
 Only one default category can be created per file, though multiple
 non-defaults can be created and used.
@@ -230,27 +226,21 @@ non-defaults can be created and used.
 First of all, each module should register its own category into the categories
 tree using \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY.
 
-Then, logging should be done with the DEBUG<n>, VERB<n>, INFO<n>, WARN<n>,
-ERROR<n> or CRITICAL<n> macro families (such as #DEBUG10, #VERB10,
-#INFO10, #WARN10, #ERROR10 and #CRITICAL10). For each group, there is at
-least 11 different macros (like DEBUG0, DEBUG1, DEBUG2, DEBUG3, DEBUG4 and
-DEBUG5, DEBUG6, DEBUG7, DEBUG8, DEBUG9, DEBUG10), only differing in the number of arguments passed along the format.
-This is because we want SimGrid itself to keep compilable on ancient
-compiler not supporting variable number of arguments to macros. But we
-should provide a macro simpler to use for the users not interested in SP3
-machines (FIXME).
+Then, logging should be done with the #XBT_DEBUG, #XBT_VERB, #XBT_INFO,
+#XBT_WARN, #XBT_ERROR and #XBT_CRITICAL macros.
 
 Under GCC, these macro check there arguments the same way than printf does. So,
 if you compile with -Wall, the following code will issue a warning:
-<code>DEBUG2("Found %s (id %f)", some_string, a_double)</code>
+<code>XBT_DEBUG("Found %s (id %d)", some_string, a_double)</code>
 
 If you want to specify the category to log onto (for example because you
 have more than one category per file, add a C before the name of the log
-producing macro (ie, use #CDEBUG10, #CVERB10, #CINFO10, #CWARN10, #CERROR10 and
-#CCRITICAL10 and friends), and pass the category name as first argument.
+producing macro (ie, use #XBT_CDEBUG, #XBT_CVERB, #XBT_CINFO, #XBT_CWARN,
+#XBT_CERROR and #XBT_CCRITICAL and friends), and pass the category name as
+first argument.
 
 The TRACE priority is not used the same way than the other. You should use
-the #XBT_IN, XBT_IN<n> (up to #XBT_IN5), #XBT_OUT and #XBT_HERE macros
+the #XBT_IN, #XBT_IN_F, #XBT_OUT and #XBT_HERE macros
 instead.
 
 \section log_API_example 2.6 Example of use
@@ -269,17 +259,17 @@ int main() {
        xbt_log_control_set("SA.thresh:3");
 
        / * This request is enabled, because WARNING >= INFO. * /
-       CWARN0(VSS, "Low fuel level.");
+       XBT_CWARN(VSS, "Low fuel level.");
 
        / * This request is disabled, because DEBUG < INFO. * /
-       CDEBUG0(VSS, "Starting search for nearest gas station.");
+       XBT_CDEBUG(VSS, "Starting search for nearest gas station.");
 
        / * The default category SA inherits its priority from VSS. Thus,
           the following request is enabled because INFO >= INFO.  * /
-       INFO0("Located nearest gas station.");
+       XBT_INFO("Located nearest gas station.");
 
        / * This request is disabled, because DEBUG < INFO. * /
-       DEBUG0("Exiting gas station search");
+       XBT_DEBUG("Exiting gas station search");
 }
 \endverbatim
 

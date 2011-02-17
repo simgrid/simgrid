@@ -16,7 +16,7 @@ int server_done_cb(gras_msg_cb_ctx_t ctx, void *payload)
 {
   server_data_t *globals = (server_data_t *) gras_userdata_get();
   globals->done = 1;
-  INFO0("Server done");
+  XBT_INFO("Server done");
 
   return 0;
 }                               /* end_of_done_callback */
@@ -38,9 +38,9 @@ int server_convert_i2a_cb(gras_msg_cb_ctx_t ctx, void *payload)
   char *result;
   char *p;
 
-  INFO1("Convert %ld to string", data);
+  XBT_INFO("Convert %ld to string", data);
   result = bprintf("%ld", data);
-  INFO2("%ld converted to string: %s", data, result);
+  XBT_INFO("%ld converted to string: %s", data, result);
 
   gras_msg_rpcreturn(60, ctx, &result);
   free(result);
@@ -53,7 +53,7 @@ int server_convert_a2i_cb(gras_msg_cb_ctx_t ctx, void *payload)
   long result;
   char *p;
 
-  INFO1("Convert %s to long", string);
+  XBT_INFO("Convert %s to long", string);
   result = strtol(string, &p, 10);
 
   if (*p != '\0')
@@ -101,26 +101,26 @@ int client(int argc, char *argv[])
   message_declaration();
   mysock = gras_socket_server_range(1024, 10000, 0, 0);
 
-  VERB1("Client ready; listening on %d", gras_socket_my_port(mysock));
+  XBT_VERB("Client ready; listening on %d", gras_socket_my_port(mysock));
 
   gras_os_sleep(1.5);           /* sleep 1 second and half */
   toserver = gras_socket_client(argv[1], atoi(argv[2]));
 
   long long_to_convert = 4321;
   char *string_result;
-  INFO1("Ask to convert %ld", long_to_convert);
+  XBT_INFO("Ask to convert %ld", long_to_convert);
   gras_msg_rpccall(toserver, 60, "convert i2a", &long_to_convert,
                    &string_result);
-  INFO2("The server says that %ld is equal to \"%s\".", long_to_convert,
+  XBT_INFO("The server says that %ld is equal to \"%s\".", long_to_convert,
         string_result);
   free(string_result);
 
   char *string_to_convert = "1234";
   long long_result;
-  INFO1("Ask to convert %s", string_to_convert);
+  XBT_INFO("Ask to convert %s", string_to_convert);
   gras_msg_rpccall(toserver, 60, "convert a2i", &string_to_convert,
                    &long_result);
-  INFO2("The server says that \"%s\" is equal to %d.", string_to_convert,
+  XBT_INFO("The server says that \"%s\" is equal to %d.", string_to_convert,
         long_result);
 
   xbt_ex_t e;
@@ -129,16 +129,16 @@ int client(int argc, char *argv[])
     gras_msg_rpccall(toserver, 60, "convert a2i", &string_to_convert,
                      &long_result);
   } CATCH(e) {
-    INFO1
+    XBT_INFO
         ("The server refuses to convert %s. Here is the received exception:",
          string_to_convert);
     xbt_ex_display(&e);
     xbt_ex_free(e);
-    INFO0("Again, previous exception was excepted");
+    XBT_INFO("Again, previous exception was excepted");
   }
 
   gras_msg_send(toserver, "done", NULL);
-  INFO0("Stopped the server");
+  XBT_INFO("Stopped the server");
 
   gras_exit();
   return 0;

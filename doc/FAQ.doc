@@ -923,7 +923,7 @@ int sender()
                                   calloc(1,sizeof(double)));
   *((double*) task->data) = MSG_get_clock();
   MSG_task_put(task, slaves[i % slaves_count], PORT_22);
-  INFO0("Send completed");
+  XBT_INFO("Send completed");
   return 0;
 }
 int receiver()
@@ -936,7 +936,7 @@ int receiver()
   time2 = MSG_get_clock();
   if(time1<*((double *)task->data))
      time1 = *((double *) task->data);
-  INFO1("Communication time :  \"%f\" ", time2-time1);
+  XBT_INFO("Communication time :  \"%f\" ", time2-time1);
   free(task->data);
   MSG_task_destroy(task);
   return 0;

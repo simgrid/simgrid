@@ -391,331 +391,324 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #ifdef _XBT_WIN32
 #include <stdlib.h>             /* calloc */
-#define _XBT_LOG_PRE(catv, prio) do {                            \
-     if (_XBT_LOG_ISENABLEDV(catv, prio)) {                      \
-       s_xbt_log_event_t _log_ev;                                \
-       _log_ev.cat = &(catv);                                    \
-       _log_ev.priority = (prio);                                \
-       _log_ev.fileName = __FILE__;                              \
-       _log_ev.functionName = _XBT_FUNCTION;                     \
-       _log_ev.lineNum = __LINE__;                               \
-       _log_ev.buffer = (char*) calloc(XBT_LOG_BUFF_SIZE + 1, sizeof(char)); \
-       _xbt_log_event_log(&_log_ev
+#define _XBT_LOG_EV_BUFFER_ZERO() \
+  _log_ev.buffer = (char*) calloc(XBT_LOG_BUFF_SIZE + 1, sizeof(char))
 #else
 #include <string.h>             /* memset */
-#define _XBT_LOG_PRE(catv, prio) do {                            \
-     if (_XBT_LOG_ISENABLEDV(catv, prio)) {                      \
-       s_xbt_log_event_t _log_ev;                                \
-       _log_ev.cat = &(catv);                                    \
-       _log_ev.priority = (prio);                                \
-       _log_ev.fileName = __FILE__;                              \
-       _log_ev.functionName = _XBT_FUNCTION;                     \
-       _log_ev.lineNum = __LINE__;                               \
-       memset(_log_ev.buffer, 0, XBT_LOG_BUFF_SIZE);             \
-       _xbt_log_event_log(&_log_ev
-
+#define _XBT_LOG_EV_BUFFER_ZERO() \
+  memset(_log_ev.buffer, 0, XBT_LOG_BUFF_SIZE)
 #endif
-
-#define _XBT_LOG_POST                          \
-                        );                      \
-     } } while(0)
-
 
 /* Logging Macros */
 
 #ifdef XBT_LOG_MAYDAY
-# define CLOG0(c, p, f)                   fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__)
-# define CLOG1(c, p, f,a1)                fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1)
-# define CLOG2(c, p, f,a1,a2)             fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2)
-# define CLOG3(c, p, f,a1,a2,a3)          fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3)
-# define CLOG4(c, p, f,a1,a2,a3,a4)       fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4)
-# define CLOG5(c, p, f,a1,a2,a3,a4,a5)    fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5)
-# define CLOG6(c, p, f,a1,a2,a3,a4,a5,a6) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6)
-# define CLOG7(c, p, f,a1,a2,a3,a4,a5,a6,a7) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7)
-# define CLOG8(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8)
-# define CLOG9(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8,a9)
-# define CLOG10(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+# define XBT_CLOG_(cat, prio, f, ...) \
+  fprintf(stderr,"%s:%d:" f "%c", __FILE__, __LINE__, __VA_ARGS__)
+# define XBT_CLOG(cat, prio, ...) XBT_CLOG_(cat, prio, __VA_ARGS__, '\n')
+# define XBT_LOG(...) XBT_CLOG(0, __VA_ARGS__)
 #else
-# define CLOG0(c, p, f)                   _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f _XBT_LOG_POST
-# define CLOG1(c, p, f,a1)                _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1 _XBT_LOG_POST
-# define CLOG2(c, p, f,a1,a2)             _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2 _XBT_LOG_POST
-# define CLOG3(c, p, f,a1,a2,a3)          _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3 _XBT_LOG_POST
-# define CLOG4(c, p, f,a1,a2,a3,a4)       _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4 _XBT_LOG_POST
-# define CLOG5(c, p, f,a1,a2,a3,a4,a5)    _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5 _XBT_LOG_POST
-# define CLOG6(c, p, f,a1,a2,a3,a4,a5,a6) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6 _XBT_LOG_POST
-# define CLOG7(c, p, f,a1,a2,a3,a4,a5,a6,a7) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7 _XBT_LOG_POST
-# define CLOG8(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8 _XBT_LOG_POST
-# define CLOG9(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8,a9 _XBT_LOG_POST
-# define CLOG10(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10 _XBT_LOG_POST
+# define XBT_CLOG_(catv, prio, ...)                                     \
+  do {                                                                  \
+    if (_XBT_LOG_ISENABLEDV(catv, prio)) {                              \
+      s_xbt_log_event_t _log_ev;                                        \
+      _log_ev.cat = &(catv);                                            \
+      _log_ev.priority = (prio);                                        \
+      _log_ev.fileName = __FILE__;                                      \
+      _log_ev.functionName = _XBT_FUNCTION;                             \
+      _log_ev.lineNum = __LINE__;                                       \
+      _XBT_LOG_EV_BUFFER_ZERO();                                        \
+      _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
+    }                                                                   \
+  }  while (0)
+# define XBT_CLOG(cat, prio, ...) XBT_CLOG_(_XBT_LOGV(cat), prio, __VA_ARGS__)
+# define XBT_LOG(...) XBT_CLOG_((*_XBT_LOGV(default)), __VA_ARGS__)
 #endif
-#define CDEBUG0(c, f)                   CLOG0(c, xbt_log_priority_debug, f)
-#define CDEBUG1(c, f,a1)                CLOG1(c, xbt_log_priority_debug, f,a1)
-#define CDEBUG2(c, f,a1,a2)             CLOG2(c, xbt_log_priority_debug, f,a1,a2)
-#define CDEBUG3(c, f,a1,a2,a3)          CLOG3(c, xbt_log_priority_debug, f,a1,a2,a3)
-#define CDEBUG4(c, f,a1,a2,a3,a4)       CLOG4(c, xbt_log_priority_debug, f,a1,a2,a3,a4)
-#define CDEBUG5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5)
-#define CDEBUG6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6)
-#define CDEBUG7(c, f,a1,a2,a3,a4,a5,a6,a7) CLOG7(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7)
-#define CDEBUG8(c, f,a1,a2,a3,a4,a5,a6,a7,a8) CLOG8(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define CDEBUG9(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) CLOG9(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
+
 /** @ingroup XBT_log
  *  @hideinitializer
  * \param c the category on which to log
  * \param f the format string
- * \param a1 first argument of the format
- * \param a2 second argument of the format
- * \param a3 third argument of the format
- * \param a4 fourth argument of the format
- * \param a5 fifth argument of the format
- * \param a6 sixth argument of the format
- * \param a7 seventh argument of the format
- * \param a8 eighth argument of the format
- * \param a9 ninth argument of the format
- * \param a10 tenth argument of the format
- *  @brief Log an event at the DEBUG priority on the specified category with these args (CDEBUGn exists for any n<10).
+ * \param ... arguments of the format
+ *  @brief Log an event at the DEBUG priority on the specified category with these args.
  */
-#define CDEBUG10(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) CLOG10(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+#define XBT_CDEBUG(c, ...) XBT_CLOG(c, xbt_log_priority_debug, __VA_ARGS__)
 
-#define CVERB0(c, f)                   CLOG0(c, xbt_log_priority_verbose, f)
-#define CVERB1(c, f,a1)                CLOG1(c, xbt_log_priority_verbose, f,a1)
-#define CVERB2(c, f,a1,a2)             CLOG2(c, xbt_log_priority_verbose, f,a1,a2)
-#define CVERB3(c, f,a1,a2,a3)          CLOG3(c, xbt_log_priority_verbose, f,a1,a2,a3)
-#define CVERB4(c, f,a1,a2,a3,a4)       CLOG4(c, xbt_log_priority_verbose, f,a1,a2,a3,a4)
-#define CVERB5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_verbose, f,a1,a2,a3,a4,a5)
-#define CVERB6(c, f,a1,a2,a3,a4,a5,a6)    CLOG6(c, xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6)
-#define CVERB7(c, f,a1,a2,a3,a4,a5,a6,a7)    CLOG7(c, xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6,a7)
-#define CVERB8(c, f,a1,a2,a3,a4,a5,a6,a7,a8)    CLOG8(c, xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define CVERB9(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)    CLOG9(c, xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log an event at the VERB priority on the specified category with these args (CVERBn exists for any n<10).
+ *  @brief Log an event at the VERB priority on the specified category with these args.
  */
-#define CVERB10(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)    CLOG10(c, xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+#define XBT_CVERB(c, ...) XBT_CLOG(c, xbt_log_priority_verbose, __VA_ARGS__)
 
-#define CINFO0(c, f)                   CLOG0(c, xbt_log_priority_info, f)
-#define CINFO1(c, f,a1)                CLOG1(c, xbt_log_priority_info, f,a1)
-#define CINFO2(c, f,a1,a2)             CLOG2(c, xbt_log_priority_info, f,a1,a2)
-#define CINFO3(c, f,a1,a2,a3)          CLOG3(c, xbt_log_priority_info, f,a1,a2,a3)
-#define CINFO4(c, f,a1,a2,a3,a4)       CLOG4(c, xbt_log_priority_info, f,a1,a2,a3,a4)
-#define CINFO5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5)
-#define CINFO6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6)
-#define CINFO7(c, f,a1,a2,a3,a4,a5,a6,a7) CLOG7(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7)
-#define CINFO8(c, f,a1,a2,a3,a4,a5,a6,a7,a8) CLOG8(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define CINFO9(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) CLOG9(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log an event at the INFO priority on the specified category with these args (CINFOn exists for any n<10).
+ *  @brief Log an event at the INFO priority on the specified category with these args.
  */
-#define CINFO10(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) CLOG10(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+#define XBT_CINFO(c, ...) XBT_CLOG(c, xbt_log_priority_info, __VA_ARGS__)
 
-#define CWARN0(c, f)                   CLOG0(c, xbt_log_priority_warning, f)
-#define CWARN1(c, f,a1)                CLOG1(c, xbt_log_priority_warning, f,a1)
-#define CWARN2(c, f,a1,a2)             CLOG2(c, xbt_log_priority_warning, f,a1,a2)
-#define CWARN3(c, f,a1,a2,a3)          CLOG3(c, xbt_log_priority_warning, f,a1,a2,a3)
-#define CWARN4(c, f,a1,a2,a3,a4)       CLOG4(c, xbt_log_priority_warning, f,a1,a2,a3,a4)
-#define CWARN5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_warning, f,a1,a2,a3,a4,a5)
-#define CWARN6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6)
-#define CWARN7(c, f,a1,a2,a3,a4,a5,a6,a7) CLOG7(c, xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6,a7)
-#define CWARN8(c, f,a1,a2,a3,a4,a5,a6,a7,a8) CLOG8(c, xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define CWARN9(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) CLOG9(c, xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log an event at the WARN priority on the specified category with these args (CWARNn exists for any n<10).
+ *  @brief Log an event at the WARN priority on the specified category with these args.
  */
-#define CWARN10(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) CLOG10(c, xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,10)
+#define XBT_CWARN(c, ...) XBT_CLOG(c, xbt_log_priority_warning, __VA_ARGS__)
 
-#define CERROR0(c, f)                   CLOG0(c, xbt_log_priority_error, f)
-#define CERROR1(c, f,a1)                CLOG1(c, xbt_log_priority_error, f,a1)
-#define CERROR2(c, f,a1,a2)             CLOG2(c, xbt_log_priority_error, f,a1,a2)
-#define CERROR3(c, f,a1,a2,a3)          CLOG3(c, xbt_log_priority_error, f,a1,a2,a3)
-#define CERROR4(c, f,a1,a2,a3,a4)       CLOG4(c, xbt_log_priority_error, f,a1,a2,a3,a4)
-#define CERROR5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_error, f,a1,a2,a3,a4,a5)
-#define CERROR6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6)
-#define CERROR7(c, f,a1,a2,a3,a4,a5,a6,a7) CLOG7(c, xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6,a7)
-#define CERROR8(c, f,a1,a2,a3,a4,a5,a6,a7,a8) CLOG8(c, xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define CERROR9(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) CLOG9(c, xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log an event at the ERROR priority on the specified category with these args (CERRORn exists for any n<10).
+ *  @brief Log an event at the ERROR priority on the specified category with these args.
  */
-#define CERROR10(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) CLOG10(c, xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+#define XBT_CERROR(c, ...) XBT_CLOG(c, xbt_log_priority_error, __VA_ARGS__)
 
-#define CCRITICAL0(c, f)                   CLOG0(c, xbt_log_priority_critical, f)
-#define CCRITICAL1(c, f,a1)                CLOG1(c, xbt_log_priority_critical, f,a1)
-#define CCRITICAL2(c, f,a1,a2)             CLOG2(c, xbt_log_priority_critical, f,a1,a2)
-#define CCRITICAL3(c, f,a1,a2,a3)          CLOG3(c, xbt_log_priority_critical, f,a1,a2,a3)
-#define CCRITICAL4(c, f,a1,a2,a3,a4)       CLOG4(c, xbt_log_priority_critical, f,a1,a2,a3,a4)
-#define CCRITICAL5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_critical, f,a1,a2,a3,a4,a5)
-#define CCRITICAL6(c, f,a1,a2,a3,a4,a5,a6)    CLOG6(c, xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6)
-#define CCRITICAL7(c, f,a1,a2,a3,a4,a5,a6,a7)    CLOG7(c, xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6,a7)
-#define CCRITICAL8(c, f,a1,a2,a3,a4,a5,a6,a7,a8)    CLOG8(c, xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define CCRITICAL9(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)    CLOG9(c, xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log an event at the CRITICAL priority on the specified category with these args (CCRITICALn exists for any n<10).
  */
-#define CCRITICAL10(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)    CLOG10(c, xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+#define XBT_CCRITICAL(c, ...) XBT_CLOG(c, xbt_log_priority_critical, __VA_ARGS__)
 
-#ifdef XBT_LOG_MAYDAY
-# define LOG0(p, f)                   fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__)
-# define LOG1(p, f,a1)                fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1)
-# define LOG2(p, f,a1,a2)             fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2)
-# define LOG3(p, f,a1,a2,a3)          fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3)
-# define LOG4(p, f,a1,a2,a3,a4)       fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4)
-# define LOG5(p, f,a1,a2,a3,a4,a5)    fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5)
-# define LOG6(p, f,a1,a2,a3,a4,a5,a6) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6)
-# define LOG7(p, f,a1,a2,a3,a4,a5,a6,a7) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7)
-# define LOG8(p, f,a1,a2,a3,a4,a5,a6,a7,a8) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8)
-# define LOG9(p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8,a9)
-# define LOG10(p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
-#else
-# define LOG0(p, f)                   _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f _XBT_LOG_POST
-# define LOG1(p, f,a1)                _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1 _XBT_LOG_POST
-# define LOG2(p, f,a1,a2)             _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2 _XBT_LOG_POST
-# define LOG3(p, f,a1,a2,a3)          _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3 _XBT_LOG_POST
-# define LOG4(p, f,a1,a2,a3,a4)       _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4 _XBT_LOG_POST
-# define LOG5(p, f,a1,a2,a3,a4,a5)    _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5 _XBT_LOG_POST
-# define LOG6(p, f,a1,a2,a3,a4,a5,a6) _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6 _XBT_LOG_POST
-# define LOG7(p, f,a1,a2,a3,a4,a5,a6,a7) _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6,a7 _XBT_LOG_POST
-# define LOG8(p, f,a1,a2,a3,a4,a5,a6,a7,a8) _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8 _XBT_LOG_POST
-# define LOG9(p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8,a9 _XBT_LOG_POST
-# define LOG10(p,f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10 _XBT_LOG_POST
-#endif
-
-#define DEBUG0(f)                   LOG0(xbt_log_priority_debug, f)
-#define DEBUG1(f,a1)                LOG1(xbt_log_priority_debug, f,a1)
-#define DEBUG2(f,a1,a2)             LOG2(xbt_log_priority_debug, f,a1,a2)
-#define DEBUG3(f,a1,a2,a3)          LOG3(xbt_log_priority_debug, f,a1,a2,a3)
-#define DEBUG4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_debug, f,a1,a2,a3,a4)
-#define DEBUG5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_debug, f,a1,a2,a3,a4,a5)
-#define DEBUG6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6)
-#define DEBUG7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7)
-#define DEBUG8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define DEBUG9(f,a1,a2,a3,a4,a5,a6,a7,a8,a9) LOG9(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 /** @ingroup XBT_log
  *  @hideinitializer
  * \param f the format string
- * \param a1 first argument of the format
- * \param a2 second argument of the format
- * \param a3 third argument of the format
- * \param a4 fourth argument of the format
- * \param a5 fifth argument of the format
- * \param a6 sixth argument of the format
- * \param a7 seventh argument of the format
- * \param a8 eighth argument of the format
- * \param a9 ninth argument of the format
- * \param a10 tenth argument of the format
- *  @brief Log an event at the DEBUG priority on the default category with these args (DEBUGn exists for any n<10)
+ * \param ...
+ *  @brief Log an event at the DEBUG priority on the default category with these args.
  */
-#define DEBUG10(f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) LOG10(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+#define XBT_DEBUG(...) XBT_LOG(xbt_log_priority_debug, __VA_ARGS__)
 
-#define VERB0(f)                   LOG0(xbt_log_priority_verbose, f)
-#define VERB1(f,a1)                LOG1(xbt_log_priority_verbose, f,a1)
-#define VERB2(f,a1,a2)             LOG2(xbt_log_priority_verbose, f,a1,a2)
-#define VERB3(f,a1,a2,a3)          LOG3(xbt_log_priority_verbose, f,a1,a2,a3)
-#define VERB4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_verbose, f,a1,a2,a3,a4)
-#define VERB5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_verbose, f,a1,a2,a3,a4,a5)
-#define VERB6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6)
-#define VERB7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6,a7)
-#define VERB8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define VERB9(f,a1,a2,a3,a4,a5,a6,a7,a8,a9) LOG9(xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log an event at the VERB priority on the default category with these args (VERBn exists for any n<10).
+ *  @brief Log an event at the VERB priority on the default category with these args.
  */
-#define VERB10(f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) LOG10(xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+#define XBT_VERB(...) XBT_LOG(xbt_log_priority_verbose, __VA_ARGS__)
 
-#define INFO0(f)                   LOG0(xbt_log_priority_info, f)
-#define INFO1(f,a1)                LOG1(xbt_log_priority_info, f,a1)
-#define INFO2(f,a1,a2)             LOG2(xbt_log_priority_info, f,a1,a2)
-#define INFO3(f,a1,a2,a3)          LOG3(xbt_log_priority_info, f,a1,a2,a3)
-#define INFO4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_info, f,a1,a2,a3,a4)
-#define INFO5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_info, f,a1,a2,a3,a4,a5)
-#define INFO6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6)
-#define INFO7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7)
-#define INFO8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define INFO9(f,a1,a2,a3,a4,a5,a6,a7,a8,a9) LOG9(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log an event at the INFO priority on the default category with these args (INFOn exists for any n<10).
+ *  @brief Log an event at the INFO priority on the default category with these args.
  */
-#define INFO10(f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) LOG10(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+#define XBT_INFO(...) XBT_LOG(xbt_log_priority_info, __VA_ARGS__)
 
-#define WARN0(f)                   LOG0(xbt_log_priority_warning, f)
-#define WARN1(f,a1)                LOG1(xbt_log_priority_warning, f,a1)
-#define WARN2(f,a1,a2)             LOG2(xbt_log_priority_warning, f,a1,a2)
-#define WARN3(f,a1,a2,a3)          LOG3(xbt_log_priority_warning, f,a1,a2,a3)
-#define WARN4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_warning, f,a1,a2,a3,a4)
-#define WARN5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_warning, f,a1,a2,a3,a4,a5)
-#define WARN6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6)
-#define WARN7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6,a7)
-#define WARN8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define WARN9(f,a1,a2,a3,a4,a5,a6,a7,a8,a9) LOG9(xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log an event at the WARN priority on the default category with these args (WARNn exists for any n<10).
+ *  @brief Log an event at the WARN priority on the default category with these args.
  */
-#define WARN10(f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) LOG10(xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+#define XBT_WARN(...) XBT_LOG(xbt_log_priority_warning, __VA_ARGS__)
 
-
-#define ERROR0(f)                   LOG0(xbt_log_priority_error, f)
-#define ERROR1(f,a1)                LOG1(xbt_log_priority_error, f,a1)
-#define ERROR2(f,a1,a2)             LOG2(xbt_log_priority_error, f,a1,a2)
-#define ERROR3(f,a1,a2,a3)          LOG3(xbt_log_priority_error, f,a1,a2,a3)
-#define ERROR4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_error, f,a1,a2,a3,a4)
-#define ERROR5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_error, f,a1,a2,a3,a4,a5)
-#define ERROR6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6)
-#define ERROR7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6,a7)
-#define ERROR8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define ERROR9(f,a1,a2,a3,a4,a5,a6,a7,a8,a9) LOG9(xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log an event at the ERROR priority on the default category with these args (ERRORn exists for any n<10).
+ *  @brief Log an event at the ERROR priority on the default category with these args.
  */
-#define ERROR10(f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) LOG10(xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+#define XBT_ERROR(...) XBT_LOG(xbt_log_priority_error, __VA_ARGS__)
 
-#define CRITICAL0(f)                   LOG0(xbt_log_priority_critical, f)
-#define CRITICAL1(f,a1)                LOG1(xbt_log_priority_critical, f,a1)
-#define CRITICAL2(f,a1,a2)             LOG2(xbt_log_priority_critical, f,a1,a2)
-#define CRITICAL3(f,a1,a2,a3)          LOG3(xbt_log_priority_critical, f,a1,a2,a3)
-#define CRITICAL4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_critical, f,a1,a2,a3,a4)
-#define CRITICAL5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_critical, f,a1,a2,a3,a4,a5)
-#define CRITICAL6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6)
-#define CRITICAL7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6,a7)
-#define CRITICAL8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6,a7,a8)
-#define CRITICAL9(f,a1,a2,a3,a4,a5,a6,a7,a8,a9) LOG9(xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log an event at the CRITICAL priority on the default category with these args (CRITICALn exists for any n<10).
+ *  @brief Log an event at the CRITICAL priority on the default category with these args.
  */
-#define CRITICAL10(f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) LOG10(xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+#define XBT_CRITICAL(...) XBT_LOG(xbt_log_priority_critical, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log at TRACE priority that we entered in current function.
  */
-#define XBT_IN               LOG1(xbt_log_priority_trace, ">> begin of %s",     _XBT_FUNCTION)
-#define XBT_IN1(fmt,a)       LOG2(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a)
-#define XBT_IN2(fmt,a,b)     LOG3(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b)
-#define XBT_IN3(fmt,a,b,c)   LOG4(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c)
-#define XBT_IN4(fmt,a,b,c,d) LOG5(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c,d)
+#define XBT_IN       XBT_IN_F("")
+
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log at TRACE priority that we entered in current function, appending a user specified format taking 5 args (XBT_INn exists for all n in [1,6])
+ *  @brief Log at TRACE priority that we entered in current function, appending a user specified format.
  */
-#define XBT_IN5(fmt,a,b,c,d,e) LOG6(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c,d,e)
-#define XBT_IN6(fmt,a,b,c,d,e,f) LOG7(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c,d,e,f)
+#define XBT_IN_F(...) XBT_IN_F_(__VA_ARGS__, "")
+#define XBT_IN_F_(fmt, ...) \
+  XBT_LOG(xbt_log_priority_trace, ">> begin of %s" fmt "%s", \
+          _XBT_FUNCTION, __VA_ARGS__)
+
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log at TRACE priority that we exited the current function.
  */
-#define XBT_OUT              LOG1(xbt_log_priority_trace, "<< end of %s",       _XBT_FUNCTION)
+#define XBT_OUT              XBT_LOG(xbt_log_priority_trace, "<< end of %s",       _XBT_FUNCTION)
+
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log at TRACE priority a message indicating that we reached that point.
  */
-#define XBT_HERE             LOG0(xbt_log_priority_trace, "-- was here")
+#define XBT_HERE             XBT_LOG(xbt_log_priority_trace, "-- was here")
 
+#define XBT_LOG_OLD_STYLE
+#ifdef XBT_LOG_OLD_STYLE
+
+/* Kept for backward compatibility. */
+
+#define CLOG0(...) XBT_CLOG(__VA_ARGS__)
+#define CLOG1(...) XBT_CLOG(__VA_ARGS__)
+#define CLOG2(...) XBT_CLOG(__VA_ARGS__)
+#define CLOG3(...) XBT_CLOG(__VA_ARGS__)
+#define CLOG4(...) XBT_CLOG(__VA_ARGS__)
+#define CLOG5(...) XBT_CLOG(__VA_ARGS__)
+#define CLOG6(...) XBT_CLOG(__VA_ARGS__)
+#define CLOG7(...) XBT_CLOG(__VA_ARGS__)
+#define CLOG8(...) XBT_CLOG(__VA_ARGS__)
+#define CLOG9(...) XBT_CLOG(__VA_ARGS__)
+#define CLOG10(...) XBT_CLOG(__VA_ARGS__)
+
+#define CDEBUG0(...) XBT_CDEBUG(__VA_ARGS__)
+#define CDEBUG1(...) XBT_CDEBUG(__VA_ARGS__)
+#define CDEBUG2(...) XBT_CDEBUG(__VA_ARGS__)
+#define CDEBUG3(...) XBT_CDEBUG(__VA_ARGS__)
+#define CDEBUG4(...) XBT_CDEBUG(__VA_ARGS__)
+#define CDEBUG5(...) XBT_CDEBUG(__VA_ARGS__)
+#define CDEBUG6(...) XBT_CDEBUG(__VA_ARGS__)
+#define CDEBUG7(...) XBT_CDEBUG(__VA_ARGS__)
+#define CDEBUG8(...) XBT_CDEBUG(__VA_ARGS__)
+#define CDEBUG9(...) XBT_CDEBUG(__VA_ARGS__)
+#define CDEBUG10(...) XBT_CDEBUG(__VA_ARGS__)
+
+#define CVERB0(...) XBT_CVERB(__VA_ARGS__)
+#define CVERB1(...) XBT_CVERB(__VA_ARGS__)
+#define CVERB2(...) XBT_CVERB(__VA_ARGS__)
+#define CVERB3(...) XBT_CVERB(__VA_ARGS__)
+#define CVERB4(...) XBT_CVERB(__VA_ARGS__)
+#define CVERB5(...) XBT_CVERB(__VA_ARGS__)
+#define CVERB6(...) XBT_CVERB(__VA_ARGS__)
+#define CVERB7(...) XBT_CVERB(__VA_ARGS__)
+#define CVERB8(...) XBT_CVERB(__VA_ARGS__)
+#define CVERB9(...) XBT_CVERB(__VA_ARGS__)
+#define CVERB10(...) XBT_CVERB(__VA_ARGS__)
+
+#define CINFO0(...) XBT_CINFO(__VA_ARGS__)
+#define CINFO1(...) XBT_CINFO(__VA_ARGS__)
+#define CINFO2(...) XBT_CINFO(__VA_ARGS__)
+#define CINFO3(...) XBT_CINFO(__VA_ARGS__)
+#define CINFO4(...) XBT_CINFO(__VA_ARGS__)
+#define CINFO5(...) XBT_CINFO(__VA_ARGS__)
+#define CINFO6(...) XBT_CINFO(__VA_ARGS__)
+#define CINFO7(...) XBT_CINFO(__VA_ARGS__)
+#define CINFO8(...) XBT_CINFO(__VA_ARGS__)
+#define CINFO9(...) XBT_CINFO(__VA_ARGS__)
+#define CINFO10(...) XBT_CINFO(__VA_ARGS__)
+
+#define CWARN0(...) XBT_CWARN(__VA_ARGS__)
+#define CWARN1(...) XBT_CWARN(__VA_ARGS__)
+#define CWARN2(...) XBT_CWARN(__VA_ARGS__)
+#define CWARN3(...) XBT_CWARN(__VA_ARGS__)
+#define CWARN4(...) XBT_CWARN(__VA_ARGS__)
+#define CWARN5(...) XBT_CWARN(__VA_ARGS__)
+#define CWARN6(...) XBT_CWARN(__VA_ARGS__)
+#define CWARN7(...) XBT_CWARN(__VA_ARGS__)
+#define CWARN8(...) XBT_CWARN(__VA_ARGS__)
+#define CWARN9(...) XBT_CWARN(__VA_ARGS__)
+#define CWARN10(...) XBT_CWARN(__VA_ARGS__)
+
+#define CERROR0(...) XBT_CERROR(__VA_ARGS__)
+#define CERROR1(...) XBT_CERROR(__VA_ARGS__)
+#define CERROR2(...) XBT_CERROR(__VA_ARGS__)
+#define CERROR3(...) XBT_CERROR(__VA_ARGS__)
+#define CERROR4(...) XBT_CERROR(__VA_ARGS__)
+#define CERROR5(...) XBT_CERROR(__VA_ARGS__)
+#define CERROR6(...) XBT_CERROR(__VA_ARGS__)
+#define CERROR7(...) XBT_CERROR(__VA_ARGS__)
+#define CERROR8(...) XBT_CERROR(__VA_ARGS__)
+#define CERROR9(...) XBT_CERROR(__VA_ARGS__)
+#define CERROR10(...) XBT_CERROR(__VA_ARGS__)
+
+#define CCRITICAL0(...) XBT_CCRITICAL(__VA_ARGS__)
+#define CCRITICAL1(...) XBT_CCRITICAL(__VA_ARGS__)
+#define CCRITICAL2(...) XBT_CCRITICAL(__VA_ARGS__)
+#define CCRITICAL3(...) XBT_CCRITICAL(__VA_ARGS__)
+#define CCRITICAL4(...) XBT_CCRITICAL(__VA_ARGS__)
+#define CCRITICAL5(...) XBT_CCRITICAL(__VA_ARGS__)
+#define CCRITICAL6(...) XBT_CCRITICAL(__VA_ARGS__)
+#define CCRITICAL7(...) XBT_CCRITICAL(__VA_ARGS__)
+#define CCRITICAL8(...) XBT_CCRITICAL(__VA_ARGS__)
+#define CCRITICAL9(...) XBT_CCRITICAL(__VA_ARGS__)
+#define CCRITICAL10(...) XBT_CCRITICAL(__VA_ARGS__)
+
+#define LOG0(...) XBT_LOG(__VA_ARGS__)
+#define LOG1(...) XBT_LOG(__VA_ARGS__)
+#define LOG2(...) XBT_LOG(__VA_ARGS__)
+#define LOG3(...) XBT_LOG(__VA_ARGS__)
+#define LOG4(...) XBT_LOG(__VA_ARGS__)
+#define LOG5(...) XBT_LOG(__VA_ARGS__)
+#define LOG6(...) XBT_LOG(__VA_ARGS__)
+#define LOG7(...) XBT_LOG(__VA_ARGS__)
+#define LOG8(...) XBT_LOG(__VA_ARGS__)
+#define LOG9(...) XBT_LOG(__VA_ARGS__)
+#define LOG10(...) XBT_LOG(__VA_ARGS__)
+
+#define DEBUG0(...) XBT_DEBUG(__VA_ARGS__)
+#define DEBUG1(...) XBT_DEBUG(__VA_ARGS__)
+#define DEBUG2(...) XBT_DEBUG(__VA_ARGS__)
+#define DEBUG3(...) XBT_DEBUG(__VA_ARGS__)
+#define DEBUG4(...) XBT_DEBUG(__VA_ARGS__)
+#define DEBUG5(...) XBT_DEBUG(__VA_ARGS__)
+#define DEBUG6(...) XBT_DEBUG(__VA_ARGS__)
+#define DEBUG7(...) XBT_DEBUG(__VA_ARGS__)
+#define DEBUG8(...) XBT_DEBUG(__VA_ARGS__)
+#define DEBUG9(...) XBT_DEBUG(__VA_ARGS__)
+#define DEBUG10(...) XBT_DEBUG(__VA_ARGS__)
+
+#define VERB0(...) XBT_VERB(__VA_ARGS__)
+#define VERB1(...) XBT_VERB(__VA_ARGS__)
+#define VERB2(...) XBT_VERB(__VA_ARGS__)
+#define VERB3(...) XBT_VERB(__VA_ARGS__)
+#define VERB4(...) XBT_VERB(__VA_ARGS__)
+#define VERB5(...) XBT_VERB(__VA_ARGS__)
+#define VERB6(...) XBT_VERB(__VA_ARGS__)
+#define VERB7(...) XBT_VERB(__VA_ARGS__)
+#define VERB8(...) XBT_VERB(__VA_ARGS__)
+#define VERB9(...) XBT_VERB(__VA_ARGS__)
+#define VERB10(...) XBT_VERB(__VA_ARGS__)
+
+#define INFO0(...) XBT_INFO(__VA_ARGS__)
+#define INFO1(...) XBT_INFO(__VA_ARGS__)
+#define INFO2(...) XBT_INFO(__VA_ARGS__)
+#define INFO3(...) XBT_INFO(__VA_ARGS__)
+#define INFO4(...) XBT_INFO(__VA_ARGS__)
+#define INFO5(...) XBT_INFO(__VA_ARGS__)
+#define INFO6(...) XBT_INFO(__VA_ARGS__)
+#define INFO7(...) XBT_INFO(__VA_ARGS__)
+#define INFO8(...) XBT_INFO(__VA_ARGS__)
+#define INFO9(...) XBT_INFO(__VA_ARGS__)
+#define INFO10(...) XBT_INFO(__VA_ARGS__)
+
+#define WARN0(...) XBT_WARN(__VA_ARGS__)
+#define WARN1(...) XBT_WARN(__VA_ARGS__)
+#define WARN2(...) XBT_WARN(__VA_ARGS__)
+#define WARN3(...) XBT_WARN(__VA_ARGS__)
+#define WARN4(...) XBT_WARN(__VA_ARGS__)
+#define WARN5(...) XBT_WARN(__VA_ARGS__)
+#define WARN6(...) XBT_WARN(__VA_ARGS__)
+#define WARN7(...) XBT_WARN(__VA_ARGS__)
+#define WARN8(...) XBT_WARN(__VA_ARGS__)
+#define WARN9(...) XBT_WARN(__VA_ARGS__)
+#define WARN10(...) XBT_WARN(__VA_ARGS__)
+
+#define ERROR0(...) XBT_ERROR(__VA_ARGS__)
+#define ERROR1(...) XBT_ERROR(__VA_ARGS__)
+#define ERROR2(...) XBT_ERROR(__VA_ARGS__)
+#define ERROR3(...) XBT_ERROR(__VA_ARGS__)
+#define ERROR4(...) XBT_ERROR(__VA_ARGS__)
+#define ERROR5(...) XBT_ERROR(__VA_ARGS__)
+#define ERROR6(...) XBT_ERROR(__VA_ARGS__)
+#define ERROR7(...) XBT_ERROR(__VA_ARGS__)
+#define ERROR8(...) XBT_ERROR(__VA_ARGS__)
+#define ERROR9(...) XBT_ERROR(__VA_ARGS__)
+#define ERROR10(...) XBT_ERROR(__VA_ARGS__)
+
+#define CRITICAL0(...) XBT_CRITICAL(__VA_ARGS__)
+#define CRITICAL1(...) XBT_CRITICAL(__VA_ARGS__)
+#define CRITICAL2(...) XBT_CRITICAL(__VA_ARGS__)
+#define CRITICAL3(...) XBT_CRITICAL(__VA_ARGS__)
+#define CRITICAL4(...) XBT_CRITICAL(__VA_ARGS__)
+#define CRITICAL5(...) XBT_CRITICAL(__VA_ARGS__)
+#define CRITICAL6(...) XBT_CRITICAL(__VA_ARGS__)
+#define CRITICAL7(...) XBT_CRITICAL(__VA_ARGS__)
+#define CRITICAL8(...) XBT_CRITICAL(__VA_ARGS__)
+#define CRITICAL9(...) XBT_CRITICAL(__VA_ARGS__)
+#define CRITICAL10(...) XBT_CRITICAL(__VA_ARGS__)
+
+#define XBT_IN1(...) XBT_IN_F(__VA_ARGS__);
+#define XBT_IN2(...) XBT_IN_F(__VA_ARGS__);
+#define XBT_IN3(...) XBT_IN_F(__VA_ARGS__);
+#define XBT_IN4(...) XBT_IN_F(__VA_ARGS__);
+#define XBT_IN5(...) XBT_IN_F(__VA_ARGS__);
+#define XBT_IN6(...) XBT_IN_F(__VA_ARGS__);
+
+#endif
 
 SG_END_DECL()
 #endif                          /* ! _XBT_LOG_H_ */

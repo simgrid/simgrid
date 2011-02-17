@@ -28,11 +28,11 @@ int server_request_cb(gras_msg_cb_ctx_t ctx, void *payload)
 
   if (globals->process_in_CS) {
     xbt_dynar_push(globals->waiting_queue, &s);
-    INFO2("put %s:%d in waiting queue", gras_socket_peer_name(s),
+    XBT_INFO("put %s:%d in waiting queue", gras_socket_peer_name(s),
           gras_socket_peer_port(s));
   } else {
     globals->process_in_CS = 1;
-    INFO2("grant %s:%d since nobody wanted it", gras_socket_peer_name(s),
+    XBT_INFO("grant %s:%d since nobody wanted it", gras_socket_peer_name(s),
           gras_socket_peer_port(s));
     gras_msg_send(s, "grant", NULL);
   }
@@ -47,7 +47,7 @@ int server_release_cb(gras_msg_cb_ctx_t ctx, void *payload)
     gras_socket_t s;
     xbt_dynar_pop(globals->waiting_queue, &s);
 
-    INFO2("grant %s:%d since token released", gras_socket_peer_name(s),
+    XBT_INFO("grant %s:%d since token released", gras_socket_peer_name(s),
           gras_socket_peer_port(s));
     gras_msg_send(s, "grant", NULL);
   } else {
@@ -87,12 +87,12 @@ void lock(gras_socket_t toserver)
 {
   gras_msg_send(toserver, "request", NULL);
   gras_msg_wait(-1, "grant", NULL, NULL);
-  INFO0("Granted by server");
+  XBT_INFO("Granted by server");
 }                               /* end_of_lock */
 
 void unlock(gras_socket_t toserver)
 {
-  INFO0("Release the token");
+  XBT_INFO("Release the token");
   gras_msg_send(toserver, "release", NULL);
 }                               /* end_of_unlock */
 
@@ -106,7 +106,7 @@ int client(int argc, char *argv[])
 
   mysock = gras_socket_server_range(1024, 10000, 0, 0);
 
-  VERB1("Client ready; listening on %d", gras_socket_my_port(mysock));
+  XBT_VERB("Client ready; listening on %d", gras_socket_my_port(mysock));
 
   gras_os_sleep(1.5);           /* sleep 1 second and half */
   message_declaration();
