@@ -69,7 +69,7 @@ static void create_hierarchy(routing_component_t current_comp,
 
 		xbt_dict_foreach(current_comp->to_index, cursor, key, network_elem) {
 			char *hostname;
-			DEBUG2("key %s value %p\n", key, network_elem);
+			XBT_DEBUG("key %s value %p\n", key, network_elem);
 			//xbt_dynar_push_as(hosts, char*, key);
 			hostname = strdup(key);
 			xbt_dynar_push(hosts, &hostname);
@@ -82,7 +82,7 @@ static void create_hierarchy(routing_component_t current_comp,
 			jed_simgrid_container_t child_container;
 			jed_simgrid_create_container(&child_container, elem->name);
 			jed_simgrid_add_container(current_container, child_container);
-			DEBUG1("name : %s\n", elem->name);
+			XBT_DEBUG("name : %s\n", elem->name);
 			create_hierarchy(elem, child_container);
 		}
 	}
@@ -99,7 +99,7 @@ void jedule_setup_platform() {
 	jed_create_jedule(&jedule);
 
 	root_comp = global_routing->root;
-	DEBUG1("root name %s\n", root_comp->name);
+	XBT_DEBUG("root name %s\n", root_comp->name);
 
 	// that doesn't work
 	type = root_comp->get_network_element_type(root_comp->name);
