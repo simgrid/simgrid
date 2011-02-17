@@ -9,7 +9,6 @@
 #include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
 #include "simix/simix.h"        /* semaphores for the barrier */
 #include "xbt.h"                /* calloc, printf */
-#include "simgrid_config.h"     /* getline */
 #include "instr/instr_private.h"
 
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);

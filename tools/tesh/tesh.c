@@ -6,8 +6,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid_config.h"     /* FILE for getline */
-
 /* specific to Borland Compiler */
 #ifdef __BORLANDDC__
 #pragma hdrstop
@@ -85,7 +83,7 @@ static void handle_line(const char *filepos, char *line)
   }
 }
 
-static void handle_suite(const char *filename, FILE * FICIN)
+static void handle_suite(const char *filename, FILE * IN)
 {
   size_t len;
   int blankline;
@@ -100,7 +98,7 @@ static void handle_suite(const char *filename, FILE * FICIN)
   buff = xbt_strbuff_new();
   rctx = rctx_new();
 
-  while (getline(&line, &len, FICIN) != -1) {
+  while (getline(&line, &len, IN) != -1) {
     line_num++;
 
     /* Count the line length while checking wheather it's blank */
@@ -190,7 +188,7 @@ static void parse_environ()
 
 int main(int argc, char *argv[])
 {
-  FILE *FICIN = NULL;
+  FILE *IN = NULL;
   int i;
   char *suitename = NULL;
   struct sigaction newact;
@@ -272,15 +270,15 @@ int main(int argc, char *argv[])
 
       XBT_INFO("Test suite `%s'", suitename);
       testsuite_name = suitename;
-      FICIN = fopen(argv[i], "r");
-      if (!FICIN) {
+      IN = fopen(argv[i], "r");
+      if (!IN) {
         perror(bprintf("Impossible to open the suite file `%s'", argv[i]));
         XBT_ERROR("Test suite `%s': NOK (system error)", testsuite_name);
         rctx_armageddon(rctx, 1);
       }
-      handle_suite(suitename, FICIN);
+      handle_suite(suitename, IN);
       rctx_wait_bg();
-      fclose(FICIN);
+      fclose(IN);
       XBT_INFO("Test suite `%s' OK", suitename);
       free(suitename);
     }
