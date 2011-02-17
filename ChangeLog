@@ -35,6 +35,7 @@ SimGrid (3.6) unstable; urgency=low
    due to the change to return type of SD_Simulate. See also:
    http://lists.gforge.inria.fr/pipermail/simgrid-user/2010-December/002206.html
  * Add new logging macros, with variable number of arguments.
+ * Kill old style logging macros.
 
  INSTR
  * New configuration options
