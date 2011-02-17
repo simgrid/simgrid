@@ -223,7 +223,7 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
 
   uint32_t hisport;
 
-  XBT_IN;
+  XBT_IN("");
   gras_trp_socket_new(1, &res);
 
   sd = accept(sock->sd, (struct sockaddr *) &peer_in, &peer_in_len);
@@ -286,7 +286,7 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
   xbt_dynar_push(((gras_trp_procdata_t)
                   gras_libdata_by_id(gras_trp_libdata_id))->sockets, &res);
 
-  XBT_OUT;
+  XBT_OUT();
   return res;
 }
 
@@ -418,7 +418,7 @@ static void gras_trp_bufiov_flush(gras_socket_t sock)
   int size;
 #endif
   gras_trp_bufdata_t *data = sock->bufdata;
-  XBT_IN;
+  XBT_IN("");
 
   XBT_DEBUG("Flush");
   if (data->out == buffering_buf) {
@@ -466,7 +466,7 @@ gras_trp_buf_send(gras_socket_t sock,
   gras_trp_bufdata_t *data = (gras_trp_bufdata_t *) sock->bufdata;
   int chunk_pos = 0;
 
-  XBT_IN;
+  XBT_IN("");
 
   while (chunk_pos < size) {
     /* size of the chunk to receive in that shot */
@@ -490,7 +490,7 @@ gras_trp_buf_send(gras_socket_t sock,
       gras_trp_bufiov_flush(sock);
   }
 
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static int
@@ -500,7 +500,7 @@ gras_trp_buf_recv(gras_socket_t sock, char *chunk, unsigned long int size)
   gras_trp_bufdata_t *data = sock->bufdata;
   long int chunk_pos = 0;
 
-  XBT_IN;
+  XBT_IN("");
 
   while (chunk_pos < size) {
     /* size of the chunk to receive in that shot */
@@ -536,7 +536,7 @@ gras_trp_buf_recv(gras_socket_t sock, char *chunk, unsigned long int size)
   sock->moredata = (data->in_buf.size > data->in_buf.pos);
   XBT_DEBUG("There is %smore data", (sock->moredata ? "" : "no "));
 
-  XBT_OUT;
+  XBT_OUT();
   return chunk_pos;
 }
 

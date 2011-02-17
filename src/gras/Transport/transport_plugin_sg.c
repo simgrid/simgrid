@@ -251,7 +251,7 @@ void gras_trp_sg_socket_close(gras_socket_t sock)
   unsigned int cpt;
   gras_sg_portrec_t pr;
 
-  XBT_IN_F(" (sock=%p)", sock);
+  XBT_IN(" (sock=%p)", sock);
 
   if (!sock)
     return;
@@ -266,7 +266,7 @@ void gras_trp_sg_socket_close(gras_socket_t sock)
       XBT_DEBUG("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));
       if (pr->port == sockdata->server_port) {
         xbt_dynar_cursor_rm(hd->ports, &cpt);
-        XBT_OUT;
+        XBT_OUT();
         return;
       }
     }
@@ -278,7 +278,7 @@ void gras_trp_sg_socket_close(gras_socket_t sock)
     /* FIXME: kill the rdv point if receiver side */
     free(sock->data);
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 typedef struct {

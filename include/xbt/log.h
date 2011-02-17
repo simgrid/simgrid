@@ -503,16 +503,10 @@ extern xbt_log_layout_t xbt_log_default_layout;
 
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log at TRACE priority that we entered in current function.
- */
-#define XBT_IN       XBT_IN_F("")
-
-/** @ingroup XBT_log
- *  @hideinitializer
  *  @brief Log at TRACE priority that we entered in current function, appending a user specified format.
  */
-#define XBT_IN_F(...) XBT_IN_F_(__VA_ARGS__, "")
-#define XBT_IN_F_(fmt, ...) \
+#define XBT_IN(...) XBT_IN_(__VA_ARGS__, "")
+#define XBT_IN_(fmt, ...) \
   XBT_LOG(xbt_log_priority_trace, ">> begin of %s" fmt "%s", \
           _XBT_FUNCTION, __VA_ARGS__)
 
@@ -520,13 +514,13 @@ extern xbt_log_layout_t xbt_log_default_layout;
  *  @hideinitializer
  *  @brief Log at TRACE priority that we exited the current function.
  */
-#define XBT_OUT              XBT_LOG(xbt_log_priority_trace, "<< end of %s",       _XBT_FUNCTION)
+#define XBT_OUT() XBT_LOG(xbt_log_priority_trace, "<< end of %s", _XBT_FUNCTION)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log at TRACE priority a message indicating that we reached that point.
  */
-#define XBT_HERE             XBT_LOG(xbt_log_priority_trace, "-- was here")
+#define XBT_HERE() XBT_LOG(xbt_log_priority_trace, "-- was here")
 
 SG_END_DECL()
 #endif                          /* ! _XBT_LOG_H_ */

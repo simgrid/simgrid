@@ -668,7 +668,7 @@ static surf_action_t im_net_communicate(const char *src_name,
   /* LARGE PLATFORMS HACK:
      total_route_size = route_size + src->link_nb + dst->nb */
 
-  XBT_IN_F("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
+  XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
   xbt_assert2(xbt_dynar_length(route),
@@ -791,7 +791,7 @@ static surf_action_t im_net_communicate(const char *src_name,
 #endif
 
   xbt_dynar_free(&route);
-  XBT_OUT;
+  XBT_OUT();
 
   return (surf_action_t) action;
 }

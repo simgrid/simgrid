@@ -213,7 +213,7 @@ gras_socket_t gras_trp_select(double timeout)
           sock_iter->valid = 0; /* don't close it. User may keep references to it */
         } else {
           /* Got a suited socket ! */
-          XBT_OUT;
+          XBT_OUT();
           sock_iter->recvd = 1;
           XBT_DEBUG("Filled little buffer (%c %x %d)", sock_iter->recvd_val,
                  sock_iter->recvd_val, recvd);

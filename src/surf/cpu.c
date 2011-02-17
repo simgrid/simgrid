@@ -294,7 +294,7 @@ static surf_action_t cpu_execute(void *cpu, double size)
   surf_action_cpu_Cas01_t action = NULL;
   cpu_Cas01_t CPU = cpu;
 
-  XBT_IN_F("(%s,%g)", surf_resource_name(CPU), size);
+  XBT_IN("(%s,%g)", surf_resource_name(CPU), size);
   action =
       surf_action_new(sizeof(s_surf_action_cpu_Cas01_t), size,
                       surf_cpu_model,
@@ -307,7 +307,7 @@ static surf_action_t cpu_execute(void *cpu, double size)
                                       action->generic_action.priority,
                                       CPU->power_scale * CPU->power_peak, 1);
   lmm_expand(cpu_maxmin_system, CPU->constraint, action->variable, 1.0);
-  XBT_OUT;
+  XBT_OUT();
   return (surf_action_t) action;
 }
 
@@ -318,7 +318,7 @@ static surf_action_t cpu_action_sleep(void *cpu, double duration)
   if (duration > 0)
     duration = MAX(duration, MAXMIN_PRECISION);
 
-  XBT_IN_F("(%s,%g)", surf_resource_name(cpu), duration);
+  XBT_IN("(%s,%g)", surf_resource_name(cpu), duration);
   action = (surf_action_cpu_Cas01_t) cpu_execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
   action->suspended = 2;
@@ -332,32 +332,32 @@ static surf_action_t cpu_action_sleep(void *cpu, double duration)
   }
 
   lmm_update_variable_weight(cpu_maxmin_system, action->variable, 0.0);
-  XBT_OUT;
+  XBT_OUT();
   return (surf_action_t) action;
 }
 
 static void cpu_action_suspend(surf_action_t action)
 {
-  XBT_IN_F("(%p)", action);
+  XBT_IN("(%p)", action);
   if (((surf_action_cpu_Cas01_t) action)->suspended != 2) {
     lmm_update_variable_weight(cpu_maxmin_system,
                                ((surf_action_cpu_Cas01_t)
                                 action)->variable, 0.0);
     ((surf_action_cpu_Cas01_t) action)->suspended = 1;
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void cpu_action_resume(surf_action_t action)
 {
-  XBT_IN_F("(%p)", action);
+  XBT_IN("(%p)", action);
   if (((surf_action_cpu_Cas01_t) action)->suspended != 2) {
     lmm_update_variable_weight(cpu_maxmin_system,
                                ((surf_action_cpu_Cas01_t)
                                 action)->variable, action->priority);
     ((surf_action_cpu_Cas01_t) action)->suspended = 0;
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static int cpu_action_is_suspended(surf_action_t action)
@@ -368,36 +368,36 @@ static int cpu_action_is_suspended(surf_action_t action)
 static void cpu_action_set_max_duration(surf_action_t action,
                                         double duration)
 {
-  XBT_IN_F("(%p,%g)", action, duration);
+  XBT_IN("(%p,%g)", action, duration);
   action->max_duration = duration;
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void cpu_action_set_priority(surf_action_t action, double priority)
 {
-  XBT_IN_F("(%p,%g)", action, priority);
+  XBT_IN("(%p,%g)", action, priority);
   action->priority = priority;
   lmm_update_variable_weight(cpu_maxmin_system,
                              ((surf_action_cpu_Cas01_t) action)->variable,
                              priority);
 
-  XBT_OUT;
+  XBT_OUT();
 }
 
 #ifdef HAVE_TRACING
 static void cpu_action_set_category(surf_action_t action, const char *category)
 {
-  XBT_IN_F("(%p,%s)", action, category);
+  XBT_IN("(%p,%s)", action, category);
   action->category = xbt_strdup (category);
-  XBT_OUT;
+  XBT_OUT();
 }
 #endif
 
 static double cpu_action_get_remains(surf_action_t action)
 {
-  XBT_IN_F("(%p)", action);
+  XBT_IN("(%p)", action);
   return action->remains;
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static e_surf_resource_state_t cpu_get_state(void *cpu)

@@ -42,7 +42,7 @@ extern char *gras_ddt_parse_text;       /* text being considered in the parser *
 /* local functions */
 static void parse_type_modifier(type_modifier_t type_modifier)
 {
-  XBT_IN;
+  XBT_IN("");
   do {
     if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_STAR) {
       /* This only used when parsing 'short *' since this function returns when int, float, double,... is encountered */
@@ -89,14 +89,14 @@ static void parse_type_modifier(type_modifier_t type_modifier)
       break;
     }
   } while (1);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void print_type_modifier(s_type_modifier_t tm)
 {
   int i;
 
-  XBT_IN;
+  XBT_IN("");
   if (tm.is_unsigned)
     printf("(unsigned) ");
   if (tm.is_short)
@@ -113,7 +113,7 @@ static void print_type_modifier(s_type_modifier_t tm)
 
   for (i = 0; i < tm.is_ref; i++)
     printf("(ref) ");
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void change_to_fixed_array(xbt_dynar_t dynar, long int size)
@@ -121,7 +121,7 @@ static void change_to_fixed_array(xbt_dynar_t dynar, long int size)
   s_identifier_t former, array;
   memset(&array, 0, sizeof(array));
 
-  XBT_IN;
+  XBT_IN("");
   xbt_dynar_pop(dynar, &former);
   array.type_name = (char *) xbt_malloc(strlen(former.type->name) + 48);
   XBT_DEBUG("Array specification (size=%ld, elm='%s'), change pushed type",
@@ -136,7 +136,7 @@ static void change_to_fixed_array(xbt_dynar_t dynar, long int size)
   array.name = former.name;
 
   xbt_dynar_push(dynar, &array);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void change_to_ref(xbt_dynar_t dynar)
@@ -144,7 +144,7 @@ static void change_to_ref(xbt_dynar_t dynar)
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
-  XBT_IN;
+  XBT_IN("");
   xbt_dynar_pop(dynar, &former);
   ref.type_name = (char *) xbt_malloc(strlen(former.type->name) + 2);
   XBT_DEBUG("Ref specification (elm='%s'), change pushed type",
@@ -156,7 +156,7 @@ static void change_to_ref(xbt_dynar_t dynar)
   ref.name = former.name;
 
   xbt_dynar_push(dynar, &ref);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void change_to_ref_pop_array(xbt_dynar_t dynar)
@@ -164,7 +164,7 @@ static void change_to_ref_pop_array(xbt_dynar_t dynar)
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
-  XBT_IN;
+  XBT_IN("");
   xbt_dynar_pop(dynar, &former);
   ref.type = gras_datadesc_ref_pop_arr(former.type);    /* redeclaration are ignored */
   ref.type_name = (char *) strdup(ref.type->name);
@@ -173,7 +173,7 @@ static void change_to_ref_pop_array(xbt_dynar_t dynar)
   free(former.type_name);
 
   xbt_dynar_push(dynar, &ref);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void change_to_dynar_of(xbt_dynar_t dynar,
@@ -182,7 +182,7 @@ static void change_to_dynar_of(xbt_dynar_t dynar,
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
-  XBT_IN;
+  XBT_IN("");
   xbt_dynar_pop(dynar, &former);
   ref.type = gras_datadesc_dynar(subtype, NULL);        /* redeclaration are ignored */
   ref.type_name = (char *) strdup(ref.type->name);
@@ -191,7 +191,7 @@ static void change_to_dynar_of(xbt_dynar_t dynar,
   free(former.type_name);
 
   xbt_dynar_push(dynar, &ref);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void change_to_matrix_of(xbt_dynar_t dynar,
@@ -200,7 +200,7 @@ static void change_to_matrix_of(xbt_dynar_t dynar,
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
-  XBT_IN;
+  XBT_IN("");
   xbt_dynar_pop(dynar, &former);
   ref.type = gras_datadesc_matrix(subtype, NULL);       /* redeclaration are ignored */
   ref.type_name = (char *) strdup(ref.type->name);
@@ -209,7 +209,7 @@ static void change_to_matrix_of(xbt_dynar_t dynar,
   free(former.type_name);
 
   xbt_dynar_push(dynar, &ref);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void add_free_f(xbt_dynar_t dynar, void_f_pvoid_t free_f)
@@ -217,11 +217,11 @@ static void add_free_f(xbt_dynar_t dynar, void_f_pvoid_t free_f)
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
-  XBT_IN;
+  XBT_IN("");
   xbt_dynar_pop(dynar, &former);
   memcpy(former.type->extra, free_f, sizeof(free_f));
   xbt_dynar_push(dynar, &former);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void parse_statement(char *definition,
@@ -234,12 +234,12 @@ static void parse_statement(char *definition,
 
   int expect_id_separator = 0;
 
-  XBT_IN;
+  XBT_IN("");
   memset(&identifier, 0, sizeof(identifier));
 
   gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
   if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_RA) {
-    XBT_OUT;
+    XBT_OUT();
     THROW0(mismatch_error, 0, "End of the englobing structure or union");
   }
 
@@ -595,7 +595,7 @@ static void parse_statement(char *definition,
   if (identifier.tm.is_dynar > 0)
     PARSE_ERROR0("xbt_dynar_t field without 'subtype' annotation");
 
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static gras_datadesc_type_t parse_struct(char *definition)
@@ -616,7 +616,7 @@ static gras_datadesc_type_t parse_struct(char *definition)
 
   gras_datadesc_type_t struct_type;
 
-  XBT_IN;
+  XBT_IN("");
   identifiers = xbt_dynar_new(sizeof(s_identifier_t), NULL);
   fields_to_push = xbt_dynar_new(sizeof(char *), NULL);
 
@@ -695,7 +695,7 @@ static gras_datadesc_type_t parse_struct(char *definition)
 
   xbt_dynar_free(&identifiers);
   xbt_dynar_free(&fields_to_push);
-  XBT_OUT;
+  XBT_OUT();
   return struct_type;
 }
 
@@ -707,7 +707,7 @@ static gras_datadesc_type_t parse_typedef(char *definition)
   gras_datadesc_type_t struct_desc = NULL;
   gras_datadesc_type_t typedef_desc = NULL;
 
-  XBT_IN;
+  XBT_IN("");
   memset(&tm, 0, sizeof(tm));
 
   /* get the aliased type */
@@ -733,7 +733,7 @@ static gras_datadesc_type_t parse_typedef(char *definition)
   PARSE_ERROR0
       ("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle typedef yet");
 
-  XBT_OUT;
+  XBT_OUT();
   return typedef_desc;
 }
 
@@ -752,7 +752,7 @@ gras_datadesc_parse(const char *name, const char *C_statement)
   int semicolon_count = 0;
   int def_count, C_count;
 
-  XBT_IN;
+  XBT_IN("");
   /* reput the \n in place for debug */
   for (C_count = 0; C_statement[C_count] != '\0'; C_count++)
     if (C_statement[C_count] == ';' || C_statement[C_count] == '{')
@@ -801,7 +801,7 @@ gras_datadesc_parse(const char *name, const char *C_statement)
     xbt_abort();
   }
   gras_ddt_parse_lex_destroy();
-  XBT_OUT;
+  XBT_OUT();
   return res;
 }
 

@@ -428,7 +428,7 @@ static surf_action_t cpu_im_execute(void *cpu, double size)
   surf_action_cpu_Cas01_im_t action = NULL;
   cpu_Cas01_im_t CPU = cpu;
 
-  XBT_IN_F("(%s,%g)", surf_resource_name(CPU), size);
+  XBT_IN("(%s,%g)", surf_resource_name(CPU), size);
   action =
       surf_action_new(sizeof(s_surf_action_cpu_Cas01_im_t), size,
                       surf_cpu_model,
@@ -446,7 +446,7 @@ static surf_action_t cpu_im_execute(void *cpu, double size)
   xbt_swag_insert(action, CPU->action_set);
   lmm_expand(cpu_im_maxmin_system, CPU->constraint,
              GENERIC_LMM_ACTION(action).variable, 1.0);
-  XBT_OUT;
+  XBT_OUT();
   return (surf_action_t) action;
 }
 
@@ -457,7 +457,7 @@ static surf_action_t cpu_im_action_sleep(void *cpu, double duration)
   if (duration > 0)
     duration = MAX(duration, MAXMIN_PRECISION);
 
-  XBT_IN_F("(%s,%g)", surf_resource_name(cpu), duration);
+  XBT_IN("(%s,%g)", surf_resource_name(cpu), duration);
   action = (surf_action_cpu_Cas01_im_t) cpu_im_execute(cpu, 1.0);
   GENERIC_ACTION(action).max_duration = duration;
   GENERIC_LMM_ACTION(action).suspended = 2;
@@ -473,13 +473,13 @@ static surf_action_t cpu_im_action_sleep(void *cpu, double duration)
   lmm_update_variable_weight(cpu_im_maxmin_system,
                              GENERIC_LMM_ACTION(action).variable, 0.0);
   xbt_swag_insert(cpu, cpu_im_modified_cpu);
-  XBT_OUT;
+  XBT_OUT();
   return (surf_action_t) action;
 }
 
 static void cpu_im_action_suspend(surf_action_t action)
 {
-  XBT_IN_F("(%p)", action);
+  XBT_IN("(%p)", action);
   if (((surf_action_lmm_t) action)->suspended != 2) {
     lmm_update_variable_weight(cpu_im_maxmin_system,
                                ((surf_action_lmm_t) action)->variable,
@@ -489,13 +489,13 @@ static void cpu_im_action_suspend(surf_action_t action)
                     ((surf_action_cpu_Cas01_im_t) action)->index_heap);
     xbt_swag_insert(ACTION_GET_CPU(action), cpu_im_modified_cpu);
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void cpu_im_action_resume(surf_action_t action)
 {
 
-  XBT_IN_F("(%p)", action);
+  XBT_IN("(%p)", action);
   if (((surf_action_lmm_t) action)->suspended != 2) {
     lmm_update_variable_weight(cpu_im_maxmin_system,
                                ((surf_action_lmm_t) action)->variable,
@@ -503,7 +503,7 @@ static void cpu_im_action_resume(surf_action_t action)
     ((surf_action_lmm_t) action)->suspended = 0;
     xbt_swag_insert(ACTION_GET_CPU(action), cpu_im_modified_cpu);
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static int cpu_im_action_is_suspended(surf_action_t action)
@@ -514,44 +514,44 @@ static int cpu_im_action_is_suspended(surf_action_t action)
 static void cpu_im_action_set_max_duration(surf_action_t action,
                                            double duration)
 {
-  XBT_IN_F("(%p,%g)", action, duration);
+  XBT_IN("(%p,%g)", action, duration);
 
   action->max_duration = duration;
   /* insert cpu in modified_cpu set to notice the max duration change */
   xbt_swag_insert(ACTION_GET_CPU(action), cpu_im_modified_cpu);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void cpu_im_action_set_priority(surf_action_t action,
                                        double priority)
 {
-  XBT_IN_F("(%p,%g)", action, priority);
+  XBT_IN("(%p,%g)", action, priority);
   action->priority = priority;
   lmm_update_variable_weight(cpu_im_maxmin_system,
                              ((surf_action_lmm_t) action)->variable,
                              priority);
 
   xbt_swag_insert(ACTION_GET_CPU(action), cpu_im_modified_cpu);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 #ifdef HAVE_TRACING
 static void cpu_im_action_set_category(surf_action_t action,
                                        const char *category)
 {
-  XBT_IN_F("(%p,%s)", action, category);
+  XBT_IN("(%p,%s)", action, category);
   action->category = xbt_strdup (category);
-  XBT_OUT;
+  XBT_OUT();
 }
 #endif
 
 static double cpu_im_action_get_remains(surf_action_t action)
 {
-  XBT_IN_F("(%p)", action);
+  XBT_IN("(%p)", action);
   /* update remains before return it */
   cpu_im_update_remains(ACTION_GET_CPU(action), surf_get_clock());
   return action->remains;
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static e_surf_resource_state_t cpu_im_get_state(void *cpu)

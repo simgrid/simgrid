@@ -170,7 +170,7 @@ void gras_trp_socket_new(int incoming, gras_socket_t * dst)
 
   *dst = sock;
 
-  XBT_OUT;
+  XBT_OUT();
 }
 
 /**
@@ -346,7 +346,7 @@ void gras_socket_close(gras_socket_t sock)
   gras_socket_t sock_iter = NULL;
   unsigned int cursor;
 
-  XBT_IN;
+  XBT_IN("");
   XBT_VERB("Close %p", sock);
   if (sock == _gras_lastly_selected_socket) {
     xbt_assert0(!gras_opt_trp_nomoredata_on_close || !sock->moredata,
@@ -374,7 +374,7 @@ void gras_socket_close(gras_socket_t sock)
 
         /* free the memory */
         free(sock);
-        XBT_OUT;
+        XBT_OUT();
         return;
       }
     }
@@ -383,7 +383,7 @@ void gras_socket_close(gras_socket_t sock)
          sock);
     xbt_backtrace_display_current();
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 /**
@@ -489,7 +489,7 @@ void gras_socket_meas_send(gras_socket_t peer,
   char *chunk = NULL;
   unsigned long int sent_sofar;
 
-  XBT_IN;
+  XBT_IN("");
   THROW0(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
       "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
   if (gras_if_RL())
@@ -515,7 +515,7 @@ void gras_socket_meas_send(gras_socket_t peer,
   if (gras_if_RL())
     free(chunk);
 
-  XBT_OUT;
+  XBT_OUT();
 }
 
 /** \brief Receive a chunk of data over a measurement socket
@@ -537,7 +537,7 @@ void gras_socket_meas_recv(gras_socket_t peer,
   char *chunk = NULL;
   unsigned long int got_sofar;
 
-  XBT_IN;
+  XBT_IN("");
   THROW0(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
       "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
 
@@ -562,7 +562,7 @@ void gras_socket_meas_recv(gras_socket_t peer,
 
   if (gras_if_RL())
     free(chunk);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 /**

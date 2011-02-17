@@ -58,7 +58,7 @@ static void route_new(int src_id, int dst_id, xbt_dynar_t links,
   int i = 0;
   int *gtnets_links;
 
-  XBT_IN_F("(src_id=%d, dst_id=%d, links=%p, nb_link=%d)",
+  XBT_IN("(src_id=%d, dst_id=%d, links=%p, nb_link=%d)",
           src_id, dst_id, links, nb_link);
 
   /* Build the list of gtnets link IDs */
@@ -71,7 +71,7 @@ static void route_new(int src_id, int dst_id, xbt_dynar_t links,
   if (gtnets_add_route(src_id, dst_id, gtnets_links, nb_link)) {
     xbt_assert0(0, "Cannot create GTNetS route");
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void route_onehop_new(int src_id, int dst_id,

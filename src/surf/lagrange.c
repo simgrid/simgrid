@@ -378,7 +378,7 @@ static double dichotomy(double init, double diff(double, void *),
   double diff_0 = 0.0;
   min = max = init;
 
-  XBT_IN;
+  XBT_IN("");
 
   if (init == 0.0) {
     min = max = 0.5;
@@ -389,7 +389,7 @@ static double dichotomy(double init, double diff(double, void *),
 
   if ((diff_0 = diff(1e-16, var_cnst)) >= 0) {
     XBT_CDEBUG(surf_lagrange_dichotomy, "returning 0.0 (diff = %e)", diff_0);
-    XBT_OUT;
+    XBT_OUT();
     return 0.0;
   }
 
@@ -472,7 +472,7 @@ static double dichotomy(double init, double diff(double, void *),
   }
 
   XBT_CDEBUG(surf_lagrange_dichotomy, "returning %e", (min + max) / 2.0);
-  XBT_OUT;
+  XBT_OUT();
   return ((min + max) / 2.0);
 }
 
@@ -487,7 +487,7 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
   double diff = 0.0;
   double sigma_i = 0.0;
 
-  XBT_IN;
+  XBT_IN("");
   elem_list = &(cnst->element_set);
 
   XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", cnst);
@@ -523,7 +523,7 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
   XBT_CDEBUG(surf_lagrange_dichotomy,
           "d D/d lambda for cnst (%p) at %1.20f = %1.20f", cnst, lambda,
           diff);
-  XBT_OUT;
+  XBT_OUT();
   return diff;
 }
 

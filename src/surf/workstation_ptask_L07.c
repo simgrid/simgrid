@@ -145,14 +145,14 @@ static void ptask_action_cancel(surf_action_t action)
 
 static void ptask_action_suspend(surf_action_t action)
 {
-  XBT_IN_F("(%p))", action);
+  XBT_IN("(%p))", action);
   if (((surf_action_workstation_L07_t) action)->suspended != 2) {
     ((surf_action_workstation_L07_t) action)->suspended = 1;
     lmm_update_variable_weight(ptask_maxmin_system,
                                ((surf_action_workstation_L07_t)
                                 action)->variable, 0.0);
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void ptask_action_resume(surf_action_t action)
@@ -160,12 +160,12 @@ static void ptask_action_resume(surf_action_t action)
   surf_action_workstation_L07_t act =
       (surf_action_workstation_L07_t) action;
 
-  XBT_IN_F("(%p)", act);
+  XBT_IN("(%p)", act);
   if (act->suspended != 2) {
     lmm_update_variable_weight(ptask_maxmin_system, act->variable, 1.0);
     act->suspended = 0;
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static int ptask_action_is_suspended(surf_action_t action)
@@ -176,25 +176,25 @@ static int ptask_action_is_suspended(surf_action_t action)
 static void ptask_action_set_max_duration(surf_action_t action,
                                           double duration)
 {                               /* FIXME: should inherit */
-  XBT_IN_F("(%p,%g)", action, duration);
+  XBT_IN("(%p,%g)", action, duration);
   action->max_duration = duration;
-  XBT_OUT;
+  XBT_OUT();
 }
 
 
 static void ptask_action_set_priority(surf_action_t action,
                                       double priority)
 {                               /* FIXME: should inherit */
-  XBT_IN_F("(%p,%g)", action, priority);
+  XBT_IN("(%p,%g)", action, priority);
   action->priority = priority;
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static double ptask_action_get_remains(surf_action_t action)
 {
-  XBT_IN_F("(%p)", action);
+  XBT_IN("(%p)", action);
   return action->remains;
-  XBT_OUT;
+  XBT_OUT();
 }
 
 /**************************************/
@@ -578,14 +578,14 @@ static surf_action_t ptask_action_sleep(void *cpu, double duration)
 {
   surf_action_workstation_L07_t action = NULL;
 
-  XBT_IN_F("(%s,%g)", surf_resource_name(cpu), duration);
+  XBT_IN("(%s,%g)", surf_resource_name(cpu), duration);
 
   action = (surf_action_workstation_L07_t) ptask_execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
   action->suspended = 2;
   lmm_update_variable_weight(ptask_maxmin_system, action->variable, 0.0);
 
-  XBT_OUT;
+  XBT_OUT();
   return (surf_action_t) action;
 }
 

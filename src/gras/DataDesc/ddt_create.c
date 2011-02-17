@@ -34,7 +34,7 @@ static gras_datadesc_type_t gras_ddt_new(const char *name)
 {
   gras_datadesc_type_t res;
 
-  XBT_IN_F("(%s)", name);
+  XBT_IN("(%s)", name);
   res = xbt_new0(s_gras_datadesc_type_t, 1);
 
   res->name = (char *) strdup(name);
@@ -43,7 +43,7 @@ static gras_datadesc_type_t gras_ddt_new(const char *name)
 
   xbt_set_add(gras_datadesc_set_local, (xbt_set_elm_t) res,
               gras_ddt_freev);
-  XBT_OUT;
+  XBT_OUT();
   return res;
 }
 
@@ -119,7 +119,7 @@ gras_datadesc_scalar(const char *name,
   gras_datadesc_type_t res;
   long int arch;
 
-  XBT_IN;
+  XBT_IN("");
   res = gras_datadesc_by_name_or_null(name);
   if (res) {
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_scalar,
@@ -143,7 +143,7 @@ gras_datadesc_scalar(const char *name,
   res->category_code = e_gras_datadesc_type_cat_scalar;
   res->category.scalar_data.encoding = encoding;
   res->category.scalar_data.type = type;
-  XBT_OUT;
+  XBT_OUT();
 
   return res;
 }
@@ -153,13 +153,13 @@ gras_datadesc_scalar(const char *name,
 void gras_dd_cat_field_free(void *f)
 {
   gras_dd_cat_field_t field = *(gras_dd_cat_field_t *) f;
-  XBT_IN;
+  XBT_IN("");
   if (field) {
     if (field->name)
       free(field->name);
     free(field);
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 /** \brief Declare a new structure description */
@@ -169,7 +169,7 @@ gras_datadesc_type_t gras_datadesc_struct(const char *name)
   gras_datadesc_type_t res;
   long int arch;
 
-  XBT_IN_F("(%s)", name);
+  XBT_IN("(%s)", name);
   res = gras_datadesc_by_name_or_null(name);
   if (res) {
     /* FIXME: Check that field redefinition matches */
@@ -189,7 +189,7 @@ gras_datadesc_type_t gras_datadesc_struct(const char *name)
   res->category.struct_data.fields =
       xbt_dynar_new(sizeof(gras_dd_cat_field_t), gras_dd_cat_field_free);
 
-  XBT_OUT;
+  XBT_OUT();
   return res;
 }
 
@@ -206,7 +206,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
   xbt_assert2(field_type,
               "Cannot add the field '%s' into struct '%s': its type is NULL",
               name, struct_type->name);
-  XBT_IN_F("(%s %s.%s;)", field_type->name, struct_type->name, name);
+  XBT_IN("(%s %s.%s;)", field_type->name, struct_type->name, name);
   if (struct_type->category.struct_data.closed) {
     XBT_DEBUG
         ("Ignoring request to add field to struct %s (closed. Redefinition?)",
@@ -256,7 +256,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
          struct_type->size[GRAS_THISARCH],
          struct_type->alignment[GRAS_THISARCH],
          struct_type->aligned_size[GRAS_THISARCH]);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 /** \brief Close a structure description
@@ -266,7 +266,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
 void gras_datadesc_struct_close(gras_datadesc_type_t struct_type)
 {
   int arch;
-  XBT_IN;
+  XBT_IN("");
   struct_type->category.struct_data.closed = 1;
   for (arch = 0; arch < gras_arch_count; arch++) {
     struct_type->size[arch] = struct_type->aligned_size[arch];
@@ -312,7 +312,7 @@ gras_datadesc_union(const char *name, gras_datadesc_type_cb_int_t selector)
   gras_datadesc_type_t res;
   int arch;
 
-  XBT_IN_F("(%s)", name);
+  XBT_IN("(%s)", name);
   xbt_assert0(selector,
               "Attempt to creat an union without field_count function");
 
@@ -352,7 +352,7 @@ void gras_datadesc_union_append(gras_datadesc_type_t union_type,
   gras_dd_cat_field_t field;
   int arch;
 
-  XBT_IN_F("(%s %s.%s;)", field_type->name, union_type->name, name);
+  XBT_IN("(%s %s.%s;)", field_type->name, union_type->name, name);
   xbt_assert1(field_type->size[GRAS_THISARCH] >= 0,
               "Cannot add a dynamically sized field in union %s",
               union_type->name);
@@ -418,7 +418,7 @@ gras_datadesc_ref(const char *name, gras_datadesc_type_t referenced_type)
       gras_datadesc_by_name("data pointer");
   int arch;
 
-  XBT_IN_F("(%s)", name);
+  XBT_IN("(%s)", name);
   res = gras_datadesc_by_name_or_null(name);
   if (res) {
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_ref,
@@ -464,7 +464,7 @@ gras_datadesc_ref_generic(const char *name,
       gras_datadesc_by_name("data pointer");
   int arch;
 
-  XBT_IN_F("(%s)", name);
+  XBT_IN("(%s)", name);
   res = gras_datadesc_by_name_or_null(name);
 
   if (res) {
@@ -505,7 +505,7 @@ gras_datadesc_array_fixed(const char *name,
   gras_datadesc_type_t res;
   int arch;
 
-  XBT_IN_F("(%s)", name);
+  XBT_IN("(%s)", name);
   res = gras_datadesc_by_name_or_null(name);
   if (res) {
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_array,
@@ -557,7 +557,7 @@ gras_datadesc_type_t gras_datadesc_array_dyn(const char *name,
   gras_datadesc_type_t res;
   int arch;
 
-  XBT_IN_F("(%s)", name);
+  XBT_IN("(%s)", name);
   xbt_assert1(dynamic_size,
               "'%s' is a dynamic array without size discriminant", name);
 

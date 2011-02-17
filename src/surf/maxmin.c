@@ -89,7 +89,7 @@ XBT_INLINE void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
   int i;
   lmm_element_t elem = NULL;
 
-  XBT_IN_F("(sys=%p, var=%p)", sys, var);
+  XBT_IN("(sys=%p, var=%p)", sys, var);
   sys->modified = 1;
 
   for (i = 0; i < var->cnsts_number; i++) {
@@ -102,7 +102,7 @@ XBT_INLINE void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
       lmm_update_modified_set(sys, elem->constraint);
   }
   var->cnsts_number = 0;
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
@@ -185,7 +185,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   lmm_variable_t var = NULL;
   int i;
 
-  XBT_IN_F("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)",
+  XBT_IN("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)",
           sys, id, weight, bound, number_of_constraints);
 
   var = xbt_mallocator_get(sys->variable_mallocator);
@@ -222,7 +222,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
     xbt_swag_insert_at_head(var, &(sys->variable_set));
   else
     xbt_swag_insert_at_tail(var, &(sys->variable_set));
-  XBT_OUT;
+  XBT_OUT();
   return var;
 }
 
@@ -350,13 +350,13 @@ static XBT_INLINE void saturated_constraint_set_update(lmm_system_t sys,
 {
   lmm_constraint_t useless_cnst = NULL;
 
-  XBT_IN_F("sys=%p, cnst=%p, min_usage=%f", sys, cnst, *min_usage);
+  XBT_IN("sys=%p, cnst=%p, min_usage=%f", sys, cnst, *min_usage);
   if (cnst->usage <= 0) {
-    XBT_OUT;
+    XBT_OUT();
     return;
   }
   if (cnst->remaining <= 0) {
-    XBT_OUT;
+    XBT_OUT();
     return;
   }
   if ((*min_usage < 0) || (*min_usage > cnst->remaining / cnst->usage)) {
@@ -372,7 +372,7 @@ static XBT_INLINE void saturated_constraint_set_update(lmm_system_t sys,
   } else if (*min_usage == cnst->remaining / cnst->usage) {
     xbt_swag_insert(cnst, &(sys->saturated_constraint_set));
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static XBT_INLINE void saturated_variable_set_update(lmm_system_t sys)
@@ -505,7 +505,7 @@ void lmm_solve(lmm_system_t sys)
   if (!(sys->modified))
     return;
 
-  XBT_IN_F("(sys=%p)", sys);
+  XBT_IN("(sys=%p)", sys);
 
   /*
    * Compute Usage and store the variables that reach the maximum.
@@ -650,7 +650,7 @@ void lmm_solve(lmm_system_t sys)
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     lmm_print(sys);
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 /* Not a O(1) function */
@@ -703,7 +703,7 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
 
   if (weight == var->weight)
     return;
-  XBT_IN_F("(sys=%p, var=%p, weight=%f)", sys, var, weight);
+  XBT_IN("(sys=%p, var=%p, weight=%f)", sys, var, weight);
   sys->modified = 1;
   var->weight = weight;
   xbt_swag_remove(var, &(sys->variable_set));
@@ -725,7 +725,7 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
   if (!weight)
     var->value = 0.0;
 
-  XBT_OUT;
+  XBT_OUT();
 }
 
 XBT_INLINE double lmm_get_variable_weight(lmm_variable_t var)

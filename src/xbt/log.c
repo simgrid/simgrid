@@ -240,8 +240,7 @@ producing macro (ie, use #XBT_CDEBUG, #XBT_CVERB, #XBT_CINFO, #XBT_CWARN,
 first argument.
 
 The TRACE priority is not used the same way than the other. You should use
-the #XBT_IN, #XBT_IN_F, #XBT_OUT and #XBT_HERE macros
-instead.
+the #XBT_IN, #XBT_OUT and #XBT_HERE macros instead.
 
 \section log_API_example 2.6 Example of use
 

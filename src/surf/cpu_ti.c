@@ -583,7 +583,7 @@ static surf_action_t cpu_ti_execute(void *cpu, double size)
   surf_action_cpu_ti_t action = NULL;
   cpu_ti_t CPU = cpu;
 
-  XBT_IN_F("(%s,%g)", surf_resource_name(CPU), size);
+  XBT_IN("(%s,%g)", surf_resource_name(CPU), size);
   action =
       surf_action_new(sizeof(s_surf_action_cpu_ti_t), size, surf_cpu_model,
                       CPU->state_current != SURF_RESOURCE_ON);
@@ -597,7 +597,7 @@ static surf_action_t cpu_ti_execute(void *cpu, double size)
   action->suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
 
-  XBT_OUT;
+  XBT_OUT();
   return (surf_action_t) action;
 }
 
@@ -613,7 +613,7 @@ static surf_action_t cpu_ti_action_sleep(void *cpu, double duration)
   if (duration > 0)
     duration = MAX(duration, MAXMIN_PRECISION);
 
-  XBT_IN_F("(%s,%g)", surf_resource_name(cpu), duration);
+  XBT_IN("(%s,%g)", surf_resource_name(cpu), duration);
   action = (surf_action_cpu_ti_t) cpu_ti_execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
   action->suspended = 2;
@@ -625,30 +625,30 @@ static surf_action_t cpu_ti_action_sleep(void *cpu, double duration)
         cpu_ti_running_action_set_that_does_not_need_being_checked;
     xbt_swag_insert(action, ((surf_action_t) action)->state_set);
   }
-  XBT_OUT;
+  XBT_OUT();
   return (surf_action_t) action;
 }
 
 static void cpu_ti_action_suspend(surf_action_t action)
 {
-  XBT_IN_F("(%p)", action);
+  XBT_IN("(%p)", action);
   if (((surf_action_cpu_ti_t) action)->suspended != 2) {
     ((surf_action_cpu_ti_t) action)->suspended = 1;
     xbt_heap_remove(cpu_ti_action_heap,
                     ((surf_action_cpu_ti_t) action)->index_heap);
     xbt_swag_insert(ACTION_GET_CPU(action), cpu_ti_modified_cpu);
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void cpu_ti_action_resume(surf_action_t action)
 {
-  XBT_IN_F("(%p)", action);
+  XBT_IN("(%p)", action);
   if (((surf_action_cpu_ti_t) action)->suspended != 2) {
     ((surf_action_cpu_ti_t) action)->suspended = 0;
     xbt_swag_insert(ACTION_GET_CPU(action), cpu_ti_modified_cpu);
   }
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static int cpu_ti_action_is_suspended(surf_action_t action)
@@ -662,7 +662,7 @@ static void cpu_ti_action_set_max_duration(surf_action_t action,
   surf_action_cpu_ti_t ACT = (surf_action_cpu_ti_t) action;
   double min_finish;
 
-  XBT_IN_F("(%p,%g)", action, duration);
+  XBT_IN("(%p,%g)", action, duration);
 
   action->max_duration = duration;
 
@@ -683,26 +683,26 @@ static void cpu_ti_action_set_max_duration(surf_action_t action,
   }
   xbt_heap_push(cpu_ti_action_heap, ACT, min_finish);
 
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static void cpu_ti_action_set_priority(surf_action_t action,
                                        double priority)
 {
-  XBT_IN_F("(%p,%g)", action, priority);
+  XBT_IN("(%p,%g)", action, priority);
   action->priority = priority;
   xbt_swag_insert(ACTION_GET_CPU(action), cpu_ti_modified_cpu);
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static double cpu_ti_action_get_remains(surf_action_t action)
 {
-  XBT_IN_F("(%p)", action);
+  XBT_IN("(%p)", action);
   cpu_ti_update_remaining_amount((cpu_ti_t)
                                  ((surf_action_cpu_ti_t) action)->cpu,
                                  surf_get_clock());
   return action->remains;
-  XBT_OUT;
+  XBT_OUT();
 }
 
 static e_surf_resource_state_t cpu_ti_get_state(void *cpu)
