@@ -2,12 +2,24 @@
 
 /* simgrid_config.h - Results of the configure made visible to user code    */
 
-/* Copyright (c) 2009, Da SimGrid team. All rights reserved.                */
+/* Copyright (c) 2009, 2010, 2011. Da SimGrid team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h"           /* XBT_PUBLIC */
+
+#ifndef SIMGRID_PUBLIC_CONFIG_H
+#define SIMGRID_PUBLIC_CONFIG_H
+SG_BEGIN_DECL()
+
+
+/* Version X.Y.Z will get version number XYZ: all digits concatenated without dots
+ * (with Y and Z must be on two positions)*/
+
+#define SIMGRID_VERSION 30599 /* 3.5.99, aka 3.6 svn */
+
+/* take care of DLL usage madness */
 
 #ifdef _XBT_DLL_EXPORT
 	#define DLL_EXPORT
@@ -30,9 +42,6 @@
 	#endif
 #endif
 
-#ifndef SIMGRID_PUBLIC_CONFIG_H
-#define SIMGRID_PUBLIC_CONFIG_H
-SG_BEGIN_DECL()
 
 /* Define to 1 if you have the `mmap' function. */
 #cmakedefine HAVE_MMAP @HAVE_MMAP@

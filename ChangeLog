@@ -2,7 +2,8 @@ SimGrid (3.6) unstable; urgency=low
 
  MSG
  * Change the prototypes of action replay. Sorry for inconvenience,
-   but this is really more efficient this way.
+   but this is really more efficient this way (and to adapt your code,
+   you just have to fix the initialization, that shouldn't be too long)
  * Kill the braindead MSG_task_refcount_dec() function. I guess nobody
    ever managed to do anything useful with it.
 
@@ -55,6 +56,14 @@ SimGrid (3.6) unstable; urgency=low
    these options generate traces that are suited to gantt-charts, such as the space-time view of Paje
  * The experimental option tracing/msg/volume is deprecated
    its functionality may be reincorporated if needed
+   
+ Build Infrastructure
+ * Define a SIMGRID_VERSION macro in simgrid_config.h.
+   - We are trying hard to keep the API stable, but it may happen that
+     some things change (we're a research project after all, not a
+     nuclear plant operating system). If such things should happen, you
+     could rely on that macro to adapt.
+   - current value: 30600 for 3.06.00, aka 3.6
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
