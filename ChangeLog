@@ -35,8 +35,8 @@ SimGrid (3.6) unstable; urgency=low
    NULL-terminated array. This may solve backward compatibility issues
    due to the change to return type of SD_Simulate. See also:
    http://lists.gforge.inria.fr/pipermail/simgrid-user/2010-December/002206.html
- * Add new logging macros, with variable number of arguments.
- * Kill old style logging macros.
+ * Add new logging macros, with variable number of arguments. Define
+   XBT_USE_DEPRECATED if you want to use the old macros INFO1, INFO2, etc.
 
  INSTR
  * New configuration options
