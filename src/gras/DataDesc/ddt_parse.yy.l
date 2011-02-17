@@ -56,10 +56,10 @@ digit           [0-9]
 }
 
 <annotate>"*/" {
-  PARSE_ERROR0("``/*g'' construct closed by a regular ``*/''");
+  PARSE_ERROR("``/*g'' construct closed by a regular ``*/''");
 }
 <annotate>\n  {
-  PARSE_ERROR0("Type annotation cannot spread over several lines");
+  PARSE_ERROR("Type annotation cannot spread over several lines");
 }
 
 <annotate>.* { /* eat the rest */

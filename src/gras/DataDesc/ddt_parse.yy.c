@@ -841,14 +841,14 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 {
-  PARSE_ERROR0("``/*g'' construct closed by a regular ``*/''");
+  PARSE_ERROR("``/*g'' construct closed by a regular ``*/''");
 }
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
 {
-  PARSE_ERROR0("Type annotation cannot spread over several lines");
+  PARSE_ERROR("Type annotation cannot spread over several lines");
 }
 	YY_BREAK
 case 7:

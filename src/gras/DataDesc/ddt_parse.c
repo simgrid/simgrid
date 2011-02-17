@@ -255,7 +255,7 @@ static void parse_statement(char *definition,
   }
 
   if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD)
-    PARSE_ERROR1
+    PARSE_ERROR
         ("Unparsable symbol: found a typeless statement (got '%s' instead)",
          gras_ddt_parse_text);
 
@@ -265,7 +265,7 @@ static void parse_statement(char *definition,
   /*  FIXME: This does not detect recursive definitions at all? */
   if (identifier.tm.is_union || identifier.tm.is_enum
       || identifier.tm.is_struct)
-    PARSE_ERROR0
+    PARSE_ERROR
         ("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle recursive type definition yet");
 
         /**** get the base type, giving "short a" the needed love ****/
@@ -289,11 +289,11 @@ static void parse_statement(char *definition,
 
         /**** build the base type for latter use ****/
   if (identifier.tm.is_union) {
-    PARSE_ERROR0
+    PARSE_ERROR
         ("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle union yet (get callback from annotation?)");
 
   } else if (identifier.tm.is_enum) {
-    PARSE_ERROR0
+    PARSE_ERROR
         ("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle enum yet");
 
   } else if (identifier.tm.is_struct) {
@@ -325,7 +325,7 @@ static void parse_statement(char *definition,
 
   } else if (!strcmp(identifier.type_name, "double")) {
     if (identifier.tm.is_long)
-      PARSE_ERROR0("long double not portable and thus not handled");
+      PARSE_ERROR("long double not portable and thus not handled");
 
     identifier.type = gras_datadesc_by_name("double");
 
@@ -353,7 +353,7 @@ static void parse_statement(char *definition,
       } else {
         identifier.type = gras_datadesc_by_name(identifier.type_name);
         if (!identifier.type)
-          PARSE_ERROR1("Unknown base type '%s'", identifier.type_name);
+          PARSE_ERROR("Unknown base type '%s'", identifier.type_name);
       }
     }
   }
@@ -379,7 +379,7 @@ static void parse_statement(char *definition,
         /* Handle fixed size arrays */
         gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
         if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_RB) {
-          PARSE_ERROR0
+          PARSE_ERROR
               ("Unimplemented feature: GRAS_DEFINE_TYPE cannot deal with [] constructs (yet)");
 
         } else if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
@@ -393,7 +393,7 @@ static void parse_statement(char *definition,
             if (storage) {
               size = *storage;
             } else {
-              PARSE_ERROR1
+              PARSE_ERROR
                   ("Unparsable size of array. Found '%s', expected number or known constant. Need to use gras_datadesc_set_const(), huh?",
                    gras_ddt_parse_text);
             }
@@ -405,11 +405,11 @@ static void parse_statement(char *definition,
           /* eat the closing bracket */
           gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
           if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_RB)
-            PARSE_ERROR0("Unparsable size of array");
+            PARSE_ERROR("Unparsable size of array");
           XBT_DEBUG("Fixed size array, size=%ld", size);
           continue;
         } else {
-          PARSE_ERROR0("Unparsable size of array");
+          PARSE_ERROR("Unparsable size of array");
         }
         /* End of fixed size arrays handling */
 
@@ -420,13 +420,13 @@ static void parse_statement(char *definition,
         char *keyval = NULL;
         memset(&array, 0, sizeof(array));
         if (strcmp(gras_ddt_parse_text, "GRAS_ANNOTE"))
-          PARSE_ERROR1
+          PARSE_ERROR
               ("Unparsable symbol: Expected 'GRAS_ANNOTE', got '%s'",
                gras_ddt_parse_text);
 
         gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
         if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_LP)
-          PARSE_ERROR1
+          PARSE_ERROR
               ("Unparsable annotation: Expected parenthesis, got '%s'",
                gras_ddt_parse_text);
 
@@ -435,7 +435,7 @@ static void parse_statement(char *definition,
                GRAS_DDT_PARSE_TOKEN_EMPTY);
 
         if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD)
-          PARSE_ERROR1
+          PARSE_ERROR
               ("Unparsable annotation: Expected key name, got '%s'",
                gras_ddt_parse_text);
         keyname = (char *) strdup(gras_ddt_parse_text);
@@ -445,7 +445,7 @@ static void parse_statement(char *definition,
                GRAS_DDT_PARSE_TOKEN_EMPTY);
 
         if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_COLON)
-          PARSE_ERROR1
+          PARSE_ERROR
               ("Unparsable annotation: expected ',' after the key name, got '%s'",
                gras_ddt_parse_text);
 
@@ -456,7 +456,7 @@ static void parse_statement(char *definition,
         /* get the value */
 
         if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD)
-          PARSE_ERROR1
+          PARSE_ERROR
               ("Unparsable annotation: Expected key value, got '%s'",
                gras_ddt_parse_text);
         keyval = (char *) strdup(gras_ddt_parse_text);
@@ -470,7 +470,7 @@ static void parse_statement(char *definition,
         XBT_DEBUG("Anotation: %s=%s", keyname, keyval);
         if (!strcmp(keyname, "size")) {
           if (!identifier.tm.is_ref)
-            PARSE_ERROR0
+            PARSE_ERROR
                 ("Size annotation for a field not being a reference");
           identifier.tm.is_ref--;
 
@@ -502,7 +502,7 @@ static void parse_statement(char *definition,
             change_to_dynar_of(identifiers, subtype);
             identifier.tm.is_dynar = -1;
           } else {
-            PARSE_ERROR1
+            PARSE_ERROR
                 ("subtype annotation only accepted for dynars and matrices, but passed to '%s'",
                  identifier.type_name);
           }
@@ -510,7 +510,7 @@ static void parse_statement(char *definition,
         } else if (!strcmp(keyname, "free_f")) {
           int *storage = xbt_dict_get_or_null(gras_dd_constants, keyval);
           if (!storage)
-            PARSE_ERROR1
+            PARSE_ERROR
                 ("value for free_f annotation of field %s is not a known constant",
                  identifier.name);
           if (identifier.tm.is_matrix == -1) {
@@ -520,14 +520,14 @@ static void parse_statement(char *definition,
             add_free_f(identifiers, *(void_f_pvoid_t *) storage);
             identifier.tm.is_dynar = 0;
           } else {
-            PARSE_ERROR1
+            PARSE_ERROR
                 ("free_f annotation only accepted for dynars and matrices which subtype is already declared (field %s)",
                  identifier.name);
           }
           free(keyval);
         } else {
           free(keyval);
-          PARSE_ERROR1("Unknown annotation type: '%s'", keyname);
+          PARSE_ERROR("Unknown annotation type: '%s'", keyname);
         }
         free(keyname);
 
@@ -537,7 +537,7 @@ static void parse_statement(char *definition,
           gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
 
           if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD)
-            PARSE_ERROR1
+            PARSE_ERROR
                 ("Unparsable annotation: Expected field name after '*', got '%s'",
                  gras_ddt_parse_text);
 
@@ -553,7 +553,7 @@ static void parse_statement(char *definition,
         }
 
         if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_RP)
-          PARSE_ERROR1
+          PARSE_ERROR
               ("Unparsable annotation: Expected parenthesis, got '%s'",
                gras_ddt_parse_text);
 
@@ -561,12 +561,12 @@ static void parse_statement(char *definition,
 
         /* End of annotation handling */
       } else {
-        PARSE_ERROR1
+        PARSE_ERROR
             ("Unparsable symbol: Got '%s' instead of expected comma (',')",
              gras_ddt_parse_text);
       }
     } else if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_COLON) {
-      PARSE_ERROR0("Unparsable symbol: Unexpected comma (',')");
+      PARSE_ERROR("Unparsable symbol: Unexpected comma (',')");
     }
 
     if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_STAR) {
@@ -586,14 +586,14 @@ static void parse_statement(char *definition,
       continue;
     }
 
-    PARSE_ERROR0
+    PARSE_ERROR
         ("Unparasable symbol (maybe a def struct in a def struct or a parser bug ;)");
   }
 
   if (identifier.tm.is_matrix > 0)
-    PARSE_ERROR0("xbt_matrix_t field without 'subtype' annotation");
+    PARSE_ERROR("xbt_matrix_t field without 'subtype' annotation");
   if (identifier.tm.is_dynar > 0)
-    PARSE_ERROR0("xbt_dynar_t field without 'subtype' annotation");
+    PARSE_ERROR("xbt_dynar_t field without 'subtype' annotation");
 
   XBT_OUT();
 }
@@ -632,7 +632,7 @@ static gras_datadesc_type_t parse_struct(char *definition)
   }
 
   if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_LA)
-    PARSE_ERROR1
+    PARSE_ERROR
         ("Unparasable symbol: Expecting struct definition, but got %s instead of '{'",
          gras_ddt_parse_text);
 
@@ -654,7 +654,7 @@ static gras_datadesc_type_t parse_struct(char *definition)
     /* append the identifiers we've found */
     xbt_dynar_foreach(identifiers, iter, field) {
       if (field.tm.is_ref)
-        PARSE_ERROR2
+        PARSE_ERROR
             ("Not enough GRAS_ANNOTATE to deal with all dereferencing levels of %s (%d '*' left)",
              field.name, field.tm.is_ref);
 
@@ -687,7 +687,7 @@ static gras_datadesc_type_t parse_struct(char *definition)
 
   /* terminates */
   if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_RA)
-    PARSE_ERROR1
+    PARSE_ERROR
         ("Unparasable symbol: Expected '}' at the end of struct definition, got '%s'",
          gras_ddt_parse_text);
 
@@ -720,17 +720,17 @@ static gras_datadesc_type_t parse_typedef(char *definition)
   parse_type_modifier(&tm);
 
   if (tm.is_ref)
-    PARSE_ERROR0
+    PARSE_ERROR
         ("GRAS_DEFINE_TYPE cannot handle reference without annotation");
 
   /* get the aliasing name */
   if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD)
-    PARSE_ERROR1
+    PARSE_ERROR
         ("Unparsable typedef: Expected the alias name, and got '%s'",
          gras_ddt_parse_text);
 
   /* (FIXME: should) build the alias */
-  PARSE_ERROR0
+  PARSE_ERROR
       ("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle typedef yet");
 
   XBT_OUT();
