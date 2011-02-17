@@ -39,15 +39,11 @@ int master(int argc, char *argv[])
 							task_comm_size,
 							NULL);
     MSG_task_send(task_s,mailbox);
-    MSG_process_sleep(1);
-    //MSG_comm_wait(comm, -1);
     INFO1("Send Data to \"%s\"", mailbox);
 
 	sprintf(mailbox, "host%d", num);
 	MSG_task_receive(&(task_r), mailbox);
-	//res = MSG_comm_wait(res_irecv, -1);
 	INFO1("Received \"%s\"", MSG_task_get_name(task_r));
-	//MSG_comm_destroy(res_irecv);
 	return 0;
 }
 
@@ -63,12 +59,7 @@ int slave(int argc, char *argv[])
 
 	sprintf(mailbox, "host%d", num);
 	MSG_task_receive(&(task_r), mailbox);
-	//res = MSG_comm_wait(res_irecv, -1);
 	INFO1("Received \"%s\"", MSG_task_get_name(task_r));
-	MSG_process_sleep(1);
-	//MSG_comm_destroy(res_irecv);
-	//Receive something now need to tell it!
-
 	sprintf(mailbox, "host%d", num+1);
 	if(num == totalHosts-1)
 		sprintf(mailbox, "host%d", 0);
@@ -78,7 +69,6 @@ int slave(int argc, char *argv[])
 							task_comm_size,
 							NULL);
 	MSG_task_send(task_s, mailbox);
-	//MSG_comm_wait(comm, -1);
 	INFO1("Send Data to \"%s\"", mailbox);
 
 	return 0;
