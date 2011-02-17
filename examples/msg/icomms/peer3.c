@@ -69,7 +69,7 @@ int sender(int argc, char *argv[])
     task = NULL;
     res_irecv = MSG_task_irecv(&(task), mailbox);
     res_wait = MSG_comm_wait(res_irecv, -1);
-    xbt_assert0(res == MSG_OK, "MSG_comm_wait failed");
+    xbt_assert0(res_wait == MSG_OK, "MSG_comm_wait failed");
     MSG_comm_destroy(res_irecv);
     MSG_task_destroy(task);
   }
