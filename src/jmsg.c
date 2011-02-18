@@ -62,7 +62,7 @@ Java_org_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
   m_process_t process;          /* the native process to create                         */
   m_host_t host;                /* Where that process lives */
    
-  DEBUG4("Java_org_simgrid_msg_MsgNative_processCreate(env=%p,cls=%p,jproc=%p,jhost=%p)",
+  XBT_DEBUG("Java_org_simgrid_msg_MsgNative_processCreate(env=%p,cls=%p,jproc=%p,jhost=%p)",
 	 env, cls, jprocess_arg, jhost);
    
    
@@ -324,10 +324,10 @@ Java_org_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
 
   /* get the C string from the java string */
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
-  DEBUG1("Looking for host '%s'",name);
+  XBT_DEBUG("Looking for host '%s'",name);
   /* get the host by name       (the hosts are created during the grid resolution) */
   host = MSG_get_host_by_name(name);
-  DEBUG2("MSG gave %p as native host (simdata=%p)", host,host? host->simdata:NULL);
+  XBT_DEBUG("MSG gave %p as native host (simdata=%p)", host,host? host->simdata:NULL);
 
   if (!host) {                  /* invalid name */
     jxbt_throw_host_not_found(env, name);
@@ -815,16 +815,16 @@ JNIEXPORT void JNICALL
   jobject jhost;
 
   /* Run everything */
-  INFO0("Ready to run MSG_MAIN");
+  XBT_INFO("Ready to run MSG_MAIN");
   rv = MSG_main();
-  INFO0("Done running MSG_MAIN");
+  XBT_INFO("Done running MSG_MAIN");
   jxbt_check_res("MSG_main()", rv, MSG_OK,
                  bprintf
                  ("unexpected error : MSG_main() failed .. please report this bug "));
 
-  INFO0("MSG_main finished");
+  XBT_INFO("MSG_main finished");
 
-  INFO0("Clean java world");
+  XBT_INFO("Clean java world");
   /* Cleanup java hosts */
   hosts = MSG_get_host_table();
   for (index = 0; index < MSG_get_host_number() - 1; index++) {
@@ -834,7 +834,7 @@ JNIEXPORT void JNICALL
 
   }
 
-  INFO0("Clean native world");
+  XBT_INFO("Clean native world");
   /* cleanup native stuff */
   rv = MSG_OK != MSG_clean();
   jxbt_check_res("MSG_clean()", rv, MSG_OK,
@@ -882,7 +882,7 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_info(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = (*env)->GetStringUTFChars(env, js, 0);
-  INFO1("%s", s);
+  XBT_INFO("%s", s);
   (*env)->ReleaseStringUTFChars(env, js, s);
 }
 

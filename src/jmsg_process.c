@@ -122,9 +122,9 @@ void jprocess_start(jobject jprocess, JNIEnv * env)
   if (!id)
     return;
 
-  DEBUG2("jprocess_start(jproc=%p,env=%p)", jprocess, env);
+  XBT_DEBUG("jprocess_start(jproc=%p,env=%p)", jprocess, env);
   (*env)->CallVoidMethod(env, jprocess, id);
-  DEBUG0("jprocess started");
+  XBT_DEBUG("jprocess started");
 }
 
 m_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env)
@@ -191,7 +191,7 @@ void jprocess_schedule(smx_context_t context)
   id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "schedule", "()V");
 
   if (!id) {
-    CRITICAL0("Cannot find java method org/simgrid/msg/Process/schedule()V");
+    XBT_CRITICAL("Cannot find java method org/simgrid/msg/Process/schedule()V");
     return;
   }
 

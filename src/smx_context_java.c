@@ -65,7 +65,7 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     void_pfn_smxprocess_t cleanup_func,
                                     void* data)
 {
-  DEBUG0("XXXX Create Context\n");
+  XBT_DEBUG("XXXX Create Context\n");
   smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
 
   /* If the user provided a function for the process then use it
@@ -106,7 +106,7 @@ static void smx_ctx_java_free(smx_context_t context)
 static void smx_ctx_java_stop(smx_context_t context)
 {
   jobject jprocess = NULL;
-  DEBUG0("XXXX Context Stop\n");
+  XBT_DEBUG("XXXX Context Stop\n");
 
   smx_ctx_java_t ctx_java;
 
@@ -117,7 +117,7 @@ static void smx_ctx_java_stop(smx_context_t context)
 
   /*FIXME: is this really necessary? Seems to. */
   if (my_current_context->iwannadie) {
-    INFO0("I wannadie");
+    XBT_INFO("I wannadie");
     /* The maestro call xbt_context_stop() with an exit code set to one */
     if (ctx_java->jprocess) {
       /* if the java process is alive schedule it */
@@ -148,13 +148,13 @@ static void smx_ctx_java_suspend(smx_context_t context)
 // FIXME: inline those functions
 static void smx_ctx_java_resume(smx_context_t new_context)
 {
-  DEBUG0("XXXX Context Resume\n");
+  XBT_DEBUG("XXXX Context Resume\n");
   jprocess_schedule(new_context);
 }
 
 static void smx_ctx_java_runall(xbt_dynar_t processes)
 {
-  DEBUG0("XXXX Run all\n");
+  XBT_DEBUG("XXXX Run all\n");
   smx_process_t process;
   smx_context_t old_context;
   unsigned int cursor;
@@ -167,5 +167,5 @@ static void smx_ctx_java_runall(xbt_dynar_t processes)
   }
   xbt_dynar_reset(processes);
 
-  DEBUG0("XXXX End of run all\n");
+  XBT_DEBUG("XXXX End of run all\n");
 }
