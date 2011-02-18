@@ -9,6 +9,7 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/replay_trace_reader.h"
+#include "simgrid_config.h" //For getline
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 
