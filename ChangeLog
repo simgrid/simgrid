@@ -6,6 +6,18 @@ SimGrid (3.6) unstable; urgency=low
    you just have to fix the initialization, that shouldn't be too long)
  * Kill the braindead MSG_task_refcount_dec() function. I guess nobody
    ever managed to do anything useful with it.
+ * New function MSG_comm_testany(). Similarly to MSG_comm_waitany(), it
+   takes a dynar of communications. It returns immediately and gives the
+   index of a finished communication (if any)
+ * New function MSG_comm_get_status(). MSG_comm_test() and MSG_comm_testany
+   only say if a communication is finished, no matter whether is succeeded or
+   failed. You can call MSG_comm_get_status() to have the status of a finished
+   communication.
+ * New function MSG_task_dsend() to send a task and detach it. When a
+   communication is detached, you are never notified of its success or failure
+   and the memory is released automatically once it is finished. This function
+   is useful when you don't care about the success nor the duration of a
+   communication.
 
  SURF
  * New model for multi-core CPUs. You can now use the core attribute to
@@ -23,12 +35,19 @@ SimGrid (3.6) unstable; urgency=low
    combine Vivaldi based latencies with last-mile platforms.
 
  Simix
- * Completely rewrote this module to allow parallel execution.
  * Introduce a new context factory "raw", highly inspirated from the
-   context factory, but using manually crafted functions in assembly to
+   ucontext factory, but using manually crafted functions in assembly to
    do the work in an efficient manner.
  * Allow to change the used context factory at run time, not only at
-   compilation time. Use --cfg=simix/context:raw for maximal speed.
+   compilation time. Use --cfg=contexts/factory:raw for maximal speed.
+ * Add an option --cfg=contexts/stacksize:N to set the stack size of the user
+   contextes at runtime (only with raw contexts or ucontexts).
+ * Completely rewrote this module to allow parallel execution of user
+   processes. Use --cfg=contexts/nthreads:N to execute user processes
+   with N parallel threads (the default is 1, meaning no parallelism).
+ * Allow to decide dynamically between sequential and parallel modes.
+   When nthreads > 1, you can use --cfg=contexts/threshold:P to run the user
+   processes in parallel only when their number is greater than or equal to P.
 
  XBT
  * Add a new function xbt_dynar_to_array that transforms a dynar into a
