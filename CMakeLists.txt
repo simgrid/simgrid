@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(simgrid-java C)
+set(UPDATE_TYPE svn)
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/lib")
@@ -141,5 +142,17 @@ ${CMAKE_HOME_DIRECTORY}/simgrid.jar
 INCLUDE(CTest)
 ENABLE_TESTING()
 
-ADD_TEST(java-basic 	${CMAKE_HOME_DIRECTORY}/test_java.sh ${CMAKE_HOME_DIRECTORY}/examples basic/BasicTest ${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/basic/)
-ADD_TEST(java-pingpong 	${CMAKE_HOME_DIRECTORY}/test_java.sh ${CMAKE_HOME_DIRECTORY}/examples pingPong/PingPongTest ${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/pingPong/)
+ADD_TEST(java-basic
+java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar basic/BasicTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/basic/basicDeployment.xml
+)
+ADD_TEST(java-pingPong
+java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar pingPong/PingPongTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingPongDeployment.xml
+)
+
+##########################################
+# Set the  LD_LIBRARY_PATH for our tests #
+##########################################
+message(STATUS "export LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{LD_LIBRARY_PATH}")
+
+set_tests_properties(java-basic java-pingPong
+PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{LD_LIBRARY_PATH}")
