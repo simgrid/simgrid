@@ -218,6 +218,8 @@ examples/smpi/alltoall_basic
 examples/smpi/alltoallv
 examples/smpi/sendrecv
 examples/smpi/smpi_sendrecv
+examples/smpi/mc_bugged1
+examples/smpi/mc_bugged2
 src/replay/replay
 src/testall
 teshsuite/gras/datadesc/datadesc_usage
