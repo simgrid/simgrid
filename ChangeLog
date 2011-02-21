@@ -8,16 +8,16 @@ SimGrid (3.6) unstable; urgency=low
    ever managed to do anything useful with it.
  * New function MSG_comm_testany(). Similarly to MSG_comm_waitany(), it
    takes a dynar of communications. It returns immediately and gives the
-   index of a finished communication (if any)
- * New function MSG_comm_get_status(). MSG_comm_test() and MSG_comm_testany
-   only say if a communication is finished, no matter whether is succeeded or
-   failed. You can call MSG_comm_get_status() to have the status of a finished
+   index of a finished communication (if any).
+ * New function MSG_comm_get_status(). MSG_comm_test() and MSG_comm_testany()
+   only say if a communication is finished, no matter whether it succeeded or
+   failed. You can call MSG_comm_get_status() to know the status of a finished
    communication.
  * New function MSG_task_dsend() to send a task and detach it. When a
    communication is detached, you are never notified of its success or failure
    and the memory is released automatically once it is finished. This function
-   is useful when you don't care about the success nor the duration of a
-   communication.
+   is useful when you don't care about the end nor the success of a
+   communication you send.
 
  SURF
  * New model for multi-core CPUs. You can now use the core attribute to
