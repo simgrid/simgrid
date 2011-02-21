@@ -56,6 +56,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t killer);
 void SIMIX_process_killall(void);
 smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args);
 void SIMIX_create_maestro_process(void);
+void SIMIX_process_cleanup(smx_process_t arg);
 void SIMIX_process_empty_trash(void);
 void SIMIX_process_yield(void);
 xbt_running_ctx_t *SIMIX_process_get_running_context(void);

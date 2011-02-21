@@ -366,6 +366,11 @@ void SIMIX_request_pre(smx_req_t req, int value)
       SIMIX_request_answer(req);
       break;
 
+    case REQ_PROCESS_CLEANUP:
+      SIMIX_process_cleanup(req->process_cleanup.process);
+      SIMIX_request_answer(req);
+      break;
+
     case REQ_PROCESS_CHANGE_HOST:
       SIMIX_process_change_host(
 	  req->process_change_host.process,

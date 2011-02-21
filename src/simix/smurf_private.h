@@ -32,6 +32,7 @@ SIMIX_REQ_ENUM_ELEMENT(REQ_HOST_EXECUTION_SET_PRIORITY),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_HOST_EXECUTION_WAIT),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_PROCESS_CREATE),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_PROCESS_KILL),\
+SIMIX_REQ_ENUM_ELEMENT(REQ_PROCESS_CLEANUP),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_PROCESS_CHANGE_HOST),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_PROCESS_SUSPEND),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_PROCESS_RESUME),\
@@ -224,6 +225,10 @@ typedef struct s_smx_req {
     struct {
       smx_process_t process;
     } process_kill;
+
+    struct {
+      smx_process_t process;
+    } process_cleanup;
 
     struct {
       smx_process_t process;

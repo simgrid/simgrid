@@ -345,6 +345,18 @@ void SIMIX_req_process_kill(smx_process_t process)
   SIMIX_request_push();
 }
 
+/** \brief Cleans up a SIMIX process.
+ * \param process poor victim
+ */
+void SIMIX_req_process_cleanup(smx_process_t process)
+{
+  smx_req_t req = SIMIX_req_mine();
+
+  req->call = REQ_PROCESS_CLEANUP;
+  req->process_cleanup.process = process;
+  SIMIX_request_push();
+}
+
 /**
  * \brief Migrates an agent to another location.
  *

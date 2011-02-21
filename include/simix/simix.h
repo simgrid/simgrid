@@ -60,7 +60,6 @@ XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
 
 /********************************* Process ************************************/
-XBT_PUBLIC(void) SIMIX_process_cleanup(smx_process_t arg);
 XBT_PUBLIC(int) SIMIX_process_count(void);
 XBT_INLINE XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
 XBT_PUBLIC(const char*) SIMIX_process_self_get_name(void);
@@ -128,7 +127,7 @@ XBT_PUBLIC(void) SIMIX_req_process_create(smx_process_t *process,
 XBT_PUBLIC(void) SIMIX_req_process_kill(smx_process_t process);
 
 /* Process handling */
-XBT_PUBLIC(void) SIMIX_req_process_cleanup(void *arg); /* FIXME: This function shouldn't be called from outside SIMIX */
+XBT_PUBLIC(void) SIMIX_req_process_cleanup(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_req_process_change_host(smx_process_t process,
                                            const char *source, const char *dest);
 XBT_PUBLIC(void) SIMIX_req_process_suspend(smx_process_t process);

@@ -28,13 +28,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
 /******************************** Process ************************************/
 void __MSG_process_cleanup(smx_process_t smx_proc)
 {
-  /* This function should be always be executed by the process being
-   * cleaned up */
-  if(smx_proc != SIMIX_process_self())
-    THROW_IMPOSSIBLE;
 
-  /* arg is no longer used, just kept to avoid changing the interface */
-  m_process_t proc = SIMIX_process_self_get_data();
+  m_process_t proc;
+
+  if (smx_proc == SIMIX_process_self()) {
+    /* avoid a SIMIX request if this function is called by the process itself */
+    proc = SIMIX_process_self_get_data();
+  }
+  else {
+    proc = SIMIX_req_process_get_data(smx_proc);
+  }
 
 #ifdef HAVE_TRACING
   TRACE_msg_process_end(proc);
@@ -43,7 +46,8 @@ void __MSG_process_cleanup(smx_process_t smx_proc)
   if (msg_global)
     xbt_swag_remove(proc, msg_global->process_list);
 
-  SIMIX_process_cleanup(smx_proc);
+  SIMIX_req_process_cleanup(smx_proc);
+
   if (proc->name) {
     free(proc->name);
     proc->name = NULL;
