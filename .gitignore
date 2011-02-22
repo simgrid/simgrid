@@ -11,12 +11,6 @@
 *.patch
 
 ################################################
-### Simgrid java
-*.class
-simgrid.jar
-src/simgrid.jar
-
-################################################
 ### Libraries links 
 src/bindings/ruby/simgrid.so
 examples/ruby/simgrid.so
