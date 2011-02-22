@@ -64,8 +64,6 @@ void MSG_global_init(int *argc, char **argv)
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
 
-    s_m_process_t p;
-    msg_global->process_list = xbt_swag_new(xbt_swag_offset(p, process_list_hookup));
     msg_global->host = xbt_fifo_new();
     msg_global->max_channel = 0;
     msg_global->PID = 1;
@@ -74,9 +72,9 @@ void MSG_global_init(int *argc, char **argv)
     /* initialization of the action module */
     _MSG_action_init();
 
-    SIMIX_function_register_process_create(_MSG_process_create_from_SIMIX);
-    SIMIX_function_register_process_cleanup(__MSG_process_cleanup);
-    SIMIX_function_register_process_kill(_MSG_process_kill_from_SIMIX);
+    SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
+    SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
+    SIMIX_function_register_process_kill(MSG_process_kill_from_SIMIX);
   }
 #ifdef HAVE_TRACING
   TRACE_start();
@@ -162,13 +160,7 @@ MSG_error_t MSG_main(void)
  */
 int MSG_process_killall(int reset_PIDs)
 {
-  m_process_t p = NULL;
-  m_process_t self = MSG_process_self();
-
-  while ((p = xbt_swag_extract(msg_global->process_list))) {
-    if (p != self)
-      MSG_process_kill(p);
-  }
+  SIMIX_req_process_killall();
 
   if (reset_PIDs > 0) {
     msg_global->PID = reset_PIDs;
@@ -186,21 +178,17 @@ MSG_error_t MSG_clean(void)
 {
   xbt_fifo_item_t i = NULL;
   m_host_t h = NULL;
-  m_process_t p = NULL;
 
 #ifdef HAVE_TRACING
   TRACE_surf_release();
 #endif
 
-  while ((p = xbt_swag_extract(msg_global->process_list))) {
-    MSG_process_kill(p);
-  }
+  MSG_process_killall(0);
 
   xbt_fifo_foreach(msg_global->host, i, h, m_host_t) {
     __MSG_host_destroy(h);
   }
   xbt_fifo_free(msg_global->host);
-  xbt_swag_free(msg_global->process_list);
 
   free(msg_global);
   msg_global = NULL;

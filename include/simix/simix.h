@@ -24,7 +24,7 @@ XBT_PUBLIC(void) SIMIX_clean(void);
 
 XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function);
 XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
-XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_f_pvoid_t function);
+XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_pfn_smxprocess_t function);
 
 /* Simulation execution */
 XBT_PUBLIC(void) SIMIX_run(void);    
@@ -125,6 +125,7 @@ XBT_PUBLIC(void) SIMIX_req_process_create(smx_process_t *process,
                                           xbt_dict_t properties);
 
 XBT_PUBLIC(void) SIMIX_req_process_kill(smx_process_t process);
+XBT_PUBLIC(void) SIMIX_req_process_killall(void);
 
 /* Process handling */
 XBT_PUBLIC(void) SIMIX_req_process_cleanup(smx_process_t process);

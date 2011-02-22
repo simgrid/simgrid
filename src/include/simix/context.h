@@ -10,11 +10,11 @@
 #include "xbt/misc.h"           /* XBT_PUBLIC(), SG_BEGIN_DECL() and SG_END_DECL() definitions  */
 #include "xbt/function_types.h" /* function pointer types declarations                                                  */
 #include "xbt_modinter.h"       /* xbt_context_init() and xbt_context_exit() declarations               */
+#include "simix/simix.h"
 
 SG_BEGIN_DECL()
 
 typedef struct s_xbt_context *xbt_context_t;
-typedef void (*void_pfn_smxprocess_t) (smx_process_t);
 
 
 XBT_PUBLIC(xbt_context_t) xbt_context_new(const char *name,

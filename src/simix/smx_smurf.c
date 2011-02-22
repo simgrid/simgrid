@@ -94,8 +94,8 @@ void SIMIX_request_answer(smx_req_t req)
 
 void SIMIX_request_pre(smx_req_t req, int value)
 {
-  switch (req->call) {
 
+  switch (req->call) {
     case REQ_COMM_TEST:
       SIMIX_pre_comm_test(req);
       break;
@@ -362,7 +362,12 @@ void SIMIX_request_pre(smx_req_t req, int value)
       break;
 
     case REQ_PROCESS_KILL:
-      SIMIX_process_kill(req->process_kill.process, req->issuer);
+      SIMIX_process_kill(req->process_kill.process);
+      SIMIX_request_answer(req);
+      break;
+
+    case REQ_PROCESS_KILLALL:
+      SIMIX_process_killall(req->issuer);
       SIMIX_request_answer(req);
       break;
 

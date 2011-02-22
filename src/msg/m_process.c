@@ -26,45 +26,30 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
  */
 
 /******************************** Process ************************************/
-void __MSG_process_cleanup(smx_process_t smx_proc)
+void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 {
-
-  m_process_t proc;
+  simdata_process_t msg_proc;
 
   if (smx_proc == SIMIX_process_self()) {
     /* avoid a SIMIX request if this function is called by the process itself */
-    proc = SIMIX_process_self_get_data();
+    msg_proc = SIMIX_process_self_get_data();
   }
   else {
-    proc = SIMIX_req_process_get_data(smx_proc);
+    msg_proc = SIMIX_req_process_get_data(smx_proc);
   }
 
 #ifdef HAVE_TRACING
-  TRACE_msg_process_end(proc);
+  TRACE_msg_process_end(smx_proc);
 #endif
 
-  if (msg_global)
-    xbt_swag_remove(proc, msg_global->process_list);
-
+  xbt_free(msg_proc);
   SIMIX_req_process_cleanup(smx_proc);
-
-  if (proc->name) {
-    free(proc->name);
-    proc->name = NULL;
-  }
-  if (proc->simdata) {
-    free(proc->simdata);
-    proc->simdata = NULL;
-  }
-  free(proc);
-
-  return;
 }
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
-void _MSG_process_create_from_SIMIX(void* process, const char *name,
+void MSG_process_create_from_SIMIX(smx_process_t* process, const char *name,
                                     xbt_main_func_t code, void *data,
-                                    char *hostname, int argc, char **argv,
+                                    const char *hostname, int argc, char **argv,
                                     xbt_dict_t properties)
 {
   m_host_t host = MSG_get_host_by_name(hostname);
@@ -154,48 +139,38 @@ m_process_t MSG_process_create_with_environment(const char *name,
                                                 int argc, char **argv,
                                                 xbt_dict_t properties)
 {
-  simdata_process_t simdata = NULL;
-  m_process_t process = xbt_new0(s_m_process_t, 1);
-  xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
+  xbt_assert0(code != NULL && host != NULL, "Invalid parameters");
+  simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
+  m_process_t process;
 
-  simdata = xbt_new0(s_simdata_process_t, 1);
-
-  /* Simulator Data */
+  /* Simulator data for MSG */
   simdata->PID = msg_global->PID++;
   simdata->waiting_action = NULL;
   simdata->waiting_task = NULL;
   simdata->m_host = host;
   simdata->argc = argc;
   simdata->argv = argv;
+  simdata->data = data;
+  simdata->last_errno = MSG_OK;
 
   if (SIMIX_process_self()) {
-    simdata->PPID = MSG_process_get_PID(SIMIX_process_self_get_data());
+    simdata->PPID = MSG_process_get_PID(MSG_process_self());
   } else {
     simdata->PPID = -1;
   }
-  simdata->last_errno = MSG_OK;
-
-  /* Process structure */
-  process->name = xbt_strdup(name);
-  process->simdata = simdata;
-  process->data = data;
-  xbt_swag_insert(process, msg_global->process_list);
-
-#ifdef HAVE_TRACING
-  TRACE_msg_process_create (process);
-#endif
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
-  SIMIX_req_process_create(&simdata->s_process, name, code, (void *) process, host->name,
+  SIMIX_req_process_create(&process, name, code, simdata, host->name,
                            argc, argv, properties);
 
-  if (!simdata->s_process) {
+#ifdef HAVE_TRACING
+  TRACE_msg_process_create(process);
+#endif
+
+  if (!process) {
     /* Undo everything we have just changed */
     msg_global->PID--;
-    xbt_swag_remove(process, msg_global->process_list);
-    xbt_free(process->name);
-    xbt_free(process);
     xbt_free(simdata);
     return NULL;
   }
@@ -203,36 +178,32 @@ m_process_t MSG_process_create_with_environment(const char *name,
   return process;
 }
 
-void _MSG_process_kill_from_SIMIX(void *p)
+void MSG_process_kill_from_SIMIX(smx_process_t p)
 {
 #ifdef HAVE_TRACING
-  TRACE_msg_process_kill((m_process_t) p);
+  TRACE_msg_process_kill(p);
 #endif
-  MSG_process_kill((m_process_t) p);
+  MSG_process_kill(p);
 }
 
 /** \ingroup m_process_management
  * \param process poor victim
  *
- * This function simply kills a \a process... scarry isn't it ? :)
+ * This function simply kills a \a process... scary isn't it ? :)
  */
 void MSG_process_kill(m_process_t process)
 {
-  simdata_process_t p_simdata = process->simdata;
-
 #ifdef HAVE_TRACING
   TRACE_msg_process_kill(process);
 #endif
 
-  XBT_DEBUG("Killing %s(%d) on %s",
-         process->name, p_simdata->PID, p_simdata->m_host->name);
-
+  /* FIXME: why do we only cancel communication actions? is this useful? */
+  simdata_process_t p_simdata = SIMIX_req_process_get_data(process);
   if (p_simdata->waiting_task && p_simdata->waiting_task->simdata->comm) {
     SIMIX_req_comm_cancel(p_simdata->waiting_task->simdata->comm);
   }
  
-  xbt_swag_remove(process, msg_global->process_list);
-  SIMIX_req_process_kill(process->simdata->s_process);
+  SIMIX_req_process_kill(process);
 
   return;
 }
@@ -246,40 +217,43 @@ void MSG_process_kill(m_process_t process)
 MSG_error_t MSG_process_change_host(m_host_t host)
 {
   m_process_t process = MSG_process_self();
-  m_host_t now = process->simdata->m_host;
-  process->simdata->m_host = host;
+  simdata_process_t simdata = SIMIX_process_self_get_data();
+  m_host_t now = simdata->m_host;
+  simdata->m_host = host;
 #ifdef HAVE_TRACING
   TRACE_msg_process_change_host(process, now, host);
 #endif
-  SIMIX_req_process_change_host(process->simdata->s_process, now->name,
-                            host->name);
+  SIMIX_req_process_change_host(process, now->name, host->name);
   return MSG_OK;
 }
 
 /** \ingroup m_process_management
- * \brief Return the user data of a #m_process_t.
+ * \brief Returns the user data of a process.
  *
  * This function checks whether \a process is a valid pointer or not
-   and return the user data associated to \a process if it is possible.
+   and returns the user data associated to this process.
  */
-void *MSG_process_get_data(m_process_t process)
+void* MSG_process_get_data(m_process_t process)
 {
-  xbt_assert0((process != NULL), "Invalid parameters");
+  xbt_assert0(process != NULL, "Invalid parameter");
 
-  return (process->data);
+  /* get from SIMIX the MSG process data, and then the user data */
+  simdata_process_t simdata = SIMIX_req_process_get_data(process);
+  return simdata->data;
 }
 
 /** \ingroup m_process_management
- * \brief Set the user data of a #m_process_t.
+ * \brief Sets the user data of a process.
  *
  * This function checks whether \a process is a valid pointer or not
-   and set the user data associated to \a process if it is possible.
+   and sets the user data associated to this process.
  */
 MSG_error_t MSG_process_set_data(m_process_t process, void *data)
 {
-  xbt_assert0((process != NULL), "Invalid parameters");
+  xbt_assert0(process != NULL, "Invalid parameter");
 
-  process->data = data;
+  simdata_process_t simdata = SIMIX_req_process_get_data(process);
+  simdata->data = data;
 
   return MSG_OK;
 }
@@ -293,10 +267,10 @@ MSG_error_t MSG_process_set_data(m_process_t process, void *data)
  */
 m_host_t MSG_process_get_host(m_process_t process)
 {
-  xbt_assert0(((process != NULL)
-               && (process->simdata)), "Invalid parameters");
+  xbt_assert0(process != NULL, "Invalid parameter");
 
-  return (((simdata_process_t) process->simdata)->m_host);
+  simdata_process_t simdata = SIMIX_req_process_get_data(process);
+  return simdata->m_host;
 }
 
 /** \ingroup m_process_management
@@ -309,13 +283,9 @@ m_host_t MSG_process_get_host(m_process_t process)
  */
 m_process_t MSG_process_from_PID(int PID)
 {
-  m_process_t process = NULL;
-
-  xbt_swag_foreach(process, msg_global->process_list) {
-    if (MSG_process_get_PID(process) == PID)
-      return process;
-  }
-  return NULL;
+  /* FIXME: reimplement this function using SIMIX when we have a good PID.
+   * In the meantime, I guess nobody uses it so it should not break anything. */
+  THROW_UNIMPLEMENTED;
 }
 
 /** \ingroup m_process_management
@@ -326,12 +296,15 @@ m_process_t MSG_process_from_PID(int PID)
  */
 int MSG_process_get_PID(m_process_t process)
 {
-  /* Do not raise an exception here: this function is used in the logs,
-     and it will be called back by the exception handling stuff */
-  if (process == NULL || process->simdata == NULL)
+  /* Do not raise an exception here: this function is called by the logs
+   * and the exceptions, so it would be called back again and again */
+  if (process == NULL) {
     return 0;
+  }
 
-  return (((simdata_process_t) process->simdata)->PID);
+  simdata_process_t simdata = SIMIX_req_process_get_data(process);
+
+  return simdata != NULL ? simdata->PID : 0;
 }
 
 /** \ingroup m_process_management
@@ -343,10 +316,11 @@ int MSG_process_get_PID(m_process_t process)
  */
 int MSG_process_get_PPID(m_process_t process)
 {
-  xbt_assert0(((process != NULL)
-               && (process->simdata)), "Invalid parameters");
+  xbt_assert0(process != NULL, "Invalid parameter");
 
-  return (((simdata_process_t) process->simdata)->PPID);
+  simdata_process_t simdata = SIMIX_req_process_get_data(process);
+
+  return simdata->PPID;
 }
 
 /** \ingroup m_process_management
@@ -357,11 +331,9 @@ int MSG_process_get_PPID(m_process_t process)
  */
 const char *MSG_process_get_name(m_process_t process)
 {
-  xbt_assert0(process, "Invalid parameter: process is NULL");
-  xbt_assert0(process->simdata,
-              "Invalid parameter: process->simdata is NULL");
+  xbt_assert0(process, "Invalid parameter");
 
-  return (process->name);
+  return SIMIX_req_process_get_name(process);
 }
 
 /** \ingroup m_process_management
@@ -384,10 +356,9 @@ const char *MSG_process_get_property_value(m_process_t process,
  */
 xbt_dict_t MSG_process_get_properties(m_process_t process)
 {
-  xbt_assert0((process != NULL), "Invalid parameters");
+  xbt_assert0(process != NULL, "Invalid parameter");
 
-  return (SIMIX_req_process_get_properties
-          (((simdata_process_t) process->simdata)->s_process));
+  return SIMIX_req_process_get_properties(process);
 
 }
 
@@ -398,7 +369,7 @@ xbt_dict_t MSG_process_get_properties(m_process_t process)
  */
 int MSG_process_self_PID(void)
 {
-  return (MSG_process_get_PID(MSG_process_self()));
+  return MSG_process_get_PID(MSG_process_self());
 }
 
 /** \ingroup m_process_management
@@ -409,19 +380,17 @@ int MSG_process_self_PID(void)
  */
 int MSG_process_self_PPID(void)
 {
-  return (MSG_process_get_PPID(MSG_process_self()));
+  return MSG_process_get_PPID(MSG_process_self());
 }
 
 /** \ingroup m_process_management
- * \brief Return the current agent.
+ * \brief Return the current process.
  *
  * This function returns the currently running #m_process_t.
  */
 m_process_t MSG_process_self(void)
 {
-  /* we cannot make a SIMIX request here because this may create an exception or a logging
-     event, and both mechanisms call MSG_process_self() again (via xbt_getpid()) */
-  return (m_process_t) SIMIX_process_self_get_data();
+  return SIMIX_process_self();
 }
 
 /** \ingroup m_process_management
@@ -432,15 +401,14 @@ m_process_t MSG_process_self(void)
  */
 MSG_error_t MSG_process_suspend(m_process_t process)
 {
-  xbt_assert0(((process != NULL)
-               && (process->simdata)), "Invalid parameters");
+  xbt_assert0(process != NULL, "Invalid parameter");
   CHECK_HOST();
 
 #ifdef HAVE_TRACING
   TRACE_msg_process_suspend(process);
 #endif
 
-  SIMIX_req_process_suspend(process->simdata->s_process);
+  SIMIX_req_process_suspend(process);
   MSG_RETURN(MSG_OK);
 }
 
@@ -452,16 +420,14 @@ MSG_error_t MSG_process_suspend(m_process_t process)
  */
 MSG_error_t MSG_process_resume(m_process_t process)
 {
-
-  xbt_assert0(((process != NULL)
-               && (process->simdata)), "Invalid parameters");
+  xbt_assert0(process != NULL, "Invalid parameter");
   CHECK_HOST();
 
 #ifdef HAVE_TRACING
   TRACE_msg_process_resume(process);
 #endif
 
-  SIMIX_req_process_resume(process->simdata->s_process);
+  SIMIX_req_process_resume(process);
   MSG_RETURN(MSG_OK);
 }
 
@@ -473,12 +439,10 @@ MSG_error_t MSG_process_resume(m_process_t process)
  */
 int MSG_process_is_suspended(m_process_t process)
 {
-  xbt_assert0(((process != NULL)
-               && (process->simdata)), "Invalid parameters");
-  return SIMIX_req_process_is_suspended(process->simdata->s_process);
+  xbt_assert0(process != NULL, "Invalid parameter");
+  return SIMIX_req_process_is_suspended(process);
 }
 
-
 smx_context_t MSG_process_get_smx_ctx(m_process_t process) {
-  return SIMIX_process_get_context(process->simdata->s_process);
+  return SIMIX_process_get_context(process);
 }

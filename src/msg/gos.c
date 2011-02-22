@@ -37,7 +37,7 @@ MSG_error_t MSG_get_errno(void)
 MSG_error_t MSG_task_execute(m_task_t task)
 {
   simdata_task_t simdata = NULL;
-  m_process_t self = MSG_process_self();
+  simdata_process_t p_simdata;
   e_smx_state_t comp_state;
   CHECK_HOST();
 
@@ -54,7 +54,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
               "This task is executed somewhere else. Go fix your code! %d",
               task->simdata->isused);
 
-  XBT_DEBUG("Computing on %s", MSG_process_self()->simdata->m_host->name);
+  XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
   if (simdata->computation_amount == 0) {
 #ifdef HAVE_TRACING
@@ -71,9 +71,10 @@ MSG_error_t MSG_task_execute(m_task_t task)
   SIMIX_req_set_category(simdata->compute, task->category);
 #endif
 
-  self->simdata->waiting_action = simdata->compute;
+  p_simdata = SIMIX_process_self_get_data();
+  p_simdata->waiting_action = simdata->compute;
   comp_state = SIMIX_req_host_execution_wait(simdata->compute);
-  self->simdata->waiting_action = NULL;
+  p_simdata->waiting_action = NULL;
 
   simdata->isused=0;
 
@@ -166,10 +167,11 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
 {
   simdata_task_t simdata = NULL;
   e_smx_state_t comp_state;
-  m_process_t self = MSG_process_self();
+  simdata_process_t p_simdata;
   CHECK_HOST();
 
   simdata = task->simdata;
+  p_simdata = SIMIX_process_self_get_data();
 
   xbt_assert0((!simdata->compute)
               && (task->simdata->isused == 0),
@@ -178,7 +180,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   xbt_assert0(simdata->host_nb,
               "This is not a parallel task. Go to hell.");
 
-  XBT_DEBUG("Parallel computing on %s", MSG_process_self()->simdata->m_host->name);
+  XBT_DEBUG("Parallel computing on %s", p_simdata->m_host->name);
 
   simdata->isused=1;
 
@@ -189,9 +191,9 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
                                   simdata->comm_amount, 1.0, -1.0);
   XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
 
-  self->simdata->waiting_action = simdata->compute;
+  p_simdata->waiting_action = simdata->compute;
   comp_state = SIMIX_req_host_execution_wait(simdata->compute);
-  self->simdata->waiting_action = NULL;
+  p_simdata->waiting_action = NULL;
 
   XBT_DEBUG("Finished waiting for execution of action %p, state = %d", simdata->compute, comp_state);
 

@@ -130,6 +130,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   MSG_error_t ret = MSG_OK;
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
+  simdata_process_t p_simdata = SIMIX_process_self_get_data();
 #ifdef HAVE_TRACING
   volatile smx_action_t comm = NULL;
   int call_end = 0;
@@ -151,7 +152,8 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   t_simdata->isused=1;
   msg_global->sent_msg++;
 
-  process->simdata->waiting_task = task;
+
+  p_simdata->waiting_task = task;
 
   /* Try to send it by calling SIMIX network layer */
   TRY {
@@ -187,7 +189,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
     t_simdata->isused = 0;
   }
 
-  process->simdata->waiting_task = NULL;
+  p_simdata->waiting_task = NULL;
 #ifdef HAVE_TRACING
   if (call_end)
     TRACE_msg_task_put_end();

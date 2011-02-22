@@ -94,31 +94,15 @@ void SIMIX_create_maestro_process()
 smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
 
   smx_process_t process;
-
-  if (simix_global->create_process_function) {
-    simix_global->create_process_function(
-        &process,
-        args->name,
-	args->code,
-	args->data,
-	args->hostname,
-	args->argc,
-	args->argv,
-	args->properties);
-  }
-  else {
-    SIMIX_process_create(
-        &process,
-        args->name,
-	args->code,
-	args->data,
-	args->hostname,
-	args->argc,
-	args->argv,
-	args->properties);
-  }
-  // FIXME: to simplify this, simix_global->create_process_function could just
-  // be SIMIX_process_create() by default (and the same thing in smx_deployment.c)
+  simix_global->create_process_function(
+      &process,
+      args->name,
+      args->code,
+      args->data,
+      args->hostname,
+      args->argc,
+      args->argv,
+      args->properties);
 
   return process;
 }
@@ -190,7 +174,7 @@ void SIMIX_process_create(smx_process_t *process,
  *
  * \param process poor victim
  */
-void SIMIX_process_kill(smx_process_t process, smx_process_t killer) {
+void SIMIX_process_kill(smx_process_t process) {
 
   XBT_DEBUG("Killing process %s on %s", process->name, process->smx_host->name);
 
@@ -227,26 +211,22 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t killer) {
     }
   }
 
-  /* If I'm killing myself then stop, otherwise schedule the process to kill. */
-  if (process == killer) {
-    SIMIX_context_stop(process->context);
-  }
-  else {
-    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
-  }
+  xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
 }
 
 /**
  * \brief Kills all running processes.
- *
- * Only maestro can kill everyone.
+ * \param issuer this one will not be killed
  */
-void SIMIX_process_killall(void)
+void SIMIX_process_killall(smx_process_t issuer)
 {
   smx_process_t p = NULL;
 
-  while ((p = xbt_swag_extract(simix_global->process_list)))
-    SIMIX_process_kill(p, SIMIX_process_self());
+  while ((p = xbt_swag_extract(simix_global->process_list))) {
+    if (p != issuer) {
+      SIMIX_process_kill(p);
+    }
+  }
 
   SIMIX_context_runall(simix_global->process_to_run);
 
@@ -349,6 +329,7 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 int SIMIX_process_get_maxpid(void) {
   return simix_process_maxpid;
 }
+
 int SIMIX_process_count(void)
 {
   return xbt_swag_size(simix_global->process_list);
@@ -543,6 +524,7 @@ void SIMIX_process_exception_terminate(xbt_ex_t * e)
 smx_context_t SIMIX_process_get_context(smx_process_t p) {
   return p->context;
 }
+
 void SIMIX_process_set_context(smx_process_t p,smx_context_t c) {
   p->context = c;
 }

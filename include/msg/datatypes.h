@@ -12,9 +12,11 @@
 SG_BEGIN_DECL()
 
 /* ******************************** Host ************************************ */
+
 /** @defgroup m_datatypes_management_details Details on MSG datatypes
     @ingroup  m_datatypes_management*/
 typedef struct simdata_host *simdata_host_t;
+
 /** @brief Host datatype 
     @ingroup m_datatypes_management_details */
 typedef struct m_host {
@@ -22,6 +24,7 @@ typedef struct m_host {
   simdata_host_t simdata;       /**< @brief simulator data */
   void *data;                   /**< @brief user data */
 } s_m_host_t;
+
 /** @brief Host datatype  
     @ingroup m_datatypes_management
 
@@ -36,9 +39,11 @@ typedef struct m_host {
   @{ */
 typedef struct m_host *m_host_t;
 /** @} */
+
 /* ******************************** Task ************************************ */
 
 typedef struct simdata_task *simdata_task_t;
+
 /** @brief Task datatype 
     @ingroup m_datatypes_management_details */
 typedef struct m_task {
@@ -50,6 +55,7 @@ typedef struct m_task {
   char *category;               /* task category for instrumentation */
 #endif
 } s_m_task_t;
+
 /** @brief Task datatype  
     @ingroup m_datatypes_management 
 
@@ -76,28 +82,16 @@ typedef struct msg_comm *msg_comm_t;
 
 /** @} */
 
-
-
 /* ****************************** Process *********************************** */
-typedef struct simdata_process *simdata_process_t;
-/** @brief Process datatype 
-    @ingroup m_datatypes_management_details @{ */
-typedef struct m_process {
-  s_xbt_swag_hookup_t process_list_hookup;
-  char *name;                   /**< @brief process name if any */
-  simdata_process_t simdata;
-                                /**< @brief simulator data */
-  void *data;                   /**< @brief user data */
-} s_m_process_t;
-/** @} */
-/** @brief Agent datatype  
+
+/** @brief Process datatype
     @ingroup m_datatypes_management 
 
-    An agent may be defined as a <em>code</em>, with some <em>private
+    A process may be defined as a <em>code</em>, with some <em>private
     data</em>, executing in a <em>location</em>.
     \see m_process_management
   @{ */
-typedef struct m_process *m_process_t;
+typedef struct s_smx_process *m_process_t;
 /** @} */
 
 /* ********************************* Channel ******************************** */

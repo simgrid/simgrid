@@ -49,7 +49,6 @@ typedef struct simdata_task {
 
 typedef struct simdata_process {
   m_host_t m_host;              /* the host on which the process is running */
-  smx_process_t s_process;
   int PID;                      /* used for debugging purposes */
   int PPID;                     /* The parent PID */
   m_host_t put_host;            /* used for debugging purposes */
@@ -59,7 +58,8 @@ typedef struct simdata_process {
   int argc;                     /* arguments number if any */
   char **argv;                  /* arguments table if any */
   MSG_error_t last_errno;       /* the last value returned by a MSG_function */
-} s_simdata_process_t;
+  void* data;                   /* user data */
+} s_simdata_process_t, *simdata_process_t;
 
 typedef struct process_arg {
   const char *name;
@@ -81,7 +81,6 @@ typedef struct msg_comm {
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
   xbt_fifo_t host;
-  xbt_swag_t process_list;
   int max_channel;
   int PID;
   int session;
@@ -94,8 +93,10 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 
 /*************************************************************/
 
-#define PROCESS_SET_ERRNO(val) (MSG_process_self()->simdata->last_errno=val)
-#define PROCESS_GET_ERRNO() (MSG_process_self()->simdata->last_errno)
+#define PROCESS_SET_ERRNO(val) \
+  (((simdata_process_t) SIMIX_process_self_get_data())->last_errno=val)
+#define PROCESS_GET_ERRNO() \
+  (((simdata_process_t) SIMIX_process_self_get_data())->last_errno)
 #define MSG_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
 /* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
 
@@ -103,19 +104,17 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
                                   "Host failed, you cannot call this function. (state=%d)",SIMIX_req_host_get_state(SIMIX_host_self()))*/
 #define CHECK_HOST()
 
-
 m_host_t __MSG_host_create(smx_host_t workstation, void *data);
-
 void __MSG_host_destroy(m_host_t host);
 
 void __MSG_display_process_status(void);
 
-void __MSG_process_cleanup(smx_process_t smx_proc);
-void _MSG_process_create_from_SIMIX(void *process, const char *name,
-                                    xbt_main_func_t code, void *data,
-                                    char *hostname, int argc,
-                                    char **argv, xbt_dict_t properties);
-void _MSG_process_kill_from_SIMIX(void *p);
+void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
+void MSG_process_create_from_SIMIX(smx_process_t *process, const char *name,
+                                   xbt_main_func_t code, void *data,
+                                   const char *hostname, int argc,
+                                   char **argv, xbt_dict_t properties);
+void MSG_process_kill_from_SIMIX(smx_process_t p);
 
 void _MSG_action_init(void);
 void _MSG_action_exit(void);

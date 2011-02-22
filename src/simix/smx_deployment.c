@@ -82,10 +82,9 @@ static void parse_process_finalize(void)
       return;
     }
     if (kill_time > SIMIX_get_clock()) {
-      if (simix_global->kill_process_function)
+      if (simix_global->kill_process_function) {
         SIMIX_timer_set(start_time, simix_global->kill_process_function, process);
-      else
-        SIMIX_timer_set(start_time, &SIMIX_process_kill, process);
+      }
     }
     xbt_free(parse_host);
   }

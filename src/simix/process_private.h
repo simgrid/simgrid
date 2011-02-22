@@ -52,8 +52,8 @@ void SIMIX_process_create(smx_process_t *process,
                           const char *hostname,
                           int argc, char **argv,
                           xbt_dict_t properties);
-void SIMIX_process_kill(smx_process_t process, smx_process_t killer);
-void SIMIX_process_killall(void);
+void SIMIX_process_kill(smx_process_t process);
+void SIMIX_process_killall(smx_process_t issuer);
 smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args);
 void SIMIX_create_maestro_process(void);
 void SIMIX_process_cleanup(smx_process_t arg);

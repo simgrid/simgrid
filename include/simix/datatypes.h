@@ -69,22 +69,24 @@ typedef struct s_smx_process *smx_process_t;
 /** @} */
 
 
-/* User create and kill process, the function must accept the folling parameters:
+/*
+ * Type of function that creates a process.
+ * The function must accept the following parameters:
  * void* process: the process created will be stored there
  * const char *name: a name for the object. It is for user-level information and can be NULL
  * xbt_main_func_t code: is a function describing the behavior of the agent
  * void *data: data a pointer to any data one may want to attach to the new object.
  * smx_host_t host: the location where the new agent is executed
  * int argc, char **argv: parameters passed to code
- *
- * */
-typedef void (*smx_creation_func_t) ( /* process */ void *,
-                                      /*name */ const char *,
-                                      /*code */ xbt_main_func_t,
-                                      /*userdata */ void *,
-                                      /*hostname */ char *,
+ * xbt_dict_t pros: properties
+ */
+typedef void (*smx_creation_func_t) ( /* process */ smx_process_t*,
+                                      /* name */ const char*,
+                                      /* code */ xbt_main_func_t,
+                                      /* userdata */ void*,
+                                      /* hostname */ const char*,
                                       /* argc */ int,
-                                      /* argv */ char **,
+                                      /* argv */ char**,
                                       /* props */ xbt_dict_t);
 
 

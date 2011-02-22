@@ -345,8 +345,18 @@ void SIMIX_req_process_kill(smx_process_t process)
   SIMIX_request_push();
 }
 
+/** \brief Kills all SIMIX processes.
+ */
+void SIMIX_req_process_killall(void)
+{
+  smx_req_t req = SIMIX_req_mine();
+
+  req->call = REQ_PROCESS_KILLALL;
+  SIMIX_request_push();
+}
+
 /** \brief Cleans up a SIMIX process.
- * \param process poor victim
+ * \param process poor victim (must have already been killed)
  */
 void SIMIX_req_process_cleanup(smx_process_t process)
 {
@@ -436,6 +446,11 @@ int SIMIX_req_process_count(void)
  */
 void* SIMIX_req_process_get_data(smx_process_t process)
 {
+  if (process == SIMIX_process_self()) {
+    /* avoid a request if this function is called by the process itself */
+    return SIMIX_process_self_get_data();
+  }
+
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_PROCESS_GET_DATA;
@@ -453,12 +468,19 @@ void* SIMIX_req_process_get_data(smx_process_t process)
  */
 void SIMIX_req_process_set_data(smx_process_t process, void *data)
 {
-  smx_req_t req = SIMIX_req_mine();
+  if (process == SIMIX_process_self()) {
+    /* avoid a request if this function is called by the process itself */
+    SIMIX_process_self_set_data(data);
+  }
+  else {
 
-  req->call = REQ_PROCESS_SET_DATA;
-  req->process_set_data.process = process;
-  req->process_set_data.data = data;
-  SIMIX_request_push();
+    smx_req_t req = SIMIX_req_mine();
+
+    req->call = REQ_PROCESS_SET_DATA;
+    req->process_set_data.process = process;
+    req->process_set_data.data = data;
+    SIMIX_request_push();
+  }
 }
 
 /**
@@ -487,6 +509,11 @@ smx_host_t SIMIX_req_process_get_host(smx_process_t process)
  */
 const char* SIMIX_req_process_get_name(smx_process_t process)
 {
+  if (process == SIMIX_process_self()) {
+    /* avoid a request if this function is called by the process itself */
+    return process->name;
+  }
+
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_PROCESS_GET_NAME;

@@ -80,8 +80,8 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->maestro_process = NULL;
     simix_global->registered_functions = xbt_dict_new();
 
-    simix_global->create_process_function = NULL;
-    simix_global->kill_process_function = NULL;
+    simix_global->create_process_function = SIMIX_process_create;
+    simix_global->kill_process_function = SIMIX_process_kill;
     simix_global->cleanup_process_function = SIMIX_process_cleanup;
     simix_global->action_mallocator = xbt_mallocator_new(65536,
         SIMIX_action_mallocator_new_f, SIMIX_action_mallocator_free_f,
@@ -117,7 +117,7 @@ void SIMIX_global_init(int *argc, char **argv)
 void SIMIX_clean(void)
 {
   /* Kill everyone (except maestro) */
-  SIMIX_process_killall();
+  SIMIX_process_killall(simix_global->maestro_process);
 
   /* Exit the SIMIX network module */
   SIMIX_network_exit();
@@ -250,43 +250,40 @@ XBT_INLINE void SIMIX_timer_set(double date, void *function, void *arg)
 }
 
 /**
- *	\brief Registers a function to create a process.
+ * \brief Registers a function to create a process.
  *
- *	This function registers an user function to be called when a new process is created. The user function have to call the SIMIX_create_process function.
- *	\param function Create process function
- *
+ * This function registers a function to be called
+ * when a new process is created. The function has
+ * to call SIMIX_process_create().
+ * \param function create process function
  */
 XBT_INLINE void SIMIX_function_register_process_create(smx_creation_func_t
                                                        function)
 {
-  xbt_assert0((simix_global->create_process_function == NULL),
-              "Data already set");
-
   simix_global->create_process_function = function;
 }
 
 /**
- *	\brief Registers a function to kill a process.
+ * \brief Registers a function to kill a process.
  *
- *	This function registers an user function to be called when a new process is killed. The user function have to call the SIMIX_kill_process function.
- *	\param function Kill process function
+ * This function registers a function to be called when a
+ * process is killed. The function has to call the SIMIX_process_kill().
  *
+ * \param function Kill process function
  */
-XBT_INLINE void SIMIX_function_register_process_kill(void_f_pvoid_t
+XBT_INLINE void SIMIX_function_register_process_kill(void_pfn_smxprocess_t
                                                      function)
 {
-  xbt_assert0((simix_global->kill_process_function == NULL),
-              "Data already set");
-
   simix_global->kill_process_function = function;
 }
 
 /**
- *	\brief Registers a function to cleanup a process.
+ * \brief Registers a function to cleanup a process.
  *
- *	This function registers an user function to be called when a new process ends properly.
- *	\param function cleanup process function
+ * This function registers a user function to be called when
+ * a process ends properly.
  *
+ * \param function cleanup process function
  */
 XBT_INLINE void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t
                                                         function)
