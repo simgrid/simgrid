@@ -3394,13 +3394,15 @@ static void routing_parse_Scluster(void)
       SURFXML_BUFFER_SET(host_power, temp_cluster_power);
       SURFXML_BUFFER_SET(host_core, cluster_core);
       SURFXML_BUFFER_SET(host_availability, "1.0");
-	  availability_file = bprintf("%s",cluster_availability_file);
-	  state_file = bprintf("%s",cluster_state_file);
-	  XBT_DEBUG("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
-	  XBT_DEBUG("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
-	  SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(availability_file,patterns));
-	  SURFXML_BUFFER_SET(host_state_file, xbt_str_varsubst(state_file,patterns));
-	  XBT_DEBUG("</host>");
+      xbt_free(availability_file);
+      availability_file = bprintf("%s",cluster_availability_file);
+      xbt_free(state_file);
+      state_file = bprintf("%s",cluster_state_file);
+      XBT_DEBUG("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
+      XBT_DEBUG("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
+      SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(availability_file,patterns));
+      SURFXML_BUFFER_SET(host_state_file, xbt_str_varsubst(state_file,patterns));
+      XBT_DEBUG("</host>");
       SURFXML_START_TAG(host);
       SURFXML_END_TAG(host);
 
@@ -3451,14 +3453,16 @@ static void routing_parse_Scluster(void)
         SURFXML_BUFFER_SET(host_id, host_id);
         SURFXML_BUFFER_SET(host_power, temp_cluster_power);
         SURFXML_BUFFER_SET(host_core, cluster_core);
-		SURFXML_BUFFER_SET(host_availability, "1.0");
-		availability_file = bprintf("%s",cluster_availability_file);
-		state_file = bprintf("%s",cluster_state_file);
-		XBT_DEBUG("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
-		XBT_DEBUG("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
-		SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(availability_file,patterns));
-		SURFXML_BUFFER_SET(host_state_file, xbt_str_varsubst(state_file,patterns));
-		XBT_DEBUG("</host>");
+        SURFXML_BUFFER_SET(host_availability, "1.0");
+        xbt_free(availability_file);
+        availability_file = bprintf("%s",cluster_availability_file);
+        xbt_free(state_file);
+        state_file = bprintf("%s",cluster_state_file);
+        XBT_DEBUG("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
+        XBT_DEBUG("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
+        SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(availability_file,patterns));
+        SURFXML_BUFFER_SET(host_state_file, xbt_str_varsubst(state_file,patterns));
+        XBT_DEBUG("</host>");
         SURFXML_START_TAG(host);
         SURFXML_END_TAG(host);
 
@@ -3678,10 +3682,10 @@ static void routing_parse_Scluster(void)
     }
   }
   xbt_dynar_free(&tab_elements_num);
-  free(router_id);
 
 #endif
 
+  free(router_id);
   free(link_backbone);
   free(link_router);
   xbt_dict_free(&patterns);
