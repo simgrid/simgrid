@@ -66,6 +66,8 @@ void test(int nb_cnst, int nb_var, int nb_elem)
   lmm_solve(Sys);
   date = xbt_os_time() * 1000000 - date;
 
+  for (i = 0; i < nb_var; i++)
+    lmm_variable_free(Sys, var[i]);
   lmm_system_free(Sys);
   free(cnst);
   free(var);
