@@ -83,6 +83,8 @@ SimGrid (3.6) unstable; urgency=low
      nuclear plant operating system). If such things should happen, you
      could rely on that macro to adapt.
    - current value: 30600 for 3.06.00, aka 3.6
+ * Define macro MAKE_SIMGRID_VERSION(major, minor, patch) to help building
+   a number that can be compared with SIMGRID_VERSION.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

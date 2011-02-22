@@ -17,7 +17,16 @@ SG_BEGIN_DECL()
 /* Version X.Y.Z will get version number XYZ: all digits concatenated without dots
  * (with Y and Z must be on two positions)*/
 
-#define SIMGRID_VERSION 30599 /* 3.5.99, aka 3.6 svn */
+#define MAKE_SIMGRID_VERSION(major, minor, patch)       \
+  (100UL * (100UL * (major) + (minor)) + (patch))
+
+#cmakedefine SIMGRID_VERSION_MAJOR @SIMGRID_VERSION_MAJOR@
+#cmakedefine SIMGRID_VERSION_MINOR @SIMGRID_VERSION_MINOR@
+#cmakedefine SIMGRID_VERSION_PATCH @SIMGRID_VERSION_PATCH@
+
+#define SIMGRID_VERSION MAKE_SIMGRID_VERSION(SIMGRID_VERSION_MAJOR, \
+                                             SIMGRID_VERSION_MINOR, \
+                                             SIMGRID_VERSION_PATCH)
 
 /* take care of DLL usage madness */
 
