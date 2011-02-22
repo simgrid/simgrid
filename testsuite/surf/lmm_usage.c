@@ -307,7 +307,6 @@ void test3(method_t method)
     1, 1, 1, 1, 1
   };
 
-  /*A = xbt_new0(double*, links + 5); */
   A = xbt_new0(double *, links + 5);
 
   for (i = 0; i < links + 5; i++) {
@@ -452,10 +451,15 @@ void test3(method_t method)
     PRINT_VAR(tmp_var[j]);
   }
 
-  free(tmp_var);
-  free(tmp_cnst);
-  free(tmp_name);
+  xbt_free(tmp_var);
+  xbt_free(tmp_cnst);
+  for (i = 0; i < 31; i++)
+    xbt_free(tmp_name[i]);
+  xbt_free(tmp_name);
   lmm_system_free(Sys);
+  for (i = 0; i < links + 5; i++)
+    xbt_free(A[i]);
+  xbt_free(A);
 }
 
 #ifdef __BORLANDC__
