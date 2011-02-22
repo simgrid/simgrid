@@ -402,9 +402,12 @@ extern xbt_log_layout_t xbt_log_default_layout;
 /* Logging Macros */
 
 #ifdef XBT_LOG_MAYDAY
-# define XBT_CLOG_(cat, prio, f, ...) \
-  fprintf(stderr,"%s:%d:" f "%c", __FILE__, __LINE__, __VA_ARGS__)
-# define XBT_CLOG(cat, prio, ...) XBT_CLOG_(cat, prio, __VA_ARGS__, '\n')
+# define XBT_CLOG(cat, prio, ...) \
+  _XBT_IF_ONE_ARG(_XBT_CLOG_ARG1, _XBT_CLOG_ARGN, __VA_ARGS__)(__VA_ARGS__)
+# define _XBT_CLOG_ARG1(f) \
+  fprintf(stderr,"%s:%d:" f, __FILE__, __LINE__)
+# define _XBT_CLOG_ARGN(f, ...) \
+  fprintf(stderr,"%s:%d:" f, __FILE__, __LINE__, __VA_ARGS__)
 # define XBT_LOG(...) XBT_CLOG(0, __VA_ARGS__)
 #else
 # define XBT_CLOG_(catv, prio, ...)                                     \
@@ -505,10 +508,12 @@ extern xbt_log_layout_t xbt_log_default_layout;
  *  @hideinitializer
  *  @brief Log at TRACE priority that we entered in current function, appending a user specified format.
  */
-#define XBT_IN(...) XBT_IN_(__VA_ARGS__, "")
-#define XBT_IN_(fmt, ...) \
-  XBT_LOG(xbt_log_priority_trace, ">> begin of %s" fmt "%s", \
-          _XBT_FUNCTION, __VA_ARGS__)
+#define XBT_IN(...) \
+  _XBT_IF_ONE_ARG(_XBT_IN_ARG1, _XBT_IN_ARGN, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_IN_ARG1(fmt) \
+  XBT_LOG(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION)
+#define _XBT_IN_ARGN(fmt, ...) \
+  XBT_LOG(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
