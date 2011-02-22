@@ -234,9 +234,9 @@ static void parse_S_host(const char *host_id, const char* coord)
                (void *) info, xbt_free);
 
   if (strcmp(coord,"")) {
-  	xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
-  	xbt_dynar_shrink(ctn,0);
-   	xbt_dict_set (coordinates,host_id,ctn,NULL);
+    xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
+    xbt_dynar_shrink(ctn, 0);
+    xbt_dict_set(coordinates, host_id, ctn, xbt_dynar_free_voidp);
   }
 }
 
@@ -297,9 +297,9 @@ static void parse_S_router(void)
   xbt_dict_set(global_routing->where_network_elements, A_surfxml_router_id,
                (void *) info, xbt_free);
   if (strcmp(A_surfxml_router_coordinates,"")) {
-    	xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
-    	xbt_dynar_shrink(ctn,0);
-     	xbt_dict_set (coordinates,A_surfxml_router_id,ctn,NULL);
+    xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
+    xbt_dynar_shrink(ctn, 0);
+    xbt_dict_set(coordinates, A_surfxml_router_id, ctn, xbt_dynar_free_voidp);
   }
 }
 
@@ -549,10 +549,10 @@ static void parse_S_AS_XML(void)
   parse_S_AS(A_surfxml_AS_id, A_surfxml_AS_routing);
 
   if (strcmp(A_surfxml_AS_coordinates,"")) {
-	XBT_DEBUG("%s coordinates : %s",A_surfxml_AS_id,A_surfxml_AS_coordinates);
-  	xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_AS_coordinates, " ");
-  	xbt_dynar_shrink(ctn,0);
-   	xbt_dict_set (coordinates,A_surfxml_AS_id,ctn,NULL);
+    XBT_DEBUG("%s coordinates : %s", A_surfxml_AS_id, A_surfxml_AS_coordinates);
+    xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_AS_coordinates, " ");
+    xbt_dynar_shrink(ctn, 0);
+    xbt_dict_set(coordinates, A_surfxml_AS_id, ctn, xbt_dynar_free_voidp);
   }
 }
 
