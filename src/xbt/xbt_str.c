@@ -453,10 +453,10 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
 #include "xbt/str.h"
 
 #define mytest(name, input, expected) \
-  xbt_test_add0(name); \
+  xbt_test_add(name); \
   d=xbt_str_split_quoted(input); \
   s=xbt_str_join(d,"XXX"); \
-  xbt_test_assert3(!strcmp(s,expected),\
+  xbt_test_assert(!strcmp(s,expected),\
                    "Input (%s) leads to (%s) instead of (%s)", \
                    input,s,expected);\
                    free(s); \
@@ -487,10 +487,10 @@ XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_
 }
 
 #define mytest_str(name, input, separator, expected) \
-  xbt_test_add0(name); \
+  xbt_test_add(name); \
   d=xbt_str_split_str(input, separator); \
   s=xbt_str_join(d,"XXX"); \
-  xbt_test_assert3(!strcmp(s,expected),\
+  xbt_test_assert(!strcmp(s,expected),\
                    "Input (%s) leads to (%s) instead of (%s)", \
                    input,s,expected);\
                    free(s); \

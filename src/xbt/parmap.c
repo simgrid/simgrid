@@ -209,7 +209,7 @@ void fun(void *arg)
 
 XBT_TEST_UNIT("basic", test_parmap_basic, "Basic usage")
 {
-  xbt_test_add0("Create the parmap");
+  xbt_test_add("Create the parmap");
 
   unsigned long i,j;
   xbt_dynar_t data = xbt_dynar_new(sizeof(void *), NULL);

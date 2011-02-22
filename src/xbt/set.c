@@ -354,13 +354,13 @@ static void debuged_add(xbt_set_t set, const char *name, const char *data)
 
   elm->data = xbt_strdup(data);
 
-  xbt_test_log2("Add %s (->%s)", name, data);
+  xbt_test_log("Add %s (->%s)", name, data);
   xbt_set_add(set, (xbt_set_elm_t) elm, &my_elem_free);
 }
 
 static void fill(xbt_set_t * set)
 {
-  xbt_test_add0("Fill in the data set");
+  xbt_test_add("Fill in the data set");
 
   *set = xbt_set_new();
   debuged_add(*set, "12", "12");
@@ -368,9 +368,9 @@ static void fill(xbt_set_t * set)
   debuged_add(*set, "12b", "12b");
   debuged_add(*set, "123", "123");
   debuged_add(*set, "123456", "123456");
-  xbt_test_log0("Child becomes child of what to add");
+  xbt_test_log("Child becomes child of what to add");
   debuged_add(*set, "1234", "1234");
-  xbt_test_log0("Need of common ancestor");
+  xbt_test_log("Need of common ancestor");
   debuged_add(*set, "123457", "123457");
 }
 
@@ -378,9 +378,9 @@ static void search_name(xbt_set_t head, const char *key)
 {
   my_elem_t elm;
 
-  xbt_test_add1("Search by name %s", key);
+  xbt_test_add("Search by name %s", key);
   elm = (my_elem_t) xbt_set_get_by_name(head, key);
-  xbt_test_log2(" Found %s (under ID %d)\n",
+  xbt_test_log(" Found %s (under ID %d)\n",
                 elm ? elm->data : "(null)", elm ? elm->ID : -1);
   if (strcmp(key, elm->name))
     THROW2(mismatch_error, 0, "The key (%s) is not the one expected (%s)",
@@ -395,9 +395,9 @@ static void search_id(xbt_set_t head, int id, const char *key)
 {
   my_elem_t elm;
 
-  xbt_test_add1("Search by id %d", id);
+  xbt_test_add("Search by id %d", id);
   elm = (my_elem_t) xbt_set_get_by_id(head, id);
-  xbt_test_log2("Found %s (data %s)",
+  xbt_test_log("Found %s (data %s)",
                 elm ? elm->name : "(null)", elm ? elm->data : "(null)");
   if (id != elm->ID)
     THROW2(mismatch_error, 0,
@@ -417,9 +417,9 @@ static void traverse(xbt_set_t set)
   my_elem_t elm = NULL;
 
   xbt_set_foreach(set, cursor, elm) {
-    xbt_test_assert0(elm, "Dude ! Got a null elm during traversal!");
-    xbt_test_log3("Id(%d):  %s->%s\n", elm->ID, elm->name, elm->data);
-    xbt_test_assert2(!strcmp(elm->name, elm->data),
+    xbt_test_assert(elm, "Dude ! Got a null elm during traversal!");
+    xbt_test_log("Id(%d):  %s->%s\n", elm->ID, elm->name, elm->data);
+    xbt_test_assert(!strcmp(elm->name, elm->data),
                      "Key(%s) != value(%s). Abording", elm->name,
                      elm->data);
   }
@@ -429,7 +429,7 @@ static void search_not_found(xbt_set_t set, const char *data)
 {
   xbt_ex_t e;
 
-  xbt_test_add1("Search %s (expected not to be found)", data);
+  xbt_test_add("Search %s (expected not to be found)", data);
   TRY {
     xbt_set_get_by_name(set, data);
     THROW1(unknown_error, 0,
@@ -448,14 +448,14 @@ XBT_TEST_UNIT("basic", test_set_basic, "Basic usage")
 {
   set = NULL;
 
-  xbt_test_add0("Traverse the empty set");
+  xbt_test_add("Traverse the empty set");
   traverse(set);
 
-  xbt_test_add0("Free a data set");
+  xbt_test_add("Free a data set");
   fill(&set);
   xbt_set_free(&set);
 
-  xbt_test_add0("Free the NULL data set");
+  xbt_test_add("Free the NULL data set");
   xbt_set_free(&set);
 
 }
@@ -464,20 +464,20 @@ XBT_TEST_UNIT("change", test_set_change, "Changing some values")
 {
   fill(&set);
 
-  xbt_test_add0("Change 123 to 'Changed 123'");
+  xbt_test_add("Change 123 to 'Changed 123'");
   debuged_add(set, "123", "Changed 123");
 
-  xbt_test_add0("Change 123 back to '123'");
+  xbt_test_add("Change 123 back to '123'");
   debuged_add(set, "123", "123");
 
-  xbt_test_add0("Change 12a to 'Dummy 12a'");
+  xbt_test_add("Change 12a to 'Dummy 12a'");
   debuged_add(set, "12a", "Dummy 12a");
 
-  xbt_test_add0("Change 12a to '12a'");
+  xbt_test_add("Change 12a to '12a'");
   debuged_add(set, "12a", "12a");
 
   /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
-  xbt_test_add0("Traverse the resulting data set");
+  xbt_test_add("Traverse the resulting data set");
   traverse(set);
 }
 
@@ -485,9 +485,9 @@ XBT_TEST_UNIT("retrieve", test_set_retrieve, "Retrieving some values")
 {
   my_elem_t elm;
 
-  xbt_test_add0("Search 123");
+  xbt_test_add("Search 123");
   elm = (my_elem_t) xbt_set_get_by_name(set, "123");
-  xbt_test_assert0(elm, "elm must be there");
+  xbt_test_assert(elm, "elm must be there");
   xbt_assert(!strcmp("123", elm->data));
 
   search_not_found(set, "Can't be found");
@@ -510,16 +510,16 @@ XBT_TEST_UNIT("retrieve", test_set_retrieve, "Retrieving some values")
   search_id(set, 5, "1234");
   search_id(set, 6, "123457");
 
-  xbt_test_add0("Traverse the resulting data set");
+  xbt_test_add("Traverse the resulting data set");
   traverse(set);
 
   /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
 
-  xbt_test_add0("Free the data set (twice)");
+  xbt_test_add("Free the data set (twice)");
   xbt_set_free(&set);
   xbt_set_free(&set);
 
-  xbt_test_add0("Traverse the resulting data set");
+  xbt_test_add("Traverse the resulting data set");
   traverse(set);
 }
 
@@ -548,7 +548,7 @@ XBT_TEST_UNIT("remove", test_set_remove, "Removing some values")
 
   debuged_add(set, "12anew", "12anew");
   elm = (my_elem_t) xbt_set_get_by_id(set, 1);
-  xbt_test_assert1(elm->ID == 1, "elm->ID is %d but should be 1", elm->ID);
+  xbt_test_assert(elm->ID == 1, "elm->ID is %d but should be 1", elm->ID);
 
   xbt_set_free(&set);
 }

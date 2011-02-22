@@ -195,8 +195,8 @@ static void test_sha(const char *clear, const char *hashed)
   char hash[41];
   xbt_sha(clear, hash);
 
-  xbt_test_add1("==== Test with '%s'", clear);
-  xbt_test_assert3(!memcmp(hash, hashed, 40), "Wrong sha: %40s!=%40s (%s)",
+  xbt_test_add("==== Test with '%s'", clear);
+  xbt_test_assert(!memcmp(hash, hashed, 40), "Wrong sha: %40s!=%40s (%s)",
                    hash, hashed, mycmp(hash, hashed, 40));
 }
 

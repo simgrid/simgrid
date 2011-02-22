@@ -235,8 +235,8 @@ XBT_TEST_UNIT("basic", test_swag_basic, "Basic usage")
   obj1->name = "Obj 1";
   obj2->name = "Obj 2";
 
-  xbt_test_add0("Basic usage");
-  xbt_test_log3("%p %p %ld\n", obj1, &(obj1->setB),
+  xbt_test_add("Basic usage");
+  xbt_test_log("%p %p %ld\n", obj1, &(obj1->setB),
                 (long) ((char *) &(obj1->setB) - (char *) obj1));
 
   setA = xbt_swag_new(xbt_swag_offset(*obj1, setA));
@@ -250,17 +250,17 @@ XBT_TEST_UNIT("basic", test_swag_basic, "Basic usage")
   xbt_swag_remove(obj1, setB);
   /*  xbt_swag_remove(obj2, setB); */
 
-  xbt_test_add0("Traverse set A");
+  xbt_test_add("Traverse set A");
   xbt_swag_foreach(obj, setA) {
-    xbt_test_log1("Saw: %s", obj->name);
+    xbt_test_log("Saw: %s", obj->name);
   }
 
-  xbt_test_add0("Traverse set B");
+  xbt_test_add("Traverse set B");
   xbt_swag_foreach(obj, setB) {
-    xbt_test_log1("Saw: %s", obj->name);
+    xbt_test_log("Saw: %s", obj->name);
   }
 
-  xbt_test_add0("Ensure set content and length");
+  xbt_test_add("Ensure set content and length");
   xbt_test_assert(xbt_swag_belongs(obj1, setA));
   xbt_test_assert(xbt_swag_belongs(obj2, setA));
 

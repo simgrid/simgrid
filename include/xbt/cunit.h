@@ -89,7 +89,7 @@ XBT_PUBLIC(void) xbt_test_skip(void);
     void func(void);  /*prototype*/       \
     void func(void)
 
-#if 1 || defined(XBT_USE_DEPRECATED)
+#ifdef XBT_USE_DEPRECATED
 
 /* Kept for backward compatibility. */
 
