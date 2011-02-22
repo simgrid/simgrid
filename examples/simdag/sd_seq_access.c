@@ -116,8 +116,9 @@ int main(int argc, char **argv)
         XBT_ERROR("Shouldn't be here");
       }
     }
-    xbt_dynar_free_container(&changed_tasks);
+    xbt_dynar_free(&changed_tasks);
   }
+  xbt_dynar_free(&changed_tasks);
 
   XBT_DEBUG("Destroying tasks...");
 

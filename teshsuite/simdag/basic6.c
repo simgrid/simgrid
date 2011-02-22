@@ -18,6 +18,7 @@ int main(int argc, char **argv)
   double comm_cost[] = { 0.0, 0.0, 0.0, 0.0 };
   double comp_cost[] = { 1.0 };
   SD_task_t taskA, taskB;
+  xbt_dynar_t ret;
 
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
@@ -30,7 +31,10 @@ int main(int argc, char **argv)
   SD_task_schedule(taskB, 1, SD_workstation_get_list(), comp_cost,
                    comm_cost, -1.0);
 
-  SD_simulate(-1.0);
+  ret = SD_simulate(-1.0);
+  xbt_dynar_free(&ret);
+  SD_task_destroy(taskA);
+  SD_task_destroy(taskB);
 
   XBT_INFO("Simulation time: %f", SD_get_clock());
 

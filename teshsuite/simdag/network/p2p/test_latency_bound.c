@@ -29,6 +29,7 @@ int main(int argc, char **argv)
   double time;
   double communication_amount[] = { 0.0, 1.0, 0.0, 0.0 };
   double no_cost[] = { 0.0, 0.0 };
+  xbt_dynar_t ret;
 
   SD_task_t root;
   SD_task_t task[TASK_NUM];
@@ -49,7 +50,8 @@ int main(int argc, char **argv)
     SD_task_dependency_add(NULL, NULL, root, task[i]);
   }
 
-  SD_simulate(-1.0);
+  ret = SD_simulate(-1.0);
+  xbt_dynar_free(&ret);
 
   time = SD_get_clock();
 
@@ -59,6 +61,7 @@ int main(int argc, char **argv)
   for (i = 0; i < TASK_NUM; i++) {
     SD_task_destroy(task[i]);
   }
+  SD_task_destroy(root);
 
   SD_exit();
 

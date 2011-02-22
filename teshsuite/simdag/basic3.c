@@ -17,6 +17,7 @@ int main(int argc, char **argv)
   SD_task_t taskInit;
   SD_task_t taskA;
   SD_task_t taskFin;
+  xbt_dynar_t ret;
 
   /* scheduling parameters */
 
@@ -44,7 +45,11 @@ int main(int argc, char **argv)
   SD_task_dependency_add(NULL, NULL, taskInit, taskA);
   SD_task_dependency_add(NULL, NULL, taskA, taskFin);
 
-  SD_simulate(-1.0);
+  ret = SD_simulate(-1.0);
+  xbt_dynar_free(&ret);
+  SD_task_destroy(taskInit);
+  SD_task_destroy(taskA);
+  SD_task_destroy(taskFin);
 
   XBT_INFO("Simulation time: %f", SD_get_clock());
 

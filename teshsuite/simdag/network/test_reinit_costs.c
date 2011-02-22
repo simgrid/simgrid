@@ -38,21 +38,25 @@ static void zero_cost_test(int *argc, char *argv[])
 {
   double time;
   SD_task_t task;
+  xbt_dynar_t ret;
 
   SD_init(argc, argv);
   SD_create_environment(argv[1]);
 
   task = create_empty_cost_root();
-  SD_simulate(-1.0);
+  ret = SD_simulate(-1.0);
+  xbt_dynar_free(&ret);
   SD_task_destroy(task);
 
   SD_application_reinit();
 
   task = create_empty_cost_root();
-  SD_simulate(-1.0);
+  ret = SD_simulate(-1.0);
+  xbt_dynar_free(&ret);
   SD_task_destroy(task);
 
-  SD_simulate(-1.0);
+  ret = SD_simulate(-1.0);
+  xbt_dynar_free(&ret);
 
   time = SD_get_clock();
   printf("%g\n", time);
@@ -78,21 +82,25 @@ static void zero_cost_test2(int *argc, char *argv[])
 {
   double time;
   SD_task_t task;
+  xbt_dynar_t ret;
 
   SD_init(argc, argv);
   SD_create_environment(argv[1]);
 
   task = create_root_with_costs();
-  SD_simulate(-1.0);
+  ret = SD_simulate(-1.0);
+  xbt_dynar_free(&ret);
   SD_task_destroy(task);
 
   SD_application_reinit();
 
   task = create_empty_cost_root();
-  SD_simulate(-1.0);
+  ret =  SD_simulate(-1.0);
+  xbt_dynar_free(&ret);
   SD_task_destroy(task);
 
-  SD_simulate(-1.0);
+  ret = SD_simulate(-1.0);
+  xbt_dynar_free(&ret);
 
   time = SD_get_clock();
   printf("%g\n", time);
