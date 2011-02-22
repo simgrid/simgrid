@@ -69,14 +69,13 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
       continue;
 
     if (sscanf(val, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2)
-      xbt_die(bprintf
-              ("%s:%d: Syntax error in trace\n%s", id, linecount, input));
+      xbt_die("%s:%d: Syntax error in trace\n%s", id, linecount, input);
 
     if (last_event) {
       if (last_event->delta > event.delta) {
-        xbt_die(bprintf
-                ("%s:%d: Invalid trace: Events must be sorted, but time %lg > time %lg.\n%s",
-                 id, linecount, last_event->delta, event.delta, input));
+        xbt_die("%s:%d: Invalid trace: Events must be sorted, "
+                "but time %lg > time %lg.\n%s",
+                id, linecount, last_event->delta, event.delta, input);
       }
       last_event->delta = event.delta - last_event->delta;
     }

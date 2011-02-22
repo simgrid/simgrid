@@ -1370,8 +1370,8 @@ void SD_task_schedulev(SD_task_t task, int count,
     SD_task_do_schedule(task);
     break;
   default:
-    xbt_die(bprintf("Kind of task %s not supported by SD_task_schedulev()",
-                    SD_task_get_name(task)));
+    xbt_die("Kind of task %s not supported by SD_task_schedulev()",
+            SD_task_get_name(task));
   }
   if (task->kind == SD_TASK_COMM_E2E) {
     XBT_VERB("Schedule comm task %s between %s -> %s. It costs %.f bytes",

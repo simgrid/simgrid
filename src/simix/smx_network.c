@@ -197,7 +197,8 @@ void SIMIX_comm_destroy(smx_action_t action)
   XBT_DEBUG("Destroy action %p (refcount:%d)", action, action->comm.refcount);
 
   if (action->comm.refcount <= 0)
-    xbt_die(bprintf("the refcount of comm %p is already 0 before decreasing it. That's a bug!",action));
+    xbt_die("the refcount of comm %p is already 0 before decreasing it. "
+            "That's a bug!", action);
 
   action->comm.refcount--;
   if (action->comm.refcount > 0)

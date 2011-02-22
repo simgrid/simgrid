@@ -553,9 +553,8 @@ static void parse_Stag_trace_connect(void)
                  xbt_strdup(A_surfxml_trace_connect_element), free);
     break;
   default:
-    xbt_die(bprintf("Cannot connect trace %s to %s: kind of trace unknown",
-                    A_surfxml_trace_connect_trace,
-                    A_surfxml_trace_connect_element));
+    xbt_die("Cannot connect trace %s to %s: kind of trace unknown",
+            A_surfxml_trace_connect_trace, A_surfxml_trace_connect_element);
   }
 }
 

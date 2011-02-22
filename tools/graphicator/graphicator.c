@@ -100,7 +100,7 @@ int main(int argc, char **argv)
   TRY {
     SD_create_environment(platformFile);
   } CATCH(e) {
-    xbt_die(bprintf("Error while loading %s: %s",platformFile,e.msg));     
+    xbt_die("Error while loading %s: %s",platformFile,e.msg);
   }
 
   //creating the graph structure

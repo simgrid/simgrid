@@ -56,7 +56,7 @@ xbt_workload_elm_t xbt_workload_elm_parse(char *line)
     res->action = XBT_WORKLOAD_COMPUTE;
     sscanf(words[++i], "%lg", &(res->d_arg));
   } else {
-    xbt_die(bprintf("Unparsable command: %s (in %s)", words[i], line));
+    xbt_die("Unparsable command: %s (in %s)", words[i], line);
   }
   i++;
   if (words[i] && words[i][0] == '#') {
@@ -119,7 +119,7 @@ char *xbt_workload_elm_to_string(xbt_workload_elm_t cmd)
     free(addon);
     break;
   default:
-    xbt_die(bprintf("Unknown command %d in '%s...'", cmd->action, res));
+    xbt_die("Unknown command %d in '%s...'", cmd->action, res);
   }
   if (cmd->comment) {
     addon = bprintf(" (comment: %s)", cmd->comment);

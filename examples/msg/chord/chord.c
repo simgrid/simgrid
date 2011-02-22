@@ -917,7 +917,7 @@ int main(int argc, char *argv[])
 	XBT_DEBUG("Set timeout to %d", timeout);
       }
       else {
-	xbt_die(bprintf("Invalid chord option '%s'", options[0]));
+	xbt_die("Invalid chord option '%s'", options[0]);
       }
     }
     options++;

@@ -124,8 +124,7 @@ int master(int argc, char *argv[])
       MSG_task_destroy(task);
     } else {
       XBT_INFO("Hey ?! What's up ? ");
-      xbt_die(bprintf("Unexpected behavior with '%s': %d", slaves[i]->name,
-                  a));
+      xbt_die("Unexpected behavior with '%s': %d", slaves[i]->name, a);
     }
   }
 

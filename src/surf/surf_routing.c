@@ -2504,9 +2504,8 @@ static char *remplace(char *value, const char **src_list, int src_size,
         param_list = dst_list;
         param_size = dst_size;
       } else {
-        xbt_die(bprintf(
-                    "bad string parameter, support only \"src\" and \"dst\", at offset: %d (\"%s\")",
-                    i, value));
+        xbt_die("bad string parameter, support only \"src\" and \"dst\", "
+                "at offset: %d (\"%s\")", i, value);
       }
       i = i + 3;
 
@@ -2605,8 +2604,8 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
     are_processing_units = 0;
     rule_list = routing->list_ASroute;
   } else
-    xbt_die(bprintf("Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
-                src, dst));
+    xbt_die("Ask for route \"from\"(%s)  or \"to\"(%s) no found in "
+            "the local table", src, dst);
 
   int rc_src = -1;
   int rc_dst = -1;

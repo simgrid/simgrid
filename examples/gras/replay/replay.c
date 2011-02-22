@@ -185,8 +185,7 @@ static void do_command(int rank, void *c)
     XBT_INFO("Done receiving %.f bytes from %s", cmd->d_arg, cmd->str_arg);
 
   } else {
-    xbt_die(bprintf
-            ("unknown command: %s", xbt_workload_elm_to_string(cmd)));
+    xbt_die("unknown command: %s", xbt_workload_elm_to_string(cmd));
   }
 }
 

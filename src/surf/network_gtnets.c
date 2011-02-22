@@ -354,8 +354,7 @@ static surf_action_t communicate(const char *src_name,
 
   /* Add a flow to the GTNets Simulation, associated to this action */
   if (gtnets_create_flow(src, dst, size, (void *) action) < 0) {
-    xbt_die(bprintf("Not route between host %s and host %s", src_name,
-                dst_name));
+    xbt_die("Not route between host %s and host %s", src_name, dst_name);
   }
 #ifdef HAVE_TRACING
   TRACE_surf_gtnets_communicate(action, src, dst);

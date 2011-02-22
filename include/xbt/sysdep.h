@@ -95,8 +95,7 @@ void *xbt_malloc(size_t n)
 
   res = malloc(n);
   if (!res)
-    xbt_die(bprintf("Memory allocation of %lu bytes failed",
-                    (unsigned long)n));
+    xbt_die("Memory allocation of %lu bytes failed", (unsigned long)n);
   return res;
 }
 
@@ -109,8 +108,7 @@ void *xbt_malloc0(size_t n)
   //if (n==0) xbt_die("calloc(0) is not portable");
   res = calloc(n, 1);
   if (!res)
-    xbt_die(bprintf("Memory callocation of %lu bytes failed",
-                    (unsigned long)n));
+    xbt_die("Memory callocation of %lu bytes failed", (unsigned long)n);
   return res;
 }
 
@@ -125,8 +123,7 @@ void *xbt_realloc(void *p, size_t s)
     if (p) {
       res = realloc(p, s);
       if (!res)
-        xbt_die(bprintf("memory (re)allocation of %lu bytes failed",
-                        (unsigned long)s));
+        xbt_die("memory (re)allocation of %lu bytes failed", (unsigned long)s);
     } else {
       res = xbt_malloc(s);
     }

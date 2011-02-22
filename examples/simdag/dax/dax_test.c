@@ -126,9 +126,8 @@ int main(int argc, char **argv)
               SD_task_get_name(task));
       break;
     default:
-      xbt_die(bprintf
-              ("Task %s is of unknown kind %d", SD_task_get_name(task),
-               SD_task_get_kind(task)));
+      xbt_die("Task %s is of unknown kind %d", SD_task_get_name(task),
+              SD_task_get_kind(task));
     }
     SD_task_destroy(task);
   }
