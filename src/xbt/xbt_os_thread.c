@@ -41,6 +41,7 @@ static xbt_os_mutex_t next_sem_ID_lock;
 
 typedef struct xbt_os_thread_ {
   pthread_t t;
+  int detached;
   char *name;
   void *param;
   pvoid_f_pvoid_t start_routine;
@@ -54,9 +55,14 @@ static pthread_key_t xbt_self_thread_key;
 static int thread_mod_inited = 0;
 
 /* frees the xbt_os_thread_t corresponding to the current thread */
-static void xbt_os_thread_free_thread_data(void *d)
+static void xbt_os_thread_free_thread_data(xbt_os_thread_t thread)
 {
-  free(d);
+  if (thread == main_thread)    /* just killed main thread */
+    main_thread = NULL;
+
+  free(thread->running_ctx);
+  free(thread->name);
+  free(thread);
 }
 
 /* callback: context fetching */
@@ -144,7 +150,10 @@ static void *wrapper_start_routine(void *s)
     THROW0(system_error, errcode,
            "pthread_setspecific failed for xbt_self_thread_key");
 
-  return (*(t->start_routine)) (t->param);
+  void *res = (*(t->start_routine)) (t->param);
+  if (t->detached)
+    xbt_os_thread_free_thread_data(t);
+  return res;
 }
 
 xbt_os_thread_t xbt_os_thread_create(const char *name,
@@ -155,6 +164,7 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
   int errcode;
 
   xbt_os_thread_t res_thread = xbt_new(s_xbt_os_thread_t, 1);
+  res_thread->detached = 0;
   res_thread->name = xbt_strdup(name);
   res_thread->start_routine = start_routine;
   res_thread->param = param;
@@ -199,16 +209,7 @@ void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
   if ((errcode = pthread_join(thread->t, thread_return)))
     THROW1(system_error, errcode, "pthread_join failed: %s",
            strerror(errcode));
-  if (thread->running_ctx)
-    free(thread->running_ctx);
-
-  if (thread->name)
-    free(thread->name);
-
-  if (thread == main_thread)    /* just killed main thread */
-    main_thread = NULL;
-
-  free(thread);
+  xbt_os_thread_free_thread_data(thread);
 }
 
 void xbt_os_thread_exit(int *retval)
@@ -230,6 +231,7 @@ xbt_os_thread_t xbt_os_thread_self(void)
 
 void xbt_os_thread_detach(xbt_os_thread_t thread)
 {
+  thread->detached = 1;
   pthread_detach(thread->t);
 }
 
