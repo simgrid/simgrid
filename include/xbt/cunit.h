@@ -60,39 +60,24 @@ XBT_PUBLIC(void) xbt_test_exit(void);
 /* test operations */
 XBT_PUBLIC(void) _xbt_test_add(const char *file, int line, const char *fmt,
                                ...) _XBT_GNUC_PRINTF(3, 4);
-#define xbt_test_add0(fmt)           _xbt_test_add(__FILE__,__LINE__,fmt)
-#define xbt_test_add1(fmt,a)         _xbt_test_add(__FILE__,__LINE__,fmt,a)
-#define xbt_test_add2(fmt,a,b)       _xbt_test_add(__FILE__,__LINE__,fmt,a,b)
-#define xbt_test_add3(fmt,a,b,c)     _xbt_test_add(__FILE__,__LINE__,fmt,a,b,c)
-#define xbt_test_add4(fmt,a,b,c,d)   _xbt_test_add(__FILE__,__LINE__,fmt,a,b,c,d)
-#define xbt_test_add5(fmt,a,b,c,d,e) _xbt_test_add(__FILE__,__LINE__,fmt,a,b,c,d,e)
-
 XBT_PUBLIC(void) _xbt_test_fail(const char *file, int line,
                                 const char *fmt, ...) _XBT_GNUC_PRINTF(3,
                                                                        4);
-#define xbt_test_fail0(fmt)           _xbt_test_fail(__FILE__, __LINE__, fmt)
-#define xbt_test_fail1(fmt,a)         _xbt_test_fail(__FILE__, __LINE__, fmt,a)
-#define xbt_test_fail2(fmt,a,b)       _xbt_test_fail(__FILE__, __LINE__, fmt,a,b)
-#define xbt_test_fail3(fmt,a,b,c)     _xbt_test_fail(__FILE__, __LINE__, fmt,a,b,c)
-#define xbt_test_fail4(fmt,a,b,c,d)   _xbt_test_fail(__FILE__, __LINE__, fmt,a,b,c,d)
-#define xbt_test_fail5(fmt,a,b,c,d,e) _xbt_test_fail(__FILE__, __LINE__, fmt,a,b,c,d,e)
-
-#define xbt_test_assert0(cond,fmt)           if(!(cond)) xbt_test_fail0(fmt)
-#define xbt_test_assert1(cond,fmt,a)         if(!(cond)) xbt_test_fail1(fmt,a)
-#define xbt_test_assert2(cond,fmt,a,b)       if(!(cond)) xbt_test_fail2(fmt,a,b)
-#define xbt_test_assert3(cond,fmt,a,b,c)     if(!(cond)) xbt_test_fail3(fmt,a,b,c)
-#define xbt_test_assert4(cond,fmt,a,b,c,d)   if(!(cond)) xbt_test_fail4(fmt,a,b,c,d)
-#define xbt_test_assert5(cond,fmt,a,b,c,d,e) if(!(cond)) xbt_test_fail5(fmt,a,b,c,d,e)
-#define xbt_test_assert(cond)                xbt_test_assert0(cond,#cond)
-
 XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt,
                                ...) _XBT_GNUC_PRINTF(3, 4);
-#define xbt_test_log0(fmt)           _xbt_test_log(__FILE__, __LINE__, fmt)
-#define xbt_test_log1(fmt,a)         _xbt_test_log(__FILE__, __LINE__, fmt,a)
-#define xbt_test_log2(fmt,a,b)       _xbt_test_log(__FILE__, __LINE__, fmt,a,b)
-#define xbt_test_log3(fmt,a,b,c)     _xbt_test_log(__FILE__, __LINE__, fmt,a,b,c)
-#define xbt_test_log4(fmt,a,b,c,d)   _xbt_test_log(__FILE__, __LINE__, fmt,a,b,c,d)
-#define xbt_test_log5(fmt,a,b,c,d,e) _xbt_test_log(__FILE__, __LINE__, fmt,a,b,c,d,e)
+
+#define xbt_test_add(...)       _xbt_test_add(__FILE__, __LINE__, __VA_ARGS__)
+#define xbt_test_fail(...)      _xbt_test_fail(__FILE__, __LINE__, __VA_ARGS__)
+#define xbt_test_assert(...)    _XBT_IF_ONE_ARG(_xbt_test_assert_ARG1,  \
+                                                _xbt_test_assert_ARGN,  \
+                                                __VA_ARGS__)(__VA_ARGS__)
+#define _xbt_test_assert_ARG1(cond)      _xbt_test_assert_CHECK(cond,   \
+                                                                "%s", #cond)
+#define _xbt_test_assert_ARGN(cond, ...) _xbt_test_assert_CHECK(cond,   \
+                                                                __VA_ARGS__)
+#define _xbt_test_assert_CHECK(cond, ...)                       \
+  do { if (!(cond)) xbt_test_fail(__VA_ARGS__); } while (0)
+#define xbt_test_log(...)       _xbt_test_log(__FILE__, __LINE__, __VA_ARGS__)
 
 XBT_PUBLIC(void) xbt_test_exception(xbt_ex_t e);
 
@@ -103,6 +88,40 @@ XBT_PUBLIC(void) xbt_test_skip(void);
 #define XBT_TEST_UNIT(name,func,title)    \
     void func(void);  /*prototype*/       \
     void func(void)
+
+#if 1 || defined(XBT_USE_DEPRECATED)
+
+/* Kept for backward compatibility. */
+
+#define xbt_test_add0(...)      xbt_test_add(__VA_ARGS__)
+#define xbt_test_add1(...)      xbt_test_add(__VA_ARGS__)
+#define xbt_test_add2(...)      xbt_test_add(__VA_ARGS__)
+#define xbt_test_add3(...)      xbt_test_add(__VA_ARGS__)
+#define xbt_test_add4(...)      xbt_test_add(__VA_ARGS__)
+#define xbt_test_add5(...)      xbt_test_add(__VA_ARGS__)
+
+#define xbt_test_fail0(...)     xbt_test_fail(__VA_ARGS__)
+#define xbt_test_fail1(...)     xbt_test_fail(__VA_ARGS__)
+#define xbt_test_fail2(...)     xbt_test_fail(__VA_ARGS__)
+#define xbt_test_fail3(...)     xbt_test_fail(__VA_ARGS__)
+#define xbt_test_fail4(...)     xbt_test_fail(__VA_ARGS__)
+#define xbt_test_fail5(...)     xbt_test_fail(__VA_ARGS__)
+
+#define xbt_test_assert0(...)   xbt_test_assert(__VA_ARGS__)
+#define xbt_test_assert1(...)   xbt_test_assert(__VA_ARGS__)
+#define xbt_test_assert2(...)   xbt_test_assert(__VA_ARGS__)
+#define xbt_test_assert3(...)   xbt_test_assert(__VA_ARGS__)
+#define xbt_test_assert4(...)   xbt_test_assert(__VA_ARGS__)
+#define xbt_test_assert5(...)   xbt_test_assert(__VA_ARGS__)
+
+#define xbt_test_log0(...)      xbt_test_log(__VA_ARGS__)
+#define xbt_test_log1(...)      xbt_test_log(__VA_ARGS__)
+#define xbt_test_log2(...)      xbt_test_log(__VA_ARGS__)
+#define xbt_test_log3(...)      xbt_test_log(__VA_ARGS__)
+#define xbt_test_log4(...)      xbt_test_log(__VA_ARGS__)
+#define xbt_test_log5(...)      xbt_test_log(__VA_ARGS__)
+
+#endif
 
 SG_END_DECL()
 #endif                          /* _TS_H_ */
