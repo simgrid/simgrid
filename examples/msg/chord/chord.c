@@ -507,10 +507,12 @@ static int join(node_t node, int known_id)
   XBT_INFO("Joining the ring with id %d, knowing node %d", node->id, known_id);
   set_predecessor(node, -1); // no predecessor (yet)
 
+  /*
   int i;
   for (i = 0; i < nb_bits; i++) {
     set_finger(node, i, known_id);
   }
+  */
 
   int successor_id = remote_find_successor(node, known_id, node->id);
   if (successor_id == -1) {
