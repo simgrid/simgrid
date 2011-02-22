@@ -222,7 +222,7 @@ static int Host_new(lua_State * L)
 {
   p_host_attr host;
   unsigned int i;
-  p_AS_attr p_as,current_as;
+  p_AS_attr p_as,current_as = NULL;
   const char *AS_id;
   const char *id;
   const char *power_trace;
@@ -317,7 +317,7 @@ static int Link_new(lua_State * L)      // (id,bandwidth,latency)
 {
   const char *AS_id;
   unsigned int i;
-  p_AS_attr p_as,current_as;
+  p_AS_attr p_as,current_as = NULL;
   const char* id;
   double bandwidth, latency;
   const char *bandwidth_trace;
