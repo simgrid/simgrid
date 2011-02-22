@@ -112,6 +112,7 @@ static m_task_t checkTask(lua_State * L, int index)
  */
 static int Task_new(lua_State * L)
 {
+  XBT_INFO("Task new...");
   const char *name = luaL_checkstring(L, 1);
   int comp_size = luaL_checkint(L, 2);
   int msg_size = luaL_checkint(L, 3);
@@ -453,7 +454,6 @@ static const luaL_reg Host_methods[] = {
   {"self",Host_self},
   {"getPropValue",Host_get_property_value},
   // Bypass XML Methods
-  {"new", console_add_host},
   {"setFunction", console_set_function},
   {0, 0}
 };
@@ -483,23 +483,9 @@ static const luaL_reg Host_meta[] = {
  */
 static const luaL_reg AS_methods[] = {
   {"new", console_add_AS},
-  {0, 0}
-};
-
-
-/*
- * Link Methods
- */
-static const luaL_reg Link_methods[] = {
-  {"new", console_add_link},
-  {0, 0}
-};
-
-/*
- * Route Methods
- */
-static const luaL_reg Route_methods[] = {
-  {"new", console_add_route},
+  {"addHost",console_add_host},
+  {"addLink",console_add_link},
+  {"addRoute",console_add_route},
   {0, 0}
 };
 
@@ -517,14 +503,16 @@ static const luaL_reg Trace_methods[] = {
  * Environment related
  */
 
-extern lua_State *simgrid_lua_state;
+//extern lua_State *simgrid_lua_state;
 
 static int run_lua_code(int argc, char **argv)
 {
+  XBT_INFO("run_lua_code****");
   XBT_DEBUG("Run lua code %s", argv[0]);
   lua_State *L = lua_newthread(simgrid_lua_state);
   int ref = luaL_ref(simgrid_lua_state, LUA_REGISTRYINDEX);     // protect the thread from being garbage collected
   int res = 1;
+  XBT_INFO("Here");
 
   /* Start the co-routine */
   lua_getglobal(L, argv[0]);
@@ -698,13 +686,12 @@ static const luaL_Reg simgrid_funcs[] = {
 /*                       module management functions                                 */
 /* ********************************************************************************* */
 
-
 #define LUA_MAX_ARGS_COUNT 10   /* maximum amount of arguments we can get from lua on command line */
 #define TEST
 int luaopen_simgrid(lua_State * L);     // Fuck gcc: we don't need that prototype
 int luaopen_simgrid(lua_State * L)
 {
-
+  XBT_INFO("Luaopen_Simgrid *****");
   char **argv = malloc(sizeof(char *) * LUA_MAX_ARGS_COUNT);
   int argc = 1;
   argv[0] = (char *) "/usr/bin/lua";    /* Lie on the argv[0] so that the stack dumping facilities find the right binary. FIXME: what if lua is not in that location? */
@@ -769,15 +756,7 @@ int luaopen_simgrid(lua_State * L)
   luaL_newmetatable(L, AS_MODULE_NAME);
   lua_pop(L, 1);
 
-  /* register the links methods to lua */
-  luaL_openlib(L, LINK_MODULE_NAME, Link_methods, 0);
-  luaL_newmetatable(L, LINK_MODULE_NAME);
-  lua_pop(L, 1);
 
-  /*register the routes methods to lua */
-  luaL_openlib(L, ROUTE_MODULE_NAME, Route_methods, 0);
-  luaL_newmetatable(L, ROUTE_MODULE_NAME);
-  lua_pop(L, 1);
 
   /*register the Tracing functions to lua */
   luaL_openlib(L, TRACE_MODULE_NAME, Trace_methods, 0);

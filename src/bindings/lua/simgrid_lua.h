@@ -50,6 +50,9 @@ void generate_makefile_local(const char *project);
 typedef struct t_AS_attr {
   const char *id;
   const char *mode;
+  xbt_dynar_t host_list_d;
+  xbt_dynar_t link_list_d;
+  xbt_dynar_t route_list_d;
 } AS_attr, *p_AS_attr;
 
 typedef struct t_host_attr {
