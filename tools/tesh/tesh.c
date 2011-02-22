@@ -11,9 +11,10 @@
 #pragma hdrstop
 #endif
 
+#include "simgrid_config.h" //For getline, keep that include first
+
 #include "tesh.h"
 #include "xbt.h"
-#include "simgrid_config.h" //For getline
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(tesh, "TEst SHell utility");
 

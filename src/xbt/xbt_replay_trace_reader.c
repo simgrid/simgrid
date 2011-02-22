@@ -3,13 +3,14 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+#include "simgrid_config.h" //For getline, keep that include first
+
 #include "gras_config.h"
 #include <errno.h>
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/replay_trace_reader.h"
-#include "simgrid_config.h" //For getline
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 
