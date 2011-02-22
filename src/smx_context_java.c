@@ -110,9 +110,6 @@ static void smx_ctx_java_stop(smx_context_t context)
 
   smx_ctx_java_t ctx_java;
 
-  if (context->cleanup_func)
-    (*(context->cleanup_func)) (context->data);
-
   ctx_java = (smx_ctx_java_t) context;
 
   /*FIXME: is this really necessary? Seems to. */
