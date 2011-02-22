@@ -3,8 +3,11 @@
 *.l[oa]
 *.loT
 *.[oa]
+*~
+*.log
 *_simulator
 *.mk
+*.swp
 *.patch
 
 ################################################
@@ -38,10 +41,24 @@ simgrid-*.tar.gz
 
 ################################################
 ### Cmake files
+CPackConfig.cmake
+CPackSourceConfig.cmake
+CTestTestfile.cmake
 conftestval
+cmake_install.cmake
+CMakeFiles
+install_manifest.txt
 _CPack_Packages/
+CMakeFiles
+CMakeCache.txt
+DartConfiguration.tcl
+Testing/
+Makefile
+bin/
+lib/
 build_dir/
 buildtools/Cmake/test_prog/prog_va_copy.c
+
 
 ################################################
 ### windows borland
@@ -63,6 +80,20 @@ doc/realtoc.sh
 doc/tmp.realtoc
 doc/using_bib.html
 doc/Doxyfile
+
+################################################
+### Specific of project 
+.cproject
+.project
+.settings/
+.anjuta
+.anjuta_sym_db.db
+simgrid.anjuta
+.externalToolBuilders/
+Debug/
+.emacs.desktop
+tags
+callgrind.out.*
 
 ################################################
 ### Examples and traces
