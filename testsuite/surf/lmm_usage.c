@@ -229,6 +229,10 @@ void test1(method_t method)
   PRINT_VAR(R_2);
   PRINT_VAR(R_3);
 
+  lmm_variable_free(Sys, R_1_2_3);
+  lmm_variable_free(Sys, R_1);
+  lmm_variable_free(Sys, R_2);
+  lmm_variable_free(Sys, R_3);
   lmm_system_free(Sys);
 }
 
@@ -279,6 +283,8 @@ void test2(method_t method)
   PRINT_VAR(T1);
   PRINT_VAR(T2);
 
+  lmm_variable_free(Sys, T1);
+  lmm_variable_free(Sys, T2);
   lmm_system_free(Sys);
 }
 
@@ -451,6 +457,8 @@ void test3(method_t method)
     PRINT_VAR(tmp_var[j]);
   }
 
+  for (j = 0; j < 16; j++)
+    lmm_variable_free(Sys, tmp_var[j]);
   xbt_free(tmp_var);
   xbt_free(tmp_cnst);
   for (i = 0; i < 31; i++)
