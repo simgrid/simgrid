@@ -45,7 +45,6 @@ static void create_host(const char *id, double power_peak, double power_sc,
     power_scale = power_sc;
   if (core)
 	  core_nb = core; //default value
-  else
   if (state_init == -1)
     state_initial = SURF_RESOURCE_OFF;
   else
