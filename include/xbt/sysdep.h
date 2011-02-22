@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdarg.h>             /* va_list */
 
+#include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
 
@@ -29,8 +30,25 @@ SG_BEGIN_DECL()
  *
  * @{
  */
-XBT_PUBLIC(void) xbt_abort(void) _XBT_GNUC_NORETURN;
-XBT_PUBLIC(void) xbt_die(const char *msg) _XBT_GNUC_NORETURN;
+/** @brief Kill the program in silence */
+#define xbt_abort() abort()
+
+/**
+ * @brief Kill the program with an error message
+ * \param msg
+ *
+ * Things are so messed up that the only thing to do now, is to stop the
+ * program.
+ *
+ * The message is handled by a CRITICAL logging request, and may consist of a
+ * format string with arguments.
+ */
+#define xbt_die(...)                            \
+  do {                                          \
+    XBT_LOG_EXTERNAL_CATEGORY(xbt);             \
+    XBT_CCRITICAL(xbt, __VA_ARGS__);            \
+    xbt_abort();                                \
+  } while (0)
 /** @} */
 
 /* these ones live in str.h, but redeclare them here so that we do

@@ -140,7 +140,6 @@ set(XBT_SRC
 	src/gras_modinter.h
 	src/xbt/xbt_virtu.c
 	src/xbt/xbt_os_time.c
-	src/xbt/asserts.c
 	src/xbt/log.c
 	src/xbt/xbt_log_appender_file.c
 	src/xbt/xbt_log_layout_simple.c
