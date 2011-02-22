@@ -3873,6 +3873,7 @@ static void routing_parse_Srandom(void)
 	  double res = 0;
 	  int i = 0;
 	  random_data_t random = xbt_new0(s_random_data_t, 1);
+          char *tmpbuf;
 
 	  xbt_dynar_t radical_elements;
 	  unsigned int iter;
@@ -3930,7 +3931,9 @@ static void routing_parse_Srandom(void)
 			case 1:
 					  xbt_assert1(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",random_id);
 					  res = random_generate(random);
-					  xbt_dict_set(random_value, bprintf("%s%d",random_id,atoi(xbt_dynar_getfirst_as(radical_ends,char *))), bprintf("%f",res), free);
+                                          tmpbuf = bprintf("%s%d",random_id,atoi(xbt_dynar_getfirst_as(radical_ends,char *)));
+                                          xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);
+                                          xbt_free(tmpbuf);
 					  break;
 
 			case 2:	  surf_parse_get_int(&start,
@@ -3939,7 +3942,9 @@ static void routing_parse_Srandom(void)
 					  for (i = start; i <= end; i++) {
 						  xbt_assert1(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",bprintf("%s%d",random_id,i));
 						  res = random_generate(random);
-						  xbt_dict_set(random_value, bprintf("%s%d",random_id,i), bprintf("%f",res), free);
+                                                  tmpbuf = bprintf("%s%d",random_id,i);
+						  xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);
+                                                  xbt_free(tmpbuf);
 					  }
 					  break;
 			default:

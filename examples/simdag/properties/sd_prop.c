@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
 
   /* Trying to set a new property */
-  xbt_dict_set(props, xbt_strdup("NewProp"), strdup("newValue"), free);
+  xbt_dict_set(props, "NewProp", strdup("newValue"), free);
 
   /* Print the properties of the workstation 1 */
   xbt_dict_foreach(props, cursor, key, data) {
