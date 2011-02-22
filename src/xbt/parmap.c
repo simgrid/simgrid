@@ -226,6 +226,7 @@ XBT_TEST_UNIT("basic", test_parmap_basic, "Basic usage")
 
   /* Destroy the parmap */
   xbt_parmap_destroy(parmap);
+  xbt_dynar_free(&data);
 }
 
 #endif /* SIMGRID_TEST */
