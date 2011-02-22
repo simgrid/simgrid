@@ -327,7 +327,8 @@ XBT_INLINE void xbt_dynar_free(xbt_dynar_t * dynar)
 /** \brief free a dynar passed as void* (handy to store dynar in dynars or dict) */
 void xbt_dynar_free_voidp(void *d)
 {
-  xbt_dynar_free((xbt_dynar_t *) d);
+  xbt_dynar_t dynar = (xbt_dynar_t)d;
+  xbt_dynar_free(&dynar);
 }
 
 /** @brief Count of dynar's elements
