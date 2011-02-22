@@ -55,7 +55,7 @@ void xbt_queue_free(xbt_queue_t * queue)
   xbt_mutex_destroy((*queue)->mutex);
   xbt_cond_destroy((*queue)->not_full);
   xbt_cond_destroy((*queue)->not_empty);
-  free((*queue));
+  free(*queue);
   *queue = NULL;
 }
 

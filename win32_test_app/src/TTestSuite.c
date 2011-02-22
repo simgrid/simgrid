@@ -809,14 +809,14 @@ unsigned long WINAPI TestSuite_runSyncTestCase(void *param)
 
 
   /* Close inheritable copies of the handles you do not want to be inherited. */
-  if (!CloseHandle((context->hChildStdoutReadTmp))) {
+  if (!CloseHandle(context->hChildStdoutReadTmp)) {
     setErrno(E_CANNOT_CLOSE_CHILD_STDIN_TEMPORY_HANDLE);
     return getErrno();
   }
 
   context->hChildStdoutReadTmp = NULL;
 
-  if (!CloseHandle((context->hChildStdinWriteTmp))) {
+  if (!CloseHandle(context->hChildStdinWriteTmp)) {
     setErrno(E_CANNOT_CLOSE_CHILD_STDOUT_TEMPORY_HANDLE);
     return getErrno();
   }
