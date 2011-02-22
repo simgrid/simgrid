@@ -733,11 +733,9 @@ static surf_action_t net_communicate(const char *src_name,
   /* LARGE PLATFORMS HACK:
      expand also with src->link and dst->link */
 #ifdef HAVE_TRACING
-  action->src_name = xbt_new(char, strlen(src_name) + 1);
-  strncpy(action->src_name, src_name, strlen(src_name) + 1);
+  action->src_name = xbt_strdup(src_name);
 
-  action->dst_name = xbt_new(char, strlen(dst_name) + 1);
-  strncpy(action->dst_name, dst_name, strlen(dst_name) + 1);
+  action->dst_name = xbt_strdup(dst_name);
 #endif
 
   xbt_dynar_free(&route);

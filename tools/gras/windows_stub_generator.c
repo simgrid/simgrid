@@ -660,9 +660,7 @@ void generate_borland_simulation_project(const char *name)
 
   GetCurrentDirectory(MAX_PATH, buffer);
 
-  borland_project.src_dir = xbt_new0(char, strlen(buffer) + 1);
-
-  strcpy(borland_project.src_dir, buffer);
+  borland_project.src_dir = xbt_strdup(buffer);
 
   borland_project.name =
       xbt_new0(char, strlen(name) + strlen("simulator") + 2);
@@ -717,9 +715,7 @@ void generate_borland_real_life_project(const char *name)
 
   GetCurrentDirectory(MAX_PATH, buffer);
 
-  borland_project.src_dir = xbt_new0(char, strlen(buffer) + 1);
-
-  strcpy(borland_project.src_dir, buffer);
+  borland_project.src_dir = xbt_strdup(buffer);
 
   borland_project.bin_dir =
       xbt_new0(char, strlen(buffer) + strlen("\\bin") + 1);
@@ -838,8 +834,7 @@ int generate_simulation_dsp_file(const char *name)
   GetEnvironmentVariable("LIB_SIMGRID_PATH", dsp.lib_dir, MAX_PATH);
   GetCurrentDirectory(MAX_PATH, buffer);
 
-  dsp.src_dir = xbt_new0(char, strlen(buffer) + 1);
-  strcpy(dsp.src_dir, buffer);
+  dsp.src_dir = xbt_strdup(buffer);
   dsp.name = xbt_new0(char, strlen(name) + strlen("simulator") + 2);
   sprintf(dsp.name, "%s_simulator", name);
 
@@ -871,9 +866,7 @@ int generate_real_live_dsp_file(const char *name)
 
   GetCurrentDirectory(MAX_PATH, buffer);
 
-  dsp.src_dir = xbt_new0(char, strlen(buffer) + 1);
-
-  strcpy(dsp.src_dir, buffer);
+  dsp.src_dir = xbt_strdup(buffer);
 
 
   xbt_dict_foreach(process_function_set, cursor, key, data) {

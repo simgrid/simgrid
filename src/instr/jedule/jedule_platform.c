@@ -66,8 +66,7 @@ void jed_simgrid_create_container(jed_simgrid_container_t *container, char *name
 	xbt_assert( name != NULL );
 
 	*container = (jed_simgrid_container_t)calloc(1,sizeof(s_jed_simgrid_container_t));
-	(*container)->name = (char*)calloc((strlen(name)+1), sizeof(char));
-	strcpy((*container)->name, name);
+	(*container)->name = xbt_strdup(name);
 	(*container)->is_lowest = 0;
 	(*container)->container_children = xbt_dynar_new(sizeof(jed_simgrid_container_t), NULL);
 	(*container)->parent = NULL;

@@ -54,14 +54,12 @@ void create_jed_event(jed_event_t *event, char *name, double start_time,
 		double end_time, const char *type) {
 
 	*event = (jed_event_t) calloc(1, sizeof(s_jed_event_t));
-	(*event)->name = (char*) calloc(strlen(name) + 1, sizeof(char));
-	strcpy((*event)->name, name);
+	(*event)->name = xbt_strdup(name);
 
 	(*event)->start_time = start_time;
 	(*event)->end_time = end_time;
 
-	(*event)->type = (char*) calloc(strlen(type) + 1, sizeof(char));
-	strcpy((*event)->type, type);
+	(*event)->type = xbt_strdup(type);
 
 	(*event)->resource_subsets = xbt_dynar_new(sizeof(jed_res_subset_t), NULL);
 	(*event)->characteristics_list = xbt_dynar_new(sizeof(char*), NULL);

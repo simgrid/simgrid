@@ -411,8 +411,7 @@ static int Route_new(lua_State * L)     // (src_id,dest_id,links_number,link_tab
 
      route->links_id = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 
-     char *tmp_links = malloc(sizeof(char)*strlen(links)+1);//use xbt
-     strcpy(tmp_links,links);
+     char *tmp_links = xbt_strdup(links);
      link_id = strtok(tmp_links,",");   //tmp_link = strtok((char*)links,",");
      while(link_id != NULL)
        {
