@@ -3385,7 +3385,7 @@ static void routing_parse_Scluster(void)
 #endif
       link_id = bprintf("%s_link_%d", cluster_id, start);
 
-      xbt_dict_set(patterns,"radical",bprintf("%d",start),NULL);
+      xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
       temp_cluster_power = bprintf("%s",cluster_power);
       temp_cluster_power = replace_random_parameter(temp_cluster_power);
       XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, temp_cluster_power);
@@ -3443,7 +3443,7 @@ static void routing_parse_Scluster(void)
 #endif
         link_id = bprintf("%s_link_%d", cluster_id, i);
 
-        xbt_dict_set(patterns,"radical",bprintf("%d",i),NULL);
+        xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
         temp_cluster_power = bprintf("%s",cluster_power);
         temp_cluster_power = replace_random_parameter(temp_cluster_power);
         XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, temp_cluster_power);
@@ -3512,7 +3512,7 @@ static void routing_parse_Scluster(void)
   SURFXML_END_TAG(router);
 
   //TODO
-  xbt_dict_set(patterns,"radical",bprintf("_router"),NULL);
+  xbt_dict_set(patterns, "radical", bprintf("_router"), xbt_free);
   temp_cluster_bw = bprintf("%s",cluster_bw);
   temp_cluster_bw = replace_random_parameter(temp_cluster_bw);
   temp_cluster_lat = bprintf("%s",cluster_lat);
