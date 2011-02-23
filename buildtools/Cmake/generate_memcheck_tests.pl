@@ -55,7 +55,7 @@ while(defined($line=<MAKETEST>))
 			{
 				$path=($1);
 				$path=~ s/\"//g;
-				$path =~ s/\$\{CMAKE_BINARY_DIR\}/$proj_dir/g;
+#				$path =~ s/\$\{CMAKE_BINARY_DIR\}/$proj_dir/g;
 				$path =~ s/\$\{CMAKE_HOME_DIRECTORY\}/$proj_dir/g;
 			}
 			if($line =~ /--setenv\s*\t*(\S*)\=(\S*)/)
@@ -75,8 +75,7 @@ while(defined($line=<MAKETEST>))
 			if($line =~ /([\S]+)[)]$/)
 			{
 				$tesh_file =($1);
-				$tesh_file =~ s/\$\{CMAKE_BINARY_DIR\}/$proj_dir/g;
-				$tesh_file =~ s/\$\{CMAKE_HOME_DIRECTORY\}/$proj_dir/g;
+				$tesh_file =~ s/\${CMAKE_HOME_DIRECTORY}/$proj_dir/g;
 				if ( -e "$tesh_file")
 				{
 					
@@ -88,6 +87,8 @@ while(defined($line=<MAKETEST>))
 				}
 				else
 				{
+					print "tesh_file : $tesh_file not exists!\n";
+					print "tesh_file : $path\/$tesh_file not exists!\n";
 					die;
 				}
 				
@@ -128,6 +129,7 @@ while(defined($line=<MAKETEST>))
                 	$command = $path."/".$command;
                 	$command =~ s/\/(.?\/)+/\//g;
                 }
+                $command =~ s/$proj_dir/\$\{CMAKE_BINARY_DIR\}/g;
                 if ($config_var)
                 {
                 	$command = "$command $config_var";
