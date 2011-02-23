@@ -428,7 +428,7 @@ static int Route_new(lua_State * L)     // (src_id,dest_id,links_number,link_tab
   p_route_attr route = malloc(sizeof(route_attr));
 
 
-  if (!lua_istable(L, 3)) { // if Route.new is declared as an indexed table (FIXME : we check the third arg if it's not a table)
+  if (!lua_istable(L, 4)) { // if Route.new is declared as an indexed table (FIXME : we check the third arg if it's not a table)
 
 	 //get AS_id
 	 lua_pushstring(L, "AS");
@@ -476,18 +476,27 @@ static int Route_new(lua_State * L)     // (src_id,dest_id,links_number,link_tab
           link_id = strtok(NULL,","); //Alternatively, a null pointer may be specified, in which case the function continues scanning where a previous successful call to the function ended.
         }
      xbt_dynar_push(current_as->route_list_d, &route);
-
-
      return 0;
-
       }
   else { // Route.new is declared as a function
-     //const char* link_id;
-     route->src_id = luaL_checkstring(L, 1);
-     route->dest_id = luaL_checkstring(L, 2);
+	 AS_id = luaL_checkstring(L, 1);
+	 xbt_dynar_foreach(as_list_d, i, p_as){
+	 	  if (p_as->id == AS_id){
+	 		  current_as = p_as;
+	 		  break;
+	 	  }
+	 	 }
+
+	 if (!current_as)
+	 {
+		XBT_ERROR("addRoute: No AS_id :%s found",AS_id);
+	 	return -2;
+	 }
+     route->src_id = luaL_checkstring(L, 2);
+     route->dest_id = luaL_checkstring(L, 3);
      route->links_id = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
      lua_pushnil(L);
-     while (lua_next(L, 3) != 0)
+     while (lua_next(L, 4) != 0)
 		{
     	 link_id = lua_tostring(L, -1);
     	 xbt_dynar_push(route->links_id, &link_id);
@@ -495,11 +504,10 @@ static int Route_new(lua_State * L)     // (src_id,dest_id,links_number,link_tab
     	 lua_tostring(L, -1));
     	 lua_pop(L, 1);
     	}
-    	 lua_pop(L, 1);
-
-    	  //add route to platform's route list
-    	  xbt_dynar_push(current_as->route_list_d, &route);
-    	  return 0;
+    lua_pop(L, 1);
+    //add route to platform's route list
+    xbt_dynar_push(current_as->route_list_d, &route);
+    return 0;
     }
 
   return -1;
