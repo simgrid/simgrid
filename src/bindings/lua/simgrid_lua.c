@@ -112,7 +112,7 @@ static m_task_t checkTask(lua_State * L, int index)
  */
 static int Task_new(lua_State * L)
 {
-  XBT_INFO("Task new...");
+  XBT_DEBUG("Task new...");
   const char *name = luaL_checkstring(L, 1);
   int comp_size = luaL_checkint(L, 2);
   int msg_size = luaL_checkint(L, 3);
@@ -507,12 +507,10 @@ static const luaL_reg Trace_methods[] = {
 
 static int run_lua_code(int argc, char **argv)
 {
-  XBT_INFO("run_lua_code****");
   XBT_DEBUG("Run lua code %s", argv[0]);
   lua_State *L = lua_newthread(simgrid_lua_state);
   int ref = luaL_ref(simgrid_lua_state, LUA_REGISTRYINDEX);     // protect the thread from being garbage collected
   int res = 1;
-  XBT_INFO("Here");
 
   /* Start the co-routine */
   lua_getglobal(L, argv[0]);
@@ -691,7 +689,7 @@ static const luaL_Reg simgrid_funcs[] = {
 int luaopen_simgrid(lua_State * L);     // Fuck gcc: we don't need that prototype
 int luaopen_simgrid(lua_State * L)
 {
-  XBT_INFO("Luaopen_Simgrid *****");
+  XBT_DEBUG("Luaopen_Simgrid *****");
   char **argv = malloc(sizeof(char *) * LUA_MAX_ARGS_COUNT);
   int argc = 1;
   argv[0] = (char *) "/usr/bin/lua";    /* Lie on the argv[0] so that the stack dumping facilities find the right binary. FIXME: what if lua is not in that location? */
