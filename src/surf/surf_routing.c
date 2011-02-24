@@ -232,7 +232,6 @@ static void parse_S_host(const char *host_id, const char* coord)
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
   xbt_dict_set(global_routing->where_network_elements, host_id,
                (void *) info, xbt_free);
-
   if (strcmp(coord,"")) {
     xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
     xbt_dynar_shrink(ctn, 0);
@@ -3394,6 +3393,7 @@ static void routing_parse_Scluster(void)
       SURFXML_BUFFER_SET(host_power, temp_cluster_power);
       SURFXML_BUFFER_SET(host_core, cluster_core);
       SURFXML_BUFFER_SET(host_availability, "1.0");
+      SURFXML_BUFFER_SET(host_coordinates, "");
       xbt_free(availability_file);
       availability_file = bprintf("%s",cluster_availability_file);
       xbt_free(state_file);
@@ -3454,6 +3454,7 @@ static void routing_parse_Scluster(void)
         SURFXML_BUFFER_SET(host_power, temp_cluster_power);
         SURFXML_BUFFER_SET(host_core, cluster_core);
         SURFXML_BUFFER_SET(host_availability, "1.0");
+        SURFXML_BUFFER_SET(host_coordinates, "");
         xbt_free(availability_file);
         availability_file = bprintf("%s",cluster_availability_file);
         xbt_free(state_file);
@@ -3783,6 +3784,7 @@ static void routing_parse_Speer(void)
   SURFXML_BUFFER_SET(host_availability, "1.0");
   SURFXML_BUFFER_SET(host_availability_file, peer_availability_file);
   SURFXML_BUFFER_SET(host_state_file, peer_state_file);
+  SURFXML_BUFFER_SET(host_coordinates, "");
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 
