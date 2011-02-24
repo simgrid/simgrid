@@ -57,11 +57,11 @@ if [ x$PIPOL_IMAGE == "xamd64_2010-linux-ubuntu-maverick.dd.gz" ] ; then
 	-Denable_gtnets=off \
 	-Denable_jedule=off \
 	-Denable_memcheck=on ./
-	ctest -D ExperimentalStart
-	ctest -D ExperimentalConfigure
-	ctest -D ExperimentalBuild
-	ctest -D ExperimentalMemCheck
-	ctest -D ExperimentalSubmit
+	ctest -D NightlyStart
+	ctest -D NightlyConfigure
+	ctest -D NightlyBuild
+	ctest -D NightlyMemCheck
+	ctest -D NightlySubmit
 	make clean
 else
 	#supernovae
