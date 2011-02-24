@@ -840,7 +840,6 @@ JNIEXPORT void JNICALL
   jxbt_check_res("MSG_clean()", rv, MSG_OK,
                  bprintf
                  ("unexpected error : MSG_clean() failed .. please report this bug "));
-
 }
 
 JNIEXPORT jint JNICALL
@@ -875,7 +874,7 @@ Java_org_simgrid_msg_MsgNative_processExit(JNIEnv * env, jclass cls,
     return;
   }
 
-  MSG_process_kill(process);
+  smx_ctx_java_stop(MSG_process_get_smx_ctx(process));
 }
 
 JNIEXPORT void JNICALL
