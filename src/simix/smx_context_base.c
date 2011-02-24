@@ -9,6 +9,7 @@
 
 #include "xbt/function_types.h"
 #include "simix/context.h"
+#include "simix/process_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(bindings);
 
@@ -86,6 +87,7 @@ void smx_ctx_base_stop(smx_context_t context)
 {
   if (context->cleanup_func)
     (*(context->cleanup_func)) (context->data);
+  SIMIX_process_cleanup(context->data);
 }
 
 smx_context_t smx_ctx_base_self(void)
