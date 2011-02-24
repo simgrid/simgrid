@@ -215,10 +215,10 @@ static void parse_cpu_ti_init(void)
     state_initial = SURF_RESOURCE_OFF;
   state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 
-  current_property_set = xbt_dict_new();
   cpu_ti_new(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
              power_trace, core, state_initial, state_trace,
              current_property_set);
+  current_property_set = NULL;
 
 }
 
@@ -281,7 +281,7 @@ static void add_traces_cpu_ti(void)
 
 static void cpu_ti_define_callbacks(const char *file)
 {
-  surfxml_add_callback(STag_surfxml_host_cb_list, parse_cpu_ti_init);
+  surfxml_add_callback(ETag_surfxml_host_cb_list, parse_cpu_ti_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces_cpu_ti);
 }
 

@@ -629,7 +629,7 @@ static cpu_L07_t ptask_cpu_new(const char *name, double power_scale,
   cpu->generic_resource.model = surf_workstation_model;
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
   cpu->generic_resource.name = xbt_strdup(name);
-  cpu->generic_resource.properties = current_property_set;
+  cpu->generic_resource.properties = cpu_properties;
   cpu->id = ptask_host_count++;
 
   cpu->power_scale = power_scale;
@@ -676,9 +676,9 @@ static void ptask_parse_cpu_init(void)
     state_initial = SURF_RESOURCE_OFF;
   state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 
-  current_property_set = xbt_dict_new();
   ptask_cpu_new(A_surfxml_host_id, power_scale, power_initial, power_trace,
                 state_initial, state_trace, current_property_set);
+  current_property_set=NULL;
 }
 
 static void ptask_cpu_create_resource(char *name, double power_peak,
@@ -783,8 +783,6 @@ static void ptask_parse_link_init(void)
 
   state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
-  current_property_set = xbt_dict_new();
-
   if(policy_initial_link == SURF_LINK_FULLDUPLEX)
   {
 	  ptask_link_new(name_link_up, bw_initial, bw_trace, lat_initial, lat_trace,
@@ -792,7 +790,7 @@ static void ptask_parse_link_init(void)
 	                 current_property_set);
 	  ptask_link_new(name_link_down, bw_initial, bw_trace, lat_initial, lat_trace,
 	                 state_initial_link, state_trace, policy_initial_link,
-	                 xbt_dict_new());
+	                 current_property_set);
   }
   else
   {
@@ -800,6 +798,7 @@ static void ptask_parse_link_init(void)
 					 state_initial_link, state_trace, policy_initial_link,
 					 current_property_set);
   }
+  current_property_set = NULL;
 }
 
 static void ptask_link_create_resource(char *name,
@@ -813,10 +812,9 @@ static void ptask_link_create_resource(char *name,
                                        e_surf_link_sharing_policy_t
                                        policy, xbt_dict_t properties)
 {
-
   ptask_link_new(name, bw_initial, bw_trace,
                  lat_initial, lat_trace, state_initial, state_trace,
-                 policy, xbt_dict_new());
+                 policy, properties);
 }
 
 
@@ -892,8 +890,8 @@ static void ptask_add_traces(void)
 static void ptask_define_callbacks(const char *file)
 {
   /* Adding callback functions */
-  surfxml_add_callback(STag_surfxml_host_cb_list, &ptask_parse_cpu_init);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &ptask_parse_link_init);
+  surfxml_add_callback(ETag_surfxml_host_cb_list, &ptask_parse_cpu_init);
+  surfxml_add_callback(ETag_surfxml_link_cb_list, &ptask_parse_link_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &ptask_add_traces);
 }
 

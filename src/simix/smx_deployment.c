@@ -34,8 +34,6 @@ static void parse_process_init(void)
   parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
   surf_parse_get_double(&start_time, A_surfxml_process_start_time);
   surf_parse_get_double(&kill_time, A_surfxml_process_kill_time);
-
-  current_property_set = xbt_dict_new();
 }
 
 static void parse_argument(void)
@@ -88,6 +86,7 @@ static void parse_process_finalize(void)
     }
     xbt_free(parse_host);
   }
+  current_property_set = NULL;
 }
 
 /**
@@ -203,7 +202,6 @@ void SIMIX_process_set_function(const char *process_host,
   parse_argv[(parse_argc) - 1] = xbt_strdup(process_function);
   start_time = process_start_time;
   kill_time = process_kill_time;
-  current_property_set = xbt_dict_new();
 
   /* add arguments */
   xbt_dynar_foreach(arguments, i, arg) {

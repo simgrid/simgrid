@@ -55,10 +55,12 @@ static void create_host(const char *id, double power_peak, double power_sc,
     state_trace = tmgr_trace_new(state_tr);
   else
     state_trace = tmgr_trace_new("");
-  current_property_set = xbt_dict_new();
+
   surf_host_create_resource(xbt_strdup(id), power_peak, power_scale,
                             power_trace, core_nb, state_initial, state_trace,
                             current_property_set);
+
+  current_property_set = NULL;
 
 }
 
@@ -127,11 +129,11 @@ static void create_host_wsL07(const char *id, double power_peak,
     state_trace = tmgr_trace_new(state_tr);
   else
     state_trace = tmgr_trace_new("");
-  current_property_set = xbt_dict_new();
+
   surf_wsL07_host_create_resource(xbt_strdup(id), power_peak, power_scale,
                                   power_trace, state_initial, state_trace,
                                   current_property_set);
-
+  current_property_set = NULL;
 }
 
 /**

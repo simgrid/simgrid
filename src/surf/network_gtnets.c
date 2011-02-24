@@ -110,7 +110,6 @@ static void parse_link_init(void)
   if (state_trace)
     XBT_INFO("The GTNetS network model doesn't support link state traces");
 
-  current_property_set = xbt_dict_new();
   if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
   {
 	  link_new(bprintf("%s_UP",name), bw, lat, current_property_set);
@@ -118,6 +117,7 @@ static void parse_link_init(void)
 
   }
   else  link_new(name, bw, lat, current_property_set);
+  current_property_set = NULL;
 }
 
 /* Create the gtnets topology based on routing strategy */
@@ -167,7 +167,7 @@ static void create_gtnets_topology()
 static void define_callbacks(const char *file)
 {
   /* Figuring out the network links */
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
+  surfxml_add_callback(ETag_surfxml_link_cb_list, &parse_link_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list,
                        &create_gtnets_topology);
 }
