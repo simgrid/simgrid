@@ -556,13 +556,3 @@ set_tests_properties(memcheck-lua-masterslave-bypass-0  		PROPERTIES ENVIRONMENT
 set_tests_properties(memcheck-lua-msg-masterslave-console-0  	PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
 endif(HAVE_LUA)
 
-# Ruby examples
-if(HAVE_RUBY)
-ADD_TEST(memcheck-ruby-masterslave-0 ruby -I ../../src/bindings/ruby MasterSlave.rb --cd /home/navarrop/simgrid/simgrid/trunk/examples/ruby/)
-ADD_TEST(memcheck-ruby-ping-pong-0 ruby -I ../../src/bindings/ruby PingPong.rb --cd /home/navarrop/simgrid/simgrid/trunk/examples/ruby/)
-ADD_TEST(memcheck-ruby-quicksort-0 ruby -I ../../src/bindings/ruby Quicksort.rb --cd /home/navarrop/simgrid/simgrid/trunk/examples/ruby/)
-set_tests_properties(memcheck-ruby-masterslave-0				PROPERTIES ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/lib")
-set_tests_properties(memcheck-ruby-ping-pong-0  				PROPERTIES ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/lib")
-set_tests_properties(memcheck-ruby-quicksort-0			 		PROPERTIES ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/lib")
-endif(HAVE_RUBY)
-

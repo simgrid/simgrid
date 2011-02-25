@@ -370,16 +370,6 @@ set_tests_properties(lua-masterslave-bypass  		PROPERTIES ENVIRONMENT "LUA_CPATH
 set_tests_properties(lua-msg-masterslave-console  	PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
 endif(HAVE_LUA)
 
-# Ruby examples
-if(HAVE_RUBY)
-ADD_TEST(ruby-masterslave	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/ruby MasterSlave.tesh)
-ADD_TEST(ruby-ping-pong		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/ruby PingPong.tesh)
-ADD_TEST(ruby-quicksort		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/ruby Quicksort.tesh)
-set_tests_properties(ruby-masterslave				PROPERTIES ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/lib")
-set_tests_properties(ruby-ping-pong  				PROPERTIES ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/lib")
-set_tests_properties(ruby-quicksort			 		PROPERTIES ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/lib")
-endif(HAVE_RUBY)
-
 # END TESH TESTS
 
 if(enable_smpi)
@@ -423,13 +413,6 @@ else(${ARCH_32_BITS})
 set_tests_properties(amok-bandwidth-sg-64-raw amok-bandwidth-sg-64-thread amok-bandwidth-sg-64-ucontext PROPERTIES WILL_FAIL true)   
 set_tests_properties(amok-saturate-sg-64-raw amok-saturate-sg-64-thread amok-saturate-sg-64-ucontext PROPERTIES WILL_FAIL true)  
 endif(${ARCH_32_BITS})
-
-if(HAVE_RUBY)
-# for the moment with ruby 1.9 -> undefined method `release'
-set_tests_properties(ruby-quicksort PROPERTIES WILL_FAIL true)
-set_tests_properties(ruby-ping-pong PROPERTIES WILL_FAIL true)
-set_tests_properties(ruby-masterslave PROPERTIES WILL_FAIL true)
-endif(HAVE_RUBY)
 
 endif(NOT enable_memcheck)
 

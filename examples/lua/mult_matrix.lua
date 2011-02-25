@@ -90,8 +90,8 @@ end
 
 --end
 require "simgrid"
-simgrid.platform("../ruby/quicksort_platform.xml")
-simgrid.application("../ruby/quicksort_deployment.xml")
+simgrid.platform("quicksort_platform.xml")
+simgrid.application("quicksort_deployment.xml")
 simgrid.run()
 simgrid.info("Simulation's over.See you.")
 simgrid.clean()

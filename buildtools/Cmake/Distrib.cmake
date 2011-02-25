@@ -99,25 +99,6 @@ if(HAVE_LUA)
 		)
 endif(HAVE_LUA)
 
-if(HAVE_RUBY)
-	string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_ARCH_DIR}")
-	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}")
-	add_custom_target(ruby_simgrid ALL
-		DEPENDS simgrid
-				${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
-	)
-	add_custom_command(
-		OUTPUT ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
-		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
-	)
-	install(FILES ${CMAKE_BINARY_DIR}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
-		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/
-	)
-	install(FILES ${CMAKE_HOME_DIRECTORY}/src/bindings/ruby/simgrid.rb
-		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/)
-
-endif(HAVE_RUBY)
-
 ###########################################
 ### Fill in the "make uninstall" target ###
 ###########################################
@@ -161,16 +142,6 @@ if(HAVE_LUA)
 	WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/"
 	)
 endif(HAVE_LUA)
-
-if(HAVE_RUBY)
-	string(REGEX REPLACE "^.*ruby/" "" install_link_ruby "${RUBY_ARCH_DIR}")
-	add_custom_command(TARGET uninstall
-	COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding ruby ok"
-	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/libsimgrid.${LIB_EXE}
-	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/ruby/${install_link_ruby}/simgrid.rb
-	WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/"
-	)
-endif(HAVE_RUBY)
 
 ################################################################
 ## Build a sain "make dist" target to build a source package ###

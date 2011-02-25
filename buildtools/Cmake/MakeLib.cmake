@@ -77,19 +77,6 @@ if(HAVE_PCRE_LIB)
        SET(SIMGRID_DEP "${SIMGRID_DEP} -lpcre")
 endif(HAVE_PCRE_LIB)
 
-if(HAVE_RUBY)
-	set(SIMGRID_DEP "${SIMGRID_DEP} -l${RUBY_LIBRARY_NAME}")
-	ADD_CUSTOM_TARGET(link_simgrid_ruby ALL
-		 DEPENDS simgrid ${CMAKE_BINARY_DIR}/src/bindings/ruby/libsimgrid.${LIB_EXE}
-	)
-	add_custom_command(
-		OUTPUT ${CMAKE_BINARY_DIR}/src/bindings/ruby/libsimgrid.${LIB_EXE}
-	        COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_BINARY_DIR}/src/bindings/ruby/libsimgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
-			COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/src/bindings/ruby/
-			COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/src/bindings/ruby/libsimgrid.${LIB_EXE}
-	)
-endif(HAVE_RUBY)
-
 if(pthread)
 	if(${CONTEXT_THREADS})
 		SET(SIMGRID_DEP "${SIMGRID_DEP} -lpthread")

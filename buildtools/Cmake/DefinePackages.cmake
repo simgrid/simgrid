@@ -327,14 +327,6 @@ set(JEDULE_SRC
 	src/instr/jedule/jedule_sd_binding.c
 )
 
-set(RUBY_SRC
-	src/simix/smx_context_ruby.c
-	src/bindings/ruby/rb_msg_process.c
-	src/bindings/ruby/rb_msg_host.c
-	src/bindings/ruby/rb_msg_task.c
-	src/bindings/ruby/rb_application_handler.c
-)
-
 set(MC_SRC
 	src/mc/mc_memory.c
 	src/mc/mc_checkpoint.c
@@ -498,21 +490,6 @@ elseif(${HAVE_LUA})
 		${LUA_SRC}
 	)
 endif(${HAVE_LUA})
-
-
-if(${HAVE_RUBY})
-	set(simgrid_sources
-		${simgrid_sources}
-		${RUBY_SRC}
-		src/bindings/ruby/simgrid_ruby.c
-	)
-else(${HAVE_RUBY})
-	set(EXTRA_DIST
-		${EXTRA_DIST}
-		${RUBY_SRC}
-		src/bindings/ruby/simgrid_ruby.c
-	)
-endif(${HAVE_RUBY})
 
 file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.c"
@@ -814,7 +791,6 @@ set(source_to_pack
 	${GRAS_SG_SRC}
 	${AMOK_SRC}
 	${LUA_SRC}
-	${RUBY_SRC}
 	${MC_SRC}
 	${add_src_files}
 	${include_files}

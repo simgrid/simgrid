@@ -23,12 +23,6 @@
  *  <em>message size</em> and some <em>private data</em>.
  */
 
-#ifdef HAVE_RUBY                /* FIXME: KILLME */
-XBT_LOG_EXTERNAL_CATEGORY(ruby);
-#endif
-
-
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg,
                                 "Logging specific to MSG (task)");
 
