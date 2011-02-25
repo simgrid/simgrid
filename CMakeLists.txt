@@ -156,3 +156,11 @@ message(STATUS "export LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{LD_LIBRA
 
 set_tests_properties(java-basic java-pingPong
 PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{LD_LIBRARY_PATH}")
+
+###########
+# Install #
+###########
+install(TARGETS SG_java
+	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
+install(FILES ${CMAKE_HOME_DIRECTORY}/simgrid.jar
+	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
