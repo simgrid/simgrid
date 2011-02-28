@@ -4,9 +4,58 @@ set(UPDATE_TYPE svn)
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/lib")
-
-
 set(soversion 1)
+
+########
+## SVN #
+########
+if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
+	find_file(SVN ".svn" ${CMAKE_HOME_DIRECTORY})
+	exec_program("svnversion ${CMAKE_HOME_DIRECTORY}" OUTPUT_VARIABLE "SVN_VERSION")
+endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
+
+exec_program("git config --get svn-remote.svn.url"
+	OUTPUT_VARIABLE url
+	RETURN_VALUE ret)
+if(ret EQUAL 0)
+	exec_program("git svn info" ${CMAKE_HOME_DIRECTORY}
+		OUTPUT_VARIABLE "GIT_SVN_VERSION")
+	string(REPLACE "\n" ";" GIT_SVN_VERSION ${GIT_SVN_VERSION})
+	foreach(line ${GIT_SVN_VERSION})
+		string(REGEX MATCH "^Revision:.*" line_good ${line})
+		if(line_good)
+			string(REPLACE "Revision: " ""
+				line_good ${line_good})
+			set(SVN_VERSION ${line_good})
+		endif(line_good)
+	endforeach(line ${GIT_SVN_VERSION})
+endif(ret EQUAL 0)
+
+message(STATUS "Svn version : ${SVN_VERSION}")
+#########
+# CDASH #
+#########
+SET(DROP_METHOD "http")
+SET(DROP_SITE "cdash.inria.fr/CDash")
+SET(DROP_LOCATION "/submit.php?project=simgrid")
+SET(DROP_SITE_CDASH TRUE)
+SET(TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-TestingResults.cgi")
+SET(BUILDNAME "Simgrid-Java" CACHE TYPE INTERNAL FORCE)
+set(osname ${CMAKE_SYSTEM_NAME})
+set(cpu ${CMAKE_SYSTEM_PROCESSOR})
+set(DISTRIB2 ${CMAKE_SYSTEM_VERSION})
+SET(SITE "${osname}_${DISTRIB2}_${cpu}")
+SET(CTEST_SITE "${osname}_${DISTRIB2}_${cpu}")
+SET(CTEST_PROJECT_NAME "${PROJECT_NAME}")
+SET(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE "3000000")
+SET(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE "3000000")
+set(PIPOL_IMAGE $ENV{PIPOL_IMAGE})
+if(NOT ${PIPOL_IMAGE} MATCHES "\n")
+set(SITE ${PIPOL_IMAGE})
+endif(NOT ${PIPOL_IMAGE} MATCHES "\n")
+message(STATUS "SITE        : ${SITE}")
+message(STATUS "BUILDNAME   : ${BUILDNAME}")
+
 ###############################
 # Test the build dependencies #
 ###############################
@@ -74,27 +123,29 @@ set(JAVA_EXAMPLES
 	examples/pingPong/PingPongTest.java
 )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
-
-set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I$ENV{SIMGRID_ROOT}/include -I$ENV{SIMGRID_ROOT}/src -I$ENV{SIMGRID_ROOT}/src/include")
-set(LIB_PATH "-L$ENV{SIMGRID_ROOT}/lib")
-
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${INCLUDE_PATH} ${LIB_PATH}")
-
 string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/org/" JAVA_FILES "${JMSG_JAVA_SRC}") 
-
 string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/classes/org/" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC}")
 string(REPLACE ".java" ".class" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC_CLASS}")
-
 string(REPLACE "examples/" "${CMAKE_HOME_DIRECTORY}/examples/" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES}") 
 string(REPLACE ".java" ".class" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES_CLASS}")
 
-# TARGET SG_java
+#########
+# FLAGS #
+#########
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
+set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I$ENV{SIMGRID_ROOT}/include -I$ENV{SIMGRID_ROOT}/src -I$ENV{SIMGRID_ROOT}/src/include")
+set(LIB_PATH "-L$ENV{SIMGRID_ROOT}/lib")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${INCLUDE_PATH} ${LIB_PATH}")
+
+###########
+# TARGETS #
+###########
+# SG_java
 add_library(SG_java SHARED ${JMSG_C_SRC})
 target_link_libraries(SG_java -lsimgrid)
 set_target_properties(SG_java PROPERTIES VERSION ${soversion})
   
-# TARGET java_classes
+# java_classes
 add_custom_command(
 	OUTPUT 	${JMSG_JAVA_SRC_CLASS}
 	DEPENDS ${JMSG_JAVA_SRC}
@@ -107,14 +158,14 @@ add_custom_target(java_classes ALL
   DEPENDS ${JMSG_JAVA_SRC_CLASS}		
 )
 
-# TARGET simgrid_jar
+# simgrid_jar
 add_custom_target(simgrid_jar ALL
   COMMAND ${JAVA_ARCHIVE} -cvf ${CMAKE_HOME_DIRECTORY}/simgrid.jar .
   COMMENT "Building simgrid.jar..."
   WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/classes 
 )
 
-# TARGET simgrid_java_examples
+# simgrid_java_examples
 add_custom_command(
 	COMMENT "Build examples for java"
 	OUTPUT	${JAVA_EXAMPLES_CLASS}
@@ -128,7 +179,9 @@ add_custom_target(simgrid_java_examples ALL
 	DEPENDS ${JAVA_EXAMPLES_CLASS}
 )
 
-# Declare dependencies
+########################
+# Declare dependencies #
+########################
 add_dependencies(simgrid_jar java_classes)
 add_dependencies(simgrid_java_examples simgrid_jar SG_java)
 
@@ -142,20 +195,25 @@ ${CMAKE_HOME_DIRECTORY}/simgrid.jar
 INCLUDE(CTest)
 ENABLE_TESTING()
 
-ADD_TEST(java-basic
+ADD_TEST(basic
 java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar basic/BasicTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/basic/basicDeployment.xml
 )
-ADD_TEST(java-pingPong
+ADD_TEST(pingPong
 java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar pingPong/PingPongTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingPongDeployment.xml
+)
+ADD_TEST(CommTime
+java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar commTime/CommTimeTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/commTime/commTimeDeployment.xml
+)
+ADD_TEST(mutualExclusion
+java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar mutualExclusion/centralized/MutexCentral ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/ring3.xml ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
 )
 
 ##########################################
 # Set the  LD_LIBRARY_PATH for our tests #
 ##########################################
-message(STATUS "export LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{LD_LIBRARY_PATH}")
-
-set_tests_properties(java-basic java-pingPong
+set_tests_properties(basic pingPong CommTime mutualExclusion
 PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{LD_LIBRARY_PATH}")
+message(STATUS "export LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{LD_LIBRARY_PATH}")
 
 ###########
 # Install #

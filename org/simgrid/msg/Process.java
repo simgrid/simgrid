@@ -335,7 +335,7 @@ public abstract class Process extends Thread {
 	}
 
 	public void schedule() {
-	   System.err.println("Scheduling process in Java");
+	   //System.err.println("Scheduling process in Java");
 		try {
 			schedBegin.release();
 			schedEnd.acquire();
