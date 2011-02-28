@@ -81,6 +81,13 @@ XBT_PUBLIC(int) surf_parse_lex_destroy(void);
 /* What is needed to bypass the parser. */
 XBT_PUBLIC_DATA(int_f_void_t) surf_parse;       /* Entry-point to the parser. Set this to your function. */
 
+XBT_PUBLIC(void) parse_E_route_store_route(void);
+XBT_PUBLIC(void) parse_S_AS(char *AS_id, char *AS_routing);
+XBT_PUBLIC(void) parse_E_AS(const char *AS_id);
+XBT_PUBLIC(void) parse_S_host(const char *host_id, const char* coord);
+XBT_PUBLIC(void) parse_S_route_new_and_endpoints(const char *src_id, const char *dst_id);
+XBT_PUBLIC(void) parse_E_link_ctn_new_elem(const char *link_id);
+
 /* Set of macros to make the bypassing work easier.
  * See examples/msg/masterslave_bypass.c for an example of use */
 
