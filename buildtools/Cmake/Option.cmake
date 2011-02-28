@@ -17,12 +17,10 @@ set(pipol_user ${pipol_user} CACHE TYPE INTERNAL FORCE)
 
 option(enable_gtnets "Whether gtnets model is activated." on)
 option(enable_smpi "This variable set smpi lib." on)
-option(enable_lua "Whether the lua bindings are activated." on)
 option(enable_pcre "Whether the pcre lib is activated." on) 
 
 if(WIN32 OR APPLE) 
 set(enable_smpi off CACHE TYPE INTERNAL FORCE)
-set(enable_lua off CACHE TYPE INTERNAL FORCE)
 endif(WIN32 OR APPLE) 
 
 option(enable_compile_optimizations "" on)

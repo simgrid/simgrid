@@ -292,12 +292,6 @@ set(AMOK_SRC
 	src/amok/PeerManagement/peermanagement.c
 )
 
-set(LUA_SRC
-	src/bindings/lua/simgrid_lua.c
-	src/bindings/lua/lua_stub_generator.c
-	src/bindings/lua/lua_console.c
-)
-
 set(TRACING_SRC
 	src/instr/instr_routing.c
 	src/instr/instr_config.c
@@ -480,26 +474,11 @@ set(gras_sources
 	${AMOK_SRC}
 )
 
-if(${HAVE_LUA})
-  	set(simgrid_sources
-		${simgrid_sources}
-		${LUA_SRC}
-	)
-elseif(${HAVE_LUA})
-  	set(EXTRA_DIST
-		${EXTRA_DIST}
-		${LUA_SRC}
-	)
-endif(${HAVE_LUA})
-
 file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.c"
 "examples/*.h"
 "examples/*.cxx"
 "examples/*.hpp"
-"examples/*.rb"
-"examples/*.lua"
-"examples/*.java"
 "examples/*.xml"
 "examples/*README"
 )
@@ -618,11 +597,7 @@ file(GLOB_RECURSE add_src_files
 "tools/*CMakeLists.txt"
 "examples/*.c"
 "examples/*.cxx"
-"examples/*.lua"
-"examples/*.rb"
 "examples/*CMakeLists.txt"
-"src/bindings/*.lua"
-"src/bindings/*.rb"
 "src/bindings/*.c"
 "src/bindings/*.h"
 "src/bindings/*CMakeLists.txt"
@@ -791,7 +766,6 @@ set(source_to_pack
 	${GRAS_COMMON_SRC}
 	${GRAS_SG_SRC}
 	${AMOK_SRC}
-	${LUA_SRC}
 	${MC_SRC}
 	${JEDULE_SRC}
 	${RNGSTREAM_SRC}

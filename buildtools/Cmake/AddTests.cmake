@@ -358,18 +358,6 @@ IF(HAVE_TRACING)
   ADD_TEST(tracing-process-migration ${CMAKE_BINARY_DIR}/bin/tesh	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/procmig.tesh)
 ENDIF(HAVE_TRACING)
 
-# Lua examples
-if(HAVE_LUA)
-ADD_TEST(lua-masterslave				${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/lua master_slave.tesh)
-ADD_TEST(lua-mult-matrix				${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/lua mult_matrix.tesh)
-ADD_TEST(lua-masterslave-bypass 		${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_HOME_DIRECTORY}/examples/lua master_slave_bypass.tesh)
-ADD_TEST(lua-msg-masterslave-console	${CMAKE_BINARY_DIR}/bin/tesh --cd ${CMAKE_BINARY_DIR}/examples/msg/masterslave --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave	${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_console.tesh)
-set_tests_properties(lua-masterslave 				PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
-set_tests_properties(lua-mult-matrix  				PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
-set_tests_properties(lua-masterslave-bypass  		PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
-set_tests_properties(lua-msg-masterslave-console  	PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
-endif(HAVE_LUA)
-
 # END TESH TESTS
 
 if(enable_smpi)

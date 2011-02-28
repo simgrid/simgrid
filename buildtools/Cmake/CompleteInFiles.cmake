@@ -23,9 +23,6 @@ endif(enable_gtnets)
 if(enable_smpi)
 	include(FindF2c)
 endif(enable_smpi)
-if(enable_lua)
-	include(FindLua51Simgrid)
-endif(enable_lua)
 
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(pthread 	pthread_create 			"" pthread)
