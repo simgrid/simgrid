@@ -262,14 +262,6 @@ static void parse_E_host_XML(void)
 	parse_E_host();
 }
 
-/*
- * \brief Add a host to the network element list from lua script
- */
-static void parse_S_host_lua(const char *host_id, const char *coord)
-{
-  parse_S_host(host_id, coord);
-}
-
 
 /**
  * \brief Add a "router" to the network element list
@@ -325,14 +317,6 @@ static void parse_S_route_new_and_endpoints_XML(void)
 {
   parse_S_route_new_and_endpoints(A_surfxml_route_src,
                                   A_surfxml_route_dst);
-}
-
-/**
- * \brief Set the endpoints for a route from lua
- */
-static void parse_S_route_new_and_endpoints_lua(const char *id_src, const char *id_dst)
-{
-  parse_S_route_new_and_endpoints(id_src, id_dst);
 }
 
 /**
@@ -402,14 +386,6 @@ static void parse_E_link_ctn_new_elem_XML(void)
     parse_E_link_ctn_new_elem(link_id);
     free(link_id);
   }
-}
-
-/**
- * \brief Set a new link on the actual list of link for a route or ASroute from lua
- */
-static void parse_E_link_c_ctn_new_elem_lua(const char *link_id)
-{
-  parse_E_link_ctn_new_elem(link_id);
 }
 
 /**
@@ -555,15 +531,6 @@ static void parse_S_AS_XML(void)
   }
 }
 
-/*
- * define the routing model type of routing component from lua script
- */
-static void parse_S_AS_lua(char *id, char *mode)
-{
-  parse_S_AS(id, mode);
-}
-
-
 /**
  * \brief Finish the creation of a new routing component
  *
@@ -600,14 +567,6 @@ static void parse_E_AS(const char *AS_id)
 static void parse_E_AS_XML(void)
 {
   parse_E_AS(A_surfxml_AS_id);
-}
-
-/*
- * \brief Finish the creation of a new routing component from lua
- */
-static void parse_E_AS_lua(const char *id)
-{
-  parse_E_AS(id);
 }
 
 /* Aux Business methods */
@@ -3981,58 +3940,4 @@ static void routing_parse_Erandom(void)
 	  XBT_DEBUG("%s = %s",key,elem);
 	}
 
-}
-
-
-/*
- * New methods to init the routing model component from the lua script
- */
-
-/*
- * calling parse_S_AS_lua with lua values
- */
-void routing_AS_init(const char *AS_id, const char *AS_routing)
-{
-  parse_S_AS_lua((char *) AS_id, (char *) AS_routing);
-}
-
-/*
- * calling parse_E_AS_lua to fisnish the creation of routing component
- */
-void routing_AS_end(const char *AS_id)
-{
-  parse_E_AS_lua((char *) AS_id);
-}
-
-/*
- * add a host to the network element list
- */
-
-void routing_add_host(const char *host_id)
-{
-  parse_S_host_lua((char *) host_id, (char*)""); // FIXME propagate coordinate system to lua
-}
-
-/*
- * Set a new link on the actual list of link for a route or ASroute
- */
-void routing_add_link(const char *link_id)
-{
-  parse_E_link_c_ctn_new_elem_lua((char *) link_id);
-}
-
-/*
- *Set the endpoints for a route
- */
-void routing_set_route(const char *src_id, const char *dst_id)
-{
-  parse_S_route_new_and_endpoints_lua(src_id, dst_id);
-}
-
-/*
- * Store the route by calling parse_E_route_store_route
- */
-void routing_store_route(void)
-{
-  parse_E_route_store_route();
 }
