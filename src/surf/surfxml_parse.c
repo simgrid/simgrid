@@ -695,6 +695,46 @@ void surf_wsL07_link_create_resource(char *name,
 }
 
 /**
+ *
+ *init new routing model component
+ */
+
+void surf_AS_new(const char *AS_id, const char *AS_mode)
+{
+  routing_AS_init(AS_id, AS_mode);
+}
+
+void surf_AS_finalize(const char *AS_id)
+{
+  routing_AS_end(AS_id);
+}
+
+/*
+ * add host to the network element list
+ */
+void surf_route_add_host(const char *host_id)
+{
+  routing_add_host(host_id);
+}
+
+/**
+ * set route
+ */
+void surf_routing_add_route(const char *src_id, const char *dst_id,
+                            xbt_dynar_t links_id)
+{
+  unsigned int i;
+  const char *link_id;
+  routing_set_route(src_id, dst_id);
+  xbt_dynar_foreach(links_id, i, link_id) {
+    routing_add_link(link_id);
+  }
+
+  //store the route
+  routing_store_route();
+}
+
+/**
  * Add Traces
  */
 void surf_add_host_traces(void)

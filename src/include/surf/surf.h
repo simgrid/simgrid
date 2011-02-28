@@ -762,6 +762,32 @@ XBT_PUBLIC(void) surf_add_host_traces(void);
 XBT_PUBLIC(void) surf_add_link_traces(void);
 XBT_PUBLIC(void) surf_wsL07_add_traces(void);
 
+/*
+ * init AS from lua console
+ * see surf_routing.c
+ */
+XBT_PUBLIC(void) routing_AS_init(const char *id, const char *mode);
+XBT_PUBLIC(void) routing_AS_end(const char *id);
+// add host to network element list
+XBT_PUBLIC(void) routing_add_host(const char *host_id);
+//Set a new link on the actual list of link for a route or ASroute
+XBT_PUBLIC(void) routing_add_link(const char *link_id);
+//Set the endpoints for a route
+XBT_PUBLIC(void) routing_set_route(const char *src_id, const char *dst_id);
+//Store the route
+XBT_PUBLIC(void) routing_store_route(void);
+
+/*
+ * interface between surf and lua bindings
+ * see surfxml_parse.c
+ */
+XBT_PUBLIC(void) surf_AS_new(const char *id, const char *mode);
+XBT_PUBLIC(void) surf_AS_finalize(const char *id);
+XBT_PUBLIC(void) surf_route_add_host(const char *id);
+XBT_PUBLIC(void) surf_routing_add_route(const char *src_id,
+                                        const char *dest_id,
+                                        xbt_dynar_t links_id);
+
 #include "surf/surf_resource.h"
 #include "surf/surf_resource_lmm.h"
 
