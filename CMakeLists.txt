@@ -32,6 +32,7 @@ if(ret EQUAL 0)
 endif(ret EQUAL 0)
 
 message(STATUS "Svn version : ${SVN_VERSION}")
+
 #########
 # CDASH #
 #########
@@ -222,3 +223,12 @@ install(TARGETS SG_java
 	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
 install(FILES ${CMAKE_HOME_DIRECTORY}/simgrid.jar
 	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
+
+########
+# NOTE #
+########
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Testing/Notes/)
+file(WRITE ${CMAKE_BINARY_DIR}/Testing/Notes/Build  "SVN version : ${SVN_VERSION}\n")
+file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Release     : simgrid-java-${soversion}\n")
+file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Pipol user  : $ENV{PIPOL_USER}\n")
+file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Pipol image : $ENV{PIPOL_IMAGE}\n")
