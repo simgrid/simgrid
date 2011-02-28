@@ -18,7 +18,11 @@ IF(pipol_user)
 	
 	if(enable_smpi)
 	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_smpi=on")
-	endif(enable_smpi)	
+	endif(enable_smpi)
+	
+	if(enable_lua)
+	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_lua=on")
+	endif(enable_lua)	
 	
 	if(enable_compile_optimizations)
 	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_compile_optimizations=on")

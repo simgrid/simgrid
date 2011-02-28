@@ -83,6 +83,32 @@ if(pthread)
 	endif(${CONTEXT_THREADS})	
 endif(pthread)
 
+if(HAVE_LUA)	  
+    ADD_CUSTOM_TARGET(link_simgrid_lua ALL
+      DEPENDS 	simgrid
+      			${CMAKE_BINARY_DIR}/examples/lua/simgrid.${LIB_EXE}
+				${CMAKE_BINARY_DIR}/examples/msg/masterslave/simgrid.${LIB_EXE}
+				${CMAKE_BINARY_DIR}/examples/simdag/simgrid.${LIB_EXE}
+	)
+	add_custom_command(
+		OUTPUT 	${CMAKE_BINARY_DIR}/examples/lua/simgrid.${LIB_EXE}
+				${CMAKE_BINARY_DIR}/examples/msg/masterslave/simgrid.${LIB_EXE}
+				${CMAKE_BINARY_DIR}/examples/simdag/simgrid.${LIB_EXE}
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_BINARY_DIR}/examples/lua/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/examples/lua/
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/examples/lua/simgrid.${LIB_EXE} #for test
+		
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_BINARY_DIR}/examples/msg/masterslave/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+	  	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/examples/msg/masterslave/
+	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/examples/msg/masterslave/simgrid.${LIB_EXE} #for test
+		
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_BINARY_DIR}/examples/simdag/simgrid.${LIB_EXE} # if it exists, creating the link fails. So cleanup before hand
+	  	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/examples/simdag/
+	  	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/examples/simdag/simgrid.${LIB_EXE} #for test			
+	)
+	SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl -l${LIB_LUA_NAME}")   	  
+endif(HAVE_LUA)
+
 if(HAVE_GRAPHVIZ)
     if(HAVE_CGRAPH_LIB)
 	    SET(SIMGRID_DEP "${SIMGRID_DEP} -lcgraph")
