@@ -33,8 +33,8 @@ cd simgrid-trunk
 
 sh ./buildtools/pipol/liste_install.sh
 sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install
-SIMGRID_ROOT=`pwd`
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/gtnets_install/lib
+SIMGRID_DIR=`pwd`
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_DIR/gtnets_install/lib
 perl ./buildtools/pipol/cmake.pl
 perl ./buildtools/pipol/ruby.pl
 
@@ -104,3 +104,14 @@ else
 	ctest -D NightlySubmit
 	make clean
 fi
+
+export SIMGRID_ROOT=$SIMGRID_DIR
+cd ../
+svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java simgrid-java --quiet
+cd simgrid-java
+cmake .
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyTest
+ctest -D NightlySubmit
