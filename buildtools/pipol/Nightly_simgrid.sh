@@ -106,9 +106,20 @@ else
 fi
 
 export SIMGRID_ROOT=$SIMGRID_DIR
+
 cd ../
 svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java simgrid-java --quiet
 cd simgrid-java
+cmake .
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyTest
+ctest -D NightlySubmit
+
+cd ../
+svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-ruby simgrid-ruby --quiet
+cd simgrid-ruby
 cmake .
 ctest -D NightlyStart
 ctest -D NightlyConfigure
