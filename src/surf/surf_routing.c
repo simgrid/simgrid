@@ -2632,7 +2632,7 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
       if (rc_dst >= 0) {
         res = pcre_get_substring_list(src, ovector_src, rc_src, &list_src);
         xbt_assert1(!res, "error solving substring list for src \"%s\"", src);
-        res = pcre_get_substring_list(dst, ovector_dst, rc_dst, &list_dst)
+        res = pcre_get_substring_list(dst, ovector_dst, rc_dst, &list_dst);
         xbt_assert1(!res, "error solving substring list for src \"%s\"", dst);
         char *link_name;
         xbt_dynar_foreach(ruleroute->re_str_link, cpt, link_name) {
