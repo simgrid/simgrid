@@ -44,8 +44,6 @@ if [ x$PIPOL_IMAGE == "xamd64_2010-linux-ubuntu-maverick.dd.gz" ] ; then
 	#mem-check
 	cmake \
 	-Denable_lua=off \
-	-Denable_ruby=off \
-	-Denable_java=off \
 	-Denable_tracing=off \
 	-Denable_smpi=off \
 	-Denable_supernovae=off \
@@ -67,8 +65,6 @@ else
 	#supernovae
 	cmake \
 	-Denable_lua=on \
-	-Denable_ruby=on \
-	-Denable_java=on \
 	-Denable_tracing=on \
 	-Denable_smpi=on \
 	-Denable_supernovae=on \
@@ -105,7 +101,7 @@ else
 	make clean
 fi
 
-export SIMGRID_ROOT=$SIMGRID_DIR
+export SIMGRID_ROOT=`pwd`
 
 cd ../
 svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java simgrid-java --quiet
