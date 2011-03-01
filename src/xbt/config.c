@@ -321,10 +321,10 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
   xbt_assert1(tok, "Invalid maximum in config element descriptor %s",
               entry);
 
-  tok++;
   xbt_assert2(*tok == '_',
               "Invalid config element descriptor: %s%s", entry,
               "; Should be <name>:<min nb>_to_<max nb>_<type>");
+  tok++;
 
   for (type = 0;
        type < xbt_cfgelm_type_count
