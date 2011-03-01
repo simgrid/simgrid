@@ -104,7 +104,7 @@ static char *sample_location(int global, const char *file, int line)
   }
 }
 
-void smpi_sample_1(int global, const char *file, int line, int iters, double threshold)
+int smpi_sample_1(int global, const char *file, int line, int iters, double threshold)
 {
   char *loc = sample_location(global, file, line);
   local_data_t *data;
@@ -123,8 +123,10 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
     data->threshold = threshold;
     data->started = 0;
     xbt_dict_set(samples, loc, data, &free);
+    return 0;
   }
   free(loc);
+  return 1;
 }
 
 int smpi_sample_2(int global, const char *file, int line)
@@ -163,18 +165,18 @@ void smpi_sample_3(int global, const char *file, int line)
 
   xbt_assert0(samples, "You did something very inconsistent, didn't you?");
   data = xbt_dict_get_or_null(samples, loc);
-  if (!data || !data->started || data->count >= data->iters) {
-    xbt_assert0(data, "Please, do thing in order");
-  }
   smpi_bench_end();
-  sample = smpi_process_simulated_elapsed();
-  data->sum += sample;
-  data->sum_pow2 += sample * sample;
-  n = (double)data->count;
-  data->mean = data->sum / n;
-  data->relstderr = sqrt((data->sum_pow2 / n - data->mean * data->mean) / n) / data->mean;
-  XBT_DEBUG("Average mean after %d steps is %f, relative standard error is %f (sample was %f)", data->count,
-         data->mean, data->relstderr, sample);
+  if(data && data->started && data->count < data->iters) {
+    sample = smpi_process_simulated_elapsed();
+    data->sum += sample;
+    data->sum_pow2 += sample * sample;
+    n = (double)data->count;
+    data->mean = data->sum / n;
+    data->relstderr = sqrt((data->sum_pow2 / n - data->mean * data->mean) / n) / data->mean;
+    XBT_DEBUG("Average mean after %d steps is %f, relative standard error is %f (sample was %f)", data->count,
+           data->mean, data->relstderr, sample);
+  }
+  free(loc);
 }
 
 void smpi_sample_flops(double flops)

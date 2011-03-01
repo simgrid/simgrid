@@ -21,4 +21,25 @@ XBT_PUBLIC(int) smpi_process_argc(void);
 XBT_PUBLIC(int) smpi_process_getarg(integer* index, char* dst, ftnlen len);
 XBT_PUBLIC(int) smpi_global_size(void);
 
+#define smpi_sample_local__(pi,pt) \
+   { \
+      if(smpi_sample_1(0, __FILE__, __LINE__, *pi, *pt)) { \
+         smpi_sample_3(0, __FILE__, __LINE__); \
+      } \
+      if(!smpi_sample_2(0, __FILE__, __LINE__)) { \
+         continue; \
+      } \
+   }
+
+#define smpi_sample_global__(pi,pt) \
+   { \
+      if(smpi_sample_1(1, __FILE__, __LINE__, *pi, *pt)) { \
+         smpi_sample_3(1, __FILE__, __LINE__); \
+      } \
+      if(!smpi_sample_2(1, __FILE__, __LINE__)) { \
+         continue; \
+      } \
+   }
+
+
 #endif
