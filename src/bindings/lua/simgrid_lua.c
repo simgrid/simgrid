@@ -523,9 +523,10 @@ static int run_lua_code(int argc, char **argv)
     lua_pushstring(L, argv[i]);
 
   // Call the function (in resume)
-  xbt_assert2(lua_pcall(L, argc - 1, 1, 0) == 0,
-              "error running function `%s': %s", argv[0], lua_tostring(L,
-                                                                       -1));
+  int err;
+  err = lua_pcall(L, argc - 1, 1, 0);
+  xbt_assert2(err == 0, "error running function `%s': %s", argv[0],
+              lua_tostring(L, -1));
 
   /* retrieve result */
   if (lua_isnumber(L, -1)) {

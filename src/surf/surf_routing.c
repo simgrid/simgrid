@@ -2620,6 +2620,7 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
   int ovector_dst[OVECCOUNT];
   const char **list_src = NULL;
   const char **list_dst = NULL;
+  int res;
   xbt_dynar_foreach(rule_list, cpt, ruleroute) {
     rc_src =
         pcre_exec(ruleroute->re_src, NULL, src, src_length, 0, 0,
@@ -2629,12 +2630,10 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
           pcre_exec(ruleroute->re_dst, NULL, dst, dst_length, 0, 0,
                     ovector_dst, OVECCOUNT);
       if (rc_dst >= 0) {
-        xbt_assert1(!pcre_get_substring_list
-                    (src, ovector_src, rc_src, &list_src),
-                    "error solving substring list for src \"%s\"", src);
-        xbt_assert1(!pcre_get_substring_list
-                    (dst, ovector_dst, rc_dst, &list_dst),
-                    "error solving substring list for src \"%s\"", dst);
+        res = pcre_get_substring_list(src, ovector_src, rc_src, &list_src);
+        xbt_assert1(!res, "error solving substring list for src \"%s\"", src);
+        res = pcre_get_substring_list(dst, ovector_dst, rc_dst, &list_dst)
+        xbt_assert1(!res, "error solving substring list for src \"%s\"", dst);
         char *link_name;
         xbt_dynar_foreach(ruleroute->re_str_link, cpt, link_name) {
           char *new_link_name =

@@ -71,9 +71,10 @@ int slave(int argc, char *argv[])
   int res;
   int id = -1;
   char mailbox[80];
+  int read;
 
-  xbt_assert1(sscanf(argv[1], "%d", &id),
-              "Invalid argument %s\n", argv[1]);
+  read = sscanf(argv[1], "%d", &id);
+  xbt_assert1(read, "Invalid argument %s\n", argv[1]);
 
   sprintf(mailbox, "slave-%d", id);
 

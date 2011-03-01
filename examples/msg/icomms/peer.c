@@ -95,7 +95,9 @@ int receiver(int argc, char *argv[])
   XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time,
         sleep_test_time);
 
-  xbt_assert1(sscanf(argv[1], "%d", &id),
+  int read;
+  read = sscanf(argv[1], "%d", &id);
+  xbt_assert1(read,
               "Invalid argument %s\n", argv[1]);
 
   MSG_process_sleep(sleep_start_time);

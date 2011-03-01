@@ -51,8 +51,9 @@ int master(int argc, char *argv[])
   }
 
   /* data size */
-  xbt_assert1(sscanf(argv[1], "%lg", &task_comm_size),
-              "Invalid argument %s\n", argv[1]);
+  int read;
+  read = sscanf(argv[1], "%lg", &task_comm_size);
+  xbt_assert1(read, "Invalid argument %s\n", argv[1]);
 
   /* slave name */
   slavename = argv[2];

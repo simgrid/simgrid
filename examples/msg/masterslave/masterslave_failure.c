@@ -35,16 +35,15 @@ int master(int argc, char *argv[])
   int number_of_tasks = 0;
   double task_comp_size = 0;
   double task_comm_size = 0;
-
-
   int i;
+  int read;
 
-  xbt_assert1(sscanf(argv[1], "%d", &number_of_tasks),
-              "Invalid argument %s\n", argv[1]);
-  xbt_assert1(sscanf(argv[2], "%lg", &task_comp_size),
-              "Invalid argument %s\n", argv[2]);
-  xbt_assert1(sscanf(argv[3], "%lg", &task_comm_size),
-              "Invalid argument %s\n", argv[3]);
+  read = sscanf(argv[1], "%d", &number_of_tasks);
+  xbt_assert1(read, "Invalid argument %s\n", argv[1]);
+  read = sscanf(argv[2], "%lg", &task_comp_size);
+  xbt_assert1(read, "Invalid argument %s\n", argv[2]);
+  read = sscanf(argv[3], "%lg", &task_comm_size);
+  xbt_assert1(read, "Invalid argument %s\n", argv[3]);
 
   {                             /* Process organisation */
     slaves_count = argc - 4;

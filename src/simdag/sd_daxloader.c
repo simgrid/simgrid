@@ -295,7 +295,9 @@ xbt_dynar_t SD_daxload(const char *filename)
   xbt_dynar_push(result, &root_task);
   end_task = SD_task_create_comp_seq("end", NULL, 0);
 
-  xbt_assert2(!dax_lex(), "Parse error in %s: %s", filename,
+  int res;
+  res = dax_lex();
+  xbt_assert2(!res, "Parse error in %s: %s", filename,
               dax__parse_err_msg());
   dax__delete_buffer(input_buffer);
   fclose(in_file);
@@ -393,7 +395,7 @@ void STag_dax__adag(void)
   double version;
   version = dax_parse_double(A_dax__adag_version);
 
-  xbt_assert1((version == 2.1),
+  xbt_assert1(version == 2.1,
               "Expected version 2.1 in <adag> tag, got %f. Fix the parser or your file",
               version);
 }

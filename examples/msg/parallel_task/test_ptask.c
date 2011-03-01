@@ -49,10 +49,11 @@ int execute(int argc, char *argv[])
                 "Unknown host %s. Stopping Now! ", argv[i]);
   }
 
-  xbt_assert1(sscanf(argv[argc - 2], "%lg", &computation_amount),
-              "Invalid argument %s\n", argv[argc - 2]);
-  xbt_assert1(sscanf(argv[argc - 1], "%lg", &communication_amount),
-              "Invalid argument %s\n", argv[argc - 1]);
+  int read;
+  read = sscanf(argv[argc - 2], "%lg", &computation_amount);
+  xbt_assert1(read, "Invalid argument %s\n", argv[argc - 2]);
+  read = sscanf(argv[argc - 1], "%lg", &communication_amount);
+  xbt_assert1(read, "Invalid argument %s\n", argv[argc - 1]);
   computation_duration = (double *) calloc(host_list_size, sizeof(double));
   communication_table =
       (double *) calloc(host_list_size * host_list_size, sizeof(double));
@@ -104,8 +105,9 @@ int redistribute(int argc, char *argv[])
                 "Unknown host %s. Stopping Now! ", argv[i]);
   }
 
-  xbt_assert1(sscanf(argv[argc - 1], "%lg", &communication_amount),
-              "Invalid argument %s\n", argv[argc - 1]);
+  int read;
+  read = sscanf(argv[argc - 1], "%lg", &communication_amount);
+  xbt_assert1(read, "Invalid argument %s\n", argv[argc - 1]);
   computation_duration = (double *) calloc(host_list_size, sizeof(double));
   communication_table =
       (double *) calloc(host_list_size * host_list_size, sizeof(double));

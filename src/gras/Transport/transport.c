@@ -67,8 +67,9 @@ void gras_trp_init(void)
       WSADATA wsaData;
 
       wVersionRequested = MAKEWORD(2, 0);
-      xbt_assert0(WSAStartup(wVersionRequested, &wsaData) == 0,
-                  "Cannot find a usable WinSock DLL");
+      int res;
+      res = WSAStartup(wVersionRequested, &wsaData);
+      xbt_assert0(res == 0, "Cannot find a usable WinSock DLL");
 
       /* Confirm that the WinSock DLL supports 2.0. */
       /* Note that if the DLL supports versions greater    */
@@ -84,8 +85,9 @@ void gras_trp_init(void)
 #elif HAVE_WINSOCK_H
     {
       WSADATA wsaData;
-      xbt_assert0(WSAStartup(0x0101, &wsaData) == 0,
-                  "Cannot find a usable WinSock DLL");
+      int res;
+      res = WSAStartup(0x0101, &wsaData);
+      xbt_assert0(res == 0, "Cannot find a usable WinSock DLL");
       XBT_INFO("Found and initialized winsock");
     }
 #endif

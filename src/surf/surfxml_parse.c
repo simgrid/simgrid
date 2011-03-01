@@ -573,9 +573,8 @@ double get_cpu_power(const char *power)
       generator = xbt_malloc(q - (p + 6) + 1);
       memcpy(generator, p + 6, q - (p + 6));
       generator[q - (p + 6)] = '\0';
-      xbt_assert1((random =
-                   xbt_dict_get_or_null(random_data_list, generator)),
-                  "Random generator %s undefined", generator);
+      random = xbt_dict_get_or_null(random_data_list, generator);
+      xbt_assert1(random, "Random generator %s undefined", generator);
       power_scale = random_generate(random);
     }
   } else {
