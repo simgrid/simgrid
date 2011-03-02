@@ -25,6 +25,7 @@ ctest -D ExperimentalTest
 ctest -D ExperimentalSubmit
 
 export SIMGRID_ROOT=`pwd`
+export LD_LIBRARY_PATH=`pwd`/lib
 
 cd ../
 svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java simgrid-java --quiet
