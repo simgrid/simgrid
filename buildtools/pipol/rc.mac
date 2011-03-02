@@ -1,0 +1,44 @@
+#!/bin/bash
+
+sudo fink -y -q -b selfupdate
+
+sudo fink -y -q -b install svn
+sudo fink -y -q -b install gcc42
+sudo fink -y -q -b install make
+sudo fink -y -q -b install lua51-dev lua51
+sudo fink -y -q -b install unzip
+sudo fink -y -q -b install cmake
+sudo fink -y -q -b install wget
+sudo fink -y -q -b install perl
+sudo fink -y -q -b install gd2 graphviz graphviz-dev
+sudo fink -y -q -b install pcre
+sudo fink -y -q -b install f2c
+
+which_svn=`which svn`		#svn necessary
+which_gcc=`which gcc`		#gcc gcc necessary
+which_gpp=`which g++`		#gcc g++ necessary
+which_make=`which make`		#make necessary
+which_java=`which java`		#java optional
+which_lua=`which lua`		#lua
+which_cmake=`which cmake`	#cmake necessary
+which_unzip=`which unzip`	#unzip for gtnets
+which_wget=`which wget`		#wget for cmake
+which_dot=`which dot`		#dot for cgraph
+which_perl=`which perl`		#perl
+which_f2c=`which f2c`		#f2c
+which_gcov=`which gcov`     #gcov
+echo "DEBUT----------------------------------"
+echo $which_cmake
+echo $which_unzip
+echo $which_lua
+echo $which_java
+echo $which_make
+echo $which_gcc
+echo $which_gpp
+echo $which_svn
+echo $which_dot
+echo $which_wget
+echo $which_perl
+echo $which_f2c
+echo $which_gcov
+echo "FIN------------------------------------"

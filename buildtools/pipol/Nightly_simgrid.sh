@@ -31,7 +31,6 @@ cd ./pipol/$PIPOL_HOST
 svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid-trunk --quiet
 cd simgrid-trunk
 
-sh ./buildtools/pipol/liste_install.sh
 sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install
 SIMGRID_DIR=`pwd`
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_DIR/gtnets_install/lib
@@ -60,7 +59,6 @@ if [ x$PIPOL_IMAGE == "xamd64_2010-linux-ubuntu-maverick.dd.gz" ] ; then
 	ctest -D NightlyBuild
 	ctest -D NightlyMemCheck
 	ctest -D NightlySubmit
-	make clean
 else
 	#supernovae
 	cmake \
@@ -98,7 +96,6 @@ else
 	ctest -D NightlyTest
 	ctest -D NightlyCoverage
 	ctest -D NightlySubmit
-	make clean
 fi
 
 export SIMGRID_ROOT=`pwd`

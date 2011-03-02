@@ -13,7 +13,6 @@ cd ./pipol/$PIPOL_HOST
 svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid-trunk --quiet
 cd simgrid-trunk
 
-sh ./buildtools/pipol/liste_install.sh
 sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install
 SIMGRID_ROOT=`pwd`
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/gtnets_install/lib
