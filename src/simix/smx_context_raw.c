@@ -169,8 +169,10 @@ static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 { 
   XBT_VERB("Total User Time: %lf", totaltime);
+#ifdef CONTEXT_THREADS
   if(parmap)
       xbt_parmap_destroy(parmap);
+#endif
   return smx_ctx_base_factory_finalize(factory);
 }
 
@@ -273,7 +275,9 @@ static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
 
 static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
 {
+#ifdef CONTEXT_THREADS
   xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_raw_resume, processes);
+#endif
   xbt_dynar_reset(processes);
 }
 
@@ -313,9 +317,9 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
   (*factory)->stop = smx_ctx_raw_stop;
   (*factory)->suspend = smx_ctx_raw_suspend;
   (*factory)->name = "smx_raw_context_factory";
-
+#ifdef CONTEXT_THREADS
   parmap = xbt_parmap_new(2);
-
+#endif
   if (SIMIX_context_is_parallel()) {
     if (SIMIX_context_get_parallel_threshold() > 1) {
       /* choose dynamically */

@@ -80,8 +80,10 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 
 int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory)
 { 
+#ifdef CONTEXT_THREADS
   if(parmap)
     xbt_parmap_destroy(parmap);
+#endif
   return smx_ctx_base_factory_finalize(factory);
 }
 
@@ -230,7 +232,9 @@ void smx_ctx_sysv_resume_parallel(smx_process_t process)
 
 void smx_ctx_sysv_runall_parallel(xbt_dynar_t processes)
 {
+#ifdef CONTEXT_THREADS
   xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_sysv_resume_parallel, processes);
+#endif
   xbt_dynar_reset(processes);
 }
 
