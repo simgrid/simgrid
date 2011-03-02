@@ -34,41 +34,27 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
 
   /* Initialize the thread pool data structure */
   xbt_parmap_t parmap = xbt_new0(s_xbt_parmap_t, 1);
+  parmap->sync_event = xbt_new0(s_xbt_event_t, 1);
   parmap->num_workers = num_workers;
   parmap->status = PARMAP_WORK;
+  parmap->sync_event->threads_to_wait = num_workers;
 
-  parmap->workers_ready = xbt_new0(s_xbt_barrier_t, 1);
-  xbt_barrier_init(parmap->workers_ready, num_workers + 1);
-  parmap->workers_done = xbt_new0(s_xbt_barrier_t, 1);
-  xbt_barrier_init(parmap->workers_done, num_workers + 1);
-#ifndef HAVE_FUTEX_H
-  parmap->workers_ready->mutex = xbt_os_mutex_init();
-  parmap->workers_ready->cond = xbt_os_cond_init();
-#endif
   /* Create the pool of worker threads */
   for(i=0; i < num_workers; i++){
     worker = xbt_os_thread_create(NULL, _xbt_parmap_worker_main, parmap, NULL);
     xbt_os_thread_detach(worker);
   }
-  
+
+  xbt_event_init(parmap->sync_event);
   return parmap;
 }
 
 void xbt_parmap_destroy(xbt_parmap_t parmap)
 { 
   XBT_DEBUG("Destroy parmap %p", parmap);
-
   parmap->status = PARMAP_DESTROY;
-
-  xbt_barrier_wait(parmap->workers_ready);
-  XBT_DEBUG("Kill job sent");
-  xbt_barrier_wait(parmap->workers_done);
-#ifndef HAVE_FUTEX_H
-  xbt_os_mutex_destroy(parmap->workers_ready->mutex);
-  xbt_os_cond_destroy(parmap->workers_ready->cond);
-#endif
-  xbt_free(parmap->workers_ready);
-  xbt_free(parmap->workers_done);
+  xbt_event_signal(parmap->sync_event);
+  xbt_free(parmap->sync_event);
   xbt_free(parmap);
 }
 
@@ -78,14 +64,9 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
   parmap->fun = fun;
   parmap->data = data;
 
-  /* Notify workers that there is a job */
-  xbt_barrier_wait(parmap->workers_ready);
-  XBT_DEBUG("Job dispatched, lets wait...");
-  xbt_barrier_wait(parmap->workers_done);
+  xbt_event_signal(parmap->sync_event);
 
   XBT_DEBUG("Job done");
-  parmap->fun = NULL;
-  parmap->data = NULL;
 }
 
 static void *_xbt_parmap_worker_main(void *arg)
@@ -101,8 +82,7 @@ static void *_xbt_parmap_worker_main(void *arg)
   
   /* Worker's main loop */
   while(1){
-    xbt_barrier_wait(parmap->workers_ready);
-
+    xbt_event_wait(parmap->sync_event);
     if(parmap->status == PARMAP_WORK){
       XBT_DEBUG("Worker %u got a job", worker_id);
 
@@ -125,11 +105,9 @@ static void *_xbt_parmap_worker_main(void *arg)
         data_start++;
       }
 
-      xbt_barrier_wait(parmap->workers_done);
-
     /* We are destroying the parmap */
     }else{
-      xbt_barrier_wait(parmap->workers_done);
+      xbt_event_end(parmap->sync_event);
       XBT_DEBUG("Shutting down worker %u", worker_id);
       return NULL;
     }
@@ -137,56 +115,61 @@ static void *_xbt_parmap_worker_main(void *arg)
 }
 
 #ifdef HAVE_FUTEX_H
-	static void futex_wait(int *uaddr, int val)
-	{
-	  XBT_DEBUG("Waiting on futex %d", *uaddr);
-	  syscall(SYS_futex, uaddr, FUTEX_WAIT_PRIVATE, val, NULL, NULL, 0);
-	}
-
-	static void futex_wake(int *uaddr, int val)
-	{
-	  XBT_DEBUG("Waking futex %d", *uaddr);
-	  syscall(SYS_futex, uaddr, FUTEX_WAKE_PRIVATE, val, NULL, NULL, 0);
-	}
-#endif
-
-/* Futex based implementation of the barrier */
-void xbt_barrier_init(xbt_barrier_t barrier, unsigned int threads_to_wait)
+static void futex_wait(int *uaddr, int val)
 {
-  barrier->threads_to_wait = threads_to_wait;
-  barrier->thread_count = 0;
+  XBT_VERB("Waiting on futex %p", uaddr);
+  syscall(SYS_futex, uaddr, FUTEX_WAIT_PRIVATE, val, NULL, NULL, 0);
 }
 
-#ifdef HAVE_FUTEX_H
-	void xbt_barrier_wait(xbt_barrier_t barrier)
-	{
-	  int myflag = 0;
-	  unsigned int mycount = 0;
+static void futex_wake(int *uaddr, int val)
+{
+  XBT_VERB("Waking futex %p", uaddr);
+  syscall(SYS_futex, uaddr, FUTEX_WAKE_PRIVATE, val, NULL, NULL, 0);
+}
 
-	  myflag = barrier->futex;
-	  mycount = __sync_add_and_fetch(&barrier->thread_count, 1);
-	  if(mycount < barrier->threads_to_wait){
-		futex_wait(&barrier->futex, myflag);
-	  }else{
-		barrier->futex = __sync_add_and_fetch(&barrier->futex, 1);
-		barrier->thread_count = 0;
-		futex_wake(&barrier->futex, barrier->threads_to_wait);
-	  }
-	}
-#else
-	void xbt_barrier_wait(xbt_barrier_t barrier)
-	{
-	  xbt_os_mutex_acquire(barrier->mutex);
+void xbt_event_init(xbt_event_t event)
+{
+  int myflag = event->done;
+  if(event->thread_counter < event->threads_to_wait)
+    futex_wait(&event->done, myflag);
+}
 
-	  barrier->thread_count++;
-	  if(barrier->thread_count < barrier->threads_to_wait){
-		  xbt_os_cond_wait(barrier->cond,barrier->mutex);
-	  }else{
-		barrier->thread_count = 0;
-		xbt_os_cond_broadcast(barrier->cond);
-	  }
-	  xbt_os_mutex_release(barrier->mutex);
-	}
+void xbt_event_signal(xbt_event_t event)
+{
+  int myflag = event->done;
+  event->thread_counter = 0;
+  event->work++;
+  futex_wake(&event->work, event->threads_to_wait);
+  futex_wait(&event->done, myflag);
+}
+
+void xbt_event_wait(xbt_event_t event)
+{
+  int myflag;
+  unsigned int mycount;
+
+  myflag = event->work;
+  mycount = __sync_add_and_fetch(&event->thread_counter, 1);
+  if(mycount == event->threads_to_wait){
+    event->done++;
+    futex_wake(&event->done, 1);
+  }
+
+  futex_wait(&event->work, myflag);
+}
+
+void xbt_event_end(xbt_event_t event)
+{
+  int myflag;
+  unsigned int mycount;
+
+  myflag = event->work;
+  mycount = __sync_add_and_fetch(&event->thread_counter, 1);
+  if(mycount == event->threads_to_wait){
+    event->done++;
+    futex_wake(&event->done, 1);
+  }
+}
 #endif
 
 #ifdef SIMGRID_TEST
