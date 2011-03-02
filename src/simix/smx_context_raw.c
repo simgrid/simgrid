@@ -32,6 +32,9 @@ typedef struct s_smx_ctx_raw {
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id;       /* the valgrind stack id */
 #endif
+#ifdef TIME_BENCH
+  unsigned int thread;  /* Just for measuring purposes */
+#endif
 } s_smx_ctx_raw_t, *smx_ctx_raw_t;
 
 smx_ctx_raw_t maestro_raw_context;
@@ -159,16 +162,28 @@ static xbt_parmap_t parmap;
 
 static smx_context_factory_t raw_factory;
 
+#ifdef TIME_BENCH
 #include "xbt/xbt_os_time.h"
+#define NUM_THREADS 4
 static xbt_os_timer_t timer;
-static double totaltime = 0;
-
+static double time_thread_sr[NUM_THREADS];
+static double time_thread_ssr[NUM_THREADS];
+static double time_wasted_sr = 0;
+static double time_wasted_ssr = 0;
+static unsigned int sr_count = 0;
+static unsigned int ssr_count = 0;
+static char new_sr = 0;
+#endif
 
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
 
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
-{ 
-  XBT_VERB("Total User Time: %lf", totaltime);
+{
+#ifdef TIME_BENCH
+  XBT_CRITICAL("Total wasted time in %u SR: %lf", sr_count, time_wasted_sr);
+  XBT_CRITICAL("Total wasted time in %u SSR: %lf", ssr_count, time_wasted_ssr);
+#endif
+
 #ifdef CONTEXT_THREADS
   if(parmap)
       xbt_parmap_destroy(parmap);
@@ -258,6 +273,76 @@ static void smx_ctx_raw_resume(smx_process_t process)
       ((smx_ctx_raw_t) context)->stack_top);
 }
 
+#ifdef TIME_BENCH
+static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
+{
+  smx_process_t process;
+  unsigned int cursor;
+
+  double elapsed = 0;
+  double tmax = 0;
+  unsigned long num_proc = xbt_dynar_length(processes);
+  unsigned int t=0;
+  unsigned int data_size = (num_proc / NUM_THREADS) + ((num_proc % NUM_THREADS) ? 1 : 0);
+
+  ssr_count++;
+  time_thread_ssr[0] = 0;
+  xbt_dynar_foreach(processes, cursor, process) {
+    XBT_DEBUG("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
+    if(cursor >= t * data_size + data_size){
+      if(time_thread_ssr[t] > tmax)
+        tmax = time_thread_ssr[t];
+      t++;
+      time_thread_ssr[t] = 0;
+    }
+
+    if(new_sr){
+      ((smx_ctx_raw_t)process->context)->thread = t;
+      time_thread_sr[t] = 0;
+    }
+
+    xbt_os_timer_start(timer);
+    smx_ctx_raw_resume(process);
+    xbt_os_timer_stop(timer);
+    elapsed = xbt_os_timer_elapsed(timer);
+    time_thread_ssr[t] += elapsed;
+    time_thread_sr[((smx_ctx_raw_t)process->context)->thread] += elapsed;
+  }
+
+  if(new_sr)
+    new_sr = FALSE;
+
+  if(time_thread_ssr[t] > tmax)
+    tmax = time_thread_ssr[t];
+
+  for(cursor=0; cursor <= t; cursor++){
+    XBT_VERB("Time SSR thread %u = %lf (max %lf)", cursor, time_thread_ssr[cursor], tmax);
+    time_wasted_ssr += tmax - time_thread_ssr[cursor];
+  }
+
+  xbt_dynar_reset(processes);
+}
+
+void smx_ctx_raw_new_sr(void);
+void smx_ctx_raw_new_sr(void)
+{
+  int i;
+  double tmax = 0;
+  new_sr = TRUE;
+  sr_count++;
+  for(i=0; i < NUM_THREADS; i++){
+    if(time_thread_sr[i] > tmax)
+      tmax = time_thread_sr[i];
+  }
+
+  for(i=0; i < NUM_THREADS; i++){
+    XBT_VERB("Time SR thread %u = %lf (max %lf)", i, time_thread_sr[i], tmax);
+    time_wasted_sr += tmax - time_thread_sr[i];
+  }
+
+  XBT_VERB("New scheduling round");
+}
+#else
 static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
 {
   smx_process_t process;
@@ -265,13 +350,11 @@ static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
 
   xbt_dynar_foreach(processes, cursor, process) {
     XBT_DEBUG("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
-    xbt_os_timer_start(timer);
     smx_ctx_raw_resume(process);
-    xbt_os_timer_stop(timer);
-    totaltime += xbt_os_timer_elapsed(timer);
   }
   xbt_dynar_reset(processes);
 }
+#endif
 
 static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
 {
@@ -317,10 +400,11 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
   (*factory)->stop = smx_ctx_raw_stop;
   (*factory)->suspend = smx_ctx_raw_suspend;
   (*factory)->name = "smx_raw_context_factory";
-#ifdef CONTEXT_THREADS
-  parmap = xbt_parmap_new(2);
-#endif
+
   if (SIMIX_context_is_parallel()) {
+#ifdef CONTEXT_THREADS
+    parmap = xbt_parmap_new(SIMIX_context_get_nthreads());
+#endif
     if (SIMIX_context_get_parallel_threshold() > 1) {
       /* choose dynamically */
       (*factory)->runall = smx_ctx_raw_runall;
@@ -339,6 +423,7 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
     (*factory)->runall = smx_ctx_raw_runall_serial;
   }
   raw_factory = *factory;
-
+#ifdef TIME_BENCH
   timer = xbt_os_timer_new();
+#endif
 }

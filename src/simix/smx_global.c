@@ -30,6 +30,8 @@ static void* SIMIX_action_mallocator_new_f(void);
 static void SIMIX_action_mallocator_free_f(void* action);
 static void SIMIX_action_mallocator_reset_f(void* action);
 
+extern void smx_ctx_raw_new_sr(void);
+
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
 
@@ -116,6 +118,10 @@ void SIMIX_global_init(int *argc, char **argv)
  */
 void SIMIX_clean(void)
 {
+#ifdef TIME_BENCH
+  smx_ctx_raw_new_sr();
+#endif
+
   /* Kill everyone (except maestro) */
   SIMIX_process_killall(simix_global->maestro_process);
 
@@ -185,6 +191,9 @@ void SIMIX_run(void)
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%lu",
         xbt_dynar_length(simix_global->process_to_run));
+#ifdef TIME_BENCH
+    smx_ctx_raw_new_sr();
+#endif
     do {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu",
               xbt_dynar_length(simix_global->process_to_run));

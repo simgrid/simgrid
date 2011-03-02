@@ -24,9 +24,10 @@
 #include "synchro_private.h"
 #include "simix/context.h"
 
+/* Define only for SimGrid benchmarking purposes */
+#undef TIME_BENCH
+
 /********************************** Simix Global ******************************/
-
-
 typedef struct s_smx_global {
   smx_context_factory_t context_factory;
   xbt_dict_t host;
