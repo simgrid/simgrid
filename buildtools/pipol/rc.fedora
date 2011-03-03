@@ -43,3 +43,10 @@ echo $which_perl
 echo $which_f2c
 echo $which_gcov
 echo "FIN------------------------------------"
+
+wget ftp://ftp.ruby-lang.org//pub/ruby/1.9/ruby-1.9.1-p378.tar.gz
+tar zxvf ruby-1.9.1-p378.tar.gz
+cd ./ruby-1.9.1-p378
+./configure -prefix=/usr
+make
+sudo make install
