@@ -45,10 +45,11 @@ static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
   xbt_dynar_t d = xbt_dict_get_or_null(keys, aux);
 
-  int length = xbt_dynar_length(d);
-  char *s = xbt_dynar_get_as (d, length-1, char *);
+  xbt_assert1(xbt_dynar_length(d)!=0,
+      "Trying to get a link key (for message reception) that has no corresponding send (%s).", __FUNCTION__);
+  char *s = xbt_dynar_get_as (d, 0, char *);
   snprintf (key, n, "%s", s);
-  xbt_dynar_remove_at (d, length-1, NULL);
+  xbt_dynar_remove_at (d, 0, NULL);
   return key;
 }
 
