@@ -39,7 +39,6 @@ require "simgrid"
   
    --Save Platform
    simgrid.msg_register_platform();
-   simgrid.info("Platform Saved...")
 
 
 
