@@ -1135,4 +1135,14 @@ void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
   LeaveCriticalSection(&(sem->value_lock));
 }
 
+void xbt_os_thread_set_extra_data(void *data)
+{
+  xbt_os_thread_self()->extra_data = data;
+}
+
+void *xbt_os_thread_get_extra_data(void)
+{
+  return xbt_os_thread_self()->extra_data;
+}
+
 #endif
