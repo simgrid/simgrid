@@ -34,18 +34,22 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
 
   /* Initialize the thread pool data structure */
   xbt_parmap_t parmap = xbt_new0(s_xbt_parmap_t, 1);
+#ifdef HAVE_FUTEX_H
   parmap->sync_event = xbt_new0(s_xbt_event_t, 1);
+#endif
   parmap->num_workers = num_workers;
   parmap->status = PARMAP_WORK;
+#ifdef HAVE_FUTEX_H
   parmap->sync_event->threads_to_wait = num_workers;
-
+#endif
   /* Create the pool of worker threads */
   for(i=0; i < num_workers; i++){
     worker = xbt_os_thread_create(NULL, _xbt_parmap_worker_main, parmap, NULL);
     xbt_os_thread_detach(worker);
   }
-
+#ifdef HAVE_FUTEX_H
   xbt_event_init(parmap->sync_event);
+#endif
   return parmap;
 }
 
@@ -53,8 +57,10 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
 { 
   XBT_DEBUG("Destroy parmap %p", parmap);
   parmap->status = PARMAP_DESTROY;
+#ifdef HAVE_FUTEX_H
   xbt_event_signal(parmap->sync_event);
   xbt_free(parmap->sync_event);
+#endif
   xbt_free(parmap);
 }
 
@@ -63,9 +69,9 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
   /* Assign resources to worker threads*/
   parmap->fun = fun;
   parmap->data = data;
-
+#ifdef HAVE_FUTEX_H
   xbt_event_signal(parmap->sync_event);
-
+#endif
   XBT_DEBUG("Job done");
 }
 
@@ -82,7 +88,9 @@ static void *_xbt_parmap_worker_main(void *arg)
   
   /* Worker's main loop */
   while(1){
+#ifdef HAVE_FUTEX_H
     xbt_event_wait(parmap->sync_event);
+#endif
     if(parmap->status == PARMAP_WORK){
       XBT_DEBUG("Worker %u got a job", worker_id);
 
@@ -107,7 +115,9 @@ static void *_xbt_parmap_worker_main(void *arg)
 
     /* We are destroying the parmap */
     }else{
+#ifdef HAVE_FUTEX_H
       xbt_event_end(parmap->sync_event);
+#endif
       XBT_DEBUG("Shutting down worker %u", worker_id);
       return NULL;
     }

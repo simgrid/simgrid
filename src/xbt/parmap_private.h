@@ -35,7 +35,9 @@ void xbt_event_end(xbt_event_t event);
 
 typedef struct s_xbt_parmap {
   e_xbt_parmap_flag_t status;
+#ifdef HAVE_FUTEX_H
   xbt_event_t sync_event;
+#endif
   unsigned int num_workers;
   unsigned int workers_max_id;
   void_f_pvoid_t fun;
