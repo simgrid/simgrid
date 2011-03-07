@@ -16,6 +16,7 @@ add_custom_command(
          ${CMAKE_CURRENT_BINARY_DIR}/_chrono_multiplier.c
   DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/chrono.xml
   COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator chrono ${CMAKE_CURRENT_SOURCE_DIR}/chrono.xml
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 ### Add definitions for compile

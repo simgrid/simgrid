@@ -20,6 +20,7 @@ add_custom_command(
          ${CMAKE_CURRENT_BINARY_DIR}/_rpc_forwarder.c
   DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/rpc.xml
   COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator rpc ${CMAKE_CURRENT_SOURCE_DIR}/rpc.xml
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 ### Add definitions for compile

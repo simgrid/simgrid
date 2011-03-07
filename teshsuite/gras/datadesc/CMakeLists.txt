@@ -10,4 +10,3 @@ target_link_libraries(datadesc_usage gras m pthread)
 elseif(NOT WIN32)
 target_link_libraries(datadesc_usage gras)
 endif(NOT WIN32)
-

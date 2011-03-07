@@ -23,6 +23,7 @@ add_custom_command(
 	 						${CMAKE_CURRENT_BINARY_DIR}/_ping_server.c
   					DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/ping.xml
   					COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator ping ${CMAKE_CURRENT_SOURCE_DIR}/ping.xml
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					)
 
 ### Add definitions for compile

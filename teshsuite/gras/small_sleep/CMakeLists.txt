@@ -16,6 +16,7 @@ add_custom_command(
 							${CMAKE_CURRENT_BINARY_DIR}/_small_sleep_simulator.c
   					DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/small_sleep.xml
   					COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator small_sleep ${CMAKE_CURRENT_SOURCE_DIR}/small_sleep.xml
+					WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					)
 					
 ### Add definitions for compile

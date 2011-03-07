@@ -16,6 +16,7 @@ add_custom_command(
 							${CMAKE_CURRENT_BINARY_DIR}/_synchro_philosopher.c
   					DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/synchro.xml
   					COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator synchro ${CMAKE_CURRENT_SOURCE_DIR}/synchro.xml
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					)
 
 ### Add definitions for compile

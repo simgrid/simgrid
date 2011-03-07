@@ -15,7 +15,8 @@ add_custom_command(OUTPUT   ${CMAKE_CURRENT_BINARY_DIR}/_spawn_server.c
                             ${CMAKE_CURRENT_BINARY_DIR}/_spawn_simulator.c
                    DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/spawn.xml
                    COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator spawn ${CMAKE_CURRENT_SOURCE_DIR}/spawn.xml
-                  )
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                   )
           
 ### Add definitions for compile
 if(NOT WIN32)

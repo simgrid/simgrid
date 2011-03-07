@@ -20,6 +20,7 @@ add_custom_command(
 							${CMAKE_CURRENT_BINARY_DIR}/_all2all_receiver.c
   					DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/all2all.xml
   					COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator all2all ${CMAKE_CURRENT_SOURCE_DIR}/all2all.xml
+					WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					)
 
 ### Add definitions for compile

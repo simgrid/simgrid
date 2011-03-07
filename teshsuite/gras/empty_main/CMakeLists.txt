@@ -16,6 +16,7 @@ add_custom_command(
 							${CMAKE_CURRENT_BINARY_DIR}/_empty_main_simulator.c
   					DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/empty_main.xml
   					COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator empty_main ${CMAKE_CURRENT_SOURCE_DIR}/empty_main.xml
+					WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					)
 					
 ### Add definitions for compile
