@@ -448,7 +448,6 @@ else(HAVE_GTNETS)
 	)
 endif(HAVE_GTNETS)
 
-
 ### Simgrid Lib sources
 set(simgrid_sources
 	${XBT_SRC}
@@ -471,6 +470,16 @@ if(HAVE_MC)
 		${MC_SRC}
 		)
 endif(HAVE_MC)
+
+# WINDOWS
+if(WIN32)
+	set(simgrid_sources
+		${simgrid_sources}
+		src/xbt/win32_ucontext.c
+		src/xbt/xbt_os_thread.c
+		src/simix/smx_context_thread.c
+		)
+endif(WIN32)
 
 ### Gras Lib sources
 set(gras_sources
