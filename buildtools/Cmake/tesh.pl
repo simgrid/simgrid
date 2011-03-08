@@ -36,6 +36,7 @@ my($result);
 my($result_err);
 my($fich_name);
 my($forked);
+my($config)="";
 
 my($tesh_command)=0;
 my(@buffer_tesh)=();
@@ -50,7 +51,7 @@ do{
 		if( -e $directory) 
 		{
 			chdir("$directory");
-			print "[Tesh/INFO] Change directory to \"$directory\"\n";
+			print "[Tesh/INFO] --cd \"$directory\"\n";
 		}
 		else
 		{
@@ -62,10 +63,19 @@ do{
 	{
 		$nb_arg++;
 		if(!$ARGV[$nb_arg] or $ARGV[$nb_arg] =~ /^--/){die "Usage: tesh.pl --setenv environment_variable\n";}
-		if(!$ARGV[$nb_arg+1] or $ARGV[$nb_arg+1] =~ /^--/){die "Usage: tesh.pl --setenv environment_variable\n";}
-		$ENV{$ARGV[$nb_arg]} = "$ENV{$ARGV[$nb_arg]}:$ARGV[$nb_arg+1]";
-		print "[Tesh/INFO] export $ARGV[$nb_arg]=\"$ENV{$ARGV[$nb_arg]}\"\n";
+		$ARGV[$nb_arg] =~ /^(.*)=(.*)$/;
+		my($var)=$1;
+		my($content)=$2;
+		$ENV{$var} = $content;
+		print "[Tesh/INFO] --setenv $var=$content\n";
 		$nb_arg++;
+	}
+	elsif($ARGV[$nb_arg] =~ /^--cfg$/)
+	{
+		$nb_arg++;
+		if(!$ARGV[$nb_arg] or $ARGV[$nb_arg] =~ /^--/){die "Usage: tesh.pl --setenv environment_variable\n";}
+		$config = "$config--cfg=$ARGV[$nb_arg] ";
+		print "[Tesh/INFO] $config\n";
 		$nb_arg++;
 	}
 	elsif($ARGV[$nb_arg] =~ /^--verbose$/)
@@ -91,7 +101,6 @@ open SH_LIGNE, $file or die "[Tesh/CRITICAL] Unable to open $file. $!\n";
 while(defined($line1=<SH_LIGNE>))
 {
 	if($line1 =~ /^\< \$ /){  	# arg command line
-		$line1 =~ s/\$\{srcdir\:\=\.\}/./g;
 		$line1 =~ s/\${EXEEXT:=}//g;
 		$line1 =~ s/^\< \$\ *//g;
 		$line1 =~ s/^.\/lua/lua/g;
@@ -143,7 +152,6 @@ while(defined($line1=<SH_LIGNE>))
 			@buffer = @buffer_tesh;
 			@buffer_tesh=();
 		}
-		$line1 =~ s/\$\{srcdir\:\=\.\}/./g;
 		$line1 =~ s/\${EXEEXT:=}//g;
 		$line1 =~ s/^\$\ *//g;
 		$line1 =~ s/^.\/lua/lua/g;
@@ -152,11 +160,13 @@ while(defined($line1=<SH_LIGNE>))
 		$line1 =~ s/^tesh/.\/tesh/g;
 		$line1 =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
 		chomp $line1;
+		$line1 = "$line1 $config";
+		
 		if(@list1){
 			print color("red");
 			print "[Tesh/CRITICAL] -\n";
-			print "[Tesh/CRITICAL] + @list1\n";
-			print color("reset");
+			print "[Tesh/CRITICAL] + @list1";
+			print color("reset"), "\n";
 			die;}		
 		if(@list_of_commands){ # need parallel execution
 			push @list_of_commands, $line1;
@@ -205,7 +215,6 @@ while(defined($line1=<SH_LIGNE>))
 	elsif($line1 =~ /^\& /){  	# parallel command line
 		$command_executed = 0;
 		$expected_result_line = 0;
-		$line1 =~ s/\$\{srcdir\:\=\.\}/./g;
 		$line1 =~ s/\${EXEEXT:=}//g;
 		$line1 =~ s/^\& //g;
 		$line1 =~ s/^.\/lua/lua/g;
@@ -213,6 +222,8 @@ while(defined($line1=<SH_LIGNE>))
 		$line1 =~ s/^.\///g;
 		$line1 =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
 		chomp $line1;
+		$line1 = "$line1 $config";
+		
 		$execline = "$line1";
 		print "[Tesh/INFO] exec_line : $execline\n";
 		push @list_of_commands, $execline;	
@@ -263,7 +274,8 @@ while(defined($line1=<SH_LIGNE>))
 		$line1 =~ s/\r//g;
 		chomp $line1;
 		$return = $line1;
-		print color("red"), "[Tesh/INFO] expect return $return\n";
+		print color("red"), "[Tesh/INFO] expect return $return";
+		print color("reset"), "\n";
 		die;
 	}
 	elsif($line1 =~ /^! setenv/){	#setenv
@@ -275,7 +287,9 @@ while(defined($line1=<SH_LIGNE>))
 		print "[Tesh/INFO] setenv: $1=$2\n";
 	}
 	elsif($line1 =~ /^! include/){	#output sort
-		color("red");die "[Tesh/CRITICAL] need include\n";
+		print color("red"), "[Tesh/CRITICAL] need include";
+		print color("reset"), "\n";
+		die;
 	}
 	elsif($line1 =~ /^! timeout/){	#timeout
 		$line1 =~ s/^! timeout //g;
@@ -364,15 +378,15 @@ while(defined($line1=<SH_LIGNE>))
 				}
 				else
 				{	if($verbose == 0){print color("green"),@buffer,color("reset");}
-					if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2\n",color("reset");}
-					if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1\n",color("reset");}
+					if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2",color("reset"),"\n";}
+					if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1",color("reset"),"\n";}
 					die;
 				}
 			}
 			else
 			{	if($verbose == 0){print color("green"),@buffer,color("reset");}
-				if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2\n",color("reset");}
-				if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1\n",color("reset");}
+				if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2",color("reset"),"\n";}
+				if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1",color("reset"),"\n";}
 				die;
 			}
 		}
@@ -468,15 +482,15 @@ if($command_executed and $expected_result_line ){
 					}
 					else
 					{	if($verbose == 0){print color("green"),@buffer,color("reset");}
-						if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2\n",color("reset");}
-						if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1\n",color("reset");}
+						if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2",color("reset"),"\n";}
+						if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1",color("reset"),"\n";}
 						die;
 					}
 				}
 				else
 				{	if($verbose == 0){print color("green"),@buffer,color("reset");}
-					if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2\n",color("reset");}
-					if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1\n",color("reset");}
+					if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2",color("reset"),"\n";}
+					if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1",color("reset"),"\n";}
 					die;
 				}
 			}
