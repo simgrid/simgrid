@@ -66,4 +66,4 @@ else(NOT WIN32)
     target_link_libraries(testall gras)
 endif(NOT WIN32)
 	
-add_dependencies(testall $(TEST_UNITS))
+add_dependencies(testall ${TEST_UNITS})
