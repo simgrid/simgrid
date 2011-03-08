@@ -144,15 +144,6 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #cmakedefine HAVE_INTTYPES_H @HAVE_INTTYPES_H@
 
-/* defines whether Java bindings must be compiled or not */
-#cmakedefine HAVE_JAVA @HAVE_JAVA@
-
-/* Define to 1 if you have the <jni.h> header file. */
-#cmakedefine HAVE_JNI_H @HAVE_JNI_H@
-
-/* defines whether Ruby bindings must be compiled or not */
-#cmakedefine HAVE_RUBY @HAVE_RUBY@
-
 /* defines whether Lua bindings must be compiled or not */
 #cmakedefine HAVE_LUA @HAVE_LUA@
 

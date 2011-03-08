@@ -215,11 +215,6 @@ endif(NOT WIN32)
 ### Make Exes
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExe.cmake)
 
-### Make Simgrid.jar and Java examples
-if(HAVE_JAVA)
-	include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeJava.cmake)
-endif(HAVE_JAVA)
-
 ### Make tests
 if(NOT WIN32)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
