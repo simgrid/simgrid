@@ -191,16 +191,6 @@ const char *xbt_os_thread_self_name(void)
   return me ? me->name : "main";
 }
 
-void xbt_os_thread_set_extra_data(void *data)
-{
-  xbt_os_thread_self()->extra_data = data;
-}
-
-void *xbt_os_thread_get_extra_data(void)
-{
-  return xbt_os_thread_self()->extra_data;
-}
-
 void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
 {
 
@@ -1135,6 +1125,9 @@ void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
   LeaveCriticalSection(&(sem->value_lock));
 }
 
+
+#endif
+
 void xbt_os_thread_set_extra_data(void *data)
 {
   xbt_os_thread_self()->extra_data = data;
@@ -1144,5 +1137,3 @@ void *xbt_os_thread_get_extra_data(void)
 {
   return xbt_os_thread_self()->extra_data;
 }
-
-#endif
