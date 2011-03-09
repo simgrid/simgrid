@@ -1072,7 +1072,8 @@ static e_surf_network_element_type_t get_network_element_type(const char
                                                               *name)
 {
   network_element_info_t rc = NULL;
-  rc = xbt_dict_get(global_routing->where_network_elements, name);
+  rc = xbt_dict_get_or_null(global_routing->where_network_elements, name);
+  if(!rc) return SURF_NETWORK_ELEMENT_NULL;
   return rc->rc_type;
 }
 
