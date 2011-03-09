@@ -214,7 +214,7 @@ static double vivaldi_get_link_latency (routing_component_t rc,const char *src, 
 /**
  * \brief Add a "host" to the network element list
  */
-void parse_S_host(const char *host_id, const char* coord)
+static void parse_S_host(const char *host_id, const char* coord)
 {
   network_element_info_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
@@ -305,7 +305,7 @@ static void parse_S_router(void)
 /**
  * \brief Set the endponints for a route
  */
-void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_id)
+static void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_id)
 {
   if (src != NULL && dst != NULL && link_list != NULL)
     THROW2(arg_error, 0, "Route between %s to %s can not be defined",
@@ -377,7 +377,7 @@ static void parse_S_bypassRoute_new_and_endpoints(void)
 /**
  * \brief Set a new link on the actual list of link for a route or ASroute
  */
-void parse_E_link_ctn_new_elem(const char *link_id)
+static void parse_E_link_ctn_new_elem(const char *link_id)
 {
   char *val;
   val = xbt_strdup(link_id);
@@ -415,7 +415,7 @@ static void parse_E_link_c_ctn_new_elem_lua(const char *link_id)
 /**
  * \brief Store the route by calling the set_route function of the current routing component
  */
-void parse_E_route_store_route(void)
+static void parse_E_route_store_route(void)
 {
   name_route_extended_t route = xbt_new0(s_name_route_extended_t, 1);
   route->generic_route.link_list = link_list;
@@ -475,7 +475,7 @@ static void parse_E_bypassRoute_store_route(void)
  * make the new structure and
  * set the parsing functions to allows parsing the part of the routing tree
  */
-void parse_S_AS(char *AS_id, char *AS_routing)
+static void parse_S_AS(char *AS_id, char *AS_routing)
 {
   routing_component_t new_routing;
   model_type_t model = NULL;
@@ -570,7 +570,7 @@ static void parse_S_AS_lua(char *id, char *mode)
  * When you finish to read the routing component, other structures must be created. 
  * the "end" method allow to do that for any routing model type
  */
-void parse_E_AS(const char *AS_id)
+static void parse_E_AS(const char *AS_id)
 {
 
   if (current_routing == NULL) {
