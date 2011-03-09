@@ -1379,9 +1379,14 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 	{
 		  if(!route->dst_gateway && !route->src_gateway)
 			  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
-		  else
+		  else{
 			  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
 			         route->src_gateway, dst, route->dst_gateway);
+			  if(global_routing->get_network_element_type((const char*)route->dst_gateway) == SURF_NETWORK_ELEMENT_NULL)
+				  xbt_die("The dst_gateway '%s' does not exist!",route->dst_gateway);
+			  if(global_routing->get_network_element_type((const char*)route->src_gateway) == SURF_NETWORK_ELEMENT_NULL)
+				  xbt_die("The src_gateway '%s' does not exist!",route->src_gateway);
+		  }
 	      TO_ROUTE_FULL(*src_id, *dst_id) = generic_new_extended_route(rc->hierarchy,route,1);
 	      xbt_dynar_shrink(TO_ROUTE_FULL(*src_id, *dst_id)->generic_route.link_list, 0);
 	}
@@ -1748,10 +1753,14 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 	{
 		if(!route->dst_gateway && !route->src_gateway)
 		  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
-		else
-		  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
+		else{
+			XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
 				 route->src_gateway, dst, route->dst_gateway);
-
+			if(global_routing->get_network_element_type((const char*)route->dst_gateway) == SURF_NETWORK_ELEMENT_NULL)
+				xbt_die("The dst_gateway '%s' does not exist!",route->dst_gateway);
+			if(global_routing->get_network_element_type((const char*)route->src_gateway) == SURF_NETWORK_ELEMENT_NULL)
+				xbt_die("The src_gateway '%s' does not exist!",route->src_gateway);
+		}
 	    TO_FLOYD_LINK(*src_id, *dst_id) =
 	    		generic_new_extended_route(rc->hierarchy, route, 1);
 	    TO_FLOYD_PRED(*src_id, *dst_id) = *src_id;
@@ -2226,7 +2235,7 @@ static void *model_dijkstra_both_create(int cached)
   new_component->generic_routing.set_autonomous_system =
       generic_set_autonomous_system;
   new_component->generic_routing.set_route = model_dijkstra_both_set_route;
-  new_component->generic_routing.set_ASroute = model_dijkstra_both_set_route; //TODO
+  new_component->generic_routing.set_ASroute = model_dijkstra_both_set_route;
   new_component->generic_routing.set_bypassroute = generic_set_bypassroute;
   new_component->generic_routing.get_route = dijkstra_get_route;
   new_component->generic_routing.get_latency = generic_get_link_latency;
@@ -2316,9 +2325,14 @@ static void model_dijkstra_both_set_route (routing_component_t rc, const char *s
 
 	if(!route->dst_gateway && !route->src_gateway)
 	  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
-	else
+	else{
 	  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
 			 route->src_gateway, dst, route->dst_gateway);
+	  if(global_routing->get_network_element_type((const char*)route->dst_gateway) == SURF_NETWORK_ELEMENT_NULL)
+		  xbt_die("The dst_gateway '%s' does not exist!",route->dst_gateway);
+	  if(global_routing->get_network_element_type((const char*)route->src_gateway) == SURF_NETWORK_ELEMENT_NULL)
+		  xbt_die("The src_gateway '%s' does not exist!",route->src_gateway);
+	}
 
 	route_extended_t e_route =
 		generic_new_extended_route(current_routing->hierarchy, route, 1);
