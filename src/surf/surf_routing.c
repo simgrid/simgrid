@@ -3317,7 +3317,8 @@ static void routing_parse_Econfig(void)
 		  xbt_cfg_set_parse(_surf_cfg_set, cfg);
 	  else
 		  XBT_INFO("The custom configuration '%s' is already define by user!",key);
-	}
+	  free(cfg);
+  }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 }
 
@@ -3443,6 +3444,7 @@ static void routing_parse_Scluster(void)
 
       xbt_free(temp_cluster_bw);
       xbt_free(temp_cluster_lat);
+      xbt_free(temp_cluster_power);
       free(link_id);
       free(host_id);
       break;
@@ -3898,6 +3900,8 @@ static void routing_parse_Srandom(void)
 	  double mean, std, min, max, seed;
 	  char *random_id = A_surfxml_random_id;
 	  char *random_radical = A_surfxml_random_radical;
+	  char *rd_name;
+	  char *rd_value;
 	  surf_parse_get_double(&mean,A_surfxml_random_mean);
 	  surf_parse_get_double(&std,A_surfxml_random_std_deviation);
 	  surf_parse_get_double(&min,A_surfxml_random_min);
@@ -3954,7 +3958,8 @@ static void routing_parse_Srandom(void)
 	  if(!strcmp(random_radical,""))
 	  {
 		  res = random_generate(random);
-		  xbt_dict_set(random_value, random_id, bprintf("%f",res), free);
+		  rd_value = bprintf("%f",res);
+		  xbt_dict_set(random_value, random_id, rd_value, free);
 	  }
 	  else
 	  {
@@ -3976,19 +3981,22 @@ static void routing_parse_Srandom(void)
 					  for (i = start; i <= end; i++) {
 						  xbt_assert1(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",bprintf("%s%d",random_id,i));
 						  res = random_generate(random);
-                                                  tmpbuf = bprintf("%s%d",random_id,i);
+                          tmpbuf = bprintf("%s%d",random_id,i);
 						  xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);
-                                                  xbt_free(tmpbuf);
+                          xbt_free(tmpbuf);
 					  }
 					  break;
 			default:
 				XBT_INFO("Malformed radical");
 			}
 			res = random_generate(random);
-			xbt_dict_set(random_value, bprintf("%s_router",random_id), bprintf("%f",res), free);
+			rd_name  = bprintf("%s_router",random_id);
+			rd_value = bprintf("%f",res);
+			xbt_dict_set(random_value, rd_name, rd_value, free);
 
 			xbt_dynar_free(&radical_ends);
 		  }
+		  free(rd_name);
 		  xbt_dynar_free(&radical_elements);
 	  }
 }
