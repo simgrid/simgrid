@@ -8,6 +8,8 @@
 #include "xbt/sysdep.h"
 #include "gras_config.h" /*_XBT_WIN32*/
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(random, surf, "Random part of surf");
+
 #ifdef _XBT_WIN32
 
 static unsigned int _seed = 2147483647;
@@ -198,7 +200,7 @@ static double custom_random(Generator generator, long int *seed)
   case RAND:
     return (double) rand_r((unsigned int *) seed) / RAND_MAX;
   case RNGSTREAM :
-	  printf("Seen RNGSTREAM");
+	  XBT_INFO("Seen RNGSTREAM");
 	  return 0.0;
   default:
     return drand48();
