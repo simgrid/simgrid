@@ -74,6 +74,7 @@ static void routing_parse_Sconfig(void);        /*config Tag */
 static void routing_parse_Econfig(void);        /*config Tag */
 
 static char* replace_random_parameter(char * chaine);
+static void clean_dict_random(void);
 
 /* this lines are only for replace use like index in the model table */
 typedef enum {
@@ -1134,6 +1135,8 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   surfxml_add_callback(STag_surfxml_peer_cb_list,
                          &routing_parse_Speer);
 
+  surfxml_add_callback(ETag_surfxml_platform_cb_list,
+						  &clean_dict_random);
 
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();
@@ -3729,8 +3732,16 @@ static char* replace_random_parameter(char * string)
     xbt_free(string);
     string = test_string;
   } //In other case take old value (without ${})
-
+  else
+	free(test_string);
   return string;
+}
+
+static void clean_dict_random(void)
+{
+	XBT_DEBUG("Clean dict for random");
+	xbt_dict_free(&random_value);
+	xbt_dict_free(&patterns);
 }
 
 static void routing_parse_Speer(void)
