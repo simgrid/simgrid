@@ -148,6 +148,7 @@ int main(int argc, char **argv)
 
 					char *link_name = bprintf("%s",((surf_resource_t) link)->name);
 					printf("<link_ctn id=\"%s\"/>",link_name);
+					free(link_name);
 				}
 				printf("\n  </route>\n");
 

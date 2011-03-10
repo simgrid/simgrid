@@ -15,7 +15,6 @@ int main(int argc, char **argv)
 {
   /* initialisation of SD */
   int size;
-  xbt_dict_t eltms = xbt_dict_new();
   SD_init(&argc, argv);
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data;
@@ -23,13 +22,12 @@ int main(int argc, char **argv)
   /* creation of the environment */
   SD_create_environment(argv[1]);
 
-  eltms = global_routing->where_network_elements;
-  size = xbt_dict_size(eltms);
+  size = xbt_dict_size(global_routing->where_network_elements);
 
   printf("Workstation number: %d, link number: %d, elmts number: %d\n",
          SD_workstation_get_number(), SD_link_get_number(), size);
 
-  xbt_dict_foreach(eltms, cursor, key, data) {
+  xbt_dict_foreach(global_routing->where_network_elements, cursor, key, data) {
     printf("   - Seen: \"%s\" is type : %d\n", key,
            (int) global_routing->get_network_element_type(key));
   }
