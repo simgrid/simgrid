@@ -125,7 +125,8 @@ int main(int argc, char **argv)
 
       xbt_node_t src_node = xbt_graph_search_node (graph, src, strcmp);
       xbt_node_t dst_node = xbt_graph_search_node (graph, dst, strcmp);
-      TRY {
+      if(get_network_element_type(src) != SURF_NETWORK_ELEMENT_AS &&
+    		  get_network_element_type(dst) != SURF_NETWORK_ELEMENT_AS ){
         xbt_dynar_t route = global_routing->get_route(src,dst);
         xbt_node_t previous = src_node;
         for(i=0;i<xbt_dynar_length(route) ;i++)
@@ -143,14 +144,15 @@ int main(int argc, char **argv)
             xbt_graph_new_edge (graph, previous, link_node, NULL);
           }
           previous = link_node;
+          free(link_name);
         }
         xbt_edge_t edge = xbt_graph_search_edge (graph, previous, dst_node);
         if (!edge){
           XBT_DEBUG("\%s %s", (char*)xbt_graph_node_get_data(previous), (char*)xbt_graph_node_get_data(dst_node));
           xbt_graph_new_edge (graph, previous, dst_node, NULL);
         }
-      } CATCH(e) {}
     }
+   }
   }
   xbt_graph_export_graphviz (graph, graphvizFile, node_name, edge_name);
   xbt_graph_free_graph (graph, NULL, NULL, NULL);

@@ -1,0 +1,6 @@
+#! ./tesh
+
+$ ${bindir:=.}/graphicator ${srcdir:=.}/teshsuite/simdag/platforms/one_cluster.xml test.dot
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+
+$ rm test.dot
