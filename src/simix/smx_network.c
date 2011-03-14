@@ -117,6 +117,10 @@ static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm)
   comm->comm.rdv = NULL;
 }
 
+smx_action_t SIMIX_comm_get_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data) {
+   return SIMIX_rdv_get_request(rdv, SIMIX_COMM_SEND, match_fun, data);
+}
+
 /**
  *  \brief Checks if there is a communication action queued in a rendez-vous matching our needs
  *  \param type The type of communication we are looking for (comm_send, comm_recv)

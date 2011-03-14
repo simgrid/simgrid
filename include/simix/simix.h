@@ -72,6 +72,7 @@ XBT_PUBLIC(void) SIMIX_process_set_context(smx_process_t p,smx_context_t c);
 XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_action_t, size_t));
 XBT_PUBLIC(void) SIMIX_comm_copy_pointer_callback(smx_action_t comm, size_t buff_size);
 XBT_PUBLIC(void) SIMIX_comm_copy_buffer_callback(smx_action_t comm, size_t buff_size);
+XBT_PUBLIC(smx_action_t) SIMIX_comm_get_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
 
 /******************************************************************************/
 /*                        SIMIX Smurf Proxy Functions                         */
