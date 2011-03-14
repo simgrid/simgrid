@@ -1069,7 +1069,7 @@ static xbt_dynar_t get_onelink_routes(void)
   return recursive_get_onelink_routes(global_routing->root);
 }
 
-static e_surf_network_element_type_t get_network_element_type(const char
+e_surf_network_element_type_t get_network_element_type(const char
                                                               *name)
 {
   network_element_info_t rc = NULL;

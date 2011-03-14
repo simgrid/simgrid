@@ -200,6 +200,9 @@ struct s_routing_global {
   xbt_dynar_t last_route;
 };
 
+XBT_PUBLIC(e_surf_network_element_type_t) get_network_element_type(const char
+                                                              *name);
+
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback, double_f_cpvoid_t get_link_latency_fun);
 
 /**
