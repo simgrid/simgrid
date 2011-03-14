@@ -3899,7 +3899,7 @@ static void routing_parse_Srandom(void)
 	  double mean, std, min, max, seed;
 	  char *random_id = A_surfxml_random_id;
 	  char *random_radical = A_surfxml_random_radical;
-	  char *rd_name;
+	  char *rd_name = NULL;
 	  char *rd_value;
 	  surf_parse_get_double(&mean,A_surfxml_random_mean);
 	  surf_parse_get_double(&std,A_surfxml_random_std_deviation);
