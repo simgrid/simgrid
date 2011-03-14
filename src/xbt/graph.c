@@ -159,7 +159,7 @@ void xbt_graph_free_graph(xbt_graph_t g,
   if (graph_free_function)
     (*graph_free_function) (g->data);
   free(g);
-
+  xbt_graph_parse_lex_destroy();
   return;
 }
 

@@ -154,7 +154,7 @@ void test(char *graph_file)
   }
 
   xbt_graph_free_graph(graph, free_label, NULL, NULL);
-  xbt_graph_parse_lex_destroy();
+
 }
 
 #ifdef __BORLANDC__
