@@ -539,7 +539,7 @@ set(DOC_SOURCES
 	doc/gtut-tour.doc
 	doc/gtut-tour-recap-messages.doc
 	doc/history.doc
-	doc/index-API.doc
+	#doc/index-API.doc
 	doc/index.doc
 	doc/module-amok.doc
 	doc/module-gras.doc
