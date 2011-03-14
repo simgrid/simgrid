@@ -49,7 +49,7 @@ while(defined($line=<MAKETEST>))
 			}
 			if($line =~ /--cfg\s*\t*(\S*)/)
 			{
-				$config_var = "--cfg $1 $config_var";
+				$config_var = "--cfg=$1 $config_var";
 			}
 			if($line =~ /--cd\s*(\S+)/)
 			{
