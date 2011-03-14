@@ -83,8 +83,8 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 	)
 	
 	ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
+	    COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
 		COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
-		COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/toc_create.pl FAQ.doc index.doc contrib.doc gtut-introduction.doc history.doc
 		

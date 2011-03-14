@@ -36,7 +36,6 @@ src/context_sysv_config.h
 src/gras_config.h
 src/smpi/smpicc
 src/smpi/smpirun
-doc/footer.html
 simgrid-*.tar.gz
 
 ################################################
@@ -81,6 +80,7 @@ doc/realtoc.sh
 doc/tmp.realtoc
 doc/using_bib.html
 doc/Doxyfile
+doc/footer.html
 
 ################################################
 ### Specific of project 
