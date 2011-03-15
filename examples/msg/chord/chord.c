@@ -394,7 +394,6 @@ int node(int argc, char *argv[])
 
   // stop the simulation
   xbt_free(node.fingers);
-  XBT_INFO("Messages created: %lu", smx_total_comms);
   return 0;
 }
 
@@ -937,7 +936,7 @@ int main(int argc, char *argv[])
   xbt_os_timer_start(timer);
   MSG_error_t res = MSG_main();
   xbt_os_timer_stop(timer);
-  XBT_CRITICAL("Simulation time %lf", xbt_os_timer_elapsed(timer));
+  XBT_CRITICAL("Simulation time %lf, messages created: %ld", xbt_os_timer_elapsed(timer), smx_total_comms);
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 
   MSG_clean();
