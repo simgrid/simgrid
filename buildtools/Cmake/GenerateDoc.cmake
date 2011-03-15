@@ -46,8 +46,6 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 	ADD_CUSTOM_TARGET(simgrid_documentation
 		COMMENT "Generating the SimGrid documentation..."
 		DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
-		COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/html
 		COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
 	)
@@ -111,33 +109,27 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/
 	)
 
-	
-	ADD_CUSTOM_COMMAND(
-		OUTPUT ${CMAKE_HOME_DIRECTORY}/doc/publis_count.html
-		DEPENDS all.bib
+	ADD_CUSTOM_TARGET(bib_files
+		DEPENDS ${CMAKE_HOME_DIRECTORY}/doc/all.bib
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
+		COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/html
+		COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_core.bib publis_extern.bib publis_intra.bib"
+		COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"core\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_core.bib
+		COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"extern\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_extern.bib
+		COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"intra\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_intra.bib
+
+		COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_count.html"
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_table_count.pl < ${CMAKE_HOME_DIRECTORY}/doc/all.bib > ${CMAKE_HOME_DIRECTORY}/doc/publis_count.html
-	)
-	add_dependencies(simgrid_documentation ${CMAKE_HOME_DIRECTORY}/doc/publis_count.html)
-
-	ADD_CUSTOM_COMMAND(
-		OUTPUT publis_core.bib publis_extern.bib publis_intra.bib
-		DEPENDS all.bib
-
-		COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category "core"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' ${CMAKE_HOME_DIRECTORY}/doc/all.bib -o ${CMAKE_HOME_DIRECTORY}/doc/publis_core.bib
-		COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category "extern"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' ${CMAKE_HOME_DIRECTORY}/doc/all.bib -o ${CMAKE_HOME_DIRECTORY}/doc/publis_extern.bib
-		COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category "intra"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' ${CMAKE_HOME_DIRECTORY}/doc/all.bib -o ${CMAKE_HOME_DIRECTORY}/doc/publis_intra.bib
-	)
-
-	foreach(file "publis_core publis_extern publis_intra")
-		ADD_CUSTOM_COMMAND(
-			OUTPUT ${CMAKE_HOME_DIRECTORY}/doc/${file}.html
-			DEPENDS "${file}.bib"
 		
-			COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl ${file}
-		)
+		COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_core.html publis_extern.html publis_intra.html"
+		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_core
+		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_extern
+		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_intra
+		
+		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/
+	)
 
-		add_dependencies(simgrid_documentation ${CMAKE_HOME_DIRECTORY}/doc/${file}.html)
-	endforeach(file "publis_core publis_extern publis_intra")
+	add_dependencies(simgrid_documentation bib_files)
 	
 else(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH AND GOOD_BIBTEX2HTML_VERSION)
 

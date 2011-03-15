@@ -5,6 +5,9 @@ use strict;
 my $file = shift @ARGV || die "USAGE: bibtex2html_wrapper <file>\n";
 
 my $output;
+my $write;
+my $line;
+my $title;
 
 open IN,"bibtex2html -single-output -nv -force -sort year -copy-icons ${file}.bib -output -|iconv -f latin1 -t utf8 -|";
 
@@ -26,6 +29,7 @@ while($line = <IN>) {
 	    next;
 	}
 	if($line =~ /height="35"/) {
+		my $output;
 	    ## Change this uggly table into a h2
 	    do {
 		$line = <IN>;
@@ -56,3 +60,7 @@ while($line = <IN>) {
     }
     
 }
+open(OUT,">${file}_bib.html");
+print OUT $output;
+close(OUT);
+close(IN);
