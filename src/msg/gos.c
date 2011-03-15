@@ -383,6 +383,24 @@ MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
  */
 msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
 {
+  return MSG_task_isend_with_matching(task,alias,NULL,NULL);
+}
+/** \ingroup msg_gos_functions
+ * \brief Sends a task on a mailbox, with support for matching requests
+ *
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
+ * to end the communication.
+ *
+ * \param task a #m_task_t to send on another location.
+ * \param alias name of the mailbox to sent the task to
+ * \param match_fun boolean function taking the #match_data provided by sender (here), and the one of the receiver (if any) and returning whether they match
+ * \param match_data user provided data passed to match_fun
+ * \return the msg_comm_t communication created
+ */
+XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *alias,
+    int (*match_fun)(void*,void*),
+    void *match_data)
+{
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
@@ -409,7 +427,7 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
   comm->status = MSG_OK;
   comm->s_comm =
     SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                         t_simdata->rate, task, sizeof(void *), NULL, NULL, 0);
+                         t_simdata->rate, task, sizeof(void *), match_fun, match_data, 0);
   t_simdata->comm = comm->s_comm; /* FIXME: is the field t_simdata->comm still useful? */
 
   return comm;
