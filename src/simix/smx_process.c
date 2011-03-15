@@ -380,6 +380,18 @@ const char* SIMIX_process_get_name(smx_process_t process)
   return process->name;
 }
 
+smx_process_t SIMIX_process_get_by_name(const char* name)
+{
+  smx_process_t proc;
+
+  xbt_swag_foreach(proc, simix_global->process_list)
+  {
+    if(!strcmp(name, proc->name))
+      return proc;
+  }
+  return NULL;
+}
+
 int SIMIX_process_is_suspended(smx_process_t process)
 {
   return process->suspended;
