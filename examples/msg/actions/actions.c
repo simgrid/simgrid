@@ -121,7 +121,7 @@ static void action_Isend(const char *const *action)
 
 static int task_matching(void*sent_task,void*ignored) {
   m_task_t t = (m_task_t)sent_task;
-  if (MSG_task_get_data_size(t)<65536)
+  if (t!=NULL && MSG_task_get_data_size(t)<65536)
     return 1; /* that's supposed to be already arrived */
   return 0; /* rendez-vous mode: it's not there yet */
 }
