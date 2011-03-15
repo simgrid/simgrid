@@ -15,7 +15,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
 static xbt_dict_t rdv_points = NULL;
 unsigned long int smx_total_comms = 0;
 
-static XBT_INLINE void SIMIX_comm_start(smx_action_t action);
 static void SIMIX_waitany_req_remove_from_actions(smx_req_t req);
 static void SIMIX_comm_copy_data(smx_action_t comm);
 static smx_action_t SIMIX_comm_new(e_smx_comm_type_t type);
@@ -467,7 +466,8 @@ void SIMIX_waitany_req_remove_from_actions(smx_req_t req)
  *  \brief Start the simulation of a communication request
  *  \param action The communication action
  */
-static XBT_INLINE void SIMIX_comm_start(smx_action_t action)
+
+XBT_INLINE void SIMIX_comm_start(smx_action_t action)
 {
   /* If both the sender and the receiver are already there, start the communication */
   if (action->state == SIMIX_READY) {
