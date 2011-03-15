@@ -119,7 +119,7 @@ static void action_Isend(const char *const *action)
   asynchronous_cleanup();
 }
 
-static int task_matching(void*sent_task,void*ignored) {
+static int task_matching(void*ignored,void*sent_task) {
   m_task_t t = (m_task_t)sent_task;
   if (t!=NULL && MSG_task_get_data_size(t)<65536)
     return 1; /* that's supposed to be already arrived */
