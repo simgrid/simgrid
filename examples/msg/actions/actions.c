@@ -12,6 +12,9 @@
 #include "xbt.h"                /* calloc, printf */
 #include "instr/instr_private.h"
 
+#include "msg/private.h" /* You don't want to know why, trust us */
+#include "simix/private.h"
+
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actions,
@@ -113,6 +116,17 @@ static void action_Isend(const char *const *action)
   msg_comm_t comm = MSG_task_isend_with_matching(task, to, /*matching madness*/NULL,task);
   xbt_dynar_push(globals->isends,&comm);
 
+  if (task->simdata->message_size < 65536) {
+    /* Close your eyes, it burns ! */
+    comm->s_comm->comm.dst_proc = SIMIX_process_get_by_name(action[2]);
+    comm->s_comm->comm.dst_buff = NULL;
+    comm->s_comm->comm.dst_buff_size = NULL;
+    comm->s_comm->comm.dst_data = NULL;
+    comm->s_comm->state = SIMIX_READY;
+    comm->s_comm->comm.refcount++;
+    SIMIX_comm_start(comm->s_comm);
+  }
+
   XBT_DEBUG("Isend on %s", MSG_process_get_name(MSG_process_self()));
   XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
 
@@ -148,11 +162,19 @@ static void action_recv(const char *const *action)
 
   /* make sure the rdv is created on need by asking to MSG instead of simix directly */
   smx_rdv_t rdv = MSG_mailbox_get_by_alias(mailbox_name);
-  smx_action_t act = SIMIX_comm_get_send_match(rdv,task_matching,NULL);
+  smx_action_t act = SIMIX_comm_get_send_match(rdv, task_matching, NULL);
   if (act!=NULL){
     /* FIXME account for the memcopy time if needed */
-    SIMIX_comm_finish(act);
-    return;
+    task = act->comm.src_data;
+
+    if (task->simdata->message_size < 65536) {
+      act->comm.refcount--; /* See action_send for more pain */
+      if(act->state == SIMIX_DONE)
+        SIMIX_comm_finish(act);
+      else
+        SIMIX_req_comm_wait(act, -1.0);
+      return;
+    }
   }
 
 #ifdef HAVE_TRACING
