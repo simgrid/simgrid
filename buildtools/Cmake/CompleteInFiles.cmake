@@ -245,10 +245,13 @@ if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
 	find_file(SVN ".svn" ${CMAKE_HOME_DIRECTORY})
 	exec_program("svnversion ${CMAKE_HOME_DIRECTORY}" OUTPUT_VARIABLE "SVN_VERSION")
 	message(STATUS "svn version ${SVN_VERSION}")
+else(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
+	exec_program("git config --get svn-remote.svn.url"
+		OUTPUT_VARIABLE url
+		RETURN_VALUE ret)
 endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
 
-if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git)
-
+if(url)
 	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
 	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
 	
@@ -256,24 +259,20 @@ if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git)
 	STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
+	
+	exec_program("git svn info" ${CMAKE_HOME_DIRECTORY}
+		OUTPUT_VARIABLE "GIT_SVN_VERSION")
+	string(REPLACE "\n" ";" GIT_SVN_VERSION ${GIT_SVN_VERSION})
+	foreach(line ${GIT_SVN_VERSION})
+		string(REGEX MATCH "^Revision:.*" line_good ${line})
+		if(line_good)
+			string(REPLACE "Revision: " ""
+				line_good ${line_good})
+			set(SVN_VERSION ${line_good})
+		endif(line_good)
+	endforeach(line ${GIT_SVN_VERSION})
+endif(url)
 
-	exec_program("git config --get svn-remote.svn.url"
-		OUTPUT_VARIABLE url
-		RETURN_VALUE ret)
-	if(ret EQUAL 0)
-		exec_program("git svn info" ${CMAKE_HOME_DIRECTORY}
-			OUTPUT_VARIABLE "GIT_SVN_VERSION")
-		string(REPLACE "\n" ";" GIT_SVN_VERSION ${GIT_SVN_VERSION})
-		foreach(line ${GIT_SVN_VERSION})
-			string(REGEX MATCH "^Revision:.*" line_good ${line})
-			if(line_good)
-				string(REPLACE "Revision: " ""
-					line_good ${line_good})
-				set(SVN_VERSION ${line_good})
-			endif(line_good)
-		endforeach(line ${GIT_SVN_VERSION})
-	endif(ret EQUAL 0)
-endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git)
 
 ###################################
 ## SimGrid and GRAS specific checks
