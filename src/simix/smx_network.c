@@ -127,6 +127,7 @@ smx_action_t SIMIX_comm_get_send_match(smx_rdv_t rdv, int (*match_fun)(void*, vo
 smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
                                    int (*match_fun)(void *, void *), void *data)
 {
+  // FIXME rewrite this function by using SIMIX_rdv_has_send/recv_match
   smx_action_t action;
   xbt_fifo_item_t item;
   void* req_data = NULL;
@@ -151,6 +152,48 @@ smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
   }
   XBT_DEBUG("No matching communication action found");
   return NULL;
+}
+
+/**
+ *  \brief Checks if there is a send communication action
+ *  queued in a rendez-vous matching our needs.
+ *  \return 1 if found, 0 otherwise
+ */
+int SIMIX_comm_has_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data) {
+
+  smx_action_t action;
+  xbt_fifo_item_t item;
+
+  xbt_fifo_foreach(rdv->comm_fifo, item, action, smx_action_t){
+    if (action->comm.type == SIMIX_COMM_SEND
+        && (!match_fun || match_fun(data, action->comm.src_data))) {
+      XBT_DEBUG("Found a matching communication action %p", action);
+      return 1;
+    }
+  }
+  XBT_DEBUG("No matching communication action found");
+  return 1;
+}
+
+/**
+ *  \brief Checks if there is a recv communication action
+ *  queued in a rendez-vous matching our needs.
+ *  \return 1 if found, 0 otherwise
+ */
+int SIMIX_comm_has_recv_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data) {
+
+  smx_action_t action;
+  xbt_fifo_item_t item;
+
+  xbt_fifo_foreach(rdv->comm_fifo, item, action, smx_action_t){
+    if (action->comm.type == SIMIX_COMM_RECEIVE
+        && (!match_fun || match_fun(data, action->comm.dst_data))) {
+      XBT_DEBUG("Found a matching communication action %p", action);
+      return 1;
+    }
+  }
+  XBT_DEBUG("No matching communication action found");
+  return 1;
 }
 
 /******************************************************************************/
