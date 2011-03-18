@@ -115,6 +115,9 @@ static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm)
   comm->comm.rdv = NULL;
 }
 
+/**
+ *  \brief Wrapper to SIMIX_rdv_get_request
+ */
 smx_action_t SIMIX_comm_get_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data) {
    return SIMIX_rdv_get_request(rdv, SIMIX_COMM_SEND, match_fun, data);
 }
