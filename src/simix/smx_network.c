@@ -175,7 +175,7 @@ int SIMIX_comm_has_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), voi
     }
   }
   XBT_DEBUG("No matching communication action found");
-  return 1;
+  return 0;
 }
 
 /**
@@ -196,7 +196,7 @@ int SIMIX_comm_has_recv_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), voi
     }
   }
   XBT_DEBUG("No matching communication action found");
-  return 1;
+  return 0;
 }
 
 /******************************************************************************/

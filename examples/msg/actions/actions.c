@@ -124,25 +124,25 @@ static void action_Isend(const char *const *action)
   if(SIMIX_comm_has_recv_match(rdv, task_recv_matching, NULL)) {
     XBT_DEBUG("Switching back to MSG_task_send: %s", to);
     MSG_task_send(task, to);
-    return;
+  } else {
+
+    msg_comm_t comm = MSG_task_isend_with_matching(task, to, /*matching madness*/NULL,task);
+    xbt_dynar_push(globals->isends,&comm);
+
+    if (task->simdata->message_size < 65536) {
+      /* Close your eyes, it burns ! */
+      comm->s_comm->comm.dst_proc = SIMIX_process_get_by_name(action[2]);
+      comm->s_comm->comm.dst_buff = NULL;
+      comm->s_comm->comm.dst_buff_size = NULL;
+      comm->s_comm->comm.dst_data = NULL;
+      comm->s_comm->state = SIMIX_READY;
+      comm->s_comm->comm.refcount++;
+      SIMIX_comm_start(comm->s_comm);
+    }
+
+    XBT_DEBUG("Isend on %s", MSG_process_get_name(MSG_process_self()));
+    XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
   }
-
-  msg_comm_t comm = MSG_task_isend_with_matching(task, to, /*matching madness*/NULL,task);
-  xbt_dynar_push(globals->isends,&comm);
-
-  if (task->simdata->message_size < 65536) {
-    /* Close your eyes, it burns ! */
-    comm->s_comm->comm.dst_proc = SIMIX_process_get_by_name(action[2]);
-    comm->s_comm->comm.dst_buff = NULL;
-    comm->s_comm->comm.dst_buff_size = NULL;
-    comm->s_comm->comm.dst_data = NULL;
-    comm->s_comm->state = SIMIX_READY;
-    comm->s_comm->comm.refcount++;
-    SIMIX_comm_start(comm->s_comm);
-  }
-
-  XBT_DEBUG("Isend on %s", MSG_process_get_name(MSG_process_self()));
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
 
   asynchronous_cleanup();
 }
