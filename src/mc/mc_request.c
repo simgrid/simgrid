@@ -25,10 +25,10 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
     if(r2->comm_wait.comm->comm.rdv != rdv)
       return FALSE;
 
-    if(r2->comm_wait.comm->type == SIMIX_COMM_SEND && r1->call == REQ_COMM_ISEND)
+    if(r2->comm_wait.comm->comm.type == SIMIX_COMM_SEND && r1->call == REQ_COMM_ISEND)
       return FALSE;
 
-    if(r2->comm_wait.comm->type == SIMIX_COMM_RECEIVE && r1->call == REQ_COMM_IRECV)
+    if(r2->comm_wait.comm->comm.type == SIMIX_COMM_RECEIVE && r1->call == REQ_COMM_IRECV)
       return FALSE;
   }
 
@@ -43,10 +43,10 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
     if(r1->comm_wait.comm->comm.rdv != rdv)
       return FALSE;
 
-    if(r1->comm_wait.comm->type == SIMIX_COMM_SEND && r2->call == REQ_COMM_ISEND)
+    if(r1->comm_wait.comm->comm.type == SIMIX_COMM_SEND && r2->call == REQ_COMM_ISEND)
       return FALSE;
 
-    if(r1->comm_wait.comm->type == SIMIX_COMM_RECEIVE && r2->call == REQ_COMM_IRECV)
+    if(r1->comm_wait.comm->comm.type == SIMIX_COMM_RECEIVE && r2->call == REQ_COMM_IRECV)
       return FALSE;
   }
 
