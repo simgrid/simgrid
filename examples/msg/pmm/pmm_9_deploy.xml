@@ -1,0 +1,13 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <process host="c-0.me" function="node"><argument value="0"/></process>
+  <process host="c-1.me" function="node"><argument value="1"/></process>
+  <process host="c-2.me" function="node"><argument value="2"/></process>
+  <process host="c-3.me" function="node"><argument value="3"/></process>
+  <process host="c-4.me" function="node"><argument value="4"/></process>
+  <process host="c-5.me" function="node"><argument value="5"/></process>
+  <process host="c-6.me" function="node"><argument value="6"/></process>
+  <process host="c-7.me" function="node"><argument value="7"/></process>
+  <process host="c-8.me" function="node"><argument value="8"/></process>
+</platform>
