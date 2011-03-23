@@ -28,7 +28,6 @@ static void smx_ctx_java_start(smx_context_t context);
 static void smx_ctx_java_suspend(smx_context_t context);
 static void smx_ctx_java_resume(smx_context_t new_context);
 static void smx_ctx_java_runall(xbt_dynar_t processes);
-static void* smx_ctx_java_get_data(smx_context_t context);
 
 void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
 {
@@ -51,11 +50,6 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
 static smx_context_t smx_ctx_java_self(void)
 {
 	return my_current_context;
-}
-
-static void* smx_ctx_java_get_data(smx_context_t context)
-{
-	return context->data;
 }
 
 static smx_context_t
