@@ -53,6 +53,8 @@ typedef struct t_AS_attr {
   xbt_dynar_t host_list_d;
   xbt_dynar_t link_list_d;
   xbt_dynar_t route_list_d;
+  xbt_dynar_t router_list_d;
+  xbt_dynar_t sub_as_list_id;
 } AS_attr, *p_AS_attr;
 
 typedef struct t_host_attr {
@@ -92,6 +94,10 @@ typedef struct t_route_attr {
   xbt_dynar_t links_id;
 
 } route_attr, *p_route_attr;
+
+typedef struct t_router_attr {
+	const char *id;
+} router_attr, *p_router_attr;
 
 // Public Functions
 

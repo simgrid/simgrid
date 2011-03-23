@@ -33,7 +33,6 @@ static void create_host(const char *id, double power_peak, double power_sc,
                         const char *power_tr,int core,int state_init,
                         const char *state_tr)
 {
-
   double power_scale = 1.0;
   int core_nb = 1; //default value
   tmgr_trace_t power_trace = NULL;
@@ -59,9 +58,7 @@ static void create_host(const char *id, double power_peak, double power_sc,
   surf_host_create_resource(xbt_strdup(id), power_peak, power_scale,
                             power_trace, core_nb, state_initial, state_trace,
                             current_property_set);
-
   current_property_set = NULL;
-
 }
 
 /**
@@ -102,7 +99,6 @@ static void create_link(const char *name,
                             lat_initial, lat_trace, state_initial_link,
                             st_trace, policy_initial_link, xbt_dict_new());
 }
-
 
 /*
  *create host resource via workstation_ptask_L07 model [for SimDag]
@@ -179,7 +175,7 @@ static void create_link_wsL07(const char *name,
 
 
 /*
- * init AS
+ * Append new AS to the Platform
  */
 
 static int AS_new(lua_State * L)
@@ -212,10 +208,56 @@ static int AS_new(lua_State * L)
   AS->host_list_d = xbt_dynar_new(sizeof(p_host_attr),&xbt_free_ref);
   AS->link_list_d = xbt_dynar_new(sizeof(p_link_attr),&xbt_free_ref);
   AS->route_list_d = xbt_dynar_new(sizeof(p_route_attr),&xbt_free_ref);
+  AS->router_list_d = xbt_dynar_new(sizeof(p_router_attr),&xbt_free_ref);
+  AS->sub_as_list_id = xbt_dynar_new(sizeof(p_AS_attr),&xbt_free_ref);
   xbt_dynar_push(as_list_d, &AS);
 
   return 0;
 }
+
+/**
+ * add sub AS to the Parent AS
+ */
+static int AS_add(lua_State *L)
+{
+	unsigned int i;
+	p_AS_attr AS;
+	p_AS_attr super_as,p_as;
+	const char *super_AS_id;
+	const char *sub_AS_id = NULL;
+	const char *sub_AS_routing= NULL;
+	if(lua_istable(L, -1))
+	{
+		lua_pushstring(L, "AS");
+		lua_gettable(L, -2);
+		super_AS_id = lua_tostring(L, -1);
+		lua_pop(L,1);
+
+		lua_pushstring(L, "id");
+		lua_gettable(L, -2);
+		sub_AS_id = lua_tostring(L, -1);
+		lua_pop(L,1);
+
+	}
+
+	xbt_dynar_foreach(as_list_d, i, p_as){
+		  if (p_as->id == super_AS_id){
+			  super_as = p_as;
+			  break;
+		  }
+	}
+	AS = malloc(sizeof(AS_attr));
+	AS->id = sub_AS_id;
+	AS->mode = sub_AS_routing;
+	AS->host_list_d = xbt_dynar_new(sizeof(p_host_attr),&xbt_free_ref);
+	AS->link_list_d = xbt_dynar_new(sizeof(p_link_attr),&xbt_free_ref);
+	AS->route_list_d = xbt_dynar_new(sizeof(p_route_attr),&xbt_free_ref);
+	AS->sub_as_list_id = xbt_dynar_new(sizeof(p_AS_attr),&xbt_free_ref);
+	xbt_dynar_push(super_as->sub_as_list_id, &AS);
+
+	return 0;
+}
+
 
 /*
  * add new host to platform hosts list
@@ -313,7 +355,7 @@ static int Host_new(lua_State * L)
 }
 
 /**
- * add link to platform links list
+ * add link to AS links list
  */
 static int Link_new(lua_State * L)      // (id,bandwidth,latency)
 {
@@ -418,7 +460,7 @@ static int Link_new(lua_State * L)      // (id,bandwidth,latency)
 }
 
 /**
- * add route to platform routes list
+ * add route to AS routes list
  */
 static int Route_new(lua_State * L)     // (src_id,dest_id,links_number,link_table)
 {
@@ -514,6 +556,47 @@ static int Route_new(lua_State * L)     // (src_id,dest_id,links_number,link_tab
 
   return -1;
 }
+/**
+ * add Router to AS components
+ */
+static int Router_new(lua_State* L)
+{
+	p_router_attr router;
+	const char* AS_id;
+	unsigned int i;
+	p_AS_attr p_as,current_as = NULL;
+	const char* id;
+	if (lua_istable(L, -1)) {
+		// get AS id
+		lua_pushstring(L, "AS");
+		lua_gettable(L, -2);
+		AS_id = lua_tostring(L, -1);
+		lua_pop(L,1);
+
+		lua_pushstring(L, "id");
+		lua_gettable(L, -2);
+		id = lua_tostring(L, -1);
+		lua_pop(L,1);
+	}
+	xbt_dynar_foreach(as_list_d, i, p_as){
+		  if (p_as->id == AS_id){
+			  current_as = p_as;
+			  break;
+		  }
+	  }
+
+	  if (!current_as)
+	  {
+		  XBT_ERROR("No AS_id :%s found",AS_id);
+		  return -2;
+	  }
+	router = malloc(sizeof(router_attr));
+	router->id = id;
+	xbt_dynar_push(current_as->router_list_d, &router);
+	return 0;
+
+}
+
 /**
  * set function to process
  */
@@ -629,9 +712,8 @@ static int surf_parse_bypass_platform()
 
 static int surf_wsL07_parse_bypass_platform()
 {
-
   unsigned int i,j;
-  p_AS_attr p_as;
+  p_AS_attr p_as, p_sub_as;
   p_host_attr p_host;
   p_link_attr p_link;
   p_route_attr p_route;
@@ -640,7 +722,13 @@ static int surf_wsL07_parse_bypass_platform()
   {
 	  // Init AS
 	  create_AS(p_as->id, p_as->mode);
+
+	  // add Sub AS
+
 	  // Add Hosts
+	  xbt_dynar_foreach(p_as->sub_as_list_id, j, p_sub_as) {
+			  //...
+	  }
 	  xbt_dynar_foreach(p_as->host_list_d, j, p_host) {
 	    create_host_wsL07(p_host->id, p_host->power_peak, p_host->power_scale,
 	                      p_host->power_trace, p_host->state_initial,

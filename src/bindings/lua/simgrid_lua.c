@@ -507,7 +507,7 @@ static const luaL_reg Trace_methods[] = {
 
 static int run_lua_code(int argc, char **argv)
 {
-  XBT_DEBUG("Run lua code %s", argv[0]);
+  XBT_INFO("Run lua code %s", argv[0]);
   lua_State *L = lua_newthread(simgrid_lua_state);
   int ref = luaL_ref(simgrid_lua_state, LUA_REGISTRYINDEX);     // protect the thread from being garbage collected
   int res = 1;
