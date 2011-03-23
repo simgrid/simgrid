@@ -275,7 +275,7 @@ static void parse_S_host_lua(const char *host_id, const char *coord)
 /**
  * \brief Add a "router" to the network element list
  */
-static void parse_S_router(void)
+static void parse_S_router(const char *router_id)
 {
   network_element_info_t info = NULL;
 
@@ -285,22 +285,38 @@ static void parse_S_router(void)
               (global_routing->where_network_elements,
                A_surfxml_router_id),
               "Reading a router, processing unit \"%s\" already exists",
-              A_surfxml_router_id);
+              router_id);
   xbt_assert1(current_routing->set_processing_unit,
               "no defined method \"set_processing_unit\" in \"%s\"",
               current_routing->name);
   (*(current_routing->set_processing_unit)) (current_routing,
-                                             A_surfxml_router_id);
+                                             router_id);
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_ROUTER;
-  xbt_dict_set(global_routing->where_network_elements, A_surfxml_router_id,
+  xbt_dict_set(global_routing->where_network_elements, router_id,
                (void *) info, xbt_free);
   if (strcmp(A_surfxml_router_coordinates,"")) {
     xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
     xbt_dynar_shrink(ctn, 0);
-    xbt_dict_set(coordinates, A_surfxml_router_id, ctn, xbt_dynar_free_voidp);
+    xbt_dict_set(coordinates, router_id, ctn, xbt_dynar_free_voidp);
   }
+}
+
+/**
+ * brief Add a "router" to the network element list from XML description
+ */
+static void parse_S_router_XML(void)
+{
+	return parse_S_router(A_surfxml_router_id);
+}
+
+/**
+ * brief Add a "router" to the network element list from XML description
+ */
+static void parse_S_router_lua(const char* router_id)
+{
+	return parse_S_router(router_id);
 }
 
 /**
@@ -1107,7 +1123,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   /* parse generic elements */
   surfxml_add_callback(STag_surfxml_host_cb_list, &parse_S_host_XML);
   surfxml_add_callback(ETag_surfxml_host_cb_list, &parse_E_host_XML);
-  surfxml_add_callback(STag_surfxml_router_cb_list, &parse_S_router);
+  surfxml_add_callback(STag_surfxml_router_cb_list, &parse_S_router_XML);
 
   surfxml_add_callback(STag_surfxml_route_cb_list,
                        &parse_S_route_new_and_endpoints_XML);
