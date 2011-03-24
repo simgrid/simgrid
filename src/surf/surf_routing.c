@@ -170,8 +170,6 @@ static char *gw_src = NULL;     /* temporary store the gateway source name of a 
 static char *gw_dst = NULL;     /* temporary store the gateway destination name of a route */
 static xbt_dynar_t link_list = NULL;    /* temporary store of current list link of a route */
 
-static xbt_dict_t coordinates = NULL;
-
 
 static double eculidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
 {
@@ -188,8 +186,13 @@ static double vivaldi_get_link_latency (routing_component_t rc,const char *src, 
 {
   double euclidean_dist;
   xbt_dynar_t src_ctn, dst_ctn;
-  src_ctn = xbt_dict_get(coordinates, src);
-  dst_ctn = xbt_dict_get(coordinates, dst);
+  src_ctn = xbt_lib_get_or_null(host_lib, src, COORD_HOST_LEVEL);
+  if(!src_ctn) src_ctn = xbt_lib_get_or_null(as_router_lib, src, COORD_ASR_LEVEL);
+  dst_ctn = xbt_lib_get_or_null(host_lib, dst, COORD_HOST_LEVEL);
+  if(!dst_ctn) dst_ctn = xbt_lib_get_or_null(as_router_lib, dst, COORD_ASR_LEVEL);
+
+  if(dst_ctn == NULL || src_ctn == NULL)
+  xbt_die("Coord src '%s' :%p   dst '%s' :%p",src,src_ctn,dst,dst_ctn);
 
   euclidean_dist = sqrt (eculidean_dist_comp(0,src_ctn,dst_ctn)+eculidean_dist_comp(1,src_ctn,dst_ctn))
   								+fabs(atof(xbt_dynar_get_as(src_ctn, 2, char *)))+fabs(atof(xbt_dynar_get_as(dst_ctn, 2, char *)));
@@ -207,7 +210,7 @@ static double vivaldi_get_link_latency (routing_component_t rc,const char *src, 
 	  if (strcmp(coord,"")) {
   	xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
   	xbt_dynar_shrink(ctn,0);
-   	xbt_dict_set (coordinates,host_id,ctn,NULL);
+   	xbt_lib_set(host_lib, host_id, COORD_HOST_LEVEL, ctn);
   }
 	*/
 }
@@ -234,7 +237,7 @@ static void parse_S_host(const char *host_id, const char* coord)
   if (strcmp(coord,"")) {
     xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
     xbt_dynar_shrink(ctn, 0);
-    xbt_dict_set(coordinates, host_id, ctn, xbt_dynar_free_voidp);
+    xbt_lib_set(host_lib,host_id,COORD_HOST_LEVEL,(void *) ctn);
   }
 }
 
@@ -564,7 +567,7 @@ static void parse_S_AS_XML(void)
     XBT_DEBUG("%s coordinates : %s", A_surfxml_AS_id, A_surfxml_AS_coordinates);
     xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_AS_coordinates, " ");
     xbt_dynar_shrink(ctn, 0);
-    xbt_dict_set(coordinates, A_surfxml_AS_id, ctn, xbt_dynar_free_voidp);
+    xbt_lib_set(as_router_lib,A_surfxml_AS_id,COORD_ASR_LEVEL,(void *) ctn);
   }
 }
 
@@ -1037,7 +1040,6 @@ static void finalize(void)
 {
   /* delete recursibly all the tree */
   _finalize(global_routing->root);
-  xbt_dict_free(&(coordinates));
   /* delete last_route */
   xbt_dynar_free(&(global_routing->last_route));
   /* delete global routing structure */
@@ -1113,8 +1115,6 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   get_link_latency = get_link_latency_fun;
   /* no current routing at moment */
   current_routing = NULL;
-
-  coordinates = xbt_dict_new();
 
   /* parse generic elements */
   surfxml_add_callback(STag_surfxml_host_cb_list, &parse_S_host_XML);
@@ -3383,9 +3383,11 @@ static void routing_parse_Scluster(void)
   SURFXML_BUFFER_SET(AS_id, cluster_id);
 #ifdef HAVE_PCRE_LIB
   SURFXML_BUFFER_SET(AS_routing, "RuleBased");
+  SURFXML_BUFFER_SET(AS_coordinates, "");
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"RuleBased\">", cluster_id);
 #else
   SURFXML_BUFFER_SET(AS_routing, "Full");
+  SURFXML_BUFFER_SET(AS_coordinates, "");
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", cluster_id);
 #endif
   SURFXML_START_TAG(AS);
@@ -3533,6 +3535,7 @@ static void routing_parse_Scluster(void)
 
   XBT_DEBUG("<router id=\"%s\"/>", router_id);
   SURFXML_BUFFER_SET(router_id, router_id);
+  SURFXML_BUFFER_SET(router_coordinates, "");
   SURFXML_START_TAG(router);
   SURFXML_END_TAG(router);
 
