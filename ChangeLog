@@ -57,6 +57,7 @@ SimGrid (3.6) unstable; urgency=low
  * Add new macros with variable number of arguments.
    - in xbt/log.h: XBT_DEBUG, XBT_VERB, XBT_INFO, etc.
    - in xbt/cunit.h: xbt_test_{add,fail,assert,log}
+   - in xbt/ex.h: THROWF and RETHROWF.
    Define XBT_USE_DEPRECATED if you want to use the old numbered macros like
    INFO1, INFO2, etc.
  * Change xbt_die() to accept a format string with arguments, just like printf.

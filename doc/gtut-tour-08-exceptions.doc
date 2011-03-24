@@ -44,12 +44,12 @@ information about the host on which they were thrown (#xbt_ex_t) along with
 the thrown point in the source code.
 
 The syntax of XBT exceptions should not sound unfamilliar to most of you.
-You throw them using the #THROW0...#THROW7 macros. They take 2 extra
-arguments in addition to the format and its self arguments: an error
-category (of type #xbt_errcat_t) and an error "value" (an integer;
-pratically, this is often left to 0 in my own code). So, you may have
-something like the following:
-\verbatim THROW3(system_error, 0, "Cannot connect to %s:%d because of %s", hostname, port, reason);\endverbatim
+You throw them using the #THROW and #THROWF macros. They take 2 arguments:
+an error category (of type #xbt_errcat_t) and an error "value" (an integer;
+pratically, this is often left to 0 in my own code). #THROWF also takes a
+message string as extra argument which is a printf-like format string with
+its own arguments. So, you may have something like the following:
+\verbatim THROWF(system_error, 0, "Cannot connect to %s:%d because of %s", hostname, port, reason);\endverbatim
 
 Then, you simply add a #TRY/#CATCH block around your code:
 \verbatim TRY{ 

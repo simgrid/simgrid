@@ -410,7 +410,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
        __ex_mctx_restore(running_ctx->ctx_mctx); /* catched somewhere */               \
      abort()  /* nope, stupid GCC, we won't survive a THROW (this won't be reached) */
 
-/** @brief Helper macro for THROWS0-6
+/** @brief Helper macro for THROW and THROWF
  *  @hideinitializer
  *
  *  @param c: category code (integer)
@@ -447,33 +447,18 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
      DO_THROW(_throw_ctx);                                                   \
   } while (0)
 
-/** @brief Builds and throws an exception with a string taking no arguments
+/** @brief Builds and throws an exception
     @hideinitializer */
-#define THROW0(c,v,m)                   _THROW(c,v,(m?bprintf(m):NULL))
-/** @brief Builds and throws an exception with a string taking one argument
-    @hideinitializer */
-#define THROW1(c,v,m,a1)                _THROW(c,v,bprintf(m,a1))
-/** @brief Builds and throws an exception with a string taking two arguments
-    @hideinitializer */
-#define THROW2(c,v,m,a1,a2)             _THROW(c,v,bprintf(m,a1,a2))
-/** @brief Builds and throws an exception with a string taking three arguments
-    @hideinitializer */
-#define THROW3(c,v,m,a1,a2,a3)          _THROW(c,v,bprintf(m,a1,a2,a3))
-/** @brief Builds and throws an exception with a string taking four arguments
-    @hideinitializer */
-#define THROW4(c,v,m,a1,a2,a3,a4)       _THROW(c,v,bprintf(m,a1,a2,a3,a4))
-/** @brief Builds and throws an exception with a string taking five arguments
-    @hideinitializer */
-#define THROW5(c,v,m,a1,a2,a3,a4,a5)    _THROW(c,v,bprintf(m,a1,a2,a3,a4,a5))
-/** @brief Builds and throws an exception with a string taking six arguments
-    @hideinitializer */
-#define THROW6(c,v,m,a1,a2,a3,a4,a5,a6) _THROW(c,v,bprintf(m,a1,a2,a3,a4,a5,a6))
-/** @brief Builds and throws an exception with a string taking seven arguments
-    @hideinitializer */
-#define THROW7(c,v,m,a1,a2,a3,a4,a5,a6,a7) _THROW(c,v,bprintf(m,a1,a2,a3,a4,a5,a6,a7))
+#define THROW(c, v)             _THROW(c, v, NULL)
 
-#define THROW_IMPOSSIBLE     THROW0(unknown_error,0,"The Impossible Did Happen (yet again)")
-#define THROW_UNIMPLEMENTED  THROW1(unknown_error,0,"Function %s unimplemented",_XBT_FUNCTION)
+/** @brief Builds and throws an exception with a printf-like formatted message
+    @hideinitializer */
+#define THROWF(c, v, ...)       _THROW(c, v, bprintf(__VA_ARGS__))
+
+#define THROW_IMPOSSIBLE \
+  THROWF(unknown_error, 0, "The Impossible Did Happen (yet again)")
+#define THROW_UNIMPLEMENTED \
+  THROWF(unknown_error, 0, "Function %s unimplemented",_XBT_FUNCTION)
 
 #ifndef NDEBUG
 #  define DIE_IMPOSSIBLE       xbt_assert0(0,"The Impossible Did Happen (yet again)")
@@ -494,43 +479,17 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
    abort();\
   } while(0)
 
-
-#ifndef DOXYGEN_SKIP
-#define _XBT_PRE_RETHROW \
-  do {                                                               \
-    char *_xbt_ex_internal_msg = __xbt_running_ctx_fetch()->exception.msg;         \
-    __xbt_running_ctx_fetch()->exception.msg = bprintf(
-#define _XBT_POST_RETHROW \
- _xbt_ex_internal_msg); \
-    free(_xbt_ex_internal_msg);                                      \
-    RETHROW;                                                         \
+/** @brief like THROWF, but adding some details to the message of an existing exception
+ *  @hideinitializer
+ */
+#define RETHROWF(...)                                                   \
+  do {                                                                  \
+    char *_xbt_ex_internal_msg = __xbt_running_ctx_fetch()->exception.msg; \
+    __xbt_running_ctx_fetch()->exception.msg = bprintf(__VA_ARGS__,     \
+                                                       _xbt_ex_internal_msg); \
+    free(_xbt_ex_internal_msg);                                         \
+    RETHROW;                                                            \
   } while (0)
-#endif
-
-/** @brief like THROW0, but adding some details to the message of an existing exception
- *  @hideinitializer
- */
-#define RETHROW0(msg)           _XBT_PRE_RETHROW msg,          _XBT_POST_RETHROW
-/** @brief like THROW1, but adding some details to the message of an existing exception
- *  @hideinitializer
- */
-#define RETHROW1(msg,a)         _XBT_PRE_RETHROW msg,a,        _XBT_POST_RETHROW
-/** @brief like THROW2, but adding some details to the message of an existing exception
- *  @hideinitializer
- */
-#define RETHROW2(msg,a,b)       _XBT_PRE_RETHROW msg,a,b,      _XBT_POST_RETHROW
-/** @brief like THROW3, but adding some details to the message of an existing exception
- *  @hideinitializer
- */
-#define RETHROW3(msg,a,b,c)     _XBT_PRE_RETHROW msg,a,b,c,    _XBT_POST_RETHROW
-/** @brief like THROW4, but adding some details to the message of an existing exception
- *  @hideinitializer
- */
-#define RETHROW4(msg,a,b,c,d)   _XBT_PRE_RETHROW msg,a,b,c,d,  _XBT_POST_RETHROW
-/** @brief like THROW5, but adding some details to the message of an existing exception
- *  @hideinitializer
- */
-#define RETHROW5(msg,a,b,c,d,e) _XBT_PRE_RETHROW msg,a,b,c,d,e, _XBT_POST_RETHROW
 
 /** @brief Exception destructor */
 XBT_PUBLIC(void) xbt_ex_free(xbt_ex_t e);
@@ -541,6 +500,29 @@ XBT_PUBLIC(void) xbt_backtrace_display_current(void);
 XBT_PUBLIC(void) xbt_backtrace_current(xbt_ex_t * e);
 /** @brief Display a previously captured backtrace */
 XBT_PUBLIC(void) xbt_backtrace_display(xbt_ex_t * e);
+
+#if 1 || defined(XBT_USE_DEPRECATED)
+
+/* Kept for backward compatibility. */
+
+#define THROW0(c, v, m) \
+  do { if (m) THROWF(c, v, m); else THROW(c, v); } while (0)
+#define THROW1(c, v, ...)       THROWF(c, v, __VA_ARGS__)
+#define THROW2(c, v, ...)       THROWF(c, v, __VA_ARGS__)
+#define THROW3(c, v, ...)       THROWF(c, v, __VA_ARGS__)
+#define THROW4(c, v, ...)       THROWF(c, v, __VA_ARGS__)
+#define THROW5(c, v, ...)       THROWF(c, v, __VA_ARGS__)
+#define THROW6(c, v, ...)       THROWF(c, v, __VA_ARGS__)
+#define THROW7(c, v, ...)       THROWF(c, v, __VA_ARGS__)
+
+#define RETHROW0(...)           RETHROWF(__VA_ARGS__)
+#define RETHROW1(...)           RETHROWF(__VA_ARGS__)
+#define RETHROW2(...)           RETHROWF(__VA_ARGS__)
+#define RETHROW3(...)           RETHROWF(__VA_ARGS__)
+#define RETHROW4(...)           RETHROWF(__VA_ARGS__)
+#define RETHROW5(...)           RETHROWF(__VA_ARGS__)
+
+#endif
 
 SG_END_DECL()
 

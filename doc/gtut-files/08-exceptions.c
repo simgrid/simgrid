@@ -89,7 +89,7 @@ int client(int argc, char *argv[])
   }                             /* end_of_loop */
 
   if (!found)
-    THROW0(not_found_error, 0,
+    THROWF(not_found_error, 0,
            "Damn, I failed to find the server! I cannot survive this humilliation.");
 
 
