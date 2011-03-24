@@ -64,8 +64,6 @@ void SD_init(int *argc, char **argv)
   sd_global->workstations = xbt_dict_new();
   sd_global->workstation_count = 0;
   sd_global->workstation_list = NULL;
-  sd_global->links = xbt_dict_new();
-  sd_global->link_count = 0;
   sd_global->link_list = NULL;
   sd_global->recyclable_route = NULL;
   sd_global->watch_point_reached = 0;
@@ -405,7 +403,6 @@ void SD_exit(void)
   if (SD_INITIALISED()) {
     XBT_DEBUG("Destroying workstation and link dictionaries...");
     xbt_dict_free(&sd_global->workstations);
-    xbt_dict_free(&sd_global->links);
 
     XBT_DEBUG("Destroying workstation and link arrays if necessary...");
     if (sd_global->workstation_list != NULL)

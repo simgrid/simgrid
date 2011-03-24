@@ -209,7 +209,7 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
   xbt_dynar_foreach(surf_route, cpt, surf_link) {
     link_name = surf_resource_name(surf_link);
     sd_global->recyclable_route[cpt] =
-        xbt_dict_get(sd_global->links, link_name);
+        xbt_lib_get_or_null(link_lib, link_name, SD_LINK_LEVEL);
   }
   return sd_global->recyclable_route;
 }

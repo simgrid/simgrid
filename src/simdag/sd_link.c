@@ -30,8 +30,7 @@ SD_link_t __SD_link_create(void *surf_link, void *data)
     link->sharing_policy = SD_LINK_FATPIPE;
 
   name = SD_link_get_name(link);
-  xbt_dict_set(sd_global->links, name, link, __SD_link_destroy);        /* add the link to the dictionary */
-  sd_global->link_count++;
+  xbt_lib_set(link_lib,name,SD_LINK_LEVEL,link);
 
   return link;
 }
@@ -47,20 +46,20 @@ SD_link_t __SD_link_create(void *surf_link, void *data)
 const SD_link_t *SD_link_get_list(void)
 {
 
-  xbt_dict_cursor_t cursor;
+  xbt_lib_cursor_t cursor;
   char *key;
-  void *data;
+  void **data;
   int i;
 
   SD_CHECK_INIT_DONE();
   xbt_assert0(SD_link_get_number() > 0, "There is no link!");
 
   if (sd_global->link_list == NULL) {   /* this is the first time the function is called */
-    sd_global->link_list = xbt_new(SD_link_t, sd_global->link_count);
+    sd_global->link_list = xbt_new(SD_link_t, link_lib->count);
 
     i = 0;
-    xbt_dict_foreach(sd_global->links, cursor, key, data) {
-      sd_global->link_list[i++] = (SD_link_t) data;
+    xbt_lib_foreach(link_lib, cursor, key, data) {
+    		sd_global->link_list[i++] = (SD_link_t) data[SD_LINK_LEVEL];
     }
   }
   return sd_global->link_list;
@@ -75,7 +74,7 @@ const SD_link_t *SD_link_get_list(void)
 int SD_link_get_number(void)
 {
   SD_CHECK_INIT_DONE();
-  return sd_global->link_count;
+  return link_lib->count;
 }
 
 /**
