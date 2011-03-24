@@ -262,7 +262,7 @@ void gras_cbps_block_end(gras_cbps_t ps)
   unsigned int cursor = 0;
   char *name = NULL;
 
-  xbt_assert0(xbt_dynar_length(ps->frames),
+  xbt_assert(xbt_dynar_length(ps->frames),
               "More block_end than block_begin");
   xbt_dynar_pop(ps->frames, &frame);
 
@@ -302,7 +302,7 @@ int gras_cbps_i_pop(gras_cbps_t ps)
 {
   int ret;
 
-  xbt_assert0(xbt_dynar_length(ps->lints) > 0,
+  xbt_assert(xbt_dynar_length(ps->lints) > 0,
               "gras_cbps_i_pop: no value to pop");
   ret = xbt_dynar_pop_as(ps->lints, int);
   XBT_DEBUG("pop %d as a size", ret);

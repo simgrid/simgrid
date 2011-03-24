@@ -279,7 +279,7 @@ void lagrange_solve(lmm_system_t sys)
         new_obj = dual_objective(var_list, cnst_list);
         XBT_DEBUG("Improvement for Objective (%g -> %g) : %g", obj, new_obj,
                obj - new_obj);
-        xbt_assert1(obj - new_obj >= -epsilon_min_error,
+        xbt_assert(obj - new_obj >= -epsilon_min_error,
                     "Our gradient sucks! (%1.20f)", obj - new_obj);
         obj = new_obj;
       }
@@ -302,7 +302,7 @@ void lagrange_solve(lmm_system_t sys)
       new_obj = dual_objective(var_list, cnst_list);
       XBT_DEBUG("Improvement for Objective (%g -> %g) : %g", obj, new_obj,
              obj - new_obj);
-      xbt_assert1(obj - new_obj >= -epsilon_min_error,
+      xbt_assert(obj - new_obj >= -epsilon_min_error,
                   "Our gradient sucks! (%1.20f)", obj - new_obj);
       obj = new_obj;
     }
@@ -568,19 +568,19 @@ void lmm_set_default_protocol_function(double (*func_f)
 
 double func_vegas_f(lmm_variable_t var, double x)
 {
-  xbt_assert1(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
+  xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
   return VEGAS_SCALING * var->weight * log(x);
 }
 
 double func_vegas_fp(lmm_variable_t var, double x)
 {
-  xbt_assert1(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
+  xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
   return VEGAS_SCALING * var->weight / x;
 }
 
 double func_vegas_fpi(lmm_variable_t var, double x)
 {
-  xbt_assert1(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
+  xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
   return var->weight / (x / VEGAS_SCALING);
 }
 
@@ -592,7 +592,7 @@ double func_vegas_fpi(lmm_variable_t var, double x)
 #define RENO_SCALING 1.0
 double func_reno_f(lmm_variable_t var, double x)
 {
-  xbt_assert0(var->weight > 0.0, "Don't call me with stupid values!");
+  xbt_assert(var->weight > 0.0, "Don't call me with stupid values!");
 
   return RENO_SCALING * sqrt(3.0 / 2.0) / var->weight *
       atan(sqrt(3.0 / 2.0) * var->weight * x);
@@ -608,15 +608,15 @@ double func_reno_fpi(lmm_variable_t var, double x)
 {
   double res_fpi;
 
-  xbt_assert0(var->weight > 0.0, "Don't call me with stupid values!");
-  xbt_assert0(x > 0.0, "Don't call me with stupid values!");
+  xbt_assert(var->weight > 0.0, "Don't call me with stupid values!");
+  xbt_assert(x > 0.0, "Don't call me with stupid values!");
 
   res_fpi =
       1.0 / (var->weight * var->weight * (x / RENO_SCALING)) -
       2.0 / (3.0 * var->weight * var->weight);
   if (res_fpi <= 0.0)
     return 0.0;
-/*   xbt_assert0(res_fpi>0.0,"Don't call me with stupid values!"); */
+/*   xbt_assert(res_fpi>0.0,"Don't call me with stupid values!"); */
   return sqrt(res_fpi);
 }
 
@@ -629,7 +629,7 @@ double func_reno_fpi(lmm_variable_t var, double x)
 #define RENO2_SCALING 1.0
 double func_reno2_f(lmm_variable_t var, double x)
 {
-  xbt_assert0(var->weight > 0.0, "Don't call me with stupid values!");
+  xbt_assert(var->weight > 0.0, "Don't call me with stupid values!");
   return RENO2_SCALING * (1.0 / var->weight) * log((x * var->weight) /
                                                    (2.0 * x * var->weight +
                                                     3.0));
@@ -646,7 +646,7 @@ double func_reno2_fpi(lmm_variable_t var, double x)
   double res_fpi;
   double tmp;
 
-  xbt_assert0(x > 0.0, "Don't call me with stupid values!");
+  xbt_assert(x > 0.0, "Don't call me with stupid values!");
   tmp = x * var->weight * var->weight;
   res_fpi = tmp * (9.0 * x + 24.0);
 

@@ -41,7 +41,7 @@ SG_BEGIN_DECL()
   do { if (!(cond)) THROWF(0, 0, __VA_ARGS__); } while (0)
 #endif
 
-#if 1 || defined(XBT_USE_DEPRECATED)
+#ifdef XBT_USE_DEPRECATED
 
 #define xbt_assert0(...)        xbt_assert(__VA_ARGS__)
 #define xbt_assert1(...)        xbt_assert(__VA_ARGS__)

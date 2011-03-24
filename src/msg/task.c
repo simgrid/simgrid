@@ -86,7 +86,7 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
  */
 void *MSG_task_get_data(m_task_t task)
 {
-  xbt_assert0((task != NULL), "Invalid parameter");
+  xbt_assert((task != NULL), "Invalid parameter");
 
   return (task->data);
 }
@@ -99,7 +99,7 @@ void *MSG_task_get_data(m_task_t task)
  */
 void MSG_task_set_data(m_task_t task, void *data)
 {
-  xbt_assert0((task != NULL), "Invalid parameter");
+  xbt_assert((task != NULL), "Invalid parameter");
 
   task->data = data;
 }
@@ -111,7 +111,7 @@ void MSG_task_set_data(m_task_t task, void *data)
  */
 m_process_t MSG_task_get_sender(m_task_t task)
 {
-  xbt_assert0(task, "Invalid parameters");
+  xbt_assert(task, "Invalid parameters");
   return ((simdata_task_t) task->simdata)->sender;
 }
 
@@ -122,7 +122,7 @@ m_process_t MSG_task_get_sender(m_task_t task)
  */
 m_host_t MSG_task_get_source(m_task_t task)
 {
-  xbt_assert0(task, "Invalid parameters");
+  xbt_assert(task, "Invalid parameters");
   return ((simdata_task_t) task->simdata)->source;
 }
 
@@ -133,7 +133,7 @@ m_host_t MSG_task_get_source(m_task_t task)
  */
 const char *MSG_task_get_name(m_task_t task)
 {
-  xbt_assert0(task, "Invalid parameters");
+  xbt_assert(task, "Invalid parameters");
   return task->name;
 }
 
@@ -144,7 +144,7 @@ const char *MSG_task_get_name(m_task_t task)
  */
 void MSG_task_set_name(m_task_t task, const char *name)
 {
-  xbt_assert0(task, "Invalid parameters");
+  xbt_assert(task, "Invalid parameters");
   task->name = xbt_strdup(name);
 }
 
@@ -157,7 +157,7 @@ void MSG_task_set_name(m_task_t task, const char *name)
 MSG_error_t MSG_task_destroy(m_task_t task)
 {
   smx_action_t action = NULL;
-  xbt_assert0((task != NULL), "Invalid parameter");
+  xbt_assert((task != NULL), "Invalid parameter");
 
   /* why? if somebody is using, then you can't free! ok... but will return MSG_OK? when this task will be destroyed? isn't the user code wrong? */
   if (task->simdata->isused > 0) {
@@ -194,7 +194,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
  */
 MSG_error_t MSG_task_cancel(m_task_t task)
 {
-  xbt_assert0((task != NULL), "Invalid parameter");
+  xbt_assert((task != NULL), "Invalid parameter");
 
   if (task->simdata->compute) {
     SIMIX_req_host_execution_cancel(task->simdata->compute);
@@ -213,7 +213,7 @@ MSG_error_t MSG_task_cancel(m_task_t task)
  */
 double MSG_task_get_compute_duration(m_task_t task)
 {
-  xbt_assert0((task != NULL)
+  xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
 
   return task->simdata->computation_amount;
@@ -227,7 +227,7 @@ double MSG_task_get_compute_duration(m_task_t task)
 void MSG_task_set_compute_duration(m_task_t task,
                                    double computation_amount)
 {
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert(task, "Invalid parameter");
   task->simdata->computation_amount = computation_amount;
 
 }
@@ -238,7 +238,7 @@ void MSG_task_set_compute_duration(m_task_t task,
  */
 double MSG_task_get_remaining_computation(m_task_t task)
 {
-  xbt_assert0((task != NULL)
+  xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
 
   if (task->simdata->compute) {
@@ -256,7 +256,7 @@ double MSG_task_get_remaining_computation(m_task_t task)
  */
 double MSG_task_get_remaining_communication(m_task_t task)
 {
-  xbt_assert0((task != NULL)
+  xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
   XBT_DEBUG("calling SIMIX_req_communication_get_remains(%p)",
          task->simdata->comm);
@@ -270,7 +270,7 @@ double MSG_task_get_remaining_communication(m_task_t task)
  */
 int MSG_task_is_latency_bounded(m_task_t task)
 {
-  xbt_assert0((task != NULL)
+  xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
   XBT_DEBUG("calling SIMIX_req_communication_is_latency_bounded(%p)",
          task->simdata->comm);
@@ -284,7 +284,7 @@ int MSG_task_is_latency_bounded(m_task_t task)
  */
 double MSG_task_get_data_size(m_task_t task)
 {
-  xbt_assert0((task != NULL)
+  xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
 
   return task->simdata->message_size;
@@ -300,7 +300,7 @@ double MSG_task_get_data_size(m_task_t task)
  */
 void MSG_task_set_priority(m_task_t task, double priority)
 {
-  xbt_assert0((task != NULL)
+  xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
 
   task->simdata->priority = 1 / priority;

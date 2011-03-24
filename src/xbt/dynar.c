@@ -35,12 +35,12 @@ static XBT_INLINE void _dynar_unlock(xbt_dynar_t dynar)
 
 static XBT_INLINE void _sanity_check_dynar(xbt_dynar_t dynar)
 {
-  xbt_assert0(dynar, "dynar is NULL");
+  xbt_assert(dynar, "dynar is NULL");
 }
 
 static XBT_INLINE void _sanity_check_idx(int idx)
 {
-  xbt_assert1(idx >= 0, "dynar idx(=%d) < 0", (int) (idx));
+  xbt_assert(idx >= 0, "dynar idx(=%d) < 0", (int) (idx));
 }
 
 static XBT_INLINE void _check_inbound_idx(xbt_dynar_t dynar, int idx)

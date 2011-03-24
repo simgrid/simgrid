@@ -69,8 +69,8 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
  */
 MSG_error_t MSG_host_set_data(m_host_t host, void *data)
 {
-  xbt_assert0((host != NULL), "Invalid parameters");
-  xbt_assert0((host->data == NULL), "Data already set");
+  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((host->data == NULL), "Data already set");
 
   /* Assign data */
   host->data = data;
@@ -88,7 +88,7 @@ MSG_error_t MSG_host_set_data(m_host_t host, void *data)
 void *MSG_host_get_data(m_host_t host)
 {
 
-  xbt_assert0((host != NULL), "Invalid parameters");
+  xbt_assert((host != NULL), "Invalid parameters");
 
   /* Return data */
   return (host->data);
@@ -104,7 +104,7 @@ void *MSG_host_get_data(m_host_t host)
 const char *MSG_host_get_name(m_host_t host)
 {
 
-  xbt_assert0((host != NULL)
+  xbt_assert((host != NULL)
               && (host->simdata != NULL), "Invalid parameters");
 
   /* Return data */
@@ -130,7 +130,7 @@ void __MSG_host_destroy(m_host_t host)
   int i = 0;
   char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
 
-  xbt_assert0((host != NULL), "Invalid parameters");
+  xbt_assert((host != NULL), "Invalid parameters");
 
   /* Clean Simulator data */
   /* SIMIX host will be cleaned when MSG_clean calls SIMIX_clean */
@@ -190,7 +190,7 @@ m_host_t *MSG_get_host_table(void)
  */
 int MSG_get_host_msgload(m_host_t h)
 {
-  xbt_assert0((h != NULL), "Invalid parameters");
+  xbt_assert((h != NULL), "Invalid parameters");
   xbt_die( "Not implemented yet");
 
   return (0);
@@ -202,7 +202,7 @@ int MSG_get_host_msgload(m_host_t h)
  */
 double MSG_get_host_speed(m_host_t h)
 {
-  xbt_assert0((h != NULL), "Invalid parameters");
+  xbt_assert((h != NULL), "Invalid parameters");
 
   return (SIMIX_req_host_get_speed(h->simdata->smx_host));
 }
@@ -227,7 +227,7 @@ const char *MSG_host_get_property_value(m_host_t host, const char *name)
  */
 xbt_dict_t MSG_host_get_properties(m_host_t host)
 {
-  xbt_assert0((host != NULL), "Invalid parameters (host is NULL)");
+  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 
   return (SIMIX_req_host_get_properties(host->simdata->smx_host));
 }
@@ -240,6 +240,6 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
  */
 int MSG_host_is_avail(m_host_t h)
 {
-  xbt_assert0((h != NULL), "Invalid parameters (host is NULL)");
+  xbt_assert((h != NULL), "Invalid parameters (host is NULL)");
   return (SIMIX_req_host_get_state(h->simdata->smx_host));
 }

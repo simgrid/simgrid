@@ -171,7 +171,7 @@ void *xbt_heap_remove(xbt_heap_t H, int i)
  */
 XBT_INLINE double xbt_heap_maxkey(xbt_heap_t H)
 {
-  xbt_assert0(H->count != 0, "Empty heap");
+  xbt_assert(H->count != 0, "Empty heap");
   return KEY(H, 0);
 }
 
@@ -184,7 +184,7 @@ XBT_INLINE double xbt_heap_maxkey(xbt_heap_t H)
  */
 void *xbt_heap_maxcontent(xbt_heap_t H)
 {
-  xbt_assert0(H->count != 0, "Empty heap");
+  xbt_assert(H->count != 0, "Empty heap");
   return CONTENT(H, 0);
 }
 

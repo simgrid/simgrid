@@ -514,7 +514,7 @@ static int run_lua_code(int argc, char **argv)
 
   /* Start the co-routine */
   lua_getglobal(L, argv[0]);
-  xbt_assert1(lua_isfunction(L, -1),
+  xbt_assert(lua_isfunction(L, -1),
               "The lua function %s does not seem to exist", argv[0]);
 
   // push arguments onto the stack
@@ -525,7 +525,7 @@ static int run_lua_code(int argc, char **argv)
   // Call the function (in resume)
   int err;
   err = lua_pcall(L, argc - 1, 1, 0);
-  xbt_assert2(err == 0, "error running function `%s': %s", argv[0],
+  xbt_assert(err == 0, "error running function `%s': %s", argv[0],
               lua_tostring(L, -1));
 
   /* retrieve result */
@@ -708,9 +708,9 @@ int luaopen_simgrid(lua_State * L)
       if (lua_isnil(L, -1)) {
         done = 1;
       } else {
-        xbt_assert1(lua_isstring(L, -1),
+        xbt_assert(lua_isstring(L, -1),
                     "argv[%d] got from lua is no string", argc - 1);
-        xbt_assert2(argc < LUA_MAX_ARGS_COUNT,
+        xbt_assert(argc < LUA_MAX_ARGS_COUNT,
                     "Too many arguments, please increase LUA_MAX_ARGS_COUNT in %s before recompiling SimGrid if you insist on having more than %d args on command line",
                     __FILE__, LUA_MAX_ARGS_COUNT - 1);
         argv[argc - 1] = (char *) luaL_checkstring(L, -1);

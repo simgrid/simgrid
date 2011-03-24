@@ -97,17 +97,17 @@ gras_msgtype_declare_ext(const char *name,
     XBT_DEBUG
         ("Re-register version %d of message '%s' (same kind & payload, ignored).",
          version, name);
-    xbt_assert3(msgtype->kind == kind,
+    xbt_assert(msgtype->kind == kind,
                 "Message %s re-registered as a %s (it was known as a %s)",
                 namev, e_gras_msg_kind_names[kind],
                 e_gras_msg_kind_names[msgtype->kind]);
-    xbt_assert3(!gras_datadesc_type_cmp
+    xbt_assert(!gras_datadesc_type_cmp
                 (msgtype->ctn_type, payload_request),
                 "Message %s re-registred with another payload (%s was %s)",
                 namev, gras_datadesc_get_name(payload_request),
                 gras_datadesc_get_name(msgtype->ctn_type));
 
-    xbt_assert3(!gras_datadesc_type_cmp
+    xbt_assert(!gras_datadesc_type_cmp
                 (msgtype->answer_type, payload_answer),
                 "Message %s re-registred with another answer payload (%s was %s)",
                 namev, gras_datadesc_get_name(payload_answer),

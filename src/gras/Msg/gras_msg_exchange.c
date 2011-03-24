@@ -46,7 +46,7 @@ gras_msg_wait_ext_(double timeout,
       (gras_msg_procdata_t) gras_libdata_by_id(gras_msg_libdata_id);
   unsigned int cpt;
 
-  xbt_assert0(msg_got, "msg_got is an output parameter");
+  xbt_assert(msg_got, "msg_got is an output parameter");
 
   start = gras_os_time();
   XBT_VERB("Waiting for message '%s' for %fs",
@@ -152,11 +152,11 @@ gras_msg_wait_(double timeout,
   gras_msg_wait_ext_(timeout, msgt_want, NULL, NULL, NULL, &msg);
 
   if (msgt_want->ctn_type) {
-    xbt_assert1(payload,
+    xbt_assert(payload,
                 "Message type '%s' convey a payload that you must accept",
                 msgt_want->name);
   } else {
-    xbt_assert1(!payload,
+    xbt_assert(!payload,
                 "No payload was declared for message type '%s' (don't expect one)",
                 msgt_want->name);
   }
@@ -209,7 +209,7 @@ void gras_msg_wait_or(double timeout,
                      &gras_msg_wait_or_filter, (void *) msgt_want, &msg);
 
   if (msg.type->ctn_type) {
-    xbt_assert1(payload,
+    xbt_assert(payload,
                 "Message type '%s' convey a payload you must accept",
                 msg.type->name);
   }
@@ -235,11 +235,11 @@ void gras_msg_send_(gras_socket_t sock, gras_msgtype_t msgtype,
 {
 
   if (msgtype->ctn_type) {
-    xbt_assert1(payload,
+    xbt_assert(payload,
                 "Message type '%s' convey a payload you must provide",
                 msgtype->name);
   } else {
-    xbt_assert1(!payload,
+    xbt_assert(!payload,
                 "No payload was declared for message type '%s'",
                 msgtype->name);
   }
@@ -352,7 +352,7 @@ void gras_msg_handle(double timeOut)
         /* we served a timer, we're done */
         return;
       } else {
-        xbt_assert1(untiltimer > 0, "Negative timer (%f). I'm 'puzzeled'",
+        xbt_assert(untiltimer > 0, "Negative timer (%f). I'm 'puzzeled'",
                     untiltimer);
         XBT_WARN
             ("No timer elapsed, in contrary to expectations (next in %f sec)",
@@ -444,7 +444,7 @@ void gras_msg_handle(double timeOut)
       }
     }
 
-    xbt_assert1(!ctx.answer_due,
+    xbt_assert(!ctx.answer_due,
                 "Bug in user code: RPC callback to message '%s' didn't call gras_msg_rpcreturn",
                 msg.type->name);
     if (ctx.answer_due)

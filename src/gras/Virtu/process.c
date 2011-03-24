@@ -144,7 +144,7 @@ void gras_procdata_init()
     XBT_DEBUG("Go ahead for cursor %d, there is %ld libdata",
            cursor, xbt_set_length(pd->libdata));
 
-    xbt_assert1(fab.name, "Name of fabric #%d is NULL!", cursor);
+    xbt_assert(fab.name, "Name of fabric #%d is NULL!", cursor);
     XBT_DEBUG("Create the procdata for %s", fab.name);
     /* Check for our own errors */
     TRY {

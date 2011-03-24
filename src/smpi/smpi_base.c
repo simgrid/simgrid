@@ -24,8 +24,8 @@ static int match_recv(void* a, void* b) {
    MPI_Request ref = (MPI_Request)a;
    MPI_Request req = (MPI_Request)b;
 
-   xbt_assert0(ref, "Cannot match recv against null reference");
-   xbt_assert0(req, "Cannot match recv against null request");
+   xbt_assert(ref, "Cannot match recv against null reference");
+   xbt_assert(req, "Cannot match recv against null request");
    return req->comm == ref->comm
           && (ref->src == MPI_ANY_SOURCE || req->src == ref->src)
           && (ref->tag == MPI_ANY_TAG || req->tag == ref->tag);
@@ -35,8 +35,8 @@ static int match_send(void* a, void* b) {
    MPI_Request ref = (MPI_Request)a;
    MPI_Request req = (MPI_Request)b;
 
-   xbt_assert0(ref, "Cannot match send against null reference");
-   xbt_assert0(req, "Cannot match send against null request");
+   xbt_assert(ref, "Cannot match send against null reference");
+   xbt_assert(req, "Cannot match send against null request");
    return req->comm == ref->comm
           && (req->src == MPI_ANY_SOURCE || req->src == ref->src)
           && (req->tag == MPI_ANY_TAG || req->tag == ref->tag);
@@ -89,7 +89,7 @@ void smpi_mpi_start(MPI_Request request)
 {
   smx_rdv_t mailbox;
 
-  xbt_assert0(!request->action,
+  xbt_assert(!request->action,
               "Cannot (re)start a non-finished communication");
   if(request->flags & RECV) {
     print_request("New recv", request);

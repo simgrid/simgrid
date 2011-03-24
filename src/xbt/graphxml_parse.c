@@ -94,7 +94,7 @@ void xbt_graph_parse_open(const char *file)
     xbt_graph_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), NULL);
 
   xbt_graph_file_to_parse = fopen(file, "r");   /* FIXME should use something like surf_fopen */
-  xbt_assert1((xbt_graph_file_to_parse), "Unable to open \"%s\"\n", file);
+  xbt_assert((xbt_graph_file_to_parse), "Unable to open \"%s\"\n", file);
   xbt_graph_input_buffer =
       xbt_graph_parse__create_buffer(xbt_graph_file_to_parse, 10);
   xbt_graph_parse__switch_to_buffer(xbt_graph_input_buffer);
@@ -127,6 +127,6 @@ void xbt_graph_parse_get_double(double *value, const char *string)
   int ret = 0;
 
   ret = sscanf(string, "%lg", value);
-  xbt_assert2((ret == 1), "Parse error line %d : %s not a number",
+  xbt_assert((ret == 1), "Parse error line %d : %s not a number",
               xbt_graph_parse_lineno, string);
 }

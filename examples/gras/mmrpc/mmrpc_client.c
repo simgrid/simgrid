@@ -85,7 +85,7 @@ int client(int argc, char *argv[])
    */
   for (i = 0; i < MATSIZE; i++)
     for (j = 0; i < MATSIZE; i++)
-      xbt_assert4(xbt_matrix_get_as(answer, i, j, double) ==
+      xbt_assert(xbt_matrix_get_as(answer, i, j, double) ==
                   xbt_matrix_get_as(request[1], i, j, double),
                   "Answer does not match expectations. Found %f at cell %d,%d instead of %f",
                   xbt_matrix_get_as(answer, i, j, double), i, j,

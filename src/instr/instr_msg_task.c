@@ -18,13 +18,13 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
   if (!TRACE_is_active())
     return;
 
-  xbt_assert3(task->category == NULL, "Task %p(%s) already has a category (%s).",
+  xbt_assert(task->category == NULL, "Task %p(%s) already has a category (%s).",
       task, task->name, task->category);
   if (TRACE_msg_task_is_enabled()){
-    xbt_assert2(task->name != NULL,
+    xbt_assert(task->name != NULL,
         "Task %p(%s) must have a unique name in order to be traced, if --cfg=tracing/msg/task:1 is used.",
         task, task->name);
-    xbt_assert3(getContainer(task->name)==NULL,
+    xbt_assert(getContainer(task->name)==NULL,
         "Task %p(%s). Tracing already knows a task with name %s."
         "The name of each task must be unique, if --cfg=tracing/msg/task:1 is used.", task, task->name, task->name);
   }
@@ -44,7 +44,7 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
     m_host_t host = MSG_host_self();
     container_t host_container = getContainer(host->name);
     //check to see if there is a container with the task->name
-    xbt_assert3(getContainer(task->name) == NULL,
+    xbt_assert(getContainer(task->name) == NULL,
         "Task %p(%s). Tracing already knows a task with name %s."
         "The name of each task must be unique, if --cfg=tracing/msg/task:1 is used.", task, task->name, task->name);
     container_t msg = newContainer(task->name, INSTR_MSG_TASK, host_container);

@@ -71,9 +71,9 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
 {
   char *p;
   const char *procname = NULL;
-  xbt_assert0(ev->priority >= 0,
+  xbt_assert(ev->priority >= 0,
               "Negative logging priority naturally forbidden");
-  xbt_assert1(ev->priority < sizeof(xbt_log_priority_names),
+  xbt_assert(ev->priority < sizeof(xbt_log_priority_names),
               "Priority %d is greater than the biggest allowed value",
               ev->priority);
 

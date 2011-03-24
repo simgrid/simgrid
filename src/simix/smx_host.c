@@ -50,7 +50,7 @@ void SIMIX_host_destroy(void *h)
 {
   smx_host_t host = (smx_host_t) h;
 
-  xbt_assert0((host != NULL), "Invalid parameters");
+  xbt_assert((host != NULL), "Invalid parameters");
 
   /* Clean Simulator data */
   if (xbt_swag_size(host->process_list) != 0) {
@@ -98,7 +98,7 @@ xbt_dict_t SIMIX_host_get_dict(void)
 
 smx_host_t SIMIX_host_get_by_name(const char *name)
 {
-  xbt_assert0(((simix_global != NULL)
+  xbt_assert(((simix_global != NULL)
                && (host_lib != NULL)),
               "Environment not set yet");
 
@@ -124,21 +124,21 @@ const char* SIMIX_host_self_get_name(void)
 
 const char* SIMIX_host_get_name(smx_host_t host)
 {
-  xbt_assert0((host != NULL), "Invalid parameters");
+  xbt_assert((host != NULL), "Invalid parameters");
 
   return host->name;
 }
 
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
 {
-  xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.get_properties(host->host);
 }
 
 double SIMIX_host_get_speed(smx_host_t host)
 {
-  xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.
       get_speed(host->host, 1.0);
@@ -146,7 +146,7 @@ double SIMIX_host_get_speed(smx_host_t host)
 
 double SIMIX_host_get_available_speed(smx_host_t host)
 {
-  xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.
       get_available_speed(host->host);
@@ -154,7 +154,7 @@ double SIMIX_host_get_available_speed(smx_host_t host)
 
 int SIMIX_host_get_state(smx_host_t host)
 {
-  xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.
       get_state(host->host);
@@ -172,15 +172,15 @@ void SIMIX_host_self_set_data(void *data)
 
 void* SIMIX_host_get_data(smx_host_t host)
 {
-  xbt_assert0((host != NULL), "Invalid parameters (simix host is NULL)");
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return host->data;
 }
 
 void SIMIX_host_set_data(smx_host_t host, void *data)
 {
-  xbt_assert0((host != NULL), "Invalid parameters");
-  xbt_assert0((host->data == NULL), "Data already set");
+  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((host->data == NULL), "Data already set");
 
   host->data = data;
 }

@@ -223,7 +223,7 @@ static double share_resources(double now)
   if (!xbt_swag_size(running_actions))
     return -1.0;
 
-  xbt_assert0(time_to_next_flow_completion,
+  xbt_assert(time_to_next_flow_completion,
               "Time to next flow completion not initialized!\n");
 
   XBT_DEBUG("Calling gtnets_get_time_to_next_flow_completion");
@@ -338,7 +338,7 @@ static surf_action_t communicate(const char *src_name,
 
   src = *((int *) xbt_dict_get_or_null(global_routing->root->to_index,src_name));
   dst = *((int *) xbt_dict_get_or_null(global_routing->root->to_index,dst_name));
-  xbt_assert0((src >= 0
+  xbt_assert((src >= 0
                && dst >= 0), "Either src or dst have invalid id (id<0)");
 
   XBT_DEBUG("Setting flow src %d \"%s\", dst %d \"%s\"", src, src_name, dst,

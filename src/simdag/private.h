@@ -16,7 +16,7 @@
 #include <stdbool.h>
 
 #define SD_INITIALISED() (sd_global != NULL)
-#define SD_CHECK_INIT_DONE() xbt_assert0(SD_INITIALISED(), "Call SD_init() first");
+#define SD_CHECK_INIT_DONE() xbt_assert(SD_INITIALISED(), "Call SD_init() first");
 
 /* Global variables */
 

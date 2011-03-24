@@ -461,7 +461,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
   THROWF(unknown_error, 0, "Function %s unimplemented",_XBT_FUNCTION)
 
 #ifndef NDEBUG
-#  define DIE_IMPOSSIBLE       xbt_assert0(0,"The Impossible Did Happen (yet again)")
+#  define DIE_IMPOSSIBLE       xbt_assert(0,"The Impossible Did Happen (yet again)")
 #else
 #  define DIE_IMPOSSIBLE       exit(1);
 #endif

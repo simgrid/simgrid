@@ -107,7 +107,7 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
 
     int res;
     res = getcontext(&(context->uc));
-    xbt_assert2(res == 0,
+    xbt_assert(res == 0,
                 "Error in context saving: %d (%s)", errno,
                 strerror(errno));
 
@@ -194,7 +194,7 @@ void smx_ctx_sysv_suspend(smx_context_t context)
   int rv;
   rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &((smx_ctx_sysv_t)context)->old_uc);
 
-  xbt_assert0((rv == 0), "Context swapping failure");
+  xbt_assert((rv == 0), "Context swapping failure");
 }
 
 void smx_ctx_sysv_resume(smx_context_t context)
@@ -203,7 +203,7 @@ void smx_ctx_sysv_resume(smx_context_t context)
   int rv;
   rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
 
-  xbt_assert0((rv == 0), "Context swapping failure");
+  xbt_assert((rv == 0), "Context swapping failure");
 }
 
 void smx_ctx_sysv_runall(xbt_dynar_t processes)
@@ -226,7 +226,7 @@ void smx_ctx_sysv_resume_parallel(smx_process_t process)
   rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
   smx_current_context = (smx_context_t)maestro_context;
 
-  xbt_assert0((rv == 0), "Context swapping failure");
+  xbt_assert((rv == 0), "Context swapping failure");
 }
 
 void smx_ctx_sysv_runall_parallel(xbt_dynar_t processes)

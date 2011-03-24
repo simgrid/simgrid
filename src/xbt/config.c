@@ -84,7 +84,7 @@ void xbt_cfg_cpy(xbt_cfg_t tocopy, xbt_cfg_t * whereto)
 
   XBT_DEBUG("Copy cfg set %p", tocopy);
   *whereto = NULL;
-  xbt_assert0(tocopy, "cannot copy NULL config");
+  xbt_assert(tocopy, "cannot copy NULL config");
 
   xbt_dict_foreach((xbt_dict_t) tocopy, cursor, name, variable) {
     xbt_cfg_register(whereto, name, variable->desc, variable->type, NULL,
@@ -212,7 +212,7 @@ xbt_cfg_register(xbt_cfg_t * cfg,
 
   if (*cfg == NULL)
     *cfg = xbt_cfg_new();
-  xbt_assert4(type >= xbt_cfgelm_int && type <= xbt_cfgelm_peer,
+  xbt_assert(type >= xbt_cfgelm_int && type <= xbt_cfgelm_peer,
               "type of %s not valid (%d should be between %d and %d)",
               name, type, xbt_cfgelm_int, xbt_cfgelm_peer);
   res = xbt_dict_get_or_null((xbt_dict_t) * cfg, name);
@@ -305,24 +305,24 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
   XBT_DEBUG("Register string '%s'", entry);
 
   tok = strchr(entrycpy, ':');
-  xbt_assert2(tok, "Invalid config element descriptor: %s%s",
+  xbt_assert(tok, "Invalid config element descriptor: %s%s",
               entry, "; Should be <name>:<min nb>_to_<max nb>_<type>");
   *(tok++) = '\0';
 
   min = strtol(tok, &tok, 10);
-  xbt_assert1(tok, "Invalid minimum in config element descriptor %s",
+  xbt_assert(tok, "Invalid minimum in config element descriptor %s",
               entry);
 
-  xbt_assert2(strcmp(tok, "_to_"),
+  xbt_assert(strcmp(tok, "_to_"),
               "Invalid config element descriptor : %s%s",
               entry, "; Should be <name>:<min nb>_to_<max nb>_<type>");
   tok += strlen("_to_");
 
   max = strtol(tok, &tok, 10);
-  xbt_assert1(tok, "Invalid maximum in config element descriptor %s",
+  xbt_assert(tok, "Invalid maximum in config element descriptor %s",
               entry);
 
-  xbt_assert2(*tok == '_',
+  xbt_assert(*tok == '_',
               "Invalid config element descriptor: %s%s", entry,
               "; Should be <name>:<min nb>_to_<max nb>_<type>");
   tok++;
@@ -330,7 +330,7 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
   for (type = 0;
        type < xbt_cfgelm_type_count
        && strcmp(tok, xbt_cfgelm_type_name[type]); type++);
-  xbt_assert2(type < xbt_cfgelm_type_count,
+  xbt_assert(type < xbt_cfgelm_type_count,
               "Invalid type in config element descriptor: %s%s", entry,
               "; Should be one of 'string', 'int', 'peer' or 'double'.");
 
@@ -426,7 +426,7 @@ void xbt_cfg_check(xbt_cfg_t cfg)
   char *name;
   int size;
 
-  xbt_assert0(cfg, "NULL config set.");
+  xbt_assert(cfg, "NULL config set.");
   XBT_DEBUG("Check cfg set %p", cfg);
 
   xbt_dict_foreach((xbt_dict_t) cfg, cursor, name, variable) {
@@ -464,7 +464,7 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg,
            "No registered variable '%s' in this config set", name);
   }
 
-  xbt_assert3(type == xbt_cfgelm_any || res->type == type,
+  xbt_assert(type == xbt_cfgelm_any || res->type == type,
               "You tried to access to the config element %s as an %s, but its type is %s.",
               name,
               xbt_cfgelm_type_name[type], xbt_cfgelm_type_name[res->type]);

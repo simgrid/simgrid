@@ -397,7 +397,7 @@ void SIMIX_req_process_change_host(smx_process_t process, const char *source, co
  */
 void SIMIX_req_process_suspend(smx_process_t process)
 {
-  xbt_assert0(process, "Invalid parameters");
+  xbt_assert(process, "Invalid parameters");
 
   smx_req_t req = SIMIX_req_mine();
 
@@ -606,7 +606,7 @@ void SIMIX_req_rdv_destroy(smx_rdv_t rdv)
 
 smx_rdv_t SIMIX_req_rdv_get_by_name(const char *name)
 {
-  xbt_assert0(name != NULL, "Invalid parameter for SIMIX_req_rdv_get_by_name (name is NULL)");
+  xbt_assert(name != NULL, "Invalid parameter for SIMIX_req_rdv_get_by_name (name is NULL)");
 
   /* FIXME: this is a horrible lost of performance, so we hack it out by
    * skipping the request (for now). It won't work on distributed but
@@ -661,7 +661,7 @@ void SIMIX_req_comm_send(smx_rdv_t rdv, double task_size, double rate,
                          int (*match_fun)(void *, void *), void *data,
                          double timeout)
 {
-  xbt_assert0(rdv, "No rendez-vous point defined for send");
+  xbt_assert(rdv, "No rendez-vous point defined for send");
 
   if (MC_IS_ENABLED) {
     /* the model-checker wants two separate requests */
@@ -691,7 +691,7 @@ smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                               int (*match_fun)(void *, void *), void *data,
                               int detached)
 {
-  xbt_assert0(rdv, "No rendez-vous point defined for isend");
+  xbt_assert(rdv, "No rendez-vous point defined for isend");
 
   smx_req_t req = SIMIX_req_mine();
 
@@ -712,7 +712,7 @@ smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
 void SIMIX_req_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
                          int (*match_fun)(void *, void *), void *data, double timeout)
 {
-  xbt_assert0(rdv, "No rendez-vous point defined for recv");
+  xbt_assert(rdv, "No rendez-vous point defined for recv");
 
   if (MC_IS_ENABLED) {
     /* the model-checker wants two separate requests */
@@ -738,7 +738,7 @@ void SIMIX_req_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
 smx_action_t SIMIX_req_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
                                   int (*match_fun)(void *, void *), void *data)
 {
-  xbt_assert0(rdv, "No rendez-vous point defined for irecv");
+  xbt_assert(rdv, "No rendez-vous point defined for irecv");
 
   smx_req_t req = SIMIX_req_mine();
 
@@ -755,7 +755,7 @@ smx_action_t SIMIX_req_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_bu
 
 void SIMIX_req_comm_destroy(smx_action_t comm)
 {
-  xbt_assert0(comm, "Invalid parameter");
+  xbt_assert(comm, "Invalid parameter");
 
   /* FIXME remove this request type: comms are auto-destroyed now,
    * but what happens with unfinished comms? */

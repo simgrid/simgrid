@@ -96,7 +96,7 @@ gras_socket_t gras_socket_client_from_file(const char *path)
 {
   gras_socket_t res;
 
-  xbt_assert0(gras_if_RL(), "Cannot use file as socket in the simulator");
+  xbt_assert(gras_if_RL(), "Cannot use file as socket in the simulator");
 
   gras_trp_socket_new(0, &res);
 
@@ -138,7 +138,7 @@ gras_socket_t gras_socket_server_from_file(const char *path)
 {
   gras_socket_t res;
 
-  xbt_assert0(gras_if_RL(), "Cannot use file as socket in the simulator");
+  xbt_assert(gras_if_RL(), "Cannot use file as socket in the simulator");
 
   gras_trp_socket_new(1, &res);
 
@@ -211,8 +211,8 @@ gras_trp_file_chunk_send_raw(gras_socket_t sock,
                              const char *data, unsigned long int size)
 {
 
-  xbt_assert0(sock->outgoing, "Cannot write on client file socket");
-  xbt_assert0(size >= 0, "Cannot send a negative amount of data");
+  xbt_assert(sock->outgoing, "Cannot write on client file socket");
+  xbt_assert(size >= 0, "Cannot send a negative amount of data");
 
   while (size) {
     int status = 0;
@@ -246,9 +246,9 @@ gras_trp_file_chunk_recv(gras_socket_t sock,
 
   int got = 0;
 
-  xbt_assert0(sock, "Cannot recv on an NULL socket");
-  xbt_assert0(sock->incoming, "Cannot recv on client file socket");
-  xbt_assert0(size >= 0, "Cannot receive a negative amount of data");
+  xbt_assert(sock, "Cannot recv on an NULL socket");
+  xbt_assert(sock->incoming, "Cannot recv on client file socket");
+  xbt_assert(size >= 0, "Cannot receive a negative amount of data");
 
   if (sock->recvd) {
     data[0] = sock->recvd_val;

@@ -339,7 +339,7 @@ int main(int argc, char **argv)
       ("------------------- Produce the trace file---------------------------");
   XBT_INFO("Producing the trace of the run into %s", tracefilename);
   out = fopen(tracefilename, "w");
-  xbt_assert1(out, "Cannot write to %s", tracefilename);
+  xbt_assert(out, "Cannot write to %s", tracefilename);
   free(tracefilename);
 
   output_xml(out, dax);

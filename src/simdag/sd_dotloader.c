@@ -147,7 +147,7 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename){
 
 xbt_dynar_t SD_dotload_generic(const char * filename)
 {
-  xbt_assert0(filename, "Unable to use a null file descriptor\n");
+  xbt_assert(filename, "Unable to use a null file descriptor\n");
   dag_dot =  agopen((char*)filename,Agstrictdirected,0);
 
   result = xbt_dynar_new(sizeof(SD_task_t), dot_task_free);

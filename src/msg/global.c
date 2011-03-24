@@ -110,7 +110,7 @@ void MSG_global_init(int *argc, char **argv)
  */
 MSG_error_t MSG_set_channel_number(int number)
 {
-  xbt_assert0((msg_global)
+  xbt_assert((msg_global)
               && (msg_global->max_channel == 0),
               "Channel number already set!");
 
@@ -128,7 +128,7 @@ MSG_error_t MSG_set_channel_number(int number)
  */
 int MSG_get_channel_number(void)
 {
-  xbt_assert0((msg_global)
+  xbt_assert((msg_global)
               && (msg_global->max_channel != 0),
               "Channel number not set yet!");
 

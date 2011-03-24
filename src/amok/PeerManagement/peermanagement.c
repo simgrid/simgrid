@@ -149,7 +149,7 @@ xbt_dynar_t amok_pm_group_new(const char *group_name)
   xbt_dynar_t res = xbt_dynar_new(sizeof(xbt_peer_t),
                                   xbt_peer_free_voidp);
 
-  xbt_assert0(amok_pm_moddata_id != -1, "Run amok_pm_init first!");
+  xbt_assert(amok_pm_moddata_id != -1, "Run amok_pm_init first!");
   g = gras_moddata_by_id(amok_pm_moddata_id);
 
   XBT_DEBUG("retrieved groups=%p", g->groups);

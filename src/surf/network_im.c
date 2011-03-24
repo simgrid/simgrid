@@ -170,7 +170,7 @@ static link_CM02_im_t im_net_link_new(char *name,
                             state_initial, state_trace,
                             bw_initial, bw_trace);
 
-  xbt_assert1(!xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL),
+  xbt_assert(!xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL),
               "Link '%s' declared several times in the platform file.",
               name);
 
@@ -205,7 +205,7 @@ static void im_net_parse_link_init(void)
   surf_parse_get_double(&lat_initial, A_surfxml_link_latency);
   lat_trace = tmgr_trace_new(A_surfxml_link_latency_file);
 
-  xbt_assert0((A_surfxml_link_state == A_surfxml_link_state_ON)
+  xbt_assert((A_surfxml_link_state == A_surfxml_link_state_ON)
               || (A_surfxml_link_state ==
                   A_surfxml_link_state_OFF), "Invalid state");
   if (A_surfxml_link_state == A_surfxml_link_state_ON)
@@ -275,9 +275,9 @@ static void im_net_add_traces(void)
     link_CM02_im_t link =
     		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
-    xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined",
+    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
                 trace_name, elm);
-    xbt_assert2(trace,
+    xbt_assert(trace,
                 "Cannot connect trace %s to link %s: trace undefined",
                 trace_name, elm);
 
@@ -290,9 +290,9 @@ static void im_net_add_traces(void)
     link_CM02_im_t link =
     		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
-    xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined",
+    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
                 trace_name, elm);
-    xbt_assert2(trace,
+    xbt_assert(trace,
                 "Cannot connect trace %s to link %s: trace undefined",
                 trace_name, elm);
 
@@ -305,9 +305,9 @@ static void im_net_add_traces(void)
     link_CM02_im_t link =
     		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
-    xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined",
+    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
                 trace_name, elm);
-    xbt_assert2(trace,
+    xbt_assert(trace,
                 "Cannot connect trace %s to link %s: trace undefined",
                 trace_name, elm);
 
@@ -669,7 +669,7 @@ static surf_action_t im_net_communicate(const char *src_name,
   XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
-  xbt_assert2(xbt_dynar_length(route),
+  xbt_assert(xbt_dynar_length(route),
               "You're trying to send data from %s to %s but there is no connection between these two hosts.",
               src_name, dst_name);
 

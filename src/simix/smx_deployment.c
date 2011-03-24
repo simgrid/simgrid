@@ -22,10 +22,10 @@ static double kill_time = -1.0;
 static void parse_process_init(void)
 {
   parse_host = xbt_strdup(A_surfxml_process_host);
-  xbt_assert1(SIMIX_host_get_by_name(parse_host),
+  xbt_assert(SIMIX_host_get_by_name(parse_host),
               "Host '%s' unknown", parse_host);
   parse_code = SIMIX_get_registered_function(A_surfxml_process_function);
-  xbt_assert1(parse_code, "Function '%s' unknown",
+  xbt_assert(parse_code, "Function '%s' unknown",
               A_surfxml_process_function);
   parse_argc = 0;
   parse_argv = NULL;
@@ -106,7 +106,7 @@ static void parse_process_finalize(void)
 void SIMIX_launch_application(const char *file)
 {
   int parse_status;
-  xbt_assert0(simix_global,
+  xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_launch_application.");
 
   // Reset callbacks
@@ -121,7 +121,7 @@ void SIMIX_launch_application(const char *file)
   surf_parse_open(file);
   parse_status = surf_parse();
   surf_parse_close();
-  xbt_assert1(!parse_status, "Parse error in %s", file);
+  xbt_assert(!parse_status, "Parse error in %s", file);
 }
 
 /**
@@ -135,7 +135,7 @@ void SIMIX_launch_application(const char *file)
 XBT_INLINE void SIMIX_function_register(const char *name,
                                         xbt_main_func_t code)
 {
-  xbt_assert0(simix_global,
+  xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_function_register.");
 
   xbt_dict_set(simix_global->registered_functions, name, code, NULL);
@@ -150,7 +150,7 @@ static xbt_main_func_t default_function = NULL;
  */
 void SIMIX_function_register_default(xbt_main_func_t code)
 {
-  xbt_assert0(simix_global,
+  xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_function_register.");
 
   default_function = code;
@@ -167,7 +167,7 @@ void SIMIX_function_register_default(xbt_main_func_t code)
 xbt_main_func_t SIMIX_get_registered_function(const char *name)
 {
   xbt_main_func_t res = NULL;
-  xbt_assert0(simix_global,
+  xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_get_registered_function.");
 
   res = xbt_dict_get_or_null(simix_global->registered_functions, name);
@@ -190,10 +190,10 @@ void SIMIX_process_set_function(const char *process_host,
 
   /* init process */
   parse_host = xbt_strdup(process_host);
-  xbt_assert1(SIMIX_host_get_by_name(parse_host),
+  xbt_assert(SIMIX_host_get_by_name(parse_host),
               "Host '%s' unknown", parse_host);
   parse_code = SIMIX_get_registered_function(process_function);
-  xbt_assert1(parse_code, "Function '%s' unknown", process_function);
+  xbt_assert(parse_code, "Function '%s' unknown", process_function);
 
   parse_argc = 0;
   parse_argv = NULL;

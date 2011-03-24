@@ -38,7 +38,7 @@ GTNETS_Node::~GTNETS_Node(){
 
 // hostid = network_card_id
 int GTNETS_Node::add_host(int hostid){
-  xbt_assert0(!(is_router_), "Cannot add a host to a router node");
+  xbt_assert(!(is_router_), "Cannot add a host to a router node");
   hosts_.insert(hostid);
   return 0;
 }
@@ -46,9 +46,9 @@ int GTNETS_Node::add_host(int hostid){
 // Add a router. If this node already has a router/host,
 // return -1.
 int GTNETS_Node::add_router(int routerid){
-  xbt_assert0(!(hosts_.size() > 1), "Router node should have only one router");
+  xbt_assert(!(hosts_.size() > 1), "Router node should have only one router");
   if (hosts_.size() == 1){
-	  xbt_assert1((hosts_.find(routerid) != hosts_.end()), "Node %d is a different router", routerid);
+	  xbt_assert((hosts_.find(routerid) != hosts_.end()), "Node %d is a different router", routerid);
 	  return 0;
   }
   is_router_ = true;
@@ -121,7 +121,7 @@ bool GTNETS_Link::route_exists(){
 
 // return the peer node id
 int GTNETS_Link::peer_node(int cur_id){
-  xbt_assert0(((cur_id ==  src_node_->id())||(cur_id == dst_node_->id())), "Node not found");
+  xbt_assert(((cur_id ==  src_node_->id())||(cur_id == dst_node_->id())), "Node not found");
 
   if (cur_id ==  src_node_->id()) return dst_node_->id();
   else if (cur_id == dst_node_->id()) return src_node_->id();
@@ -168,7 +168,7 @@ int GTNETS_Topology::node_size(){
 
 int GTNETS_Topology::add_link(int id){
   map<int,GTNETS_Link*>::iterator iter = links_.find(id);
-  xbt_assert1((iter == links_.end()), "Link %d already exists", id);
+  xbt_assert((iter == links_.end()), "Link %d already exists", id);
 
   if(iter == links_.end()) {
     GTNETS_Link* link= new GTNETS_Link(id);
@@ -196,11 +196,11 @@ bool GTNETS_Topology::is_router(int id){
 //return the node id of the peer of cur_id by linkid.
 int GTNETS_Topology::peer_node_id(int linkid, int cur_id){
   GTNETS_Link* link = links_[linkid];
-  xbt_assert1((link), "Link %d not found", linkid);
-  xbt_assert1(!((cur_id < 0) || (cur_id > nodes_.size()-1)), "Node %d not found", cur_id);
+  xbt_assert((link), "Link %d not found", linkid);
+  xbt_assert(!((cur_id < 0) || (cur_id > nodes_.size()-1)), "Node %d not found", cur_id);
 
   int peer  = link->peer_node(nodes_[cur_id]->id());
-  xbt_assert0(!(peer < 0), "Peer not found");
+  xbt_assert(!(peer < 0), "Peer not found");
 
   return peer;
 }
@@ -210,7 +210,7 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
 
   map<int, GTNETS_Link*>::iterator iter = links_.find(linkid);
 
-  xbt_assert1(!(iter == links_.end()), "Link %d not found", linkid);
+  xbt_assert(!(iter == links_.end()), "Link %d not found", linkid);
   link = iter->second;
 
   XBT_DEBUG("Add onehop route, src (#%d), dst (#%d), linkid %d:(#%d)",src, dst, linkid, link->id());
@@ -258,7 +258,7 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
 
     link->add_dst(nodes_[d_node_id]);
   }else if (!(src_node && dst_node)){
-      xbt_assert0((src_node && dst_node), "Either src or dst is null");
+      xbt_assert((src_node && dst_node), "Either src or dst is null");
   }
 
   // case 1: link has two routers
@@ -267,14 +267,14 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
     int tmpsrc2 = nodeid_from_hostid(src);
     int tmpdst1 = dst_node->id();
     int tmpdst2 = nodeid_from_hostid(dst);
-    xbt_assert0( (((tmpsrc1 == tmpsrc2) && (tmpdst1 == tmpdst2)) ||
+    xbt_assert( (((tmpsrc1 == tmpsrc2) && (tmpdst1 == tmpdst2)) ||
 	((tmpsrc1 == tmpdst2) && (tmpdst1 == tmpsrc2))), "Different one hop route defined");
   }
 
   // case 2: link has one router and one host
   else if (src_node->is_router() && !dst_node->is_router()){
     int newsrc, newdst;
-    xbt_assert0( ((is_router(src))||(is_router(dst))), "One of nodes should be a router");
+    xbt_assert( ((is_router(src))||(is_router(dst))), "One of nodes should be a router");
 
     if (is_router(src)){
       newsrc = src;
@@ -284,10 +284,10 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
       newdst = src;
     }
 
-    xbt_assert0(!(src_node->id() != nodeid_from_hostid(newsrc)), "The router should be identical");
+    xbt_assert(!(src_node->id() != nodeid_from_hostid(newsrc)), "The router should be identical");
 
     //now, to add dst to dst_node, dst should be a host.
-    xbt_assert1(!(is_router(newdst)), "Dst %d is not an endpoint. cannot add it to dst_node", newdst);
+    xbt_assert(!(is_router(newdst)), "Dst %d is not an endpoint. cannot add it to dst_node", newdst);
 
     if (!dst_node->include(newdst)){
       dst_node->add_host(newdst);
@@ -296,7 +296,7 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
   }
   else if (!src_node->is_router() && dst_node->is_router()){
     int newsrc, newdst;
-    xbt_assert0(((is_router(src))||(is_router(dst))), "One of nodes should be a router");
+    xbt_assert(((is_router(src))||(is_router(dst))), "One of nodes should be a router");
 
     if (is_router(src)){
       newsrc = dst;
@@ -306,9 +306,9 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
       newdst = dst;
     }
 
-    xbt_assert0(!(dst_node->id() != hosts_[newdst]), "The router should be identical");
+    xbt_assert(!(dst_node->id() != hosts_[newdst]), "The router should be identical");
     //now, to add dst to src_node, dst should be a host.
-    xbt_assert1(!(is_router(newsrc)), "Src %d is not an endpoint. cannot add it to src_node", newsrc);
+    xbt_assert(!(is_router(newsrc)), "Src %d is not an endpoint. cannot add it to src_node", newsrc);
 
     if (!src_node->include(newsrc)){
       src_node->add_host(newsrc);
@@ -318,7 +318,7 @@ int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
 
   // case 3: link has two hosts
   else if (!src_node->is_router() && !dst_node->is_router()){
-	xbt_assert0(!(is_router(src) || is_router(dst)), "Cannot add a router to host-host link");
+	xbt_assert(!(is_router(src) || is_router(dst)), "Cannot add a router to host-host link");
 
     //if both are hosts, the order doesn't matter.
     if (src_node->include(src)){

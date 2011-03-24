@@ -272,7 +272,7 @@ int node(int argc, char *argv[])
   double next_check_predecessor_date = init_time + periodic_check_predecessor_delay;
   double next_lookup_date = init_time + periodic_lookup_delay;
 
-  xbt_assert0(argc == 3 || argc == 5, "Wrong number of arguments for this node");
+  xbt_assert(argc == 3 || argc == 5, "Wrong number of arguments for this node");
 
   // initialize my node
   s_node_t node = {0};

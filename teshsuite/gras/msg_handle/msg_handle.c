@@ -36,7 +36,7 @@ int server(int argc, char *argv[])
 
   gras_init(&argc, argv);
 
-  xbt_assert0(argc == 3, "Usage: server <myport> <client>");
+  xbt_assert(argc == 3, "Usage: server <myport> <client>");
   myport = atoi(argv[1]);
   palstr = argv[2];
 
@@ -70,9 +70,9 @@ int server(int argc, char *argv[])
       RETHROWF("Didn't got the expected timeout: %s");
     }
   }
-  xbt_assert0(got_expected,
+  xbt_assert(got_expected,
               "gras_msg_handle(0) do not lead to any timeout exception");
-  xbt_assert1(gras_os_time() - now < 0.01,
+  xbt_assert(gras_os_time() - now < 0.01,
               "gras_msg_handle(0) do not anwser immediately (%.4fsec)",
               gras_os_time() - now);
   XBT_INFO("gras_msg_handle(0) works as expected (immediate timeout)");
@@ -89,12 +89,12 @@ int server(int argc, char *argv[])
       RETHROWF("Didn't got the expected timeout: %s");
     }
   }
-  xbt_assert0(got_expected,
+  xbt_assert(got_expected,
               "gras_msg_handle(1) do not lead to any timeout exception");
-  xbt_assert1(gras_os_time() - now < 1.5,
+  xbt_assert(gras_os_time() - now < 1.5,
               "gras_msg_handle(1) needs more than 1.5 sec to answer (%.4fsec)",
               gras_os_time() - now);
-  xbt_assert1(gras_os_time() - now >= 1.0,
+  xbt_assert(gras_os_time() - now >= 1.0,
               "gras_msg_handle(1) answers in less than one second (%.4fsec)",
               gras_os_time() - now);
   XBT_INFO("gras_msg_handle(1) works as expected (delayed timeout)");
@@ -122,7 +122,7 @@ int client(int argc, char *argv[])
 
 
   gras_init(&argc, argv);
-  xbt_assert0(argc == 3, "Usage: client <myport> <server>");
+  xbt_assert(argc == 3, "Usage: client <myport> <server>");
   myport = atoi(argv[1]);
   palstr = argv[2];
 

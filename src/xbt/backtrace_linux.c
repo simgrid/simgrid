@@ -56,7 +56,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   struct stat stat_buf;
   char *binary_name = NULL;
 
-  xbt_assert0(e
+  xbt_assert(e
               && e->used,
               "Backtrace not setup yet, cannot set it up for display");
 

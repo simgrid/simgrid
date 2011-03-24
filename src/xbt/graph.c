@@ -440,7 +440,7 @@ xbt_edge_t *xbt_graph_spanning_tree_prim(xbt_graph_t g)
   xbt_heap_t heap = xbt_heap_new(10, NULL);
   unsigned int cursor;
 
-  xbt_assert0(!(g->directed),
+  xbt_assert(!(g->directed),
               "Spanning trees do not make sense on directed graphs");
 
   xbt_dynar_foreach(g->nodes, cursor, node) {
@@ -628,7 +628,7 @@ xbt_graph_t xbt_graph_read(const char *filename,
   xbt_graph_parse_open(filename);
   int res;
   res = (*xbt_graph_parse) ();
-  xbt_assert1(!res, "Parse error in %s", filename);
+  xbt_assert(!res, "Parse error in %s", filename);
   xbt_graph_parse_close();
 
   graph = parsed_graph;
@@ -649,7 +649,7 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
   const char *name = NULL;
 
   file = fopen(filename, "w");
-  xbt_assert1(file, "Failed to open %s \n", filename);
+  xbt_assert(file, "Failed to open %s \n", filename);
 
   if (g->directed)
     fprintf(file, "digraph test {\n");
@@ -695,7 +695,7 @@ void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
   const char *name = NULL;
 
   file = fopen(filename, "w");
-  xbt_assert1(file, "Failed to open %s \n", filename);
+  xbt_assert(file, "Failed to open %s \n", filename);
 
   fprintf(file, "<?xml version='1.0'?>\n");
   fprintf(file, "<!DOCTYPE graph SYSTEM \"graphxml.dtd\">\n");

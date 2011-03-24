@@ -19,7 +19,7 @@ SD_link_t __SD_link_create(void *surf_link, void *data)
   const char *name;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(surf_link != NULL, "surf_link is NULL !");
+  xbt_assert(surf_link != NULL, "surf_link is NULL !");
 
   link = xbt_new(s_SD_link_t, 1);
   link->surf_link = surf_link;
@@ -52,7 +52,7 @@ const SD_link_t *SD_link_get_list(void)
   int i;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(SD_link_get_number() > 0, "There is no link!");
+  xbt_assert(SD_link_get_number() > 0, "There is no link!");
 
   if (sd_global->link_list == NULL) {   /* this is the first time the function is called */
     sd_global->link_list = xbt_new(SD_link_t, link_lib->count);
@@ -87,7 +87,7 @@ int SD_link_get_number(void)
 void *SD_link_get_data(SD_link_t link)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(link != NULL, "Invalid parameter");
+  xbt_assert(link != NULL, "Invalid parameter");
   return link->data;
 }
 
@@ -104,7 +104,7 @@ void *SD_link_get_data(SD_link_t link)
 void SD_link_set_data(SD_link_t link, void *data)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(link != NULL, "Invalid parameter");
+  xbt_assert(link != NULL, "Invalid parameter");
   link->data = data;
 }
 
@@ -117,7 +117,7 @@ void SD_link_set_data(SD_link_t link, void *data)
 const char *SD_link_get_name(SD_link_t link)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(link != NULL, "Invalid parameter");
+  xbt_assert(link != NULL, "Invalid parameter");
   return surf_resource_name(link->surf_link);
 }
 
@@ -130,7 +130,7 @@ const char *SD_link_get_name(SD_link_t link)
 double SD_link_get_current_bandwidth(SD_link_t link)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(link != NULL, "Invalid parameter");
+  xbt_assert(link != NULL, "Invalid parameter");
   return surf_workstation_model->extension.workstation.
       get_link_bandwidth(link->surf_link);
 }
@@ -144,7 +144,7 @@ double SD_link_get_current_bandwidth(SD_link_t link)
 double SD_link_get_current_latency(SD_link_t link)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(link != NULL, "Invalid parameter");
+  xbt_assert(link != NULL, "Invalid parameter");
   return surf_workstation_model->extension.workstation.
       get_link_latency(link->surf_link);
 }
@@ -160,7 +160,7 @@ double SD_link_get_current_latency(SD_link_t link)
 e_SD_link_sharing_policy_t SD_link_get_sharing_policy(SD_link_t link)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(link != NULL, "Invalid parameter");
+  xbt_assert(link != NULL, "Invalid parameter");
   return link->sharing_policy;
 }
 
@@ -170,7 +170,7 @@ e_SD_link_sharing_policy_t SD_link_get_sharing_policy(SD_link_t link)
 void __SD_link_destroy(void *link)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(link != NULL, "Invalid parameter");
+  xbt_assert(link != NULL, "Invalid parameter");
   /* link->surf_link is freed by surf_exit and link->data is freed by the user */
   xbt_free(link);
 }

@@ -62,7 +62,7 @@ XBT_INLINE void xbt_dict_cursor_free(xbt_dict_cursor_t * cursor)
  */
 static XBT_INLINE void __cursor_not_null(xbt_dict_cursor_t cursor)
 {
-  xbt_assert0(cursor, "Null cursor");
+  xbt_assert(cursor, "Null cursor");
 }
 
 

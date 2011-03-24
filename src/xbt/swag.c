@@ -71,7 +71,7 @@ XBT_INLINE void xbt_swag_insert(void *obj, xbt_swag_t swag)
 
   (swag->count)++;
   if (swag->head == NULL) {
-    xbt_assert0(!(swag->tail), "Inconsistent swag.");
+    xbt_assert(!(swag->tail), "Inconsistent swag.");
     swag->head = obj;
     swag->tail = obj;
     return;
@@ -97,7 +97,7 @@ XBT_INLINE void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
 
   (swag->count)++;
   if (swag->head == NULL) {
-    xbt_assert0(!(swag->tail), "Inconsistent swag.");
+    xbt_assert(!(swag->tail), "Inconsistent swag.");
     swag->head = obj;
     swag->tail = obj;
     return;
@@ -123,7 +123,7 @@ XBT_INLINE void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
 
   (swag->count)++;
   if (swag->head == NULL) {
-    xbt_assert0(!(swag->tail), "Inconsistent swag.");
+    xbt_assert(!(swag->tail), "Inconsistent swag.");
     swag->head = obj;
     swag->tail = obj;
     return;

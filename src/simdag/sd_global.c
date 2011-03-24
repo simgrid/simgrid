@@ -52,7 +52,7 @@ void SD_init(int *argc, char **argv)
 
   s_SD_task_t task;
 
-  xbt_assert0(!SD_INITIALISED(), "SD_init() already called");
+  xbt_assert(!SD_INITIALISED(), "SD_init() already called");
 
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(sd_kernel, sd);

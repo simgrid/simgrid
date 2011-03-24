@@ -157,7 +157,7 @@ xbt_dynar_t xbt_workload_parse_file(char *filename)
 {
   FILE *file_in;
   file_in = fopen(filename, "r");
-  xbt_assert1(file_in, "cannot open tracefile '%s'", filename);
+  xbt_assert(file_in, "cannot open tracefile '%s'", filename);
   char *str_in = xbt_str_from_file(file_in);
   fclose(file_in);
   xbt_dynar_t in = xbt_str_split(str_in, "\n");

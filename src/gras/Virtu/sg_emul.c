@@ -76,7 +76,7 @@ static double get_from_dict(xbt_dict_t dict, const char *key)
 
 int gras_bench_always_begin(const char *location, int line)
 {
-  xbt_assert0(!benchmarking, "Already benchmarking");
+  xbt_assert(!benchmarking, "Already benchmarking");
   benchmarking = 1;
 
   if (!timer)
@@ -86,7 +86,7 @@ int gras_bench_always_begin(const char *location, int line)
 
 int gras_bench_always_end(void)
 {
-  xbt_assert0(benchmarking, "Not benchmarking yet");
+  xbt_assert(benchmarking, "Not benchmarking yet");
   benchmarking = 0;
   xbt_os_timer_stop(timer);
   duration = xbt_os_timer_elapsed(timer);
@@ -99,7 +99,7 @@ int gras_bench_always_end(void)
 int gras_bench_once_begin(const char *location, int line)
 {
   double *ir = NULL;
-  xbt_assert0(!benchmarking, "Already benchmarking");
+  xbt_assert(!benchmarking, "Already benchmarking");
   benchmarking = 1;
 
   if (!locbuf || locbufsize < strlen(location) + 64) {
@@ -122,7 +122,7 @@ int gras_bench_once_begin(const char *location, int line)
 
 int gras_bench_once_end(void)
 {
-  xbt_assert0(benchmarking, "Not benchmarking yet");
+  xbt_assert(benchmarking, "Not benchmarking yet");
   benchmarking = 0;
   if (duration > 0) {
     xbt_os_timer_stop(timer);

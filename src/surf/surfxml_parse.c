@@ -269,7 +269,7 @@ void STag_surfxml_platform(void)
 
   sscanf(A_surfxml_platform_version, "%lg", &version);
 
-  xbt_assert0((version >= 1.0), "******* BIG FAT WARNING *********\n "
+  xbt_assert((version >= 1.0), "******* BIG FAT WARNING *********\n "
       "You're using an ancient XML file.\n"
       "Since SimGrid 3.1, units are Bytes, Flops, and seconds "
       "instead of MBytes, MFlops and seconds.\n"
@@ -283,7 +283,7 @@ void STag_surfxml_platform(void)
 
       "Last, do not forget to also update your values for "
       "the calls to MSG_task_create (if any).");
-  xbt_assert0((version >= 3.0), "******* BIG FAT WARNING *********\n "
+  xbt_assert((version >= 3.0), "******* BIG FAT WARNING *********\n "
       "You're using an old XML file.\n"
       "Use simgrid_update_xml to update your file automatically. "
       "This program is installed automatically with SimGrid, or "
@@ -347,7 +347,7 @@ void surf_parse_open(const char *file)
     return;
   }
   surf_file_to_parse = surf_fopen(file, "r");
-  xbt_assert1((surf_file_to_parse), "Unable to open \"%s\"\n", file);
+  xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", file);
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, 10);
   surf_parse__switch_to_buffer(surf_input_buffer);
   surf_parse_lineno = 1;
@@ -473,7 +473,7 @@ void parse_platform_file(const char *file)
   parse_status = surf_parse();
   free_data();
   surf_parse_close();
-  xbt_assert1(!parse_status, "Parse error in %s", file);
+  xbt_assert(!parse_status, "Parse error in %s", file);
 }
 
 /* Prop tag functions */
@@ -534,7 +534,7 @@ static void parse_Etag_trace(void)
 
 static void parse_Stag_trace_connect(void)
 {
-  xbt_assert2(xbt_dict_get_or_null
+  xbt_assert(xbt_dict_get_or_null
               (traces_set_list, A_surfxml_trace_connect_trace),
               "Cannot connect trace %s to %s: trace unknown",
               A_surfxml_trace_connect_trace,
@@ -586,7 +586,7 @@ double get_cpu_power(const char *power)
       memcpy(generator, p + 6, q - (p + 6));
       generator[q - (p + 6)] = '\0';
       random = xbt_dict_get_or_null(random_data_list, generator);
-      xbt_assert1(random, "Random generator %s undefined", generator);
+      xbt_assert(random, "Random generator %s undefined", generator);
       power_scale = random_generate(random);
     }
   } else {

@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets_interface, surf_network_gtne
 // initialize the GTNetS interface and environment
 int gtnets_initialize(int wsize){
   XBT_DEBUG("Using logging.");
-  xbt_assert0(!gtnets_sim, "gtnets already initialized");
+  xbt_assert(!gtnets_sim, "gtnets already initialized");
 
   if(wsize > 0){
 	XBT_INFO("TCP window maximum size : %d", wsize);

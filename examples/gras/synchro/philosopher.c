@@ -35,7 +35,7 @@ static void pickup(int id, int lunch)
   }
 
   state[id] = EATING;
-  xbt_assert1(state[(id + (philosopher_amount - 1)) % philosopher_amount]
+  xbt_assert(state[(id + (philosopher_amount - 1)) % philosopher_amount]
               == THINKING
               && state[(id + 1) % philosopher_amount] == THINKING,
               "Philosopher %d eats at the same time that one of its neighbors!!!",
@@ -100,7 +100,7 @@ int philosopher(int argc, char *argv[])
   xbt_thread_t *philosophers;
 
   gras_init(&argc, argv);
-  xbt_assert0(argc >= 2,
+  xbt_assert(argc >= 2,
               "This program expects one argument (the amount of philosophers)");
 
   /* initializations of the philosopher mecanisms */

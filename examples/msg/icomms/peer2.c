@@ -68,14 +68,14 @@ int receiver(int argc, char *argv[])
   msg_comm_t res_irecv;
   int read;
   read = sscanf(argv[1], "%d", &id);
-  xbt_assert1(read, "Invalid argument %s\n", argv[1]);
+  xbt_assert(read, "Invalid argument %s\n", argv[1]);
   MSG_process_sleep(10);
   sprintf(mailbox, "receiver-%d", id);
   while (1) {
     res_irecv = MSG_task_irecv(&(task), mailbox);
     XBT_INFO("Wait to receive a task");
     res = MSG_comm_wait(res_irecv, -1);
-    xbt_assert0(res == MSG_OK, "MSG_task_get failed");
+    xbt_assert(res == MSG_OK, "MSG_task_get failed");
     XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
     if (!strcmp(MSG_task_get_name(task), "finalize")) {
       MSG_task_destroy(task);

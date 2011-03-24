@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  xbt_assert1((argc >= 3),
+  xbt_assert((argc >= 3),
               "Usage: %s project_name deployment_file [deployment_file...]\n",
               argv[0]);
 

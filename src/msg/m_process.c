@@ -138,7 +138,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
                                                 int argc, char **argv,
                                                 xbt_dict_t properties)
 {
-  xbt_assert0(code != NULL && host != NULL, "Invalid parameters");
+  xbt_assert(code != NULL && host != NULL, "Invalid parameters");
   simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
   m_process_t process;
 
@@ -234,7 +234,7 @@ MSG_error_t MSG_process_change_host(m_host_t host)
  */
 void* MSG_process_get_data(m_process_t process)
 {
-  xbt_assert0(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter");
 
   /* get from SIMIX the MSG process data, and then the user data */
   simdata_process_t simdata = SIMIX_req_process_get_data(process);
@@ -249,7 +249,7 @@ void* MSG_process_get_data(m_process_t process)
  */
 MSG_error_t MSG_process_set_data(m_process_t process, void *data)
 {
-  xbt_assert0(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter");
 
   simdata_process_t simdata = SIMIX_req_process_get_data(process);
   simdata->data = data;
@@ -266,7 +266,7 @@ MSG_error_t MSG_process_set_data(m_process_t process, void *data)
  */
 m_host_t MSG_process_get_host(m_process_t process)
 {
-  xbt_assert0(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter");
 
   simdata_process_t simdata = SIMIX_req_process_get_data(process);
   return simdata->m_host;
@@ -315,7 +315,7 @@ int MSG_process_get_PID(m_process_t process)
  */
 int MSG_process_get_PPID(m_process_t process)
 {
-  xbt_assert0(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter");
 
   simdata_process_t simdata = SIMIX_req_process_get_data(process);
 
@@ -330,7 +330,7 @@ int MSG_process_get_PPID(m_process_t process)
  */
 const char *MSG_process_get_name(m_process_t process)
 {
-  xbt_assert0(process, "Invalid parameter");
+  xbt_assert(process, "Invalid parameter");
 
   return SIMIX_req_process_get_name(process);
 }
@@ -355,7 +355,7 @@ const char *MSG_process_get_property_value(m_process_t process,
  */
 xbt_dict_t MSG_process_get_properties(m_process_t process)
 {
-  xbt_assert0(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter");
 
   return SIMIX_req_process_get_properties(process);
 
@@ -400,7 +400,7 @@ m_process_t MSG_process_self(void)
  */
 MSG_error_t MSG_process_suspend(m_process_t process)
 {
-  xbt_assert0(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter");
   CHECK_HOST();
 
 #ifdef HAVE_TRACING
@@ -419,7 +419,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
  */
 MSG_error_t MSG_process_resume(m_process_t process)
 {
-  xbt_assert0(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter");
   CHECK_HOST();
 
 #ifdef HAVE_TRACING
@@ -438,7 +438,7 @@ MSG_error_t MSG_process_resume(m_process_t process)
  */
 int MSG_process_is_suspended(m_process_t process)
 {
-  xbt_assert0(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter");
   return SIMIX_req_process_is_suspended(process);
 }
 

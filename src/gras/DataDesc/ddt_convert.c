@@ -143,7 +143,7 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 
       XBT_DEBUG("Resize integer %d from %lu @%p to %lu @%p",
              cpt, r_size, r_data, l_size, l_data);
-      xbt_assert0(r_data != l_data, "Impossible to resize in place");
+      xbt_assert(r_data != l_data, "Impossible to resize in place");
 
       if (sizeChange < 0) {
         XBT_DEBUG("Truncate %d bytes (%s,%s)", -sizeChange,

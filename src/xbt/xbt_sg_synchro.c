@@ -90,7 +90,7 @@ const char *xbt_thread_self_name(void)
 void xbt_thread_join(xbt_thread_t thread)
 {
   xbt_mutex_acquire(thread->mutex);
-  xbt_assert1(thread->joinable,
+  xbt_assert(thread->joinable,
               "Cannot join on %p: wasn't created joinable", thread);
   if (!thread->done) {
     xbt_cond_wait(thread->cond, thread->mutex);

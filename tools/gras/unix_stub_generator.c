@@ -122,7 +122,7 @@ void generate_sim(char *project)
 
   FICOUT = fopen(filename, "w");
 
-  xbt_assert1(FICOUT, "Unable to open %s for writing", filename);
+  xbt_assert(FICOUT, "Unable to open %s for writing", filename);
 
   fprintf(FICOUT, "%s\n", warning);
   fprintf(FICOUT, "%s", SIM_PREEMBULE);
@@ -185,7 +185,7 @@ void generate_rl(char *project)
     sprintf(filename, RL_SOURCENAME, project, key);
 
     FICOUT = fopen(filename, "w");
-    xbt_assert1(FICOUT, "Unable to open %s for writing", filename);
+    xbt_assert(FICOUT, "Unable to open %s for writing", filename);
 
     fprintf(FICOUT, "\n%s\n", warning);
     fprintf(FICOUT, "/* specific to Borland Compiler */\n"
@@ -228,7 +228,7 @@ void generate_makefile_am(char *project, char *deployment)
   sprintf(filename, MAKEFILE_FILENAME_AM, project);
 
   FICOUT = fopen(filename, "w");
-  xbt_assert1(FICOUT, "Unable to open %s for writing", filename);
+  xbt_assert(FICOUT, "Unable to open %s for writing", filename);
 
   fprintf(FICOUT, "# AUTOMAKE variable definition\n");
   fprintf(FICOUT, "INCLUDES= @CFLAGS_SimGrid@\n\n");
@@ -297,7 +297,7 @@ void generate_makefile_local(char *project, char *deployment)
   sprintf(filename, MAKEFILE_FILENAME_LOCAL, project);
 
   FICOUT = fopen(filename, "w");
-  xbt_assert1(FICOUT, "Unable to open %s for writing", filename);
+  xbt_assert(FICOUT, "Unable to open %s for writing", filename);
   free(filename);
 
   fprintf(FICOUT,

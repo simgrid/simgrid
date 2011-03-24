@@ -81,7 +81,7 @@ static XBT_INLINE void gras_dd_alloc_ref(xbt_dict_t refs, long int size, char **
 {
   char *l_data = NULL;
 
-  xbt_assert1(size > 0, "Cannot allocate %ld bytes!", size);
+  xbt_assert(size > 0, "Cannot allocate %ld bytes!", size);
   l_data = xbt_malloc((size_t) size);
 
   *l_ref = l_data;
@@ -136,7 +136,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
       char *field_dst;
 
       struct_data = type->category.struct_data;
-      xbt_assert1(struct_data.closed,
+      xbt_assert(struct_data.closed,
                   "Please call gras_datadesc_declare_struct_close on %s before copying it",
                   type->name);
       XBT_VERB(">> Copy all fields of the structure %s", type->name);
@@ -194,17 +194,17 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
 
       union_data = type->category.union_data;
 
-      xbt_assert1(union_data.closed,
+      xbt_assert(union_data.closed,
                   "Please call gras_datadesc_declare_union_close on %s before copying it",
                   type->name);
       /* retrieve the field number */
       field_num = union_data.selector(type, state, src);
 
-      xbt_assert1(field_num > 0,
+      xbt_assert(field_num > 0,
                   "union field selector of %s gave a negative value",
                   type->name);
 
-      xbt_assert3(field_num < xbt_dynar_length(union_data.fields),
+      xbt_assert(field_num < xbt_dynar_length(union_data.fields),
                   "union field selector of %s returned %d but there is only %lu fields",
                   type->name, field_num,
                   xbt_dynar_length(union_data.fields));
@@ -325,7 +325,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
         array_count = subsize;
       if (array_count == -1) {
         array_count = array_data.dynamic_size(type, state, src);
-        xbt_assert1(array_count >= 0,
+        xbt_assert(array_count >= 0,
                     "Invalid (negative) array size for type %s",
                     type->name);
       }
@@ -390,7 +390,7 @@ int gras_datadesc_memcpy(gras_datadesc_type_t type, void *src, void *dst)
   static xbt_dict_t refs = NULL;        /* all references already sent */
   int size = 0;
 
-  xbt_assert0(type, "called with NULL type descriptor");
+  xbt_assert(type, "called with NULL type descriptor");
 
   XBT_DEBUG("Memcopy a %s from %p to %p", gras_datadesc_get_name(type), src,
          dst);
@@ -449,7 +449,7 @@ gras_datadesc_send_rec(gras_socket_t sock,
       char *field_data;
 
       struct_data = type->category.struct_data;
-      xbt_assert1(struct_data.closed,
+      xbt_assert(struct_data.closed,
                   "Please call gras_datadesc_declare_struct_close on %s before sending it",
                   type->name);
       XBT_VERB(">> Send all fields of the structure %s", type->name);
@@ -481,17 +481,17 @@ gras_datadesc_send_rec(gras_socket_t sock,
 
       union_data = type->category.union_data;
 
-      xbt_assert1(union_data.closed,
+      xbt_assert(union_data.closed,
                   "Please call gras_datadesc_declare_union_close on %s before sending it",
                   type->name);
       /* retrieve the field number */
       field_num = union_data.selector(type, state, data);
 
-      xbt_assert1(field_num > 0,
+      xbt_assert(field_num > 0,
                   "union field selector of %s gave a negative value",
                   type->name);
 
-      xbt_assert3(field_num < xbt_dynar_length(union_data.fields),
+      xbt_assert(field_num < xbt_dynar_length(union_data.fields),
                   "union field selector of %s returned %d but there is only %lu fields",
                   type->name, field_num,
                   xbt_dynar_length(union_data.fields));
@@ -579,7 +579,7 @@ gras_datadesc_send_rec(gras_socket_t sock,
       count = array_data.fixed_size;
       if (count == -1) {
         count = array_data.dynamic_size(type, state, data);
-        xbt_assert1(count >= 0,
+        xbt_assert(count >= 0,
                     "Invalid (negative) array size for type %s",
                     type->name);
         gras_dd_send_int(sock, &count, 0 /*non-stable */ );
@@ -635,7 +635,7 @@ void gras_datadesc_send(gras_socket_t sock,
   static gras_cbps_t state = NULL;
   static xbt_dict_t refs = NULL;        /* all references already sent */
 
-  xbt_assert0(type, "called with NULL type descriptor");
+  xbt_assert(type, "called with NULL type descriptor");
 
   if (!state) {
     state = gras_cbps_new();
@@ -704,7 +704,7 @@ gras_datadesc_recv_rec(gras_socket_t sock,
 
       struct_data = type->category.struct_data;
 
-      xbt_assert1(struct_data.closed,
+      xbt_assert(struct_data.closed,
                   "Please call gras_datadesc_declare_struct_close on %s before receiving it",
                   type->name);
       XBT_VERB(">> Receive all fields of the structure %s", type->name);
@@ -736,7 +736,7 @@ gras_datadesc_recv_rec(gras_socket_t sock,
 
       union_data = type->category.union_data;
 
-      xbt_assert1(union_data.closed,
+      xbt_assert(union_data.closed,
                   "Please call gras_datadesc_declare_union_close on %s before receiving it",
                   type->name);
       /* retrieve the field number */
@@ -980,7 +980,7 @@ gras_datadesc_recv(gras_socket_t sock,
     refs = xbt_dict_new();
   }
 
-  xbt_assert0(type, "called with NULL type descriptor");
+  xbt_assert(type, "called with NULL type descriptor");
   TRY {
     gras_datadesc_recv_rec(sock, state, refs, type,
                            r_arch, NULL, 0, (char *) dst, -1, type->cycle);

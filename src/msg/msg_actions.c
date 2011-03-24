@@ -61,7 +61,7 @@ static int MSG_action_runner(int argc, char *argv[])
       free(evt);
     }
   } else {                      // Should have got my trace file in argument
-    xbt_assert1(argc >= 2,
+    xbt_assert(argc >= 2,
                 "No '%s' agent function provided, no simulation-wide trace file provided to MSG_action_trace_run(), "
                 "and no process-wide trace file provided in deployment file. Aborting.",
                 argv[0]
@@ -171,7 +171,7 @@ MSG_error_t MSG_action_trace_run(char *path)
 
   if (path) {
     action_fp = fopen(path, "r");
-    xbt_assert2(action_fp != NULL, "Cannot open %s: %s", path,
+    xbt_assert(action_fp != NULL, "Cannot open %s: %s", path,
                 strerror(errno));
   }
   res = MSG_main();

@@ -61,7 +61,7 @@ static gras_sg_portrec_t find_port(gras_hostdata_t * hd, int port)
   unsigned int cpt;
   gras_sg_portrec_t pr;
 
-  xbt_assert0(hd, "Please run gras_process_init on each process");
+  xbt_assert(hd, "Please run gras_process_init on each process");
 
   xbt_dynar_foreach(hd->ports, cpt, pr) {
     if (pr->port == port)
@@ -200,7 +200,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self, int port, gras_socket_t s
   gras_sg_portrec_t pr;
   gras_trp_sg_sock_data_t data;
 
-  xbt_assert0(hd, "Please run gras_process_init on each process");
+  xbt_assert(hd, "Please run gras_process_init on each process");
 
   sock->accepting = 1;
 
@@ -256,7 +256,7 @@ void gras_trp_sg_socket_close(gras_socket_t sock)
   if (!sock)
     return;
 
-  xbt_assert0(hd, "Please run gras_process_init on each process");
+  xbt_assert(hd, "Please run gras_process_init on each process");
 
   gras_trp_sg_sock_data_t sockdata = sock->data;
 
@@ -306,7 +306,7 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
   gras_msg_t msg;               /* message to send */
 
   //gras_trp_sg_sock_data_t sock_data = (gras_trp_sg_sock_data_t) sock->data;
-  xbt_assert0(sock->meas,
+  xbt_assert(sock->meas,
               "SG chunk exchange shouldn't be used on non-measurement sockets");
 
 
@@ -342,7 +342,7 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
   gras_trp_procdata_t trp_proc =
       (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
 
-  xbt_assert0(sock->meas,
+  xbt_assert(sock->meas,
               "SG chunk exchange shouldn't be used on non-measurement sockets");
   xbt_queue_shift_timed(trp_proc->meas_selectable_sockets,
                         &remote_socket, 60);

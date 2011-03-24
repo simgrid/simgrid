@@ -32,7 +32,7 @@ xbt_peer_t xbt_peer_from_string(const char *peerport)
   xbt_peer_t res = xbt_new(s_xbt_peer_t, 1);
   char *name = xbt_strdup(peerport);
   char *port_str = strchr(name, ':');
-  xbt_assert1(port_str,
+  xbt_assert(port_str,
               "argument of xbt_peer_from_string should be of form <peername>:<port>, it's '%s'",
               peerport);
   *port_str = '\0';

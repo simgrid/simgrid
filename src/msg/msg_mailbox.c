@@ -58,8 +58,8 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 msg_mailbox_t MSG_mailbox_get_by_channel(m_host_t host,
                                          m_channel_t channel)
 {
-  xbt_assert0((host != NULL), "Invalid host");
-  xbt_assert1((channel >= 0)
+  xbt_assert((host != NULL), "Invalid host");
+  xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
@@ -83,7 +83,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 #endif
 
   /* Sanity check */
-  xbt_assert0(task, "Null pointer for the task storage");
+  xbt_assert(task, "Null pointer for the task storage");
 
   if (*task)
     XBT_CRITICAL
@@ -146,7 +146,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   t_simdata->sender = process;
   t_simdata->source = MSG_host_self();
 
-  xbt_assert0(t_simdata->isused == 0,
+  xbt_assert(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
 
   t_simdata->isused=1;

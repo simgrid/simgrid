@@ -42,7 +42,7 @@ xbt_multidict_set_ext(xbt_dict_t mdict,
   int keys_len = xbt_dynar_length(keys);
 
   xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
-  xbt_assert0(keys_len, "Can't set a zero-long key set in a multidict");
+  xbt_assert(keys_len, "Can't set a zero-long key set in a multidict");
 
   XBT_DEBUG("xbt_multidict_set(%p,%d)", mdict, keys_len);
 
@@ -124,7 +124,7 @@ void *xbt_multidict_get_ext(xbt_dict_t mdict,
   int keys_len = xbt_dynar_length(keys);
 
   xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
-  xbt_assert0(xbt_dynar_length(keys) >= 1,
+  xbt_assert(xbt_dynar_length(keys) >= 1,
               "Can't get a zero-long key set in a multidict");
 
   XBT_DEBUG("xbt_multidict_get(%p, %ld)", mdict, xbt_dynar_length(keys));
@@ -191,7 +191,7 @@ xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys,
   int keys_len = xbt_dynar_length(keys);
 
   xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
-  xbt_assert0(xbt_dynar_length(keys),
+  xbt_assert(xbt_dynar_length(keys),
               "Can't remove a zero-long key set in a multidict");
 
   for (i = 0, thislevel = mdict; i < keys_len - 1;

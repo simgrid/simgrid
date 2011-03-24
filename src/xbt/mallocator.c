@@ -40,8 +40,8 @@ xbt_mallocator_t xbt_mallocator_new(int size,
 
   xbt_mallocator_t m;
 
-  xbt_assert0(size > 0, "size must be positive");
-  xbt_assert0(new_f != NULL && free_f != NULL
+  xbt_assert(size > 0, "size must be positive");
+  xbt_assert(new_f != NULL && free_f != NULL
               && reset_f != NULL, "invalid parameter");
 
   /* Let's force 0 size mallocator! (Dirty hack, blame Martin :) ) */
@@ -80,7 +80,7 @@ void xbt_mallocator_free(xbt_mallocator_t m)
 {
 
   int i;
-  xbt_assert0(m != NULL, "Invalid parameter");
+  xbt_assert(m != NULL, "Invalid parameter");
 
   XBT_VERB("Frees mallocator %p (size:%d/%d)", m, m->current_size,
         m->max_size);

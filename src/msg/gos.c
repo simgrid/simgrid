@@ -43,14 +43,14 @@ MSG_error_t MSG_task_execute(m_task_t task)
 
   simdata = task->simdata;
 
-  xbt_assert0(simdata->host_nb == 0,
+  xbt_assert(simdata->host_nb == 0,
               "This is a parallel task. Go to hell.");
 
 #ifdef HAVE_TRACING
   TRACE_msg_task_execute_start(task);
 #endif
 
-  xbt_assert1((!simdata->compute) && (task->simdata->isused == 0),
+  xbt_assert((!simdata->compute) && (task->simdata->isused == 0),
               "This task is executed somewhere else. Go fix your code! %d",
               task->simdata->isused);
 
@@ -173,11 +173,11 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   simdata = task->simdata;
   p_simdata = SIMIX_process_self_get_data();
 
-  xbt_assert0((!simdata->compute)
+  xbt_assert((!simdata->compute)
               && (task->simdata->isused == 0),
               "This task is executed somewhere else. Go fix your code!");
 
-  xbt_assert0(simdata->host_nb,
+  xbt_assert(simdata->host_nb,
               "This is not a parallel task. Go to hell.");
 
   XBT_DEBUG("Parallel computing on %s", p_simdata->m_host->name);
@@ -331,7 +331,7 @@ MSG_error_t
 MSG_task_get_ext(m_task_t * task, m_channel_t channel, double timeout,
                  m_host_t host)
 {
-  xbt_assert1((channel >= 0)
+  xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
@@ -414,7 +414,7 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
   t_simdata->sender = process;
   t_simdata->source = MSG_host_self();
 
-  xbt_assert0(t_simdata->isused == 0,
+  xbt_assert(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
 
   t_simdata->isused = 1;
@@ -465,7 +465,7 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   t_simdata->sender = process;
   t_simdata->source = MSG_host_self();
 
-  xbt_assert0(t_simdata->isused == 0,
+  xbt_assert(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
 
   t_simdata->isused = 1;
@@ -495,7 +495,7 @@ msg_comm_t MSG_task_irecv(m_task_t *task, const char *alias)
   /* FIXME: these functions are not tracable */
 
   /* Sanity check */
-  xbt_assert0(task, "Null pointer for the task storage");
+  xbt_assert(task, "Null pointer for the task storage");
 
   if (*task)
     XBT_CRITICAL
@@ -731,7 +731,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
     xbt_ex_free(e);
   }
 
-  xbt_assert0(finished_index != -1, "WaitAny returned -1");
+  xbt_assert(finished_index != -1, "WaitAny returned -1");
   xbt_dynar_free(&s_comms);
 
   comm = xbt_dynar_get_as(comms, finished_index, msg_comm_t);
@@ -755,7 +755,7 @@ MSG_error_t MSG_comm_get_status(msg_comm_t comm) {
 
 m_task_t MSG_comm_get_task(msg_comm_t comm)
 {
-  xbt_assert0(comm, "Invalid parameter");
+  xbt_assert(comm, "Invalid parameter");
 
   return comm->task_received ? *comm->task_received : comm->task_sent;
 }
@@ -838,7 +838,7 @@ MSG_error_t
 MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
                           m_channel_t channel, double timeout)
 {
-  xbt_assert1((channel >= 0)
+  xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
@@ -889,7 +889,7 @@ int MSG_task_listen(const char *alias)
  */
 int MSG_task_Iprobe(m_channel_t channel)
 {
-  xbt_assert1((channel >= 0)
+  xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
@@ -915,7 +915,7 @@ int MSG_task_Iprobe(m_channel_t channel)
  */
 int MSG_task_probe_from_host(int channel, m_host_t host)
 {
-  xbt_assert1((channel >= 0)
+  xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
@@ -952,7 +952,7 @@ int MSG_task_probe_from(m_channel_t channel)
 
   CHECK_HOST();
 
-  xbt_assert1((channel >= 0)
+  xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 

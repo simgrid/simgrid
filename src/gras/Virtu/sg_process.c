@@ -95,7 +95,7 @@ void gras_process_exit()
   xbt_queue_free(&trp_pd->meas_selectable_sockets);
 
 
-  xbt_assert0(hd, "Run gras_process_init (ie, gras_init)!!");
+  xbt_assert(hd, "Run gras_process_init (ie, gras_init)!!");
 
   XBT_VERB("GRAS: Finalizing process '%s' (%d)",
         SIMIX_req_process_get_name(SIMIX_process_self()), gras_os_getpid());
@@ -139,7 +139,7 @@ gras_procdata_t *gras_procdata_get(void)
   gras_procdata_t *pd =
       (gras_procdata_t *) SIMIX_req_process_get_data(SIMIX_process_self());
 
-  xbt_assert0(pd, "Run gras_process_init! (ie, gras_init)");
+  xbt_assert(pd, "Run gras_process_init! (ie, gras_init)");
 
   return pd;
 }
@@ -148,7 +148,7 @@ void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p)
 {
   gras_procdata_t *pd = (gras_procdata_t *) SIMIX_req_process_get_data(p);
 
-  xbt_assert2(pd,
+  xbt_assert(pd,
               "process '%s' on '%s' didn't run gras_process_init! (ie, gras_init)",
               SIMIX_req_process_get_name(p),
               SIMIX_req_host_get_name(SIMIX_req_process_get_host(p)));

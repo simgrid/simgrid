@@ -197,7 +197,7 @@ static double vivaldi_get_link_latency (routing_component_t rc,const char *src, 
   euclidean_dist = sqrt (eculidean_dist_comp(0,src_ctn,dst_ctn)+eculidean_dist_comp(1,src_ctn,dst_ctn))
   								+fabs(atof(xbt_dynar_get_as(src_ctn, 2, char *)))+fabs(atof(xbt_dynar_get_as(dst_ctn, 2, char *)));
 
-  xbt_assert2(euclidean_dist>=0, "Euclidean Dist is less than 0\"%s\" and \"%.2f\"", src, euclidean_dist);
+  xbt_assert(euclidean_dist>=0, "Euclidean Dist is less than 0\"%s\" and \"%.2f\"", src, euclidean_dist);
 
   return euclidean_dist;
 
@@ -223,10 +223,10 @@ static void parse_S_host(const char *host_id, const char* coord)
   network_element_info_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
-  xbt_assert1(!xbt_lib_get_or_null(host_lib, host_id,ROUTING_HOST_LEVEL),
+  xbt_assert(!xbt_lib_get_or_null(host_lib, host_id,ROUTING_HOST_LEVEL),
               "Reading a host, processing unit \"%s\" already exists",
               host_id);
-  xbt_assert1(current_routing->set_processing_unit,
+  xbt_assert(current_routing->set_processing_unit,
               "no defined method \"set_processing_unit\" in \"%s\"",
               current_routing->name);
   (*(current_routing->set_processing_unit)) (current_routing, host_id);
@@ -283,10 +283,10 @@ static void parse_S_router(const char *router_id)
 
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
-  xbt_assert1(!xbt_lib_get_or_null(as_router_lib,A_surfxml_router_id, ROUTING_ASR_LEVEL),
+  xbt_assert(!xbt_lib_get_or_null(as_router_lib,A_surfxml_router_id, ROUTING_ASR_LEVEL),
               "Reading a router, processing unit \"%s\" already exists",
               router_id);
-  xbt_assert1(current_routing->set_processing_unit,
+  xbt_assert(current_routing->set_processing_unit,
               "no defined method \"set_processing_unit\" in \"%s\"",
               current_routing->name);
   (*(current_routing->set_processing_unit)) (current_routing,
@@ -330,7 +330,7 @@ static void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_
            src_id, dst_id);
   src = src_id;
   dst = dst_id;
-  xbt_assert2(strlen(src) > 0 || strlen(dst) > 0,
+  xbt_assert(strlen(src) > 0 || strlen(dst) > 0,
               "Some limits are null in the route between \"%s\" and \"%s\"",
               src, dst);
   link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
@@ -365,7 +365,7 @@ static void parse_S_ASroute_new_and_endpoints(void)
   dst = A_surfxml_ASroute_dst;
   gw_src = A_surfxml_ASroute_gw_src;
   gw_dst = A_surfxml_ASroute_gw_dst;
-  xbt_assert2(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0
+  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0
               || strlen(gw_dst) > 0,
               "Some limits are null in the route between \"%s\" and \"%s\"",
               src, dst);
@@ -385,7 +385,7 @@ static void parse_S_bypassRoute_new_and_endpoints(void)
   dst = A_surfxml_bypassRoute_dst;
   gw_src = A_surfxml_bypassRoute_gw_src;
   gw_dst = A_surfxml_bypassRoute_gw_dst;
-  xbt_assert2(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0
+  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0
               || strlen(gw_dst) > 0,
               "Some limits are null in the route between \"%s\" and \"%s\"",
               src, dst);
@@ -437,7 +437,7 @@ static void parse_E_route_store_route(void)
 {
   name_route_extended_t route = xbt_new0(s_name_route_extended_t, 1);
   route->generic_route.link_list = link_list;
-  xbt_assert1(current_routing->set_route,
+  xbt_assert(current_routing->set_route,
               "no defined method \"set_route\" in \"%s\"",
               current_routing->name);
   (*(current_routing->set_route)) (current_routing, src, dst, route);
@@ -455,7 +455,7 @@ static void parse_E_ASroute_store_route(void)
   e_route->generic_route.link_list = link_list;
   e_route->src_gateway = xbt_strdup(gw_src);
   e_route->dst_gateway = xbt_strdup(gw_dst);
-  xbt_assert1(current_routing->set_ASroute,
+  xbt_assert(current_routing->set_ASroute,
               "no defined method \"set_ASroute\" in \"%s\"",
               current_routing->name);
   (*(current_routing->set_ASroute)) (current_routing, src, dst, e_route);
@@ -475,7 +475,7 @@ static void parse_E_bypassRoute_store_route(void)
   e_route->generic_route.link_list = link_list;
   e_route->src_gateway = xbt_strdup(gw_src);
   e_route->dst_gateway = xbt_strdup(gw_dst);
-  xbt_assert1(current_routing->set_bypassroute,
+  xbt_assert(current_routing->set_bypassroute,
               "no defined method \"set_bypassroute\" in \"%s\"",
               current_routing->name);
   (*(current_routing->set_bypassroute)) (current_routing, src, dst,
@@ -533,7 +533,7 @@ static void parse_S_AS(char *AS_id, char *AS_routing)
 
   } else if (current_routing != NULL && global_routing->root != NULL) {
 
-    xbt_assert1(!xbt_dict_get_or_null
+    xbt_assert(!xbt_dict_get_or_null
                 (current_routing->routing_sons, AS_id),
                 "The AS \"%s\" already exists", AS_id);
     /* it is a part of the tree */
@@ -596,7 +596,7 @@ static void parse_E_AS(const char *AS_id)
     THROWF(arg_error, 0, "Close AS(%s), that never open", AS_id);
   } else {
     network_element_info_t info = NULL;
-    xbt_assert1(!xbt_lib_get_or_null(as_router_lib,current_routing->name, ROUTING_ASR_LEVEL),
+    xbt_assert(!xbt_lib_get_or_null(as_router_lib,current_routing->name, ROUTING_ASR_LEVEL),
     		"The AS \"%s\" already exists",current_routing->name);
     info = xbt_new0(s_network_element_info_t, 1);
     info->rc_component = current_routing->routing_father;
@@ -658,7 +658,7 @@ static char* elements_As_name(const char *name)
 static xbt_dynar_t elements_father(const char *src, const char *dst)
 {
 
-  xbt_assert0(src && dst, "bad parameters for \"elements_father\" method");
+  xbt_assert(src && dst, "bad parameters for \"elements_father\" method");
 
   xbt_dynar_t result = xbt_dynar_new(sizeof(char *), NULL);
 
@@ -679,7 +679,7 @@ static xbt_dynar_t elements_father(const char *src, const char *dst)
   src_as = ((network_element_info_t)src_data)->rc_component;
   dst_as = ((network_element_info_t)dst_data)->rc_component;
 
-  xbt_assert2(src_as
+  xbt_assert(src_as
               && dst_as,
               "Ask for route \"from\"(%s) or \"to\"(%s) no found", src,
               dst);
@@ -753,7 +753,7 @@ static route_extended_t _get_route(const char *src, const char *dst)
 
   XBT_DEBUG("Solve route  \"%s\" to \"%s\"", src, dst);
 
-  xbt_assert0(src && dst, "bad parameters for \"_get_route\" method");
+  xbt_assert(src && dst, "bad parameters for \"_get_route\" method");
 
   route_extended_t e_route, e_route_cnt, e_route_src = NULL, e_route_dst =
       NULL;
@@ -778,7 +778,7 @@ static route_extended_t _get_route(const char *src, const char *dst)
     if (strcmp(src, dst)) {
       e_route_cnt =
           (*(common_father->get_route)) (common_father, src, dst);
-      xbt_assert2(e_route_cnt, "no route between \"%s\" and \"%s\"", src,
+      xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"", src,
                   dst);
       xbt_dynar_foreach(e_route_cnt->generic_route.link_list, cpt, link) {
         xbt_dynar_push(e_route->generic_route.link_list, &link);
@@ -801,17 +801,17 @@ static route_extended_t _get_route(const char *src, const char *dst)
           (*(common_father->get_route)) (common_father, src_father->name,
                                          dst_father->name);
 
-    xbt_assert2(e_route_cnt, "no route between \"%s\" and \"%s\"",
+    xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"",
                 src_father->name, dst_father->name);
 
-    xbt_assert2((e_route_cnt->src_gateway == NULL) ==
+    xbt_assert((e_route_cnt->src_gateway == NULL) ==
                 (e_route_cnt->dst_gateway == NULL),
                 "bad gateway for route between \"%s\" and \"%s\"", src,
                 dst);
 
     if (strcmp(src, e_route_cnt->src_gateway)) {
       e_route_src = _get_route(src, e_route_cnt->src_gateway);
-      xbt_assert2(e_route_src, "no route between \"%s\" and \"%s\"", src,
+      xbt_assert(e_route_src, "no route between \"%s\" and \"%s\"", src,
                   e_route_cnt->src_gateway);
       xbt_dynar_foreach(e_route_src->generic_route.link_list, cpt, link) {
         xbt_dynar_push(e_route->generic_route.link_list, &link);
@@ -824,7 +824,7 @@ static route_extended_t _get_route(const char *src, const char *dst)
 
     if (strcmp(e_route_cnt->dst_gateway, dst)) {
       e_route_dst = _get_route(e_route_cnt->dst_gateway, dst);
-      xbt_assert2(e_route_dst, "no route between \"%s\" and \"%s\"",
+      xbt_assert(e_route_dst, "no route between \"%s\" and \"%s\"",
                   e_route_cnt->dst_gateway, dst);
       xbt_dynar_foreach(e_route_dst->generic_route.link_list, cpt, link) {
         xbt_dynar_push(e_route->generic_route.link_list, &link);
@@ -849,7 +849,7 @@ static double _get_latency(const char *src, const char *dst)
   double latency, latency_src, latency_dst = 0.0;
 
   XBT_DEBUG("Solve route  \"%s\" to \"%s\"", src, dst);
-  xbt_assert0(src && dst, "bad parameters for \"_get_route\" method");
+  xbt_assert(src && dst, "bad parameters for \"_get_route\" method");
 
   route_extended_t e_route_cnt;
 
@@ -867,7 +867,7 @@ static double _get_latency(const char *src, const char *dst)
     if (strcmp(src, dst)) {
       latency =
           (*(common_father->get_latency)) (common_father, src, dst);
-      xbt_assert2(latency>=0, "no route between \"%s\" and \"%s\"", src,
+      xbt_assert(latency>=0, "no route between \"%s\" and \"%s\"", src,
                   dst);
      } else latency = 0;
   } else {                      /* SURF_ROUTING_RECURSIVE */
@@ -876,16 +876,16 @@ static double _get_latency(const char *src, const char *dst)
       e_route_bypass =
           (*(common_father->get_bypass_route)) (common_father, src, dst);
 
-    xbt_assert0(!e_route_bypass,"Bypass cannot work yet with get_latency"); 
+    xbt_assert(!e_route_bypass,"Bypass cannot work yet with get_latency");
                                                  
     e_route_cnt =
           (*(common_father->get_route)) (common_father, src_father->name,
                                          dst_father->name);
 
-    xbt_assert2(e_route_cnt, "no route between \"%s\" and \"%s\"",
+    xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"",
                 src_father->name, dst_father->name);
 
-    xbt_assert2((e_route_cnt->src_gateway == NULL) ==
+    xbt_assert((e_route_cnt->src_gateway == NULL) ==
                 (e_route_cnt->dst_gateway == NULL),
                 "bad gateway for route between \"%s\" and \"%s\"", src,
                 dst);            
@@ -893,14 +893,14 @@ static double _get_latency(const char *src, const char *dst)
           (*(common_father->get_latency)) (common_father, elements_As_name(src),
         		  elements_As_name(dst));
 
-    xbt_assert2(latency>=0, "no route between \"%s\" and \"%s\"",
+    xbt_assert(latency>=0, "no route between \"%s\" and \"%s\"",
                 src_father->name, dst_father->name);
     
 
     if (src != e_route_cnt->src_gateway) {
 
       latency_src = _get_latency(src, e_route_cnt->src_gateway);
-      xbt_assert2(latency_src>=0, "no route between \"%s\" and \"%s\"", src,
+      xbt_assert(latency_src>=0, "no route between \"%s\" and \"%s\"", src,
                   e_route_cnt->src_gateway);
       latency += latency_src;
     }
@@ -908,7 +908,7 @@ static double _get_latency(const char *src, const char *dst)
     if (e_route_cnt->dst_gateway != dst) {
     
       latency_dst = _get_latency(e_route_cnt->dst_gateway, dst);
-      xbt_assert2(latency_dst>=0, "no route between \"%s\" and \"%s\"",
+      xbt_assert(latency_dst>=0, "no route between \"%s\" and \"%s\"",
                   e_route_cnt->dst_gateway, dst);
       latency += latency_dst;
     }
@@ -948,7 +948,7 @@ static xbt_dynar_t get_route(const char *src, const char *dst)
     xbt_dynar_free(&elem_father_list);
   }
 
-  xbt_assert2(e_route, "no route between \"%s\" and \"%s\"", src, dst);
+  xbt_assert(e_route, "no route between \"%s\" and \"%s\"", src, dst);
 
   if (global_routing->last_route)
     xbt_dynar_free(&(global_routing->last_route));
@@ -1000,7 +1000,7 @@ static double get_latency(const char *src, const char *dst)
   else
     latency = (*(common_father->get_latency)) (common_father, src, dst);
 
-  xbt_assert2(latency>=0.0, "no route between \"%s\" and \"%s\"", src, dst);
+  xbt_assert(latency>=0.0, "no route between \"%s\" and \"%s\"", src, dst);
   xbt_dynar_free(&elem_father_list);
 
   return latency;
@@ -1027,7 +1027,7 @@ static void _finalize(routing_component_t rc)
     char *tmp_name = rc->name;
     xbt_dict_free(&tmp_sons);
     xbt_free(tmp_name);
-    xbt_assert1(rc->finalize, "no defined method \"finalize\" in \"%s\"",
+    xbt_assert(rc->finalize, "no defined method \"finalize\" in \"%s\"",
                 current_routing->name);
     (*(rc->finalize)) (rc);
   }
@@ -1200,7 +1200,7 @@ static xbt_dynar_t full_get_onelink_routes(routing_component_t rc)
     xbt_dict_foreach(routing->generic_routing.to_index, c2, k2, d2) {
       int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, k1);
       int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, k2);
-      xbt_assert2(src_id
+      xbt_assert(src_id
                   && dst_id,
                   "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
                   src, dst);
@@ -1231,7 +1231,7 @@ static xbt_dynar_t full_get_onelink_routes(routing_component_t rc)
 static route_extended_t full_get_route(routing_component_t rc,
                                        const char *src, const char *dst)
 {
-  xbt_assert1(rc && src
+  xbt_assert(rc && src
               && dst,
               "Invalid params for \"get_route\" function at AS \"%s\"",
               rc->name);
@@ -1243,7 +1243,7 @@ static route_extended_t full_get_route(routing_component_t rc,
   generic_src_dst_check(rc, src, dst);
   int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
   int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, dst);
-  xbt_assert2(src_id
+  xbt_assert(src_id
               && dst_id,
               "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
               src, dst);
@@ -1365,10 +1365,10 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 	routing_component_full_t routing = ((routing_component_full_t) rc);
 	size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
 
-	xbt_assert2(src_id
+	xbt_assert(src_id
 			  && dst_id, "Network elements %s or %s not found", src, dst);
 
-	xbt_assert2(xbt_dynar_length(route->generic_route.link_list) > 0,
+	xbt_assert(xbt_dynar_length(route->generic_route.link_list) > 0,
 			  "Invalid count of links, must be greater than zero (%s,%s)",
 			  src, dst);
 
@@ -1383,10 +1383,10 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 		xbt_dynar_foreach(route->generic_route.link_list,i,link_name)
 		{
 			void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
-			xbt_assert1(link,"Link : '%s' doesn't exists.",link_name);
+			xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
 			xbt_dynar_push(link_route_to_test,&link);
 		}
-		xbt_assert2(!xbt_dynar_compare(
+		xbt_assert(!xbt_dynar_compare(
 			  (void*)TO_ROUTE_FULL(*src_id, *dst_id)->generic_route.link_list,
 			  (void*)link_route_to_test,
 			  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
@@ -1427,10 +1427,10 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 			{
 				link_name = xbt_dynar_get_as(route->generic_route.link_list,i-1,void *);
 				void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
-				xbt_assert1(link,"Link : '%s' doesn't exists.",link_name);
+				xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
 				xbt_dynar_push(link_route_to_test,&link);
 			}
-			xbt_assert2(!xbt_dynar_compare(
+			xbt_assert(!xbt_dynar_compare(
 				  (void*)TO_ROUTE_FULL(*dst_id, *src_id)->generic_route.link_list,
 			      (void*)link_route_to_test,
 				  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
@@ -1508,7 +1508,7 @@ static xbt_dynar_t floyd_get_onelink_routes(routing_component_t rc)
 static route_extended_t floyd_get_route(routing_component_t rc,
                                         const char *src, const char *dst)
 {
-  xbt_assert1(rc && src
+  xbt_assert(rc && src
               && dst,
               "Invalid params for \"get_route\" function at AS \"%s\"",
               rc->name);
@@ -1520,7 +1520,7 @@ static route_extended_t floyd_get_route(routing_component_t rc,
   generic_src_dst_check(rc, src, dst);
   int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
   int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, dst);
-  xbt_assert2(src_id
+  xbt_assert(src_id
               && dst_id,
               "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
               src, dst);
@@ -1546,7 +1546,7 @@ static route_extended_t floyd_get_route(routing_component_t rc,
     pred = TO_FLOYD_PRED(*src_id, pred);
     if (pred == -1)             /* if no pred in route -> no route to host */
       break;
-    xbt_assert2(TO_FLOYD_LINK(pred, prev_pred),
+    xbt_assert(TO_FLOYD_LINK(pred, prev_pred),
                 "Invalid link for the route between \"%s\" or \"%s\"", src,
                 dst);
 
@@ -1564,7 +1564,7 @@ static route_extended_t floyd_get_route(routing_component_t rc,
         && strcmp(gw_dst, prev_gw_src)) {
       xbt_dynar_t e_route_as_to_as =
           (*(global_routing->get_route)) (gw_dst, prev_gw_src);
-      xbt_assert2(e_route_as_to_as, "no route between \"%s\" and \"%s\"",
+      xbt_assert(e_route_as_to_as, "no route between \"%s\" and \"%s\"",
                   gw_dst, prev_gw_src);
       links = e_route_as_to_as;
       int pos = 0;
@@ -1582,7 +1582,7 @@ static route_extended_t floyd_get_route(routing_component_t rc,
     first = 0;
 
   } while (pred != *src_id);
-  xbt_assert4(pred != -1, "no route from host %d to %d (\"%s\" to \"%s\")",
+  xbt_assert(pred != -1, "no route from host %d to %d (\"%s\" to \"%s\")",
               *src_id, *dst_id, src, dst);
 
   if (rc->hierarchy == SURF_ROUTING_RECURSIVE) {
@@ -1755,10 +1755,10 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 		xbt_dynar_foreach(route->generic_route.link_list,cpt,link_name)
 		{
 			void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
-			xbt_assert1(link,"Link : '%s' doesn't exists.",link_name);
+			xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
 			xbt_dynar_push(link_route_to_test,&link);
 		}
-		xbt_assert2(!xbt_dynar_compare(
+		xbt_assert(!xbt_dynar_compare(
 			  (void*)TO_FLOYD_LINK(*src_id, *dst_id)->generic_route.link_list,
 			  (void*)link_route_to_test,
 			  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
@@ -1800,10 +1800,10 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 			{
 				link_name = xbt_dynar_get_as(route->generic_route.link_list,i-1,void *);
 				void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
-				xbt_assert1(link,"Link : '%s' doesn't exists.",link_name);
+				xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
 				xbt_dynar_push(link_route_to_test,&link);
 			}
-			xbt_assert2(!xbt_dynar_compare(
+			xbt_assert(!xbt_dynar_compare(
 				  (void*)TO_FLOYD_LINK(*dst_id, *src_id)->generic_route.link_list,
 			      (void*)link_route_to_test,
 				  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
@@ -2014,7 +2014,7 @@ static route_extended_t dijkstra_get_route(routing_component_t rc,
                                            const char *src,
                                            const char *dst)
 {
-  xbt_assert1(rc && src
+  xbt_assert(rc && src
               && dst,
               "Invalid params for \"get_route\" function at AS \"%s\"",
               rc->name);
@@ -2025,7 +2025,7 @@ static route_extended_t dijkstra_get_route(routing_component_t rc,
   generic_src_dst_check(rc, src, dst);
   int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
   int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, dst);
-  xbt_assert2(src_id
+  xbt_assert(src_id
               && dst_id,
               "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
               src, dst);
@@ -2055,7 +2055,7 @@ static route_extended_t dijkstra_get_route(routing_component_t rc,
       graph_node_map_search(routing, *src_id);
   graph_node_map_element_t dst_elm =
       graph_node_map_search(routing, *dst_id);
-  xbt_assert2(src_elm != NULL
+  xbt_assert(src_elm != NULL
               && dst_elm != NULL, "src %d or dst %d does not exist",
               *src_id, *dst_id);
   src_node_id = ((graph_node_data_t)
@@ -2071,7 +2071,7 @@ static route_extended_t dijkstra_get_route(routing_component_t rc,
     xbt_edge_t edge =
         xbt_graph_get_edge(routing->route_graph, node_s_v, node_e_v);
 
-    xbt_assert2(edge != NULL, "no route between host %d and %d", *src_id,
+    xbt_assert(edge != NULL, "no route between host %d and %d", *src_id,
                 *dst_id);
 
     e_route = (route_extended_t) xbt_graph_edge_get_data(edge);
@@ -2164,7 +2164,7 @@ static route_extended_t dijkstra_get_route(routing_component_t rc,
     xbt_edge_t edge =
         xbt_graph_get_edge(routing->route_graph, node_pred_v, node_v);
 
-    xbt_assert2(edge != NULL, "no route between host %d and %d", *src_id,
+    xbt_assert(edge != NULL, "no route between host %d and %d", *src_id,
                 *dst_id);
 
     prev_gw_src = gw_src;
@@ -2181,7 +2181,7 @@ static route_extended_t dijkstra_get_route(routing_component_t rc,
         && strcmp(gw_dst, prev_gw_src)) {
       xbt_dynar_t e_route_as_to_as =
           (*(global_routing->get_route)) (gw_dst, prev_gw_src);
-      xbt_assert2(e_route_as_to_as, "no route between \"%s\" and \"%s\"",
+      xbt_assert(e_route_as_to_as, "no route between \"%s\" and \"%s\"",
                   gw_dst, prev_gw_src);
       links = e_route_as_to_as;
       int pos = 0;
@@ -2437,11 +2437,11 @@ static void model_rulebased_set_route(routing_component_t rc,
   const char *error;
   int erroffset;
   ruleroute->re_src = pcre_compile(src, 0, &error, &erroffset, NULL);
-  xbt_assert3(ruleroute->re_src,
+  xbt_assert(ruleroute->re_src,
               "PCRE compilation failed at offset %d (\"%s\"): %s\n",
               erroffset, src, error);
   ruleroute->re_dst = pcre_compile(dst, 0, &error, &erroffset, NULL);
-  xbt_assert3(ruleroute->re_src,
+  xbt_assert(ruleroute->re_src,
               "PCRE compilation failed at offset %d (\"%s\"): %s\n",
               erroffset, dst, error);
   ruleroute->re_str_link = route->generic_route.link_list;
@@ -2460,12 +2460,12 @@ static void model_rulebased_set_ASroute(routing_component_t rc,
   int erroffset;
   ruleroute_e->generic_rule_route.re_src =
       pcre_compile(src, 0, &error, &erroffset, NULL);
-  xbt_assert3(ruleroute_e->generic_rule_route.re_src,
+  xbt_assert(ruleroute_e->generic_rule_route.re_src,
               "PCRE compilation failed at offset %d (\"%s\"): %s\n",
               erroffset, src, error);
   ruleroute_e->generic_rule_route.re_dst =
       pcre_compile(dst, 0, &error, &erroffset, NULL);
-  xbt_assert3(ruleroute_e->generic_rule_route.re_src,
+  xbt_assert(ruleroute_e->generic_rule_route.re_src,
               "PCRE compilation failed at offset %d (\"%s\"): %s\n",
               erroffset, dst, error);
   ruleroute_e->generic_rule_route.re_str_link =
@@ -2510,14 +2510,14 @@ static char *remplace(char *value, const char **src_list, int src_size,
              && value[i + number_length] <= '9') {
         number_length++;
       }
-      xbt_assert2(number_length != 0,
+      xbt_assert(number_length != 0,
                   "bad string parameter, no number indication, at offset: %d (\"%s\")",
                   i, value);
 
       // solve number
       number = atoi(value + i);
       i = i + number_length;
-      xbt_assert2(i + 2 < value_length,
+      xbt_assert(i + 2 < value_length,
                   "bad string parameter, too few chars, at offset: %d (\"%s\")",
                   i, value);
 
@@ -2537,7 +2537,7 @@ static char *remplace(char *value, const char **src_list, int src_size,
       }
       i = i + 3;
 
-      xbt_assert4(param_size >= number,
+      xbt_assert(param_size >= number,
                   "bad string parameter, not enough length param_size, at offset: %d (\"%s\") %d %d",
                   i, value, param_size, number);
 
@@ -2558,7 +2558,7 @@ static char *remplace(char *value, const char **src_list, int src_size,
 
   } while (i < value_length && i_result_buffer < BUFFER_SIZE);
 
-  xbt_assert2(i_result_buffer < BUFFER_SIZE,
+  xbt_assert(i_result_buffer < BUFFER_SIZE,
               "solving string \"%s\", small buffer size (%d)", value,
               BUFFER_SIZE);
   result_result[i_result_buffer] = 0;
@@ -2611,7 +2611,7 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
                                             const char *src,
                                             const char *dst)
 {
-  xbt_assert1(rc && src
+  xbt_assert(rc && src
               && dst,
               "Invalid params for \"get_route\" function at AS \"%s\"",
               rc->name);
@@ -2660,9 +2660,9 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
                     ovector_dst, OVECCOUNT);
       if (rc_dst >= 0) {
         res = pcre_get_substring_list(src, ovector_src, rc_src, &list_src);
-        xbt_assert1(!res, "error solving substring list for src \"%s\"", src);
+        xbt_assert(!res, "error solving substring list for src \"%s\"", src);
         res = pcre_get_substring_list(dst, ovector_dst, rc_dst, &list_dst);
-        xbt_assert1(!res, "error solving substring list for src \"%s\"", dst);
+        xbt_assert(!res, "error solving substring list for src \"%s\"", dst);
         char *link_name;
         xbt_dynar_foreach(ruleroute->re_str_link, cpt, link_name) {
           char *new_link_name =
@@ -2938,10 +2938,10 @@ static void generic_set_bypassroute(routing_component_t rc,
   char *route_name;
 
   route_name = bprintf("%s#%s", src, dst);
-  xbt_assert2(xbt_dynar_length(e_route->generic_route.link_list) > 0,
+  xbt_assert(xbt_dynar_length(e_route->generic_route.link_list) > 0,
               "Invalid count of links, must be greater than zero (%s,%s)",
               src, dst);
-  xbt_assert4(!xbt_dict_get_or_null(dict_bypassRoutes, route_name),
+  xbt_assert(!xbt_dict_get_or_null(dict_bypassRoutes, route_name),
               "The bypass route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exists",
               src, e_route->src_gateway, dst, e_route->dst_gateway);
 
@@ -3129,7 +3129,7 @@ generic_new_route(e_surf_routing_hierarchy_t hierarchy,
   new_route->link_list =
       xbt_dynar_new(global_routing->size_of_link, NULL);
 
-  xbt_assert0(hierarchy == SURF_ROUTING_BASE,
+  xbt_assert(hierarchy == SURF_ROUTING_BASE,
               "the hierarchy type is not SURF_ROUTING_BASE");
 
   links = ((route_t) data)->link_list;
@@ -3170,7 +3170,7 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
   new_e_route->src_gateway = NULL;
   new_e_route->dst_gateway = NULL;
 
-  xbt_assert0(hierarchy == SURF_ROUTING_BASE
+  xbt_assert(hierarchy == SURF_ROUTING_BASE
               || hierarchy == SURF_ROUTING_RECURSIVE,
               "the hierarchy type is not defined");
 
@@ -3182,7 +3182,7 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
   } else if (hierarchy == SURF_ROUTING_RECURSIVE) {
 
     e_route = (route_extended_t) data;
-    xbt_assert0(e_route->src_gateway
+    xbt_assert(e_route->src_gateway
                 && e_route->dst_gateway, "bad gateway, is null");
     links = e_route->generic_route.link_list;
 
@@ -3986,7 +3986,7 @@ static void routing_parse_Srandom(void)
 			radical_ends = xbt_str_split(groups, "-");
 			switch (xbt_dynar_length(radical_ends)) {
 			case 1:
-					  xbt_assert1(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",random_id);
+					  xbt_assert(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",random_id);
 					  res = random_generate(random);
                                           tmpbuf = bprintf("%s%d",random_id,atoi(xbt_dynar_getfirst_as(radical_ends,char *)));
                                           xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);
@@ -3997,7 +3997,7 @@ static void routing_parse_Srandom(void)
 										 xbt_dynar_get_as(radical_ends, 0, char *));
 					  surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
 					  for (i = start; i <= end; i++) {
-						  xbt_assert1(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",bprintf("%s%d",random_id,i));
+						  xbt_assert(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",bprintf("%s%d",random_id,i));
 						  res = random_generate(random);
                           tmpbuf = bprintf("%s%d",random_id,i);
 						  xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);

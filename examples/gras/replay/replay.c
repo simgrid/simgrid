@@ -46,7 +46,7 @@ int master(int argc, char *argv[])
   declare_msg();
 
 
-  xbt_assert0(argc == 3, "usage: replay_master tracefile port");
+  xbt_assert(argc == 3, "usage: replay_master tracefile port");
   gras_socket_server(atoi(argv[2]));    /* open my master socket, even if I don't use it */
   xbt_dynar_t peers = amok_pm_group_new("replay");      /* group of slaves */
   xbt_peer_t peer;

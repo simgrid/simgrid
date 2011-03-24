@@ -41,17 +41,17 @@ static cpu_Cas01_t cpu_new(char *name, double power_peak,
                            xbt_dict_t cpu_properties)
 {
   cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
-  xbt_assert1(!surf_cpu_resource_by_name(name),
+  xbt_assert(!surf_cpu_resource_by_name(name),
               "Host '%s' declared several times in the platform file",
               name);
   cpu->generic_resource.model = surf_cpu_model;
   cpu->generic_resource.name = name;
   cpu->generic_resource.properties = cpu_properties;
   cpu->power_peak = power_peak;
-  xbt_assert0(cpu->power_peak > 0, "Power has to be >0");
+  xbt_assert(cpu->power_peak > 0, "Power has to be >0");
   cpu->power_scale = power_scale;
   cpu->core = core;
-  xbt_assert1(core>0,"Invalid number of cores %d",core);
+  xbt_assert(core>0,"Invalid number of cores %d",core);
   if (power_trace)
     cpu->power_event =
         tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
@@ -85,7 +85,7 @@ static void parse_cpu_init(void)
   power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
   surf_parse_get_int(&core, A_surfxml_host_core);
 
-  xbt_assert0((A_surfxml_host_state == A_surfxml_host_state_ON) ||
+  xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
               (A_surfxml_host_state == A_surfxml_host_state_OFF),
               "Invalid state");
   if (A_surfxml_host_state == A_surfxml_host_state_ON)
@@ -116,8 +116,8 @@ static void add_traces_cpu(void)
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     cpu_Cas01_t host = surf_cpu_resource_by_name(elm);
 
-    xbt_assert1(host, "Host %s undefined", elm);
-    xbt_assert1(trace, "Trace %s undefined", trace_name);
+    xbt_assert(host, "Host %s undefined", elm);
+    xbt_assert(trace, "Trace %s undefined", trace_name);
 
     host->state_event =
         tmgr_history_add_trace(history, trace, 0.0, 0, host);
@@ -127,8 +127,8 @@ static void add_traces_cpu(void)
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     cpu_Cas01_t host = surf_cpu_resource_by_name(elm);
 
-    xbt_assert1(host, "Host %s undefined", elm);
-    xbt_assert1(trace, "Trace %s undefined", trace_name);
+    xbt_assert(host, "Host %s undefined", elm);
+    xbt_assert(trace, "Trace %s undefined", trace_name);
 
     host->power_event =
         tmgr_history_add_trace(history, trace, 0.0, 0, host);

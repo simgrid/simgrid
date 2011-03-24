@@ -40,11 +40,11 @@ int master(int argc, char *argv[])
   int read;
 
   read = sscanf(argv[1], "%d", &number_of_tasks);
-  xbt_assert1(read, "Invalid argument %s\n", argv[1]);
+  xbt_assert(read, "Invalid argument %s\n", argv[1]);
   read = sscanf(argv[2], "%lg", &task_comp_size);
-  xbt_assert1(read, "Invalid argument %s\n", argv[2]);
+  xbt_assert(read, "Invalid argument %s\n", argv[2]);
   read = sscanf(argv[3], "%lg", &task_comm_size);
-  xbt_assert1(read, "Invalid argument %s\n", argv[3]);
+  xbt_assert(read, "Invalid argument %s\n", argv[3]);
 
   {                             /*  Task creation */
     char sprintf_buffer[64];

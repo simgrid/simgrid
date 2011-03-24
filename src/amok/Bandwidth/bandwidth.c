@@ -220,7 +220,7 @@ void amok_bw_test(gras_socket_t peer,
             ((request->msg_size / ((double) 64 * 1024 * 1024))
              * request->msg_amount) + 1;
 
-        xbt_assert0(new_amount > request->msg_amount,
+        xbt_assert(new_amount > request->msg_amount,
                     "Overflow on the number of messages! You must have a *really* fat pipe. Please fix your platform");
         request->msg_amount = new_amount;
 

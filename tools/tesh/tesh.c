@@ -227,7 +227,7 @@ int main(int argc, char *argv[])
         exit(1);
       }
       char *eq = strchr(argv[i+1], '=');
-      xbt_assert1(eq,"The argument of --setenv must contain a '=' (got %s instead)",argv[i+1]);
+      xbt_assert(eq,"The argument of --setenv must contain a '=' (got %s instead)",argv[i+1]);
       char *key = bprintf("%.*s", (int) (eq - argv[i+1]), argv[i+1]);
       xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
       XBT_INFO("setting environment variable '%s' to '%s'", key, eq+1);

@@ -280,7 +280,7 @@ xbt_dynar_t SD_daxload(const char *filename)
   SD_task_t file;
   char *name;
   FILE *in_file = fopen(filename, "r");
-  xbt_assert1(in_file, "Unable to open \"%s\"\n", filename);
+  xbt_assert(in_file, "Unable to open \"%s\"\n", filename);
   input_buffer = dax__create_buffer(in_file, 10);
   dax__switch_to_buffer(input_buffer);
   dax_lineno = 1;
@@ -297,7 +297,7 @@ xbt_dynar_t SD_daxload(const char *filename)
 
   int res;
   res = dax_lex();
-  xbt_assert2(!res, "Parse error in %s: %s", filename,
+  xbt_assert(!res, "Parse error in %s: %s", filename,
               dax__parse_err_msg());
   dax__delete_buffer(input_buffer);
   fclose(in_file);
@@ -395,7 +395,7 @@ void STag_dax__adag(void)
   double version;
   version = dax_parse_double(A_dax__adag_version);
 
-  xbt_assert1(version == 2.1,
+  xbt_assert(version == 2.1,
               "Expected version 2.1 in <adag> tag, got %f. Fix the parser or your file",
               version);
 }

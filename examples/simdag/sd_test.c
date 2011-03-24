@@ -190,7 +190,7 @@ int main(int argc, char **argv)
   xbt_dynar_get_cpy(changed_tasks, 0, &checkD);
   xbt_dynar_get_cpy(changed_tasks, 1, &checkB);
 
-  xbt_assert0(checkD == taskD &&
+  xbt_assert(checkD == taskD &&
               checkB == taskB, "Unexpected simulation results");
 
   xbt_dynar_free_container(&changed_tasks);

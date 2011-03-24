@@ -796,7 +796,7 @@ static int _gras_tcp_proto_number(void)
 
   if (returnValue == 0) {
     fetchedEntry = getprotobyname("tcp");
-    xbt_assert0(fetchedEntry, "getprotobyname(tcp) gave NULL");
+    xbt_assert(fetchedEntry, "getprotobyname(tcp) gave NULL");
     returnValue = fetchedEntry->p_proto;
   }
 

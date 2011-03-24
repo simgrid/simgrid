@@ -622,7 +622,7 @@ static cpu_L07_t ptask_cpu_new(const char *name, double power_scale,
                                xbt_dict_t cpu_properties)
 {
   cpu_L07_t cpu = xbt_new0(s_cpu_L07_t, 1);
-  xbt_assert1(!surf_workstation_resource_by_name(name),
+  xbt_assert(!surf_workstation_resource_by_name(name),
               "Host '%s' declared several times in the platform file.",
               name);
 
@@ -633,7 +633,7 @@ static cpu_L07_t ptask_cpu_new(const char *name, double power_scale,
   cpu->id = ptask_host_count++;
 
   cpu->power_scale = power_scale;
-  xbt_assert0(cpu->power_scale > 0, "Power has to be >0");
+  xbt_assert(cpu->power_scale > 0, "Power has to be >0");
 
   cpu->power_current = power_initial;
   if (power_trace)
@@ -666,7 +666,7 @@ static void ptask_parse_cpu_init(void)
   surf_parse_get_double(&power_initial, A_surfxml_host_availability);
   power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
 
-  xbt_assert0((A_surfxml_host_state == A_surfxml_host_state_ON) ||
+  xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
               (A_surfxml_host_state == A_surfxml_host_state_OFF),
               "Invalid state");
   if (A_surfxml_host_state == A_surfxml_host_state_ON)
@@ -704,7 +704,7 @@ static link_L07_t ptask_link_new(char *name,
                                  policy, xbt_dict_t properties)
 {
   link_L07_t nw_link = xbt_new0(s_link_L07_t, 1);
-  xbt_assert1(!xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL),
+  xbt_assert(!xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL),
               "Link '%s' declared several times in the platform file.",
               name);
 
@@ -761,7 +761,7 @@ static void ptask_parse_link_init(void)
   surf_parse_get_double(&lat_initial, A_surfxml_link_latency);
   lat_trace = tmgr_trace_new(A_surfxml_link_latency_file);
 
-  xbt_assert0((A_surfxml_link_state == A_surfxml_link_state_ON)
+  xbt_assert((A_surfxml_link_state == A_surfxml_link_state_ON)
               || (A_surfxml_link_state ==
                   A_surfxml_link_state_OFF), "Invalid state");
   if (A_surfxml_link_state == A_surfxml_link_state_ON)
@@ -826,8 +826,8 @@ static void ptask_add_traces(void)
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     cpu_L07_t host = surf_workstation_resource_by_name(elm);
 
-    xbt_assert1(host, "Host %s undefined", elm);
-    xbt_assert1(trace, "Trace %s undefined", trace_name);
+    xbt_assert(host, "Host %s undefined", elm);
+    xbt_assert(trace, "Trace %s undefined", trace_name);
 
     host->state_event =
         tmgr_history_add_trace(history, trace, 0.0, 0, host);
@@ -837,8 +837,8 @@ static void ptask_add_traces(void)
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     cpu_L07_t host = surf_workstation_resource_by_name(elm);
 
-    xbt_assert1(host, "Host %s undefined", elm);
-    xbt_assert1(trace, "Trace %s undefined", trace_name);
+    xbt_assert(host, "Host %s undefined", elm);
+    xbt_assert(trace, "Trace %s undefined", trace_name);
 
     host->power_event =
         tmgr_history_add_trace(history, trace, 0.0, 0, host);
@@ -850,8 +850,8 @@ static void ptask_add_traces(void)
     link_L07_t link =
     		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
-    xbt_assert1(link, "Link %s undefined", elm);
-    xbt_assert1(trace, "Trace %s undefined", trace_name);
+    xbt_assert(link, "Link %s undefined", elm);
+    xbt_assert(trace, "Trace %s undefined", trace_name);
 
     link->state_event =
         tmgr_history_add_trace(history, trace, 0.0, 0, link);
@@ -862,8 +862,8 @@ static void ptask_add_traces(void)
     link_L07_t link =
     		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
-    xbt_assert1(link, "Link %s undefined", elm);
-    xbt_assert1(trace, "Trace %s undefined", trace_name);
+    xbt_assert(link, "Link %s undefined", elm);
+    xbt_assert(trace, "Trace %s undefined", trace_name);
 
     link->bw_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
   }
@@ -873,8 +873,8 @@ static void ptask_add_traces(void)
     link_L07_t link =
     		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
-    xbt_assert1(link, "Link %s undefined", elm);
-    xbt_assert1(trace, "Trace %s undefined", trace_name);
+    xbt_assert(link, "Link %s undefined", elm);
+    xbt_assert(trace, "Trace %s undefined", trace_name);
 
     link->lat_event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
   }
@@ -965,8 +965,8 @@ static void ptask_model_init_internal(void)
 void surf_workstation_model_init_ptask_L07(const char *filename)
 {
   XBT_INFO("surf_workstation_model_init_ptask_L07");
-  xbt_assert0(!surf_cpu_model, "CPU model type already defined");
-  xbt_assert0(!surf_network_model, "network model type already defined");
+  xbt_assert(!surf_cpu_model, "CPU model type already defined");
+  xbt_assert(!surf_network_model, "network model type already defined");
   surf_network_model = surf_model_init();
   ptask_define_callbacks(filename);
   ptask_model_init_internal();

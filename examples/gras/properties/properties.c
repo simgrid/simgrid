@@ -37,18 +37,18 @@ int alice(int argc, char *argv[])
 
   XBT_INFO("== Try to get a process property that does not exist");
   value = gras_process_property_value("Nonexisting");
-  xbt_assert0(!value, "nonexisting property exists!!");
+  xbt_assert(!value, "nonexisting property exists!!");
 
   /* Modify an existing property. First check it exists */
   XBT_INFO("== Trying to modify a process property");
   value = gras_process_property_value("new prop");
-  xbt_assert0(!value, "Property 'new prop' exists before I add it!");
+  xbt_assert(!value, "Property 'new prop' exists before I add it!");
   xbt_dict_set(process_props, "new prop", xbt_strdup("new value"),
                xbt_free_f);
 
   /* Test if we have changed the value */
   value = gras_process_property_value("new prop");
-  xbt_assert1(!strcmp(value, "new value"),
+  xbt_assert(!strcmp(value, "new value"),
               "New property does have the value I've set ('%s' != 'new value')",
               value);
 
@@ -72,7 +72,7 @@ int bob(int argc, char *argv[])
 
   XBT_INFO("== Try to get a property that does not exist");
   value = gras_os_host_property_value("non existing key");
-  xbt_assert1(value == NULL,
+  xbt_assert(value == NULL,
               "The key 'non existing key' exists (with value '%s')!!",
               value);
 

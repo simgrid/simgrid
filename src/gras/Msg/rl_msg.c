@@ -36,7 +36,7 @@ void gras_msg_send_ext(gras_socket_t sock,
   static gras_datadesc_type_t ulong_type = NULL;
   char c_kind = (char) kind;
 
-  xbt_assert0(msgtype, "Cannot send the NULL message");
+  xbt_assert(msgtype, "Cannot send the NULL message");
 
   if (!string_type) {
     string_type = gras_datadesc_by_name("string");
@@ -99,7 +99,7 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
   char *msg_name = NULL;
   char c_kind;
 
-  xbt_assert1(!gras_socket_is_meas(sock),
+  xbt_assert(!gras_socket_is_meas(sock),
               "Asked to receive a message on the measurement socket %p",
               sock);
   if (!string_type) {
@@ -180,7 +180,7 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
     /* answer to RPC */
     if (msg->type->answer_type) {
       msg->payl_size = gras_datadesc_size(msg->type->answer_type);
-      xbt_assert2(msg->payl_size > 0,
+      xbt_assert(msg->payl_size > 0,
                   "%s %s",
                   "Dynamic array as payload is forbided for now (FIXME?).",
                   "Reference to dynamic array is allowed.");
@@ -194,7 +194,7 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
     /* regular message */
     if (msg->type->ctn_type) {
       msg->payl_size = gras_datadesc_size(msg->type->ctn_type);
-      xbt_assert2(msg->payl_size > 0,
+      xbt_assert(msg->payl_size > 0,
                   "%s %s",
                   "Dynamic array as payload is forbided for now (FIXME?).",
                   "Reference to dynamic array is allowed.");

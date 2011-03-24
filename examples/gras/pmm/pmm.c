@@ -108,7 +108,7 @@ int master(int argc, char *argv[])
   C = xbt_matrix_double_new_zeros(DATA_MATRIX_SIZE, DATA_MATRIX_SIZE);
 
   /* Create the connexions */
-  xbt_assert0(argc > 1, "Usage: master <port>");
+  xbt_assert(argc > 1, "Usage: master <port>");
   gras_socket_server(atoi(argv[1]));
   peers = amok_pm_group_new("pmm");
 
@@ -126,7 +126,7 @@ int master(int argc, char *argv[])
     xbt_dynar_get_cpy(peers, i, &grid[i]);
     socket[i] = gras_socket_client(grid[i]->name, grid[i]->port);
   }
-  xbt_assert2(i == SLAVE_COUNT,
+  xbt_assert(i == SLAVE_COUNT,
               "Not enough slaves for this setting (got %d of %d). Change the deployment file",
               i, SLAVE_COUNT);
 

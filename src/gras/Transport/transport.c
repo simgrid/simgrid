@@ -69,7 +69,7 @@ void gras_trp_init(void)
       wVersionRequested = MAKEWORD(2, 0);
       int res;
       res = WSAStartup(wVersionRequested, &wsaData);
-      xbt_assert0(res == 0, "Cannot find a usable WinSock DLL");
+      xbt_assert(res == 0, "Cannot find a usable WinSock DLL");
 
       /* Confirm that the WinSock DLL supports 2.0. */
       /* Note that if the DLL supports versions greater    */
@@ -77,7 +77,7 @@ void gras_trp_init(void)
       /* 2.0 in wVersion since that is the version we      */
       /* requested.                                        */
 
-      xbt_assert0(LOBYTE(wsaData.wVersion) == 2 &&
+      xbt_assert(LOBYTE(wsaData.wVersion) == 2 &&
                   HIBYTE(wsaData.wVersion) == 0,
                   "Cannot find a usable WinSock DLL");
       XBT_INFO("Found and initialized winsock2");
@@ -87,7 +87,7 @@ void gras_trp_init(void)
       WSADATA wsaData;
       int res;
       res = WSAStartup(0x0101, &wsaData);
-      xbt_assert0(res == 0, "Cannot find a usable WinSock DLL");
+      xbt_assert(res == 0, "Cannot find a usable WinSock DLL");
       XBT_INFO("Found and initialized winsock");
     }
 #endif
@@ -351,7 +351,7 @@ void gras_socket_close(gras_socket_t sock)
   XBT_IN("");
   XBT_VERB("Close %p", sock);
   if (sock == _gras_lastly_selected_socket) {
-    xbt_assert0(!gras_opt_trp_nomoredata_on_close || !sock->moredata,
+    xbt_assert(!gras_opt_trp_nomoredata_on_close || !sock->moredata,
                 "Closing a socket having more data in buffer while the nomoredata_on_close option is activated");
 
     if (sock->moredata)
@@ -396,7 +396,7 @@ void gras_socket_close(gras_socket_t sock)
  */
 void gras_trp_send(gras_socket_t sd, char *data, long int size, int stable)
 {
-  xbt_assert0(sd->outgoing, "Socket not suited for data send");
+  xbt_assert(sd->outgoing, "Socket not suited for data send");
   (*sd->plugin->send) (sd, data, size, stable);
 }
 
@@ -407,7 +407,7 @@ void gras_trp_send(gras_socket_t sd, char *data, long int size, int stable)
  */
 void gras_trp_recv(gras_socket_t sd, char *data, long int size)
 {
-  xbt_assert0(sd->incoming, "Socket not suited for data receive");
+  xbt_assert(sd->incoming, "Socket not suited for data receive");
   (sd->plugin->recv) (sd, data, size);
 }
 
@@ -497,9 +497,9 @@ void gras_socket_meas_send(gras_socket_t peer,
   if (gras_if_RL())
     chunk = xbt_malloc0(msg_size);
 
-  xbt_assert0(peer->meas,
+  xbt_assert(peer->meas,
               "Asked to send measurement data on a regular socket");
-  xbt_assert0(peer->outgoing,
+  xbt_assert(peer->outgoing,
               "Socket not suited for data send (was created with gras_socket_server(), not gras_socket_client())");
 
   for (sent_sofar = 0; sent_sofar < msg_amount; sent_sofar++) {
@@ -546,9 +546,9 @@ void gras_socket_meas_recv(gras_socket_t peer,
   if (gras_if_RL())
     chunk = xbt_malloc(msg_size);
 
-  xbt_assert0(peer->meas,
+  xbt_assert(peer->meas,
               "Asked to receive measurement data on a regular socket");
-  xbt_assert0(peer->incoming, "Socket not suited for data receive");
+  xbt_assert(peer->incoming, "Socket not suited for data receive");
 
   for (got_sofar = 0; got_sofar < msg_amount; got_sofar++) {
     XBT_CDEBUG(gras_trp_meas,
@@ -585,7 +585,7 @@ gras_socket_t gras_socket_meas_accept(gras_socket_t peer)
   THROWF(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
       "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
 
-  xbt_assert0(peer->meas,
+  xbt_assert(peer->meas,
               "No need to accept on non-measurement sockets (it's automatic)");
 
   if (!peer->accepting) {

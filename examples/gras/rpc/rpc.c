@@ -46,11 +46,11 @@ static void exception_catching(void)
     if (!gotit) {
       THROWF(unknown_error, 0, "Didn't got the remote exception!");
     }
-    xbt_assert2(e.category == unknown_error,
+    xbt_assert(e.category == unknown_error,
                 "Got wrong category: %d (instead of %d)", e.category,
                 unknown_error);
-    xbt_assert1(e.value == 42, "Got wrong value: %d (!=42)", e.value);
-    xbt_assert1(!strncmp(e.msg, exception_msg, strlen(exception_msg)),
+    xbt_assert(e.value == 42, "Got wrong value: %d (!=42)", e.value);
+    xbt_assert(!strncmp(e.msg, exception_msg, strlen(exception_msg)),
                 "Got wrong message: %s", e.msg);
     xbt_ex_free(e);
   }
@@ -138,11 +138,11 @@ int client(int argc, char *argv[])
   }
   CATCH(e) {
     gotit = 1;
-    xbt_assert2(e.category == unknown_error,
+    xbt_assert(e.category == unknown_error,
                 "Got wrong category: %d (instead of %d)",
                 e.category, unknown_error);
-    xbt_assert1(e.value == 42, "Got wrong value: %d (!=42)", e.value);
-    xbt_assert1(!strncmp(e.msg, exception_msg, strlen(exception_msg)),
+    xbt_assert(e.value == 42, "Got wrong value: %d (!=42)", e.value);
+    xbt_assert(!strncmp(e.msg, exception_msg, strlen(exception_msg)),
                 "Got wrong message: %s", e.msg);
     XBT_INFO
         ("Got the expected exception when calling the exception raising RPC");
@@ -185,10 +185,10 @@ int client(int argc, char *argv[])
     if (!gotit) {
       THROWF(unknown_error, 0, "Didn't got the remote exception!");
     }
-    xbt_assert1(e.value == 42, "Got wrong value: %d (!=42)", e.value);
-    xbt_assert1(!strncmp(e.msg, exception_msg, strlen(exception_msg)),
+    xbt_assert(e.value == 42, "Got wrong value: %d (!=42)", e.value);
+    xbt_assert(!strncmp(e.msg, exception_msg, strlen(exception_msg)),
                 "Got wrong message: %s", e.msg);
-    xbt_assert2(e.category == unknown_error,
+    xbt_assert(e.category == unknown_error,
                 "Got wrong category: %d (instead of %d)",
                 e.category, unknown_error);
     XBT_INFO

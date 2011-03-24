@@ -212,14 +212,14 @@ GTSim::~GTSim(){
 }
 
 int GTSim::add_router(int id){
-  xbt_assert1(!(topo_->add_router(id) < 0), "can't add router %d. already exists", id);
+  xbt_assert(!(topo_->add_router(id) < 0), "can't add router %d. already exists", id);
 }
 
 //bandwidth: in bytes.
 //latency: in seconds.
 int GTSim::add_link(int id, double bandwidth, double latency){
   double bw = bandwidth * 8; //Bandwidth in bits (used in GTNETS).
-  xbt_assert1(!(topo_->add_link(id) < 0),"Can't add link %d. already exists", id);
+  xbt_assert(!(topo_->add_link(id) < 0),"Can't add link %d. already exists", id);
   XBT_DEBUG("Creating a new P2P, linkid %d, bandwidth %gl, latency %gl", id, bandwidth, latency);
   gtnets_links_[id] = new Linkp2p(bw, latency);
   if(jitter_ > 0){
@@ -245,7 +245,7 @@ bool GTSim::link_include(int id){
 }
 
 int GTSim::add_onehop_route(int src, int dst, int link){
-  xbt_assert3(!(topo_->add_onehop_route(src, dst, link) < 0), "Cannot add a route, src: %d, dst: %d, link: %d", src, dst, link);
+  xbt_assert(!(topo_->add_onehop_route(src, dst, link) < 0), "Cannot add a route, src: %d, dst: %d, link: %d", src, dst, link);
   return 0;
 }
 
@@ -309,8 +309,8 @@ int GTSim::add_route(int src, int dst, int* links, int nlink){
   int src_node = topo_->nodeid_from_hostid(src);
   int dst_node = topo_->nodeid_from_hostid(dst);
 
-  xbt_assert1(!(gtnets_nodes_.find(src_node) == gtnets_nodes_.end()), "Node %d not found", src_node);
-  xbt_assert1(!(gtnets_nodes_.find(dst_node) == gtnets_nodes_.end()), "Node %d not found", dst_node);
+  xbt_assert(!(gtnets_nodes_.find(src_node) == gtnets_nodes_.end()), "Node %d not found", src_node);
+  xbt_assert(!(gtnets_nodes_.find(dst_node) == gtnets_nodes_.end()), "Node %d not found", dst_node);
 
   Node* tmpsrc = gtnets_nodes_[src_node];
   Node* tmpdst = gtnets_nodes_[dst_node];
@@ -319,10 +319,10 @@ int GTSim::add_route(int src, int dst, int* links, int nlink){
   
   cur_node = src_node;
   for (int i = 0; i < nlink; i++){
-	xbt_assert1(!(gtnets_nodes_.find(cur_node) == gtnets_nodes_.end()), "Node %d not found", cur_node);
+	xbt_assert(!(gtnets_nodes_.find(cur_node) == gtnets_nodes_.end()), "Node %d not found", cur_node);
     next_node = topo_->peer_node_id(links[i], cur_node);
-    xbt_assert0(!(next_node < 0), "Peer node not found");
-    xbt_assert1(!(gtnets_nodes_.find(next_node) == gtnets_nodes_.end()), "Node %d not found", next_node);
+    xbt_assert(!(next_node < 0), "Peer node not found");
+    xbt_assert(!(gtnets_nodes_.find(next_node) == gtnets_nodes_.end()), "Node %d not found", next_node);
     
     //add route
     Node* tmpcur = gtnets_nodes_[cur_node];
@@ -341,7 +341,7 @@ int GTSim::add_route(int src, int dst, int* links, int nlink){
     cur_node = next_node;
   }
 
-  xbt_assert2(!(cur_node != dst_node), "Route inconsistency, last: %d, dst: %d",cur_node, dst_node);
+  xbt_assert(!(cur_node != dst_node), "Route inconsistency, last: %d, dst: %d",cur_node, dst_node);
 
   return 0;
 }
@@ -357,10 +357,10 @@ int GTSim::create_flow(int src, int dst, long datasize, void* metadata){
   }
 
   int src_node = topo_->nodeid_from_hostid(src);
-  xbt_assert1(!(src_node < 0), "Src %d not found", src_node);
+  xbt_assert(!(src_node < 0), "Src %d not found", src_node);
 
   int dst_node = topo_->nodeid_from_hostid(dst);
-  xbt_assert1(!(dst_node < 0), "Dst %d not found", dst_node);
+  xbt_assert(!(dst_node < 0), "Dst %d not found", dst_node);
 
   gtnets_servers_[nflow_] = (TCPServer*) gtnets_nodes_[dst_node]->
        AddApplication(TCPServer(TCPReno()));
@@ -430,7 +430,7 @@ int GTSim::run(double delta){
 }
 
 void GTSim::set_jitter(double d){
-  xbt_assert1(((0 <= d)&&(d <= 1)), "The jitter value must be within interval [0.0;1.0), got %f", d);
+  xbt_assert(((0 <= d)&&(d <= 1)), "The jitter value must be within interval [0.0;1.0), got %f", d);
   jitter_ = d;
 }
 

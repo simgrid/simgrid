@@ -26,7 +26,7 @@ xbt_replay_trace_reader_t xbt_replay_trace_reader_new(const char *filename)
 {
   xbt_replay_trace_reader_t res = xbt_new0(s_xbt_replay_trace_reader_t,1);
   res->fp = fopen(filename, "r");
-  xbt_assert2(res->fp != NULL, "Cannot open %s: %s", filename,
+  xbt_assert(res->fp != NULL, "Cannot open %s: %s", filename,
       strerror(errno));
   res->filename = xbt_strdup(filename);
   return res;

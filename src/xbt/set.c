@@ -264,7 +264,7 @@ void xbt_set_cursor_first(xbt_set_t set, xbt_set_cursor_t * cursor)
     if (!*cursor) {
       XBT_DEBUG("Create the cursor on first use");
       *cursor = xbt_new(s_xbt_set_cursor_t, 1);
-      xbt_assert0(*cursor,
+      xbt_assert(*cursor,
                   "Malloc error during the creation of the cursor");
     }
     (*cursor)->set = set;

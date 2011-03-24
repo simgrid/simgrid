@@ -86,7 +86,7 @@ void SIMIX_context_mod_exit(void)
  */
 XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
 
-  xbt_assert1(nb_threads > 0, "Invalid number of parallel threads: %d", nb_threads);
+  xbt_assert(nb_threads > 0, "Invalid number of parallel threads: %d", nb_threads);
 
   if (nb_threads > 1) {
 #ifndef CONTEXT_THREADS

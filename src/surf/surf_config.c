@@ -80,7 +80,7 @@ static void _surf_cfg_cb__workstation_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert0(_surf_init_status < 2,
+  xbt_assert(_surf_init_status < 2,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -99,7 +99,7 @@ static void _surf_cfg_cb__cpu_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert0(_surf_init_status < 2,
+  xbt_assert(_surf_init_status < 2,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -118,7 +118,7 @@ static void _surf_cfg_cb__network_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert0(_surf_init_status < 2,
+  xbt_assert(_surf_init_status < 2,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -404,7 +404,7 @@ void surf_config_init(int *argc, char **argv)
     if (!surf_path) {
       /* retrieves the current directory of the        current process */
       const char *initial_path = __surf_get_initial_path();
-      xbt_assert0((initial_path),
+      xbt_assert((initial_path),
                   "__surf_get_initial_path() failed! Can't resolves current Windows directory");
 
       surf_path = xbt_dynar_new(sizeof(char *), NULL);
@@ -461,10 +461,10 @@ void surf_config_models_setup(const char *platform_file)
     int network_id = -1;
     int cpu_id = -1;
 
-    xbt_assert0(cpu_model_name,
+    xbt_assert(cpu_model_name,
                 "Set a cpu model to use with the 'compound' workstation model");
 
-    xbt_assert0(network_model_name,
+    xbt_assert(network_model_name,
                 "Set a network model to use with the 'compound' workstation model");
 
     network_id =

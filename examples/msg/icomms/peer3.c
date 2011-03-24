@@ -69,7 +69,7 @@ int sender(int argc, char *argv[])
     task = NULL;
     res_irecv = MSG_task_irecv(&(task), mailbox);
     res_wait = MSG_comm_wait(res_irecv, -1);
-    xbt_assert0(res_wait == MSG_OK, "MSG_comm_wait failed");
+    xbt_assert(res_wait == MSG_OK, "MSG_comm_wait failed");
     MSG_comm_destroy(res_irecv);
     MSG_task_destroy(task);
   }
@@ -90,7 +90,7 @@ int receiver(int argc, char *argv[])
 
   int read;
   read = sscanf(argv[1], "%d", &id);
-  xbt_assert1(read, "Invalid argument %s\n", argv[1]);
+  xbt_assert(read, "Invalid argument %s\n", argv[1]);
   sprintf(mailbox, "receiver-%d", id);
   MSG_process_sleep(10);
   msg_comm_t res_irecv;
@@ -112,7 +112,7 @@ int receiver(int argc, char *argv[])
     MSG_task_execute(task_com);
     XBT_INFO("\"%s\" done", MSG_task_get_name(task_com));
     err = MSG_task_destroy(task_com);
-    xbt_assert0(err == MSG_OK, "MSG_task_destroy failed");
+    xbt_assert(err == MSG_OK, "MSG_task_destroy failed");
   }
   xbt_dynar_free(&comms);
   xbt_free(task);

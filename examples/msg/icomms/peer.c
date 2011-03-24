@@ -97,7 +97,7 @@ int receiver(int argc, char *argv[])
 
   int read;
   read = sscanf(argv[1], "%d", &id);
-  xbt_assert1(read,
+  xbt_assert(read,
               "Invalid argument %s\n", argv[1]);
 
   MSG_process_sleep(sleep_start_time);
@@ -109,7 +109,7 @@ int receiver(int argc, char *argv[])
 
     if (sleep_test_time == 0) {
       res = MSG_comm_wait(res_irecv, -1);
-      xbt_assert0(res == MSG_OK, "MSG_task_get failed");
+      xbt_assert(res == MSG_OK, "MSG_task_get failed");
     } else {
       while (MSG_comm_test(res_irecv) == 0) {
         MSG_process_sleep(sleep_test_time);

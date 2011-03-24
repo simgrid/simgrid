@@ -22,7 +22,7 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation,
   SD_workstation_t workstation;
   const char *name;
   SD_CHECK_INIT_DONE();
-  xbt_assert0(surf_workstation != NULL, "surf_workstation is NULL !");
+  xbt_assert(surf_workstation != NULL, "surf_workstation is NULL !");
 
   workstation = xbt_new(s_SD_workstation_t, 1);
   workstation->surf_workstation = surf_workstation;
@@ -48,7 +48,7 @@ SD_workstation_t SD_workstation_get_by_name(const char *name)
 {
   SD_CHECK_INIT_DONE();
 
-  xbt_assert0(name != NULL, "Invalid parameter");
+  xbt_assert(name != NULL, "Invalid parameter");
 
   return xbt_lib_get_or_null(host_lib, name, SD_HOST_LEVEL);
 }
@@ -70,7 +70,7 @@ const SD_workstation_t *SD_workstation_get_list(void)
   int i;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(SD_workstation_get_number() > 0, "There is no workstation!");
+  xbt_assert(SD_workstation_get_number() > 0, "There is no workstation!");
 
   if (sd_global->workstation_list == NULL) {    /* this is the first time the function is called */
     sd_global->workstation_list =
@@ -107,7 +107,7 @@ int SD_workstation_get_number(void)
 void *SD_workstation_get_data(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
+  xbt_assert(workstation != NULL, "Invalid parameter");
   return workstation->data;
 }
 
@@ -124,7 +124,7 @@ void *SD_workstation_get_data(SD_workstation_t workstation)
 void SD_workstation_set_data(SD_workstation_t workstation, void *data)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
+  xbt_assert(workstation != NULL, "Invalid parameter");
   workstation->data = data;
 }
 
@@ -137,7 +137,7 @@ void SD_workstation_set_data(SD_workstation_t workstation, void *data)
 const char *SD_workstation_get_name(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
+  xbt_assert(workstation != NULL, "Invalid parameter");
   return surf_resource_name(workstation->surf_workstation);
 }
 
@@ -164,7 +164,7 @@ const char *SD_workstation_get_property_value(SD_workstation_t ws,
 xbt_dict_t SD_workstation_get_properties(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0((workstation != NULL), "Invalid parameters");
+  xbt_assert((workstation != NULL), "Invalid parameters");
 
   return surf_workstation_model->extension.
       workstation.get_properties(workstation->surf_workstation);
@@ -239,7 +239,7 @@ int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
 double SD_workstation_get_power(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
+  xbt_assert(workstation != NULL, "Invalid parameter");
   return surf_workstation_model->extension.workstation.
       get_speed(workstation->surf_workstation, 1.0);
 }
@@ -254,7 +254,7 @@ double SD_workstation_get_power(SD_workstation_t workstation)
 double SD_workstation_get_available_power(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
+  xbt_assert(workstation != NULL, "Invalid parameter");
   return surf_workstation_model->extension.
       workstation.get_available_speed(workstation->surf_workstation);
 }
@@ -270,8 +270,8 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation,
                                            double computation_amount)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
-  xbt_assert0(computation_amount >= 0,
+  xbt_assert(workstation != NULL, "Invalid parameter");
+  xbt_assert(computation_amount >= 0,
               "computation_amount must be greater than or equal to zero");
   return computation_amount / SD_workstation_get_power(workstation);
 }
@@ -295,7 +295,7 @@ double SD_route_get_current_latency(SD_workstation_t src,
   int i;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+  xbt_assert(src != NULL && dst != NULL, "Invalid parameter");
   links = SD_route_get_list(src, dst);
   nb_links = SD_route_get_size(src, dst);
   latency = 0.0;
@@ -327,7 +327,7 @@ double SD_route_get_current_bandwidth(SD_workstation_t src,
   int i;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+  xbt_assert(src != NULL && dst != NULL, "Invalid parameter");
 
   links = SD_route_get_list(src, dst);
   nb_links = SD_route_get_size(src, dst);
@@ -369,8 +369,8 @@ double SD_route_get_communication_time(SD_workstation_t src,
   int i;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-  xbt_assert0(communication_amount >= 0,
+  xbt_assert(src != NULL && dst != NULL, "Invalid parameter");
+  xbt_assert(communication_amount >= 0,
               "communication_amount must be greater than or equal to zero");
 
 
@@ -406,7 +406,7 @@ e_SD_workstation_access_mode_t
 SD_workstation_get_access_mode(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
+  xbt_assert(workstation != NULL, "Invalid parameter");
   return workstation->access_mode;
 }
 
@@ -430,7 +430,7 @@ void SD_workstation_set_access_mode(SD_workstation_t workstation,
                                     access_mode)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
+  xbt_assert(workstation != NULL, "Invalid parameter");
 
   if (access_mode == workstation->access_mode) {
     return;                     // nothing is changed
@@ -450,7 +450,7 @@ void SD_workstation_set_access_mode(SD_workstation_t workstation,
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *//*
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    int __SD_workstation_can_start(SD_workstation_t workstation, SD_task_t task) {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    SD_CHECK_INIT_DONE();
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   xbt_assert0(workstation != NULL && task != NULL, "Invalid parameter");
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   xbt_assert(workstation != NULL && task != NULL, "Invalid parameter");
 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    return !__SD_workstation_is_busy(workstation) &&
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    (xbt_fifo_size(workstation->task_fifo) == 0) || xbt_fifo_get_first_item(workstation->task_fifo) == task);
@@ -463,7 +463,7 @@ void SD_workstation_set_access_mode(SD_workstation_t workstation,
 int __SD_workstation_is_busy(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
+  xbt_assert(workstation != NULL, "Invalid parameter");
 
   XBT_DEBUG
       ("Workstation '%s' access mode: '%s', current task: %s, fifo size: %d",
@@ -489,7 +489,7 @@ void __SD_workstation_destroy(void *workstation)
   SD_workstation_t w;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
+  xbt_assert(workstation != NULL, "Invalid parameter");
   /* workstation->surf_workstation is freed by surf_exit and workstation->data is freed by the user */
 
   w = (SD_workstation_t) workstation;
@@ -507,8 +507,8 @@ void __SD_workstation_destroy(void *workstation)
 SD_task_t SD_workstation_get_current_task(SD_workstation_t workstation)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
-  xbt_assert0(workstation->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS,
+  xbt_assert(workstation != NULL, "Invalid parameter");
+  xbt_assert(workstation->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS,
               "Access mode must be set to SD_WORKSTATION_SEQUENTIAL_ACCESS"
               " to use this function");
 

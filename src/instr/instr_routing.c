@@ -71,7 +71,7 @@ static void linkContainers (const char *a1, const char *a2, xbt_dict_t filter)
   type_t a2_type = a2_container->type;
 
   container_t container = findCommonFather (getRootContainer(), a1_container, a2_container);
-  xbt_assert0 (container != NULL, "common father not found");
+  xbt_assert (container != NULL, "common father not found");
 
   //declare type
   char link_typename[INSTR_DEFAULT_STR_SIZE];
@@ -144,7 +144,7 @@ static void recursiveGraphExtraction (container_t container, xbt_dict_t filter)
             //no route between them, that's possible
             continue;
           }
-          xbt_assert2(route!=NULL,
+          xbt_assert(route!=NULL,
               "there is no ASroute between %s and %s", child_name1, child_name2);
           unsigned int cpt;
           void *link;

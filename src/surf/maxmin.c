@@ -115,7 +115,7 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
 static XBT_INLINE void lmm_cnst_free(lmm_system_t sys,
                                      lmm_constraint_t cnst)
 {
-/*   xbt_assert0(xbt_swag_size(&(cnst->element_set)), */
+/*   xbt_assert(xbt_swag_size(&(cnst->element_set)), */
 /* 	      "This list should be empty!"); */
   remove_active_constraint(sys, cnst);
   free(cnst);
@@ -249,7 +249,7 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
 
   sys->modified = 1;
 
-  xbt_assert0(var->cnsts_number < var->cnsts_size, "Too much constraints");
+  xbt_assert(var->cnsts_number < var->cnsts_size, "Too much constraints");
 
   elem = &(var->cnsts[var->cnsts_number++]);
 
@@ -469,7 +469,7 @@ void lmm_print(lmm_system_t sys)
     //   XBT_DEBUG("%s", trace_buf);
     fprintf(stderr, "%s\n", trace_buf);
     trace_buf[0] = '\000';
-    xbt_assert3(!double_positive(sum - cnst->bound),
+    xbt_assert(!double_positive(sum - cnst->bound),
                 "Incorrect value (%f is not smaller than %f): %g",
                 sum, cnst->bound, sum - cnst->bound);
   }
@@ -480,7 +480,7 @@ void lmm_print(lmm_system_t sys)
     if (var->bound > 0) {
       XBT_DEBUG("'%d'(%f) : %f (<=%f)", var->id_int, var->weight, var->value,
              var->bound);
-      xbt_assert2(!double_positive(var->value - var->bound),
+      xbt_assert(!double_positive(var->value - var->bound),
                   "Incorrect value (%f is not smaller than %f",
                   var->value, var->bound);
     } else {

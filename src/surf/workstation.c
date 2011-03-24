@@ -360,8 +360,8 @@ void surf_workstation_model_init_CLM03(const char *filename)
 void surf_workstation_model_init_compound(const char *filename)
 {
 
-  xbt_assert0(surf_cpu_model, "No CPU model defined yet!");
-  xbt_assert0(surf_network_model, "No network model defined yet!");
+  xbt_assert(surf_cpu_model, "No CPU model defined yet!");
+  xbt_assert(surf_network_model, "No network model defined yet!");
   surf_workstation_model_init_internal();
 
   update_model_description(surf_workstation_model_description,

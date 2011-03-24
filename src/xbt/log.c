@@ -606,7 +606,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
   while (1) {
     xbt_log_appender_t appender = cat->appender;
     if (appender != NULL) {
-      xbt_assert1(cat->layout,
+      xbt_assert(cat->layout,
                   "No valid layout for the appender of category %s",
                   cat->name);
       cat->layout->do_layout(cat->layout, ev, fmt, appender);
@@ -738,12 +738,12 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   if (!xbt_log_settings)
     return priority >= category->threshold;
 
-  xbt_assert0(category, "NULL category");
+  xbt_assert(category, "NULL category");
   xbt_assert(category->name);
 
   xbt_dynar_foreach(xbt_log_settings, cursor, setting) {
-    xbt_assert0(setting, "Damnit, NULL cat in the list");
-    xbt_assert1(setting->catname, "NULL setting(=%p)->catname",
+    xbt_assert(setting, "Damnit, NULL cat in the list");
+    xbt_assert(setting->catname, "NULL setting(=%p)->catname",
                 (void *) setting);
 
     if (!strcmp(setting->catname, category->name)) {
@@ -769,8 +769,8 @@ int _xbt_log_cat_init(xbt_log_category_t category,
 void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
 {
 
-  xbt_assert0(cat, "NULL category to be given a parent");
-  xbt_assert1(parent, "The parent category of %s is NULL", cat->name);
+  xbt_assert(cat, "NULL category to be given a parent");
+  xbt_assert(parent, "The parent category of %s is NULL", cat->name);
 
   /*
    * if the threshold is initialized
@@ -858,7 +858,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   eq = control_string;
   control_string += strcspn(control_string, " ");
 
-  xbt_assert1(*dot == '.' && (*eq == '=' || *eq == ':'),
+  xbt_assert(*dot == '.' && (*eq == '=' || *eq == ':'),
               "Invalid control string '%s'", control_string);
 
   if (!strncmp(dot + 1, "thresh", (size_t) (eq - dot - 1))) {

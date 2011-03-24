@@ -146,7 +146,7 @@ gras_msg_t gras_msg_recv_any(void)
      *    an iterator, incremented only when the socket has a comm. And we've the right socket
      *    when that iterator is equal to "got", the result of waitany. Not needed if B holds.
      */
-    xbt_assert1(sock_data->comm_recv,
+    xbt_assert(sock_data->comm_recv,
                 "Comm_recv of socket %p is empty; please report that nasty bug",
                 sock);
     /* End of paranoia */

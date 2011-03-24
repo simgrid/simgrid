@@ -267,7 +267,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite)
     int suite_len = strlen(suite->title);
     int i;
 
-    xbt_assert2(suite_len < 68,
+    xbt_assert(suite_len < 68,
                 "suite title \"%s\" too long (%d should be less than 68",
                 suite->title, suite_len);
 
@@ -745,7 +745,7 @@ void _xbt_test_fail(const char *file, int line, const char *fmt, ...)
   xbt_assert(unit);
   xbt_assert(fmt);
 
-  xbt_assert1(xbt_dynar_length(_xbt_test_current_unit->tests),
+  xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
               "Test failed even before being declared (broken unit: %s)",
               unit->title);
 
@@ -771,7 +771,7 @@ void xbt_test_exception(xbt_ex_t e)
 void xbt_test_expect_failure(void)
 {
   xbt_test_test_t test;
-  xbt_assert1(xbt_dynar_length(_xbt_test_current_unit->tests),
+  xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
               "Cannot expect the failure of a test before declaring it (broken unit: %s)",
               _xbt_test_current_unit->title);
   test =
@@ -783,7 +783,7 @@ void xbt_test_skip(void)
 {
   xbt_test_test_t test;
 
-  xbt_assert1(xbt_dynar_length(_xbt_test_current_unit->tests),
+  xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
               "Test skiped even before being declared (broken unit: %s)",
               _xbt_test_current_unit->title);
 
@@ -803,7 +803,7 @@ void _xbt_test_log(const char *file, int line, const char *fmt, ...)
   xbt_assert(unit);
   xbt_assert(fmt);
 
-  xbt_assert1(xbt_dynar_length(_xbt_test_current_unit->tests),
+  xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
               "Test logged into even before being declared (broken test unit: %s)",
               unit->title);
 

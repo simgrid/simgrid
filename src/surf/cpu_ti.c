@@ -156,17 +156,17 @@ static cpu_ti_t cpu_ti_new(char *name, double power_peak,
   s_tmgr_event_t val;
   cpu_ti_t cpu = xbt_new0(s_cpu_ti_t, 1);
   s_surf_action_cpu_ti_t ti_action;
-  xbt_assert1(!surf_cpu_resource_by_name(name),
+  xbt_assert(!surf_cpu_resource_by_name(name),
               "Host '%s' declared several times in the platform file",
               name);
-  xbt_assert0(core==1,"Multi-core not handled with this model yet");
+  xbt_assert(core==1,"Multi-core not handled with this model yet");
   cpu->action_set =
       xbt_swag_new(xbt_swag_offset(ti_action, cpu_list_hookup));
   cpu->generic_resource.model = surf_cpu_model;
   cpu->generic_resource.name = name;
   cpu->generic_resource.properties = cpu_properties;
   cpu->power_peak = power_peak;
-  xbt_assert0(cpu->power_peak > 0, "Power has to be >0");
+  xbt_assert(cpu->power_peak > 0, "Power has to be >0");
   XBT_DEBUG("power scale %lf", power_scale);
   cpu->power_scale = power_scale;
   cpu->avail_trace = cpu_ti_parse_trace(power_trace, power_scale);
@@ -205,7 +205,7 @@ static void parse_cpu_ti_init(void)
   power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
   surf_parse_get_int(&core, A_surfxml_host_core);
 
-  xbt_assert0((A_surfxml_host_state == A_surfxml_host_state_ON) ||
+  xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
               (A_surfxml_host_state == A_surfxml_host_state_OFF),
               "Invalid state");
   if (A_surfxml_host_state == A_surfxml_host_state_ON)
@@ -237,8 +237,8 @@ static void add_traces_cpu_ti(void)
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     cpu_ti_t cpu = surf_cpu_resource_by_name(elm);
 
-    xbt_assert1(cpu, "Host %s undefined", elm);
-    xbt_assert1(trace, "Trace %s undefined", trace_name);
+    xbt_assert(cpu, "Host %s undefined", elm);
+    xbt_assert(trace, "Trace %s undefined", trace_name);
 
     if (cpu->state_event) {
       XBT_DEBUG("Trace already configured for this CPU(%s), ignoring it",
@@ -253,8 +253,8 @@ static void add_traces_cpu_ti(void)
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     cpu_ti_t cpu = surf_cpu_resource_by_name(elm);
 
-    xbt_assert1(cpu, "Host %s undefined", elm);
-    xbt_assert1(trace, "Trace %s undefined", trace_name);
+    xbt_assert(cpu, "Host %s undefined", elm);
+    xbt_assert(trace, "Trace %s undefined", trace_name);
 
     XBT_DEBUG("Add power trace: %s to CPU(%s)", trace_name, elm);
     if (cpu->avail_trace)
@@ -754,7 +754,7 @@ static void cpu_ti_create_resource(char *name, double power_peak,
                                    tmgr_trace_t state_trace,
                                    xbt_dict_t cpu_properties)
 {
-	xbt_assert0(core==1,"Multi-core not handled with this model yet");
+	xbt_assert(core==1,"Multi-core not handled with this model yet");
   cpu_ti_new(name, power_peak, power_scale, power_trace, core,
              state_initial, state_trace, cpu_properties);
 }

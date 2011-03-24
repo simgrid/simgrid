@@ -211,7 +211,7 @@ void xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B,
 {
   unsigned int i, j, k;
 
-  xbt_assert2(A->lines == C->lines,
+  xbt_assert(A->lines == C->lines,
               "A->lines != C->lines (%d vs %d)", A->lines, C->lines);
   xbt_assert(B->rows == C->rows);
 

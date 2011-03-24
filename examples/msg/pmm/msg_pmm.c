@@ -61,7 +61,7 @@ int node(int argc, char **argv)
   xbt_matrix_t A, B, C = NULL, sA, sB, sC;
   result_t result;
 
-  xbt_assert0(argc != 1, "Wrong number of arguments for this node");
+  xbt_assert(argc != 1, "Wrong number of arguments for this node");
 
   /* Initialize the node's data-structures */
   myid = atoi(argv[1]);

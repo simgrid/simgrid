@@ -26,7 +26,7 @@ static int receive(int argc, char *argv[])
   XBT_INFO("Receiving");
   m_task_t task = NULL;
   MSG_task_get_with_timeout(&task, 0, DBL_MAX);
-  xbt_assert0(MSG_task_get_sender(task), "No sender received");
+  xbt_assert(MSG_task_get_sender(task), "No sender received");
   XBT_INFO("Got a message sent by '%s'",
         MSG_process_get_name(MSG_task_get_sender(task)));
   return 0;

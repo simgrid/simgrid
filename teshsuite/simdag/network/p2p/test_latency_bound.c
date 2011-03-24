@@ -37,7 +37,7 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
 
-  // xbt_assert0( check max tcp win size, "MAX TCP WIN SIZE is 20000");
+  // xbt_assert( check max tcp win size, "MAX TCP WIN SIZE is 20000");
 
   root = SD_task_create("Root", NULL, 1.0);
   SD_task_schedule(root, 1, SD_workstation_get_list(), no_cost, no_cost,

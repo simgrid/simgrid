@@ -143,7 +143,7 @@ void *xbt_fifo_shift(xbt_fifo_t l)
  */
 void xbt_fifo_push_item(xbt_fifo_t l, xbt_fifo_item_t new)
 {
-  xbt_assert0((new->next == NULL) && (new->prev == NULL), "Invalid item!");
+  xbt_assert((new->next == NULL) && (new->prev == NULL), "Invalid item!");
   (l->count)++;
   if (l->head == NULL) {
     l->head = new;
@@ -191,7 +191,7 @@ xbt_fifo_item_t xbt_fifo_pop_item(xbt_fifo_t l)
  */
 void xbt_fifo_unshift_item(xbt_fifo_t l, xbt_fifo_item_t new)
 {
-  xbt_assert0((new->next == NULL) && (new->prev == NULL), "Invalid item!");
+  xbt_assert((new->next == NULL) && (new->prev == NULL), "Invalid item!");
   (l->count)++;
   if (l->head == NULL) {
     l->head = new;
@@ -293,7 +293,7 @@ int xbt_fifo_remove_all(xbt_fifo_t l, void *t)
 void xbt_fifo_remove_item(xbt_fifo_t l, xbt_fifo_item_t current)
 {
   if (l->head == l->tail) {     /* special case */
-    xbt_assert0((current == l->head), "This item is not in the list!");
+    xbt_assert((current == l->head), "This item is not in the list!");
     l->head = NULL;
     l->tail = NULL;
     (l->count)--;

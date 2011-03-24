@@ -90,7 +90,7 @@ int gras_os_getpid(void)
 
 gras_procdata_t *gras_procdata_get(void)
 {
-  xbt_assert0(_gras_procdata, "Run gras_process_init (ie, gras_init)!");
+  xbt_assert(_gras_procdata, "Run gras_process_init (ie, gras_init)!");
 
   return _gras_procdata;
 }

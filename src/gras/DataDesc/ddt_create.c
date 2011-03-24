@@ -122,11 +122,11 @@ gras_datadesc_scalar(const char *name,
   XBT_IN("");
   res = gras_datadesc_by_name_or_null(name);
   if (res) {
-    xbt_assert1(res->category_code == e_gras_datadesc_type_cat_scalar,
+    xbt_assert(res->category_code == e_gras_datadesc_type_cat_scalar,
                 "Redefinition of type %s does not match", name);
-    xbt_assert1(res->category.scalar_data.encoding == encoding,
+    xbt_assert(res->category.scalar_data.encoding == encoding,
                 "Redefinition of type %s does not match", name);
-    xbt_assert1(res->category.scalar_data.type == type,
+    xbt_assert(res->category.scalar_data.type == type,
                 "Redefinition of type %s does not match", name);
     XBT_VERB("Discarding redefinition of %s", name);
     return res;
@@ -173,7 +173,7 @@ gras_datadesc_type_t gras_datadesc_struct(const char *name)
   res = gras_datadesc_by_name_or_null(name);
   if (res) {
     /* FIXME: Check that field redefinition matches */
-    xbt_assert1(res->category_code == e_gras_datadesc_type_cat_struct,
+    xbt_assert(res->category_code == e_gras_datadesc_type_cat_struct,
                 "Redefinition of type %s does not match", name);
     XBT_DEBUG("Discarding redefinition of %s", name);
     return res;
@@ -203,7 +203,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
   gras_dd_cat_field_t field;
   int arch;
 
-  xbt_assert2(field_type,
+  xbt_assert(field_type,
               "Cannot add the field '%s' into struct '%s': its type is NULL",
               name, struct_type->name);
   XBT_IN("(%s %s.%s;)", field_type->name, struct_type->name, name);
@@ -214,7 +214,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
     return;
   }
 
-  xbt_assert1(field_type->size[GRAS_THISARCH] >= 0,
+  xbt_assert(field_type->size[GRAS_THISARCH] >= 0,
               "Cannot add a dynamically sized field in structure %s",
               struct_type->name);
 
@@ -313,15 +313,15 @@ gras_datadesc_union(const char *name, gras_datadesc_type_cb_int_t selector)
   int arch;
 
   XBT_IN("(%s)", name);
-  xbt_assert0(selector,
+  xbt_assert(selector,
               "Attempt to creat an union without field_count function");
 
   res = gras_datadesc_by_name_or_null(name);
   if (res) {
     /* FIXME: Check that field redefinition matches */
-    xbt_assert1(res->category_code == e_gras_datadesc_type_cat_union,
+    xbt_assert(res->category_code == e_gras_datadesc_type_cat_union,
                 "Redefinition of type %s does not match", name);
-    xbt_assert1(res->category.union_data.selector == selector,
+    xbt_assert(res->category.union_data.selector == selector,
                 "Redefinition of type %s does not match", name);
     XBT_VERB("Discarding redefinition of %s", name);
     return res;
@@ -353,7 +353,7 @@ void gras_datadesc_union_append(gras_datadesc_type_t union_type,
   int arch;
 
   XBT_IN("(%s %s.%s;)", field_type->name, union_type->name, name);
-  xbt_assert1(field_type->size[GRAS_THISARCH] >= 0,
+  xbt_assert(field_type->size[GRAS_THISARCH] >= 0,
               "Cannot add a dynamically sized field in union %s",
               union_type->name);
 
@@ -421,11 +421,11 @@ gras_datadesc_ref(const char *name, gras_datadesc_type_t referenced_type)
   XBT_IN("(%s)", name);
   res = gras_datadesc_by_name_or_null(name);
   if (res) {
-    xbt_assert1(res->category_code == e_gras_datadesc_type_cat_ref,
+    xbt_assert(res->category_code == e_gras_datadesc_type_cat_ref,
                 "Redefinition of %s does not match", name);
-    xbt_assert1(res->category.ref_data.type == referenced_type,
+    xbt_assert(res->category.ref_data.type == referenced_type,
                 "Redefinition of %s does not match", name);
-    xbt_assert1(res->category.ref_data.selector == NULL,
+    xbt_assert(res->category.ref_data.selector == NULL,
                 "Redefinition of %s does not match", name);
     XBT_DEBUG("Discarding redefinition of %s", name);
     return res;
@@ -433,7 +433,7 @@ gras_datadesc_ref(const char *name, gras_datadesc_type_t referenced_type)
 
   res = gras_ddt_new(name);
 
-  xbt_assert0(pointer_type, "Cannot get the description of data pointer");
+  xbt_assert(pointer_type, "Cannot get the description of data pointer");
 
   for (arch = 0; arch < gras_arch_count; arch++) {
     res->size[arch] = pointer_type->size[arch];
@@ -468,18 +468,18 @@ gras_datadesc_ref_generic(const char *name,
   res = gras_datadesc_by_name_or_null(name);
 
   if (res) {
-    xbt_assert1(res->category_code == e_gras_datadesc_type_cat_ref,
+    xbt_assert(res->category_code == e_gras_datadesc_type_cat_ref,
                 "Redefinition of type %s does not match", name);
-    xbt_assert1(res->category.ref_data.type == NULL,
+    xbt_assert(res->category.ref_data.type == NULL,
                 "Redefinition of type %s does not match", name);
-    xbt_assert1(res->category.ref_data.selector == selector,
+    xbt_assert(res->category.ref_data.selector == selector,
                 "Redefinition of type %s does not match", name);
     XBT_VERB("Discarding redefinition of %s", name);
     return res;
   }
   res = gras_ddt_new(name);
 
-  xbt_assert0(pointer_type, "Cannot get the description of data pointer");
+  xbt_assert(pointer_type, "Cannot get the description of data pointer");
 
   for (arch = 0; arch < gras_arch_count; arch++) {
     res->size[arch] = pointer_type->size[arch];
@@ -508,7 +508,7 @@ gras_datadesc_array_fixed(const char *name,
   XBT_IN("(%s)", name);
   res = gras_datadesc_by_name_or_null(name);
   if (res) {
-    xbt_assert1(res->category_code == e_gras_datadesc_type_cat_array,
+    xbt_assert(res->category_code == e_gras_datadesc_type_cat_array,
                 "Redefinition of type %s does not match", name);
 
     if (res->category.array_data.type != element_type) {
@@ -519,9 +519,9 @@ gras_datadesc_array_fixed(const char *name,
       gras_datadesc_type_dump(element_type);
     }
 
-    xbt_assert1(res->category.array_data.fixed_size == fixed_size,
+    xbt_assert(res->category.array_data.fixed_size == fixed_size,
                 "Redefinition of type %s does not match", name);
-    xbt_assert1(res->category.array_data.dynamic_size == NULL,
+    xbt_assert(res->category.array_data.dynamic_size == NULL,
                 "Redefinition of type %s does not match", name);
     XBT_VERB("Discarding redefinition of %s", name);
 
@@ -529,7 +529,7 @@ gras_datadesc_array_fixed(const char *name,
   }
   res = gras_ddt_new(name);
 
-  xbt_assert1(fixed_size >= 0, "'%s' is a array of negative fixed size",
+  xbt_assert(fixed_size >= 0, "'%s' is a array of negative fixed size",
               name);
   for (arch = 0; arch < gras_arch_count; arch++) {
     res->size[arch] = fixed_size * element_type->aligned_size[arch];
@@ -558,18 +558,18 @@ gras_datadesc_type_t gras_datadesc_array_dyn(const char *name,
   int arch;
 
   XBT_IN("(%s)", name);
-  xbt_assert1(dynamic_size,
+  xbt_assert(dynamic_size,
               "'%s' is a dynamic array without size discriminant", name);
 
   res = gras_datadesc_by_name_or_null(name);
   if (res) {
-    xbt_assert1(res->category_code == e_gras_datadesc_type_cat_array,
+    xbt_assert(res->category_code == e_gras_datadesc_type_cat_array,
                 "Redefinition of type %s does not match", name);
-    xbt_assert1(res->category.array_data.type == element_type,
+    xbt_assert(res->category.array_data.type == element_type,
                 "Redefinition of type %s does not match", name);
-    xbt_assert1(res->category.array_data.fixed_size == -1,
+    xbt_assert(res->category.array_data.fixed_size == -1,
                 "Redefinition of type %s does not match", name);
-    xbt_assert1(res->category.array_data.dynamic_size == dynamic_size,
+    xbt_assert(res->category.array_data.dynamic_size == dynamic_size,
                 "Redefinition of type %s does not match", name);
     XBT_VERB("Discarding redefinition of %s", name);
 

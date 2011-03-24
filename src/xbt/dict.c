@@ -989,7 +989,7 @@ static void count_check_get_key(xbt_dict_t dict, int length)
   xbt_dict_foreach(dict, cursor, key, data) {
     effective++;
     key2 = xbt_dict_get_key(dict, data);
-    xbt_assert2(!strcmp(key, key2),
+    xbt_assert(!strcmp(key, key2),
                 "The data was registered under %s instead of %s as expected",
                 key2, key);
   }

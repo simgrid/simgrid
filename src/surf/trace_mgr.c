@@ -51,7 +51,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
     }
   }
 
-  xbt_assert1(periodicity >= 0,
+  xbt_assert(periodicity >= 0,
               "Invalid periodicity %lg (must be positive)", periodicity);
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
@@ -115,7 +115,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   }
 
   f = surf_fopen(filename, "r");
-  xbt_assert2(f != NULL, "Cannot open file '%s' (path=%s)", filename,
+  xbt_assert(f != NULL, "Cannot open file '%s' (path=%s)", filename,
               xbt_str_join(surf_path, ":"));
 
   tstr = xbt_str_from_file(f);
@@ -161,7 +161,7 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
   trace_event->idx = offset;
   trace_event->model = model;
 
-  xbt_assert0((trace_event->idx < xbt_dynar_length(trace->event_list)),
+  xbt_assert((trace_event->idx < xbt_dynar_length(trace->event_list)),
               "You're referring to an event that does not exist!");
 
   xbt_heap_push(h->heap, trace_event, start_time);

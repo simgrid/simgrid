@@ -72,7 +72,7 @@ static void test_float(gras_socket_t sock, int direction)
   XBT_INFO("---- Test on float ----");
   write_read("float", &i, &j, sock, direction);
   if (direction == READ || direction == COPY)
-    xbt_assert2(i == j, "%f != %f", i, j);
+    xbt_assert(i == j, "%f != %f", i, j);
 }
 
 static void test_double(gras_socket_t sock, int direction)
@@ -82,7 +82,7 @@ static void test_double(gras_socket_t sock, int direction)
   XBT_INFO("---- Test on double ----");
   write_read("double", &i, &j, sock, direction);
   if (direction == READ || direction == COPY)
-    xbt_assert2(i == j, "%f != %f", i, j);
+    xbt_assert(i == j, "%f != %f", i, j);
 }
 
 #define FIXED_ARRAY_SIZE 5
@@ -99,7 +99,7 @@ static void test_array(gras_socket_t sock, int direction)
   if (direction == READ || direction == COPY) {
     for (cpt = 0; cpt < FIXED_ARRAY_SIZE; cpt++) {
       XBT_DEBUG("Test spot %d", cpt);
-      xbt_assert4(i[cpt] == j[cpt], "i[%d]=%d  !=  j[%d]=%d",
+      xbt_assert(i[cpt] == j[cpt], "i[%d]=%d  !=  j[%d]=%d",
                   cpt, i[cpt], cpt, j[cpt]);
     }
   }
@@ -164,7 +164,7 @@ static void test_intref(gras_socket_t sock, int direction)
 
   write_read("int*", &i, &j, sock, direction);
   if (direction == READ || direction == COPY) {
-    xbt_assert2(*i == *j, "*i != *j (%d != %d)", *i, *j);
+    xbt_assert(*i == *j, "*i != *j (%d != %d)", *i, *j);
     free(j);
   }
   free(i);
@@ -182,7 +182,7 @@ static void test_string(gras_socket_t sock, int direction)
   write_read("string", &i, &j, sock, direction);
   if (direction == READ || direction == COPY) {
     for (cpt = 0; cpt < strlen(i); cpt++) {
-      xbt_assert4(i[cpt] == j[cpt], "i[%d]=%c  !=  j[%d]=%c",
+      xbt_assert(i[cpt] == j[cpt], "i[%d]=%c  !=  j[%d]=%c",
                   cpt, i[cpt], cpt, j[cpt]);
     }
     free(j);
@@ -211,7 +211,7 @@ static void test_homostruct(gras_socket_t sock, int direction)
 
   write_read("homostruct*", &i, &j, sock, direction);
   if (direction == READ || direction == COPY) {
-    xbt_assert2(i->a == j->a, "i->a=%d != j->a=%d", i->a, j->a);
+    xbt_assert(i->a == j->a, "i->a=%d != j->a=%d", i->a, j->a);
     xbt_assert(i->b == j->b);
     xbt_assert(i->c == j->c);
     xbt_assert(i->d == j->d);
@@ -245,7 +245,7 @@ static void test_hetestruct(gras_socket_t sock, int direction)
   if (direction == READ || direction == COPY) {
     xbt_assert(i->c1 == j->c1);
     xbt_assert(i->c2 == j->c2);
-    xbt_assert2(i->l1 == j->l1, "i->l1(=%ld)  !=  j->l1(=%ld)", i->l1,
+    xbt_assert(i->l1 == j->l1, "i->l1(=%ld)  !=  j->l1(=%ld)", i->l1,
                 j->l1);
     xbt_assert(i->l2 == j->l2);
     free(j);
@@ -273,7 +273,7 @@ static void test_hetestruct_array(gras_socket_t sock, int direction)
     for (cpt = 0, p = i, q = j; cpt < 10; cpt++, p++, q++) {
       xbt_assert(p->c1 == q->c1);
       xbt_assert(p->c2 == q->c2);
-      xbt_assert3(p->l1 == p->l1,
+      xbt_assert(p->l1 == p->l1,
                   "for cpt=%d i->l1(=%ld)  !=  j->l1(=%ld)", cpt, p->l1,
                   q->l1);
       xbt_assert(q->l2 == p->l2);
@@ -403,7 +403,7 @@ static void test_graph(gras_socket_t sock, int direction)
     XBT_DEBUG("j->l=%p", j->l);
     XBT_DEBUG("j->l->l=%p", j->l->l);
     XBT_DEBUG("j->l->l->l=%p", j->l->l->l);
-    xbt_assert4(j->l->l->l == j,
+    xbt_assert(j->l->l->l == j,
                 "Received list is not cyclic. j=%p != j->l->l->l=%p\n"
                 "j=%p; &j=%p", j, j->l->l->l, j, &j);
     j->l->l->l = NULL;
@@ -444,7 +444,7 @@ static void test_dynar_ref(gras_socket_t sock, int direction)
     for (cpt = 0; cpt < 64; cpt++) {
       sprintf(buf, "%d", cpt);
       xbt_dynar_shift(j, &s2);
-      xbt_assert2(!strcmp(buf, s2),
+      xbt_assert(!strcmp(buf, s2),
                   "The retrieved value is not the same than the injected one (%s!=%s)",
                   buf, s2);
       free(s2);
@@ -514,7 +514,7 @@ static void test_pbio(gras_socket_t sock, int direction)
     /* Check that the data match */
     xbt_assert(i.Cnstatv == j.Cnstatv);
     for (cpt = 0; cpt < 12; cpt++)
-      xbt_assert4(i.Cstatev[cpt] == j.Cstatev[cpt],
+      xbt_assert(i.Cstatev[cpt] == j.Cstatev[cpt],
                   "i.Cstatev[%d] (=%f) != j.Cstatev[%d] (=%f)",
                   cpt, i.Cstatev[cpt], cpt, j.Cstatev[cpt]);
     xbt_assert(i.Cnprops == j.Cnprops);
@@ -537,7 +537,7 @@ static void test_pbio(gras_socket_t sock, int direction)
     for (cpt = 0; cpt < 106; cpt++) {
       xbt_assert(i.Cstress[cpt] == j.Cstress[cpt]);
       for (cpt2 = 0; cpt2 < 106; cpt2++)
-        xbt_assert4(i.Cddsdde[cpt][cpt2] == j.Cddsdde[cpt][cpt2],
+        xbt_assert(i.Cddsdde[cpt][cpt2] == j.Cddsdde[cpt][cpt2],
                     "%f=i.Cddsdde[%d][%d] != j.Cddsdde[cpt][cpt2]=%f",
                     i.Cddsdde[cpt][cpt2], cpt, cpt2, j.Cddsdde[cpt][cpt2]);
     }

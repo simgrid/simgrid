@@ -83,7 +83,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
 void *SD_task_get_data(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
   return task->data;
 }
 
@@ -100,7 +100,7 @@ void *SD_task_get_data(SD_task_t task)
 void SD_task_set_data(SD_task_t task, void *data)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
   task->data = data;
 }
 
@@ -115,7 +115,7 @@ void SD_task_set_data(SD_task_t task, void *data)
 e_SD_task_state_t SD_task_get_state(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
   return task->state;
 }
 
@@ -179,7 +179,7 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 const char *SD_task_get_name(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
   return task->name;
 }
 
@@ -202,7 +202,7 @@ xbt_dynar_t SD_task_get_parents(SD_task_t task)
   xbt_dynar_t parents;
   SD_dependency_t dep;
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
 
   parents = xbt_dynar_new(sizeof(SD_task_t), NULL);
   xbt_dynar_foreach(task->tasks_before, i, dep) {
@@ -222,7 +222,7 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
   xbt_dynar_t children;
   SD_dependency_t dep;
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
 
   children = xbt_dynar_new(sizeof(SD_task_t), NULL);
   xbt_dynar_foreach(task->tasks_after, i, dep) {
@@ -240,8 +240,8 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
 int SD_task_get_workstation_count(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
-  //  xbt_assert1( task->state_set != sd_global->scheduled_task_set, 
+  xbt_assert(task != NULL, "Invalid parameter");
+  //xbt_assert(task->state_set != sd_global->scheduled_task_set,
   //           "Unscheduled task %s", task->name);
   return task->workstation_nb;
 }
@@ -255,8 +255,8 @@ int SD_task_get_workstation_count(SD_task_t task)
 SD_workstation_t *SD_task_get_workstation_list(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
-  //xbt_assert1( task->state_set != sd_global->scheduled_task_set, 
+  xbt_assert(task != NULL, "Invalid parameter");
+  //xbt_assert(task->state_set != sd_global->scheduled_task_set,
   //           "Unscheduled task %s", task->name);
   return task->workstation_list;
 }
@@ -271,7 +271,7 @@ SD_workstation_t *SD_task_get_workstation_list(SD_task_t task)
 double SD_task_get_amount(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
   return task->amount;
 }
 
@@ -285,7 +285,7 @@ double SD_task_get_amount(SD_task_t task)
 double SD_task_get_remaining_amount(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
 
   if (task->surf_action)
     return surf_workstation_model->get_remains(task->surf_action);
@@ -401,7 +401,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
   SD_dependency_t dependency;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+  xbt_assert(src != NULL && dst != NULL, "Invalid parameter");
 
   dynar = src->tasks_after;
   length = xbt_dynar_length(dynar);
@@ -479,7 +479,7 @@ int SD_task_dependency_exists(SD_task_t src, SD_task_t dst)
   SD_dependency_t dependency;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(src != NULL
+  xbt_assert(src != NULL
               || dst != NULL,
               "Invalid parameter: both src and dst are NULL");
 
@@ -515,7 +515,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
   SD_dependency_t dependency;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+  xbt_assert(src != NULL && dst != NULL, "Invalid parameter");
 
   /* remove the dependency from src->tasks_after */
   dynar = src->tasks_after;
@@ -550,7 +550,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
     }
   }
   /* should never happen... */
-  xbt_assert4(found,
+  xbt_assert(found,
               "SimDag error: task '%s' is a successor of '%s' but task '%s' is not a predecessor of task '%s'",
               SD_task_get_name(dst), SD_task_get_name(src),
               SD_task_get_name(src), SD_task_get_name(dst));
@@ -590,7 +590,7 @@ void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
 
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+  xbt_assert(src != NULL && dst != NULL, "Invalid parameter");
 
   dynar = src->tasks_after;
   length = xbt_dynar_length(dynar);
@@ -643,7 +643,7 @@ static void __SD_print_watch_points(SD_task_t task)
 void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
 
   if (state & SD_NOT_SCHEDULED)
     THROWF(arg_error, 0,
@@ -663,8 +663,8 @@ void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
 void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert0(state != SD_NOT_SCHEDULED,
+  xbt_assert(task != NULL, "Invalid parameter");
+  xbt_assert(state != SD_NOT_SCHEDULED,
               "SimDag error: Cannot have a watch point for state SD_NOT_SCHEDULED");
 
   task->watch_points = task->watch_points & ~state;
@@ -694,7 +694,7 @@ double SD_task_get_execution_time(SD_task_t task,
   double time, max_time = 0.0;
   int i, j;
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL && workstation_nb > 0
+  xbt_assert(task != NULL && workstation_nb > 0
               && workstation_list != NULL, "Invalid parameter");
 
   /* the task execution time is the maximum execution time of the parallel tasks */
@@ -761,7 +761,7 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
   int communication_nb;
   task->workstation_nb = 0;
   task->rate = -1;
-  xbt_assert0(workstation_count > 0, "workstation_nb must be positive");
+  xbt_assert(workstation_count > 0, "workstation_nb must be positive");
 
   task->workstation_nb = workstation_count;
   task->rate = rate;
@@ -809,7 +809,7 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
 void SD_task_unschedule(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
 
   if (task->state_set != sd_global->scheduled_task_set &&
       task->state_set != sd_global->runnable_task_set &&
@@ -862,11 +862,11 @@ void __SD_task_really_run(SD_task_t task)
   void **surf_workstations;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert2(__SD_task_is_runnable_or_in_fifo(task),
+  xbt_assert(task != NULL, "Invalid parameter");
+  xbt_assert(__SD_task_is_runnable_or_in_fifo(task),
               "Task '%s' is not runnable or in a fifo! Task state: %d",
               SD_task_get_name(task), SD_task_get_state(task));
-  xbt_assert1(task->workstation_list != NULL,
+  xbt_assert(task->workstation_list != NULL,
               "Task '%s': workstation_list is NULL!",
               SD_task_get_name(task));
 
@@ -879,7 +879,7 @@ void __SD_task_really_run(SD_task_t task)
     if (SD_workstation_get_access_mode(task->workstation_list[i]) ==
         SD_WORKSTATION_SEQUENTIAL_ACCESS) {
       task->workstation_list[i]->current_task = task;
-      xbt_assert0(__SD_workstation_is_busy(task->workstation_list[i]),
+      xbt_assert(__SD_workstation_is_busy(task->workstation_list[i]),
                   "The workstation should be busy now");
     }
   }
@@ -966,7 +966,7 @@ void __SD_task_really_run(SD_task_t task)
 
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   __SD_task_set_state(task, SD_RUNNING);
-  xbt_assert2(__SD_task_is_running(task), "Bad state of task '%s': %d",
+  xbt_assert(__SD_task_is_running(task), "Bad state of task '%s': %d",
               SD_task_get_name(task), SD_task_get_state(task));
 
 }
@@ -985,8 +985,8 @@ int __SD_task_try_to_run(SD_task_t task)
   SD_workstation_t workstation;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert2(__SD_task_is_runnable(task),
+  xbt_assert(task != NULL, "Invalid parameter");
+  xbt_assert(__SD_task_is_runnable(task),
               "Task '%s' is not runnable! Task state: %d",
               SD_task_get_name(task), SD_task_get_state(task));
 
@@ -1009,7 +1009,7 @@ int __SD_task_try_to_run(SD_task_t task)
       }
     }
     __SD_task_set_state(task, SD_IN_FIFO);
-    xbt_assert2(__SD_task_is_in_fifo(task), "Bad state of task '%s': %d",
+    xbt_assert(__SD_task_is_in_fifo(task), "Bad state of task '%s': %d",
                 SD_task_get_name(task), SD_task_get_state(task));
     XBT_DEBUG("Task '%s' state is now SD_IN_FIFO", SD_task_get_name(task));
   } else {
@@ -1035,11 +1035,11 @@ void __SD_task_just_done(SD_task_t task)
   int can_start = 1;
 
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert1(__SD_task_is_running(task),
+  xbt_assert(task != NULL, "Invalid parameter");
+  xbt_assert(__SD_task_is_running(task),
               "The task must be running! Task state: %d",
               SD_task_get_state(task));
-  xbt_assert1(task->workstation_list != NULL,
+  xbt_assert(task->workstation_list != NULL,
               "Task '%s': workstation_list is NULL!",
               SD_task_get_name(task));
 
@@ -1059,10 +1059,10 @@ void __SD_task_just_done(SD_task_t task)
     XBT_DEBUG("Workstation '%s': access_mode = %d",
            SD_workstation_get_name(workstation), workstation->access_mode);
     if (workstation->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
-      xbt_assert1(workstation->task_fifo != NULL,
+      xbt_assert(workstation->task_fifo != NULL,
                   "Workstation '%s' has sequential access but no fifo!",
                   SD_workstation_get_name(workstation));
-      xbt_assert2(workstation->current_task =
+      xbt_assert(workstation->current_task =
                   task, "Workstation '%s': current task should be '%s'",
                   SD_workstation_get_name(workstation),
                   SD_task_get_name(task));
@@ -1077,7 +1077,7 @@ void __SD_task_just_done(SD_task_t task)
 
       if (candidate != NULL) {
         XBT_DEBUG("Candidate: '%s'", SD_task_get_name(candidate));
-        xbt_assert2(__SD_task_is_in_fifo(candidate),
+        xbt_assert(__SD_task_is_in_fifo(candidate),
                     "Bad state of candidate '%s': %d",
                     SD_task_get_name(candidate),
                     SD_task_get_state(candidate));
@@ -1117,7 +1117,7 @@ void __SD_task_just_done(SD_task_t task)
       continue;                 /* we have already evaluated that task */
     }
 
-    xbt_assert2(__SD_task_is_in_fifo(candidate),
+    xbt_assert(__SD_task_is_in_fifo(candidate),
                 "Bad state of candidate '%s': %d",
                 SD_task_get_name(candidate), SD_task_get_state(candidate));
 
@@ -1146,7 +1146,7 @@ void __SD_task_just_done(SD_task_t task)
           XBT_DEBUG("Head of the fifo: '%s'",
                  (candidate !=
                   NULL) ? SD_task_get_name(candidate) : "NULL");
-          xbt_assert0(candidate == candidates[i],
+          xbt_assert(candidate == candidates[i],
                       "Error in __SD_task_just_done: bad first task in the fifo");
         }
       }                         /* for each workstation */
@@ -1160,7 +1160,7 @@ void __SD_task_just_done(SD_task_t task)
           ("Calling __SD_task_is_running: task '%s', state set: %p, running_task_set: %p, is running: %d",
            SD_task_get_name(candidate), candidate->state_set,
            sd_global->running_task_set, __SD_task_is_running(candidate));
-      xbt_assert2(__SD_task_is_running(candidate),
+      xbt_assert(__SD_task_is_running(candidate),
                   "Bad state of task '%s': %d",
                   SD_task_get_name(candidate),
                   SD_task_get_state(candidate));
@@ -1202,7 +1202,7 @@ static void __SD_task_remove_dependencies(SD_task_t task)
 double SD_task_get_start_time(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
   if (task->surf_action)
     return surf_workstation_model->
         action_get_start_time(task->surf_action);
@@ -1224,7 +1224,7 @@ double SD_task_get_start_time(SD_task_t task)
 double SD_task_get_finish_time(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
 
   if (task->surf_action)        /* should never happen as actions are destroyed right after their completion */
     return surf_workstation_model->
@@ -1244,7 +1244,7 @@ double SD_task_get_finish_time(SD_task_t task)
 void SD_task_destroy(SD_task_t task)
 {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert(task != NULL, "Invalid parameter");
 
   XBT_DEBUG("Destroying task %s...", SD_task_get_name(task));
 
@@ -1358,7 +1358,7 @@ void SD_task_schedulev(SD_task_t task, int count,
   int i;
   SD_dependency_t dep;
   unsigned int cpt;
-  xbt_assert1(task->kind != 0,
+  xbt_assert(task->kind != 0,
               "Task %s is not typed. Cannot automatically schedule it.",
               SD_task_get_name(task));
   switch (task->kind) {

@@ -136,7 +136,7 @@ void SIMIX_process_create(smx_process_t *process,
   else {
     *process = xbt_new0(s_smx_process_t, 1);
 
-    xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
+    xbt_assert(((code != NULL) && (host != NULL)), "Invalid parameters");
 
     /* Process data */
     (*process)->pid = simix_process_maxpid++;
@@ -238,7 +238,7 @@ void SIMIX_process_change_host(smx_process_t process,
 {
   smx_host_t h1 = NULL;
   smx_host_t h2 = NULL;
-  xbt_assert0((process != NULL), "Invalid parameters");
+  xbt_assert((process != NULL), "Invalid parameters");
   h1 = SIMIX_host_get_by_name(source);
   h2 = SIMIX_host_get_by_name(dest);
   process->smx_host = h2;
@@ -291,7 +291,7 @@ void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 {
-  xbt_assert0((process != NULL), "Invalid parameters");
+  xbt_assert((process != NULL), "Invalid parameters");
 
   process->suspended = 0;
 

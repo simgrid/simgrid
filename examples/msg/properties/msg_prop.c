@@ -38,13 +38,13 @@ int alice(int argc, char *argv[])
 
   XBT_INFO("== Try to get a host property that does not exist");
   value = MSG_host_get_property_value(host1, noexist);
-  xbt_assert0(!value, "The key exists (it's not supposed to)");
+  xbt_assert(!value, "The key exists (it's not supposed to)");
 
   XBT_INFO("== Try to get a host property that does exist");
   value = MSG_host_get_property_value(host1, exist);
-  xbt_assert1(value, "\tProperty %s is undefined (where it should)",
+  xbt_assert(value, "\tProperty %s is undefined (where it should)",
               exist);
-  xbt_assert2(!strcmp(value, "180"),
+  xbt_assert(!strcmp(value, "180"),
               "\tValue of property %s is defined to %s (where it should be 180)",
               exist, value);
   XBT_INFO("   Property: %s old value: %s", exist, value);
@@ -54,8 +54,8 @@ int alice(int argc, char *argv[])
 
   /* Test if we have changed the value */
   value = MSG_host_get_property_value(host1, exist);
-  xbt_assert1(value, "Property %s is undefined (where it should)", exist);
-  xbt_assert2(!strcmp(value, "250"),
+  xbt_assert(value, "Property %s is undefined (where it should)", exist);
+  xbt_assert(!strcmp(value, "250"),
               "Value of property %s is defined to %s (where it should be 250)",
               exist, value);
   XBT_INFO("   Property: %s old value: %s", exist, value);
@@ -79,7 +79,7 @@ int bob(int argc, char *argv[])
   XBT_INFO("== Try to get a process property that does not exist");
 
   value = MSG_process_get_property_value(MSG_process_self(), noexist);
-  xbt_assert0(!value, "The property is defined (it shouldnt)");
+  xbt_assert(!value, "The property is defined (it shouldnt)");
 
   return 0;
 }

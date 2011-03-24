@@ -350,7 +350,7 @@ void SIMIX_cond_destroy(smx_cond_t cond)
   XBT_DEBUG("Destroy condition %p", cond);
 
   if (cond != NULL) {
-    xbt_assert0(xbt_swag_size(cond->sleeping) == 0,
+    xbt_assert(xbt_swag_size(cond->sleeping) == 0,
                 "Cannot destroy conditional since someone is still using it");
 
     xbt_swag_free(cond->sleeping);
@@ -376,7 +376,7 @@ void SIMIX_sem_destroy(smx_sem_t sem)
 {
   XBT_DEBUG("Destroy semaphore %p", sem);
   if (sem != NULL) {
-    xbt_assert0(xbt_swag_size(sem->sleeping) == 0,
+    xbt_assert(xbt_swag_size(sem->sleeping) == 0,
                 "Cannot destroy semaphore since someone is still using it");
     xbt_swag_free(sem->sleeping);
     xbt_free(sem);

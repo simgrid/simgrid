@@ -40,11 +40,11 @@ int master(int argc, char *argv[])
   int i;
 
   int res = sscanf(argv[1], "%d", &number_of_tasks);
-  xbt_assert1(res,"Invalid argument %s\n", argv[1]);
+  xbt_assert(res,"Invalid argument %s\n", argv[1]);
   res = sscanf(argv[2], "%lg", &task_comp_size);
-  xbt_assert1(res, "Invalid argument %s\n", argv[2]);
+  xbt_assert(res, "Invalid argument %s\n", argv[2]);
   res = sscanf(argv[3], "%lg", &task_comm_size);
-  xbt_assert1(res, "Invalid argument %s\n", argv[3]);
+  xbt_assert(res, "Invalid argument %s\n", argv[3]);
 
   {                             /*  Task creation */
     char sprintf_buffer[64];
@@ -65,7 +65,7 @@ int master(int argc, char *argv[])
 
     for (i = 4; i < argc; i++) {
       slaves[i - 4] = MSG_get_host_by_name(argv[i]);
-      xbt_assert1(slaves[i - 4] != NULL, "Unknown host %s. Stopping Now! ",
+      xbt_assert(slaves[i - 4] != NULL, "Unknown host %s. Stopping Now! ",
                   argv[i]);
     }
   }
@@ -106,7 +106,7 @@ int slave(int argc, char *argv[])
   int res;
   while (1) {
     res = MSG_task_get(&(task), PORT_22);
-    xbt_assert0(res == MSG_OK, "MSG_task_get failed");
+    xbt_assert(res == MSG_OK, "MSG_task_get failed");
 
     XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
     if (!strcmp(MSG_task_get_name(task), "finalize")) {

@@ -123,11 +123,11 @@ gras_msg_rpc_async_call_(gras_socket_t server,
   gras_msg_cb_ctx_t ctx = xbt_mallocator_get(gras_msg_ctx_mallocator);
 
   if (msgtype->ctn_type) {
-    xbt_assert1(request,
+    xbt_assert(request,
                 "RPC type '%s' convey a payload you must provide",
                 msgtype->name);
   } else {
-    xbt_assert1(!request,
+    xbt_assert(!request,
                 "No payload was declared for RPC type '%s'",
                 msgtype->name);
   }
@@ -154,11 +154,11 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer)
   s_gras_msg_t received;
 
   if (ctx->msgtype->answer_type) {
-    xbt_assert1(answer,
+    xbt_assert(answer,
                 "Answers to RPC '%s' convey a payload you must accept",
                 ctx->msgtype->name);
   } else {
-    xbt_assert1(!answer,
+    xbt_assert(!answer,
                 "No payload was declared for answers to RPC '%s'",
                 ctx->msgtype->name);
   }
@@ -233,7 +233,7 @@ void gras_msg_rpccall_(gras_socket_t server,
 void gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,
                         void *answer)
 {
-  xbt_assert0(ctx->answer_due,
+  xbt_assert(ctx->answer_due,
               "RPC return not allowed here. Either not a RPC message or already returned a result");
   ctx->answer_due = 0;
   XBT_DEBUG("Return to RPC '%s' from %s:%d (tOut=%f, payl=%p)",

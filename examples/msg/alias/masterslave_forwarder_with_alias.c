@@ -42,11 +42,11 @@ int master(int argc, char *argv[])
   int read;
 
   read = sscanf(argv[1], "%d", &number_of_tasks);
-  xbt_assert1(read, "Invalid argument %s\n", argv[1]);
+  xbt_assert(read, "Invalid argument %s\n", argv[1]);
   read = sscanf(argv[2], "%lg", &task_comp_size);
-  xbt_assert1(read, "Invalid argument %s\n", argv[2]);
+  xbt_assert(read, "Invalid argument %s\n", argv[2]);
   read = sscanf(argv[3], "%lg", &task_comm_size);
-  xbt_assert1(read, "Invalid argument %s\n", argv[3]);
+  xbt_assert(read, "Invalid argument %s\n", argv[3]);
 
   {
     /*  Task creation */
@@ -115,7 +115,7 @@ int slave(int argc, char *argv[])
 
   while (1) {
     res = MSG_task_receive(&(task), MSG_host_get_name(MSG_host_self()));
-    xbt_assert0(res == MSG_OK, "MSG_task_receive failed");
+    xbt_assert(res == MSG_OK, "MSG_task_receive failed");
 
     XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
 
