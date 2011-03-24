@@ -345,7 +345,7 @@ static void cpu_im_update_actions_state(double now, double delta)
     //without losing the event ascending order (considering all CPU's)
 	void **data;
     cpu_Cas01_im_t cpu;
-    xbt_dict_cursor_t cursor;
+    xbt_lib_cursor_t cursor;
     char *key;
     double smaller = -1;
     xbt_lib_foreach(host_lib, cursor, key, data){
