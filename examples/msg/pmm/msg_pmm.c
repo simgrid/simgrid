@@ -58,7 +58,7 @@ int node(int argc, char **argv)
   int k, myid;
   char my_mbox[MAILBOX_NAME_SIZE];
   node_job_t myjob, jobs[GRID_NUM_NODES];
-  xbt_matrix_t A, B, C, sA, sB, sC;
+  xbt_matrix_t A, B, C = NULL, sA, sB, sC;
   result_t result;
 
   xbt_assert0(argc != 1, "Wrong number of arguments for this node");
