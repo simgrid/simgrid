@@ -483,8 +483,20 @@ void parse_properties(void)
   char *value = NULL;
   if (!current_property_set)
     current_property_set = xbt_dict_new();      // Maybe, it should be make a error
-  value = xbt_strdup(A_surfxml_prop_value);
-  xbt_dict_set(current_property_set, A_surfxml_prop_id, value, free);
+  if(!strcmp(A_surfxml_prop_id,"coordinates")){
+	  if(!strcmp(A_surfxml_prop_value,"yes") && !COORD_HOST_LEVEL)
+	  {
+		    XBT_INFO("Configuration change: Set '%s' to '%s'", A_surfxml_prop_id, A_surfxml_prop_value);
+			COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_dynar_free_voidp);
+			COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
+	  }
+	  if(strcmp(A_surfxml_prop_value,"yes"))
+		  xbt_die("Setting XML prop coordinates must be \"yes\"");
+  }
+  else{
+	  value = xbt_strdup(A_surfxml_prop_value);
+	  xbt_dict_set(current_property_set, A_surfxml_prop_id, value, free);
+  }
 }
 
 /* Trace management functions */

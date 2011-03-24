@@ -298,10 +298,6 @@ void surf_init(int *argc, char **argv)
 	SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
 	SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_resource_free);
 
-	XBT_DEBUG("ADD COORD LEVEL");
-	COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_dynar_free_voidp);
-	COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
-
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(surf_cpu, surf);
   XBT_LOG_CONNECT(surf_kernel, surf);

@@ -18,6 +18,7 @@
 #include "xbt/peer.h"
 
 #include "xbt/config.h"         /* prototypes of this module */
+#include "surf/surf.h"			/* COORD_HOST_LEVEL and COORD_ASR_LEVEL */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
@@ -649,6 +650,18 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
               name);
     }
     *(val++) = '\0';
+
+    if (!strcmp(name,"coordinates")){
+    	if(!strcmp(val,"yes") && !COORD_HOST_LEVEL){
+    		XBT_INFO("Configuration change: Set '%s' to '%s'", name, val);
+			COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_dynar_free_voidp);
+			COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
+			free(optionlist_cpy);
+			return;
+    	}
+    	if(strcmp(val,"yes"))
+    		xbt_die("Setting CMD prop coordinates must be \"yes\"");
+    }
 
     if (strcmp(name,"contexts/factory"))
       XBT_INFO("Configuration change: Set '%s' to '%s'", name, val);

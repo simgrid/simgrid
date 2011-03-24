@@ -235,6 +235,7 @@ static void parse_S_host(const char *host_id, const char* coord)
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
   xbt_lib_set(host_lib,host_id,ROUTING_HOST_LEVEL,(void *) info);
   if (strcmp(coord,"")) {
+	if(!COORD_HOST_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
     xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
     xbt_dynar_shrink(ctn, 0);
     xbt_lib_set(host_lib,host_id,COORD_HOST_LEVEL,(void *) ctn);
@@ -296,9 +297,10 @@ static void parse_S_router(const char *router_id)
 
   xbt_lib_set(as_router_lib,router_id,ROUTING_ASR_LEVEL,(void *) info);
   if (strcmp(A_surfxml_router_coordinates,"")) {
-	  xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
-	  xbt_dynar_shrink(ctn, 0);
-	  xbt_lib_set(as_router_lib,router_id,COORD_ASR_LEVEL,(void *) ctn);
+	if(!COORD_ASR_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
+    xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
+    xbt_dynar_shrink(ctn, 0);
+    xbt_lib_set(as_router_lib,router_id,COORD_ASR_LEVEL,(void *) ctn);
   }
 }
 
@@ -564,6 +566,7 @@ static void parse_S_AS_XML(void)
   parse_S_AS(A_surfxml_AS_id, A_surfxml_AS_routing);
 
   if (strcmp(A_surfxml_AS_coordinates,"")) {
+	if(!COORD_ASR_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
     XBT_DEBUG("%s coordinates : %s", A_surfxml_AS_id, A_surfxml_AS_coordinates);
     xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_AS_coordinates, " ");
     xbt_dynar_shrink(ctn, 0);

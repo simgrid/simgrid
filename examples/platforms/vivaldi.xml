@@ -1,6 +1,10 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
+	
+<config id="General">
+	<prop id="coordinates" value="yes"></prop>
+</config>	
  <AS  id="AS0"  routing="Vivaldi">
 	<host id="100030591" coordinates="25.5 9.4 1.4" power="1500000000.0" />
 	<host id="100036570" coordinates="-12.7 -9.9 2.1" power="730000000.0" />
