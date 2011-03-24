@@ -50,9 +50,10 @@ int main(int argc, char **argv)
   unsigned int i;
   xbt_dict_t props = NULL;
   xbt_dict_cursor_t cursor = NULL;
-  xbt_dict_cursor_t cursor_src = NULL;
-  xbt_dict_cursor_t cursor_dst = NULL;
+  xbt_lib_cursor_t cursor_src = NULL;
+  xbt_lib_cursor_t cursor_dst = NULL;
   char *src,*dst,*key,*data;
+  char **value;
   xbt_ex_t e;
 
   const SD_workstation_t *hosts;
@@ -96,9 +97,9 @@ int main(int argc, char **argv)
   }
 
   // Routers
-  xbt_dict_foreach(global_routing->where_network_elements, cursor, key, data) {
-	  if(((network_element_info_t)xbt_dict_get(global_routing->where_network_elements, key))->rc_type
-			  == SURF_NETWORK_ELEMENT_ROUTER)
+  xbt_lib_foreach(as_router_lib, cursor_src, key, value) {
+	  if(((network_element_info_t)xbt_lib_get_or_null(as_router_lib, key,
+			  ROUTING_ASR_LEVEL))->rc_type == SURF_NETWORK_ELEMENT_ROUTER)
 	  {
 		  printf("  <router id=\"%s\"/>\n",key);
 	  }
@@ -107,6 +108,7 @@ int main(int argc, char **argv)
   // Links
   totalLinks = SD_link_get_number();
   links = SD_link_get_list();
+
   qsort((void *) links, totalLinks, sizeof(SD_link_t), name_compare_links);
 
   for (i = 0; i < totalLinks; i++) {
@@ -123,21 +125,11 @@ int main(int argc, char **argv)
     }
   }
 
-  // Routes
-  xbt_dict_foreach(global_routing->where_network_elements, cursor_src, src, data)
+
+  xbt_lib_foreach(host_lib, cursor_src, src, value) // Routes from host
   {
-	  if(((network_element_info_t)xbt_dict_get(global_routing->where_network_elements, src))->rc_type
-			  == SURF_NETWORK_ELEMENT_ROUTER ||
-			  ((network_element_info_t)xbt_dict_get(global_routing->where_network_elements, src))->rc_type
-			  == SURF_NETWORK_ELEMENT_HOST)
-	  {
-		  xbt_dict_foreach(global_routing->where_network_elements, cursor_dst, dst, data)
+		  xbt_lib_foreach(host_lib, cursor_dst, dst, value) //to host
 		  {
-			  if(((network_element_info_t)xbt_dict_get(global_routing->where_network_elements, dst))->rc_type
-					  == SURF_NETWORK_ELEMENT_ROUTER ||
-					  ((network_element_info_t)xbt_dict_get(global_routing->where_network_elements, dst))->rc_type
-					  == SURF_NETWORK_ELEMENT_HOST)
-			  {
 				printf("  <route src=\"%s\" dst=\"%s\">\n	"
 					  ,src
 					  ,dst);
@@ -151,8 +143,63 @@ int main(int argc, char **argv)
 					free(link_name);
 				}
 				printf("\n  </route>\n");
+		  }
+		  xbt_lib_foreach(as_router_lib, cursor_dst, dst, value) //to router
+		  {
+			    if(get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
+				printf("  <route src=\"%s\" dst=\"%s\">\n	"
+					  ,src
+					  ,dst);
+				xbt_dynar_t route = global_routing->get_route(src,dst);
+				for(i=0;i<xbt_dynar_length(route) ;i++)
+				{
+					void *link = xbt_dynar_get_as(route,i,void *);
 
-			  }
+					char *link_name = bprintf("%s",((surf_resource_t) link)->name);
+					printf("<link_ctn id=\"%s\"/>",link_name);
+					free(link_name);
+				}
+				printf("\n  </route>\n");
+			    }
+		  }
+  }
+
+  xbt_lib_foreach(as_router_lib, cursor_src, src, value) // Routes from router
+  {
+	  if(get_network_element_type(src) == SURF_NETWORK_ELEMENT_ROUTER){
+		  xbt_lib_foreach(as_router_lib, cursor_dst, dst, value) //to router
+		  {
+				if(get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
+				printf("  <route src=\"%s\" dst=\"%s\">\n	"
+					  ,src
+					  ,dst);
+				xbt_dynar_t route = global_routing->get_route(src,dst);
+				for(i=0;i<xbt_dynar_length(route) ;i++)
+				{
+					void *link = xbt_dynar_get_as(route,i,void *);
+
+					char *link_name = bprintf("%s",((surf_resource_t) link)->name);
+					printf("<link_ctn id=\"%s\"/>",link_name);
+					free(link_name);
+				}
+				printf("\n  </route>\n");
+				}
+		  }
+		  xbt_lib_foreach(host_lib, cursor_dst, dst, value) //to host
+		  {
+				printf("  <route src=\"%s\" dst=\"%s\">\n	"
+					  ,src
+					  ,dst);
+				xbt_dynar_t route = global_routing->get_route(src,dst);
+				for(i=0;i<xbt_dynar_length(route) ;i++)
+				{
+					void *link = xbt_dynar_get_as(route,i,void *);
+
+					char *link_name = bprintf("%s",((surf_resource_t) link)->name);
+					printf("<link_ctn id=\"%s\"/>",link_name);
+					free(link_name);
+				}
+				printf("\n  </route>\n");
 		  }
 	  }
   }

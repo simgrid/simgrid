@@ -220,8 +220,7 @@ static void parse_S_host(const char *host_id, const char* coord)
   network_element_info_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
-  xbt_assert1(!xbt_dict_get_or_null
-              (global_routing->where_network_elements, host_id),
+  xbt_assert1(!xbt_lib_get_or_null(host_lib, host_id,ROUTING_HOST_LEVEL),
               "Reading a host, processing unit \"%s\" already exists",
               host_id);
   xbt_assert1(current_routing->set_processing_unit,
@@ -231,8 +230,7 @@ static void parse_S_host(const char *host_id, const char* coord)
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
-  xbt_dict_set(global_routing->where_network_elements, host_id,
-               (void *) info, xbt_free);
+  xbt_lib_set(host_lib,host_id,ROUTING_HOST_LEVEL,(void *) info);
   if (strcmp(coord,"")) {
     xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
     xbt_dynar_shrink(ctn, 0);
@@ -281,9 +279,7 @@ static void parse_S_router(const char *router_id)
 
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
-  xbt_assert1(!xbt_dict_get_or_null
-              (global_routing->where_network_elements,
-               A_surfxml_router_id),
+  xbt_assert1(!xbt_lib_get_or_null(as_router_lib,A_surfxml_router_id, ROUTING_ASR_LEVEL),
               "Reading a router, processing unit \"%s\" already exists",
               router_id);
   xbt_assert1(current_routing->set_processing_unit,
@@ -294,12 +290,12 @@ static void parse_S_router(const char *router_id)
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_ROUTER;
-  xbt_dict_set(global_routing->where_network_elements, router_id,
-               (void *) info, xbt_free);
+
+  xbt_lib_set(as_router_lib,router_id,ROUTING_ASR_LEVEL,(void *) info);
   if (strcmp(A_surfxml_router_coordinates,"")) {
-    xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
-    xbt_dynar_shrink(ctn, 0);
-    xbt_dict_set(coordinates, router_id, ctn, xbt_dynar_free_voidp);
+	  xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
+	  xbt_dynar_shrink(ctn, 0);
+	  xbt_lib_set(as_router_lib,router_id,COORD_ASR_LEVEL,(void *) ctn);
   }
 }
 
@@ -594,15 +590,13 @@ static void parse_E_AS(const char *AS_id)
     THROW1(arg_error, 0, "Close AS(%s), that never open", AS_id);
   } else {
     network_element_info_t info = NULL;
-    xbt_assert1(!xbt_dict_get_or_null
-                (global_routing->where_network_elements,
-                 current_routing->name), "The AS \"%s\" already exists",
-                current_routing->name);
+    xbt_assert1(!xbt_lib_get_or_null(as_router_lib,current_routing->name, ROUTING_ASR_LEVEL),
+    		"The AS \"%s\" already exists",current_routing->name);
     info = xbt_new0(s_network_element_info_t, 1);
     info->rc_component = current_routing->routing_father;
     info->rc_type = SURF_NETWORK_ELEMENT_AS;
-    xbt_dict_set(global_routing->where_network_elements,
-                 current_routing->name, info, xbt_free);
+    xbt_lib_set(as_router_lib,current_routing->name,ROUTING_ASR_LEVEL,(void *) info);
+
     (*(current_routing->routing->unload)) ();
     (*(current_routing->routing->end)) ();
     current_routing = current_routing->routing_father;
@@ -641,8 +635,7 @@ static char* elements_As_name(const char *name)
 
   /* (1) find the as where the host is located */
   as_comp = ((network_element_info_t)
-            xbt_dict_get_or_null(global_routing->where_network_elements,
-                                 name))->rc_component;
+            xbt_lib_get_or_null(host_lib,name, ROUTING_HOST_LEVEL))->rc_component;
   return as_comp->name;
 }
 
@@ -673,12 +666,13 @@ static xbt_dynar_t elements_father(const char *src, const char *dst)
   routing_component_t *father = NULL;
 
   /* (1) find the as where the src and dst are located */
-  src_as = ((network_element_info_t)
-            xbt_dict_get_or_null(global_routing->where_network_elements,
-                                 src))->rc_component;
-  dst_as = ((network_element_info_t)
-            xbt_dict_get_or_null(global_routing->where_network_elements,
-                                 dst))->rc_component;
+  void * src_data = xbt_lib_get_or_null(host_lib,src, ROUTING_HOST_LEVEL);
+  void * dst_data = xbt_lib_get_or_null(host_lib,dst, ROUTING_HOST_LEVEL);
+  if(!src_data) src_data = xbt_lib_get_or_null(as_router_lib,src, ROUTING_ASR_LEVEL);
+  if(!dst_data) dst_data = xbt_lib_get_or_null(as_router_lib,dst, ROUTING_ASR_LEVEL);
+  src_as = ((network_element_info_t)src_data)->rc_component;
+  dst_as = ((network_element_info_t)dst_data)->rc_component;
+
   xbt_assert2(src_as
               && dst_as,
               "Ask for route \"from\"(%s) or \"to\"(%s) no found", src,
@@ -1043,8 +1037,6 @@ static void finalize(void)
 {
   /* delete recursibly all the tree */
   _finalize(global_routing->root);
-  /* delete "where" dict */
-  xbt_dict_free(&(global_routing->where_network_elements));
   xbt_dict_free(&(coordinates));
   /* delete last_route */
   xbt_dynar_free(&(global_routing->last_route));
@@ -1089,9 +1081,14 @@ e_surf_network_element_type_t get_network_element_type(const char
                                                               *name)
 {
   network_element_info_t rc = NULL;
-  rc = xbt_dict_get_or_null(global_routing->where_network_elements, name);
-  if(!rc) return SURF_NETWORK_ELEMENT_NULL;
-  return rc->rc_type;
+
+  rc = xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);
+  if(rc) return rc->rc_type;
+
+  rc = xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
+  if(rc) return rc->rc_type;
+
+  return SURF_NETWORK_ELEMENT_NULL;
 }
 
 /**
@@ -1103,7 +1100,6 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
 {
   /* config the uniq global routing */
   global_routing = xbt_new0(s_routing_global_t, 1);
-  global_routing->where_network_elements = xbt_dict_new();
   global_routing->root = NULL;
   global_routing->get_route = get_route;
   global_routing->get_latency = get_latency;
@@ -2995,11 +2991,9 @@ static route_extended_t generic_get_bypassroute(routing_component_t rc,
 
   /* (1) find the as where the src and dst are located */
   src_as = ((network_element_info_t)
-            xbt_dict_get_or_null(global_routing->where_network_elements,
-                                 src))->rc_component;
+            xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL))->rc_component;
   dst_as = ((network_element_info_t)
-            xbt_dict_get_or_null(global_routing->where_network_elements,
-                                 dst))->rc_component;
+            xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL))->rc_component;
   xbt_assert2(src_as
               && dst_as,
               "Ask for route \"from\"(%s) or \"to\"(%s) no found", src,
@@ -3257,9 +3251,7 @@ generic_autonomous_system_exist(routing_component_t rc, char *element)
   xbt_dict_cursor_t cursor = NULL;
   char *key;
   element_as = ((network_element_info_t)
-                xbt_dict_get_or_null
-                (global_routing->where_network_elements,
-                 element))->rc_component;
+                xbt_lib_get_or_null(as_router_lib, element, ROUTING_ASR_LEVEL))->rc_component;
   result = ((routing_component_t) - 1);
   if (element_as != rc)
     result = generic_as_exist(rc, element_as);
@@ -3282,9 +3274,8 @@ generic_processing_units_exist(routing_component_t rc, char *element)
 {
   routing_component_t element_as;
   element_as = ((network_element_info_t)
-                xbt_dict_get_or_null
-                (global_routing->where_network_elements,
-                 element))->rc_component;
+                xbt_lib_get_or_null(host_lib,
+                 element, ROUTING_HOST_LEVEL))->rc_component;
   if (element_as == rc)
     return element_as;
   return generic_as_exist(rc, element_as);
@@ -3293,17 +3284,19 @@ generic_processing_units_exist(routing_component_t rc, char *element)
 static void generic_src_dst_check(routing_component_t rc, const char *src,
                                   const char *dst)
 {
-  routing_component_t src_as = ((network_element_info_t)
-                                xbt_dict_get_or_null
-                                (global_routing->where_network_elements,
-                                 src))->rc_component;
-  routing_component_t dst_as = ((network_element_info_t)
-                                xbt_dict_get_or_null
-                                (global_routing->where_network_elements,
-                                 dst))->rc_component;
-  if(src_as == NULL || dst_as == NULL)
+
+  void * src_data = xbt_lib_get_or_null(host_lib,src, ROUTING_HOST_LEVEL);
+  void * dst_data = xbt_lib_get_or_null(host_lib,dst, ROUTING_HOST_LEVEL);
+  if(!src_data) src_data = xbt_lib_get_or_null(as_router_lib,src, ROUTING_ASR_LEVEL);
+  if(!dst_data) dst_data = xbt_lib_get_or_null(as_router_lib,dst, ROUTING_ASR_LEVEL);
+
+  if(src_data == NULL || dst_data == NULL)
 	  xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-              src, dst, rc->name);
+	             src, dst, rc->name);
+
+  routing_component_t src_as = ((network_element_info_t)src_data)->rc_component;
+  routing_component_t dst_as = ((network_element_info_t)dst_data)->rc_component;
+
   if(src_as != dst_as)
 	  xbt_die("The src(%s in %s) and dst(%s in %s) are in differents AS",
               src, src_as->name, dst, dst_as->name);

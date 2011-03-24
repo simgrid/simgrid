@@ -81,12 +81,12 @@ int main(int argc, char **argv)
   char *graphvizFile = NULL;
 
   unsigned int i;
-  xbt_dict_cursor_t cursor_src = NULL;
-  xbt_dict_cursor_t cursor_dst = NULL;
   char *src;
   char *dst;
-  char *data;
   xbt_ex_t e;
+  xbt_lib_cursor_t cursor,cursor_src,cursor_dst;
+  char * key;
+  char **data;
 
   SD_init(&argc, argv);
 
@@ -107,8 +107,10 @@ int main(int argc, char **argv)
   xbt_graph_t graph = xbt_graph_new_graph (0, NULL);
 
   //adding hosts
-  xbt_dict_foreach(global_routing->where_network_elements, cursor_src, src, data) {
-    xbt_graph_new_node (graph, xbt_strdup(src));
+  xbt_lib_foreach(host_lib,cursor,key,data){
+	  if(get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST ||
+			  get_network_element_type(key) == SURF_NETWORK_ELEMENT_ROUTER )
+	    xbt_graph_new_node (graph, xbt_strdup(key));
   }
 
   //adding links
@@ -119,9 +121,9 @@ int main(int argc, char **argv)
     xbt_graph_new_node (graph, xbt_strdup (SD_link_get_name(links[i])));
   }
 
-  xbt_dict_foreach(global_routing->where_network_elements, cursor_src, src, data) {
-    xbt_dict_foreach(global_routing->where_network_elements, cursor_dst, dst, data) {
-      if (strcmp(src,"loopback")==0 || strcmp(dst,"loopback")==0) continue;
+
+  xbt_lib_foreach(host_lib,cursor_src,src,data){
+	  xbt_lib_foreach(host_lib,cursor_dst,dst,data){
 
       xbt_node_t src_node = xbt_graph_search_node (graph, src, strcmp);
       xbt_node_t dst_node = xbt_graph_search_node (graph, dst, strcmp);

@@ -187,7 +187,6 @@ typedef int *network_element_t;
 
 struct s_routing_global {
   routing_component_t root;
-  xbt_dict_t where_network_elements;    /* char* -> network_element_info_t */
   void *loopback;
   size_t size_of_link;
    xbt_dynar_t(*get_route) (const char *src, const char *dst);
