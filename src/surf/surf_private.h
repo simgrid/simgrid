@@ -142,13 +142,6 @@ typedef enum {
   SURF_ROUTING_RECURSIVE   /**< Recursive case: also return gateway informations */
 } e_surf_routing_hierarchy_t;
 
-typedef enum {
-  SURF_NETWORK_ELEMENT_NULL = 0,        /* NULL */
-  SURF_NETWORK_ELEMENT_HOST,    /* host type */
-  SURF_NETWORK_ELEMENT_ROUTER,  /* router type */
-  SURF_NETWORK_ELEMENT_AS,      /* AS type */
-} e_surf_network_element_type_t;
-
 typedef struct s_routing_component *routing_component_t;
 typedef struct s_routing_component {
   xbt_dict_t to_index;			/* char* -> network_element_t */
@@ -198,9 +191,6 @@ struct s_routing_global {
   void (*finalize) (void);
   xbt_dynar_t last_route;
 };
-
-XBT_PUBLIC(e_surf_network_element_type_t) get_network_element_type(const char
-                                                              *name);
 
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback, double_f_cpvoid_t get_link_latency_fun);
 

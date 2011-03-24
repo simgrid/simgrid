@@ -46,6 +46,16 @@ typedef enum {
   SURF_LINK_FATPIPE = 0
 } e_surf_link_sharing_policy_t;
 
+typedef enum {
+  SURF_NETWORK_ELEMENT_NULL = 0,        /* NULL */
+  SURF_NETWORK_ELEMENT_HOST,    /* host type */
+  SURF_NETWORK_ELEMENT_ROUTER,  /* router type */
+  SURF_NETWORK_ELEMENT_AS,      /* AS type */
+} e_surf_network_element_type_t;
+
+XBT_PUBLIC(e_surf_network_element_type_t) get_network_element_type(const char
+                                                              *name);
+
 /** @Brief Specify that we use that action */
 XBT_PUBLIC(void) surf_action_ref(surf_action_t action);
 /** @brief Creates a new action.
