@@ -77,6 +77,25 @@ void SIMIX_host_destroy(void *h)
   return;
 }
 
+/**
+ * \brief Returns a dict of all hosts.
+ *
+ * \return List of all hosts (as a #xbt_dict_t)
+ */
+xbt_dict_t SIMIX_host_get_dict(void)
+{
+  xbt_dict_t host_dict = xbt_dict_new();
+  xbt_lib_cursor_t cursor = NULL;
+  char *name = NULL;
+  void **host = NULL;
+
+  xbt_lib_foreach(host_lib, cursor, name, host){
+	  if(host[SIMIX_HOST_LEVEL])
+		  xbt_dict_set(host_dict,name,host[SIMIX_HOST_LEVEL],NULL);
+  }
+  return host_dict;
+}
+
 smx_host_t SIMIX_host_get_by_name(const char *name)
 {
   xbt_assert0(((simix_global != NULL)
