@@ -3904,7 +3904,12 @@ static void routing_parse_Speer(void)
   XBT_DEBUG(" ");
 
   //xbt_dynar_free(&tab_elements_num);
-
+	free(host_id);
+	free(router_id);
+	free(link_router);
+	free(link_backbone);
+	free(link_id_up);
+	free(link_id_down);
   surfxml_bufferstack_pop(1);
 }
 
