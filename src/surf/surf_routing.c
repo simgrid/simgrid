@@ -2992,14 +2992,17 @@ static route_extended_t generic_get_bypassroute(routing_component_t rc,
   routing_component_t *current_dst = NULL;
 
   /* (1) find the as where the src and dst are located */
-  src_as = ((network_element_info_t)
-            xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL))->rc_component;
-  dst_as = ((network_element_info_t)
-            xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL))->rc_component;
-  xbt_assert2(src_as
-              && dst_as,
-              "Ask for route \"from\"(%s) or \"to\"(%s) no found", src,
-              dst);
+  void * src_data = xbt_lib_get_or_null(host_lib,src, ROUTING_HOST_LEVEL);
+  void * dst_data = xbt_lib_get_or_null(host_lib,dst, ROUTING_HOST_LEVEL);
+  if(!src_data) src_data = xbt_lib_get_or_null(as_router_lib,src, ROUTING_ASR_LEVEL);
+  if(!dst_data) dst_data = xbt_lib_get_or_null(as_router_lib,dst, ROUTING_ASR_LEVEL);
+
+  if(src_data == NULL || dst_data == NULL)
+	  xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
+	             src, dst, rc->name);
+
+  src_as = ((network_element_info_t)src_data)->rc_component;
+  dst_as = ((network_element_info_t)dst_data)->rc_component;
 
   /* (2) find the path to the root routing component */
   path_src = xbt_dynar_new(sizeof(routing_component_t), NULL);
