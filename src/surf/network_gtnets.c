@@ -23,7 +23,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   static int link_count = -1;
   network_link_GTNETS_t gtnets_link;
 
-  if (xbt_dict_get_or_null(surf_network_model->resource_set, name)) {
+  if (xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL)) {
     return;
   }
 
@@ -46,8 +46,7 @@ static void link_new(char *name, double bw, double lat, xbt_dict_t props)
   }
   gtnets_link->id = link_count;
 
-  xbt_dict_set(surf_network_model->resource_set, name, gtnets_link,
-               surf_resource_free);
+  xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, gtnets_link);
 }
 
 static void route_new(int src_id, int dst_id, xbt_dynar_t links,

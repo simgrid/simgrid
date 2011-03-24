@@ -173,8 +173,7 @@ static link_CM02_t net_link_new(char *name,
                             state_initial, state_trace,
                             bw_initial, bw_trace);
 
-  xbt_assert1(!xbt_dict_get_or_null
-              (surf_network_model->resource_set, name),
+  xbt_assert1(!xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL),
               "Link '%s' declared several times in the platform file.",
               name);
 
@@ -186,8 +185,7 @@ static link_CM02_t net_link_new(char *name,
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(nw_link->lmm_resource.constraint);
 
-  xbt_dict_set(surf_network_model->resource_set, name, nw_link,
-               surf_resource_free);
+  xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, nw_link);
 
   return nw_link;
 }
@@ -277,7 +275,7 @@ static void net_add_traces(void)
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     link_CM02_t link =
-        xbt_dict_get_or_null(surf_network_model->resource_set, elm);
+        xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
     xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined",
                 trace_name, elm);
@@ -292,7 +290,7 @@ static void net_add_traces(void)
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     link_CM02_t link =
-        xbt_dict_get_or_null(surf_network_model->resource_set, elm);
+    		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
     xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined",
                 trace_name, elm);
@@ -307,7 +305,7 @@ static void net_add_traces(void)
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     link_CM02_t link =
-        xbt_dict_get_or_null(surf_network_model->resource_set, elm);
+    		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
     xbt_assert2(link, "Cannot connect trace %s to link %s: link undefined",
                 trace_name, elm);

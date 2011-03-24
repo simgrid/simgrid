@@ -705,8 +705,7 @@ static link_L07_t ptask_link_new(char *name,
                                  policy, xbt_dict_t properties)
 {
   link_L07_t nw_link = xbt_new0(s_link_L07_t, 1);
-  xbt_assert1(!xbt_dict_get_or_null
-              (surf_network_model->resource_set, name),
+  xbt_assert1(!xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL),
               "Link '%s' declared several times in the platform file.",
               name);
 
@@ -734,10 +733,7 @@ static link_L07_t ptask_link_new(char *name,
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(nw_link->constraint);
 
-  xbt_dict_set(surf_network_model->resource_set, name, nw_link,
-               surf_resource_free);
-
-
+  xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, nw_link);
   return nw_link;
 }
 
@@ -853,7 +849,7 @@ static void ptask_add_traces(void)
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     link_L07_t link =
-        xbt_dict_get_or_null(surf_network_model->resource_set, elm);
+    		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
     xbt_assert1(link, "Link %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -865,7 +861,7 @@ static void ptask_add_traces(void)
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     link_L07_t link =
-        xbt_dict_get_or_null(surf_network_model->resource_set, elm);
+    		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
     xbt_assert1(link, "Link %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -876,7 +872,7 @@ static void ptask_add_traces(void)
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     link_L07_t link =
-        xbt_dict_get_or_null(surf_network_model->resource_set, elm);
+    		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
     xbt_assert1(link, "Link %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);

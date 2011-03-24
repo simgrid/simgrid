@@ -1379,7 +1379,7 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 		xbt_dynar_t link_route_to_test = xbt_dynar_new(global_routing->size_of_link, NULL);
 		xbt_dynar_foreach(route->generic_route.link_list,i,link_name)
 		{
-			void *link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+			void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
 			xbt_assert1(link,"Link : '%s' doesn't exists.",link_name);
 			xbt_dynar_push(link_route_to_test,&link);
 		}
@@ -1423,7 +1423,7 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 			for(i=xbt_dynar_length(route->generic_route.link_list) ;i>0 ;i--)
 			{
 				link_name = xbt_dynar_get_as(route->generic_route.link_list,i-1,void *);
-				void *link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+				void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
 				xbt_assert1(link,"Link : '%s' doesn't exists.",link_name);
 				xbt_dynar_push(link_route_to_test,&link);
 			}
@@ -1751,7 +1751,7 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 		xbt_dynar_t link_route_to_test = xbt_dynar_new(global_routing->size_of_link, NULL);
 		xbt_dynar_foreach(route->generic_route.link_list,cpt,link_name)
 		{
-			void *link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+			void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
 			xbt_assert1(link,"Link : '%s' doesn't exists.",link_name);
 			xbt_dynar_push(link_route_to_test,&link);
 		}
@@ -1796,7 +1796,7 @@ static void model_floyd_set_route(routing_component_t rc, const char *src,
 			for(i=xbt_dynar_length(route->generic_route.link_list) ;i>0 ;i--)
 			{
 				link_name = xbt_dynar_get_as(route->generic_route.link_list,i-1,void *);
-				void *link = xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+				void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
 				xbt_assert1(link,"Link : '%s' doesn't exists.",link_name);
 				xbt_dynar_push(link_route_to_test,&link);
 			}
@@ -2665,8 +2665,7 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
           char *new_link_name =
               remplace(link_name, list_src, rc_src, list_dst, rc_dst);
           void *link =
-              xbt_dict_get_or_null(surf_network_model->resource_set,
-                                   new_link_name);
+        		  xbt_lib_get_or_null(link_lib, new_link_name, SURF_LINK_LEVEL);
           if (link)
             xbt_dynar_push(links_list, &link);
           else
@@ -3135,7 +3134,7 @@ generic_new_route(e_surf_routing_hierarchy_t hierarchy,
   xbt_dynar_foreach(links, cpt, link_name) {
 
     void *link =
-        xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+    		xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
     if (link) {
       if (order)
         xbt_dynar_push(links_id, &link);
@@ -3191,7 +3190,7 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
   xbt_dynar_foreach(links, cpt, link_name) {
 
     void *link =
-        xbt_dict_get_or_null(surf_network_model->resource_set, link_name);
+    		xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
     if (link) {
       if (order)
         xbt_dynar_push(links_id, &link);

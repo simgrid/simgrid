@@ -34,7 +34,6 @@ surf_model_t surf_model_init(void)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
   model->states.done_action_set =
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
-  model->resource_set = xbt_dict_new();
 
   model->action_unref = int_die_impossible_paction;
   model->action_cancel = void_die_impossible_paction;
