@@ -390,10 +390,6 @@ void surf_exit(void)
   surf_parse_lex_destroy();
   surf_parse_free_callbacks();
   NOW = 0;                      /* Just in case the user plans to restart the simulation afterward */
-  // Exit the LIB host_lib
-  xbt_lib_free(&host_lib);
-  xbt_lib_free(&link_lib);
-  xbt_lib_free(&as_router_lib);
 }
 
 void surf_presolve(void)

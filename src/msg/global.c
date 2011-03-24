@@ -179,6 +179,12 @@ int MSG_process_killall(int reset_PIDs)
 MSG_error_t MSG_clean(void)
 {
 
+// Exit the LIB host_lib
+xbt_lib_free(&host_lib);
+xbt_lib_free(&link_lib);
+xbt_lib_free(&as_router_lib);
+
+
 #ifdef HAVE_TRACING
   TRACE_surf_release();
 #endif

@@ -420,6 +420,11 @@ void SD_exit(void)
     xbt_swag_free(sd_global->done_task_set);
     xbt_swag_free(sd_global->failed_task_set);
 
+    // Exit the LIB host_lib
+    xbt_lib_free(&host_lib);
+    xbt_lib_free(&link_lib);
+    xbt_lib_free(&as_router_lib);
+
     xbt_free(sd_global);
     sd_global = NULL;
 
