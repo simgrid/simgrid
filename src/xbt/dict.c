@@ -223,8 +223,8 @@ static void xbt_dict_rehash(xbt_dict_t dict)
  * \param key the key to set the new data
  * \param key_len the size of the \a key
  * \param data the data to add in the dict
- * \param free_ctn function to call with (\a key as argument) when
- *        \a key is removed from the dictionary
+ * \param free_ctn function to call with (\a data as argument) when
+ *        \a data is removed from the dictionary
  *
  * Set the \a data in the structure under the \a key, which can be any kind
  * of data, as long as its length is provided in \a key_len.
@@ -281,8 +281,8 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
  * \param dict the dict
  * \param key the key to set the new data
  * \param data the data to add in the dict
- * \param free_ctn function to call with (\a key as argument) when
- *        \a key is removed from the dictionary
+ * \param free_ctn function to call with (\a data as argument) when
+ *        \a data is removed from the dictionary
  *
  * set the \a data in the structure under the \a key, which is a
  * null terminated string.
