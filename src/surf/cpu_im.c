@@ -83,8 +83,7 @@ static cpu_Cas01_im_t cpu_im_new(char *name, double power_peak,
       lmm_constraint_new(cpu_im_maxmin_system, cpu,
                          cpu->core * cpu->power_scale * cpu->power_peak);
 
-  xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu,
-               surf_resource_free);
+  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
   cpu->action_set = xbt_swag_new(xbt_swag_offset(action, cpu_list_hookup));
 
   return cpu;
@@ -344,19 +343,23 @@ static void cpu_im_update_actions_state(double now, double delta)
   {
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
+	void **data;
     cpu_Cas01_im_t cpu;
     xbt_dict_cursor_t cursor;
     char *key;
     double smaller = -1;
-    xbt_dict_foreach(surf_model_resource_set(surf_cpu_model), cursor, key, cpu){
-      if (smaller < 0){
-        smaller = cpu->last_update;
-        continue;
-      }
-      if (cpu->last_update < smaller){
-        smaller = cpu->last_update;
-      }
-    }
+    xbt_lib_foreach(host_lib, cursor, key, data){
+    	if(data[SURF_CPU_LEVEL]){
+    	  cpu = data[SURF_CPU_LEVEL];
+		  if (smaller < 0){
+			smaller = cpu->last_update;
+			continue;
+		  }
+		  if (cpu->last_update < smaller){
+			smaller = cpu->last_update;
+		  }
+    	}
+   }
     if (smaller > 0) {
       TRACE_last_timestamp_to_dump = smaller;
     }
@@ -589,13 +592,16 @@ static void cpu_im_create_resource(char *name, double power_peak,
 
 static void cpu_im_finalize(void)
 {
-  void *cpu;
-  xbt_dict_cursor_t cursor;
+  void **cpu;
+  xbt_lib_cursor_t cursor;
   char *key;
-  xbt_dict_foreach(surf_model_resource_set(surf_cpu_model), cursor, key,
-                   cpu) {
-    cpu_Cas01_im_t CPU = cpu;
-    xbt_swag_free(CPU->action_set);
+
+  xbt_lib_foreach(host_lib, cursor, key, cpu){
+	  if(cpu[SURF_CPU_LEVEL])
+	  {
+		    cpu_Cas01_im_t CPU = cpu[SURF_CPU_LEVEL];
+		    xbt_swag_free(CPU->action_set);
+	  }
   }
 
   lmm_system_free(cpu_im_maxmin_system);

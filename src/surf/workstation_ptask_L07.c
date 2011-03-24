@@ -649,8 +649,7 @@ static cpu_L07_t ptask_cpu_new(const char *name, double power_scale,
       lmm_constraint_new(ptask_maxmin_system, cpu,
                          cpu->power_current * cpu->power_scale);
 
-  xbt_dict_set(surf_model_resource_set(surf_workstation_model), name, cpu,
-               surf_resource_free);
+  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, cpu);
 
   return cpu;
 }

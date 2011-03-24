@@ -309,7 +309,7 @@ void dot_add_task(Agnode_t * dag_node)
         computer = xbt_dynar_new(sizeof(SD_task_t), NULL);
         xbt_dict_set(computers, char_performer, computer, NULL);
       }
-      if(performer < sd_global->workstation_count){
+      if(performer < host_lib->count){
         // the  wanted computer is available
         SD_task_t *task_test = NULL;
         if(order < computer->used)

@@ -185,8 +185,7 @@ static cpu_ti_t cpu_ti_new(char *name, double power_peak,
                                  cpu->avail_trace->last_time, 0, cpu);
     }
   }
-  xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu,
-               surf_resource_free);
+  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
 
   return cpu;
 }
@@ -762,14 +761,17 @@ static void cpu_ti_create_resource(char *name, double power_peak,
 
 static void cpu_ti_finalize(void)
 {
-  void *cpu;
-  xbt_dict_cursor_t cursor;
+  void **cpu;
+  xbt_lib_cursor_t cursor;
   char *key;
-  xbt_dict_foreach(surf_model_resource_set(surf_cpu_model), cursor, key,
-                   cpu) {
-    cpu_ti_t CPU = cpu;
-    xbt_swag_free(CPU->action_set);
-    surf_cpu_ti_free_tmgr(CPU->avail_trace);
+
+  xbt_lib_foreach(host_lib, cursor, key, cpu){
+	  if(cpu[SURF_CPU_LEVEL])
+	  {
+		    cpu_ti_t CPU = cpu[SURF_CPU_LEVEL];
+		    xbt_swag_free(CPU->action_set);
+		    surf_cpu_ti_free_tmgr(CPU->avail_trace);
+	  }
   }
 
   surf_model_exit(surf_cpu_model);

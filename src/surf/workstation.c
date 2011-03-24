@@ -27,21 +27,20 @@ static workstation_CLM03_t workstation_new(const char *name, void *cpu)
   workstation->generic_resource.name = xbt_strdup(name);
   workstation->cpu = cpu;
 
-  xbt_dict_set(surf_model_resource_set(surf_workstation_model), name,
-               workstation, surf_resource_free);
+  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, workstation);
 
   return workstation;
 }
 
 void create_workstations(void)
 {
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_lib_cursor_t cursor = NULL;
   char *name = NULL;
-  void *cpu = NULL;
+  void **cpu = NULL;
 
-  xbt_dict_foreach(surf_model_resource_set(surf_cpu_model), cursor, name,
-                   cpu) {
-    workstation_new(name, cpu);
+  xbt_lib_foreach(host_lib, cursor, name, cpu) {
+	  if(cpu[SURF_CPU_LEVEL])
+		  workstation_new(name, cpu[SURF_CPU_LEVEL]);
   }
 }
 

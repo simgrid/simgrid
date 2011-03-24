@@ -65,8 +65,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_peak,
       lmm_constraint_new(cpu_maxmin_system, cpu,
                          cpu->core * cpu->power_scale * cpu->power_peak);
 
-  xbt_dict_set(surf_model_resource_set(surf_cpu_model), name, cpu,
-               surf_resource_free);
+  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
 
   return cpu;
 }

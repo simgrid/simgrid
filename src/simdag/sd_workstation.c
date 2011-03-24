@@ -32,9 +32,7 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation,
   workstation->current_task = NULL;
 
   name = SD_workstation_get_name(workstation);
-  xbt_dict_set(sd_global->workstations, name, workstation, __SD_workstation_destroy);   /* add the workstation to the dictionary */
-  sd_global->workstation_count++;
-
+  xbt_lib_set(host_lib,name,SD_HOST_LEVEL,workstation);
   return workstation;
 }
 
@@ -52,7 +50,7 @@ SD_workstation_t SD_workstation_get_by_name(const char *name)
 
   xbt_assert0(name != NULL, "Invalid parameter");
 
-  return xbt_dict_get_or_null(sd_global->workstations, name);
+  return xbt_lib_get_or_null(host_lib, name, SD_HOST_LEVEL);
 }
 
 /**
@@ -66,9 +64,9 @@ SD_workstation_t SD_workstation_get_by_name(const char *name)
 const SD_workstation_t *SD_workstation_get_list(void)
 {
 
-  xbt_dict_cursor_t cursor;
+  xbt_lib_cursor_t cursor;
   char *key;
-  void *data;
+  void **data;
   int i;
 
   SD_CHECK_INIT_DONE();
@@ -76,11 +74,12 @@ const SD_workstation_t *SD_workstation_get_list(void)
 
   if (sd_global->workstation_list == NULL) {    /* this is the first time the function is called */
     sd_global->workstation_list =
-        xbt_new(SD_workstation_t, sd_global->workstation_count);
+        xbt_new(SD_workstation_t, host_lib->count);
 
     i = 0;
-    xbt_dict_foreach(sd_global->workstations, cursor, key, data) {
-      sd_global->workstation_list[i++] = (SD_workstation_t) data;
+    xbt_lib_foreach(host_lib, cursor, key, data) {
+      if(data[SD_HOST_LEVEL])
+    	  sd_global->workstation_list[i++] = (SD_workstation_t) data[SD_HOST_LEVEL];
     }
   }
   return sd_global->workstation_list;
@@ -95,7 +94,7 @@ const SD_workstation_t *SD_workstation_get_list(void)
 int SD_workstation_get_number(void)
 {
   SD_CHECK_INIT_DONE();
-  return sd_global->workstation_count;
+  return host_lib->count;
 }
 
 /**

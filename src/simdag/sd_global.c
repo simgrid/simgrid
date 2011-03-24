@@ -61,8 +61,6 @@ void SD_init(int *argc, char **argv)
 
 
   sd_global = xbt_new(s_SD_global_t, 1);
-  sd_global->workstations = xbt_dict_new();
-  sd_global->workstation_count = 0;
   sd_global->workstation_list = NULL;
   sd_global->link_list = NULL;
   sd_global->recyclable_route = NULL;
@@ -182,10 +180,10 @@ void SD_application_reinit(void)
  */
 void SD_create_environment(const char *platform_file)
 {
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_lib_cursor_t cursor = NULL;
   char *name = NULL;
-  void *surf_workstation = NULL;
-  void *surf_link = NULL;
+  void **surf_workstation = NULL;
+  void **surf_link = NULL;
 
   platform_filename = bprintf("%s",platform_file);
 
@@ -198,14 +196,13 @@ void SD_create_environment(const char *platform_file)
   surf_config_models_create_elms();
 
   /* now let's create the SD wrappers for workstations and links */
-  xbt_dict_foreach(surf_model_resource_set(surf_workstation_model), cursor,
-                   name, surf_workstation) {
-    __SD_workstation_create(surf_workstation, NULL);
+  xbt_lib_foreach(host_lib, cursor, name, surf_workstation){
+	  if(surf_workstation[SURF_WKS_LEVEL])
+		  __SD_workstation_create(surf_workstation[SURF_WKS_LEVEL], NULL);
   }
 
-  xbt_dict_foreach(surf_model_resource_set(surf_network_model), cursor,
-                   name, surf_link) {
-    __SD_link_create(surf_link, NULL);
+  xbt_lib_foreach(link_lib, cursor, name, surf_link) {
+    __SD_link_create(surf_link[SURF_LINK_LEVEL], NULL);
   }
 
   XBT_DEBUG("Workstation number: %d, link number: %d",
@@ -402,7 +399,6 @@ void SD_exit(void)
 #endif
   if (SD_INITIALISED()) {
     XBT_DEBUG("Destroying workstation and link dictionaries...");
-    xbt_dict_free(&sd_global->workstations);
 
     XBT_DEBUG("Destroying workstation and link arrays if necessary...");
     if (sd_global->workstation_list != NULL)
