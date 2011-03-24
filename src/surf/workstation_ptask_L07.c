@@ -622,7 +622,7 @@ static cpu_L07_t ptask_cpu_new(const char *name, double power_scale,
                                xbt_dict_t cpu_properties)
 {
   cpu_L07_t cpu = xbt_new0(s_cpu_L07_t, 1);
-  xbt_assert1(!surf_model_resource_by_name(surf_workstation_model, name),
+  xbt_assert1(!surf_workstation_resource_by_name(name),
               "Host '%s' declared several times in the platform file.",
               name);
 
@@ -829,8 +829,7 @@ static void ptask_add_traces(void)
   /* Connect traces relative to cpu */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_L07_t host =
-        surf_model_resource_by_name(surf_workstation_model, elm);
+    cpu_L07_t host = surf_workstation_resource_by_name(elm);
 
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -841,8 +840,7 @@ static void ptask_add_traces(void)
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_L07_t host =
-        surf_model_resource_by_name(surf_workstation_model, elm);
+    cpu_L07_t host = surf_workstation_resource_by_name(elm);
 
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);

@@ -41,7 +41,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_peak,
                            xbt_dict_t cpu_properties)
 {
   cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
-  xbt_assert1(!surf_model_resource_by_name(surf_cpu_model, name),
+  xbt_assert1(!surf_cpu_resource_by_name(name),
               "Host '%s' declared several times in the platform file",
               name);
   cpu->generic_resource.model = surf_cpu_model;
@@ -115,7 +115,7 @@ static void add_traces_cpu(void)
   /* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_Cas01_t host = surf_model_resource_by_name(surf_cpu_model, elm);
+    cpu_Cas01_t host = surf_cpu_resource_by_name(elm);
 
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);
@@ -126,7 +126,7 @@ static void add_traces_cpu(void)
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_Cas01_t host = surf_model_resource_by_name(surf_cpu_model, elm);
+    cpu_Cas01_t host = surf_cpu_resource_by_name(elm);
 
     xbt_assert1(host, "Host %s undefined", elm);
     xbt_assert1(trace, "Trace %s undefined", trace_name);

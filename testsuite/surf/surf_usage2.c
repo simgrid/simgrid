@@ -62,9 +62,9 @@ void test(char *platform)
 
   /*********************** WORKSTATION ***********************************/
   workstationA =
-      surf_model_resource_by_name(surf_workstation_model, "Cpu A");
+      surf_workstation_resource_by_name("Cpu A");
   workstationB =
-      surf_model_resource_by_name(surf_workstation_model, "Cpu B");
+      surf_workstation_resource_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
   XBT_DEBUG("%s : %p", surf_resource_name(workstationA), workstationA);

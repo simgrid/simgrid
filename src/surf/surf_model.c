@@ -57,12 +57,6 @@ void surf_model_exit(surf_model_t model)
   xbt_swag_free(model->states.running_action_set);
   xbt_swag_free(model->states.failed_action_set);
   xbt_swag_free(model->states.done_action_set);
-  xbt_dict_free(&model->resource_set);
   free(model->model_private);
   free(model);
-}
-
-void *surf_model_resource_by_name(surf_model_t model, const char *name)
-{
-  return xbt_dict_get_or_null(model->resource_set, name);
 }

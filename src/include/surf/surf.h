@@ -297,11 +297,7 @@ typedef struct surf_model {
   int (*get_latency_limited) (surf_action_t action);     /**< Return 1 if action is limited by latency, 0 otherwise */
 #endif
 
-  xbt_dict_t resource_set;
-
-
   surf_model_private_t model_private;
-
 
   union extension {
     s_surf_model_extension_cpu_t cpu;
@@ -313,8 +309,15 @@ typedef struct surf_model {
 surf_model_t surf_model_init(void);
 void surf_model_exit(surf_model_t model);
 
-void *surf_model_resource_by_name(surf_model_t model, const char *name);
-#define surf_model_resource_set(model) (model)->resource_set
+static inline void *surf_cpu_resource_by_name(const char *name) {
+	return xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL);
+}
+static inline void *surf_workstation_resource_by_name(const char *name){
+	return xbt_lib_get_or_null(host_lib, name, SURF_WKS_LEVEL);
+}
+static inline void *surf_network_resource_by_name(const char *name){
+	return xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL);
+}
 
 typedef struct surf_resource {
   surf_model_t model;

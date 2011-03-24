@@ -59,8 +59,8 @@ void test(char *platform)
 
   /*********************** CPU ***********************************/
   XBT_DEBUG("%p", surf_cpu_model);
-  cpuA = surf_model_resource_by_name(surf_cpu_model, "Cpu A");
-  cpuB = surf_model_resource_by_name(surf_cpu_model, "Cpu B");
+  cpuA = surf_cpu_resource_by_name("Cpu A");
+  cpuB = surf_cpu_resource_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
   XBT_DEBUG("%s : %p", surf_resource_name(cpuA), cpuA);
@@ -83,8 +83,8 @@ void test(char *platform)
 
   /*********************** Network *******************************/
   XBT_DEBUG("%p", surf_network_model);
-  cardA = surf_model_resource_by_name(surf_network_model, "Cpu A");
-  cardB = surf_model_resource_by_name(surf_network_model, "Cpu B");
+  cardA = surf_network_resource_by_name("Cpu A");
+  cardB = surf_network_resource_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
   XBT_DEBUG("%s : %p", surf_resource_name(cardA), cardA);
