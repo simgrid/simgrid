@@ -64,7 +64,6 @@ void MSG_global_init(int *argc, char **argv)
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
 
-    msg_global->host = xbt_fifo_new();
     msg_global->max_channel = 0;
     msg_global->PID = 1;
     msg_global->sent_msg = 0;
@@ -179,19 +178,12 @@ int MSG_process_killall(int reset_PIDs)
  */
 MSG_error_t MSG_clean(void)
 {
-  xbt_fifo_item_t i = NULL;
-  m_host_t h = NULL;
 
 #ifdef HAVE_TRACING
   TRACE_surf_release();
 #endif
 
   MSG_process_killall(0);
-
-  xbt_fifo_foreach(msg_global->host, i, h, m_host_t) {
-    __MSG_host_destroy(h);
-  }
-  xbt_fifo_free(msg_global->host);
 
   free(msg_global);
   msg_global = NULL;

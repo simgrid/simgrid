@@ -55,9 +55,7 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
   }
 
   SIMIX_req_host_set_data(workstation, host);
-
-  /* Update global variables */
-  xbt_fifo_unshift(msg_global->host, host);
+  xbt_lib_set(host_lib,name,MSG_HOST_LEVEL,host);
 
   return host;
 }
@@ -125,7 +123,6 @@ m_host_t MSG_host_self(void)
 /*
  * Real function to destroy a host.
  * MSG_host_destroy is just  a front_end that also removes it from 
- * msg_global->host
  */
 void __MSG_host_destroy(m_host_t host)
 {
@@ -153,8 +150,6 @@ void __MSG_host_destroy(m_host_t host)
   /* Clean host structure */
   free(host->name);
   free(host);
-
-
 }
 
 /** \ingroup m_host_management
@@ -162,7 +157,7 @@ void __MSG_host_destroy(m_host_t host)
  */
 int MSG_get_host_number(void)
 {
-  return (xbt_fifo_size(msg_global->host));
+  return host_lib->count;
 }
 
 /** \ingroup m_host_management
@@ -170,7 +165,23 @@ int MSG_get_host_number(void)
  */
 m_host_t *MSG_get_host_table(void)
 {
-  return ((m_host_t *) xbt_fifo_to_array(msg_global->host));
+      void **array;
+	  int i = 0;
+	  xbt_lib_cursor_t cursor;
+	  char *key;
+	  void **data;
+
+	  if (host_lib->count == 0)
+		return NULL;
+	  else
+		array = xbt_new0(void *, host_lib->count);
+
+	  xbt_lib_foreach(host_lib, cursor, key, data) {
+	    if(get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
+	    	array[i++] = data[MSG_HOST_LEVEL];
+	  }
+
+	  return (m_host_t *)array;
 }
 
 /** \ingroup m_host_management

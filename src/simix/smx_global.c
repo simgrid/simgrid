@@ -72,7 +72,6 @@ void SIMIX_global_init(int *argc, char **argv)
 
     simix_global = xbt_new0(s_smx_global_t, 1);
 
-    simix_global->host = xbt_dict_new();
     simix_global->process_to_run = xbt_dynar_new(sizeof(void *), NULL);
     simix_global->process_list =
         xbt_swag_new(xbt_swag_offset(proc, process_hookup));
@@ -142,7 +141,6 @@ void SIMIX_clean(void)
   simix_global->process_list = NULL;
   simix_global->process_to_destroy = NULL;
   xbt_dict_free(&(simix_global->registered_functions));
-  xbt_dict_free(&(simix_global->host));
 
   /* Let's free maestro now */
   SIMIX_context_free(simix_global->maestro_process->context);

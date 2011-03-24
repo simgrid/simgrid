@@ -62,15 +62,16 @@ m_host_t MSG_get_host_by_name(const char *name)
  */
 void MSG_create_environment(const char *file)
 {
-  xbt_dict_cursor_t c;
-  smx_host_t h;
+  xbt_lib_cursor_t cursor;
+  void **data;
   char *name;
 
   SIMIX_create_environment(file);
 
   /* Initialize MSG hosts */
-  xbt_dict_foreach(SIMIX_host_get_dict(), c, name, h) {
-    __MSG_host_create(h, NULL);
+  xbt_lib_foreach(host_lib, cursor, name, data) {
+	if(data[SIMIX_HOST_LEVEL])
+      __MSG_host_create((smx_host_t)data[SIMIX_HOST_LEVEL], NULL);
   }
   return;
 }

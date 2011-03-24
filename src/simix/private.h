@@ -30,7 +30,6 @@
 /********************************** Simix Global ******************************/
 typedef struct s_smx_global {
   smx_context_factory_t context_factory;
-  xbt_dict_t host;
   xbt_dynar_t process_to_run;
   xbt_swag_t process_list;
   xbt_swag_t process_to_destroy;

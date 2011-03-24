@@ -36,8 +36,7 @@ smx_host_t SIMIX_host_create(const char *name,
       xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
 
   /* Update global variables */
-  xbt_dict_set(simix_global->host, smx_host->name, smx_host,
-               &SIMIX_host_destroy);
+  xbt_lib_set(host_lib,smx_host->name,SIMIX_HOST_LEVEL,smx_host);
 
   return smx_host;
 }
@@ -78,23 +77,13 @@ void SIMIX_host_destroy(void *h)
   return;
 }
 
-/**
- * \brief Returns a dict of all hosts.
- *
- * \return List of all hosts (as a #xbt_dict_t)
- */
-xbt_dict_t SIMIX_host_get_dict(void)
-{
-  return simix_global->host;
-}
-
 smx_host_t SIMIX_host_get_by_name(const char *name)
 {
   xbt_assert0(((simix_global != NULL)
-               && (simix_global->host != NULL)),
+               && (host_lib != NULL)),
               "Environment not set yet");
 
-  return xbt_dict_get_or_null(simix_global->host, name);
+  return xbt_lib_get_or_null(host_lib, name, SIMIX_HOST_LEVEL);
 }
 
 smx_host_t SIMIX_host_self(void)
