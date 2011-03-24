@@ -85,30 +85,29 @@ void xbt_lib_free(xbt_lib_t * lib)
   xbt_libelm_t current, previous;
   int table_size;
   xbt_libelm_t *table;
+  xbt_lib_t l = *lib;
 
-  //  if ( *dict )  xbt_dict_dump_sizes(*dict);
+  if (l) {
+    table_size = l->table_size;
+    table = l->table;
 
-  if (lib != NULL && *lib != NULL) {
-    table_size = (*lib)->table_size;
-    table = (*lib)->table;
-
-    for (i = 0; (*lib)->count && i <= table_size; i++) {
+    for (i = 0; l->count && i <= table_size; i++) {
       current = table[i];
       while (current != NULL) {
 			previous = current;
 			current = current->next;
 			xbt_free(previous->key);
-			for(j=0; j< (*lib)->levels; j++)
+			for(j=0; j< l->levels; j++)
 			  if((&(previous->content))[j])
-				  (*lib)->free_f[j]( (&(previous->content))[j]);
+				  l->free_f[j]( (&(previous->content))[j]);
 	    	xbt_free(previous);
-			(*lib)->count--;
+			l->count--;
       }
     }
     xbt_free(table);
-    xbt_free((*lib)->free_f);
-    xbt_free(*lib);
-    *lib = NULL;
+    xbt_free(l->free_f);
+    xbt_free(l);
+    l = NULL;
   }
 }
 
@@ -169,7 +168,7 @@ void xbt_lib_reset(xbt_lib_t *lib)
   xbt_libelm_t current, next;
   xbt_lib_t l = *lib;
   int levels = l->levels;
-  if(!(*lib)) xbt_die("Lib is NULL!");
+  if(!l) xbt_die("Lib is NULL!");
 
   if (l->count == 0)
     return;
