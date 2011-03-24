@@ -1342,7 +1342,7 @@ workstation_ptask_L07.c:
                 
   /* Parse the file */
   surf_parse_open(file);
-  xbt_assert1((!surf_parse()), "Parse error in %s", file);
+  xbt_assert(!surf_parse(), "Parse error in %s", file);
   surf_parse_close();
 \endverbatim
     

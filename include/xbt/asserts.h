@@ -21,7 +21,7 @@ SG_BEGIN_DECL()
  *
  * You can pass them a format message and arguments, just as if it where a
  * printf.
- * It is converted to a CRITICALn logging request.
+ * It is converted to a XBT_CRITICAL logging request.
  * Be careful: the boolean expression that you want to test should not have
  * side effects, because assertions are disabled at compile time if NDEBUG
  * is set.
@@ -29,32 +29,28 @@ SG_BEGIN_DECL()
  * @{
  */
 #ifdef NDEBUG
-#define xbt_assert(cond)
-#define xbt_assert0(cond,msg)
-#define xbt_assert1(cond,msg,a)
-#define xbt_assert2(cond,msg,a,b)
-#define xbt_assert3(cond,msg,a,b,c)
-#define xbt_assert4(cond,msg,a,b,c,d)
-#define xbt_assert5(cond,msg,a,b,c,d,e)
-#define xbt_assert6(cond,msg,a,b,c,d,e,f)
+#define xbt_assert(...) ((void)0)
 #else
      /** @brief The condition which failed will be displayed.
 	 @hideinitializer  */
-#define xbt_assert(cond)                  do { if (!(cond)) THROWF(0,0,"Assertion %s failed", #cond); } while (0)
-     /** @hideinitializer  */
-#define xbt_assert0(cond,msg)             do { if (!(cond)) THROWF(0,0,msg); } while (0)
-     /** @hideinitializer  */
-#define xbt_assert1(cond,msg,a)           do { if (!(cond)) THROWF(0,0,msg,a); } while (0)
-     /** @hideinitializer  */
-#define xbt_assert2(cond,msg,a,b)         do { if (!(cond)) THROWF(0,0,msg,a,b); } while (0)
-     /** @hideinitializer  */
-#define xbt_assert3(cond,msg,a,b,c)       do { if (!(cond)) THROWF(0,0,msg,a,b,c); } while (0)
-     /** @hideinitializer  */
-#define xbt_assert4(cond,msg,a,b,c,d)     do { if (!(cond)) THROWF(0,0,msg,a,b,c,d); } while (0)
-     /** @hideinitializer  */
-#define xbt_assert5(cond,msg,a,b,c,d,e)   do { if (!(cond)) THROWF(0,0,msg,a,b,c,d,e); } while (0)
-     /** @hideinitializer  */
-#define xbt_assert6(cond,msg,a,b,c,d,e,f) do { if (!(cond)) THROWF(0,0,msg,a,b,c,d,e,f); } while (0)
+#define xbt_assert(...) \
+  _XBT_IF_ONE_ARG(_xbt_assert_ARG1, _xbt_assert_ARGN, __VA_ARGS__)(__VA_ARGS__)
+#define _xbt_assert_ARG1(cond) \
+  _xbt_assert_ARGN(cond, "Assertion %s failed", #cond)
+#define _xbt_assert_ARGN(cond, ...) \
+  do { if (!(cond)) THROWF(0, 0, __VA_ARGS__); } while (0)
+#endif
+
+#if 1 || defined(XBT_USE_DEPRECATED)
+
+#define xbt_assert0(...)        xbt_assert(__VA_ARGS__)
+#define xbt_assert1(...)        xbt_assert(__VA_ARGS__)
+#define xbt_assert2(...)        xbt_assert(__VA_ARGS__)
+#define xbt_assert3(...)        xbt_assert(__VA_ARGS__)
+#define xbt_assert4(...)        xbt_assert(__VA_ARGS__)
+#define xbt_assert5(...)        xbt_assert(__VA_ARGS__)
+#define xbt_assert6(...)        xbt_assert(__VA_ARGS__)
+
 #endif
 /** @} */
     SG_END_DECL()

@@ -56,6 +56,7 @@ SimGrid (3.6) unstable; urgency=low
    http://lists.gforge.inria.fr/pipermail/simgrid-user/2010-December/002206.html
  * Add new macros with variable number of arguments.
    - in xbt/log.h: XBT_DEBUG, XBT_VERB, XBT_INFO, etc.
+   - in xbt/asserts.h: xbt_assert
    - in xbt/cunit.h: xbt_test_{add,fail,assert,log}
    - in xbt/ex.h: THROWF and RETHROWF.
    Define XBT_USE_DEPRECATED if you want to use the old numbered macros like
