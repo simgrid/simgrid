@@ -138,7 +138,7 @@ int main(int argc, char **argv)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
 
-					char *link_name = bprintf("%s",((surf_resource_t) link)->name);
+					char *link_name = xbt_strdup(((surf_resource_t)link)->name);
 					printf("<link_ctn id=\"%s\"/>",link_name);
 					free(link_name);
 				}
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
 
-					char *link_name = bprintf("%s",((surf_resource_t) link)->name);
+					char *link_name = xbt_strdup(((surf_resource_t)link)->name);
 					printf("<link_ctn id=\"%s\"/>",link_name);
 					free(link_name);
 				}
@@ -178,7 +178,7 @@ int main(int argc, char **argv)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
 
-					char *link_name = bprintf("%s",((surf_resource_t) link)->name);
+					char *link_name = xbt_strdup(((surf_resource_t)link)->name);
 					printf("<link_ctn id=\"%s\"/>",link_name);
 					free(link_name);
 				}
@@ -195,7 +195,7 @@ int main(int argc, char **argv)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
 
-					char *link_name = bprintf("%s",((surf_resource_t) link)->name);
+					char *link_name = xbt_strdup(((surf_resource_t)link)->name);
 					printf("<link_ctn id=\"%s\"/>",link_name);
 					free(link_name);
 				}

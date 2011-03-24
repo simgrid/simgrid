@@ -150,23 +150,23 @@ char *MC_request_to_string(smx_req_t req, int value)
   
   switch(req->call){
     case REQ_COMM_ISEND:
-      type = bprintf("iSend");
+      type = xbt_strdup("iSend");
       args = bprintf("src=%s, buff=%p, size=%zu", req->issuer->name, 
                      req->comm_isend.src_buff, req->comm_isend.src_buff_size);
       break;
     case REQ_COMM_IRECV:
       size = req->comm_irecv.dst_buff_size ? *req->comm_irecv.dst_buff_size : 0;
-      type = bprintf("iRecv");
+      type = xbt_strdup("iRecv");
       args = bprintf("dst=%s, buff=%p, size=%zu", req->issuer->name, 
                      req->comm_irecv.dst_buff, size);
       break;
     case REQ_COMM_WAIT:
       act = req->comm_wait.comm;
       if(value == -1){
-        type = bprintf("WaitTimeout");
+        type = xbt_strdup("WaitTimeout");
         args = bprintf("comm=%p", act);
       }else{
-        type = bprintf("Wait");
+        type = xbt_strdup("Wait");
         args  = bprintf("comm=%p [(%lu)%s -> (%lu)%s]", act,
                         act->comm.src_proc ? act->comm.src_proc->pid : 0,
                         act->comm.src_proc ? act->comm.src_proc->name : "",
@@ -177,10 +177,10 @@ char *MC_request_to_string(smx_req_t req, int value)
     case REQ_COMM_TEST:
       act = req->comm_test.comm;
       if(act->comm.src_proc == NULL || act->comm.src_proc == NULL){
-        type = bprintf("Test FALSE");
+        type = xbt_strdup("Test FALSE");
         args = bprintf("comm=%p", act);
       }else{
-        type = bprintf("Test TRUE");
+        type = xbt_strdup("Test TRUE");
         args  = bprintf("comm=%p [(%lu)%s -> (%lu)%s]", act,
                           act->comm.src_proc ? act->comm.src_proc->pid : 0,
                           act->comm.src_proc ? act->comm.src_proc->name : "",
@@ -190,17 +190,17 @@ char *MC_request_to_string(smx_req_t req, int value)
       break;
 
     case REQ_COMM_WAITANY:
-      type = bprintf("WaitAny");
+      type = xbt_strdup("WaitAny");
       args = bprintf("comm=%p (%d of %lu)", xbt_dynar_get_as(req->comm_waitany.comms, value, smx_action_t),
                      value+1, xbt_dynar_length(req->comm_waitany.comms));
       break;
 
     case REQ_COMM_TESTANY:
       if(value == -1){
-        type = bprintf("TestAny FALSE");
-        args = bprintf("-");
+        type = xbt_strdup("TestAny FALSE");
+        args = xbt_strdup("-");
       }else{
-        type = bprintf("TestAny");
+        type = xbt_strdup("TestAny");
         args = bprintf("(%d of %lu)", value+1, xbt_dynar_length(req->comm_testany.comms));
       }
       break;

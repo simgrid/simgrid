@@ -128,9 +128,9 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
     p = strchr(buff, ']');
     *p = '\0';
     if (strcmp(buff, "(nil)"))
-      addrs[i] = bprintf("%s", buff);
+      addrs[i] = xbt_strdup(buff);
     else
-      addrs[i] = bprintf("0x0");
+      addrs[i] = xbt_strdup("0x0");
     XBT_DEBUG("Set up a new address: %d, '%s'(%p)", i, addrs[i], addrs[i]);
 
     /* Add it to the command line args */
@@ -304,7 +304,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
           ("xbt_thread_context_wrapper", line_func,
            strlen("xbt_thread_context_wrapper"))) {
         free(e->bt_strings[i]);
-        e->bt_strings[i] = bprintf("**   (in a separate thread)");
+        e->bt_strings[i] = xbt_strdup("**   (in a separate thread)");
       }
     }
 

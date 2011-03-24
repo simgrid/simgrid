@@ -134,7 +134,7 @@ int main(int argc, char **argv)
         for(i=0;i<xbt_dynar_length(route) ;i++)
         {
           void *link = xbt_dynar_get_as(route,i,void *);
-          char *link_name = bprintf("%s",((surf_resource_t) link)->name);
+          char *link_name = xbt_strdup(((surf_resource_t)link)->name);
           if (strcmp(link_name, "loopback")==0 || strcmp(link_name, "__loopback__")==0) continue;
           xbt_node_t link_node = xbt_graph_search_node (graph, link_name, strcmp);
           if (!link_node){
