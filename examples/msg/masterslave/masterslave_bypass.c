@@ -28,6 +28,7 @@ static int surf_parse_bypass_platform(void)
 
   XBT_DEBUG("<AS>");
   SURFXML_BUFFER_SET(AS_id, "AS0");
+  SURFXML_BUFFER_SET(AS_coordinates, "");
   SURFXML_BUFFER_SET(AS_routing, "Full");
   SURFXML_START_TAG(AS);
 
@@ -39,6 +40,7 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_core, "1");
   A_surfxml_host_state = A_surfxml_host_state_ON;
   SURFXML_BUFFER_SET(host_state_file, "");
+  SURFXML_BUFFER_SET(host_coordinates, "");
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 
@@ -50,6 +52,7 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_core, "1");
   A_surfxml_host_state = A_surfxml_host_state_ON;
   SURFXML_BUFFER_SET(host_state_file, "");
+  SURFXML_BUFFER_SET(host_coordinates, "");
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 
