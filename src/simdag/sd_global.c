@@ -421,6 +421,9 @@ void SD_exit(void)
     xbt_swag_free(sd_global->done_task_set);
     xbt_swag_free(sd_global->failed_task_set);
 
+    XBT_DEBUG("Exiting Surf...");
+    surf_exit();
+
     // Exit the LIB host_lib
     xbt_lib_free(&host_lib);
     xbt_lib_free(&link_lib);
@@ -436,9 +439,6 @@ void SD_exit(void)
   jedule_sd_dump();
   jedule_sd_cleanup();
 #endif
-
-    XBT_DEBUG("Exiting Surf...");
-    surf_exit();
 
   } else {
     XBT_WARN("SD_exit() called, but SimDag is not running");
