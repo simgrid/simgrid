@@ -42,7 +42,7 @@ static double parse_double(const char *string)
 
   value = strtod(string, &endptr);
   if (*endptr != '\0')
-    THROW1(unknown_error, 0, "%s is not a double", string);
+    THROWF(unknown_error, 0, "%s is not a double", string);
   return value;
 }
 

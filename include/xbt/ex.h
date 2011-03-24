@@ -501,7 +501,7 @@ XBT_PUBLIC(void) xbt_backtrace_current(xbt_ex_t * e);
 /** @brief Display a previously captured backtrace */
 XBT_PUBLIC(void) xbt_backtrace_display(xbt_ex_t * e);
 
-#if 1 || defined(XBT_USE_DEPRECATED)
+#ifdef XBT_USE_DEPRECATED
 
 /* Kept for backward compatibility. */
 

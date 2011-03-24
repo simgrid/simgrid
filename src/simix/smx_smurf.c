@@ -535,7 +535,7 @@ void SIMIX_request_pre(smx_req_t req, int value)
       break;
 
     case REQ_NO_REQ:
-      THROW2(arg_error,0,"Asked to do the noop syscall on %s@%s",
+      THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
           SIMIX_process_get_name(req->issuer),
           SIMIX_host_get_name(SIMIX_process_get_host(req->issuer))
           );

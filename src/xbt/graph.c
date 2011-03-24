@@ -528,7 +528,7 @@ void xbt_graph_depth_visit(xbt_graph_t g, xbt_node_t n,
   if (*((int *) (n->xbtdata)) == ALREADY_EXPLORED)
     return;
   else if (*((int *) (n->xbtdata)) == CURRENTLY_EXPLORING)
-    THROW0(0, 0, "There is a cycle");
+    THROWF(0, 0, "There is a cycle");
   else {
     *((int *) (n->xbtdata)) = CURRENTLY_EXPLORING;
 

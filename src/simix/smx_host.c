@@ -65,7 +65,7 @@ void SIMIX_host_destroy(void *h)
       msg = tmp;
     }
     SIMIX_display_process_status();
-    THROW1(arg_error, 0, "%s", msg);
+    THROWF(arg_error, 0, "%s", msg);
   }
 
   xbt_swag_free(host->process_list);
@@ -353,7 +353,7 @@ void SIMIX_execution_finish(smx_action_t action)
       case SIMIX_FAILED:
         TRY {
 	  XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", req->issuer->smx_host->name);
-          THROW0(host_error, 0, "Host failed");
+          THROWF(host_error, 0, "Host failed");
         }
 	CATCH(req->issuer->running_ctx->exception) {
 	  req->issuer->doexception = 1;
@@ -363,7 +363,7 @@ void SIMIX_execution_finish(smx_action_t action)
       case SIMIX_CANCELED:
         TRY {
 	  XBT_DEBUG("SIMIX_execution_finished: execution canceled");
-          THROW0(cancel_error, 0, "Canceled");
+          THROWF(cancel_error, 0, "Canceled");
         }
 	CATCH(req->issuer->running_ctx->exception) {
 	  req->issuer->doexception = 1;

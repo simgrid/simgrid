@@ -350,7 +350,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
       /* Protected char; move it closer */
       memmove(end, end + 1, strlen(end));
       if (*end == '\0')
-        THROW0(arg_error, 0, "String ends with \\");
+        THROWF(arg_error, 0, "String ends with \\");
       end++;                    /* Pass the protected char */
       break;
 
@@ -380,7 +380,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
     case '\n':
     case '\0':
       if (*end == '\0' && (in_simple_quote || in_double_quote)) {
-        THROW2(arg_error, 0,
+        THROWF(arg_error, 0,
                "End of string found while searching for %c in %s",
                (in_simple_quote ? '\'' : '"'), s);
       }
@@ -720,7 +720,7 @@ static void diff_build_diff(xbt_dynar_t res,
   } else if (i <= 0 && j <= 0) {
     return;
   } else {
-    THROW2(arg_error, 0, "Invalid values: i=%d, j=%d", i, j);
+    THROWF(arg_error, 0, "Invalid values: i=%d, j=%d", i, j);
   }
 
 }

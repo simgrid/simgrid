@@ -264,12 +264,12 @@ random_data_t random_new(Generator generator, long int seed,
 
   /* Check user stupidities */
   if (max < min)
-    THROW2(arg_error, 0, "random->max < random->min (%f < %f)", max, min);
+    THROWF(arg_error, 0, "random->max < random->min (%f < %f)", max, min);
   if (mean < min)
-    THROW2(arg_error, 0, "random->mean < random->min (%f < %f)", mean,
+    THROWF(arg_error, 0, "random->mean < random->min (%f < %f)", mean,
            min);
   if (mean > max)
-    THROW2(arg_error, 0, "random->mean > random->max (%f > %f)", mean,
+    THROWF(arg_error, 0, "random->mean > random->max (%f > %f)", mean,
            max);
 
   /* normalize the mean and standard deviation before storing */
@@ -277,7 +277,7 @@ random_data_t random_new(Generator generator, long int seed,
   random->std = std / (max - min);
 
   if (random->mean * (1 - random->mean) < random->std * random->std)
-    THROW2(arg_error, 0, "Invalid mean and standard deviation (%f and %f)",
+    THROWF(arg_error, 0, "Invalid mean and standard deviation (%f and %f)",
            random->mean, random->std);
 
   return random;

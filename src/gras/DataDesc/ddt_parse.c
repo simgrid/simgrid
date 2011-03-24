@@ -240,7 +240,7 @@ static void parse_statement(char *definition,
   gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
   if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_RA) {
     XBT_OUT();
-    THROW0(mismatch_error, 0, "End of the englobing structure or union");
+    THROWF(mismatch_error, 0, "End of the englobing structure or union");
   }
 
   if (XBT_LOG_ISENABLED(gras_ddt_parse, xbt_log_priority_debug)) {

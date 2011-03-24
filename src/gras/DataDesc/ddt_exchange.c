@@ -742,10 +742,10 @@ gras_datadesc_recv_rec(gras_socket_t sock,
       /* retrieve the field number */
       gras_dd_recv_int(sock, r_arch, &field_num);
       if (field_num < 0)
-        THROW1(mismatch_error, 0,
+        THROWF(mismatch_error, 0,
                "Received union field for %s is negative", type->name);
       if (field_num > xbt_dynar_length(union_data.fields))
-        THROW3(mismatch_error, 0,
+        THROWF(mismatch_error, 0,
                "Received union field for %s is said to be #%d but there is only %lu fields",
                type->name, field_num, xbt_dynar_length(union_data.fields));
 
@@ -875,7 +875,7 @@ gras_datadesc_recv_rec(gras_socket_t sock,
       if (count == -1)
         gras_dd_recv_int(sock, r_arch, &count);
       if (count == -1)
-        THROW1(mismatch_error, 0,
+        THROWF(mismatch_error, 0,
                "Invalid (=-1) array size for type %s", type->name);
 
       /* receive the content */

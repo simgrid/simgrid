@@ -47,13 +47,13 @@ int server(int argc, char *argv[])
   TRY {
     me = gras_socket_server(myport);
   } CATCH(e) {
-    RETHROW0("Unable to establish a server socket: %s");
+    RETHROWF("Unable to establish a server socket: %s");
   }
   gras_os_sleep(1);             /* Wait for pal to startup */
   TRY {
     pal = gras_socket_client_from_string(palstr);
   } CATCH(e) {
-    RETHROW1("Unable to establish a socket to %s: %s", palstr);
+    RETHROWF("Unable to establish a socket to %s: %s", palstr);
   }
   XBT_INFO("Initialization done.");
   now = gras_os_time();
@@ -67,7 +67,7 @@ int server(int argc, char *argv[])
       got_expected = 1;
       xbt_ex_free(e);
     } else {
-      RETHROW0("Didn't got the expected timeout: %s");
+      RETHROWF("Didn't got the expected timeout: %s");
     }
   }
   xbt_assert0(got_expected,
@@ -86,7 +86,7 @@ int server(int argc, char *argv[])
       got_expected = 1;
       xbt_ex_free(e);
     } else {
-      RETHROW0("Didn't got the expected timeout: %s");
+      RETHROWF("Didn't got the expected timeout: %s");
     }
   }
   xbt_assert0(got_expected,
@@ -133,13 +133,13 @@ int client(int argc, char *argv[])
   TRY {
     me = gras_socket_server(myport);
   } CATCH(e) {
-    RETHROW0("Unable to establish a server socket: %s");
+    RETHROWF("Unable to establish a server socket: %s");
   }
   gras_os_sleep(1);             /* Wait for pal to startup */
   TRY {
     pal = gras_socket_client_from_string(palstr);
   } CATCH(e) {
-    RETHROW1("Unable to establish a socket to %s: %s", palstr);
+    RETHROWF("Unable to establish a socket to %s: %s", palstr);
   }
   XBT_INFO("Initialization done.");
 
@@ -148,7 +148,7 @@ int client(int argc, char *argv[])
   TRY {
     gras_msg_handle(-1);
   } CATCH(e) {
-    RETHROW0("No exception expected during handle(-1), but got %s");
+    RETHROWF("No exception expected during handle(-1), but got %s");
   }
   XBT_INFO("gras_msg_handle(-1) works as expected (locked)");
 

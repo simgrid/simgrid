@@ -326,7 +326,7 @@ static void parse_S_router_lua(const char* router_id)
 static void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_id)
 {
   if (src != NULL && dst != NULL && link_list != NULL)
-    THROW2(arg_error, 0, "Route between %s to %s can not be defined",
+    THROWF(arg_error, 0, "Route between %s to %s can not be defined",
            src_id, dst_id);
   src = src_id;
   dst = dst_id;
@@ -359,7 +359,7 @@ static void parse_S_route_new_and_endpoints_lua(const char *id_src, const char *
 static void parse_S_ASroute_new_and_endpoints(void)
 {
   if (src != NULL && dst != NULL && link_list != NULL)
-    THROW2(arg_error, 0, "Route between %s to %s can not be defined",
+    THROWF(arg_error, 0, "Route between %s to %s can not be defined",
            A_surfxml_ASroute_src, A_surfxml_ASroute_dst);
   src = A_surfxml_ASroute_src;
   dst = A_surfxml_ASroute_dst;
@@ -378,7 +378,7 @@ static void parse_S_ASroute_new_and_endpoints(void)
 static void parse_S_bypassRoute_new_and_endpoints(void)
 {
   if (src != NULL && dst != NULL && link_list != NULL)
-    THROW2(arg_error, 0,
+    THROWF(arg_error, 0,
            "Bypass Route between %s to %s can not be defined",
            A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
   src = A_surfxml_bypassRoute_src;
@@ -550,7 +550,7 @@ static void parse_S_AS(char *AS_id, char *AS_routing)
     (*(current_routing->routing->unload)) ();
 
   } else {
-    THROW0(arg_error, 0, "All defined components must be belong to a AS");
+    THROWF(arg_error, 0, "All defined components must be belong to a AS");
   }
   /* set the new parse rules */
   (*(new_routing->routing->load)) ();
@@ -593,7 +593,7 @@ static void parse_E_AS(const char *AS_id)
 {
 
   if (current_routing == NULL) {
-    THROW1(arg_error, 0, "Close AS(%s), that never open", AS_id);
+    THROWF(arg_error, 0, "Close AS(%s), that never open", AS_id);
   } else {
     network_element_info_t info = NULL;
     xbt_assert1(!xbt_lib_get_or_null(as_router_lib,current_routing->name, ROUTING_ASR_LEVEL),
@@ -2672,7 +2672,7 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
           if (link)
             xbt_dynar_push(links_list, &link);
           else
-            THROW1(mismatch_error, 0, "Link %s not found", new_link_name);
+            THROWF(mismatch_error, 0, "Link %s not found", new_link_name);
           xbt_free(new_link_name);
         }
       }
@@ -3147,7 +3147,7 @@ generic_new_route(e_surf_routing_hierarchy_t hierarchy,
       else
         xbt_dynar_unshift(links_id, &link);
     } else
-      THROW1(mismatch_error, 0, "Link %s not found", link_name);
+      THROWF(mismatch_error, 0, "Link %s not found", link_name);
   }
 
   return new_route;
@@ -3203,7 +3203,7 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
       else
         xbt_dynar_unshift(links_id, &link);
     } else
-      THROW1(mismatch_error, 0, "Link %s not found", link_name);
+      THROWF(mismatch_error, 0, "Link %s not found", link_name);
   }
 
   return new_e_route;
@@ -3944,12 +3944,12 @@ static void routing_parse_Srandom(void)
 
 	  /* Check user stupidities */
 	  if (max < min)
-	    THROW2(arg_error, 0, "random->max < random->min (%f < %f)", max, min);
+	    THROWF(arg_error, 0, "random->max < random->min (%f < %f)", max, min);
 	  if (mean < min)
-	    THROW2(arg_error, 0, "random->mean < random->min (%f < %f)", mean,
+	    THROWF(arg_error, 0, "random->mean < random->min (%f < %f)", mean,
 		   min);
 	  if (mean > max)
-	    THROW2(arg_error, 0, "random->mean > random->max (%f > %f)", mean,
+	    THROWF(arg_error, 0, "random->mean > random->max (%f > %f)", mean,
 		   max);
 
 	  /* normalize the mean and standard deviation before storing */
@@ -3957,7 +3957,7 @@ static void routing_parse_Srandom(void)
 	  random->std = std / (max - min);
 
 	  if (random->mean * (1 - random->mean) < random->std * random->std)
-	    THROW2(arg_error, 0, "Invalid mean and standard deviation (%f and %f)",
+	    THROWF(arg_error, 0, "Invalid mean and standard deviation (%f and %f)",
 		   random->mean, random->std);
 
 	  XBT_DEBUG("id = '%s' min = '%f' max = '%f' mean = '%f' std_deviatinon = '%f' generator = '%d' seed = '%ld' radical = '%s'",

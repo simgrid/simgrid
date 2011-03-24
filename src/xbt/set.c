@@ -229,7 +229,7 @@ xbt_set_elm_t xbt_set_get_by_id(xbt_set_t set, int id)
 
   res = xbt_dynar_get_as(set->dynar, id, xbt_set_elm_t);
   if (res == NULL) {
-    THROW1(not_found_error, 0, "Invalid id: %d", id);
+    THROWF(not_found_error, 0, "Invalid id: %d", id);
   }
   XBT_DEBUG("Lookup type of id %d (of %lu): %s",
          id, xbt_dynar_length(set->dynar), res->name);
@@ -383,10 +383,10 @@ static void search_name(xbt_set_t head, const char *key)
   xbt_test_log(" Found %s (under ID %d)\n",
                 elm ? elm->data : "(null)", elm ? elm->ID : -1);
   if (strcmp(key, elm->name))
-    THROW2(mismatch_error, 0, "The key (%s) is not the one expected (%s)",
+    THROWF(mismatch_error, 0, "The key (%s) is not the one expected (%s)",
            key, elm->name);
   if (strcmp(elm->name, elm->data))
-    THROW2(mismatch_error, 0, "The name (%s) != data (%s)", key,
+    THROWF(mismatch_error, 0, "The name (%s) != data (%s)", key,
            elm->name);
   fflush(stdout);
 }
@@ -400,13 +400,13 @@ static void search_id(xbt_set_t head, int id, const char *key)
   xbt_test_log("Found %s (data %s)",
                 elm ? elm->name : "(null)", elm ? elm->data : "(null)");
   if (id != elm->ID)
-    THROW2(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "The found ID (%d) is not the one expected (%d)", elm->ID, id);
   if (strcmp(key, elm->name))
-    THROW2(mismatch_error, 0, "The key (%s) is not the one expected (%s)",
+    THROWF(mismatch_error, 0, "The key (%s) is not the one expected (%s)",
            elm->name, key);
   if (strcmp(elm->name, elm->data))
-    THROW2(mismatch_error, 0, "The name (%s) != data (%s)",
+    THROWF(mismatch_error, 0, "The name (%s) != data (%s)",
            elm->name, elm->data);
 }
 
@@ -432,7 +432,7 @@ static void search_not_found(xbt_set_t set, const char *data)
   xbt_test_add("Search %s (expected not to be found)", data);
   TRY {
     xbt_set_get_by_name(set, data);
-    THROW1(unknown_error, 0,
+    THROWF(unknown_error, 0,
            "Found something which shouldn't be there (%s)", data);
   } CATCH(e) {
     if (e.category != not_found_error)

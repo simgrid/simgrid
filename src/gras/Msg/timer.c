@@ -65,7 +65,7 @@ void gras_timer_cancel_delay(double interval, void_f_void_t action)
   }
 
   if (!found)
-    THROW2(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "Cannot remove the action %p delayed of %f second: not found",
            action, interval);
 
@@ -91,7 +91,7 @@ void gras_timer_cancel_repeat(double interval, void_f_void_t action)
   }
 
   if (!found)
-    THROW2(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "Cannot remove the action %p delayed of %f second: not found",
            action, interval);
 }
@@ -115,7 +115,7 @@ void gras_timer_cancel_delay_all(void)
   }
 
   if (!found)
-    THROW0(mismatch_error, 0, "No delayed action to remove");
+    THROWF(mismatch_error, 0, "No delayed action to remove");
 
 }
 
@@ -138,7 +138,7 @@ void gras_timer_cancel_repeat_all(void)
   }
 
   if (!found)
-    THROW0(mismatch_error, 0, "No repetitive action to remove");
+    THROWF(mismatch_error, 0, "No repetitive action to remove");
 }
 
 /** @brief Cancel all delayed and repetitive tasks */

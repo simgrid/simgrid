@@ -108,7 +108,7 @@ gras_socket_t gras_socket_client_from_file(const char *path)
              S_IRUSR | S_IWUSR | S_IRGRP);
 
     if (res->sd < 0) {
-      THROW2(system_error, 0,
+      THROWF(system_error, 0,
              "Cannot create a client socket from file %s: %s",
              path, strerror(errno));
     }
@@ -149,7 +149,7 @@ gras_socket_t gras_socket_server_from_file(const char *path)
     res->sd = open(path, O_RDONLY | O_BINARY);
 
     if (res->sd < 0) {
-      THROW2(system_error, 0,
+      THROWF(system_error, 0,
              "Cannot create a server socket from file %s: %s",
              path, strerror(errno));
     }
@@ -221,7 +221,7 @@ gras_trp_file_chunk_send_raw(gras_socket_t sock,
     status = write(sock->sd, data, (long int) size);
 
     if (status == -1) {
-      THROW4(system_error, 0, "write(%d,%p,%d) failed: %s",
+      THROWF(system_error, 0, "write(%d,%p,%d) failed: %s",
              sock->sd, data, (int) size, strerror(errno));
     }
 
@@ -229,7 +229,7 @@ gras_trp_file_chunk_send_raw(gras_socket_t sock,
       size -= status;
       data += status;
     } else {
-      THROW0(system_error, 0, "file descriptor closed");
+      THROWF(system_error, 0, "file descriptor closed");
     }
   }
 }
@@ -264,7 +264,7 @@ gras_trp_file_chunk_recv(gras_socket_t sock,
     XBT_DEBUG("read(%d, %p, %ld);", sock->sd, data + got, size);
 
     if (status < 0) {
-      THROW4(system_error, 0, "read(%d,%p,%d) failed: %s",
+      THROWF(system_error, 0, "read(%d,%p,%d) failed: %s",
              sock->sd, data + got, (int) size, strerror(errno));
     }
 
@@ -272,7 +272,7 @@ gras_trp_file_chunk_recv(gras_socket_t sock,
       size -= status;
       got += status;
     } else {
-      THROW1(system_error, errno, "file descriptor closed after %d bytes",
+      THROWF(system_error, errno, "file descriptor closed after %d bytes",
              got);
     }
   }

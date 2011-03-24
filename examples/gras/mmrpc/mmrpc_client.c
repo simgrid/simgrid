@@ -45,7 +45,7 @@ int client(int argc, char *argv[])
     }
     CATCH(e) {
       if (e.category != system_error)
-        RETHROW0("Unable to connect to the server: %s");
+        RETHROWF("Unable to connect to the server: %s");
       xbt_ex_free(e);
       gras_os_sleep(0.05);
     }

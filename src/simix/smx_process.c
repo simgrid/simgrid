@@ -423,7 +423,7 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
   /* check if the host is active */
   if (surf_workstation_model->extension.
       workstation.get_state(host->host) != SURF_RESOURCE_ON) {
-    THROW1(host_error, 0, "Host %s failed, you cannot call this function",
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            host->name);
   }
 

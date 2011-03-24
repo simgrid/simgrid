@@ -73,7 +73,7 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
   int needed_space;
 
   if (!b)
-    THROW0(arg_error, 0, "Asked to append stuff to NULL buffer");
+    THROWF(arg_error, 0, "Asked to append stuff to NULL buffer");
 
   addlen = strlen(toadd);
   needed_space = b->used + addlen + 1;
@@ -133,7 +133,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
       /* Protected char; pass the protection */
       end++;
       if (*end == '\0')
-        THROW0(arg_error, 0, "String ends with \\");
+        THROWF(arg_error, 0, "String ends with \\");
       break;
 
     case '\'':
@@ -173,7 +173,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
               while (*p != '\0' && *p != '}')
                 p++;
               if (*p == '\0')
-                THROW0(arg_error, 0,
+                THROWF(arg_error, 0,
                        "Variable default value not terminated ('}' missing)");
 
               default_value = xbt_malloc(p - end_var - 1);
@@ -187,14 +187,14 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
             end_var++;
           }
           if (*end_var == '\0')
-            THROW0(arg_error, 0,
+            THROWF(arg_error, 0,
                    "Variable name not terminated ('}' missing)");
 
           if (!end_subst)       /* already set if there's a default value */
             end_subst = end_var + 1;    /* also kill the } in the name */
 
           if (end_var == beg_var)
-            THROW0(arg_error, 0, "Variable name empty (${} is not valid)");
+            THROWF(arg_error, 0, "Variable name empty (${} is not valid)");
 
 
         } else {
@@ -206,7 +206,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
             end_var++;
           end_subst = end_var;
           if (end_var == beg_var)
-            THROW0(arg_error, 0, "Variable name empty ($ is not valid)");
+            THROWF(arg_error, 0, "Variable name empty ($ is not valid)");
         }
 /*        XBT_DEBUG("var='%.*s'; subst='%.*s'; End_var = '%s'",
             end_var-beg_var,beg_var,

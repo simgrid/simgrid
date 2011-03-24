@@ -79,7 +79,7 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload)
     }
     CATCH(e) {
       gras_socket_close(globals->sock);
-      RETHROW0("Unable to forward token: %s");
+      RETHROWF("Unable to forward token: %s");
     }
 
   }
@@ -171,7 +171,7 @@ int node(int argc, char *argv[])
     TRY {
       gras_msg_send(globals->tosuccessor, "stoken", &token);
     } CATCH(e) {
-      RETHROW0("Unable to send the freshly created token: %s");
+      RETHROWF("Unable to send the freshly created token: %s");
     }
   }
 

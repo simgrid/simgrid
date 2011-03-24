@@ -89,7 +89,7 @@ static void SIMIX_synchro_finish(smx_action_t action)
 
     case SIMIX_SRC_TIMEOUT:
       TRY {
-        THROW0(timeout_error, 0, "Synchro's wait timeout");
+        THROWF(timeout_error, 0, "Synchro's wait timeout");
       } CATCH(req->issuer->running_ctx->exception) {
         req->issuer->doexception = 1;
       }
@@ -97,7 +97,7 @@ static void SIMIX_synchro_finish(smx_action_t action)
 
     case SIMIX_FAILED:
       TRY {
-        THROW0(host_error, 0, "Host failed");
+        THROWF(host_error, 0, "Host failed");
       } CATCH(req->issuer->running_ctx->exception) {
         req->issuer->doexception = 1;
       }

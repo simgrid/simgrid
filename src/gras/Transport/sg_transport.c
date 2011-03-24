@@ -52,7 +52,7 @@ gras_socket_t gras_trp_select(double timeout)
 
   if (active_socket == NULL) {
     XBT_DEBUG("TIMEOUT");
-    THROW0(timeout_error, 0, "Timeout");
+    THROWF(timeout_error, 0, "Timeout");
   }
   active_socket_data = (gras_trp_sg_sock_data_t *) active_socket->data;
 
@@ -131,17 +131,17 @@ gras_socket_t gras_trp_select(double timeout)
 
 void gras_trp_tcp_setup(gras_trp_plugin_t plug)
 {
-  THROW0(mismatch_error, 0, NULL);
+  THROW(mismatch_error, 0);
 }
 
 void gras_trp_file_setup(gras_trp_plugin_t plug)
 {
-  THROW0(mismatch_error, 0, NULL);
+  THROW(mismatch_error, 0);
 }
 
 void gras_trp_iov_setup(gras_trp_plugin_t plug)
 {
-  THROW0(mismatch_error, 0, NULL);
+  THROW(mismatch_error, 0);
 }
 
 gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock)

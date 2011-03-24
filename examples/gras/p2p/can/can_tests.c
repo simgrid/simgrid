@@ -36,7 +36,7 @@ int start_war(int argc, char **argv)
   TRY {                         // contacting the bad guy that will launch the War.
     temp_sock = gras_socket_client(gras_os_myname(), atoi(argv[1]));
   } CATCH(e) {
-    RETHROW0("Unable to connect known host so as to declare WAR!: %s");
+    RETHROWF("Unable to connect known host so as to declare WAR!: %s");
   }
 
 
@@ -50,7 +50,7 @@ int start_war(int argc, char **argv)
     gras_msg_send(temp_sock, "can_nuke", &nuke_msg);
   } CATCH(e) {
     gras_socket_close(temp_sock);
-    RETHROW0
+    RETHROWF
         ("Unable to contact known host so as to declare WAR!!!!!!!!!!!!!!!!!!!!!: %s");
   }
   gras_socket_close(temp_sock); // spare.
@@ -96,14 +96,14 @@ static int send_nuke(nuke_t * msg, int xId, int yId)
       temp_sock = gras_socket_client(host, port);
     }
     CATCH(e) {
-      RETHROW0("Unable to connect the nuke!: %s");
+      RETHROWF("Unable to connect the nuke!: %s");
     }
     //XBT_INFO("%s ON %s %d %d <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",globals->host,host,xId,yId);
     TRY {
       gras_msg_send(temp_sock, "can_nuke", msg);
     }
     CATCH(e) {
-      RETHROW0("Unable to send the nuke!: %s");
+      RETHROWF("Unable to send the nuke!: %s");
     }
     gras_socket_close(temp_sock);
     XBT_INFO("Nuke launched by %s to %s for (%d;%d)", globals->host, host,
@@ -191,13 +191,13 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
       temp_sock = gras_socket_client(host, port);
     }
     CATCH(e) {
-      RETHROW0("Unable to connect the nuke!: %s");
+      RETHROWF("Unable to connect the nuke!: %s");
     }
     TRY {
       gras_msg_send(temp_sock, "can_nuke", incoming);
     }
     CATCH(e) {
-      RETHROW0("Unable to send the nuke!: %s");
+      RETHROWF("Unable to send the nuke!: %s");
     }
     XBT_INFO("Nuke re-aimed by %s to %s for (%d;%d)", globals->host, host,
           incoming->xId, incoming->yId);

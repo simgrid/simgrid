@@ -430,7 +430,7 @@ gras_trp_plugin_t gras_trp_plugin_get_by_name(const char *name)
 int gras_socket_my_port(gras_socket_t sock)
 {
   if (!sock->plugin->my_port)
-    THROW1(unknown_error,0,"Function my_port unimplemented in plugin %s",sock->plugin->name);
+    THROWF(unknown_error,0,"Function my_port unimplemented in plugin %s",sock->plugin->name);
   return (*sock->plugin->my_port)(sock);
 
 }
@@ -438,7 +438,7 @@ int gras_socket_my_port(gras_socket_t sock)
 int gras_socket_peer_port(gras_socket_t sock)
 {
   if (!sock->plugin->peer_port)
-    THROW1(unknown_error,0,"Function peer_port unimplemented in plugin %s",sock->plugin->name);
+    THROWF(unknown_error,0,"Function peer_port unimplemented in plugin %s",sock->plugin->name);
   return (*sock->plugin->peer_port)(sock);
 }
 
@@ -492,7 +492,7 @@ void gras_socket_meas_send(gras_socket_t peer,
   unsigned long int sent_sofar;
 
   XBT_IN("");
-  THROW0(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
+  THROWF(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
       "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
   if (gras_if_RL())
     chunk = xbt_malloc0(msg_size);
@@ -540,7 +540,7 @@ void gras_socket_meas_recv(gras_socket_t peer,
   unsigned long int got_sofar;
 
   XBT_IN("");
-  THROW0(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
+  THROWF(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
       "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
 
   if (gras_if_RL())
@@ -582,7 +582,7 @@ void gras_socket_meas_recv(gras_socket_t peer,
 gras_socket_t gras_socket_meas_accept(gras_socket_t peer)
 {
   gras_socket_t res;
-  THROW0(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
+  THROWF(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
       "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
 
   xbt_assert0(peer->meas,

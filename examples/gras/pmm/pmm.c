@@ -312,7 +312,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
         gras_msg_wait(600, "dataB", &from, &bB);
       }
       CATCH(e) {
-        RETHROW0("Can't get a data message from line : %s");
+        RETHROWF("Can't get a data message from line : %s");
       }
       XBT_VERB("LINE: step(%d) <> Myline(%d). Receive data from %s", step,
             myline, gras_socket_peer_name(from));
@@ -335,7 +335,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
         gras_msg_wait(1200, "dataA", &from, &bA);
       }
       CATCH(e) {
-        RETHROW0("Can't get a data message from row : %s");
+        RETHROWF("Can't get a data message from row : %s");
       }
       XBT_VERB("ROW: step(%d)<>myrow(%d). Receive data from %s", step, myrow,
             gras_socket_peer_name(from));
@@ -353,7 +353,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
     gras_msg_send(master, "result", &result);
   }
   CATCH(e) {
-    RETHROW0("Failed to send answer to server: %s");
+    RETHROWF("Failed to send answer to server: %s");
   }
   XBT_VERB(">>>>>>>> Result sent to %s:%d <<<<<<<<",
         gras_socket_peer_name(master), gras_socket_peer_port(master));

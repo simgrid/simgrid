@@ -100,7 +100,7 @@ void *gras_libdata_by_name_from_procdata(const char *name,
     res = xbt_set_get_by_name(pd->libdata, name);
   }
   CATCH(e) {
-    RETHROW1("Cannot retrieve the libdata associated to %s: %s", name);
+    RETHROWF("Cannot retrieve the libdata associated to %s: %s", name);
   }
   return res;
 }
@@ -156,7 +156,7 @@ void gras_procdata_init()
       found = 0;
     }
     if (found)
-      THROW1(unknown_error, 0,
+      THROWF(unknown_error, 0,
              "MayDay: two modules use '%s' as libdata name", fab.name);
 
     /* Add the data in place, after some more sanity checking */

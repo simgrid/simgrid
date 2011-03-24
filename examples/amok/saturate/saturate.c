@@ -221,7 +221,7 @@ static void full_fledged_saturation(int argc, char *argv[])
                                0 /* no timeout */ );
       }
       CATCH(e) {
-        RETHROW0("Cannot ask peers to saturate the link: %s");
+        RETHROWF("Cannot ask peers to saturate the link: %s");
       }
       gras_os_sleep(5);
 

@@ -585,7 +585,7 @@ void SIMIX_comm_finish(smx_action_t action)
 
       case SIMIX_SRC_TIMEOUT:
         TRY {
-          THROW0(timeout_error, 0, "Communication timeouted because of sender");
+          THROWF(timeout_error, 0, "Communication timeouted because of sender");
         }
 	CATCH(req->issuer->running_ctx->exception) {
           req->issuer->doexception = 1;
@@ -594,7 +594,7 @@ void SIMIX_comm_finish(smx_action_t action)
 
       case SIMIX_DST_TIMEOUT:
         TRY {
-          THROW0(timeout_error, 0, "Communication timeouted because of receiver");
+          THROWF(timeout_error, 0, "Communication timeouted because of receiver");
         }
 	CATCH(req->issuer->running_ctx->exception) {
           req->issuer->doexception = 1;
@@ -604,9 +604,9 @@ void SIMIX_comm_finish(smx_action_t action)
       case SIMIX_SRC_HOST_FAILURE:
         TRY {
           if (req->issuer == action->comm.src_proc)
-            THROW0(host_error, 0, "Host failed");
+            THROWF(host_error, 0, "Host failed");
           else
-            THROW0(network_error, 0, "Remote peer failed");
+            THROWF(network_error, 0, "Remote peer failed");
         }
 	CATCH(req->issuer->running_ctx->exception) {
           req->issuer->doexception = 1;
@@ -616,9 +616,9 @@ void SIMIX_comm_finish(smx_action_t action)
       case SIMIX_DST_HOST_FAILURE:
         TRY {
           if (req->issuer == action->comm.dst_proc)
-            THROW0(host_error, 0, "Host failed");
+            THROWF(host_error, 0, "Host failed");
           else
-            THROW0(network_error, 0, "Remote peer failed");
+            THROWF(network_error, 0, "Remote peer failed");
         }
 	CATCH(req->issuer->running_ctx->exception) {
           req->issuer->doexception = 1;
@@ -630,7 +630,7 @@ void SIMIX_comm_finish(smx_action_t action)
 	  XBT_DEBUG("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p)",
 	      action, action->comm.src_proc->smx_host->name, action->comm.dst_proc->smx_host->name,
 	      req->issuer->name, req->issuer);
-          THROW0(network_error, 0, "Link failure");
+          THROWF(network_error, 0, "Link failure");
         }
 	CATCH(req->issuer->running_ctx->exception) {
           req->issuer->doexception = 1;

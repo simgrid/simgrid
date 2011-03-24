@@ -62,7 +62,7 @@ void gras_msg_send_ext(gras_socket_t sock,
     break;
 
   default:
-    THROW1(unknown_error, 0, "Unknown msg kind %d", kind);
+    THROWF(unknown_error, 0, "Unknown msg kind %d", kind);
   }
 
   gras_datadesc_send(sock, string_type, &msgtype->name);
@@ -118,17 +118,17 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
     msg->kind = (e_gras_msg_kind_t) c_kind;
   }
   CATCH(e) {
-    RETHROW0
+    RETHROWF
         ("Exception caught while trying to get the message header: %s");
   }
 
   for (cpt = 0; cpt < 4; cpt++)
     if (header[cpt] != _GRAS_header[cpt])
-      THROW2(mismatch_error, 0,
+      THROWF(mismatch_error, 0,
              "Incoming bytes do not look like a GRAS message (header='%s'  not '%.4s')",
              hexa_str((unsigned char *) header, 4, 0), _GRAS_header);
   if (header[4] != _GRAS_header[4])
-    THROW2(mismatch_error, 0, "GRAS protocol mismatch (got %d, use %d)",
+    THROWF(mismatch_error, 0, "GRAS protocol mismatch (got %d, use %d)",
            (int) header[4], (int) _GRAS_header[4]);
   r_arch = (int) header[5];
 
@@ -159,11 +159,11 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
     /* FIXME: Survive unknown messages */
     if (e.category == not_found_error) {
       xbt_ex_free(e);
-      THROW1(not_found_error, 0,
+      THROWF(not_found_error, 0,
              "Received an unknown message: %s (FIXME: should survive to these)",
              msg_name);
     } else
-      RETHROW1
+      RETHROWF
           ("Exception caught while retrieving the type associated to messages '%s' : %s",
            msg_name);
   }

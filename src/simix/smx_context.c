@@ -90,7 +90,7 @@ XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
 
   if (nb_threads > 1) {
 #ifndef CONTEXT_THREADS
-    THROW0(arg_error, 0, "No thread support for parallel context execution");
+    THROWF(arg_error, 0, "No thread support for parallel context execution");
 #endif
   }
 

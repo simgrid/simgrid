@@ -154,7 +154,7 @@ void amok_bw_test(gras_socket_t peer,
     CATCH(e) {
       measMasterIn = NULL;
       if (port == 10000 - 1) {
-        RETHROW0("Error caught while opening a measurement socket: %s");
+        RETHROWF("Error caught while opening a measurement socket: %s");
       } else {
         xbt_ex_free(e);
       }
@@ -177,7 +177,7 @@ void amok_bw_test(gras_socket_t peer,
     gras_msg_rpccall(peer, 15, "BW handshake", &request, &request_ack);
   }
   CATCH(e) {
-    RETHROW0("Error encountered while sending the BW request: %s");
+    RETHROWF("Error encountered while sending the BW request: %s");
   }
   measIn = gras_socket_meas_accept(measMasterIn);
 
@@ -187,7 +187,7 @@ void amok_bw_test(gras_socket_t peer,
                                      request->buf_size, 1);
   }
   CATCH(e) {
-    RETHROW2
+    RETHROWF
         ("Error encountered while opening the measurement socket to %s:%d for BW test: %s",
          gras_socket_peer_name(peer), request_ack->peer.port);
   }
@@ -248,7 +248,7 @@ void amok_bw_test(gras_socket_t peer,
       gras_socket_close(measOut);
       gras_socket_close(measMasterIn);
       gras_socket_close(measIn);
-      RETHROW0("Unable to conduct the experiment: %s");
+      RETHROWF("Unable to conduct the experiment: %s");
     }
     *sec = gras_os_time() - *sec;
     if (*sec != 0.0) {
@@ -315,7 +315,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
         xbt_ex_free(e);
       else
         /* FIXME: tell error to remote */
-        RETHROW0
+        RETHROWF
             ("Error encountered while opening a measurement server socket: %s");
     }
   }
@@ -331,7 +331,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
   CATCH(e) {
     gras_socket_close(measMasterIn);
     /* FIXME: tell error to remote */
-    RETHROW0("Error encountered while sending the answer: %s");
+    RETHROWF("Error encountered while sending the answer: %s");
   }
 
 
@@ -342,7 +342,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
                                      request->buf_size, 1);
   }
   CATCH(e) {
-    RETHROW2
+    RETHROWF
         ("Error encountered while opening a measurement socket back to %s:%d : %s",
          gras_socket_peer_name(expeditor), request->peer.port);
     /* FIXME: tell error to remote */
@@ -360,7 +360,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
     gras_socket_close(measIn);
     gras_socket_close(measOut);
     /* FIXME: tell error to remote ? */
-    RETHROW0("Error encountered while opening the meas socket: %s");
+    RETHROWF("Error encountered while opening the meas socket: %s");
   }
 
   if (!msgtwaited) {
@@ -381,7 +381,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
       gras_socket_close(measIn);
       gras_socket_close(measOut);
       /* FIXME: tell error to remote ? */
-      RETHROW0("Error encountered while receiving the experiment: %s");
+      RETHROWF("Error encountered while receiving the experiment: %s");
     }
     gras_msg_wait_or(60, msgtwaited, &ctx_reask, &msggot, &payload);
     switch (msggot) {

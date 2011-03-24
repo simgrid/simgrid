@@ -45,7 +45,7 @@ static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload)
     /* 6. Deal with errors: add some details to the exception */
   } CATCH(e) {
     gras_socket_close(globals->sock);
-    RETHROW0("Unable answer with PONG: %s");
+    RETHROWF("Unable answer with PONG: %s");
   }
 
   XBT_INFO(">>>>>>>> Answered with PONG(4321) <<<<<<<<");

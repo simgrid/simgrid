@@ -133,7 +133,7 @@ gras_cbps_v_pop(gras_cbps_t ps,
       RETHROW;
 
     xbt_ex_free(e);
-    THROW1(not_found_error, 1, "Asked to pop the non-existant %s", name);
+    THROWF(not_found_error, 1, "Asked to pop the non-existant %s", name);
   }
   xbt_dynar_pop(varstack, &var);
 

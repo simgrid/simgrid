@@ -153,13 +153,13 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
     XBT_DEBUG("Looking for symbol %d, addr = '%s'", i, addrs[i]);
     fgets_res = fgets(line_func, 1024, pipe);
     if (fgets_res == NULL)
-      THROW2(system_error, 0,
+      THROWF(system_error, 0,
              "Cannot run fgets to look for symbol %d, addr %s", i,
              addrs[i]);
     line_func[strlen(line_func) - 1] = '\0';
     fgets_res = fgets(line_pos, 1024, pipe);
     if (fgets_res == NULL)
-      THROW2(system_error, 0,
+      THROWF(system_error, 0,
              "Cannot run fgets to look for symbol %d, addr %s", i,
              addrs[i]);
     line_pos[strlen(line_pos) - 1] = '\0';
@@ -261,12 +261,12 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
         }
         fgets_res = fgets(line_func, 1024, subpipe);
         if (fgets_res == NULL)
-          THROW1(system_error, 0, "Cannot read result of subcommand %s",
+          THROWF(system_error, 0, "Cannot read result of subcommand %s",
                  subcmd);
         line_func[strlen(line_func) - 1] = '\0';
         fgets_res = fgets(line_pos, 1024, subpipe);
         if (fgets_res == NULL)
-          THROW1(system_error, 0, "Cannot read result of subcommand %s",
+          THROWF(system_error, 0, "Cannot read result of subcommand %s",
                  subcmd);
         line_pos[strlen(line_pos) - 1] = '\0';
         pclose(subpipe);

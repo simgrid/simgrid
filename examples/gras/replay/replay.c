@@ -178,7 +178,7 @@ static void do_command(int rank, void *c)
     }
     CATCH(e) {
       SIMIX_display_process_status();
-      RETHROW2("Exception while waiting for %f bytes from %s: %s",
+      RETHROWF("Exception while waiting for %f bytes from %s: %s",
                cmd->d_arg, cmd->str_arg);
     }
     xbt_workload_data_chunk_free(chunk);

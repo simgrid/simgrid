@@ -41,7 +41,7 @@ int client(int argc, char *argv[])
     CATCH(e) {
       if (e.category != system_error)
         /* dunno what happened, let the exception go through */
-        RETHROW0("Unable to connect to the server: %s");
+        RETHROWF("Unable to connect to the server: %s");
       xbt_ex_free(e);
       gras_os_sleep(0.05);
     }
@@ -64,7 +64,7 @@ int client(int argc, char *argv[])
   }
   CATCH(e) {
     gras_socket_close(toserver);
-    RETHROW0("Failed to send PING to server: %s");
+    RETHROWF("Failed to send PING to server: %s");
   }
   XBT_INFO(">>>>>>>> Message PING(%d) sent to %s:%d <<<<<<<<",
         ping, gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
@@ -75,7 +75,7 @@ int client(int argc, char *argv[])
   }
   CATCH(e) {
     gras_socket_close(toserver);
-    RETHROW0("Why can't I get my PONG message like everyone else: %s");
+    RETHROWF("Why can't I get my PONG message like everyone else: %s");
   }
 
   /* 8. Keep the user informed of what's going on, again */

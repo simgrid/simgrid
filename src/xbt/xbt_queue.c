@@ -168,7 +168,7 @@ void xbt_queue_push_timed(xbt_queue_t queue, const void *src, double delay)
         queue->capacity == xbt_dynar_length(queue->data)) {
 
       xbt_mutex_release(queue->mutex);
-      THROW2(timeout_error, 0,
+      THROWF(timeout_error, 0,
              "Capacity of %p exceded (=%d), and delay = 0", queue,
              queue->capacity);
     }
@@ -211,7 +211,7 @@ void xbt_queue_pop_timed(xbt_queue_t queue, void *const dst, double delay)
   if (delay == 0) {
     if (xbt_dynar_length(queue->data) == 0) {
       xbt_mutex_release(queue->mutex);
-      THROW0(timeout_error, 0, "Delay = 0, and queue is empty");
+      THROWF(timeout_error, 0, "Delay = 0, and queue is empty");
     }
   } else {
     while ((xbt_dynar_length(queue->data) == 0) &&
@@ -250,7 +250,7 @@ void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src,
         queue->capacity == xbt_dynar_length(queue->data)) {
 
       xbt_mutex_release(queue->mutex);
-      THROW2(timeout_error, 0,
+      THROWF(timeout_error, 0,
              "Capacity of %p exceded (=%d), and delay = 0", queue,
              queue->capacity);
     }
@@ -294,7 +294,7 @@ void xbt_queue_shift_timed(xbt_queue_t queue, void *const dst,
   if (delay == 0) {
     if (xbt_dynar_length(queue->data) == 0) {
       xbt_mutex_release(queue->mutex);
-      THROW0(timeout_error, 0, "Delay = 0, and queue is empty");
+      THROWF(timeout_error, 0, "Delay = 0, and queue is empty");
     }
   } else {
     while ((xbt_dynar_length(queue->data) == 0) &&
@@ -313,7 +313,7 @@ void xbt_queue_shift_timed(xbt_queue_t queue, void *const dst,
 
   if (xbt_dynar_length(queue->data) == 0) {
     xbt_mutex_release(queue->mutex);
-    THROW1(timeout_error, 0, "Timeout (%f) elapsed, but queue still empty",
+    THROWF(timeout_error, 0, "Timeout (%f) elapsed, but queue still empty",
            delay);
   }
 

@@ -57,7 +57,7 @@ int server_convert_a2i_cb(gras_msg_cb_ctx_t ctx, void *payload)
   result = strtol(string, &p, 10);
 
   if (*p != '\0')
-    THROW2(arg_error, 0,
+    THROWF(arg_error, 0,
            "Error while converting %s: this does not seem to be a valid number (problem at '%s')",
            string, p);
 

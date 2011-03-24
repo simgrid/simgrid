@@ -105,7 +105,7 @@ void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
   sock->sd = socket(AF_INET, SOCK_STREAM, 0);
 
   if (sock->sd < 0) {
-    THROW1(system_error, 0, "Failed to create socket: %s",
+    THROWF(system_error, 0, "Failed to create socket: %s",
            sock_errstr(sock_errno));
   }
 
@@ -119,7 +119,7 @@ void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
 
   he = gethostbyname(sockdata->peer_name);
   if (he == NULL) {
-    THROW2(system_error, 0, "Failed to lookup hostname %s: %s",
+    THROWF(system_error, 0, "Failed to lookup hostname %s: %s",
         sockdata->peer_name, sock_errstr(sock_errno));
   }
 
@@ -132,7 +132,7 @@ void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
 
   if (connect(sock->sd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
     tcp_close(sock->sd);
-    THROW3(system_error, 0,
+    THROWF(system_error, 0,
            "Failed to connect socket to %s:%d (%s)",
            sockdata->peer_name, sockdata->peer_port, sock_errstr(sock_errno));
   }
@@ -171,12 +171,12 @@ void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
   server.sin_addr.s_addr = INADDR_ANY;
   server.sin_family = AF_INET;
   if ((sock->sd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    THROW1(system_error, 0, "Socket allocation failed: %s",
+    THROWF(system_error, 0, "Socket allocation failed: %s",
            sock_errstr(sock_errno));
 
   if (setsockopt
       (sock->sd, SOL_SOCKET, SO_REUSEADDR, (char *) &on, sizeof(on)))
-    THROW1(system_error, 0,
+    THROWF(system_error, 0,
            "setsockopt failed, cannot condition the socket: %s",
            sock_errstr(sock_errno));
 
@@ -190,7 +190,7 @@ void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
 
   if (bind(sock->sd, (struct sockaddr *) &server, sizeof(server)) == -1) {
     tcp_close(sock->sd);
-    THROW2(system_error, 0,
+    THROWF(system_error, 0,
            "Cannot bind to port %d: %s", sockdata->port,
            sock_errstr(sock_errno));
   }
@@ -198,7 +198,7 @@ void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
   XBT_DEBUG("Listen on port %d (sd=%d)", sockdata->port, sock->sd);
   if (listen(sock->sd, 5) < 0) {
     tcp_close(sock->sd);
-    THROW2(system_error, 0,
+    THROWF(system_error, 0,
            "Cannot listen on port %d: %s",
            sockdata->port, sock_errstr(sock_errno));
   }
@@ -231,7 +231,7 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
 
   if (sd == -1) {
     gras_socket_close(sock);
-    THROW1(system_error, 0,
+    THROWF(system_error, 0,
            "Accept failed (%s). Droping server socket.",
            sock_errstr(tmp_errno));
   }
@@ -239,7 +239,7 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
   if (setsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char *) &i, s)
       || setsockopt(sd, _gras_tcp_proto_number(), TCP_NODELAY, (char *) &i,
                     s))
-    THROW1(system_error, 0,
+    THROWF(system_error, 0,
            "setsockopt failed, cannot condition the socket: %s",
            sock_errstr(tmp_errno));
 
@@ -335,7 +335,7 @@ static XBT_INLINE void gras_trp_tcp_send(gras_socket_t sock,
 #endif
         continue;
 
-      THROW4(system_error, 0, "write(%d,%p,%ld) failed: %s",
+      THROWF(system_error, 0, "write(%d,%p,%ld) failed: %s",
              sock->sd, data, size, sock_errstr(sock_errno));
     }
 
@@ -343,7 +343,7 @@ static XBT_INLINE void gras_trp_tcp_send(gras_socket_t sock,
       size -= status;
       data += status;
     } else {
-      THROW1(system_error, 0, "file descriptor closed (%s)",
+      THROWF(system_error, 0, "file descriptor closed (%s)",
              sock_errstr(sock_errno));
     }
   }
@@ -374,7 +374,7 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
     status = tcp_read(sock->sd, data + got, (size_t) bufsize);
 
     if (status < 0) {
-      THROW7(system_error, 0,
+      THROWF(system_error, 0,
              "read(%d,%p,%d) from %s:%d failed: %s; got %d so far",
              sock->sd, data + got, (int) size, gras_socket_peer_name(sock),
              gras_socket_peer_port(sock), sock_errstr(sock_errno), got);
@@ -386,7 +386,7 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
       bufsize -= status;
       got += status;
     } else {
-      THROW1(system_error, errno,
+      THROWF(system_error, errno,
              "Socket closed by remote side (got %d bytes before this)",
              got);
     }

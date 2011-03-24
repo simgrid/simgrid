@@ -470,13 +470,13 @@ static void rctx_mkfile(void)
   xbt_str_trim(filename, NULL);
   OUT = fopen(filename, "w");
   if (!OUT) {
-    THROW3(system_error, errno, "%s: Cannot create file %s: %s",
+    THROWF(system_error, errno, "%s: Cannot create file %s: %s",
            rctx->filepos, filename, strerror(errno));
   }
   err = (fprintf(OUT, "%s", rctx->input->data) < 0);
   err = (fclose(OUT) == -1) || err;
   if (err) {
-    THROW3(system_error, errno, "%s: Cannot write file %s: %s",
+    THROWF(system_error, errno, "%s: Cannot write file %s: %s",
            rctx->filepos, filename, strerror(errno));
   }
   free(filename);
@@ -677,7 +677,7 @@ void *rctx_wait(void *r)
   rctx_dump(rctx, "wait");
 
   if (!rctx->is_stoppable)
-    THROW1(unknown_error, 0, "Cmd '%s' not started yet. Cannot wait it",
+    THROWF(unknown_error, 0, "Cmd '%s' not started yet. Cannot wait it",
            rctx->cmd);
 
   /* Wait for the child to die or the timeout to happen (or an armageddon to happen) */

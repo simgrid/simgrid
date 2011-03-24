@@ -28,7 +28,7 @@ int forwarder(int argc, char *argv[]);
 int client(int argc, char *argv[]);
 
 #define exception_msg       "Error for the client"
-#define exception_raising() THROW0(unknown_error,42,exception_msg)
+#define exception_raising() THROWF(unknown_error,42,exception_msg)
 
 static void exception_catching(void)
 {
@@ -44,7 +44,7 @@ static void exception_catching(void)
       gotit = 1;
     }
     if (!gotit) {
-      THROW0(unknown_error, 0, "Didn't got the remote exception!");
+      THROWF(unknown_error, 0, "Didn't got the remote exception!");
     }
     xbt_assert2(e.category == unknown_error,
                 "Got wrong category: %d (instead of %d)", e.category,
@@ -98,7 +98,7 @@ int client(int argc, char *argv[])
     toforwarder = gras_socket_client(argv[3], atoi(argv[4]));
   }
   CATCH(e) {
-    RETHROW0("Unable to connect to the server: %s");
+    RETHROWF("Unable to connect to the server: %s");
   }
   XBT_INFO("Connected to %s:%d.", host, port);
 
@@ -121,7 +121,7 @@ int client(int argc, char *argv[])
   }
   CATCH(e) {
     gras_socket_close(toserver);
-    RETHROW0("Failed to execute a PING rpc on the server: %s");
+    RETHROWF("Failed to execute a PING rpc on the server: %s");
   }
   exception_catching();
 
@@ -150,7 +150,7 @@ int client(int argc, char *argv[])
   }
 
   if (!gotit)
-    THROW0(unknown_error, 0, "Didn't got the remote exception!");
+    THROWF(unknown_error, 0, "Didn't got the remote exception!");
 
   XBT_INFO("Called the exception raising RPC");
   exception_catching();
@@ -167,7 +167,7 @@ int client(int argc, char *argv[])
       xbt_ex_free(e);
     }
     if (!gotit) {
-      THROW0(unknown_error, 0, "Didn't got the remote exception!");
+      THROWF(unknown_error, 0, "Didn't got the remote exception!");
     }
   }
   /* doxygen_resume */
@@ -183,7 +183,7 @@ int client(int argc, char *argv[])
       gotit = 1;
     }
     if (!gotit) {
-      THROW0(unknown_error, 0, "Didn't got the remote exception!");
+      THROWF(unknown_error, 0, "Didn't got the remote exception!");
     }
     xbt_assert1(e.value == 42, "Got wrong value: %d (!=42)", e.value);
     xbt_assert1(!strncmp(e.msg, exception_msg, strlen(exception_msg)),

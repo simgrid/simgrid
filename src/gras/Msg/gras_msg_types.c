@@ -204,7 +204,7 @@ gras_msgtype_t gras_msgtype_by_namev(const char *name, short int version)
     xbt_ex_free(e);
   }
   if (!found)
-    THROW1(not_found_error, 0, "No registred message of that name: %s",
+    THROWF(not_found_error, 0, "No registred message of that name: %s",
            name);
 
   free(namev);

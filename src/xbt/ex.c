@@ -251,7 +251,7 @@ XBT_TEST_UNIT("controlflow", test_controlflow, "basic nested control flow")
       if (n != 2)
         xbt_test_fail("M2: n=%d (!= 2)", n);
       n++;
-      THROW0(unknown_error, 0, "something");
+      THROWF(unknown_error, 0, "something");
     }
     CATCH(ex) {
       if (n != 3)
@@ -264,7 +264,7 @@ XBT_TEST_UNIT("controlflow", test_controlflow, "basic nested control flow")
       if (n != 5)
         xbt_test_fail("M2: n=%d (!= 5)", n);
       n++;
-      THROW0(unknown_error, 0, "something");
+      THROWF(unknown_error, 0, "something");
     }
     CATCH(ex) {
       if (n != 6)
@@ -290,7 +290,7 @@ XBT_TEST_UNIT("value", test_value, "exception value passing")
   xbt_ex_t ex;
 
   TRY {
-    THROW0(unknown_error, 2, "toto");
+    THROWF(unknown_error, 2, "toto");
   }
   CATCH(ex) {
     xbt_test_add("exception value passing");
@@ -314,7 +314,7 @@ XBT_TEST_UNIT("variables", test_variables, "variable value preservation")
   TRY {
     r2 = 5678;
     v2 = 5678;
-    THROW0(unknown_error, 0, "toto");
+    THROWF(unknown_error, 0, "toto");
   } CATCH(ex) {
     xbt_test_add("variable preservation");
     if (r1 != 1234)
@@ -340,7 +340,7 @@ XBT_TEST_UNIT("cleanup", test_cleanup, "cleanup handling")
   c = 0;
   TRY {
     v1 = 5678;
-    THROW0(1, 2, "blah");
+    THROWF(1, 2, "blah");
   } TRY_CLEANUP {
     if (v1 != 5678)
       xbt_test_fail("v1 = %d (!= 5678)", v1);

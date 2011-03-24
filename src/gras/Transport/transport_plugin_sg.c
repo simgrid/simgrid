@@ -140,31 +140,31 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
 
   /* make sure this socket will reach someone */
   if (!(peer = SIMIX_req_host_get_by_name(host)))
-    THROW1(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "Can't connect to %s: no such host.\n", host);
 
   if (!(hd = (gras_hostdata_t *) SIMIX_req_host_get_data(peer)))
-    THROW1(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "can't connect to %s: no process on this host",
            host);
 
   pr = find_port(hd, port);
 
   if (pr == NULL) {
-    THROW2(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "can't connect to %s:%d, no process listen on this port",
            host, port);
   }
 
   /* Ensure that the listener is expecting the kind of stuff we want to send */
   if (pr->meas && !sock->meas) {
-    THROW2(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "can't connect to %s:%d in regular mode, the process listen "
            "in measurement mode on this port", host,
            port);
   }
   if (!pr->meas && sock->meas) {
-    THROW2(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "can't connect to %s:%d in measurement mode, the process listen "
            "in regular mode on this port", host,
            port);
@@ -208,7 +208,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self, int port, gras_socket_t s
   pr = find_port(hd, port);
 
   if (pr)
-    THROW2(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "can't listen on address %s:%d: port already in use.",
            SIMIX_host_self_get_name(), port);
 
@@ -348,7 +348,7 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
                         &remote_socket, 60);
 
   if (remote_socket == NULL) {
-    THROW0(timeout_error, 0, "Timeout");
+    THROWF(timeout_error, 0, "Timeout");
   }
 
   remote_sock_data = (gras_trp_sg_sock_data_t *) remote_socket->data;
@@ -364,7 +364,7 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
   SIMIX_req_cond_wait(remote_sock_data->cond, remote_sock_data->mutex);
 
   if (msg_got->payl_size != size)
-    THROW5(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "Got %d bytes when %ld where expected (in %s->%s:%d)",
            msg_got->payl_size, size,
            SIMIX_req_host_get_name(sock_data->to_host),

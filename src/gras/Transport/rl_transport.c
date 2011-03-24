@@ -74,7 +74,7 @@ gras_socket_t gras_trp_select(double timeout)
       XBT_DEBUG("wakeup=%f now=%f", wakeup, now);
       if (now == -1 || now >= wakeup) {
         /* didn't find anything; no need to update _gras_lastly_selected_socket since its moredata is 0 (or we would have returned it directly) */
-        THROW1(timeout_error, 0,
+        THROWF(timeout_error, 0,
                "Timeout (%f) elapsed with selecting for incomming connexions",
                timeout);
       }
@@ -107,11 +107,11 @@ gras_socket_t gras_trp_select(double timeout)
       if (timeout > 0) {
         XBT_DEBUG("No socket to select onto. Sleep %f sec instead.", timeout);
         gras_os_sleep(timeout);
-        THROW1(timeout_error, 0,
+        THROWF(timeout_error, 0,
                "No socket to select onto. Sleep %f sec instead", timeout);
       } else {
         XBT_DEBUG("No socket to select onto. Return directly.");
-        THROW0(timeout_error, 0,
+        THROWF(timeout_error, 0,
                "No socket to select onto. Return directly.");
       }
     }
@@ -156,13 +156,13 @@ gras_socket_t gras_trp_select(double timeout)
         /* if we cared, we would have set an handler */
         continue;
       case EINVAL:             /* invalid value */
-        THROW3(system_error, EINVAL,
+        THROWF(system_error, EINVAL,
                "invalid select: nb fds: %d, timeout: %d.%d", max_fds,
                (int) tout.tv_sec, (int) tout.tv_usec);
       case ENOMEM:
         xbt_die("Malloc error during the select");
       default:
-        THROW2(system_error, errno, "Error during select: %s (%d)",
+        THROWF(system_error, errno, "Error during select: %s (%d)",
                strerror(errno), errno);
       }
       THROW_IMPOSSIBLE;
@@ -236,10 +236,10 @@ gras_socket_t gras_trp_select(double timeout)
 
   /* No socket found. Maybe we had timeout=0 and nothing to do */
   XBT_DEBUG("TIMEOUT");
-  THROW0(timeout_error, 0, "Timeout");
+  THROWF(timeout_error, 0, "Timeout");
 }
 
 void gras_trp_sg_setup(gras_trp_plugin_t plug)
 {
-  THROW0(mismatch_error, 0, "No SG transport on live platforms");
+  THROWF(mismatch_error, 0, "No SG transport on live platforms");
 }

@@ -81,7 +81,7 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name)
     xbt_ex_free(e);
   }
   if (!found)
-    THROW1(not_found_error, 0, "No registred datatype of that name: %s",
+    THROWF(not_found_error, 0, "No registred datatype of that name: %s",
            name);
 
   return res;

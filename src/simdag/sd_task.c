@@ -407,19 +407,19 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
   length = xbt_dynar_length(dynar);
 
   if (src == dst)
-    THROW1(arg_error, 0,
+    THROWF(arg_error, 0,
            "Cannot add a dependency between task '%s' and itself",
            SD_task_get_name(src));
 
   if (!__SD_task_is_not_scheduled(src) && !__SD_task_is_schedulable(src)
       && !__SD_task_is_scheduled_or_runnable(src))
-    THROW1(arg_error, 0,
+    THROWF(arg_error, 0,
            "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED or SD_RUNNABLE",
            SD_task_get_name(src));
 
   if (!__SD_task_is_not_scheduled(dst) && !__SD_task_is_schedulable(dst)
       && !__SD_task_is_scheduled_or_runnable(dst))
-    THROW1(arg_error, 0,
+    THROWF(arg_error, 0,
            "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED or SD_RUNNABLE",
            SD_task_get_name(dst));
 
@@ -433,7 +433,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
   }
 
   if (found)
-    THROW2(arg_error, 0,
+    THROWF(arg_error, 0,
            "A dependency already exists between task '%s' and task '%s'",
            SD_task_get_name(src), SD_task_get_name(dst));
 
@@ -529,7 +529,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
     }
   }
   if (!found)
-    THROW4(arg_error, 0,
+    THROWF(arg_error, 0,
            "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'",
            SD_task_get_name(src), SD_task_get_name(dst),
            SD_task_get_name(dst), SD_task_get_name(src));
@@ -600,7 +600,7 @@ void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
     found = (dependency->dst == dst);
   }
   if (!found)
-    THROW2(arg_error, 0, "No dependency found between task '%s' and '%s'",
+    THROWF(arg_error, 0, "No dependency found between task '%s' and '%s'",
            SD_task_get_name(src), SD_task_get_name(dst));
   return dependency->data;
 }
@@ -646,7 +646,7 @@ void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
   xbt_assert0(task != NULL, "Invalid parameter");
 
   if (state & SD_NOT_SCHEDULED)
-    THROW0(arg_error, 0,
+    THROWF(arg_error, 0,
            "Cannot add a watch point for state SD_NOT_SCHEDULED");
 
   task->watch_points = task->watch_points | state;
@@ -728,7 +728,7 @@ static XBT_INLINE void SD_task_do_schedule(SD_task_t task)
   SD_CHECK_INIT_DONE();
 
   if (!__SD_task_is_not_scheduled(task) && !__SD_task_is_schedulable(task))
-    THROW1(arg_error, 0, "Task '%s' has already been scheduled",
+    THROWF(arg_error, 0, "Task '%s' has already been scheduled",
            SD_task_get_name(task));
 
   /* update the task state */
@@ -815,7 +815,7 @@ void SD_task_unschedule(SD_task_t task)
       task->state_set != sd_global->runnable_task_set &&
       task->state_set != sd_global->running_task_set &&
       task->state_set != sd_global->failed_task_set)
-    THROW1(arg_error, 0,
+    THROWF(arg_error, 0,
            "Task %s: the state must be SD_SCHEDULED, SD_RUNNABLE, SD_RUNNING or SD_FAILED",
            SD_task_get_name(task));
 
@@ -842,7 +842,7 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
   SD_CHECK_INIT_DONE();
   if (!__SD_task_is_scheduled_or_runnable(task)
       && !__SD_task_is_in_fifo(task))
-    THROW1(arg_error, 0,
+    THROWF(arg_error, 0,
            "Task '%s' must be SD_SCHEDULED, SD_RUNNABLE or SD_IN_FIFO",
            SD_task_get_name(task));
 

@@ -433,7 +433,7 @@ void xbt_cfg_check(xbt_cfg_t cfg)
     size = xbt_dynar_length(variable->content);
     if (variable->min > size) {
       xbt_dict_cursor_free(&cursor);
-      THROW4(mismatch_error, 0,
+      THROWF(mismatch_error, 0,
              "Config elem %s needs at least %d %s, but there is only %d values.",
              name, variable->min, xbt_cfgelm_type_name[variable->type],
              size);
@@ -441,7 +441,7 @@ void xbt_cfg_check(xbt_cfg_t cfg)
 
     if (variable->max > 0 && variable->max < size) {
       xbt_dict_cursor_free(&cursor);
-      THROW4(mismatch_error, 0,
+      THROWF(mismatch_error, 0,
              "Config elem %s accepts at most %d %s, but there is %d values.",
              name, variable->max, xbt_cfgelm_type_name[variable->type],
              size);
@@ -460,7 +460,7 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg,
   res = xbt_dict_get_or_null((xbt_dict_t) cfg, name);
   if (!res) {
     xbt_cfg_help(cfg);
-    THROW1(not_found_error, 0,
+    THROWF(not_found_error, 0,
            "No registered variable '%s' in this config set", name);
   }
 
@@ -487,7 +487,7 @@ e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name)
 
   variable = xbt_dict_get_or_null((xbt_dict_t) cfg, name);
   if (!variable)
-    THROW1(not_found_error, 0,
+    THROWF(not_found_error, 0,
            "Can't get the type of '%s' since this variable does not exist",
            name);
 
@@ -519,7 +519,7 @@ void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa)
   } CATCH(e) {
     if (e.category == not_found_error) {
       xbt_ex_free(e);
-      THROW1(not_found_error, 0,
+      THROWF(not_found_error, 0,
              "Can't set the property '%s' since it's not registered",
              name);
     }
@@ -675,7 +675,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
       free(optionlist_cpy);
       if (e.category == not_found_error) {
         xbt_ex_free(e);
-        THROW1(not_found_error, 0,
+        THROWF(not_found_error, 0,
                "No registered variable corresponding to '%s'.", name);
       }
       RETHROW;
@@ -728,7 +728,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
         break;
 
       default:
-        THROW1(unknown_error, 0, "Type of config element %s is not valid.",
+        THROWF(unknown_error, 0, "Type of config element %s is not valid.",
                name);
       }
     }
@@ -841,7 +841,7 @@ void xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val)
     if (variable->max
         && xbt_dynar_length(variable->content) ==
         (unsigned long) variable->max)
-      THROW3(mismatch_error, 0,
+      THROWF(mismatch_error, 0,
              "Cannot add value %d to the config element %s since it's already full (size=%d)",
              val, name, variable->max);
 
@@ -875,7 +875,7 @@ void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val)
   } else {
     if (variable->max
         && xbt_dynar_length(variable->content) == variable->max)
-      THROW3(mismatch_error, 0,
+      THROWF(mismatch_error, 0,
              "Cannot add value %f to the config element %s since it's already full (size=%d)",
              val, name, variable->max);
 
@@ -920,7 +920,7 @@ void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val)
   } else {
     if (variable->max
         && xbt_dynar_length(variable->content) == variable->max)
-      THROW3(mismatch_error, 0,
+      THROWF(mismatch_error, 0,
              "Cannot add value %s to the config element %s since it's already full (size=%d)",
              name, val, variable->max);
 
@@ -961,7 +961,7 @@ xbt_cfg_set_peer(xbt_cfg_t cfg, const char *name, const char *peer,
   } else {
     if (variable->max
         && xbt_dynar_length(variable->content) == variable->max)
-      THROW4(mismatch_error, 0,
+      THROWF(mismatch_error, 0,
              "Cannot add value %s:%d to the config element %s since it's already full (size=%d)",
              peer, port, name, variable->max);
 
@@ -991,7 +991,7 @@ void xbt_cfg_rm_int(xbt_cfg_t cfg, const char *name, int val)
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
 
   if (xbt_dynar_length(variable->content) == variable->min)
-    THROW3(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "Cannot remove value %d from the config element %s since it's already at its minimal size (=%d)",
            val, name, variable->min);
 
@@ -1004,7 +1004,7 @@ void xbt_cfg_rm_int(xbt_cfg_t cfg, const char *name, int val)
     }
   }
 
-  THROW2(not_found_error, 0,
+  THROWF(not_found_error, 0,
          "Can't remove the value %d of config element %s: value not found.",
          val, name);
 }
@@ -1025,7 +1025,7 @@ void xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, double val)
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_double);
 
   if (xbt_dynar_length(variable->content) == variable->min)
-    THROW3(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "Cannot remove value %f from the config element %s since it's already at its minimal size (=%d)",
            val, name, variable->min);
 
@@ -1038,7 +1038,7 @@ void xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, double val)
     }
   }
 
-  THROW2(not_found_error, 0,
+  THROWF(not_found_error, 0,
          "Can't remove the value %f of config element %s: value not found.",
          val, name);
 }
@@ -1058,7 +1058,7 @@ void xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, const char *val)
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
 
   if (xbt_dynar_length(variable->content) == variable->min)
-    THROW3(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "Cannot remove value %s from the config element %s since it's already at its minimal size (=%d)",
            name, val, variable->min);
 
@@ -1071,7 +1071,7 @@ void xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, const char *val)
     }
   }
 
-  THROW2(not_found_error, 0,
+  THROWF(not_found_error, 0,
          "Can't remove the value %s of config element %s: value not found.",
          val, name);
 }
@@ -1095,7 +1095,7 @@ xbt_cfg_rm_peer(xbt_cfg_t cfg, const char *name, const char *peer,
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_peer);
 
   if (xbt_dynar_length(variable->content) == variable->min)
-    THROW4(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "Cannot remove value %s:%d from the config element %s since it's already at its minimal size (=%d)",
            peer, port, name, variable->min);
 
@@ -1108,7 +1108,7 @@ xbt_cfg_rm_peer(xbt_cfg_t cfg, const char *name, const char *peer,
     }
   }
 
-  THROW3(not_found_error, 0,
+  THROWF(not_found_error, 0,
          "Can't remove the value %s:%d of config element %s: value not found.",
          peer, port, name);
 }
@@ -1123,7 +1123,7 @@ void xbt_cfg_rm_at(xbt_cfg_t cfg, const char *name, int pos)
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_any);
 
   if (xbt_dynar_length(variable->content) == variable->min)
-    THROW3(mismatch_error, 0,
+    THROWF(mismatch_error, 0,
            "Cannot remove %dth value from the config element %s since it's already at its minimal size (=%d)",
            pos, name, variable->min);
 
@@ -1150,7 +1150,7 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name)
       RETHROW;
 
     xbt_ex_free(e);
-    THROW1(not_found_error, 0,
+    THROWF(not_found_error, 0,
            "Can't empty  '%s' since this config element does not exist",
            name);
   }
@@ -1309,7 +1309,7 @@ xbt_dynar_t xbt_cfg_get_dynar(xbt_cfg_t cfg, const char *name)
   } CATCH(e) {
     if (e.category == not_found_error) {
       xbt_ex_free(e);
-      THROW1(not_found_error, 0,
+      THROWF(not_found_error, 0,
              "No registered variable %s in this config set", name);
     }
     RETHROW;

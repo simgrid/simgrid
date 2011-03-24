@@ -47,7 +47,7 @@ static XBT_INLINE void _check_inbound_idx(xbt_dynar_t dynar, int idx)
 {
   if (idx < 0 || idx >= dynar->used) {
     _dynar_unlock(dynar);
-    THROW2(bound_error, idx,
+    THROWF(bound_error, idx,
            "dynar is not that long. You asked %d, but it's only %lu long",
            (int) (idx), (unsigned long) dynar->used);
   }
@@ -58,7 +58,7 @@ static XBT_INLINE void _check_sloppy_inbound_idx(xbt_dynar_t dynar,
 {
   if (idx > dynar->used) {
     _dynar_unlock(dynar);
-    THROW2(bound_error, idx,
+    THROWF(bound_error, idx,
            "dynar is not that long. You asked %d, but it's only %lu long (could have been equal to it)",
            (int) (idx), (unsigned long) dynar->used);
   }
@@ -68,7 +68,7 @@ static XBT_INLINE void _check_populated_dynar(xbt_dynar_t dynar)
 {
   if (dynar->used == 0) {
     _dynar_unlock(dynar);
-    THROW1(bound_error, 0, "dynar %p is empty", dynar);
+    THROWF(bound_error, 0, "dynar %p is empty", dynar);
   }
 }
 
@@ -571,7 +571,7 @@ unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void *const elem)
     }
 
   _dynar_unlock(dynar);
-  THROW2(not_found_error, 0, "Element %p not part of dynar %p", elem,
+  THROWF(not_found_error, 0, "Element %p not part of dynar %p", elem,
          dynar);
 }
 

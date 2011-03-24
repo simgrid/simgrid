@@ -882,7 +882,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
     if (i < xbt_log_priority_infinite) {
       set->thresh = (e_xbt_log_priority_t) i;
     } else {
-      THROW1(arg_error, 0,
+      THROWF(arg_error, 0,
              "Unknown priority name: %s (must be one of: trace,debug,verbose,info,warning,error,critical)",
              eq + 1);
     }
@@ -913,7 +913,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
     if (!strncmp(neweq, "file:", 5)) {
       set->appender = xbt_log_appender_file_new(neweq + 5);
     } else {
-      THROW1(arg_error, 0, "Unknown appender log type: '%s'", neweq);
+      THROWF(arg_error, 0, "Unknown appender log type: '%s'", neweq);
     }
     free(neweq);
   } else if (!strncmp(dot + 1, "fmt", (size_t) (eq - dot - 1))) {
@@ -921,7 +921,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   } else {
     char buff[512];
     snprintf(buff, min(512, eq - dot), "%s", dot + 1);
-    THROW1(arg_error, 0, "Unknown setting of the log category: '%s'",
+    THROWF(arg_error, 0, "Unknown setting of the log category: '%s'",
            buff);
   }
   set->catname = (char *) xbt_malloc(dot - name + 1);

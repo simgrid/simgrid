@@ -58,7 +58,7 @@ int server(int argc, char *argv[])
     sock = gras_socket_server(port);
   }
   CATCH(e) {
-    RETHROW0("Unable to establish a server socket: %s");
+    RETHROWF("Unable to establish a server socket: %s");
   }
 
   /* 4. Register the known messages and payloads. */

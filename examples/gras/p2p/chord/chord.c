@@ -142,13 +142,13 @@ static int node_cb_get_suc_handler(gras_msg_cb_ctx_t ctx,
                                        globals->finger[contact].port);
       }
       CATCH(e) {
-        RETHROW0("Unable to connect!: %s");
+        RETHROWF("Unable to connect!: %s");
       }
       TRY {
         gras_msg_send(temp_sock, "chord_get_suc", &asking);
       }
       CATCH(e) {
-        RETHROW0("Unable to ask!: %s");
+        RETHROWF("Unable to ask!: %s");
       }
       gras_msg_wait(10., "chord_rep_suc", &temp_sock, &outgoing);
     }
@@ -159,7 +159,7 @@ static int node_cb_get_suc_handler(gras_msg_cb_ctx_t ctx,
     XBT_INFO("Successor information sent!");
   }
   CATCH(e) {
-    RETHROW2("%s:Timeout sending successor information to %s: %s",
+    RETHROWF("%s:Timeout sending successor information to %s: %s",
              globals->host, gras_socket_peer_name(expeditor));
   }
   gras_socket_close(expeditor);
@@ -210,7 +210,7 @@ static void fix_fingers()
   TRY {
     temp_sock = gras_socket_client(globals->host, globals->port);
   } CATCH(e) {
-    RETHROW0("Unable to contact known host: %s");
+    RETHROWF("Unable to contact known host: %s");
   }
 
   get_suc_msg.id = globals->id;
@@ -218,14 +218,14 @@ static void fix_fingers()
     gras_msg_send(temp_sock, "chord_get_suc", &get_suc_msg);
   } CATCH(e) {
     gras_socket_close(temp_sock);
-    RETHROW0("Unable to contact known host to get successor!: %s");
+    RETHROWF("Unable to contact known host to get successor!: %s");
   }
 
   TRY {
     XBT_INFO("Waiting for reply!");
     gras_msg_wait(6000, "chord_rep_suc", &temp_sock2, &rep_suc_msg);
   } CATCH(e) {
-    RETHROW1("%s: Error waiting for successor:%s", globals->host);
+    RETHROWF("%s: Error waiting for successor:%s", globals->host);
   }
   globals->finger[0].id = rep_suc_msg.id;
   snprintf(globals->finger[0].host, 1024, rep_suc_msg.host);
@@ -335,7 +335,7 @@ int node(int argc, char **argv)
       temp_sock = gras_socket_client(other_host, other_port);
     }
     CATCH(e) {
-      RETHROW0("Unable to contact known host: %s");
+      RETHROWF("Unable to contact known host: %s");
     }
 
     get_suc_msg.id = globals->id;
@@ -344,7 +344,7 @@ int node(int argc, char **argv)
     }
     CATCH(e) {
       gras_socket_close(temp_sock);
-      RETHROW0("Unable to contact known host to get successor!: %s");
+      RETHROWF("Unable to contact known host to get successor!: %s");
     }
 
     TRY {
@@ -352,7 +352,7 @@ int node(int argc, char **argv)
       gras_msg_wait(10., "chord_rep_suc", &temp_sock2, &rep_suc_msg);
     }
     CATCH(e) {
-      RETHROW1("%s: Error waiting for successor:%s", globals->host);
+      RETHROWF("%s: Error waiting for successor:%s", globals->host);
     }
     globals->finger[0].id = rep_suc_msg.id;
     snprintf(globals->finger[0].host, 1024, rep_suc_msg.host);
@@ -365,7 +365,7 @@ int node(int argc, char **argv)
                                      globals->finger[0].port);
     }
     CATCH(e) {
-      RETHROW0("Unable to contact successor: %s");
+      RETHROWF("Unable to contact successor: %s");
     }
 
     notify_msg.id = globals->id;
@@ -375,7 +375,7 @@ int node(int argc, char **argv)
       gras_msg_send(temp_sock, "chord_notify", &notify_msg);
     }
     CATCH(e) {
-      RETHROW0("Unable to notify successor! %s");
+      RETHROWF("Unable to notify successor! %s");
     }
   }
 

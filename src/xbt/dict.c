@@ -323,7 +323,7 @@ XBT_INLINE void *xbt_dict_get_ext(xbt_dict_t dict, const char *key,
   }
 
   if (current == NULL)
-    THROW2(not_found_error, 0, "key %.*s not found", key_len, key);
+    THROWF(not_found_error, 0, "key %.*s not found", key_len, key);
 
   return current->content;
 }
@@ -401,7 +401,7 @@ XBT_INLINE void *xbt_dict_get(xbt_dict_t dict, const char *key)
     current = current->next;
 
   if (current == NULL)
-    THROW1(not_found_error, 0, "key %s not found", key);
+    THROWF(not_found_error, 0, "key %s not found", key);
 
   return current->content;
 }
@@ -457,7 +457,7 @@ XBT_INLINE void xbt_dict_remove_ext(xbt_dict_t dict, const char *key,
   }
 
   if (current == NULL)
-    THROW2(not_found_error, 0, "key %.*s not found", key_len, key);
+    THROWF(not_found_error, 0, "key %.*s not found", key_len, key);
 
   if (previous != NULL) {
     previous->next = current->next;
@@ -591,7 +591,7 @@ XBT_INLINE void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key)
   }
 
   if (current == NULL)
-    THROW1(not_found_error, 0, "key %zu not found", key);
+    THROWF(not_found_error, 0, "key %zu not found", key);
 
   if (previous != NULL) {
     previous->next = current->next;
@@ -939,7 +939,7 @@ static void search_not_found(xbt_dict_t head, const char *data)
 
   TRY {
     data = xbt_dict_get(head, data);
-    THROW1(unknown_error, 0,
+    THROWF(unknown_error, 0,
            "Found something which shouldn't be there (%s)", data);
   } CATCH(e) {
     if (e.category != not_found_error)

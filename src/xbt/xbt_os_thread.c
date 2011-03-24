@@ -88,7 +88,7 @@ void xbt_os_thread_mod_preinit(void)
     return;
 
   if ((errcode = pthread_key_create(&xbt_self_thread_key, NULL)))
-    THROW0(system_error, errcode,
+    THROWF(system_error, errcode,
            "pthread_key_create failed for xbt_self_thread_key");
   
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
@@ -99,7 +99,7 @@ void xbt_os_thread_mod_preinit(void)
   XBT_RUNNING_CTX_INITIALIZE(main_thread->running_ctx);
 
   if ((errcode = pthread_setspecific(xbt_self_thread_key, main_thread)))
-    THROW0(system_error, errcode,
+    THROWF(system_error, errcode,
            "pthread_setspecific failed for xbt_self_thread_key");
 
   
@@ -121,7 +121,7 @@ void xbt_os_thread_mod_postexit(void)
   //   int errcode;
 
   //   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
-  //     THROW0(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
+  //     THROWF(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
   free(main_thread->running_ctx);
   free(main_thread);
   main_thread = NULL;
@@ -147,7 +147,7 @@ static void *wrapper_start_routine(void *s)
   int errcode;
 
   if ((errcode = pthread_setspecific(xbt_self_thread_key, t)))
-    THROW0(system_error, errcode,
+    THROWF(system_error, errcode,
            "pthread_setspecific failed for xbt_self_thread_key");
 
   void *res = (*(t->start_routine)) (t->param);
@@ -174,7 +174,7 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
   
   if ((errcode = pthread_create(&(res_thread->t), NULL,
                                 wrapper_start_routine, res_thread)))
-    THROW1(system_error, errcode,
+    THROWF(system_error, errcode,
            "pthread_create failed: %s", strerror(errcode));
 
   return res_thread;
@@ -197,7 +197,7 @@ void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
   int errcode;
 
   if ((errcode = pthread_join(thread->t, thread_return)))
-    THROW1(system_error, errcode, "pthread_join failed: %s",
+    THROWF(system_error, errcode, "pthread_join failed: %s",
            strerror(errcode));
   xbt_os_thread_free_thread_data(thread);
 }
@@ -251,7 +251,7 @@ xbt_os_mutex_t xbt_os_mutex_init(void)
   int errcode;
 
   if ((errcode = pthread_mutex_init(&(res->m), NULL)))
-    THROW1(system_error, errcode, "pthread_mutex_init() failed: %s",
+    THROWF(system_error, errcode, "pthread_mutex_init() failed: %s",
            strerror(errcode));
 
   return res;
@@ -262,7 +262,7 @@ void xbt_os_mutex_acquire(xbt_os_mutex_t mutex)
   int errcode;
 
   if ((errcode = pthread_mutex_lock(&(mutex->m))))
-    THROW2(system_error, errcode, "pthread_mutex_lock(%p) failed: %s",
+    THROWF(system_error, errcode, "pthread_mutex_lock(%p) failed: %s",
            mutex, strerror(errcode));
 }
 
@@ -281,9 +281,9 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
     case 0:
       return;
     case ETIMEDOUT:
-      THROW1(timeout_error, 0, "mutex %p not ready", mutex);
+      THROWF(timeout_error, 0, "mutex %p not ready", mutex);
     default:
-      THROW2(system_error, errcode,
+      THROWF(system_error, errcode,
              "xbt_mutex_timedacquire(%p) failed: %s", mutex,
              strerror(errcode));
     }
@@ -319,11 +319,11 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
       return;
 
     case ETIMEDOUT:
-      THROW2(timeout_error, delay,
+      THROWF(timeout_error, delay,
              "mutex %p wasn't signaled before timeout (%f)", mutex, delay);
 
     default:
-      THROW3(system_error, errcode,
+      THROWF(system_error, errcode,
              "pthread_mutex_timedlock(%p,%f) failed: %s", mutex, delay,
              strerror(errcode));
     }
@@ -335,7 +335,7 @@ void xbt_os_mutex_release(xbt_os_mutex_t mutex)
   int errcode;
 
   if ((errcode = pthread_mutex_unlock(&(mutex->m))))
-    THROW2(system_error, errcode, "pthread_mutex_unlock(%p) failed: %s",
+    THROWF(system_error, errcode, "pthread_mutex_unlock(%p) failed: %s",
            mutex, strerror(errcode));
 }
 
@@ -347,7 +347,7 @@ void xbt_os_mutex_destroy(xbt_os_mutex_t mutex)
     return;
 
   if ((errcode = pthread_mutex_destroy(&(mutex->m))))
-    THROW2(system_error, errcode, "pthread_mutex_destroy(%p) failed: %s",
+    THROWF(system_error, errcode, "pthread_mutex_destroy(%p) failed: %s",
            mutex, strerror(errcode));
   free(mutex);
 }
@@ -363,7 +363,7 @@ xbt_os_cond_t xbt_os_cond_init(void)
   xbt_os_cond_t res = xbt_new(s_xbt_os_cond_t, 1);
   int errcode;
   if ((errcode = pthread_cond_init(&(res->c), NULL)))
-    THROW1(system_error, errcode, "pthread_cond_init() failed: %s",
+    THROWF(system_error, errcode, "pthread_cond_init() failed: %s",
            strerror(errcode));
 
   return res;
@@ -373,7 +373,7 @@ void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex)
 {
   int errcode;
   if ((errcode = pthread_cond_wait(&(cond->c), &(mutex->m))))
-    THROW3(system_error, errcode, "pthread_cond_wait(%p,%p) failed: %s",
+    THROWF(system_error, errcode, "pthread_cond_wait(%p,%p) failed: %s",
            cond, mutex, strerror(errcode));
 }
 
@@ -397,11 +397,11 @@ void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex,
     case 0:
       return;
     case ETIMEDOUT:
-      THROW3(timeout_error, errcode,
+      THROWF(timeout_error, errcode,
              "condition %p (mutex %p) wasn't signaled before timeout (%f)",
              cond, mutex, delay);
     default:
-      THROW4(system_error, errcode,
+      THROWF(system_error, errcode,
              "pthread_cond_timedwait(%p,%p,%f) failed: %s", cond, mutex,
              delay, strerror(errcode));
     }
@@ -412,7 +412,7 @@ void xbt_os_cond_signal(xbt_os_cond_t cond)
 {
   int errcode;
   if ((errcode = pthread_cond_signal(&(cond->c))))
-    THROW2(system_error, errcode, "pthread_cond_signal(%p) failed: %s",
+    THROWF(system_error, errcode, "pthread_cond_signal(%p) failed: %s",
            cond, strerror(errcode));
 }
 
@@ -420,7 +420,7 @@ void xbt_os_cond_broadcast(xbt_os_cond_t cond)
 {
   int errcode;
   if ((errcode = pthread_cond_broadcast(&(cond->c))))
-    THROW2(system_error, errcode, "pthread_cond_broadcast(%p) failed: %s",
+    THROWF(system_error, errcode, "pthread_cond_broadcast(%p) failed: %s",
            cond, strerror(errcode));
 }
 
@@ -432,7 +432,7 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond)
     return;
 
   if ((errcode = pthread_cond_destroy(&(cond->c))))
-    THROW2(system_error, errcode, "pthread_cond_destroy(%p) failed: %s",
+    THROWF(system_error, errcode, "pthread_cond_destroy(%p) failed: %s",
            cond, strerror(errcode));
   free(cond);
 }
@@ -465,7 +465,7 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
    */
 #ifdef HAVE_SEM_INIT
   if (sem_init(&(res->s), 0, value) != 0)
-    THROW1(system_error, errno, "sem_init() failed: %s", strerror(errno));
+    THROWF(system_error, errno, "sem_init() failed: %s", strerror(errno));
   res->ps = &(res->s);
 
 #else                           /* damn, no sem_init(). Reimplement it */
@@ -481,11 +481,11 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
     res->ps = sem_open(res->name, O_CREAT, 0644, 1);
   }
   if ((res->ps == (sem_t *) SEM_FAILED))
-    THROW1(system_error, errno, "sem_open() failed: %s", strerror(errno));
+    THROWF(system_error, errno, "sem_open() failed: %s", strerror(errno));
 
   /* Remove the name from the semaphore namespace: we never join on it */
   if (sem_unlink(res->name) < 0)
-    THROW1(system_error, errno, "sem_unlink() failed: %s",
+    THROWF(system_error, errno, "sem_unlink() failed: %s",
            strerror(errno));
 
 #endif
@@ -496,9 +496,9 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
 void xbt_os_sem_acquire(xbt_os_sem_t sem)
 {
   if (!sem)
-    THROW0(arg_error, EINVAL, "Cannot acquire of the NULL semaphore");
+    THROWF(arg_error, EINVAL, "Cannot acquire of the NULL semaphore");
   if (sem_wait(sem->ps) < 0)
-    THROW1(system_error, errno, "sem_wait() failed: %s", strerror(errno));
+    THROWF(system_error, errno, "sem_wait() failed: %s", strerror(errno));
 }
 
 void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
@@ -506,7 +506,7 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
   int errcode;
 
   if (!sem)
-    THROW0(arg_error, EINVAL, "Cannot acquire of the NULL semaphore");
+    THROWF(arg_error, EINVAL, "Cannot acquire of the NULL semaphore");
 
   if (delay < 0) {
     xbt_os_sem_acquire(sem);
@@ -517,9 +517,9 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
     case 0:
       return;
     case ETIMEDOUT:
-      THROW1(timeout_error, 0, "semaphore %p not ready", sem);
+      THROWF(timeout_error, 0, "semaphore %p not ready", sem);
     default:
-      THROW2(system_error, errcode,
+      THROWF(system_error, errcode,
              "xbt_os_sem_timedacquire(%p) failed: %s", sem,
              strerror(errcode));
     }
@@ -551,12 +551,12 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
       return;
 
     case ETIMEDOUT:
-      THROW2(timeout_error, delay,
+      THROWF(timeout_error, delay,
              "semaphore %p wasn't signaled before timeout (%f)", sem,
              delay);
 
     default:
-      THROW3(system_error, errcode, "sem_timedwait(%p,%f) failed: %s", sem,
+      THROWF(system_error, errcode, "sem_timedwait(%p,%f) failed: %s", sem,
              delay, strerror(errcode));
     }
   }
@@ -565,24 +565,24 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
 void xbt_os_sem_release(xbt_os_sem_t sem)
 {
   if (!sem)
-    THROW0(arg_error, EINVAL, "Cannot release of the NULL semaphore");
+    THROWF(arg_error, EINVAL, "Cannot release of the NULL semaphore");
 
   if (sem_post(sem->ps) < 0)
-    THROW1(system_error, errno, "sem_post() failed: %s", strerror(errno));
+    THROWF(system_error, errno, "sem_post() failed: %s", strerror(errno));
 }
 
 void xbt_os_sem_destroy(xbt_os_sem_t sem)
 {
   if (!sem)
-    THROW0(arg_error, EINVAL, "Cannot destroy the NULL sempahore");
+    THROWF(arg_error, EINVAL, "Cannot destroy the NULL sempahore");
 
 #ifdef HAVE_SEM_INIT
   if (sem_destroy(sem->ps) < 0)
-    THROW1(system_error, errno, "sem_destroy() failed: %s",
+    THROWF(system_error, errno, "sem_destroy() failed: %s",
            strerror(errno));
 #else
   if (sem_close(sem->ps) < 0)
-    THROW1(system_error, errno, "sem_close() failed: %s", strerror(errno));
+    THROWF(system_error, errno, "sem_close() failed: %s", strerror(errno));
   xbt_free(sem->name);
 
 #endif
@@ -592,11 +592,11 @@ void xbt_os_sem_destroy(xbt_os_sem_t sem)
 void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
 {
   if (!sem)
-    THROW0(arg_error, EINVAL,
+    THROWF(arg_error, EINVAL,
            "Cannot get the value of the NULL semaphore");
 
   if (sem_getvalue(&(sem->s), svalue) < 0)
-    THROW1(system_error, errno, "sem_getvalue() failed: %s",
+    THROWF(system_error, errno, "sem_getvalue() failed: %s",
            strerror(errno));
 }
 
@@ -635,7 +635,7 @@ void xbt_os_thread_mod_postexit(void)
 {
 
   if (!TlsFree(xbt_self_thread_key))
-    THROW0(system_error, (int) GetLastError(),
+    THROWF(system_error, (int) GetLastError(),
            "TlsFree() failed to cleanup the thread submodule");
 }
 
@@ -651,7 +651,7 @@ static DWORD WINAPI wrapper_start_routine(void *s)
   DWORD *rv;
 
   if (!TlsSetValue(xbt_self_thread_key, t))
-    THROW0(system_error, (int) GetLastError(),
+    THROWF(system_error, (int) GetLastError(),
            "TlsSetValue of data describing the created thread failed");
 
   rv = (DWORD *) ((t->start_routine) (t->param));
@@ -679,7 +679,7 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
 
   if (!t->handle) {
     xbt_free(t);
-    THROW0(system_error, (int) GetLastError(), "CreateThread failed");
+    THROWF(system_error, (int) GetLastError(), "CreateThread failed");
   }
 
   return t;
@@ -700,13 +700,13 @@ void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
 {
 
   if (WAIT_OBJECT_0 != WaitForSingleObject(thread->handle, INFINITE))
-    THROW0(system_error, (int) GetLastError(),
+    THROWF(system_error, (int) GetLastError(),
            "WaitForSingleObject failed");
 
   if (thread_return) {
 
     if (!GetExitCodeThread(thread->handle, (DWORD *) (*thread_return)))
-      THROW0(system_error, (int) GetLastError(),
+      THROWF(system_error, (int) GetLastError(),
              "GetExitCodeThread failed");
   }
 
@@ -752,7 +752,7 @@ void xbt_os_thread_yield(void)
 void xbt_os_thread_cancel(xbt_os_thread_t t)
 {
   if (!TerminateThread(t->handle, 0))
-    THROW0(system_error, (int) GetLastError(), "TerminateThread failed");
+    THROWF(system_error, (int) GetLastError(), "TerminateThread failed");
 }
 
 /****** mutex related functions ******/
@@ -831,7 +831,7 @@ xbt_os_cond_t xbt_os_cond_init(void)
   if (!res->events[SIGNAL]) {
     DeleteCriticalSection(&res->waiters_count_lock);
     free(res);
-    THROW0(system_error, 0, "CreateEvent failed for the signals");
+    THROWF(system_error, 0, "CreateEvent failed for the signals");
   }
 
   /* Create a manual-reset event. */
@@ -842,7 +842,7 @@ xbt_os_cond_t xbt_os_cond_init(void)
     DeleteCriticalSection(&res->waiters_count_lock);
     CloseHandle(res->events[SIGNAL]);
     free(res);
-    THROW0(system_error, 0, "CreateEvent failed for the broadcasts");
+    THROWF(system_error, 0, "CreateEvent failed for the broadcasts");
   }
 
   return res;
@@ -866,7 +866,7 @@ void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex)
   wait_result = WaitForMultipleObjects(2, cond->events, FALSE, INFINITE);
 
   if (wait_result == WAIT_FAILED)
-    THROW0(system_error, 0,
+    THROWF(system_error, 0,
            "WaitForMultipleObjects failed, so we cannot wait on the condition");
 
   /* we have a signal lock the condition */
@@ -885,7 +885,7 @@ void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex)
    */
   if (is_last_waiter)
     if (!ResetEvent(cond->events[BROADCAST]))
-      THROW0(system_error, 0, "ResetEvent failed");
+      THROWF(system_error, 0, "ResetEvent failed");
 
   /* relock the mutex associated with the condition in accordance with the posix thread specification */
   EnterCriticalSection(&mutex->lock);
@@ -919,11 +919,11 @@ void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex,
 
     switch (wait_result) {
     case WAIT_TIMEOUT:
-      THROW3(timeout_error, GetLastError(),
+      THROWF(timeout_error, GetLastError(),
              "condition %p (mutex %p) wasn't signaled before timeout (%f)",
              cond, mutex, delay);
     case WAIT_FAILED:
-      THROW0(system_error, GetLastError(),
+      THROWF(system_error, GetLastError(),
              "WaitForMultipleObjects failed, so we cannot wait on the condition");
     }
 
@@ -943,7 +943,7 @@ void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex,
      */
     if (is_last_waiter)
       if (!ResetEvent(cond->events[BROADCAST]))
-        THROW0(system_error, 0, "ResetEvent failed");
+        THROWF(system_error, 0, "ResetEvent failed");
 
     /* relock the mutex associated with the condition in accordance with the posix thread specification */
     EnterCriticalSection(&mutex->lock);
@@ -961,7 +961,7 @@ void xbt_os_cond_signal(xbt_os_cond_t cond)
 
   if (have_waiters)
     if (!SetEvent(cond->events[SIGNAL]))
-      THROW0(system_error, 0, "SetEvent failed");
+      THROWF(system_error, 0, "SetEvent failed");
 
   xbt_os_thread_yield();
 }
@@ -996,7 +996,7 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond)
   xbt_free(cond);
 
   if (error)
-    THROW0(system_error, 0, "Error while destroying the condition");
+    THROWF(system_error, 0, "Error while destroying the condition");
 }
 
 typedef struct xbt_os_sem_ {
@@ -1014,14 +1014,14 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
   xbt_os_sem_t res;
 
   if (value > INT_MAX)
-    THROW1(arg_error, value,
+    THROWF(arg_error, value,
            "Semaphore initial value too big: %ud cannot be stored as a signed int",
            value);
 
   res = (xbt_os_sem_t) xbt_new0(s_xbt_os_sem_t, 1);
 
   if (!(res->h = CreateSemaphore(NULL, value, (long) INT_MAX, NULL))) {
-    THROW1(system_error, GetLastError(), "CreateSemaphore() failed: %s",
+    THROWF(system_error, GetLastError(), "CreateSemaphore() failed: %s",
            strerror(GetLastError()));
     return NULL;
   }
@@ -1036,11 +1036,11 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
 void xbt_os_sem_acquire(xbt_os_sem_t sem)
 {
   if (!sem)
-    THROW0(arg_error, EINVAL, "Cannot acquire the NULL semaphore");
+    THROWF(arg_error, EINVAL, "Cannot acquire the NULL semaphore");
 
   /* wait failure */
   if (WAIT_OBJECT_0 != WaitForSingleObject(sem->h, INFINITE))
-    THROW1(system_error, GetLastError(),
+    THROWF(system_error, GetLastError(),
            "WaitForSingleObject() failed: %s", strerror(GetLastError()));
   EnterCriticalSection(&(sem->value_lock));
   sem->value--;
@@ -1054,7 +1054,7 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double timeout)
   double end = timeout + xbt_os_time();
 
   if (!sem)
-    THROW0(arg_error, EINVAL, "Cannot acquire the NULL semaphore");
+    THROWF(arg_error, EINVAL, "Cannot acquire the NULL semaphore");
 
   if (timeout < 0) {
     xbt_os_sem_acquire(sem);
@@ -1073,13 +1073,13 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double timeout)
       return;
 
     case WAIT_TIMEOUT:
-      THROW2(timeout_error, GetLastError(),
+      THROWF(timeout_error, GetLastError(),
              "semaphore %p wasn't signaled before timeout (%f)", sem,
              timeout);
       return;
 
     default:
-      THROW3(system_error, GetLastError(),
+      THROWF(system_error, GetLastError(),
              "WaitForSingleObject(%p,%f) failed: %s", sem, timeout,
              strerror(GetLastError()));
     }
@@ -1089,10 +1089,10 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double timeout)
 void xbt_os_sem_release(xbt_os_sem_t sem)
 {
   if (!sem)
-    THROW0(arg_error, EINVAL, "Cannot release the NULL semaphore");
+    THROWF(arg_error, EINVAL, "Cannot release the NULL semaphore");
 
   if (!ReleaseSemaphore(sem->h, 1, NULL))
-    THROW1(system_error, GetLastError(), "ReleaseSemaphore() failed: %s",
+    THROWF(system_error, GetLastError(), "ReleaseSemaphore() failed: %s",
            strerror(GetLastError()));
   EnterCriticalSection(&(sem->value_lock));
   sem->value++;
@@ -1102,10 +1102,10 @@ void xbt_os_sem_release(xbt_os_sem_t sem)
 void xbt_os_sem_destroy(xbt_os_sem_t sem)
 {
   if (!sem)
-    THROW0(arg_error, EINVAL, "Cannot destroy the NULL semaphore");
+    THROWF(arg_error, EINVAL, "Cannot destroy the NULL semaphore");
 
   if (!CloseHandle(sem->h))
-    THROW1(system_error, GetLastError(), "CloseHandle() failed: %s",
+    THROWF(system_error, GetLastError(), "CloseHandle() failed: %s",
            strerror(GetLastError()));
 
   DeleteCriticalSection(&(sem->value_lock));
@@ -1117,7 +1117,7 @@ void xbt_os_sem_destroy(xbt_os_sem_t sem)
 void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
 {
   if (!sem)
-    THROW0(arg_error, EINVAL,
+    THROWF(arg_error, EINVAL,
            "Cannot get the value of the NULL semaphore");
 
   EnterCriticalSection(&(sem->value_lock));

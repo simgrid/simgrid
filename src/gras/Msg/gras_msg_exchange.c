@@ -122,7 +122,7 @@ gras_msg_wait_ext_(double timeout,
 
     now = gras_os_time();
     if (now - start + 0.001 > timeout) {
-      THROW1(timeout_error, now - start + 0.001 - timeout,
+      THROWF(timeout_error, now - start + 0.001 - timeout,
              "Timeout while waiting for msg '%s'",
              msgt_want ? msgt_want->name : "(any)");
     }
@@ -274,7 +274,7 @@ void gras_msg_handleall(double period)
     }
     CATCH(e) {
       if (e.category != timeout_error)
-        RETHROW0("Error while waiting for messages: %s");
+        RETHROWF("Error while waiting for messages: %s");
       xbt_ex_free(e);
     }
     /* Epsilon to avoid numerical stability issues were the waited interval is so small that the global clock cannot notice the increment */
@@ -357,14 +357,14 @@ void gras_msg_handle(double timeOut)
         XBT_WARN
             ("No timer elapsed, in contrary to expectations (next in %f sec)",
              untiltimer);
-        THROW1(timeout_error, 0,
+        THROWF(timeout_error, 0,
                "No timer elapsed, in contrary to expectations (next in %f sec)",
                untiltimer);
       }
 
     } else {
       /* select timeouted, and no timer elapsed. Nothing to do */
-      THROW1(timeout_error, 0, "No new message or timer (delay was %f)",
+      THROWF(timeout_error, 0, "No new message or timer (delay was %f)",
              timeOut);
     }
 
@@ -438,7 +438,7 @@ void gras_msg_handle(double timeOut)
         ctx.answer_due = 0;
         ran_ok = 1;
       } else {
-        RETHROW4
+        RETHROWF
             ("Callback #%d (@%p) to message '%s' (payload size: %d) raised an exception: %s",
              cpt + 1, cb, msg.type->name, msg.payl_size);
       }
@@ -453,7 +453,7 @@ void gras_msg_handle(double timeOut)
            "AND IN SIMGRID (process wasn't killed by an assert)",
            msg.type->name);
     if (!ran_ok)
-      THROW1(mismatch_error, 0,
+      THROWF(mismatch_error, 0,
              "Message '%s' refused by all registered callbacks (maybe your callback misses a 'return 0' at the end)",
              msg.type->name);
     /* FIXME: gras_datadesc_free not implemented => leaking the payload */
@@ -477,7 +477,7 @@ void gras_msg_handle(double timeOut)
     return;
 
   default:
-    THROW1(unknown_error, 0,
+    THROWF(unknown_error, 0,
            "Cannot handle messages of kind %d yet", msg.type->kind);
   }
 

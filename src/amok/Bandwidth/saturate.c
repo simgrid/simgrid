@@ -277,7 +277,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload)
       if (port < 10000)
         xbt_ex_free(e);
       else
-        RETHROW0
+        RETHROWF
             ("Error encountered while opening a measurement server socket: %s");
     }
     if (measMaster == NULL)
@@ -296,7 +296,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload)
   }
   CATCH(e) {
     gras_socket_close(measMaster);
-    RETHROW0("Error during saturation handshake: %s");
+    RETHROWF("Error during saturation handshake: %s");
   }
 
   while (saturate_further) {
@@ -338,7 +338,7 @@ void amok_bw_saturate_stop(const char *from_name, unsigned int from_port,
   TRY {
     gras_msg_rpccall(sock, 60, "amok_bw_sat stop", NULL, &answer);
   } CATCH(e) {
-    RETHROW2("Cannot ask %s:%d to stop saturation: %s", from_name,
+    RETHROWF("Cannot ask %s:%d to stop saturation: %s", from_name,
              from_port);
   }
   gras_socket_close(sock);

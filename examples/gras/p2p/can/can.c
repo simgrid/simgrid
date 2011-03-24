@@ -58,12 +58,12 @@ static void forward_get_suc(get_suc_t msg, char host[1024], int port)
   TRY {
     temp_sock = gras_socket_client(host, port);
   } CATCH(e) {
-    RETHROW0("Unable to connect!: %s");
+    RETHROWF("Unable to connect!: %s");
   }
   TRY {
     gras_msg_send(temp_sock, "can_get_suc", &msg);
   } CATCH(e) {
-    RETHROW0("Unable to send!: %s");
+    RETHROWF("Unable to send!: %s");
   }
   XBT_INFO("Forwarding a get_successor message to %s for (%d;%d)", host,
         msg.xId, msg.yId);
@@ -180,7 +180,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
         temp_sock = gras_socket_client(incoming->host, incoming->port);
       }
       CATCH(e) {
-        RETHROW0
+        RETHROWF
             ("Unable to connect to the node wich has requested for an area!: %s");
       }
       TRY {
@@ -188,7 +188,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
         XBT_INFO("Environment informations sent!");
       }
       CATCH(e) {
-        RETHROW2("%s:Timeout sending environment informations to %s: %s",
+        RETHROWF("%s:Timeout sending environment informations to %s: %s",
                  globals->host, gras_socket_peer_name(expeditor));
       }
       gras_socket_close(temp_sock);
@@ -252,7 +252,7 @@ int node(int argc, char **argv)
       temp_sock = gras_socket_client(argv[4], atoi(argv[5]));
     }
     CATCH(e) {
-      RETHROW0("Unable to connect known host to request for an area!: %s");
+      RETHROWF("Unable to connect known host to request for an area!: %s");
     }
 
 
@@ -265,7 +265,7 @@ int node(int argc, char **argv)
     }
     CATCH(e) {
       gras_socket_close(temp_sock);
-      RETHROW0("Unable to contact known host to get an area!: %s");
+      RETHROWF("Unable to contact known host to get an area!: %s");
     }
     gras_socket_close(temp_sock);
 
@@ -276,7 +276,7 @@ int node(int argc, char **argv)
       gras_msg_wait(6000, "can_rep_suc", &temp_sock2, &rep_suc_msg);
     }
     CATCH(e) {
-      RETHROW1("%s: Error waiting for an area:%s", globals->host);
+      RETHROWF("%s: Error waiting for an area:%s", globals->host);
     }
 
     // retreiving the data of the response.

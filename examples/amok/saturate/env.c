@@ -108,7 +108,7 @@ static void env_Pairwisehost_bw(int argc, char *argv[])
                              msg_size, 120);    // sturation of the link with msg_size to compute a concurent bandwidth MA //MB
     }
     CATCH(e) {
-      RETHROW0("Cannot ask hosts to saturate the link: %s");
+      RETHROWF("Cannot ask hosts to saturate the link: %s");
     }
     // gras_os_sleep(1.0);
 
