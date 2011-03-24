@@ -109,6 +109,9 @@ void SIMIX_global_init(int *argc, char **argv)
   if (!simix_timers) {
     simix_timers = xbt_heap_new(8, &free);
   }
+
+  XBT_DEBUG("ADD SIMIX LEVELS");
+  SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,free);
 }
 
 /**

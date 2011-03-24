@@ -284,6 +284,24 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
 
 void surf_init(int *argc, char **argv)
 {
+	XBT_DEBUG("Create all Libs");
+	host_lib = xbt_lib_new();
+	link_lib = xbt_lib_new();
+	as_router_lib = xbt_lib_new();
+
+	XBT_DEBUG("ADD ROUTING LEVEL");
+	ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,free);
+	ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,free);
+
+	XBT_DEBUG("ADD SURF LEVELS");
+	SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,free);
+	SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,free);
+	SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,free);
+
+	XBT_DEBUG("ADD COORD LEVEL");
+	COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,free);
+	COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,free);
+
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(surf_cpu, surf);
   XBT_LOG_CONNECT(surf_kernel, surf);
@@ -372,6 +390,10 @@ void surf_exit(void)
   surf_parse_lex_destroy();
   surf_parse_free_callbacks();
   NOW = 0;                      /* Just in case the user plans to restart the simulation afterward */
+  // Exit the LIB host_lib
+  xbt_lib_free(&host_lib);
+  xbt_lib_free(&link_lib);
+  xbt_lib_free(&as_router_lib);
 }
 
 void surf_presolve(void)

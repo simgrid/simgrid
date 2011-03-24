@@ -100,6 +100,10 @@ void SD_init(int *argc, char **argv)
 #ifdef HAVE_JEDULE
   jedule_sd_init();
 #endif
+
+  XBT_DEBUG("ADD SD LEVELS");
+  SD_HOST_LEVEL = xbt_lib_add_level(host_lib,free);
+  SD_LINK_LEVEL = xbt_lib_add_level(link_lib,free);
 }
 
 /**

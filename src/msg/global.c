@@ -79,6 +79,9 @@ void MSG_global_init(int *argc, char **argv)
 #ifdef HAVE_TRACING
   TRACE_start();
 #endif
+
+  XBT_DEBUG("ADD MSG LEVELS");
+  MSG_HOST_LEVEL = xbt_lib_add_level(host_lib,free);
 }
 
 /** \defgroup m_channel_management    Understanding channels
