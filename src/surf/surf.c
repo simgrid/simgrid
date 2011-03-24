@@ -290,17 +290,17 @@ void surf_init(int *argc, char **argv)
 	as_router_lib = xbt_lib_new();
 
 	XBT_DEBUG("ADD ROUTING LEVEL");
-	ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,free);
-	ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,free);
+	ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_free);
+	ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_free);
 
 	XBT_DEBUG("ADD SURF LEVELS");
-	SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,free);
-	SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,free);
-	SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,free);
+	SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
+	SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
+	SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_resource_free);
 
 	XBT_DEBUG("ADD COORD LEVEL");
-	COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,free);
-	COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,free);
+	COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_dynar_free_voidp);
+	COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
 
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(surf_cpu, surf);

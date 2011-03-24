@@ -98,8 +98,8 @@ void SD_init(int *argc, char **argv)
 #endif
 
   XBT_DEBUG("ADD SD LEVELS");
-  SD_HOST_LEVEL = xbt_lib_add_level(host_lib,free);
-  SD_LINK_LEVEL = xbt_lib_add_level(link_lib,free);
+  SD_HOST_LEVEL = xbt_lib_add_level(host_lib,__SD_workstation_destroy);
+  SD_LINK_LEVEL = xbt_lib_add_level(link_lib,__SD_link_destroy);
 }
 
 /**
@@ -397,6 +397,7 @@ void SD_exit(void)
 #ifdef HAVE_TRACING
   TRACE_surf_release();
 #endif
+
   if (SD_INITIALISED()) {
     XBT_DEBUG("Destroying workstation and link dictionaries...");
 
@@ -438,6 +439,7 @@ void SD_exit(void)
 
     XBT_DEBUG("Exiting Surf...");
     surf_exit();
+
   } else {
     XBT_WARN("SD_exit() called, but SimDag is not running");
     /* we cannot use exceptions here because xbt is not running! */

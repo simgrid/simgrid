@@ -110,7 +110,7 @@ void SIMIX_global_init(int *argc, char **argv)
   }
 
   XBT_DEBUG("ADD SIMIX LEVELS");
-  SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,free);
+  SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
 }
 
 /**
