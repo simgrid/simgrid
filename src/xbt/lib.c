@@ -20,8 +20,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_lib, xbt,
                                 "Libraries provide the same functionalities than hash tables");
 
-xbt_mallocator_t lib_mallocator = NULL;
-
 /*####[ Private prototypes ]#################################################*/
 static void *lib_mallocator_new_f(void);
 static void lib_mallocator_free_f(void *dict);
@@ -42,24 +40,9 @@ static void xbt_lib_cursor_free(xbt_lib_cursor_t * cursor);
 
 /*####[ Code ]###############################################################*/
 
-void xbt_lib_preinit(void)
+unsigned int xbt_lib_size(xbt_lib_t lib)
 {
-  if (lib_mallocator != NULL) {
-    xbt_mallocator_free(lib_mallocator);
-  }
-
-  lib_mallocator = xbt_mallocator_new(256,
-                                       lib_mallocator_new_f,
-                                       lib_mallocator_free_f,
-                                       lib_mallocator_reset_f);
-}
-
-void xbt_lib_postexit(void)
-{
-  if (lib_mallocator != NULL) {
-    xbt_mallocator_free(lib_mallocator);
-    lib_mallocator = NULL;
-  }
+  return (lib ? (unsigned int) lib->count : (unsigned int) 0);
 }
 
 static xbt_libelm_t xbt_libelm_new(const char *key,
@@ -85,7 +68,7 @@ static xbt_libelm_t xbt_libelm_new(const char *key,
 xbt_lib_t xbt_lib_new(void)
 {
   xbt_lib_t lib;
-  lib = xbt_mallocator_get(lib_mallocator);
+  lib = xbt_new0(s_xbt_lib_t, 1);
   lib->table_size = 127;
   lib->table = xbt_new0(xbt_libelm_t, lib->table_size + 1);
   lib->count = 0;
@@ -124,7 +107,7 @@ void xbt_lib_free(xbt_lib_t * lib)
     }
     xbt_free(table);
     xbt_free((*lib)->free_f);
-    xbt_mallocator_release(lib_mallocator, *lib);
+    xbt_free(*lib);
     *lib = NULL;
   }
 }
@@ -140,7 +123,7 @@ int xbt_lib_add_level(xbt_lib_t lib, void_f_pvoid_t free_f)
 
 void xbt_lib_set(xbt_lib_t lib, const char *name, int level, void *obj)
 {
-	XBT_INFO("xbt_lib_set key '%s' with object '%p'",name,obj);
+	XBT_DEBUG("xbt_lib_set key '%s' with object '%p'",name,obj);
 	xbt_lib_set_ext(lib, name, strlen(name),level, obj);
 }
 
@@ -181,7 +164,7 @@ static void lib_mallocator_reset_f(void *lib)
 
 void xbt_lib_reset(xbt_lib_t *lib)
 {
-	XBT_INFO("xbt_lib_reset");
+  XBT_DEBUG("xbt_lib_reset");
   int i,j;
   xbt_libelm_t current, next;
   xbt_lib_t l = *lib;
@@ -264,7 +247,7 @@ static void xbt_lib_set_ext(xbt_lib_t lib,
 	  }
 	  else
 	  {/* there is already an element with the same key: overwrite it */
-			XBT_INFO("Replace %.*s by %.*s under key %.*s",
+			XBT_DEBUG("Replace %.*s by %.*s under key %.*s",
 				   key_len, (char *) (&(current->content))[level],
 				   key_len, (char *) data, key_len, (char *) key);
 			if (current->content != NULL) {
@@ -355,7 +338,48 @@ static unsigned int xbt_lib_hash(const char *str)
 
 static void xbt_lib_rehash(xbt_lib_t lib)
 {
-	xbt_die("xbt_lib_rehash not yet implemented!");
+	const int oldsize = lib->table_size + 1;
+	register int newsize = oldsize * 2;
+	register int i;
+	register xbt_libelm_t *currcell;
+	register xbt_libelm_t *twincell;
+	register xbt_libelm_t bucklet;
+	register xbt_libelm_t *pprev;
+
+	currcell =
+	  (xbt_libelm_t *) xbt_realloc((char *) lib->table,
+									newsize * (sizeof(xbt_libelm_t) + sizeof(void*)*(lib->levels - 1)));
+	memset(&currcell[oldsize], 0, oldsize * (sizeof(xbt_libelm_t) + sizeof(void*)*(lib->levels - 1)));       /* zero second half */
+	lib->table_size = --newsize;
+	lib->table = currcell;
+	XBT_DEBUG("REHASH (%d->%d)", oldsize, newsize);
+
+	for (i = 0; i < oldsize; i++, currcell++) {
+	if (!*currcell)             /* empty cell */
+	  continue;
+	twincell = currcell + oldsize;
+	for (pprev = currcell, bucklet = *currcell; bucklet; bucklet = *pprev) {
+	  /* Since we use "& size" instead of "%size" and since the size was doubled,
+		 each bucklet of this cell must either :
+		 - stay  in  cell i (ie, currcell)
+		 - go to the cell i+oldsize (ie, twincell) */
+	  if ((bucklet->hash_code & newsize) != i) {        /* Move to b */
+		*pprev = bucklet->next;
+		bucklet->next = *twincell;
+		if (!*twincell)
+		  lib->fill++;
+		*twincell = bucklet;
+		continue;
+	  } else {
+		pprev = &bucklet->next;
+	  }
+
+	}
+
+	if (!*currcell)             /* everything moved */
+	  lib->fill--;
+	}
+
 }
 
 void xbt_lib_cursor_first(const xbt_lib_t lib,

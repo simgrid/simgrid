@@ -18,7 +18,6 @@ struct xbt_lib_cursor_ {
 
 typedef struct xbt_libelm_ {
   char *key;
-  // key_len ???
   int key_len;
   unsigned int hash_code;
   xbt_libelm_t next;
@@ -36,7 +35,6 @@ typedef struct xbt_lib_ {
 
 
 /*####[ Prototypes ]#################################################*/
- //lib.c
 XBT_PUBLIC(void) xbt_lib_preinit(void);
 XBT_PUBLIC(void) xbt_lib_postexit(void);
 XBT_PUBLIC(xbt_lib_t) xbt_lib_new(void);
@@ -49,10 +47,11 @@ XBT_PUBLIC(void) xbt_lib_reset(xbt_lib_t *lib);
 XBT_PUBLIC(void) xbt_lib_cursor_step(xbt_lib_cursor_t cursor);
 XBT_PUBLIC(int) xbt_lib_cursor_get_or_free(xbt_lib_cursor_t * cursor, char **key, void **data);
 XBT_PUBLIC(void) xbt_lib_cursor_first(const xbt_lib_t lib, xbt_lib_cursor_t * cursor);
+XBT_PUBLIC(unsigned int) xbt_lib_size(xbt_lib_t lib);
 
 /** @def xbt_lib_foreach
     @hideinitializer */
-#  define xbt_lib_foreach(lib,cursor,key,data)                       \
+#define xbt_lib_foreach(lib,cursor,key,data)                       \
   for (cursor=NULL, xbt_lib_cursor_first((lib),&(cursor)) ;        \
        xbt_lib_cursor_get_or_free(&(cursor),(char**)&(key),(void**)(&data));\
        xbt_lib_cursor_step(cursor) )
