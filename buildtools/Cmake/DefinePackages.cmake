@@ -166,6 +166,7 @@ set(XBT_SRC
 	src/xbt/setset.c
 	src/xbt/parmap.c
 	src/xbt/xbt_replay_trace_reader.c
+	src/xbt/lib.c
 )
 
 if(HAVE_MMAP)
