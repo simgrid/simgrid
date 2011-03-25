@@ -205,7 +205,7 @@ static void jxbt_throw_by_name(JNIEnv * env, const char *name, char *msg)
 {
   jclass cls = (*env)->FindClass(env, name);
 
-  xbt_assert2(cls, "%s (Plus severe error: class %s not found)\n", msg,
+  xbt_assert(cls, "%s (Plus severe error: class %s not found)\n", msg,
               name);
 
   (*env)->ThrowNew(env, cls, msg);
