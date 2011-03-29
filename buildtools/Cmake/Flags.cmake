@@ -16,9 +16,9 @@ if(enable_compile_optimizations)
 	set(optCFLAGS "-O3 -finline-functions -funroll-loops -fno-strict-aliasing ")
 endif(enable_compile_optimizations)
 
-if(enable_debug)
+if(NOT enable_debug)
 		set(CMAKE_C_FLAGS "-DNDEBUG ${CMAKE_C_FLAGS}")
-endif(enable_debug)
+endif(NOT enable_debug)
 
 set(CMAKE_C_FLAGS "${optCFLAGS}${warnCFLAGS}${CMAKE_C_FLAGS}")
 
