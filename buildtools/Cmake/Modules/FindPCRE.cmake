@@ -53,3 +53,6 @@ message(STATUS "Looking for lib pcre - found")
 else(PATH_PCRE_LIB)
 message(STATUS "Looking for lib pcre - not found")
 endif(PATH_PCRE_LIB)
+
+mark_as_advanced(PATH_PCRE_H)
+mark_as_advanced(PATH_PCRE_LIB)

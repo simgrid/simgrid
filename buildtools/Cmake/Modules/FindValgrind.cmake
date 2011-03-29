@@ -31,3 +31,5 @@ else(VALGRIND_EXE)
 	set(enable_memcheck false)
 	message(FATAL_ERROR "Command valgrind not found --> enable_memcheck autoset to false.")
 endif(VALGRIND_EXE)
+
+mark_as_advanced(VALGRIND_EXE)

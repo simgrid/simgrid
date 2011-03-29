@@ -18,7 +18,7 @@
 #PIPOL esn i386_kvm-linux-debian-testing none 02:00 --user --silent
 #PIPOL esn amd64_kvm-linux-debian-testing none 02:00 --user --silent
 
-#PIPOL esn amd64-windows-server-2008-64bits-navarro-2011-03-15-122256.dd.gz none 02:00 --user --silent
+#PIPOL esn amd64-windows-server-2008-64bits-navarro-2011-03-15-122256.dd.gz none 02:00 --root
 
 if [ -e ./pipol ] ; then
 	rm -rf ./pipol/$PIPOL_HOST
