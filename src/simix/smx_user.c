@@ -154,6 +154,10 @@ smx_action_t SIMIX_req_host_execute(const char *name, smx_host_t host,
                                     double computation_amount,
                                     double priority)
 {
+  /* checking for infinite values */
+  xbt_assert(isfinite(computation_amount), "computation_amount is not finite!");
+  xbt_assert(isfinite(priority), "priority is not finite!");
+  
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_HOST_EXECUTE;
@@ -186,6 +190,19 @@ smx_action_t SIMIX_req_host_parallel_execute(const char *name,
                                          double amount,
                                          double rate)
 {
+  int i,j;
+  /* checking for infinite values */
+  for (i = 0 ; i < host_nb ; ++i) {
+     xbt_assert(isfinite(computation_amount[i]), "computation_amount[%d] is not finite!", i);
+     for (j = 0 ; j < host_nb ; ++j) {
+        xbt_assert(isfinite(communication_amount[i + host_nb * j]), 
+	           "communication_amount[%d+%d*%d] is not finite!", i, host_nb, j);
+     }   
+  }   
+ 
+  xbt_assert(isfinite(amount), "amount is not finite!");
+  xbt_assert(isfinite(rate), "rate is not finite!");
+  
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_HOST_PARALLEL_EXECUTE;
@@ -271,6 +288,9 @@ e_smx_state_t SIMIX_req_host_execution_get_state(smx_action_t execution)
  */
 void SIMIX_req_host_execution_set_priority(smx_action_t execution, double priority)
 {
+  /* checking for infinite values */
+  xbt_assert(isfinite(priority), "priority is not finite!");
+  
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_HOST_EXECUTION_SET_PRIORITY;
@@ -565,6 +585,9 @@ xbt_dict_t SIMIX_req_process_get_properties(smx_process_t process)
  */
 e_smx_state_t SIMIX_req_process_sleep(double duration)
 {
+  /* checking for infinite values */
+  xbt_assert(isfinite(duration), "duration is not finite!");
+  
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_PROCESS_SLEEP;
@@ -661,6 +684,11 @@ void SIMIX_req_comm_send(smx_rdv_t rdv, double task_size, double rate,
                          int (*match_fun)(void *, void *), void *data,
                          double timeout)
 {
+  /* checking for infinite values */
+  xbt_assert(isfinite(task_size), "task_size is not finite!");
+  xbt_assert(isfinite(rate), "rate is not finite!");
+  xbt_assert(isfinite(timeout), "timeout is not finite!");
+  
   xbt_assert(rdv, "No rendez-vous point defined for send");
 
   if (MC_IS_ENABLED) {
@@ -691,6 +719,10 @@ smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                               int (*match_fun)(void *, void *), void *data,
                               int detached)
 {
+  /* checking for infinite values */
+  xbt_assert(isfinite(task_size), "task_size is not finite!");
+  xbt_assert(isfinite(rate), "rate is not finite!");
+  
   xbt_assert(rdv, "No rendez-vous point defined for isend");
 
   smx_req_t req = SIMIX_req_mine();
@@ -712,6 +744,7 @@ smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
 void SIMIX_req_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
                          int (*match_fun)(void *, void *), void *data, double timeout)
 {
+  xbt_assert(isfinite(timeout), "timeout is not finite!");
   xbt_assert(rdv, "No rendez-vous point defined for recv");
 
   if (MC_IS_ENABLED) {
@@ -806,6 +839,8 @@ int SIMIX_req_comm_testany(xbt_dynar_t comms)
 
 void SIMIX_req_comm_wait(smx_action_t comm, double timeout)
 {
+  xbt_assert(isfinite(timeout), "timeout is not finite!");
+  
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_COMM_WAIT;
@@ -1026,6 +1061,8 @@ void SIMIX_req_cond_wait_timeout(smx_cond_t cond,
                                  smx_mutex_t mutex,
                                  double timeout)
 {
+  xbt_assert(isfinite(timeout), "timeout is not finite!");
+  
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_COND_WAIT_TIMEOUT;
@@ -1101,6 +1138,8 @@ void SIMIX_req_sem_acquire(smx_sem_t sem)
 
 void SIMIX_req_sem_acquire_timeout(smx_sem_t sem, double timeout)
 {
+  xbt_assert(isfinite(timeout), "timeout is not finite!");
+  
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_SEM_ACQUIRE_TIMEOUT;
