@@ -8,8 +8,6 @@ else(NOT __VISUALC__ AND NOT __BORLANDC__)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}/Zi")
 endif(NOT __VISUALC__ AND NOT __BORLANDC__)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${custom_flags}")
-
 if(enable_compile_warnings)
 	set(warnCFLAGS "-Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
 endif(enable_compile_warnings)
@@ -18,7 +16,13 @@ if(enable_compile_optimizations)
 	set(optCFLAGS "-O3 -finline-functions -funroll-loops -fno-strict-aliasing ")
 endif(enable_compile_optimizations)
 
+if(enable_debug)
+		set(CMAKE_C_FLAGS "-DNDEBUG ${CMAKE_C_FLAGS}")
+endif(enable_debug)
+
 set(CMAKE_C_FLAGS "${optCFLAGS}${warnCFLAGS}${CMAKE_C_FLAGS}")
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${custom_flags}")
 
 if(enable_coverage)
 	find_program(GCOV_PATH gcov)
