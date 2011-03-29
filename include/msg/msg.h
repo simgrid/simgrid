@@ -80,7 +80,7 @@ XBT_PUBLIC(m_process_t) MSG_process_create_with_environment(const char
 XBT_PUBLIC(void) MSG_process_kill(m_process_t process);
 XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
 
-XBT_PUBLIC(MSG_error_t) MSG_process_change_host(m_host_t host);
+XBT_PUBLIC(MSG_error_t) MSG_process_migrate(m_process_t process, m_host_t host);
 
 XBT_PUBLIC(void *) MSG_process_get_data(m_process_t process);
 XBT_PUBLIC(MSG_error_t) MSG_process_set_data(m_process_t process,
@@ -227,13 +227,13 @@ XBT_PUBLIC(void) MSG_action_register(const char *action_name,
 XBT_PUBLIC(void) MSG_action_unregister(const char *action_name);
 MSG_error_t MSG_action_trace_run(char *path);
 
-
 #ifdef MSG_USE_DEPRECATED
 /* these are the functions which are deprecated. Do not use them, they may get removed in future releases */
 #define MSG_TIMEOUT_FAILURE MSG_TIMEOUT
 #define MSG_mailbox_put_with_time_out(mailbox, task, timeout) \
         MSG_mailbox_put_with_timeout(mailbox, task, timeout)
 
+#define MSG_process_change_host(h) MSG_process_migrate(MSG_process_self(),h);
 #endif
 
 #include "instr/instr.h"
@@ -241,7 +241,6 @@ MSG_error_t MSG_action_trace_run(char *path);
 /* Used only by the bindings */
 #include "simix/simix.h"
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(m_process_t process);
-
 
 SG_END_DECL()
 #endif

@@ -377,9 +377,8 @@ void SIMIX_request_pre(smx_req_t req, int value)
       break;
 
     case REQ_PROCESS_CHANGE_HOST:
-      SIMIX_process_change_host(
+      SIMIX_pre_process_change_host(
 	  req->process_change_host.process,
-	  req->process_change_host.source,
 	  req->process_change_host.dest);
       SIMIX_request_answer(req);
       break;

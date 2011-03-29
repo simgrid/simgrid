@@ -12,33 +12,42 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+static m_process_t process_to_migrate = NULL;
+
 /** The guy we will move from host to host. It move alone and then is moved by policeman back  */
 static int emigrant(int argc, char *argv[])
 {
   m_task_t task;
   XBT_INFO
       ("I'll look for a new job on another machine where the grass is greener.");
-  MSG_process_change_host(MSG_get_host_by_name("Boivin"));
+  MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name("Boivin"));
+  
   XBT_INFO("Yeah, found something to do");
   task = MSG_task_create("job", 98095000, 0, NULL);
   MSG_task_execute(task);
   MSG_task_destroy(task);
   MSG_process_sleep(2);
   XBT_INFO("Moving back home after work");
-  MSG_process_change_host(MSG_get_host_by_name("Jacquelin"));
-  MSG_process_change_host(MSG_get_host_by_name("Boivin"));
+  MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name("Jacquelin"));
+  MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name("Boivin"));
   MSG_process_sleep(4);
+  process_to_migrate = MSG_process_self();
+  MSG_process_suspend(MSG_process_self());
+  m_host_t h = MSG_process_get_host(MSG_process_self());
+  XBT_INFO("I've been moved on this new host: %s", h->name);
   XBT_INFO("Uh, nothing to do here. Stopping now");
   return 0;
 }                               /* end_of_emigrant */
 
-/* This function would move the emigrant back home, if it were possible to do so in the MSG API.
- * Nothing for now.
- */
+
+/* This function move the emigrant on Jacquelin */
 static int policeman(int argc, char *argv[])
 {
-  XBT_INFO
-      ("No function in the API to move the emigrant back, so do nothing.");
+  XBT_INFO("Wait a bit before migrating the emigrant.");
+  while (process_to_migrate == NULL) MSG_process_sleep(1);
+  MSG_process_migrate(process_to_migrate, MSG_get_host_by_name("Jacquelin"));
+  XBT_INFO("I moved the emigrant");
+  MSG_process_resume(process_to_migrate);
   return 0;
 }                               /* end_of_policeman */
 
@@ -62,6 +71,7 @@ int main(int argc, char *argv[])
 
   /* Application deployment */
   MSG_function_register("emigrant", emigrant);
+  MSG_function_register("policeman", policeman);
   MSG_launch_application(argv[2]);
 
   /* Run the simulation */

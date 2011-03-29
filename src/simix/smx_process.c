@@ -234,16 +234,17 @@ void SIMIX_process_killall(smx_process_t issuer)
 }
 
 void SIMIX_process_change_host(smx_process_t process,
-    const char *source, const char *dest)
+			       smx_host_t dest)
 {
-  smx_host_t h1 = NULL;
-  smx_host_t h2 = NULL;
   xbt_assert((process != NULL), "Invalid parameters");
-  h1 = SIMIX_host_get_by_name(source);
-  h2 = SIMIX_host_get_by_name(dest);
-  process->smx_host = h2;
-  xbt_swag_remove(process, h1->process_list);
-  xbt_swag_insert(process, h2->process_list);
+  xbt_swag_remove(process, process->smx_host->process_list);
+  process->smx_host = dest;
+  xbt_swag_insert(process, dest->process_list);
+}
+
+void SIMIX_pre_process_change_host(smx_process_t process, smx_host_t dest)
+{
+  process->new_host = dest;
 }
 
 void SIMIX_pre_process_suspend(smx_req_t req)
@@ -517,6 +518,11 @@ void SIMIX_process_yield(void)
     XBT_DEBUG("Wait, maestro left me an exception");
     self->doexception = 0;
     RETHROW;
+  }
+  
+  if (self->new_host) {
+    SIMIX_process_change_host(self, self->new_host);
+    self->new_host = NULL;
   }
 }
 

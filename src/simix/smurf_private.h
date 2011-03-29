@@ -233,8 +233,7 @@ typedef struct s_smx_req {
 
     struct {
       smx_process_t process;
-      const char *source;
-      const char *dest;
+      smx_host_t dest;
     } process_change_host;
 
     struct {

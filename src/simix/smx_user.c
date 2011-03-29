@@ -376,13 +376,12 @@ void SIMIX_req_process_cleanup(smx_process_t process)
  * \param source name of the previous host
  * \param dest name of the new host
  */
-void SIMIX_req_process_change_host(smx_process_t process, const char *source, const char *dest)
+void SIMIX_req_process_change_host(smx_process_t process, smx_host_t dest)
 {
   smx_req_t req = SIMIX_req_mine();
 
   req->call = REQ_PROCESS_CHANGE_HOST;
   req->process_change_host.process = process;
-  req->process_change_host.source = source;
   req->process_change_host.dest = dest;
   SIMIX_request_push();
 }

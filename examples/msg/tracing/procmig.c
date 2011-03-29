@@ -26,7 +26,7 @@ static int emigrant(int argc, char *argv[])
     destination = (char*)MSG_task_get_data (task);
     if (!destination) break; //there is no destination, die
     XBT_INFO("Migrating to %s", destination);
-    MSG_process_change_host(MSG_get_host_by_name(destination));
+    MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name(destination));
     MSG_process_sleep(2); // I am tired, have to sleep for 2 seconds
     xbt_free (destination);
     MSG_task_destroy (task);

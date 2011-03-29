@@ -134,7 +134,7 @@ XBT_PUBLIC(void) SIMIX_req_process_killall(void);
 /* Process handling */
 XBT_PUBLIC(void) SIMIX_req_process_cleanup(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_req_process_change_host(smx_process_t process,
-                                           const char *source, const char *dest);
+					       smx_host_t dest);
 XBT_PUBLIC(void) SIMIX_req_process_suspend(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_req_process_resume(smx_process_t process);
 

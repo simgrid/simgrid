@@ -213,16 +213,15 @@ void MSG_process_kill(m_process_t process)
  * This function checks whether \a process and \a host are valid pointers
    and change the value of the #m_host_t on which \a process is running.
  */
-MSG_error_t MSG_process_change_host(m_host_t host)
+MSG_error_t MSG_process_migrate(m_process_t process, m_host_t host)
 {
-  m_process_t process = MSG_process_self();
-  simdata_process_t simdata = SIMIX_process_self_get_data();
-  m_host_t now = simdata->m_host;
+  simdata_process_t simdata = SIMIX_req_process_get_data(process);
   simdata->m_host = host;
 #ifdef HAVE_TRACING
+  m_host_t now = simdata->m_host;
   TRACE_msg_process_change_host(process, now, host);
 #endif
-  SIMIX_req_process_change_host(process, now->name, host->name);
+  SIMIX_req_process_change_host(process, host->simdata->smx_host);
   return MSG_OK;
 }
 
