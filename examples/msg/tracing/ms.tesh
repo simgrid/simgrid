@@ -266,25 +266,25 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=34)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 34
-> [  0.000000] (0:@) new type LINK-HOST, child of L1
-> [  0.000000] (0:@) LinkType LINK-HOST(11), child of L1(1)  LINK(6)->HOST(2)
-> [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
 > [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=35)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 35
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=36)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 36
+> [  0.000000] (0:@) new type LINK-ROUTER, child of L1
+> [  0.000000] (0:@) LinkType LINK-ROUTER(11), child of L1(1)  LINK(6)->ROUTER(5)
+> [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
+> [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
+> [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
 > [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=37)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 37
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=38)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 38
-> [  0.000000] (0:@) new type LINK-ROUTER, child of L1
-> [  0.000000] (0:@) LinkType LINK-ROUTER(12), child of L1(1)  LINK(6)->ROUTER(5)
+> [  0.000000] (0:@) new type LINK-LINK, child of L1
+> [  0.000000] (0:@) LinkType LINK-LINK(12), child of L1(1)  LINK(6)->LINK(6)
 > [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
 > [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
 > [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
@@ -300,11 +300,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=42)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 42
-> [  0.000000] (0:@) new type LINK-LINK, child of L1
-> [  0.000000] (0:@) LinkType LINK-LINK(13), child of L1(1)  LINK(6)->LINK(6)
-> [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
 > [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=43)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 43
@@ -323,6 +318,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=48)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 48
+> [  0.000000] (0:@) new type LINK-HOST, child of L1
+> [  0.000000] (0:@) LinkType LINK-HOST(13), child of L1(1)  LINK(6)->HOST(2)
+> [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
+> [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
+> [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
 > [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=49)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 49
@@ -371,6 +371,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=64)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 64
+> [  0.000000] (0:@) new type ROUTER-LINK, child of L1
+> [  0.000000] (0:@) LinkType ROUTER-LINK(14), child of L1(1)  ROUTER(5)->LINK(6)
+> [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
+> [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
+> [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
 > [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=65)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 65
@@ -449,11 +454,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=90)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 90
-> [  0.000000] (0:@) new type ROUTER-LINK, child of L1
-> [  0.000000] (0:@) LinkType ROUTER-LINK(14), child of L1(1)  ROUTER(5)->LINK(6)
-> [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
 > [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=91)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 91
@@ -496,318 +496,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=104)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 104
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=105)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 105
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=106)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 106
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=107)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 107
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=108)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 108
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=109)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 109
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=110)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 110
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=111)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 111
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=112)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 112
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=113)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 113
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=114)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 114
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=115)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 115
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=116)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 116
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=117)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 117
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=118)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 118
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=119)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 119
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=120)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 120
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=121)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 121
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=122)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 122
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=123)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 123
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=124)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 124
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=125)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 125
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=126)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 126
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=127)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 127
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=128)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 128
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=129)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 129
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=130)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 130
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=131)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 131
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=132)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 132
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=133)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 133
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=134)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 134
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=135)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 135
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=136)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 136
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=137)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 137
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=138)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 138
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=139)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 139
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=140)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 140
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=141)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 141
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=142)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 142
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=143)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 143
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=144)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 144
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=145)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 145
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=146)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 146
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=147)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 147
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=148)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 148
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=149)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 149
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=150)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 150
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=151)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 151
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=152)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 152
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=153)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 153
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=154)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 154
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=155)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 155
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=156)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 156
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=157)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 157
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=158)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 158
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=159)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 159
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=160)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 160
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=161)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 161
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=162)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 162
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=163)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 163
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=164)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 164
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=165)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 165
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=166)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 166
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=167)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 167
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=168)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 168
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=169)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 169
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=170)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 170
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=171)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 171
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=172)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 172
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=173)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 173
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=174)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 174
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=175)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 175
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=176)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 176
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=177)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 177
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=178)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 178
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=179)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 179
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=180)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 180
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=181)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 181
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=182)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 182
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=183)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 183
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=184)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 184
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=185)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 185
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=186)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 186
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=187)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 187
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=188)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 188
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=189)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 189
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=190)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 190
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=191)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 191
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=192)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 192
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=193)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 193
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=194)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 194
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=195)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 195
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=196)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 196
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=197)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 197
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=198)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 198
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=199)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 199
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=200)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 200
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=201)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 201
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=202)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 202
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=203)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 203
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=204)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 204
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=205)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 205
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=206)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 206
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=207)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 207
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=208)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 208
 > [  0.000000] (0:@) TRACE_paje_dump_buffer: dump until 0.000000. starts
 > [  0.000000] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.000000
 > [  0.000000] (0:@) free_paje_event: event_type=8, timestamp=0.000000
@@ -875,214 +563,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) free_paje_event: event_type=8, timestamp=0.000000
 > [  0.000000] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.000000
 > [  0.000000] (0:@) free_paje_event: event_type=8, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
@@ -4331,9 +3811,9 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 6 0 25 6 1 5
 > 6 0 26 6 1 loopback
 > 4 10 1 2 6 HOST-LINK
-> 4 11 1 6 2 LINK-HOST
-> 4 12 1 6 5 LINK-ROUTER
-> 4 13 1 6 6 LINK-LINK
+> 4 11 1 6 5 LINK-ROUTER
+> 4 12 1 6 6 LINK-LINK
+> 4 13 1 6 2 LINK-HOST
 > 4 14 1 5 6 ROUTER-LINK
 > 8 0 3 2 98095000.000000
 > 8 0 3 3 76296000.000000
@@ -4370,180 +3850,76 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 8 0 8 26 0.000015
 > 14 0 10 1 G 4 0
 > 15 0 10 1 G 26 0
-> 14 0 11 1 G 26 1
-> 15 0 11 1 G 4 1
-> 14 0 10 1 G 4 2
-> 15 0 10 1 G 20 2
+> 14 0 10 1 G 4 1
+> 15 0 10 1 G 20 1
+> 14 0 11 1 G 20 2
+> 15 0 11 1 G 11 2
 > 14 0 12 1 G 20 3
-> 15 0 12 1 G 11 3
-> 14 0 10 1 G 4 4
-> 15 0 10 1 G 20 4
-> 14 0 13 1 G 20 5
-> 15 0 13 1 G 21 5
-> 14 0 13 1 G 21 6
-> 15 0 13 1 G 23 6
-> 14 0 13 1 G 23 7
-> 15 0 13 1 G 19 7
-> 14 0 13 1 G 19 8
-> 15 0 13 1 G 15 8
-> 14 0 13 1 G 15 9
-> 15 0 13 1 G 22 9
-> 14 0 11 1 G 22 10
-> 15 0 11 1 G 2 10
-> 14 0 10 1 G 4 11
-> 15 0 10 1 G 20 11
-> 14 0 13 1 G 20 12
-> 15 0 13 1 G 13 12
-> 14 0 13 1 G 13 13
-> 15 0 13 1 G 16 13
-> 14 0 11 1 G 16 14
-> 15 0 11 1 G 6 14
-> 14 0 10 1 G 4 15
-> 15 0 10 1 G 20 15
-> 14 0 13 1 G 20 16
-> 15 0 13 1 G 21 16
-> 14 0 13 1 G 21 17
-> 15 0 13 1 G 23 17
-> 14 0 13 1 G 23 18
-> 15 0 13 1 G 19 18
-> 14 0 13 1 G 19 19
-> 15 0 13 1 G 15 19
-> 14 0 13 1 G 15 20
-> 15 0 13 1 G 22 20
-> 14 0 13 1 G 22 21
-> 15 0 13 1 G 17 21
-> 14 0 11 1 G 17 22
-> 15 0 11 1 G 3 22
-> 14 0 10 1 G 4 23
-> 15 0 10 1 G 20 23
-> 14 0 13 1 G 20 24
-> 15 0 13 1 G 21 24
-> 14 0 13 1 G 21 25
-> 15 0 13 1 G 23 25
-> 14 0 13 1 G 23 26
-> 15 0 13 1 G 19 26
-> 14 0 13 1 G 19 27
-> 15 0 13 1 G 25 27
-> 14 0 11 1 G 25 28
-> 15 0 11 1 G 5 28
-> 14 0 14 1 G 9 29
-> 15 0 14 1 G 19 29
-> 14 0 12 1 G 19 30
-> 15 0 12 1 G 8 30
-> 14 0 14 1 G 9 31
-> 15 0 14 1 G 23 31
-> 14 0 12 1 G 23 32
-> 15 0 12 1 G 10 32
-> 14 0 14 1 G 7 33
-> 15 0 14 1 G 15 33
-> 14 0 12 1 G 15 34
-> 15 0 12 1 G 8 34
-> 14 0 14 1 G 7 35
-> 15 0 14 1 G 22 35
-> 14 0 11 1 G 22 36
-> 15 0 11 1 G 2 36
-> 14 0 14 1 G 8 37
-> 15 0 14 1 G 25 37
-> 14 0 11 1 G 25 38
-> 15 0 11 1 G 5 38
-> 14 0 14 1 G 11 39
-> 15 0 14 1 G 13 39
-> 14 0 12 1 G 13 40
-> 15 0 12 1 G 12 40
-> 14 0 14 1 G 11 41
-> 15 0 14 1 G 21 41
-> 14 0 12 1 G 21 42
-> 15 0 12 1 G 10 42
-> 14 0 14 1 G 12 43
-> 15 0 14 1 G 16 43
-> 14 0 11 1 G 16 44
-> 15 0 11 1 G 6 44
-> 14 0 10 1 G 2 45
-> 15 0 10 1 G 26 45
-> 14 0 11 1 G 26 46
-> 15 0 11 1 G 2 46
-> 14 0 10 1 G 2 47
-> 15 0 10 1 G 22 47
-> 14 0 13 1 G 22 48
-> 15 0 13 1 G 15 48
-> 14 0 13 1 G 15 49
-> 15 0 13 1 G 19 49
-> 14 0 13 1 G 19 50
-> 15 0 13 1 G 23 50
-> 14 0 13 1 G 23 51
-> 15 0 13 1 G 21 51
-> 14 0 13 1 G 21 52
-> 15 0 13 1 G 13 52
-> 14 0 13 1 G 13 53
-> 15 0 13 1 G 16 53
-> 14 0 11 1 G 16 54
-> 15 0 11 1 G 6 54
-> 14 0 10 1 G 2 55
-> 15 0 10 1 G 17 55
-> 14 0 11 1 G 17 56
-> 15 0 11 1 G 3 56
-> 14 0 10 1 G 2 57
-> 15 0 10 1 G 22 57
-> 14 0 13 1 G 22 58
-> 15 0 13 1 G 15 58
-> 14 0 13 1 G 15 59
-> 15 0 13 1 G 25 59
-> 14 0 11 1 G 25 60
-> 15 0 11 1 G 5 60
-> 14 0 10 1 G 6 61
-> 15 0 10 1 G 26 61
-> 14 0 11 1 G 26 62
-> 15 0 11 1 G 6 62
-> 14 0 10 1 G 6 63
-> 15 0 10 1 G 16 63
-> 14 0 13 1 G 16 64
-> 15 0 13 1 G 13 64
-> 14 0 13 1 G 13 65
-> 15 0 13 1 G 21 65
-> 14 0 13 1 G 21 66
-> 15 0 13 1 G 23 66
-> 14 0 13 1 G 23 67
-> 15 0 13 1 G 19 67
-> 14 0 13 1 G 19 68
-> 15 0 13 1 G 15 68
-> 14 0 13 1 G 15 69
-> 15 0 13 1 G 22 69
-> 14 0 13 1 G 22 70
-> 15 0 13 1 G 17 70
-> 14 0 11 1 G 17 71
-> 15 0 11 1 G 3 71
-> 14 0 10 1 G 6 72
-> 15 0 10 1 G 16 72
-> 14 0 13 1 G 16 73
-> 15 0 13 1 G 13 73
-> 14 0 13 1 G 13 74
-> 15 0 13 1 G 21 74
-> 14 0 13 1 G 21 75
-> 15 0 13 1 G 23 75
-> 14 0 13 1 G 23 76
-> 15 0 13 1 G 19 76
-> 14 0 13 1 G 19 77
-> 15 0 13 1 G 25 77
-> 14 0 11 1 G 25 78
-> 15 0 11 1 G 5 78
-> 14 0 10 1 G 3 79
-> 15 0 10 1 G 26 79
-> 14 0 11 1 G 26 80
-> 15 0 11 1 G 3 80
-> 14 0 10 1 G 3 81
-> 15 0 10 1 G 17 81
-> 14 0 13 1 G 17 82
-> 15 0 13 1 G 22 82
-> 14 0 13 1 G 22 83
-> 15 0 13 1 G 15 83
-> 14 0 13 1 G 15 84
-> 15 0 13 1 G 25 84
-> 14 0 11 1 G 25 85
-> 15 0 11 1 G 5 85
-> 14 0 10 1 G 5 86
-> 15 0 10 1 G 26 86
-> 14 0 11 1 G 26 87
-> 15 0 11 1 G 5 87
+> 15 0 12 1 G 21 3
+> 14 0 12 1 G 21 4
+> 15 0 12 1 G 23 4
+> 14 0 12 1 G 23 5
+> 15 0 12 1 G 19 5
+> 14 0 12 1 G 19 6
+> 15 0 12 1 G 15 6
+> 14 0 12 1 G 15 7
+> 15 0 12 1 G 22 7
+> 14 0 13 1 G 22 8
+> 15 0 13 1 G 2 8
+> 14 0 12 1 G 20 9
+> 15 0 12 1 G 13 9
+> 14 0 12 1 G 13 10
+> 15 0 12 1 G 16 10
+> 14 0 13 1 G 16 11
+> 15 0 13 1 G 6 11
+> 14 0 12 1 G 22 12
+> 15 0 12 1 G 17 12
+> 14 0 13 1 G 17 13
+> 15 0 13 1 G 3 13
+> 14 0 12 1 G 19 14
+> 15 0 12 1 G 25 14
+> 14 0 13 1 G 25 15
+> 15 0 13 1 G 5 15
+> 14 0 14 1 G 9 16
+> 15 0 14 1 G 19 16
+> 14 0 11 1 G 19 17
+> 15 0 11 1 G 8 17
+> 14 0 14 1 G 9 18
+> 15 0 14 1 G 23 18
+> 14 0 11 1 G 23 19
+> 15 0 11 1 G 10 19
+> 14 0 14 1 G 7 20
+> 15 0 14 1 G 15 20
+> 14 0 11 1 G 15 21
+> 15 0 11 1 G 8 21
+> 14 0 14 1 G 7 22
+> 15 0 14 1 G 22 22
+> 14 0 14 1 G 8 23
+> 15 0 14 1 G 25 23
+> 14 0 14 1 G 11 24
+> 15 0 14 1 G 13 24
+> 14 0 11 1 G 13 25
+> 15 0 11 1 G 12 25
+> 14 0 14 1 G 11 26
+> 15 0 14 1 G 21 26
+> 14 0 11 1 G 21 27
+> 15 0 11 1 G 10 27
+> 14 0 14 1 G 12 28
+> 15 0 14 1 G 16 28
+> 14 0 10 1 G 2 29
+> 15 0 10 1 G 26 29
+> 14 0 12 1 G 21 30
+> 15 0 12 1 G 13 30
+> 14 0 10 1 G 2 31
+> 15 0 10 1 G 17 31
+> 14 0 12 1 G 15 32
+> 15 0 12 1 G 25 32
+> 14 0 10 1 G 6 33
+> 15 0 10 1 G 26 33
+> 14 0 10 1 G 3 34
+> 15 0 10 1 G 26 34
+> 14 0 10 1 G 5 35
+> 15 0 10 1 G 26 35
 > 1 15 2 is_slave "1 1 1"
 > 1 16 2 is_master "1 1 1"
 > 1 17 2 task_creation "1 1 1"
