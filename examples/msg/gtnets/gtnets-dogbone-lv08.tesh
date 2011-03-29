@@ -8,4 +8,5 @@ $ gtnets/gtnets ${srcdir:=.}/gtnets/dogbone-p.xml ${srcdir:=.}/gtnets/dogbone-d.
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'LV08'
 > [C1:slave:(3) 0.342000] [msg_test/INFO] WARNING FLOW[0] is limited by latency!!
 > [C1:slave:(3) 0.342000] [msg_test/INFO] ===> Estimated Bw of FLOW[0] : 29239.766082 ;  message from S1 to C1  with remaining : 0.000000
+> [C1:slave:(3) 0.342000] [msg_test/INFO] WARNING FLOW[1] is limited by latency!!
 > [C1:slave:(3) 0.342000] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 29239.766082 ;  message from S2 to C2  with remaining : 0.000000
