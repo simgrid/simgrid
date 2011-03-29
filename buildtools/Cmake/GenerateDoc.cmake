@@ -140,7 +140,10 @@ else(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICO
 	if(NOT GOOD_BIBTEX2HTML_VERSION) # wrong version
 		ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
 			COMMAND ${CMAKE_COMMAND} -E echo "This is not the good bibtex2html program !!!"
-			COMMAND ${CMAKE_COMMAND} -E echo  "You can download it from : ftp://ftp-sop.inria.fr/epidaure/Softs/bibtex2html/bibtex2html-1.02.tar.gz"
+			COMMAND ${CMAKE_COMMAND} -E echo  "You can download it from:"
+			COMMAND ${CMAKE_COMMAND} -E echo  "  ftp://ftp-sop.inria.fr/epidaure/Softs/bibtex2html/bibtex2html-1.02.tar.gz"
+			COMMAND ${CMAKE_COMMAND} -E echo  "There is also an unofficial Debian/Ubuntu package, see:"
+		        COMMAND ${CMAKE_COMMAND} -E echo  "  http://www.loria.fr/~lnussbau/bibtex2html/README"
 			)
 	endif(NOT GOOD_BIBTEX2HTML_VERSION)
 
