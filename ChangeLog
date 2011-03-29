@@ -50,6 +50,8 @@ SimGrid (3.6) unstable; urgency=low
    processes in parallel only when their number is greater than or equal to P.
 
  XBT
+ * New command line option: if you pass --cfg=verbose-exit:0, SimGrid
+   won't output the state of processes when interrupted with Ctrl-C
  * Add a new function xbt_dynar_to_array that transforms a dynar into a
    NULL-terminated array. This may solve backward compatibility issues
    due to the change to return type of SD_Simulate. See also:
