@@ -567,7 +567,6 @@ static void parse_S_AS_XML(void)
 
   if (strcmp(A_surfxml_AS_coordinates,"")) {
 	if(!COORD_ASR_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
-    XBT_DEBUG("%s coordinates : %s", A_surfxml_AS_id, A_surfxml_AS_coordinates);
     xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_AS_coordinates, " ");
     xbt_dynar_shrink(ctn, 0);
     xbt_lib_set(as_router_lib,A_surfxml_AS_id,COORD_ASR_LEVEL,(void *) ctn);
@@ -3754,7 +3753,6 @@ static char* replace_random_parameter(char * string)
 
 static void clean_dict_random(void)
 {
-	XBT_DEBUG("Clean dict for random");
 	xbt_dict_free(&random_value);
 	xbt_dict_free(&patterns);
 }
@@ -3775,18 +3773,6 @@ static void routing_parse_Speer(void)
   char *host_id = NULL;
   char *router_id, *link_router, *link_backbone, *link_id_up, *link_id_down;
 
-#ifdef HAVE_PCRE_LIB
-
-#endif
-
-  int peer_sharing_policy = AX_surfxml_peer_sharing_policy;
-
-#ifndef HAVE_PCRE_LIB
-  //xbt_dynar_t tab_elements_num = xbt_dynar_new(sizeof(int), NULL);
-  //char *route_src, *route_dst;
-  //int j;
-#endif
-
   static unsigned int surfxml_buffer_stack_stack_ptr = 1;
   static unsigned int surfxml_buffer_stack_stack[1024];
 
@@ -3796,13 +3782,10 @@ static void routing_parse_Speer(void)
 
   SURFXML_BUFFER_SET(AS_id, peer_id);
   SURFXML_BUFFER_SET(AS_coordinates, peer_coord);
-#ifdef HAVE_PCRE_LIB
-  SURFXML_BUFFER_SET(AS_routing, "RuleBased");
-  XBT_DEBUG("<AS id=\"%s\"\trouting=\"RuleBased\">", peer_id);
-#else
+
   SURFXML_BUFFER_SET(AS_routing, "Full");
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", peer_id);
-#endif
+
   SURFXML_START_TAG(AS);
 
   XBT_DEBUG(" ");
@@ -3834,8 +3817,6 @@ static void routing_parse_Speer(void)
   XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_up, peer_bw_in, peer_lat);
   A_surfxml_link_state = A_surfxml_link_state_ON;
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-  if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FULLDUPLEX)
-{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
   SURFXML_BUFFER_SET(link_id, link_id_up);
   SURFXML_BUFFER_SET(link_bandwidth, peer_bw_in);
   SURFXML_BUFFER_SET(link_latency, peer_lat);
@@ -3848,8 +3829,6 @@ static void routing_parse_Speer(void)
   XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_down, peer_bw_out, peer_lat);
   A_surfxml_link_state = A_surfxml_link_state_ON;
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-  if(peer_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
-{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
   SURFXML_BUFFER_SET(link_id, link_id_down);
   SURFXML_BUFFER_SET(link_bandwidth, peer_bw_out);
   SURFXML_BUFFER_SET(link_latency, peer_lat);
@@ -3862,9 +3841,9 @@ static void routing_parse_Speer(void)
   XBT_DEBUG(" ");
 
   // begin here
-  XBT_DEBUG("<route\tsrc=\"%s\"\tdst=\"%s\"", peer_id, router_id);
+  XBT_DEBUG("<route\tsrc=\"%s\"\tdst=\"%s\"", host_id, router_id);
   XBT_DEBUG("symmetrical=\"NO\">");
-  SURFXML_BUFFER_SET(route_src, peer_id);
+  SURFXML_BUFFER_SET(route_src, host_id);
   SURFXML_BUFFER_SET(route_dst, router_id);
   A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
   SURFXML_START_TAG(route);
@@ -3872,8 +3851,6 @@ static void routing_parse_Speer(void)
   XBT_DEBUG("<link_ctn\tid=\"%s\"/>", link_id_up);
   SURFXML_BUFFER_SET(link_ctn_id, link_id_up);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
-  if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FULLDUPLEX)
-  {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_UP;}
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
@@ -3881,18 +3858,16 @@ static void routing_parse_Speer(void)
   SURFXML_END_TAG(route);
 
   //Opposite Route
-  XBT_DEBUG("<route\tsrc=\"%s\"\tdst=\"%s\"", router_id, peer_id);
+  XBT_DEBUG("<route\tsrc=\"%s\"\tdst=\"%s\"", router_id, host_id);
   XBT_DEBUG("symmetrical=\"NO\">");
   SURFXML_BUFFER_SET(route_src, router_id);
-  SURFXML_BUFFER_SET(route_dst, peer_id);
+  SURFXML_BUFFER_SET(route_dst, host_id);
   A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
   SURFXML_START_TAG(route);
 
   XBT_DEBUG("<link_ctn\tid=\"%s\"/>", link_id_down);
   SURFXML_BUFFER_SET(link_ctn_id, link_id_down);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
-  if(peer_sharing_policy == A_surfxml_peer_sharing_policy_FULLDUPLEX)
-  {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_DOWN;}
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
