@@ -192,6 +192,14 @@ static void _surf_cfg_cb_model_check(const char *name, int pos)
   }
 }
 
+extern int _surf_do_verbose_exit;
+
+static void _surf_cfg_cb_verbose_exit(const char *name, int pos)
+{
+  _surf_do_verbose_exit = xbt_cfg_get_int(_surf_cfg_set, name);
+}
+
+
 static void _surf_cfg_cb_context_factory(const char *name, int pos)
 {
   smx_context_factory_name = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -347,12 +355,21 @@ void surf_config_init(int *argc, char **argv)
                      "Activate the model-checking of the \"simulated\" system (EXPERIMENTAL -- msg only for now)",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
                      _surf_cfg_cb_model_check, NULL);
+    
     /*
        FIXME: this function is not setting model-check to it's default value because
        internally it calls to variable->cb_set that in this case is the function 
-       _surf_cfg_cb_model_check which sets it's value to 1 (instead of the defalut value 0)
+       _surf_cfg_cb_model_check which sets it's value to 1 (instead of the default value 0)
        xbt_cfg_set_int(_surf_cfg_set, "model-check", default_value_int); */
 
+    /* do verbose-exit */
+    default_value_int = 0;
+    xbt_cfg_register(&_surf_cfg_set, "verbose-exit",
+                     "Activate the \"do nothing\" mode in Ctrl-C",
+                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     _surf_cfg_cb_verbose_exit, NULL);
+    
+    
     /* context factory */
     default_value = xbt_strdup("ucontext");
     xbt_cfg_register(&_surf_cfg_set, "contexts/factory",
