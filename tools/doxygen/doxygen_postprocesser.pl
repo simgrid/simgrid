@@ -314,19 +314,26 @@ foreach my $file (@allfiles) {
       print TO '<link href="simgrid.css" rel="stylesheet" type="text/css">'."\n"
         if (m|</head>|);
 
+	
       # Rework the navbar
-      if (m,<li><a href="(doc/)?index.html"><span>Main\&nbsp;Page</span></a></li>,) {
-        print TO '    <li'.($file =~ m,(doc/)?index.html, ? " class='current'" :"").'><a href="'.$1.'index.html"><span>Overview</span></a></li>'."\n";
-        print TO '    <li'.($file =~ m,(doc/)?faq.html, ? " class='current'" :"").'><a href="'.$1.'faq.html"><span>FAQ</span></a></li>'."\n";
-        next;
+      if($file =~ "^html/index.*"){
+	      if ($_ =~ /<li><a href="index.html"><span>Main&#160;Page<\/span><\/a><\/li>/) {
+	        print TO '      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>'."\n";
+	      	next;
+	      }
+	      elsif ($_ =~ /[\ ]*<li class="current">.*/) {
+	      	$_ =~ s/ class="current"//g;
+	        print TO $_;
+	        next;
+	      }
       }
-      if (m,<li><a href="(doc/)?annotated.html"><span>Data\&nbsp;Structures</span></a></li>,) {
-        print TO '    <li'.($file =~ m,(doc/)?publis(_[^.]*)?.html, ? " class='current'" :"").'><a href="'.$1.'publis.html"><span>Publications</span></a></li>'."\n";
-        print TO '    <li'.($file =~ m,(doc/)?people.html, ? " class='current'" :"").'><a href="'.$1.'people.html"><span>People</span></a></li>'."\n";
-        print TO '    <li'.($file =~ m,(doc/)?history.html, ? " class='current'" :"").'><a href="'.$1.'history.html"><span>History</span></a></li>'."\n";
-        print TO '    <li'.($file =~ m,(doc/)?contrib.html, ? " class='current'" :"").'><a href="'.$1.'contrib.html"><span>Contrib</span></a></li>'."\n";
-        next;
-      }
+#      if (m,<li><a href="(doc/)?annotated.html"><span>Data\&nbsp;Structures</span></a></li>,) {
+#        print TO '    <li'.($file =~ m,(doc/)?publis(_[^.]*)?.html, ? " class='current'" :"").'><a href="'.$1.'publis.html"><span>Publications</span></a></li>'."\n";
+#        print TO '    <li'.($file =~ m,(doc/)?people.html, ? " class='current'" :"").'><a href="'.$1.'people.html"><span>People</span></a></li>'."\n";
+#        print TO '    <li'.($file =~ m,(doc/)?history.html, ? " class='current'" :"").'><a href="'.$1.'history.html"><span>History</span></a></li>'."\n";
+#        print TO '    <li'.($file =~ m,(doc/)?contrib.html, ? " class='current'" :"").'><a href="'.$1.'contrib.html"><span>Contrib</span></a></li>'."\n";
+#        next;
+#      }
       s|<span>Modules</span>|<span>Modules API</span>|g;
       s|<span>Related&nbsp;Pages</span>|<span>Site&nbsp;Plan</span>|g;
                                                                                                  
