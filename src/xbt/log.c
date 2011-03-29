@@ -1043,6 +1043,7 @@ void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app)
 
 void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
 {
+#define _xbt_log_cat_init(a, b) (0)
   if (!cat->appender) {
     XBT_VERB
         ("No appender to category %s. Setting the file appender as default",
@@ -1057,6 +1058,7 @@ void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
   }
   cat->layout = lay;
   xbt_log_additivity_set(cat, 0);
+#undef _xbt_log_cat_init
 }
 
 void xbt_log_additivity_set(xbt_log_category_t cat, int additivity)
