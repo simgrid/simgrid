@@ -35,10 +35,16 @@ extern void smx_ctx_raw_new_sr(void);
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
 
+int _surf_do_verbose_exit = 1;
 static void _XBT_CALL inthandler(int ignored)
 {
-  XBT_INFO("CTRL-C pressed. Displaying status and bailing out");
-  SIMIX_display_process_status();
+  if ( _surf_do_verbose_exit ) {
+     XBT_INFO("CTRL-C pressed. Displaying status and bailing out");
+     SIMIX_display_process_status();
+  }
+  else {
+     XBT_INFO("CTRL-C pressed. bailing out without displaying because verbose-exit disabled");
+  }
   exit(1);
 }
 
