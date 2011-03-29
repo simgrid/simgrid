@@ -14,9 +14,10 @@ my($body) = "";
 
 open FILE,$inputhtml;
 while(defined($line=<FILE>)) {
-    if($line =~/<div class="tabs">/) {
+    if($line =~/<div id=".*" class="tabs">/) {
 	$onglets = $line;
 	while(defined($line=<FILE>) && !($line =~/<\/div>/)) {
+		$line =~ s/ class="current"//g;
 	    $onglets.=$line;
 	}
 	$onglets.=$line;
