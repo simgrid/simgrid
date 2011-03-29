@@ -1,5 +1,7 @@
 This is the SimGrid project.
 
+This file is a bit outdated, sorry.
+
 There is at least 5 sub-projects in the tree:
 
  - XBT: eXtended Bundle of Tools (low-level toolbox: logging, datatypes).
