@@ -23,7 +23,9 @@ fi
 
 old_version=`cat bckup_version`
 new_version=`svnversion`
+Date=`date`
 
+echo date : $date
 echo version old : $old_version
 echo version svn : $new_version
 echo `svnversion` > bckup_version
