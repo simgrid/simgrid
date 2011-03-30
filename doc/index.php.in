@@ -66,10 +66,10 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 <table border="0" width="100%" cellspacing="0" cellpadding="0">
 
 	<tr>
-		<td style="text-align: left; vertical-align: top;"><a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>"><img
-		  src="simgrid_logo_small.png"
-		  style="text-decoration: underline;" border="0" alt="SimGrid"></a><br>
-		</td>
+        <td style="text-align: left; vertical-align: top;"><a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>"><img
+          src="<?php if (date('m') == '04'  && date('d') == '01')  {echo 'simgrid_logo_smaller.png';} else {echo 'simgrid_logo_small.png';};?>"
+          style="text-decoration: underline;" border="0" alt="SimGrid"></a><br>
+        </td>
 		<td style="text-align: right; vertical-align: top;"><a href="http://<?php echo $domain; ?>"><img src="http://<?php echo $domain; ?>/themes/inria/images/logo.png" border="0" alt="gforge INRIA" width="198" height="52" /></a></td>
 	</tr>
 </table>
@@ -79,7 +79,6 @@ ______ONGLETS______
 	<tr>
 		<td>&nbsp;</td>
 		<td colspan="3">
-
 
 
 		<!-- start tabs -->

@@ -21,7 +21,7 @@ while(defined($line=<FILE>)) {
 	    $onglets.=$line;
 	}
 	$onglets.=$line;
-	$onglets.="<center></center><p><br>\n"
+	#$onglets.="<center></center><p><br>\n"
     } 
     if($line =~/<!-- ______BODY_BEGIN______ --!>(.*)$/) {
 	$tmp=$1;
