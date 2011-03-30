@@ -211,7 +211,8 @@ sub handle_page {
   # we generate the tabs bottom up begining from where we are in the tree
   # and display them top down, as it should in a file
   my @tabs = ();
-
+  my $found_div_tabs=0;
+  
   if (defined ($current->{'label'}) and $current->{'label'} ne 'ROOT') {
 #    print "handle $current->{'file'}, at level $level\n";
     # generate the tabs
@@ -246,8 +247,9 @@ sub handle_page {
       # add "current" to the module API granfather page
       s|<li><a href="modules.html"><span>[^<]*</span></a></li>|<li class="current"><a href="modules.html"><span>Modules&nbsp;API</span></a></li>|;
 #      print "++Write $_";
+	  $found_div_tabs=1 if m/div.*class="tabs"/;	
       print TO "$_";
-      last if (m|</div>|);
+      last if ((m|</div>|)&&($found_div_tabs));
     }
       
     print TO "\n<!-- POST-PROCESSED TABS -->\n";
@@ -258,26 +260,26 @@ sub handle_page {
     print TO "\n<!-- END OF POST-PROCESSED TABS -->\n";
       
     if ($current->{'file'} =~ m/^class/) {
-	while (<FROM>) {
-	    last if (m|</div>|);
-	}
+	  while (<FROM>) {
+	 	last if (m|</div>|);
+	  }
       print TO "$_";	
     }
     while (<FROM>) {
       if (m/POST-PROCESSED TABS/) {
-	  while (<FROM>) {
+	    while (<FROM>) {
 	      last if (m/END OF POST-PROCESSED TABS/);
-	  }
-	  next;
+	    }
+	    next;
       }
 
       if (m/The documentation for/) {
-	  while (<FROM>) {
+	    while (<FROM>) {
 	      last if (m/<p>/);
-	  }
+	    }
       }
       print TO "$_";
-    }    
+    }
     close FROM;
     close TO;
     rename("$newname","html/$current->{'file'}") unless $debug{'rename'};
@@ -292,8 +294,45 @@ sub handle_page {
 ###
 ### Launch the modules navbar reworking
 ###
-handle_page($top,-2);# skip roots (we have 2 roots) in level counting
+handle_page($top,-1);# skip roots (we have 2 roots) in level counting
 
+###
+### Add the modules navbar reworking to the modules.html file
+###
+sub add_tabs_to_module_html {
+  my $found_div_tabs=0;
+  my $module_tabs = "<div class=\"tabs2\">\n<ul class=\"tablist\">\n";
+  foreach my $entry (@{$top->{'down'}}) {
+      $module_tabs .= "  <li> <a href=\"$entry->{'file'}\"><span>$entry->{'label'}</span></a></li>\n";
+  }
+  $module_tabs .= "  </ul></div>\n";      
+  
+  my $oldname = "html/modules.html";
+  open FROM,$oldname || die;
+  my $newname=$oldname;
+  $newname =~ s/.html/.handlepage.html/;
+  open TO,">$newname" || die;
+  while (<FROM>) {
+    $found_div_tabs=1 if m/div.*class="tabs"/;	
+	print TO "$_";
+	last if ((m|</div>|)&&($found_div_tabs));
+  }
+  
+  print TO "\n<!-- POST-PROCESSED TABS -->\n";
+  print TO $module_tabs;
+  print TO "\n<!-- END OF POST-PROCESSED TABS -->\n";
+
+  while (<FROM>) {
+	print TO "$_";
+  }  
+  close FROM;
+  close TO;
+  rename($newname, $oldname) unless $debug{'rename'};
+  
+  # die;
+}   
+
+add_tabs_to_module_html;
 
 ###
 ### Post-processsing common to all pages
@@ -316,43 +355,55 @@ foreach my $file (@allfiles) {
       print TO '<link href="simgrid.css" rel="stylesheet" type="text/css">'."\n"
         if (m|</head>|);
 
+	  if($tabs){
+		  if($file =~ /^html\/index\..*/){
+		  	$_ =~ s/<li class="current">/<li>/g;
+		  	$_ =~ s/<li><a href="index.html">/<li class="current"><a href="index.html">/g;
+		  }
+		  
+		  $_ =~ s/<li class="current"><a href="pages.html">/<li><a href="pages.html">/g;
+		  
+		  if($file =~ /^html\/pages\..*/){
+		  	$_ =~ s/<li><a href="pages.html">/<li class="current"><a href="pages.html">/g;
+		  }
+	  }
 	
-      # Rework the navbar
-      if($file =~ "^html/index.*"){
-	      if ($_ =~ /<li><a href="index.html"><span>Main&#160;Page<\/span><\/a><\/li>/) {
-	        print TO '      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>'."\n";
-	      	next;
-	      }
-	      elsif ($_ =~ /[\ ]*<li class="current">.*/) {
-	      	$_ =~ s/ class="current"//g;
-	        print TO $_;
-	        next;
-	      }
+	  # Add the FAQ PUBLIS PEOPLE HISTORY and CONTRIB to the top navbar.
+      if( $_ =~ /<div.*class="tabs">/){
+      	$tabs = 1;
       }
-      if($file =~ "^html/faq.*"){
-		if ($_ =~ /[\ ]*<li class="current">.*/) {
-	      	$_ =~ s/ class="current"//g;
-	        print TO $_;
-	        next;
-	      }
+      if( $_ =~ /<\/div>/){
+      	$tabs = 0;
       }
-      if( $_ =~ /<div.*class="tabs">/){$tabs = 1;}
-      if( $_ =~ /<\/div>/){$tabs = 0;}
       if( $_ =~ /<\/ul>/ && $tabs){
-      		if($file =~ "^html/faq.*"){
-      		print TO '      <li class="current"><a href="faq.html"><span>FAQ&#160;Page</span></a></li>'."\n";}
-      		else{
-      	  	print TO '      <li><a href="faq.html"><span>FAQ&#160;Page</span></a></li>'."\n";}
-      	  	print TO $_;
-      	  	next;
-      }
-#      if (m,<li><a href="(doc/)?annotated.html"><span>Data\&nbsp;Structures</span></a></li>,) {
-#        print TO '    <li'.($file =~ m,(doc/)?publis(_[^.]*)?.html, ? " class='current'" :"").'><a href="'.$1.'publis.html"><span>Publications</span></a></li>'."\n";
-#        print TO '    <li'.($file =~ m,(doc/)?people.html, ? " class='current'" :"").'><a href="'.$1.'people.html"><span>People</span></a></li>'."\n";
-#        print TO '    <li'.($file =~ m,(doc/)?history.html, ? " class='current'" :"").'><a href="'.$1.'history.html"><span>History</span></a></li>'."\n";
-#        print TO '    <li'.($file =~ m,(doc/)?contrib.html, ? " class='current'" :"").'><a href="'.$1.'contrib.html"><span>Contrib</span></a></li>'."\n";
-#        next;
-#      }
+      		my $tmp_buff="";
+      		$tmp_buff .= '     <li><a href="publis.html"><span>Publications</span></a></li>'."\n";
+      		$tmp_buff .= '      <li><a href="people.html"><span>People</span></a></li>'."\n";
+      		$tmp_buff .= '      <li><a href="history.html"><span>History</span></a></li>'."\n";
+      		$tmp_buff .= '      <li><a href="contrib.html"><span>Contrib</span></a></li>'."\n";
+      		$tmp_buff .= '      <li><a href="faq.html"><span>FAQ&#160;Page</span></a></li>'."\n";
+      	  	$tmp_buff .= $_;
+      	  	$tabs = 0;
+	
+	      # Rework the navbar
+	      # Fix the current "button" of buggy Doxygen tabs   
+	      if($file =~ /^html\/faq.*/ 
+	      || $file =~ /^html\/publis.*/ 
+	      || $file =~ /^html\/people.*/ 
+	      || $file =~ /^html\/history.*/ 
+	      || $file =~ /^html\/contrib.*/)
+	      {
+		      my $filename = $file;
+		      $filename =~ s/html\///g;
+		      $filename =~ s/\.html//g;
+		      $filename =~ s/publis_.*/publis/g;
+		      $tmp_buff =~ s/<li class="current">/<li>/g;
+		      $tmp_buff =~ s/<li><a href="$filename.html">/<li class="current"><a href="$filename.html">/g;	      
+	      }
+	      print TO $tmp_buff;
+	      next;
+    }
+      
       s|<span>Modules</span>|<span>Modules API</span>|g;
       s|<span>Related&nbsp;Pages</span>|<span>Site&nbsp;Plan</span>|g;
                                                                                                  
