@@ -1412,10 +1412,10 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 	{
 		if(route->dst_gateway && route->src_gateway)
 		{
-                  char *gw_src = xbt_strdup(route->src_gateway);
-                  char *gw_dst = xbt_strdup(route->dst_gateway);
-                  route->src_gateway = gw_dst;
-                  route->dst_gateway = gw_src;
+                  char *gw_tmp ;
+                  gw_tmp = route->src_gateway;
+                  route->src_gateway = route->dst_gateway;
+                  route->dst_gateway = gw_tmp;
 		}
 		if(TO_ROUTE_FULL(*dst_id, *src_id))
 		{
@@ -1445,8 +1445,10 @@ static void model_full_set_route(routing_component_t rc, const char *src,
 		      TO_ROUTE_FULL(*dst_id, *src_id) = generic_new_extended_route(rc->hierarchy,route,0);
 		      xbt_dynar_shrink(TO_ROUTE_FULL(*dst_id, *src_id)->generic_route.link_list, 0);
 		}
-
 	}
+
+	if (rc->hierarchy == SURF_ROUTING_BASE) generic_free_route((route_t)route) ;
+	else generic_free_extended_route((route_extended_t)route);
 }
 
 /* ************************************************************************** */
@@ -3186,8 +3188,8 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
     links = e_route->generic_route.link_list;
 
     /* remeber not erase the gateway names */
-    new_e_route->src_gateway = e_route->src_gateway;
-    new_e_route->dst_gateway = e_route->dst_gateway;
+    new_e_route->src_gateway = strdup(e_route->src_gateway);
+    new_e_route->dst_gateway = strdup(e_route->dst_gateway);
   }
 
   links_id = new_e_route->generic_route.link_list;
