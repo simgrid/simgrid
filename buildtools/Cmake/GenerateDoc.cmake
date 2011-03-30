@@ -91,9 +91,9 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 		
 		COMMAND ${CMAKE_COMMAND} -E echo "XX Post-processing Doxygen result"
 		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/html/dir*
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_php.pl index.php.in html/index.html index.php
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/doxygen_postprocesser.pl
-	
+		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_php.pl index.php.in html/index.html index.php
+		
 		COMMAND ${CMAKE_COMMAND} -E echo "XX Create shortcuts pages"
 		COMMAND ${CMAKE_COMMAND} -E echo \"<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>\" > ${CMAKE_HOME_DIRECTORY}/doc/html/gras.html
 		COMMAND ${CMAKE_COMMAND} -E echo \"<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>Grid Reality And Simulation.</a></h2></center></html>\" >> ${CMAKE_HOME_DIRECTORY}/doc/html/gras.html

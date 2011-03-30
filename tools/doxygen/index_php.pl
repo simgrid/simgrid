@@ -54,6 +54,7 @@ open OUTPUT,"> $output";
 while(defined($line=<FILE>)) {
     chomp $line;
     if($line =~/______ONGLETS______/) {
+    $onglets =~ s/<li><a href=\"http:\/\/simgrid/<li class=\"current\"><a href=\"http:\/\/simgrid/g;
 	$line =~ s/______ONGLETS______/$onglets/g;
     } elsif($line =~/______BODY______/) {
 	$line =~ s/______BODY______/$body/g;

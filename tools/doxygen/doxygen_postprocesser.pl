@@ -382,6 +382,8 @@ foreach my $file (@allfiles) {
       		$tmp_buff .= '      <li><a href="history.html"><span>History</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="contrib.html"><span>Contrib</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="faq.html"><span>FAQ&#160;Page</span></a></li>'."\n";
+      		$tmp_buff .= '      <li><a href="http://gforge.inria.fr/projects/simgrid"><span>Simgrid&#160;Forge</span></a></li>'."\n";
+      		$tmp_buff .= '      <li><a href="http://simgrid.gforge.inria.fr/"><span>Home</span></a></li>'."\n";
       	  	$tmp_buff .= $_;
       	  	$tabs = 0;
 	
