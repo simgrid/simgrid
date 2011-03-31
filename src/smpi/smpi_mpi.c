@@ -164,6 +164,11 @@ int MPI_Comm_size(MPI_Comm comm, int *size)
   return PMPI_Comm_size(comm, size);
 }
 
+int MPI_Comm_get_name (MPI_Comm comm, char* name, int* len)
+{
+  return PMPI_Comm_get_name(comm, name, len);
+}
+
 int MPI_Comm_group(MPI_Comm comm, MPI_Group * group)
 {
   return PMPI_Comm_group(comm, group);

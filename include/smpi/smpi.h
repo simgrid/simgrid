@@ -23,6 +23,7 @@ SG_BEGIN_DECL()
 #define MPI_THREAD_MULTIPLE   3
 //FIXME: check values
 #define MPI_MAX_PROCESSOR_NAME 100
+#define MPI_MAX_NAME_STRING    100
 #define MPI_MAX_ERROR_STRING   100
 #define MPI_MAX_DATAREP_STRIN  100
 #define MPI_MAX_INFO_KEY       100
@@ -208,6 +209,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Group_range_excl,
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_rank, (MPI_Comm comm, int *rank));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_size, (MPI_Comm comm, int *size));
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_get_name, (MPI_Comm comm, char* name, int* len));
 MPI_CALL(XBT_PUBLIC(int), MPI_Get_processor_name, (char *name, int *resultlen));
 MPI_CALL(XBT_PUBLIC(int), MPI_Get_count,
                             (MPI_Status * status, MPI_Datatype datatype,

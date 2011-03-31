@@ -83,6 +83,7 @@ MPI_Comm smpi_comm_new(MPI_Group group);
 void smpi_comm_destroy(MPI_Comm comm);
 MPI_Group smpi_comm_group(MPI_Comm comm);
 int smpi_comm_size(MPI_Comm comm);
+void smpi_comm_get_name(MPI_Comm comm, char* name, int* len);
 int smpi_comm_rank(MPI_Comm comm);
 MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key);
 

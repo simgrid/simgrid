@@ -649,6 +649,23 @@ int PMPI_Comm_size(MPI_Comm comm, int *size)
   return retval;
 }
 
+int PMPI_Comm_get_name (MPI_Comm comm, char* name, int* len)
+{
+  int retval;
+
+  smpi_bench_end();
+  if (comm == MPI_COMM_NULL)  {
+    retval = MPI_ERR_COMM;
+  } else if (name == NULL || len == NULL)  {
+    retval = MPI_ERR_ARG;
+  } else {
+    smpi_comm_get_name(comm, name, len);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
 int PMPI_Comm_group(MPI_Comm comm, MPI_Group * group)
 {
   int retval;
