@@ -222,6 +222,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Comm_dup, (MPI_Comm comm, MPI_Comm * newcomm));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_create,
                             (MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_free, (MPI_Comm * comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_disconnect, (MPI_Comm * comm));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_split, (MPI_Comm comm, int color, int key, MPI_Comm* comm_out));
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Send_init,

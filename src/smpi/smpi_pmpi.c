@@ -763,6 +763,25 @@ int PMPI_Comm_free(MPI_Comm * comm)
   return retval;
 }
 
+int PMPI_Comm_disconnect(MPI_Comm * comm)
+{
+  /* TODO: wait until all communication in comm are done */
+  int retval;
+
+  smpi_bench_end();
+  if (comm == NULL) {
+    retval = MPI_ERR_ARG;
+  } else if (*comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else {
+    smpi_comm_destroy(*comm);
+    *comm = MPI_COMM_NULL;
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
 int PMPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
 {
   int retval;

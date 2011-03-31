@@ -194,6 +194,11 @@ int MPI_Comm_free(MPI_Comm * comm)
   return PMPI_Comm_free(comm);
 }
 
+int MPI_Comm_disconnect(MPI_Comm * comm)
+{
+  return PMPI_Comm_disconnect(comm);
+}
+
 int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
 {
   return PMPI_Comm_split(comm, color, key, comm_out);
