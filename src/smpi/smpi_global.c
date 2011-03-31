@@ -252,6 +252,10 @@ int MAIN__(void)
                    xbt_cfgelm_double, &default_threshold, 1, 1, NULL,
                    NULL);
 
+  if(getenv("SMPI_PRETEND_CC") != NULL) {
+    return 0;
+  }
+
 #ifdef HAVE_TRACING
   TRACE_global_init(&xargc, xargv);
 #endif
