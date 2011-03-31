@@ -359,14 +359,18 @@ foreach my $file (@allfiles) {
 		  if($file =~ /^html\/index\..*/){
 		  	$_ =~ s/<li class="current">/<li>/g;
 		  	$_ =~ s/<li><a href="index.html">/<li class="current"><a href="index.html">/g;
-		  }
-		  
+		  }		  
 		  $_ =~ s/<li class="current"><a href="pages.html">/<li><a href="pages.html">/g;
 		  
 		  if($file =~ /^html\/pages\..*/){
 		  	$_ =~ s/<li><a href="pages.html">/<li class="current"><a href="pages.html">/g;
 		  }
 	  }
+	  
+	  if($file =~ /^html\/publis.*/){
+		  	$_ =~ s/<div class="header">/<div>/g;
+		  	$_ =~ s/<div class="headertitle">/<div>/g;
+	 }
 	
 	  # Add the FAQ PUBLIS PEOPLE HISTORY and CONTRIB to the top navbar.
       if( $_ =~ /<div.*class="tabs">/){

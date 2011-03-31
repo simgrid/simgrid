@@ -215,12 +215,7 @@ endif(NOT WIN32)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExe.cmake)
 
 ### Make tests
-if(NOT WIN32)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
-else(NOT WIN32)
-
-endif(NOT WIN32)
-
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
 
 ### Setup the distrib
