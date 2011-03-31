@@ -1,0 +1,185 @@
+Using Git for SimGrid
+=====================
+
+SimGrid developement tree is now managed with Git. 
+So, you need to use Git to :
+
+- follow the last development of SimGrid
+- propose some new commit to SimGrid developpers
+
+
+Installing Git and finding documentation
+----------------------------------------
+Refer to your OS documentation for installing Git.
+
+On Debian/Unbuntu, you can install the following packages :
+  apt-get install git-core git-gui gitk git-email
+
+Git website is http://git.or.cz/ . A **lot** of documentation is available on
+this website. You can read for example the
+link:http://www.kernel.org/pub/software/scm/git/docs/gittutorial.html[Tutorial
+Introduction to Git] to begin with Git.
+
+
+Setting up GIT on your computer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Be sure that git will use your right name and email for commits:
+
+  git config --global user.name "Firstname Lastname"
+  git config --global user.email Firstname.Lastname@imag.fr
+
+Note: the "--global" switch ensure that these setups will be used for all
+git projects. You can change these settings per project without this flags
+(see "man gitconfig" for more information)
+
+
+Getting a working copy of SimGrid developement tree
+------------------------------------------------
+
+Read-only access:
+  git clone git://scm.gforge.inria.fr/simgrid/simgrid.git
+Read-write access (for people with account on the forge and in the SimGrid
+project):
+  git clone git+ssh://USER@scm.gforge.inria.fr//gitroot//simgrid/simgrid.git
+(replace USER by your login name on the forge)
+
+Note: due to the distributed nature of Git, it is probably better to checkout
+with a read-only access and later push in the official repo with another
+"remote" setup (see later).
+
+Creating a commit
+~~~~~~~~~~~~~~~~~
+A commit is a self-contained modification of the sources associated to
+meta-data such as author, date, message, etc.
+
+Several rules must be repected as much as possible :
+
+- all commits in public branches should lead to a state where "make"
+  works (required in order git-bisect to be useful)
+- all commits in public branches must never be rebased (use "git revert" if you
+  need to revert a public commit)
+- each commit should contain only one logical modification
+- this modification must be described in the log message. The first line of the
+  log is a summary, the second line should be empty, the next lines can
+  describe more precisely the modifications. 
+
+
+Your first line of commit message can begin with a [flag] telling which global
+part of SimGrid you are changing. It can be for example [doc], [network], [build
+system], [bugfix], etc.
+
+[bugfix] commits will probably be considered to be also applied in the last
+stable branch.
+
+If you need to modify your commits (changeset) before publishing them (better
+log message, splitting/merging of commits, ...), you can use :
+
+- "git gui" to modify (ammend) the last commit (check the good box)
+- "gitk" to cherry pick interresting commits (right-clic on interesting
+  commits) and (re)create a linear branch
+- "git rebase -i" to merge/split/reorder commits in a linear branch
+- your email or your feet to go ask for help ;-)
+
+
+Writing in the official repo
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+People with an accound on the forge (and in the SimGrid group) are allowed
+to publish their changes in the main repo. However, they can only
+create/modify/remove heads under refs/heads/$forge_login/*
+
+Global branches $global such as 'master', 'stable-*', ... are only writable
+if they are a subset of a refs/heads/$forge_login/official/$global .
+Restrictions to push to these global branches can be added if required.
+
+To publish some commit, the easiest way is to create a "remote" config
+such as:
+  git remote add inria-forge git+ssh://$forge_login@scm.gforge.inria.fr//gitroot//simgrid/simgrid.git
+
+And then, you should add to the configuration (in the [remote "sourceforge"]
+section of .git/config) some lines such as (replace $forge_login by your
+login on the forge):
+  push = refs/heads/master:refs/heads/$forge_login/wip/master
+  push = refs/heads/public/*:refs/heads/$forge_login/*
+  push = +refs/heads/wip/*:refs/heads/$forge_login/wip/*
+The idea here is to establish a correspondance between local heads and remote
+heads. As said before, remote heads **must** match refs/heads/$forge_login/*
+in order the push to succeed.
+
+Note: you can also add the previous config directly into the [remote "origin"]
+section if your clone has been done with the ssh protocol.
+
+You can create one-to-one correspondances (lines 1) or global correspondances
+(lines 2 and 3) as you wish. If you add a '+' in front of the line (line 3),
+then non fast-forward updates will be allowed. See 'man git-push' for more
+information.
+
+You can them push your commits with:
+  git push sourceforge
+
+
+To summary, with this setup:
+- local branch named master is pushed to '$forge_login/wip/master'
+- local branches named 'public/*' are pushed to '$forge_login/*'
+- local branches named 'wip/*' are pushed to '$forge_login/wip/*'
+- other local branches are not pushed
+
+Putting something in the 'master', 'stable-*', ... branches
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Just create a branch that merge the current 'master', 'stable-*', ... branch
+(called $global in this text) you want to update, push it first as
+$forge_login/official/$global and then push it as $global.
+  With the previous example setup, if you want to update 'master' to include
+your current commit, you have to type something like:
+  git merge sourceforge/master
+  git push sourceforge HEAD:$forge_login/official/master
+  git push sourceforge HEAD:master
+You can also add some config in .git/config such as
+  push = refs/heads/user-master:refs/heads/$forge_login/official/master
+  push = refs/heads/global-master:refs/heads/master
+
+  You can also ask one official maintainer of this branch to pull from your one
+(ie publish your branch and give its name to the official maintainers).
+
+Note: take care to ask to push only well commented, well formed changeset.
+Use 'git-rebase' to cleanup your branch if needed. Do not hesitate to ask for
+help if you do not know how to do it.
+
+Publishing branches
+~~~~~~~~~~~~~~~~~~~
+There is mainly two reasons for which you might want to publish some of your
+commits:
+
+- to merge your work into the main (master) developement branch. You must then
+ensure that the branch you want to publish is ready to be merged (well
+commented, well formed, bug free changeset) and then ask for a merge (see
+previous paragraph). If 'make' does not produce a working binary, you should
+reconsider seriously your request.
+
+Even if your work is not merged immediately, you should never rebase this
+branch (ie only fast-forward commits should be done). SimGrid developers should
+use public/* heads to track these kind of works;
+
+- to allow you/other people to test some experimental features. Rebase can
+occurs here, so other developers must never merge from theses branches unless
+they really know what they do. SimGrid developers should use wip/* heads to
+track these kind of works;
+
+To summary: commits in public/* heads (and 'master', 'stable-*' heads) must
+never be rebased as they can be used by other people. Take care before
+pushing such heads!
+
+Essential commands
+------------------
+
+You can probably do most of your work with the following commands:
+
+- git clone: get a new repo
+- git gui: commit some changes (graphical program)
+  You can very easily modify your last commit with this program
+- gitk: look at commits and manage branches (graphical program)
+- git rebase: rewrite/reorganize your (not yet public) commits
+- git fetch: get upstream changes
+- git merge: merge commits present on other branches
+- git pull: do a fetch and a merge
+- git push: publish your changes
+
