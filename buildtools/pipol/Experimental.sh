@@ -10,10 +10,10 @@ else
 fi
 cd ./pipol/$PIPOL_HOST
 
-svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid-trunk --quiet
-cd simgrid-trunk
+git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid --quiet
+cd simgrid
 
-if [ x$PIPOL_IMAGE == "xamd64-windows-server-2008-64bits-navarro-2011-03-15-122256.dd.gz" ] ; then
+if [ x$PIPOL_IMAGE == "xamd64-windows-server-2008-64bits.dd.gz" ] ; then
 	cmake \
 	-G"Unix Makefiles" \
 	-Denable_lua=off \
