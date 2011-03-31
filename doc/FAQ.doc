@@ -112,7 +112,7 @@ For Unix and MacOS:
   \li cmake <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
 
 For Windows :
-  \li cmake 2.8.3 <a href="http://www.cmake.org/files/v2.8/cmake-2.8.3-win32-x86.exe">(download page)</a>
+  \li cmake 2.8 <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
   \li perl strawberry <a href="http://www.strawberryperl.com/download/5.12.2.0/strawberry-perl-5.12.2.0.msi">(download page)</a>
   \li pcre-7.0 <a href="http://sourceforge.net/projects/gnuwin32/files/pcre/7.0/pcre-7.0.exe/download">(download page)</a>
 
@@ -120,11 +120,9 @@ For Windows :
 
 \verbatim
 "cmake -D[name]=[value] ... ./"
- 
+
 [name] 	enable_gtnets		[value] ON/OFF or TRUE/FALSE or 1/0
-	enable_java			ON/OFF or TRUE/FALSE or 1/0
 	enable_lua			ON/OFF or TRUE/FALSE or 1/0
-	enable_ruby			ON/OFF or TRUE/FALSE or 1/0
 	enable_compile_optimizations	ON/OFF or TRUE/FALSE or 1/0
 	enable_compile_warnings		ON/OFF or TRUE/FALSE or 1/0
 	enable_smpi			ON/OFF or TRUE/FALSE or 1/0
@@ -132,22 +130,24 @@ For Windows :
 	enable_supernovae		ON/OFF or TRUE/FALSE or 1/0
 	enable_tracing 			ON/OFF or TRUE/FALSE or 1/0
 	enable_coverage 		ON/OFF or TRUE/FALSE or 1/0
-	enable_memcheck 		ON/OFF or TRUE/FALSE or 1/0 
+	enable_memcheck 		ON/OFF or TRUE/FALSE or 1/0
 	enable_model-checking		ON/OFF or TRUE/FALSE or 1/0
+	enable_debug			ON/OFF or TRUE/FALSE or 1/0
+	enable_jedule 	 		ON/OFF or TRUE/FALSE or 1/0
+	enable_latency_bound_tracking 	ON/OFF or TRUE/FALSE or 1/0
+	enable_lib_static		ON/OFF or TRUE/FALSE or 1/0
+	enable_pcre			ON/OFF or TRUE/FALSE or 1/0
+	custom_flags 			<flags>
 	gtnets_path			<path_to_gtnets_directory>
 	CMAKE_INSTALL_PREFIX		<path_to_install_directory>
-	pipol_user			<pipol_username>	 
+	pipol_user			<pipol_username>
 \endverbatim
                                                                                                                                                           
 \subsubsection faq_cmakeoption2 Options explaination
 
   \li enable_gtnets : set to true implie that user wants to use gtnets.
 
-  \li enable_java : set to true implie that user wants to add java langage into simgrid compilation.
-
   \li enable_lua : set to true implie that user wants to add lua langage into simgrid compilation.
-
-  \li enable_ruby : set to true implie that user wants to add ruby langage into simgrid compilation.
 
   \li enable_compile_optimizations : add flags "-O3 -finline-functions -funroll-loops -fno-strict-aliasing"
 
@@ -159,13 +159,25 @@ For Windows :
 
   \li enable_supernovae : set to true make one file for each lib and compile with those generated files.
 
-  \li enable_tracing : To enable the generation of simulation traces for visualization
+  \li enable_tracing : To enable the generation of simulation traces for visualization.
 
   \li enable_coverage : When set to true this option enable code coverage by setting -fprofile-arcs -ftest-coverage flags.
 
   \li enable_memcheck : When set to true this option enable tests for memcheck.
 
   \li enable_model-checking : Enable the model checking when set to true.
+
+  \li enable_debug : If enable_debug is set to 'off' Simgrid compil flag has '-DNDEBUG' option.
+  
+  \li enable_jedule : To enable jedule mode, which creates visualizations of task schedules with Simdag. 
+  
+  \li enable_latency_bound_tracking : Set to on if you want to be warned when communications are limited by round trip time.
+  
+  \li enable_lib_static : Enable generated Simgrid and smpi static libraries.
+  
+  \li enable_pcre : Use or not the pcre lib for memory optimization. 	
+  
+  \li custom_flags : If user wants to use a specific flag during compilation, give here.
 
   \li gtnets_path : Path to gtnets install directory (ex /usr)
 
@@ -180,18 +192,22 @@ Those options are initialized the first time you launch "cmake ." whithout speci
 \verbatim
 enable_gtnets			on
 enable_lua			on
-enable_ruby			on
-enable_java			on
 enable_smpi			on
 enable_supernovae		on
 enable_tracing			on
 enable_compile_optimizations	on
+enable_debug			on
+enable_pcre			on
 enable_compile_warnings		off
 enable_maintainer_mode		off
 enable_coverage 		off
 enable_memcheck 		off
 enable_model-checking		off
+enable_jedule 	 		off
+enable_latency_bound_tracking 	off 
+enable_lib_static		off
 CMAKE_INSTALL_PREFIX		/usr/local
+custom_flags			null
 gtnets_path			null
 pipol_user			null
 \endverbatim
@@ -298,8 +314,8 @@ For Windows:
 
 \verbatim
 cmake -G"Unix Makefiles" -DCMAKE_INSTALL_PREFIX=C:\simgrid_install ./
-make
-make install
+gmake
+gmake install
 \endverbatim
 
 \subsubsection faq_cmakeinstall2 From a distrib
