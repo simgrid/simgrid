@@ -9,6 +9,7 @@ which_gpp=`which g++`		#gcc g++ necessary
 which_make=`which gmake`		#make necessary
 which_cmake=`which cmake`	#cmake necessary
 which_perl=`which perl`		#perl
+export PATH=$PATH:/cygdrive/c/:/cygdrive/c/GnuWin32/bin/
 echo "DEBUT----------------------------------"
 echo $which_cmake
 echo $which_make
@@ -16,4 +17,5 @@ echo $which_gcc
 echo $which_gpp
 echo $which_svn
 echo $which_perl
+echo $PATH
 echo "FIN------------------------------------"
