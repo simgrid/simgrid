@@ -67,6 +67,16 @@ int smpi_comm_rank(MPI_Comm comm)
   return smpi_group_rank(smpi_comm_group(comm), smpi_process_index());
 }
 
+void smpi_comm_get_name (MPI_Comm comm, char* name, int* len)
+{
+  if(comm == MPI_COMM_WORLD) {
+    strcpy(name, "WORLD");
+    *len = 5;
+  } else {
+    *len = snprintf(name, MPI_MAX_NAME_STRING, "%p", comm);
+  }
+}
+
 MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
 {
   int system_tag = 666;

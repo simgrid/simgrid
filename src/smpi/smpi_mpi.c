@@ -164,6 +164,11 @@ int MPI_Comm_size(MPI_Comm comm, int *size)
   return PMPI_Comm_size(comm, size);
 }
 
+int MPI_Comm_get_name (MPI_Comm comm, char* name, int* len)
+{
+  return PMPI_Comm_get_name(comm, name, len);
+}
+
 int MPI_Comm_group(MPI_Comm comm, MPI_Group * group)
 {
   return PMPI_Comm_group(comm, group);
@@ -187,6 +192,11 @@ int MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
 int MPI_Comm_free(MPI_Comm * comm)
 {
   return PMPI_Comm_free(comm);
+}
+
+int MPI_Comm_disconnect(MPI_Comm * comm)
+{
+  return PMPI_Comm_disconnect(comm);
 }
 
 int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
