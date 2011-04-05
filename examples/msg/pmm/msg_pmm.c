@@ -13,14 +13,14 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pmm,
                              "Messages specific for this msg example");
 
-/* This example should always be executed using a MATRIX_SIZE multiple of
- * GRID_SIZE and with GRID_SIZE^2 nodes. */
-#define MATRIX_SIZE 900
-#define GRID_SIZE 3
+/* This example should always be executed using a deployment of
+ * GRID_SIZE * GRID_SIZE nodes. */
+#define GRID_SIZE 3		/* Modify to adjust the grid's size */
+#define NODE_MATRIX_SIZE 300	/* Ammount of work done by each node*/
 
-#define MAILBOX_NAME_SIZE 10
 #define GRID_NUM_NODES GRID_SIZE * GRID_SIZE
-#define NODE_MATRIX_SIZE MATRIX_SIZE / GRID_SIZE
+#define MATRIX_SIZE NODE_MATRIX_SIZE * GRID_SIZE
+#define MAILBOX_NAME_SIZE 10
 #define NEIGHBOURS_COUNT GRID_SIZE - 1
 
 /*
