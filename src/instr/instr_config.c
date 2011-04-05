@@ -445,7 +445,7 @@ void TRACE_generate_triva_cat_conf (void)
         "    size = power;\n"
         "    values = (");
     xbt_dict_foreach(created_categories,cursor2,name2,value2) {
-      fprintf (file, "%s, ", name2);
+      fprintf (file, "p%s, ", name2);
     }
     fprintf (file,
         ");\n"
@@ -455,7 +455,7 @@ void TRACE_generate_triva_cat_conf (void)
         "    size = bandwidth;\n"
         "    values = (");
     xbt_dict_foreach(created_categories,cursor2,name2,value2) {
-      fprintf (file, "%s, ", name2);
+      fprintf (file, "b%s, ", name2);
     }
     fprintf (file,
         ");\n"
