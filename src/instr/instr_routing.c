@@ -197,15 +197,39 @@ static void instr_routing_parse_end_AS ()
 static void instr_routing_parse_start_link ()
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  container_t new = newContainer (A_surfxml_link_id, INSTR_LINK, father);
+  const char *link_id = A_surfxml_link_id;
 
-  type_t bandwidth = getVariableType ("bandwidth", NULL, new->type);
-  type_t latency = getVariableType ("latency", NULL, new->type);
-  new_pajeSetVariable (0, new, bandwidth, atof(A_surfxml_link_bandwidth));
-  new_pajeSetVariable (0, new, latency, atof(A_surfxml_link_latency));
-  if (TRACE_uncategorized()){
-    getVariableType ("bandwidth_used", "0.5 0.5 0.5", new->type);
+  double bandwidth_value = atof(A_surfxml_link_bandwidth);
+  double latency_value = atof(A_surfxml_link_latency);
+  xbt_dynar_t links_to_create = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
+
+  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX){
+    char *up = bprintf("%s_UP", link_id);
+    char *down = bprintf("%s_DOWN", link_id);
+    xbt_dynar_push_as (links_to_create, char*, xbt_strdup(up));
+    xbt_dynar_push_as (links_to_create, char*, xbt_strdup(down));
+    free (up);
+    free (down);
+  }else{
+    xbt_dynar_push_as (links_to_create, char*, strdup(link_id));
   }
+
+  char *link_name = NULL;
+  unsigned int i;
+  xbt_dynar_foreach (links_to_create, i, link_name){
+
+    container_t new = newContainer (link_name, INSTR_LINK, father);
+
+    type_t bandwidth = getVariableType ("bandwidth", NULL, new->type);
+    type_t latency = getVariableType ("latency", NULL, new->type);
+    new_pajeSetVariable (0, new, bandwidth, bandwidth_value);
+    new_pajeSetVariable (0, new, latency, latency_value);
+    if (TRACE_uncategorized()){
+      getVariableType ("bandwidth_used", "0.5 0.5 0.5", new->type);
+    }
+  }
+
+  xbt_dynar_free (&links_to_create);
 }
 
 static void instr_routing_parse_end_link ()
