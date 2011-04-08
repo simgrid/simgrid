@@ -696,7 +696,9 @@ XBT_PUBLIC(void) surf_exit(void);
 
 /* Prototypes of the functions that handle the properties */
 XBT_PUBLIC_DATA(xbt_dict_t) current_property_set;       /* the prop set for the currently parsed element (also used in SIMIX) */
-XBT_PUBLIC_DATA(void) parse_properties(void);
+XBT_PUBLIC_DATA(void) parse_properties(const char* prop_id, const char* prop_value);
+XBT_PUBLIC_DATA(void) parse_properties_XML(void);
+XBT_PUBLIC_DATA(void) parse_properties_lua(const char* prop_id, const char* prop_value);
 
 /* surf parse file related (public because called from a test suite) */
 XBT_PUBLIC(void) parse_platform_file(const char *file);
