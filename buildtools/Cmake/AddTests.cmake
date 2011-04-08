@@ -92,9 +92,13 @@ ADD_TEST(tesh-simdag-reinit-costs-ucontext	${CMAKE_BINARY_DIR}/bin/tesh	--cfg co
 ADD_TEST(tesh-simdag-parser-raw		${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:raw		--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms 	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test.tesh)
 ADD_TEST(tesh-simdag-parser-thread	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:thread		--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms 	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test.tesh)
 ADD_TEST(tesh-simdag-parser-ucontext	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:ucontext		--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms 	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test.tesh)
+
+IF(enable_debug) # these tests need the assertion mechanism
 ADD_TEST(tesh-simdag-parser-bogus-symmetric-raw		${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:raw		--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms 	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms two_hosts_asymetric.tesh)
 ADD_TEST(tesh-simdag-parser-bogus-symmetric-thread	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:thread		--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms 	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms two_hosts_asymetric.tesh)
 ADD_TEST(tesh-simdag-parser-bogus-symmetric-ucontext	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:ucontext		--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms 	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms two_hosts_asymetric.tesh)
+ENDIF(enable_debug)
+
 ADD_TEST(tesh-simdag-parser-sym-full-raw		${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:raw		--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms 	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test_sym_full.tesh)
 ADD_TEST(tesh-simdag-parser-sym-full-thread	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:thread		--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms 	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test_sym_full.tesh)
 ADD_TEST(tesh-simdag-parser-sym-full-ucontext	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:ucontext		--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms 	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test_sym_full.tesh)

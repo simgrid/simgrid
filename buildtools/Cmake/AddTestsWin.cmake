@@ -33,7 +33,11 @@ ENABLE_TESTING()
 ADD_TEST(tesh-msg-get-sender	            perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_HOME_DIRECTORY}/teshsuite msg/get_sender.tesh)
 ADD_TEST(tesh-simdag-reinit-costs	        perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_HOME_DIRECTORY}/teshsuite simdag/network/test_reinit_costs.tesh)
 ADD_TEST(tesh-simdag-parser		            perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test.tesh)
+
+IF(enable_debug)
 ADD_TEST(tesh-simdag-parser-bogus-symmetric perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms two_hosts_asymetric.tesh)
+ENDIF(enable_debug)
+
 ADD_TEST(tesh-simdag-parser-sym-full		perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test_sym_full.tesh)
 ADD_TEST(tesh-simdag-flatifier		        perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms flatifier.tesh)
 ADD_TEST(tesh-simdag-full-links		        perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms get_full_link.tesh)

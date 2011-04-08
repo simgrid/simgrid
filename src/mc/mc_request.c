@@ -1,5 +1,10 @@
 #include "private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
+                                "Logging specific to MC (request)");
+
+static char* pointer_to_string(void* pointer);
+
 int MC_request_depend(smx_req_t r1, smx_req_t r2)
 {
   if(_surf_do_model_check == 2)
@@ -142,32 +147,44 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
   return TRUE;
 }
 
+static char* pointer_to_string(void* pointer) {
+
+  if (XBT_LOG_ISENABLED(mc_request, xbt_log_priority_verbose))
+    return bprintf("%p", pointer);
+
+  return xbt_strdup("(verbose only)");
+}
+
 char *MC_request_to_string(smx_req_t req, int value)
 {
-  char *type = NULL, *args = NULL, *str = NULL; 
+  char *type = NULL, *args = NULL, *str = NULL, *p = NULL;
   smx_action_t act = NULL;
   size_t size = 0;
-  
+
   switch(req->call){
     case REQ_COMM_ISEND:
       type = xbt_strdup("iSend");
-      args = bprintf("src=%s, buff=%p, size=%zu", req->issuer->name, 
-                     req->comm_isend.src_buff, req->comm_isend.src_buff_size);
+      p = pointer_to_string(req->comm_isend.src_buff);
+      args = bprintf("src=%s, buff=%s, size=%zu", req->issuer->name, 
+                     p, req->comm_isend.src_buff_size);
       break;
     case REQ_COMM_IRECV:
       size = req->comm_irecv.dst_buff_size ? *req->comm_irecv.dst_buff_size : 0;
       type = xbt_strdup("iRecv");
-      args = bprintf("dst=%s, buff=%p, size=%zu", req->issuer->name, 
-                     req->comm_irecv.dst_buff, size);
+      p = pointer_to_string(req->comm_irecv.dst_buff); 
+      args = bprintf("dst=%s, buff=%s, size=%zu", req->issuer->name, 
+                     p, size);
       break;
     case REQ_COMM_WAIT:
       act = req->comm_wait.comm;
       if(value == -1){
         type = xbt_strdup("WaitTimeout");
-        args = bprintf("comm=%p", act);
+	p = pointer_to_string(act);
+	args = bprintf("comm=%p", p);
       }else{
         type = xbt_strdup("Wait");
-        args  = bprintf("comm=%p [(%lu)%s -> (%lu)%s]", act,
+	p = pointer_to_string(act);
+	args  = bprintf("comm=%s [(%lu)%s -> (%lu)%s]", p,
                         act->comm.src_proc ? act->comm.src_proc->pid : 0,
                         act->comm.src_proc ? act->comm.src_proc->name : "",
                         act->comm.dst_proc ? act->comm.dst_proc->pid : 0,
@@ -178,20 +195,23 @@ char *MC_request_to_string(smx_req_t req, int value)
       act = req->comm_test.comm;
       if(act->comm.src_proc == NULL || act->comm.src_proc == NULL){
         type = xbt_strdup("Test FALSE");
-        args = bprintf("comm=%p", act);
+	p = pointer_to_string(act);
+        args = bprintf("comm=%s", p);
       }else{
         type = xbt_strdup("Test TRUE");
-        args  = bprintf("comm=%p [(%lu)%s -> (%lu)%s]", act,
-                          act->comm.src_proc ? act->comm.src_proc->pid : 0,
-                          act->comm.src_proc ? act->comm.src_proc->name : "",
-                          act->comm.dst_proc ? act->comm.dst_proc->pid : 0,
-                          act->comm.dst_proc ? act->comm.dst_proc->name : "");
+	p = pointer_to_string(act);
+        args  = bprintf("comm=%s [(%lu)%s -> (%lu)%s]", p,
+                        act->comm.src_proc ? act->comm.src_proc->pid : 0,
+                        act->comm.src_proc ? act->comm.src_proc->name : "",
+                        act->comm.dst_proc ? act->comm.dst_proc->pid : 0,
+                        act->comm.dst_proc ? act->comm.dst_proc->name : "");
       }
       break;
 
     case REQ_COMM_WAITANY:
       type = xbt_strdup("WaitAny");
-      args = bprintf("comm=%p (%d of %lu)", xbt_dynar_get_as(req->comm_waitany.comms, value, smx_action_t),
+      p = pointer_to_string(xbt_dynar_get_as(req->comm_waitany.comms, value, smx_action_t));
+      args = bprintf("comm=%s (%d of %lu)", p,
                      value+1, xbt_dynar_length(req->comm_waitany.comms));
       break;
 
@@ -212,6 +232,7 @@ char *MC_request_to_string(smx_req_t req, int value)
   str = bprintf("[(%lu)%s] %s (%s)", req->issuer->pid ,req->issuer->name, type, args);
   xbt_free(type);
   xbt_free(args);
+  xbt_free(p);
   return str;
 }
 

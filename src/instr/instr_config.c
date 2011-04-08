@@ -382,45 +382,18 @@ void TRACE_generate_triva_uncat_conf (void)
         ");\n"
         "\n");
 
-    //register each NODE type layout
-    xbt_dict_foreach(trivaNodeTypes, cursor, name, value) {
-      fprintf (file, "  %s = {\n", name);
-      if (strcmp (name, "HOST") == 0){
-        fprintf (file,
-            "    type = node;\n"
-            "    size = power;\n"
-            "    host_sep = {\n"
-            "      type = separation;\n"
-            "      size = power;\n"
-            "      values = (power_used);\n"
-            "    };\n");
-      }else if (strcmp (name, "ROUTER") == 0){
-        fprintf (file,
-            "    type = node;\n"
-            "    size = 10;\n");
-      }else if (strcmp (name, "LINK") == 0){
-        fprintf (file,
-            "    type = edge;\n"
-            "    size = bandwidth;\n"
-            "    scale = global;\n"
-            "    link_sep = {\n"
-            "      type = separation;\n"
-            "      size = bandwidth;\n"
-            "      values = (bandwidth_used);\n"
-            "    };\n");
-      }
-      fprintf (file, "  };\n\n");
-    }
-
-    //EDGE configuration
-    xbt_dict_foreach(trivaEdgeTypes, cursor, name, value) {
-      fprintf (file, "  %s = { size = 1; };\n", name);
-    }
-
-    //graphviz configuration
-    fprintf (file, "\n");
-    fprintf (file, "  graphviz-algorithm = neato;\n");
-
+    //configuration for all nodes
+    fprintf (file,
+        "  host = {\n"
+        "    type = square;\n"
+        "    size = power;\n"
+        "    values = (power_used);\n"
+        "  };\n"
+        "  link = {\n"
+        "    type = rhombus;\n"
+        "    size = bandwidth;\n"
+        "    values = (bandwidth_used);\n"
+        "  };\n");
     //close
     fprintf (file, "}\n");
     fclose (file);
@@ -465,55 +438,28 @@ void TRACE_generate_triva_cat_conf (void)
         ");\n"
         "\n");
 
-    //register each NODE type layout
-    xbt_dict_foreach(trivaNodeTypes, cursor, name, value) {
-      fprintf (file, "  %s = {\n", name);
-      if (strcmp (name, "HOST") == 0){
-        fprintf (file,
-            "    type = node;\n"
-            "    size = power;\n"
-            "    host_sep = {\n"
-            "      type = separation;\n"
-            "      size = power;\n"
-            "      values = (");
-        xbt_dict_foreach(created_categories,cursor2,name2,value2) {
-          fprintf (file, "%s, ", name2);
-        }
-        fprintf (file,
-            ");\n"
-            "    };\n");
-      }else if (strcmp (name, "ROUTER") == 0){
-        fprintf (file,
-            "    type = node;\n"
-            "    size = 10;\n");
-      }else if (strcmp (name, "LINK") == 0){
-        fprintf (file,
-            "    type = edge;\n"
-            "    size = bandwidth;\n"
-            "    scale = global;\n"
-            "    link_sep = {\n"
-            "      type = separation;\n"
-            "      size = bandwidth;\n"
-            "      values = (");
-        xbt_dict_foreach(created_categories,cursor2,name2,value2) {
-          fprintf (file, "%s, ", name2);
-        }
-        fprintf (file,
-            ");\n"
-            "    };\n");
-      }
-      fprintf (file, "  };\n\n");
+    //configuration for all nodes
+    fprintf (file,
+        "  host = {\n"
+        "    type = square;\n"
+        "    size = power;\n"
+        "    values = (");
+    xbt_dict_foreach(created_categories,cursor2,name2,value2) {
+      fprintf (file, "p%s, ", name2);
     }
-
-    //EDGE configuration
-    xbt_dict_foreach(trivaEdgeTypes, cursor, name, value) {
-      fprintf (file, "  %s = { size = 1; };\n", name);
+    fprintf (file,
+        ");\n"
+        "  };\n"
+        "  link = {\n"
+        "    type = rhombus;\n"
+        "    size = bandwidth;\n"
+        "    values = (");
+    xbt_dict_foreach(created_categories,cursor2,name2,value2) {
+      fprintf (file, "b%s, ", name2);
     }
-
-    //graphviz configuration
-    fprintf (file, "\n");
-    fprintf (file, "  graphviz-algorithm = neato;\n");
-
+    fprintf (file,
+        ");\n"
+        "  };\n");
     //close
     fprintf (file, "}\n");
     fclose (file);

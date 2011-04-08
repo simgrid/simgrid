@@ -186,6 +186,7 @@ examples/msg/mc/bugged2
 examples/msg/mc/bugged1
 examples/msg/parallel_contexts/pcontexts
 examples/msg/parallel_contexts/pcontexts2
+examples/msg/pmm/msg_pmm
 examples/simdag/ex_sd_test
 examples/simdag/ex_sd_test2
 examples/simdag/metaxml/sd_meta

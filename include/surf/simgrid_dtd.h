@@ -1,5 +1,5 @@
 /* XML processor/application API for src/surf/simgrid.dtd.
- * Generated 2011/02/14 15:04:45.
+ * Generated 2011/04/07 16:42:54.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -51,6 +51,8 @@
 /* XML application entry points. */
 XBT_PUBLIC(void ) STag_surfxml_platform(void);
 XBT_PUBLIC(void ) ETag_surfxml_platform(void);
+XBT_PUBLIC(void ) STag_surfxml_include(void);
+XBT_PUBLIC(void ) ETag_surfxml_include(void);
 XBT_PUBLIC(void ) STag_surfxml_trace(void);
 XBT_PUBLIC(void ) ETag_surfxml_trace(void);
 XBT_PUBLIC(void ) STag_surfxml_random(void);
@@ -215,7 +217,6 @@ typedef int AT_surfxml_host_coordinates;
 #define AU_surfxml_host_coordinates NULL
 typedef int AT_surfxml_trace_id;
 #define AU_surfxml_trace_id NULL
-typedef enum { AU_surfxml_peer_sharing_policy, A_surfxml_peer_sharing_policy_SHARED,A_surfxml_peer_sharing_policy_FULLDUPLEX } AT_surfxml_peer_sharing_policy;
 typedef int AT_surfxml_peer_power;
 #define AU_surfxml_peer_power NULL
 typedef int AT_surfxml_cluster_radical;
@@ -224,10 +225,12 @@ typedef int AT_surfxml_config_id;
 #define AU_surfxml_config_id NULL
 typedef int AT_surfxml_bypassRoute_gw_src;
 #define AU_surfxml_bypassRoute_gw_src NULL
-typedef int AT_surfxml_cluster_core;
-#define AU_surfxml_cluster_core NULL
+typedef int AT_surfxml_include_file;
+#define AU_surfxml_include_file NULL
 typedef int AT_surfxml_random_std_deviation;
 #define AU_surfxml_random_std_deviation NULL
+typedef int AT_surfxml_cluster_core;
+#define AU_surfxml_cluster_core NULL
 typedef int AT_surfxml_host_state_file;
 #define AU_surfxml_host_state_file NULL
 typedef int AT_surfxml_AS_coordinates;
@@ -381,8 +384,6 @@ XBT_PUBLIC_DATA(AT_surfxml_host_coordinates ) AX_surfxml_host_coordinates;
 #define A_surfxml_host_coordinates (surfxml_bufferstack + AX_surfxml_host_coordinates)
 XBT_PUBLIC_DATA(AT_surfxml_trace_id ) AX_surfxml_trace_id;
 #define A_surfxml_trace_id (surfxml_bufferstack + AX_surfxml_trace_id)
-XBT_PUBLIC_DATA(AT_surfxml_peer_sharing_policy ) AX_surfxml_peer_sharing_policy;
-#define A_surfxml_peer_sharing_policy AX_surfxml_peer_sharing_policy
 XBT_PUBLIC_DATA(AT_surfxml_peer_power ) AX_surfxml_peer_power;
 #define A_surfxml_peer_power (surfxml_bufferstack + AX_surfxml_peer_power)
 XBT_PUBLIC_DATA(AT_surfxml_cluster_radical ) AX_surfxml_cluster_radical;
@@ -391,10 +392,12 @@ XBT_PUBLIC_DATA(AT_surfxml_config_id ) AX_surfxml_config_id;
 #define A_surfxml_config_id (surfxml_bufferstack + AX_surfxml_config_id)
 XBT_PUBLIC_DATA(AT_surfxml_bypassRoute_gw_src ) AX_surfxml_bypassRoute_gw_src;
 #define A_surfxml_bypassRoute_gw_src (surfxml_bufferstack + AX_surfxml_bypassRoute_gw_src)
-XBT_PUBLIC_DATA(AT_surfxml_cluster_core ) AX_surfxml_cluster_core;
-#define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
+XBT_PUBLIC_DATA(AT_surfxml_include_file ) AX_surfxml_include_file;
+#define A_surfxml_include_file (surfxml_bufferstack + AX_surfxml_include_file)
 XBT_PUBLIC_DATA(AT_surfxml_random_std_deviation ) AX_surfxml_random_std_deviation;
 #define A_surfxml_random_std_deviation (surfxml_bufferstack + AX_surfxml_random_std_deviation)
+XBT_PUBLIC_DATA(AT_surfxml_cluster_core ) AX_surfxml_cluster_core;
+#define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
 XBT_PUBLIC_DATA(AT_surfxml_host_state_file ) AX_surfxml_host_state_file;
 #define A_surfxml_host_state_file (surfxml_bufferstack + AX_surfxml_host_state_file)
 XBT_PUBLIC_DATA(AT_surfxml_AS_coordinates ) AX_surfxml_AS_coordinates;

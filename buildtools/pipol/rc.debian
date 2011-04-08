@@ -16,6 +16,7 @@ sudo apt-get -y -qq install graphviz-dev graphviz
 sudo apt-get -y -qq install libpcre3-dev
 sudo apt-get -y -qq install f2c
 sudo apt-get -y -qq install valgrind
+sudo apt-get -y -qq install git-core
 
 which_svn=`which svn`		#svn necessary
 which_gcc=`which gcc`		#gcc gcc necessary
@@ -30,6 +31,7 @@ which_dot=`which dot`		#dot for cgraph
 which_perl=`which perl`		#perl
 which_f2c=`which f2c`		#f2c
 which_gcov=`which gcov`     #gcov
+which_git=`which git`
 echo "DEBUT----------------------------------"
 echo $which_cmake
 echo $which_unzip
@@ -44,4 +46,5 @@ echo $which_wget
 echo $which_perl
 echo $which_f2c
 echo $which_gcov
+echo $which_git
 echo "FIN------------------------------------"

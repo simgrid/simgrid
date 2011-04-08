@@ -308,9 +308,12 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
   if (TRACE_categorized()){
     if (!surf_action->category)
       return;
-    XBT_DEBUG("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
+    //variable of this category starts by 'b', because we have a link here
+    char category_type[INSTR_DEFAULT_STR_SIZE];
+    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "b%s", surf_action->category);
+    XBT_DEBUG("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
     container_t container = getContainerByName (resource);
-    type_t type = getVariableType(surf_action->category, NULL, container->type);
+    type_t type = getVariableType(category_type, NULL, container->type);
     TRACE_surf_resource_utilization_event(smx_action, now, delta, type->name, container->name, value);
   }
   return;
@@ -342,9 +345,12 @@ void TRACE_surf_host_set_utilization(const char *resource,
   if (TRACE_categorized()){
     if (!surf_action->category)
       return;
-    XBT_DEBUG("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, surf_action->category, value);
+    //variable of this category starts by 'p', because we have a host here
+    char category_type[INSTR_DEFAULT_STR_SIZE];
+    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "p%s", surf_action->category);
+    XBT_DEBUG("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
     container_t container = getContainerByName (resource);
-    type_t type = getVariableType(surf_action->category, NULL, container->type);
+    type_t type = getVariableType(category_type, NULL, container->type);
     TRACE_surf_resource_utilization_event(smx_action, now, delta, type->name, container->name, value);
   }
   return;

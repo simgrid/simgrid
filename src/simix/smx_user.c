@@ -1,5 +1,6 @@
 #include "private.h"
 #include "mc/mc.h"
+#include <math.h> /* isfinite() */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 

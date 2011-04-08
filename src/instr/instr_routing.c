@@ -298,8 +298,15 @@ void instr_routing_define_callbacks ()
  */
 static void recursiveNewUserVariableType (const char *new_typename, const char *color, type_t root)
 {
-  if (!strcmp (root->name, "HOST") || !strcmp (root->name, "LINK")){
-    getVariableType(new_typename, color, root);
+  if (!strcmp (root->name, "HOST")){
+    char tnstr[INSTR_DEFAULT_STR_SIZE];
+    snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
+    getVariableType(tnstr, color, root);
+  }
+  if (!strcmp (root->name, "LINK")){
+    char tnstr[INSTR_DEFAULT_STR_SIZE];
+    snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
+    getVariableType(tnstr, color, root);
   }
   xbt_dict_cursor_t cursor = NULL;
   type_t child_type;
