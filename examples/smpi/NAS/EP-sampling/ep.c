@@ -246,7 +246,7 @@
          k_offset = no_large_nodes*(np+1) + (node-no_large_nodes)*np -1;
      
       int stop = false;
-      for(k = 1; k <= np; k++) SMPI_SAMPLE_LOCAL(0.25 * np) {
+      for(k = 1; k <= np; k++) SMPI_SAMPLE_LOCAL(0.25 * np, 0.03) {
          stop = false;
          kk = k_offset + k ;
          t1 = s;
