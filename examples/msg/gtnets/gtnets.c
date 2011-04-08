@@ -172,6 +172,9 @@ MSG_error_t test_all(const char *platform_file,
     MSG_set_channel_number(MAX_CHANNEL);
     MSG_create_environment(platform_file);
   }
+
+  TRACE_declare_mark("endmark");
+
   {                             /*   Application deployment */
     MSG_function_register("master", master);
     MSG_function_register("slave", slave);
@@ -192,8 +195,6 @@ int main(int argc, char *argv[])
     printf("Usage: %s platform_file deployment_file\n", argv[0]);
     exit(1);
   }
-
-  TRACE_declare_mark("endmark");
 
   res = test_all(argv[1], argv[2]);
 
