@@ -2,6 +2,9 @@
 <!ELEMENT platform ((config|random)*,(include|cluster|peer|AS|trace|trace_connect)*,(include|process)*)>
 <!ATTLIST platform version CDATA "0.0">
 
+<!ELEMENT include EMPTY>
+<!ATTLIST include file CDATA #REQUIRED>
+
 <!ELEMENT trace (#PCDATA)>
 <!ATTLIST trace id CDATA #REQUIRED>
 <!ATTLIST trace file CDATA "">
@@ -22,7 +25,7 @@
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|link|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect)*,(bypassRoute|trace|trace_connect)*)|((host|router|link|trace|trace_connect)*,(route|trace|trace_connect)*))>
+<!ELEMENT AS (((AS|include|link|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect)*,(bypassRoute|trace|trace_connect)*)|((host|router|link|trace|trace_connect)*,(route|trace|trace_connect)*))>
 
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing CDATA #REQUIRED>

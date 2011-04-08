@@ -92,6 +92,8 @@ xbt_dynar_t STag_surfxml_bypassRoute_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_bypassRoute_cb_list = NULL;
 xbt_dynar_t STag_surfxml_config_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_config_cb_list = NULL;
+xbt_dynar_t STag_surfxml_include_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_include_cb_list = NULL;
 
 /* store the current property set for any tag */
 xbt_dict_t current_property_set = NULL;
@@ -111,6 +113,31 @@ static void parse_Stag_trace_connect(void);
 
 static void init_randomness(void);
 static void add_randomness(void);
+
+static xbt_dynar_t surf_input_buffer_stack = NULL;
+static xbt_dynar_t surf_file_to_parse_stack = NULL;
+
+void STag_surfxml_include(void)
+{
+  XBT_INFO("STag_surfxml_include '%s'",A_surfxml_include_file);
+  xbt_dynar_push(surf_file_to_parse_stack, &surf_file_to_parse);
+
+  surf_file_to_parse = surf_fopen(A_surfxml_include_file, "r");
+  xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n",
+              A_surfxml_include_file);
+  surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
+  surf_parse_push_buffer_state(surf_input_buffer);
+  fflush(NULL);
+}
+
+void ETag_surfxml_include(void)
+{
+  fflush(NULL);
+  fclose(surf_file_to_parse);
+  xbt_dynar_pop(surf_file_to_parse_stack, &surf_file_to_parse);
+  surf_parse_pop_buffer_state();
+  XBT_INFO("ETag_surfxml_include '%s'",A_surfxml_include_file);
+}
 
 /*
  * This function return 0 or 1 if callbacks are empty or not.
@@ -152,7 +179,9 @@ int surf_parse_no_callbacks(void)
 	  xbt_dynar_is_empty(STag_surfxml_peer_cb_list) &&
 	  xbt_dynar_is_empty(ETag_surfxml_peer_cb_list) &&
 	  xbt_dynar_is_empty(STag_surfxml_config_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_config_cb_list);
+	  xbt_dynar_is_empty(ETag_surfxml_config_cb_list) &&
+	  xbt_dynar_is_empty(STag_surfxml_include_cb_list) &&
+	  xbt_dynar_is_empty(ETag_surfxml_include_cb_list);
 }
 
 void surf_parse_init_callbacks(void)
@@ -213,6 +242,10 @@ void surf_parse_init_callbacks(void)
 			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_config_cb_list =
 			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
+	  STag_surfxml_include_cb_list =
+			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
+	  ETag_surfxml_include_cb_list =
+			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
 }
 
 void surf_parse_reset_callbacks(void)
@@ -259,6 +292,8 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_peer_cb_list);
   xbt_dynar_free(&STag_surfxml_config_cb_list);
   xbt_dynar_free(&ETag_surfxml_config_cb_list);
+  xbt_dynar_free(&STag_surfxml_include_cb_list);
+  xbt_dynar_free(&ETag_surfxml_include_cb_list);
 }
 
 /* Stag and Etag parse functions */
@@ -346,15 +381,26 @@ void surf_parse_open(const char *file)
     }
     return;
   }
+
+  if (!surf_input_buffer_stack)
+	surf_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE), NULL);
+  if (!surf_file_to_parse_stack)
+	surf_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), NULL);
+
   surf_file_to_parse = surf_fopen(file, "r");
   xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", file);
-  surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, 10);
+  surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse__switch_to_buffer(surf_input_buffer);
   surf_parse_lineno = 1;
 }
 
 void surf_parse_close(void)
 {
+  if (surf_input_buffer_stack)
+	xbt_dynar_free(&surf_input_buffer_stack);
+  if (surf_file_to_parse_stack)
+	xbt_dynar_free(&surf_file_to_parse_stack);
+
   if (surf_file_to_parse) {
     surf_parse__delete_buffer(surf_input_buffer);
     fclose(surf_file_to_parse);
