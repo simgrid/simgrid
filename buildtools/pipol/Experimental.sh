@@ -14,6 +14,10 @@ git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid --quiet
 cd simgrid
 
 if [ x$PIPOL_IMAGE == "xamd64-windows-server-2008-64bits.dd.gz" ] ; then
+
+	export PATH=/cygdrive/c/:/cygdrive/c/GnuWin32/bin/:/cygdrive/c/Windows/system32:/cygdrive/c/Windows
+	export PATH=$PATH:/cygdrive/c/strawberry/c/bin:/cygdrive/c/strawberry/perl/site/bin:/cygdrive/c/strawberry/perl/bin
+	
 	cmake \
 	-G"Unix Makefiles" \
 	-Denable_lua=off \

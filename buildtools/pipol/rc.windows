@@ -1,15 +1,13 @@
 #!/bin/bash
 
-sudo echo " " >> /etc/profile
-sudo echo "export PATH=/cygdrive/c/strawberry/c/bin:/cygdrive/c/strawberry/perl/site/bin:/cygdrive/c/strawberry/perl/bin:/cygdrive/c/CMake\ 2.8/bin:/cygdrive/c/Subversion/bin:/bin" >> /etc/profile
-sudo echo "export PATH=$PATH:/cygdrive/c/:/cygdrive/c/GnuWin32/bin/" >> /etc/profile
 which_svn=`which svn`		#svn necessary
 which_gcc=`which gcc`		#gcc gcc necessary
 which_gpp=`which g++`		#gcc g++ necessary
 which_make=`which gmake`		#make necessary
 which_cmake=`which cmake`	#cmake necessary
 which_perl=`which perl`		#perl
-export PATH=$PATH:/cygdrive/c/:/cygdrive/c/GnuWin32/bin/
+which_git=`which git`
+
 echo "DEBUT----------------------------------"
 echo $which_cmake
 echo $which_make
@@ -17,5 +15,6 @@ echo $which_gcc
 echo $which_gpp
 echo $which_svn
 echo $which_perl
+echo $which_git
 echo $PATH
 echo "FIN------------------------------------"

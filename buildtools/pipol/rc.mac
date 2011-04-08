@@ -1,9 +1,10 @@
 #!/bin/bash
 
 sudo fink -y -q -b selfupdate
+sudo fink -y -q -b selfupdate-rsync
 
 sudo fink -y -q -b install svn
-sudo fink -y -q -b install gcc42
+sudo fink -y -q -b install gcc45
 sudo fink -y -q -b install make
 sudo fink -y -q -b install lua51-dev lua51
 sudo fink -y -q -b install unzip
@@ -13,6 +14,17 @@ sudo fink -y -q -b install perl
 sudo fink -y -q -b install gd2 graphviz graphviz-dev
 sudo fink -y -q -b install pcre
 sudo fink -y -q -b install f2c
+
+wget http://kernel.org/pub/software/scm/git/git-1.7.4.tar.gz
+tar xzf git-1.7.4.tar.gz
+cd git-1.7.4
+./configure --prefix=/usr
+make
+chmod 777 *
+sudo make install
+cd ../
+rm git-1.7.4.tar.gz
+rm -rf git-1.7.4
 
 which_svn=`which svn`		#svn necessary
 which_gcc=`which gcc`		#gcc gcc necessary
@@ -27,6 +39,7 @@ which_dot=`which dot`		#dot for cgraph
 which_perl=`which perl`		#perl
 which_f2c=`which f2c`		#f2c
 which_gcov=`which gcov`     #gcov
+which_git=`which git`
 echo "DEBUT----------------------------------"
 echo $which_cmake
 echo $which_unzip
@@ -41,4 +54,5 @@ echo $which_wget
 echo $which_perl
 echo $which_f2c
 echo $which_gcov
+echo $which_git
 echo "FIN------------------------------------"
