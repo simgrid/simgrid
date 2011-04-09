@@ -524,25 +524,41 @@ void parse_platform_file(const char *file)
 
 /* Prop tag functions */
 
-void parse_properties(void)
+void parse_properties(const char* prop_id, const char* prop_value)
 {
-  char *value = NULL;
-  if (!current_property_set)
-    current_property_set = xbt_dict_new();      // Maybe, it should be make a error
-  if(!strcmp(A_surfxml_prop_id,"coordinates")){
-	  if(!strcmp(A_surfxml_prop_value,"yes") && !COORD_HOST_LEVEL)
-	  {
-		    XBT_INFO("Configuration change: Set '%s' to '%s'", A_surfxml_prop_id, A_surfxml_prop_value);
-			COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_dynar_free_voidp);
-			COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
+    char *value = NULL;
+	if (!current_property_set)
+	    current_property_set = xbt_dict_new();      // Maybe, it should be make a error
+	if(!strcmp(prop_id,"coordinates")){
+		if(!strcmp(prop_value,"yes") && !COORD_HOST_LEVEL)
+		  {
+			    XBT_INFO("Configuration change: Set '%s' to '%s'", prop_id, prop_value);
+				COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_dynar_free_voidp);
+				COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
+		  }
+		if(strcmp(A_surfxml_prop_value,"yes"))
+			  xbt_die("Setting XML prop coordinates must be \"yes\"");
 	  }
-	  if(strcmp(A_surfxml_prop_value,"yes"))
-		  xbt_die("Setting XML prop coordinates must be \"yes\"");
-  }
-  else{
-	  value = xbt_strdup(A_surfxml_prop_value);
-	  xbt_dict_set(current_property_set, A_surfxml_prop_id, value, free);
-  }
+	else{
+		  value = xbt_strdup(prop_value);
+		  xbt_dict_set(current_property_set, prop_id, value, free);
+	 }
+}
+
+/**
+ * With XML parser
+ */
+void parse_properties_XML(void)
+{
+  parse_properties(A_surfxml_prop_id, A_surfxml_prop_value);
+}
+
+/*
+ * With lua console
+ */
+void parse_properties_lua(const char* prop_id, const char* prop_value)
+{
+	 parse_properties(prop_id, prop_value);
 }
 
 /* Trace management functions */
