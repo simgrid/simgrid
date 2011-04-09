@@ -250,6 +250,15 @@ container_t getContainer (const char *name)
   return recursiveGetContainer(name, rootContainer);
 }
 
+int knownContainerWithName (const char *name)
+{
+  if (xbt_dict_get_or_null (allContainers, name)){
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
 container_t getContainerByName (const char *name)
 {
   return (container_t)xbt_dict_get (allContainers, name);

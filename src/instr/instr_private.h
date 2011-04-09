@@ -206,6 +206,7 @@ extern xbt_dict_t trivaNodeTypes;
 extern xbt_dict_t trivaEdgeTypes;
 container_t newContainer (const char *name, e_container_types kind, container_t father);
 container_t getContainer (const char *name);
+int knownContainerWithName (const char *name);
 container_t getContainerByName (const char *name);
 char *getContainerIdByName (const char *name);
 char *getVariableTypeIdByName (const char *name, type_t father);
