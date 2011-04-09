@@ -1161,7 +1161,7 @@ void surf_parse_add_callback_config(void)
 {
 	surfxml_add_callback(STag_surfxml_config_cb_list, &routing_parse_Sconfig);
 	surfxml_add_callback(ETag_surfxml_config_cb_list, &routing_parse_Econfig);
-	surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+	surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties_XML);
 	surfxml_add_callback(STag_surfxml_AS_cb_list, &surf_parse_models_setup);
 	surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
 }
