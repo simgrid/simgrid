@@ -230,6 +230,7 @@ void instr_new_user_variable_type (const char *new_typename, const char *color);
 void instr_new_user_link_variable_type  (const char *new_typename, const char *color);
 void instr_new_user_host_variable_type  (const char *new_typename, const char *color);
 int instr_platform_traced (void);
+xbt_graph_t instr_routing_platform_graph (void);
 
 #endif /* HAVE_TRACING */
 

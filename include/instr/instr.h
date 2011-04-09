@@ -12,6 +12,7 @@
 #ifdef HAVE_TRACING
 
 #include "xbt.h"
+#include "xbt/graph.h"
 #include "msg/msg.h"
 #include "simdag/simdag.h"
 
@@ -23,6 +24,8 @@ void TRACE_msg_set_process_category(m_process_t process, const char *category, c
 XBT_PUBLIC(void) TRACE_user_host_variable(double time,
                                           const char *variable,
                                           double value, const char *what);
+XBT_PUBLIC(const char *) TRACE_node_name (xbt_node_t node);
+XBT_PUBLIC(xbt_graph_t) TRACE_platform_graph (void);
 XBT_PUBLIC(void) TRACE_user_link_variable(double time, const char *resource,
                               const char *variable,
                               double value, const char *what);

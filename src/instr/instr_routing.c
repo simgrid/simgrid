@@ -369,5 +369,111 @@ int instr_platform_traced ()
   return platform_created;
 }
 
+#define GRAPHICATOR_SUPPORT_FUNCTIONS
+
+
+static xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_dict_t nodes)
+{
+  xbt_node_t ret = xbt_dict_get_or_null (nodes, name);
+  if (ret) return ret;
+
+  ret = xbt_graph_new_node (graph, xbt_strdup(name));
+  xbt_dict_set (nodes, name, ret, NULL);
+  return ret;
+}
+
+static xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges)
+{
+  xbt_edge_t ret;
+  char *name;
+
+  const char *sn = TRACE_node_name (s);
+  const char *dn = TRACE_node_name (d);
+
+  name = bprintf ("%s%s", sn, dn);
+  ret = xbt_dict_get_or_null (edges, name);
+  if (ret) return ret;
+  free (name);
+  name = bprintf ("%s%s", dn, sn);
+  ret = xbt_dict_get_or_null (edges, name);
+  if (ret) return ret;
+
+  ret = xbt_graph_new_edge(graph, s, d, NULL);
+  xbt_dict_set (edges, name, ret, NULL);
+  return ret;
+}
+
+static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
+    routing_component_t rc, container_t container)
+{
+  if (xbt_dict_length (rc->routing_sons)){
+    xbt_dict_cursor_t cursor = NULL;
+    routing_component_t rc_son;
+    char *child_name;
+    //bottom-up recursion
+    xbt_dict_foreach(rc->routing_sons, cursor, child_name, rc_son) {
+      container_t child_container = xbt_dict_get (container->children, rc_son->name);
+      recursiveXBTGraphExtraction (graph, nodes, edges, rc_son, child_container);
+    }
+  }
+
+  //let's get routes
+  xbt_dict_cursor_t cursor1 = NULL, cursor2 = NULL;
+  container_t child1, child2;
+  const char *child1_name, *child2_name;
+  xbt_dict_foreach(container->children, cursor1, child1_name, child1) {
+    if (child1->kind == INSTR_LINK) continue;
+    xbt_dict_foreach(container->children, cursor2, child2_name, child2) {
+      if (child2->kind == INSTR_LINK) continue;
+
+      if ((child1->kind == INSTR_HOST || child1->kind == INSTR_ROUTER) &&
+          (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER) &&
+          strcmp (child1_name, child2_name) != 0){
+
+        xbt_dynar_t route = global_routing->get_route (child1_name, child2_name);
+        unsigned int cpt;
+        void *link;
+        xbt_node_t current, previous = new_xbt_graph_node(graph, child1_name, nodes);
+        xbt_dynar_foreach (route, cpt, link) {
+          char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+          current = new_xbt_graph_node(graph, link_name, nodes);
+          new_xbt_graph_edge (graph, previous, current, edges);
+          //previous -> current
+          previous = current;
+        }
+        current = new_xbt_graph_node(graph, child2_name, nodes);
+        new_xbt_graph_edge (graph, previous, current, edges);
+
+      }else if (child1->kind == INSTR_AS &&
+                child2->kind == INSTR_AS &&
+                strcmp(child1_name, child2_name) != 0){
+
+        route_extended_t route = rc->get_route (rc, child1_name, child2_name);
+        unsigned int cpt;
+        void *link;
+        xbt_node_t current, previous = new_xbt_graph_node(graph, route->src_gateway, nodes);
+        xbt_dynar_foreach (route->generic_route.link_list, cpt, link) {
+          char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+          current = new_xbt_graph_node(graph, link_name, nodes);
+          //previous -> current
+          previous = current;
+        }
+        current = new_xbt_graph_node(graph, route->dst_gateway, nodes);
+        new_xbt_graph_edge (graph, previous, current, edges);
+      }
+    }
+  }
+
+}
+
+xbt_graph_t instr_routing_platform_graph (void)
+{
+  xbt_graph_t ret = xbt_graph_new_graph (0, NULL);
+  xbt_dict_t nodes = xbt_dict_new ();
+  xbt_dict_t edges = xbt_dict_new ();
+  recursiveXBTGraphExtraction (ret, nodes, edges, global_routing->root, getRootContainer());
+  return ret;
+}
+
 #endif /* HAVE_TRACING */
 

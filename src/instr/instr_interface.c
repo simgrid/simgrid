@@ -145,4 +145,19 @@ void TRACE_user_host_variable(double time, const char *variable,
   }
 }
 
+const char *TRACE_node_name (xbt_node_t node)
+{
+  void *data = xbt_graph_node_get_data(node);
+  char *str = (char*)data;
+  return str;
+}
+
+xbt_graph_t TRACE_platform_graph (void)
+{
+  if (!TRACE_is_active())
+    return NULL;
+
+  return instr_routing_platform_graph ();
+}
+
 #endif /* HAVE_TRACING */
