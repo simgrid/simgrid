@@ -252,7 +252,7 @@ container_t getContainer (const char *name)
 
 container_t getContainerByName (const char *name)
 {
-  return (container_t)xbt_dict_get_or_null (allContainers, name);
+  return (container_t)xbt_dict_get (allContainers, name);
 }
 
 char *getContainerIdByName (const char *name)
