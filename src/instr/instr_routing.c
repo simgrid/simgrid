@@ -47,36 +47,29 @@ static container_t findCommonFather (container_t root, container_t a1, container
   return NULL;
 }
 
-static void linkContainers (const char *a1, const char *a2, xbt_dict_t filter)
+static void linkContainers (container_t father, container_t src, container_t dst, xbt_dict_t filter)
 {
   //ignore loopback
-  if (strcmp (a1, "__loopback__") == 0 || strcmp (a2, "__loopback__") == 0)
+  if (strcmp (src->name, "__loopback__") == 0 || strcmp (dst->name, "__loopback__") == 0)
     return;
 
-  //check if we already register this pair (we only need one direction)
-  char aux1[INSTR_DEFAULT_STR_SIZE], aux2[INSTR_DEFAULT_STR_SIZE];
-  snprintf (aux1, INSTR_DEFAULT_STR_SIZE, "%s%s", a1, a2);
-  snprintf (aux2, INSTR_DEFAULT_STR_SIZE, "%s%s", a2, a1);
-  if (xbt_dict_get_or_null (filter, aux1)) return;
-  if (xbt_dict_get_or_null (filter, aux2)) return;
+  if (filter != NULL){
+    //check if we already register this pair (we only need one direction)
+    char aux1[INSTR_DEFAULT_STR_SIZE], aux2[INSTR_DEFAULT_STR_SIZE];
+    snprintf (aux1, INSTR_DEFAULT_STR_SIZE, "%s%s", src->name, dst->name);
+    snprintf (aux2, INSTR_DEFAULT_STR_SIZE, "%s%s", dst->name, src->name);
+    if (xbt_dict_get_or_null (filter, aux1)) return;
+    if (xbt_dict_get_or_null (filter, aux2)) return;
 
-  //ok, not found, register it
-  xbt_dict_set (filter, aux1, xbt_strdup ("1"), xbt_free);
-  xbt_dict_set (filter, aux2, xbt_strdup ("1"), xbt_free);
-
-  container_t a1_container = getContainerByName (a1);
-  type_t a1_type = a1_container->type;
-
-  container_t a2_container = getContainerByName (a2);
-  type_t a2_type = a2_container->type;
-
-  container_t container = findCommonFather (getRootContainer(), a1_container, a2_container);
-  xbt_assert (container != NULL, "common father not found");
+    //ok, not found, register it
+    xbt_dict_set (filter, aux1, xbt_strdup ("1"), xbt_free);
+    xbt_dict_set (filter, aux2, xbt_strdup ("1"), xbt_free);
+  }
 
   //declare type
   char link_typename[INSTR_DEFAULT_STR_SIZE];
-  snprintf (link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s", a1_type->name, a2_type->name);
-  type_t link_type = getLinkType (link_typename, container->type, a1_type, a2_type);
+  snprintf (link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s", src->type->name, dst->type->name);
+  type_t link_type = getLinkType (link_typename, father->type, src->type, dst->type);
 
   //register EDGE types for triva configuration
   xbt_dict_set (trivaEdgeTypes, link_type->name, xbt_strdup("1"), xbt_free);
@@ -85,77 +78,64 @@ static void linkContainers (const char *a1, const char *a2, xbt_dict_t filter)
   static long long counter = 0;
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
-  new_pajeStartLink(SIMIX_get_clock(), container, link_type, a1_container, "G", key);
-  new_pajeEndLink(SIMIX_get_clock(), container, link_type, a2_container, "G", key);
+  new_pajeStartLink(SIMIX_get_clock(), father, link_type, src, "G", key);
+  new_pajeEndLink(SIMIX_get_clock(), father, link_type, dst, "G", key);
 }
 
-static void recursiveGraphExtraction (container_t container, xbt_dict_t filter)
+static void recursiveGraphExtraction (routing_component_t rc, container_t container, xbt_dict_t filter)
 {
-  if (xbt_dict_length(container->children)){
+  if (xbt_dict_length (rc->routing_sons)){
     xbt_dict_cursor_t cursor = NULL;
-    container_t child;
+    routing_component_t rc_son;
     char *child_name;
     //bottom-up recursion
-    xbt_dict_foreach(container->children, cursor, child_name, child) {
-      recursiveGraphExtraction (child, filter);
+    xbt_dict_foreach(rc->routing_sons, cursor, child_name, rc_son) {
+      container_t child_container = xbt_dict_get (container->children, rc_son->name);
+      recursiveGraphExtraction (rc_son, child_container, filter);
     }
+  }
 
-    //let's get routes
-    xbt_dict_cursor_t cursor1 = NULL, cursor2 = NULL;
-    container_t child1, child2;
-    const char *child_name1, *child_name2;
+  //let's get routes
+  xbt_dict_cursor_t cursor1 = NULL, cursor2 = NULL;
+  container_t child1, child2;
+  const char *child1_name, *child2_name;
+  xbt_dict_foreach(container->children, cursor1, child1_name, child1) {
+    if (child1->kind == INSTR_LINK) continue;
+    xbt_dict_foreach(container->children, cursor2, child2_name, child2) {
+      if (child2->kind == INSTR_LINK) continue;
 
-    xbt_dict_foreach(container->children, cursor1, child_name1, child1) {
-      xbt_dict_foreach(container->children, cursor2, child_name2, child2) {
-        if ((child1->kind == INSTR_HOST || child1->kind == INSTR_ROUTER) &&
-            (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER)){
+      if ((child1->kind == INSTR_HOST || child1->kind == INSTR_ROUTER) &&
+          (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER) &&
+          strcmp (child1_name, child2_name) != 0){
 
-          //getting route
-          xbt_dynar_t route = NULL;
-          xbt_ex_t exception;
-          TRY {
-            route = global_routing->get_route (child_name1, child_name2);
-          }CATCH(exception) {
-            //no route between them, that's possible
-            continue;
-          }
-
-          //link the route members
-          unsigned int cpt;
-          void *link;
-          char *previous_entity_name = (char*)child_name1;
-          xbt_dynar_foreach (route, cpt, link) {
-            char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-            linkContainers (previous_entity_name, link_name, filter);
-            previous_entity_name = link_name;
-          }
-          linkContainers (previous_entity_name, child_name2, filter);
-        }else if (child1->kind == INSTR_AS &&
-                  child2->kind == INSTR_AS &&
-                  strcmp(child_name1, child_name2) != 0){
-
-          //getting route
-          routing_component_t root = global_routing->root;
-          route_extended_t route = NULL;
-          xbt_ex_t exception;
-          TRY {
-            route = root->get_route (root, child_name1, child_name2);
-          }CATCH(exception) {
-            //no route between them, that's possible
-            continue;
-          }
-          xbt_assert(route!=NULL,
-              "there is no ASroute between %s and %s", child_name1, child_name2);
-          unsigned int cpt;
-          void *link;
-          char *previous_entity_name = route->src_gateway;
-          xbt_dynar_foreach (route->generic_route.link_list, cpt, link) {
-            char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-            linkContainers (previous_entity_name, link_name, filter);
-            previous_entity_name = link_name;
-          }
-          linkContainers (previous_entity_name, route->dst_gateway, filter);
+        xbt_dynar_t route = global_routing->get_route (child1_name, child2_name);
+        unsigned int cpt;
+        void *link;
+        container_t previous = child1;
+        xbt_dynar_foreach (route, cpt, link) {
+          char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+          container_t current = getContainerByName(link_name);
+          linkContainers(container, previous, current, filter);
+          previous = current;
         }
+        linkContainers(container, previous, child2, filter);
+
+      }else if (child1->kind == INSTR_AS &&
+                child2->kind == INSTR_AS &&
+                strcmp(child1_name, child2_name) != 0){
+
+        route_extended_t route = rc->get_route (rc, child1_name, child2_name);
+        unsigned int cpt;
+        void *link;
+        container_t previous = getContainerByName(route->src_gateway);
+        xbt_dynar_foreach (route->generic_route.link_list, cpt, link) {
+          char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+          container_t current = getContainerByName(link_name);
+          linkContainers (container, previous, current, filter);
+          previous = current;
+        }
+        container_t last = getContainerByName(route->dst_gateway);
+        linkContainers (container, previous, last, filter);
       }
     }
   }
@@ -298,7 +278,7 @@ static void instr_routing_parse_end_platform ()
   xbt_dynar_free(&currentContainer);
   currentContainer = NULL;
   xbt_dict_t filter = xbt_dict_new ();
-  recursiveGraphExtraction (getRootContainer(), filter);
+  recursiveGraphExtraction (global_routing->root, getRootContainer(), filter);
   xbt_dict_free(&filter);
   platform_created = 1;
   TRACE_paje_dump_buffer(1);
