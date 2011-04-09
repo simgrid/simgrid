@@ -167,7 +167,7 @@ static void recursiveGraphExtraction (container_t container, xbt_dict_t filter)
 static void instr_routing_parse_start_AS ()
 {
   if (getRootContainer() == NULL){
-    container_t root = newContainer ("0", INSTR_AS, NULL);
+    container_t root = newContainer (A_surfxml_AS_id, INSTR_AS, NULL);
     instr_paje_init (root);
 
     currentContainer = xbt_dynar_new (sizeof(container_t), NULL);
@@ -181,6 +181,8 @@ static void instr_routing_parse_start_AS ()
         getLinkType ("MPI_LINK", getRootType(), mpi, mpi);
       }
     }
+
+    return;
   }
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   container_t new = newContainer (A_surfxml_AS_id, INSTR_AS, father);
