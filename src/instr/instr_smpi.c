@@ -111,7 +111,7 @@ void TRACE_smpi_init(int rank)
   if (TRACE_smpi_is_grouped()){
     father = getContainer (SIMIX_host_self_get_name());
   }else{
-    father = getContainer ("0");
+    father = getRootContainer ();
   }
   xbt_assert(father!=NULL,
       "Could not find a parent for mpi rank %s at function %s", str, __FUNCTION__);
