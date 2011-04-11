@@ -3307,8 +3307,8 @@ static void generic_src_dst_check(routing_component_t rc, const char *src,
 	  xbt_die("The src(%s in %s) and dst(%s in %s) are in differents AS",
               src, src_as->name, dst, dst_as->name);
   if(rc != dst_as)
-	 xbt_die("The routing component of src and dst is not the same as the network elements belong (%s==%s)",
-     rc->name, dst_as->name);
+	 xbt_die("The routing component of src'%s' and dst'%s' is not the same as the network elements belong (%s?=%s?=%s)",
+     src,dst,src_as->name, dst_as->name,rc->name);
 }
 
 static void routing_parse_Sconfig(void)
