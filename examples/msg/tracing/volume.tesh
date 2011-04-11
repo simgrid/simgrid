@@ -2,8 +2,9 @@
 
 p Tracing communications among processes of a master/slave application
 
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/volume$EXEEXT --cfg=tracing:1 --cfg=tracing/filename:tracing/volume.trace --cfg=tracing/msg/volume:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/volume$EXEEXT --cfg=tracing:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/volume.trace --cfg=tracing/msg/volume:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/volume.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/volume' to '1'
 > [206.701532] [msg_test/INFO] Simulation time 206.702
