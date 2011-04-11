@@ -171,7 +171,6 @@ int TRACE_msg_task_is_enabled(void);
 int TRACE_msg_process_is_enabled(void);
 int TRACE_msg_volume_is_enabled(void);
 char *TRACE_get_filename(void);
-char *TRACE_get_platform_method(void);
 char *TRACE_get_triva_uncat_conf (void);
 char *TRACE_get_triva_cat_conf (void);
 void TRACE_global_init(int *argc, char **argv);

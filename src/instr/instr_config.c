@@ -21,7 +21,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
 #define OPT_TRACING_MSG_VOLUME    "tracing/msg/volume"
 #define OPT_TRACING_FILENAME      "tracing/filename"
-#define OPT_TRACING_PLATFORM_METHOD "tracing/platform/method"
 #define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
 #define OPT_TRIVA_CAT_CONF        "triva/categorized"
 
@@ -157,11 +156,6 @@ char *TRACE_get_filename(void)
   return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_FILENAME);
 }
 
-char *TRACE_get_platform_method(void)
-{
-  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_PLATFORM_METHOD);
-}
-
 char *TRACE_get_triva_uncat_conf (void)
 {
   return xbt_cfg_get_string(_surf_cfg_set, OPT_TRIVA_UNCAT_CONF);
@@ -216,13 +210,6 @@ void TRACE_global_init(int *argc, char **argv)
                    "Tracing of uncategorized resource (host and link) utilization.",
                    xbt_cfgelm_int, &default_tracing_uncategorized, 0, 1,
                    NULL, NULL);
-
-  /* platform method */
-  char *default_tracing_platform_method = xbt_strdup("a");
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM_METHOD,
-                   "Tracing method used to register categorized resource behavior.",
-                   xbt_cfgelm_string, &default_tracing_platform_method, 1,
-                   1, NULL, NULL);
 
   /* msg task */
   int default_tracing_msg_task = 0;
@@ -291,18 +278,6 @@ void TRACE_help (int detailed)
       "  It activates the uncategorized resource utilization tracing. Use it if\n"
       "  this simulator do not use tracing categories and resource use have to be\n"
       "  traced.",
-      detailed);
-  print_line (OPT_TRACING_PLATFORM_METHOD, "Change the resource utilization tracing method",
-      "  It changes the way resource utilization (categorized or not) is traced\n"
-      "  inside the simulation core. Method 'a' (default) traces all updates defined\n"
-      "  by the CPU/network model of a given resource. Depending on the interface used\n"
-      "  by this simulator (MSG, SMPI, SimDAG), the default method can generate large\n"
-      "  trace files. Method 'b' tries to make smaller tracefiles using clever updates,\n"
-      "  without losing details of resource utilization. Method 'c' generates even\n"
-      "  smaller files by doing time integration during the simulation, but it loses\n"
-      "  precision. If this last method is used, the smallest timeslice used in the\n"
-      "  tracefile analysis must be bigger than the smaller resource utilization. If\n"
-      "  unsure, do not change this option.",
       detailed);
   print_line (OPT_TRACING_FILENAME, "Filename to register traces",
       "  A file with this name will be created to register the simulation. The file\n"
