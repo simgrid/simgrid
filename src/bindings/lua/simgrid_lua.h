@@ -71,6 +71,7 @@ typedef struct t_host_attr {
   //deployment attribute
   const char *function;
   xbt_dynar_t args_list;
+  xbt_dict_t properties;
 } host_attr, *p_host_attr;
 
 
@@ -106,6 +107,7 @@ int console_add_link(lua_State*);
 int console_add_route(lua_State*);
 int console_add_AS(lua_State*);
 int console_set_function(lua_State*);
+int console_host_set_property(lua_State*);
 
 int console_parse_platform(void);
 int console_parse_application(void);

@@ -66,6 +66,7 @@ SimGrid (3.6) unstable; urgency=low
    Define XBT_USE_DEPRECATED if you want to use the old numbered macros like
    INFO1, INFO2, etc.
  * Change xbt_die() to accept a format string with arguments, just like printf.
+ * New data structure: xbt_lib_t, like a dict but more general and with better memory handling.
 
  INSTR
  * New configuration options
@@ -95,6 +96,8 @@ SimGrid (3.6) unstable; urgency=low
    - current value: 30600 for 3.06.00, aka 3.6
  * Define macro MAKE_SIMGRID_VERSION(major, minor, patch) to help building
    a number that can be compared with SIMGRID_VERSION.
+ * Add a build option -Denable_debug (set to ON by default): when set to OFF,
+   assertions and verbose/debug logging events are disabled at compile time.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

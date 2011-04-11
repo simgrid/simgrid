@@ -163,8 +163,8 @@ static int Task_destroy(lua_State * L)
 static int Task_send(lua_State * L)
 {
   //stackDump("send ",L);
-  m_task_t tk = checkTask(L, -2);
-  const char *mailbox = luaL_checkstring(L, -1);
+  m_task_t tk = checkTask(L, 1);
+  const char *mailbox = luaL_checkstring(L, 2);
   lua_pop(L, 1);                // remove the string so that the task is on top of it
   MSG_task_set_data(tk, L);     // Copy my stack into the task, so that the receiver can copy the lua task directly
   MSG_error_t res = MSG_task_send(tk, mailbox);
@@ -220,6 +220,71 @@ static int Task_recv(lua_State * L)
   return 1;
 }
 
+static int Task_recv_with_timeout(lua_State * L)
+{
+  m_task_t tk = NULL;
+  const char *mailbox = luaL_checkstring(L, -2);
+  int timeout = luaL_checknumber(L, -1);
+  MSG_error_t res = MSG_task_receive_with_timeout(&tk, mailbox, timeout);
+
+  lua_State *sender_stack = MSG_task_get_data(tk);
+  lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
+  MSG_task_set_data(tk, NULL);
+
+  if (res != MSG_OK)
+    switch (res) {
+    case MSG_TIMEOUT:
+      XBT_ERROR("MSG_task_receive failed : Timeout");
+      break;
+    case MSG_TRANSFER_FAILURE:
+      XBT_ERROR("MSG_task_receive failed : Transfer Failure");
+      break;
+    case MSG_HOST_FAILURE:
+      XBT_ERROR("MSG_task_receive failed : Host Failure ");
+      break;
+    default:
+      XBT_ERROR
+          ("MSG_task_receive failed : Unexpected error , please report this bug");
+      break;
+    }
+
+  return 1;
+}
+
+/**
+ * Static Binding for the Splay methods : event.sleep :
+ * it use MSG_task_irecv with MSG_comm_wait
+ */
+static int Task_splay_irecv(lua_State *L)
+{
+	m_task_t task = NULL;
+	msg_comm_t comm = NULL;		//current communication to receive
+	const char *mailbox = luaL_checkstring(L, -2);
+	double timeout = luaL_checknumber(L, -1);
+	comm = MSG_task_irecv(&task, mailbox);
+	MSG_comm_wait(comm, timeout);
+	if (MSG_comm_get_status(comm) == MSG_OK)
+	{
+		lua_State *sender_stack = MSG_task_get_data(task);
+		lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
+		MSG_task_set_data(task, NULL);
+		MSG_comm_destroy(comm);
+	}
+
+    return 1;
+}
+
+static int Task_splay_isend(lua_State *L)
+{
+	m_task_t tk = checkTask(L, 1);
+	const char *mailbox = luaL_checkstring(L, 2);
+	lua_pop(L, 1);                // remove the string so that the task is on top of it
+	MSG_task_set_data(tk, L);     // Copy my stack into the task, so that the receiver can copy the lua task directly
+	MSG_task_isend(tk, mailbox);
+
+	return 1;
+}
+
 static const luaL_reg Task_methods[] = {
   {"new", Task_new},
   {"name", Task_get_name},
@@ -228,6 +293,9 @@ static const luaL_reg Task_methods[] = {
   {"destroy", Task_destroy},
   {"send", Task_send},
   {"recv", Task_recv},
+  {"recv_timeout",Task_recv_with_timeout},
+  {"splay_recv",Task_splay_irecv},
+  {"iSend",Task_splay_isend},
   {0, 0}
 };
 
@@ -275,7 +343,7 @@ static int Host_get_by_name(lua_State * L)
   XBT_DEBUG("Getting Host from name...");
   m_host_t msg_host = MSG_get_host_by_name(name);
   if (!msg_host) {
-    luaL_error(L, "null Host : MSG_get_host_by_name failled");
+    luaL_error(L, "null Host : MSG_get_host_by_name failed");
   }
   lua_newtable(L);              /* create a table, put the userdata on top of it */
   m_host_t *lua_host = (m_host_t *) lua_newuserdata(L, sizeof(m_host_t));
@@ -318,14 +386,14 @@ static int Host_at(lua_State * L)
 
 static int Host_self(lua_State * L)
 {
-	m_host_t host = MSG_host_self();
-	lua_newtable(L);
-	m_host_t *lua_host =(m_host_t *)lua_newuserdata(L,sizeof(m_host_t));
-	*lua_host = host;
-	luaL_getmetatable(L, HOST_MODULE_NAME);
-	lua_setmetatable(L, -2);
-	lua_setfield(L, -2, "__simgrid_host");
-	return 1;
+   m_host_t host = MSG_host_self();
+   lua_newtable(L);
+   m_host_t *lua_host =(m_host_t *)lua_newuserdata(L,sizeof(m_host_t));
+   *lua_host = host;
+   luaL_getmetatable(L, HOST_MODULE_NAME);
+   lua_setmetatable(L, -2);
+   lua_setfield(L, -2, "__simgrid_host");
+   return 1;
 
 }
 
@@ -334,6 +402,20 @@ static int Host_get_property_value(lua_State * L)
 	m_host_t ht = checkHost(L, -2);
 	const char *prop = luaL_checkstring(L, -1);
 	lua_pushstring(L,MSG_host_get_property_value(ht,prop));
+	return 1;
+}
+
+static int Host_sleep(lua_State *L)
+{
+	int time = luaL_checknumber(L, -1);
+	MSG_process_sleep(time);
+	return 1;
+}
+
+static int Host_destroy(lua_State *L)
+{
+	m_host_t ht = checkHost(L, -1);
+	__MSG_host_destroy(ht);
 	return 1;
 }
 
@@ -393,9 +475,7 @@ static int gras_add_process_function(lua_State * L)
   lua_pop(L, 1);
   //add to the process list
   xbt_dynar_push(process_list, &process);
-
   return 0;
-
 }
 
 
@@ -452,9 +532,12 @@ static const luaL_reg Host_methods[] = {
   {"number", Host_number},
   {"at", Host_at},
   {"self",Host_self},
-  {"getPropValue",Host_get_property_value},
+  {"getPropValue", Host_get_property_value},
+  {"sleep", Host_sleep},
+  {"destroy",Host_destroy},
   // Bypass XML Methods
   {"setFunction", console_set_function},
+  {"setProperty", console_host_set_property},
   {0, 0}
 };
 

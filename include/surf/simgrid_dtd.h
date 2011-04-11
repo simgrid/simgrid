@@ -1,5 +1,5 @@
 /* XML processor/application API for src/surf/simgrid.dtd.
- * Generated 2011/04/07 16:42:54.
+ * Generated 2011/04/11 09:38:38.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -225,16 +225,14 @@ typedef int AT_surfxml_config_id;
 #define AU_surfxml_config_id NULL
 typedef int AT_surfxml_bypassRoute_gw_src;
 #define AU_surfxml_bypassRoute_gw_src NULL
+typedef int AT_surfxml_cluster_core;
+#define AU_surfxml_cluster_core NULL
 typedef int AT_surfxml_include_file;
 #define AU_surfxml_include_file NULL
 typedef int AT_surfxml_random_std_deviation;
 #define AU_surfxml_random_std_deviation NULL
-typedef int AT_surfxml_cluster_core;
-#define AU_surfxml_cluster_core NULL
 typedef int AT_surfxml_host_state_file;
 #define AU_surfxml_host_state_file NULL
-typedef int AT_surfxml_AS_coordinates;
-#define AU_surfxml_AS_coordinates NULL
 typedef int AT_surfxml_route_dst;
 #define AU_surfxml_route_dst NULL
 typedef int AT_surfxml_cluster_bw;
@@ -392,16 +390,14 @@ XBT_PUBLIC_DATA(AT_surfxml_config_id ) AX_surfxml_config_id;
 #define A_surfxml_config_id (surfxml_bufferstack + AX_surfxml_config_id)
 XBT_PUBLIC_DATA(AT_surfxml_bypassRoute_gw_src ) AX_surfxml_bypassRoute_gw_src;
 #define A_surfxml_bypassRoute_gw_src (surfxml_bufferstack + AX_surfxml_bypassRoute_gw_src)
+XBT_PUBLIC_DATA(AT_surfxml_cluster_core ) AX_surfxml_cluster_core;
+#define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
 XBT_PUBLIC_DATA(AT_surfxml_include_file ) AX_surfxml_include_file;
 #define A_surfxml_include_file (surfxml_bufferstack + AX_surfxml_include_file)
 XBT_PUBLIC_DATA(AT_surfxml_random_std_deviation ) AX_surfxml_random_std_deviation;
 #define A_surfxml_random_std_deviation (surfxml_bufferstack + AX_surfxml_random_std_deviation)
-XBT_PUBLIC_DATA(AT_surfxml_cluster_core ) AX_surfxml_cluster_core;
-#define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
 XBT_PUBLIC_DATA(AT_surfxml_host_state_file ) AX_surfxml_host_state_file;
 #define A_surfxml_host_state_file (surfxml_bufferstack + AX_surfxml_host_state_file)
-XBT_PUBLIC_DATA(AT_surfxml_AS_coordinates ) AX_surfxml_AS_coordinates;
-#define A_surfxml_AS_coordinates (surfxml_bufferstack + AX_surfxml_AS_coordinates)
 XBT_PUBLIC_DATA(AT_surfxml_route_dst ) AX_surfxml_route_dst;
 #define A_surfxml_route_dst (surfxml_bufferstack + AX_surfxml_route_dst)
 XBT_PUBLIC_DATA(AT_surfxml_cluster_bw ) AX_surfxml_cluster_bw;
