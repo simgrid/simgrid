@@ -31,7 +31,7 @@ static void create_AS(const char *id, const char *mode)
 
 static void create_host(const char *id, double power_peak, double power_sc,
                         const char *power_tr,int core,int state_init,
-                        const char *state_tr)
+                        const char *state_tr,xbt_dict_t properties)
 {
   double power_scale = 1.0;
   int core_nb = 1; //default value
@@ -57,8 +57,7 @@ static void create_host(const char *id, double power_peak, double power_sc,
 
   surf_host_create_resource(xbt_strdup(id), power_peak, power_scale,
                             power_trace, core_nb, state_initial, state_trace,
-                            current_property_set);
-  current_property_set = NULL;
+                            properties);
 }
 
 /**
@@ -349,6 +348,7 @@ static int Host_new(lua_State * L)
   host->state_initial = state_initial;
   host->state_trace = state_trace;
   host->function = NULL;
+  host->properties = xbt_dict_new();
   xbt_dynar_push(current_as->host_list_d, &host);
 
   return 0;
@@ -604,22 +604,22 @@ static int Host_set_function(lua_State * L)     //(host,function,nb_args,list_ar
 {
 	p_AS_attr p_as;
 	p_host_attr p_host;
-	const char *host;
-	const char *function;
+	unsigned int i,j;
+	const char *host_id ;
+	const char *function_id;
 	const char *args;
 	char * tmp_arg;
-	unsigned int i,j;
 
    if (lua_istable(L, -1)) {
 	 // get Host id
 	 lua_pushstring(L, "host");
 	 lua_gettable(L, -2);
-	 host = lua_tostring(L, -1);
+	 host_id = lua_tostring(L, -1);
 	 lua_pop(L, 1);
 	 // get Function Name
 	 lua_pushstring(L, "fct");
 	 lua_gettable(L, -2);
-     function = lua_tostring(L, -1);
+     function_id = lua_tostring(L, -1);
      lua_pop(L, 1);
      //get args
      lua_pushstring(L,"args");
@@ -636,8 +636,8 @@ static int Host_set_function(lua_State * L)     //(host,function,nb_args,list_ar
    xbt_dynar_foreach(as_list_d, i, p_as)
    {
 	   xbt_dynar_foreach(p_as->host_list_d, j, p_host) {
-		   if (p_host->id == host) {
-			   p_host->function = function;
+		   if (p_host->id == host_id) {
+			   p_host->function = function_id;
 			   p_host->args_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 			   // split & fill the args list
 			   tmp_arg = strtok((char*)args,",");
@@ -649,8 +649,45 @@ static int Host_set_function(lua_State * L)     //(host,function,nb_args,list_ar
 		   }
       	}
    }
-	  XBT_ERROR("Host : %s Not Found !!", host);
+	  XBT_ERROR("Host : %s Not Found !!", host_id);
 	  return 1;
+
+}
+
+static int Host_set_property(lua_State* L)
+{
+	p_AS_attr p_as;
+	p_host_attr p_host;
+	unsigned int i,j;
+	const char* host_id ="";
+	const char* prop_id = "";
+	const char* prop_value = "";
+	if (lua_istable(L, -1)) {
+		 // get Host id
+		 lua_pushstring(L, "host");
+		 lua_gettable(L, -2);
+		 host_id = lua_tostring(L, -1);
+		 lua_pop(L, 1);
+		 // get Function Name
+		 lua_pushstring(L, "prop_id");
+		 lua_gettable(L, -2);
+	     prop_id = lua_tostring(L, -1);
+	     lua_pop(L, 1);
+	     //get args
+	     lua_pushstring(L,"prop_value");
+	     lua_gettable(L, -2);
+	     prop_value = lua_tostring(L,-1);
+	     lua_pop(L, 1);
+	 }
+	xbt_dynar_foreach(as_list_d, i, p_as)
+	   {
+		   xbt_dynar_foreach(p_as->host_list_d, j, p_host) {
+			   if (p_host->id == host_id) {
+				   xbt_dict_set(p_host->properties, prop_id, xbt_strdup(prop_value), free);
+			   }
+		   }
+      }
+	return 1;
 
 }
 /*
@@ -675,9 +712,11 @@ static int surf_parse_bypass_platform()
 	  xbt_dynar_foreach(p_as->host_list_d, j, p_host){
 		  create_host(p_host->id, p_host->power_peak, p_host->power_scale,
 		                  p_host->power_trace, p_host->core, p_host->state_initial,
-		                  p_host->state_trace);
-		      //add to routing model host list
-		      surf_route_add_host((char *) p_host->id);
+		                  p_host->state_trace, p_host->properties);
+
+
+		   //add to routing model host list
+		   surf_route_add_host((char *) p_host->id);
 	  }
 	  // add associated Links
 	  xbt_dynar_foreach(p_as->link_list_d, j, p_link){
@@ -801,6 +840,11 @@ int console_add_AS(lua_State *L)
 int console_set_function(lua_State *L)
 {
 	return Host_set_function(L);
+}
+
+int console_host_set_property(lua_State *L)
+{
+	return Host_set_property(L);
 }
 
 int console_parse_platform()
