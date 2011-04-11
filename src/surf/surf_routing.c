@@ -2430,6 +2430,12 @@ static void model_rulebased_set_route(routing_component_t rc,
   rule_route_t ruleroute = xbt_new0(s_rule_route_t, 1);
   const char *error;
   int erroffset;
+
+  if(!strcmp(rc->routing->name,"Vivaldi")){
+	  if(xbt_dynar_length(route->generic_route.link_list) != 0)
+		  xbt_die("You can't have link_ctn with Model Vivaldi.");
+  }
+
   ruleroute->re_src = pcre_compile(src, 0, &error, &erroffset, NULL);
   xbt_assert(ruleroute->re_src,
               "PCRE compilation failed at offset %d (\"%s\"): %s\n",
@@ -2452,6 +2458,12 @@ static void model_rulebased_set_ASroute(routing_component_t rc,
   rule_route_extended_t ruleroute_e = xbt_new0(s_rule_route_extended_t, 1);
   const char *error;
   int erroffset;
+
+  if(!strcmp(rc->routing->name,"Vivaldi")){
+	  if(xbt_dynar_length(route->generic_route.link_list) != 0)
+		  xbt_die("You can't have link_ctn with Model Vivaldi.");
+  }
+
   ruleroute_e->generic_rule_route.re_src =
       pcre_compile(src, 0, &error, &erroffset, NULL);
   xbt_assert(ruleroute_e->generic_rule_route.re_src,
