@@ -158,14 +158,14 @@ m_process_t MSG_process_create_with_environment(const char *name,
     simdata->PPID = -1;
   }
 
+#ifdef HAVE_TRACING
+  TRACE_msg_process_create(process);
+#endif
+
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
   SIMIX_req_process_create(&process, name, code, simdata, host->name,
                            argc, argv, properties);
-
-#ifdef HAVE_TRACING
-  TRACE_msg_process_create(process);
-#endif
 
   if (!process) {
     /* Undo everything we have just changed */
