@@ -28,7 +28,6 @@ static int emigrant(int argc, char *argv[])
     XBT_INFO("Migrating to %s", destination);
     MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name(destination));
     MSG_process_sleep(2); // I am tired, have to sleep for 2 seconds
-    xbt_free (destination);
     MSG_task_destroy (task);
     task = NULL;
   }
@@ -41,7 +40,7 @@ static int master(int argc, char *argv[])
 
   // I am the master of emigrant process,
   // I tell it where it must emigrate to.
-  xbt_dynar_t destinations = xbt_dynar_new (sizeof(char*), xbt_free);
+  xbt_dynar_t destinations = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
   xbt_dynar_push_as (destinations, char*, xbt_strdup ("Tremblay"));
   xbt_dynar_push_as (destinations, char*, xbt_strdup ("Jupiter"));
   xbt_dynar_push_as (destinations, char*, xbt_strdup ("Fafard"));
@@ -63,6 +62,7 @@ static int master(int argc, char *argv[])
     MSG_task_send (task, "master_mailbox");
     task = NULL;
   }
+  xbt_dynar_free (&destinations);
   return 0;
 }
 

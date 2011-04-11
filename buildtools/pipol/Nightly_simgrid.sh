@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#PRE-PIPOL /home/mescal/navarro/pre-simgrid.sh
+
 #PIPOL esn i386-linux-ubuntu-karmic.dd.gz none 02:00 --user --silent
 #PIPOL esn amd64-linux-ubuntu-karmic.dd.gz none 02:00 --user --silent
 #PIPOL esn i386-linux-ubuntu-lucid.dd.gz none 02:00 --user --silent
@@ -33,6 +35,10 @@ cd simgrid
 
 
 if [ x$PIPOL_IMAGE == "xamd64-windows-server-2008-64bits.dd.gz" ] ; then
+
+	export PATH=/cygdrive/c/:/cygdrive/c/GnuWin32/bin/:/cygdrive/c/Windows/system32:/cygdrive/c/Windows
+	export PATH=$PATH:/cygdrive/c/strawberry/c/bin:/cygdrive/c/strawberry/perl/site/bin:/cygdrive/c/strawberry/perl/bin
+
 	cmake \
 	-G"Unix Makefiles" \
 	-Denable_lua=off \

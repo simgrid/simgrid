@@ -7,33 +7,16 @@
    <host id="Fafard" power="76296000"/>
    <host id="Ginette" power="48492000"/>
    <host id="Bourassa" power="48492000"/>
-   <router id="R.4-3"/>
-   <router id="R.3-2-5"/>
-   <router id="R.2-0"/>
-   <router id="R.1-0"/>
-   <router id="R.1-8-6"/>
-   <router id="R.6-7"/>
-   <link id="6"  bandwidth="41279125" latency="5.9904e-05"/>
-   <link id="3"  bandwidth="34285622" latency="0.000514433"/>
-   <link id="7"  bandwidth="11618875" latency="0.00018998"/>
-   <link id="9"  bandwidth="7209750" latency="0.001461517"/>
-   <link id="2"  bandwidth="22222222" latency="0.000136931"/>
-   <link id="8"  bandwidth="8158000" latency="0.000270544"/>
-   <link id="1"  bandwidth="34285625" latency="0.000514433"/>
-   <link id="4"  bandwidth="10099625" latency="0.00047978"/>
-   <link id="0"  bandwidth="41279125" latency="5.9904e-05"/>
-   <link id="5"  bandwidth="27946250" latency="0.000278066"/>
- 
-   <route src="Tremblay" dst="R.4-3"><link_ctn id="4"/></route>
-   <route src="R.3-2-5" dst="Ginette"><link_ctn id="5"/></route>
-   <route src="R.4-3" dst="R.3-2-5"><link_ctn id="3"/></route>
-   <route src="R.3-2-5" dst="R.2-0"><link_ctn id="2"/></route>
-   <route src="R.2-0" dst="R.1-0"><link_ctn id="0"/></route>
-   <route src="Fafard" dst="R.1-8-6"><link_ctn id="8"/></route>
-   <route src="R.1-0" dst="R.1-8-6"><link_ctn id="1"/></route>
-   <route src="R.1-8-6" dst="R.6-7"><link_ctn id="6"/></route>
-   <route src="R.6-7" dst="Bourassa"><link_ctn id="7"/></route>
- 
+   <link id="6" bandwidth="41279125" latency="5.9904e-05"/>
+   <link id="3" bandwidth="34285625" latency="0.000514433"/>
+   <link id="7" bandwidth="11618875" latency="0.00018998"/>
+   <link id="9" bandwidth="7209750" latency="0.001461517"/>
+   <link id="2" bandwidth="118682500" latency="0.000136931"/>
+   <link id="8" bandwidth="8158000" latency="0.000270544"/>
+   <link id="1" bandwidth="34285625" latency="0.000514433"/>
+   <link id="4" bandwidth="10099625" latency="0.00047978"/>
+   <link id="0" bandwidth="41279125" latency="5.9904e-05"/>
+   <link id="5" bandwidth="27946250" latency="0.000278066"/>
    <route src="Tremblay" dst="Jupiter">
      <link_ctn id="9"/>
    </route>

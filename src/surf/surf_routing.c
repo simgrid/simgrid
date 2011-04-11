@@ -564,13 +564,6 @@ static void parse_S_AS(char *AS_id, char *AS_routing)
 static void parse_S_AS_XML(void)
 {
   parse_S_AS(A_surfxml_AS_id, A_surfxml_AS_routing);
-
-  if (strcmp(A_surfxml_AS_coordinates,"")) {
-	if(!COORD_ASR_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
-    xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_AS_coordinates, " ");
-    xbt_dynar_shrink(ctn, 0);
-    xbt_lib_set(as_router_lib,A_surfxml_AS_id,COORD_ASR_LEVEL,(void *) ctn);
-  }
 }
 
 /*
@@ -1161,7 +1154,7 @@ void surf_parse_add_callback_config(void)
 {
 	surfxml_add_callback(STag_surfxml_config_cb_list, &routing_parse_Sconfig);
 	surfxml_add_callback(ETag_surfxml_config_cb_list, &routing_parse_Econfig);
-	surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+	surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties_XML);
 	surfxml_add_callback(STag_surfxml_AS_cb_list, &surf_parse_models_setup);
 	surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
 }
@@ -3307,8 +3300,8 @@ static void generic_src_dst_check(routing_component_t rc, const char *src,
 	  xbt_die("The src(%s in %s) and dst(%s in %s) are in differents AS",
               src, src_as->name, dst, dst_as->name);
   if(rc != dst_as)
-	 xbt_die("The routing component of src and dst is not the same as the network elements belong (%s==%s)",
-     rc->name, dst_as->name);
+	 xbt_die("The routing component of src'%s' and dst'%s' is not the same as the network elements belong (%s?=%s?=%s)",
+     src,dst,src_as->name, dst_as->name,rc->name);
 }
 
 static void routing_parse_Sconfig(void)
@@ -3390,11 +3383,9 @@ static void routing_parse_Scluster(void)
   SURFXML_BUFFER_SET(AS_id, cluster_id);
 #ifdef HAVE_PCRE_LIB
   SURFXML_BUFFER_SET(AS_routing, "RuleBased");
-  SURFXML_BUFFER_SET(AS_coordinates, "");
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"RuleBased\">", cluster_id);
 #else
   SURFXML_BUFFER_SET(AS_routing, "Full");
-  SURFXML_BUFFER_SET(AS_coordinates, "");
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", cluster_id);
 #endif
   SURFXML_START_TAG(AS);
@@ -3783,7 +3774,6 @@ static void routing_parse_Speer(void)
   surfxml_bufferstack_push(1);
 
   SURFXML_BUFFER_SET(AS_id, peer_id);
-  SURFXML_BUFFER_SET(AS_coordinates, peer_coord);
 
   SURFXML_BUFFER_SET(AS_routing, "Full");
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", peer_id);

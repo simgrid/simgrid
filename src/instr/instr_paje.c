@@ -233,6 +233,7 @@ container_t newContainer (const char *name, e_container_types kind, container_t 
 
 static container_t recursiveGetContainer (const char *name, container_t root)
 {
+  if (name == NULL || root == NULL) return NULL;
   if (strcmp (root->name, name) == 0) return root;
 
   xbt_dict_cursor_t cursor = NULL;
@@ -247,12 +248,22 @@ static container_t recursiveGetContainer (const char *name, container_t root)
 
 container_t getContainer (const char *name)
 {
+  if (name == NULL) return NULL;
   return recursiveGetContainer(name, rootContainer);
+}
+
+int knownContainerWithName (const char *name)
+{
+  if (xbt_dict_get_or_null (allContainers, name)){
+    return 1;
+  }else{
+    return 0;
+  }
 }
 
 container_t getContainerByName (const char *name)
 {
-  return (container_t)xbt_dict_get_or_null (allContainers, name);
+  return (container_t)xbt_dict_get (allContainers, name);
 }
 
 char *getContainerIdByName (const char *name)

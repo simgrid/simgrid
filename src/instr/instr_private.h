@@ -105,9 +105,10 @@ void TRACE_msg_task_put_end(void);
 
 /* declaration of instrumentation functions from msg_process_instr.c */
 char *instr_process_id (m_process_t proc, char *str, int len);
+char *instr_process_id_2 (const char *process_name, int process_pid, char *str, int len);
 void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host,
                                    m_host_t new_host);
-void TRACE_msg_process_create (m_process_t process);
+void TRACE_msg_process_create (const char *process_name, int process_pid, m_host_t host);
 void TRACE_msg_process_kill(m_process_t process);
 void TRACE_msg_process_suspend(m_process_t process);
 void TRACE_msg_process_resume(m_process_t process);
@@ -206,6 +207,7 @@ extern xbt_dict_t trivaNodeTypes;
 extern xbt_dict_t trivaEdgeTypes;
 container_t newContainer (const char *name, e_container_types kind, container_t father);
 container_t getContainer (const char *name);
+int knownContainerWithName (const char *name);
 container_t getContainerByName (const char *name);
 char *getContainerIdByName (const char *name);
 char *getVariableTypeIdByName (const char *name, type_t father);
@@ -229,6 +231,7 @@ void instr_new_user_variable_type (const char *new_typename, const char *color);
 void instr_new_user_link_variable_type  (const char *new_typename, const char *color);
 void instr_new_user_host_variable_type  (const char *new_typename, const char *color);
 int instr_platform_traced (void);
+xbt_graph_t instr_routing_platform_graph (void);
 
 #endif /* HAVE_TRACING */
 

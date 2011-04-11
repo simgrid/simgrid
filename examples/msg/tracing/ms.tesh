@@ -11,16 +11,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) Configuration change: Set 'triva/uncategorized' to 'tracing/ms.uncat.plist'
 > [  0.000000] (0:@) Filename tracing/ms.trace is open for writing
 > [  0.000000] (0:@) Define paje header
-> [  0.000000] (0:@) new container AS0, child of 0
-> [  0.000000] (0:@) new type L1, child of 0
-> [  0.000000] (0:@) new_pajeDefineContainerType: event_type=0
-> [  0.000000] (0:@) print_pajeDefineContainerType: event_type=0
-> [  0.000000] (0:@) free_paje_event: event_type=0, timestamp=0.000000
-> [  0.000000] (0:@) new_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=6, timestamp=0.000000
 > [  0.000000] (0:@) new container Tremblay, child of AS0
-> [  0.000000] (0:@) new type HOST, child of L1
+> [  0.000000] (0:@) new type HOST, child of 0
 > [  0.000000] (0:@) new_pajeDefineContainerType: event_type=0
 > [  0.000000] (0:@) print_pajeDefineContainerType: event_type=0
 > [  0.000000] (0:@) free_paje_event: event_type=0, timestamp=0.000000
@@ -28,7 +20,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) print_pajeCreateContainer: event_type=6, timestamp=0.000000
 > [  0.000000] (0:@) free_paje_event: event_type=6, timestamp=0.000000
 > [  0.000000] (0:@) new type power, child of HOST
-> [  0.000000] (0:@) VariableType power(3), child of HOST(2)
+> [  0.000000] (0:@) VariableType power(2), child of HOST(1)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
@@ -36,7 +28,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.000000, buffersize=0)
 > [  0.000000] (0:@) insert_into_buffer: inserted at beginning
 > [  0.000000] (0:@) new type power_used, child of HOST
-> [  0.000000] (0:@) VariableType power_used(4), child of HOST(2)
+> [  0.000000] (0:@) VariableType power_used(3), child of HOST(1)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
@@ -68,36 +60,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.000000, buffersize=4)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 4
-> [  0.000000] (0:@) new container R.4-3, child of AS0
-> [  0.000000] (0:@) new type ROUTER, child of L1
-> [  0.000000] (0:@) new_pajeDefineContainerType: event_type=0
-> [  0.000000] (0:@) print_pajeDefineContainerType: event_type=0
-> [  0.000000] (0:@) free_paje_event: event_type=0, timestamp=0.000000
-> [  0.000000] (0:@) new_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) new container R.3-2-5, child of AS0
-> [  0.000000] (0:@) new_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) new container R.2-0, child of AS0
-> [  0.000000] (0:@) new_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) new container R.1-0, child of AS0
-> [  0.000000] (0:@) new_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) new container R.1-8-6, child of AS0
-> [  0.000000] (0:@) new_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) new container R.6-7, child of AS0
-> [  0.000000] (0:@) new_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeCreateContainer: event_type=6, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=6, timestamp=0.000000
 > [  0.000000] (0:@) new container 6, child of AS0
-> [  0.000000] (0:@) new type LINK, child of L1
+> [  0.000000] (0:@) new type LINK, child of 0
 > [  0.000000] (0:@) new_pajeDefineContainerType: event_type=0
 > [  0.000000] (0:@) print_pajeDefineContainerType: event_type=0
 > [  0.000000] (0:@) free_paje_event: event_type=0, timestamp=0.000000
@@ -105,12 +69,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) print_pajeCreateContainer: event_type=6, timestamp=0.000000
 > [  0.000000] (0:@) free_paje_event: event_type=6, timestamp=0.000000
 > [  0.000000] (0:@) new type bandwidth, child of LINK
-> [  0.000000] (0:@) VariableType bandwidth(7), child of LINK(6)
+> [  0.000000] (0:@) VariableType bandwidth(5), child of LINK(4)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type latency, child of LINK
-> [  0.000000] (0:@) VariableType latency(8), child of LINK(6)
+> [  0.000000] (0:@) VariableType latency(6), child of LINK(4)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
@@ -121,7 +85,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.000000, buffersize=6)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 6
 > [  0.000000] (0:@) new type bandwidth_used, child of LINK
-> [  0.000000] (0:@) VariableType bandwidth_used(9), child of LINK(6)
+> [  0.000000] (0:@) VariableType bandwidth_used(7), child of LINK(4)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
@@ -215,8 +179,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.000000, buffersize=24)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 24
-> [  0.000000] (0:@) new type HOST-LINK, child of L1
-> [  0.000000] (0:@) LinkType HOST-LINK(10), child of L1(1)  HOST(2)->LINK(6)
+> [  0.000000] (0:@) new type HOST-LINK, child of 0
+> [  0.000000] (0:@) LinkType HOST-LINK(8), child of 0(0)  HOST(1)->LINK(4)
 > [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
 > [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
 > [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
@@ -226,8 +190,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=26)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 26
-> [  0.000000] (0:@) new type LINK-ROUTER, child of L1
-> [  0.000000] (0:@) LinkType LINK-ROUTER(11), child of L1(1)  LINK(6)->ROUTER(5)
+> [  0.000000] (0:@) new type LINK-LINK, child of 0
+> [  0.000000] (0:@) LinkType LINK-LINK(9), child of 0(0)  LINK(4)->LINK(4)
 > [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
 > [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
 > [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
@@ -237,11 +201,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=28)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 28
-> [  0.000000] (0:@) new type LINK-LINK, child of L1
-> [  0.000000] (0:@) LinkType LINK-LINK(12), child of L1(1)  LINK(6)->LINK(6)
-> [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
 > [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=29)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 29
@@ -266,17 +225,17 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=36)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 36
+> [  0.000000] (0:@) new type LINK-HOST, child of 0
+> [  0.000000] (0:@) LinkType LINK-HOST(10), child of 0(0)  LINK(4)->HOST(1)
+> [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
+> [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
+> [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
 > [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=37)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 37
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=38)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 38
-> [  0.000000] (0:@) new type LINK-HOST, child of L1
-> [  0.000000] (0:@) LinkType LINK-HOST(13), child of L1(1)  LINK(6)->HOST(2)
-> [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
 > [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=39)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 39
@@ -325,11 +284,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=54)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 54
-> [  0.000000] (0:@) new type ROUTER-LINK, child of L1
-> [  0.000000] (0:@) LinkType ROUTER-LINK(14), child of L1(1)  ROUTER(5)->LINK(6)
-> [  0.000000] (0:@) new_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) print_pajeDefineLinkType: event_type=4
-> [  0.000000] (0:@) free_paje_event: event_type=4, timestamp=0.000000
 > [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=55)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 55
@@ -342,90 +296,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=58)
 > [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 58
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=59)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 59
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=60)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 60
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=61)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 61
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=62)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 62
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=63)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 63
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=64)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 64
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=65)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 65
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=66)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 66
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=67)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 67
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=68)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 68
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=69)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 69
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=70)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 70
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=71)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 71
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=72)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 72
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=73)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 73
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=74)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 74
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=75)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 75
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=76)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 76
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=77)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 77
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=78)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 78
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=79)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 79
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=80)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 80
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=81)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 81
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=82)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 82
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=83)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 83
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=84)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 84
-> [  0.000000] (0:@) new_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=14, timestamp=0.000000, buffersize=85)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 85
-> [  0.000000] (0:@) new_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) insert_into_buffer: insert event_type=15, timestamp=0.000000, buffersize=86)
-> [  0.000000] (0:@) insert_into_buffer: inserted at end, pos = 86
 > [  0.000000] (0:@) TRACE_paje_dump_buffer: dump until 0.000000. starts
 > [  0.000000] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.000000
 > [  0.000000] (0:@) free_paje_event: event_type=8, timestamp=0.000000
@@ -545,125 +415,69 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
 > [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeStartLink: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=14, timestamp=0.000000
-> [  0.000000] (0:@) print_pajeEndLink: event_type=15, timestamp=0.000000
-> [  0.000000] (0:@) free_paje_event: event_type=15, timestamp=0.000000
 > [  0.000000] (0:@) TRACE_paje_dump_buffer: ends
 > [  0.000000] (0:@) new type is_slave, child of HOST
-> [  0.000000] (0:@) VariableType is_slave(15), child of HOST(2)
+> [  0.000000] (0:@) VariableType is_slave(11), child of HOST(1)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type is_master, child of HOST
-> [  0.000000] (0:@) VariableType is_master(16), child of HOST(2)
+> [  0.000000] (0:@) VariableType is_master(12), child of HOST(1)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type task_creation, child of HOST
-> [  0.000000] (0:@) VariableType task_creation(17), child of HOST(2)
+> [  0.000000] (0:@) VariableType task_creation(13), child of HOST(1)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type task_computation, child of HOST
-> [  0.000000] (0:@) VariableType task_computation(18), child of HOST(2)
+> [  0.000000] (0:@) VariableType task_computation(14), child of HOST(1)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type msmark, child of 0
-> [  0.000000] (0:@) EventType msmark(19), child of 0(0)
+> [  0.000000] (0:@) EventType msmark(15), child of 0(0)
 > [  0.000000] (0:@) new_pajeDefineEventType: event_type=3
 > [  0.000000] (0:@) print_pajeDefineEventType: event_type=3
 > [  0.000000] (0:@) free_paje_event: event_type=3, timestamp=0.000000
 > [  0.000000] (0:@) new type bcompute, child of LINK
-> [  0.000000] (0:@) VariableType bcompute(20), child of LINK(6)
+> [  0.000000] (0:@) VariableType bcompute(16), child of LINK(4)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type pcompute, child of HOST
-> [  0.000000] (0:@) VariableType pcompute(21), child of HOST(2)
+> [  0.000000] (0:@) VariableType pcompute(17), child of HOST(1)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type bfinalize, child of LINK
-> [  0.000000] (0:@) VariableType bfinalize(22), child of LINK(6)
+> [  0.000000] (0:@) VariableType bfinalize(18), child of LINK(4)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type pfinalize, child of HOST
-> [  0.000000] (0:@) VariableType pfinalize(23), child of HOST(2)
+> [  0.000000] (0:@) VariableType pfinalize(19), child of HOST(1)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type brequest, child of LINK
-> [  0.000000] (0:@) VariableType brequest(24), child of LINK(6)
+> [  0.000000] (0:@) VariableType brequest(20), child of LINK(4)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type prequest, child of HOST
-> [  0.000000] (0:@) VariableType prequest(25), child of HOST(2)
+> [  0.000000] (0:@) VariableType prequest(21), child of HOST(1)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type breport, child of LINK
-> [  0.000000] (0:@) VariableType breport(26), child of LINK(6)
+> [  0.000000] (0:@) VariableType breport(22), child of LINK(4)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
 > [  0.000000] (0:@) new type preport, child of HOST
-> [  0.000000] (0:@) VariableType preport(27), child of HOST(2)
+> [  0.000000] (0:@) VariableType preport(23), child of HOST(1)
 > [  0.000000] (0:@) new_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) print_pajeDefineVariableType: event_type=1
 > [  0.000000] (0:@) free_paje_event: event_type=1, timestamp=0.000000
@@ -671,7 +485,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  0.000000] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=0.000000, buffersize=0)
 > [  0.000000] (1:master@Tremblay) insert_into_buffer: inserted at beginning
 > [  0.000000] (1:master@Tremblay) new value start_send_tasks, child of msmark
-> [  0.000000] (1:master@Tremblay) EntityValue start_send_tasks(28), child of msmark(19)
+> [  0.000000] (1:master@Tremblay) EntityValue start_send_tasks(24), child of msmark(15)
 > [  0.000000] (1:master@Tremblay) new_pajeDefineEntityValue: event_type=5
 > [  0.000000] (1:master@Tremblay) print_pajeDefineEntityValue: event_type=5
 > [  0.000000] (1:master@Tremblay) free_paje_event: event_type=5, timestamp=0.000000
@@ -2966,7 +2780,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  3.389815] (6:slave@Bourassa) insert_into_buffer: insert event_type=9, timestamp=3.389815, buffersize=96)
 > [  3.389815] (6:slave@Bourassa) insert_into_buffer: inserted at end, pos = 96
 > [  3.389815] (1:master@Tremblay) new value finish_send_tasks, child of msmark
-> [  3.389815] (1:master@Tremblay) EntityValue finish_send_tasks(29), child of msmark(19)
+> [  3.389815] (1:master@Tremblay) EntityValue finish_send_tasks(25), child of msmark(15)
 > [  3.389815] (1:master@Tremblay) new_pajeDefineEntityValue: event_type=5
 > [  3.389815] (1:master@Tremblay) print_pajeDefineEntityValue: event_type=5
 > [  3.389815] (1:master@Tremblay) free_paje_event: event_type=5, timestamp=0.000000
@@ -3296,43 +3110,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  4.441249] (0:@) new_pajeDestroyContainer: event_type=7, timestamp=4.441249
 > [  4.441249] (0:@) print_pajeDestroyContainer: event_type=7, timestamp=4.441249
 > [  4.441249] (0:@) free_paje_event: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) destroy container R.2-0
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: dump until 4.441249. starts
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: ends
-> [  4.441249] (0:@) new_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) print_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) free_paje_event: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) destroy container R.4-3
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: dump until 4.441249. starts
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: ends
-> [  4.441249] (0:@) new_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) print_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) free_paje_event: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) destroy container R.3-2-5
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: dump until 4.441249. starts
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: ends
-> [  4.441249] (0:@) new_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) print_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) free_paje_event: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) destroy container R.1-8-6
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: dump until 4.441249. starts
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: ends
-> [  4.441249] (0:@) new_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) print_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) free_paje_event: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) destroy container R.6-7
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: dump until 4.441249. starts
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: ends
-> [  4.441249] (0:@) new_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) print_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) free_paje_event: event_type=7, timestamp=4.441249
 > [  4.441249] (0:@) destroy container Tremblay
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: dump until 4.441249. starts
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: ends
-> [  4.441249] (0:@) new_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) print_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) free_paje_event: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) destroy container R.1-0
 > [  4.441249] (0:@) TRACE_paje_dump_buffer: dump until 4.441249. starts
 > [  4.441249] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441249] (0:@) new_pajeDestroyContainer: event_type=7, timestamp=4.441249
@@ -3417,12 +3195,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/fi
 > [  4.441249] (0:@) print_pajeDestroyContainer: event_type=7, timestamp=4.441249
 > [  4.441249] (0:@) free_paje_event: event_type=7, timestamp=4.441249
 > [  4.441249] (0:@) destroy container AS0
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: dump until 4.441249. starts
-> [  4.441249] (0:@) TRACE_paje_dump_buffer: ends
-> [  4.441249] (0:@) new_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) print_pajeDestroyContainer: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) free_paje_event: event_type=7, timestamp=4.441249
-> [  4.441249] (0:@) destroy container 0
 > [  4.441249] (0:@) TRACE_paje_dump_buffer: dump until 4.441249. starts
 > [  4.441249] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.441249] (0:@) new_pajeDestroyContainer: event_type=7, timestamp=4.441249
@@ -3535,668 +3307,622 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > %       Container string 
 > %       Value string 
 > %EndEventDef
-> 0 1 0 L1
-> 6 0 1 1 0 AS0
-> 0 2 1 HOST
-> 6 0 2 2 1 Tremblay
-> 1 3 2 power "1 1 1"
-> 1 4 2 power_used "0.5 0.5 0.5"
-> 6 0 3 2 1 Jupiter
-> 6 0 4 2 1 Fafard
-> 6 0 5 2 1 Ginette
-> 6 0 6 2 1 Bourassa
-> 0 5 1 ROUTER
-> 6 0 7 5 1 R.4-3
-> 6 0 8 5 1 R.3-2-5
-> 6 0 9 5 1 R.2-0
-> 6 0 10 5 1 R.1-0
-> 6 0 11 5 1 R.1-8-6
-> 6 0 12 5 1 R.6-7
-> 0 6 1 LINK
-> 6 0 13 6 1 6
-> 1 7 6 bandwidth "1 1 1"
-> 1 8 6 latency "1 1 1"
-> 1 9 6 bandwidth_used "0.5 0.5 0.5"
-> 6 0 14 6 1 3
-> 6 0 15 6 1 7
-> 6 0 16 6 1 9
-> 6 0 17 6 1 2
-> 6 0 18 6 1 8
-> 6 0 19 6 1 1
-> 6 0 20 6 1 4
-> 6 0 21 6 1 0
-> 6 0 22 6 1 5
-> 4 10 1 2 6 HOST-LINK
-> 4 11 1 6 5 LINK-ROUTER
-> 4 12 1 6 6 LINK-LINK
-> 4 13 1 6 2 LINK-HOST
-> 4 14 1 5 6 ROUTER-LINK
-> 8 0 3 2 98095000.000000
-> 8 0 3 3 76296000.000000
-> 8 0 3 4 76296000.000000
-> 8 0 3 5 48492000.000000
-> 8 0 3 6 48492000.000000
-> 8 0 7 13 41279125.000000
-> 8 0 8 13 0.000060
-> 8 0 7 14 34285622.000000
-> 8 0 8 14 0.000514
-> 8 0 7 15 11618875.000000
-> 8 0 8 15 0.000190
-> 8 0 7 16 7209750.000000
-> 8 0 8 16 0.001462
-> 8 0 7 17 22222222.000000
-> 8 0 8 17 0.000137
-> 8 0 7 18 8158000.000000
-> 8 0 8 18 0.000271
-> 8 0 7 19 34285625.000000
-> 8 0 8 19 0.000514
-> 8 0 7 20 10099625.000000
-> 8 0 8 20 0.000480
-> 8 0 7 21 41279125.000000
-> 8 0 8 21 0.000060
-> 8 0 7 22 27946250.000000
-> 8 0 8 22 0.000278
-> 14 0 10 1 G 4 0
-> 15 0 10 1 G 18 0
-> 14 0 11 1 G 18 1
-> 15 0 11 1 G 11 1
-> 14 0 12 1 G 18 2
-> 15 0 12 1 G 19 2
-> 14 0 12 1 G 19 3
-> 15 0 12 1 G 21 3
-> 14 0 12 1 G 21 4
-> 15 0 12 1 G 17 4
-> 14 0 12 1 G 17 5
-> 15 0 12 1 G 14 5
-> 14 0 12 1 G 14 6
-> 15 0 12 1 G 20 6
-> 14 0 13 1 G 20 7
-> 15 0 13 1 G 2 7
-> 14 0 12 1 G 18 8
-> 15 0 12 1 G 13 8
-> 14 0 12 1 G 13 9
-> 15 0 12 1 G 15 9
-> 14 0 13 1 G 15 10
-> 15 0 13 1 G 6 10
-> 14 0 12 1 G 20 11
-> 15 0 12 1 G 16 11
-> 14 0 13 1 G 16 12
-> 15 0 13 1 G 3 12
-> 14 0 12 1 G 17 13
-> 15 0 12 1 G 22 13
-> 14 0 13 1 G 22 14
-> 15 0 13 1 G 5 14
-> 14 0 14 1 G 9 15
-> 15 0 14 1 G 17 15
-> 14 0 11 1 G 17 16
-> 15 0 11 1 G 8 16
-> 14 0 14 1 G 9 17
-> 15 0 14 1 G 21 17
-> 14 0 11 1 G 21 18
-> 15 0 11 1 G 10 18
-> 14 0 14 1 G 7 19
-> 15 0 14 1 G 14 19
-> 14 0 11 1 G 14 20
-> 15 0 11 1 G 8 20
-> 14 0 14 1 G 7 21
-> 15 0 14 1 G 20 21
-> 14 0 14 1 G 8 22
-> 15 0 14 1 G 22 22
-> 14 0 14 1 G 11 23
-> 15 0 14 1 G 13 23
-> 14 0 11 1 G 13 24
-> 15 0 11 1 G 12 24
-> 14 0 14 1 G 11 25
-> 15 0 14 1 G 19 25
-> 14 0 11 1 G 19 26
-> 15 0 11 1 G 10 26
-> 14 0 14 1 G 12 27
-> 15 0 14 1 G 15 27
-> 14 0 12 1 G 19 28
-> 15 0 12 1 G 13 28
-> 14 0 10 1 G 2 29
-> 15 0 10 1 G 16 29
-> 14 0 12 1 G 14 30
-> 15 0 12 1 G 22 30
-> 1 15 2 is_slave "1 1 1"
-> 1 16 2 is_master "1 1 1"
-> 1 17 2 task_creation "1 1 1"
-> 1 18 2 task_computation "1 1 1"
-> 3 19 0 msmark "1 1 1"
-> 1 20 6 bcompute "1 0 0"
-> 1 21 2 pcompute "1 0 0"
-> 1 22 6 bfinalize "0 1 0"
-> 1 23 2 pfinalize "0 1 0"
-> 1 24 6 brequest "0.000000 0.000985 0.041631"
-> 1 25 2 prequest "0.000000 0.000985 0.041631"
-> 1 26 6 breport "0.176643 0.364602 0.091331"
-> 1 27 2 preport "0.176643 0.364602 0.091331"
-> 5 28 19 start_send_tasks "(null)"
-> 8 0 16 2 1.000000
-> 16 0 19 0 28
-> 8 0 17 2 0.000000
-> 8 0 15 2 1.000000
-> 8 0 15 3 1.000000
-> 8 0 15 4 1.000000
-> 8 0 15 5 1.000000
-> 8 0 15 6 1.000000
-> 9 0.002164 18 2 50000000.000000
-> 8 0.002164 17 2 1.000000
-> 8 0.002164 4 2 0.000000
-> 9 0.002164 4 2 98095000.000000
-> 8 0.002164 21 2 0.000000
-> 9 0.002164 21 2 98095000.000000
-> 8 0.017364 9 16 0.000000
-> 9 0.017364 9 16 6632970.000000
-> 8 0.017364 20 16 0.000000
-> 9 0.017364 20 16 6632970.000000
-> 10 0.168126 9 16 6632970.000000
-> 10 0.168126 20 16 6632970.000000
-> 9 0.168126 18 3 50000000.000000
-> 8 0.168126 17 2 2.000000
-> 10 0.168126 4 2 98095000.000000
-> 10 0.168126 21 2 98095000.000000
-> 9 0.168126 4 2 98095000.000000
-> 9 0.168126 21 2 98095000.000000
-> 8 0.168126 4 3 0.000000
-> 9 0.168126 4 3 76296000.000000
-> 8 0.168126 21 3 0.000000
-> 9 0.168126 21 3 76296000.000000
-> 8 0.188676 9 20 0.000000
-> 9 0.188676 9 20 5060664.718311
-> 8 0.188676 20 20 0.000000
-> 9 0.188676 20 20 5060664.718311
-> 8 0.188676 9 14 0.000000
-> 9 0.188676 9 14 5060664.718311
-> 8 0.188676 20 14 0.000000
-> 9 0.188676 20 14 5060664.718311
-> 8 0.188676 9 17 0.000000
-> 9 0.188676 9 17 5060664.718311
-> 8 0.188676 20 17 0.000000
-> 9 0.188676 20 17 5060664.718311
-> 8 0.188676 9 21 0.000000
-> 9 0.188676 9 21 5060664.718311
-> 8 0.188676 20 21 0.000000
-> 9 0.188676 20 21 5060664.718311
-> 8 0.188676 9 19 0.000000
-> 9 0.188676 9 19 5060664.718311
-> 8 0.188676 20 19 0.000000
-> 9 0.188676 20 19 5060664.718311
-> 8 0.188676 9 18 0.000000
-> 9 0.188676 9 18 5060664.718311
-> 8 0.188676 20 18 0.000000
-> 9 0.188676 20 18 5060664.718311
-> 10 0.386279 9 20 5060664.718311
-> 10 0.386279 20 20 5060664.718311
-> 10 0.386279 9 14 5060664.718311
-> 10 0.386279 20 14 5060664.718311
-> 10 0.386279 9 17 5060664.718311
-> 10 0.386279 20 17 5060664.718311
-> 10 0.386279 9 21 5060664.718311
-> 10 0.386279 20 21 5060664.718311
-> 10 0.386279 9 19 5060664.718311
-> 10 0.386279 20 19 5060664.718311
-> 10 0.386279 9 18 5060664.718311
-> 10 0.386279 20 18 5060664.718311
-> 9 0.386279 18 4 50000000.000000
-> 8 0.386279 17 2 3.000000
-> 10 0.386279 4 2 98095000.000000
-> 10 0.386279 21 2 98095000.000000
-> 9 0.386279 4 2 98095000.000000
-> 9 0.386279 21 2 98095000.000000
-> 8 0.386279 4 4 0.000000
-> 9 0.386279 4 4 76296000.000000
-> 8 0.386279 21 4 0.000000
-> 9 0.386279 21 4 76296000.000000
-> 9 0.399511 9 20 7859911.230163
-> 9 0.399511 20 20 7859911.230163
-> 9 0.399511 9 14 7859911.230163
-> 9 0.399511 20 14 7859911.230163
-> 8 0.399511 9 22 0.000000
-> 9 0.399511 9 22 7859911.230163
-> 8 0.399511 20 22 0.000000
-> 9 0.399511 20 22 7859911.230163
-> 10 0.511874 4 2 98095000.000000
-> 10 0.511874 21 2 98095000.000000
-> 10 0.511874 9 20 7859911.230163
-> 10 0.511874 20 20 7859911.230163
-> 10 0.511874 9 14 7859911.230163
-> 10 0.511874 20 14 7859911.230163
-> 10 0.511874 9 22 7859911.230163
-> 10 0.511874 20 22 7859911.230163
-> 9 0.511874 9 20 7859911.230163
-> 9 0.511874 20 20 7859911.230163
-> 9 0.511874 9 14 7859911.230163
-> 9 0.511874 20 14 7859911.230163
-> 9 0.511874 9 22 7859911.230163
-> 9 0.511874 20 22 7859911.230163
-> 10 0.526739 9 20 7859911.230163
-> 10 0.526739 20 20 7859911.230163
-> 10 0.526739 9 14 7859911.230163
-> 10 0.526739 20 14 7859911.230163
-> 10 0.526739 9 22 7859911.230163
-> 10 0.526739 20 22 7859911.230163
-> 9 0.526739 18 5 50000000.000000
-> 8 0.526739 17 2 4.000000
-> 8 0.526739 4 5 0.000000
-> 9 0.526739 4 5 48492000.000000
-> 8 0.526739 21 5 0.000000
-> 9 0.526739 21 5 48492000.000000
-> 9 0.547074 9 20 5114134.701194
-> 9 0.547074 20 20 5114134.701194
-> 9 0.547074 9 14 5114134.701194
-> 9 0.547074 20 14 5114134.701194
-> 9 0.547074 9 17 5114134.701194
-> 9 0.547074 20 17 5114134.701194
-> 9 0.547074 9 21 5114134.701194
-> 9 0.547074 20 21 5114134.701194
-> 9 0.547074 9 19 5114134.701194
-> 9 0.547074 20 19 5114134.701194
-> 8 0.547074 9 13 0.000000
-> 9 0.547074 9 13 5114134.701194
-> 8 0.547074 20 13 0.000000
-> 9 0.547074 20 13 5114134.701194
-> 8 0.547074 9 15 0.000000
-> 9 0.547074 9 15 5114134.701194
-> 8 0.547074 20 15 0.000000
-> 9 0.547074 20 15 5114134.701194
-> 10 0.742611 9 20 5114134.701194
-> 10 0.742611 20 20 5114134.701194
-> 10 0.742611 9 14 5114134.701194
-> 10 0.742611 20 14 5114134.701194
-> 10 0.742611 9 17 5114134.701194
-> 10 0.742611 20 17 5114134.701194
-> 10 0.742611 9 21 5114134.701194
-> 10 0.742611 20 21 5114134.701194
-> 10 0.742611 9 19 5114134.701194
-> 10 0.742611 20 19 5114134.701194
-> 10 0.742611 9 13 5114134.701194
-> 10 0.742611 20 13 5114134.701194
-> 10 0.742611 9 15 5114134.701194
-> 10 0.742611 20 15 5114134.701194
-> 9 0.742611 18 6 50000000.000000
-> 8 0.742611 17 2 5.000000
-> 8 0.742611 4 6 0.000000
-> 9 0.742611 4 6 48492000.000000
-> 8 0.742611 21 6 0.000000
-> 9 0.742611 21 6 48492000.000000
-> 9 0.744775 18 2 50000000.000000
-> 8 0.744775 17 2 6.000000
-> 9 0.744775 4 2 98095000.000000
-> 9 0.744775 21 2 98095000.000000
-> 10 0.823468 4 3 76296000.000000
-> 10 0.823468 21 3 76296000.000000
-> 9 0.838668 9 16 6632970.000000
-> 10 0.989430 9 16 6632970.000000
-> 8 0.989430 17 2 7.000000
-> 9 0.989430 18 3 50000000.000000
-> 10 0.989430 4 2 98095000.000000
-> 10 0.989430 21 2 98095000.000000
-> 9 0.989430 4 2 98095000.000000
-> 9 0.989430 21 2 98095000.000000
-> 9 0.989430 4 3 76296000.000000
-> 9 0.989430 21 3 76296000.000000
-> 10 1.041621 4 4 76296000.000000
-> 10 1.041621 21 4 76296000.000000
-> 9 1.062172 9 20 5060664.718311
-> 9 1.062172 9 14 5060664.718311
-> 9 1.062172 9 17 5060664.718311
-> 9 1.062172 9 21 5060664.718311
-> 9 1.062172 9 19 5060664.718311
-> 9 1.062172 9 18 5060664.718311
-> 10 1.254485 4 2 98095000.000000
-> 10 1.254485 21 2 98095000.000000
-> 10 1.254485 9 20 5060664.718311
-> 10 1.254485 9 14 5060664.718311
-> 10 1.254485 9 17 5060664.718311
-> 10 1.254485 9 21 5060664.718311
-> 10 1.254485 9 19 5060664.718311
-> 10 1.254485 9 18 5060664.718311
-> 9 1.254485 9 20 5060664.718311
-> 9 1.254485 9 14 5060664.718311
-> 9 1.254485 9 17 5060664.718311
-> 9 1.254485 9 21 5060664.718311
-> 9 1.254485 9 19 5060664.718311
-> 9 1.254485 9 18 5060664.718311
-> 10 1.259775 9 20 5060664.718311
-> 10 1.259775 9 14 5060664.718311
-> 10 1.259775 9 17 5060664.718311
-> 10 1.259775 9 21 5060664.718311
-> 10 1.259775 9 19 5060664.718311
-> 10 1.259775 9 18 5060664.718311
-> 8 1.259775 17 2 8.000000
-> 9 1.259775 18 4 50000000.000000
-> 9 1.259775 4 4 76296000.000000
-> 9 1.259775 21 4 76296000.000000
-> 9 1.261939 18 2 50000000.000000
-> 8 1.261939 17 2 9.000000
-> 9 1.261939 4 2 98095000.000000
-> 9 1.261939 21 2 98095000.000000
-> 10 1.557837 4 5 48492000.000000
-> 10 1.557837 21 5 48492000.000000
-> 9 1.571068 9 20 7859911.230163
-> 9 1.571068 9 14 7859911.230163
-> 9 1.571068 9 22 7859911.230163
-> 10 1.644772 4 3 76296000.000000
-> 10 1.644772 21 3 76296000.000000
-> 10 1.644772 9 20 7859911.230163
-> 10 1.644772 9 14 7859911.230163
-> 10 1.644772 9 22 7859911.230163
-> 9 1.644772 9 20 7859911.230163
-> 9 1.644772 9 14 7859911.230163
-> 9 1.644772 9 22 7859911.230163
-> 10 1.698296 9 20 7859911.230163
-> 10 1.698296 9 14 7859911.230163
-> 10 1.698296 9 22 7859911.230163
-> 8 1.698296 17 2 10.000000
-> 9 1.698296 18 5 50000000.000000
-> 10 1.698296 4 2 98095000.000000
-> 10 1.698296 21 2 98095000.000000
-> 9 1.698296 4 2 98095000.000000
-> 9 1.698296 21 2 98095000.000000
-> 9 1.698296 4 5 48492000.000000
-> 9 1.698296 21 5 48492000.000000
-> 9 1.713496 9 16 6632970.000000
-> 9 1.713496 20 16 6632970.000000
-> 10 1.771649 4 2 98095000.000000
-> 10 1.771649 21 2 98095000.000000
-> 10 1.771649 9 16 6632970.000000
-> 10 1.771649 20 16 6632970.000000
-> 9 1.771649 9 16 6632970.000000
-> 9 1.771649 20 16 6632970.000000
-> 10 1.773709 4 6 48492000.000000
-> 10 1.773709 21 6 48492000.000000
-> 10 1.773709 9 16 6632970.000000
-> 10 1.773709 20 16 6632970.000000
-> 9 1.773709 9 16 6632970.000000
-> 9 1.773709 20 16 6632970.000000
-> 10 1.864258 9 16 6632970.000000
-> 10 1.864258 20 16 6632970.000000
-> 9 1.864258 18 3 50000000.000000
-> 8 1.864258 17 2 11.000000
-> 9 1.864258 4 3 76296000.000000
-> 9 1.864258 21 3 76296000.000000
-> 9 1.866422 18 2 50000000.000000
-> 8 1.866422 17 2 12.000000
-> 9 1.866422 4 2 98095000.000000
-> 9 1.866422 21 2 98095000.000000
-> 9 1.886758 9 20 5114134.701194
-> 9 1.886758 20 20 5114134.701194
-> 9 1.886758 9 14 5114134.701194
-> 9 1.886758 20 14 5114134.701194
-> 9 1.886758 9 17 5114134.701194
-> 9 1.886758 20 17 5114134.701194
-> 9 1.886758 9 21 5114134.701194
-> 9 1.886758 20 21 5114134.701194
-> 9 1.886758 9 19 5114134.701194
-> 9 1.886758 20 19 5114134.701194
-> 9 1.886758 9 13 5114134.701194
-> 9 1.886758 20 13 5114134.701194
-> 9 1.886758 9 15 5114134.701194
-> 9 1.886758 20 15 5114134.701194
-> 10 1.915117 4 4 76296000.000000
-> 10 1.915117 21 4 76296000.000000
-> 10 1.915117 9 20 5114134.701194
-> 10 1.915117 20 20 5114134.701194
-> 10 1.915117 9 14 5114134.701194
-> 10 1.915117 20 14 5114134.701194
-> 10 1.915117 9 17 5114134.701194
-> 10 1.915117 20 17 5114134.701194
-> 10 1.915117 9 21 5114134.701194
-> 10 1.915117 20 21 5114134.701194
-> 10 1.915117 9 19 5114134.701194
-> 10 1.915117 20 19 5114134.701194
-> 10 1.915117 9 13 5114134.701194
-> 10 1.915117 20 13 5114134.701194
-> 10 1.915117 9 15 5114134.701194
-> 10 1.915117 20 15 5114134.701194
-> 9 1.915117 9 20 5114134.701194
-> 9 1.915117 20 20 5114134.701194
-> 9 1.915117 9 14 5114134.701194
-> 9 1.915117 20 14 5114134.701194
-> 9 1.915117 9 17 5114134.701194
-> 9 1.915117 20 17 5114134.701194
-> 9 1.915117 9 21 5114134.701194
-> 9 1.915117 20 21 5114134.701194
-> 9 1.915117 9 19 5114134.701194
-> 9 1.915117 20 19 5114134.701194
-> 9 1.915117 9 13 5114134.701194
-> 9 1.915117 20 13 5114134.701194
-> 9 1.915117 9 15 5114134.701194
-> 9 1.915117 20 15 5114134.701194
-> 10 2.082294 9 20 5114134.701194
-> 10 2.082294 20 20 5114134.701194
-> 10 2.082294 9 14 5114134.701194
-> 10 2.082294 20 14 5114134.701194
-> 10 2.082294 9 17 5114134.701194
-> 10 2.082294 20 17 5114134.701194
-> 10 2.082294 9 21 5114134.701194
-> 10 2.082294 20 21 5114134.701194
-> 10 2.082294 9 19 5114134.701194
-> 10 2.082294 20 19 5114134.701194
-> 10 2.082294 9 13 5114134.701194
-> 10 2.082294 20 13 5114134.701194
-> 10 2.082294 9 15 5114134.701194
-> 10 2.082294 20 15 5114134.701194
-> 9 2.082294 18 6 50000000.000000
-> 8 2.082294 17 2 13.000000
-> 10 2.082294 4 2 98095000.000000
-> 10 2.082294 21 2 98095000.000000
-> 9 2.082294 4 2 98095000.000000
-> 9 2.082294 21 2 98095000.000000
-> 9 2.082294 4 6 48492000.000000
-> 9 2.082294 21 6 48492000.000000
-> 9 2.102845 9 20 5060664.718311
-> 9 2.102845 20 20 5060664.718311
-> 9 2.102845 9 14 5060664.718311
-> 9 2.102845 20 14 5060664.718311
-> 9 2.102845 9 17 5060664.718311
-> 9 2.102845 20 17 5060664.718311
-> 9 2.102845 9 21 5060664.718311
-> 9 2.102845 20 21 5060664.718311
-> 9 2.102845 9 19 5060664.718311
-> 9 2.102845 20 19 5060664.718311
-> 9 2.102845 9 18 5060664.718311
-> 9 2.102845 20 18 5060664.718311
-> 10 2.300447 9 20 5060664.718311
-> 10 2.300447 20 20 5060664.718311
-> 10 2.300447 9 14 5060664.718311
-> 10 2.300447 20 14 5060664.718311
-> 10 2.300447 9 17 5060664.718311
-> 10 2.300447 20 17 5060664.718311
-> 10 2.300447 9 21 5060664.718311
-> 10 2.300447 20 21 5060664.718311
-> 10 2.300447 9 19 5060664.718311
-> 10 2.300447 20 19 5060664.718311
-> 10 2.300447 9 18 5060664.718311
-> 10 2.300447 20 18 5060664.718311
-> 9 2.300447 18 4 50000000.000000
-> 8 2.300447 17 2 14.000000
-> 10 2.300447 4 2 98095000.000000
-> 10 2.300447 21 2 98095000.000000
-> 9 2.300447 4 2 98095000.000000
-> 9 2.300447 21 2 98095000.000000
-> 9 2.300447 4 4 76296000.000000
-> 9 2.300447 21 4 76296000.000000
-> 10 2.376132 4 2 98095000.000000
-> 10 2.376132 21 2 98095000.000000
-> 8 2.378296 17 2 15.000000
-> 9 2.378296 18 2 50000000.000000
-> 9 2.378296 4 2 98095000.000000
-> 9 2.378296 21 2 98095000.000000
-> 10 2.519600 4 3 76296000.000000
-> 10 2.519600 21 3 76296000.000000
-> 9 2.534800 9 16 6632970.000000
-> 10 2.685562 9 16 6632970.000000
-> 8 2.685562 17 2 16.000000
-> 9 2.685562 18 3 50000000.000000
-> 10 2.685562 4 2 98095000.000000
-> 10 2.685562 21 2 98095000.000000
-> 9 2.685562 4 2 98095000.000000
-> 9 2.685562 21 2 98095000.000000
-> 9 2.685562 4 3 76296000.000000
-> 9 2.685562 21 3 76296000.000000
-> 10 2.729394 4 5 48492000.000000
-> 10 2.729394 21 5 48492000.000000
-> 9 2.742626 9 20 7859911.230163
-> 9 2.742626 9 14 7859911.230163
-> 9 2.742626 9 22 7859911.230163
-> 10 2.869854 9 20 7859911.230163
-> 10 2.869854 9 14 7859911.230163
-> 10 2.869854 9 22 7859911.230163
-> 8 2.869854 17 2 17.000000
-> 9 2.869854 18 5 50000000.000000
-> 10 2.869854 4 2 98095000.000000
-> 10 2.869854 21 2 98095000.000000
-> 9 2.869854 4 2 98095000.000000
-> 9 2.869854 21 2 98095000.000000
-> 5 29 19 finish_send_tasks "(null)"
-> 9 2.869854 4 5 48492000.000000
-> 9 2.869854 21 5 48492000.000000
-> 10 2.888006 4 2 98095000.000000
-> 10 2.888006 21 2 98095000.000000
-> 8 2.890170 17 2 18.000000
-> 9 2.890170 18 2 50000000.000000
-> 9 2.890170 4 2 98095000.000000
-> 9 2.890170 21 2 98095000.000000
-> 10 2.955790 4 4 76296000.000000
-> 10 2.955790 21 4 76296000.000000
-> 9 2.976340 9 20 5060664.718311
-> 9 2.976340 9 14 5060664.718311
-> 9 2.976340 9 17 5060664.718311
-> 9 2.976340 9 21 5060664.718311
-> 9 2.976340 9 19 5060664.718311
-> 9 2.976340 9 18 5060664.718311
-> 10 3.113392 4 6 48492000.000000
-> 10 3.113392 21 6 48492000.000000
-> 10 3.113392 9 20 5060664.718311
-> 10 3.113392 9 14 5060664.718311
-> 10 3.113392 9 17 5060664.718311
-> 10 3.113392 9 21 5060664.718311
-> 10 3.113392 9 19 5060664.718311
-> 10 3.113392 9 18 5060664.718311
-> 9 3.113392 9 20 5060664.718311
-> 9 3.113392 9 14 5060664.718311
-> 9 3.113392 9 17 5060664.718311
-> 9 3.113392 9 21 5060664.718311
-> 9 3.113392 9 19 5060664.718311
-> 9 3.113392 9 18 5060664.718311
-> 10 3.173943 9 20 5060664.718311
-> 10 3.173943 9 14 5060664.718311
-> 10 3.173943 9 17 5060664.718311
-> 10 3.173943 9 21 5060664.718311
-> 10 3.173943 9 19 5060664.718311
-> 10 3.173943 9 18 5060664.718311
-> 8 3.173943 17 2 19.000000
-> 9 3.173943 18 4 50000000.000000
-> 10 3.173943 4 2 98095000.000000
-> 10 3.173943 21 2 98095000.000000
-> 9 3.173943 4 2 98095000.000000
-> 9 3.173943 21 2 98095000.000000
-> 9 3.173943 4 4 76296000.000000
-> 9 3.173943 21 4 76296000.000000
-> 9 3.194279 9 20 5114134.701194
-> 9 3.194279 20 20 5114134.701194
-> 9 3.194279 9 14 5114134.701194
-> 9 3.194279 20 14 5114134.701194
-> 9 3.194279 9 17 5114134.701194
-> 9 3.194279 20 17 5114134.701194
-> 9 3.194279 9 21 5114134.701194
-> 9 3.194279 20 21 5114134.701194
-> 9 3.194279 9 19 5114134.701194
-> 9 3.194279 20 19 5114134.701194
-> 9 3.194279 9 13 5114134.701194
-> 9 3.194279 20 13 5114134.701194
-> 9 3.194279 9 15 5114134.701194
-> 9 3.194279 20 15 5114134.701194
-> 10 3.340904 4 3 76296000.000000
-> 10 3.340904 21 3 76296000.000000
-> 10 3.340904 9 20 5114134.701194
-> 10 3.340904 20 20 5114134.701194
-> 10 3.340904 9 14 5114134.701194
-> 10 3.340904 20 14 5114134.701194
-> 10 3.340904 9 17 5114134.701194
-> 10 3.340904 20 17 5114134.701194
-> 10 3.340904 9 21 5114134.701194
-> 10 3.340904 20 21 5114134.701194
-> 10 3.340904 9 19 5114134.701194
-> 10 3.340904 20 19 5114134.701194
-> 10 3.340904 9 13 5114134.701194
-> 10 3.340904 20 13 5114134.701194
-> 10 3.340904 9 15 5114134.701194
-> 10 3.340904 20 15 5114134.701194
-> 9 3.340904 9 20 5114134.701194
-> 9 3.340904 20 20 5114134.701194
-> 9 3.340904 9 14 5114134.701194
-> 9 3.340904 20 14 5114134.701194
-> 9 3.340904 9 17 5114134.701194
-> 9 3.340904 20 17 5114134.701194
-> 9 3.340904 9 21 5114134.701194
-> 9 3.340904 20 21 5114134.701194
-> 9 3.340904 9 19 5114134.701194
-> 9 3.340904 20 19 5114134.701194
-> 9 3.340904 9 13 5114134.701194
-> 9 3.340904 20 13 5114134.701194
-> 9 3.340904 9 15 5114134.701194
-> 9 3.340904 20 15 5114134.701194
-> 10 3.389815 9 20 5114134.701194
-> 10 3.389815 20 20 5114134.701194
-> 10 3.389815 9 14 5114134.701194
-> 10 3.389815 20 14 5114134.701194
-> 10 3.389815 9 17 5114134.701194
-> 10 3.389815 20 17 5114134.701194
-> 10 3.389815 9 21 5114134.701194
-> 10 3.389815 20 21 5114134.701194
-> 10 3.389815 9 19 5114134.701194
-> 10 3.389815 20 19 5114134.701194
-> 10 3.389815 9 13 5114134.701194
-> 10 3.389815 20 13 5114134.701194
-> 10 3.389815 9 15 5114134.701194
-> 10 3.389815 20 15 5114134.701194
-> 9 3.389815 18 6 50000000.000000
-> 16 3.389815 19 0 29
-> 10 3.389815 4 2 98095000.000000
-> 10 3.389815 21 2 98095000.000000
-> 9 3.389815 4 2 98095000.000000
-> 9 3.389815 21 2 98095000.000000
-> 9 3.389815 4 6 48492000.000000
-> 9 3.389815 21 6 48492000.000000
-> 10 3.399880 4 2 98095000.000000
-> 10 3.399880 21 2 98095000.000000
-> 10 3.829285 4 4 76296000.000000
-> 10 3.829285 21 4 76296000.000000
-> 10 3.900952 4 5 48492000.000000
-> 10 3.900952 21 5 48492000.000000
-> 10 4.420913 4 6 48492000.000000
-> 10 4.420913 21 6 48492000.000000
-> 7 4.441249 2 4
-> 7 4.441249 5 9
-> 7 4.441249 5 7
-> 7 4.441249 5 8
-> 7 4.441249 5 11
-> 7 4.441249 5 12
-> 7 4.441249 2 2
-> 7 4.441249 5 10
-> 7 4.441249 6 21
-> 7 4.441249 6 19
-> 7 4.441249 6 17
-> 7 4.441249 6 14
-> 7 4.441249 6 20
-> 7 4.441249 6 22
-> 7 4.441249 6 13
-> 7 4.441249 6 15
-> 7 4.441249 6 18
-> 7 4.441249 6 16
-> 7 4.441249 2 6
-> 7 4.441249 2 3
-> 7 4.441249 2 5
+> 0 1 0 HOST
+> 6 0 1 1 0 Tremblay
+> 1 2 1 power "1 1 1"
+> 1 3 1 power_used "0.5 0.5 0.5"
+> 6 0 2 1 0 Jupiter
+> 6 0 3 1 0 Fafard
+> 6 0 4 1 0 Ginette
+> 6 0 5 1 0 Bourassa
+> 0 4 0 LINK
+> 6 0 6 4 0 6
+> 1 5 4 bandwidth "1 1 1"
+> 1 6 4 latency "1 1 1"
+> 1 7 4 bandwidth_used "0.5 0.5 0.5"
+> 6 0 7 4 0 3
+> 6 0 8 4 0 7
+> 6 0 9 4 0 9
+> 6 0 10 4 0 2
+> 6 0 11 4 0 8
+> 6 0 12 4 0 1
+> 6 0 13 4 0 4
+> 6 0 14 4 0 0
+> 6 0 15 4 0 5
+> 4 8 0 1 4 HOST-LINK
+> 4 9 0 4 4 LINK-LINK
+> 4 10 0 4 1 LINK-HOST
+> 8 0 2 1 98095000.000000
+> 8 0 2 2 76296000.000000
+> 8 0 2 3 76296000.000000
+> 8 0 2 4 48492000.000000
+> 8 0 2 5 48492000.000000
+> 8 0 5 6 41279125.000000
+> 8 0 6 6 0.000060
+> 8 0 5 7 34285625.000000
+> 8 0 6 7 0.000514
+> 8 0 5 8 11618875.000000
+> 8 0 6 8 0.000190
+> 8 0 5 9 7209750.000000
+> 8 0 6 9 0.001462
+> 8 0 5 10 118682500.000000
+> 8 0 6 10 0.000137
+> 8 0 5 11 8158000.000000
+> 8 0 6 11 0.000271
+> 8 0 5 12 34285625.000000
+> 8 0 6 12 0.000514
+> 8 0 5 13 10099625.000000
+> 8 0 6 13 0.000480
+> 8 0 5 14 41279125.000000
+> 8 0 6 14 0.000060
+> 8 0 5 15 27946250.000000
+> 8 0 6 15 0.000278
+> 14 0 8 0 G 3 0
+> 15 0 8 0 G 11 0
+> 14 0 9 0 G 11 1
+> 15 0 9 0 G 12 1
+> 14 0 9 0 G 12 2
+> 15 0 9 0 G 14 2
+> 14 0 9 0 G 14 3
+> 15 0 9 0 G 10 3
+> 14 0 9 0 G 10 4
+> 15 0 9 0 G 7 4
+> 14 0 9 0 G 7 5
+> 15 0 9 0 G 13 5
+> 14 0 10 0 G 13 6
+> 15 0 10 0 G 1 6
+> 14 0 9 0 G 11 7
+> 15 0 9 0 G 6 7
+> 14 0 9 0 G 6 8
+> 15 0 9 0 G 8 8
+> 14 0 10 0 G 8 9
+> 15 0 10 0 G 5 9
+> 14 0 9 0 G 13 10
+> 15 0 9 0 G 9 10
+> 14 0 10 0 G 9 11
+> 15 0 10 0 G 2 11
+> 14 0 9 0 G 10 12
+> 15 0 9 0 G 15 12
+> 14 0 10 0 G 15 13
+> 15 0 10 0 G 4 13
+> 14 0 9 0 G 12 14
+> 15 0 9 0 G 6 14
+> 14 0 8 0 G 1 15
+> 15 0 8 0 G 9 15
+> 14 0 9 0 G 7 16
+> 15 0 9 0 G 15 16
+> 1 11 1 is_slave "1 1 1"
+> 1 12 1 is_master "1 1 1"
+> 1 13 1 task_creation "1 1 1"
+> 1 14 1 task_computation "1 1 1"
+> 3 15 0 msmark "1 1 1"
+> 1 16 4 bcompute "1 0 0"
+> 1 17 1 pcompute "1 0 0"
+> 1 18 4 bfinalize "0 1 0"
+> 1 19 1 pfinalize "0 1 0"
+> 1 20 4 brequest "0.000000 0.000985 0.041631"
+> 1 21 1 prequest "0.000000 0.000985 0.041631"
+> 1 22 4 breport "0.176643 0.364602 0.091331"
+> 1 23 1 preport "0.176643 0.364602 0.091331"
+> 5 24 15 start_send_tasks "(null)"
+> 8 0 12 1 1.000000
+> 16 0 15 0 24
+> 8 0 13 1 0.000000
+> 8 0 11 1 1.000000
+> 8 0 11 2 1.000000
+> 8 0 11 3 1.000000
+> 8 0 11 4 1.000000
+> 8 0 11 5 1.000000
+> 9 0.002164 14 1 50000000.000000
+> 8 0.002164 13 1 1.000000
+> 8 0.002164 3 1 0.000000
+> 9 0.002164 3 1 98095000.000000
+> 8 0.002164 17 1 0.000000
+> 9 0.002164 17 1 98095000.000000
+> 8 0.017364 7 9 0.000000
+> 9 0.017364 7 9 6632970.000000
+> 8 0.017364 16 9 0.000000
+> 9 0.017364 16 9 6632970.000000
+> 10 0.168126 7 9 6632970.000000
+> 10 0.168126 16 9 6632970.000000
+> 9 0.168126 14 2 50000000.000000
+> 8 0.168126 13 1 2.000000
+> 10 0.168126 3 1 98095000.000000
+> 10 0.168126 17 1 98095000.000000
+> 9 0.168126 3 1 98095000.000000
+> 9 0.168126 17 1 98095000.000000
+> 8 0.168126 3 2 0.000000
+> 9 0.168126 3 2 76296000.000000
+> 8 0.168126 17 2 0.000000
+> 9 0.168126 17 2 76296000.000000
+> 8 0.188676 7 13 0.000000
+> 9 0.188676 7 13 5060664.718311
+> 8 0.188676 16 13 0.000000
+> 9 0.188676 16 13 5060664.718311
+> 8 0.188676 7 7 0.000000
+> 9 0.188676 7 7 5060664.718311
+> 8 0.188676 16 7 0.000000
+> 9 0.188676 16 7 5060664.718311
+> 8 0.188676 7 10 0.000000
+> 9 0.188676 7 10 5060664.718311
+> 8 0.188676 16 10 0.000000
+> 9 0.188676 16 10 5060664.718311
+> 8 0.188676 7 14 0.000000
+> 9 0.188676 7 14 5060664.718311
+> 8 0.188676 16 14 0.000000
+> 9 0.188676 16 14 5060664.718311
+> 8 0.188676 7 12 0.000000
+> 9 0.188676 7 12 5060664.718311
+> 8 0.188676 16 12 0.000000
+> 9 0.188676 16 12 5060664.718311
+> 8 0.188676 7 11 0.000000
+> 9 0.188676 7 11 5060664.718311
+> 8 0.188676 16 11 0.000000
+> 9 0.188676 16 11 5060664.718311
+> 10 0.386279 7 13 5060664.718311
+> 10 0.386279 16 13 5060664.718311
+> 10 0.386279 7 7 5060664.718311
+> 10 0.386279 16 7 5060664.718311
+> 10 0.386279 7 10 5060664.718311
+> 10 0.386279 16 10 5060664.718311
+> 10 0.386279 7 14 5060664.718311
+> 10 0.386279 16 14 5060664.718311
+> 10 0.386279 7 12 5060664.718311
+> 10 0.386279 16 12 5060664.718311
+> 10 0.386279 7 11 5060664.718311
+> 10 0.386279 16 11 5060664.718311
+> 9 0.386279 14 3 50000000.000000
+> 8 0.386279 13 1 3.000000
+> 10 0.386279 3 1 98095000.000000
+> 10 0.386279 17 1 98095000.000000
+> 9 0.386279 3 1 98095000.000000
+> 9 0.386279 17 1 98095000.000000
+> 8 0.386279 3 3 0.000000
+> 9 0.386279 3 3 76296000.000000
+> 8 0.386279 17 3 0.000000
+> 9 0.386279 17 3 76296000.000000
+> 9 0.399511 7 13 7859911.230163
+> 9 0.399511 16 13 7859911.230163
+> 9 0.399511 7 7 7859911.230163
+> 9 0.399511 16 7 7859911.230163
+> 8 0.399511 7 15 0.000000
+> 9 0.399511 7 15 7859911.230163
+> 8 0.399511 16 15 0.000000
+> 9 0.399511 16 15 7859911.230163
+> 10 0.511874 3 1 98095000.000000
+> 10 0.511874 17 1 98095000.000000
+> 10 0.511874 7 13 7859911.230163
+> 10 0.511874 16 13 7859911.230163
+> 10 0.511874 7 7 7859911.230163
+> 10 0.511874 16 7 7859911.230163
+> 10 0.511874 7 15 7859911.230163
+> 10 0.511874 16 15 7859911.230163
+> 9 0.511874 7 13 7859911.230163
+> 9 0.511874 16 13 7859911.230163
+> 9 0.511874 7 7 7859911.230163
+> 9 0.511874 16 7 7859911.230163
+> 9 0.511874 7 15 7859911.230163
+> 9 0.511874 16 15 7859911.230163
+> 10 0.526739 7 13 7859911.230163
+> 10 0.526739 16 13 7859911.230163
+> 10 0.526739 7 7 7859911.230163
+> 10 0.526739 16 7 7859911.230163
+> 10 0.526739 7 15 7859911.230163
+> 10 0.526739 16 15 7859911.230163
+> 9 0.526739 14 4 50000000.000000
+> 8 0.526739 13 1 4.000000
+> 8 0.526739 3 4 0.000000
+> 9 0.526739 3 4 48492000.000000
+> 8 0.526739 17 4 0.000000
+> 9 0.526739 17 4 48492000.000000
+> 9 0.547074 7 13 5114134.701194
+> 9 0.547074 16 13 5114134.701194
+> 9 0.547074 7 7 5114134.701194
+> 9 0.547074 16 7 5114134.701194
+> 9 0.547074 7 10 5114134.701194
+> 9 0.547074 16 10 5114134.701194
+> 9 0.547074 7 14 5114134.701194
+> 9 0.547074 16 14 5114134.701194
+> 9 0.547074 7 12 5114134.701194
+> 9 0.547074 16 12 5114134.701194
+> 8 0.547074 7 6 0.000000
+> 9 0.547074 7 6 5114134.701194
+> 8 0.547074 16 6 0.000000
+> 9 0.547074 16 6 5114134.701194
+> 8 0.547074 7 8 0.000000
+> 9 0.547074 7 8 5114134.701194
+> 8 0.547074 16 8 0.000000
+> 9 0.547074 16 8 5114134.701194
+> 10 0.742611 7 13 5114134.701194
+> 10 0.742611 16 13 5114134.701194
+> 10 0.742611 7 7 5114134.701194
+> 10 0.742611 16 7 5114134.701194
+> 10 0.742611 7 10 5114134.701194
+> 10 0.742611 16 10 5114134.701194
+> 10 0.742611 7 14 5114134.701194
+> 10 0.742611 16 14 5114134.701194
+> 10 0.742611 7 12 5114134.701194
+> 10 0.742611 16 12 5114134.701194
+> 10 0.742611 7 6 5114134.701194
+> 10 0.742611 16 6 5114134.701194
+> 10 0.742611 7 8 5114134.701194
+> 10 0.742611 16 8 5114134.701194
+> 9 0.742611 14 5 50000000.000000
+> 8 0.742611 13 1 5.000000
+> 8 0.742611 3 5 0.000000
+> 9 0.742611 3 5 48492000.000000
+> 8 0.742611 17 5 0.000000
+> 9 0.742611 17 5 48492000.000000
+> 9 0.744775 14 1 50000000.000000
+> 8 0.744775 13 1 6.000000
+> 9 0.744775 3 1 98095000.000000
+> 9 0.744775 17 1 98095000.000000
+> 10 0.823468 3 2 76296000.000000
+> 10 0.823468 17 2 76296000.000000
+> 9 0.838668 7 9 6632970.000000
+> 10 0.989430 7 9 6632970.000000
+> 8 0.989430 13 1 7.000000
+> 9 0.989430 14 2 50000000.000000
+> 10 0.989430 3 1 98095000.000000
+> 10 0.989430 17 1 98095000.000000
+> 9 0.989430 3 1 98095000.000000
+> 9 0.989430 17 1 98095000.000000
+> 9 0.989430 3 2 76296000.000000
+> 9 0.989430 17 2 76296000.000000
+> 10 1.041621 3 3 76296000.000000
+> 10 1.041621 17 3 76296000.000000
+> 9 1.062172 7 13 5060664.718311
+> 9 1.062172 7 7 5060664.718311
+> 9 1.062172 7 10 5060664.718311
+> 9 1.062172 7 14 5060664.718311
+> 9 1.062172 7 12 5060664.718311
+> 9 1.062172 7 11 5060664.718311
+> 10 1.254485 3 1 98095000.000000
+> 10 1.254485 17 1 98095000.000000
+> 10 1.254485 7 13 5060664.718311
+> 10 1.254485 7 7 5060664.718311
+> 10 1.254485 7 10 5060664.718311
+> 10 1.254485 7 14 5060664.718311
+> 10 1.254485 7 12 5060664.718311
+> 10 1.254485 7 11 5060664.718311
+> 9 1.254485 7 13 5060664.718311
+> 9 1.254485 7 7 5060664.718311
+> 9 1.254485 7 10 5060664.718311
+> 9 1.254485 7 14 5060664.718311
+> 9 1.254485 7 12 5060664.718311
+> 9 1.254485 7 11 5060664.718311
+> 10 1.259775 7 13 5060664.718311
+> 10 1.259775 7 7 5060664.718311
+> 10 1.259775 7 10 5060664.718311
+> 10 1.259775 7 14 5060664.718311
+> 10 1.259775 7 12 5060664.718311
+> 10 1.259775 7 11 5060664.718311
+> 8 1.259775 13 1 8.000000
+> 9 1.259775 14 3 50000000.000000
+> 9 1.259775 3 3 76296000.000000
+> 9 1.259775 17 3 76296000.000000
+> 9 1.261939 14 1 50000000.000000
+> 8 1.261939 13 1 9.000000
+> 9 1.261939 3 1 98095000.000000
+> 9 1.261939 17 1 98095000.000000
+> 10 1.557837 3 4 48492000.000000
+> 10 1.557837 17 4 48492000.000000
+> 9 1.571068 7 13 7859911.230163
+> 9 1.571068 7 7 7859911.230163
+> 9 1.571068 7 15 7859911.230163
+> 10 1.644772 3 2 76296000.000000
+> 10 1.644772 17 2 76296000.000000
+> 10 1.644772 7 13 7859911.230163
+> 10 1.644772 7 7 7859911.230163
+> 10 1.644772 7 15 7859911.230163
+> 9 1.644772 7 13 7859911.230163
+> 9 1.644772 7 7 7859911.230163
+> 9 1.644772 7 15 7859911.230163
+> 10 1.698296 7 13 7859911.230163
+> 10 1.698296 7 7 7859911.230163
+> 10 1.698296 7 15 7859911.230163
+> 8 1.698296 13 1 10.000000
+> 9 1.698296 14 4 50000000.000000
+> 10 1.698296 3 1 98095000.000000
+> 10 1.698296 17 1 98095000.000000
+> 9 1.698296 3 1 98095000.000000
+> 9 1.698296 17 1 98095000.000000
+> 9 1.698296 3 4 48492000.000000
+> 9 1.698296 17 4 48492000.000000
+> 9 1.713496 7 9 6632970.000000
+> 9 1.713496 16 9 6632970.000000
+> 10 1.771649 3 1 98095000.000000
+> 10 1.771649 17 1 98095000.000000
+> 10 1.771649 7 9 6632970.000000
+> 10 1.771649 16 9 6632970.000000
+> 9 1.771649 7 9 6632970.000000
+> 9 1.771649 16 9 6632970.000000
+> 10 1.773709 3 5 48492000.000000
+> 10 1.773709 17 5 48492000.000000
+> 10 1.773709 7 9 6632970.000000
+> 10 1.773709 16 9 6632970.000000
+> 9 1.773709 7 9 6632970.000000
+> 9 1.773709 16 9 6632970.000000
+> 10 1.864258 7 9 6632970.000000
+> 10 1.864258 16 9 6632970.000000
+> 9 1.864258 14 2 50000000.000000
+> 8 1.864258 13 1 11.000000
+> 9 1.864258 3 2 76296000.000000
+> 9 1.864258 17 2 76296000.000000
+> 9 1.866422 14 1 50000000.000000
+> 8 1.866422 13 1 12.000000
+> 9 1.866422 3 1 98095000.000000
+> 9 1.866422 17 1 98095000.000000
+> 9 1.886758 7 13 5114134.701194
+> 9 1.886758 16 13 5114134.701194
+> 9 1.886758 7 7 5114134.701194
+> 9 1.886758 16 7 5114134.701194
+> 9 1.886758 7 10 5114134.701194
+> 9 1.886758 16 10 5114134.701194
+> 9 1.886758 7 14 5114134.701194
+> 9 1.886758 16 14 5114134.701194
+> 9 1.886758 7 12 5114134.701194
+> 9 1.886758 16 12 5114134.701194
+> 9 1.886758 7 6 5114134.701194
+> 9 1.886758 16 6 5114134.701194
+> 9 1.886758 7 8 5114134.701194
+> 9 1.886758 16 8 5114134.701194
+> 10 1.915117 3 3 76296000.000000
+> 10 1.915117 17 3 76296000.000000
+> 10 1.915117 7 13 5114134.701194
+> 10 1.915117 16 13 5114134.701194
+> 10 1.915117 7 7 5114134.701194
+> 10 1.915117 16 7 5114134.701194
+> 10 1.915117 7 10 5114134.701194
+> 10 1.915117 16 10 5114134.701194
+> 10 1.915117 7 14 5114134.701194
+> 10 1.915117 16 14 5114134.701194
+> 10 1.915117 7 12 5114134.701194
+> 10 1.915117 16 12 5114134.701194
+> 10 1.915117 7 6 5114134.701194
+> 10 1.915117 16 6 5114134.701194
+> 10 1.915117 7 8 5114134.701194
+> 10 1.915117 16 8 5114134.701194
+> 9 1.915117 7 13 5114134.701194
+> 9 1.915117 16 13 5114134.701194
+> 9 1.915117 7 7 5114134.701194
+> 9 1.915117 16 7 5114134.701194
+> 9 1.915117 7 10 5114134.701194
+> 9 1.915117 16 10 5114134.701194
+> 9 1.915117 7 14 5114134.701194
+> 9 1.915117 16 14 5114134.701194
+> 9 1.915117 7 12 5114134.701194
+> 9 1.915117 16 12 5114134.701194
+> 9 1.915117 7 6 5114134.701194
+> 9 1.915117 16 6 5114134.701194
+> 9 1.915117 7 8 5114134.701194
+> 9 1.915117 16 8 5114134.701194
+> 10 2.082294 7 13 5114134.701194
+> 10 2.082294 16 13 5114134.701194
+> 10 2.082294 7 7 5114134.701194
+> 10 2.082294 16 7 5114134.701194
+> 10 2.082294 7 10 5114134.701194
+> 10 2.082294 16 10 5114134.701194
+> 10 2.082294 7 14 5114134.701194
+> 10 2.082294 16 14 5114134.701194
+> 10 2.082294 7 12 5114134.701194
+> 10 2.082294 16 12 5114134.701194
+> 10 2.082294 7 6 5114134.701194
+> 10 2.082294 16 6 5114134.701194
+> 10 2.082294 7 8 5114134.701194
+> 10 2.082294 16 8 5114134.701194
+> 9 2.082294 14 5 50000000.000000
+> 8 2.082294 13 1 13.000000
+> 10 2.082294 3 1 98095000.000000
+> 10 2.082294 17 1 98095000.000000
+> 9 2.082294 3 1 98095000.000000
+> 9 2.082294 17 1 98095000.000000
+> 9 2.082294 3 5 48492000.000000
+> 9 2.082294 17 5 48492000.000000
+> 9 2.102845 7 13 5060664.718311
+> 9 2.102845 16 13 5060664.718311
+> 9 2.102845 7 7 5060664.718311
+> 9 2.102845 16 7 5060664.718311
+> 9 2.102845 7 10 5060664.718311
+> 9 2.102845 16 10 5060664.718311
+> 9 2.102845 7 14 5060664.718311
+> 9 2.102845 16 14 5060664.718311
+> 9 2.102845 7 12 5060664.718311
+> 9 2.102845 16 12 5060664.718311
+> 9 2.102845 7 11 5060664.718311
+> 9 2.102845 16 11 5060664.718311
+> 10 2.300447 7 13 5060664.718311
+> 10 2.300447 16 13 5060664.718311
+> 10 2.300447 7 7 5060664.718311
+> 10 2.300447 16 7 5060664.718311
+> 10 2.300447 7 10 5060664.718311
+> 10 2.300447 16 10 5060664.718311
+> 10 2.300447 7 14 5060664.718311
+> 10 2.300447 16 14 5060664.718311
+> 10 2.300447 7 12 5060664.718311
+> 10 2.300447 16 12 5060664.718311
+> 10 2.300447 7 11 5060664.718311
+> 10 2.300447 16 11 5060664.718311
+> 9 2.300447 14 3 50000000.000000
+> 8 2.300447 13 1 14.000000
+> 10 2.300447 3 1 98095000.000000
+> 10 2.300447 17 1 98095000.000000
+> 9 2.300447 3 1 98095000.000000
+> 9 2.300447 17 1 98095000.000000
+> 9 2.300447 3 3 76296000.000000
+> 9 2.300447 17 3 76296000.000000
+> 10 2.376132 3 1 98095000.000000
+> 10 2.376132 17 1 98095000.000000
+> 8 2.378296 13 1 15.000000
+> 9 2.378296 14 1 50000000.000000
+> 9 2.378296 3 1 98095000.000000
+> 9 2.378296 17 1 98095000.000000
+> 10 2.519600 3 2 76296000.000000
+> 10 2.519600 17 2 76296000.000000
+> 9 2.534800 7 9 6632970.000000
+> 10 2.685562 7 9 6632970.000000
+> 8 2.685562 13 1 16.000000
+> 9 2.685562 14 2 50000000.000000
+> 10 2.685562 3 1 98095000.000000
+> 10 2.685562 17 1 98095000.000000
+> 9 2.685562 3 1 98095000.000000
+> 9 2.685562 17 1 98095000.000000
+> 9 2.685562 3 2 76296000.000000
+> 9 2.685562 17 2 76296000.000000
+> 10 2.729394 3 4 48492000.000000
+> 10 2.729394 17 4 48492000.000000
+> 9 2.742626 7 13 7859911.230163
+> 9 2.742626 7 7 7859911.230163
+> 9 2.742626 7 15 7859911.230163
+> 10 2.869854 7 13 7859911.230163
+> 10 2.869854 7 7 7859911.230163
+> 10 2.869854 7 15 7859911.230163
+> 8 2.869854 13 1 17.000000
+> 9 2.869854 14 4 50000000.000000
+> 10 2.869854 3 1 98095000.000000
+> 10 2.869854 17 1 98095000.000000
+> 9 2.869854 3 1 98095000.000000
+> 9 2.869854 17 1 98095000.000000
+> 5 25 15 finish_send_tasks "(null)"
+> 9 2.869854 3 4 48492000.000000
+> 9 2.869854 17 4 48492000.000000
+> 10 2.888006 3 1 98095000.000000
+> 10 2.888006 17 1 98095000.000000
+> 8 2.890170 13 1 18.000000
+> 9 2.890170 14 1 50000000.000000
+> 9 2.890170 3 1 98095000.000000
+> 9 2.890170 17 1 98095000.000000
+> 10 2.955790 3 3 76296000.000000
+> 10 2.955790 17 3 76296000.000000
+> 9 2.976340 7 13 5060664.718311
+> 9 2.976340 7 7 5060664.718311
+> 9 2.976340 7 10 5060664.718311
+> 9 2.976340 7 14 5060664.718311
+> 9 2.976340 7 12 5060664.718311
+> 9 2.976340 7 11 5060664.718311
+> 10 3.113392 3 5 48492000.000000
+> 10 3.113392 17 5 48492000.000000
+> 10 3.113392 7 13 5060664.718311
+> 10 3.113392 7 7 5060664.718311
+> 10 3.113392 7 10 5060664.718311
+> 10 3.113392 7 14 5060664.718311
+> 10 3.113392 7 12 5060664.718311
+> 10 3.113392 7 11 5060664.718311
+> 9 3.113392 7 13 5060664.718311
+> 9 3.113392 7 7 5060664.718311
+> 9 3.113392 7 10 5060664.718311
+> 9 3.113392 7 14 5060664.718311
+> 9 3.113392 7 12 5060664.718311
+> 9 3.113392 7 11 5060664.718311
+> 10 3.173943 7 13 5060664.718311
+> 10 3.173943 7 7 5060664.718311
+> 10 3.173943 7 10 5060664.718311
+> 10 3.173943 7 14 5060664.718311
+> 10 3.173943 7 12 5060664.718311
+> 10 3.173943 7 11 5060664.718311
+> 8 3.173943 13 1 19.000000
+> 9 3.173943 14 3 50000000.000000
+> 10 3.173943 3 1 98095000.000000
+> 10 3.173943 17 1 98095000.000000
+> 9 3.173943 3 1 98095000.000000
+> 9 3.173943 17 1 98095000.000000
+> 9 3.173943 3 3 76296000.000000
+> 9 3.173943 17 3 76296000.000000
+> 9 3.194279 7 13 5114134.701194
+> 9 3.194279 16 13 5114134.701194
+> 9 3.194279 7 7 5114134.701194
+> 9 3.194279 16 7 5114134.701194
+> 9 3.194279 7 10 5114134.701194
+> 9 3.194279 16 10 5114134.701194
+> 9 3.194279 7 14 5114134.701194
+> 9 3.194279 16 14 5114134.701194
+> 9 3.194279 7 12 5114134.701194
+> 9 3.194279 16 12 5114134.701194
+> 9 3.194279 7 6 5114134.701194
+> 9 3.194279 16 6 5114134.701194
+> 9 3.194279 7 8 5114134.701194
+> 9 3.194279 16 8 5114134.701194
+> 10 3.340904 3 2 76296000.000000
+> 10 3.340904 17 2 76296000.000000
+> 10 3.340904 7 13 5114134.701194
+> 10 3.340904 16 13 5114134.701194
+> 10 3.340904 7 7 5114134.701194
+> 10 3.340904 16 7 5114134.701194
+> 10 3.340904 7 10 5114134.701194
+> 10 3.340904 16 10 5114134.701194
+> 10 3.340904 7 14 5114134.701194
+> 10 3.340904 16 14 5114134.701194
+> 10 3.340904 7 12 5114134.701194
+> 10 3.340904 16 12 5114134.701194
+> 10 3.340904 7 6 5114134.701194
+> 10 3.340904 16 6 5114134.701194
+> 10 3.340904 7 8 5114134.701194
+> 10 3.340904 16 8 5114134.701194
+> 9 3.340904 7 13 5114134.701194
+> 9 3.340904 16 13 5114134.701194
+> 9 3.340904 7 7 5114134.701194
+> 9 3.340904 16 7 5114134.701194
+> 9 3.340904 7 10 5114134.701194
+> 9 3.340904 16 10 5114134.701194
+> 9 3.340904 7 14 5114134.701194
+> 9 3.340904 16 14 5114134.701194
+> 9 3.340904 7 12 5114134.701194
+> 9 3.340904 16 12 5114134.701194
+> 9 3.340904 7 6 5114134.701194
+> 9 3.340904 16 6 5114134.701194
+> 9 3.340904 7 8 5114134.701194
+> 9 3.340904 16 8 5114134.701194
+> 10 3.389815 7 13 5114134.701194
+> 10 3.389815 16 13 5114134.701194
+> 10 3.389815 7 7 5114134.701194
+> 10 3.389815 16 7 5114134.701194
+> 10 3.389815 7 10 5114134.701194
+> 10 3.389815 16 10 5114134.701194
+> 10 3.389815 7 14 5114134.701194
+> 10 3.389815 16 14 5114134.701194
+> 10 3.389815 7 12 5114134.701194
+> 10 3.389815 16 12 5114134.701194
+> 10 3.389815 7 6 5114134.701194
+> 10 3.389815 16 6 5114134.701194
+> 10 3.389815 7 8 5114134.701194
+> 10 3.389815 16 8 5114134.701194
+> 9 3.389815 14 5 50000000.000000
+> 16 3.389815 15 0 25
+> 10 3.389815 3 1 98095000.000000
+> 10 3.389815 17 1 98095000.000000
+> 9 3.389815 3 1 98095000.000000
+> 9 3.389815 17 1 98095000.000000
+> 9 3.389815 3 5 48492000.000000
+> 9 3.389815 17 5 48492000.000000
+> 10 3.399880 3 1 98095000.000000
+> 10 3.399880 17 1 98095000.000000
+> 10 3.829285 3 3 76296000.000000
+> 10 3.829285 17 3 76296000.000000
+> 10 3.900952 3 4 48492000.000000
+> 10 3.900952 17 4 48492000.000000
+> 10 4.420913 3 5 48492000.000000
+> 10 4.420913 17 5 48492000.000000
+> 7 4.441249 1 3
 > 7 4.441249 1 1
+> 7 4.441249 4 14
+> 7 4.441249 4 12
+> 7 4.441249 4 10
+> 7 4.441249 4 7
+> 7 4.441249 4 13
+> 7 4.441249 4 15
+> 7 4.441249 4 6
+> 7 4.441249 4 8
+> 7 4.441249 4 11
+> 7 4.441249 4 9
+> 7 4.441249 1 5
+> 7 4.441249 1 2
+> 7 4.441249 1 4
 > 7 4.441249 0 0
 
 $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 > {
->   node = (LINK, HOST, ROUTER, );
->   edge = (ROUTER-LINK, HOST-LINK, LINK-HOST, LINK-ROUTER, LINK-LINK, );
+>   node = (LINK, HOST, );
+>   edge = (HOST-LINK, LINK-HOST, LINK-LINK, );
 > 
 >   host = {
 >     type = square;
@@ -4212,8 +3938,8 @@ $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 
 $ $SG_TEST_EXENV cat tracing/ms.cat.plist
 > {
->   node = (LINK, HOST, ROUTER, );
->   edge = (ROUTER-LINK, HOST-LINK, LINK-HOST, LINK-ROUTER, LINK-LINK, );
+>   node = (LINK, HOST, );
+>   edge = (HOST-LINK, LINK-HOST, LINK-LINK, );
 > 
 >   host = {
 >     type = square;

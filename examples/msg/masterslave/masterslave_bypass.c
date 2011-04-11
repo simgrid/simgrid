@@ -28,7 +28,6 @@ static int surf_parse_bypass_platform(void)
 
   XBT_DEBUG("<AS>");
   SURFXML_BUFFER_SET(AS_id, "AS0");
-  SURFXML_BUFFER_SET(AS_coordinates, "");
   SURFXML_BUFFER_SET(AS_routing, "Full");
   SURFXML_START_TAG(AS);
 
