@@ -160,4 +160,9 @@ xbt_graph_t TRACE_platform_graph (void)
   return instr_routing_platform_graph ();
 }
 
+void TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char *filename)
+{
+  instr_routing_platform_graph_export_graphviz (g, filename);
+}
+
 #endif /* HAVE_TRACING */

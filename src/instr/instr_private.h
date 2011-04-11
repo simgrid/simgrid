@@ -17,6 +17,7 @@
 #include "msg/msg.h"
 #include "simdag/private.h"
 #include "simix/private.h"
+#include "xbt/graph_private.h"
 
 typedef enum {
   TYPE_VARIABLE,
@@ -232,6 +233,7 @@ void instr_new_user_link_variable_type  (const char *new_typename, const char *c
 void instr_new_user_host_variable_type  (const char *new_typename, const char *color);
 int instr_platform_traced (void);
 xbt_graph_t instr_routing_platform_graph (void);
+void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 
 #endif /* HAVE_TRACING */
 

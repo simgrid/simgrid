@@ -9,6 +9,7 @@
 #ifdef HAVE_TRACING
 #include "surf/surf_private.h"
 #include "surf/network_private.h"
+#include "xbt/graph.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
@@ -473,6 +474,43 @@ xbt_graph_t instr_routing_platform_graph (void)
   xbt_dict_t edges = xbt_dict_new ();
   recursiveXBTGraphExtraction (ret, nodes, edges, global_routing->root, getRootContainer());
   return ret;
+}
+
+void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename)
+{
+  unsigned int cursor = 0;
+  xbt_node_t node = NULL;
+  xbt_edge_t edge = NULL;
+  FILE *file = NULL;
+
+  file = fopen(filename, "w");
+  xbt_assert(file, "Failed to open %s \n", filename);
+
+  if (g->directed)
+    fprintf(file, "digraph test {\n");
+  else
+    fprintf(file, "graph test {\n");
+
+  fprintf(file, "  graph [overlap=scale]\n");
+
+  fprintf(file, "  node [shape=box, style=filled]\n");
+  fprintf(file,
+          "  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
+
+  xbt_dynar_foreach(g->nodes, cursor, node) {
+    fprintf(file, "  \"%s\";\n", TRACE_node_name(node));
+  }
+  xbt_dynar_foreach(g->edges, cursor, edge) {
+    const char *src_s = TRACE_node_name (edge->src);
+    const char *dst_s = TRACE_node_name (edge->dst);
+    if (g->directed)
+      fprintf(file, "  \"%s\" -> \"%s\";\n", src_s, dst_s);
+    else
+      fprintf(file, "  \"%s\" -- \"%s\";\n", src_s, dst_s);
+  }
+  fprintf(file, "}\n");
+  fclose(file);
+
 }
 
 #endif /* HAVE_TRACING */
