@@ -9,6 +9,8 @@
 *.mk
 *.swp
 *.patch
+*.plist
+*.trace
 
 ################################################
 ### Libraries links 
