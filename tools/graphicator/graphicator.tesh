@@ -1,6 +1,8 @@
 #! ./tesh
 
-$ ${bindir:=.}/graphicator ${srcdir:=.}/teshsuite/simdag/platforms/one_cluster.xml test.dot
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+$ ${bindir:=.}/graphicator ${srcdir:=.}/teshsuite/simdag/platforms/one_cluster.xml --cfg=tracing:1 test.dot
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [graphicator/INFO] Output is in file test.dot
+
 
 $ rm test.dot

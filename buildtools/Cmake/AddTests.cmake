@@ -316,6 +316,7 @@ IF(HAVE_TRACING)
   ADD_TEST(tracing-volume 			${CMAKE_BINARY_DIR}/bin/tesh	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/volume.tesh)
   ADD_TEST(tracing-tasks 			${CMAKE_BINARY_DIR}/bin/tesh	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/tasks.tesh)
   ADD_TEST(tracing-process-migration ${CMAKE_BINARY_DIR}/bin/tesh	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/procmig.tesh)
+  ADD_TEST(graphicator ${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY} --setenv bindir=${CMAKE_BINARY_DIR}/bin --cd ${CMAKE_HOME_DIRECTORY}/tools/graphicator graphicator.tesh)
 ENDIF(HAVE_TRACING)
 
 # Lua examples
@@ -329,9 +330,6 @@ set_tests_properties(lua-mult-matrix  				PROPERTIES ENVIRONMENT "LUA_CPATH=${CM
 set_tests_properties(lua-masterslave-bypass  		PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
 set_tests_properties(lua-msg-masterslave-console  	PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
 endif(HAVE_LUA)
-
-add_test(graphicator ${CMAKE_BINARY_DIR}/bin/tesh --setenv srcdir=${CMAKE_HOME_DIRECTORY} --setenv bindir=${CMAKE_BINARY_DIR}/bin --cd ${CMAKE_HOME_DIRECTORY}/tools/graphicator graphicator.tesh)
-
 
 # END TESH TESTS
 
