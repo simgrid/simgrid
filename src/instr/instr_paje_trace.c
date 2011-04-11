@@ -331,6 +331,11 @@ void TRACE_paje_create_header(void)
 /* internal do the instrumentation module */
 static void insert_into_buffer (paje_event_t tbi)
 {
+  if (TRACE_buffer() == 0){
+    tbi->print (tbi);
+    tbi->free (tbi);
+    return;
+  }
   XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%ld)", __FUNCTION__, tbi->event_type, tbi->timestamp, xbt_dynar_length(buffer));
 
   unsigned int i;

@@ -21,6 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
 #define OPT_TRACING_MSG_VOLUME    "tracing/msg/volume"
 #define OPT_TRACING_FILENAME      "tracing/filename"
+#define OPT_TRACING_BUFFER        "tracing/buffer"
 #define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
 #define OPT_TRIVA_CAT_CONF        "triva/categorized"
 
@@ -151,6 +152,12 @@ int TRACE_msg_volume_is_enabled(void)
       TRACE_is_enabled();
 }
 
+int TRACE_buffer (void)
+{
+  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BUFFER) &&
+      TRACE_is_enabled();
+}
+
 char *TRACE_get_filename(void)
 {
   return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_FILENAME);
@@ -232,6 +239,13 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_tracing_msg_volume, 0, 1,
                    NULL, NULL);
 
+  /* msg volume (experimental) */
+  int default_buffer = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_BUFFER,
+                   "Buffer trace events to put them in temporal order.",
+                   xbt_cfgelm_int, &default_buffer, 0, 1,
+                   NULL, NULL);
+
   /* Triva graph configuration for uncategorized tracing */
   char *default_triva_uncat_conf_file = xbt_strdup ("");
   xbt_cfg_register(&_surf_cfg_set, OPT_TRIVA_UNCAT_CONF,
@@ -308,6 +322,13 @@ void TRACE_help (int detailed)
   print_line (OPT_TRACING_MSG_VOLUME, "Tracing of communication volume (MSG)",
       "  This experimental option only has effect if this simulator is MSG-based.\n"
       "  It traces the communication volume of MSG send/receive.",
+      detailed);
+  print_line (OPT_TRACING_BUFFER, "Buffer events to put them in temporal order",
+      "  This option put some events in a time-ordered buffer using the insertion\n"
+      "  sort algorithm. The process of acquiring and releasing locks to access this\n"
+      "  buffer and the cost of the sorting algorithm make this process slow. The\n"
+      "  simulator performance can be severely impacted if this option is activated,\n"
+      "  but you are sure to get a trace file with events sorted.",
       detailed);
   print_line (OPT_TRIVA_UNCAT_CONF, "Generate graph configuration for Triva",
       "  This option can be used in all types of simulators build with SimGrid\n"
