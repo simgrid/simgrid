@@ -10,7 +10,7 @@
 #include "gras_config.h"
 
 #ifdef HAVE_PCRE_LIB
-#include <pcre.h>               /* regular expresion library */
+#include <pcre.h>               /* regular expression library */
 #endif
 #include "surf_private.h"
 #include "xbt/dynar.h"
@@ -89,7 +89,7 @@ typedef enum {
 } e_routing_types;
 
 
-/* must be finish with null and carefull if change de order */
+/* must finish with NULL and be careful if the order is changed */
 struct s_model_type routing_models[] = { {"Full",
                                           "Full routing data (fast, large memory requirements, fully expressive)",
                                           model_full_create,
