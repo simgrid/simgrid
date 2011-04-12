@@ -134,7 +134,8 @@ static int surf_pointer_resource_cmp(const void *a, const void *b);
 /* ************************************************************************** */
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
 
-static double generic_get_link_latency(routing_component_t rc, const char *src, const char *dst);
+static double generic_get_link_latency(routing_component_t rc, const char *src, const char *dst,
+										route_extended_t e_route);
 static xbt_dynar_t generic_get_onelink_routes(routing_component_t rc);
 static route_extended_t generic_get_bypassroute(routing_component_t rc,
                                                 const char *src,
@@ -180,7 +181,7 @@ static double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
 
 }
 
-static double vivaldi_get_link_latency (routing_component_t rc,const char *src, const char *dst)
+static double base_vivaldi_get_latency (const char *src, const char *dst)
 {
   double euclidean_dist;
   xbt_dynar_t src_ctn, dst_ctn;
@@ -193,11 +194,25 @@ static double vivaldi_get_link_latency (routing_component_t rc,const char *src, 
   xbt_die("Coord src '%s' :%p   dst '%s' :%p",src,src_ctn,dst,dst_ctn);
 
   euclidean_dist = sqrt (euclidean_dist_comp(0,src_ctn,dst_ctn)+euclidean_dist_comp(1,src_ctn,dst_ctn))
-  								+fabs(atof(xbt_dynar_get_as(src_ctn, 2, char *)))+fabs(atof(xbt_dynar_get_as(dst_ctn, 2, char *)));
+  				 + fabs(atof(xbt_dynar_get_as(src_ctn, 2, char *)))+fabs(atof(xbt_dynar_get_as(dst_ctn, 2, char *)));
 
   xbt_assert(euclidean_dist>=0, "Euclidean Dist is less than 0\"%s\" and \"%.2f\"", src, euclidean_dist);
 
   return euclidean_dist;
+}
+
+static double vivaldi_get_link_latency (routing_component_t rc,const char *src, const char *dst, route_extended_t e_route)
+{
+  if(get_network_element_type(src) == SURF_NETWORK_ELEMENT_AS) {
+	  int need_to_clean = e_route?0:1;
+	  double latency;
+	  e_route = e_route?e_route:(*(rc->get_route)) (rc, src, dst);
+	  latency = base_vivaldi_get_latency(e_route->src_gateway,e_route->dst_gateway);
+	  if(need_to_clean) generic_free_extended_route(e_route);
+	  return latency;
+  } else {
+	  return base_vivaldi_get_latency(src,dst);
+  }
 }
 
 /**
@@ -752,16 +767,15 @@ static route_extended_t _get_route(const char *src, const char *dst)
 
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
-    if (strcmp(src, dst)) {
-      e_route_cnt =
-          (*(common_father->get_route)) (common_father, src, dst);
-      xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"", src,
-                  dst);
-      xbt_dynar_foreach(e_route_cnt->generic_route.link_list, cpt, link) {
-        xbt_dynar_push(e_route->generic_route.link_list, &link);
-      }
-      generic_free_extended_route(e_route_cnt);
-    }
+	e_route_cnt =
+	  (*(common_father->get_route)) (common_father, src, dst);
+	xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"", src,
+			  dst);
+	  // FIXME (optim): faire une copie et pas une série de push
+	xbt_dynar_foreach(e_route_cnt->generic_route.link_list, cpt, link) {
+	xbt_dynar_push(e_route->generic_route.link_list, &link);
+	}
+	generic_free_extended_route(e_route_cnt);
 
   } else {                      /* SURF_ROUTING_RECURSIVE */
 
@@ -841,12 +855,11 @@ static double _get_latency(const char *src, const char *dst)
 
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
-    if (strcmp(src, dst)) {
       latency =
-          (*(common_father->get_latency)) (common_father, src, dst);
+          (*(common_father->get_latency)) (common_father, src, dst, NULL);
       xbt_assert(latency>=0, "no route between \"%s\" and \"%s\"", src,
                   dst);
-     } else latency = 0;
+
   } else {                      /* SURF_ROUTING_RECURSIVE */
      route_extended_t e_route_bypass = NULL;
     if (common_father->get_bypass_route)
@@ -865,16 +878,14 @@ static double _get_latency(const char *src, const char *dst)
     xbt_assert((e_route_cnt->src_gateway == NULL) ==
                 (e_route_cnt->dst_gateway == NULL),
                 "bad gateway for route between \"%s\" and \"%s\"", src,
-                dst);            
-    latency =
-          (*(common_father->get_latency)) (common_father, elements_As_name(src),
-        		  elements_As_name(dst));
+                dst);
+
+    latency = (*(common_father->get_latency)) (common_father, src_father->name, dst_father->name, e_route_cnt);
 
     xbt_assert(latency>=0, "no route between \"%s\" and \"%s\"",
                 src_father->name, dst_father->name);
-    
 
-    if (src != e_route_cnt->src_gateway) {
+    if (strcmp(src,e_route_cnt->src_gateway)) {
 
       latency_src = _get_latency(src, e_route_cnt->src_gateway);
       xbt_assert(latency_src>=0, "no route between \"%s\" and \"%s\"", src,
@@ -882,7 +893,7 @@ static double _get_latency(const char *src, const char *dst)
       latency += latency_src;
     }
 
-    if (e_route_cnt->dst_gateway != dst) {
+    if (strcmp(e_route_cnt->dst_gateway,dst)) {
     
       latency_dst = _get_latency(e_route_cnt->dst_gateway, dst);
       xbt_assert(latency_dst>=0, "no route between \"%s\" and \"%s\"",
@@ -911,20 +922,8 @@ static xbt_dynar_t get_route(const char *src, const char *dst)
 {
 
   route_extended_t e_route;
-  xbt_dynar_t elem_father_list = NULL;
-  routing_component_t common_father = NULL;
 
-  if (strcmp(src, dst))
-    e_route = _get_route(src, dst);
-  else {
-    elem_father_list = elements_father(src, dst);
-    common_father =
-        xbt_dynar_get_as(elem_father_list, 0, routing_component_t);
-
-    e_route = (*(common_father->get_route)) (common_father, src, dst);
-    xbt_dynar_free(&elem_father_list);
-  }
-
+  e_route = _get_route(src, dst);
   xbt_assert(e_route, "no route between \"%s\" and \"%s\"", src, dst);
 
   if (global_routing->last_route)
@@ -938,12 +937,7 @@ static xbt_dynar_t get_route(const char *src, const char *dst)
 
   xbt_free(e_route);
 
-/*
-  if (xbt_dynar_length(global_routing->last_route) == 0)
-    return NULL;
-  else
-*/
-    return global_routing->last_route;
+  return global_routing->last_route;
 }
 
 /**
@@ -968,18 +962,8 @@ static double get_latency(const char *src, const char *dst)
 {
 
   double latency = -1.0;
-  xbt_dynar_t elem_father_list = elements_father(src, dst);
-  routing_component_t common_father =
-      xbt_dynar_get_as(elem_father_list, 0, routing_component_t);
-
-  if (strcmp(src, dst))
-    latency = _get_latency(src, dst);
-  else
-    latency = (*(common_father->get_latency)) (common_father, src, dst);
-
+  latency = _get_latency(src, dst);
   xbt_assert(latency>=0.0, "no route between \"%s\" and \"%s\"", src, dst);
-  xbt_dynar_free(&elem_father_list);
-
   return latency;
 }
 
@@ -1217,7 +1201,6 @@ static route_extended_t full_get_route(routing_component_t rc,
   routing_component_full_t routing = (routing_component_full_t) rc;
   size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
 
-  generic_src_dst_check(rc, src, dst);
   int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
   int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, dst);
   xbt_assert(src_id
@@ -2950,17 +2933,20 @@ static void generic_set_bypassroute(routing_component_t rc,
 /* *********************** GENERIC BUSINESS METHODS ************************* */
 
 static double generic_get_link_latency(routing_component_t rc,
-                                       const char *src, const char *dst)
+                                       const char *src, const char *dst,
+                                       route_extended_t route)
 {
-	route_extended_t route = rc->get_route(rc,src,dst);
+	int need_to_clean = route?0:1;
 	void * link;
 	unsigned int i;
 	double latency = 0.0;
 
+	route = route?route:rc->get_route(rc,src,dst);
+
 	xbt_dynar_foreach(route->generic_route.link_list,i,link) {
 		latency += get_link_latency(link);
 	}
-	generic_free_extended_route(route);
+	if(need_to_clean) generic_free_extended_route(route);
   return latency;
 }
 

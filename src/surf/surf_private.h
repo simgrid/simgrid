@@ -154,7 +154,7 @@ typedef struct s_routing_component {
    route_extended_t(*get_route) (routing_component_t rc, const char *src,
                                  const char *dst);
    double(*get_latency) (routing_component_t rc, const char *src,
-                                 const char *dst);
+                                 const char *dst, route_extended_t e_route);
    xbt_dynar_t(*get_onelink_routes) (routing_component_t rc);
    e_surf_network_element_type_t(*get_network_element_type) (const char
                                                              *name);
