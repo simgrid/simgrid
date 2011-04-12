@@ -171,7 +171,7 @@ static char *gw_dst = NULL;     /* temporary store the gateway destination name 
 static xbt_dynar_t link_list = NULL;    /* temporary store of current list link of a route */
 
 
-static double eculidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
+static double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
 {
 	double src_coord, dst_coord;
 
@@ -194,25 +194,12 @@ static double vivaldi_get_link_latency (routing_component_t rc,const char *src, 
   if(dst_ctn == NULL || src_ctn == NULL)
   xbt_die("Coord src '%s' :%p   dst '%s' :%p",src,src_ctn,dst,dst_ctn);
 
-  euclidean_dist = sqrt (eculidean_dist_comp(0,src_ctn,dst_ctn)+eculidean_dist_comp(1,src_ctn,dst_ctn))
+  euclidean_dist = sqrt (euclidean_dist_comp(0,src_ctn,dst_ctn)+euclidean_dist_comp(1,src_ctn,dst_ctn))
   								+fabs(atof(xbt_dynar_get_as(src_ctn, 2, char *)))+fabs(atof(xbt_dynar_get_as(dst_ctn, 2, char *)));
 
   xbt_assert(euclidean_dist>=0, "Euclidean Dist is less than 0\"%s\" and \"%.2f\"", src, euclidean_dist);
 
   return euclidean_dist;
-
-  /*
-  x = atof(xbt_dynar_get_as(src_ctn, 0, char *))-atof(xbt_dynar_get_as(dst_ctn, 0, char *));
-  y = atof(xbt_dynar_get_as(src_ctn, 1, char *));
-  h = atof(xbt_dynar_get_as(ctn, 2, char *));
-  sqrt((c1->x - c2->x) * (c1->x - c2->x) + (c1->y - c2->y) * (c1->y - c2->y)) + fabs(c1->h) + fabs(c2->h);
-
-	  if (strcmp(coord,"")) {
-  	xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
-  	xbt_dynar_shrink(ctn,0);
-   	xbt_lib_set(host_lib, host_id, COORD_HOST_LEVEL, ctn);
-  }
-	*/
 }
 
 /**
@@ -734,8 +721,8 @@ static xbt_dynar_t elements_father(const char *src, const char *dst)
  * \param src the source host name 
  * \param dst the destination host name
  * 
- * This fuction is call by "get_route". It allow to walk through the 
- * routing components tree.
+ * This function is called by "get_route". It allows to walk recursively
+ * through the routing components tree.
  */
 static route_extended_t _get_route(const char *src, const char *dst)
 {
