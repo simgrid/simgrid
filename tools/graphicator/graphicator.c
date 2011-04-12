@@ -9,12 +9,14 @@
 #endif
 
 #include "msg/msg.h"
+#include "xbt/graph.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(graphicator,
                              "Graphicator Logging System");
 
 int main(int argc, char **argv)
 {
+#ifdef HAVE_TRACING
   MSG_global_init(&argc, argv);
 
   if (argc < 3){
@@ -35,5 +37,8 @@ int main(int argc, char **argv)
     XBT_INFO ("Output is in file %s", graphvizFile);
   }
   MSG_clean();
+#else
+  XBT_INFO ("works only if simgrid has tracing enabled.");
+#endif
   return 0;
 }
