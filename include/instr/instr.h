@@ -26,6 +26,7 @@ XBT_PUBLIC(void) TRACE_user_host_variable(double time,
                                           double value, const char *what);
 XBT_PUBLIC(const char *) TRACE_node_name (xbt_node_t node);
 XBT_PUBLIC(xbt_graph_t) TRACE_platform_graph (void);
+XBT_PUBLIC(void) TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 XBT_PUBLIC(void) TRACE_user_link_variable(double time, const char *resource,
                               const char *variable,
                               double value, const char *what);

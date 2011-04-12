@@ -53,7 +53,7 @@ int main(int argc, char **argv)
   if (graph == NULL){
     XBT_INFO ("%s expects --cfg=tracing:1", argv[0]);
   }else{
-    xbt_graph_export_graphviz(graph, graphvizFile, &TRACE_node_name, NULL);
+    TRACE_platform_graph_export_graphviz (graph, graphvizFile);
     XBT_INFO ("Output is in file %s", graphvizFile);
   }
   MSG_clean();
