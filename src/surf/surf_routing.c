@@ -36,7 +36,7 @@ static void *model_full_create(void);   /* create structures for full routing mo
 static void model_full_load(void);      /* load parse functions for full routing model */
 static void model_full_unload(void);    /* unload parse functions for full routing model */
 static void model_full_end(void);       /* finalize the creation of full routing model */
-static void model_full_set_route(		/* Set the route and ASroute between src and dst */
+static void model_full_set_route(	/* Set the route and ASroute between src and dst */
 		routing_component_t rc, const char *src, const char *dst, name_route_extended_t route);
 
 static void *model_floyd_create(void);  /* create structures for floyd routing model */
@@ -56,22 +56,22 @@ static void model_dijkstra_both_set_route (routing_component_t rc, const char *s
                      const char *dst, name_route_extended_t route);
 
 static void *model_rulebased_create(void);      /* create structures for rulebased routing model */
-static void model_rulebased_load(void); /* load parse functions for rulebased routing model */
+static void model_rulebased_load(void);         /* load parse functions for rulebased routing model */
 static void model_rulebased_unload(void);       /* unload parse functions for rulebased routing model */
-static void model_rulebased_end(void);  /* finalize the creation of rulebased routing model */
+static void model_rulebased_end(void);          /* finalize the creation of rulebased routing model */
 
-static void *model_none_create(void);   /* none routing model */
-static void model_none_load(void);      /* none routing model */
-static void model_none_unload(void);    /* none routing model */
-static void model_none_end(void);       /* none routing model */
+static void *model_none_create(void);           /* none routing model */
+static void model_none_load(void);              /* none routing model */
+static void model_none_unload(void);            /* none routing model */
+static void model_none_end(void);               /* none routing model */
 
-static void routing_parse_Scluster(void);  /*cluster bypass */
-static void routing_parse_Speer(void);  	/*peer bypass */
-static void routing_parse_Srandom(void);  	/*random bypass */
-static void routing_parse_Erandom(void);  	/*random bypass */
+static void routing_parse_Scluster(void);       /* cluster bypass */
+static void routing_parse_Speer(void);          /* peer bypass */
+static void routing_parse_Srandom(void);        /* random bypass */
+static void routing_parse_Erandom(void);        /* random bypass */
 
-static void routing_parse_Sconfig(void);        /*config Tag */
-static void routing_parse_Econfig(void);        /*config Tag */
+static void routing_parse_Sconfig(void);        /* config Tag */
+static void routing_parse_Econfig(void);        /* config Tag */
 
 static char* replace_random_parameter(char * chaine);
 static void clean_dict_random(void);
