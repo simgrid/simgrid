@@ -5,6 +5,7 @@
 
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib and include")
+set(ns3_path ${ns3_path} CACHE PATH "Path to ns3 lib and include")
 set(custom_flags ${custom_flags} CACHE FORCE "Customers flags add to cmake_c_flag")
 
 if(NOT CMAKE_INSTALL_PREFIX)
@@ -16,6 +17,7 @@ endif(NOT CMAKE_INSTALL_PREFIX)
 set(pipol_user ${pipol_user} CACHE TYPE INTERNAL FORCE)
 
 option(enable_gtnets "Whether gtnets model is activated." on)
+option(enable_ns3    "Whether ns3 model is activated." off)
 option(enable_smpi "This variable set smpi lib." on)
 option(enable_lua "Whether the lua bindings are activated." on)
 set(enable_pcre ${enable_pcre} CACHE FORCE "Whether the pcre lib is activated.")

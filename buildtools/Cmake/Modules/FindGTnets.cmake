@@ -25,6 +25,7 @@ find_path(HAVE_SIMULATOR_H
     /opt/csw
     /sw
     /usr
+    ${gtnets_path}
 )
 
 string(REPLACE "/libgtnets.${LIB_EXE}" ""  GTNETS_LIB_PATH "${HAVE_GTNETS_LIB}")
