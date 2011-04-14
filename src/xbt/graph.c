@@ -14,6 +14,7 @@
 #include "xbt/graphxml_parse.h"
 #include "xbt/dict.h"
 #include "xbt/heap.h"
+#include "xbt/str.h"
 
 
 
@@ -724,4 +725,102 @@ void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
   }
   fprintf(file, "</graph>\n");
   fclose(file);
+}
+
+/** @brief Load a graph from a file (in the SimGrid Graph format) */
+xbt_graph_t xbt_graph_load (const char *filename)
+{
+  FILE *file = NULL;
+  file = fopen (filename, "r");
+  xbt_assert(file, "Failed to open %s \n", filename);
+
+  xbt_dict_t nodes_dict = xbt_dict_new ();
+  xbt_graph_t ret = xbt_graph_new_graph (0, NULL);
+
+  //read the number of nodes
+  size_t size;
+  char *nnodes_str = NULL;
+  getline (&nnodes_str, &size, file);
+  int i, nnodes = atoi (nnodes_str);
+  free (nnodes_str);
+
+  //read all nodes
+  for (i = 0; i < nnodes; i++){
+    char *node_str = NULL;
+    getline (&node_str, &size, file);
+    xbt_node_t n;
+    char *name = xbt_strdup (node_str);
+    xbt_str_subst (name, '\n', '\0', 0);
+    n = xbt_graph_new_node (ret, name);
+    xbt_dict_set (nodes_dict, name, n, NULL);
+    free (node_str);
+  }
+
+  //read the number of edges
+  char *nedges_str = NULL;
+  getline (&nedges_str, &size, file);
+  int nedges = atoi (nedges_str);
+  free (nedges_str);
+
+  //read all edges
+  for (i = 0; i < nedges; i++){
+    char *edge_str = NULL, edge_id[200], node_source[200], node_target[200];
+    getline (&edge_str, &size, file);
+    sscanf (edge_str, "%s %s %s", edge_id, node_source, node_target);
+    free (edge_str);
+    xbt_str_subst (edge_id, '\n', '\0', 0);
+    xbt_str_subst (node_source, '\n', '\0', 0);
+    xbt_str_subst (node_target, '\n', '\0', 0);
+
+    xbt_node_t source = xbt_dict_get (nodes_dict, node_source);
+    xbt_node_t target = xbt_dict_get (nodes_dict, node_target);
+    xbt_edge_t e;
+    e = xbt_graph_new_edge (ret, source, target, xbt_strdup(edge_id));
+  }
+  xbt_dict_free (&nodes_dict);
+  return ret;
+}
+
+/** @brief Save a graph from a file (in the SimGrid Graph format) */
+void xbt_graph_save (xbt_graph_t span,
+                     const char *filename,
+                     const char *(nname) (xbt_node_t),
+                     const char *(ename) (xbt_edge_t))
+{
+  FILE *file = NULL;
+  file = fopen(filename, "w");
+  xbt_assert(file, "Failed to open %s \n", filename);
+
+  xbt_dynar_t nodes = xbt_graph_get_nodes (span);
+  xbt_dynar_t edges = xbt_graph_get_edges (span);
+  unsigned int cpt;
+  xbt_node_t node;
+  fprintf (file, "%ld\n", xbt_dynar_length (nodes));
+  xbt_dynar_foreach (nodes, cpt, node) {
+    if (nname){
+      fprintf (file, "%s\n", nname(node));
+    }else{
+      fprintf (file, "%p\n", node);
+    }
+  }
+  fprintf (file, "%ld\n", xbt_dynar_length (edges));
+  xbt_edge_t edge;
+  xbt_dynar_foreach (edges, cpt, edge) {
+    xbt_node_t source = xbt_graph_edge_get_source (edge);
+    xbt_node_t target = xbt_graph_edge_get_target (edge);
+    if (ename){
+      if (nname){
+        fprintf (file, "%s %s %s\n", ename(edge), nname(source), nname(target));
+      }else{
+        fprintf (file, "%s %p %p\n", ename(edge), source, target);
+      }
+    }else{
+      if (nname){
+        fprintf (file, "%p %s %s\n", edge, nname(source), nname(target));
+      }else{
+        fprintf (file, "%p %p %p\n", edge, source, target);
+      }
+    }
+  }
+  fclose (file);
 }

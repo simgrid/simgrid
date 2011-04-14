@@ -271,18 +271,17 @@ static void update_actions_state(double now, double delta)
         trace_sent = action->generic_action.cost;
       }
       // tracing resource utilization
-// COMMENTED BY DAVID
-//       int src = TRACE_surf_gtnets_get_src (action);
-//       int dst = TRACE_surf_gtnets_get_dst (action);
-//       if (src != -1 && dst != -1){
-//         xbt_dynar_t route = used_routing->get_route(src, dst);
-//         network_link_GTNETS_t link;
-//         unsigned int i;
-//         xbt_dynar_foreach(route, i, link) {
-//              TRACE_surf_link_set_utilization (link->generic_resource.name,
-//             action->generic_action.data, trace_sent/delta, now-delta, delta);
-//         }
-//       }
+      xbt_dynar_t route = global_routing->get_route(action->src_name, action->dst_name);
+      network_link_GTNETS_t link;
+      unsigned int i;
+      xbt_dynar_foreach(route, i, link) {
+        TRACE_surf_link_set_utilization (link->generic_resource.name,
+            action->generic_action.data,
+            (surf_action_t) action,
+            trace_sent/delta,
+            now-delta,
+            delta);
+      }
 #endif
 
       XBT_DEBUG("Sent value returned by GTNetS : %f", sent);
@@ -356,7 +355,7 @@ static surf_action_t communicate(const char *src_name,
     xbt_die("Not route between host %s and host %s", src_name, dst_name);
   }
 #ifdef HAVE_TRACING
-  TRACE_surf_gtnets_communicate(action, src, dst);
+  TRACE_surf_gtnets_communicate(action, src_name, dst_name);
 #endif
 
   return (surf_action_t) action;
@@ -379,6 +378,13 @@ static int action_is_suspended(surf_action_t action)
 {
   return 0;
 }
+
+#ifdef HAVE_TRACING
+static void gtnets_action_set_category(surf_action_t action, const char *category)
+{
+  action->category = xbt_strdup (category);
+}
+#endif
 
 static void finalize(void)
 {
@@ -407,6 +413,9 @@ static void surf_network_model_init_internal(void)
   surf_network_model->suspend = action_suspend;
   surf_network_model->resume = action_resume;
   surf_network_model->is_suspended = action_is_suspended;
+#ifdef HAVE_TRACING
+  surf_network_model->set_category = gtnets_action_set_category;
+#endif
 
   surf_network_model->extension.network.communicate = communicate;
 

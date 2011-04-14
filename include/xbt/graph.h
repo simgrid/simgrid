@@ -77,6 +77,11 @@ XBT_PUBLIC(void) xbt_graph_export_graphxml(xbt_graph_t g,
                                            *(edge_name) (xbt_edge_t), const char
                                            *(node_data_print) (void *), const char
                                            *(edge_data_print) (void *));
+XBT_PUBLIC(xbt_graph_t) xbt_graph_load (const char *filename);
+XBT_PUBLIC(void) xbt_graph_save (xbt_graph_t span,
+                                 const char *filename,
+                                 const char *(nname) (xbt_node_t),
+                                 const char *(ename) (xbt_edge_t));
 
 /* Not implemented yet ! */
 /* void *xbt_graph_to_array(xbt_graph_t g);  */
