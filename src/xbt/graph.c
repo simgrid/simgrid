@@ -731,6 +731,7 @@ void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
 xbt_graph_t xbt_graph_load (const char *filename)
 {
   FILE *file = NULL;
+  ssize_t read;
   file = fopen (filename, "r");
   xbt_assert(file, "Failed to open %s \n", filename);
 
@@ -740,14 +741,14 @@ xbt_graph_t xbt_graph_load (const char *filename)
   //read the number of nodes
   size_t size;
   char *nnodes_str = NULL;
-  getline (&nnodes_str, &size, file);
+  read = getline (&nnodes_str, &size, file);
   int i, nnodes = atoi (nnodes_str);
   free (nnodes_str);
 
   //read all nodes
   for (i = 0; i < nnodes; i++){
     char *node_str = NULL;
-    getline (&node_str, &size, file);
+    read = getline (&node_str, &size, file);
     xbt_node_t n;
     char *name = xbt_strdup (node_str);
     xbt_str_subst (name, '\n', '\0', 0);
@@ -758,14 +759,14 @@ xbt_graph_t xbt_graph_load (const char *filename)
 
   //read the number of edges
   char *nedges_str = NULL;
-  getline (&nedges_str, &size, file);
+  read = getline (&nedges_str, &size, file);
   int nedges = atoi (nedges_str);
   free (nedges_str);
 
   //read all edges
   for (i = 0; i < nedges; i++){
     char *edge_str = NULL, edge_id[200], node_source[200], node_target[200];
-    getline (&edge_str, &size, file);
+    read = getline (&edge_str, &size, file);
     sscanf (edge_str, "%s %s %s", edge_id, node_source, node_target);
     free (edge_str);
     xbt_str_subst (edge_id, '\n', '\0', 0);
