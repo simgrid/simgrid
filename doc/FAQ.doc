@@ -2130,7 +2130,7 @@ Actually, the use of lua in Simgrid is quite simple, you have just to follow the
   - loading the platforme/deployment XML file that describe the environment of simulation
   - and … Running the Simulation.
   
-\dontinclude lua/master_slave.lua
+\dontinclude lua/masterslave/master.lua
 \subsubsection faq_binding_lua_example_master_slave Master/Slave Example
 
  \li Master Code
@@ -2139,16 +2139,18 @@ we mainly  use   simgrid.Task.new(task_name,computation_size,communication_size)
 	 then simgrid.Task.send(task,alias) to send it.
 we use also simgrid.Task.name(task), to get the task's name. 
 
+\dontinclude lua/masterslave/slave.lua
 \li Slave Code
 \until end_of_slave
 Here, we see the use of simgrid.Task.recv(alias) to receive a task with a specific alias,
 this function return directly the task recevied.
 
+\dontinclude lua/masterslave/master_slave.lua
 \li Set Environmenet and run application
 \until simgrid.clean()
 
 \subsubsection faq_binding_lua_example_data Exchanging Data
-You can also exchange data between Process using lua. for that, you have to deal with  lua task as a table,
+You can also exchange data between Process using lua. for that, you have to deal with lua task as a table,
 since lua is based itself on a mechanism of tables,
 so you can exchange any kind of data (tables, matrix, strings,…) between process via tasks.
 
@@ -2256,7 +2258,6 @@ the full example is distributed in the file examples/lua/master_slave_bypass.lua
 Since v3.4, the use of <a href="http://ruby-lang.org">ruby</a> in simgrid is available for the MSG Module.
 you can find almost all MSG functionalities in Ruby code, that allows you to set up your environment, manage tasks between hosts and run the simulation.
 
-\dontinclude ruby/MasterSlave.rb
 \subsubsection faq_binding_ruby_example Master/Slave Ruby Application
 for each process method(master and slave in this example), you have to associate a ruby class, that should inherit from <i>MSG::Process</i> ruby class,
   with a 'main' function that describe the behaviour of the process during the simulation.
@@ -2267,7 +2268,44 @@ include MSG
 \endverbatim
 
 \li Master code
-\until end_of_master
+\verbatim
+class Master < MSG::Process 
+  # main : that function that will be executed when running simulation
+
+  def main(args) # args is an array containing arguments for function master
+   size = args.size
+   for i in 0..size-1
+     MSG::info("args["+String(i)+"]="+args[i])
+   end
+  
+   raise "Master needs 3 arguments" if size < 3 
+   numberOfTask = Integer(args[0]) 
+   taskComputeSize = Float(args[1])
+   taskCommunicationSize = Float(args[2])
+   slaveCount = Integer(args[3]) 
+   
+   # Creates and sends the tasks
+    for i in 0..numberOfTask-1
+     task = Task.new("Task_"+ i.to_s, taskComputeSize , taskCommunicationSize);
+     mailbox = "slave " + (i%slaveCount).to_s
+     MSG::info("Master Sending "+ task.name + " to " + mailbox + " with Comput Size " + 
+           task.compSize.to_s)
+     task.send(mailbox)
+     MSG::info("Master Done Sending " + task.name + " to " + mailbox)
+    end
+  
+   # Sending Finalize MSG::Tasks
+   MSG::info("Master: All tasks have been dispatched. Let's tell everybody the computation is over.")
+   for i in 0..slaveCount-1
+     mailbox = "slave " + i.to_s
+     finalize_task = Task.new("finalize",0,0)
+     finalize_task.send(mailbox)
+   end
+   MSG::info("Master : Everything's Done")
+  end    
+end
+\endverbatim
+
 
 the class MSG::Task contains methods that allows the management of the native MSG tasks.
 in master ruby code we used : 
@@ -2276,11 +2314,50 @@ in master ruby code we used :
   - <i>MSG::Task.name</i> : to get the task's name.
 
 \li Slave code
-\until end_of_slave
+\verbatim
+class Slave < MSG::Process
+
+  def main(args)
+    mailbox = "slave " + args[0]
+    for i in 0..args.size-1
+      MSG::debug("args["+String(i)+"]="+args[i])
+    end
+
+    while true
+       MSG::info("Slave '"+ mailbox +"' waiting for new task");
+       task = Task.receive(mailbox)
+       if (task.name == "finalize")
+	       break
+       end
+       task.execute
+       MSG::info("Slave '" + mailbox + "' done executing task "+ task.name + ".")
+    end
+    MSG::info("I'm done, see you")
+  end
+end
+\enverbatim
 to receive a task, we use the method <i>MSG::Task.receive(mailbox)</i> that return a MSG:Task object (received task).
 
 \li Main chunk
-\until MSG.exit
+
+\verbatim
+require 'simgrid'
+include MSG
+(...)
+
+if (ARGV.length == 2) 
+	MSG.createEnvironment(ARGV[0])
+	MSG.deployApplication(ARGV[1])
+
+else
+
+	MSG.createEnvironment("platform.xml")
+	MSG.deployApplication("deploy.xml")
+end
+MSG.run
+puts "Simulation time : " + MSG.getClock.to_s
+MSG.exit
+\endverbatim
 
 - <i>MSG.createEnvironment(platform_file)</i> : set up the environment
 - <i>MSG.deployApplication(deployment_file)</i> : load the deployment file description.
