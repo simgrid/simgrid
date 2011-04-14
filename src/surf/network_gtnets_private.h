@@ -26,6 +26,10 @@ typedef struct surf_action_network_GTNETS {
   lmm_variable_t variable;
   double rate;
   int suspended;
+#ifdef HAVE_TRACING
+  char *src_name;
+  char *dst_name;
+#endif //HAVE_TRACING
 } s_surf_action_network_GTNETS_t, *surf_action_network_GTNETS_t;
 
 xbt_dict_t network_card_ids;
