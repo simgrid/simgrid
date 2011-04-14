@@ -22,6 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_MSG_VOLUME    "tracing/msg/volume"
 #define OPT_TRACING_FILENAME      "tracing/filename"
 #define OPT_TRACING_BUFFER        "tracing/buffer"
+#define OPT_TRACING_ONELINK_ONLY  "tracing/onelink_only"
 #define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
 #define OPT_TRIVA_CAT_CONF        "triva/categorized"
 
@@ -158,6 +159,12 @@ int TRACE_buffer (void)
       TRACE_is_enabled();
 }
 
+int TRACE_onelink_only (void)
+{
+  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_ONELINK_ONLY) &&
+      TRACE_is_enabled();
+}
+
 char *TRACE_get_filename(void)
 {
   return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_FILENAME);
@@ -246,6 +253,13 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_buffer, 0, 1,
                    NULL, NULL);
 
+  /* msg volume (experimental) */
+  int default_onelink_only = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_ONELINK_ONLY,
+                   "Use only routes with one link to trace platform.",
+                   xbt_cfgelm_int, &default_onelink_only, 0, 1,
+                   NULL, NULL);
+
   /* Triva graph configuration for uncategorized tracing */
   char *default_triva_uncat_conf_file = xbt_strdup ("");
   xbt_cfg_register(&_surf_cfg_set, OPT_TRIVA_UNCAT_CONF,
@@ -329,6 +343,13 @@ void TRACE_help (int detailed)
       "  buffer and the cost of the sorting algorithm make this process slow. The\n"
       "  simulator performance can be severely impacted if this option is activated,\n"
       "  but you are sure to get a trace file with events sorted.",
+      detailed);
+  print_line (OPT_TRACING_ONELINK_ONLY, "Consider only one link routes to trace platform",
+      "  This option changes the way SimGrid register its platform on the trace file.\n"
+      "  Normally, the tracing considers all routes (no matter their size) on the\n"
+      "  platform file to re-create the resource topology. If this option is activated,\n"
+      "  only the routes with one link are used to register the topology within an AS.\n"
+      "  Routes among AS continue to be traced as usual.",
       detailed);
   print_line (OPT_TRIVA_UNCAT_CONF, "Generate graph configuration for Triva",
       "  This option can be used in all types of simulators build with SimGrid\n"
