@@ -40,9 +40,22 @@ void SIMIX_context_mod_init(void)
       (*smx_factory_initializer_to_use)(&(simix_global->context_factory));
     }
     else { /* use the factory specified by --cfg=contexts/factory:value */
-      if (smx_context_factory_name == NULL || !strcmp(smx_context_factory_name, "ucontext")) {
-        /* use ucontext */
+
+      if (smx_context_factory_name == NULL) {
+        /* use the default factory */
+#ifdef CONTEXT_UCONTEXT
         SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
+#else
+        SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
+#endif
+      }
+      else if (!strcmp(smx_context_factory_name, "ucontext")) {
+        /* use ucontext */
+#ifdef CONTEXT_UCONTEXT
+        SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
+#else
+        xbt_die("The ontext factory 'ucontext' unavailable on your system");
+#endif
       }
       else if (!strcmp(smx_context_factory_name, "thread")) {
 	/* use os threads (either pthreads or windows ones) */

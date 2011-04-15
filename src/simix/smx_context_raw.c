@@ -14,12 +14,6 @@
 #  include <valgrind/valgrind.h>
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
 
-#ifdef _XBT_WIN32
-#include "win32_ucontext.h"
-#else
-#include "ucontext.h"
-#endif
-
 typedef char * raw_stack_t;
 typedef void (*rawctx_entry_point_t)(void *);
 
