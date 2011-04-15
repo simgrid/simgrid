@@ -49,6 +49,7 @@ set(EXTRA_DIST
 	src/surf/gtnets/gtnets_simulator.h
 	src/surf/gtnets/gtnets_topology.h
 	src/surf/cpu_ti_private.h
+	src/surf/surf_routing_private.h
 	src/include/surf/surf_resource.h
 	src/include/surf/datatypes.h
 	src/include/surf/maxmin.h
@@ -521,7 +522,7 @@ file(GLOB_RECURSE examples_to_install_in_doc
 
 set(DOC_SOURCES
 	doc/contrib.doc
-    doc/FAQ.doc
+	doc/FAQ.doc
 	doc/gtut-howto-design.doc
 	doc/gtut-howto.doc
 	doc/gtut-introduction.doc
@@ -599,6 +600,9 @@ set(DOC_SOURCES
 	doc/webcruft/robots.txt
 	doc/webcruft/simgrid_logo.png
 	doc/webcruft/simgrid_logo_small.png
+	doc/triva-graph_configuration.png
+	doc/triva-graph_visualization.png
+	doc/simgrid.css
 	
 	doc/Doxyfile.in
 	doc/footer.html.in
@@ -619,6 +623,10 @@ set(DOC_FIGS
 	${CMAKE_HOME_DIRECTORY}/doc/fig/amok_bw_test.fig
 	${CMAKE_HOME_DIRECTORY}/doc/fig/amok_bw_sat.fig
 	${CMAKE_HOME_DIRECTORY}/doc/fig/gras_comm.fig
+)
+
+set(DOC_bib
+	${CMAKE_HOME_DIRECTORY}/doc/all.bib
 )
 
 file(GLOB_RECURSE add_src_files
@@ -774,6 +782,7 @@ file(GLOB_RECURSE README_files
 string(REPLACE "${CMAKE_HOME_DIRECTORY}/" "" README_files "${README_files}")
 
 file(GLOB_RECURSE CMAKE_SOURCE_FILES
+"buildtools/Cmake/Makefile.default"
 "buildtools/Cmake/test_java.sh"
 "buildtools/Cmake/*.cmake"
 "buildtools/Cmake/*.h.in"
@@ -815,10 +824,10 @@ set(source_to_pack
 	${xml_files}
 	${tesh_files}
 	${txt_files}
-	${EXTRA_DIST}
 	${CMAKE_SOURCE_FILES}
 	${bin_files}
 	${DOC_SOURCES}
 	${DOC_FIGS}
+	${DOC_bib}
 	${README_files}
 )

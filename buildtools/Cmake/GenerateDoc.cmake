@@ -45,7 +45,7 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 	
 	ADD_CUSTOM_TARGET(simgrid_documentation
 		COMMENT "Generating the SimGrid documentation..."
-		DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
+		DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen} ${DOC_bib}
 		COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
 	)
