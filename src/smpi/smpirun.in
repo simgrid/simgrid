@@ -59,6 +59,11 @@ while true; do
    	  shift 2
    ;;
 
+   "-trace-grouped")
+    TRACE_GROUPED="true"
+      shift 1
+   ;;
+
    "-triva")
    	TRIVA="true"
    	  shift 1
@@ -210,17 +215,19 @@ APPLICATIONFOOT
   fi
 
   if [ -n "${TRIVA}" ]; then
-    TRIVAOPTIONS="--cfg=triva/categorized:smpi_cat.plist --cfg=triva/uncategorized:smpi_uncat.plist"
-  else
-    TRIVAOPTIONS=""
+    TRACEOPTIONS="$TRACEOPTIONS --cfg=triva/categorized:smpi_cat.plist --cfg=triva/uncategorized:smpi_uncat.plist"
+  fi
+
+  if [ -n "${TRACE_GROUPED}" ]; then
+    TRACEOPTIONS="$TRACEOPTIONS --cfg=tracing/smpi/group:1"
   fi
 ##---------------------- end SMPI TRACING OPTIONS ---------------------------------
 
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
-  echo ${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${TRIVAOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
+  echo ${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
 fi
-${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${TRIVAOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
+${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
 
 if [ -z "${KEEP}" ] ; then
    if [ -z "${PLATFORM}" ]; then
