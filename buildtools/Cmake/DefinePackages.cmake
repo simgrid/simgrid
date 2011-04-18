@@ -799,8 +799,9 @@ tools/simgrid_update_xml.pl
 buildtools/Cmake/tesh.pl
 )
 
-# This is the complete lise of what will be added to the source archive
+# This is the complete list of what will be added to the source archive
 set(source_to_pack	
+	${install_HEADERS}
 	${XBT_RL_SRC}
 	${EXTRA_DIST}
 	${SMPI_SRC}
