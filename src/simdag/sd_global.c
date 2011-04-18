@@ -424,11 +424,6 @@ void SD_exit(void)
     XBT_DEBUG("Exiting Surf...");
     surf_exit();
 
-    // Exit the LIB host_lib
-    xbt_lib_free(&host_lib);
-    xbt_lib_free(&link_lib);
-    xbt_lib_free(&as_router_lib);
-
     xbt_free(sd_global);
     sd_global = NULL;
 

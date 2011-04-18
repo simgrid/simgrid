@@ -197,11 +197,6 @@ MSG_error_t MSG_clean(void)
 
   SIMIX_clean();
 
-  // Exit the LIB host_lib
-  xbt_lib_free(&host_lib);
-  xbt_lib_free(&link_lib);
-  xbt_lib_free(&as_router_lib);
-
   return MSG_OK;
 }
 
