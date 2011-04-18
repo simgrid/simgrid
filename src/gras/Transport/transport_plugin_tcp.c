@@ -223,6 +223,8 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
 
   uint32_t hisport;
 
+  int failed=0;
+
   XBT_IN("");
   gras_trp_socket_new(1, &res);
 
@@ -236,9 +238,14 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
            sock_errstr(tmp_errno));
   }
 
-  if (setsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char *) &i, s)
-      || setsockopt(sd, _gras_tcp_proto_number(), TCP_NODELAY, (char *) &i,
-                    s))
+  if (_gras_tcp_proto_number()!=-1)
+    if (setsockopt(sd, _gras_tcp_proto_number(), TCP_NODELAY, (char *) &i,s))
+      failed=1;
+
+  if (setsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char *) &i, s))
+    failed=1;
+
+  if (failed)
     THROWF(system_error, 0,
            "setsockopt failed, cannot condition the socket: %s",
            sock_errstr(tmp_errno));
@@ -785,7 +792,7 @@ void gras_trp_buf_socket_close(gras_socket_t sock)
 /****************************/
 
 /*
- * Returns the tcp protocol number from the network protocol data base.
+ * Returns the tcp protocol number from the network protocol data base, or -1 if not found
  *
  * getprotobyname() is not thread safe. We need to lock it.
  */
@@ -796,8 +803,12 @@ static int _gras_tcp_proto_number(void)
 
   if (returnValue == 0) {
     fetchedEntry = getprotobyname("tcp");
-    xbt_assert(fetchedEntry, "getprotobyname(tcp) gave NULL");
-    returnValue = fetchedEntry->p_proto;
+    if (fetchedEntry == NULL) {
+      XBT_VERB("getprotobyname(tcp) gave NULL");
+      returnValue = -1;
+    } else {
+      returnValue = fetchedEntry->p_proto;
+    }
   }
 
   return returnValue;
