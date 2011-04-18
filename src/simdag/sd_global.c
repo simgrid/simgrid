@@ -442,7 +442,7 @@ void SD_exit(void)
 }
 
 /**
- * \bried load script file
+ * \brief load script file
  */
 
 void SD_load_environment_script(const char *script_file)
