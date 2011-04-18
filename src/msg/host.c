@@ -120,9 +120,9 @@ m_host_t MSG_host_self(void)
   return MSG_process_get_host(MSG_process_self());
 }
 
-/*
- * Real function to destroy a host.
- * MSG_host_destroy is just  a front_end that also removes it from 
+/** \ingroup m_host_management
+ *
+ * \brief Destroys a host
  */
 void __MSG_host_destroy(m_host_t host)
 {
@@ -130,7 +130,7 @@ void __MSG_host_destroy(m_host_t host)
 
   xbt_assert((host != NULL), "Invalid parameters");
 
-  /* Clean Simulator data */
+  /* Clean simulator data */
   simdata = (host)->simdata;
 
   if (msg_global->max_channel > 0)
