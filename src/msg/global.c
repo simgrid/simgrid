@@ -80,7 +80,7 @@ void MSG_global_init(int *argc, char **argv)
 #endif
 
   XBT_DEBUG("ADD MSG LEVELS");
-  MSG_HOST_LEVEL = xbt_lib_add_level(host_lib,free);
+  MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_destroy);
 }
 
 /** \defgroup m_channel_management    Understanding channels
@@ -185,9 +185,6 @@ MSG_error_t MSG_clean(void)
 
   MSG_process_killall(0);
 
-  free(msg_global);
-  msg_global = NULL;
-
   /* initialization of the action module */
   _MSG_action_exit();
 
@@ -196,6 +193,9 @@ MSG_error_t MSG_clean(void)
 #endif
 
   SIMIX_clean();
+
+  free(msg_global);
+  msg_global = NULL;
 
   return MSG_OK;
 }

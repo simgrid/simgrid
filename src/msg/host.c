@@ -127,20 +127,11 @@ m_host_t MSG_host_self(void)
 void __MSG_host_destroy(m_host_t host)
 {
   simdata_host_t simdata = NULL;
-  int i = 0;
-  char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
 
   xbt_assert((host != NULL), "Invalid parameters");
 
   /* Clean Simulator data */
-  /* SIMIX host will be cleaned when MSG_clean calls SIMIX_clean */
   simdata = (host)->simdata;
-
-  for (i = 0; i < msg_global->max_channel; i++) {
-    sprintf(alias, "%s:%d", host->name, i);
-    MSG_mailbox_free((void *) (simdata->mailboxes[i]));
-    memset(alias, 0, MAX_ALIAS_NAME + 1);
-  }
 
   if (msg_global->max_channel > 0)
     free(simdata->mailboxes);
