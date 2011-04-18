@@ -726,6 +726,7 @@ set(txt_files
 "teshsuite/gras/small_sleep/test_sg_64.tesh"
 "teshsuite/simdag/platforms/bob.fail"
 "teshsuite/simdag/platforms/bob.trace"
+"teshsuite/simdag/platforms/bob0_availability_file.trace"
 "teshsuite/simdag/platforms/link1.bw"
 "teshsuite/simdag/platforms/link1.fail"
 "teshsuite/simdag/platforms/link1.lat"
