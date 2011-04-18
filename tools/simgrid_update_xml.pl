@@ -1,13 +1,107 @@
-#! /usr/bin/perl
+#! /usr/bin/env perl
+eval 'exec perl -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
 
 # This script updates the simgrid XML file passed as argument (modification in place)
 # It is built to do the conversion incrementally.
 
-# Copyright (C) 2006-2010. The SimGrid team. All rights reserved.
+# Copyright (C) 2006-2011. The SimGrid team. All rights reserved.
 #
 # This file is part of the SimGrid project. This is free software:
 # You can redistribute and/or modify it under the terms of the
 # GNU LGPL (v2.1) licence.
+
+=encoding UTF-8
+
+=head1 NAME
+
+simgrid_update_xml - updates simgrid XML files to lastest version
+  
+=head1 SYNOPSIS
+
+B<simgrid_update_xml> I<xml_file>
+  
+=head1 DESCRIPTION
+
+simgrid_update_xml updates the simgrid XML file passed as argument.  The file
+is modified in place, without any kind of backup. You may want to save a copy
+before running the script.
+
+In SimGrid XML files, the standard version is indicated in the version
+attribute of the platform tag. Current version is 3. Here is a list of major
+changes in each version.
+
+=over 4
+
+=item B<Version 0:> Used before SimGrid 3.3
+
+=item B<Version 1:> Introduced in SimGrid 3.3
+
+=over 4
+
+=item 
+
+The version attribute of platform were added to allow file versionning.
+
+=item
+
+The link bandwidth changed from Mb/s to b/s; and the CPU power were changed
+from MFlop/s to Flop/s
+
+=back
+
+=item B<Version 2:> Introduced in SimGrid 3.4
+
+=over 
+
+=item 
+
+Several tags were renamed: 
+
+  CPU -> HOST 
+  NETWORK_LINK -> LINK
+  ROUTE_ELEMENT ->  LINK_CTN
+  PLATFORM_DESCRIPTION -> PLATFORM
+
+=back
+
+=item B<Version 3:> Introduced in SimGrid 3.5 (this is the current version)
+
+=over 4
+
+=item
+
+The AS tag were introduced. Every plaform should now contain an englobing AS
+tag.
+
+=item 
+
+Routes are now symmetric by default.
+
+=item
+
+Several tags were renamed (for sake of XML sanity):
+
+  LINK:CTN -> LINK_CTN
+  TRACE:CONNECT -> TRACE_CONNECT
+
+=back
+
+=back
+
+=head1 AUTHORS
+
+ The SimGrid team (simgrid-devel@lists.gforge.inria.fr)
+  
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2006-2011. The SimGrid team. All rights reserved.
+  
+This program is free software; you may redistribute it and/or modify it
+under the terms of GNU LGPL (v2.1) license.
+  
+=cut
+
 
 use strict;
 
