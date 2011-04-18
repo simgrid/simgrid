@@ -676,12 +676,13 @@ XBT_INLINE void xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst)
 
 static void _dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
 {
-  char elm[SIZEOF_MAX];
+  char *const data = (char *) dynar->data;
+  const unsigned long elmsize = dynar->elmsize;
   const unsigned long used = dynar->used;
-  unsigned long i = 0;
+  unsigned long i;
 
   for (i = 0; i < used; i++) {
-    _xbt_dynar_get_elm(elm, dynar, i);
+    char* elm = (char*) data + i * elmsize;
     (*op) (elm);
   }
 }
