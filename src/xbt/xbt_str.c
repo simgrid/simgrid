@@ -316,7 +316,7 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
   return res;
 }
 
-/** @brief Just like @xbt_str_split_quoted (Splits a string into a dynar of strings), but without memory allocation
+/** @brief Just like @ref xbt_str_split_quoted (Splits a string into a dynar of strings), but without memory allocation
  *
  * The string passed as argument must be writable (not const)
  * The elements of the dynar are just parts of the string passed as argument.
