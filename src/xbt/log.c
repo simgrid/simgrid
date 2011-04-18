@@ -298,7 +298,15 @@ displayed by setting a threshold to each category through the
 For example, \verbatim --log=root.thres:debug\endverbatim will make
 SimGrid <b>extremely</b> verbose while \verbatim
 --log=root.thres:critical\endverbatim should shut it almost
-completely off.
+completely off. The full list of recognized thresholds is the following:
+
+ - trace: enter and return of some functions
+ - debug: crufty output
+ - verbose: verbose output for the user wanting more
+ - info: output about the regular functionning
+ - warning: minor issue encountered
+ - error: issue encountered
+ - critical: major issue encountered 
 
 \subsection log_use_conf_multi 3.1.2 Passing several settings
 
