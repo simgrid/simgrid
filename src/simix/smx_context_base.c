@@ -47,8 +47,8 @@ smx_ctx_base_factory_create_context_sized(size_t size,
 {
   smx_context_t context = xbt_malloc0(size);
 
-  /* If the user provided a function for the process then use it
-     otherwise is the context for maestro and we should set it as the
+  /* If the user provided a function for the process then use it.
+     Otherwise, it is the context for maestro and we should set it as the
      current context */
   if (code) {
     context->cleanup_func = cleanup_func;
