@@ -22,10 +22,7 @@
 #include "gras_stub_generator.h"
 #include <stdarg.h>
 
-
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen, gras, "Stub generator");
-
 
 #ifdef _XBT_WIN32
 #include <windows.h>
@@ -176,6 +173,11 @@ int main(int argc, char *argv[])
 #endif
 
   free(warning);
+
+  xbt_dict_free(&process_function_set);
+  xbt_dynar_free(&process_list);
+  xbt_dict_free(&machine_set);
   surf_exit();
+
   return 0;
 }
