@@ -430,8 +430,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
 /** @ingroup XBT_log
  *  @hideinitializer
  * \param c the category on which to log
- * \param f the format string
- * \param ... arguments of the format
+ * \param ... the format string and its arguments
  *  @brief Log an event at the DEBUG priority on the specified category with these args.
  */
 #define XBT_CDEBUG(c, ...) XBT_CLOG(c, xbt_log_priority_debug, __VA_ARGS__)
@@ -468,8 +467,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
 
 /** @ingroup XBT_log
  *  @hideinitializer
- * \param f the format string
- * \param ...
+ * \param ... the format string and its arguments
  *  @brief Log an event at the DEBUG priority on the default category with these args.
  */
 #define XBT_DEBUG(...) XBT_LOG(xbt_log_priority_debug, __VA_ARGS__)

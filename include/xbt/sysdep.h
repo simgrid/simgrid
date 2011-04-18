@@ -35,7 +35,7 @@ SG_BEGIN_DECL()
 
 /**
  * @brief Kill the program with an error message
- * \param msg
+ * \param ... a format string and its arguments
  *
  * Things are so messed up that the only thing to do now, is to stop the
  * program.

@@ -486,9 +486,9 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
  * \param name of the mailbox to receive the task on
  * \return the msg_comm_t communication created
  */
-msg_comm_t MSG_task_irecv(m_task_t *task, const char *alias)
+msg_comm_t MSG_task_irecv(m_task_t *task, const char *name)
 {
-  smx_rdv_t rdv = MSG_mailbox_get_by_alias(alias);
+  smx_rdv_t rdv = MSG_mailbox_get_by_alias(name);
 
   CHECK_HOST();
 

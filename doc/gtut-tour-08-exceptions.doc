@@ -60,7 +60,7 @@ Then, you simply add a #TRY/#CATCH block around your code:
 
 Another strange thing is that you should actually free the memory allocated
 to the exception with xbt_ex_fres() if you manage to deal with them. There
-is a bit more than this on the picture (#CLEANUP blocks, for example), and
+is a bit more than this on the picture (#TRY_CLEANUP blocks, for example), and
 you should check the section \ref XBT_ex for more details.
 
 You should be <b>very carfull</b> when using the exceptions. They work great

@@ -746,7 +746,7 @@ static XBT_INLINE void SD_task_do_schedule(SD_task_t task)
  * i.e. when its dependencies are satisfied.
  *
  * \param task the task you want to schedule
- * \param workstation_nb number of workstations on which the task will be executed
+ * \param workstation_count number of workstations on which the task will be executed
  * \param workstation_list the workstations on which the task will be executed
  * \param computation_amount computation amount for each workstation
  * \param communication_amount communication amount between each pair of workstations

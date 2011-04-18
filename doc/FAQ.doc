@@ -2365,7 +2365,7 @@ MSG.exit
 
 \subsubsection faq_binding_ruby_data Exchanging data 
 ruby bindings provides two ways to exchange data between ruby processes.
-\li MSG::Task.join & MSG::Task.data \br
+\li MSG::Task.join & MSG::Task.data <br/>
 
   the MSG::Task class contains 2 methods that allows a data exchange between 2 process.
   
