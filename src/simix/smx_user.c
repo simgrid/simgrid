@@ -1,5 +1,7 @@
 #include "private.h"
 #include "mc/mc.h"
+
+#define _ISO_C99_SOURCE
 #include <math.h> /* isfinite() */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
