@@ -131,7 +131,7 @@ void *mmalloc_attach(int fd, void *baseaddr)
   if ((mbase = mdp->morecore(mdp, sizeof(mtemp))) != NULL) {
     memcpy(mbase, mdp, sizeof(mtemp));
   } else {
-    abort();
+    THROWF(system_error,0,"morecore failed to get some memory!");
   }
 
   /* Add the new heap to the linked list of heaps attached by mmalloc */  

@@ -143,13 +143,15 @@ static void mmalloc_fork_child(void)
 /* Initialize the default malloc descriptor. */
 void mmalloc_preinit(void)
 {
+  int res;
   if (!__mmalloc_default_mdp) {
     __mmalloc_default_mdp =
         mmalloc_attach(-1, (char *) sbrk(0) + HEAP_OFFSET);
     /* Fixme? only the default mdp in protected against forks */
-    if (xbt_os_thread_atfork(mmalloc_fork_prepare,
-                             mmalloc_fork_parent, mmalloc_fork_child) != 0)
-      abort();
+    res = xbt_os_thread_atfork(mmalloc_fork_prepare,
+			       mmalloc_fork_parent, mmalloc_fork_child);
+    if (res != 0)
+      THROWF(system_error,0,"xbt_os_thread_atfork() failed: return value %d",res);
   }
   xbt_assert(__mmalloc_default_mdp != NULL);
 }
