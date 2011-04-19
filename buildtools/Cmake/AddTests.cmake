@@ -289,7 +289,7 @@ IF(${ARCH_32_BITS})
   if(HAVE_RAWCTX)
     ADD_TEST(amok-bandwidth-sg-32-raw		${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:raw		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/amok 	--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth/bandwidth_sg_32.tesh)
     ADD_TEST(amok-saturate-sg-32-raw		${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:raw		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/amok 	--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/saturate/saturate_sg_32.tesh)
-  endif
+  endif(HAVE_RAWCTX)
   ADD_TEST(amok-bandwidth-sg-32-ucontext	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:ucontext		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/amok 	--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth/bandwidth_sg_32.tesh)
   ADD_TEST(amok-saturate-sg-32-ucontext	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:ucontext		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/amok 	--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/saturate/saturate_sg_32.tesh)
 ELSE(${ARCH_32_BITS})
