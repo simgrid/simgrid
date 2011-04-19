@@ -10,9 +10,13 @@ if(enable_smpi AND NOT WIN32)
 	exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE "OKITOKI")
 endif(enable_smpi AND NOT WIN32)
 
-if(PROCESSOR_x86_64 or PROCESSOR_i686)
+
+if(${PROCESSOR_x86_64})
 	set(HAVE_RAWCTX 1)
-endif(PROCESSOR_x86_64 or PROCESSOR_i686)
+endif(${PROCESSOR_x86_64})
+if(${PROCESSOR_i686})
+	set(HAVE_RAWCTX 1)
+endif(${PROCESSOR_i686})
        
 
 ### For code coverage
