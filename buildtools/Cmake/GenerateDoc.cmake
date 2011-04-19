@@ -9,7 +9,8 @@ add_custom_command(OUTPUT doc/simgrid_update_xml.1
 	COMMAND pod2man tools/simgrid_update_xml.pl > doc/simgrid_update_xml.1
 	COMMENT "Generating manpage for simgrid_update_xml"
 )
-
+install(FILES ${MANPAGES} 
+		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1/)
 
 #### Generate the html documentation
 
