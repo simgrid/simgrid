@@ -28,6 +28,7 @@ Boston, MA 02111-1307, USA.  */
 #include <unistd.h>             /* Prototypes for lseek */
 #endif
 #include "mmprivate.h"
+#include "xbt/ex.h"
 
 #ifndef SEEK_SET
 #define SEEK_SET 0
