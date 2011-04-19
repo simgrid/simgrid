@@ -425,7 +425,7 @@
        - \ref MSG_ext_ms_platform
        
        
-      \dontinclude lua/master_slave.lua
+      \dontinclude lua/masterslave/master_slave.lua
       
       \section MSG_ext_ms_code_lua Code of the application
       
@@ -478,7 +478,7 @@
        - \ref MSG_ext_ms_core_lua
        
        
-      \dontinclude lua/master_slave_bypass.lua
+      \dontinclude lua/console/master_slave_bypass.lua
       
       \section MSG_ext_ms_code_lua Code of the application
       
