@@ -68,7 +68,7 @@ This program simulates the behavior of a batch scheduler managing a
 cluster. 
 
 This program is maintained by Jean-Sebastien Gay
-(Jean-Sebastien.Gay::ens-lyon.fr), and is part of the SimGrid SVN
+(Jean-Sebastien.Gay at ens-lyon.fr), and is part of the SimGrid SVN
 (directory contrib/Simbatch).
 
 

@@ -630,6 +630,7 @@ INPUT                  = index.doc \
                          gtut-main.doc \
                          gtut-introduction.doc \
                          gtut-tour.doc \
+                         gtut-tour-00-install.doc \
                          gtut-tour-01-bones.doc \
                          gtut-tour-02-simple.doc \
                          gtut-tour-03-args.doc \
@@ -649,7 +650,6 @@ INPUT                  = index.doc \
                          gtut-tour-16-exchangecb.doc \
                          gtut-howto.doc \
                          gtut-howto-design.doc \
-                         @top_srcdir@/doc/logcategories.doc \
                          @top_srcdir@/include/ \
                          @top_srcdir@/include/msg \
                          @top_srcdir@/include/gras \

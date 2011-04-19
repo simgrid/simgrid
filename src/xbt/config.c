@@ -292,7 +292,7 @@ void xbt_cfg_unregister(xbt_cfg_t cfg, const char *name)
  * Each of them must use the following syntax: \<name\>:\<min nb\>_to_\<max nb\>_\<type\>
  * with type being one of  'string','int', 'peer' or 'double'.
  *
- * @fixme: this does not allow to set the description
+ * FIXME: this does not allow to set the description
  */
 
 void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
