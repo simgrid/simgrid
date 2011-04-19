@@ -25,6 +25,7 @@
 #endif
 
 #include "mmprivate.h"
+#include "xbt/ex.h"
 
 /* Cache the pagesize for the current host machine.  Note that if the host
    does not readily provide a getpagesize() function, we need to emulate it
@@ -77,6 +78,7 @@ void *__mmalloc_mmap_morecore(struct mdesc *mdp, int size)
   if (size == 0) {
     /* Just return the current "break" value. */
     result = mdp->breakval;
+
   } else if (size < 0) {
     /* We are deallocating memory.  If the amount requested would cause
        us to try to deallocate back past the base of the mmap'd region
@@ -94,6 +96,7 @@ void *__mmalloc_mmap_morecore(struct mdesc *mdp, int size)
     /* We are allocating memory. Make sure we have an open file
        descriptor if not working with anonymous memory. */
     if (!(mdp->flags & MMALLOC_ANONYMOUS) && mdp->fd < 0) {
+      THROWF(system_error,0,"mmap file descriptor <0 (%d), without MMALLOC_ANONYMOUS being in the flags",mdp->fd);
       result = NULL;
     } else if ((char *) mdp->breakval + size > (char *) mdp->top) {
       /* The request would move us past the end of the currently
@@ -117,7 +120,7 @@ void *__mmalloc_mmap_morecore(struct mdesc *mdp, int size)
                    MAP_PRIVATE_OR_SHARED(mdp) | MAP_IS_ANONYMOUS(mdp) |
                    MAP_FIXED, MAP_ANON_OR_FD(mdp), foffset);
 
-      if (mapto != (void *) -1) {
+      if (mapto != (void *) -1/* That's MAP_FAILED */) {
 
         if (mdp->top == 0)
           mdp->base = mdp->breakval = mapto;
@@ -125,6 +128,8 @@ void *__mmalloc_mmap_morecore(struct mdesc *mdp, int size)
         mdp->top = PAGE_ALIGN((char *) mdp->breakval + size);
         result = (void *) mdp->breakval;
         mdp->breakval = (char *) mdp->breakval + size;
+      } else {
+	THROWF(system_error,0,"mmap returned MAP_FAILED! error: %s",strerror(errno));
       }
     } else {
       result = (void *) mdp->breakval;
