@@ -527,6 +527,7 @@ set(DOC_SOURCES
 	doc/gtut-howto.doc
 	doc/gtut-introduction.doc
 	doc/gtut-main.doc
+	doc/gtut-tour-00-install.doc
 	doc/gtut-tour-01-bones.doc
 	doc/gtut-tour-02-simple.doc
 	doc/gtut-tour-03-args.doc
