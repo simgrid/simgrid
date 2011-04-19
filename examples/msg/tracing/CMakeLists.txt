@@ -15,3 +15,9 @@ target_link_libraries(categories simgrid m )
 target_link_libraries(volume simgrid m )
 target_link_libraries(tasks simgrid m )
 target_link_libraries(procmig simgrid m )
+
+## Clean generated files
+get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
+set_directory_properties(
+	PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
+        "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/ms.cat.plist;${CMAKE_CURRENT_BINARY_DIR}/ms.trace;${CMAKE_CURRENT_BINARY_DIR}/ms.uncat.plist;")
