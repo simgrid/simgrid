@@ -280,14 +280,8 @@ if(HAVE_RAWCTX)
 endif(HAVE_RAWCTX)
 
 # amok examples
-ADD_TEST(amok-bandwidth-rl-thread	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:thread			--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth/bandwidth_rl.tesh)
-ADD_TEST(amok-saturate-rl-thread	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:thread			--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/saturate/saturate_rl.tesh)
-if(HAVE_RAWCTX)
-  ADD_TEST(amok-bandwidth-rl-raw		${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:raw			--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth/bandwidth_rl.tesh)
-  ADD_TEST(amok-saturate-rl-raw		${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:raw			--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/saturate/saturate_rl.tesh)
-endif
-ADD_TEST(amok-bandwidth-rl-ucontext	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:ucontext			--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth/bandwidth_rl.tesh)
-ADD_TEST(amok-saturate-rl-ucontext	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:ucontext			--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/saturate/saturate_rl.tesh)
+ADD_TEST(amok-bandwidth-rl	${CMAKE_BINARY_DIR}/bin/tesh	--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth/bandwidth_rl.tesh)
+ADD_TEST(amok-saturate-rl	${CMAKE_BINARY_DIR}/bin/tesh	--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/saturate/saturate_rl.tesh)
 
 IF(${ARCH_32_BITS})
   ADD_TEST(amok-bandwidth-sg-32-thread	${CMAKE_BINARY_DIR}/bin/tesh	--cfg contexts/factory:thread		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/amok 	--cd ${CMAKE_BINARY_DIR}/examples/amok ${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth/bandwidth_sg_32.tesh)
