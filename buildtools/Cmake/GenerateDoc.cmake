@@ -179,9 +179,27 @@ endif(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND IC
 ##############################################################################"
 
 message(STATUS "Check individual TOCs")
-file(GLOB_RECURSE LISTE_GTUT
-	"${CMAKE_HOME_DIRECTORY}/doc/gtut-tour-*.doc"
+set(LISTE_GTUT
+	doc/gtut-tour-00-install.doc
+	doc/gtut-tour-01-bones.doc
+	doc/gtut-tour-02-simple.doc
+	doc/gtut-tour-03-args.doc
+	doc/gtut-tour-04-callback.doc
+	doc/gtut-tour-05-globals.doc
+	doc/gtut-tour-06-logs.doc
+	doc/gtut-tour-07-timers.doc
+	doc/gtut-tour-08-exceptions.doc
+	doc/gtut-tour-09-simpledata.doc
+	doc/gtut-tour-10-rpc.doc
+	doc/gtut-tour-11-explicitwait.doc
+	doc/gtut-tour-recap-messages.doc
+	doc/gtut-tour-12-staticstruct.doc
+	doc/gtut-tour-13-pointers.doc
+	doc/gtut-tour-14-dynar.doc
+	doc/gtut-tour-15-manualdatadef.doc
+	doc/gtut-tour-16-exchangecb.doc
 )
+
 foreach(file_name ${LISTE_GTUT})
 	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc)
 	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc)
@@ -190,7 +208,8 @@ foreach(file_name ${LISTE_GTUT})
 	string(REGEX MATCH "Table of Contents.*<hr>" valeur_line "${file_content}")
 	string(REPLACE "\n" ";" valeur_line "${valeur_line}")
 	string(REPLACE "\n" ";" file_content "${file_content}")
-	
+	       
+	file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc "\n") # make sure it exists
 	foreach(line ${file_content})
 		string(REGEX MATCH "[\\]s?u?b?s?u?b?section.*" line2 "${line}")
 		string(REGEX MATCH ".*_toc.*" line3 "${line}")
@@ -206,6 +225,7 @@ foreach(file_name ${LISTE_GTUT})
 		endif(line2 AND NOT line3)
 	endforeach(line ${file_content})
 	
+	file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc "\n") # make sure it exists
 	foreach(line ${valeur_line})
 		string(REGEX MATCH ".*ref.*" line_ok ${line})
 		if(line_ok)

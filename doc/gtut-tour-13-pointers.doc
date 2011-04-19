@@ -7,9 +7,15 @@ long otherwise, the lesson is organized as a FAQ, with little examples of
 how to do things.
 
 \section GRAS_tut_tour_pointers_toc Table of Contents
+ - \ref GRAS_tut_tour_pointers_intro
+ - \ref GRAS_tut_tour_pointers_use
+ - \ref GRAS_tut_tour_pointers_recap
  - \ref GRAS_tut_tour_pointers_cste
    
 <hr>
+\section GRAS_tut_tour_pointers_intro Introduction to pointers in datadesc
+\section GRAS_tut_tour_pointers_use Using pointers in datadesc
+\section GRAS_tut_tour_pointers_recap Recapping everything
 
 
 \section GRAS_tut_tour_pointers_cste How to have constants in parsed structures?
