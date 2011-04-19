@@ -136,6 +136,10 @@ __asm__ (
    "   retq\n"
 );
 #else
+
+/* If you implement raw contextes for other processors, don't forget to 
+   update the definition of HAVE_RAWCTX in buildtools/Cmake/AddTests.cmake */
+
 raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
                             rawctx_entry_point_t entry_point, void* arg) {
    THROW_UNIMPLEMENTED;
