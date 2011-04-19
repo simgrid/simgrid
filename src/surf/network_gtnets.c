@@ -434,7 +434,6 @@ static int get_latency_limited(surf_action_t action)
 }
 #endif
 
-#ifdef HAVE_GTNETS
 void surf_network_model_init_GTNETS(const char *filename)
 {
   if (surf_network_model)
@@ -455,4 +454,3 @@ void surf_network_model_init_GTNETS(const char *filename)
   update_model_description(surf_network_model_description,
                            "GTNets", surf_network_model);
 }
-#endif
