@@ -42,32 +42,26 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, void *start_addr, siz
 void MC_take_snapshot(mc_snapshot_t snapshot)
 {
   unsigned int i = 0;
-  char copy = 0;
   s_map_region reg;
   memory_map_t maps = get_memory_map();
 
-  /* Save the std heap and the writtable mapped pages of libsimgrid */
-    while(i < maps->mapsize
-          && (maps->regions[i].pathname == NULL
-              || memcmp(maps->regions[i].pathname, "/lib/ld", 7))){
-      reg = maps->regions[i];
-      if((reg.prot & PROT_WRITE)){
-        if(reg.start_addr == std_heap){
-          MC_snapshot_add_region(snapshot, reg.start_addr,
-                                 (char*)reg.end_addr - (char*)reg.start_addr);
-
-        }else if(copy || (reg.pathname != NULL
-                 && !memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10))){
-          MC_snapshot_add_region(snapshot, reg.start_addr,
-                                 (char*)reg.end_addr - (char*)reg.start_addr);
-          /* This will force the save of the regions in the next iterations,
-           * but we assume that ld will be found mapped and break the loop
-           * before saving a wrong region.(This is ugly I know). */
-          copy = TRUE;
+  /* Save the std heap and the writable mapped pages of libsimgrid */
+  while (i < maps->mapsize) {
+    reg = maps->regions[i];
+    if ((reg.prot & PROT_WRITE)){
+      if (maps->regions[i].pathname == NULL){
+        if (reg.start_addr == std_heap){
+          MC_snapshot_add_region(snapshot, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+        }
+      } else {
+        if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
+          MC_snapshot_add_region(snapshot, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
         }
       }
-      i++;
     }
+    i++;
+  }
+
 
   /* FIXME: free the memory map */
 }
