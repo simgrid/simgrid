@@ -93,9 +93,10 @@ void free(void *p)
 
 /* Make sure it works with md==NULL */
 
-#define HEAP_OFFSET   (128<<20)  /* Safety gap from the heap's break address.
-                                  * Try to increase this first if you experience
-                                  * strange errors under valgrind. */
+/* Safety gap from the heap's break address.
+ * Try to increase this first if you experience strange errors under
+ * valgrind. */
+#define HEAP_OFFSET   (128UL<<20)
 
 void *mmalloc_get_default_md(void)
 {
@@ -145,8 +146,9 @@ void mmalloc_preinit(void)
 {
   int res;
   if (!__mmalloc_default_mdp) {
-    __mmalloc_default_mdp =
-        mmalloc_attach(-1, (char *) sbrk(0) + HEAP_OFFSET);
+    unsigned long mask = ~((unsigned long)getpagesize() - 1);
+    void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
+    __mmalloc_default_mdp = mmalloc_attach(-1, addr);
     /* Fixme? only the default mdp in protected against forks */
     res = xbt_os_thread_atfork(mmalloc_fork_prepare,
 			       mmalloc_fork_parent, mmalloc_fork_child);
