@@ -4,6 +4,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
                                 "Logging specific to MC (request)");
 
 static char* pointer_to_string(void* pointer);
+static char* buff_size_to_string(size_t size);
 
 int MC_request_depend(smx_req_t r1, smx_req_t r2)
 {
@@ -155,9 +156,18 @@ static char* pointer_to_string(void* pointer) {
   return xbt_strdup("(verbose only)");
 }
 
+static char* buff_size_to_string(size_t buff_size) {
+
+  if (XBT_LOG_ISENABLED(mc_request, xbt_log_priority_verbose))
+    return bprintf("%zu", buff_size);
+
+  return xbt_strdup("(verbose only)");
+}
+
+
 char *MC_request_to_string(smx_req_t req, int value)
 {
-  char *type = NULL, *args = NULL, *str = NULL, *p = NULL;
+  char *type = NULL, *args = NULL, *str = NULL, *p = NULL, *bs = NULL;
   smx_action_t act = NULL;
   size_t size = 0;
 
@@ -165,15 +175,15 @@ char *MC_request_to_string(smx_req_t req, int value)
     case REQ_COMM_ISEND:
       type = xbt_strdup("iSend");
       p = pointer_to_string(req->comm_isend.src_buff);
-      args = bprintf("src=%s, buff=%s, size=%zu", req->issuer->name, 
-                     p, req->comm_isend.src_buff_size);
+      bs = buff_size_to_string(req->comm_isend.src_buff_size);
+      args = bprintf("src=%s, buff=%s, size=%s", req->issuer->name, p, bs);
       break;
     case REQ_COMM_IRECV:
       size = req->comm_irecv.dst_buff_size ? *req->comm_irecv.dst_buff_size : 0;
       type = xbt_strdup("iRecv");
       p = pointer_to_string(req->comm_irecv.dst_buff); 
-      args = bprintf("dst=%s, buff=%s, size=%zu", req->issuer->name, 
-                     p, size);
+      bs = buff_size_to_string(size);
+      args = bprintf("dst=%s, buff=%s, size=%s", req->issuer->name, p, bs);
       break;
     case REQ_COMM_WAIT:
       act = req->comm_wait.comm;
@@ -233,6 +243,7 @@ char *MC_request_to_string(smx_req_t req, int value)
   xbt_free(type);
   xbt_free(args);
   xbt_free(p);
+  xbt_free(bs);
   return str;
 }
 
