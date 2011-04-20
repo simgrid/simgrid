@@ -1,27 +1,30 @@
 #! /usr/bin/perl -w
 
+=encoding UTF-8
+
+=head1 NAME
+
+tesh -- testing shell
+
+=head1 SYNOPSIS
+
+B<tesh> [I<options>] I<tesh_file>
+
+=cut
+
+use Pod::Usage qw(pod2usage);
+use Getopt::Long qw(GetOptions);
 use strict;
 use Term::ANSIColor;
 use IPC::Open3;
 
-if($#ARGV < 0)
-{
-	die "Usage: tesh.pl <options> <teshfile.tesh>\n";
-}
 
-my($line1);
-my($line2);
-my($execline);
-my($command);
-my($command_tesh);
+my($line1,$line2,$execline,$command,$command_tesh);
 my($command_executed)=0;
 my($expected_result_line)=0;
 my($sort)=0;
 my($nb_arg)=0;
-my(@list1)=();
-my(@list2)=();
-my(@list3)=();
-my(@list_of_commands)=();
+my(@list1,@list2,@list3,@list_of_commands)=();
 my(@buffer)=();
 my($timeout)=0;
 my($encore)=0;
@@ -41,62 +44,74 @@ my($config)="";
 my($tesh_command)=0;
 my(@buffer_tesh)=();
 
-#options
-do{
-	if($ARGV[$nb_arg] =~ /^--cd$/)
-	{
-		$nb_arg++;
-		if(!$ARGV[$nb_arg] or $ARGV[$nb_arg] =~ /^--/){die "Usage: tesh.pl --cd <directory>\n";}
-		my($directory)=$ARGV[$nb_arg];
-		if( -e $directory) 
-		{
-			chdir("$directory");
-			print "[Tesh/INFO] --cd \"$directory\"\n";
-		}
-		else
-		{
-			die "[Tesh/CRITICAL] Directory not found : \"$directory\"\n";
-		}
-		$nb_arg++;	
-	}
-	elsif($ARGV[$nb_arg] =~ /^--setenv$/)
-	{
-		$nb_arg++;
-		if(!$ARGV[$nb_arg] or $ARGV[$nb_arg] =~ /^--/){die "Usage: tesh.pl --setenv environment_variable\n";}
-		$ARGV[$nb_arg] =~ /^(.*)=(.*)$/;
-		my($var)=$1;
-		my($content)=$2;
-		$ENV{$var} = $content;
-		print "[Tesh/INFO] --setenv $var=$content\n";
-		$nb_arg++;
-	}
-	elsif($ARGV[$nb_arg] =~ /^--cfg$/)
-	{
-		$nb_arg++;
-		if(!$ARGV[$nb_arg] or $ARGV[$nb_arg] =~ /^--/){die "Usage: tesh.pl --setenv environment_variable\n";}
-		$config = "$config--cfg=$ARGV[$nb_arg] ";
-		print "[Tesh/INFO] $config\n";
-		$nb_arg++;
-	}
-	elsif($ARGV[$nb_arg] =~ /^--verbose$/)
-	{
-		$verbose=1;$nb_arg++;
-	}
-	else
-	{
-		print "[Tesh/CRITICAL] Unrecognized option : $ARGV[$nb_arg]\n";
-		$nb_arg++;
-	}
-}while(($nb_arg) < $#ARGV);
+# make sure we received a tesh file
+scalar @ARGV > 0 || pod2usage(-exitval => 1);
 
 #Add current directory to path
 $ENV{PATH} = "$ENV{PATH}:.";
 
-#tesh file
-if(!$ARGV[$nb_arg]){die "tesh.pl <options> <teshfile.tesh>\n";}
-print "[Tesh/INFO] load file : $ARGV[$nb_arg]\n";
-my($file)=$ARGV[$nb_arg];
-open SH_LIGNE, $file or die "[Tesh/CRITICAL] Unable to open $file. $!\n";
+
+#options
+sub cd_cmd {
+    my $directory=$_[1];
+    if (-e $directory) {
+	chdir("$directory");
+	print "[Tesh/INFO] change directory to $directory\n";
+    } else {
+	die "[Tesh/CRITICAL] Directory not found : \"$directory\"\n";
+    }
+}
+
+sub setenv_cmd {
+    if ($_[1] =~ /^(.*)=(.*)$/) {
+	my($var,$ctn)=($1,$2);
+	$ENV{$var} = $ctn;
+	print "[Tesh/INFO] setenv $var=$ctn\n";
+    } else { 
+	die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$_[1]'\n";
+    }
+}
+
+my $tesh_file;
+sub get_options {
+    # remove the tesh file from the ARGV used
+    my @ARGV = @_;
+    $tesh_file = pop @ARGV;
+
+    # temporary arrays for GetOption
+    my @verbose = ();
+    my @cfg;
+
+    my %opt = (
+	"help"    => 0,
+	"debug"   => 0,
+	"verbose" => 0
+	);
+
+    Getopt::Long::config('bundling', 'no_getopt_compat', 'no_auto_abbrev');
+    
+    GetOptions(
+	'help|h'     => \$opt{'help'},
+
+        'verbose|v'  => \@verbose,
+        'debug|d'    => \$opt{"debug"},
+
+	'cd=s'       => \&cd_cmd,
+	'setenv=s'   => \&setenv_cmd,
+	'cfg=s'      => \@cfg,
+	);
+
+    $opt{'verbose'} = scalar @verbose;
+    foreach (@cfg) {
+	$opt{'cfg'} .= " --cfg=$_";
+    }
+    return %opt;
+}
+
+my %opts = get_options(@ARGV);
+
+# parse tesh file
+open SH_LIGNE, $tesh_file or die "[Tesh/CRITICAL] Unable to open $tesh_file: $!\n";
 
 while(defined($line1=<SH_LIGNE>))
 {

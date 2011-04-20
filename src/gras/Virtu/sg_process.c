@@ -195,7 +195,7 @@ const char *gras_os_host_property_value(const char *name)
                            name);
 }
 
-/** @brief retrieve the host properties dictionnary
+/** @brief retrieve the host properties dictionary
  *  @warning it's the original one, not a copy. Don't mess with it
  */
 xbt_dict_t gras_os_host_properties(void)

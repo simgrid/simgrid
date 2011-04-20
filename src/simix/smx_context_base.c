@@ -1,4 +1,4 @@
-/* context_base - Code factorization accross context switching implementations */
+/* context_base - Code factorization across context switching implementations */
 
 /* Copyright (c) 2010. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -87,6 +87,7 @@ void smx_ctx_base_stop(smx_context_t context)
 {
   if (context->cleanup_func)
     (*(context->cleanup_func)) (context->data);
+  context->iwannadie = 0;
   SIMIX_req_process_cleanup(context->data);
 }
 
