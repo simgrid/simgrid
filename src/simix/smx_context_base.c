@@ -1,4 +1,4 @@
-/* context_base - Code factorization accross context switching implementations */
+/* context_base - Code factorization across context switching implementations */
 
 /* Copyright (c) 2010. The SimGrid Team.
  * All rights reserved.                                                     */
