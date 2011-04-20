@@ -250,10 +250,11 @@ static xbt_dynar_t rulebased_get_onelink_routes(routing_component_t rc)
   //find router
   char *router = NULL;
   xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
-    if (strstr (k1, "router")){
+    if (rc->get_network_element_type(k1) == SURF_NETWORK_ELEMENT_ROUTER){
       router = k1;
     }
   }
+
   if (!router){
     xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
   }
@@ -262,17 +263,23 @@ static xbt_dynar_t rulebased_get_onelink_routes(routing_component_t rc)
     route_extended_t route = rulebased_get_route (rc, router, k1);
 
     int number_of_links = xbt_dynar_length(route->generic_route.link_list);
-    if (number_of_links != 3) {
-      xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
-    }
 
-    void *link_ptr;
-    xbt_dynar_get_cpy (route->generic_route.link_list, 2, &link_ptr);
-    onelink_t onelink = xbt_new0 (s_onelink_t, 1);
-    onelink->src = xbt_strdup (k1);
-    onelink->dst = xbt_strdup (router);
-    onelink->link_ptr = link_ptr;
-    xbt_dynar_push (ret, &onelink);
+    if(number_of_links == 1) {
+		//loopback
+    }
+    else{
+		if (number_of_links != 2) {
+		  xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
+		}
+
+		void *link_ptr;
+		xbt_dynar_get_cpy (route->generic_route.link_list, 1, &link_ptr);
+		onelink_t onelink = xbt_new0 (s_onelink_t, 1);
+		onelink->src = xbt_strdup (k1);
+		onelink->dst = xbt_strdup (router);
+		onelink->link_ptr = link_ptr;
+		xbt_dynar_push (ret, &onelink);
+    }
   }
   return ret;
 }
