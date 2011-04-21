@@ -54,7 +54,7 @@ void SIMIX_context_mod_init(void)
 #ifdef CONTEXT_UCONTEXT
         SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
 #else
-        xbt_die("The ontext factory 'ucontext' unavailable on your system");
+        xbt_die("The context factory 'ucontext' unavailable on your system");
 #endif
       }
       else if (!strcmp(smx_context_factory_name, "thread")) {
