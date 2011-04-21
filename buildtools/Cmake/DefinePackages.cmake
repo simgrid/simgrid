@@ -184,6 +184,11 @@ set(GTNETS_SRC
 	src/surf/network_gtnets.c
 )
 
+set(NS3_SRC
+	src/surf/network_ns3.c
+	src/surf/ns3/ns3_interface.cc
+	)
+
 set(SURF_SRC 
 	src/surf/surf_model.c
 	src/surf/surf_action.c
@@ -477,6 +482,13 @@ if(HAVE_MC)
 		${MC_SRC}
 		)
 endif(HAVE_MC)
+
+if(HAVE_NS3)
+	set(simgrid_sources
+		${simgrid_sources}
+		${NS3_SRC}
+	)
+endif(HAVE_NS3)
 
 # WINDOWS
 if(WIN32)

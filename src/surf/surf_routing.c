@@ -27,7 +27,6 @@ static double_f_cpvoid_t get_link_latency = NULL;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
-static void routing_parse_Scluster(void);       /* cluster bypass */
 static void routing_parse_Speer(void);          /* peer bypass */
 static void routing_parse_Srandom(void);        /* random bypass */
 static void routing_parse_Erandom(void);        /* random bypass */
@@ -1529,7 +1528,7 @@ static void routing_parse_Econfig(void)
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 }
 
-static void routing_parse_Scluster(void)
+void routing_parse_Scluster(void)
 {
   static int AX_ptr = 0;
 

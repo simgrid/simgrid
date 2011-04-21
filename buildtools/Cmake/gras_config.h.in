@@ -141,6 +141,9 @@
 /* Indicates that we have GTNETS support */
 #cmakedefine HAVE_GTNETS @HAVE_GTNETS@
 
+/* Indicates that we have NS3 support */
+#cmakedefine HAVE_NS3 @HAVE_NS3@
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #cmakedefine HAVE_INTTYPES_H @HAVE_INTTYPES_H@
 

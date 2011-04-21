@@ -59,6 +59,11 @@ if(HAVE_NS3_LIB AND HAVE_CORE_MODULE_H)
 		if(NOT operation1)
 			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-L${HAVE_NS3_LIB} ")
 		endif(NOT operation1)
+		
+		string(REGEX MATCH "-I${HAVE_CORE_MODULE_H} " operation1 "${CMAKE_C_FLAGS}")
+		if(NOT operation1)
+			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${HAVE_CORE_MODULE_H} ")
+		endif(NOT operation1)
 	
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-I${HAVE_CORE_MODULE_H} -L${HAVE_NS3_LIB} ")
 	endif(NOT operation)		

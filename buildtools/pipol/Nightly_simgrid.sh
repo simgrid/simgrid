@@ -18,6 +18,9 @@
 #PIPOL esn i386_kvm-linux-debian-testing none 02:00 --user --silent
 #PIPOL esn amd64_kvm-linux-debian-testing none 02:00 --user --silent
 
+#PIPOL  esn x86_64_mac-mac-osx-server-snow-leopard.dd.gz none 02:00 --user --silent
+#PIPOL  esn x86_mac-mac-osx-server-snow-leopard.dd.gz none 02:00 --user --silent
+
 #PIPOL esn amd64-windows-server-2008-64bits.dd.gz none 02:00 --root
 
 if [ -e ./pipol ] ; then
