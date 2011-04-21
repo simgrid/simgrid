@@ -18,6 +18,8 @@ mc_stats_t mc_stats = NULL;
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 double *mc_time = NULL;
+xbt_fifo_t mc_snapshot_stack = NULL;
+
 /**
  *  \brief Initialize the model-checker data structures
  */
@@ -51,10 +53,38 @@ void MC_init(void)
   MC_UNSET_RAW_MEM;
 }
 
+void MC_init_with_automaton(xbt_automaton_t a){
+  
+  mc_time = xbt_new0(double, simix_process_maxpid);
+
+  /* Initialize the data structures that must be persistent across every
+     iteration of the model-checker (in RAW memory) */
+  MC_SET_RAW_MEM;
+
+  /* Initialize statistics */
+  mc_stats = xbt_new0(s_mc_stats_t, 1);
+  mc_stats->state_size = 1;
+
+ /* Create exploration stack */
+  mc_snapshot_stack = xbt_fifo_new();
+
+  MC_UNSET_RAW_MEM;
+
+  XBT_DEBUG("---------- Avant dfs init -----------");
+
+  MC_dfs_init(a);
+}
+
+
 void MC_modelcheck(void)
 {
   MC_init();
   MC_dpor();
+  MC_exit();
+}
+
+void MC_modelcheck_with_automaton(xbt_automaton_t a){
+  MC_init_with_automaton(a);
   MC_exit();
 }
 

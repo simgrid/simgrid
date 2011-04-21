@@ -65,7 +65,7 @@ void MC_dpor(void)
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration detph=%d (state=%p)(%u interleave)",
+    XBT_DEBUG("Exploration depth=%d (state=%p)(%u interleave)",
            xbt_fifo_size(mc_stack), state,
            MC_state_interleave_size(state));
 

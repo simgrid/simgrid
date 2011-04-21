@@ -16,6 +16,7 @@
 #include "mc/datatypes.h"
 #include "simix/datatypes.h"
 #include "gras_config.h" /* Definition of HAVE_MC */
+#include "xbt/automaton.h"
 
 #ifdef HAVE_MC
 extern int _surf_do_model_check;
@@ -31,6 +32,7 @@ XBT_PUBLIC(void) MC_init(void);
 XBT_PUBLIC(void) MC_exit(void);
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(void) MC_modelcheck(void);
+XBT_PUBLIC(void) MC_modelcheck_with_automaton(xbt_automaton_t a);
 XBT_PUBLIC(int) MC_random(int, int);
 XBT_PUBLIC(void) MC_process_clock_add(smx_process_t, double);
 XBT_PUBLIC(double) MC_process_clock_get(smx_process_t);

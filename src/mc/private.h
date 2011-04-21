@@ -18,6 +18,7 @@
 #include "xbt/function_types.h"
 #include "xbt/mmalloc.h"
 #include "../simix/private.h"
+#include "xbt/automaton.h"
 
 /****************************** Snapshots ***********************************/
 
@@ -167,6 +168,23 @@ typedef struct s_memory_map {
 } s_memory_map_t, *memory_map_t;
 
 memory_map_t get_memory_map(void);
+
+/********************************** DFS **************************************/
+
+typedef struct s_mc_pairs{
+  mc_snapshot_t system_state;
+  mc_state_t graph_state;
+  xbt_state_t automaton_state;
+  int visited;
+  int num;
+}s_mc_pairs_t, *mc_pairs_t;
+
+void MC_dfs_init(xbt_automaton_t a);
+void MC_dfs(xbt_automaton_t automaton, int search_cycle);
+int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
+mc_pairs_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
+void set_pair_visited(mc_pairs_t p);
+int pair_reached(xbt_dynar_t p, int num_pair);
 
 
 #endif
