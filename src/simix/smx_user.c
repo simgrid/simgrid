@@ -1,8 +1,16 @@
+/* smx_user.c - public interface to simix                                   */
+
+/* Copyright (c) 2010, 2011. Da SimGrid team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#define _ISO_C99_SOURCE /* isfinite() */
+#include <math.h> /* isfinite() */
+
 #include "private.h"
 #include "mc/mc.h"
 
-#define _ISO_C99_SOURCE
-#include <math.h> /* isfinite() */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
