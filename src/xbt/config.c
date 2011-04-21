@@ -663,7 +663,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
     		xbt_die("Setting CMD prop coordinates must be \"yes\"");
     }
 
-    if (strcmp(name,"contexts/factory"))
+    if (strncmp(name, "contexts/", strlen("contexts/")))
       XBT_INFO("Configuration change: Set '%s' to '%s'", name, val);
 
     TRY {
