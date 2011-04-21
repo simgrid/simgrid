@@ -123,22 +123,22 @@ static void xbt_preinit(void)
   XBT_LOG_CONNECT(xbt_parmap,xbt);
   XBT_LOG_CONNECT(xbt_parmap_unit,xbt_parmap);
 
-  xbt_fifo_preinit();
-  xbt_dict_preinit();
 
   xbt_backtrace_preinit();
   xbt_os_thread_mod_preinit();
+  xbt_fifo_preinit();
+  xbt_dict_preinit();
 }
 
 static void xbt_postexit(void)
 {
-  xbt_os_thread_mod_postexit();
   xbt_backtrace_postexit();
 
   xbt_fifo_postexit();
   xbt_dict_postexit();
 
   xbt_log_postexit();
+  xbt_os_thread_mod_postexit();
 
   free(xbt_binary_name);
 #ifdef HAVE_MMAP

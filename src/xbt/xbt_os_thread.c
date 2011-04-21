@@ -242,6 +242,12 @@ typedef struct xbt_os_mutex_ {
   pthread_mutex_t m;
 } s_xbt_os_mutex_t;
 
+typedef struct xbt_os_rmutex_ {
+  xbt_os_mutex_t mutex;
+  xbt_os_thread_t owner;
+  int count;
+} s_xbt_os_rmutex_t;
+
 #include <time.h>
 #include <math.h>
 
@@ -350,6 +356,45 @@ void xbt_os_mutex_destroy(xbt_os_mutex_t mutex)
     THROWF(system_error, errcode, "pthread_mutex_destroy(%p) failed: %s",
            mutex, strerror(errcode));
   free(mutex);
+}
+
+xbt_os_rmutex_t xbt_os_rmutex_init(void)
+{
+  xbt_os_rmutex_t rmutex = xbt_new0(struct xbt_os_rmutex_, 0);
+  rmutex->mutex = xbt_os_mutex_init();
+  rmutex->owner = NULL;
+  rmutex->count = 0;
+  return rmutex;
+}
+
+void xbt_os_rmutex_acquire(xbt_os_rmutex_t rmutex)
+{
+  xbt_os_thread_t self = xbt_os_thread_self();
+  xbt_assert(self != NULL, "Cannot get my own thread object (is the thread module initialized?)");
+
+  if (self != rmutex->owner) {
+    xbt_os_mutex_acquire(rmutex->mutex);
+    rmutex->owner = self;
+    rmutex->count = 1;
+  } else {
+    rmutex->count++;
+ }
+}
+
+void xbt_os_rmutex_release(xbt_os_rmutex_t rmutex)
+{
+  xbt_assert(rmutex->owner == xbt_os_thread_self());
+
+  if (--rmutex->count == 0) {
+    rmutex->owner = NULL;
+    xbt_os_mutex_release(rmutex->mutex);
+  }
+}
+
+void xbt_os_rmutex_destroy(xbt_os_rmutex_t rmutex)
+{
+  xbt_os_mutex_destroy(rmutex->mutex);
+  xbt_free(rmutex);
 }
 
 /***** condition related functions *****/
