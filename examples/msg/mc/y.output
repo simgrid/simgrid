@@ -1,0 +1,353 @@
+Terminals unused in grammar
+
+   LITT_ENT
+   LITT_CHAINE
+   LITT_REEL
+
+
+Grammaire
+
+    0 $accept: automaton $end
+
+    1 automaton: NEVER LEFT_BRACE stateseq RIGHT_BRACE
+
+    2 stateseq: /* vide */
+
+    3 $@1: /* vide */
+
+    4 stateseq: ID COLON $@1 IF option FI SEMI_COLON stateseq
+
+    5 option: /* vide */
+    6       | CASE exp IMPLIES GOTO ID option
+
+    7 exp: LEFT_PAR exp RIGHT_PAR
+    8    | exp OR exp
+    9    | exp AND exp
+   10    | NOT exp
+   11    | CASE_TRUE
+   12    | ID
+
+
+Terminaux, suivis des règles où ils apparaissent
+
+$end (0) 0
+error (256)
+NEVER (258) 1
+IF (259) 4
+FI (260) 4
+IMPLIES (261) 6
+GOTO (262) 6
+AND (263) 9
+OR (264) 8
+NOT (265) 10
+LEFT_PAR (266) 7
+RIGHT_PAR (267) 7
+CASE (268) 6
+COLON (269) 4
+SEMI_COLON (270) 4
+CASE_TRUE (271) 11
+LEFT_BRACE (272) 1
+RIGHT_BRACE (273) 1
+LITT_ENT (274)
+LITT_CHAINE (275)
+LITT_REEL (276)
+ID (277) 4 6 12
+
+
+Non-terminaux, suivis des règles où ils apparaissent
+
+$accept (23)
+    à gauche: 0
+automaton (24)
+    à gauche: 1, à droite: 0
+stateseq (25)
+    à gauche: 2 4, à droite: 1 4
+$@1 (26)
+    à gauche: 3, à droite: 4
+option (27)
+    à gauche: 5 6, à droite: 4 6
+exp (28)
+    à gauche: 7 8 9 10 11 12, à droite: 6 7 8 9 10
+
+
+état 0
+
+    0 $accept: . automaton $end
+
+    NEVER  décalage et aller à l'état 1
+
+    automaton  aller à l'état 2
+
+
+état 1
+
+    1 automaton: NEVER . LEFT_BRACE stateseq RIGHT_BRACE
+
+    LEFT_BRACE  décalage et aller à l'état 3
+
+
+état 2
+
+    0 $accept: automaton . $end
+
+    $end  décalage et aller à l'état 4
+
+
+état 3
+
+    1 automaton: NEVER LEFT_BRACE . stateseq RIGHT_BRACE
+
+    ID  décalage et aller à l'état 5
+
+    $défaut  réduction par utilisation de la règle 2 (stateseq)
+
+    stateseq  aller à l'état 6
+
+
+état 4
+
+    0 $accept: automaton $end .
+
+    $défaut  accepter
+
+
+état 5
+
+    4 stateseq: ID . COLON $@1 IF option FI SEMI_COLON stateseq
+
+    COLON  décalage et aller à l'état 7
+
+
+état 6
+
+    1 automaton: NEVER LEFT_BRACE stateseq . RIGHT_BRACE
+
+    RIGHT_BRACE  décalage et aller à l'état 8
+
+
+état 7
+
+    4 stateseq: ID COLON . $@1 IF option FI SEMI_COLON stateseq
+
+    $défaut  réduction par utilisation de la règle 3 ($@1)
+
+    $@1  aller à l'état 9
+
+
+état 8
+
+    1 automaton: NEVER LEFT_BRACE stateseq RIGHT_BRACE .
+
+    $défaut  réduction par utilisation de la règle 1 (automaton)
+
+
+état 9
+
+    4 stateseq: ID COLON $@1 . IF option FI SEMI_COLON stateseq
+
+    IF  décalage et aller à l'état 10
+
+
+état 10
+
+    4 stateseq: ID COLON $@1 IF . option FI SEMI_COLON stateseq
+
+    CASE  décalage et aller à l'état 11
+
+    $défaut  réduction par utilisation de la règle 5 (option)
+
+    option  aller à l'état 12
+
+
+état 11
+
+    6 option: CASE . exp IMPLIES GOTO ID option
+
+    NOT        décalage et aller à l'état 13
+    LEFT_PAR   décalage et aller à l'état 14
+    CASE_TRUE  décalage et aller à l'état 15
+    ID         décalage et aller à l'état 16
+
+    exp  aller à l'état 17
+
+
+état 12
+
+    4 stateseq: ID COLON $@1 IF option . FI SEMI_COLON stateseq
+
+    FI  décalage et aller à l'état 18
+
+
+état 13
+
+   10 exp: NOT . exp
+
+    NOT        décalage et aller à l'état 13
+    LEFT_PAR   décalage et aller à l'état 14
+    CASE_TRUE  décalage et aller à l'état 15
+    ID         décalage et aller à l'état 16
+
+    exp  aller à l'état 19
+
+
+état 14
+
+    7 exp: LEFT_PAR . exp RIGHT_PAR
+
+    NOT        décalage et aller à l'état 13
+    LEFT_PAR   décalage et aller à l'état 14
+    CASE_TRUE  décalage et aller à l'état 15
+    ID         décalage et aller à l'état 16
+
+    exp  aller à l'état 20
+
+
+état 15
+
+   11 exp: CASE_TRUE .
+
+    $défaut  réduction par utilisation de la règle 11 (exp)
+
+
+état 16
+
+   12 exp: ID .
+
+    $défaut  réduction par utilisation de la règle 12 (exp)
+
+
+état 17
+
+    6 option: CASE exp . IMPLIES GOTO ID option
+    8 exp: exp . OR exp
+    9    | exp . AND exp
+
+    IMPLIES  décalage et aller à l'état 21
+    AND      décalage et aller à l'état 22
+    OR       décalage et aller à l'état 23
+
+
+état 18
+
+    4 stateseq: ID COLON $@1 IF option FI . SEMI_COLON stateseq
+
+    SEMI_COLON  décalage et aller à l'état 24
+
+
+état 19
+
+    8 exp: exp . OR exp
+    9    | exp . AND exp
+   10    | NOT exp .
+
+    $défaut  réduction par utilisation de la règle 10 (exp)
+
+
+état 20
+
+    7 exp: LEFT_PAR exp . RIGHT_PAR
+    8    | exp . OR exp
+    9    | exp . AND exp
+
+    AND        décalage et aller à l'état 22
+    OR         décalage et aller à l'état 23
+    RIGHT_PAR  décalage et aller à l'état 25
+
+
+état 21
+
+    6 option: CASE exp IMPLIES . GOTO ID option
+
+    GOTO  décalage et aller à l'état 26
+
+
+état 22
+
+    9 exp: exp AND . exp
+
+    NOT        décalage et aller à l'état 13
+    LEFT_PAR   décalage et aller à l'état 14
+    CASE_TRUE  décalage et aller à l'état 15
+    ID         décalage et aller à l'état 16
+
+    exp  aller à l'état 27
+
+
+état 23
+
+    8 exp: exp OR . exp
+
+    NOT        décalage et aller à l'état 13
+    LEFT_PAR   décalage et aller à l'état 14
+    CASE_TRUE  décalage et aller à l'état 15
+    ID         décalage et aller à l'état 16
+
+    exp  aller à l'état 28
+
+
+état 24
+
+    4 stateseq: ID COLON $@1 IF option FI SEMI_COLON . stateseq
+
+    ID  décalage et aller à l'état 5
+
+    $défaut  réduction par utilisation de la règle 2 (stateseq)
+
+    stateseq  aller à l'état 29
+
+
+état 25
+
+    7 exp: LEFT_PAR exp RIGHT_PAR .
+
+    $défaut  réduction par utilisation de la règle 7 (exp)
+
+
+état 26
+
+    6 option: CASE exp IMPLIES GOTO . ID option
+
+    ID  décalage et aller à l'état 30
+
+
+état 27
+
+    8 exp: exp . OR exp
+    9    | exp . AND exp
+    9    | exp AND exp .
+
+    $défaut  réduction par utilisation de la règle 9 (exp)
+
+
+état 28
+
+    8 exp: exp . OR exp
+    8    | exp OR exp .
+    9    | exp . AND exp
+
+    $défaut  réduction par utilisation de la règle 8 (exp)
+
+
+état 29
+
+    4 stateseq: ID COLON $@1 IF option FI SEMI_COLON stateseq .
+
+    $défaut  réduction par utilisation de la règle 4 (stateseq)
+
+
+état 30
+
+    6 option: CASE exp IMPLIES GOTO ID . option
+
+    CASE  décalage et aller à l'état 11
+
+    $défaut  réduction par utilisation de la règle 5 (option)
+
+    option  aller à l'état 31
+
+
+état 31
+
+    6 option: CASE exp IMPLIES GOTO ID option .
+
+    $défaut  réduction par utilisation de la règle 6 (option)

@@ -153,6 +153,21 @@ MSG_error_t MSG_main(void)
   return MSG_OK;
 }
 
+MSG_error_t MSG_main_with_automaton(xbt_automaton_t a)
+{
+  /* Clean IO before the run */
+  fflush(stdout);
+  fflush(stderr);
+
+  if (MC_IS_ENABLED) {
+    MC_modelcheck_with_automaton(a);
+  }
+  else {
+    SIMIX_run();
+  }
+  return MSG_OK;
+}
+
 /** \ingroup msg_simulation
  * \brief Kill all running process
 
