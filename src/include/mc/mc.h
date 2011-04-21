@@ -29,6 +29,7 @@ SG_BEGIN_DECL()
 
 /********************************* Global *************************************/
 XBT_PUBLIC(void) MC_init(void);
+XBT_PUBLIC(void) MC_init_with_automaton(xbt_automaton_t a);
 XBT_PUBLIC(void) MC_exit(void);
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(void) MC_modelcheck(void);

@@ -1,4 +1,5 @@
 #include "xbt/automaton.h"
+#include "xbt/dynar.h"
 
 xbt_automaton_t xbt_automaton_new_automaton(){
   xbt_automaton_t automaton = NULL;
@@ -268,7 +269,7 @@ xbt_state_t xbt_automaton_get_current_state(xbt_automaton_t a){
   return a->current_state;
 }
 
-xbt_propositional_symbol_t xbt_new_propositional_symbol(xbt_automaton_t a, char* id, void* fct){
+xbt_propositional_symbol_t xbt_new_propositional_symbol(xbt_automaton_t a, const char* id, void* fct){
   xbt_propositional_symbol_t prop_symb = NULL;
   prop_symb = xbt_new0(struct xbt_propositional_symbol, 1);
   prop_symb->pred = strdup(id);

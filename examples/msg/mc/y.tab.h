@@ -91,7 +91,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 9 "parserPromela.yacc"
+#line 11 "parserPromela.yacc"
 
   double real;
   int integer;

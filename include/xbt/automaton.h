@@ -5,6 +5,7 @@
 #include <string.h>
 #include "xbt/dynar.h"
 #include "xbt/sysdep.h"
+#include "xbt/graph.h"
 
 SG_BEGIN_DECL()
 
@@ -58,7 +59,7 @@ typedef struct xbt_propositional_symbol{
 typedef struct xbt_propositional_symbol* xbt_propositional_symbol_t;
 
 
-XBT_PUBLIC(xbt_automaton_t) xbt_automaton_new_automaton();
+XBT_PUBLIC(xbt_automaton_t) xbt_automaton_new_automaton(void);
 
 XBT_PUBLIC(xbt_state_t) xbt_automaton_new_state(xbt_automaton_t a, int type, char* id);
 
@@ -96,7 +97,9 @@ XBT_PUBLIC(void) xbt_automaton_display(xbt_automaton_t a);
 
 XBT_PUBLIC(void) xbt_automaton_display_exp(xbt_exp_label_t l);
 
-XBT_PUBLIC(xbt_propositional_symbol_t) xbt_new_propositional_symbol(xbt_automaton_t a, char* id, void* fct);
+XBT_PUBLIC(xbt_propositional_symbol_t) xbt_new_propositional_symbol(xbt_automaton_t a, const char* id, void* fct);
+
+XBT_PUBLIC(xbt_state_t) xbt_automaton_get_current_state(xbt_automaton_t a);
 
 SG_END_DECL()
 

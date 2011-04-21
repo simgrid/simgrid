@@ -156,6 +156,8 @@ int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l){
     return 2;
     break;
   }
+  default : 
+    return -1;
   }
 }
 
@@ -241,7 +243,6 @@ void MC_dfs(xbt_automaton_t a, int search_cycle){
 
   smx_process_t process = NULL;
   int value;
-  mc_state_t state = NULL;
   mc_state_t next_graph_state = NULL;
   smx_req_t req = NULL;
   char *req_str;
@@ -271,7 +272,7 @@ void MC_dfs(xbt_automaton_t a, int search_cycle){
 
   //FIXME : vérifier condition permettant d'avoir tous les successeurs possibles dans le graph
 
-  while(req = MC_state_get_request(current_pair->graph_state, &value)){
+  while((req = MC_state_get_request(current_pair->graph_state, &value)) != NULL){
     
     /* Debug information */
     if(XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_debug)){

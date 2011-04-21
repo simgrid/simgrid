@@ -406,8 +406,8 @@ set(headers_to_install
 	include/xbt/mmalloc.h
 	include/xbt/replay_trace_reader.h
 	include/xbt/parmap.h
-	include/xbt/automatonparse_promela.h
 	include/xbt/automaton.h
+	include/xbt/automatonparse_promela.h
 	include/mc/modelchecker.h
 	include/msg/msg.h
 	include/msg/datatypes.h

@@ -4,6 +4,8 @@
 #include "automatonparse_promela.h"
 #include "lex.yy.c"
 
+void yyerror(const char *s);
+
 %}
 
 %union{
@@ -64,9 +66,11 @@ exp : LEFT_PAR exp RIGHT_PAR { $$ = $2; }
  
 %%
 
-int yyerror(char *s) {
-  fprintf(stderr, "%s\n", s);
-  return 0;
+
+
+void yyerror(const char *s){
+  fprintf (stderr, "%s\n", s);
 }
+
 
 
