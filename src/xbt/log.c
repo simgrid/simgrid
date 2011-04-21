@@ -22,9 +22,11 @@
 #include "xbt/sysdep.h"
 #include "xbt/log_private.h"
 #include "xbt/dynar.h"
+#include "xbt/xbt_os_thread.h"
 
 XBT_PUBLIC_DATA(int) (*xbt_pid) ();
 int xbt_log_no_loc = 0;         /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
+static xbt_os_rmutex_t log_cat_init_mutex = NULL;
 
 /** \addtogroup XBT_log
  *
@@ -530,6 +532,7 @@ void xbt_log_preinit(void)
   xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
   _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
   _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
+  log_cat_init_mutex = xbt_os_rmutex_init();
 }
 
 /** @brief Get all logging settings from the command line
@@ -596,6 +599,7 @@ static void log_cat_exit(xbt_log_category_t cat)
 void xbt_log_postexit(void)
 {
   XBT_VERB("Exiting log");
+  xbt_os_rmutex_destroy(log_cat_init_mutex);
   xbt_dynar_free(&xbt_log_settings);
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
 }
@@ -687,6 +691,12 @@ int _xbt_log_cat_init(xbt_log_category_t category,
 {
 #define _xbt_log_cat_init(a, b) (0)
 
+  xbt_os_rmutex_acquire(log_cat_init_mutex);
+  if (category->threshold != xbt_log_priority_uninitialized) {
+    xbt_os_rmutex_release(log_cat_init_mutex);
+    return priority >= category->threshold;
+  }
+
   unsigned int cursor;
   xbt_log_setting_t setting = NULL;
   int found = 0;
@@ -739,8 +749,10 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   }
 
   /* Apply the control */
-  if (!xbt_log_settings)
+  if (!xbt_log_settings) {
+    xbt_os_rmutex_release(log_cat_init_mutex);
     return priority >= category->threshold;
+  }
 
   xbt_assert(category, "NULL category");
   xbt_assert(category->name);
@@ -765,6 +777,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
            category->name, xbt_log_priority_names[category->threshold],
            category->threshold);
 
+  xbt_os_rmutex_release(log_cat_init_mutex);
   return priority >= category->threshold;
 
 #undef _xbt_log_cat_init
@@ -772,7 +785,6 @@ int _xbt_log_cat_init(xbt_log_category_t category,
 
 void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
 {
-
   xbt_assert(cat, "NULL category to be given a parent");
   xbt_assert(parent, "The parent category of %s is NULL", cat->name);
 
@@ -806,7 +818,6 @@ void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
   cat->threshold = parent->threshold;
 
   cat->isThreshInherited = 1;
-
 }
 
 static void _set_inherited_thresholds(xbt_log_category_t cat)
