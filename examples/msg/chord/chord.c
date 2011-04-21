@@ -890,8 +890,6 @@ static void random_lookup(node_t node)
  */
 int main(int argc, char *argv[])
 {
-  xbt_os_timer_t timer = xbt_os_timer_new();
-
   if (argc < 3) {
     printf("Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n", argv[0]);
     printf("example: %s ../msg_platform.xml chord.xml\n", argv[0]);
@@ -933,10 +931,8 @@ int main(int argc, char *argv[])
   MSG_function_register("node", node);
   MSG_launch_application(application_file);
 
-  xbt_os_timer_start(timer);
   MSG_error_t res = MSG_main();
-  xbt_os_timer_stop(timer);
-  XBT_CRITICAL("Simulation time %lf, messages created: %ld", xbt_os_timer_elapsed(timer), smx_total_comms);
+  XBT_CRITICAL("Messages created: %ld", smx_total_comms);
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 
   MSG_clean();
