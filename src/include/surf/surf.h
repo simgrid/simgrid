@@ -497,6 +497,28 @@ XBT_PUBLIC(void) surf_network_model_init_bypass(const char *id,
 XBT_PUBLIC(void) surf_network_model_init_GTNETS(const char *filename);
 #endif
 
+#ifdef HAVE_NS3
+/** \brief Initializes the platform with the network model NS3
+ *  \ingroup SURF_models
+ *  \param filename XML platform file name
+ *
+ *  This function is called by surf_workstation_model_init_NS3
+ *  or by yourself only if you plan using surf_workstation_model_init_compound
+ *
+ *  \see surf_workstation_model_init_NS3()
+ */
+XBT_PUBLIC(void) surf_network_model_init_NS3(const char *filename);
+
+XBT_PUBLIC(void) parse_ns3_add_host(void);
+XBT_PUBLIC(void) parse_ns3_add_router(void);
+XBT_PUBLIC(void) parse_ns3_add_link(void);
+XBT_PUBLIC(void) parse_ns3_add_AS(void);
+XBT_PUBLIC(void) parse_ns3_add_route(void);
+XBT_PUBLIC(void) parse_ns3_add_ASroute(void);
+XBT_PUBLIC(void) parse_ns3_add_cluster(void);
+
+#endif
+
 /** \brief Initializes the platform with the network model Reno
  *  \ingroup SURF_models
  *  \param filename XML platform file name

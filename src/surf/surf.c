@@ -132,6 +132,11 @@ s_surf_model_description_t surf_network_model_description[] = {
    "Network Pseudo-model using the GTNets simulator instead of an analytic model",
    NULL, surf_network_model_init_GTNETS},
 #endif
+#ifdef HAVE_NS3
+  {"NS3",
+   "TODO",
+   NULL, surf_network_model_init_NS3},
+#endif
   {"Reno",
    "Model using lagrange_solve instead of lmm_solve (experts only)", NULL,
    surf_network_model_init_Reno},
