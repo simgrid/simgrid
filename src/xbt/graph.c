@@ -6,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h>
 #include "simgrid_config.h" /* getline */
+#include <stdlib.h>
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/graph.h"
