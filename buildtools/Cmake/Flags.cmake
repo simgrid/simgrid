@@ -24,6 +24,10 @@ set(CMAKE_C_FLAGS "${optCFLAGS}${warnCFLAGS}${CMAKE_C_FLAGS}")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${custom_flags}")
 
+if(WIN32)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=i486")
+endif(WIN32)
+
 if(enable_coverage)
 	find_program(GCOV_PATH gcov)
 	if(GCOV_PATH)
