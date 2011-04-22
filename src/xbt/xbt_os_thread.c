@@ -219,6 +219,24 @@ xbt_os_thread_t xbt_os_thread_self(void)
   return res;
 }
 
+void xbt_os_thread_key_create(xbt_os_thread_key_t* key) {
+
+  int errcode;
+  if ((errcode = pthread_key_create(key, NULL)))
+    THROWF(system_error, errcode, "pthread_key_create failed");
+}
+
+void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value) {
+
+  int errcode;
+  if ((errcode = pthread_setspecific(key, value)))
+    THROWF(system_error, errcode, "pthread_setspecific failed");
+}
+
+void* xbt_os_thread_get_specific(xbt_os_thread_key_t key) {
+  return pthread_getspecific(key);
+}
+
 void xbt_os_thread_detach(xbt_os_thread_t thread)
 {
   thread->detached = 1;
@@ -724,6 +742,21 @@ void xbt_os_thread_exit(int *retval)
     ExitThread(*retval);
   else
     ExitThread(0);
+}
+
+void xbt_os_thread_key_create(xbt_os_thread_key_t* key) {
+
+  *key = TlsAlloc();
+}
+
+void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value) {
+
+  if (!TlsSetValue(key, value))
+    THROWF(system_error, (int) GetLastError(), "TlsSetValue() failed");
+}
+
+void* xbt_os_thread_get_specific(xbt_os_thread_key_t key) {
+  return TlsGetValue(key);
 }
 
 void xbt_os_thread_detach(xbt_os_thread_t thread)

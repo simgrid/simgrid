@@ -26,6 +26,8 @@ SG_BEGIN_DECL()
   /** \brief Thread data type (opaque structure) */
 typedef struct xbt_os_thread_ *xbt_os_thread_t;
 
+typedef unsigned int xbt_os_thread_key_t;
+
 /* Calls pthread_atfork() if present, and else does nothing.
  * The only known user of this wrapper is mmalloc_preinit().
  */
@@ -46,6 +48,9 @@ XBT_PUBLIC(const char *) xbt_os_thread_self_name(void);
 XBT_PUBLIC(const char *) xbt_os_thread_name(xbt_os_thread_t);
 XBT_PUBLIC(void) xbt_os_thread_set_extra_data(void *data);
 XBT_PUBLIC(void *) xbt_os_thread_get_extra_data(void);
+XBT_PUBLIC(void) xbt_os_thread_key_create(xbt_os_thread_key_t* key);
+XBT_PUBLIC(void) xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value);
+XBT_PUBLIC(void*) xbt_os_thread_get_specific(xbt_os_thread_key_t key);
   /* xbt_os_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */
 XBT_PUBLIC(void) xbt_os_thread_join(xbt_os_thread_t thread,
                                     void **thread_return);
