@@ -31,6 +31,7 @@ typedef struct xbt_os_thread_ *xbt_os_thread_t;
 #include <pthread.h>
 typedef pthread_key_t xbt_os_thread_key_t;
 #elif defined(_XBT_WIN32)
+#include <WinDef.h>
 typedef DWORD xbt_os_thread_key_t;
 #endif
 
