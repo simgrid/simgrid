@@ -353,11 +353,11 @@ static void insert_into_buffer (paje_event_t tbi)
       return;
     }
     int inserted = 0;
-    for (i = 0; i < len; i++){
+    for (i = len-1; i > 0; i--){
       paje_event_t e1 = *(paje_event_t*)xbt_dynar_get_ptr(buffer, i);
-      if (e1->timestamp > tbi->timestamp){
-        xbt_dynar_insert_at (buffer, i, &tbi);
-        XBT_DEBUG("%s: inserted at %d", __FUNCTION__, i);
+      if (e1->timestamp <= tbi->timestamp){
+        xbt_dynar_insert_at (buffer, i+1, &tbi);
+        XBT_DEBUG("%s: inserted at %d", __FUNCTION__, i+1);
         inserted = 1;
         break;
       }
