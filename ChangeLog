@@ -87,6 +87,14 @@ SimGrid (3.6) unstable; urgency=low
    these options generate traces that are suited to gantt-charts, such as the space-time view of Paje
  * The experimental option tracing/msg/volume is deprecated
    its functionality may be reincorporated if needed
+ * Buffering
+   The tracing generates a trace file with unordered timestamped events,
+   because of the way the core simulator (surf) works. A script available
+   at the tools directory (fix-paje-trace.sh) can be used to put the events
+   in order. We have changed the tracing so it can generate ordered timestamped
+   events in the final trace, but depending on the simulator (and how much time
+   is simulated) that can lead to a huge memory utilization. It is desactivated 
+   by default, but it can be activated using the --cfg=tracing/buffer:1 switch.
    
  Build Infrastructure
  * Define a SIMGRID_VERSION macro in simgrid_config.h.
