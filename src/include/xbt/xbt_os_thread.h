@@ -10,6 +10,7 @@
 #ifndef _XBT_OS_THREAD_H
 #define _XBT_OS_THREAD_H
 
+#include "gras_config.h"
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
 #include "xbt/function_types.h"
 
@@ -26,7 +27,12 @@ SG_BEGIN_DECL()
   /** \brief Thread data type (opaque structure) */
 typedef struct xbt_os_thread_ *xbt_os_thread_t;
 
-typedef unsigned int xbt_os_thread_key_t;
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+typedef pthread_key_t xbt_os_thread_key_t;
+#elif defined(_XBT_WIN32)
+typedef DWORD xbt_os_thread_key_t;
+#endif
 
 /* Calls pthread_atfork() if present, and else does nothing.
  * The only known user of this wrapper is mmalloc_preinit().

@@ -23,7 +23,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt,
 /* ********************************* PTHREAD IMPLEMENTATION ************************************ */
 #ifdef HAVE_PTHREAD_H
 
-#include <pthread.h>
 #include <semaphore.h>
 
 #ifdef HAVE_MUTEX_TIMEDLOCK
