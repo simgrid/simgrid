@@ -16,6 +16,9 @@
 #cmakedefine SIZEOF_INT @SIZEOF_INT@
 #cmakedefine SIZEOF_VOIDP @SIZEOF_VOIDP@
 
+/* If __thread is available */
+#cmakedefine HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@
+
 #ifndef __STRICT_ANSI__
 	#cmakedefine __STRICT_ANSI__ @__STRICT_ANSI__@
 #endif

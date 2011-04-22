@@ -60,10 +60,6 @@ extern smx_ctx_factory_initializer_t smx_factory_initializer_to_use;
 extern char* smx_context_factory_name;
 extern int smx_context_stack_size;
 
-#if defined(CONTEXT_THREADS) && !defined(APPLE)
-#define HAVE_THREAD_LOCAL_STORAGE 1
-#endif
-
 #ifdef HAVE_THREAD_LOCAL_STORAGE
 extern __thread smx_context_t smx_current_context;
 #else

@@ -125,5 +125,9 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 /* Tracking of latency bound */
 #cmakedefine HAVE_LATENCY_BOUND_TRACKING @HAVE_LATENCY_BOUND_TRACKING@
 
+/* If __thread is available */
+#cmakedefine HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@
+
+
 SG_END_DECL()
 #endif /* SIMGRID_PUBLIC_CONFIG_H */

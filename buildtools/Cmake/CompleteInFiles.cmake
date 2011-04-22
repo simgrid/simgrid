@@ -83,6 +83,15 @@ CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 
+#Check if __thread is defined
+exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_thread_storage.c" 
+			OUTPUT_VARIABLE HAVE_thread_storage_run)
+if(HAVE_thread_storage_run)
+	set(HAVE_THREAD_LOCAL_STORAGE 0)
+else(HAVE_thread_storage_run)
+	set(HAVE_THREAD_LOCAL_STORAGE 1)
+endif(HAVE_thread_storage_run)
+
 # Our usage of mmap is Linux-specific (flag MAP_ANONYMOUS), but kFreeBSD uses a GNU libc
 IF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD")
   SET(HAVE_MMAP 0)
