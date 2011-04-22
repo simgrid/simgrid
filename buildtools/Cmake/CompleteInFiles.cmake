@@ -84,7 +84,7 @@ CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 
 #Check if __thread is defined
-exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_thread_storage.c" 
+exec_program("${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_thread_storage.c" 
 			OUTPUT_VARIABLE HAVE_thread_storage_run)
 if(HAVE_thread_storage_run)
 	set(HAVE_THREAD_LOCAL_STORAGE 0)
