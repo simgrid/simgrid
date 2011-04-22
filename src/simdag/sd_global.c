@@ -202,6 +202,7 @@ void SD_create_environment(const char *platform_file)
   }
 
   xbt_lib_foreach(link_lib, cursor, name, surf_link) {
+	if(surf_link[SURF_LINK_LEVEL])
     __SD_link_create(surf_link[SURF_LINK_LEVEL], NULL);
   }
 

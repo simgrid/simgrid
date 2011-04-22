@@ -24,14 +24,17 @@ int SIMIX_HOST_LEVEL;	//Simix level
 int	MSG_HOST_LEVEL;		//Msg level
 int	SD_HOST_LEVEL;		//Simdag level
 int	COORD_HOST_LEVEL;	//Coordinates level
+int NS3_HOST_LEVEL;		//host node for ns3
 
 xbt_lib_t link_lib;
 int SD_LINK_LEVEL;		//Simdag level
 int SURF_LINK_LEVEL;	//Surf level
+int NS3_LINK_LEVEL;		//link for ns3
 
 xbt_lib_t as_router_lib;
 int ROUTING_ASR_LEVEL;	//Routing level
 int COORD_ASR_LEVEL;	//Coordinates level
+int NS3_ASR_LEVEL;		//host node for ns3
 
 SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
@@ -516,6 +519,7 @@ XBT_PUBLIC(void) parse_ns3_add_AS(void);
 XBT_PUBLIC(void) parse_ns3_add_route(void);
 XBT_PUBLIC(void) parse_ns3_add_ASroute(void);
 XBT_PUBLIC(void) parse_ns3_add_cluster(void);
+XBT_PUBLIC(void) parse_ns3_end_platform(void);
 
 #endif
 

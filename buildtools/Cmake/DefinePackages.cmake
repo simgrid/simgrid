@@ -187,6 +187,7 @@ set(GTNETS_SRC
 set(NS3_SRC
 	src/surf/network_ns3.c
 	src/surf/ns3/ns3_interface.cc
+	src/surf/ns3/ns3_simulator.cc
 	)
 
 set(SURF_SRC 
