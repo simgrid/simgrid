@@ -16,7 +16,7 @@ cd simgrid
 if [ x$PIPOL_IMAGE == "xamd64-windows-server-2008-64bits.dd.gz" ] ; then
 
 	export PATH=/cygdrive/c/:/cygdrive/c/GnuWin32/bin/:/cygdrive/c/Windows/system32:/cygdrive/c/Windows
-	export PATH=$PATH:/cygdrive/c/strawberry/c/bin:/cygdrive/c/strawberry/perl/site/bin:/cygdrive/c/strawberry/perl/bin
+	export PATH=$PATH:/cygdrive/c/CMake\ 2.8/bin/:/cygdrive/c/strawberry/c/bin:/cygdrive/c/strawberry/perl/site/bin:/cygdrive/c/strawberry/perl/bin
 	
 	cmake \
 	-G"Unix Makefiles" \
@@ -35,10 +35,10 @@ if [ x$PIPOL_IMAGE == "xamd64-windows-server-2008-64bits.dd.gz" ] ; then
 	ctest -D ExperimentalBuild
 	ctest -D ExperimentalSubmit
 else
+
 	perl ./buildtools/pipol/cmake.pl
 	perl ./buildtools/pipol/ruby.pl
-	
-	
+		
 	if [ x$PIPOL_IMAGE == "xamd64_2010-linux-ubuntu-maverick.dd.gz" ] ; then
 		#mem-check
 		cmake \
