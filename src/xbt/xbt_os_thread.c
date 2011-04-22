@@ -1179,7 +1179,7 @@ void *xbt_os_thread_get_extra_data(void)
 
 xbt_os_rmutex_t xbt_os_rmutex_init(void)
 {
-  xbt_os_rmutex_t rmutex = xbt_new0(struct xbt_os_rmutex_, 0);
+  xbt_os_rmutex_t rmutex = xbt_new0(struct xbt_os_rmutex_, 1);
   rmutex->mutex = xbt_os_mutex_init();
   rmutex->owner = NULL;
   rmutex->count = 0;
