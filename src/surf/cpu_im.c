@@ -343,23 +343,23 @@ static void cpu_im_update_actions_state(double now, double delta)
   {
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
-	void **data;
+    void **data;
     cpu_Cas01_im_t cpu;
     xbt_lib_cursor_t cursor;
     char *key;
     double smaller = -1;
     xbt_lib_foreach(host_lib, cursor, key, data){
-    	if(data[SURF_CPU_LEVEL]){
-    	  cpu = data[SURF_CPU_LEVEL];
-		  if (smaller < 0){
-			smaller = cpu->last_update;
-			continue;
-		  }
-		  if (cpu->last_update < smaller){
-			smaller = cpu->last_update;
-		  }
-    	}
-   }
+      if(data[SURF_CPU_LEVEL]){
+        cpu = data[SURF_CPU_LEVEL];
+        if (smaller < 0){
+          smaller = cpu->last_update;
+          continue;
+        }
+        if (cpu->last_update < smaller){
+          smaller = cpu->last_update;
+        }
+      }
+    }
     if (smaller > 0) {
       TRACE_last_timestamp_to_dump = smaller;
     }
