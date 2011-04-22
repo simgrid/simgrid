@@ -121,39 +121,37 @@ my($tesh_command)=0;
 my(@buffer_tesh)=();
 
 # parse tesh file
-open SH_LIGNE, $tesh_file or die "[Tesh/CRITICAL] Unable to open $tesh_file $!\n";
+open TESH_FILE, $tesh_file or die "[Tesh/CRITICAL] Unable to open $tesh_file $!\n";
 
-while (defined(my $line1=<SH_LIGNE>)) {
+my %cmd; # everything about the next command to run
+while (defined(my $line1=<TESH_FILE>)) {
+    chomp $line1;
     if($line1 =~ /^\< \$ /){  	# arg command line
 	$line1 =~ s/\${EXEEXT:=}//g;
 	$line1 =~ s/^\< \$\ *//g;
-	$line1 =~ s/^.\/lua/lua/g;
-	$line1 =~ s/^.\/ruby/ruby/g;
-	$line1 =~ s/^.\///g;
-	$line1 =~ s/^tesh/.\/tesh/g;
+	$line1 =~ s|^./lua|lua|g;
+	$line1 =~ s|^./ruby|ruby|g;
+	$line1 =~ s|^./||g;
+	$line1 =~ s|^tesh|./tesh|g;
 	$line1 =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
-	chomp $line1;
 	$command_tesh = $line1;
 	print "[Tesh/INFO] arg_exec_line   : $command_tesh\n";
     }
     elsif($line1 =~ /^\< \< /){  # arg buffer line
 	$line1 =~ s/^\< \<\ *//g;
-	chomp $line1;
 	print "[Tesh/INFO] arg_buffer_line : $line1\n";
 	push @buffer_tesh, "$line1\n";
     }
     elsif($line1 =~ /^\< \> /){  # arg output line
 	$line1 =~ s/^\< \>\ *//g;
 	$line1 =~ s/\r//g;
-	chomp $line1;
-		push @list2, $line1;
+	push @list2, $line1;
 	print "[Tesh/INFO] arg_output_line : $line1\n";
 	$expected_result_line = 1;
     }
     elsif($line1 =~ /^\$ mkfile/){  	# "mkfile" command line
 	$line1 =~ s/\$ //g;
 	$line1 =~ s/mkfile//g;
-	chomp $line1;
 	$fich_name = $line1;
 	$line1 =();
 	print "[Tesh/INFO] exec_line : mkfile $fich_name\n";
@@ -165,25 +163,23 @@ while (defined(my $line1=<SH_LIGNE>)) {
     }
     elsif($line1 =~ /^\$ cd/){  	# "cd" command line
 	$line1 =~ s/\$ //g;
-	chomp $line1;
 	print "[Tesh/INFO] exec_line : $line1\n";
 		$line1 =~ s/cd //g;
 	chdir("$line1") or die "[Tesh/CRITICAL] Unable to open $line1. $!\n";	
     }
     elsif($line1 =~ /^\$ /){  	#command line
-	if($line1 =~ /^\$ .\/tesh/){  	# tesh command line
+	if($line1 =~ m|^\$ ./tesh|){  	# tesh command line
 			$tesh_command = 1;
 			@buffer = @buffer_tesh;
 			@buffer_tesh=();
 	}
 	$line1 =~ s/\${EXEEXT:=}//g;
 	$line1 =~ s/^\$\ *//g;
-	$line1 =~ s/^.\/lua/lua/g;
-	$line1 =~ s/^.\/ruby/ruby/g;
-	$line1 =~ s/^.\///g;
-	$line1 =~ s/^tesh/.\/tesh/g;
+	$line1 =~ s|^./lua|lua|g;
+	$line1 =~ s|^./ruby|ruby|g;
+	$line1 =~ s|^./||g;
+	$line1 =~ s|^tesh|./tesh|g;
 	$line1 =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
-	chomp $line1;
 	$line1 = "$line1 $config";
 	
 	if(@list1){
@@ -241,11 +237,10 @@ while (defined(my $line1=<SH_LIGNE>)) {
 	$expected_result_line = 0;
 	$line1 =~ s/\${EXEEXT:=}//g;
 	$line1 =~ s/^\& //g;
-	$line1 =~ s/^.\/lua/lua/g;
-	$line1 =~ s/^.\/ruby/ruby/g;
-	$line1 =~ s/^.\///g;
+	$line1 =~ s|^./lua|lua|g;
+	$line1 =~ s|^./ruby|ruby|g;
+	$line1 =~ s|^./||g;
 	$line1 =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
-	chomp $line1;
 	$line1 = "$line1 $config";
 	
 	$execline = "$line1";
@@ -255,14 +250,12 @@ while (defined(my $line1=<SH_LIGNE>)) {
     elsif($line1 =~ /^\>/){	#expected result line
 	$line1 =~ s/^\>( )*//g;
 	$line1 =~ s/\r//g;
-	chomp $line1;
 	push @list2, $line1;
 	$expected_result_line = 1;
     }
     elsif($line1 =~ /^\</ or $encore==1){	#need to buffer
 	$line1 =~ s/^\<( )*//g; #delete < with space or tab after
 	$line1 =~ s/\r//g;
-	chomp $line1;
 	if($line1 =~ /\\$/) # need to store this line into old_buff
 	{
 	    $encore=1;
@@ -280,7 +273,6 @@ while (defined(my $line1=<SH_LIGNE>)) {
     elsif($line1 =~ /^p/){	#comment
 	$line1 =~ s/^p //g;
 	$line1 =~ s/\r//g;
-	chomp $line1;
 	print "[Tesh/INFO] comment_line :$line1\n";
     }
     elsif($line1 =~ /^! output sort/){	#output sort
@@ -296,7 +288,6 @@ while (defined(my $line1=<SH_LIGNE>)) {
     elsif($line1 =~ /^! expect return/){	#expect return
 	$line1 =~ s/^! expect return //g;
 	$line1 =~ s/\r//g;
-	chomp $line1;
 	$return = $line1;
 	print color("red"), "[Tesh/INFO] expect return $return";
 	print color("reset"), "\n";
@@ -305,7 +296,6 @@ while (defined(my $line1=<SH_LIGNE>)) {
     elsif($line1 =~ /^! setenv/){	#setenv
 	$line1 =~ s/^! setenv //g;
 	$line1 =~ s/\r//g;
-	chomp $line1;
 	$line1 =~ /^(.*)=(.*)$/;
 	$ENV{$1} = $2;
 	print "[Tesh/INFO] setenv: $1=$2\n";
@@ -318,7 +308,6 @@ while (defined(my $line1=<SH_LIGNE>)) {
     elsif($line1 =~ /^! timeout/){	#timeout
 	$line1 =~ s/^! timeout //g;
 	$line1 =~ s/\r//g;
-	chomp $line1;
 	if($timeout != $line1){
 	    $timeout = $line1;
 	    print "[Tesh/INFO] timeout   : $timeout\n";}
