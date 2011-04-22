@@ -242,12 +242,6 @@ typedef struct xbt_os_mutex_ {
   pthread_mutex_t m;
 } s_xbt_os_mutex_t;
 
-typedef struct xbt_os_rmutex_ {
-  xbt_os_mutex_t mutex;
-  xbt_os_thread_t owner;
-  int count;
-} s_xbt_os_rmutex_t;
-
 #include <time.h>
 #include <math.h>
 
@@ -1133,6 +1127,13 @@ void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
 
 
 #endif
+
+/***** reentrant mutexes *****/
+typedef struct xbt_os_rmutex_ {
+  xbt_os_mutex_t mutex;
+  xbt_os_thread_t owner;
+  int count;
+} s_xbt_os_rmutex_t;
 
 void xbt_os_thread_set_extra_data(void *data)
 {
