@@ -691,9 +691,14 @@ int _xbt_log_cat_init(xbt_log_category_t category,
 {
 #define _xbt_log_cat_init(a, b) (0)
 
-  xbt_os_rmutex_acquire(log_cat_init_mutex);
+  if (log_cat_init_mutex != NULL) {
+    xbt_os_rmutex_acquire(log_cat_init_mutex);
+  }
+
   if (category->threshold != xbt_log_priority_uninitialized) {
-    xbt_os_rmutex_release(log_cat_init_mutex);
+    if (log_cat_init_mutex != NULL) {
+      xbt_os_rmutex_release(log_cat_init_mutex);
+    }
     return priority >= category->threshold;
   }
 
@@ -750,7 +755,9 @@ int _xbt_log_cat_init(xbt_log_category_t category,
 
   /* Apply the control */
   if (!xbt_log_settings) {
-    xbt_os_rmutex_release(log_cat_init_mutex);
+    if (log_cat_init_mutex != NULL) {
+      xbt_os_rmutex_release(log_cat_init_mutex);
+    }
     return priority >= category->threshold;
   }
 
@@ -777,7 +784,9 @@ int _xbt_log_cat_init(xbt_log_category_t category,
            category->name, xbt_log_priority_names[category->threshold],
            category->threshold);
 
-  xbt_os_rmutex_release(log_cat_init_mutex);
+  if (log_cat_init_mutex != NULL) {
+    xbt_os_rmutex_release(log_cat_init_mutex);
+  }
   return priority >= category->threshold;
 
 #undef _xbt_log_cat_init

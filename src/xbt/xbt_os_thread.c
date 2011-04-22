@@ -1157,7 +1157,12 @@ xbt_os_rmutex_t xbt_os_rmutex_init(void)
 void xbt_os_rmutex_acquire(xbt_os_rmutex_t rmutex)
 {
   xbt_os_thread_t self = xbt_os_thread_self();
-  xbt_assert(self != NULL, "Cannot get my own thread object (is the thread module initialized?)");
+
+  if (self == NULL) {
+    /* the thread module is not initialized yet */
+    rmutex->owner = NULL;
+    return;
+  }
 
   if (self != rmutex->owner) {
     xbt_os_mutex_acquire(rmutex->mutex);
@@ -1170,6 +1175,11 @@ void xbt_os_rmutex_acquire(xbt_os_rmutex_t rmutex)
 
 void xbt_os_rmutex_release(xbt_os_rmutex_t rmutex)
 {
+  if (rmutex->owner == NULL) {
+    /* the thread module was not initialized */
+    return;
+  }
+
   xbt_assert(rmutex->owner == xbt_os_thread_self());
 
   if (--rmutex->count == 0) {
