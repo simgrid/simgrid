@@ -190,7 +190,7 @@ void smx_ctx_sysv_wrapper(int first, ...)
 
 void smx_ctx_sysv_suspend(smx_context_t context)
 {
-  smx_current_context = (smx_context_t)maestro_context;
+  SIMIX_context_set_current((smx_context_t) maestro_context);
   int rv;
   rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &((smx_ctx_sysv_t)context)->old_uc);
 
@@ -199,7 +199,7 @@ void smx_ctx_sysv_suspend(smx_context_t context)
 
 void smx_ctx_sysv_resume(smx_context_t context)
 {
-  smx_current_context = context; 
+  SIMIX_context_set_current(context);
   int rv;
   rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
 
@@ -221,10 +221,10 @@ void smx_ctx_sysv_runall(xbt_dynar_t processes)
 void smx_ctx_sysv_resume_parallel(smx_process_t process)
 {
   smx_context_t context = process->context;
-  smx_current_context = (smx_context_t)context;
+  SIMIX_context_set_current((smx_context_t) context);
   int rv;
   rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
-  smx_current_context = (smx_context_t)maestro_context;
+  SIMIX_context_set_current((smx_context_t) maestro_context);
 
   xbt_assert((rv == 0), "Context swapping failure");
 }
@@ -241,7 +241,7 @@ smx_context_t smx_ctx_sysv_self_parallel(void)
 {
   /*smx_context_t self_context = (smx_context_t) xbt_os_thread_get_extra_data();
   return self_context ? self_context : (smx_context_t) maestro_context;*/
-  return smx_current_context;
+  return SIMIX_context_get_current();
 }
 
 int smx_ctx_sysv_get_thread_id(void)

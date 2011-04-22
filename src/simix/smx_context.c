@@ -9,7 +9,8 @@
 #include "portable.h"
 #include "xbt/log.h"
 #include "xbt/swag.h"
-#include "private.h"
+#include "xbt/xbt_os_thread.h"
+#include "src/simix/private.h"
 #include "simix/context.h"
 #include "gras_config.h"
 
@@ -20,10 +21,11 @@ char* smx_context_factory_name = NULL; /* factory name specified by --cfg=contex
 smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
 int smx_context_stack_size = 128 * 1024;
 
-#ifdef CONTEXT_THREADS
+#ifdef HAVE_THREAD_LOCAL_STORAGE
 __thread smx_context_t smx_current_context;
 #else
-smx_context_t smx_current_context;
+smx_context_t smx_current_context; /* define it anyway, will be used in non-parallel mode */
+static xbt_os_thread_key_t smx_current_context_key = 0;
 #endif
 
 static int smx_parallel_contexts = 1;
@@ -70,6 +72,12 @@ void SIMIX_context_mod_init(void)
       }
     }
   }
+
+#if defined(CONTEXT_THREADS) && !defined(HAVE_THREAD_LOCAL_STORAGE)
+  /* the __thread storage class is not available on this platform:
+   * use getspecific/setspecific instead to store the current context in each thread */
+  xbt_os_thread_key_create(&smx_current_context_key);
+#endif
 }
 
 /**
@@ -152,5 +160,31 @@ XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold) {
  */
 XBT_INLINE int SIMIX_context_get_parallel_threshold(void) {
   return smx_parallel_threshold;
+}
+
+/**
+ * \brief Returns the current context of this thread.
+ * \return the current context of this thread
+ */
+XBT_INLINE smx_context_t SIMIX_context_get_current(void)
+{
+#ifdef HAVE_THREAD_LOCAL_STORAGE
+  return smx_current_context;
+#else
+  return xbt_os_thread_get_specific(smx_current_context_key);
+#endif
+}
+
+/**
+ * \brief Sets the current context of this thread.
+ * \param context the context to set
+ */
+XBT_INLINE void SIMIX_context_set_current(smx_context_t context)
+{
+#ifdef HAVE_THREAD_LOCAL_STORAGE
+  smx_current_context = context;
+#else
+  xbt_os_thread_set_specific(smx_current_context_key, context);
+#endif
 }
 

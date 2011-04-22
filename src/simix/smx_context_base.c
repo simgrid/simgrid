@@ -10,6 +10,7 @@
 #include "xbt/function_types.h"
 #include "simix/simix.h"
 #include "simix/context.h"
+#include "simix/private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(bindings);
 
@@ -55,8 +56,8 @@ smx_ctx_base_factory_create_context_sized(size_t size,
     context->argc = argc;
     context->argv = argv;
     context->code = code;
-  }else{
-    smx_current_context = context;
+  } else {
+    SIMIX_context_set_current(context);
   }
   context->data = data;
 
@@ -93,7 +94,7 @@ void smx_ctx_base_stop(smx_context_t context)
 
 smx_context_t smx_ctx_base_self(void)
 {
-  return smx_current_context;
+  return SIMIX_context_get_current();
 }
 
 void *smx_ctx_base_get_data(smx_context_t context)

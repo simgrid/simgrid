@@ -242,7 +242,7 @@ static void smx_ctx_raw_free(smx_context_t context)
 
 static void smx_ctx_raw_suspend(smx_context_t context)
 {
-  smx_current_context = (smx_context_t)maestro_raw_context;
+  SIMIX_context_set_current((smx_context_t) maestro_raw_context);
   raw_swapcontext(
       &((smx_ctx_raw_t) context)->stack_top,
       ((smx_ctx_raw_t) context)->old_stack_top);
@@ -264,7 +264,7 @@ static void smx_ctx_raw_wrapper(smx_ctx_raw_t context)
 static void smx_ctx_raw_resume(smx_process_t process)
 {
   smx_ctx_raw_t context = (smx_ctx_raw_t)process->context;
-  smx_current_context = (smx_context_t)context;
+  SIMIX_context_set_current((smx_context_t) context);
   raw_swapcontext(
       &((smx_ctx_raw_t) context)->old_stack_top,
       ((smx_ctx_raw_t) context)->stack_top);
@@ -363,7 +363,7 @@ static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
 
 static smx_context_t smx_ctx_raw_self_parallel(void)
 {
-  return smx_current_context;
+  return SIMIX_context_get_current();
 }
 
 static int smx_ctx_raw_get_thread_id(){

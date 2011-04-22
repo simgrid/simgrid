@@ -60,7 +60,11 @@ extern smx_ctx_factory_initializer_t smx_factory_initializer_to_use;
 extern char* smx_context_factory_name;
 extern int smx_context_stack_size;
 
-#ifdef CONTEXT_THREADS
+#if defined(CONTEXT_THREADS) && !defined(APPLE)
+#define HAVE_THREAD_LOCAL_STORAGE 1
+#endif
+
+#ifdef HAVE_THREAD_LOCAL_STORAGE
 extern __thread smx_context_t smx_current_context;
 #else
 extern smx_context_t smx_current_context;
@@ -72,7 +76,7 @@ extern smx_context_t smx_current_context;
 /* the following function pointers types describe the interface that all context
    concepts must implement */
 /* each context type derive from this structure, so they must contain this structure
- * at their begining -- OOP in C :/ */
+ * at their beginning -- OOP in C :/ */
 typedef struct s_smx_context {
   s_xbt_swag_hookup_t hookup;
   xbt_main_func_t code;
