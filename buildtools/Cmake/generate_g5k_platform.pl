@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
+use Switch;
 my $toversion=3;
 
 if($#ARGV!=1) {
@@ -77,7 +78,9 @@ while(defined($line=<SITES_LIGNE>))
 				while(defined($line=<NODES_LIGNE>))
 				{
 					if($line =~ /"total": (.*),/){
-						print "\t\t\t\tradical=\"1-$1\" power=\"3.542E9\" bw=\"1.25E8\" lat=\"1.0E-4\""."\n";
+						print "\t\t\t\tradical=\"1-$1\" power=\"";
+						&get_gflops($cluster);
+						print "\" bw=\"1.25E8\" lat=\"1.0E-4\""."\n";
    						print "\t\t\t\tbb_bw=\"1.25E9\" bb_lat=\"1.0E-4\"></cluster>\n";
 					}
 				}
@@ -157,3 +160,45 @@ print "\t</AS>\n";
 print "</platform>\n";
 `rm sites`;
 close SITES_LIGNE;
+
+
+sub get_gflops {
+	switch ($_[0]) {
+		case "bordeplage" { print "5.2297E9" }
+		case "bordereau"  { print "8.8925E9" }
+		case "borderline" { print "13.357E9" }
+		
+		case "chicon"     { print "8.9618E9" }
+		case "chimint"    { print "23.531E9" }
+		case "chinqchint" { print "22.270E9" }
+		case "chirloute"  { print "24.473E9" }
+		
+		case "adonis"     { print "23.681E9" }
+		case "edel"       { print "23.492E9" }
+		case "genepi"     { print "21.175E9" }
+		
+		case "capricorne" { print "4.7233E9" }
+		case "sagittaire" { print "5.6693E9" }
+		
+		case "graphene"   { print "16.673E9" }
+		case "griffon"    { print "20.678E9" }
+		
+		case "gdx"        { print "4.7153E9" }
+		case "netgdx"     { print "4.7144E9" }
+		
+		case "paradent"   { print "21.496E9" }
+		case "paramount"  { print "12.910E9" }
+		case "parapide"   { print "30.130E9" }
+		case "parapluie"  { print "27.391E9" }
+		
+		case "helios"     { print "7.7318E9" }
+		case "sol"        { print "8.9388E9" }
+		case "suno"       { print "23.530E9" }
+		
+		case "pastel"     { print "9.5674E9" }
+		case "violette"   { print "5.1143E9" }
+		
+		case "default"    {	print "3.542E9" }
+		else 			  {	print "xxxxxxx" }
+	}
+}
