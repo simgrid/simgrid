@@ -42,6 +42,9 @@
 #cmakedefine MMALLOC_WANT_OVERIDE_LEGACY @MMALLOC_WANT_OVERIDE_LEGACY@
 #cmakedefine HAVE_MC @HAVE_MC@
 
+/* Set to true if have the mergesort function */
+#cmakedefine HAVE_MERGESORT @HAVE_MERGESORT@
+
 /* Set to true if lib pcre is present */
 #cmakedefine HAVE_PCRE_LIB @HAVE_PCRE_LIB@
 

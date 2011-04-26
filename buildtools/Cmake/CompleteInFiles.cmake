@@ -82,6 +82,7 @@ CHECK_FUNCTION_EXISTS(asprintf HAVE_ASPRINTF)
 CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
+CHECK_FUNCTION_EXISTS(mergesort HAVE_MERGESORT)
 
 #Check if __thread is defined
 exec_program("${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_thread_storage.c" 

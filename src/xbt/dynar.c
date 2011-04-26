@@ -745,8 +745,11 @@ XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
 
   _dynar_lock(dynar);
 
+#ifdef HAVE_MERGESORT
+  mergesort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
+#else
   qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
-
+#endif
   _dynar_unlock(dynar);
 }
 
