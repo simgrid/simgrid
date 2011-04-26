@@ -5,7 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define _ISO_C99_SOURCE /* isfinite() */
+#define _ISOC99_SOURCE /* isfinite() */
 #include <math.h> /* isfinite() */
 
 #include "private.h"
