@@ -9,5 +9,7 @@
 void main(void)
 {
   sem_t s;
-  sem_init(&s, 0, 0);
+  if (sem_init(&s, 0, 0) != 0) 
+     return 1;
+  return 0;
 }
