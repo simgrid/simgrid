@@ -1,4 +1,4 @@
-#! /usr/bin/perl -w
+#! /usr/bin/perl
 eval 'exec perl -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 
@@ -13,6 +13,10 @@ tesh -- testing shell
 B<tesh> [I<options>] I<tesh_file>
 
 =cut
+
+my $path = $0;
+$path =~ s|[^/]*$||;
+push @INC,$path;
 
 use Pod::Usage qw(pod2usage);
 use Getopt::Long qw(GetOptions);
@@ -35,11 +39,13 @@ $ENV{PATH} = "$ENV{PATH}:.";
 # option handling helper subs
 sub cd_cmd {
     my $directory=$_[1];
-    if (-e $directory) {
+    if (-e $directory && -d $directory) {
 	chdir("$directory");
 	print "[Tesh/INFO] change directory to $directory\n";
+    } elsif (-e $directory) {
+	die "[Tesh/CRITICAL] Cannot change directory to '$directory': it is not a directory\n";
     } else {
-	die "[Tesh/CRITICAL] Directory not found : \"$directory\"\n";
+	die "[Tesh/CRITICAL] Cannot change directory to '$directory': no such directory\n";
     }
 }
 
@@ -63,6 +69,7 @@ sub get_options {
     # temporary arrays for GetOption
     my @verbose = ();
     my @cfg;
+    my $log; # ignored
 
     my %opt = (
 	"help"    => 0,
@@ -81,6 +88,7 @@ sub get_options {
 	'cd=s'       => \&cd_cmd,
 	'setenv=s'   => \&setenv_cmd,
 	'cfg=s'      => \@cfg,
+	'log=s'      => \$log,
 	);
 
     $opt{'verbose'} = scalar @verbose;
@@ -95,15 +103,9 @@ my %opts = get_options(@ARGV);
 ##
 ## File parsing
 ##
-my($line2,$execline,$command,$command_tesh);
-my($command_executed)=0;
-my($expected_result_line)=0;
 my($sort)=0;
 my($nb_arg)=0;
-my(@list1,@list2,@list3,@list_of_commands)=();
-my(@buffer)=();
 my($timeout)=0;
-my($encore)=0;
 my($old_buffer);
 my($linebis);
 my($SIGABRT)=0;
@@ -113,404 +115,291 @@ my($return)=-1;
 my($pid);
 my($result);
 my($result_err);
-my($fich_name);
 my($forked);
 my($config)="";
 
 my($tesh_command)=0;
 my(@buffer_tesh)=();
 
-# parse tesh file
-open TESH_FILE, $tesh_file or die "[Tesh/CRITICAL] Unable to open $tesh_file $!\n";
-
-my %cmd; # everything about the next command to run
-while (defined(my $line1=<TESH_FILE>)) {
-    chomp $line1;
-    if($line1 =~ /^\< \$ /){  	# arg command line
-	$line1 =~ s/\${EXEEXT:=}//g;
-	$line1 =~ s/^\< \$\ *//g;
-	$line1 =~ s|^./lua|lua|g;
-	$line1 =~ s|^./ruby|ruby|g;
-	$line1 =~ s|^./||g;
-	$line1 =~ s|^tesh|./tesh|g;
-	$line1 =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
-	$command_tesh = $line1;
-	print "[Tesh/INFO] arg_exec_line   : $command_tesh\n";
-    }
-    elsif($line1 =~ /^\< \< /){  # arg buffer line
-	$line1 =~ s/^\< \<\ *//g;
-	print "[Tesh/INFO] arg_buffer_line : $line1\n";
-	push @buffer_tesh, "$line1\n";
-    }
-    elsif($line1 =~ /^\< \> /){  # arg output line
-	$line1 =~ s/^\< \>\ *//g;
-	$line1 =~ s/\r//g;
-	push @list2, $line1;
-	print "[Tesh/INFO] arg_output_line : $line1\n";
-	$expected_result_line = 1;
-    }
-    elsif($line1 =~ /^\$ mkfile/){  	# "mkfile" command line
-	$line1 =~ s/\$ //g;
-	$line1 =~ s/mkfile//g;
-	$fich_name = $line1;
-	$line1 =();
-	print "[Tesh/INFO] exec_line : mkfile $fich_name\n";
-	`rm -f $fich_name`;
-	open(FILE,">$fich_name") or die "[Tesh/CRITICAL] Unable to make file : $fich_name. $!\n";
-	print FILE @buffer;
-	close(FILE);
-	@buffer = ();	
-    }
-    elsif($line1 =~ /^\$ cd/){  	# "cd" command line
-	$line1 =~ s/\$ //g;
-	print "[Tesh/INFO] exec_line : $line1\n";
-		$line1 =~ s/cd //g;
-	chdir("$line1") or die "[Tesh/CRITICAL] Unable to open $line1. $!\n";	
-    }
-    elsif($line1 =~ /^\$ /){  	#command line
-	if($line1 =~ m|^\$ ./tesh|){  	# tesh command line
-			$tesh_command = 1;
-			@buffer = @buffer_tesh;
-			@buffer_tesh=();
+eval {
+    use POSIX;
+    sub exit_status {
+	my $status = shift;
+	if (POSIX::WIFEXITED($status)) {
+	    return "returned code ".POSIX::WEXITSTATUS($status);
+	} elsif (POSIX::WIFSIGNALED($status)) {
+	    return "got signal ".$SIG{POSIX::WTERMSIG($status)};
 	}
-	$line1 =~ s/\${EXEEXT:=}//g;
-	$line1 =~ s/^\$\ *//g;
-	$line1 =~ s|^./lua|lua|g;
-	$line1 =~ s|^./ruby|ruby|g;
-	$line1 =~ s|^./||g;
-	$line1 =~ s|^tesh|./tesh|g;
-	$line1 =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
-	$line1 = "$line1 $config";
-	
-	if(@list1){
-	    print color("red");
-	    print "[Tesh/CRITICAL] -\n";
-	    print "[Tesh/CRITICAL] + @list1";
-	    print color("reset"), "\n";
-	    die;}		
-	if(@list_of_commands){ # need parallel execution
-	    push @list_of_commands, $line1;
-	    print "[Tesh/INFO] exec_line : $line1\n";
-	}
-	else{
-	    print "[Tesh/INFO] exec_line : $line1\n";
-	    if($tesh_command)
-	    {	$execline = $command_tesh;
-		$tesh_command=0;}
-	    else
-	    {	$execline = $line1;}
-	    $pid = open3(\*IN, \*OUT, \*OUT, $execline );
-	    if( $timeout){
-		$forked = fork();die "fork() failed: $!" unless defined $forked;
-		if ( $forked == 0 )
-		{
-		    sleep $timeout;
-		    kill(9, $pid);
-		    exit;
-		}
-	    }
-	    
-	    while(@buffer)
-	    {
-		$line1 = shift (@buffer);
-		print IN $line1;
-	    }
-	    close IN ;
-	    
-	    waitpid( $pid, 0 );
-	    if($timeout){kill(9, $forked);$timeout=0;}
-	    $timeout = 0;
-	    
-	    while(defined($linebis=<OUT>))
-	    {
-		$linebis =~ s/\r//g;
-		$linebis =~ s/^( )*//g;
-		chomp $linebis;
-		push @list1,"$linebis";
-	    }	
-	    close OUT;
-	    $command_executed = 1;
-	}
+	return "Unparsable status. Is the process stopped?";
     }
-    elsif($line1 =~ /^\& /){  	# parallel command line
-	$command_executed = 0;
-	$expected_result_line = 0;
-	$line1 =~ s/\${EXEEXT:=}//g;
-	$line1 =~ s/^\& //g;
-	$line1 =~ s|^./lua|lua|g;
-	$line1 =~ s|^./ruby|ruby|g;
-	$line1 =~ s|^./||g;
-	$line1 =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
-	$line1 = "$line1 $config";
-	
-	$execline = "$line1";
-	print "[Tesh/INFO] exec_line : $execline\n";
-	push @list_of_commands, $execline;	
-    }	
-    elsif($line1 =~ /^\>/){	#expected result line
-	$line1 =~ s/^\>( )*//g;
-	$line1 =~ s/\r//g;
-	push @list2, $line1;
-	$expected_result_line = 1;
+};
+if ($@) { # no POSIX available?
+    warn "POSIX not usable to parse the return value of forked child: $@\n";
+    sub exit_status {
+	return "returned code 0";
     }
-    elsif($line1 =~ /^\</ or $encore==1){	#need to buffer
-	$line1 =~ s/^\<( )*//g; #delete < with space or tab after
-	$line1 =~ s/\r//g;
-	if($line1 =~ /\\$/) # need to store this line into old_buff
-	{
-	    $encore=1;
-	    $line1 =~ s/\\$//g;
-	    $old_buffer = "$old_buffer$line1";
-	}
-	else
-	{
-	    if($encore == 1){push @buffer, "$old_buffer$line1";}
-	    else{push @buffer, "$line1\n";}
-	    $old_buffer = ();
-	    $encore = 0;	
-	}
-    }
-    elsif($line1 =~ /^p/){	#comment
-	$line1 =~ s/^p //g;
-	$line1 =~ s/\r//g;
-	print "[Tesh/INFO] comment_line :$line1\n";
-    }
-    elsif($line1 =~ /^! output sort/){	#output sort
-	$sort=1;
-    }
-    elsif($line1 =~ /^! output ignore/){	#output ignore
-	$no_output_ignore=0;
-    }
-    elsif($line1 =~ /^! expect signal SIGABRT$/) #expect signal SIGABRT
-    {
-	$SIGABRT=1;
-    }
-    elsif($line1 =~ /^! expect return/){	#expect return
-	$line1 =~ s/^! expect return //g;
-	$line1 =~ s/\r//g;
-	$return = $line1;
-	print color("red"), "[Tesh/INFO] expect return $return";
-	print color("reset"), "\n";
-	die;
-    }
-    elsif($line1 =~ /^! setenv/){	#setenv
-	$line1 =~ s/^! setenv //g;
-	$line1 =~ s/\r//g;
-	$line1 =~ /^(.*)=(.*)$/;
-	$ENV{$1} = $2;
-	print "[Tesh/INFO] setenv: $1=$2\n";
-    }
-    elsif($line1 =~ /^! include/){	#output sort
-	print color("red"), "[Tesh/CRITICAL] need include";
-	print color("reset"), "\n";
-	die;
-    }
-    elsif($line1 =~ /^! timeout/){	#timeout
-	$line1 =~ s/^! timeout //g;
-	$line1 =~ s/\r//g;
-	if($timeout != $line1){
-	    $timeout = $line1;
-	    print "[Tesh/INFO] timeout   : $timeout\n";}
-    }
-    elsif($line1 =~ /^! need execute/){	#need execute // commands
-	$execline = ();
-	$sort = 1; # need sort output
-	while(@list_of_commands)
-	{
-	    $command = shift (@list_of_commands);
-	    if($execline){$execline = "$command & $execline";}
-	    else{$execline = "$command";}
-	}
-	$pid = open3(\*IN, \*OUT, \*OUT, $execline);
-	if( $timeout){
-	    $forked = fork();die "fork() failed: $!" unless defined $forked;
-	    if ( $forked == 0 )
-	    {
-		sleep $timeout;
-		kill(9, $pid);
-		exit;
-	    }
-	}
-	
-	while(@buffer)
-	{
-	    $line1 = shift (@buffer);
-	    print IN $line1;
-	}
-	close IN ;
-	waitpid( $pid, 0 );
-	if($timeout){kill(9, $forked);$timeout=0;}
-	$timeout = 0;
-	
-	@list1=();
-	while(defined($linebis=<OUT>))
-	{
-	    $linebis =~ s/\r//g;
-	    $linebis =~ s/^( )*//g;
-	    chomp $linebis;
-	    push @list1,"$linebis";
-	}	
-	close OUT;
-	$command_executed = 1;
-    }
-    elsif($command_executed and $expected_result_line)
-    {
-	if($no_output_ignore){
-	    @buffer = ();
-	    if($sort == 1)
-	    {
-		@list3 = sort @list1;
-		@list1=();
-		@list1=@list3;
-		@list3=();
-		
-		@list3 = sort @list2;
-		@list2=();
-		@list2=@list3;
-		@list3=();
-		
-		$sort=0;
-	    }
-	    if($SIGABRT)
-	    {
-		push @list2,"Aborted";
-		$SIGABRT = 0;
-	    }
-	    
-	    while(@list1 or @list2)
-	    {
-		if(@list1){$line1 = shift (@list1);$expected_result_line = "x$line1";}
-		if(@list2){$line2 = shift (@list2);$command_executed = "x$line2";}
-		if($command_executed and $expected_result_line)
-		{
-		    
-		    if($line1 eq $line2){
-			if($verbose == 1){print color("green"),"[Tesh/VERB] $line1\n",color("reset");}
-			else{push @buffer, "[Tesh/CRITICAL]   $line1\n";}
-			
-		    }
-		    else
-		    {	if($verbose == 0){print color("green"),@buffer,color("reset");}
-			if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2",color("reset"),"\n";}
-			if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1",color("reset"),"\n";}
-			die;
-		    }
-		}
-		else
-		{	if($verbose == 0){print color("green"),@buffer,color("reset");}
-			if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2",color("reset"),"\n";}
-			if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1",color("reset"),"\n";}
-			die;
-		}
-	    }
-	}else{$no_output_ignore = 1;}
-	$command_executed = 0;
-	$expected_result_line = 0;
-	@list1=();
-	@list2=();
-	@buffer = ();
-	$tesh_command=0;
-	@buffer_tesh=();
-    }
-    
 }
 
-if(@list_of_commands){ # need parallel execution
-    $execline = ();
-    $sort = 1; # need sort output
-    while(@list_of_commands)
-    {
-	$command = shift (@list_of_commands);
-	if($execline){$execline = "$command & $execline";}
-	else{$execline = "$command";}
+sub exec_cmd { 
+    my %cmd = %{$_[0]};
+    if ($opts{'debug'}) {
+	print "IN BEGIN\n";
+	map {print "  $_"} @{$cmd{'in'}};
+	print "IN END\n";
+	print "OUT BEGIN\n";
+	map {print "  $_"} @{$cmd{'out'}};
+	print "OUT END\n";
+	print "CMD: $cmd{'cmd'}\n";
     }
-    print "[Tesh/INFO] exec_line : $execline\n";
-    $pid = open3(\*IN, \*OUT, \*OUT,"$execline");
-    
-    if( $timeout){
-	$forked = fork();die "fork() failed: $!" unless defined $forked;
-	if ( $forked == 0 )
-	{
+
+    # cleanup the command line
+    $cmd{'cmd'} =~ s/\${EXEEXT:=}//g;
+    $cmd{'cmd'} =~ s|^\./||g;
+#    $cmd{'cmd'} =~ s|tesh|tesh.pl|g;
+    $cmd{'cmd'} =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
+    $cmd{'cmd'} .= " $opts{'cfg'}" if (defined($opts{'cfg'}) && length($opts{'cfg'}));
+
+    print "[$cmd{'file'}:$cmd{'line'}] $cmd{'cmd'}\n";
+
+    ###
+    # exec the command line
+    ###
+    $pid = open3(\*IN, \*OUT, \*OUT, $cmd{'cmd'} );
+
+    # if timeout specified, fork and kill executing child at the end of timeout
+    if ($timeout){
+	$forked = fork();
+	die "fork() failed: $!" unless defined $forked;
+	if ( $forked == 0 ) { # child
 	    sleep $timeout;
 	    kill(9, $pid);
 	    exit;
 	}
     }
-    
-    while(@buffer)
-    {
-	$line1 = shift (@buffer);
-	print IN $line1;
-    }
-    close IN ;
-    waitpid( $pid, 0 );
-    if($timeout){kill(9, $forked);$timeout=0;}
-    $timeout = 0;
 
-    @list1=();
-    while(defined($linebis=<OUT>))
-    {
-	$linebis =~ s/\r//g;
-	$linebis =~ s/^( )*//g;
-	chomp $linebis;
-	push @list1,"$linebis";
+    # push all provided input to executing child
+    map { print IN "$_\n" } $cmd{'in'};
+    close IN;
+
+    # pop all output from executing child
+    my @got;
+    while(defined(my $got=<OUT>)) {
+	$got =~ s/\r//g;
+	$got =~ s/^( )*//g;
+	chomp $got;
+	push @got, "$got";
     }	
     close OUT;
-    $command_executed = 1;
+    
+    # Cleanup the executing child, and kill the timeouter brother on need
+    $cmd{'return'} = 0 unless defined($cmd{'return'});
+    my $wantret = "returned code ".(defined($cmd{'return'})? $cmd{'return'} : 0);
+    waitpid ($pid, 0);
+    my $gotret = exit_status($?);
+    if($gotret ne $wantret) {
+	my $msg = "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> $gotret)\n".
+	    "Output of <$cmd{'file'}:$cmd{'line'}> so far:\n";      
+	map {$msg .=  "|| $_\n"} @got;
+	print STDERR "$msg";
+	exit(1);
+    }
+    if($timeout){kill(9, $forked);$timeout=0;}
+    $timeout = 0;
+	    
+    ###
+    # Check the result of execution 
+    ###
+    my $diff = build_diff(\@{$cmd{'out'}}, \@got);
+    if (length $diff) {
+	print color("red")."[TESH/CRITICAL$$] Output mismatch\n";
+	map { print "[TESH/CRITICAL] $_\n" } split(/\n/,$diff);
+	print color("reset");
+	die "Tesh failed\n";
+    }
 }
 
-if($command_executed and $expected_result_line ){
-    if($no_output_ignore){
-	@buffer = ();
-	if($sort == 1)
-	{
-	    @list3 = sort @list1;
-	    @list1=();
-	    @list1=@list3;
-	    @list3=();
-	    
-	    @list3 = sort @list2;
-	    @list2=();
-	    @list2=@list3;
-	    @list3=();
-	    
-	    $sort=0;
-	}
-	if($SIGABRT)
-	{
-	    push @list2,"Aborted";
-	    $SIGABRT = 0;
-	}
-	
-	while(@list1 or @list2)
-	{
-	    if(@list1){$line1 = shift (@list1);$expected_result_line = "x$line1";}
-	    if(@list2){$line2 = shift (@list2);$command_executed = "x$line2";}
-	    if($command_executed and $expected_result_line)
-	    {
-		if($line1 eq $line2){
-		    if($verbose == 1){print color("green"),"[Tesh/VERB] $line1\n",color("reset");}
-		    else{push @buffer, "[Tesh/CRITICAL]   $line1\n";}
-		    
-		}
-		else
-		{	if($verbose == 0){print color("green"),@buffer,color("reset");}
-			if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2",color("reset"),"\n";}
-			if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1",color("reset"),"\n";}
-			die;
-		}
-	    }
-	    else
-	    {	if($verbose == 0){print color("green"),@buffer,color("reset");}
-		if($line2) {print color("red"), "[Tesh/CRITICAL] - $line2",color("reset"),"\n";}
-		if($line1) {print color("red"), "[Tesh/CRITICAL] + $line1",color("reset"),"\n";}
-		die;
-	    }
-	}
-    }else{$no_output_ignore = 1;}
-    $command_executed = 0;
-    $expected_result_line= 0;
-    @list1=();
-    @list2=();
-    @buffer = ();
+sub mkfile_cmd {
+    my %cmd = %{$_[0]};
+    my $file = $cmd{'arg'};
+    print "[Tesh/INFO] mkfile $file\n";
+
+    die "[TESH/CRITICAL] no input provided to mkfile\n" unless defined($cmd{'in'}) && scalar @{$cmd{'in'}};
+    unlink($file);
+    open(FILE,">$file") or die "[Tesh/CRITICAL] Unable to create file $file: $!\n";
+    print FILE join("\n", @{$cmd{'in'}});
+    print FILE "\n" if (scalar @{$cmd{'in'}} > 0);
+    close(FILE);
 }
+
+# parse tesh file
+print "Test suite $tesh_file\n";
+open TESH_FILE, $tesh_file or die "[Tesh/CRITICAL] Unable to open $tesh_file $!\n";
+
+
+my %cmd; # everything about the next command to run
+my $line_num=0;
+LINE: while (defined(my $line=<TESH_FILE>)) {
+    $line_num++;
+    chomp $line;
+    print "[TESH/debug] $line_num: $line\n" if $opts{'debug'};
+
+    # deal with line continuations
+    while ($line =~ /^(.*?)\\$/) {
+	my $next=<TESH_FILE>;
+	die "[TESH/CRITICAL] Continued line at end of file\n"
+	    unless defined($next);
+	chomp $next;
+	print "[TESH/debug] $line_num: $next\n" if $opts{'debug'};
+	$line = $1.$next;
+    }
+
+    # Push delayed commands on empty lines
+    unless ($line =~ m/^(..)(.*)$/) {
+	if (defined($cmd{'cmd'})) {
+	    exec_cmd(\%cmd);
+	    %cmd = ();
+	}
+	next LINE;
+    } 	
+ 
+    my ($cmd,$arg) = ($1,$2);
+    $arg =~ s/\r//g;
+
+    # handle the commands
+    if ($cmd =~ /^#/) {	#comment
+    } elsif ($cmd eq '> '){	#expected result line
+	print "[TESH/debug] push expected result\n" if $opts{'debug'};
+	push @{$cmd{'out'}}, $arg;
+
+    } elsif ($cmd eq '< ') {	# provided input
+	print "[TESH/debug] push provided input\n" if $opts{'debug'};
+	push @{$cmd{'in'}}, $arg;
+
+    } elsif ($cmd eq 'p ') {	# comment
+	print "[Tesh/INFO] $arg\n";
+
+    } elsif ($cmd eq '$ ') {  # Command
+	# if we have something buffered, run it now
+	if (defined($cmd{'cmd'})) {
+	    exec_cmd(\%cmd);
+	    %cmd = ();
+	}
+	if ($arg =~ /^ *mkfile /){  	# "mkfile" command line
+	    die "[TESH/CRITICAL] Output expected from mkfile command!\n" if scalar @{cmd{'out'}};
+
+	    $cmd{'arg'} = $arg;
+	    $cmd{'arg'} =~ s/ *mkfile //;
+	    mkfile_cmd(\%cmd);
+	    %cmd = ();
+
+	} elsif ($arg =~ /^ *cd /) {
+	    die "[TESH/CRITICAL] Input provided to cd command!\n" if scalar @{cmd{'in'}};
+	    die "[TESH/CRITICAL] Output expected from cd command!\n" if scalar @{cmd{'out'}};
+
+	    $arg =~ s/^ *cd //;
+	    cd_cmd("",$arg);
+	    %cmd = ();
+
+	} else { # regular command
+	    $cmd{'cmd'} = $arg;
+	    $cmd{'file'} = $tesh_file;
+	    $cmd{'line'} = $line_num;
+	}
+    }
+    elsif($cmd eq '& '){  	# parallel command line
+	$cmd{'background'} = 1;
+	$cmd{'cmd'} = $arg;
+    }	
+    elsif($line =~ /^! output sort/){	#output sort
+	$cmd{'sort'} = 1;
+    }
+    elsif($line =~ /^! output ignore/){	#output ignore
+	$cmd{'output ignore'} = 1;
+    }
+    elsif($line =~ /^! expect signal SIGABRT$/) {#expect signal SIGABRT
+	$cmd{'expect'} = "SIGABRT";
+    }
+    elsif($line =~ /^! expect return/){	#expect return
+	$line =~ s/^! expect return //g;
+	$line =~ s/\r//g;
+	$cmd{'return'} = $line;
+    }
+    elsif($line =~ /^! setenv/){	#setenv
+	$line =~ s/^! setenv //g;
+	$line =~ s/\r//g;
+	setenv_cmd($line);
+    }
+    elsif($line =~ /^! include/){	#output sort
+	print color("red"), "[Tesh/CRITICAL] need include";
+	print color("reset"), "\n";
+	die;
+    }
+    elsif($line =~ /^! timeout/){	#timeout
+	$line =~ s/^! timeout //;
+	$line =~ s/\r//g;
+	$cmd{'timeout'} = $line;
+    } else {
+	die "[TESH/CRITICAL] parse error: $line\n";
+    }
+}
+
+# Deal with last command
+if (defined($cmd{'cmd'})) {
+    exec_cmd(\%cmd);
+    %cmd = ();
+}
+
+#my (@a,@b);
+#push @a,"bl1";   push @b,"bl1";
+#push @a,"bl2";   push @b,"bl2";
+#push @a,"bl3";   push @b,"bl3";
+#push @a,"bl4";   push @b,"bl4";
+#push @a,"bl5";   push @b,"bl5";
+#push @a,"bl6";   push @b,"bl6";
+#push @a,"bl7";   push @b,"bl7";
+##push @a,"Perl";  push @b,"ruby";
+#push @a,"END1";   push @b,"END1";
+#push @a,"END2";   push @b,"END2";
+#push @a,"END3";   push @b,"END3";
+#push @a,"END4";   push @b,"END4";
+#push @a,"END5";   push @b,"END5";
+#push @a,"END6";   push @b,"END6";
+#push @a,"END7";   push @b,"END7";
+#print "Identical:\n". build_diff(\@a,\@b);
+
+#@a = (); @b =();
+#push @a,"AZE"; push @b,"EZA";
+#print "Different:\n".build_diff(\@a,\@b);
+
+use Diff qw(diff); # postpone a bit to have time to change INC
+
+sub build_diff {
+    my $res;
+    my $diff = Diff->new(@_);
+    
+    $diff->Base( 1 );   # Return line numbers, not indices
+    my $chunk_count = $diff->Next(-1); # Compute the amount of chuncks
+    return ""     if ($chunk_count == 1 && $diff->Same());
+    $diff->Reset();
+    while(  $diff->Next()  ) {
+	my @same = $diff->Same();
+	if ($diff->Same() ) {
+	    if ($diff->Next(0) > 1) { # not first chunk: print 2 first lines
+		$res .= '  '.$same[0]."\n" ;
+		$res .= '  '.$same[1]."\n" if (scalar @same>1);
+	    } 	
+	    $res .= "...\n"  if (scalar @same>2);
+#	$res .= $diff->Next(0)."/$chunk_count\n";
+	    if ($diff->Next(0) < $chunk_count) { # not last chunk: print 2 last lines
+		$res .= '  '.$same[scalar @same -2]."\n" if (scalar @same>1);
+		$res .= '  '.$same[scalar @same -1]."\n";
+	    } 
+	} 
+	next if  $diff->Same();
+	map { $res .= "- $_\n" } $diff->Items(1);
+	map { $res .= "+ $_\n" } $diff->Items(2);
+    }
+    return $res;
+}
+
+
