@@ -150,7 +150,7 @@ final class MsgNative {
 	 * @see                Process.migrate()
 	 * @see                Host.getByName()
 	 */
-	final static native void processChangeHost(Process process, Host host) ;
+	final static native void processMigrate(Process process, Host host) ;
 
 	/**
 	 * The natively implemented native to request the current process to sleep 

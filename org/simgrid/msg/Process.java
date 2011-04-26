@@ -266,11 +266,12 @@ public abstract class Process extends Thread {
 	/**
 	 * Migrates a process to another host.
 	 *
+	 * @param process		The process to migrate.
 	 * @param host			The host where to migrate the process.
 	 *
 	 */
-	public void migrate(Host host)  {
-		MsgNative.processChangeHost(this, host);
+	public static void migrate(Process process, Host host)  {
+		MsgNative.processMigrate(process, host);
 	}
 	/**
 	 * Makes the current process sleep until time seconds have elapsed.

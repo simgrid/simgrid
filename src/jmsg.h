@@ -117,11 +117,11 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_MsgNative_processSelfPPID
 
 /*
  * Class		simgrid_msg_Msg
- * Method		processChangeHost
+ * Method		processMigrate
  * Signature	(Lsimgrid/msg/Process;Lsimgrid/msg/Host;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_msg_MsgNative_processChangeHost
-    (JNIEnv *, jclass, jobject);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_MsgNative_processMigrate
+    (JNIEnv *, jclass, jobject, jobject);
 
 /*
  * Class		simgrid_msg_Msg

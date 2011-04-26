@@ -280,9 +280,16 @@ Java_org_simgrid_msg_MsgNative_processSelf(JNIEnv * env, jclass cls)
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_MsgNative_processChangeHost(JNIEnv * env, jclass cls,
-                                             jobject jhost)
+Java_org_simgrid_msg_MsgNative_processMigrate(JNIEnv * env, jclass cls,
+                                             jobject jprocess, jobject jhost)
 {
+  m_process_t process = jprocess_to_native_process(jprocess, env);
+
+  if (!process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return;
+  }
+
   m_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
@@ -291,9 +298,8 @@ Java_org_simgrid_msg_MsgNative_processChangeHost(JNIEnv * env, jclass cls,
   }
 
   /* try to change the host of the process */
-  MSG_error_t rv = MSG_process_change_host(host);
-
-  jxbt_check_res("MSG_process_change_host()", rv, MSG_OK,
+  MSG_error_t rv = MSG_process_migrate(process, host);
+  jxbt_check_res("MSG_process_migrate()", rv, MSG_OK,
                  bprintf("unexpected error , please report this bug"));
 
 }
