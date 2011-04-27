@@ -615,6 +615,7 @@ set(DOC_SOURCES
 	doc/webcruft/robots.txt
 	doc/webcruft/simgrid_logo.png
 	doc/webcruft/simgrid_logo_small.png
+	doc/webcruft/fish.gif
 	doc/triva-graph_configuration.png
 	doc/triva-graph_visualization.png
 	doc/simgrid.css
@@ -709,13 +710,8 @@ set(txt_files
 "testsuite/surf/trace_A.txt"
 "testsuite/surf/trace_B.txt"
 "examples/smpi/hostfile"
-"examples/msg/procmig.trace"
-"examples/msg/volume.trace"
-"examples/msg/ms.trace"
 "examples/msg/trace/file.trace"
 "examples/msg/link5_state.trace"
-"examples/msg/categories.trace"
-"examples/msg/tasks.trace"
 "examples/msg/fafard_state.trace"
 "examples/msg/jupiter_state.trace"
 "examples/msg/actions/actions_allReduce.txt"
