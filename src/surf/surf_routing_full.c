@@ -199,8 +199,8 @@ void model_full_set_route(routing_component_t rc, const char *src,
 	routing_component_full_t routing = ((routing_component_full_t) rc);
 	size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
 
-	xbt_assert(src_id
-			  && dst_id, "Network elements %s or %s not found", src, dst);
+	xbt_assert(src_id, "Network elements %s not found", src);
+	xbt_assert(dst_id, "Network elements %s not found", dst);
 
 	xbt_assert(xbt_dynar_length(route->generic_route.link_list) > 0,
 			  "Invalid count of links, must be greater than zero (%s,%s)",
