@@ -247,7 +247,6 @@ static int Task_recv_with_timeout(lua_State * L)
           ("MSG_task_receive failed : Unexpected error , please report this bug");
       break;
     }
-
   return 1;
 }
 
@@ -265,13 +264,13 @@ static int Task_splay_irecv(lua_State *L)
 	MSG_comm_wait(comm, timeout);
 	if (MSG_comm_get_status(comm) == MSG_OK)
 	{
+		XBT_DEBUG("Receiving task : %s",MSG_task_get_name(task));
 		lua_State *sender_stack = MSG_task_get_data(task);
 		lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
 		MSG_task_set_data(task, NULL);
-		MSG_comm_destroy(comm);
 	}
-
-    return 1;
+	MSG_comm_destroy(comm);
+    	return 1;
 }
 
 static int Task_splay_isend(lua_State *L)
