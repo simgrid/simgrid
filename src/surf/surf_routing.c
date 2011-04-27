@@ -8,6 +8,27 @@
 #include <pcre.h>               /* regular expression library */
 #endif
 #include "surf_routing_private.h"
+#include "surf_routing.h"
+
+xbt_lib_t host_lib;
+int ROUTING_HOST_LEVEL; //Routing level
+int	SURF_CPU_LEVEL;		//Surf cpu level
+int SURF_WKS_LEVEL;		//Surf workstation level
+int SIMIX_HOST_LEVEL;	//Simix level
+int	MSG_HOST_LEVEL;		//Msg level
+int	SD_HOST_LEVEL;		//Simdag level
+int	COORD_HOST_LEVEL;	//Coordinates level
+int NS3_HOST_LEVEL;		//host node for ns3
+
+xbt_lib_t link_lib;
+int SD_LINK_LEVEL;		//Simdag level
+int SURF_LINK_LEVEL;	//Surf level
+int NS3_LINK_LEVEL;		//link for ns3
+
+xbt_lib_t as_router_lib;
+int ROUTING_ASR_LEVEL;	//Routing level
+int COORD_ASR_LEVEL;	//Coordinates level
+int NS3_ASR_LEVEL;		//host node for ns3
 
 static xbt_dict_t patterns = NULL;
 static xbt_dict_t random_value = NULL;
