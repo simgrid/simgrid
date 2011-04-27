@@ -500,6 +500,9 @@ void model_dijkstra_both_set_route (routing_component_t rc, const char *src,
 	src_id = xbt_dict_get_or_null(rc->to_index, src);
 	dst_id = xbt_dict_get_or_null(rc->to_index, dst);
 
+	xbt_assert(src_id, "Network elements %s not found", src);
+	xbt_assert(dst_id, "Network elements %s not found", dst);
+
     /* Create the topology graph */
 	if(!routing->route_graph)
 	routing->route_graph = xbt_graph_new_graph(1, NULL);
