@@ -18,7 +18,12 @@
 #include "xbt/peer.h"
 
 #include "xbt/config.h"         /* prototypes of this module */
-#include "surf/surf.h"			/* COORD_HOST_LEVEL and COORD_ASR_LEVEL */
+#include "surf/surf_routing.h"	/* COORD_HOST_LEVEL and COORD_ASR_LEVEL */
+
+xbt_lib_t host_lib;
+int	COORD_HOST_LEVEL;	//Coordinates level
+xbt_lib_t as_router_lib;
+int COORD_ASR_LEVEL;	//Coordinates level
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 

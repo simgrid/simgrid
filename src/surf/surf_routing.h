@@ -7,6 +7,8 @@
 #ifndef _SURF_SURF_ROUTING_H
 #define _SURF_SURF_ROUTING_H
 
+#include "xbt/lib.h"
+
 extern xbt_lib_t host_lib;
 extern int ROUTING_HOST_LEVEL; //Routing level
 extern int	SURF_CPU_LEVEL;		//Surf cpu level
