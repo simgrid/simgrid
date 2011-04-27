@@ -4,10 +4,16 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#define _SVID_SOURCE    /* strdup */
-#define _ISO_C99_SOURCE /* isfinite() */
-#define _ISOC99_SOURCE  /* isfinite() */
-#include <math.h>       /* isfinite() */
+#ifndef _SVID_SOURCE
+#  define _SVID_SOURCE    /* strdup() */
+#endif
+#ifndef _ISOC99_SOURCE
+#  define _ISOC99_SOURCE  /* isfinite() */
+#endif
+#ifndef _ISO_C99_SOURCE
+#  define _ISO_C99_SOURCE /* isfinite() */
+#endif
+#include <math.h>         /* isfinite() */
 
 #include "private.h"
 #include "mc/mc.h"

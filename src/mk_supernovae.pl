@@ -44,7 +44,16 @@ open OUT, ">$outfile" or die "ERROR: cannot open $outfile: $!\n";
 print OUT <<EOF
 #define SUPERNOVAE_MODE 1
 #ifndef _GNU_SOURCE
-#  define _GNU_SOURCE   /* for getline() with older libc */
+#  define _GNU_SOURCE     /* for getline() with older libc */
+#endif
+#ifndef _SVID_SOURCE
+#  define _SVID_SOURCE    /* strdup() */
+#endif
+#ifndef _ISOC99_SOURCE
+#  define _ISOC99_SOURCE  /* isfinite() */
+#endif
+#ifndef _ISO_C99_SOURCE
+#  define _ISO_C99_SOURCE /* isfinite() */
 #endif
 #include <ctype.h>
 #include "portable.h"
