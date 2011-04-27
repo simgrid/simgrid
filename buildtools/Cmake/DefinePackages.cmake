@@ -401,6 +401,7 @@ set(install_HEADERS
 	include/smpi/mpif.h
 	include/surf/surfxml_parse.h
 	include/surf/simgrid_dtd.h
+	include/surf/surf_routing.h
 	include/gras/datadesc.h
 	include/gras/transport.h
 	include/gras/virtu.h
