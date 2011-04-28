@@ -209,10 +209,12 @@ static void instr_routing_parse_start_link ()
 
     container_t new = newContainer (link_name, INSTR_LINK, father);
 
-    type_t bandwidth = getVariableType ("bandwidth", NULL, new->type);
-    type_t latency = getVariableType ("latency", NULL, new->type);
-    new_pajeSetVariable (0, new, bandwidth, bandwidth_value);
-    new_pajeSetVariable (0, new, latency, latency_value);
+    if (TRACE_categorized() || TRACE_uncategorized()){
+      type_t bandwidth = getVariableType ("bandwidth", NULL, new->type);
+      type_t latency = getVariableType ("latency", NULL, new->type);
+      new_pajeSetVariable (0, new, bandwidth, bandwidth_value);
+      new_pajeSetVariable (0, new, latency, latency_value);
+    }
     if (TRACE_uncategorized()){
       getVariableType ("bandwidth_used", "0.5 0.5 0.5", new->type);
     }
@@ -230,18 +232,18 @@ static void instr_routing_parse_start_host ()
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   container_t new = newContainer (A_surfxml_host_id, INSTR_HOST, father);
 
-  type_t power = getVariableType ("power", NULL, new->type);
-  new_pajeSetVariable (0, new, power, atof(A_surfxml_host_power));
+  if (TRACE_categorized() || TRACE_uncategorized()) {
+    type_t power = getVariableType ("power", NULL, new->type);
+    new_pajeSetVariable (0, new, power, atof(A_surfxml_host_power));
+  }
   if (TRACE_uncategorized()){
     getVariableType ("power_used", "0.5 0.5 0.5", new->type);
   }
 
-  if (TRACE_smpi_is_enabled()) {
-    if (TRACE_smpi_is_grouped()){
-      type_t mpi = getContainerType("MPI", new->type);
-      getStateType ("MPI_STATE", mpi);
-      getLinkType ("MPI_LINK", getRootType(), mpi, mpi);
-    }
+  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()){
+    type_t mpi = getContainerType("MPI", new->type);
+    getStateType ("MPI_STATE", mpi);
+    getLinkType ("MPI_LINK", getRootType(), mpi, mpi);
   }
 
   if (TRACE_msg_process_is_enabled()) {
