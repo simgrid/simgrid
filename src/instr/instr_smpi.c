@@ -87,8 +87,6 @@ void TRACE_smpi_alloc()
 
 void TRACE_smpi_start(void)
 {
-  if (!TRACE_smpi_is_enabled()) return;
-
   TRACE_start();
 }
 
