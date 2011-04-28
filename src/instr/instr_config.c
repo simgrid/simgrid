@@ -19,7 +19,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_TASK      "tracing/msg/task"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
-#define OPT_TRACING_MSG_VOLUME    "tracing/msg/volume"
 #define OPT_TRACING_FILENAME      "tracing/filename"
 #define OPT_TRACING_BUFFER        "tracing/buffer"
 #define OPT_TRACING_ONELINK_ONLY  "tracing/onelink_only"
@@ -33,7 +32,6 @@ static int trace_categorized;
 static int trace_uncategorized;
 static int trace_msg_task_enabled;
 static int trace_msg_process_enabled;
-static int trace_msg_volume_enabled;
 static int trace_buffer;
 static int trace_onelink_only;
 
@@ -51,7 +49,6 @@ static void TRACE_getopts(void)
   trace_uncategorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_UNCATEGORIZED);
   trace_msg_task_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_TASK);
   trace_msg_process_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
-  trace_msg_volume_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_VOLUME);
   trace_buffer = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BUFFER);
   trace_onelink_only = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_ONELINK_ONLY);
 }
@@ -180,11 +177,6 @@ int TRACE_msg_process_is_enabled(void)
   return trace_msg_process_enabled && TRACE_is_enabled();
 }
 
-int TRACE_msg_volume_is_enabled(void)
-{
-  return trace_msg_volume_enabled && TRACE_is_enabled();
-}
-
 int TRACE_buffer (void)
 {
   return trace_buffer && TRACE_is_enabled();
@@ -269,21 +261,14 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_tracing_msg_process, 0, 1,
                    NULL, NULL);
 
-  /* msg volume (experimental) */
-  int default_tracing_msg_volume = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_MSG_VOLUME,
-                   "Tracing of MSG communication volume (experimental).",
-                   xbt_cfgelm_int, &default_tracing_msg_volume, 0, 1,
-                   NULL, NULL);
-
-  /* msg volume (experimental) */
+  /* tracing buffer */
   int default_buffer = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_BUFFER,
                    "Buffer trace events to put them in temporal order.",
                    xbt_cfgelm_int, &default_buffer, 0, 1,
                    NULL, NULL);
 
-  /* msg volume (experimental) */
+  /* tracing one link only */
   int default_onelink_only = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_ONELINK_ONLY,
                    "Use only routes with one link to trace platform.",
@@ -362,10 +347,6 @@ void TRACE_help (int detailed)
       "  This option only has effect if this simulator is MSG-based. It traces the\n"
       "  behavior of all categorized MSG processes, grouping them by hosts. This option\n"
       "  can be used to track process location if this simulator has process migration.",
-      detailed);
-  print_line (OPT_TRACING_MSG_VOLUME, "Tracing of communication volume (MSG)",
-      "  This experimental option only has effect if this simulator is MSG-based.\n"
-      "  It traces the communication volume of MSG send/receive.",
       detailed);
   print_line (OPT_TRACING_BUFFER, "Buffer events to put them in temporal order",
       "  This option put some events in a time-ordered buffer using the insertion\n"

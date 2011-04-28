@@ -117,10 +117,6 @@ void TRACE_msg_process_sleep_in(m_process_t process);   //called from msg/gos.c
 void TRACE_msg_process_sleep_out(m_process_t process);
 void TRACE_msg_process_end(m_process_t process);
 
-/* declaration of instrumentation functions from msg_volume.c */
-void TRACE_msg_volume_start(m_task_t task);
-void TRACE_msg_volume_finish(m_task_t task);
-
 /* from smx.c */
 void TRACE_smx_host_execute(smx_action_t act);
 void TRACE_smx_action_communicate(smx_action_t act, smx_process_t proc);
@@ -168,7 +164,6 @@ int TRACE_categorized (void);
 int TRACE_uncategorized (void);
 int TRACE_msg_task_is_enabled(void);
 int TRACE_msg_process_is_enabled(void);
-int TRACE_msg_volume_is_enabled(void);
 int TRACE_buffer (void);
 int TRACE_onelink_only (void);
 char *TRACE_get_filename(void);
