@@ -131,6 +131,13 @@ int TRACE_is_active (void)
   return trace_active;
 }
 
+int TRACE_needs_platform (void)
+{
+  return TRACE_categorized() ||
+         TRACE_uncategorized() ||
+         (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped());
+}
+
 int TRACE_is_enabled(void)
 {
   return trace_enabled;
