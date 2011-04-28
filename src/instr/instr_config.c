@@ -150,7 +150,9 @@ int TRACE_is_configured(void)
 
 int TRACE_smpi_is_enabled(void)
 {
-  return trace_smpi_enabled && TRACE_is_enabled();
+  return (xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI) ||
+       TRACE_smpi_is_grouped())&&
+      TRACE_is_enabled();
 }
 
 int TRACE_smpi_is_grouped(void)
