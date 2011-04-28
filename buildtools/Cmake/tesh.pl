@@ -18,7 +18,6 @@ my $path = $0;
 $path =~ s|[^/]*$||;
 push @INC,$path;
 
-use Pod::Usage qw(pod2usage);
 use Getopt::Long qw(GetOptions);
 use strict;
 use Term::ANSIColor;
@@ -26,7 +25,7 @@ use IPC::Open3;
 
 
 # make sure we received a tesh file
-scalar @ARGV > 0 || pod2usage(-exitval => 1);
+scalar @ARGV > 0 || die "Usage:\n    tesh [*options*] *tesh_file*\n";
 
 #Add current directory to path
 $ENV{PATH} = "$ENV{PATH}:.";
