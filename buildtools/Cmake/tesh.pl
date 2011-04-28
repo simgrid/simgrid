@@ -13,7 +13,8 @@ tesh -- testing shell
 B<tesh> [I<options>] I<tesh_file>
 
 =cut
-
+my($bindir);
+my($srcdir);
 my $path = $0;
 $path =~ s|[^/]*$||;
 push @INC,$path;
@@ -23,6 +24,13 @@ use strict;
 use Term::ANSIColor;
 use IPC::Open3;
 
+my($OS)=`echo %OS%`;
+if($OS eq "%OS%"){
+	$OS = "UNIX";
+}
+else{
+	$OS = "WIN";
+}
 
 # make sure we received a tesh file
 scalar @ARGV > 0 || die "Usage:\n    tesh [*options*] *tesh_file*\n";
@@ -51,9 +59,22 @@ sub cd_cmd {
 sub setenv_cmd {
     if ($_[1] =~ /^(.*)=(.*)$/) {
 	my($var,$ctn)=($1,$2);
-	$ENV{$var} = $ctn;
-	print "[Tesh/INFO] setenv $var=$ctn\n";
-    } else { 
+	
+	if($var =~ /bindir/){
+		print "[Tesh/INFO] setenv $var=$ctn\n";
+		$bindir = $ctn;
+	}
+	else
+	{
+		if($var =~ /srcdir/){
+			$srcdir = $ctn;
+		}
+		else{
+			$ENV{$var} = $ctn;
+			print "[Tesh/INFO] setenv $var=$ctn\n";
+		}
+	}	
+	} else { 
 	die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$_[1]'\n";
     }
 }
@@ -152,7 +173,18 @@ sub exec_cmd {
     }
 
     # cleanup the command line
-    $cmd{'cmd'} =~ s/\${EXEEXT:=}//g;
+    if($OS eq "WIN"){
+		$cmd{'cmd'} =~ s/\${EXEEXT:=}/.exe/g;
+	}
+	else{
+		$cmd{'cmd'} =~ s/\${EXEEXT:=}//g;
+	}
+    $cmd{'cmd'} =~ s/\${bindir:=}/$bindir/g;
+    $cmd{'cmd'} =~ s/\${srcdir:=}/$srcdir/g;
+    $cmd{'cmd'} =~ s/\${bindir:=.}/$bindir/g;
+    $cmd{'cmd'} =~ s/\${srcdir:=.}/$srcdir/g;
+    $cmd{'cmd'} =~ s/\${bindir}/$bindir/g;
+    $cmd{'cmd'} =~ s/\${srcdir}/$srcdir/g;
     $cmd{'cmd'} =~ s|^\./||g;
 #    $cmd{'cmd'} =~ s|tesh|tesh.pl|g;
     $cmd{'cmd'} =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
