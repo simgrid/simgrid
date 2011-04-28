@@ -18,6 +18,24 @@ POWER="${DEFAULT_POWER}"
 
 SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=TCP_gamma:4194304"
 
+
+#usage to print the way this script should be called
+function usage () {
+    echo "usage:"
+    echo "$0 [-quiet] [-keep-temps] [-trace <tracefile>] [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
+    echo "or (deprecated usage):"
+    echo "$0 [-quiet] [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
+    echo
+}
+
+#check if we have at least one parameter
+if [ $# -eq 0 ]
+then
+    usage
+    exit
+fi
+
+
 while true; do
   case "$1" in
    "-np" | "-n")
@@ -75,11 +93,7 @@ while true; do
    ;;
 
    "-help" | "--help" | "-h")
-      echo "usage:"
-      echo "$0 [-quiet] [-keep-temps] [-trace <tracefile>] [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
-      echo "or (deprecated usage):"
-      echo "$0 [-quiet] [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
-      echo
+      usage
       exit
    ;;
 
