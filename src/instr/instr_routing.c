@@ -154,30 +154,33 @@ static void instr_routing_parse_start_AS ()
     container_t root = newContainer (A_surfxml_AS_id, INSTR_AS, NULL);
     instr_paje_init (root);
 
-    currentContainer = xbt_dynar_new (sizeof(container_t), NULL);
-    xbt_dynar_push (currentContainer, &root);
-
     if (TRACE_smpi_is_enabled()) {
       if (!TRACE_smpi_is_grouped()){
-        container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-        type_t mpi = getContainerType("MPI", father->type);
+        type_t mpi = getContainerType("MPI", root->type);
         getStateType ("MPI_STATE", mpi);
         getLinkType ("MPI_LINK", getRootType(), mpi, mpi);
       }
     }
 
+    if (TRACE_needs_platform()){
+      currentContainer = xbt_dynar_new (sizeof(container_t), NULL);
+      xbt_dynar_push (currentContainer, &root);
+    }
     return;
   }
-  container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  container_t new = newContainer (A_surfxml_AS_id, INSTR_AS, father);
 
-  //push
-  xbt_dynar_push (currentContainer, &new);
+  if (TRACE_needs_platform()){
+    container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+    container_t new = newContainer (A_surfxml_AS_id, INSTR_AS, father);
+    xbt_dynar_push (currentContainer, &new);
+  }
 }
 
 static void instr_routing_parse_end_AS ()
 {
-  xbt_dynar_pop_ptr (currentContainer);
+  if (TRACE_needs_platform()){
+    xbt_dynar_pop_ptr (currentContainer);
+  }
 }
 
 static void instr_routing_parse_start_link ()
@@ -290,10 +293,12 @@ static void instr_routing_parse_end_platform ()
 
 void instr_routing_define_callbacks ()
 {
-  if (!TRACE_is_active())
-    return;
+  if (!TRACE_is_enabled()) return;
+  //always need the call backs to ASes (we need only the root AS),
+  //to create the rootContainer and the rootType properly
   surfxml_add_callback(STag_surfxml_AS_cb_list, &instr_routing_parse_start_AS);
   surfxml_add_callback(ETag_surfxml_AS_cb_list, &instr_routing_parse_end_AS);
+  if (!TRACE_needs_platform()) return;
   surfxml_add_callback(STag_surfxml_link_cb_list, &instr_routing_parse_start_link);
   surfxml_add_callback(ETag_surfxml_link_cb_list, &instr_routing_parse_end_link);
   surfxml_add_callback(STag_surfxml_host_cb_list, &instr_routing_parse_start_host);
