@@ -130,7 +130,9 @@ int TRACE_is_active (void)
 
 int TRACE_needs_platform (void)
 {
-  return TRACE_categorized() ||
+  return TRACE_msg_process_is_enabled() ||
+         TRACE_msg_task_is_enabled() ||
+         TRACE_categorized() ||
          TRACE_uncategorized() ||
          (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped());
 }
