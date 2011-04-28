@@ -176,6 +176,7 @@ double TRACE_last_timestamp_to_dump = 0;
 //dumps the trace file until the timestamp TRACE_last_timestamp_to_dump
 void TRACE_paje_dump_buffer (int force)
 {
+  if (!TRACE_is_enabled()) return;
   XBT_DEBUG("%s: dump until %f. starts", __FUNCTION__, TRACE_last_timestamp_to_dump);
   if (force){
     paje_event_t event;
