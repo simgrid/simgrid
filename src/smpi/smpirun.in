@@ -115,6 +115,13 @@ shift
 
 ##-----------------------------------
 
+# test if we have something to execute, otherwise show usage and exit
+if [ -z ${EXEC} ]
+then
+    echo "Program is missing"
+    usage
+    exit 1
+fi
 
 
 
