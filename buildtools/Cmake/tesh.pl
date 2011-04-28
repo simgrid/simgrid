@@ -216,7 +216,7 @@ sub exec_cmd {
     my @got;
     while(defined(my $got=<OUT>)) {
 	$got =~ s/\r//g;
-	$got =~ s/^( )*//g;
+	#$got =~ s/^( )*//g;
 	chomp $got;
 	push @got, "$got";
     }	
