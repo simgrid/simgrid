@@ -39,6 +39,8 @@ int server(int argc, char *argv[])
     }
     MSG_task_receive(&task, "mymailbox");
     count++;
+    //e++;
+    //e=e%2;
   }
   //MC_assert(atoi(MSG_task_get_name(task)) == 3);
 

@@ -65,12 +65,12 @@ void MC_init_with_automaton(xbt_automaton_t a){
   mc_stats = xbt_new0(s_mc_stats_t, 1);
   mc_stats->state_size = 1;
 
+  XBT_DEBUG("Creating snapshot_stack");
+
  /* Create exploration stack */
   mc_snapshot_stack = xbt_fifo_new();
 
   MC_UNSET_RAW_MEM;
-
-  XBT_DEBUG("---------- Avant dfs init -----------");
 
   MC_dfs_init(a);
 }
