@@ -96,8 +96,8 @@ XBT_PUBLIC(void *) xbt_swag_remove(void *obj, xbt_swag_t swag);
 XBT_PUBLIC(void *) xbt_swag_extract(xbt_swag_t swag);
 XBT_PUBLIC(int) xbt_swag_size(xbt_swag_t swag);
 
-#define xbt_swag_getNext(obj,offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->prev)
-#define xbt_swag_getPrev(obj,offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->next)
+#define xbt_swag_getPrev(obj,offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->prev)
+#define xbt_swag_getNext(obj,offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->next)
 
 static XBT_INLINE int xbt_swag_belongs(void *obj, xbt_swag_t swag)
 {
