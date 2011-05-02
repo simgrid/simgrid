@@ -56,32 +56,6 @@ XBT_INLINE void xbt_swag_init(xbt_swag_t swag, size_t offset)
   swag->count = 0;
 }
 
-
-/**
- * \param obj the objet to insert in the swag
- * \param swag a swag
- *
- * insert \a obj in \a swag
- */
-XBT_INLINE void xbt_swag_insert(void *obj, xbt_swag_t swag)
-{
-
-  if (xbt_swag_belongs(obj, swag))
-    return;
-
-  (swag->count)++;
-  if (swag->head == NULL) {
-    xbt_assert(!(swag->tail), "Inconsistent swag.");
-    swag->head = obj;
-    swag->tail = obj;
-    return;
-  }
-
-  xbt_swag_getPrev(obj, swag->offset) = swag->tail;
-  xbt_swag_getNext(swag->tail, swag->offset) = obj;
-  swag->tail = obj;
-}
-
 /**
  * \param obj the objet to insert in the swag
  * \param swag a swag
