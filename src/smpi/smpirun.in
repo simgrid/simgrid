@@ -18,11 +18,16 @@ POWER="${DEFAULT_POWER}"
 
 SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=TCP_gamma:4194304"
 
-
 #usage to print the way this script should be called
 function usage () {
     echo "usage:"
-    echo "$0 [-quiet] [-keep-temps] [-trace <tracefile>] [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
+    echo "$0 [-quiet] [-keep-temps]"
+    echo "      [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
+    echo "      [-trace]                  # activate tracing"
+    echo "      [-trace-grouped]          # group MPI processes by location"
+    echo "      [-trace-resource]         # trace resource utilization"
+    echo "      [-trace-triva]            # generate configuration for Triva's GraphView"
+    echo "      [-trace-file <tracefile>] # name of the tracefile (simgrid_smpi.trace)"
     echo "or (deprecated usage):"
     echo "$0 [-quiet] [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
     echo
@@ -34,7 +39,6 @@ then
     usage
     exit
 fi
-
 
 while true; do
   case "$1" in
@@ -73,17 +77,27 @@ while true; do
    ;;
 
    "-trace")
-   	TRACEOPT="$2"
-   	  shift 2
+   	TRACE_ACTIVE="true"
+   	  shift 1
+   ;;
+
+   "-trace-file")
+      TRACE_FILENAME="$2"
+      shift 2
    ;;
 
    "-trace-grouped")
-    TRACE_GROUPED="true"
+      TRACE_GROUPED="true"
       shift 1
    ;;
 
-   "-triva")
-   	TRIVA="true"
+   "-trace-resource")
+      TRACE_RESOURCE="true"
+      shift 1
+   ;;
+
+   "-trace-triva")
+   	TRACE_TRIVA="true"
    	  shift 1
    ;;
 
@@ -229,19 +243,25 @@ APPLICATIONFOOT
 ##-------------------------------- end DEFAULT APPLICATION --------------------------------------
 
 ##---------------------- SMPI TRACING OPTIONS ---------------------------------
-  if [ -n "${TRACEOPT}" ]; then
-    TRACEOPTIONS="--cfg=tracing:1 --cfg=tracing/filename:${TRACEOPT} --cfg=tracing/smpi:1 --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1"
-  else
-    TRACEOPTIONS=""
+if [ -n "${TRACE_ACTIVE}" ]; then
+  #define trace filename
+  if [ -z "${TRACE_FILENAME}" ]; then
+    TRACE_FILENAME="smpi_simgrid.trace"
   fi
-
-  if [ -n "${TRIVA}" ]; then
-    TRACEOPTIONS="$TRACEOPTIONS --cfg=triva/categorized:smpi_cat.plist --cfg=triva/uncategorized:smpi_uncat.plist"
-  fi
+  TRACEOPTIONS="--cfg=tracing:1 --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:1"
 
   if [ -n "${TRACE_GROUPED}" ]; then
-    TRACEOPTIONS="$TRACEOPTIONS --cfg=tracing/smpi/group:1"
+    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/smpi/group:1"
   fi
+
+  if [ -n "${TRACE_RESOURCE}" ]; then
+    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1"
+  fi
+
+  if [ -n "${TRACE_TRIVA}" ]; then
+    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/categorized:smpi_cat.plist --cfg=tracing/uncategorized:smpi_uncat.plist"
+  fi
+fi
 ##---------------------- end SMPI TRACING OPTIONS ---------------------------------
 
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
