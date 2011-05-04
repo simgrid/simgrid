@@ -5,6 +5,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "private.h"
@@ -98,6 +99,7 @@ int smpi_global_size(void) {
    char* value = getenv("SMPI_GLOBAL_SIZE");
 
    if(!value) {
+      fprintf(stderr, "Please set env var SMPI_GLOBAL_SIZE to expected number of processes.\n");
       abort();
    }
    return atoi(value);
