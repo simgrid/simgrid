@@ -6,7 +6,7 @@
 
 #include "y.tab.c"
 
-#define N 3
+#define N 5
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(example, "Example with automaton");
 
@@ -40,8 +40,8 @@ int server(int argc, char *argv[])
     }
     MSG_task_receive(&task, "mymailbox");
     count++;
-    r++;
-    r=r%2;
+    r=(r+1)%4;
+     
   }
   MC_assert(atoi(MSG_task_get_name(task)) == 3);
 
@@ -59,6 +59,7 @@ int client(int argc, char *argv[])
   MSG_task_send(task, "mymailbox");
   
   XBT_INFO("Sent!");
+   r=(r+1)%4;
   return 0;
 }
 
