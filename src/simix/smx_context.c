@@ -29,7 +29,7 @@ static xbt_os_thread_key_t smx_current_context_key = 0;
 #endif
 
 static int smx_parallel_contexts = 1;
-static int smx_parallel_threshold = 1;
+static int smx_parallel_threshold = 2;
 
 /** 
  * This function is called by SIMIX_global_init() to initialize the context module.
