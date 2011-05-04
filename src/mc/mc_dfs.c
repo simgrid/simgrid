@@ -386,17 +386,11 @@ void MC_dfs(xbt_automaton_t a, int search_cycle, int restore){
 	  MC_dfs(a, search_cycle, 0);
 
 	  if((search_cycle == 0) && (pair_succ->automaton_state->type == 1)){
-
-	    /* mc_pairs_t first_item = (mc_pairs_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_snapshot_stack)); */
-	    /* if((first_item->graph_state != pair_succ->graph_state) || (first_item->automaton_state != pair_succ->automaton_state) ){ */
-	    /*   MC_SET_RAW_MEM; */
-	    /*   xbt_fifo_unshift(mc_snapshot_stack, pair_succ); */
-	    /*   MC_UNSET_RAW_MEM; */
-	    /* } */
-
+	    
 	    set_pair_reached(pair_succ->graph_state, pair_succ->automaton_state); 
 	    XBT_DEBUG("Acceptance state : graph=%p, automaton=%p", pair_succ->graph_state, pair_succ->automaton_state);
 	    MC_dfs(a, 1, 0);
+
 	  }
 	}else{
 	  //XBT_DEBUG("Pair (graph=%p, automaton=%p) already visited !", pair_succ->graph_state, pair_succ->automaton_state );
@@ -483,7 +477,19 @@ void MC_show_snapshot_stack(xbt_fifo_t stack){
 }
 
 void MC_dump_snapshot_stack(xbt_fifo_t stack){
+  mc_pairs_t pair;
 
+  MC_SET_RAW_MEM;
+  while ((pair = (mc_pairs_t) xbt_fifo_pop(stack)) != NULL)
+    MC_pair_delete(pair);
+  MC_UNSET_RAW_MEM;
+}
+
+void MC_pair_delete(mc_pairs_t pair){
+  xbt_free(pair->graph_state->proc_status);
+  xbt_free(pair->graph_state);
+  //xbt_free(pair->automaton_state); -> FIXME : à implémenter
+  xbt_free(pair);
 }
 
 
