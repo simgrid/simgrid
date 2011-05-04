@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
 
 xbt_dict_t allocs = NULL;       /* Allocated on first use */
 xbt_dict_t samples = NULL;      /* Allocated on first use */
-int smpi_current_rank = 0;      /* Updated after each MPI call */
+__thread int smpi_current_rank = 0;      /* Updated after each MPI call */
 
 typedef struct {
   int count;
