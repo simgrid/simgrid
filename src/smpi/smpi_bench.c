@@ -14,6 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
 
 xbt_dict_t allocs = NULL;       /* Allocated on first use */
 xbt_dict_t samples = NULL;      /* Allocated on first use */
+int smpi_current_rank = 0;      /* Updated after each MPI call */
 
 typedef struct {
   int count;
@@ -68,6 +69,7 @@ static void smpi_execute(double duration)
 void smpi_bench_begin(void)
 {
   xbt_os_timer_start(smpi_process_timer());
+  smpi_current_rank = smpi_process_index();
 }
 
 void smpi_bench_end(void)
