@@ -454,7 +454,6 @@ void MC_dfs(xbt_automaton_t a, int search_cycle, int restore){
   //XBT_DEBUG("State shifted in snapshot_stack, mc_snapshot_stack size=%d", xbt_fifo_size(mc_snapshot_stack));
   MC_UNSET_RAW_MEM;
 
-
 }
 
 void MC_show_snapshot_stack(xbt_fifo_t stack){

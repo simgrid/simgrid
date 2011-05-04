@@ -268,6 +268,19 @@ void MC_assert(int prop)
   }
 }
 
+void MC_assert_pair(int prop){
+  if (MC_IS_ENABLED && !prop) {
+    XBT_INFO("**************************");
+    XBT_INFO("*** PROPERTY NOT VALID ***");
+    XBT_INFO("**************************");
+    XBT_INFO("Counter-example execution trace:");
+    MC_show_snapshot_stack(mc_snapshot_stack);
+    MC_dump_snapshot_stack(mc_snapshot_stack);
+    //MC_print_statistics(mc_stats);
+    xbt_abort();
+  }
+}
+
 void MC_process_clock_add(smx_process_t process, double amount)
 {
   mc_time[process->pid] += amount;
