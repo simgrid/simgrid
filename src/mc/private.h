@@ -175,21 +175,29 @@ typedef struct s_mc_pairs{
   mc_snapshot_t system_state;
   mc_state_t graph_state;
   xbt_state_t automaton_state;
-  xbt_dynar_t pairs_reached;
   int num;
 }s_mc_pairs_t, *mc_pairs_t;
 
 typedef struct s_mc_visited_pairs{
-  int num_pair;
+  mc_state_t graph_state;
+  xbt_state_t automaton_state;
   int search_cycle;
 }s_mc_visited_pairs_t, *mc_visited_pairs_t;
+
+typedef struct s_mc_reached_pairs{
+  mc_state_t graph_state;
+  xbt_state_t automaton_state;
+}s_mc_reached_pairs_t, *mc_reached_pairs_t;
+
+extern xbt_fifo_t mc_snapshot_stack;
 
 void MC_dfs_init(xbt_automaton_t a);
 void MC_dfs(xbt_automaton_t automaton, int search_cycle, int restore);
 int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
 mc_pairs_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
-void set_pair_visited(int num_pair, int search_cycle);
-int visited(int num_pair, int search_cycle);
-int pair_reached(xbt_dynar_t pairs_reached, int num_pair);
+void set_pair_visited(mc_state_t gs, xbt_state_t as, int search_cycle);
+int visited(mc_state_t gs, xbt_state_t as, int search_cycle);
+int reached(mc_state_t gs, xbt_state_t as);
+void set_pair_reached(mc_state_t gs, xbt_state_t as);
 
 #endif

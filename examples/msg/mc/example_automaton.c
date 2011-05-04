@@ -2,6 +2,7 @@
 #include "xbt/automatonparse_promela.h"
 #include "example_automaton.h"
 #include "msg/msg.h"
+#include "mc/mc.h"
 
 #include "y.tab.c"
 
@@ -13,7 +14,7 @@ extern xbt_automaton_t automaton;
 
 
 int d=1;
-int r=0;
+int r=1;
 int e=1;
 
 int predD(){
@@ -39,10 +40,10 @@ int server(int argc, char *argv[])
     }
     MSG_task_receive(&task, "mymailbox");
     count++;
-    //e++;
-    //e=e%2;
+    r++;
+    r=r%2;
   }
-  //MC_assert(atoi(MSG_task_get_name(task)) == 3);
+  MC_assert(atoi(MSG_task_get_name(task)) == 3);
 
   XBT_INFO("OK");
   return 0;

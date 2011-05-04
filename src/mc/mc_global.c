@@ -54,11 +54,14 @@ void MC_init(void)
 }
 
 void MC_init_with_automaton(xbt_automaton_t a){
+
+  XBT_DEBUG("Start init mc");
   
   mc_time = xbt_new0(double, simix_process_maxpid);
 
   /* Initialize the data structures that must be persistent across every
      iteration of the model-checker (in RAW memory) */
+
   MC_SET_RAW_MEM;
 
   /* Initialize statistics */
