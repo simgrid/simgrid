@@ -201,7 +201,7 @@ void SIMIX_run(void)
 #ifdef TIME_BENCH
     smx_ctx_raw_new_sr();
 #endif
-    do {
+    while (xbt_dynar_length(simix_global->process_to_run)) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu",
               xbt_dynar_length(simix_global->process_to_run));
       SIMIX_context_runall(simix_global->process_to_run);
@@ -209,7 +209,7 @@ void SIMIX_run(void)
         XBT_DEBUG("Handling request %p", req);
         SIMIX_request_pre(req, 0);
       }
-    } while (xbt_dynar_length(simix_global->process_to_run));
+    }
 
     time = surf_solve(SIMIX_timer_next());
 
