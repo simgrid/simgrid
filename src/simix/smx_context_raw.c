@@ -362,21 +362,15 @@ static smx_context_t smx_ctx_raw_self_parallel(void)
   return SIMIX_context_get_current();
 }
 
-static int smx_ctx_raw_get_thread_id(){
-  return (int)(unsigned long)xbt_os_thread_get_extra_data();
-}
-
 static void smx_ctx_raw_runall(xbt_dynar_t processes)
 {
   if (xbt_dynar_length(processes) >= SIMIX_context_get_parallel_threshold()) {
     XBT_DEBUG("Runall // %lu", xbt_dynar_length(processes));
     raw_factory->self = smx_ctx_raw_self_parallel;
-    raw_factory->get_thread_id = smx_ctx_raw_get_thread_id;
     smx_ctx_raw_runall_parallel(processes);
   } else {
     XBT_DEBUG("Runall serial %lu", xbt_dynar_length(processes));
     raw_factory->self = smx_ctx_base_self;
-    raw_factory->get_thread_id = smx_ctx_base_get_thread_id;
     smx_ctx_raw_runall_serial(processes);
   }
 }
@@ -405,14 +399,12 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
     else {
       /* always parallel */
       (*factory)->self = smx_ctx_raw_self_parallel;
-      (*factory)->get_thread_id = smx_ctx_raw_get_thread_id;
       (*factory)->runall = smx_ctx_raw_runall_parallel;
     }
   }
   else {
     /* always serial */
     (*factory)->self = smx_ctx_base_self;
-    (*factory)->get_thread_id = smx_ctx_base_get_thread_id;
     (*factory)->runall = smx_ctx_raw_runall_serial;
   }
   raw_factory = *factory;

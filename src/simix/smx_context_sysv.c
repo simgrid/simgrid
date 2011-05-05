@@ -68,7 +68,6 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
     parmap = xbt_parmap_new(2);
     (*factory)->runall = smx_ctx_sysv_runall_parallel;
     (*factory)->self = smx_ctx_sysv_self_parallel;
-    (*factory)->get_thread_id = smx_ctx_sysv_get_thread_id;
 #else
     THROWF(arg_error, 0, "No thread support for parallel context execution");
 #endif
@@ -240,9 +239,4 @@ smx_context_t smx_ctx_sysv_self_parallel(void)
   /*smx_context_t self_context = (smx_context_t) xbt_os_thread_get_extra_data();
   return self_context ? self_context : (smx_context_t) maestro_context;*/
   return SIMIX_context_get_current();
-}
-
-int smx_ctx_sysv_get_thread_id(void)
-{
-  return (int)(unsigned long)xbt_os_thread_get_extra_data();
 }

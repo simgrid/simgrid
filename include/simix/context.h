@@ -36,7 +36,6 @@ typedef void (*smx_pfn_context_suspend_t) (smx_context_t context);
 typedef void (*smx_pfn_context_runall_t) (xbt_dynar_t processes);
 typedef smx_context_t (*smx_pfn_context_self_t) (void);
 typedef void* (*smx_pfn_context_get_data_t) (smx_context_t context);
-typedef int (*smx_pfn_context_get_thread_id) (void);
 
 /* interface of the context factories */
 typedef struct s_smx_context_factory {
@@ -49,7 +48,6 @@ typedef struct s_smx_context_factory {
   smx_pfn_context_runall_t runall;
   smx_pfn_context_self_t self;
   smx_pfn_context_get_data_t get_data;
-  smx_pfn_context_get_thread_id get_thread_id;
 } s_smx_context_factory_t;
 
 
@@ -97,7 +95,6 @@ void smx_ctx_base_free(smx_context_t context);
 void smx_ctx_base_stop(smx_context_t context);
 smx_context_t smx_ctx_base_self(void);
 void *smx_ctx_base_get_data(smx_context_t context);
-int smx_ctx_base_get_thread_id(void);
 
 /* parallelism */
 XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads);
