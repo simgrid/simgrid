@@ -31,6 +31,7 @@
 typedef struct s_smx_global {
   smx_context_factory_t context_factory;
   xbt_dynar_t process_to_run;
+  xbt_dynar_t process_that_ran;
   xbt_swag_t process_list;
   xbt_swag_t process_to_destroy;
   smx_process_t maestro_process;

@@ -316,8 +316,6 @@ static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
     XBT_VERB("Time SSR thread %u = %lf (max %lf)", cursor, time_thread_ssr[cursor], tmax);
     time_wasted_ssr += tmax - time_thread_ssr[cursor];
   }
-
-  xbt_dynar_reset(processes);
 }
 
 void smx_ctx_raw_new_sr(void);
@@ -349,7 +347,6 @@ static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
     XBT_DEBUG("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
     smx_ctx_raw_resume(process);
   }
-  xbt_dynar_reset(processes);
 }
 #endif
 
@@ -358,7 +355,6 @@ static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
 #ifdef CONTEXT_THREADS
   xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_raw_resume, processes);
 #endif
-  xbt_dynar_reset(processes);
 }
 
 static smx_context_t smx_ctx_raw_self_parallel(void)

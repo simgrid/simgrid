@@ -215,7 +215,6 @@ void smx_ctx_sysv_runall(xbt_dynar_t processes)
     XBT_DEBUG("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
     smx_ctx_sysv_resume(process->context);
   }
-  xbt_dynar_reset(processes);
 }
 
 void smx_ctx_sysv_resume_parallel(smx_process_t process)
@@ -234,7 +233,6 @@ void smx_ctx_sysv_runall_parallel(xbt_dynar_t processes)
 #ifdef CONTEXT_THREADS
   xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_sysv_resume_parallel, processes);
 #endif
-  xbt_dynar_reset(processes);
 }
 
 smx_context_t smx_ctx_sysv_self_parallel(void)

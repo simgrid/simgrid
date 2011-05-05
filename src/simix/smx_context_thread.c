@@ -180,7 +180,6 @@ static void smx_ctx_thread_runall_serial(xbt_dynar_t processes)
     xbt_os_sem_release(((smx_ctx_thread_t) process->context)->begin);
     xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
   }
-  xbt_dynar_reset(processes);
 }
 
 static void smx_ctx_thread_runall_parallel(xbt_dynar_t processes)
@@ -194,7 +193,6 @@ static void smx_ctx_thread_runall_parallel(xbt_dynar_t processes)
   xbt_dynar_foreach(processes, index, process) {
      xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
   }
-  xbt_dynar_reset(processes);
 }
 
 static smx_context_t smx_ctx_thread_self(void)
