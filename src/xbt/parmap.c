@@ -69,6 +69,7 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
   /* Assign resources to worker threads*/
   parmap->fun = fun;
   parmap->data = data;
+  parmap->index = 0;
 #ifdef HAVE_FUTEX_H
   xbt_event_signal(parmap->sync_event);
 #endif
@@ -77,7 +78,7 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
 
 static void *_xbt_parmap_worker_main(void *arg)
 {
-  unsigned int data_start, data_end, data_size, worker_id;
+  unsigned int worker_id;
   xbt_parmap_t parmap = (xbt_parmap_t)arg;
 
   /* Fetch a worker id */
@@ -92,26 +93,18 @@ static void *_xbt_parmap_worker_main(void *arg)
     xbt_event_wait(parmap->sync_event);
 #endif
     if(parmap->status == PARMAP_WORK){
+      unsigned int i;
+      unsigned int n = 0;
+
       XBT_DEBUG("Worker %u got a job", worker_id);
 
-      /* Compute how much data does every worker gets */
-      data_size = (xbt_dynar_length(parmap->data) / parmap->num_workers)
-                  + ((xbt_dynar_length(parmap->data) % parmap->num_workers) ? 1 : 0);
-
-      /* Each worker data segment starts in a position associated with its id*/
-      data_start = data_size * worker_id;
-
-      /* The end of the worker data segment must be bounded by the end of the data vector */
-      data_end = MIN(data_start + data_size, xbt_dynar_length(parmap->data));
-
-      XBT_DEBUG("Worker %u: data_start=%u data_end=%u (data_size=%u)",
-          worker_id, data_start, data_end, data_size);
-
-      /* While the worker don't pass the end of it data segment apply the function */
-      while(data_start < data_end){
-        parmap->fun(*(void **)xbt_dynar_get_ptr(parmap->data, data_start));
-        data_start++;
+      while ((i = __sync_fetch_and_add(&parmap->index, 1))
+             < xbt_dynar_length(parmap->data)) {
+        parmap->fun(xbt_dynar_get_as(parmap->data, i, void*));
+        n++;
       }
+
+      XBT_DEBUG("Worker %u processed %u tasks", worker_id, n);
 
     /* We are destroying the parmap */
     }else{
