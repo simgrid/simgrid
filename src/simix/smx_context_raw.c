@@ -157,8 +157,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 static xbt_parmap_t parmap;
 #endif
 
-static smx_context_factory_t raw_factory;
-
 #ifdef TIME_BENCH
 #include "xbt/xbt_os_time.h"
 #define NUM_THREADS 4
@@ -357,20 +355,13 @@ static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
 #endif
 }
 
-static smx_context_t smx_ctx_raw_self_parallel(void)
-{
-  return SIMIX_context_get_current();
-}
-
 static void smx_ctx_raw_runall(xbt_dynar_t processes)
 {
   if (xbt_dynar_length(processes) >= SIMIX_context_get_parallel_threshold()) {
     XBT_DEBUG("Runall // %lu", xbt_dynar_length(processes));
-    raw_factory->self = smx_ctx_raw_self_parallel;
     smx_ctx_raw_runall_parallel(processes);
   } else {
     XBT_DEBUG("Runall serial %lu", xbt_dynar_length(processes));
-    raw_factory->self = smx_ctx_base_self;
     smx_ctx_raw_runall_serial(processes);
   }
 }
@@ -398,16 +389,13 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
     }
     else {
       /* always parallel */
-      (*factory)->self = smx_ctx_raw_self_parallel;
       (*factory)->runall = smx_ctx_raw_runall_parallel;
     }
   }
   else {
     /* always serial */
-    (*factory)->self = smx_ctx_base_self;
     (*factory)->runall = smx_ctx_raw_runall_serial;
   }
-  raw_factory = *factory;
 #ifdef TIME_BENCH
   timer = xbt_os_timer_new();
 #endif
