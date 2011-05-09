@@ -23,6 +23,7 @@ static void SIMIX_sem_block_onto(smx_sem_t sem);
 
 static smx_action_t SIMIX_synchro_wait(smx_host_t smx_host, double timeout)
 {
+  XBT_IN("(%p, %f)",smx_host,timeout);
   smx_action_t action;
   action = xbt_mallocator_get(simix_global->action_mallocator);
   action->type = SIMIX_ACTION_SYNCHRO;
@@ -31,11 +32,13 @@ static smx_action_t SIMIX_synchro_wait(smx_host_t smx_host, double timeout)
     surf_workstation_model->extension.workstation.sleep(smx_host->host, timeout);
 
   surf_workstation_model->action_data_set(action->synchro.sleep, action);
+  XBT_OUT();
   return action;
 }
 
 void SIMIX_synchro_stop_waiting(smx_process_t process, smx_req_t req)
 {
+  XBT_IN("(%p, %p)",process,req);
   switch (req->call) {
 
     case REQ_MUTEX_LOCK:
@@ -61,28 +64,34 @@ void SIMIX_synchro_stop_waiting(smx_process_t process, smx_req_t req)
     default:
       THROW_IMPOSSIBLE;
   }
+  XBT_OUT();
 }
 
 void SIMIX_synchro_destroy(smx_action_t action)
 {
+  XBT_IN("(%p)",action);
   XBT_DEBUG("Destroying synchro %p", action);
   action->synchro.sleep->model_type->action_unref(action->synchro.sleep);
   xbt_free(action->name);
   xbt_mallocator_release(simix_global->action_mallocator, action);
+  XBT_OUT();
 }
 
 void SIMIX_post_synchro(smx_action_t action)
 {
+  XBT_IN("(%p)",action);
   if (surf_workstation_model->action_state_get(action->synchro.sleep) == SURF_ACTION_FAILED)
     action->state = SIMIX_FAILED;
   else if(surf_workstation_model->action_state_get(action->synchro.sleep) == SURF_ACTION_DONE)
     action->state = SIMIX_SRC_TIMEOUT;
 
   SIMIX_synchro_finish(action);  
+  XBT_OUT();
 }
 
 static void SIMIX_synchro_finish(smx_action_t action)
 {
+  XBT_IN("(%p)",action);
   smx_req_t req = xbt_fifo_shift(action->request_list);
 
   switch (action->state) {
@@ -111,6 +120,7 @@ static void SIMIX_synchro_finish(smx_action_t action)
   SIMIX_synchro_stop_waiting(req->issuer, req);
   SIMIX_synchro_destroy(action);
   SIMIX_request_answer(req);
+  XBT_OUT();
 }
 /*********************************** Mutex ************************************/
 
@@ -122,11 +132,13 @@ static void SIMIX_synchro_finish(smx_action_t action)
  */
 smx_mutex_t SIMIX_mutex_init(void)
 {
+  XBT_IN("()");
   s_smx_process_t p;            /* useful to initialize sleeping swag */
 
   smx_mutex_t mutex = xbt_new0(s_smx_mutex_t, 1);
   mutex->locked = 0;
   mutex->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
+  XBT_OUT();
   return mutex;
 }
 
@@ -136,6 +148,7 @@ smx_mutex_t SIMIX_mutex_init(void)
  */
 void SIMIX_pre_mutex_lock(smx_req_t req)
 {
+  XBT_IN("(%p)",req);
   /* FIXME: check where to validate the arguments */
   smx_action_t sync_act = NULL;
   smx_mutex_t mutex = req->mutex_lock.mutex;
@@ -154,6 +167,7 @@ void SIMIX_pre_mutex_lock(smx_req_t req)
     mutex->owner = req->issuer;
     SIMIX_request_answer(req);
   }
+  XBT_OUT();
 }
 
 /**
@@ -167,11 +181,15 @@ void SIMIX_pre_mutex_lock(smx_req_t req)
  */
 int SIMIX_mutex_trylock(smx_mutex_t mutex, smx_process_t issuer)
 {
-  if (mutex->locked)
-    return 0;
+  XBT_IN("(%p, %p)",mutex,issuer);
+  if (mutex->locked){
+	  XBT_OUT();
+	  return 0;
+  }
 
   mutex->locked = 1;
   mutex->owner = issuer;
+  XBT_OUT();
   return 1;
 }
 
@@ -186,11 +204,14 @@ int SIMIX_mutex_trylock(smx_mutex_t mutex, smx_process_t issuer)
  */
 void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
 {
+  XBT_IN("(%p, %p)",mutex,issuer);
   smx_process_t p;              /*process to wake up */
 
   /* If the mutex is not owned by the issuer do nothing */
-  if (issuer != mutex->owner)
-    return;
+  if (issuer != mutex->owner){
+	  XBT_OUT();
+	  return;
+  }
 
   if (xbt_swag_size(mutex->sleeping) > 0) {
     p = xbt_swag_extract(mutex->sleeping);
@@ -203,6 +224,7 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
     mutex->locked = 0;
     mutex->owner = NULL;
   }
+  XBT_OUT();
 }
 
 /**
@@ -213,10 +235,12 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
  */
 void SIMIX_mutex_destroy(smx_mutex_t mutex)
 {
+  XBT_IN("(%p)",mutex);
   if (mutex){
     xbt_swag_free(mutex->sleeping);
     xbt_free(mutex);
   }
+  XBT_OUT();
 }
 
 /********************************* Condition **********************************/
@@ -230,10 +254,12 @@ void SIMIX_mutex_destroy(smx_mutex_t mutex)
  */
 smx_cond_t SIMIX_cond_init()
 {
+  XBT_IN("()");
   s_smx_process_t p;
   smx_cond_t cond = xbt_new0(s_smx_cond_t, 1);
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   cond->mutex = NULL;
+  XBT_OUT();
   return cond;
 }
 
@@ -243,11 +269,13 @@ smx_cond_t SIMIX_cond_init()
  */
 void SIMIX_pre_cond_wait(smx_req_t req)
 {
+  XBT_IN("(%p)",req);
   smx_process_t issuer = req->issuer;
   smx_cond_t cond = req->cond_wait.cond;
   smx_mutex_t mutex = req->cond_wait.mutex;
 
   _SIMIX_cond_wait(cond, mutex, -1, issuer, req);
+  XBT_OUT();
 }
 
 /**
@@ -256,18 +284,21 @@ void SIMIX_pre_cond_wait(smx_req_t req)
  */
 void SIMIX_pre_cond_wait_timeout(smx_req_t req)
 {
+  XBT_IN("(%p)",req);
   smx_process_t issuer = req->issuer;
   smx_cond_t cond = req->cond_wait_timeout.cond;
   smx_mutex_t mutex = req->cond_wait_timeout.mutex;
   double timeout = req->cond_wait_timeout.timeout;
 
   _SIMIX_cond_wait(cond, mutex, timeout, issuer, req);
+  XBT_OUT();
 }
 
 
 static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
                              smx_process_t issuer, smx_req_t req)
 {
+  XBT_IN("(%p, %p, %f, %p,%p)",cond,mutex,timeout,issuer,req);
   smx_action_t sync_act = NULL;
 
   XBT_DEBUG("Wait condition %p", cond);
@@ -283,6 +314,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
   xbt_fifo_unshift(sync_act->request_list, req);
   issuer->waiting_action = sync_act;
   xbt_swag_insert(req->issuer, cond->sleeping);   
+  XBT_OUT();
 }
 
 /**
@@ -294,6 +326,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
  */
 void SIMIX_cond_signal(smx_cond_t cond)
 {
+  XBT_IN("(%p)",cond);
   smx_process_t proc = NULL;
   smx_mutex_t mutex = NULL;
   smx_req_t req = NULL;
@@ -320,6 +353,7 @@ void SIMIX_cond_signal(smx_cond_t cond)
 
     SIMIX_pre_mutex_lock(req);
   }
+  XBT_OUT();
 }
 
 /**
@@ -331,12 +365,14 @@ void SIMIX_cond_signal(smx_cond_t cond)
  */
 void SIMIX_cond_broadcast(smx_cond_t cond)
 {
+  XBT_IN("(%p)",cond);
   XBT_DEBUG("Broadcast condition %p", cond);
 
   /* Signal the condition until nobody is waiting on it */
   while (xbt_swag_size(cond->sleeping)) {
     SIMIX_cond_signal(cond);
   }
+  XBT_OUT();
 }
 
 /**
@@ -347,6 +383,7 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
  */
 void SIMIX_cond_destroy(smx_cond_t cond)
 {
+  XBT_IN("(%p)",cond);
   XBT_DEBUG("Destroy condition %p", cond);
 
   if (cond != NULL) {
@@ -356,6 +393,7 @@ void SIMIX_cond_destroy(smx_cond_t cond)
     xbt_swag_free(cond->sleeping);
     xbt_free(cond);
   }
+  XBT_OUT();
 }
 
 /******************************** Semaphores **********************************/
@@ -363,17 +401,20 @@ void SIMIX_cond_destroy(smx_cond_t cond)
 /** @brief Initialize a semaphore */
 smx_sem_t SIMIX_sem_init(unsigned int value)
 {
+  XBT_IN("(%d)",value);
   s_smx_process_t p;
 
   smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
   sem->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   sem->value = value;
+  XBT_OUT();
   return sem;
 }
 
 /** @brief Destroys a semaphore */
 void SIMIX_sem_destroy(smx_sem_t sem)
 {
+  XBT_IN("(%p)",sem);
   XBT_DEBUG("Destroy semaphore %p", sem);
   if (sem != NULL) {
     xbt_assert(xbt_swag_size(sem->sleeping) == 0,
@@ -381,6 +422,7 @@ void SIMIX_sem_destroy(smx_sem_t sem)
     xbt_swag_free(sem->sleeping);
     xbt_free(sem);
   }
+  XBT_OUT();
 }
 
 /** @brief release the semaphore
@@ -390,6 +432,7 @@ void SIMIX_sem_destroy(smx_sem_t sem)
  */
 void SIMIX_sem_release(smx_sem_t sem)
 {
+  XBT_IN("(%p)",sem);
   smx_process_t proc;
 
   XBT_DEBUG("Sem release semaphore %p", sem);
@@ -401,23 +444,29 @@ void SIMIX_sem_release(smx_sem_t sem)
   } else if (sem->value < SMX_SEM_NOLIMIT) {
     sem->value++;
   }
+  XBT_OUT();
 }
 
 /** @brief Returns true if acquiring this semaphore would block */
 XBT_INLINE int SIMIX_sem_would_block(smx_sem_t sem)
 {
+  XBT_IN("(%p)",sem);
+  XBT_OUT();
   return (sem->value <= 0);
 }
 
 /** @brief Returns the current capacity of the semaphore */
 int SIMIX_sem_get_capacity(smx_sem_t sem)
 {
+  XBT_IN("(%p)",sem);
+  XBT_OUT();
   return sem->value;
 }
 
 static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
                             smx_req_t req)
 {
+  XBT_IN("(%p, %f, %p, %p)",sem,timeout,issuer,req);
   smx_action_t sync_act = NULL;
 
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", sem, timeout);
@@ -430,6 +479,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
     sem->value--;
     SIMIX_request_answer(req);
   }
+  XBT_OUT();
 }
 
 /**
@@ -437,7 +487,9 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
  */
 void SIMIX_pre_sem_acquire(smx_req_t req)
 {
+  XBT_IN("(%p)",req);
   _SIMIX_sem_wait(req->sem_acquire.sem, -1, req->issuer, req);
+  XBT_OUT();
 }
 
 /**
@@ -445,6 +497,8 @@ void SIMIX_pre_sem_acquire(smx_req_t req)
  */
 void SIMIX_pre_sem_acquire_timeout(smx_req_t req)
 {
+  XBT_IN("(%p)",req);
   _SIMIX_sem_wait(req->sem_acquire_timeout.sem,
                   req->sem_acquire_timeout.timeout, req->issuer, req);  
+  XBT_OUT();
 }
