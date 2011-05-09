@@ -52,6 +52,7 @@ if [ x$PIPOL_IMAGE == "xamd64-windows-server-2008-64bits.dd.gz" ] ; then
 	-Denable_lib_static=off \
 	-Denable_model-checking=off \
 	-Denable_latency_bound_tracking=off \
+	-Drelease=on \
 	-Denable_gtnets=off .
 	ctest -D NightlyStart
 	ctest -D NightlyConfigure
@@ -78,6 +79,7 @@ else
 		-Denable_latency_bound_tracking=off \
 		-Denable_gtnets=off \
 		-Denable_jedule=off \
+		-Drelease=on \
 		-Denable_memcheck=on ./
 		ctest -D NightlyStart
 		ctest -D NightlyConfigure
@@ -96,6 +98,7 @@ else
 		-Denable_lib_static=off \
 		-Denable_model-checking=off \
 		-Denable_latency_bound_tracking=off \
+		-Drelease=on \
 		-Denable_gtnets=off .
 		ctest -D NightlyStart
 		ctest -D NightlyConfigure
@@ -114,6 +117,7 @@ else
 		-Denable_compile_optimizations=off \
 		-Denable_auto_install=on \
 		-DCMAKE_INSTALL_PREFIX=./simgrid_install \
+		-Drelease=on \
 		-Denable_supernovae=off .
 		ctest -D NightlyStart
 		ctest -D NightlyConfigure
