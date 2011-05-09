@@ -44,7 +44,6 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
   //(*factory)->finalize = smx_ctx_base_factory_finalize;
   (*factory)->self = smx_ctx_java_self;
   (*factory)->get_data = smx_ctx_base_get_data;
-  (*factory)->get_thread_id = smx_ctx_base_get_thread_id;
 }
 
 static smx_context_t smx_ctx_java_self(void)
