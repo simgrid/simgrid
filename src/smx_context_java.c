@@ -156,7 +156,6 @@ static void smx_ctx_java_runall(xbt_dynar_t processes)
     smx_ctx_java_resume(my_current_context);
     my_current_context = old_context;
   }
-  xbt_dynar_reset(processes);
 
   XBT_DEBUG("XXXX End of run all\n");
 }
