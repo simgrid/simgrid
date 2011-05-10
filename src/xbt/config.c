@@ -675,14 +675,14 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
       variable = xbt_dict_get((xbt_dict_t) cfg, name);
     }
     CATCH(e) {
-      /* put it back on what won't get freed, ie within "options" and out of "optionlist_cpy" */
-      name = (char *) (optionlist_cpy - name + options);
-      free(optionlist_cpy);
       if (e.category == not_found_error) {
         xbt_ex_free(e);
+        name = xbt_strdup(name);
+        free(optionlist_cpy);
         THROWF(not_found_error, 0,
                "No registered variable corresponding to '%s'.", name);
       }
+      free(optionlist_cpy);
       RETHROW;
     }
 
