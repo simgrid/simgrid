@@ -58,7 +58,7 @@ XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task,
 	TRACE_user_host_variable(MSG_get_clock(),var,value,"sub");
 
 #define TRACE_link_variable_declare(var) \
-	TRACE_user_link_variable(0,NULL,NULL,var,0,"declare");
+	TRACE_user_link_variable(0,NULL,var,0,"declare");
 
 #define TRACE_link_variable_set_with_time(time,link,var,value) \
 	TRACE_user_link_variable(time,link,var,value,"set");
