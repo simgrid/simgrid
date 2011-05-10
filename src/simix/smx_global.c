@@ -200,11 +200,7 @@ void SIMIX_run(void)
     while (xbt_dynar_length(simix_global->process_to_run)) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu",
               xbt_dynar_length(simix_global->process_to_run));
-      SIMIX_context_runall(simix_global->process_to_run);
-      xbt_dynar_t tmp = simix_global->process_that_ran;
-      simix_global->process_that_ran = simix_global->process_to_run;
-      simix_global->process_to_run = tmp;
-      xbt_dynar_reset(simix_global->process_to_run);
+      SIMIX_process_runall();
       xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
         if (process->request.call != REQ_NO_REQ) {
           XBT_DEBUG("Handling request %p", &process->request);
