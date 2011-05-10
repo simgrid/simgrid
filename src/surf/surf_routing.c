@@ -662,22 +662,15 @@ static xbt_dynar_t elements_father(const char *src, const char *dst)
  *
  * \param src the source host name 
  * \param dst the destination host name
+ * \param *e_route the route where the links are stored
  * 
  * This function is called by "get_route". It allows to walk recursively
  * through the routing components tree.
  */
-static route_extended_t _get_route(const char *src, const char *dst)
+static void _get_route(const char *src, const char *dst,route_extended_t *e_route)
 {
-
-  void *link;
-  unsigned int cpt = 0;
-
   XBT_DEBUG("Solve route  \"%s\" to \"%s\"", src, dst);
-
   xbt_assert(src && dst, "bad parameters for \"_get_route\" method");
-
-  route_extended_t e_route, e_route_cnt, e_route_src = NULL, e_route_dst =
-      NULL;
 
   xbt_dynar_t elem_father_list = elements_father(src, dst);
 
@@ -688,27 +681,28 @@ static route_extended_t _get_route(const char *src, const char *dst)
   routing_component_t dst_father =
       xbt_dynar_get_as(elem_father_list, 2, routing_component_t);
 
-  e_route = xbt_new0(s_route_extended_t, 1);
-  e_route->src_gateway = NULL;
-  e_route->dst_gateway = NULL;
-  e_route->generic_route.link_list =
-      xbt_dynar_new(global_routing->size_of_link, NULL);
-
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
-	e_route_cnt =
+	(*e_route) =
 	  (*(common_father->get_route)) (common_father, src, dst);
-	xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"", src,
+	xbt_assert((*e_route), "no route between \"%s\" and \"%s\"", src,
 			  dst);
-	  // FIXME (optim): faire une copie et pas une série de push
-	xbt_dynar_foreach(e_route_cnt->generic_route.link_list, cpt, link) {
-	xbt_dynar_push(e_route->generic_route.link_list, &link);
-	}
-	generic_free_extended_route(e_route_cnt);
 
   } else {                      /* SURF_ROUTING_RECURSIVE */
 
+	void *link;
+	unsigned int cpt = 0;
+
+	route_extended_t e_route_cnt = NULL;
+	route_extended_t e_route_src = NULL;
+	route_extended_t e_route_dst = NULL;
     route_extended_t e_route_bypass = NULL;
+
+    (*e_route) = xbt_new0(s_route_extended_t, 1);
+    (*e_route)->src_gateway = NULL;
+    (*e_route)->dst_gateway = NULL;
+    (*e_route)->generic_route.link_list =
+        xbt_dynar_new(global_routing->size_of_link, NULL);
 
     if (common_father->get_bypass_route)
       e_route_bypass =
@@ -730,29 +724,29 @@ static route_extended_t _get_route(const char *src, const char *dst)
                 dst);
 
     if (strcmp(src, e_route_cnt->src_gateway)) {
-      e_route_src = _get_route(src, e_route_cnt->src_gateway);
+      _get_route(src, e_route_cnt->src_gateway, &e_route_src);
       xbt_assert(e_route_src, "no route between \"%s\" and \"%s\"", src,
                   e_route_cnt->src_gateway);
       xbt_dynar_foreach(e_route_src->generic_route.link_list, cpt, link) {
-        xbt_dynar_push(e_route->generic_route.link_list, &link);
+        xbt_dynar_push((*e_route)->generic_route.link_list, &link);
       }
     }
 
     xbt_dynar_foreach(e_route_cnt->generic_route.link_list, cpt, link) {
-      xbt_dynar_push(e_route->generic_route.link_list, &link);
+      xbt_dynar_push((*e_route)->generic_route.link_list, &link);
     }
 
     if (strcmp(e_route_cnt->dst_gateway, dst)) {
-      e_route_dst = _get_route(e_route_cnt->dst_gateway, dst);
+      _get_route(e_route_cnt->dst_gateway, dst, &e_route_dst);
       xbt_assert(e_route_dst, "no route between \"%s\" and \"%s\"",
                   e_route_cnt->dst_gateway, dst);
       xbt_dynar_foreach(e_route_dst->generic_route.link_list, cpt, link) {
-        xbt_dynar_push(e_route->generic_route.link_list, &link);
+        xbt_dynar_push((*e_route)->generic_route.link_list, &link);
       }
     }
 
-    e_route->src_gateway = xbt_strdup(e_route_cnt->src_gateway);
-    e_route->dst_gateway = xbt_strdup(e_route_cnt->dst_gateway);
+    (*e_route)->src_gateway = xbt_strdup(e_route_cnt->src_gateway);
+    (*e_route)->dst_gateway = xbt_strdup(e_route_cnt->dst_gateway);
 
     generic_free_extended_route(e_route_src);
     generic_free_extended_route(e_route_cnt);
@@ -760,8 +754,6 @@ static route_extended_t _get_route(const char *src, const char *dst)
   }
 
   xbt_dynar_free(&elem_father_list);
-
-  return e_route;
 }
 
 static double _get_latency(const char *src, const char *dst)
@@ -850,9 +842,9 @@ static double _get_latency(const char *src, const char *dst)
 static xbt_dynar_t get_route(const char *src, const char *dst)
 {
 
-  route_extended_t e_route;
+  route_extended_t e_route = NULL;
 
-  e_route = _get_route(src, dst);
+  _get_route(src, dst, &e_route);
   xbt_assert(e_route, "no route between \"%s\" and \"%s\"", src, dst);
 
   if (global_routing->last_route)
