@@ -643,163 +643,141 @@ static void elements_father(const char *src, const char *dst,
 /* Global Business methods */
 
 /**
- * \brief Recursive function for get_route
+ * \brief Recursive function for get_route and get_latency
  *
  * \param src the source host name 
  * \param dst the destination host name
  * \param *e_route the route where the links are stored
+ * \param *latency the latency, if needed
  * 
- * This function is called by "get_route". It allows to walk recursively
- * through the routing components tree.
+ * This function is called by "get_route" and "get_latency". It allows to walk
+ * recursively through the routing components tree.
  */
-static void _get_route(const char *src, const char *dst,route_extended_t *e_route)
+static void _get_route_latency(const char *src, const char *dst,
+                               route_extended_t *e_route, double *latency)
 {
-  XBT_DEBUG("Solve route  \"%s\" to \"%s\"", src, dst);
-  xbt_assert(src && dst, "bad parameters for \"_get_route\" method");
+  XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src, dst);
+  xbt_assert(src && dst, "bad parameters for \"_get_route_latency\" method");
 
   routing_component_t common_father;
   routing_component_t src_father;
   routing_component_t dst_father;
   elements_father(src, dst, &common_father, &src_father, &dst_father);
 
-  if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
+  if (src_father == dst_father) { /* SURF_ROUTING_BASE */
 
-	(*e_route) =
-	  (*(common_father->get_route)) (common_father, src, dst);
-	xbt_assert((*e_route), "no route between \"%s\" and \"%s\"", src,
-			  dst);
+    route_extended_t route = NULL;
+    if (e_route) {
+      route = common_father->get_route(common_father, src, dst);
+      xbt_assert(route, "no route between \"%s\" and \"%s\"", src, dst);
+      *e_route = route;
+    }
+    if (latency) {
+      *latency = common_father->get_latency(common_father, src, dst, route);
+      xbt_assert(*latency >= 0.0,
+                 "latency error on route between \"%s\" and \"%s\"", src, dst);
+    }
 
   } else {                      /* SURF_ROUTING_RECURSIVE */
 
-	void *link;
-	unsigned int cpt = 0;
-
-	route_extended_t e_route_cnt = NULL;
-	route_extended_t e_route_src = NULL;
-	route_extended_t e_route_dst = NULL;
     route_extended_t e_route_bypass = NULL;
-
-    (*e_route) = xbt_new0(s_route_extended_t, 1);
-    (*e_route)->src_gateway = NULL;
-    (*e_route)->dst_gateway = NULL;
-    (*e_route)->generic_route.link_list =
-        xbt_dynar_new(global_routing->size_of_link, NULL);
-
     if (common_father->get_bypass_route)
-      e_route_bypass =
-          (*(common_father->get_bypass_route)) (common_father, src, dst);
+      e_route_bypass = common_father->get_bypass_route(common_father, src, dst);
 
-    if (e_route_bypass)
-      e_route_cnt = e_route_bypass;
-    else
-      e_route_cnt =
-          (*(common_father->get_route)) (common_father, src_father->name,
-                                         dst_father->name);
+    xbt_assert(!latency || !e_route_bypass,
+               "Bypass cannot work yet with get_latency");
+
+    route_extended_t e_route_cnt = e_route_bypass
+      ? e_route_bypass
+      : common_father->get_route(common_father,
+                               src_father->name, dst_father->name);
 
     xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"",
-                src_father->name, dst_father->name);
+               src_father->name, dst_father->name);
 
     xbt_assert((e_route_cnt->src_gateway == NULL) ==
-                (e_route_cnt->dst_gateway == NULL),
-                "bad gateway for route between \"%s\" and \"%s\"", src,
-                dst);
+               (e_route_cnt->dst_gateway == NULL),
+               "bad gateway for route between \"%s\" and \"%s\"", src, dst);
+
+    if (e_route) {
+      (*e_route) = xbt_new0(s_route_extended_t, 1);
+      (*e_route)->src_gateway = NULL;
+      (*e_route)->dst_gateway = NULL;
+      (*e_route)->generic_route.link_list =
+        xbt_dynar_new(global_routing->size_of_link, NULL);
+    }
+
+    if (latency) {
+      *latency = common_father->get_latency(common_father,
+                                            src_father->name, dst_father->name,
+                                            e_route_cnt);
+      xbt_assert(*latency >= 0.0,
+                 "latency error on route between \"%s\" and \"%s\"",
+                 src_father->name, dst_father->name);
+    }
+
+    void *link;
+    unsigned int cpt;
 
     if (strcmp(src, e_route_cnt->src_gateway)) {
-      _get_route(src, e_route_cnt->src_gateway, &e_route_src);
-      xbt_assert(e_route_src, "no route between \"%s\" and \"%s\"", src,
-                  e_route_cnt->src_gateway);
-      xbt_dynar_foreach(e_route_src->generic_route.link_list, cpt, link) {
-        xbt_dynar_push((*e_route)->generic_route.link_list, &link);
+      double latency_src;
+      route_extended_t e_route_src;
+
+      _get_route_latency(src, e_route_cnt->src_gateway,
+                         (e_route ? &e_route_src : NULL),
+                         (latency ? &latency_src : NULL));
+      if (e_route) {
+        xbt_assert(e_route_src, "no route between \"%s\" and \"%s\"",
+                   src, e_route_cnt->src_gateway);
+        xbt_dynar_foreach(e_route_src->generic_route.link_list, cpt, link) {
+          xbt_dynar_push((*e_route)->generic_route.link_list, &link);
+        }
+        generic_free_extended_route(e_route_src);
+      }
+      if (latency) {
+        xbt_assert(latency_src >= 0.0,
+                   "latency error on route between \"%s\" and \"%s\"",
+                   src, e_route_cnt->src_gateway);
+        *latency += latency_src;
       }
     }
 
-    xbt_dynar_foreach(e_route_cnt->generic_route.link_list, cpt, link) {
-      xbt_dynar_push((*e_route)->generic_route.link_list, &link);
+    if (e_route) {
+      xbt_dynar_foreach(e_route_cnt->generic_route.link_list, cpt, link) {
+        xbt_dynar_push((*e_route)->generic_route.link_list, &link);
+      }
     }
 
     if (strcmp(e_route_cnt->dst_gateway, dst)) {
-      _get_route(e_route_cnt->dst_gateway, dst, &e_route_dst);
-      xbt_assert(e_route_dst, "no route between \"%s\" and \"%s\"",
-                  e_route_cnt->dst_gateway, dst);
-      xbt_dynar_foreach(e_route_dst->generic_route.link_list, cpt, link) {
-        xbt_dynar_push((*e_route)->generic_route.link_list, &link);
+      double latency_dst;
+      route_extended_t e_route_dst;
+
+      _get_route_latency(e_route_cnt->dst_gateway, dst,
+                         (e_route ? &e_route_dst : NULL),
+                         (latency ? &latency_dst : NULL));
+      if (e_route) {
+        xbt_assert(e_route_dst, "no route between \"%s\" and \"%s\"",
+                   e_route_cnt->dst_gateway, dst);
+        xbt_dynar_foreach(e_route_dst->generic_route.link_list, cpt, link) {
+          xbt_dynar_push((*e_route)->generic_route.link_list, &link);
+        }
+        generic_free_extended_route(e_route_dst);
+      }
+      if (latency) {
+        xbt_assert(latency_dst >= 0.0,
+                   "latency error on route between \"%s\" and \"%s\"",
+                   e_route_cnt->dst_gateway, dst);
+        *latency += latency_dst;
       }
     }
 
-    (*e_route)->src_gateway = xbt_strdup(e_route_cnt->src_gateway);
-    (*e_route)->dst_gateway = xbt_strdup(e_route_cnt->dst_gateway);
+    if (e_route) {
+      (*e_route)->src_gateway = xbt_strdup(e_route_cnt->src_gateway);
+      (*e_route)->dst_gateway = xbt_strdup(e_route_cnt->dst_gateway);
+    }
 
-    generic_free_extended_route(e_route_src);
     generic_free_extended_route(e_route_cnt);
-    generic_free_extended_route(e_route_dst);
   }
-}
-
-static double _get_latency(const char *src, const char *dst)
-{
-  double latency, latency_src, latency_dst = 0.0;
-
-  XBT_DEBUG("Solve route  \"%s\" to \"%s\"", src, dst);
-  xbt_assert(src && dst, "bad parameters for \"_get_route\" method");
-
-  route_extended_t e_route_cnt;
-
-  routing_component_t common_father;
-  routing_component_t src_father;
-  routing_component_t dst_father;
-  elements_father(src, dst, &common_father, &src_father, &dst_father);
-
-  if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
-
-      latency =
-          (*(common_father->get_latency)) (common_father, src, dst, NULL);
-      xbt_assert(latency>=0, "no route between \"%s\" and \"%s\"", src,
-                  dst);
-
-  } else {                      /* SURF_ROUTING_RECURSIVE */
-     route_extended_t e_route_bypass = NULL;
-    if (common_father->get_bypass_route)
-      e_route_bypass =
-          (*(common_father->get_bypass_route)) (common_father, src, dst);
-
-    xbt_assert(!e_route_bypass,"Bypass cannot work yet with get_latency");
-                                                 
-    e_route_cnt =
-          (*(common_father->get_route)) (common_father, src_father->name,
-                                         dst_father->name);
-
-    xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"",
-                src_father->name, dst_father->name);
-
-    xbt_assert((e_route_cnt->src_gateway == NULL) ==
-                (e_route_cnt->dst_gateway == NULL),
-                "bad gateway for route between \"%s\" and \"%s\"", src,
-                dst);
-
-    latency = (*(common_father->get_latency)) (common_father, src_father->name, dst_father->name, e_route_cnt);
-
-    xbt_assert(latency>=0, "no route between \"%s\" and \"%s\"",
-                src_father->name, dst_father->name);
-
-    if (strcmp(src,e_route_cnt->src_gateway)) {
-
-      latency_src = _get_latency(src, e_route_cnt->src_gateway);
-      xbt_assert(latency_src>=0, "no route between \"%s\" and \"%s\"", src,
-                  e_route_cnt->src_gateway);
-      latency += latency_src;
-    }
-
-    if (strcmp(e_route_cnt->dst_gateway,dst)) {
-    
-      latency_dst = _get_latency(e_route_cnt->dst_gateway, dst);
-      xbt_assert(latency_dst>=0, "no route between \"%s\" and \"%s\"",
-                  e_route_cnt->dst_gateway, dst);
-      latency += latency_dst;
-    }
-	
-  }
-
-  return latency;
 }
 
 /**
@@ -817,7 +795,7 @@ static xbt_dynar_t get_route(const char *src, const char *dst)
 
   route_extended_t e_route = NULL;
 
-  _get_route(src, dst, &e_route);
+  _get_route_latency(src, dst, &e_route, NULL);
   xbt_assert(e_route, "no route between \"%s\" and \"%s\"", src, dst);
 
   if (global_routing->last_route)
@@ -856,7 +834,7 @@ static double get_latency(const char *src, const char *dst)
 {
 
   double latency = -1.0;
-  latency = _get_latency(src, dst);
+  _get_route_latency(src, dst, NULL, &latency);
   xbt_assert(latency>=0.0, "no route between \"%s\" and \"%s\"", src, dst);
   return latency;
 }
