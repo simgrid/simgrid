@@ -12,9 +12,6 @@
 #include "xbt.h"                /* calloc, printf */
 #include "instr/instr_private.h"
 
-#include "msg/private.h" /* You don't want to know why, trust us */
-#include "simix/private.h"
-
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actions,
@@ -42,7 +39,7 @@ static double parse_double(const char *string)
 
   value = strtod(string, &endptr);
   if (*endptr != '\0')
-    THROWF(unknown_error, 0, "%s is not a double", string);
+    THROW1(unknown_error, 0, "%s is not a double", string);
   return value;
 }
 
@@ -103,11 +100,6 @@ static void action_send(const char *const *action)
   asynchronous_cleanup();
 }
 
-static int task_recv_matching(void*ignored,void*recv_task) {
-  XBT_DEBUG("Trying to recv_match with %p", recv_task);
-  return recv_task != NULL;
-}
-
 static void action_Isend(const char *const *action)
 {
   char to[250];
@@ -118,36 +110,16 @@ static void action_Isend(const char *const *action)
 
   sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()),action[2]);
   m_task_t task = MSG_task_create(to,0,parse_double(size),NULL);
+  msg_comm_t comm = MSG_task_isend_with_matching(task, to, /*matching madness*/NULL,task);
+  xbt_dynar_push(globals->isends,&comm);
 
-  smx_rdv_t rdv = MSG_mailbox_get_by_alias(to);
-
-  if(SIMIX_comm_has_recv_match(rdv, task_recv_matching, NULL)) {
-    XBT_DEBUG("Switching back to MSG_task_send: %s", to);
-    MSG_task_send(task, to);
-  } else {
-
-    msg_comm_t comm = MSG_task_isend_with_matching(task, to, /*matching madness*/NULL,task);
-    xbt_dynar_push(globals->isends,&comm);
-
-    if (task->simdata->message_size < 65536) {
-      /* Close your eyes, it burns ! */
-      comm->s_comm->comm.dst_proc = SIMIX_process_get_by_name(action[2]);
-      comm->s_comm->comm.dst_buff = NULL;
-      comm->s_comm->comm.dst_buff_size = NULL;
-      comm->s_comm->comm.dst_data = NULL;
-      comm->s_comm->state = SIMIX_READY;
-      comm->s_comm->comm.refcount++;
-      SIMIX_comm_start(comm->s_comm);
-    }
-
-    XBT_DEBUG("Isend on %s", MSG_process_get_name(MSG_process_self()));
-    XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
-  }
+  XBT_DEBUG("Isend on %s", MSG_process_get_name(MSG_process_self()));
+  XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
 
   asynchronous_cleanup();
 }
 
-static int task_sent_matching(void*ignored,void*sent_task) {
+static int task_matching(void*ignored,void*sent_task) {
   m_task_t t = (m_task_t)sent_task;
   if (t!=NULL && MSG_task_get_data_size(t)<65536)
     return 1; /* that's supposed to be already arrived */
@@ -176,19 +148,11 @@ static void action_recv(const char *const *action)
 
   /* make sure the rdv is created on need by asking to MSG instead of simix directly */
   smx_rdv_t rdv = MSG_mailbox_get_by_alias(mailbox_name);
-  smx_action_t act = SIMIX_comm_get_send_match(rdv, task_sent_matching, NULL);
+  smx_action_t act = SIMIX_comm_get_send_match(rdv,task_matching,NULL);
   if (act!=NULL){
     /* FIXME account for the memcopy time if needed */
-    task = act->comm.src_data;
-
-    if (task->simdata->message_size < 65536) {
-      act->comm.refcount--; /* See action_send for more pain */
-      if(act->state == SIMIX_DONE)
-        SIMIX_comm_finish(act);
-      else
-        SIMIX_req_comm_wait(act, -1.0);
-      return;
-    }
+    SIMIX_comm_finish(act);
+    return;
   }
 
 #ifdef HAVE_TRACING
@@ -198,9 +162,7 @@ static void action_recv(const char *const *action)
 #endif
 
   XBT_DEBUG("Receiving: %s", name);
-  /* Mimic a call to MSG_task_receive(&task, mailbox_name); */
-  SIMIX_req_comm_recv(rdv, &task, NULL, NULL, &task, -1.0);
-
+  MSG_task_receive(&task, mailbox_name);
   //  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
   XBT_VERB("%s %f", name, MSG_get_clock() - clock);
   MSG_task_destroy(task);
@@ -259,7 +221,7 @@ static void action_wait(const char *const *action)
   double clock = MSG_get_clock();
   process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-  xbt_assert(xbt_dynar_length(globals->irecvs),
+  xbt_assert1(xbt_dynar_length(globals->irecvs),
       "action wait not preceded by any irecv: %s", xbt_str_join_array(action," "));
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
@@ -342,7 +304,7 @@ static void action_reduce(const char *const *action)
 
 	process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-	xbt_assert(communicator_size, "Size of Communicator is not defined, "
+	xbt_assert0(communicator_size, "Size of Communicator is not defined, "
 			"can't use collective operations");
 
 	process_name = MSG_process_get_name(MSG_process_self());
@@ -395,7 +357,7 @@ static void action_bcast(const char *const *action)
 
 	process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-	xbt_assert(communicator_size, "Size of Communicator is not defined, "
+	xbt_assert0(communicator_size, "Size of Communicator is not defined, "
 			"can't use collective operations");
 
 	process_name = MSG_process_get_name(MSG_process_self());
@@ -462,7 +424,7 @@ static void action_allReduce(const char *const *action) {
 
   process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-  xbt_assert(communicator_size, "Size of Communicator is not defined, "
+  xbt_assert0(communicator_size, "Size of Communicator is not defined, "
               "can't use collective operations");
 
   process_name = MSG_process_get_name(MSG_process_self());
