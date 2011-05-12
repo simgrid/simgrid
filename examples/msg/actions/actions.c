@@ -39,7 +39,7 @@ static double parse_double(const char *string)
 
   value = strtod(string, &endptr);
   if (*endptr != '\0')
-    THROW1(unknown_error, 0, "%s is not a double", string);
+    THROWF(unknown_error, 0, "%s is not a double", string);
   return value;
 }
 
@@ -221,7 +221,7 @@ static void action_wait(const char *const *action)
   double clock = MSG_get_clock();
   process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-  xbt_assert1(xbt_dynar_length(globals->irecvs),
+  xbt_assert(xbt_dynar_length(globals->irecvs),
       "action wait not preceded by any irecv: %s", xbt_str_join_array(action," "));
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
@@ -304,7 +304,7 @@ static void action_reduce(const char *const *action)
 
 	process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-	xbt_assert0(communicator_size, "Size of Communicator is not defined, "
+	xbt_assert(communicator_size, "Size of Communicator is not defined, "
 			"can't use collective operations");
 
 	process_name = MSG_process_get_name(MSG_process_self());
@@ -357,7 +357,7 @@ static void action_bcast(const char *const *action)
 
 	process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-	xbt_assert0(communicator_size, "Size of Communicator is not defined, "
+	xbt_assert(communicator_size, "Size of Communicator is not defined, "
 			"can't use collective operations");
 
 	process_name = MSG_process_get_name(MSG_process_self());
@@ -424,7 +424,7 @@ static void action_allReduce(const char *const *action) {
 
   process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-  xbt_assert0(communicator_size, "Size of Communicator is not defined, "
+  xbt_assert(communicator_size, "Size of Communicator is not defined, "
               "can't use collective operations");
 
   process_name = MSG_process_get_name(MSG_process_self());
