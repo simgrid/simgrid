@@ -60,7 +60,7 @@ void TRACE_category_with_color (const char *category, const char *color)
 
   //define the type of this category on top of hosts and links
   if (TRACE_categorized ()){
-    instr_new_user_variable_type (category, final_color);
+    instr_new_variable_type (category, final_color);
   }
 }
 
@@ -88,10 +88,12 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   new_pajeNewEvent (MSG_get_clock(), getRootContainer(), type, value);
 }
 
-
-void TRACE_user_link_variable(double time, const char *resource,
-                              const char *variable,
-                              double value, const char *what)
+void TRACE_user_variable(double time,
+                         const char *resource,
+                         const char *variable,
+                         const char *father_type,
+                         double value,
+                         InstrUserVariable what)
 {
   if (!TRACE_is_active())
     return;
@@ -102,46 +104,34 @@ void TRACE_user_link_variable(double time, const char *resource,
   char valuestr[100];
   snprintf(valuestr, 100, "%g", value);
 
-  if (strcmp(what, "declare") == 0) {
-    instr_new_user_link_variable_type (variable, NULL);
-  } else{
-    container_t container = getContainerByName (resource);
+  switch (what){
+  case INSTR_US_DECLARE:
+    instr_new_user_variable_type (father_type, variable, NULL);
+    break;
+  case INSTR_US_SET:
+  {
+    container_t container = getContainerByName(resource);
     type_t type = getVariableType (variable, NULL, container->type);
-    if (strcmp(what, "set") == 0) {
-      new_pajeSetVariable(time, container, type, value);
-    } else if (strcmp(what, "add") == 0) {
-      new_pajeAddVariable(time, container, type, value);
-    } else if (strcmp(what, "sub") == 0) {
-      new_pajeSubVariable(time, container, type, value);
-    }
+    new_pajeSetVariable(time, container, type, value);
+    break;
   }
-}
-
-void TRACE_user_host_variable(double time, const char *variable,
-                              double value, const char *what)
-{
-  if (!TRACE_is_active())
-    return;
-
-  xbt_assert (instr_platform_traced(),
-      "%s must be called after environment creation", __FUNCTION__);
-
-  char valuestr[100];
-  snprintf(valuestr, 100, "%g", value);
-
-  if (strcmp(what, "declare") == 0) {
-    instr_new_user_host_variable_type (variable, NULL);
-  } else{
-    char *host_name = MSG_host_self()->name;
-    container_t container = getContainerByName(host_name);
+  case INSTR_US_ADD:
+  {
+    container_t container = getContainerByName(resource);
     type_t type = getVariableType (variable, NULL, container->type);
-    if (strcmp(what, "set") == 0) {
-      new_pajeSetVariable(time, container, type, value);
-    } else if (strcmp(what, "add") == 0) {
-      new_pajeAddVariable(time, container, type, value);
-    } else if (strcmp(what, "sub") == 0) {
-      new_pajeSubVariable(time, container, type, value);
-    }
+    new_pajeAddVariable(time, container, type, value);
+    break;
+  }
+  case INSTR_US_SUB:
+  {
+    container_t container = getContainerByName(resource);
+    type_t type = getVariableType (variable, NULL, container->type);
+    new_pajeSubVariable(time, container, type, value);
+    break;
+  }
+  default:
+    //TODO: launch exception
+    break;
   }
 }
 
