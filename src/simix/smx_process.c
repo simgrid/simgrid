@@ -167,6 +167,24 @@ void SIMIX_process_create(smx_process_t *process,
 }
 
 /**
+ * \brief Executes the processes from simix_global->process_to_run.
+ *
+ * The processes of simix_global->process_to_run are run (in parallel if
+ * possible).  On exit, simix_global->process_to_run is empty, and
+ * simix_global->process_that_ran contains the list of processes that just ran.
+ * The two lists are swapped so, be careful when using them before and after a
+ * call to this function.
+ */
+void SIMIX_process_runall(void)
+{
+  SIMIX_context_runall(simix_global->process_to_run);
+  xbt_dynar_t tmp = simix_global->process_that_ran;
+  simix_global->process_that_ran = simix_global->process_to_run;
+  simix_global->process_to_run = tmp;
+  xbt_dynar_reset(simix_global->process_to_run);
+}
+
+/**
  * \brief Internal function to kill a SIMIX process.
  *
  * This function may be called when a REQ_PROCESS_KILL request occurs,

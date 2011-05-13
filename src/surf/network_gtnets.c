@@ -271,16 +271,19 @@ static void update_actions_state(double now, double delta)
         trace_sent = action->generic_action.cost;
       }
       // tracing resource utilization
-      xbt_dynar_t route = global_routing->get_route(action->src_name, action->dst_name);
-      network_link_GTNETS_t link;
-      unsigned int i;
-      xbt_dynar_foreach(route, i, link) {
-        TRACE_surf_link_set_utilization (link->generic_resource.name,
-            action->generic_action.data,
-            (surf_action_t) action,
-            trace_sent/delta,
-            now-delta,
-            delta);
+      if (TRACE_is_active()) {
+        xbt_dynar_t route = global_routing->get_route(action->src_name,
+                                                      action->dst_name);
+        network_link_GTNETS_t link;
+        unsigned int i;
+        xbt_dynar_foreach(route, i, link) {
+          TRACE_surf_link_set_utilization (link->generic_resource.name,
+                                           action->generic_action.data,
+                                           (surf_action_t) action,
+                                           trace_sent/delta,
+                                           now-delta,
+                                           delta);
+        }
       }
 #endif
 

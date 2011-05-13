@@ -437,17 +437,19 @@ static void net_update_actions_state(double now, double delta)
                                    action->weight);
     }
 #ifdef HAVE_TRACING
-    xbt_dynar_t route =
-        global_routing->get_route(action->src_name, action->dst_name);
-    link_CM02_t link;
-    unsigned int i;
-    xbt_dynar_foreach(route, i, link) {
-      TRACE_surf_link_set_utilization(link->lmm_resource.generic_resource.name,
-                                      action->generic_action.data,
-                                      (surf_action_t) action,
-                                      lmm_variable_getvalue
-                                      (action->variable), now - delta,
-                                      delta);
+    if (TRACE_is_active()) {
+      xbt_dynar_t route = global_routing->get_route(action->src_name,
+                                                    action->dst_name);
+      link_CM02_t link;
+      unsigned int i;
+      xbt_dynar_foreach(route, i, link) {
+        TRACE_surf_link_set_utilization(link->lmm_resource.generic_resource.name,
+                                        action->generic_action.data,
+                                        (surf_action_t) action,
+                                        lmm_variable_getvalue
+                                        (action->variable), now - delta,
+                                        delta);
+      }
     }
 #endif
     if(!lmm_get_number_of_cnst_from_var(network_maxmin_system, action->variable)) {

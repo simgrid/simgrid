@@ -21,62 +21,74 @@ XBT_PUBLIC(void) TRACE_category_with_color (const char *category, const char *co
 XBT_PUBLIC(void) TRACE_msg_set_task_category(m_task_t task,
                                              const char *category);
 void TRACE_msg_set_process_category(m_process_t process, const char *category, const char *color);
-XBT_PUBLIC(void) TRACE_user_host_variable(double time,
-                                          const char *variable,
-                                          double value, const char *what);
+
 XBT_PUBLIC(const char *) TRACE_node_name (xbt_node_t node);
 XBT_PUBLIC(xbt_graph_t) TRACE_platform_graph (void);
 XBT_PUBLIC(void) TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
-XBT_PUBLIC(void) TRACE_user_link_variable(double time, const char *resource,
-                              const char *variable,
-                              double value, const char *what);
 XBT_PUBLIC(void) TRACE_declare_mark(const char *mark_type);
 XBT_PUBLIC(void) TRACE_mark(const char *mark_type, const char *mark_value);
 XBT_PUBLIC(void) TRACE_smpi_set_category(const char *category);
 XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task,
                                             const char *category);
 
+/*
+ * User-variables related functions
+ */
+typedef enum {
+  INSTR_US_DECLARE,
+  INSTR_US_SET,
+  INSTR_US_ADD,
+  INSTR_US_SUB,
+} InstrUserVariable;
+
+XBT_PUBLIC(void) TRACE_user_variable(double time,
+                              const char *resource,
+                              const char *variable,
+                              const char *father_type,
+                              double value,
+                              InstrUserVariable what);
+
 #define TRACE_host_variable_declare(var) \
-	TRACE_user_host_variable(0,var,0,"declare");
+	TRACE_user_variable(0,NULL,var,"HOST",0,INSTR_US_DECLARE);
 
-#define TRACE_host_variable_set_with_time(time,var,value) \
-	TRACE_user_host_variable(time,var,value,"set");
+#define TRACE_host_variable_set_with_time(time,host,var,value) \
+	TRACE_user_variable(time,host,var,"HOST",value,INSTR_US_SET);
 
-#define TRACE_host_variable_add_with_time(time,var,value) \
-	TRACE_user_host_variable(time,var,value,"add");
+#define TRACE_host_variable_add_with_time(time,host,var,value) \
+	TRACE_user_variable(time,host,var,"HOST",value,INSTR_US_ADD);
 
-#define TRACE_host_variable_sub_with_time(time,var,value) \
-	TRACE_user_host_variable(time,var,value,"sub");
+#define TRACE_host_variable_sub_with_time(time,host,var,value) \
+	TRACE_user_variable(time,host,var,"HOST",value,INSTR_US_SUB);
 
-#define TRACE_host_variable_set(var,value) \
-	TRACE_user_host_variable(MSG_get_clock(),var,value,"set");
+#define TRACE_host_variable_set(host,var,value) \
+	TRACE_user_variable(MSG_get_clock(),host,var,"HOST",value,INSTR_US_SET);
 
-#define TRACE_host_variable_add(var,value) \
-	TRACE_user_host_variable(MSG_get_clock(),var,value,"add");
+#define TRACE_host_variable_add(host,var,value) \
+	TRACE_user_variable(MSG_get_clock(),host,var,"HOST",value,INSTR_US_ADD);
 
-#define TRACE_host_variable_sub(var,value) \
-	TRACE_user_host_variable(MSG_get_clock(),var,value,"sub");
+#define TRACE_host_variable_sub(host,var,value) \
+	TRACE_user_variable(MSG_get_clock(),host,var,"HOST",value,INSTR_US_SUB);
 
 #define TRACE_link_variable_declare(var) \
-	TRACE_user_link_variable(0,NULL,NULL,var,0,"declare");
+	TRACE_user_variable(0,NULL,var,"LINK",0,INSTR_US_DECLARE);
 
 #define TRACE_link_variable_set_with_time(time,link,var,value) \
-	TRACE_user_link_variable(time,link,var,value,"set");
+	TRACE_user_variable(time,link,var,"LINK",value,INSTR_US_SET);
 
 #define TRACE_link_variable_add_with_time(time,link,var,value) \
-	TRACE_user_link_variable(time,link,var,value,"add");
+	TRACE_user_variable(time,link,var,"LINK",value,INSTR_US_ADD);
 
 #define TRACE_link_variable_sub_with_time(time,link,var,value) \
-	TRACE_user_link_variable(time,link,var,value,"sub");
+	TRACE_user_variable(time,link,var,"LINK",value,INSTR_US_SUB);
 
 #define TRACE_link_variable_set(link,var,value) \
-	TRACE_user_link_variable(MSG_get_clock(),link,var,value,"set");
+	TRACE_user_variable(MSG_get_clock(),link,var,"LINK",value,INSTR_US_SET);
 
 #define TRACE_link_variable_add(link,var,value) \
-	TRACE_user_link_variable(MSG_get_clock(),link,var,value,"add");
+	TRACE_user_variable(MSG_get_clock(),link,var,"LINK",value,INSTR_US_ADD);
 
 #define TRACE_link_variable_sub(link,var,value) \
-	TRACE_user_link_variable(MSG_get_clock(),link,var,value,"sub");
+	TRACE_user_variable(MSG_get_clock(),link,var,"LINK",value,INSTR_US_SUB);
 
 #else                           /* HAVE_TRACING */
 
@@ -87,12 +99,12 @@ XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task,
 #define TRACE_set_mask(mask)
 
 #define TRACE_host_variable_declare(var)
-#define TRACE_host_variable_set_with_time(time,var,value)
-#define TRACE_host_variable_add_with_time(time,var,value)
-#define TRACE_host_variable_sub_with_time(time,var,value)
-#define TRACE_host_variable_set(var,value)
-#define TRACE_host_variable_add(var,value)
-#define TRACE_host_variable_sub(var,value)
+#define TRACE_host_variable_set_with_time(time,host,var,value)
+#define TRACE_host_variable_add_with_time(time,host,var,value)
+#define TRACE_host_variable_sub_with_time(time,host,var,value)
+#define TRACE_host_variable_set(host,var,value)
+#define TRACE_host_variable_add(host,var,value)
+#define TRACE_host_variable_sub(host,var,value)
 #define TRACE_link_variable_declare(var)
 #define TRACE_link_variable_set_with_time(time,link,var,value)
 #define TRACE_link_variable_add_with_time(time,link,var,value)

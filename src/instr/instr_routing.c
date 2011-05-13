@@ -306,7 +306,7 @@ void instr_routing_define_callbacks ()
 /*
  * user categories support
  */
-static void recursiveNewUserVariableType (const char *new_typename, const char *color, type_t root)
+static void recursiveNewVariableType (const char *new_typename, const char *color, type_t root)
 {
   if (!strcmp (root->name, "HOST")){
     char tnstr[INSTR_DEFAULT_STR_SIZE];
@@ -322,51 +322,34 @@ static void recursiveNewUserVariableType (const char *new_typename, const char *
   type_t child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
-    recursiveNewUserVariableType (new_typename, color, child_type);
+    recursiveNewVariableType (new_typename, color, child_type);
   }
 }
 
-void instr_new_user_variable_type (const char *new_typename, const char *color)
+void instr_new_variable_type (const char *new_typename, const char *color)
 {
-  recursiveNewUserVariableType (new_typename, color, getRootType());
+  recursiveNewVariableType (new_typename, color, getRootType());
 }
 
-static void recursiveNewUserLinkVariableType (const char *new_typename, const char *color, type_t root)
+static void recursiveNewUserVariableType (const char *father_type, const char *new_typename, const char *color, type_t root)
 {
-  if (!strcmp (root->name, "LINK")){
+  if (!strcmp (root->name, father_type)){
     getVariableType(new_typename, color, root);
   }
   xbt_dict_cursor_t cursor = NULL;
   type_t child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
-    recursiveNewUserLinkVariableType (new_typename, color, child_type);
+    recursiveNewUserVariableType (father_type, new_typename, color, child_type);
   }
 }
 
-void instr_new_user_link_variable_type  (const char *new_typename, const char *color)
+void instr_new_user_variable_type  (const char *father_type, const char *new_typename, const char *color)
 {
-  recursiveNewUserLinkVariableType (new_typename, color, getRootType());
+  recursiveNewUserVariableType (father_type, new_typename, color, getRootType());
 }
 
 
-static void recursiveNewUserHostVariableType (const char *new_typename, const char *color, type_t root)
-{
-  if (!strcmp (root->name, "HOST")){
-    getVariableType(new_typename, color, root);
-  }
-  xbt_dict_cursor_t cursor = NULL;
-  type_t child_type;
-  char *name;
-  xbt_dict_foreach(root->children, cursor, name, child_type) {
-    recursiveNewUserHostVariableType (new_typename, color, child_type);
-  }
-}
-
-void instr_new_user_host_variable_type  (const char *new_typename, const char *color)
-{
-  recursiveNewUserHostVariableType (new_typename, color, getRootType());
-}
 
 int instr_platform_traced ()
 {

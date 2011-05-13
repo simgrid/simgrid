@@ -31,6 +31,7 @@
 typedef struct s_smx_global {
   smx_context_factory_t context_factory;
   xbt_dynar_t process_to_run;
+  xbt_dynar_t process_that_ran;
   xbt_swag_t process_list;
   xbt_swag_t process_to_destroy;
   smx_process_t maestro_process;
@@ -258,15 +259,6 @@ static XBT_INLINE smx_context_t SIMIX_context_self(void)
 static XBT_INLINE void* SIMIX_context_get_data(smx_context_t context)
 {
   return (*(simix_global->context_factory->get_data))(context);
-}
-
-/**
- \brief returns the thread's pid running the current context
- \return The pid
- */
-static XBT_INLINE int SIMIX_context_get_thread_id(void)
-{
-  return (*(simix_global->context_factory->get_thread_id))();
 }
 
 XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);

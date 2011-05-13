@@ -396,7 +396,6 @@ set(install_HEADERS
 	include/simdag/simdag.h
 	include/simdag/datatypes.h
 	include/smpi/smpi.h
-	${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
 	include/smpi/mpi.h
 	include/smpi/mpif.h
 	include/surf/surfxml_parse.h
@@ -413,12 +412,15 @@ set(install_HEADERS
 	include/amok/peermanagement.h
 	include/amok/bandwidth.h
 	include/instr/instr.h
-	${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
 	include/gras.h 
 	include/xbt.h
 	include/simix/simix.h
 	include/simix/datatypes.h
 	include/simix/context.h
+)
+set(GENERATE_HEADERS
+	${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
+	${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
 )
 
 ### depend of some variables setted upper

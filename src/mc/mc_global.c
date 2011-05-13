@@ -76,15 +76,18 @@ int MC_random(int min, int max)
  */
 void MC_wait_for_requests(void)
 {
-  smx_req_t req = NULL;
+  smx_process_t process;
+  smx_req_t req;
+  unsigned int iter;
 
-  do {
-    SIMIX_context_runall(simix_global->process_to_run);
-    while((req = SIMIX_request_pop())){
-      if(!MC_request_is_visible(req))
-        SIMIX_request_pre(req, 0);
+  while (xbt_dynar_length(simix_global->process_to_run)) {
+    SIMIX_process_runall();
+    xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
+      req = &process->request;
+      if (req->call != REQ_NO_REQ && !MC_request_is_visible(req))
+          SIMIX_request_pre(req, 0);
     }
-  } while (xbt_dynar_length(simix_global->process_to_run));
+  }
 }
 
 int MC_deadlock_check()

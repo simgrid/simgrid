@@ -1,14 +1,6 @@
 SimGrid (3.6) unstable; urgency=low
 
  MSG
- * Change the prototypes of action replay. Sorry for inconvenience,
-   but this is really more efficient this way (and to adapt your code,
-   you just have to fix the initialization, that shouldn't be too long)
- * Kill the braindead MSG_task_refcount_dec() function. I guess nobody
-   ever managed to do anything useful with it.
- * New function MSG_comm_testany(). Similarly to MSG_comm_waitany(), it
-   takes a dynar of communications. It returns immediately and gives the
-   index of a finished communication (if any).
  * New function MSG_comm_get_status(). MSG_comm_test() and MSG_comm_testany()
    only say if a communication is finished, no matter whether it succeeded or
    failed. You can call MSG_comm_get_status() to know the status of a finished
@@ -17,13 +9,21 @@ SimGrid (3.6) unstable; urgency=low
    communication is detached, you are never notified of its success or failure
    and the memory is released automatically once it is finished. This function
    is useful when you don't care about the end nor the success of a
-   communication you send.
+   communication.
+ * Change the prototypes of action replay. Sorry for inconvenience,
+   but this is really more efficient this way (and to adapt your code,
+   you just have to fix the initialization, that shouldn't be too long)
+ * Kill the braindead MSG_task_refcount_dec() function. I guess nobody
+   ever managed to do anything useful with it.
+ * New function MSG_comm_testany(). Similarly to MSG_comm_waitany(), it
+   takes a dynar of communications. It returns immediately and gives the
+   index of a finished communication (if any).
  * New example: a basic implementation of the Chord P2P algorithm.
 
  SURF
  * New model for multi-core CPUs. You can now use the core attribute to
    precise the number of cores of a host. This is a basic model. Every
-   process running on the host receive at most the power provided in
+   process running on the host receives at most the power provided in
    the DTD (throughput<=power). Total throughput of process cannot exceed
    power * num_cores.
  * New peer tag. This peer tag creates a tiny AS comprising a host and a
@@ -35,9 +35,7 @@ SimGrid (3.6) unstable; urgency=low
    into a Vivaldi routing model (based on the rule-based model). This allows to
    combine Vivaldi based latencies with last-mile platforms.
 
- Simix
- * Added a check for NaN of IEEE754 infinite in the double entries of 
-   the smx_user.c file
+ SIMIX
  * Introduce a new context factory "raw", highly inspirated from the
    ucontext factory, but using manually crafted functions in assembly to
    do the work in an efficient manner.
@@ -50,14 +48,17 @@ SimGrid (3.6) unstable; urgency=low
    with N parallel threads (the default is 1, meaning no parallelism).
  * Allow to decide dynamically between sequential and parallel modes.
    When nthreads > 1, you can use --cfg=contexts/threshold:P to run the user
-   processes in parallel only when their number is greater than or equal to P.
+   processes in parallel only when their number is greater than or equal to P
+   (the default is 2).
+ * Added a check for NaN of IEEE754 infinite in the double entries of 
+   the smx_user.c file
 
  XBT
  * New command line option: if you pass --cfg=verbose-exit:0, SimGrid
    won't output the state of processes when interrupted with Ctrl-C
  * Add a new function xbt_dynar_to_array that transforms a dynar into a
    NULL-terminated array. This may solve backward compatibility issues
-   due to the change to return type of SD_Simulate. See also:
+   due to the change to return type of SD_simulate. See also:
    http://lists.gforge.inria.fr/pipermail/simgrid-user/2010-December/002206.html
  * Add new macros with variable number of arguments.
    - in xbt/log.h: XBT_DEBUG, XBT_VERB, XBT_INFO, etc.
@@ -67,7 +68,8 @@ SimGrid (3.6) unstable; urgency=low
    Define XBT_USE_DEPRECATED if you want to use the old numbered macros like
    INFO1, INFO2, etc.
  * Change xbt_die() to accept a format string with arguments, just like printf.
- * New data structure: xbt_lib_t, like a dict but more general and with better memory handling.
+ * New data structure: xbt_lib_t, like a dict but more general and with better
+   memory handling.
 
  INSTR
  * New configuration options
@@ -77,7 +79,8 @@ SimGrid (3.6) unstable; urgency=low
  * XBT logging makes tracing error checks easier, new root log hierarchy: instr
  * New TRACE_user_link_variable interface:
    User provides the name of the link and the tracing variable to attach to it
- * the declaration of tracing categories must be done after the environment creation
+ * the declaration of tracing categories must be done after the environment
+   creation
  * simpler tracing interface, just one way to declare categories
     TRACE_category or TRACE_category_with_color, it is up to you
  * links in the trace file are again identified by their names

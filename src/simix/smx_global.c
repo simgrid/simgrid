@@ -78,7 +78,8 @@ void SIMIX_global_init(int *argc, char **argv)
 
     simix_global = xbt_new0(s_smx_global_t, 1);
 
-    simix_global->process_to_run = xbt_dynar_new(sizeof(void *), NULL);
+    simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), NULL);
+    simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_process_t), NULL);
     simix_global->process_list =
         xbt_swag_new(xbt_swag_offset(proc, process_hookup));
     simix_global->process_to_destroy =
@@ -101,9 +102,6 @@ void SIMIX_global_init(int *argc, char **argv)
     /* context exception handlers */
     __xbt_running_ctx_fetch = SIMIX_process_get_running_context;
     __xbt_ex_terminate = SIMIX_process_exception_terminate;
-
-    /* Initialize request mechanism */
-    SIMIX_request_init();
 
     /* Initialize the SIMIX network module */
     SIMIX_network_init();
@@ -136,12 +134,10 @@ void SIMIX_clean(void)
   /* Exit the SIMIX network module */
   SIMIX_network_exit();
 
-  /* Exit request mechanism */
-  SIMIX_request_destroy();
-
   xbt_heap_free(simix_timers);
   /* Free the remaining data structures */
   xbt_dynar_free(&simix_global->process_to_run);
+  xbt_dynar_free(&simix_global->process_that_ran);
   xbt_swag_free(simix_global->process_to_destroy);
   xbt_swag_free(simix_global->process_list);
   simix_global->process_list = NULL;
@@ -188,7 +184,7 @@ XBT_INLINE double SIMIX_get_clock(void)
 void SIMIX_run(void)
 {
   double time = 0;
-  smx_req_t req;
+  smx_process_t process;
   xbt_swag_t set;
   surf_action_t action;
   smx_timer_t timer;
@@ -201,15 +197,17 @@ void SIMIX_run(void)
 #ifdef TIME_BENCH
     smx_ctx_raw_new_sr();
 #endif
-    do {
+    while (xbt_dynar_length(simix_global->process_to_run)) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu",
               xbt_dynar_length(simix_global->process_to_run));
-      SIMIX_context_runall(simix_global->process_to_run);
-      while ((req = SIMIX_request_pop())) {
-        XBT_DEBUG("Handling request %p", req);
-        SIMIX_request_pre(req, 0);
+      SIMIX_process_runall();
+      xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
+        if (process->request.call != REQ_NO_REQ) {
+          XBT_DEBUG("Handling request %p", &process->request);
+          SIMIX_request_pre(&process->request, 0);
+        }
       }
-    } while (xbt_dynar_length(simix_global->process_to_run));
+    }
 
     time = surf_solve(SIMIX_timer_next());
 

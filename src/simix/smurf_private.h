@@ -119,7 +119,6 @@ SIMIX_REQ_LIST
  * \brief Represents a SIMIX request.
  */
 typedef struct s_smx_req {
-  s_xbt_swag_hookup_t reqtable_hookup;
   e_smx_req_t call;
   smx_process_t issuer;
 
@@ -505,11 +504,7 @@ typedef struct s_smx_req {
 
 /******************************** General *************************************/
 
-void SIMIX_request_init(void);
-void SIMIX_request_destroy(void);
-xbt_swag_t SIMIX_request_get_reqlist(int thread_pid);
 void SIMIX_request_push(void);
-smx_req_t SIMIX_request_pop(void);
 void SIMIX_request_answer(smx_req_t);
 void SIMIX_request_pre(smx_req_t, int);
 void SIMIX_request_post(smx_action_t);

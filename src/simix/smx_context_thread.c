@@ -23,6 +23,8 @@ typedef struct s_smx_ctx_thread {
   xbt_os_sem_t end;             /* this semaphore is used to schedule/unschedule the process   */
 } s_smx_ctx_thread_t, *smx_ctx_thread_t;
 
+static xbt_os_sem_t smx_ctx_thread_sem;
+
 static smx_context_t
 smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc,
                                       char **argv,
@@ -37,6 +39,7 @@ static void smx_ctx_thread_runall_serial(xbt_dynar_t processes);
 static void smx_ctx_thread_runall_parallel(xbt_dynar_t processes);
 static smx_context_t smx_ctx_thread_self(void);
 
+static int smx_ctx_thread_factory_finalize(smx_context_factory_t *factory);
 static void *smx_ctx_thread_wrapper(void *param);
 
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
@@ -44,6 +47,7 @@ void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
   smx_ctx_base_factory_init(factory);
   XBT_VERB("Activating thread context factory");
 
+  (*factory)->finalize  = smx_ctx_thread_factory_finalize;
   (*factory)->create_context = smx_ctx_thread_factory_create_context;
   /* Do not overload that method (*factory)->finalize */
   (*factory)->free = smx_ctx_thread_free;
@@ -57,6 +61,21 @@ void SIMIX_ctx_thread_factory_init(smx_context_factory_t * factory)
 
   (*factory)->self = smx_ctx_thread_self;
   (*factory)->name = "ctx_thread_factory";
+
+  if (SIMIX_context_is_parallel()) {
+    smx_ctx_thread_sem = xbt_os_sem_init(SIMIX_context_get_nthreads());
+  } else {
+    smx_ctx_thread_sem = NULL;
+  }
+}
+
+static int smx_ctx_thread_factory_finalize(smx_context_factory_t *factory)
+{
+  if (smx_ctx_thread_sem) {
+    xbt_os_sem_destroy(smx_ctx_thread_sem);
+    smx_ctx_thread_sem = NULL;
+  }
+  return smx_ctx_base_factory_finalize(factory);
 }
 
 static smx_context_t
@@ -115,6 +134,9 @@ static void smx_ctx_thread_stop(smx_context_t pcontext)
   /* please no debug here: our procdata was already free'd */
   smx_ctx_base_stop(pcontext);
 
+  if (smx_ctx_thread_sem)       /* parallel run */
+    xbt_os_sem_release(smx_ctx_thread_sem);
+
   /* signal to the maestro that it has finished */
   xbt_os_sem_release(((smx_ctx_thread_t) context)->end);
 
@@ -130,6 +152,8 @@ static void *smx_ctx_thread_wrapper(void *param)
   /* Tell the maestro we are starting, and wait for its green light */
   xbt_os_sem_release(context->end);
   xbt_os_sem_acquire(context->begin);
+  if (smx_ctx_thread_sem)       /* parallel run */
+    xbt_os_sem_acquire(smx_ctx_thread_sem);
 
   (context->super.code) (context->super.argc, context->super.argv);
 
@@ -139,8 +163,12 @@ static void *smx_ctx_thread_wrapper(void *param)
 
 static void smx_ctx_thread_suspend(smx_context_t context)
 {
+  if (smx_ctx_thread_sem)       /* parallel run */
+    xbt_os_sem_release(smx_ctx_thread_sem);
   xbt_os_sem_release(((smx_ctx_thread_t) context)->end);
   xbt_os_sem_acquire(((smx_ctx_thread_t) context)->begin);
+  if (smx_ctx_thread_sem)       /* parallel run */
+    xbt_os_sem_acquire(smx_ctx_thread_sem);
 }
 
 static void smx_ctx_thread_runall_serial(xbt_dynar_t processes)
@@ -152,7 +180,6 @@ static void smx_ctx_thread_runall_serial(xbt_dynar_t processes)
     xbt_os_sem_release(((smx_ctx_thread_t) process->context)->begin);
     xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
   }
-  xbt_dynar_reset(processes);
 }
 
 static void smx_ctx_thread_runall_parallel(xbt_dynar_t processes)
@@ -166,7 +193,6 @@ static void smx_ctx_thread_runall_parallel(xbt_dynar_t processes)
   xbt_dynar_foreach(processes, index, process) {
      xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
   }
-  xbt_dynar_reset(processes);
 }
 
 static smx_context_t smx_ctx_thread_self(void)

@@ -17,7 +17,7 @@ perl ./buildtools/pipol/cmake.pl
 perl ./buildtools/pipol/ruby.pl
 
 #supernovae
-cmake .
+cmake -Drelease=on .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
 ctest -D ExperimentalBuild

@@ -78,12 +78,16 @@ if(enable_lib_static AND NOT WIN32)
 endif(enable_lib_static AND NOT WIN32)
 
 # include files
-foreach(file ${install_HEADERS})
+set(HEADERS
+    ${install_HEADERS}
+    ${GENERATE_HEADERS}
+    )
+foreach(file ${HEADERS})
   get_filename_component(location ${file} PATH)
   string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/" "" location "${location}")
   install(FILES ${file}
           DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${location})
-endforeach(file ${install_HEADERS})
+endforeach(file ${HEADERS})
 
 # example files
 foreach(file ${examples_to_install_in_doc})

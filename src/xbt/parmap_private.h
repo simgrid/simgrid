@@ -42,6 +42,7 @@ typedef struct s_xbt_parmap {
   unsigned int workers_max_id;
   void_f_pvoid_t fun;
   xbt_dynar_t data;
+  unsigned int index;
 } s_xbt_parmap_t;
 
 #endif
