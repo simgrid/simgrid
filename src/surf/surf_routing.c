@@ -584,70 +584,59 @@ static void elements_father(const char *src, const char *dst,
   xbt_assert(src && dst, "bad parameters for \"elements_father\" method");
 
   routing_component_t src_as, dst_as;
-  int index_src, index_dst, index_father_src, index_father_dst;
-  xbt_dynar_t path_src = NULL;
-  xbt_dynar_t path_dst = NULL;
-  routing_component_t current = NULL;
-  routing_component_t *current_src = NULL;
-  routing_component_t *current_dst = NULL;
-  routing_component_t *father = NULL;
+  int index_src, index_dst;
+  xbt_dynar_t path_src;
+  xbt_dynar_t path_dst;
+  routing_component_t current;
+  routing_component_t current_src;
+  routing_component_t current_dst;
+  routing_component_t father;
 
   /* (1) find the as where the src and dst are located */
-  void * src_data = xbt_lib_get_or_null(host_lib,src, ROUTING_HOST_LEVEL);
-  void * dst_data = xbt_lib_get_or_null(host_lib,dst, ROUTING_HOST_LEVEL);
-  if(!src_data) src_data = xbt_lib_get_or_null(as_router_lib,src, ROUTING_ASR_LEVEL);
-  if(!dst_data) dst_data = xbt_lib_get_or_null(as_router_lib,dst, ROUTING_ASR_LEVEL);
-  src_as = ((network_element_info_t)src_data)->rc_component;
-  dst_as = ((network_element_info_t)dst_data)->rc_component;
+  network_element_info_t src_data = xbt_lib_get_or_null(host_lib, src,
+                                                        ROUTING_HOST_LEVEL);
+  network_element_info_t dst_data = xbt_lib_get_or_null(host_lib, dst,
+                                                        ROUTING_HOST_LEVEL);
+  if (!src_data)
+    src_data = xbt_lib_get_or_null(as_router_lib, src, ROUTING_ASR_LEVEL);
+  if (!dst_data)
+    dst_data = xbt_lib_get_or_null(as_router_lib, dst, ROUTING_ASR_LEVEL);
+  src_as = src_data->rc_component;
+  dst_as = dst_data->rc_component;
 
-  xbt_assert(src_as
-              && dst_as,
-              "Ask for route \"from\"(%s) or \"to\"(%s) no found", src,
-              dst);
+  xbt_assert(src_as && dst_as,
+             "Ask for route \"from\"(%s) or \"to\"(%s) no found", src, dst);
 
   /* (2) find the path to the root routing component */
   path_src = xbt_dynar_new(sizeof(routing_component_t), NULL);
-  current = src_as;
-  while (current != NULL) {
-    xbt_dynar_push(path_src, &current);
-    current = current->routing_father;
-  }
+  for (current = src_as ; current != NULL ; current = current->routing_father)
+    xbt_dynar_push_as(path_src, routing_component_t, current);
   path_dst = xbt_dynar_new(sizeof(routing_component_t), NULL);
-  current = dst_as;
-  while (current != NULL) {
-    xbt_dynar_push(path_dst, &current);
-    current = current->routing_father;
-  }
+  for (current = dst_as ; current != NULL ; current = current->routing_father)
+    xbt_dynar_push_as(path_dst, routing_component_t, current);
 
   /* (3) find the common father */
-  index_src = path_src->used - 1;
-  index_dst = path_dst->used - 1;
-  current_src = xbt_dynar_get_ptr(path_src, index_src);
-  current_dst = xbt_dynar_get_ptr(path_dst, index_dst);
-  while (index_src >= 0 && index_dst >= 0 && *current_src == *current_dst) {
-    current_src = xbt_dynar_get_ptr(path_src, index_src);
-    current_dst = xbt_dynar_get_ptr(path_dst, index_dst);
+  index_src = xbt_dynar_length(path_src) - 1;
+  index_dst = xbt_dynar_length(path_dst) - 1;
+  current_src = xbt_dynar_get_as(path_src, index_src, routing_component_t);
+  current_dst = xbt_dynar_get_as(path_dst, index_dst, routing_component_t);
+  while (index_src > 0 && index_dst > 0 && current_src == current_dst) {
     index_src--;
     index_dst--;
+    current_src = xbt_dynar_get_as(path_src, index_src, routing_component_t);
+    current_dst = xbt_dynar_get_as(path_dst, index_dst, routing_component_t);
   }
-  index_src++;
-  index_dst++;
-  current_src = xbt_dynar_get_ptr(path_src, index_src);
-  current_dst = xbt_dynar_get_ptr(path_dst, index_dst);
 
   /* (4) they are not in the same routing component, make the path */
-  index_father_src = index_src + 1;
-  index_father_dst = index_dst + 1;
-
-  if (*current_src == *current_dst)
+  if (current_src == current_dst)
     father = current_src;
   else
-    father = xbt_dynar_get_ptr(path_src, index_father_src);
+    father = xbt_dynar_get_as(path_src, index_src + 1, routing_component_t);
 
   /* (5) result generation */
-  *res_father = *father;        /* first same the father of src and dst */
-  *res_src = *current_src;      /* second the first different father of src */
-  *res_dst = *current_dst;      /* three  the first different father of dst */
+  *res_father = father;         /* first the common father of src and dst */
+  *res_src = current_src;       /* second the first different father of src */
+  *res_dst = current_dst;       /* three  the first different father of dst */
 
   xbt_dynar_free(&path_src);
   xbt_dynar_free(&path_dst);
