@@ -576,12 +576,12 @@ static char* elements_As_name(const char *name)
  * Get the common father of the to processing units, and the first different 
  * father in the chain
  */
-static xbt_dynar_t elements_father(const char *src, const char *dst)
+static void elements_father(const char *src, const char *dst,
+                            routing_component_t *res_father,
+                            routing_component_t *res_src,
+                            routing_component_t *res_dst)
 {
-
   xbt_assert(src && dst, "bad parameters for \"elements_father\" method");
-
-  xbt_dynar_t result = xbt_dynar_new(sizeof(char *), NULL);
 
   routing_component_t src_as, dst_as;
   int index_src, index_dst, index_father_src, index_father_dst;
@@ -645,14 +645,12 @@ static xbt_dynar_t elements_father(const char *src, const char *dst)
     father = xbt_dynar_get_ptr(path_src, index_father_src);
 
   /* (5) result generation */
-  xbt_dynar_push(result, father);       /* first same the father of src and dst */
-  xbt_dynar_push(result, current_src);  /* second the first different father of src */
-  xbt_dynar_push(result, current_dst);  /* three  the first different father of dst */
+  *res_father = *father;        /* first same the father of src and dst */
+  *res_src = *current_src;      /* second the first different father of src */
+  *res_dst = *current_dst;      /* three  the first different father of dst */
 
   xbt_dynar_free(&path_src);
   xbt_dynar_free(&path_dst);
-
-  return result;
 }
 
 /* Global Business methods */
@@ -672,14 +670,10 @@ static void _get_route(const char *src, const char *dst,route_extended_t *e_rout
   XBT_DEBUG("Solve route  \"%s\" to \"%s\"", src, dst);
   xbt_assert(src && dst, "bad parameters for \"_get_route\" method");
 
-  xbt_dynar_t elem_father_list = elements_father(src, dst);
-
-  routing_component_t common_father =
-      xbt_dynar_get_as(elem_father_list, 0, routing_component_t);
-  routing_component_t src_father =
-      xbt_dynar_get_as(elem_father_list, 1, routing_component_t);
-  routing_component_t dst_father =
-      xbt_dynar_get_as(elem_father_list, 2, routing_component_t);
+  routing_component_t common_father;
+  routing_component_t src_father;
+  routing_component_t dst_father;
+  elements_father(src, dst, &common_father, &src_father, &dst_father);
 
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
@@ -752,8 +746,6 @@ static void _get_route(const char *src, const char *dst,route_extended_t *e_rout
     generic_free_extended_route(e_route_cnt);
     generic_free_extended_route(e_route_dst);
   }
-
-  xbt_dynar_free(&elem_father_list);
 }
 
 static double _get_latency(const char *src, const char *dst)
@@ -765,14 +757,10 @@ static double _get_latency(const char *src, const char *dst)
 
   route_extended_t e_route_cnt;
 
-  xbt_dynar_t elem_father_list = elements_father(src, dst);
-
-  routing_component_t common_father =
-      xbt_dynar_get_as(elem_father_list, 0, routing_component_t);
-  routing_component_t src_father =
-      xbt_dynar_get_as(elem_father_list, 1, routing_component_t);
-  routing_component_t dst_father =
-      xbt_dynar_get_as(elem_father_list, 2, routing_component_t);
+  routing_component_t common_father;
+  routing_component_t src_father;
+  routing_component_t dst_father;
+  elements_father(src, dst, &common_father, &src_father, &dst_father);
 
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
@@ -823,8 +811,6 @@ static double _get_latency(const char *src, const char *dst)
     }
 	
   }
-
-  xbt_dynar_free(&elem_father_list);
 
   return latency;
 }
