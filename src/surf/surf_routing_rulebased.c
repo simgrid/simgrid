@@ -163,36 +163,23 @@ static void model_rulebased_set_bypassroute(routing_component_t rc,
 static char *remplace(char *value, const char **src_list, int src_size,
                       const char **dst_list, int dst_size)
 {
-
-  char result_result[BUFFER_SIZE];
-  int i_result_buffer;
-  int value_length = (int) strlen(value);
-  int number = 0;
-
+  char result[BUFFER_SIZE];
+  int i_res = 0;
   int i = 0;
-  i_result_buffer = 0;
-  do {
+
+  while (value[i]) {
     if (value[i] == '$') {
-      i++;                      // skip $
+      i++;                      /* skip the '$' */
+      if (value[i] < '0' || value[i] > '9')
+        xbt_die("bad string parameter, no number indication, at offset: "
+                "%d (\"%s\")", i, value);
 
-      // find the number
-      int number_length = 0;
-      while ('0' <= value[i + number_length]
-             && value[i + number_length] <= '9') {
-        number_length++;
-      }
-      xbt_assert(number_length != 0,
-                  "bad string parameter, no number indication, at offset: %d (\"%s\")",
-                  i, value);
+      /* solve the number */
+      int number = value[i++] - '0';
+      while (value[i] >= '0' && value[i] <= '9')
+        number = 10 * number + (value[i++] - '0');
 
-      // solve number
-      number = atoi(value + i);
-      i = i + number_length;
-      xbt_assert(i + 2 < value_length,
-                  "bad string parameter, too few chars, at offset: %d (\"%s\")",
-                  i, value);
-
-      // solve the indication
+      /* solve the indication */
       const char **param_list;
       int param_size;
       if (value[i] == 's' && value[i + 1] == 'r' && value[i + 2] == 'c') {
@@ -206,34 +193,26 @@ static char *remplace(char *value, const char **src_list, int src_size,
         xbt_die("bad string parameter, support only \"src\" and \"dst\", "
                 "at offset: %d (\"%s\")", i, value);
       }
-      i = i + 3;
+      i += 3;
 
-      xbt_assert(param_size >= number,
-                  "bad string parameter, not enough length param_size, at offset: %d (\"%s\") %d %d",
-                  i, value, param_size, number);
+      xbt_assert(number < param_size,
+                 "bad string parameter, not enough length param_size, "
+                 "at offset: %d (\"%s\") %d %d", i, value, param_size, number);
 
       const char *param = param_list[number];
-      int size = strlen(param);
-      int cp;
-      for (cp = 0; cp < size; cp++) {
-        result_result[i_result_buffer] = param[cp];
-        i_result_buffer++;
-        if (i_result_buffer >= BUFFER_SIZE)
-          break;
-      }
+      int j = 0;
+      while (param[j] && i_res < BUFFER_SIZE)
+        result[i_res++] = param[j++];
     } else {
-      result_result[i_result_buffer] = value[i];
-      i_result_buffer++;
-      i++;                      // next char
+      result[i_res++] = value[i++]; /* next char */
     }
-
-  } while (i < value_length && i_result_buffer < BUFFER_SIZE);
-
-  xbt_assert(i_result_buffer < BUFFER_SIZE,
-              "solving string \"%s\", small buffer size (%d)", value,
-              BUFFER_SIZE);
-  result_result[i_result_buffer] = 0;
-  return xbt_strdup(result_result);
+    if (i_res >= BUFFER_SIZE)
+      xbt_die("solving string \"%s\", small buffer size (%d)",
+              value, BUFFER_SIZE);
+  }
+  result[i_res++] = '\0';
+  char *res = xbt_malloc(i_res);
+  return memcpy(res, result, i_res);
 }
 
 static route_extended_t rulebased_get_route(routing_component_t rc,
