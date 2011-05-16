@@ -28,6 +28,11 @@ if(WIN32)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=i486")
 endif(WIN32)
 
+# Try to make Mac a bit more complient to open source standards
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_XOPEN_SOURCE")
+endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+
 if(enable_coverage)
 	find_program(GCOV_PATH gcov)
 	if(GCOV_PATH)

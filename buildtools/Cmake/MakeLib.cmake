@@ -1,11 +1,5 @@
 ### Make Libs
 
-
-# Try to make Mac a bit more complient to open source standards
-if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-	add_definitions("-D_XOPEN_SOURCE")
-endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-
 ###############################
 # Declare the library content #
 ###############################
