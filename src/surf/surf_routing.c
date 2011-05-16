@@ -643,7 +643,7 @@ static void elements_father(const char *src, const char *dst,
 /* Global Business methods */
 
 /**
- * \brief Recursive function for get_route and get_latency
+ * \brief Recursive function for get_route_latency
  *
  * \param src the source host name 
  * \param dst the destination host name
@@ -776,6 +776,22 @@ static void _get_route_latency(const char *src, const char *dst,
 }
 
 /**
+ * \brief Generic function for get_route, get_route_no_cleanup, and get_latency
+ */
+static void get_route_latency(const char *src, const char *dst,
+                              xbt_dynar_t *route, double *latency, int cleanup)
+{
+  _get_route_latency(src, dst, route, latency);
+  xbt_assert(!route || *route, "no route between \"%s\" and \"%s\"", src, dst);
+  xbt_assert(!latency || *latency >= 0.0,
+             "latency error on route between \"%s\" and \"%s\"", src, dst);
+  if (route) {
+    xbt_dynar_free(&global_routing->last_route);
+    global_routing->last_route = cleanup ? *route : NULL;
+  }
+}
+
+/**
  * \brief Generic method: find a route between hosts
  *
  * \param src the source host name 
@@ -787,15 +803,8 @@ static void _get_route_latency(const char *src, const char *dst,
  */
 static xbt_dynar_t get_route(const char *src, const char *dst)
 {
-
   xbt_dynar_t route = NULL;
-
-  _get_route_latency(src, dst, &route, NULL);
-  xbt_assert(route, "no route between \"%s\" and \"%s\"", src, dst);
-
-  xbt_dynar_free(&global_routing->last_route);
-  global_routing->last_route = route;
-
+  get_route_latency(src, dst, &route, NULL, 1);
   return route;
 }
 
@@ -811,18 +820,16 @@ static xbt_dynar_t get_route(const char *src, const char *dst)
  */
 static xbt_dynar_t get_route_no_cleanup(const char *src, const char *dst)
 {
-	xbt_dynar_t d = get_route(src,dst);
-	global_routing->last_route = NULL;
-	return d;
+  xbt_dynar_t route = NULL;
+  get_route_latency(src, dst, &route, NULL, 0);
+  return route;
 }
 
 /*Get Latency*/
 static double get_latency(const char *src, const char *dst)
 {
-
   double latency = -1.0;
-  _get_route_latency(src, dst, NULL, &latency);
-  xbt_assert(latency>=0.0, "no route between \"%s\" and \"%s\"", src, dst);
+  get_route_latency(src, dst, NULL, &latency, 0);
   return latency;
 }
 
