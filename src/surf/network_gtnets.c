@@ -298,11 +298,11 @@ static void update_actions_state(double now, double delta)
              action->generic_action.remains);
 
 #ifdef HAVE_TRACING
-      double last_amount_sent = (action->generic_action.cost - action->last_remains);
-      double amount_sent = (action->generic_action.cost - action->generic_action.remains);
-
-      // tracing resource utilization
       if (TRACE_is_active()) {
+        double last_amount_sent = (action->generic_action.cost - action->last_remains);
+        double amount_sent = (action->generic_action.cost - action->generic_action.remains);
+
+        // tracing resource utilization
         xbt_dynar_t route = global_routing->get_route(action->src_name,
                                                       action->dst_name);
         network_link_GTNETS_t link;
