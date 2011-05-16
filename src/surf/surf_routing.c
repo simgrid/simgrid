@@ -937,6 +937,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   global_routing->get_latency = get_latency;
   global_routing->get_route_no_cleanup = get_route_no_cleanup;
   global_routing->get_onelink_routes = get_onelink_routes;
+  global_routing->get_route_latency = get_route_latency;
   global_routing->get_network_element_type = get_network_element_type;
   global_routing->finalize = finalize;
   global_routing->loopback = loopback;

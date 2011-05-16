@@ -610,9 +610,9 @@ static surf_action_t net_communicate(const char *src_name,
 
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
-  // I will need this route for some time so let's call get_route_no_cleanup
-  xbt_dynar_t route = global_routing->get_route_no_cleanup(src_name, dst_name);
-
+  xbt_dynar_t route;
+  // I will need this route for some time so require for no cleanup
+  global_routing->get_route_latency(src_name, dst_name, &route, &latency, 0);
 
   if (sg_network_fullduplex == 1) {
     back_route = global_routing->get_route(dst_name, src_name);
@@ -624,7 +624,6 @@ static surf_action_t net_communicate(const char *src_name,
   XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
-  latency = global_routing->get_latency(src_name,dst_name);
   xbt_assert(xbt_dynar_length(route) || latency,
               "You're trying to send data from %s to %s but there is no connection at all between these two hosts.",
               src_name, dst_name);
