@@ -610,14 +610,14 @@ static void elements_father(const char *src, const char *dst,
 
   /* (2) find the path to the root routing component */
   for (current = src_as ; current != NULL ; current = current->routing_father) {
-    path_src[index_src++] = current;
     if (index_src >= ELEMENTS_FATHER_MAXDEPTH)
       xbt_die("ELEMENTS_FATHER_MAXDEPTH should be increased for path_src");
+    path_src[index_src++] = current;
   }
   for (current = dst_as ; current != NULL ; current = current->routing_father) {
-    path_dst[index_dst++] = current;
     if (index_dst >= ELEMENTS_FATHER_MAXDEPTH)
       xbt_die("ELEMENTS_FATHER_MAXDEPTH should be increased for path_dst");
+    path_dst[index_dst++] = current;
   }
 
   /* (3) find the common father */
