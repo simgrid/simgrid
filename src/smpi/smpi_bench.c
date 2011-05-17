@@ -7,6 +7,7 @@
 #include "private.h"
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
+#include "xbt/ex.h"
 #include "surf/surf.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
@@ -14,6 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
 
 xbt_dict_t allocs = NULL;       /* Allocated on first use */
 xbt_dict_t samples = NULL;      /* Allocated on first use */
+xbt_dict_t calls = NULL;        /* Allocated on first use */
 
 typedef struct {
   int count;
@@ -38,6 +40,9 @@ void smpi_bench_destroy(void)
   }
   if (samples) {
     xbt_dict_free(&samples);
+  }
+  if(calls) {
+    xbt_dict_free(&calls);
   }
 }
 
@@ -222,4 +227,50 @@ void smpi_shared_free(void *ptr)
   if (data->count <= 0) {
     xbt_dict_remove(allocs, loc);
   }
+}
+
+int smpi_shared_known_call(const char* func, const char* input) {
+   char* loc = bprintf("%s:%s", func, input);
+   xbt_ex_t ex;
+   int known;
+
+   if(!calls) {
+      calls = xbt_dict_new();
+   }
+   TRY {
+      xbt_dict_get(calls, loc); /* Succeed or throw */
+      known = 1;
+   } CATCH(ex) {
+      if(ex.category == not_found_error) {
+         known = 0;
+         xbt_ex_free(ex);
+      } else {
+         RETHROW;
+      }
+   }
+   free(loc);
+   return known;
+}
+
+void* smpi_shared_get_call(const char* func, const char* input) {
+   char* loc = bprintf("%s:%s", func, input);
+   void* data;
+
+   if(!calls) {
+      calls = xbt_dict_new();
+   }
+   data = xbt_dict_get(calls, loc);
+   free(loc);
+   return data;
+}
+
+void* smpi_shared_set_call(const char* func, const char* input, void* data) {
+   char* loc = bprintf("%s:%s", func, input);
+
+   if(!calls) {
+      calls = xbt_dict_new();
+   }
+   xbt_dict_set(calls, loc, data, NULL);
+   free(loc);
+   return data;
 }

@@ -444,6 +444,13 @@ XBT_PUBLIC(void *) smpi_shared_malloc(size_t size, const char *file,
 XBT_PUBLIC(void) smpi_shared_free(void *data);
 #define SMPI_SHARED_FREE(data) smpi_shared_free(data)
 
+XBT_PUBLIC(int) smpi_shared_known_call(const char* func, const char* input);
+XBT_PUBLIC(void*) smpi_shared_get_call(const char* func, const char* input);
+XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void* data);
+#define SMPI_SHARED_CALL(func, input, ...) \
+   (smpi_shared_known_call(#func, input) ? smpi_shared_get_call(#func, input) \
+                                         : smpi_shared_set_call(#func, input, func(__VA_ARGS__)))
+
 /* Fortran specific stuff */
 XBT_PUBLIC(int) MAIN__(void);
 
