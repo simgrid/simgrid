@@ -26,13 +26,40 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
 #define OPT_TRIVA_CAT_CONF        "triva/categorized"
 
+static int trace_enabled;
+static int trace_smpi_enabled;
+static int trace_smpi_grouped;
+static int trace_categorized;
+static int trace_uncategorized;
+static int trace_msg_task_enabled;
+static int trace_msg_process_enabled;
+static int trace_msg_volume_enabled;
+static int trace_buffer;
+static int trace_onelink_only;
+
 static int trace_configured = 0;
 static int trace_active = 0;
 
 xbt_dict_t created_categories; //declared in instr_interface.c
 
+static void TRACE_getopts(void)
+{
+  trace_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING);
+  trace_smpi_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
+  trace_smpi_grouped = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
+  trace_categorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_CATEGORIZED);
+  trace_uncategorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_UNCATEGORIZED);
+  trace_msg_task_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_TASK);
+  trace_msg_process_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
+  trace_msg_volume_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_VOLUME);
+  trace_buffer = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BUFFER);
+  trace_onelink_only = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_ONELINK_ONLY);
+}
+
 int TRACE_start()
 {
+  TRACE_getopts();
+
   // tracing system must be:
   //    - enabled (with --cfg=tracing:1)
   //    - already configured (TRACE_global_init already called)
@@ -106,7 +133,7 @@ int TRACE_is_active (void)
 
 int TRACE_is_enabled(void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING);
+  return trace_enabled;
 }
 
 int TRACE_is_configured(void)
@@ -116,53 +143,47 @@ int TRACE_is_configured(void)
 
 int TRACE_smpi_is_enabled(void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI) &&
-      TRACE_is_enabled();
+  return trace_smpi_enabled && TRACE_is_enabled();
 }
 
 int TRACE_smpi_is_grouped(void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
+  return trace_smpi_grouped;
 }
 
 int TRACE_categorized (void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_CATEGORIZED);
+  return trace_categorized;
 }
 
 int TRACE_uncategorized (void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_UNCATEGORIZED);
+  return trace_uncategorized;
 }
 
 int TRACE_msg_task_is_enabled(void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_TASK) &&
-      TRACE_is_enabled();
+  return trace_msg_task_enabled && TRACE_is_enabled();
 }
 
 int TRACE_msg_process_is_enabled(void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS) &&
-      TRACE_is_enabled();
+  return trace_msg_process_enabled && TRACE_is_enabled();
 }
 
 int TRACE_msg_volume_is_enabled(void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_VOLUME) &&
-      TRACE_is_enabled();
+  return trace_msg_volume_enabled && TRACE_is_enabled();
 }
 
 int TRACE_buffer (void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BUFFER) &&
-      TRACE_is_enabled();
+  return trace_buffer && TRACE_is_enabled();
 }
 
 int TRACE_onelink_only (void)
 {
-  return xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_ONELINK_ONLY) &&
-      TRACE_is_enabled();
+  return trace_onelink_only && TRACE_is_enabled();
 }
 
 char *TRACE_get_filename(void)

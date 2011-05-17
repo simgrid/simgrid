@@ -86,27 +86,18 @@ static XBT_INLINE
   const unsigned long old_size = dynar->size;
 
   if (nb > old_size) {
-    char *const old_data = (char *) dynar->data;
-
+    void *const old_data = dynar->data;
     const unsigned long elmsize = dynar->elmsize;
+    const unsigned long old_length = old_size * elmsize;
 
-    const unsigned long used = dynar->used;
-    const unsigned long used_length = used * elmsize;
-
-    const unsigned long new_size =
-        nb > (2 * (old_size + 1)) ? nb : (2 * (old_size + 1));
+    const unsigned long expand = 2 * (old_size + 1);
+    const unsigned long new_size = (nb > expand ? nb : expand);
     const unsigned long new_length = new_size * elmsize;
-    char *const new_data = (char *) xbt_malloc0(elmsize * new_size);
+    void *const new_data = xbt_realloc(old_data, new_length);
 
-    XBT_DEBUG("expand %p from %lu to %lu elements", (void *) dynar,
-           (unsigned long) old_size, nb);
+    XBT_DEBUG("expand %p from %lu to %lu elements", dynar, old_size, new_size);
 
-    if (old_data) {
-      memcpy(new_data, old_data, used_length);
-      free(old_data);
-    }
-
-    _xbt_clear_mem(new_data + used_length, new_length - used_length);
+    _xbt_clear_mem((char *)new_data + old_length, new_length - old_length);
 
     dynar->size = new_size;
     dynar->data = new_data;

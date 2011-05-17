@@ -240,7 +240,7 @@ static void update_actions_state(double now, double delta)
   xbt_swag_t running_actions =
       surf_network_model->states.running_action_set;
 
-  /* If there are no renning flows, just return */
+  /* If there are no running flows, just return */
   if (time_to_next_flow_completion < 0.0) {
     return;
   }
@@ -264,14 +264,45 @@ static void update_actions_state(double now, double delta)
              action->generic_action.remains);
       double sent = gtnets_get_flow_rx(action);
 
+      XBT_DEBUG("Sent value returned by GTNetS : %f", sent);
+
 #ifdef HAVE_TRACING
-      double trace_sent = sent;
-      if (trace_sent == 0) {
-        //if sent is equals to 0, means that gtnets sent all the bytes
-        trace_sent = action->generic_action.cost;
+      action->last_remains = action->generic_action.remains;
+#endif
+
+     //need to trust this remain value
+     if (sent == 0) {
+       action->generic_action.remains = 0;
+      } else {
+        action->generic_action.remains =
+            action->generic_action.cost - sent;
       }
-      // tracing resource utilization
+
+     // verify that this action is a finishing action.
+     int found=0;
+     for (i = 0; i < num_flows; i++) {
+       if(action == (surf_action_network_GTNETS_t) (metadata[i])){
+           found = 1;
+           break;
+       }
+     }
+
+     // indeed this action have not yet started
+     // because of that we need to fix the remaining to the
+     // original total cost
+     if(found != 1 && action->generic_action.remains == 0 ){
+         action->generic_action.remains = action->generic_action.cost;
+     }
+
+     XBT_DEBUG("Action (%p) remains new value: %f", action,
+             action->generic_action.remains);
+
+#ifdef HAVE_TRACING
       if (TRACE_is_active()) {
+        double last_amount_sent = (action->generic_action.cost - action->last_remains);
+        double amount_sent = (action->generic_action.cost - action->generic_action.remains);
+
+        // tracing resource utilization
         xbt_dynar_t route = global_routing->get_route(action->src_name,
                                                       action->dst_name);
         network_link_GTNETS_t link;
@@ -280,34 +311,28 @@ static void update_actions_state(double now, double delta)
           TRACE_surf_link_set_utilization (link->generic_resource.name,
                                            action->generic_action.data,
                                            (surf_action_t) action,
-                                           trace_sent/delta,
+                                           (amount_sent - last_amount_sent)/(delta),
                                            now-delta,
                                            delta);
         }
       }
 #endif
 
-      XBT_DEBUG("Sent value returned by GTNetS : %f", sent);
-      //need to trust this remain value
-      if (sent == 0) {
-        action->generic_action.remains = 0;
-      } else {
-        action->generic_action.remains =
-            action->generic_action.cost - sent;
-      }
-      XBT_DEBUG("Action (%p) remains new value: %f", action,
-             action->generic_action.remains);
+
     }
 
     for (i = 0; i < num_flows; i++) {
       action = (surf_action_network_GTNETS_t) (metadata[i]);
 
+
+
       action->generic_action.finish = now + time_to_next_flow_completion;
+      action_state_set((surf_action_t) action, SURF_ACTION_DONE);
+      XBT_DEBUG("----> Action (%p) just terminated", action);
+
 #ifdef HAVE_TRACING
       TRACE_surf_gtnets_destroy(action);
 #endif
-      action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-      XBT_DEBUG("----> Action (%p) just terminated", action);
     }
 
 
@@ -352,6 +377,8 @@ static surf_action_t communicate(const char *src_name,
   action =
       surf_action_new(sizeof(s_surf_action_network_GTNETS_t), size,
                       surf_network_model, 0);
+
+  action->last_remains = 0;
 
   /* Add a flow to the GTNets Simulation, associated to this action */
   if (gtnets_create_flow(src, dst, size, (void *) action) < 0) {

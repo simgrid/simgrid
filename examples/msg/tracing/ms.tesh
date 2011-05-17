@@ -542,13 +542,13 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  0.017364] (0:@) TRACE_paje_dump_buffer: ends
 > [  0.168126] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.017364
 > [  0.168126] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.017364, buffersize=2)
-> [  0.168126] (0:@) insert_into_buffer: inserted at 2
+> [  0.168126] (0:@) insert_into_buffer: inserted at end, pos = 2
 > [  0.168126] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.017364
 > [  0.168126] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.017364, buffersize=3)
 > [  0.168126] (0:@) insert_into_buffer: inserted at end, pos = 3
 > [  0.168126] (0:@) new_pajeSubVariable: event_type=10, timestamp=0.168126
 > [  0.168126] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.168126, buffersize=4)
-> [  0.168126] (0:@) insert_into_buffer: inserted at 4
+> [  0.168126] (0:@) insert_into_buffer: inserted at end, pos = 4
 > [  0.168126] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.017364
 > [  0.168126] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.017364, buffersize=5)
 > [  0.168126] (0:@) insert_into_buffer: inserted at 4
@@ -588,13 +588,13 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  0.188676] (0:@) TRACE_paje_dump_buffer: ends
 > [  0.386279] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.188676
 > [  0.386279] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.188676, buffersize=16)
-> [  0.386279] (0:@) insert_into_buffer: inserted at 16
+> [  0.386279] (0:@) insert_into_buffer: inserted at end, pos = 16
 > [  0.386279] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.188676
 > [  0.386279] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.188676, buffersize=17)
 > [  0.386279] (0:@) insert_into_buffer: inserted at end, pos = 17
 > [  0.386279] (0:@) new_pajeSubVariable: event_type=10, timestamp=0.386279
 > [  0.386279] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.386279, buffersize=18)
-> [  0.386279] (0:@) insert_into_buffer: inserted at 18
+> [  0.386279] (0:@) insert_into_buffer: inserted at end, pos = 18
 > [  0.386279] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.188676
 > [  0.386279] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.188676, buffersize=19)
 > [  0.386279] (0:@) insert_into_buffer: inserted at 18
@@ -721,7 +721,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  0.511874] (0:@) insert_into_buffer: inserted at end, pos = 58
 > [  0.511874] (0:@) new_pajeSubVariable: event_type=10, timestamp=0.511874
 > [  0.511874] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.511874, buffersize=59)
-> [  0.511874] (0:@) insert_into_buffer: inserted at 59
+> [  0.511874] (0:@) insert_into_buffer: inserted at end, pos = 59
 > [  0.511874] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.386279
 > [  0.511874] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.386279, buffersize=60)
 > [  0.511874] (0:@) insert_into_buffer: inserted at 59
@@ -777,7 +777,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  0.526739] (0:@) insert_into_buffer: inserted at end, pos = 76
 > [  0.526739] (0:@) new_pajeSubVariable: event_type=10, timestamp=0.526739
 > [  0.526739] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.526739, buffersize=77)
-> [  0.526739] (0:@) insert_into_buffer: inserted at 77
+> [  0.526739] (0:@) insert_into_buffer: inserted at end, pos = 77
 > [  0.526739] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.511874
 > [  0.526739] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.511874, buffersize=78)
 > [  0.526739] (0:@) insert_into_buffer: inserted at 77
@@ -820,10 +820,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  0.547074] (0:@) TRACE_paje_dump_buffer: ends
 > [  0.742611] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.547074
 > [  0.742611] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.547074, buffersize=90)
-> [  0.742611] (0:@) insert_into_buffer: inserted at 90
+> [  0.742611] (0:@) insert_into_buffer: inserted at end, pos = 90
 > [  0.742611] (0:@) new_pajeSubVariable: event_type=10, timestamp=0.742611
 > [  0.742611] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.742611, buffersize=91)
-> [  0.742611] (0:@) insert_into_buffer: inserted at 91
+> [  0.742611] (0:@) insert_into_buffer: inserted at end, pos = 91
 > [  0.742611] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.547074
 > [  0.742611] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.547074, buffersize=92)
 > [  0.742611] (0:@) insert_into_buffer: inserted at 91
@@ -964,29 +964,37 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  0.744775] (0:@) TRACE_paje_dump_buffer: ends
 > [  0.744775] (2:slave@Tremblay) new_pajeAddVariable: event_type=9, timestamp=0.744775
 > [  0.744775] (2:slave@Tremblay) insert_into_buffer: insert event_type=9, timestamp=0.744775, buffersize=106)
-> [  0.744775] (2:slave@Tremblay) insert_into_buffer: inserted at 106
+> [  0.744775] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 106
 > [  0.744775] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=0.744775
 > [  0.744775] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=0.744775, buffersize=107)
 > [  0.744775] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 107
 > [  0.823468] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.168126
 > [  0.823468] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.168126, buffersize=108)
-> [  0.823468] (0:@) insert_into_buffer: inserted at end
+> [  0.823468] (0:@) insert_into_buffer: inserted at beginning
 > [  0.823468] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.168126
 > [  0.823468] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.168126, buffersize=109)
-> [  0.823468] (0:@) insert_into_buffer: inserted at end, pos = 109
+> [  0.823468] (0:@) insert_into_buffer: inserted at 1
 > [  0.823468] (0:@) new_pajeSubVariable: event_type=10, timestamp=0.823468
 > [  0.823468] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.823468, buffersize=110)
-> [  0.823468] (0:@) insert_into_buffer: inserted at 110
+> [  0.823468] (0:@) insert_into_buffer: inserted at end, pos = 110
 > [  0.823468] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.168126
 > [  0.823468] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.168126, buffersize=111)
-> [  0.823468] (0:@) insert_into_buffer: inserted at 110
+> [  0.823468] (0:@) insert_into_buffer: inserted at 2
 > [  0.823468] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.168126
 > [  0.823468] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.168126, buffersize=112)
-> [  0.823468] (0:@) insert_into_buffer: inserted at 111
+> [  0.823468] (0:@) insert_into_buffer: inserted at 3
 > [  0.823468] (0:@) new_pajeSubVariable: event_type=10, timestamp=0.823468
 > [  0.823468] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.823468, buffersize=113)
 > [  0.823468] (0:@) insert_into_buffer: inserted at end, pos = 113
 > [  0.823468] (0:@) TRACE_paje_dump_buffer: dump until 0.386279. starts
+> [  0.823468] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.168126
+> [  0.823468] (0:@) free_paje_event: event_type=8, timestamp=0.168126
+> [  0.823468] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.168126
+> [  0.823468] (0:@) free_paje_event: event_type=9, timestamp=0.168126
+> [  0.823468] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.168126
+> [  0.823468] (0:@) free_paje_event: event_type=8, timestamp=0.168126
+> [  0.823468] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.168126
+> [  0.823468] (0:@) free_paje_event: event_type=9, timestamp=0.168126
 > [  0.823468] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.188676
 > [  0.823468] (0:@) free_paje_event: event_type=8, timestamp=0.188676
 > [  0.823468] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.188676
@@ -1075,50 +1083,58 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  0.838668] (0:@) TRACE_paje_dump_buffer: dump until 0.386279. starts
 > [  0.838668] (0:@) TRACE_paje_dump_buffer: ends
 > [  0.989430] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.838668
-> [  0.989430] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.838668, buffersize=72)
-> [  0.989430] (0:@) insert_into_buffer: inserted at 72
+> [  0.989430] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.838668, buffersize=68)
+> [  0.989430] (0:@) insert_into_buffer: inserted at end, pos = 68
 > [  0.989430] (0:@) new_pajeSubVariable: event_type=10, timestamp=0.989430
-> [  0.989430] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.989430, buffersize=73)
-> [  0.989430] (0:@) insert_into_buffer: inserted at 73
+> [  0.989430] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.989430, buffersize=69)
+> [  0.989430] (0:@) insert_into_buffer: inserted at end, pos = 69
 > [  0.989430] (0:@) TRACE_paje_dump_buffer: dump until 0.386279. starts
 > [  0.989430] (0:@) TRACE_paje_dump_buffer: ends
 > [  0.989430] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=0.989430
-> [  0.989430] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=0.989430, buffersize=74)
-> [  0.989430] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 74
+> [  0.989430] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=0.989430, buffersize=70)
+> [  0.989430] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 70
 > [  0.989430] (3:slave@Jupiter) new_pajeAddVariable: event_type=9, timestamp=0.989430
-> [  0.989430] (3:slave@Jupiter) insert_into_buffer: insert event_type=9, timestamp=0.989430, buffersize=75)
-> [  0.989430] (3:slave@Jupiter) insert_into_buffer: inserted at end, pos = 75
+> [  0.989430] (3:slave@Jupiter) insert_into_buffer: insert event_type=9, timestamp=0.989430, buffersize=71)
+> [  0.989430] (3:slave@Jupiter) insert_into_buffer: inserted at end, pos = 71
 > [  0.989430] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.744775
-> [  0.989430] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.744775, buffersize=76)
-> [  0.989430] (0:@) insert_into_buffer: inserted at 70
+> [  0.989430] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.744775, buffersize=72)
+> [  0.989430] (0:@) insert_into_buffer: inserted at 66
 > [  0.989430] (0:@) new_pajeSubVariable: event_type=10, timestamp=0.989430
-> [  0.989430] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.989430, buffersize=77)
-> [  0.989430] (0:@) insert_into_buffer: inserted at end, pos = 77
+> [  0.989430] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.989430, buffersize=73)
+> [  0.989430] (0:@) insert_into_buffer: inserted at end, pos = 73
 > [  0.989430] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.744775
-> [  0.989430] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.744775, buffersize=78)
-> [  0.989430] (0:@) insert_into_buffer: inserted at 71
+> [  0.989430] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.744775, buffersize=74)
+> [  0.989430] (0:@) insert_into_buffer: inserted at 67
 > [  0.989430] (0:@) new_pajeSubVariable: event_type=10, timestamp=0.989430
-> [  0.989430] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.989430, buffersize=79)
-> [  0.989430] (0:@) insert_into_buffer: inserted at end, pos = 79
+> [  0.989430] (0:@) insert_into_buffer: insert event_type=10, timestamp=0.989430, buffersize=75)
+> [  0.989430] (0:@) insert_into_buffer: inserted at end, pos = 75
 > [  1.041621] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.386279
-> [  1.041621] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.386279, buffersize=80)
-> [  1.041621] (0:@) insert_into_buffer: inserted at 70
+> [  1.041621] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.386279, buffersize=76)
+> [  1.041621] (0:@) insert_into_buffer: inserted at beginning
 > [  1.041621] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.386279
-> [  1.041621] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.386279, buffersize=81)
-> [  1.041621] (0:@) insert_into_buffer: inserted at 71
+> [  1.041621] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.386279, buffersize=77)
+> [  1.041621] (0:@) insert_into_buffer: inserted at 1
 > [  1.041621] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.041621
-> [  1.041621] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.041621, buffersize=82)
-> [  1.041621] (0:@) insert_into_buffer: inserted at 82
+> [  1.041621] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.041621, buffersize=78)
+> [  1.041621] (0:@) insert_into_buffer: inserted at end, pos = 78
 > [  1.041621] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.386279
-> [  1.041621] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.386279, buffersize=83)
-> [  1.041621] (0:@) insert_into_buffer: inserted at 72
+> [  1.041621] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.386279, buffersize=79)
+> [  1.041621] (0:@) insert_into_buffer: inserted at 2
 > [  1.041621] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.386279
-> [  1.041621] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.386279, buffersize=84)
-> [  1.041621] (0:@) insert_into_buffer: inserted at 73
+> [  1.041621] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.386279, buffersize=80)
+> [  1.041621] (0:@) insert_into_buffer: inserted at 3
 > [  1.041621] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.041621
-> [  1.041621] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.041621, buffersize=85)
-> [  1.041621] (0:@) insert_into_buffer: inserted at end, pos = 85
+> [  1.041621] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.041621, buffersize=81)
+> [  1.041621] (0:@) insert_into_buffer: inserted at end, pos = 81
 > [  1.041621] (0:@) TRACE_paje_dump_buffer: dump until 0.526739. starts
+> [  1.041621] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.386279
+> [  1.041621] (0:@) free_paje_event: event_type=8, timestamp=0.386279
+> [  1.041621] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.386279
+> [  1.041621] (0:@) free_paje_event: event_type=9, timestamp=0.386279
+> [  1.041621] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.386279
+> [  1.041621] (0:@) free_paje_event: event_type=8, timestamp=0.386279
+> [  1.041621] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.386279
+> [  1.041621] (0:@) free_paje_event: event_type=9, timestamp=0.386279
 > [  1.041621] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.399511
 > [  1.041621] (0:@) free_paje_event: event_type=9, timestamp=0.399511
 > [  1.041621] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.399511
@@ -1183,128 +1199,136 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  1.062172] (0:@) TRACE_paje_dump_buffer: dump until 0.526739. starts
 > [  1.062172] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.989430
-> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.989430, buffersize=56)
-> [  1.254485] (0:@) insert_into_buffer: inserted at 54
+> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.989430, buffersize=48)
+> [  1.254485] (0:@) insert_into_buffer: inserted at 46
+> [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
+> [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=49)
+> [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 49
+> [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.989430
+> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.989430, buffersize=50)
+> [  1.254485] (0:@) insert_into_buffer: inserted at 47
+> [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
+> [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=51)
+> [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 51
+> [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.062172
+> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.062172, buffersize=52)
+> [  1.254485] (0:@) insert_into_buffer: inserted at 50
+> [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
+> [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=53)
+> [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 53
+> [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.062172
+> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.062172, buffersize=54)
+> [  1.254485] (0:@) insert_into_buffer: inserted at 51
+> [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
+> [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=55)
+> [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 55
+> [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.062172
+> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.062172, buffersize=56)
+> [  1.254485] (0:@) insert_into_buffer: inserted at 52
 > [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
 > [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=57)
-> [  1.254485] (0:@) insert_into_buffer: inserted at 57
-> [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.989430
-> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.989430, buffersize=58)
-> [  1.254485] (0:@) insert_into_buffer: inserted at 55
+> [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 57
+> [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.062172
+> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.062172, buffersize=58)
+> [  1.254485] (0:@) insert_into_buffer: inserted at 53
 > [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
 > [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=59)
 > [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 59
 > [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.062172
 > [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.062172, buffersize=60)
-> [  1.254485] (0:@) insert_into_buffer: inserted at 58
+> [  1.254485] (0:@) insert_into_buffer: inserted at 54
 > [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
 > [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=61)
 > [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 61
 > [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.062172
 > [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.062172, buffersize=62)
-> [  1.254485] (0:@) insert_into_buffer: inserted at 59
+> [  1.254485] (0:@) insert_into_buffer: inserted at 55
 > [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
 > [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=63)
 > [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 63
-> [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.062172
-> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.062172, buffersize=64)
-> [  1.254485] (0:@) insert_into_buffer: inserted at 60
-> [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
-> [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=65)
-> [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 65
-> [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.062172
-> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.062172, buffersize=66)
-> [  1.254485] (0:@) insert_into_buffer: inserted at 61
-> [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
-> [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=67)
-> [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 67
-> [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.062172
-> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.062172, buffersize=68)
-> [  1.254485] (0:@) insert_into_buffer: inserted at 62
-> [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
-> [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=69)
-> [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 69
-> [  1.254485] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.062172
-> [  1.254485] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.062172, buffersize=70)
-> [  1.254485] (0:@) insert_into_buffer: inserted at 63
-> [  1.254485] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.254485
-> [  1.254485] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.254485, buffersize=71)
-> [  1.254485] (0:@) insert_into_buffer: inserted at end, pos = 71
 > [  1.254485] (0:@) TRACE_paje_dump_buffer: dump until 0.526739. starts
 > [  1.254485] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.259775] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.254485
+> [  1.259775] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.254485, buffersize=64)
+> [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 64
+> [  1.259775] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.259775
+> [  1.259775] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.259775, buffersize=65)
+> [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 65
+> [  1.259775] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.254485
+> [  1.259775] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.254485, buffersize=66)
+> [  1.259775] (0:@) insert_into_buffer: inserted at 65
+> [  1.259775] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.259775
+> [  1.259775] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.259775, buffersize=67)
+> [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 67
+> [  1.259775] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.254485
+> [  1.259775] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.254485, buffersize=68)
+> [  1.259775] (0:@) insert_into_buffer: inserted at 66
+> [  1.259775] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.259775
+> [  1.259775] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.259775, buffersize=69)
+> [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 69
+> [  1.259775] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.254485
+> [  1.259775] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.254485, buffersize=70)
+> [  1.259775] (0:@) insert_into_buffer: inserted at 67
+> [  1.259775] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.259775
+> [  1.259775] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.259775, buffersize=71)
+> [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 71
+> [  1.259775] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.254485
 > [  1.259775] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.254485, buffersize=72)
-> [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 72
+> [  1.259775] (0:@) insert_into_buffer: inserted at 68
 > [  1.259775] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.259775
 > [  1.259775] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.259775, buffersize=73)
-> [  1.259775] (0:@) insert_into_buffer: inserted at 73
+> [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 73
 > [  1.259775] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.254485
 > [  1.259775] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.254485, buffersize=74)
-> [  1.259775] (0:@) insert_into_buffer: inserted at 73
+> [  1.259775] (0:@) insert_into_buffer: inserted at 69
 > [  1.259775] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.259775
 > [  1.259775] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.259775, buffersize=75)
 > [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 75
-> [  1.259775] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.254485
-> [  1.259775] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.254485, buffersize=76)
-> [  1.259775] (0:@) insert_into_buffer: inserted at 74
-> [  1.259775] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.259775
-> [  1.259775] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.259775, buffersize=77)
-> [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 77
-> [  1.259775] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.254485
-> [  1.259775] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.254485, buffersize=78)
-> [  1.259775] (0:@) insert_into_buffer: inserted at 75
-> [  1.259775] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.259775
-> [  1.259775] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.259775, buffersize=79)
-> [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 79
-> [  1.259775] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.254485
-> [  1.259775] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.254485, buffersize=80)
-> [  1.259775] (0:@) insert_into_buffer: inserted at 76
-> [  1.259775] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.259775
-> [  1.259775] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.259775, buffersize=81)
-> [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 81
-> [  1.259775] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.254485
-> [  1.259775] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.254485, buffersize=82)
-> [  1.259775] (0:@) insert_into_buffer: inserted at 77
-> [  1.259775] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.259775
-> [  1.259775] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.259775, buffersize=83)
-> [  1.259775] (0:@) insert_into_buffer: inserted at end, pos = 83
 > [  1.259775] (0:@) TRACE_paje_dump_buffer: dump until 0.526739. starts
 > [  1.259775] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.259775] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=1.259775
-> [  1.259775] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=1.259775, buffersize=84)
-> [  1.259775] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 84
+> [  1.259775] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=1.259775, buffersize=76)
+> [  1.259775] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 76
 > [  1.259775] (4:slave@Fafard) new_pajeAddVariable: event_type=9, timestamp=1.259775
-> [  1.259775] (4:slave@Fafard) insert_into_buffer: insert event_type=9, timestamp=1.259775, buffersize=85)
-> [  1.259775] (4:slave@Fafard) insert_into_buffer: inserted at end, pos = 85
+> [  1.259775] (4:slave@Fafard) insert_into_buffer: insert event_type=9, timestamp=1.259775, buffersize=77)
+> [  1.259775] (4:slave@Fafard) insert_into_buffer: inserted at end, pos = 77
 > [  1.259931] (0:@) TRACE_paje_dump_buffer: dump until 0.526739. starts
 > [  1.259931] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.261939] (0:@) TRACE_paje_dump_buffer: dump until 0.526739. starts
 > [  1.261939] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.261939] (2:slave@Tremblay) new_pajeAddVariable: event_type=9, timestamp=1.261939
-> [  1.261939] (2:slave@Tremblay) insert_into_buffer: insert event_type=9, timestamp=1.261939, buffersize=86)
-> [  1.261939] (2:slave@Tremblay) insert_into_buffer: inserted at 86
+> [  1.261939] (2:slave@Tremblay) insert_into_buffer: insert event_type=9, timestamp=1.261939, buffersize=78)
+> [  1.261939] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 78
 > [  1.261939] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=1.261939
-> [  1.261939] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=1.261939, buffersize=87)
-> [  1.261939] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 87
+> [  1.261939] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=1.261939, buffersize=79)
+> [  1.261939] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 79
 > [  1.557837] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.526739
-> [  1.557837] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.526739, buffersize=88)
-> [  1.557837] (0:@) insert_into_buffer: inserted at 44
+> [  1.557837] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.526739, buffersize=80)
+> [  1.557837] (0:@) insert_into_buffer: inserted at beginning
 > [  1.557837] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.526739
-> [  1.557837] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.526739, buffersize=89)
-> [  1.557837] (0:@) insert_into_buffer: inserted at 45
+> [  1.557837] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.526739, buffersize=81)
+> [  1.557837] (0:@) insert_into_buffer: inserted at 1
 > [  1.557837] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.557837
-> [  1.557837] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.557837, buffersize=90)
-> [  1.557837] (0:@) insert_into_buffer: inserted at 90
+> [  1.557837] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.557837, buffersize=82)
+> [  1.557837] (0:@) insert_into_buffer: inserted at end, pos = 82
 > [  1.557837] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.526739
-> [  1.557837] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.526739, buffersize=91)
-> [  1.557837] (0:@) insert_into_buffer: inserted at 46
+> [  1.557837] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.526739, buffersize=83)
+> [  1.557837] (0:@) insert_into_buffer: inserted at 2
 > [  1.557837] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.526739
-> [  1.557837] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.526739, buffersize=92)
-> [  1.557837] (0:@) insert_into_buffer: inserted at 47
+> [  1.557837] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.526739, buffersize=84)
+> [  1.557837] (0:@) insert_into_buffer: inserted at 3
 > [  1.557837] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.557837
-> [  1.557837] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.557837, buffersize=93)
-> [  1.557837] (0:@) insert_into_buffer: inserted at end, pos = 93
+> [  1.557837] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.557837, buffersize=85)
+> [  1.557837] (0:@) insert_into_buffer: inserted at end, pos = 85
 > [  1.557837] (0:@) TRACE_paje_dump_buffer: dump until 0.742611. starts
+> [  1.557837] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.526739
+> [  1.557837] (0:@) free_paje_event: event_type=8, timestamp=0.526739
+> [  1.557837] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.526739
+> [  1.557837] (0:@) free_paje_event: event_type=9, timestamp=0.526739
+> [  1.557837] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.526739
+> [  1.557837] (0:@) free_paje_event: event_type=8, timestamp=0.526739
+> [  1.557837] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.526739
+> [  1.557837] (0:@) free_paje_event: event_type=9, timestamp=0.526739
 > [  1.557837] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.547074
 > [  1.557837] (0:@) free_paje_event: event_type=9, timestamp=0.547074
 > [  1.557837] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.547074
@@ -1377,170 +1401,146 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  1.571068] (0:@) TRACE_paje_dump_buffer: dump until 0.742611. starts
 > [  1.571068] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.644772] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.989430
-> [  1.644772] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.989430, buffersize=60)
-> [  1.644772] (0:@) insert_into_buffer: inserted at 26
+> [  1.644772] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.989430, buffersize=48)
+> [  1.644772] (0:@) insert_into_buffer: inserted at 14
 > [  1.644772] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.644772
-> [  1.644772] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.644772, buffersize=61)
-> [  1.644772] (0:@) insert_into_buffer: inserted at 61
+> [  1.644772] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.644772, buffersize=49)
+> [  1.644772] (0:@) insert_into_buffer: inserted at end, pos = 49
 > [  1.644772] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.989430
-> [  1.644772] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.989430, buffersize=62)
-> [  1.644772] (0:@) insert_into_buffer: inserted at 27
+> [  1.644772] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.989430, buffersize=50)
+> [  1.644772] (0:@) insert_into_buffer: inserted at 15
 > [  1.644772] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.644772
-> [  1.644772] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.644772, buffersize=63)
-> [  1.644772] (0:@) insert_into_buffer: inserted at end, pos = 63
+> [  1.644772] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.644772, buffersize=51)
+> [  1.644772] (0:@) insert_into_buffer: inserted at end, pos = 51
 > [  1.644772] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.571068
-> [  1.644772] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.571068, buffersize=64)
-> [  1.644772] (0:@) insert_into_buffer: inserted at 62
+> [  1.644772] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.571068, buffersize=52)
+> [  1.644772] (0:@) insert_into_buffer: inserted at 50
 > [  1.644772] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.644772
-> [  1.644772] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.644772, buffersize=65)
-> [  1.644772] (0:@) insert_into_buffer: inserted at end, pos = 65
+> [  1.644772] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.644772, buffersize=53)
+> [  1.644772] (0:@) insert_into_buffer: inserted at end, pos = 53
 > [  1.644772] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.571068
-> [  1.644772] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.571068, buffersize=66)
-> [  1.644772] (0:@) insert_into_buffer: inserted at 63
+> [  1.644772] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.571068, buffersize=54)
+> [  1.644772] (0:@) insert_into_buffer: inserted at 51
 > [  1.644772] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.644772
-> [  1.644772] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.644772, buffersize=67)
-> [  1.644772] (0:@) insert_into_buffer: inserted at end, pos = 67
+> [  1.644772] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.644772, buffersize=55)
+> [  1.644772] (0:@) insert_into_buffer: inserted at end, pos = 55
 > [  1.644772] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.571068
-> [  1.644772] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.571068, buffersize=68)
-> [  1.644772] (0:@) insert_into_buffer: inserted at 64
+> [  1.644772] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.571068, buffersize=56)
+> [  1.644772] (0:@) insert_into_buffer: inserted at 52
 > [  1.644772] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.644772
-> [  1.644772] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.644772, buffersize=69)
-> [  1.644772] (0:@) insert_into_buffer: inserted at end, pos = 69
+> [  1.644772] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.644772, buffersize=57)
+> [  1.644772] (0:@) insert_into_buffer: inserted at end, pos = 57
 > [  1.644772] (0:@) TRACE_paje_dump_buffer: dump until 0.742611. starts
 > [  1.644772] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.698296] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.644772
-> [  1.698296] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.644772, buffersize=70)
-> [  1.698296] (0:@) insert_into_buffer: inserted at end, pos = 70
+> [  1.698296] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.644772, buffersize=58)
+> [  1.698296] (0:@) insert_into_buffer: inserted at end, pos = 58
 > [  1.698296] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.698296
-> [  1.698296] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.698296, buffersize=71)
-> [  1.698296] (0:@) insert_into_buffer: inserted at 71
+> [  1.698296] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.698296, buffersize=59)
+> [  1.698296] (0:@) insert_into_buffer: inserted at end, pos = 59
 > [  1.698296] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.644772
-> [  1.698296] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.644772, buffersize=72)
-> [  1.698296] (0:@) insert_into_buffer: inserted at 71
+> [  1.698296] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.644772, buffersize=60)
+> [  1.698296] (0:@) insert_into_buffer: inserted at 59
 > [  1.698296] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.698296
-> [  1.698296] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.698296, buffersize=73)
-> [  1.698296] (0:@) insert_into_buffer: inserted at end, pos = 73
+> [  1.698296] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.698296, buffersize=61)
+> [  1.698296] (0:@) insert_into_buffer: inserted at end, pos = 61
 > [  1.698296] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.644772
-> [  1.698296] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.644772, buffersize=74)
-> [  1.698296] (0:@) insert_into_buffer: inserted at 72
+> [  1.698296] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.644772, buffersize=62)
+> [  1.698296] (0:@) insert_into_buffer: inserted at 60
 > [  1.698296] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.698296
-> [  1.698296] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.698296, buffersize=75)
-> [  1.698296] (0:@) insert_into_buffer: inserted at end, pos = 75
+> [  1.698296] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.698296, buffersize=63)
+> [  1.698296] (0:@) insert_into_buffer: inserted at end, pos = 63
 > [  1.698296] (0:@) TRACE_paje_dump_buffer: dump until 0.742611. starts
 > [  1.698296] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.698296] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=1.698296
-> [  1.698296] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=1.698296, buffersize=76)
-> [  1.698296] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 76
+> [  1.698296] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=1.698296, buffersize=64)
+> [  1.698296] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 64
 > [  1.698296] (5:slave@Ginette) new_pajeAddVariable: event_type=9, timestamp=1.698296
-> [  1.698296] (5:slave@Ginette) insert_into_buffer: insert event_type=9, timestamp=1.698296, buffersize=77)
-> [  1.698296] (5:slave@Ginette) insert_into_buffer: inserted at end, pos = 77
+> [  1.698296] (5:slave@Ginette) insert_into_buffer: insert event_type=9, timestamp=1.698296, buffersize=65)
+> [  1.698296] (5:slave@Ginette) insert_into_buffer: inserted at end, pos = 65
 > [  1.698296] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.261939
-> [  1.698296] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.261939, buffersize=78)
-> [  1.698296] (0:@) insert_into_buffer: inserted at 60
+> [  1.698296] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.261939, buffersize=66)
+> [  1.698296] (0:@) insert_into_buffer: inserted at 48
 > [  1.698296] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.698296
-> [  1.698296] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.698296, buffersize=79)
-> [  1.698296] (0:@) insert_into_buffer: inserted at end, pos = 79
+> [  1.698296] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.698296, buffersize=67)
+> [  1.698296] (0:@) insert_into_buffer: inserted at end, pos = 67
 > [  1.698296] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.261939
-> [  1.698296] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.261939, buffersize=80)
-> [  1.698296] (0:@) insert_into_buffer: inserted at 61
+> [  1.698296] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.261939, buffersize=68)
+> [  1.698296] (0:@) insert_into_buffer: inserted at 49
 > [  1.698296] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.698296
-> [  1.698296] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.698296, buffersize=81)
-> [  1.698296] (0:@) insert_into_buffer: inserted at end, pos = 81
+> [  1.698296] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.698296, buffersize=69)
+> [  1.698296] (0:@) insert_into_buffer: inserted at end, pos = 69
 > [  1.713496] (0:@) TRACE_paje_dump_buffer: dump until 0.742611. starts
 > [  1.713496] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.771649] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.698296
-> [  1.771649] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.698296, buffersize=82)
-> [  1.771649] (0:@) insert_into_buffer: inserted at end, pos = 82
+> [  1.771649] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.698296, buffersize=70)
+> [  1.771649] (0:@) insert_into_buffer: inserted at end, pos = 70
 > [  1.771649] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.771649
-> [  1.771649] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.771649, buffersize=83)
-> [  1.771649] (0:@) insert_into_buffer: inserted at 83
+> [  1.771649] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.771649, buffersize=71)
+> [  1.771649] (0:@) insert_into_buffer: inserted at end, pos = 71
 > [  1.771649] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.698296
-> [  1.771649] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.698296, buffersize=84)
-> [  1.771649] (0:@) insert_into_buffer: inserted at 83
+> [  1.771649] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.698296, buffersize=72)
+> [  1.771649] (0:@) insert_into_buffer: inserted at 71
 > [  1.771649] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.771649
-> [  1.771649] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.771649, buffersize=85)
-> [  1.771649] (0:@) insert_into_buffer: inserted at end, pos = 85
+> [  1.771649] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.771649, buffersize=73)
+> [  1.771649] (0:@) insert_into_buffer: inserted at end, pos = 73
 > [  1.771649] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.713496
-> [  1.771649] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.713496, buffersize=86)
-> [  1.771649] (0:@) insert_into_buffer: inserted at 84
+> [  1.771649] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.713496, buffersize=74)
+> [  1.771649] (0:@) insert_into_buffer: inserted at 72
 > [  1.771649] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.771649
-> [  1.771649] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.771649, buffersize=87)
-> [  1.771649] (0:@) insert_into_buffer: inserted at end, pos = 87
+> [  1.771649] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.771649, buffersize=75)
+> [  1.771649] (0:@) insert_into_buffer: inserted at end, pos = 75
 > [  1.771649] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.713496
-> [  1.771649] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.713496, buffersize=88)
-> [  1.771649] (0:@) insert_into_buffer: inserted at 85
+> [  1.771649] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.713496, buffersize=76)
+> [  1.771649] (0:@) insert_into_buffer: inserted at 73
 > [  1.771649] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.771649
-> [  1.771649] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.771649, buffersize=89)
-> [  1.771649] (0:@) insert_into_buffer: inserted at end, pos = 89
+> [  1.771649] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.771649, buffersize=77)
+> [  1.771649] (0:@) insert_into_buffer: inserted at end, pos = 77
 > [  1.771649] (0:@) TRACE_paje_dump_buffer: dump until 0.742611. starts
 > [  1.771649] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.773709] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.742611
-> [  1.773709] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.742611, buffersize=90)
-> [  1.773709] (0:@) insert_into_buffer: inserted at 14
+> [  1.773709] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.742611, buffersize=78)
+> [  1.773709] (0:@) insert_into_buffer: inserted at beginning
 > [  1.773709] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.742611
-> [  1.773709] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.742611, buffersize=91)
-> [  1.773709] (0:@) insert_into_buffer: inserted at 15
+> [  1.773709] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.742611, buffersize=79)
+> [  1.773709] (0:@) insert_into_buffer: inserted at 1
 > [  1.773709] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.773709
-> [  1.773709] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.773709, buffersize=92)
-> [  1.773709] (0:@) insert_into_buffer: inserted at 92
+> [  1.773709] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.773709, buffersize=80)
+> [  1.773709] (0:@) insert_into_buffer: inserted at end, pos = 80
 > [  1.773709] (0:@) new_pajeSetVariable: event_type=8, timestamp=0.742611
-> [  1.773709] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.742611, buffersize=93)
-> [  1.773709] (0:@) insert_into_buffer: inserted at 16
+> [  1.773709] (0:@) insert_into_buffer: insert event_type=8, timestamp=0.742611, buffersize=81)
+> [  1.773709] (0:@) insert_into_buffer: inserted at 2
 > [  1.773709] (0:@) new_pajeAddVariable: event_type=9, timestamp=0.742611
-> [  1.773709] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.742611, buffersize=94)
-> [  1.773709] (0:@) insert_into_buffer: inserted at 17
+> [  1.773709] (0:@) insert_into_buffer: insert event_type=9, timestamp=0.742611, buffersize=82)
+> [  1.773709] (0:@) insert_into_buffer: inserted at 3
 > [  1.773709] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.773709
-> [  1.773709] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.773709, buffersize=95)
-> [  1.773709] (0:@) insert_into_buffer: inserted at end, pos = 95
+> [  1.773709] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.773709, buffersize=83)
+> [  1.773709] (0:@) insert_into_buffer: inserted at end, pos = 83
 > [  1.773709] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.771649
-> [  1.773709] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.771649, buffersize=96)
-> [  1.773709] (0:@) insert_into_buffer: inserted at 94
+> [  1.773709] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.771649, buffersize=84)
+> [  1.773709] (0:@) insert_into_buffer: inserted at 82
 > [  1.773709] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.773709
-> [  1.773709] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.773709, buffersize=97)
-> [  1.773709] (0:@) insert_into_buffer: inserted at end, pos = 97
+> [  1.773709] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.773709, buffersize=85)
+> [  1.773709] (0:@) insert_into_buffer: inserted at end, pos = 85
 > [  1.773709] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.771649
-> [  1.773709] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.771649, buffersize=98)
-> [  1.773709] (0:@) insert_into_buffer: inserted at 95
+> [  1.773709] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.771649, buffersize=86)
+> [  1.773709] (0:@) insert_into_buffer: inserted at 83
 > [  1.773709] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.773709
-> [  1.773709] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.773709, buffersize=99)
-> [  1.773709] (0:@) insert_into_buffer: inserted at end, pos = 99
+> [  1.773709] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.773709, buffersize=87)
+> [  1.773709] (0:@) insert_into_buffer: inserted at end, pos = 87
 > [  1.773709] (0:@) TRACE_paje_dump_buffer: dump until 1.259775. starts
+> [  1.773709] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.742611
+> [  1.773709] (0:@) free_paje_event: event_type=8, timestamp=0.742611
+> [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.742611
+> [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.742611
+> [  1.773709] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.742611
+> [  1.773709] (0:@) free_paje_event: event_type=8, timestamp=0.742611
+> [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.742611
+> [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.742611
 > [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.744775
 > [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.744775
 > [  1.773709] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.744775
 > [  1.773709] (0:@) free_paje_event: event_type=8, timestamp=0.744775
-> [  1.773709] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.168126
-> [  1.773709] (0:@) free_paje_event: event_type=8, timestamp=0.168126
-> [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.168126
-> [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.168126
-> [  1.773709] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.168126
-> [  1.773709] (0:@) free_paje_event: event_type=8, timestamp=0.168126
-> [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.168126
-> [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.168126
-> [  1.773709] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.386279
-> [  1.773709] (0:@) free_paje_event: event_type=8, timestamp=0.386279
-> [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.386279
-> [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.386279
-> [  1.773709] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.386279
-> [  1.773709] (0:@) free_paje_event: event_type=8, timestamp=0.386279
-> [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.386279
-> [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.386279
-> [  1.773709] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.526739
-> [  1.773709] (0:@) free_paje_event: event_type=8, timestamp=0.526739
-> [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.526739
-> [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.526739
-> [  1.773709] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.526739
-> [  1.773709] (0:@) free_paje_event: event_type=8, timestamp=0.526739
-> [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.526739
-> [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.526739
-> [  1.773709] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.742611
-> [  1.773709] (0:@) free_paje_event: event_type=8, timestamp=0.742611
-> [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.742611
-> [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.742611
-> [  1.773709] (0:@) print_pajeSetVariable: event_type=8, timestamp=0.742611
-> [  1.773709] (0:@) free_paje_event: event_type=8, timestamp=0.742611
-> [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.742611
-> [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.742611
 > [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.744775
 > [  1.773709] (0:@) free_paje_event: event_type=9, timestamp=0.744775
 > [  1.773709] (0:@) print_pajeAddVariable: event_type=9, timestamp=0.744775
@@ -1635,7 +1635,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  1.864258] (0:@) insert_into_buffer: inserted at end, pos = 38
 > [  1.864258] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.864258
 > [  1.864258] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.864258, buffersize=39)
-> [  1.864258] (0:@) insert_into_buffer: inserted at 39
+> [  1.864258] (0:@) insert_into_buffer: inserted at end, pos = 39
 > [  1.864258] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.773709
 > [  1.864258] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.773709, buffersize=40)
 > [  1.864258] (0:@) insert_into_buffer: inserted at 39
@@ -1656,7 +1656,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  1.866422] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.866422] (2:slave@Tremblay) new_pajeAddVariable: event_type=9, timestamp=1.866422
 > [  1.866422] (2:slave@Tremblay) insert_into_buffer: insert event_type=9, timestamp=1.866422, buffersize=44)
-> [  1.866422] (2:slave@Tremblay) insert_into_buffer: inserted at 44
+> [  1.866422] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 44
 > [  1.866422] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=1.866422
 > [  1.866422] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=1.866422, buffersize=45)
 > [  1.866422] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 45
@@ -1664,13 +1664,13 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  1.886758] (0:@) TRACE_paje_dump_buffer: ends
 > [  1.915117] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.259775
 > [  1.915117] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.259775, buffersize=46)
-> [  1.915117] (0:@) insert_into_buffer: inserted at end
+> [  1.915117] (0:@) insert_into_buffer: inserted at beginning
 > [  1.915117] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.915117
 > [  1.915117] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.915117, buffersize=47)
-> [  1.915117] (0:@) insert_into_buffer: inserted at 47
+> [  1.915117] (0:@) insert_into_buffer: inserted at end, pos = 47
 > [  1.915117] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.259775
 > [  1.915117] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.259775, buffersize=48)
-> [  1.915117] (0:@) insert_into_buffer: inserted at 47
+> [  1.915117] (0:@) insert_into_buffer: inserted at 1
 > [  1.915117] (0:@) new_pajeSubVariable: event_type=10, timestamp=1.915117
 > [  1.915117] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.915117, buffersize=49)
 > [  1.915117] (0:@) insert_into_buffer: inserted at end, pos = 49
@@ -1759,6 +1759,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  1.915117] (0:@) insert_into_buffer: insert event_type=10, timestamp=1.915117, buffersize=77)
 > [  1.915117] (0:@) insert_into_buffer: inserted at end, pos = 77
 > [  1.915117] (0:@) TRACE_paje_dump_buffer: dump until 1.698296. starts
+> [  1.915117] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.259775
+> [  1.915117] (0:@) free_paje_event: event_type=9, timestamp=1.259775
+> [  1.915117] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.259775
+> [  1.915117] (0:@) free_paje_event: event_type=9, timestamp=1.259775
 > [  1.915117] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.261939
 > [  1.915117] (0:@) free_paje_event: event_type=9, timestamp=1.261939
 > [  1.915117] (0:@) print_pajeSetVariable: event_type=8, timestamp=1.261939
@@ -1813,215 +1817,215 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  1.915117] (0:@) free_paje_event: event_type=9, timestamp=1.698296
 > [  1.915117] (0:@) TRACE_paje_dump_buffer: ends
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
+> [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=50)
+> [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 50
+> [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
+> [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=51)
+> [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 51
+> [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=52)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 52
+> [  2.082294] (0:@) insert_into_buffer: inserted at 51
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=53)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 53
+> [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 53
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=54)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 53
+> [  2.082294] (0:@) insert_into_buffer: inserted at 52
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=55)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 55
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=56)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 54
+> [  2.082294] (0:@) insert_into_buffer: inserted at 53
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=57)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 57
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=58)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 55
+> [  2.082294] (0:@) insert_into_buffer: inserted at 54
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=59)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 59
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=60)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 56
+> [  2.082294] (0:@) insert_into_buffer: inserted at 55
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=61)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 61
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=62)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 57
+> [  2.082294] (0:@) insert_into_buffer: inserted at 56
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=63)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 63
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=64)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 58
+> [  2.082294] (0:@) insert_into_buffer: inserted at 57
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=65)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 65
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=66)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 59
+> [  2.082294] (0:@) insert_into_buffer: inserted at 58
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=67)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 67
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=68)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 60
+> [  2.082294] (0:@) insert_into_buffer: inserted at 59
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=69)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 69
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=70)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 61
+> [  2.082294] (0:@) insert_into_buffer: inserted at 60
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=71)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 71
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=72)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 62
+> [  2.082294] (0:@) insert_into_buffer: inserted at 61
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=73)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 73
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=74)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 63
+> [  2.082294] (0:@) insert_into_buffer: inserted at 62
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=75)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 75
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=76)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 64
+> [  2.082294] (0:@) insert_into_buffer: inserted at 63
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=77)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 77
-> [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.915117
-> [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.915117, buffersize=78)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 65
-> [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
-> [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=79)
-> [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 79
 > [  2.082294] (0:@) TRACE_paje_dump_buffer: dump until 1.698296. starts
 > [  2.082294] (0:@) TRACE_paje_dump_buffer: ends
 > [  2.082294] (6:slave@Bourassa) new_pajeAddVariable: event_type=9, timestamp=2.082294
-> [  2.082294] (6:slave@Bourassa) insert_into_buffer: insert event_type=9, timestamp=2.082294, buffersize=80)
-> [  2.082294] (6:slave@Bourassa) insert_into_buffer: inserted at end, pos = 80
+> [  2.082294] (6:slave@Bourassa) insert_into_buffer: insert event_type=9, timestamp=2.082294, buffersize=78)
+> [  2.082294] (6:slave@Bourassa) insert_into_buffer: inserted at end, pos = 78
 > [  2.082294] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=2.082294
-> [  2.082294] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=2.082294, buffersize=81)
-> [  2.082294] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 81
+> [  2.082294] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=2.082294, buffersize=79)
+> [  2.082294] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 79
+> [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.866422
+> [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.866422, buffersize=80)
+> [  2.082294] (0:@) insert_into_buffer: inserted at 20
+> [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
+> [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=81)
+> [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 81
 > [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.866422
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.866422, buffersize=82)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 22
+> [  2.082294] (0:@) insert_into_buffer: inserted at 21
 > [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
 > [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=83)
 > [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 83
-> [  2.082294] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.866422
-> [  2.082294] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.866422, buffersize=84)
-> [  2.082294] (0:@) insert_into_buffer: inserted at 23
-> [  2.082294] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.082294
-> [  2.082294] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.082294, buffersize=85)
-> [  2.082294] (0:@) insert_into_buffer: inserted at end, pos = 85
 > [  2.102845] (0:@) TRACE_paje_dump_buffer: dump until 1.698296. starts
 > [  2.102845] (0:@) TRACE_paje_dump_buffer: ends
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
+> [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=84)
+> [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 84
+> [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
+> [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=85)
+> [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 85
+> [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=86)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 86
+> [  2.300447] (0:@) insert_into_buffer: inserted at 85
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=87)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 87
+> [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 87
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=88)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 87
+> [  2.300447] (0:@) insert_into_buffer: inserted at 86
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=89)
 > [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 89
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=90)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 88
+> [  2.300447] (0:@) insert_into_buffer: inserted at 87
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=91)
 > [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 91
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=92)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 89
+> [  2.300447] (0:@) insert_into_buffer: inserted at 88
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=93)
 > [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 93
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=94)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 90
+> [  2.300447] (0:@) insert_into_buffer: inserted at 89
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=95)
 > [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 95
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=96)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 91
+> [  2.300447] (0:@) insert_into_buffer: inserted at 90
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=97)
 > [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 97
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=98)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 92
+> [  2.300447] (0:@) insert_into_buffer: inserted at 91
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=99)
 > [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 99
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=100)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 93
+> [  2.300447] (0:@) insert_into_buffer: inserted at 92
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=101)
 > [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 101
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=102)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 94
+> [  2.300447] (0:@) insert_into_buffer: inserted at 93
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=103)
 > [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 103
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=104)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 95
+> [  2.300447] (0:@) insert_into_buffer: inserted at 94
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=105)
 > [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 105
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=106)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 96
+> [  2.300447] (0:@) insert_into_buffer: inserted at 95
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=107)
 > [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 107
-> [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.102845
-> [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.102845, buffersize=108)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 97
-> [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
-> [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=109)
-> [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 109
 > [  2.300447] (0:@) TRACE_paje_dump_buffer: dump until 1.698296. starts
 > [  2.300447] (0:@) TRACE_paje_dump_buffer: ends
 > [  2.300447] (4:slave@Fafard) new_pajeAddVariable: event_type=9, timestamp=2.300447
-> [  2.300447] (4:slave@Fafard) insert_into_buffer: insert event_type=9, timestamp=2.300447, buffersize=110)
-> [  2.300447] (4:slave@Fafard) insert_into_buffer: inserted at end, pos = 110
+> [  2.300447] (4:slave@Fafard) insert_into_buffer: insert event_type=9, timestamp=2.300447, buffersize=108)
+> [  2.300447] (4:slave@Fafard) insert_into_buffer: inserted at end, pos = 108
 > [  2.300447] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=2.300447
-> [  2.300447] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=2.300447, buffersize=111)
-> [  2.300447] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 111
+> [  2.300447] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=2.300447, buffersize=109)
+> [  2.300447] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 109
+> [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.082294
+> [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.082294, buffersize=110)
+> [  2.300447] (0:@) insert_into_buffer: inserted at 84
+> [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
+> [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=111)
+> [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 111
 > [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.082294
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.082294, buffersize=112)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 86
+> [  2.300447] (0:@) insert_into_buffer: inserted at 85
 > [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
 > [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=113)
 > [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 113
-> [  2.300447] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.082294
-> [  2.300447] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.082294, buffersize=114)
-> [  2.300447] (0:@) insert_into_buffer: inserted at 87
-> [  2.300447] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.300447
-> [  2.300447] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.300447, buffersize=115)
-> [  2.300447] (0:@) insert_into_buffer: inserted at end, pos = 115
+> [  2.376132] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.300447
+> [  2.376132] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.300447, buffersize=114)
+> [  2.376132] (0:@) insert_into_buffer: inserted at end, pos = 114
+> [  2.376132] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.376132
+> [  2.376132] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.376132, buffersize=115)
+> [  2.376132] (0:@) insert_into_buffer: inserted at end, pos = 115
 > [  2.376132] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.300447
 > [  2.376132] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.300447, buffersize=116)
-> [  2.376132] (0:@) insert_into_buffer: inserted at end, pos = 116
+> [  2.376132] (0:@) insert_into_buffer: inserted at 115
 > [  2.376132] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.376132
 > [  2.376132] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.376132, buffersize=117)
-> [  2.376132] (0:@) insert_into_buffer: inserted at 117
-> [  2.376132] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.300447
-> [  2.376132] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.300447, buffersize=118)
-> [  2.376132] (0:@) insert_into_buffer: inserted at 117
-> [  2.376132] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.376132
-> [  2.376132] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.376132, buffersize=119)
-> [  2.376132] (0:@) insert_into_buffer: inserted at end, pos = 119
+> [  2.376132] (0:@) insert_into_buffer: inserted at end, pos = 117
 > [  2.376132] (0:@) TRACE_paje_dump_buffer: dump until 1.698296. starts
 > [  2.376132] (0:@) TRACE_paje_dump_buffer: ends
 > [  2.376288] (0:@) TRACE_paje_dump_buffer: dump until 1.698296. starts
@@ -2029,66 +2033,70 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  2.378296] (0:@) TRACE_paje_dump_buffer: dump until 1.698296. starts
 > [  2.378296] (0:@) TRACE_paje_dump_buffer: ends
 > [  2.378296] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=2.378296
-> [  2.378296] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=2.378296, buffersize=120)
-> [  2.378296] (1:master@Tremblay) insert_into_buffer: inserted at 120
+> [  2.378296] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=2.378296, buffersize=118)
+> [  2.378296] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 118
 > [  2.378296] (2:slave@Tremblay) new_pajeAddVariable: event_type=9, timestamp=2.378296
-> [  2.378296] (2:slave@Tremblay) insert_into_buffer: insert event_type=9, timestamp=2.378296, buffersize=121)
-> [  2.378296] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 121
+> [  2.378296] (2:slave@Tremblay) insert_into_buffer: insert event_type=9, timestamp=2.378296, buffersize=119)
+> [  2.378296] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 119
+> [  2.519600] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.864258
+> [  2.519600] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.864258, buffersize=120)
+> [  2.519600] (0:@) insert_into_buffer: inserted at 18
+> [  2.519600] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.519600
+> [  2.519600] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.519600, buffersize=121)
+> [  2.519600] (0:@) insert_into_buffer: inserted at end, pos = 121
 > [  2.519600] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.864258
 > [  2.519600] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.864258, buffersize=122)
-> [  2.519600] (0:@) insert_into_buffer: inserted at 22
+> [  2.519600] (0:@) insert_into_buffer: inserted at 19
 > [  2.519600] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.519600
 > [  2.519600] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.519600, buffersize=123)
-> [  2.519600] (0:@) insert_into_buffer: inserted at 123
-> [  2.519600] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.864258
-> [  2.519600] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.864258, buffersize=124)
-> [  2.519600] (0:@) insert_into_buffer: inserted at 23
-> [  2.519600] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.519600
-> [  2.519600] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.519600, buffersize=125)
-> [  2.519600] (0:@) insert_into_buffer: inserted at end, pos = 125
+> [  2.519600] (0:@) insert_into_buffer: inserted at end, pos = 123
 > [  2.519600] (0:@) TRACE_paje_dump_buffer: dump until 1.698296. starts
 > [  2.519600] (0:@) TRACE_paje_dump_buffer: ends
 > [  2.534800] (0:@) TRACE_paje_dump_buffer: dump until 1.698296. starts
 > [  2.534800] (0:@) TRACE_paje_dump_buffer: ends
 > [  2.685562] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.534800
-> [  2.685562] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.534800, buffersize=126)
-> [  2.685562] (0:@) insert_into_buffer: inserted at 126
+> [  2.685562] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.534800, buffersize=124)
+> [  2.685562] (0:@) insert_into_buffer: inserted at end, pos = 124
 > [  2.685562] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.685562
-> [  2.685562] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.685562, buffersize=127)
-> [  2.685562] (0:@) insert_into_buffer: inserted at 127
+> [  2.685562] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.685562, buffersize=125)
+> [  2.685562] (0:@) insert_into_buffer: inserted at end, pos = 125
 > [  2.685562] (0:@) TRACE_paje_dump_buffer: dump until 1.698296. starts
 > [  2.685562] (0:@) TRACE_paje_dump_buffer: ends
 > [  2.685562] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=2.685562
-> [  2.685562] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=2.685562, buffersize=128)
-> [  2.685562] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 128
+> [  2.685562] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=2.685562, buffersize=126)
+> [  2.685562] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 126
 > [  2.685562] (3:slave@Jupiter) new_pajeAddVariable: event_type=9, timestamp=2.685562
-> [  2.685562] (3:slave@Jupiter) insert_into_buffer: insert event_type=9, timestamp=2.685562, buffersize=129)
-> [  2.685562] (3:slave@Jupiter) insert_into_buffer: inserted at end, pos = 129
+> [  2.685562] (3:slave@Jupiter) insert_into_buffer: insert event_type=9, timestamp=2.685562, buffersize=127)
+> [  2.685562] (3:slave@Jupiter) insert_into_buffer: inserted at end, pos = 127
+> [  2.685562] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.378296
+> [  2.685562] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.378296, buffersize=128)
+> [  2.685562] (0:@) insert_into_buffer: inserted at 122
+> [  2.685562] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.685562
+> [  2.685562] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.685562, buffersize=129)
+> [  2.685562] (0:@) insert_into_buffer: inserted at end, pos = 129
 > [  2.685562] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.378296
 > [  2.685562] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.378296, buffersize=130)
-> [  2.685562] (0:@) insert_into_buffer: inserted at 124
+> [  2.685562] (0:@) insert_into_buffer: inserted at 123
 > [  2.685562] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.685562
 > [  2.685562] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.685562, buffersize=131)
 > [  2.685562] (0:@) insert_into_buffer: inserted at end, pos = 131
-> [  2.685562] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.378296
-> [  2.685562] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.378296, buffersize=132)
-> [  2.685562] (0:@) insert_into_buffer: inserted at 125
-> [  2.685562] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.685562
-> [  2.685562] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.685562, buffersize=133)
-> [  2.685562] (0:@) insert_into_buffer: inserted at end, pos = 133
+> [  2.729394] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.698296
+> [  2.729394] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.698296, buffersize=132)
+> [  2.729394] (0:@) insert_into_buffer: inserted at beginning
+> [  2.729394] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.729394
+> [  2.729394] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.729394, buffersize=133)
+> [  2.729394] (0:@) insert_into_buffer: inserted at end, pos = 133
 > [  2.729394] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.698296
 > [  2.729394] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.698296, buffersize=134)
-> [  2.729394] (0:@) insert_into_buffer: inserted at 22
+> [  2.729394] (0:@) insert_into_buffer: inserted at 1
 > [  2.729394] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.729394
 > [  2.729394] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.729394, buffersize=135)
-> [  2.729394] (0:@) insert_into_buffer: inserted at 135
-> [  2.729394] (0:@) new_pajeAddVariable: event_type=9, timestamp=1.698296
-> [  2.729394] (0:@) insert_into_buffer: insert event_type=9, timestamp=1.698296, buffersize=136)
-> [  2.729394] (0:@) insert_into_buffer: inserted at 23
-> [  2.729394] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.729394
-> [  2.729394] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.729394, buffersize=137)
-> [  2.729394] (0:@) insert_into_buffer: inserted at end, pos = 137
+> [  2.729394] (0:@) insert_into_buffer: inserted at end, pos = 135
 > [  2.729394] (0:@) TRACE_paje_dump_buffer: dump until 2.082294. starts
+> [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.698296
+> [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.698296
+> [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.698296
+> [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.698296
 > [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.713496
 > [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.713496
 > [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.713496
@@ -2125,22 +2133,14 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.864258
 > [  2.729394] (0:@) print_pajeSetVariable: event_type=8, timestamp=1.864258
 > [  2.729394] (0:@) free_paje_event: event_type=8, timestamp=1.864258
+> [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.864258
+> [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.864258
+> [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.864258
+> [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.864258
 > [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.866422
 > [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.866422
 > [  2.729394] (0:@) print_pajeSetVariable: event_type=8, timestamp=1.866422
 > [  2.729394] (0:@) free_paje_event: event_type=8, timestamp=1.866422
-> [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.259775
-> [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.259775
-> [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.259775
-> [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.259775
-> [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.698296
-> [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.698296
-> [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.698296
-> [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.698296
-> [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.864258
-> [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.864258
-> [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.864258
-> [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.864258
 > [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.866422
 > [  2.729394] (0:@) free_paje_event: event_type=9, timestamp=1.866422
 > [  2.729394] (0:@) print_pajeAddVariable: event_type=9, timestamp=1.866422
@@ -2278,10 +2278,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  2.742626] (0:@) TRACE_paje_dump_buffer: ends
 > [  2.869854] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.742626
 > [  2.869854] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.742626, buffersize=46)
-> [  2.869854] (0:@) insert_into_buffer: inserted at 46
+> [  2.869854] (0:@) insert_into_buffer: inserted at end, pos = 46
 > [  2.869854] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.869854
 > [  2.869854] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.869854, buffersize=47)
-> [  2.869854] (0:@) insert_into_buffer: inserted at 47
+> [  2.869854] (0:@) insert_into_buffer: inserted at end, pos = 47
 > [  2.869854] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.742626
 > [  2.869854] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.742626, buffersize=48)
 > [  2.869854] (0:@) insert_into_buffer: inserted at 47
@@ -2319,7 +2319,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  2.888006] (0:@) insert_into_buffer: inserted at end, pos = 58
 > [  2.888006] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.888006
 > [  2.888006] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.888006, buffersize=59)
-> [  2.888006] (0:@) insert_into_buffer: inserted at 59
+> [  2.888006] (0:@) insert_into_buffer: inserted at end, pos = 59
 > [  2.888006] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.869854
 > [  2.888006] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.869854, buffersize=60)
 > [  2.888006] (0:@) insert_into_buffer: inserted at 59
@@ -2334,7 +2334,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  2.890170] (0:@) TRACE_paje_dump_buffer: ends
 > [  2.890170] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=2.890170
 > [  2.890170] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=2.890170, buffersize=62)
-> [  2.890170] (1:master@Tremblay) insert_into_buffer: inserted at 62
+> [  2.890170] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 62
 > [  2.890170] (2:slave@Tremblay) new_pajeAddVariable: event_type=9, timestamp=2.890170
 > [  2.890170] (2:slave@Tremblay) insert_into_buffer: insert event_type=9, timestamp=2.890170, buffersize=63)
 > [  2.890170] (2:slave@Tremblay) insert_into_buffer: inserted at end, pos = 63
@@ -2343,7 +2343,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  2.955790] (0:@) insert_into_buffer: inserted at 30
 > [  2.955790] (0:@) new_pajeSubVariable: event_type=10, timestamp=2.955790
 > [  2.955790] (0:@) insert_into_buffer: insert event_type=10, timestamp=2.955790, buffersize=65)
-> [  2.955790] (0:@) insert_into_buffer: inserted at 65
+> [  2.955790] (0:@) insert_into_buffer: inserted at end, pos = 65
 > [  2.955790] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.300447
 > [  2.955790] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.300447, buffersize=66)
 > [  2.955790] (0:@) insert_into_buffer: inserted at 31
@@ -2356,13 +2356,13 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  2.976340] (0:@) TRACE_paje_dump_buffer: ends
 > [  3.113392] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.082294
 > [  3.113392] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.082294, buffersize=68)
-> [  3.113392] (0:@) insert_into_buffer: inserted at end
+> [  3.113392] (0:@) insert_into_buffer: inserted at beginning
 > [  3.113392] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.113392
 > [  3.113392] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.113392, buffersize=69)
-> [  3.113392] (0:@) insert_into_buffer: inserted at 69
+> [  3.113392] (0:@) insert_into_buffer: inserted at end, pos = 69
 > [  3.113392] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.082294
 > [  3.113392] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.082294, buffersize=70)
-> [  3.113392] (0:@) insert_into_buffer: inserted at 69
+> [  3.113392] (0:@) insert_into_buffer: inserted at 1
 > [  3.113392] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.113392
 > [  3.113392] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.113392, buffersize=71)
 > [  3.113392] (0:@) insert_into_buffer: inserted at end, pos = 71
@@ -2403,6 +2403,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  3.113392] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.113392, buffersize=83)
 > [  3.113392] (0:@) insert_into_buffer: inserted at end, pos = 83
 > [  3.113392] (0:@) TRACE_paje_dump_buffer: dump until 2.685562. starts
+> [  3.113392] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.082294
+> [  3.113392] (0:@) free_paje_event: event_type=9, timestamp=2.082294
+> [  3.113392] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.082294
+> [  3.113392] (0:@) free_paje_event: event_type=9, timestamp=2.082294
 > [  3.113392] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.102845
 > [  3.113392] (0:@) free_paje_event: event_type=9, timestamp=2.102845
 > [  3.113392] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.102845
@@ -2501,160 +2505,164 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  3.113392] (0:@) free_paje_event: event_type=9, timestamp=2.685562
 > [  3.113392] (0:@) TRACE_paje_dump_buffer: ends
 > [  3.173943] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.113392
+> [  3.173943] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.113392, buffersize=34)
+> [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 34
+> [  3.173943] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.173943
+> [  3.173943] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.173943, buffersize=35)
+> [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 35
+> [  3.173943] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.113392
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.113392, buffersize=36)
-> [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 36
+> [  3.173943] (0:@) insert_into_buffer: inserted at 35
 > [  3.173943] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.173943
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.173943, buffersize=37)
-> [  3.173943] (0:@) insert_into_buffer: inserted at 37
+> [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 37
 > [  3.173943] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.113392
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.113392, buffersize=38)
-> [  3.173943] (0:@) insert_into_buffer: inserted at 37
+> [  3.173943] (0:@) insert_into_buffer: inserted at 36
 > [  3.173943] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.173943
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.173943, buffersize=39)
 > [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 39
 > [  3.173943] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.113392
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.113392, buffersize=40)
-> [  3.173943] (0:@) insert_into_buffer: inserted at 38
+> [  3.173943] (0:@) insert_into_buffer: inserted at 37
 > [  3.173943] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.173943
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.173943, buffersize=41)
 > [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 41
 > [  3.173943] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.113392
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.113392, buffersize=42)
-> [  3.173943] (0:@) insert_into_buffer: inserted at 39
+> [  3.173943] (0:@) insert_into_buffer: inserted at 38
 > [  3.173943] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.173943
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.173943, buffersize=43)
 > [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 43
 > [  3.173943] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.113392
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.113392, buffersize=44)
-> [  3.173943] (0:@) insert_into_buffer: inserted at 40
+> [  3.173943] (0:@) insert_into_buffer: inserted at 39
 > [  3.173943] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.173943
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.173943, buffersize=45)
 > [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 45
-> [  3.173943] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.113392
-> [  3.173943] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.113392, buffersize=46)
-> [  3.173943] (0:@) insert_into_buffer: inserted at 41
-> [  3.173943] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.173943
-> [  3.173943] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.173943, buffersize=47)
-> [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 47
 > [  3.173943] (0:@) TRACE_paje_dump_buffer: dump until 2.685562. starts
 > [  3.173943] (0:@) TRACE_paje_dump_buffer: ends
 > [  3.173943] (1:master@Tremblay) new_pajeSetVariable: event_type=8, timestamp=3.173943
-> [  3.173943] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=3.173943, buffersize=48)
-> [  3.173943] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 48
+> [  3.173943] (1:master@Tremblay) insert_into_buffer: insert event_type=8, timestamp=3.173943, buffersize=46)
+> [  3.173943] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 46
 > [  3.173943] (4:slave@Fafard) new_pajeAddVariable: event_type=9, timestamp=3.173943
-> [  3.173943] (4:slave@Fafard) insert_into_buffer: insert event_type=9, timestamp=3.173943, buffersize=49)
-> [  3.173943] (4:slave@Fafard) insert_into_buffer: inserted at end, pos = 49
+> [  3.173943] (4:slave@Fafard) insert_into_buffer: insert event_type=9, timestamp=3.173943, buffersize=47)
+> [  3.173943] (4:slave@Fafard) insert_into_buffer: inserted at end, pos = 47
+> [  3.173943] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.890170
+> [  3.173943] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.890170, buffersize=48)
+> [  3.173943] (0:@) insert_into_buffer: inserted at 18
+> [  3.173943] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.173943
+> [  3.173943] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.173943, buffersize=49)
+> [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 49
 > [  3.173943] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.890170
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.890170, buffersize=50)
-> [  3.173943] (0:@) insert_into_buffer: inserted at 22
+> [  3.173943] (0:@) insert_into_buffer: inserted at 19
 > [  3.173943] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.173943
 > [  3.173943] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.173943, buffersize=51)
 > [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 51
-> [  3.173943] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.890170
-> [  3.173943] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.890170, buffersize=52)
-> [  3.173943] (0:@) insert_into_buffer: inserted at 23
-> [  3.173943] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.173943
-> [  3.173943] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.173943, buffersize=53)
-> [  3.173943] (0:@) insert_into_buffer: inserted at end, pos = 53
 > [  3.194279] (0:@) TRACE_paje_dump_buffer: dump until 2.685562. starts
 > [  3.194279] (0:@) TRACE_paje_dump_buffer: ends
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.685562
+> [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.685562, buffersize=52)
+> [  3.340904] (0:@) insert_into_buffer: inserted at beginning
+> [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
+> [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=53)
+> [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 53
+> [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.685562
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.685562, buffersize=54)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 22
+> [  3.340904] (0:@) insert_into_buffer: inserted at 1
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=55)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 55
-> [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.685562
-> [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.685562, buffersize=56)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 23
+> [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 55
+> [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
+> [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=56)
+> [  3.340904] (0:@) insert_into_buffer: inserted at 54
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=57)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 57
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=58)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 56
+> [  3.340904] (0:@) insert_into_buffer: inserted at 55
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=59)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 59
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=60)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 57
+> [  3.340904] (0:@) insert_into_buffer: inserted at 56
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=61)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 61
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=62)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 58
+> [  3.340904] (0:@) insert_into_buffer: inserted at 57
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=63)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 63
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=64)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 59
+> [  3.340904] (0:@) insert_into_buffer: inserted at 58
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=65)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 65
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=66)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 60
+> [  3.340904] (0:@) insert_into_buffer: inserted at 59
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=67)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 67
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=68)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 61
+> [  3.340904] (0:@) insert_into_buffer: inserted at 60
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=69)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 69
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=70)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 62
+> [  3.340904] (0:@) insert_into_buffer: inserted at 61
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=71)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 71
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=72)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 63
+> [  3.340904] (0:@) insert_into_buffer: inserted at 62
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=73)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 73
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=74)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 64
+> [  3.340904] (0:@) insert_into_buffer: inserted at 63
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=75)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 75
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=76)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 65
+> [  3.340904] (0:@) insert_into_buffer: inserted at 64
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=77)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 77
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=78)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 66
+> [  3.340904] (0:@) insert_into_buffer: inserted at 65
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=79)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 79
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=80)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 67
+> [  3.340904] (0:@) insert_into_buffer: inserted at 66
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=81)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 81
 > [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=82)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 68
+> [  3.340904] (0:@) insert_into_buffer: inserted at 67
 > [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
 > [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=83)
 > [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 83
-> [  3.340904] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.194279
-> [  3.340904] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.194279, buffersize=84)
-> [  3.340904] (0:@) insert_into_buffer: inserted at 69
-> [  3.340904] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.340904
-> [  3.340904] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.340904, buffersize=85)
-> [  3.340904] (0:@) insert_into_buffer: inserted at end, pos = 85
 > [  3.340904] (0:@) TRACE_paje_dump_buffer: dump until 2.869854. starts
+> [  3.340904] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.685562
+> [  3.340904] (0:@) free_paje_event: event_type=9, timestamp=2.685562
+> [  3.340904] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.685562
+> [  3.340904] (0:@) free_paje_event: event_type=9, timestamp=2.685562
 > [  3.340904] (0:@) print_pajeSubVariable: event_type=10, timestamp=2.729394
 > [  3.340904] (0:@) free_paje_event: event_type=10, timestamp=2.729394
 > [  3.340904] (0:@) print_pajeSubVariable: event_type=10, timestamp=2.729394
@@ -2685,126 +2693,126 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  3.340904] (0:@) free_paje_event: event_type=9, timestamp=2.869854
 > [  3.340904] (0:@) TRACE_paje_dump_buffer: ends
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
+> [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=68)
+> [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 68
+> [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
+> [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=69)
+> [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 69
+> [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
+> [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=70)
+> [  3.389815] (0:@) insert_into_buffer: inserted at 69
+> [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
+> [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=71)
+> [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 71
+> [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=72)
-> [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 72
+> [  3.389815] (0:@) insert_into_buffer: inserted at 70
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=73)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 73
+> [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 73
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=74)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 73
+> [  3.389815] (0:@) insert_into_buffer: inserted at 71
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=75)
 > [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 75
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=76)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 74
+> [  3.389815] (0:@) insert_into_buffer: inserted at 72
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=77)
 > [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 77
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=78)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 75
+> [  3.389815] (0:@) insert_into_buffer: inserted at 73
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=79)
 > [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 79
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=80)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 76
+> [  3.389815] (0:@) insert_into_buffer: inserted at 74
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=81)
 > [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 81
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=82)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 77
+> [  3.389815] (0:@) insert_into_buffer: inserted at 75
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=83)
 > [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 83
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=84)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 78
+> [  3.389815] (0:@) insert_into_buffer: inserted at 76
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=85)
 > [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 85
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=86)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 79
+> [  3.389815] (0:@) insert_into_buffer: inserted at 77
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=87)
 > [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 87
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=88)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 80
+> [  3.389815] (0:@) insert_into_buffer: inserted at 78
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=89)
 > [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 89
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=90)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 81
+> [  3.389815] (0:@) insert_into_buffer: inserted at 79
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=91)
 > [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 91
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=92)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 82
+> [  3.389815] (0:@) insert_into_buffer: inserted at 80
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=93)
 > [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 93
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=94)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 83
+> [  3.389815] (0:@) insert_into_buffer: inserted at 81
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
 > [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=95)
 > [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 95
-> [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
-> [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=96)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 84
-> [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
-> [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=97)
-> [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 97
-> [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.340904
-> [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.340904, buffersize=98)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 85
-> [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
-> [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=99)
-> [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 99
 > [  3.389815] (0:@) TRACE_paje_dump_buffer: dump until 2.869854. starts
 > [  3.389815] (0:@) TRACE_paje_dump_buffer: ends
 > [  3.389815] (6:slave@Bourassa) new_pajeAddVariable: event_type=9, timestamp=3.389815
-> [  3.389815] (6:slave@Bourassa) insert_into_buffer: insert event_type=9, timestamp=3.389815, buffersize=100)
-> [  3.389815] (6:slave@Bourassa) insert_into_buffer: inserted at end, pos = 100
+> [  3.389815] (6:slave@Bourassa) insert_into_buffer: insert event_type=9, timestamp=3.389815, buffersize=96)
+> [  3.389815] (6:slave@Bourassa) insert_into_buffer: inserted at end, pos = 96
 > [  3.389815] (1:master@Tremblay) new value finish_send_tasks, child of msmark
 > [  3.389815] (1:master@Tremblay) EntityValue finish_send_tasks(25), child of msmark(15)
 > [  3.389815] (1:master@Tremblay) new_pajeDefineEntityValue: event_type=5
 > [  3.389815] (1:master@Tremblay) print_pajeDefineEntityValue: event_type=5
 > [  3.389815] (1:master@Tremblay) free_paje_event: event_type=5, timestamp=0.000000
 > [  3.389815] (1:master@Tremblay) new_pajeNewEvent: event_type=16, timestamp=3.389815
-> [  3.389815] (1:master@Tremblay) insert_into_buffer: insert event_type=16, timestamp=3.389815, buffersize=101)
-> [  3.389815] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 101
+> [  3.389815] (1:master@Tremblay) insert_into_buffer: insert event_type=16, timestamp=3.389815, buffersize=97)
+> [  3.389815] (1:master@Tremblay) insert_into_buffer: inserted at end, pos = 97
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.173943
-> [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.173943, buffersize=102)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 42
+> [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.173943, buffersize=98)
+> [  3.389815] (0:@) insert_into_buffer: inserted at 38
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
-> [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=103)
-> [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 103
+> [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=99)
+> [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 99
 > [  3.389815] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.173943
-> [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.173943, buffersize=104)
-> [  3.389815] (0:@) insert_into_buffer: inserted at 43
+> [  3.389815] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.173943, buffersize=100)
+> [  3.389815] (0:@) insert_into_buffer: inserted at 39
 > [  3.389815] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.389815
-> [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=105)
-> [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 105
+> [  3.389815] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.389815, buffersize=101)
+> [  3.389815] (0:@) insert_into_buffer: inserted at end, pos = 101
 > [  3.399880] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.389815
-> [  3.399880] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.389815, buffersize=106)
-> [  3.399880] (0:@) insert_into_buffer: inserted at end, pos = 106
+> [  3.399880] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.389815, buffersize=102)
+> [  3.399880] (0:@) insert_into_buffer: inserted at end, pos = 102
 > [  3.399880] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.399880
-> [  3.399880] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.399880, buffersize=107)
-> [  3.399880] (0:@) insert_into_buffer: inserted at 107
+> [  3.399880] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.399880, buffersize=103)
+> [  3.399880] (0:@) insert_into_buffer: inserted at end, pos = 103
 > [  3.399880] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.389815
-> [  3.399880] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.389815, buffersize=108)
-> [  3.399880] (0:@) insert_into_buffer: inserted at 107
+> [  3.399880] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.389815, buffersize=104)
+> [  3.399880] (0:@) insert_into_buffer: inserted at 103
 > [  3.399880] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.399880
-> [  3.399880] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.399880, buffersize=109)
-> [  3.399880] (0:@) insert_into_buffer: inserted at end, pos = 109
+> [  3.399880] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.399880, buffersize=105)
+> [  3.399880] (0:@) insert_into_buffer: inserted at end, pos = 105
 > [  3.399880] (0:@) TRACE_paje_dump_buffer: dump until 2.869854. starts
 > [  3.399880] (0:@) TRACE_paje_dump_buffer: ends
 > [  3.405015] (0:@) TRACE_paje_dump_buffer: dump until 2.869854. starts
@@ -2812,34 +2820,38 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  3.405171] (0:@) TRACE_paje_dump_buffer: dump until 2.869854. starts
 > [  3.405171] (0:@) TRACE_paje_dump_buffer: ends
 > [  3.829285] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.173943
-> [  3.829285] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.173943, buffersize=110)
-> [  3.829285] (0:@) insert_into_buffer: inserted at 44
+> [  3.829285] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.173943, buffersize=106)
+> [  3.829285] (0:@) insert_into_buffer: inserted at 40
 > [  3.829285] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.829285
-> [  3.829285] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.829285, buffersize=111)
-> [  3.829285] (0:@) insert_into_buffer: inserted at 111
+> [  3.829285] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.829285, buffersize=107)
+> [  3.829285] (0:@) insert_into_buffer: inserted at end, pos = 107
 > [  3.829285] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.173943
-> [  3.829285] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.173943, buffersize=112)
-> [  3.829285] (0:@) insert_into_buffer: inserted at 45
+> [  3.829285] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.173943, buffersize=108)
+> [  3.829285] (0:@) insert_into_buffer: inserted at 41
 > [  3.829285] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.829285
-> [  3.829285] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.829285, buffersize=113)
-> [  3.829285] (0:@) insert_into_buffer: inserted at end, pos = 113
+> [  3.829285] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.829285, buffersize=109)
+> [  3.829285] (0:@) insert_into_buffer: inserted at end, pos = 109
 > [  3.829285] (0:@) TRACE_paje_dump_buffer: dump until 2.869854. starts
 > [  3.829285] (0:@) TRACE_paje_dump_buffer: ends
 > [  3.849836] (0:@) TRACE_paje_dump_buffer: dump until 2.869854. starts
 > [  3.849836] (0:@) TRACE_paje_dump_buffer: ends
 > [  3.900952] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.869854
-> [  3.900952] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.869854, buffersize=114)
-> [  3.900952] (0:@) insert_into_buffer: inserted at 10
+> [  3.900952] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.869854, buffersize=110)
+> [  3.900952] (0:@) insert_into_buffer: inserted at beginning
 > [  3.900952] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.900952
-> [  3.900952] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.900952, buffersize=115)
-> [  3.900952] (0:@) insert_into_buffer: inserted at 115
+> [  3.900952] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.900952, buffersize=111)
+> [  3.900952] (0:@) insert_into_buffer: inserted at end, pos = 111
 > [  3.900952] (0:@) new_pajeAddVariable: event_type=9, timestamp=2.869854
-> [  3.900952] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.869854, buffersize=116)
-> [  3.900952] (0:@) insert_into_buffer: inserted at 11
+> [  3.900952] (0:@) insert_into_buffer: insert event_type=9, timestamp=2.869854, buffersize=112)
+> [  3.900952] (0:@) insert_into_buffer: inserted at 1
 > [  3.900952] (0:@) new_pajeSubVariable: event_type=10, timestamp=3.900952
-> [  3.900952] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.900952, buffersize=117)
-> [  3.900952] (0:@) insert_into_buffer: inserted at end, pos = 117
+> [  3.900952] (0:@) insert_into_buffer: insert event_type=10, timestamp=3.900952, buffersize=113)
+> [  3.900952] (0:@) insert_into_buffer: inserted at end, pos = 113
 > [  3.900952] (0:@) TRACE_paje_dump_buffer: dump until 3.389815. starts
+> [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.869854
+> [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.869854
+> [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.869854
+> [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.869854
 > [  3.900952] (0:@) print_pajeSubVariable: event_type=10, timestamp=2.888006
 > [  3.900952] (0:@) free_paje_event: event_type=10, timestamp=2.888006
 > [  3.900952] (0:@) print_pajeSubVariable: event_type=10, timestamp=2.888006
@@ -2848,26 +2860,14 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  3.900952] (0:@) free_paje_event: event_type=8, timestamp=2.890170
 > [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.890170
 > [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.890170
-> [  3.900952] (0:@) print_pajeSubVariable: event_type=10, timestamp=2.955790
-> [  3.900952] (0:@) free_paje_event: event_type=10, timestamp=2.955790
-> [  3.900952] (0:@) print_pajeSubVariable: event_type=10, timestamp=2.955790
-> [  3.900952] (0:@) free_paje_event: event_type=10, timestamp=2.955790
-> [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.082294
-> [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.082294
-> [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.082294
-> [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.082294
-> [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.685562
-> [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.685562
-> [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.685562
-> [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.685562
-> [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.869854
-> [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.869854
-> [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.869854
-> [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.869854
 > [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.890170
 > [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.890170
 > [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.890170
 > [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.890170
+> [  3.900952] (0:@) print_pajeSubVariable: event_type=10, timestamp=2.955790
+> [  3.900952] (0:@) free_paje_event: event_type=10, timestamp=2.955790
+> [  3.900952] (0:@) print_pajeSubVariable: event_type=10, timestamp=2.955790
+> [  3.900952] (0:@) free_paje_event: event_type=10, timestamp=2.955790
 > [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.976340
 > [  3.900952] (0:@) free_paje_event: event_type=9, timestamp=2.976340
 > [  3.900952] (0:@) print_pajeAddVariable: event_type=9, timestamp=2.976340
@@ -3069,17 +3069,21 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  3.914183] (0:@) TRACE_paje_dump_buffer: ends
 > [  4.420913] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.389815
 > [  4.420913] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.389815, buffersize=6)
-> [  4.420913] (0:@) insert_into_buffer: inserted at end
+> [  4.420913] (0:@) insert_into_buffer: inserted at beginning
 > [  4.420913] (0:@) new_pajeSubVariable: event_type=10, timestamp=4.420913
 > [  4.420913] (0:@) insert_into_buffer: insert event_type=10, timestamp=4.420913, buffersize=7)
-> [  4.420913] (0:@) insert_into_buffer: inserted at 7
+> [  4.420913] (0:@) insert_into_buffer: inserted at end, pos = 7
 > [  4.420913] (0:@) new_pajeAddVariable: event_type=9, timestamp=3.389815
 > [  4.420913] (0:@) insert_into_buffer: insert event_type=9, timestamp=3.389815, buffersize=8)
-> [  4.420913] (0:@) insert_into_buffer: inserted at 7
+> [  4.420913] (0:@) insert_into_buffer: inserted at 1
 > [  4.420913] (0:@) new_pajeSubVariable: event_type=10, timestamp=4.420913
 > [  4.420913] (0:@) insert_into_buffer: insert event_type=10, timestamp=4.420913, buffersize=9)
 > [  4.420913] (0:@) insert_into_buffer: inserted at end, pos = 9
 > [  4.420913] (0:@) TRACE_paje_dump_buffer: dump until 3.405015. starts
+> [  4.420913] (0:@) print_pajeAddVariable: event_type=9, timestamp=3.389815
+> [  4.420913] (0:@) free_paje_event: event_type=9, timestamp=3.389815
+> [  4.420913] (0:@) print_pajeAddVariable: event_type=9, timestamp=3.389815
+> [  4.420913] (0:@) free_paje_event: event_type=9, timestamp=3.389815
 > [  4.420913] (0:@) print_pajeSubVariable: event_type=10, timestamp=3.399880
 > [  4.420913] (0:@) free_paje_event: event_type=10, timestamp=3.399880
 > [  4.420913] (0:@) print_pajeSubVariable: event_type=10, timestamp=3.399880
@@ -3097,10 +3101,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [  4.441249] (0:@) free_paje_event: event_type=10, timestamp=3.900952
 > [  4.441249] (0:@) print_pajeSubVariable: event_type=10, timestamp=3.900952
 > [  4.441249] (0:@) free_paje_event: event_type=10, timestamp=3.900952
-> [  4.441249] (0:@) print_pajeAddVariable: event_type=9, timestamp=3.389815
-> [  4.441249] (0:@) free_paje_event: event_type=9, timestamp=3.389815
-> [  4.441249] (0:@) print_pajeAddVariable: event_type=9, timestamp=3.389815
-> [  4.441249] (0:@) free_paje_event: event_type=9, timestamp=3.389815
 > [  4.441249] (0:@) print_pajeSubVariable: event_type=10, timestamp=4.420913
 > [  4.441249] (0:@) free_paje_event: event_type=10, timestamp=4.420913
 > [  4.441249] (0:@) print_pajeSubVariable: event_type=10, timestamp=4.420913
@@ -3433,6 +3433,10 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 10 0.168126 17 1 98095000.000000
 > 9 0.168126 3 1 98095000.000000
 > 9 0.168126 17 1 98095000.000000
+> 8 0.168126 3 2 0.000000
+> 9 0.168126 3 2 76296000.000000
+> 8 0.168126 17 2 0.000000
+> 9 0.168126 17 2 76296000.000000
 > 8 0.188676 7 13 0.000000
 > 9 0.188676 7 13 5060664.718311
 > 8 0.188676 16 13 0.000000
@@ -3475,6 +3479,10 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 10 0.386279 17 1 98095000.000000
 > 9 0.386279 3 1 98095000.000000
 > 9 0.386279 17 1 98095000.000000
+> 8 0.386279 3 3 0.000000
+> 9 0.386279 3 3 76296000.000000
+> 8 0.386279 17 3 0.000000
+> 9 0.386279 17 3 76296000.000000
 > 9 0.399511 7 13 7859911.230163
 > 9 0.399511 16 13 7859911.230163
 > 9 0.399511 7 7 7859911.230163
@@ -3505,6 +3513,10 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 10 0.526739 16 15 7859911.230163
 > 9 0.526739 14 4 50000000.000000
 > 8 0.526739 13 1 4.000000
+> 8 0.526739 3 4 0.000000
+> 9 0.526739 3 4 48492000.000000
+> 8 0.526739 17 4 0.000000
+> 9 0.526739 17 4 48492000.000000
 > 9 0.547074 7 13 5114134.701194
 > 9 0.547074 16 13 5114134.701194
 > 9 0.547074 7 7 5114134.701194
@@ -3539,24 +3551,12 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 10 0.742611 16 8 5114134.701194
 > 9 0.742611 14 5 50000000.000000
 > 8 0.742611 13 1 5.000000
-> 9 0.744775 14 1 50000000.000000
-> 8 0.744775 13 1 6.000000
-> 8 0.168126 3 2 0.000000
-> 9 0.168126 3 2 76296000.000000
-> 8 0.168126 17 2 0.000000
-> 9 0.168126 17 2 76296000.000000
-> 8 0.386279 3 3 0.000000
-> 9 0.386279 3 3 76296000.000000
-> 8 0.386279 17 3 0.000000
-> 9 0.386279 17 3 76296000.000000
-> 8 0.526739 3 4 0.000000
-> 9 0.526739 3 4 48492000.000000
-> 8 0.526739 17 4 0.000000
-> 9 0.526739 17 4 48492000.000000
 > 8 0.742611 3 5 0.000000
 > 9 0.742611 3 5 48492000.000000
 > 8 0.742611 17 5 0.000000
 > 9 0.742611 17 5 48492000.000000
+> 9 0.744775 14 1 50000000.000000
+> 8 0.744775 13 1 6.000000
 > 9 0.744775 3 1 98095000.000000
 > 9 0.744775 17 1 98095000.000000
 > 10 0.823468 3 2 76296000.000000
@@ -3601,6 +3601,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 10 1.259775 7 11 5060664.718311
 > 8 1.259775 13 1 8.000000
 > 9 1.259775 14 3 50000000.000000
+> 9 1.259775 3 3 76296000.000000
+> 9 1.259775 17 3 76296000.000000
 > 9 1.261939 14 1 50000000.000000
 > 8 1.261939 13 1 9.000000
 > 9 1.261939 3 1 98095000.000000
@@ -3627,6 +3629,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 10 1.698296 17 1 98095000.000000
 > 9 1.698296 3 1 98095000.000000
 > 9 1.698296 17 1 98095000.000000
+> 9 1.698296 3 4 48492000.000000
+> 9 1.698296 17 4 48492000.000000
 > 9 1.713496 7 9 6632970.000000
 > 9 1.713496 16 9 6632970.000000
 > 10 1.771649 3 1 98095000.000000
@@ -3645,14 +3649,10 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 10 1.864258 16 9 6632970.000000
 > 9 1.864258 14 2 50000000.000000
 > 8 1.864258 13 1 11.000000
-> 9 1.866422 14 1 50000000.000000
-> 8 1.866422 13 1 12.000000
-> 9 1.259775 3 3 76296000.000000
-> 9 1.259775 17 3 76296000.000000
-> 9 1.698296 3 4 48492000.000000
-> 9 1.698296 17 4 48492000.000000
 > 9 1.864258 3 2 76296000.000000
 > 9 1.864258 17 2 76296000.000000
+> 9 1.866422 14 1 50000000.000000
+> 8 1.866422 13 1 12.000000
 > 9 1.866422 3 1 98095000.000000
 > 9 1.866422 17 1 98095000.000000
 > 9 1.886758 7 13 5114134.701194
@@ -3719,6 +3719,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 10 2.082294 17 1 98095000.000000
 > 9 2.082294 3 1 98095000.000000
 > 9 2.082294 17 1 98095000.000000
+> 9 2.082294 3 5 48492000.000000
+> 9 2.082294 17 5 48492000.000000
 > 9 2.102845 7 13 5060664.718311
 > 9 2.102845 16 13 5060664.718311
 > 9 2.102845 7 7 5060664.718311
@@ -3767,6 +3769,8 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 10 2.685562 17 1 98095000.000000
 > 9 2.685562 3 1 98095000.000000
 > 9 2.685562 17 1 98095000.000000
+> 9 2.685562 3 2 76296000.000000
+> 9 2.685562 17 2 76296000.000000
 > 10 2.729394 3 4 48492000.000000
 > 10 2.729394 17 4 48492000.000000
 > 9 2.742626 7 13 7859911.230163
@@ -3782,20 +3786,16 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 9 2.869854 3 1 98095000.000000
 > 9 2.869854 17 1 98095000.000000
 > 5 25 15 finish_send_tasks "(null)"
+> 9 2.869854 3 4 48492000.000000
+> 9 2.869854 17 4 48492000.000000
 > 10 2.888006 3 1 98095000.000000
 > 10 2.888006 17 1 98095000.000000
 > 8 2.890170 13 1 18.000000
 > 9 2.890170 14 1 50000000.000000
-> 10 2.955790 3 3 76296000.000000
-> 10 2.955790 17 3 76296000.000000
-> 9 2.082294 3 5 48492000.000000
-> 9 2.082294 17 5 48492000.000000
-> 9 2.685562 3 2 76296000.000000
-> 9 2.685562 17 2 76296000.000000
-> 9 2.869854 3 4 48492000.000000
-> 9 2.869854 17 4 48492000.000000
 > 9 2.890170 3 1 98095000.000000
 > 9 2.890170 17 1 98095000.000000
+> 10 2.955790 3 3 76296000.000000
+> 10 2.955790 17 3 76296000.000000
 > 9 2.976340 7 13 5060664.718311
 > 9 2.976340 7 7 5060664.718311
 > 9 2.976340 7 10 5060664.718311
@@ -3894,14 +3894,14 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > 10 3.389815 17 1 98095000.000000
 > 9 3.389815 3 1 98095000.000000
 > 9 3.389815 17 1 98095000.000000
+> 9 3.389815 3 5 48492000.000000
+> 9 3.389815 17 5 48492000.000000
 > 10 3.399880 3 1 98095000.000000
 > 10 3.399880 17 1 98095000.000000
 > 10 3.829285 3 3 76296000.000000
 > 10 3.829285 17 3 76296000.000000
 > 10 3.900952 3 4 48492000.000000
 > 10 3.900952 17 4 48492000.000000
-> 9 3.389815 3 5 48492000.000000
-> 9 3.389815 17 5 48492000.000000
 > 10 4.420913 3 5 48492000.000000
 > 10 4.420913 17 5 48492000.000000
 > 7 4.441249 1 3
