@@ -582,11 +582,12 @@ static void elements_father(const char *src, const char *dst,
                             routing_component_t *res_dst)
 {
   xbt_assert(src && dst, "bad parameters for \"elements_father\" method");
-
+#define ELEMENTS_FATHER_MAXDEPTH 16 /* increase if it is not enough */
   routing_component_t src_as, dst_as;
-  int index_src, index_dst;
-  xbt_dynar_t path_src;
-  xbt_dynar_t path_dst;
+  routing_component_t path_src[ELEMENTS_FATHER_MAXDEPTH];
+  routing_component_t path_dst[ELEMENTS_FATHER_MAXDEPTH];
+  int index_src = 0;
+  int index_dst = 0;
   routing_component_t current;
   routing_component_t current_src;
   routing_component_t current_dst;
@@ -608,38 +609,35 @@ static void elements_father(const char *src, const char *dst,
              "Ask for route \"from\"(%s) or \"to\"(%s) no found", src, dst);
 
   /* (2) find the path to the root routing component */
-  path_src = xbt_dynar_new(sizeof(routing_component_t), NULL);
-  for (current = src_as ; current != NULL ; current = current->routing_father)
-    xbt_dynar_push_as(path_src, routing_component_t, current);
-  path_dst = xbt_dynar_new(sizeof(routing_component_t), NULL);
-  for (current = dst_as ; current != NULL ; current = current->routing_father)
-    xbt_dynar_push_as(path_dst, routing_component_t, current);
+  for (current = src_as ; current != NULL ; current = current->routing_father) {
+    path_src[index_src++] = current;
+    xbt_assert(index_src <= ELEMENTS_FATHER_MAXDEPTH,
+               "ELEMENTS_FATHER_MAXDEPTH should be increased for path_src");
+  }
+  for (current = dst_as ; current != NULL ; current = current->routing_father) {
+    path_dst[index_dst++] = current;
+    xbt_assert(index_dst <= ELEMENTS_FATHER_MAXDEPTH,
+               "ELEMENTS_FATHER_MAXDEPTH should be increased for path_dst");
+  }
 
   /* (3) find the common father */
-  index_src = xbt_dynar_length(path_src) - 1;
-  index_dst = xbt_dynar_length(path_dst) - 1;
-  current_src = xbt_dynar_get_as(path_src, index_src, routing_component_t);
-  current_dst = xbt_dynar_get_as(path_dst, index_dst, routing_component_t);
-  while (index_src > 0 && index_dst > 0 && current_src == current_dst) {
-    index_src--;
-    index_dst--;
-    current_src = xbt_dynar_get_as(path_src, index_src, routing_component_t);
-    current_dst = xbt_dynar_get_as(path_dst, index_dst, routing_component_t);
-  }
+  do {
+    current_src = path_src[--index_src];
+    current_dst = path_dst[--index_dst];
+  } while (index_src > 0 && index_dst > 0 && current_src == current_dst);
 
   /* (4) they are not in the same routing component, make the path */
   if (current_src == current_dst)
     father = current_src;
   else
-    father = xbt_dynar_get_as(path_src, index_src + 1, routing_component_t);
+    father = path_src[index_src + 1];
 
   /* (5) result generation */
   *res_father = father;         /* first the common father of src and dst */
   *res_src = current_src;       /* second the first different father of src */
   *res_dst = current_dst;       /* three  the first different father of dst */
 
-  xbt_dynar_free(&path_src);
-  xbt_dynar_free(&path_dst);
+#undef ELEMENTS_FATHER_MAXDEPTH
 }
 
 /* Global Business methods */
