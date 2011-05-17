@@ -339,34 +339,17 @@ static void insert_into_buffer (paje_event_t tbi)
   XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%ld)", __FUNCTION__, tbi->event_type, tbi->timestamp, xbt_dynar_length(buffer));
 
   unsigned int i;
-  unsigned long len = xbt_dynar_length(buffer);
-  if (len == 0){
-    xbt_dynar_push (buffer, &tbi);
-    XBT_DEBUG("%s: inserted at beginning", __FUNCTION__);
-  }else{
-    //check if last event has the same timestamp that tbi event
-    paje_event_t e2 = *(paje_event_t*)xbt_dynar_get_ptr (buffer, len-1);
-    if (e2->timestamp == tbi->timestamp){
-      //insert at the end
-      XBT_DEBUG("%s: inserted at end, pos = %ld", __FUNCTION__, len);
-      xbt_dynar_insert_at (buffer, len, &tbi);
-      return;
-    }
-    int inserted = 0;
-    for (i = len-1; i > 0; i--){
-      paje_event_t e1 = *(paje_event_t*)xbt_dynar_get_ptr(buffer, i);
-      if (e1->timestamp <= tbi->timestamp){
-        xbt_dynar_insert_at (buffer, i+1, &tbi);
-        XBT_DEBUG("%s: inserted at %d", __FUNCTION__, i+1);
-        inserted = 1;
-        break;
-      }
-    }
-    if (!inserted){
-      xbt_dynar_push (buffer, &tbi);
-      XBT_DEBUG("%s: inserted at end", __FUNCTION__);
-    }
+  for (i = xbt_dynar_length(buffer); i > 0; i--) {
+    paje_event_t e1 = *(paje_event_t*)xbt_dynar_get_ptr(buffer, i - 1);
+    if (e1->timestamp <= tbi->timestamp)
+      break;
   }
+  xbt_dynar_insert_at(buffer, i, &tbi);
+  if (i == 0)
+    XBT_DEBUG("%s: inserted at beginning", __FUNCTION__);
+  else
+    XBT_DEBUG("%s: inserted at%s %d", __FUNCTION__,
+              (i == xbt_dynar_length(buffer) - 1 ? " end, pos =" : ""), i);
 }
 
 static void print_pajeDefineContainerType(paje_event_t event)
