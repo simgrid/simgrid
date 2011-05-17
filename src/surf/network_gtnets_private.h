@@ -23,6 +23,9 @@ typedef struct surf_action_network_GTNETS {
   s_surf_action_t generic_action;
   double latency;
   double lat_current;
+#ifdef HAVE_TRACING
+  int last_remains;
+#endif
   lmm_variable_t variable;
   double rate;
   int suspended;
