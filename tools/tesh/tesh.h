@@ -22,13 +22,13 @@ const char *signal_name(unsigned int got, char *expected);
 #include "run_context.h"
 
 /*** Options ***/
-int timeout_value;              /* child timeout value */
-int sort_len;                   /* length of the prefix to sort */
-char* option;					/* cfg for command line */
+extern int timeout_value;       /* child timeout value */
+extern int sort_len;            /* length of the prefix to sort */
+extern char* option;            /* cfg for command line */
 #define SORT_LEN_DEFAULT 19
 
-rctx_t rctx;
-const char *testsuite_name;
+extern rctx_t rctx;
+extern const char *testsuite_name;
 
 
 /* Environment related definitions */
@@ -41,6 +41,6 @@ const char *testsuite_name;
 extern char **environ;
 # endif
 
-xbt_dict_t env;                 /* the environment, stored as a dict (for variable substitution) */
+extern xbt_dict_t env; /* the environment, stored as a dict (for variable substitution) */
 
 #endif                          /* TESH_H */
