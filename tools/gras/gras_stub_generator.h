@@ -15,16 +15,16 @@
 
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
-xbt_dict_t process_function_set;
-xbt_dynar_t process_list;
-xbt_dict_t machine_set;
+extern xbt_dict_t process_function_set;
+extern xbt_dynar_t process_list;
+extern xbt_dict_t machine_set;
+extern char *warning;
 
 typedef struct s_process_t {
   int argc;
   char **argv;
   char *host;
 } s_process_t;
-char *warning;
 
 void s_process_free(void *process);
 

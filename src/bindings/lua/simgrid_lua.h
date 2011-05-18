@@ -23,9 +23,9 @@
 #include <stdarg.h>
 
 
-xbt_dict_t process_function_set;
-xbt_dynar_t process_list;
-xbt_dict_t machine_set;
+extern xbt_dict_t process_function_set;
+extern xbt_dynar_t process_list;
+extern xbt_dict_t machine_set;
 
 typedef struct s_process_t {
   int argc;

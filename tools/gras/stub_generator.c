@@ -40,6 +40,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen, gras, "Stub generator");
 xbt_dict_t process_function_set = NULL;
 xbt_dynar_t process_list = NULL;
 xbt_dict_t machine_set = NULL;
+char *warning = NULL;
 
 void s_process_free(void *process)
 {
