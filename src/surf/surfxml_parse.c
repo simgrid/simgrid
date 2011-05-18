@@ -16,6 +16,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
 #undef CLEANUP
 #include "simgrid_dtd.c"
 
+char *platform_filename;
+
 /* Initialize the parsing globals */
 xbt_dict_t traces_set_list = NULL;
 xbt_dict_t trace_connect_list_host_avail = NULL;

@@ -12,9 +12,9 @@
 #include "xbt/function_types.h"
 #include "xbt/dict.h"
 
-char * platform_filename;
-
 SG_BEGIN_DECL()
+
+XBT_PUBLIC_DATA(char *) platform_filename;
 
 /* Hook for the different tags. All the functions which pointer to are push into here are run when the tag is encountered */
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_platform_cb_list;
