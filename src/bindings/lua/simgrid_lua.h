@@ -33,8 +33,6 @@ typedef struct s_process_t {
   char *host;
 } s_process_t;
 
-char *warning;
-
 void s_process_free(void *process);
 
 /* UNIX files */
