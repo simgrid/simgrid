@@ -9,6 +9,7 @@
 #include "xbt/config.h"
 #include "xbt/str.h"
 #include "surf/surf_private.h"
+#include "surf/surf_routing.h"	/* COORD_HOST_LEVEL and COORD_ASR_LEVEL */
 #include "simix/context.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
@@ -220,6 +221,23 @@ static void _surf_cfg_cb_contexts_parallel_threshold(const char *name, int pos)
   SIMIX_context_set_parallel_threshold(xbt_cfg_get_int(_surf_cfg_set, name));
 }
 
+static void _surf_cfg_cb__surf_network_coordinates(const char *name,
+                                                   int pos)
+{
+  char *val = xbt_cfg_get_string(_surf_cfg_set, name);
+  if (!strcmp(val, "yes")) {
+    if (!COORD_HOST_LEVEL) {
+      COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_dynar_free_voidp);
+      COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
+    }
+  } else if (!strcmp(val, "no")) {
+    if (COORD_HOST_LEVEL)
+      XBT_WARN("Cannot disable CMD prop coordinates, once set.");
+  } else {
+    XBT_WARN("Setting CMD prop coordinates must be \"yes\" or \"no\"");
+  }
+}
+
 static void _surf_cfg_cb__surf_network_fullduplex(const char *name,
                                                   int pos)
 {
@@ -396,6 +414,13 @@ void surf_config_init(int *argc, char **argv)
         "Minimal number of user contexts to be run in parallel",
         xbt_cfgelm_int, &default_value_int, 1, 1,
         _surf_cfg_cb_contexts_parallel_threshold, NULL);
+
+    default_value = xbt_strdup("no");
+    xbt_cfg_register(&_surf_cfg_set, "coordinates",
+                     "\"yes\" or \"no\" (FIXME: document)",
+                     xbt_cfgelm_string, &default_value, 1, 1,
+                     _surf_cfg_cb__surf_network_coordinates, NULL);
+    xbt_cfg_setdefault_string(_surf_cfg_set, "coordinates", default_value);
 
     default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "fullduplex",
