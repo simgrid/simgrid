@@ -259,7 +259,7 @@ if [ -n "${TRACE_ACTIVE}" ]; then
   fi
 
   if [ -n "${TRACE_TRIVA}" ]; then
-    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/categorized:smpi_cat.plist --cfg=tracing/uncategorized:smpi_uncat.plist"
+    TRACEOPTIONS="${TRACEOPTIONS} --cfg=triva/categorized:smpi_cat.plist --cfg=triva/uncategorized:smpi_uncat.plist"
   fi
 fi
 ##---------------------- end SMPI TRACING OPTIONS ---------------------------------
