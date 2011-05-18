@@ -13,6 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
 /* Pointers to each of the heap regions to use */
 void *std_heap = NULL;          /* memory erased each time the MC stuff rollbacks to the beginning. Almost everything goes here */
 void *raw_heap = NULL;          /* memory persistent over the MC rollbacks. Only MC stuff should go there */
+/* int raw_heap_fd; */ /* unsued */
 
 /* Initialize the model-checker memory subsystem */
 /* It creates the two heap regions: std_heap and raw_heap */
