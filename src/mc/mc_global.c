@@ -273,9 +273,9 @@ void MC_assert_pair(int prop){
     XBT_INFO("**************************");
     XBT_INFO("*** PROPERTY NOT VALID ***");
     XBT_INFO("**************************");
-    XBT_INFO("Counter-example execution trace:");
-    MC_show_snapshot_stack(mc_snapshot_stack);
-    MC_dump_snapshot_stack(mc_snapshot_stack);
+    //XBT_INFO("Counter-example execution trace:");
+    //MC_show_snapshot_stack(mc_snapshot_stack);
+    //MC_dump_snapshot_stack(mc_snapshot_stack);
     //MC_print_statistics(mc_stats);
     xbt_abort();
   }

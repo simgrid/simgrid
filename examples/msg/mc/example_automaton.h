@@ -5,9 +5,14 @@ int yyparse(void);
 int yywrap(void);
 int yylex(void);
 
-int predD(void);
+int predP(void);
 int predR(void);
+int predQ(void);
+int predD(void);
 int predE(void);
+
+
+
 
 int server(int argc, char *argv[]);
 int client(int argc, char *argv[]);
