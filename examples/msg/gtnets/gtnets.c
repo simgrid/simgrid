@@ -15,8 +15,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
+int timer(int argc, char *argv[]);
 MSG_error_t test_all(const char *platform_file,
                      const char *application_file);
+
+int timer_start = 1;
 
 typedef enum {
   PORT_22 = 0,
@@ -32,6 +35,7 @@ m_task_t gl_task_array[NTASKS];
 const char *slavenames[NTASKS];
 const char *masternames[NTASKS];
 int gl_task_array_id = 0;
+int count_finished = 0;
 
 #define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
 
@@ -77,6 +81,8 @@ int master(int argc, char *argv[])
     slave = MSG_get_host_by_name(slavename);
   }
 
+  count_finished++;
+
   /* time measurement */
   sprintf(id_alias, "%d", id);
   start_time = MSG_get_clock();
@@ -86,6 +92,31 @@ int master(int argc, char *argv[])
 
   return 0;
 }                               /* end_of_master */
+
+
+/** Timer function  */
+int timer(int argc, char *argv[])
+{
+  int sleep_time;
+  int first_sleep;
+
+  if (argc != 3) {
+    XBT_INFO("Strange number of arguments expected 2 got %d", argc - 1);
+  }
+
+  sscanf(argv[1], "%d", &first_sleep);
+  sscanf(argv[2], "%d", &sleep_time);
+
+  if(first_sleep){
+      MSG_process_sleep(first_sleep);
+  }
+
+  while(timer_start){
+      MSG_process_sleep(sleep_time);
+  }
+
+  return 0;
+}
 
 /** Receiver function  */
 int slave(int argc, char *argv[])
@@ -109,6 +140,13 @@ int slave(int argc, char *argv[])
   int trace_id = id;
 
   a = MSG_task_receive(&(task), id_alias);
+
+  count_finished--;
+  if(count_finished == 0){
+      timer_start = 0;
+  }
+
+
 
   if (a != MSG_OK) {
     XBT_INFO("Hey?! What's up?");
@@ -157,6 +195,7 @@ int slave(int argc, char *argv[])
   TRACE_mark("endmark", mark);
 
   MSG_task_destroy(task);
+
   return 0;
 }                               /* end_of_slave */
 
@@ -178,6 +217,8 @@ MSG_error_t test_all(const char *platform_file,
   {                             /*   Application deployment */
     MSG_function_register("master", master);
     MSG_function_register("slave", slave);
+    MSG_function_register("timer", timer);
+
     MSG_launch_application(application_file);
   }
   res = MSG_main();
