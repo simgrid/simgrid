@@ -125,7 +125,7 @@ static surf_action_t netcste_communicate(const char *src_name,
 
   action->suspended = 0;
 
-  action->latency = 1;          //random_generate(random_latency);
+  action->latency = sg_latency_factor;          //random_generate(random_latency);
   action->lat_init = action->latency;
 
   if (action->latency <= 0.0) {
