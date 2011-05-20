@@ -112,9 +112,18 @@ typedef struct mc_stats {
   unsigned long executed_transitions;
 } s_mc_stats_t, *mc_stats_t;
 
+typedef struct mc_stats_pair {
+  //unsigned long pair_size;
+  unsigned long visited_pairs;
+  unsigned long expanded_pairs;
+  unsigned long executed_transitions;
+} s_mc_stats_pair_t, *mc_stats_pair_t;
+
 extern mc_stats_t mc_stats;
+extern mc_stats_pair_t mc_stats_pair;
 
 void MC_print_statistics(mc_stats_t);
+void MC_print_statistics_pairs(mc_stats_pair_t);
 
 /********************************** MEMORY ******************************/
 /* The possible memory modes for the modelchecker are standard and raw. */
@@ -202,6 +211,8 @@ void set_pair_reached(mc_state_t gs, xbt_state_t as);
 void MC_show_snapshot_stack(xbt_fifo_t stack);
 void MC_dump_snapshot_stack(xbt_fifo_t stack);
 void MC_pair_delete(mc_pairs_t pair);
+void MC_exit_with_automaton(void);
+mc_state_t MC_state_pair_new(void);
 
 
 #endif

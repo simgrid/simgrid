@@ -15,6 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
 mc_snapshot_t initial_snapshot = NULL;
 xbt_fifo_t mc_stack = NULL;
 mc_stats_t mc_stats = NULL;
+mc_stats_pair_t mc_stats_pair = NULL;
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 double *mc_time = NULL;
@@ -65,8 +66,8 @@ void MC_init_with_automaton(xbt_automaton_t a){
   MC_SET_RAW_MEM;
 
   /* Initialize statistics */
-  mc_stats = xbt_new0(s_mc_stats_t, 1);
-  mc_stats->state_size = 1;
+  mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
+  //mc_stats_pair->pair_size = 1;
 
   XBT_DEBUG("Creating snapshot_stack");
 
@@ -88,7 +89,14 @@ void MC_modelcheck(void)
 
 void MC_modelcheck_with_automaton(xbt_automaton_t a){
   MC_init_with_automaton(a);
-  MC_exit();
+  MC_exit_with_automaton();
+}
+
+void MC_exit_with_automaton(void)
+{
+  MC_print_statistics_pairs(mc_stats_pair);
+  xbt_free(mc_time);
+  MC_memory_exit();
 }
 
 void MC_exit(void)
@@ -251,6 +259,17 @@ void MC_print_statistics(mc_stats_t stats)
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
   XBT_INFO("Expanded / Visited = %lf",
         (double) stats->visited_states / stats->expanded_states);
+  /*XBT_INFO("Exploration coverage = %lf",
+     (double)stats->expanded_states / stats->state_size); */
+}
+
+void MC_print_statistics_pairs(mc_stats_pair_t stats)
+{
+  XBT_INFO("Expanded pairs = %lu", stats->expanded_pairs);
+  XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
+  XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
+  XBT_INFO("Expanded / Visited = %lf",
+        (double) stats->visited_pairs / stats->expanded_pairs);
   /*XBT_INFO("Exploration coverage = %lf",
      (double)stats->expanded_states / stats->state_size); */
 }
