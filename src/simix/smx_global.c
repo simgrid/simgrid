@@ -325,6 +325,8 @@ void SIMIX_display_process_status(void)
 
   XBT_INFO("%d processes are still running, waiting for something.", nbprocess);
   /*  List the process and their state */
+  XBT_INFO
+    ("Legend of the following listing: \"<process>(<pid>) on <host>: <status>.\"");
   xbt_swag_foreach(process, simix_global->process_list) {
 
     if (process->waiting_action) {
@@ -356,8 +358,8 @@ void SIMIX_display_process_status(void)
 	  action_description = "I/O";
 	  break;
       }
-      XBT_INFO("Process %ld (%s@%s): waiting for %s action %p to finish", process->pid, process->name, process->smx_host->name,
-	  action_description, process->waiting_action);
+      XBT_INFO("Process %ld (%s@%s): waiting for %s action %p (%s) to finish", process->pid, process->name, process->smx_host->name,
+	  action_description, process->waiting_action, process->waiting_action->name);
     }
   }
 }
