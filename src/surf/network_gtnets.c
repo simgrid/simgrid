@@ -378,7 +378,9 @@ static surf_action_t communicate(const char *src_name,
       surf_action_new(sizeof(s_surf_action_network_GTNETS_t), size,
                       surf_network_model, 0);
 
+#ifdef HAVE_TRACING
   action->last_remains = 0;
+#endif
 
   /* Add a flow to the GTNets Simulation, associated to this action */
   if (gtnets_create_flow(src, dst, size, (void *) action) < 0) {
