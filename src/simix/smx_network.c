@@ -721,6 +721,10 @@ double SIMIX_comm_get_remains(smx_action_t action)
 {
   double remains;
 
+  if(!action){
+      return 0;
+  }
+
   switch (action->state) {
 
     case SIMIX_RUNNING:
