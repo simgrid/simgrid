@@ -157,6 +157,7 @@ void TRACE_desactivate (void);
 int TRACE_is_active (void);
 int TRACE_needs_platform (void);
 int TRACE_is_enabled(void);
+int TRACE_platform(void);
 int TRACE_is_configured(void);
 int TRACE_smpi_is_enabled(void);
 int TRACE_smpi_is_grouped(void);

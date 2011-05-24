@@ -13,6 +13,7 @@ XBT_LOG_NEW_CATEGORY(instr, "Logging the behavior of the tracing system (used fo
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
 #define OPT_TRACING               "tracing"
+#define OPT_TRACING_PLATFORM      "tracing/platform"
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
 #define OPT_TRACING_CATEGORIZED   "tracing/categorized"
@@ -26,6 +27,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRIVA_CAT_CONF        "triva/categorized"
 
 static int trace_enabled;
+static int trace_platform;
 static int trace_smpi_enabled;
 static int trace_smpi_grouped;
 static int trace_categorized;
@@ -43,6 +45,7 @@ xbt_dict_t created_categories; //declared in instr_interface.c
 static void TRACE_getopts(void)
 {
   trace_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING);
+  trace_platform = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_PLATFORM);
   trace_smpi_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
   trace_smpi_grouped = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
   trace_categorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_CATEGORIZED);
@@ -134,12 +137,18 @@ int TRACE_needs_platform (void)
          TRACE_msg_task_is_enabled() ||
          TRACE_categorized() ||
          TRACE_uncategorized() ||
+         TRACE_platform () ||
          (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped());
 }
 
 int TRACE_is_enabled(void)
 {
   return trace_enabled;
+}
+
+int TRACE_platform(void)
+{
+  return trace_platform;
 }
 
 int TRACE_is_configured(void)
@@ -220,6 +229,13 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_tracing, 0, 1,
                    NULL, NULL);
 
+  /* tracing platform*/
+  int default_tracing_platform = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM,
+                   "Enable Tracing Platform.",
+                   xbt_cfgelm_int, &default_tracing_platform, 0, 1,
+                   NULL, NULL);
+
   /* smpi */
   int default_tracing_smpi = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_SMPI,
@@ -236,10 +252,10 @@ void TRACE_global_init(int *argc, char **argv)
 
 
   /* platform */
-  int default_tracing_platform = 0;
+  int default_tracing_categorized = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_CATEGORIZED,
                    "Tracing of categorized platform (host and link) utilization.",
-                   xbt_cfgelm_int, &default_tracing_platform, 0, 1,
+                   xbt_cfgelm_int, &default_tracing_categorized, 0, 1,
                    NULL, NULL);
 
   /* tracing uncategorized resource utilization */
@@ -497,6 +513,7 @@ void TRACE_generate_triva_cat_conf (void)
 }
 
 #undef OPT_TRACING
+#undef OPT_TRACING_PLATFORM
 #undef OPT_TRACING_SMPI
 #undef OPT_TRACING_SMPI_GROUP
 #undef OPT_TRACING_CATEGORIZED
