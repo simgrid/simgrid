@@ -12,9 +12,10 @@ set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 # 3.5.91 -> beta1
 # 3.5.92 -> beta2
 # 3.5.93 -> rc1
+# 3.5.94 -> rc2
 set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "5")
-set(SIMGRID_VERSION_PATCH "93")
+set(SIMGRID_VERSION_PATCH "94")
 set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
 set(libsimgrid_version "${release_version}")
 set(libgras_version "${release_version}")
