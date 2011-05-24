@@ -2,7 +2,7 @@ SimGrid (3.6) unstable; urgency=low
 
  Java and Ruby: 
  * Bindings now constitute their own package, separated from the main one.
-   Rational: reduce our maintainance nightmare by reducing the module coupling.
+   Rationale: reduce our maintainance nightmare by reducing the module coupling
    They will soon be released on their own on gforge. 
  * In the meanwhile:
    svn co svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java
