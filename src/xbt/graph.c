@@ -7,6 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid_config.h" /* getline */
+#include <errno.h>
 #include <stdlib.h>
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -743,6 +744,8 @@ xbt_graph_t xbt_graph_load (const char *filename)
   size_t size;
   char *nnodes_str = NULL;
   read = getline (&nnodes_str, &size, file);
+  if (read == -1)
+    THROWF(system_error, 0, "getline failed to read the number of nodes (errno = %d)", errno);
   int i, nnodes = atoi (nnodes_str);
   free (nnodes_str);
 
@@ -750,6 +753,8 @@ xbt_graph_t xbt_graph_load (const char *filename)
   for (i = 0; i < nnodes; i++){
     char *node_str = NULL;
     read = getline (&node_str, &size, file);
+    if (read == -1)
+      THROWF(system_error, 0, "getline failed to read all nodes (errno = %d)", errno);
     xbt_node_t n;
     char *name = xbt_strdup (node_str);
     xbt_str_subst (name, '\n', '\0', 0);
@@ -761,6 +766,8 @@ xbt_graph_t xbt_graph_load (const char *filename)
   //read the number of edges
   char *nedges_str = NULL;
   read = getline (&nedges_str, &size, file);
+  if (read == -1)
+    THROWF(system_error, 0, "getline failed to read the number of edges (errno = %d)", errno);
   int nedges = atoi (nedges_str);
   free (nedges_str);
 
@@ -768,6 +775,8 @@ xbt_graph_t xbt_graph_load (const char *filename)
   for (i = 0; i < nedges; i++){
     char *edge_str = NULL, edge_id[200], node_source[200], node_target[200];
     read = getline (&edge_str, &size, file);
+    if (read == -1)
+      THROWF(system_error, 0, "getline failed to read all edges (errno = %d)", errno);
     sscanf (edge_str, "%s %s %s", edge_id, node_source, node_target);
     free (edge_str);
     xbt_str_subst (edge_id, '\n', '\0', 0);
