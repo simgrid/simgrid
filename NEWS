@@ -1,3 +1,25 @@
+
+                    _               _____  __   
+__   _____ _ __ ___(_) ___  _ __   |___ / / /_  
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \| '_ \ 
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | (_) |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)___/ 
+                                                
+
+The "F*! They Killed Kenny!" version. Major changes:
+
+ * Java and Ruby bindings were removed from the main archive
+   - They are now distributed separately
+ * First support for parallel simulation:
+   - Can run the user code of any simulation in parallel.
+   - Basic support for multi-cores hosts in platform files
+ * Improved P2P support:
+   - Peer tag in platform files for DSL connected nodes
+   - Vivaldi routing scheme for lightweigted yet accurate models
+ * Improved SMPI: Faster Fortran, automatic privatization of C globals
+ 
+Plus numerous other goodies (check the ChangeLog for details)
+
                     _               _____  ____  		    
 __   _____ _ __ ___(_) ___  _ __   |___ / | ___| 
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ |___ \ 
