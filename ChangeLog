@@ -1,5 +1,14 @@
 SimGrid (3.6) unstable; urgency=low
 
+ SMPI
+ * New MPI functions supported: MPI_Comm_disconnect, MPI_Comm_get_name
+ * Fortran: New user-level cache variable to store the rank of the running
+   process. This improves performance by an order of magnitude.
+ * C: New coccinelle script to automatically locate and modifiy global and
+   local static variables.
+ * Improved SMPI network model with a sender-side gap to account for multiple
+   parallel sends.
+
  MSG
  * New function MSG_comm_get_status(). MSG_comm_test() and MSG_comm_testany()
    only say if a communication is finished, no matter whether it succeeded or
