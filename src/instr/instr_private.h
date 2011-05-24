@@ -117,11 +117,6 @@ void TRACE_msg_process_sleep_in(m_process_t process);   //called from msg/gos.c
 void TRACE_msg_process_sleep_out(m_process_t process);
 void TRACE_msg_process_end(m_process_t process);
 
-/* from smx.c */
-void TRACE_smx_host_execute(smx_action_t act);
-void TRACE_smx_action_communicate(smx_action_t act, smx_process_t proc);
-void TRACE_smx_action_destroy(smx_action_t act);
-
 /* from surf_instr.c */
 void TRACE_surf_alloc(void);
 void TRACE_surf_release(void);
