@@ -18,6 +18,8 @@ The "F*! They Killed Kenny!" version. Major changes:
    - Peer tag in platform files for DSL connected nodes
    - Vivaldi routing scheme for lightweigted yet accurate models
  * Improved SMPI: Faster Fortran, automatic privatization of C globals
+ * Tracing: trace contains the full platform hierarchy
+   exactly as declared using the ASes of the platform file
  
 Plus numerous other goodies (check the ChangeLog for details)
 
