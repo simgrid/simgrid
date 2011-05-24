@@ -11,6 +11,13 @@
 #include "instr/instr_private.h"
 #include "surf/network_private.h"
 
+typedef enum {
+  INSTR_US_DECLARE,
+  INSTR_US_SET,
+  INSTR_US_ADD,
+  INSTR_US_SUB,
+} InstrUserVariable;
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
 void TRACE_category(const char *category)
@@ -45,20 +52,6 @@ void TRACE_category_with_color (const char *category, const char *color)
 
   XBT_DEBUG("CAT,declare %s, %s", category, final_color);
 
-//FIXME
-//  -  if (final) {
-//  -    //for m_process_t
-//  -    if (TRACE_msg_process_is_enabled())
-//  -      pajeDefineContainerType("process", type, "process");
-//  -    if (TRACE_msg_process_is_enabled())
-//  -      pajeDefineStateType("process-state", "process", "process-state");
-//  -
-//  -    if (TRACE_msg_task_is_enabled())
-//  -      pajeDefineContainerType("task", type, "task");
-//  -    if (TRACE_msg_task_is_enabled())
-//  -      pajeDefineStateType("task-state", "task", "task-state");
-//  -  }
-
   //define the type of this category on top of hosts and links
   if (TRACE_categorized ()){
     instr_new_variable_type (category, final_color);
@@ -89,7 +82,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   new_pajeNewEvent (MSG_get_clock(), getRootContainer(), type, value);
 }
 
-void TRACE_user_variable(double time,
+static void instr_user_variable(double time,
                          const char *resource,
                          const char *variable,
                          const char *father_type,
@@ -136,7 +129,7 @@ void TRACE_user_variable(double time,
   }
 }
 
-void TRACE_user_srcdst_variable(double time,
+static void instr_user_srcdst_variable(double time,
                               const char *src,
                               const char *dst,
                               const char *variable,
@@ -149,7 +142,7 @@ void TRACE_user_srcdst_variable(double time,
   void *link;
   xbt_dynar_foreach (route, i, link) {
     char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-    TRACE_user_variable (time, link_name, variable, father_type, value, what);
+    instr_user_variable (time, link_name, variable, father_type, value, what);
   }
 }
 
@@ -171,6 +164,116 @@ xbt_graph_t TRACE_platform_graph (void)
 void TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char *filename)
 {
   instr_routing_platform_graph_export_graphviz (g, filename);
+}
+
+
+/*
+ * Derived functions that use instr_user_variable and TRACE_user_srcdst_variable.
+ * They were previously defined as pre-processors directives, but were transformed
+ * into functions so the user can track them using gdb.
+ */
+
+/* for host variables */
+void TRACE_host_variable_declare (const char *var)
+{
+  instr_user_variable(0, NULL, var, "HOST", 0, INSTR_US_DECLARE);
+}
+
+void TRACE_host_variable_set (const char *host, const char *variable, double value)
+{
+  TRACE_host_variable_set_with_time (MSG_get_clock(), host, variable, value);
+}
+
+void TRACE_host_variable_add (const char *host, const char *variable, double value)
+{
+  TRACE_host_variable_add_with_time (MSG_get_clock(), host, variable, value);
+}
+
+void TRACE_host_variable_sub (const char *host, const char *variable, double value)
+{
+  TRACE_host_variable_sub_with_time (MSG_get_clock(), host, variable, value);
+}
+
+void TRACE_host_variable_set_with_time (double time, const char *host, const char *variable, double value)
+{
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SET);
+}
+
+void TRACE_host_variable_add_with_time (double time, const char *host, const char *variable, double value)
+{
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_ADD);
+}
+
+void TRACE_host_variable_sub_with_time (double time, const char *host, const char *variable, double value)
+{
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB);
+}
+
+/* for link variables */
+void TRACE_link_variable_declare (const char *var)
+{
+  instr_user_variable (0, NULL, var, "LINK", 0, INSTR_US_DECLARE);
+}
+
+void TRACE_link_variable_set (const char *link, const char *variable, double value)
+{
+  TRACE_link_variable_set_with_time (MSG_get_clock(), link, variable, value);
+}
+
+void TRACE_link_variable_add (const char *link, const char *variable, double value)
+{
+  TRACE_link_variable_add_with_time (MSG_get_clock(), link, variable, value);
+}
+
+void TRACE_link_variable_sub (const char *link, const char *variable, double value)
+{
+  TRACE_link_variable_sub_with_time (MSG_get_clock(), link, variable, value);
+}
+
+void TRACE_link_variable_set_with_time (double time, const char *link, const char *variable, double value)
+{
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SET);
+}
+
+void TRACE_link_variable_add_with_time (double time, const char *link, const char *variable, double value)
+{
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_ADD);
+}
+
+void TRACE_link_variable_sub_with_time (double time, const char *link, const char *variable, double value)
+{
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SUB);
+}
+
+/* for link variables, but with src and dst used for get_route */
+void TRACE_link_srcdst_variable_set (const char *src, const char *dst, const char *variable, double value)
+{
+  TRACE_link_srcdst_variable_set_with_time (MSG_get_clock(), src, dst, variable, value);
+}
+
+void TRACE_link_srcdst_variable_add (const char *src, const char *dst, const char *variable, double value)
+{
+  TRACE_link_srcdst_variable_add_with_time (MSG_get_clock(), src, dst, variable, value);
+}
+
+void TRACE_link_srcdst_variable_sub (const char *src, const char *dst, const char *variable, double value)
+{
+  TRACE_link_srcdst_variable_sub_with_time (MSG_get_clock(), src, dst, variable, value);
+}
+
+void TRACE_link_srcdst_variable_set_with_time (double time, const char *src, const char *dst, const char *variable, double value)
+{
+  instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_SET);
+}
+
+void TRACE_link_srcdst_variable_add_with_time (double time, const char *src, const char *dst, const char *variable, double value)
+{
+  instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_ADD);
+}
+
+void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable, double value)
+{
+  instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_SUB);
 }
 
 #endif /* HAVE_TRACING */
