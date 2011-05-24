@@ -10,6 +10,7 @@ The "F*! They Killed Kenny!" version. Major changes:
 
  * Java and Ruby bindings were removed from the main archive
    - They are now distributed separately
+ * GRAS is not considered as stable anymore, but experimental. Sorry.
  * First support for parallel simulation:
    - Can run the user code of any simulation in parallel.
    - Basic support for multi-cores hosts in platform files
