@@ -781,7 +781,7 @@ static surf_action_t im_net_communicate(const char *src_name,
   /* LARGE PLATFORMS HACK:
      expand also with src->link and dst->link */
 #ifdef HAVE_TRACING
-  if (TRACE_is_active()) {
+  if (TRACE_is_enabled()) {
     action->src_name = xbt_strdup(src_name);
     action->dst_name = xbt_strdup(dst_name);
   } else {

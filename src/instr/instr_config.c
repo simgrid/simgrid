@@ -73,7 +73,9 @@ int TRACE_start()
   TRACE_paje_start();
 
   /* activate trace */
-  TRACE_activate ();
+  xbt_assert (trace_active==0, "Tracing is already active.");
+  trace_active = 1;
+  XBT_DEBUG ("Tracing is on");
 
   /* other trace initialization */
   created_categories = xbt_dict_new();
@@ -84,7 +86,7 @@ int TRACE_start()
 
 int TRACE_end()
 {
-  if (!TRACE_is_active())
+  if (!trace_active)
     return 1;
 
   /* generate uncategorized graph configuration for triva */
@@ -107,28 +109,11 @@ int TRACE_end()
   /* close the trace file */
   TRACE_paje_end();
 
-  /* activate trace */
-  TRACE_desactivate ();
-  XBT_DEBUG("Tracing system is shutdown");
-  return 0;
-}
-
-void TRACE_activate (void)
-{
-  xbt_assert (trace_active==0, "Tracing is already active.");
-  trace_active = 1;
-  XBT_DEBUG ("Tracing is on");
-}
-
-void TRACE_desactivate (void)
-{
+  /* de-activate trace */
   trace_active = 0;
   XBT_DEBUG ("Tracing is off");
-}
-
-int TRACE_is_active (void)
-{
-  return trace_active;
+  XBT_DEBUG("Tracing system is shutdown");
+  return 0;
 }
 
 int TRACE_needs_platform (void)

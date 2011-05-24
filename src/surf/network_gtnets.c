@@ -298,7 +298,7 @@ static void update_actions_state(double now, double delta)
              action->generic_action.remains);
 
 #ifdef HAVE_TRACING
-      if (TRACE_is_active()) {
+      if (TRACE_is_enabled()) {
         double last_amount_sent = (action->generic_action.cost - action->last_remains);
         double amount_sent = (action->generic_action.cost - action->generic_action.remains);
 

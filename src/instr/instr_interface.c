@@ -27,7 +27,7 @@ void TRACE_category(const char *category)
 
 void TRACE_category_with_color (const char *category, const char *color)
 {
-  if (!(TRACE_is_active() && category != NULL))
+  if (!(TRACE_categorized() && category != NULL))
     return;
 
   xbt_assert (instr_platform_traced(),
@@ -53,14 +53,12 @@ void TRACE_category_with_color (const char *category, const char *color)
   XBT_DEBUG("CAT,declare %s, %s", category, final_color);
 
   //define the type of this category on top of hosts and links
-  if (TRACE_categorized ()){
-    instr_new_variable_type (category, final_color);
-  }
+  instr_new_variable_type (category, final_color);
 }
 
 void TRACE_declare_mark(const char *mark_type)
 {
-  if (!TRACE_is_active())
+  if (!TRACE_is_enabled())
     return;
   if (!mark_type)
     return;
@@ -71,7 +69,7 @@ void TRACE_declare_mark(const char *mark_type)
 
 void TRACE_mark(const char *mark_type, const char *mark_value)
 {
-  if (!TRACE_is_active())
+  if (!TRACE_is_enabled())
     return;
   if (!mark_type || !mark_value)
     return;
@@ -89,7 +87,7 @@ static void instr_user_variable(double time,
                          double value,
                          InstrUserVariable what)
 {
-  if (!TRACE_is_active())
+  if (!TRACE_is_enabled())
     return;
 
   xbt_assert (instr_platform_traced(),

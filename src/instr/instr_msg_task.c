@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg, instr, "MSG");
  */
 void TRACE_msg_set_task_category(m_task_t task, const char *category)
 {
-  if (!TRACE_is_active())
+  if (!TRACE_categorized())
     return;
 
   xbt_assert(task->category == NULL, "Task %p(%s) already has a category (%s).",
