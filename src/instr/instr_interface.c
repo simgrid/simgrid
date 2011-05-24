@@ -27,11 +27,13 @@ void TRACE_category(const char *category)
 
 void TRACE_category_with_color (const char *category, const char *color)
 {
-  if (!(TRACE_categorized() && category != NULL))
-    return;
+  /* safe switch */
+  if (!TRACE_is_enabled()) return;
 
-  xbt_assert (instr_platform_traced(),
-      "%s must be called after environment creation", __FUNCTION__);
+  if (!(TRACE_categorized() && category != NULL)) return;
+
+  /* if platform is not traced, we can't deal with categories */
+  if (!TRACE_needs_platform()) return;
 
   //check if category is already created
   char *created = xbt_dict_get_or_null(created_categories, category);
@@ -58,10 +60,10 @@ void TRACE_category_with_color (const char *category, const char *color)
 
 void TRACE_declare_mark(const char *mark_type)
 {
-  if (!TRACE_is_enabled())
-    return;
-  if (!mark_type)
-    return;
+  /* safe switch */
+  if (!TRACE_is_enabled()) return;
+
+  if (!mark_type) return;
 
   XBT_DEBUG("MARK,declare %s", mark_type);
   getEventType(mark_type, NULL, getRootType());
@@ -69,10 +71,10 @@ void TRACE_declare_mark(const char *mark_type)
 
 void TRACE_mark(const char *mark_type, const char *mark_value)
 {
-  if (!TRACE_is_enabled())
-    return;
-  if (!mark_type || !mark_value)
-    return;
+  /* safe switch */
+  if (!TRACE_is_enabled()) return;
+
+  if (!mark_type || !mark_value) return;
 
   XBT_DEBUG("MARK %s %s", mark_type, mark_value);
   type_t type = getEventType (mark_type, NULL, getRootContainer()->type);
@@ -87,11 +89,11 @@ static void instr_user_variable(double time,
                          double value,
                          InstrUserVariable what)
 {
-  if (!TRACE_is_enabled())
-    return;
+  /* safe switch */
+  if (!TRACE_is_enabled()) return;
 
-  xbt_assert (instr_platform_traced(),
-      "%s must be called after environment creation", __FUNCTION__);
+  /* if platform is not traced, we can't deal user variables */
+  if (!TRACE_needs_platform()) return;
 
   char valuestr[100];
   snprintf(valuestr, 100, "%g", value);
@@ -153,9 +155,7 @@ const char *TRACE_node_name (xbt_node_t node)
 
 xbt_graph_t TRACE_platform_graph (void)
 {
-  if (!TRACE_is_enabled())
-    return NULL;
-
+  if (!TRACE_is_enabled()) return NULL;
   return instr_routing_platform_graph ();
 }
 
