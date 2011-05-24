@@ -64,7 +64,7 @@ SG_BEGIN_DECL()
                                   ),
 #  define MAYDAY_CATCH(e)   printf("%d %s:%d Catched '%s'\n",           \
                                    (*xbt_getpid)(),__FILE__,__LINE__,  \
-                                   e.msg                                \
+                                   (e).msg                              \
 				  ),
 #else
 #  define MAYDAY_SAVE(m)
@@ -385,6 +385,17 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
  *  @hideinitializer
  */
 #define CATCH(e) \
+  DO_CATCH((e) = XBT_EX_T_CPLUSPLUSCAST __xbt_running_ctx_fetch()->exception)
+
+/** @brief like CATCH(e) but without argument
+ *  @hideinitializer
+ *
+ *  Useful if you only want to rethrow the exception caught, and do not want to
+ *  bother with an unused variable.
+ */
+#define CATCH_ANONYMOUS DO_CATCH(0)
+
+#define DO_CATCH(_xbt_do_catch_set_e) \
             else { \
             } \
             if (!(__ex_cleanup)) \
@@ -398,7 +409,8 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
         __xbt_ex_ctx_ptr->ctx_mctx = __ex_mctx_en; \
     } \
     if (   !(__xbt_running_ctx_fetch()->ctx_caught) \
-        || ((e) = XBT_EX_T_CPLUSPLUSCAST __xbt_running_ctx_fetch()->exception, MAYDAY_CATCH(e) 0)) { \
+        || ((void)(_xbt_do_catch_set_e),                             \
+            MAYDAY_CATCH(__xbt_running_ctx_fetch()->exception) 0)) {    \
     } \
     else
 

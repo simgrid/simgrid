@@ -1,5 +1,7 @@
 SimGrid (3.7) unstable; urgency=medium
 
+ XBT
+ * New macro: CATCH_ANONYMOUS, which is like CATCH(e) but without argument.
 
  -- `LC_ALL=C date` Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
