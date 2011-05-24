@@ -2441,45 +2441,29 @@ end
 
 \subsection faq_trouble_lib_compil SimGrid compilation and installation problems
 
-\subsubsection faq_trouble_lib_config ./configure fails!
+\subsubsection faq_trouble_lib_config cmake fails!
 
 We know only one reason for the configure to fail:
 
  - <b>You are using a broken build environment</b>\n
-   If symptom is that configure complains about gcc not being able to build
+   If symptom is that the configury magic complains about gcc not being able to build
    executables, you are probably missing the libc6-dev package. Damn Ubuntu.
 
 If you experience other kind of issue, please get in touch with us. We are
 always interested in improving our portability to new systems.
 
-\subsubsection faq_trouble_distcheck Dude! "make check" fails on my machine!
+\subsubsection faq_trouble_distcheck Dude! "ctest" fails on my machine!
 
 Don't assume we never run this target, because we do. Check
-http://bob.loria.fr:8010 if you don't believe us.
+http://cdash.inria.fr/CDash/index.php?project=Simgrid (click on
+previous if there is no result for today: results are produced only by
+11am, French time) and
+https://buildd.debian.org/status/logs.php?pkg=simgrid if you don't believe us. 
 
-There is several reasons which may cause the make check to fail on your
-machine:
-
- - <b>You are using a broken libc (probably concerning the contextes)</b>.\n
-   The symptom is that the "make check" fails within the examples/msg directory.\n
-   By default, SimGrid uses something called ucontexts. This is part of the
-   libc, but it's quite undertested. For example, some (old) versions of the
-   glibc on alpha do not implement these functions, but provide the stubs
-   (which return ENOSYS: not implemented). It may fool our detection mechanism
-   and leads to segfaults. There is not much we can do to fix the bug.
-   A workaround is to compile with --with-context=pthread to avoid
-   ucontext completely. You'll be a bit more limited in the number
-   of simulated processes you can start concurrently, but 5000
-   processes is still enough for most purposes, isn't it?\n
-   This limitation is the reason why we insist on using this piece of ...
-   software even if it's so troublesome.\n
-   <b>=> use --with-pthread on AMD64 architecture that do not have an 
-   ultra-recent libc.</b>
-   
- - <b>There is a bug in SimGrid we aren't aware of</b>.\n
-   If none of the above apply, please drop us a mail on the mailing list so
-   that we can check it out. Make sure to read \ref faq_bugrepport
-   before you do so.
+If it's failing on your machine in a way not experienced by the
+autobuilders above, please drop us a mail on the mailing list so that
+we can check it out. Make sure to read \ref faq_bugrepport before you
+do so.
 
 \subsection faq_trouble_compil User code compilation problems
 
