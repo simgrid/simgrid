@@ -155,7 +155,7 @@ const char *TRACE_node_name (xbt_node_t node)
 
 xbt_graph_t TRACE_platform_graph (void)
 {
-  if (!TRACE_is_active())
+  if (!TRACE_is_enabled())
     return NULL;
 
   return instr_routing_platform_graph ();

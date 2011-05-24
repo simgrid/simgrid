@@ -31,14 +31,14 @@ int main(int argc, char **argv)
   //creating the graph structure
   xbt_graph_t graph = TRACE_platform_graph();
   if (graph == NULL){
-    XBT_INFO ("%s expects --cfg=tracing:1", argv[0]);
+    XBT_INFO ("%s expects --cfg=tracing:1 --cfg=tracing/platform:1", argv[0]);
   }else{
     TRACE_platform_graph_export_graphviz (graph, graphvizFile);
     XBT_INFO ("Output is in file %s", graphvizFile);
   }
   MSG_clean();
 #else
-  XBT_INFO ("works only if simgrid has tracing enabled.");
+  XBT_INFO ("works only if simgrid was compiled with tracing enabled.");
 #endif
   return 0;
 }
