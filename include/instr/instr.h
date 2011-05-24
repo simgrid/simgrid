@@ -47,6 +47,13 @@ XBT_PUBLIC(void) TRACE_user_variable(double time,
                               const char *father_type,
                               double value,
                               InstrUserVariable what);
+XBT_PUBLIC(void) TRACE_user_srcdst_variable(double time,
+                              const char *src,
+                              const char *dst,
+                              const char *variable,
+                              const char *father_type,
+                              double value,
+                              InstrUserVariable what);
 
 #define TRACE_host_variable_declare(var) \
 	TRACE_user_variable(0,NULL,var,"HOST",0,INSTR_US_DECLARE);
@@ -90,6 +97,26 @@ XBT_PUBLIC(void) TRACE_user_variable(double time,
 #define TRACE_link_variable_sub(link,var,value) \
 	TRACE_user_variable(MSG_get_clock(),link,var,"LINK",value,INSTR_US_SUB);
 
+//user provides src and dst, we set the value for the variables of all
+//links connecting src and dst
+#define TRACE_link_srcdst_variable_set_with_time(time,src,dst,var,value) \
+  TRACE_user_srcdst_variable(time,src,dst,,var,"LINK",value,INSTR_US_SET);
+
+#define TRACE_link_srcdst_variable_add_with_time(time,src,dst,var,value) \
+  TRACE_user_srcdst_variable(time,src,dst,var,"LINK",value,INSTR_US_ADD);
+
+#define TRACE_link_srcdst_variable_sub_with_time(time,src,dst,var,value) \
+  TRACE_user_srcdst_variable(time,src,dst,var,"LINK",value,INSTR_US_SUB);
+
+#define TRACE_link_srcdst_variable_set(src,dst,var,value) \
+  TRACE_user_srcdst_variable(MSG_get_clock(),src,dst,var,"LINK",value,INSTR_US_SET);
+
+#define TRACE_link_srcdst_variable_add(src,dst,var,value) \
+  TRACE_user_srcdst_variable(MSG_get_clock(),src,dst,var,"LINK",value,INSTR_US_ADD);
+
+#define TRACE_link_srcdst_variable_sub(src,dst,var,value) \
+  TRACE_user_srcdst_variable(MSG_get_clock(),src,dst,var,"LINK",value,INSTR_US_SUB);
+
 #else                           /* HAVE_TRACING */
 
 #define TRACE_category(category)
@@ -118,6 +145,14 @@ XBT_PUBLIC(void) TRACE_user_variable(double time,
 #define TRACE_link_variable_set(link,var,value)
 #define TRACE_link_variable_add(link,var,value)
 #define TRACE_link_variable_sub(link,var,value)
+#define TRACE_link_srcdst_variable_set_with_time(time,src,dst,var,value)
+#define TRACE_link_srcdst_variable_add_with_time(time,src,dst,var,value)
+#define TRACE_link_srcdst_variable_sub_with_time(time,src,dst,var,value)
+#define TRACE_link_srcdst_variable_set(src,dst,var,value)
+#define TRACE_link_srcdst_variable_add(src,dst,var,value)
+#define TRACE_link_srcdst_variable_sub(src,dst,var,value)
+
+
 
 #endif                          /* HAVE_TRACING */
 

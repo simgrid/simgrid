@@ -9,6 +9,7 @@
 #ifdef HAVE_TRACING
 
 #include "instr/instr_private.h"
+#include "surf/network_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
@@ -132,6 +133,23 @@ void TRACE_user_variable(double time,
   default:
     //TODO: launch exception
     break;
+  }
+}
+
+void TRACE_user_srcdst_variable(double time,
+                              const char *src,
+                              const char *dst,
+                              const char *variable,
+                              const char *father_type,
+                              double value,
+                              InstrUserVariable what)
+{
+  xbt_dynar_t route = global_routing->get_route (src, dst);
+  unsigned int i;
+  void *link;
+  xbt_dynar_foreach (route, i, link) {
+    char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+    TRACE_user_variable (time, link_name, variable, father_type, value, what);
   }
 }
 
