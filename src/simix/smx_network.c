@@ -781,6 +781,9 @@ smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action)
  */
 XBT_INLINE int SIMIX_comm_is_latency_bounded(smx_action_t action)
 {
+  if(!action){
+      return 0;
+  }
   if (action->comm.surf_comm){
       XBT_DEBUG("Getting latency limited for surf_action (%p)", action->comm.surf_comm);
       action->latency_limited = surf_workstation_model->get_latency_limited(action->comm.surf_comm);
