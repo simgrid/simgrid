@@ -234,7 +234,7 @@ static void cpu_im_update_remains(cpu_Cas01_im_t cpu, double now)
                                           (action).variable) * (now -
                                                                 cpu->last_update));
 #ifdef HAVE_TRACING
-      if (TRACE_is_active()) {
+      if (TRACE_is_enabled()) {
         TRACE_surf_host_set_utilization(cpu->generic_resource.name,
                                         action->
                                         generic_lmm_action.generic_action.
@@ -327,7 +327,7 @@ static void cpu_im_update_actions_state(double now, double delta)
     GENERIC_ACTION(action).finish = surf_get_clock();
     /* set the remains to 0 due to precision problems when updating the remaining amount */
 #ifdef HAVE_TRACING
-    if (TRACE_is_active()) {
+    if (TRACE_is_enabled()) {
       cpu_Cas01_im_t cpu = ((cpu_Cas01_im_t)(action->cpu));
       TRACE_surf_host_set_utilization(cpu->generic_resource.name,
           action->generic_lmm_action.generic_action.data,
@@ -342,7 +342,7 @@ static void cpu_im_update_actions_state(double now, double delta)
     cpu_im_update_remains(action->cpu, surf_get_clock());
   }
 #ifdef HAVE_TRACING
-  if (TRACE_is_active()) {
+  if (TRACE_is_enabled()) {
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
     void **data;

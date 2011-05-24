@@ -24,7 +24,7 @@ void TRACE_surf_release(void)
 
 void TRACE_surf_host_set_power(double date, const char *resource, double power)
 {
-  if (!TRACE_is_active())
+  if (!TRACE_is_enabled())
     return;
 
   container_t container = getContainerByName(resource);
@@ -34,7 +34,7 @@ void TRACE_surf_host_set_power(double date, const char *resource, double power)
 
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth)
 {
-  if (!TRACE_is_active())
+  if (!TRACE_is_enabled())
     return;
 
   container_t container = getContainerByName(resource);
@@ -45,7 +45,7 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
 //FIXME: this function is not used (latency availability traces support exists in surf network models?)
 void TRACE_surf_link_set_latency(double date, const char *resource, double latency)
 {
-  if (!TRACE_is_active())
+  if (!TRACE_is_enabled())
     return;
 
   container_t container = getContainerByName(resource);
@@ -70,7 +70,7 @@ void TRACE_surf_gtnets_destroy(void *action)
 
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
 {
-  if (!TRACE_is_active())
+  if (!TRACE_is_enabled())
     return;
   if (!TRACE_categorized ())
     return;

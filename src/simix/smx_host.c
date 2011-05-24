@@ -209,10 +209,6 @@ smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
     surf_workstation_model->set_priority(action->execution.surf_exec, priority);
   }
 
-#ifdef HAVE_TRACING
-  TRACE_smx_host_execute(action);
-#endif
-
   XBT_DEBUG("Create execute action %p", action);
 
   return action;
@@ -267,9 +263,6 @@ void SIMIX_host_execution_destroy(smx_action_t action)
     action->execution.surf_exec = NULL;
   }
 
-#ifdef HAVE_TRACING
-  TRACE_smx_action_destroy(action);
-#endif
   xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 

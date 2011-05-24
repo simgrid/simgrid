@@ -3,13 +3,23 @@ SimGrid (3.6) unstable; urgency=low
  Java and Ruby: 
  * Bindings now constitute their own package, separated from the main one.
    Rational: reduce our maintainance nightmare by reducing the module coupling.
-   They will soon be released on their own on gforge. In the meanwhile:
+   They will soon be released on their own on gforge. 
+ * In the meanwhile:
    svn co svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java
    svn co svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-ruby
  
  GRAS: It is not considered as stable anymore, but experimental. Sorry.
  * It's not quite deprecated for now because we have no replacement,
    but it may soon become the case.
+
+ SMPI
+ * New MPI functions supported: MPI_Comm_disconnect, MPI_Comm_get_name
+ * Fortran: New user-level cache variable to store the rank of the running
+   process. This improves performance by an order of magnitude.
+ * C: New coccinelle script to automatically locate and modifiy global and
+   local static variables.
+ * Improved SMPI network model with a sender-side gap to account for multiple
+   parallel sends.
 
  MSG
  * New function MSG_comm_get_status(). MSG_comm_test() and MSG_comm_testany()

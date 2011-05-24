@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg, instr, "MSG");
  */
 void TRACE_msg_set_task_category(m_task_t task, const char *category)
 {
-  if (!TRACE_is_active())
+  if (!TRACE_categorized())
     return;
 
   xbt_assert(task->category == NULL, "Task %p(%s) already has a category (%s).",
@@ -154,11 +154,6 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
 
   if (TRACE_msg_task_is_enabled()){
 
-    //FIXME
-    //if (TRACE_msg_volume_is_enabled()){
-    //  TRACE_msg_volume_end(task);
-    //}
-
     m_host_t host = MSG_host_self();
     container_t host_container = getContainer(host->name);
     container_t msg = newContainer(task->name, INSTR_MSG_TASK, host_container);
@@ -207,11 +202,6 @@ int TRACE_msg_task_put_start(m_task_t task)
     new_pajeStartLink(MSG_get_clock(), getRootContainer(), type, msg, "SR", key);
 
     destroyContainer (msg);
-
-    //FIXME
-    //if (TRACE_msg_volume_is_enabled()){
-    //  TRACE_msg_volume_start(task);
-    //}
   }
 
   if (TRACE_msg_process_is_enabled()){

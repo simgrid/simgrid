@@ -43,6 +43,7 @@ set(string10 "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g'")
 set(string11 "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
 set(string12 "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g'")
 set(string13 "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
+set(string14 "'\\!^ \\* Generated [0-9/]\\{10\\} [0-9:]\\{8\\}\\.$$!d'")
 
 ADD_CUSTOM_COMMAND(
   	OUTPUT 	${CMAKE_HOME_DIRECTORY}/include/surf/simgrid_dtd.h
@@ -58,13 +59,16 @@ ADD_CUSTOM_COMMAND(
 		  			
 	#${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid.dtd
 	COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=http://simgrid.gforge.inria.fr/simgrid.dtd -S src/surf/simgrid_dtd.l -L src/surf/simgrid.dtd
+	COMMAND ${SED_EXE} -i ${string14} src/surf/simgrid_dtd.l
 	COMMAND ${CMAKE_COMMAND} -E echo "src/surf/simgrid_dtd.l"
 	#${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.l: ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.dtd
 	COMMAND ${FLEXML_EXE} -b 1000000 -P graphxml --sysid=graphxml.dtd -S src/xbt/graphxml.l -L src/xbt/graphxml.dtd
+	COMMAND ${SED_EXE} -i ${string14} src/xbt/graphxml.l
 	COMMAND ${CMAKE_COMMAND} -E echo "src/xbt/graphxml.l"
 	#${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
-	COMMAND ${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.l -L ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
+	COMMAND ${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S src/simdag/dax_dtd.l -L src/simdag/dax.dtd
 	COMMAND ${SED_EXE} -i ${string5} src/simdag/dax_dtd.l
+	COMMAND ${SED_EXE} -i ${string14} src/simdag/dax_dtd.l
 	COMMAND ${CMAKE_COMMAND} -E echo "src/simdag/dax_dtd.l"
 	
 	#${CMAKE_HOME_DIRECTORY}/include/surf/simgrid_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid.dtd
@@ -72,18 +76,21 @@ ADD_CUSTOM_COMMAND(
 	COMMAND ${FLEXML_EXE} --root-tags platform -P surfxml --sysid=http://simgrid.gforge.inria.fr/simgrid.dtd -H include/surf/simgrid_dtd.h -L src/surf/simgrid.dtd
 	COMMAND ${SED_EXE} -i ${string1} include/surf/simgrid_dtd.h
 	COMMAND ${SED_EXE} -i ${string2} include/surf/simgrid_dtd.h	
+	COMMAND ${SED_EXE} -i ${string14} include/surf/simgrid_dtd.h
 	COMMAND ${CMAKE_COMMAND} -E echo "include/surf/simgrid_dtd.h"
 	#${CMAKE_HOME_DIRECTORY}/include/xbt/graphxml.h: ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.dtd
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/include/xbt/graphxml.h
 	COMMAND ${FLEXML_EXE} -P graphxml --sysid=graphxml.dtd -H include/xbt/graphxml.h -L src/xbt/graphxml.dtd
 	COMMAND ${SED_EXE} -i ${string3} include/xbt/graphxml.h	
 	COMMAND ${SED_EXE} -i ${string4} include/xbt/graphxml.h
+	COMMAND ${SED_EXE} -i ${string14} include/xbt/graphxml.h
 	COMMAND ${CMAKE_COMMAND} -E echo "include/xbt/graphxml.h"
 	#${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
 	COMMAND ${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H src/simdag/dax_dtd.h -L src/simdag/dax.dtd
 	COMMAND ${SED_EXE} -i ${string6} src/simdag/dax_dtd.h	
 	COMMAND ${SED_EXE} -i ${string7} src/simdag/dax_dtd.h
+	COMMAND ${SED_EXE} -i ${string14} src/simdag/dax_dtd.h
 	COMMAND ${FLEX_EXE} -o src/gras/DataDesc/ddt_parse.yy.c -Pgras_ddt_parse_ --noline src/gras/DataDesc/ddt_parse.yy.l
 	COMMAND ${CMAKE_COMMAND} -E echo "src/simdag/dax_dtd.h"
 	

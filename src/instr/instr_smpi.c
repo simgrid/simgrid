@@ -5,12 +5,68 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/instr_private.h"
+#include <ctype.h>
+#include <wchar.h>
+
 
 #ifdef HAVE_TRACING
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
 static xbt_dict_t keys;
+
+static const char *smpi_colors[] ={
+    "recv",     "255 000 000",
+    "irecv",    "255 135 135",
+    "send",     "000 000 255",
+    "isend",    "135 135 255",
+    "sendrecv", "000 255 255",
+    "wait",     "255 255 000",
+    "waitall",  "200 200 000",
+    "waitany",  "200 200 150",
+
+    "allgather",     "255 000 000",
+    "allgatherv",    "255 135 135",
+    "allreduce",     "255 000 255",
+    "alltoall",      "135 000 255",
+    "alltoallv",     "200 135 255",
+    "barrier",       "000 200 200",
+    "bcast",         "000 200 100",
+    "gather",        "255 255 000",
+    "gatherv",       "255 255 135",
+    "reduce",        "000 255 000",
+    "reducescatter", "135 255 135",
+    "scan",          "255 150 060",
+    "scatterv",      "135 000 135",
+    "scatter",       "255 190 140",
+
+    NULL, NULL,
+};
+
+static char *str_tolower (const char *str)
+{
+  char *ret = xbt_strdup (str);
+  int i, n = strlen (ret);
+  for (i = 0; i < n; i++)
+    ret[i] = tolower (str[i]);
+  return ret;
+}
+
+static const char *instr_find_color (const char *state)
+{
+  char *target = str_tolower (state);
+  const char *ret = NULL;
+  const char *current;
+  unsigned int i = 0;
+  while ((current = smpi_colors[i])){
+    if (strcmp (state, current) == 0){ ret = smpi_colors[i+1]; break; } //exact match
+    if (strstr(target, current)) { ret = smpi_colors[i+1]; break; }; //as substring
+    i+=2;
+  }
+  free (target);
+  return ret;
+}
+
 
 static char *smpi_container(int rank, char *container, int n)
 {
@@ -87,8 +143,6 @@ void TRACE_smpi_alloc()
 
 void TRACE_smpi_start(void)
 {
-  if (!TRACE_smpi_is_enabled()) return;
-
   TRACE_start();
 }
 
@@ -135,7 +189,8 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation)
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = getContainer (str);
   type_t type = getType ("MPI_STATE", container->type);
-  val_t value = getValue (operation, "1 1 1", type);
+  const char *color = instr_find_color (operation);
+  val_t value = getValue (operation, color, type);
 
   new_pajePushState (SIMIX_get_clock(), container, type, value);
 }
@@ -156,11 +211,13 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
 {
   if (!TRACE_smpi_is_enabled()) return;
 
+
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = getContainer (str);
   type_t type = getType ("MPI_STATE", container->type);
-  val_t value = getValue (operation, "1 1 1", type);
+  const char *color = instr_find_color (operation);
+  val_t value = getValue (operation, color, type);
 
   new_pajePushState (SIMIX_get_clock(), container, type, value);
 }

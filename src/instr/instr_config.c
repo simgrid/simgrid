@@ -13,13 +13,13 @@ XBT_LOG_NEW_CATEGORY(instr, "Logging the behavior of the tracing system (used fo
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
 #define OPT_TRACING               "tracing"
+#define OPT_TRACING_PLATFORM      "tracing/platform"
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
 #define OPT_TRACING_CATEGORIZED   "tracing/categorized"
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_TASK      "tracing/msg/task"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
-#define OPT_TRACING_MSG_VOLUME    "tracing/msg/volume"
 #define OPT_TRACING_FILENAME      "tracing/filename"
 #define OPT_TRACING_BUFFER        "tracing/buffer"
 #define OPT_TRACING_ONELINK_ONLY  "tracing/onelink_only"
@@ -27,13 +27,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRIVA_CAT_CONF        "triva/categorized"
 
 static int trace_enabled;
+static int trace_platform;
 static int trace_smpi_enabled;
 static int trace_smpi_grouped;
 static int trace_categorized;
 static int trace_uncategorized;
 static int trace_msg_task_enabled;
 static int trace_msg_process_enabled;
-static int trace_msg_volume_enabled;
 static int trace_buffer;
 static int trace_onelink_only;
 
@@ -45,13 +45,13 @@ xbt_dict_t created_categories; //declared in instr_interface.c
 static void TRACE_getopts(void)
 {
   trace_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING);
+  trace_platform = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_PLATFORM);
   trace_smpi_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
   trace_smpi_grouped = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
   trace_categorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_CATEGORIZED);
   trace_uncategorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_UNCATEGORIZED);
   trace_msg_task_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_TASK);
   trace_msg_process_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
-  trace_msg_volume_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_VOLUME);
   trace_buffer = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BUFFER);
   trace_onelink_only = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_ONELINK_ONLY);
 }
@@ -73,7 +73,9 @@ int TRACE_start()
   TRACE_paje_start();
 
   /* activate trace */
-  TRACE_activate ();
+  xbt_assert (trace_active==0, "Tracing is already active.");
+  trace_active = 1;
+  XBT_DEBUG ("Tracing is on");
 
   /* other trace initialization */
   created_categories = xbt_dict_new();
@@ -84,7 +86,7 @@ int TRACE_start()
 
 int TRACE_end()
 {
-  if (!TRACE_is_active())
+  if (!trace_active)
     return 1;
 
   /* generate uncategorized graph configuration for triva */
@@ -107,33 +109,31 @@ int TRACE_end()
   /* close the trace file */
   TRACE_paje_end();
 
-  /* activate trace */
-  TRACE_desactivate ();
+  /* de-activate trace */
+  trace_active = 0;
+  XBT_DEBUG ("Tracing is off");
   XBT_DEBUG("Tracing system is shutdown");
   return 0;
 }
 
-void TRACE_activate (void)
+int TRACE_needs_platform (void)
 {
-  xbt_assert (trace_active==0, "Tracing is already active.");
-  trace_active = 1;
-  XBT_DEBUG ("Tracing is on");
-}
-
-void TRACE_desactivate (void)
-{
-  trace_active = 0;
-  XBT_DEBUG ("Tracing is off");
-}
-
-int TRACE_is_active (void)
-{
-  return trace_active;
+  return TRACE_msg_process_is_enabled() ||
+         TRACE_msg_task_is_enabled() ||
+         TRACE_categorized() ||
+         TRACE_uncategorized() ||
+         TRACE_platform () ||
+         (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped());
 }
 
 int TRACE_is_enabled(void)
 {
   return trace_enabled;
+}
+
+int TRACE_platform(void)
+{
+  return trace_platform;
 }
 
 int TRACE_is_configured(void)
@@ -143,7 +143,9 @@ int TRACE_is_configured(void)
 
 int TRACE_smpi_is_enabled(void)
 {
-  return trace_smpi_enabled && TRACE_is_enabled();
+  return (xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI) ||
+       TRACE_smpi_is_grouped())&&
+      TRACE_is_enabled();
 }
 
 int TRACE_smpi_is_grouped(void)
@@ -169,11 +171,6 @@ int TRACE_msg_task_is_enabled(void)
 int TRACE_msg_process_is_enabled(void)
 {
   return trace_msg_process_enabled && TRACE_is_enabled();
-}
-
-int TRACE_msg_volume_is_enabled(void)
-{
-  return trace_msg_volume_enabled && TRACE_is_enabled();
 }
 
 int TRACE_buffer (void)
@@ -217,6 +214,13 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_tracing, 0, 1,
                    NULL, NULL);
 
+  /* tracing platform*/
+  int default_tracing_platform = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM,
+                   "Enable Tracing Platform.",
+                   xbt_cfgelm_int, &default_tracing_platform, 0, 1,
+                   NULL, NULL);
+
   /* smpi */
   int default_tracing_smpi = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_SMPI,
@@ -233,10 +237,10 @@ void TRACE_global_init(int *argc, char **argv)
 
 
   /* platform */
-  int default_tracing_platform = 0;
+  int default_tracing_categorized = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_CATEGORIZED,
                    "Tracing of categorized platform (host and link) utilization.",
-                   xbt_cfgelm_int, &default_tracing_platform, 0, 1,
+                   xbt_cfgelm_int, &default_tracing_categorized, 0, 1,
                    NULL, NULL);
 
   /* tracing uncategorized resource utilization */
@@ -260,21 +264,14 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_tracing_msg_process, 0, 1,
                    NULL, NULL);
 
-  /* msg volume (experimental) */
-  int default_tracing_msg_volume = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_MSG_VOLUME,
-                   "Tracing of MSG communication volume (experimental).",
-                   xbt_cfgelm_int, &default_tracing_msg_volume, 0, 1,
-                   NULL, NULL);
-
-  /* msg volume (experimental) */
+  /* tracing buffer */
   int default_buffer = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_BUFFER,
                    "Buffer trace events to put them in temporal order.",
                    xbt_cfgelm_int, &default_buffer, 0, 1,
                    NULL, NULL);
 
-  /* msg volume (experimental) */
+  /* tracing one link only */
   int default_onelink_only = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_ONELINK_ONLY,
                    "Use only routes with one link to trace platform.",
@@ -353,10 +350,6 @@ void TRACE_help (int detailed)
       "  This option only has effect if this simulator is MSG-based. It traces the\n"
       "  behavior of all categorized MSG processes, grouping them by hosts. This option\n"
       "  can be used to track process location if this simulator has process migration.",
-      detailed);
-  print_line (OPT_TRACING_MSG_VOLUME, "Tracing of communication volume (MSG)",
-      "  This experimental option only has effect if this simulator is MSG-based.\n"
-      "  It traces the communication volume of MSG send/receive.",
       detailed);
   print_line (OPT_TRACING_BUFFER, "Buffer events to put them in temporal order",
       "  This option put some events in a time-ordered buffer using the insertion\n"
@@ -505,6 +498,7 @@ void TRACE_generate_triva_cat_conf (void)
 }
 
 #undef OPT_TRACING
+#undef OPT_TRACING_PLATFORM
 #undef OPT_TRACING_SMPI
 #undef OPT_TRACING_SMPI_GROUP
 #undef OPT_TRACING_CATEGORIZED
