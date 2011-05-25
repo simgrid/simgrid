@@ -94,9 +94,10 @@ else(HAVE_thread_storage_run)
 endif(HAVE_thread_storage_run)
 
 # Our usage of mmap is Linux-specific (flag MAP_ANONYMOUS), but kFreeBSD uses a GNU libc
-IF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD")
+IF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND NOT "${CMAKE_SYSTEM}" MATCHES "GNU")
   SET(HAVE_MMAP 0)
-ENDIF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD")
+  message(STATUS "Warning: MMAP is thought as non functional on this architecture (${CMAKE_SYSTEM})")
+ENDIF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND NOT "${CMAKE_SYSTEM}" MATCHES "GNU")
 
 if(WIN32) #THOSE FILES ARE FUNCTIONS ARE NOT DETECTED BUT THEY SHOULD...
     set(HAVE_UCONTEXT_H 1)
