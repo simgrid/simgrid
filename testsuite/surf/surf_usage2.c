@@ -42,10 +42,6 @@ void test(char *platform)
 {
   void *workstationA = NULL;
   void *workstationB = NULL;
-  surf_action_t actionA = NULL;
-  surf_action_t actionB = NULL;
-  surf_action_t actionC = NULL;
-  surf_action_t commAB = NULL;
   double now = -1.0;
   int running;
 
@@ -71,18 +67,11 @@ void test(char *platform)
   XBT_DEBUG("%s : %p", surf_resource_name(workstationB), workstationB);
 
   /* Let's do something on it */
-  actionA =
-      surf_workstation_model->extension.workstation.execute(workstationA,
-                                                            1000.0);
-  actionB =
-      surf_workstation_model->extension.workstation.execute(workstationB,
-                                                            1000.0);
-  actionC =
-      surf_workstation_model->extension.workstation.sleep(workstationB,
-                                                          7.32);
+  surf_workstation_model->extension.workstation.execute(workstationA, 1000.0);
+  surf_workstation_model->extension.workstation.execute(workstationB, 1000.0);
+      surf_workstation_model->extension.workstation.sleep(workstationB, 7.32);
 
-  commAB =
-      surf_workstation_model->extension.workstation.
+  surf_workstation_model->extension.workstation.
       communicate(workstationA, workstationB, 150.0, -1.0);
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */

@@ -476,13 +476,12 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount,
                          MPI_Datatype recvtype, MPI_Comm comm)
 {
   int system_tag = 666;
-  int rank, size, other, index, sendsize, recvsize;
+  int rank, size, other, index, sendsize;
   MPI_Request *requests;
 
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   sendsize = smpi_datatype_size(sendtype);
-  recvsize = smpi_datatype_size(recvtype);
   // Local copy from self
   memcpy(&((char *) recvbuf)[displs[rank]], sendbuf,
          sendcount * sendsize * sizeof(char));
@@ -552,7 +551,7 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs,
                        MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int system_tag = 666;
-  int rank, size, dst, index, sendsize, recvsize;
+  int rank, size, dst, index, recvsize;
   MPI_Request *requests;
 
   rank = smpi_comm_rank(comm);
@@ -562,7 +561,6 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs,
     smpi_mpi_recv(recvbuf, recvcount, recvtype, root, system_tag, comm,
                   MPI_STATUS_IGNORE);
   } else {
-    sendsize = smpi_datatype_size(sendtype);
     recvsize = smpi_datatype_size(recvtype);
     // Local copy from root
     memcpy(recvbuf, &((char *) sendbuf)[displs[root]],

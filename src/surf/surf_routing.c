@@ -1179,9 +1179,8 @@ route_extended_t generic_get_bypassroute(routing_component_t rc,
   current_src = xbt_dynar_get_ptr(path_src, index_src);
   current_dst = xbt_dynar_get_ptr(path_dst, index_dst);
   while (index_src >= 0 && index_dst >= 0 && *current_src == *current_dst) {
-    routing_component_t *tmp_src, *tmp_dst;
-    tmp_src = xbt_dynar_pop_ptr(path_src);
-    tmp_dst = xbt_dynar_pop_ptr(path_dst);
+    xbt_dynar_pop_ptr(path_src);
+    xbt_dynar_pop_ptr(path_dst);
     index_src--;
     index_dst--;
     current_src = xbt_dynar_get_ptr(path_src, index_src);

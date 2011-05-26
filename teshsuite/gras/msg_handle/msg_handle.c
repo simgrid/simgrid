@@ -116,10 +116,7 @@ int client(int argc, char *argv[])
   gras_socket_t me = NULL, pal = NULL;
   int myport;
   char *palstr;
-
   xbt_ex_t e;
-  int got_expected;
-
 
   gras_init(&argc, argv);
   xbt_assert(argc == 3, "Usage: client <myport> <server>");
@@ -144,7 +141,6 @@ int client(int argc, char *argv[])
   XBT_INFO("Initialization done.");
 
   /* Launch handle(-1). Lock until message from server expected */
-  got_expected = 0;
   TRY {
     gras_msg_handle(-1);
   } CATCH(e) {

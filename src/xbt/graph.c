@@ -785,8 +785,7 @@ xbt_graph_t xbt_graph_load (const char *filename)
 
     xbt_node_t source = xbt_dict_get (nodes_dict, node_source);
     xbt_node_t target = xbt_dict_get (nodes_dict, node_target);
-    xbt_edge_t e;
-    e = xbt_graph_new_edge (ret, source, target, xbt_strdup(edge_id));
+    xbt_graph_new_edge (ret, source, target, xbt_strdup(edge_id));
   }
   xbt_dict_free (&nodes_dict);
   return ret;

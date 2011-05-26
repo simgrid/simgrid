@@ -330,8 +330,7 @@ static route_extended_t dijkstra_get_route(routing_component_t rc,
   }
 
   /* compose route path with links */
-  char *gw_src = NULL, *gw_dst =
-      NULL, *prev_gw_src, *prev_gw_dst, *first_gw = NULL;
+  char *gw_src = NULL, *gw_dst = NULL, *prev_gw_src, *first_gw = NULL;
 
   for (v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v =
@@ -344,7 +343,6 @@ static route_extended_t dijkstra_get_route(routing_component_t rc,
                 *dst_id);
 
     prev_gw_src = gw_src;
-    prev_gw_dst = gw_dst;
 
     e_route = (route_extended_t) xbt_graph_edge_get_data(edge);
     gw_src = e_route->src_gateway;

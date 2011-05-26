@@ -1248,7 +1248,7 @@ static int countelems(xbt_dict_t head)
 XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 {
   xbt_dict_t head = NULL;
-  int i, j, k, nb;
+  int i, j, k;
   char *key;
   void *data;
 
@@ -1263,7 +1263,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
          SIZEOFKEY);
     head = xbt_dict_new();
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
-    nb = 0;
     for (j = 0; j < 1000; j++) {
       char *data = NULL;
       key = xbt_malloc(SIZEOFKEY);

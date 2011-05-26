@@ -47,7 +47,6 @@ void test(char *platform)
   surf_action_t actionA = NULL;
   surf_action_t actionB = NULL;
   surf_action_t actionC = NULL;
-  surf_action_t commAB = NULL;
   e_surf_action_state_t stateActionA;
   e_surf_action_state_t stateActionB;
   e_surf_action_state_t stateActionC;
@@ -91,9 +90,8 @@ void test(char *platform)
   XBT_DEBUG("%s : %p", surf_resource_name(cardB), cardB);
 
   /* Let's do something on it */
-  commAB =
-      surf_network_model->extension.network.communicate("Cpu A", "Cpu B",
-                                                        150.0, -1.0);
+  surf_network_model->extension.network.communicate("Cpu A", "Cpu B",
+                                                    150.0, -1.0);
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {
