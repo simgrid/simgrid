@@ -87,7 +87,7 @@ static void build_tree(int root, int rank, int size, proc_tree_t * tree)
  * bcast
  **/
 static void tree_bcast(void *buf, int count, MPI_Datatype datatype,
-                       int root, MPI_Comm comm, proc_tree_t tree)
+                       MPI_Comm comm, proc_tree_t tree)
 {
   int system_tag = 999;         // used negative int but smpi_create_request() declares this illegal (to be checked)
   int rank, i;
@@ -125,7 +125,7 @@ static void tree_bcast(void *buf, int count, MPI_Datatype datatype,
  * anti-bcast
  **/
 static void tree_antibcast(void *buf, int count, MPI_Datatype datatype,
-                           int root, MPI_Comm comm, proc_tree_t tree)
+                           MPI_Comm comm, proc_tree_t tree)
 {
   int system_tag = 999;         // used negative int but smpi_create_request() declares this illegal (to be checked)
   int rank, i;
@@ -171,7 +171,7 @@ void nary_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   build_tree(root, rank, size, &tree);
-  tree_bcast(buf, count, datatype, root, comm, tree);
+  tree_bcast(buf, count, datatype, comm, tree);
   free_tree(tree);
 }
 
@@ -187,8 +187,8 @@ void nary_tree_barrier(MPI_Comm comm, int arity)
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   build_tree(0, rank, size, &tree);
-  tree_antibcast(&dummy, 1, MPI_CHAR, 0, comm, tree);
-  tree_bcast(&dummy, 1, MPI_CHAR, 0, comm, tree);
+  tree_antibcast(&dummy, 1, MPI_CHAR, comm, tree);
+  tree_bcast(&dummy, 1, MPI_CHAR, comm, tree);
   free_tree(tree);
 }
 
