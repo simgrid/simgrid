@@ -58,31 +58,28 @@ static void free_tree(proc_tree_t tree)
 
 /**
  * Build the tree depending on a process rank (index) and the group size (extent)
- * @param index the rank of the calling process
- * @param extent the total number of processes
+ * @param root the rank of the tree root
+ * @param rank the rank of the calling process
+ * @param size the total number of processes
  **/
-static void build_tree(int index, int extent, proc_tree_t * tree)
+static void build_tree(int root, int rank, int size, proc_tree_t * tree)
 {
-  int places = (*tree)->PROCTREE_A * index;
-  int i, ch, pr;
+  int index = (rank - root + size) % size;
+  int firstChildIdx = index * (*tree)->PROCTREE_A + 1;
+  int i;
 
-  (*tree)->me = index;
-  (*tree)->root = 0;
-  for (i = 1; i <= (*tree)->PROCTREE_A; i++) {
-    ++places;
-    ch = (*tree)->PROCTREE_A * index + i + (*tree)->root;
-    ch %= extent;
-    if (places < extent) {
-      (*tree)->child[i - 1] = ch;
-      (*tree)->numChildren++;
-    }
+  (*tree)->me = rank;
+  (*tree)->root = root;
+
+  for (i = 0; i < (*tree)->PROCTREE_A && firstChildIdx + i < size; i++) {
+    (*tree)->child[i] = (firstChildIdx + i + root) % size;
+    (*tree)->numChildren++;
   }
-  if (index == (*tree)->root) {
+  if (rank == root) {
     (*tree)->isRoot = 1;
   } else {
     (*tree)->isRoot = 0;
-    pr = (index - 1) / (*tree)->PROCTREE_A;
-    (*tree)->parent = pr;
+    (*tree)->parent = (((index - 1) / (*tree)->PROCTREE_A) + root) % size;
   }
 }
 
@@ -173,7 +170,7 @@ void nary_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
 
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
-  build_tree(rank, size, &tree);
+  build_tree(root, rank, size, &tree);
   tree_bcast(buf, count, datatype, root, comm, tree);
   free_tree(tree);
 }
@@ -189,7 +186,7 @@ void nary_tree_barrier(MPI_Comm comm, int arity)
 
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
-  build_tree(rank, size, &tree);
+  build_tree(0, rank, size, &tree);
   tree_antibcast(&dummy, 1, MPI_CHAR, 0, comm, tree);
   tree_bcast(&dummy, 1, MPI_CHAR, 0, comm, tree);
   free_tree(tree);
