@@ -294,7 +294,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload)
     meas = gras_socket_meas_accept(measMaster);
     XBT_DEBUG("saturation handshake answered");
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     gras_socket_close(measMaster);
     RETHROWF("Error during saturation handshake: %s");
   }
@@ -330,16 +330,14 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload)
 void amok_bw_saturate_stop(const char *from_name, unsigned int from_port,
                            /*out */ double *time, double *bw)
 {
-  xbt_ex_t e;
-
   gras_socket_t sock = gras_socket_client(from_name, from_port);
   bw_res_t answer;
   XBT_VERB("Ask %s:%d to stop the saturation", from_name, from_port);
   TRY {
     gras_msg_rpccall(sock, 60, "amok_bw_sat stop", NULL, &answer);
-  } CATCH(e) {
-    RETHROWF("Cannot ask %s:%d to stop saturation: %s", from_name,
-             from_port);
+  }
+  CATCH_ANONYMOUS {
+    RETHROWF("Cannot ask %s:%d to stop saturation: %s", from_name, from_port);
   }
   gras_socket_close(sock);
   if (time)

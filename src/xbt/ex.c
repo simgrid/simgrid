@@ -266,7 +266,7 @@ XBT_TEST_UNIT("controlflow", test_controlflow, "basic nested control flow")
       n++;
       THROWF(unknown_error, 0, "something");
     }
-    CATCH(ex) {
+    CATCH_ANONYMOUS {
       if (n != 6)
         xbt_test_fail("M3: n=%d (!= 6)", n);
       n++;
@@ -397,7 +397,7 @@ static void bad_example(void)
     if (cp1 != NULL)
       free(cp1);
   }
-  CATCH(ex) {
+  CATCH_ANONYMOUS {
     printf("cp3=%s", cp3);
     RETHROW;
   }
@@ -411,7 +411,6 @@ typedef struct {
 static void good_example(void)
 {
   global_context_t *global_context = malloc(sizeof(global_context_t));
-  xbt_ex_t ex;
 
   /* GOOD_EXAMPLE */
   {                             /*01 */
@@ -434,7 +433,7 @@ static void good_example(void)
         free(cp2);
       /*05 cp1 was given away */
     }
-    CATCH(ex) {
+    CATCH_ANONYMOUS {
       /*05 global context untouched */
       RETHROW;
     }

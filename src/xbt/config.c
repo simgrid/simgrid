@@ -719,7 +719,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
                name);
       }
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       free(optionlist_cpy);
       RETHROW;
     }

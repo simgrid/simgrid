@@ -19,8 +19,6 @@ typedef struct {
 
 static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload)
 {
-
-  xbt_ex_t e;
   /* 1. Get the payload into the msg variable, and retrieve my caller */
   int msg = *(int *) payload;
   gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
@@ -43,7 +41,8 @@ static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload)
     gras_msg_send(expeditor, "pong", &msg);
 
     /* 6. Deal with errors: add some details to the exception */
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     gras_socket_close(globals->sock);
     RETHROWF("Unable answer with PONG: %s");
   }

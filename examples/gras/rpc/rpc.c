@@ -97,7 +97,7 @@ int client(int argc, char *argv[])
     toserver = gras_socket_client(host, port);
     toforwarder = gras_socket_client(argv[3], atoi(argv[4]));
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to connect to the server: %s");
   }
   XBT_INFO("Connected to %s:%d.", host, port);
@@ -119,7 +119,7 @@ int client(int argc, char *argv[])
     exception_catching();
     gras_msg_rpccall(toserver, 6000.0, "plain ping", &ping, &pong);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     gras_socket_close(toserver);
     RETHROWF("Failed to execute a PING rpc on the server: %s");
   }

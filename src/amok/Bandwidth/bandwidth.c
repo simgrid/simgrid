@@ -176,7 +176,7 @@ void amok_bw_test(gras_socket_t peer,
   TRY {
     gras_msg_rpccall(peer, 15, "BW handshake", &request, &request_ack);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF("Error encountered while sending the BW request: %s");
   }
   measIn = gras_socket_meas_accept(measMasterIn);
@@ -186,7 +186,7 @@ void amok_bw_test(gras_socket_t peer,
                                      request_ack->peer.port,
                                      request->buf_size, 1);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF
         ("Error encountered while opening the measurement socket to %s:%d for BW test: %s",
          gras_socket_peer_name(peer), request_ack->peer.port);
@@ -244,7 +244,8 @@ void amok_bw_test(gras_socket_t peer,
                             request->msg_amount);
       XBT_DEBUG("Data sent. Wait ACK");
       gras_socket_meas_recv(measIn, 120, 1, 1);
-    } CATCH(e) {
+    }
+    CATCH_ANONYMOUS {
       gras_socket_close(measOut);
       gras_socket_close(measMasterIn);
       gras_socket_close(measIn);
@@ -328,7 +329,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
   TRY {
     gras_msg_rpcreturn(60, ctx, &answer);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     gras_socket_close(measMasterIn);
     /* FIXME: tell error to remote */
     RETHROWF("Error encountered while sending the answer: %s");
@@ -341,7 +342,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
                                      request->peer.port,
                                      request->buf_size, 1);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF
         ("Error encountered while opening a measurement socket back to %s:%d : %s",
          gras_socket_peer_name(expeditor), request->peer.port);
@@ -355,7 +356,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
          answer->buf_size, answer->msg_size, answer->msg_amount,
          answer->peer.port);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     gras_socket_close(measMasterIn);
     gras_socket_close(measIn);
     gras_socket_close(measOut);
@@ -376,7 +377,8 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
       gras_socket_meas_recv(measIn, 120, request->msg_size,
                             request->msg_amount);
       gras_socket_meas_send(measOut, 120, 1, 1);
-    } CATCH(e) {
+    }
+    CATCH_ANONYMOUS {
       gras_socket_close(measMasterIn);
       gras_socket_close(measIn);
       gras_socket_close(measOut);

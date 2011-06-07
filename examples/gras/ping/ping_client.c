@@ -62,7 +62,7 @@ int client(int argc, char *argv[])
   TRY {
     gras_msg_send(toserver, "ping", &ping);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     gras_socket_close(toserver);
     RETHROWF("Failed to send PING to server: %s");
   }
@@ -73,7 +73,7 @@ int client(int argc, char *argv[])
   TRY {
     gras_msg_wait(6000, "pong", &from, &pong);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     gras_socket_close(toserver);
     RETHROWF("Why can't I get my PONG message like everyone else: %s");
   }

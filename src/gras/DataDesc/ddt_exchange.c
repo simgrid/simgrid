@@ -385,7 +385,6 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
  */
 int gras_datadesc_memcpy(gras_datadesc_type_t type, void *src, void *dst)
 {
-  xbt_ex_t e;
   static gras_cbps_t state = NULL;
   static xbt_dict_t refs = NULL;        /* all references already sent */
   int size = 0;
@@ -406,7 +405,8 @@ int gras_datadesc_memcpy(gras_datadesc_type_t type, void *src, void *dst)
   } TRY_CLEANUP {
     xbt_dict_reset(refs);
     gras_cbps_reset(state);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROW;
   }
   return size;
@@ -630,8 +630,6 @@ gras_datadesc_send_rec(gras_socket_t sock,
 void gras_datadesc_send(gras_socket_t sock,
                         gras_datadesc_type_t type, void *src)
 {
-
-  xbt_ex_t e;
   static gras_cbps_t state = NULL;
   static xbt_dict_t refs = NULL;        /* all references already sent */
 
@@ -648,7 +646,8 @@ void gras_datadesc_send(gras_socket_t sock,
   } TRY_CLEANUP {
     xbt_dict_reset(refs);
     gras_cbps_reset(state);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROW;
   }
 }
@@ -970,8 +969,6 @@ void
 gras_datadesc_recv(gras_socket_t sock,
                    gras_datadesc_type_t type, int r_arch, void *dst)
 {
-
-  xbt_ex_t e;
   static gras_cbps_t state = NULL;      /* callback persistent state */
   static xbt_dict_t refs = NULL;        /* all references already sent */
 
@@ -987,7 +984,8 @@ gras_datadesc_recv(gras_socket_t sock,
   } TRY_CLEANUP {
     xbt_dict_reset(refs);
     gras_cbps_reset(state);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROW;
   }
 }

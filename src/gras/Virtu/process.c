@@ -89,7 +89,6 @@ void *gras_libdata_by_name_from_procdata(const char *name,
                                          gras_procdata_t * pd)
 {
   void *res = NULL;
-  xbt_ex_t e;
   if (xbt_set_length(pd->libdata) <
       xbt_dynar_length(_gras_procdata_fabrics)) {
     /* Damn, some new modules were added since procdata_init(). Amok? */
@@ -99,7 +98,7 @@ void *gras_libdata_by_name_from_procdata(const char *name,
   TRY {
     res = xbt_set_get_by_name(pd->libdata, name);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF("Cannot retrieve the libdata associated to %s: %s", name);
   }
   return res;

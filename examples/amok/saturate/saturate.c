@@ -171,7 +171,6 @@ static void simple_saturation(int argc, char *argv[])
 /********************************************************************************************/
 static void full_fledged_saturation(int argc, char *argv[])
 {
-  xbt_ex_t e;
   double time1 = 5.0, bw1 = 5.0;        // 0.5 for test
   /* timers */
   double begin_simulated;
@@ -220,7 +219,7 @@ static void full_fledged_saturation(int argc, char *argv[])
         amok_bw_saturate_start(h1->name, h1->port, h2->name, h2->port, 0,       /* Be nice, compute msg_size yourself */
                                0 /* no timeout */ );
       }
-      CATCH(e) {
+      CATCH_ANONYMOUS {
         RETHROWF("Cannot ask peers to saturate the link: %s");
       }
       gras_os_sleep(5);

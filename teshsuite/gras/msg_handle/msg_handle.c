@@ -46,13 +46,15 @@ int server(int argc, char *argv[])
   XBT_INFO("Launch server (port=%d)", myport);
   TRY {
     me = gras_socket_server(myport);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to establish a server socket: %s");
   }
   gras_os_sleep(1);             /* Wait for pal to startup */
   TRY {
     pal = gras_socket_client_from_string(palstr);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to establish a socket to %s: %s", palstr);
   }
   XBT_INFO("Initialization done.");
@@ -116,7 +118,6 @@ int client(int argc, char *argv[])
   gras_socket_t me = NULL, pal = NULL;
   int myport;
   char *palstr;
-  xbt_ex_t e;
 
   gras_init(&argc, argv);
   xbt_assert(argc == 3, "Usage: client <myport> <server>");
@@ -129,13 +130,15 @@ int client(int argc, char *argv[])
   XBT_INFO("Launch client (port=%d)", myport);
   TRY {
     me = gras_socket_server(myport);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to establish a server socket: %s");
   }
   gras_os_sleep(1);             /* Wait for pal to startup */
   TRY {
     pal = gras_socket_client_from_string(palstr);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to establish a socket to %s: %s", palstr);
   }
   XBT_INFO("Initialization done.");
@@ -143,7 +146,8 @@ int client(int argc, char *argv[])
   /* Launch handle(-1). Lock until message from server expected */
   TRY {
     gras_msg_handle(-1);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROWF("No exception expected during handle(-1), but got %s");
   }
   XBT_INFO("gras_msg_handle(-1) works as expected (locked)");

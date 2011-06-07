@@ -36,9 +36,6 @@ typedef struct {
 /* Callback function */
 static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload)
 {
-
-  xbt_ex_t e;
-
   /* 1. Get the payload into the msg variable, and retrieve my caller */
   int msg = *(int *) payload;
   gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
@@ -77,7 +74,7 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload)
 
       /* 6. Deal with errors */
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       gras_socket_close(globals->sock);
       RETHROWF("Unable to forward token: %s");
     }
@@ -109,8 +106,6 @@ int node(int argc, char *argv[])
   const char *host;
   int myport;
   int peerport;
-
-  xbt_ex_t e;
 
   /* 1. Init the GRAS infrastructure and declare my globals */
   gras_init(&argc, argv);
@@ -170,7 +165,8 @@ int node(int argc, char *argv[])
 
     TRY {
       gras_msg_send(globals->tosuccessor, "stoken", &token);
-    } CATCH(e) {
+    }
+    CATCH_ANONYMOUS {
       RETHROWF("Unable to send the freshly created token: %s");
     }
   }
