@@ -204,6 +204,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
     XBT_INFO("My area is [%d;%d;%d;%d]", globals->x1, globals->x2,
           globals->y1, globals->y2);
     //XBT_INFO("Closing node, all has been done!");
+    xbt_ex_free(e);
   }
   return 0;
 }
@@ -309,6 +310,7 @@ int node(int argc, char **argv)
     XBT_INFO("My area is [%d;%d;%d;%d]", globals->x1, globals->x2,
           globals->y1, globals->y2);
     //XBT_INFO("Closing node, all has been done!");
+    xbt_ex_free(e);
   }
 
   gras_socket_close(globals->sock);     // spare.

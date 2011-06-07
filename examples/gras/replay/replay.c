@@ -249,6 +249,7 @@ int worker(int argc, char *argv[])
             }
             CATCH(e) {
               SIMIX_display_process_status();
+              xbt_ex_free(e);
             }
             XBT_INFO("Communications all done");
             xbt_dynar_reset(cmd_to_go);
