@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf/ns3/ns3_interface.h"
+#include "ns3_interface.h"
 #include "ns3/core-module.h"
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
@@ -25,11 +25,9 @@ void * ns3_add_host(char * id)
 	XBT_INFO("Interface ns3 add host '%s'",id);
 	Ptr<Node> node =  CreateObject<Node> (0);
 	nodes.Add(node);
-
 	host->node_num = number_of_nodes;
 	host->type = NS3_NETWORK_ELEMENT_HOST;
-	host->data = nodes.Get(number_of_nodes);
-	XBT_INFO("node %p",host->data);
+	host->data = node;
 	number_of_nodes++;
 	return host;
 }
@@ -47,32 +45,8 @@ void * ns3_add_router(char * id)
 	return router;
 }
 
-void * ns3_add_link(char * id)
-{
-	XBT_INFO("Interface ns3 add link '%s'",id);
-	PointToPointHelper pointToPoint_5Mbps;
-	pointToPoint_5Mbps.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-	pointToPoint_5Mbps.SetChannelAttribute ("Delay", StringValue ("2ms"));
-	return	NULL;//&pointToPoint_5Mbps;
-}
-
 void * ns3_add_AS(char * id)
 {
 	XBT_INFO("Interface ns3 add AS '%s'",id);
 	return NULL;
-}
-
-void ns3_add_route(char * src,char * dst)
-{
-	XBT_INFO("Interface ns3 add route from '%s' to '%s'",src,dst);
-}
-
-void ns3_add_ASroute(char * src,char * dst)
-{
-	XBT_INFO("Interface ns3 add ASroute from '%s' to '%s'",src,dst);
-}
-
-void free_ns3_elmts(void * elmts)
-{
-	XBT_INFO("Free ns3 elmts");
 }
