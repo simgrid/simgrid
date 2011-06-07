@@ -95,7 +95,8 @@ xbt_multidict_set(xbt_dict_t mdict,
 
   TRY {
     xbt_multidict_set_ext(mdict, keys, lens, data, free_ctn);
-  } TRY_CLEANUP {
+  }
+  TRY_CLEANUP {
     xbt_dynar_free(&lens);
   }
   CATCH_ANONYMOUS {
@@ -232,7 +233,8 @@ void xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys)
 
   TRY {
     xbt_multidict_remove_ext(mdict, keys, lens);
-  } TRY_CLEANUP {
+  }
+  TRY_CLEANUP {
     xbt_dynar_free(&lens);
   }
   CATCH_ANONYMOUS {

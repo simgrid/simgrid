@@ -54,7 +54,8 @@ its own arguments. So, you may have something like the following:
 Then, you simply add a #TRY/#CATCH block around your code:
 \verbatim TRY{ 
   /* your code */ 
-} CATCH(e) { 
+}
+CATCH(e) {
   /* error handling code */
 } \endverbatim
 

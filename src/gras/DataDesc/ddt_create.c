@@ -55,7 +55,8 @@ gras_datadesc_type_t gras_datadesc_by_name_or_null(const char *name)
 
   TRY {
     res = gras_datadesc_by_name(name);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     res = NULL;
     xbt_ex_free(e);
   }
@@ -75,7 +76,8 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name)
         (gras_datadesc_type_t) xbt_set_get_by_name(gras_datadesc_set_local,
                                                    name);
     found = 1;
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category != not_found_error)
       RETHROW;
     xbt_ex_free(e);
@@ -98,7 +100,8 @@ gras_datadesc_type_t gras_datadesc_by_id(long int code)
     res =
         (gras_datadesc_type_t) xbt_set_get_by_id(gras_datadesc_set_local,
                                                  code);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category != not_found_error)
       RETHROW;
     xbt_ex_free(e);

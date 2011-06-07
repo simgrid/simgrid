@@ -515,7 +515,8 @@ void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa)
 
   TRY {
     type = xbt_cfg_get_type(cfg, name);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category == not_found_error) {
       xbt_ex_free(e);
       THROWF(not_found_error, 0,
@@ -1132,7 +1133,8 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name)
 
   TRY {
     variable = xbt_dict_get((xbt_dict_t) cfg, name);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category != not_found_error)
       RETHROW;
 
@@ -1293,7 +1295,8 @@ xbt_dynar_t xbt_cfg_get_dynar(xbt_cfg_t cfg, const char *name)
 
   TRY {
     variable = xbt_dict_get((xbt_dict_t) cfg, name);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category == not_found_error) {
       xbt_ex_free(e);
       THROWF(not_found_error, 0,
@@ -1472,7 +1475,8 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
 
     TRY {
       xbt_cfg_set_parse(myset, "color:blue");
-    } CATCH(e) {
+    }
+    CATCH(e) {
       if (e.category != not_found_error)
         xbt_test_exception(e);
       xbt_ex_free(e);

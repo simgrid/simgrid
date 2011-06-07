@@ -38,7 +38,8 @@ static void gras_trp_plugin_new(const char *name, gras_trp_setup_t setup)
 
   TRY {
     setup(plug);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category == mismatch_error) {
       /* SG plugin raise mismatch when in RL mode (and vice versa) */
       free(plug->name);

@@ -39,7 +39,8 @@ int sensor(int argc, char *argv[])
     TRY {
       master = gras_socket_client_from_string(argv[1]);
       connected = 1;
-    } CATCH(e) {
+    }
+    CATCH(e) {
       xbt_ex_free(e);
     }
     if (!connected) {

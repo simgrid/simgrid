@@ -85,7 +85,8 @@ gras_msgtype_declare_ext(const char *name,
     msgtype =
         (gras_msgtype_t) xbt_set_get_by_name(_gras_msgtype_set, namev);
     found = 1;
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category != not_found_error) {
       xbt_free(namev);
       RETHROW;
@@ -182,7 +183,8 @@ gras_msgtype_t gras_msgtype_by_name_or_null(const char *name)
 
   TRY {
     res = gras_msgtype_by_namev(name, 0);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     res = NULL;
     xbt_ex_free(e);
   }
@@ -200,7 +202,8 @@ gras_msgtype_t gras_msgtype_by_namev(const char *name, short int version)
   TRY {
     res = (gras_msgtype_t) xbt_set_get_by_name(_gras_msgtype_set, namev);
     found = 1;
-  } CATCH(e) {
+  }
+  CATCH(e) {
     xbt_ex_free(e);
   }
   if (!found)

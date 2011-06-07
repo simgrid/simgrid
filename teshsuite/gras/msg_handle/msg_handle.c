@@ -64,7 +64,8 @@ int server(int argc, char *argv[])
   got_expected = 0;
   TRY {
     gras_msg_handle(0);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category == timeout_error) {
       got_expected = 1;
       xbt_ex_free(e);

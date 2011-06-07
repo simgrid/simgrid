@@ -941,7 +941,8 @@ static void search_not_found(xbt_dict_t head, const char *data)
     data = xbt_dict_get(head, data);
     THROWF(unknown_error, 0,
            "Found something which shouldn't be there (%s)", data);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
@@ -1014,7 +1015,8 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse
   traverse(head);
   TRY {
     debuged_remove(head, "12346");
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);

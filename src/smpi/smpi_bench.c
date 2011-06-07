@@ -240,7 +240,8 @@ int smpi_shared_known_call(const char* func, const char* input) {
    TRY {
       xbt_dict_get(calls, loc); /* Succeed or throw */
       known = 1;
-   } CATCH(ex) {
+   }
+   CATCH(ex) {
       if(ex.category == not_found_error) {
          known = 0;
          xbt_ex_free(ex);
