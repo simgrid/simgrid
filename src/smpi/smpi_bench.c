@@ -91,7 +91,7 @@ static void* shm_map(int fd, size_t size, shared_data_t* data) {
       xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
     }
   }
-  mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
   if(mem == MAP_FAILED) {
     xbt_die("Could not map fd %d: %s", fd, strerror(errno));
   }
