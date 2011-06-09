@@ -298,7 +298,7 @@ static void update_actions_state(double now, double delta)
              action->generic_action.remains);
 
 #ifdef HAVE_TRACING
-      if (TRACE_is_active()) {
+      if (TRACE_is_enabled()) {
         double last_amount_sent = (action->generic_action.cost - action->last_remains);
         double amount_sent = (action->generic_action.cost - action->generic_action.remains);
 
@@ -378,7 +378,9 @@ static surf_action_t communicate(const char *src_name,
       surf_action_new(sizeof(s_surf_action_network_GTNETS_t), size,
                       surf_network_model, 0);
 
+#ifdef HAVE_TRACING
   action->last_remains = 0;
+#endif
 
   /* Add a flow to the GTNets Simulation, associated to this action */
   if (gtnets_create_flow(src, dst, size, (void *) action) < 0) {

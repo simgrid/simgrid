@@ -437,7 +437,7 @@ static void net_update_actions_state(double now, double delta)
                                    action->weight);
     }
 #ifdef HAVE_TRACING
-    if (TRACE_is_active()) {
+    if (TRACE_is_enabled()) {
       xbt_dynar_t route = global_routing->get_route(action->src_name,
                                                     action->dst_name);
       link_CM02_t link;
@@ -732,7 +732,7 @@ static surf_action_t net_communicate(const char *src_name,
   /* LARGE PLATFORMS HACK:
      expand also with src->link and dst->link */
 #ifdef HAVE_TRACING
-  if (TRACE_is_active()) {
+  if (TRACE_is_enabled()) {
     action->src_name = xbt_strdup(src_name);
     action->dst_name = xbt_strdup(dst_name);
   } else {

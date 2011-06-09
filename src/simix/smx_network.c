@@ -258,10 +258,6 @@ void SIMIX_comm_destroy(smx_action_t action)
     action->latency_limited = SIMIX_comm_is_latency_bounded( action ) ;
 #endif
 
-#ifdef HAVE_TRACING
-  TRACE_smx_action_destroy(action);
-#endif
-
   xbt_free(action->name);
   SIMIX_comm_destroy_internal_actions(action);
 
@@ -530,10 +526,6 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
 
     action->state = SIMIX_RUNNING;
 
-#ifdef HAVE_TRACING
-    TRACE_smx_action_communicate(action, action->comm.src_proc);
-#endif
-
     /* If a link is failed, detect it immediately */
     if (surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure",
@@ -729,6 +721,10 @@ double SIMIX_comm_get_remains(smx_action_t action)
 {
   double remains;
 
+  if(!action){
+      return 0;
+  }
+
   switch (action->state) {
 
     case SIMIX_RUNNING:
@@ -789,6 +785,9 @@ smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action)
  */
 XBT_INLINE int SIMIX_comm_is_latency_bounded(smx_action_t action)
 {
+  if(!action){
+      return 0;
+  }
   if (action->comm.surf_comm){
       XBT_DEBUG("Getting latency limited for surf_action (%p)", action->comm.surf_comm);
       action->latency_limited = surf_workstation_model->get_latency_limited(action->comm.surf_comm);

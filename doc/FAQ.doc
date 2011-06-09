@@ -1623,7 +1623,13 @@ that are created during the simulation (for example, tasks from server1,
 server2, or request tasks, computation tasks, communication tasks).
 All resource utilization (host power and link bandwidth) will be
 classified according to the task category. Tasks that do not belong to a
-category are not traced.
+category are not traced. The color for the category that is being declared
+is random (use next function to specify a color).
+
+\li <b>\c TRACE_category_with_color (const char *category, const char *color)</b>: Same
+as TRACE_category, but let user specify a color encoded as a RGB-like string with
+three floats from 0 to 1. So, to specify a red color, the user can pass "1 0 0" as
+color parameter. A light-gray color can be specified using "0.7 0.7 0.7" as color.
 
 \li <b>\c TRACE_msg_set_task_category (m_task_t task, const char *category)</b>:
 This function should be called after the creation of a MSG task, to define the
@@ -1639,17 +1645,32 @@ created with the function \c MSG_task_create. The second parameter
 \c category must contain a category that was previously defined by the function
 \c TRACE_category.
 
-\li <b>\c TRACE_host_variable_declare (const char *variable)</b>:
-Declare a user variable that will be associated to hosts. A variable can
+\li <b>\c TRACE_[host|link]_variable_declare (const char *variable)</b>:
+Declare a user variable that will be associated to host/link. A variable can
 be used to trace user variables such as the number of tasks in a server,
-the number of clients in an application, and so on.
+the number of clients in an application (for hosts), and so on.
 
-\li <b>\c TRACE_host_variable_[set|add|sub] (const char *variable, double
-value)</b>:
-Set the value of a given user variable. It is important to remind that
-the value of this variable is always associated to the host. The host
-that will be used when these functions are called is the one returned by
-the function \c MSG_host_self().
+\li <b>\c TRACE_[host|link]_variable_[set|add|sub] (const char *[host|link], const char *variable, double value)</b>:
+Set the value of a given user variable for a given host/link. The value
+of this variable is always associated to the host/link. The host/link 
+parameters should be its name as the one listed in the platform file.
+
+\li <b>\c TRACE_[host|link]_variable_[set|add|sub]_with_time (double time, const char *[host|link], const char *variable, double value)</b>:
+Same as TRACE_[host|link]_variable_[set|add|sub], but let user specify
+the time used to trace it. Users can specify a time that is not the 
+simulated clock time as defined by the core simulator. This allows
+a fine-grain control of time definition, but should be used with 
+caution since the trace can be inconsistent if resource utilization
+traces are also traced.
+
+\li <b>\c TRACE_link_srcdst_variable_[set|add|sub] (const char *src, const char *dst, const char *variable, double value)</b>:
+Same as TRACE_link_variable_[set|add|sub], but now users specify a source and
+destination hosts (as the names from the platform file). The tracing library
+will get the corresponding route that connects those two hosts (src and dst) and
+[set|add|sub] the value's variable for all the links of the route.
+
+\li <b>\c TRACE_link_srcdst_variable_[set|add|sub]_with_time (double time, const char *src, const char *dst, const char *variable, double value)</b>: 
+Same as TRACE_link_srcdst_variable_[set|add|sub], but user specify a time different from the simulated time.
 
 \subsubsection faq_tracing_options Tracing configuration Options
 
@@ -1658,8 +1679,21 @@ These are the options accepted by the tracing system of SimGrid:
 \li <b>\c 
 tracing
 </b>:
-  It activates the tracing system and register the simulation platform
-  in the trace file. You have to enable this option to others take effect.
+  Safe switch. It activates (or deactivates) the tracing system.
+  No other tracing options take effect if this one is not activated.
+
+\li <b>\c
+tracing/platform
+</b>:
+  Register the simulation platform in the trace file.
+
+\li <b>\c
+tracing/onelink_only
+</b>:
+  By default, the tracing system uses all routes in the platform file
+  to re-create a "graph" of the platform and register it in the trace file.
+  This option let the user tell the tracing system to use only the routes
+  that are composed with just one link.
 
 \li <b>\c 
 tracing/categorized
@@ -1673,20 +1707,6 @@ tracing/uncategorized
   It activates the uncategorized resource utilization tracing. Use it if
   this simulator do not use tracing categories and resource use have to be
   traced.
-
-\li <b>\c 
-tracing/platform/method
-</b>:
-  It changes the way resource utilization (categorized or not) is traced
-  inside the simulation core. Method 'a' (default) traces all updates defined
-  by the CPU/network model of a given resource. Depending on the interface used
-  by this simulator (MSG, SMPI, SimDAG), the default method can generate large
-  trace files. Method 'b' tries to make smaller tracefiles using clever updates,
-  without losing details of resource utilization. Method 'c' generates even
-  smaller files by doing time integration during the simulation, but it loses
-  precision. If this last method is used, the smallest timeslice used in the
-  tracefile analysis must be bigger than the smaller resource utilization. If
-  unsure, do not change this option.
 
 \li <b>\c 
 tracing/filename
@@ -1724,11 +1744,18 @@ tracing/msg/process
   behavior of all categorized MSG processes, grouping them by hosts. This option
   can be used to track process location if this simulator has process migration.
 
+
 \li <b>\c 
-tracing/msg/volume
+triva/categorized:graph_categorized.plist
 </b>:
-  This experimental option only has effect if this simulator is MSG-based.
-  It traces the communication volume of MSG send/receive.
+  This option generates a graph configuration file for Triva considering
+  categorized resource utilization.
+
+\li <b>\c 
+triva/uncategorized:graph_uncategorized.plist
+</b>:
+  This option generates a graph configuration file for Triva considering
+  uncategorized resource utilization.
 
 \subsubsection faq_tracing_example Example of Instrumentation
 
@@ -1739,12 +1766,12 @@ int main (int argc, char **argv)
 {
   MSG_global_init (&argc, &argv);
 
-  //note that TRACE_start must be called after MSG_global_init
+  //(... after deployment ...)
+
+  //note that category declaration must be called after MSG_create_environment
   TRACE_category_with_color ("request", "1 0 0");
   TRACE_category_with_color ("computation", "0.3 1 0.4");
   TRACE_category ("finalize");
-
-  //(... after deployment ...)
 
   m_task_t req1 = MSG_task_create("1st_request_task", 10, 10, NULL);
   m_task_t req2 = MSG_task_create("2nd_request_task", 10, 10, NULL);
@@ -2414,45 +2441,29 @@ end
 
 \subsection faq_trouble_lib_compil SimGrid compilation and installation problems
 
-\subsubsection faq_trouble_lib_config ./configure fails!
+\subsubsection faq_trouble_lib_config cmake fails!
 
 We know only one reason for the configure to fail:
 
  - <b>You are using a broken build environment</b>\n
-   If symptom is that configure complains about gcc not being able to build
+   If symptom is that the configury magic complains about gcc not being able to build
    executables, you are probably missing the libc6-dev package. Damn Ubuntu.
 
 If you experience other kind of issue, please get in touch with us. We are
 always interested in improving our portability to new systems.
 
-\subsubsection faq_trouble_distcheck Dude! "make check" fails on my machine!
+\subsubsection faq_trouble_distcheck Dude! "ctest" fails on my machine!
 
 Don't assume we never run this target, because we do. Check
-http://bob.loria.fr:8010 if you don't believe us.
+http://cdash.inria.fr/CDash/index.php?project=Simgrid (click on
+previous if there is no result for today: results are produced only by
+11am, French time) and
+https://buildd.debian.org/status/logs.php?pkg=simgrid if you don't believe us. 
 
-There is several reasons which may cause the make check to fail on your
-machine:
-
- - <b>You are using a broken libc (probably concerning the contextes)</b>.\n
-   The symptom is that the "make check" fails within the examples/msg directory.\n
-   By default, SimGrid uses something called ucontexts. This is part of the
-   libc, but it's quite undertested. For example, some (old) versions of the
-   glibc on alpha do not implement these functions, but provide the stubs
-   (which return ENOSYS: not implemented). It may fool our detection mechanism
-   and leads to segfaults. There is not much we can do to fix the bug.
-   A workaround is to compile with --with-context=pthread to avoid
-   ucontext completely. You'll be a bit more limited in the number
-   of simulated processes you can start concurrently, but 5000
-   processes is still enough for most purposes, isn't it?\n
-   This limitation is the reason why we insist on using this piece of ...
-   software even if it's so troublesome.\n
-   <b>=> use --with-pthread on AMD64 architecture that do not have an 
-   ultra-recent libc.</b>
-   
- - <b>There is a bug in SimGrid we aren't aware of</b>.\n
-   If none of the above apply, please drop us a mail on the mailing list so
-   that we can check it out. Make sure to read \ref faq_bugrepport
-   before you do so.
+If it's failing on your machine in a way not experienced by the
+autobuilders above, please drop us a mail on the mailing list so that
+we can check it out. Make sure to read \ref faq_bugrepport before you
+do so.
 
 \subsection faq_trouble_compil User code compilation problems
 

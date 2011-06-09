@@ -24,8 +24,6 @@
 #define MAKEFILE_FILENAME_REMOTE  "%s.Makefile.remote"
 #define DEPLOYMENT  "%s.deploy.sh"
 
-char *warning = NULL;
-
 /**********************************************/
 /**** Generate the file for the simulator *****/
 /**********************************************/

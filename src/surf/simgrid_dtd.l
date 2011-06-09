@@ -1,5 +1,4 @@
 /* Validating XML processor for src/surf/simgrid.dtd.
- * Generated 2010/12/03 11:37:14.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -102,6 +101,8 @@ AT_surfxml_peer_lat AX_surfxml_peer_lat;
 #define A_surfxml_peer_lat (surfxml_bufferstack + AX_surfxml_peer_lat)
 AT_surfxml_link_latency_file AX_surfxml_link_latency_file;
 #define A_surfxml_link_latency_file (surfxml_bufferstack + AX_surfxml_link_latency_file)
+AT_surfxml_peer_availability_file AX_surfxml_peer_availability_file;
+#define A_surfxml_peer_availability_file (surfxml_bufferstack + AX_surfxml_peer_availability_file)
 AT_surfxml_link_ctn_direction AX_surfxml_link_ctn_direction;
 #define A_surfxml_link_ctn_direction AX_surfxml_link_ctn_direction
 AT_surfxml_host_state AX_surfxml_host_state;
@@ -130,6 +131,8 @@ AT_surfxml_link_ctn_id AX_surfxml_link_ctn_id;
 #define A_surfxml_link_ctn_id (surfxml_bufferstack + AX_surfxml_link_ctn_id)
 AT_surfxml_peer_bw_out AX_surfxml_peer_bw_out;
 #define A_surfxml_peer_bw_out (surfxml_bufferstack + AX_surfxml_peer_bw_out)
+AT_surfxml_cluster_availability_file AX_surfxml_cluster_availability_file;
+#define A_surfxml_cluster_availability_file (surfxml_bufferstack + AX_surfxml_cluster_availability_file)
 AT_surfxml_process_kill_time AX_surfxml_process_kill_time;
 #define A_surfxml_process_kill_time (surfxml_bufferstack + AX_surfxml_process_kill_time)
 AT_surfxml_cluster_bb_bw AX_surfxml_cluster_bb_bw;
@@ -156,6 +159,10 @@ AT_surfxml_link_latency AX_surfxml_link_latency;
 #define A_surfxml_link_latency (surfxml_bufferstack + AX_surfxml_link_latency)
 AT_surfxml_trace_connect_kind AX_surfxml_trace_connect_kind;
 #define A_surfxml_trace_connect_kind AX_surfxml_trace_connect_kind
+AT_surfxml_random_seed AX_surfxml_random_seed;
+#define A_surfxml_random_seed (surfxml_bufferstack + AX_surfxml_random_seed)
+AT_surfxml_cluster_state_file AX_surfxml_cluster_state_file;
+#define A_surfxml_cluster_state_file (surfxml_bufferstack + AX_surfxml_cluster_state_file)
 AT_surfxml_link_bandwidth_file AX_surfxml_link_bandwidth_file;
 #define A_surfxml_link_bandwidth_file (surfxml_bufferstack + AX_surfxml_link_bandwidth_file)
 AT_surfxml_route_symmetrical AX_surfxml_route_symmetrical;
@@ -180,10 +187,14 @@ AT_surfxml_router_coordinates AX_surfxml_router_coordinates;
 #define A_surfxml_router_coordinates (surfxml_bufferstack + AX_surfxml_router_coordinates)
 AT_surfxml_peer_coordinates AX_surfxml_peer_coordinates;
 #define A_surfxml_peer_coordinates (surfxml_bufferstack + AX_surfxml_peer_coordinates)
+AT_surfxml_peer_state_file AX_surfxml_peer_state_file;
+#define A_surfxml_peer_state_file (surfxml_bufferstack + AX_surfxml_peer_state_file)
 AT_surfxml_prop_value AX_surfxml_prop_value;
 #define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
 AT_surfxml_ASroute_dst AX_surfxml_ASroute_dst;
 #define A_surfxml_ASroute_dst (surfxml_bufferstack + AX_surfxml_ASroute_dst)
+AT_surfxml_random_radical AX_surfxml_random_radical;
+#define A_surfxml_random_radical (surfxml_bufferstack + AX_surfxml_random_radical)
 AT_surfxml_link_state_file AX_surfxml_link_state_file;
 #define A_surfxml_link_state_file (surfxml_bufferstack + AX_surfxml_link_state_file)
 AT_surfxml_trace_connect_trace AX_surfxml_trace_connect_trace;
@@ -212,8 +223,6 @@ AT_surfxml_host_coordinates AX_surfxml_host_coordinates;
 #define A_surfxml_host_coordinates (surfxml_bufferstack + AX_surfxml_host_coordinates)
 AT_surfxml_trace_id AX_surfxml_trace_id;
 #define A_surfxml_trace_id (surfxml_bufferstack + AX_surfxml_trace_id)
-AT_surfxml_peer_sharing_policy AX_surfxml_peer_sharing_policy;
-#define A_surfxml_peer_sharing_policy AX_surfxml_peer_sharing_policy
 AT_surfxml_peer_power AX_surfxml_peer_power;
 #define A_surfxml_peer_power (surfxml_bufferstack + AX_surfxml_peer_power)
 AT_surfxml_cluster_radical AX_surfxml_cluster_radical;
@@ -224,6 +233,8 @@ AT_surfxml_bypassRoute_gw_src AX_surfxml_bypassRoute_gw_src;
 #define A_surfxml_bypassRoute_gw_src (surfxml_bufferstack + AX_surfxml_bypassRoute_gw_src)
 AT_surfxml_cluster_core AX_surfxml_cluster_core;
 #define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
+AT_surfxml_include_file AX_surfxml_include_file;
+#define A_surfxml_include_file (surfxml_bufferstack + AX_surfxml_include_file)
 AT_surfxml_random_std_deviation AX_surfxml_random_std_deviation;
 #define A_surfxml_random_std_deviation (surfxml_bufferstack + AX_surfxml_random_std_deviation)
 AT_surfxml_host_state_file AX_surfxml_host_state_file;
@@ -395,7 +406,8 @@ Literal		\'[^'']*\'|\"[^""]*\"
  * IMPOSSIBLE	dummy to permit disabling rules; must be last
  */
 %x PROLOG DOCTYPE EPILOG INCOMMENT INPI VALUE1 VALUE2 CDATA
-%x ROOT_surfxml_platform AL_surfxml_platform S_surfxml_platform S_surfxml_platform_1 S_surfxml_platform_2 S_surfxml_platform_3 S_surfxml_platform_4 S_surfxml_platform_5 S_surfxml_platform_6 E_surfxml_platform
+%x ROOT_surfxml_platform AL_surfxml_platform S_surfxml_platform S_surfxml_platform_1 S_surfxml_platform_2 S_surfxml_platform_3 S_surfxml_platform_4 S_surfxml_platform_5 S_surfxml_platform_6 S_surfxml_platform_7 S_surfxml_platform_8 E_surfxml_platform
+%x AL_surfxml_include E_surfxml_include
 %x AL_surfxml_trace IN_trace
 %x AL_surfxml_random S_surfxml_random S_surfxml_random_1 S_surfxml_random_2 E_surfxml_random
 %x AL_surfxml_trace_connect E_surfxml_trace_connect
@@ -443,6 +455,7 @@ const char* *surfxml_statenames=NULL;
   /* FleXML_init */
   bnext = inext = 1;
   surfxml_bufferliteral('\0', &bnext, "0.0");
+  surfxml_bufferliteral('\0', &bnext, "2147483647");
   surfxml_bufferliteral('\0', &bnext, "1");
   surfxml_bufferliteral('\0', &bnext, "1.0");
   surfxml_bufferliteral('\0', &bnext, "1");
@@ -467,7 +480,11 @@ const char* *surfxml_statenames=NULL;
   surfxml_statenames[S_surfxml_platform_4] = "platform";
   surfxml_statenames[S_surfxml_platform_5] = "platform";
   surfxml_statenames[S_surfxml_platform_6] = "platform";
+  surfxml_statenames[S_surfxml_platform_7] = "platform";
+  surfxml_statenames[S_surfxml_platform_8] = "platform";
   surfxml_statenames[E_surfxml_platform] = "platform";
+  surfxml_statenames[AL_surfxml_include] = NULL;
+  surfxml_statenames[E_surfxml_include] = "include";
   surfxml_statenames[AL_surfxml_trace] = NULL;
   surfxml_statenames[IN_trace] = "trace";
   surfxml_statenames[AL_surfxml_random] = NULL;
@@ -544,7 +561,7 @@ const char* *surfxml_statenames=NULL;
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-<ROOT_surfxml_platform,AL_surfxml_platform,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_platform_2,S_surfxml_platform_3,S_surfxml_platform_4,S_surfxml_platform_5,S_surfxml_platform_6,E_surfxml_platform,AL_surfxml_trace,IN_trace,AL_surfxml_random,S_surfxml_random,S_surfxml_random_1,S_surfxml_random_2,E_surfxml_random,AL_surfxml_trace_connect,E_surfxml_trace_connect,AL_surfxml_AS,S_surfxml_AS,S_surfxml_AS_1,S_surfxml_AS_2,S_surfxml_AS_3,S_surfxml_AS_4,S_surfxml_AS_5,S_surfxml_AS_6,S_surfxml_AS_7,S_surfxml_AS_8,S_surfxml_AS_9,S_surfxml_AS_10,S_surfxml_AS_11,S_surfxml_AS_12,S_surfxml_AS_13,E_surfxml_AS,AL_surfxml_host,S_surfxml_host,S_surfxml_host_1,S_surfxml_host_2,E_surfxml_host,AL_surfxml_cluster,E_surfxml_cluster,AL_surfxml_peer,E_surfxml_peer,AL_surfxml_router,E_surfxml_router,AL_surfxml_link,S_surfxml_link,S_surfxml_link_1,S_surfxml_link_2,E_surfxml_link,AL_surfxml_route,S_surfxml_route,S_surfxml_route_1,S_surfxml_route_2,E_surfxml_route,AL_surfxml_ASroute,S_surfxml_ASroute,S_surfxml_ASroute_1,S_surfxml_ASroute_2,E_surfxml_ASroute,AL_surfxml_link_ctn,E_surfxml_link_ctn,AL_surfxml_bypassRoute,S_surfxml_bypassRoute,S_surfxml_bypassRoute_1,S_surfxml_bypassRoute_2,E_surfxml_bypassRoute,AL_surfxml_process,S_surfxml_process,S_surfxml_process_1,S_surfxml_process_2,E_surfxml_process,AL_surfxml_argument,E_surfxml_argument,AL_surfxml_config,S_surfxml_config,S_surfxml_config_1,S_surfxml_config_2,E_surfxml_config,AL_surfxml_prop,E_surfxml_prop,PROLOG,DOCTYPE,EPILOG>{
+<ROOT_surfxml_platform,AL_surfxml_platform,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_platform_2,S_surfxml_platform_3,S_surfxml_platform_4,S_surfxml_platform_5,S_surfxml_platform_6,S_surfxml_platform_7,S_surfxml_platform_8,E_surfxml_platform,AL_surfxml_include,E_surfxml_include,AL_surfxml_trace,IN_trace,AL_surfxml_random,S_surfxml_random,S_surfxml_random_1,S_surfxml_random_2,E_surfxml_random,AL_surfxml_trace_connect,E_surfxml_trace_connect,AL_surfxml_AS,S_surfxml_AS,S_surfxml_AS_1,S_surfxml_AS_2,S_surfxml_AS_3,S_surfxml_AS_4,S_surfxml_AS_5,S_surfxml_AS_6,S_surfxml_AS_7,S_surfxml_AS_8,S_surfxml_AS_9,S_surfxml_AS_10,S_surfxml_AS_11,S_surfxml_AS_12,S_surfxml_AS_13,E_surfxml_AS,AL_surfxml_host,S_surfxml_host,S_surfxml_host_1,S_surfxml_host_2,E_surfxml_host,AL_surfxml_cluster,E_surfxml_cluster,AL_surfxml_peer,E_surfxml_peer,AL_surfxml_router,E_surfxml_router,AL_surfxml_link,S_surfxml_link,S_surfxml_link_1,S_surfxml_link_2,E_surfxml_link,AL_surfxml_route,S_surfxml_route,S_surfxml_route_1,S_surfxml_route_2,E_surfxml_route,AL_surfxml_ASroute,S_surfxml_ASroute,S_surfxml_ASroute_1,S_surfxml_ASroute_2,E_surfxml_ASroute,AL_surfxml_link_ctn,E_surfxml_link_ctn,AL_surfxml_bypassRoute,S_surfxml_bypassRoute,S_surfxml_bypassRoute_1,S_surfxml_bypassRoute_2,E_surfxml_bypassRoute,AL_surfxml_process,S_surfxml_process,S_surfxml_process_1,S_surfxml_process_2,E_surfxml_process,AL_surfxml_argument,E_surfxml_argument,AL_surfxml_config,S_surfxml_config,S_surfxml_config_1,S_surfxml_config_2,E_surfxml_config,AL_surfxml_prop,E_surfxml_prop,PROLOG,DOCTYPE,EPILOG>{
  "<!--" ENTER(INCOMMENT);
  "<?" ENTER(INPI);
 }
@@ -564,7 +581,7 @@ const char* *surfxml_statenames=NULL;
 
  /* SPACES: skipped uniformly */
 
-<ROOT_surfxml_platform,AL_surfxml_platform,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_platform_2,S_surfxml_platform_3,S_surfxml_platform_4,S_surfxml_platform_5,S_surfxml_platform_6,E_surfxml_platform,AL_surfxml_trace,AL_surfxml_random,S_surfxml_random,S_surfxml_random_1,S_surfxml_random_2,E_surfxml_random,AL_surfxml_trace_connect,E_surfxml_trace_connect,AL_surfxml_AS,S_surfxml_AS,S_surfxml_AS_1,S_surfxml_AS_2,S_surfxml_AS_3,S_surfxml_AS_4,S_surfxml_AS_5,S_surfxml_AS_6,S_surfxml_AS_7,S_surfxml_AS_8,S_surfxml_AS_9,S_surfxml_AS_10,S_surfxml_AS_11,S_surfxml_AS_12,S_surfxml_AS_13,E_surfxml_AS,AL_surfxml_host,S_surfxml_host,S_surfxml_host_1,S_surfxml_host_2,E_surfxml_host,AL_surfxml_cluster,E_surfxml_cluster,AL_surfxml_peer,E_surfxml_peer,AL_surfxml_router,E_surfxml_router,AL_surfxml_link,S_surfxml_link,S_surfxml_link_1,S_surfxml_link_2,E_surfxml_link,AL_surfxml_route,S_surfxml_route,S_surfxml_route_1,S_surfxml_route_2,E_surfxml_route,AL_surfxml_ASroute,S_surfxml_ASroute,S_surfxml_ASroute_1,S_surfxml_ASroute_2,E_surfxml_ASroute,AL_surfxml_link_ctn,E_surfxml_link_ctn,AL_surfxml_bypassRoute,S_surfxml_bypassRoute,S_surfxml_bypassRoute_1,S_surfxml_bypassRoute_2,E_surfxml_bypassRoute,AL_surfxml_process,S_surfxml_process,S_surfxml_process_1,S_surfxml_process_2,E_surfxml_process,AL_surfxml_argument,E_surfxml_argument,AL_surfxml_config,S_surfxml_config,S_surfxml_config_1,S_surfxml_config_2,E_surfxml_config,AL_surfxml_prop,E_surfxml_prop,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
+<ROOT_surfxml_platform,AL_surfxml_platform,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_platform_2,S_surfxml_platform_3,S_surfxml_platform_4,S_surfxml_platform_5,S_surfxml_platform_6,S_surfxml_platform_7,S_surfxml_platform_8,E_surfxml_platform,AL_surfxml_include,E_surfxml_include,AL_surfxml_trace,AL_surfxml_random,S_surfxml_random,S_surfxml_random_1,S_surfxml_random_2,E_surfxml_random,AL_surfxml_trace_connect,E_surfxml_trace_connect,AL_surfxml_AS,S_surfxml_AS,S_surfxml_AS_1,S_surfxml_AS_2,S_surfxml_AS_3,S_surfxml_AS_4,S_surfxml_AS_5,S_surfxml_AS_6,S_surfxml_AS_7,S_surfxml_AS_8,S_surfxml_AS_9,S_surfxml_AS_10,S_surfxml_AS_11,S_surfxml_AS_12,S_surfxml_AS_13,E_surfxml_AS,AL_surfxml_host,S_surfxml_host,S_surfxml_host_1,S_surfxml_host_2,E_surfxml_host,AL_surfxml_cluster,E_surfxml_cluster,AL_surfxml_peer,E_surfxml_peer,AL_surfxml_router,E_surfxml_router,AL_surfxml_link,S_surfxml_link,S_surfxml_link_1,S_surfxml_link_2,E_surfxml_link,AL_surfxml_route,S_surfxml_route,S_surfxml_route_1,S_surfxml_route_2,E_surfxml_route,AL_surfxml_ASroute,S_surfxml_ASroute,S_surfxml_ASroute_1,S_surfxml_ASroute_2,E_surfxml_ASroute,AL_surfxml_link_ctn,E_surfxml_link_ctn,AL_surfxml_bypassRoute,S_surfxml_bypassRoute,S_surfxml_bypassRoute_1,S_surfxml_bypassRoute_2,E_surfxml_bypassRoute,AL_surfxml_process,S_surfxml_process,S_surfxml_process_1,S_surfxml_process_2,E_surfxml_process,AL_surfxml_argument,E_surfxml_argument,AL_surfxml_config,S_surfxml_config,S_surfxml_config_1,S_surfxml_config_2,E_surfxml_config,AL_surfxml_prop,E_surfxml_prop,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
 
  /* PROLOG: determine root element and process it. */
 
@@ -574,7 +591,7 @@ const char* *surfxml_statenames=NULL;
 }
 
 <PROLOG,DOCTYPE>{
- "<!DOCTYPE"{S}"platform"{S}SYSTEM{S}("'simgrid.dtd'"|"\"simgrid.dtd\""){s}">" SET(ROOT_surfxml_platform);
+ "<!DOCTYPE"{S}"platform"{S}SYSTEM{S}("'http://simgrid.gforge.inria.fr/simgrid.dtd'"|"\"http://simgrid.gforge.inria.fr/simgrid.dtd\""){s}">" SET(ROOT_surfxml_platform);
  "<!"[^>-][^>]*">" FAIL("Bad declaration %s.",yytext);
  . 		FAIL("Unexpected character `%c' in prolog.", yytext[0]);
  <<EOF>> 	FAIL("EOF in prolog.");
@@ -584,7 +601,7 @@ const char* *surfxml_statenames=NULL;
 
  /* <!-- Small DTD for SURF based tools. -->  */
 
-<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,E_surfxml_link,S_surfxml_AS_6,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<platform"{s} FAIL("Starting tag <platform> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,E_surfxml_link,S_surfxml_AS_6,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<platform"{s} FAIL("Starting tag <platform> is not allowed here.");
 
 <ROOT_surfxml_platform>"<platform"{s} {
   AX_surfxml_platform_version = 1;
@@ -609,7 +626,7 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("EOF in attribute list of `platform' element.");
 }
 
-<S_surfxml_platform_2,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_platform_4,S_surfxml_platform_6,E_surfxml_platform>{
+<S_surfxml_platform_8,S_surfxml_platform_1,S_surfxml_platform_3,S_surfxml_platform,S_surfxml_platform_4,S_surfxml_platform_6,E_surfxml_platform>{
  "</platform"{s}">" {
   LEAVE;
   ETag_surfxml_platform();
@@ -623,9 +640,54 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</platform>' expected.");
 }
 
-<ROOT_surfxml_trace,S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_route_1,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_config_1,S_surfxml_route,E_surfxml_bypassRoute>"<trace"{s} FAIL("Starting tag <trace> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,ROOT_surfxml_include,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<include"{s} FAIL("Starting tag <include> is not allowed here.");
 
-<S_surfxml_AS_12,S_surfxml_AS_1,S_surfxml_AS_9,S_surfxml_AS_11,S_surfxml_AS_2,S_surfxml_AS_5,S_surfxml_AS_10,S_surfxml_AS_13,S_surfxml_AS,S_surfxml_AS_8,S_surfxml_platform_4,S_surfxml_AS_4,S_surfxml_AS_7,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_AS_6,S_surfxml_AS_3,S_surfxml_platform_3>"<trace"{s} {
+<S_surfxml_platform_5,S_surfxml_AS_2,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_platform_6,S_surfxml_platform_8,S_surfxml_AS_3,S_surfxml_platform_7,S_surfxml_AS,S_surfxml_platform_3,S_surfxml_platform_4>"<include"{s} {
+  AX_surfxml_include_file = 0;
+  ENTER(AL_surfxml_include); pushbuffer(0);
+  }
+
+<AL_surfxml_include>{
+ "file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_include_file);
+ "file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_include_file);
+
+ ">" {
+  if (!AX_surfxml_include_file) FAIL("Required attribute `file' not set for `include' element.");
+  LEAVE; STag_surfxml_include();surfxml_pcdata_ix = 0; ENTER(E_surfxml_include);
+ }
+ "/>" {
+  if (!AX_surfxml_include_file) FAIL("Required attribute `file' not set for `include' element.");
+  LEAVE; STag_surfxml_include(); surfxml_pcdata_ix = 0; ETag_surfxml_include(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_surfxml_AS_2: case S_surfxml_AS_3: case S_surfxml_AS: SET(S_surfxml_AS_3); break;
+   case S_surfxml_platform_5: SET(S_surfxml_platform_6); break;
+   case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_6: case S_surfxml_platform_8: case S_surfxml_platform_7: case S_surfxml_platform_3: case S_surfxml_platform_4: SET(S_surfxml_platform_8); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of include element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `include' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `include' element.");
+}
+
+<E_surfxml_include>{
+ "</include"{s}">" {
+  LEAVE;
+  ETag_surfxml_include();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_surfxml_AS_2: case S_surfxml_AS_3: case S_surfxml_AS: SET(S_surfxml_AS_3); break;
+   case S_surfxml_platform_5: SET(S_surfxml_platform_6); break;
+   case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_6: case S_surfxml_platform_8: case S_surfxml_platform_7: case S_surfxml_platform_3: case S_surfxml_platform_4: SET(S_surfxml_platform_8); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</include>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</include>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</include>' expected.");
+}
+
+<ROOT_surfxml_trace,S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_route_1,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_process_2,E_surfxml_ASroute,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_ASroute,S_surfxml_config_1,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<trace"{s} FAIL("Starting tag <trace> is not allowed here.");
+
+<S_surfxml_AS_12,S_surfxml_AS_1,S_surfxml_AS_9,S_surfxml_AS_11,S_surfxml_AS_2,S_surfxml_platform_6,S_surfxml_AS_5,S_surfxml_AS_10,S_surfxml_AS_13,S_surfxml_AS,S_surfxml_AS_8,S_surfxml_AS_4,S_surfxml_platform_5,S_surfxml_AS_7,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_AS_6,S_surfxml_AS_3,S_surfxml_platform_3>"<trace"{s} {
   AX_surfxml_trace_id = 0;
   AX_surfxml_trace_file = 0;
   AX_surfxml_trace_periodicity = 0;
@@ -656,7 +718,7 @@ const char* *surfxml_statenames=NULL;
    case S_surfxml_AS_11: case S_surfxml_AS_10: case S_surfxml_AS: SET(S_surfxml_AS_11); break;
    case S_surfxml_AS_2: SET(S_surfxml_AS_3); break;
    case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_4); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
    case S_surfxml_AS_12: case S_surfxml_AS_9: case S_surfxml_AS_13: SET(S_surfxml_AS_13); break;
   }
  }
@@ -677,7 +739,7 @@ const char* *surfxml_statenames=NULL;
    case S_surfxml_AS_11: case S_surfxml_AS_10: case S_surfxml_AS: SET(S_surfxml_AS_11); break;
    case S_surfxml_AS_2: SET(S_surfxml_AS_3); break;
    case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_4); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
    case S_surfxml_AS_12: case S_surfxml_AS_9: case S_surfxml_AS_13: SET(S_surfxml_AS_13); break;
   }
  }
@@ -685,14 +747,16 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</trace>' expected.");
 }
 
-<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,ROOT_surfxml_random,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<random"{s} FAIL("Starting tag <random> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,ROOT_surfxml_random,E_surfxml_route,S_surfxml_AS_9,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<random"{s} FAIL("Starting tag <random> is not allowed here.");
 
-<S_surfxml_config>"<random"{s} {
+<S_surfxml_platform_2,S_surfxml_platform,S_surfxml_platform_3>"<random"{s} {
   AX_surfxml_random_id = 0;
   AX_surfxml_random_min = 0;
   AX_surfxml_random_max = 0;
   AX_surfxml_random_mean = 0;
   AX_surfxml_random_std_deviation = 0;
+  AX_surfxml_random_seed = 5;
+  AX_surfxml_random_radical = 0;
   AX_surfxml_random_generator = A_surfxml_random_generator_DRAND48;
   ENTER(AL_surfxml_random); pushbuffer(0);
   }
@@ -713,10 +777,20 @@ const char* *surfxml_statenames=NULL;
  "std_deviation"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_random_std_deviation);
  "std_deviation"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_random_std_deviation);
 
+ "seed"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_random_seed);
+ "seed"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_random_seed);
+
+ "radical"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_random_radical);
+ "radical"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_random_radical);
+
  "generator"{Eq}"'DRAND48'" |
  "generator"{Eq}"\"DRAND48\"" A_surfxml_random_generator = A_surfxml_random_generator_DRAND48;
  "generator"{Eq}"'RAND'" |
  "generator"{Eq}"\"RAND\"" A_surfxml_random_generator = A_surfxml_random_generator_RAND;
+ "generator"{Eq}"'RNGSTREAM'" |
+ "generator"{Eq}"\"RNGSTREAM\"" A_surfxml_random_generator = A_surfxml_random_generator_RNGSTREAM;
+ "generator"{Eq}"'NONE'" |
+ "generator"{Eq}"\"NONE\"" A_surfxml_random_generator = A_surfxml_random_generator_NONE;
 
  ">" {
   if (!AX_surfxml_random_id) FAIL("Required attribute `id' not set for `random' element.");
@@ -734,7 +808,7 @@ const char* *surfxml_statenames=NULL;
   if (!AX_surfxml_random_std_deviation) FAIL("Required attribute `std_deviation' not set for `random' element.");
   LEAVE; STag_surfxml_random(); surfxml_pcdata_ix = 0; ETag_surfxml_random(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_config: SET(E_surfxml_config); break;
+   case S_surfxml_platform_2: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of random element.", yytext[0]);
@@ -748,7 +822,7 @@ const char* *surfxml_statenames=NULL;
   ETag_surfxml_random();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_config: SET(E_surfxml_config); break;
+   case S_surfxml_platform_2: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</random>' expected.",yytext);
@@ -756,9 +830,9 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</random>' expected.");
 }
 
-<S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_route_1,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,ROOT_surfxml_trace_connect,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_config_1,S_surfxml_route,E_surfxml_bypassRoute>"<trace_connect"{s} FAIL("Starting tag <trace_connect> is not allowed here.");
+<S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_route_1,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_process_2,E_surfxml_ASroute,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,ROOT_surfxml_trace_connect,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_ASroute,S_surfxml_config_1,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<trace_connect"{s} FAIL("Starting tag <trace_connect> is not allowed here.");
 
-<S_surfxml_AS_12,S_surfxml_AS_1,S_surfxml_AS_9,S_surfxml_AS_11,S_surfxml_AS_2,S_surfxml_AS_5,S_surfxml_AS_10,S_surfxml_AS_13,S_surfxml_AS,S_surfxml_AS_8,S_surfxml_platform_4,S_surfxml_AS_4,S_surfxml_AS_7,S_surfxml_platform_1,S_surfxml_AS_6,S_surfxml_platform,S_surfxml_AS_3,S_surfxml_platform_3>"<trace_connect"{s} {
+<S_surfxml_AS_12,S_surfxml_AS_1,S_surfxml_AS_9,S_surfxml_AS_11,S_surfxml_AS_2,S_surfxml_platform_6,S_surfxml_AS_5,S_surfxml_AS_10,S_surfxml_AS_13,S_surfxml_AS,S_surfxml_AS_8,S_surfxml_AS_4,S_surfxml_platform_5,S_surfxml_AS_7,S_surfxml_platform_1,S_surfxml_AS_6,S_surfxml_platform,S_surfxml_AS_3,S_surfxml_platform_3>"<trace_connect"{s} {
   AX_surfxml_trace_connect_kind = A_surfxml_trace_connect_kind_HOST_AVAIL;
   AX_surfxml_trace_connect_trace = 0;
   AX_surfxml_trace_connect_element = 0;
@@ -797,7 +871,7 @@ const char* *surfxml_statenames=NULL;
    case S_surfxml_AS_11: case S_surfxml_AS_10: case S_surfxml_AS: SET(S_surfxml_AS_11); break;
    case S_surfxml_AS_2: SET(S_surfxml_AS_3); break;
    case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_4); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
    case S_surfxml_AS_12: case S_surfxml_AS_9: case S_surfxml_AS_13: SET(S_surfxml_AS_13); break;
   }
  }
@@ -816,7 +890,7 @@ const char* *surfxml_statenames=NULL;
    case S_surfxml_AS_11: case S_surfxml_AS_10: case S_surfxml_AS: SET(S_surfxml_AS_11); break;
    case S_surfxml_AS_2: SET(S_surfxml_AS_3); break;
    case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_4); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
    case S_surfxml_AS_12: case S_surfxml_AS_9: case S_surfxml_AS_13: SET(S_surfxml_AS_13); break;
   }
  }
@@ -825,9 +899,9 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</trace_connect>' expected.");
 }
 
-<S_surfxml_AS_10,S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,ROOT_surfxml_AS,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<AS"{s} FAIL("Starting tag <AS> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,ROOT_surfxml_AS,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<AS"{s} FAIL("Starting tag <AS> is not allowed here.");
 
-<S_surfxml_AS_2,S_surfxml_AS,S_surfxml_platform_4,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_AS_3,S_surfxml_platform_3>"<AS"{s} {
+<S_surfxml_AS_2,S_surfxml_platform_6,S_surfxml_AS,S_surfxml_platform_5,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_AS_3,S_surfxml_platform_3>"<AS"{s} {
   AX_surfxml_AS_id = 0;
   AX_surfxml_AS_routing = 0;
   ENTER(AL_surfxml_AS); pushbuffer(0);
@@ -851,7 +925,7 @@ const char* *surfxml_statenames=NULL;
   LEAVE; STag_surfxml_AS(); surfxml_pcdata_ix = 0; ETag_surfxml_AS(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_2: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_3); break;
-   case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_4); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of AS element.", yytext[0]);
@@ -866,7 +940,7 @@ const char* *surfxml_statenames=NULL;
   popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_2: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_3); break;
-   case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_4); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</AS>' expected.",yytext);
@@ -874,13 +948,13 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</AS>' expected.");
 }
 
-<S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,ROOT_surfxml_host,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<host"{s} FAIL("Starting tag <host> is not allowed here.");
+<S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,ROOT_surfxml_host,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<host"{s} FAIL("Starting tag <host> is not allowed here.");
 
 <S_surfxml_AS_11,S_surfxml_AS_10,S_surfxml_AS>"<host"{s} {
   AX_surfxml_host_id = 0;
   AX_surfxml_host_power = 0;
-  AX_surfxml_host_core = 5;
-  AX_surfxml_host_availability = 7;
+  AX_surfxml_host_core = 16;
+  AX_surfxml_host_availability = 18;
   AX_surfxml_host_availability_file = 0;
   AX_surfxml_host_state = A_surfxml_host_state_ON;
   AX_surfxml_host_state_file = 0;
@@ -947,21 +1021,23 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</host>' expected.");
 }
 
-<S_surfxml_AS_10,S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,ROOT_surfxml_cluster,S_surfxml_random_1,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<cluster"{s} FAIL("Starting tag <cluster> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,ROOT_surfxml_cluster,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<cluster"{s} FAIL("Starting tag <cluster> is not allowed here.");
 
-<S_surfxml_AS_2,S_surfxml_AS,S_surfxml_platform_4,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_AS_3,S_surfxml_platform_3>"<cluster"{s} {
+<S_surfxml_AS_2,S_surfxml_platform_6,S_surfxml_AS,S_surfxml_platform_5,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_AS_3,S_surfxml_platform_3>"<cluster"{s} {
   AX_surfxml_cluster_id = 0;
   AX_surfxml_cluster_prefix = 0;
   AX_surfxml_cluster_suffix = 0;
   AX_surfxml_cluster_radical = 0;
   AX_surfxml_cluster_power = 0;
-  AX_surfxml_cluster_core = 11;
+  AX_surfxml_cluster_core = 22;
   AX_surfxml_cluster_bw = 0;
   AX_surfxml_cluster_lat = 0;
   AX_surfxml_cluster_sharing_policy = A_surfxml_cluster_sharing_policy_SHARED;
   AX_surfxml_cluster_bb_bw = 0;
   AX_surfxml_cluster_bb_lat = 0;
   AX_surfxml_cluster_bb_sharing_policy = A_surfxml_cluster_bb_sharing_policy_SHARED;
+  AX_surfxml_cluster_availability_file = 0;
+  AX_surfxml_cluster_state_file = 0;
   ENTER(AL_surfxml_cluster); pushbuffer(0);
   }
 
@@ -1008,6 +1084,12 @@ const char* *surfxml_statenames=NULL;
  "bb_sharing_policy"{Eq}"'FATPIPE'" |
  "bb_sharing_policy"{Eq}"\"FATPIPE\"" A_surfxml_cluster_bb_sharing_policy = A_surfxml_cluster_bb_sharing_policy_FATPIPE;
 
+ "availability_file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_availability_file);
+ "availability_file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_availability_file);
+
+ "state_file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_state_file);
+ "state_file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_state_file);
+
  ">" {
   if (!AX_surfxml_cluster_id) FAIL("Required attribute `id' not set for `cluster' element.");
   if (!AX_surfxml_cluster_prefix) FAIL("Required attribute `prefix' not set for `cluster' element.");
@@ -1033,7 +1115,7 @@ const char* *surfxml_statenames=NULL;
   LEAVE; STag_surfxml_cluster(); surfxml_pcdata_ix = 0; ETag_surfxml_cluster(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_2: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_3); break;
-   case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_4); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of cluster element.", yytext[0]);
@@ -1048,7 +1130,7 @@ const char* *surfxml_statenames=NULL;
   popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_2: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_3); break;
-   case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_4); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</cluster>' expected.",yytext);
@@ -1056,16 +1138,17 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</cluster>' expected.");
 }
 
-<S_surfxml_AS_10,S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,ROOT_surfxml_peer,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<peer"{s} FAIL("Starting tag <peer> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_AS_5,ROOT_surfxml_peer,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<peer"{s} FAIL("Starting tag <peer> is not allowed here.");
 
-<S_surfxml_AS_2,S_surfxml_AS,S_surfxml_platform_4,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_AS_3,S_surfxml_platform_3>"<peer"{s} {
+<S_surfxml_AS_2,S_surfxml_platform_6,S_surfxml_AS,S_surfxml_platform_5,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_AS_3,S_surfxml_platform_3>"<peer"{s} {
   AX_surfxml_peer_id = 0;
   AX_surfxml_peer_power = 0;
   AX_surfxml_peer_bw_in = 0;
   AX_surfxml_peer_bw_out = 0;
   AX_surfxml_peer_lat = 0;
   AX_surfxml_peer_coordinates = 0;
-  AX_surfxml_peer_sharing_policy = A_surfxml_peer_sharing_policy_FULLDUPLEX;
+  AX_surfxml_peer_availability_file = 0;
+  AX_surfxml_peer_state_file = 0;
   ENTER(AL_surfxml_peer); pushbuffer(0);
   }
 
@@ -1088,10 +1171,11 @@ const char* *surfxml_statenames=NULL;
  "coordinates"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_coordinates);
  "coordinates"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_coordinates);
 
- "sharing_policy"{Eq}"'SHARED'" |
- "sharing_policy"{Eq}"\"SHARED\"" A_surfxml_peer_sharing_policy = A_surfxml_peer_sharing_policy_SHARED;
- "sharing_policy"{Eq}"'FULLDUPLEX'" |
- "sharing_policy"{Eq}"\"FULLDUPLEX\"" A_surfxml_peer_sharing_policy = A_surfxml_peer_sharing_policy_FULLDUPLEX;
+ "availability_file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_availability_file);
+ "availability_file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_availability_file);
+
+ "state_file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_state_file);
+ "state_file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_state_file);
 
  ">" {
   if (!AX_surfxml_peer_id) FAIL("Required attribute `id' not set for `peer' element.");
@@ -1110,7 +1194,7 @@ const char* *surfxml_statenames=NULL;
   LEAVE; STag_surfxml_peer(); surfxml_pcdata_ix = 0; ETag_surfxml_peer(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_2: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_3); break;
-   case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_4); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of peer element.", yytext[0]);
@@ -1125,7 +1209,7 @@ const char* *surfxml_statenames=NULL;
   popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_2: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_3); break;
-   case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_4); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</peer>' expected.",yytext);
@@ -1133,7 +1217,7 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</peer>' expected.");
 }
 
-<S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,ROOT_surfxml_router,E_surfxml_bypassRoute>"<router"{s} FAIL("Starting tag <router> is not allowed here.");
+<S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,ROOT_surfxml_router,S_surfxml_platform_7,E_surfxml_bypassRoute>"<router"{s} FAIL("Starting tag <router> is not allowed here.");
 
 <S_surfxml_AS_11,S_surfxml_AS_10,S_surfxml_AS>"<router"{s} {
   AX_surfxml_router_id = 0;
@@ -1178,13 +1262,13 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</router>' expected.");
 }
 
-<S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,ROOT_surfxml_link,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<link"{s} FAIL("Starting tag <link> is not allowed here.");
+<S_surfxml_random,S_surfxml_ASroute_1,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,ROOT_surfxml_link,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<link"{s} FAIL("Starting tag <link> is not allowed here.");
 
 <S_surfxml_AS_11,S_surfxml_AS_2,S_surfxml_AS_10,S_surfxml_AS,S_surfxml_AS_3>"<link"{s} {
   AX_surfxml_link_id = 0;
   AX_surfxml_link_bandwidth = 0;
   AX_surfxml_link_bandwidth_file = 0;
-  AX_surfxml_link_latency = 13;
+  AX_surfxml_link_latency = 24;
   AX_surfxml_link_latency_file = 0;
   AX_surfxml_link_state = A_surfxml_link_state_ON;
   AX_surfxml_link_state_file = 0;
@@ -1257,7 +1341,7 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</link>' expected.");
 }
 
-<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_link_1,ROOT_surfxml_route,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<route"{s} FAIL("Starting tag <route> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_link_1,ROOT_surfxml_route,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<route"{s} FAIL("Starting tag <route> is not allowed here.");
 
 <S_surfxml_AS_12,S_surfxml_AS_9,S_surfxml_AS_11,S_surfxml_AS_13,S_surfxml_AS>"<route"{s} {
   AX_surfxml_route_src = 0;
@@ -1310,7 +1394,7 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</route>' expected.");
 }
 
-<S_surfxml_AS_10,ROOT_surfxml_ASroute,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_4,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<ASroute"{s} FAIL("Starting tag <ASroute> is not allowed here.");
+<S_surfxml_AS_10,ROOT_surfxml_ASroute,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<ASroute"{s} FAIL("Starting tag <ASroute> is not allowed here.");
 
 <S_surfxml_AS_1,S_surfxml_AS_5,S_surfxml_AS,S_surfxml_AS_6,S_surfxml_AS_3>"<ASroute"{s} {
   AX_surfxml_ASroute_src = 0;
@@ -1375,7 +1459,7 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</ASroute>' expected.");
 }
 
-<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_link,E_surfxml_host,S_surfxml_config,ROOT_surfxml_link_ctn,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,E_surfxml_config,S_surfxml_host_1,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,E_surfxml_bypassRoute>"<link_ctn"{s} FAIL("Starting tag <link_ctn> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_link,E_surfxml_host,S_surfxml_config,ROOT_surfxml_link_ctn,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,E_surfxml_config,S_surfxml_host_1,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_platform_7,E_surfxml_bypassRoute>"<link_ctn"{s} FAIL("Starting tag <link_ctn> is not allowed here.");
 
 <S_surfxml_route_1,S_surfxml_bypassRoute,S_surfxml_route,S_surfxml_bypassRoute_2,S_surfxml_bypassRoute_1,S_surfxml_route_2,S_surfxml_ASroute,S_surfxml_ASroute_1,S_surfxml_ASroute_2>"<link_ctn"{s} {
   AX_surfxml_link_ctn_id = 0;
@@ -1428,7 +1512,7 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</link_ctn>' expected.");
 }
 
-<S_surfxml_AS_10,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,ROOT_surfxml_bypassRoute,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_4,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_route,E_surfxml_bypassRoute>"<bypassRoute"{s} FAIL("Starting tag <bypassRoute> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,ROOT_surfxml_bypassRoute,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<bypassRoute"{s} FAIL("Starting tag <bypassRoute> is not allowed here.");
 
 <S_surfxml_AS_1,S_surfxml_AS,S_surfxml_AS_8,S_surfxml_AS_4,S_surfxml_AS_7,S_surfxml_AS_6,S_surfxml_AS_3>"<bypassRoute"{s} {
   AX_surfxml_bypassRoute_src = 0;
@@ -1487,13 +1571,13 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</bypassRoute>' expected.");
 }
 
-<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_process_2,E_surfxml_ASroute,ROOT_surfxml_process,S_surfxml_AS_6,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_AS_1,S_surfxml_host,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<process"{s} FAIL("Starting tag <process> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_process_2,E_surfxml_ASroute,ROOT_surfxml_process,S_surfxml_AS_6,E_surfxml_link,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<process"{s} FAIL("Starting tag <process> is not allowed here.");
 
-<S_surfxml_platform_6,S_surfxml_platform_4,S_surfxml_platform_5,S_surfxml_platform_2,S_surfxml_platform_1,S_surfxml_platform>"<process"{s} {
+<S_surfxml_platform_6,S_surfxml_platform_4,S_surfxml_platform_1,S_surfxml_platform,S_surfxml_platform_8,S_surfxml_platform_7,S_surfxml_platform_3>"<process"{s} {
   AX_surfxml_process_host = 0;
   AX_surfxml_process_function = 0;
-  AX_surfxml_process_start_time = 17;
-  AX_surfxml_process_kill_time = 22;
+  AX_surfxml_process_start_time = 28;
+  AX_surfxml_process_kill_time = 33;
   ENTER(AL_surfxml_process); pushbuffer(0);
   }
 
@@ -1520,7 +1604,7 @@ const char* *surfxml_statenames=NULL;
   if (!AX_surfxml_process_function) FAIL("Required attribute `function' not set for `process' element.");
   LEAVE; STag_surfxml_process(); surfxml_pcdata_ix = 0; ETag_surfxml_process(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_platform_6: case S_surfxml_platform_4: case S_surfxml_platform_5: case S_surfxml_platform_2: case S_surfxml_platform_1: case S_surfxml_platform: SET(S_surfxml_platform_6); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_8: case S_surfxml_platform_7: case S_surfxml_platform_3: SET(S_surfxml_platform_8); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of process element.", yytext[0]);
@@ -1534,7 +1618,7 @@ const char* *surfxml_statenames=NULL;
   ETag_surfxml_process();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_platform_6: case S_surfxml_platform_4: case S_surfxml_platform_5: case S_surfxml_platform_2: case S_surfxml_platform_1: case S_surfxml_platform: SET(S_surfxml_platform_6); break;
+   case S_surfxml_platform_6: case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_8: case S_surfxml_platform_7: case S_surfxml_platform_3: SET(S_surfxml_platform_8); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</process>' expected.",yytext);
@@ -1542,7 +1626,7 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</process>' expected.");
 }
 
-<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,ROOT_surfxml_argument,E_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<argument"{s} FAIL("Starting tag <argument> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,ROOT_surfxml_argument,E_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<argument"{s} FAIL("Starting tag <argument> is not allowed here.");
 
 <S_surfxml_process_1,S_surfxml_process,S_surfxml_process_2>"<argument"{s} {
   AX_surfxml_argument_value = 0;
@@ -1583,9 +1667,9 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</argument>' expected.");
 }
 
-<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,ROOT_surfxml_config,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_platform_2,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<config"{s} FAIL("Starting tag <config> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_random,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,S_surfxml_process,S_surfxml_link_2,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,S_surfxml_AS_9,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_link_1,S_surfxml_AS,S_surfxml_bypassRoute,S_surfxml_link,E_surfxml_host,S_surfxml_config,S_surfxml_ASroute_2,S_surfxml_random_2,S_surfxml_platform_6,S_surfxml_process_2,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_host_1,ROOT_surfxml_config,S_surfxml_route_2,E_surfxml_platform,S_surfxml_config_2,S_surfxml_random_1,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_host,S_surfxml_process_1,S_surfxml_host_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_config_1,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<config"{s} FAIL("Starting tag <config> is not allowed here.");
 
-<S_surfxml_platform>"<config"{s} {
+<S_surfxml_platform_2,S_surfxml_platform,S_surfxml_platform_3>"<config"{s} {
   AX_surfxml_config_id = 0;
   ENTER(AL_surfxml_config); pushbuffer(0);
   }
@@ -1600,7 +1684,7 @@ const char* *surfxml_statenames=NULL;
  "/>" {
   LEAVE; STag_surfxml_config(); surfxml_pcdata_ix = 0; ETag_surfxml_config(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_platform: SET(S_surfxml_platform_1); break;
+   case S_surfxml_platform_2: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of config element.", yytext[0]);
@@ -1614,7 +1698,7 @@ const char* *surfxml_statenames=NULL;
   ETag_surfxml_config();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_platform: SET(S_surfxml_platform_1); break;
+   case S_surfxml_platform_2: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</config>' expected.",yytext);
@@ -1625,7 +1709,7 @@ const char* *surfxml_statenames=NULL;
  /* <!-- <!ATTLIST prop key CDATA #REQUIRED> -->
   * <!-- <!ATTLIST prop key CDATA #REQUIRED> -->  */
 
-<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,ROOT_surfxml_prop,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_AS,S_surfxml_bypassRoute,E_surfxml_host,S_surfxml_ASroute_2,S_surfxml_platform_6,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_route_2,E_surfxml_platform,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_platform_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_AS_4,S_surfxml_route,E_surfxml_bypassRoute>"<prop"{s} FAIL("Starting tag <prop> is not allowed here.");
+<S_surfxml_AS_10,S_surfxml_AS_3,S_surfxml_ASroute_1,S_surfxml_AS_2,E_surfxml_AS,S_surfxml_AS_12,E_surfxml_process,E_surfxml_random,S_surfxml_AS_8,S_surfxml_bypassRoute_2,E_surfxml_route,ROOT_surfxml_prop,S_surfxml_AS_9,S_surfxml_platform_3,S_surfxml_route_1,S_surfxml_AS_11,S_surfxml_AS,S_surfxml_bypassRoute,E_surfxml_host,S_surfxml_ASroute_2,S_surfxml_platform_6,E_surfxml_ASroute,S_surfxml_AS_6,E_surfxml_link,S_surfxml_platform,S_surfxml_platform_1,S_surfxml_bypassRoute_1,E_surfxml_config,S_surfxml_route_2,E_surfxml_platform,S_surfxml_platform_8,S_surfxml_platform_4,S_surfxml_AS_1,S_surfxml_platform_2,S_surfxml_AS_7,S_surfxml_AS_13,S_surfxml_ASroute,S_surfxml_platform_5,S_surfxml_AS_5,S_surfxml_AS_4,S_surfxml_route,S_surfxml_platform_7,E_surfxml_bypassRoute>"<prop"{s} FAIL("Starting tag <prop> is not allowed here.");
 
 <S_surfxml_config_1,S_surfxml_config,S_surfxml_random,S_surfxml_host_1,S_surfxml_host_2,S_surfxml_host,S_surfxml_link_1,S_surfxml_link_2,S_surfxml_config_2,S_surfxml_random_2,S_surfxml_link,S_surfxml_random_1,S_surfxml_process_1,S_surfxml_process,S_surfxml_process_2>"<prop"{s} {
   AX_surfxml_prop_id = 0;

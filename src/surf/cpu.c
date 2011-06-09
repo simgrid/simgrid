@@ -201,7 +201,7 @@ static void cpu_update_actions_state(double now, double delta)
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
 #ifdef HAVE_TRACING
-    if (TRACE_is_active()) {
+    if (TRACE_is_enabled()) {
       cpu_Cas01_t x =
         lmm_constraint_id(lmm_get_cnst_from_var
                           (cpu_maxmin_system, action->variable, 0));

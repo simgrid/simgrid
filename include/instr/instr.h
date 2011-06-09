@@ -18,104 +18,85 @@
 
 XBT_PUBLIC(void) TRACE_category(const char *category);
 XBT_PUBLIC(void) TRACE_category_with_color (const char *category, const char *color);
-XBT_PUBLIC(void) TRACE_msg_set_task_category(m_task_t task,
-                                             const char *category);
-void TRACE_msg_set_process_category(m_process_t process, const char *category, const char *color);
+XBT_PUBLIC(void) TRACE_msg_set_task_category(m_task_t task, const char *category);
+XBT_PUBLIC(void) TRACE_msg_set_process_category(m_process_t process, const char *category, const char *color);
+XBT_PUBLIC(void) TRACE_smpi_set_category(const char *category);
+XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task, const char *category);
+
+XBT_PUBLIC(void) TRACE_declare_mark(const char *mark_type);
+XBT_PUBLIC(void) TRACE_mark(const char *mark_type, const char *mark_value);
 
 XBT_PUBLIC(const char *) TRACE_node_name (xbt_node_t node);
 XBT_PUBLIC(xbt_graph_t) TRACE_platform_graph (void);
 XBT_PUBLIC(void) TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
-XBT_PUBLIC(void) TRACE_declare_mark(const char *mark_type);
-XBT_PUBLIC(void) TRACE_mark(const char *mark_type, const char *mark_value);
-XBT_PUBLIC(void) TRACE_smpi_set_category(const char *category);
-XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task,
-                                            const char *category);
 
 /*
  * User-variables related functions
  */
-typedef enum {
-  INSTR_US_DECLARE,
-  INSTR_US_SET,
-  INSTR_US_ADD,
-  INSTR_US_SUB,
-} InstrUserVariable;
+/* for host variables */
+XBT_PUBLIC(void) TRACE_host_variable_declare (const char *var);
+XBT_PUBLIC(void) TRACE_host_variable_set (const char *host, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_host_variable_add (const char *host, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_host_variable_sub (const char *host, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_host_variable_set_with_time (double time, const char *host, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_host_variable_add_with_time (double time, const char *host, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_host_variable_sub_with_time (double time, const char *host, const char *variable, double value);
 
-XBT_PUBLIC(void) TRACE_user_variable(double time,
-                              const char *resource,
-                              const char *variable,
-                              const char *father_type,
-                              double value,
-                              InstrUserVariable what);
+/* for link variables */
+XBT_PUBLIC(void) TRACE_link_variable_declare (const char *var);
+XBT_PUBLIC(void) TRACE_link_variable_set (const char *link, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_variable_add (const char *link, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_variable_sub (const char *link, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_variable_set_with_time (double time, const char *link, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_variable_add_with_time (double time, const char *link, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_variable_sub_with_time (double time, const char *link, const char *variable, double value);
 
-#define TRACE_host_variable_declare(var) \
-	TRACE_user_variable(0,NULL,var,"HOST",0,INSTR_US_DECLARE);
-
-#define TRACE_host_variable_set_with_time(time,host,var,value) \
-	TRACE_user_variable(time,host,var,"HOST",value,INSTR_US_SET);
-
-#define TRACE_host_variable_add_with_time(time,host,var,value) \
-	TRACE_user_variable(time,host,var,"HOST",value,INSTR_US_ADD);
-
-#define TRACE_host_variable_sub_with_time(time,host,var,value) \
-	TRACE_user_variable(time,host,var,"HOST",value,INSTR_US_SUB);
-
-#define TRACE_host_variable_set(host,var,value) \
-	TRACE_user_variable(MSG_get_clock(),host,var,"HOST",value,INSTR_US_SET);
-
-#define TRACE_host_variable_add(host,var,value) \
-	TRACE_user_variable(MSG_get_clock(),host,var,"HOST",value,INSTR_US_ADD);
-
-#define TRACE_host_variable_sub(host,var,value) \
-	TRACE_user_variable(MSG_get_clock(),host,var,"HOST",value,INSTR_US_SUB);
-
-#define TRACE_link_variable_declare(var) \
-	TRACE_user_variable(0,NULL,var,"LINK",0,INSTR_US_DECLARE);
-
-#define TRACE_link_variable_set_with_time(time,link,var,value) \
-	TRACE_user_variable(time,link,var,"LINK",value,INSTR_US_SET);
-
-#define TRACE_link_variable_add_with_time(time,link,var,value) \
-	TRACE_user_variable(time,link,var,"LINK",value,INSTR_US_ADD);
-
-#define TRACE_link_variable_sub_with_time(time,link,var,value) \
-	TRACE_user_variable(time,link,var,"LINK",value,INSTR_US_SUB);
-
-#define TRACE_link_variable_set(link,var,value) \
-	TRACE_user_variable(MSG_get_clock(),link,var,"LINK",value,INSTR_US_SET);
-
-#define TRACE_link_variable_add(link,var,value) \
-	TRACE_user_variable(MSG_get_clock(),link,var,"LINK",value,INSTR_US_ADD);
-
-#define TRACE_link_variable_sub(link,var,value) \
-	TRACE_user_variable(MSG_get_clock(),link,var,"LINK",value,INSTR_US_SUB);
+/* for link variables, but with src and dst used for get_route */
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_set (const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_add (const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub (const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_set_with_time (double time, const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_add_with_time (double time, const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable, double value);
 
 #else                           /* HAVE_TRACING */
 
-#define TRACE_category(cat)
-#define TRACE_category_with_color(cat,color)
-#define TRACE_msg_set_task_category(task,cat)
-#define TRACE_msg_set_process_category(proc,cat,color)
-#define TRACE_set_mask(mask)
+#define TRACE_category(category)
+#define TRACE_category_with_color(category,color)
+#define TRACE_msg_set_task_category(task,category)
+#define TRACE_msg_set_process_category(process,category,color)
+#define TRACE_smpi_set_category(category)
+#define TRACE_sd_set_task_category(task,category)
+
+#define TRACE_declare_mark(mark_type)
+#define TRACE_mark(mark_type,mark_value)
+
+#define TRACE_node_name(node)
+#define TRACE_platform_graph(void)
+#define TRACE_platform_graph_export_graphviz(g,filename)
 
 #define TRACE_host_variable_declare(var)
-#define TRACE_host_variable_set_with_time(time,host,var,value)
-#define TRACE_host_variable_add_with_time(time,host,var,value)
-#define TRACE_host_variable_sub_with_time(time,host,var,value)
 #define TRACE_host_variable_set(host,var,value)
 #define TRACE_host_variable_add(host,var,value)
 #define TRACE_host_variable_sub(host,var,value)
+#define TRACE_host_variable_set_with_time(time,host,var,value)
+#define TRACE_host_variable_add_with_time(time,host,var,value)
+#define TRACE_host_variable_sub_with_time(time,host,var,value)
+
 #define TRACE_link_variable_declare(var)
-#define TRACE_link_variable_set_with_time(time,link,var,value)
-#define TRACE_link_variable_add_with_time(time,link,var,value)
-#define TRACE_link_variable_sub_with_time(time,link,var,value)
 #define TRACE_link_variable_set(link,var,value)
 #define TRACE_link_variable_add(link,var,value)
 #define TRACE_link_variable_sub(link,var,value)
-#define TRACE_declare_mark(type)
-#define TRACE_mark(type,value)
-#define TRACE_smpi_set_category(cat)
-#define TRACE_sd_set_task_category(task,cat)
+#define TRACE_link_variable_set_with_time(time,link,var,value)
+#define TRACE_link_variable_add_with_time(time,link,var,value)
+#define TRACE_link_variable_sub_with_time(time,link,var,value)
+
+#define TRACE_link_srcdst_variable_set(src,dst,var,value)
+#define TRACE_link_srcdst_variable_add(src,dst,var,value)
+#define TRACE_link_srcdst_variable_sub(src,dst,var,value)
+#define TRACE_link_srcdst_variable_set_with_time(time,src,dst,var,value)
+#define TRACE_link_srcdst_variable_add_with_time(time,src,dst,var,value)
+#define TRACE_link_srcdst_variable_sub_with_time(time,src,dst,var,value)
 
 #endif                          /* HAVE_TRACING */
 

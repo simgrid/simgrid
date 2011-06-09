@@ -84,10 +84,6 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
                                      double value, double now,
                                      double delta)
 {
-  if (!TRACE_is_active())
-    return;
-  if (!value)
-    return;
   //only trace link utilization if link is known by tracing mechanism
   if (!knownContainerWithName(resource))
     return;
@@ -126,8 +122,6 @@ void TRACE_surf_host_set_utilization(const char *resource,
                                      double value, double now,
                                      double delta)
 {
-  if (!TRACE_is_active())
-    return;
   //only trace host utilization if host is known by tracing mechanism
   if (!knownContainerWithName(resource))
     return;

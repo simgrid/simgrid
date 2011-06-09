@@ -14,7 +14,8 @@ int client(int argc, char *argv[]);
 
 int server(int argc, char *argv[])
 {
-  m_task_t task1, task2;
+  m_task_t task1 = NULL;
+  m_task_t task2 = NULL;
   long val1, val2;
 
   MSG_task_receive(&task1, "mymailbox");

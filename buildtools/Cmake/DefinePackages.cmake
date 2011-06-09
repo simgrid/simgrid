@@ -319,8 +319,6 @@ set(TRACING_SRC
 	src/instr/instr_paje_trace.c
 	src/instr/instr_msg_task.c
 	src/instr/instr_msg_process.c
-	src/instr/instr_msg_volume.c
-	src/instr/instr_smx.c
 	src/instr/instr_surf.c
 	src/instr/instr_smpi.c
 	src/instr/instr_simdag.c

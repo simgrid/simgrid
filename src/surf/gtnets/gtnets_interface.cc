@@ -124,7 +124,26 @@ double gtnets_get_flow_rx(void *metadata){
 
 // run for a given time (double)
 int gtnets_run(Time_t deltat){
+  ofstream file;
+  streambuf* sbuf;
+  double value;
+
+  if (!XBT_LOG_ISENABLED(surf_network_gtnets_interface, xbt_log_priority_debug)) {
+          file.open ("/dev/null");
+          sbuf = cout.rdbuf();
+          cout.rdbuf(file.rdbuf());
+          XBT_DEBUG("Enable GTNetS library quite mode");
+  }else {
+          XBT_DEBUG("Disable GTNetS library quite mode");
+  }
+
   gtnets_sim->run(deltat);
+
+
+  if (!XBT_LOG_ISENABLED(surf_network_gtnets_interface, xbt_log_priority_debug)) {
+          cout.rdbuf(sbuf);
+          file.close();
+  }
   return 0;
 }
 

@@ -22,7 +22,7 @@ void TRACE_sd_task_destroy(SD_task_t task)
 
 void TRACE_sd_set_task_category(SD_task_t task, const char *category)
 {
-  if (!TRACE_is_active())
+  if (!TRACE_is_enabled())
     return;
   task->category = xbt_strdup (category);
 }
