@@ -25,20 +25,6 @@
    <route src="host3" dst="host1" symmetrical="NO">
      <link_ctn id="link2"/>
    </route>
-      
-   <route src="host2" dst="host3" symmetrical="NO">
-     <link_ctn id="link3"/>
-   </route>
-   <route src="host3" dst="host2" symmetrical="NO">
-     <link_ctn id="link3"/>
-   </route>
-         
-   <route src="host3" dst="host4" symmetrical="NO">
-     <link_ctn id="link4"/>
-   </route>
-   <route src="host4" dst="host3" symmetrical="NO">
-     <link_ctn id="link4"/>
-   </route>
    
  </AS>
  </platform>

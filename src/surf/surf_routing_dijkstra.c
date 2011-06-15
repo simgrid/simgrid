@@ -180,10 +180,43 @@ static void add_loopback_dijkstra(routing_component_dijkstra_t rc)
   }
 }
 
-/* Business methods */
+static route_extended_t dijkstra_get_route(routing_component_t rc,
+        const char *src,
+        const char *dst);
+
 static xbt_dynar_t dijkstra_get_onelink_routes(routing_component_t rc)
 {
-  xbt_die("\"dijkstra_get_onelink_routes\" function not implemented yet");
+ // xbt_die("\"dijkstra_get_onelink_routes\" function not implemented yet");
+	  xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
+
+	  routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
+	  //size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
+	  xbt_dict_cursor_t c1 = NULL, c2 = NULL;
+	  char *k1, *d1, *k2, *d2;
+	  xbt_dict_foreach(routing->generic_routing.to_index, c1, k1, d1) {
+	    xbt_dict_foreach(routing->generic_routing.to_index, c2, k2, d2) {
+	      route_extended_t route = dijkstra_get_route(rc, k1, k2);
+	      if (route) {
+	        if (xbt_dynar_length(route->generic_route.link_list) == 1) {
+	          void *link =
+	              *(void **) xbt_dynar_get_ptr(route->generic_route.link_list,
+	                                           0);
+	          onelink_t onelink = xbt_new0(s_onelink_t, 1);
+	          onelink->link_ptr = link;
+	          if (routing->generic_routing.hierarchy == SURF_ROUTING_BASE) {
+	            onelink->src = xbt_strdup(k1);
+	            onelink->dst = xbt_strdup(k2);
+	          } else if (routing->generic_routing.hierarchy ==
+	                     SURF_ROUTING_RECURSIVE) {
+	            onelink->src = xbt_strdup(route->src_gateway);
+	            onelink->dst = xbt_strdup(route->dst_gateway);
+	          }
+	          xbt_dynar_push(ret, &onelink);
+	        }
+	      }
+	    }
+	  }
+	  return ret;
 }
 
 static route_extended_t dijkstra_get_route(routing_component_t rc,

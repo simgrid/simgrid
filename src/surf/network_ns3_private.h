@@ -19,6 +19,7 @@ typedef struct ns3_link{
 typedef struct surf_ns3_link{
 	s_surf_resource_t generic_resource;
 	ns3_link_t data;
+	int created;
 }s_surf_ns3_link_t, *surf_ns3_link_t;
 
 #endif                          /* _SURF_NETWORK_NS3_PRIVATE_H */
