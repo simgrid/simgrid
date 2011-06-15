@@ -87,7 +87,8 @@ static void instr_user_variable(double time,
                          const char *variable,
                          const char *father_type,
                          double value,
-                         InstrUserVariable what)
+                         InstrUserVariable what,
+                         const char *color)
 {
   /* safe switch */
   if (!TRACE_is_enabled()) return;
@@ -100,7 +101,7 @@ static void instr_user_variable(double time,
 
   switch (what){
   case INSTR_US_DECLARE:
-    instr_new_user_variable_type (father_type, variable, NULL);
+    instr_new_user_variable_type (father_type, variable, color);
     break;
   case INSTR_US_SET:
   {
@@ -142,7 +143,7 @@ static void instr_user_srcdst_variable(double time,
   void *link;
   xbt_dynar_foreach (route, i, link) {
     char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-    instr_user_variable (time, link_name, variable, father_type, value, what);
+    instr_user_variable (time, link_name, variable, father_type, value, what, NULL);
   }
 }
 
@@ -174,7 +175,12 @@ void TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char *filename)
 /* for host variables */
 void TRACE_host_variable_declare (const char *var)
 {
-  instr_user_variable(0, NULL, var, "HOST", 0, INSTR_US_DECLARE);
+  instr_user_variable(0, NULL, var, "HOST", 0, INSTR_US_DECLARE, NULL);
+}
+
+void TRACE_host_variable_declare_with_color (const char *var, const char *color)
+{
+  instr_user_variable(0, NULL, var, "HOST", 0, INSTR_US_DECLARE, color);
 }
 
 void TRACE_host_variable_set (const char *host, const char *variable, double value)
@@ -194,23 +200,28 @@ void TRACE_host_variable_sub (const char *host, const char *variable, double val
 
 void TRACE_host_variable_set_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SET);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SET, NULL);
 }
 
 void TRACE_host_variable_add_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_ADD);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_ADD, NULL);
 }
 
 void TRACE_host_variable_sub_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB, NULL);
 }
 
 /* for link variables */
 void TRACE_link_variable_declare (const char *var)
 {
-  instr_user_variable (0, NULL, var, "LINK", 0, INSTR_US_DECLARE);
+  instr_user_variable (0, NULL, var, "LINK", 0, INSTR_US_DECLARE, NULL);
+}
+
+void TRACE_link_variable_declare_with_color (const char *var, const char *color)
+{
+  instr_user_variable (0, NULL, var, "LINK", 0, INSTR_US_DECLARE, color);
 }
 
 void TRACE_link_variable_set (const char *link, const char *variable, double value)
@@ -230,17 +241,17 @@ void TRACE_link_variable_sub (const char *link, const char *variable, double val
 
 void TRACE_link_variable_set_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SET);
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SET, NULL);
 }
 
 void TRACE_link_variable_add_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_ADD);
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_ADD, NULL);
 }
 
 void TRACE_link_variable_sub_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SUB);
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SUB, NULL);
 }
 
 /* for link variables, but with src and dst used for get_route */

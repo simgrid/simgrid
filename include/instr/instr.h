@@ -35,6 +35,7 @@ XBT_PUBLIC(void) TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char
  */
 /* for host variables */
 XBT_PUBLIC(void) TRACE_host_variable_declare (const char *var);
+XBT_PUBLIC(void) TRACE_host_variable_declare_with_color (const char *var, const char *color);
 XBT_PUBLIC(void) TRACE_host_variable_set (const char *host, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_host_variable_add (const char *host, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_host_variable_sub (const char *host, const char *variable, double value);
@@ -44,6 +45,7 @@ XBT_PUBLIC(void) TRACE_host_variable_sub_with_time (double time, const char *hos
 
 /* for link variables */
 XBT_PUBLIC(void) TRACE_link_variable_declare (const char *var);
+XBT_PUBLIC(void) TRACE_link_variable_declare_with_color (const char *var, const char *color);
 XBT_PUBLIC(void) TRACE_link_variable_set (const char *link, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_link_variable_add (const char *link, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_link_variable_sub (const char *link, const char *variable, double value);
