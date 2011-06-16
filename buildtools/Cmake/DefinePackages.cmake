@@ -91,6 +91,10 @@ set(EXTRA_DIST
 	src/smpi/smpi_mpi_dt_private.h
 	src/smpi/README
 	src/mk_supernovae.pl
+	
+	examples/gras/ping/ping.h
+	examples/gras/console/ping.h
+	examples/gras/mmrpc/mmrpc.h
 )
 
 set(XBT_RL_SRC 
@@ -374,6 +378,7 @@ set(install_HEADERS
 	include/xbt/graph.h
 	include/xbt/fifo.h
 	include/xbt/swag.h
+	include/xbt/lib.h
 	include/xbt/matrix.h
 	include/xbt/peer.h
 	include/xbt/config.h
@@ -396,6 +401,7 @@ set(install_HEADERS
 	include/smpi/smpi.h
 	include/smpi/mpi.h
 	include/smpi/mpif.h
+	include/smpi/smpi_cocci.h
 	include/surf/surfxml_parse.h
 	include/surf/simgrid_dtd.h
 	include/surf/surf_routing.h
@@ -415,7 +421,16 @@ set(install_HEADERS
 	include/simix/simix.h
 	include/simix/datatypes.h
 	include/simix/context.h
+	
+	tools/gras/gras_stub_generator.h
+	tools/tesh/run_context.h  
+	tools/tesh/tesh.h
 )
+set(source_of_generated_headers
+	include/simgrid_config.h.in
+	include/smpi/smpif.h.in
+	src/context_sysv_config.h.in)
+
 set(GENERATE_HEADERS
 	${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
 	${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
@@ -676,17 +691,6 @@ set(add_src_files
 	src/simix/smx_context_sysv_private.h
 )
 
-file(GLOB_RECURSE include_files
-"include/*.h"
-"teshsuite/*.h"
-"testsuite/*.h"
-"tools/*.h"
-"examples/*.h"
-"examples/*.hpp"
-"src/*.h.in"
-"include/*.h.in"
-)
-
 file(GLOB_RECURSE xml_files
 "examples/*.xml"
 "include/*.xml"
@@ -817,6 +821,7 @@ buildtools/Cmake/tesh.pl
 # This is the complete list of what will be added to the source archive
 set(source_to_pack	
 	${install_HEADERS}
+	${source_of_generated_headers}
 	${XBT_RL_SRC}
 	${EXTRA_DIST}
 	${SMPI_SRC}
@@ -836,7 +841,6 @@ set(source_to_pack
 	${JEDULE_SRC}
 	${RNGSTREAM_SRC}
 	${add_src_files}
-	${include_files}
 	${xml_files}
 	${tesh_files}
 	${txt_files}
