@@ -23,6 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_FILENAME      "tracing/filename"
 #define OPT_TRACING_BUFFER        "tracing/buffer"
 #define OPT_TRACING_ONELINK_ONLY  "tracing/onelink_only"
+#define OPT_TRACING_DISABLE_DESTROY "tracing/disable_destroy"
 #define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
 #define OPT_TRIVA_CAT_CONF        "triva/categorized"
 
@@ -36,6 +37,7 @@ static int trace_msg_task_enabled;
 static int trace_msg_process_enabled;
 static int trace_buffer;
 static int trace_onelink_only;
+static int trace_disable_destroy;
 
 static int trace_configured = 0;
 static int trace_active = 0;
@@ -54,6 +56,7 @@ static void TRACE_getopts(void)
   trace_msg_process_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
   trace_buffer = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BUFFER);
   trace_onelink_only = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_ONELINK_ONLY);
+  trace_disable_destroy = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_DISABLE_DESTROY);
 }
 
 int TRACE_start()
@@ -104,7 +107,9 @@ int TRACE_end()
   TRACE_paje_dump_buffer(1);
 
   /* destroy all data structures of tracing (and free) */
-  destroyAllContainers();
+  if (!TRACE_disable_destroy()){
+    destroyAllContainers();
+  }
 
   /* close the trace file */
   TRACE_paje_end();
@@ -181,6 +186,11 @@ int TRACE_buffer (void)
 int TRACE_onelink_only (void)
 {
   return trace_onelink_only && TRACE_is_enabled();
+}
+
+int TRACE_disable_destroy (void)
+{
+  return trace_disable_destroy && TRACE_is_enabled();
 }
 
 char *TRACE_get_filename(void)
@@ -278,6 +288,13 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_onelink_only, 0, 1,
                    NULL, NULL);
 
+  /* disable destroy */
+  int default_disable_destroy = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_DISABLE_DESTROY,
+                   "Disable platform containers destruction.",
+                   xbt_cfgelm_int, &default_disable_destroy, 0, 1,
+                   NULL, NULL);
+
   /* Triva graph configuration for uncategorized tracing */
   char *default_triva_uncat_conf_file = xbt_strdup ("");
   xbt_cfg_register(&_surf_cfg_set, OPT_TRIVA_UNCAT_CONF,
@@ -364,6 +381,11 @@ void TRACE_help (int detailed)
       "  platform file to re-create the resource topology. If this option is activated,\n"
       "  only the routes with one link are used to register the topology within an AS.\n"
       "  Routes among AS continue to be traced as usual.",
+      detailed);
+  print_line (OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction",
+      "  Disable the destruction of containers at the end of simulation. This can be"
+      "  used with simulators that have a different notion of time (different from"
+      "  the simulated time).",
       detailed);
   print_line (OPT_TRIVA_UNCAT_CONF, "Generate graph configuration for Triva",
       "  This option can be used in all types of simulators build with SimGrid\n"
