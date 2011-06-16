@@ -358,7 +358,7 @@ set(RNGSTREAM_SRC
 	src/rngstreams/RngStream.c
 )
 
-set(install_HEADERS
+set(headers_to_install
 	include/xbt/misc.h
 	include/xbt/sysdep.h
 	include/xbt/virtu.h
@@ -430,11 +430,6 @@ set(source_of_generated_headers
 	include/simgrid_config.h.in
 	include/smpi/smpif.h.in
 	src/context_sysv_config.h.in)
-
-set(GENERATE_HEADERS
-	${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
-	${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
-)
 
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS CONTEXT_UCONTEXT
@@ -820,7 +815,7 @@ buildtools/Cmake/tesh.pl
 
 # This is the complete list of what will be added to the source archive
 set(source_to_pack	
-	${install_HEADERS}
+	${headers_to_install}
 	${source_of_generated_headers}
 	${XBT_RL_SRC}
 	${EXTRA_DIST}
