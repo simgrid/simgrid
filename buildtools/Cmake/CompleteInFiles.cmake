@@ -405,7 +405,7 @@ set(makecontext_CPPFLAGS_2 "")
 if(HAVE_MAKECONTEXT OR WIN32)
 	set(makecontext_CPPFLAGS "-DTEST_makecontext")
 	if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-		set(makecontext_CPPFLAGS_2 "-DOSX")
+		set(makecontext_CPPFLAGS_2 "-D_XOPEN_SOURCE")
 	endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	
     if(WIN32 AND __VISUALC__)

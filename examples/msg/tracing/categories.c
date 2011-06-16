@@ -56,10 +56,9 @@ int master(int argc, char *argv[])
 int slave(int argc, char *argv[])
 {
   m_task_t task = NULL;
-  int res;
 
   while (1) {
-    res = MSG_task_receive(&(task), "master_mailbox");
+    MSG_task_receive(&(task), "master_mailbox");
 
     if (!strcmp(MSG_task_get_name(task), "finalize")) {
       MSG_task_destroy(task);

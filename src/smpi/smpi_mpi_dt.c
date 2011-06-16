@@ -129,7 +129,7 @@ int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
     *extent = datatype->ub - datatype->lb;
     retval = MPI_SUCCESS;
   }
-  return MPI_SUCCESS;
+  return retval;
 }
 
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,

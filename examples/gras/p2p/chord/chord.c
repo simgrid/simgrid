@@ -254,6 +254,7 @@ static void check_predecessor()
     globals->pre_id = -1;
     globals->pre_host[0] = 0;
     globals->pre_port = 0;
+    xbt_ex_free(e);
   }
 
   ping.id = 0;
@@ -264,6 +265,7 @@ static void check_predecessor()
     globals->pre_id = -1;
     globals->pre_host[0] = 0;
     globals->pre_port = 0;
+    xbt_ex_free(e);
   }
   TRY {
     gras_msg_wait(60, "chord_pong", &temp_sock, &pong);
@@ -272,6 +274,7 @@ static void check_predecessor()
     globals->pre_id = -1;
     globals->pre_host[0] = 0;
     globals->pre_port = 0;
+    xbt_ex_free(e);
   }
   gras_socket_close(temp_sock);
 }
@@ -390,6 +393,7 @@ int node(int argc, char **argv)
       gras_msg_handle(6000000.0);
     }
     CATCH(e) {
+      xbt_ex_free(e);
     }
   }
   /*} */

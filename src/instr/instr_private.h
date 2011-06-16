@@ -159,6 +159,7 @@ int TRACE_msg_task_is_enabled(void);
 int TRACE_msg_process_is_enabled(void);
 int TRACE_buffer (void);
 int TRACE_onelink_only (void);
+int TRACE_disable_destroy (void);
 char *TRACE_get_filename(void);
 char *TRACE_get_triva_uncat_conf (void);
 char *TRACE_get_triva_cat_conf (void);

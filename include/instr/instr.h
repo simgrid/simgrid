@@ -35,6 +35,7 @@ XBT_PUBLIC(void) TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char
  */
 /* for host variables */
 XBT_PUBLIC(void) TRACE_host_variable_declare (const char *var);
+XBT_PUBLIC(void) TRACE_host_variable_declare_with_color (const char *var, const char *color);
 XBT_PUBLIC(void) TRACE_host_variable_set (const char *host, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_host_variable_add (const char *host, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_host_variable_sub (const char *host, const char *variable, double value);
@@ -44,6 +45,7 @@ XBT_PUBLIC(void) TRACE_host_variable_sub_with_time (double time, const char *hos
 
 /* for link variables */
 XBT_PUBLIC(void) TRACE_link_variable_declare (const char *var);
+XBT_PUBLIC(void) TRACE_link_variable_declare_with_color (const char *var, const char *color);
 XBT_PUBLIC(void) TRACE_link_variable_set (const char *link, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_link_variable_add (const char *link, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_link_variable_sub (const char *link, const char *variable, double value);
@@ -76,6 +78,7 @@ XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const ch
 #define TRACE_platform_graph_export_graphviz(g,filename)
 
 #define TRACE_host_variable_declare(var)
+#define TRACE_host_variable_declare_with_color(var,color)
 #define TRACE_host_variable_set(host,var,value)
 #define TRACE_host_variable_add(host,var,value)
 #define TRACE_host_variable_sub(host,var,value)
@@ -84,6 +87,7 @@ XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const ch
 #define TRACE_host_variable_sub_with_time(time,host,var,value)
 
 #define TRACE_link_variable_declare(var)
+#define TRACE_link_variable_declare_with_color(var,color)
 #define TRACE_link_variable_set(link,var,value)
 #define TRACE_link_variable_add(link,var,value)
 #define TRACE_link_variable_sub(link,var,value)

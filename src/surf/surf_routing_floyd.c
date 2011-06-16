@@ -95,8 +95,7 @@ static route_extended_t floyd_get_route(routing_component_t rc,
   int first = 1;
   int pred = *dst_id;
   int prev_pred = 0;
-  char *gw_src = NULL, *gw_dst =
-      NULL, *prev_gw_src, *prev_gw_dst, *first_gw = NULL;
+  char *gw_src = NULL, *gw_dst = NULL, *prev_gw_src, *first_gw = NULL;
   unsigned int cpt;
   void *link;
   xbt_dynar_t links;
@@ -111,7 +110,6 @@ static route_extended_t floyd_get_route(routing_component_t rc,
                 dst);
 
     prev_gw_src = gw_src;
-    prev_gw_dst = gw_dst;
 
     route_extended_t e_route = TO_FLOYD_LINK(pred, prev_pred);
     gw_src = e_route->src_gateway;
