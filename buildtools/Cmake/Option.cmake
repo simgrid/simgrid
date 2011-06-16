@@ -16,6 +16,8 @@ endif(NOT CMAKE_INSTALL_PREFIX)
 
 set(pipol_user ${pipol_user} CACHE TYPE INTERNAL FORCE)
 
+option(release "Whether Release Mode is activated (disable tests on experimental parts)" on)
+
 option(enable_gtnets "Whether gtnets model is activated." on)
 option(enable_ns3    "Whether ns3 model is activated." off)
 option(enable_smpi "This variable set smpi lib." on)
