@@ -310,7 +310,10 @@ void destroyContainer (container_t container)
   TRACE_paje_dump_buffer(1);
 
   //trace my destruction
-  new_pajeDestroyContainer(container);
+  if (!TRACE_disable_destroy()){
+    //do not trace the container destruction if user requests
+    new_pajeDestroyContainer(container);
+  }
 
   //free
   xbt_free (container->name);

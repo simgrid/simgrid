@@ -107,9 +107,7 @@ int TRACE_end()
   TRACE_paje_dump_buffer(1);
 
   /* destroy all data structures of tracing (and free) */
-  if (!TRACE_disable_destroy()){
-    destroyAllContainers();
-  }
+  destroyAllContainers();
 
   /* close the trace file */
   TRACE_paje_end();
