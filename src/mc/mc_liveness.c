@@ -344,7 +344,7 @@ void MC_dfs(xbt_automaton_t a, int search_cycle, int restore){
     /* Get enabled process and insert it in the interleave set of the next graph_state */
     xbt_swag_foreach(process, simix_global->process_list){
       if(MC_process_is_enabled(process)){
-	//XBT_DEBUG("Pid : %lu", process->pid);
+	XBT_DEBUG("Pid : %lu", process->pid);
 	MC_state_interleave_process(next_graph_state, process);
       }
     }
