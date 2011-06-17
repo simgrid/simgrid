@@ -5,9 +5,9 @@
 \section faq_simgrid I'm new to SimGrid. I have some questions. Where should I start?
 
 You are at the right  place... Having a look to these
-<a href="http://www.loria.fr/~quinson/articles/simgrid-tutorial.pdf">the tutorial slides</a> 
-(or to these <a href="http://graal.ens-lyon.fr/~alegrand/articles/slides_g5k_simul.pdf">old slides</a>,
-or to these
+<a href="http://www.loria.fr/~quinson/blog/2010/06/28/Tutorial_at_HPCS/">the slides of the HPCS'10 tutorial</a>
+(or to these <a href="http://graal.ens-lyon.fr/~alegrand/articles/slides_g5k_simul.pdf">ancient
+slides</a>, or to these
 <a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">"obsolete" slides</a>)
 may give you some insights on what SimGrid can help you to do and what
 are its limitations. Then you definitely should read the \ref
@@ -632,7 +632,7 @@ one). That means that using this development releases should be safe for most
 users. 
 
 These archives can be found on 
-<a href="http://www.loria.fr/~quinson/simgrid.html">this web page</a>. Once you 
+<a href="http://www.loria.fr/~quinson/Research/SimGrid/">this web page</a>. Once you 
 got the lastest archive, you can compile it just like any archive (see above).
 
 \subsection faq_compiling_svn Compiling SimGrid from the SVN
