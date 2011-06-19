@@ -79,8 +79,8 @@ endif(enable_lib_static AND NOT WIN32)
 
 # include files
 set(HEADERS
-    ${install_HEADERS}
-    ${GENERATE_HEADERS}
+    ${headers_to_install}
+    ${generated_headers_to_install}
     )
 foreach(file ${HEADERS})
   get_filename_component(location ${file} PATH)

@@ -90,19 +90,18 @@ void * ns3_add_cluster(char * bw,char * lat,char *id)
 	XBT_DEBUG("Add router %d to cluster",nodes.GetN()-Nodes.GetN()-1);
 	Nodes.Add(nodes.Get(nodes.GetN()-Nodes.GetN()-1));
 
-	if(Nodes.GetN() > 254)
-		xbt_die("Cluster with NS3 is limited to 254 nodes");
+	if(Nodes.GetN() > 65000)
+		xbt_die("Cluster with NS3 is limited to 65000 nodes");
 	CsmaHelper csma;
 	csma.SetChannelAttribute ("DataRate", StringValue (bw));
 	csma.SetChannelAttribute ("Delay", StringValue (lat));
 	NetDeviceContainer devices = csma.Install (Nodes);
 	XBT_DEBUG("Create CSMA");
 
-
-	char * adr = bprintf("10.%d.%d.0",number_of_networks,number_of_links);
+	char * adr = bprintf("%d.%d.0.0",number_of_networks,number_of_links);
 	XBT_DEBUG("Assign IP Addresses %s to CSMA.",adr);
 	Ipv4AddressHelper ipv4;
-	ipv4.SetBase (adr, "255.255.255.0");
+	ipv4.SetBase (adr, "255.255.0.0");
 	interfaces.Add(ipv4.Assign (devices));
 
 	if(number_of_links == 255){
@@ -114,6 +113,7 @@ void * ns3_add_cluster(char * bw,char * lat,char *id)
 		number_of_links++;
 	}
 	XBT_DEBUG("Number of nodes in Cluster_nodes: %d",Cluster_nodes.GetN());
+
 }
 
 void * ns3_add_AS(char * id)
@@ -143,8 +143,8 @@ void * ns3_add_link(int src,int dst,char * bw,char * lat)
 
 	netA.Add(pointToPoint.Install (a, b));
 
-	char * adr = bprintf("10.%d.%d.0",number_of_networks,number_of_links);
-	address.SetBase (adr, "255.255.255.0");
+	char * adr = bprintf("%d.%d.0.0",number_of_networks,number_of_links);
+	address.SetBase (adr, "255.255.0.0");
 	XBT_DEBUG("\tInterface stack '%s'",adr);
 	interfaces.Add(address.Assign (netA));
 
@@ -164,11 +164,12 @@ void * ns3_end_platform(void)
 	XBT_INFO("InitializeRoutes");
 	GlobalRouteManager::BuildGlobalRoutingDatabase();
 	GlobalRouteManager::InitializeRoutes();
+
 	//TODO REMOVE ;)
 	Ptr<Node> a = nodes.Get(0);
-	Ptr<Node> b = nodes.Get(11);
-	Ptr<Node> c = nodes.Get(12);
-	Ptr<Node> d = nodes.Get(13);
+	Ptr<Node> b = nodes.Get(1);
+	Ptr<Node> c = nodes.Get(2);
+	Ptr<Node> d = nodes.Get(3);
 
 	UdpEchoServerHelper echoServer (9);
 

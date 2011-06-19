@@ -37,28 +37,6 @@ static void replace_str(char *str, const char *orig, const char *rep)
 
 static void replace_bdw_ns3(char * bdw)
 {
-//	replace_str(bdw,".00","");
-//	char *temp = xbt_strdup(bdw);
-//
-//	replace_str(bdw,"000000000","Gbps");
-//	if(strcmp(bdw,temp)) {xbt_free(temp);return;}
-//	replace_str(bdw,"00000000","00Mbps");
-//	if(strcmp(bdw,temp)) {xbt_free(temp);return;}
-//	replace_str(bdw,"0000000","0Mbps");
-//	if(strcmp(bdw,temp)) {xbt_free(temp);return;}
-//	replace_str(bdw,"000000","Mbps");
-//	if(strcmp(bdw,temp)) {xbt_free(temp);return;}
-//	replace_str(bdw,"00000","00Kbps");
-//	if(strcmp(bdw,temp)) {xbt_free(temp);return;}
-//	replace_str(bdw,"0000","0Kbps");
-//	if(strcmp(bdw,temp)) {xbt_free(temp);return;}
-//	replace_str(bdw,"000","Kbps");
-//	if(strcmp(bdw,temp)) {xbt_free(temp);return;}
-//
-//	xbt_free(bdw);
-//	bdw = bprintf("%s%s",temp,"bps");
-//	xbt_free(temp);
-
 	char *temp = xbt_strdup(bdw);
 	xbt_free(bdw);
 	bdw = bprintf("%fbps",atof(temp));
@@ -257,38 +235,36 @@ void parse_ns3_end_platform(void)
 {
 	ns3_end_platform();
 
-//	  xbt_lib_cursor_t cursor = NULL;
-//	  char *name = NULL;
-//	  void **data = NULL;
-//	  XBT_INFO("link_lib");
-//	  xbt_lib_foreach(link_lib, cursor, name, data) {
-//			XBT_INFO("\tSee link '%s'\t--> NS3_LEVEL %p",
-//					name,
-//					data[NS3_LINK_LEVEL]);
-//	  }
-//	  XBT_INFO(" ");
-//	  XBT_INFO("host_lib");
-//	  xbt_lib_foreach(host_lib, cursor, name, data) {
-//			XBT_INFO("\tSee host '%s'\t--> NS3_LEVEL %p",
-//					name,
-//					data[NS3_HOST_LEVEL]);
-//	  }
-//	  XBT_INFO(" ");
-//	  XBT_INFO("as_router_lib");
-//	  xbt_lib_foreach(as_router_lib, cursor, name, data) {
-//			XBT_INFO("\tSee ASR '%s'\t--> NS3_LEVEL %p",
-//					name,
-//					data[NS3_ASR_LEVEL]);
-//	  }
-//
-//	  XBT_INFO(" ");
+	  xbt_lib_cursor_t cursor = NULL;
+	  char *name = NULL;
+	  void **data = NULL;
+	  XBT_DEBUG("link_lib");
+	  xbt_lib_foreach(link_lib, cursor, name, data) {
+			XBT_DEBUG("\tSee link '%s'\t--> NS3_LEVEL %p",
+					name,
+					data[NS3_LINK_LEVEL]);
+	  }
+	  XBT_DEBUG(" ");
+	  XBT_DEBUG("host_lib");
+	  xbt_lib_foreach(host_lib, cursor, name, data) {
+			XBT_DEBUG("\tSee host '%s'\t--> NS3_LEVEL %p",
+					name,
+					data[NS3_HOST_LEVEL]);
+	  }
+	  XBT_DEBUG(" ");
+	  XBT_DEBUG("as_router_lib");
+	  xbt_lib_foreach(as_router_lib, cursor, name, data) {
+			XBT_DEBUG("\tSee ASR '%s'\t--> NS3_LEVEL %p",
+					name,
+					data[NS3_ASR_LEVEL]);
+	  }
+
+	  XBT_DEBUG(" ");
 }
 
 /* Create the ns3 topology based on routing strategy */
 void create_ns3_topology()
 {
-//   int src_id,dst_id;
-
    XBT_INFO("Starting topology generation");
 
    //get the onelinks from the parsed platform
@@ -304,11 +280,6 @@ void create_ns3_topology()
      char *dst = onelink->dst;
      void *link = onelink->link_ptr;
 
-//TODO need to uncomment those two line
-//     src_id = *((int *) xbt_dict_get_or_null(global_routing->root->to_index,src));
-//     dst_id = *((int *) xbt_dict_get_or_null(global_routing->root->to_index,dst));
-
-//   if( (src_id != dst_id) && ((surf_ns3_link_t)link)->created){
      if( strcmp(src,dst) && ((surf_ns3_link_t)link)->created){
      XBT_INFO("Route from '%s' to '%s' with link '%s'",src,dst,((surf_ns3_link_t)link)->data->id);
      char * link_bdw = xbt_strdup(((surf_ns3_link_t)link)->data->bdw);

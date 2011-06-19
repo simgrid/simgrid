@@ -676,11 +676,19 @@ exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE OKITO
 exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE OKITOKI)
 exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE OKITOKI)
 
-set(generate_files_to_clean
-${CMAKE_BINARY_DIR}/src/context_sysv_config.h
-${CMAKE_BINARY_DIR}/src/gras_config.h
-${CMAKE_BINARY_DIR}/include/simgrid_config.h
-${CMAKE_BINARY_DIR}/include/smpi/smpif.h
+set(generated_headers_to_install
+	${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
+	${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
+)
+
+set(generated_headers
+    ${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h
+)
+
+set(generated_files_to_clean
+${generated_headers}
+${generated_headers_to_install}
 ${CMAKE_BINARY_DIR}/bin/smpicc
 ${CMAKE_BINARY_DIR}/bin/smpif2c
 ${CMAKE_BINARY_DIR}/bin/smpiff
