@@ -95,6 +95,10 @@ set(EXTRA_DIST
 	examples/gras/ping/ping.h
 	examples/gras/console/ping.h
 	examples/gras/mmrpc/mmrpc.h
+
+	tools/gras/gras_stub_generator.h
+	tools/tesh/run_context.h  
+	tools/tesh/tesh.h
 )
 
 set(XBT_RL_SRC 
@@ -421,10 +425,6 @@ set(install_HEADERS
 	include/simix/simix.h
 	include/simix/datatypes.h
 	include/simix/context.h
-	
-	tools/gras/gras_stub_generator.h
-	tools/tesh/run_context.h  
-	tools/tesh/tesh.h
 )
 set(source_of_generated_headers
 	include/simgrid_config.h.in
