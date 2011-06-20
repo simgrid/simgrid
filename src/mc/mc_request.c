@@ -10,6 +10,7 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
 {
   if(_surf_do_model_check == 2)
     return TRUE;
+  
 
   if (r1->issuer == r2->issuer)
     return FALSE;
@@ -144,6 +145,7 @@ int MC_request_depend(smx_req_t r1, smx_req_t r2)
           && r1->comm_test.comm->comm.dst_buff != r2->comm_wait.comm->comm.dst_buff
           && r2->comm_wait.comm->comm.dst_buff != r1->comm_test.comm->comm.src_buff)
       return FALSE;
+
 
   return TRUE;
 }

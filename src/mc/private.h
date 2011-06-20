@@ -214,5 +214,9 @@ void MC_pair_delete(mc_pairs_t pair);
 void MC_exit_with_automaton(void);
 mc_state_t MC_state_pair_new(void);
 
+/********************************** Stateful DPOR **************************************/
+
+void MC_stateful_dpor(xbt_automaton_t a, int search_cycle, int restore);
+void MC_stateful_dpor_init(xbt_automaton_t a);
 
 #endif

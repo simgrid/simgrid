@@ -76,7 +76,8 @@ void MC_init_with_automaton(xbt_automaton_t a){
 
   MC_UNSET_RAW_MEM;
 
-  MC_dfs_init(a);
+  //MC_dfs_init(a);
+  MC_stateful_dpor_init(a);
 }
 
 
@@ -293,9 +294,9 @@ void MC_assert_pair(int prop){
     XBT_INFO("*** PROPERTY NOT VALID ***");
     XBT_INFO("**************************");
     //XBT_INFO("Counter-example execution trace:");
-    //MC_show_snapshot_stack(mc_snapshot_stack);
+    MC_show_snapshot_stack(mc_snapshot_stack);
     //MC_dump_snapshot_stack(mc_snapshot_stack);
-    //MC_print_statistics(mc_stats);
+    MC_print_statistics_pairs(mc_stats_pair);
     xbt_abort();
   }
 }

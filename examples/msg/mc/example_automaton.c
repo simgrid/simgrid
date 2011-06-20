@@ -14,7 +14,7 @@ extern xbt_automaton_t automaton;
 
 
 int p=1;
-int r=1;
+int r=0;
 int q=1;
 int e=1;
 int d=1;
@@ -55,9 +55,9 @@ int server(int argc, char *argv[])
     }
     MSG_task_receive(&task, "mymailbox");
     count++;
-    r=(r+1)%3;
+    //r=(r+1)%3;
     //d=(d+1)%2;
-    XBT_INFO("r (server) = %d", r);
+    //XBT_INFO("r (server) = %d", r);
      
   }
   MC_assert_pair(atoi(MSG_task_get_name(task)) == 3);
@@ -78,7 +78,7 @@ int client(int argc, char *argv[])
   XBT_INFO("Sent!");
   
   //r=(r+1)%3;
-  XBT_INFO("r (client) = %d", r);
+  //XBT_INFO("r (client) = %d", r);
   
   return 0;
 }
