@@ -7,15 +7,19 @@ project(simgrid CXX C)
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_CXX_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
+
 ## Mapping version number -> version name
 # 3.5.99 -> alpha1 (oops)
 # 3.5.9{1,2} -> beta{1,2}
 # 3.5.9{3,4,5} -> rc{1,2,3}
+# 3.6.0 -> release 3.6 
 
-# 3.6.0 -> release 3.6 (not yet)
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "5")
-set(SIMGRID_VERSION_PATCH "95")
+set(SIMGRID_VERSION_MINOR "6")
+set(SIMGRID_VERSION_PATCH "0")
+
+
+
 set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
 set(libsimgrid_version "${release_version}")
 set(libgras_version "${release_version}")

@@ -1,4 +1,6 @@
-SimGrid (3.6) unstable; urgency=low
+SimGrid (3.6) stable; urgency=medium
+
+ The Summer Release, also known as the "F*! They Killed Kenny!" version
 
  Java and Ruby: 
  * Bindings now constitute their own package, separated from the main one.
@@ -132,7 +134,7 @@ SimGrid (3.6) unstable; urgency=low
  * Add a build option -Denable_debug (set to ON by default): when set to OFF,
    assertions and verbose/debug logging events are disabled at compile time.
 
- -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Tue Jun 21 08:57:43 CEST 2011 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.5) stable; urgency=medium
 
