@@ -1,3 +1,8 @@
+SimGrid (3.7) unstable; urgency=medium
+
+
+ -- `LC_ALL=C date` Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
 SimGrid (3.6) stable; urgency=medium
 
  The Summer Release, also known as the "F*! They Killed Kenny!" version
