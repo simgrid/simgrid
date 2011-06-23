@@ -14,6 +14,8 @@ endif(enable_compile_warnings)
 
 if(enable_compile_optimizations)
 	set(optCFLAGS "-O3 -finline-functions -funroll-loops -fno-strict-aliasing ")
+else(enable_compile_optimizations)
+        set(optCFLAGS "-O0 ")
 endif(enable_compile_optimizations)
 
 if(NOT enable_debug)
