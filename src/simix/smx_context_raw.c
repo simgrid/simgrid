@@ -38,10 +38,16 @@ extern void raw_swapcontext(raw_stack_t* old, raw_stack_t new);
 
 #ifdef PROCESSOR_i686
 __asm__ (
+#ifdef APPLE
+   ".text\n"
+   ".globl _raw_makecontext\n"
+   "_raw_makecontext:\n"
+#else
    ".text\n"
    ".globl raw_makecontext\n"
    ".type raw_makecontext,@function\n"
    "raw_makecontext:\n"
+#endif
    "   movl 4(%esp),%eax\n"   /* stack */
    "   addl 8(%esp),%eax\n"   /* size  */
    "   movl 12(%esp),%ecx\n"  /* func  */
@@ -58,10 +64,16 @@ __asm__ (
 );
 
 __asm__ (
+#ifdef APPLE
+   ".text\n"
+   ".globl _raw_swapcontext\n"
+   "_raw_swapcontext:\n"
+#else
    ".text\n"
    ".globl raw_swapcontext\n"
    ".type raw_swapcontext,@function\n"
    "raw_swapcontext:\n"
+#endif
    "   movl 4(%esp),%eax\n" /* old */
    "   movl 8(%esp),%edx\n" /* new */
    "   pushl %ebp\n"
@@ -78,10 +90,16 @@ __asm__ (
 );
 #elif PROCESSOR_x86_64
 __asm__ (
+#ifdef APPLE
+   ".text\n"
+   ".globl _raw_makecontext\n"
+   "_raw_makecontext:\n"
+#else
    ".text\n"
    ".globl raw_makecontext\n"
    ".type raw_makecontext,@function\n"
-   "raw_makecontext:\n" /* Calling convention sets the arguments in rdi, rsi, rdx and rcx, respectively */
+   "raw_makecontext:\n"/* Calling convention sets the arguments in rdi, rsi, rdx and rcx, respectively */
+#endif
    "   movq %rdi,%rax\n"      /* stack */
    "   addq %rsi,%rax\n"      /* size  */
    "   movq $0,   -8(%rax)\n" /* @return for func */
@@ -103,10 +121,16 @@ __asm__ (
 );
 
 __asm__ (
+#ifdef APPLE
+   ".text\n"
+   ".globl _raw_swapcontext\n"
+   "_raw_swapcontext:\n"
+#else
    ".text\n"
    ".globl raw_swapcontext\n"
    ".type raw_swapcontext,@function\n"
-   "raw_swapcontext:\n" /* Calling convention sets the arguments in rdi and rsi, respectively */
+   "raw_swapcontext:\n"	/* Calling convention sets the arguments in rdi and rsi, respectively */
+#endif
    "   pushq %rdi\n"
    "   pushq %rsi\n"
    "   pushq %rdx\n"

@@ -33,6 +33,7 @@
 #cmakedefine _WIN64 @_WIN64@			//this variable is set if it is a 64 bits  windows platform
 #cmakedefine __VISUALC__ @__VISUALC__@
 #cmakedefine __BORLANDC__ @__BORLANDC__@
+#cmakedefine APPLE @APPLE@
 #ifdef _XBT_WIN32
 	#ifndef __GNUC__
 		#cmakedefine __GNUC__ @__GNUC__@
