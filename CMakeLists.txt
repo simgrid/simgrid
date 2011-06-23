@@ -18,13 +18,12 @@ set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "6")
 set(SIMGRID_VERSION_PATCH "0")
 
-
-
 set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
 set(libsimgrid_version "${release_version}")
 set(libgras_version "${release_version}")
 set(libsmpi_version "${release_version}")
 set(GCC_NEED_VERSION "4.0")
+set(APPLE_NEED_GCC_VERSION "4.6")
 
 ### SET THE LIBRARY EXTENSION AND GCC VERSION
 if(APPLE) #MAC
