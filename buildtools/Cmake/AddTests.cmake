@@ -12,45 +12,50 @@ endif(enable_smpi AND NOT WIN32)
 
 
 IF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-   message(STATUS"System processor: amd64")
+   message(STATUS "System processor: amd64")
    set(HAVE_RAWCTX 1)
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^i.86$")
-    message(STATUS"System processor: i386")
+   
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^i386$")
+    message(STATUS "System processor: i386")
+    
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^i686$")
+    message(STATUS "System processor: i686")
     set(HAVE_RAWCTX 1)
+    
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^alpha")
-    message(STATUS"System processor: alpha")
+    message(STATUS "System processor: alpha")
     
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
     # Subdir is "arm" for both big-endian (arm) and little-endian (armel).
-    message(STATUS"System processor: arm")
+    message(STATUS "System processor: arm")
     
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^mips")
     # mips* machines are bi-endian mostly so processor does not tell
     # endianess of the underlying system.
-    message(STATUS"System processor: ${CMAKE_SYSTEM_PROCESSOR}" "mips" "mipsel" "mipseb")
+    message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}" "mips" "mipsel" "mipseb")
     
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(powerpc|ppc)64")
-    message(STATUS"System processor: ppc64")
+    message(STATUS "System processor: ppc64")
     
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(powerpc|ppc)")
-    message(STATUS"System processor: ppc")
+    message(STATUS "System processor: ppc")
     
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^sparc")
     # Both flavours can run on the same processor
-    message(STATUS"System processor: ${CMAKE_SYSTEM_PROCESSOR}" "sparc" "sparcv9")
+    message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}" "sparc" "sparcv9")
     
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(parisc|hppa)")
-    message(STATUS"System processor: parisc" "parisc64")
+    message(STATUS "System processor: parisc" "parisc64")
     
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^s390")
     # s390 binaries can run on s390x machines
-    message(STATUS"System processor: ${CMAKE_SYSTEM_PROCESSOR}" "s390" "s390x")
+    message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}" "s390" "s390x")
     
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^sh")
-    message(STATUS"System processor: sh")
+    message(STATUS "System processor: sh")
     
 ELSE(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") #PROCESSOR NOT fIND
-    message("PROCESSOR NOT FIND: ${CMAKE_SYSTEM_PROCESSOR}")
+    message(STATUS "PROCESSOR NOT FIND: ${CMAKE_SYSTEM_PROCESSOR}")
     
 ENDIF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
        
