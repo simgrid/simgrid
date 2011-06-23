@@ -213,8 +213,8 @@ java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar 
 # Set the  LD_LIBRARY_PATH for our tests #
 ##########################################
 set_tests_properties(basic pingPong CommTime mutualExclusion
-PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
-message(STATUS "export LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
+PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
+message(STATUS "export LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
 
 ###########
 # Install #
