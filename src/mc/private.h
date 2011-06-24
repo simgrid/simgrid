@@ -211,7 +211,7 @@ typedef struct s_mc_reached_pairs{
 extern xbt_fifo_t mc_snapshot_stack;
 
 void MC_dfs_init(xbt_automaton_t a);
-void MC_dfs(xbt_automaton_t automaton, int search_cycle);
+void MC_dfs(xbt_automaton_t automaton, int search_cycle, int restore);
 int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
 mc_pairs_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 void set_pair_visited(mc_state_t gs, xbt_state_t as, int search_cycle);

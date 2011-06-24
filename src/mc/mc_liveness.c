@@ -273,14 +273,21 @@ void MC_dfs_init(xbt_automaton_t a){
 
     MC_UNSET_RAW_MEM;
 
-    MC_dfs(a,0);
-
+    if(cursor == 0){
+      MC_dfs(a, 0, 0);
+    }else{
+      MC_dfs(a, 0, 1);
+    }
   }
 
+ 
+
+ 
+  
 }
 
 
-void MC_dfs(xbt_automaton_t a, int search_cycle){
+void MC_dfs(xbt_automaton_t a, int search_cycle, int restore){
 
   smx_process_t process = NULL;
 
@@ -288,11 +295,23 @@ void MC_dfs(xbt_automaton_t a, int search_cycle){
   if(xbt_fifo_size(mc_snapshot_stack) == 0)
     return;
 
- 
+  if(restore == 1){
+    MC_restore_snapshot(((mc_pairs_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_snapshot_stack)))->system_state);
+    MC_UNSET_RAW_MEM;
+  }
+
 
   /* Get current state */
   mc_pairs_t current_pair = (mc_pairs_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_snapshot_stack));
 
+  /*if(restore==1){
+    xbt_swag_foreach(process, simix_global->process_list){
+      if(MC_process_is_enabled(process)){
+	//XBT_DEBUG("Pid : %lu", process->pid);
+	MC_state_interleave_process(current_pair->graph_state, process);
+      }
+    }
+    }*/
 
   XBT_DEBUG("************************************************** ( search_cycle = %d )", search_cycle);
   XBT_DEBUG("State : graph=%p, automaton=%p(%s), %u interleave", current_pair->graph_state, current_pair->automaton_state, current_pair->automaton_state->id,MC_state_interleave_size(current_pair->graph_state));
@@ -414,7 +433,7 @@ void MC_dfs(xbt_automaton_t a, int search_cycle){
 	set_pair_visited(pair_succ->graph_state, pair_succ->automaton_state, search_cycle);
 	MC_UNSET_RAW_MEM;
 
-	MC_dfs(a, search_cycle);
+	MC_dfs(a, search_cycle, 0);
 
 	if((search_cycle == 0) && (current_pair->automaton_state->type == 1)){
 
@@ -430,9 +449,13 @@ void MC_dfs(xbt_automaton_t a, int search_cycle){
 	    
 	  set_pair_reached(current_pair->graph_state, current_pair->automaton_state);
 	  XBT_DEBUG("Acceptance pair : graph=%p, automaton=%p(%s)", current_pair->graph_state, current_pair->automaton_state, current_pair->automaton_state->id);
-	  MC_dfs(a, 1);
+	  MC_dfs(a, 1, 1);
 
 	}
+      }else{
+
+	XBT_DEBUG("Pair already visited !");
+
       }
     }
     
