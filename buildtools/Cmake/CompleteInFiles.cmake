@@ -556,9 +556,9 @@ foreach(fct ${diff_va})
 	    }
 	    va_end(ap);
 	}
-	int main(int argc, char *argv[])
+	int main(void)
 	{
-	    test("test", 1, 2, 3, 4, 5, 6, 7, 8, 9);
+	    test(\"test\", 1, 2, 3, 4, 5, 6, 7, 8, 9);
 	    exit(0);
 	}"
 	)
