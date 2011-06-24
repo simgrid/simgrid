@@ -31,7 +31,7 @@ void set_pair_visited(mc_state_t gs, xbt_state_t as, int sc){
   p->graph_state = gs;
   p->automaton_state = as;
   p->search_cycle = sc;
-  char *hash = malloc(sizeof(char)*128);
+  char *hash = malloc(sizeof(char)*160);
   xbt_sha((char *)&p, hash);
   xbt_dynar_push(visited_pairs, &hash); 
   MC_UNSET_RAW_MEM;	
@@ -65,7 +65,7 @@ int reached(mc_state_t gs, xbt_state_t as ){
   return 0;*/
   //XBT_DEBUG("Search acceptance pair already reach !"); 
 
-  char* hash_reached = malloc(sizeof(char)*128);
+  char* hash_reached = malloc(sizeof(char)*160);
   unsigned int c= 0;
 
   MC_SET_RAW_MEM;
@@ -73,7 +73,7 @@ int reached(mc_state_t gs, xbt_state_t as ){
   p = xbt_new0(s_mc_reached_pairs_t, 1);
   p->graph_state = gs;
   p->automaton_state = as;
-  char *hash = malloc(sizeof(char)*128);
+  char *hash = malloc(sizeof(char)*160);
   xbt_sha((char *)&p, hash);
   //XBT_DEBUG("Hash : %s", hash);
   xbt_dynar_foreach(reached_pairs, c, hash_reached){
@@ -97,7 +97,7 @@ void set_pair_reached(mc_state_t gs, xbt_state_t as){
     p = xbt_new0(s_mc_reached_pairs_t, 1);
     p->graph_state = gs;
     p->automaton_state = as;
-    char *hash = malloc(sizeof(char)*128) ;
+    char *hash = malloc(sizeof(char)*160) ;
     xbt_sha((char *)&p, hash);
     xbt_dynar_push(reached_pairs, &hash); 
     //XBT_DEBUG("New reached pair : graph=%p, automaton=%p(%s)", gs, as, as->id);
@@ -136,7 +136,7 @@ int visited(mc_state_t gs, xbt_state_t as, int sc){
 
   //XBT_DEBUG("Test visited pair");
 
-  char* hash_visited = malloc(sizeof(char)*128);
+  char* hash_visited = malloc(sizeof(char)*160);
   unsigned int c= 0;
 
   MC_SET_RAW_MEM;
@@ -144,7 +144,7 @@ int visited(mc_state_t gs, xbt_state_t as, int sc){
   p = xbt_new0(s_mc_visited_pairs_t, 1);
   p->graph_state = gs;
   p->automaton_state = as;
-  char *hash = malloc(sizeof(char)*128);
+  char *hash = malloc(sizeof(char)*160);
   xbt_sha((char *)&p, hash);
   //XBT_DEBUG("Hash : %s", hash);
   xbt_dynar_foreach(visited_pairs, c, hash_visited){
