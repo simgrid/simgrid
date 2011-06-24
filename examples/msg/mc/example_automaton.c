@@ -14,7 +14,7 @@ extern xbt_automaton_t automaton;
 
 
 int p=1;
-int r=0;
+int r=1;
 int q=1;
 int e=1;
 int d=1;
@@ -55,7 +55,7 @@ int server(int argc, char *argv[])
     }
     MSG_task_receive(&task, "mymailbox");
     count++;
-    //r=(r+1)%3;
+    r=(r+1)%2;
     //d=(d+1)%2;
     //XBT_INFO("r (server) = %d", r);
      
@@ -107,7 +107,7 @@ int main(int argc, char **argv){
 
   MSG_launch_application("deploy_bugged1.xml"); 
   
-  XBT_INFO("r=%d", r);
+  //XBT_INFO("r=%d", r);
   
   MSG_main_with_automaton(automaton);
 

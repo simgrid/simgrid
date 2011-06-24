@@ -77,7 +77,7 @@ void MC_init_with_automaton(xbt_automaton_t a){
   MC_UNSET_RAW_MEM;
 
   //MC_dfs_init(a);
-  MC_stateful_dpor_init(a);
+  MC_dfs_init(a);
 }
 
 
@@ -268,7 +268,7 @@ void MC_print_statistics_pairs(mc_stats_pair_t stats)
 {
   XBT_INFO("Expanded pairs = %lu", stats->expanded_pairs);
   XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
-  XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
+  //XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
   XBT_INFO("Expanded / Visited = %lf",
         (double) stats->visited_pairs / stats->expanded_pairs);
   /*XBT_INFO("Exploration coverage = %lf",

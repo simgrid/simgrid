@@ -19,6 +19,7 @@
 #include "xbt/mmalloc.h"
 #include "../simix/private.h"
 #include "xbt/automaton.h"
+#include "xbt/hash.h"
 
 /****************************** Snapshots ***********************************/
 
@@ -180,11 +181,20 @@ memory_map_t get_memory_map(void);
 
 /********************************** DFS **************************************/
 
+typedef enum {
+  GREEN=0,
+  ORANGE,
+  RED
+}e_mc_color_pair_t;
+
 typedef struct s_mc_pairs{
   mc_snapshot_t system_state;
   mc_state_t graph_state;
   xbt_state_t automaton_state;
   int num;
+  e_mc_color_pair_t color;
+  int expanded;
+  int predecessor;
 }s_mc_pairs_t, *mc_pairs_t;
 
 typedef struct s_mc_visited_pairs{
@@ -201,7 +211,7 @@ typedef struct s_mc_reached_pairs{
 extern xbt_fifo_t mc_snapshot_stack;
 
 void MC_dfs_init(xbt_automaton_t a);
-void MC_dfs(xbt_automaton_t automaton, int search_cycle, int restore);
+void MC_dfs(xbt_automaton_t automaton, int search_cycle);
 int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
 mc_pairs_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 void set_pair_visited(mc_state_t gs, xbt_state_t as, int search_cycle);
@@ -216,7 +226,7 @@ mc_state_t MC_state_pair_new(void);
 
 /********************************** Stateful DPOR **************************************/
 
-void MC_stateful_dpor(xbt_automaton_t a, int search_cycle, int restore);
-void MC_stateful_dpor_init(xbt_automaton_t a);
+void MC_dpor_with_restore_snapshot(xbt_automaton_t a, int search_cycle, int restore);
+void MC_dpor_with_restore_snapshot_init(xbt_automaton_t a);
 
 #endif
