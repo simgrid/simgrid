@@ -304,14 +304,14 @@ void MC_dfs(xbt_automaton_t a, int search_cycle, int restore){
   /* Get current state */
   mc_pairs_t current_pair = (mc_pairs_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_snapshot_stack));
 
-  /*if(restore==1){
+  if(restore==1){
     xbt_swag_foreach(process, simix_global->process_list){
       if(MC_process_is_enabled(process)){
 	//XBT_DEBUG("Pid : %lu", process->pid);
 	MC_state_interleave_process(current_pair->graph_state, process);
       }
     }
-    }*/
+  }
 
   XBT_DEBUG("************************************************** ( search_cycle = %d )", search_cycle);
   XBT_DEBUG("State : graph=%p, automaton=%p(%s), %u interleave", current_pair->graph_state, current_pair->automaton_state, current_pair->automaton_state->id,MC_state_interleave_size(current_pair->graph_state));
@@ -440,12 +440,12 @@ void MC_dfs(xbt_automaton_t a, int search_cycle, int restore){
 	  MC_restore_snapshot(current_pair->system_state);
 	  MC_UNSET_RAW_MEM;
  
-	  /*xbt_swag_foreach(process, simix_global->process_list){
+	  xbt_swag_foreach(process, simix_global->process_list){
 	    if(MC_process_is_enabled(process)){
 	      //XBT_DEBUG("Pid : %lu", process->pid);
 	      MC_state_interleave_process(current_pair->graph_state, process);
 	    }
-	    }*/
+	  }
 	    
 	  set_pair_reached(current_pair->graph_state, current_pair->automaton_state);
 	  XBT_DEBUG("Acceptance pair : graph=%p, automaton=%p(%s)", current_pair->graph_state, current_pair->automaton_state, current_pair->automaton_state->id);
