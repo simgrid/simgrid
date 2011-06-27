@@ -845,4 +845,5 @@ set(source_to_pack
 	${DOC_FIGS}
 	${DOC_bib}
 	${README_files}
+	buildtools/Cmake/simgrid.nsi.in 
 )
