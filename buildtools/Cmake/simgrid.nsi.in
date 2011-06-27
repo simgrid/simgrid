@@ -1,0 +1,76 @@
+# define installer name
+outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@.exe"
+
+# set the default installation directory
+InstallDir $PROGRAMFILES\SimGrid
+
+# The text to prompt the user to enter a directory
+DirText "This will install Simgrid on your computer. Choose a directory"
+
+# default section start
+section
+
+	# install lib
+	CreateDirectory $INSTDIR\lib
+	setOutPath $INSTDIR\lib
+	file lib\libgras.a
+	file lib\libsimgrid.a
+
+	# insatll bin
+	CreateDirectory $INSTDIR\bin
+	setOutPath $INSTDIR\bin
+	file bin\colorize
+	file bin\graphicator.exe
+	file bin\gras_stub_generator.exe
+	file bin\simgrid_update_xml
+	file bin\smpicc
+	file bin\smpif2c
+	file bin\smpiff
+	file bin\smpirun
+	file bin\tesh
+
+	# define uninstaller name
+	writeUninstaller $INSTDIR\uninstaller.exe
+
+	# create a shortcut in the start menu programs directory
+	CreateDirectory "$SMPROGRAMS\SimGrid"
+	createShortCut  "$SMPROGRAMS\SimGrid\uninstall simgrid.lnk" "$INSTDIR\uninstaller.exe"
+
+	MessageBox MB_OK "Installation was successful."
+
+# default section end
+sectionEnd
+
+# create a section to define what the uninstaller does.
+# the section will always be named "Uninstall"
+section "Uninstall"
+
+	# always delete uninstaller first
+	delete $INSTDIR\uninstaller.exe
+
+	# delete installed libs
+	delete $INSTDIR\lib\libgras.a
+	delete $INSTDIR\lib\libsimgrid.a
+
+	# delete insatlled bin
+	delete $INSTDIR\bin\colorize
+	delete $INSTDIR\bin\graphicator.exe
+	delete $INSTDIR\bin\gras_stub_generator.exe
+	delete $INSTDIR\bin\simgrid_update_xml
+	delete $INSTDIR\bin\smpicc
+	delete $INSTDIR\bin\smpif2c
+	delete $INSTDIR\bin\smpiff
+	delete $INSTDIR\bin\smpirun
+	delete $INSTDIR\bin\tesh
+
+	# delete link
+	delete "$SMPROGRAMS\SimGrid\uninstall simgrid.lnk"
+
+	# now delete directories
+	RMDir  "$INSTDIR\bin"
+	RMDir  "$INSTDIR\lib"
+	RMDir  "$SMPROGRAMS\SimGrid"
+	RMDir  "$PROGRAMFILES\SimGrid"
+
+# uninstall section end
+sectionEnd

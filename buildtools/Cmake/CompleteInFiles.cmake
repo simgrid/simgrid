@@ -776,3 +776,5 @@ endif("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 "${generate_files_to_clean}")
+
+configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/simgrid.nsi.in" 	"${CMAKE_BINARY_DIR}/simgrid.nsi" @ONLY IMMEDIATE)
