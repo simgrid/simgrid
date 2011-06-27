@@ -35,6 +35,7 @@ if(APPLE) #MAC
 else(APPLE)
     if(WIN32) #WINDOWS
         set(LIB_EXE "a")
+        set(BIN_EXE ".exe")
     else(WIN32) #UNIX
 	    set(LIB_EXE "so")
     endif(WIN32)

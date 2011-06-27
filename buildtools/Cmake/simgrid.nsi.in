@@ -1,5 +1,5 @@
 # define installer name
-outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@.exe"
+outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@_win@WIN_ARCH@@BIN_EXE@"
 
 # set the default installation directory
 InstallDir $PROGRAMFILES\SimGrid
@@ -13,8 +13,8 @@ section
 	# install lib
 	CreateDirectory $INSTDIR\lib
 	setOutPath $INSTDIR\lib
-	file lib\libgras.a
-	file lib\libsimgrid.a
+	file lib\libgras.@LIB_EXE@
+	file lib\libsimgrid.@LIB_EXE@
 	
 	#install headers
 	CreateDirectory  $INSTDIR\include
@@ -118,8 +118,8 @@ section
 	CreateDirectory $INSTDIR\bin
 	setOutPath $INSTDIR\bin
 	file bin\colorize
-	file bin\graphicator.exe
-	file bin\gras_stub_generator.exe
+	file bin\graphicator@BIN_EXE@
+	file bin\gras_stub_generator@BIN_EXE@
 	file bin\simgrid_update_xml
 	file bin\smpicc
 	file bin\smpif2c
@@ -133,12 +133,13 @@ section
 	file /r @CMAKE_HOME_DIRECTORY@\doc\html
 
 	# define uninstaller name
-	writeUninstaller $INSTDIR\uninstaller.exe
+	writeUninstaller $INSTDIR\uninstaller@BIN_EXE@
 
 	# create a shortcut in the start menu programs directory
 	CreateDirectory "$SMPROGRAMS\SimGrid"
-	createShortCut  "$SMPROGRAMS\SimGrid\uninstall simgrid.lnk" "$INSTDIR\uninstaller.exe"
-
+	createShortCut  "$SMPROGRAMS\SimGrid\Uninstall simgrid.lnk" "$INSTDIR\uninstaller@BIN_EXE@"
+	createShortCut  "$SMPROGRAMS\SimGrid\Documentation.lnk"	"$INSTDIR\doc\index.html"
+	
 	MessageBox MB_OK "Installation was successful."
 
 # default section end
@@ -149,16 +150,16 @@ sectionEnd
 section "Uninstall"
 
 	# always delete uninstaller first
-	delete $INSTDIR\uninstaller.exe
+	delete $INSTDIR\uninstaller@BIN_EXE@
 
 	# delete installed libs
-	delete $INSTDIR\lib\libgras.a
-	delete $INSTDIR\lib\libsimgrid.a
+	delete $INSTDIR\lib\libgras.@LIB_EXE@
+	delete $INSTDIR\lib\libsimgrid.@LIB_EXE@
 
 	# delete installed bin
 	delete $INSTDIR\bin\colorize
-	delete $INSTDIR\bin\graphicator.exe
-	delete $INSTDIR\bin\gras_stub_generator.exe
+	delete $INSTDIR\bin\graphicator@BIN_EXE@
+	delete $INSTDIR\bin\gras_stub_generator@BIN_EXE@
 	delete $INSTDIR\bin\simgrid_update_xml
 	delete $INSTDIR\bin\smpicc
 	delete $INSTDIR\bin\smpif2c
@@ -233,8 +234,9 @@ section "Uninstall"
 	delete $INSTDIR\include\simix\context.h
 		
 	# delete link
-	delete "$SMPROGRAMS\SimGrid\uninstall simgrid.lnk"
-
+	delete "$SMPROGRAMS\SimGrid\Uninstall simgrid.lnk"
+	delete "$SMPROGRAMS\SimGrid\Documentation.lnk"
+	
 	# now delete directories
 	RMDir  "$INSTDIR\bin"
 	RMDir  "$INSTDIR\lib"

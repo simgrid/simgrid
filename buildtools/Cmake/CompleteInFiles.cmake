@@ -807,4 +807,10 @@ endif("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 "${generate_files_to_clean}")
 
+
+IF(${ARCH_32_BITS})
+  set(WIN_ARCH "32")
+ELSE(${ARCH_32_BITS})
+    set(WIN_ARCH "64")
+ENDIF(${ARCH_32_BITS})
 configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/simgrid.nsi.in" 	"${CMAKE_BINARY_DIR}/simgrid.nsi" @ONLY IMMEDIATE)
