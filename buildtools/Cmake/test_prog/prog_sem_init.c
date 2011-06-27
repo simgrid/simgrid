@@ -6,7 +6,7 @@
 
 #include <semaphore.h>
 
-void main(void)
+int main(void)
 {
   sem_t s;
   if (sem_init(&s, 0, 0) != 0) 
