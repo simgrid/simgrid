@@ -20,7 +20,7 @@ option(release "Whether Release Mode is activated (disable tests on experimental
 
 option(enable_gtnets "Whether gtnets model is activated." on)
 option(enable_ns3    "Whether ns3 model is activated." off)
-option(enable_smpi "This variable set smpi lib." on)
+option(enable_smpi "This variable set smpi lib." off)
 option(enable_lua "Whether the lua bindings are activated." on)
 set(enable_pcre ${enable_pcre} CACHE FORCE "Whether the pcre lib is activated.")
 if(enable_pcre STREQUAL "")
