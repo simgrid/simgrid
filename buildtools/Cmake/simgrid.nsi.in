@@ -130,7 +130,7 @@ section
 	#install doc
 	CreateDirectory $INSTDIR\doc
 	setOutPath $INSTDIR\doc
-	file /r @CMAKE_HOME_DIRECTORY@\doc\html
+	file /nonfatal /r @CMAKE_HOME_DIRECTORY@\doc\html
 
 	# define uninstaller name
 	writeUninstaller $INSTDIR\uninstaller@BIN_EXE@
@@ -251,7 +251,7 @@ section "Uninstall"
 	RMDir  "$INSTDIR\include\mc"
 	RMDir  "$INSTDIR\include\xbt"
 	RMDir  "$INSTDIR\include"
-	RMDir  "$INSTDIR\doc"
+	RMDir  /r "$INSTDIR\doc"
 	RMDir  "$SMPROGRAMS\SimGrid"
 	RMDir  "$PROGRAMFILES\SimGrid"
 
