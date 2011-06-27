@@ -1,13 +1,22 @@
-SimGrid (3.7) unstable; urgency=medium
+SimGrid (3.6.1) unstable; urgency=low 
+
+ The "Oops, we broke Macs too" release
+
+ Portability
+ * Fixed contextes detection so that raw ones are used when possible   
+ * On Mac, do not use Posix Ucontextes with gcc v4.[1-5] since this
+   leads to a strange error, with user code segfaulting sometimes when
+   the generated code is not perfectly aligned (which is not
+   controlable from the user side, depends on the amount of code)
 
  XBT
  * New macro: CATCH_ANONYMOUS, which is like CATCH(e) but without argument.
 
- -- `LC_ALL=C date` Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Mon Jun 27 13:59:03 CEST 2011 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.6) stable; urgency=medium
 
- The Summer Release, also known as the "F*! They Killed Kenny!" version
+ The Summer Release, also known as the "Oh my god! They Killed Kenny!" version
 
  Java and Ruby: 
  * Bindings now constitute their own package, separated from the main one.
