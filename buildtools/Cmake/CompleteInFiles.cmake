@@ -88,6 +88,7 @@ endif(enable_ns3)
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(pthread 	pthread_create 			"" pthread)
 CHECK_LIBRARY_EXISTS(pthread 	sem_init 				"" HAVE_SEM_INIT_LIB)
+CHECK_LIBRARY_EXISTS(pthread 	sem_open 				"" HAVE_SEM_OPEN_LIB)
 CHECK_LIBRARY_EXISTS(pthread 	sem_timedwait 			"" HAVE_SEM_TIMEDWAIT_LIB)
 CHECK_LIBRARY_EXISTS(pthread 	pthread_mutex_timedlock "" HAVE_MUTEX_TIMEDLOCK_LIB)
 CHECK_LIBRARY_EXISTS(rt 		clock_gettime 			"" HAVE_POSIX_GETTIME)
@@ -205,18 +206,47 @@ elseif(pthread)
 endif(pthread)
 
 if(pthread)
-	### HAVE_SEM_INIT
+	### Test that we have a way to create semaphores
   	
+  	if(HAVE_SEM_OPEN_LIB)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_open.c -o testprog"
+		             OUTPUT_VARIABLE HAVE_SEM_OPEN_run)
+	    	if(HAVE_SEM_OPEN_run)
+			set(HAVE_SEM_OPEN 0)
+	    	else(HAVE_SEM_OPEN_run)
+			exec_program("./testprog" RETURN_VALUE HAVE_SEM_OPEN_run2)
+		    	if(HAVE_SEM_OPEN_run2)
+				set(HAVE_SEM_OPEN 0)
+	    		else(HAVE_SEM_OPEN_run2)
+				set(HAVE_SEM_OPEN 1)
+	    		endif(HAVE_SEM_OPEN_run2)	
+		endif(HAVE_SEM_OPEN_run)
+        else(HAVE_SEM_OPEN_LIB)
+		set(HAVE_SEM_OPEN 0)
+  	endif(HAVE_SEM_OPEN_LIB)
+
   	if(HAVE_SEM_INIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -o testprog" 
+		             OUTPUT_VARIABLE HAVE_SEM_INIT_run)
 	    	if(HAVE_SEM_INIT_run)
 			set(HAVE_SEM_INIT 0)
 	    	else(HAVE_SEM_INIT_run)
-			set(HAVE_SEM_INIT 1)
+			exec_program("./testprog" RETURN_VALUE HAVE_SEM_INIT_run)
+			if(HAVE_SEM_INIT_run)
+				set(HAVE_SEM_INIT 0)
+			else(HAVE_SEM_INIT_run)
+				set(HAVE_SEM_INIT 1)
+			endif(HAVE_SEM_INIT_run)
 		endif(HAVE_SEM_INIT_run)
+        else(HAVE_SEM_INIT_LIB)
+		set(HAVE_SEM_INIT 0)
   	endif(HAVE_SEM_INIT_LIB)
 
-	### HAVE_SEM_TIMEDWAIT
+	if(NOT HAVE_SEM_OPEN AND NOT HAVE_SEM_INIT)
+		message(FATAL_ERROR "Semaphores are not usable, but they are mandatory to threads (you may need to mount /dev).")
+	endif(NOT HAVE_SEM_OPEN AND NOT HAVE_SEM_INIT)
+
+	### Test that we have a way to timewait for semaphores
 
 	if(HAVE_SEM_TIMEDWAIT_LIB)
 		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
