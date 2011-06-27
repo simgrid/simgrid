@@ -15,7 +15,105 @@ section
 	setOutPath $INSTDIR\lib
 	file lib\libgras.a
 	file lib\libsimgrid.a
-
+	
+	#install headers
+	CreateDirectory  $INSTDIR\include
+	setOutPath $INSTDIR\include
+	file @CMAKE_HOME_DIRECTORY@\include\gras.h 
+	file @CMAKE_HOME_DIRECTORY@\include\xbt.h
+	file include\simgrid_config.h
+	
+	CreateDirectory  $INSTDIR\include\xbt
+	setOutPath $INSTDIR\include\xbt
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\misc.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\sysdep.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\virtu.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\str.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\strbuff.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\hash.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\function_types.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\asserts.h 
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\ex.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\log.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\module.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\mallocator.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\dynar.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\dict.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\set.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\heap.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\graph.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\fifo.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\swag.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\lib.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\matrix.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\peer.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\config.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\cunit.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\graphxml_parse.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\graphxml.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\time.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\synchro.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\synchro_core.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\queue.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\setset.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\mmalloc.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\replay_trace_reader.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\parmap.h
+	
+	CreateDirectory  $INSTDIR\include\mc
+	setOutPath $INSTDIR\include\mc
+	file @CMAKE_HOME_DIRECTORY@\include\mc\modelchecker.h
+	
+	CreateDirectory  $INSTDIR\include\msg
+	setOutPath $INSTDIR\include\msg
+	file @CMAKE_HOME_DIRECTORY@\include\msg\msg.h
+	file @CMAKE_HOME_DIRECTORY@\include\msg\datatypes.h
+	
+	CreateDirectory  $INSTDIR\include\simdag
+	setOutPath $INSTDIR\include\simdag
+	file @CMAKE_HOME_DIRECTORY@\include\simdag\simdag.h
+	file @CMAKE_HOME_DIRECTORY@\include\simdag\datatypes.h
+	
+	CreateDirectory  $INSTDIR\include\smpi
+	setOutPath $INSTDIR\include\smpi
+	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi.h
+	file @CMAKE_HOME_DIRECTORY@\include\smpi\mpi.h
+	file @CMAKE_HOME_DIRECTORY@\include\smpi\mpif.h
+	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi_cocci.h
+	file include\smpi\smpif.h
+	
+	CreateDirectory  $INSTDIR\include\surf
+	setOutPath $INSTDIR\include\surf
+	file @CMAKE_HOME_DIRECTORY@\include\surf\surfxml_parse.h
+	file @CMAKE_HOME_DIRECTORY@\include\surf\simgrid_dtd.h
+	file @CMAKE_HOME_DIRECTORY@\include\surf\surf_routing.h
+	
+	CreateDirectory  $INSTDIR\include\gras
+	setOutPath $INSTDIR\include\gras
+	file @CMAKE_HOME_DIRECTORY@\include\gras\datadesc.h
+	file @CMAKE_HOME_DIRECTORY@\include\gras\transport.h
+	file @CMAKE_HOME_DIRECTORY@\include\gras\virtu.h
+	file @CMAKE_HOME_DIRECTORY@\include\gras\emul.h
+	file @CMAKE_HOME_DIRECTORY@\include\gras\process.h
+	file @CMAKE_HOME_DIRECTORY@\include\gras\module.h
+	file @CMAKE_HOME_DIRECTORY@\include\gras\messages.h
+	file @CMAKE_HOME_DIRECTORY@\include\gras\timer.h
+	
+	CreateDirectory  $INSTDIR\include\amok
+	setOutPath $INSTDIR\include\amok
+	file @CMAKE_HOME_DIRECTORY@\include\amok\peermanagement.h
+	file @CMAKE_HOME_DIRECTORY@\include\amok\bandwidth.h
+	
+	CreateDirectory  $INSTDIR\include\instr
+	setOutPath $INSTDIR\include\instr
+	file @CMAKE_HOME_DIRECTORY@\include\instr\instr.h
+	
+	CreateDirectory  $INSTDIR\include\simix
+	setOutPath $INSTDIR\include\simix
+	file @CMAKE_HOME_DIRECTORY@\include\simix\simix.h
+	file @CMAKE_HOME_DIRECTORY@\include\simix\datatypes.h
+	file @CMAKE_HOME_DIRECTORY@\include\simix\context.h
+	
 	# insatll bin
 	CreateDirectory $INSTDIR\bin
 	setOutPath $INSTDIR\bin
@@ -28,6 +126,11 @@ section
 	file bin\smpiff
 	file bin\smpirun
 	file bin\tesh
+	
+	#install doc
+	CreateDirectory $INSTDIR\doc
+	setOutPath $INSTDIR\doc
+	file /r @CMAKE_HOME_DIRECTORY@\doc\html
 
 	# define uninstaller name
 	writeUninstaller $INSTDIR\uninstaller.exe
@@ -52,7 +155,7 @@ section "Uninstall"
 	delete $INSTDIR\lib\libgras.a
 	delete $INSTDIR\lib\libsimgrid.a
 
-	# delete insatlled bin
+	# delete installed bin
 	delete $INSTDIR\bin\colorize
 	delete $INSTDIR\bin\graphicator.exe
 	delete $INSTDIR\bin\gras_stub_generator.exe
@@ -62,13 +165,91 @@ section "Uninstall"
 	delete $INSTDIR\bin\smpiff
 	delete $INSTDIR\bin\smpirun
 	delete $INSTDIR\bin\tesh
-
+	
+	# delete installed headers
+	delete $INSTDIR\include\gras.h 
+	delete $INSTDIR\include\xbt.h
+	delete $INSTDIR\include\simgrid_config.h
+	delete $INSTDIR\include\xbt\misc.h
+	delete $INSTDIR\include\xbt\sysdep.h
+	delete $INSTDIR\include\xbt\virtu.h
+	delete $INSTDIR\include\xbt\str.h
+	delete $INSTDIR\include\xbt\strbuff.h
+	delete $INSTDIR\include\xbt\hash.h
+	delete $INSTDIR\include\xbt\function_types.h
+	delete $INSTDIR\include\xbt\asserts.h 
+	delete $INSTDIR\include\xbt\ex.h
+	delete $INSTDIR\include\xbt\log.h
+	delete $INSTDIR\include\xbt\module.h
+	delete $INSTDIR\include\xbt\mallocator.h
+	delete $INSTDIR\include\xbt\dynar.h
+	delete $INSTDIR\include\xbt\dict.h
+	delete $INSTDIR\include\xbt\set.h
+	delete $INSTDIR\include\xbt\heap.h
+	delete $INSTDIR\include\xbt\graph.h
+	delete $INSTDIR\include\xbt\fifo.h
+	delete $INSTDIR\include\xbt\swag.h
+	delete $INSTDIR\include\xbt\lib.h
+	delete $INSTDIR\include\xbt\matrix.h
+	delete $INSTDIR\include\xbt\peer.h
+	delete $INSTDIR\include\xbt\config.h
+	delete $INSTDIR\include\xbt\cunit.h
+	delete $INSTDIR\include\xbt\graphxml_parse.h
+	delete $INSTDIR\include\xbt\graphxml.h
+	delete $INSTDIR\include\xbt\time.h
+	delete $INSTDIR\include\xbt\synchro.h
+	delete $INSTDIR\include\xbt\synchro_core.h
+	delete $INSTDIR\include\xbt\queue.h
+	delete $INSTDIR\include\xbt\setset.h
+	delete $INSTDIR\include\xbt\mmalloc.h
+	delete $INSTDIR\include\xbt\replay_trace_reader.h
+	delete $INSTDIR\include\xbt\parmap.h
+	delete $INSTDIR\include\mc\modelchecker.h
+	delete $INSTDIR\include\msg\msg.h
+	delete $INSTDIR\include\msg\datatypes.h	
+	delete $INSTDIR\include\simdag\simdag.h
+	delete $INSTDIR\include\simdag\datatypes.h
+	delete $INSTDIR\include\smpi\smpi.h
+	delete $INSTDIR\include\smpi\mpi.h
+	delete $INSTDIR\include\smpi\mpif.h
+	delete $INSTDIR\include\smpi\smpi_cocci.h
+	delete $INSTDIR\include\smpi\smpif.h
+	delete $INSTDIR\include\surf\surfxml_parse.h
+	delete $INSTDIR\include\surf\simgrid_dtd.h
+	delete $INSTDIR\include\surf\surf_routing.h
+	delete $INSTDIR\include\gras\datadesc.h
+	delete $INSTDIR\include\gras\transport.h
+	delete $INSTDIR\include\gras\virtu.h
+	delete $INSTDIR\include\gras\emul.h
+	delete $INSTDIR\include\gras\process.h
+	delete $INSTDIR\include\gras\module.h
+	delete $INSTDIR\include\gras\messages.h
+	delete $INSTDIR\include\gras\timer.h
+	delete $INSTDIR\include\amok\peermanagement.h
+	delete $INSTDIR\include\amok\bandwidth.h
+	delete $INSTDIR\include\instr\instr.h
+	delete $INSTDIR\include\simix\simix.h
+	delete $INSTDIR\include\simix\datatypes.h
+	delete $INSTDIR\include\simix\context.h
+		
 	# delete link
 	delete "$SMPROGRAMS\SimGrid\uninstall simgrid.lnk"
 
 	# now delete directories
 	RMDir  "$INSTDIR\bin"
 	RMDir  "$INSTDIR\lib"
+	RMDir  "$INSTDIR\include\simix"
+	RMDir  "$INSTDIR\include\instr"
+	RMDir  "$INSTDIR\include\amok"
+	RMDir  "$INSTDIR\include\gras"
+	RMDir  "$INSTDIR\include\surf"
+	RMDir  "$INSTDIR\include\smpi"
+	RMDir  "$INSTDIR\include\simdag"
+	RMDir  "$INSTDIR\include\msg"
+	RMDir  "$INSTDIR\include\mc"
+	RMDir  "$INSTDIR\include\xbt"
+	RMDir  "$INSTDIR\include"
+	RMDir  "$INSTDIR\doc"
 	RMDir  "$SMPROGRAMS\SimGrid"
 	RMDir  "$PROGRAMFILES\SimGrid"
 
