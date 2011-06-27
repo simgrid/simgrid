@@ -20,7 +20,7 @@ SimGrid (3.6.1) unstable; urgency=low
 
 SimGrid (3.6) stable; urgency=medium
 
- The Summer Release, also known as the "Oh my god! They Killed Kenny!" version
+ The Summer Release, also known as the "OMG! They Killed Kenny!" version
 
  Java and Ruby: 
  * Bindings now constitute their own package, separated from the main one.
