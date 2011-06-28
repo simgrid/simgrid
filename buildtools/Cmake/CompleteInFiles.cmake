@@ -804,8 +804,6 @@ else("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 		)
 endif("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 
-message("generated_files_to_clean:\n${generated_files_to_clean}")
-
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 "${generated_files_to_clean}")
 
