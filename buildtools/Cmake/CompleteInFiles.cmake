@@ -3,12 +3,18 @@ ${CMAKE_MODULE_PATH}
 ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
 )
 
-IF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+IF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") #Intel processor 64 bits
    message(STATUS "System processor: amd64")
+   set(HAVE_RAWCTX 1)
+   
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "x86") #Intel processor 32 bits
+   message(STATUS "System processor: x86")
+   set(PROCESSOR_i686 1)
    set(HAVE_RAWCTX 1)
    
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^i.86$")
     IF(${ARCH_32_BITS})
+        set(PROCESSOR_i686 1)
         message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}")
     ELSE(${ARCH_32_BITS})
         message(STATUS "System processor: amd64")
