@@ -3,12 +3,18 @@ ${CMAKE_MODULE_PATH}
 ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
 )
 
-IF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+IF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") #Intel processor 64 bits
    message(STATUS "System processor: amd64")
+   set(HAVE_RAWCTX 1)
+   
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "x86") #Intel processor 32 bits
+   message(STATUS "System processor: x86")
+   set(PROCESSOR_i686 1)
    set(HAVE_RAWCTX 1)
    
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^i.86$")
     IF(${ARCH_32_BITS})
+        set(PROCESSOR_i686 1)
         message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}")
     ELSE(${ARCH_32_BITS})
         message(STATUS "System processor: amd64")
@@ -214,7 +220,7 @@ if(pthread)
 	    	if(HAVE_SEM_OPEN_run)
 			set(HAVE_SEM_OPEN 0)
 	    	else(HAVE_SEM_OPEN_run)
-			exec_program("./testprog" RETURN_VALUE HAVE_SEM_OPEN_run2)
+			exec_program("./testprog" RETURN_VALUE HAVE_SEM_OPEN_run2 OUTPUT_VARIABLE var_compil)
 		    	if(HAVE_SEM_OPEN_run2)
 				set(HAVE_SEM_OPEN 0)
 	    		else(HAVE_SEM_OPEN_run2)
@@ -231,7 +237,7 @@ if(pthread)
 	    	if(HAVE_SEM_INIT_run)
 			set(HAVE_SEM_INIT 0)
 	    	else(HAVE_SEM_INIT_run)
-			exec_program("./testprog" RETURN_VALUE HAVE_SEM_INIT_run)
+			exec_program("./testprog" RETURN_VALUE HAVE_SEM_INIT_run OUTPUT_VARIABLE var_compil)
 			if(HAVE_SEM_INIT_run)
 				set(HAVE_SEM_INIT 0)
 			else(HAVE_SEM_INIT_run)
@@ -795,8 +801,8 @@ else("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
 	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing/platform.xml ${CMAKE_BINARY_DIR}/examples/msg/tracing/platform.xml COPYONLY)
 	
-	set(generate_files_to_clean
-		${generate_files_to_clean}
+	set(generated_files_to_clean
+		${generated_files_to_clean}
 		${CMAKE_BINARY_DIR}/examples/smpi/hostfile
 		${CMAKE_BINARY_DIR}/examples/msg/small_platform.xml
 		${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml
@@ -805,7 +811,7 @@ else("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 endif("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-"${generate_files_to_clean}")
+"${generated_files_to_clean}")
 
 
 IF(${ARCH_32_BITS})
