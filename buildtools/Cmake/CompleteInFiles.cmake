@@ -795,8 +795,8 @@ else("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
 	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing/platform.xml ${CMAKE_BINARY_DIR}/examples/msg/tracing/platform.xml COPYONLY)
 	
-	set(generate_files_to_clean
-		${generate_files_to_clean}
+	set(generated_files_to_clean
+		${generated_files_to_clean}
 		${CMAKE_BINARY_DIR}/examples/smpi/hostfile
 		${CMAKE_BINARY_DIR}/examples/msg/small_platform.xml
 		${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml
@@ -804,8 +804,10 @@ else("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 		)
 endif("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 
+message("generated_files_to_clean:\n${generated_files_to_clean}")
+
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-"${generate_files_to_clean}")
+"${generated_files_to_clean}")
 
 
 IF(${ARCH_32_BITS})
