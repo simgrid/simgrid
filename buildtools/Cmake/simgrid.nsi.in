@@ -140,6 +140,16 @@ section
 	createShortCut  "$SMPROGRAMS\SimGrid\Uninstall simgrid.lnk" "$INSTDIR\uninstaller@BIN_EXE@"
 	createShortCut  "$SMPROGRAMS\SimGrid\Documentation.lnk"	"$INSTDIR\doc\index.html"
 	
+	# Include for some of the windows message defines
+	!include "winmessages.nsh"
+	# HKLM (all users) vs HKCU (current user) defines
+	!define env_hklm 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
+	!define env_hkcu 'HKCU "Environment"'
+	# Set Variables
+	WriteRegExpandStr ${env_hklm} SIMGRID_ROOT $INSTDIR\lib
+	WriteRegExpandStr ${env_hklm} GRAS_ROOT $INSTDIR\lib
+	WriteRegExpandStr ${env_hklm} SIMGRID_VERSION @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
+
 	MessageBox MB_OK "Installation was successful."
 
 # default section end
@@ -254,6 +264,11 @@ section "Uninstall"
 	RMDir  /r "$INSTDIR\doc"
 	RMDir  "$SMPROGRAMS\SimGrid"
 	RMDir  "$PROGRAMFILES\SimGrid"
+	
+	# Delete variable
+	DeleteRegValue ${env_hklm} SIMGRID_ROOT
+	DeleteRegValue ${env_hklm} GRAS_ROOT
+	DeleteRegValue ${env_hklm} SIMGRID_VERSION
 
 # uninstall section end
 sectionEnd
