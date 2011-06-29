@@ -32,6 +32,8 @@ else{
 	$OS = "WIN";
 }
 
+print "OS: ".$OS."\n";
+
 # make sure we received a tesh file
 scalar @ARGV > 0 || die "Usage:\n    tesh [*options*] *tesh_file*\n";
 
@@ -175,6 +177,8 @@ sub exec_cmd {
     # cleanup the command line
     if($OS eq "WIN"){
 		$cmd{'cmd'} =~ s/\${EXEEXT:=}/.exe/g;
+		$cmd{'cmd'} =~ s/\${EXEEXT}/.exe/g;
+		$cmd{'cmd'} =~ s/\$EXEEXT/.exe/g;
 	}
 	else{
 		$cmd{'cmd'} =~ s/\${EXEEXT:=}//g;
