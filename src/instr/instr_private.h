@@ -13,7 +13,7 @@
 
 /* Need to define function drand48 for Windows */
 #ifdef _WIN32
-	#define drand48() rand()/(float)(RAND_MAX);
+#  define drand48() (rand()/(RAND_MAX + 1.0))
 #endif
 
 #define INSTR_DEFAULT_STR_SIZE 500
