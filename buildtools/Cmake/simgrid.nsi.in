@@ -131,7 +131,8 @@ section
 	CreateDirectory $INSTDIR\doc
 	setOutPath $INSTDIR\doc
 	file /nonfatal /r @CMAKE_HOME_DIRECTORY@\doc\html
-
+	file /r @CMAKE_HOME_DIRECTORY@\doc\HelloWorld
+	
 	# define uninstaller name
 	writeUninstaller $INSTDIR\uninstaller@BIN_EXE@
 
@@ -146,8 +147,8 @@ section
 	!define env_hklm 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 	!define env_hkcu 'HKCU "Environment"'
 	# Set Variables
-	WriteRegExpandStr ${env_hklm} SIMGRID_ROOT $INSTDIR\lib
-	WriteRegExpandStr ${env_hklm} GRAS_ROOT $INSTDIR\lib
+	WriteRegExpandStr ${env_hklm} SIMGRID_ROOT $INSTDIR
+	WriteRegExpandStr ${env_hklm} GRAS_ROOT $INSTDIR
 	WriteRegExpandStr ${env_hklm} SIMGRID_VERSION @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
 
 	MessageBox MB_OK "Installation was successful."
