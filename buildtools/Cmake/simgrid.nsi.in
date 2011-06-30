@@ -127,11 +127,16 @@ section
 	file bin\smpirun
 	file bin\tesh
 	
-	#install doc
+	# install doc
 	CreateDirectory $INSTDIR\doc
 	setOutPath $INSTDIR\doc
 	file /nonfatal /r @CMAKE_HOME_DIRECTORY@\doc\html
 	file /r @CMAKE_HOME_DIRECTORY@\doc\HelloWorld
+	
+	# install examples
+	CreateDirectory $INSTDIR\examples
+	setOutPath $INSTDIR\examples
+	file /r @CMAKE_HOME_DIRECTORY@\examples\platforms	
 	
 	# define uninstaller name
 	writeUninstaller $INSTDIR\uninstaller@BIN_EXE@
@@ -263,8 +268,8 @@ section "Uninstall"
 	RMDir  "$INSTDIR\include\xbt"
 	RMDir  "$INSTDIR\include"
 	RMDir  /r "$INSTDIR\doc"
+	RMDir  /r "$INSTDIR\examples"
 	RMDir  "$SMPROGRAMS\SimGrid"
-	RMDir  "$PROGRAMFILES\SimGrid"
 	
 	# Delete variable
 	DeleteRegValue ${env_hklm} SIMGRID_ROOT
