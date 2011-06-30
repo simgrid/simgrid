@@ -1,8 +1,31 @@
-Name "Simgrid"
-XPstyle on
+!include "MUI2.nsh"
 
-# define installer name
+Name "Simgrid"
 outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@_@CMAKE_SYSTEM_PROCESSOR@@BIN_EXE@"
+
+;--------------------------------
+;Interface Configuration
+
+  !define MUI_HEADERIMAGE
+  !define MUI_HEADERIMAGE_BITMAP "@CMAKE_HOME_DIRECTORY@\doc\webcruft\simgrid_logo_win.bmp" ; optional
+  !define MUI_ABORTWARNING
+
+;--------------------------------
+;Pages
+
+  !insertmacro MUI_PAGE_LICENSE "@CMAKE_HOME_DIRECTORY@\LICENSE-LGPL-2.1"
+  #!insertmacro MUI_PAGE_COMPONENTS
+  !insertmacro MUI_PAGE_DIRECTORY
+  !insertmacro MUI_PAGE_INSTFILES
+  
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_INSTFILES
+  
+;--------------------------------
+;Languages
+  !insertmacro MUI_LANGUAGE "English"
+
+;--------------------------------
 
 # set the default installation directory
 InstallDir $PROGRAMFILES\SimGrid
@@ -147,7 +170,7 @@ section
 	# create a shortcut in the start menu programs directory
 	CreateDirectory "$SMPROGRAMS\SimGrid"
 	createShortCut  "$SMPROGRAMS\SimGrid\Uninstall simgrid.lnk" "$INSTDIR\uninstaller@BIN_EXE@"
-	createShortCut  "$SMPROGRAMS\SimGrid\Documentation.lnk"	"$INSTDIR\doc\index.html"
+	createShortCut  "$SMPROGRAMS\SimGrid\Documentation.lnk"	"$INSTDIR\doc\html\index.html"
 	
 	# Include for some of the windows message defines
 	!include "winmessages.nsh"
@@ -158,8 +181,6 @@ section
 	WriteRegExpandStr ${env_hklm} SIMGRID_ROOT $INSTDIR
 	WriteRegExpandStr ${env_hklm} GRAS_ROOT $INSTDIR
 	WriteRegExpandStr ${env_hklm} SIMGRID_VERSION @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
-
-	MessageBox MB_OK "Installation was successful."
 
 # default section end
 sectionEnd
