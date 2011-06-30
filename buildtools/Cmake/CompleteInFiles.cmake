@@ -352,9 +352,8 @@ endif(pthread)
 ###############
 ## SVN version check
 ##
-exec_program("git config --get svn-remote.svn.url"
-	OUTPUT_VARIABLE url
-	RETURN_VALUE ret)
+exec_program("git remote" OUTPUT_VARIABLE remote RETURN_VALUE ret)
+exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
 
 if(url)
 	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
