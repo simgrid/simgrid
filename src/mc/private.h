@@ -179,54 +179,56 @@ typedef struct s_memory_map {
 
 memory_map_t get_memory_map(void);
 
-/********************************** DFS **************************************/
 
-typedef enum {
-  GREEN=0,
-  ORANGE,
-  RED
-}e_mc_color_pair_t;
+/********************************** DFS for liveness property**************************************/
 
-typedef struct s_mc_pairs{
+typedef struct s_mc_pair{
   mc_snapshot_t system_state;
   mc_state_t graph_state;
   xbt_state_t automaton_state;
   int num;
-  e_mc_color_pair_t color;
-  int expanded;
-  int predecessor;
-}s_mc_pairs_t, *mc_pairs_t;
-
-typedef struct s_mc_visited_pairs{
-  mc_state_t graph_state;
-  xbt_state_t automaton_state;
-  int search_cycle;
-}s_mc_visited_pairs_t, *mc_visited_pairs_t;
-
-typedef struct s_mc_reached_pairs{
-  mc_state_t graph_state;
-  xbt_state_t automaton_state;
-}s_mc_reached_pairs_t, *mc_reached_pairs_t;
+}s_mc_pair_t, *mc_pair_t;
 
 extern xbt_fifo_t mc_snapshot_stack;
 
-void MC_dfs_init(xbt_automaton_t a);
-void MC_dfs(xbt_automaton_t automaton, int search_cycle, int restore);
 int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
-mc_pairs_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
-void set_pair_visited(mc_state_t gs, xbt_state_t as, int search_cycle);
-int visited(mc_state_t gs, xbt_state_t as, int search_cycle);
-int reached(mc_state_t gs, xbt_state_t as);
-void set_pair_reached(mc_state_t gs, xbt_state_t as);
+mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
+
+int reached(mc_pair_t p);
+void set_pair_reached(mc_pair_t p);
 void MC_show_snapshot_stack(xbt_fifo_t stack);
 void MC_dump_snapshot_stack(xbt_fifo_t stack);
-void MC_pair_delete(mc_pairs_t pair);
+void MC_pair_delete(mc_pair_t pair);
 void MC_exit_with_automaton(void);
 mc_state_t MC_state_pair_new(void);
 
-/********************************** Stateful DPOR **************************************/
+/* **** Double-DFS without visited state **** */
 
-void MC_dpor_with_restore_snapshot(xbt_automaton_t a, int search_cycle, int restore);
-void MC_dpor_with_restore_snapshot_init(xbt_automaton_t a);
+void MC_ddfs_with_restore_snapshot_init(xbt_automaton_t a);
+void MC_ddfs_with_restore_snapshot(xbt_automaton_t a, int search_cycle, int restore);
+
+/* **** Double-DFS with visited state **** */
+
+typedef struct s_mc_visited_pair{
+  mc_pair_t pair;
+  int search_cycle;
+}s_mc_visited_pair_t, *mc_visited_pair_t;
+
+void MC_vddfs_with_restore_snapshot_init(xbt_automaton_t a);
+void MC_vddfs_with_restore_snapshot(xbt_automaton_t automaton, int search_cycle, int restore);
+void set_pair_visited(mc_pair_t p, int search_cycle);
+int visited(mc_pair_t p, int search_cycle);
+
+
+/* **** DPOR with restore snapshot **** */
+
+typedef struct s_mc_state_with_snapshot{
+  mc_snapshot_t system_state;
+  mc_state_t graph_state;
+}s_mc_state_ws_t, *mc_state_ws_t;
+
+mc_state_ws_t new_state_ws(mc_snapshot_t s, mc_state_t gs);
+void MC_dpor_with_restore_snapshot_init(void);
+void MC_dpor_with_restore_snapshot(void);
 
 #endif

@@ -55,7 +55,7 @@ int server(int argc, char *argv[])
     }
     MSG_task_receive(&task, "mymailbox");
     count++;
-    e=(e+1)%2;
+    //e=(e+1)%2;
     //d=(d+1)%2;
     //XBT_INFO("r (server) = %d", r);
      

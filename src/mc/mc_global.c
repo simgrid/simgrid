@@ -76,8 +76,8 @@ void MC_init_with_automaton(xbt_automaton_t a){
 
   MC_UNSET_RAW_MEM;
 
-  //MC_dfs_init(a);
-  MC_dfs_init(a);
+  //MC_vddfs_with_restore_snapshot_init(a);
+  MC_ddfs_with_restore_snapshot_init(a);
 }
 
 

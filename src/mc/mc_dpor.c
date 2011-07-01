@@ -177,3 +177,168 @@ void MC_dpor(void)
   MC_UNSET_RAW_MEM;
   return;
 }
+
+
+/********************* DPOR without replay *********************/
+
+mc_state_ws_t new_state_ws(mc_snapshot_t s, mc_state_t gs){
+  mc_state_ws_t sws = NULL;
+  sws = xbt_new0(s_mc_state_ws_t, 1);
+  sws->system_state = s;
+  sws->graph_state = gs;
+  return sws;
+}
+
+void MC_dpor_with_restore_snapshot_init(){
+
+  XBT_DEBUG("**************************************************");
+  XBT_DEBUG("DPOR (with restore snapshot) init");
+  XBT_DEBUG("**************************************************");
+
+  mc_state_t initial_graph_state;
+  smx_process_t process; 
+  mc_snapshot_t initial_system_snapshot;
+  mc_state_ws_t initial_state ;
+  
+  MC_wait_for_requests();
+
+  MC_SET_RAW_MEM;
+
+  initial_system_snapshot = xbt_new0(s_mc_snapshot_t, 1);
+
+  initial_graph_state = MC_state_new();
+  xbt_swag_foreach(process, simix_global->process_list){
+    if(MC_process_is_enabled(process)){
+      MC_state_interleave_process(initial_graph_state, process);
+      break;
+    }
+  }
+
+  MC_take_snapshot(initial_system_snapshot);
+
+  initial_state = new_state_ws(initial_system_snapshot, initial_graph_state);
+  xbt_fifo_unshift(mc_snapshot_stack, initial_state);
+
+  MC_UNSET_RAW_MEM;
+	  
+  MC_dpor_with_restore_snapshot();
+
+}
+
+void MC_dpor_with_restore_snapshot(){
+
+  smx_process_t process = NULL;
+  
+  if(xbt_fifo_size(mc_snapshot_stack) == 0)
+    return;
+
+  int value;
+  mc_state_t next_graph_state = NULL;
+  smx_req_t req = NULL, prev_req = NULL;
+  char *req_str;
+  xbt_fifo_item_t item = NULL;
+
+  mc_snapshot_t next_snapshot;
+  mc_state_ws_t current_state;
+  mc_state_ws_t prev_state;
+  mc_state_ws_t next_state;
+ 
+  while(xbt_fifo_size(mc_snapshot_stack) > 0){
+
+    current_state = (mc_state_ws_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_snapshot_stack));
+
+    
+    XBT_DEBUG("**************************************************");
+    XBT_DEBUG("Depth : %d, State : %p , %u interleave", xbt_fifo_size(mc_snapshot_stack),current_state, MC_state_interleave_size(current_state->graph_state));
+    
+
+    if((xbt_fifo_size(mc_snapshot_stack) < MAX_DEPTH) && (req = MC_state_get_request(current_state->graph_state, &value))){
+
+      /* Debug information */
+      if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
+	req_str = MC_request_to_string(req, value);
+	XBT_DEBUG("Execute: %s", req_str);
+	xbt_free(req_str);
+      }
+
+      MC_state_set_executed_request(current_state->graph_state, req, value);
+
+      /* Answer the request */
+      SIMIX_request_pre(req, value);
+      
+      /* Wait for requests (schedules processes) */
+      MC_wait_for_requests();
+      
+      /* Create the new expanded graph_state */
+      MC_SET_RAW_MEM;
+      
+      next_graph_state = MC_state_new();
+      
+      /* Get an enabled process and insert it in the interleave set of the next graph_state */
+      xbt_swag_foreach(process, simix_global->process_list){
+	if(MC_process_is_enabled(process)){
+	  MC_state_interleave_process(next_graph_state, process);
+	  break;
+	}
+      }
+
+      next_snapshot = xbt_new0(s_mc_snapshot_t, 1);
+      MC_take_snapshot(next_snapshot);
+
+      next_state = new_state_ws(next_snapshot, next_graph_state);
+      xbt_fifo_unshift(mc_snapshot_stack, next_state);
+      
+      MC_UNSET_RAW_MEM;
+
+    }else{
+      XBT_DEBUG("There are no more processes to interleave.");
+      
+      /* Trash the current state, no longer needed */
+      MC_SET_RAW_MEM;
+      xbt_fifo_shift(mc_snapshot_stack);
+      MC_UNSET_RAW_MEM;
+
+      while((current_state = xbt_fifo_shift(mc_snapshot_stack)) != NULL){
+	req = MC_state_get_internal_request(current_state->graph_state);
+	xbt_fifo_foreach(mc_snapshot_stack, item, prev_state, mc_state_ws_t) {
+          if(MC_request_depend(req, MC_state_get_internal_request(prev_state->graph_state))){
+            if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
+              XBT_DEBUG("Dependent Transitions:");
+              prev_req = MC_state_get_executed_request(prev_state->graph_state, &value);
+              req_str = MC_request_to_string(prev_req, value);
+              XBT_DEBUG("%s (state=%p)", req_str, prev_state->graph_state);
+              xbt_free(req_str);
+              prev_req = MC_state_get_executed_request(current_state->graph_state, &value);
+              req_str = MC_request_to_string(prev_req, value);
+              XBT_DEBUG("%s (state=%p)", req_str, current_state->graph_state);
+              xbt_free(req_str);              
+            }
+
+            if(!MC_state_process_is_done(prev_state->graph_state, req->issuer)){
+              MC_state_interleave_process(prev_state->graph_state, req->issuer);
+	      
+	    } else {
+              XBT_DEBUG("Process %p is in done set", req->issuer);
+	    }
+
+            break;
+          }
+        }
+
+	if(MC_state_interleave_size(current_state->graph_state)){
+	  MC_restore_snapshot(current_state->system_state);
+	  xbt_fifo_unshift(mc_snapshot_stack, current_state);
+	  XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_snapshot_stack));
+	  MC_UNSET_RAW_MEM;
+	  break;
+	}
+      }
+
+      MC_UNSET_RAW_MEM;
+
+    } 
+  }
+  MC_UNSET_RAW_MEM;
+  return;
+}
+
