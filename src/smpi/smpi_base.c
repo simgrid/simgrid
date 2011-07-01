@@ -26,8 +26,7 @@ static int match_recv(void* a, void* b) {
 
    xbt_assert(ref, "Cannot match recv against null reference");
    xbt_assert(req, "Cannot match recv against null request");
-   return req->size == ref->size
-          && (ref->src == MPI_ANY_SOURCE || req->src == ref->src)
+   return (ref->src == MPI_ANY_SOURCE || req->src == ref->src)
           && (ref->tag == MPI_ANY_TAG || req->tag == ref->tag);
 }
 
@@ -37,8 +36,7 @@ static int match_send(void* a, void* b) {
 
    xbt_assert(ref, "Cannot match send against null reference");
    xbt_assert(req, "Cannot match send against null request");
-   return req->size == ref->size
-          && (req->src == MPI_ANY_SOURCE || req->src == ref->src)
+   return (req->src == MPI_ANY_SOURCE || req->src == ref->src)
           && (req->tag == MPI_ANY_TAG || req->tag == ref->tag);
 }
 
