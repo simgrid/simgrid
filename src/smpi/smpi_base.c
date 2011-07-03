@@ -398,7 +398,7 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                       MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int system_tag = 666;
-  int rank, size, src, index, sendsize;
+  int rank, size, src, index, sendsize, recvsize;
   MPI_Request *requests;
 
   rank = smpi_comm_rank(comm);
@@ -408,8 +408,9 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     smpi_mpi_send(sendbuf, sendcount, sendtype, root, system_tag, comm);
   } else {
     sendsize = smpi_datatype_size(sendtype);
+    recvsize = smpi_datatype_size(recvtype);
     // Local copy from root
-    memcpy(&((char *) recvbuf)[displs[root]], sendbuf,
+    memcpy(&((char *) recvbuf)[displs[root] * recvsize], sendbuf,
            sendcount * sendsize * sizeof(char));
     // Receive buffers from senders
     requests = xbt_new(MPI_Request, size - 1);
@@ -417,7 +418,7 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     for(src = 0; src < size; src++) {
       if(src != root) {
         requests[index] =
-            smpi_irecv_init(&((char *) recvbuf)[displs[src]],
+            smpi_irecv_init(&((char *) recvbuf)[displs[src] * recvsize],
                             recvcounts[src], recvtype, src, system_tag,
                             comm);
         index++;
@@ -482,7 +483,7 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount,
   sendsize = smpi_datatype_size(sendtype);
   recvsize = smpi_datatype_size(recvtype);
   // Local copy from self
-  memcpy(&((char *) recvbuf)[displs[rank]], sendbuf,
+  memcpy(&((char *) recvbuf)[displs[rank] * recvsize], sendbuf,
          sendcount * sendsize * sizeof(char));
   // Send buffers to others;
   requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -494,7 +495,7 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount,
                           comm);
       index++;
       requests[index] =
-          smpi_irecv_init(&((char *) recvbuf)[displs[other]],
+          smpi_irecv_init(&((char *) recvbuf)[displs[other] * recvsize],
                           recvcounts[other], recvtype, other, system_tag,
                           comm);
       index++;
@@ -563,7 +564,7 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs,
     sendsize = smpi_datatype_size(sendtype);
     recvsize = smpi_datatype_size(recvtype);
     // Local copy from root
-    memcpy(recvbuf, &((char *) sendbuf)[displs[root]],
+    memcpy(recvbuf, &((char *) sendbuf)[displs[root] * sendsize],
            recvcount * recvsize * sizeof(char));
     // Send buffers to receivers
     requests = xbt_new(MPI_Request, size - 1);
@@ -571,7 +572,7 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs,
     for(dst = 0; dst < size; dst++) {
       if(dst != root) {
         requests[index] =
-            smpi_isend_init(&((char *) sendbuf)[displs[dst]],
+            smpi_isend_init(&((char *) sendbuf)[displs[dst] * sendsize],
                             sendcounts[dst], sendtype, dst, system_tag,
                             comm);
         index++;
@@ -727,7 +728,7 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count,
       smpi_op_apply(op, tmpbufs[index], recvbuf, &count, &datatype);
     }
   }
-  for(index = 0; index < size - 1; index++) {
+  for(index = 0; index < rank; index++) {
     xbt_free(tmpbufs[index]);
   }
   xbt_free(tmpbufs);
