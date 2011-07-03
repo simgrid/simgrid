@@ -845,10 +845,8 @@ void SIMIX_comm_copy_data(smx_action_t comm)
   if (comm->comm.dst_buff_size)
     *comm->comm.dst_buff_size = buff_size;
 
-  if (buff_size == 0)
-    return;
-
-  (*SIMIX_comm_copy_data_callback) (comm, buff_size);
+  if (buff_size > 0)
+    (*SIMIX_comm_copy_data_callback) (comm, buff_size);
 
   /* Set the copied flag so we copy data only once */
   /* (this function might be called from both communication ends) */
