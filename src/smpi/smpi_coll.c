@@ -268,24 +268,20 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
 {
   int system_tag = 888;
   int i, rank, size, err, count;
-  MPI_Aint lb;
-  MPI_Aint sendinc = 0;
-  MPI_Aint recvinc = 0;
+  MPI_Aint lb = 0, sendext = 0, recvext = 0;
   MPI_Request *requests;
 
   /* Initialize. */
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm alltoall_basic_linear() called.", rank);
-  err = smpi_datatype_extent(sendtype, &lb, &sendinc);
-  err = smpi_datatype_extent(recvtype, &lb, &recvinc);
-  sendinc *= sendcount;
-  recvinc *= recvcount;
+  err = smpi_datatype_extent(sendtype, &lb, &sendext);
+  err = smpi_datatype_extent(recvtype, &lb, &recvext);
   /* simple optimization */
-  err =
-      smpi_datatype_copy(&((char *) sendbuf)[rank * sendinc], sendcount,
-                         sendtype, &((char *) recvbuf)[rank * recvinc],
-                         recvcount, recvtype);
+  err = smpi_datatype_copy(sendbuf + rank * sendcount * sendext, sendcount, 
+                           sendtype, 
+                           recvbuf + rank * recvcount * recvext, recvcount, 
+                           recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
     requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -293,7 +289,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
     count = 0;
     for (i = (rank + 1) % size; i != rank; i = (i + 1) % size) {
       requests[count] =
-          smpi_irecv_init(&((char *) recvbuf)[i * recvinc], recvcount,
+          smpi_irecv_init(recvbuf + i * recvcount * recvext, recvcount, 
                           recvtype, i, system_tag, comm);
       count++;
     }
@@ -302,10 +298,9 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
      *     when messages actually arrive in the order in which they were posted.
      * TODO: check the previous assertion
      */
-    for (i = (rank + size - 1) % size; i != rank;
-         i = (i + size - 1) % size) {
+    for (i = (rank + size - 1) % size; i != rank; i = (i + size - 1) % size) {
       requests[count] =
-          smpi_isend_init(&((char *) sendbuf)[i * sendinc], sendcount,
+          smpi_isend_init(sendbuf + i * sendcount * sendext, sendcount,
                           sendtype, i, system_tag, comm);
       count++;
     }
@@ -364,23 +359,21 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
 {
   int system_tag = 889;
   int i, rank, size, err, count;
-  MPI_Aint lb;
-  MPI_Aint sendextent = 0;
-  MPI_Aint recvextent = 0;
+  MPI_Aint lb = 0, sendext = 0, recvext = 0;
   MPI_Request *requests;
 
   /* Initialize. */
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm basic_alltoallv() called.", rank);
-  err = smpi_datatype_extent(sendtype, &lb, &sendextent);
-  err = smpi_datatype_extent(recvtype, &lb, &recvextent);
+  err = smpi_datatype_extent(sendtype, &lb, &sendext);
+  err = smpi_datatype_extent(recvtype, &lb, &recvext);
   /* Local copy from self */
   err =
-      smpi_datatype_copy(&((char *) sendbuf)[senddisps[rank] * sendextent],
-                         sendcounts[rank], sendtype,
-                         &((char *) recvbuf)[recvdisps[rank] * recvextent],
-                         recvcounts[rank], recvtype);
+      smpi_datatype_copy(sendbuf + senddisps[rank] * sendext, sendcounts[rank], 
+                         sendtype,
+                         recvbuf + recvdisps[rank] * recvext, recvcounts[rank],
+                         recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
     requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -394,8 +387,8 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
         continue;
       }
       requests[count] =
-          smpi_irecv_init(&((char *) recvbuf)[recvdisps[i] * recvextent],
-                          recvcounts[i], recvtype, i, system_tag, comm);
+          smpi_irecv_init(recvbuf + recvdisps[i] * recvext, recvcounts[i], 
+                          recvtype, i, system_tag, comm);
       count++;
     }
     /* Now create all sends  */
@@ -407,8 +400,8 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
         continue;
       }
       requests[count] =
-          smpi_isend_init(&((char *) sendbuf)[senddisps[i] * sendextent],
-                          sendcounts[i], sendtype, i, system_tag, comm);
+          smpi_isend_init(sendbuf + senddisps[i] * sendext, sendcounts[i], 
+                          sendtype, i, system_tag, comm);
       count++;
     }
     /* Wait for them all. */
