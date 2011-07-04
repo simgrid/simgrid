@@ -14,7 +14,7 @@ outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION
 ;Pages
 
   !insertmacro MUI_PAGE_LICENSE "@CMAKE_HOME_DIRECTORY@\LICENSE-LGPL-2.1"
-  #!insertmacro MUI_PAGE_COMPONENTS
+  !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
   
@@ -24,17 +24,13 @@ outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION
 ;--------------------------------
 ;Languages
   !insertmacro MUI_LANGUAGE "English"
-
+  !insertmacro MUI_LANGUAGE "French"
 ;--------------------------------
 
 # set the default installation directory
-InstallDir $PROGRAMFILES\SimGrid
+InstallDir "c:\SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@"
 
-# The text to prompt the user to enter a directory
-DirText "This will install Simgrid on your computer. Choose a directory"
-
-# default section start
-section
+Section "Libraries and Headers" LibSection
 
 	# install lib
 	CreateDirectory $INSTDIR\lib
@@ -140,6 +136,9 @@ section
 	file @CMAKE_HOME_DIRECTORY@\include\simix\datatypes.h
 	file @CMAKE_HOME_DIRECTORY@\include\simix\context.h
 	
+SectionEnd
+Section "Binaries" BinSection	
+	
 	# insatll bin
 	CreateDirectory $INSTDIR\bin
 	setOutPath $INSTDIR\bin
@@ -153,25 +152,39 @@ section
 	file bin\smpirun
 	file bin\tesh
 	
+SectionEnd
+Section "Documentation" DocSection	
+	
 	# install doc
 	CreateDirectory $INSTDIR\doc
 	setOutPath $INSTDIR\doc
 	file /nonfatal /r @CMAKE_HOME_DIRECTORY@\doc\html
-	file /r @CMAKE_HOME_DIRECTORY@\doc\HelloWorld
+	# create a shortcut in the start menu programs directory
+	CreateDirectory "$SMPROGRAMS\SimGrid"
+	createShortCut  "$SMPROGRAMS\SimGrid\Documentation.lnk"	"$INSTDIR\doc\html\index.html"
+	
+SectionEnd
+Section "Examples" ExamplesSection	
 	
 	# install examples
 	CreateDirectory $INSTDIR\examples
 	setOutPath $INSTDIR\examples
-	file /r @CMAKE_HOME_DIRECTORY@\examples\platforms	
+	file /r @CMAKE_HOME_DIRECTORY@\examples\platforms
+	file /r @CMAKE_HOME_DIRECTORY@\doc\HelloWorld
+	# create a shortcut in the start menu programs directory
+	createShortCut  "$SMPROGRAMS\SimGrid\HelloWorld project.lnk"	"$INSTDIR\examples\HelloWorld"	
 	
+SectionEnd
+
+# default section start
+section	
 	# define uninstaller name
 	writeUninstaller $INSTDIR\uninstaller@BIN_EXE@
 
 	# create a shortcut in the start menu programs directory
 	CreateDirectory "$SMPROGRAMS\SimGrid"
 	createShortCut  "$SMPROGRAMS\SimGrid\Uninstall simgrid.lnk" "$INSTDIR\uninstaller@BIN_EXE@"
-	createShortCut  "$SMPROGRAMS\SimGrid\Documentation.lnk"	"$INSTDIR\doc\html\index.html"
-	
+
 	# Include for some of the windows message defines
 	!include "winmessages.nsh"
 	# HKLM (all users) vs HKCU (current user) defines
@@ -179,11 +192,27 @@ section
 	!define env_hkcu 'HKCU "Environment"'
 	# Set Variables
 	WriteRegExpandStr ${env_hklm} SIMGRID_ROOT $INSTDIR
-	WriteRegExpandStr ${env_hklm} GRAS_ROOT $INSTDIR
 	WriteRegExpandStr ${env_hklm} SIMGRID_VERSION @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
 
 # default section end
 sectionEnd
+
+LangString DESC_LibSection 		${LANG_ENGLISH} "Install Simgrid and gras libraries with associated headers."
+LangString DESC_BinSection 		${LANG_ENGLISH} "Install some useful tools for Simgrid."
+LangString DESC_DocSection 		${LANG_ENGLISH} "Generated (doxygen) documentation."
+LangString DESC_ExamplesSection ${LANG_ENGLISH} "Simgrid's HelloWorld example and some classical platforms."
+
+LangString DESC_LibSection 		${LANG_FRENCH} 	"Installer les librairies Simgrid et Gras et leurs Entêtes."
+LangString DESC_BinSection 		${LANG_FRENCH} 	"Installer les outils optionnels."
+LangString DESC_DocSection 		${LANG_FRENCH} 	"Installer la documentation."
+LangString DESC_ExamplesSection ${LANG_FRENCH} 	"Installer un exemple 'HelloWorld' et des fichiers de plate-formes types."
+
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${LibSection} 		$(DESC_LibSection)
+  !insertmacro MUI_DESCRIPTION_TEXT ${BinSection} 		$(DESC_BinSection)
+  !insertmacro MUI_DESCRIPTION_TEXT ${DocSection} 		$(DESC_DocSection)
+  !insertmacro MUI_DESCRIPTION_TEXT ${ExamplesSection} 	$(DESC_ExamplesSection)
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 # create a section to define what the uninstaller does.
 # the section will always be named "Uninstall"
@@ -276,6 +305,7 @@ section "Uninstall"
 	# delete link
 	delete "$SMPROGRAMS\SimGrid\Uninstall simgrid.lnk"
 	delete "$SMPROGRAMS\SimGrid\Documentation.lnk"
+	delete "$SMPROGRAMS\SimGrid\HelloWorld project.lnk"
 	
 	# now delete directories
 	RMDir  "$INSTDIR\bin"
@@ -297,7 +327,6 @@ section "Uninstall"
 	
 	# Delete variable
 	DeleteRegValue ${env_hklm} SIMGRID_ROOT
-	DeleteRegValue ${env_hklm} GRAS_ROOT
 	DeleteRegValue ${env_hklm} SIMGRID_VERSION
 
 # uninstall section end
