@@ -455,6 +455,7 @@ void MC_vddfs_with_restore_snapshot(xbt_automaton_t a, int search_cycle, int res
 
 /********************* Double-DFS without visited state *******************/
 
+
 void MC_ddfs_with_restore_snapshot_init(xbt_automaton_t a){
 
   XBT_DEBUG("**************************************************");
@@ -720,3 +721,4 @@ void MC_ddfs_with_restore_snapshot(xbt_automaton_t a, int search_cycle, int rest
   MC_UNSET_RAW_MEM;
 
 }
+

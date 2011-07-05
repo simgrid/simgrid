@@ -220,7 +220,7 @@ void set_pair_visited(mc_pair_t p, int search_cycle);
 int visited(mc_pair_t p, int search_cycle);
 
 
-/* **** DPOR with restore snapshot **** */
+/* **** DPOR Cristian with restore snapshot **** */
 
 typedef struct s_mc_state_with_snapshot{
   mc_snapshot_t system_state;
@@ -230,5 +230,11 @@ typedef struct s_mc_state_with_snapshot{
 mc_state_ws_t new_state_ws(mc_snapshot_t s, mc_state_t gs);
 void MC_dpor_with_restore_snapshot_init(void);
 void MC_dpor_with_restore_snapshot(void);
+
+/* **** DPOR 2 (invisible and independant transitions) **** */
+
+
+void MC_dpor2_init(xbt_automaton_t a);
+void MC_dpor2(xbt_automaton_t a, int search_cycle);
 
 #endif

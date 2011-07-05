@@ -67,6 +67,7 @@ void MC_init_with_automaton(xbt_automaton_t a){
 
   /* Initialize statistics */
   mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
+  mc_stats = xbt_new0(s_mc_stats_t, 1);
   //mc_stats_pair->pair_size = 1;
 
   XBT_DEBUG("Creating snapshot_stack");
@@ -77,7 +78,8 @@ void MC_init_with_automaton(xbt_automaton_t a){
   MC_UNSET_RAW_MEM;
 
   //MC_vddfs_with_restore_snapshot_init(a);
-  MC_ddfs_with_restore_snapshot_init(a);
+  //MC_ddfs_with_restore_snapshot_init(a);
+  MC_dpor2_init(a);
 }
 
 
