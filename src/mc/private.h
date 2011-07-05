@@ -233,7 +233,23 @@ void MC_dpor_with_restore_snapshot(void);
 
 /* **** DPOR 2 (invisible and independant transitions) **** */
 
+typedef struct s_mc_prop_ato{
+  char *id;
+  int value;
+}s_mc_prop_ato_t, *mc_prop_ato_t;
 
+typedef struct s_mc_pair_prop{
+  mc_snapshot_t system_state;
+  mc_state_t graph_state;
+  xbt_state_t automaton_state;
+  int num;
+  xbt_dynar_t propositions;
+}s_mc_pair_prop_t, *mc_pair_prop_t;
+
+mc_prop_ato_t new_proposition(char* id, int value);
+mc_pair_prop_t new_pair_prop(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
+int reached_prop(mc_pair_prop_t pair);
+void set_pair_prop_reached(mc_pair_prop_t pair);
 void MC_dpor2_init(xbt_automaton_t a);
 void MC_dpor2(xbt_automaton_t a, int search_cycle);
 
