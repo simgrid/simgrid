@@ -1,8 +1,5 @@
 !include "MUI2.nsh"
 
-Name "Simgrid"
-outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@_@CMAKE_SYSTEM_PROCESSOR@@BIN_EXE@"
-
 ;--------------------------------
 ;Interface Configuration
 
@@ -17,18 +14,24 @@ outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
+  !insertmacro MUI_PAGE_FINISH
   
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
-  
+  !insertmacro MUI_UNPAGE_FINISH
+
 ;--------------------------------
 ;Languages
   !insertmacro MUI_LANGUAGE "English"
   !insertmacro MUI_LANGUAGE "French"
 ;--------------------------------
 
+Name "Simgrid"
+outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@_@CMAKE_SYSTEM_PROCESSOR@@BIN_EXE@"
+Icon "@CMAKE_HOME_DIRECTORY@\doc\webcruft\SimGrid.ico"
+
 # set the default installation directory
-InstallDir "c:\SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@"
+InstallDir c:\SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
 
 Section "Libraries and Headers" LibSection
 
@@ -194,6 +197,11 @@ section
 	WriteRegExpandStr ${env_hklm} SIMGRID_ROOT $INSTDIR
 	WriteRegExpandStr ${env_hklm} SIMGRID_VERSION @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
 
+	WriteRegStr HKCU "SOFTWARE\SimGrid" "Version" "@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@"
+	WriteRegStr HKCU "SOFTWARE\SimGrid" "InstallPath" "$INSTDIR"
+	
+	SetRebootFlag true
+
 # default section end
 sectionEnd
 
@@ -328,6 +336,7 @@ section "Uninstall"
 	# Delete variable
 	DeleteRegValue ${env_hklm} SIMGRID_ROOT
 	DeleteRegValue ${env_hklm} SIMGRID_VERSION
-
+      DeleteRegKey HKCU "SOFTWARE\SimGrid"
+    
 # uninstall section end
 sectionEnd
