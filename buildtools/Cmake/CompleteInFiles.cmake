@@ -404,6 +404,35 @@ else(BIGENDIAN)
   set(GRAS_BIGENDIAN 0)
 endif(BIGENDIAN)
 
+# The syntax of this magic string is given in src/gras/DataDesc/ddt_convert.c
+# It kinda matches the values that the gras_arch_desc_t structure can take
+
+# Basically, the syntax is one char l or B for endianness (little or Big)
+#   then there is a bunch of blocks separated by _.  
+# C block is for char, I block for integers, P block for pointers and
+#   D block for floating points
+# For each block there is an amount of chuncks separated by :, each of
+#   them describing a data size. For example there is only one chunk
+#   in the char block, because no architecture provide several sizes
+#   of chars. In integer block, there is 4 chunks: "short int", "int",
+#   "long int", "long long int". There is 2 pointer chunks for data
+#   pointers and pointers on functions (thanks to the AMD64 madness).
+#   Thee two floating points chuncks are for "float" and "double".
+# Each chunk is of the form datasize/minimal_alignment_size
+
+# These informations are used to convert a data stream from one
+#    formalism to another. Only the GRAS_ARCH is transfered in the
+#    stream, and it it of cruxial importance to keep these detection
+#    information here synchronized with the data hardcoded in the
+#    source in src/gras/DataDesc/ddt_convert.c 
+
+# If you add something here (like a previously unknown architecture),
+#    please add it to the source code too. 
+# Please do not modify stuff here since it'd break the GRAS protocol.
+#     If you really need to change stuff, please also bump
+#    GRAS_PROTOCOL_VERSION in src/gras/Msg/msg_interface.h
+
+
 if(val_big MATCHES "l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1:")
 	#gras_arch=0; gras_size=32; gras_arch_name=little32_1;
 	SET(GRAS_ARCH_32_BITS 1)

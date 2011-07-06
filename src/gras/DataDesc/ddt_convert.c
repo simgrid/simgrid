@@ -30,6 +30,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_convert, gras_ddt,
 
   B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=7; gras_arch_name=big64;;
 
+  
+  
+  PLEASE DO NOT MESS WITH THESE HARDCODED VALUES
+  
+  
+  Grep GRAS_THISARCH in buildtools/Cmake/CompleteInFiles.cmake for details
+  
  ***/
 
 const gras_arch_desc_t gras_arches[gras_arch_count] = {
