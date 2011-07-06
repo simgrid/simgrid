@@ -352,36 +352,18 @@ endif(pthread)
 ###############
 ## SVN version check
 ##
-if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
-	find_file(SVN ".svn" ${CMAKE_HOME_DIRECTORY})
-	exec_program("svnversion ${CMAKE_HOME_DIRECTORY}" OUTPUT_VARIABLE "SVN_VERSION")
-	message(STATUS "svn version ${SVN_VERSION}")
-else(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
-	exec_program("git config --get svn-remote.svn.url"
-		OUTPUT_VARIABLE url
-		RETURN_VALUE ret)
-endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
+exec_program("git remote" OUTPUT_VARIABLE remote RETURN_VALUE ret)
+exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
 
 if(url)
 	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
+	message(STATUS "Git version: ${GIT_VERSION}")
 	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
-	
+	message(STATUS "Git date: ${GIT_DATE}")
 	string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
 	STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
-	
-	exec_program("git svn info" ${CMAKE_HOME_DIRECTORY}
-		OUTPUT_VARIABLE "GIT_SVN_VERSION")
-	string(REPLACE "\n" ";" GIT_SVN_VERSION ${GIT_SVN_VERSION})
-	foreach(line ${GIT_SVN_VERSION})
-		string(REGEX MATCH "^Revision:.*" line_good ${line})
-		if(line_good)
-			string(REPLACE "Revision: " ""
-				line_good ${line_good})
-			set(SVN_VERSION ${line_good})
-		endif(line_good)
-	endforeach(line ${GIT_SVN_VERSION})
 endif(url)
 
 
@@ -432,6 +414,7 @@ endif(BIGENDIAN)
 #     If you really need to change stuff, please also bump
 #    GRAS_PROTOCOL_VERSION in src/gras/Msg/msg_interface.h
 
+SET(GRAS_THISARCH "none")
 
 if(val_big MATCHES "l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1:")
 	#gras_arch=0; gras_size=32; gras_arch_name=little32_1;
@@ -490,6 +473,10 @@ if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:")
 	SET(GRAS_THISARCH 10)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 
 
+if(GRAS_THISARCH MATCHES "none")
+    message(STATUS "architecture: ${val_big}")
+    message(FATAL_ERROR "GRAS_THISARCH is empty: '${GRAS_THISARCH}'")  
+endif(GRAS_THISARCH MATCHES "none")
 
 # Check architecture signature end
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR

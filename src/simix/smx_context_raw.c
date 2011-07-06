@@ -38,7 +38,7 @@ extern void raw_swapcontext(raw_stack_t* old, raw_stack_t new);
 
 #ifdef PROCESSOR_i686
 __asm__ (
-#ifdef APPLE
+#if defined(APPLE) || defined(_WIN32)
    ".text\n"
    ".globl _raw_makecontext\n"
    "_raw_makecontext:\n"
@@ -64,7 +64,7 @@ __asm__ (
 );
 
 __asm__ (
-#ifdef APPLE
+#if defined(APPLE) || defined(_WIN32)
    ".text\n"
    ".globl _raw_swapcontext\n"
    "_raw_swapcontext:\n"
@@ -90,7 +90,7 @@ __asm__ (
 );
 #elif PROCESSOR_x86_64
 __asm__ (
-#ifdef APPLE
+#if defined(APPLE) || defined(_WIN32)
    ".text\n"
    ".globl _raw_makecontext\n"
    "_raw_makecontext:\n"
@@ -121,7 +121,7 @@ __asm__ (
 );
 
 __asm__ (
-#ifdef APPLE
+#if defined(APPLE) || defined(_WIN32)
    ".text\n"
    ".globl _raw_swapcontext\n"
    "_raw_swapcontext:\n"

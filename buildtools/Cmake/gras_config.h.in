@@ -103,6 +103,7 @@
 #cmakedefine PROCESSOR_i686 @PROCESSOR_i686@
 #cmakedefine PROCESSOR_x86_64 @PROCESSOR_x86_64@
 #cmakedefine CMAKE_SYSTEM_PROCESSOR @CMAKE_SYSTEM_PROCESSOR@
+#cmakedefine HAVE_RAWCTX @HAVE_RAWCTX@
 
 /* Defined if arrays in struct can straddle struct alignment boundaries. This
    is like than the structure compaction above, but this time, the argument to

@@ -111,17 +111,27 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
 {
   void *object;
 
-  if (m->current_size > 0) {
-    /* there is at least an available object */
-    /* XBT_DEBUG("Reuse an old object for mallocator %p (size:%d/%d)", m,
-           m->current_size, m->max_size); */
-    object = m->objects[--m->current_size];
-  } else {
-    /* otherwise we must allocate a new object */
+  if (m->current_size <= 0) {
+    /* No object is ready yet. Create a bunch of them to try to group the mallocs
+     *  on the same memory pages (to help the cache lines) */
+
     /* XBT_DEBUG("Create a new object for mallocator %p (size:%d/%d)", m,
            m->current_size, m->max_size); */
-    object = (*(m->new_f)) ();
+    int i;
+    int amount=MIN( (m->max_size) /2,1000);
+    for (i=0;i<amount;i++)
+      m->objects[i] = (*(m->new_f)) ();
+    m->current_size=amount;
   }
+
+  /* there is at least an available object, now */
+  /* XBT_DEBUG("Reuse an old object for mallocator %p (size:%d/%d)", m,
+           m->current_size, m->max_size); */
+  if (MC_IS_ENABLED) /* no mallocator with MC */
+    object = (*(m->new_f)) ();
+  else
+    object = m->objects[--m->current_size];
+
   (*(m->reset_f)) (object);
   return object;
 }

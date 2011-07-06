@@ -115,7 +115,8 @@ For Windows :
   \li cmake 2.8 <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
   \li perl strawberry <a href="http://www.strawberryperl.com/download/5.12.2.0/strawberry-perl-5.12.2.0.msi">(download page)</a>
   \li pcre-7.0 <a href="http://sourceforge.net/projects/gnuwin32/files/pcre/7.0/pcre-7.0.exe/download">(download page)</a>
-
+  \li git <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">(download page)</a>
+  
 \subsubsection faq_cmakeoption1 Liste of options
 
 \verbatim
@@ -228,6 +229,7 @@ make
 
 On Windows
 
+Open the "Git Bash" window.
 \verbatim
 cmake -G"Unix Makefiles" -D[name]=[value] ... ./
 gmake

@@ -69,13 +69,7 @@ XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new_sync(const unsigned long elm_size,
 XBT_INLINE XBT_PUBLIC(void) xbt_dynar_free(xbt_dynar_t * dynar);
 XBT_PUBLIC(void) xbt_dynar_free_voidp(void *dynar);
 XBT_PUBLIC(void) xbt_dynar_free_container(xbt_dynar_t * dynar);
-
-XBT_INLINE XBT_PUBLIC(unsigned long) xbt_dynar_length(const xbt_dynar_t
-                                                      dynar);
-XBT_INLINE XBT_PUBLIC(int) xbt_dynar_is_empty(const xbt_dynar_t dynar);
-XBT_PUBLIC(void) xbt_dynar_reset(xbt_dynar_t const dynar);
 XBT_PUBLIC(void) xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots);
-
 XBT_PUBLIC(void) xbt_dynar_dump(xbt_dynar_t dynar);
 
 /** @} */
@@ -107,6 +101,19 @@ XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar,
 XBT_INLINE XBT_PUBLIC(int) xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
 					int(*compar)(const void *, const void *));
 XBT_INLINE XBT_PUBLIC(void *) xbt_dynar_to_array (xbt_dynar_t dynar);
+
+/** @} */
+/** @defgroup XBT_dynar_misc Dynar miscellaneous functions
+ *  @ingroup XBT_dynar
+ *
+ *  @{
+ */
+
+XBT_INLINE XBT_PUBLIC(unsigned long) xbt_dynar_length(const xbt_dynar_t
+                                                      dynar);
+XBT_INLINE XBT_PUBLIC(int) xbt_dynar_is_empty(const xbt_dynar_t dynar);
+XBT_PUBLIC(void) xbt_dynar_reset(xbt_dynar_t const dynar);
+
 
 /** @} */
 /** @defgroup XBT_dynar_perl Perl-like use of dynars
