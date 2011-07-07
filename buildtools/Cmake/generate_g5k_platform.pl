@@ -72,7 +72,7 @@ while(defined($line=<SITES_LIGNE>))
 		{
 			if($line =~ /"uid": "(.*)",/){
 				$cluster = $1;
-				print "\t\t\t<cluster id=\"AS_$cluster\" prefix=\"$cluster-\" suffix=\".$cluster.grid5000.fr\"\n";
+				print "\t\t\t<cluster id=\"AS_$cluster\" prefix=\"$cluster-\" suffix=\".$site.grid5000.fr\"\n";
 				`wget https://api.grid5000.fr/2.0/grid5000/sites/$site/clusters/$cluster/nodes --http-user="$ARGV[0]" --http-password="$ARGV[1]" --no-check-certificate --quiet`;
 				open NODES_LIGNE, 'nodes' or die "Unable to open nodes $!\n";
 				while(defined($line=<NODES_LIGNE>))
