@@ -18,20 +18,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_convert, gras_ddt,
 /***
  *** Table of all known architectures:
  ***
-  l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:) gras_arch=0; gras_arch_name=little32;;
-  l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=1; gras_arch_name=little32_4;;
+l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1: #gras_arch=0;  gras_size=32; gras_arch_name=little32_1;
+l_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2: #gras_arch=1;  gras_size=32; gras_arch_name=little32_2;
+l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4: #gras_arch=2;  gras_size=32; gras_arch_name=little32_4;
+l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8: #gras_arch=3;  gras_size=32; gras_arch_name=little32_8;
+l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8: #gras_arch=4;  gras_size=64; gras_arch_name=little64;
+l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:8/8:8/8:_D:4/4:8/8: #gras_arch=11; gras_size=64; gras_arch_name=little64_2;
 
-  l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=2; gras_arch_name=little64;;
+B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8: #gras_arch=5; gras_size=32; gras_arch_name=big32;
+B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4: #gras_arch=6; gras_size=32; gras_arch_name=big32_8_4;
+B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4: #gras_arch=7; gras_size=32; gras_arch_name=big32_4;
+B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2: #gras_arch=8; gras_size=32; gras_arch_name=big32_2;
+B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8: #gras_arch=9; gras_size=64; gras_arch_name=big64;
+B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4: #gras_arch=10;gras_size=64; gras_arch_name=big64_8_4;
 
-  B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:) gras_arch=3; gras_arch_name=big32;;
-  B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=4; gras_arch_name=big32_8_4;;
-  B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=5; gras_arch_name=big32_4;;
-  B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:) gras_arch=6; gras_arch_name=big32_2;;
-
-  B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=7; gras_arch_name=big64;;
-
-  
-  
   PLEASE DO NOT MESS WITH THESE HARDCODED VALUES
   
   
@@ -55,6 +55,9 @@ const gras_arch_desc_t gras_arches[gras_arch_count] = {
 
   {"little64", 0, {1, 2, 4, 8, 8, 8, 8, 4, 8},  /* alpha, ia64 */
    {1, 2, 4, 8, 8, 8, 8, 4, 8}},
+
+  {"little64_2", 0, {1, 2, 4, 4, 8, 8, 8, 4, 8},  /* win64 */
+   {1, 2, 4, 4, 8, 8, 8, 4, 8}},
 
   {"big32_8", 1, {1, 2, 4, 4, 8, 4, 4, 4, 8},
    {1, 2, 4, 4, 8, 4, 4, 4, 8}},

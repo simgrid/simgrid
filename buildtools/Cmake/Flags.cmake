@@ -30,10 +30,6 @@ set(CMAKE_C_FLAGS "${optCFLAGS}${warnCFLAGS}${CMAKE_C_FLAGS}")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${custom_flags}")
 
-if(WIN32)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=i486")
-endif(WIN32)
-
 # Try to make Mac a bit more complient to open source standards
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_XOPEN_SOURCE")
