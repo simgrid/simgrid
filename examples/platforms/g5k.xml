@@ -1,351 +1,441 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<!-- ...................................................................... -->
-<!-- ... Platform description file for GRID5000 ........................... -->
-<!-- ....................................................... 24/09/2010 ... -->
-<!-- ...................................................................... -->
-<!--
-     ../ AS file structure /............................................... 
-
-   AS_grid5000(Floyd)
-                                      _______________
-                                     |               |
-                                     | AS_chinqchint |
-                                     |_______________|
-                           _______________   |   _______________
-                          |               |  |  |               |
-                          | AS_chti       |  |  | AS_sagittaire |
-                          |_______________|  .  |_______________|
-               _______________   |    _______________   |   _______________    
-              |               |  |   |               |  |  |               |   
-              | AS_chicon     |  |   | AS_chuque     |  |  | AS_capricorne |   
-              |_______________|  |   |_______________|  |  |_______________|   
-  _______________           |    |     |     .          |    |       _______________
- |               |          |    |     |     |          |    |      |               |
- | AS_bordemer   |     _____|____|_____|_____|__________|____|_     | AS_grelon     |
- |_______________|____|                                        |____|_______________|
-  _______________     |          AS_network(Floyd)             |     _______________
- |               |    |                                        |    |               |
- | AS_bordeplage |____|                                        |____| AS_griffon    |
- |_______________|    |                                        |    |_______________|
-  _______________     |                                        |     _______________
- |               |    |                                        |    |               |
- | AS_bordereau  |____|                                        |____| AS_gdx        |
- |_______________|    |                                        |    |_______________|
-  _______________     |                                        |     _______________
- |               |    |                                        |    |               |
- | AS_borderline |____|                                        |____| AS_gdx2       |
- |_______________|    |                                        |    |_______________|
-  _______________     |                                        |     _______________ 
- |               |    |                                        |    |               | 
- | AS_pastel     |____|                                        |____| AS_azur       | 
- |_______________|    |                                        |    |_______________| 
-  _______________     |                                        |     _______________
- |               |____|                                        |    |               |
- | AS_violette   |    |________________________________________|____| AS_helios     |
- |_______________|       |     |     |     |               | |      |_______________| 
-                         |     |     |     |               | |      _______________
-             ____________|__   |     |   __|____________   | |     |               |
-            |               |  |     |  |               |  | \____-| AS_sol        |
-            | AS_paramount  |  |     |  | AS_paraquad   |  |       |_______________| 
-            |_______________|  |     |  |_______________|  |       _______________     
-                  _____________|_   _|_____________        |      |               |
-                 |               | |               |       \______| AS_suno       |
-                 | AS_paradent   | | AS_parapide   |              |_______________|
-                 |_______________| |_______________| 
-                 
-     ../ Cluster description /............................................. 
-
-        bordemer   - bordeaux | nodes=48    power=3.542E9 
-        bordeplage - bordeaux | nodes=51    power=3.464E9
-        bordereau  - bordeaux | nodes=93    power=4.389E9
-        borderline - bordeaux | nodes=10    power=4.389E9
-        chicon     - lille    | nodes=26    power=4.384E9
-        chti       - lille    | nodes=20    power=4.311E9
-        chuque     - lille    | nodes=53    power=3.647E9
-        chinqchint - lille    | nodes=46    power=5.0E9     <- not correct
-        capricorne - lyon     | nodes=56    power=3.254E9
-        sagittaire - lyon     | nodes=79    power=3.865E9
-        grelon     - nancy    | nodes=120   power=3.185E9
-        griffon    - nancy    | nodes=92    power=5.0E9     <- not correct
-        gdx        - orsay    | nodes=216   power=3.388E9
-        gdx2       - orsay    | nodes=126   power=4.04E9
-        paramount  - rennes   | nodes=33    power=4.603E9
-        paraquad   - rennes   | nodes=64    power=4.603E9
-        paradent   - rennes   | nodes=64    power=5.0E9     <- not correct
-        parapide   - rennes   | nodes=25    power=5.0E9     <- not correct
-        azur       - sophia   | nodes=48    power=3.258E9
-        helios     - sophia   | nodes=56    power=3.675E9
-        sol        - sophia   | nodes=50    power=4.389E9
-        suno       - sophia   | nodes=45    power=5.0E9     <- not correct
-        pastel     - toulouse | nodes=80    power=4.389E9
-        violette   - toulouse | nodes=57    power=3.586E9
--->
 <platform version="3">
-<AS id="AS_grid5000" routing="Floyd" >
+	<AS id="AS_grid5000" routing="Floyd" >
+		<AS id="AS_interne" routing="Floyd">
+			<router id="lille"/>
+			<router id="paris"/>
+			<router id="nancy"/>
+			<router id="rennes"/>
+			<router id="lyon"/>
+			<router id="bordeaux"/>
+			<router id="grenoble"/>
+			<router id="marseille"/>
+			<router id="toulouse"/>
+			<router id="sophia"/>
 
-  <cluster id="AS_bordemer" prefix="bordemer-" suffix=".bordeaux.grid5000.fr"
-   radical="1-48" power="3.542E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_bordeplage" prefix="bordeplage-" suffix=".bordeaux.grid5000.fr"
-   radical="1-51" power="3.464E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_bordereau" prefix="bordereau-" suffix=".bordeaux.grid5000.fr"
-   radical="1-93" power="4.389E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_borderline" prefix="borderline-" suffix=".bordeaux.grid5000.fr"
-   radical="1-10" power="4.389E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_chicon" prefix="chicon-" suffix=".lille.grid5000.fr"
-   radical="1-26" power="4.384E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_chti" prefix="chti-" suffix=".lille.grid5000.fr"
-   radical="1-20" power="4.311E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_chuque" prefix="chuque-" suffix=".lille.grid5000.fr"
-   radical="1-53" power="3.647E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_chinqchint" prefix="chinqchint-" suffix=".lille.grid5000.fr"
-   radical="1-46" power="5.0E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_capricorne" prefix="capricorne-" suffix=".lyon.grid5000.fr"
-   radical="1-56" power="3.254E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_sagittaire" prefix="sagittaire-" suffix=".lyon.grid5000.fr"
-   radical="1-79" power="3.865E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_grelon" prefix="grelon-" suffix=".nancy.grid5000.fr"
-   radical="1-120" power="3.185E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_griffon" prefix="griffon-" suffix=".nancy.grid5000.fr"
-   radical="1-92" power="5.0E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_gdx" prefix="gdx-" suffix=".orsay.grid5000.fr"
-   radical="1-216" power="3.388E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_gdx2" prefix="gdx2-" suffix=".orsay.grid5000.fr"
-   radical="1-126" power="4.04E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_paramount" prefix="paramount-" suffix=".rennes.grid5000.fr"
-   radical="1-33" power="4.603E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_paraquad" prefix="paraquad-" suffix=".rennes.grid5000.fr"
-   radical="1-64" power="4.603E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-  
-  <cluster id="AS_paradent" prefix="paradent-" suffix=".rennes.grid5000.fr"
-   radical="1-64" power="3.364E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_parapide" prefix="parapide-" suffix=".rennes.grid5000.fr"
-   radical="1-25" power="5.0E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>   
-   
-  <cluster id="AS_azur" prefix="azur-" suffix=".sophia.grid5000.fr"
-   radical="1-48" power="3.258E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_helios" prefix="helios-" suffix=".sophia.grid5000.fr"
-   radical="1-56" power="3.675E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_sol" prefix="sol-" suffix=".sophia.grid5000.fr"
-   radical="1-50" power="4.389E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_suno" prefix="suno-" suffix=".sophia.grid5000.fr"
-   radical="1-45" power="5.0E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>  
-   
-  <cluster id="AS_pastel" prefix="pastel-" suffix=".toulouse.grid5000.fr"
-   radical="1-80" power="4.389E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-   
-  <cluster id="AS_violette" prefix="violette-" suffix=".toulouse.grid5000.fr"
-   radical="1-57" power="3.586E9" bw="1.25E8" lat="1.0E-4"
-   bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link id="Lille_Paris"        bandwidth="1.25E9" latency="1.0E-4"/>
+			<link id="Paris_Nancy"        bandwidth="1.25E9" latency="1.0E-4"/>
+			<link id="Paris_Rennes"       bandwidth="1.25E9" latency="1.0E-4"/>
+			<link id="Paris_Lyon"         bandwidth="1.25E9" latency="1.0E-4"/>
+			<link id="Bordeaux_Lyon"      bandwidth="1.25E9" latency="1.0E-4"/>
+			<link id="Lyon_Grenoble"      bandwidth="1.25E9" latency="1.0E-4"/>
+			<link id="Lyon_Marseille"     bandwidth="1.25E9" latency="1.0E-4"/>
+			<link id="Marseille_Sophia"   bandwidth="1.25E9" latency="1.0E-4"/>
+			<link id="Marseille_Toulouse" bandwidth="1.25E9" latency="1.0E-4"/>
 
-  
-  <AS id="AS_network" routing="Floyd" >
-  
-    <router id="Lille_sw"/>
-    <router id="Paris_sw"/>
-    <router id="Luxemburg_sw"/>
-    <router id="Nancy_sw"/>
-    <router id="Rennes_sw"/>
-    <router id="Bordeaux_sw"/>
-    <router id="Lyon_sw"/>
-    <router id="Grenoble_sw"/>
-    <router id="Marseille_sw"/>
-    <router id="Sophia_sw"/>
-    <router id="Toulouse_sw"/>
-    
-    <router id="Lille_gw"/>
-    <router id="Orsay_gw"/>
-    <router id="Luxemburg_gw"/>
-    <router id="Nancy_gw"/>
-    <router id="Rennes_gw"/>
-    <router id="Bordeaux_gw"/>
-    <router id="Lyon_gw"/>
-    <router id="Grenoble_gw"/>
-    <router id="Sophia_gw"/>
-    <router id="Toulouse_gw"/>
-    
-    <link id="Lille_Paris"        bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Luxemburg_Nancy"    bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Paris_Nancy"        bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Paris_Rennes"       bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Paris_Lyon"         bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Bordeaux_Lyon"      bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Lyon_Grenoble"      bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Lyon_Marseille"     bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Marseille_Sophia"   bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Marseille_Toulouse" bandwidth="1.25E9" latency="1.0E-4"/>
-    
-    <link id="Lille_sw_gw"     bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Orsay_sw_gw"     bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Luxemburg_sw_gw" bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Nancy_sw_gw"     bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Rennes_sw_gw"    bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Bordeaux_sw_gw"  bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Lyon_sw_gw"      bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Grenoble_sw_gw"  bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Sophia_sw_gw"    bandwidth="1.25E9" latency="1.0E-4"/>
-    <link id="Toulouse_sw_gw"  bandwidth="1.25E9" latency="1.0E-4"/>
-    
-    <route src="Lille_sw"     dst="Paris_sw"     ><link_ctn id="Lille_Paris"/></route>
-    <route src="Paris_sw"     dst="Lille_sw"     ><link_ctn id="Lille_Paris"/></route>
-    <route src="Luxemburg_sw" dst="Nancy_sw"     ><link_ctn id="Luxemburg_Nancy"/></route>
-    <route src="Nancy_sw"     dst="Luxemburg_sw" ><link_ctn id="Luxemburg_Nancy"/></route>
-    <route src="Paris_sw"     dst="Nancy_sw"     ><link_ctn id="Paris_Nancy"/></route>
-    <route src="Nancy_sw"     dst="Paris_sw"     ><link_ctn id="Paris_Nancy"/></route>
-    <route src="Paris_sw"     dst="Rennes_sw"    ><link_ctn id="Paris_Rennes"/></route>
-    <route src="Rennes_sw"    dst="Paris_sw"     ><link_ctn id="Paris_Rennes"/></route>
-    <route src="Paris_sw"     dst="Lyon_sw"      ><link_ctn id="Paris_Lyon"/></route>
-    <route src="Lyon_sw"      dst="Paris_sw"     ><link_ctn id="Paris_Lyon"/></route>
-    <route src="Bordeaux_sw"  dst="Lyon_sw"      ><link_ctn id="Bordeaux_Lyon"/></route>
-    <route src="Lyon_sw"      dst="Bordeaux_sw"  ><link_ctn id="Bordeaux_Lyon"/></route>
-    <route src="Lyon_sw"      dst="Grenoble_sw"  ><link_ctn id="Lyon_Grenoble"/></route>
-    <route src="Grenoble_sw"  dst="Lyon_sw"      ><link_ctn id="Lyon_Grenoble"/></route>
-    <route src="Lyon_sw"      dst="Marseille_sw" ><link_ctn id="Lyon_Marseille"/></route>
-    <route src="Marseille_sw" dst="Lyon_sw"      ><link_ctn id="Lyon_Marseille"/></route>
-    <route src="Marseille_sw" dst="Sophia_sw"    ><link_ctn id="Marseille_Sophia"/></route>
-    <route src="Sophia_sw"    dst="Marseille_sw" ><link_ctn id="Marseille_Sophia"/></route>
-    <route src="Marseille_sw" dst="Toulouse_sw"  ><link_ctn id="Marseille_Toulouse"/></route>
-    <route src="Toulouse_sw"  dst="Marseille_sw" ><link_ctn id="Marseille_Toulouse"/></route>
-    
-    <route src="Lille_gw"     dst="Lille_sw"     ><link_ctn id="Lille_sw_gw"/></route>
-    <route src="Lille_sw"     dst="Lille_gw"     ><link_ctn id="Lille_sw_gw"/></route>
-    <route src="Orsay_gw"     dst="Paris_sw"     ><link_ctn id="Orsay_sw_gw"/></route>
-    <route src="Paris_sw"     dst="Orsay_gw"     ><link_ctn id="Orsay_sw_gw"/></route>
-    <route src="Luxemburg_gw" dst="Luxemburg_sw" ><link_ctn id="Luxemburg_sw_gw"/></route>
-    <route src="Luxemburg_sw" dst="Luxemburg_gw" ><link_ctn id="Luxemburg_sw_gw"/></route>
-    <route src="Rennes_gw"    dst="Rennes_sw"    ><link_ctn id="Rennes_sw_gw"/></route>
-    <route src="Rennes_sw"    dst="Rennes_gw"    ><link_ctn id="Rennes_sw_gw"/></route>
-    <route src="Nancy_gw"     dst="Nancy_sw"     ><link_ctn id="Nancy_sw_gw"/></route>
-    <route src="Nancy_sw"     dst="Nancy_gw"     ><link_ctn id="Nancy_sw_gw"/></route>
-    <route src="Bordeaux_gw"  dst="Bordeaux_sw"  ><link_ctn id="Bordeaux_sw_gw"/></route>
-    <route src="Bordeaux_sw"  dst="Bordeaux_gw"  ><link_ctn id="Bordeaux_sw_gw"/></route>
-    <route src="Lyon_gw"      dst="Lyon_sw"      ><link_ctn id="Lyon_sw_gw"/></route>
-    <route src="Lyon_sw"      dst="Lyon_gw"      ><link_ctn id="Lyon_sw_gw"/></route>
-    <route src="Grenoble_gw"  dst="Grenoble_sw"  ><link_ctn id="Grenoble_sw_gw"/></route>
-    <route src="Grenoble_sw"  dst="Grenoble_gw"  ><link_ctn id="Grenoble_sw_gw"/></route>
-    <route src="Sophia_gw"    dst="Sophia_sw"    ><link_ctn id="Sophia_sw_gw"/></route>
-    <route src="Sophia_sw"    dst="Sophia_gw"    ><link_ctn id="Sophia_sw_gw"/></route>
-    <route src="Toulouse_gw"  dst="Toulouse_sw"  ><link_ctn id="Toulouse_sw_gw"/></route>
-    <route src="Toulouse_sw"  dst="Toulouse_gw"  ><link_ctn id="Toulouse_sw_gw"/></route>
-    
-  </AS>
-  
-  <link id="bordemer_gw"   bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="bordeplage_gw" bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="bordereau_gw"  bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="borderline_gw" bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="chicon_gw"     bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="chti_gw"       bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="chuque_gw"     bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="chinqchint_gw" bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="capricorne_gw" bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="sagittaire_gw" bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="grelon_gw"     bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="griffon_gw"    bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="gdx_gw"        bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="gdx2_gw"       bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="paramount_gw"  bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="paraquad_gw"   bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="paradent_gw"   bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="parapide_gw"   bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="azur_gw"       bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="helios_gw"     bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="sol_gw"        bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="suno_gw"       bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="pastel_gw"     bandwidth="1.25E8" latency="1.0E-4"/>
-  <link id="violette_gw"   bandwidth="1.25E8" latency="1.0E-4"/>
-  
-  <ASroute src="AS_bordemer"    dst="AS_network"     gw_src="bordemer-AS_bordemer_router.bordeaux.grid5000.fr"  gw_dst="Bordeaux_gw"    ><link_ctn id="bordemer_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_bordemer"    gw_src="Bordeaux_gw"  gw_dst="bordemer-AS_bordemer_router.bordeaux.grid5000.fr"    ><link_ctn id="bordemer_gw"/></ASroute>
-  <ASroute src="AS_bordeplage"  dst="AS_network"     gw_src="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr"   gw_dst="Bordeaux_gw" ><link_ctn id="bordeplage_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_bordeplage"  gw_src="Bordeaux_gw"  gw_dst="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr"  ><link_ctn id="bordeplage_gw"/></ASroute>
-  <ASroute src="AS_bordereau"   dst="AS_network"     gw_src="bordereau-AS_bordereau_router.bordeaux.grid5000.fr"    gw_dst="Bordeaux_gw" ><link_ctn id="bordereau_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_bordereau"   gw_src="Bordeaux_gw"  gw_dst="bordereau-AS_bordereau_router.bordeaux.grid5000.fr"   ><link_ctn id="bordereau_gw"/></ASroute>
-  <ASroute src="AS_borderline"  dst="AS_network"     gw_src="borderline-AS_borderline_router.bordeaux.grid5000.fr"   gw_dst="Bordeaux_gw" ><link_ctn id="borderline_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_borderline"  gw_src="Bordeaux_gw"  gw_dst="borderline-AS_borderline_router.bordeaux.grid5000.fr"  ><link_ctn id="borderline_gw"/></ASroute>
-  <ASroute src="AS_chicon"      dst="AS_network"     gw_src="chicon-AS_chicon_router.lille.grid5000.fr"       gw_dst="Lille_gw"       ><link_ctn id="chicon_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_chicon"      gw_src="Lille_gw"     gw_dst="chicon-AS_chicon_router.lille.grid5000.fr"         ><link_ctn id="chicon_gw"/></ASroute>
-  <ASroute src="AS_chti"        dst="AS_network"     gw_src="chti-AS_chti_router.lille.grid5000.fr"         gw_dst="Lille_gw"       ><link_ctn id="chti_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_chti"        gw_src="Lille_gw"     gw_dst="chti-AS_chti_router.lille.grid5000.fr"           ><link_ctn id="chti_gw"/></ASroute>
-  <ASroute src="AS_chuque"      dst="AS_network"     gw_src="chuque-AS_chuque_router.lille.grid5000.fr"       gw_dst="Lille_gw"       ><link_ctn id="chuque_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_chuque"      gw_src="Lille_gw"     gw_dst="chuque-AS_chuque_router.lille.grid5000.fr"         ><link_ctn id="chuque_gw"/></ASroute>
-  <ASroute src="AS_chinqchint"  dst="AS_network"     gw_src="chinqchint-AS_chinqchint_router.lille.grid5000.fr"       gw_dst="Lille_gw"   ><link_ctn id="chinqchint_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_chinqchint"  gw_src="Lille_gw"     gw_dst="chinqchint-AS_chinqchint_router.lille.grid5000.fr"     ><link_ctn id="chinqchint_gw"/></ASroute>
-  <ASroute src="AS_capricorne"  dst="AS_network"     gw_src="capricorne-AS_capricorne_router.lyon.grid5000.fr"   gw_dst="Lyon_gw"         ><link_ctn id="capricorne_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_capricorne"  gw_src="Lyon_gw"      gw_dst="capricorne-AS_capricorne_router.lyon.grid5000.fr"      ><link_ctn id="capricorne_gw"/></ASroute>
-  <ASroute src="AS_sagittaire"  dst="AS_network"     gw_src="sagittaire-AS_sagittaire_router.lyon.grid5000.fr"   gw_dst="Lyon_gw"         ><link_ctn id="sagittaire_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_sagittaire"  gw_src="Lyon_gw"      gw_dst="sagittaire-AS_sagittaire_router.lyon.grid5000.fr"      ><link_ctn id="sagittaire_gw"/></ASroute>
-  <ASroute src="AS_grelon"      dst="AS_network"     gw_src="grelon-AS_grelon_router.nancy.grid5000.fr"       gw_dst="Nancy_gw"       ><link_ctn id="grelon_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_grelon"      gw_src="Nancy_gw"     gw_dst="grelon-AS_grelon_router.nancy.grid5000.fr"         ><link_ctn id="grelon_gw"/></ASroute>
-  <ASroute src="AS_griffon"     dst="AS_network"     gw_src="griffon-AS_griffon_router.nancy.grid5000.fr"      gw_dst="Nancy_gw"       ><link_ctn id="griffon_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_griffon"     gw_src="Nancy_gw"     gw_dst="griffon-AS_griffon_router.nancy.grid5000.fr"        ><link_ctn id="griffon_gw"/></ASroute>
-  <ASroute src="AS_gdx"         dst="AS_network"     gw_src="gdx-AS_gdx_router.orsay.grid5000.fr"          gw_dst="Orsay_gw"       ><link_ctn id="gdx_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_gdx"         gw_src="Orsay_gw"     gw_dst="gdx-AS_gdx_router.orsay.grid5000.fr"            ><link_ctn id="gdx_gw"/></ASroute>
-  <ASroute src="AS_gdx2"        dst="AS_network"     gw_src="gdx2-AS_gdx2_router.orsay.grid5000.fr"         gw_dst="Orsay_gw"       ><link_ctn id="gdx2_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_gdx2"        gw_src="Orsay_gw"     gw_dst="gdx2-AS_gdx2_router.orsay.grid5000.fr"           ><link_ctn id="gdx2_gw"/></ASroute>
-  <ASroute src="AS_paramount"   dst="AS_network"     gw_src="paramount-AS_paramount_router.rennes.grid5000.fr"    gw_dst="Rennes_gw"     ><link_ctn id="paramount_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_paramount"   gw_src="Rennes_gw"    gw_dst="paramount-AS_paramount_router.rennes.grid5000.fr"     ><link_ctn id="paramount_gw"/></ASroute>
-  <ASroute src="AS_paraquad"    dst="AS_network"     gw_src="paraquad-AS_paraquad_router.rennes.grid5000.fr"     gw_dst="Rennes_gw"     ><link_ctn id="paraquad_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_paraquad"    gw_src="Rennes_gw"    gw_dst="paraquad-AS_paraquad_router.rennes.grid5000.fr"      ><link_ctn id="paraquad_gw"/></ASroute>
-  <ASroute src="AS_paradent"     dst="AS_network"     gw_src="paradent-AS_paradent_router.rennes.grid5000.fr"      gw_dst="Rennes_gw"   ><link_ctn id="paradent_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_paradent"     gw_src="Rennes_gw"    gw_dst="paradent-AS_paradent_router.rennes.grid5000.fr"     ><link_ctn id="paradent_gw"/></ASroute>
-  <ASroute src="AS_parapide"    dst="AS_network"     gw_src="parapide-AS_parapide_router.rennes.grid5000.fr"     gw_dst="Rennes_gw"     ><link_ctn id="parapide_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_parapide"    gw_src="Rennes_gw"    gw_dst="parapide-AS_parapide_router.rennes.grid5000.fr"      ><link_ctn id="parapide_gw"/></ASroute>
-  <ASroute src="AS_azur"        dst="AS_network"     gw_src="azur-AS_azur_router.sophia.grid5000.fr"         gw_dst="Sophia_gw"     ><link_ctn id="azur_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_azur"        gw_src="Sophia_gw"    gw_dst="azur-AS_azur_router.sophia.grid5000.fr"          ><link_ctn id="azur_gw"/></ASroute>
-  <ASroute src="AS_helios"      dst="AS_network"     gw_src="helios-AS_helios_router.sophia.grid5000.fr"       gw_dst="Sophia_gw"     ><link_ctn id="helios_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_helios"      gw_src="Sophia_gw"    gw_dst="helios-AS_helios_router.sophia.grid5000.fr"        ><link_ctn id="helios_gw"/></ASroute>
-  <ASroute src="AS_sol"         dst="AS_network"     gw_src="sol-AS_sol_router.sophia.grid5000.fr"          gw_dst="Sophia_gw"     ><link_ctn id="sol_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_sol"         gw_src="Sophia_gw"    gw_dst="sol-AS_sol_router.sophia.grid5000.fr"           ><link_ctn id="sol_gw"/></ASroute>
-  <ASroute src="AS_suno"        dst="AS_network"     gw_src="suno-AS_suno_router.sophia.grid5000.fr"          gw_dst="Sophia_gw"    ><link_ctn id="suno_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_suno"        gw_src="Sophia_gw"    gw_dst="suno-AS_suno_router.sophia.grid5000.fr"          ><link_ctn id="suno_gw"/></ASroute>
-  <ASroute src="AS_pastel"      dst="AS_network"     gw_src="pastel-AS_pastel_router.toulouse.grid5000.fr"       gw_dst="Toulouse_gw" ><link_ctn id="pastel_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_pastel"      gw_src="Toulouse_gw"  gw_dst="pastel-AS_pastel_router.toulouse.grid5000.fr"      ><link_ctn id="pastel_gw"/></ASroute>
-  <ASroute src="AS_violette"    dst="AS_network"     gw_src="violette-AS_violette_router.toulouse.grid5000.fr"     gw_dst="Toulouse_gw" ><link_ctn id="violette_gw"/></ASroute>
-  <ASroute src="AS_network"     dst="AS_violette"    gw_src="Toulouse_gw"  gw_dst="violette-AS_violette_router.toulouse.grid5000.fr"    ><link_ctn id="violette_gw"/></ASroute>
-    
-</AS>
+		<route src="lille"     dst="paris"     ><link_ctn id="Lille_Paris"/></route>
+		<route src="paris"     dst="nancy"     ><link_ctn id="Paris_Nancy"/></route>
+		<route src="paris"     dst="rennes"    ><link_ctn id="Paris_Rennes"/></route>
+		<route src="paris"     dst="lyon"      ><link_ctn id="Paris_Lyon"/></route>
+		<route src="bordeaux"  dst="lyon"      ><link_ctn id="Bordeaux_Lyon"/></route>
+		<route src="lyon"      dst="grenoble"  ><link_ctn id="Lyon_Grenoble"/></route>
+		<route src="lyon"      dst="marseille" ><link_ctn id="Lyon_Marseille"/></route>
+		<route src="marseille" dst="sophia"    ><link_ctn id="Marseille_Sophia"/></route>
+		<route src="marseille" dst="toulouse"  ><link_ctn id="Marseille_Toulouse"/></route>
+		</AS>
+		<AS id="AS_bordeaux" routing="RuleBased" >
+			<cluster id="AS_bordeplage" prefix="bordeplage-" suffix=".bordeplage.grid5000.fr"
+				radical="1-51" power="5.2297E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_bordeplage" bandwidth="1.25E9" latency="1.0E-4"/>
 
+			<cluster id="AS_bordereau" prefix="bordereau-" suffix=".bordereau.grid5000.fr"
+				radical="1-93" power="8.8925E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_bordereau" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_borderline" prefix="borderline-" suffix=".borderline.grid5000.fr"
+				radical="1-10" power="13.357E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_borderline" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<AS id="gw_AS_bordeaux" routing="Full">
+				<router id="gw_bordeaux"/>
+			</AS>
+			<link   id="link_gw_bordeaux" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="YES">
+					<link_ctn id="link_$1src"/>
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="gw_$1dst"
+				symmetrical="NO">
+					<link_ctn id="link_$1src"/>
+			</ASroute>
+
+			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="gw_$1src"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="NO">
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+		</AS>
+		<AS id="AS_grenoble" routing="RuleBased" >
+			<cluster id="AS_adonis" prefix="adonis-" suffix=".adonis.grid5000.fr"
+				radical="1-12" power="23.681E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_adonis" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_edel" prefix="edel-" suffix=".edel.grid5000.fr"
+				radical="1-72" power="23.492E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_edel" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_genepi" prefix="genepi-" suffix=".genepi.grid5000.fr"
+				radical="1-34" power="21.175E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_genepi" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<AS id="gw_AS_grenoble" routing="Full">
+				<router id="gw_grenoble"/>
+			</AS>
+			<link   id="link_gw_grenoble" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="YES">
+					<link_ctn id="link_$1src"/>
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="gw_$1dst"
+				symmetrical="NO">
+					<link_ctn id="link_$1src"/>
+			</ASroute>
+
+			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="gw_$1src"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="NO">
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+		</AS>
+		<AS id="AS_lille" routing="RuleBased" >
+			<cluster id="AS_chicon" prefix="chicon-" suffix=".chicon.grid5000.fr"
+				radical="1-26" power="8.9618E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_chicon" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_chinqchint" prefix="chinqchint-" suffix=".chinqchint.grid5000.fr"
+				radical="1-46" power="22.270E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_chinqchint" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<AS id="gw_AS_lille" routing="Full">
+				<router id="gw_lille"/>
+			</AS>
+			<link   id="link_gw_lille" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="YES">
+					<link_ctn id="link_$1src"/>
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="gw_$1dst"
+				symmetrical="NO">
+					<link_ctn id="link_$1src"/>
+			</ASroute>
+
+			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="gw_$1src"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="NO">
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+		</AS>
+		<AS id="AS_lyon" routing="RuleBased" >
+			<cluster id="AS_capricorne" prefix="capricorne-" suffix=".capricorne.grid5000.fr"
+				radical="1-56" power="4.7233E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_capricorne" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_sagittaire" prefix="sagittaire-" suffix=".sagittaire.grid5000.fr"
+				radical="1-79" power="5.6693E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_sagittaire" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<AS id="gw_AS_lyon" routing="Full">
+				<router id="gw_lyon"/>
+			</AS>
+			<link   id="link_gw_lyon" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="YES">
+					<link_ctn id="link_$1src"/>
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="gw_$1dst"
+				symmetrical="NO">
+					<link_ctn id="link_$1src"/>
+			</ASroute>
+
+			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="gw_$1src"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="NO">
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+		</AS>
+		<AS id="AS_nancy" routing="RuleBased" >
+			<cluster id="AS_graphene" prefix="graphene-" suffix=".graphene.grid5000.fr"
+				radical="1-144" power="16.673E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_graphene" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_griffon" prefix="griffon-" suffix=".griffon.grid5000.fr"
+				radical="1-92" power="20.678E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_griffon" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<AS id="gw_AS_nancy" routing="Full">
+				<router id="gw_nancy"/>
+			</AS>
+			<link   id="link_gw_nancy" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="YES">
+					<link_ctn id="link_$1src"/>
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="gw_$1dst"
+				symmetrical="NO">
+					<link_ctn id="link_$1src"/>
+			</ASroute>
+
+			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="gw_$1src"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="NO">
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+		</AS>
+		<AS id="AS_orsay" routing="RuleBased" >
+			<cluster id="AS_gdx" prefix="gdx-" suffix=".gdx.grid5000.fr"
+				radical="1-310" power="4.7153E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_gdx" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_netgdx" prefix="netgdx-" suffix=".netgdx.grid5000.fr"
+				radical="1-30" power="4.7144E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_netgdx" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<AS id="gw_AS_orsay" routing="Full">
+				<router id="gw_orsay"/>
+			</AS>
+			<link   id="link_gw_orsay" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="YES">
+					<link_ctn id="link_$1src"/>
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="gw_$1dst"
+				symmetrical="NO">
+					<link_ctn id="link_$1src"/>
+			</ASroute>
+
+			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="gw_$1src"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="NO">
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+		</AS>
+		<AS id="AS_rennes" routing="RuleBased" >
+			<cluster id="AS_paradent" prefix="paradent-" suffix=".paradent.grid5000.fr"
+				radical="1-64" power="21.496E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_paradent" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_paramount" prefix="paramount-" suffix=".paramount.grid5000.fr"
+				radical="1-33" power="12.910E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_paramount" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_parapide" prefix="parapide-" suffix=".parapide.grid5000.fr"
+				radical="1-25" power="30.130E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_parapide" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_parapluie" prefix="parapluie-" suffix=".parapluie.grid5000.fr"
+				radical="1-40" power="27.391E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_parapluie" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<AS id="gw_AS_rennes" routing="Full">
+				<router id="gw_rennes"/>
+			</AS>
+			<link   id="link_gw_rennes" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="YES">
+					<link_ctn id="link_$1src"/>
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="gw_$1dst"
+				symmetrical="NO">
+					<link_ctn id="link_$1src"/>
+			</ASroute>
+
+			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="gw_$1src"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="NO">
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+		</AS>
+		<AS id="AS_sophia" routing="RuleBased" >
+			<cluster id="AS_helios" prefix="helios-" suffix=".helios.grid5000.fr"
+				radical="1-56" power="7.7318E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_helios" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_sol" prefix="sol-" suffix=".sol.grid5000.fr"
+				radical="1-50" power="8.9388E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_sol" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_suno" prefix="suno-" suffix=".suno.grid5000.fr"
+				radical="1-45" power="23.530E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_suno" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<AS id="gw_AS_sophia" routing="Full">
+				<router id="gw_sophia"/>
+			</AS>
+			<link   id="link_gw_sophia" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="YES">
+					<link_ctn id="link_$1src"/>
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="gw_$1dst"
+				symmetrical="NO">
+					<link_ctn id="link_$1src"/>
+			</ASroute>
+
+			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="gw_$1src"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="NO">
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+		</AS>
+		<AS id="AS_toulouse" routing="RuleBased" >
+			<cluster id="AS_pastel" prefix="pastel-" suffix=".pastel.grid5000.fr"
+				radical="1-80" power="9.5674E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_pastel" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_violette" prefix="violette-" suffix=".violette.grid5000.fr"
+				radical="1-52" power="5.1143E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_violette" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<AS id="gw_AS_toulouse" routing="Full">
+				<router id="gw_toulouse"/>
+			</AS>
+			<link   id="link_gw_toulouse" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="YES">
+					<link_ctn id="link_$1src"/>
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_dst="gw_$1dst"
+				symmetrical="NO">
+					<link_ctn id="link_$1src"/>
+			</ASroute>
+
+			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="gw_$1src"
+				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				symmetrical="NO">
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+		</AS>
+		<ASroute src="AS_toulouse" dst="AS_interne" gw_src="gw_toulouse" gw_dst="toulouse" symmetrical="YES">
+			<link_ctn id="link_gw_toulouse"/>
+		</ASroute>
+		<ASroute src="AS_sophia" dst="AS_interne" gw_src="gw_sophia" gw_dst="sophia" symmetrical="YES">
+			<link_ctn id="link_gw_sophia"/>
+		</ASroute>
+		<ASroute src="AS_rennes" dst="AS_interne" gw_src="gw_rennes" gw_dst="rennes" symmetrical="YES">
+			<link_ctn id="link_gw_rennes"/>
+		</ASroute>
+		<ASroute src="AS_orsay" dst="AS_interne" gw_src="gw_orsay" gw_dst="paris" symmetrical="YES">
+			<link_ctn id="link_gw_orsay"/>
+		</ASroute>
+		<ASroute src="AS_nancy" dst="AS_interne" gw_src="gw_nancy" gw_dst="nancy" symmetrical="YES">
+			<link_ctn id="link_gw_nancy"/>
+		</ASroute>
+		<ASroute src="AS_lyon" dst="AS_interne" gw_src="gw_lyon" gw_dst="lyon" symmetrical="YES">
+			<link_ctn id="link_gw_lyon"/>
+		</ASroute>
+		<ASroute src="AS_lille" dst="AS_interne" gw_src="gw_lille" gw_dst="lille" symmetrical="YES">
+			<link_ctn id="link_gw_lille"/>
+		</ASroute>
+		<ASroute src="AS_grenoble" dst="AS_interne" gw_src="gw_grenoble" gw_dst="grenoble" symmetrical="YES">
+			<link_ctn id="link_gw_grenoble"/>
+		</ASroute>
+		<ASroute src="AS_bordeaux" dst="AS_interne" gw_src="gw_bordeaux" gw_dst="bordeaux" symmetrical="YES">
+			<link_ctn id="link_gw_bordeaux"/>
+		</ASroute>
+	</AS>
 </platform>
