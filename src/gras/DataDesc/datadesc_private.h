@@ -39,7 +39,7 @@ void gras_ddt_freev(void *ddt);
  * Descriptions of all known architectures *
  *******************************************/
 
-#define gras_arch_count 11
+#define gras_arch_count 12
 typedef enum {
   gras_ddt_scalar_char = 0,
   gras_ddt_scalar_short = 1,
