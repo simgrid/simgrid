@@ -56,15 +56,15 @@
 			<link   id="link_gw_bordeaux" bandwidth="1.25E9" latency="1.0E-4"/>
 
 			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.bordeaux.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.bordeaux.grid5000.fr"
 				symmetrical="YES">
 					<link_ctn id="link_$1src"/>
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
 
 			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.bordeaux.grid5000.fr"
 				gw_dst="gw_$1dst"
 				symmetrical="NO">
 					<link_ctn id="link_$1src"/>
@@ -72,7 +72,7 @@
 
 			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
 				gw_src="gw_$1src"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.bordeaux.grid5000.fr"
 				symmetrical="NO">
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
@@ -100,15 +100,15 @@
 			<link   id="link_gw_grenoble" bandwidth="1.25E9" latency="1.0E-4"/>
 
 			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.grenoble.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.grenoble.grid5000.fr"
 				symmetrical="YES">
 					<link_ctn id="link_$1src"/>
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
 
 			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.grenoble.grid5000.fr"
 				gw_dst="gw_$1dst"
 				symmetrical="NO">
 					<link_ctn id="link_$1src"/>
@@ -116,7 +116,7 @@
 
 			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
 				gw_src="gw_$1src"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.grenoble.grid5000.fr"
 				symmetrical="NO">
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
@@ -149,15 +149,15 @@
 			<link   id="link_gw_lille" bandwidth="1.25E9" latency="1.0E-4"/>
 
 			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.lille.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.lille.grid5000.fr"
 				symmetrical="YES">
 					<link_ctn id="link_$1src"/>
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
 
 			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.lille.grid5000.fr"
 				gw_dst="gw_$1dst"
 				symmetrical="NO">
 					<link_ctn id="link_$1src"/>
@@ -165,7 +165,7 @@
 
 			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
 				gw_src="gw_$1src"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.lille.grid5000.fr"
 				symmetrical="NO">
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
@@ -188,15 +188,15 @@
 			<link   id="link_gw_lyon" bandwidth="1.25E9" latency="1.0E-4"/>
 
 			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.lyon.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.lyon.grid5000.fr"
 				symmetrical="YES">
 					<link_ctn id="link_$1src"/>
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
 
 			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.lyon.grid5000.fr"
 				gw_dst="gw_$1dst"
 				symmetrical="NO">
 					<link_ctn id="link_$1src"/>
@@ -204,7 +204,7 @@
 
 			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
 				gw_src="gw_$1src"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.lyon.grid5000.fr"
 				symmetrical="NO">
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
@@ -227,15 +227,15 @@
 			<link   id="link_gw_nancy" bandwidth="1.25E9" latency="1.0E-4"/>
 
 			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.nancy.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.nancy.grid5000.fr"
 				symmetrical="YES">
 					<link_ctn id="link_$1src"/>
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
 
 			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.nancy.grid5000.fr"
 				gw_dst="gw_$1dst"
 				symmetrical="NO">
 					<link_ctn id="link_$1src"/>
@@ -243,7 +243,7 @@
 
 			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
 				gw_src="gw_$1src"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.nancy.grid5000.fr"
 				symmetrical="NO">
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
@@ -266,15 +266,15 @@
 			<link   id="link_gw_orsay" bandwidth="1.25E9" latency="1.0E-4"/>
 
 			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.orsay.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.orsay.grid5000.fr"
 				symmetrical="YES">
 					<link_ctn id="link_$1src"/>
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
 
 			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.orsay.grid5000.fr"
 				gw_dst="gw_$1dst"
 				symmetrical="NO">
 					<link_ctn id="link_$1src"/>
@@ -282,7 +282,7 @@
 
 			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
 				gw_src="gw_$1src"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.orsay.grid5000.fr"
 				symmetrical="NO">
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
@@ -315,15 +315,15 @@
 			<link   id="link_gw_rennes" bandwidth="1.25E9" latency="1.0E-4"/>
 
 			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.rennes.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.rennes.grid5000.fr"
 				symmetrical="YES">
 					<link_ctn id="link_$1src"/>
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
 
 			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.rennes.grid5000.fr"
 				gw_dst="gw_$1dst"
 				symmetrical="NO">
 					<link_ctn id="link_$1src"/>
@@ -331,7 +331,7 @@
 
 			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
 				gw_src="gw_$1src"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.rennes.grid5000.fr"
 				symmetrical="NO">
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
@@ -359,15 +359,15 @@
 			<link   id="link_gw_sophia" bandwidth="1.25E9" latency="1.0E-4"/>
 
 			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.sophia.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.sophia.grid5000.fr"
 				symmetrical="YES">
 					<link_ctn id="link_$1src"/>
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
 
 			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.sophia.grid5000.fr"
 				gw_dst="gw_$1dst"
 				symmetrical="NO">
 					<link_ctn id="link_$1src"/>
@@ -375,7 +375,7 @@
 
 			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
 				gw_src="gw_$1src"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.sophia.grid5000.fr"
 				symmetrical="NO">
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
@@ -398,15 +398,15 @@
 			<link   id="link_gw_toulouse" bandwidth="1.25E9" latency="1.0E-4"/>
 
 			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.toulouse.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.toulouse.grid5000.fr"
 				symmetrical="YES">
 					<link_ctn id="link_$1src"/>
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
 
 			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.$1src.grid5000.fr"
+				gw_src="$1src-AS_$1src_router.toulouse.grid5000.fr"
 				gw_dst="gw_$1dst"
 				symmetrical="NO">
 					<link_ctn id="link_$1src"/>
@@ -414,7 +414,7 @@
 
 			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
 				gw_src="gw_$1src"
-				gw_dst="$1dst-AS_$1dst_router.$1dst.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.toulouse.grid5000.fr"
 				symmetrical="NO">
 					<link_ctn id="link_$1dst"/>
 			</ASroute>
