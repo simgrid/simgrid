@@ -127,7 +127,8 @@ static double base_vivaldi_get_latency (const char *src, const char *dst)
 
   xbt_assert(euclidean_dist>=0, "Euclidean Dist is less than 0\"%s\" and \"%.2f\"", src, euclidean_dist);
 
-  return euclidean_dist;
+  //From .ms to .s
+  return euclidean_dist / 1000;
 }
 
 static double vivaldi_get_link_latency (routing_component_t rc,const char *src, const char *dst, route_extended_t e_route)
