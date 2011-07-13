@@ -5,6 +5,7 @@
 # VPATH builds), but also the function name (which changes with the
 # optimization level: if inlining, gcc changes it).
 
+! timeout 10
 ! output sort
 $ $SG_TEST_EXENV ./rpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/rpc.xml "--log=root.fmt:[0]%e(%i:%P@%h)%e%m%n"
 > [0] (1:server@Tremblay) Launch server (port=4000)
