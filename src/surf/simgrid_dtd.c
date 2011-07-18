@@ -5183,8 +5183,6 @@ YY_RULE_SETUP
   if (!AX_surfxml_cluster_power) FAIL("Required attribute `power' not set for `cluster' element.");
   if (!AX_surfxml_cluster_bw) FAIL("Required attribute `bw' not set for `cluster' element.");
   if (!AX_surfxml_cluster_lat) FAIL("Required attribute `lat' not set for `cluster' element.");
-  if (!AX_surfxml_cluster_bb_bw) FAIL("Required attribute `bb_bw' not set for `cluster' element.");
-  if (!AX_surfxml_cluster_bb_lat) FAIL("Required attribute `bb_lat' not set for `cluster' element.");
   LEAVE; STag_surfxml_cluster();surfxml_pcdata_ix = 0; ENTER(E_surfxml_cluster);
  }
 	YY_BREAK
@@ -5198,8 +5196,6 @@ YY_RULE_SETUP
   if (!AX_surfxml_cluster_power) FAIL("Required attribute `power' not set for `cluster' element.");
   if (!AX_surfxml_cluster_bw) FAIL("Required attribute `bw' not set for `cluster' element.");
   if (!AX_surfxml_cluster_lat) FAIL("Required attribute `lat' not set for `cluster' element.");
-  if (!AX_surfxml_cluster_bb_bw) FAIL("Required attribute `bb_bw' not set for `cluster' element.");
-  if (!AX_surfxml_cluster_bb_lat) FAIL("Required attribute `bb_lat' not set for `cluster' element.");
   LEAVE; STag_surfxml_cluster(); surfxml_pcdata_ix = 0; ETag_surfxml_cluster(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_2: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_3); break;
