@@ -1,6 +1,10 @@
 SimGrid (3.7) unstable; urgency=low 
 
  -- `LC_ALL=C date` Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ SIMDAG
+ [dot loader]
+ * Bug fix: correction of the dot file parsing with the libcgraph
+
 
 SimGrid (3.6.1) unstable; urgency=low 
 
