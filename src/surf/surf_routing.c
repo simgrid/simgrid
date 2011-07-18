@@ -1507,7 +1507,7 @@ void routing_parse_Scluster(void)
   char *cluster_availability_file = A_surfxml_cluster_availability_file;
   char *cluster_state_file = A_surfxml_cluster_state_file;
   char *host_id, *groups, *link_id = NULL;
-  char *router_id, *link_backbone;
+  char *router_id;
   char *availability_file = xbt_strdup(cluster_availability_file);
   char *state_file = xbt_strdup(cluster_state_file);
 
@@ -1697,7 +1697,7 @@ void routing_parse_Scluster(void)
   SURFXML_END_TAG(router);
 
   if(strcmp(cluster_bb_bw,"") && strcmp(cluster_bb_lat,"")){
-  link_backbone = bprintf("%s_backbone", cluster_id);
+  char *link_backbone = bprintf("%s_backbone", cluster_id);
   XBT_DEBUG("<link\tid=\"%s\" bw=\"%s\" lat=\"%s\"/>", link_backbone,cluster_bb_bw, cluster_bb_lat);
   A_surfxml_link_state = A_surfxml_link_state_ON;
   A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
@@ -1711,6 +1711,7 @@ void routing_parse_Scluster(void)
   SURFXML_BUFFER_SET(link_state_file, "");
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
+  free(link_backbone);
   }
 
   XBT_DEBUG(" ");
@@ -1920,8 +1921,6 @@ void routing_parse_Scluster(void)
 #endif
 
   free(router_id);
-  if(strcmp(cluster_bb_bw,"") && strcmp(cluster_bb_lat,""))
-	  free(link_backbone);
   xbt_dict_free(&patterns);
   free(availability_file);
   free(state_file);
