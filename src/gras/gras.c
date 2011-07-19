@@ -145,11 +145,9 @@ void gras_init(int *argc, char **argv)
 
 void gras_exit(void)
 {
-  gras_procdata_t *pd;
   XBT_INFO("Exiting GRAS");
   amok_exit();
   gras_moddata_leave();
-  pd = gras_procdata_get();
   gras_msg_listener_shutdown();
   gras_process_exit();
   if (--gras_running_process == 0) {

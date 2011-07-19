@@ -159,7 +159,6 @@ void xbt_queue_shift(xbt_queue_t queue, void *const dst)
 void xbt_queue_push_timed(xbt_queue_t queue, const void *src, double delay)
 {
   double begin = xbt_time();
-  xbt_ex_t e;
 
   xbt_mutex_acquire(queue->mutex);
 
@@ -183,7 +182,7 @@ void xbt_queue_push_timed(xbt_queue_t queue, const void *src, double delay)
         xbt_cond_timedwait(queue->not_full, queue->mutex,
                            delay < 0 ? -1 : delay - (xbt_time() - begin));
       }
-      CATCH(e) {
+      CATCH_ANONYMOUS {
         xbt_mutex_release(queue->mutex);
         RETHROW;
       }
@@ -204,7 +203,6 @@ void xbt_queue_push_timed(xbt_queue_t queue, const void *src, double delay)
 void xbt_queue_pop_timed(xbt_queue_t queue, void *const dst, double delay)
 {
   double begin = xbt_time();
-  xbt_ex_t e;
 
   xbt_mutex_acquire(queue->mutex);
 
@@ -221,7 +219,7 @@ void xbt_queue_pop_timed(xbt_queue_t queue, void *const dst, double delay)
         xbt_cond_timedwait(queue->not_empty, queue->mutex,
                            delay < 0 ? -1 : delay - (xbt_time() - begin));
       }
-      CATCH(e) {
+      CATCH_ANONYMOUS {
         xbt_mutex_release(queue->mutex);
         RETHROW;
       }
@@ -241,7 +239,6 @@ void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src,
                              double delay)
 {
   double begin = xbt_time();
-  xbt_ex_t e;
 
   xbt_mutex_acquire(queue->mutex);
 
@@ -265,7 +262,7 @@ void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src,
         xbt_cond_timedwait(queue->not_full, queue->mutex,
                            delay < 0 ? -1 : delay - (xbt_time() - begin));
       }
-      CATCH(e) {
+      CATCH_ANONYMOUS {
         xbt_mutex_release(queue->mutex);
         RETHROW;
       }
@@ -287,7 +284,6 @@ void xbt_queue_shift_timed(xbt_queue_t queue, void *const dst,
                            double delay)
 {
   double begin = xbt_time();
-  xbt_ex_t e;
 
   xbt_mutex_acquire(queue->mutex);
 
@@ -304,7 +300,7 @@ void xbt_queue_shift_timed(xbt_queue_t queue, void *const dst,
         xbt_cond_timedwait(queue->not_empty, queue->mutex,
                            delay < 0 ? -1 : delay - (xbt_time() - begin));
       }
-      CATCH(e) {
+      CATCH_ANONYMOUS {
         xbt_mutex_release(queue->mutex);
         RETHROW;
       }

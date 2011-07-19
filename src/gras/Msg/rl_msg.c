@@ -117,7 +117,7 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
     gras_trp_recv(sock, &c_kind, 1);
     msg->kind = (e_gras_msg_kind_t) c_kind;
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF
         ("Exception caught while trying to get the message header: %s");
   }
@@ -155,7 +155,8 @@ void gras_msg_recv(gras_socket_t sock, gras_msg_t msg)
   TRY {
     msg->type =
         (gras_msgtype_t) xbt_set_get_by_name(_gras_msgtype_set, msg_name);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     /* FIXME: Survive unknown messages */
     if (e.category == not_found_error) {
       xbt_ex_free(e);

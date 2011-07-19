@@ -27,7 +27,6 @@ int start_war(int argc, char **argv)
 {
   gras_socket_t temp_sock = NULL;
   nuke_t nuke_msg;
-  xbt_ex_t e;                   // the error variable used in TRY.. CATCH tokens.
   //return 0; // in order to inhibit the War of the Nodes 
   gras_init(&argc, argv);
   gras_os_sleep((15 - gras_os_getpid()) * 20 + 200);    // wait a bit.
@@ -35,7 +34,8 @@ int start_war(int argc, char **argv)
 
   TRY {                         // contacting the bad guy that will launch the War.
     temp_sock = gras_socket_client(gras_os_myname(), atoi(argv[1]));
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to connect known host so as to declare WAR!: %s");
   }
 
@@ -48,7 +48,8 @@ int start_war(int argc, char **argv)
 
   TRY {
     gras_msg_send(temp_sock, "can_nuke", &nuke_msg);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     gras_socket_close(temp_sock);
     RETHROWF
         ("Unable to contact known host so as to declare WAR!!!!!!!!!!!!!!!!!!!!!: %s");
@@ -63,7 +64,6 @@ static int send_nuke(nuke_t * msg, int xId, int yId)
 {
   node_data_t *globals = (node_data_t *) gras_userdata_get();
   gras_socket_t temp_sock = NULL;
-  xbt_ex_t e;                   // the error variable used in TRY.. CATCH tokens.
 
   if (xId >= globals->x1 && xId <= globals->x2 && yId >= globals->y1
       && yId <= globals->y2) {
@@ -95,14 +95,14 @@ static int send_nuke(nuke_t * msg, int xId, int yId)
     TRY {                       // sending the nuke.
       temp_sock = gras_socket_client(host, port);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       RETHROWF("Unable to connect the nuke!: %s");
     }
     //XBT_INFO("%s ON %s %d %d <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",globals->host,host,xId,yId);
     TRY {
       gras_msg_send(temp_sock, "can_nuke", msg);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       RETHROWF("Unable to send the nuke!: %s");
     }
     gras_socket_close(temp_sock);
@@ -190,13 +190,13 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
     TRY {
       temp_sock = gras_socket_client(host, port);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       RETHROWF("Unable to connect the nuke!: %s");
     }
     TRY {
       gras_msg_send(temp_sock, "can_nuke", incoming);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       RETHROWF("Unable to send the nuke!: %s");
     }
     XBT_INFO("Nuke re-aimed by %s to %s for (%d;%d)", globals->host, host,
@@ -212,6 +212,7 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
     XBT_INFO("My area is [%d;%d;%d;%d]", globals->x1, globals->x2,
           globals->y1, globals->y2);
     //XBT_INFO("Closing node, all has been done!");
+    xbt_ex_free(e);
   }
   return 0;
 }

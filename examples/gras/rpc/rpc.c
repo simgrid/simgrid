@@ -42,17 +42,17 @@ static void exception_catching(void)
     }
     CATCH(e) {
       gotit = 1;
+      xbt_assert(e.category == unknown_error,
+                 "Got wrong category: %d (instead of %d)", e.category,
+                 unknown_error);
+      xbt_assert(e.value == 42, "Got wrong value: %d (!=42)", e.value);
+      xbt_assert(!strncmp(e.msg, exception_msg, strlen(exception_msg)),
+                 "Got wrong message: %s", e.msg);
+      xbt_ex_free(e);
     }
     if (!gotit) {
       THROWF(unknown_error, 0, "Didn't got the remote exception!");
     }
-    xbt_assert(e.category == unknown_error,
-                "Got wrong category: %d (instead of %d)", e.category,
-                unknown_error);
-    xbt_assert(e.value == 42, "Got wrong value: %d (!=42)", e.value);
-    xbt_assert(!strncmp(e.msg, exception_msg, strlen(exception_msg)),
-                "Got wrong message: %s", e.msg);
-    xbt_ex_free(e);
   }
 }
 
@@ -97,7 +97,7 @@ int client(int argc, char *argv[])
     toserver = gras_socket_client(host, port);
     toforwarder = gras_socket_client(argv[3], atoi(argv[4]));
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to connect to the server: %s");
   }
   XBT_INFO("Connected to %s:%d.", host, port);
@@ -119,7 +119,7 @@ int client(int argc, char *argv[])
     exception_catching();
     gras_msg_rpccall(toserver, 6000.0, "plain ping", &ping, &pong);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     gras_socket_close(toserver);
     RETHROWF("Failed to execute a PING rpc on the server: %s");
   }
@@ -181,19 +181,19 @@ int client(int argc, char *argv[])
     }
     CATCH(e) {
       gotit = 1;
+      xbt_assert(e.value == 42, "Got wrong value: %d (!=42)", e.value);
+      xbt_assert(!strncmp(e.msg, exception_msg, strlen(exception_msg)),
+                 "Got wrong message: %s", e.msg);
+      xbt_assert(e.category == unknown_error,
+                 "Got wrong category: %d (instead of %d)",
+                 e.category, unknown_error);
+      XBT_INFO
+        ("Got the expected exception when calling the exception raising RPC");
+      xbt_ex_free(e);
     }
     if (!gotit) {
       THROWF(unknown_error, 0, "Didn't got the remote exception!");
     }
-    xbt_assert(e.value == 42, "Got wrong value: %d (!=42)", e.value);
-    xbt_assert(!strncmp(e.msg, exception_msg, strlen(exception_msg)),
-                "Got wrong message: %s", e.msg);
-    xbt_assert(e.category == unknown_error,
-                "Got wrong category: %d (instead of %d)",
-                e.category, unknown_error);
-    XBT_INFO
-        ("Got the expected exception when calling the exception raising RPC");
-    xbt_ex_free(e);
     exception_catching();
   }
 

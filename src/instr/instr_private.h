@@ -11,6 +11,11 @@
 
 #ifdef HAVE_TRACING
 
+/* Need to define function drand48 for Windows */
+#ifdef _WIN32
+#  define drand48() (rand()/(RAND_MAX + 1.0))
+#endif
+
 #define INSTR_DEFAULT_STR_SIZE 500
 
 #include "instr/instr.h"
@@ -159,6 +164,7 @@ int TRACE_msg_task_is_enabled(void);
 int TRACE_msg_process_is_enabled(void);
 int TRACE_buffer (void);
 int TRACE_onelink_only (void);
+int TRACE_disable_destroy (void);
 char *TRACE_get_filename(void);
 char *TRACE_get_triva_uncat_conf (void);
 char *TRACE_get_triva_cat_conf (void);

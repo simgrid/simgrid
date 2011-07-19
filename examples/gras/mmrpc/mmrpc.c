@@ -55,7 +55,6 @@ static int server_cb_request_handler(gras_msg_cb_ctx_t ctx,
 
 int server(int argc, char *argv[])
 {
-  xbt_ex_t e;
   gras_socket_t sock = NULL;
   int port = 4000;
 
@@ -72,7 +71,7 @@ int server(int argc, char *argv[])
   TRY {
     sock = gras_socket_server(port);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to establish a server socket: %s");
   }
 
@@ -96,7 +95,6 @@ int server(int argc, char *argv[])
 
 int client(int argc, char *argv[])
 {
-  xbt_ex_t e;
   gras_socket_t toserver = NULL;        /* peer */
 
   gras_socket_t from;
@@ -125,7 +123,7 @@ int client(int argc, char *argv[])
   TRY {
     toserver = gras_socket_client(host, port);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to connect to the server: %s");
   }
   XBT_INFO("Connected to %s:%d.", host, port);

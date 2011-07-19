@@ -456,7 +456,8 @@ void surfxml_del_callback(xbt_dynar_t cb_list, void_f_void_t function)
 
   TRY {
     it = xbt_dynar_search(cb_list,&function);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category == not_found_error) {
       xbt_ex_free(e);
       xbt_die("Trying to remove a callback that is not here! This should not happen");

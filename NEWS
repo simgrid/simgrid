@@ -1,4 +1,13 @@
 
+                    _               _____ _____ 
+__   _____ _ __ ___(_) ___  _ __   |___ /|___  |
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   / / 
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | / /  
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_/   
+                                                
+
+(still to be done)
+
                     _               _____  __   
 __   _____ _ __ ___(_) ___  _ __   |___ / / /_  
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \| '_ \ 
@@ -6,7 +15,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / /_
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)___/ 
                                                 
 
-The "F*! They Killed Kenny!" version. Major changes:
+The "OMG! They Killed Kenny!" version. Major changes:
 
  * Java and Ruby bindings were removed from the main archive
    - They are now distributed separately

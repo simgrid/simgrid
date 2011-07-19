@@ -185,10 +185,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
       maps_name = bprintf("/proc/%d/maps", (int) getpid());
       maps = fopen(maps_name, "r");
 
-      sscanf(addrs[i], "%lx", &addr);
-      sprintf(maps_buff, "%#lx", addr);
-
-      if (strcmp(addrs[i], maps_buff)) {
+      addr = strtol(addrs[i], &p, 16);
+      if (*p != '\0') {
         XBT_CRITICAL("Cannot parse backtrace address '%s' (addr=%#lx)",
                   addrs[i], addr);
       }

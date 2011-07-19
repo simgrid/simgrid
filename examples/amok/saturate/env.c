@@ -67,8 +67,6 @@ static void env_hosttohost_bw(int argc, char *argv[])
 /********************************************************************************************/
 static void env_Pairwisehost_bw(int argc, char *argv[])
 {
-  xbt_ex_t e;
-
   /* where are the sensors */
   xbt_dynar_t hosts = xbt_dynar_new(sizeof(xbt_host_t), &free_host);
   int nb_hosts;
@@ -107,7 +105,7 @@ static void env_Pairwisehost_bw(int argc, char *argv[])
       amok_bw_saturate_start(h1->name, h1->port, host_test, h1->port,   //"Ginette"
                              msg_size, 120);    // sturation of the link with msg_size to compute a concurent bandwidth MA //MB
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       RETHROWF("Cannot ask hosts to saturate the link: %s");
     }
     // gras_os_sleep(1.0);

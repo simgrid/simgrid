@@ -3,6 +3,63 @@ ${CMAKE_MODULE_PATH}
 ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
 )
 
+IF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") #Intel processor 64 bits
+   message(STATUS "System processor: amd64")
+   set(HAVE_RAWCTX 1)
+   
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "x86") #Intel processor 32 bits
+   message(STATUS "System processor: x86")
+   set(PROCESSOR_i686 1)
+   set(HAVE_RAWCTX 1)
+   
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^i.86$")
+    IF(${ARCH_32_BITS})
+        set(PROCESSOR_i686 1)
+        message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}")
+    ELSE(${ARCH_32_BITS})
+        message(STATUS "System processor: amd64")
+        set(PROCESSOR_x86_64 1)
+        set(PROCESSOR_i686 0)
+    ENDIF(${ARCH_32_BITS})          
+    set(HAVE_RAWCTX 1)
+    
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^alpha")
+    message(STATUS "System processor: alpha")
+    
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
+    # Subdir is "arm" for both big-endian (arm) and little-endian (armel).
+    message(STATUS "System processor: arm")
+    
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^mips")
+    # mips* machines are bi-endian mostly so processor does not tell
+    # endianess of the underlying system.
+    message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}" "mips" "mipsel" "mipseb")
+    
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(powerpc|ppc)64")
+    message(STATUS "System processor: ppc64")
+    
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(powerpc|ppc)")
+    message(STATUS "System processor: ppc")
+    
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^sparc")
+    # Both flavours can run on the same processor
+    message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}" "sparc" "sparcv9")
+    
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(parisc|hppa)")
+    message(STATUS "System processor: parisc" "parisc64")
+    
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^s390")
+    # s390 binaries can run on s390x machines
+    message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}" "s390" "s390x")
+    
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^sh")
+    message(STATUS "System processor: sh")
+    
+ELSE(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") #PROCESSOR NOT fIND
+    message(STATUS "PROCESSOR NOT FOUND: ${CMAKE_SYSTEM_PROCESSOR}")
+    
+ENDIF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
 
 include(CheckFunctionExists)
@@ -37,6 +94,7 @@ endif(enable_ns3)
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(pthread 	pthread_create 			"" pthread)
 CHECK_LIBRARY_EXISTS(pthread 	sem_init 				"" HAVE_SEM_INIT_LIB)
+CHECK_LIBRARY_EXISTS(pthread 	sem_open 				"" HAVE_SEM_OPEN_LIB)
 CHECK_LIBRARY_EXISTS(pthread 	sem_timedwait 			"" HAVE_SEM_TIMEDWAIT_LIB)
 CHECK_LIBRARY_EXISTS(pthread 	pthread_mutex_timedlock "" HAVE_MUTEX_TIMEDLOCK_LIB)
 CHECK_LIBRARY_EXISTS(rt 		clock_gettime 			"" HAVE_POSIX_GETTIME)
@@ -154,18 +212,47 @@ elseif(pthread)
 endif(pthread)
 
 if(pthread)
-	### HAVE_SEM_INIT
+	### Test that we have a way to create semaphores
   	
+  	if(HAVE_SEM_OPEN_LIB)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_open.c -o testprog"
+		             OUTPUT_VARIABLE HAVE_SEM_OPEN_run)
+	    	if(HAVE_SEM_OPEN_run)
+			set(HAVE_SEM_OPEN 0)
+	    	else(HAVE_SEM_OPEN_run)
+			exec_program("./testprog" RETURN_VALUE HAVE_SEM_OPEN_run2 OUTPUT_VARIABLE var_compil)
+		    	if(HAVE_SEM_OPEN_run2)
+				set(HAVE_SEM_OPEN 0)
+	    		else(HAVE_SEM_OPEN_run2)
+				set(HAVE_SEM_OPEN 1)
+	    		endif(HAVE_SEM_OPEN_run2)	
+		endif(HAVE_SEM_OPEN_run)
+        else(HAVE_SEM_OPEN_LIB)
+		set(HAVE_SEM_OPEN 0)
+  	endif(HAVE_SEM_OPEN_LIB)
+
   	if(HAVE_SEM_INIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c" OUTPUT_VARIABLE HAVE_SEM_INIT_run)
+		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -o testprog" 
+		             OUTPUT_VARIABLE HAVE_SEM_INIT_run)
 	    	if(HAVE_SEM_INIT_run)
 			set(HAVE_SEM_INIT 0)
 	    	else(HAVE_SEM_INIT_run)
-			set(HAVE_SEM_INIT 1)
+			exec_program("./testprog" RETURN_VALUE HAVE_SEM_INIT_run OUTPUT_VARIABLE var_compil)
+			if(HAVE_SEM_INIT_run)
+				set(HAVE_SEM_INIT 0)
+			else(HAVE_SEM_INIT_run)
+				set(HAVE_SEM_INIT 1)
+			endif(HAVE_SEM_INIT_run)
 		endif(HAVE_SEM_INIT_run)
+        else(HAVE_SEM_INIT_LIB)
+		set(HAVE_SEM_INIT 0)
   	endif(HAVE_SEM_INIT_LIB)
 
-	### HAVE_SEM_TIMEDWAIT
+	if(NOT HAVE_SEM_OPEN AND NOT HAVE_SEM_INIT)
+		message(FATAL_ERROR "Semaphores are not usable, but they are mandatory to threads (you may need to mount /dev).")
+	endif(NOT HAVE_SEM_OPEN AND NOT HAVE_SEM_INIT)
+
+	### Test that we have a way to timewait for semaphores
 
 	if(HAVE_SEM_TIMEDWAIT_LIB)
 		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
@@ -220,12 +307,8 @@ ELSE(CMAKE_CROSSCOMPILING)
 			file(READ "${simgrid_BINARY_DIR}/conftestval" mcsc)
 			STRING(REPLACE "\n" "" mcsc "${mcsc}")
 			if(mcsc)
-			    if(APPLE AND NOT ucontext) # TODO for the moment ucontext don't work on MAC OSX
-			        set(mcsc "no") 
-			    else(APPLE AND NOT ucontext)
-    				set(mcsc "yes")
-    				set(HAVE_UCONTEXT_H 1)
-				endif(APPLE AND NOT ucontext)
+   				set(mcsc "yes")
+   				set(HAVE_UCONTEXT_H 1)
 			else(mcsc)
 				set(mcsc "no")
 			endif(mcsc)
@@ -269,36 +352,18 @@ endif(pthread)
 ###############
 ## SVN version check
 ##
-if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
-	find_file(SVN ".svn" ${CMAKE_HOME_DIRECTORY})
-	exec_program("svnversion ${CMAKE_HOME_DIRECTORY}" OUTPUT_VARIABLE "SVN_VERSION")
-	message(STATUS "svn version ${SVN_VERSION}")
-else(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
-	exec_program("git config --get svn-remote.svn.url"
-		OUTPUT_VARIABLE url
-		RETURN_VALUE ret)
-endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
+exec_program("git remote" OUTPUT_VARIABLE remote RETURN_VALUE ret)
+exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
 
 if(url)
 	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
+	message(STATUS "Git version: ${GIT_VERSION}")
 	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
-	
+	message(STATUS "Git date: ${GIT_DATE}")
 	string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
 	STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
-	
-	exec_program("git svn info" ${CMAKE_HOME_DIRECTORY}
-		OUTPUT_VARIABLE "GIT_SVN_VERSION")
-	string(REPLACE "\n" ";" GIT_SVN_VERSION ${GIT_SVN_VERSION})
-	foreach(line ${GIT_SVN_VERSION})
-		string(REGEX MATCH "^Revision:.*" line_good ${line})
-		if(line_good)
-			string(REPLACE "Revision: " ""
-				line_good ${line_good})
-			set(SVN_VERSION ${line_good})
-		endif(line_good)
-	endforeach(line ${GIT_SVN_VERSION})
 endif(url)
 
 
@@ -320,6 +385,36 @@ else(BIGENDIAN)
   set(val_big "l${var1}")
   set(GRAS_BIGENDIAN 0)
 endif(BIGENDIAN)
+
+# The syntax of this magic string is given in src/gras/DataDesc/ddt_convert.c
+# It kinda matches the values that the gras_arch_desc_t structure can take
+
+# Basically, the syntax is one char l or B for endianness (little or Big)
+#   then there is a bunch of blocks separated by _.  
+# C block is for char, I block for integers, P block for pointers and
+#   D block for floating points
+# For each block there is an amount of chuncks separated by :, each of
+#   them describing a data size. For example there is only one chunk
+#   in the char block, because no architecture provide several sizes
+#   of chars. In integer block, there is 4 chunks: "short int", "int",
+#   "long int", "long long int". There is 2 pointer chunks for data
+#   pointers and pointers on functions (thanks to the AMD64 madness).
+#   Thee two floating points chuncks are for "float" and "double".
+# Each chunk is of the form datasize/minimal_alignment_size
+
+# These informations are used to convert a data stream from one
+#    formalism to another. Only the GRAS_ARCH is transfered in the
+#    stream, and it it of cruxial importance to keep these detection
+#    information here synchronized with the data hardcoded in the
+#    source in src/gras/DataDesc/ddt_convert.c 
+
+# If you add something here (like a previously unknown architecture),
+#    please add it to the source code too. 
+# Please do not modify stuff here since it'd break the GRAS protocol.
+#     If you really need to change stuff, please also bump
+#    GRAS_PROTOCOL_VERSION in src/gras/Msg/msg_interface.h
+
+SET(GRAS_THISARCH "none")
 
 if(val_big MATCHES "l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1:")
 	#gras_arch=0; gras_size=32; gras_arch_name=little32_1;
@@ -346,38 +441,47 @@ if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 	SET(GRAS_ARCH_32_BITS 0)
 	SET(GRAS_THISARCH 4)
 endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
+if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:8/8:8/8:_D:4/4:8/8:") 
+	#gras_arch=5; gras_size=64; gras_arch_name=little64_2;
+	SET(GRAS_ARCH_32_BITS 0)
+	SET(GRAS_THISARCH 5)
+endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:") 
-	#gras_arch=5; gras_size=32; gras_arch_name=big32;
-	SET(GRAS_ARCH_32_BITS 1)
-	SET(GRAS_THISARCH 5)
-endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:")
-if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:") 
-	#gras_arch=6; gras_size=32; gras_arch_name=big32_8_4;
+	#gras_arch=6; gras_size=32; gras_arch_name=big32_8;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 6)
-endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:")
-if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:") 
-	#gras_arch=7; gras_size=32; gras_arch_name=big32_4;
+endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:")
+if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:") 
+	#gras_arch=7; gras_size=32; gras_arch_name=big32_8_4;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 7)
-endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:")
-if(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:") 
-	#gras_arch=8; gras_size=32; gras_arch_name=big32_2;
+endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:")
+if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:") 
+	#gras_arch=8; gras_size=32; gras_arch_name=big32_4;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 8)
+endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:")
+if(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:") 
+	#gras_arch=9; gras_size=32; gras_arch_name=big32_2;
+	SET(GRAS_ARCH_32_BITS 1)
+	SET(GRAS_THISARCH 9)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:") 
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:") 
-	#gras_arch=9; gras_size=64; gras_arch_name=big64;
-	SET(GRAS_ARCH_32_BITS 0)
-	SET(GRAS_THISARCH 9)
-endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
-if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 
-	#gras_arch=10;gras_size=64; gras_arch_name=big64_8_4;
+	#gras_arch=10; gras_size=64; gras_arch_name=big64;
 	SET(GRAS_ARCH_32_BITS 0)
 	SET(GRAS_THISARCH 10)
+endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
+if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 
+	#gras_arch=11; gras_size=64; gras_arch_name=big64_8_4;
+	SET(GRAS_ARCH_32_BITS 0)
+	SET(GRAS_THISARCH 11)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 
 
+if(GRAS_THISARCH MATCHES "none")
+    message(STATUS "architecture: ${val_big}")
+    message(FATAL_ERROR "GRAS_THISARCH is empty: '${GRAS_THISARCH}'")  
+endif(GRAS_THISARCH MATCHES "none")
 
 # Check architecture signature end
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
@@ -405,7 +509,7 @@ set(makecontext_CPPFLAGS_2 "")
 if(HAVE_MAKECONTEXT OR WIN32)
 	set(makecontext_CPPFLAGS "-DTEST_makecontext")
 	if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-		set(makecontext_CPPFLAGS_2 "-DOSX")
+		set(makecontext_CPPFLAGS_2 "-D_XOPEN_SOURCE")
 	endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	
     if(WIN32 AND __VISUALC__)
@@ -509,9 +613,9 @@ foreach(fct ${diff_va})
 	    }
 	    va_end(ap);
 	}
-	int main(int argc, char *argv[])
+	int main(void)
 	{
-	    test("test", 1, 2, 3, 4, 5, 6, 7, 8, 9);
+	    test(\"test\", 1, 2, 3, 4, 5, 6, 7, 8, 9);
 	    exit(0);
 	}"
 	)
@@ -646,6 +750,16 @@ if(ADDR2LINE)
 set(ADDR2LINE "${ADDR2LINE}/addr2line")
 endif(ADDR2LINE)
 
+
+
+### Check if OSX can compile with ucontext (with gcc 4.[1-5] it is broken)
+if(APPLE)
+    if(APPLE_NEED_GCC_VERSION GREATER COMPILER_C_VERSION_MAJOR_MINOR)
+        message(STATUS "Ucontext can't be used with this version of gcc (must be greater than 4.5)")
+        set(HAVE_UCONTEXT_H 0)
+    endif(APPLE_NEED_GCC_VERSION GREATER COMPILER_C_VERSION_MAJOR_MINOR)
+endif(APPLE)
+
 ### File to create
 
 configure_file("${CMAKE_HOME_DIRECTORY}/src/context_sysv_config.h.in" 			"${CMAKE_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
@@ -676,11 +790,19 @@ exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE OKITO
 exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE OKITOKI)
 exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE OKITOKI)
 
-set(generate_files_to_clean
-${CMAKE_BINARY_DIR}/src/context_sysv_config.h
-${CMAKE_BINARY_DIR}/src/gras_config.h
-${CMAKE_BINARY_DIR}/include/simgrid_config.h
-${CMAKE_BINARY_DIR}/include/smpi/smpif.h
+set(generated_headers_to_install
+	${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
+	${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
+)
+
+set(generated_headers
+    ${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h
+)
+
+set(generated_files_to_clean
+${generated_headers}
+${generated_headers_to_install}
 ${CMAKE_BINARY_DIR}/bin/smpicc
 ${CMAKE_BINARY_DIR}/bin/smpif2c
 ${CMAKE_BINARY_DIR}/bin/smpiff
@@ -700,8 +822,8 @@ else("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
 	configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing/platform.xml ${CMAKE_BINARY_DIR}/examples/msg/tracing/platform.xml COPYONLY)
 	
-	set(generate_files_to_clean
-		${generate_files_to_clean}
+	set(generated_files_to_clean
+		${generated_files_to_clean}
 		${CMAKE_BINARY_DIR}/examples/smpi/hostfile
 		${CMAKE_BINARY_DIR}/examples/msg/small_platform.xml
 		${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml
@@ -710,4 +832,12 @@ else("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 endif("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-"${generate_files_to_clean}")
+"${generated_files_to_clean}")
+
+
+IF(${ARCH_32_BITS})
+  set(WIN_ARCH "32")
+ELSE(${ARCH_32_BITS})
+    set(WIN_ARCH "64")
+ENDIF(${ARCH_32_BITS})
+configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/simgrid.nsi.in" 	"${CMAKE_BINARY_DIR}/simgrid.nsi" @ONLY IMMEDIATE)

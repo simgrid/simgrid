@@ -15,11 +15,18 @@ print "</config>\n\n";
 
 print "\t<AS  id=\"AS0\"  routing=\"Vivaldi\">\n";
 
-for($i=0 ; $i<$nb_peer ; $i++){
-		print "\t\t<peer id=\"$i\" coordinates=\"-12.7 -9.9 2.1\" power=\"730000000.0\"\n";
-		print "\t\tbw_in=\"2250000000\" bw_out=\"2250000000\" lat=\"5E-4\" />\n\n";
-}
+my $line;
 
+open SITES_LIGNE, $ARGV[0] or die "Unable to open $ARGV[1]\n";
+while(defined($line=<SITES_LIGNE>))
+{
+	#278 7.2 -9.4 h 2.3 
+		if($line =~ /^(.*) (.*) (.*) h (.*)$/)
+		{
+		print "\t\t<peer id=\"peer-$1\" coordinates=\"$2 $3 $4\" power=\"730000000.0\"\n";
+		print "\t\tbw_in=\"13380000\" bw_out=\"1024000\" lat=\"5E-4\" />\n\n";
+		}
+}
 print "\t\t<ASroute src=\"(.*)\"\n\t\t\tdst=\"(.*)\"\n\t\t\tgw_src=\"router_\$1src\"\n\t\t\tgw_dst=\"router_\$1dst\">\n\t\t</ASroute>\n";		
 			
 print "\t</AS>\n";

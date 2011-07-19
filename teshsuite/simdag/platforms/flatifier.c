@@ -65,7 +65,8 @@ int main(int argc, char **argv)
   XBT_DEBUG("%s", platformFile);
   TRY {
     SD_create_environment(platformFile);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     xbt_die("Error while loading %s: %s",platformFile,e.msg);
   }
 

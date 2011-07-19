@@ -113,7 +113,6 @@ static int node_cb_get_suc_handler(gras_msg_cb_ctx_t ctx,
                                    void *payload_data)
 {
   gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
-  xbt_ex_t e;
   get_suc_t incoming = *(get_suc_t *) payload_data;
   rep_suc_t outgoing;
   node_data_t *globals = (node_data_t *) gras_userdata_get();
@@ -141,13 +140,13 @@ static int node_cb_get_suc_handler(gras_msg_cb_ctx_t ctx,
         temp_sock = gras_socket_client(globals->finger[contact].host,
                                        globals->finger[contact].port);
       }
-      CATCH(e) {
+      CATCH_ANONYMOUS {
         RETHROWF("Unable to connect!: %s");
       }
       TRY {
         gras_msg_send(temp_sock, "chord_get_suc", &asking);
       }
-      CATCH(e) {
+      CATCH_ANONYMOUS {
         RETHROWF("Unable to ask!: %s");
       }
       gras_msg_wait(10., "chord_rep_suc", &temp_sock, &outgoing);
@@ -158,7 +157,7 @@ static int node_cb_get_suc_handler(gras_msg_cb_ctx_t ctx,
     gras_msg_send(expeditor, "chord_rep_suc", &outgoing);
     XBT_INFO("Successor information sent!");
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF("%s:Timeout sending successor information to %s: %s",
              globals->host, gras_socket_peer_name(expeditor));
   }
@@ -201,7 +200,6 @@ static int node_cb_notify_handler(gras_msg_cb_ctx_t ctx,
 static void fix_fingers()
 {
   get_suc_t get_suc_msg;
-  xbt_ex_t e;
   gras_socket_t temp_sock = NULL;
   gras_socket_t temp_sock2 = NULL;
   rep_suc_t rep_suc_msg;
@@ -209,14 +207,16 @@ static void fix_fingers()
 
   TRY {
     temp_sock = gras_socket_client(globals->host, globals->port);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to contact known host: %s");
   }
 
   get_suc_msg.id = globals->id;
   TRY {
     gras_msg_send(temp_sock, "chord_get_suc", &get_suc_msg);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     gras_socket_close(temp_sock);
     RETHROWF("Unable to contact known host to get successor!: %s");
   }
@@ -224,7 +224,8 @@ static void fix_fingers()
   TRY {
     XBT_INFO("Waiting for reply!");
     gras_msg_wait(6000, "chord_rep_suc", &temp_sock2, &rep_suc_msg);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROWF("%s: Error waiting for successor:%s", globals->host);
   }
   globals->finger[0].id = rep_suc_msg.id;
@@ -254,6 +255,7 @@ static void check_predecessor()
     globals->pre_id = -1;
     globals->pre_host[0] = 0;
     globals->pre_port = 0;
+    xbt_ex_free(e);
   }
 
   ping.id = 0;
@@ -264,6 +266,7 @@ static void check_predecessor()
     globals->pre_id = -1;
     globals->pre_host[0] = 0;
     globals->pre_port = 0;
+    xbt_ex_free(e);
   }
   TRY {
     gras_msg_wait(60, "chord_pong", &temp_sock, &pong);
@@ -272,6 +275,7 @@ static void check_predecessor()
     globals->pre_id = -1;
     globals->pre_host[0] = 0;
     globals->pre_port = 0;
+    xbt_ex_free(e);
   }
   gras_socket_close(temp_sock);
 }
@@ -334,7 +338,7 @@ int node(int argc, char **argv)
     TRY {
       temp_sock = gras_socket_client(other_host, other_port);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       RETHROWF("Unable to contact known host: %s");
     }
 
@@ -342,7 +346,7 @@ int node(int argc, char **argv)
     TRY {
       gras_msg_send(temp_sock, "chord_get_suc", &get_suc_msg);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       gras_socket_close(temp_sock);
       RETHROWF("Unable to contact known host to get successor!: %s");
     }
@@ -351,7 +355,7 @@ int node(int argc, char **argv)
       XBT_INFO("Waiting for reply!");
       gras_msg_wait(10., "chord_rep_suc", &temp_sock2, &rep_suc_msg);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       RETHROWF("%s: Error waiting for successor:%s", globals->host);
     }
     globals->finger[0].id = rep_suc_msg.id;
@@ -364,7 +368,7 @@ int node(int argc, char **argv)
       temp_sock = gras_socket_client(globals->finger[0].host,
                                      globals->finger[0].port);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       RETHROWF("Unable to contact successor: %s");
     }
 
@@ -374,7 +378,7 @@ int node(int argc, char **argv)
     TRY {
       gras_msg_send(temp_sock, "chord_notify", &notify_msg);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       RETHROWF("Unable to notify successor! %s");
     }
   }
@@ -390,6 +394,7 @@ int node(int argc, char **argv)
       gras_msg_handle(6000000.0);
     }
     CATCH(e) {
+      xbt_ex_free(e);
     }
   }
   /*} */

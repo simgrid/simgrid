@@ -8,6 +8,7 @@
 #define _NS3_INTERFACE_H
 
 #include "xbt/log.h"
+#include "xbt/dynar.h"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 
@@ -29,14 +30,12 @@ extern "C" {
 #endif
 
 XBT_PUBLIC(void *) ns3_add_host(char * id);
+XBT_PUBLIC(void *) ns3_add_host_cluster(char * id);
 XBT_PUBLIC(void *) ns3_add_router(char * id);
-XBT_PUBLIC(void *) ns3_add_link(char * id);
 XBT_PUBLIC(void *) ns3_add_AS(char * id);
-XBT_PUBLIC(void) ns3_add_cluster(char * id);
-XBT_PUBLIC(void) ns3_add_route(char * src,char * dst);
-XBT_PUBLIC(void) ns3_add_ASroute(char * src,char * dst);
-XBT_PUBLIC(void) free_ns3_elmts(void *);
-
+XBT_PUBLIC(void *) ns3_add_link(int src,int dst,char * bw,char * lat);
+XBT_PUBLIC(void *) ns3_end_platform(void);
+XBT_PUBLIC(void *) ns3_add_cluster(char * bw,char * lat,char *id);
 #ifdef __cplusplus
 }
 #endif

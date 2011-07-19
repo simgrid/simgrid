@@ -38,7 +38,8 @@ static void gras_trp_plugin_new(const char *name, gras_trp_setup_t setup)
 
   TRY {
     setup(plug);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category == mismatch_error) {
       /* SG plugin raise mismatch when in RL mode (and vice versa) */
       free(plug->name);
@@ -187,8 +188,6 @@ gras_socket_t
 gras_socket_server_ext(unsigned short port,
                        unsigned long int buf_size, int measurement)
 {
-
-  xbt_ex_t e;
   gras_trp_plugin_t trp;
   gras_socket_t sock;
 
@@ -209,8 +208,8 @@ gras_socket_server_ext(unsigned short port,
     XBT_DEBUG("in=%c out=%c accept=%c",
            sock->incoming ? 'y' : 'n',
            sock->outgoing ? 'y' : 'n', sock->accepting ? 'y' : 'n');
-  } CATCH(e) {
-
+  }
+  CATCH_ANONYMOUS {
     free(sock);
     RETHROW;
   }
@@ -274,8 +273,6 @@ gras_socket_client_ext(const char *host,
                        unsigned short port,
                        unsigned long int buf_size, int measurement)
 {
-
-  xbt_ex_t e;
   gras_trp_plugin_t trp;
   gras_socket_t sock;
 
@@ -295,7 +292,8 @@ gras_socket_client_ext(const char *host,
     XBT_DEBUG("in=%c out=%c accept=%c",
            sock->incoming ? 'y' : 'n',
            sock->outgoing ? 'y' : 'n', sock->accepting ? 'y' : 'n');
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     free(sock);
     RETHROW;
   }

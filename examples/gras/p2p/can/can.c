@@ -53,16 +53,17 @@ static void register_messages()
 static void forward_get_suc(get_suc_t msg, char host[1024], int port)
 {
   gras_socket_t temp_sock = NULL;
-  xbt_ex_t e;                   // the error variable used in TRY.. CATCH tokens.
   //XBT_INFO("Transmiting message to %s:%d",host,port);
   TRY {
     temp_sock = gras_socket_client(host, port);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to connect!: %s");
   }
   TRY {
     gras_msg_send(temp_sock, "can_get_suc", &msg);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to send!: %s");
   }
   XBT_INFO("Forwarding a get_successor message to %s for (%d;%d)", host,
@@ -179,7 +180,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
       TRY {
         temp_sock = gras_socket_client(incoming->host, incoming->port);
       }
-      CATCH(e) {
+      CATCH_ANONYMOUS {
         RETHROWF
             ("Unable to connect to the node wich has requested for an area!: %s");
       }
@@ -187,7 +188,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
         gras_msg_send(temp_sock, "can_rep_suc", &outgoing);
         XBT_INFO("Environment informations sent!");
       }
-      CATCH(e) {
+      CATCH_ANONYMOUS {
         RETHROWF("%s:Timeout sending environment informations to %s: %s",
                  globals->host, gras_socket_peer_name(expeditor));
       }
@@ -204,6 +205,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
     XBT_INFO("My area is [%d;%d;%d;%d]", globals->x1, globals->x2,
           globals->y1, globals->y2);
     //XBT_INFO("Closing node, all has been done!");
+    xbt_ex_free(e);
   }
   return 0;
 }
@@ -251,7 +253,7 @@ int node(int argc, char **argv)
     TRY {
       temp_sock = gras_socket_client(argv[4], atoi(argv[5]));
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       RETHROWF("Unable to connect known host to request for an area!: %s");
     }
 
@@ -263,7 +265,7 @@ int node(int argc, char **argv)
     TRY {                       // asking.
       gras_msg_send(temp_sock, "can_get_suc", &get_suc_msg);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       gras_socket_close(temp_sock);
       RETHROWF("Unable to contact known host to get an area!: %s");
     }
@@ -275,7 +277,7 @@ int node(int argc, char **argv)
       XBT_INFO("Waiting for reply!");
       gras_msg_wait(6000, "can_rep_suc", &temp_sock2, &rep_suc_msg);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       RETHROWF("%s: Error waiting for an area:%s", globals->host);
     }
 
@@ -309,6 +311,7 @@ int node(int argc, char **argv)
     XBT_INFO("My area is [%d;%d;%d;%d]", globals->x1, globals->x2,
           globals->y1, globals->y2);
     //XBT_INFO("Closing node, all has been done!");
+    xbt_ex_free(e);
   }
 
   gras_socket_close(globals->sock);     // spare.

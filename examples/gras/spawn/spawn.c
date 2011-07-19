@@ -33,7 +33,8 @@ int worker(int argc, char *argv[]) {
     xbt_ex_t e;
     TRY {
       xbt_queue_shift_timed(todo,&chunk,0);
-    } CATCH(e) {
+    }
+    CATCH(e) {
       if (e.category != timeout_error) {
         RETHROW;
       }

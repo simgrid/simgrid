@@ -54,8 +54,6 @@ int master(int argc, char *argv[])
   xbt_workload_sort_who_date(cmds);
   unsigned int cursor;
   xbt_workload_elm_t cmd;
-
-  xbt_ex_t e;
   xbt_dict_cursor_t dict_cursor;
 
   xbt_dict_t pals_int = xbt_dict_new();
@@ -74,7 +72,7 @@ int master(int argc, char *argv[])
     TRY {
       gras_msg_handle(20);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       xbt_dynar_foreach(peers, cursor, peer) {
         xbt_dict_remove(pals_int, peer->name);
       }
@@ -159,7 +157,6 @@ static int worker_commands_cb(gras_msg_cb_ctx_t ctx, void *payload)
 
 static void do_command(int rank, void *c)
 {
-  xbt_ex_t e;
   xbt_workload_elm_t cmd = *(xbt_workload_elm_t *) c;
   xbt_workload_data_chunk_t chunk;
 
@@ -176,7 +173,7 @@ static void do_command(int rank, void *c)
     TRY {
       gras_msg_wait(1000000, "chunk", NULL, &chunk);
     }
-    CATCH(e) {
+    CATCH_ANONYMOUS {
       SIMIX_display_process_status();
       RETHROWF("Exception while waiting for %f bytes from %s: %s",
                cmd->d_arg, cmd->str_arg);
@@ -249,6 +246,7 @@ int worker(int argc, char *argv[])
             }
             CATCH(e) {
               SIMIX_display_process_status();
+              xbt_ex_free(e);
             }
             XBT_INFO("Communications all done");
             xbt_dynar_reset(cmd_to_go);

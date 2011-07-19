@@ -7,20 +7,27 @@ project(simgrid CXX C)
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_CXX_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
+
 ## Mapping version number -> version name
 # 3.5.99 -> alpha1 (oops)
-# 3.5.91 -> beta1
-# 3.5.92 -> beta2
-# 3.5.93 -> rc1
-# 3.5.94 -> rc2
+# 3.5.9{1,2} -> beta{1,2}
+# 3.5.9{3,4,5} -> rc{1,2,3}
+# 3.6.{0,1} -> release 3.6, 3.6.1
+
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "5")
-set(SIMGRID_VERSION_PATCH "94")
-set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
+set(SIMGRID_VERSION_MINOR "6")
+set(SIMGRID_VERSION_PATCH "1")
+
+if(${SIMGRID_VERSION_PATCH} EQUAL "0")
+	set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
+else(${SIMGRID_VERSION_PATCH} EQUAL "0")
+	set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}")
+endif(${SIMGRID_VERSION_PATCH} EQUAL "0")
 set(libsimgrid_version "${release_version}")
 set(libgras_version "${release_version}")
 set(libsmpi_version "${release_version}")
 set(GCC_NEED_VERSION "4.0")
+set(APPLE_NEED_GCC_VERSION "4.6")
 
 ### SET THE LIBRARY EXTENSION AND GCC VERSION
 if(APPLE) #MAC
@@ -28,6 +35,7 @@ if(APPLE) #MAC
 else(APPLE)
     if(WIN32) #WINDOWS
         set(LIB_EXE "a")
+        set(BIN_EXE ".exe")
     else(WIN32) #UNIX
 	    set(LIB_EXE "so")
     endif(WIN32)

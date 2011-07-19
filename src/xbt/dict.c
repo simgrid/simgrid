@@ -941,7 +941,8 @@ static void search_not_found(xbt_dict_t head, const char *data)
     data = xbt_dict_get(head, data);
     THROWF(unknown_error, 0,
            "Found something which shouldn't be there (%s)", data);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
@@ -1014,7 +1015,8 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse
   traverse(head);
   TRY {
     debuged_remove(head, "12346");
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
@@ -1248,7 +1250,7 @@ static int countelems(xbt_dict_t head)
 XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 {
   xbt_dict_t head = NULL;
-  int i, j, k, nb;
+  int i, j, k;
   char *key;
   void *data;
 
@@ -1263,7 +1265,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
          SIZEOFKEY);
     head = xbt_dict_new();
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
-    nb = 0;
     for (j = 0; j < 1000; j++) {
       char *data = NULL;
       key = xbt_malloc(SIZEOFKEY);

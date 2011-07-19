@@ -148,7 +148,9 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename){
 xbt_dynar_t SD_dotload_generic(const char * filename)
 {
   xbt_assert(filename, "Unable to use a null file descriptor\n");
-  dag_dot =  agopen((char*)filename,Agstrictdirected,0);
+//dag_dot =  agopen((char*)filename,Agstrictdirected,0);
+  FILE *in_file = fopen(filename, "r");
+  dag_dot = agread(in_file, NIL(Agdisc_t *));
 
   result = xbt_dynar_new(sizeof(SD_task_t), dot_task_free);
   files = xbt_dict_new();
@@ -228,6 +230,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
 
   /* Free previous copy of the files */
   xbt_dict_free(&files);
+  fclose(in_file);
   if(acyclic_graph_detail(result))
     return result;
   acyclic_graph_detail(result);

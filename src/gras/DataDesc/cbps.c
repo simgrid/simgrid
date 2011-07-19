@@ -87,7 +87,8 @@ gras_cbps_v_push(gras_cbps_t ps,
 
   TRY {
     varstack = xbt_dict_get(ps->space, name);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category != mismatch_error)
       RETHROW;
 
@@ -128,7 +129,8 @@ gras_cbps_v_pop(gras_cbps_t ps,
   XBT_DEBUG("pop(%s)", name);
   TRY {
     varstack = xbt_dict_get(ps->space, name);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category != mismatch_error)
       RETHROW;
 

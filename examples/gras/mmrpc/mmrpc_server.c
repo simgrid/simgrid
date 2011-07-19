@@ -40,7 +40,6 @@ static int server_cb_request_handler(gras_msg_cb_ctx_t ctx,
 
 int server(int argc, char *argv[])
 {
-  xbt_ex_t e;
   gras_socket_t sock = NULL;
   int port = 4002;
 
@@ -57,7 +56,7 @@ int server(int argc, char *argv[])
   TRY {
     sock = gras_socket_server(port);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF("Unable to establish a server socket: %s");
   }
 

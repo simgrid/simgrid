@@ -163,10 +163,8 @@ void xbt_event_wait(xbt_event_t event)
 
 void xbt_event_end(xbt_event_t event)
 {
-  int myflag;
   unsigned int mycount;
 
-  myflag = event->work;
   mycount = __sync_add_and_fetch(&event->thread_counter, 1);
   if(mycount == event->threads_to_wait){
     event->done++;

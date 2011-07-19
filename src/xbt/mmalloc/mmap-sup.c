@@ -109,9 +109,11 @@ void *__mmalloc_mmap_morecore(struct mdesc *mdp, int size)
       foffset = (char *) mdp->top - (char *) mdp->base;
 
       if (mdp->fd > 0) {
-        /* FIXME:  Test results of lseek() and write() */
+        /* FIXME:  Test results of lseek() */
         lseek(mdp->fd, foffset + mapbytes - 1, SEEK_SET);
         test = write(mdp->fd, &buf, 1);
+        if (test == -1)
+          THROWF(system_error, 0, "write to mmap'ed fd failed! error: %s", strerror(errno));
       }
 
       /* Let's call mmap. Note that it is possible that mdp->top

@@ -50,7 +50,10 @@ void gras_msg_send_namev(gras_socket_t sock,
 void gras_msg_listener_awake(void);
 void gras_msg_listener_close_socket(int sd);
 
-#define GRAS_PROTOCOL_VERSION '\1';
+#define GRAS_PROTOCOL_VERSION '\2';
+/* The difference between GRAS_PROTOCOL_VERSION=\1 (in SimGrid 3.6.1) and \2 (afterward) is that 
+   the architectures were renumbered (GRAS_THISARCH were shifted by 1) to insert WIN64 near to WIN32. 
+   See commit 27cbb00affed384593925fc5af6d5533d0a7ef09 */
 
 
 #endif                          /* GRAS_MSG_INTERFACE_H */

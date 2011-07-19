@@ -221,6 +221,11 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
 static xbt_dynar_t rulebased_get_onelink_routes(routing_component_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
+
+  //We have already bypass cluster routes with network NS3
+  if(!strcmp(surf_network_model->name,"network NS3"))
+	return ret;
+
   routing_component_rulebased_t routing = (routing_component_rulebased_t)rc;
 
   xbt_dict_cursor_t c1 = NULL;

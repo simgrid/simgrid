@@ -72,7 +72,7 @@ while(defined($line=<SITES_LIGNE>))
 		{
 			if($line =~ /"uid": "(.*)",/){
 				$cluster = $1;
-				print "\t\t\t<cluster id=\"AS_$cluster\" prefix=\"$cluster-\" suffix=\".$cluster.grid5000.fr\"\n";
+				print "\t\t\t<cluster id=\"AS_$cluster\" prefix=\"$cluster-\" suffix=\".$site.grid5000.fr\"\n";
 				`wget https://api.grid5000.fr/2.0/grid5000/sites/$site/clusters/$cluster/nodes --http-user="$ARGV[0]" --http-password="$ARGV[1]" --no-check-certificate --quiet`;
 				open NODES_LIGNE, 'nodes' or die "Unable to open nodes $!\n";
 				while(defined($line=<NODES_LIGNE>))
@@ -99,15 +99,15 @@ while(defined($line=<SITES_LIGNE>))
 		print "\n";
 		
 		print "\t\t\t<ASroute src=\"^AS_(.*)\$\" dst=\"^AS_(.*)\$\"\n";
-		print "\t\t\t\tgw_src=\"\$1src-AS_\$1src_router.\$1src.grid5000.fr\"\n";
-		print "\t\t\t\tgw_dst=\"\$1dst-AS_\$1dst_router.\$1dst.grid5000.fr\"\n";
+		print "\t\t\t\tgw_src=\"\$1src-AS_\$1src_router.$site.grid5000.fr\"\n";
+		print "\t\t\t\tgw_dst=\"\$1dst-AS_\$1dst_router.$site.grid5000.fr\"\n";
 		print "\t\t\t\tsymmetrical=\"YES\">\n";
 		print "\t\t\t\t\t<link_ctn id=\"link_\$1src\"/>\n";
 		print "\t\t\t\t\t<link_ctn id=\"link_\$1dst\"/>\n";
 		print "\t\t\t</ASroute>\n\n"; 
 
 		print "\t\t\t<ASroute src=\"^AS_(.*)\$\" dst=\"^gw_AS_(.*)\$\"\n";
-		print "\t\t\t\tgw_src=\"\$1src-AS_\$1src_router.\$1src.grid5000.fr\"\n";
+		print "\t\t\t\tgw_src=\"\$1src-AS_\$1src_router.$site.grid5000.fr\"\n";
 		print "\t\t\t\tgw_dst=\"gw_\$1dst\"\n";
 		print "\t\t\t\tsymmetrical=\"NO\">\n";
 		print "\t\t\t\t\t<link_ctn id=\"link_\$1src\"/>\n";
@@ -115,7 +115,7 @@ while(defined($line=<SITES_LIGNE>))
 		
 		print "\t\t\t<ASroute src=\"^gw_AS_(.*)\$\" dst=\"^AS_(.*)\$\"\n";
 		print "\t\t\t\tgw_src=\"gw_\$1src\"\n";
-		print "\t\t\t\tgw_dst=\"\$1dst-AS_\$1dst_router.\$1dst.grid5000.fr\"\n";
+		print "\t\t\t\tgw_dst=\"\$1dst-AS_\$1dst_router.$site.grid5000.fr\"\n";
 		print "\t\t\t\tsymmetrical=\"NO\">\n";
 		print "\t\t\t\t\t<link_ctn id=\"link_\$1dst\"/>\n";
 		print "\t\t\t</ASroute>\n\n"; 

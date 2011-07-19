@@ -266,7 +266,7 @@ XBT_TEST_UNIT("controlflow", test_controlflow, "basic nested control flow")
       n++;
       THROWF(unknown_error, 0, "something");
     }
-    CATCH(ex) {
+    CATCH_ANONYMOUS {
       if (n != 6)
         xbt_test_fail("M3: n=%d (!= 6)", n);
       n++;
@@ -315,7 +315,8 @@ XBT_TEST_UNIT("variables", test_variables, "variable value preservation")
     r2 = 5678;
     v2 = 5678;
     THROWF(unknown_error, 0, "toto");
-  } CATCH(ex) {
+  }
+  CATCH(ex) {
     xbt_test_add("variable preservation");
     if (r1 != 1234)
       xbt_test_fail("r1=%d (!= 1234)", r1);
@@ -341,7 +342,8 @@ XBT_TEST_UNIT("cleanup", test_cleanup, "cleanup handling")
   TRY {
     v1 = 5678;
     THROWF(1, 2, "blah");
-  } TRY_CLEANUP {
+  }
+  TRY_CLEANUP {
     if (v1 != 5678)
       xbt_test_fail("v1 = %d (!= 5678)", v1);
     c = 1;
@@ -389,7 +391,8 @@ static void bad_example(void)
     cp3 = mallocex(SMALLAMOUNT);
     strcpy(cp1, "foo");
     strcpy(cp2, "bar");
-  } TRY_CLEANUP {
+  }
+  TRY_CLEANUP {
     if (cp3 != NULL)
       free(cp3);
     if (cp2 != NULL)
@@ -397,7 +400,7 @@ static void bad_example(void)
     if (cp1 != NULL)
       free(cp1);
   }
-  CATCH(ex) {
+  CATCH_ANONYMOUS {
     printf("cp3=%s", cp3);
     RETHROW;
   }
@@ -411,7 +414,6 @@ typedef struct {
 static void good_example(void)
 {
   global_context_t *global_context = malloc(sizeof(global_context_t));
-  xbt_ex_t ex;
 
   /* GOOD_EXAMPLE */
   {                             /*01 */
@@ -426,7 +428,8 @@ static void good_example(void)
       cp3 = mallocex(SMALLAMOUNT);
       strcpy(cp1, "foo");
       strcpy(cp2, "bar");
-    } TRY_CLEANUP {             /*04 */
+    }
+    TRY_CLEANUP {               /*04 */
       printf("cp3=%s", cp3 == NULL /*02 */ ? "" : cp3);
       if (cp3 != NULL)
         free(cp3);
@@ -434,7 +437,7 @@ static void good_example(void)
         free(cp2);
       /*05 cp1 was given away */
     }
-    CATCH(ex) {
+    CATCH_ANONYMOUS {
       /*05 global context untouched */
       RETHROW;
     }

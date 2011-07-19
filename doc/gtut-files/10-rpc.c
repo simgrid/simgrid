@@ -128,7 +128,8 @@ int client(int argc, char *argv[])
   TRY {
     gras_msg_rpccall(toserver, 60, "convert a2i", &string_to_convert,
                      &long_result);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     XBT_INFO
         ("The server refuses to convert %s. Here is the received exception:",
          string_to_convert);

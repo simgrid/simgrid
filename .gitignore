@@ -32,6 +32,7 @@ src/supernovae_*.c
 ### Generated files
 _*.c
 include/simgrid_config.h
+include/xbt/version.h
 include/instr/tracing_config.h
 include/smpi/smpif.h
 src/context_sysv_config.h
@@ -53,6 +54,7 @@ _CPack_Packages/
 CMakeFiles
 CMakeCache.txt
 DartConfiguration.tcl
+simgrid.nsi
 Testing/
 Makefile
 bin/

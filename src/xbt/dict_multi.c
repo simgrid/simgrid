@@ -85,7 +85,6 @@ xbt_multidict_set(xbt_dict_t mdict,
 {
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int), NULL);
   unsigned long i;
-  xbt_ex_t e;
 
   for (i = 0; i < xbt_dynar_length(keys); i++) {
     char *thiskey = xbt_dynar_get_as(keys, i, char *);
@@ -96,9 +95,11 @@ xbt_multidict_set(xbt_dict_t mdict,
 
   TRY {
     xbt_multidict_set_ext(mdict, keys, lens, data, free_ctn);
-  } TRY_CLEANUP {
+  }
+  TRY_CLEANUP {
     xbt_dynar_free(&lens);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROW;
   }
 }
@@ -221,8 +222,6 @@ xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys,
 
 void xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys)
 {
-
-  xbt_ex_t e;
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int), NULL);
   unsigned long i;
 
@@ -234,9 +233,11 @@ void xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys)
 
   TRY {
     xbt_multidict_remove_ext(mdict, keys, lens);
-  } TRY_CLEANUP {
+  }
+  TRY_CLEANUP {
     xbt_dynar_free(&lens);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     RETHROW;
   }
 }

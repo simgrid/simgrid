@@ -79,8 +79,8 @@ endif(enable_lib_static AND NOT WIN32)
 
 # include files
 set(HEADERS
-    ${install_HEADERS}
-    ${GENERATE_HEADERS}
+    ${headers_to_install}
+    ${generated_headers_to_install}
     )
 foreach(file ${HEADERS})
   get_filename_component(location ${file} PATH)
@@ -177,6 +177,7 @@ add_custom_target(dist-dir
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ simgrid-${release_version}/doc/html/
 )
 add_dependencies(dist-dir simgrid_documentation)
+add_dependencies(dist-dir maintainer_files)
 
 set(dirs_in_tarball "")
 foreach(file ${source_to_pack})

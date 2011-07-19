@@ -29,8 +29,8 @@ $ $SG_TEST_EXENV token_ring ${srcdir:=.}/two_clusters.xml "--log=root.fmt:[%10.6
 $ $SG_TEST_EXENV token_ring ${srcdir:=.}/two_peers.xml --cfg=coordinates:yes "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
 > [    0.000000] (0:@) Configuration change: Set 'coordinates' to 'yes'
 > [    0.000000] (0:@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
-> [ 5111.488529] (1:master@peer_100030591) Send Data to "host1"
-> [ 5111.488529] (2:slave@peer_100036570) Received "Token"
-> [10222.977057] (0:@) Simulation time 10223
-> [10222.977057] (1:master@peer_100030591) Received "Token"
-> [10222.977057] (2:slave@peer_100036570) Send Data to "host0"
+> [    5.221778] (1:master@peer_100030591) Send Data to "host1"
+> [    5.221778] (2:slave@peer_100036570) Received "Token"
+> [   10.443556] (0:@) Simulation time 10.4436
+> [   10.443556] (1:master@peer_100030591) Received "Token"
+> [   10.443556] (2:slave@peer_100036570) Send Data to "host0"

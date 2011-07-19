@@ -9,11 +9,9 @@
 
 #include "simix/datatypes.h"
 #include "smurf_private.h"
-#include "xbt/setset.h"
 
 /** @brief Process datatype */
 typedef struct s_smx_process {
-  XBT_SETSET_HEADERS;
   s_xbt_swag_hookup_t process_hookup;
   s_xbt_swag_hookup_t synchro_hookup;   /* process_to_run or mutex->sleeping and co */
   s_xbt_swag_hookup_t host_proc_hookup;

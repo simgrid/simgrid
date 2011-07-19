@@ -240,8 +240,6 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
   s_pmm_assignment_t assignment = *(s_pmm_assignment_t *) payload;
   gras_socket_t master = gras_msg_cb_ctx_from(ctx);
 
-  xbt_ex_t e;
-
   int step, l;
   xbt_matrix_t bA = xbt_matrix_new(submatrix_size, submatrix_size,
                                    sizeof(double), NULL);
@@ -311,7 +309,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
         xbt_matrix_free(bB);
         gras_msg_wait(600, "dataB", &from, &bB);
       }
-      CATCH(e) {
+      CATCH_ANONYMOUS {
         RETHROWF("Can't get a data message from line : %s");
       }
       XBT_VERB("LINE: step(%d) <> Myline(%d). Receive data from %s", step,
@@ -334,7 +332,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
         xbt_matrix_free(bA);
         gras_msg_wait(1200, "dataA", &from, &bA);
       }
-      CATCH(e) {
+      CATCH_ANONYMOUS {
         RETHROWF("Can't get a data message from row : %s");
       }
       XBT_VERB("ROW: step(%d)<>myrow(%d). Receive data from %s", step, myrow,
@@ -352,7 +350,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
   TRY {
     gras_msg_send(master, "result", &result);
   }
-  CATCH(e) {
+  CATCH_ANONYMOUS {
     RETHROWF("Failed to send answer to server: %s");
   }
   XBT_VERB(">>>>>>>> Result sent to %s:%d <<<<<<<<",

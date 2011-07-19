@@ -310,8 +310,8 @@ reach the machine on which B is running from the machine running on A. The time
 (2) is mainly given by the network bandwidth. This is the time for all bytes of
 the messages to travel from one machine to the other. Please note that the
 models used by SimGrid are a bit more complicated to keep realistic, as
-explained in <a href="http://www.loria.fr/~quinson/articles/simgrid-tutorial.pdf">the 
-tutorial slides</a>, but this not that important here. The time (3) is mainly
+explained in <a href="http://www.loria.fr/~quinson/blog/2010/06/28/Tutorial_at_HPCS/">the
+slides of the HPCS'10</a>, but this not that important here. The time (3) is mainly
 found in the SG version and not in RL (and that's a bug). This is the time to
 make sure that message were received on machine B. In real life, some buffering
 at system and network level may give the illusion to machine A that the message

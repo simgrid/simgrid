@@ -27,7 +27,6 @@ void bottleneck_solve(lmm_system_t sys)
   xbt_swag_t cnst_list = NULL;
   xbt_swag_t var_list = NULL;
   xbt_swag_t elem_list = NULL;
-  double min_usage = -1;
   int i;
 
   static s_xbt_swag_t cnst_to_update;
@@ -87,7 +86,6 @@ void bottleneck_solve(lmm_system_t sys)
     }
     XBT_DEBUG("******* Constraints to process: %d *******",
            xbt_swag_size(cnst_list));
-    min_usage = -1;
     xbt_swag_foreach_safe(cnst, cnst_next, cnst_list) {
       int nb = 0;
       XBT_DEBUG("Processing cnst %p ", cnst);

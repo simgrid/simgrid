@@ -80,7 +80,6 @@ static double finish_on_at(SD_task_t task, SD_workstation_t workstation)
   SD_task_t parent, grand_parent;
   xbt_dynar_t parents, grand_parents;
 
-  int grand_parent_nworkstations;
   SD_workstation_t *grand_parent_workstation_list;
 
   parents = SD_task_get_parents(task);
@@ -100,8 +99,6 @@ static double finish_on_at(SD_task_t task, SD_workstation_t workstation)
         }
         xbt_dynar_get_cpy(grand_parents, 0, &grand_parent);
 
-        grand_parent_nworkstations =
-            SD_task_get_workstation_count(grand_parent);
         grand_parent_workstation_list =
             SD_task_get_workstation_list(grand_parent);
         /* Estimate the redistribution time from this parent */
@@ -236,7 +233,7 @@ static void output_xml(FILE * out, xbt_dynar_t dax)
 
 int main(int argc, char **argv)
 {
-  unsigned int cursor, selected_idx = 0;
+  unsigned int cursor;
   double finish_time, min_finish_time = -1.0;
   SD_task_t task, selected_task = NULL;
   xbt_dynar_t ready_tasks;
@@ -314,7 +311,6 @@ int main(int argc, char **argv)
         min_finish_time = finish_time;
         selected_task = task;
         selected_workstation = workstation;
-        selected_idx = cursor;
       }
     }
 

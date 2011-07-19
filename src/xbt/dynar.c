@@ -574,7 +574,8 @@ int xbt_dynar_member(xbt_dynar_t const dynar, void *const elem)
 
   TRY {
     xbt_dynar_search(dynar, elem);
-  } CATCH(e) {
+  }
+  CATCH(e) {
     if (e.category == not_found_error) {
       xbt_ex_free(e);
       return 0;
