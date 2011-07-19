@@ -196,6 +196,8 @@ void nary_tree_barrier(MPI_Comm comm, int arity)
  * Alltoall Bruck
  *
  * Openmpi calls this routine when the message size sent to each rank < 2000 bytes and size < 12
+ * FIXME: uh, check smpi_pmpi again, but this routine is called for > 12, not
+ * less...
  **/
 int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
                                    MPI_Datatype sendtype, void *recvbuf,
@@ -205,20 +207,21 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
   int system_tag = 777;
   int i, rank, size, err, count;
   MPI_Aint lb;
-  MPI_Aint sendextent = 0;
-  MPI_Aint recvextent = 0;
+  MPI_Aint sendext = 0;
+  MPI_Aint recvext = 0;
   MPI_Request *requests;
 
   // FIXME: check implementation
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm alltoall_bruck() called.", rank);
-  err = smpi_datatype_extent(sendtype, &lb, &sendextent);
-  err = smpi_datatype_extent(recvtype, &lb, &recvextent);
+  err = smpi_datatype_extent(sendtype, &lb, &sendext);
+  err = smpi_datatype_extent(recvtype, &lb, &recvext);
   /* Local copy from self */
   err =
-      smpi_datatype_copy(&((char *) sendbuf)[rank * sendextent], sendcount,
-                         sendtype, &((char *) recvbuf)[rank * recvextent],
+      smpi_datatype_copy((char *)sendbuf + rank * sendcount * sendext, 
+                         sendcount, sendtype, 
+                         (char *)recvbuf + rank * recvcount * recvext,
                          recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -232,7 +235,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
         continue;
       }
       requests[count] =
-          smpi_irecv_init(&((char *) recvbuf)[i * recvextent], recvcount,
+          smpi_irecv_init((char *)recvbuf + i * recvcount * recvext, recvcount,
                           recvtype, i, system_tag, comm);
       count++;
     }
@@ -244,7 +247,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
         continue;
       }
       requests[count] =
-          smpi_isend_init(&((char *) sendbuf)[i * sendextent], sendcount,
+          smpi_isend_init((char *)sendbuf + i * sendcount * sendext, sendcount,
                           sendtype, i, system_tag, comm);
       count++;
     }
@@ -278,10 +281,10 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
   err = smpi_datatype_extent(sendtype, &lb, &sendext);
   err = smpi_datatype_extent(recvtype, &lb, &recvext);
   /* simple optimization */
-  err = smpi_datatype_copy(sendbuf + rank * sendcount * sendext, sendcount, 
-                           sendtype, 
-                           recvbuf + rank * recvcount * recvext, recvcount, 
-                           recvtype);
+  err = smpi_datatype_copy((char *)sendbuf + rank * sendcount * sendext, 
+                           sendcount, sendtype, 
+                           (char *)recvbuf + rank * recvcount * recvext, 
+                           recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
     requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -289,7 +292,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
     count = 0;
     for (i = (rank + 1) % size; i != rank; i = (i + 1) % size) {
       requests[count] =
-          smpi_irecv_init(recvbuf + i * recvcount * recvext, recvcount, 
+          smpi_irecv_init((char *)recvbuf + i * recvcount * recvext, recvcount, 
                           recvtype, i, system_tag, comm);
       count++;
     }
@@ -300,7 +303,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
      */
     for (i = (rank + size - 1) % size; i != rank; i = (i + size - 1) % size) {
       requests[count] =
-          smpi_isend_init(sendbuf + i * sendcount * sendext, sendcount,
+          smpi_isend_init((char *)sendbuf + i * sendcount * sendext, sendcount,
                           sendtype, i, system_tag, comm);
       count++;
     }
@@ -370,10 +373,10 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
   err = smpi_datatype_extent(recvtype, &lb, &recvext);
   /* Local copy from self */
   err =
-      smpi_datatype_copy(sendbuf + senddisps[rank] * sendext, sendcounts[rank], 
-                         sendtype,
-                         recvbuf + recvdisps[rank] * recvext, recvcounts[rank],
-                         recvtype);
+      smpi_datatype_copy((char *)sendbuf + senddisps[rank] * sendext, 
+                         sendcounts[rank], sendtype,
+                         (char *)recvbuf + recvdisps[rank] * recvext, 
+                         recvcounts[rank], recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
     requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -387,8 +390,8 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
         continue;
       }
       requests[count] =
-          smpi_irecv_init(recvbuf + recvdisps[i] * recvext, recvcounts[i], 
-                          recvtype, i, system_tag, comm);
+          smpi_irecv_init((char *)recvbuf + recvdisps[i] * recvext, 
+                          recvcounts[i], recvtype, i, system_tag, comm);
       count++;
     }
     /* Now create all sends  */
@@ -400,8 +403,8 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
         continue;
       }
       requests[count] =
-          smpi_isend_init(sendbuf + senddisps[i] * sendext, sendcounts[i], 
-                          sendtype, i, system_tag, comm);
+          smpi_isend_init((char *)sendbuf + senddisps[i] * sendext, 
+                          sendcounts[i], sendtype, i, system_tag, comm);
       count++;
     }
     /* Wait for them all. */
