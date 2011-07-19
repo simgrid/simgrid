@@ -442,38 +442,38 @@ if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 	SET(GRAS_THISARCH 4)
 endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:8/8:8/8:_D:4/4:8/8:") 
-	#gras_arch=11; gras_size=64; gras_arch_name=little64_2;
+	#gras_arch=5; gras_size=64; gras_arch_name=little64_2;
 	SET(GRAS_ARCH_32_BITS 0)
 	SET(GRAS_THISARCH 5)
 endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:") 
-	#gras_arch=5; gras_size=32; gras_arch_name=big32;
+	#gras_arch=6; gras_size=32; gras_arch_name=big32_8;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 6)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:") 
-	#gras_arch=6; gras_size=32; gras_arch_name=big32_8_4;
+	#gras_arch=7; gras_size=32; gras_arch_name=big32_8_4;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 7)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:") 
-	#gras_arch=7; gras_size=32; gras_arch_name=big32_4;
+	#gras_arch=8; gras_size=32; gras_arch_name=big32_4;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 8)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:") 
-	#gras_arch=8; gras_size=32; gras_arch_name=big32_2;
+	#gras_arch=9; gras_size=32; gras_arch_name=big32_2;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 9)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:") 
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:") 
-	#gras_arch=9; gras_size=64; gras_arch_name=big64;
+	#gras_arch=10; gras_size=64; gras_arch_name=big64;
 	SET(GRAS_ARCH_32_BITS 0)
 	SET(GRAS_THISARCH 10)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 
-	#gras_arch=10;gras_size=64; gras_arch_name=big64_8_4;
+	#gras_arch=11; gras_size=64; gras_arch_name=big64_8_4;
 	SET(GRAS_ARCH_32_BITS 0)
 	SET(GRAS_THISARCH 11)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 
