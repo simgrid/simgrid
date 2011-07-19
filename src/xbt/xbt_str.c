@@ -666,7 +666,7 @@ static void diff_build_diff(xbt_dynar_t res,
 }
 
 /** @brief Compute the unified diff of two strings */
-char *xbt_str_diff(char *a, char *b)
+char *xbt_str_diff(const char *a, const char *b)
 {
   xbt_dynar_t da = xbt_str_split(a, "\n");
   xbt_dynar_t db = xbt_str_split(b, "\n");
