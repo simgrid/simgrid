@@ -567,48 +567,43 @@ long getline(char **buf, size_t * n, FILE * stream)
 /*
  * Diff related functions
  */
+static XBT_INLINE int diff_get(xbt_matrix_t C, int i, int j)
+{
+  return (i == -1 || j == -1) ? 0 : xbt_matrix_get_as(C, i, j, int);
+}
+
 static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db)
 {
   xbt_matrix_t C =
       xbt_matrix_new(xbt_dynar_length(da), xbt_dynar_length(db),
                      sizeof(int), NULL);
-  unsigned long i, j;
+  int i, j;
 
   /* Compute the LCS */
   /*
-     C = array(0..m, 0..n)
-     for i := 0..m
-     C[i,0] = 0
-     for j := 1..n
-     C[0,j] = 0
-     for i := 1..m
-     for j := 1..n
-     if X[i] = Y[j]
-     C[i,j] := C[i-1,j-1] + 1
-     else:
-     C[i,j] := max(C[i,j-1], C[i-1,j])
-     return C[m,n]
+     function LCSLength(X[1..m], Y[1..n])
+       C = array(0..m, 0..n)
+       for i := 0..m
+         C[i,0] = 0
+       for j := 1..n
+         C[0,j] = 0
+       for i := 1..m
+         for j := 1..n
+           if X[i] = Y[j]
+             C[i,j] := C[i-1,j-1] + 1
+           else:
+             C[i,j] := max(C[i,j-1], C[i-1,j])
+       return C[m,n]
    */
-  if (xbt_dynar_length(db) != 0)
-    for (i = 0; i < xbt_dynar_length(da); i++)
-      *((int *) xbt_matrix_get_ptr(C, i, 0)) = 0;
+  for (i = 0; i < (int)xbt_dynar_length(da); i++)
+    for (j = 0; j < (int)xbt_dynar_length(db); j++) {
 
-  if (xbt_dynar_length(da) != 0)
-    for (j = 0; j < xbt_dynar_length(db); j++)
-      *((int *) xbt_matrix_get_ptr(C, 0, j)) = 0;
-
-  for (i = 1; i < xbt_dynar_length(da); i++)
-    for (j = 1; j < xbt_dynar_length(db); j++) {
-
-      if (!strcmp
-          (xbt_dynar_get_as(da, i, char *),
-           xbt_dynar_get_as(db, j, char *)))
-        *((int *) xbt_matrix_get_ptr(C, i, j)) =
-            xbt_matrix_get_as(C, i - 1, j - 1, int) + 1;
+      if (!strcmp(xbt_dynar_get_as(da, i, char *),
+                  xbt_dynar_get_as(db, j, char *)))
+        *((int *) xbt_matrix_get_ptr(C, i, j)) = diff_get(C, i - 1, j - 1) + 1;
       else
-        *((int *) xbt_matrix_get_ptr(C, i, j)) =
-            max(xbt_matrix_get_as(C, i, j - 1, int),
-                xbt_matrix_get_as(C, i - 1, j, int));
+        *((int *) xbt_matrix_get_ptr(C, i, j)) = max(diff_get(C, i, j - 1),
+                                                     diff_get(C, i - 1, j));
     }
   return C;
 }
@@ -620,16 +615,16 @@ static void diff_build_diff(xbt_dynar_t res,
   char *topush;
   /* Construct the diff
      function printDiff(C[0..m,0..n], X[1..m], Y[1..n], i, j)
-     if i > 0 and j > 0 and X[i] = Y[j]
-     printDiff(C, X, Y, i-1, j-1)
-     print "  " + X[i]
-     else
-     if j > 0 and (i = 0 or C[i,j-1] >= C[i-1,j])
-     printDiff(C, X, Y, i, j-1)
-     print "+ " + Y[j]
-     else if i > 0 and (j = 0 or C[i,j-1] < C[i-1,j])
-     printDiff(C, X, Y, i-1, j)
-     print "- " + X[i]
+       if i > 0 and j > 0 and X[i] = Y[j]
+         printDiff(C, X, Y, i-1, j-1)
+         print "  " + X[i]
+       else
+         if j > 0 and (i = 0 or C[i,j-1] >= C[i-1,j])
+           printDiff(C, X, Y, i, j-1)
+           print "+ " + Y[j]
+         else if i > 0 and (j = 0 or C[i,j-1] < C[i-1,j])
+           printDiff(C, X, Y, i-1, j)
+           print "- " + X[i]
    */
 
   if (i >= 0 && j >= 0 && !strcmp(xbt_dynar_get_as(da, i, char *),
@@ -638,31 +633,16 @@ static void diff_build_diff(xbt_dynar_t res,
     topush = bprintf("  %s", xbt_dynar_get_as(da, i, char *));
     xbt_dynar_push(res, &topush);
   } else if (j >= 0 &&
-             (i <= 0 || j == 0
-              || xbt_matrix_get_as(C, i, j - 1,
-                                   int) >= xbt_matrix_get_as(C, i - 1, j,
-                                                             int))) {
+             (i == -1 || diff_get(C, i, j - 1) >= diff_get(C, i - 1, j))) {
     diff_build_diff(res, C, da, db, i, j - 1);
     topush = bprintf("+ %s", xbt_dynar_get_as(db, j, char *));
     xbt_dynar_push(res, &topush);
   } else if (i >= 0 &&
-             (j <= 0
-              || xbt_matrix_get_as(C, i, j - 1, int) < xbt_matrix_get_as(C,
-                                                                         i
-                                                                         -
-                                                                         1,
-                                                                         j,
-                                                                         int)))
-  {
+             (j == -1 || diff_get(C, i, j - 1) < diff_get(C, i - 1, j))) {
     diff_build_diff(res, C, da, db, i - 1, j);
     topush = bprintf("- %s", xbt_dynar_get_as(da, i, char *));
     xbt_dynar_push(res, &topush);
-  } else if (i <= 0 && j <= 0) {
-    return;
-  } else {
-    THROWF(arg_error, 0, "Invalid values: i=%d, j=%d", i, j);
   }
-
 }
 
 /** @brief Compute the unified diff of two strings */
@@ -670,24 +650,30 @@ char *xbt_str_diff(const char *a, const char *b)
 {
   xbt_dynar_t da = xbt_str_split(a, "\n");
   xbt_dynar_t db = xbt_str_split(b, "\n");
+  xbt_matrix_t C;
+  xbt_dynar_t diff;
+  char *res;
+  size_t len;
 
-  xbt_matrix_t C = diff_build_LCS(da, db);
-  xbt_dynar_t diff = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-  char *res = NULL;
+  /* Clean empty lines at the end of da and db */
+  len = strlen(a);
+  if (len > 0 && a[len - 1] == '\n') {
+    char *str;
+    xbt_dynar_pop(da, &str);
+    free(str);
+  }
+  len = strlen(b);
+  if (len > 0 && b[len - 1] == '\n') {
+    char *str;
+    xbt_dynar_pop(db, &str);
+    free(str);
+  }
+
+  C = diff_build_LCS(da, db);
+  diff = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 
   diff_build_diff(diff, C, da, db, xbt_dynar_length(da) - 1,
                   xbt_dynar_length(db) - 1);
-  /* Clean empty lines at the end */
-  while (xbt_dynar_length(diff) > 0) {
-    char *str;
-    xbt_dynar_pop(diff, &str);
-    if (str[0] == '\0' || !strcmp(str, "  ")) {
-      free(str);
-    } else {
-      xbt_dynar_push(diff, &str);
-      break;
-    }
-  }
   res = xbt_str_join(diff, "\n");
 
   xbt_dynar_free(&da);
