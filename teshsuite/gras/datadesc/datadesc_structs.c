@@ -610,7 +610,7 @@ void test_structures(gras_socket_t * sock, int direction)
       { 1424420.11331 + (double) 1, 'w' + (char) 2,
 1424420.11331 + (double) 3, 'w' + (char) 4 }, my_dcdc2;
   XBT_INFO
-      ("---- Test on all possible struct having 3 fields (49 structs) ----");
+      ("---- Test on all possible struct having 4 fields (49 structs) ----");
   write_read("cccc", &my_cccc, &my_cccc2, sock, direction);
   if (direction == READ || direction == RW) {
     int failed = 0;

@@ -66,7 +66,7 @@ for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l
                                            .$val[$l]."+(".$types[$l].")4}, my_${struct}2;\n";
 }}}}
 
-print "  XBT_INFO(\"---- Test on all possible struct having 3 fields (".(($max_i+1)*($max_j+1)*($max_k+1)*($max_l+1))." structs) ----\");\n";
+print "  XBT_INFO(\"---- Test on all possible struct having 4 fields (".(($max_i+1)*($max_j+1)*($max_k+1)*($max_l+1))." structs) ----\");\n";
 for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
     print "  write_read(\"$struct\", &my_$struct, &my_${struct}2, sock,direction);\n";
