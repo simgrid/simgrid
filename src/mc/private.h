@@ -244,7 +244,10 @@ typedef struct s_mc_pair_prop{
   xbt_state_t automaton_state;
   int num;
   xbt_dynar_t propositions;
+  int fully_expanded;
+  int interleave;
 }s_mc_pair_prop_t, *mc_pair_prop_t;
+
 
 mc_prop_ato_t new_proposition(char* id, int value);
 mc_pair_prop_t new_pair_prop(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
@@ -252,5 +255,7 @@ int reached_prop(mc_pair_prop_t pair);
 void set_pair_prop_reached(mc_pair_prop_t pair);
 void MC_dpor2_init(xbt_automaton_t a);
 void MC_dpor2(xbt_automaton_t a, int search_cycle);
+int invisible(mc_pair_prop_t p, mc_pair_prop_t np);
+void set_fully_expanded(mc_pair_prop_t pair);
 
 #endif

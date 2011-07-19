@@ -347,6 +347,8 @@ void MC_dpor_with_restore_snapshot(){
 /************ DPOR 2 (invisible and independant transitions) ************/
 
 xbt_dynar_t reached_pairs_prop;
+xbt_dynar_t visible_transitions;
+xbt_dynar_t enabled_processes;
 
 mc_prop_ato_t new_proposition(char* id, int value){
   mc_prop_ato_t prop = NULL;
@@ -363,6 +365,8 @@ mc_pair_prop_t new_pair_prop(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st){
   pair->automaton_state = st;
   pair->graph_state = sg;
   pair->propositions = xbt_dynar_new(sizeof(mc_prop_ato_t), NULL);
+  pair->fully_expanded = 0;
+  pair->interleave = 0;
   mc_stats_pair->expanded_pairs++;
   return pair;
 }
@@ -398,6 +402,24 @@ void set_pair_prop_reached(mc_pair_prop_t pair){
 
 }
 
+int invisible(mc_pair_prop_t p, mc_pair_prop_t np){
+  mc_prop_ato_t prop1;
+  mc_prop_ato_t prop2;
+  int i;
+  for(i=0;i<xbt_dynar_length(p->propositions); i++){
+    prop1 = xbt_dynar_get_as(p->propositions, i, mc_prop_ato_t);
+    prop2 = xbt_dynar_get_as(np->propositions, i, mc_prop_ato_t);
+    //XBT_DEBUG("test invisible : prop 1 = %s : %d / prop 2 = %s : %d", prop1->id, prop1->value, prop2->id, prop2->value);
+    if(prop1->value != prop2->value)
+	  return 0;
+  }
+  return 1; 
+
+}
+
+void set_fully_expanded(mc_pair_prop_t pair){
+  pair->fully_expanded = 1;
+}
 
 void MC_dpor2_init(xbt_automaton_t a)
 {
@@ -405,8 +427,7 @@ void MC_dpor2_init(xbt_automaton_t a)
   mc_state_t initial_graph_state = NULL;
   mc_snapshot_t initial_system_state = NULL;
   xbt_state_t initial_automaton_state = NULL;
-  smx_process_t process;
-  
+ 
 
   MC_SET_RAW_MEM;
   initial_graph_state = MC_state_new();
@@ -414,15 +435,6 @@ void MC_dpor2_init(xbt_automaton_t a)
 
   /* Wait for requests (schedules processes) */
   MC_wait_for_requests();
-
-  MC_SET_RAW_MEM;
-  xbt_swag_foreach(process, simix_global->process_list){
-    if(MC_process_is_enabled(process)){
-      MC_state_interleave_process(initial_graph_state, process);
-      break;
-    }
-  }
-  MC_UNSET_RAW_MEM;
 
   unsigned int cursor = 0;
   unsigned int cursor2 = 0;
@@ -456,6 +468,8 @@ void MC_dpor2_init(xbt_automaton_t a)
   }
 
   reached_pairs_prop = xbt_dynar_new(sizeof(char *), NULL); 
+  visible_transitions = xbt_dynar_new(sizeof(s_smx_req_t), NULL);
+  enabled_processes = xbt_dynar_new(sizeof(smx_process_t), NULL);
 
   MC_SET_RAW_MEM;
   initial_system_state = xbt_new0(s_mc_snapshot_t, 1);
@@ -472,7 +486,6 @@ void MC_dpor2_init(xbt_automaton_t a)
   xbt_fifo_unshift(mc_snapshot_stack, initial_pair);
   MC_UNSET_RAW_MEM;
 
- 
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial pair");
@@ -496,6 +509,8 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
   mc_pair_prop_t pair = NULL, next_pair = NULL, prev_pair = NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
+  int d;
+
 
   while (xbt_fifo_size(mc_snapshot_stack) > 0) {
 
@@ -506,19 +521,50 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
     XBT_DEBUG("**************************************************");
     XBT_DEBUG("Exploration depth=%d (pair=%p)(%u interleave)",
            xbt_fifo_size(mc_snapshot_stack), pair,
-           MC_state_interleave_size(pair->graph_state));
+	      MC_state_interleave_size(pair->graph_state));
 
-    XBT_DEBUG("Propositions (%lu): ", xbt_dynar_length(pair->propositions));
+    xbt_dynar_reset(enabled_processes);
+
+    MC_SET_RAW_MEM;
     
-    cursor = 0;
-    mc_prop_ato_t prop_at;
-    xbt_dynar_foreach(pair->propositions, cursor, prop_at){
-      XBT_DEBUG("Id : %s, value : %d", prop_at->id, prop_at->value);
-    } 
+    xbt_swag_foreach(process, simix_global->process_list){
+      if(MC_process_is_enabled(process)){ 
+	xbt_dynar_push(enabled_processes, &process);
+	//XBT_DEBUG("Process : pid=%lu",process->pid);
+      }
+    }
+
+    XBT_DEBUG("Enabled processes before pop : %lu", xbt_dynar_length(enabled_processes));
+    
+    XBT_DEBUG("Processes already interleaved : %d", pair->interleave);
+    
+    if(xbt_dynar_length(enabled_processes) > 0){
+      for(d=0;d<pair->interleave;d++){
+	xbt_dynar_shift(enabled_processes, NULL);
+      }
+    }
+
+    XBT_DEBUG("Enabled processes after pop : %lu", xbt_dynar_length(enabled_processes));
+    
+    if(pair->fully_expanded == 0){
+      if(xbt_dynar_length(enabled_processes) > 0){
+	MC_state_interleave_process(pair->graph_state, xbt_dynar_get_as(enabled_processes, 0, smx_process_t));
+	//XBT_DEBUG("Interleave process");
+      }
+    }
+    
+    MC_UNSET_RAW_MEM;
 
 
     /* Update statistics */
     mc_stats_pair->visited_pairs++;
+    //sleep(1);
+
+    /*cursor = 0;
+    mc_prop_ato_t pato;
+    xbt_dynar_foreach(pair->propositions, cursor, pato){
+      XBT_DEBUG("%s : %d", pato->id, pato->value);
+      }*/
 
     /* Test acceptance pair and acceptance cycle*/
 
@@ -563,15 +609,12 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
 
       /* Create the new expanded state */
       MC_SET_RAW_MEM;
-      next_graph_state = MC_state_new();
 
-      /* Get an enabled process and insert it in the interleave set of the next state */
-      xbt_swag_foreach(process, simix_global->process_list){
-        if(MC_process_is_enabled(process)){
-          MC_state_interleave_process(next_graph_state, process);
-          break;
-        }
-      }
+      pair->interleave++;
+      //XBT_DEBUG("Process interleaved in pair %p : %u", pair, MC_state_interleave_size(pair->graph_state));
+      //xbt_dynar_pop(enabled_processes, NULL);
+
+      next_graph_state = MC_state_new();
 
       next_system_state = xbt_new0(s_mc_snapshot_t, 1);
       MC_take_snapshot(next_system_state);
@@ -591,6 +634,7 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
       }
 
       MC_SET_RAW_MEM;
+      
       next_pair = new_pair_prop(next_system_state, next_graph_state, next_automaton_state);
       cursor = 0;
       xbt_propositional_symbol_t ps;
@@ -599,14 +643,24 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
 	int val = (*f)();
 	mc_prop_ato_t pa = new_proposition(ps->pred, val);
 	xbt_dynar_push(next_pair->propositions, &pa);
+	//XBT_DEBUG("%s : %d", pa->id, pa->value); 
       } 
       xbt_fifo_unshift(mc_snapshot_stack, next_pair);
+      
+      cursor = 0;
+      if((invisible(pair, next_pair) == 0) && (pair->fully_expanded == 0)){
+	set_fully_expanded(pair);
+	if(xbt_dynar_length(enabled_processes) > 1){ // Si 1 seul process activé, déjà exécuté juste avant donc état complètement étudié
+	  xbt_dynar_foreach(enabled_processes, cursor, process){
+	    MC_state_interleave_process(pair->graph_state, process);
+	  }
+	}
+	XBT_DEBUG("Pair %p fully expanded (%u interleave)", pair, MC_state_interleave_size(pair->graph_state));
+      }
+
       MC_UNSET_RAW_MEM;
 
      
-      
-      
-
       /* Let's loop again */
 
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
@@ -648,15 +702,21 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
               xbt_free(req_str);              
             }
 
-            if(!MC_state_process_is_done(prev_pair->graph_state, req->issuer))
-              MC_state_interleave_process(prev_pair->graph_state, req->issuer);
-            else
-              XBT_DEBUG("Process %p is in done set", req->issuer);
-
+	    if(prev_pair->fully_expanded == 0){
+	      if(!MC_state_process_is_done(prev_pair->graph_state, req->issuer)){
+		MC_state_interleave_process(prev_pair->graph_state, req->issuer);
+		XBT_DEBUG("Process %p (%lu) interleaved in pair %p", req->issuer, req->issuer->pid, prev_pair);
+	      }else{
+		XBT_DEBUG("Process %p (%lu) is in done set", req->issuer, req->issuer->pid);
+	      }
+	    }
+      
             break;
           }
         }
-        if (MC_state_interleave_size(pair->graph_state)) {
+
+	
+        if (MC_state_interleave_size(pair->graph_state) > 0) {
           /* We found a back-tracking point, let's loop */
 	  MC_restore_snapshot(pair->system_state);
           xbt_fifo_unshift(mc_snapshot_stack, pair);

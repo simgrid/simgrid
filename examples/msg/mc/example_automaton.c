@@ -14,7 +14,7 @@ extern xbt_automaton_t automaton;
 
 
 int p=1;
-int r=0;
+int r=1;
 int q=1;
 int e=1;
 int d=1;
