@@ -765,10 +765,11 @@ XBT_TEST_UNIT("xbt_str_split_str", test_split_str, "test the function xbt_str_sp
   mytest_str("Basic test", "toto##tutu", "##", "totoXXXtutu");
 }
 
-#define mytest_diff(name, s1, s2, diff)                                 \
+/* Last args are format string and parameters for xbt_test_add */
+#define mytest_diff(s1, s2, diff, ...)                                  \
   do {                                                                  \
     char *mytest_diff_res;                                              \
-    xbt_test_add(name);                                                 \
+    xbt_test_add(__VA_ARGS__);                                          \
     mytest_diff_res = xbt_str_diff(s1, s2);                             \
     xbt_test_assert(!strcmp(mytest_diff_res, diff),                     \
                     "Wrong output:\n--- got:\n%s\n--- expected:\n%s\n---", \
@@ -781,58 +782,57 @@ XBT_TEST_UNIT("xbt_str_diff", test_diff, "test the function xbt_str_diff")
   unsigned i;
 
   /* Trivial cases */
-  mytest_diff("1 word, no difference", "a", "a", "  a");
-  mytest_diff("1 word, different", "a", "A", "- a\n+ A");
-  mytest_diff("1 line, no difference", "a\n", "a\n", "  a");
-  mytest_diff("1 line, different", "a\n", "A\n", "- a\n+ A");
+  mytest_diff("a", "a", "  a", "1 word, no difference");
+  mytest_diff("a", "A", "- a\n+ A", "1 word, different");
+  mytest_diff("a\n", "a\n", "  a", "1 line, no difference");
+  mytest_diff("a\n", "A\n", "- a\n+ A", "1 line, different");
 
   /* Empty strings */
-  mytest_diff("empty strings", "", "", "");
-  mytest_diff("1 word, added", "", "a", "+ a");
-  mytest_diff("1 word, removed", "a", "", "- a");
-  mytest_diff("1 line, added", "", "a\n", "+ a");
-  mytest_diff("1 line, removed", "a\n", "", "- a");
-  mytest_diff("4 lines, all added", "", "a\nb\nc\n", "+ a\n+ b\n+ c");
-  mytest_diff("4 lines, all removed", "a\nb\nc\n", "", "- a\n- b\n- c");
+  mytest_diff("", "", "", "empty strings");
+  mytest_diff("", "a", "+ a", "1 word, added");
+  mytest_diff("a", "", "- a", "1 word, removed");
+  mytest_diff("", "a\n", "+ a", "1 line, added");
+  mytest_diff("a\n", "", "- a", "1 line, removed");
+  mytest_diff("", "a\nb\nc\n", "+ a\n+ b\n+ c", "4 lines, all added");
+  mytest_diff("a\nb\nc\n", "", "- a\n- b\n- c", "4 lines, all removed");
 
   /* Empty lines */
-  mytest_diff("empty lines", "\n", "\n", "  ");
-  mytest_diff("empty line, added", "", "\n", "+ ");
-  mytest_diff("empty line, removed", "\n", "", "- ");
+  mytest_diff("\n", "\n", "  ", "empty lines");
+  mytest_diff("", "\n", "+ ", "empty line, added");
+  mytest_diff("\n", "", "- ", "empty line, removed");
 
-  mytest_diff("empty line added before word", "a", "\na", "+ \n  a");
-  mytest_diff("empty line added after word", "a", "a\n\n", "  a\n+ ");
-  mytest_diff("empty line removed before word", "\na", "a", "- \n  a");
-  mytest_diff("empty line removed after word", "a\n\n", "a", "  a\n- ");
+  mytest_diff("a", "\na", "+ \n  a", "empty line added before word");
+  mytest_diff("a", "a\n\n", "  a\n+ ", "empty line added after word");
+  mytest_diff("\na", "a", "- \n  a", "empty line removed before word");
+  mytest_diff("a\n\n", "a", "  a\n- ", "empty line removed after word");
 
-  mytest_diff("empty line added before line", "a\n", "\na\n", "+ \n  a");
-  mytest_diff("empty line added after line", "a\n", "a\n\n", "  a\n+ ");
-  mytest_diff("empty line removed before line", "\na\n", "a\n", "- \n  a");
-  mytest_diff("empty line removed after line", "a\n\n", "a\n", "  a\n- ");
+  mytest_diff("a\n", "\na\n", "+ \n  a", "empty line added before line");
+  mytest_diff("a\n", "a\n\n", "  a\n+ ", "empty line added after line");
+  mytest_diff("\na\n", "a\n", "- \n  a", "empty line removed before line");
+  mytest_diff("a\n\n", "a\n", "  a\n- ", "empty line removed after line");
 
-  mytest_diff("empty line added before 4 lines",
-              "a\nb\nc\nd\n", "\na\nb\nc\nd\n", "+ \n  a\n  b\n  c\n  d");
-  mytest_diff("empty line added after 4 lines",
-              "a\nb\nc\nd\n", "a\nb\nc\nd\n\n", "  a\n  b\n  c\n  d\n+ ");
-  mytest_diff("empty line removed before 4 lines",
-              "\na\nb\nc\nd\n", "a\nb\nc\nd\n", "- \n  a\n  b\n  c\n  d");
-  mytest_diff("empty line removed after 4 lines",
-              "a\nb\nc\nd\n\n", "a\nb\nc\nd\n", "  a\n  b\n  c\n  d\n- ");
+  mytest_diff("a\nb\nc\nd\n", "\na\nb\nc\nd\n", "+ \n  a\n  b\n  c\n  d",
+              "empty line added before 4 lines");
+  mytest_diff("a\nb\nc\nd\n", "a\nb\nc\nd\n\n", "  a\n  b\n  c\n  d\n+ ",
+              "empty line added after 4 lines");
+  mytest_diff("\na\nb\nc\nd\n", "a\nb\nc\nd\n", "- \n  a\n  b\n  c\n  d",
+              "empty line removed before 4 lines");
+  mytest_diff("a\nb\nc\nd\n\n", "a\nb\nc\nd\n", "  a\n  b\n  c\n  d\n- ",
+              "empty line removed after 4 lines");
 
   /* Missing newline at the end of one of the strings */
-  mytest_diff("1 line, 1 word, no difference", "a\n", "a", "  a");
-  mytest_diff("1 word, 1 line, no difference", "a", "a\n", "  a");
-  mytest_diff("1 line, 1 word, different", "a\n", "A", "- a\n+ A");
-  mytest_diff("1 word, 1 line, different", "a", "A\n", "- a\n+ A");
+  mytest_diff("a\n", "a", "  a", "1 line, 1 word, no difference");
+  mytest_diff("a", "a\n", "  a", "1 word, 1 line, no difference");
+  mytest_diff("a\n", "A", "- a\n+ A", "1 line, 1 word, different");
+  mytest_diff("a", "A\n", "- a\n+ A", "1 word, 1 line, different");
 
-  mytest_diff("4 lines, no newline on first",
-              "a\nb\nc\nd", "a\nb\nc\nd\n", "  a\n  b\n  c\n  d");
-  mytest_diff("4 lines, no newline on second",
-              "a\nb\nc\nd\n", "a\nb\nc\nd", "  a\n  b\n  c\n  d");
+  mytest_diff("a\nb\nc\nd", "a\nb\nc\nd\n", "  a\n  b\n  c\n  d",
+              "4 lines, no newline on first");
+  mytest_diff("a\nb\nc\nd\n", "a\nb\nc\nd", "  a\n  b\n  c\n  d",
+              "4 lines, no newline on second");
 
   /* Four lines, all combinations of differences */
   for (i = 0 ; i < (1U << 4) ; i++) {
-    char descr[80];
     char d2[4 + 1];
     char s2[4 * 2 + 1];
     char res[4 * 8 + 1];
@@ -858,13 +858,12 @@ XBT_TEST_UNIT("xbt_str_diff", test_diff, "test the function xbt_str_diff")
     }
     *pd = '\0';
     *--pr = '\0';               /* strip last '\n' from expected result */
-    sprintf(descr, "compare (abcd) with changed (%s)", d2);
-    mytest_diff(descr, "a\nb\nc\nd\n", s2, res);
+    mytest_diff("a\nb\nc\nd\n", s2, res,
+                "compare (abcd) with changed (%s)", d2);
   }
 
   /* Subsets of four lines, do not test for empty subset */
   for (i = 1 ; i < (1U << 4) ; i++) {
-    char descr[80];
     char d2[4 + 1];
     char s2[4 * 2 + 1];
     char res[4 * 8 + 1];
@@ -884,14 +883,14 @@ XBT_TEST_UNIT("xbt_str_diff", test_diff, "test the function xbt_str_diff")
     }
     *pd = '\0';
     *--pr = '\0';               /* strip last '\n' from expected result */
-    sprintf(descr, "compare (abcd) with subset (%s)", d2);
-    mytest_diff(descr, "a\nb\nc\nd\n", s2, res);
+    mytest_diff("a\nb\nc\nd\n", s2, res,
+                "compare (abcd) with subset (%s)", d2);
 
     for (pr = res ; *pr != '\0' ; pr++)
       if (*pr == '-')
         *pr = '+';
-    sprintf(descr, "compare subset (%s) with (abcd)", d2);
-    mytest_diff(descr, s2, "a\nb\nc\nd\n", res);
+    mytest_diff(s2, "a\nb\nc\nd\n", res,
+                "compare subset (%s) with (abcd)", d2);
   }
 }
 
