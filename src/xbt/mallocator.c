@@ -14,6 +14,17 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
 
+
+/* Change to 0 to completely disable mallocators. */
+#define MALLOCATOR_IS_WANTED 1
+
+/* Mallocators and memory mess introduced by model-checking do not mix well
+ * together: the mallocator will give standard memory when we are using raw
+ * memory (so these blocks are killed on restore) and the contrary (so these
+ * blocks will leak accross restores).
+ */
+#define MALLOCATOR_IS_ENABLED (MALLOCATOR_IS_WANTED && !MC_IS_ENABLED)
+
 /**
  * \brief Constructor
  * \param size size of the internal stack: number of objects the mallocator
@@ -36,32 +47,28 @@ xbt_mallocator_t xbt_mallocator_new(int size,
                                     void_f_pvoid_t free_f,
                                     void_f_pvoid_t reset_f)
 {
-
-
   xbt_mallocator_t m;
 
   xbt_assert(size > 0, "size must be positive");
   xbt_assert(new_f != NULL && free_f != NULL
               && reset_f != NULL, "invalid parameter");
 
-  /* Let's force 0 size mallocator! (Dirty hack, blame Martin :) ) */
-
-  /* mallocators and memory mess introduced by model-checking do not mix well together:
-   *   The mallocator will give standard memory when we are using raw memory (so these blocks are killed on restore)
-   *   and the contrary (so these blocks will leak accross restores)
-   */
-  if (MC_IS_ENABLED)
-    size = 0;
-
   m = xbt_new0(s_xbt_mallocator_t, 1);
   XBT_VERB("Create mallocator %p", m);
-
-  m->objects = xbt_new0(void *, MC_IS_ENABLED ? 1 : size);
-  m->max_size = size;
   m->current_size = 0;
   m->new_f = new_f;
   m->free_f = free_f;
   m->reset_f = reset_f;
+
+  if (MALLOCATOR_IS_ENABLED) {
+    m->objects = xbt_new0(void *, size);
+    m->max_size = size;
+  } else {
+    if (!MALLOCATOR_IS_WANTED) /* Warn to avoid to commit debugging settings */
+      XBT_WARN("Mallocator is disabled!");
+    m->objects = NULL;
+    m->max_size = 0;
+  }
 
   return m;
 }
@@ -109,26 +116,27 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
 {
   void *object;
 
-  if (m->current_size <= 0) {
-    /* No object is ready yet. Create a bunch of them to try to group the mallocs
-     *  on the same memory pages (to help the cache lines) */
+  if (MALLOCATOR_IS_ENABLED) {
+    if (m->current_size <= 0) {
+      /* No object is ready yet. Create a bunch of them to try to group the
+       * mallocs on the same memory pages (to help the cache lines) */
 
-    /* XBT_DEBUG("Create a new object for mallocator %p (size:%d/%d)", m,
-           m->current_size, m->max_size); */
-    int i;
-    int amount=MIN( (m->max_size) /2,1000);
-    for (i=0;i<amount;i++)
-      m->objects[i] = (*(m->new_f)) ();
-    m->current_size=amount;
-  }
+      /* XBT_DEBUG("Create a new object for mallocator %p (size:%d/%d)", */
+      /*           m, m->current_size, m->max_size); */
+      int i;
+      int amount = MIN(m->max_size / 2, 1000);
+      for (i = 0; i < amount; i++)
+        m->objects[i] = (*(m->new_f)) ();
+      m->current_size = amount;
+    }
 
-  /* there is at least an available object, now */
-  /* XBT_DEBUG("Reuse an old object for mallocator %p (size:%d/%d)", m,
-           m->current_size, m->max_size); */
-  if (MC_IS_ENABLED) /* no mallocator with MC */
-    object = (*(m->new_f)) ();
-  else
+    /* there is at least an available object, now */
+    /* XBT_DEBUG("Reuse an old object for mallocator %p (size:%d/%d)", */
+    /*           m, m->current_size, m->max_size); */
     object = m->objects[--m->current_size];
+  } else {
+    object = (*(m->new_f)) ();
+  }
 
   (*(m->reset_f)) (object);
   return object;
