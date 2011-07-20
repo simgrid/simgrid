@@ -519,41 +519,44 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_snapshot_stack));
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%d (pair=%p)(%u interleave)",
-           xbt_fifo_size(mc_snapshot_stack), pair,
-	      MC_state_interleave_size(pair->graph_state));
+    XBT_DEBUG("Exploration depth=%d (pair=%p) (%d interleave)",
+	      xbt_fifo_size(mc_snapshot_stack), pair, MC_state_interleave_size(pair->graph_state));
 
-    xbt_dynar_reset(enabled_processes);
-
-    MC_SET_RAW_MEM;
+    if(MC_state_interleave_size(pair->graph_state) == 0){
     
-    xbt_swag_foreach(process, simix_global->process_list){
-      if(MC_process_is_enabled(process)){ 
-	xbt_dynar_push(enabled_processes, &process);
-	//XBT_DEBUG("Process : pid=%lu",process->pid);
+      xbt_dynar_reset(enabled_processes);
+
+      MC_SET_RAW_MEM;
+    
+      xbt_swag_foreach(process, simix_global->process_list){
+	if(MC_process_is_enabled(process)){ 
+	  xbt_dynar_push(enabled_processes, &process);
+	  //XBT_DEBUG("Process : pid=%lu",process->pid);
+	}
       }
-    }
 
-    XBT_DEBUG("Enabled processes before pop : %lu", xbt_dynar_length(enabled_processes));
+      XBT_DEBUG("Enabled processes before pop : %lu", xbt_dynar_length(enabled_processes));
     
-    XBT_DEBUG("Processes already interleaved : %d", pair->interleave);
+      XBT_DEBUG("Processes already interleaved : %d", pair->interleave);
     
-    if(xbt_dynar_length(enabled_processes) > 0){
-      for(d=0;d<pair->interleave;d++){
-	xbt_dynar_shift(enabled_processes, NULL);
-      }
-    }
-
-    XBT_DEBUG("Enabled processes after pop : %lu", xbt_dynar_length(enabled_processes));
-    
-    if(pair->fully_expanded == 0){
       if(xbt_dynar_length(enabled_processes) > 0){
-	MC_state_interleave_process(pair->graph_state, xbt_dynar_get_as(enabled_processes, 0, smx_process_t));
-	//XBT_DEBUG("Interleave process");
+	for(d=0;d<pair->interleave;d++){
+	  xbt_dynar_shift(enabled_processes, NULL);
+	}
       }
-    }
+
+      XBT_DEBUG("Enabled processes after pop : %lu", xbt_dynar_length(enabled_processes));
     
-    MC_UNSET_RAW_MEM;
+      if(pair->fully_expanded == 0){
+	if(xbt_dynar_length(enabled_processes) > 0){
+	  MC_state_interleave_process(pair->graph_state, xbt_dynar_get_as(enabled_processes, 0, smx_process_t));
+	  //XBT_DEBUG("Interleave process");
+	}
+      }
+    
+      MC_UNSET_RAW_MEM;
+
+    }
 
 
     /* Update statistics */
