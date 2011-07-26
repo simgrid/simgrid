@@ -1,6 +1,7 @@
 find_library(PATH_PCRE_LIB 
 	NAMES pcre
     HINTS
+    $ENV{SIMGRID_PCRE_LIBRARY_PATH}
     $ENV{LD_LIBRARY_PATH}
     $ENV{PCRE_LIBRARY_PATH}
     PATH_SUFFIXES lib/ GnuWin32/lib
@@ -13,6 +14,7 @@ find_library(PATH_PCRE_LIB
     
 find_path(PATH_PCRE_H "pcre.h"
     HINTS
+    $ENV{SIMGRID_PCRE_LIBRARY_PATH}
     $ENV{LD_LIBRARY_PATH}
     $ENV{PCRE_LIBRARY_PATH}
     PATH_SUFFIXES include/ GnuWin32/include
