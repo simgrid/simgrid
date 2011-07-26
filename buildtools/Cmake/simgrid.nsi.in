@@ -179,10 +179,11 @@ Section "Examples" ExamplesSection
 	
 SectionEnd
 Section "Pcre library" PCRESection	
-	
 	# install pcre library
 	CreateDirectory $INSTDIR\GnuWin32
-	
+	setOutPath $INSTDIR\GnuWin32
+	file "@PATH_PCRE_LICENCE@\LICENCE"
+
 	CreateDirectory $INSTDIR\GnuWin32\lib
 	setOutPath $INSTDIR\GnuWin32\lib
 	file @PATHLIBPCRE@\libpcre.a
@@ -192,9 +193,6 @@ Section "Pcre library" PCRESection
 	setOutPath $INSTDIR\GnuWin32\include
 	file @PATH_PCRE_H@\pcre.h
 	file @PATH_PCRE_H@\pcreposix.h
-	
-	setOutPath $INSTDIR\GnuWin32\
-	file @PATH_PCRE_H@\..\LICENCE
 SectionEnd
 
 # default section start

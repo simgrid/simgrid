@@ -24,7 +24,7 @@ find_path(PATH_PCRE_H "pcre.h"
     /opt/csw
     /sw
     /usr)
-    
+       
 set(HAVE_PCRE_LIB 0)
 
 message(STATUS "Looking for pcre.h")
@@ -40,6 +40,27 @@ message(STATUS "Looking for lib pcre - found")
 else(PATH_PCRE_LIB)
 message(STATUS "Looking for lib pcre - not found")
 endif(PATH_PCRE_LIB)
+
+if(WIN32)
+    find_path(PATH_PCRE_LICENCE "LICENCE"
+        HINTS
+        $ENV{SIMGRID_PCRE_LIBRARY_PATH}
+        $ENV{LD_LIBRARY_PATH}
+        $ENV{PCRE_LIBRARY_PATH}
+        PATH_SUFFIXES GnuWin32
+        PATHS
+        /opt
+        /opt/local
+        /opt/csw
+        /sw
+        /usr)
+    message(STATUS "Looking for pcre licence")
+    if(PATH_PCRE_LICENCE)
+    message(STATUS "Looking for pcre licence - found")
+    else(PATH_PCRE_LICENCE)
+    message(STATUS "Looking for pcre licence - not found")
+    endif(PATH_PCRE_LICENCE)
+endif(WIN32)
 
 if(PATH_PCRE_LIB AND PATH_PCRE_H)
        string(REGEX REPLACE "/libpcre.*[.]${LIB_EXE}$" "" PATHLIBPCRE "${PATH_PCRE_LIB}")
