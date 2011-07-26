@@ -19,8 +19,8 @@ else(MSVC)
     endif(CMAKE_COMPILER_IS_GNUCC)
 endif(MSVC)
 
-set(GRAS_DEP "wsock32")
-set(SIMGRID_DEP "wsock32")
+set(GRAS_DEP "ws2_32")
+set(SIMGRID_DEP "ws2_32")
 
 if(HAVE_PCRE_LIB)
        SET(SIMGRID_DEP "${SIMGRID_DEP} -lpcre")
