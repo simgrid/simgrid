@@ -66,8 +66,8 @@ int makecontext(ucontext_t * ucp, void (*func) (), int argc, ...)
   #  error "_IA64_"
   #endif
   #ifdef _AMD64_
-  ucp->uc_mcontext.Rip = (unsigned long) func;
-  ucp->uc_mcontext.Rsp = (unsigned long) sp - 4;
+  ucp->uc_mcontext.Rip = (unsigned long long) func;
+  ucp->uc_mcontext.Rsp = (unsigned long long) sp - 8;
   #endif
 
       /* Save/Restore the full machine context */ 
