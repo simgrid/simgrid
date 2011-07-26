@@ -178,6 +178,24 @@ Section "Examples" ExamplesSection
 	createShortCut  "$SMPROGRAMS\SimGrid\HelloWorld project.lnk"	"$INSTDIR\examples\HelloWorld"	
 	
 SectionEnd
+Section "Pcre library" PCRESection	
+	
+	# install pcre library
+	CreateDirectory $INSTDIR\GnuWin32
+	
+	CreateDirectory $INSTDIR\GnuWin32\lib
+	setOutPath $INSTDIR\GnuWin32\lib
+	file @PATHLIBPCRE@\libpcre.a
+	file @PATHLIBPCRE@\libpcreposix.a
+	
+	CreateDirectory $INSTDIR\GnuWin32\include
+	setOutPath $INSTDIR\GnuWin32\include
+	file @PATH_PCRE_H@\pcre.h
+	file @PATH_PCRE_H@\pcreposix.h
+	
+	setOutPath $INSTDIR\GnuWin32\
+	file @PATH_PCRE_H@\..\LICENCE
+SectionEnd
 
 # default section start
 section	
@@ -197,6 +215,9 @@ section
 	WriteRegExpandStr ${env_hklm} SIMGRID_ROOT $INSTDIR
 	WriteRegExpandStr ${env_hklm} SIMGRID_VERSION @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
 
+	WriteRegExpandStr ${env_hklm} SIMGRID_PCRE_LIBRARY_PATH $INSTDIR\GnuWin32
+	WriteRegExpandStr ${env_hklm} SIMGRID_PCRE_LIBRARY_VERSION "8.12"
+
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "Version" "@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@"
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "InstallPath" "$INSTDIR"
 	
@@ -209,17 +230,20 @@ LangString DESC_LibSection 		${LANG_ENGLISH} "Install Simgrid and gras libraries
 LangString DESC_BinSection 		${LANG_ENGLISH} "Install some useful tools for Simgrid."
 LangString DESC_DocSection 		${LANG_ENGLISH} "Generated (doxygen) documentation."
 LangString DESC_ExamplesSection ${LANG_ENGLISH} "Simgrid's HelloWorld example and some classical platforms."
+LangString DESC_PCRESection 	${LANG_ENGLISH} "Install the PCRE and PCREPOSIX libraries for SimGrid."
 
 LangString DESC_LibSection 		${LANG_FRENCH} 	"Installer les librairies Simgrid et Gras et leurs Entêtes."
 LangString DESC_BinSection 		${LANG_FRENCH} 	"Installer les outils optionnels."
 LangString DESC_DocSection 		${LANG_FRENCH} 	"Installer la documentation."
 LangString DESC_ExamplesSection ${LANG_FRENCH} 	"Installer un exemple 'HelloWorld' et des fichiers de plate-formes types."
+LangString DESC_PCRESection 	${LANG_FRENCH}  "Installer les librairies PCRE et PCREPOSIX for SimGrid."
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${LibSection} 		$(DESC_LibSection)
   !insertmacro MUI_DESCRIPTION_TEXT ${BinSection} 		$(DESC_BinSection)
   !insertmacro MUI_DESCRIPTION_TEXT ${DocSection} 		$(DESC_DocSection)
   !insertmacro MUI_DESCRIPTION_TEXT ${ExamplesSection} 	$(DESC_ExamplesSection)
+  !insertmacro MUI_DESCRIPTION_TEXT ${PCRESection} 		$(DESC_PCRESection)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 # create a section to define what the uninstaller does.
@@ -333,9 +357,14 @@ section "Uninstall"
 	RMDir  /r "$INSTDIR\examples"
 	RMDir  "$SMPROGRAMS\SimGrid"
 	
+	# delete PCRE
+	RMDir   "$INSTDIR\GnuWin32"
+	
 	# Delete variable
 	DeleteRegValue ${env_hklm} SIMGRID_ROOT
 	DeleteRegValue ${env_hklm} SIMGRID_VERSION
+	DeleteRegValue ${env_hklm} SIMGRID_PCRE_LIBRARY_PATH
+	DeleteRegValue ${env_hklm} SIMGRID_PCRE_LIBRARY_VERSION
       DeleteRegKey HKCU "SOFTWARE\SimGrid"
     
 # uninstall section end
