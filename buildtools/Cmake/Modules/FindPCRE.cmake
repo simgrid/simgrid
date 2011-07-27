@@ -11,7 +11,16 @@ find_library(PATH_PCRE_LIB
     /opt/csw
     /sw
     /usr)
-    
+message(status "PATH_PCRE_LIB ${PATH_PCRE_LIB}")
+string(REGEX MATCH ".dll.a" operation "${PATH_PCRE_LIB}")
+
+if(NOT operation)
+    if(WIN32)
+           set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPCRE_STATIC")
+    endif(WIN32)
+endif(NOT operation)
+
+
 find_path(PATH_PCRE_H "pcre.h"
     HINTS
     $ENV{SIMGRID_PCRE_LIBRARY_PATH}
