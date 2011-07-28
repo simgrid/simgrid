@@ -457,7 +457,7 @@ double surf_solve(double max_date)
   XBT_DEBUG("Min for other resources : %f", min);
 
 
-  if(!strcmp(surf_network_model->name,"network NS3")){
+  if(surf_network_model->name && !strcmp(surf_network_model->name,"network NS3")){
 	// run until min or next flow
 	model_next_action_end = surf_network_model->model_private->share_resources(min);
 	XBT_DEBUG("Min for NS3 : %f", model_next_action_end);
