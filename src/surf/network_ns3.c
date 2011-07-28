@@ -331,6 +331,13 @@ static void free_ns3_host(void * elmts)
 	free(host);
 }
 
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+static int ns3_get_link_latency_limited(surf_action_t action)
+{
+  return 0;
+}
+#endif
+
 void surf_network_model_init_NS3(const char *filename)
 {
 	if (surf_network_model)
@@ -367,6 +374,10 @@ void surf_network_model_init_NS3(const char *filename)
 	xbt_dynar_push(model_list, &surf_network_model);
 	update_model_description(surf_network_model_description,
 	            "NS3", surf_network_model);
+
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+	surf_network_model->get_latency_limited = ns3_get_link_latency_limited;
+#endif
 }
 
 static void finalize(void)
