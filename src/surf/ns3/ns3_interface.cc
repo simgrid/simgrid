@@ -5,6 +5,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "ns3_interface.h"
+#include "ns3_simulator.h"
+#include "xbt/lib.h"
+#include "xbt/log.h"
+#include "xbt/dynar.h"
+
 #include "ns3/core-module.h"
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
@@ -15,6 +20,10 @@
 
 using namespace ns3;
 
+extern xbt_lib_t host_lib;
+extern int NS3_HOST_LEVEL;		//host node for ns3
+extern xbt_dynar_t IPV4addr;
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(interface_ns3, surf,
                                 "Logging specific to the SURF network NS3 module");
 
@@ -23,21 +32,87 @@ NodeContainer nodes;
 NodeContainer Cluster_nodes;
 Ipv4InterfaceContainer interfaces;
 
+
+
 int number_of_nodes = 0;
 int number_of_clusters_nodes = 0;
 int number_of_links = 1;
 int number_of_networks = 1;
+int port_number = 1025; //Port number is limited from 1025 to 65 000
+
+static NS3Sim* ns3_sim = 0;
+
+void ns3_simulator(double min){
+			ns3_sim->simulator_stop(min);
+			ns3_sim->simulator_start();
+}
+
+void* ns3_get_socket_action(void *socket){
+		return ns3_sim->get_action_from_socket(socket);
+}
+
+double ns3_get_socket_remains(void *socket){
+		return ns3_sim->get_remains_from_socket(socket);
+}
+
+char ns3_get_socket_is_finished(void *socket){
+		return ns3_sim->get_finished(socket);
+}
+
+
+double ns3_time(){
+	return Simulator::Now().GetSeconds();
+}
+
+int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,void * action)
+{
+	ns3_nodes_t node1 = (ns3_nodes_t) xbt_lib_get_or_null(host_lib,a,NS3_HOST_LEVEL);
+	ns3_nodes_t node2 = (ns3_nodes_t) xbt_lib_get_or_null(host_lib,b,NS3_HOST_LEVEL);
+
+	Ptr<Node> src_node = nodes.Get(node1->node_num);
+	Ptr<Node> dst_node = nodes.Get(node2->node_num);
+
+	char* addr = (char*)xbt_dynar_get_ptr(IPV4addr,node2->node_num);
+
+	XBT_INFO("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1->node_num, node2->node_num,addr);
+	ns3_sim->create_flow_NS3(src_node,
+			dst_node,
+			port_number,
+			start,
+			addr,
+			TotalBytes,
+			action);
+
+	port_number++;
+	if(port_number >= 65001 ) xbt_die("Too many connections! Port number is saturated.");
+	return 0;
+}
+
+// clean up
+int ns3_finalize(void){
+	if (!ns3_sim) return -1;
+	delete ns3_sim;
+	ns3_sim = 0;
+	return 0;
+}
+
+// initialize the NS3 interface and environment
+int ns3_initialize(void){
+  xbt_assert(!ns3_sim, "ns3 already initialized");
+  ns3_sim = new NS3Sim();
+  return 0;
+}
 
 void * ns3_add_host(char * id)
 {
 	ns3_nodes_t host  = xbt_new0(s_ns3_nodes_t,1);
-	XBT_INFO("Interface ns3 add host[%d] '%s'",number_of_nodes,id);
+	XBT_DEBUG("Interface ns3 add host[%d] '%s'",number_of_nodes,id);
 	Ptr<Node> node =  CreateObject<Node> (0);
 	stack.Install(node);
 	nodes.Add(node);
 	host->node_num = number_of_nodes;
 	host->type = NS3_NETWORK_ELEMENT_HOST;
-	host->data = node;
+	host->data = GetPointer(node);
 	number_of_nodes++;
 	return host;
 }
@@ -45,7 +120,7 @@ void * ns3_add_host(char * id)
 void * ns3_add_host_cluster(char * id)
 {
 	ns3_nodes_t host  = xbt_new0(s_ns3_nodes_t,1);
-	XBT_INFO("Interface ns3 add host[%d] '%s'",number_of_nodes,id);
+	XBT_DEBUG("Interface ns3 add host[%d] '%s'",number_of_nodes,id);
 	Ptr<Node> node =  CreateObject<Node> (0);
 	stack.Install(node);
 	Cluster_nodes.Add(node);
@@ -60,7 +135,7 @@ void * ns3_add_host_cluster(char * id)
 void * ns3_add_router(char * id)
 {
 	ns3_nodes_t router  = xbt_new0(s_ns3_nodes_t,1);
-	XBT_INFO("Interface ns3 add router[%d] '%s'",number_of_nodes,id);
+	XBT_DEBUG("Interface ns3 add router[%d] '%s'",number_of_nodes,id);
 	Ptr<Node> node =  CreateObject<Node> (0);
 	stack.Install(node);
 	nodes.Add(node);
@@ -118,8 +193,17 @@ void * ns3_add_cluster(char * bw,char * lat,char *id)
 
 void * ns3_add_AS(char * id)
 {
-	XBT_INFO("Interface ns3 add AS '%s'",id);
+	XBT_DEBUG("Interface ns3 add AS '%s'",id);
 	return NULL;
+}
+
+static char* transformIpv4Address (Ipv4Address from){
+	std::stringstream sstream;
+		sstream << interfaces.GetAddress(interfaces.GetN()-2);
+		std::string s = sstream.str();
+		size_t size = s.size() + 1;
+		char* IPaddr = bprintf("%s",s.c_str());
+		return IPaddr;
 }
 
 void * ns3_add_link(int src,int dst,char * bw,char * lat)
@@ -146,9 +230,15 @@ void * ns3_add_link(int src,int dst,char * bw,char * lat)
 	char * adr = bprintf("%d.%d.0.0",number_of_networks,number_of_links);
 	address.SetBase (adr, "255.255.0.0");
 	XBT_DEBUG("\tInterface stack '%s'",adr);
+	free(adr);
 	interfaces.Add(address.Assign (netA));
 
-	XBT_DEBUG(" ");
+	xbt_dynar_set(IPV4addr,src,
+			transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-2)));
+
+	xbt_dynar_set(IPV4addr,dst,
+			transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-1)));
+
 	if(number_of_links == 255){
 		if(number_of_networks == 255)
 			xbt_die("Number of links and networks exceed 255*255");
@@ -161,48 +251,7 @@ void * ns3_add_link(int src,int dst,char * bw,char * lat)
 
 void * ns3_end_platform(void)
 {
-	XBT_INFO("InitializeRoutes");
+	XBT_DEBUG("InitializeRoutes");
 	GlobalRouteManager::BuildGlobalRoutingDatabase();
 	GlobalRouteManager::InitializeRoutes();
-
-	//TODO REMOVE ;)
-	Ptr<Node> a = nodes.Get(0);
-	Ptr<Node> b = nodes.Get(1);
-	Ptr<Node> c = nodes.Get(2);
-	Ptr<Node> d = nodes.Get(3);
-
-	UdpEchoServerHelper echoServer (9);
-
-	ApplicationContainer serverApps = echoServer.Install (a);
-	serverApps.Start (Seconds (1.0));
-	serverApps.Stop (Seconds (20.0));
-
-	UdpEchoClientHelper echoClient (interfaces.GetAddress (0), 9);
-	echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
-	echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.)));
-	echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
-	ApplicationContainer clientApps_b = echoClient.Install (b);
-	clientApps_b.Start (Seconds (2.0));
-	clientApps_b.Stop (Seconds (10.0));
-
-	UdpEchoClientHelper echoClient2 (interfaces.GetAddress (0), 9);
-	echoClient2.SetAttribute ("MaxPackets", UintegerValue (1));
-	echoClient2.SetAttribute ("Interval", TimeValue (Seconds (1.)));
-	echoClient2.SetAttribute ("PacketSize", UintegerValue (512));
-	ApplicationContainer clientApps_c = echoClient2.Install (c);
-	clientApps_c.Start (Seconds (3.0));
-	clientApps_c.Stop (Seconds (10.0));
-
-	UdpEchoClientHelper echoClient3 (interfaces.GetAddress (0), 9);
-	echoClient3.SetAttribute ("MaxPackets", UintegerValue (1));
-	echoClient3.SetAttribute ("Interval", TimeValue (Seconds (1.)));
-	echoClient3.SetAttribute ("PacketSize", UintegerValue (256));
-	ApplicationContainer clientApps_d = echoClient3.Install (d);
-	clientApps_d.Start (Seconds (4.0));
-	clientApps_d.Stop (Seconds (10.0));
-
-	Simulator::Run ();
-	Simulator::Destroy ();
-
-	//HEEEEEEE
 }
