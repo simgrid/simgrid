@@ -27,8 +27,12 @@
 
 /* XBT_LOG_MAYDAY: define this to replace the logging facilities with basic
    printf function. Useful to debug the logging facilities themselves */
+#include "gras_config.h"
 #undef XBT_LOG_MAYDAY
 //#define XBT_LOG_MAYDAY
+#ifdef _WIN64
+	#define XBT_LOG_MAYDAY
+#endif
 
 #ifndef _XBT_LOG_H_
 #define _XBT_LOG_H_
@@ -405,9 +409,9 @@ extern xbt_log_layout_t xbt_log_default_layout;
 # define XBT_CLOG(cat, prio, ...) \
   _XBT_IF_ONE_ARG(_XBT_CLOG_ARG1, _XBT_CLOG_ARGN, __VA_ARGS__)(__VA_ARGS__)
 # define _XBT_CLOG_ARG1(f) \
-  fprintf(stderr,"%s:%d:" f, __FILE__, __LINE__)
+  fprintf(stderr,"%s:%d:\n" f, __FILE__, __LINE__)
 # define _XBT_CLOG_ARGN(f, ...) \
-  fprintf(stderr,"%s:%d:" f, __FILE__, __LINE__, __VA_ARGS__)
+  fprintf(stderr,"%s:%d:\n" f, __FILE__, __LINE__, __VA_ARGS__)
 # define XBT_LOG(...) XBT_CLOG(0, __VA_ARGS__)
 #else
 # define XBT_CLOG_(catv, prio, ...)                                     \
