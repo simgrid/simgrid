@@ -2,7 +2,7 @@ This is a very simple example to explain how to compile with simgrid.
 
 1) How to compile an example: (HelloWorld)
 
-- Run "Git bash" (installed with git).
+- Run "Git bash" (installed with git) or windows shell "cmd".
 - Open HelloWorld Directory ('cd' command line).
 - Create a build directory and change directory. (optional)
 - Type 'cmake -G"Unix Makefiles" <path_to_HelloWorld_project>'
@@ -17,7 +17,7 @@ This is a very simple example to explain how to compile with simgrid.
 	It allows to configure the project.
 - FindPCRE.cmake
 	Simgrid needs pcre regular expression.
-	This finds and links to the pcre library.
+	This finds and links to the pcre library (Normally included into Simgrid directory "GnuWin32").
 - README
 	This explaination.
 	

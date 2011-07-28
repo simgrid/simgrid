@@ -57,10 +57,19 @@ int makecontext(ucontext_t * ucp, void (*func) (), int argc, ...)
         return -1;
   }
   
-      /* Set the instruction and the stack pointer */ 
-      ucp->uc_mcontext.Eip = (unsigned long) func;
+      /* Set the instruction and the stack pointer */
+  #ifdef I_X86_
+  ucp->uc_mcontext.Eip = (unsigned long) func;
   ucp->uc_mcontext.Esp = (unsigned long) sp - 4;
-  
+  #endif
+  #ifdef _IA64_
+  #  error "_IA64_"
+  #endif
+  #ifdef _AMD64_
+  ucp->uc_mcontext.Rip = (unsigned long long) func;
+  ucp->uc_mcontext.Rsp = (unsigned long long) sp - 8;
+  #endif
+
       /* Save/Restore the full machine context */ 
       ucp->uc_mcontext.ContextFlags = CONTEXT_FULL;
   
