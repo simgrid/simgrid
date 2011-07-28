@@ -234,6 +234,10 @@ void SIMIX_run(void)
           SIMIX_request_post((smx_action_t) action->data);
       }
     }
+
+    /* Clean processes to destroy */
+    SIMIX_process_empty_trash();
+
   } while (time != -1.0);
 
   if (xbt_swag_size(simix_global->process_list) != 0) {

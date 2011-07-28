@@ -189,7 +189,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
 
 /** \ingroup m_task_management
  * \brief Cancel a #m_task_t.
- * \param task the taskt to cancel. If it was executed or transfered, it 
+ * \param task the task to cancel. If it was executed or transfered, it
           stops the process that were working on it.
  */
 MSG_error_t MSG_task_cancel(m_task_t task)
@@ -198,13 +198,18 @@ MSG_error_t MSG_task_cancel(m_task_t task)
 
   if (task->simdata->compute) {
     SIMIX_req_host_execution_cancel(task->simdata->compute);
-    return MSG_OK;
   }
-  if (task->simdata->comm) {
+  else if (task->simdata->comm) {
     SIMIX_req_comm_cancel(task->simdata->comm);
-    return MSG_OK;
   }
-  THROW_IMPOSSIBLE;
+  else {
+    static int warned = 0;
+    if (!warned) {
+      XBT_WARN("Cannot cancel a non-running task");
+      warned = 1;
+    }
+  }
+  return MSG_OK;
 }
 
 /** \ingroup m_task_management
