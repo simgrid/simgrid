@@ -1,9 +1,22 @@
 SimGrid (3.7) unstable; urgency=low 
 
+ Dot Loader
+ * Bug fix: correction of the dot file parsing with the libcgraph
+
+ Windows Port
+ * Fix many issues that prevented SimGrid from working 
+   correctly on windows (both for 32 and 64 bit architectures):
+     - port win32_ucontext.c to 64 bit arch
+     - now that we rely on gcc, clean xbt/log.h so that it does not
+       add useless bugs that had been introduced to handle the 
+       borland compiler
+ * Create an installer for windows with nsis(amd64 and win32)
+   - Add an hello world project to illustrate simgrid project creation.
+   - Embed libpcre into the Simgrid installer to avoid 
+     its compilation burden 
+
  -- `LC_ALL=C date` Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
  SIMDAG
- [dot loader]
- * Bug fix: correction of the dot file parsing with the libcgraph
 
 
 SimGrid (3.6.1) unstable; urgency=low 
