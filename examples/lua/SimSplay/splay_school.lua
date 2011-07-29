@@ -6,17 +6,13 @@ function SPLAYschool()
     log:print(i)
   end
 
---[[
   events.sleep(5)
 
   if job.me.ip() == job.nodes[1].ip then
-    log:print("calling")
     rpc.call(job.nodes[2], {"call_me", job.me.ip()})
   end
-  log:print("second sleep")
   events.sleep(5)
   os.exit()
-]]
 end
 
 function call_me(from)
