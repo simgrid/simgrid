@@ -17,6 +17,8 @@ extern xbt_lib_t as_router_lib;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_ns3, surf,
                                 "Logging specific to the SURF network NS3 module");
 
+#define MAX_LENGHT_IPV4 16 //255.255.255.255\0
+
 extern routing_global_t global_routing;
 extern xbt_dict_t dict_socket;
 
@@ -54,7 +56,7 @@ static void replace_bdw_ns3(char * bdw)
 {
 	char *temp = xbt_strdup(bdw);
 	xbt_free(bdw);
-	bdw = bprintf("%fbps",atof(temp));
+	bdw = bprintf("%fBps",atof(temp));
 	xbt_free(temp);
 
 }
@@ -76,11 +78,18 @@ void parse_ns3_add_host(void)
 				ns3_add_host(A_surfxml_host_id)
 				);
 }
+
+static void ns3_free_dynar(void * elmts){
+	if(elmts)
+		free(elmts);
+	return;
+}
+
 void parse_ns3_add_link(void)
 {
 	XBT_DEBUG("NS3_ADD_LINK '%s'",A_surfxml_link_id);
 
-	if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),free);
+	if(!IPV4addr) IPV4addr = xbt_dynar_new(MAX_LENGHT_IPV4*sizeof(char),ns3_free_dynar);
 
 	tmgr_trace_t bw_trace;
 	tmgr_trace_t state_trace;
@@ -188,8 +197,6 @@ void parse_ns3_add_cluster(void)
 		}
 	}
 
-
-
 	//Create links
 	unsigned int cpt;
 	int elmts;
@@ -258,6 +265,8 @@ void create_ns3_topology()
 {
    XBT_DEBUG("Starting topology generation");
 
+   xbt_dynar_shrink(IPV4addr,0);
+
    //get the onelinks from the parsed platform
    xbt_dynar_t onelink_routes = global_routing->get_onelink_routes();
    if (!onelink_routes)
@@ -273,8 +282,10 @@ void create_ns3_topology()
 
      if( strcmp(src,dst) && ((surf_ns3_link_t)link)->created){
      XBT_DEBUG("Route from '%s' to '%s' with link '%s'",src,dst,((surf_ns3_link_t)link)->data->id);
-     char * link_bdw = bprintf("%sBps",((surf_ns3_link_t)link)->data->bdw);
-	 char * link_lat = bprintf("%ss",(((surf_ns3_link_t)link)->data->lat));
+     char * link_bdw = bprintf("%s",((surf_ns3_link_t)link)->data->bdw);
+	 char * link_lat = bprintf("%s",(((surf_ns3_link_t)link)->data->lat));
+ 	 replace_lat_ns3(link_lat);
+ 	 replace_bdw_ns3(link_bdw);
 	 ((surf_ns3_link_t)link)->created = 0;
 
 	 //	 XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
@@ -399,6 +410,10 @@ static double ns3_share_resources(double min)
 
 	ns3_simulator(min);
 	time_to_next_flow_completion = ns3_time() - surf_get_clock();
+
+//	XBT_INFO("min       : %f",min);
+//	XBT_INFO("ns3  time : %f",ns3_time());
+//	XBT_INFO("surf time : %f",surf_get_clock());
 
 	xbt_assert(time_to_next_flow_completion,
 			  "Time to next flow completion not initialized!\n");

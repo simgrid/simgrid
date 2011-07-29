@@ -74,7 +74,7 @@ int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalByte
 
 	char* addr = (char*)xbt_dynar_get_ptr(IPV4addr,node2->node_num);
 
-	XBT_INFO("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1->node_num, node2->node_num,addr);
+	XBT_DEBUG("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1->node_num, node2->node_num,addr);
 	ns3_sim->create_flow_NS3(src_node,
 			dst_node,
 			port_number,
@@ -188,7 +188,6 @@ void * ns3_add_cluster(char * bw,char * lat,char *id)
 		number_of_links++;
 	}
 	XBT_DEBUG("Number of nodes in Cluster_nodes: %d",Cluster_nodes.GetN());
-
 }
 
 void * ns3_add_AS(char * id)
@@ -199,7 +198,7 @@ void * ns3_add_AS(char * id)
 
 static char* transformIpv4Address (Ipv4Address from){
 	std::stringstream sstream;
-		sstream << interfaces.GetAddress(interfaces.GetN()-2);
+		sstream << from ;
 		std::string s = sstream.str();
 		size_t size = s.size() + 1;
 		char* IPaddr = bprintf("%s",s.c_str());
@@ -233,9 +232,11 @@ void * ns3_add_link(int src,int dst,char * bw,char * lat)
 	free(adr);
 	interfaces.Add(address.Assign (netA));
 
+	XBT_DEBUG("Have write '%s' for Node '%d'",transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-2)),src);
 	xbt_dynar_set(IPV4addr,src,
 			transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-2)));
 
+	XBT_DEBUG("Have write '%s' for Node '%d'",transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-1)),dst);
 	xbt_dynar_set(IPV4addr,dst,
 			transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-1)));
 

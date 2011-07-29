@@ -122,7 +122,6 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
       toWrite = min (toWrite, localSocket->GetTxAvailable ());
       int amountSent = localSocket->Send (&data[0], toWrite, 0);
 
-//      cout << Simulator::Now () << "  AmountSend: " << amountSent << "  Towrite: " << toWrite << endl;
       if(amountSent < 0)
     	  return;
 	  (mysocket->sentBytes) += amountSent;
