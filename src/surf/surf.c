@@ -442,14 +442,30 @@ double surf_solve(double max_date)
 
   XBT_DEBUG("Looking for next action end");
   xbt_dynar_foreach(model_list, iter, model) {
-    XBT_DEBUG("Running for Resource [%s]", model->name);
-    model_next_action_end = model->model_private->share_resources(NOW);
-    XBT_DEBUG("Resource [%s] : next action end = %f",
-           model->name, model_next_action_end);
-    if (((min < 0.0) || (model_next_action_end < min))
-        && (model_next_action_end >= 0.0))
-      min = model_next_action_end;
+
+	if(strcmp(model->name,"network NS3") ){
+		XBT_DEBUG("Running for Resource [%s]", model->name);
+		model_next_action_end = model->model_private->share_resources(NOW);
+		XBT_DEBUG("Resource [%s] : next action end = %f",
+			   model->name, model_next_action_end);
+		if (((min < 0.0) || (model_next_action_end < min))
+			&& (model_next_action_end >= 0.0))
+		  min = model_next_action_end;
+	  }
   }
+
+  XBT_DEBUG("Min for other resources : %f", min);
+
+
+  if(surf_network_model->name && !strcmp(surf_network_model->name,"network NS3")){
+	// run until min or next flow
+	model_next_action_end = surf_network_model->model_private->share_resources(min);
+	XBT_DEBUG("Min for NS3 : %f", model_next_action_end);
+	if ( ((min < 0.0) || (model_next_action_end < min)) && ( model_next_action_end >= 0.0 ))
+		min = model_next_action_end;
+  }
+
+
   XBT_DEBUG("Next action end : %f", min);
 
   XBT_DEBUG("Looking for next event");

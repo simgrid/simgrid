@@ -241,11 +241,9 @@ typedef struct xbt_log_category_s s_xbt_log_category_t,
 /*
  * Do NOT access any members of this structure directly. FIXME: move to private?
  */
-#ifdef _XBT_WIN32
-#define XBT_LOG_BUFF_SIZE  16384        /* Size of the static string in which we build the log string */
-#else
+
 #define XBT_LOG_BUFF_SIZE 2048  /* Size of the static string in which we build the log string */
-#endif
+
 struct xbt_log_category_s {
   xbt_log_category_t parent;
   xbt_log_category_t firstChild;
@@ -266,11 +264,7 @@ struct xbt_log_event_s {
   int lineNum;
   va_list ap;
   va_list ap_copy;              /* need a copy to launch dynamic layouts when the static ones overflowed */
-#ifdef _XBT_WIN32
-  char *buffer;
-#else
   char buffer[XBT_LOG_BUFF_SIZE];
-#endif
 };
 
 /**
@@ -389,15 +383,10 @@ extern xbt_log_layout_t xbt_log_default_layout;
  * code. 
  * Setting the LogEvent's valist member is done inside _log_logEvent.
  */
-#ifdef _XBT_WIN32
-#include <stdlib.h>             /* calloc */
-#define _XBT_LOG_EV_BUFFER_ZERO() \
-  _log_ev.buffer = (char*) calloc(XBT_LOG_BUFF_SIZE + 1, sizeof(char))
-#else
+
 #include <string.h>             /* memset */
 #define _XBT_LOG_EV_BUFFER_ZERO() \
   memset(_log_ev.buffer, 0, XBT_LOG_BUFF_SIZE)
-#endif
 
 /* Logging Macros */
 
@@ -405,9 +394,9 @@ extern xbt_log_layout_t xbt_log_default_layout;
 # define XBT_CLOG(cat, prio, ...) \
   _XBT_IF_ONE_ARG(_XBT_CLOG_ARG1, _XBT_CLOG_ARGN, __VA_ARGS__)(__VA_ARGS__)
 # define _XBT_CLOG_ARG1(f) \
-  fprintf(stderr,"%s:%d:" f, __FILE__, __LINE__)
+  fprintf(stderr,"%s:%d:\n" f, __FILE__, __LINE__)
 # define _XBT_CLOG_ARGN(f, ...) \
-  fprintf(stderr,"%s:%d:" f, __FILE__, __LINE__, __VA_ARGS__)
+  fprintf(stderr,"%s:%d:\n" f, __FILE__, __LINE__, __VA_ARGS__)
 # define XBT_LOG(...) XBT_CLOG(0, __VA_ARGS__)
 #else
 # define XBT_CLOG_(catv, prio, ...)                                     \

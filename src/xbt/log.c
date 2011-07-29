@@ -626,10 +626,6 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
   }
   va_end(ev->ap);
   va_end(ev->ap_copy);
-
-#ifdef _XBT_WIN32
-  free(ev->buffer);
-#endif
 }
 
 /* NOTE:

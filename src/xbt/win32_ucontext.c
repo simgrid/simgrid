@@ -21,6 +21,7 @@
  */  
     
 #include "win32_ucontext.h"
+
 int getcontext(ucontext_t * ucp) 
 {
   int ret;
@@ -45,12 +46,12 @@ int makecontext(ucontext_t * ucp, void (*func) (), int argc, ...)
   int i;
   va_list ap;
   char *sp;
-  
-      /* Stack grows down */ 
+
+   /* Stack grows down */
       sp = (char *) (size_t) ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size;
   
       /* Reserve stack space for the arguments (maximum possible: argc*(8 bytes per argument)) */ 
-      sp -= argc * 8;
+      sp -= argc * sizeof(void*);
   if (sp < (char *) ucp->uc_stack.ss_sp) {
     
         /* errno = ENOMEM; */ 
@@ -59,15 +60,15 @@ int makecontext(ucontext_t * ucp, void (*func) (), int argc, ...)
   
       /* Set the instruction and the stack pointer */
   #ifdef I_X86_
-  ucp->uc_mcontext.Eip = (unsigned long) func;
-  ucp->uc_mcontext.Esp = (unsigned long) sp - 4;
+  ucp->uc_mcontext.Eip = (DWORD) func;
+  ucp->uc_mcontext.Esp = (DWORD) sp - sizeof(void*);
   #endif
   #ifdef _IA64_
   #  error "_IA64_"
   #endif
   #ifdef _AMD64_
-  ucp->uc_mcontext.Rip = (unsigned long long) func;
-  ucp->uc_mcontext.Rsp = (unsigned long long) sp - 8;
+  ucp->uc_mcontext.Rip = (DWORD64) func;
+  ucp->uc_mcontext.Rsp = (DWORD64) sp - sizeof(void*);
   #endif
 
       /* Save/Restore the full machine context */ 
@@ -76,9 +77,9 @@ int makecontext(ucontext_t * ucp, void (*func) (), int argc, ...)
       /* Copy the arguments */ 
       va_start(ap, argc);
   for (i = 0; i < argc; i++) {
-    memcpy(sp, ap, 8);
-    ap += 8;
-    sp += 8;
+    memcpy(sp, ap, sizeof(void*));
+    ap += sizeof(void*);
+    sp += sizeof(void*);
   }
   va_end(ap);
   return 0;

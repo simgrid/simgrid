@@ -356,7 +356,7 @@ section "Uninstall"
 	RMDir  "$SMPROGRAMS\SimGrid"
 	
 	# delete PCRE
-	RMDir   "$INSTDIR\GnuWin32"
+	RMDir   /r "$INSTDIR\GnuWin32"
 	
 	# Delete variable
 	DeleteRegValue ${env_hklm} SIMGRID_ROOT
