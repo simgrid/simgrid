@@ -5,7 +5,7 @@ function SPLAYschool()
   for i = 1000,10000 do
     log:print(i)
   end
-  
+
 --[[
   events.sleep(5)
 
