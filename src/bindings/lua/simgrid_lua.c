@@ -174,13 +174,13 @@ static int Task_send(lua_State * L)
   if (res != MSG_OK)
     switch (res) {
     case MSG_TIMEOUT:
-      XBT_ERROR("MSG_task_send failed : Timeout");
+      XBT_DEBUG("MSG_task_send failed : Timeout");
       break;
     case MSG_TRANSFER_FAILURE:
-      XBT_ERROR("MSG_task_send failed : Transfer Failure");
+      XBT_DEBUG("MSG_task_send failed : Transfer Failure");
       break;
     case MSG_HOST_FAILURE:
-      XBT_ERROR("MSG_task_send failed : Host Failure ");
+      XBT_DEBUG("MSG_task_send failed : Host Failure ");
       break;
     default:
       XBT_ERROR
@@ -190,99 +190,82 @@ static int Task_send(lua_State * L)
   return 0;
 }
 
-static int Task_recv(lua_State * L)
-{
-  m_task_t tk = NULL;
-  const char *mailbox = luaL_checkstring(L, -1);
-  MSG_error_t res = MSG_task_receive(&tk, mailbox);
-
-  lua_State *sender_stack = MSG_task_get_data(tk);
-  lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
-  MSG_task_set_data(tk, NULL);
-
-  if (res != MSG_OK)
-    switch (res) {
-    case MSG_TIMEOUT:
-      XBT_ERROR("MSG_task_receive failed : Timeout");
-      break;
-    case MSG_TRANSFER_FAILURE:
-      XBT_ERROR("MSG_task_receive failed : Transfer Failure");
-      break;
-    case MSG_HOST_FAILURE:
-      XBT_ERROR("MSG_task_receive failed : Host Failure ");
-      break;
-    default:
-      XBT_ERROR
-          ("MSG_task_receive failed : Unexpected error , please report this bug");
-      break;
-    }
-
-  return 1;
-}
-
-static int Task_recv_with_timeout(lua_State * L)
+static int Task_recv_with_timeout(lua_State *L)
 {
   m_task_t tk = NULL;
   const char *mailbox = luaL_checkstring(L, -2);
   int timeout = luaL_checknumber(L, -1);
   MSG_error_t res = MSG_task_receive_with_timeout(&tk, mailbox, timeout);
 
-  lua_State *sender_stack = MSG_task_get_data(tk);
-  lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
-  MSG_task_set_data(tk, NULL);
-
-  if (res != MSG_OK)
+  if (res == MSG_OK) {
+    lua_State *sender_stack = MSG_task_get_data(tk);
+    lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
+    MSG_task_set_data(tk, NULL);
+  }
+  else {
     switch (res) {
     case MSG_TIMEOUT:
-      XBT_ERROR("MSG_task_receive failed : Timeout");
+      XBT_DEBUG("MSG_task_receive failed : Timeout");
       break;
     case MSG_TRANSFER_FAILURE:
-      XBT_ERROR("MSG_task_receive failed : Transfer Failure");
+      XBT_DEBUG("MSG_task_receive failed : Transfer Failure");
       break;
     case MSG_HOST_FAILURE:
-      XBT_ERROR("MSG_task_receive failed : Host Failure ");
+      XBT_DEBUG("MSG_task_receive failed : Host Failure ");
       break;
     default:
-      XBT_ERROR
-          ("MSG_task_receive failed : Unexpected error , please report this bug");
+      XBT_ERROR("MSG_task_receive failed : Unexpected error , please report this bug");
       break;
     }
+    lua_pushnil(L);
+  }
   return 1;
 }
 
+static int Task_recv(lua_State * L)
+{
+  lua_pushnumber(L, -1.0);
+  return Task_recv_with_timeout(L);
+}
+
 /**
- * Static Binding for the Splay methods : event.sleep :
- * it use MSG_task_irecv with MSG_comm_wait
- */
+ * Static Binding for the Splay method event.sleep :
+ * it uses MSG_task_irecv with MSG_comm_wait
+ *
 static int Task_splay_irecv(lua_State *L)
 {
-	m_task_t task = NULL;
-	msg_comm_t comm = NULL;		//current communication to receive
-	const char *mailbox = luaL_checkstring(L, -2);
-	double timeout = luaL_checknumber(L, -1);
-	comm = MSG_task_irecv(&task, mailbox);
-	MSG_comm_wait(comm, timeout);
-	if (MSG_comm_get_status(comm) == MSG_OK)
-	{
-		XBT_DEBUG("Receiving task : %s",MSG_task_get_name(task));
-		lua_State *sender_stack = MSG_task_get_data(task);
-		lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
-		MSG_task_set_data(task, NULL);
-	}
-	MSG_comm_destroy(comm);
-    	return 1;
+  m_task_t task = NULL;
+  msg_comm_t comm = NULL; // current communication to receive
+  const char *mailbox = luaL_checkstring(L, -2);
+  double timeout = luaL_checknumber(L, -1);
+  comm = MSG_task_irecv(&task, mailbox);
+  MSG_comm_wait(comm, timeout);
+  if (MSG_comm_get_status(comm) == MSG_OK)
+  {
+    XBT_DEBUG("Task_splay_irecv: Received task %s", MSG_task_get_name(task));
+    lua_State *sender_stack = MSG_task_get_data(task);
+    lua_xmove(sender_stack, L, 1); // move the data directly from the sender's stack
+    MSG_task_set_data(task, NULL);
+  }
+  else {
+    XBT_DEBUG("Task_splay_irecv: Timeout!");
+    lua_pushnil(L);
+  }
+  MSG_comm_destroy(comm);
+  return 1;
 }
 
 static int Task_splay_isend(lua_State *L)
 {
-	m_task_t tk = checkTask(L, 1);
-	const char *mailbox = luaL_checkstring(L, 2);
-	lua_pop(L, 1);                // remove the string so that the task is on top of it
-	MSG_task_set_data(tk, L);     // Copy my stack into the task, so that the receiver can copy the lua task directly
-	MSG_task_isend(tk, mailbox);
+  m_task_t tk = checkTask(L, 1);
+  const char *mailbox = luaL_checkstring(L, 2);
+  lua_pop(L, 1);                // remove the string from the stack so that the task is on top of it
+  MSG_task_set_data(tk, L);     // copy my stack onto the task, so that the receiver can get the lua task directly
+  MSG_task_isend(tk, mailbox);
 
-	return 1;
+  return 1;
 }
+*/
 
 static const luaL_reg Task_methods[] = {
   {"new", Task_new},
@@ -292,10 +275,12 @@ static const luaL_reg Task_methods[] = {
   {"destroy", Task_destroy},
   {"send", Task_send},
   {"recv", Task_recv},
-  {"recv_timeout",Task_recv_with_timeout},
-  {"splay_recv",Task_splay_irecv},
-  {"iSend",Task_splay_isend},
-  {0, 0}
+  {"recv_timeout", Task_recv_with_timeout},
+/*
+  {"splay_recv", Task_splay_irecv},
+  {"iSend", Task_splay_isend},
+*/
+  {NULL, NULL}
 };
 
 static int Task_gc(lua_State * L)
@@ -315,7 +300,7 @@ static int Task_tostring(lua_State * L)
 static const luaL_reg Task_meta[] = {
   {"__gc", Task_gc},
   {"__tostring", Task_tostring},
-  {0, 0}
+  {NULL, NULL}
 };
 
 /**
@@ -591,20 +576,20 @@ static int run_lua_code(int argc, char **argv)
 {
   XBT_DEBUG("Run lua code %s", argv[0]);
   lua_State *L = lua_newthread(simgrid_lua_state);
-  int ref = luaL_ref(simgrid_lua_state, LUA_REGISTRYINDEX);     // protect the thread from being garbage collected
+  int ref = luaL_ref(simgrid_lua_state, LUA_REGISTRYINDEX);     /* protect the thread from being garbage collected */
   int res = 1;
 
-  /* Start the co-routine */
+  /* start the co-routine */
   lua_getglobal(L, argv[0]);
   xbt_assert(lua_isfunction(L, -1),
               "The lua function %s does not seem to exist", argv[0]);
 
-  // push arguments onto the stack
+  /* push arguments onto the stack */
   int i;
   for (i = 1; i < argc; i++)
     lua_pushstring(L, argv[i]);
 
-  // Call the function (in resume)
+  /* call the function */
   int err;
   err = lua_pcall(L, argc - 1, 1, 0);
   xbt_assert(err == 0, "error running function `%s': %s", argv[0],
@@ -615,7 +600,8 @@ static int run_lua_code(int argc, char **argv)
     res = lua_tonumber(L, -1);
     lua_pop(L, 1);              /* pop returned value */
   }
-  // cleanups
+
+  /* cleanups */
   luaL_unref(simgrid_lua_state, LUA_REGISTRYINDEX, ref);
   XBT_DEBUG("Execution of lua code %s is over", (argv ? argv[0] : "(null)"));
   return res;
@@ -837,9 +823,7 @@ int luaopen_simgrid(lua_State * L)
   luaL_newmetatable(L, AS_MODULE_NAME);
   lua_pop(L, 1);
 
-
-
-  /*register the Tracing functions to lua */
+  /* register the Tracing functions to lua */
   luaL_openlib(L, TRACE_MODULE_NAME, Trace_methods, 0);
   luaL_newmetatable(L, TRACE_MODULE_NAME);
   lua_pop(L, 1);
