@@ -38,25 +38,39 @@ while(defined($line=<FILE>))
 	elsif($line =~ /^([0-9]*) ([0-9]*) ([0-9]*) (.*)$/)
 	{
 		if($1.$2.$3 == "000"){
-			push @routers, "\t<router id=\"$list_of_name[$src]\"/>\n";
+			if(@list_of_name){
+				push @routers, "\t<router id=\"$list_of_name[$src]\"/>\n";
+			}
+			else{
+				push @routers, "\t<router id=\"$src\"/>\n";
+			}
 		}
 		else{
 			$power = $1 * $3;
 			if($power == 0){
 				$power=1;
 			}
-			push @hosts, "\t<host id=\"$list_of_name[$src]\" power=\"$power\"/>\n";
+			if(@list_of_name){
+				push @hosts, "\t<host id=\"$list_of_name[$src]\" power=\"$power\"/>\n";
+			}
+			else{
+				push @hosts, "\t<host id=\"$src\" power=\"$power\"/>\n";
+			}
 		}		
 		my $table = $4;
 		@tokens = split(/ /,$table);
 		foreach $token (@tokens) {
 			if($token != "0"){
-#				print "from \"$list_of_name[$src]\" to \"$list_of_name[$dst]\" bdw=\"$token\"\n";
 				if($src <= $dst){
 					
 					push @links, "\t<link id=\"link$num_link\" bandwidth=\"$token\"/>\n";
 					
-					push @routes, "\t<route src=\"$list_of_name[$src]\" dst=\"$list_of_name[$dst]\">\n";
+					if(@list_of_name){
+						push @routes, "\t<route src=\"$list_of_name[$src]\" dst=\"$list_of_name[$dst]\">\n";
+					}
+					else{
+						push @routes, "\t<route src=\"$src\" dst=\"$dst\">\n";
+					}
 					push @routes, "\t\t<link_ctn id=\"link$num_link\"/>\n";
 					push @routes, "\t</route>\n";
 					$num_link++;
