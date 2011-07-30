@@ -348,9 +348,10 @@ void dot_add_task(Agnode_t * dag_node)
 void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
 {
   SD_task_t file;
-
-  char name[80];
-  sprintf(name, "%s->%s", agnameof(agtail(edge)), agnameof(aghead(edge)));
+  char *name_tail=agnameof(agtail(edge));
+  char *name_head=agnameof(aghead(edge));
+  char *name = malloc((strlen(name_head)+strlen(name_tail)+2)*sizeof(char));
+  sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
   XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
 
@@ -375,6 +376,7 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
       SD_task_dependency_add(NULL, NULL, file, current_job);
     }
   }
+  free(name);
 }
 
 /* dot_add_output_dependencies create the dependencies between a
@@ -384,8 +386,10 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
 void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
 {
   SD_task_t file;
-  char name[80];
-  sprintf(name, "%s->%s", agnameof(agtail(edge)), agnameof(aghead(edge)));
+  char *name_tail=agnameof(agtail(edge));
+  char *name_head=agnameof(aghead(edge));
+  char *name = malloc((strlen(name_head)+strlen(name_tail)+2)*sizeof(char));
+  sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
   XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
 
@@ -413,4 +417,5 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
       SD_task_dependency_add(NULL, NULL, current_job, file);
     }
   }
+  free(name);
 }
