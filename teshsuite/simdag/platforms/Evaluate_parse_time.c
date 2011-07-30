@@ -23,18 +23,30 @@ int main(int argc, char **argv)
 	/* initialisation of SD */
 	SD_init(&argc, argv);
 
+#if _POSIX_TIMERS > 0
 	if( clock_gettime( CLOCK_REALTIME, &start) == -1 ) {
 	perror( "clock gettime" );
 	return EXIT_FAILURE;
 	}
-
+#else
+      struct timeval tv;
+      gettimeofday(&tv, NULL);
+      start.tv_sec = tv.tv_sec;
+      start.tv_nsec = tv.tv_usec*1000;
+#endif
 	/* creation of the environment */
 	SD_create_environment(argv[1]);
 
+#if _POSIX_TIMERS > 0
 	if( clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
 	perror( "clock gettime" );
 	return EXIT_FAILURE;
 	}
+#else
+      gettimeofday(&tv, NULL);
+      stop.tv_sec = tv.tv_sec;
+      stop.tv_nsec = tv.tv_usec*1000;
+#endif
 
 	accum = ( stop.tv_sec - start.tv_sec )
 		   + (double)( stop.tv_nsec - start.tv_nsec )

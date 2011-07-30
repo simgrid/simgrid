@@ -36,7 +36,15 @@ int main(int argc, char **argv)
 
 	unsigned int seed;
 	struct timespec time;
-	clock_gettime( CLOCK_REALTIME, &time);
+	//clock_gettime( CLOCK_REALTIME, &time);
+#if _POSIX_TIMERS > 0
+      clock_gettime(CLOCK_REALTIME, &time);
+#else
+      struct timeval tv;
+      gettimeofday(&tv, NULL);
+      time.tv_sec = tv.tv_sec;
+      time.tv_nsec = tv.tv_usec*1000;
+#endif
 	seed = time.tv_nsec;
 
 	srand(seed);
@@ -50,17 +58,29 @@ int main(int argc, char **argv)
 	w2 = workstations[j];
 	printf("%d\tand\t%d\t\t",i,j);
 
+#if _POSIX_TIMERS > 0
 	if( clock_gettime( CLOCK_REALTIME, &start) == -1 ) {
 	perror( "clock gettime" );
 	return EXIT_FAILURE;
 	}
+#else
+      gettimeofday(&tv, NULL);
+      start.tv_sec = tv.tv_sec;
+      start.tv_nsec = tv.tv_usec*1000;
+#endif
 
 	SD_route_get_list(w1, w2);
 
+#if _POSIX_TIMERS > 0
 	if( clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
 	perror( "clock gettime" );
 	return EXIT_FAILURE;
 	}
+#else
+      gettimeofday(&tv, NULL);
+      stop.tv_sec = tv.tv_sec;
+      stop.tv_nsec = tv.tv_usec*1000;
+#endif
 
 	accum = ( stop.tv_sec - start.tv_sec )
 	   + (double)( stop.tv_nsec - start.tv_nsec )
