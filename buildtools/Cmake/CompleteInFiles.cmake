@@ -3,21 +3,17 @@ ${CMAKE_MODULE_PATH}
 ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
 )
 
-IF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") #Intel processor 64 bits
-   message(STATUS "System processor: amd64")
-   set(HAVE_RAWCTX 1)
-   
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "x86") #Intel processor 32 bits
-   message(STATUS "System processor: x86")
-   set(PROCESSOR_i686 1)
-   set(HAVE_RAWCTX 1)
-   
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^i.86$")
+# x86_64
+# x86
+# i.86
+IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
     IF(${ARCH_32_BITS})
         set(PROCESSOR_i686 1)
+        set(SIMGRID_SYSTEM_PROCESSOR "${CMAKE_SYSTEM_PROCESSOR}")
         message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}")
     ELSE(${ARCH_32_BITS})
         message(STATUS "System processor: amd64")
+        set(SIMGRID_SYSTEM_PROCESSOR "amd64")
         set(PROCESSOR_x86_64 1)
         set(PROCESSOR_i686 0)
     ENDIF(${ARCH_32_BITS})          
@@ -58,7 +54,7 @@ ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^sh")
 ELSE(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") #PROCESSOR NOT fIND
     message(STATUS "PROCESSOR NOT FOUND: ${CMAKE_SYSTEM_PROCESSOR}")
     
-ENDIF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+ENDIF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
 
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
 
@@ -219,10 +215,12 @@ if(pthread)
 		             OUTPUT_VARIABLE HAVE_SEM_OPEN_run)
 	    	if(HAVE_SEM_OPEN_run)
 			set(HAVE_SEM_OPEN 0)
+			message(STATUS "Warning: sem_open not compilable")
 	    	else(HAVE_SEM_OPEN_run)
 			exec_program("./testprog" RETURN_VALUE HAVE_SEM_OPEN_run2 OUTPUT_VARIABLE var_compil)
 		    	if(HAVE_SEM_OPEN_run2)
 				set(HAVE_SEM_OPEN 0)
+				message(STATUS "Warning: sem_open not executable")
 	    		else(HAVE_SEM_OPEN_run2)
 				set(HAVE_SEM_OPEN 1)
 	    		endif(HAVE_SEM_OPEN_run2)	
@@ -236,10 +234,12 @@ if(pthread)
 		             OUTPUT_VARIABLE HAVE_SEM_INIT_run)
 	    	if(HAVE_SEM_INIT_run)
 			set(HAVE_SEM_INIT 0)
+			message(STATUS "Warning: sem_init not compilable")
 	    	else(HAVE_SEM_INIT_run)
 			exec_program("./testprog" RETURN_VALUE HAVE_SEM_INIT_run OUTPUT_VARIABLE var_compil)
 			if(HAVE_SEM_INIT_run)
 				set(HAVE_SEM_INIT 0)
+				message(STATUS "Warning: sem_init not executable")
 			else(HAVE_SEM_INIT_run)
 				set(HAVE_SEM_INIT 1)
 			endif(HAVE_SEM_INIT_run)
@@ -249,7 +249,7 @@ if(pthread)
   	endif(HAVE_SEM_INIT_LIB)
 
 	if(NOT HAVE_SEM_OPEN AND NOT HAVE_SEM_INIT)
-		message(FATAL_ERROR "Semaphores are not usable, but they are mandatory to threads (you may need to mount /dev).")
+		message(FATAL_ERROR "Semaphores are not usable (neither sem_open nor sem_init is both compilable and executable), but they are mandatory to threads (you may need to mount /dev).")
 	endif(NOT HAVE_SEM_OPEN AND NOT HAVE_SEM_INIT)
 
 	### Test that we have a way to timewait for semaphores
@@ -442,38 +442,38 @@ if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 	SET(GRAS_THISARCH 4)
 endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:8/8:8/8:_D:4/4:8/8:") 
-	#gras_arch=11; gras_size=64; gras_arch_name=little64_2;
+	#gras_arch=5; gras_size=64; gras_arch_name=little64_2;
 	SET(GRAS_ARCH_32_BITS 0)
 	SET(GRAS_THISARCH 5)
 endif(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:") 
-	#gras_arch=5; gras_size=32; gras_arch_name=big32;
+	#gras_arch=6; gras_size=32; gras_arch_name=big32_8;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 6)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:") 
-	#gras_arch=6; gras_size=32; gras_arch_name=big32_8_4;
+	#gras_arch=7; gras_size=32; gras_arch_name=big32_8_4;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 7)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:") 
-	#gras_arch=7; gras_size=32; gras_arch_name=big32_4;
+	#gras_arch=8; gras_size=32; gras_arch_name=big32_4;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 8)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:") 
-	#gras_arch=8; gras_size=32; gras_arch_name=big32_2;
+	#gras_arch=9; gras_size=32; gras_arch_name=big32_2;
 	SET(GRAS_ARCH_32_BITS 1)
 	SET(GRAS_THISARCH 9)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:") 
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:") 
-	#gras_arch=9; gras_size=64; gras_arch_name=big64;
+	#gras_arch=10; gras_size=64; gras_arch_name=big64;
 	SET(GRAS_ARCH_32_BITS 0)
 	SET(GRAS_THISARCH 10)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
 if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 
-	#gras_arch=10;gras_size=64; gras_arch_name=big64_8_4;
+	#gras_arch=11; gras_size=64; gras_arch_name=big64_8_4;
 	SET(GRAS_ARCH_32_BITS 0)
 	SET(GRAS_THISARCH 11)
 endif(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:") 

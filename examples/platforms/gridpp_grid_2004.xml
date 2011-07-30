@@ -1,0 +1,233 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+<AS  id="AS0"  routing="Floyd">
+<!--0 WC_Gla-->
+<!--1 WC_Edi-->
+<!--2 WC_Manc-->
+<!--3 WC_Leeds-->
+<!--4 WC_Reading-->
+<!--5 WC_London-->
+<!--6 WC_Bristol-->
+<!--7 WC_Portsmouth-->
+<!--8 Gla_router-->
+<!--9 Edi_router-->
+<!--10 NorMAN-->
+<!--11 YHMAN-->
+<!--12 EastNet-->
+<!--13 LMN-->
+<!--14 SWAN_BWEMAN-->
+<!--15 TVN-->
+<!--16 MidMAN-->
+<!--17 NNW_router-->
+<!--18 Glasgow-->
+<!--19 Edi-->
+<!--20 Durham-->
+<!--21 Sheffield-->
+<!--22 Cam-->
+<!--23 UCL-->
+<!--24 IC-->
+<!--25 QMW-->
+<!--26 Brunel-->
+<!--27 RHNBC-->
+<!--28 Bristol-->
+<!--29 RAL-->
+<!--30 Oxford-->
+<!--31 B_ham-->
+<!--32 L_pool-->
+<!--33 Manc-->
+<!--34 Lanc-->
+<!--35 CERN-->
+	<host id="WC_Edi" power="1"/>
+	<host id="WC_Manc" power="1"/>
+	<host id="Gla_router" power="1"/>
+	<host id="Glasgow" power="20000000"/>
+	<host id="Edi" power="25600000"/>
+	<host id="Durham" power="4134000"/>
+	<host id="Sheffield" power="49640000"/>
+	<host id="Cam" power="1320000"/>
+	<host id="UCL" power="22500000"/>
+	<host id="IC" power="440000000"/>
+	<host id="QMW" power="44000000"/>
+	<host id="Brunel" power="85680000"/>
+	<host id="RHNBC" power="7200000"/>
+	<host id="Bristol" power="60000000"/>
+	<host id="RAL" power="556956000"/>
+	<host id="Oxford" power="156560000"/>
+	<host id="B_ham" power="13500000"/>
+	<host id="L_pool" power="308070000"/>
+	<host id="Manc" power="22500000"/>
+	<host id="Lanc" power="204800000"/>
+	<host id="CERN" power="1"/>
+
+	<router id="WC_Gla"/>
+	<router id="WC_Leeds"/>
+	<router id="WC_Reading"/>
+	<router id="WC_London"/>
+	<router id="WC_Bristol"/>
+	<router id="WC_Portsmouth"/>
+	<router id="Edi_router"/>
+	<router id="NorMAN"/>
+	<router id="YHMAN"/>
+	<router id="EastNet"/>
+	<router id="LMN"/>
+	<router id="SWAN_BWEMAN"/>
+	<router id="TVN"/>
+	<router id="MidMAN"/>
+	<router id="NNW_router"/>
+
+	<link id="link0" bandwidth="10000"/>
+	<link id="link1" bandwidth="10000"/>
+	<link id="link2" bandwidth="1000"/>
+	<link id="link3" bandwidth="10000"/>
+	<link id="link4" bandwidth="1000"/>
+	<link id="link5" bandwidth="10000"/>
+	<link id="link6" bandwidth="10000"/>
+	<link id="link7" bandwidth="1000"/>
+	<link id="link8" bandwidth="1000"/>
+	<link id="link9" bandwidth="10000"/>
+	<link id="link10" bandwidth="622"/>
+	<link id="link11" bandwidth="1000"/>
+	<link id="link12" bandwidth="10000"/>
+	<link id="link13" bandwidth="10000"/>
+	<link id="link14" bandwidth="622"/>
+	<link id="link15" bandwidth="10000"/>
+	<link id="link16" bandwidth="1000"/>
+	<link id="link17" bandwidth="1000"/>
+	<link id="link18" bandwidth="10000"/>
+	<link id="link19" bandwidth="622"/>
+	<link id="link20" bandwidth="2500"/>
+	<link id="link21" bandwidth="1000"/>
+	<link id="link22" bandwidth="1000"/>
+	<link id="link23" bandwidth="155"/>
+	<link id="link24" bandwidth="155"/>
+	<link id="link25" bandwidth="155"/>
+	<link id="link26" bandwidth="155"/>
+	<link id="link27" bandwidth="155"/>
+	<link id="link28" bandwidth="155"/>
+	<link id="link29" bandwidth="155"/>
+	<link id="link30" bandwidth="155"/>
+	<link id="link31" bandwidth="622"/>
+	<link id="link32" bandwidth="622"/>
+	<link id="link33" bandwidth="622"/>
+	<link id="link34" bandwidth="622"/>
+	<link id="link35" bandwidth="155"/>
+	<link id="link36" bandwidth="1000"/>
+	<link id="link37" bandwidth="155"/>
+
+	<route src="WC_Gla" dst="WC_Gla">
+		<link_ctn id="link0"/>
+	</route>
+	<route src="WC_Gla" dst="WC_Edi">
+		<link_ctn id="link1"/>
+	</route>
+	<route src="WC_Gla" dst="WC_Portsmouth">
+		<link_ctn id="link2"/>
+	</route>
+	<route src="WC_Edi" dst="WC_Manc">
+		<link_ctn id="link3"/>
+	</route>
+	<route src="WC_Edi" dst="Gla_router">
+		<link_ctn id="link4"/>
+	</route>
+	<route src="WC_Manc" dst="WC_Manc">
+		<link_ctn id="link5"/>
+	</route>
+	<route src="WC_Manc" dst="WC_Leeds">
+		<link_ctn id="link6"/>
+	</route>
+	<route src="WC_Manc" dst="TVN">
+		<link_ctn id="link7"/>
+	</route>
+	<route src="WC_Manc" dst="MidMAN">
+		<link_ctn id="link8"/>
+	</route>
+	<route src="WC_Leeds" dst="WC_Reading">
+		<link_ctn id="link9"/>
+	</route>
+	<route src="WC_Leeds" dst="Edi_router">
+		<link_ctn id="link10"/>
+	</route>
+	<route src="WC_Leeds" dst="NorMAN">
+		<link_ctn id="link11"/>
+	</route>
+	<route src="WC_Reading" dst="WC_Reading">
+		<link_ctn id="link12"/>
+	</route>
+	<route src="WC_Reading" dst="WC_London">
+		<link_ctn id="link13"/>
+	</route>
+	<route src="WC_Reading" dst="SWAN_BWEMAN">
+		<link_ctn id="link14"/>
+	</route>
+	<route src="WC_London" dst="WC_Bristol">
+		<link_ctn id="link15"/>
+	</route>
+	<route src="WC_London" dst="YHMAN">
+		<link_ctn id="link16"/>
+	</route>
+	<route src="WC_London" dst="EastNet">
+		<link_ctn id="link17"/>
+	</route>
+	<route src="WC_Bristol" dst="WC_Bristol">
+		<link_ctn id="link18"/>
+	</route>
+	<route src="WC_Bristol" dst="LMN">
+		<link_ctn id="link19"/>
+	</route>
+	<route src="WC_Portsmouth" dst="Lanc">
+		<link_ctn id="link20"/>
+	</route>
+	<route src="Gla_router" dst="NNW_router">
+		<link_ctn id="link21"/>
+	</route>
+	<route src="Edi_router" dst="Glasgow">
+		<link_ctn id="link22"/>
+	</route>
+	<route src="NorMAN" dst="Edi">
+		<link_ctn id="link23"/>
+	</route>
+	<route src="YHMAN" dst="Durham">
+		<link_ctn id="link24"/>
+	</route>
+	<route src="EastNet" dst="Sheffield">
+		<link_ctn id="link25"/>
+	</route>
+	<route src="LMN" dst="Cam">
+		<link_ctn id="link26"/>
+	</route>
+	<route src="LMN" dst="UCL">
+		<link_ctn id="link27"/>
+	</route>
+	<route src="LMN" dst="IC">
+		<link_ctn id="link28"/>
+	</route>
+	<route src="LMN" dst="QMW">
+		<link_ctn id="link29"/>
+	</route>
+	<route src="LMN" dst="Brunel">
+		<link_ctn id="link30"/>
+	</route>
+	<route src="SWAN_BWEMAN" dst="RHNBC">
+		<link_ctn id="link31"/>
+	</route>
+	<route src="TVN" dst="Bristol">
+		<link_ctn id="link32"/>
+	</route>
+	<route src="TVN" dst="RAL">
+		<link_ctn id="link33"/>
+	</route>
+	<route src="MidMAN" dst="Oxford">
+		<link_ctn id="link34"/>
+	</route>
+	<route src="NNW_router" dst="B_ham">
+		<link_ctn id="link35"/>
+	</route>
+	<route src="NNW_router" dst="L_pool">
+		<link_ctn id="link36"/>
+	</route>
+	<route src="NNW_router" dst="Manc">
+		<link_ctn id="link37"/>
+	</route>
+</AS>
+</platform> 

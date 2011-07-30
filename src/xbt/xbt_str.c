@@ -449,66 +449,6 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
   return res;
 }
 
-#ifdef SIMGRID_TEST
-#include "xbt/str.h"
-
-#define mytest(name, input, expected) \
-  xbt_test_add(name); \
-  d=xbt_str_split_quoted(input); \
-  s=xbt_str_join(d,"XXX"); \
-  xbt_test_assert(!strcmp(s,expected),\
-                   "Input (%s) leads to (%s) instead of (%s)", \
-                   input,s,expected);\
-                   free(s); \
-                   xbt_dynar_free(&d);
-
-XBT_TEST_SUITE("xbt_str", "String Handling");
-XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_str_split_quoted")
-{
-  xbt_dynar_t d;
-  char *s;
-
-  mytest("Empty", "", "");
-  mytest("Basic test", "toto tutu", "totoXXXtutu");
-  mytest("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u",
-         "totoXXXtutu");
-  mytest("Protected space", "toto\\ tutu", "toto tutu");
-  mytest("Several spaces", "toto   tutu", "totoXXXtutu");
-  mytest("LTriming", "  toto tatu", "totoXXXtatu");
-  mytest("Triming", "  toto   tutu  ", "totoXXXtutu");
-  mytest("Single quotes", "'toto tutu' tata", "toto tutuXXXtata");
-  mytest("Double quotes", "\"toto tutu\" tata", "toto tutuXXXtata");
-  mytest("Mixed quotes", "\"toto' 'tutu\" tata", "toto' 'tutuXXXtata");
-  mytest("Backslashed quotes", "\\'toto tutu\\' tata",
-         "'totoXXXtutu'XXXtata");
-  mytest("Backslashed quotes + quotes", "'toto \\'tutu' tata",
-         "toto 'tutuXXXtata");
-
-}
-
-#define mytest_str(name, input, separator, expected) \
-  xbt_test_add(name); \
-  d=xbt_str_split_str(input, separator); \
-  s=xbt_str_join(d,"XXX"); \
-  xbt_test_assert(!strcmp(s,expected),\
-                   "Input (%s) leads to (%s) instead of (%s)", \
-                   input,s,expected);\
-                   free(s); \
-                   xbt_dynar_free(&d);
-
-XBT_TEST_UNIT("xbt_str_split_str", test_split_str, "test the function xbt_str_split_str")
-{
-  xbt_dynar_t d;
-  char *s;
-
-  mytest_str("Empty string and separator", "", "", "");
-  mytest_str("Empty string", "", "##", "");
-  mytest_str("Empty separator", "toto", "", "toto");
-  mytest_str("String with no separator in it", "toto", "##", "toto");
-  mytest_str("Basic test", "toto##tutu", "##", "totoXXXtutu");
-}
-#endif                          /* SIMGRID_TEST */
-
 /** @brief Join a set of strings as a single string */
 char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
 {
@@ -627,48 +567,43 @@ long getline(char **buf, size_t * n, FILE * stream)
 /*
  * Diff related functions
  */
+static XBT_INLINE int diff_get(xbt_matrix_t C, int i, int j)
+{
+  return (i == -1 || j == -1) ? 0 : xbt_matrix_get_as(C, i, j, int);
+}
+
 static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db)
 {
   xbt_matrix_t C =
       xbt_matrix_new(xbt_dynar_length(da), xbt_dynar_length(db),
                      sizeof(int), NULL);
-  unsigned long i, j;
+  int i, j;
 
   /* Compute the LCS */
   /*
-     C = array(0..m, 0..n)
-     for i := 0..m
-     C[i,0] = 0
-     for j := 1..n
-     C[0,j] = 0
-     for i := 1..m
-     for j := 1..n
-     if X[i] = Y[j]
-     C[i,j] := C[i-1,j-1] + 1
-     else:
-     C[i,j] := max(C[i,j-1], C[i-1,j])
-     return C[m,n]
+     function LCSLength(X[1..m], Y[1..n])
+       C = array(0..m, 0..n)
+       for i := 0..m
+         C[i,0] = 0
+       for j := 1..n
+         C[0,j] = 0
+       for i := 1..m
+         for j := 1..n
+           if X[i] = Y[j]
+             C[i,j] := C[i-1,j-1] + 1
+           else:
+             C[i,j] := max(C[i,j-1], C[i-1,j])
+       return C[m,n]
    */
-  if (xbt_dynar_length(db) != 0)
-    for (i = 0; i < xbt_dynar_length(da); i++)
-      *((int *) xbt_matrix_get_ptr(C, i, 0)) = 0;
+  for (i = 0; i < (int)xbt_dynar_length(da); i++)
+    for (j = 0; j < (int)xbt_dynar_length(db); j++) {
 
-  if (xbt_dynar_length(da) != 0)
-    for (j = 0; j < xbt_dynar_length(db); j++)
-      *((int *) xbt_matrix_get_ptr(C, 0, j)) = 0;
-
-  for (i = 1; i < xbt_dynar_length(da); i++)
-    for (j = 1; j < xbt_dynar_length(db); j++) {
-
-      if (!strcmp
-          (xbt_dynar_get_as(da, i, char *),
-           xbt_dynar_get_as(db, j, char *)))
-        *((int *) xbt_matrix_get_ptr(C, i, j)) =
-            xbt_matrix_get_as(C, i - 1, j - 1, int) + 1;
+      if (!strcmp(xbt_dynar_get_as(da, i, char *),
+                  xbt_dynar_get_as(db, j, char *)))
+        *((int *) xbt_matrix_get_ptr(C, i, j)) = diff_get(C, i - 1, j - 1) + 1;
       else
-        *((int *) xbt_matrix_get_ptr(C, i, j)) =
-            max(xbt_matrix_get_as(C, i, j - 1, int),
-                xbt_matrix_get_as(C, i - 1, j, int));
+        *((int *) xbt_matrix_get_ptr(C, i, j)) = max(diff_get(C, i, j - 1),
+                                                     diff_get(C, i - 1, j));
     }
   return C;
 }
@@ -680,16 +615,16 @@ static void diff_build_diff(xbt_dynar_t res,
   char *topush;
   /* Construct the diff
      function printDiff(C[0..m,0..n], X[1..m], Y[1..n], i, j)
-     if i > 0 and j > 0 and X[i] = Y[j]
-     printDiff(C, X, Y, i-1, j-1)
-     print "  " + X[i]
-     else
-     if j > 0 and (i = 0 or C[i,j-1] >= C[i-1,j])
-     printDiff(C, X, Y, i, j-1)
-     print "+ " + Y[j]
-     else if i > 0 and (j = 0 or C[i,j-1] < C[i-1,j])
-     printDiff(C, X, Y, i-1, j)
-     print "- " + X[i]
+       if i > 0 and j > 0 and X[i] = Y[j]
+         printDiff(C, X, Y, i-1, j-1)
+         print "  " + X[i]
+       else
+         if j > 0 and (i = 0 or C[i,j-1] >= C[i-1,j])
+           printDiff(C, X, Y, i, j-1)
+           print "+ " + Y[j]
+         else if i > 0 and (j = 0 or C[i,j-1] < C[i-1,j])
+           printDiff(C, X, Y, i-1, j)
+           print "- " + X[i]
    */
 
   if (i >= 0 && j >= 0 && !strcmp(xbt_dynar_get_as(da, i, char *),
@@ -698,56 +633,47 @@ static void diff_build_diff(xbt_dynar_t res,
     topush = bprintf("  %s", xbt_dynar_get_as(da, i, char *));
     xbt_dynar_push(res, &topush);
   } else if (j >= 0 &&
-             (i <= 0 || j == 0
-              || xbt_matrix_get_as(C, i, j - 1,
-                                   int) >= xbt_matrix_get_as(C, i - 1, j,
-                                                             int))) {
+             (i == -1 || diff_get(C, i, j - 1) >= diff_get(C, i - 1, j))) {
     diff_build_diff(res, C, da, db, i, j - 1);
     topush = bprintf("+ %s", xbt_dynar_get_as(db, j, char *));
     xbt_dynar_push(res, &topush);
   } else if (i >= 0 &&
-             (j <= 0
-              || xbt_matrix_get_as(C, i, j - 1, int) < xbt_matrix_get_as(C,
-                                                                         i
-                                                                         -
-                                                                         1,
-                                                                         j,
-                                                                         int)))
-  {
+             (j == -1 || diff_get(C, i, j - 1) < diff_get(C, i - 1, j))) {
     diff_build_diff(res, C, da, db, i - 1, j);
     topush = bprintf("- %s", xbt_dynar_get_as(da, i, char *));
     xbt_dynar_push(res, &topush);
-  } else if (i <= 0 && j <= 0) {
-    return;
-  } else {
-    THROWF(arg_error, 0, "Invalid values: i=%d, j=%d", i, j);
   }
-
 }
 
 /** @brief Compute the unified diff of two strings */
-char *xbt_str_diff(char *a, char *b)
+char *xbt_str_diff(const char *a, const char *b)
 {
   xbt_dynar_t da = xbt_str_split(a, "\n");
   xbt_dynar_t db = xbt_str_split(b, "\n");
+  xbt_matrix_t C;
+  xbt_dynar_t diff;
+  char *res;
+  size_t len;
 
-  xbt_matrix_t C = diff_build_LCS(da, db);
-  xbt_dynar_t diff = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-  char *res = NULL;
+  /* Clean empty lines at the end of da and db */
+  len = strlen(a);
+  if (len > 0 && a[len - 1] == '\n') {
+    char *str;
+    xbt_dynar_pop(da, &str);
+    free(str);
+  }
+  len = strlen(b);
+  if (len > 0 && b[len - 1] == '\n') {
+    char *str;
+    xbt_dynar_pop(db, &str);
+    free(str);
+  }
+
+  C = diff_build_LCS(da, db);
+  diff = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 
   diff_build_diff(diff, C, da, db, xbt_dynar_length(da) - 1,
                   xbt_dynar_length(db) - 1);
-  /* Clean empty lines at the end */
-  while (xbt_dynar_length(diff) > 0) {
-    char *str;
-    xbt_dynar_pop(diff, &str);
-    if (str[0] == '\0' || !strcmp(str, "  ")) {
-      free(str);
-    } else {
-      xbt_dynar_push(diff, &str);
-      break;
-    }
-  }
   res = xbt_str_join(diff, "\n");
 
   xbt_dynar_free(&da);
@@ -779,3 +705,193 @@ char *xbt_str_from_file(FILE * file)
   xbt_strbuff_free_container(buff);
   return res;
 }
+
+#ifdef SIMGRID_TEST
+#include "xbt/str.h"
+
+#define mytest(name, input, expected) \
+  xbt_test_add(name); \
+  d=xbt_str_split_quoted(input); \
+  s=xbt_str_join(d,"XXX"); \
+  xbt_test_assert(!strcmp(s,expected),\
+                   "Input (%s) leads to (%s) instead of (%s)", \
+                   input,s,expected);\
+                   free(s); \
+                   xbt_dynar_free(&d);
+
+XBT_TEST_SUITE("xbt_str", "String Handling");
+XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_str_split_quoted")
+{
+  xbt_dynar_t d;
+  char *s;
+
+  mytest("Empty", "", "");
+  mytest("Basic test", "toto tutu", "totoXXXtutu");
+  mytest("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u",
+         "totoXXXtutu");
+  mytest("Protected space", "toto\\ tutu", "toto tutu");
+  mytest("Several spaces", "toto   tutu", "totoXXXtutu");
+  mytest("LTriming", "  toto tatu", "totoXXXtatu");
+  mytest("Triming", "  toto   tutu  ", "totoXXXtutu");
+  mytest("Single quotes", "'toto tutu' tata", "toto tutuXXXtata");
+  mytest("Double quotes", "\"toto tutu\" tata", "toto tutuXXXtata");
+  mytest("Mixed quotes", "\"toto' 'tutu\" tata", "toto' 'tutuXXXtata");
+  mytest("Backslashed quotes", "\\'toto tutu\\' tata",
+         "'totoXXXtutu'XXXtata");
+  mytest("Backslashed quotes + quotes", "'toto \\'tutu' tata",
+         "toto 'tutuXXXtata");
+
+}
+
+#define mytest_str(name, input, separator, expected) \
+  xbt_test_add(name); \
+  d=xbt_str_split_str(input, separator); \
+  s=xbt_str_join(d,"XXX"); \
+  xbt_test_assert(!strcmp(s,expected),\
+                   "Input (%s) leads to (%s) instead of (%s)", \
+                   input,s,expected);\
+                   free(s); \
+                   xbt_dynar_free(&d);
+
+XBT_TEST_UNIT("xbt_str_split_str", test_split_str, "test the function xbt_str_split_str")
+{
+  xbt_dynar_t d;
+  char *s;
+
+  mytest_str("Empty string and separator", "", "", "");
+  mytest_str("Empty string", "", "##", "");
+  mytest_str("Empty separator", "toto", "", "toto");
+  mytest_str("String with no separator in it", "toto", "##", "toto");
+  mytest_str("Basic test", "toto##tutu", "##", "totoXXXtutu");
+}
+
+/* Last args are format string and parameters for xbt_test_add */
+#define mytest_diff(s1, s2, diff, ...)                                  \
+  do {                                                                  \
+    char *mytest_diff_res;                                              \
+    xbt_test_add(__VA_ARGS__);                                          \
+    mytest_diff_res = xbt_str_diff(s1, s2);                             \
+    xbt_test_assert(!strcmp(mytest_diff_res, diff),                     \
+                    "Wrong output:\n--- got:\n%s\n--- expected:\n%s\n---", \
+                    mytest_diff_res, diff);                             \
+    free(mytest_diff_res);                                              \
+  } while (0)
+
+XBT_TEST_UNIT("xbt_str_diff", test_diff, "test the function xbt_str_diff")
+{
+  unsigned i;
+
+  /* Trivial cases */
+  mytest_diff("a", "a", "  a", "1 word, no difference");
+  mytest_diff("a", "A", "- a\n+ A", "1 word, different");
+  mytest_diff("a\n", "a\n", "  a", "1 line, no difference");
+  mytest_diff("a\n", "A\n", "- a\n+ A", "1 line, different");
+
+  /* Empty strings */
+  mytest_diff("", "", "", "empty strings");
+  mytest_diff("", "a", "+ a", "1 word, added");
+  mytest_diff("a", "", "- a", "1 word, removed");
+  mytest_diff("", "a\n", "+ a", "1 line, added");
+  mytest_diff("a\n", "", "- a", "1 line, removed");
+  mytest_diff("", "a\nb\nc\n", "+ a\n+ b\n+ c", "4 lines, all added");
+  mytest_diff("a\nb\nc\n", "", "- a\n- b\n- c", "4 lines, all removed");
+
+  /* Empty lines */
+  mytest_diff("\n", "\n", "  ", "empty lines");
+  mytest_diff("", "\n", "+ ", "empty line, added");
+  mytest_diff("\n", "", "- ", "empty line, removed");
+
+  mytest_diff("a", "\na", "+ \n  a", "empty line added before word");
+  mytest_diff("a", "a\n\n", "  a\n+ ", "empty line added after word");
+  mytest_diff("\na", "a", "- \n  a", "empty line removed before word");
+  mytest_diff("a\n\n", "a", "  a\n- ", "empty line removed after word");
+
+  mytest_diff("a\n", "\na\n", "+ \n  a", "empty line added before line");
+  mytest_diff("a\n", "a\n\n", "  a\n+ ", "empty line added after line");
+  mytest_diff("\na\n", "a\n", "- \n  a", "empty line removed before line");
+  mytest_diff("a\n\n", "a\n", "  a\n- ", "empty line removed after line");
+
+  mytest_diff("a\nb\nc\nd\n", "\na\nb\nc\nd\n", "+ \n  a\n  b\n  c\n  d",
+              "empty line added before 4 lines");
+  mytest_diff("a\nb\nc\nd\n", "a\nb\nc\nd\n\n", "  a\n  b\n  c\n  d\n+ ",
+              "empty line added after 4 lines");
+  mytest_diff("\na\nb\nc\nd\n", "a\nb\nc\nd\n", "- \n  a\n  b\n  c\n  d",
+              "empty line removed before 4 lines");
+  mytest_diff("a\nb\nc\nd\n\n", "a\nb\nc\nd\n", "  a\n  b\n  c\n  d\n- ",
+              "empty line removed after 4 lines");
+
+  /* Missing newline at the end of one of the strings */
+  mytest_diff("a\n", "a", "  a", "1 line, 1 word, no difference");
+  mytest_diff("a", "a\n", "  a", "1 word, 1 line, no difference");
+  mytest_diff("a\n", "A", "- a\n+ A", "1 line, 1 word, different");
+  mytest_diff("a", "A\n", "- a\n+ A", "1 word, 1 line, different");
+
+  mytest_diff("a\nb\nc\nd", "a\nb\nc\nd\n", "  a\n  b\n  c\n  d",
+              "4 lines, no newline on first");
+  mytest_diff("a\nb\nc\nd\n", "a\nb\nc\nd", "  a\n  b\n  c\n  d",
+              "4 lines, no newline on second");
+
+  /* Four lines, all combinations of differences */
+  for (i = 0 ; i < (1U << 4) ; i++) {
+    char d2[4 + 1];
+    char s2[4 * 2 + 1];
+    char res[4 * 8 + 1];
+    char *pd = d2;
+    char *ps = s2;
+    char *pr = res;
+    unsigned j = 0;
+    while (j < 4) {
+      unsigned k;
+      for (/* j */ ; j < 4 && !(i & (1U << j)) ; j++) {
+        *pd++ = "abcd"[j];
+        ps += sprintf(ps, "%c\n", "abcd"[j]);
+        pr += sprintf(pr, "  %c\n", "abcd"[j]);
+      }
+      for (k = j ; k < 4 && (i & (1U << k)) ; k++) {
+        *pd++ = "ABCD"[k];
+        ps += sprintf(ps, "%c\n", "ABCD"[k]);
+        pr += sprintf(pr, "- %c\n", "abcd"[k]);
+      }
+      for (/* j */ ; j < k ; j++) {
+        pr += sprintf(pr, "+ %c\n", "ABCD"[j]);
+      }
+    }
+    *pd = '\0';
+    *--pr = '\0';               /* strip last '\n' from expected result */
+    mytest_diff("a\nb\nc\nd\n", s2, res,
+                "compare (abcd) with changed (%s)", d2);
+  }
+
+  /* Subsets of four lines, do not test for empty subset */
+  for (i = 1 ; i < (1U << 4) ; i++) {
+    char d2[4 + 1];
+    char s2[4 * 2 + 1];
+    char res[4 * 8 + 1];
+    char *pd = d2;
+    char *ps = s2;
+    char *pr = res;
+    unsigned j = 0;
+    while (j < 4) {
+      for (/* j */ ; j < 4 && (i & (1U << j)) ; j++) {
+        *pd++ = "abcd"[j];
+        ps += sprintf(ps, "%c\n", "abcd"[j]);
+        pr += sprintf(pr, "  %c\n", "abcd"[j]);
+      }
+      for (/* j */; j < 4 && !(i & (1U << j)) ; j++) {
+        pr += sprintf(pr, "- %c\n", "abcd"[j]);
+      }
+    }
+    *pd = '\0';
+    *--pr = '\0';               /* strip last '\n' from expected result */
+    mytest_diff("a\nb\nc\nd\n", s2, res,
+                "compare (abcd) with subset (%s)", d2);
+
+    for (pr = res ; *pr != '\0' ; pr++)
+      if (*pr == '-')
+        *pr = '+';
+    mytest_diff(s2, "a\nb\nc\nd\n", res,
+                "compare subset (%s) with (abcd)", d2);
+  }
+}
+
+#endif                          /* SIMGRID_TEST */

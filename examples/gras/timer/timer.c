@@ -85,5 +85,6 @@ int client(int argc, char *argv[])
     gras_msg_handle(5.0);
   }
   gras_exit();
+  xbt_free(globals);
   return 0;
 }                               /* end_of_client */

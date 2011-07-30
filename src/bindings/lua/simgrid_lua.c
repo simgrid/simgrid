@@ -9,20 +9,30 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
-lua_State *simgrid_lua_state;
+static lua_State *lua_maestro_state;
 
 #define TASK_MODULE_NAME "simgrid.Task"
 #define HOST_MODULE_NAME "simgrid.Host"
-// Surf ( bypass XML )
+// Surf (bypass XML)
 #define LINK_MODULE_NAME "simgrid.Link"
 #define ROUTE_MODULE_NAME "simgrid.Route"
 #define AS_MODULE_NAME "simgrid.AS"
 #define TRACE_MODULE_NAME "simgrid.Trace"
 
+static void stack_dump(const char *msg, lua_State *L);
+static m_task_t check_task(lua_State *L, int index);
+static void register_c_functions(lua_State *L);
+
 /* ********************************************************************************* */
 /*                            helper functions                                       */
 /* ********************************************************************************* */
-static void stackDump(const char *msg, lua_State * L)
+
+/**
+ * @brief Dumps the Lua stack
+ * @param msg a message to print
+ * @param L a Lua state
+ */
+static void stack_dump(const char *msg, lua_State *L)
 {
   char buff[2048];
   char *p = buff;
@@ -67,7 +77,13 @@ static void stackDump(const char *msg, lua_State * L)
   XBT_INFO("%s%s", msg, buff);
 }
 
-/** @brief ensures that a userdata on the stack is a task and returns the pointer inside the userdata */
+/**
+ * @brief Ensures that a userdata on the stack is a task
+ * and returns the pointer inside the userdata.
+ * @param L a Lua state
+ * @param index an index in the Lua stack
+ * @return the task at this index
+ */
 static m_task_t checkTask(lua_State * L, int index)
 {
   m_task_t *pi, tk;
@@ -96,8 +112,9 @@ static m_task_t checkTask(lua_State * L, int index)
 /* *              * *
  * * Constructors * *
  * *              * */
+
 /**
- * Construct an new task with the specified processing amount and amount
+ * @brief Constructs a new task with the specified processing amount and amount
  * of data needed.
  *
  * @param name	Task's name
@@ -174,13 +191,13 @@ static int Task_send(lua_State * L)
   if (res != MSG_OK)
     switch (res) {
     case MSG_TIMEOUT:
-      XBT_ERROR("MSG_task_send failed : Timeout");
+      XBT_DEBUG("MSG_task_send failed : Timeout");
       break;
     case MSG_TRANSFER_FAILURE:
-      XBT_ERROR("MSG_task_send failed : Transfer Failure");
+      XBT_DEBUG("MSG_task_send failed : Transfer Failure");
       break;
     case MSG_HOST_FAILURE:
-      XBT_ERROR("MSG_task_send failed : Host Failure ");
+      XBT_DEBUG("MSG_task_send failed : Host Failure ");
       break;
     default:
       XBT_ERROR
@@ -190,98 +207,42 @@ static int Task_send(lua_State * L)
   return 0;
 }
 
-static int Task_recv(lua_State * L)
-{
-  m_task_t tk = NULL;
-  const char *mailbox = luaL_checkstring(L, -1);
-  MSG_error_t res = MSG_task_receive(&tk, mailbox);
-
-  lua_State *sender_stack = MSG_task_get_data(tk);
-  lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
-  MSG_task_set_data(tk, NULL);
-
-  if (res != MSG_OK)
-    switch (res) {
-    case MSG_TIMEOUT:
-      XBT_ERROR("MSG_task_receive failed : Timeout");
-      break;
-    case MSG_TRANSFER_FAILURE:
-      XBT_ERROR("MSG_task_receive failed : Transfer Failure");
-      break;
-    case MSG_HOST_FAILURE:
-      XBT_ERROR("MSG_task_receive failed : Host Failure ");
-      break;
-    default:
-      XBT_ERROR
-          ("MSG_task_receive failed : Unexpected error , please report this bug");
-      break;
-    }
-
-  return 1;
-}
-
-static int Task_recv_with_timeout(lua_State * L)
+static int Task_recv_with_timeout(lua_State *L)
 {
   m_task_t tk = NULL;
   const char *mailbox = luaL_checkstring(L, -2);
   int timeout = luaL_checknumber(L, -1);
   MSG_error_t res = MSG_task_receive_with_timeout(&tk, mailbox, timeout);
 
-  lua_State *sender_stack = MSG_task_get_data(tk);
-  lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
-  MSG_task_set_data(tk, NULL);
-
-  if (res != MSG_OK)
+  if (res == MSG_OK) {
+    lua_State *sender_stack = MSG_task_get_data(tk);
+    lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
+    MSG_task_set_data(tk, NULL);
+  }
+  else {
     switch (res) {
     case MSG_TIMEOUT:
-      XBT_ERROR("MSG_task_receive failed : Timeout");
+      XBT_DEBUG("MSG_task_receive failed : Timeout");
       break;
     case MSG_TRANSFER_FAILURE:
-      XBT_ERROR("MSG_task_receive failed : Transfer Failure");
+      XBT_DEBUG("MSG_task_receive failed : Transfer Failure");
       break;
     case MSG_HOST_FAILURE:
-      XBT_ERROR("MSG_task_receive failed : Host Failure ");
+      XBT_DEBUG("MSG_task_receive failed : Host Failure ");
       break;
     default:
-      XBT_ERROR
-          ("MSG_task_receive failed : Unexpected error , please report this bug");
+      XBT_ERROR("MSG_task_receive failed : Unexpected error , please report this bug");
       break;
     }
+    lua_pushnil(L);
+  }
   return 1;
 }
 
-/**
- * Static Binding for the Splay methods : event.sleep :
- * it use MSG_task_irecv with MSG_comm_wait
- */
-static int Task_splay_irecv(lua_State *L)
+static int Task_recv(lua_State * L)
 {
-	m_task_t task = NULL;
-	msg_comm_t comm = NULL;		//current communication to receive
-	const char *mailbox = luaL_checkstring(L, -2);
-	double timeout = luaL_checknumber(L, -1);
-	comm = MSG_task_irecv(&task, mailbox);
-	MSG_comm_wait(comm, timeout);
-	if (MSG_comm_get_status(comm) == MSG_OK)
-	{
-		XBT_DEBUG("Receiving task : %s",MSG_task_get_name(task));
-		lua_State *sender_stack = MSG_task_get_data(task);
-		lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
-		MSG_task_set_data(task, NULL);
-	}
-	MSG_comm_destroy(comm);
-    	return 1;
-}
-
-static int Task_splay_isend(lua_State *L)
-{
-	m_task_t tk = checkTask(L, 1);
-	const char *mailbox = luaL_checkstring(L, 2);
-	lua_pop(L, 1);                // remove the string so that the task is on top of it
-	MSG_task_set_data(tk, L);     // Copy my stack into the task, so that the receiver can copy the lua task directly
-	MSG_task_isend(tk, mailbox);
-
-	return 1;
+  lua_pushnumber(L, -1.0);
+  return Task_recv_with_timeout(L);
 }
 
 static const luaL_reg Task_methods[] = {
@@ -292,10 +253,8 @@ static const luaL_reg Task_methods[] = {
   {"destroy", Task_destroy},
   {"send", Task_send},
   {"recv", Task_recv},
-  {"recv_timeout",Task_recv_with_timeout},
-  {"splay_recv",Task_splay_irecv},
-  {"iSend",Task_splay_isend},
-  {0, 0}
+  {"recv_timeout", Task_recv_with_timeout},
+  {NULL, NULL}
 };
 
 static int Task_gc(lua_State * L)
@@ -315,7 +274,7 @@ static int Task_tostring(lua_State * L)
 static const luaL_reg Task_meta[] = {
   {"__gc", Task_gc},
   {"__tostring", Task_tostring},
-  {0, 0}
+  {NULL, NULL}
 };
 
 /**
@@ -355,7 +314,6 @@ static int Host_get_by_name(lua_State * L)
   return 1;
 }
 
-
 static int Host_get_name(lua_State * L)
 {
   m_host_t ht = checkHost(L, -1);
@@ -385,37 +343,36 @@ static int Host_at(lua_State * L)
 
 static int Host_self(lua_State * L)
 {
-   m_host_t host = MSG_host_self();
-   lua_newtable(L);
-   m_host_t *lua_host =(m_host_t *)lua_newuserdata(L,sizeof(m_host_t));
-   *lua_host = host;
-   luaL_getmetatable(L, HOST_MODULE_NAME);
-   lua_setmetatable(L, -2);
-   lua_setfield(L, -2, "__simgrid_host");
-   return 1;
-
+  m_host_t host = MSG_host_self();
+  lua_newtable(L);
+  m_host_t *lua_host =(m_host_t *)lua_newuserdata(L,sizeof(m_host_t));
+  *lua_host = host;
+  luaL_getmetatable(L, HOST_MODULE_NAME);
+  lua_setmetatable(L, -2);
+  lua_setfield(L, -2, "__simgrid_host");
+  return 1;
 }
 
 static int Host_get_property_value(lua_State * L)
 {
-	m_host_t ht = checkHost(L, -2);
-	const char *prop = luaL_checkstring(L, -1);
-	lua_pushstring(L,MSG_host_get_property_value(ht,prop));
-	return 1;
+  m_host_t ht = checkHost(L, -2);
+  const char *prop = luaL_checkstring(L, -1);
+  lua_pushstring(L,MSG_host_get_property_value(ht,prop));
+  return 1;
 }
 
 static int Host_sleep(lua_State *L)
 {
-	int time = luaL_checknumber(L, -1);
-	MSG_process_sleep(time);
-	return 1;
+  int time = luaL_checknumber(L, -1);
+  MSG_process_sleep(time);
+  return 1;
 }
 
 static int Host_destroy(lua_State *L)
 {
-	m_host_t ht = checkHost(L, -1);
-	__MSG_host_destroy(ht);
-	return 1;
+  m_host_t ht = checkHost(L, -1);
+  __MSG_host_destroy(ht);
+  return 1;
 }
 
 /* ********************************************************************************* */
@@ -521,7 +478,9 @@ static int trace_end(lua_State *L)
 #endif
   return 1;
 }
-//***********Register Methods *******************************************//
+
+// *********** Register Methods ******************************************* //
+
 /*
  * Host Methods
  */
@@ -530,14 +489,14 @@ static const luaL_reg Host_methods[] = {
   {"name", Host_get_name},
   {"number", Host_number},
   {"at", Host_at},
-  {"self",Host_self},
+  {"self", Host_self},
   {"getPropValue", Host_get_property_value},
   {"sleep", Host_sleep},
-  {"destroy",Host_destroy},
+  {"destroy", Host_destroy},
   // Bypass XML Methods
   {"setFunction", console_set_function},
   {"setProperty", console_host_set_property},
-  {0, 0}
+  {NULL, NULL}
 };
 
 static int Host_gc(lua_State * L)
@@ -565,46 +524,52 @@ static const luaL_reg Host_meta[] = {
  */
 static const luaL_reg AS_methods[] = {
   {"new", console_add_AS},
-  {"addHost",console_add_host},
-  {"addLink",console_add_link},
-  {"addRoute",console_add_route},
-  {0, 0}
+  {"addHost", console_add_host},
+  {"addLink", console_add_link},
+  {"addRoute", console_add_route},
+  {NULL, NULL}
 };
 
 /**
  * Tracing Functions
  */
 static const luaL_reg Trace_methods[] = {
-		{"start",trace_start},
-		{"category",trace_category},
-		{"setTaskCategory",trace_set_task_category},
-		{"finish",trace_end},
-		{0,0}
+  {"start", trace_start},
+  {"category", trace_category},
+  {"setTaskCategory", trace_set_task_category},
+  {"finish", trace_end},
+  {NULL, NULL}
 };
+
 /*
  * Environment related
  */
 
-//extern lua_State *simgrid_lua_state;
-
+/**
+ * @brief Runs a Lua function as a new simulated process.
+ * @param argc number of arguments of the function
+ * @param argv name of the Lua function and array of its arguments
+ * @return result of the function
+ */
 static int run_lua_code(int argc, char **argv)
 {
   XBT_DEBUG("Run lua code %s", argv[0]);
-  lua_State *L = lua_newthread(simgrid_lua_state);
-  int ref = luaL_ref(simgrid_lua_state, LUA_REGISTRYINDEX);     // protect the thread from being garbage collected
+
+  lua_State *L = lua_newthread(lua_maestro_state);
+  int ref = luaL_ref(lua_maestro_state, LUA_REGISTRYINDEX);     /* protect the thread from being garbage collected */
   int res = 1;
 
-  /* Start the co-routine */
+  /* start the co-routine */
   lua_getglobal(L, argv[0]);
   xbt_assert(lua_isfunction(L, -1),
               "The lua function %s does not seem to exist", argv[0]);
 
-  // push arguments onto the stack
+  /* push arguments onto the stack */
   int i;
   for (i = 1; i < argc; i++)
     lua_pushstring(L, argv[i]);
 
-  // Call the function (in resume)
+  /* call the function */
   int err;
   err = lua_pcall(L, argc - 1, 1, 0);
   xbt_assert(err == 0, "error running function `%s': %s", argv[0],
@@ -615,9 +580,11 @@ static int run_lua_code(int argc, char **argv)
     res = lua_tonumber(L, -1);
     lua_pop(L, 1);              /* pop returned value */
   }
-  // cleanups
-  luaL_unref(simgrid_lua_state, LUA_REGISTRYINDEX, ref);
-  XBT_DEBUG("Execution of lua code %s is over", (argv ? argv[0] : "(null)"));
+
+  /* cleanups */
+  luaL_unref(lua_maestro_state, LUA_REGISTRYINDEX, ref);
+  XBT_DEBUG("Execution of Lua code %s is over", (argv ? argv[0] : "(null)"));
+
   return res;
 }
 
@@ -629,24 +596,11 @@ static int launch_application(lua_State * L)
   return 0;
 }
 
-#include "simix/simix.h"        //FIXME: KILLME when debugging on simix internals become useless
 static int create_environment(lua_State * L)
 {
   const char *file = luaL_checkstring(L, 1);
   XBT_DEBUG("Loading environment file %s", file);
   MSG_create_environment(file);
-
-/*
-  xbt_dict_t hosts = SIMIX_host_get_dict();
-  smx_host_t host;
-  xbt_dict_cursor_t c;
-  const char *name;
-
-  xbt_dict_foreach(hosts, c, name, host) {
-    XBT_DEBUG("We have an host %s", SIMIX_host_get_name(host));
-  }
-*/
-
   return 0;
 }
 
@@ -768,15 +722,23 @@ static const luaL_Reg simgrid_funcs[] = {
 /* ********************************************************************************* */
 
 #define LUA_MAX_ARGS_COUNT 10   /* maximum amount of arguments we can get from lua on command line */
-#define TEST
-int luaopen_simgrid(lua_State * L);     // Fuck gcc: we don't need that prototype
-int luaopen_simgrid(lua_State * L)
+
+int luaopen_simgrid(lua_State *L);     // Fuck gcc: we don't need that prototype
+
+/**
+ * This function is called automatically by the Lua interpreter when some Lua code requires
+ * the "simgrid" module.
+ * @param L the Lua state
+ */
+int luaopen_simgrid(lua_State *L)
 {
-  XBT_DEBUG("Luaopen_Simgrid *****");
+  XBT_DEBUG("luaopen_simgrid *****");
+
+  /* Get the command line arguments from the lua interpreter */
   char **argv = malloc(sizeof(char *) * LUA_MAX_ARGS_COUNT);
   int argc = 1;
   argv[0] = (char *) "/usr/bin/lua";    /* Lie on the argv[0] so that the stack dumping facilities find the right binary. FIXME: what if lua is not in that location? */
-  /* Get the command line arguments from the lua interpreter */
+
   lua_getglobal(L, "arg");
   /* if arg is a null value, it means we use lua only as a script to init platform
    * else it should be a table and then take arg in consideration
@@ -806,19 +768,35 @@ int luaopen_simgrid(lua_State * L)
     MSG_global_init(&argc, argv);
     XBT_DEBUG("Still %d arguments on command line", argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
   }
+
+  /* Keep the context mechanism informed of our lua world today */
+  lua_maestro_state = L;
+
+  register_c_functions(L);
+
+  return 1;
+}
+
+/**
+ * Makes the appropriate Simgrid functions available to the Lua world.
+ * @param L a Lua world
+ */
+void register_c_functions(lua_State *L) {
+
   /* register the core C functions to lua */
   luaL_register(L, "simgrid", simgrid_funcs);
+
   /* register the task methods to lua */
-  luaL_openlib(L, TASK_MODULE_NAME, Task_methods, 0);   //create methods table,add it to the globals
-  luaL_newmetatable(L, TASK_MODULE_NAME);       //create metatable for Task,add it to the Lua registry
+  luaL_openlib(L, TASK_MODULE_NAME, Task_methods, 0);   // create methods table, add it to the globals
+  luaL_newmetatable(L, TASK_MODULE_NAME);       // create metatable for Task, add it to the Lua registry
   luaL_openlib(L, 0, Task_meta, 0);     // fill metatable
   lua_pushliteral(L, "__index");
-  lua_pushvalue(L, -3);         //dup methods table
-  lua_rawset(L, -3);            //matatable.__index = methods
+  lua_pushvalue(L, -3);         // dup methods table
+  lua_rawset(L, -3);            // matatable.__index = methods
   lua_pushliteral(L, "__metatable");
-  lua_pushvalue(L, -3);         //dup methods table
-  lua_rawset(L, -3);            //hide metatable:metatable.__metatable = methods
-  lua_pop(L, 1);                //drop metatable
+  lua_pushvalue(L, -3);         // dup methods table
+  lua_rawset(L, -3);            // hide metatable:metatable.__metatable = methods
+  lua_pop(L, 1);                // drop metatable
 
   /* register the hosts methods to lua */
   luaL_openlib(L, HOST_MODULE_NAME, Host_methods, 0);
@@ -837,14 +815,8 @@ int luaopen_simgrid(lua_State * L)
   luaL_newmetatable(L, AS_MODULE_NAME);
   lua_pop(L, 1);
 
-
-
-  /*register the Tracing functions to lua */
+  /* register the Tracing functions to lua */
   luaL_openlib(L, TRACE_MODULE_NAME, Trace_methods, 0);
   luaL_newmetatable(L, TRACE_MODULE_NAME);
   lua_pop(L, 1);
-
-  /* Keep the context mechanism informed of our lua world today */
-  simgrid_lua_state = L;
-  return 1;
 }

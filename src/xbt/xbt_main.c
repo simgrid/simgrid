@@ -92,7 +92,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
 
 static void xbt_preinit(void)
 {
-#ifdef HAVE_MMAP
+#ifdef MMALLOC_WANT_OVERIDE_LEGACY
   mmalloc_preinit();
 #endif
   xbt_log_preinit();
@@ -141,7 +141,7 @@ static void xbt_postexit(void)
   xbt_os_thread_mod_postexit();
 
   free(xbt_binary_name);
-#ifdef HAVE_MMAP
+#ifdef MMALLOC_WANT_OVERIDE_LEGACY
   mmalloc_postexit();
 #endif
 }

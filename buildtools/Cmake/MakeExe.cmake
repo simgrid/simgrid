@@ -69,6 +69,10 @@ if(HAVE_GTNETS)
 	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets)
 endif(HAVE_GTNETS)
 
+if(HAVE_NS3)
+	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/ns3)
+endif(HAVE_NS3)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/amok/saturate)
 

@@ -21,9 +21,10 @@ static double kill_time = -1.0;
 
 static void parse_process_init(void)
 {
-  parse_host = xbt_strdup(A_surfxml_process_host);
-  xbt_assert(SIMIX_host_get_by_name(parse_host),
-              "Host '%s' unknown", parse_host);
+  smx_host_t host = SIMIX_host_get_by_name(A_surfxml_process_host);
+  if (!host)
+    THROWF(arg_error, 0, "Host '%s' unknown", A_surfxml_process_host);
+  parse_host = host->name;
   parse_code = SIMIX_get_registered_function(A_surfxml_process_function);
   xbt_assert(parse_code, "Function '%s' unknown",
               A_surfxml_process_function);
@@ -76,7 +77,6 @@ static void parse_process_finalize(void)
                                current_property_set);
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
     if (!process) {
-      xbt_free(parse_host);
       return;
     }
     if (kill_time > SIMIX_get_clock()) {
@@ -84,7 +84,6 @@ static void parse_process_finalize(void)
         SIMIX_timer_set(start_time, simix_global->kill_process_function, process);
       }
     }
-    xbt_free(parse_host);
   }
   current_property_set = NULL;
 }
@@ -189,9 +188,10 @@ void SIMIX_process_set_function(const char *process_host,
   char *arg;
 
   /* init process */
-  parse_host = xbt_strdup(process_host);
-  xbt_assert(SIMIX_host_get_by_name(parse_host),
-              "Host '%s' unknown", parse_host);
+  smx_host_t host = SIMIX_host_get_by_name(process_host);
+  if (!host)
+    THROWF(arg_error, 0, "Host '%s' unknown", process_host);
+  parse_host = host->name;
   parse_code = SIMIX_get_registered_function(process_function);
   xbt_assert(parse_code, "Function '%s' unknown", process_function);
 
