@@ -27,16 +27,22 @@ xbt_dynar_t SD_dotload_generic(const char * filename);
 
 static double dot_parse_double(const char *string)
 {
-  if (string == NULL)
-    return -1;
-  int ret = 0;
-  double value = -1;
+    if (string == NULL)
+          return -1;
+      double value = -1;
+        char *err;
 
-  ret = sscanf(string, "%lg", &value);
-  if (ret != 1)
-    XBT_WARN("%s is not a double", string);
-  return value;
+          //ret = sscanf(string, "%lg", &value);
+          errno = 0;
+            value = strtod(string,&err);
+              if(errno)
+                  {
+                        XBT_WARN("Failed to convert string to double: %s\n",strerror(errno));
+                            return -1;
+                              }
+                return value;
 }
+
 
 static int dot_parse_int(const char *string)
 {
@@ -350,7 +356,7 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
   SD_task_t file;
   char *name_tail=agnameof(agtail(edge));
   char *name_head=agnameof(aghead(edge));
-  char *name = malloc((strlen(name_head)+strlen(name_tail)+2)*sizeof(char));
+  char *name = malloc((strlen(name_head)+strlen(name_tail)+3)*sizeof(char));
   sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
   XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
@@ -388,7 +394,7 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
   SD_task_t file;
   char *name_tail=agnameof(agtail(edge));
   char *name_head=agnameof(aghead(edge));
-  char *name = malloc((strlen(name_head)+strlen(name_tail)+2)*sizeof(char));
+  char *name = malloc((strlen(name_head)+strlen(name_tail)+3)*sizeof(char));
   sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
   XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
