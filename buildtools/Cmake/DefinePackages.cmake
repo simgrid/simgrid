@@ -99,6 +99,10 @@ set(EXTRA_DIST
 	tools/gras/gras_stub_generator.h
 	tools/tesh/run_context.h  
 	tools/tesh/tesh.h
+	
+	src/surf/network_ns3_private.h
+	src/surf/ns3/ns3_interface.h
+	src/surf/ns3/ns3_simulator.h
 )
 
 set(XBT_RL_SRC 
@@ -823,6 +827,7 @@ set(source_to_pack
 	${GRAS_RL_SRC}
 	${XBT_SRC}
 	${GTNETS_SRC}
+	${NS3_SRC}
 	${SURF_SRC}
 	${SIMIX_SRC}
 	${TRACING_SRC}
