@@ -55,6 +55,7 @@
 <!ATTLIST cluster bb_sharing_policy (SHARED|FATPIPE) "SHARED">
 <!ATTLIST cluster availability_file CDATA "">
 <!ATTLIST cluster state_file CDATA "">
+<!ATTLIST cluster router_id CDATA "">
 
 <!ELEMENT peer EMPTY>
 <!ATTLIST peer id CDATA #REQUIRED>

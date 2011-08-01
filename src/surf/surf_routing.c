@@ -1507,7 +1507,7 @@ void routing_parse_Scluster(void)
   char *cluster_availability_file = A_surfxml_cluster_availability_file;
   char *cluster_state_file = A_surfxml_cluster_state_file;
   char *host_id, *groups, *link_id = NULL;
-  char *router_id;
+  char *router_id = xbt_strdup(A_surfxml_cluster_router_id);
   char *availability_file = xbt_strdup(cluster_availability_file);
   char *state_file = xbt_strdup(cluster_state_file);
 
@@ -1686,9 +1686,8 @@ void routing_parse_Scluster(void)
   xbt_dynar_free(&radical_elements);
 
   XBT_DEBUG(" ");
-  router_id =
-      bprintf("%s%s_router%s", cluster_prefix, cluster_id,
-              cluster_suffix);
+  if(!strcmp(router_id,""))
+	  router_id = bprintf("%s%s_router%s", cluster_prefix, cluster_id, cluster_suffix);
 
   XBT_DEBUG("<router id=\"%s\"/>", router_id);
   SURFXML_BUFFER_SET(router_id, router_id);

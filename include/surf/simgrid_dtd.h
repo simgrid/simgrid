@@ -199,6 +199,8 @@ typedef int AT_surfxml_process_function;
 #define AU_surfxml_process_function NULL
 typedef int AT_surfxml_peer_id;
 #define AU_surfxml_peer_id NULL
+typedef int AT_surfxml_cluster_router_id;
+#define AU_surfxml_cluster_router_id NULL
 typedef enum { AU_surfxml_cluster_sharing_policy, A_surfxml_cluster_sharing_policy_SHARED,A_surfxml_cluster_sharing_policy_FULLDUPLEX,A_surfxml_cluster_sharing_policy_FATPIPE } AT_surfxml_cluster_sharing_policy;
 typedef int AT_surfxml_bypassRoute_dst;
 #define AU_surfxml_bypassRoute_dst NULL
@@ -363,6 +365,8 @@ XBT_PUBLIC_DATA(AT_surfxml_process_function ) AX_surfxml_process_function;
 #define A_surfxml_process_function (surfxml_bufferstack + AX_surfxml_process_function)
 XBT_PUBLIC_DATA(AT_surfxml_peer_id ) AX_surfxml_peer_id;
 #define A_surfxml_peer_id (surfxml_bufferstack + AX_surfxml_peer_id)
+XBT_PUBLIC_DATA(AT_surfxml_cluster_router_id ) AX_surfxml_cluster_router_id;
+#define A_surfxml_cluster_router_id (surfxml_bufferstack + AX_surfxml_cluster_router_id)
 XBT_PUBLIC_DATA(AT_surfxml_cluster_sharing_policy ) AX_surfxml_cluster_sharing_policy;
 #define A_surfxml_cluster_sharing_policy AX_surfxml_cluster_sharing_policy
 XBT_PUBLIC_DATA(AT_surfxml_bypassRoute_dst ) AX_surfxml_bypassRoute_dst;
