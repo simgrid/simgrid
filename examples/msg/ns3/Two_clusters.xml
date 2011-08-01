@@ -9,28 +9,28 @@
 				|  router1 |											|
 	____________|__________|_____________ csma1							|
 	  |   |   |              |     |   |  								|backbone
-    l0|	l1|	l2|           l97|  l98|   | l99							|
+    l0|	l1|	l2|            l7|   l8|   | l9 							|
       |	  |	  |   ........   |     |   |								|
       |                                |								|
-   c-0.me                             c-99.me	                        |
+   c-0.me                             c-9.me	                        |
                      ___________________________________________________|
 				  ___|______
 				|	       |
 				|  router2 |
 	____________|__________|_____________ csma2
 	 |    |    |               |     |   |  	
- l100|l101|	   |           l197| l198|   | l199
+ l10 | l11|	   |            l17|  l18|   | l19
      |	  |	   |   ........    |     |   |
      |                                   |
-   c-100.me                             c-199.me	
+   c-10.me                              c-19.me	
 -->
 <AS  id="AS0"  routing="Full">
   <cluster id="my_cluster_1" prefix="c-" suffix=".me"
-  		radical="0-99"	power="1000000000"    bw="125000000"     lat="5E-5"
+  		radical="0-9"	power="1000000000"    bw="125000000"     lat="5E-5"
         bb_bw="2250000000" bb_lat="5E-4"/>
 		
   <cluster id="my_cluster_2" prefix="c-" suffix=".me"
- 	    radical="100-199" power="1000000000"	bw="125000000"	lat="5E-5"
+ 	    radical="10-19" power="1000000000"	bw="125000000"	lat="5E-5"
  	    bb_bw="2250000000" bb_lat="5E-4"/>  
        
      <link id="backbone" bandwidth="1250000000" latency="5E-4"/>  
