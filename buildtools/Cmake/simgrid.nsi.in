@@ -168,14 +168,29 @@ Section "Documentation" DocSection
 	
 SectionEnd
 Section "Examples" ExamplesSection	
-	
-	# install examples
+
 	CreateDirectory $INSTDIR\examples
 	setOutPath $INSTDIR\examples
+	
+	#install examples for platforms
 	file /r @CMAKE_HOME_DIRECTORY@\examples\platforms
+	
+	# install example HelloWorld
 	file /r @CMAKE_HOME_DIRECTORY@\doc\HelloWorld
-	# create a shortcut in the start menu programs directory
-	createShortCut  "$SMPROGRAMS\SimGrid\HelloWorld project.lnk"	"$INSTDIR\examples\HelloWorld"	
+		
+	# install example MasterSlave
+	CreateDirectory $INSTDIR\examples\MasterSlave
+	setOutPath $INSTDIR\examples\MasterSlave
+	file @CMAKE_HOME_DIRECTORY@\examples\msg\masterslave\masterslave_forwarder.c
+	file @CMAKE_HOME_DIRECTORY@\examples\msg\masterslave\deployment_masterslave_forwarder.xml
+	file @CMAKE_HOME_DIRECTORY@\examples\msg\msg_platform.xml
+	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\CMakeLists.txt
+	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\FindPCRE.cmake
+	
+	# create shortcuts in the start menu programs directory
+	CreateDirectory "$SMPROGRAMS\SimGrid\Examples\"
+	createShortCut  "$SMPROGRAMS\SimGrid\Examples\HelloWorld project.lnk"	"$INSTDIR\examples\HelloWorld"
+	createShortCut  "$SMPROGRAMS\SimGrid\Examples\MasterSlave project.lnk"	"$INSTDIR\examples\MasterSlave"
 	
 SectionEnd
 Section "Pcre library" PCRESection	
@@ -335,7 +350,8 @@ section "Uninstall"
 	# delete link
 	delete "$SMPROGRAMS\SimGrid\Uninstall simgrid.lnk"
 	delete "$SMPROGRAMS\SimGrid\Documentation.lnk"
-	delete "$SMPROGRAMS\SimGrid\HelloWorld project.lnk"
+	delete "$SMPROGRAMS\SimGrid\Examples\HelloWorld project.lnk"
+	delete "$SMPROGRAMS\SimGrid\Examples\MasterSlave project.lnk"
 	
 	# now delete directories
 	RMDir  "$INSTDIR\bin"
@@ -353,6 +369,7 @@ section "Uninstall"
 	RMDir  "$INSTDIR\include"
 	RMDir  /r "$INSTDIR\doc"
 	RMDir  /r "$INSTDIR\examples"
+	RMDir  "$SMPROGRAMS\SimGrid\Examples"
 	RMDir  "$SMPROGRAMS\SimGrid"
 	
 	# delete PCRE
@@ -363,7 +380,7 @@ section "Uninstall"
 	DeleteRegValue ${env_hklm} SIMGRID_VERSION
 	DeleteRegValue ${env_hklm} SIMGRID_PCRE_LIBRARY_PATH
 	DeleteRegValue ${env_hklm} SIMGRID_PCRE_LIBRARY_VERSION
-      DeleteRegKey HKCU "SOFTWARE\SimGrid"
+    DeleteRegKey HKCU "SOFTWARE\SimGrid"
     
 # uninstall section end
 sectionEnd
