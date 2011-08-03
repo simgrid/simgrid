@@ -614,6 +614,8 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = index.doc \
+						 installSimgrid.doc \
+                         bindings.doc \
                          FAQ.doc \
                          contrib.doc \
                          publis.doc \

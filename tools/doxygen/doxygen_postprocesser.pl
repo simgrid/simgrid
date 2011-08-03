@@ -6,7 +6,7 @@ use strict;
 my @extra_files = qw(html/index.html html/faq.html html/history.html html/contrib.html html/people.html
                      html/publis.html html/publis_core.html html/publis_extern.html html/publis_intra.html
                      html/pages.html html/modules.html html/annotated.html html/functions.html html/functions_vars.html index.php 
-                     html/GRAS_tut.html);
+                     html/GRAS_tut.html html/installSimgrid.html html/bindings.html);
 
 # GRAS tutorial
 map {push @extra_files, "html/GRAS_tut_$_.html"} qw (intro 
@@ -381,6 +381,8 @@ foreach my $file (@allfiles) {
       }
       if( $_ =~ /<\/ul>/ && $tabs){
       		my $tmp_buff="";
+      		$tmp_buff .= '      <li><a href="installSimgrid.html"><span>Install SimGrid</span></a></li>'."\n";
+      		$tmp_buff .= '      <li><a href="bindings.html"><span>Bindings</span></a></li>'."\n";      		
       		$tmp_buff .= '     <li><a href="publis.html"><span>Publications</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="people.html"><span>People</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="history.html"><span>History</span></a></li>'."\n";

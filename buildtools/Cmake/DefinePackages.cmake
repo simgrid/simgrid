@@ -551,6 +551,8 @@ file(GLOB_RECURSE examples_to_install_in_doc
 set(DOC_SOURCES
 	doc/contrib.doc
 	doc/FAQ.doc
+	doc/installSimgrid.doc
+	doc/bindings.doc
 	doc/gtut-howto-design.doc
 	doc/gtut-howto.doc
 	doc/gtut-introduction.doc
