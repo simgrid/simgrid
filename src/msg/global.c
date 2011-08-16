@@ -153,6 +153,21 @@ MSG_error_t MSG_main(void)
   return MSG_OK;
 }
 
+MSG_error_t MSG_main_stateful(void)
+{
+  /* Clean IO before the run */
+  fflush(stdout);
+  fflush(stderr);
+
+  if (MC_IS_ENABLED) {
+    MC_modelcheck_stateful();
+  }
+  else {
+    SIMIX_run();
+  }
+  return MSG_OK;
+}
+
 MSG_error_t MSG_main_with_automaton(xbt_automaton_t a)
 {
   /* Clean IO before the run */

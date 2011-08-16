@@ -54,6 +54,32 @@ void MC_init(void)
   MC_UNSET_RAW_MEM;
 }
 
+void MC_init_stateful(void){
+  
+   /* Check if MC is already initialized */
+  if (initial_snapshot)
+    return;
+
+  mc_time = xbt_new0(double, simix_process_maxpid);
+
+  /* Initialize the data structures that must be persistent across every
+     iteration of the model-checker (in RAW memory) */
+  MC_SET_RAW_MEM;
+
+  /* Initialize statistics */
+  mc_stats = xbt_new0(s_mc_stats_t, 1);
+  mc_stats->state_size = 1;
+
+  /* Create exploration stack */
+  mc_snapshot_stack = xbt_fifo_new();
+
+  MC_UNSET_RAW_MEM;
+
+  MC_dpor_stateful_init();
+
+
+}
+
 void MC_init_with_automaton(xbt_automaton_t a){
 
   XBT_DEBUG("Start init mc");
@@ -75,11 +101,13 @@ void MC_init_with_automaton(xbt_automaton_t a){
  /* Create exploration stack */
   mc_snapshot_stack = xbt_fifo_new();
 
+
   MC_UNSET_RAW_MEM;
 
   //MC_vddfs_with_restore_snapshot_init(a);
   //MC_ddfs_with_restore_snapshot_init(a);
   MC_dpor2_init(a);
+  //MC_dpor3_init(a);
 }
 
 
@@ -87,6 +115,13 @@ void MC_modelcheck(void)
 {
   MC_init();
   MC_dpor();
+  MC_exit();
+}
+
+void MC_modelcheck_stateful(void)
+{
+  MC_init_stateful();
+  MC_dpor_stateful();
   MC_exit();
 }
 
@@ -108,6 +143,7 @@ void MC_exit(void)
   xbt_free(mc_time);
   MC_memory_exit();
 }
+
 
 int MC_random(int min, int max)
 {
@@ -220,6 +256,7 @@ void MC_dump_stack(xbt_fifo_t stack)
   MC_UNSET_RAW_MEM;
 }
 
+
 void MC_show_stack(xbt_fifo_t stack)
 {
   int value;
@@ -254,6 +291,53 @@ void MC_show_deadlock(smx_req_t req)
   MC_dump_stack(mc_stack);
 }
 
+void MC_show_deadlock_stateful(smx_req_t req)
+{
+  /*char *req_str = NULL;*/
+  XBT_INFO("**************************");
+  XBT_INFO("*** DEAD-LOCK DETECTED ***");
+  XBT_INFO("**************************");
+  XBT_INFO("Locked request:");
+  /*req_str = MC_request_to_string(req);
+  XBT_INFO("%s", req_str);
+  xbt_free(req_str);*/
+  XBT_INFO("Counter-example execution trace:");
+  MC_show_stack_stateful(mc_snapshot_stack);
+}
+
+void MC_dump_stack_stateful(xbt_fifo_t stack)
+{
+  //mc_state_ws_t state;
+
+  MC_show_stack_stateful(stack);
+
+  /*MC_SET_RAW_MEM;
+  while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
+    MC_state_delete(state);
+    MC_UNSET_RAW_MEM;*/
+}
+
+
+void MC_show_stack_stateful(xbt_fifo_t stack)
+{
+  int value;
+  mc_state_ws_t state;
+  xbt_fifo_item_t item;
+  smx_req_t req;
+  char *req_str = NULL;
+  
+  for (item = xbt_fifo_get_last_item(stack);
+       (item ? (state = (mc_state_ws_t) (xbt_fifo_get_item_content(item)))
+        : (NULL)); item = xbt_fifo_get_prev_item(item)) {
+    req = MC_state_get_executed_request(state->graph_state, &value);
+    if(req){
+      req_str = MC_request_to_string(req, value);
+      XBT_INFO("%s", req_str);
+      xbt_free(req_str);
+    }
+  }
+}
+
 void MC_print_statistics(mc_stats_t stats)
 {
   XBT_INFO("State space size ~= %lu", stats->state_size);
@@ -285,6 +369,19 @@ void MC_assert(int prop)
     XBT_INFO("**************************");
     XBT_INFO("Counter-example execution trace:");
     MC_dump_stack(mc_stack);
+    MC_print_statistics(mc_stats);
+    xbt_abort();
+  }
+}
+
+void MC_assert_stateful(int prop)
+{
+  if (MC_IS_ENABLED && !prop) {
+    XBT_INFO("**************************");
+    XBT_INFO("*** PROPERTY NOT VALID ***");
+    XBT_INFO("**************************");
+    XBT_INFO("Counter-example execution trace:");
+    MC_dump_stack_stateful(mc_snapshot_stack);
     MC_print_statistics(mc_stats);
     xbt_abort();
   }

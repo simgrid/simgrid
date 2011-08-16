@@ -51,6 +51,9 @@ void MC_get_enabled_processes();
 void MC_show_deadlock(smx_req_t req);
 void MC_show_stack(xbt_fifo_t stack);
 void MC_dump_stack(xbt_fifo_t stack);
+void MC_show_deadlock_stateful(smx_req_t req);
+void MC_show_stack_stateful(xbt_fifo_t stack);
+void MC_dump_stack_stateful(xbt_fifo_t stack);
 
 /********************************* Requests ***********************************/
 int MC_request_depend(smx_req_t req1, smx_req_t req2);
@@ -220,16 +223,19 @@ void set_pair_visited(mc_pair_t p, int search_cycle);
 int visited(mc_pair_t p, int search_cycle);
 
 
-/* **** DPOR Cristian with restore snapshot **** */
+/* **** DPOR Cristian stateful **** */
 
 typedef struct s_mc_state_with_snapshot{
   mc_snapshot_t system_state;
   mc_state_t graph_state;
 }s_mc_state_ws_t, *mc_state_ws_t;
 
+void MC_init_stateful(void);
+void MC_modelcheck_stateful(void);
 mc_state_ws_t new_state_ws(mc_snapshot_t s, mc_state_t gs);
-void MC_dpor_with_restore_snapshot_init(void);
-void MC_dpor_with_restore_snapshot(void);
+void MC_dpor_stateful_init(void);
+void MC_dpor_stateful(void);
+void MC_exit_stateful(void);
 
 /* **** DPOR 2 (invisible and independant transitions) **** */
 
@@ -248,7 +254,6 @@ typedef struct s_mc_pair_prop{
   int interleave;
 }s_mc_pair_prop_t, *mc_pair_prop_t;
 
-
 mc_prop_ato_t new_proposition(char* id, int value);
 mc_pair_prop_t new_pair_prop(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 int reached_prop(mc_pair_prop_t pair);
@@ -257,5 +262,41 @@ void MC_dpor2_init(xbt_automaton_t a);
 void MC_dpor2(xbt_automaton_t a, int search_cycle);
 int invisible(mc_pair_prop_t p, mc_pair_prop_t np);
 void set_fully_expanded(mc_pair_prop_t pair);
+
+/* **** DPOR 3 (invisible and independant transitions with coloration of pairs) **** */
+
+typedef enum {
+  GREEN=0,      
+  ORANGE,           
+  RED              
+} e_mc_color_pair_t;
+
+typedef struct s_mc_pair_prop_col{
+  mc_snapshot_t system_state;
+  mc_state_t graph_state;
+  xbt_state_t automaton_state;
+  int num;
+  xbt_dynar_t propositions;
+  int fully_expanded;
+  int interleave;
+  e_mc_color_pair_t color;
+  int expanded;
+}s_mc_pair_prop_col_t, *mc_pair_prop_col_t;
+
+typedef struct s_mc_visited_pair_prop_col{
+  mc_pair_prop_col_t pair;
+  int search_cycle;
+}s_mc_visited_pair_prop_col_t, *mc_visited_pair_prop_col_t;
+
+void MC_dpor3_init(xbt_automaton_t a);
+void MC_dpor3(xbt_automaton_t a, int search_cycle);
+mc_pair_prop_col_t new_pair_prop_col(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
+void set_expanded(mc_pair_prop_col_t pair);
+int reached_prop_col(mc_pair_prop_col_t pair);
+void set_pair_prop_col_reached(mc_pair_prop_col_t pair);
+int invisible_col(mc_pair_prop_col_t p, mc_pair_prop_col_t np);
+void set_fully_expanded_col(mc_pair_prop_col_t pair);
+void set_pair_prop_col_visited(mc_pair_prop_col_t pair, int sc);
+int visited_pair_prop_col(mc_pair_prop_col_t pair, int sc);
 
 #endif
