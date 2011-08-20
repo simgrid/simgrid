@@ -20,7 +20,7 @@ void MC_dpor_init()
   /* Create the initial state and push it into the exploration stack */
   MC_SET_RAW_MEM;
   initial_state = MC_state_new();
-  xbt_fifo_unshift(mc_stack, initial_state);
+  xbt_fifo_unshift(mc_stack_safety_stateless, initial_state);
   MC_UNSET_RAW_MEM;
 
   XBT_DEBUG("**************************************************");
@@ -58,15 +58,15 @@ void MC_dpor(void)
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
 
-  while (xbt_fifo_size(mc_stack) > 0) {
+  while (xbt_fifo_size(mc_stack_safety_stateless) > 0) {
 
     /* Get current state */
     state = (mc_state_t) 
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_safety_stateless));
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG("Exploration depth=%d (state=%p)(%u interleave)",
-           xbt_fifo_size(mc_stack), state,
+           xbt_fifo_size(mc_stack_safety_stateless), state,
            MC_state_interleave_size(state));
 
     /* Update statistics */
@@ -74,7 +74,7 @@ void MC_dpor(void)
 
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (xbt_fifo_size(mc_stack) < MAX_DEPTH &&
+    if (xbt_fifo_size(mc_stack_safety_stateless) < MAX_DEPTH &&
         (req = MC_state_get_request(state, &value))) {
 
       /* Debug information */
@@ -96,7 +96,7 @@ void MC_dpor(void)
       /* Create the new expanded state */
       MC_SET_RAW_MEM;
       next_state = MC_state_new();
-      xbt_fifo_unshift(mc_stack, next_state);
+      xbt_fifo_unshift(mc_stack_safety_stateless, next_state);
 
       /* Get an enabled process and insert it in the interleave set of the next state */
       xbt_swag_foreach(process, simix_global->process_list){
@@ -119,7 +119,7 @@ void MC_dpor(void)
 
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
-      xbt_fifo_shift(mc_stack);
+      xbt_fifo_shift(mc_stack_safety_stateless);
       MC_state_delete(state);
       MC_UNSET_RAW_MEM;
 
@@ -136,9 +136,9 @@ void MC_dpor(void)
          (from it's predecesor state), depends on any other previous request 
          executed before it. If it does then add it to the interleave set of the
          state that executed that previous request. */
-      while ((state = xbt_fifo_shift(mc_stack)) != NULL) {
+      while ((state = xbt_fifo_shift(mc_stack_safety_stateless)) != NULL) {
         req = MC_state_get_internal_request(state);
-        xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
+        xbt_fifo_foreach(mc_stack_safety_stateless, item, prev_state, mc_state_t) {
           if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
             if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
               XBT_DEBUG("Dependent Transitions:");
@@ -162,10 +162,10 @@ void MC_dpor(void)
         }
         if (MC_state_interleave_size(state)) {
           /* We found a back-tracking point, let's loop */
-          xbt_fifo_unshift(mc_stack, state);
-          XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack));
+          xbt_fifo_unshift(mc_stack_safety_stateless, state);
+          XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety_stateless));
           MC_UNSET_RAW_MEM;
-          MC_replay(mc_stack);
+          MC_replay(mc_stack_safety_stateless);
           break;
         } else {
           MC_state_delete(state);
@@ -179,7 +179,7 @@ void MC_dpor(void)
 }
 
 
-/********************* DPOR without replay *********************/
+/********************* DPOR stateful *********************/
 
 mc_state_ws_t new_state_ws(mc_snapshot_t s, mc_state_t gs){
   mc_state_ws_t sws = NULL;
@@ -217,7 +217,7 @@ void MC_dpor_stateful_init(){
   MC_take_snapshot(initial_system_snapshot);
 
   initial_state = new_state_ws(initial_system_snapshot, initial_graph_state);
-  xbt_fifo_unshift(mc_snapshot_stack, initial_state);
+  xbt_fifo_unshift(mc_stack_safety_stateful, initial_state);
 
   MC_UNSET_RAW_MEM;
 
@@ -227,7 +227,7 @@ void MC_dpor_stateful(){
 
   smx_process_t process = NULL;
   
-  if(xbt_fifo_size(mc_snapshot_stack) == 0)
+  if(xbt_fifo_size(mc_stack_safety_stateful) == 0)
     return;
 
   int value;
@@ -241,23 +241,26 @@ void MC_dpor_stateful(){
   mc_state_ws_t prev_state;
   mc_state_ws_t next_state;
  
-  while(xbt_fifo_size(mc_snapshot_stack) > 0){
+  while(xbt_fifo_size(mc_stack_safety_stateful) > 0){
 
-    current_state = (mc_state_ws_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_snapshot_stack));
+    current_state = (mc_state_ws_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_safety_stateful));
 
     
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Depth : %d, State : %p , %u interleave", xbt_fifo_size(mc_snapshot_stack),current_state, MC_state_interleave_size(current_state->graph_state));
+    XBT_DEBUG("Depth : %d, State : %p , %u interleave", xbt_fifo_size(mc_stack_safety_stateful),current_state, MC_state_interleave_size(current_state->graph_state));
 
     mc_stats->visited_states++;
-    
+    if(mc_stats->expanded_states>1100)
+      exit(0);
+    //sleep(1);
 
-    if((xbt_fifo_size(mc_snapshot_stack) < MAX_DEPTH) && (req = MC_state_get_request(current_state->graph_state, &value))){
+    if((xbt_fifo_size(mc_stack_safety_stateful) < MAX_DEPTH) && (req = MC_state_get_request(current_state->graph_state, &value))){
 
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
 	req_str = MC_request_to_string(req, value);
-	XBT_DEBUG("Execute: %s", req_str);
+	//XBT_INFO("Visited states = %lu",mc_stats->visited_states );
+	XBT_DEBUG("Execute: %s",req_str);
 	xbt_free(req_str);
       }
 
@@ -287,7 +290,7 @@ void MC_dpor_stateful(){
       MC_take_snapshot(next_snapshot);
 
       next_state = new_state_ws(next_snapshot, next_graph_state);
-      xbt_fifo_unshift(mc_snapshot_stack, next_state);
+      xbt_fifo_unshift(mc_stack_safety_stateful, next_state);
       
       MC_UNSET_RAW_MEM;
 
@@ -296,7 +299,7 @@ void MC_dpor_stateful(){
       
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
-      xbt_fifo_shift(mc_snapshot_stack);
+      xbt_fifo_shift(mc_stack_safety_stateful);
       MC_UNSET_RAW_MEM;
 
       /* Check for deadlocks */
@@ -306,9 +309,9 @@ void MC_dpor_stateful(){
       }
 
       MC_SET_RAW_MEM;
-      while((current_state = xbt_fifo_shift(mc_snapshot_stack)) != NULL){
+      while((current_state = xbt_fifo_shift(mc_stack_safety_stateful)) != NULL){
 	req = MC_state_get_internal_request(current_state->graph_state);
-	xbt_fifo_foreach(mc_snapshot_stack, item, prev_state, mc_state_ws_t) {
+	xbt_fifo_foreach(mc_stack_safety_stateful, item, prev_state, mc_state_ws_t) {
           if(MC_request_depend(req, MC_state_get_internal_request(prev_state->graph_state))){
             if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
               XBT_DEBUG("Dependent Transitions:");
@@ -335,8 +338,8 @@ void MC_dpor_stateful(){
 
 	if(MC_state_interleave_size(current_state->graph_state)){
 	  MC_restore_snapshot(current_state->system_state);
-	  xbt_fifo_unshift(mc_snapshot_stack, current_state);
-	  XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_snapshot_stack));
+	  xbt_fifo_unshift(mc_stack_safety_stateful, current_state);
+	  XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety_stateful));
 	  MC_UNSET_RAW_MEM;
 	  break;
 	}
@@ -461,11 +464,11 @@ void MC_dpor2_init(xbt_automaton_t a)
       }
     }
 
-    if(xbt_fifo_size(mc_snapshot_stack) > 0)
+    if(initial_automaton_state != NULL)
       break;
   }
 
-  if(xbt_fifo_size(mc_snapshot_stack) == 0){
+  if(initial_automaton_state == NULL){
     cursor = 0;
     xbt_dynar_foreach(a->states, cursor, automaton_state){
       if(automaton_state->type == -1){
@@ -491,7 +494,7 @@ void MC_dpor2_init(xbt_automaton_t a)
     mc_prop_ato_t pa = new_proposition(ps->pred, val);
     xbt_dynar_push(initial_pair->propositions, &pa);
   } 
-  xbt_fifo_unshift(mc_snapshot_stack, initial_pair);
+  xbt_fifo_unshift(mc_stack_liveness_stateful, initial_pair);
   MC_UNSET_RAW_MEM;
 
 
@@ -520,15 +523,15 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
   int d;
 
 
-  while (xbt_fifo_size(mc_snapshot_stack) > 0) {
+  while (xbt_fifo_size(mc_stack_liveness_stateful) > 0) {
 
     /* Get current pair */
     pair = (mc_pair_prop_t) 
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_snapshot_stack));
+      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_liveness_stateful));
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG("Exploration depth=%d (pair=%p) (%d interleave)",
-	      xbt_fifo_size(mc_snapshot_stack), pair, MC_state_interleave_size(pair->graph_state));
+	      xbt_fifo_size(mc_stack_liveness_stateful), pair, MC_state_interleave_size(pair->graph_state));
 
     if(MC_state_interleave_size(pair->graph_state) == 0){
     
@@ -589,8 +592,8 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
 	  XBT_INFO("|             ACCEPTANCE CYCLE            |");
 	  XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 	  XBT_INFO("Counter-example that violates formula :");
-	  MC_show_snapshot_stack(mc_snapshot_stack);
-	  MC_dump_snapshot_stack(mc_snapshot_stack);
+	  MC_show_stack_liveness_stateful(mc_stack_liveness_stateful);
+	  MC_dump_stack_liveness_stateful(mc_stack_liveness_stateful);
 	  MC_print_statistics_pairs(mc_stats_pair);
 	  exit(0);
 	}
@@ -599,7 +602,7 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
 
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (xbt_fifo_size(mc_snapshot_stack) < MAX_DEPTH &&
+    if (xbt_fifo_size(mc_stack_liveness_stateful) < MAX_DEPTH &&
         (req = MC_state_get_request(pair->graph_state, &value))) {
 
       /* Debug information */
@@ -656,7 +659,7 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
 	xbt_dynar_push(next_pair->propositions, &pa);
 	//XBT_DEBUG("%s : %d", pa->id, pa->value); 
       } 
-      xbt_fifo_unshift(mc_snapshot_stack, next_pair);
+      xbt_fifo_unshift(mc_stack_liveness_stateful, next_pair);
       
       cursor = 0;
       if((invisible(pair, next_pair) == 0) && (pair->fully_expanded == 0)){
@@ -680,7 +683,7 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
 
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
-      xbt_fifo_shift(mc_snapshot_stack);
+      xbt_fifo_shift(mc_stack_liveness_stateful);
       //MC_state_delete(state);
       MC_UNSET_RAW_MEM;
 
@@ -697,9 +700,9 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
          (from it's predecesor state), depends on any other previous request 
          executed before it. If it does then add it to the interleave set of the
          state that executed that previous request. */
-      while ((pair = xbt_fifo_shift(mc_snapshot_stack)) != NULL) {
+      while ((pair = xbt_fifo_shift(mc_stack_liveness_stateful)) != NULL) {
         req = MC_state_get_internal_request(pair->graph_state);
-        xbt_fifo_foreach(mc_snapshot_stack, item, prev_pair, mc_pair_prop_t) {
+        xbt_fifo_foreach(mc_stack_liveness_stateful, item, prev_pair, mc_pair_prop_t) {
           if(MC_request_depend(req, MC_state_get_internal_request(prev_pair->graph_state))){
             if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
               XBT_DEBUG("Dependent Transitions:");
@@ -730,8 +733,8 @@ void MC_dpor2(xbt_automaton_t a, int search_cycle)
         if (MC_state_interleave_size(pair->graph_state) > 0) {
           /* We found a back-tracking point, let's loop */
 	  MC_restore_snapshot(pair->system_state);
-          xbt_fifo_unshift(mc_snapshot_stack, pair);
-          XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_snapshot_stack));
+          xbt_fifo_unshift(mc_stack_liveness_stateful, pair);
+          XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_liveness_stateful));
           MC_UNSET_RAW_MEM;
           break;
         } else {
@@ -926,7 +929,7 @@ void MC_dpor3_init(xbt_automaton_t a)
     mc_prop_ato_t pa = new_proposition(ps->pred, val);
     xbt_dynar_push(initial_pair->propositions, &pa);
   } 
-  xbt_fifo_unshift(mc_snapshot_stack, initial_pair);
+  xbt_fifo_unshift(mc_stack_liveness_stateful, initial_pair);
   MC_UNSET_RAW_MEM;
 
 
@@ -955,15 +958,15 @@ void MC_dpor3(xbt_automaton_t a, int search_cycle)
   int d;
 
 
-  while (xbt_fifo_size(mc_snapshot_stack) > 0) {
+  while (xbt_fifo_size(mc_stack_liveness_stateful) > 0) {
 
     /* Get current pair */
     pair = (mc_pair_prop_col_t) 
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_snapshot_stack));
+      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_liveness_stateful));
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG("Exploration depth=%d (pair=%p) (%d interleave)",
-	      xbt_fifo_size(mc_snapshot_stack), pair, MC_state_interleave_size(pair->graph_state));
+	      xbt_fifo_size(mc_stack_liveness_stateful), pair, MC_state_interleave_size(pair->graph_state));
 
     if(MC_state_interleave_size(pair->graph_state) == 0){
     
@@ -1018,8 +1021,8 @@ void MC_dpor3(xbt_automaton_t a, int search_cycle)
 	  XBT_INFO("|             ACCEPTANCE CYCLE            |");
 	  XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 	  XBT_INFO("Counter-example that violates formula :");
-	  MC_show_snapshot_stack(mc_snapshot_stack);
-	  MC_dump_snapshot_stack(mc_snapshot_stack);
+	  MC_show_stack_liveness_stateful(mc_stack_liveness_stateful);
+	  MC_dump_stack_liveness_stateful(mc_stack_liveness_stateful);
 	  MC_print_statistics_pairs(mc_stats_pair);
 	  exit(0);
 	}
@@ -1028,7 +1031,7 @@ void MC_dpor3(xbt_automaton_t a, int search_cycle)
 
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (xbt_fifo_size(mc_snapshot_stack) < MAX_DEPTH &&
+    if (xbt_fifo_size(mc_stack_liveness_stateful) < MAX_DEPTH &&
         (req = MC_state_get_request(pair->graph_state, &value))) {
 
       set_pair_prop_col_visited(pair, search_cycle);
@@ -1082,7 +1085,7 @@ void MC_dpor3(xbt_automaton_t a, int search_cycle)
 	mc_prop_ato_t pa = new_proposition(ps->pred, val);
 	xbt_dynar_push(next_pair->propositions, &pa);
       } 
-      xbt_fifo_unshift(mc_snapshot_stack, next_pair);
+      xbt_fifo_unshift(mc_stack_liveness_stateful, next_pair);
       
       cursor = 0;
       if((invisible_col(pair, next_pair) == 0) && (pair->fully_expanded == 0)){
@@ -1106,7 +1109,7 @@ void MC_dpor3(xbt_automaton_t a, int search_cycle)
 
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
-      xbt_fifo_shift(mc_snapshot_stack);
+      xbt_fifo_shift(mc_stack_liveness_stateful);
       //MC_state_delete(state);
       MC_UNSET_RAW_MEM;
 
@@ -1123,9 +1126,9 @@ void MC_dpor3(xbt_automaton_t a, int search_cycle)
          (from it's predecesor state), depends on any other previous request 
          executed before it. If it does then add it to the interleave set of the
          state that executed that previous request. */
-      while ((pair = xbt_fifo_shift(mc_snapshot_stack)) != NULL) {
+      while ((pair = xbt_fifo_shift(mc_stack_liveness_stateful)) != NULL) {
         req = MC_state_get_internal_request(pair->graph_state);
-        xbt_fifo_foreach(mc_snapshot_stack, item, prev_pair, mc_pair_prop_col_t) {
+        xbt_fifo_foreach(mc_stack_liveness_stateful, item, prev_pair, mc_pair_prop_col_t) {
           if(MC_request_depend(req, MC_state_get_internal_request(prev_pair->graph_state))){
             if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
               XBT_DEBUG("Dependent Transitions:");
@@ -1156,8 +1159,8 @@ void MC_dpor3(xbt_automaton_t a, int search_cycle)
         if (MC_state_interleave_size(pair->graph_state) > 0) {
           /* We found a back-tracking point, let's loop */
 	  MC_restore_snapshot(pair->system_state);
-          xbt_fifo_unshift(mc_snapshot_stack, pair);
-          XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_snapshot_stack));
+          xbt_fifo_unshift(mc_stack_liveness_stateful, pair);
+          XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_liveness_stateful));
           MC_UNSET_RAW_MEM;
           break;
         } else {

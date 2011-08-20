@@ -45,7 +45,7 @@ int client(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-
+   
   MSG_global_init(&argc, argv);
 
   MSG_create_environment("platform.xml");
@@ -57,9 +57,9 @@ int main(int argc, char *argv[])
   MSG_launch_application("deploy_bugged1.xml");
 
   MSG_main_stateful();
-
+  
   MSG_clean();
-
+   
   return 0;
 
 }

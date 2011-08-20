@@ -49,11 +49,11 @@ void MC_replay(xbt_fifo_t stack);
 void MC_wait_for_requests(void);
 void MC_get_enabled_processes();
 void MC_show_deadlock(smx_req_t req);
-void MC_show_stack(xbt_fifo_t stack);
-void MC_dump_stack(xbt_fifo_t stack);
 void MC_show_deadlock_stateful(smx_req_t req);
-void MC_show_stack_stateful(xbt_fifo_t stack);
-void MC_dump_stack_stateful(xbt_fifo_t stack);
+void MC_show_stack_safety_stateless(xbt_fifo_t stack);
+void MC_dump_stack_safety_stateless(xbt_fifo_t stack);
+void MC_show_stack_safety_stateful(xbt_fifo_t stack);
+void MC_dump_stack_safety_stateful(xbt_fifo_t stack);
 
 /********************************* Requests ***********************************/
 int MC_request_depend(smx_req_t req1, smx_req_t req2);
@@ -96,7 +96,7 @@ typedef struct mc_state {
                                        multi-request like waitany ) */
 } s_mc_state_t, *mc_state_t;
 
-extern xbt_fifo_t mc_stack;
+extern xbt_fifo_t mc_stack_safety_stateless;
 
 mc_state_t MC_state_new(void);
 void MC_state_delete(mc_state_t state);
@@ -183,7 +183,7 @@ typedef struct s_memory_map {
 memory_map_t get_memory_map(void);
 
 
-/********************************** DFS for liveness property**************************************/
+/********************************** Double-DFS for liveness property**************************************/
 
 typedef struct s_mc_pair{
   mc_snapshot_t system_state;
@@ -192,36 +192,53 @@ typedef struct s_mc_pair{
   int num;
 }s_mc_pair_t, *mc_pair_t;
 
-extern xbt_fifo_t mc_snapshot_stack;
+extern xbt_fifo_t mc_stack_liveness_stateful;
 
 int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
 int reached(mc_pair_t p);
 void set_pair_reached(mc_pair_t p);
-void MC_show_snapshot_stack(xbt_fifo_t stack);
-void MC_dump_snapshot_stack(xbt_fifo_t stack);
+void MC_show_stack_liveness_stateful(xbt_fifo_t stack);
+void MC_dump_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_pair_delete(mc_pair_t pair);
-void MC_exit_with_automaton(void);
+void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
 
-/* **** Double-DFS without visited state **** */
+/* **** Double-DFS stateful without visited state **** */
 
-void MC_ddfs_with_restore_snapshot_init(xbt_automaton_t a);
-void MC_ddfs_with_restore_snapshot(xbt_automaton_t a, int search_cycle, int restore);
+void MC_ddfs_stateful_init(xbt_automaton_t a);
+void MC_ddfs_stateful(xbt_automaton_t a, int search_cycle, int restore);
 
-/* **** Double-DFS with visited state **** */
+/* **** Double-DFS stateful with visited state **** */
 
 typedef struct s_mc_visited_pair{
   mc_pair_t pair;
   int search_cycle;
 }s_mc_visited_pair_t, *mc_visited_pair_t;
 
-void MC_vddfs_with_restore_snapshot_init(xbt_automaton_t a);
-void MC_vddfs_with_restore_snapshot(xbt_automaton_t automaton, int search_cycle, int restore);
+void MC_vddfs_stateful_init(xbt_automaton_t a);
+void MC_vddfs_stateful(xbt_automaton_t automaton, int search_cycle, int restore);
 void set_pair_visited(mc_pair_t p, int search_cycle);
 int visited(mc_pair_t p, int search_cycle);
 
+/* **** Double-DFS stateless **** */
+
+typedef struct s_mc_pair_stateless{
+  mc_state_t graph_state;
+  xbt_state_t automaton_state;
+}s_mc_pair_stateless_t, *mc_pair_stateless_t;
+
+extern xbt_fifo_t mc_stack_liveness_stateless;
+
+mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st);
+void MC_ddfs_stateless_init(xbt_automaton_t a);
+void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int restore);
+int reached_stateless(mc_pair_stateless_t p);
+void set_pair_stateless_reached(mc_pair_stateless_t p);
+void MC_show_stack_liveness_stateless(xbt_fifo_t stack);
+void MC_dump_stack_liveness_stateless(xbt_fifo_t stack);
+void MC_pair_stateless_delete(mc_pair_stateless_t pair);
 
 /* **** DPOR Cristian stateful **** */
 
@@ -229,6 +246,8 @@ typedef struct s_mc_state_with_snapshot{
   mc_snapshot_t system_state;
   mc_state_t graph_state;
 }s_mc_state_ws_t, *mc_state_ws_t;
+
+extern xbt_fifo_t mc_stack_safety_stateful;
 
 void MC_init_stateful(void);
 void MC_modelcheck_stateful(void);
