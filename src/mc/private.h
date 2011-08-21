@@ -230,12 +230,17 @@ typedef struct s_mc_pair_stateless{
   xbt_state_t automaton_state;
 }s_mc_pair_stateless_t, *mc_pair_stateless_t;
 
+typedef struct s_mc_reached_pair_stateless{
+  mc_pair_stateless_t pair;
+  mc_snapshot_t snapshot_system;
+}s_mc_reached_pair_stateless_t, *mc_reached_pair_stateless_t;
+
 extern xbt_fifo_t mc_stack_liveness_stateless;
 
 mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st);
 void MC_ddfs_stateless_init(xbt_automaton_t a);
 void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay);
-int reached_stateless(mc_pair_stateless_t p);
+int reached_stateless(mc_reached_pair_stateless_t p);
 void set_pair_stateless_reached(mc_pair_stateless_t p);
 void MC_show_stack_liveness_stateless(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateless(xbt_fifo_t stack);

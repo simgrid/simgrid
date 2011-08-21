@@ -715,7 +715,7 @@ mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st){
 }
 
 
-int reached_stateless(mc_pair_stateless_t pair){
+int reached_stateless(mc_reached_pair_stateless_t pair){
 
   char* hash_reached = malloc(sizeof(char)*160);
   unsigned int c= 0;
@@ -736,10 +736,16 @@ int reached_stateless(mc_pair_stateless_t pair){
 
 void set_pair_stateless_reached(mc_pair_stateless_t pair){
 
-  if(reached_stateless(pair) == 0){
+  mc_reached_pair_stateless_t p = NULL;
+  p = xbt_new0(s_mc_reached_pair_stateless_t, 1);
+  p->pair = pair;
+  p->snapshot_system = xbt_new0(s_mc_snapshot_t, 1);
+  MC_take_snapshot(p->snapshot_system);
+
+  if(reached_stateless(p) == 0){
     MC_SET_RAW_MEM;
     char *hash = malloc(sizeof(char)*160) ;
-    xbt_sha((char *)&pair, hash);
+    xbt_sha((char *)&p, hash);
     xbt_dynar_push(reached_pairs, &hash); 
     MC_UNSET_RAW_MEM;
   }
@@ -868,6 +874,7 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
   xbt_dynar_t successors;
 
   mc_pair_stateless_t next_pair;  
+  mc_snapshot_t snap;
   
   while((req = MC_state_get_request(current_pair->graph_state, &value)) != NULL){
 
@@ -904,9 +911,12 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
     }
 
     successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
-      
-    MC_UNSET_RAW_MEM;
 
+    snap = xbt_new0(s_mc_snapshot_t, 1);
+    MC_take_snapshot(snap);
+
+    MC_UNSET_RAW_MEM;
+    
     //xbt_dynar_reset(successors);
     
     cursor = 0;
@@ -939,7 +949,12 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
 
     xbt_dynar_foreach(successors, cursor, pair_succ){
 
-      if((search_cycle == 1) && (reached_stateless(pair_succ) == 1)){
+      mc_reached_pair_stateless_t p = NULL;
+      p = xbt_new0(s_mc_reached_pair_stateless_t, 1);
+      p->pair = pair_succ;
+      p->snapshot_system = snap;
+     
+      if((search_cycle == 1) && (reached_stateless(p) == 1)){
 	XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 	XBT_INFO("|             ACCEPTANCE CYCLE            |");
 	XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
@@ -955,8 +970,6 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
       MC_SET_RAW_MEM;
       xbt_fifo_unshift(mc_stack_liveness_stateless, pair_succ);
       MC_UNSET_RAW_MEM;
-
-      
 
       MC_ddfs_stateless(a, search_cycle, 0);
 
