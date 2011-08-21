@@ -59,7 +59,7 @@ int server(int argc, char *argv[])
     //XBT_INFO("r (server) = %d", r);
      
   }
-  MC_assert_pair_stateful(atoi(MSG_task_get_name(task)) == 3);
+  MC_assert_pair_stateless(atoi(MSG_task_get_name(task)) == 3);
 
   XBT_INFO("OK");
   return 0;
@@ -108,7 +108,7 @@ int main(int argc, char **argv){
   
   //XBT_INFO("r=%d", r);
   
-  MSG_main_liveness_stateful(automaton);
+  MSG_main_liveness_stateless(automaton);
 
   MSG_clean();
 

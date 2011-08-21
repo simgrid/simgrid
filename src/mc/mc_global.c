@@ -106,7 +106,7 @@ void MC_init_liveness_stateful(xbt_automaton_t a){
 
   /* Initialize statistics */
   mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
-  mc_stats = xbt_new0(s_mc_stats_t, 1);
+  //mc_stats = xbt_new0(s_mc_stats_t, 1);
 
   XBT_DEBUG("Creating snapshot_stack");
 
@@ -136,7 +136,7 @@ void MC_init_liveness_stateless(xbt_automaton_t a){
   /* Initialize statistics */
   mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
 
-  XBT_DEBUG("Creating snapshot_stack");
+  XBT_DEBUG("Creating stack");
 
  /* Create exploration stack */
   mc_stack_liveness_stateless = xbt_fifo_new();
@@ -144,6 +144,8 @@ void MC_init_liveness_stateless(xbt_automaton_t a){
   MC_UNSET_RAW_MEM;
 
   MC_ddfs_stateless_init(a);
+
+  
 }
 
 
@@ -280,6 +282,57 @@ void MC_replay(xbt_fifo_t stack)
   }
   XBT_DEBUG("**** End Replay ****");
 }
+
+void MC_replay_liveness(xbt_fifo_t stack)
+{
+  int value;
+  char *req_str;
+  smx_req_t req = NULL, saved_req = NULL;
+  xbt_fifo_item_t item;
+  mc_state_t state;
+  mc_pair_stateless_t pair;
+
+  XBT_DEBUG("**** Begin Replay ****");
+
+  /* Restore the initial state */
+  MC_restore_snapshot(initial_snapshot);
+  /* At the moment of taking the snapshot the raw heap was set, so restoring
+   * it will set it back again, we have to unset it to continue  */
+  MC_UNSET_RAW_MEM;
+
+  /* Traverse the stack from the initial state and re-execute the transitions */
+  for (item = xbt_fifo_get_last_item(stack);
+       item != xbt_fifo_get_first_item(stack);
+       item = xbt_fifo_get_prev_item(item)) {
+
+    pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
+    state = (mc_state_t) pair->graph_state;
+    saved_req = MC_state_get_executed_request(state, &value);
+    //XBT_DEBUG("SavedReq->call %u", saved_req->call);
+   
+    if(saved_req != NULL){
+      /* because we got a copy of the executed request, we have to fetch the  
+         real one, pointed by the request field of the issuer process */
+      req = &saved_req->issuer->request;
+      //XBT_DEBUG("Req->call %u", req->call);
+
+      /* Debug information */
+      if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
+        req_str = MC_request_to_string(req, value);
+        XBT_DEBUG("Replay: %s (%p)", req_str, state);
+        xbt_free(req_str);
+      }
+    }
+         
+    SIMIX_request_pre(req, value);
+    MC_wait_for_requests();
+         
+    /* Update statistics */
+    mc_stats_pair->visited_pairs++;
+  }
+  XBT_DEBUG("**** End Replay ****");
+}
+
 
 /**
  * \brief Dumps the contents of a model-checker's stack and shows the actual

@@ -46,6 +46,7 @@ extern double *mc_time;
 
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack);
+void MC_replay_liveness(xbt_fifo_t stack);
 void MC_wait_for_requests(void);
 void MC_get_enabled_processes();
 void MC_show_deadlock(smx_req_t req);
@@ -233,7 +234,7 @@ extern xbt_fifo_t mc_stack_liveness_stateless;
 
 mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st);
 void MC_ddfs_stateless_init(xbt_automaton_t a);
-void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int restore);
+void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay);
 int reached_stateless(mc_pair_stateless_t p);
 void set_pair_stateless_reached(mc_pair_stateless_t p);
 void MC_show_stack_liveness_stateless(xbt_fifo_t stack);

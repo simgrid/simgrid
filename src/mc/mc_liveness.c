@@ -7,6 +7,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
 xbt_dynar_t initial_pairs = NULL;
 int max_pair = 0;
 xbt_dynar_t reached_pairs;
+extern mc_snapshot_t initial_snapshot;
 
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st){
   mc_pair_t p = NULL;
@@ -20,7 +21,6 @@ mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st){
   return p;
     
 }
-
 
 int reached(mc_pair_t pair){
 
@@ -750,7 +750,7 @@ void set_pair_stateless_reached(mc_pair_stateless_t pair){
 void MC_ddfs_stateless_init(xbt_automaton_t a){
 
   XBT_DEBUG("**************************************************");
-  XBT_DEBUG("Double-DFS without visited state and with restore snapshot init");
+  XBT_DEBUG("Double-DFS stateless init");
   XBT_DEBUG("**************************************************");
  
   mc_pair_stateless_t mc_initial_pair;
@@ -823,6 +823,10 @@ void MC_ddfs_stateless_init(xbt_automaton_t a){
 
     xbt_fifo_unshift(mc_stack_liveness_stateless, pair_succ);
 
+    /* Save the initial state */
+    initial_snapshot = xbt_new0(s_mc_snapshot_t, 1);
+    MC_take_snapshot(initial_snapshot);
+
     MC_UNSET_RAW_MEM;
 
     if(cursor == 0){
@@ -834,8 +838,149 @@ void MC_ddfs_stateless_init(xbt_automaton_t a){
 }
 
 
-void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int restore){
+void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
 
+ smx_process_t process = NULL;
+
+
+  if(xbt_fifo_size(mc_stack_liveness_stateless) == 0)
+    return;
+
+  /* Get current state */
+  mc_pair_stateless_t current_pair = (mc_pair_stateless_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_liveness_stateless));
+
+  XBT_DEBUG("********************* ( Depth = %d, search_cycle = %d )", xbt_fifo_size(mc_stack_liveness_stateless), search_cycle);
+  XBT_DEBUG("Pair : graph=%p, automaton=%p(%s), %u interleave", current_pair->graph_state, current_pair->automaton_state, current_pair->automaton_state->id,MC_state_interleave_size(current_pair->graph_state));
+  
+
+  mc_stats_pair->visited_pairs++;
+
+  int value;
+  mc_state_t next_graph_state = NULL;
+  smx_req_t req = NULL;
+  char *req_str;
+
+  mc_pair_stateless_t pair_succ;
+  xbt_transition_t transition_succ;
+  unsigned int cursor;
+  int res;
+
+  xbt_dynar_t successors;
+
+  mc_pair_stateless_t next_pair;  
+  
+  while((req = MC_state_get_request(current_pair->graph_state, &value)) != NULL){
+
+    //XBT_DEBUG("Interleave size %u", MC_state_interleave_size(current_pair->graph_state));
+
+    /* Debug information */
+    if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+      req_str = MC_request_to_string(req, value);
+      XBT_DEBUG("Execute: %s", req_str);
+      xbt_free(req_str);
+    }
+
+    //sleep(1);
+
+    MC_state_set_executed_request(current_pair->graph_state, req, value);   
+    
+    /* Answer the request */
+    SIMIX_request_pre(req, value);
+
+    /* Wait for requests (schedules processes) */
+    MC_wait_for_requests();
+
+
+    /* Create the new expanded graph_state */
+    MC_SET_RAW_MEM;
+
+    next_graph_state = MC_state_pair_new();
+    
+    /* Get enabled process and insert it in the interleave set of the next graph_state */
+    xbt_swag_foreach(process, simix_global->process_list){
+      if(MC_process_is_enabled(process)){
+	MC_state_interleave_process(next_graph_state, process);
+      }
+    }
+
+    successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
+      
+    MC_UNSET_RAW_MEM;
+
+    //xbt_dynar_reset(successors);
+    
+    cursor = 0;
+   
+    xbt_dynar_foreach(current_pair->automaton_state->out, cursor, transition_succ){
+
+      res = MC_automaton_evaluate_label(a, transition_succ->label);
+
+      MC_SET_RAW_MEM;
+	
+      if((res == 1) || (res == 2)){ // enabled transition in automaton
+	next_pair = new_pair_stateless(next_graph_state, transition_succ->dst);
+	xbt_dynar_push(successors, &next_pair);
+      }
+
+      MC_UNSET_RAW_MEM;
+    }
+
+   
+    if(xbt_dynar_length(successors) == 0){
+
+      MC_SET_RAW_MEM;
+      next_pair = new_pair_stateless(next_graph_state, current_pair->automaton_state);
+      xbt_dynar_push(successors, &next_pair);
+      MC_UNSET_RAW_MEM;
+	
+    }
+
+    cursor = 0;
+
+    xbt_dynar_foreach(successors, cursor, pair_succ){
+
+      if((search_cycle == 1) && (reached_stateless(pair_succ) == 1)){
+	XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+	XBT_INFO("|             ACCEPTANCE CYCLE            |");
+	XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+	XBT_INFO("Counter-example that violates formula :");
+	MC_show_stack_liveness_stateless(mc_stack_liveness_stateless);
+	MC_dump_stack_liveness_stateless(mc_stack_liveness_stateless);
+	MC_print_statistics_pairs(mc_stats_pair);
+	exit(0);
+      }
+	
+      mc_stats_pair->executed_transitions++;
  
+      MC_SET_RAW_MEM;
+      xbt_fifo_unshift(mc_stack_liveness_stateless, pair_succ);
+      MC_UNSET_RAW_MEM;
+
+      
+
+      MC_ddfs_stateless(a, search_cycle, 0);
+
+      if((search_cycle == 0) && (current_pair->automaton_state->type == 1)){
+
+	set_pair_stateless_reached(current_pair);
+	XBT_DEBUG("Acceptance pair : graph=%p, automaton=%p(%s)", current_pair->graph_state, current_pair->automaton_state, current_pair->automaton_state->id);
+	MC_replay_liveness(mc_stack_liveness_stateless);
+	MC_ddfs_stateless(a, 1, 1);
+
+      }
+    }
+    
+    if(MC_state_interleave_size(current_pair->graph_state) > 0){
+      XBT_DEBUG("Backtracking to depth %u", xbt_fifo_size(mc_stack_liveness_stateless));
+      MC_replay_liveness(mc_stack_liveness_stateless);
+    }
+  }
+
+  
+  MC_SET_RAW_MEM;
+  xbt_fifo_shift(mc_stack_liveness_stateless);
+  XBT_DEBUG("Pair (graph=%p, automaton =%p) shifted in stack", current_pair->graph_state, current_pair->automaton_state);
+  MC_UNSET_RAW_MEM;
+
 }
 
