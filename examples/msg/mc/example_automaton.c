@@ -14,7 +14,7 @@ extern xbt_automaton_t automaton;
 
 
 int p=1;
-int r=0;
+int r=1;
 int q=1;
 int e=1;
 int d=1;
@@ -55,7 +55,7 @@ int server(int argc, char *argv[])
     }
     MSG_task_receive(&task, "mymailbox");
     count++;
-    //r=(r+1)%2;
+    r=(r+1)%2;
     //XBT_INFO("r (server) = %d", r);
      
   }
