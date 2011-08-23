@@ -7,10 +7,32 @@
 /* same buffer for reception (task1).                                         */
 /******************************************************************************/
 
-#include <msg/msg.h>
-#include <mc/modelchecker.h>
+#include "xbt/automaton.h"
+#include "xbt/automatonparse_promela.h"
+#include "example2_liveness_without_cycle.h"
+#include "msg/msg.h"
+#include "mc/mc.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(bugged3, "this example");
+#include "y.tab.c"
+
+XBT_LOG_NEW_DEFAULT_CATEGORY(example_liveness_with_cycle, "Example liveness with cycle");
+
+extern xbt_automaton_t automaton;
+
+
+int p=1;
+int q=0;
+
+
+int predP(){
+  return p;
+}
+
+
+int predQ(){
+  return q;
+}
+
 
 int server(int argc, char *argv[]);
 int client(int argc, char *argv[]);
@@ -29,9 +51,17 @@ int server(int argc, char *argv[])
   val1 = (long) MSG_task_get_data(task1);
   XBT_INFO("Received %lu", val1);
 
-  //MC_assert(val1 == 2);
+  //MC_assert_pair_stateless(val1 == 2);
+
+  /*if(val1 == 2)
+    q = 1;
+  else
+  q = 0;*/
+
+  //XBT_INFO("q (server) = %d", q);
 
   XBT_INFO("OK");
+ 
   return 0;
 }
 
@@ -46,6 +76,7 @@ int client(int argc, char *argv[])
 
   XBT_INFO("Send %d!", atoi(argv[1]));
   comm = MSG_task_isend(task1, mbox);
+
   MSG_comm_wait(comm, -1);
 
   xbt_free(mbox);
@@ -55,6 +86,15 @@ int client(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
+
+  init();
+  yyparse();
+  automaton = get_automaton();
+  xbt_propositional_symbol_t ps = xbt_new_propositional_symbol(automaton,"p", &predP); 
+  ps = xbt_new_propositional_symbol(automaton,"q", &predQ); 
+      
+  //display_automaton();
+
   MSG_global_init(&argc, argv);
 
   MSG_create_environment("platform.xml");
@@ -65,7 +105,7 @@ int main(int argc, char *argv[])
 
   MSG_launch_application("deploy_bugged3.xml");
 
-  MSG_main();
+  MSG_main_liveness_stateless(automaton);
 
   return 0;
 }

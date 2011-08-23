@@ -116,8 +116,8 @@ void MC_init_liveness_stateful(xbt_automaton_t a){
 
   MC_UNSET_RAW_MEM;
 
-  MC_vddfs_stateful_init(a);
-  //MC_ddfs_stateful_init(a);
+  //MC_vddfs_stateful_init(a);
+  MC_ddfs_stateful_init(a);
   //MC_dpor2_init(a);
   //MC_dpor3_init(a);
 }

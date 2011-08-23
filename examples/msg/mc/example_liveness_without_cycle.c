@@ -1,6 +1,6 @@
 #include "xbt/automaton.h"
 #include "xbt/automatonparse_promela.h"
-#include "example_automaton.h"
+#include "example_liveness_without_cycle.h"
 #include "msg/msg.h"
 #include "mc/mc.h"
 
@@ -8,7 +8,7 @@
 
 #define N 3
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(example, "Example with automaton");
+XBT_LOG_NEW_DEFAULT_CATEGORY(example_liveness_without_cycle, "Example liveness without cycle");
 
 extern xbt_automaton_t automaton;
 

@@ -9,7 +9,12 @@ add_executable(bugged2_stateful bugged2_stateful.c)
 add_executable(bugged2     bugged2.c)
 add_executable(bugged3	   bugged3.c)
 add_executable(random_test random_test.c)
-add_executable(example_automaton automaton.c automatonparse_promela.c example_automaton.c)
+add_executable(example_liveness_without_cycle automaton.c
+automatonparse_promela.c example_liveness_without_cycle.c)
+add_executable(example2_liveness_without_cycle automaton.c
+automatonparse_promela.c
+example2_liveness_without_cycle.c)
+
 
 target_link_libraries(centralized simgrid m )
 target_link_libraries(bugged1     simgrid m )
@@ -18,4 +23,5 @@ target_link_libraries(bugged2_stateful simgrid m)
 target_link_libraries(bugged2     simgrid m )
 target_link_libraries(bugged3     simgrid m )
 target_link_libraries(random_test     simgrid m )
-target_link_libraries(example_automaton     simgrid m )
+target_link_libraries(example_liveness_without_cycle     simgrid m )
+target_link_libraries(example2_liveness_without_cycle     simgrid m )
