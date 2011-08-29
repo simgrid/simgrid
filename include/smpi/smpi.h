@@ -12,6 +12,9 @@
 #include <xbt/misc.h>
 #include <xbt/function_types.h>
 
+#define sleep(x) smpi_sleep(x)
+#define gettimeofday(x, y) smpi_gettimeofday(x, y)
+
 #define MPI_CALL(type,name,args) \
   type name args __attribute__((weak)); \
   type P##name args
