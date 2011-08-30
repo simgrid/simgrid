@@ -399,7 +399,9 @@ foreach my $file (@allfiles) {
 	      || $file =~ /^html\/publis.*/ 
 	      || $file =~ /^html\/people.*/ 
 	      || $file =~ /^html\/history.*/ 
-	      || $file =~ /^html\/contrib.*/)
+	      || $file =~ /^html\/contrib.*/
+	      || $file =~ /^html\/installSimgrid.*/
+		  || $file =~ /^html\/bindings.*/)
 	      {
 		      my $filename = $file;
 		      $filename =~ s/html\///g;
