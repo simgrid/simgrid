@@ -2,9 +2,8 @@
 
 \htmlinclude .bindings.doc.toc
 
-\section bindings_start Available bindings
+\section bindings_binding_lua Lua Binding
 
-\subsection bindings_binding_lua Lua Binding
 Most of Simgrid modules require a  good level in C programming, since simgrid is used to be as standard C library.
  Sometime users prefer using some kind of « easy scripts » or a language easier to code with, for their works,
  which avoid dealing with C errors, and sometime an important  gain of time.
@@ -12,7 +11,7 @@ Besides Java Binding, Lua  and Ruby bindings are available since version 3.4 of 
 for MSG Module, and we are currenlty working on bindings for other modules.
 
 
-\subsubsection bindings_binding_lua_about What is lua ?
+\subsection bindings_binding_lua_about What is lua ?
 Lua is a lightweight, reflective, imperative and functional programming language,
  designed as a scripting language with extensible semantics as a primary goal (see official web site <a href="http://www.lua.org">here</a>).
 \subsubsection bindings_binding_lua_why Why lua ?
@@ -28,7 +27,7 @@ Actually, the use of lua in Simgrid is quite simple, you have just to follow the
   - and … Running the Simulation.
   
 \dontinclude lua/masterslave/master.lua
-\subsubsection bindings_binding_lua_example_master_slave Master/Slave Example
+\subsection bindings_binding_lua_example_master_slave Master/Slave Example
 
  \li Master Code
  \until end_of_master
@@ -46,7 +45,7 @@ this function return directly the task recevied.
 \li Set Environmenet and run application
 \until simgrid.clean()
 
-\subsubsection bindings_binding_lua_example_data Exchanging Data
+\subsection bindings_binding_lua_example_data Exchanging Data
 You can also exchange data between Process using lua. for that, you have to deal with lua task as a table,
 since lua is based itself on a mechanism of tables,
 so you can exchange any kind of data (tables, matrix, strings,…) between process via tasks.
@@ -77,7 +76,7 @@ so you can exchange any kind of data (tables, matrix, strings,…) between proce
 	You can find  a complet example (matrix multiplication case) in the file example/lua/mult_matrix.lua. 
 
 
-\subsubsection bindings_binding_lua_example_bypass Bypass XML
+\subsection bindings_binding_lua_example_bypass Bypass XML
 	maybe you wonder if there is a way to bypass the XML files,
 	 and describe your platform directly from the code, with lua bindings it's Possible !! how ?
 	We provide some additional (tricky?) functions in lua that allows you to set up your own platform without using the XML files
@@ -148,14 +147,52 @@ Yes, Here too you have to resgiter your application before running the simulatio
 
 the full example is distributed in the file examples/lua/master_slave_bypass.lua
 
-\subsection bindings_binding_ruby Ruby Binding
+\section bindings_binding_ruby Ruby Binding
 
+\subsection bindings_binding_ruby_install How to install Simgrid-ruby
 
-\subsubsection bindings_binding_ruby_simgrid Use Ruby in Simgrid
+To use Ruby with Simgrid you have to install some dependancies:
+ \li Simgrid (see \ref installSimgrid_cmake). Be sure having set the environment variable "SIMGRID_ROOT". 
+ \li Ruby package.
+ 
+Then Download and install package Simgrid-ruby:
+\verbatim
+svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-ruby simgrid-ruby
+cd simgrid-ruby
+cmake .
+\endverbatim
+ 
+ Cmake output
+ 
+\verbatim
+-- Svn version : 9905
+-- SITE        : Linux_2.6.38-8-generic_x86_64
+-- BUILDNAME   : Simgrid-Ruby
+-- Looking for lib SimGrid
+-- Looking for lib SimGrid - found
+-- Simgrid version : 3.6
+-- Looking for gras.h
+-- Looking for gras.h - found
+-- Found Tesh: /home/user/Bureau/simgrid/git/bin/tesh
+-- Found gras_stub_generator: /home/user/Bureau/simgrid/git/bin/gras_stub_generator
+-- Found ruby:	/usr/bin/ruby
+-- Looking for ruby.h
+-- Looking for ruby.h - found
+-- Looking for confi.h
+-- Looking for config.h - found
+-- Looking for lib ruby
+-- Looking for lib ruby - found
+-- Lib ruby version: 1.9.1
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/user/workspace/simgrid-ruby/build
+\endverbatim
+
+\subsection bindings_binding_ruby_simgrid Use Ruby in Simgrid
 Since v3.4, the use of <a href="http://ruby-lang.org">ruby</a> in simgrid is available for the MSG Module.
 you can find almost all MSG functionalities in Ruby code, that allows you to set up your environment, manage tasks between hosts and run the simulation.
 
-\subsubsection bindings_binding_ruby_example Master/Slave Ruby Application
+\subsection bindings_binding_ruby_example Master/Slave Ruby Application
 for each process method(master and slave in this example), you have to associate a ruby class, that should inherit from <i>MSG::Process</i> ruby class,
   with a 'main' function that describe the behaviour of the process during the simulation.
 \li required stuff
@@ -260,7 +297,7 @@ MSG.exit
 - <i>MSG.deployApplication(deployment_file)</i> : load the deployment file description.
 - <i>MSG.run</i> : run the simulation
 
-\subsubsection bindings_binding_ruby_data Exchanging data 
+\subsection bindings_binding_ruby_data Exchanging data 
 ruby bindings provides two ways to exchange data between ruby processes.
 \li MSG::Task.join & MSG::Task.data <br/>
 
@@ -306,5 +343,52 @@ class PingPongTask < MSG::Task
 end
  \endverbatim
  you can find an example of use in file example/ruby/PingPong.rb
+
+
+\section bindings_binding_java Java Binding
+
+\subsection bindings_binding_java_install How to install Simgrid-java
+
+To use java with Simgrid you have to install some dependancies:
+ \li Simgrid (see \ref installSimgrid_cmake). Be sure having set the environment variable "SIMGRID_ROOT". 
+ \li Java packages: sun-java6-jdk and libgcj10-dev. If you cannot find the
+libgcj10-dev, try another version.
+ 
+Then Download and install package Simgrid-java:
+\verbatim
+svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java simgrid-java
+cd simgrid-java
+cmake .
+\endverbatim
+ 
+Cmake output
+\verbatim
+-- Svn version : 9904
+-- SITE        : Linux_2.6.38-8-generic_x86_64
+-- BUILDNAME   : Simgrid-Java
+-- Looking for lib SimGrid
+-- Looking for lib SimGrid - found
+-- Simgrid version : 3.6
+-- Looking for gras.h
+-- Looking for gras.h - found
+-- Found Tesh: /home/user/Bureau/simgrid/git/bin/tesh
+-- Found gras_stub_generator: /home/user/Bureau/simgrid/git/bin/gras_stub_generator
+-- Java version 1.6.0.22 configured successfully!
+-- Looking for jni.h
+-- Looking for jni.h - found
+-- Add flags -I/usr/lib/jvm/java-6-openjdk/include
+-- Looking for jni_md.h
+-- Looking for jni_md.h - found
+-- Found javac: /usr/bin/javac
+-- Found jar: /usr/bin/jar
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/user/workspace/simgrid-java/build
+\endverbatim
+ 
+\subsection bindings_binding_java_use Use Java in Simgrid
+
+The use of java in simgrid is available for the MSG Module. You can find almost all MSG functionalities 
+in Java code (\ref MSG_JAVA).
 
  */
