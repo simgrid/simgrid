@@ -617,6 +617,8 @@ INPUT                  = index.doc \
 						 installSimgrid.doc \
                          bindings.doc \
                          FAQ.doc \
+                         options.doc \
+                         use.doc \
                          contrib.doc \
                          publis.doc \
                          people.doc \

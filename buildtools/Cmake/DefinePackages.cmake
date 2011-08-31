@@ -553,6 +553,8 @@ set(DOC_SOURCES
 	doc/FAQ.doc
 	doc/installSimgrid.doc
 	doc/bindings.doc
+	doc/options.doc
+	doc/use.doc
 	doc/gtut-howto-design.doc
 	doc/gtut-howto.doc
 	doc/gtut-introduction.doc
