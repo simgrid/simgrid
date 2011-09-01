@@ -107,7 +107,7 @@ if(HAVE_LUA)
 		)
 	add_custom_command(
 		OUTPUT ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ../../www-id/Pages_Perso_Mescal/pierre.navarro//libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
 	)
 	install(FILES ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
 		DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lua/5.1
@@ -330,5 +330,15 @@ COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs
 WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 
+set(HOME_TEMP intra-id:/www-id/Pages_Perso_Mescal/pierre.navarro/doc/) 
+
+add_custom_target(sync-temp-doc
+COMMAND chmod g+rw -R doc/
+COMMAND chmod a+rX -R doc/
+COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times doc/html/ ${HOME_TEMP} || true
+COMMAND scp doc/index.php doc/webcruft/robots.txt ${HOME_TEMP}
+COMMAND scp doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/simgrid_logo.png doc/webcruft/fish.gif doc/webcruft/simgrid_logo_small.png ${HOME_TEMP}
+WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
+)
 
 include(CPack)
