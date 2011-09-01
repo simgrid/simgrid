@@ -68,6 +68,10 @@ XBT_LOG_EXTERNAL_CATEGORY(gras_virtu);
 XBT_LOG_EXTERNAL_CATEGORY(gras_virtu_emul);
 XBT_LOG_EXTERNAL_CATEGORY(gras_virtu_process);
 
+/**
+ * @ingroup GRAS_API
+ * \brief Initialize the gras mechanisms.
+ */
 void gras_init(int *argc, char **argv)
 {
   int first = 0;
@@ -143,6 +147,10 @@ void gras_init(int *argc, char **argv)
   pd->listener = gras_msg_listener_launch(msg_pd->msg_received);
 }
 
+/**
+ * @ingroup GRAS_API
+ * @brief Finalize the gras mechanisms.
+ * */
 void gras_exit(void)
 {
   XBT_INFO("Exiting GRAS");

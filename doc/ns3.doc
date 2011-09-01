@@ -1,0 +1,7 @@
+/*! \page ns3 SimGrid and NS3
+
+\section ns3_simgrid_configuration_ns3 Using NS3
+ \li gras_init()
+ \li \ref xbt_new
+ \li MSG_process_suspend()
+*/

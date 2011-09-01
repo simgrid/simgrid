@@ -555,6 +555,8 @@ set(DOC_SOURCES
 	doc/bindings.doc
 	doc/options.doc
 	doc/use.doc
+	doc/gtnets.doc
+	doc/ns3.doc
 	doc/gtut-howto-design.doc
 	doc/gtut-howto.doc
 	doc/gtut-introduction.doc

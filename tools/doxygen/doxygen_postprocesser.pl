@@ -6,7 +6,8 @@ use strict;
 my @extra_files = qw(html/index.html html/faq.html html/history.html html/contrib.html html/people.html
                      html/publis.html html/publis_core.html html/publis_extern.html html/publis_intra.html
                      html/pages.html html/modules.html html/annotated.html html/functions.html html/functions_vars.html index.php 
-                     html/GRAS_tut.html html/installSimgrid.html html/bindings.html html/options.html html/use.html);
+                     html/GRAS_tut.html html/installSimgrid.html html/bindings.html html/options.html html/use.html html/gtnets.html
+                     html/ns3.html);
 
 # GRAS tutorial
 map {push @extra_files, "html/GRAS_tut_$_.html"} qw (intro 
@@ -381,13 +382,15 @@ foreach my $file (@allfiles) {
       }
       if( $_ =~ /<\/ul>/ && $tabs){
       		my $tmp_buff="";
-      		$tmp_buff .= '      <li><a href="use.html"><span>Use SimGrid</span></a></li>'."\n";
+      		$tmp_buff .= '      <li><a href="use.html"><span>Using SimGrid</span></a></li>'."\n";
+      		$tmp_buff .= '      <li><a href="faq.html"><span>FAQ&#160;Page</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="publis.html"><span>Publications</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="people.html"><span>People</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="history.html"><span>History</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="contrib.html"><span>Contrib</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="http://gforge.inria.fr/projects/simgrid"><span>Simgrid&#160;Forge</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="http://simgrid.gforge.inria.fr/"><span>Home</span></a></li>'."\n";
+      		$tmp_buff .= '      <li><a href="pages.html"><span>Site&nbsp;Map</span></a></li>'."\n";
       	  	$tmp_buff .= $_;
       	  	$tabs = 0;
 
@@ -397,14 +400,20 @@ foreach my $file (@allfiles) {
 	      || $file =~ /^html\/installSimgrid.*/
 	      || $file =~ /^html\/options.*/ 
 	      || $file =~ /^html\/bindings.*/
-	      || $file =~ /^html\/faq.*/)
+	      || $file =~ /^html\/gtnets.*/
+	      || $file =~ /^html\/ns3.*/
+	      || $file =~ /^html\/modules.*/
+	      || $file =~ /^html\/annotated.*/)
 	      {
 				$tmp_buff .= '      <div class="tabs_group_use">'."\n";
 				$tmp_buff .= '      	<ul class="tablist">'."\n";
 				$tmp_buff .= '        	<li><a href="installSimgrid.html"><span>Install SimGrid</span></a></li>'."\n";
+				$tmp_buff .= '        	<li><a href="modules.html"><span>Modules&#160;API</span></a></li>'."\n";
+      			$tmp_buff .= '        	<li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="options.html"><span>Options & configurations</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="bindings.html"><span>Bindings</span></a></li>'."\n";
-				$tmp_buff .= '          <li><a href="faq.html"><span>FAQ&#160;Page</span></a></li>'."\n";
+				$tmp_buff .= '        	<li><a href="gtnets.html"><span>GTNets</span></a></li>'."\n";
+				$tmp_buff .= '        	<li><a href="ns3.html"><span>NS3</span></a></li>'."\n";
 				$tmp_buff .= '      	</ul></div>'."\n";
 				$tmp_buff .= '      </div>'."\n";
 				
@@ -414,33 +423,39 @@ foreach my $file (@allfiles) {
 		        $filename =~ s/publis_.*/publis/g;
 		        $tmp_buff =~ s/<li class="current">/<li>/g;
 		        $tmp_buff =~ s/<li><a href="$filename.html">/<li class="current"><a href="$filename.html">/g;
-		        $tmp_buff =~ s/<li><a href="use.html">/<li class="current"><a href="$filename.html">/g; 
+		        $tmp_buff =~ s/<li><a href="use.html">/<li class="current"><a href="use.html">/g; 
 				
 	      }
 	
 	      # Rework the navbar
 	      # Fix the current "button" of buggy Doxygen tabs   
 	      if($file =~ /^html\/publis.*/ 
+	      || $file =~ /^html\/faq.*/
 	      || $file =~ /^html\/people.*/ 
 	      || $file =~ /^html\/history.*/ 
-	      || $file =~ /^html\/contrib.*/)
+	      || $file =~ /^html\/contrib.*/
+	      || $file =~ /^html\/pages.*/)
 	      {
 		      my $filename = $file;
 		      $filename =~ s/html\///g;
 		      $filename =~ s/\.html//g;
 		      $filename =~ s/publis_.*/publis/g;
 		      $tmp_buff =~ s/<li class="current">/<li>/g;
-		      $tmp_buff =~ s/<li><a href="$filename.html">/<li class="current"><a href="$filename.html">/g;	      
+		      $tmp_buff =~ s/<li><a href="$filename.html">/<li class="current"><a href="$filename.html">/g;     
 	      }
 	      
 
 	      print TO $tmp_buff;	      
 	      next;
     }
-      
       s|<span>Modules</span>|<span>Modules&#160;API</span>|g;
-      s|<span>Related&nbsp;Pages</span>|<span>Site&nbsp;Plan</span>|g;
-                                                                                                 
+      s|<li.*><a href="pages.html"><span>Related&#160;Pages</span></a></li>\n||g;
+      s|<li><a href="modules.html"><span>Modules&#160;API</span></a></li>\n||g;
+      s|<li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>\n||g;
+      s|<li class="current"><a href="modules.html"><span>Modules&#160;API</span></a></li>\n||g;
+      s|<li class="current"><a href="annotated.html"><span>Data&#160;Structures</span></a></li>\n||g;
+      s|Related Pages<|Site&nbsp;Map<|g;
+                                                                                           
       print TO $_;
     }
     close FROM;
