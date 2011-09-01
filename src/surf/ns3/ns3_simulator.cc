@@ -60,6 +60,7 @@ void NS3Sim::create_flow_NS3(
 	MySocket *mysocket = new MySocket();
 	mysocket->TotalBytes = TotalBytes;
 	mysocket->remaining = TotalBytes;
+	mysocket->last_amount_sent = 0;
 	mysocket->sentBytes = 0;
 	mysocket->finished = 0;
 	mysocket->action = action;
@@ -78,6 +79,14 @@ char NS3Sim::get_finished(void *socket){
 
 double NS3Sim::get_remains_from_socket(void *socket){
 	return ((MySocket *)socket)->remaining;
+}
+
+double NS3Sim::get_last_amount_sent_from_socket(void *socket){
+	return ((MySocket *)socket)->last_amount_sent;
+}
+
+void NS3Sim::reset_last_amount_sent_from_socket(void *socket){
+	((MySocket *)socket)->last_amount_sent = 0;
 }
 
 void NS3Sim::simulator_stop(double min){
@@ -124,7 +133,9 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 
       if(amountSent < 0)
     	  return;
-	  (mysocket->sentBytes) += amountSent;
+
+      (mysocket->last_amount_sent) += amountSent;
+      (mysocket->sentBytes) += amountSent;
 	  (mysocket->remaining) -= amountSent;
 	  //cout << "[" << Simulator::Now ().GetSeconds() << "] " << "Send one packet, remaining "<<  mysocket->remaining << " bytes!" << endl;
     }
