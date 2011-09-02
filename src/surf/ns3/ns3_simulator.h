@@ -49,6 +49,7 @@ public:
 	void simulator_start(void);
 	void* get_action_from_socket(void *socket);
 	double get_remains_from_socket(void *socket);
+	double get_sent_from_socket(void *socket);
 	double get_last_amount_sent_from_socket(void *socket);
 	void reset_last_amount_sent_from_socket(void *socket);
 	char get_finished(void *socket);

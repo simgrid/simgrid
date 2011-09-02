@@ -55,6 +55,10 @@ double ns3_get_socket_remains(void *socket){
 		return ns3_sim->get_remains_from_socket(socket);
 }
 
+double ns3_get_socket_sent(void *socket){
+  return ns3_sim->get_sent_from_socket(socket);
+}
+
 double ns3_get_socket_last_amount_sent(void *socket){
 	return ns3_sim->get_last_amount_sent_from_socket(socket);
 }

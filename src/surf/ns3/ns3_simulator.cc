@@ -83,6 +83,10 @@ double NS3Sim::get_remains_from_socket(void *socket){
 	return ((MySocket *)socket)->remaining;
 }
 
+double NS3Sim::get_sent_from_socket(void *socket){
+  return ((MySocket *)socket)->sentBytes;
+}
+
 double NS3Sim::get_last_amount_sent_from_socket(void *socket){
 	return ((MySocket *)socket)->last_amount_sent;
 }

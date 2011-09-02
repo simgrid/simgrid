@@ -438,7 +438,7 @@ static void ns3_update_actions_state(double now, double delta)
 
 	  xbt_dict_foreach(dict_socket,cursor,key,data){
 	    action = (surf_action_t)ns3_get_socket_action(data);
-	    action->remains = ns3_get_socket_remains(data);
+	    action->remains = action->cost - ns3_get_socket_sent(data);
 
 	    if(ns3_get_socket_is_finished(data) == 1){
 	      action->finish = now;
