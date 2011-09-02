@@ -37,8 +37,6 @@ XBT_PUBLIC(double) ns3_time(void);
 XBT_PUBLIC(void*)  ns3_get_socket_action(void *socket);
 XBT_PUBLIC(double) ns3_get_socket_remains(void *socket);
 XBT_PUBLIC(double) ns3_get_socket_sent(void *socket);
-XBT_PUBLIC(double) ns3_get_socket_last_amount_sent(void *socket);
-XBT_PUBLIC(void)   ns3_reset_socket_last_amount_sent(void *socket);
 XBT_PUBLIC(char)   ns3_get_socket_is_finished(void *socket);
 XBT_PUBLIC(void *) ns3_add_host(char * id);
 XBT_PUBLIC(void *) ns3_add_host_cluster(char * id);

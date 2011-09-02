@@ -87,14 +87,6 @@ double NS3Sim::get_sent_from_socket(void *socket){
   return ((MySocket *)socket)->sentBytes;
 }
 
-double NS3Sim::get_last_amount_sent_from_socket(void *socket){
-	return ((MySocket *)socket)->last_amount_sent;
-}
-
-void NS3Sim::reset_last_amount_sent_from_socket(void *socket){
-	((MySocket *)socket)->last_amount_sent = 0;
-}
-
 void NS3Sim::simulator_stop(double min){
 	if(min > 0.0)
 		Simulator::Stop(Seconds(min));
