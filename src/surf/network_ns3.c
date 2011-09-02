@@ -428,7 +428,7 @@ static void ns3_update_actions_state(double now, double delta)
 	  char *key;
 	  void *data;
 
-	  surf_action_t action = NULL;
+	  surf_action_network_ns3_t action = NULL;
 	  xbt_swag_t running_actions =
 	      surf_network_model->states.running_action_set;
 
@@ -437,12 +437,12 @@ static void ns3_update_actions_state(double now, double delta)
 	  	return;
 
 	  xbt_dict_foreach(dict_socket,cursor,key,data){
-	    action = (surf_action_t)ns3_get_socket_action(data);
-	    action->remains = action->cost - ns3_get_socket_sent(data);
+	    action = (surf_action_network_ns3_t)ns3_get_socket_action(data);
+	    action->generic_action.remains = action->generic_action.cost - ns3_get_socket_sent(data);
 
 	    if(ns3_get_socket_is_finished(data) == 1){
-	      action->finish = now;
-	      surf_action_state_set(action, SURF_ACTION_DONE);
+	      action->generic_action.finish = now;
+	      surf_action_state_set(&(action->generic_action), SURF_ACTION_DONE);
 	    }
 	  }
 	  return;
@@ -452,12 +452,18 @@ static void ns3_update_actions_state(double now, double delta)
 static surf_action_t ns3_communicate(const char *src_name,
                                  const char *dst_name, double size, double rate)
 {
-  surf_action_t action = NULL;
+  surf_action_network_ns3_t action = NULL;
 
   XBT_DEBUG("Communicate from %s to %s",src_name,dst_name);
-  action = surf_action_new(sizeof(s_surf_action_t), size, surf_network_model, 0);
+  action = surf_action_new(sizeof(s_surf_action_network_ns3_t), size, surf_network_model, 0);
 
   ns3_create_flow(src_name, dst_name, surf_get_clock(), size, action);
+
+#ifdef HAVE_TRACING
+  action->last_sent = 0;
+  action->src_name = xbt_strdup (src_name);
+  action->dst_name = xbt_strdup (dst_name);
+#endif
 
   return (surf_action_t) action;
 }
@@ -485,6 +491,14 @@ static int action_unref(surf_action_t action)
   action->refcount--;
   if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
+
+#ifdef HAVE_TRACING
+    xbt_free(((surf_action_network_ns3_t)action)->src_name);
+    xbt_free(((surf_action_network_ns3_t)action)->dst_name);
+    if (action->category)
+      xbt_free(action->category);
+#endif
+
     surf_action_free(&action);
     return 1;
   }
