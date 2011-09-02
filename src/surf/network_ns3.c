@@ -27,7 +27,7 @@ static double time_to_next_flow_completion = -1;
 static double ns3_share_resources(double min);
 static void ns3_update_actions_state(double now, double delta);
 static void finalize(void);
-static surf_action_t communicate(const char *src_name,
+static surf_action_t ns3_communicate(const char *src_name,
                                  const char *dst_name, double size, double rate);
 static void action_suspend(surf_action_t action);
 static void action_resume(surf_action_t action);
@@ -368,7 +368,7 @@ void surf_network_model_init_NS3(const char *filename)
 	surf_network_model->resume = action_resume;
 	surf_network_model->is_suspended = action_is_suspended;
 	surf_network_model->action_unref = action_unref;
-	surf_network_model->extension.network.communicate = communicate;
+	surf_network_model->extension.network.communicate = ns3_communicate;
 
 	/* Added the initialization for NS3 interface */
 	if (ns3_initialize()) {
@@ -449,7 +449,7 @@ static void ns3_update_actions_state(double now, double delta)
 }
 
 /* Max durations are not supported */
-static surf_action_t communicate(const char *src_name,
+static surf_action_t ns3_communicate(const char *src_name,
                                  const char *dst_name, double size, double rate)
 {
   surf_action_t action = NULL;
