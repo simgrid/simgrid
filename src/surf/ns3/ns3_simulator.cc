@@ -19,6 +19,7 @@ NS3Sim SimulatorNS3;
 
 static void receive_callback(Ptr<Socket> localSocket);
 static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace);
+static void datasent_callback(Ptr<Socket> localSocket, uint32_t dataSent);
 static void StartFlow(Ptr<Socket> sock,
     const char *to,
     uint16_t port_number);
@@ -146,6 +147,16 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 
 }
 
+static void datasent_callback(Ptr<Socket> localSocket, uint32_t dataSent){
+  Address addr;
+  localSocket->GetSockName (addr);
+  InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
+  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+  mysocket->sentBytes += dataSent;
+  //cout << "[" << Simulator::Now ().GetSeconds() << "] " << "DATASENT [" << mysocket->totalBytes << "bytes],  from: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort () << " dataSent " << dataSent <<endl;
+}
+
+
 static void StartFlow(Ptr<Socket> sock,
     const char *to,
     uint16_t port_number)
@@ -157,4 +168,5 @@ static void StartFlow(Ptr<Socket> sock,
   sock->Connect(serverAddr);
   sock->SetSendCallback (MakeCallback (&send_callback));
   sock->SetRecvCallback (MakeCallback (&receive_callback));
+  sock->SetDataSentCallback (MakeCallback (&datasent_callback));
 }
