@@ -127,18 +127,18 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 	MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
 	uint32_t totalBytes = mysocket->TotalBytes;
 	while ((mysocket->sentBytes) < totalBytes && localSocket->GetTxAvailable () > 0){
-      uint32_t toWrite = min ((mysocket->remaining), writeSize);
-      toWrite = min (toWrite, localSocket->GetTxAvailable ());
-      int amountSent = localSocket->Send (&data[0], toWrite, 0);
+	  uint32_t toWrite = min ((mysocket->remaining), writeSize);
+	  toWrite = min (toWrite, localSocket->GetTxAvailable ());
+	  int amountSent = localSocket->Send (&data[0], toWrite, 0);
 
-      if(amountSent < 0)
-    	  return;
+	  if(amountSent < 0)
+	    return;
 
-      (mysocket->last_amount_sent) += amountSent;
-      (mysocket->sentBytes) += amountSent;
+	  (mysocket->last_amount_sent) += amountSent;
+	  (mysocket->sentBytes) += amountSent;
 	  (mysocket->remaining) -= amountSent;
 	  //cout << "[" << Simulator::Now ().GetSeconds() << "] " << "Send one packet, remaining "<<  mysocket->remaining << " bytes!" << endl;
-    }
+	}
 	if ((mysocket->sentBytes) >= totalBytes){
 		localSocket->Close();
 	}
