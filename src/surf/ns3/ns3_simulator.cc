@@ -42,7 +42,7 @@ NS3Sim::~NS3Sim(){
  * 		port_number: The port number to use
  * 		start: the time the communication start
  * 		addr:  ip address
- * 		TotalBytes: number of bytes to transmit
+ * 		totalBytes: number of bytes to transmit
  */
 void NS3Sim::create_flow_NS3(
 		Ptr<Node> src,
@@ -50,7 +50,7 @@ void NS3Sim::create_flow_NS3(
 		uint16_t port_number,
 		double start,
 		const char *addr,
-		uint32_t TotalBytes,
+		uint32_t totalBytes,
 		void * action)
 {
 	if(!dict_socket) dict_socket = xbt_dict_new();
@@ -58,8 +58,8 @@ void NS3Sim::create_flow_NS3(
 	sink.Install (dst);
 	Ptr<Socket> sock = Socket::CreateSocket (src, TypeId::LookupByName ("ns3::TcpSocketFactory"));
 	MySocket *mysocket = new MySocket();
-	mysocket->TotalBytes = TotalBytes;
-	mysocket->remaining = TotalBytes;
+	mysocket->totalBytes = totalBytes;
+	mysocket->remaining = totalBytes;
 	mysocket->last_amount_sent = 0;
 	mysocket->bufferedBytes = 0;
 	mysocket->sentBytes = 0;
@@ -109,7 +109,7 @@ static void receive_callback(Ptr<Socket> localSocket){
   MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
   mysocket->finished = 1;
 
-  //cout << "[" << Simulator::Now ().GetSeconds() << "] " << "Received [" << mysocket->TotalBytes << "bytes],  from: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort () << endl;
+  //cout << "[" << Simulator::Now ().GetSeconds() << "] " << "Received [" << mysocket->totalBytes << "bytes],  from: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort () << endl;
 	std::stringstream sstream;
 		sstream << Simulator::Now ().GetSeconds();
 		std::string s = sstream.str();
@@ -126,7 +126,7 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 	localSocket->GetSockName (addr);
 	InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
 	MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
-	uint32_t totalBytes = mysocket->TotalBytes;
+	uint32_t totalBytes = mysocket->totalBytes;
 	while ((mysocket->bufferedBytes) < totalBytes && localSocket->GetTxAvailable () > 0){
 	  uint32_t toWrite = min ((mysocket->remaining), writeSize);
 	  toWrite = min (toWrite, localSocket->GetTxAvailable ());
@@ -140,7 +140,7 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 	  (mysocket->remaining) -= amountSent;
 	  //cout << "[" << Simulator::Now ().GetSeconds() << "] " << "Send one packet, remaining "<<  mysocket->remaining << " bytes!" << endl;
 	}
-	if ((mysocket->bufferedBytes) >= TotalBytes){
+	if ((mysocket->bufferedBytes) >= totalBytes){
 		localSocket->Close();
 	}
 

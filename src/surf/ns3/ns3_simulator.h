@@ -24,7 +24,7 @@ struct MySocket{
   uint32_t bufferedBytes;
   uint32_t sentBytes;
   uint32_t remaining;
-  uint32_t TotalBytes;
+  uint32_t totalBytes;
   uint32_t last_amount_sent;
   char finished;
   void* action;
