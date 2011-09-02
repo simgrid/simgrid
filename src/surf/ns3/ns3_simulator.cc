@@ -61,6 +61,7 @@ void NS3Sim::create_flow_NS3(
 	mysocket->TotalBytes = TotalBytes;
 	mysocket->remaining = TotalBytes;
 	mysocket->last_amount_sent = 0;
+	mysocket->bufferedBytes = 0;
 	mysocket->sentBytes = 0;
 	mysocket->finished = 0;
 	mysocket->action = action;
@@ -126,7 +127,7 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 	InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
 	MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
 	uint32_t totalBytes = mysocket->TotalBytes;
-	while ((mysocket->sentBytes) < totalBytes && localSocket->GetTxAvailable () > 0){
+	while ((mysocket->bufferedBytes) < totalBytes && localSocket->GetTxAvailable () > 0){
 	  uint32_t toWrite = min ((mysocket->remaining), writeSize);
 	  toWrite = min (toWrite, localSocket->GetTxAvailable ());
 	  int amountSent = localSocket->Send (&data[0], toWrite, 0);
@@ -135,11 +136,11 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 	    return;
 
 	  (mysocket->last_amount_sent) += amountSent;
-	  (mysocket->sentBytes) += amountSent;
+	  (mysocket->bufferedBytes) += amountSent;
 	  (mysocket->remaining) -= amountSent;
 	  //cout << "[" << Simulator::Now ().GetSeconds() << "] " << "Send one packet, remaining "<<  mysocket->remaining << " bytes!" << endl;
 	}
-	if ((mysocket->sentBytes) >= totalBytes){
+	if ((mysocket->bufferedBytes) >= TotalBytes){
 		localSocket->Close();
 	}
 

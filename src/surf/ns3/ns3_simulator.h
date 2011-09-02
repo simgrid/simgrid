@@ -21,12 +21,13 @@ using namespace ns3;
 using namespace std;
 
 struct MySocket{
-	uint32_t sentBytes;
-	uint32_t remaining;
-	uint32_t TotalBytes;
-	uint32_t last_amount_sent;
-	char finished;
-	void* action;
+  uint32_t bufferedBytes;
+  uint32_t sentBytes;
+  uint32_t remaining;
+  uint32_t TotalBytes;
+  uint32_t last_amount_sent;
+  char finished;
+  void* action;
 };
 
 //Simulator s;
