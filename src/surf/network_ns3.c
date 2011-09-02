@@ -437,33 +437,13 @@ static void ns3_update_actions_state(double now, double delta)
 	  	return;
 
 	  xbt_dict_foreach(dict_socket,cursor,key,data){
-		action = (surf_action_t)ns3_get_socket_action(data);
-		action->remains = ns3_get_socket_remains(data);
+	    action = (surf_action_t)ns3_get_socket_action(data);
+	    action->remains = ns3_get_socket_remains(data);
 
-//#ifdef HAVE_TRACING
-//      if (TRACE_is_enabled()) {
-//        double amount_sent = (action->generic_action.cost - action->generic_action.remains);
-//
-//        // tracing resource utilization
-//        xbt_dynar_t route = global_routing->get_route(action->src_name,
-//                                                      action->dst_name);
-//        network_link_GTNETS_t link;
-//        unsigned int i;
-//        xbt_dynar_foreach(route, i, link) {
-//          TRACE_surf_link_set_utilization (link->generic_resource.name,
-//                                           action->generic_action.data,
-//                                           (surf_action_t) action,
-//                                           (amount_sent - last_amount_sent)/(delta),
-//                                           now-delta,
-//                                           delta);
-//        }
-//      }
-//#endif
-
-		if(ns3_get_socket_is_finished(data) == 1){
-			action->finish = now;
-			surf_action_state_set(action, SURF_ACTION_DONE);
-		}
+	    if(ns3_get_socket_is_finished(data) == 1){
+	      action->finish = now;
+	      surf_action_state_set(action, SURF_ACTION_DONE);
+	    }
 	  }
 	  return;
 }
