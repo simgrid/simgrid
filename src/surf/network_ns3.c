@@ -441,10 +441,23 @@ static void ns3_update_actions_state(double now, double delta)
 	    action->generic_action.remains = action->generic_action.cost - ns3_get_socket_sent(data);
 
 #ifdef HAVE_TRACING
-	    if (surf_action_state_get(&(action->generic_action)) == SURF_ACTION_RUNNING){
-//	      double data_sent = ns3_get_socket_sent(data) - action->last_sent;
-	      //TRACE here using data_sent/delta as data rate
-//	      action->last_sent = ns3_get_socket_sent(data);
+	    if (TRACE_is_enabled() &&
+	        surf_action_state_get(&(action->generic_action)) == SURF_ACTION_RUNNING){
+	      double data_sent = ns3_get_socket_sent(data);
+	      double data_delta_sent = data_sent - action->last_sent;
+
+	      xbt_dynar_t route = global_routing->get_route(action->src_name, action->dst_name);
+	      unsigned int i;
+	      for (i = 0; i < xbt_dynar_length (route); i++){
+	        surf_ns3_link_t *link = ((surf_ns3_link_t*)xbt_dynar_get_ptr (route, i));
+	        TRACE_surf_link_set_utilization ((*link)->generic_resource.name,
+	            action->generic_action.data,
+	            (surf_action_t) action,
+	            (data_delta_sent),
+	            now-delta,
+	            delta);
+	      }
+	      action->last_sent = data_sent;
 	    }
 #endif
 
