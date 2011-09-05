@@ -440,6 +440,14 @@ static void ns3_update_actions_state(double now, double delta)
 	    action = (surf_action_network_ns3_t)ns3_get_socket_action(data);
 	    action->generic_action.remains = action->generic_action.cost - ns3_get_socket_sent(data);
 
+#ifdef HAVE_TRACING
+	    if (surf_action_state_get(&(action->generic_action)) == SURF_ACTION_RUNNING){
+//	      double data_sent = ns3_get_socket_sent(data) - action->last_sent;
+	      //TRACE here using data_sent/delta as data rate
+//	      action->last_sent = ns3_get_socket_sent(data);
+	    }
+#endif
+
 	    if(ns3_get_socket_is_finished(data) == 1){
 	      action->generic_action.finish = now;
 	      surf_action_state_set(&(action->generic_action), SURF_ACTION_DONE);
