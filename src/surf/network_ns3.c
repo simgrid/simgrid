@@ -349,6 +349,13 @@ static int ns3_get_link_latency_limited(surf_action_t action)
 }
 #endif
 
+#ifdef HAVE_TRACING
+static void ns3_action_set_category(surf_action_t action, const char *category)
+{
+  action->category = xbt_strdup (category);
+}
+#endif
+
 void surf_network_model_init_NS3(const char *filename)
 {
 	if (surf_network_model)
@@ -369,6 +376,10 @@ void surf_network_model_init_NS3(const char *filename)
 	surf_network_model->is_suspended = action_is_suspended;
 	surf_network_model->action_unref = action_unref;
 	surf_network_model->extension.network.communicate = ns3_communicate;
+
+#ifdef HAVE_TRACING
+  surf_network_model->set_category = ns3_action_set_category;
+#endif
 
 	/* Added the initialization for NS3 interface */
 
