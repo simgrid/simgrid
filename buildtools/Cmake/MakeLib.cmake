@@ -118,7 +118,12 @@ if(HAVE_GTNETS)
 endif(HAVE_GTNETS)
 
 if(HAVE_NS3)
-	SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3")
+    if(${NS3_VERSION} EQUAL 310)
+	    SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3")
+	    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_NS3_3_10")
+	else(${NS3_VERSION} EQUAL 310)
+	    SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3-core -lns3-csma -lns3-point-to-point")
+	endif(${NS3_VERSION} EQUAL 310)
 endif(HAVE_NS3)
 
 if(HAVE_POSIX_GETTIME)

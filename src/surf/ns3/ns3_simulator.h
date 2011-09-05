@@ -10,12 +10,26 @@
 #ifdef __cplusplus
 
 #include "ns3/core-module.h"
-#include "ns3/helper-module.h"
-#include "ns3/simulator-module.h"
-#include "ns3/node-module.h"
-#include "ns3/helper-module.h"
-#include "ns3/global-routing-module.h"
-#include "ns3/tcp-socket-factory.h"
+
+#ifdef _NS3_3_10
+	/*NS3 3.10*/
+	#include "ns3/helper-module.h"
+	#include "ns3/simulator-module.h"
+	#include "ns3/node-module.h"
+	#include "ns3/helper-module.h"
+	#include "ns3/global-routing-module.h"
+	#include "ns3/tcp-socket-factory.h"
+#else
+	/*NS3 3.12*/
+	#include "ns3/node.h"
+	#include "ns3/global-route-manager.h"
+	#include "ns3/csma-helper.h"
+	#include "ns3/internet-stack-helper.h"
+	#include "ns3/ipv4-address-helper.h"
+	#include "ns3/point-to-point-helper.h"
+	#include "ns3/packet-sink-helper.h"
+	#include "ns3/inet-socket-address.h"
+#endif
 
 using namespace ns3;
 using namespace std;
