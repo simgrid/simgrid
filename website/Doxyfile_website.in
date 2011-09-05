@@ -34,7 +34,7 @@ PROJECT_NAME           = SimGrid
 # This could be handy for archiving the generated documentation or
 # if some version control system is used.
 
-PROJECT_NUMBER         = @release_version@
+PROJECT_NUMBER         = 
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer
@@ -613,63 +613,11 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = index.doc \
-						 installSimgrid.doc \
-                         bindings.doc \
-                         options.doc \
-                         use.doc \
-                         gtnets.doc \
-                         ns3.doc \
-                         ./index-API.doc \
-                         modules.doc \
-                         module-xbt.doc \
-                         module-msg.doc \
-                         module-gras.doc \
-                         module-amok.doc \
-                         module-sd.doc \
-                         module-surf.doc \
-                         gtut-main.doc \
-                         gtut-introduction.doc \
-                         gtut-tour.doc \
-                         gtut-tour-00-install.doc \
-                         gtut-tour-01-bones.doc \
-                         gtut-tour-02-simple.doc \
-                         gtut-tour-03-args.doc \
-                         gtut-tour-04-callback.doc \
-                         gtut-tour-05-globals.doc \
-                         gtut-tour-06-logs.doc \
-                         gtut-tour-07-timers.doc \
-                         gtut-tour-08-exceptions.doc \
-                         gtut-tour-09-simpledata.doc \
-                         gtut-tour-10-rpc.doc \
-                         gtut-tour-11-explicitwait.doc \
-                         gtut-tour-recap-messages.doc \
-                         gtut-tour-12-staticstruct.doc \
-                         gtut-tour-13-pointers.doc \
-                         gtut-tour-14-dynar.doc \
-                         gtut-tour-15-manualdatadef.doc \
-                         gtut-tour-16-exchangecb.doc \
-                         gtut-howto.doc \
-                         gtut-howto-design.doc \
-                         @top_srcdir@/include/ \
-                         @top_srcdir@/include/msg \
-                         @top_srcdir@/include/gras \
-                         @top_srcdir@/include/amok \
-                         @top_srcdir@/include/xbt \
-                         @top_srcdir@/include/simdag \
-                         @top_srcdir@/src/include/surf \
-                         @top_srcdir@/src/xbt/ \
-                         @top_srcdir@/src/surf/ \
-                         @top_srcdir@/src/msg/ \
-                         @top_srcdir@/src/gras \
-                         @top_srcdir@/src/gras/DataDesc \
-                         @top_srcdir@/src/gras/Msg \
-                         @top_srcdir@/src/gras/Transport \
-                         @top_srcdir@/src/gras/Virtu \
-                         @top_srcdir@/src/amok \
-                         @top_srcdir@/src/amok/Bandwidth \
-                         @top_srcdir@/src/amok/PeerManagement \
-                         @top_srcdir@/src/simdag
+INPUT                  = FAQ.doc \
+                         contrib.doc \
+                         publis.doc \
+                         people.doc \
+                         history.doc \
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -727,12 +675,7 @@ EXCLUDE_SYMBOLS        =
 # directories that contain example code fragments that are included (see
 # the \include command).
 
-EXAMPLE_PATH           = ./ \
-                         @top_srcdir@/doc/gtut-files \
-                         @top_srcdir@/src/surf/ \
-                         @top_srcdir@/src/xbt/ \
-                         @top_srcdir@/examples \
-                         @top_srcdir@/testsuite
+EXAMPLE_PATH           = ./ 
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -1557,7 +1500,7 @@ TAGFILES               =
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = simgrid.tag
+GENERATE_TAGFILE       = simgrid_website.tag
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes

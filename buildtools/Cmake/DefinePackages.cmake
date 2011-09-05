@@ -548,9 +548,25 @@ file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*README"
 )
 
+set(WEBSITE_SOURCES
+    website/contrib.doc
+    website/FAQ.doc
+    website/history.doc
+	website/people.doc	
+	website/publis.doc  
+	website/all.bib
+	website/Doxyfile_website.in
+	website/footer.html
+	website/index.php.in
+	website/download.php.in
+	website/documentation.php.in
+    
+    tools/doxygen/bibtex2html_table_count.pl
+	doc/webcruft/fish.gif
+	doc/webcruft/robots.txt
+	)
+    
 set(DOC_SOURCES
-	doc/contrib.doc
-	doc/FAQ.doc
 	doc/installSimgrid.doc
 	doc/bindings.doc
 	doc/options.doc
@@ -580,7 +596,7 @@ set(DOC_SOURCES
 	doc/gtut-tour-16-exchangecb.doc
 	doc/gtut-tour.doc
 	doc/gtut-tour-recap-messages.doc
-	doc/history.doc
+	
 	#doc/index-API.doc
 	doc/index.doc
 	doc/module-amok.doc
@@ -590,8 +606,6 @@ set(DOC_SOURCES
 	doc/modules.doc
 	doc/module-surf.doc
 	doc/module-xbt.doc
-	doc/people.doc	
-	doc/publis.doc
 	
 	doc/gtut-files/01-bones.c
 	doc/gtut-files/01-bones.output
@@ -632,10 +646,8 @@ set(DOC_SOURCES
 	doc/webcruft/Paje_MSG_screenshot.jpg
 	doc/webcruft/Paje_MSG_screenshot_thn.jpg
 	doc/webcruft/poster_thumbnail.png
-	doc/webcruft/robots.txt
 	doc/webcruft/simgrid_logo.png
 	doc/webcruft/simgrid_logo_small.png
-	doc/webcruft/fish.gif
 	doc/triva-graph_configuration.png
 	doc/triva-graph_visualization.png
 	doc/simgrid.css
@@ -643,13 +655,11 @@ set(DOC_SOURCES
 	doc/Doxyfile.in
 	doc/footer.html.in
 	
-	tools/doxygen/bibtex2html_table_count.pl
 	tools/doxygen/doxygen_postprocesser.pl
 	tools/doxygen/index_create.pl
 	tools/doxygen/toc_create.pl
 	tools/doxygen/bibtex2html_wrapper.pl
 	tools/doxygen/fig2dev_postprocessor.pl
-	tools/doxygen/index_php.pl
 	tools/doxygen/xbt_log_extract_hierarchy.pl
 )
 
@@ -659,10 +669,6 @@ set(DOC_FIGS
 	${CMAKE_HOME_DIRECTORY}/doc/fig/amok_bw_test.fig
 	${CMAKE_HOME_DIRECTORY}/doc/fig/amok_bw_sat.fig
 	${CMAKE_HOME_DIRECTORY}/doc/fig/gras_comm.fig
-)
-
-set(DOC_bib
-	${CMAKE_HOME_DIRECTORY}/doc/all.bib
 )
 
 file(GLOB_RECURSE add_src_files
@@ -853,8 +859,8 @@ set(source_to_pack
 	${CMAKE_SOURCE_FILES}
 	${bin_files}
 	${DOC_SOURCES}
+	${WEBSITE_SOURCES}
 	${DOC_FIGS}
-	${DOC_bib}
 	${README_files}
 	buildtools/Cmake/simgrid.nsi.in 
 )

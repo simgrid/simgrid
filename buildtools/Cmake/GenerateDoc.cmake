@@ -47,11 +47,13 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 	
 	ADD_CUSTOM_TARGET(simgrid_documentation
 		COMMENT "Generating the SimGrid documentation..."
-		DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen} ${DOC_bib}
+		DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
+	    COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/html
 		COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
 	)
-
+		
 	ADD_CUSTOM_COMMAND(
 		OUTPUT ${CMAKE_HOME_DIRECTORY}/doc/logcategories.doc
 		DEPENDS ${source_doxygen}
@@ -86,7 +88,7 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 	    COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
 		COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/toc_create.pl FAQ.doc index.doc contrib.doc gtut-introduction.doc history.doc installSimgrid.doc bindings.doc options.doc
+		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/toc_create.pl index.doc gtut-introduction.doc installSimgrid.doc bindings.doc options.doc
 		
 		COMMAND ${CMAKE_COMMAND} -E echo "XX Second Doxygen pass"
 		COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
@@ -94,7 +96,6 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 		COMMAND ${CMAKE_COMMAND} -E echo "XX Post-processing Doxygen result"
 		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/html/dir*
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/doxygen_postprocesser.pl
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_php.pl index.php.in html/index.html index.php
 		
 		COMMAND ${CMAKE_COMMAND} -E echo "XX Create shortcuts pages"
 		COMMAND ${CMAKE_COMMAND} -E echo \"<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>\" > ${CMAKE_HOME_DIRECTORY}/doc/html/gras.html
@@ -110,28 +111,6 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 		COMMAND ${CMAKE_COMMAND} -E echo \"<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>DAG Simulator.</a></h2></center></html>\" >> ${CMAKE_HOME_DIRECTORY}/doc/html/simdag.html
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/
 	)
-
-	ADD_CUSTOM_TARGET(bib_files
-		DEPENDS ${CMAKE_HOME_DIRECTORY}/doc/all.bib
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
-		COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/html
-		COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_core.bib publis_extern.bib publis_intra.bib"
-		COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"core\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_core.bib
-		COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"extern\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_extern.bib
-		COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"intra\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_intra.bib
-
-		COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_count.html"
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_table_count.pl < ${CMAKE_HOME_DIRECTORY}/doc/all.bib > ${CMAKE_HOME_DIRECTORY}/doc/publis_count.html
-		
-		COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_core.html publis_extern.html publis_intra.html"
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_core
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_extern
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_intra
-		
-		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/
-	)
-
-	add_dependencies(simgrid_documentation bib_files)
 	
 else(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH AND GOOD_BIBTEX2HTML_VERSION)
 
@@ -279,3 +258,39 @@ else(compare_files)
 endif(compare_files)	
   
 file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc)
+
+#Website
+
+configure_file(${CMAKE_HOME_DIRECTORY}/website/Doxyfile_website.in ${CMAKE_HOME_DIRECTORY}/website/Doxyfile_website @ONLY)
+
+ADD_CUSTOM_TARGET(simgrid_website
+	COMMENT "Generating the SimGrid Website..."	
+	DEPENDS ${WEBSITE_SOURCES} ${CMAKE_HOME_DIRECTORY}/website/all.bib
+	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/toc_create.pl FAQ.doc contrib.doc history.doc
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Doxygen website pass"
+	COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile_website
+		
+	COMMAND ${CMAKE_COMMAND} -E echo "XX Post-processing Doxygen website result"
+	#COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/doxygen_postprocesser_website.pl
+	WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/website/
+)
+
+ADD_CUSTOM_TARGET(bib_files
+	DEPENDS ${CMAKE_HOME_DIRECTORY}/website/all.bib
+	COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_core.bib publis_extern.bib publis_intra.bib"
+	COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"core\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_core.bib
+	COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"extern\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_extern.bib
+	COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"intra\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_intra.bib
+
+	COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_count.html"
+	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_table_count.pl < ${CMAKE_HOME_DIRECTORY}/website/all.bib > ${CMAKE_HOME_DIRECTORY}/website/publis_count.html
+	
+	COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_core.html publis_extern.html publis_intra.html"
+	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_core
+	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_extern
+	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_intra
+	
+	WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/website/
+)
+
+add_dependencies(simgrid_website bib_files)
