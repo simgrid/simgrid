@@ -73,19 +73,26 @@ buildtools/Cmake/test_prog/prog_va_copy.c
 ### Documentation
 doc/all_bib.html
 doc/logcategories.sh
-doc/publis_core.bib
-doc/publis_core_bib.html
-doc/publis_count.html
-doc/publis_extern.bib
-doc/publis_extern_bib.html
-doc/publis_intra.bib
-doc/publis_intra_bib.html
 doc/realtoc.sh
 doc/tmp.realtoc
 doc/using_bib.html
 doc/Doxyfile
 doc/footer.html
 *.doc.toc
+
+################################################
+### Website
+website/simgrid_website.tag
+website/Doxyfile_website
+website/html/
+website/publis_core.bib
+website/publis_core.bib
+website/publis_core_bib.html
+website/publis_count.html
+website/publis_extern.bib
+website/publis_extern_bib.html
+website/publis_intra.bib
+website/publis_intra_bib.html
 
 ################################################
 ### Specific of project 
