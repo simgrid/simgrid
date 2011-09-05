@@ -25,7 +25,7 @@ typedef struct surf_ns3_link{
 typedef struct surf_action_network_ns3 {
   s_surf_action_t generic_action;
 #ifdef HAVE_TRACING
-  int last_sent;
+  double last_sent;
   char *src_name;
   char *dst_name;
 #endif //HAVE_TRACING
