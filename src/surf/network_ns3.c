@@ -453,7 +453,7 @@ static void ns3_update_actions_state(double now, double delta)
 	        TRACE_surf_link_set_utilization ((*link)->generic_resource.name,
 	            action->generic_action.data,
 	            (surf_action_t) action,
-	            (data_delta_sent),
+	            (data_delta_sent)/delta,
 	            now-delta,
 	            delta);
 	      }
