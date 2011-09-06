@@ -28,7 +28,7 @@ $group_name="simgrid";
       <li><a href="index.php"><span>Home</span></a></li>
                         <li><a href="https://gforge.inria.fr/frs/?group_id=12"><span>Download</span></a></li>
 
-      <li><a href="documentation.php"><span>Online documentation</span></a></li>
+      <li><a href="documentation.html"><span>Online documentation</span></a></li>
       <li><a href="publis.html"><span>Publications</span></a></li>
       <li><a href="people.html"><span>People</span></a></li>
       <li><a href="history.html"><span>History</span></a></li>

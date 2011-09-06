@@ -332,11 +332,11 @@ WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 
 #doc/index.php doc/webcruft/robots.txt doc/webcruft/fish.gif 
-#add_custom_target(sync-gforge-website
-#COMMAND chmod g+rw -R doc/
-#COMMAND chmod a+rX -R doc/
-#COMMAND scp -r doc/website/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/
-#WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-#)
+add_custom_target(sync-gforge-website
+COMMAND chmod g+rw -R website/html
+COMMAND chmod a+rX -R website/html
+COMMAND scp -r website/html/* scm.gforge.inria.fr:/home/groups/simgrid/htdocs/
+WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
+)
 
 include(CPack)

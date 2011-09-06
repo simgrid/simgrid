@@ -267,7 +267,7 @@ configure_file(${CMAKE_HOME_DIRECTORY}/website/documentation.php.in ${CMAKE_HOME
 configure_file(${CMAKE_HOME_DIRECTORY}/website/download.php.in ${CMAKE_HOME_DIRECTORY}/website/html/download.php @ONLY)
 
 ADD_CUSTOM_TARGET(simgrid_website
-	COMMENT "Generating the SimGrid Website..."	
+	COMMENT "Generating the SimGrid Website..."
 	DEPENDS ${WEBSITE_SOURCES} ${CMAKE_HOME_DIRECTORY}/website/all.bib
 	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/toc_create.pl FAQ.doc contrib.doc history.doc  	    			
 	COMMAND ${CMAKE_COMMAND} -E echo "XX Doxygen website pass"
@@ -276,9 +276,12 @@ ADD_CUSTOM_TARGET(simgrid_website
 	COMMAND ${CMAKE_COMMAND} -E echo "XX Post-processing Doxygen website result"
 	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/doxygen_postprocesser_website.pl
 
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/stylesheets/ ${CMAKE_HOME_DIRECTORY}/website/html/
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/logos/ ${CMAKE_HOME_DIRECTORY}/website/html/
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/img/ ${CMAKE_HOME_DIRECTORY}/website/html/
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/stylesheets/ ${CMAKE_HOME_DIRECTORY}/website/html/stylesheets/
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/logos/ ${CMAKE_HOME_DIRECTORY}/website/html/logos/
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/img/ ${CMAKE_HOME_DIRECTORY}/website/html/img/
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/website/documentation.html ${CMAKE_HOME_DIRECTORY}/website/html/documentation.html
+	
+	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/website/html/index.html
 
 	WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/website/
 )

@@ -172,7 +172,11 @@ sub handle_pub{
     my $line;
 # BIG FAT WARNING : THIS HACK IS DEPENDANT OF THE DOXYGEN VERSION AND OUR TEXT (because of the string we are looking for, that is changing with doxygen version, either h1 or div class="title" ... So we're forced to use titles defined in doc files...
     while ($line = <IN>) {
-	last if (($line =~ /Reference publications about SimGrid/) or ($line =~  /Publications about the SimGrid framework/) or ($line =~  /Papers that use SimGrid-generated results/) or ($line =~  /Our own papers that use SimGrid-generated results/));
+	$line =~ s/<h1>/<h1 align="center">/g;
+	last if (($line =~ /Reference publications about SimGrid/) 
+		or ($line =~  /Publications about the SimGrid framework/) 
+		or ($line =~  /Papers that use SimGrid-generated results/) 
+		or ($line =~  /Our own papers that use SimGrid-generated results/));
 	print OUT $line;
     }
 
@@ -375,7 +379,7 @@ foreach my $file (@allfiles) {
 		
 			# LBO : ugly way to separate doc in 2 separate stuff ...
 			$tmp_buff .= '      <li><a href="https://gforge.inria.fr/frs/?group_id=12"><span>Download</span></a></li>'."\n";
-	      		$tmp_buff .= '      <li><a href="documentation.php"><span>Online documentation</span></a></li>'."\n";
+	      		$tmp_buff .= '      <li><a href="documentation.html"><span>Online documentation</span></a></li>'."\n";
 	      		$tmp_buff .= '      <li><a href="publis.html"><span>Publications</span></a></li>'."\n";
 	      		$tmp_buff .= '      <li><a href="people.html"><span>People</span></a></li>'."\n";
 	      		$tmp_buff .= '      <li><a href="history.html"><span>History</span></a></li>'."\n";
@@ -454,6 +458,7 @@ foreach my $file (@allfiles) {
       s|<li class="current"><a href="annotated.html"><span>Data&#160;Structures</span></a></li>\n||g;
       s|Related Pages<|Documentation&nbsp;Index<|g;
       s|<div id="navrow|<div align="center" id="navrow|g;
+      s|<div class="headertitle">|<div class="headertitle" align="center">|g;	
       print TO $_;
     }
     close FROM;
