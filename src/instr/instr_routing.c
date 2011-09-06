@@ -109,7 +109,10 @@ static void recursiveGraphExtraction (routing_component_t rc, container_t contai
           (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER) &&
           strcmp (child1_name, child2_name) != 0){
 
-        xbt_dynar_t route = global_routing->get_route (child1_name, child2_name);
+        xbt_dynar_t route = NULL;
+        route = global_routing->get_route_or_null (child1_name, child2_name);
+        if (route == NULL) continue;
+
         if (TRACE_onelink_only()){
           if (xbt_dynar_length (route) > 1) continue;
         }
