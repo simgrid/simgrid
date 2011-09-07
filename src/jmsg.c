@@ -104,10 +104,9 @@ Java_org_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
   MSG_process_set_data(process,&process);
    
   /* release our reference to the process name (variable name becomes invalid) */
-  (*env)->ReleaseStringUTFChars(env, jname, name);
+  //FIXME : This line should be uncommented but with mac it doesn't work. BIG WARNING
+  //(*env)->ReleaseStringUTFChars(env, jname, name);
    
-
-
   /* bind the java process instance to the native process */
   jprocess_bind(jprocess, process, env);
 
