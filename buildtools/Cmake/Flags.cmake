@@ -3,6 +3,7 @@ set(optCFLAGS "")
 
 if(NOT __VISUALC__ AND NOT __BORLANDC__)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-g3")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-g3")
 else(NOT __VISUALC__ AND NOT __BORLANDC__)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}/Zi")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}/Zi")
@@ -34,6 +35,7 @@ endif(NOT enable_debug)
 set(CMAKE_C_FLAGS "${optCFLAGS}${warnCFLAGS}${CMAKE_C_FLAGS}")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${custom_flags}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${optCFLAGS}")
 
 # Try to make Mac a bit more complient to open source standards
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
