@@ -116,11 +116,11 @@ static void recursiveGraphExtraction (routing_component_t rc, container_t contai
         if (TRACE_onelink_only()){
           if (xbt_dynar_length (route) > 1) continue;
         }
-        unsigned int cpt;
-        void *link;
         container_t previous = child1;
-        xbt_dynar_foreach (route, cpt, link) {
-          char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+        int i;
+        for (i = 0; i < xbt_dynar_length(route); i++){
+          link_CM02_t *link = ((link_CM02_t*)xbt_dynar_get_ptr (route, i));
+          char *link_name = (*link)->lmm_resource.generic_resource.name;
           container_t current = getContainerByName(link_name);
           linkContainers(container, previous, current, filter);
           previous = current;
