@@ -102,21 +102,14 @@ void NS3Sim::simulator_start(void){
 }
 
 static void receive_callback(Ptr<Socket> localSocket){
-  Address addr;
-  localSocket->GetSockName (addr);
-  InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
   MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
-  mysocket->finished = 1;
 
-  //cout << "[" << Simulator::Now ().GetSeconds() << "] " << "Received [" << mysocket->totalBytes << "bytes],  from: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort () << endl;
-	std::stringstream sstream;
-		sstream << Simulator::Now ().GetSeconds();
-		std::string s = sstream.str();
-		size_t size = s.size() + 1;
-		char * time_sec = new char[ size ];
-		strncpy( time_sec, s.c_str(), size );
-  XBT_DEBUG("Stop simulator at %s seconds",time_sec);
-  Simulator::Stop();
+  if (mysocket->finished == 0){
+    mysocket->finished = 1;
+//    cout << "[" << Simulator::Now ().GetSeconds() << "] " << "recv_cb of F[" << mysocket->totalBytes << "] " << endl;
+    XBT_DEBUG("Stop simulator at %f seconds", Simulator::Now().GetSeconds());
+    Simulator::Stop();
+  }
 }
 
 static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
