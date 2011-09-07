@@ -7,6 +7,7 @@
 #include "surf/ns3/ns3_simulator.h"
 #include "xbt/dict.h"
 #include "xbt/log.h"
+#include "xbt/sysdep.h"
 
 using namespace ns3;
 using namespace std;
@@ -143,6 +144,28 @@ static void datasent_callback(Ptr<Socket> localSocket, uint32_t dataSent){
 //  cout << "[" << Simulator::Now ().GetSeconds() << "] " << "datasent_cb of F[" << mysocket->totalBytes << "] " << dataSent << " sent." << endl;
 }
 
+static void normalClose_callback(Ptr<Socket> localSocket){
+  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+//  cout << "[" << Simulator::Now ().GetSeconds() << "] " << "normalClose_cb of F[" << mysocket->totalBytes << "]" << endl;
+  receive_callback (localSocket);
+}
+
+static void errorClose_callback(Ptr<Socket> localSocket){
+  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+//  cout << "[" << Simulator::Now ().GetSeconds() << "] " << "errorClose_cb of F[" << mysocket->totalBytes << "]" << endl;
+  xbt_die("NS3: a socket was closed anormally");
+}
+
+static void succeededConnect_callback(Ptr<Socket> localSocket){
+  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+//  cout << "[" << Simulator::Now ().GetSeconds() << "] " << "succeededConnect_cb of F[" << mysocket->totalBytes << "]" << endl;
+}
+
+static void failedConnect_callback(Ptr<Socket> localSocket){
+  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+//  cout << "[" << Simulator::Now ().GetSeconds() << "] " << "failedConnect_cb of F[" << mysocket->totalBytes << "]" << endl;
+  xbt_die("NS3: a socket failed to connect");
+}
 
 static void StartFlow(Ptr<Socket> sock,
     const char *to,
@@ -150,10 +173,13 @@ static void StartFlow(Ptr<Socket> sock,
 {
   InetSocketAddress serverAddr (to, port_number);
 
-  //cout << "[" <<  Simulator::Now().GetSeconds() << "] Starting flow to " << to << " using port " << port_number << endl;
-
   sock->Connect(serverAddr);
   sock->SetSendCallback (MakeCallback (&send_callback));
   sock->SetRecvCallback (MakeCallback (&receive_callback));
   sock->SetDataSentCallback (MakeCallback (&datasent_callback));
+  sock->SetConnectCallback (MakeCallback (&succeededConnect_callback), MakeCallback (&failedConnect_callback));
+  sock->SetCloseCallbacks (MakeCallback (&normalClose_callback), MakeCallback (&errorClose_callback));
+
+  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&sock);
+//  cout << "[" <<  Simulator::Now().GetSeconds() << "] Starting flow to " << to << " using port " << port_number << endl;
 }
