@@ -70,7 +70,19 @@ void SIMIX_context_mod_init(void)
 	SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
       }
       else {
-        xbt_die("Invalid context factory specified");
+        XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
+#ifdef HAVE_RAWCTX
+        XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
+#else
+        XBT_ERROR("  (raw contextes are disabled at compilation time on this machine -- check configure logs for details)");
+#endif
+#ifdef CONTEXT_UCONTEXT
+        XBT_ERROR("  ucontext: classical system V contextes (implemented with makecontext, swapcontext and friends)");
+#else
+        XBT_ERROR("  (ucontext is disabled at compilation time on this machine -- check configure logs for details)");
+#endif
+        XBT_ERROR("  thread: slow portability layer using system threads (pthreads on UNIX, CreateThread() on windows)");
+        xbt_die("Please use a valid factory.");
       }
     }
   }
