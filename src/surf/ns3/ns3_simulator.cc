@@ -11,8 +11,6 @@
 using namespace ns3;
 using namespace std;
 
-static const uint32_t writeSize  = 1024; // limit the amout of data to write
-uint8_t data[writeSize];
 xbt_dict_t dict_socket = NULL;
 
 NS3Sim SimulatorNS3;
@@ -122,37 +120,34 @@ static void receive_callback(Ptr<Socket> localSocket){
 }
 
 static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
-
-	Address addr;
-	localSocket->GetSockName (addr);
-	InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
 	MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
-	uint32_t totalBytes = mysocket->totalBytes;
-	while ((mysocket->bufferedBytes) < totalBytes && localSocket->GetTxAvailable () > 0){
-	  uint32_t toWrite = min ((mysocket->remaining), writeSize);
-	  toWrite = min (toWrite, localSocket->GetTxAvailable ());
-	  int amountSent = localSocket->Send (&data[0], toWrite, 0);
 
-	  if(amountSent < 0)
-	    return;
-
-	  (mysocket->bufferedBytes) += amountSent;
-	  (mysocket->remaining) -= amountSent;
-	  //cout << "[" << Simulator::Now ().GetSeconds() << "] " << "Send one packet, remaining "<<  mysocket->remaining << " bytes!" << endl;
-	}
-	if ((mysocket->bufferedBytes) >= totalBytes){
-		localSocket->Close();
+	if (mysocket->remaining == 0){
+	  //all data was already buffered (and socket was already closed), just return
+	  return;
 	}
 
+	uint32_t toWrite = min (mysocket->remaining, txSpace);
+	uint8_t *data = (uint8_t*)malloc(sizeof(uint8_t)*toWrite);
+	int amountSent = localSocket->Send (&data[0], toWrite, 0);
+	free (data);
+	if (amountSent > 0){
+	  mysocket->bufferedBytes += amountSent;
+	  mysocket->remaining -= amountSent;
+	}
+//	cout << "[" << Simulator::Now ().GetSeconds() << "] " << "send_cb of F[" << mysocket->totalBytes << "] ("<<  mysocket->remaining << " / " << mysocket->totalBytes << ") " << amountSent << " buffered." << endl;
+
+  if (mysocket->remaining == 0){
+    //everything was buffered to send, tell NS3 to close the socket
+    localSocket->Close();
+  }
+	return;
 }
 
 static void datasent_callback(Ptr<Socket> localSocket, uint32_t dataSent){
-  Address addr;
-  localSocket->GetSockName (addr);
-  InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
   MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
   mysocket->sentBytes += dataSent;
-  //cout << "[" << Simulator::Now ().GetSeconds() << "] " << "DATASENT [" << mysocket->totalBytes << "bytes],  from: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort () << " dataSent " << dataSent <<endl;
+//  cout << "[" << Simulator::Now ().GetSeconds() << "] " << "datasent_cb of F[" << mysocket->totalBytes << "] " << dataSent << " sent." << endl;
 }
 
 
