@@ -440,39 +440,47 @@ double surf_solve(double max_date)
     min = max_date - NOW;
   }
 
-  XBT_DEBUG("Looking for next action end");
+  XBT_DEBUG("Looking for next action end for all models except NS3");
   xbt_dynar_foreach(model_list, iter, model) {
-
-	if(strcmp(model->name,"network NS3") ){
-		XBT_DEBUG("Running for Resource [%s]", model->name);
-		model_next_action_end = model->model_private->share_resources(NOW);
-		XBT_DEBUG("Resource [%s] : next action end = %f",
-			   model->name, model_next_action_end);
-		if (((min < 0.0) || (model_next_action_end < min))
-			&& (model_next_action_end >= 0.0))
-		  min = model_next_action_end;
-	  }
+    if(strcmp(model->name,"network NS3") ){
+      XBT_DEBUG("Running for Resource [%s]", model->name);
+      model_next_action_end = model->model_private->share_resources(NOW);
+      XBT_DEBUG("Resource [%s] : next action end = %f",
+          model->name, model_next_action_end);
+      if (((min < 0.0) || (model_next_action_end < min))
+          && (model_next_action_end >= 0.0))
+        min = model_next_action_end;
+    }
   }
 
-  XBT_DEBUG("Min for other resources : %f", min);
+  XBT_DEBUG("Min for resources (except NS3) : %f", min);
 
+  XBT_DEBUG("Looking for next trace event");
 
-  if(surf_network_model->name && !strcmp(surf_network_model->name,"network NS3")){
-	// run until min or next flow
-	model_next_action_end = surf_network_model->model_private->share_resources(min);
-	XBT_DEBUG("Min for NS3 : %f", model_next_action_end);
-	if ( ((min < 0.0) || (model_next_action_end < min)) && ( model_next_action_end >= 0.0 ))
-		min = model_next_action_end;
-  }
-
-
-  XBT_DEBUG("Next action end : %f", min);
-
-  XBT_DEBUG("Looking for next event");
-  while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
+  do {
     XBT_DEBUG("Next TRACE event : %f", next_event_date);
-    if ((min != -1.0) && (next_event_date > NOW + min))
-      break;
+
+    next_event_date = tmgr_history_next_date(history);
+
+    if(surf_network_model->name && !strcmp(surf_network_model->name,"network NS3")){
+      if(next_event_date!=-1.0 && min!=-1.0) {
+        min = MIN(next_event_date - NOW, min);
+      } else{
+        min = MAX(next_event_date - NOW, min);
+      }
+
+      XBT_DEBUG("Run for NS3 at most %f", min);
+      // run until min or next flow
+      model_next_action_end = surf_network_model->model_private->share_resources(min);
+
+      XBT_DEBUG("Min for NS3 : %f", model_next_action_end);
+      min = model_next_action_end;
+    }
+
+    if (next_event_date == -1.0) break;
+
+    if ((min != -1.0) && (next_event_date > NOW + min)) break;
+
     XBT_DEBUG("Updating models");
     while ((event =
             tmgr_history_get_next_event_leq(history, next_event_date,
@@ -492,8 +500,7 @@ double surf_solve(double max_date)
                                                             event, value,
                                                             NOW + min);
     }
-  }
-
+  } while (1);
 
   /* FIXME: Moved this test to here to avoid stoping simulation if there are actions running on cpus and all cpus are with availability = 0. 
    * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.
