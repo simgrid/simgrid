@@ -109,7 +109,8 @@ static void receive_callback(Ptr<Socket> localSocket){
     mysocket->finished = 1;
 //    cout << "[" << Simulator::Now ().GetSeconds() << "] " << "recv_cb of F[" << mysocket->totalBytes << "] " << endl;
     XBT_DEBUG("Stop simulator at %f seconds", Simulator::Now().GetSeconds());
-    Simulator::Stop();
+    Simulator::Stop(Seconds(0.0));
+    Simulator::Run();
   }
 }
 
