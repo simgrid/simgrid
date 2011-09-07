@@ -417,20 +417,19 @@ static double ns3_share_resources(double min)
 	  surf_network_model->states.running_action_set;
 
 	//get the first relevant value from the running_actions list
-	if (!xbt_swag_size(running_actions))
-	return -1.0;
+	if (!xbt_swag_size(running_actions) || min == 0.0)
+	  return -1.0;
+	else
+	 do {
+	   ns3_simulator(min);
+	   time_to_next_flow_completion = ns3_time() - surf_get_clock();
+	 } while(time_to_next_flow_completion==0.0);
 
-	ns3_simulator(min);
-	time_to_next_flow_completion = ns3_time() - surf_get_clock();
+	XBT_DEBUG("min       : %f",min);
+	XBT_DEBUG("ns3  time : %f",ns3_time());
+	XBT_DEBUG("surf time : %f",surf_get_clock());
+	XBT_DEBUG("Next completion %f :",time_to_next_flow_completion);
 
-//	XBT_INFO("min       : %f",min);
-//	XBT_INFO("ns3  time : %f",ns3_time());
-//	XBT_INFO("surf time : %f",surf_get_clock());
-
-	xbt_assert(time_to_next_flow_completion,
-			  "Time to next flow completion not initialized!\n");
-
-	XBT_DEBUG("ns3_share_resources return %f",time_to_next_flow_completion);
 	return time_to_next_flow_completion;
 }
 
