@@ -55,6 +55,8 @@ For Windows :
 	custom_flags 			<flags>
 	gtnets_path			<path_to_gtnets_directory>
 	CMAKE_INSTALL_PREFIX		<path_to_install_directory>
+	CMAKE_C_COMPILER		<path_to_compiler>
+	CMAKE_CXX_COMPILER		<path_to_compiler>
 	pipol_user			<pipol_username>
 \endverbatim
                                                                                                                                                           
@@ -97,6 +99,10 @@ For Windows :
   \li gtnets_path : Path to gtnets install directory (ex /usr)
 
   \li CMAKE_INSTALL_PREFIX : Path where are installed lib/ doc/ and include/ directories (ex /usr/local)
+  
+  \li CMAKE_C_COMPILER : Change the c compiler.
+  
+  \li CMAKE_CXX_COMPILER : Change the c++ compiler. 
   
   \li pipol_user : specify your pipol username if you want to use the pipol-remote command.
 
