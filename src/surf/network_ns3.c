@@ -371,7 +371,8 @@ void surf_network_model_init_NS3(const char *filename)
 	surf_network_model->extension.network.communicate = ns3_communicate;
 
 	/* Added the initialization for NS3 interface */
-	if (ns3_initialize()) {
+
+	if (ns3_initialize(xbt_cfg_get_string(_surf_cfg_set,"ns3/TcpModel"))) {
 	xbt_die("Impossible to initialize NS3 interface");
 	}
 

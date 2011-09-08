@@ -442,7 +442,13 @@ void surf_config_init(int *argc, char **argv)
                      xbt_cfgelm_int, &default_value_int, 0, 1,
                      _surf_cfg_cb__gtnets_jitter_seed, NULL);
 #endif
-
+#ifdef HAVE_NS3
+    xbt_cfg_register(&_surf_cfg_set, "ns3/TcpModel",
+                     "The ns3 tcp model can be : NewReno or Reno or Tahoe",
+                     xbt_cfgelm_string, NULL, 1, 1,
+                     NULL, NULL);
+    xbt_cfg_setdefault_string(_surf_cfg_set, "ns3/TcpModel", "default");
+#endif
     if (!surf_path) {
       /* retrieves the current directory of the        current process */
       const char *initial_path = __surf_get_initial_path();

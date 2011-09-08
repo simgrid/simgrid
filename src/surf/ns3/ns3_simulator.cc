@@ -55,9 +55,14 @@ void NS3Sim::create_flow_NS3(
 		void * action)
 {
 	if(!dict_socket) dict_socket = xbt_dict_new();
-	PacketSinkHelper sink ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny(), port_number));
+
+	PacketSinkHelper sink ("ns3::TcpSocketFactory",
+							InetSocketAddress (Ipv4Address::GetAny(),
+							port_number));
 	sink.Install (dst);
-	Ptr<Socket> sock = Socket::CreateSocket (src, TypeId::LookupByName ("ns3::TcpSocketFactory"));
+	Ptr<Socket> sock = Socket::CreateSocket (src,
+							TcpSocketFactory::GetTypeId());
+
 	MySocket *mysocket = new MySocket();
 	mysocket->totalBytes = totalBytes;
 	mysocket->remaining = totalBytes;

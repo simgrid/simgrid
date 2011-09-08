@@ -92,10 +92,38 @@ int ns3_finalize(void){
 }
 
 // initialize the NS3 interface and environment
-int ns3_initialize(void){
+int ns3_initialize(const char* TcpProtocol){
   xbt_assert(!ns3_sim, "ns3 already initialized");
   ns3_sim = new NS3Sim();
-  return 0;
+
+//  tcpModel are:
+//  "ns3::TcpNewReno"
+//  "ns3::TcpReno"
+//  "ns3::TcpTahoe"
+
+  Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000)); // 1000-byte packet for easier reading
+  Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
+
+  if(!strcmp(TcpProtocol,"default")){
+	  return 0;
+  }
+  if(!strcmp(TcpProtocol,"Reno")){
+	  XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
+	  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue("ns3::TcpReno"));
+	  return 0;
+  }
+  if(!strcmp(TcpProtocol,"NewReno")){
+	  XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
+	  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue("ns3::TcpNewReno"));
+	  return 0;
+  }
+  if(!strcmp(TcpProtocol,"Tahoe")){
+	  XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
+	  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue("ns3::TcpTahoe"));
+	  return 0;
+  }
+
+  XBT_ERROR("The ns3/TcpModel must be : NewReno or Reno or Tahoe");
 }
 
 void * ns3_add_host(char * id)
