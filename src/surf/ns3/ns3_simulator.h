@@ -58,8 +58,7 @@ public:
 						const char *addr,
 						uint32_t TotalBytes,
 						void * action);
-	void simulator_stop(double min);
-	void simulator_start(void);
+	void simulator_start(double min);
 	void* get_action_from_socket(void *socket);
 	double get_remains_from_socket(void *socket);
 	double get_sent_from_socket(void *socket);

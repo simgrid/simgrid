@@ -90,16 +90,11 @@ double NS3Sim::get_sent_from_socket(void *socket){
   return ((MySocket *)socket)->sentBytes;
 }
 
-void NS3Sim::simulator_stop(double min){
-	if(min > 0.0)
-		Simulator::Stop(Seconds(min));
-	else
-		Simulator::Stop();
-}
-
-void NS3Sim::simulator_start(void){
-	XBT_DEBUG("Start simulator");
-	Simulator::Run ();
+void NS3Sim::simulator_start(double min){
+  if(min > 0.0)
+    Simulator::Stop(Seconds(min));
+  XBT_DEBUG("Start simulator");
+  Simulator::Run ();
 }
 
 static void receive_callback(Ptr<Socket> localSocket){

@@ -35,8 +35,7 @@ int port_number = 1025; //Port number is limited from 1025 to 65 000
 static NS3Sim* ns3_sim = 0;
 
 void ns3_simulator(double min){
-			ns3_sim->simulator_stop(min);
-			ns3_sim->simulator_start();
+			ns3_sim->simulator_start(min);
 }
 
 void* ns3_get_socket_action(void *socket){
