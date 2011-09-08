@@ -65,6 +65,7 @@ else(HAVE_NS3_CORE_LIB)
 message(STATUS "Looking for lib ns3-core - not found")
 endif(HAVE_NS3_CORE_LIB)
 mark_as_advanced(HAVE_NS3_LIB)
+mark_as_advanced(HAVE_NS3_CORE_LIB)
 
 if(HAVE_CORE_MODULE_H)
     if(HAVE_NS3_LIB)
