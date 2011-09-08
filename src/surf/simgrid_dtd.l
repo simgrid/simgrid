@@ -205,6 +205,8 @@ AT_surfxml_process_function AX_surfxml_process_function;
 #define A_surfxml_process_function (surfxml_bufferstack + AX_surfxml_process_function)
 AT_surfxml_peer_id AX_surfxml_peer_id;
 #define A_surfxml_peer_id (surfxml_bufferstack + AX_surfxml_peer_id)
+AT_surfxml_cluster_router_id AX_surfxml_cluster_router_id;
+#define A_surfxml_cluster_router_id (surfxml_bufferstack + AX_surfxml_cluster_router_id)
 AT_surfxml_cluster_sharing_policy AX_surfxml_cluster_sharing_policy;
 #define A_surfxml_cluster_sharing_policy AX_surfxml_cluster_sharing_policy
 AT_surfxml_bypassRoute_dst AX_surfxml_bypassRoute_dst;
@@ -1038,6 +1040,7 @@ const char* *surfxml_statenames=NULL;
   AX_surfxml_cluster_bb_sharing_policy = A_surfxml_cluster_bb_sharing_policy_SHARED;
   AX_surfxml_cluster_availability_file = 0;
   AX_surfxml_cluster_state_file = 0;
+  AX_surfxml_cluster_router_id = 0;
   ENTER(AL_surfxml_cluster); pushbuffer(0);
   }
 
@@ -1089,6 +1092,9 @@ const char* *surfxml_statenames=NULL;
 
  "state_file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_state_file);
  "state_file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_state_file);
+
+ "router_id"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_router_id);
+ "router_id"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_router_id);
 
  ">" {
   if (!AX_surfxml_cluster_id) FAIL("Required attribute `id' not set for `cluster' element.");
