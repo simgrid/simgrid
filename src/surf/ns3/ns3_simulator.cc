@@ -122,7 +122,8 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 	  return;
 	}
 
-	uint32_t toWrite = min (mysocket->remaining, txSpace);
+	uint32_t packetSize = 1024;
+	uint32_t toWrite = min (mysocket->remaining, packetSize);
 	uint8_t *data = (uint8_t*)malloc(sizeof(uint8_t)*toWrite);
 	int amountSent = localSocket->Send (&data[0], toWrite, 0);
 	free (data);
