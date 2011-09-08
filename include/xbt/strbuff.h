@@ -28,9 +28,9 @@ typedef struct {
 
 XBT_PUBLIC(void) xbt_strbuff_empty(xbt_strbuff_t b);
 XBT_PUBLIC(xbt_strbuff_t) xbt_strbuff_new(void);
-XBT_INLINE XBT_PUBLIC(xbt_strbuff_t) xbt_strbuff_new_from(char *s);
+XBT_PUBLIC(xbt_strbuff_t) xbt_strbuff_new_from(char *s);
 XBT_PUBLIC(void) xbt_strbuff_free(xbt_strbuff_t b);
-XBT_INLINE XBT_PUBLIC(void) xbt_strbuff_free_container(xbt_strbuff_t b);
+XBT_PUBLIC(void) xbt_strbuff_free_container(xbt_strbuff_t b);
 XBT_PUBLIC(void) xbt_strbuff_append(xbt_strbuff_t b, const char *toadd);
 XBT_PUBLIC(void) xbt_strbuff_chomp(xbt_strbuff_t b);
 XBT_PUBLIC(void) xbt_strbuff_trim(xbt_strbuff_t b);

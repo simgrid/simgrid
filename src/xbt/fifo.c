@@ -389,7 +389,7 @@ static void fifo_item_mallocator_reset_f(void *item)
 /** Constructor
  * \return a new bucket
  */
-XBT_INLINE xbt_fifo_item_t xbt_fifo_new_item(void)
+xbt_fifo_item_t xbt_fifo_new_item(void)
 {
   return xbt_mallocator_get(item_mallocator);
 }
@@ -427,7 +427,7 @@ XBT_INLINE void *xbt_fifo_get_item_content(xbt_fifo_item_t i)
  *
  * Free the bucket but does not modifies the object (if any) that was stored in it.
  */
-XBT_INLINE void xbt_fifo_free_item(xbt_fifo_item_t b)
+void xbt_fifo_free_item(xbt_fifo_item_t b)
 {
   xbt_mallocator_release(item_mallocator, b);
   return;
@@ -456,7 +456,7 @@ XBT_INLINE int xbt_fifo_size(xbt_fifo_t f)
  * \param l a list
  * \return the head of \a l.
  */
-XBT_INLINE xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
+xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
 {
   return l->head;
 }
@@ -465,7 +465,7 @@ XBT_INLINE xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
  * \param l a list
  * \return the tail of \a l.
  */
-XBT_INLINE xbt_fifo_item_t xbt_fifo_get_last_item(xbt_fifo_t l)
+xbt_fifo_item_t xbt_fifo_get_last_item(xbt_fifo_t l)
 {
   return l->tail;
 }

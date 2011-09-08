@@ -307,7 +307,7 @@ void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
  * kilkil a dynar and its content
  */
 
-XBT_INLINE void xbt_dynar_free(xbt_dynar_t * dynar)
+void xbt_dynar_free(xbt_dynar_t * dynar)
 {
   if (dynar && *dynar) {
     xbt_dynar_reset(*dynar);
@@ -326,7 +326,7 @@ void xbt_dynar_free_voidp(void *d)
  *
  * \param dynar the dynar we want to mesure
  */
-XBT_INLINE unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
+unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
 {
   return (dynar ? (unsigned long) dynar->used : (unsigned long) 0);
 }
@@ -336,7 +336,7 @@ XBT_INLINE unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
  *\param dynar the dynat we want to check
  */
 
-XBT_INLINE int xbt_dynar_is_empty(const xbt_dynar_t dynar)
+int xbt_dynar_is_empty(const xbt_dynar_t dynar)
 {
   return (xbt_dynar_length(dynar) == 0);
 }
@@ -368,7 +368,7 @@ xbt_dynar_get_cpy(const xbt_dynar_t dynar,
  * \warning The returned value is the actual content of the dynar.
  * Make a copy before fooling with it.
  */
-XBT_INLINE void *xbt_dynar_get_ptr(const xbt_dynar_t dynar,
+void *xbt_dynar_get_ptr(const xbt_dynar_t dynar,
                                    const unsigned long idx)
 {
 
@@ -604,7 +604,7 @@ XBT_INLINE void *xbt_dynar_push_ptr(xbt_dynar_t const dynar)
 }
 
 /** @brief Add an element at the end of the dynar */
-XBT_INLINE void xbt_dynar_push(xbt_dynar_t const dynar,
+void xbt_dynar_push(xbt_dynar_t const dynar,
                                const void *const src)
 {
   _dynar_lock(dynar);
@@ -619,7 +619,7 @@ XBT_INLINE void xbt_dynar_push(xbt_dynar_t const dynar,
  * You can then use regular affectation to set its value instead of relying
  * on the slow memcpy. This is what xbt_dynar_pop_as() does.
  */
-XBT_INLINE void *xbt_dynar_pop_ptr(xbt_dynar_t const dynar)
+void *xbt_dynar_pop_ptr(xbt_dynar_t const dynar)
 {
   void *res;
 
@@ -705,7 +705,7 @@ XBT_INLINE void xbt_dynar_map(const xbt_dynar_t dynar,
  *
  * This function can be used while traversing without problem.
  */
-XBT_INLINE void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
+void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
                                     unsigned int *const cursor)
 {
 
