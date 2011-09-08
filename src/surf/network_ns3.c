@@ -53,20 +53,20 @@ static void replace_str(char *str, const char *orig, const char *rep)
   str = xbt_strdup(buffer);
 }
 
-static void replace_bdw_ns3(char * bdw)
+static void replace_bdw_ns3(char ** bdw)
 {
-	char *temp = xbt_strdup(bdw);
-	xbt_free(bdw);
-	bdw = bprintf("%fBps",atof(temp));
+	char *temp = xbt_strdup(*bdw);
+	xbt_free(*bdw);
+	*bdw = bprintf("%fBps",atof(temp));
 	xbt_free(temp);
 
 }
 
-static void replace_lat_ns3(char * lat)
+static void replace_lat_ns3(char ** lat)
 {
-	char *temp = xbt_strdup(lat);
-	xbt_free(lat);
-	lat = bprintf("%fs",atof(temp));
+	char *temp = xbt_strdup(*lat);
+	xbt_free(*lat);
+	*lat = bprintf("%fs",atof(temp));
 	xbt_free(temp);
 }
 
@@ -203,8 +203,8 @@ void parse_ns3_add_cluster(void)
 	int elmts;
 	char * lat = xbt_strdup(cluster_lat);
 	char * bw =  xbt_strdup(cluster_bw);
-	replace_lat_ns3(lat);
-	replace_bdw_ns3(bw);
+	replace_lat_ns3(&lat);
+	replace_bdw_ns3(&bw);
 
 	xbt_dynar_foreach(tab_elements_num,cpt,elmts)
 	{
@@ -229,8 +229,8 @@ void parse_ns3_add_cluster(void)
 	//Create link backbone
 	lat = xbt_strdup(cluster_bb_lat);
 	bw =  xbt_strdup(cluster_bb_bw);
-	replace_lat_ns3(lat);
-	replace_bdw_ns3(bw);
+	replace_lat_ns3(&lat);
+	replace_bdw_ns3(&bw);
 	ns3_add_cluster(bw,lat,A_surfxml_cluster_id);
 	xbt_free(lat);
 	xbt_free(bw);	
@@ -285,8 +285,8 @@ void create_ns3_topology()
      XBT_DEBUG("Route from '%s' to '%s' with link '%s'",src,dst,((surf_ns3_link_t)link)->data->id);
      char * link_bdw = bprintf("%s",((surf_ns3_link_t)link)->data->bdw);
 	 char * link_lat = bprintf("%s",(((surf_ns3_link_t)link)->data->lat));
- 	 replace_lat_ns3(link_lat);
- 	 replace_bdw_ns3(link_bdw);
+ 	 replace_lat_ns3(&link_lat);
+ 	 replace_bdw_ns3(&link_bdw);
 	 ((surf_ns3_link_t)link)->created = 0;
 
 	 //	 XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
