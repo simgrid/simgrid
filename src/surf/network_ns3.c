@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_private.h"
+#include "surf/maxmin.h"
 #include "surf/ns3/ns3_interface.h"
 #include "xbt/lib.h"
 #include "surf/network_ns3_private.h"
@@ -423,7 +424,7 @@ static double ns3_share_resources(double min)
 	 do {
 	   ns3_simulator(min);
 	   time_to_next_flow_completion = ns3_time() - surf_get_clock();
-	 } while(time_to_next_flow_completion==0.0);
+	 } while(double_equals(time_to_next_flow_completion,0));
 
 	XBT_DEBUG("min       : %f",min);
 	XBT_DEBUG("ns3  time : %f",ns3_time());
@@ -445,7 +446,7 @@ static void ns3_update_actions_state(double now, double delta)
 
 	  /* If there are no running flows, just return */
 	  if (!xbt_swag_size(running_actions)) {
-	    while(ns3_time()<now) {
+	    while(double_positive(now-ns3_time())) {
 	      ns3_simulator(now-ns3_time());
 	    }
 	    return;
