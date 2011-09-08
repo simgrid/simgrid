@@ -124,7 +124,7 @@ typedef struct xbt_dict_cursor_ *xbt_dict_cursor_t;
 XBT_PUBLIC(xbt_dict_cursor_t) xbt_dict_cursor_new(const xbt_dict_t dict);
 XBT_PUBLIC(void) xbt_dict_cursor_free(xbt_dict_cursor_t * cursor);
 
-XBT_PUBLIC(void) xbt_dict_cursor_rewind(xbt_dict_cursor_t
+XBT_INLINE XBT_PUBLIC(void) xbt_dict_cursor_rewind(xbt_dict_cursor_t
                                                    cursor);
 
 
@@ -136,7 +136,7 @@ XBT_PUBLIC(void) xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor,
 
 XBT_PUBLIC(void) xbt_dict_cursor_first(const xbt_dict_t dict,
                                        xbt_dict_cursor_t * cursor);
-XBT_PUBLIC(void) xbt_dict_cursor_step(xbt_dict_cursor_t cursor);
+XBT_INLINE XBT_PUBLIC(void) xbt_dict_cursor_step(xbt_dict_cursor_t cursor);
 XBT_PUBLIC(int) xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
                                             char **key, void **data);
   /** @def xbt_dict_foreach

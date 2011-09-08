@@ -48,7 +48,7 @@ XBT_INLINE void xbt_swag_free(xbt_swag_t swag)
  *
  * Usage : xbt_swag_init(swag,&obj.setA-&obj);
  */
-void xbt_swag_init(xbt_swag_t swag, size_t offset)
+XBT_INLINE void xbt_swag_init(xbt_swag_t swag, size_t offset)
 {
   swag->tail = NULL;
   swag->head = NULL;

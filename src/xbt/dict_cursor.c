@@ -67,7 +67,7 @@ static XBT_INLINE void __cursor_not_null(xbt_dict_cursor_t cursor)
 
 
 /** @brief Reinitialize the cursor. Mandatory after removal or add in dict. */
-void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor)
+XBT_INLINE void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor)
 {
   XBT_CDEBUG(xbt_dict_cursor, "xbt_dict_cursor_rewind");
   xbt_assert(cursor);
@@ -105,7 +105,7 @@ XBT_INLINE void xbt_dict_cursor_first(const xbt_dict_t dict,
 /**
  * \brief Move to the next element.
  */
-void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
+XBT_INLINE void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
 {
   xbt_dictelm_t current;
   int line;
