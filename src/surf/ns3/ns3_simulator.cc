@@ -102,7 +102,7 @@ static void receive_callback(Ptr<Socket> localSocket){
 
   if (mysocket->finished == 0){
     mysocket->finished = 1;
-//    cout << "[" << Simulator::Now ().GetSeconds() << "] " << "recv_cb of F[" << mysocket->totalBytes << "] " << endl;
+    XBT_DEBUG("recv_cb of F[%p, %p, %d]", mysocket, mysocket->action, mysocket->totalBytes);
     XBT_DEBUG("Stop simulator at %f seconds", Simulator::Now().GetSeconds());
     Simulator::Stop(Seconds(0.0));
     Simulator::Run();
@@ -126,7 +126,7 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 	  mysocket->bufferedBytes += amountSent;
 	  mysocket->remaining -= amountSent;
 	}
-//	cout << "[" << Simulator::Now ().GetSeconds() << "] " << "send_cb of F[" << mysocket->totalBytes << "] ("<<  mysocket->remaining << " / " << mysocket->totalBytes << ") " << amountSent << " buffered." << endl;
+  XBT_DEBUG("send_cb of F[%p, %p, %d] (%d/%d) %d buffered", mysocket, mysocket->action, mysocket->totalBytes, mysocket->remaining, mysocket->totalBytes, amountSent);
 
   if (mysocket->remaining == 0){
     //everything was buffered to send, tell NS3 to close the socket
@@ -138,29 +138,29 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 static void datasent_callback(Ptr<Socket> localSocket, uint32_t dataSent){
   MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
   mysocket->sentBytes += dataSent;
-//  cout << "[" << Simulator::Now ().GetSeconds() << "] " << "datasent_cb of F[" << mysocket->totalBytes << "] " << dataSent << " sent." << endl;
+  XBT_DEBUG("datasent_cb of F[%p, %p, %d] %d sent", mysocket, mysocket->action, mysocket->totalBytes, dataSent);
 }
 
 static void normalClose_callback(Ptr<Socket> localSocket){
   MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
-//  cout << "[" << Simulator::Now ().GetSeconds() << "] " << "normalClose_cb of F[" << mysocket->totalBytes << "]" << endl;
+  XBT_DEBUG("normalClose_cb of F[%p, %p, %d]", mysocket, mysocket->action, mysocket->totalBytes);
   receive_callback (localSocket);
 }
 
 static void errorClose_callback(Ptr<Socket> localSocket){
   MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
-//  cout << "[" << Simulator::Now ().GetSeconds() << "] " << "errorClose_cb of F[" << mysocket->totalBytes << "]" << endl;
+  XBT_DEBUG("errorClose_cb of F[%p, %p, %d]", mysocket, mysocket->action, mysocket->totalBytes);
   xbt_die("NS3: a socket was closed anormally");
 }
 
 static void succeededConnect_callback(Ptr<Socket> localSocket){
   MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
-//  cout << "[" << Simulator::Now ().GetSeconds() << "] " << "succeededConnect_cb of F[" << mysocket->totalBytes << "]" << endl;
+  XBT_DEBUG("succeededConnect_cb of F[%p, %p, %d]", mysocket, mysocket->action, mysocket->totalBytes);
 }
 
 static void failedConnect_callback(Ptr<Socket> localSocket){
   MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
-//  cout << "[" << Simulator::Now ().GetSeconds() << "] " << "failedConnect_cb of F[" << mysocket->totalBytes << "]" << endl;
+  XBT_DEBUG("failedConnect_cb of F[%p, %p, %d]", mysocket, mysocket->action, mysocket->totalBytes);
   xbt_die("NS3: a socket failed to connect");
 }
 
@@ -178,5 +178,5 @@ static void StartFlow(Ptr<Socket> sock,
   sock->SetCloseCallbacks (MakeCallback (&normalClose_callback), MakeCallback (&errorClose_callback));
 
   MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&sock);
-//  cout << "[" <<  Simulator::Now().GetSeconds() << "] Starting flow to " << to << " using port " << port_number << endl;
+  XBT_DEBUG("startFlow_cb of F[%p, %p, %d] dest=%s port=%d", mysocket, mysocket->action, mysocket->totalBytes, to, port_number);
 }
