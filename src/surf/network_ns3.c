@@ -438,6 +438,9 @@ static void ns3_update_actions_state(double now, double delta)
 	  char *key;
 	  void *data;
 
+	  static xbt_dynar_t socket_to_destroy = NULL;
+    if(!socket_to_destroy) socket_to_destroy = xbt_dynar_new(sizeof(char*),NULL);
+
 	  surf_action_network_ns3_t action = NULL;
 	  xbt_swag_t running_actions =
 	      surf_network_model->states.running_action_set;
@@ -452,6 +455,7 @@ static void ns3_update_actions_state(double now, double delta)
 
 	  xbt_dict_foreach(dict_socket,cursor,key,data){
 	    action = (surf_action_network_ns3_t)ns3_get_socket_action(data);
+	    XBT_DEBUG("Processing socket %p (action %p)",data,action);
 	    action->generic_action.remains = action->generic_action.cost - ns3_get_socket_sent(data);
 
 #ifdef HAVE_TRACING
@@ -476,9 +480,19 @@ static void ns3_update_actions_state(double now, double delta)
 #endif
 
 	    if(ns3_get_socket_is_finished(data) == 1){
+	      xbt_dynar_push(socket_to_destroy,&key);
 	      action->generic_action.finish = now;
 	      surf_action_state_set(&(action->generic_action), SURF_ACTION_DONE);
 	    }
+	  }
+
+	  while (xbt_dynar_length(socket_to_destroy)){
+	    xbt_dynar_pop(socket_to_destroy,&key);
+
+	    void *data = xbt_dict_get (dict_socket, key);
+	    surf_action_network_ns3_t action = (surf_action_network_ns3_t)ns3_get_socket_action(data);
+	    XBT_DEBUG ("Removing socket %p of action %p", key, action);
+	    xbt_dict_remove(dict_socket,key);
 	  }
 	  return;
 }
@@ -533,7 +547,7 @@ static int action_unref(surf_action_t action)
     if (action->category)
       xbt_free(action->category);
 #endif
-
+    XBT_DEBUG ("Removing action %p", action);
     surf_action_free(&action);
     return 1;
   }
