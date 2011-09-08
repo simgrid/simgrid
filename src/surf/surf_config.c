@@ -424,7 +424,7 @@ void surf_config_init(int *argc, char **argv)
 
     default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "fullduplex",
-                     "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM03)",
+                     "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
                      _surf_cfg_cb__surf_network_fullduplex, NULL);
     xbt_cfg_setdefault_int(_surf_cfg_set, "fullduplex", default_value_int);
