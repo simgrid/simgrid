@@ -304,3 +304,12 @@ ADD_CUSTOM_TARGET(bib_files
 )
 
 add_dependencies(simgrid_website bib_files)
+
+ADD_CUSTOM_TARGET(pdf
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Generate simgrid_documentation.pdf"
+    COMMAND make clean
+    COMMAND make pdf
+    COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_HOME_DIRECTORY}/doc/latex/refman.pdf ${CMAKE_HOME_DIRECTORY}/doc/latex/simgrid_documentation.pdf
+    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/latex
+)
+add_dependencies(pdf simgrid_documentation)
