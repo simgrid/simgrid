@@ -444,8 +444,12 @@ static void ns3_update_actions_state(double now, double delta)
 	      surf_network_model->states.running_action_set;
 
 	  /* If there are no running flows, just return */
-	  if (!xbt_swag_size(running_actions))
-	  	return;
+	  if (!xbt_swag_size(running_actions)) {
+	    while(ns3_time()<now) {
+	      ns3_simulator(now-ns3_time());
+	    }
+	    return;
+	  }
 
 	  xbt_dict_foreach(dict_socket,cursor,key,data){
 	    action = (surf_action_network_ns3_t)ns3_get_socket_action(data);
