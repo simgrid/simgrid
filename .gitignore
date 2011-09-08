@@ -79,6 +79,7 @@ doc/using_bib.html
 doc/Doxyfile
 doc/footer.html
 *.doc.toc
+doc/latex/
 
 ################################################
 ### Website
