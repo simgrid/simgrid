@@ -18,8 +18,6 @@ extern xbt_lib_t as_router_lib;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_ns3, surf,
                                 "Logging specific to the SURF network NS3 module");
 
-#define MAX_LENGHT_IPV4 16 //255.255.255.255\0
-
 extern routing_global_t global_routing;
 extern xbt_dict_t dict_socket;
 
@@ -90,7 +88,7 @@ void parse_ns3_add_link(void)
 {
 	XBT_DEBUG("NS3_ADD_LINK '%s'",A_surfxml_link_id);
 
-	if(!IPV4addr) IPV4addr = xbt_dynar_new(MAX_LENGHT_IPV4*sizeof(char),ns3_free_dynar);
+	if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),ns3_free_dynar);
 
 	tmgr_trace_t bw_trace;
 	tmgr_trace_t state_trace;

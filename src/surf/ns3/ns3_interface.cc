@@ -254,13 +254,13 @@ void * ns3_add_link(int src,int dst,char * bw,char * lat)
 	free(adr);
 	interfaces.Add(address.Assign (netA));
 
-	XBT_DEBUG("Have write '%s' for Node '%d'",transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-2)),src);
-	xbt_dynar_set(IPV4addr,src,
-			transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-2)));
+	char *tmp = transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-2));
+	XBT_DEBUG("Have write '%s' for Node '%d'",tmp,src);
+	xbt_dynar_set(IPV4addr,src,tmp);
 
-	XBT_DEBUG("Have write '%s' for Node '%d'",transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-1)),dst);
-	xbt_dynar_set(IPV4addr,dst,
-			transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-1)));
+	tmp = transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-1));
+	XBT_DEBUG("Have write '%s' for Node '%d'",tmp,dst);
+	xbt_dynar_set(IPV4addr,dst,tmp);
 
 	if(number_of_links == 255){
 		if(number_of_networks == 255)
