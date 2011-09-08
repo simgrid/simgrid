@@ -33,9 +33,23 @@
     <argument value="3"/>
   </process>
 
-<!--  <process host="C3" function="timer">
+  <process host="S3" function="master" start_time="2.0">
+      <argument value="2000000"/>
+      <argument value="C3"/>
+      <argument value="4"/>
+  </process>
+  
+  <process host="C3" function="slave">
+    <argument value="4"/>
+  </process>
+
+  <process host="C3" function="timer">
     <argument value="0"/>
     <argument value=".1"/>
   </process>
-    --> 
+
+  <process host="C3" function="timer" start_time="2.0">
+    <argument value="0"/>
+    <argument value=".1"/>
+  </process>
 </platform>

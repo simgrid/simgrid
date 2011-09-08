@@ -19,7 +19,7 @@ int timer(int argc, char *argv[]);
 MSG_error_t test_all(const char *platform_file,
                      const char *application_file);
 
-int timer_start = 1;
+int timer_start; //set as 1 in the master process
 
 typedef enum {
   PORT_22 = 0,
@@ -49,9 +49,9 @@ int master(int argc, char *argv[])
   //unique id to control statistics
   int id = -1;
 
-  if (argc != 4) {
-    XBT_INFO("Strange number of arguments expected 3 got %d", argc - 1);
-  }
+  xbt_assert(argc==4,"Strange number of arguments expected 3 got %d", argc - 1);
+
+  XBT_DEBUG ("Master started");
 
   /* data size */
   int read;
@@ -81,6 +81,7 @@ int master(int argc, char *argv[])
   }
 
   count_finished++;
+  timer_start = 1 ;
 
   /* time measurement */
   sprintf(id_alias, "%d", id);
@@ -89,7 +90,7 @@ int master(int argc, char *argv[])
   MSG_task_send(todo, id_alias);
   end_time = MSG_get_clock();
 
-
+  XBT_DEBUG ("Finished");
   return 0;
 }                               /* end_of_master */
 
@@ -97,24 +98,26 @@ int master(int argc, char *argv[])
 /** Timer function  */
 int timer(int argc, char *argv[])
 {
-  int sleep_time;
-  int first_sleep;
+  double sleep_time;
+  double first_sleep;
 
-  if (argc != 3) {
-    XBT_INFO("Strange number of arguments expected 2 got %d", argc - 1);
-  }
+  xbt_assert(argc==3,"Strange number of arguments expected 2 got %d", argc - 1);
 
-  sscanf(argv[1], "%d", &first_sleep);
-  sscanf(argv[2], "%d", &sleep_time);
+  sscanf(argv[1], "%lf", &first_sleep);
+  sscanf(argv[2], "%lf", &sleep_time);
+
+  XBT_DEBUG ("Timer started");
 
   if(first_sleep){
       MSG_process_sleep(first_sleep);
   }
 
-  while(timer_start){
+  do {
+    XBT_DEBUG ("Get sleep");
       MSG_process_sleep(sleep_time);
-  }
+  } while(timer_start);
 
+  XBT_DEBUG ("Finished");
   return 0;
 }
 
@@ -127,9 +130,9 @@ int slave(int argc, char *argv[])
   int id = 0;
   char id_alias[10];
 
-  if (argc != 2) {
-    XBT_INFO("Strange number of arguments expected 1 got %d", argc - 1);
-  }
+  xbt_assert(argc==2,"Strange number of arguments expected 1 got %d", argc - 1);
+
+  XBT_DEBUG ("Slave started");
 
   id = atoi(argv[1]);
   sprintf(id_alias, "%d", id);
@@ -155,9 +158,10 @@ int slave(int argc, char *argv[])
 		  MSG_task_get_data_size(task),
        masternames[id],
        slavenames[id]);
-
+//  MSG_task_execute(task);
   MSG_task_destroy(task);
 
+  XBT_DEBUG ("Finished");
   return 0;
 }                               /* end_of_slave */
 
