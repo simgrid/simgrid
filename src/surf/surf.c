@@ -474,7 +474,8 @@ double surf_solve(double max_date)
       model_next_action_end = surf_network_model->model_private->share_resources(min);
 
       XBT_DEBUG("Min for NS3 : %f", model_next_action_end);
-      min = model_next_action_end;
+      if(model_next_action_end>=0.0)
+        min = model_next_action_end;
     }
 
     if (next_event_date == -1.0) break;
