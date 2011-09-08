@@ -2,6 +2,7 @@
 body {
   margin: 0px;
   padding: 0px 0px 10px 0px;  
+  font:0.9em "trebuchet ms", helvetica, arial, sans-serif;
 }
 /** Header layout ***/
 #header {text-align: center;
