@@ -384,10 +384,6 @@ extern xbt_log_layout_t xbt_log_default_layout;
  * Setting the LogEvent's valist member is done inside _log_logEvent.
  */
 
-#include <string.h>             /* memset */
-#define _XBT_LOG_EV_BUFFER_ZERO() \
-  memset(_log_ev.buffer, 0, XBT_LOG_BUFF_SIZE)
-
 /* Logging Macros */
 
 #ifdef XBT_LOG_MAYDAY
@@ -399,6 +395,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
   fprintf(stderr,"%s:%d:\n" f, __FILE__, __LINE__, __VA_ARGS__)
 # define XBT_LOG(...) XBT_CLOG(0, __VA_ARGS__)
 #else
+# include <string.h>            /* memset */
 # define XBT_CLOG_(catv, prio, ...)                                     \
   do {                                                                  \
     if (_XBT_LOG_ISENABLEDV(catv, prio)) {                              \
@@ -408,7 +405,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
       _log_ev.fileName = __FILE__;                                      \
       _log_ev.functionName = _XBT_FUNCTION;                             \
       _log_ev.lineNum = __LINE__;                                       \
-      _XBT_LOG_EV_BUFFER_ZERO();                                        \
+      memset(_log_ev.buffer, 0, XBT_LOG_BUFF_SIZE);                     \
       _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
     }                                                                   \
   }  while (0)
