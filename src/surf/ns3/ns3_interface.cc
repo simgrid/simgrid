@@ -100,7 +100,7 @@ int ns3_initialize(const char* TcpProtocol){
 //  "ns3::TcpReno"
 //  "ns3::TcpTahoe"
 
-  Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000)); // 1000-byte packet for easier reading
+  Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1024)); // 1024-byte packet for easier reading
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
 
   if(!strcmp(TcpProtocol,"default")){
