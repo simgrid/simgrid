@@ -190,7 +190,6 @@ typedef struct s_mc_pair{
   mc_snapshot_t system_state;
   mc_state_t graph_state;
   xbt_state_t automaton_state;
-  int num;
 }s_mc_pair_t, *mc_pair_t;
 
 extern xbt_fifo_t mc_stack_liveness_stateful;
