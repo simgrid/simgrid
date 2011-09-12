@@ -66,7 +66,7 @@ int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalByte
 	Ptr<Node> src_node = nodes.Get(node1->node_num);
 	Ptr<Node> dst_node = nodes.Get(node2->node_num);
 
-	char* addr = (char*)xbt_dynar_get_ptr(IPV4addr,node2->node_num);
+	char* addr = (char*)xbt_dynar_get_as(IPV4addr,node2->node_num,char*);
 
 	XBT_DEBUG("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1->node_num, node2->node_num,addr);
 	ns3_sim->create_flow_NS3(src_node,
@@ -255,12 +255,12 @@ void * ns3_add_link(int src,int dst,char * bw,char * lat)
 	interfaces.Add(address.Assign (netA));
 
 	char *tmp = transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-2));
-	XBT_DEBUG("Have write '%s' for Node '%d'",tmp,src);
-	xbt_dynar_set(IPV4addr,src,tmp);
+	xbt_dynar_set_as(IPV4addr,src,char*,tmp);
+	XBT_DEBUG("Have write '%s' for Node '%d'",(char*)xbt_dynar_get_as(IPV4addr,src,char*),src);
 
 	tmp = transformIpv4Address(interfaces.GetAddress(interfaces.GetN()-1));
-	XBT_DEBUG("Have write '%s' for Node '%d'",tmp,dst);
-	xbt_dynar_set(IPV4addr,dst,tmp);
+	xbt_dynar_set_as(IPV4addr,dst,char*,tmp);
+	XBT_DEBUG("Have write '%s' for Node '%d'",(char*)xbt_dynar_get_as(IPV4addr,dst,char*),dst);
 
 	if(number_of_links == 255){
 		if(number_of_networks == 255)
