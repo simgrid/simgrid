@@ -571,6 +571,7 @@ set(DOC_SOURCES
 	doc/bindings.doc
 	doc/options.doc
 	doc/use.doc
+	doc/tracing.doc
 	doc/gtnets.doc
 	doc/ns3.doc
 	doc/gtut-howto-design.doc

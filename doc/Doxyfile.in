@@ -617,6 +617,7 @@ INPUT                  = index.doc \
 						 installSimgrid.doc \
                          bindings.doc \
                          options.doc \
+                         tracing.doc \
                          use.doc \
                          gtnets.doc \
                          ns3.doc \
