@@ -211,7 +211,7 @@ if(pthread)
 	### Test that we have a way to create semaphores
   	
   	if(HAVE_SEM_OPEN_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_open.c -o testprog"
+		exec_program("${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_open.c -lpthread -o testprog"
 		             OUTPUT_VARIABLE HAVE_SEM_OPEN_run)
 	    	if(HAVE_SEM_OPEN_run)
 			set(HAVE_SEM_OPEN 0)
@@ -230,7 +230,7 @@ if(pthread)
   	endif(HAVE_SEM_OPEN_LIB)
 
   	if(HAVE_SEM_INIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -o testprog" 
+		exec_program("${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -lpthread -o testprog"
 		             OUTPUT_VARIABLE HAVE_SEM_INIT_run)
 	    	if(HAVE_SEM_INIT_run)
 			set(HAVE_SEM_INIT 0)
