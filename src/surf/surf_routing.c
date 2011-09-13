@@ -818,6 +818,7 @@ static xbt_dynar_t get_route_or_null(const char *src, const char *dst)
   TRY {
     get_route_latency(src, dst, &route, NULL, 1);
   }CATCH(exception) {
+    xbt_ex_free(exception);
     return NULL;
   }
   return route;
