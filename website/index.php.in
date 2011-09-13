@@ -42,7 +42,6 @@ $group_name="simgrid";
 
 <tr><td width="75%" valign="top">
 <h1>Welcome to the SimGrid project!</h1>
-<h1>SimGrid in a nutshell:</h1>
 <p>SimGrid is a toolkit that provides core functionalities for the simulation of distributed applications in heterogeneous distributed environments. The specific goal of the project is to facilitate research in the area of parallel and distributed large scale systems, such as Grids, P2P systems and clouds. Its use cases encompass heuristic evaluation, application prototyping or even real application development and tuning
 </p>
 <h2>What SimGrid can do for you ?</h2>
