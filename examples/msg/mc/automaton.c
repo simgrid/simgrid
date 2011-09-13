@@ -12,7 +12,6 @@ xbt_automaton_t xbt_automaton_new_automaton(){
 xbt_state_t xbt_automaton_new_state(xbt_automaton_t a, int type, char* id){
   xbt_state_t state = NULL;
   state = xbt_new0(struct xbt_state, 1);
-  state->visited = 0;
   state->type = type;
   state->id = strdup(id);
   state->in = xbt_dynar_new(sizeof(xbt_transition_t), NULL);

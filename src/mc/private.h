@@ -229,6 +229,10 @@ typedef struct s_mc_pair_stateless{
   xbt_state_t automaton_state;
 }s_mc_pair_stateless_t, *mc_pair_stateless_t;
 
+typedef struct s_mc_pair_stateless_reached{
+  char *id_state_automaton;
+}s_mc_pair_reached_stateless_t, *mc_pair_reached_stateless_t;
+
 extern xbt_fifo_t mc_stack_liveness_stateless;
 
 mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st);

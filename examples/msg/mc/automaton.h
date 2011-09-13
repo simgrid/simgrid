@@ -14,7 +14,6 @@ typedef struct xbt_state {
   int type; /* -1 = init, 0 = inter, 1 = final */
   xbt_dynar_t in;
   xbt_dynar_t out;
-  int visited;
 } s_xbt_state;
 
 typedef struct xbt_state* xbt_state_t;
