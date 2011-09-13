@@ -283,8 +283,8 @@ void create_ns3_topology()
 
      if( strcmp(src,dst) && ((surf_ns3_link_t)link)->created){
      XBT_DEBUG("Route from '%s' to '%s' with link '%s'",src,dst,((surf_ns3_link_t)link)->data->id);
-     char * link_bdw = bprintf("%s",((surf_ns3_link_t)link)->data->bdw);
-	 char * link_lat = bprintf("%s",(((surf_ns3_link_t)link)->data->lat));
+     char * link_bdw = xbt_strdup(((surf_ns3_link_t)link)->data->bdw);
+	 char * link_lat = xbt_strdup(((surf_ns3_link_t)link)->data->lat);
  	 replace_lat_ns3(&link_lat);
  	 replace_bdw_ns3(&link_bdw);
 	 ((surf_ns3_link_t)link)->created = 0;
