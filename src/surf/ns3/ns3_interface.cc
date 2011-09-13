@@ -10,6 +10,7 @@
 #include "xbt/log.h"
 #include "xbt/dynar.h"
 
+
 using namespace ns3;
 
 extern xbt_lib_t host_lib;
@@ -23,8 +24,6 @@ InternetStackHelper stack;
 NodeContainer nodes;
 NodeContainer Cluster_nodes;
 Ipv4InterfaceContainer interfaces;
-
-
 
 int number_of_nodes = 0;
 int number_of_clusters_nodes = 0;
@@ -103,6 +102,9 @@ int ns3_initialize(const char* TcpProtocol){
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1024)); // 1024-byte packet for easier reading
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
 
+#ifdef _HAVE_NS3_RED
+  XBT_INFO("Using RED version of ns3");
+#endif
   if(!strcmp(TcpProtocol,"default")){
 	  return 0;
   }
@@ -227,14 +229,20 @@ static char* transformIpv4Address (Ipv4Address from){
 		return IPaddr;
 }
 
-void * ns3_add_link(int src,int dst,char * bw,char * lat)
+void * ns3_add_link(int src, e_ns3_network_element_type_t type_src,
+					int dst, e_ns3_network_element_type_t type_dst,
+					char * bw,char * lat)
 {
 	if(number_of_links == 1 ) {
 		LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
 		LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 	}
 
+#ifdef _HAVE_NS3_RED
+	MyPointToPointHelper pointToPoint;
+#else
 	PointToPointHelper pointToPoint;
+#endif
 	NetDeviceContainer netA;
 	Ipv4AddressHelper address;
 
@@ -246,7 +254,11 @@ void * ns3_add_link(int src,int dst,char * bw,char * lat)
 	pointToPoint.SetChannelAttribute ("Delay", StringValue (lat));
 	//pointToPoint.EnablePcapAll("test_ns3_trace"); //DEBUG
 
+#ifdef _HAVE_NS3_RED
+	netA.Add(pointToPoint.Install (a, type_src, b, type_dst));
+#else
 	netA.Add(pointToPoint.Install (a, b));
+#endif
 
 	char * adr = bprintf("%d.%d.0.0",number_of_networks,number_of_links);
 	address.SetBase (adr, "255.255.0.0");
