@@ -216,7 +216,9 @@ void parse_ns3_add_cluster(void)
 		if(host_src && host_dst){}
 		else xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
 
-		ns3_add_link(host_src->node_num,host_dst->node_num,bw,lat);
+		ns3_add_link(host_src->node_num,host_src->type,
+					 host_dst->node_num,host_dst->type,
+					 bw,lat);
 
 		free(router_id);
 		free(host_id);
@@ -302,7 +304,7 @@ void create_ns3_topology()
      if(host_src && host_dst){}
      else xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
 
-     ns3_add_link(host_src->node_num,host_dst->node_num,link_bdw,link_lat);
+     ns3_add_link(host_src->node_num,host_src->type,host_dst->node_num,host_dst->type,link_bdw,link_lat);
 
      xbt_free(link_bdw);
      xbt_free(link_lat);

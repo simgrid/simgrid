@@ -110,28 +110,29 @@ static void receive_callback(Ptr<Socket> localSocket){
 }
 
 static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
+	uint8_t *data = (uint8_t*)malloc(sizeof(uint8_t)*txSpace);
 	MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
-
 	if (mysocket->remaining == 0){
-	  //all data was already buffered (and socket was already closed), just return
-	  return;
+		  //all data was already buffered (and socket was already closed), just return
+		  return;
 	}
+	while (mysocket->sentBytes < mysocket->totalBytes
+			&& localSocket->GetTxAvailable () > 0)
+	{
+      uint32_t toWrite = min ((mysocket->remaining), txSpace);
+      toWrite = min (toWrite, localSocket->GetTxAvailable ());
+      int amountSent = localSocket->Send (&data[0], toWrite, 0);
 
-	uint32_t toWrite = min (mysocket->remaining, txSpace);
-	uint8_t *data = (uint8_t*)malloc(sizeof(uint8_t)*toWrite);
-	int amountSent = localSocket->Send (&data[0], toWrite, 0);
-	free (data);
-	if (amountSent > 0){
-	  mysocket->bufferedBytes += amountSent;
-	  mysocket->remaining -= amountSent;
+      if(amountSent < 0)
+    	  return;
+	  (mysocket->sentBytes) += amountSent;
+	  (mysocket->remaining) -= amountSent;
+      XBT_DEBUG("send_cb of F[%p, %p, %d] (%d/%d) %d buffered", mysocket, mysocket->action, mysocket->totalBytes, mysocket->remaining, mysocket->totalBytes, amountSent);
+
+    }
+	if ((mysocket->sentBytes) >= mysocket->totalBytes){
+		localSocket->Close();
 	}
-  XBT_DEBUG("send_cb of F[%p, %p, %d] (%d/%d) %d buffered", mysocket, mysocket->action, mysocket->totalBytes, mysocket->remaining, mysocket->totalBytes, amountSent);
-
-  if (mysocket->remaining == 0){
-    //everything was buffered to send, tell NS3 to close the socket
-    localSocket->Close();
-  }
-	return;
 }
 
 static void datasent_callback(Ptr<Socket> localSocket, uint32_t dataSent){

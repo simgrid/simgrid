@@ -42,6 +42,20 @@ find_path(HAVE_CORE_MODULE_H
     ${ns3_path}
 )
 
+find_path(HAVE_RED_QUEUE_H
+	NAME ns3/red-queue.h
+    HINTS
+    $ENV{HOME}
+    PATH_SUFFIXES include ns3/include
+    PATHS
+    /opt
+    /opt/local
+    /opt/csw
+    /sw
+    /usr
+    ${ns3_path}
+)
+
 message(STATUS "Looking for core-module.h")
 if(HAVE_CORE_MODULE_H)
 message(STATUS "Looking for core-module.h - found")
@@ -49,6 +63,14 @@ else(HAVE_CORE_MODULE_H)
 message(STATUS "Looking for core-module.h - not found")
 endif(HAVE_CORE_MODULE_H)
 mark_as_advanced(HAVE_CORE_MODULE_H)
+
+message(STATUS "Looking for red-queue.h")
+if(HAVE_RED_QUEUE_H)
+message(STATUS "Looking for red-queue.h - found")
+else(HAVE_RED_QUEUE_H)
+message(STATUS "Looking for red-queue.h - not found")
+endif(HAVE_RED_QUEUE_H)
+mark_as_advanced(HAVE_RED_QUEUE_H)
 
 message(STATUS "Looking for lib ns3")
 if(HAVE_NS3_LIB)
@@ -104,3 +126,7 @@ if(HAVE_NS3)
 else(HAVE_NS3)
     message(STATUS "Warning: To use NS-3 Please install ns3 at least version 3.10 (http://www.nsnam.org/releases/)")
 endif(HAVE_NS3)
+
+if(HAVE_NS3 AND enable_supernovae)
+    set(enable_supernovae OFF)
+endif(HAVE_NS3 AND enable_supernovae)

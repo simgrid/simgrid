@@ -42,7 +42,9 @@ XBT_PUBLIC(void *) ns3_add_host(char * id);
 XBT_PUBLIC(void *) ns3_add_host_cluster(char * id);
 XBT_PUBLIC(void *) ns3_add_router(char * id);
 XBT_PUBLIC(void *) ns3_add_AS(char * id);
-XBT_PUBLIC(void *) ns3_add_link(int src,int dst,char * bw,char * lat);
+XBT_PUBLIC(void *) ns3_add_link(int src, e_ns3_network_element_type_t type_src,
+								int dst, e_ns3_network_element_type_t type_dst,
+								char * bw,char * lat);
 XBT_PUBLIC(void *) ns3_end_platform(void);
 XBT_PUBLIC(void *) ns3_add_cluster(char * bw,char * lat,char *id);
 #ifdef __cplusplus
