@@ -71,7 +71,10 @@ void NS3Sim::create_flow_NS3(
 	mysocket->action = action;
 	xbt_dict_set(dict_socket,(const char*)&sock, mysocket,NULL);
 	sock->Bind(InetSocketAddress(port_number));
-	Simulator::Schedule (Seconds(0.0),&StartFlow, sock, addr, port_number);
+	XBT_INFO("Create flow starting to %fs + %fs = %fs",start-ns3_time(), ns3_time(), start);
+	Simulator::Schedule (Seconds(start-ns3_time()),&StartFlow, sock, addr, port_number);
+//	Simulator::Schedule (Seconds(0.0),&StartFlow, sock, addr, port_number);
+
 }
 
 void* NS3Sim::get_action_from_socket(void *socket){
