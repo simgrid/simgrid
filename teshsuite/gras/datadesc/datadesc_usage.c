@@ -475,12 +475,11 @@ static void test_pbio(gras_socket_t sock, int direction)
 {
   int cpt;
   int cpt2;
-  gras_datadesc_type_t pbio_type;
   pbio_t i, j;
 
   XBT_INFO
       ("---- Test on the PBIO IEEE struct (also tests GRAS DEFINE TYPE) ----");
-  pbio_type = gras_datadesc_by_symbol(s_pbio);
+  gras_datadesc_by_symbol(s_pbio); 
 
   /* Fill in that damn struct */
   i.Cnstatv = 325115;

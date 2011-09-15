@@ -704,7 +704,6 @@ static gras_datadesc_type_t parse_typedef(char *definition)
 
   s_type_modifier_t tm;
 
-  gras_datadesc_type_t struct_desc = NULL;
   gras_datadesc_type_t typedef_desc = NULL;
 
   XBT_IN("");
@@ -714,7 +713,7 @@ static gras_datadesc_type_t parse_typedef(char *definition)
   parse_type_modifier(&tm);
 
   if (tm.is_struct) {
-    struct_desc = parse_struct(definition);
+   gras_datadesc_type_t struct_desc = parse_struct(definition);
   }
 
   parse_type_modifier(&tm);
