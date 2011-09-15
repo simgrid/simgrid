@@ -733,7 +733,7 @@ static double surf_cpu_ti_get_power_scale(surf_cpu_ti_tgmr_t trace,
   point =
       surf_cpu_ti_binary_search(trace->trace->time_points, reduced_a, 0,
                                 trace->trace->nb_points - 1);
-  xbt_dynar_get_cpy(trace->power_trace->event_list, 0, &val);
+  xbt_dynar_get_cpy(trace->power_trace->event_list, point, &val);
   return val.value;
 }
 
