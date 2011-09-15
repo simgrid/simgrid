@@ -192,13 +192,18 @@ typedef struct s_mc_pair{
   xbt_state_t automaton_state;
 }s_mc_pair_t, *mc_pair_t;
 
+typedef struct s_mc_pair_reached{
+  xbt_state_t automaton_state;
+  xbt_dynar_t prop_ato;
+}s_mc_pair_reached_t, *mc_pair_reached_t;
+
 extern xbt_fifo_t mc_stack_liveness_stateful;
 
 int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
-int reached(mc_pair_t p);
-void set_pair_reached(mc_pair_t p);
+int reached(xbt_automaton_t a);
+int set_pair_reached(xbt_automaton_t a);
 void MC_show_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_pair_delete(mc_pair_t pair);
@@ -229,17 +234,11 @@ typedef struct s_mc_pair_stateless{
   xbt_state_t automaton_state;
 }s_mc_pair_stateless_t, *mc_pair_stateless_t;
 
-typedef struct s_mc_pair_stateless_reached{
-  char *id_state_automaton;
-}s_mc_pair_reached_stateless_t, *mc_pair_reached_stateless_t;
-
 extern xbt_fifo_t mc_stack_liveness_stateless;
 
 mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st);
 void MC_ddfs_stateless_init(xbt_automaton_t a);
 void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay);
-int reached_stateless(mc_pair_stateless_t p);
-void set_pair_stateless_reached(mc_pair_stateless_t p);
 void MC_show_stack_liveness_stateless(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateless(xbt_fifo_t stack);
 void MC_pair_stateless_delete(mc_pair_stateless_t pair);
