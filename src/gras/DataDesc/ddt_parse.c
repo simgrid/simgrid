@@ -713,7 +713,7 @@ static gras_datadesc_type_t parse_typedef(char *definition)
   parse_type_modifier(&tm);
 
   if (tm.is_struct) {
-   gras_datadesc_type_t struct_desc = parse_struct(definition);
+     parse_struct(definition);
   }
 
   parse_type_modifier(&tm);
