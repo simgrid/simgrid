@@ -91,7 +91,7 @@ static void create_hierarchy(routing_component_t current_comp,
 void jedule_setup_platform() {
 
 	routing_component_t root_comp;
-	e_surf_network_element_type_t type;
+	// e_surf_network_element_type_t type;
 
 	jed_simgrid_container_t root_container;
 
@@ -102,7 +102,7 @@ void jedule_setup_platform() {
 	XBT_DEBUG("root name %s\n", root_comp->name);
 
 	// that doesn't work
-	type = root_comp->get_network_element_type(root_comp->name);
+	// type = root_comp->get_network_element_type(root_comp->name);
 
 	jed_simgrid_create_container(&root_container, root_comp->name);
 	jedule->root_container = root_container;
