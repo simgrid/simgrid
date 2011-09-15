@@ -13,11 +13,11 @@
    <router id="R1"/>
    <router id="R2"/>
  
-   <link id="1" bandwidth="1000000" latency="0.0001"/>
-   <link id="2" bandwidth="100000" latency="0.1"/>
-   <link id="3" bandwidth="1000000" latency="0.0001"/>
-   <link id="4" bandwidth="1000000" latency="0.0001"/>
-   <link id="5" bandwidth="1000000" latency="0.0001"/>
+   <link id="1" bandwidth="100000000" latency="0.00001"/>
+   <link id="2" bandwidth="10000000"  latency="0.00001"/>
+   <link id="3" bandwidth="100000000" latency="0.00001"/>
+   <link id="4" bandwidth="100000000" latency="0.00001"/>
+   <link id="5" bandwidth="100000000" latency="0.00001"/>
  
  
    <route src="S1" dst="C1">
