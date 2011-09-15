@@ -1103,10 +1103,11 @@ static double surf_cpu_ti_solve_trace_simple(surf_cpu_ti_trace_t trace,
 static int surf_cpu_ti_binary_search(double *array, double a, int low,
                                      int high)
 {
-  xbt_assert(low<high,"Wrong parameters: low (%d) should be smaller than high (%d)");
+  xbt_assert(low<high,"Wrong parameters: low (%d) should be smaller than high (%d)",low,high);
 
+  int mid;
   while(low<high) {
-	int mid = low + (high - low) / 2;
+	mid = low + (high - low) / 2;
 	XBT_DEBUG("a %lf low %d high %d mid %d value %lf", a, low, high, mid,
 			array[mid]);
 	/* a == array[mid] */
@@ -1121,4 +1122,5 @@ static int surf_cpu_ti_binary_search(double *array, double a, int low,
 	else
 		high = mid - 1;
   }
+  return mid;
 }
