@@ -422,14 +422,14 @@ static void print_pajeCreateContainer(paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s %s %s\n",
+    fprintf(tracing_file, "%d 0 %s %s %s \"%s\"\n",
         event->event_type,
         ((createContainer_t)event->data)->container->id,
         ((createContainer_t)event->data)->container->type->id,
         ((createContainer_t)event->data)->container->father->id,
         ((createContainer_t)event->data)->container->name);
   }else{
-    fprintf(tracing_file, "%d %lf %s %s %s %s\n",
+    fprintf(tracing_file, "%d %lf %s %s %s \"%s\"\n",
         event->event_type,
         event->timestamp,
         ((createContainer_t)event->data)->container->id,
