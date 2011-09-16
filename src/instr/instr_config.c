@@ -381,8 +381,8 @@ void TRACE_help (int detailed)
       "  Routes among AS continue to be traced as usual.",
       detailed);
   print_line (OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction",
-      "  Disable the destruction of containers at the end of simulation. This can be"
-      "  used with simulators that have a different notion of time (different from"
+      "  Disable the destruction of containers at the end of simulation. This can be\n"
+      "  used with simulators that have a different notion of time (different from\n"
       "  the simulated time).",
       detailed);
   print_line (OPT_TRIVA_UNCAT_CONF, "Generate graph configuration for Triva",
