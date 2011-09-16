@@ -224,7 +224,7 @@ void TRACE_paje_create_header(void)
 %%EndEventDef \n\
 %%EventDef PajeDefineEventType %d \n\
 %%       Alias string \n\
-%%       EntityType string \n\
+%%       ContainerType string \n\
 %%       Name string \n\
 %%       Color color \n\
 %%EndEventDef \n\
@@ -251,46 +251,46 @@ void TRACE_paje_create_header(void)
 %%EventDef PajeDestroyContainer %d \n\
 %%       Time date \n\
 %%       Type string \n\
-%%       Container string \n\
+%%       Name string \n\
 %%EndEventDef \n\
 %%EventDef PajeSetVariable %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%EndEventDef\n\
 %%EventDef PajeAddVariable %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%EndEventDef\n\
 %%EventDef PajeSubVariable %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%EndEventDef\n\
 %%EventDef PajeSetState %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%EndEventDef\n\
 %%EventDef PajePushState %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%EndEventDef\n\
 %%EventDef PajePopState %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%EndEventDef\n\
 %%EventDef PajeStartLink %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%       SourceContainer string \n\
@@ -298,7 +298,7 @@ void TRACE_paje_create_header(void)
 %%EndEventDef\n\
 %%EventDef PajeEndLink %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%       DestContainer string \n\
@@ -306,7 +306,7 @@ void TRACE_paje_create_header(void)
 %%EndEventDef\n\
 %%EventDef PajeNewEvent %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%EndEventDef\n",
