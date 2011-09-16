@@ -37,11 +37,6 @@ RELATIVE ${CMAKE_HOME_DIRECTORY}/
 )
 string(REPLACE ".c" "" TARGET_NAME ${SOURCE_FILE})
 
-#########################
-# add_executable        #
-#    args1 target name  #
-#    args2 sources      #
-#########################
 foreach(target "${TARGET_NAME}")
     add_executable(${target} "${target}.c")
     message(STATUS "source_file: ${target}.c")
