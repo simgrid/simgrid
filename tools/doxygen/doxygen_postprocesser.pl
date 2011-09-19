@@ -251,8 +251,9 @@ sub handle_page {
       print TO "$_";
       last if ((m|</div>|)&&($found_div_tabs));
     }
-      
+    
     print TO "\n<!-- POST-PROCESSED TABS -->\n";
+             
     foreach (@tabs) {
 #      print "TAB: $_";
       print TO "$_";
@@ -339,7 +340,6 @@ add_tabs_to_module_html;
 ###
 map {push @allfiles,$_} @extra_files;
 print "All files: ".(join(", ",@allfiles))."\n" if $debug{'parse'};
-
 my $tabs;
 
 foreach my $file (@allfiles) {
@@ -398,7 +398,9 @@ foreach my $file (@allfiles) {
 	      || $file =~ /^html\/gtnets.*/
 	      || $file =~ /^html\/ns3.*/
 	      || $file =~ /^html\/modules.*/
-	      || $file =~ /^html\/annotated.*/)
+	      || $file =~ /^html\/annotated.*/
+	      || $file =~ /^html\/group__.*/
+	      || $file =~ /^html\/functions.*/)
 	      {
 				$tmp_buff .= '      <div class="tabs_group_use">'."\n";
 				$tmp_buff .= '      	<ul class="tablist">'."\n";
@@ -433,6 +435,14 @@ foreach my $file (@allfiles) {
 		      $tmp_buff =~ s/<li class="current">/<li>/g;
 		      $tmp_buff =~ s/<li><a href="$filename.html">/<li class="current"><a href="$filename.html">/g;     
 	      }
+	      if($file =~ /^html\/group__.*/)
+	      {
+	      	$tmp_buff =~ s/<li><a href="modules.html">/<li class="current"><a href="modules.html">/g;
+	      }
+	      if($file =~ /^html\/functions.*/)
+	      {
+	      	$tmp_buff =~ s/<li><a href="annotated.html">/<li class="current"><a href="annotated.html">/g;
+	      }
 	      
 
 	      print TO $tmp_buff;	      
@@ -440,9 +450,18 @@ foreach my $file (@allfiles) {
     }
       s|<span>Modules</span>|<span>Modules&#160;API</span>|g;
       s|<li.*><a href="pages.html"><span>Related&#160;Pages</span></a></li>\n||g;
-      s|<li><a href="modules.html"><span>Modules&#160;API</span></a></li>\n||g;
-      s|<li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>\n||g;
       s|<li class="current"><a href="modules.html"><span>Modules&#160;API</span></a></li>\n||g;
+      s|<li class="current"><a href="modules.html"><span>Modules&nbsp;API</span></a></li>\n||g;
+      if($file =~ /^html\/group__.*/)
+      {
+      	s|<li><a href="use.html">|<li class="current"><a href="use.html">|g;
+      	s|<li><a href="modules.html"><span>Modules&#160;API</span></a></li>\n|<li class="current"><a href="modules.html"><span>Modules&#160;API</span></a></li>\n|g;
+      }
+      else
+      {
+      	s|<li><a href="modules.html"><span>Modules&#160;API</span></a></li>\n||g;
+      }
+      s|<li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>\n||g;    
       s|<li class="current"><a href="annotated.html"><span>Data&#160;Structures</span></a></li>\n||g;
       s|Related Pages<|Documentation&nbsp;index<|g;
                                                                                            
