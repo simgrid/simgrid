@@ -305,6 +305,30 @@ Before start the installation, you need to be sure to have the following depende
 Then download the package <a href="https://gforge.inria.fr/frs/?group_id=12">SimGrid Installer</a>,
 execute it and follow instructions.
 
+\htmlonly
+<a href="win_install_01.png" border=0><img src="win_install_01.png" width="50%" border=0></a>
+\endhtmlonly
+
+Step 1: Accept the license. 
+
+\htmlonly
+<a href="win_install_02.png" border=0><img src="win_install_02.png" width="50%" border=0></a>
+\endhtmlonly
+
+Step 2: Select packets to install.
+
+\htmlonly
+<a href="win_install_03.png" border=0><img src="win_install_03.png" width="50%" border=0></a>
+\endhtmlonly
+
+Step 3: Choice where to install packets previously selected. Please don't use spaces in path.
+ 
+\htmlonly
+<a href="win_install_04.png" border=0><img src="win_install_04.png" width="50%" border=0></a>
+\endhtmlonly
+
+Step 4: Restart your computer to take in consideration environment variables.
+
 \subsection installSimgrid_Win_compile1 Compile a project "HelloWorld"
 
 In the SimGrid install directroy you should have an HelloWorld project to explain you how to start 

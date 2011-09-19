@@ -40,6 +40,10 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_small.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
+		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
+		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
+		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
+		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
 	)
 	
 	configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
