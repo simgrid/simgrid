@@ -50,7 +50,6 @@ For Windows :
 	enable_jedule 	 		ON/OFF or TRUE/FALSE or 1/0
 	enable_latency_bound_tracking 	ON/OFF or TRUE/FALSE or 1/0
 	enable_lib_static		ON/OFF or TRUE/FALSE or 1/0
-	enable_pcre			ON/OFF or TRUE/FALSE or 1/0
 	custom_flags 			<flags>
 	gtnets_path			<path_to_gtnets_directory>
 	CMAKE_INSTALL_PREFIX		<path_to_install_directory>
@@ -89,9 +88,7 @@ For Windows :
   
   \li enable_latency_bound_tracking : Set to on if you want to be warned when communications are limited by round trip time.
   
-  \li enable_lib_static : Enable generated Simgrid and smpi static libraries.
-  
-  \li enable_pcre : Use or not the pcre lib for memory optimization. 	
+  \li enable_lib_static : Enable generated Simgrid and smpi static libraries.	
   
   \li custom_flags : If user wants to use a specific flag during compilation, give here.
 
@@ -117,7 +114,6 @@ enable_supernovae		on
 enable_tracing			on
 enable_compile_optimizations	on
 enable_debug			on
-enable_pcre			on
 enable_compile_warnings		off
 enable_maintainer_mode		off
 enable_coverage 		off
