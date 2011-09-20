@@ -106,7 +106,7 @@ static double constant_bandwidth_constraint(double rate, double bound,
 /**
  *------------------ <copy/paste C code snippet in surf/network.c> ----------------------
  *
- * produced by: ./calibrate_piecewise2.py griffon_skampi_pt2pt.ski.dat 2 2.4e-5 1.25e8 1024 65536
+ * produced by: ./calibrate_piecewise.py griffon_skampi_pt2pt.ski.dat 2 2.4e-5 1.25e8 1024 65536
  *
  *---------------------------------------------------------------------------------------
  **/
@@ -120,8 +120,8 @@ static double smpi_bandwidth_factor(double size)
 	  if (1536 <= size && size <=  65536) {
 		    return(0.58527);
 	  }
-	  /* case 66560 Bytes <= size <=8388608 Bytes */
-	  if (66560 <= size && size <=  8388608) {
+	  /* case 66560 Bytes <= size */
+	  if (66560 <= size ) {
 		    return(0.933246);
 	  }
 }
@@ -136,8 +136,8 @@ static double smpi_latency_factor(double size)
 	  if (1536 <= size && size <=  65536) {
 		    return(1.82006);
 	  }
-	  /* case 66560 Bytes <= size <=8388608 Bytes */
-	  if (66560 <= size && size <=  8388608) {
+	  /* case 66560 Bytes <= size */
+	  if (66560 <= size) {
 		    return(14.6187);
 	  }
 }
