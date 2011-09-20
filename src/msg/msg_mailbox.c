@@ -158,7 +158,6 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
       smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
                                   t_simdata->rate, task, sizeof(void *),
                                   NULL, NULL, 0);
-      t_simdata->comm = comm;
       SIMIX_req_set_category(comm, task->category);
       SIMIX_req_comm_wait(comm, timeout);
     } else {
