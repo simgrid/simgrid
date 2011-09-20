@@ -15,6 +15,7 @@ using namespace std;
 xbt_dict_t dict_socket = NULL;
 
 NS3Sim SimulatorNS3;
+static char socket_key[24];
 
 static void receive_callback(Ptr<Socket> localSocket);
 static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace);
@@ -31,6 +32,13 @@ NS3Sim::NS3Sim(){
 }
 //Destructor.
 NS3Sim::~NS3Sim(){
+}
+
+static XBT_INLINE void transformSocketPtr (Ptr<Socket> localSocket){
+  std::stringstream sstream;
+  sstream << localSocket ;
+  std::string s = sstream.str();
+  sprintf(socket_key,"%s",s.c_str());
 }
 
 /*
@@ -59,6 +67,7 @@ void NS3Sim::create_flow_NS3(
 							InetSocketAddress (Ipv4Address::GetAny(),
 							port_number));
 	sink.Install (dst);
+
 	Ptr<Socket> sock = Socket::CreateSocket (src,
 							TcpSocketFactory::GetTypeId());
 
@@ -69,9 +78,13 @@ void NS3Sim::create_flow_NS3(
 	mysocket->sentBytes = 0;
 	mysocket->finished = 0;
 	mysocket->action = action;
-	xbt_dict_set(dict_socket,(const char*)&sock, mysocket,NULL);
+
+	transformSocketPtr(sock);
+	xbt_dict_set(dict_socket,socket_key, mysocket,free);
+
 	sock->Bind(InetSocketAddress(port_number));
-	XBT_INFO("Create flow starting to %fs + %fs = %fs",start-ns3_time(), ns3_time(), start);
+	XBT_DEBUG("Create flow starting to %fs + %fs = %fs",start-ns3_time(), ns3_time(), start);
+
 	Simulator::Schedule (Seconds(start-ns3_time()),&StartFlow, sock, addr, port_number);
 //	Simulator::Schedule (Seconds(0.0),&StartFlow, sock, addr, port_number);
 
@@ -100,8 +113,13 @@ void NS3Sim::simulator_start(double min){
   Simulator::Run ();
 }
 
+static MySocket* get_my_socket(Ptr<Socket> localSocket) {
+	transformSocketPtr(localSocket);
+	return (MySocket*)xbt_dict_get_or_null(dict_socket,socket_key);
+}
+
 static void receive_callback(Ptr<Socket> localSocket){
-  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+  MySocket* mysocket = get_my_socket(localSocket);
 
   if (mysocket->finished == 0){
     mysocket->finished = 1;
@@ -114,7 +132,7 @@ static void receive_callback(Ptr<Socket> localSocket){
 
 static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 	uint8_t *data = (uint8_t*)malloc(sizeof(uint8_t)*txSpace);
-	MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+	MySocket* mysocket = get_my_socket(localSocket);
 	if (mysocket->remaining == 0){
 		  //all data was already buffered (and socket was already closed), just return
 		  return;
@@ -124,7 +142,7 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 	{
       uint32_t toWrite = min ((mysocket->remaining), txSpace);
       toWrite = min (toWrite, localSocket->GetTxAvailable ());
-      int amountSent = localSocket->Send (&data[0], toWrite, 0);
+      int amountSent = localSocket->Send (data, toWrite, 0);
 
       if(amountSent < 0)
     	  return;
@@ -133,36 +151,39 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
       XBT_DEBUG("send_cb of F[%p, %p, %d] (%d/%d) %d buffered", mysocket, mysocket->action, mysocket->totalBytes, mysocket->remaining, mysocket->totalBytes, amountSent);
 
     }
+
+	free(data);
+
 	if ((mysocket->sentBytes) >= mysocket->totalBytes){
 		localSocket->Close();
 	}
 }
 
 static void datasent_callback(Ptr<Socket> localSocket, uint32_t dataSent){
-  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+  MySocket* mysocket = get_my_socket(localSocket);
   mysocket->sentBytes += dataSent;
   XBT_DEBUG("datasent_cb of F[%p, %p, %d] %d sent", mysocket, mysocket->action, mysocket->totalBytes, dataSent);
 }
 
 static void normalClose_callback(Ptr<Socket> localSocket){
-  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+  MySocket* mysocket = get_my_socket(localSocket);
   XBT_DEBUG("normalClose_cb of F[%p, %p, %d]", mysocket, mysocket->action, mysocket->totalBytes);
   receive_callback (localSocket);
 }
 
 static void errorClose_callback(Ptr<Socket> localSocket){
-  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+  MySocket* mysocket = get_my_socket(localSocket);
   XBT_DEBUG("errorClose_cb of F[%p, %p, %d]", mysocket, mysocket->action, mysocket->totalBytes);
   xbt_die("NS3: a socket was closed anormally");
 }
 
 static void succeededConnect_callback(Ptr<Socket> localSocket){
-  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+  MySocket* mysocket = get_my_socket(localSocket);
   XBT_DEBUG("succeededConnect_cb of F[%p, %p, %d]", mysocket, mysocket->action, mysocket->totalBytes);
 }
 
 static void failedConnect_callback(Ptr<Socket> localSocket){
-  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&localSocket);
+  MySocket* mysocket = get_my_socket(localSocket);
   XBT_DEBUG("failedConnect_cb of F[%p, %p, %d]", mysocket, mysocket->action, mysocket->totalBytes);
   xbt_die("NS3: a socket failed to connect");
 }
@@ -180,6 +201,6 @@ static void StartFlow(Ptr<Socket> sock,
   sock->SetConnectCallback (MakeCallback (&succeededConnect_callback), MakeCallback (&failedConnect_callback));
   sock->SetCloseCallbacks (MakeCallback (&normalClose_callback), MakeCallback (&errorClose_callback));
 
-  MySocket* mysocket = (MySocket*)xbt_dict_get_or_null(dict_socket,(char*)&sock);
+  MySocket* mysocket = get_my_socket(sock);
   XBT_DEBUG("startFlow_cb of F[%p, %p, %d] dest=%s port=%d", mysocket, mysocket->action, mysocket->totalBytes, to, port_number);
 }

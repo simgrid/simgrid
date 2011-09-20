@@ -408,6 +408,7 @@ static void finalize(void)
 {
 	ns3_finalize();
 	xbt_dynar_free_container(&IPV4addr);
+	xbt_dict_free(&dict_socket);
 }
 
 static double ns3_share_resources(double min)
@@ -483,6 +484,7 @@ static void ns3_update_actions_state(double now, double delta)
 
 	    if(ns3_get_socket_is_finished(data) == 1){
 	      xbt_dynar_push(socket_to_destroy,&key);
+	      XBT_DEBUG("Destroy socket %p of action %p", key, action);
 	      action->generic_action.finish = now;
 	      surf_action_state_set(&(action->generic_action), SURF_ACTION_DONE);
 	    }

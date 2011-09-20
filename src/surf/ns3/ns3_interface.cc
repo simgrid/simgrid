@@ -103,7 +103,7 @@ int ns3_initialize(const char* TcpProtocol){
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
 
 #ifdef _HAVE_NS3_RED
-  XBT_INFO("Using RED version of ns3");
+  XBT_DEBUG("Using RED version of ns3");
 #endif
   if(!strcmp(TcpProtocol,"default")){
 	  return 0;
@@ -201,6 +201,7 @@ void * ns3_add_cluster(char * bw,char * lat,char *id)
 	XBT_DEBUG("Assign IP Addresses %s to CSMA.",adr);
 	Ipv4AddressHelper ipv4;
 	ipv4.SetBase (adr, "255.255.0.0");
+	free(adr);
 	interfaces.Add(ipv4.Assign (devices));
 
 	if(number_of_links == 255){
@@ -224,9 +225,7 @@ static char* transformIpv4Address (Ipv4Address from){
 	std::stringstream sstream;
 		sstream << from ;
 		std::string s = sstream.str();
-		size_t size = s.size() + 1;
-		char* IPaddr = bprintf("%s",s.c_str());
-		return IPaddr;
+		return bprintf("%s",s.c_str());
 }
 
 void * ns3_add_link(int src, e_ns3_network_element_type_t type_src,
