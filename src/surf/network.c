@@ -103,40 +103,49 @@ static double constant_bandwidth_constraint(double rate, double bound,
   return rate;
 }
 
-/**********************/
-/*   SMPI callbacks   */
-/**********************/
-static double smpi_latency_factor(double size)
-{
-  /* 1 B <= size <= 1 KiB */
-  if (size <= 1024.0) {
-    return 1.0056;
-  }
-
-  /* 2 KiB <= size <= 32 KiB */
-  if (size <= 32768.0) {
-    return 1.8805;
-  }
-
-  /* 64 KiB <= size <= 4 MiB */
-  return 22.7111;
-}
-
+/**
+ *------------------ <copy/paste C code snippet in surf/network.c> ----------------------
+ *
+ * produced by: ./calibrate_piecewise2.py griffon_skampi_pt2pt.ski.dat 2 2.4e-5 1.25e8 1024 65536
+ *
+ *---------------------------------------------------------------------------------------
+ **/
 static double smpi_bandwidth_factor(double size)
 {
-  /* 1 B <= size <= 1 KiB */
-  if (size <= 1024.0) {
-    return 0.2758;
-  }
-
-  /* 2 KiB <= size <= 32 KiB */
-  if (size <= 32768.0) {
-    return 0.5477;
-  }
-
-  /* 64 KiB <= size <= 4 MiB */
-  return 0.9359;
+	  /* case 1 Bytes <= size <=1024 Bytes */
+	  if (1 <= size && size <=  1024) {
+		    return(0.188567);
+	  }
+	  /* case 1536 Bytes <= size <=65536 Bytes */
+	  if (1536 <= size && size <=  65536) {
+		    return(0.58527);
+	  }
+	  /* case 66560 Bytes <= size <=8388608 Bytes */
+	  if (66560 <= size && size <=  8388608) {
+		    return(0.933246);
+	  }
 }
+
+static double smpi_latency_factor(double size)
+{
+	  /* case 1 Bytes <= size <=1024 Bytes */
+	  if (1 <= size && size <=  1024) {
+		    return(1.1484);
+	  }
+	  /* case 1536 Bytes <= size <=65536 Bytes */
+	  if (1536 <= size && size <=  65536) {
+		    return(1.82006);
+	  }
+	  /* case 66560 Bytes <= size <=8388608 Bytes */
+	  if (66560 <= size && size <=  8388608) {
+		    return(14.6187);
+	  }
+}
+
+/**
+ *------------------ </copy/paste C code snippet in surf/network.c> ---------------------
+ **/
+
 
 static double smpi_bandwidth_constraint(double rate, double bound,
                                         double size)
