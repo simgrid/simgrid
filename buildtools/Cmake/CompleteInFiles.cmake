@@ -67,11 +67,8 @@ include(TestBigEndian)
 TEST_BIG_ENDIAN(BIGENDIAN)
 
 include(FindGraphviz)
-
-string(TOUPPER ${enable_pcre} enable_pcre)
-if(enable_pcre STREQUAL "AUTO" OR enable_pcre STREQUAL "ON")
 include(FindPCRE)
-endif(enable_pcre STREQUAL "AUTO" OR enable_pcre STREQUAL "ON")
+
 set(HAVE_GTNETS 0)
 if(enable_gtnets)	
 	include(FindGTnets)

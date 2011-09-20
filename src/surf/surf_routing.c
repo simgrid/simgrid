@@ -4,9 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifdef HAVE_PCRE_LIB
 #include <pcre.h>               /* regular expression library */
-#endif
 #include "surf_routing_private.h"
 #include "surf/surf_routing.h"
 
@@ -65,9 +63,7 @@ typedef enum {
   SURF_MODEL_DIJKSTRA,
   SURF_MODEL_DIJKSTRACACHE,
   SURF_MODEL_NONE,
-#ifdef HAVE_PCRE_LIB
   SURF_MODEL_RULEBASED
-#endif
 } e_routing_types;
 
 struct s_model_type routing_models[] = { {"Full",
@@ -90,12 +86,10 @@ struct s_model_type routing_models[] = { {"Full",
  model_dijkstra_both_unload, model_dijkstra_both_end},
 {"none", "No routing (usable with Constant network only)",
  model_none_create, model_none_load, model_none_unload, model_none_end},
-#ifdef HAVE_PCRE_LIB
 {"RuleBased", "Rule-Based routing data (...)", model_rulebased_create,
  model_rulebased_load, model_rulebased_unload, model_rulebased_end},
 {"Vivaldi", "Vivaldi routing", model_rulebased_create,
   model_rulebased_load, model_rulebased_unload, model_rulebased_end},
-#endif
 {NULL, NULL, NULL, NULL, NULL, NULL}
 };
 
@@ -1539,21 +1533,13 @@ void routing_parse_Scluster(void)
   xbt_dict_set(patterns,"prefix",cluster_prefix,NULL);
   xbt_dict_set(patterns,"suffix",cluster_suffix,NULL);
 
-#ifdef HAVE_PCRE_LIB
   char *route_src_dst;
-#endif
   unsigned int iter;
   int start, end, i;
   xbt_dynar_t radical_elements;
   xbt_dynar_t radical_ends;
   int cluster_sharing_policy = AX_surfxml_cluster_sharing_policy;
   int cluster_bb_sharing_policy = AX_surfxml_cluster_bb_sharing_policy;
-
-#ifndef HAVE_PCRE_LIB
-  xbt_dynar_t tab_elements_num = xbt_dynar_new(sizeof(int), NULL);
-  char *route_src, *route_dst;
-  int j;
-#endif
 
   static unsigned int surfxml_buffer_stack_stack_ptr = 1;
   static unsigned int surfxml_buffer_stack_stack[1024];
@@ -1563,13 +1549,8 @@ void routing_parse_Scluster(void)
   surfxml_bufferstack_push(1);
 
   SURFXML_BUFFER_SET(AS_id, cluster_id);
-#ifdef HAVE_PCRE_LIB
   SURFXML_BUFFER_SET(AS_routing, "RuleBased");
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"RuleBased\">", cluster_id);
-#else
-  SURFXML_BUFFER_SET(AS_routing, "Full");
-  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", cluster_id);
-#endif
   SURFXML_START_TAG(AS);
 
   radical_elements = xbt_str_split(cluster_radical, ",");
@@ -1580,9 +1561,6 @@ void routing_parse_Scluster(void)
       surf_parse_get_int(&start,
                          xbt_dynar_get_as(radical_ends, 0, char *));
       host_id = bprintf("%s%d%s", cluster_prefix, start, cluster_suffix);
-#ifndef HAVE_PCRE_LIB
-      xbt_dynar_push_as(tab_elements_num, int, start);
-#endif
       link_id = bprintf("%s_link_%d", cluster_id, start);
 
       xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
@@ -1642,9 +1620,6 @@ void routing_parse_Scluster(void)
       surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
       for (i = start; i <= end; i++) {
         host_id = bprintf("%s%d%s", cluster_prefix, i, cluster_suffix);
-#ifndef HAVE_PCRE_LIB
-        xbt_dynar_push_as(tab_elements_num, int, i);
-#endif
         link_id = bprintf("%s_link_%d", cluster_id, i);
 
         xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
@@ -1736,7 +1711,6 @@ void routing_parse_Scluster(void)
 
   XBT_DEBUG(" ");
 
-#ifdef HAVE_PCRE_LIB
   char *new_suffix = xbt_strdup("");
 
   radical_elements = xbt_str_split(cluster_suffix, ".");
@@ -1867,78 +1841,6 @@ void routing_parse_Scluster(void)
   free(pcre_link_backbone);
   free(pcre_link_src);
   free(route_src_dst);
-
-#else
-  for (i = 0; i <= xbt_dynar_length(tab_elements_num); i++) {
-    for (j = 0; j <= xbt_dynar_length(tab_elements_num); j++) {
-      if (i == xbt_dynar_length(tab_elements_num)) {
-        route_src = router_id;
-      } else {
-        route_src =
-            bprintf("%s%d%s", cluster_prefix,
-                    xbt_dynar_get_as(tab_elements_num, i, int),
-                    cluster_suffix);
-      }
-
-      if (j == xbt_dynar_length(tab_elements_num)) {
-        route_dst = router_id;
-      } else {
-        route_dst =
-            bprintf("%s%d%s", cluster_prefix,
-                    xbt_dynar_get_as(tab_elements_num, j, int),
-                    cluster_suffix);
-      }
-
-      XBT_DEBUG("<route\tsrc=\"%s\"\tdst=\"%s\"", route_src, route_dst);
-      XBT_DEBUG("symmetrical=\"NO\">");
-      SURFXML_BUFFER_SET(route_src, route_src);
-      SURFXML_BUFFER_SET(route_dst, route_dst);
-      A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
-      SURFXML_START_TAG(route);
-
-      if (i != xbt_dynar_length(tab_elements_num)){
-          route_src =
-                bprintf("%s_link_%d", cluster_id,
-                        xbt_dynar_get_as(tab_elements_num, i, int));
-		  XBT_DEBUG("<link_ctn\tid=\"%s\"/>", route_src);
-		  SURFXML_BUFFER_SET(link_ctn_id, route_src);
-		  A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
-		  if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
-		  {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_UP;}
-		  SURFXML_START_TAG(link_ctn);
-		  SURFXML_END_TAG(link_ctn);
-		  free(route_src);
-      }
-
-      if(strcmp(cluster_bb_bw,"") && strcmp(cluster_bb_lat,"")){
-      XBT_DEBUG("<link_ctn\tid=\"%s_backbone\"/>", cluster_id);
-      SURFXML_BUFFER_SET(link_ctn_id, bprintf("%s_backbone", cluster_id));
-      A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
-      SURFXML_START_TAG(link_ctn);
-      SURFXML_END_TAG(link_ctn);
-      }
-
-      if (j != xbt_dynar_length(tab_elements_num)) {
-          route_dst =
-                bprintf("%s_link_%d", cluster_id,
-                        xbt_dynar_get_as(tab_elements_num, j, int));
-		  XBT_DEBUG("<link_ctn\tid=\"%s\"/>", route_dst);
-		  SURFXML_BUFFER_SET(link_ctn_id, route_dst);
-		  A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
-		  if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
-		  {A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_DOWN;}
-		  SURFXML_START_TAG(link_ctn);
-		  SURFXML_END_TAG(link_ctn);
-		  free(route_dst);
-      }
-
-      XBT_DEBUG("</route>");
-      SURFXML_END_TAG(route);
-    }
-  }
-  xbt_dynar_free(&tab_elements_num);
-
-#endif
 
   free(router_id);
   xbt_dict_free(&patterns);

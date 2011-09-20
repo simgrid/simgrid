@@ -4,8 +4,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 #include "surf_routing_private.h"
-
-#ifdef HAVE_PCRE_LIB
 #include <pcre.h>               /* regular expression library */
 
 /* Global vars */
@@ -436,5 +434,3 @@ void model_rulebased_unload(void)
 void model_rulebased_end(void)
 {
 }
-
-#endif                          /* HAVE_PCRE_LIB */

@@ -44,8 +44,6 @@ find_path(PATH_PCRE_H "pcre.h"
     /opt/csw
     /sw
     /usr)
-    
-set(HAVE_PCRE_LIB 0)
 
 message(STATUS "Looking for pcre.h")
 if(PATH_PCRE_H)
@@ -93,9 +91,8 @@ if(PATH_PCRE_LIB AND PATH_PCRE_H)
 	if(NOT operation)
 	    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${PATH_PCRE_H} ")
 	endif(NOT operation)	   
-    set(HAVE_PCRE_LIB 1)
 else(PATH_PCRE_LIB)
-    message(FATAL_ERROR "Please install the libpcre3-dev package or equivalent before using it.")
+    message(FATAL_ERROR "Please install the libpcre3-dev package or equivalent before using SimGrid.")
 endif(PATH_PCRE_LIB AND PATH_PCRE_H)
     
 mark_as_advanced(PATH_PCRE_H)

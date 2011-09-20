@@ -20,11 +20,7 @@ else(MSVC)
 endif(MSVC)
 
 set(GRAS_DEP "ws2_32")
-set(SIMGRID_DEP "ws2_32")
-
-if(HAVE_PCRE_LIB)
-       SET(SIMGRID_DEP "${SIMGRID_DEP} -lpcre")
-endif(HAVE_PCRE_LIB)
+set(SIMGRID_DEP "ws2_32 -lpcre")
 
 target_link_libraries(simgrid 	${SIMGRID_DEP})
 target_link_libraries(gras 	${GRAS_DEP})

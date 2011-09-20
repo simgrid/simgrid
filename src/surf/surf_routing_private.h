@@ -71,15 +71,12 @@ void model_floyd_end(void);      /* finalize the creation of floyd routing model
 void model_floyd_set_route(routing_component_t rc, const char *src,
         const char *dst, name_route_extended_t route);
 
-
-#ifdef HAVE_PCRE_LIB
 /* ************************************************** */
 /* ************** RULE-BASED ROUTING **************** */
 void *model_rulebased_create(void);      /* create structures for rulebased routing model */
 void model_rulebased_load(void);         /* load parse functions for rulebased routing model */
 void model_rulebased_unload(void);       /* unload parse functions for rulebased routing model */
 void model_rulebased_end(void);          /* finalize the creation of rulebased routing model */
-#endif
 
 /* ************************************************************************** */
 /* ********** Dijkstra & Dijkstra Cached ROUTING **************************** */

@@ -1,8 +1,6 @@
 ### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see after)
 ### ex: cmake -Denable_java=ON -Denable_gtnets=ON ./
 
-
-
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib and include")
 set(ns3_path ${ns3_path} CACHE PATH "Path to ns3 lib and include")
@@ -22,10 +20,6 @@ option(enable_gtnets "Whether gtnets model is activated." on)
 option(enable_ns3    "Whether ns3 model is activated." on)
 option(enable_smpi "This variable set smpi lib." off)
 option(enable_lua "Whether the lua bindings are activated." on)
-set(enable_pcre ${enable_pcre} CACHE FORCE "Whether the pcre lib is activated.")
-if(enable_pcre STREQUAL "")
-	set(enable_pcre "AUTO")
-endif(enable_pcre STREQUAL "")
 
 if(WIN32 OR APPLE) 
 set(enable_smpi off CACHE TYPE INTERNAL FORCE)

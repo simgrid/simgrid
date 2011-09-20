@@ -66,10 +66,7 @@ target_link_libraries(gras 	${GRAS_DEP})
 
 # Compute the dependencies of SimGrid
 #####################################
-set(SIMGRID_DEP "-lm")
-if(HAVE_PCRE_LIB)
-       SET(SIMGRID_DEP "${SIMGRID_DEP} -lpcre")
-endif(HAVE_PCRE_LIB)
+set(SIMGRID_DEP "-lm -lpcre")
 
 if(pthread)
 	if(${CONTEXT_THREADS})
