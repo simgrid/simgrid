@@ -16,8 +16,8 @@ set(pipol_user ${pipol_user} CACHE TYPE INTERNAL FORCE)
 
 option(release "Whether Release Mode is activated (disable tests on experimental parts)" on)
 
-option(enable_gtnets "Whether gtnets model is activated." on)
-option(enable_ns3    "Whether ns3 model is activated." on)
+option(enable_gtnets "Whether gtnets model is activated." off)
+option(enable_ns3    "Whether ns3 model is activated." off)
 option(enable_smpi "This variable set smpi lib." off)
 option(enable_lua "Whether the lua bindings are activated." on)
 
