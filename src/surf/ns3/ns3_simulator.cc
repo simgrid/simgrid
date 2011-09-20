@@ -140,7 +140,7 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 
 	uint8_t *data = (uint8_t*)malloc(sizeof(uint8_t)*txSpace);
 
-	while (mysocket->sentBytes < mysocket->totalBytes
+	while (mysocket->bufferedBytes < mysocket->totalBytes
 			&& localSocket->GetTxAvailable () > 0)
 	{
       uint32_t toWrite = min ((mysocket->remaining), txSpace);
@@ -149,15 +149,15 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 
       if(amountSent < 0)
     	  return;
-	  (mysocket->sentBytes) += amountSent;
-	  (mysocket->remaining) -= amountSent;
+      (mysocket->bufferedBytes) += amountSent;
+      (mysocket->remaining) -= amountSent;
       XBT_DEBUG("send_cb of F[%p, %p, %d] (%d/%d) %d buffered", mysocket, mysocket->action, mysocket->totalBytes, mysocket->remaining, mysocket->totalBytes, amountSent);
 
     }
 
 	free(data);
 
-	if ((mysocket->sentBytes) >= mysocket->totalBytes){
+	if ((mysocket->bufferedBytes) >= mysocket->totalBytes){
 		localSocket->Close();
 	}
 }
