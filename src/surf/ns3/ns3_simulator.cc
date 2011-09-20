@@ -131,12 +131,15 @@ static void receive_callback(Ptr<Socket> localSocket){
 }
 
 static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
-	uint8_t *data = (uint8_t*)malloc(sizeof(uint8_t)*txSpace);
 	MySocket* mysocket = get_my_socket(localSocket);
+
 	if (mysocket->remaining == 0){
 		  //all data was already buffered (and socket was already closed), just return
 		  return;
 	}
+
+	uint8_t *data = (uint8_t*)malloc(sizeof(uint8_t)*txSpace);
+
 	while (mysocket->sentBytes < mysocket->totalBytes
 			&& localSocket->GetTxAvailable () > 0)
 	{
