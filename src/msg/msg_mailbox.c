@@ -131,14 +131,10 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
   simdata_process_t p_simdata = SIMIX_process_self_get_data();
-#ifdef HAVE_TRACING
-  volatile smx_action_t comm = NULL;
-  int call_end = 0;
-#endif
   CHECK_HOST();
 
 #ifdef HAVE_TRACING
-  call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
+  int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
 #endif
 
   /* Prepare the task to send */
@@ -159,7 +155,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   TRY {
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
+      smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
                                   t_simdata->rate, task, sizeof(void *),
                                   NULL, NULL, 0);
       t_simdata->comm = comm;
