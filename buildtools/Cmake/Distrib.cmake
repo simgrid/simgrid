@@ -325,6 +325,7 @@ doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/${release_version}/doc
 COMMAND scp doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/simgrid_logo.png  doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/${release_version}/
 WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
+add_dependencies(sync-gforge-doc simgrid_documentation)
 
 add_custom_target(sync-gforge-dtd
 COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/${release_version}/
@@ -338,6 +339,7 @@ COMMAND chmod a+rX -R website/html
 COMMAND scp -r website/html/* scm.gforge.inria.fr:/home/groups/simgrid/htdocs/
 WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
+add_dependencies(sync-gforge-website simgrid_website)
 
 #PIPOL
 add_custom_target(sync-pipol
