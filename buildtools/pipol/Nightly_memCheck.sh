@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#PIPOL esn amd64_2010-linux-ubuntu-maverick.dd.gz none 02:00 --user --silent
+
 if [ -e ./pipol ] ; then
 	rm -rf ./pipol/$PIPOL_HOST
 	mkdir ./pipol/$PIPOL_HOST
@@ -29,10 +31,9 @@ cmake \
 -Denable_latency_bound_tracking=off \
 -Denable_gtnets=off \
 -Denable_jedule=off \
--Drelease=on \
 -Denable_memcheck=on ./
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalMemCheck
-ctest -D ExperimentalSubmit
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyMemCheck
+ctest -D NightlySubmit

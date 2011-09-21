@@ -26,9 +26,10 @@ ctest -D ExperimentalSubmit
 
 export SIMGRID_ROOT=`pwd`
 export LD_LIBRARY_PATH=`pwd`/lib
+export DYLD_LIBRARY_PATH=`pwd`/lib #for mac
 
 cd ../
-svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java simgrid-java --quiet
+git clone git://scm.gforge.inria.fr/simgrid/simgrid-java.git simgrid-java --quiet
 cd simgrid-java
 cmake .
 ctest -D ExperimentalStart
