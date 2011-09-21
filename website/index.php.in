@@ -26,9 +26,8 @@ $group_name="simgrid";
  <div id="navrow1" class="tabs" align="center">
     <ul class="tablist">
       <li><a href="index.php"><span>Home</span></a></li>
-                        <li><a href="https://gforge.inria.fr/frs/?group_id=12"><span>Download</span></a></li>
-
-      <li><a href="documentation.html"><span>Online documentation</span></a></li>
+                         <li><a href="download.php"><span>Download</span></a></li>
+      <li><a href="documentation.php"><span>Online documentation</span></a></li>
       <li><a href="publis.html"><span>Publications</span></a></li>
       <li><a href="people.html"><span>People</span></a></li>
       <li><a href="history.html"><span>History</span></a></li>
@@ -42,9 +41,9 @@ $group_name="simgrid";
 
 <tr><td width="75%" valign="top">
 <h1>Welcome to the SimGrid project!</h1>
-<p>SimGrid is a toolkit that provides core functionalities for the simulation of distributed applications in heterogeneous distributed environments. The specific goal of the project is to facilitate research in the area of parallel and distributed large scale systems, such as Grids, P2P systems and clouds. Its use cases encompass heuristic evaluation, application prototyping or even real application development and tuning
+<p>SimGrid is a toolkit that provides core functionalities for the simulation of distributed applications in heterogeneous distributed environments. The specific goal of the project is to facilitate research in the area of parallel and distributed large scale systems, such as Grids, P2P systems and clouds. Its use cases encompass heuristic evaluation, application prototyping or even real application development and tuning. 
 </p>
-<h2>What SimGrid can do for you ?</h2>
+<h2>What can SimGrid do for you ?</h2>
 <ul>
 
 <li>
@@ -56,7 +55,7 @@ $group_name="simgrid";
 <li>
 <b>SimGrid as a MPI simulator</b>: SimGrid provides an API to simulate reallisticaly MPI simulation
 </li>
-<li><b>And so much more</b>: SimGrid comes with a whole ecosystem of applications, for example tools to visualize and analyse your simulation results and traces, platform generation ..., and with so fancy features to help you to handle your platform dynamicity simulation (quantitative resource sharing or qualitative churn)
+<li><b>And so much more</b>: SimGrid comes with a whole ecosystem of applications, for example tools to visualize and analyse your simulation results and traces, platform generation ..., and with so fancy features to help you to handle your platform dynamicity simulation (quantitative resource sharing or qualitative churn). 
 </li>
 </ul>
 <h2>Main strengths</h2>
@@ -79,8 +78,8 @@ $group_name="simgrid";
 <h2>Would you like to know more? </h2>
 <ul>
 <li>The <a href="documentation.php">documentation</a> contains docs for the latests version of the tool. Each documentation contains examples, description of the different modules of the projects, and many more</li>
-<li>In case of trouble, try to ask the mailing list !</li>
-<li>A tutorial is also available <a href="http://www.loria.fr/~quinson/articles/simgrid-tutorial.pdf ">here</a></li>
+<li>In case of trouble, try to ask the <a href="http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user">mailing list</a> !</li>
+<li>A tutorial is also available <a href="http://www.loria.fr/~quinson/blog/2010/0628/Tutorial_at_HPCS/">here</a></li>
 <li>Are you interested on the scientific ground of SimGrid ? Take a look at our <a href="publis.html">publications</a> !</li>
 <li>Do you want to know the whole story of SimGrid, since when it all began ? <a href="history.html">Here is the tale of SimGrid</a></li>
 <!--li>Is SimGrid is actually maintained ? So many other related projects have died due to a lack of resources or good scientific ground, but we're alive since more than 10 years.  Will SimGrid survive to next years ? Take a look at our <a href="IhaveToWriteIT.html">foundation section</a></li-->
@@ -98,13 +97,30 @@ $group_name="simgrid";
 				<tr align="left">
 					<td colspan="2">
 <?php if ($handle=fopen('http://'.$domain.'/export/projnews.php?group_name='.$group_name,'r')){
+// Reading news
 $contents = '';
-while (!feof($handle)) {
-	$contents .= fread($handle, 8192);
-}
+$contents = stream_get_contents($handle);
+
 fclose($handle);
+
+//Replacing hrefs ...
 $contents=str_replace('href="/','href="http://'.$domain.'/',$contents);
-echo $contents; } ?>
+// 
+$newslines = array();
+$newslines  = explode('</div>', $contents);
+$toPrint = '';
+// number of news : modify the loop max.
+for($i=0;$i<5;$i++)
+{ 
+$toPrint .= $newslines[$i];
+$toPrint .= '</div>'; 
+}
+// adding the news archive stuff and the finishing tags that are somewhere before :
+$toPrint .= $newslines[sizeof($newslines) - 2];
+$toPrint .= '</div>';
+$toPrint .= $newslines[sizeof($newslines) - 1];
+$toPrint .= '</div>';
+echo $toPrint; } ?>
 
 
 					</td>
@@ -117,21 +133,18 @@ echo $contents; } ?>
 </table>
 <div id="footer" align="center">
 <p>
- Help: <a href="mailto:siteadmin-help@lists.gforge.inria.fr">siteadmin-help@lists.gforge.inria.fr</a> Webmaster: <a href="mailto:webmaster@gforge.inria.fr">webmaster@gforge.inria.fr</a>
-
-</p>
-<p>
-<ul class="footerlogos">
-	<li><a href="http://www.inria.fr/"><img align="left" src="logos/logo_INRIA.png" alt="INRIA"/></a>	
+<ul class="footerlogos">	           
+	<li><a href="http://www.inria.fr/"><img align="center" src="logos/INRIA.png" alt="INRIA"/></a>	
 	</li>
-	<li><a href="http://gforge.org/"><img src="http://gforge.org/images/pow-gforge.png" alt="Powered By GForge Collaborative Development Environment" border="0"/></a>
-
+	<li><a href="http://www.cnrs.fr/"><img align="center" src="logos/cnrs.png" alt="CNRS"/></a>	
+	</li>	
+	<li><a href="http://www.univ-nancy2.fr/"><img align="center" src="logos/UnivNancy2.png" alt="Université Nancy 2"/></a>	
 	</li>
-	<li><a href="http://creativecommons.org/licenses/LGPL/2.1/"><img alt="CC-GNU LGPL" border="0" src="http://creativecommons.org/images/public/cc-LGPL-a.png" /></a>
-
+	<li><a href="http://manoa.hawaii.edu/"><img align="center" src="logos/UnivHawaiiManoa.png" alt="Univeristy of Hawaii Manoa"/></a>	
 	</li>
-</ul>
-	
+	<li><a href="http://www.agence-nationale-recherche.fr/"><img align="center" src="logos/ANR.png" alt="ANR"/></a>	
+	</li>
+</ul>	
 </p>
 </div>
 </body>

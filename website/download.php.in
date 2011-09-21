@@ -1,3 +1,7 @@
+<?php 
+$domain="gforge.inria.fr";
+$group_name="simgrid";
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
@@ -5,7 +9,7 @@
 	<link rel="stylesheet" type="text/css" href="stylesheets/simgridsite.css" />
 	<link rel="stylesheet" type="text/css" href="stylesheets/simgridsitetabs.css" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>SimGrid - Downloads</title>
+	<title>SimGrid - Scalable simulation of distributed systems, ranging from grids to peer-to-peer systems</title>
 	<meta name="keywords" content="Scalable, simulation, distributed systems, grid, peer-to-peer" /> 
 
 </head>
@@ -22,8 +26,7 @@
  <div id="navrow1" class="tabs" align="center">
     <ul class="tablist">
       <li><a href="index.php"><span>Home</span></a></li>
-                        <li><a href="https://gforge.inria.fr/frs/?group_id=12"><span>Download</span></a></li>
-
+                        <li><a href="download.php"><span>Download</span></a></li>
       <li><a href="documentation.php"><span>Online documentation</span></a></li>
       <li><a href="publis.html"><span>Publications</span></a></li>
       <li><a href="people.html"><span>People</span></a></li>
@@ -35,36 +38,42 @@
     </ul>
   </div>
 <table width="80%" cellpadding="5" cellspacing="0" border="0" align="center">
-
-<tr><td width="75%" valign="top">
-
+<td>
 <?php if ($handle=fopen('https://gforge.inria.fr/frs/?group_id=12','r')){
+// Reading the file
 $contents = '';
-while (!feof($handle)) {
-	$contents .= fread($handle, 8192);
-}
-fclose($handle);
-echo $contents; } ?>
+$contents = stream_get_contents($handle);
 
-</tr>
+fclose($handle);
+
+// I'm not a php expert at all, so this is an ugly code based on the only method I know : explode !
+$tempArray = array();
+// There is a tag around releases : fieldset 
+$tempArray  = explode('<fieldset>', $contents);
+$secondTempArray = array();
+$secondTempArray  = explode('</fieldset>', $tempArray[1]);
+
+$toPrint = '';
+$toPrint .= $secondTempArray[0];
+
+echo $toPrint; } ?>
+</td>
 </table>
+
 <div id="footer" align="center">
 <p>
- Help: <a href="mailto:siteadmin-help@lists.gforge.inria.fr">siteadmin-help@lists.gforge.inria.fr</a> Webmaster: <a href="mailto:webmaster@gforge.inria.fr">webmaster@gforge.inria.fr</a>
-
-</p>
-<p>
-<ul class="footerlogos">
-	<li><a href="http://www.inria.fr/"><img align="left" src="logos/logo_INRIA.png" alt="INRIA"/></a>	
+<ul class="footerlogos">	           
+	<li><a href="http://www.inria.fr/"><img align="center" src="logos/INRIA.png" alt="INRIA"/></a>	
 	</li>
-	<li><a href="http://gforge.org/"><img src="http://gforge.org/images/pow-gforge.png" alt="Powered By GForge Collaborative Development Environment" border="0"/></a>
-
+	<li><a href="http://www.cnrs.fr/"><img align="center" src="logos/cnrs.png" alt="CNRS"/></a>	
+	</li>	
+	<li><a href="http://www.univ-nancy2.fr/"><img align="center" src="logos/UnivNancy2.png" alt="Université Nancy 2"/></a>	
 	</li>
-	<li><a href="http://creativecommons.org/licenses/LGPL/2.1/"><img alt="CC-GNU LGPL" border="0" src="http://creativecommons.org/images/public/cc-LGPL-a.png" /></a>
-
+	<li><a href="http://manoa.hawaii.edu/"><img align="center" src="logos/UnivHawaiiManoa.png" alt="Univeristy of Hawaii Manoa"/></a>	
 	</li>
-</ul>
-	
+	<li><a href="http://www.agence-nationale-recherche.fr/"><img align="center" src="logos/ANR.png" alt="ANR"/></a>	
+	</li>
+</ul>	
 </p>
 </div>
 </body>

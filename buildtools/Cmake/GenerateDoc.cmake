@@ -283,7 +283,6 @@ ADD_CUSTOM_TARGET(simgrid_website
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/stylesheets/ ${CMAKE_HOME_DIRECTORY}/website/html/stylesheets/
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/logos/ ${CMAKE_HOME_DIRECTORY}/website/html/logos/
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/img/ ${CMAKE_HOME_DIRECTORY}/website/html/img/
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/website/documentation.html ${CMAKE_HOME_DIRECTORY}/website/html/documentation.html
 	
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/website/html/index.html
 

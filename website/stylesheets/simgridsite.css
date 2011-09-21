@@ -56,8 +56,8 @@ width:1000px; height:200px;
 font-size:12px; color:#888; font-weight:normal; margin-top:15px;
  }
 /*** Footer logos ***/
-ul.footerlogos {padding:0; margin:0 auto; list-style:none; width:600px; height:100px; position:relative;}
-ul.footerlogos li {width:200px; height:100px; float:left;}
+ul.footerlogos {padding:0; margin:0 auto; list-style:none; width:1100px; height:100px; position:relative;}
+ul.footerlogos li {width:220px; height:100px; float:left;}
 
 ul.footerlogos li a {display:block; width:150px; height:50px; padding:25px; font-family:arial, sans-serif; color:#666; text-decoration:none; font-size:12px;
 -webkit-transition: 0.1s;
@@ -91,3 +91,23 @@ div.contents {
   margin-right: auto;
 width:70%;
 }
+
+/*** Some stuff for download.php ***/
+
+.altRowStyleEven {background-color: #EAEAEA; font-weight: none}
+
+.altRowStyleOdd { 
+	background-color: #E0E0E0; 
+	font-weight: none
+}
+.altRowStyleEven h3 {background-color: #EAEAEA;
+}
+/** Ugly hack (not proud of it) ***/
+.multiTableRowTitle {
+text-align: left;
+display:none;
+}
+legend {
+display:none;
+}
+

@@ -378,8 +378,8 @@ foreach my $file (@allfiles) {
       		my $tmp_buff="";
 		
 			# LBO : ugly way to separate doc in 2 separate stuff ...
-			$tmp_buff .= '      <li><a href="https://gforge.inria.fr/frs/?group_id=12"><span>Download</span></a></li>'."\n";
-	      		$tmp_buff .= '      <li><a href="documentation.html"><span>Online documentation</span></a></li>'."\n";
+			$tmp_buff .= '      <li><a href="download.php"><span>Download</span></a></li>'."\n";
+	      		$tmp_buff .= '      <li><a href="documentation.php"><span>Online documentation</span></a></li>'."\n";
 	      		$tmp_buff .= '      <li><a href="publis.html"><span>Publications</span></a></li>'."\n";
 	      		$tmp_buff .= '      <li><a href="people.html"><span>People</span></a></li>'."\n";
 	      		$tmp_buff .= '      <li><a href="history.html"><span>History</span></a></li>'."\n";
