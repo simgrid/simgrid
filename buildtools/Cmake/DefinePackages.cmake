@@ -585,8 +585,7 @@ set(DOC_SOURCES
 	doc/options.doc
 	doc/use.doc
 	doc/tracing.doc
-	doc/gtnets.doc
-	doc/ns3.doc
+	doc/pls.doc
 	doc/gtut-howto-design.doc
 	doc/gtut-howto.doc
 	doc/gtut-introduction.doc

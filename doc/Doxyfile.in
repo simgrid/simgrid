@@ -619,8 +619,7 @@ INPUT                  = index.doc \
                          options.doc \
                          tracing.doc \
                          use.doc \
-                         gtnets.doc \
-                         ns3.doc \
+                         pls.doc \
                          ./index-API.doc \
                          modules.doc \
                          module-xbt.doc \
