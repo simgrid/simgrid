@@ -195,6 +195,8 @@ typedef struct s_mc_pair{
 typedef struct s_mc_pair_reached{
   xbt_state_t automaton_state;
   xbt_dynar_t prop_ato;
+  mc_snapshot_t system_state;
+  
 }s_mc_pair_reached_t, *mc_pair_reached_t;
 
 extern xbt_fifo_t mc_stack_liveness_stateful;
@@ -204,6 +206,7 @@ mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
 int reached(xbt_automaton_t a);
 int set_pair_reached(xbt_automaton_t a);
+int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
 void MC_show_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_pair_delete(mc_pair_t pair);

@@ -1,4 +1,4 @@
-#include "automatonparse_promela.h"
+#include "xbt/automatonparse_promela.h"
 
 char* state_id_src;
 
@@ -10,16 +10,10 @@ void new_state(char* id, int src){
 
   char* id_state = strdup(id);
   char* first_part = strtok(id,"_");
-  int type = 0 ; // -1=état initial, 0=état intermédiaire, 1=état final, 2=état initial/final
+  int type = 0 ; // -1=état initial, 0=état intermédiaire, 1=état final
 
   if(strcmp(first_part,"accept")==0){
-     char* second_part = strtok(NULL,"_");
-     if(strcmp(second_part,"init")==0){
-	type = 2;
-     }else{
-	type = 1;
-     }
-     
+    type = 1;
   }else{
     char* second_part = strtok(NULL,"_");
     if(strcmp(second_part,"init")==0){
@@ -33,7 +27,7 @@ void new_state(char* id, int src){
     state = xbt_automaton_new_state(automaton, type, id_state);
   }
 
-  if(type==-1 || type==2)
+  if(type==-1)
     automaton->current_state = state;
 
   if(src)
@@ -94,8 +88,5 @@ xbt_automaton_t get_automaton(){
   return automaton;
 }
 
-void display_automaton(){
-  xbt_automaton_display(automaton);
-}
 
 

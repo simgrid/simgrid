@@ -1,5 +1,4 @@
 #include "xbt/automaton.h"
-#include "xbt/dynar.h"
 
 xbt_automaton_t xbt_automaton_new_automaton(){
   xbt_automaton_t automaton = NULL;
@@ -13,7 +12,6 @@ xbt_automaton_t xbt_automaton_new_automaton(){
 xbt_state_t xbt_automaton_new_state(xbt_automaton_t a, int type, char* id){
   xbt_state_t state = NULL;
   state = xbt_new0(struct xbt_state, 1);
-  state->visited = 0;
   state->type = type;
   state->id = strdup(id);
   state->in = xbt_dynar_new(sizeof(xbt_transition_t), NULL);
@@ -276,4 +274,75 @@ xbt_propositional_symbol_t xbt_new_propositional_symbol(xbt_automaton_t a, const
   prop_symb->function = fct;
   xbt_dynar_push(a->propositional_symbols, &prop_symb);
   return prop_symb;
+}
+
+int automaton_state_compare(xbt_state_t s1, xbt_state_t s2){
+
+  /* single id for each state, id and type sufficient for comparison*/
+
+  if(strcmp(s1->id, s2->id))
+    return 1;
+
+  if(s1->type != s2->type)
+    return 1;
+
+  return 0;
+
+}
+
+int automaton_transition_compare(const void *t1, const void *t2){
+
+  if(automaton_state_compare(((xbt_transition_t)t1)->src, ((xbt_transition_t)t2)->src))
+    return 1;
+  
+  if(automaton_state_compare(((xbt_transition_t)t1)->dst, ((xbt_transition_t)t2)->dst))
+    return 1;
+
+  if(automaton_label_transition_compare(((xbt_transition_t)t1)->label,((xbt_transition_t)t2)->label))
+    return 1;
+
+  return 0;
+  
+}
+
+int automaton_label_transition_compare(xbt_exp_label_t l1, xbt_exp_label_t l2){
+
+  if(l1->type != l2->type)
+    return 1;
+
+  switch(l1->type){
+
+  case 0 : // OR 
+  case 1 : // AND
+    if(automaton_label_transition_compare(l1->u.or_and.left_exp, l2->u.or_and.left_exp))
+      return 1;
+    else
+      return automaton_label_transition_compare(l1->u.or_and.right_exp, l2->u.or_and.right_exp);
+    break;
+
+  case 2 : // NOT
+    return automaton_label_transition_compare(l1->u.exp_not, l2->u.exp_not);
+    break;
+
+  case 3 : // predicat
+    return (strcmp(l1->u.predicat, l2->u.predicat));
+    break;
+
+  case 4 : // 1
+    return 0;
+    break;
+
+  default :
+    return -1;
+    break;
+
+  }
+
+}
+
+
+int propositional_symbols_compare_value(const void *s1, const void *s2){
+
+  return (!((int)s1 == (int)s2));
+
 }

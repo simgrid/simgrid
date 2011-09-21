@@ -19,6 +19,29 @@ mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st){
     
 }
 
+int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
+  
+  if(s1->num_reg != s2->num_reg)
+    return 1;
+
+  int i;
+  for(i=0 ; i< s1->num_reg ; i++){
+
+    if(s1->regions[i]->size != s2->regions[i]->size)
+      return 1;
+
+    if(s1->regions[i]->start_addr != s2->regions[i]->start_addr)
+      return 1;
+
+    if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0)
+      return 1;
+    
+  }
+
+  return 0;
+
+}
+
 int reached(xbt_automaton_t a){
 
   if(xbt_dynar_is_empty(reached_pairs)){
@@ -30,6 +53,8 @@ int reached(xbt_automaton_t a){
     pair = xbt_new0(s_mc_pair_reached_t, 1);
     pair->automaton_state = a->current_state;
     pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
+    pair->system_state = xbt_new0(s_mc_snapshot_t, 1);
+    MC_take_snapshot(pair->system_state);
     
     /* Get values of propositional symbols */
     unsigned int cursor = 0;
@@ -42,24 +67,18 @@ int reached(xbt_automaton_t a){
     
     cursor = 0;
     mc_pair_reached_t pair_test;
-    //int size = xbt_dynar_length(pair->prop_ato);
-    //int i, d1, d2;
     
     xbt_dynar_foreach(reached_pairs, cursor, pair_test){
-      /*if(memcmp(pair_test->automaton_state, pair->automaton_state, sizeof(xbt_state_t)) == 0){
-	for(i=0; i< size; i++){
-	  d1 = xbt_dynar_get_as(pair->prop_ato, i, int);
-	  d2 = xbt_dynar_get_as(pair_test->prop_ato, i, int);
-	  if(d1 == d2){
+      if(automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
+	//XBT_DEBUG("Same automaton state");
+	if(xbt_dynar_compare(pair_test->prop_ato, pair->prop_ato, propositional_symbols_compare_value) == 0){
+	  //XBT_DEBUG("Same values of propositional symbols");
+	  if(snapshot_compare(pair_test->system_state, pair->system_state) == 0){
+	    //XBT_DEBUG("Same system state");
 	    MC_UNSET_RAW_MEM;
 	    return 1;
 	  }
 	}
-	}*/
- 
-      if(memcmp(pair_test, pair, sizeof(mc_pair_reached_t)) == 0){
-	MC_UNSET_RAW_MEM;
-	return 1;
       }
     }
 
@@ -79,6 +98,8 @@ int set_pair_reached(xbt_automaton_t a){
     pair = xbt_new0(s_mc_pair_reached_t, 1);
     pair->automaton_state = a->current_state;
     pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
+    pair->system_state = xbt_new0(s_mc_snapshot_t, 1);
+    MC_take_snapshot(pair->system_state);
     
     /* Get values of propositional symbols */
     unsigned int cursor = 0;
@@ -921,8 +942,7 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
 
     MC_UNSET_RAW_MEM;
     
-    
-    
+
     cursor= 0;
     xbt_dynar_foreach(current_pair->automaton_state->out, cursor, transition_succ){
 
@@ -960,9 +980,7 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
       MC_UNSET_RAW_MEM;
     }
 
-    cursor = 0;
-
-   
+    cursor = 0; 
 
     xbt_dynar_foreach(successors, cursor, pair_succ){
      

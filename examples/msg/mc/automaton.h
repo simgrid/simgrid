@@ -41,14 +41,15 @@ typedef struct xbt_exp_label{
 
 typedef struct xbt_exp_label* xbt_exp_label_t;
 
+
 typedef struct xbt_transition {
   xbt_state_t src;
   xbt_state_t dst;
   xbt_exp_label_t label;
 } s_xbt_transition;
 
-
 typedef struct xbt_transition* xbt_transition_t;
+
 
 typedef struct xbt_propositional_symbol{
   char* pred;
@@ -99,6 +100,15 @@ XBT_PUBLIC(void) xbt_automaton_display_exp(xbt_exp_label_t l);
 XBT_PUBLIC(xbt_propositional_symbol_t) xbt_new_propositional_symbol(xbt_automaton_t a, const char* id, void* fct);
 
 XBT_PUBLIC(xbt_state_t) xbt_automaton_get_current_state(xbt_automaton_t a);
+
+XBT_PUBLIC(int) automaton_state_compare(xbt_state_t s1, xbt_state_t s2);
+
+XBT_PUBLIC(int) propositional_symbols_compare_value(const void *s1, const void *s2);
+
+XBT_PUBLIC(int) automaton_transition_compare(const void *t1, const void *t2);
+
+XBT_PUBLIC(int) automaton_label_transition_compare(xbt_exp_label_t l1, xbt_exp_label_t l2);
+
 
 SG_END_DECL()
 
