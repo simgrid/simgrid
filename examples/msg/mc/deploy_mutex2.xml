@@ -1,0 +1,43 @@
+<?xml version='1.0'?>
+
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+
+<platform version="3">
+
+  <process host="Tremblay" function="coordinator" />
+
+  <process host="Fafard" function="client" >
+    <argument value="1"/>
+  </process>
+
+  <process host="Boivin" function="client" >
+    <argument value="2"/>
+  </process>
+
+  <!-- <process host="TeX" function="client" />
+
+  <process host="Geoff" function="client" />
+  
+  <process host="Disney" function="client" />
+    
+  <process host="iRMX" function="client" />
+      
+  <process host="McGee" function="client" />
+
+  <process host="Gatien" function="client" />
+    
+  <process host="Laroche" function="client" />
+      
+  <process host="Tanguay" function="client" />
+
+  <process host="Morin" function="client" />
+
+  <process host="Ethernet" function="client" />
+
+  <process host="Bellemarre" function="client" />
+
+  <process host="Kuenning" function="client" />
+  
+  <process host="Gaston" function="client" /> -->
+
+</platform>
