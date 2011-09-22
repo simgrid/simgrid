@@ -39,6 +39,9 @@ $group_name="simgrid";
   </div>
 <table width="80%" cellpadding="5" cellspacing="0" border="0" align="center">
 <td>
+<p>
+Since version 3.6.1, windows installer are provided for amd64 or x86. Linux and Mac users should retrieve the tar.gz files. See release documentation for install informations.
+</p>
 <?php if ($handle=fopen('https://gforge.inria.fr/frs/?group_id=12','r')){
 // Reading the file
 $contents = '';
@@ -56,6 +59,9 @@ $secondTempArray  = explode('</fieldset>', $tempArray[1]);
 $toPrint = '';
 $toPrint .= $secondTempArray[0];
 
+
+//Replacing bad hrefs ... I don't know why they actually change from the original content once deployed and invoked from ... 
+$toPrint=str_replace('href="http://simgrid.gforge','href="http://gforge',$toPrint);
 echo $toPrint; } ?>
 </td>
 </table>
