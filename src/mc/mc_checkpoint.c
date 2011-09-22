@@ -50,7 +50,7 @@ void MC_take_snapshot(mc_snapshot_t snapshot)
     reg = maps->regions[i];
     if ((reg.prot & PROT_WRITE)){
       if (maps->regions[i].pathname == NULL){
-        if (reg.start_addr == std_heap){
+        if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
           MC_snapshot_add_region(snapshot, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
         }
       } else {
