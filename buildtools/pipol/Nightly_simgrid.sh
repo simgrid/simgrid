@@ -104,8 +104,10 @@ export SIMGRID_ROOT=`pwd`
 export LD_LIBRARY_PATH=`pwd`/lib
 export DYLD_LIBRARY_PATH=`pwd`/lib              
 cd ../
-svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java simgrid-java --quiet
+git clone git://scm.gforge.inria.fr/simgrid/simgrid-java.git simgrid-java --quiet
 cd simgrid-java
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:`pwd`/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/lib
 cmake .
 ctest -D NightlyStart
 ctest -D NightlyConfigure

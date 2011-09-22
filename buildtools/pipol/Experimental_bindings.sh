@@ -31,6 +31,9 @@ export DYLD_LIBRARY_PATH=`pwd`/lib #for mac
 cd ../
 git clone git://scm.gforge.inria.fr/simgrid/simgrid-java.git simgrid-java --quiet
 cd simgrid-java
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:`pwd`/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/lib #for mac
+
 cmake .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure

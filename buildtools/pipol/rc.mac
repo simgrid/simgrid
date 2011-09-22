@@ -7,6 +7,10 @@
 #sudo port install lua
 #sudo port select bf2c
 
+sudo port install ruby19
+sudo ln -sf /opt/local/lib/libruby.1.9.1.dylib /usr/lib/libruby.dylib
+sudo ln -sf /opt/local/bin/ruby1.9 /usr/bin/ruby
+
 #sudo port select gcc mp-gcc46
 
 which_gcc=`which gcc`		#gcc gcc necessary

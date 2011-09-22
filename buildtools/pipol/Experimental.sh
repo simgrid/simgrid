@@ -15,10 +15,11 @@ cd simgrid
 
 perl ./buildtools/pipol/cmake.pl
 perl ./buildtools/pipol/ruby.pl
-	
-sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install
-SIMGRID_ROOT=`pwd`
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/gtnets_install/lib
+
+#Those 3 lines is for GTNetS
+#sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install
+#SIMGRID_ROOT=`pwd`
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/gtnets_install/lib
 
 #supernovae
 cmake \
