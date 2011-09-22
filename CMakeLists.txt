@@ -17,29 +17,19 @@ string(REPLACE "${COMPILER_C_VERSION_MAJOR_MINOR}." "" COMPILER_C_VERSION_PATCH 
 ########
 ## SVN #
 ########
-if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
-	find_file(SVN ".svn" ${CMAKE_HOME_DIRECTORY})
-	exec_program("svnversion ${CMAKE_HOME_DIRECTORY}" OUTPUT_VARIABLE "SVN_VERSION")
-endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
+exec_program("git remote" OUTPUT_VARIABLE remote RETURN_VALUE ret)
+exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
 
-exec_program("git config --get svn-remote.svn.url"
-	OUTPUT_VARIABLE url
-	RETURN_VALUE ret)
-if(ret EQUAL 0)
-	exec_program("git svn info" ${CMAKE_HOME_DIRECTORY}
-		OUTPUT_VARIABLE "GIT_SVN_VERSION")
-	string(REPLACE "\n" ";" GIT_SVN_VERSION ${GIT_SVN_VERSION})
-	foreach(line ${GIT_SVN_VERSION})
-		string(REGEX MATCH "^Revision:.*" line_good ${line})
-		if(line_good)
-			string(REPLACE "Revision: " ""
-				line_good ${line_good})
-			set(SVN_VERSION ${line_good})
-		endif(line_good)
-	endforeach(line ${GIT_SVN_VERSION})
-endif(ret EQUAL 0)
-
-message(STATUS "Svn version : ${SVN_VERSION}")
+if(url)
+	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
+	message(STATUS "Git version: ${GIT_VERSION}")
+	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
+	message(STATUS "Git date: ${GIT_DATE}")
+	string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
+	STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
+	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
+	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
+endif(url)
 
 #########
 # CDASH #
