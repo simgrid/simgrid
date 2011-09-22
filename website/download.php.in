@@ -61,7 +61,7 @@ $toPrint .= $secondTempArray[0];
 
 
 //Replacing bad hrefs ... I don't know why they actually change from the original content once deployed and invoked from ... 
-$toPrint=str_replace('href="http://simgrid.gforge','href="http://gforge',$toPrint);
+$toPrint=str_replace('href="shownotes','href="https://gforge.inria.fr/frs/shownotes',$toPrint);
 echo $toPrint; } ?>
 </td>
 </table>
