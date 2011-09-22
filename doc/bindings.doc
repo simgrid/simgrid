@@ -356,7 +356,7 @@ libgcj10-dev, try another version.
  
 Then Download and install package Simgrid-java:
 \verbatim
-git clone git+ssh://navarrop@scm.gforge.inria.fr//gitroot//simgrid/simgrid-java.git
+git clone git://scm.gforge.inria.fr/simgrid/simgrid-java.git
 cd simgrid-java
 cmake .
 \endverbatim
