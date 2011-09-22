@@ -40,8 +40,7 @@ ssh pipol pipol-sub esn amd64_kvm-linux-debian-testing none 02:00 "~/Experimenta
 
 #___________________________________________________________________________________________________
 #MacOS Snow Leopard 10.6____________________________________________________________________________
-#ssh pipol pipol-sub esn x86_64_mac-mac-osx-server-snow-leopard.dd.gz none 02:00 "~/Experimental_bindings.sh" # PASSE PAS
-ssh pipol pipol-sub esn x86_mac-mac-osx-server-snow-leopard-navarro-2011-06-22-203726.dd.gz none 02:00 "~/Experimental_bindings.sh"
+ssh pipol pipol-sub esn x86_mac-mac-osx-server-snow-leopard-navarro-2011-09-22-113726.dd.gz none 02:00 "~/Experimental_bindings.sh"
 
 #___________________________________________________________________________________________________
 #windows-server-2008-64bits_________________________________________________________________________
