@@ -101,7 +101,7 @@ contrib/ALNeM).
   - Scalable visual analysis with Squarified Treemaps
   - A Custom Graph Visualization 
 
-SimGrid includes a tracing that can be easily visualized using Triva. It is so since version 3.4 (and works seemly since version 3.6). It's very usefull when you to understand why and how your simulation behaves, so let's have a look to the vids on <a href="http://triva.gforge.inria.fr/">TRIVA website</a>.  
+SimGrid includes a tracing system capable to generate traces that can be easily visualized using Triva. It is so since version 3.4 (and works seemly since version 3.6). It is very useful when you to understand why and how your simulation behaves, so let's have a look to the vids on <a href="http://triva.gforge.inria.fr/">TRIVA website</a>.  
 */
 
 \author Arnaud Legrand (arnaud.legrand::imag.fr)
