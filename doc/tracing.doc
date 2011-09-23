@@ -105,19 +105,28 @@ Same as TRACE_link_srcdst_variable_[set|add|sub], but user specify a time differ
 
 \subsection tracing_tracing_options Tracing configuration Options
 
-These are the options accepted by the tracing system of SimGrid:
+To check which tracing options are available for your simulator, you
+can just run it with the option <b>--help-tracing</b>. These are the
+options accepted by the tracing system of SimGrid as of today, you
+can use them by running your simulator with the <b>--cfg=</b> switch:
 
 \li <b>\c 
 tracing
 </b>:
   Safe switch. It activates (or deactivates) the tracing system.
   No other tracing options take effect if this one is not activated.
+\verbatim
+--cfg=tracing:1
+\endverbatim
 
 \li <b>\c 
 tracing/categorized
 </b>:
   It activates the categorized resource utilization tracing. It should
   be enabled if tracing categories are used by this simulator.
+\verbatim
+--cfg=tracing/categorized:1
+\endverbatim
 
 \li <b>\c 
 tracing/uncategorized
@@ -125,6 +134,9 @@ tracing/uncategorized
   It activates the uncategorized resource utilization tracing. Use it if
   this simulator do not use tracing categories and resource use have to be
   traced.
+\verbatim
+--cfg=tracing/uncategorized:1
+\endverbatim
 
 \li <b>\c 
 tracing/filename
@@ -134,6 +146,10 @@ tracing/filename
   tools. More information can be found in these webpages:
      <a href="http://triva.gforge.inria.fr/">http://triva.gforge.inria.fr/</a>
      <a href="http://paje.sourceforge.net/">http://paje.sourceforge.net/</a>
+\verbatim
+--cfg=tracing/filename:mytracefile.trace
+\endverbatim
+  If you do not provide this parameter, the trace file will be named simgrid.trace.
 
 \li <b>\c
 tracing/onelink_only
@@ -142,6 +158,9 @@ tracing/onelink_only
   to re-create a "graph" of the platform and register it in the trace file.
   This option let the user tell the tracing system to use only the routes
   that are composed with just one link.
+\verbatim
+--cfg=tracing/onelink_only:1
+\endverbatim
 
 \li <b>\c 
 tracing/smpi
@@ -150,18 +169,27 @@ tracing/smpi
   interface and generates a trace that can be analyzed using Gantt-like
   visualizations. Every MPI function (implemented by SMPI) is transformed in a
   state, and point-to-point communications can be analyzed with arrows.
+\verbatim
+--cfg=tracing/smpi:1
+\endverbatim
 
 \li <b>\c 
 tracing/smpi/group
 </b>:
   This option only has effect if this simulator is SMPI-based. The processes
   are grouped by the hosts where they were executed.
+\verbatim
+--cfg=tracing/smpi/group:1
+\endverbatim
 
 \li <b>\c 
 tracing/msg/task
 </b>:
   This option only has effect if this simulator is MSG-based. It traces the
   behavior of all categorized MSG tasks, grouping them by hosts.
+\verbatim
+--cfg=tracing/msg/task:1
+\endverbatim
 
 \li <b>\c 
 tracing/msg/process
@@ -169,18 +197,27 @@ tracing/msg/process
   This option only has effect if this simulator is MSG-based. It traces the
   behavior of all categorized MSG processes, grouping them by hosts. This option
   can be used to track process location if this simulator has process migration.
+\verbatim
+--cfg=tracing/msg/process:1
+\endverbatim
 
 \li <b>\c 
-triva/categorized:graph_categorized.plist
+triva/categorized
 </b>:
   This option generates a graph configuration file for Triva considering
   categorized resource utilization.
+\verbatim
+--cfg=triva/categorized:graph_categorized.plist
+\endverbatim
 
 \li <b>\c 
-triva/uncategorized:graph_uncategorized.plist
+triva/uncategorized
 </b>:
   This option generates a graph configuration file for Triva considering
   uncategorized resource utilization.
+\verbatim
+--cfg=triva/categorized:graph_uncategorized.plist
+\endverbatim
 
 \subsection tracing_tracing_example Example of Instrumentation
 
