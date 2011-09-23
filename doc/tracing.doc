@@ -113,14 +113,6 @@ tracing
   Safe switch. It activates (or deactivates) the tracing system.
   No other tracing options take effect if this one is not activated.
 
-\li <b>\c
-tracing/onelink_only
-</b>:
-  By default, the tracing system uses all routes in the platform file
-  to re-create a "graph" of the platform and register it in the trace file.
-  This option let the user tell the tracing system to use only the routes
-  that are composed with just one link.
-
 \li <b>\c 
 tracing/categorized
 </b>:
@@ -142,6 +134,14 @@ tracing/filename
   tools. More information can be found in these webpages:
      <a href="http://triva.gforge.inria.fr/">http://triva.gforge.inria.fr/</a>
      <a href="http://paje.sourceforge.net/">http://paje.sourceforge.net/</a>
+
+\li <b>\c
+tracing/onelink_only
+</b>:
+  By default, the tracing system uses all routes in the platform file
+  to re-create a "graph" of the platform and register it in the trace file.
+  This option let the user tell the tracing system to use only the routes
+  that are composed with just one link.
 
 \li <b>\c 
 tracing/smpi
@@ -169,7 +169,6 @@ tracing/msg/process
   This option only has effect if this simulator is MSG-based. It traces the
   behavior of all categorized MSG processes, grouping them by hosts. This option
   can be used to track process location if this simulator has process migration.
-
 
 \li <b>\c 
 triva/categorized:graph_categorized.plist
