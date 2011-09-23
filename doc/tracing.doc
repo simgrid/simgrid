@@ -114,11 +114,6 @@ tracing
   No other tracing options take effect if this one is not activated.
 
 \li <b>\c
-tracing/platform
-</b>:
-  Register the simulation platform in the trace file.
-
-\li <b>\c
 tracing/onelink_only
 </b>:
   By default, the tracing system uses all routes in the platform file
