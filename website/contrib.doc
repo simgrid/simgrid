@@ -93,6 +93,15 @@ contrib/ALNeM).
 
 (nothing for now)
 
+\section contrib_partners Projects that facilitates SimGrid usability
+
+<a href="http://triva.gforge.inria.fr/">TRIVA</a> is an open-source tool used to analyze traces (in the pajé format) registered during the execution of parallel applications. The tool serves also as a sandbox to the development of new visualization techniques. Some features include:
+  - Temporal integration using dynamic time-intervals
+  - Spatial aggregation through hierarchical traces
+  - Scalable visual analysis with Squarified Treemaps
+  - A Custom Graph Visualization 
+
+SimGrid includes a tracing that can be easily visualized using Triva. It is so since version 3.4 (and works seemly since version 3.6). It's very usefull when you to understand why and how your simulation behaves, so let's have a look to the vids on <a href="http://triva.gforge.inria.fr/">TRIVA website</a>.  
 */
 
 \author Arnaud Legrand (arnaud.legrand::imag.fr)
