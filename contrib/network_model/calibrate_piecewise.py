@@ -56,7 +56,11 @@ def variance (X):
 ##---------------------------------------------------------------------
 ## calibrate : output correction factors, c_lat on latency, c_bw on bw
 ## such that bandwidth * c_bw = bw_regr, latency * c_lat = lat_regr
+<<<<<<< HEAD
+## where bw_obs and lat_obs are the values approximatong experimental
+=======
 ## where bw_regr and lat_regr are the values approximatong experimental
+>>>>>>> 496787ff18b9d4034acba3c5c68dc54ea416e887
 ## observations.
 ##
 ## param links number of links traversed during ping-pong
@@ -69,11 +73,48 @@ def calibrate (links, latency, bandwidth, sizes, timings):
    assert len(sizes) == len(timings)
    if len(sizes) < 2:
       return None
+<<<<<<< HEAD
+   # compute linear regression : find an affine form  time = a*size+b
+=======
    # compute linear regression : find an affine form  a*size+b
+>>>>>>> 496787ff18b9d4034acba3c5c68dc54ea416e887
    S_XY = cov(sizes, timings)
    S_X2 = variance(sizes)
    a = S_XY / S_X2
    b = avg(timings) - a * avg(sizes)
+<<<<<<< HEAD
+   # corresponding bandwith, in byte/s (was in byte/us in skampi dat)
+   bw_regr = 1e6 / a     
+   # corresponding latency, in s (was in us in skampi dat)
+   lat_regr = b*1e-6
+   print("\nregression: {0} * x + {1}".format(a,b))
+   print("corr_bw = bw_regr/bandwidth= {0}/{1}={2}     lat_regr/(lat_xml*links)={3}/({4}*{5}))".format(bw_regr,bandwidth,bw_regr/bandwidth,lat_regr,latency,links))
+   # return linear regression result and corresponding correction factors c_bw,c_lat
+   return a,b, bw_regr/bandwidth, lat_regr/(latency*links)
+
+
+##---------------------------------------------------------------------
+## outputs a C formatted conditional return value for factor
+##
+## param lb lower bound
+## param ub upper bound
+## param lb_included boolean to tell if bound is included (<=) or exclude (<) 
+## param ub_included boolean to tell if bound is included (<=) or exclude (<) 
+##---------------------------------------------------------------------
+def c_code_print (lb,ub, retval, lb_included, ub_included):
+	lb_cmp = ub_cmp = "<"
+	if lb_included:
+		lb_cmp ="<="
+	if ub_included:
+		ub_cmp ="<="
+
+	ub_kib=ub/1024.
+	lb_kib=lb/1024.
+	print("\t /* case {0:.1f} KiB {1} size {2} {3:.1f} KiB */".format(lb_kib,lb_cmp,ub_cmp,ub_kib))
+	print("\t if ({0:d} {1}  size && size {2} {3:d}) ".format(lb,lb_cmp,ub_cmp,ub))
+	print("\t	return({0});" . format(retval))
+
+=======
    # corresponding bandwith, in s (was in us in skampi dat)
    bw_regr = 1e6 / a     
    # corresponding latency, in s (was in us in skampi dat)
@@ -82,6 +123,7 @@ def calibrate (links, latency, bandwidth, sizes, timings):
    #print("corr_bw = bw_regr/bandwidth= {0}/{1}={2}     lat_regr/(lat_xml*links)={3}/({4}*{5}))".format(bw_regr,bandwidth,bw_regr/bandwidth,lat_regr,latency,links))
    # return correction factors c_bw,c_lat
    return bw_regr/bandwidth, lat_regr/(latency*links)
+>>>>>>> 496787ff18b9d4034acba3c5c68dc54ea416e887
 
 ##-----------------------------------------------------------------------------------------------
 ## main
@@ -125,6 +167,67 @@ low = 0
 for lim in limits:
    correc = calibrate(links, latency, bandwidth, sizes[low:lim + 1], timings[low:lim + 1])
    if correc:
+<<<<<<< HEAD
+	# save interval [lb,ub] correction, regression line direction and origin
+      # and corresponding correction  factors for bw and lat resp, 
+	(dircoef,origin,factor_bw,factor_lat) = correc
+	factors.append( (sizes[low],sizes[lim], dircoef, origin, factor_bw,factor_lat) )
+	print("Segment [%d:%d] --Bandwidth factor=%g --Latency factor=%g " % (sizes[low], sizes[lim], factor_bw,factor_lat))
+   low = lim + 1
+
+# now computes joining lines between segments
+joinseg=[]
+
+print("\n/**\n *------------------ <copy/paste C code snippet in surf/network.c> ----------------------")
+print(" *\n * produced by: {0}\n *".format(' '.join(sys.argv)))
+print(" *---------------------------------------------------------------------------------------\n **/")
+
+# print correction factor for bandwidth for each segment
+print("static double smpi_bandwidth_factor(double size)\n{")                                
+for (lb,ub,a,b,factor_bw,factor_lat) in factors:
+	c_code_print(lb,ub,factor_bw,True,True)
+
+	# save ends and starts of segments 
+	if lb != sizes[0]:
+		joinseg.append( (lb,timings[sizes.index(lb)]) )
+	if ub != sizes[-1]:
+		joinseg.append( (ub,timings[sizes.index(ub)]) )
+
+# print correction factor for bandwidth between segments
+joinseg.reverse()
+print("\t /* ..:: inter-segment corrections ::.. */\n");
+inx=len(joinseg)-1
+while inx>=1:
+	(x0,y0) = joinseg[inx]
+	inx = inx -1
+	(x1,y1) = joinseg[inx]
+	inx = inx -1
+	# line eq. is y = (y1-y0)/(x0-x1) * x +  (y0 x1 - y1 x0)/(x1-x0)
+	a = (y1-y0) / (x1-x0)
+	bw_join = 1e6 / a
+	factor_join_bw = bw_join / bandwidth
+	#print("Joining points (%f,%f) -> (%f,%f)  : line dir : a=%g\n" % (x0,y0,x1,y1,a))
+	c_code_print(x0,x1,factor_join_bw,False,False)
+
+print("}\n")  
+
+# print correction factor for latency for each segment
+print("static double smpi_latency_factor(double size)\n{")                                
+for (lb,ub,a,b,factor_bw,factor_lat) in factors:
+	c_code_print(lb,ub,factor_lat,True,True)
+
+print("\t /* ..:: inter-segment corrections ::.. */\n");
+while joinseg:
+	(x0,y0) = joinseg.pop()
+	(x1,y1) = joinseg.pop()
+	# line eq. is y = (y0-y1)/(x0-x1) * x +  (y0 x1 - y1 x0)/(x1-x0)
+	#print("(%f,%f) -> (%f,%f)\n" % (x0,y0,x1,y1))
+	b = 1e-6 * (y0*x1-y1*x0) / (x1-x0)
+	factor_join_lat = b / (latency*links)
+	c_code_print(x0,x1,factor_join_lat,False,False)
+
+
+=======
 	# save interval [lb,ub] and correction factors for bw and lat resp.
 	factors.append( (sizes[low],sizes[lim], correc[0], correc[1]) )
 	print("Segment [%d:%d] --Bandwidth factor=%g --Latency factor=%g " % (sizes[low], sizes[lim], correc[0], correc[1]))
@@ -147,5 +250,6 @@ for (lb,ub,factor_bw,factor_lat) in factors:
 	print("\t if (%d <= size && size <=  %d) {" % (lb,ub))
 	print("\t	return(%g);" % (factor_lat))
 	print("\t }")
+>>>>>>> 496787ff18b9d4034acba3c5c68dc54ea416e887
 print("}\n")  
 print("/**\n *------------------ </copy/paste C code snippet in surf/network.c> ---------------------\n **/")
