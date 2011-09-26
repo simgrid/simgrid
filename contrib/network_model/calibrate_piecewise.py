@@ -56,11 +56,7 @@ def variance (X):
 ##---------------------------------------------------------------------
 ## calibrate : output correction factors, c_lat on latency, c_bw on bw
 ## such that bandwidth * c_bw = bw_regr, latency * c_lat = lat_regr
-<<<<<<< HEAD
-## where bw_obs and lat_obs are the values approximatong experimental
-=======
-## where bw_regr and lat_regr are the values approximatong experimental
->>>>>>> 496787ff18b9d4034acba3c5c68dc54ea416e887
+## where bw_regr and lat_regr are the values approximating experimental
 ## observations.
 ##
 ## param links number of links traversed during ping-pong
@@ -73,16 +69,11 @@ def calibrate (links, latency, bandwidth, sizes, timings):
    assert len(sizes) == len(timings)
    if len(sizes) < 2:
       return None
-<<<<<<< HEAD
    # compute linear regression : find an affine form  time = a*size+b
-=======
-   # compute linear regression : find an affine form  a*size+b
->>>>>>> 496787ff18b9d4034acba3c5c68dc54ea416e887
    S_XY = cov(sizes, timings)
    S_X2 = variance(sizes)
    a = S_XY / S_X2
    b = avg(timings) - a * avg(sizes)
-<<<<<<< HEAD
    # corresponding bandwith, in byte/s (was in byte/us in skampi dat)
    bw_regr = 1e6 / a     
    # corresponding latency, in s (was in us in skampi dat)
@@ -114,16 +105,6 @@ def c_code_print (lb,ub, retval, lb_included, ub_included):
 	print("\t if ({0:d} {1}  size && size {2} {3:d}) ".format(lb,lb_cmp,ub_cmp,ub))
 	print("\t	return({0});" . format(retval))
 
-=======
-   # corresponding bandwith, in s (was in us in skampi dat)
-   bw_regr = 1e6 / a     
-   # corresponding latency, in s (was in us in skampi dat)
-   lat_regr = b*1e-6
-   #print("\nregression: {0} * x + {1}".format(a,b))
-   #print("corr_bw = bw_regr/bandwidth= {0}/{1}={2}     lat_regr/(lat_xml*links)={3}/({4}*{5}))".format(bw_regr,bandwidth,bw_regr/bandwidth,lat_regr,latency,links))
-   # return correction factors c_bw,c_lat
-   return bw_regr/bandwidth, lat_regr/(latency*links)
->>>>>>> 496787ff18b9d4034acba3c5c68dc54ea416e887
 
 ##-----------------------------------------------------------------------------------------------
 ## main
@@ -167,9 +148,8 @@ low = 0
 for lim in limits:
    correc = calibrate(links, latency, bandwidth, sizes[low:lim + 1], timings[low:lim + 1])
    if correc:
-<<<<<<< HEAD
 	# save interval [lb,ub] correction, regression line direction and origin
-      # and corresponding correction  factors for bw and lat resp, 
+      # and corresponding correction factors for bw and lat resp. 
 	(dircoef,origin,factor_bw,factor_lat) = correc
 	factors.append( (sizes[low],sizes[lim], dircoef, origin, factor_bw,factor_lat) )
 	print("Segment [%d:%d] --Bandwidth factor=%g --Latency factor=%g " % (sizes[low], sizes[lim], factor_bw,factor_lat))
@@ -195,7 +175,7 @@ for (lb,ub,a,b,factor_bw,factor_lat) in factors:
 
 # print correction factor for bandwidth between segments
 joinseg.reverse()
-print("\t /* ..:: inter-segment corrections ::.. */\n");
+print("\n\t /* ..:: inter-segment corrections ::.. */");
 inx=len(joinseg)-1
 while inx>=1:
 	(x0,y0) = joinseg[inx]
@@ -216,7 +196,7 @@ print("static double smpi_latency_factor(double size)\n{")
 for (lb,ub,a,b,factor_bw,factor_lat) in factors:
 	c_code_print(lb,ub,factor_lat,True,True)
 
-print("\t /* ..:: inter-segment corrections ::.. */\n");
+print("\n\t /* ..:: inter-segment corrections ::.. */");
 while joinseg:
 	(x0,y0) = joinseg.pop()
 	(x1,y1) = joinseg.pop()
@@ -226,30 +206,4 @@ while joinseg:
 	factor_join_lat = b / (latency*links)
 	c_code_print(x0,x1,factor_join_lat,False,False)
 
-
-=======
-	# save interval [lb,ub] and correction factors for bw and lat resp.
-	factors.append( (sizes[low],sizes[lim], correc[0], correc[1]) )
-	print("Segment [%d:%d] --Bandwidth factor=%g --Latency factor=%g " % (sizes[low], sizes[lim], correc[0], correc[1]))
-   low = lim + 1
-
-print("\n/**\n *------------------ <copy/paste C code snippet in surf/network.c> ----------------------")
-print(" *\n * produced by: {0}\n *".format(' '.join(sys.argv)))
-print(" *---------------------------------------------------------------------------------------\n **/")
-print("static double smpi_bandwidth_factor(double size)\n{")                                
-for (lb,ub,factor_bw,factor_lat) in factors:
-	print("\t /* case %d Bytes <= size <=%d Bytes */" % (lb,ub))
-	print("\t if (%d <= size && size <=  %d) {" % (lb,ub))
-	print("\t	return(%g);" % (factor_bw))
-	print("\t }")
-print("}\n")  
-
-print("static double smpi_latency_factor(double size)\n{")                                
-for (lb,ub,factor_bw,factor_lat) in factors:
-	print("\t /* case %d Bytes <= size <=%d Bytes */" % (lb,ub))
-	print("\t if (%d <= size && size <=  %d) {" % (lb,ub))
-	print("\t	return(%g);" % (factor_lat))
-	print("\t }")
->>>>>>> 496787ff18b9d4034acba3c5c68dc54ea416e887
-print("}\n")  
-print("/**\n *------------------ </copy/paste C code snippet in surf/network.c> ---------------------\n **/")
+print("\n/**\n *------------------ <copy/paste C code snippet in surf/network.c> ----------------------\n **/")
