@@ -106,40 +106,52 @@ static double constant_bandwidth_constraint(double rate, double bound,
 /**
  *------------------ <copy/paste C code snippet in surf/network.c> ----------------------
  *
- * produced by: ./calibrate_piecewise.py griffon_skampi_pt2pt.ski.dat 2 2.4e-5 1.25e8 1024 65536
+ * produced by: ./calibrate_piecewise.py griffon_skampi_pt2pt.ski.dat 2 2.4e-5 1.25e8 1536 65536
  *
  *---------------------------------------------------------------------------------------
  **/
 static double smpi_bandwidth_factor(double size)
 {
-	  /* case 1 Bytes <= size <=1024 Bytes */
-	  if (1 <= size && size <=  1024) {
-		    return(0.188567);
-	  }
-	  /* case 1536 Bytes <= size <=65536 Bytes */
-	  if (1536 <= size && size <=  65536) {
-		    return(0.58527);
-	  }
-	  /* case 66560 Bytes <= size */
-	  if (66560 <= size ) {
-		    return(0.933246);
-	  }
+	 /* case 0.0 KiB <= size <= 1.5 KiB */
+	 if (1 <=  size && size <= 1536) 
+		return(0.193137361131);
+	 /* case 2.0 KiB <= size <= 64.0 KiB */
+	 if (2048 <=  size && size <= 65536) 
+		return(0.584680317461);
+	 /* case 65.0 KiB <= size */
+	 if (66560 <=  size) 
+		return(0.933246215769);
+
+	 /* ..:: inter-segment corrections ::.. */
+
+	 /* case 1.5 KiB < size < 2.0 KiB */
+	 if (1536 <  size && size < 2048) 
+		return(0.765607476636);
+	 /* case 64.0 KiB < size < 65.0 KiB */
+	 if (65536 <  size && size < 66560) 
+		return(1.24121212121);
 }
 
 static double smpi_latency_factor(double size)
 {
-	  /* case 1 Bytes <= size <=1024 Bytes */
-	  if (1 <= size && size <=  1024) {
-		    return(1.1484);
-	  }
-	  /* case 1536 Bytes <= size <=65536 Bytes */
-	  if (1536 <= size && size <=  65536) {
-		    return(1.82006);
-	  }
-	  /* case 66560 Bytes <= size */
-	  if (66560 <= size) {
-		    return(14.6187);
-	  }
+	 /* case 0.0 KiB <= size <= 1.5 KiB */
+	 if (1 <=  size && size <= 1536) 
+		return(1.15019564848);
+	 /* case 2.0 KiB <= size <= 64.0 KiB */
+	 if (2048 <=  size && size <= 65536) 
+		return(1.80598448863);
+	 /* case 65.0 KiB <= size <= 8192.0 KiB */
+	 if (66560 <=  size) 
+		return(14.6187359323);
+
+	 /* ..:: inter-segment corrections ::.. */
+
+	 /* case 1.5 KiB < size < 2.0 KiB */
+	 if (1536 <  size && size < 2048) 
+		return(2.1375);
+	 /* case 64.0 KiB < size < 65.0 KiB */
+	 if (65536 <  size && size < 66560) 
+		return(14.6375);
 }
 
 /**
