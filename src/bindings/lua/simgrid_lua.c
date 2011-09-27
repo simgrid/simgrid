@@ -123,6 +123,25 @@ static const char* keyvalue_tostring(lua_State* L, int key_index, int value_inde
 }
 
 /**
+ * @brief Returns a string composed of the specified number of spaces.
+ *
+ * This function is for debugging purposes.
+ * It always returns the same pointer.
+ *
+ * @param length length of the string
+ * @return a string of this length with only spaces
+ */
+static const char* get_spaces(int length) {
+
+  static char spaces[128];
+
+  xbt_assert(length < 128);
+  memset(spaces, ' ', length);
+  spaces[length] = '\0';
+  return spaces;
+}
+
+/**
  * @brief Dumps the Lua stack if debug logs are enabled.
  * @param msg a message to print
  * @param L a Lua state
@@ -135,7 +154,7 @@ static void stack_dump(const char* msg, lua_State* L)
     int i;
     int top = lua_gettop(L);
 
-    //  if (1) return;
+    if (1) return;
 
     fflush(stdout);
 
@@ -182,7 +201,7 @@ static int writer(lua_State* L, const void* source, size_t size, void* userdata)
  * Its keys are pointers to visited tables in src and its values are the tables
  * already built.
  *
- * TODO: add support of upvalues
+ * TODO: add support of closures
  *
  * @param src the source state
  * @param dst the destination state
@@ -194,7 +213,11 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
   luaL_checktype(dst, 1, LUA_TTABLE);      /* check the presence of a table of
                                               previously visited tables */
 
-  XBT_DEBUG("Copying value %s", name);
+  int indentation_level = (lua_gettop(dst) - 1) * 6;
+  const char* indent = get_spaces(indentation_level);
+
+  XBT_DEBUG("%sCopying value %s", indent, name);
+  indent = get_spaces(indentation_level + 2);
 
   stack_dump("src before copying a value (should be ... value): ", src);
   stack_dump("dst before copying a value (should be visited ...): ", dst);
@@ -223,13 +246,12 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
 
       if (lua_iscfunction(src, -1)) {
         /* it's a C function: just copy the pointer */
-        XBT_DEBUG("Copying C function '%s'", name);
         lua_CFunction f = lua_tocfunction(src, -1);
         lua_pushcfunction(dst, f);
       }
       else {
         /* it's a Lua function: dump it from src */
-        XBT_DEBUG("Dumping Lua function '%s'", name);
+        XBT_DEBUG("%sDumping Lua function '%s'", indent, name);
 
         s_buffer_t buffer;
         buffer.capacity = 64;
@@ -245,7 +267,7 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
         error = luaL_loadbuffer(dst, buffer.data, buffer.size, name);
         xbt_assert(!error, "Failed to load function '%s' from the source state: %s",
             name, lua_tostring(dst, -1));
-        XBT_DEBUG("Function '%s' successfully dumped from source state.", name);
+        XBT_DEBUG("%sFunction '%s' successfully dumped from source state.", indent, name);
       }
       break;
 
@@ -257,11 +279,11 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
       lua_gettable(dst, 1);
                                   /* dst: visited ... table/nil */
       if (lua_istable(dst, -1)) {
-        XBT_DEBUG("Nothing to do: table already visited");
+        XBT_DEBUG("%sNothing to do: table already visited", indent);
                                   /* dst: visited ... table */
       }
       else {
-        XBT_DEBUG("First visit of this table");
+        XBT_DEBUG("%sFirst visit of this table", indent);
                                   /* dst: visited ... nil */
         lua_pop(dst, 1);
                                   /* dst: visited ... */
@@ -277,7 +299,7 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
                                   /* dst: visited ... table psrctable table */
         lua_settable(dst, 1);
                                   /* dst: visited ... table */
-        XBT_DEBUG("Table marked as visited");
+        XBT_DEBUG("%sTable marked as visited", indent);
 
         stack_dump("dst after marking the table as visited (should be visited ... table): ", dst);
 
@@ -285,7 +307,7 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
         int has_meta_table = lua_getmetatable(src, -1);
                                   /* src: ... table mt? */
         if (has_meta_table) {
-          XBT_DEBUG("Copying metatable");
+          XBT_DEBUG("%sCopying metatable", indent);
                                   /* src: ... table mt */
           move_value(dst, src, "metatable");
                                   /* src: ... table
@@ -294,7 +316,7 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
                                   /* dst: visited ... table */
         }
         else {
-          XBT_DEBUG("No metatable");
+          XBT_DEBUG("%sNo metatable", indent);
         }
 
         stack_dump("src before traversing the table (should be ... table): ", src);
@@ -306,7 +328,8 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
         while (lua_next(src, -2) != 0) {
                                   /* src: ... table key value */
 
-          XBT_DEBUG("Copying table element %s", keyvalue_tostring(src, -2, -1));
+          XBT_DEBUG("%sCopying table element %s", indent, keyvalue_tostring(src, -2, -1));
+          indent = get_spaces(indentation_level + 4);
 
           stack_dump("src before copying table element (should be ... table key value): ", src);
           stack_dump("dst before copying table element (should be visited ... table): ", dst);
@@ -314,18 +337,18 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
           /* copy the key */
           lua_pushvalue(src, -2);
                                   /* src: ... table key value key */
-          XBT_DEBUG("Copying the element key");
+          XBT_DEBUG("%sCopying the key part of the table element", indent);
           move_value(dst, src, value_tostring(src, -1));
                                   /* src: ... table key value
                                      dst: visited ... table key */
-          XBT_DEBUG("Copied the element key");
+          XBT_DEBUG("%sCopied the key part of the table element", indent);
 
           /* copy the value */
-          XBT_DEBUG("Copying the element value");
+          XBT_DEBUG("%sCopying the value part of the table element", indent);
           move_value(dst, src, value_tostring(src, -1));
                                   /* src: ... table key
                                      dst: visited ... table key value */
-          XBT_DEBUG("Copied the element value");
+          XBT_DEBUG("%sCopied the value part of the table element", indent);
 
           /* set the table element */
           lua_settable(dst, -3);
@@ -334,8 +357,10 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
           /* the key stays on top of src for next iteration */
           stack_dump("src before next iteration (should be ... table key): ", src);
           stack_dump("dst before next iteration (should be visited ... table): ", dst);
+
+          indent = get_spaces(indentation_level + 2);
         }
-        XBT_DEBUG("Finished traversing the table");
+        XBT_DEBUG("%sFinished traversing the table", indent);
       }
       break;
 
@@ -344,7 +369,7 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
       break;
 
     case LUA_TUSERDATA:
-      XBT_WARN("Cannot copy a full userdata from the source state.");
+      XBT_WARN("Copying a full userdata is not supported yet.");
       lua_pushnil(dst);
       break;
 
@@ -356,6 +381,9 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
 
   /* pop the value from src */
   lua_pop(src, 1);
+
+  indent = get_spaces(indentation_level);
+  XBT_DEBUG("%sCopied the value", indent);
 
   stack_dump("src after copying a value (should be ...): ", src);
   stack_dump("dst after copying a value (should be visited ... value): ", dst);
@@ -447,12 +475,26 @@ static lua_State* clone_lua_state(lua_State *father) {
   lua_setfenv(L, -2);                       /* thread */
   lua_pop(L, 1);                            /* -- */
 
-  /* open the standard libs (theoretically, this is not necessary) */
+  /* open the standard libs (theoretically, this is not necessary as they can
+   * be inherited like any global values, but without a proper support of
+   * closures, iterators like ipairs don't work). */
   luaL_openlibs(L);
 
-  /* put a pointer to the father */
+  /* set a pointer to the father */
   lua_pushlightuserdata(L, father);
   lua_setfield(L, LUA_REGISTRYINDEX, "simgrid.father_state");
+
+  /* copy the registry */
+  lua_pushvalue(father, LUA_REGISTRYINDEX);    /* father: ... reg */
+  lua_newtable(L);                             /* L: visited */
+  move_value(L, father, "registry");           /* father: ...
+                                                  L: visited newreg */
+
+  /* set the pointer again */
+  lua_pushlightuserdata(L, father);            /* L: visited newreg father */
+  lua_setfield(L, -1, "simgrid.father_state"); /* L: visited newreg */
+  lua_replace(L, LUA_REGISTRYINDEX);           /* L: visited */
+  lua_pop(L, 1);                               /* L: -- */
 
   XBT_DEBUG("New state created");
 
