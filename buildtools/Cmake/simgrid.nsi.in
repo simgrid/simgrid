@@ -35,6 +35,13 @@ InstallDir c:\SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VE
 
 Section "Libraries and Headers" LibSection
 
+	setOutPath $INSTDIR
+	file @CMAKE_HOME_DIRECTORY@\AUTHORS
+	file @CMAKE_HOME_DIRECTORY@\Changelog
+	file @CMAKE_HOME_DIRECTORY@\COPYING
+	file @CMAKE_HOME_DIRECTORY@\LICENSE-LGPL-2.1
+	file @CMAKE_HOME_DIRECTORY@\NEWS
+
 	# install lib
 	CreateDirectory $INSTDIR\lib
 	setOutPath $INSTDIR\lib
@@ -165,6 +172,7 @@ Section "Documentation" DocSection
 	# create a shortcut in the start menu programs directory
 	CreateDirectory "$SMPROGRAMS\SimGrid"
 	createShortCut  "$SMPROGRAMS\SimGrid\Documentation.lnk"	"$INSTDIR\doc\html\index.html"
+	createShortCut  "$SMPROGRAMS\SimGrid\Website.lnk"	"http://simgrid.gforge.inria.fr/"
 	
 SectionEnd
 Section "Examples" ExamplesSection	
@@ -350,8 +358,16 @@ section "Uninstall"
 	# delete link
 	delete "$SMPROGRAMS\SimGrid\Uninstall simgrid.lnk"
 	delete "$SMPROGRAMS\SimGrid\Documentation.lnk"
+	delete "$SMPROGRAMS\SimGrid\Website.lnk"
 	delete "$SMPROGRAMS\SimGrid\Examples\HelloWorld project.lnk"
 	delete "$SMPROGRAMS\SimGrid\Examples\MasterSlave project.lnk"
+	
+	# delete EXTRA FILES
+	delete $INSTDIR\AUTHORS
+	delete $INSTDIR\Changelog
+	delete $INSTDIR\COPYING
+	delete $INSTDIR\LICENSE-LGPL-2.1
+	delete $INSTDIR\NEWS
 	
 	# now delete directories
 	RMDir  "$INSTDIR\bin"
@@ -381,6 +397,9 @@ section "Uninstall"
 	DeleteRegValue ${env_hklm} SIMGRID_PCRE_LIBRARY_PATH
 	DeleteRegValue ${env_hklm} SIMGRID_PCRE_LIBRARY_VERSION
     DeleteRegKey HKCU "SOFTWARE\SimGrid"
+    
+    # delete INSTDIR
+    RMDir  /r "$INSTDIR"
     
 # uninstall section end
 sectionEnd
