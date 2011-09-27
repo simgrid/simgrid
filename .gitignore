@@ -13,6 +13,10 @@
 *.trace
 
 ################################################
+### Maintainer mode
+*.l
+
+################################################
 ### Libraries links 
 src/bindings/ruby/simgrid.so
 examples/ruby/simgrid.so
