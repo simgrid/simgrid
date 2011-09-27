@@ -87,7 +87,7 @@ static const char* value_tostring(lua_State* L, int index) {
       break;
 
     case LUA_TTABLE:
-      sprintf(buff, "table(%d)", lua_objlen(L, index));
+      sprintf(buff, "table(%zu)", lua_objlen(L, index));
       break;
 
     case LUA_TLIGHTUSERDATA:
