@@ -157,7 +157,7 @@ To use Ruby with Simgrid you have to install some dependancies:
  
 Then Download and install package Simgrid-ruby:
 \verbatim
-svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-ruby simgrid-ruby
+git clone git://scm.gforge.inria.fr/simgrid/simgrid-ruby.git
 cd simgrid-ruby
 cmake .
 \endverbatim
@@ -165,7 +165,6 @@ cmake .
  Cmake output
  
 \verbatim
--- Svn version : 9905
 -- SITE        : Linux_2.6.38-8-generic_x86_64
 -- BUILDNAME   : Simgrid-Ruby
 -- Looking for lib SimGrid

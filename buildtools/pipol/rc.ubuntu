@@ -2,7 +2,6 @@
 
 sudo apt-get update
 
-sudo apt-get -y -qq install subversion
 sudo apt-get -y -qq install gcc
 sudo apt-get -y -qq install g++
 sudo apt-get -y -qq install make
