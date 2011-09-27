@@ -35,7 +35,8 @@ static const char* value_tostring(lua_State* L, int index);
 static const char* keyvalue_tostring(lua_State* L, int key_index, int value_index);
 static void stack_dump(const char *msg, lua_State* L);
 static int writer(lua_State* L, const void* source, size_t size, void* userdata);
-static void move_value(lua_State* dst, lua_State* src, const char* name);
+static void move_value(lua_State* src, lua_State* dst);
+static void move_value_impl(lua_State* src, lua_State* dst, const char* name);
 static int l_get_from_father(lua_State* L);
 static lua_State *clone_lua_state(lua_State* L);
 static m_task_t check_task(lua_State *L, int index);
@@ -117,7 +118,7 @@ static const char* keyvalue_tostring(lua_State* L, int key_index, int value_inde
 
   static char buff[64];
   /* value_tostring also always returns the same pointer */
-  int len = snprintf(buff, 63, "%s -> ", value_tostring(L, key_index));
+  int len = snprintf(buff, 63, "[%s] -> ", value_tostring(L, key_index));
   snprintf(buff + len, 63 - len, "%s", value_tostring(L, value_index));
   return buff;
 }
@@ -154,7 +155,7 @@ static void stack_dump(const char* msg, lua_State* L)
     int i;
     int top = lua_gettop(L);
 
-    if (1) return;
+    //if (1) return;
 
     fflush(stdout);
 
@@ -193,31 +194,58 @@ static int writer(lua_State* L, const void* source, size_t size, void* userdata)
 }
 
 /**
+ * @brief Pops a value from a state and pushes it onto the stack of another
+ * state.
+ *
+ * @param src the source state
+ * @param dst the destination state
+ */
+static void move_value(lua_State* src, lua_State* dst) {
+
+  if (src != dst) {
+
+    /* create a list of visited tables at index 1 of dst */
+                                  /* src: ... value
+                                     dst: ... */
+    lua_newtable(dst);
+                                  /* dst: ... visited */
+    lua_insert(dst, 1);
+                                  /* dst: visited ... */
+
+    move_value_impl(src, dst, value_tostring(src, -1));
+                                  /* src: ...
+                                     dst: visited ... value */
+    lua_remove(dst, 1);
+                                  /* dst: ... value */
+    stack_dump("src after xmove: ", src);
+    stack_dump("dst after xmove: ", dst);
+  }
+}
+
+/**
  * @brief Pops a value from the stack of a source state and pushes it on the
  * stack of another state.
  *
  * If the value is a table, its content is copied recursively. To avoid cycles,
- * a table of previsously visited tables must be present at index 1 of dst.
+ * a table of previously visited tables must be present at index 1 of dst.
  * Its keys are pointers to visited tables in src and its values are the tables
  * already built.
  *
  * TODO: add support of closures
  *
  * @param src the source state
- * @param dst the destination state
+ * @param dst the destination state, with a list of visited tables at index 1
  * @param name a name describing the value
  */
-static void move_value(lua_State* dst, lua_State *src, const char* name) {
+static void move_value_impl(lua_State* src, lua_State *dst, const char* name) {
 
   luaL_checkany(src, -1);                  /* check the value to copy */
   luaL_checktype(dst, 1, LUA_TTABLE);      /* check the presence of a table of
                                               previously visited tables */
 
-  int indentation_level = (lua_gettop(dst) - 1) * 6;
-  const char* indent = get_spaces(indentation_level);
-
-  XBT_DEBUG("%sCopying value %s", indent, name);
-  indent = get_spaces(indentation_level + 2);
+  int indent = (lua_gettop(dst) - 1) * 6;
+  XBT_DEBUG("%sCopying data %s", get_spaces(indent), name);
+  indent += 2;
 
   stack_dump("src before copying a value (should be ... value): ", src);
   stack_dump("dst before copying a value (should be visited ...): ", dst);
@@ -251,7 +279,7 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
       }
       else {
         /* it's a Lua function: dump it from src */
-        XBT_DEBUG("%sDumping Lua function '%s'", indent, name);
+        XBT_DEBUG("%sDumping Lua function '%s'", get_spaces(indent), name);
 
         s_buffer_t buffer;
         buffer.capacity = 64;
@@ -265,9 +293,9 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
 
         /* load the chunk into dst */
         error = luaL_loadbuffer(dst, buffer.data, buffer.size, name);
-        xbt_assert(!error, "Failed to load function '%s' from the source state: %s",
+        xbt_assert(!error, "Failed to load function '%s' into the destination state: %s",
             name, lua_tostring(dst, -1));
-        XBT_DEBUG("%sFunction '%s' successfully dumped from source state.", indent, name);
+        XBT_DEBUG("%sFunction '%s' successfully loaded", get_spaces(indent), name);
       }
       break;
 
@@ -279,11 +307,11 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
       lua_gettable(dst, 1);
                                   /* dst: visited ... table/nil */
       if (lua_istable(dst, -1)) {
-        XBT_DEBUG("%sNothing to do: table already visited", indent);
+        XBT_DEBUG("%sNothing to do: table already visited", get_spaces(indent));
                                   /* dst: visited ... table */
       }
       else {
-        XBT_DEBUG("%sFirst visit of this table", indent);
+        XBT_DEBUG("%sFirst visit of this table", get_spaces(indent));
                                   /* dst: visited ... nil */
         lua_pop(dst, 1);
                                   /* dst: visited ... */
@@ -299,7 +327,7 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
                                   /* dst: visited ... table psrctable table */
         lua_settable(dst, 1);
                                   /* dst: visited ... table */
-        XBT_DEBUG("%sTable marked as visited", indent);
+        XBT_DEBUG("%sTable marked as visited", get_spaces(indent));
 
         stack_dump("dst after marking the table as visited (should be visited ... table): ", dst);
 
@@ -307,16 +335,16 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
         int has_meta_table = lua_getmetatable(src, -1);
                                   /* src: ... table mt? */
         if (has_meta_table) {
-          XBT_DEBUG("%sCopying metatable", indent);
+          XBT_DEBUG("%sCopying metatable", get_spaces(indent));
                                   /* src: ... table mt */
-          move_value(dst, src, "metatable");
+          move_value_impl(src, dst, "metatable");
                                   /* src: ... table
                                      dst: visited ... table mt */
           lua_setmetatable(dst, -2);
                                   /* dst: visited ... table */
         }
         else {
-          XBT_DEBUG("%sNo metatable", indent);
+          XBT_DEBUG("%sNo metatable", get_spaces(indent));
         }
 
         stack_dump("src before traversing the table (should be ... table): ", src);
@@ -328,8 +356,7 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
         while (lua_next(src, -2) != 0) {
                                   /* src: ... table key value */
 
-          XBT_DEBUG("%sCopying table element %s", indent, keyvalue_tostring(src, -2, -1));
-          indent = get_spaces(indentation_level + 4);
+          XBT_DEBUG("%sCopying table element %s", get_spaces(indent), keyvalue_tostring(src, -2, -1));
 
           stack_dump("src before copying table element (should be ... table key value): ", src);
           stack_dump("dst before copying table element (should be visited ... table): ", dst);
@@ -337,18 +364,20 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
           /* copy the key */
           lua_pushvalue(src, -2);
                                   /* src: ... table key value key */
-          XBT_DEBUG("%sCopying the key part of the table element", indent);
-          move_value(dst, src, value_tostring(src, -1));
+          indent += 2;
+          XBT_DEBUG("%sCopying the key part of the table element", get_spaces(indent));
+          move_value_impl(src, dst, value_tostring(src, -1));
                                   /* src: ... table key value
                                      dst: visited ... table key */
-          XBT_DEBUG("%sCopied the key part of the table element", indent);
+          XBT_DEBUG("%sCopied the key part of the table element", get_spaces(indent));
 
           /* copy the value */
-          XBT_DEBUG("%sCopying the value part of the table element", indent);
-          move_value(dst, src, value_tostring(src, -1));
+          XBT_DEBUG("%sCopying the value part of the table element", get_spaces(indent));
+          move_value_impl(src, dst, value_tostring(src, -1));
                                   /* src: ... table key
                                      dst: visited ... table key value */
-          XBT_DEBUG("%sCopied the value part of the table element", indent);
+          XBT_DEBUG("%sCopied the value part of the table element", get_spaces(indent));
+          indent -= 2;
 
           /* set the table element */
           lua_settable(dst, -3);
@@ -358,9 +387,9 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
           stack_dump("src before next iteration (should be ... table key): ", src);
           stack_dump("dst before next iteration (should be visited ... table): ", dst);
 
-          indent = get_spaces(indentation_level + 2);
+          XBT_DEBUG("%sTable element copied", get_spaces(indent));
         }
-        XBT_DEBUG("%sFinished traversing the table", indent);
+        XBT_DEBUG("%sFinished traversing the table", get_spaces(indent));
       }
       break;
 
@@ -369,9 +398,33 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
       break;
 
     case LUA_TUSERDATA:
-      XBT_WARN("Copying a full userdata is not supported yet.");
-      lua_pushnil(dst);
-      break;
+    {
+      /* copy the data */
+      size_t size = lua_objlen(src, -1);
+      void* src_block = lua_touserdata(src, -1);
+      void* dst_block = lua_newuserdata(dst, size);
+      memcpy(dst_block, src_block, size);
+
+      /* copy the metatable if any */
+      int has_meta_table = lua_getmetatable(src, -1);
+                                /* src: ... udata mt? */
+      if (has_meta_table) {
+        XBT_DEBUG("%sCopying metatable of userdata", get_spaces(indent));
+                                /* src: ... udata mt */
+        move_value_impl(src, dst, "metatable");
+                                /* src: ... udata
+                                   dst: visited ... udata mt */
+        lua_setmetatable(dst, -2);
+                                /* dst: visited ... udata */
+
+        XBT_DEBUG("%sMetatable of userdata copied", get_spaces(indent));
+      }
+      else {
+        XBT_DEBUG("%sNo metatable for this userdata", get_spaces(indent));
+                                /* src: ... udata */
+      }
+    }
+    break;
 
     case LUA_TTHREAD:
       XBT_WARN("Cannot copy a thread from the source state.");
@@ -382,25 +435,24 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
   /* pop the value from src */
   lua_pop(src, 1);
 
-  indent = get_spaces(indentation_level);
-  XBT_DEBUG("%sCopied the value", indent);
+  indent -= 2;
+  XBT_DEBUG("%sData copied", get_spaces(indent));
 
   stack_dump("src after copying a value (should be ...): ", src);
   stack_dump("dst after copying a value (should be visited ... value): ", dst);
 }
 
 /**
- * @brief Copies a global value from the father state.
+ * @brief Copies a global value or a registry value from the father state.
  *
  * The state L must have a father, i.e. it should have been created by
  * clone_lua_state().
  * This function is meant to be an __index metamethod.
  * Consequently, it assumes that the stack has two elements:
- * a table (usually the environment of L) and the string key of a value
- * that does not exist yet in this table. It copies the corresponding global
+ * a table (either the environment or the registry of L) and the string key of
+ * a value that does not exist yet in this table. It copies the corresponding
  * value from the father state and pushes it on the stack of L.
- * If the global value does not exist in the father state either, nil is
- * pushed.
+ * If the value does not exist in the father state either, nil is pushed.
  *
  * TODO: make this function thread safe. If the simulation runs in parallel,
  * several simulated processes may trigger this __index metamethod at the same
@@ -411,31 +463,73 @@ static void move_value(lua_State* dst, lua_State *src, const char* name) {
  */
 static int l_get_from_father(lua_State *L) {
 
-  /* retrieve the father */
-  lua_getfield(L, LUA_REGISTRYINDEX, "simgrid.father_state");
-  lua_State* father = lua_touserdata(L, -1);
-  xbt_assert(father != NULL, "This Lua state has no father");
-  lua_pop(L, 1);
-
-  /* get the global from the father */
-  const char* key = luaL_checkstring(L, 2);    /* L:      table key */
-  lua_getglobal(father, key);                  /* father: ... value */
+  /* check the arguments */
+  luaL_checktype(L, 1, LUA_TTABLE);
+  const char* key = luaL_checkstring(L, 2);
+                                               /* L:      table key */
   XBT_DEBUG("__index of '%s' begins", key);
 
+  /* want a global or a registry value? */
+  int pseudo_index;
+  if (lua_equal(L, 1, LUA_REGISTRYINDEX)) {
+    /* registry */
+    pseudo_index = LUA_REGISTRYINDEX;
+    XBT_DEBUG("Will get the value from the registry of the father");
+  }
+  else {
+    /* global */
+    pseudo_index = LUA_GLOBALSINDEX;
+    XBT_DEBUG("Will get the value from the globals of the father");
+  }
+
+  /* get the father */
+  lua_pushstring(L, "simgrid.father_state");
+                                               /* L       table key "simgrid.father_state" */
+  lua_rawget(L, LUA_REGISTRYINDEX);
+                                               /* L       table key father */
+
+  lua_State* father = lua_touserdata(L, -1);
+
+  if (father == NULL) {
+    XBT_WARN("This state has no father");
+    lua_pop(L, 3);
+    lua_pushnil(L);
+    return 1;
+  }
+
+  lua_pop(L, 1);
+                                               /* L:      table key */
+
+  /* get the list of visited tables */
+  lua_pushstring(L, "simgrid.father_visited_tables");
+                                               /* L:      table key "simgrid.father_visited_tables" */
+  lua_rawget(L, LUA_REGISTRYINDEX);
+                                               /* L:      table key visited */
+  lua_insert(L, 1);
+                                               /* L:      visited table key */
+
+  /* get the value from the father */
+  lua_getfield(father, pseudo_index, key);
+                                               /* father: ... value */
+
   /* push the value onto the stack of L */
-  lua_newtable(L);                             /* L:      table key visited */
-  lua_insert(L, 1);                            /* L:      visited table key */
-  move_value(L, father, key);                  /* father: ...
+  move_value_impl(father, L, key);
+                                               /* father: ...
                                                   L:      visited table key value */
-  lua_remove(L, 1);                            /* L:      table key value */
+  lua_remove(L, 1);
+                                               /* L:      table key value */
 
   /* prepare the return value of __index */
-  lua_pushvalue(L, -1);                        /* L:      table key value value */
-  lua_insert(L, 1);                            /* L:      value table key value */
+  lua_pushvalue(L, -1);
+                                               /* L:      table key value value */
+  lua_insert(L, 1);
+                                               /* L:      value table key value */
 
   /* save the copied value in the table for subsequent accesses */
-  lua_settable(L, -3);                         /* L:      value table */
-  lua_remove(L, 2);                            /* L:      value */
+  lua_settable(L, -3);
+                                               /* L:      value table */
+  lua_settop(L, 1);
+                                               /* L:      value */
 
   XBT_DEBUG("__index of '%s' returns %s", key, value_tostring(L, -1));
 
@@ -459,42 +553,44 @@ static lua_State* clone_lua_state(lua_State *father) {
   /* create the new state */
   lua_State *L = luaL_newstate();
 
-  /* set its environment:
+  /* set its environment and its registry:
    * - create a table newenv
    * - create a metatable mt
    * - set mt.__index = a function that copies the global from the father state
+   * - set mt as the metatable of the registry
    * - set mt as the metatable of newenv
    * - set newenv as the environment of the new state
    */
   lua_pushthread(L);                        /* thread */
   lua_newtable(L);                          /* thread newenv */
   lua_newtable(L);                          /* thread newenv mt */
-  lua_pushcfunction(L, l_get_from_father);  /* thread newenv mt f */
-  lua_setfield(L, -2, "__index");           /* thread newenv mt */
+  lua_pushvalue(L, LUA_REGISTRYINDEX);      /* thread newenv mt reg */
+  lua_pushcfunction(L, l_get_from_father);  /* thread newenv mt reg f */
+  lua_setfield(L, -3, "__index");           /* thread newenv mt reg */
+  lua_pushvalue(L, -2);                     /* thread newenv mt reg mt */
+  lua_setmetatable(L, -2);                  /* thread newenv mt reg */
+  lua_pop(L, 1);                            /* thread newenv mt */
   lua_setmetatable(L, -2);                  /* thread newenv */
   lua_setfenv(L, -2);                       /* thread */
   lua_pop(L, 1);                            /* -- */
 
+  /* set a pointer to the father */
+  lua_pushlightuserdata(L, father);         /* father */
+  lua_setfield(L, LUA_REGISTRYINDEX, "simgrid.father_state");
+                                            /* -- */
+
+  lua_getfield(L, LUA_REGISTRYINDEX, "simgrid.father_state"); /* father */
+
+  /* create the table of visited tables from the father */
+  lua_newtable(L);                          /* visited */
+  lua_setfield(L, LUA_REGISTRYINDEX, "simgrid.father_visited_tables");
+                                            /* -- */
+
   /* open the standard libs (theoretically, this is not necessary as they can
    * be inherited like any global values, but without a proper support of
    * closures, iterators like ipairs don't work). */
+  XBT_DEBUG("Metatable of globals and registry set, opening standard libraries now");
   luaL_openlibs(L);
-
-  /* set a pointer to the father */
-  lua_pushlightuserdata(L, father);
-  lua_setfield(L, LUA_REGISTRYINDEX, "simgrid.father_state");
-
-  /* copy the registry */
-  lua_pushvalue(father, LUA_REGISTRYINDEX);    /* father: ... reg */
-  lua_newtable(L);                             /* L: visited */
-  move_value(L, father, "registry");           /* father: ...
-                                                  L: visited newreg */
-
-  /* set the pointer again */
-  lua_pushlightuserdata(L, father);            /* L: visited newreg father */
-  lua_setfield(L, -1, "simgrid.father_state"); /* L: visited newreg */
-  lua_replace(L, LUA_REGISTRYINDEX);           /* L: visited */
-  lua_pop(L, 1);                               /* L: -- */
 
   XBT_DEBUG("New state created");
 
@@ -513,7 +609,9 @@ static m_task_t checkTask(lua_State * L, int index)
   m_task_t *pi, tk;
   luaL_checktype(L, index, LUA_TTABLE);
   lua_getfield(L, index, "__simgrid_task");
+
   pi = (m_task_t *) luaL_checkudata(L, -1, TASK_MODULE_NAME);
+
   if (pi == NULL)
     luaL_typerror(L, index, TASK_MODULE_NAME);
   tk = *pi;
@@ -603,7 +701,7 @@ static int Task_destroy(lua_State * L)
 
 static int Task_send(lua_State * L)
 {
-  //stackDump("send ",L);
+  //stack_dump("send ", L);
   m_task_t tk = checkTask(L, 1);
   const char *mailbox = luaL_checkstring(L, 2);
   lua_pop(L, 1);                // remove the string so that the task is on top of it
@@ -640,7 +738,15 @@ static int Task_recv_with_timeout(lua_State *L)
 
   if (res == MSG_OK) {
     lua_State *sender_stack = MSG_task_get_data(tk);
-    lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
+
+    stack_dump("sender before moving data: ", sender_stack);
+    stack_dump("receiver before moving data: ", L);
+
+    move_value(sender_stack, L);        // copy the data directly from sender's stack
+
+    stack_dump("sender after moving data: ", sender_stack);
+    stack_dump("receiver after moving data: ", L);
+
     MSG_task_set_data(tk, NULL);
   }
   else {
