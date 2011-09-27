@@ -35,6 +35,7 @@ static const char* value_tostring(lua_State* L, int index);
 static const char* keyvalue_tostring(lua_State* L, int key_index, int value_index);
 static void stack_dump(const char *msg, lua_State* L);
 static int writer(lua_State* L, const void* source, size_t size, void* userdata);
+static lua_State* get_father(lua_State* L);
 static void move_value(lua_State* src, lua_State* dst);
 static void move_value_impl(lua_State* src, lua_State* dst, const char* name);
 static int l_get_from_father(lua_State* L);
@@ -88,7 +89,7 @@ static const char* value_tostring(lua_State* L, int index) {
       break;
 
     case LUA_TTABLE:
-      sprintf(buff, "table(%zu)", lua_objlen(L, index));
+      sprintf(buff, "table(%p)", lua_topointer(L, index));
       break;
 
     case LUA_TLIGHTUSERDATA:
@@ -194,6 +195,24 @@ static int writer(lua_State* L, const void* source, size_t size, void* userdata)
 }
 
 /**
+ * @brief Returns the father of a state.
+ * @param L a Lua state
+ * @return its father
+ */
+static lua_State* get_father(lua_State* L) {
+
+                                  /* ... */
+  lua_pushstring(L, "simgrid.father");
+                                  /* ... "simgrid.father" */
+  lua_rawget(L, LUA_REGISTRYINDEX);
+                                  /* ... father */
+  lua_State* father = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+                                  /* ... */
+  return father;
+}
+
+/**
  * @brief Pops a value from a state and pushes it onto the stack of another
  * state.
  *
@@ -204,10 +223,10 @@ static void move_value(lua_State* src, lua_State* dst) {
 
   if (src != dst) {
 
-    /* create a list of visited tables at index 1 of dst */
+    /* get the list of visited tables from father at index 1 of dst */
                                   /* src: ... value
                                      dst: ... */
-    lua_newtable(dst);
+    lua_getfield(dst, LUA_REGISTRYINDEX, "simgrid.father_visited_tables");
                                   /* dst: ... visited */
     lua_insert(dst, 1);
                                   /* dst: visited ... */
@@ -301,17 +320,31 @@ static void move_value_impl(lua_State* src, lua_State *dst, const char* name) {
 
     case LUA_TTABLE:
 
-      /* see if this table was already visited */
+      /* first register the table in the source state itself */
+      lua_getfield(src, LUA_REGISTRYINDEX, "simgrid.visited_tables");
+                                  /* src: ... table visited */
+      lua_pushlightuserdata(src, (void*) lua_topointer(src, -1));
+                                  /* src: ... table visited psrctable */
+      lua_pushvalue(src, -3);
+                                  /* src: ... table visited psrctable table */
+      lua_settable(src, -3);
+                                  /* src: ... table visited */
+      lua_pop(src, 1);
+                                  /* src: ... table */
+
+      /* see if this table was already known by dst */
       lua_pushlightuserdata(dst, (void*) lua_topointer(src, -1));
                                   /* dst: visited ... psrctable */
       lua_gettable(dst, 1);
                                   /* dst: visited ... table/nil */
       if (lua_istable(dst, -1)) {
-        XBT_DEBUG("%sNothing to do: table already visited", get_spaces(indent));
+        XBT_DEBUG("%sNothing to do: table already visited (%p)",
+            get_spaces(indent), lua_topointer(src, -1));
                                   /* dst: visited ... table */
       }
       else {
-        XBT_DEBUG("%sFirst visit of this table", get_spaces(indent));
+        XBT_DEBUG("%sFirst visit of this table (%p)", get_spaces(indent),
+            lua_topointer(src, -1));
                                   /* dst: visited ... nil */
         lua_pop(dst, 1);
                                   /* dst: visited ... */
@@ -400,28 +433,58 @@ static void move_value_impl(lua_State* src, lua_State *dst, const char* name) {
     case LUA_TUSERDATA:
     {
       /* copy the data */
+                                  /* src: ... udata
+                                     dst: visited ... */
       size_t size = lua_objlen(src, -1);
       void* src_block = lua_touserdata(src, -1);
       void* dst_block = lua_newuserdata(dst, size);
+                                  /* dst: visited ... udata */
       memcpy(dst_block, src_block, size);
 
       /* copy the metatable if any */
       int has_meta_table = lua_getmetatable(src, -1);
-                                /* src: ... udata mt? */
+                                  /* src: ... udata mt? */
       if (has_meta_table) {
-        XBT_DEBUG("%sCopying metatable of userdata", get_spaces(indent));
-                                /* src: ... udata mt */
-        move_value_impl(src, dst, "metatable");
-                                /* src: ... udata
-                                   dst: visited ... udata mt */
+        XBT_DEBUG("%sCopying metatable of userdata (%p)", get_spaces(indent),
+            lua_topointer(src, -1));
+                                  /* src: ... udata mt */
+        lua_State* father = get_father(dst);
+
+        if (father != NULL) {
+          XBT_DEBUG("%sGet the metatable from my father", get_spaces(indent));
+          /* find the same metatable in the father state */
+          /* TODO find in visited_tables of src the pointer to the same
+           * metatable in the father world, then copy the metatable from the
+           * father world into dst
+           */
+          lua_pushstring(father, "simgrid.visited_tables");
+                                  /* father: ... "simgrid.visited_tables" */
+          lua_rawget(father, LUA_REGISTRYINDEX);
+                                  /* father: ... visited */
+          lua_pushlightuserdata(father, (void*) lua_topointer(src, -1));
+                                  /* father: ... visited pfathermt */
+          lua_gettable(father, -2);
+                                  /* father: ... visited mt */
+          move_value_impl(father, dst, "(father metatable)");
+                                  /* father: ... visited
+                                     dst: visited ... udata mt */
+          lua_pop(father, 1);
+                                  /* father: ... */
+        }
+        else {
+          XBT_DEBUG("%sI have no father", get_spaces(indent));
+          move_value_impl(src, dst, "metatable");
+                                  /* src: ... udata
+                                     dst: visited ... udata mt */
+        }
         lua_setmetatable(dst, -2);
-                                /* dst: visited ... udata */
+                                  /* dst: visited ... udata */
 
         XBT_DEBUG("%sMetatable of userdata copied", get_spaces(indent));
       }
       else {
         XBT_DEBUG("%sNo metatable for this userdata", get_spaces(indent));
-                                /* src: ... udata */
+                                  /* src: ... udata */
       }
     }
     break;
@@ -483,12 +546,7 @@ static int l_get_from_father(lua_State *L) {
   }
 
   /* get the father */
-  lua_pushstring(L, "simgrid.father_state");
-                                               /* L       table key "simgrid.father_state" */
-  lua_rawget(L, LUA_REGISTRYINDEX);
-                                               /* L       table key father */
-
-  lua_State* father = lua_touserdata(L, -1);
+  lua_State* father = get_father(L);
 
   if (father == NULL) {
     XBT_WARN("This state has no father");
@@ -496,8 +554,6 @@ static int l_get_from_father(lua_State *L) {
     lua_pushnil(L);
     return 1;
   }
-
-  lua_pop(L, 1);
                                                /* L:      table key */
 
   /* get the list of visited tables */
@@ -575,15 +631,24 @@ static lua_State* clone_lua_state(lua_State *father) {
   lua_pop(L, 1);                            /* -- */
 
   /* set a pointer to the father */
-  lua_pushlightuserdata(L, father);         /* father */
-  lua_setfield(L, LUA_REGISTRYINDEX, "simgrid.father_state");
+  lua_pushstring(L, "simgrid.father");      /* "simgrid.father" */
+  lua_pushlightuserdata(L, father);         /* "simgrid.father" father */
+  lua_rawset(L, LUA_REGISTRYINDEX);
                                             /* -- */
 
-  lua_getfield(L, LUA_REGISTRYINDEX, "simgrid.father_state"); /* father */
-
   /* create the table of visited tables from the father */
-  lua_newtable(L);                          /* visited */
-  lua_setfield(L, LUA_REGISTRYINDEX, "simgrid.father_visited_tables");
+  lua_pushstring(L, "simgrid.father_visited_tables");
+                                            /* "simgrid.father_visited_tables" */
+  lua_newtable(L);                          /* "simgrid.father_visited_tables" visited */
+  lua_rawset(L, LUA_REGISTRYINDEX);
+                                            /* -- */
+
+  /* create the table of my own visited tables */
+  /* TODO simgrid.father_visited_tables probably becomes useless */
+  lua_pushstring(L, "simgrid.visited_tables");
+                                            /* "simgrid.visited_tables" */
+  lua_newtable(L);                          /* "simgrid.visited_tables" visited */
+  lua_rawset(L, LUA_REGISTRYINDEX);
                                             /* -- */
 
   /* open the standard libs (theoretically, this is not necessary as they can
@@ -596,6 +661,25 @@ static lua_State* clone_lua_state(lua_State *father) {
 
   return L;
 }
+
+/*
+static void *my_checkudata (lua_State *L, int ud, const char *tname) {
+  void *p = lua_touserdata(L, ud);
+  lua_getfield(L, LUA_REGISTRYINDEX, tname);
+  const void* correct_mt = lua_topointer(L, -1);
+
+  int has_mt = lua_getmetatable(L, ud);
+  const void* actual_mt = NULL;
+  if (has_mt) { actual_mt = lua_topointer(L, -1); lua_pop(L, 1); }
+  XBT_DEBUG("Checking the task's metatable: expected %p, found %p", correct_mt, actual_mt);
+  stack_dump("my_checkudata: ", L);
+
+  if (p == NULL || !lua_getmetatable(L, ud) || !lua_rawequal(L, -1, -2))
+    luaL_typerror(L, ud, tname);
+  lua_pop(L, 2);
+  return p;
+}
+*/
 
 /**
  * @brief Ensures that a userdata on the stack is a task
@@ -610,7 +694,7 @@ static m_task_t checkTask(lua_State * L, int index)
   luaL_checktype(L, index, LUA_TTABLE);
   lua_getfield(L, index, "__simgrid_task");
 
-  pi = (m_task_t *) luaL_checkudata(L, -1, TASK_MODULE_NAME);
+  pi = (m_task_t *) luaL_checkudata(L, lua_gettop(L), TASK_MODULE_NAME);
 
   if (pi == NULL)
     luaL_typerror(L, index, TASK_MODULE_NAME);
@@ -815,7 +899,7 @@ static m_host_t checkHost(lua_State * L, int index)
   m_host_t *pi, ht;
   luaL_checktype(L, index, LUA_TTABLE);
   lua_getfield(L, index, "__simgrid_host");
-  pi = (m_host_t *) luaL_checkudata(L, -1, HOST_MODULE_NAME);
+  pi = (m_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
   if (pi == NULL)
     luaL_typerror(L, index, HOST_MODULE_NAME);
   ht = *pi;
@@ -1298,6 +1382,10 @@ int luaopen_simgrid(lua_State *L)
 
   /* Keep the context mechanism informed of our lua world today */
   lua_maestro_state = L;
+
+  /* initialize access to my tables by children Lua states */
+  lua_newtable(L);
+  lua_setfield(L, LUA_REGISTRYINDEX, "simgrid.visited_tables");
 
   register_c_functions(L);
 
