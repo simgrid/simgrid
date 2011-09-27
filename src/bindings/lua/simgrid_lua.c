@@ -123,28 +123,30 @@ static const char* keyvalue_tostring(lua_State* L, int key_index, int value_inde
 }
 
 /**
- * @brief Dumps the Lua stack for debugging purposes.
+ * @brief Dumps the Lua stack if debug logs are enabled.
  * @param msg a message to print
  * @param L a Lua state
  */
 static void stack_dump(const char* msg, lua_State* L)
 {
-  char buff[2048];
-  char* p = buff;
-  int i;
-  int top = lua_gettop(L);
+  if (XBT_LOG_ISENABLED(lua, xbt_log_priority_debug)) {
+    char buff[2048];
+    char* p = buff;
+    int i;
+    int top = lua_gettop(L);
 
-//  if (1) return;
+    //  if (1) return;
 
-  fflush(stdout);
+    fflush(stdout);
 
-  p[0] = '\0';
-  for (i = 1; i <= top; i++) {  /* repeat for each level */
+    p[0] = '\0';
+    for (i = 1; i <= top; i++) {  /* repeat for each level */
 
-    p += sprintf(p, "%s", value_tostring(L, i));
-    p += sprintf(p, " ");       /* put a separator */
+      p += sprintf(p, "%s", value_tostring(L, i));
+      p += sprintf(p, " ");       /* put a separator */
+    }
+    XBT_DEBUG("%s%s", msg, buff);
   }
-  XBT_INFO("%s%s", msg, buff);
 }
 
 /**
