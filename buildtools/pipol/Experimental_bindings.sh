@@ -50,7 +50,7 @@ ctest -D ExperimentalTest
 ctest -D ExperimentalSubmit
 
 cd ../
-svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-ruby simgrid-ruby --quiet
+git clone git://scm.gforge.inria.fr/simgrid/simgrid-ruby.git simgrid-ruby --quiet
 cd simgrid-ruby
 
 if [ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz" ] ; then

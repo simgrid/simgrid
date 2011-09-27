@@ -2,7 +2,6 @@
 
 sudo yum -y -q update
 
-sudo yum -y -q install subversion
 sudo yum -y -q install gcc
 sudo yum -y -q install make
 sudo yum -y -q install java-1.6.0-openjdk
