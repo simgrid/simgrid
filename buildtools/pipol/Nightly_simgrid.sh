@@ -29,16 +29,16 @@
 
 #__________________________________________________________________________________________________
 #Debian Lenny 5.0___________________________________________________________________________________
-#PIPOL esn i386_kvm-linux-debian-lenny none 02:00 --user --silent
-#PIPOL esn amd64_kvm-linux-debian-lenny none 02:00 --user --silent
+#PIPOL esn i386-linux-debian-lenny none 02:00 --user --silent
+#PIPOL esn amd64-linux-debian-lenny none 02:00 --user --silent
 
 #Debian Lenny 6.0
 #PIPOL esn amd64_2010-linux-debian-squeeze.dd.gz none 02:00 --user --silent
 #PIPOL esn i386_2010-linux-debian-squeeze.dd.gz none 02:00 --user --silent
 
 #Debian Testing
-#PIPOL esn i386_kvm-linux-debian-testing none 02:00 --user --silent
-#PIPOL esn amd64_kvm-linux-debian-testing none 02:00 --user --silent
+#PIPOL esn i386-linux-debian-testing none 02:00 --user --silent
+#PIPOL esn amd64-linux-debian-testing none 02:00 --user --silent
 
 #___________________________________________________________________________________________________
 #MacOS Snow Leopard 10.6____________________________________________________________________________
@@ -65,6 +65,20 @@ perl ./buildtools/pipol/cmake.pl
 perl ./buildtools/pipol/ruby.pl
 
 #supernovae
+if [ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz" ] ; then
+cmake -DCMAKE_C_COMPILER=gcc-4.6 -DCMAKE_CXX_COMPILER=g++-4.6 \
+-Denable_lua=on \
+-Denable_tracing=on \
+-Denable_smpi=on \
+-Denable_supernovae=on \
+-Denable_compile_optimizations=on \
+-Denable_compile_warnings=on \
+-Denable_lib_static=off \
+-Denable_model-checking=off \
+-Denable_latency_bound_tracking=off \
+-Drelease=on \
+-Denable_gtnets=off .
+else
 cmake \
 -Denable_lua=on \
 -Denable_tracing=on \
@@ -77,6 +91,8 @@ cmake \
 -Denable_latency_bound_tracking=off \
 -Drelease=on \
 -Denable_gtnets=off .
+fi
+
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
@@ -108,7 +124,12 @@ git clone git://scm.gforge.inria.fr/simgrid/simgrid-java.git simgrid-java --quie
 cd simgrid-java
 export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:`pwd`/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/lib
-cmake .
+
+if [ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz" ] ; then
+	cmake -DCMAKE_C_COMPILER=gcc-4.6 -DCMAKE_CXX_COMPILER=g++-4.6 .
+else
+	cmake .
+fi
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
@@ -118,7 +139,12 @@ ctest -D NightlySubmit
 cd ../
 svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-ruby simgrid-ruby --quiet
 cd simgrid-ruby
-cmake .
+
+if [ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz" ] ; then
+	cmake -DCMAKE_C_COMPILER=gcc-4.6 -DCMAKE_CXX_COMPILER=g++-4.6 .
+else
+	cmake .
+fi
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
