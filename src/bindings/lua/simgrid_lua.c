@@ -270,6 +270,7 @@ static void move_value_impl(lua_State* src, lua_State *dst, const char* name) {
   stack_dump("dst before copying a value (should be visited ...): ", dst);
 
   switch (lua_type(src, -1)) {
+    /* TODO implement the copy of each type in a separate function */
 
     case LUA_TNIL:
       lua_pushnil(dst);
@@ -323,10 +324,16 @@ static void move_value_impl(lua_State* src, lua_State *dst, const char* name) {
       /* first register the table in the source state itself */
       lua_getfield(src, LUA_REGISTRYINDEX, "simgrid.visited_tables");
                                   /* src: ... table visited */
+      lua_pushvalue(src, -2);
+                                  /* src: ... table visited table */
       lua_pushlightuserdata(src, (void*) lua_topointer(src, -1));
-                                  /* src: ... table visited psrctable */
+                                  /* src: ... table visited table psrctable */
+      lua_pushvalue(src, -1);
+                                  /* src: ... table visited table psrctable psrctable */
       lua_pushvalue(src, -3);
-                                  /* src: ... table visited psrctable table */
+                                  /* src: ... table visited table psrctable psrctable table */
+      lua_settable(src, -5);
+                                  /* src: ... table visited table psrctable */
       lua_settable(src, -3);
                                   /* src: ... table visited */
       lua_pop(src, 1);
@@ -357,6 +364,12 @@ static void move_value_impl(lua_State* src, lua_State *dst, const char* name) {
         lua_pushlightuserdata(dst, (void*) lua_topointer(src, -1));
                                   /* dst: visited ... table psrctable */
         lua_pushvalue(dst, -2);
+                                  /* dst: visited ... table psrctable table */
+        lua_pushvalue(dst, -1);
+                                  /* dst: visited ... table psrctable table table */
+        lua_pushvalue(dst, -3);
+                                  /* dst: visited ... table psrctable table table psrctable */
+        lua_settable(dst, 1);
                                   /* dst: visited ... table psrctable table */
         lua_settable(dst, 1);
                                   /* dst: visited ... table */
@@ -450,13 +463,22 @@ static void move_value_impl(lua_State* src, lua_State *dst, const char* name) {
                                   /* src: ... udata mt */
         lua_State* father = get_father(dst);
 
-        if (father != NULL) {
+        if (father != NULL && src != father && get_father(src) == father) {
           XBT_DEBUG("%sGet the metatable from my father", get_spaces(indent));
-          /* find the same metatable in the father state */
-          /* TODO find in visited_tables of src the pointer to the same
-           * metatable in the father world, then copy the metatable from the
-           * father world into dst
-           */
+          /* I don't want the metatable of src, I want the father's copy of the
+             same metatable */
+
+          /* get from src the pointer to the father's copy of this metatable */
+          lua_pushstring(src, "simgrid.father_visited_tables");
+                                  /* src: ... udata mt "simgrid.visited_tables" */
+          lua_rawget(src, LUA_REGISTRYINDEX);
+                                  /* src: ... udata mt visited */
+          lua_pushvalue(src, -2);
+                                  /* src: ... udata mt visited mt */
+          lua_gettable(src, -2);
+                                  /* src: ... udata mt visited pfathermt */
+
+          /* copy the metatable from the father world into dst */
           lua_pushstring(father, "simgrid.visited_tables");
                                   /* father: ... "simgrid.visited_tables" */
           lua_rawget(father, LUA_REGISTRYINDEX);
@@ -470,6 +492,10 @@ static void move_value_impl(lua_State* src, lua_State *dst, const char* name) {
                                      dst: visited ... udata mt */
           lua_pop(father, 1);
                                   /* father: ... */
+          lua_pop(src, 3);
+                                  /* src: ... udata */
+
+          /* TODO make helper functions for this kind of operations */
         }
         else {
           XBT_DEBUG("%sI have no father", get_spaces(indent));
@@ -644,7 +670,6 @@ static lua_State* clone_lua_state(lua_State *father) {
                                             /* -- */
 
   /* create the table of my own visited tables */
-  /* TODO simgrid.father_visited_tables probably becomes useless */
   lua_pushstring(L, "simgrid.visited_tables");
                                             /* "simgrid.visited_tables" */
   lua_newtable(L);                          /* "simgrid.visited_tables" visited */
