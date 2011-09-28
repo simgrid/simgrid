@@ -10,9 +10,7 @@
 #ifdef __cplusplus
 
 #include "ns3/core-module.h"
-#ifdef _HAVE_NS3_RED
 #include "my-point-to-point-helper.h"
-#endif
 
 #ifdef _NS3_3_10
 	/*NS3 3.10*/

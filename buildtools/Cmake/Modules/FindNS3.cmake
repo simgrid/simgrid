@@ -42,20 +42,6 @@ find_path(HAVE_CORE_MODULE_H
     ${ns3_path}
 )
 
-find_path(HAVE_RED_QUEUE_H
-	NAME ns3/red-queue.h
-    HINTS
-    $ENV{HOME}
-    PATH_SUFFIXES include ns3/include
-    PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr
-    ${ns3_path}
-)
-
 message(STATUS "Looking for core-module.h")
 if(HAVE_CORE_MODULE_H)
 message(STATUS "Looking for core-module.h - found")
@@ -63,14 +49,6 @@ else(HAVE_CORE_MODULE_H)
 message(STATUS "Looking for core-module.h - not found")
 endif(HAVE_CORE_MODULE_H)
 mark_as_advanced(HAVE_CORE_MODULE_H)
-
-message(STATUS "Looking for red-queue.h")
-if(HAVE_RED_QUEUE_H)
-message(STATUS "Looking for red-queue.h - found")
-else(HAVE_RED_QUEUE_H)
-message(STATUS "Looking for red-queue.h - not found")
-endif(HAVE_RED_QUEUE_H)
-mark_as_advanced(HAVE_RED_QUEUE_H)
 
 message(STATUS "Looking for lib ns3")
 if(HAVE_NS3_LIB)
@@ -97,7 +75,7 @@ if(HAVE_CORE_MODULE_H)
         string(REPLACE "/libns3.${LIB_EXE}" ""  HAVE_NS3_LIB "${HAVE_NS3_LIB}")
     endif(HAVE_NS3_LIB)
     if(HAVE_NS3_CORE_LIB)
-        message(STATUS "Warning: NS-3 version > 3.10")
+        message(STATUS "NS-3 version > 3.10")
         set(HAVE_NS3 1)
         set(NS3_VERSION 312)
         string(REPLACE "/libns3-core.${LIB_EXE}" ""  HAVE_NS3_LIB "${HAVE_NS3_CORE_LIB}")

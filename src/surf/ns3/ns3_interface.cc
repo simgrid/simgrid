@@ -102,9 +102,6 @@ int ns3_initialize(const char* TcpProtocol){
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1024)); // 1024-byte packet for easier reading
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
 
-#ifdef _HAVE_NS3_RED
-  XBT_DEBUG("Using RED version of ns3");
-#endif
   if(!strcmp(TcpProtocol,"default")){
 	  return 0;
   }
@@ -237,11 +234,9 @@ void * ns3_add_link(int src, e_ns3_network_element_type_t type_src,
 		LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 	}
 
-#ifdef _HAVE_NS3_RED
+
 	MyPointToPointHelper pointToPoint;
-#else
-	PointToPointHelper pointToPoint;
-#endif
+
 	NetDeviceContainer netA;
 	Ipv4AddressHelper address;
 
@@ -253,11 +248,7 @@ void * ns3_add_link(int src, e_ns3_network_element_type_t type_src,
 	pointToPoint.SetChannelAttribute ("Delay", StringValue (lat));
 	//pointToPoint.EnablePcapAll("test_ns3_trace"); //DEBUG
 
-#ifdef _HAVE_NS3_RED
 	netA.Add(pointToPoint.Install (a, type_src, b, type_dst));
-#else
-	netA.Add(pointToPoint.Install (a, b));
-#endif
 
 	char * adr = bprintf("%d.%d.0.0",number_of_networks,number_of_links);
 	address.SetBase (adr, "255.255.0.0");

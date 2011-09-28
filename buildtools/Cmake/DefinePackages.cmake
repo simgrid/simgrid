@@ -104,6 +104,7 @@ set(EXTRA_DIST
 	src/surf/ns3/ns3_interface.h
 	src/surf/ns3/ns3_simulator.h
 	src/surf/ns3/my-point-to-point-helper.h
+	src/surf/ns3/red-queue.h
 )
 
 set(XBT_RL_SRC 
@@ -201,20 +202,10 @@ set(NS3_SRC
 	src/surf/network_ns3.c
 	src/surf/ns3/ns3_interface.cc
 	src/surf/ns3/ns3_simulator.cc
-	)
+	src/surf/ns3/red-queue.cc
+	src/surf/ns3/my-point-to-point-helper.cc
+)
 	
-if(HAVE_RED_QUEUE_H)
-    set(NS3_SRC
-        ${NS3_SRC}
-        src/surf/ns3/my-point-to-point-helper.cc
-        )
-else(HAVE_RED_QUEUE_H)
-	set(EXTRA_DIST
-	    ${EXTRA_DIST}
-	    src/surf/ns3/my-point-to-point-helper.cc
-	)
-endif(HAVE_RED_QUEUE_H)
-
 set(SURF_SRC 
 	src/surf/surf_model.c
 	src/surf/surf_action.c
