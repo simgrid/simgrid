@@ -17,6 +17,11 @@
 *.l
 
 ################################################
+### Jedule
+examples/simdag/scheduling/simgrid.jed
+teshsuite/simdag/platforms/simgrid.jed
+
+################################################
 ### Libraries links 
 src/bindings/ruby/simgrid.so
 examples/ruby/simgrid.so
