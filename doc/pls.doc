@@ -2,14 +2,15 @@
 
 \htmlinclude .pls.doc.toc
 
-\section pls_simgrid_configuration_gtnets Using GTNetS
-
 It is possible to use a packet-level network simulator
 instead of the default flow-based simulation. You may want to use such
 an approach if you have doubts about the validity of the default model
 or if you want to perform some validation experiments. At the moment,
-we support the GTNetS simulator (it is still rather experimental
-though, so leave us a message if you play with it). 
+we support the GTNetS simulator and since version 3.6.2, ns-3. 
+
+
+\section pls_simgrid_configuration_gtnets Using GTNetS
+
 
 <i>
 To enable GTNetS model inside SimGrid it is needed to patch the GTNetS simulator source code 
@@ -119,6 +120,26 @@ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=network_model:GTNe
 It is possible to use discrete-event network simulator <a href="http://www.nsnam.org/">(ns-3)</a> for Internet systems
 instead of the default one. 
 
+A ns-3 platform is created according to the platform file you provide in SimGrid format. However from this configuration, we had to set up some extra parameters : 
+
+<ul>
+<li>
+First, whenever possible, we let default ns3 values and we don't changed it ; in case you have doubts on values for those parameters (TCP parameters for example), blame ns-3...
+</li>
+
+<li>
+Second, routing used inside ns-3 is a global and static one, relying on a shortest path algorithm. We did so by using ns3::Ipv4GlobalRoutingHelper::PopulateRoutingTables.
+</li>
+
+<li>
+Third, we also choose to restrict the way your platform is built : end hosts cannot have more than one interface card (so, only one &lt;link&gt; in your SimGrid platform should link 
+an end host to the platform ; if not, your end host will be considered as a router. 
+</li>
+
+<li>
+Finally we <b>STRONGLY</b> encourage you to apply the ns-3 RED patch (even if as the time of writing, it still needs some bugs correcting and the installation is then cumbersome, as described later). The reason why is that the default queue policy on ns-3 side is droptail. It implies a lot of undesirable (and not realistic) phase effects when simulating, and it has an huge impact on simulation times ... 
+</li>
+</ul>
 <i>
 To use ns3 model inside SimGrid you have to install at least the version 3.10 of ns3 simulator.
 </i>
