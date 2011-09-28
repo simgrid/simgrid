@@ -9,6 +9,7 @@ sudo apt-get -y install openjdk-6-jdk
 sudo apt-get -y install gcc-4.6
 sudo apt-get -y install g++-4.6
 sudo apt-get -y install valgrind
+sudo apt-get -y install f2c
 
 which_svn=`which svn`		#svn necessary
 which_gcc=`which gcc`		#gcc gcc necessary

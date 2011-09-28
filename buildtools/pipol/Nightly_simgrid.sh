@@ -29,8 +29,8 @@
 
 #__________________________________________________________________________________________________
 #Debian Lenny 5.0___________________________________________________________________________________
-#PIPOL esn i386-linux-debian-lenny none 02:00 --user --silent
-#PIPOL esn amd64-linux-debian-lenny none 02:00 --user --silent
+#PIPOL esn i386-linux-debian-lenny.dd.gz none 02:00 --user --silent
+#PIPOL esn amd64-linux-debian-lenny.dd.gz none 02:00 --user --silent
 
 #Debian Lenny 6.0
 #PIPOL esn amd64_2010-linux-debian-squeeze.dd.gz none 02:00 --user --silent
@@ -65,7 +65,7 @@ perl ./buildtools/pipol/cmake.pl
 perl ./buildtools/pipol/ruby.pl
 
 #supernovae
-if [ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz" ] ; then
+if 	[ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz"  ] || [ "x$PIPOL_IMAGE" = "xamd64-linux-debian-testing.dd.gz" ] ; then
 cmake -DCMAKE_C_COMPILER=gcc-4.6 -DCMAKE_CXX_COMPILER=g++-4.6 \
 -Denable_lua=on \
 -Denable_tracing=on \
@@ -125,7 +125,7 @@ cd simgrid-java
 export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:`pwd`/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/lib
 
-if [ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz" ] ; then
+if 	[ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz"  ] || [ "x$PIPOL_IMAGE" = "xamd64-linux-debian-testing.dd.gz" ] ; then
 	cmake -DCMAKE_C_COMPILER=gcc-4.6 -DCMAKE_CXX_COMPILER=g++-4.6 .
 else
 	cmake .
@@ -140,7 +140,7 @@ cd ../
 git clone git://scm.gforge.inria.fr/simgrid/simgrid-ruby.git simgrid-ruby --quiet
 cd simgrid-ruby
 
-if [ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz" ] ; then
+if 	[ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz"  ] || [ "x$PIPOL_IMAGE" = "xamd64-linux-debian-testing.dd.gz" ] ; then
 	cmake -DCMAKE_C_COMPILER=gcc-4.6 -DCMAKE_CXX_COMPILER=g++-4.6 .
 else
 	cmake .

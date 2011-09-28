@@ -22,7 +22,7 @@ perl ./buildtools/pipol/ruby.pl
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/gtnets_install/lib
 
 #supernovae
-if [ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz" ] ; then
+if 	[ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz"  ] || [ "x$PIPOL_IMAGE" = "xamd64-linux-debian-testing.dd.gz" ] ; then
 cmake -DCMAKE_C_COMPILER=gcc-4.6 -DCMAKE_CXX_COMPILER=g++-4.6 \
 -Denable_lua=on \
 -Denable_tracing=on \

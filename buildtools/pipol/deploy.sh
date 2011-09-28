@@ -27,8 +27,8 @@ ssh pipol pipol-sub esn i386_2010-linux-fedora-core14.dd.gz none 02:00 "~/Experi
 
 #___________________________________________________________________________________________________
 #Debian Lenny 5.0___________________________________________________________________________________
-ssh pipol pipol-sub esn i386-linux-debian-lenny none 02:00 "~/Experimental_bindings.sh"
-ssh pipol pipol-sub esn amd64-linux-debian-lenny none 02:00 "~/Experimental_bindings.sh"
+ssh pipol pipol-sub esn i386-linux-debian-lenny.dd.gz none 02:00 "~/Experimental_bindings.sh"
+ssh pipol pipol-sub esn amd64-linux-debian-lenny.dd.gz none 02:00 "~/Experimental_bindings.sh"
 
 #Debian Lenny 6.0
 ssh pipol pipol-sub esn amd64_2010-linux-debian-squeeze.dd.gz none 02:00 "~/Experimental_bindings.sh"

@@ -17,7 +17,7 @@ perl ./buildtools/pipol/cmake.pl
 perl ./buildtools/pipol/ruby.pl
 
 #supernovae
-if [ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz" ] ; then
+if 	[ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz"  ] || [ "x$PIPOL_IMAGE" = "xamd64-linux-debian-testing.dd.gz" ] ; then
 	cmake -DCMAKE_C_COMPILER=gcc-4.6 -DCMAKE_CXX_COMPILER=g++-4.6 -Drelease=on .
 else
 	cmake -Drelease=on .
@@ -38,7 +38,7 @@ cd simgrid-java
 export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:`pwd`/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/lib #for mac
 
-if [ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz" ] ; then
+if 	[ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz"  ] || [ "x$PIPOL_IMAGE" = "xamd64-linux-debian-testing.dd.gz" ] ; then
 	cmake -DCMAKE_C_COMPILER=gcc-4.6 -DCMAKE_CXX_COMPILER=g++-4.6 .
 else
 	cmake .
@@ -53,7 +53,7 @@ cd ../
 git clone git://scm.gforge.inria.fr/simgrid/simgrid-ruby.git simgrid-ruby --quiet
 cd simgrid-ruby
 
-if [ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz" ] ; then
+if 	[ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz"  ] || [ "x$PIPOL_IMAGE" = "xamd64-linux-debian-testing.dd.gz" ] ; then
 	cmake -DCMAKE_C_COMPILER=gcc-4.6 -DCMAKE_CXX_COMPILER=g++-4.6 .
 else
 	cmake .
