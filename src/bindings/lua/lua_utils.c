@@ -140,7 +140,6 @@ void sglua_stack_dump(const char* msg, lua_State* L)
  *
  * This function is a valid lua_Writer that writes into a memory buffer passed
  * as userdata.
- * TODO: use a dynar as userdata
  *
  * @param L a lua state
  * @param source some data
@@ -150,7 +149,7 @@ void sglua_stack_dump(const char* msg, lua_State* L)
 int sglua_memory_writer(lua_State* L, const void* source, size_t size,
     void* userdata) {
 
-  buffer_t buffer = (buffer_t) userdata;
+  sglua_buffer_t buffer = (sglua_buffer_t) userdata;
   while (buffer->capacity < buffer->size + size) {
     buffer->capacity *= 2;
     buffer->data = xbt_realloc(buffer->data, buffer->capacity);

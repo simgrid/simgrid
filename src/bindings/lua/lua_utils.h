@@ -11,13 +11,13 @@
 /**
  * @brief A chunk of memory.
  *
- * TODO replace this by a dynar
+ * This structure is used as the userdata parameter of lua_Writer.
  */
-typedef struct s_buffer {
+typedef struct s_sglua_buffer {
   char* data;
   size_t size;
   size_t capacity;
-} s_buffer_t, *buffer_t;
+} s_sglua_buffer_t, *sglua_buffer_t;
 
 const char* sglua_tostring(lua_State* L, int index);
 const char* sglua_keyvalue_tostring(lua_State* L, int key_index, int value_index);
