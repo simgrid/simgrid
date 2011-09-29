@@ -22,7 +22,6 @@
 #include "portable.h"           /* Needed for the time of the SIMIX convertion */
 #include <stdarg.h>
 
-
 extern xbt_dict_t process_function_set;
 extern xbt_dynar_t process_list;
 extern xbt_dict_t machine_set;

@@ -522,7 +522,7 @@ static int run_lua_code(int argc, char **argv)
 {
   XBT_DEBUG("Run lua code %s", argv[0]);
 
-  lua_State *L = sglua_clone_state(lua_maestro_state);
+  lua_State *L = sglua_clone_maestro();
   int res = 1;
 
   /* start the function */
@@ -738,11 +738,28 @@ int luaopen_simgrid(lua_State *L)
 
   /* initialize access to my tables by children Lua states */
   lua_newtable(L);
-  lua_setfield(L, LUA_REGISTRYINDEX, "simgrid.visited_tables");
+  lua_setfield(L, LUA_REGISTRYINDEX, "simgrid.maestro_tables");
 
   register_c_functions(L);
 
   return 1;
+}
+
+/**
+ * @brief Returns whether a Lua state is the maestro state.
+ * @param L a Lua state
+ * @return true if this is maestro
+ */
+int sglua_is_maestro(lua_State* L) {
+  return L == lua_maestro_state;
+}
+
+/**
+ * @brief Returns the maestro state.
+ * @return true the maestro Lua state
+ */
+lua_State* sglua_get_maestro(void) {
+  return lua_maestro_state;
 }
 
 /**
