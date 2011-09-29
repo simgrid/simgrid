@@ -16,8 +16,18 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_state_cloner, lua, "Lua state management");
 
 static lua_State* sglua_get_father(lua_State* L);
-static void sglua_move_value_impl(lua_State* src, lua_State* dst, const char* name);
 static int l_get_from_father(lua_State* L);
+
+static void sglua_move_value_impl(lua_State* src, lua_State* dst, const char* name);
+static void sglua_copy_nil(lua_State* src, lua_State* dst);
+static void sglua_copy_number(lua_State* src, lua_State* dst);
+static void sglua_copy_boolean(lua_State* src, lua_State* dst);
+static void sglua_copy_string(lua_State* src, lua_State* dst);
+static void sglua_copy_table(lua_State* src, lua_State* dst);
+static void sglua_copy_function(lua_State* src, lua_State* dst);
+static void sglua_copy_lightuserdata(lua_State* src, lua_State* dst);
+static void sglua_copy_userdata(lua_State* src, lua_State* dst);
+static void sglua_copy_thread(lua_State* src, lua_State* dst);
 
 /**
  * @brief Returns the father of a state, i.e. the state that created it.
@@ -79,7 +89,7 @@ void sglua_move_value(lua_State* src, lua_State* dst) {
  *
  * @param src the source state
  * @param dst the destination state, with a list of visited tables at index 1
- * @param name a name describing the value
+ * @param name a name describing the value (for debugging purposes)
  */
 static void sglua_move_value_impl(lua_State* src, lua_State *dst, const char* name) {
 
@@ -89,271 +99,50 @@ static void sglua_move_value_impl(lua_State* src, lua_State *dst, const char* na
 
   int indent = (lua_gettop(dst) - 1) * 6;
   XBT_DEBUG("%sCopying data %s", sglua_get_spaces(indent), name);
-  indent += 2;
 
   sglua_stack_dump("src before copying a value (should be ... value): ", src);
   sglua_stack_dump("dst before copying a value (should be visited ...): ", dst);
 
   switch (lua_type(src, -1)) {
-    /* TODO implement the copy of each type in a separate function */
 
     case LUA_TNIL:
-      lua_pushnil(dst);
+      sglua_copy_nil(src, dst);
       break;
 
     case LUA_TNUMBER:
-      lua_pushnumber(dst, lua_tonumber(src, -1));
+      sglua_copy_number(src, dst);
       break;
 
     case LUA_TBOOLEAN:
-      lua_pushboolean(dst, lua_toboolean(src, -1));
+      sglua_copy_boolean(src, dst);
       break;
 
     case LUA_TSTRING:
-      /* no worries about memory: lua_pushstring makes a copy */
-      lua_pushstring(dst, lua_tostring(src, -1));
+      sglua_copy_string(src, dst);
       break;
 
     case LUA_TFUNCTION:
-      /* it's a function that does not exist yet in L2 */
-
-      if (lua_iscfunction(src, -1)) {
-        /* it's a C function: just copy the pointer */
-        lua_CFunction f = lua_tocfunction(src, -1);
-        lua_pushcfunction(dst, f);
-      }
-      else {
-        /* it's a Lua function: dump it from src */
-        XBT_DEBUG("%sDumping Lua function '%s'", sglua_get_spaces(indent), name);
-
-        s_buffer_t buffer;
-        buffer.capacity = 64;
-        buffer.size = 0;
-        buffer.data = xbt_new(char, buffer.capacity);
-
-        /* copy the binary chunk from src into a buffer */
-        int error = lua_dump(src, sglua_memory_writer, &buffer);
-        xbt_assert(!error, "Failed to dump function '%s' from the source state: error %d",
-              name, error);
-
-        /* load the chunk into dst */
-        error = luaL_loadbuffer(dst, buffer.data, buffer.size, name);
-        xbt_assert(!error, "Failed to load function '%s' into the destination state: %s",
-            name, lua_tostring(dst, -1));
-        XBT_DEBUG("%sFunction '%s' successfully loaded", sglua_get_spaces(indent), name);
-      }
+      sglua_copy_function(src, dst);
       break;
 
     case LUA_TTABLE:
-
-      /* first register the table in the source state itself */
-      lua_getfield(src, LUA_REGISTRYINDEX, "simgrid.visited_tables");
-                                  /* src: ... table visited */
-      lua_pushvalue(src, -2);
-                                  /* src: ... table visited table */
-      lua_pushlightuserdata(src, (void*) lua_topointer(src, -1));
-                                  /* src: ... table visited table psrctable */
-      lua_pushvalue(src, -1);
-                                  /* src: ... table visited table psrctable psrctable */
-      lua_pushvalue(src, -3);
-                                  /* src: ... table visited table psrctable psrctable table */
-      lua_settable(src, -5);
-                                  /* src: ... table visited table psrctable */
-      lua_settable(src, -3);
-                                  /* src: ... table visited */
-      lua_pop(src, 1);
-                                  /* src: ... table */
-
-      /* see if this table was already known by dst */
-      lua_pushlightuserdata(dst, (void*) lua_topointer(src, -1));
-                                  /* dst: visited ... psrctable */
-      lua_gettable(dst, 1);
-                                  /* dst: visited ... table/nil */
-      if (lua_istable(dst, -1)) {
-        XBT_DEBUG("%sNothing to do: table already visited (%p)",
-            sglua_get_spaces(indent), lua_topointer(src, -1));
-                                  /* dst: visited ... table */
-      }
-      else {
-        XBT_DEBUG("%sFirst visit of this table (%p)", sglua_get_spaces(indent),
-            lua_topointer(src, -1));
-                                  /* dst: visited ... nil */
-        lua_pop(dst, 1);
-                                  /* dst: visited ... */
-
-        /* first visit: create the new table in dst */
-        lua_newtable(dst);
-                                  /* dst: visited ... table */
-
-        /* mark the table as visited to avoid infinite recursion */
-        lua_pushlightuserdata(dst, (void*) lua_topointer(src, -1));
-                                  /* dst: visited ... table psrctable */
-        lua_pushvalue(dst, -2);
-                                  /* dst: visited ... table psrctable table */
-        lua_pushvalue(dst, -1);
-                                  /* dst: visited ... table psrctable table table */
-        lua_pushvalue(dst, -3);
-                                  /* dst: visited ... table psrctable table table psrctable */
-        lua_settable(dst, 1);
-                                  /* dst: visited ... table psrctable table */
-        lua_settable(dst, 1);
-                                  /* dst: visited ... table */
-        XBT_DEBUG("%sTable marked as visited", sglua_get_spaces(indent));
-
-        sglua_stack_dump("dst after marking the table as visited (should be visited ... table): ", dst);
-
-        /* copy the metatable if any */
-        int has_meta_table = lua_getmetatable(src, -1);
-                                  /* src: ... table mt? */
-        if (has_meta_table) {
-          XBT_DEBUG("%sCopying metatable", sglua_get_spaces(indent));
-                                  /* src: ... table mt */
-          sglua_move_value_impl(src, dst, "metatable");
-                                  /* src: ... table
-                                     dst: visited ... table mt */
-          lua_setmetatable(dst, -2);
-                                  /* dst: visited ... table */
-        }
-        else {
-          XBT_DEBUG("%sNo metatable", sglua_get_spaces(indent));
-        }
-
-        sglua_stack_dump("src before traversing the table (should be ... table): ", src);
-        sglua_stack_dump("dst before traversing the table (should be visited ... table): ", dst);
-
-        /* traverse the table of src and copy each element */
-        lua_pushnil(src);
-                                  /* src: ... table nil */
-        while (lua_next(src, -2) != 0) {
-                                  /* src: ... table key value */
-
-          XBT_DEBUG("%sCopying table element %s", sglua_get_spaces(indent),
-              sglua_keyvalue_tostring(src, -2, -1));
-
-          sglua_stack_dump("src before copying table element (should be ... table key value): ", src);
-          sglua_stack_dump("dst before copying table element (should be visited ... table): ", dst);
-
-          /* copy the key */
-          lua_pushvalue(src, -2);
-                                  /* src: ... table key value key */
-          indent += 2;
-          XBT_DEBUG("%sCopying the key part of the table element",
-              sglua_get_spaces(indent));
-          sglua_move_value_impl(src, dst, sglua_tostring(src, -1));
-                                  /* src: ... table key value
-                                     dst: visited ... table key */
-          XBT_DEBUG("%sCopied the key part of the table element",
-              sglua_get_spaces(indent));
-
-          /* copy the value */
-          XBT_DEBUG("%sCopying the value part of the table element",
-              sglua_get_spaces(indent));
-          sglua_move_value_impl(src, dst, sglua_tostring(src, -1));
-                                  /* src: ... table key
-                                     dst: visited ... table key value */
-          XBT_DEBUG("%sCopied the value part of the table element",
-              sglua_get_spaces(indent));
-          indent -= 2;
-
-          /* set the table element */
-          lua_settable(dst, -3);
-                                  /* dst: visited ... table */
-
-          /* the key stays on top of src for next iteration */
-          sglua_stack_dump("src before next iteration (should be ... table key): ", src);
-          sglua_stack_dump("dst before next iteration (should be visited ... table): ", dst);
-
-          XBT_DEBUG("%sTable element copied", sglua_get_spaces(indent));
-        }
-        XBT_DEBUG("%sFinished traversing the table", sglua_get_spaces(indent));
-      }
+      sglua_copy_table(src, dst);
       break;
 
     case LUA_TLIGHTUSERDATA:
-      lua_pushlightuserdata(dst, lua_touserdata(src, -1));
+      sglua_copy_lightuserdata(src, dst);
       break;
 
     case LUA_TUSERDATA:
-    {
-      /* copy the data */
-                                  /* src: ... udata
-                                     dst: visited ... */
-      size_t size = lua_objlen(src, -1);
-      void* src_block = lua_touserdata(src, -1);
-      void* dst_block = lua_newuserdata(dst, size);
-                                  /* dst: visited ... udata */
-      memcpy(dst_block, src_block, size);
-
-      /* copy the metatable if any */
-      int has_meta_table = lua_getmetatable(src, -1);
-                                  /* src: ... udata mt? */
-      if (has_meta_table) {
-        XBT_DEBUG("%sCopying metatable of userdata (%p)",
-            sglua_get_spaces(indent), lua_topointer(src, -1));
-                                  /* src: ... udata mt */
-        lua_State* father = sglua_get_father(dst);
-
-        if (father != NULL && src != father && sglua_get_father(src) == father) {
-          XBT_DEBUG("%sGet the metatable from my father",
-              sglua_get_spaces(indent));
-          /* I don't want the metatable of src, I want the father's copy of the
-             same metatable */
-
-          /* get from src the pointer to the father's copy of this metatable */
-          lua_pushstring(src, "simgrid.father_visited_tables");
-                                  /* src: ... udata mt "simgrid.visited_tables" */
-          lua_rawget(src, LUA_REGISTRYINDEX);
-                                  /* src: ... udata mt visited */
-          lua_pushvalue(src, -2);
-                                  /* src: ... udata mt visited mt */
-          lua_gettable(src, -2);
-                                  /* src: ... udata mt visited pfathermt */
-
-          /* copy the metatable from the father world into dst */
-          lua_pushstring(father, "simgrid.visited_tables");
-                                  /* father: ... "simgrid.visited_tables" */
-          lua_rawget(father, LUA_REGISTRYINDEX);
-                                  /* father: ... visited */
-          lua_pushlightuserdata(father, (void*) lua_topointer(src, -1));
-                                  /* father: ... visited pfathermt */
-          lua_gettable(father, -2);
-                                  /* father: ... visited mt */
-          sglua_move_value_impl(father, dst, "(father metatable)");
-                                  /* father: ... visited
-                                     dst: visited ... udata mt */
-          lua_pop(father, 1);
-                                  /* father: ... */
-          lua_pop(src, 3);
-                                  /* src: ... udata */
-
-          /* TODO make helper functions for this kind of operations */
-        }
-        else {
-          XBT_DEBUG("%sI have no father", sglua_get_spaces(indent));
-          sglua_move_value_impl(src, dst, "metatable");
-                                  /* src: ... udata
-                                     dst: visited ... udata mt */
-        }
-        lua_setmetatable(dst, -2);
-                                  /* dst: visited ... udata */
-
-        XBT_DEBUG("%sMetatable of userdata copied", sglua_get_spaces(indent));
-      }
-      else {
-        XBT_DEBUG("%sNo metatable for this userdata",
-            sglua_get_spaces(indent));
-                                  /* src: ... udata */
-      }
-    }
-    break;
+      sglua_copy_userdata(src, dst);
+      break;
 
     case LUA_TTHREAD:
-      XBT_WARN("Cannot copy a thread from the source state.");
-      lua_pushnil(dst);
+      sglua_copy_thread(src, dst);
       break;
   }
 
-  /* pop the value from src */
+  /* the value has been copied to dst: remove it from src */
   lua_pop(src, 1);
 
   indent -= 2;
@@ -361,6 +150,318 @@ static void sglua_move_value_impl(lua_State* src, lua_State *dst, const char* na
 
   sglua_stack_dump("src after copying a value (should be ...): ", src);
   sglua_stack_dump("dst after copying a value (should be visited ... value): ", dst);
+}
+
+/**
+ * @brief Copies the nil value on the top of src to the top of dst.
+ * @param src source state
+ * @param dst destination state
+ */
+static void sglua_copy_nil(lua_State* src, lua_State* dst) {
+  lua_pushnil(dst);
+}
+
+/**
+ * @brief Copies the number value on the top of src to the top of dst.
+ * @param src source state
+ * @param dst destination state
+ */
+static void sglua_copy_number(lua_State* src, lua_State* dst) {
+  lua_pushnumber(dst, lua_tonumber(src, -1));
+}
+
+/**
+ * @brief Copies the boolean value on the top of src to the top of dst.
+ * @param src source state
+ * @param dst destination state
+ */
+static void sglua_copy_boolean(lua_State* src, lua_State* dst) {
+  lua_pushboolean(dst, lua_toboolean(src, -1));
+}
+
+static void sglua_copy_string(lua_State* src, lua_State* dst) {
+
+  /* no worries about memory: lua_pushstring makes a copy */
+  lua_pushstring(dst, lua_tostring(src, -1));
+}
+
+/**
+ * @brief Copies the table value on the top of src to the top of dst.
+ *
+ * A deep copy of the table is made. If the table has a metatable, the
+ * metatable is also copied.
+ * If the table is already known by the destination state, nothing is
+ * done.
+ *
+ * @param src source state
+ * @param dst destination state
+ */
+static void sglua_copy_table(lua_State* src, lua_State* dst) {
+
+  int indent = (lua_gettop(dst) - 1) * 6  + 2;
+
+  /* first register the table in the source state itself */
+  lua_getfield(src, LUA_REGISTRYINDEX, "simgrid.visited_tables");
+                              /* src: ... table visited */
+  lua_pushvalue(src, -2);
+                              /* src: ... table visited table */
+  lua_pushlightuserdata(src, (void*) lua_topointer(src, -1));
+                              /* src: ... table visited table psrctable */
+  lua_pushvalue(src, -1);
+                              /* src: ... table visited table psrctable psrctable */
+  lua_pushvalue(src, -3);
+                              /* src: ... table visited table psrctable psrctable table */
+  lua_settable(src, -5);
+                              /* src: ... table visited table psrctable */
+  lua_settable(src, -3);
+                              /* src: ... table visited */
+  lua_pop(src, 1);
+                              /* src: ... table */
+
+  /* see if this table was already known by dst */
+  lua_pushlightuserdata(dst, (void*) lua_topointer(src, -1));
+                              /* dst: visited ... psrctable */
+  lua_gettable(dst, 1);
+                              /* dst: visited ... table/nil */
+  if (lua_istable(dst, -1)) {
+    XBT_DEBUG("%sNothing to do: table already visited (%p)",
+        sglua_get_spaces(indent), lua_topointer(src, -1));
+                              /* dst: visited ... table */
+  }
+  else {
+    XBT_DEBUG("%sFirst visit of this table (%p)", sglua_get_spaces(indent),
+        lua_topointer(src, -1));
+                              /* dst: visited ... nil */
+    lua_pop(dst, 1);
+                              /* dst: visited ... */
+
+    /* first visit: create the new table in dst */
+    lua_newtable(dst);
+                              /* dst: visited ... table */
+
+    /* mark the table as visited right now to avoid infinite recursion */
+    lua_pushlightuserdata(dst, (void*) lua_topointer(src, -1));
+                              /* dst: visited ... table psrctable */
+    lua_pushvalue(dst, -2);
+                              /* dst: visited ... table psrctable table */
+    lua_pushvalue(dst, -1);
+                              /* dst: visited ... table psrctable table table */
+    lua_pushvalue(dst, -3);
+                              /* dst: visited ... table psrctable table table psrctable */
+    lua_settable(dst, 1);
+                              /* dst: visited ... table psrctable table */
+    lua_settable(dst, 1);
+                              /* dst: visited ... table */
+    XBT_DEBUG("%sTable marked as visited", sglua_get_spaces(indent));
+
+    sglua_stack_dump("dst after marking the table as visited (should be visited ... table): ", dst);
+
+    /* copy the metatable if any */
+    int has_meta_table = lua_getmetatable(src, -1);
+                              /* src: ... table mt? */
+    if (has_meta_table) {
+      XBT_DEBUG("%sCopying metatable", sglua_get_spaces(indent));
+                              /* src: ... table mt */
+      sglua_copy_table(src, dst);
+                              /* dst: visited ... table mt */
+      lua_pop(src, 1);
+                              /* src: ... table */
+      lua_setmetatable(dst, -2);
+                              /* dst: visited ... table */
+    }
+    else {
+      XBT_DEBUG("%sNo metatable", sglua_get_spaces(indent));
+    }
+
+    sglua_stack_dump("src before traversing the table (should be ... table): ", src);
+    sglua_stack_dump("dst before traversing the table (should be visited ... table): ", dst);
+
+    /* traverse the table of src and copy each element */
+    lua_pushnil(src);
+                              /* src: ... table nil */
+    while (lua_next(src, -2) != 0) {
+                              /* src: ... table key value */
+
+      XBT_DEBUG("%sCopying table element %s", sglua_get_spaces(indent),
+          sglua_keyvalue_tostring(src, -2, -1));
+
+      sglua_stack_dump("src before copying table element (should be ... table key value): ", src);
+      sglua_stack_dump("dst before copying table element (should be visited ... table): ", dst);
+
+      /* copy the key */
+      lua_pushvalue(src, -2);
+                              /* src: ... table key value key */
+      indent += 2;
+      XBT_DEBUG("%sCopying the key part of the table element",
+          sglua_get_spaces(indent));
+      sglua_move_value_impl(src, dst, sglua_tostring(src, -1));
+                              /* src: ... table key value
+                                 dst: visited ... table key */
+      XBT_DEBUG("%sCopied the key part of the table element",
+          sglua_get_spaces(indent));
+
+      /* copy the value */
+      XBT_DEBUG("%sCopying the value part of the table element",
+          sglua_get_spaces(indent));
+      sglua_move_value_impl(src, dst, sglua_tostring(src, -1));
+                              /* src: ... table key
+                                 dst: visited ... table key value */
+      XBT_DEBUG("%sCopied the value part of the table element",
+          sglua_get_spaces(indent));
+      indent -= 2;
+
+      /* set the table element */
+      lua_settable(dst, -3);
+                              /* dst: visited ... table */
+
+      /* the key stays on top of src for next iteration */
+      sglua_stack_dump("src before next iteration (should be ... table key): ", src);
+      sglua_stack_dump("dst before next iteration (should be visited ... table): ", dst);
+
+      XBT_DEBUG("%sTable element copied", sglua_get_spaces(indent));
+    }
+    XBT_DEBUG("%sFinished traversing the table", sglua_get_spaces(indent));
+  }
+}
+
+/**
+ * @brief Copies the function on the top of src to the top of dst.
+ *
+ * It can be a Lua function or a C function.
+ * Copying upvalues is not implemented yet (TODO).
+ *
+ * @param src source state
+ * @param dst destination state
+ */
+static void sglua_copy_function(lua_State* src, lua_State* dst) {
+
+  if (lua_iscfunction(src, -1)) {
+    /* it's a C function: just copy the pointer */
+    lua_CFunction f = lua_tocfunction(src, -1);
+    lua_pushcfunction(dst, f);
+  }
+  else {
+    /* it's a Lua function: dump it from src */
+
+    s_sglua_buffer_t buffer;
+    buffer.capacity = 64;
+    buffer.size = 0;
+    buffer.data = xbt_new(char, buffer.capacity);
+
+    /* copy the binary chunk from src into a buffer */
+    int error = lua_dump(src, sglua_memory_writer, &buffer);
+    xbt_assert(!error, "Failed to dump the function from the source state: error %d",
+        error);
+
+    /* load the chunk into dst */
+    error = luaL_loadbuffer(dst, buffer.data, buffer.size, "(dumped function)");
+    xbt_assert(!error, "Failed to load the function into the destination state: %s",
+        lua_tostring(dst, -1));
+  }
+}
+
+/**
+ * @brief Copies the light userdata on the top of src to the top of dst.
+ * @param src source state
+ * @param dst destination state
+ */
+static void sglua_copy_lightuserdata(lua_State* src, lua_State* dst) {
+  lua_pushlightuserdata(dst, lua_touserdata(src, -1));
+}
+
+/**
+ * @brief Copies the full userdata on the top of src to the top of dst.
+ *
+ * If the userdata has a metatable, the metatable is also copied.
+ *
+ * @param src source state
+ * @param dst destination state
+ */
+static void sglua_copy_userdata(lua_State* src, lua_State* dst) {
+
+  int indent = (lua_gettop(dst) - 1) * 6  + 2;
+
+  /* copy the data */
+                                  /* src: ... udata
+                                     dst: visited ... */
+  size_t size = lua_objlen(src, -1);
+  void* src_block = lua_touserdata(src, -1);
+  void* dst_block = lua_newuserdata(dst, size);
+                                  /* dst: visited ... udata */
+  memcpy(dst_block, src_block, size);
+
+  /* copy the metatable if any */
+  int has_meta_table = lua_getmetatable(src, -1);
+                                  /* src: ... udata mt? */
+  if (has_meta_table) {
+    XBT_DEBUG("%sCopying metatable of userdata (%p)",
+        sglua_get_spaces(indent), lua_topointer(src, -1));
+                                  /* src: ... udata mt */
+    lua_State* father = sglua_get_father(dst);
+
+    if (father != NULL && src != father && sglua_get_father(src) == father) {
+      XBT_DEBUG("%sGet the metatable from my father",
+          sglua_get_spaces(indent));
+      /* I don't want the metatable of src, I want the father's copy of the
+         same metatable */
+
+      /* get from src the pointer to the father's copy of this metatable */
+      lua_pushstring(src, "simgrid.father_visited_tables");
+                                  /* src: ... udata mt "simgrid.visited_tables" */
+      lua_rawget(src, LUA_REGISTRYINDEX);
+                                  /* src: ... udata mt visited */
+      lua_pushvalue(src, -2);
+                                  /* src: ... udata mt visited mt */
+      lua_gettable(src, -2);
+                                  /* src: ... udata mt visited pfathermt */
+
+      /* copy the metatable from the father world into dst */
+      lua_pushstring(father, "simgrid.visited_tables");
+                                  /* father: ... "simgrid.visited_tables" */
+      lua_rawget(father, LUA_REGISTRYINDEX);
+                                  /* father: ... visited */
+      lua_pushlightuserdata(father, (void*) lua_topointer(src, -1));
+                                  /* father: ... visited pfathermt */
+      lua_gettable(father, -2);
+                                  /* father: ... visited mt */
+      sglua_move_value_impl(father, dst, "(father metatable)");
+                                  /* father: ... visited
+                                     dst: visited ... udata mt */
+      lua_pop(father, 1);
+                                  /* father: ... */
+      lua_pop(src, 3);
+                                  /* src: ... udata */
+
+      /* TODO make helper functions for this kind of operations */
+    }
+    else {
+      XBT_DEBUG("%sI have no father", sglua_get_spaces(indent));
+      sglua_move_value_impl(src, dst, "metatable");
+                                  /* src: ... udata
+                                     dst: visited ... udata mt */
+    }
+    lua_setmetatable(dst, -2);
+                                  /* dst: visited ... udata */
+
+    XBT_DEBUG("%sMetatable of userdata copied", sglua_get_spaces(indent));
+  }
+  else {
+    XBT_DEBUG("%sNo metatable for this userdata",
+        sglua_get_spaces(indent));
+                                  /* src: ... udata */
+  }
+}
+
+/**
+ * @brief This operation is not supported (yet?) so this function pushes nil.
+ *
+ * @param src source state
+ * @param dst destination state
+ */
+static void sglua_copy_thread(lua_State* src, lua_State* dst) {
+
+  XBT_WARN("Cannot copy a thread from the source state.");
+  lua_pushnil(dst);
 }
 
 /**
