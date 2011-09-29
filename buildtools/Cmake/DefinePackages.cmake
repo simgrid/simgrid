@@ -334,6 +334,8 @@ set(LUA_SRC
 	src/bindings/lua/simgrid_lua.c
 	src/bindings/lua/lua_stub_generator.c
 	src/bindings/lua/lua_console.c
+        src/bindings/lua/lua_utils.c
+        src/bindings/lua/lua_state_cloner.c
 )
 
 set(TRACING_SRC

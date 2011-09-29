@@ -1,0 +1,26 @@
+/* Copyright (c) 2010. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/* SimGrid Lua helper functions                                             */
+
+#include <lua.h>
+
+/**
+ * @brief A chunk of memory.
+ *
+ * TODO replace this by a dynar
+ */
+typedef struct s_buffer {
+  char* data;
+  size_t size;
+  size_t capacity;
+} s_buffer_t, *buffer_t;
+
+const char* sglua_tostring(lua_State* L, int index);
+const char* sglua_keyvalue_tostring(lua_State* L, int key_index, int value_index);
+void sglua_stack_dump(const char *msg, lua_State* L);
+const char* sglua_get_spaces(int length);
+int sglua_memory_writer(lua_State* L, const void* source, size_t size, void* userdata);
