@@ -16,26 +16,20 @@ cd simgrid
 perl ./buildtools/pipol/cmake.pl
 perl ./buildtools/pipol/ruby.pl
 
+if [ -e /usr/bin/gcc-4.6 ] ; then
+export CC=gcc-4.6
+export CXX=g++-4.6
+else
+export CC=gcc
+export CXX=g++
+fi
+
 #Those 3 lines is for GTNetS
 #sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install
 #SIMGRID_ROOT=`pwd`
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/gtnets_install/lib
 
 #supernovae
-if 	[ "x$PIPOL_IMAGE" = "xi386-linux-debian-testing.dd.gz"  ] || [ "x$PIPOL_IMAGE" = "xamd64-linux-debian-testing.dd.gz" ] ; then
-cmake -DCMAKE_C_COMPILER=gcc-4.6 -DCMAKE_CXX_COMPILER=g++-4.6 \
--Denable_lua=on \
--Denable_tracing=on \
--Denable_smpi=on \
--Denable_supernovae=on \
--Denable_compile_optimizations=on \
--Denable_compile_warnings=on \
--Denable_lib_static=off \
--Denable_model-checking=off \
--Denable_latency_bound_tracking=off \
--Drelease=on \
--Denable_gtnets=off .
-else
 cmake \
 -Denable_lua=on \
 -Denable_tracing=on \
@@ -48,7 +42,6 @@ cmake \
 -Denable_latency_bound_tracking=off \
 -Drelease=on \
 -Denable_gtnets=off .
-fi
 
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
