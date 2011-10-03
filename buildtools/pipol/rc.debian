@@ -1,15 +1,13 @@
 #!/bin/bash
 
-export PATH=$PATH:/usr/local/sbin:/usr/sbin:/sbin
-sudo apt-get update
-sudo apt-get -y install cmake
-sudo apt-get -y install git
-sudo apt-get -y install libpcre3-dev
-sudo apt-get -y install openjdk-6-jdk
-sudo apt-get -y install gcc-4.6
-sudo apt-get -y install g++-4.6
-sudo apt-get -y install valgrind
-sudo apt-get -y install f2c
+sudo aptitude update
+sudo aptitude -y install git
+sudo aptitude -y install openjdk-6-jdk
+sudo aptitude -y install valgrind
+sudo aptitude -y install f2c
+sudo aptitude -y install gcc-4.6
+sudo aptitude -y install g++-4.6
+sudo aptitude -y install libpcre3-dev
 
 which_svn=`which svn`		#svn necessary
 which_gcc=`which gcc`		#gcc gcc necessary
