@@ -102,6 +102,38 @@ contrib/ALNeM).
   - A Custom Graph Visualization 
 
 SimGrid includes a tracing system capable to generate traces that can be easily visualized using Triva. It is so since version 3.4 (and works seemly since version 3.6). It is very useful when you to understand why and how your simulation behaves, so let's have a look to the vids on <a href="http://triva.gforge.inria.fr/">TRIVA website</a>.  
+
+\section contrib_page_ranking Page ranking
+
+\li If you want to help SimGrid in being well ranked in google with the good keyword, juste copy/paste 
+this code to reference simgrid in your web page :
+
+\verbatim
+<a href="http://simgrid.gforge.inria.fr/" title="Scalable simulation of distributed systems : grid simulator, P2P simulator, MPI simulator">Simgrid</a>
+\endverbatim
+
+The output looks like this : 
+\htmlonly
+<a href="http://simgrid.gforge.inria.fr/" title="Scalable simulation of distributed systems : grid simulator, P2P simulator, MPI simulator">Simgrid</a>
+\endhtmlonly
+
+\li You can also use this logo-embedded version if you want to :
+
+\verbatim
+<a href="http://simgrid.gforge.inria.fr/" title="Scalable simulation of distributed systems : grid simulator, P2P simulator, MPI simulator">
+	<img src="http://simgrid.gforge.inria.fr/logos/SIMGRID_Logo_Thumbs_up.png"
+	alt="Scalable simulation of distributed systems : grid simulator, P2P simulator, MPI simulator" align="center">
+</a>
+\endverbatim
+
+Here is the output of it : 
+\htmlonly
+<a href="http://simgrid.gforge.inria.fr/" title="Scalable simulation of distributed systems : grid simulator, P2P simulator, MPI simulator">
+	<img src="http://simgrid.gforge.inria.fr/logos/SIMGRID_Logo_Thumbs_up.png"
+	alt="Scalable simulation of distributed systems : grid simulator, P2P simulator, MPI simulator" align="center">
+</a>
+\endhtmlonly
+
 */
 
 \author Arnaud Legrand (arnaud.legrand::imag.fr)
