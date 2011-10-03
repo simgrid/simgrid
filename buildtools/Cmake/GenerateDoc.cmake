@@ -8,8 +8,6 @@ endif(BIBTEX2HTML)
 
 find_path(FIG2DEV_PATH	NAMES fig2dev	PATHS NO_DEFAULT_PATHS)
 find_path(DOXYGEN_PATH	NAMES doxygen	PATHS NO_DEFAULT_PATHS)
-find_path(BIBTOOL_PATH	NAMES bibtool	PATHS NO_DEFAULT_PATHS)
-find_path(ICONV_PATH	NAMES iconv	PATHS NO_DEFAULT_PATHS)
 
 ### Check whether the bibtex2html that we found is the one that Arnaud requires
 exec_program("${BIBTEX2HTML_PATH}/bibtex2html -version" OUTPUT_VARIABLE OUTPUT_BIBTEX2HTML_VERSION)
@@ -27,7 +25,7 @@ else(${OUTPUT_BIBTEX2HTML_VERSION_2} STREQUAL ${OUTPUT_BIBTEX2HTML_VERSION}) # g
 	SET(GOOD_BIBTEX2HTML_VERSION 1)
 endif(${OUTPUT_BIBTEX2HTML_VERSION_2} STREQUAL ${OUTPUT_BIBTEX2HTML_VERSION})
 
-if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH AND GOOD_BIBTEX2HTML_VERSION)
+if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSION)
 
 	string(REGEX REPLACE ";.*logcategories.doc" "" LISTE_DEUX "${LISTE_DEUX}")
 
@@ -116,7 +114,7 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/
 	)
 	
-else(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH AND GOOD_BIBTEX2HTML_VERSION)
+else(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSION)
 
 	ADD_CUSTOM_TARGET(simgrid_documentation
 			COMMENT "Generating the SimGrid documentation..."
@@ -135,16 +133,14 @@ else(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICO
 	ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
 			COMMAND ${CMAKE_COMMAND} -E echo "DOXYGEN_PATH 		= ${DOXYGEN_PATH}"
 			COMMAND ${CMAKE_COMMAND} -E echo "FIG2DEV_PATH 		= ${FIG2DEV_PATH}"
-			COMMAND ${CMAKE_COMMAND} -E echo "BIBTOOL_PATH 		= ${BIBTOOL_PATH}"
 			COMMAND ${CMAKE_COMMAND} -E echo "BIBTEX2HTML_PATH 	= ${BIBTEX2HTML_PATH}"
-			COMMAND ${CMAKE_COMMAND} -E echo "ICONV_PATH 		= ${ICONV_PATH}"
 			COMMAND ${CMAKE_COMMAND} -E echo "IN ORDER TO GENERATE THE DOCUMENTATION YOU NEED ALL TOOLS !!!"
 			COMMAND ${CMAKE_COMMAND} -E echo "FAIL TO MAKE SIMGRID DOCUMENTATION see previous messages for details ..."
 			COMMAND false
 			)
 
 		
-endif(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTOOL_PATH AND BIBTEX2HTML_PATH AND ICONV_PATH AND GOOD_BIBTEX2HTML_VERSION)
+endif(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSION)
 
 ##############################################################################"
 
@@ -262,51 +258,6 @@ else(compare_files)
 endif(compare_files)	
   
 file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc)
-
-#Website
-
-configure_file(${CMAKE_HOME_DIRECTORY}/website/Doxyfile_website.in ${CMAKE_HOME_DIRECTORY}/website/Doxyfile_website @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/website/index.php.in ${CMAKE_HOME_DIRECTORY}/website/html/index.php @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/website/documentation.php.in ${CMAKE_HOME_DIRECTORY}/website/html/documentation.php @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/website/download.php.in ${CMAKE_HOME_DIRECTORY}/website/html/download.php @ONLY)
-
-ADD_CUSTOM_TARGET(simgrid_website
-	COMMENT "Generating the SimGrid Website..."
-	DEPENDS ${WEBSITE_SOURCES} ${CMAKE_HOME_DIRECTORY}/website/all.bib
-	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/toc_create.pl FAQ.doc contrib.doc history.doc  	    			
-	COMMAND ${CMAKE_COMMAND} -E echo "XX Doxygen website pass"
-	COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile_website
-		
-	COMMAND ${CMAKE_COMMAND} -E echo "XX Post-processing Doxygen website result"
-	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/doxygen_postprocesser_website.pl
-
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/stylesheets/ ${CMAKE_HOME_DIRECTORY}/website/html/stylesheets/
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/logos/ ${CMAKE_HOME_DIRECTORY}/website/html/logos/
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/website/img/ ${CMAKE_HOME_DIRECTORY}/website/html/img/
-	
-	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/website/html/index.html
-
-	WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/website/
-)
-
-ADD_CUSTOM_TARGET(bib_files
-	DEPENDS ${CMAKE_HOME_DIRECTORY}/website/all.bib
-	COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_core.bib publis_extern.bib publis_intra.bib"
-	COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"core\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_core.bib
-	COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"extern\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_extern.bib
-	COMMAND ${BIBTOOL_PATH}/bibtool -- 'select.by.string={category \"intra\"}' -- 'preserve.key.case={on}' -- 'preserve.keys={on}' all.bib -o publis_intra.bib
-
-	COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_count.html"
-	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_table_count.pl < ${CMAKE_HOME_DIRECTORY}/website/all.bib > ${CMAKE_HOME_DIRECTORY}/website/publis_count.html
-	
-	COMMAND ${CMAKE_COMMAND} -E echo "XX Generate publis_core.html publis_extern.html publis_intra.html"
-	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_core
-	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_extern
-	COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/bibtex2html_wrapper.pl publis_intra
-	WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/website/
-)
-
-add_dependencies(simgrid_website bib_files)
 
 ADD_CUSTOM_TARGET(pdf
     COMMAND ${CMAKE_COMMAND} -E echo "XX First pass simgrid_documentation.pdf"

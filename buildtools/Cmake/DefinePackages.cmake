@@ -552,23 +552,7 @@ file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*README"
 )
 
-set(WEBSITE_SOURCES
-    website/contrib.doc
-    website/FAQ.doc
-    website/history.doc
-	website/people.doc	
-	website/publis.doc  
-	website/all.bib
-	website/Doxyfile_website.in
-	website/footer.html
-	website/index.php.in
-	website/download.php.in
-	website/documentation.php.in
-    
-    tools/doxygen/bibtex2html_table_count.pl
-	doc/webcruft/fish.gif
-	doc/webcruft/robots.txt
-	)
+
     
 set(DOC_SOURCES
 	doc/installSimgrid.doc
@@ -863,7 +847,6 @@ set(source_to_pack
 	${CMAKE_SOURCE_FILES}
 	${bin_files}
 	${DOC_SOURCES}
-	${WEBSITE_SOURCES}
 	${DOC_FIGS}
 	${README_files}
 	buildtools/Cmake/simgrid.nsi.in 

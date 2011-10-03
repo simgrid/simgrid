@@ -332,15 +332,6 @@ COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs
 WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 
-#doc/index.php doc/webcruft/robots.txt doc/webcruft/fish.gif 
-add_custom_target(sync-gforge-website
-COMMAND chmod g+rw -R website/html
-COMMAND chmod a+rX -R website/html
-COMMAND scp -r website/html/* scm.gforge.inria.fr:/home/groups/simgrid/htdocs/
-WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-)
-add_dependencies(sync-gforge-website simgrid_website)
-
 #PIPOL
 add_custom_target(sync-pipol
 COMMAND scp -r Experimental_bindings.sh Experimental.sh  MemCheck.sh pre-simgrid.sh navarro@pipol.inria.fr:~/
