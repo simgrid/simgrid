@@ -209,7 +209,9 @@ void SIMIX_run(void)
       }
     }
 
-    time = surf_solve(SIMIX_timer_next());
+    time = SIMIX_timer_next();
+    if (time != -1.0 || xbt_swag_size(simix_global->process_list) != 0)
+      time = surf_solve(time);
 
     /* Notify all the hosts that have failed */
     /* FIXME: iterate through the list of failed host and mark each of them */
