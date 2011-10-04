@@ -26,8 +26,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(strbuff, xbt, "String buffers");
 XBT_INLINE void xbt_strbuff_empty(xbt_strbuff_t b)
 {
   b->used = 0;
-  b->data[0] = '\n';
-  b->data[1] = '\0';
+  b->data[0] = '\0';
 }
 
 xbt_strbuff_t xbt_strbuff_new(void)
