@@ -31,24 +31,6 @@ static void sglua_copy_userdata(lua_State* src, lua_State* dst);
 static void sglua_copy_thread(lua_State* src, lua_State* dst);
 
 /**
- * @brief Returns the father of a state, i.e. the state that created it.
- * @param L a Lua state
- * @return its father, or NULL if the state was not created by sglua_clone_state()
- */
-static lua_State* sglua_get_father(lua_State* L) {
-
-                                  /* ... */
-  lua_pushstring(L, "simgrid.father");
-                                  /* ... "simgrid.father" */
-  lua_rawget(L, LUA_REGISTRYINDEX);
-                                  /* ... father */
-  lua_State* father = lua_touserdata(L, -1);
-  lua_pop(L, 1);
-                                  /* ... */
-  return father;
-}
-
-/**
  * @brief Adds a reference to a maestro table to the list of known maestro
  * tables of a state.
  *
@@ -387,7 +369,7 @@ static void sglua_copy_table(lua_State* src, lua_State* dst) {
  * @brief Copies the function on the top of src to the top of dst.
  *
  * It can be a Lua function or a C function.
- * Copying upvalues is not implemented yet (TODO).
+ * Copying upvalues is not implemented yet.
  *
  * @param src source state
  * @param dst destination state
