@@ -803,18 +803,16 @@ void *rctx_wait(void *r)
 			xbt_dynar_sort(a,cmpstringp);
 
 		if (coverage){
-			int pos;
-			char* data;
-			for(pos=0;pos<xbt_dynar_length(a);pos++){
-			  data = xbt_dynar_get_as(a,pos,char*);
-			  if(!strncmp(data,"profiling:",strlen("profiling:"))){
-				  XBT_INFO("Remove line a[%d]='%s'",pos,data);
-				  rctx->output_got->used -= strlen(data)+1;
-				  xbt_dynar_remove_at(a,pos,data);
-				  pos--;
-			  }
+		    char * ligne;
+		    unsigned int cpt;
 
-			}
+	        xbt_dynar_foreach(a, cpt, ligne) {
+	        	if(!strncmp(ligne,"profiling:",strlen("profiling:"))){
+	        		XBT_DEBUG("Remove line '%s'",ligne);
+	        		rctx->output_got->used -= strlen(ligne)+1;
+	        		xbt_dynar_cursor_rm(a,&cpt);
+	        	}
+	        }
 		}
 
 		char *sorted_output = xbt_str_join(a, "\n");
