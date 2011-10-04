@@ -33,7 +33,7 @@ public class Coordinator extends Process  {
 					GrantTask tosend =  new GrantTask();
 					tosend.send(t.from);
 				} else {
-					waitingQueue.push(t);
+					waitingQueue.addFirst(t);
 				}
 			} else if (task instanceof ReleaseTask) {
 				if (!waitingQueue.isEmpty()) {
