@@ -93,20 +93,6 @@ doc/footer.html
 doc/latex/
 
 ################################################
-### Website
-website/simgrid_website.tag
-website/Doxyfile_website
-website/html/
-website/publis_core.bib
-website/publis_core.bib
-website/publis_core_bib.html
-website/publis_count.html
-website/publis_extern.bib
-website/publis_extern_bib.html
-website/publis_intra.bib
-website/publis_intra_bib.html
-
-################################################
 ### Specific of project 
 .cproject
 .project
