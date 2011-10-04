@@ -22,6 +22,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(tesh, "TEst SHell utility");
 int timeout_value = 5;          /* child timeout value */
 int sort_len = 19;              /* length of the prefix to sort */
 char *option;
+int coverage = 0;				/* whether the code coverage is enable */
 
 rctx_t rctx;
 const char *testsuite_name;
@@ -254,6 +255,13 @@ int main(int argc, char *argv[])
       memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));
       argc -= 2;
       i -= 2;
+    }
+    else if (!strcmp(argv[i], "--enable-coverage" )){
+    	coverage = 1;
+    	XBT_INFO("Enable coverage");
+    	memmove(argv + i, argv + i + 1, (argc - i - 1) * sizeof(char *));
+    	argc -= 1;
+    	i -= 1;
     }
   }
 

@@ -796,19 +796,38 @@ void *rctx_wait(void *r)
     errcode = 1;
   }
 
-  if (rctx->output_sort) {
-    xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
-    xbt_dynar_sort(a,cmpstringp);
-    char *sorted_output = xbt_str_join(a, "\n");
-    strcpy(rctx->output_got->data, sorted_output);
-    xbt_free(sorted_output);
-    xbt_dynar_free(&a);
-    /* If an empty line moved in first position, move it back to the end */
-    if (rctx->output_got->data[0]=='\n') {
-      memmove(rctx->output_got->data,rctx->output_got->data+1,rctx->output_got->used-1);
-      rctx->output_got->data[rctx->output_got->used-1] = '\n';
-    }
-  }
+	if(rctx->output_sort || coverage){
+	xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
+
+		if (rctx->output_sort)
+			xbt_dynar_sort(a,cmpstringp);
+
+		if (coverage){
+			int pos;
+			char* data;
+			for(pos=0;pos<xbt_dynar_length(a);pos++){
+			  data = xbt_dynar_get_as(a,pos,char*);
+			  if(!strncmp(data,"profiling:",strlen("profiling:"))){
+				  XBT_INFO("Remove line a[%d]='%s'",pos,data);
+				  rctx->output_got->used -= strlen(data)+1;
+				  xbt_dynar_remove_at(a,pos,data);
+			  }
+
+			}
+		}
+
+		char *sorted_output = xbt_str_join(a, "\n");
+		strcpy(rctx->output_got->data, sorted_output);
+		xbt_free(sorted_output);
+		xbt_dynar_free(&a);
+
+		/* If an empty line moved in first position, move it back to the end */
+		if (rctx->output_got->data[0]=='\n') {
+		  memmove(rctx->output_got->data,rctx->output_got->data+1,rctx->output_got->used-1);
+		  rctx->output_got->data[rctx->output_got->used-1] = '\n';
+		}
+	}
+
   if ((errcode && errcode != 1) || rctx->interrupted) {
     /* checking output, and matching */
     xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");

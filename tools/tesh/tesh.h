@@ -26,6 +26,7 @@ extern int timeout_value;       /* child timeout value */
 extern int sort_len;            /* length of the prefix to sort */
 extern char* option;            /* cfg for command line */
 #define SORT_LEN_DEFAULT 19
+extern int coverage;       /* coverage */
 
 extern rctx_t rctx;
 extern const char *testsuite_name;
