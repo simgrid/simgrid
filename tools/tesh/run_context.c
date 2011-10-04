@@ -707,6 +707,41 @@ void *rctx_wait(void *r)
      return NULL;
      xbt_os_mutex_acquire(rctx->interruption); */
 
+  {
+    xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
+    xbt_dynar_t b = xbt_dynar_new(sizeof(char *), NULL);
+    unsigned cpt;
+    char *str;
+    xbt_dynar_foreach(a, cpt, str) {
+      if (strncmp(str, "TESH_ERROR ", (sizeof "TESH_ERROR ") - 1) == 0) {
+        XBT_CRITICAL("%s", str);
+        errcode = 1;
+      } else if (coverage &&
+                 strncmp(str, "profiling:", (sizeof "profiling:") - 1) == 0) {
+        XBT_DEBUG("Remove line [%u]: '%s'", cpt, str);
+      } else {
+        xbt_dynar_push_as(b, char *, str);
+      }
+    }
+
+    if (rctx->output_sort) {
+      xbt_dynar_sort(b, cmpstringp);
+      /* If empty lines moved in first position, remove them */
+      while (*xbt_dynar_getfirst_as(b, char *) == '\0')
+        xbt_dynar_shift(b, NULL);
+    }
+
+    if (rctx->output_sort || xbt_dynar_length(b) != xbt_dynar_length(a)) {
+      char *newbuf = xbt_str_join(b, "\n");
+      strcpy(rctx->output_got->data, newbuf);
+      rctx->output_got->used = strlen(newbuf);
+      xbt_free(newbuf);
+    }
+
+    xbt_dynar_free(&b);
+    xbt_dynar_free(&a);
+  }
+
   xbt_strbuff_chomp(rctx->output_got);
   xbt_strbuff_chomp(rctx->output_wanted);
   xbt_strbuff_trim(rctx->output_got);
@@ -781,51 +816,6 @@ void *rctx_wait(void *r)
       rctx->expected_signal = NULL;
     }
   }
-  while (rctx->output_got->used
-         && !strncmp(rctx->output_got->data, "TESH_ERROR ",
-                     strlen("TESH_ERROR "))) {
-    int marklen = strlen("TESH_ERROR ");
-    char *endline = strchr(rctx->output_got->data, '\n');
-
-    XBT_CRITICAL("%.*s", (int) (endline - rctx->output_got->data - marklen),
-              rctx->output_got->data + marklen);
-    memmove(rctx->output_got->data, rctx->output_got->data + marklen,
-            rctx->output_got->used - marklen);
-    rctx->output_got->used -= endline - rctx->output_got->data + 1;
-    rctx->output_got->data[rctx->output_got->used] = '\0';
-    errcode = 1;
-  }
-
-	if(rctx->output_sort || coverage){
-	xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
-
-		if (rctx->output_sort)
-			xbt_dynar_sort(a,cmpstringp);
-
-		if (coverage){
-		    char * ligne;
-		    unsigned int cpt;
-
-	        xbt_dynar_foreach(a, cpt, ligne) {
-	        	if(!strncmp(ligne,"profiling:",strlen("profiling:"))){
-	        		XBT_DEBUG("Remove line '%s'",ligne);
-	        		rctx->output_got->used -= strlen(ligne)+1;
-	        		xbt_dynar_cursor_rm(a,&cpt);
-	        	}
-	        }
-		}
-
-		char *sorted_output = xbt_str_join(a, "\n");
-		strcpy(rctx->output_got->data, sorted_output);
-		xbt_free(sorted_output);
-		xbt_dynar_free(&a);
-
-		/* If an empty line moved in first position, move it back to the end */
-		if (rctx->output_got->data[0]=='\n') {
-		  memmove(rctx->output_got->data,rctx->output_got->data+1,rctx->output_got->used-1);
-		  rctx->output_got->data[rctx->output_got->used-1] = '\n';
-		}
-	}
 
   if ((errcode && errcode != 1) || rctx->interrupted) {
     /* checking output, and matching */
