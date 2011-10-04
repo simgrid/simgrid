@@ -811,6 +811,7 @@ void *rctx_wait(void *r)
 				  XBT_INFO("Remove line a[%d]='%s'",pos,data);
 				  rctx->output_got->used -= strlen(data)+1;
 				  xbt_dynar_remove_at(a,pos,data);
+				  pos--;
 			  }
 
 			}
