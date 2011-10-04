@@ -1,7 +1,9 @@
 #!/bin/bash
 
 sudo aptitude update
+sudo aptitude -y install make
 sudo aptitude -y install git
+sudo aptitude -y install git-core
 sudo aptitude -y install openjdk-6-jdk
 sudo aptitude -y install valgrind
 sudo aptitude -y install f2c
