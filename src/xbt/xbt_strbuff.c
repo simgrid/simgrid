@@ -88,10 +88,9 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
 
 XBT_INLINE void xbt_strbuff_chomp(xbt_strbuff_t b)
 {
-  while (b->data[b->used] == '\n') {
+  while (b->used && b->data[b->used - 1] == '\n') {
+    b->used--;
     b->data[b->used] = '\0';
-    if (b->used)
-      b->used--;
   }
 }
 
