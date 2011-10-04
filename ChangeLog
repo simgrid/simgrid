@@ -1,22 +1,41 @@
-SimGrid (3.7) unstable; urgency=low 
+SimGrid (3.6.2) unstable; urgency=low 
 
- Dot Loader
- * Bug fix: correction of the dot file parsing with the libcgraph
+ The "not coding new stuff allows to polish old things" release.
 
- Windows Port
- * Fix many issues that prevented SimGrid from working 
-   correctly on windows (both for 32 and 64 bit architectures):
-     - port win32_ucontext.c to 64 bit arch
-     - now that we rely on gcc, clean xbt/log.h so that it does not
-       add useless bugs that had been introduced to handle the 
-       borland compiler
- * Create an installer for windows with nsis(amd64 and win32)
+ General
+ * New bindings to the NS3 packet level simulator (experimental)
+ * Use the raw (efficient) execution contextes instead of the sysv
+   (portable) ones when possible.
+ * libpcre is now mandatory in any cases since not using it led to
+    severe performance loss and possibly other issues
+ * Update the XML platforms:
+   - G5K: include the lastest machine in Nancy 
+   - GridPP and LCG: new platforms
+ * Documentation was partially updated, at least (more to come)
+   
+ Bug fixes, cosmetics and small improvements
+ * Free terminated processes before the end of the simulation to avoid
+   exhausting the memory of users having very dynamic amount of
+   processes.
+ * Bug fix and cosmetics about canceling non-running tasks
+ * Bug fix about the dot loader's issues when using libcgraph
+
+ Portability
+ * Create an installer for windows with nsis (amd64 and win32)
    - Add an hello world project to illustrate simgrid project creation.
    - Embed libpcre into the Simgrid installer to avoid 
      its compilation burden 
+ * The raw execution contextes should work on Apple now
+ * Port to Windows 64 bits
+    - Sysv contextes now have an implementation for this arch
+    - GRAS communication features now support this arch
+ * Drop support for borland compiler on windows
+    - this code was not maintained, and we kinda depend on gcc nowadays
+ * Fix portability issues on kfreebsd/gnu: build error about semaphores
+ * Fix portability issue on unstable ubuntu: linker became picky on
+   argument order
 
  -- `LC_ALL=C date` Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
- SIMDAG
 
 
 SimGrid (3.6.1) unstable; urgency=low 
