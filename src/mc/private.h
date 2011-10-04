@@ -24,6 +24,7 @@
 /****************************** Snapshots ***********************************/
 
 typedef struct s_mc_mem_region{
+  int type;
   void *start_addr;
   void *data;
   size_t size;
@@ -180,6 +181,28 @@ typedef struct s_memory_map {
 memory_map_t get_memory_map(void);
 
 
+/********************************** DPOR for safety (stateless) **************************************/
+void MC_dpor_init(void);
+void MC_dpor(void);
+void MC_dpor_exit(void);
+
+/***** DPOR for safety (stateful) **** */
+
+typedef struct s_mc_state_with_snapshot{
+  mc_snapshot_t system_state;
+  mc_state_t graph_state;
+}s_mc_state_ws_t, *mc_state_ws_t;
+
+extern xbt_fifo_t mc_stack_safety_stateful;
+
+void MC_init_stateful(void);
+void MC_modelcheck_stateful(void);
+mc_state_ws_t new_state_ws(mc_snapshot_t s, mc_state_t gs);
+void MC_dpor_stateful_init(void);
+void MC_dpor_stateful(void);
+void MC_exit_stateful(void);
+
+
 /********************************** Double-DFS for liveness property**************************************/
 
 typedef struct s_mc_pair{
@@ -199,8 +222,8 @@ extern xbt_fifo_t mc_stack_liveness_stateful;
 int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
-int reached(xbt_automaton_t a);
-int set_pair_reached(xbt_automaton_t a);
+int reached(xbt_automaton_t a, mc_snapshot_t s);
+int set_pair_reached(xbt_automaton_t a, mc_snapshot_t s);
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
 void MC_show_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateful(xbt_fifo_t stack);
@@ -229,25 +252,6 @@ void MC_show_stack_liveness_stateless(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateless(xbt_fifo_t stack);
 void MC_pair_stateless_delete(mc_pair_stateless_t pair);
 
-/********************************** DPOR for safety (stateless) **************************************/
-void MC_dpor_init(void);
-void MC_dpor(void);
-void MC_dpor_exit(void);
 
-/***** DPOR for safety (stateful) **** */
-
-typedef struct s_mc_state_with_snapshot{
-  mc_snapshot_t system_state;
-  mc_state_t graph_state;
-}s_mc_state_ws_t, *mc_state_ws_t;
-
-extern xbt_fifo_t mc_stack_safety_stateful;
-
-void MC_init_stateful(void);
-void MC_modelcheck_stateful(void);
-mc_state_ws_t new_state_ws(mc_snapshot_t s, mc_state_t gs);
-void MC_dpor_stateful_init(void);
-void MC_dpor_stateful(void);
-void MC_exit_stateful(void);
 
 #endif

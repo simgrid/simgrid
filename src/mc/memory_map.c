@@ -18,6 +18,8 @@ memory_map_t get_memory_map(void)
   char *lfields[6], *tok, *endptr;
   int i;
 
+  char *backup_line = NULL;
+
 /* Open the actual process's proc maps file and create the memory_map_t */
 /* to be returned. */
   fp = fopen("/proc/self/maps", "r");
@@ -32,7 +34,9 @@ memory_map_t get_memory_map(void)
   /* Read one line at the time, parse it and add it to the memory map to be returned */
   while ((read = getline(&line, &n, fp)) != -1) {
 
-    //XBT_DEBUG("%s", line);
+    //XBT_INFO("%s", line);
+    if(XBT_LOG_ISENABLED(mc_memory_map, xbt_log_priority_debug))
+      backup_line = strdup(line);
 
     /* Wipeout the new line character */
     line[read - 1] = '\0';
@@ -138,6 +142,21 @@ memory_map_t get_memory_map(void)
         xbt_realloc(ret->regions, sizeof(memreg) * (ret->mapsize + 1));
     memcpy(ret->regions + ret->mapsize, &memreg, sizeof(memreg));
     ret->mapsize++;
+
+    if(XBT_LOG_ISENABLED(mc_memory_map, xbt_log_priority_debug)){
+
+      if (memreg.pathname == NULL){
+	if (memreg.start_addr == std_heap){ 
+	  XBT_DEBUG("New region in snapshot : %s", backup_line); 
+	}
+      } else {
+	if (!memcmp(basename(memreg.pathname), "libsimgrid", 10)){
+	  XBT_DEBUG("New region in snapshot : %s", backup_line); 
+	}
+      }
+    }
+
+
   }
 
   if (line)
