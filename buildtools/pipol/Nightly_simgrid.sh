@@ -72,20 +72,8 @@ export CC=gcc
 export CXX=g++
 fi
 
-#supernovae
-cmake \
--Denable_lua=on \
--Denable_tracing=on \
--Denable_smpi=on \
--Denable_supernovae=on \
--Denable_compile_optimizations=on \
--Denable_compile_warnings=on \
--Denable_lib_static=off \
--Denable_model-checking=off \
--Denable_latency_bound_tracking=off \
--Drelease=on \
--Denable_gtnets=off .
-
+#supernovae DEFAULT CONF
+cmake -Drelease=on .
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
@@ -95,8 +83,6 @@ make clean
 
 #MC
 cmake \
--Denable_latency_bound_tracking=on \
--Denable_gtnets=off \
 -Denable_coverage=on \
 -Denable_model-checking=on \
 -Denable_compile_optimizations=off \
