@@ -6,7 +6,8 @@ p This tests whether TESH detects wrong outputs
 < > TOTO
 < < TUTU
 < $ cat
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
+> Enable coverage
 > Test suite from stdin
 > [(stdin):3] cat
 > Output of <(stdin):3> mismatch:

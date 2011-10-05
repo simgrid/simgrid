@@ -5,53 +5,59 @@ p Order: in, out, cmd
 < < TOTO
 < > TOTO
 < $ cat
+> Enable coverage
 > Test suite from stdin
 > [(stdin):3] cat
 > Test suite from stdin OK
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
 
 p Order: out, in, cmd
 < > TOTO
 < < TOTO
 < $ cat
+> Enable coverage
 > Test suite from stdin
 > [(stdin):3] cat
 > Test suite from stdin OK
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
 
 p Order: out, cmd, in
 < > TOTO
 < $ cat
 < < TOTO
+> Enable coverage
 > Test suite from stdin
 > [(stdin):2] cat
 > Test suite from stdin OK
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
 
 p Order: in, cmd, out
 < < TOTO
 < $ cat
 < > TOTO
+> Enable coverage
 > Test suite from stdin
 > [(stdin):2] cat
 > Test suite from stdin OK
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
 
 p Order: cmd, out, in
 < $ cat
 < > TOTO
 < < TOTO
+> Enable coverage
 > Test suite from stdin
 > [(stdin):1] cat
 > Test suite from stdin OK
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
 
 p Order: cmd, in, out
 < $ cat
 < < TOTO
 < > TOTO
+> Enable coverage
 > Test suite from stdin
 > [(stdin):1] cat
 > Test suite from stdin OK
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
 

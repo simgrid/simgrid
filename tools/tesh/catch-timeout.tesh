@@ -6,9 +6,10 @@
 ! expect return 3
 < ! timeout 1
 < $ sleep 6
+> Enable coverage
 > Test suite from stdin
 > [(stdin):2] sleep 6
 > <(stdin):2> timeouted. Kill the process.
 > <(stdin):2> No output before timeout
 > Test suite `(stdin)': NOK (<(stdin):2> timeout after 1 sec)
-$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
