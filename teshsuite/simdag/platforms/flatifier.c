@@ -59,6 +59,8 @@ int main(int argc, char **argv)
   const SD_workstation_t *hosts;
   const SD_link_t *links;
 
+  setvbuf(stdout, NULL, _IOLBF, 0);
+
   SD_init(&argc, argv);
 
   platformFile = argv[1];

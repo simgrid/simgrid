@@ -23,6 +23,8 @@ int main(int argc, char **argv)
   int route_size, i, j, k;
   int list_size;
 
+  setvbuf(stdout, NULL, _IOLBF, 0);
+
   SD_init(&argc, argv);
 
   /* creation of the environment */
