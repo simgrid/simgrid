@@ -8,7 +8,6 @@ set(EXTRA_DIST
 	src/xbt/fifo_private.h
 	src/xbt/graph_private.h
 	src/xbt/graphxml_parse.c
-	src/xbt/graphxml.l
 	src/xbt/graphxml.c
 	src/xbt/graphxml.dtd
 	src/xbt/log_private.h
@@ -40,7 +39,6 @@ set(EXTRA_DIST
 	src/surf/trace_mgr_private.h
 	src/surf/surf_private.h
 	src/surf/surfxml_parse.c
-	src/surf/simgrid_dtd.l
 	src/surf/simgrid_dtd.c
 	src/surf/simgrid.dtd
 	src/surf/network_private.h
@@ -68,7 +66,6 @@ set(EXTRA_DIST
 	src/msg/mailbox.h
 	src/simdag/private.h
 	src/simdag/dax.dtd
-	src/simdag/dax_dtd.l
 	src/simdag/dax_dtd.h
 	src/simdag/dax_dtd.c
 	src/gras/DataDesc/ddt_parse.yy.l
