@@ -10,6 +10,7 @@ sudo aptitude -y install f2c
 sudo aptitude -y install gcc-4.6
 sudo aptitude -y install g++-4.6
 sudo aptitude -y install libpcre3-dev
+sudo aptitude -y install cmake
 
 which_svn=`which svn`		#svn necessary
 which_gcc=`which gcc`		#gcc gcc necessary
