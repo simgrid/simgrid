@@ -27,7 +27,7 @@
 ;--------------------------------
 
 Name "Simgrid"
-outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@_@SIMGRID_SYSTEM_PROCESSOR@@BIN_EXE@"
+outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@_@NSIS_WIN_VERSION@@BIN_EXE@"
 Icon "@CMAKE_HOME_DIRECTORY@\doc\webcruft\SimGrid.ico"
 
 # set the default installation directory
