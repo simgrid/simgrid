@@ -136,9 +136,6 @@ Third, we also choose to restrict the way your platform is built : end hosts can
 an end host to the platform ; if not, your end host will be considered as a router. 
 </li>
 
-<li>
-Finally we <b>STRONGLY</b> encourage you to apply the ns-3 RED patch (even if as the time of writing, it still needs some bugs correcting and the installation is then cumbersome, as described later). The reason why is that the default queue policy on ns-3 side is droptail. It implies a lot of undesirable (and not realistic) phase effects when simulating, and it has an huge impact on simulation times ... 
-</li>
 </ul>
 <i>
 To use ns3 model inside SimGrid you have to install at least the version 3.10 of ns3 simulator.
