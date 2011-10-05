@@ -91,6 +91,11 @@ doc/Doxyfile
 doc/footer.html
 *.doc.toc
 doc/latex/
+doc/html
+doc/index-API.doc
+doc/index.php
+doc/simgrid.tag
+doc/simgrid_modules.map
 
 ################################################
 ### Specific of project 
