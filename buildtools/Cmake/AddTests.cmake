@@ -24,7 +24,7 @@ INCLUDE(CTest)
 ENABLE_TESTING()
 
 if(NOT enable_memcheck)
-ADD_TEST(tesh-self-basic 		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" basic.tesh)
+ADD_TEST(tesh-self-basic 		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/bin --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" basic.tesh)
 ADD_TEST(tesh-self-cd			${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/cd.tesh)
 ADD_TEST(tesh-self-IO-broken-pipe	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" IO-broken-pipe.tesh)
 ADD_TEST(tesh-self-IO-orders		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/IO-orders.tesh)
