@@ -1,10 +1,15 @@
 cmake_minimum_required(VERSION 2.8)
-project(simgrid-java C)
+project(SimGrid-Java C)
 set(UPDATE_TYPE svn)
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/lib")
 set(soversion 1)
+
+set(SIMGRID_JAVA_VERSION_MAJOR "1")
+set(SIMGRID_JAVA_VERSION_MINOR "0")
+set(SIMGRID_JAVA_VERSION_PATCH "0")
+set(DIST_NAME ${PROJECT_NAME}-${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR})
 
 ########
 ## GCC #
@@ -15,9 +20,10 @@ string(REGEX MATCH "^[0-9].[0-9]" COMPILER_C_VERSION_MAJOR_MINOR "${COMPILER_C_V
 string(REPLACE "${COMPILER_C_VERSION_MAJOR_MINOR}." "" COMPILER_C_VERSION_PATCH "${COMPILER_C_VERSION}")
 
 ########
-## SVN #
+## GIT #
 ########
-exec_program("git remote" OUTPUT_VARIABLE remote RETURN_VALUE ret)
+if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
+exec_program("git remote | head -n 1" OUTPUT_VARIABLE remote RETURN_VALUE ret)
 exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
 
 if(url)
@@ -30,6 +36,7 @@ if(url)
 	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
 endif(url)
+endif(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
 
 #########
 # CDASH #
@@ -39,7 +46,7 @@ SET(DROP_SITE "cdash.inria.fr/CDash")
 SET(DROP_LOCATION "/submit.php?project=simgrid")
 SET(DROP_SITE_CDASH TRUE)
 SET(TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-TestingResults.cgi")
-SET(BUILDNAME "Simgrid-Java" CACHE TYPE INTERNAL FORCE)
+SET(BUILDNAME "SimGrid-Java" CACHE TYPE INTERNAL FORCE)
 set(osname ${CMAKE_SYSTEM_NAME})
 set(cpu ${CMAKE_SYSTEM_PROCESSOR})
 set(DISTRIB2 ${CMAKE_SYSTEM_VERSION})
@@ -120,6 +127,31 @@ set(JAVA_EXAMPLES
 	examples/pingPong/Sender.java
 	examples/pingPong/Receiver.java
 	examples/pingPong/PingPongTest.java
+)
+
+set(CMAKE_SRC
+${CMAKE_HOME_DIRECTORY}/ChangeLog
+${CMAKE_HOME_DIRECTORY}/CMakeLists.txt
+${CMAKE_HOME_DIRECTORY}/FindJavaSG.cmake
+${CMAKE_HOME_DIRECTORY}/FindSimGrid.cmake
+)
+
+set(XML_FILES
+    examples/commTime/commTimeDeployment.xml
+    examples/mutualExclusion/ring3.xml
+    examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
+    examples/platform.xml
+    examples/pingPong/pingPongDeployment.xml
+    examples/basic/basicDeployment.xml
+    examples/basic/deploy.xml
+)
+
+set(source_to_pack
+${CMAKE_SRC}
+${JMSG_C_SRC}
+${JMSG_JAVA_SRC}
+${JAVA_EXAMPLES}
+${XML_FILES}
 )
 
 string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/org/" JAVA_FILES "${JMSG_JAVA_SRC}") 
@@ -244,11 +276,60 @@ install(TARGETS SG_java
 install(FILES ${CMAKE_HOME_DIRECTORY}/simgrid.jar
 	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
 
+
+#########
+# Dist  #
+#########
+
+add_custom_target(dist-dir
+  COMMENT "Generating the distribution directory"
+  COMMAND test -e ${DIST_NAME}/ && chmod -R a+w ${DIST_NAME}/ || true
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${DIST_NAME}/
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_NAME}
+)
+
+set(dirs_in_tarball "")
+foreach(file ${source_to_pack})
+
+  # This damn prefix is still set somewhere (seems to be in subdirs)
+  string(REPLACE "${CMAKE_HOME_DIRECTORY}/" "" file "${file}")
+  
+  # Create the directory on need
+  get_filename_component(file_location ${file} PATH)
+  string(REGEX MATCH ";${file_location};" OPERATION "${dirs_in_tarball}")
+  if(NOT OPERATION)
+       set(dirs_in_tarball "${dirs_in_tarball};${file_location};")
+       add_custom_command(
+         TARGET dist-dir
+         COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_NAME}/${file_location}/
+       )       
+   endif(NOT OPERATION)
+   
+   # Actually copy the file
+   add_custom_command(
+     TARGET dist-dir
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${DIST_NAME}/${file_location}/
+   )
+endforeach(file ${source_to_pack})
+
+add_custom_target(dist
+  DEPENDS ${CMAKE_BINARY_DIR}/${DIST_NAME}.tar.gz
+  COMMENT "Generated ${DIST_NAME}"
+)
+add_custom_command(
+	OUTPUT ${CMAKE_BINARY_DIR}/${DIST_NAME}.tar.gz	
+	COMMENT "Compressing the archive from the distribution directory"
+	COMMAND ${CMAKE_COMMAND} -E tar cf ${DIST_NAME}.tar ${DIST_NAME}/
+  	COMMAND gzip -9v ${DIST_NAME}.tar
+  	COMMAND ${CMAKE_COMMAND} -E remove_directory ${DIST_NAME}/
+)
+add_dependencies(dist dist-dir)
+
 ########
 # NOTE #
 ########
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Testing/Notes/)
 file(WRITE ${CMAKE_BINARY_DIR}/Testing/Notes/Build  "SVN version : ${SVN_VERSION}\n")
-file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Release     : simgrid-java-${soversion}\n")
+file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Release     : ${PROJECT_NAME}-${soversion}\n")
 file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Pipol user  : $ENV{PIPOL_USER}\n")
 file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Pipol image : $ENV{PIPOL_IMAGE}\n")
