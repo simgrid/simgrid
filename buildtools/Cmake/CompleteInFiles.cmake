@@ -349,8 +349,8 @@ endif(pthread)
 ###############
 ## SVN version check
 ##
-if(EXISTS .git)
-exec_program("git remote" OUTPUT_VARIABLE remote RETURN_VALUE ret)
+if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
+exec_program("git remote | head -n 1" OUTPUT_VARIABLE remote RETURN_VALUE ret)
 exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
 
 if(url)
@@ -363,7 +363,7 @@ if(url)
 	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
 endif(url)
-endif(EXISTS .git)
+endif(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
 
 ###################################
 ## SimGrid and GRAS specific checks
