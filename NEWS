@@ -1,19 +1,35 @@
 
-                    _               _____ _____ 
-__   _____ _ __ ___(_) ___  _ __   |___ /|___  |
-\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   / / 
- \ V /  __/ |  \__ \ | (_) | | | |  ___) | / /  
-  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_/   
-                                                
 
-(still to be done)
+                    _               _____  __    ____  
+__   _____ _ __ ___(_) ___  _ __   |___ / / /_  |___ \ 
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \| '_ \   __) | 
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | (_) | / __/  
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)___(_)_____|
+                Oct 5 2011
+
+The "Not coding new stuff allows to polish old things" release.
+
+ * Portability to Mac and Windows improved.
+ * Possible misconfigurations (contextes, libPCRE) made impossible by 
+   removing the option or providing sane default value.
+ * Exerimental support to NS3 simulator as a backend.
+ 
+                    _               _____  __    _ 
+__   _____ _ __ ___(_) ___  _ __   |___ / / /_  / |
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \| '_ \ | |
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | (_) || |  
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)___(_)_|
+                Jun 27 2011  
+                                                   
+The "Oops, we broke Macs too" release. 
+Bug fix to an issue preventing SimGrid from working on Mac OSX.
 
                     _               _____  __   
 __   _____ _ __ ___(_) ___  _ __   |___ / / /_  
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \| '_ \ 
- \ V /  __/ |  \__ \ | (_) | | | |  ___) | (_) |
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | (_) |         
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)___/ 
-                                                
+                Jun 21 2011
 
 The "OMG! They Killed Kenny!" version. Major changes:
 
@@ -37,6 +53,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / | ___|
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ |___ \ 
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/
+                01 Dec 2010
 
 The "Winter in Frejus" release. Also known as "ANR/ADT funding helps"
 Major changes are:
@@ -56,12 +73,12 @@ Major changes are:
     - Windows port: should be usable now but still considered experimental
     - Autotools have now been completely removed
 
-
                     _               _____ _  _    _ 
 __   _____ _ __ ___(_) ___  _ __   |___ /| || |  / |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \| || |_ | |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) |__   _|| |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_) |_|(_)_|
+                04 May 2010
 
 The "Polishing easter eggs is probably a good idea" release.
 This is a bug fixes release only. 
@@ -70,7 +87,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ /| || |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \| || |_ 
  \ V /  __/ |  \__ \ | (_) | | | |  ___) |__   _|
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_) |_|  
-
+                28 Apr 2010
 
 The "Easter in Cargese" release. Also known as (major changes):
  
@@ -86,7 +103,8 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ /| || |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| || |_ 
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) |__   _|
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____(_) |_|  
-                                           
+                24 Dec 2009
+
 The "Desktop Grid needs love too" release (also called "Xmas release").
 Most important changes:
  * Big speedup through lazy evaluation of the linear models
@@ -100,7 +118,8 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ / |___ /
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \   |_ \ 
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) | ___) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____(_)____/ 
-                                                        
+                20 Aug 2009
+		
 The "Need for Speed" release.
 Big speedup through some function inlining.
 
@@ -109,7 +128,8 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ / |___ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \   __) |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) | / __/ 
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____(_)_____|
-                                                        
+                19 Aug 2009
+		
 The "Simplicity does not preceed complexity, but follows it" release.
 Most important changes:
  * surf and simix modules reworked for simplification.
@@ -123,7 +143,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \ | |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) || |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____(_)_|
-
+                27 Jun 2009
 
 This dot release is mainly a maintainance one. Most important changes:
  * We fixed a large amount of bugs all around
@@ -147,12 +167,12 @@ fixed in a latter release.
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ / 
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \ 
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) |  
-  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/ 
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/
                _             _           _ 
      _  _ _ _ | |___ __ _ __| |_  ___ __| |
     | || | ' \| / -_) _` (_-< ' \/ -_) _` |
      \_,_|_||_|_\___\__,_/__/_||_\___\__,_|
-                                       
+               Mar 16 2007
 
 homepage: http://simgrid.gforge.inria.fr/
 download: http://gforge.inria.fr/frs/?group_id=12

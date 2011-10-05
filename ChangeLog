@@ -1,6 +1,6 @@
-SimGrid (3.6.2) unstable; urgency=low 
+SimGrid (3.6.2) stable; urgency=low 
 
- The "not coding new stuff allows to polish old things" release.
+ The "Not coding new stuff allows to polish old things" release.
 
  General
  * New bindings to the NS3 packet level simulator (experimental)
@@ -35,10 +35,10 @@ SimGrid (3.6.2) unstable; urgency=low
  * Fix portability issue on unstable ubuntu: linker became picky on
    argument order
 
- -- `LC_ALL=C date` Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Wed Oct  5 15:51:01 CEST 2011 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 
-SimGrid (3.6.1) unstable; urgency=low 
+SimGrid (3.6.1) stable; urgency=low 
 
  The "Oops, we broke Macs too" release
 
