@@ -329,7 +329,7 @@ add_dependencies(dist dist-dir)
 # NOTE #
 ########
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Testing/Notes/)
-file(WRITE ${CMAKE_BINARY_DIR}/Testing/Notes/Build  "SVN version : ${SVN_VERSION}\n")
-file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Release     : ${PROJECT_NAME}-${soversion}\n")
+file(WRITE ${CMAKE_BINARY_DIR}/Testing/Notes/Build  "GIT version : ${GIT_VERSION}\n")
+file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Release     : ${DIST_NAME}\n")
 file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Pipol user  : $ENV{PIPOL_USER}\n")
 file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Pipol image : $ENV{PIPOL_IMAGE}\n")
