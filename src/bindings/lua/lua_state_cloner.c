@@ -126,10 +126,10 @@ static void sglua_get_table_by_ptr(lua_State* L, void* maestro_table_ptr) {
 /**
  * @brief Pops a value from the stack of a source state and pushes it on the
  * stack of another state.
- *
  * If the value is a table, its content is copied recursively.
  *
- * TODO: add support of closures
+ * This function is similar to lua_xmove() but it allows to move a value
+ * between two different global states.
  *
  * @param src the source state (not necessarily maestro)
  * @param dst the destination state
@@ -377,9 +377,33 @@ static void sglua_copy_table(lua_State* src, lua_State* dst) {
 static void sglua_copy_function(lua_State* src, lua_State* dst) {
 
   if (lua_iscfunction(src, -1)) {
-    /* it's a C function: just copy the pointer */
-    lua_CFunction f = lua_tocfunction(src, -1);
-    lua_pushcfunction(dst, f);
+    /* it's a C function */
+
+    XBT_DEBUG("It's a C function");
+    sglua_stack_dump("src before copying upvalues: ", src);
+
+    /* get the function pointer */
+    int function_index = lua_gettop(src);
+    lua_CFunction f = lua_tocfunction(src, function_index);
+
+    /* copy the upvalues */
+    int i = 0;
+    const char* upvalue_name = NULL;
+    do {
+      i++;
+      upvalue_name = lua_getupvalue(src, function_index, i);
+
+      if (upvalue_name != NULL) {
+        XBT_DEBUG("Upvalue %s", upvalue_name);
+        sglua_move_value(src, dst);
+      }
+    } while (upvalue_name != NULL);
+
+    sglua_stack_dump("src before copying pointer: ", src);
+
+    /* set the function */
+    lua_pushcclosure(dst, f, i - 1);
+    XBT_DEBUG("Function pointer copied");
   }
   else {
     /* it's a Lua function: dump it from src */
@@ -584,11 +608,9 @@ lua_State* sglua_clone_maestro(void) {
   lua_rawset(L, LUA_REGISTRYINDEX);
                                             /* -- */
 
-  /* open the standard libs (theoretically, this is not necessary as they can
-   * be inherited like any global values, but without a proper support of
-   * closures, iterators like ipairs don't work). */
-  XBT_DEBUG("Metatable of globals and registry set, opening standard libraries now");
-  luaL_openlibs(L);
+  /* opening the standard libs is not necessary as they are
+   * be inherited like any global values */
+  /* luaL_openlibs(L); */
 
   XBT_DEBUG("New state created");
 

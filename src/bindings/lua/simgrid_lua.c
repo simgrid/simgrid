@@ -8,6 +8,7 @@
 
 #include "simgrid_lua.h"
 #include "lua_state_cloner.h"
+#include "lua_utils.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua, "Lua Bindings");
 
@@ -23,24 +24,26 @@ static lua_State *lua_maestro_state;
 
 static void register_c_functions(lua_State *L);
 
-/*
 static void *my_checkudata (lua_State *L, int ud, const char *tname) {
+
+  XBT_DEBUG("Checking the task: ud = %d", ud);
+  sglua_stack_dump("my_checkudata: ", L);
   void *p = lua_touserdata(L, ud);
   lua_getfield(L, LUA_REGISTRYINDEX, tname);
   const void* correct_mt = lua_topointer(L, -1);
 
   int has_mt = lua_getmetatable(L, ud);
+  XBT_DEBUG("Checking the task: has metatable ? %d", has_mt);
   const void* actual_mt = NULL;
   if (has_mt) { actual_mt = lua_topointer(L, -1); lua_pop(L, 1); }
   XBT_DEBUG("Checking the task's metatable: expected %p, found %p", correct_mt, actual_mt);
-  stack_dump("my_checkudata: ", L);
+  sglua_stack_dump("my_checkudata: ", L);
 
   if (p == NULL || !lua_getmetatable(L, ud) || !lua_rawequal(L, -1, -2))
     luaL_typerror(L, ud, tname);
   lua_pop(L, 2);
   return p;
 }
-*/
 
 /**
  * @brief Ensures that a userdata on the stack is a task
@@ -52,6 +55,7 @@ static void *my_checkudata (lua_State *L, int ud, const char *tname) {
 static m_task_t checkTask(lua_State * L, int index)
 {
   m_task_t *pi, tk;
+  XBT_DEBUG("Lua task: %s", sglua_tostring(L, index));
   luaL_checktype(L, index, LUA_TTABLE);
   lua_getfield(L, index, "__simgrid_task");
 
