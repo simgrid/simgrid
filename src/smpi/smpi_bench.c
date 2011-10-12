@@ -178,10 +178,9 @@ unsigned int smpi_sleep(unsigned int secs)
 int smpi_gettimeofday(struct timeval *tv, struct timezone *tz)
 {
   double now = SIMIX_get_clock();
-
   if (tv) {
     tv->tv_sec = (time_t) now;
-    tv->tv_usec = (suseconds_t) (now * 1e6);
+    tv->tv_usec = (suseconds_t)((now - tv->tv_sec) * 1e6);
   }
   return 0;
 }
