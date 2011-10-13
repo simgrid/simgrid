@@ -10,7 +10,7 @@
 #include "xbt.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_utils, lua, "Lua helper functions");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_utils, bindings, "Lua helper functions");
 
 /**
  * @brief Returns a string representation of a value in the Lua stack.

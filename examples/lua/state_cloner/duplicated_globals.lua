@@ -22,7 +22,7 @@ function replace(...)
   please_dont_replace_me(...)
 end
 
--- Show a hello message and prints the global string
+-- Shows a hello message and prints the global string
 function please_dont_replace_me(...)
 
   simgrid.info("Hello from please_dont_replace_me(). I'm lucky, I still exist in this state.")

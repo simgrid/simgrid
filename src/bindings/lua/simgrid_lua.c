@@ -10,7 +10,7 @@
 #include "lua_state_cloner.h"
 #include "lua_utils.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(lua, "Lua Bindings");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
 static lua_State *lua_maestro_state;
 
@@ -314,13 +314,19 @@ static int Host_at(lua_State * L)
 
 static int Host_self(lua_State * L)
 {
+                                  /* -- */
   m_host_t host = MSG_host_self();
   lua_newtable(L);
-  m_host_t *lua_host =(m_host_t *)lua_newuserdata(L,sizeof(m_host_t));
+                                  /* table */
+  m_host_t* lua_host = (m_host_t*) lua_newuserdata(L, sizeof(m_host_t));
+                                  /* table ud */
   *lua_host = host;
   luaL_getmetatable(L, HOST_MODULE_NAME);
+                                  /* table ud mt */
   lua_setmetatable(L, -2);
+                                  /* table ud */
   lua_setfield(L, -2, "__simgrid_host");
+                                  /* table */
   return 1;
 }
 

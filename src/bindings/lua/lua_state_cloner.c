@@ -13,7 +13,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_state_cloner, lua, "Lua state management");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_state_cloner, bindings, "Lua state management");
 
 static void sglua_add_maestro_table(lua_State* L, int index, void* maestro_table_ptr);
 static void* sglua_get_maestro_table_ptr(lua_State* L, int index);
@@ -409,7 +409,7 @@ static void sglua_copy_function(lua_State* src, lua_State* dst) {
     /* it's a Lua function: dump it from src */
 
     s_sglua_buffer_t buffer;
-    buffer.capacity = 64;
+    buffer.capacity = 128; /* an empty function uses 77 bytes */
     buffer.size = 0;
     buffer.data = xbt_new(char, buffer.capacity);
 
@@ -417,6 +417,12 @@ static void sglua_copy_function(lua_State* src, lua_State* dst) {
     int error = lua_dump(src, sglua_memory_writer, &buffer);
     xbt_assert(!error, "Failed to dump the function from the source state: error %d",
         error);
+    XBT_DEBUG("Fonction dumped: %zu bytes", buffer.size);
+
+    /*
+    fwrite(buffer.data, buffer.size, buffer.size, stderr);
+    fprintf(stderr, "\n");
+    */
 
     /* load the chunk into dst */
     error = luaL_loadbuffer(dst, buffer.data, buffer.size, "(dumped function)");
@@ -609,7 +615,7 @@ lua_State* sglua_clone_maestro(void) {
                                             /* -- */
 
   /* opening the standard libs is not necessary as they are
-   * be inherited like any global values */
+   * inherited like any global values */
   /* luaL_openlibs(L); */
 
   XBT_DEBUG("New state created");
