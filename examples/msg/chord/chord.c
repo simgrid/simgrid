@@ -349,6 +349,7 @@ int node(int argc, char *argv[])
 
         if (status != MSG_OK) {
           XBT_DEBUG("Failed to receive a task. Nevermind.");
+          MSG_comm_destroy(node.comm_receive);
           node.comm_receive = NULL;
         }
         else {
@@ -358,35 +359,12 @@ int node(int argc, char *argv[])
           handle_task(&node, task_received);
         }
       }
-
-      // see if some communications are finished
-      /*
-      while ((index = MSG_comm_testany(node.comms)) != -1) {
-        comm_send = xbt_dynar_get_as(node.comms, index, msg_comm_t);
-        MSG_error_t status = MSG_comm_get_status(comm_send);
-        xbt_dynar_remove_at(node.comms, index, &comm_send);
-        XBT_DEBUG("Communication %p is finished with status %d, dynar size is now %lu",
-            comm_send, status, xbt_dynar_length(node.comms));
-	m_task_t task = MSG_comm_get_task(comm_send);
-        MSG_comm_destroy(comm_send);
-	if (status != MSG_OK) {
-	  task_data_destroy(MSG_task_get_data(task));
-	  MSG_task_destroy(task);
-	}
-      }
-      */
     }
 
-    // clean unfinished comms sent
-   /* unsigned int cursor;
-    xbt_dynar_foreach(node.comms, cursor, comm_send) {
-      m_task_t task = MSG_comm_get_task(comm_send);
-      MSG_task_cancel(task);
-      task_data_destroy(MSG_task_get_data(task));
-      MSG_task_destroy(task);
-      MSG_comm_destroy(comm_send);
-      // FIXME: the task is actually not destroyed because MSG thinks that the other side (whose process is dead) is still using it
-    }*/
+    if (node.comm_receive) {
+      MSG_comm_destroy(node.comm_receive);
+      node.comm_receive = NULL;
+    }
 
     // leave the ring
     leave(&node);
