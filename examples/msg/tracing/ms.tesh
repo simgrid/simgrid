@@ -3256,19 +3256,19 @@ $ $SG_TEST_EXENV cat tracing/ms.trace
 > %       Time date 
 > %       Type string 
 > %       Container string 
-> %       Value string 
+> %       Value double 
 > %EndEventDef
 > %EventDef PajeAddVariable 9 
 > %       Time date 
 > %       Type string 
 > %       Container string 
-> %       Value string 
+> %       Value double 
 > %EndEventDef
 > %EventDef PajeSubVariable 10 
 > %       Time date 
 > %       Type string 
 > %       Container string 
-> %       Value string 
+> %       Value double 
 > %EndEventDef
 > %EventDef PajeSetState 11 
 > %       Time date 
