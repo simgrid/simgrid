@@ -1,11 +1,14 @@
-/* SimGrid Lua bindings                                                     */
-
 /* Copyright (c) 2010. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/* SimGrid Lua bindings                                                     */
+
 #include "simgrid_lua.h"
+#include "lua_state_cloner.h"
+#include "lua_utils.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
@@ -19,62 +22,27 @@ static lua_State *lua_maestro_state;
 #define AS_MODULE_NAME "simgrid.AS"
 #define TRACE_MODULE_NAME "simgrid.Trace"
 
-static void stack_dump(const char *msg, lua_State *L);
-static m_task_t check_task(lua_State *L, int index);
 static void register_c_functions(lua_State *L);
 
-/* ********************************************************************************* */
-/*                            helper functions                                       */
-/* ********************************************************************************* */
+static void *my_checkudata (lua_State *L, int ud, const char *tname) {
 
-/**
- * @brief Dumps the Lua stack
- * @param msg a message to print
- * @param L a Lua state
- */
-static void stack_dump(const char *msg, lua_State *L)
-{
-  char buff[2048];
-  char *p = buff;
-  int i;
-  int top = lua_gettop(L);
+  XBT_DEBUG("Checking the task: ud = %d", ud);
+  sglua_stack_dump("my_checkudata: ", L);
+  void *p = lua_touserdata(L, ud);
+  lua_getfield(L, LUA_REGISTRYINDEX, tname);
+  const void* correct_mt = lua_topointer(L, -1);
 
-  fflush(stdout);
-  p += sprintf(p, "STACK(top=%d): ", top);
+  int has_mt = lua_getmetatable(L, ud);
+  XBT_DEBUG("Checking the task: has metatable ? %d", has_mt);
+  const void* actual_mt = NULL;
+  if (has_mt) { actual_mt = lua_topointer(L, -1); lua_pop(L, 1); }
+  XBT_DEBUG("Checking the task's metatable: expected %p, found %p", correct_mt, actual_mt);
+  sglua_stack_dump("my_checkudata: ", L);
 
-  for (i = 1; i <= top; i++) {  /* repeat for each level */
-    int t = lua_type(L, i);
-    switch (t) {
-
-    case LUA_TSTRING:          /* strings */
-      p += sprintf(p, "`%s'", lua_tostring(L, i));
-      break;
-
-    case LUA_TBOOLEAN:         /* booleans */
-      p += sprintf(p, lua_toboolean(L, i) ? "true" : "false");
-      break;
-
-    case LUA_TNUMBER:          /* numbers */
-      p += sprintf(p, "%g", lua_tonumber(L, i));
-      break;
-
-    case LUA_TTABLE:
-      p += sprintf(p, "Table");
-      break;
-
-    default:                   /* other values */
-      p += sprintf(p, "???");
-/*      if ((ptr = luaL_checkudata(L,i,TASK_MODULE_NAME))) {
-        p+=sprintf(p,"task");
-      } else {
-        p+=printf(p,"%s", lua_typename(L, t));
-      }*/
-      break;
-
-    }
-    p += sprintf(p, "  ");      /* put a separator */
-  }
-  XBT_INFO("%s%s", msg, buff);
+  if (p == NULL || !lua_getmetatable(L, ud) || !lua_rawequal(L, -1, -2))
+    luaL_typerror(L, ud, tname);
+  lua_pop(L, 2);
+  return p;
 }
 
 /**
@@ -87,9 +55,12 @@ static void stack_dump(const char *msg, lua_State *L)
 static m_task_t checkTask(lua_State * L, int index)
 {
   m_task_t *pi, tk;
+  XBT_DEBUG("Lua task: %s", sglua_tostring(L, index));
   luaL_checktype(L, index, LUA_TTABLE);
   lua_getfield(L, index, "__simgrid_task");
-  pi = (m_task_t *) luaL_checkudata(L, -1, TASK_MODULE_NAME);
+
+  pi = (m_task_t *) luaL_checkudata(L, lua_gettop(L), TASK_MODULE_NAME);
+
   if (pi == NULL)
     luaL_typerror(L, index, TASK_MODULE_NAME);
   tk = *pi;
@@ -179,7 +150,7 @@ static int Task_destroy(lua_State * L)
 
 static int Task_send(lua_State * L)
 {
-  //stackDump("send ",L);
+  //stack_dump("send ", L);
   m_task_t tk = checkTask(L, 1);
   const char *mailbox = luaL_checkstring(L, 2);
   lua_pop(L, 1);                // remove the string so that the task is on top of it
@@ -216,7 +187,7 @@ static int Task_recv_with_timeout(lua_State *L)
 
   if (res == MSG_OK) {
     lua_State *sender_stack = MSG_task_get_data(tk);
-    lua_xmove(sender_stack, L, 1);        // copy the data directly from sender's stack
+    sglua_move_value(sender_stack, L);        // copy the data directly from sender's stack
     MSG_task_set_data(tk, NULL);
   }
   else {
@@ -285,7 +256,7 @@ static m_host_t checkHost(lua_State * L, int index)
   m_host_t *pi, ht;
   luaL_checktype(L, index, LUA_TTABLE);
   lua_getfield(L, index, "__simgrid_host");
-  pi = (m_host_t *) luaL_checkudata(L, -1, HOST_MODULE_NAME);
+  pi = (m_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
   if (pi == NULL)
     luaL_typerror(L, index, HOST_MODULE_NAME);
   ht = *pi;
@@ -343,13 +314,19 @@ static int Host_at(lua_State * L)
 
 static int Host_self(lua_State * L)
 {
+                                  /* -- */
   m_host_t host = MSG_host_self();
   lua_newtable(L);
-  m_host_t *lua_host =(m_host_t *)lua_newuserdata(L,sizeof(m_host_t));
+                                  /* table */
+  m_host_t* lua_host = (m_host_t*) lua_newuserdata(L, sizeof(m_host_t));
+                                  /* table ud */
   *lua_host = host;
   luaL_getmetatable(L, HOST_MODULE_NAME);
+                                  /* table ud mt */
   lua_setmetatable(L, -2);
+                                  /* table ud */
   lua_setfield(L, -2, "__simgrid_host");
+                                  /* table */
   return 1;
 }
 
@@ -555,11 +532,10 @@ static int run_lua_code(int argc, char **argv)
 {
   XBT_DEBUG("Run lua code %s", argv[0]);
 
-  lua_State *L = lua_newthread(lua_maestro_state);
-  int ref = luaL_ref(lua_maestro_state, LUA_REGISTRYINDEX);     /* protect the thread from being garbage collected */
+  lua_State *L = sglua_clone_maestro();
   int res = 1;
 
-  /* start the co-routine */
+  /* start the function */
   lua_getglobal(L, argv[0]);
   xbt_assert(lua_isfunction(L, -1),
               "The lua function %s does not seem to exist", argv[0]);
@@ -581,8 +557,6 @@ static int run_lua_code(int argc, char **argv)
     lua_pop(L, 1);              /* pop returned value */
   }
 
-  /* cleanups */
-  luaL_unref(lua_maestro_state, LUA_REGISTRYINDEX, ref);
   XBT_DEBUG("Execution of Lua code %s is over", (argv ? argv[0] : "(null)"));
 
   return res;
@@ -772,9 +746,30 @@ int luaopen_simgrid(lua_State *L)
   /* Keep the context mechanism informed of our lua world today */
   lua_maestro_state = L;
 
+  /* initialize access to my tables by children Lua states */
+  lua_newtable(L);
+  lua_setfield(L, LUA_REGISTRYINDEX, "simgrid.maestro_tables");
+
   register_c_functions(L);
 
   return 1;
+}
+
+/**
+ * @brief Returns whether a Lua state is the maestro state.
+ * @param L a Lua state
+ * @return true if this is maestro
+ */
+int sglua_is_maestro(lua_State* L) {
+  return L == lua_maestro_state;
+}
+
+/**
+ * @brief Returns the maestro state.
+ * @return true the maestro Lua state
+ */
+lua_State* sglua_get_maestro(void) {
+  return lua_maestro_state;
 }
 
 /**
