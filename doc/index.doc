@@ -17,10 +17,10 @@ Grids.
 \htmlonly <!-- ______BODY_END______ --!> \endhtmlonly
 
   - The official webpage is <a href="http://simgrid.gforge.inria.fr/">simgrid.gforge.inria.fr</a>. 
-  - The Frequently Asked Questions are <a href="faq.html">here</a>. 
+  - The Frequently Asked Questions are <a href="http://simgrid.gforge.inria.fr/faq.html">here</a>. 
   - The development webpage is <a href="https://gforge.inria.fr/projects/simgrid//">gforge.inria.fr/projects/simgrid</a>. 
   - The user mailing list is <simgrid-user@lists.gforge.inria.fr>
-  - The SimGrid software package can be downloaded from <a href="https://gforge.inria.fr/frs/?group_id=12">here</a>.
+  - The SimGrid software package can be downloaded from <a href="http://simgrid.gforge.inria.fr/download.php">here</a>.
 <br>
 
 <hr>
@@ -113,10 +113,10 @@ See the \ref XBT_API section for more details.
 \htmlonly <!-- ______BODY_BEGIN______ --!> \endhtmlonly
 <br>
 The SimGrid software package can be downloaded from 
-<a href="https://gforge.inria.fr/frs/?group_id=12">here</a>.<br>
+<a href="http://simgrid.gforge.inria.fr/download.php">here</a>.<br>
 
 If you are interested in the history of SimGrid and in current and planned development,
-you can find out more <a href="history.html">here</a>.
+you can find out more <a href="http://simgrid.gforge.inria.fr/history.html">here</a>.
 
 Any question, remark or suggestion are welcome on the 
 <a href="http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user">SimGrid users
