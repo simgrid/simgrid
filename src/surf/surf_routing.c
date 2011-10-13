@@ -1931,6 +1931,7 @@ static void routing_parse_Speer(void)
   SURFXML_BUFFER_SET(host_availability_file, peer_availability_file);
   SURFXML_BUFFER_SET(host_state_file, peer_state_file);
   SURFXML_BUFFER_SET(host_coordinates, "");
+  SURFXML_BUFFER_SET(host_core, "1.0");
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
 
