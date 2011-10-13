@@ -200,6 +200,8 @@ void SIMIX_process_kill(smx_process_t process) {
   process->blocked = 0;
   process->suspended = 0;
   /* FIXME: set doexception to 0 also? */
+  /* FIXME: asynchronous communication actions are not destroyed:
+   * another process may find a matching rdv with me after I'm freed */
 
   if (process->waiting_action) {
 

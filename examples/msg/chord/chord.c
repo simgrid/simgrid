@@ -82,6 +82,7 @@ static int *powers2;
 
 // utility functions
 static void chord_initialize(void);
+static void chord_exit(void);
 static int normalize(int id);
 static int is_in_interval(int id, int start, int end);
 static void get_mailbox(int host_id, char* mailbox);
@@ -125,6 +126,11 @@ static void chord_initialize(void)
   }
   nb_keys = pow;
   XBT_DEBUG("Sets nb_keys to %d", nb_keys);
+}
+
+static void chord_exit(void)
+{
+  xbt_free(powers2);
 }
 
 /**
@@ -342,7 +348,9 @@ int node(int argc, char *argv[])
           MSG_process_sleep(5);
         }
       }
-      else {
+
+      if (node.comm_receive && MSG_comm_test(node.comm_receive)) {
+
         // a transfer has occured
 
         MSG_error_t status = MSG_comm_get_status(node.comm_receive);
@@ -914,6 +922,7 @@ int main(int argc, char *argv[])
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 
   MSG_clean();
+  chord_exit();
 
   if (res == MSG_OK)
     return 0;
