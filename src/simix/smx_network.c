@@ -18,6 +18,7 @@ unsigned long int smx_total_comms = 0;
 static void SIMIX_waitany_req_remove_from_actions(smx_req_t req);
 static void SIMIX_comm_copy_data(smx_action_t comm);
 static smx_action_t SIMIX_comm_new(e_smx_comm_type_t type);
+static void SIMIX_comm_remove_from_processes(smx_action_t action);
 static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm);
 static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm);
 static smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
@@ -551,6 +552,8 @@ void SIMIX_comm_finish(smx_action_t action)
   unsigned int destroy_count = 0;
   smx_req_t req;
 
+  SIMIX_comm_remove_from_processes(action);
+
   while ((req = xbt_fifo_shift(action->request_list))) {
 
     /* If a waitany request is waiting for this action to finish, then remove
@@ -678,33 +681,46 @@ void SIMIX_post_comm(smx_action_t action)
   XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d",
       action, action->state, action->comm.src_proc, action->comm.dst_proc, action->comm.detached);
 
-  /* remove the action from pending communications of both processes (if they still exist) */
+  /* destroy the surf actions associated with the Simix communication */
+  SIMIX_comm_destroy_internal_actions(action);
+
+  /* if there are requests associated with the action, then answer them */
+  if (xbt_fifo_size(action->request_list)) {
+    SIMIX_comm_finish(action);
+  }
+  else {
+    SIMIX_comm_remove_from_processes(action);
+  }
+}
+
+/**
+ * \brief Removes a communication action from the list of pending communications
+ * of both processes (if they still exist)
+ * \param action a communication action
+ */
+static void SIMIX_comm_remove_from_processes(smx_action_t action) {
+
   if (action->comm.src_proc) {
     xbt_fifo_remove(action->comm.src_proc->comms, action);
   }
   if (action->comm.dst_proc) {
     xbt_fifo_remove(action->comm.dst_proc->comms, action);
   }
-
-  /* destroy the surf actions associated with the Simix communication */
-  SIMIX_comm_destroy_internal_actions(action);
-
-  /* if there are requests associated with the action, then answer them */
-  if (xbt_fifo_size(action->request_list))
-    SIMIX_comm_finish(action);
 }
 
 void SIMIX_comm_cancel(smx_action_t action)
 {
-  /* If the action is a waiting state means that it is still in a rdv */
+  /* if the action is a waiting state means that it is still in a rdv */
   /* so remove from it and delete it */
   if (action->state == SIMIX_WAITING) {
     SIMIX_rdv_remove(action->comm.rdv, action);
     action->state = SIMIX_FAILED;
-  } else {
-    /* When running the MC there are no surf actions */
-    if(!MC_IS_ENABLED)
-      surf_workstation_model->action_cancel(action->comm.surf_comm);
+  }
+  else if (!MC_IS_ENABLED
+      && (action->state == SIMIX_READY || action->state == SIMIX_RUNNING)) {
+
+    /* when running the MC there are no surf actions */
+    surf_workstation_model->action_cancel(action->comm.surf_comm);
   }
 }
 

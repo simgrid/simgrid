@@ -437,8 +437,8 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
  * \brief Sends a task on a mailbox.
  *
  * This is a non blocking detached send function.
- * Think of it as a best effort send. The communication
- * object will be destroyed by the receiver (if any).
+ * Think of it as a best effort send. The task should
+ * be destroyed by the receiver.
  *
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
@@ -623,9 +623,7 @@ void MSG_comm_destroy(msg_comm_t comm)
     (*comm->task_received)->simdata->isused = 0;
   }
 
-  /* FIXME auto-destroy comms from SIMIX to avoid this request */
-  /*SIMIX_req_comm_destroy(comm->s_comm);*/
-  free(comm);
+  xbt_free(comm);
 }
 
 /** \ingroup msg_gos_functions
