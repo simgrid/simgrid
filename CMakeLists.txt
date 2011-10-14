@@ -127,6 +127,9 @@ set(JAVA_EXAMPLES
 	examples/pingPong/Sender.java
 	examples/pingPong/Receiver.java
 	examples/pingPong/PingPongTest.java
+	examples/master_slave_bypass/Master.java
+	examples/master_slave_bypass/MsBypass.java
+	examples/master_slave_bypass/Slave.java
 )
 
 set(CMAKE_SRC
@@ -144,6 +147,7 @@ set(XML_FILES
     examples/pingPong/pingPongDeployment.xml
     examples/basic/basicDeployment.xml
     examples/basic/deploy.xml
+    examples/master_slave_bypass/platform.xml
 )
 
 set(source_to_pack
@@ -205,11 +209,12 @@ add_custom_target(simgrid_jar ALL
 add_custom_command(
 	COMMENT "Build examples for java"
 	OUTPUT	${JAVA_EXAMPLES_CLASS}
-	
+	DEPENDS ${JAVA_EXAMPLES}
   	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/basic/*.java  
  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/pingPong/*.java
   	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/commTime/*.java
   	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/*.java              			
+	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/*.java
 )
 add_custom_target(simgrid_java_examples ALL
 	DEPENDS ${JAVA_EXAMPLES_CLASS}
@@ -243,6 +248,10 @@ java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar 
 ADD_TEST(mutualExclusion
 java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar mutualExclusion/centralized/MutexCentral ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/ring3.xml ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
 )
+ADD_TEST(bypass
+java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar master_slave_bypass/MsBypass ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/platform.xml
+)
+
 
 ##########################################
 # Set the  DYLD_LIBRARY_PATH for mac     #

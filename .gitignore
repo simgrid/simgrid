@@ -1,4 +1,8 @@
 *.class
 simgrid.jar
 libSG_java.so
-
+build/
+*.dylib
+.project
+.cproject
+.classpath
