@@ -807,8 +807,7 @@ void SIMIX_req_comm_destroy(smx_action_t comm)
 {
   xbt_assert(comm, "Invalid parameter");
 
-  /* FIXME remove this request type: comms are auto-destroyed now,
-   * but what happens with unfinished comms? */
+  /* FIXME remove this request type: comms are auto-destroyed now */
 
   /*
   smx_req_t req = SIMIX_req_mine();

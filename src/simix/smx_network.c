@@ -63,8 +63,7 @@ void SIMIX_rdv_destroy(smx_rdv_t rdv)
 void SIMIX_rdv_free(void *data)
 {
   smx_rdv_t rdv = (smx_rdv_t) data;
-  if (rdv->name)
-    xbt_free(rdv->name);
+  xbt_free(rdv->name);
   xbt_fifo_free(rdv->comm_fifo);
   xbt_free(rdv);  
 }
@@ -310,9 +309,10 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
     action->state = SIMIX_READY;
     action->comm.type = SIMIX_COMM_READY;
   }
+  xbt_fifo_push(src_proc->comms, action);
 
-  /* If the communication action is detached then decrease the refcount
-   * by one, so it will be eliminated by the receivers destroy call */
+  /* if the communication action is detached then decrease the refcount
+   * by one, so it will be eliminated by the receiver's destroy call */
   if (detached) {
     action->comm.detached = 1;
     action->comm.refcount--;
@@ -353,6 +353,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
     action->state = SIMIX_READY;
     action->comm.type = SIMIX_COMM_READY;
   }
+  xbt_fifo_push(dst_proc->comms, action);
 
   /* Setup communication request */
   action->comm.dst_proc = dst_proc;
@@ -513,6 +514,7 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
 {
   /* If both the sender and the receiver are already there, start the communication */
   if (action->state == SIMIX_READY) {
+
     smx_host_t sender = action->comm.src_proc->smx_host;
     smx_host_t receiver = action->comm.dst_proc->smx_host;
 
@@ -673,13 +675,21 @@ void SIMIX_post_comm(smx_action_t action)
   else
     action->state = SIMIX_DONE;
 
-  XBT_DEBUG("SIMIX_post_comm: action state = %d", action->state);
+  XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d",
+      action, action->state, action->comm.src_proc, action->comm.dst_proc, action->comm.detached);
 
-  /* After this point the surf actions associated with the simix communicate
-     action are no longer needed, thus we delete them. */
+  /* remove the action from pending communications of both processes (if they still exist) */
+  if (action->comm.src_proc) {
+    xbt_fifo_remove(action->comm.src_proc->comms, action);
+  }
+  if (action->comm.dst_proc) {
+    xbt_fifo_remove(action->comm.dst_proc->comms, action);
+  }
+
+  /* destroy the surf actions associated with the Simix communication */
   SIMIX_comm_destroy_internal_actions(action);
 
-  /* If there are requests associated with the action, then answer them */
+  /* if there are requests associated with the action, then answer them */
   if (xbt_fifo_size(action->request_list))
     SIMIX_comm_finish(action);
 }
