@@ -27,10 +27,9 @@ public class MsBypass {
     /* bypass deploymemt */
     try {
     Master process1 = new Master("bob","process1");
-    Slave process2 = new Slave("alice","process2");
     }
     catch (MsgException e){
-    	System.out.println("Mes couilles!!!!!");
+    	System.out.println("Create processes failed!");
     }
     
 	/*  execute the simulation. */

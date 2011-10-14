@@ -12,11 +12,16 @@ import org.simgrid.msg.TimeoutException;
 import org.simgrid.msg.TransferFailureException;
 import org.simgrid.msg.Process;
 
+import master_slave_bypass.FinalizeTask;
+
 public class Slave extends Process {
 	public Slave(String hostname, String name) throws HostNotFoundException {
 		super(hostname, name);
 	}
 	public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
 	Msg.info("Slave Hello!");
+	FinalizeTask task = new FinalizeTask();
+	Msg.info("Send finalize!");
+	task.send("alice");
 	}
 }

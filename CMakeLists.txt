@@ -130,6 +130,7 @@ set(JAVA_EXAMPLES
 	examples/master_slave_bypass/Master.java
 	examples/master_slave_bypass/MsBypass.java
 	examples/master_slave_bypass/Slave.java
+	examples/master_slave_bypass/FinalizeTask.java
 )
 
 set(CMAKE_SRC
