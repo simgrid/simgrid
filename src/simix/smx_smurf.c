@@ -29,7 +29,8 @@ void SIMIX_request_push()
 void SIMIX_request_answer(smx_req_t req)
 {
   if (req->issuer != simix_global->maestro_process){
-    XBT_DEBUG("Answer request %s (%d)", SIMIX_request_name(req->call), req->call);
+    XBT_DEBUG("Answer request %s (%d) issued by %s (%p)", SIMIX_request_name(req->call), req->call,
+        req->issuer->name, req->issuer);
     req->issuer->request.call = REQ_NO_REQ;
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, req->issuer);
   }

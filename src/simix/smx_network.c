@@ -625,7 +625,9 @@ void SIMIX_comm_finish(smx_action_t action)
       case SIMIX_LINK_FAILURE:
         TRY {
 	  XBT_DEBUG("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p)",
-	      action, action->comm.src_proc->smx_host->name, action->comm.dst_proc->smx_host->name,
+	      action,
+	      action->comm.src_proc ? action->comm.src_proc->smx_host->name : NULL,
+	      action->comm.dst_proc ? action->comm.dst_proc->smx_host->name : NULL,
 	      req->issuer->name, req->issuer);
           THROWF(network_error, 0, "Link failure");
         }
