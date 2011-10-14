@@ -137,10 +137,13 @@ static void action_recv(const char *const *action)
 #endif
 
   XBT_DEBUG("Receiving: %s", name);
-  MSG_task_receive(&task, mailbox_name);
+  MSG_error_t res = MSG_task_receive(&task, mailbox_name);
   //  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
   XBT_VERB("%s %f", name, MSG_get_clock() - clock);
-  MSG_task_destroy(task);
+
+  if (res == MSG_OK) {
+    MSG_task_destroy(task);
+  }
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);
