@@ -200,13 +200,6 @@ MSG_error_t MSG_task_cancel(m_task_t task)
     SIMIX_req_comm_cancel(task->simdata->comm);
     task->simdata->isused = 0;
   }
-  else {
-    static int warned = 0;
-    if (!warned) {
-      XBT_WARN("Cannot cancel a non-running task");
-      warned = 1;
-    }
-  }
   return MSG_OK;
 }
 
