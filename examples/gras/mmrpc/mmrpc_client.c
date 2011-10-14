@@ -37,7 +37,10 @@ int client(int argc, char *argv[])
 
   XBT_INFO("Launch client (server on %s:%d)", host, port);
 
-  /* 3. Create a socket to speak to the server */
+  /* 3. Register the messages (before use) */
+  mmrpc_register_messages();
+
+  /* 4. Create a socket to speak to the server */
   while (!connected) {
     TRY {
       toserver = gras_socket_client(host, port);
@@ -51,10 +54,6 @@ int client(int argc, char *argv[])
     }
   }
   XBT_INFO("Connected to %s:%d.", host, port);
-
-
-  /* 4. Register the messages (before use) */
-  mmrpc_register_messages();
 
   /* 5. Keep the user informed of what's going on */
   XBT_INFO(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<",

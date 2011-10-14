@@ -51,7 +51,13 @@ int server(int argc, char *argv[])
     port = atoi(argv[1]);
   }
 
-  /* 3. Create my master socket */
+  /* 3. Register the known messages and payloads. */
+  mmrpc_register_messages();
+
+  /* 4. Register my callback */
+  gras_cb_register("request", &server_cb_request_handler);
+
+  /* 5. Create my master socket */
   XBT_INFO("Launch server (port=%d)", port);
   TRY {
     sock = gras_socket_server(port);
@@ -59,12 +65,6 @@ int server(int argc, char *argv[])
   CATCH_ANONYMOUS {
     RETHROWF("Unable to establish a server socket: %s");
   }
-
-  /* 4. Register the known messages and payloads. */
-  mmrpc_register_messages();
-
-  /* 5. Register my callback */
-  gras_cb_register("request", &server_cb_request_handler);
 
   /* 6. Wait up to 10 minutes for an incomming message to handle */
   gras_msg_handle(600.0);
