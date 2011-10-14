@@ -28,7 +28,7 @@ static int new_comm(MPI_Comm comm) {
 static MPI_Comm get_comm(int comm) {
   if(comm == -2) {
     return MPI_COMM_SELF;
-  } else if(comm >= 0) {
+  } else if(comm_lookup && comm >= 0 && comm < (int)xbt_dynar_length(comm_lookup)) {
     return *(MPI_Comm*)xbt_dynar_get_ptr(comm_lookup, comm);
   }
   return MPI_COMM_NULL;
@@ -123,9 +123,13 @@ void mpi_init__(int* ierr) {
 void mpi_finalize__(int* ierr) {
    *ierr = MPI_Finalize();
    xbt_dynar_free(&op_lookup);
+   op_lookup = NULL;
    xbt_dynar_free(&datatype_lookup);
+   datatype_lookup = NULL;
    xbt_dict_free(&request_lookup);
+   request_lookup = NULL;
    xbt_dynar_free(&comm_lookup);
+   comm_lookup = NULL;
 }
 
 void mpi_abort__(int* comm, int* errorcode, int* ierr) {
