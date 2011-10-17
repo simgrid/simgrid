@@ -127,6 +127,7 @@ void STag_surfxml_include(void)
   surf_file_to_parse = surf_fopen(A_surfxml_include_file, "r");
   xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n",
               A_surfxml_include_file);
+  xbt_dynar_push_as(surf_input_buffer_stack,YY_BUFFER_STATE,surf_input_buffer);
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse_push_buffer_state(surf_input_buffer);
   fflush(NULL);
@@ -138,6 +139,7 @@ void ETag_surfxml_include(void)
   fclose(surf_file_to_parse);
   xbt_dynar_pop(surf_file_to_parse_stack, &surf_file_to_parse);
   surf_parse_pop_buffer_state();
+  surf_input_buffer = xbt_dynar_pop_as(surf_input_buffer_stack,YY_BUFFER_STATE);
   XBT_INFO("ETag_surfxml_include '%s'",A_surfxml_include_file);
 }
 
