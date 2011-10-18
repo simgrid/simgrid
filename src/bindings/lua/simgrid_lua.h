@@ -1,8 +1,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef GRAS_STUB_GENERATOR_H
-#define GRAS_STUB_GENERATOR_H
+#ifndef SIMGRID_LUA_H
+#define SIMGRID_LUA_H
 
 #include <stdio.h>
 #include <lauxlib.h>
@@ -110,4 +110,4 @@ int console_parse_platform(void);
 int console_parse_application(void);
 int console_parse_platform_wsL07(void);
 
-#endif
+#endif  /* SIMGRID_LUA_H */
