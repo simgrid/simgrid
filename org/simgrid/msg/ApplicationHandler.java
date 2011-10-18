@@ -1,7 +1,7 @@
 /*
  * These are the upcalls used by the FleXML parser for application files
  *
- * Copyright 2006,2007,2010 The SimGrid team.           
+ * Copyright 2006,2007,2010,2011 The SimGrid team.           
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
@@ -14,10 +14,6 @@ package org.simgrid.msg;
 import java.util.Hashtable;
 import java.util.Vector;
 
-/**
- *
- * @author lbobelin
- */
 public final class ApplicationHandler {
 
 

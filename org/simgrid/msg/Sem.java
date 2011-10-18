@@ -1,7 +1,7 @@
 /*
  * Simple semaphore implementation, from Doug Lea (public domain)
  *
- * Copyright 2006,2007,2010 The SimGrid Team           
+ * Copyright 2006,2007,2010,2011 The SimGrid Team           
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
@@ -11,11 +11,6 @@
 
 package org.simgrid.msg;
 
-
-/**
- *
- * @author lbobelin
- */
 public class Sem {
 	/******************************************************************/ 
 	/* Simple semaphore implementation, from Doug Lea (public domain) */ 

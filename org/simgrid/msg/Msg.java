@@ -1,7 +1,7 @@
 /*
  * JNI interface to C code for MSG.
  * 
- * Copyright 2006,2007,2010 The SimGrid Team.           
+ * Copyright 2006,2007,2010,2011 The SimGrid Team.           
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
@@ -11,10 +11,6 @@
 
 package org.simgrid.msg;
 
-/**
- *
- * @author lbobelin
- */
 public final class Msg {
 	/* Statically load the library which contains all native functions used in here */
 	static {
