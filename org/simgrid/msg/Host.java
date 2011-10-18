@@ -56,7 +56,10 @@ public class Host {
 	 * User data.
 	 */ 
 	private Object data;
-	protected Host() {
+    /**
+     *
+     */
+    protected Host() {
 		this.bind = 0;
 		this.data = null;
 	};
@@ -67,7 +70,8 @@ public class Host {
 	 *
 	 * @param name		The name of the host to get.
 	 *
-	 * @exception		HostNotFoundException if the name of the host is not valid.
+     * @return
+     * @exception		HostNotFoundException if the name of the host is not valid.
 	 *					NativeException if the native version of this method failed.
 	 */ 
 	public static Host getByName(String name) 
@@ -119,20 +123,26 @@ public class Host {
 	/**
 	 * Sets the data of the host.
 	 *
-	 */ 
+     *
+     * @param data
+     */
 	public void setData(Object data) {
 		this.data = data;
 	} 
 	/**
 	 * Gets the data of the host.
-	 */ 
+     *
+     * @return
+     */
 	public Object getData() {
 		return this.data;
 	}
 
 	/**
 	 * Checks whether a host has data.
-	 */ 
+     *
+     * @return
+     */
 	public boolean hasData() {
 		return null != this.data;
 	}
@@ -158,7 +168,9 @@ public class Host {
 		return MsgNative.hostGetSpeed(this);
 	}
 
-	/** This method tests if a host is avail. */
+    /** This method tests if a host is avail.
+     * @return
+     */
 	public boolean isAvail() {
 		return MsgNative.hostIsAvail(this);
 	}

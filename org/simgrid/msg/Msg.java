@@ -11,6 +11,10 @@
 
 package org.simgrid.msg;
 
+/**
+ *
+ * @author lbobelin
+ */
 public final class Msg {
 	/* Statically load the library which contains all native functions used in here */
 	static {
@@ -26,7 +30,9 @@ public final class Msg {
 	}
 
 	/* FIXME: kill these C crufts */
-	/** Returns the last error code of the simulation */
+    /** Returns the last error code of the simulation
+     * @return
+     */
 	public final static native int getErrCode();
 
 	/** Everything is right. Keep on going the way ! */
@@ -50,10 +56,14 @@ public final class Msg {
 	/** You've done something wrong. You'd better look at it... */
 	public static final int FATAL_ERROR = 5;
 
-	/** Retrieve the simulation time */
+    /** Retrieve the simulation time
+     * @return
+     */
 	public final static native double getClock();
 
-	/** Issue an information logging message */
+    /** Issue an information logging message
+     * @param s
+     */
 	public final static native void info(String s);
 
 	/*********************************************************************************
@@ -90,11 +100,15 @@ public final class Msg {
 	/**
 	 * The method to deploy the simulation.
 	 *
-	 * @param platformFile    The XML file which contains the description of the application to deploy.
-	 */
+     *
+     * @param deploymentFile
+     */
 	public final static native void deployApplication(String deploymentFile);
 
-	/** Example launcher. You can use it or provide your own launcher, as you wish */
+    /** Example launcher. You can use it or provide your own launcher, as you wish
+     * @param args
+     * @throws MsgException
+     */
 	static public void main(String[]args) throws MsgException {
 		/* initialize the MSG simulation. Must be done before anything else (even logging). */
 		Msg.init(args);

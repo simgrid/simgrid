@@ -14,6 +14,10 @@ package org.simgrid.msg;
 import java.util.Hashtable;
 import java.util.Vector;
 
+/**
+ *
+ * @author lbobelin
+ */
 public final class ApplicationHandler {
 
 
@@ -23,7 +27,10 @@ public final class ApplicationHandler {
 		 */
 		public  static Vector<String> args;
 
-		public  static Hashtable<String,String> properties;
+        /**
+         *
+         */
+        public  static Hashtable<String,String> properties;
 
 		/**
 		 * The name of the host of the process.
@@ -41,7 +48,9 @@ public final class ApplicationHandler {
 		 * and clear the vector containing the arguments of the 
 		 * previouse process function if needed.
 		 *
-		 * @host				The host of the process to create.
+         * @param hostName_
+         * @param function_
+         * @host				The host of the process to create.
 		 * @function			The function of the process to create.
 		 *
 		 */
@@ -60,23 +69,36 @@ public final class ApplicationHandler {
 		 * It stores the argument of the function of the next
 		 * process to create in the vector of arguments.
 		 *
-		 * @arg					The argument to add.
+         * @param arg
+         * @arg					The argument to add.
 		 *
 		 */ public  static void registerProcessArg(String arg) {
 			 args.add(arg);
 		 }
 
-		 public  static void setProperty(String id, String value)
+         /**
+          *
+          * @param id
+          * @param value
+          */
+         public  static void setProperty(String id, String value)
 		 {
 			 properties.put(id,value);	
 		 }
 
-		 public  static String getHostName()
+         /**
+          *
+          * @return
+          */
+         public  static String getHostName()
 		 {
 			 return hostName;
 		 }
 
-		 @SuppressWarnings("unchecked")
+         /**
+          *
+          */
+         @SuppressWarnings("unchecked")
 		 public  static void createProcess() {
 			 try {
 				 Class<Process> cls = (Class<Process>) Class.forName(function);
@@ -116,29 +138,52 @@ public final class ApplicationHandler {
 		 }
 	
 
-	public  static void onStartDocument() {
+         /**
+          *
+          */
+         public  static void onStartDocument() {
 			args = new Vector<String>();
 			properties = new Hashtable<String,String>();
 			hostName = null;
 			function = null;
 	}
 
-	public  static void onBeginProcess(String hostName, String function) {
+         /**
+          *
+          * @param hostName
+          * @param function
+          */
+         public  static void onBeginProcess(String hostName, String function) {
 		setProcessIdentity(hostName, function);
 		
 	}
-	public  static void onProperty(String id, String value) {
+    /**
+     *
+     * @param id
+     * @param value
+     */
+    public  static void onProperty(String id, String value) {
 		setProperty(id, value);
 	}
 
-	public  static void onProcessArg(String arg) {
+    /**
+     *
+     * @param arg
+     */
+    public  static void onProcessArg(String arg) {
 		registerProcessArg(arg);
 	}
 
-	public  static void onEndProcess() {
+    /**
+     *
+     */
+    public  static void onEndProcess() {
 		createProcess();
 	}        
 
-	public static void onEndDocument() {
+    /**
+     *
+     */
+    public static void onEndDocument() {
 	}  
 }

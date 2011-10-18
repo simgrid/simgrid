@@ -8,16 +8,37 @@
  * it and/or modify it under the terms of the license 
  *(GNU LGPL) which comes with this package. 
  */  
-package org.simgrid.msg;
-public class Sem {
+
+package org.simgrid.msg;
+
+
+/**
+ *
+ * @author lbobelin
+ */
+public class Sem {
 	/******************************************************************/ 
 	/* Simple semaphore implementation, from Doug Lea (public domain) */ 
 	/******************************************************************/ 
 	private int permits_;
-	public Sem(int i) {		permits_ = i;	} 	public void acquire() throws InterruptedException {
+
+    /**
+     *
+     * @param i
+     */
+    public Sem(int i) {
+		permits_ = i;
+	} 
+
+    /**
+     *
+     * @throws java.lang.InterruptedException
+     */
+    public void acquire() throws InterruptedException {
 		if (Thread.interrupted())
 			throw new InterruptedException();
-		synchronized(this) {
+
+		synchronized(this) {
 			try {
 				while (permits_ <= 0)
 					wait();
@@ -29,7 +50,12 @@
 			}
 		}
 	}
-	public synchronized void release() {
+
+    /**
+     *
+     */
+    public synchronized void release() {
 		++(this.permits_);
 		notify();
-	} } 
+	} 
+} 

@@ -67,20 +67,33 @@ public abstract class Process extends Thread {
 	 */
 	public long id;
 
-	public Hashtable<String,String> properties;
+    /**
+     *
+     */
+    public Hashtable<String,String> properties;
 
 	/**
 	 * The name of the process.							
 	 */
 	protected String name;
-	public String msgName() {
+    /**
+     *
+     * @return
+     */
+    public String msgName() {
 		return this.name;
 	}
 	/** The arguments of the method function of the process. */     
 	public Vector<String> args;
 
 	/* process synchronization tools */
-	protected Sem schedBegin, schedEnd;
+    /**
+     *
+     */
+    /**
+     *
+     */
+    protected Sem schedBegin, schedEnd;
 
 	/**
 	 * Default constructor (used in ApplicationHandler to initialize it)
@@ -120,7 +133,8 @@ public abstract class Process extends Thread {
 	 * @param args			The arguments of the main function of the process.
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
-	 *                      NativeException
+     *                      NativeException
+     * @throws NativeException
 	 *
 	 */ 
 	public Process(String hostname, String name, String args[]) throws HostNotFoundException, NativeException {
@@ -176,12 +190,23 @@ public abstract class Process extends Thread {
 		return MsgNative.processKillAll(resetPID);
 	}
 
+
+	/**
+	 * This method kill the current process.
+	 * @param process  the process to be killed.
+	 *
+	 */
+	public static void kill(Process process) {
+		 MsgNative.processKill(process);
+	}
 	/**
 	 * This method adds an argument in the list of the arguments of the main function
 	 * of the process. 
 	 *
 	 * @param arg			The argument to add.
-	 */
+     *
+     * @deprecated
+     */
 	@Deprecated
 	protected void addArg(String arg) {
 		args.add(arg);
@@ -218,7 +243,6 @@ public abstract class Process extends Thread {
 	 *
 	 * @return				The host instance of the process.
 	 *
-	 * @exception			NativeException on error in the native SimGrid code
 	 *
 	 */ 
 	public Host getHost() {
@@ -283,7 +307,10 @@ public abstract class Process extends Thread {
 	public static void waitFor(double seconds) throws HostFailureException {
 		MsgNative.processWaitFor(seconds);
 	} 
-	public void showArgs() {
+    /**
+     *
+     */
+    public void showArgs() {
 		Msg.info("[" + this.name + "/" + this.getHost().getName() + "] argc=" +
 				this.args.size());
 		for (int i = 0; i < this.args.size(); i++)
@@ -323,11 +350,17 @@ public abstract class Process extends Thread {
 
 	/**
 	 * The main function of the process (to implement).
-	 */
+     *
+     * @param args
+     * @throws MsgException
+     */
 	public abstract void main(String[]args) throws MsgException;
 
 
-	public void unschedule() {
+    /**
+     *
+     */
+    public void unschedule() {
 		try {
 			schedEnd.release();
 			schedBegin.acquire();
@@ -335,7 +368,10 @@ public abstract class Process extends Thread {
 		}
 	}
 
-	public void schedule() {
+    /**
+     *
+     */
+    public void schedule() {
 	   //System.err.println("Scheduling process in Java");
 		try {
 			schedBegin.release();
@@ -347,7 +383,10 @@ public abstract class Process extends Thread {
 	}
 
 	/** Send the given task in the mailbox associated with the specified alias  (waiting at most given time) 
-	 * @throws TimeoutException 
+     * @param mailbox
+     * @param task 
+     * @param timeout
+     * @throws TimeoutException
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException */
 	public void taskSend(String mailbox, Task task, double timeout) throws TransferFailureException, HostFailureException, TimeoutException {
@@ -355,29 +394,59 @@ public abstract class Process extends Thread {
 	}
 
 	/** Send the given task in the mailbox associated with the specified alias
-	 * @throws TimeoutException 
+     * @param mailbox
+     * @param task
+     * @throws TimeoutException
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException */
 	public void taskSend(String mailbox, Task task) throws  TransferFailureException, HostFailureException, TimeoutException {
 		MsgNative.taskSend(mailbox, task, -1);
 	}
 
-	/** Receive a task on mailbox associated with the specified mailbox */
+    /** Receive a task on mailbox associated with the specified mailbox
+     * @param mailbox
+     * @return
+     * @throws TransferFailureException
+     * @throws HostFailureException
+     * @throws TimeoutException
+     */
 	public Task taskReceive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, -1.0, null);
 	}
 
-	/** Receive a task on mailbox associated with the specified alias (waiting at most given time) */
+    /** Receive a task on mailbox associated with the specified alias (waiting at most given time)
+     * @param mailbox
+     * @param timeout
+     * @return
+     * @throws TransferFailureException
+     * @throws HostFailureException
+     * @throws TimeoutException
+     */
 	public Task taskReceive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, timeout, null);
 	}
 
-	/** Receive a task on mailbox associated with the specified alias from given sender */
+    /** Receive a task on mailbox associated with the specified alias from given sender
+     * @param mailbox
+     * @param host
+     * @param timeout
+     * @return
+     * @throws TransferFailureException
+     * @throws HostFailureException
+     * @throws TimeoutException
+     */
 	public Task taskReceive(String mailbox, double timeout, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, timeout, host);
 	}
 
-	/** Receive a task on mailbox associated with the specified alias from given sender*/
+    /** Receive a task on mailbox associated with the specified alias from given sender
+     * @param mailbox
+     * @param host
+     * @return
+     * @throws TransferFailureException
+     * @throws HostFailureException
+     * @throws TimeoutException
+     */
 	public Task taskReceive(String mailbox, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
 		return MsgNative.taskReceive(mailbox, -1.0, host);
 	}
