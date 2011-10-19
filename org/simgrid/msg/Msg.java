@@ -76,14 +76,29 @@ public final class Msg {
 	public final static native void init(String[]args);
 
 	/**
-	 * Run the MSG simulation, and cleanup everything afterward.
+	 * Run the MSG simulation.
 	 *
-	 * If you want to chain simulations in the same process, you
-	 * should call again createEnvironment and deployApplication afterward.
+	 * The simulation is not cleaned afterward (see  
+	 * {@link #clean()} if you really insist on cleaning the C side), so you can freely 
+	 * retrieve the informations that you want from the simulation. In particular, retrieving the status 
+	 * of a process or the current date is perfectly ok. 
 	 *
-	 * @see                    MSG_run, MSG_clean
+	 * @see                    MSG_run
 	 */
 	public final static native void run() ;
+	
+	/**
+	 * Cleanup the MSG simulation.
+	 * 
+	 * This function is only useful if you want to chain the simulations within 
+	 * the same environment. But actually, it's not sure at all that cleaning the 
+	 * JVM is faster than restarting a new one, so it's probable that using this 
+	 * function is not a brilliant idea. Do so at own risk.
+	 *	
+	 * @see                    MSG_clean
+	 */
+	public final static native void clean();
+	
 
 	/**
 	 * The native implemented method to create the environment of the simulation.

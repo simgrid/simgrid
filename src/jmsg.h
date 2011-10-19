@@ -293,6 +293,8 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Msg_getClock(JNIEnv *, jclass);
 
 JNIEXPORT void JNICALL
     JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls);
+JNIEXPORT void JNICALL
+    JNICALL Java_org_simgrid_msg_Msg_clean(JNIEnv * env, jclass cls);
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs);
