@@ -262,16 +262,18 @@ java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar 
 ADD_TEST(kill
 java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar master_slave_kill/MsKill ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/platform.xml
 )
+#Don't forget to put new test in this list!!!
+set(test_list basic pingPong CommTime mutualExclusion bypass kill)
 
 ##########################################
 # Set the  DYLD_LIBRARY_PATH for mac     #
 ##########################################
 if(APPLE)
     if($ENV{DYLD_LIBRARY_PATH} STREQUAL "")
-        set_tests_properties(basic pingPong CommTime mutualExclusion bypass kill
+        set_tests_properties(${test_list}
         PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
     else($ENV{DYLD_LIBRARY_PATH} STREQUAL "")
-        set_tests_properties(basic pingPong CommTime mutualExclusion bypass kill
+        set_tests_properties(${test_list}
         PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=$ENV{DYLD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
     endif($ENV{DYLD_LIBRARY_PATH} STREQUAL "")
 endif(APPLE)
@@ -280,10 +282,10 @@ endif(APPLE)
 # Set the  LD_LIBRARY_PATH for our tests #
 ##########################################
 if($ENV{LD_LIBRARY_PATH} STREQUAL "")
-    set_tests_properties(basic pingPong CommTime mutualExclusion bypass kill
+    set_tests_properties(${test_list}
     PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
 else($ENV{LD_LIBRARY_PATH} STREQUAL "")
-    set_tests_properties(basic pingPong CommTime mutualExclusion bypass kill
+    set_tests_properties(${test_list}
     PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
 endif($ENV{LD_LIBRARY_PATH} STREQUAL "")
 
