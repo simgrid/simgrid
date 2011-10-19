@@ -78,6 +78,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/amok/saturate)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dax)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/goal)
 if(HAVE_GRAPHVIZ)
   add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dot)
 endif(HAVE_GRAPHVIZ)
