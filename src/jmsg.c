@@ -725,13 +725,11 @@ Java_org_simgrid_msg_MsgNative_taskDestroy(JNIEnv * env, jclass cls,
 
   /* get the native task */
   m_task_t task = jtask_to_native_task(jtask_arg, env);
-//  jobject jtask;
 
   if (!task) {
     jxbt_throw_notbound(env, "task", task);
     return;
   }
-//  jtask = (jobject) MSG_task_get_data(task);
 
   MSG_error_t rv = MSG_task_destroy(task);
 
@@ -797,7 +795,6 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
     jval = (jstring) (*env)->GetObjectArrayElement(env, jargs, index);
     tmp = (*env)->GetStringUTFChars(env, jval, 0);
     argv[index + 1] = strdup(tmp);
-    //argv[index] = strdup(tmp);
     (*env)->ReleaseStringUTFChars(env, jval, tmp);
   }
 
@@ -815,7 +812,7 @@ JNIEXPORT void JNICALL
     JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)
 {
   MSG_error_t rv;
-  int index;                    //xbt_fifo_item_t item = NULL;
+  int index;
   m_host_t *hosts;
   jobject jhost;
 
