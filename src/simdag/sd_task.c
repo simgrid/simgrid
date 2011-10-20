@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -16,6 +16,110 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task, sd,
 static void __SD_task_remove_dependencies(SD_task_t task);
 static void __SD_task_destroy_scheduling_data(SD_task_t task);
 
+void* SD_task_new_f(void) {
+  SD_task_t task = xbt_new0(s_SD_task_t, 1);
+  task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
+  task->tasks_after = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
+
+  return task;
+}
+void SD_task_recycle_f(void *t) {
+  SD_task_t task = (SD_task_t)t;
+
+  __SD_task_remove_dependencies(task);
+  /* if the task was scheduled or runnable we have to free the scheduling parameters */
+  if (__SD_task_is_scheduled_or_runnable(task))
+    __SD_task_destroy_scheduling_data(task);
+  if (task->state_set != NULL) {/* would be null if just created */
+    xbt_swag_remove(task, task->state_set);
+  }
+  xbt_swag_remove(task, sd_global->return_set);
+
+  if (task->name != NULL)
+    xbt_free(task->name);
+
+  if (task->surf_action != NULL)
+    surf_workstation_model->action_unref(task->surf_action);
+
+  if (task->workstation_list != NULL)
+    xbt_free(task->workstation_list);
+
+  if (task->communication_amount)
+    xbt_free(task->communication_amount);
+
+  if (task->computation_amount)
+    xbt_free(task->computation_amount);
+
+  /* Reset the content */
+  task->kind = SD_TASK_NOT_TYPED;
+  task->state_hookup.prev = NULL;
+  task->state_hookup.next = NULL;
+  task->state_set = sd_global->not_scheduled_task_set;
+  xbt_swag_insert(task, task->state_set);
+  task->state = SD_NOT_SCHEDULED;
+  task->return_hookup.prev = NULL;
+  task->return_hookup.next = NULL;
+
+  task->marked = 0;
+
+  task->start_time = -1.0;
+  task->finish_time = -1.0;
+  task->surf_action = NULL;
+  task->watch_points = 0;
+
+  /* dependencies */
+  xbt_dynar_reset(task->tasks_before); // =  new(sizeof(SD_dependency_t), NULL);
+  xbt_dynar_reset(task->tasks_after);  // = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
+  task->unsatisfied_dependencies = 0;
+  task->is_not_ready = 0;
+
+  /* scheduling parameters */
+  task->workstation_nb = 0;
+  task->workstation_list = NULL;
+  task->computation_amount = NULL;
+  task->communication_amount = NULL;
+  task->rate = -1;
+
+#ifdef HAVE_TRACING
+  TRACE_sd_task_create(task);
+#endif
+}
+void SD_task_free_f(void *t) {
+  SD_task_t task = (SD_task_t)t;
+
+  __SD_task_remove_dependencies(task);
+  /* if the task was scheduled or runnable we have to free the scheduling parameters */
+  if (__SD_task_is_scheduled_or_runnable(task))
+    __SD_task_destroy_scheduling_data(task);
+  if (task->state_set != NULL) /* would be null if just created */
+    xbt_swag_remove(task, task->state_set);
+
+  xbt_swag_remove(task, sd_global->return_set);
+
+  if (task->name != NULL)
+    xbt_free(task->name);
+
+  if (task->surf_action != NULL)
+    surf_workstation_model->action_unref(task->surf_action);
+
+  if (task->workstation_list != NULL)
+    xbt_free(task->workstation_list);
+
+  if (task->communication_amount)
+    xbt_free(task->communication_amount);
+
+  if (task->computation_amount)
+    xbt_free(task->computation_amount);
+#ifdef HAVE_TRACING
+  TRACE_sd_task_destroy(task);
+#endif
+
+  xbt_dynar_free(&task->tasks_before);
+  xbt_dynar_free(&task->tasks_after);
+  xbt_free(task);
+}
+
+
 /**
  * \brief Creates a new task.
  *
@@ -27,54 +131,36 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task);
  */
 SD_task_t SD_task_create(const char *name, void *data, double amount)
 {
-
-  SD_task_t task;
-  SD_CHECK_INIT_DONE();
-
-  task = xbt_new(s_SD_task_t, 1);
+  SD_task_t task = xbt_mallocator_get(sd_global->task_mallocator);
 
   /* general information */
   task->data = data;            /* user data */
   task->name = xbt_strdup(name);
-  task->kind = SD_TASK_NOT_TYPED;
-  task->state_hookup.prev = NULL;
-  task->state_hookup.next = NULL;
-  task->state_set = sd_global->not_scheduled_task_set;
-  task->state = SD_NOT_SCHEDULED;
-  task->return_hookup.prev = NULL;
-  task->return_hookup.next = NULL;
-
-  task->marked = 0;
-  xbt_swag_insert(task, task->state_set);
-
   task->amount = amount;
   task->remains = amount;
-  task->start_time = -1.0;
-  task->finish_time = -1.0;
-  task->surf_action = NULL;
-  task->watch_points = 0;
-
-  /* dependencies */
-  task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
-  task->tasks_after = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
-  task->unsatisfied_dependencies = 0;
-  task->is_not_ready = 0;
-
-  /* scheduling parameters */
-  task->workstation_nb = 0;
-  task->workstation_list = NULL;
-  task->computation_amount = NULL;
-  task->communication_amount = NULL;
-  task->rate = -1;
 
   sd_global->task_number++;
 
-#ifdef HAVE_TRACING
-  TRACE_sd_task_create(task);
-#endif
-
   return task;
 }
+/**
+ * \brief Destroys a task.
+ *
+ * The user data (if any) should have been destroyed first.
+ *
+ * \param task the task you want to destroy
+ * \see SD_task_create()
+ */
+void SD_task_destroy(SD_task_t task)
+{
+  XBT_DEBUG("Destroying task %s...", SD_task_get_name(task));
+
+  xbt_mallocator_release(sd_global->task_mallocator,task);
+  sd_global->task_number--;
+
+  XBT_DEBUG("Task destroyed.");
+}
+
 
 /**
  * \brief Returns the user data of a task
@@ -1235,57 +1321,6 @@ double SD_task_get_finish_time(SD_task_t task)
   else
     return task->finish_time;
 }
-
-/**
- * \brief Destroys a task.
- *
- * The user data (if any) should have been destroyed first.
- *
- * \param task the task you want to destroy
- * \see SD_task_create()
- */
-void SD_task_destroy(SD_task_t task)
-{
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
-
-  XBT_DEBUG("Destroying task %s...", SD_task_get_name(task));
-
-  __SD_task_remove_dependencies(task);
-  /* if the task was scheduled or runnable we have to free the scheduling parameters */
-  if (__SD_task_is_scheduled_or_runnable(task))
-    __SD_task_destroy_scheduling_data(task);
-  xbt_swag_remove(task, task->state_set);
-  xbt_swag_remove(task, sd_global->return_set);
-
-  if (task->name != NULL)
-    xbt_free(task->name);
-
-  if (task->surf_action != NULL)
-    surf_workstation_model->action_unref(task->surf_action);
-
-  if (task->workstation_list != NULL)
-    xbt_free(task->workstation_list);
-
-  if (task->communication_amount)
-    xbt_free(task->communication_amount);
-
-  if (task->computation_amount)
-    xbt_free(task->computation_amount);
-
-#ifdef HAVE_TRACING
-  TRACE_sd_task_destroy(task);
-#endif
-
-  xbt_dynar_free(&task->tasks_before);
-  xbt_dynar_free(&task->tasks_after);
-  xbt_free(task);
-
-  sd_global->task_number--;
-
-  XBT_DEBUG("Task destroyed.");
-}
-
 
 static XBT_INLINE SD_task_t SD_task_create_sized(const char *name,
                                                  void *data, double amount,

@@ -66,6 +66,8 @@ void SD_init(int *argc, char **argv)
   sd_global->recyclable_route = NULL;
   sd_global->watch_point_reached = 0;
 
+  sd_global->task_mallocator=xbt_mallocator_new(65536, SD_task_new_f,SD_task_free_f,SD_task_recycle_f);
+
   sd_global->not_scheduled_task_set =
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->schedulable_task_set =
@@ -411,7 +413,7 @@ void SD_exit(void)
 #endif
 
   if (SD_INITIALISED()) {
-    XBT_DEBUG("Destroying workstation and link dictionaries...");
+    xbt_mallocator_free(sd_global->task_mallocator);
 
     XBT_DEBUG("Destroying workstation and link arrays if necessary...");
     if (sd_global->workstation_list != NULL)
@@ -432,6 +434,7 @@ void SD_exit(void)
     xbt_swag_free(sd_global->running_task_set);
     xbt_swag_free(sd_global->done_task_set);
     xbt_swag_free(sd_global->failed_task_set);
+    xbt_swag_free(sd_global->return_set);
 
     XBT_DEBUG("Exiting Surf...");
     surf_exit();

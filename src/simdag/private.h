@@ -14,6 +14,7 @@
 #include "simdag/datatypes.h"
 #include "surf/surf.h"
 #include "xbt/swag.h"
+#include "xbt/mallocator.h"
 #include <stdbool.h>
 
 #define SD_INITIALISED() (sd_global != NULL)
@@ -28,6 +29,8 @@ typedef struct SD_global {
                                    necessary in SD_link_get_list */
   SD_link_t *recyclable_route;  /* array returned by SD_route_get_list
                                    and mallocated only once */
+
+  xbt_mallocator_t task_mallocator; /* to not remalloc new tasks */
 
   int watch_point_reached;      /* has a task just reached a watch point? */
 
@@ -129,6 +132,11 @@ void __SD_task_really_run(SD_task_t task);
 int __SD_task_try_to_run(SD_task_t task);
 void __SD_task_just_done(SD_task_t task);
 bool acyclic_graph_detail(xbt_dynar_t dag);
+
+/* Task mallocator functions */
+void* SD_task_new_f(void);
+void SD_task_recycle_f(void *t);
+void SD_task_free_f(void *t);
 
 /* Functions to test if the task is in a given state. */
 
