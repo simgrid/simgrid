@@ -13,6 +13,7 @@
 #include "simdag/simdag.h"
 #include "simdag/datatypes.h"
 #include "surf/surf.h"
+#include "xbt/swag.h"
 #include <stdbool.h>
 
 #define SD_INITIALISED() (sd_global != NULL)
@@ -40,6 +41,7 @@ typedef struct SD_global {
   xbt_swag_t done_task_set;
   xbt_swag_t failed_task_set;
 
+  xbt_swag_t return_set;
   int task_number;
 
 } s_SD_global_t, *SD_global_t;
@@ -66,6 +68,7 @@ typedef struct SD_workstation {
 /* Task */
 typedef struct SD_task {
   s_xbt_swag_hookup_t state_hookup;
+  s_xbt_swag_hookup_t return_hookup;
   xbt_swag_t state_set;
   e_SD_task_state_t state;
   void *data;                   /* user data */
@@ -110,6 +113,8 @@ typedef struct SD_dependency {
 } s_SD_dependency_t, *SD_dependency_t;
 
 /* SimDag private functions */
+XBT_PUBLIC(xbt_swag_t) SD_simulate_swag(double how_long); /* could be public, but you need to see the internals of the SD_task_t to use it */
+
 
 SD_link_t __SD_link_create(void *surf_link, void *data);
 void __SD_link_destroy(void *link);

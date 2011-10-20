@@ -41,6 +41,9 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   task->state_hookup.next = NULL;
   task->state_set = sd_global->not_scheduled_task_set;
   task->state = SD_NOT_SCHEDULED;
+  task->return_hookup.prev = NULL;
+  task->return_hookup.next = NULL;
+
   task->marked = 0;
   xbt_swag_insert(task, task->state_set);
 
@@ -1253,6 +1256,7 @@ void SD_task_destroy(SD_task_t task)
   if (__SD_task_is_scheduled_or_runnable(task))
     __SD_task_destroy_scheduling_data(task);
   xbt_swag_remove(task, task->state_set);
+  xbt_swag_remove(task, sd_global->return_set);
 
   if (task->name != NULL)
     xbt_free(task->name);
@@ -1364,7 +1368,7 @@ void SD_task_schedulev(SD_task_t task, int count,
   switch (task->kind) {
   case SD_TASK_COMM_E2E:
   case SD_TASK_COMP_SEQ:
-    xbt_assert(task->workstation_nb == count);
+    xbt_assert(task->workstation_nb == count,"Got %d locations, but were expecting %d locations",count,task->workstation_nb);
     for (i = 0; i < count; i++)
       task->workstation_list[i] = list[i];
     SD_task_do_schedule(task);

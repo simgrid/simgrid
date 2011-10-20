@@ -82,6 +82,8 @@ void SD_init(int *argc, char **argv)
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->failed_task_set =
       xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->return_set =
+      xbt_swag_new(xbt_swag_offset(task, return_hookup));
   sd_global->task_number = 0;
 
   surf_init(argc, argv);
@@ -228,34 +230,46 @@ void SD_create_environment(const char *platform_file)
  * \return a NULL-terminated array of \ref SD_task_t whose state has changed.
  * \see SD_task_schedule(), SD_task_watch()
  */
-xbt_dynar_t SD_simulate(double how_long)
-{
+
+xbt_dynar_t SD_simulate(double how_long) {
+  xbt_dynar_t changed_tasks = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  SD_task_t task;
+
+  SD_simulate_swag(how_long);
+  while( (task = xbt_swag_extract(sd_global->return_set)) != NULL) {
+    xbt_dynar_push(changed_tasks, &task);
+  }
+
+  return changed_tasks;
+}
+
+xbt_swag_t SD_simulate_swag(double how_long) {
   double total_time = 0.0;      /* we stop the simulation when total_time >= how_long */
   double elapsed_time = 0.0;
   SD_task_t task, task_safe, dst;
   SD_dependency_t dependency;
   surf_action_t action;
-  xbt_dynar_t changed_tasks = xbt_dynar_new(sizeof(SD_task_t), NULL);
   unsigned int iter, depcnt;
   static int first_time = 1;
 
   SD_CHECK_INIT_DONE();
 
    if (first_time) {
-    XBT_VERB("Starting simulation...");
+     XBT_VERB("Starting simulation...");
 
-    surf_presolve();            /* Takes traces into account */
-    first_time = 0;
-  }
+     surf_presolve();            /* Takes traces into account */
+     first_time = 0;
+   }
 
   sd_global->watch_point_reached = 0;
 
+  while(xbt_swag_extract(sd_global->return_set)) {}
+
   /* explore the runnable tasks */
-  xbt_swag_foreach_safe(task, task_safe, sd_global->runnable_task_set) {
+  xbt_swag_foreach(task, sd_global->runnable_task_set) {
     XBT_VERB("Executing task '%s'", SD_task_get_name(task));
-    if (__SD_task_try_to_run(task)
-        && !xbt_dynar_member(changed_tasks, &task))
-      xbt_dynar_push(changed_tasks, &task);
+    if (__SD_task_try_to_run(task))
+      xbt_swag_insert(task,sd_global->return_set);
   }
 
   /* main loop */
@@ -289,8 +303,7 @@ xbt_dynar_t SD_simulate(double how_long)
                SD_task_get_name(task));
 
         /* the state has changed */
-        if (!xbt_dynar_member(changed_tasks, &task))
-          xbt_dynar_push(changed_tasks, &task);
+        xbt_swag_insert(task,sd_global->return_set);
 
         /* remove the dependencies after this task */
         xbt_dynar_foreach(task->tasks_after, depcnt, dependency) {
@@ -326,9 +339,8 @@ xbt_dynar_t SD_simulate(double how_long)
           if (__SD_task_is_runnable(dst)
               && !sd_global->watch_point_reached) {
             XBT_VERB("Executing task '%s'", SD_task_get_name(dst));
-            if (__SD_task_try_to_run(dst) &&
-                !xbt_dynar_member(changed_tasks, &task))
-              xbt_dynar_push(changed_tasks, &task);
+            if (__SD_task_try_to_run(dst))
+              xbt_swag_insert(dst,sd_global->return_set);
           }
         }
       }
@@ -345,8 +357,7 @@ xbt_dynar_t SD_simulate(double how_long)
         surf_workstation_model->action_unref(action);
         task->surf_action = NULL;
 
-        if (!xbt_dynar_member(changed_tasks, &task))
-          xbt_dynar_push(changed_tasks, &task);
+        xbt_swag_insert(task,sd_global->return_set);
       }
     }
   }
@@ -370,7 +381,7 @@ xbt_dynar_t SD_simulate(double how_long)
          elapsed_time, total_time, sd_global->watch_point_reached);
   XBT_DEBUG("current time = %f", surf_get_clock());
 
-  return changed_tasks;
+  return sd_global->return_set;
 }
 
 /**
