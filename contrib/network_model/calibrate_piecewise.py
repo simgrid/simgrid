@@ -206,4 +206,6 @@ while joinseg:
 	factor_join_lat = b / (latency*links)
 	c_code_print(x0,x1,factor_join_lat,False,False)
 
+print("}\n")  
+
 print("\n/**\n *------------------ <copy/paste C code snippet in surf/network.c> ----------------------\n **/")
