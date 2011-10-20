@@ -1511,15 +1511,12 @@ void routing_parse_Scluster(void)
   char *cluster_prefix = A_surfxml_cluster_prefix;
   char *cluster_suffix = A_surfxml_cluster_suffix;
   char *cluster_radical = A_surfxml_cluster_radical;
-  char *cluster_power = A_surfxml_cluster_power;
   char *cluster_core = A_surfxml_cluster_core;
-  char *cluster_bw = A_surfxml_cluster_bw;
-  char *cluster_lat = A_surfxml_cluster_lat;
-  char *temp_cluster_bw = NULL;
-  char *temp_cluster_lat = NULL;
-  char *temp_cluster_power = NULL;
   char *cluster_bb_bw = A_surfxml_cluster_bb_bw;
   char *cluster_bb_lat = A_surfxml_cluster_bb_lat;
+  char *cluster_power = xbt_strdup(A_surfxml_cluster_power);
+  char *cluster_bw = xbt_strdup(A_surfxml_cluster_bw);
+  char *cluster_lat = xbt_strdup(A_surfxml_cluster_lat);
   char *cluster_availability_file = A_surfxml_cluster_availability_file;
   char *cluster_state_file = A_surfxml_cluster_state_file;
   char *host_id, *groups, *link_id = NULL;
@@ -1533,6 +1530,10 @@ void routing_parse_Scluster(void)
   xbt_dict_set(patterns,"id",cluster_id,NULL);
   xbt_dict_set(patterns,"prefix",cluster_prefix,NULL);
   xbt_dict_set(patterns,"suffix",cluster_suffix,NULL);
+
+  cluster_power = replace_random_parameter(cluster_power);
+  cluster_bw = replace_random_parameter(cluster_bw);
+  cluster_lat = replace_random_parameter(cluster_lat);
 
   char *route_src_dst;
   unsigned int iter;
@@ -1559,25 +1560,19 @@ void routing_parse_Scluster(void)
     radical_ends = xbt_str_split(groups, "-");
     switch (xbt_dynar_length(radical_ends)) {
     case 1:
-      surf_parse_get_int(&start,
-                         xbt_dynar_get_as(radical_ends, 0, char *));
+      surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char *));
       host_id = bprintf("%s%d%s", cluster_prefix, start, cluster_suffix);
       link_id = bprintf("%s_link_%d", cluster_id, start);
 
       xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
-      temp_cluster_power = xbt_strdup(cluster_power);
-      temp_cluster_power = replace_random_parameter(temp_cluster_power);
-      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, temp_cluster_power);
+      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, cluster_power);
       A_surfxml_host_state = A_surfxml_host_state_ON;
       SURFXML_BUFFER_SET(host_id, host_id);
-      SURFXML_BUFFER_SET(host_power, temp_cluster_power);
+      SURFXML_BUFFER_SET(host_power, cluster_power);
       SURFXML_BUFFER_SET(host_core, cluster_core);
       SURFXML_BUFFER_SET(host_availability, "1.0");
       SURFXML_BUFFER_SET(host_coordinates, "");
-      xbt_free(availability_file);
-      availability_file = xbt_strdup(cluster_availability_file);
-      xbt_free(state_file);
-      state_file = xbt_strdup(cluster_state_file);
+
       XBT_DEBUG("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
       XBT_DEBUG("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
       SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(availability_file,patterns));
@@ -1586,12 +1581,7 @@ void routing_parse_Scluster(void)
       SURFXML_START_TAG(host);
       SURFXML_END_TAG(host);
 
-
-      temp_cluster_bw = xbt_strdup(cluster_bw);
-      temp_cluster_bw = replace_random_parameter(temp_cluster_bw);
-      temp_cluster_lat = xbt_strdup(cluster_lat);
-      temp_cluster_lat = replace_random_parameter(temp_cluster_lat);
-      XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,temp_cluster_bw, cluster_lat);
+      XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,cluster_bw, cluster_lat);
       A_surfxml_link_state = A_surfxml_link_state_ON;
       A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
       if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
@@ -1599,17 +1589,14 @@ void routing_parse_Scluster(void)
       if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
 	  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
       SURFXML_BUFFER_SET(link_id, link_id);
-      SURFXML_BUFFER_SET(link_bandwidth, temp_cluster_bw);
-      SURFXML_BUFFER_SET(link_latency, temp_cluster_lat);
+      SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
+      SURFXML_BUFFER_SET(link_latency, cluster_lat);
       SURFXML_BUFFER_SET(link_bandwidth_file, "");
       SURFXML_BUFFER_SET(link_latency_file, "");
       SURFXML_BUFFER_SET(link_state_file, "");
       SURFXML_START_TAG(link);
       SURFXML_END_TAG(link);
 
-      xbt_free(temp_cluster_bw);
-      xbt_free(temp_cluster_lat);
-      xbt_free(temp_cluster_power);
       free(link_id);
       free(host_id);
       break;
@@ -1624,19 +1611,14 @@ void routing_parse_Scluster(void)
         link_id = bprintf("%s_link_%d", cluster_id, i);
 
         xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
-        temp_cluster_power = xbt_strdup(cluster_power);
-        temp_cluster_power = replace_random_parameter(temp_cluster_power);
-        XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, temp_cluster_power);
+        XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, cluster_power);
         A_surfxml_host_state = A_surfxml_host_state_ON;
         SURFXML_BUFFER_SET(host_id, host_id);
-        SURFXML_BUFFER_SET(host_power, temp_cluster_power);
+        SURFXML_BUFFER_SET(host_power, cluster_power);
         SURFXML_BUFFER_SET(host_core, cluster_core);
         SURFXML_BUFFER_SET(host_availability, "1.0");
         SURFXML_BUFFER_SET(host_coordinates, "");
-        xbt_free(availability_file);
-        availability_file = xbt_strdup(cluster_availability_file);
-        xbt_free(state_file);
-        state_file = xbt_strdup(cluster_state_file);
+
         XBT_DEBUG("\tavailability_file=\"%s\"",xbt_str_varsubst(availability_file,patterns));
         XBT_DEBUG("\tstate_file=\"%s\"",xbt_str_varsubst(state_file,patterns));
         SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(availability_file,patterns));
@@ -1645,13 +1627,7 @@ void routing_parse_Scluster(void)
         SURFXML_START_TAG(host);
         SURFXML_END_TAG(host);
 
-        xbt_free(temp_cluster_power);
-
-        temp_cluster_bw = xbt_strdup(cluster_bw);
-        temp_cluster_bw = replace_random_parameter(temp_cluster_bw);
-        temp_cluster_lat = xbt_strdup(cluster_lat);
-        temp_cluster_lat = replace_random_parameter(temp_cluster_lat);
-        XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,temp_cluster_bw, cluster_lat);
+        XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,cluster_bw, cluster_lat);
         A_surfxml_link_state = A_surfxml_link_state_ON;
         A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
         if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
@@ -1659,16 +1635,14 @@ void routing_parse_Scluster(void)
         if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
   	    {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
         SURFXML_BUFFER_SET(link_id, link_id);
-        SURFXML_BUFFER_SET(link_bandwidth, temp_cluster_bw);
-        SURFXML_BUFFER_SET(link_latency, temp_cluster_lat);
+        SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
+        SURFXML_BUFFER_SET(link_latency, cluster_lat);
         SURFXML_BUFFER_SET(link_bandwidth_file, "");
         SURFXML_BUFFER_SET(link_latency_file, "");
         SURFXML_BUFFER_SET(link_state_file, "");
         SURFXML_START_TAG(link);
         SURFXML_END_TAG(link);
 
-        xbt_free(temp_cluster_bw);
-        xbt_free(temp_cluster_lat);
         free(link_id);
         free(host_id);
       }
@@ -1676,6 +1650,7 @@ void routing_parse_Scluster(void)
 
     default:
       XBT_DEBUG("Malformed radical");
+      break;
     }
 
     xbt_dynar_free(&radical_ends);
@@ -1843,10 +1818,14 @@ void routing_parse_Scluster(void)
   free(pcre_link_src);
   free(route_src_dst);
 
+  xbt_free(cluster_bw);
+  xbt_free(cluster_lat);
+  xbt_free(cluster_power);
+  xbt_free(availability_file);
+  xbt_free(state_file);
+
   free(router_id);
   xbt_dict_free(&patterns);
-  free(availability_file);
-  free(state_file);
 
   XBT_DEBUG("</AS>");
   SURFXML_END_TAG(AS);
@@ -2108,6 +2087,7 @@ static void routing_parse_Srandom(void)
 					  break;
 			default:
 				XBT_INFO("Malformed radical");
+				break;
 			}
 			res = random_generate(random);
 			rd_name  = bprintf("%s_router",random_id);
