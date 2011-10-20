@@ -26,7 +26,8 @@ typedef struct s_smx_process {
   int blocked:1;
   int suspended:1;
   smx_host_t new_host;          /* if not null, the host on which the process must migrate to */
-  smx_action_t waiting_action;
+  smx_action_t waiting_action;  /* the current blocking action if any */
+  xbt_fifo_t comms;       /* the current non-blocking communication actions */
   xbt_dict_t properties;
   s_smx_req_t request;
   void *data;                   /* kept for compatibility, it should be replaced with moddata */

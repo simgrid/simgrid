@@ -7,8 +7,8 @@
 </config>
 
 	<AS  id="AS0"  routing="Vivaldi">
-		<peer id="peer-0" coordinates="173.0 96.8 0.1 " power="730000000.0"
-		bw_in="13380000" bw_out="1024000" lat="5E-4" />
+		<peer id="peer-0" coordinates="173.0 96.8 0.1" power="730000000.0"
+		bw_in="13380000" bw_out="1024000" lat="5E-4"/>
 
 		<peer id="peer-1" coordinates="247.0 57.3 0.6 " power="730000000.0"
 		bw_in="13380000" bw_out="1024000" lat="5E-4" />

@@ -2,10 +2,10 @@ require("sim_splay")
 
 function SPLAYschool()
   log:print("My ip is: "..job.me.ip())
-  for i = 1000,10000 do
+  for i = 1,200 do
     log:print(i)
   end
-
+--[[
   events.sleep(5)
 
   if job.me.ip() == job.nodes[1].ip then
@@ -13,6 +13,7 @@ function SPLAYschool()
   end
   events.sleep(5)
   os.exit()
+  --]]
 end
 
 function call_me(from)
@@ -21,4 +22,5 @@ end
 
 events.thread("SPLAYschool")
 start.loop()
+log:print("Simulation finished")
 

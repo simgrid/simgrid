@@ -11,7 +11,7 @@ Ideally, its usage would be:
 simsplay platform_file.{xml|lua} deployment_file.{xml|lua} splay_script.lua [simgrid_options...]
 
 I'm not sure about the format of the platform and deployment files yet.
-We could accept both XML and Lua files, since their is a great Lua API to
+We could accept both XML and Lua files, since there is a great Lua API to
 describe platforms, or only the XML ones.
 
 The simsplay executable (which is compiled C) would initialize SimGrid, create

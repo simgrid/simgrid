@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
-#include "msg/mailbox.h"        /* we play funny tricks with mailboxes and rdv points */
 #include "simix/simix.h"        /* semaphores for the barrier */
 #include "xbt.h"                /* calloc, printf */
 #include "instr/instr_private.h"
@@ -107,8 +106,8 @@ static void action_Isend(const char *const *action)
 
 
   sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()),action[2]);
-  m_task_t task = MSG_task_create(to,0,parse_double(size),NULL);
-  msg_comm_t comm = MSG_task_isend_with_matching(task, to, /*matching madness*/NULL,task);
+  msg_comm_t comm =
+      MSG_task_isend( MSG_task_create(to,0,parse_double(size),NULL), to);
   xbt_dynar_push(globals->isends,&comm);
 
   XBT_DEBUG("Isend on %s", MSG_process_get_name(MSG_process_self()));
@@ -117,12 +116,6 @@ static void action_Isend(const char *const *action)
   asynchronous_cleanup();
 }
 
-static int task_matching(void*ignored,void*sent_task) {
-  m_task_t t = (m_task_t)sent_task;
-  if (t!=NULL && MSG_task_get_data_size(t)<65536)
-    return 1; /* that's supposed to be already arrived */
-  return 0; /* rendez-vous mode: it's not there yet */
-}
 
 static void action_recv(const char *const *action)
 {
@@ -137,22 +130,6 @@ static void action_recv(const char *const *action)
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join_array(action, " ");
 
-  /* The next chunk is to deal with the fact that for short messages,
-   * if the send occurs before the receive, the message is already sent and
-   * buffered on receiver side when the recv() occurs.
-   *
-   * So the next chunk detects this fact and cancel the simix communication instead.
-   */
-
-  /* make sure the rdv is created on need by asking to MSG instead of simix directly */
-  smx_rdv_t rdv = MSG_mailbox_get_by_alias(mailbox_name);
-  smx_action_t act = SIMIX_comm_get_send_match(rdv,task_matching,NULL);
-  if (act!=NULL){
-    /* FIXME account for the memcopy time if needed */
-    SIMIX_comm_finish(act);
-    return;
-  }
-
 #ifdef HAVE_TRACING
   int rank = get_rank(MSG_process_get_name(MSG_process_self()));
   int src_traced = get_rank(action[2]);
@@ -160,10 +137,13 @@ static void action_recv(const char *const *action)
 #endif
 
   XBT_DEBUG("Receiving: %s", name);
-  MSG_task_receive(&task, mailbox_name);
+  MSG_error_t res = MSG_task_receive(&task, mailbox_name);
   //  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
   XBT_VERB("%s %f", name, MSG_get_clock() - clock);
-  MSG_task_destroy(task);
+
+  if (res == MSG_OK) {
+    MSG_task_destroy(task);
+  }
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     free(name);

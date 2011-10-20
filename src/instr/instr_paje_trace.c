@@ -257,19 +257,19 @@ void TRACE_paje_create_header(void)
 %%       Time date \n\
 %%       Type string \n\
 %%       Container string \n\
-%%       Value string \n\
+%%       Value double \n\
 %%EndEventDef\n\
 %%EventDef PajeAddVariable %d \n\
 %%       Time date \n\
 %%       Type string \n\
 %%       Container string \n\
-%%       Value string \n\
+%%       Value double \n\
 %%EndEventDef\n\
 %%EventDef PajeSubVariable %d \n\
 %%       Time date \n\
 %%       Type string \n\
 %%       Container string \n\
-%%       Value string \n\
+%%       Value double \n\
 %%EndEventDef\n\
 %%EventDef PajeSetState %d \n\
 %%       Time date \n\

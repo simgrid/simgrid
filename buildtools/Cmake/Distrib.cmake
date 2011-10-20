@@ -170,11 +170,11 @@ endif(HAVE_LUA)
 
 add_custom_target(dist-dir
   COMMENT "Generating the distribution directory"
-  COMMAND test -e simgrid-${release_version}/ && chmod -R a+w simgrid-${release_version}/ || true
-  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
-  COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}
-  COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/doc/html/
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ simgrid-${release_version}/doc/html/
+  COMMAND test -e ${PROJECT_NAME}-${release_version}/ && chmod -R a+w ${PROJECT_NAME}-${release_version}/ || true
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/html/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ ${PROJECT_NAME}-${release_version}/doc/html/
 )
 add_dependencies(dist-dir simgrid_documentation)
 add_dependencies(dist-dir maintainer_files)
@@ -192,19 +192,19 @@ foreach(file ${source_to_pack})
        set(dirs_in_tarball "${dirs_in_tarball};${file_location};")
        add_custom_command(
          TARGET dist-dir
-         COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/${file_location}/
+         COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/${file_location}/
        )       
    endif(NOT OPERATION)
    
    # Actually copy the file
    add_custom_command(
      TARGET dist-dir
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} simgrid-${release_version}/${file_location}/
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${PROJECT_NAME}-${release_version}/${file_location}/
    )
    
    add_custom_command(
      TARGET dist-dir
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Makefile.default simgrid-${release_version}/Makefile
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Makefile.default ${PROJECT_NAME}-${release_version}/Makefile
    )
 endforeach(file ${source_to_pack})
 
@@ -213,14 +213,14 @@ endforeach(file ${source_to_pack})
 ######################################
 
 add_custom_target(dist
-  DEPENDS ${CMAKE_BINARY_DIR}/simgrid-${release_version}.tar.gz
+  DEPENDS ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}.tar.gz
 )
 add_custom_command(
-	OUTPUT ${CMAKE_BINARY_DIR}/simgrid-${release_version}.tar.gz	
+	OUTPUT ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}.tar.gz	
 	COMMENT "Compressing the archive from the distribution directory"
-	COMMAND ${CMAKE_COMMAND} -E tar cf simgrid-${release_version}.tar simgrid-${release_version}/
-  	COMMAND gzip -9v simgrid-${release_version}.tar
-  	COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/
+	COMMAND ${CMAKE_COMMAND} -E tar cf ${PROJECT_NAME}-${release_version}.tar ${PROJECT_NAME}-${release_version}/
+  	COMMAND gzip -9v ${PROJECT_NAME}-${release_version}.tar
+  	COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/
 )
 add_dependencies(dist dist-dir)
 
@@ -231,44 +231,44 @@ add_dependencies(dist dist-dir)
 # Allow to test the "make dist"
 add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E echo "XXX remove old copy"
-  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}.cpy 
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}.cpy 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX copy again the source tree"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory simgrid-${release_version}/ simgrid-${release_version}.cpy 
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_NAME}-${release_version}/ ${PROJECT_NAME}-${release_version}.cpy 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX create build and install subtrees"
-  COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/_build
-  COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/_inst
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/_build
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/_inst
  
   # This stupid cmake creates a directory in source, killing the purpose of the chmod
   # (tricking around)
   COMMAND ${CMAKE_COMMAND} -E echo "XXX change the modes of directories"
-  COMMAND ${CMAKE_COMMAND} -E make_directory simgrid-${release_version}/CMakeFiles 
-  COMMAND chmod -R a-w simgrid-${release_version}/ # FIXME: we should pass without commenting that line
-  COMMAND chmod -R a+w simgrid-${release_version}/_build
-  COMMAND chmod -R a+w simgrid-${release_version}/_inst
-  COMMAND chmod -R a+w simgrid-${release_version}/CMakeFiles
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/CMakeFiles 
+  COMMAND chmod -R a-w ${PROJECT_NAME}-${release_version}/ # FIXME: we should pass without commenting that line
+  COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/_build
+  COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/_inst
+  COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/CMakeFiles
   
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Configure"
-  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ${CMAKE_COMMAND} build ..  -DCMAKE_INSTALL_PREFIX=../_inst -Wno-dev -Denable_doc=OFF
-#  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make dist-dir
+  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build ${CMAKE_COMMAND} build ..  -DCMAKE_INSTALL_PREFIX=../_inst -Wno-dev -Denable_doc=OFF
+#  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build make dist-dir
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Build"
-  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make VERBOSE=1
+  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build make VERBOSE=1
   
   # This fails, unfortunately, because GRAS is broken for now
-  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ctest -j5 --output-on-failure
+  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build ctest -j5 --output-on-failure
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Check that cleaning works"
-  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build make clean
+  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build make clean
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Display what is remaining after make clean"
-  COMMAND ${CMAKE_COMMAND} -E chdir simgrid-${release_version}/_build ls -lR
+  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build ls -lR
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove _build and _inst directories"
-  COMMAND chmod a+w simgrid-${release_version}/
-  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/_build
-  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}/_inst
+  COMMAND chmod a+w ${PROJECT_NAME}-${release_version}/
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/_build
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/_inst
   COMMAND ${CMAKE_COMMAND} -E echo "XXX The output of the diff follows"
-  COMMAND diff -ruN simgrid-${release_version}.cpy simgrid-${release_version}
+  COMMAND diff -ruN ${PROJECT_NAME}-${release_version}.cpy ${PROJECT_NAME}-${release_version}
   COMMAND ${CMAKE_COMMAND} -E echo "XXX end of the diff, random cleanups now"
-  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}.cpy 
-  COMMAND ${CMAKE_COMMAND} -E remove_directory simgrid-${release_version}
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}.cpy 
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}
 )
 add_dependencies(distcheck dist-dir)
 

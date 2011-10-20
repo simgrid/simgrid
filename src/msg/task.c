@@ -159,25 +159,22 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   smx_action_t action = NULL;
   xbt_assert((task != NULL), "Invalid parameter");
 
-  /* why? if somebody is using, then you can't free! ok... but will return MSG_OK? when this task will be destroyed? isn't the user code wrong? */
-  if (task->simdata->isused > 0) {
-    XBT_DEBUG("Cannot destroy task %p since somebody is using it", task);
-    return MSG_OK;
+  if (task->simdata->isused) {
+    /* the task is still being used, it may be an unfinished dsend */
+    MSG_task_cancel(task);
   }
 #ifdef HAVE_TRACING
   TRACE_msg_task_destroy(task);
 #endif
 
-  if (task->name)
-    free(task->name);
+  xbt_free(task->name);
 
   action = task->simdata->compute;
   if (action)
     SIMIX_req_host_execution_destroy(action);
 
   /* parallel tasks only */
-  if (task->simdata->host_list)
-    xbt_free(task->simdata->host_list);
+  xbt_free(task->simdata->host_list);
 
   /* free main structures */
   xbt_free(task->simdata);
@@ -201,13 +198,7 @@ MSG_error_t MSG_task_cancel(m_task_t task)
   }
   else if (task->simdata->comm) {
     SIMIX_req_comm_cancel(task->simdata->comm);
-  }
-  else {
-    static int warned = 0;
-    if (!warned) {
-      XBT_WARN("Cannot cancel a non-running task");
-      warned = 1;
-    }
+    task->simdata->isused = 0;
   }
   return MSG_OK;
 }

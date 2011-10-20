@@ -35,7 +35,41 @@ XBT_INLINE smx_process_t SIMIX_process_self(void)
  */
 void SIMIX_process_cleanup(smx_process_t process)
 {
-  XBT_DEBUG("Cleanup process %s", process->name);
+  XBT_DEBUG("Cleanup process %s (%p), waiting action %p",
+      process->name, process, process->waiting_action);
+
+  /* cancel non-blocking communications */
+  smx_action_t action;
+  while ((action = xbt_fifo_pop(process->comms))) {
+
+    /* make sure no one will finish the comm after this process is destroyed */
+    SIMIX_comm_cancel(action);
+
+    if (action->comm.src_proc == process) {
+      XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d",
+          action, action->comm.detached, action->state);
+      action->comm.src_proc = NULL;
+
+      if (action->comm.detached) {
+        /* the receiver was supposed to destroy the comm after completion,
+         * but the comm will actually never finish */
+        action->comm.refcount++;
+      }
+    }
+    else if (action->comm.dst_proc == process){
+      XBT_DEBUG("Found an unfinished recv comm %p, state %d", action, action->state);
+      action->comm.dst_proc = NULL;
+    }
+    else {
+      XBT_DEBUG("Strange, I'm not in comm %p, state = %d, src = %p, dst = %p", action,
+          action->state, action->comm.src_proc, action->comm.dst_proc);
+      THROW_IMPOSSIBLE;
+    }
+
+    /* FIXME uncommenting this instruction crashes complex simulations
+    SIMIX_comm_destroy(action); */
+  }
+
   /*xbt_swag_remove(process, simix_global->process_to_run);*/
   xbt_swag_remove(process, simix_global->process_list);
   xbt_swag_remove(process, process->smx_host->process_list);
@@ -60,6 +94,8 @@ void SIMIX_process_empty_trash(void)
       free(process->running_ctx);
     if (process->properties)
       xbt_dict_free(&process->properties);
+
+    xbt_fifo_free(process->comms);
 
     free(process->name);
     process->name = NULL;
@@ -143,6 +179,7 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->name = xbt_strdup(name);
     (*process)->smx_host = host;
     (*process)->data = data;
+    (*process)->comms = xbt_fifo_new();
 
     XBT_VERB("Create context %s", (*process)->name);
     (*process)->context = SIMIX_context_new(code, argc, argv,
@@ -201,6 +238,7 @@ void SIMIX_process_kill(smx_process_t process) {
   process->suspended = 0;
   /* FIXME: set doexception to 0 also? */
 
+  /* destroy the blocking action if any */
   if (process->waiting_action) {
 
     switch (process->waiting_action->type) {

@@ -425,5 +425,5 @@ $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT -nb_bits=6 ${srcdir:=.}/../msg_platfo
 > [547.073600] (3:node@iRMX)   54  |  38 
 > [547.073600] (3:node@iRMX)    6  |  38 
 > [547.073600] (3:node@iRMX) Predecessor: 32
-> [655.138775] (0:@) Messages created: 838
-> [655.138775] (0:@) Simulated time: 655.139
+> [649.756626] (0:@) Messages created: 838
+> [649.756626] (0:@) Simulated time: 649.757

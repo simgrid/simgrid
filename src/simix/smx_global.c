@@ -240,7 +240,7 @@ void SIMIX_run(void)
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
 
-  } while (time != -1.0);
+  } while (time != -1.0 || xbt_dynar_length(simix_global->process_to_run) > 0);
 
   if (xbt_swag_size(simix_global->process_list) != 0) {
 
@@ -362,6 +362,9 @@ void SIMIX_display_process_status(void)
       }
       XBT_INFO("Process %ld (%s@%s): waiting for %s action %p (%s) to finish", process->pid, process->name, process->smx_host->name,
 	  action_description, process->waiting_action, process->waiting_action->name);
+    }
+    else {
+      XBT_INFO("Process %ld (%s@%s)", process->pid, process->name, process->smx_host->name);
     }
   }
 }
