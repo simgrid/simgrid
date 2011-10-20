@@ -44,6 +44,7 @@ set(string11 "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32_
 set(string12 "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g'")
 set(string13 "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
 set(string14 "'\\!^ \\* Generated [0-9/]\\{10\\} [0-9:]\\{8\\}\\.$$!d'")
+set(string15 "'s/FAIL(\"Premature EOF/if(!ETag_surfxml_include_state()) FAIL(\"Premature EOF/'")
 
 ADD_CUSTOM_COMMAND(
   	OUTPUT 	${CMAKE_HOME_DIRECTORY}/include/surf/simgrid_dtd.h
@@ -100,6 +101,8 @@ ADD_CUSTOM_COMMAND(
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/surf
 	COMMAND ${FLEX_EXE} -o src/surf/simgrid_dtd.c -Psurf_parse_ --noline src/surf/simgrid_dtd.l
 	COMMAND ${SED_EXE} -i ${string9} src/surf/simgrid_dtd.c
+    COMMAND ${SED_EXE} -i ${string15} src/surf/simgrid_dtd.c
+	
 	COMMAND ${CMAKE_COMMAND} -E echo "surf/simgrid_dtd.c"
 	#xbt/graphxml.c: xbt/graphxml.l
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.c

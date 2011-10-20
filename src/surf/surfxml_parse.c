@@ -14,6 +14,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
                                 "Logging specific to the SURF parsing module");
 #undef CLEANUP
+int ETag_surfxml_include_state(void);
+
 #include "simgrid_dtd.c"
 
 char *platform_filename;
@@ -122,12 +124,12 @@ static xbt_dynar_t surf_file_to_parse_stack = NULL;
 void STag_surfxml_include(void)
 {
   XBT_INFO("STag_surfxml_include '%s'",A_surfxml_include_file);
-  xbt_dynar_push(surf_file_to_parse_stack, &surf_file_to_parse);
+  xbt_dynar_push(surf_file_to_parse_stack, &surf_file_to_parse); //save old filename
 
-  surf_file_to_parse = surf_fopen(A_surfxml_include_file, "r");
+  surf_file_to_parse = surf_fopen(A_surfxml_include_file, "r"); // read new filename
   xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n",
               A_surfxml_include_file);
-  xbt_dynar_push_as(surf_input_buffer_stack,YY_BUFFER_STATE,surf_input_buffer);
+  xbt_dynar_push(surf_input_buffer_stack,&surf_input_buffer);
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse_push_buffer_state(surf_input_buffer);
   fflush(NULL);
@@ -135,12 +137,28 @@ void STag_surfxml_include(void)
 
 void ETag_surfxml_include(void)
 {
+//	XBT_INFO("ETag_surfxml_include '%s'",A_surfxml_include_file);
+//	fflush(NULL);
+//	fclose(surf_file_to_parse);
+//	xbt_dynar_pop(surf_file_to_parse_stack, &surf_file_to_parse); // restore old filename
+//	surf_parse_pop_buffer_state();
+//	xbt_dynar_pop(surf_input_buffer_stack,&surf_input_buffer);
+}
+
+/*
+ * Return 1 if tag include is opened
+ */
+int ETag_surfxml_include_state(void)
+{
   fflush(NULL);
+  XBT_INFO("ETag_surfxml_include_state '%s'",A_surfxml_include_file);
+  if(xbt_dynar_length(surf_input_buffer_stack)!= 0)
+	  return 1;
   fclose(surf_file_to_parse);
   xbt_dynar_pop(surf_file_to_parse_stack, &surf_file_to_parse);
   surf_parse_pop_buffer_state();
-  surf_input_buffer = xbt_dynar_pop_as(surf_input_buffer_stack,YY_BUFFER_STATE);
-  XBT_INFO("ETag_surfxml_include '%s'",A_surfxml_include_file);
+  xbt_dynar_pop(surf_input_buffer_stack,surf_input_buffer);
+  return 0;
 }
 
 
