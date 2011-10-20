@@ -43,6 +43,10 @@ ADD_TEST(tesh-self-background		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd 
 
 # BEGIN TESH TESTS
 
+# test for code coverage
+ADD_TEST(help ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test --help)
+ADD_TEST(help-models ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test --help-models)
+
 # teshsuite/xbt
 ADD_TEST(tesh-log-large		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_large_test.tesh)
 ADD_TEST(tesh-log-parallel	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parallel_log_crashtest.tesh)
@@ -372,6 +376,7 @@ ADD_TEST(msg-ns3-raw        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--cfg co
 endif(HAVE_NS3)
 
 IF(HAVE_TRACING)
+  ADD_TEST(tracing-help             ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test --help-tracing)
   ADD_TEST(tracing-ms 				${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/ms.tesh)
   ADD_TEST(tracing-categories 		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/categories.tesh)
   ADD_TEST(tracing-tasks 			${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/tasks.tesh)
