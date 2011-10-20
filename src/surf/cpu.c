@@ -32,7 +32,7 @@ lmm_system_t cpu_maxmin_system = NULL;
 static xbt_swag_t cpu_running_action_set_that_does_not_need_being_checked =
     NULL;
 
-static cpu_Cas01_t cpu_new(char *name, double power_peak,
+static void* cpu_create_resource(char *name, double power_peak,
                            double power_scale,
                            tmgr_trace_t power_trace,
                            int core,
@@ -94,7 +94,7 @@ static void parse_cpu_init(void)
     state_initial = SURF_RESOURCE_OFF;
   state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 
-  cpu_new(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
+  cpu_create_resource(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
           power_trace, core, state_initial, state_trace, current_property_set);
   current_property_set = NULL;
 }
@@ -416,17 +416,6 @@ static double cpu_get_available_speed(void *cpu)
   return ((cpu_Cas01_t) cpu)->power_scale;
 }
 
-static void cpu_create_resource(char *name, double power_peak,
-                                double power_scale,
-                                tmgr_trace_t power_trace,
-                                int core,
-                                e_surf_resource_state_t state_initial,
-                                tmgr_trace_t state_trace,
-                                xbt_dict_t cpu_properties)
-{
-  cpu_new(name, power_peak, power_scale, power_trace, core,
-          state_initial, state_trace, cpu_properties);
-}
 
 static void cpu_finalize(void)
 {

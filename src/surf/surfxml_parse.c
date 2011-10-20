@@ -664,7 +664,7 @@ static void add_randomness(void)
 /**
  * create CPU resource via CPU Model
  */
-void surf_host_create_resource(char *name, double power_peak,
+void* surf_host_create_resource(char *name, double power_peak,
                                double power_scale,
                                tmgr_trace_t power_trace, int core,
                                e_surf_resource_state_t state_initial,
@@ -684,14 +684,14 @@ void surf_host_create_resource(char *name, double power_peak,
  * create CPU resource via worsktation_ptask_L07 model
  */
 
-void surf_wsL07_host_create_resource(char *name, double power_peak,
+void* surf_wsL07_host_create_resource(char *name, double power_peak,
                                      double power_scale,
                                      tmgr_trace_t power_trace,
                                      e_surf_resource_state_t state_initial,
                                      tmgr_trace_t state_trace,
                                      xbt_dict_t cpu_properties)
 {
-  surf_workstation_model->extension.workstation.cpu_create_resource(name,
+  return surf_workstation_model->extension.workstation.cpu_create_resource(name,
                                                                     power_peak,
                                                                     power_scale,
                                                                     power_trace,
@@ -703,7 +703,7 @@ void surf_wsL07_host_create_resource(char *name, double power_peak,
 /**
  * create link resource via network Model
  */
-void surf_link_create_resource(char *name,
+void* surf_link_create_resource(char *name,
                                double bw_initial,
                                tmgr_trace_t bw_trace,
                                double lat_initial,
@@ -729,7 +729,7 @@ void surf_link_create_resource(char *name,
  * create link resource via workstation_ptask_L07 model
  */
 
-void surf_wsL07_link_create_resource(char *name,
+void* surf_wsL07_link_create_resource(char *name,
                                      double bw_initial,
                                      tmgr_trace_t bw_trace,
                                      double lat_initial,

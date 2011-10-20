@@ -614,7 +614,7 @@ static int ptask_link_shared(const void *link)
 /*** Resource Creation & Destruction **/
 /**************************************/
 
-static cpu_L07_t ptask_cpu_new(const char *name, double power_scale,
+static void* ptask_cpu_create_resource(char *name, double power_scale,
                                double power_initial,
                                tmgr_trace_t power_trace,
                                e_surf_resource_state_t state_initial,
@@ -675,24 +675,12 @@ static void ptask_parse_cpu_init(void)
     state_initial = SURF_RESOURCE_OFF;
   state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 
-  ptask_cpu_new(A_surfxml_host_id, power_scale, power_initial, power_trace,
+  ptask_cpu_create_resource(A_surfxml_host_id, power_scale, power_initial, power_trace,
                 state_initial, state_trace, current_property_set);
   current_property_set=NULL;
 }
 
-static void ptask_cpu_create_resource(char *name, double power_peak,
-                                      double power_scale,
-                                      tmgr_trace_t power_trace,
-                                      e_surf_resource_state_t
-                                      state_initial,
-                                      tmgr_trace_t state_trace,
-                                      xbt_dict_t cpu_properties)
-{
-  ptask_cpu_new(xbt_strdup(name), power_peak, power_scale, power_trace,
-                state_initial, state_trace, cpu_properties);
-}
-
-static link_L07_t ptask_link_new(char *name,
+static void* ptask_link_create_resource(char *name,
                                  double bw_initial,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
@@ -780,38 +768,21 @@ static void ptask_parse_link_init(void)
 
   if(policy_initial_link == SURF_LINK_FULLDUPLEX)
   {
-	  ptask_link_new(name_link_up, bw_initial, bw_trace, lat_initial, lat_trace,
+    ptask_link_create_resource(name_link_up, bw_initial, bw_trace, lat_initial, lat_trace,
 	                 state_initial_link, state_trace, policy_initial_link,
 	                 current_property_set);
-	  ptask_link_new(name_link_down, bw_initial, bw_trace, lat_initial, lat_trace,
+    ptask_link_create_resource(name_link_down, bw_initial, bw_trace, lat_initial, lat_trace,
 	                 state_initial_link, state_trace, policy_initial_link,
 	                 current_property_set);
   }
   else
   {
-	  ptask_link_new(name_link, bw_initial, bw_trace, lat_initial, lat_trace,
+    ptask_link_create_resource(name_link, bw_initial, bw_trace, lat_initial, lat_trace,
 					 state_initial_link, state_trace, policy_initial_link,
 					 current_property_set);
   }
   current_property_set = NULL;
 }
-
-static void ptask_link_create_resource(char *name,
-                                       double bw_initial,
-                                       tmgr_trace_t bw_trace,
-                                       double lat_initial,
-                                       tmgr_trace_t lat_trace,
-                                       e_surf_resource_state_t
-                                       state_initial,
-                                       tmgr_trace_t state_trace,
-                                       e_surf_link_sharing_policy_t
-                                       policy, xbt_dict_t properties)
-{
-  ptask_link_new(name, bw_initial, bw_trace,
-                 lat_initial, lat_trace, state_initial, state_trace,
-                 policy, properties);
-}
-
 
 static void ptask_add_traces(void)
 {
@@ -951,7 +922,7 @@ static void ptask_model_init_internal(void)
     ptask_maxmin_system = lmm_system_new();
 
   routing_model_create(sizeof(link_L07_t),
-                       ptask_link_new(xbt_strdup("__loopback__"),
+      ptask_link_create_resource(xbt_strdup("__loopback__"),
                                       498000000, NULL, 0.000015, NULL,
                                       SURF_RESOURCE_ON, NULL,
                                       SURF_LINK_FATPIPE, NULL),

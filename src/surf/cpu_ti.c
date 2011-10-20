@@ -144,7 +144,7 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
 }
 
 
-static cpu_ti_t cpu_ti_new(char *name, double power_peak,
+static void* cpu_ti_create_resource(char *name, double power_peak,
                            double power_scale,
                            tmgr_trace_t power_trace,
                            int core,
@@ -156,6 +156,7 @@ static cpu_ti_t cpu_ti_new(char *name, double power_peak,
   s_tmgr_event_t val;
   cpu_ti_t cpu = xbt_new0(s_cpu_ti_t, 1);
   s_surf_action_cpu_ti_t ti_action;
+  xbt_assert(core==1,"Multi-core not handled with this model yet");
   xbt_assert(!surf_cpu_resource_by_name(name),
               "Host '%s' declared several times in the platform file",
               name);
@@ -214,7 +215,7 @@ static void parse_cpu_ti_init(void)
     state_initial = SURF_RESOURCE_OFF;
   state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 
-  cpu_ti_new(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
+  cpu_ti_create_resource(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
              power_trace, core, state_initial, state_trace,
              current_property_set);
   current_property_set = NULL;
@@ -744,19 +745,6 @@ static double cpu_ti_get_available_speed(void *cpu)
       surf_cpu_ti_get_power_scale(CPU->avail_trace, surf_get_clock());
 /* number between 0 and 1 */
   return CPU->power_scale;
-}
-
-static void cpu_ti_create_resource(char *name, double power_peak,
-                                   double power_scale,
-                                   tmgr_trace_t power_trace,
-                                   int core,
-                                   e_surf_resource_state_t state_initial,
-                                   tmgr_trace_t state_trace,
-                                   xbt_dict_t cpu_properties)
-{
-	xbt_assert(core==1,"Multi-core not handled with this model yet");
-  cpu_ti_new(name, power_peak, power_scale, power_trace, core,
-             state_initial, state_trace, cpu_properties);
 }
 
 static void cpu_ti_finalize(void)

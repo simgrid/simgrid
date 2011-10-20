@@ -169,7 +169,7 @@ typedef struct surf_cpu_model_extension_public {
   e_surf_resource_state_t(*get_state) (void *cpu);
   double (*get_speed) (void *cpu, double load);
   double (*get_available_speed) (void *cpu);
-  void (*create_resource) (char *name, double power_peak,
+  void* (*create_resource) (char *name, double power_peak,
                            double power_scale,
                            tmgr_trace_t power_trace,
                            int core,
@@ -195,7 +195,7 @@ typedef struct surf_network_model_extension_public {
   double (*get_link_latency) (const void *link);
   int (*link_shared) (const void *link);
   void (*add_traces) (void);
-  void (*create_resource) (char *name,
+  void* (*create_resource) (char *name,
                            double bw_initial,
                            tmgr_trace_t bw_trace,
                            double lat_initial,
@@ -233,7 +233,7 @@ typedef struct surf_workstation_model_extension_public {
   double (*get_link_latency) (const void *link);                                           /**< Return the current latency of a network link */
   int (*link_shared) (const void *link);
    xbt_dict_t(*get_properties) (const void *resource);
-  void (*link_create_resource) (char *name,
+  void* (*link_create_resource) (char *name,
                                 double bw_initial,
                                 tmgr_trace_t bw_trace,
                                 double lat_initial,
@@ -243,7 +243,7 @@ typedef struct surf_workstation_model_extension_public {
                                 tmgr_trace_t state_trace,
                                 e_surf_link_sharing_policy_t
                                 policy, xbt_dict_t properties);
-  void (*cpu_create_resource) (char *name, double power_peak,
+  void* (*cpu_create_resource) (char *name, double power_peak,
                                double power_scale,
                                tmgr_trace_t power_trace,
                                e_surf_resource_state_t state_initial,
@@ -731,7 +731,7 @@ XBT_PUBLIC(double) get_cpu_power(const char *power);
  *
  * see surfxml_parse.c
  * */
-XBT_PUBLIC(void) surf_host_create_resource(char *name, double power_peak,
+XBT_PUBLIC(void*) surf_host_create_resource(char *name, double power_peak,
                                            double power_scale,
                                            tmgr_trace_t power_trace,
                                            int core,
@@ -744,7 +744,7 @@ XBT_PUBLIC(void) surf_host_create_resource(char *name, double power_peak,
  *
  * see surfxml_parse.c
  * */
-XBT_PUBLIC(void) surf_wsL07_host_create_resource(char *name,
+XBT_PUBLIC(void*) surf_wsL07_host_create_resource(char *name,
                                                  double power_peak,
                                                  double power_scale,
                                                  tmgr_trace_t power_trace,
@@ -757,7 +757,7 @@ XBT_PUBLIC(void) surf_wsL07_host_create_resource(char *name,
  * create link resource
  * see surfxml_parse.c
  */
-XBT_PUBLIC(void) surf_link_create_resource(char *name,
+XBT_PUBLIC(void*) surf_link_create_resource(char *name,
                                            double bw_initial,
                                            tmgr_trace_t bw_trace,
                                            double lat_initial,
@@ -769,7 +769,7 @@ XBT_PUBLIC(void) surf_link_create_resource(char *name,
                                            policy, xbt_dict_t properties);
 
 
-XBT_PUBLIC(void) surf_wsL07_link_create_resource(char *name,
+XBT_PUBLIC(void*) surf_wsL07_link_create_resource(char *name,
                                                  double bw_initial,
                                                  tmgr_trace_t bw_trace,
                                                  double lat_initial,

@@ -150,7 +150,7 @@ static double (*im_bandwidth_constraint_callback) (double, double, double) =
     &im_constant_bandwidth_constraint;
 
 
-static link_CM02_im_t im_net_link_new(char *name,
+static void* im_net_create_resource(char *name,
                                 double bw_initial,
                                 tmgr_trace_t bw_trace,
                                 double lat_initial,
@@ -227,36 +227,20 @@ static void im_net_parse_link_init(void)
 
   if(policy_initial_link == SURF_LINK_FULLDUPLEX)
   {
-	  im_net_link_new(bprintf("%s_UP",name_link), bw_initial, bw_trace,
+    im_net_create_resource(bprintf("%s_UP",name_link), bw_initial, bw_trace,
 	               lat_initial, lat_trace, state_initial_link, state_trace,
 	               policy_initial_link, xbt_dict_new());
-	  im_net_link_new(bprintf("%s_DOWN",name_link), bw_initial, bw_trace,
+    im_net_create_resource(bprintf("%s_DOWN",name_link), bw_initial, bw_trace,
 	               lat_initial, lat_trace, state_initial_link, state_trace,
 	               policy_initial_link, xbt_dict_new());
   }
   else
   {
-	  im_net_link_new(name_link, bw_initial, bw_trace,
+    im_net_create_resource(name_link, bw_initial, bw_trace,
 	               lat_initial, lat_trace, state_initial_link, state_trace,
 	               policy_initial_link, xbt_dict_new());
   }
 
-}
-
-static void im_net_create_resource(char *name,
-                                double bw_initial,
-                                tmgr_trace_t bw_trace,
-                                double lat_initial,
-                                tmgr_trace_t lat_trace,
-                                e_surf_resource_state_t
-                                state_initial,
-                                tmgr_trace_t state_trace,
-                                e_surf_link_sharing_policy_t policy,
-                                xbt_dict_t properties)
-{
-  im_net_link_new(name, bw_initial, bw_trace,
-               lat_initial, lat_trace, state_initial, state_trace,
-               policy, xbt_dict_new());
 }
 
 static void im_net_add_traces(void)
@@ -918,11 +902,12 @@ static void im_surf_network_model_init_internal(void)
 
   xbt_heap_set_update_callback(im_net_action_heap, im_net_action_update_index_heap);
 
-  routing_model_create(sizeof(link_CM02_im_t),        im_net_link_new(xbt_strdup("__loopback__"),
-                                                                      498000000, NULL, 0.000015, NULL,
-                                                                      SURF_RESOURCE_ON, NULL,
-                                                                      SURF_LINK_FATPIPE, NULL),
-                              im_net_get_link_latency);
+  routing_model_create(sizeof(link_CM02_im_t),
+      im_net_create_resource(xbt_strdup("__loopback__"),
+          498000000, NULL, 0.000015, NULL,
+          SURF_RESOURCE_ON, NULL,
+          SURF_LINK_FATPIPE, NULL),
+          im_net_get_link_latency);
   im_net_modified_set =
       xbt_swag_new(xbt_swag_offset(comm, action_list_hookup));
   keep_track = im_net_modified_set;
