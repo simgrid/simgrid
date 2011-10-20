@@ -23,24 +23,32 @@ typedef struct {
 const SD_workstation_t* ws_list;
 int count = 0;
 
+xbt_dynar_t reclaimed;
+
 static void send_one(int from, int to) {
   //XBT_DEBUG("send_one(%d, %d)",from,to);
 
-  if (count %1000 == 0)
+  if (count %100000 == 0)
     XBT_INFO("Sending task #%d",count);
   count++;
 
-  bcast_task_t bt = xbt_new(s_bcast_task_t,1);
-
+  bcast_task_t bt;
+  if (xbt_dynar_length(reclaimed)>0) {
+     bt = xbt_dynar_pop_as(reclaimed,bcast_task_t);
+  } else {
+    bt = xbt_new(s_bcast_task_t,1);
+  }
   bt->i=from;
   bt->j=(from+to)/2;
   bt->k=to;
 
-  SD_task_t t = SD_task_create_comm_e2e("Blab",bt,424242);
+  SD_task_t task = SD_task_create_comm_e2e("Blab",bt,424242);
+
   XBT_DEBUG("Schedule task between %d and %d",bt->i,bt->j);
-  SD_task_schedulel(t,2,ws_list[bt->i],ws_list[bt->j]);
-  SD_task_watch(t,SD_DONE);
+  SD_task_schedulel(task,2,ws_list[bt->i],ws_list[bt->j]);
+  SD_task_watch(task,SD_DONE);
 }
+
 
 int main(int argc, char **argv) {
 
@@ -54,8 +62,9 @@ int main(int argc, char **argv) {
   }
 
   ws_list = SD_workstation_get_list();
+  reclaimed = xbt_dynar_new(sizeof(bcast_task_t),NULL);
   xbt_dynar_t done = NULL;
-  send_one(0,10000);
+  send_one(0,262144);
   do {
     if (done != NULL && xbt_dynar_length(done) > 0) {
       unsigned int cursor;
@@ -69,8 +78,12 @@ int main(int argc, char **argv) {
         if (bt->j != bt->k -1)
           send_one(bt->j,bt->k);
 
+        if (xbt_dynar_length(reclaimed)<100) {
+          xbt_dynar_push_as(reclaimed,bcast_task_t,bt);
+        } else {
+          free(bt);
+        }
         SD_task_destroy(task);
-        free(bt);
       }
       xbt_dynar_free(&done);
     }
