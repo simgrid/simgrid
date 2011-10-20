@@ -716,7 +716,7 @@ void SIMIX_comm_cancel(smx_action_t action)
   /* so remove from it and delete it */
   if (action->state == SIMIX_WAITING) {
     SIMIX_rdv_remove(action->comm.rdv, action);
-    action->state = SIMIX_FAILED;
+    action->state = SIMIX_CANCELED;
   }
   else if (!MC_IS_ENABLED
       && (action->state == SIMIX_READY || action->state == SIMIX_RUNNING)) {
