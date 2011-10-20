@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
   }
 
   ws_list = SD_workstation_get_list();
-  reclaimed = xbt_dynar_new(sizeof(bcast_task_t),NULL);
+  reclaimed = xbt_dynar_new(sizeof(bcast_task_t),xbt_free_ref);
   xbt_dynar_t done = NULL;
   send_one(0,262144);
   do {
@@ -89,7 +89,10 @@ int main(int argc, char **argv) {
     }
     done=SD_simulate(-1);
   } while(xbt_dynar_length(done) > 0);
+  xbt_dynar_free(&done);
+  xbt_dynar_free(&reclaimed);
 
   SD_exit();
+  XBT_INFO("Done. Bailing out");
   return 0;
 }
