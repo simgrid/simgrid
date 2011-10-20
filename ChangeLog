@@ -128,6 +128,8 @@ SimGrid (3.6) stable; urgency=medium
    combine Vivaldi based latencies with last-mile platforms.
 
  SIMIX
+ * Added a check for NaN of IEEE754 infinite in the double entries of 
+   the smx_user.c file
  * Introduce a new context factory "raw", highly inspirated from the
    ucontext factory, but using manually crafted functions in assembly to
    do the work in an efficient manner.
