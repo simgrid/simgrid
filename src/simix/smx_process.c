@@ -61,10 +61,13 @@ void SIMIX_process_cleanup(smx_process_t process)
       action->comm.dst_proc = NULL;
     }
     else {
+      XBT_DEBUG("Strange, I'm not in comm %p, state = %d, src = %p, dst = %p", action,
+          action->state, action->comm.src_proc, action->comm.dst_proc);
       THROW_IMPOSSIBLE;
     }
 
-    SIMIX_comm_destroy(action);
+    /* FIXME uncommenting this instruction crashes complex simulations
+    SIMIX_comm_destroy(action); */
   }
 
   /*xbt_swag_remove(process, simix_global->process_to_run);*/
