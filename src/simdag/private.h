@@ -17,9 +17,6 @@
 #include "xbt/mallocator.h"
 #include <stdbool.h>
 
-#define SD_INITIALISED() (sd_global != NULL)
-#define SD_CHECK_INIT_DONE() xbt_assert(SD_INITIALISED(), "Call SD_init() first");
-
 /* Global variables */
 
 typedef struct SD_global {

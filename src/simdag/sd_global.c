@@ -52,7 +52,7 @@ void SD_init(int *argc, char **argv)
 
   s_SD_task_t task;
 
-  xbt_assert(!SD_INITIALISED(), "SD_init() already called");
+  xbt_assert(sd_global == NULL, "SD_init() already called");
 
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(sd_kernel, sd);
@@ -123,45 +123,38 @@ void SD_application_reinit(void)
 
   s_SD_task_t task;
 
-  if (SD_INITIALISED()) {
-    XBT_DEBUG("Recreating the swags...");
-    xbt_swag_free(sd_global->not_scheduled_task_set);
-    xbt_swag_free(sd_global->schedulable_task_set);
-    xbt_swag_free(sd_global->scheduled_task_set);
-    xbt_swag_free(sd_global->runnable_task_set);
-    xbt_swag_free(sd_global->in_fifo_task_set);
-    xbt_swag_free(sd_global->running_task_set);
-    xbt_swag_free(sd_global->done_task_set);
-    xbt_swag_free(sd_global->failed_task_set);
+  XBT_DEBUG("Recreating the swags...");
+  xbt_swag_free(sd_global->not_scheduled_task_set);
+  xbt_swag_free(sd_global->schedulable_task_set);
+  xbt_swag_free(sd_global->scheduled_task_set);
+  xbt_swag_free(sd_global->runnable_task_set);
+  xbt_swag_free(sd_global->in_fifo_task_set);
+  xbt_swag_free(sd_global->running_task_set);
+  xbt_swag_free(sd_global->done_task_set);
+  xbt_swag_free(sd_global->failed_task_set);
 
-    sd_global->not_scheduled_task_set =
-        xbt_swag_new(xbt_swag_offset(task, state_hookup));
-    sd_global->schedulable_task_set =
-        xbt_swag_new(xbt_swag_offset(task, state_hookup));
-    sd_global->scheduled_task_set =
-        xbt_swag_new(xbt_swag_offset(task, state_hookup));
-    sd_global->runnable_task_set =
-        xbt_swag_new(xbt_swag_offset(task, state_hookup));
-    sd_global->in_fifo_task_set =
-        xbt_swag_new(xbt_swag_offset(task, state_hookup));
-    sd_global->running_task_set =
-        xbt_swag_new(xbt_swag_offset(task, state_hookup));
-    sd_global->done_task_set =
-        xbt_swag_new(xbt_swag_offset(task, state_hookup));
-    sd_global->failed_task_set =
-        xbt_swag_new(xbt_swag_offset(task, state_hookup));
-    sd_global->task_number = 0;
+  sd_global->not_scheduled_task_set =
+      xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->schedulable_task_set =
+      xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->scheduled_task_set =
+      xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->runnable_task_set =
+      xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->in_fifo_task_set =
+      xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->running_task_set =
+      xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->done_task_set =
+      xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->failed_task_set =
+      xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->task_number = 0;
 
 #ifdef HAVE_JEDULE
-    jedule_sd_cleanup();
-    jedule_sd_init();
+  jedule_sd_cleanup();
+  jedule_sd_init();
 #endif
-
-  } else {
-    XBT_WARN("SD_application_reinit called before initialization of SimDag");
-    /* we cannot use exceptions here because xbt is not running! */
-  }
-
 }
 
 /**
@@ -195,7 +188,7 @@ void SD_create_environment(const char *platform_file)
   surf_parse_reset_callbacks();
   // Add config callbacks
   surf_parse_add_callback_config();
-  SD_CHECK_INIT_DONE();
+
   parse_platform_file(platform_file);
   surf_config_models_create_elms();
 
@@ -253,8 +246,6 @@ xbt_swag_t SD_simulate_swag(double how_long) {
   surf_action_t action;
   unsigned int iter, depcnt;
   static int first_time = 1;
-
-  SD_CHECK_INIT_DONE();
 
    if (first_time) {
      XBT_VERB("Starting simulation...");
@@ -366,7 +357,8 @@ xbt_swag_t SD_simulate_swag(double how_long) {
 
   if (!sd_global->watch_point_reached && how_long<0){
     if (xbt_swag_size(sd_global->done_task_set) < sd_global->task_number){
-        XBT_WARN("Simulation is finished but some tasks are still not done");
+        XBT_WARN("Simulation is finished but %d tasks are still not done",
+            (sd_global->task_number - xbt_swag_size(sd_global->done_task_set)));
       	xbt_swag_foreach_safe (task, task_safe,sd_global->not_scheduled_task_set){
                 XBT_WARN("%s is in SD_NOT_SCHEDULED state", SD_task_get_name(task));
 		}
@@ -391,10 +383,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
  *
  * \return the current clock, in second
  */
-double SD_get_clock(void)
-{
-  SD_CHECK_INIT_DONE();
-
+double SD_get_clock(void) {
   return surf_get_clock();
 }
 
@@ -412,35 +401,34 @@ void SD_exit(void)
   TRACE_surf_release();
 #endif
 
-  if (SD_INITIALISED()) {
-    xbt_mallocator_free(sd_global->task_mallocator);
+  xbt_mallocator_free(sd_global->task_mallocator);
 
-    XBT_DEBUG("Destroying workstation and link arrays if necessary...");
-    if (sd_global->workstation_list != NULL)
-      xbt_free(sd_global->workstation_list);
+  XBT_DEBUG("Destroying workstation and link arrays if necessary...");
+  if (sd_global->workstation_list != NULL)
+    xbt_free(sd_global->workstation_list);
 
-    if (sd_global->link_list != NULL)
-      xbt_free(sd_global->link_list);
+  if (sd_global->link_list != NULL)
+    xbt_free(sd_global->link_list);
 
-    if (sd_global->recyclable_route != NULL)
-      xbt_free(sd_global->recyclable_route);
+  if (sd_global->recyclable_route != NULL)
+    xbt_free(sd_global->recyclable_route);
 
-    XBT_DEBUG("Destroying the swags...");
-    xbt_swag_free(sd_global->not_scheduled_task_set);
-    xbt_swag_free(sd_global->schedulable_task_set);
-    xbt_swag_free(sd_global->scheduled_task_set);
-    xbt_swag_free(sd_global->runnable_task_set);
-    xbt_swag_free(sd_global->in_fifo_task_set);
-    xbt_swag_free(sd_global->running_task_set);
-    xbt_swag_free(sd_global->done_task_set);
-    xbt_swag_free(sd_global->failed_task_set);
-    xbt_swag_free(sd_global->return_set);
+  XBT_DEBUG("Destroying the swags...");
+  xbt_swag_free(sd_global->not_scheduled_task_set);
+  xbt_swag_free(sd_global->schedulable_task_set);
+  xbt_swag_free(sd_global->scheduled_task_set);
+  xbt_swag_free(sd_global->runnable_task_set);
+  xbt_swag_free(sd_global->in_fifo_task_set);
+  xbt_swag_free(sd_global->running_task_set);
+  xbt_swag_free(sd_global->done_task_set);
+  xbt_swag_free(sd_global->failed_task_set);
+  xbt_swag_free(sd_global->return_set);
 
-    XBT_DEBUG("Exiting Surf...");
-    surf_exit();
+  XBT_DEBUG("Exiting Surf...");
+  surf_exit();
 
-    xbt_free(sd_global);
-    sd_global = NULL;
+  xbt_free(sd_global);
+  sd_global = NULL;
 
 #ifdef HAVE_TRACING
   TRACE_end();
@@ -449,11 +437,6 @@ void SD_exit(void)
   jedule_sd_dump();
   jedule_sd_cleanup();
 #endif
-
-  } else {
-    XBT_WARN("SD_exit() called, but SimDag is not running");
-    /* we cannot use exceptions here because xbt is not running! */
-  }
 }
 
 /**
