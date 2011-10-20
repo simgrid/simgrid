@@ -42,7 +42,7 @@ static void send_one(int from, int to) {
   bt->j=(from+to)/2;
   bt->k=to;
 
-  SD_task_t task = SD_task_create_comm_e2e("Blab",bt,424242);
+  SD_task_t task = SD_task_create_comm_e2e(NULL,bt,424242);
 
   XBT_DEBUG("Schedule task between %d and %d",bt->i,bt->j);
   SD_task_schedulel(task,2,ws_list[bt->i],ws_list[bt->j]);
