@@ -6,6 +6,9 @@
 
 /* SimGrid Lua helper functions                                             */
 
+#ifndef LUA_UTILS_H
+#define LUA_UTILS_H
+
 #include <lua.h>
 
 /**
@@ -24,3 +27,5 @@ const char* sglua_keyvalue_tostring(lua_State* L, int key_index, int value_index
 void sglua_stack_dump(const char *msg, lua_State* L);
 const char* sglua_get_spaces(int length);
 int sglua_memory_writer(lua_State* L, const void* source, size_t size, void* userdata);
+
+#endif  /* LUA_UTILS_H */

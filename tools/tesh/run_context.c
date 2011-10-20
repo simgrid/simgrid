@@ -727,7 +727,7 @@ void *rctx_wait(void *r)
     if (rctx->output_sort) {
       xbt_dynar_sort(b, cmpstringp);
       /* If empty lines moved in first position, remove them */
-      while (*xbt_dynar_getfirst_as(b, char *) == '\0')
+      while (!xbt_dynar_is_empty(b) && *xbt_dynar_getfirst_as(b, char*) == '\0')
         xbt_dynar_shift(b, NULL);
     }
 
