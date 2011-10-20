@@ -58,7 +58,6 @@ XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_include_cb_list;
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);
-XBT_PUBLIC(int)  surf_parse_no_callbacks(void);
 XBT_PUBLIC(void) surf_parse_init_callbacks(void);
 XBT_PUBLIC(void) surf_parse_reset_callbacks(void);
 XBT_PUBLIC(void) surf_parse_free_callbacks(void);

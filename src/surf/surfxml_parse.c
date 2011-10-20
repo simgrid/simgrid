@@ -143,50 +143,6 @@ void ETag_surfxml_include(void)
   XBT_INFO("ETag_surfxml_include '%s'",A_surfxml_include_file);
 }
 
-/*
- * This function return 0 or 1 if callbacks are empty or not.
- */
-int surf_parse_no_callbacks(void)
-{
-	return  xbt_dynar_is_empty(STag_surfxml_platform_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_platform_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_host_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_host_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_router_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_router_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_link_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_link_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_route_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_route_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_link_ctn_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_link_ctn_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_process_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_process_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_argument_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_argument_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_prop_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_prop_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_trace_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_trace_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_trace_connect_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_trace_connect_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_random_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_random_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_AS_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_AS_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_ASroute_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_ASroute_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_bypassRoute_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_bypassRoute_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_cluster_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_cluster_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_peer_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_peer_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_config_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_config_cb_list) &&
-	  xbt_dynar_is_empty(STag_surfxml_include_cb_list) &&
-	  xbt_dynar_is_empty(ETag_surfxml_include_cb_list);
-}
 
 void surf_parse_init_callbacks(void)
 {
