@@ -72,7 +72,7 @@ export CC=gcc
 export CXX=g++
 fi
 
-#supernovae DEFAULT CONF
+#DEFAULT CONF
 cmake -Drelease=on .
 ctest -D NightlyStart
 ctest -D NightlyConfigure
@@ -86,8 +86,7 @@ cmake \
 -Denable_coverage=on \
 -Denable_model-checking=on \
 -Denable_compile_optimizations=off \
--Drelease=on \
--Denable_supernovae=off .
+-Drelease=on .
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild

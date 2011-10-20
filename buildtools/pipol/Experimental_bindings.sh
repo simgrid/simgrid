@@ -24,7 +24,6 @@ export CC=gcc
 export CXX=g++
 fi
 
-#supernovae
 cmake -Drelease=on .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure

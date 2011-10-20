@@ -29,27 +29,6 @@ fi
 #SIMGRID_ROOT=`pwd`
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/gtnets_install/lib
 
-#supernovae
-cmake \
--Denable_lua=on \
--Denable_tracing=on \
--Denable_smpi=on \
--Denable_supernovae=on \
--Denable_compile_optimizations=on \
--Denable_compile_warnings=on \
--Denable_lib_static=off \
--Denable_model-checking=off \
--Denable_latency_bound_tracking=off \
--Drelease=on \
--Denable_gtnets=off .
-
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalTest
-ctest -D ExperimentalSubmit
-make clean
-
 #MC
 cmake \
 -Denable_latency_bound_tracking=on \
@@ -60,8 +39,7 @@ cmake \
 -Denable_compile_optimizations=off \
 -Denable_auto_install=on \
 -DCMAKE_INSTALL_PREFIX=./simgrid_install \
--Drelease=on \
--Denable_supernovae=off .
+-Drelease=on .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
 ctest -D ExperimentalBuild

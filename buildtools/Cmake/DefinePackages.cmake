@@ -87,7 +87,6 @@ set(EXTRA_DIST
 	src/smpi/private.h
 	src/smpi/smpi_mpi_dt_private.h
 	src/smpi/README
-	src/mk_supernovae.pl
 	
 	examples/gras/ping/ping.h
 	examples/gras/console/ping.h
