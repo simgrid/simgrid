@@ -911,7 +911,7 @@ void surf_network_model_init_LegrandVelho(const char *filename)
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
 
   update_model_description(surf_network_model_description,
-                           "LV08", surf_network_model);
+                           "LV08_fullupdate", surf_network_model);
 }
 
 /***************************************************************************/

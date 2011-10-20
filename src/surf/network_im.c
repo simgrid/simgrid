@@ -873,8 +873,6 @@ static void im_net_finalize(void)
 static void im_surf_network_model_init_internal(void)
 {
   s_surf_action_network_CM02_im_t comm;
-  XBT_INFO("You are using the UNSAFE lazy management optimization, I hope you know what you are doing.");
-  XBT_INFO("====> For now this optimization is only available for LV08_im network model.");
 
   surf_network_model = surf_model_init();
 
@@ -951,7 +949,7 @@ void im_surf_network_model_init_LegrandVelho(const char *filename)
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
 
   update_model_description(surf_network_model_description,
-                           "LV08_im", surf_network_model);
+                           "LV08", surf_network_model);
 }
 
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -119,11 +119,11 @@ s_surf_model_description_t surf_network_model_description[] = {
    "Realistic network model with lmm_solve and no correction factors",
    NULL, surf_network_model_init_CM02},
   {"LV08",
-   "Realistic network model with lmm_solve and these correction factors: latency*=10.4, bandwidth*=.92, S=8775",
-   NULL, surf_network_model_init_LegrandVelho},
-   {"LV08_im",
-    "Realistic network model with IMPROVED ACTION MANAGEMENT and these correction factors: latency*=10.4, bandwidth*=.92, S=8775",
-    NULL, im_surf_network_model_init_LegrandVelho},
+   "Realistic network model with lmm_solve, adequate correction factors (latency*=10.4, bandwidth*=.92, S=8775) and partial invalidation optimization",
+   NULL, im_surf_network_model_init_LegrandVelho},
+   {"LV08_fullupdate",
+    "Realistic network model wit lmm_solve, adequate correction factors (latency*=10.4, bandwidth*=.92, S=8775) but no further optimization. Should produce the same results as LV08, only slower.",
+    NULL, surf_network_model_init_LegrandVelho},
   {"SMPI",
    "Realistic network model with lmm_solve and correction factors on three intervals (< 1KiB, < 64 KiB, >= 64 KiB)",
    NULL, surf_network_model_init_SMPI},

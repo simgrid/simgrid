@@ -1,3 +1,11 @@
+SimGrid (3.7) NOT RELEASED; urgency=low 
+
+  Models:
+  * Use the partial invalidation optimization by default for the
+    network too. Should produce the exact same results, only faster.
+
+  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
 SimGrid (3.6.2) stable; urgency=low 
 
  The "Not coding new stuff allows to polish old things" release.
