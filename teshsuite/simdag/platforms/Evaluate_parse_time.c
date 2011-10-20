@@ -33,5 +33,6 @@ int main(int argc, char **argv)
 
 	SD_exit();
 
+	free(timer);
 	return 0;
 }
