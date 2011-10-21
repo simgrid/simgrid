@@ -1561,35 +1561,54 @@ void routing_parse_Scluster(void)
       surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char *));
       host_id = bprintf("%s%d%s", cluster_prefix, start, cluster_suffix);
       link_id = bprintf("%s_link_%d", cluster_id, start);
-
       xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
-      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, cluster_power);
       A_surfxml_host_state = A_surfxml_host_state_ON;
+
+      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, cluster_power);
       SURFXML_BUFFER_SET(host_id, host_id);
       SURFXML_BUFFER_SET(host_power, cluster_power);
+
+      if(!strcmp(A_surfxml_cluster_availability_file,"")){
+		  char* tmp_availability_file = xbt_strdup(availability_file);
+		  xbt_str_varsubst(tmp_availability_file,patterns);
+		  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
+	      SURFXML_BUFFER_SET(host_availability_file, tmp_availability_file);
+	      xbt_free(tmp_availability_file);
+      }
+      else
+      {
+		  XBT_DEBUG("\tavailability_file=\"\"");
+		  SURFXML_BUFFER_SET(host_availability_file, "");
+      }
+      if(!strcmp(A_surfxml_cluster_state_file,"")){
+		  char *tmp_state_file = xbt_strdup(state_file);
+		  xbt_str_varsubst(tmp_state_file,patterns);
+		  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
+	      SURFXML_BUFFER_SET(host_state_file, tmp_state_file);
+	      xbt_free(tmp_state_file);
+      }
+      else
+      {
+    	  XBT_DEBUG("\tstate_file=\"\"");
+    	  SURFXML_BUFFER_SET(host_state_file, "");
+      }
+
       SURFXML_BUFFER_SET(host_core, cluster_core);
       SURFXML_BUFFER_SET(host_availability, "1.0");
       SURFXML_BUFFER_SET(host_coordinates, "");
-
-      char* tmp_availability_file = xbt_strdup(availability_file);
-      char* tmp_state_file = xbt_strdup(state_file);
-      XBT_DEBUG("\tavailability_file=\"%s\"",xbt_str_varsubst(tmp_availability_file,patterns));
-      XBT_DEBUG("\tstate_file=\"%s\"",xbt_str_varsubst(tmp_state_file,patterns));
-      SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(tmp_availability_file,patterns));
-      SURFXML_BUFFER_SET(host_state_file, xbt_str_varsubst(tmp_state_file,patterns));
-      xbt_free(tmp_availability_file);
-      xbt_free(tmp_state_file);
-      XBT_DEBUG("</host>");
       SURFXML_START_TAG(host);
       SURFXML_END_TAG(host);
+      XBT_DEBUG("</host>");
 
-      XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,cluster_bw, cluster_lat);
       A_surfxml_link_state = A_surfxml_link_state_ON;
       A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
       if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
 	  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
       if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
 	  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
+
+      XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,cluster_bw, cluster_lat);
+
       SURFXML_BUFFER_SET(link_id, link_id);
       SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
       SURFXML_BUFFER_SET(link_latency, cluster_lat);
@@ -1609,48 +1628,67 @@ void routing_parse_Scluster(void)
                          xbt_dynar_get_as(radical_ends, 0, char *));
       surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
       for (i = start; i <= end; i++) {
-        host_id = bprintf("%s%d%s", cluster_prefix, i, cluster_suffix);
-        link_id = bprintf("%s_link_%d", cluster_id, i);
+		  host_id = bprintf("%s%d%s", cluster_prefix, i, cluster_suffix);
+		  link_id = bprintf("%s_link_%d", cluster_id, i);
+		  xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
+		  A_surfxml_host_state = A_surfxml_host_state_ON;
 
-        xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
-        XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, cluster_power);
-        A_surfxml_host_state = A_surfxml_host_state_ON;
-        SURFXML_BUFFER_SET(host_id, host_id);
-        SURFXML_BUFFER_SET(host_power, cluster_power);
-        SURFXML_BUFFER_SET(host_core, cluster_core);
-        SURFXML_BUFFER_SET(host_availability, "1.0");
-        SURFXML_BUFFER_SET(host_coordinates, "");
+	      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\">", host_id, cluster_power);
+	      SURFXML_BUFFER_SET(host_id, host_id);
+	      SURFXML_BUFFER_SET(host_power, cluster_power);
 
-        char* tmp_availability_file = xbt_strdup(availability_file);
-        char* tmp_state_file = xbt_strdup(state_file);
-        XBT_DEBUG("\tavailability_file=\"%s\"",xbt_str_varsubst(tmp_availability_file,patterns));
-        XBT_DEBUG("\tstate_file=\"%s\"",xbt_str_varsubst(tmp_state_file,patterns));
-        SURFXML_BUFFER_SET(host_availability_file, xbt_str_varsubst(tmp_availability_file,patterns));
-        SURFXML_BUFFER_SET(host_state_file, xbt_str_varsubst(tmp_state_file,patterns));
-        xbt_free(tmp_availability_file);
-        xbt_free(tmp_state_file);
-        XBT_DEBUG("</host>");
-        SURFXML_START_TAG(host);
-        SURFXML_END_TAG(host);
+	      if(!strcmp(A_surfxml_cluster_availability_file,"")){
+			  char* tmp_availability_file = xbt_strdup(availability_file);
+			  xbt_str_varsubst(tmp_availability_file,patterns);
+			  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
+		      SURFXML_BUFFER_SET(host_availability_file, tmp_availability_file);
+		      xbt_free(tmp_availability_file);
+	      }
+	      else
+	      {
+			  XBT_DEBUG("\tavailability_file=\"\"");
+			  SURFXML_BUFFER_SET(host_availability_file, "");
+	      }
+	      if(!strcmp(A_surfxml_cluster_state_file,"")){
+			  char *tmp_state_file = xbt_strdup(state_file);
+			  xbt_str_varsubst(tmp_state_file,patterns);
+			  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
+		      SURFXML_BUFFER_SET(host_state_file, tmp_state_file);
+		      xbt_free(tmp_state_file);
+	      }
+	      else
+	      {
+	    	  XBT_DEBUG("\tstate_file=\"\"");
+	    	  SURFXML_BUFFER_SET(host_state_file, "");
+	      }
 
-        XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,cluster_bw, cluster_lat);
-        A_surfxml_link_state = A_surfxml_link_state_ON;
-        A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-        if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
-  	    {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
-        if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
-  	    {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
-        SURFXML_BUFFER_SET(link_id, link_id);
-        SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
-        SURFXML_BUFFER_SET(link_latency, cluster_lat);
-        SURFXML_BUFFER_SET(link_bandwidth_file, "");
-        SURFXML_BUFFER_SET(link_latency_file, "");
-        SURFXML_BUFFER_SET(link_state_file, "");
-        SURFXML_START_TAG(link);
-        SURFXML_END_TAG(link);
+	      SURFXML_BUFFER_SET(host_core, cluster_core);
+	      SURFXML_BUFFER_SET(host_availability, "1.0");
+	      SURFXML_BUFFER_SET(host_coordinates, "");
+	      SURFXML_START_TAG(host);
+	      SURFXML_END_TAG(host);
+	      XBT_DEBUG("</host>");
 
-        free(link_id);
-        free(host_id);
+		  A_surfxml_link_state = A_surfxml_link_state_ON;
+		  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+		  if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
+		  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
+		  if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
+		  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
+
+		  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id,cluster_bw, cluster_lat);
+
+		  SURFXML_BUFFER_SET(link_id, link_id);
+		  SURFXML_BUFFER_SET(link_bandwidth, cluster_bw);
+		  SURFXML_BUFFER_SET(link_latency, cluster_lat);
+		  SURFXML_BUFFER_SET(link_bandwidth_file, "");
+		  SURFXML_BUFFER_SET(link_latency_file, "");
+		  SURFXML_BUFFER_SET(link_state_file, "");
+		  SURFXML_START_TAG(link);
+		  SURFXML_END_TAG(link);
+
+		  free(link_id);
+		  free(host_id);
       }
       break;
 
