@@ -144,14 +144,15 @@ memory_map_t get_memory_map(void)
     ret->mapsize++;
 
     if(XBT_LOG_ISENABLED(mc_memory_map, xbt_log_priority_debug)){
-
-      if (memreg.pathname == NULL){
-	if (memreg.start_addr == std_heap){ 
-	  XBT_DEBUG("New region in snapshot : %s", backup_line); 
-	}
-      } else {
-	if (!memcmp(basename(memreg.pathname), "libsimgrid", 10)){
-	  XBT_DEBUG("New region in snapshot : %s", backup_line); 
+      if ((memreg.prot & PROT_WRITE)){
+	if (memreg.pathname == NULL){
+	  if (memreg.start_addr == std_heap){ 
+	    XBT_DEBUG("New region in snapshot : %s", backup_line); 
+	  }
+	} else {
+	  if (!memcmp(basename(memreg.pathname), "libsimgrid", 10)){
+	    XBT_DEBUG("New region in snapshot : %s", backup_line); 
+	  }
 	}
       }
     }

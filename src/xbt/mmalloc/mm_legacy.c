@@ -256,7 +256,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
     return 1;
   }
 
-  XBT_DEBUG("Heap index : %d", mdp1->heapindex);
+  //XBT_DEBUG("Heap index : %d", mdp1->heapindex);
 
   if(mdp1->base != mdp2->base){
     XBT_DEBUG("Different base address of the memory region");
@@ -299,13 +299,15 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
  
   size_t block_free1, start1, block_free2 , start2, block_busy1, block_busy2 ;
   unsigned int i;
+  void *addr_block1, *addr_block2;
+  struct mdesc* mdp;
 
   start1 = block_free1 = mdp1->heapindex; 
   start2 = block_free2 = mdp2->heapindex;
   block_busy1 = start1 + mdp1->heapinfo[start1].free.size;
   block_busy2 = start2 + mdp2->heapinfo[start2].free.size;
 
-  //XBT_DEBUG("Block busy : %d - %d", block_busy1, block_busy2);
+  XBT_DEBUG("Block busy : %d - %d", block_busy1, block_busy2);
 
 
   if(mdp1->heapinfo[start1].free.size != mdp2->heapinfo[start2].free.size){ // <=> check block_busy
@@ -322,17 +324,36 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
     }else{
    
-      for(i=block_busy1 ; i<mdp1->heapinfo[start1].free.next ; i++){
+      i=block_busy1 ;
+
+      XBT_DEBUG("Next free : %d", mdp1->heapinfo[start1].free.next);
+
+
+      while(i<mdp1->heapinfo[start1].free.next){
+
+	XBT_DEBUG("i (block busy) : %d", i);
+
 	if(mdp1->heapinfo[i].busy.type != mdp2->heapinfo[i].busy.type){
 	  XBT_DEBUG("Different type of busy block");
 	  return 1;
 	}else{
+	  mdp = mdp1;
+	  addr_block1 = ADDRESS(i);
+	  mdp = mdp2;
+	  addr_block2 = ADDRESS(i); 
 	  switch(mdp1->heapinfo[i].busy.type){
 	  case 0 :
 	    if(mdp1->heapinfo[i].busy.info.size != mdp2->heapinfo[i].busy.info.size){
 	      XBT_DEBUG("Different size of a large cluster");
 	      return 1;
+	    }else{
+	      XBT_DEBUG("Blocks %d : %p - %p / Data size : %d (%d blocks)", i, addr_block1, addr_block2, (mdp->heapinfo[i].busy.info.size * BLOCKSIZE),mdp->heapinfo[i].busy.info.size );	
+	      if(memcmp(addr_block1, addr_block2, mdp1->heapinfo[i].busy.info.size * BLOCKSIZE) != 0){
+		XBT_DEBUG("Different data in block %d", i);
+		return 1;
+	      } 
 	    }
+	    i = i + mdp1->heapinfo[i].busy.info.size;
 	    break;
 	  default :	  
 	    if(mdp1->heapinfo[i].busy.info.frag.nfree != mdp2->heapinfo[i].busy.info.frag.nfree){
@@ -342,68 +363,97 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	      if(mdp1->heapinfo[i].busy.info.frag.first != mdp2->heapinfo[i].busy.info.frag.first){
 		XBT_DEBUG("Different first free fragments of the block");
 		return 1; 
+	      }else{
+		if(memcmp(addr_block1, addr_block2, BLOCKSIZE) != 0){
+		  XBT_DEBUG("Different data in block %d", i);
+		  return 1;
+		} 
 	      }
 	    }
+	    i++;
 	    break;
 	  }
 	} 
       }
-    }
 
-    block_free1 = mdp1->heapinfo[start1].free.next;
-    block_free2 = mdp2->heapinfo[start2].free.next;
 
-    //XBT_DEBUG("Index of next free cluster : %d", block_free1);
+      block_free1 = mdp1->heapinfo[start1].free.next;
+      block_free2 = mdp2->heapinfo[start2].free.next;
 
-    while((block_free1 != start1) && (block_free2 != start2)){ 
+      //XBT_DEBUG("Index of next free cluster : %d", block_free1);
 
-      block_busy1 = block_free1 + mdp1->heapinfo[block_free1].free.size;
-      block_busy2 = block_free2 + mdp2->heapinfo[block_free2].free.size;
+      while((block_free1 != start1) && (block_free2 != start2)){ 
 
-      if(block_busy1 != block_busy2){
-	XBT_DEBUG("Different index of busy block");
-	return 1;
-      }else{
+	block_busy1 = block_free1 + mdp1->heapinfo[block_free1].free.size;
+	block_busy2 = block_free2 + mdp2->heapinfo[block_free2].free.size;
 
-	//XBT_DEBUG("Index of next busy block : %d - %d", block_busy1, block_busy2);
-	//XBT_DEBUG("Index of next free cluster : %d", mdp1->heapinfo[block_free1].free.next);
+	if(block_busy1 != block_busy2){
+	  XBT_DEBUG("Different index of busy block");
+	  return 1;
+	}else{
+
+	  XBT_DEBUG("Index of next busy block : %d - %d", block_busy1, block_busy2);
+	  XBT_DEBUG("Index of next free cluster : %d", mdp1->heapinfo[block_free1].free.next);
 	
-	for(i=block_busy1 ; i<mdp1->heapinfo[block_free1].free.next ; i++){
-	  if(mdp1->heapinfo[i].busy.type != mdp2->heapinfo[i].busy.type){
-	    XBT_DEBUG("Different type of busy block");
-	    return 1;
-	  }else{
-	    switch(mdp1->heapinfo[i].busy.type){
-	    case 0 :
-	      if(mdp1->heapinfo[i].busy.info.size != mdp2->heapinfo[i].busy.info.size){
-		XBT_DEBUG("Different size of a large cluster");
-		return 1;
-	      }
-	      break;
-	    default :	  
-	      if(mdp1->heapinfo[i].busy.info.frag.nfree != mdp2->heapinfo[i].busy.info.frag.nfree){
-		XBT_DEBUG("Different free fragments in a fragmented block");
-		return 1;
-	      }else{
-		if(mdp1->heapinfo[i].busy.info.frag.first != mdp2->heapinfo[i].busy.info.frag.first){
-		  XBT_DEBUG("Different first free fragments of the block");
-		  return 1; 
-		}
-	      }
-	      break;
-	    }
-	  } 
-	}
-      }
+	  i = block_busy1;
 
-      block_free1 = mdp1->heapinfo[block_free1].free.next;
-      block_free2 = mdp2->heapinfo[block_free2].free.next;
+	  while(i<mdp1->heapinfo[block_free1].free.next){
+
+	    XBT_DEBUG("i (block busy) : %d", i);
+
+	    if(mdp1->heapinfo[i].busy.type != mdp2->heapinfo[i].busy.type){
+	      XBT_DEBUG("Different type of busy block");
+	      return 1;
+	    }else{
+	      mdp = mdp1;
+	      addr_block1 = ADDRESS(i);
+	      mdp = mdp2;
+	      addr_block2 = ADDRESS(i); 
+	      switch(mdp1->heapinfo[i].busy.type){
+	      case 0 :
+		if(mdp1->heapinfo[i].busy.info.size != mdp2->heapinfo[i].busy.info.size){
+		  XBT_DEBUG("Different size of a large cluster");
+		  return 1;
+		}else{
+		  XBT_DEBUG("Blocks %d : %p - %p / Data size : %d", i, addr_block1, addr_block2, (mdp->heapinfo[i].busy.info.size * BLOCKSIZE));		
+		  //XBT_DEBUG("Size of large cluster %d", mdp->heapinfo[i].busy.info.size);
+		  if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy.info.size * BLOCKSIZE)) != 0){
+		    XBT_DEBUG("Different data in block %d", i);
+		    return 1;
+		  } 
+		}
+		i = i+mdp1->heapinfo[i].busy.info.size;
+		break;
+	      default :	  
+		if(mdp1->heapinfo[i].busy.info.frag.nfree != mdp2->heapinfo[i].busy.info.frag.nfree){
+		  XBT_DEBUG("Different free fragments in a fragmented block");
+		  return 1;
+		}else{
+		  if(mdp1->heapinfo[i].busy.info.frag.first != mdp2->heapinfo[i].busy.info.frag.first){
+		    XBT_DEBUG("Different first free fragments of the block");
+		    return 1; 
+		  }else{
+		    if(memcmp(addr_block1, addr_block2, BLOCKSIZE) != 0){
+		      XBT_DEBUG("Different data in fragmented block %d", i);
+		      return 1;
+		    } 
+		  }
+		}
+		i++;
+		break;
+	      }
+	    } 
+	  }
+	}
+
+	block_free1 = mdp1->heapinfo[block_free1].free.next;
+	block_free2 = mdp2->heapinfo[block_free2].free.next;
       
-    } 
+      } 
     
-  }
+    }
   
-  
+      }
   return 0;   
   
   
