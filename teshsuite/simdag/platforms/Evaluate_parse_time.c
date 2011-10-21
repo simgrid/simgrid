@@ -28,8 +28,12 @@ int main(int argc, char **argv)
 
   /* Display the result and exit after cleanup */
 	printf( "%lf\n", xbt_os_timer_elapsed(timer) );
-
-	sleep(20);
+	  printf("Workstation number: %d, link number: %d\n",
+	         SD_workstation_get_number(), SD_link_get_number());
+	if(argv[2]){
+		printf("Wait for %ss\n",argv[2]);
+		sleep(atoi(argv[2]));
+	}
 
 	SD_exit();
 
