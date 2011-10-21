@@ -10,6 +10,20 @@ if ( $#ARGV != 1 ) {
 my ($proj_dir) = $ARGV[0];
 open MAKETEST, $ARGV[1] or die "Unable to open $ARGV[1]. $!\n";
 
+sub var_subst {
+    my ($text, $name, $value) = @_;
+    if ($value) {
+        $text =~ s/\${$name(?::=[^}]*)?}/$value/g;
+        $text =~ s/\$$name(\W|$)/$value$1/g;
+    }
+    else {
+        $text =~ s/\${$name:=([^}]*)}/$1/g;
+        $text =~ s/\${$name}//g;
+        $text =~ s/\$$name(\W|$)/$1/g;
+    }
+    return $text;
+}
+
 my (@test_list) = ();
 my ($nb_test)   = 0;
 my ($line);
@@ -32,7 +46,7 @@ while ( defined( $line = <MAKETEST> ) ) {
         last;
     }
     if ($dump) {
-        if ( $line =~ /ADD_TEST/ ) {
+        if ( $line =~ /ADD_TEST\(\S+\s+\S*\/tesh\s/ ) {
             $srcdir     = "";
             $bindir     = "";
             $config_var = "";
@@ -41,42 +55,31 @@ while ( defined( $line = <MAKETEST> ) ) {
             $tesh_file = "";
             $name_test = "";
 
-            if ( $line =~ /ADD_TEST\(([\S]+)/ ) {
+            if ( $line =~ /ADD_TEST\((\S+)/ ) {
                 $name_test = ($1);
             }
-            if ( $line =~ /--cfg\s*\t*(\S*)/ ) {
+            while ( $line =~ /--cfg\s+(\S+)/g ) {
                 $config_var = "--cfg=$1 $config_var";
             }
-            if ( $line =~ /--cd\s*(\S+)/ ) {
+            while ( $line =~ /--cd\s+(\S+)/g ) {
                 $path = ($1);
                 $path =~ s/\"//g;
-
-                #$path =~ s/\$\{CMAKE_BINARY_DIR\}/$proj_dir/g;
-                $path =~ s/\$\{CMAKE_HOME_DIRECTORY\}/$proj_dir/g;
             }
-            if ( $line =~ /--setenv\s*\t*(\S*)\=(\S*)/ ) {
+            while ( $line =~ /--setenv\s+(\S+)\=(\S+)/g ) {
                 my ( $env_var, $value_var ) = ( $1, $2 );
-                $value_var =~ s/\$\{CMAKE_BINARY_DIR\}/$proj_dir/g;
-                $value_var =~ s/\$\{CMAKE_HOME_DIRECTORY\}/$proj_dir/g;
                 if ( $env_var =~ /srcdir/ ) {
                     $srcdir = $value_var;
                 }
-                if ( $env_var =~ /bindir/ ) {
+                elsif ( $env_var =~ /bindir/ ) {
                     $bindir = $value_var;
                 }
             }
-            if ( $line =~ /([\S]+)[)]$/ ) {
-                $tesh_file = ($1);
+            if ( $line =~ /(\S+)\)$/ ) {
+                $tesh_file = $1;
+                $tesh_file =~ s/^[^\/\$]/$path\/$&/;
                 $tesh_file =~ s/\${CMAKE_HOME_DIRECTORY}/$proj_dir/g;
-                if ( -e "$tesh_file" ) {
-
-                }
-                elsif ( -e "$path/$tesh_file" ) {
-                    $tesh_file = "$path\/$tesh_file";
-                }
-                else {
+                if ( ! -e "$tesh_file" ) {
                     print "tesh_file : $tesh_file not exists!\n";
-                    print "tesh_file : $path\/$tesh_file not exists!\n";
                     die;
                 }
             }
@@ -100,24 +103,19 @@ while ( defined( $line = <MAKETEST> ) ) {
                 chomp $l;
                 if ( $l =~ /^\$ (.*)$/ ) {
                     my ($command) = $1;
-                    $command =~ s/\${srcdir:=.}/$srcdir/g;
-                    $command =~ s/\${bindir:=.}/$bindir/g;
-                    $command =~ s/\${EXEEXT:=}//g;
-                    $command =~ s/\$SG_TEST_EXENV //g;
-                    $command =~ s/\$SG_TEST_ENV //g;
-                    $command =~ s/\$SG_EXENV_TEST //g;
-                    $command =~ s/\$EXEEXT//g;
-                    $command =~ s/\${EXEEXT}//g;
-                    $command =~ s/\${srcdir}/\${CMAKE_HOME_DIRECTORY}\/src/g;
-                    $command =~ s/ \$ARGS//g;
-                    $command =~ s/ \$@ //g;
-                    $command =~ s/..\/..\/bin\/smpirun/\${CMAKE_BINARY_DIR\}\/bin\/smpirun/g;
+                    $command = var_subst($command, "srcdir", $srcdir);
+                    $command = var_subst($command, "bindir", $bindir);
+                    $command = var_subst($command, "EXEEXT", "");
+                    $command = var_subst($command, "SG_TEST_EXENV", "");
+                    $command = var_subst($command, "SG_TEST_ENV", "");
+                    $command = var_subst($command, "SG_EXENV_TEST", "");
+                    $command = var_subst($command, "ARGS", "");
+                    $command =~ s/\$@//g;
+#                    $command =~ s/..\/..\/bin\/smpirun/\${CMAKE_BINARY_DIR\}\/bin\/smpirun/g;
+                    $command =~ s/^\s+//;
+                    $command =~ s/^[^\/\$]\S*\//$path\/$&/;
+                    $command =~ s/^(\S*\/)(?:\.\/)+/$1/g;
 
-                    if ( $command =~ /^[^\/\$\s]+\// ) {
-                        $command = $path . "/" . $command;
-                        $command =~ s/\/(.?\/)+/\//g;
-                    }
-                    $command =~ s/$proj_dir/\$\{CMAKE_BINARY_DIR\}/g;
                     if ($config_var) {
                         $command = "$command $config_var";
                     }
