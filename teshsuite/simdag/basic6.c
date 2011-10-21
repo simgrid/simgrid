@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "simdag/simdag.h"
+#include "xbt/asserts.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic6, sd, "SimDag test basic6");
