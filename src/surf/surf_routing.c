@@ -7,6 +7,7 @@
 #include <pcre.h>               /* regular expression library */
 #include "surf_routing_private.h"
 #include "surf/surf_routing.h"
+#include "surf/surfxml_parse_values.h"
 
 xbt_lib_t host_lib;
 int ROUTING_HOST_LEVEL; //Routing level

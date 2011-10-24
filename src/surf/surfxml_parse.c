@@ -10,6 +10,7 @@
 #include "xbt/dict.h"
 #include "surf/surfxml_parse_private.h"
 #include "surf/surf_private.h"
+#include "surf/surfxml_parse_values.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
                                 "Logging specific to the SURF parsing module");
@@ -306,44 +307,195 @@ void STag_surfxml_platform(void)
 
 }
 
+void STag_surfxml_host(void){
+
+	s_host.V_host_id = xbt_strdup(A_surfxml_host_id);
+	s_host.V_host_power_peak = get_cpu_power(A_surfxml_host_power);
+	surf_parse_get_double(&(s_host.V_host_power_scale), A_surfxml_host_availability);
+	surf_parse_get_int(&(s_host.V_host_core),A_surfxml_host_core);
+	s_host.V_host_power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
+	s_host.V_host_state_trace = tmgr_trace_new(A_surfxml_host_state_file);
+	xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
+			  (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
+	if (A_surfxml_host_state == A_surfxml_host_state_ON)
+		s_host.V_host_state_initial = SURF_RESOURCE_ON;
+	if (A_surfxml_host_state == A_surfxml_host_state_OFF)
+		s_host.V_host_state_initial = SURF_RESOURCE_OFF;
+	s_host.V_host_coord = xbt_strdup(A_surfxml_host_coordinates);
+
+	surfxml_call_cb_functions(STag_surfxml_host_cb_list);
+}
+void ETag_surfxml_host(void){
+	xbt_free(s_host.V_host_id);
+	s_host.V_host_power_peak = 0.0;
+	s_host.V_host_core = 0;
+	s_host.V_host_power_scale = 0.0;
+	tmgr_trace_free(s_host.V_host_power_trace);
+	s_host.V_host_state_initial = SURF_RESOURCE_ON;
+	tmgr_trace_free(s_host.V_host_state_trace);
+	xbt_free(s_host.V_host_coord);
+
+	surfxml_call_cb_functions(ETag_surfxml_host_cb_list);
+}
+
+void STag_surfxml_router(void){
+
+	s_router.V_router_id = xbt_strdup(A_surfxml_router_id);
+	s_router.V_router_coord = xbt_strdup(A_surfxml_router_coordinates);
+
+	surfxml_call_cb_functions(STag_surfxml_router_cb_list);
+}
+void ETag_surfxml_router(void){
+	xbt_free(s_router.V_router_id);
+	xbt_free(s_router.V_router_coord);
+
+	surfxml_call_cb_functions(ETag_surfxml_router_cb_list);
+}
+
+void STag_surfxml_cluster(void){
+
+	s_cluster.V_cluster_id = xbt_strdup(A_surfxml_cluster_id);
+	s_cluster.V_cluster_prefix = xbt_strdup(A_surfxml_cluster_prefix);
+	s_cluster.V_cluster_suffix = xbt_strdup(A_surfxml_cluster_suffix);
+	s_cluster.V_cluster_radical = xbt_strdup(A_surfxml_cluster_radical);
+	surf_parse_get_double(&(s_cluster.V_cluster_power), A_surfxml_cluster_power);
+	surf_parse_get_int(&(s_cluster.V_cluster_core), A_surfxml_cluster_core);
+	surf_parse_get_double(&(s_cluster.V_cluster_bw), A_surfxml_cluster_bw);
+	surf_parse_get_double(&(s_cluster.V_cluster_lat), A_surfxml_cluster_lat);
+	surf_parse_get_double(&(s_cluster.V_cluster_bb_bw), A_surfxml_cluster_bb_bw);
+	surf_parse_get_double(&(s_cluster.V_cluster_bb_lat), A_surfxml_cluster_bb_lat);
+	s_cluster.V_cluster_router_id = xbt_strdup(A_surfxml_cluster_router_id);
+	s_cluster.V_cluster_sharing_policy = AX_surfxml_cluster_sharing_policy;
+	s_cluster.V_cluster_bb_sharing_policy = AX_surfxml_cluster_bb_sharing_policy;
+
+	surfxml_call_cb_functions(STag_surfxml_cluster_cb_list);
+}
+void ETag_surfxml_cluster(void){
+	xbt_free(s_cluster.V_cluster_id);
+	xbt_free(s_cluster.V_cluster_prefix);
+	xbt_free(s_cluster.V_cluster_suffix);
+	xbt_free(s_cluster.V_cluster_radical);
+	s_cluster.V_cluster_power = 0;
+	s_cluster.V_cluster_core = 0;
+	s_cluster.V_cluster_bw = 0;
+	s_cluster.V_cluster_lat = 0;
+	s_cluster.V_cluster_bb_bw = 0;
+	s_cluster.V_cluster_bb_lat = 0;
+	xbt_free(s_cluster.V_cluster_router_id);
+	s_cluster.V_cluster_sharing_policy = 0;
+	s_cluster.V_cluster_bb_sharing_policy = 0;
+
+	surfxml_call_cb_functions(ETag_surfxml_cluster_cb_list);
+}
+
+void STag_surfxml_peer(void){
+
+	s_peer.V_peer_id = xbt_strdup(A_surfxml_peer_id);
+	surf_parse_get_double(&(s_peer.V_peer_power), A_surfxml_peer_power);
+	surf_parse_get_double(&(s_peer.V_peer_bw_in), A_surfxml_peer_bw_in);
+	surf_parse_get_double(&(s_peer.V_peer_bw_out), A_surfxml_peer_bw_out);
+	surf_parse_get_double(&(s_peer.V_peer_lat), A_surfxml_peer_lat);
+	s_peer.V_peer_coord = xbt_strdup(A_surfxml_peer_coordinates);
+	s_peer.V_peer_availability_trace = tmgr_trace_new(A_surfxml_peer_availability_file);
+	s_peer.V_peer_state_trace = tmgr_trace_new(A_surfxml_peer_state_file);
+
+	surfxml_call_cb_functions(STag_surfxml_peer_cb_list);
+}
+void ETag_surfxml_peer(void){
+	xbt_free(s_peer.V_peer_id);
+	s_peer.V_peer_power = 0;
+	s_peer.V_peer_bw_in = 0;
+	s_peer.V_peer_bw_out = 0;
+	s_peer.V_peer_lat = 0;
+	xbt_free(s_peer.V_peer_coord);
+	tmgr_trace_free(s_peer.V_peer_availability_trace);
+	tmgr_trace_free(s_peer.V_peer_state_trace);
+
+	surfxml_call_cb_functions(ETag_surfxml_peer_cb_list);
+}
+void STag_surfxml_link(void){
+
+	s_link.V_link_id = xbt_strdup(A_surfxml_link_id);
+	surf_parse_get_double(&(s_link.V_link_bandwidth),A_surfxml_link_bandwidth);
+	s_link.V_link_bandwidth_file = tmgr_trace_new(A_surfxml_link_bandwidth_file);
+	surf_parse_get_double(&(s_link.V_link_latency),A_surfxml_link_latency);
+	s_link.V_link_latency_file = tmgr_trace_new(A_surfxml_link_latency_file);
+	xbt_assert((A_surfxml_link_state == A_surfxml_link_state_ON) ||
+			  (A_surfxml_link_state == A_surfxml_link_state_OFF), "Invalid state");
+	if (A_surfxml_link_state == A_surfxml_link_state_ON)
+		s_link.V_link_state = SURF_RESOURCE_ON;
+	if (A_surfxml_link_state == A_surfxml_link_state_OFF)
+		s_link.V_link_state = SURF_RESOURCE_OFF;
+	s_link.V_link_state_file = tmgr_trace_new(A_surfxml_link_state_file);
+	s_link.V_link_sharing_policy = A_surfxml_link_sharing_policy;
+
+	surfxml_call_cb_functions(STag_surfxml_link_cb_list);
+}
+void ETag_surfxml_link(void){
+	xbt_free(s_link.V_link_id);
+	s_link.V_link_bandwidth = 0;
+	tmgr_trace_free(s_link.V_link_bandwidth_file);
+	s_link.V_link_latency = 0;
+	tmgr_trace_free(s_link.V_link_latency_file);
+	s_link.V_link_state = SURF_RESOURCE_ON;
+	tmgr_trace_free(s_link.V_link_state_file);
+	s_link.V_link_sharing_policy = 0;
+
+	surfxml_call_cb_functions(ETag_surfxml_link_cb_list);
+}
+
+void STag_surfxml_route(void){
+	surfxml_call_cb_functions(STag_surfxml_route_cb_list);
+}
+void STag_surfxml_link_ctn(void){
+	surfxml_call_cb_functions(STag_surfxml_link_ctn_cb_list);
+}
+void STag_surfxml_process(void){
+	surfxml_call_cb_functions(STag_surfxml_process_cb_list);
+}
+void STag_surfxml_argument(void){
+	surfxml_call_cb_functions(STag_surfxml_argument_cb_list);
+}
+void STag_surfxml_prop(void){
+	surfxml_call_cb_functions(STag_surfxml_prop_cb_list);
+}
+void STag_surfxml_trace(void){
+	surfxml_call_cb_functions(STag_surfxml_trace_cb_list);
+}
+void STag_surfxml_trace_connect(void){
+	surfxml_call_cb_functions(STag_surfxml_trace_connect_cb_list);
+}
+void STag_surfxml_AS(void){
+	surfxml_call_cb_functions(STag_surfxml_AS_cb_list);
+}
+void STag_surfxml_ASroute(void){
+	surfxml_call_cb_functions(STag_surfxml_ASroute_cb_list);
+}
+void STag_surfxml_bypassRoute(void){
+	surfxml_call_cb_functions(STag_surfxml_bypassRoute_cb_list);
+}
+void STag_surfxml_config(void){
+	surfxml_call_cb_functions(STag_surfxml_config_cb_list);
+}
+void STag_surfxml_random(void){
+	surfxml_call_cb_functions(STag_surfxml_random_cb_list);
+}
+
 #define parse_method(type,name) \
 void type##Tag_surfxml_##name(void) \
 { surfxml_call_cb_functions(type##Tag_surfxml_##name##_cb_list); }
-
 parse_method(E, platform);
-parse_method(S, host);
-parse_method(E, host);
-parse_method(S, router);
-parse_method(E, router);
-parse_method(S, link);
-parse_method(E, link);
-parse_method(S, route);
 parse_method(E, route);
-parse_method(S, link_ctn);
 parse_method(E, link_ctn);
-parse_method(S, process);
 parse_method(E, process);
-parse_method(S, argument);
 parse_method(E, argument);
-parse_method(S, prop);
 parse_method(E, prop);
-parse_method(S, trace);
 parse_method(E, trace);
-parse_method(S, trace_connect);
 parse_method(E, trace_connect);
-parse_method(S, random);
 parse_method(E, random);
-parse_method(S, AS);
 parse_method(E, AS);
-parse_method(S, ASroute);
 parse_method(E, ASroute);
-parse_method(S, bypassRoute);
 parse_method(E, bypassRoute);
-parse_method(S, cluster);
-parse_method(E, cluster);
-parse_method(S, peer);
-parse_method(E, peer);
-parse_method(S, config);
 parse_method(E, config);
 
 /* Open and Close parse file */
