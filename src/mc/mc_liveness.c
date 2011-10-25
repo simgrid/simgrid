@@ -60,6 +60,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
 int reached(xbt_automaton_t a, mc_snapshot_t s){
 
+  XBT_DEBUG("Test reached");
+
   if(xbt_dynar_is_empty(reached_pairs)){
     return 0;
   }else{
@@ -77,7 +79,7 @@ int reached(xbt_automaton_t a, mc_snapshot_t s){
     xbt_dynar_foreach(a->propositional_symbols, cursor, ps){
       int (*f)() = ps->function;
       int res = (*f)();
-      xbt_dynar_push(pair->prop_ato, &res);
+      xbt_dynar_push_as(pair->prop_ato, int, res);
     }
     
     cursor = 0;
@@ -85,7 +87,7 @@ int reached(xbt_automaton_t a, mc_snapshot_t s){
     //int (*compare_dynar)(const void*, const void*) = &propositional_symbols_compare_value;
     xbt_dynar_foreach(reached_pairs, cursor, pair_test){
       if(automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
-	if(xbt_dynar_compare(pair_test->prop_ato, pair->prop_ato, propositional_symbols_compare_value) == 0){
+	if(propositional_symbols_compare_value(pair_test->prop_ato, pair->prop_ato) == 0){
 	  if(snapshot_compare(pair_test->system_state, pair->system_state) == 0){
 	    MC_UNSET_RAW_MEM;
 	    return 1;
@@ -118,7 +120,7 @@ int set_pair_reached(xbt_automaton_t a, mc_snapshot_t s){
     xbt_dynar_foreach(a->propositional_symbols, cursor, ps){
       int (*f)() = ps->function;
       int res = (*f)();
-      xbt_dynar_push(pair->prop_ato, &res);
+      xbt_dynar_push_as(pair->prop_ato, int, res);
     }
      
     xbt_dynar_push(reached_pairs, &pair); 

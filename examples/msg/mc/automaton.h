@@ -103,7 +103,7 @@ XBT_PUBLIC(xbt_state_t) xbt_automaton_get_current_state(xbt_automaton_t a);
 
 XBT_PUBLIC(int) automaton_state_compare(xbt_state_t s1, xbt_state_t s2);
 
-XBT_PUBLIC(int) propositional_symbols_compare_value(const void *s1, const void *s2);
+XBT_PUBLIC(int) propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_t s2);
 
 XBT_PUBLIC(int) automaton_transition_compare(const void *t1, const void *t2);
 

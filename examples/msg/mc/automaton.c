@@ -341,12 +341,18 @@ int automaton_label_transition_compare(xbt_exp_label_t l1, xbt_exp_label_t l2){
 }
 
 
-int propositional_symbols_compare_value(const void *s1, const void *s2){
+int propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_t s2){
 
-  const int *ps1 = s1;
-  const int *ps2 = s2;
-  printf("ps 1 = %d, ps2 = %d", *ps1, *ps2);
+  int *iptr1, *iptr2;
+  unsigned int cursor;
+  unsigned int nb_elem = xbt_dynar_length(s1);
 
-  return (!(*ps1 == *ps2));
+  for(cursor=0;cursor<nb_elem;cursor++){
+    iptr1 = xbt_dynar_get_ptr(s1, cursor);
+    iptr2 = xbt_dynar_get_ptr(s2, cursor);
+    if(*iptr1 != *iptr2)
+      return 1;
+  } 
 
+  return 0;
 }
