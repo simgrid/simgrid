@@ -204,10 +204,10 @@ static void xbt_log_layout_format_dynamic(xbt_log_layout_t l,
 
 #undef check_overflow
 #define check_overflow \
-  if (p-ev->buffer > XBT_LOG_BUFF_SIZE) { /* buffer overflow */ \
-  xbt_log_layout_format_dynamic(l,ev,msg_fmt,app); \
-  return;\
-  }
+  if (p - ev->buffer >= XBT_LOG_BUFF_SIZE) { /* buffer overflow */ \
+    xbt_log_layout_format_dynamic(l,ev,msg_fmt,app);               \
+    return;                                                        \
+  } else ((void)0)
 
 #define show_it(data,letter) \
   do { \

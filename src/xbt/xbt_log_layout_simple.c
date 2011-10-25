@@ -59,10 +59,10 @@ static void xbt_log_layout_simple_dynamic(xbt_log_layout_t l,
 /* only used after the format using: we suppose that the buffer is big enough to display our data */
 #undef check_overflow
 #define check_overflow \
-  if (p-ev->buffer > XBT_LOG_BUFF_SIZE) { /* buffer overflow */ \
-  xbt_log_layout_simple_dynamic(l,ev,fmt,app); \
-  return; \
-  }
+  if (p - ev->buffer >= XBT_LOG_BUFF_SIZE) { /* buffer overflow */ \
+    xbt_log_layout_simple_dynamic(l,ev,fmt,app);                   \
+    return;                                                        \
+  } else ((void)0)
 
 static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
                                        xbt_log_event_t ev,
@@ -95,13 +95,16 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
   check_overflow;
 
   /* Display file position if not INFO */
-  if (ev->priority != xbt_log_priority_info && !xbt_log_no_loc)
+  if (ev->priority != xbt_log_priority_info && !xbt_log_no_loc) {
     p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%s:%d: ",
                   ev->fileName, ev->lineNum);
+    check_overflow;
+  }
 
   /* Display category name */
   p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "[%s/%s] ",
                 ev->cat->name, xbt_log_priority_names[ev->priority]);
+  check_overflow;
 
   /* Display user-provided message */
   p += vsnprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), fmt, ev->ap);
