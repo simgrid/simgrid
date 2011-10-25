@@ -347,7 +347,6 @@ int propositional_symbols_compare_value(const void *s1, const void *s2){
   const int *ps2 = s2;
   printf("ps 1 = %d, ps2 = %d", *ps1, *ps2);
 
-  //return (!(*ps1 == *ps2));
-  return 0;
+  return (!(*ps1 == *ps2));
 
 }

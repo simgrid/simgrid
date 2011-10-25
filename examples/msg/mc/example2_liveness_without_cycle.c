@@ -90,8 +90,8 @@ int main(int argc, char *argv[])
   init();
   yyparse();
   automaton = get_automaton();
-  xbt_propositional_symbol_t ps = xbt_new_propositional_symbol(automaton,"p", &predP); 
-  ps = xbt_new_propositional_symbol(automaton,"q", &predQ); 
+  xbt_new_propositional_symbol(automaton,"p", &predP); 
+  xbt_new_propositional_symbol(automaton,"q", &predQ); 
       
   //display_automaton();
 

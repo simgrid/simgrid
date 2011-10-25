@@ -343,6 +343,10 @@ int automaton_label_transition_compare(xbt_exp_label_t l1, xbt_exp_label_t l2){
 
 int propositional_symbols_compare_value(const void *s1, const void *s2){
 
-  return (!((int)s1 == (int)s2));
+  const int *ps1 = s1;
+  const int *ps2 = s2;
+  printf("ps 1 = %d, ps2 = %d", *ps1, *ps2);
+
+  return (!(*ps1 == *ps2));
 
 }

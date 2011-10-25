@@ -76,7 +76,7 @@ int reached(xbt_automaton_t a, mc_snapshot_t s){
     xbt_propositional_symbol_t ps = NULL;
     xbt_dynar_foreach(a->propositional_symbols, cursor, ps){
       int (*f)() = ps->function;
-      const int res = (*f)();
+      int res = (*f)();
       xbt_dynar_push(pair->prop_ato, &res);
     }
     
@@ -109,7 +109,7 @@ int set_pair_reached(xbt_automaton_t a, mc_snapshot_t s){
     mc_pair_reached_t pair = NULL;
     pair = xbt_new0(s_mc_pair_reached_t, 1);
     pair->automaton_state = a->current_state;
-    pair->prop_ato = xbt_dynar_new(sizeof(const int), NULL);
+    pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
     pair->system_state = s;
     
     /* Get values of propositional symbols */

@@ -74,9 +74,9 @@ int main(int argc, char **argv){
   init();
   yyparse();
   automaton = get_automaton();
-  xbt_propositional_symbol_t ps =  xbt_new_propositional_symbol(automaton,"r", &predR); 
-  ps = xbt_new_propositional_symbol(automaton,"e", &predE);
-  ps = xbt_new_propositional_symbol(automaton,"d", &predD);
+  xbt_new_propositional_symbol(automaton,"r", &predR); 
+  xbt_new_propositional_symbol(automaton,"e", &predE);
+  xbt_new_propositional_symbol(automaton,"d", &predD);
       
   //display_automaton();
 

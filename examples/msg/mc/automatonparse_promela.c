@@ -43,8 +43,8 @@ void new_transition(char* id, xbt_exp_label_t label){
   state_dst = xbt_automaton_state_exists(automaton, id_state);
   xbt_state_t state_src = xbt_automaton_state_exists(automaton, state_id_src); 
   
-  xbt_transition_t trans = NULL;
-  trans = xbt_automaton_new_transition(automaton, state_src, state_dst, label);
+  //xbt_transition_t trans = NULL;
+  xbt_automaton_new_transition(automaton, state_src, state_dst, label);
 
 }
 
