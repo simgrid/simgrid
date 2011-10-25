@@ -29,7 +29,7 @@ int server(int argc, char *argv[])
   val1 = (long) MSG_task_get_data(task1);
   XBT_INFO("Received %lu", val1);
 
-  //MC_assert(val1 == 2);
+  MC_assert(val1 == 2);
 
   XBT_INFO("OK");
   return 0;

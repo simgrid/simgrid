@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(example_liveness_with_cycle, "Example liveness with
 extern xbt_automaton_t automaton;
 
 
-int p=1;
+int p=0;
 int q=0;
 
 
@@ -51,7 +51,7 @@ int server(int argc, char *argv[])
   val1 = (long) MSG_task_get_data(task1);
   XBT_INFO("Received %lu", val1);
 
-  //MC_assert_pair_stateless(val1 == 2);
+  MC_assert_pair_stateless(val1 == 2);
 
   /*if(val1 == 2)
     q = 1;

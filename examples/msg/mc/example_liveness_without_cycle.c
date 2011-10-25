@@ -12,31 +12,17 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(example_liveness_without_cycle, "Example liveness w
 
 extern xbt_automaton_t automaton;
 
-
-int p=1;
 int r=1;
-int q=1;
 int e=1;
 int d=1;
-
-
-int predP(){
-  return p;
-}
 
 int predR(){
   return r;
 }
 
-int predQ(){
-  return q;
-}
-
-
 int predD(){
   return d;
 }
-
 
 int predE(){
   return e;
@@ -59,7 +45,7 @@ int server(int argc, char *argv[])
     //XBT_INFO("r (server) = %d", r);
      
   }
-  MC_assert_pair_stateless(atoi(MSG_task_get_name(task)) == 3);
+  //MC_assert_pair_stateless(atoi(MSG_task_get_name(task)) == 3);
 
   XBT_INFO("OK");
   return 0;
@@ -76,7 +62,7 @@ int client(int argc, char *argv[])
   
   XBT_INFO("Sent!");
   
-  //r=(r+1)%3;
+  r=(r+1)%2;
   //XBT_INFO("r (client) = %d", r);
   
   return 0;
@@ -88,9 +74,7 @@ int main(int argc, char **argv){
   init();
   yyparse();
   automaton = get_automaton();
-  xbt_propositional_symbol_t ps = xbt_new_propositional_symbol(automaton,"p", &predP); 
-  ps = xbt_new_propositional_symbol(automaton,"q", &predQ); 
-  ps = xbt_new_propositional_symbol(automaton,"r", &predR); 
+  xbt_propositional_symbol_t ps =  xbt_new_propositional_symbol(automaton,"r", &predR); 
   ps = xbt_new_propositional_symbol(automaton,"e", &predE);
   ps = xbt_new_propositional_symbol(automaton,"d", &predD);
       

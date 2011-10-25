@@ -12,7 +12,7 @@
 #include "y.tab.c"
 
 #define AMOUNT_OF_CLIENTS 2
-#define CS_PER_PROCESS 1
+#define CS_PER_PROCESS 2
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(example_liveness_with_cycle, "my log messages");
 
@@ -26,6 +26,10 @@ int predP(){
 int predQ(){
   return q;
 }
+
+
+//xbt_dynar_t listeVars -> { void *ptr; int size (nb octets); } => liste de structures 
+//=> parcourir la liste et comparer les contenus de chaque pointeur
 
 int coordinator(int argc, char *argv[])
 {
@@ -48,23 +52,21 @@ int coordinator(int argc, char *argv[])
 	  m_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
 	  MSG_task_send(answer, req);
 	  CS_used = 1;
-	  }else{
+	}else{
 	  m_task_t answer = MSG_task_create("notgrant", 0, 1000, NULL);
 	  MSG_task_send(answer, req);
 	}
-	
       }
     } else {                    // that's a release. Check if someone was waiting for the lock
       if (xbt_dynar_length(requests) > 0) {
         XBT_INFO("CS release. Grant to queued requests (queue size: %lu)",
               xbt_dynar_length(requests));
-        char *req;
+        char *req ;
+	xbt_dynar_pop(requests, &req);
 	if(strcmp(req, "1") == 0){
-	  xbt_dynar_pop(requests, &req);
 	  MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
 	  todo--;
 	}else{
-	  xbt_dynar_pop(requests, &req);
 	  MSG_task_send(MSG_task_create("notgrant", 0, 1000, NULL), req);
 	  todo--;
 	}
@@ -88,12 +90,10 @@ int client(int argc, char *argv[])
   // request the CS 2 times, sleeping a bit in between
   int i;
   for (i = 0; i < CS_PER_PROCESS; i++) {
-    p = 1;
-    q = 0;
     XBT_INFO("Ask the request");
     MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox),
                   "coordinator");
-    if(strcmp(my_mailbox, "1") == 0){
+    if(strcmp(my_mailbox, "2") == 0){
       p = 1;
       q = 0;
     }
@@ -111,12 +111,6 @@ int client(int argc, char *argv[])
       XBT_INFO("got the answer. Sleep a bit and release it");
       MSG_process_sleep(1);
       MSG_task_send(MSG_task_create("release", 0, 1000,NULL ),
-		    "coordinator");
-    }else{
-      MSG_task_destroy(grant);
-      XBT_INFO("Negative answer");
-      MSG_process_sleep(1);
-      MSG_task_send(MSG_task_create("notrelease", 0, 1000,NULL ),
 		    "coordinator");
     }
     

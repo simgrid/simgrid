@@ -82,10 +82,11 @@ int reached(xbt_automaton_t a, mc_snapshot_t s){
     
     cursor = 0;
     mc_pair_reached_t pair_test;
+    int (*compare_dynar)(const void*; const void*) = propositional_symbols_compare;
     
     xbt_dynar_foreach(reached_pairs, cursor, pair_test){
       if(automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
-	if(xbt_dynar_compare(pair_test->prop_ato, pair->prop_ato, propositional_symbols_compare_value) == 0){
+	if(xbt_dynar_compare(pair_test->prop_ato, pair->prop_ato, compare_dynar) == 0){
 	  if(snapshot_compare(pair_test->system_state, pair->system_state) == 0){
 	    MC_UNSET_RAW_MEM;
 	    return 1;

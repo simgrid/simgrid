@@ -298,7 +298,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
  
   size_t block_free1, start1, block_free2 , start2, block_busy1, block_busy2 ;
-  unsigned int i;
+  size_t i;
   void *addr_block1, *addr_block2;
   struct mdesc* mdp;
 
@@ -307,7 +307,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   block_busy1 = start1 + mdp1->heapinfo[start1].free.size;
   block_busy2 = start2 + mdp2->heapinfo[start2].free.size;
 
-  XBT_DEBUG("Block busy : %d - %d", block_busy1, block_busy2);
+  XBT_DEBUG("Block busy : %Zu - %Zu", block_busy1, block_busy2);
 
 
   if(mdp1->heapinfo[start1].free.size != mdp2->heapinfo[start2].free.size){ // <=> check block_busy
@@ -326,12 +326,12 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
    
       i=block_busy1 ;
 
-      XBT_DEBUG("Next free : %d", mdp1->heapinfo[start1].free.next);
+      XBT_DEBUG("Next free : %Zu", mdp1->heapinfo[start1].free.next);
 
 
       while(i<mdp1->heapinfo[start1].free.next){
 
-	XBT_DEBUG("i (block busy) : %d", i);
+	XBT_DEBUG("i (block busy) : %Zu", i);
 
 	if(mdp1->heapinfo[i].busy.type != mdp2->heapinfo[i].busy.type){
 	  XBT_DEBUG("Different type of busy block");
@@ -347,9 +347,9 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	      XBT_DEBUG("Different size of a large cluster");
 	      return 1;
 	    }else{
-	      XBT_DEBUG("Blocks %d : %p - %p / Data size : %d (%d blocks)", i, addr_block1, addr_block2, (mdp->heapinfo[i].busy.info.size * BLOCKSIZE),mdp->heapinfo[i].busy.info.size );	
+	      XBT_DEBUG("Blocks %Zu : %p - %p / Data size : %Zu (%Zu blocks)", i, addr_block1, addr_block2, (mdp->heapinfo[i].busy.info.size * BLOCKSIZE),mdp->heapinfo[i].busy.info.size );	
 	      if(memcmp(addr_block1, addr_block2, mdp1->heapinfo[i].busy.info.size * BLOCKSIZE) != 0){
-		XBT_DEBUG("Different data in block %d", i);
+		XBT_DEBUG("Different data in block %Zu", i);
 		return 1;
 	      } 
 	    }
@@ -365,7 +365,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 		return 1; 
 	      }else{
 		if(memcmp(addr_block1, addr_block2, BLOCKSIZE) != 0){
-		  XBT_DEBUG("Different data in block %d", i);
+		  XBT_DEBUG("Different data in block %Zu", i);
 		  return 1;
 		} 
 	      }
@@ -392,14 +392,14 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	  return 1;
 	}else{
 
-	  XBT_DEBUG("Index of next busy block : %d - %d", block_busy1, block_busy2);
-	  XBT_DEBUG("Index of next free cluster : %d", mdp1->heapinfo[block_free1].free.next);
+	  XBT_DEBUG("Index of next busy block : %Zu - %Zu", block_busy1, block_busy2);
+	  XBT_DEBUG("Index of next free cluster : %Zu", mdp1->heapinfo[block_free1].free.next);
 	
 	  i = block_busy1;
 
 	  while(i<mdp1->heapinfo[block_free1].free.next){
 
-	    XBT_DEBUG("i (block busy) : %d", i);
+	    XBT_DEBUG("i (block busy) : %Zu", i);
 
 	    if(mdp1->heapinfo[i].busy.type != mdp2->heapinfo[i].busy.type){
 	      XBT_DEBUG("Different type of busy block");
@@ -415,10 +415,10 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 		  XBT_DEBUG("Different size of a large cluster");
 		  return 1;
 		}else{
-		  XBT_DEBUG("Blocks %d : %p - %p / Data size : %d", i, addr_block1, addr_block2, (mdp->heapinfo[i].busy.info.size * BLOCKSIZE));		
+		  XBT_DEBUG("Blocks %Zu : %p - %p / Data size : %Zu", i, addr_block1, addr_block2, (mdp->heapinfo[i].busy.info.size * BLOCKSIZE));		
 		  //XBT_DEBUG("Size of large cluster %d", mdp->heapinfo[i].busy.info.size);
 		  if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy.info.size * BLOCKSIZE)) != 0){
-		    XBT_DEBUG("Different data in block %d", i);
+		    XBT_DEBUG("Different data in block %Zu", i);
 		    return 1;
 		  } 
 		}
@@ -434,7 +434,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 		    return 1; 
 		  }else{
 		    if(memcmp(addr_block1, addr_block2, BLOCKSIZE) != 0){
-		      XBT_DEBUG("Different data in fragmented block %d", i);
+		      XBT_DEBUG("Different data in fragmented block %Zu", i);
 		      return 1;
 		    } 
 		  }

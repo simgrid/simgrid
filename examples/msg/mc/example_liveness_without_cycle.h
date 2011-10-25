@@ -1,5 +1,5 @@
-#ifndef _EXAMPLE_AUTOMATON_H
-#define _EXAMPLE_AUTOMATON_H
+#ifndef _EXAMPLE_LIVENESS_WITHOUT_CYCLE_H
+#define _EXAMPLE_LIVENESS_WITHOUT_CYCLE_H
 
 int yyparse(void);
 int yywrap(void);
