@@ -11,7 +11,7 @@
 #include "surf/surfxml_parse_private.h"
 #include "surf/surf_private.h"
 
-host_t struct_host;
+hostSG_t struct_host;
 router_t struct_router;
 cluster_t struct_cluster;
 peer_t struct_peer;
@@ -314,7 +314,7 @@ void STag_surfxml_platform(void)
 
 void STag_surfxml_host(void){
 //	XBT_INFO("STag_surfxml_host [%s]",A_surfxml_host_id);
-	struct_host = xbt_new0(s_host_t, 1);
+	struct_host = xbt_new0(s_hostSG_t, 1);
 	struct_host->V_host_id = xbt_strdup(A_surfxml_host_id);
 	struct_host->V_host_power_peak = get_cpu_power(A_surfxml_host_power);
 	surf_parse_get_double(&(struct_host->V_host_power_scale), A_surfxml_host_availability);

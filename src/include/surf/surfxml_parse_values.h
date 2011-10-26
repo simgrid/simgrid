@@ -1,9 +1,8 @@
-/*
- * surfxml_parse_values.h
- *
- *  Created on: 24 oct. 2011
- *      Author: navarrop
- */
+/* Copyright (c) 2011. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef SURFXML_PARSE_VALUES_H_
 #define SURFXML_PARSE_VALUES_H_
@@ -56,8 +55,8 @@ typedef struct s_router {
 	char* V_router_coord;
 } s_router_t;
 
-typedef struct s_host *host_t;
-typedef struct s_host {
+typedef struct s_hostSG *hostSG_t;
+typedef struct s_hostSG {
 	char* V_host_id;													//id
 	double V_host_power_peak;											//power
 	int V_host_core;													//core
@@ -66,9 +65,9 @@ typedef struct s_host {
 	e_surf_resource_state_t V_host_state_initial;						//state
 	tmgr_trace_t V_host_state_trace;									//state file
 	char* V_host_coord;
-} s_host_t;
+} s_hostSG_t;
 
-extern host_t struct_host;
+extern hostSG_t struct_host;
 extern router_t struct_router;
 extern cluster_t struct_cluster;
 extern peer_t struct_peer;
