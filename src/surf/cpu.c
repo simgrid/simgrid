@@ -40,6 +40,7 @@ static void* cpu_create_resource(char *name, double power_peak,
                            tmgr_trace_t state_trace,
                            xbt_dict_t cpu_properties)
 {
+
   cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
   xbt_assert(!surf_cpu_resource_by_name(name),
               "Host '%s' declared several times in the platform file",
@@ -73,29 +74,16 @@ static void* cpu_create_resource(char *name, double power_peak,
 
 static void parse_cpu_init(void)
 {
-  double power_peak = 0.0;
-  double power_scale = 0.0;
-  int core = 0;
-  tmgr_trace_t power_trace = NULL;
-  e_surf_resource_state_t state_initial = SURF_RESOURCE_OFF;
-  tmgr_trace_t state_trace = NULL;
+  if(strcmp(struct_host->V_host_coord,"")) xbt_die("Coordinates not implemented yet!");
 
-  power_peak = get_cpu_power(A_surfxml_host_power);
-  surf_parse_get_double(&power_scale, A_surfxml_host_availability);
-  power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
-  surf_parse_get_int(&core, A_surfxml_host_core);
-
-  xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
-              (A_surfxml_host_state == A_surfxml_host_state_OFF),
-              "Invalid state");
-  if (A_surfxml_host_state == A_surfxml_host_state_ON)
-    state_initial = SURF_RESOURCE_ON;
-  if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-    state_initial = SURF_RESOURCE_OFF;
-  state_trace = tmgr_trace_new(A_surfxml_host_state_file);
-
-  cpu_create_resource(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
-          power_trace, core, state_initial, state_trace, current_property_set);
+  cpu_create_resource(struct_host->V_host_id,
+		  struct_host->V_host_power_peak,
+		  struct_host->V_host_power_scale,
+		  struct_host->V_host_power_trace,
+		  struct_host->V_host_core,
+		  struct_host->V_host_state_initial,
+		  struct_host->V_host_state_trace,
+		  current_property_set);
   current_property_set = NULL;
 }
 

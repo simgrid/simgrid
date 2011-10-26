@@ -8,18 +8,20 @@
 #ifndef SURFXML_PARSE_VALUES_H_
 #define SURFXML_PARSE_VALUES_H_
 
-struct V_peer {
+typedef struct s_peer *peer_t;
+typedef struct s_peer {
 	char* V_peer_id;
-	double V_peer_power;
-	double V_peer_bw_in;
-	double V_peer_bw_out;
-	double V_peer_lat;
+	char* V_peer_power;
+	char* V_peer_bw_in;
+	char* V_peer_bw_out;
+	char* V_peer_lat;
 	char* V_peer_coord;
-	tmgr_trace_t V_peer_availability_trace;
-	tmgr_trace_t V_peer_state_trace;
-};
+	char* V_peer_availability_trace;
+	char* V_peer_state_trace;
+} s_peer_t;
 
-struct V_link {
+typedef struct s_link *link_t;
+typedef struct s_link {
 	char* V_link_id;
 	double V_link_bandwidth;
 	tmgr_trace_t V_link_bandwidth_file;
@@ -28,30 +30,34 @@ struct V_link {
 	e_surf_resource_state_t V_link_state;
 	tmgr_trace_t V_link_state_file;
 	int V_link_sharing_policy;
-};
+	int V_policy_initial_link;
+} s_link_t;
 
-struct V_cluster {
+typedef struct s_cluster *cluster_t;
+typedef struct s_cluster {
 	char* V_cluster_id;
 	char* V_cluster_prefix;
 	char* V_cluster_suffix;
 	char* V_cluster_radical;
-	double V_cluster_power;
-	int V_cluster_core;
-	double V_cluster_bw;
-	double V_cluster_lat;
-	double V_cluster_bb_bw;
-	double V_cluster_bb_lat;
-	char * V_cluster_router_id;
+	char* S_cluster_power;
+	char* S_cluster_core;
+	char* S_cluster_bw;
+	char* S_cluster_lat;
+	char* S_cluster_bb_bw;
+	char* S_cluster_bb_lat;
+	char* S_cluster_router_id;
 	int V_cluster_sharing_policy;
 	int V_cluster_bb_sharing_policy;
-};
+} s_cluster_t;
 
-struct V_router {
+typedef struct s_router *router_t;
+typedef struct s_router {
 	char* V_router_id;
 	char* V_router_coord;
-};
+} s_router_t;
 
-struct V_host {
+typedef struct s_host *host_t;
+typedef struct s_host {
 	char* V_host_id;													//id
 	double V_host_power_peak;											//power
 	int V_host_core;													//core
@@ -60,12 +66,12 @@ struct V_host {
 	e_surf_resource_state_t V_host_state_initial;						//state
 	tmgr_trace_t V_host_state_trace;									//state file
 	char* V_host_coord;
-};
+} s_host_t;
 
-struct V_host s_host;
-struct V_router s_router;
-struct V_cluster s_cluster;
-struct V_peer s_peer;
-struct V_link s_link;
+extern host_t struct_host;
+extern router_t struct_router;
+extern cluster_t struct_cluster;
+extern peer_t struct_peer;
+extern link_t struct_lnk;
 
 #endif /* SURFXML_PARSE_VALUES_H_ */

@@ -189,21 +189,20 @@ static void instr_routing_parse_end_AS ()
 static void instr_routing_parse_start_link ()
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  const char *link_id = A_surfxml_link_id;
 
-  double bandwidth_value = atof(A_surfxml_link_bandwidth);
-  double latency_value = atof(A_surfxml_link_latency);
+  double bandwidth_value = lnk->V_link_bandwidth;
+  double latency_value = lnk->V_link_latency;
   xbt_dynar_t links_to_create = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
 
-  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX){
-    char *up = bprintf("%s_UP", link_id);
-    char *down = bprintf("%s_DOWN", link_id);
+  if (lnk->V_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX){
+    char *up = bprintf("%s_UP", lnk->V_link_id);
+    char *down = bprintf("%s_DOWN", lnk->V_link_id);
     xbt_dynar_push_as (links_to_create, char*, xbt_strdup(up));
     xbt_dynar_push_as (links_to_create, char*, xbt_strdup(down));
     free (up);
     free (down);
   }else{
-    xbt_dynar_push_as (links_to_create, char*, strdup(link_id));
+    xbt_dynar_push_as (links_to_create, char*, strdup(lnk->V_link_id));
   }
 
   char *link_name = NULL;
@@ -233,11 +232,11 @@ static void instr_routing_parse_end_link ()
 static void instr_routing_parse_start_host ()
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  container_t new = newContainer (A_surfxml_host_id, INSTR_HOST, father);
+  container_t new = newContainer (host->V_host_id, INSTR_HOST, father);
 
   if (TRACE_categorized() || TRACE_uncategorized()) {
     type_t power = getVariableType ("power", NULL, new->type);
-    new_pajeSetVariable (0, new, power, atof(A_surfxml_host_power));
+    new_pajeSetVariable (0, new, power, host->V_host_power_peak);
   }
   if (TRACE_uncategorized()){
     getVariableType ("power_used", "0.5 0.5 0.5", new->type);
@@ -278,7 +277,7 @@ static void instr_routing_parse_end_host ()
 static void instr_routing_parse_start_router ()
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  newContainer (A_surfxml_router_id, INSTR_ROUTER, father);
+  newContainer (router->V_router_id, INSTR_ROUTER, father);
 }
 
 static void instr_routing_parse_end_router ()
