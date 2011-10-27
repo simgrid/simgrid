@@ -7,6 +7,7 @@
 #include "network_gtnets_private.h"
 #include "gtnets/gtnets_interface.h"
 #include "xbt/str.h"
+#include "surf/surfxml_parse_values.h"
 
 static double time_to_next_flow_completion = -1;
 
@@ -84,38 +85,25 @@ static void route_onehop_new(int src_id, int dst_id,
 /* Parse the XML for a network link */
 static void parse_link_init(void)
 {
-  char *name;
-  double bw;
-  double lat;
   e_surf_resource_state_t state;
-  name = xbt_strdup(A_surfxml_link_id);
-  surf_parse_get_double(&bw, A_surfxml_link_bandwidth);
-  surf_parse_get_double(&lat, A_surfxml_link_latency);
   state = SURF_RESOURCE_ON;
   XBT_DEBUG("link_gtnets");
-  tmgr_trace_t bw_trace;
-  tmgr_trace_t state_trace;
-  tmgr_trace_t lat_trace;
 
-  bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
-  lat_trace = tmgr_trace_new(A_surfxml_link_latency_file);
-  state_trace = tmgr_trace_new(A_surfxml_link_state_file);
-
-  if (bw_trace)
+  if (struct_lnk->V_link_bandwidth_file)
     XBT_INFO
         ("The GTNetS network model doesn't support bandwidth state traces");
-  if (lat_trace)
+  if (struct_lnk->V_link_latency_file)
     XBT_INFO("The GTNetS network model doesn't support latency state traces");
-  if (state_trace)
+  if (struct_lnk->V_link_state_file)
     XBT_INFO("The GTNetS network model doesn't support link state traces");
 
-  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
+  if (struct_lnk->V_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
   {
-	  link_new(bprintf("%s_UP",name), bw, lat, current_property_set);
-	  link_new(bprintf("%s_DOWN",name), bw, lat, current_property_set);
+	  link_new(bprintf("%s_UP",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_latency, current_property_set);
+	  link_new(bprintf("%s_DOWN",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_latency, current_property_set);
 
   }
-  else  link_new(name, bw, lat, current_property_set);
+  else  link_new(struct_lnk->V_link_id, struct_lnk->V_link_bandwidth, struct_lnk->V_link_latency, current_property_set);
   current_property_set = NULL;
 }
 
