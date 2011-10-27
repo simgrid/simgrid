@@ -1694,7 +1694,7 @@ void routing_parse_Scluster(void)
   SURFXML_START_TAG(router);
   SURFXML_END_TAG(router);
 
-  if(struct_cluster->S_cluster_bb_bw && struct_cluster->S_cluster_bb_lat){
+  if( strcmp(struct_cluster->S_cluster_bb_bw,"")  && strcmp(struct_cluster->S_cluster_bb_lat,"")  ){
   char *link_backbone = bprintf("%s_backbone", struct_cluster->V_cluster_id);
   XBT_DEBUG("<link\tid=\"%s\" bw=\"%s\" lat=\"%s\"/>", link_backbone,struct_cluster->S_cluster_bb_bw, struct_cluster->S_cluster_bb_lat);
   A_surfxml_link_state = A_surfxml_link_state_ON;
@@ -1740,7 +1740,7 @@ void routing_parse_Scluster(void)
   A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
   SURFXML_START_TAG(route);
 
-  if(struct_cluster->S_cluster_bb_bw && struct_cluster->S_cluster_bb_lat){
+  if( strcmp(struct_cluster->S_cluster_bb_bw,"")  && strcmp(struct_cluster->S_cluster_bb_lat,"")  ){
   XBT_DEBUG("<link_ctn\tid=\"%s\"/>", pcre_link_backbone);
   SURFXML_BUFFER_SET(link_ctn_id, pcre_link_backbone);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
@@ -1767,7 +1767,7 @@ void routing_parse_Scluster(void)
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
-  if(struct_cluster->S_cluster_bb_bw && struct_cluster->S_cluster_bb_lat){
+  if( strcmp(struct_cluster->S_cluster_bb_bw,"")  && strcmp(struct_cluster->S_cluster_bb_lat,"")  ){
   XBT_DEBUG("<link_ctn\tid=\"%s\"/>", pcre_link_backbone);
   SURFXML_BUFFER_SET(link_ctn_id, pcre_link_backbone);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
@@ -1786,7 +1786,7 @@ void routing_parse_Scluster(void)
   A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
   SURFXML_START_TAG(route);
 
-  if(struct_cluster->S_cluster_bb_bw && struct_cluster->S_cluster_bb_lat){
+  if( strcmp(struct_cluster->S_cluster_bb_bw,"")  && strcmp(struct_cluster->S_cluster_bb_lat,"")  ){
   XBT_DEBUG("<link_ctn\tid=\"%s\"/>", pcre_link_backbone);
   SURFXML_BUFFER_SET(link_ctn_id, pcre_link_backbone);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
@@ -1821,7 +1821,7 @@ void routing_parse_Scluster(void)
   SURFXML_START_TAG(link_ctn);
   SURFXML_END_TAG(link_ctn);
 
-  if(struct_cluster->S_cluster_bb_bw && struct_cluster->S_cluster_bb_lat){
+  if( strcmp(struct_cluster->S_cluster_bb_bw,"")  && strcmp(struct_cluster->S_cluster_bb_lat,"")  ){
   XBT_DEBUG("<link_ctn\tid=\"%s\"/>", pcre_link_backbone);
   SURFXML_BUFFER_SET(link_ctn_id, pcre_link_backbone);
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
