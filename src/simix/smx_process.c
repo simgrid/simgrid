@@ -316,6 +316,13 @@ void SIMIX_pre_process_suspend(smx_req_t req)
 
 void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 {
+  xbt_assert((process != NULL), "Invalid parameters");
+
+  if (process->suspended) {
+    XBT_DEBUG("Process '%s' is already suspended", process->name);
+    return;
+  }
+
   process->suspended = 1;
 
   /* If we are suspending another process, and it is waiting on an action,
@@ -349,6 +356,11 @@ void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 {
   xbt_assert((process != NULL), "Invalid parameters");
+
+  if (!process->suspended) {
+    XBT_DEBUG("Process '%s' is not suspended", process->name);
+    return;
+  }
 
   process->suspended = 0;
 
