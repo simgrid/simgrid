@@ -1324,7 +1324,7 @@ static void pusher_f(void *a)
 static void poper_f(void *a)
 {
   xbt_dynar_t d = (xbt_dynar_t) a;
-  int i;
+  volatile int i;
   int data;
   xbt_ex_t e;
 
