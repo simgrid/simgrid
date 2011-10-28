@@ -183,7 +183,8 @@ void
 xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys,
                          xbt_dynar_t lens)
 {
-  xbt_dict_t thislevel, nextlevel = NULL;
+  volatile xbt_dict_t thislevel;
+  volatile xbt_dict_t nextlevel = NULL;
   int i;
   xbt_ex_t e;
 

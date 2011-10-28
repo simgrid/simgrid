@@ -589,7 +589,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
   double d;
   char *str;
 
-  xbt_cfgelm_t variable = NULL;
+  volatile xbt_cfgelm_t variable = NULL;
   char *optionlist_cpy;
   char *option, *name, *val;
 

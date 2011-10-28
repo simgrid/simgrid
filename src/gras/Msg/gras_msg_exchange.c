@@ -290,7 +290,7 @@ void gras_msg_handleall(double period)
  *
  * @sa gras_msg_handleall().
  */
-void gras_msg_handle(double timeOut)
+void gras_msg_handle(volatile double timeOut)
 {
 
   double untiltimer;
@@ -306,7 +306,7 @@ void gras_msg_handle(double timeOut)
   gras_msg_cb_t cb;
   s_gras_msg_cb_ctx_t ctx;
 
-  int timerexpected, timeouted;
+  volatile int timerexpected, timeouted;
   xbt_ex_t e;
 
   XBT_VERB("Handling message within the next %.2fs", timeOut);
