@@ -190,57 +190,21 @@ static void* im_net_create_resource(char *name,
 
 static void im_net_parse_link_init(void)
 {
-  char *name_link;
-  double bw_initial;
-  tmgr_trace_t bw_trace;
-  double lat_initial;
-  tmgr_trace_t lat_trace;
-  e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
-  e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
-  tmgr_trace_t state_trace;
-  XBT_DEBUG("link_CM02_im");
-  name_link = xbt_strdup(A_surfxml_link_id);
-  surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
-  bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
-  surf_parse_get_double(&lat_initial, A_surfxml_link_latency);
-  lat_trace = tmgr_trace_new(A_surfxml_link_latency_file);
-
-  xbt_assert((A_surfxml_link_state == A_surfxml_link_state_ON)
-              || (A_surfxml_link_state ==
-                  A_surfxml_link_state_OFF), "Invalid state");
-  if (A_surfxml_link_state == A_surfxml_link_state_ON)
-    state_initial_link = SURF_RESOURCE_ON;
-  else if (A_surfxml_link_state == A_surfxml_link_state_OFF)
-    state_initial_link = SURF_RESOURCE_OFF;
-
-  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-    policy_initial_link = SURF_LINK_SHARED;
-  else
-	  {
-	  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
-		  policy_initial_link = SURF_LINK_FATPIPE;
-	  else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-		  policy_initial_link = SURF_LINK_FULLDUPLEX;
-	  }
-
-  state_trace = tmgr_trace_new(A_surfxml_link_state_file);
-
-  if(policy_initial_link == SURF_LINK_FULLDUPLEX)
+  if(struct_lnk->V_policy_initial_link == SURF_LINK_FULLDUPLEX)
   {
-    im_net_create_resource(bprintf("%s_UP",name_link), bw_initial, bw_trace,
-	               lat_initial, lat_trace, state_initial_link, state_trace,
-	               policy_initial_link, xbt_dict_new());
-    im_net_create_resource(bprintf("%s_DOWN",name_link), bw_initial, bw_trace,
-	               lat_initial, lat_trace, state_initial_link, state_trace,
-	               policy_initial_link, xbt_dict_new());
+	  im_net_create_resource(bprintf("%s_UP",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
+	               struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
+	               struct_lnk->V_policy_initial_link, xbt_dict_new());
+	  im_net_create_resource(bprintf("%s_DOWN",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
+            struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
+	               struct_lnk->V_policy_initial_link, xbt_dict_new());
   }
   else
   {
-    im_net_create_resource(name_link, bw_initial, bw_trace,
-	               lat_initial, lat_trace, state_initial_link, state_trace,
-	               policy_initial_link, xbt_dict_new());
+	  im_net_create_resource(xbt_strdup(struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
+    		struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
+	               struct_lnk->V_policy_initial_link, xbt_dict_new());
   }
-
 }
 
 static void im_net_add_traces(void)

@@ -331,7 +331,7 @@ void SIMIX_host_execution_resume(smx_action_t action)
 
 void SIMIX_execution_finish(smx_action_t action)
 {
-  xbt_fifo_item_t item;
+  volatile xbt_fifo_item_t item;
   smx_req_t req;
 
   xbt_fifo_foreach(action->request_list, item, req, smx_req_t) {
@@ -339,13 +339,13 @@ void SIMIX_execution_finish(smx_action_t action)
     switch (action->state) {
 
       case SIMIX_DONE:
-        /* do nothing, action done*/
+        /* do nothing, action done */
 	XBT_DEBUG("SIMIX_execution_finished: execution successful");
         break;
 
       case SIMIX_FAILED:
+        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", req->issuer->smx_host->name);
         TRY {
-	  XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", req->issuer->smx_host->name);
           THROWF(host_error, 0, "Host failed");
         }
 	CATCH(req->issuer->running_ctx->exception) {
@@ -354,8 +354,8 @@ void SIMIX_execution_finish(smx_action_t action)
       break;
 
       case SIMIX_CANCELED:
+        XBT_DEBUG("SIMIX_execution_finished: execution canceled");
         TRY {
-	  XBT_DEBUG("SIMIX_execution_finished: execution canceled");
           THROWF(cancel_error, 0, "Canceled");
         }
 	CATCH(req->issuer->running_ctx->exception) {

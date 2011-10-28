@@ -141,8 +141,8 @@ void amok_bw_test(gras_socket_t peer,
 {
 
   /* Measurement sockets for the experiments */
-  gras_socket_t measMasterIn = NULL, measIn, measOut = NULL;
-  int port;
+  volatile gras_socket_t measMasterIn = NULL, measIn, measOut = NULL;
+  volatile int port;
   bw_request_t request, request_ack;
   xbt_ex_t e;
   int first_pass;
@@ -289,8 +289,8 @@ void amok_bw_test(gras_socket_t peer,
 int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
 {
   gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
-  gras_socket_t measMasterIn = NULL, measIn = NULL, measOut = NULL;
-  bw_request_t request = *(bw_request_t *) payload;
+  volatile gras_socket_t measMasterIn = NULL,  measIn = NULL, measOut = NULL;
+  volatile bw_request_t request = *(bw_request_t *) payload;
   bw_request_t answer;
   xbt_ex_t e;
   int port;

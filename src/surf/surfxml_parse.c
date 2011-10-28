@@ -11,6 +11,12 @@
 #include "surf/surfxml_parse_private.h"
 #include "surf/surf_private.h"
 
+hostSG_t struct_host;
+router_t struct_router;
+cluster_t struct_cluster;
+peer_t struct_peer;
+link_t struct_lnk;
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
                                 "Logging specific to the SURF parsing module");
 #undef CLEANUP
@@ -306,44 +312,212 @@ void STag_surfxml_platform(void)
 
 }
 
+void STag_surfxml_host(void){
+//	XBT_INFO("STag_surfxml_host [%s]",A_surfxml_host_id);
+	struct_host = xbt_new0(s_hostSG_t, 1);
+	struct_host->V_host_id = xbt_strdup(A_surfxml_host_id);
+	struct_host->V_host_power_peak = get_cpu_power(A_surfxml_host_power);
+	surf_parse_get_double(&(struct_host->V_host_power_scale), A_surfxml_host_availability);
+	surf_parse_get_int(&(struct_host->V_host_core),A_surfxml_host_core);
+	struct_host->V_host_power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
+	struct_host->V_host_state_trace = tmgr_trace_new(A_surfxml_host_state_file);
+	xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
+			  (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
+	if (A_surfxml_host_state == A_surfxml_host_state_ON)
+		struct_host->V_host_state_initial = SURF_RESOURCE_ON;
+	if (A_surfxml_host_state == A_surfxml_host_state_OFF)
+		struct_host->V_host_state_initial = SURF_RESOURCE_OFF;
+	struct_host->V_host_coord = xbt_strdup(A_surfxml_host_coordinates);
+
+	surfxml_call_cb_functions(STag_surfxml_host_cb_list);
+}
+void ETag_surfxml_host(void){
+	surfxml_call_cb_functions(ETag_surfxml_host_cb_list);
+	//xbt_free(struct_host->V_host_id);
+	struct_host->V_host_power_peak = 0.0;
+	struct_host->V_host_core = 0;
+	struct_host->V_host_power_scale = 0.0;
+	struct_host->V_host_state_initial = SURF_RESOURCE_ON;
+	struct_host->V_host_power_trace = NULL;
+	struct_host->V_host_state_trace = NULL;
+	xbt_free(struct_host->V_host_coord);
+	//xbt_free(host);
+}
+
+void STag_surfxml_router(void){
+	struct_router = xbt_new0(s_router_t, 1);
+	struct_router->V_router_id = xbt_strdup(A_surfxml_router_id);
+	struct_router->V_router_coord = xbt_strdup(A_surfxml_router_coordinates);
+	surfxml_call_cb_functions(STag_surfxml_router_cb_list);
+}
+void ETag_surfxml_router(void){
+	surfxml_call_cb_functions(ETag_surfxml_router_cb_list);
+	xbt_free(struct_router->V_router_id);
+	xbt_free(struct_router->V_router_coord);
+	xbt_free(struct_router);
+}
+
+void STag_surfxml_cluster(void){
+	struct_cluster = xbt_new0(s_cluster_t, 1);
+	struct_cluster->V_cluster_id = xbt_strdup(A_surfxml_cluster_id);
+	struct_cluster->V_cluster_prefix = xbt_strdup(A_surfxml_cluster_prefix);
+	struct_cluster->V_cluster_suffix = xbt_strdup(A_surfxml_cluster_suffix);
+	struct_cluster->V_cluster_radical = xbt_strdup(A_surfxml_cluster_radical);
+	struct_cluster->S_cluster_power = xbt_strdup(A_surfxml_cluster_power);
+	struct_cluster->S_cluster_core = xbt_strdup(A_surfxml_cluster_core);
+	struct_cluster->S_cluster_bw = xbt_strdup(A_surfxml_cluster_bw);
+	struct_cluster->S_cluster_lat = xbt_strdup(A_surfxml_cluster_lat);
+	struct_cluster->S_cluster_bb_bw = xbt_strdup(A_surfxml_cluster_bb_bw);
+	struct_cluster->S_cluster_bb_lat = xbt_strdup(A_surfxml_cluster_bb_lat);
+	if(!strcmp(A_surfxml_cluster_router_id,""))
+		struct_cluster->S_cluster_router_id = bprintf("%s%s_router%s",
+				struct_cluster->V_cluster_prefix,
+				struct_cluster->V_cluster_id,
+				struct_cluster->V_cluster_suffix);
+	else
+		struct_cluster->S_cluster_router_id = xbt_strdup(A_surfxml_cluster_router_id);
+
+	struct_cluster->V_cluster_sharing_policy = AX_surfxml_cluster_sharing_policy;
+	struct_cluster->V_cluster_bb_sharing_policy = AX_surfxml_cluster_bb_sharing_policy;
+
+	surfxml_call_cb_functions(STag_surfxml_cluster_cb_list);
+}
+void ETag_surfxml_cluster(void){
+	surfxml_call_cb_functions(ETag_surfxml_cluster_cb_list);
+	xbt_free(struct_cluster->V_cluster_id);
+	xbt_free(struct_cluster->V_cluster_prefix);
+	xbt_free(struct_cluster->V_cluster_suffix);
+	xbt_free(struct_cluster->V_cluster_radical);
+	xbt_free(struct_cluster->S_cluster_power);
+	xbt_free(struct_cluster->S_cluster_core);
+	xbt_free(struct_cluster->S_cluster_bw);
+	xbt_free(struct_cluster->S_cluster_lat);
+	xbt_free(struct_cluster->S_cluster_bb_bw);
+	xbt_free(struct_cluster->S_cluster_bb_lat);
+	xbt_free(struct_cluster->S_cluster_router_id);
+	struct_cluster->V_cluster_sharing_policy = 0;
+	struct_cluster->V_cluster_bb_sharing_policy = 0;
+	xbt_free(struct_cluster);
+}
+
+void STag_surfxml_peer(void){
+	struct_peer = xbt_new0(s_peer_t, 1);
+	struct_peer->V_peer_id = xbt_strdup(A_surfxml_peer_id);
+	struct_peer->V_peer_power = xbt_strdup(A_surfxml_peer_power);
+	struct_peer->V_peer_bw_in = xbt_strdup(A_surfxml_peer_bw_in);
+	struct_peer->V_peer_bw_out = xbt_strdup(A_surfxml_peer_bw_out);
+	struct_peer->V_peer_lat = xbt_strdup(A_surfxml_peer_lat);
+	struct_peer->V_peer_coord = xbt_strdup(A_surfxml_peer_coordinates);
+	struct_peer->V_peer_availability_trace = xbt_strdup(A_surfxml_peer_availability_file);
+	struct_peer->V_peer_state_trace = xbt_strdup(A_surfxml_peer_state_file);
+	surfxml_call_cb_functions(STag_surfxml_peer_cb_list);
+}
+void ETag_surfxml_peer(void){
+	surfxml_call_cb_functions(ETag_surfxml_peer_cb_list);
+	xbt_free(struct_peer->V_peer_id);
+	xbt_free(struct_peer->V_peer_power);
+	xbt_free(struct_peer->V_peer_bw_in);
+	xbt_free(struct_peer->V_peer_bw_out);
+	xbt_free(struct_peer->V_peer_lat);
+	xbt_free(struct_peer->V_peer_coord);
+	xbt_free(struct_peer->V_peer_availability_trace);
+	xbt_free(struct_peer->V_peer_state_trace);
+	xbt_free(struct_peer);
+}
+void STag_surfxml_link(void){
+	struct_lnk = xbt_new0(s_link_t, 1);
+	struct_lnk->V_link_id = xbt_strdup(A_surfxml_link_id);
+	surf_parse_get_double(&(struct_lnk->V_link_bandwidth),A_surfxml_link_bandwidth);
+	struct_lnk->V_link_bandwidth_file = tmgr_trace_new(A_surfxml_link_bandwidth_file);
+	surf_parse_get_double(&(struct_lnk->V_link_latency),A_surfxml_link_latency);
+	struct_lnk->V_link_latency_file = tmgr_trace_new(A_surfxml_link_latency_file);
+	xbt_assert((A_surfxml_link_state == A_surfxml_link_state_ON) ||
+			  (A_surfxml_link_state == A_surfxml_link_state_OFF), "Invalid state");
+	if (A_surfxml_link_state == A_surfxml_link_state_ON)
+		struct_lnk->V_link_state = SURF_RESOURCE_ON;
+	if (A_surfxml_link_state == A_surfxml_link_state_OFF)
+		struct_lnk->V_link_state = SURF_RESOURCE_OFF;
+	struct_lnk->V_link_state_file = tmgr_trace_new(A_surfxml_link_state_file);
+	struct_lnk->V_link_sharing_policy = A_surfxml_link_sharing_policy;
+
+	if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
+		struct_lnk->V_policy_initial_link = SURF_LINK_SHARED;
+	else
+	{
+	 if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
+		 struct_lnk->V_policy_initial_link = SURF_LINK_FATPIPE;
+	 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
+		 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
+	}
+
+
+	surfxml_call_cb_functions(STag_surfxml_link_cb_list);
+}
+void ETag_surfxml_link(void){
+	surfxml_call_cb_functions(ETag_surfxml_link_cb_list);
+	xbt_free(struct_lnk->V_link_id);
+	struct_lnk->V_link_bandwidth = 0;
+	struct_lnk->V_link_bandwidth_file = NULL;
+	struct_lnk->V_link_latency = 0;
+	struct_lnk->V_link_latency_file = NULL;
+	struct_lnk->V_link_state = SURF_RESOURCE_ON;
+	struct_lnk->V_link_state_file = NULL;
+	struct_lnk->V_link_sharing_policy = 0;
+	xbt_free(struct_lnk);
+}
+
+void STag_surfxml_route(void){
+	surfxml_call_cb_functions(STag_surfxml_route_cb_list);
+}
+void STag_surfxml_link_ctn(void){
+	surfxml_call_cb_functions(STag_surfxml_link_ctn_cb_list);
+}
+void STag_surfxml_process(void){
+	surfxml_call_cb_functions(STag_surfxml_process_cb_list);
+}
+void STag_surfxml_argument(void){
+	surfxml_call_cb_functions(STag_surfxml_argument_cb_list);
+}
+void STag_surfxml_prop(void){
+	surfxml_call_cb_functions(STag_surfxml_prop_cb_list);
+}
+void STag_surfxml_trace(void){
+	surfxml_call_cb_functions(STag_surfxml_trace_cb_list);
+}
+void STag_surfxml_trace_connect(void){
+	surfxml_call_cb_functions(STag_surfxml_trace_connect_cb_list);
+}
+void STag_surfxml_AS(void){
+	surfxml_call_cb_functions(STag_surfxml_AS_cb_list);
+}
+void STag_surfxml_ASroute(void){
+	surfxml_call_cb_functions(STag_surfxml_ASroute_cb_list);
+}
+void STag_surfxml_bypassRoute(void){
+	surfxml_call_cb_functions(STag_surfxml_bypassRoute_cb_list);
+}
+void STag_surfxml_config(void){
+	surfxml_call_cb_functions(STag_surfxml_config_cb_list);
+}
+void STag_surfxml_random(void){
+	surfxml_call_cb_functions(STag_surfxml_random_cb_list);
+}
+
 #define parse_method(type,name) \
 void type##Tag_surfxml_##name(void) \
 { surfxml_call_cb_functions(type##Tag_surfxml_##name##_cb_list); }
-
 parse_method(E, platform);
-parse_method(S, host);
-parse_method(E, host);
-parse_method(S, router);
-parse_method(E, router);
-parse_method(S, link);
-parse_method(E, link);
-parse_method(S, route);
 parse_method(E, route);
-parse_method(S, link_ctn);
 parse_method(E, link_ctn);
-parse_method(S, process);
 parse_method(E, process);
-parse_method(S, argument);
 parse_method(E, argument);
-parse_method(S, prop);
 parse_method(E, prop);
-parse_method(S, trace);
 parse_method(E, trace);
-parse_method(S, trace_connect);
 parse_method(E, trace_connect);
-parse_method(S, random);
 parse_method(E, random);
-parse_method(S, AS);
 parse_method(E, AS);
-parse_method(S, ASroute);
 parse_method(E, ASroute);
-parse_method(S, bypassRoute);
 parse_method(E, bypassRoute);
-parse_method(S, cluster);
-parse_method(E, cluster);
-parse_method(S, peer);
-parse_method(E, peer);
-parse_method(S, config);
 parse_method(E, config);
 
 /* Open and Close parse file */
@@ -608,6 +782,7 @@ static void parse_Stag_trace_connect(void)
   default:
     xbt_die("Cannot connect trace %s to %s: kind of trace unknown",
             A_surfxml_trace_connect_trace, A_surfxml_trace_connect_element);
+    break;
   }
 }
 

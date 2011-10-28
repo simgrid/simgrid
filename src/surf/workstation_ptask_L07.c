@@ -656,27 +656,14 @@ static void* ptask_cpu_create_resource(char *name, double power_scale,
 
 static void ptask_parse_cpu_init(void)
 {
-  double power_scale = 0.0;
-  double power_initial = 0.0;
-  tmgr_trace_t power_trace = NULL;
-  e_surf_resource_state_t state_initial = SURF_RESOURCE_OFF;
-  tmgr_trace_t state_trace = NULL;
-
-  power_scale = get_cpu_power(A_surfxml_host_power);
-  surf_parse_get_double(&power_initial, A_surfxml_host_availability);
-  power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
-
-  xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
-              (A_surfxml_host_state == A_surfxml_host_state_OFF),
-              "Invalid state");
-  if (A_surfxml_host_state == A_surfxml_host_state_ON)
-    state_initial = SURF_RESOURCE_ON;
-  if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-    state_initial = SURF_RESOURCE_OFF;
-  state_trace = tmgr_trace_new(A_surfxml_host_state_file);
-
-  ptask_cpu_create_resource(A_surfxml_host_id, power_scale, power_initial, power_trace,
-                state_initial, state_trace, current_property_set);
+  ptask_cpu_create_resource(
+		  struct_host->V_host_id,
+		  struct_host->V_host_power_peak,
+		  struct_host->V_host_power_scale,
+		  struct_host->V_host_power_trace,
+		  struct_host->V_host_state_initial,
+		  struct_host->V_host_state_trace,
+          current_property_set);
   current_property_set=NULL;
 }
 
@@ -726,61 +713,22 @@ static void* ptask_link_create_resource(char *name,
 
 static void ptask_parse_link_init(void)
 {
-  double bw_initial;
-  tmgr_trace_t bw_trace;
-  double lat_initial;
-  tmgr_trace_t lat_trace;
-  e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
-  e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
-  tmgr_trace_t state_trace;
-  char *name_link_up = NULL;
-  char *name_link_down = NULL;
-  char *name_link = NULL;
-
-  if(A_surfxml_link_sharing_policy ==
-     A_surfxml_link_sharing_policy_FULLDUPLEX) {
-    name_link_up = bprintf("%s_UP", A_surfxml_link_id);
-    name_link_down = bprintf("%s_DOWN", A_surfxml_link_id);
-  } else {
-    name_link = xbt_strdup(A_surfxml_link_id);
-  }
-  surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
-  bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
-  surf_parse_get_double(&lat_initial, A_surfxml_link_latency);
-  lat_trace = tmgr_trace_new(A_surfxml_link_latency_file);
-
-  xbt_assert((A_surfxml_link_state == A_surfxml_link_state_ON)
-              || (A_surfxml_link_state ==
-                  A_surfxml_link_state_OFF), "Invalid state");
-  if (A_surfxml_link_state == A_surfxml_link_state_ON)
-    state_initial_link = SURF_RESOURCE_ON;
-  else if (A_surfxml_link_state == A_surfxml_link_state_OFF)
-    state_initial_link = SURF_RESOURCE_OFF;
-
-  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-    policy_initial_link = SURF_LINK_SHARED;
-  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
-	policy_initial_link = SURF_LINK_FATPIPE;
-  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-	policy_initial_link = SURF_LINK_FULLDUPLEX;
-
-  state_trace = tmgr_trace_new(A_surfxml_link_state_file);
-
-  if(policy_initial_link == SURF_LINK_FULLDUPLEX)
+  if(struct_lnk->V_policy_initial_link == SURF_LINK_FULLDUPLEX)
   {
-    ptask_link_create_resource(name_link_up, bw_initial, bw_trace, lat_initial, lat_trace,
-	                 state_initial_link, state_trace, policy_initial_link,
-	                 current_property_set);
-    ptask_link_create_resource(name_link_down, bw_initial, bw_trace, lat_initial, lat_trace,
-	                 state_initial_link, state_trace, policy_initial_link,
-	                 current_property_set);
+	  ptask_link_create_resource(bprintf("%s_UP",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
+	               struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
+	               struct_lnk->V_policy_initial_link, current_property_set);
+    ptask_link_create_resource(bprintf("%s_DOWN",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
+            struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
+	               struct_lnk->V_policy_initial_link, current_property_set);
   }
   else
   {
-    ptask_link_create_resource(name_link, bw_initial, bw_trace, lat_initial, lat_trace,
-					 state_initial_link, state_trace, policy_initial_link,
-					 current_property_set);
+	  ptask_link_create_resource(xbt_strdup(struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
+    		struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
+	               struct_lnk->V_policy_initial_link, current_property_set);
   }
+
   current_property_set = NULL;
 }
 
