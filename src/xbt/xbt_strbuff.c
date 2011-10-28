@@ -78,9 +78,8 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
   needed_space = b->used + addlen + 1;
 
   if (needed_space > b->size) {
-    b->data =
-        realloc(b->data, MAX(minimal_increment + b->used, needed_space));
     b->size = MAX(minimal_increment + b->used, needed_space);
+    b->data = realloc(b->data, b->size);
   }
   strcpy(b->data + b->used, toadd);
   b->used += addlen;
