@@ -419,13 +419,13 @@ static void parse_E_bypassRoute_store_route(void)
  * make the new structure and
  * set the parsing functions to allows parsing the part of the routing tree
  */
-static void parse_S_AS(char *AS_id, char *AS_routing)
+void routing_AS_init(const char *AS_id, const char *AS_routing)
 {
   routing_component_t new_routing;
   model_type_t model = NULL;
-  char *wanted = AS_routing;
+  const char *wanted = AS_routing;
   int cpt;
-  /* seach the routing model */
+  /* search the routing model */
   for (cpt = 0; routing_models[cpt].name; cpt++)
     if (!strcmp(wanted, routing_models[cpt].name))
       model = &routing_models[cpt];
@@ -487,17 +487,9 @@ static void parse_S_AS(char *AS_id, char *AS_routing)
 /*
  * Detect the routing model type of the routing component from XML platforms
  */
-static void parse_S_AS_XML(void)
+static void parse_S_AS(void)
 {
-  parse_S_AS(A_surfxml_AS_id, A_surfxml_AS_routing);
-}
-
-/*
- * define the routing model type of routing component from lua script
- */
-static void parse_S_AS_lua(char *id, char *mode)
-{
-  parse_S_AS(id, mode);
+  routing_AS_init(A_surfxml_AS_id, A_surfxml_AS_routing);
 }
 
 
@@ -507,7 +499,7 @@ static void parse_S_AS_lua(char *id, char *mode)
  * When you finish to read the routing component, other structures must be created. 
  * the "end" method allow to do that for any routing model type
  */
-static void parse_E_AS(const char *AS_id)
+void routing_AS_end(const char *AS_id)
 {
 
   if (current_routing == NULL) {
@@ -534,15 +526,7 @@ static void parse_E_AS(const char *AS_id)
  */
 static void parse_E_AS_XML(void)
 {
-  parse_E_AS(A_surfxml_AS_id);
-}
-
-/*
- * \brief Finish the creation of a new routing component from lua
- */
-static void parse_E_AS_lua(const char *id)
-{
-  parse_E_AS(id);
+  routing_AS_end(A_surfxml_AS_id);
 }
 
 /* Aux Business methods */
@@ -988,7 +972,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,
                        &parse_E_bypassRoute_store_route);
 
-  surfxml_add_callback(STag_surfxml_AS_cb_list, &parse_S_AS_XML);
+  surfxml_add_callback(STag_surfxml_AS_cb_list, &parse_S_AS);
   surfxml_add_callback(ETag_surfxml_AS_cb_list, &parse_E_AS_XML);
 
   surfxml_add_callback(STag_surfxml_cluster_cb_list,
@@ -2131,21 +2115,6 @@ static void routing_parse_Erandom(void)
  * New methods to init the routing model component from the lua script
  */
 
-/*
- * calling parse_S_AS_lua with lua values
- */
-void routing_AS_init(const char *AS_id, const char *AS_routing)
-{
-  parse_S_AS_lua((char *) AS_id, (char *) AS_routing);
-}
-
-/*
- * calling parse_E_AS_lua to fisnish the creation of routing component
- */
-void routing_AS_end(const char *AS_id)
-{
-  parse_E_AS_lua((char *) AS_id);
-}
 
 /*
  * add a host to the network element list
