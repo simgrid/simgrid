@@ -3,7 +3,7 @@
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.62 2007/10/11 10:00:14 mquinson Exp).
+ * (Id: flexml.pl,v 1.64 2007/11/09 13:38:20 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -56,27 +56,39 @@ XBT_PUBLIC(void ) STag_graphxml_edge(void);
 XBT_PUBLIC(void ) ETag_graphxml_edge(void);
 
 /* XML application data. */
+short int graphxml_node_name_isset;
 typedef int AT_graphxml_node_name;
 #define AU_graphxml_node_name NULL
+short int graphxml_edge_source_isset;
 typedef int AT_graphxml_edge_source;
 #define AU_graphxml_edge_source NULL
+short int graphxml_node_position_y_isset;
 typedef int AT_graphxml_node_position_y;
 #define AU_graphxml_node_position_y NULL
+short int graphxml_node_position_x_isset;
 typedef int AT_graphxml_node_position_x;
 #define AU_graphxml_node_position_x NULL
+short int graphxml_edge_data_isset;
 typedef int AT_graphxml_edge_data;
 #define AU_graphxml_edge_data NULL
+short int graphxml_edge_target_isset;
 typedef int AT_graphxml_edge_target;
 #define AU_graphxml_edge_target NULL
+short int graphxml_graph_isDirected_isset;
 typedef enum { AU_graphxml_graph_isDirected, A_graphxml_graph_isDirected_true,A_graphxml_graph_isDirected_false } AT_graphxml_graph_isDirected;
+short int graphxml_node_label_isset;
 typedef int AT_graphxml_node_label;
 #define AU_graphxml_node_label NULL
+short int graphxml_node_data_isset;
 typedef int AT_graphxml_node_data;
 #define AU_graphxml_node_data NULL
+short int graphxml_edge_label_isset;
 typedef int AT_graphxml_edge_label;
 #define AU_graphxml_edge_label NULL
+short int graphxml_edge_length_isset;
 typedef int AT_graphxml_edge_length;
 #define AU_graphxml_edge_length NULL
+short int graphxml_edge_name_isset;
 typedef int AT_graphxml_edge_name;
 #define AU_graphxml_edge_name NULL
 
