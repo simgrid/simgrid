@@ -14,7 +14,7 @@ if(enable_compile_warnings)
 endif(enable_compile_warnings)
 
 if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
-	set(warnCFLAGS "${warnCFLAGS} -Wno-unused-but-set-variable ")
+	set(warnCFLAGS "${warnCFLAGS} -Wno-error=unused-but-set-variable ")
 endif(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
 
 if(enable_compile_optimizations)
