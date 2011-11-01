@@ -524,7 +524,7 @@ void routing_AS_end(const char *AS_id)
 /*
  * \brief Finish the creation of a new routing component from XML
  */
-static void parse_E_AS_XML(void)
+static void parse_E_AS(void)
 {
   routing_AS_end(A_surfxml_AS_id);
 }
@@ -973,7 +973,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
                        &parse_E_bypassRoute_store_route);
 
   surfxml_add_callback(STag_surfxml_AS_cb_list, &parse_S_AS);
-  surfxml_add_callback(ETag_surfxml_AS_cb_list, &parse_E_AS_XML);
+  surfxml_add_callback(ETag_surfxml_AS_cb_list, &parse_E_AS);
 
   surfxml_add_callback(STag_surfxml_cluster_cb_list,
                        &routing_parse_Scluster);
