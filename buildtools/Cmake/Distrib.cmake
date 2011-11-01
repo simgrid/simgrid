@@ -16,14 +16,16 @@ install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
 
 #### Generate the manpages
 if( NOT MANPAGE_DIR )
-	set( MANPAGE_DIR $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/share/man/man1 )
+	set( MANPAGE_DIR ${CMAKE_BINARY_DIR}/manpages )
 endif( NOT MANPAGE_DIR)
 
-add_custom_target(TARGET install
+add_custom_target(manpages ALL
         COMMAND ${CMAKE_COMMAND} -E make_directory ${MANPAGE_DIR}
 	COMMAND pod2man tools/simgrid_update_xml.pl > ${MANPAGE_DIR}/simgrid_update_xml.1
 	COMMENT "Generating manpages"
 )
+install(FILES ${MANPAGE_DIR}/simgrid_update_xml.1
+        DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/usr/share/man/man1)
 
 # binaries
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
