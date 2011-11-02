@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -26,6 +26,25 @@ int ETag_surfxml_include_state(void);
 
 char *platform_filename;
 
+/*
+ * Helping functions
+ */
+static void surf_parse_error(char *msg) {
+  xbt_die("Parse error on line %d: %s\n", surf_parse_lineno, msg);
+}
+
+void surf_parse_get_double(double *value, const char *string) {
+  int ret = sscanf(string, "%lg", value);
+  if (ret != 1)
+    surf_parse_error(bprintf("%s is not a double", string));
+}
+
+void surf_parse_get_int(int *value, const char *string) {
+  int ret = sscanf(string, "%d", value);
+  if (ret != 1)
+    surf_parse_error(bprintf("%s is not an integer", string));
+}
+
 /* Initialize the parsing globals */
 xbt_dict_t traces_set_list = NULL;
 xbt_dict_t trace_connect_list_host_avail = NULL;
@@ -34,12 +53,16 @@ xbt_dict_t trace_connect_list_link_avail = NULL;
 xbt_dict_t trace_connect_list_bandwidth = NULL;
 xbt_dict_t trace_connect_list_latency = NULL;
 
-/* This buffer is used to store the original buffer before substituting it by out own buffer. Useful for the foreach tag */
+/*
+ *  Allow the cluster tag to mess with the parsing buffer.
+ * (this will probably become obsolete once the cluster tag do not mess with the parsing callbacks directly)
+ */
+
+/* This buffer is used to store the original buffer before substituting it by out own buffer. Useful for the cluster tag */
 static xbt_dynar_t surfxml_bufferstack_stack = NULL;
 int surfxml_bufferstack_size = 2048;
 
 static char *old_buff = NULL;
-static void surf_parse_error(char *msg);
 
 unsigned int surfxml_buffer_stack_stack_ptr;
 unsigned int surfxml_buffer_stack_stack[1024];
@@ -65,7 +88,12 @@ void surfxml_bufferstack_pop(int new)
   }
 }
 
-/* make sure these symbols are defined as strong ones in this file so that the linked can resolve them */
+/*
+ * All the callback lists that can be overiden anywhere.
+ * (this list should probably be reduced to the bare minimum to allow the models to work)
+ */
+
+/* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
 xbt_dynar_t STag_surfxml_platform_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_platform_cb_list = NULL;
 xbt_dynar_t STag_surfxml_host_cb_list = NULL;
@@ -105,17 +133,16 @@ xbt_dynar_t ETag_surfxml_config_cb_list = NULL;
 xbt_dynar_t STag_surfxml_include_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_include_cb_list = NULL;
 
-/* store the current property set for any tag */
+/* The default current property receiver. Setup in the corresponding opening callbacks. */
 xbt_dict_t current_property_set = NULL;
 /* dictionary of random generator data */
 xbt_dict_t random_data_list = NULL;
 
+/* Call all the callbacks of a specific SAX event */
 static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t);
 
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = NULL;
-
-static void surf_parse_error(char *msg);
 
 static void parse_Stag_trace(void);
 static void parse_Etag_trace(void);
@@ -123,6 +150,10 @@ static void parse_Stag_trace_connect(void);
 
 static void init_randomness(void);
 static void add_randomness(void);
+
+/*
+ * Stuff relative to the <include> tag
+ */
 
 static xbt_dynar_t surf_input_buffer_stack = NULL;
 static xbt_dynar_t surf_file_to_parse_stack = NULL;
@@ -141,18 +172,21 @@ void STag_surfxml_include(void)
   fflush(NULL);
 }
 
-void ETag_surfxml_include(void)
-{
-//	XBT_INFO("ETag_surfxml_include '%s'",A_surfxml_include_file);
-//	fflush(NULL);
-//	fclose(surf_file_to_parse);
-//	xbt_dynar_pop(surf_file_to_parse_stack, &surf_file_to_parse); // restore old filename
-//	surf_parse_pop_buffer_state();
-//	xbt_dynar_pop(surf_input_buffer_stack,&surf_input_buffer);
+void ETag_surfxml_include(void) {
+/* Nothing to do when done with reading the include tag.
+ * Instead, the handling should be deferred until the EOF of current buffer -- see below */
 }
 
-/*
- * Return 1 if tag include is opened
+/** @brief When reaching EOF, check whether we are in an include tag, and behave accordingly if yes
+ *
+ * This function is called automatically by sedding the parser in buildtools/Cmake/MaintainerMode.cmake
+ * Every FAIL on "Premature EOF" is preceded by a call to this function, which role is to restore the
+ * previous buffer if we reached the EOF /of an include file/. Its return code is used to avoid the
+ * error message in that case.
+ *
+ * Yeah, that's terribly hackish, but it works. A better solution should be dealed with in flexml
+ * directly: a command line flag could instruct it to do the correct thing when #include is encountered
+ * on a line.
  */
 int ETag_surfxml_include_state(void)
 {
@@ -284,9 +318,8 @@ void surf_parse_free_callbacks(void)
 
 void STag_surfxml_platform(void)
 {
-  double version = 0.0;
-
-  sscanf(A_surfxml_platform_version, "%lg", &version);
+  double version;
+  surf_parse_get_double(&version, A_surfxml_platform_version);
 
   xbt_assert((version >= 1.0), "******* BIG FAT WARNING *********\n "
       "You're using an ancient XML file.\n"
@@ -528,16 +561,17 @@ void surf_parse_open(const char *file)
   if (!file) {
     if (!warned) {
       XBT_WARN
-          ("Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.");
+          ("Bypassing the XML parser since surf_parse_open received a NULL pointer. "
+              "If it is not what you want, go fix your code.");
       warned = 1;
     }
     return;
   }
 
   if (!surf_input_buffer_stack)
-	surf_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE), NULL);
+    surf_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE), NULL);
   if (!surf_file_to_parse_stack)
-	surf_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), NULL);
+    surf_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), NULL);
 
   surf_file_to_parse = surf_fopen(file, "r");
   xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", file);
@@ -549,9 +583,9 @@ void surf_parse_open(const char *file)
 void surf_parse_close(void)
 {
   if (surf_input_buffer_stack)
-	xbt_dynar_free(&surf_input_buffer_stack);
+    xbt_dynar_free(&surf_input_buffer_stack);
   if (surf_file_to_parse_stack)
-	xbt_dynar_free(&surf_file_to_parse_stack);
+    xbt_dynar_free(&surf_file_to_parse_stack);
 
   if (surf_file_to_parse) {
     surf_parse__delete_buffer(surf_input_buffer);
@@ -560,36 +594,13 @@ void surf_parse_close(void)
   }
 }
 
-/* Parse Function */
+/* Call the lexer to parse the currently opened file. This pointer to function enables bypassing of the parser */
 
-static int _surf_parse(void)
-{
+static int _surf_parse(void) {
   return surf_parse_lex();
 }
-
 int_f_void_t surf_parse = _surf_parse;
 
-void surf_parse_error(char *msg)
-{
-  fprintf(stderr, "Parse error on line %d: %s\n", surf_parse_lineno, msg);
-  abort();
-}
-
-void surf_parse_get_double(double *value, const char *string)
-{
-  int ret = 0;
-  ret = sscanf(string, "%lg", value);
-  if (ret != 1)
-    surf_parse_error(bprintf("%s is not a double", string));
-}
-
-void surf_parse_get_int(int *value, const char *string)
-{
-  int ret = 0;
-  ret = sscanf(string, "%d", value);
-  if (ret != 1)
-    surf_parse_error(bprintf("%s is not an integer", string));
-}
 
 /* Aux parse functions */
 
@@ -681,7 +692,7 @@ void parse_properties(const char* prop_id, const char* prop_value)
 {
     char *value = NULL;
 	if (!current_property_set)
-	    current_property_set = xbt_dict_new();      // Maybe, it should be make a error
+	    current_property_set = xbt_dict_new();      // Maybe, it should raise an error
 	if(!strcmp(prop_id,"coordinates")){
 		if(!strcmp(prop_value,"yes") && !COORD_HOST_LEVEL)
 		  {
@@ -706,13 +717,6 @@ void parse_properties_XML(void)
   parse_properties(A_surfxml_prop_id, A_surfxml_prop_value);
 }
 
-/*
- * With lua console
- */
-void parse_properties_lua(const char* prop_id, const char* prop_value)
-{
-	 parse_properties(prop_id, prop_value);
-}
 
 /* Trace management functions */
 
