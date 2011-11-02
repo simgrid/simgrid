@@ -296,7 +296,7 @@ void gras_msg_handle(volatile double timeOut)
   double untiltimer;
 
   unsigned int cpt;
-  int volatile ran_ok;
+  volatile int ran_ok;
 
   s_gras_msg_t msg;
 
@@ -398,6 +398,7 @@ void gras_msg_handle(volatile double timeOut)
     ran_ok = 0;
     TRY {
       xbt_dynar_foreach(list->cbs, cpt, cb) {
+        volatile unsigned int cpt2 = cpt;
         if (!ran_ok) {
           XBT_DEBUG
               ("Use the callback #%d (@%p) for incomming msg '%s' (payload_size=%d)",
@@ -408,6 +409,7 @@ void gras_msg_handle(volatile double timeOut)
             ran_ok = 1;
           }
         }
+        cpt = cpt2;
       }
     }
     CATCH(e) {

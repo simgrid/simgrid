@@ -33,7 +33,7 @@ typedef void (*smx_pfn_context_free_t) (smx_context_t);
 typedef void (*smx_pfn_context_start_t) (smx_context_t);
 typedef void (*smx_pfn_context_stop_t) (smx_context_t);
 typedef void (*smx_pfn_context_suspend_t) (smx_context_t context);
-typedef void (*smx_pfn_context_runall_t) (xbt_dynar_t processes);
+typedef void (*smx_pfn_context_runall_t) (void);
 typedef smx_context_t (*smx_pfn_context_self_t) (void);
 typedef void* (*smx_pfn_context_get_data_t) (smx_context_t context);
 

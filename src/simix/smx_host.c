@@ -364,7 +364,8 @@ void SIMIX_execution_finish(smx_action_t action)
 	break;
 
       default:
-        THROW_IMPOSSIBLE;
+        xbt_die("Internal error in SIMIX_execution_finish: unexpected action state %d",
+            action->state);
     }
     req->issuer->waiting_action = NULL;
     req->host_execution_wait.result = action->state;

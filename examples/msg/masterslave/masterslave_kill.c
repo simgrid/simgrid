@@ -18,7 +18,7 @@ static int slave(int argc, char *argv[])
   XBT_INFO("Hello!");
   XBT_INFO("Suspend process");
   MSG_process_suspend(MSG_process_self());
-  MSG_task_execute(MSG_task_create("toto",10000000000000000,0,NULL));
+  MSG_task_execute(MSG_task_create("toto", 1e9, 0, NULL));
   XBT_INFO("Bye!");
   return 0;
 }                               /* end_of_lazy_guy */

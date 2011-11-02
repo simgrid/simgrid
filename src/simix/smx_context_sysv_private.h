@@ -25,15 +25,12 @@ SG_BEGIN_DECL()
 
 typedef struct s_smx_ctx_sysv {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
-  ucontext_t uc;                /* the thread that execute the code */
-  ucontext_t old_uc;            /* the context that was swapped with */
+  ucontext_t uc;                /* the ucontext that executes the code */
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id;       /* the valgrind stack id */
 #endif
   char stack[0];                /* the thread stack (must remain the last element of the structure) */
 } s_smx_ctx_sysv_t, *smx_ctx_sysv_t;
-
-smx_ctx_sysv_t maestro_context;
 
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory);
 int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory);
@@ -45,12 +42,6 @@ smx_ctx_sysv_create_context_sized(size_t structure_size,
                                   void_pfn_smxprocess_t cleanup_func,
                                   void *data);
 void smx_ctx_sysv_free(smx_context_t context);
-void smx_ctx_sysv_stop(smx_context_t context);
-void smx_ctx_sysv_suspend(smx_context_t context);
-void smx_ctx_sysv_resume(smx_context_t new_context);
-void smx_ctx_sysv_runall(xbt_dynar_t processes);
-void smx_ctx_sysv_resume_parallel(smx_process_t new_context);
-void smx_ctx_sysv_runall_parallel(xbt_dynar_t processes);
 int smx_ctx_sysv_get_thread_id(void);
 smx_context_t smx_ctx_sysv_self_parallel(void);
 

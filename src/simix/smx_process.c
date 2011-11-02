@@ -214,7 +214,8 @@ void SIMIX_process_create(smx_process_t *process,
  */
 void SIMIX_process_runall(void)
 {
-  SIMIX_context_runall(simix_global->process_to_run);
+  SIMIX_context_runall();
+
   xbt_dynar_t tmp = simix_global->process_that_ran;
   simix_global->process_that_ran = simix_global->process_to_run;
   simix_global->process_to_run = tmp;
@@ -326,7 +327,7 @@ void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
   process->suspended = 1;
 
   /* If we are suspending another process, and it is waiting on an action,
-     suspend it's action. */
+     suspend its action. */
   if (process != issuer) {
 
     if (process->waiting_action) {
@@ -347,7 +348,8 @@ void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
           break;
 
         default:
-          THROW_IMPOSSIBLE;
+          xbt_die("Internal error in SIMIX_process_suspend: unexpected action type %d",
+              process->waiting_action->type);
       }
     }
   }
@@ -386,7 +388,8 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
           break;
 
         default:
-          THROW_IMPOSSIBLE;
+          xbt_die("Internal error in SIMIX_process_resume: unexpected action type %d",
+              process->waiting_action->type);
       }
     }
     else {
@@ -572,7 +575,7 @@ void SIMIX_process_yield(void)
   SIMIX_context_suspend(self->context);
 
   /* Ok, maestro returned control to us */
-  XBT_DEBUG("Maestro returned control to me: '%s'", self->name);
+  XBT_DEBUG("Control returned to me: '%s'", self->name);
 
   if (self->context->iwannadie){
     XBT_DEBUG("I wanna die!");
