@@ -363,6 +363,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	    XBT_DEBUG("Different size of a large cluster");
 	    return 1;
 	  }else{
+	    XBT_DEBUG("Block : %Zu", i);
 	    if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy.info.size * BLOCKSIZE)) != 0){
 	      XBT_DEBUG("Different data in block %Zu", i);
 	      return 1;
