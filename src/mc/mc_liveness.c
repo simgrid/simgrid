@@ -7,6 +7,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
 xbt_dynar_t initial_pairs = NULL;
 xbt_dynar_t reached_pairs;
 mc_snapshot_t snapshot = NULL;
+xbt_dynar_t successors = NULL;
 extern mc_snapshot_t initial_snapshot;
 
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st){
@@ -226,9 +227,10 @@ void MC_ddfs_stateless_init(xbt_automaton_t a){
   }
 
   reached_pairs = xbt_dynar_new(sizeof(mc_pair_reached_t), NULL); 
+  successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
+  snapshot = xbt_new0(s_mc_snapshot_t, 1);
 
   initial_snapshot = xbt_new0(s_mc_snapshot_t, 1);
-  snapshot = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot(initial_snapshot);
 
   MC_UNSET_RAW_MEM; 
@@ -317,12 +319,6 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
   mc_pair_stateless_t next_pair = NULL;
   mc_pair_stateless_t pair_succ;
   //mc_snapshot_t next_snapshot = NULL;
-  
-  xbt_dynar_t successors = NULL;
-  
-  MC_SET_RAW_MEM;
-  successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
-  MC_UNSET_RAW_MEM;
 
   while((req = MC_state_get_request(current_pair->graph_state, &value)) != NULL){
    
