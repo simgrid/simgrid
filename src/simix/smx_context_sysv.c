@@ -10,6 +10,7 @@
 
 #include "smx_context_sysv_private.h"
 #include "xbt/parmap.h"
+#include "xbt/parmap_private.h"
 #include "simix/private.h"
 #include "gras_config.h"
 
@@ -28,12 +29,25 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t parmap;
 #endif
+static unsigned long smx_ctx_sysv_process_index = 0; /* index of the next process to run in the
+                                         * list of runnable processes */
+static smx_ctx_sysv_t maestro_context;
 
 static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
     void_pfn_smxprocess_t cleanup_func, void* data);
 
 static void smx_ctx_sysv_wrapper(int count, ...);
+
+static void smx_ctx_sysv_stop_serial(smx_context_t context);
+static void smx_ctx_sysv_suspend_serial(smx_context_t context);
+static void smx_ctx_sysv_runall_serial(void);
+
+static void smx_ctx_sysv_stop_parallel(smx_context_t context);
+static void smx_ctx_sysv_suspend_parallel(smx_context_t context);
+static void smx_ctx_sysv_runall_parallel(void);
+
+static void smx_ctx_sysv_resume(smx_process_t first_process);
 
 /* This is a bit paranoid about SIZEOF_VOIDP not being a multiple of SIZEOF_INT,
  * but it doesn't harm. */
@@ -59,27 +73,29 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
   (*factory)->create_context = smx_ctx_sysv_create_context;
   /* Do not overload that method (*factory)->finalize */
   (*factory)->free = smx_ctx_sysv_free;
-  (*factory)->stop = smx_ctx_sysv_stop;
-  (*factory)->suspend = smx_ctx_sysv_suspend;
   (*factory)->name = "smx_sysv_context_factory";
 
   if (SIMIX_context_is_parallel()) {
 #ifdef CONTEXT_THREADS	/* To use parallel ucontexts a thread pool is needed */
     parmap = xbt_parmap_new(2);
+    (*factory)->stop = smx_ctx_sysv_stop_parallel;
+    (*factory)->suspend = smx_ctx_sysv_suspend_parallel;
     (*factory)->runall = smx_ctx_sysv_runall_parallel;
     (*factory)->self = smx_ctx_sysv_self_parallel;
 #else
     THROWF(arg_error, 0, "No thread support for parallel context execution");
 #endif
-  }else{
-    (*factory)->runall = smx_ctx_sysv_runall;
+  } else {
+    (*factory)->stop = smx_ctx_sysv_stop_serial;
+    (*factory)->suspend = smx_ctx_sysv_suspend_serial;
+    (*factory)->runall = smx_ctx_sysv_runall_serial;
   }    
 }
 
 int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory)
 { 
 #ifdef CONTEXT_THREADS
-  if(parmap)
+  if (parmap)
     xbt_parmap_destroy(parmap);
 #endif
   return smx_ctx_base_factory_finalize(factory);
@@ -100,15 +116,14 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                                                  cleanup_func,
                                                                  data);
 
-  /* If the user provided a function for the process then use it
-     otherwise is the context for maestro */
+  /* if the user provided a function for the process then use it,
+     otherwise it is the context for maestro */
   if (code) {
 
-    int res;
-    res = getcontext(&(context->uc));
+    int res = getcontext(&(context->uc));
     xbt_assert(res == 0,
-                "Error in context saving: %d (%s)", errno,
-                strerror(errno));
+        "Error in context saving: %d (%s)", errno,
+        strerror(errno));
 
     context->uc.uc_link = NULL;
 
@@ -127,12 +142,11 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
     ctx_addr.addr = context;
     makecontext(&context->uc, (void (*)())smx_ctx_sysv_wrapper,
                 CTX_ADDR_LEN, CTX_ADDR_SPLIT(ctx_addr));
-  }else{
+  } else {
     maestro_context = context;
   }
 
   return (smx_context_t) context;
-
 }
 
 static smx_context_t
@@ -161,12 +175,6 @@ void smx_ctx_sysv_free(smx_context_t context)
   smx_ctx_base_free(context);
 }
 
-void smx_ctx_sysv_stop(smx_context_t context)
-{
-  smx_ctx_base_stop(context);
-  smx_ctx_sysv_suspend(context);
-}
-
 void smx_ctx_sysv_wrapper(int first, ...)
 { 
   union u_ctx_addr ctx_addr;
@@ -177,60 +185,101 @@ void smx_ctx_sysv_wrapper(int first, ...)
     va_list ap;
     int i;
     va_start(ap, first);
-    for(i = 1; i < CTX_ADDR_LEN; i++)
+    for (i = 1; i < CTX_ADDR_LEN; i++)
       ctx_addr.intv[i] = va_arg(ap, int);
     va_end(ap);
   }
   context = ctx_addr.addr;
   (context->super.code) (context->super.argc, context->super.argv);
 
-  smx_ctx_sysv_stop((smx_context_t) context);
+  simix_global->context_factory->stop((smx_context_t) context);
 }
 
-void smx_ctx_sysv_suspend(smx_context_t context)
+static void smx_ctx_sysv_stop_serial(smx_context_t context)
 {
-  SIMIX_context_set_current((smx_context_t) maestro_context);
-  int rv;
-  rv = swapcontext(&((smx_ctx_sysv_t) context)->uc, &((smx_ctx_sysv_t)context)->old_uc);
-
-  xbt_assert((rv == 0), "Context swapping failure");
+  smx_ctx_base_stop(context);
+  smx_ctx_sysv_suspend_serial(context);
 }
 
-void smx_ctx_sysv_resume(smx_context_t context)
+static void smx_ctx_sysv_suspend_serial(smx_context_t context)
 {
+  /* determine the next context */
+  smx_context_t next_context;
+  unsigned long int i = smx_ctx_sysv_process_index++;
+
+  if (i < xbt_dynar_length(simix_global->process_to_run)) {
+    XBT_DEBUG("Run next process");
+
+    /* execute the next process */
+    next_context = xbt_dynar_get_as(
+        simix_global->process_to_run,i, smx_process_t)->context;
+  }
+  else {
+    /* all processes were run, return to maestro */
+    XBT_DEBUG("No more process to run");
+
+    next_context = (smx_context_t) maestro_context;
+  }
+  SIMIX_context_set_current(next_context);
+  swapcontext(&((smx_ctx_sysv_t) context)->uc,
+      &((smx_ctx_sysv_t) next_context)->uc);
+}
+
+static void smx_ctx_sysv_resume(smx_process_t first_process)
+{
+  smx_context_t context = first_process->context;
   SIMIX_context_set_current(context);
-  int rv;
-  rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
-
-  xbt_assert((rv == 0), "Context swapping failure");
+  swapcontext(&maestro_context->uc,
+      &((smx_ctx_sysv_t) context)->uc);
 }
 
-void smx_ctx_sysv_runall(xbt_dynar_t processes)
+static void smx_ctx_sysv_runall_serial(void)
 {
-  smx_process_t process;
-  unsigned int cursor;
+  if (xbt_dynar_length(simix_global->process_to_run) > 0) {
+    smx_process_t first_process =
+        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
+    smx_ctx_sysv_process_index = 1;
 
-  xbt_dynar_foreach(processes, cursor, process) {
-    XBT_DEBUG("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
-    smx_ctx_sysv_resume(process->context);
+    /* execute the first process */
+    smx_ctx_sysv_resume(first_process);
   }
 }
 
-void smx_ctx_sysv_resume_parallel(smx_process_t process)
+static void smx_ctx_sysv_stop_parallel(smx_context_t context)
 {
-  smx_context_t context = process->context;
-  SIMIX_context_set_current((smx_context_t) context);
-  int rv;
-  rv = swapcontext(&((smx_ctx_sysv_t)context)->old_uc, &((smx_ctx_sysv_t) context)->uc);
-  SIMIX_context_set_current((smx_context_t) maestro_context);
-
-  xbt_assert((rv == 0), "Context swapping failure");
+  smx_ctx_base_stop(context);
+  smx_ctx_sysv_suspend_parallel(context);
 }
 
-void smx_ctx_sysv_runall_parallel(xbt_dynar_t processes)
+static void smx_ctx_sysv_suspend_parallel(smx_context_t context)
 {
 #ifdef CONTEXT_THREADS
-  xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_sysv_resume_parallel, processes);
+  /* determine the next context */
+  smx_context_t next_context;
+  unsigned long int i = __sync_fetch_and_add(&parmap->index, 1);
+
+  if (i < xbt_dynar_length(simix_global->process_to_run)) {
+    /* execute the next process */
+    XBT_DEBUG("Run next process");
+    next_context = xbt_dynar_get_as(simix_global->process_to_run, i, smx_process_t)->context;
+  }
+  else {
+    /* all processes were run, go to the barrier */
+    XBT_DEBUG("No more processes to run");
+    next_context = (smx_context_t) maestro_context;
+  }
+
+  SIMIX_context_set_current(next_context);
+  swapcontext(&((smx_ctx_sysv_t) context)->uc,
+      &((smx_ctx_sysv_t) next_context)->uc);
+#endif
+}
+
+static void smx_ctx_sysv_runall_parallel(void)
+{
+#ifdef CONTEXT_THREADS
+  xbt_parmap_apply(parmap, (void_f_pvoid_t) smx_ctx_sysv_resume,
+      simix_global->process_to_run);
 #endif
 }
 

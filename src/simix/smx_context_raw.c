@@ -360,33 +360,35 @@ void smx_ctx_raw_new_sr(void)
   XBT_VERB("New scheduling round");
 }
 #else
-static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
+static void smx_ctx_raw_runall_serial()
 {
   smx_process_t process;
   unsigned int cursor;
 
-  xbt_dynar_foreach(processes, cursor, process) {
-    XBT_DEBUG("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
+  xbt_dynar_foreach(simix_global->process_to_run, cursor, process) {
+    XBT_DEBUG("Schedule item %u of %lu", cursor, xbt_dynar_length(simix_global->process_to_run));
     smx_ctx_raw_resume(process);
   }
 }
 #endif
 
-static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
+static void smx_ctx_raw_runall_parallel()
 {
 #ifdef CONTEXT_THREADS
-  xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_raw_resume, processes);
+  xbt_parmap_apply(parmap, (void_f_pvoid_t) smx_ctx_raw_resume,
+      simix_global->process_to_run);
 #endif
 }
 
-static void smx_ctx_raw_runall(xbt_dynar_t processes)
+static void smx_ctx_raw_runall()
 {
-  if (xbt_dynar_length(processes) >= SIMIX_context_get_parallel_threshold()) {
-    XBT_DEBUG("Runall // %lu", xbt_dynar_length(processes));
-    smx_ctx_raw_runall_parallel(processes);
+  unsigned long nb_processes = xbt_dynar_length(simix_global->process_to_run);
+  if (nb_processes >= SIMIX_context_get_parallel_threshold()) {
+    XBT_DEBUG("Runall // %lu", nb_processes);
+    smx_ctx_raw_runall_parallel();
   } else {
-    XBT_DEBUG("Runall serial %lu", xbt_dynar_length(processes));
-    smx_ctx_raw_runall_serial(processes);
+    XBT_DEBUG("Runall serial %lu", nb_processes);
+    smx_ctx_raw_runall_serial();
   }
 }
 

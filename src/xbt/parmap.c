@@ -88,26 +88,23 @@ static void *_xbt_parmap_worker_main(void *arg)
   XBT_DEBUG("New worker thread created (%u)", worker_id);
   
   /* Worker's main loop */
-  while(1){
+  while (1) {
 #ifdef HAVE_FUTEX_H
     xbt_event_wait(parmap->sync_event);
 #endif
-    if(parmap->status == PARMAP_WORK){
-      unsigned int i;
-      unsigned int n = 0;
+    if (parmap->status == PARMAP_WORK) {
 
       XBT_DEBUG("Worker %u got a job", worker_id);
 
-      while ((i = __sync_fetch_and_add(&parmap->index, 1))
-             < xbt_dynar_length(parmap->data)) {
+      unsigned int i = __sync_fetch_and_add(&parmap->index, 1);
+      if (i < xbt_dynar_length(parmap->data)) {
         parmap->fun(xbt_dynar_get_as(parmap->data, i, void*));
-        n++;
       }
 
-      XBT_DEBUG("Worker %u processed %u tasks", worker_id, n);
+      XBT_DEBUG("Worker %u has finished", worker_id);
 
     /* We are destroying the parmap */
-    }else{
+    } else {
 #ifdef HAVE_FUTEX_H
       xbt_event_end(parmap->sync_event);
 #endif

@@ -214,7 +214,8 @@ void SIMIX_process_create(smx_process_t *process,
  */
 void SIMIX_process_runall(void)
 {
-  SIMIX_context_runall(simix_global->process_to_run);
+  SIMIX_context_runall();
+
   xbt_dynar_t tmp = simix_global->process_that_ran;
   simix_global->process_that_ran = simix_global->process_to_run;
   simix_global->process_to_run = tmp;
@@ -572,7 +573,7 @@ void SIMIX_process_yield(void)
   SIMIX_context_suspend(self->context);
 
   /* Ok, maestro returned control to us */
-  XBT_DEBUG("Maestro returned control to me: '%s'", self->name);
+  XBT_DEBUG("Control returned to me: '%s'", self->name);
 
   if (self->context->iwannadie){
     XBT_DEBUG("I wanna die!");
