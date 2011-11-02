@@ -138,7 +138,7 @@ typedef struct s_route_extended {
 
 /* This enum used in the routing structure helps knowing in which situation we are. */
 typedef enum {
-  SURF_ROUTING_NULL = 0,   /**< Indefined type                                   */
+  SURF_ROUTING_NULL = 0,   /**< Undefined type                                   */
   SURF_ROUTING_BASE,       /**< Base case: use simple link lists for routing     */
   SURF_ROUTING_RECURSIVE   /**< Recursive case: also return gateway informations */
 } e_surf_routing_hierarchy_t;

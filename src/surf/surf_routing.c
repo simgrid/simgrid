@@ -501,7 +501,7 @@ void routing_AS_end(const char *AS_id)
 {
 
   if (current_routing == NULL) {
-    THROWF(arg_error, 0, "Close AS(%s), that never open", AS_id);
+    THROWF(arg_error, 0, "Close AS(%s), that were never opened", AS_id);
   } else {
     network_element_info_t info = NULL;
     xbt_assert(!xbt_lib_get_or_null(as_router_lib,current_routing->name, ROUTING_ASR_LEVEL),
