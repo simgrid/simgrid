@@ -55,7 +55,6 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
 
 void xbt_parmap_destroy(xbt_parmap_t parmap)
 { 
-  XBT_DEBUG("Destroy parmap %p", parmap);
   parmap->status = PARMAP_DESTROY;
 #ifdef HAVE_FUTEX_H
   xbt_event_signal(parmap->sync_event);
@@ -76,14 +75,27 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
   XBT_DEBUG("Job done");
 }
 
+void* xbt_parmap_next(xbt_parmap_t parmap) {
+
+  unsigned int index = __sync_fetch_and_add(&parmap->index, 1);
+  if (index < xbt_dynar_length(parmap->data)) {
+    return xbt_dynar_get_as(parmap->data, index, void*);
+  }
+  return NULL;
+}
+
+unsigned long xbt_parmap_get_worker_id(xbt_parmap_t parmap) {
+  return (unsigned long) xbt_os_thread_get_extra_data();
+}
+
 static void *_xbt_parmap_worker_main(void *arg)
 {
   unsigned int worker_id;
-  xbt_parmap_t parmap = (xbt_parmap_t)arg;
+  xbt_parmap_t parmap = (xbt_parmap_t) arg;
 
   /* Fetch a worker id */
   worker_id = __sync_fetch_and_add(&parmap->workers_max_id, 1);
-  xbt_os_thread_set_extra_data((void *)(unsigned long)worker_id);
+  xbt_os_thread_set_extra_data((void*) (unsigned long) worker_id);
 
   XBT_DEBUG("New worker thread created (%u)", worker_id);
   
@@ -96,9 +108,9 @@ static void *_xbt_parmap_worker_main(void *arg)
 
       XBT_DEBUG("Worker %u got a job", worker_id);
 
-      unsigned int i = __sync_fetch_and_add(&parmap->index, 1);
-      if (i < xbt_dynar_length(parmap->data)) {
-        parmap->fun(xbt_dynar_get_as(parmap->data, i, void*));
+      void* work = xbt_parmap_next(parmap);
+      if (work != NULL) {
+        parmap->fun(work);
       }
 
       XBT_DEBUG("Worker %u has finished", worker_id);

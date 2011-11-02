@@ -10,7 +10,6 @@
 
 #include "smx_context_sysv_private.h"
 #include "xbt/parmap.h"
-#include "xbt/parmap_private.h"
 #include "simix/private.h"
 #include "gras_config.h"
 
@@ -28,10 +27,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t parmap;
+static ucontext_t* smx_ctx_sysv_local_maestro_uc;    /* space to save maestro's stack in each thead */
 #endif
 static unsigned long smx_ctx_sysv_process_index = 0; /* index of the next process to run in the
-                                         * list of runnable processes */
-static smx_ctx_sysv_t maestro_context;
+                                                      * list of runnable processes */
+static smx_ctx_sysv_t smx_ctx_sysv_maestro_context;
+
 
 static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
@@ -41,13 +42,14 @@ static void smx_ctx_sysv_wrapper(int count, ...);
 
 static void smx_ctx_sysv_stop_serial(smx_context_t context);
 static void smx_ctx_sysv_suspend_serial(smx_context_t context);
+static void smx_ctx_sysv_resume_serial(smx_process_t first_process);
 static void smx_ctx_sysv_runall_serial(void);
 
 static void smx_ctx_sysv_stop_parallel(smx_context_t context);
 static void smx_ctx_sysv_suspend_parallel(smx_context_t context);
+static void smx_ctx_sysv_resume_parallel(smx_process_t first_process);
 static void smx_ctx_sysv_runall_parallel(void);
 
-static void smx_ctx_sysv_resume(smx_process_t first_process);
 
 /* This is a bit paranoid about SIZEOF_VOIDP not being a multiple of SIZEOF_INT,
  * but it doesn't harm. */
@@ -77,7 +79,9 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 
   if (SIMIX_context_is_parallel()) {
 #ifdef CONTEXT_THREADS	/* To use parallel ucontexts a thread pool is needed */
-    parmap = xbt_parmap_new(2);
+    int nthreads = SIMIX_context_get_nthreads();
+    parmap = xbt_parmap_new(nthreads);
+    smx_ctx_sysv_local_maestro_uc = xbt_new(ucontext_t, nthreads);
     (*factory)->stop = smx_ctx_sysv_stop_parallel;
     (*factory)->suspend = smx_ctx_sysv_suspend_parallel;
     (*factory)->runall = smx_ctx_sysv_runall_parallel;
@@ -97,6 +101,7 @@ int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory)
 #ifdef CONTEXT_THREADS
   if (parmap)
     xbt_parmap_destroy(parmap);
+  xbt_free(smx_ctx_sysv_local_maestro_uc);
 #endif
   return smx_ctx_base_factory_finalize(factory);
 }
@@ -143,7 +148,7 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
     makecontext(&context->uc, (void (*)())smx_ctx_sysv_wrapper,
                 CTX_ADDR_LEN, CTX_ADDR_SPLIT(ctx_addr));
   } else {
-    maestro_context = context;
+    smx_ctx_sysv_maestro_context = context;
   }
 
   return (smx_context_t) context;
@@ -208,28 +213,26 @@ static void smx_ctx_sysv_suspend_serial(smx_context_t context)
   unsigned long int i = smx_ctx_sysv_process_index++;
 
   if (i < xbt_dynar_length(simix_global->process_to_run)) {
-    XBT_DEBUG("Run next process");
-
     /* execute the next process */
+    XBT_DEBUG("Run next process");
     next_context = xbt_dynar_get_as(
         simix_global->process_to_run,i, smx_process_t)->context;
   }
   else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
-
-    next_context = (smx_context_t) maestro_context;
+    next_context = (smx_context_t) smx_ctx_sysv_maestro_context;
   }
   SIMIX_context_set_current(next_context);
   swapcontext(&((smx_ctx_sysv_t) context)->uc,
       &((smx_ctx_sysv_t) next_context)->uc);
 }
 
-static void smx_ctx_sysv_resume(smx_process_t first_process)
+static void smx_ctx_sysv_resume_serial(smx_process_t first_process)
 {
   smx_context_t context = first_process->context;
   SIMIX_context_set_current(context);
-  swapcontext(&maestro_context->uc,
+  swapcontext(&smx_ctx_sysv_maestro_context->uc,
       &((smx_ctx_sysv_t) context)->uc);
 }
 
@@ -241,7 +244,7 @@ static void smx_ctx_sysv_runall_serial(void)
     smx_ctx_sysv_process_index = 1;
 
     /* execute the first process */
-    smx_ctx_sysv_resume(first_process);
+    smx_ctx_sysv_resume_serial(first_process);
   }
 }
 
@@ -255,30 +258,45 @@ static void smx_ctx_sysv_suspend_parallel(smx_context_t context)
 {
 #ifdef CONTEXT_THREADS
   /* determine the next context */
+  smx_process_t next_work = xbt_parmap_next(parmap);
   smx_context_t next_context;
-  unsigned long int i = __sync_fetch_and_add(&parmap->index, 1);
+  ucontext_t* next_uc;
 
-  if (i < xbt_dynar_length(simix_global->process_to_run)) {
-    /* execute the next process */
+  if (next_work != NULL) {
+    /* there is a next process to resume */
     XBT_DEBUG("Run next process");
-    next_context = xbt_dynar_get_as(simix_global->process_to_run, i, smx_process_t)->context;
+    next_context = next_work->context;
+    next_uc = &((smx_ctx_sysv_t) next_context)->uc;
   }
   else {
     /* all processes were run, go to the barrier */
     XBT_DEBUG("No more processes to run");
-    next_context = (smx_context_t) maestro_context;
+    next_context = (smx_context_t) smx_ctx_sysv_maestro_context;
+    unsigned long worker_id = (unsigned long) xbt_os_thread_get_extra_data();
+    next_uc = &smx_ctx_sysv_local_maestro_uc[worker_id];
   }
 
   SIMIX_context_set_current(next_context);
-  swapcontext(&((smx_ctx_sysv_t) context)->uc,
-      &((smx_ctx_sysv_t) next_context)->uc);
+  swapcontext(&((smx_ctx_sysv_t) context)->uc, next_uc);
+#endif
+}
+
+static void smx_ctx_sysv_resume_parallel(smx_process_t first_process)
+{
+#ifdef CONTEXT_THREADS
+  unsigned long worker_id = (unsigned long) xbt_os_thread_get_extra_data();
+  ucontext_t* local_maestro_uc = &smx_ctx_sysv_local_maestro_uc[worker_id];
+
+  smx_context_t context = first_process->context;
+  SIMIX_context_set_current(context);
+  swapcontext(local_maestro_uc, &((smx_ctx_sysv_t) context)->uc);
 #endif
 }
 
 static void smx_ctx_sysv_runall_parallel(void)
 {
 #ifdef CONTEXT_THREADS
-  xbt_parmap_apply(parmap, (void_f_pvoid_t) smx_ctx_sysv_resume,
+  xbt_parmap_apply(parmap, (void_f_pvoid_t) smx_ctx_sysv_resume_parallel,
       simix_global->process_to_run);
 #endif
 }
