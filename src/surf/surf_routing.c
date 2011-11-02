@@ -419,22 +419,20 @@ static void parse_E_bypassRoute_store_route(void)
  * make the new structure and
  * set the parsing functions to allows parsing the part of the routing tree
  */
-void routing_AS_init(const char *AS_id, const char *AS_routing)
+void routing_AS_init(const char *AS_id, const char *wanted_routing_type)
 {
   routing_component_t new_routing;
   model_type_t model = NULL;
-  const char *wanted = AS_routing;
   int cpt;
   /* search the routing model */
   for (cpt = 0; routing_models[cpt].name; cpt++)
-    if (!strcmp(wanted, routing_models[cpt].name))
+    if (!strcmp(wanted_routing_type, routing_models[cpt].name))
       model = &routing_models[cpt];
   /* if its not exist, error */
   if (model == NULL) {
     fprintf(stderr, "Routing model %s not found. Existing models:\n",
-            wanted);
+            wanted_routing_type);
     for (cpt = 0; routing_models[cpt].name; cpt++)
-      if (!strcmp(wanted, routing_models[cpt].name))
         fprintf(stderr, "   %s: %s\n", routing_models[cpt].name,
                 routing_models[cpt].desc);
     xbt_die(NULL);
