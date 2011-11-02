@@ -125,10 +125,7 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
      otherwise it is the context for maestro */
   if (code) {
 
-    int res = getcontext(&(context->uc));
-    xbt_assert(res == 0,
-        "Error in context saving: %d (%s)", errno,
-        strerror(errno));
+    getcontext(&(context->uc));
 
     context->uc.uc_link = NULL;
 
