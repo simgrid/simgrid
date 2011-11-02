@@ -340,7 +340,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
     }
     xbt_matrix_double_addmult(bA, bB, bC);
 
-  };
+  }
 
   /* send Result to master */
   result.C = bC;
