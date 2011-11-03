@@ -94,7 +94,7 @@ gras_cbps_v_push(gras_cbps_t ps,
 
     XBT_DEBUG("Create a new variable stack for '%s' into the space", name);
     varstack = xbt_dynar_new(sizeof(gras_cbps_elm_t *), NULL);
-    xbt_dict_set(ps->space, varname, (void **) varstack, NULL);
+    xbt_dict_set(ps->space, name, (void **) varstack, NULL);
     xbt_ex_free(e);
     /* leaking, you think? only if you do not close all the openned blocks ;) */
   }
