@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(example_liveness_without_cycle, "Example liveness w
 
 extern xbt_automaton_t automaton;
 
-int r=1;
+int r=0;
 int e=1;
 int d=1;
 
