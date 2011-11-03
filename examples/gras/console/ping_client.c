@@ -9,11 +9,25 @@
 #include "ping.h"
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(Ping);
 
+static gras_socket_t try_gras_socket_client(const char *host, int port)
+{
+  volatile gras_socket_t sock = NULL;
+  xbt_ex_t e;
+  TRY {
+    sock = gras_socket_client(host, port);
+  }
+  CATCH(e) {
+    if (e.category != system_error)
+      /* dunno what happened, let the exception go through */
+      RETHROWF("Unable to connect to the server: %s");
+    xbt_ex_free(e);
+  }
+  return sock;
+}
+
 int client(int argc, char *argv[])
 {
-  xbt_ex_t e;
   gras_socket_t toserver = NULL;        /* peer */
-  int connected = 0;
 
   gras_socket_t from;
   int ping, pong;
@@ -33,19 +47,8 @@ int client(int argc, char *argv[])
   XBT_INFO("Launch client (server on %s:%d)", host, port);
 
   /* 3. Create a socket to speak to the server */
-  while (!connected) {
-    TRY {
-      toserver = gras_socket_client(host, port);
-      connected = 1;
-    }
-    CATCH(e) {
-      if (e.category != system_error)
-        /* dunno what happened, let the exception go through */
-        RETHROWF("Unable to connect to the server: %s");
-      xbt_ex_free(e);
-      gras_os_sleep(0.05);
-    }
-  }
+  while (!(toserver = try_gras_socket_client(host, port)))
+    gras_os_sleep(0.05);
 
   XBT_INFO("Connected to %s:%d.", host, port);
 
