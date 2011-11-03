@@ -312,7 +312,7 @@ void create_ns3_topology()
    }
 }
 
-static void define_callbacks_ns3(const char *filename)
+static void define_callbacks_ns3(void)
 {
   surfxml_add_callback(STag_surfxml_host_cb_list, &parse_ns3_add_host);	      //HOST
   surfxml_add_callback(STag_surfxml_router_cb_list, &parse_ns3_add_router);	  //ROUTER
@@ -357,7 +357,7 @@ static void ns3_action_set_category(surf_action_t action, const char *category)
 }
 #endif
 
-void surf_network_model_init_NS3(const char *filename)
+void surf_network_model_init_NS3()
 {
 	if (surf_network_model)
 		return;
@@ -389,7 +389,7 @@ void surf_network_model_init_NS3(const char *filename)
 	}
 
 	routing_model_create(sizeof(s_surf_ns3_link_t), NULL, NULL);
-	define_callbacks_ns3(filename);
+	define_callbacks_ns3();
 
 	NS3_HOST_LEVEL = xbt_lib_add_level(host_lib,(void_f_pvoid_t)free_ns3_host);
 	NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,(void_f_pvoid_t)free_ns3_host);
