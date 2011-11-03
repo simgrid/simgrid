@@ -992,14 +992,19 @@ void surf_parse_add_callback_config(void)
 	surfxml_add_callback(STag_surfxml_config_cb_list, &routing_parse_Sconfig);
 	surfxml_add_callback(ETag_surfxml_config_cb_list, &routing_parse_Econfig);
 	surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties_XML);
-	surfxml_add_callback(STag_surfxml_AS_cb_list, &surf_parse_models_setup);
 	surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
 }
 
+/* Call the last initialization functions, that must be called after the
+ * <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
+ */
 void surf_parse_models_setup()
 {
+  static int already_called=0;
+  if (already_called)
+    return;
+  already_called=1;
 	routing_parse_Erandom();
-	surfxml_del_callback(STag_surfxml_AS_cb_list, surf_parse_models_setup);
 	surf_config_models_setup();
 }
 
@@ -1480,7 +1485,7 @@ static void routing_parse_Econfig(void)
 	  if(xbt_cfg_is_default_value(_surf_cfg_set, key))
 		  xbt_cfg_set_parse(_surf_cfg_set, cfg);
 	  else
-		  XBT_INFO("The custom configuration '%s' is already define by user!",key);
+		  XBT_INFO("The custom configuration '%s' is already defined by user!",key);
 	  free(cfg);
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
@@ -2097,16 +2102,15 @@ static void routing_parse_Srandom(void)
 
 static void routing_parse_Erandom(void)
 {
-	xbt_dict_cursor_t cursor = NULL;
+	/*xbt_dict_cursor_t cursor = NULL;
 	char *key;
 	char *elem;
 
 	xbt_dict_foreach(random_value, cursor, key, elem) {
 	  XBT_DEBUG("%s = %s",key,elem);
 	}
-
+*/
 }
-
 
 /*
  * New methods to init the routing model component from the lua script

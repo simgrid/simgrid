@@ -475,6 +475,8 @@ void STag_surfxml_trace_connect(void){
 	surfxml_call_cb_functions(STag_surfxml_trace_connect_cb_list);
 }
 void STag_surfxml_AS(void){
+  surf_parse_models_setup(); /* ensure that the models are created after the last <config> tag. See comment in simgrid.dtd */
+
 	surfxml_call_cb_functions(STag_surfxml_AS_cb_list);
 }
 void STag_surfxml_ASroute(void){
