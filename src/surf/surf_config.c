@@ -475,6 +475,7 @@ void surf_config_finalize(void)
   _surf_init_status = 0;
 }
 
+/* Pick the right models for CPU, net and workstation, and call their model_init_preparse */
 void surf_config_models_setup()
 {
   char *workstation_model_name;

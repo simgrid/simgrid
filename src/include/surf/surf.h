@@ -648,15 +648,6 @@ XBT_PUBLIC_DATA(xbt_cfg_t) _surf_cfg_set;
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common structures */
 
-/** \brief Initialize the used models.
- *
- * Must be called after the surf_init so that configuration infrastructure is created
- * Must be called before parsing/creating the environment
- * Must not be called within the initialization process so that the use get a chance to change the settings from
- * its code between, say, MSG_init and MSG_create_environment using MSG_config
- */
-XBT_PUBLIC(void) surf_config_models_setup(void);
-
 /** \brief create the elements of the models
  *
  * Must be called after parsing the platform file and before using any elements
