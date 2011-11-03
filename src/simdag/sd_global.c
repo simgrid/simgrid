@@ -182,8 +182,6 @@ void SD_create_environment(const char *platform_file)
   void **surf_workstation = NULL;
   void **surf_link = NULL;
 
-  platform_filename = xbt_strdup(platform_file);
-
   // Reset callbacks
   surf_parse_reset_callbacks();
   // Add config callbacks

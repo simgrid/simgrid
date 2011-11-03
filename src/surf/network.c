@@ -270,7 +270,7 @@ static void net_add_traces(void)
   }
 }
 
-static void net_define_callbacks(const char *file)
+static void net_define_callbacks(void)
 {
   /* Figuring out the network links */
   surfxml_add_callback(STag_surfxml_link_cb_list, &net_parse_link_init);
@@ -825,7 +825,7 @@ static void surf_network_model_init_internal(void)
 /************************************************************************/
 /* New model based on LV08 and experimental results of MPI ping-pongs   */
 /************************************************************************/
-void surf_network_model_init_SMPI(const char *filename)
+void surf_network_model_init_SMPI(void)
 {
 
   if (surf_network_model)
@@ -834,7 +834,7 @@ void surf_network_model_init_SMPI(const char *filename)
   latency_factor_callback = &smpi_latency_factor;
   bandwidth_factor_callback = &smpi_bandwidth_factor;
   bandwidth_constraint_callback = &smpi_bandwidth_constraint;
-  net_define_callbacks(filename);
+  net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
@@ -848,13 +848,13 @@ void surf_network_model_init_SMPI(const char *filename)
 /************************************************************************/
 /* New model based on optimizations discussed during this thesis        */
 /************************************************************************/
-void surf_network_model_init_LegrandVelho(const char *filename)
+void surf_network_model_init_LegrandVelho(void)
 {
 
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  net_define_callbacks(filename);
+  net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
@@ -878,13 +878,13 @@ void surf_network_model_init_LegrandVelho(const char *filename)
 /*   month         = {oct}, */
 /*   year          = {2002} */
 /* } */
-void surf_network_model_init_CM02(const char *filename)
+void surf_network_model_init_CM02(void)
 {
 
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  net_define_callbacks(filename);
+  net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
@@ -892,12 +892,12 @@ void surf_network_model_init_CM02(const char *filename)
                            "CM02", surf_network_model);
 }
 
-void surf_network_model_init_Reno(const char *filename)
+void surf_network_model_init_Reno(void)
 {
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  net_define_callbacks(filename);
+  net_define_callbacks();
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp,
@@ -914,12 +914,12 @@ void surf_network_model_init_Reno(const char *filename)
 }
 
 
-void surf_network_model_init_Reno2(const char *filename)
+void surf_network_model_init_Reno2(void)
 {
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  net_define_callbacks(filename);
+  net_define_callbacks();
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp,
@@ -936,12 +936,12 @@ void surf_network_model_init_Reno2(const char *filename)
                            "Reno2", surf_network_model);
 }
 
-void surf_network_model_init_Vegas(const char *filename)
+void surf_network_model_init_Vegas(void)
 {
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  net_define_callbacks(filename);
+  net_define_callbacks();
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,

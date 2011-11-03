@@ -475,7 +475,7 @@ void surf_config_finalize(void)
   _surf_init_status = 0;
 }
 
-void surf_config_models_setup(const char *platform_file)
+void surf_config_models_setup()
 {
   char *workstation_model_name;
   int workstation_id = -1;
@@ -523,14 +523,12 @@ void surf_config_models_setup(const char *platform_file)
     cpu_id =
         find_model_description(surf_cpu_model_description, cpu_model_name);
 
-    surf_cpu_model_description[cpu_id].model_init_preparse(platform_file);
-    surf_network_model_description[network_id].model_init_preparse
-        (platform_file);
+    surf_cpu_model_description[cpu_id].model_init_preparse();
+    surf_network_model_description[network_id].model_init_preparse();
   }
 
   XBT_DEBUG("Call workstation_model_init");
-  surf_workstation_model_description[workstation_id].model_init_preparse
-      (platform_file);
+  surf_workstation_model_description[workstation_id].model_init_preparse();
 }
 
 void surf_config_models_create_elms(void)

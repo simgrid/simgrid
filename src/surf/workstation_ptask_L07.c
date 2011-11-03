@@ -799,7 +799,7 @@ static void ptask_add_traces(void)
   }
 }
 
-static void ptask_define_callbacks(const char *file)
+static void ptask_define_callbacks()
 {
   /* Adding callback functions */
   surfxml_add_callback(ETag_surfxml_host_cb_list, &ptask_parse_cpu_init);
@@ -881,13 +881,13 @@ static void ptask_model_init_internal(void)
 /**************************************/
 /*************** Generic **************/
 /**************************************/
-void surf_workstation_model_init_ptask_L07(const char *filename)
+void surf_workstation_model_init_ptask_L07(void)
 {
   XBT_INFO("surf_workstation_model_init_ptask_L07");
   xbt_assert(!surf_cpu_model, "CPU model type already defined");
   xbt_assert(!surf_network_model, "network model type already defined");
   surf_network_model = surf_model_init();
-  ptask_define_callbacks(filename);
+  ptask_define_callbacks();
   ptask_model_init_internal();
 
   update_model_description(surf_workstation_model_description,

@@ -1000,8 +1000,7 @@ void surf_parse_models_setup()
 {
 	routing_parse_Erandom();
 	surfxml_del_callback(STag_surfxml_AS_cb_list, surf_parse_models_setup);
-	surf_config_models_setup(platform_filename);
-	free(platform_filename);
+	surf_config_models_setup();
 }
 
 /* ************************************************** */

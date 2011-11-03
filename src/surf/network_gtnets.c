@@ -151,7 +151,7 @@ static void create_gtnets_topology()
 }
 
 /* Main XML parsing */
-static void define_callbacks(const char *file)
+static void define_callbacks(void)
 {
   /* Figuring out the network links */
   surfxml_add_callback(ETag_surfxml_link_cb_list, &parse_link_init);
@@ -454,12 +454,12 @@ static int get_latency_limited(surf_action_t action)
 }
 #endif
 
-void surf_network_model_init_GTNETS(const char *filename)
+void surf_network_model_init_GTNETS(void)
 {
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  define_callbacks(filename);
+  define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING

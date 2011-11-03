@@ -24,8 +24,6 @@ int ETag_surfxml_include_state(void);
 
 #include "simgrid_dtd.c"
 
-char *platform_filename;
-
 /*
  * Helping functions
  */

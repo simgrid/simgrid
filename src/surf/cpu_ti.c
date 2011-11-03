@@ -262,7 +262,7 @@ static void add_traces_cpu_ti(void)
   }
 }
 
-static void cpu_ti_define_callbacks(const char *file)
+static void cpu_ti_define_callbacks()
 {
   surfxml_add_callback(ETag_surfxml_host_cb_list, parse_cpu_ti_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces_cpu_ti);
@@ -805,12 +805,12 @@ static void surf_cpu_ti_model_init_internal(void)
 
 }
 
-void surf_cpu_model_init_ti(const char *filename)
+void surf_cpu_model_init_ti()
 {
   if (surf_cpu_model)
     return;
   surf_cpu_ti_model_init_internal();
-  cpu_ti_define_callbacks(filename);
+  cpu_ti_define_callbacks();
   xbt_dynar_push(model_list, &surf_cpu_model);
 }
 

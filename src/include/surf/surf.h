@@ -58,7 +58,7 @@ typedef struct surf_model_description {
   const char *name;
   const char *description;
   surf_model_t model;
-  void (*model_init_preparse) (const char *filename);
+  void (*model_init_preparse) (void);
   void (*model_init_postparse) (void);
 } s_surf_model_description_t, *surf_model_description_t;
 
@@ -356,13 +356,13 @@ XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model;
  *
  *  \see surf_workstation_model_init_CLM03()
  */
-XBT_PUBLIC(void) surf_cpu_model_init_Cas01(const char *filename);
+XBT_PUBLIC(void) surf_cpu_model_init_Cas01(void);
 
 /** \brief Initializes the CPU model with trace integration
  *  \ingroup SURF_models
  *
  */
-XBT_PUBLIC(void) surf_cpu_model_init_ti(const char *filename);
+XBT_PUBLIC(void) surf_cpu_model_init_ti(void);
 
 /** \brief Initializes the CPU model with the model Cas01 Improved. This model uses a heap to order the events, decreasing the time complexity to get the minimum next event.
  *  \ingroup SURF_models
@@ -372,7 +372,7 @@ XBT_PUBLIC(void) surf_cpu_model_init_ti(const char *filename);
  *
  *  \see surf_workstation_model_init_CLM03()
  */
-XBT_PUBLIC(void) surf_cpu_model_init_Cas01_im(const char *filename);
+XBT_PUBLIC(void) surf_cpu_model_init_Cas01_im(void);
 
 /** \brief The list of all available cpu model models
  *  \ingroup SURF_models
@@ -406,7 +406,7 @@ XBT_PUBLIC_DATA(surf_model_t) surf_network_model;
  *
  *  \see surf_workstation_model_init_SMPI()
  */
-XBT_PUBLIC(void) surf_network_model_init_SMPI(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_SMPI(void);
 
 /** \brief Initializes the platform with the network model 'LagrangeVelho'
  *  \ingroup SURF_models
@@ -418,8 +418,7 @@ XBT_PUBLIC(void) surf_network_model_init_SMPI(const char *filename);
  *
  *  \see surf_workstation_model_init_LegrandVelho()
  */
-XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(const char
-                                                      *filename);
+XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(void);
 
 
 /** \brief Initializes the platform with the network model 'LV08_im'
@@ -433,8 +432,7 @@ XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(const char
  *
  *  \see surf_workstation_model_init_LegrandVelho()
  */
-XBT_PUBLIC(void) im_surf_network_model_init_LegrandVelho(const char
-                                                      *filename);
+XBT_PUBLIC(void) im_surf_network_model_init_LegrandVelho(void);
 
 /** \brief Initializes the platform with the network model 'Constant'
  *  \ingroup SURF_models
@@ -448,7 +446,7 @@ XBT_PUBLIC(void) im_surf_network_model_init_LegrandVelho(const char
  *
  *  \see surf_workstation_model_init_compound()
  */
-XBT_PUBLIC(void) surf_network_model_init_Constant(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_Constant(void);
 
 /** \brief Initializes the platform with the network model CM02
  *  \ingroup SURF_models
@@ -459,7 +457,7 @@ XBT_PUBLIC(void) surf_network_model_init_Constant(const char *filename);
  *
  *  \see surf_workstation_model_init_CLM03()
  */
-XBT_PUBLIC(void) surf_network_model_init_CM02(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_CM02(void);
 
 /**
  * brief initialize the the network model bypassing the XML parser
@@ -478,7 +476,7 @@ XBT_PUBLIC(void) surf_network_model_init_bypass(const char *id,
  *
  *  \see surf_workstation_model_init_GTNETS()
  */
-XBT_PUBLIC(void) surf_network_model_init_GTNETS(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_GbTNETS(void);
 #endif
 
 #ifdef HAVE_NS3
@@ -491,7 +489,7 @@ XBT_PUBLIC(void) surf_network_model_init_GTNETS(const char *filename);
  *
  *  \see surf_workstation_model_init_NS3()
  */
-XBT_PUBLIC(void) surf_network_model_init_NS3(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_NS3(void);
 
 XBT_PUBLIC(void) parse_ns3_add_host(void);
 XBT_PUBLIC(void) parse_ns3_add_router(void);
@@ -520,7 +518,7 @@ XBT_PUBLIC(double) ns3_get_link_bandwidth(const void *link);
  *  Call this function only if you plan using surf_workstation_model_init_compound.
  *
  */
-XBT_PUBLIC(void) surf_network_model_init_Reno(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_Reno(void);
 
 /** \brief Initializes the platform with the network model Reno2
  *  \ingroup SURF_models
@@ -535,7 +533,7 @@ XBT_PUBLIC(void) surf_network_model_init_Reno(const char *filename);
  *  Call this function only if you plan using surf_workstation_model_init_compound.
  *
  */
-XBT_PUBLIC(void) surf_network_model_init_Reno2(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_Reno2(void);
 
 /** \brief Initializes the platform with the network model Vegas
  *  \ingroup SURF_models
@@ -551,7 +549,7 @@ XBT_PUBLIC(void) surf_network_model_init_Reno2(const char *filename);
  *  Call this function only if you plan using surf_workstation_model_init_compound.
  *
  */
-XBT_PUBLIC(void) surf_network_model_init_Vegas(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_Vegas(void);
 
 /** \brief The list of all available network model models
  *  \ingroup SURF_models
@@ -578,8 +576,7 @@ XBT_PUBLIC_DATA(surf_model_t) surf_workstation_model;
  *  network_model have been set up.
  *
  */
-XBT_PUBLIC(void) surf_workstation_model_init_compound(const char
-                                                      *filename);
+XBT_PUBLIC(void) surf_workstation_model_init_compound(void);
 
 /** \brief Initializes the platform with the workstation model CLM03
  *  \ingroup SURF_models
@@ -593,7 +590,7 @@ XBT_PUBLIC(void) surf_workstation_model_init_compound(const char
  *
  *  \see surf_workstation_model_init_KCCFLN05()
  */
-XBT_PUBLIC(void) surf_workstation_model_init_CLM03(const char *filename);
+XBT_PUBLIC(void) surf_workstation_model_init_CLM03(void);
 
 /** \brief Initializes the platform with the model KCCFLN05
  *  \ingroup SURF_models
@@ -606,8 +603,7 @@ XBT_PUBLIC(void) surf_workstation_model_init_CLM03(const char *filename);
  *  SimDag.
  *
  */
-XBT_PUBLIC(void) surf_workstation_model_init_KCCFLN05(const char
-                                                      *filename);
+XBT_PUBLIC(void) surf_workstation_model_init_KCCFLN05(void);
 
 /** \brief Initializes the platform with the model KCCFLN05
  *  \ingroup SURF_models
@@ -618,8 +614,7 @@ XBT_PUBLIC(void) surf_workstation_model_init_KCCFLN05(const char
  *  the model to each action.
  *
  */
-XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(const char
-                                                       *filename);
+XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(void);
 
 /** \brief The list of all available workstation model models
  *  \ingroup SURF_models
@@ -660,7 +655,7 @@ XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common str
  * Must not be called within the initialization process so that the use get a chance to change the settings from
  * its code between, say, MSG_init and MSG_create_environment using MSG_config
  */
-XBT_PUBLIC(void) surf_config_models_setup(const char *platform_file);
+XBT_PUBLIC(void) surf_config_models_setup(void);
 
 /** \brief create the elements of the models
  *

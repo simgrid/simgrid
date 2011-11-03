@@ -52,8 +52,8 @@ void test(char *platform)
   e_surf_action_state_t stateActionC;
   double now = -1.0;
   surf_parse_reset_callbacks();
-  surf_cpu_model_init_Cas01(platform);  /* Now it is possible to use CPUs */
-  surf_network_model_init_CM02(platform);       /* Now it is possible to use eth0 */
+  surf_cpu_model_init_Cas01();  /* Now it is possible to use CPUs */
+  surf_network_model_init_CM02();       /* Now it is possible to use eth0 */
   parse_platform_file(platform);
 
   /*********************** CPU ***********************************/

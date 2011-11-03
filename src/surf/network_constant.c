@@ -26,7 +26,7 @@ static void netcste_count_hosts(void)
   host_number_int++;
 }
 
-static void netcste_define_callbacks(const char *file)
+static void netcste_define_callbacks(void)
 {
   surfxml_add_callback(STag_surfxml_host_cb_list, &netcste_count_hosts);
 }
@@ -191,7 +191,7 @@ static void netcste_finalize(void)
 
 
 
-void surf_network_model_init_Constant(const char *filename)
+void surf_network_model_init_Constant()
 {
   xbt_assert(surf_network_model == NULL);
   if (surf_network_model)
@@ -233,7 +233,7 @@ void surf_network_model_init_Constant(const char *filename)
 
   if (!random_latency)
     random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);
-  netcste_define_callbacks(filename);
+  netcste_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
 
   update_model_description(surf_network_model_description,

@@ -263,7 +263,7 @@ static void im_net_add_traces(void)
   }
 }
 
-static void im_net_define_callbacks(const char *file)
+static void im_net_define_callbacks(void)
 {
   /* Figuring out the network links */
   surfxml_add_callback(STag_surfxml_link_cb_list, &im_net_parse_link_init);
@@ -883,13 +883,13 @@ static void im_surf_network_model_init_internal(void)
 /************************************************************************/
 /* New model based on optimizations discussed during this thesis        */
 /************************************************************************/
-void im_surf_network_model_init_LegrandVelho(const char *filename)
+void im_surf_network_model_init_LegrandVelho(void)
 {
 
   if (surf_network_model)
     return;
   im_surf_network_model_init_internal();
-  im_net_define_callbacks(filename);
+  im_net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
   network_im_solve = lmm_solve;
 

@@ -39,8 +39,6 @@ void SIMIX_create_environment(const char *file)
 
   double start, end;
 
-  platform_filename = xbt_strdup(file);
-
   // Reset callbacks
   surf_parse_reset_callbacks();
   // Add config callbacks

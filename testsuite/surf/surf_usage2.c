@@ -49,7 +49,7 @@ void test(char *platform)
       find_model_description(surf_workstation_model_description, "CLM03");
   surf_parse_reset_callbacks();
   surf_workstation_model_description[workstation_id].
-      model_init_preparse(platform);
+      model_init_preparse();
   parse_platform_file(platform);
   if (surf_workstation_model_description[workstation_id].
       model_init_postparse)

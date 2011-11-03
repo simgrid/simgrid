@@ -347,17 +347,17 @@ static void surf_workstation_model_init_internal(void)
 /*   month = {may}, */
 /*   year = {2003} */
 /* } */
-void surf_workstation_model_init_CLM03(const char *filename)
+void surf_workstation_model_init_CLM03(void)
 {
   surf_workstation_model_init_internal();
-  surf_cpu_model_init_Cas01_im(filename);
-  surf_network_model_init_LegrandVelho(filename);
+  surf_cpu_model_init_Cas01_im();
+  surf_network_model_init_LegrandVelho();
   update_model_description(surf_workstation_model_description,
                            "CLM03", surf_workstation_model);
   xbt_dynar_push(model_list, &surf_workstation_model);
 }
 
-void surf_workstation_model_init_compound(const char *filename)
+void surf_workstation_model_init_compound()
 {
 
   xbt_assert(surf_cpu_model, "No CPU model defined yet!");

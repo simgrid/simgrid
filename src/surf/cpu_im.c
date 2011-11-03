@@ -136,7 +136,7 @@ static void cpu_im_add_traces_cpu(void)
   }
 }
 
-static void cpu_im_define_callbacks(const char *file)
+static void cpu_im_define_callbacks()
 {
   surfxml_add_callback(ETag_surfxml_host_cb_list, parse_cpu_im_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list,
@@ -660,11 +660,11 @@ static void surf_cpu_im_model_init_internal(void)
 /*   note =         "Available at */
 /*                  \url{http://grail.sdsc.edu/papers/simgrid_ccgrid01.ps.gz}." */
 /* } */
-void surf_cpu_model_init_Cas01_im(const char *filename)
+void surf_cpu_model_init_Cas01_im()
 {
   if (surf_cpu_model)
     return;
   surf_cpu_im_model_init_internal();
-  cpu_im_define_callbacks(filename);
+  cpu_im_define_callbacks();
   xbt_dynar_push(model_list, &surf_cpu_model);
 }
