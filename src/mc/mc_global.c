@@ -175,7 +175,7 @@ void MC_modelcheck_liveness_stateless(xbt_automaton_t a){
 void MC_exit_liveness(void)
 {
   MC_print_statistics_pairs(mc_stats_pair);
-  xbt_free(mc_time);
+  //xbt_free(mc_time);
   MC_memory_exit();
 }
 

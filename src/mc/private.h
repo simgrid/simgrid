@@ -223,7 +223,7 @@ int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
 int reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s);
-int set_pair_reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s);
+void set_pair_reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s);
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
 void MC_show_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateful(xbt_fifo_t stack);
