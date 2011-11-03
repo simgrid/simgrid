@@ -60,6 +60,20 @@ static void exception_catching(void)
  * Client code
  * **********************************************************************/
 
+static void client_create_sockets(gras_socket_t *toserver,
+                                  gras_socket_t *toforwarder,
+                                  const char *srv_host, int srv_port,
+                                  const char *fwd_host, int fwd_port)
+{
+  TRY {
+    exception_catching();
+    *toserver = gras_socket_client(srv_host, srv_port);
+    *toforwarder = gras_socket_client(fwd_host, fwd_port);
+  }
+  CATCH_ANONYMOUS {
+    RETHROWF("Unable to connect to the server: %s");
+  }
+}
 
 int client(int argc, char *argv[])
 {
@@ -92,14 +106,8 @@ int client(int argc, char *argv[])
   gras_os_sleep(2);
 
   /* 4. Create a socket to speak to the server */
-  TRY {
-    exception_catching();
-    toserver = gras_socket_client(host, port);
-    toforwarder = gras_socket_client(argv[3], atoi(argv[4]));
-  }
-  CATCH_ANONYMOUS {
-    RETHROWF("Unable to connect to the server: %s");
-  }
+  client_create_sockets(&toserver, &toforwarder,
+                        host, port, argv[3], atoi(argv[4]));
   XBT_INFO("Connected to %s:%d.", host, port);
 
 
