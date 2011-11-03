@@ -38,6 +38,18 @@ static int server_cb_request_handler(gras_msg_cb_ctx_t ctx,
   return 0;
 }                               /* end_of_server_cb_request_handler */
 
+static gras_socket_t try_gras_socket_server(int port)
+{
+  volatile gras_socket_t sock = NULL;
+  TRY {
+    sock = gras_socket_server(port);
+  }
+  CATCH_ANONYMOUS {
+    RETHROWF("Unable to establish a server socket: %s");
+  }
+  return sock;
+}
+
 int server(int argc, char *argv[])
 {
   gras_socket_t sock = NULL;
@@ -59,12 +71,7 @@ int server(int argc, char *argv[])
 
   /* 5. Create my master socket */
   XBT_INFO("Launch server (port=%d)", port);
-  TRY {
-    sock = gras_socket_server(port);
-  }
-  CATCH_ANONYMOUS {
-    RETHROWF("Unable to establish a server socket: %s");
-  }
+  sock = try_gras_socket_server(port);
 
   /* 6. Wait up to 10 minutes for an incomming message to handle */
   gras_msg_handle(600.0);
