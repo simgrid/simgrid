@@ -377,7 +377,9 @@ static double im_net_share_resources(double now)
   XBT_DEBUG("Before share resources, the size of modified actions set is %d", xbt_swag_size(im_net_modified_set));
   update_action_remaining(now);
 
+  keep_track = im_net_modified_set;
   lmm_solve(network_im_maxmin_system);
+  keep_track = NULL;
 
   XBT_DEBUG("After share resources, The size of modified actions set is %d", xbt_swag_size(im_net_modified_set));
 
@@ -874,7 +876,6 @@ static void im_surf_network_model_init_internal(void)
           im_net_get_link_latency);
   im_net_modified_set =
       xbt_swag_new(xbt_swag_offset(comm, action_list_hookup));
-  keep_track = im_net_modified_set;
 }
 
 
