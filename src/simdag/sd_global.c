@@ -182,13 +182,7 @@ void SD_create_environment(const char *platform_file)
   void **surf_workstation = NULL;
   void **surf_link = NULL;
 
-  // Reset callbacks
-  surf_parse_reset_callbacks();
-  // Add config callbacks
-  surf_parse_add_callback_config();
-
   parse_platform_file(platform_file);
-  surf_config_models_create_elms();
 
   /* now let's create the SD wrappers for workstations and links */
   xbt_lib_foreach(host_lib, cursor, name, surf_workstation){

@@ -376,8 +376,8 @@ p Testing the bypassing of the flexml parser
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/masterslave_bypass --log=no_loc --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
-> [  0.000000] (0:@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
 > [  0.000000] (0:@) Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [  0.000000] (0:@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
 > [  0.000000] (1:master@host A) Got 1 slave(s) :
 > [  0.000000] (1:master@host A) 	 host B
 > [  0.000000] (1:master@host A) Got 20 task to process :
