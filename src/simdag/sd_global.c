@@ -257,7 +257,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
   while(xbt_swag_extract(sd_global->return_set)) {}
 
   /* explore the runnable tasks */
-  xbt_swag_foreach(task, sd_global->runnable_task_set) {
+  xbt_swag_foreach_safe(task, task_safe, sd_global->runnable_task_set) {
     XBT_VERB("Executing task '%s'", SD_task_get_name(task));
     if (__SD_task_try_to_run(task))
       xbt_swag_insert(task,sd_global->return_set);
