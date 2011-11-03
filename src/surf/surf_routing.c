@@ -833,6 +833,20 @@ static double get_latency(const char *src, const char *dst)
   return latency;
 }
 
+static int surf_parse_models_setup_already_called=0;
+/* Call the last initialization functions, that must be called after the
+ * <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
+ */
+void surf_parse_models_setup()
+{
+  if (surf_parse_models_setup_already_called)
+    return;
+  surf_parse_models_setup_already_called=1;
+  routing_parse_Erandom();
+  surf_config_models_setup();
+}
+
+
 /**
  * \brief Recursive function for finalize
  *
@@ -874,6 +888,8 @@ static void finalize(void)
   xbt_dynar_free(&(global_routing->last_route));
   /* delete global routing structure */
   xbt_free(global_routing);
+  /* make sure that we will reinit the models while loading the platf once reinited -- HACK but there is no proper surf_routing_init() */
+  surf_parse_models_setup_already_called = 0;
 }
 
 static xbt_dynar_t recursive_get_onelink_routes(routing_component_t rc)
@@ -993,19 +1009,6 @@ void surf_parse_add_callback_config(void)
 	surfxml_add_callback(ETag_surfxml_config_cb_list, &routing_parse_Econfig);
 	surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties_XML);
 	surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
-}
-
-static int surf_parse_models_setup_already_called=0;
-/* Call the last initialization functions, that must be called after the
- * <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
- */
-void surf_parse_models_setup()
-{
-  if (surf_parse_models_setup_already_called)
-    return;
-  surf_parse_models_setup_already_called=1;
-	routing_parse_Erandom();
-	surf_config_models_setup();
 }
 
 /* ************************************************** */
@@ -1870,7 +1873,6 @@ static void clean_routing_after_parse(void)
 {
 	xbt_dict_free(&random_value);
 	xbt_dict_free(&patterns);
-	surf_parse_models_setup_already_called = 0; /* make sure that this function will be called again when reloading a platf */
 }
 
 static void routing_parse_Speer(void)
