@@ -45,16 +45,8 @@ void test(char *platform)
   double now = -1.0;
   int running;
 
-  int workstation_id =
-      find_model_description(surf_workstation_model_description, "CLM03");
-  surf_parse_reset_callbacks();
-  surf_workstation_model_description[workstation_id].
-      model_init_preparse();
+  xbt_cfg_set_parse(_surf_cfg_set, "workstation/model:CLM03");
   parse_platform_file(platform);
-  if (surf_workstation_model_description[workstation_id].
-      model_init_postparse)
-    surf_workstation_model_description[workstation_id].
-        model_init_postparse();
 
   /*********************** WORKSTATION ***********************************/
   workstationA =
