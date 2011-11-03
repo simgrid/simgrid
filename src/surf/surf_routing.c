@@ -55,7 +55,7 @@ static void routing_parse_Sconfig(void);        /* config Tag */
 static void routing_parse_Econfig(void);        /* config Tag */
 
 static char* replace_random_parameter(char * chaine);
-static void clean_dict_random(void);
+static void clean_routing_after_parse(void);
 
 /* this lines are only for replace use like index in the model table */
 typedef enum {
@@ -980,7 +980,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
                          &routing_parse_Speer);
 
   surfxml_add_callback(ETag_surfxml_platform_cb_list,
-						  &clean_dict_random);
+						  &clean_routing_after_parse);
 
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();
@@ -995,15 +995,15 @@ void surf_parse_add_callback_config(void)
 	surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
 }
 
+static int surf_parse_models_setup_already_called=0;
 /* Call the last initialization functions, that must be called after the
  * <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
  */
 void surf_parse_models_setup()
 {
-  static int already_called=0;
-  if (already_called)
+  if (surf_parse_models_setup_already_called)
     return;
-  already_called=1;
+  surf_parse_models_setup_already_called=1;
 	routing_parse_Erandom();
 	surf_config_models_setup();
 }
@@ -1866,10 +1866,11 @@ static char* replace_random_parameter(char * string)
   return string;
 }
 
-static void clean_dict_random(void)
+static void clean_routing_after_parse(void)
 {
 	xbt_dict_free(&random_value);
 	xbt_dict_free(&patterns);
+	surf_parse_models_setup_already_called = 0; /* make sure that this function will be called again when reloading a platf */
 }
 
 static void routing_parse_Speer(void)
