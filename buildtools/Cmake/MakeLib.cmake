@@ -28,7 +28,7 @@ add_dependencies(simgrid maintainer_files)
 
 # Compute the dependencies of GRAS
 ##################################
-set(GRAS_DEP "-lm -lpthread")
+set(GRAS_DEP "-lm -pthread")
 
 if(HAVE_POSIX_GETTIME)
 	SET(GRAS_DEP "${GRAS_DEP} -lrt")
@@ -51,7 +51,7 @@ set(SIMGRID_DEP "-lm -lpcre")
 
 if(pthread)
 	if(${CONTEXT_THREADS})
-		SET(SIMGRID_DEP "${SIMGRID_DEP} -lpthread")
+		SET(SIMGRID_DEP "${SIMGRID_DEP} -pthread")
 	endif(${CONTEXT_THREADS})	
 endif(pthread)
 
