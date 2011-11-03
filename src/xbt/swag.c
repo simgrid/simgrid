@@ -65,6 +65,9 @@ XBT_INLINE void xbt_swag_init(xbt_swag_t swag, size_t offset)
  */
 XBT_INLINE void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
 {
+  xbt_assert(!xbt_swag_belongs(obj, swag) || swag->tail,
+      "This object belongs to an empty swag! Did you correctly initialize the object's hookup?");
+
   if (!swag->head) {
     xbt_assert(!(swag->tail), "Inconsistent swag.");
     swag->head = obj;
@@ -88,17 +91,16 @@ XBT_INLINE void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
  */
 XBT_INLINE void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
 {
-  if (xbt_swag_belongs(obj, swag)) {
-    return;
-  }
+  xbt_assert(!xbt_swag_belongs(obj, swag) || swag->tail,
+      "This object belongs to an empty swag! Did you correctly initialize the object's hookup?");
 
-  if (!swag->tail) {
-    xbt_assert(!(swag->head), "Inconsistent swag.");
+  if (!swag->head) {
+    xbt_assert(!(swag->tail), "Inconsistent swag.");
     swag->head = obj;
     swag->tail = obj;
     swag->count++;
   }
-  else if (obj != swag->tail && !xbt_swag_getNext(obj, swag->offset)) {
+  else if (obj != swag->head && !xbt_swag_getPrev(obj, swag->offset)) {
     xbt_swag_getPrev(obj, swag->offset) = swag->tail;
     xbt_swag_getNext(swag->tail, swag->offset) = obj;
     swag->tail = obj;
