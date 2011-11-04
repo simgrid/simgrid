@@ -41,7 +41,6 @@ static route_extended_t cluster_get_route(routing_component_t rc,
 
 	  xbt_dynar_t links_list = xbt_dynar_new(global_routing->size_of_link, NULL);
 
-	  char *link_src,*link_bb,*link_dst,*link_src_up,*link_dst_down;
 	  surf_parsing_link_up_down_t info;
 
 	  info = xbt_dict_get_or_null(cluster_host_link,src);

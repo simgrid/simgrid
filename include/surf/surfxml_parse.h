@@ -17,7 +17,6 @@ SG_BEGIN_DECL()
 /* Hook for the different tags. All the functions which pointer to are push into here are run when the tag is encountered */
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_platform_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_platform_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_host_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_host_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_router_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_router_cb_list;

@@ -71,17 +71,17 @@ static void* cpu_create_resource(const char *name, double power_peak,
 }
 
 
-static void parse_cpu_init(void)
+static void parse_cpu_init(surf_parsing_host_arg_t host)
 {
-  if(strcmp(struct_host->V_host_coord,"")) xbt_die("Coordinates not implemented yet!");
+  if(strcmp(host->V_host_coord,"")) xbt_die("Coordinates not implemented yet!");
 
-  cpu_create_resource(struct_host->V_host_id,
-		  struct_host->V_host_power_peak,
-		  struct_host->V_host_power_scale,
-		  struct_host->V_host_power_trace,
-		  struct_host->V_host_core,
-		  struct_host->V_host_state_initial,
-		  struct_host->V_host_state_trace,
+  cpu_create_resource(host->V_host_id,
+		  host->V_host_power_peak,
+		  host->V_host_power_scale,
+		  host->V_host_power_trace,
+		  host->V_host_core,
+		  host->V_host_state_initial,
+		  host->V_host_state_trace,
 		  current_property_set);
   current_property_set = NULL;
 }
@@ -124,7 +124,7 @@ static void add_traces_cpu(void)
 
 static void cpu_define_callbacks(void)
 {
-  surfxml_add_callback(ETag_surfxml_host_cb_list, parse_cpu_init);
+  surf_parse_host_add_cb(parse_cpu_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces_cpu);
 }
 

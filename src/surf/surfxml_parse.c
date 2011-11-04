@@ -44,9 +44,10 @@ void surf_parse_get_int(int *value, const char *string) {
  */
 
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
+//xbt_dynar_t STag_surfxml_host_cb_list = NULL;
+xbt_dynar_t surf_parse_host_cb_list = NULL; // of functions of type: surf_parsing_host_arg_t -> void
 xbt_dynar_t STag_surfxml_platform_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_platform_cb_list = NULL;
-xbt_dynar_t STag_surfxml_host_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_host_cb_list = NULL;
 xbt_dynar_t STag_surfxml_router_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_router_cb_list = NULL;
@@ -158,7 +159,9 @@ void surf_parse_init_callbacks(void)
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_platform_cb_list =
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  STag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+
+	  surf_parse_host_cb_list = xbt_dynar_new(sizeof(surf_parse_host_fct_t), NULL);
+
 	  ETag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
@@ -224,9 +227,10 @@ void surf_parse_reset_callbacks(void)
 
 void surf_parse_free_callbacks(void)
 {
+  xbt_dynar_free(&surf_parse_host_cb_list);
+
   xbt_dynar_free(&STag_surfxml_platform_cb_list);
   xbt_dynar_free(&ETag_surfxml_platform_cb_list);
-  xbt_dynar_free(&STag_surfxml_host_cb_list);
   xbt_dynar_free(&ETag_surfxml_host_cb_list);
   xbt_dynar_free(&STag_surfxml_router_cb_list);
   xbt_dynar_free(&ETag_surfxml_router_cb_list);
@@ -297,31 +301,39 @@ void STag_surfxml_platform(void)
 
 void STag_surfxml_host(void){
 //	XBT_INFO("STag_surfxml_host [%s]",A_surfxml_host_id);
-	struct_host = xbt_new0(s_surf_parsing_host_arg_t, 1);
-	struct_host->V_host_id = xbt_strdup(A_surfxml_host_id);
-	struct_host->V_host_power_peak = get_cpu_power(A_surfxml_host_power);
-	surf_parse_get_double(&(struct_host->V_host_power_scale), A_surfxml_host_availability);
-	surf_parse_get_int(&(struct_host->V_host_core),A_surfxml_host_core);
-	struct_host->V_host_power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
-	struct_host->V_host_state_trace = tmgr_trace_new(A_surfxml_host_state_file);
+  s_surf_parsing_host_arg_t host;
+  memset(&host,0,sizeof(host));
+
+	host.V_host_id = xbt_strdup(A_surfxml_host_id);
+	host.V_host_power_peak = get_cpu_power(A_surfxml_host_power);
+	surf_parse_get_double(&(host.V_host_power_scale), A_surfxml_host_availability);
+	surf_parse_get_int(&(host.V_host_core),A_surfxml_host_core);
+	host.V_host_power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
+	host.V_host_state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 	xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
 			  (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
 	if (A_surfxml_host_state == A_surfxml_host_state_ON)
-		struct_host->V_host_state_initial = SURF_RESOURCE_ON;
+		host.V_host_state_initial = SURF_RESOURCE_ON;
 	if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-		struct_host->V_host_state_initial = SURF_RESOURCE_OFF;
-	struct_host->V_host_coord = xbt_strdup(A_surfxml_host_coordinates);
+		host.V_host_state_initial = SURF_RESOURCE_OFF;
+	host.V_host_coord = xbt_strdup(A_surfxml_host_coordinates);
 
-	surf_parse_host();
+	surf_parse_host(&host);
 }
-void surf_parse_host(void){
-	surfxml_call_cb_functions(STag_surfxml_host_cb_list);
+void surf_parse_host(surf_parsing_host_arg_t h){
+  unsigned int iterator;
+  surf_parse_host_fct_t fun;
+  xbt_dynar_foreach(surf_parse_host_cb_list, iterator, fun) {
+    if (fun) (*fun) (h);
+  }
+}
+void surf_parse_host_add_cb(surf_parse_host_fct_t fct) {
+  xbt_dynar_push(surf_parse_host_cb_list, &fct);
 }
 void ETag_surfxml_host(void){
 	surfxml_call_cb_functions(ETag_surfxml_host_cb_list);
-	xbt_free(struct_host->V_host_id);
-	xbt_free(struct_host);
 }
+
 
 void STag_surfxml_router(void){
 	struct_router = xbt_new0(s_surf_parsing_router_arg_t, 1);

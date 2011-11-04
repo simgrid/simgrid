@@ -52,7 +52,6 @@ void surfxml_bufferstack_pop(int new)
  * Pass arguments to parsing callback as structures to save some time (and allow callbacks to ignore some)
  */
 
-surf_parsing_host_arg_t struct_host = NULL;
 surf_parsing_router_arg_t struct_router = NULL;
 surf_parsing_cluster_arg_t struct_cluster = NULL;
 surf_parsing_peer_arg_t struct_peer = NULL;

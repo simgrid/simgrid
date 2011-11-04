@@ -225,14 +225,14 @@ static void instr_routing_parse_start_link ()
   xbt_dynar_free (&links_to_create);
 }
 
-static void instr_routing_parse_start_host ()
+static void instr_routing_parse_start_host (surf_parsing_host_arg_t host)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  container_t new = newContainer (struct_host->V_host_id, INSTR_HOST, father);
+  container_t new = newContainer (host->V_host_id, INSTR_HOST, father);
 
   if (TRACE_categorized() || TRACE_uncategorized()) {
     type_t power = getVariableType ("power", NULL, new->type);
-    new_pajeSetVariable (0, new, power, struct_host->V_host_power_peak);
+    new_pajeSetVariable (0, new, power, host->V_host_power_peak);
   }
   if (TRACE_uncategorized()){
     getVariableType ("power_used", "0.5 0.5 0.5", new->type);
@@ -292,7 +292,7 @@ void instr_routing_define_callbacks ()
   surfxml_add_callback(ETag_surfxml_AS_cb_list, &instr_routing_parse_end_AS);
   if (!TRACE_needs_platform()) return;
   surfxml_add_callback(STag_surfxml_link_cb_list, &instr_routing_parse_start_link);
-  surfxml_add_callback(STag_surfxml_host_cb_list, &instr_routing_parse_start_host);
+  surf_parse_host_add_cb(instr_routing_parse_start_host);
   surfxml_add_callback(STag_surfxml_router_cb_list, &instr_routing_parse_start_router);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &instr_routing_parse_end_platform);
 }

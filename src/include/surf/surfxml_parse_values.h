@@ -59,21 +59,15 @@ typedef struct s_surf_parsing_router_arg {
 
 typedef struct s_surf_parsing_host_arg *surf_parsing_host_arg_t;
 typedef struct s_surf_parsing_host_arg {
-	char* V_host_id;													//id
-	double V_host_power_peak;											//power
-	int V_host_core;													//core
-	double V_host_power_scale;											//availability
-	tmgr_trace_t V_host_power_trace;									//availability file
-	e_surf_resource_state_t V_host_state_initial;						//state
-	tmgr_trace_t V_host_state_trace;									//state file
+	char* V_host_id;                          //id
+	double V_host_power_peak;                     //power
+	int V_host_core;                          //core
+	double V_host_power_scale;                      //availability
+	tmgr_trace_t V_host_power_trace;                  //availability file
+	e_surf_resource_state_t V_host_state_initial;           //state
+	tmgr_trace_t V_host_state_trace;                  //state file
 	const char* V_host_coord;
 } s_surf_parsing_host_arg_t;
-
-extern surf_parsing_host_arg_t struct_host;
-extern surf_parsing_router_arg_t struct_router;
-extern surf_parsing_cluster_arg_t struct_cluster;
-extern surf_parsing_peer_arg_t struct_peer;
-extern surf_parsing_link_arg_t struct_lnk;
 
 typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
 typedef struct s_surf_parsing_link_up_down {
@@ -81,7 +75,16 @@ typedef struct s_surf_parsing_link_up_down {
 	void* link_down;
 } s_surf_parsing_link_up_down_t;
 
-void surf_parse_host(void);
+
+typedef void (*surf_parse_host_fct_t)(surf_parsing_host_arg_t);
+void surf_parse_host_add_cb(surf_parse_host_fct_t);
+
+extern surf_parsing_router_arg_t struct_router;
+extern surf_parsing_cluster_arg_t struct_cluster;
+extern surf_parsing_peer_arg_t struct_peer;
+extern surf_parsing_link_arg_t struct_lnk;
+
+void surf_parse_host(surf_parsing_host_arg_t h);
 void surf_parse_link(void);
 
 #endif /* SURFXML_PARSE_VALUES_H_ */

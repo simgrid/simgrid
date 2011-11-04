@@ -186,11 +186,9 @@ static void parse_E_host(void)
 /*
  * \brief Add a host to the network element list from XML
  */
-static void parse_S_host_XML(void)
+static void parse_S_host_XML(surf_parsing_host_arg_t h)
 {
-//	XBT_INFO("parse_S_host_XML");
-//	XBT_INFO("'%s'  '%s'",struct_host->V_host_id, struct_host->V_host_coord);
-	parse_S_host(struct_host->V_host_id, struct_host->V_host_coord);
+	parse_S_host(h->V_host_id, h->V_host_coord);
 }
 static void parse_E_host_XML(void)
 {
@@ -972,7 +970,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   current_routing = NULL;
 
   /* parse generic elements */
-  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_S_host_XML);
+  surf_parse_host_add_cb(parse_S_host_XML);
   surfxml_add_callback(ETag_surfxml_host_cb_list, &parse_E_host_XML);
   surfxml_add_callback(STag_surfxml_router_cb_list, &parse_S_router_XML);
 
@@ -1504,6 +1502,8 @@ static void routing_parse_Econfig(void)
 static void parse_create_host_link(int i)
 {
 	char *host_id, *link_id = NULL;
+	s_surf_parsing_host_arg_t host;
+	memset(&host,0,sizeof(host));
 
 	host_id = bprintf("%s%d%s", struct_cluster->V_cluster_prefix, i, struct_cluster->V_cluster_suffix);
 	link_id = bprintf("%s_link_%d", struct_cluster->V_cluster_id, i);
@@ -1511,14 +1511,13 @@ static void parse_create_host_link(int i)
 	A_surfxml_host_state = A_surfxml_host_state_ON;
 
 	XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->S_cluster_power);
-	struct_host = xbt_new0(s_surf_parsing_host_arg_t, 1);
-	struct_host->V_host_id = xbt_strdup(host_id);
+	host.V_host_id = xbt_strdup(host_id);
 	if(strcmp(struct_cluster->V_cluster_availability_file,"")){
 	  xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
 	  char* tmp_availability_file = xbt_strdup(struct_cluster->V_cluster_availability_file);
 	  xbt_str_varsubst(tmp_availability_file,patterns);
 	  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
-	  struct_host->V_host_power_trace = tmgr_trace_new(tmp_availability_file);
+	  host.V_host_power_trace = tmgr_trace_new(tmp_availability_file);
 	  xbt_free(tmp_availability_file);
 	}
 	else
@@ -1529,7 +1528,7 @@ static void parse_create_host_link(int i)
 	  char *tmp_state_file = xbt_strdup(struct_cluster->V_cluster_state_file);
 	  xbt_str_varsubst(tmp_state_file,patterns);
 	  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
-	  struct_host->V_host_state_trace = tmgr_trace_new(tmp_state_file);
+	  host.V_host_state_trace = tmgr_trace_new(tmp_state_file);
 	  xbt_free(tmp_state_file);
 	}
 	else
@@ -1537,12 +1536,12 @@ static void parse_create_host_link(int i)
 	  XBT_DEBUG("\tstate_file=\"\"");
 	}
 
-	struct_host->V_host_power_peak = struct_cluster->S_cluster_power;
-	struct_host->V_host_power_scale = 1.0;
-	struct_host->V_host_core = struct_cluster->S_cluster_core;
-	struct_host->V_host_state_initial = SURF_RESOURCE_ON;
-	struct_host->V_host_coord = "";
-	surf_parse_host();
+	host.V_host_power_peak = struct_cluster->S_cluster_power;
+	host.V_host_power_scale = 1.0;
+	host.V_host_core = struct_cluster->S_cluster_core;
+	host.V_host_state_initial = SURF_RESOURCE_ON;
+	host.V_host_coord = "";
+	surf_parse_host(&host);
 	XBT_DEBUG("</host>");
 
 	A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
@@ -1604,6 +1603,8 @@ void routing_parse_Scluster(void)
   static int AX_ptr = 0;
   char *host_id, *groups, *link_id = NULL;
 
+  s_surf_parsing_host_arg_t host;
+
   if( strcmp(struct_cluster->V_cluster_availability_file,"")
 	  || strcmp(struct_cluster->V_cluster_state_file,"") )
   {
@@ -1633,6 +1634,8 @@ void routing_parse_Scluster(void)
   //Make all hosts
   radical_elements = xbt_str_split(struct_cluster->V_cluster_radical, ",");
   xbt_dynar_foreach(radical_elements, iter, groups) {
+    memset(&host,0,sizeof(host));
+
     radical_ends = xbt_str_split(groups, "-");
     switch (xbt_dynar_length(radical_ends)) {
     case 1:
@@ -1641,14 +1644,13 @@ void routing_parse_Scluster(void)
 		link_id = bprintf("%s_link_%d", struct_cluster->V_cluster_id, start);
 
 		XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->S_cluster_power);
-		struct_host = xbt_new0(s_surf_parsing_host_arg_t, 1);
-		struct_host->V_host_id = host_id;
+		host.V_host_id = host_id;
 		if(strcmp(struct_cluster->V_cluster_availability_file,"")){
 		  xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
 		  char* tmp_availability_file = xbt_strdup(struct_cluster->V_cluster_availability_file);
 		  xbt_str_varsubst(tmp_availability_file,patterns);
 		  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
-		  struct_host->V_host_power_trace = tmgr_trace_new(tmp_availability_file);
+		  host.V_host_power_trace = tmgr_trace_new(tmp_availability_file);
 		  xbt_free(tmp_availability_file);
 		}
 		else
@@ -1659,7 +1661,7 @@ void routing_parse_Scluster(void)
 		  char *tmp_state_file = xbt_strdup(struct_cluster->V_cluster_state_file);
 		  xbt_str_varsubst(tmp_state_file,patterns);
 		  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
-		  struct_host->V_host_state_trace = tmgr_trace_new(tmp_state_file);
+		  host.V_host_state_trace = tmgr_trace_new(tmp_state_file);
 		  xbt_free(tmp_state_file);
 		}
 		else
@@ -1667,12 +1669,12 @@ void routing_parse_Scluster(void)
 		  XBT_DEBUG("\tstate_file=\"\"");
 		}
 
-		struct_host->V_host_power_peak = struct_cluster->S_cluster_power;
-		struct_host->V_host_power_scale = 1.0;
-		struct_host->V_host_core = struct_cluster->S_cluster_core;
-		struct_host->V_host_state_initial = SURF_RESOURCE_ON;
-		struct_host->V_host_coord = "";
-		surf_parse_host();
+		host.V_host_power_peak = struct_cluster->S_cluster_power;
+		host.V_host_power_scale = 1.0;
+		host.V_host_core = struct_cluster->S_cluster_core;
+		host.V_host_state_initial = SURF_RESOURCE_ON;
+		host.V_host_coord = "";
+		surf_parse_host(&host);
 		XBT_DEBUG("</host>");
 
 		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
@@ -1723,14 +1725,13 @@ void routing_parse_Scluster(void)
 		A_surfxml_host_state = A_surfxml_host_state_ON;
 
 		XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->S_cluster_power);
-		struct_host = xbt_new0(s_surf_parsing_host_arg_t, 1);
-		struct_host->V_host_id = host_id;
+		host.V_host_id = host_id;
 		if(strcmp(struct_cluster->V_cluster_availability_file,"")){
 		  xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
 		  char* tmp_availability_file = xbt_strdup(struct_cluster->V_cluster_availability_file);
 		  xbt_str_varsubst(tmp_availability_file,patterns);
 		  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
-		  struct_host->V_host_power_trace = tmgr_trace_new(tmp_availability_file);
+		  host.V_host_power_trace = tmgr_trace_new(tmp_availability_file);
 		  xbt_free(tmp_availability_file);
 		}
 		else
@@ -1741,7 +1742,7 @@ void routing_parse_Scluster(void)
 		  char *tmp_state_file = xbt_strdup(struct_cluster->V_cluster_state_file);
 		  xbt_str_varsubst(tmp_state_file,patterns);
 		  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
-		  struct_host->V_host_state_trace = tmgr_trace_new(tmp_state_file);
+		  host.V_host_state_trace = tmgr_trace_new(tmp_state_file);
 		  xbt_free(tmp_state_file);
 		}
 		else
@@ -1749,12 +1750,12 @@ void routing_parse_Scluster(void)
 		  XBT_DEBUG("\tstate_file=\"\"");
 		}
 
-		struct_host->V_host_power_peak = struct_cluster->S_cluster_power;
-		struct_host->V_host_power_scale = 1.0;
-		struct_host->V_host_core = struct_cluster->S_cluster_core;
-		struct_host->V_host_state_initial = SURF_RESOURCE_ON;
-		struct_host->V_host_coord = "";
-		surf_parse_host();
+		host.V_host_power_peak = struct_cluster->S_cluster_power;
+		host.V_host_power_scale = 1.0;
+		host.V_host_core = struct_cluster->S_cluster_core;
+		host.V_host_state_initial = SURF_RESOURCE_ON;
+		host.V_host_coord = "";
+		surf_parse_host(&host);
 		XBT_DEBUG("</host>");
 
 		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
