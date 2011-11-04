@@ -297,7 +297,7 @@ void STag_surfxml_platform(void)
 
 void STag_surfxml_host(void){
 //	XBT_INFO("STag_surfxml_host [%s]",A_surfxml_host_id);
-	struct_host = xbt_new0(s_hostSG_t, 1);
+	struct_host = xbt_new0(s_surf_parsing_host_arg_t, 1);
 	struct_host->V_host_id = xbt_strdup(A_surfxml_host_id);
 	struct_host->V_host_power_peak = get_cpu_power(A_surfxml_host_power);
 	surf_parse_get_double(&(struct_host->V_host_power_scale), A_surfxml_host_availability);
@@ -324,7 +324,7 @@ void ETag_surfxml_host(void){
 }
 
 void STag_surfxml_router(void){
-	struct_router = xbt_new0(s_router_t, 1);
+	struct_router = xbt_new0(s_surf_parsing_router_arg_t, 1);
 	struct_router->V_router_id = xbt_strdup(A_surfxml_router_id);
 	struct_router->V_router_coord = xbt_strdup(A_surfxml_router_coordinates);
 	surfxml_call_cb_functions(STag_surfxml_router_cb_list);
@@ -339,7 +339,7 @@ void ETag_surfxml_router(void){
 void STag_surfxml_cluster(void){
   surf_parse_models_setup(); /* ensure that the models are created after the last <config> tag. See comment in simgrid.dtd */
 
-	struct_cluster = xbt_new0(s_cluster_t, 1);
+	struct_cluster = xbt_new0(s_surf_parsing_cluster_arg_t, 1);
 	struct_cluster->V_cluster_id = xbt_strdup(A_surfxml_cluster_id);
 	struct_cluster->V_cluster_prefix = xbt_strdup(A_surfxml_cluster_prefix);
 	struct_cluster->V_cluster_suffix = xbt_strdup(A_surfxml_cluster_suffix);
@@ -383,7 +383,7 @@ void ETag_surfxml_cluster(void){
 void STag_surfxml_peer(void){
   surf_parse_models_setup(); /* ensure that the models are created after the last <config> tag. See comment in simgrid.dtd */
 
-	struct_peer = xbt_new0(s_peer_t, 1);
+	struct_peer = xbt_new0(s_surf_parsing_peer_arg_t, 1);
 	struct_peer->V_peer_id = xbt_strdup(A_surfxml_peer_id);
 	struct_peer->V_peer_power = xbt_strdup(A_surfxml_peer_power);
 	struct_peer->V_peer_bw_in = xbt_strdup(A_surfxml_peer_bw_in);
@@ -407,7 +407,7 @@ void ETag_surfxml_peer(void){
 	xbt_free(struct_peer);
 }
 void STag_surfxml_link(void){
-	struct_lnk = xbt_new0(s_link_t, 1);
+	struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
 	struct_lnk->V_link_id = xbt_strdup(A_surfxml_link_id);
 	surf_parse_get_double(&(struct_lnk->V_link_bandwidth),A_surfxml_link_bandwidth);
 	struct_lnk->V_link_bandwidth_file = tmgr_trace_new(A_surfxml_link_bandwidth_file);

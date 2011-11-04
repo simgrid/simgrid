@@ -7,8 +7,8 @@
 #ifndef SURFXML_PARSE_VALUES_H_
 #define SURFXML_PARSE_VALUES_H_
 
-typedef struct s_peer *peer_t;
-typedef struct s_peer {
+typedef struct s_surf_parsing_peer_arg *surf_parsing_peer_arg_t;
+typedef struct s_surf_parsing_peer_arg {
 	char* V_peer_id;
 	char* V_peer_power;
 	char* V_peer_bw_in;
@@ -17,10 +17,10 @@ typedef struct s_peer {
 	char* V_peer_coord;
 	char* V_peer_availability_trace;
 	char* V_peer_state_trace;
-} s_peer_t;
+} s_surf_parsing_peer_arg_t;
 
-typedef struct s_link *link_t;
-typedef struct s_link {
+typedef struct s_surf_parsing_link_arg *surf_parsing_link_arg_t;
+typedef struct s_surf_parsing_link_arg {
 	char* V_link_id;
 	double V_link_bandwidth;
 	tmgr_trace_t V_link_bandwidth_file;
@@ -30,10 +30,10 @@ typedef struct s_link {
 	tmgr_trace_t V_link_state_file;
 	int V_link_sharing_policy;
 	int V_policy_initial_link;
-} s_link_t;
+} s_surf_parsing_link_arg_t;
 
-typedef struct s_cluster *cluster_t;
-typedef struct s_cluster {
+typedef struct s_surf_parsing_cluster_arg *surf_parsing_cluster_arg_t;
+typedef struct s_surf_parsing_cluster_arg {
 	char* V_cluster_id;
 	char* V_cluster_prefix;
 	char* V_cluster_suffix;
@@ -49,16 +49,16 @@ typedef struct s_cluster {
 	int V_cluster_bb_sharing_policy;
 	char* V_cluster_availability_file;
 	char* V_cluster_state_file;
-} s_cluster_t;
+} s_surf_parsing_cluster_arg_t;
 
-typedef struct s_router *router_t;
-typedef struct s_router {
+typedef struct s_surf_parsing_router_arg *surf_parsing_router_arg_t;
+typedef struct s_surf_parsing_router_arg {
 	char* V_router_id;
 	char* V_router_coord;
-} s_router_t;
+} s_surf_parsing_router_arg_t;
 
-typedef struct s_hostSG *hostSG_t;
-typedef struct s_hostSG {
+typedef struct s_surf_parsing_host_arg *surf_parsing_host_arg_t;
+typedef struct s_surf_parsing_host_arg {
 	char* V_host_id;													//id
 	double V_host_power_peak;											//power
 	int V_host_core;													//core
@@ -67,13 +67,13 @@ typedef struct s_hostSG {
 	e_surf_resource_state_t V_host_state_initial;						//state
 	tmgr_trace_t V_host_state_trace;									//state file
 	const char* V_host_coord;
-} s_hostSG_t;
+} s_surf_parsing_host_arg_t;
 
-extern hostSG_t struct_host;
-extern router_t struct_router;
-extern cluster_t struct_cluster;
-extern peer_t struct_peer;
-extern link_t struct_lnk;
+extern surf_parsing_host_arg_t struct_host;
+extern surf_parsing_router_arg_t struct_router;
+extern surf_parsing_cluster_arg_t struct_cluster;
+extern surf_parsing_peer_arg_t struct_peer;
+extern surf_parsing_link_arg_t struct_lnk;
 
 void STag_surfxml_host_cluster(void);
 void STag_surfxml_link_cluster(void);
