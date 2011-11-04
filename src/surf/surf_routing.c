@@ -1618,13 +1618,7 @@ void routing_parse_Scluster(void)
 		xbt_dict_set(cluster_host_link,host_id,strdup(link_id),free);
 //		XBT_INFO("key '%s' Value '%s'",host_id,link_id);
 		ETag_surfxml_host();
-		xbt_free(struct_host->V_host_id);
-		xbt_free(struct_host->V_host_coord);
-		xbt_free(struct_host);
-
 		ETag_surfxml_link();
-		xbt_free(struct_lnk->V_link_id);
-		xbt_free(struct_lnk);
 
 		break;
 
@@ -1670,7 +1664,7 @@ void routing_parse_Scluster(void)
 		struct_host->V_host_power_scale = 1.0;
 		struct_host->V_host_core = struct_cluster->S_cluster_core;
 		struct_host->V_host_state_initial = SURF_RESOURCE_ON;
-		struct_host->V_host_coord = xbt_strdup("");
+		struct_host->V_host_coord = "";
 		STag_surfxml_host_cluster();
 		XBT_DEBUG("</host>");
 
@@ -1707,13 +1701,8 @@ void routing_parse_Scluster(void)
 //		XBT_INFO("key '%s' Value '%s'",host_id,link_id);
 
 		ETag_surfxml_host();
-		xbt_free(struct_host->V_host_id);
-		xbt_free(struct_host->V_host_coord);
-		xbt_free(struct_host);
-
 		ETag_surfxml_link();
-		xbt_free(struct_lnk->V_link_id);
-		xbt_free(struct_lnk);
+
       }
       break;
 
@@ -1763,7 +1752,7 @@ void routing_parse_Scluster(void)
 
 	  STag_surfxml_link_cluster();
 	  ETag_surfxml_link();
-	  free(link_backbone);
+//	  free(link_backbone);
   }
 
   XBT_DEBUG(" ");

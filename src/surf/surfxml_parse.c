@@ -319,6 +319,8 @@ void STag_surfxml_host_cluster(void){
 }
 void ETag_surfxml_host(void){
 	surfxml_call_cb_functions(ETag_surfxml_host_cb_list);
+	xbt_free(struct_host->V_host_id);
+	xbt_free(struct_host);
 }
 
 void STag_surfxml_router(void){
@@ -432,6 +434,8 @@ void STag_surfxml_link_cluster(void){
 }
 void ETag_surfxml_link(void){
 	surfxml_call_cb_functions(ETag_surfxml_link_cb_list);
+	xbt_free(struct_lnk->V_link_id);
+	xbt_free(struct_lnk);
 }
 
 void STag_surfxml_route(void){
