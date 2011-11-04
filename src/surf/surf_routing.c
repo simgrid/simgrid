@@ -1542,7 +1542,7 @@ static void parse_create_host_link(int i)
 	struct_host->V_host_core = struct_cluster->S_cluster_core;
 	struct_host->V_host_state_initial = SURF_RESOURCE_ON;
 	struct_host->V_host_coord = "";
-	STag_surfxml_host_cluster();
+	surf_parse_host();
 	XBT_DEBUG("</host>");
 
 	A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
@@ -1572,7 +1572,7 @@ static void parse_create_host_link(int i)
 	 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
 		 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
 	}
-	STag_surfxml_link_cluster();
+	surf_parse_link();
 
 	ETag_surfxml_host();
 	ETag_surfxml_link();
@@ -1676,9 +1676,9 @@ void routing_parse_Scluster(void)
 		XBT_DEBUG("</host>");
 
 		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-		if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
+		if(struct_cluster->V_cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
 		{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
-		if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
+		if(struct_cluster->V_cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
 		{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
 
 		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
@@ -1758,9 +1758,9 @@ void routing_parse_Scluster(void)
 		XBT_DEBUG("</host>");
 
 		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-		if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
+		if(struct_cluster->V_cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
 		{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
-		if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
+		if(struct_cluster->V_cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
 		{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
 
 		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
