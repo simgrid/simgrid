@@ -487,15 +487,6 @@ void routing_AS_init(const char *AS_id, const char *wanted_routing_type)
   current_routing = new_routing;
 }
 
-/*
- * Detect the routing model type of the routing component from XML platforms
- */
-static void parse_S_AS(void)
-{
-  routing_AS_init(A_surfxml_AS_id, A_surfxml_AS_routing);
-}
-
-
 /**
  * \brief Finish the creation of a new routing component
  *
@@ -522,14 +513,6 @@ void routing_AS_end(const char *AS_id)
     if (current_routing != NULL)
       (*(current_routing->routing->load)) ();
   }
-}
-
-/*
- * \brief Finish the creation of a new routing component from XML
- */
-static void parse_E_AS(void)
-{
-  routing_AS_end(A_surfxml_AS_id);
 }
 
 /* Aux Business methods */
@@ -990,9 +973,6 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
                        &parse_E_ASroute_store_route);
   surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,
                        &parse_E_bypassRoute_store_route);
-
-  surfxml_add_callback(STag_surfxml_AS_cb_list, &parse_S_AS);
-  surfxml_add_callback(ETag_surfxml_AS_cb_list, &parse_E_AS);
 
   surfxml_add_callback(STag_surfxml_cluster_cb_list,
                        &routing_parse_Scluster);
