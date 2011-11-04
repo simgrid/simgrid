@@ -24,100 +24,9 @@ typedef struct {
 
 /* Parse routing model functions */
 
-static void model_cluster_set_processing_unit(routing_component_t rc,
-                                                const char *name)
-{
-  routing_component_cluster_t routing =
-      (routing_component_cluster_t) rc;
-  xbt_dict_set(routing->dict_processing_units, name, (void *) (-1), NULL);
-}
-
-static void model_cluster_set_autonomous_system(routing_component_t rc,
-                                                  const char *name)
-{
-  routing_component_cluster_t routing =
-      (routing_component_cluster_t) rc;
-  xbt_dict_set(routing->dict_autonomous_systems, name, (void *) (-1),
-               NULL);
-}
-
-static void model_cluster_set_bypassroute(routing_component_t rc,
-                                            const char *src,
-                                            const char *dst,
-                                            route_extended_t e_route)
-{
-  xbt_die("bypass routing not supported for Route-Based model");
-}
-
-static void model_cluster_set_route(routing_component_t rc,
-                                      const char *src, const char *dst,
-                                      name_route_extended_t route)
-{
-	xbt_die("routing not supported for Route-Based model");
-}
-
-static void model_cluster_set_ASroute(routing_component_t rc,
-                                        const char *src, const char *dst,
-                                        name_route_extended_t route)
-{
-	xbt_die("AS routing not supported for Route-Based model");
-}
-
-#define BUFFER_SIZE 4096        /* result buffer size */
-#define OVECCOUNT 30            /* should be a multiple of 3 */
-
 static route_extended_t cluster_get_route(routing_component_t rc,
                                             const char *src,
                                             const char *dst);
-static xbt_dynar_t cluster_get_onelink_routes(routing_component_t rc)
-{
-  xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
-
-  //We have already bypass cluster routes with network NS3
-  if(!strcmp(surf_network_model->name,"network NS3"))
-	return ret;
-
-  routing_component_cluster_t routing = (routing_component_cluster_t)rc;
-
-  xbt_dict_cursor_t c1 = NULL;
-  char *k1, *d1;
-
-  //find router
-  char *router = NULL;
-  xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
-    if (rc->get_network_element_type(k1) == SURF_NETWORK_ELEMENT_ROUTER){
-      router = k1;
-    }
-  }
-
-  if (!router){
-    xbt_die ("cluster_get_onelink_routes works only if the AS is a cluster, sorry.");
-  }
-
-  xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
-    route_extended_t route = cluster_get_route (rc, router, k1);
-
-    int number_of_links = xbt_dynar_length(route->generic_route.link_list);
-
-    if(number_of_links == 1) {
-		//loopback
-    }
-    else{
-		if (number_of_links != 2) {
-		  xbt_die ("cluster_get_onelink_routes works only if the AS is a cluster, sorry.");
-		}
-
-		void *link_ptr;
-		xbt_dynar_get_cpy (route->generic_route.link_list, 1, &link_ptr);
-		onelink_t onelink = xbt_new0 (s_onelink_t, 1);
-		onelink->src = xbt_strdup (k1);
-		onelink->dst = xbt_strdup (router);
-		onelink->link_ptr = link_ptr;
-		xbt_dynar_push (ret, &onelink);
-    }
-  }
-  return ret;
-}
 
 /* Business methods */
 static route_extended_t cluster_get_route(routing_component_t rc,
@@ -179,60 +88,11 @@ static route_extended_t cluster_get_route(routing_component_t rc,
 	  return new_e_route;
 }
 
-static route_extended_t cluster_get_bypass_route(routing_component_t rc,
-                                                   const char *src,
-                                                   const char *dst)
-{
-  return NULL;
-}
-
-static void cluster_finalize(routing_component_t rc)
-{
-  routing_component_cluster_t routing =
-      (routing_component_cluster_t) rc;
-  if (routing) {
-    xbt_dict_free(&routing->dict_processing_units);
-    xbt_dict_free(&routing->dict_autonomous_systems);
-    /* Delete structure */
-    xbt_free(routing);
-  }
-}
-
 /* Creation routing model functions */
 void *model_cluster_create(void)
 {
-  routing_component_cluster_t new_component =
-      xbt_new0(s_routing_component_cluster_t, 1);
-  new_component->generic_routing.set_processing_unit =
-      model_cluster_set_processing_unit;
-  new_component->generic_routing.set_autonomous_system =
-      model_cluster_set_autonomous_system;
-  new_component->generic_routing.set_route = model_cluster_set_route;
-  new_component->generic_routing.set_ASroute = model_cluster_set_ASroute;
-  new_component->generic_routing.set_bypassroute = model_cluster_set_bypassroute;
-  new_component->generic_routing.get_onelink_routes = cluster_get_onelink_routes;
+  routing_component_cluster_t new_component = model_rulebased_create();
   new_component->generic_routing.get_route = cluster_get_route;
-  new_component->generic_routing.get_latency = generic_get_link_latency;
-  new_component->generic_routing.get_bypass_route = cluster_get_bypass_route;
-  new_component->generic_routing.finalize = cluster_finalize;
-  new_component->generic_routing.get_network_element_type = get_network_element_type;
-  /* initialization of internal structures */
-  new_component->dict_processing_units = xbt_dict_new();
-  new_component->dict_autonomous_systems = xbt_dict_new();
 
   return new_component;
-}
-
-void model_cluster_load(void)
-{
-  /* use "surfxml_add_callback" to add a parse function call */
-}
-
-void model_cluster_unload(void)
-{
-  /* use "surfxml_del_callback" to remove a parse function call */
-}
-
-void model_cluster_end(void)
-{
 }

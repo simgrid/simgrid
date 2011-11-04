@@ -95,7 +95,7 @@ struct s_model_type routing_models[] = { {"Full",
 {"Vivaldi", "Vivaldi routing", model_rulebased_create,
   model_rulebased_load, model_rulebased_unload, model_rulebased_end},
 {"Cluster", "Cluster routing", model_cluster_create,
-  model_cluster_load, model_cluster_unload, model_cluster_end},
+  model_rulebased_load, model_rulebased_unload, model_rulebased_end},
 {NULL, NULL, NULL, NULL, NULL, NULL}
 };
 
@@ -1511,12 +1511,14 @@ void routing_parse_Scluster(void)
   char *availability_file = xbt_strdup(A_surfxml_cluster_availability_file);
   char *state_file = xbt_strdup(A_surfxml_cluster_state_file);
 
-  if(xbt_dict_size(patterns)==0)
-	  patterns = xbt_dict_new();
+  if( !strcmp(A_surfxml_cluster_state_file,"") || !strcmp(A_surfxml_cluster_availability_file,"") ){
+	  if(xbt_dict_size(patterns)==0)
+		  patterns = xbt_dict_new();
 
-  xbt_dict_set(patterns,"id",struct_cluster->V_cluster_id,NULL);
-  xbt_dict_set(patterns,"prefix",struct_cluster->V_cluster_prefix,NULL);
-  xbt_dict_set(patterns,"suffix",struct_cluster->V_cluster_suffix,NULL);
+	  xbt_dict_set(patterns,"id",struct_cluster->V_cluster_id,NULL);
+	  xbt_dict_set(patterns,"prefix",struct_cluster->V_cluster_prefix,NULL);
+	  xbt_dict_set(patterns,"suffix",struct_cluster->V_cluster_suffix,NULL);
+  }
 
   char *route_src_dst;
   unsigned int iter;
@@ -1548,12 +1550,12 @@ void routing_parse_Scluster(void)
 		surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char *));
 		host_id = bprintf("%s%d%s", struct_cluster->V_cluster_prefix, start, struct_cluster->V_cluster_suffix);
 		link_id = bprintf("%s_link_%d", struct_cluster->V_cluster_id, start);
-		xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
 
 		XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->S_cluster_power);
 		struct_host = xbt_new0(s_hostSG_t, 1);
 		struct_host->V_host_id = host_id;
 		if(!strcmp(A_surfxml_cluster_availability_file,"")){
+		  xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
 		  char* tmp_availability_file = xbt_strdup(availability_file);
 		  xbt_str_varsubst(tmp_availability_file,patterns);
 		  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
@@ -1634,13 +1636,14 @@ void routing_parse_Scluster(void)
       for (i = start; i <= end; i++) {
 		host_id = bprintf("%s%d%s", struct_cluster->V_cluster_prefix, i, struct_cluster->V_cluster_suffix);
 		link_id = bprintf("%s_link_%d", struct_cluster->V_cluster_id, i);
-		xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
+
 		A_surfxml_host_state = A_surfxml_host_state_ON;
 
 		XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->S_cluster_power);
 		struct_host = xbt_new0(s_hostSG_t, 1);
 		struct_host->V_host_id = host_id;
 		if(!strcmp(A_surfxml_cluster_availability_file,"")){
+		  xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
 		  char* tmp_availability_file = xbt_strdup(availability_file);
 		  xbt_str_varsubst(tmp_availability_file,patterns);
 		  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
@@ -1781,7 +1784,8 @@ void routing_parse_Scluster(void)
   xbt_free(availability_file);
   xbt_free(state_file);
 
-  xbt_dict_free(&patterns);
+  if( !strcmp(A_surfxml_cluster_state_file,"") || !strcmp(A_surfxml_cluster_availability_file,"") )
+	  xbt_dict_free(&patterns);
 
   XBT_DEBUG("</AS>");
   SURFXML_END_TAG(AS);
