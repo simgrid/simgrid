@@ -22,7 +22,7 @@ static xbt_dynar_t as_list_d;
 
 static void create_AS(const char *id, const char *mode)
 {
-  surf_AS_new(id, mode);
+  routing_AS_init(id, mode);
 }
 
 /**
@@ -732,7 +732,7 @@ static int surf_parse_bypass_platform()
 	  }
 
 	  // Finalize AS
-	  surf_AS_finalize(p_as->id);
+	  routing_AS_end(p_as->id);
   }
 
   // add traces
@@ -789,7 +789,7 @@ static int surf_wsL07_parse_bypass_platform()
 	      }
 	  /* </AS> */
 	  // Finalize AS
-	  surf_AS_finalize(p_as->id);
+	  routing_AS_end(p_as->id);
   }
   // add traces
   surf_wsL07_add_traces();

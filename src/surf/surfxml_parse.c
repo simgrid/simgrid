@@ -764,21 +764,6 @@ void* surf_wsL07_link_create_resource(char *name,
                            properties);
 }
 
-/**
- *
- *init new routing model component
- */
-
-void surf_AS_new(const char *AS_id, const char *AS_mode)
-{
-  routing_AS_init(AS_id, AS_mode);
-}
-
-void surf_AS_finalize(const char *AS_id)
-{
-  routing_AS_end(AS_id);
-}
-
 /*
  * add host to the network element list
  */

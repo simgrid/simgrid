@@ -809,8 +809,6 @@ XBT_PUBLIC(void) routing_store_route(void);
  * interface between surf and lua bindings
  * see surfxml_parse.c
  */
-XBT_PUBLIC(void) surf_AS_new(const char *id, const char *mode);
-XBT_PUBLIC(void) surf_AS_finalize(const char *id);
 XBT_PUBLIC(void) surf_route_add_host(const char *id);
 XBT_PUBLIC(void) surf_routing_add_route(const char *src_id,
                                         const char *dest_id,
