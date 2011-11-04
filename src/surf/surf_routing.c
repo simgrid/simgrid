@@ -1520,7 +1520,6 @@ void routing_parse_Scluster(void)
 	  xbt_dict_set(patterns,"suffix",struct_cluster->V_cluster_suffix,NULL);
   }
 
-  char *route_src_dst;
   unsigned int iter;
   int start, end, i;
   xbt_dynar_t radical_elements;

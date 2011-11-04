@@ -66,7 +66,7 @@ typedef struct s_hostSG {
 	tmgr_trace_t V_host_power_trace;									//availability file
 	e_surf_resource_state_t V_host_state_initial;						//state
 	tmgr_trace_t V_host_state_trace;									//state file
-	char* V_host_coord;
+	const char* V_host_coord;
 } s_hostSG_t;
 
 extern hostSG_t struct_host;
@@ -74,5 +74,9 @@ extern router_t struct_router;
 extern cluster_t struct_cluster;
 extern peer_t struct_peer;
 extern link_t struct_lnk;
+
+void STag_surfxml_host_cluster(void);
+void STag_surfxml_link_cluster(void);
+
 
 #endif /* SURFXML_PARSE_VALUES_H_ */
