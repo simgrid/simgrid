@@ -181,7 +181,6 @@ void parse_platform_file(const char *file)
 {
   int parse_status;
 
-
   surf_parse_reset_callbacks();
   surf_parse_add_callback_config();
 
@@ -193,7 +192,8 @@ void parse_platform_file(const char *file)
   parse_status = surf_parse();
   free_data();
   surf_parse_close();
-  xbt_assert(!parse_status, "Parse error in %s", file);
+  if (parse_status)
+    xbt_die("Parse error in %s", file);
 
   surf_config_models_create_elms();
 }
