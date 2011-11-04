@@ -64,7 +64,9 @@ typedef enum {
   SURF_MODEL_DIJKSTRA,
   SURF_MODEL_DIJKSTRACACHE,
   SURF_MODEL_NONE,
-  SURF_MODEL_RULEBASED
+  SURF_MODEL_RULEBASED,
+  SURF_MODEL_VIVALDI,
+  SURF_MODEL_CLUSTER
 } e_routing_types;
 
 struct s_model_type routing_models[] = { {"Full",
@@ -91,6 +93,8 @@ struct s_model_type routing_models[] = { {"Full",
  model_rulebased_load, model_rulebased_unload, model_rulebased_end},
 {"Vivaldi", "Vivaldi routing", model_rulebased_create,
   model_rulebased_load, model_rulebased_unload, model_rulebased_end},
+{"Cluster", "Cluster routing", model_cluster_create,
+  model_cluster_load, model_cluster_unload, model_cluster_end},
 {NULL, NULL, NULL, NULL, NULL, NULL}
 };
 

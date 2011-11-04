@@ -78,6 +78,13 @@ void model_rulebased_load(void);         /* load parse functions for rulebased r
 void model_rulebased_unload(void);       /* unload parse functions for rulebased routing model */
 void model_rulebased_end(void);          /* finalize the creation of rulebased routing model */
 
+/* ************************************************** */
+/* **************  Cluster ROUTING   **************** */
+void *model_cluster_create(void);      /* create structures for cluster routing model */
+void model_cluster_load(void);         /* load parse functions for cluster routing model */
+void model_cluster_unload(void);       /* unload parse functions for cluster routing model */
+void model_cluster_end(void);          /* finalize the creation of cluster routing model */
+
 /* ************************************************************************** */
 /* ********** Dijkstra & Dijkstra Cached ROUTING **************************** */
 void *model_dijkstra_both_create(int cached);    /* create by calling dijkstra or dijkstracache */
