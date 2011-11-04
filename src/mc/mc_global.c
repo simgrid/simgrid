@@ -328,7 +328,8 @@ void MC_replay_liveness(xbt_fifo_t stack)
          
     /* Update statistics */
     mc_stats_pair->visited_pairs++;
-  }
+  }  
+
   XBT_DEBUG("**** End Replay ****");
 }
 

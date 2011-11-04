@@ -304,8 +304,7 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
  
   XBT_DEBUG("********************* ( Depth = %d, search_cycle = %d )", xbt_fifo_size(mc_stack_liveness_stateless), search_cycle);
   XBT_DEBUG("Pair : graph=%p, automaton=%p(%s), %u interleave", current_pair->graph_state, current_pair->automaton_state, current_pair->automaton_state->id, MC_state_interleave_size(current_pair->graph_state));
-  
-
+ 
   
   mc_stats_pair->visited_pairs++;
 
@@ -402,9 +401,9 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
 
      
 
-      if((search_cycle == 1) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)) && (MC_state_interleave_size(pair_succ->graph_state) > 0)){
+      if((search_cycle == 1) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)) ){
 	
-	//XBT_DEBUG("Acceptance pair : graph=%p, automaton=%p(%s)", pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
+	XBT_DEBUG("Next pair (depth = %d) already reached !", xbt_fifo_size(mc_stack_liveness_stateless) + 1);
 	
 	MC_SET_RAW_MEM;
 	MC_take_snapshot(snapshot);
@@ -422,21 +421,26 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
 	}
       }
       
+      int interleave = MC_state_interleave_size(pair_succ->graph_state);
+
+      if((search_cycle == 0) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)) && ( interleave > 0)){
+	XBT_DEBUG("Take snapshot of acceptance pair (depth = %d)", xbt_fifo_size(mc_stack_liveness_stateless) + 1 );
+	MC_SET_RAW_MEM;
+	MC_take_snapshot(snapshot);
+	MC_UNSET_RAW_MEM;
+      }
+
       MC_SET_RAW_MEM;
       xbt_fifo_unshift(mc_stack_liveness_stateless, pair_succ);
       MC_UNSET_RAW_MEM;
       
-
       MC_ddfs_stateless(a, search_cycle, 0);
 
       /* If pair_succ is the last state of the execution (0 interleave), no acceptance cycle possible */
-      if((search_cycle == 0) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)) && (MC_state_interleave_size(pair_succ->graph_state) > 0)){
+      if((search_cycle == 0) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)) && ( interleave > 0)){
        
 	XBT_DEBUG("Acceptance pair : graph=%p, automaton=%p(%s)", pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
 
-	MC_SET_RAW_MEM;
-	MC_take_snapshot(snapshot);
-	MC_UNSET_RAW_MEM;
 		
 	set_pair_reached(a, pair_succ->automaton_state, snapshot);
 
