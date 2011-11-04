@@ -390,6 +390,7 @@ void surf_exit(void)
   xbt_lib_free(&host_lib);
   xbt_lib_free(&link_lib);
   xbt_lib_free(&as_router_lib);
+  xbt_dict_free(&cluster_host_link);
 
   tmgr_finalize();
   surf_parse_lex_destroy();

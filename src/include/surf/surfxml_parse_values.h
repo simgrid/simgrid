@@ -38,12 +38,12 @@ typedef struct s_cluster {
 	char* V_cluster_prefix;
 	char* V_cluster_suffix;
 	char* V_cluster_radical;
-	char* S_cluster_power;
-	char* S_cluster_core;
-	char* S_cluster_bw;
-	char* S_cluster_lat;
-	char* S_cluster_bb_bw;
-	char* S_cluster_bb_lat;
+	double S_cluster_power;
+	int S_cluster_core;
+	double S_cluster_bw;
+	double S_cluster_lat;
+	double S_cluster_bb_bw;
+	double S_cluster_bb_lat;
 	char* S_cluster_router_id;
 	int V_cluster_sharing_policy;
 	int V_cluster_bb_sharing_policy;

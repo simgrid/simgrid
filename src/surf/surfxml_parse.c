@@ -314,17 +314,12 @@ void STag_surfxml_host(void){
 
 	surfxml_call_cb_functions(STag_surfxml_host_cb_list);
 }
+void STag_surfxml_host_cluster(void){
+	surfxml_call_cb_functions(STag_surfxml_host_cb_list);
+}
 void ETag_surfxml_host(void){
 	surfxml_call_cb_functions(ETag_surfxml_host_cb_list);
-	//xbt_free(struct_host->V_host_id);
-	struct_host->V_host_power_peak = 0.0;
-	struct_host->V_host_core = 0;
-	struct_host->V_host_power_scale = 0.0;
-	struct_host->V_host_state_initial = SURF_RESOURCE_ON;
-	struct_host->V_host_power_trace = NULL;
-	struct_host->V_host_state_trace = NULL;
-	xbt_free(struct_host->V_host_coord);
-	//xbt_free(host);
+//	xbt_free(struct_host->V_host_id);
 }
 
 void STag_surfxml_router(void){
@@ -348,12 +343,14 @@ void STag_surfxml_cluster(void){
 	struct_cluster->V_cluster_prefix = xbt_strdup(A_surfxml_cluster_prefix);
 	struct_cluster->V_cluster_suffix = xbt_strdup(A_surfxml_cluster_suffix);
 	struct_cluster->V_cluster_radical = xbt_strdup(A_surfxml_cluster_radical);
-	struct_cluster->S_cluster_power = xbt_strdup(A_surfxml_cluster_power);
-	struct_cluster->S_cluster_core = xbt_strdup(A_surfxml_cluster_core);
-	struct_cluster->S_cluster_bw = xbt_strdup(A_surfxml_cluster_bw);
-	struct_cluster->S_cluster_lat = xbt_strdup(A_surfxml_cluster_lat);
-	struct_cluster->S_cluster_bb_bw = xbt_strdup(A_surfxml_cluster_bb_bw);
-	struct_cluster->S_cluster_bb_lat = xbt_strdup(A_surfxml_cluster_bb_lat);
+	surf_parse_get_double(&struct_cluster->S_cluster_power,A_surfxml_cluster_power);
+	surf_parse_get_int(&struct_cluster->S_cluster_core,A_surfxml_cluster_core);
+	surf_parse_get_double(&struct_cluster->S_cluster_bw,A_surfxml_cluster_bw);
+	surf_parse_get_double(&struct_cluster->S_cluster_lat,A_surfxml_cluster_lat);
+	if(strcmp(A_surfxml_cluster_bb_bw,""))
+		surf_parse_get_double(&struct_cluster->S_cluster_bb_bw,A_surfxml_cluster_bb_bw);
+	if(strcmp(A_surfxml_cluster_bb_lat,""))
+		surf_parse_get_double(&struct_cluster->S_cluster_bb_lat,A_surfxml_cluster_bb_lat);
 	if(!strcmp(A_surfxml_cluster_router_id,""))
 		struct_cluster->S_cluster_router_id = bprintf("%s%s_router%s",
 				struct_cluster->V_cluster_prefix,
@@ -373,12 +370,12 @@ void ETag_surfxml_cluster(void){
 	xbt_free(struct_cluster->V_cluster_prefix);
 	xbt_free(struct_cluster->V_cluster_suffix);
 	xbt_free(struct_cluster->V_cluster_radical);
-	xbt_free(struct_cluster->S_cluster_power);
-	xbt_free(struct_cluster->S_cluster_core);
-	xbt_free(struct_cluster->S_cluster_bw);
-	xbt_free(struct_cluster->S_cluster_lat);
-	xbt_free(struct_cluster->S_cluster_bb_bw);
-	xbt_free(struct_cluster->S_cluster_bb_lat);
+	struct_cluster->S_cluster_power = 0;
+	struct_cluster->S_cluster_core = 0;
+	struct_cluster->S_cluster_bw = 0;
+	struct_cluster->S_cluster_lat = 0;
+	struct_cluster->S_cluster_bb_bw = 0;
+	struct_cluster->S_cluster_bb_lat = 0;
 	xbt_free(struct_cluster->S_cluster_router_id);
 	struct_cluster->V_cluster_sharing_policy = 0;
 	struct_cluster->V_cluster_bb_sharing_policy = 0;
@@ -437,20 +434,13 @@ void STag_surfxml_link(void){
 		 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
 	}
 
-
+	surfxml_call_cb_functions(STag_surfxml_link_cb_list);
+}
+void STag_surfxml_link_cluster(void){
 	surfxml_call_cb_functions(STag_surfxml_link_cb_list);
 }
 void ETag_surfxml_link(void){
 	surfxml_call_cb_functions(ETag_surfxml_link_cb_list);
-	xbt_free(struct_lnk->V_link_id);
-	struct_lnk->V_link_bandwidth = 0;
-	struct_lnk->V_link_bandwidth_file = NULL;
-	struct_lnk->V_link_latency = 0;
-	struct_lnk->V_link_latency_file = NULL;
-	struct_lnk->V_link_state = SURF_RESOURCE_ON;
-	struct_lnk->V_link_state_file = NULL;
-	struct_lnk->V_link_sharing_policy = 0;
-	xbt_free(struct_lnk);
 }
 
 void STag_surfxml_route(void){
