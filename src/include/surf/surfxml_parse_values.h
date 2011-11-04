@@ -75,8 +75,8 @@ extern surf_parsing_cluster_arg_t struct_cluster;
 extern surf_parsing_peer_arg_t struct_peer;
 extern surf_parsing_link_arg_t struct_lnk;
 
-void STag_surfxml_host_cluster(void);
-void STag_surfxml_link_cluster(void);
+void surf_parse_host(void);
+void surf_parse_link(void);
 
 
 #endif /* SURFXML_PARSE_VALUES_H_ */

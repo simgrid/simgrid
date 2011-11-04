@@ -312,9 +312,9 @@ void STag_surfxml_host(void){
 		struct_host->V_host_state_initial = SURF_RESOURCE_OFF;
 	struct_host->V_host_coord = xbt_strdup(A_surfxml_host_coordinates);
 
-	surfxml_call_cb_functions(STag_surfxml_host_cb_list);
+	surf_parse_host();
 }
-void STag_surfxml_host_cluster(void){
+void surf_parse_host(void){
 	surfxml_call_cb_functions(STag_surfxml_host_cb_list);
 }
 void ETag_surfxml_host(void){
@@ -432,9 +432,9 @@ void STag_surfxml_link(void){
 		 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
 	}
 
-	surfxml_call_cb_functions(STag_surfxml_link_cb_list);
+	surf_parse_link();
 }
-void STag_surfxml_link_cluster(void){
+void surf_parse_link(void){
 	surfxml_call_cb_functions(STag_surfxml_link_cb_list);
 }
 void ETag_surfxml_link(void){

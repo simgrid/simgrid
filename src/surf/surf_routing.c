@@ -1582,7 +1582,7 @@ void routing_parse_Scluster(void)
 		struct_host->V_host_core = struct_cluster->S_cluster_core;
 		struct_host->V_host_state_initial = SURF_RESOURCE_ON;
 		struct_host->V_host_coord = "";
-		STag_surfxml_host_cluster();
+		surf_parse_host();
 		XBT_DEBUG("</host>");
 
 		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
@@ -1612,7 +1612,7 @@ void routing_parse_Scluster(void)
 		 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
 			 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
 		}
-		STag_surfxml_link_cluster();
+		surf_parse_link();
 
 		xbt_dict_set(cluster_host_link,host_id,strdup(link_id),free);
 //		XBT_INFO("key '%s' Value '%s'",host_id,link_id);
@@ -1664,7 +1664,7 @@ void routing_parse_Scluster(void)
 		struct_host->V_host_core = struct_cluster->S_cluster_core;
 		struct_host->V_host_state_initial = SURF_RESOURCE_ON;
 		struct_host->V_host_coord = "";
-		STag_surfxml_host_cluster();
+		surf_parse_host();
 		XBT_DEBUG("</host>");
 
 		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
@@ -1694,7 +1694,7 @@ void routing_parse_Scluster(void)
 		 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
 			 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
 		}
-		STag_surfxml_link_cluster();
+		surf_parse_link();
 
 		xbt_dict_set(cluster_host_link,host_id,strdup(link_id),free);
 //		XBT_INFO("key '%s' Value '%s'",host_id,link_id);
@@ -1749,7 +1749,7 @@ void routing_parse_Scluster(void)
 		   struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
 	  }
 
-	  STag_surfxml_link_cluster();
+	  surf_parse_link();
 	  ETag_surfxml_link();
   }
 
