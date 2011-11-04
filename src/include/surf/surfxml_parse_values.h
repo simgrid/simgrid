@@ -75,8 +75,13 @@ extern surf_parsing_cluster_arg_t struct_cluster;
 extern surf_parsing_peer_arg_t struct_peer;
 extern surf_parsing_link_arg_t struct_lnk;
 
+typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
+typedef struct s_surf_parsing_link_up_down {
+	void* link_up;
+	void* link_down;
+} s_surf_parsing_link_up_down_t;
+
 void surf_parse_host(void);
 void surf_parse_link(void);
-
 
 #endif /* SURFXML_PARSE_VALUES_H_ */

@@ -39,47 +39,19 @@ static route_extended_t cluster_get_route(routing_component_t rc,
 	              rc->name);
 
 
-	  xbt_dynar_t links_list =
-	      xbt_dynar_new(global_routing->size_of_link, NULL);
+	  xbt_dynar_t links_list = xbt_dynar_new(global_routing->size_of_link, NULL);
 
-	  char *cluster_is_fd = xbt_dict_get_or_null(cluster_host_link,rc->name);
 	  char *link_src,*link_bb,*link_dst,*link_src_up,*link_dst_down;
+	  surf_parsing_link_up_down_t info;
 
-	  if(!cluster_is_fd){ //	NOT FULLDUPLEX
-		  link_src = xbt_dict_get_or_null(cluster_host_link,src);
-		  if( !link_src && (global_routing->get_network_element_type(src) != SURF_NETWORK_ELEMENT_ROUTER) )
-			  xbt_die("No link for '%s' found!",src);
-		  if(link_src) xbt_dynar_push_as(links_list,void*,xbt_lib_get_or_null(link_lib, link_src, SURF_LINK_LEVEL)); //link_up
+	  info = xbt_dict_get_or_null(cluster_host_link,src);
+	  if(info) xbt_dynar_push_as(links_list,void*,info->link_up); //link_up
 
-		  link_bb = bprintf("%s_backbone",rc->name);
-		  xbt_dynar_push_as(links_list,void*,xbt_lib_get_or_null(link_lib, link_bb, SURF_LINK_LEVEL)); //link_bb
-		  free(link_bb);
+	  info = xbt_dict_get_or_null(cluster_host_link,rc->name);
+	  if(info)  xbt_dynar_push_as(links_list,void*,info->link_up); //link_bb
 
-		  link_dst = xbt_dict_get_or_null(cluster_host_link,dst);
-		  if( !link_dst && (global_routing->get_network_element_type(dst) != SURF_NETWORK_ELEMENT_ROUTER) )
-		  	  xbt_die("No link for '%s' found!",dst);
-		  if(link_dst) xbt_dynar_push_as(links_list,void*,xbt_lib_get_or_null(link_lib, link_dst, SURF_LINK_LEVEL)); //link_down
-	  }
-	  else //	FULLDUPLEX
-	  {
-		  link_src = xbt_dict_get_or_null(cluster_host_link,src);
-		  if( !link_src  && (global_routing->get_network_element_type(src) != SURF_NETWORK_ELEMENT_ROUTER) )
-			  xbt_die("No link for '%s' found!",src);
-		  link_src_up = bprintf("%s_UP",link_src);
-		  if(link_src) xbt_dynar_push_as(links_list,void*,xbt_lib_get_or_null(link_lib, link_src_up, SURF_LINK_LEVEL)); //link_up
-		  free(link_src_up);
-
-		  link_bb = bprintf("%s_backbone",rc->name);
-		  if(link_bb)  xbt_dynar_push_as(links_list,void*,xbt_lib_get_or_null(link_lib, link_bb, SURF_LINK_LEVEL)); //link_bb
-		  free(link_bb);
-
-		  link_dst = xbt_dict_get_or_null(cluster_host_link,dst);
-		  if(!link_dst  && (global_routing->get_network_element_type(dst) != SURF_NETWORK_ELEMENT_ROUTER))
-			  xbt_die("No link for '%s' found!",dst);
-		  link_dst_down = bprintf("%s_DOWN",link_dst);
-		  if(link_dst) xbt_dynar_push_as(links_list,void*,xbt_lib_get_or_null(link_lib, link_dst_down, SURF_LINK_LEVEL)); //link_down
-		  free(link_dst_down);
-	  }
+	  info = xbt_dict_get_or_null(cluster_host_link,dst);
+	  if(info) xbt_dynar_push_as(links_list,void*,info->link_down); //link_down
 
 	  route_extended_t new_e_route = NULL;
 	  new_e_route = xbt_new0(s_route_extended_t, 1);
