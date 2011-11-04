@@ -1617,24 +1617,11 @@ void routing_parse_Scluster(void)
 //		XBT_INFO("key '%s' Value '%s'",host_id,link_id);
 		ETag_surfxml_host();
 		xbt_free(struct_host->V_host_id);
-		struct_host->V_host_power_peak = 0.0;
-		struct_host->V_host_core = 0;
-		struct_host->V_host_power_scale = 0.0;
-		struct_host->V_host_state_initial = SURF_RESOURCE_ON;
-		struct_host->V_host_power_trace = NULL;
-		struct_host->V_host_state_trace = NULL;
 		xbt_free(struct_host->V_host_coord);
 		xbt_free(struct_host);
 
 		ETag_surfxml_link();
 		xbt_free(struct_lnk->V_link_id);
-		struct_lnk->V_link_bandwidth = 0;
-		struct_lnk->V_link_bandwidth_file = NULL;
-		struct_lnk->V_link_latency = 0;
-		struct_lnk->V_link_latency_file = NULL;
-		struct_lnk->V_link_state = SURF_RESOURCE_ON;
-		struct_lnk->V_link_state_file = NULL;
-		struct_lnk->V_link_sharing_policy = 0;
 		xbt_free(struct_lnk);
 
 		break;
@@ -1718,24 +1705,11 @@ void routing_parse_Scluster(void)
 
 		ETag_surfxml_host();
 		xbt_free(struct_host->V_host_id);
-		struct_host->V_host_power_peak = 0.0;
-		struct_host->V_host_core = 0;
-		struct_host->V_host_power_scale = 0.0;
-		struct_host->V_host_state_initial = SURF_RESOURCE_ON;
-		struct_host->V_host_power_trace = NULL;
-		struct_host->V_host_state_trace = NULL;
 		xbt_free(struct_host->V_host_coord);
 		xbt_free(struct_host);
 
 		ETag_surfxml_link();
 		xbt_free(struct_lnk->V_link_id);
-		struct_lnk->V_link_bandwidth = 0;
-		struct_lnk->V_link_bandwidth_file = NULL;
-		struct_lnk->V_link_latency = 0;
-		struct_lnk->V_link_latency_file = NULL;
-		struct_lnk->V_link_state = SURF_RESOURCE_ON;
-		struct_lnk->V_link_state_file = NULL;
-		struct_lnk->V_link_sharing_policy = 0;
 		xbt_free(struct_lnk);
       }
       break;
