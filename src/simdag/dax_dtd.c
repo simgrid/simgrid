@@ -1259,8 +1259,8 @@ char *dax_text;
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
- * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.66 2011/10/30 21:03:48 mquinson Exp).
+ * FleXML is Copyright (C) 2003-2011 Martin Quinson.  All rights reserved.
+ * (Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -1269,7 +1269,7 @@ char *dax_text;
  * 
  * Some parts, here collectively called "Part A", are found in the 
  * FleXML package.  They are Copyright (C) 1999-2005 Kristoffer Rose
- * and Copyright (C) 2003-2006 Martin Quinson. All rights reserved.
+ * and Copyright (C) 2003-2011 Martin Quinson. All rights reserved.
  *
  * You can redistribute, use, perform, display and/or modify "Part A"
  * provided the following two conditions hold:
@@ -1305,7 +1305,7 @@ char *dax_text;
 const char rcs_dax__flexml_skeleton[] =
  "$" "Id: skel,v 1.40 2007/10/11 09:57:24 mquinson Exp $";
 const char rcs_dax__flexml[] =
- "$" "Id: flexml.pl,v 1.66 2011/10/30 21:03:48 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp $";
 
 /* ANSI headers. */
 #include <stdlib.h> /* for realloc() -- needed here when using flex 2.5.4 */
@@ -1342,54 +1342,79 @@ extern char *dax__bufferstack;
 #define dax__pcdata (dax__bufferstack + dax__pcdata_ix)
 AT_dax__adag_version AX_dax__adag_version;
 #define A_dax__adag_version (dax__bufferstack + AX_dax__adag_version)
+short int dax__adag_version_isset;
 AT_dax__uses_type AX_dax__uses_type;
 #define A_dax__uses_type (dax__bufferstack + AX_dax__uses_type)
+short int dax__uses_type_isset;
 AT_dax__uses_optional AX_dax__uses_optional;
 #define A_dax__uses_optional AX_dax__uses_optional
+short int dax__uses_optional_isset;
 AT_dax__adag_name AX_dax__adag_name;
 #define A_dax__adag_name (dax__bufferstack + AX_dax__adag_name)
+short int dax__adag_name_isset;
 AT_dax__child_ref AX_dax__child_ref;
 #define A_dax__child_ref (dax__bufferstack + AX_dax__child_ref)
+short int dax__child_ref_isset;
 AT_dax__adag_xmlns AX_dax__adag_xmlns;
 #define A_dax__adag_xmlns (dax__bufferstack + AX_dax__adag_xmlns)
+short int dax__adag_xmlns_isset;
 AT_dax__uses_transfer AX_dax__uses_transfer;
 #define A_dax__uses_transfer AX_dax__uses_transfer
+short int dax__uses_transfer_isset;
 AT_dax__job_id AX_dax__job_id;
 #define A_dax__job_id (dax__bufferstack + AX_dax__job_id)
+short int dax__job_id_isset;
 AT_dax__uses_file AX_dax__uses_file;
 #define A_dax__uses_file (dax__bufferstack + AX_dax__uses_file)
+short int dax__uses_file_isset;
 AT_dax__parent_ref AX_dax__parent_ref;
 #define A_dax__parent_ref (dax__bufferstack + AX_dax__parent_ref)
+short int dax__parent_ref_isset;
 AT_dax__adag_count AX_dax__adag_count;
 #define A_dax__adag_count (dax__bufferstack + AX_dax__adag_count)
+short int dax__adag_count_isset;
 AT_dax__adag_xmlns_c_xsi AX_dax__adag_xmlns_c_xsi;
 #define A_dax__adag_xmlns_c_xsi (dax__bufferstack + AX_dax__adag_xmlns_c_xsi)
+short int dax__adag_xmlns_c_xsi_isset;
 AT_dax__adag_index AX_dax__adag_index;
 #define A_dax__adag_index (dax__bufferstack + AX_dax__adag_index)
+short int dax__adag_index_isset;
 AT_dax__uses_size AX_dax__uses_size;
 #define A_dax__uses_size (dax__bufferstack + AX_dax__uses_size)
+short int dax__uses_size_isset;
 AT_dax__adag_childCount AX_dax__adag_childCount;
 #define A_dax__adag_childCount (dax__bufferstack + AX_dax__adag_childCount)
+short int dax__adag_childCount_isset;
 AT_dax__uses_link AX_dax__uses_link;
 #define A_dax__uses_link AX_dax__uses_link
+short int dax__uses_link_isset;
 AT_dax__job_runtime AX_dax__job_runtime;
 #define A_dax__job_runtime (dax__bufferstack + AX_dax__job_runtime)
+short int dax__job_runtime_isset;
 AT_dax__job_level AX_dax__job_level;
 #define A_dax__job_level (dax__bufferstack + AX_dax__job_level)
+short int dax__job_level_isset;
 AT_dax__job_namespace AX_dax__job_namespace;
 #define A_dax__job_namespace (dax__bufferstack + AX_dax__job_namespace)
+short int dax__job_namespace_isset;
 AT_dax__job_name AX_dax__job_name;
 #define A_dax__job_name (dax__bufferstack + AX_dax__job_name)
+short int dax__job_name_isset;
 AT_dax__adag_jobCount AX_dax__adag_jobCount;
 #define A_dax__adag_jobCount (dax__bufferstack + AX_dax__adag_jobCount)
+short int dax__adag_jobCount_isset;
 AT_dax__job_version AX_dax__job_version;
 #define A_dax__job_version (dax__bufferstack + AX_dax__job_version)
+short int dax__job_version_isset;
 AT_dax__adag_xsi_c_schemaLocation AX_dax__adag_xsi_c_schemaLocation;
 #define A_dax__adag_xsi_c_schemaLocation (dax__bufferstack + AX_dax__adag_xsi_c_schemaLocation)
+short int dax__adag_xsi_c_schemaLocation_isset;
 AT_dax__uses_register AX_dax__uses_register;
 #define A_dax__uses_register AX_dax__uses_register
+short int dax__uses_register_isset;
 AT_dax__adag_fileCount AX_dax__adag_fileCount;
 #define A_dax__adag_fileCount (dax__bufferstack + AX_dax__adag_fileCount)
+short int dax__adag_fileCount_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG

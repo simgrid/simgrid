@@ -3173,8 +3173,8 @@ char *surf_parse_text;
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
- * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.66 2011/10/30 21:03:48 mquinson Exp).
+ * FleXML is Copyright (C) 2003-2011 Martin Quinson.  All rights reserved.
+ * (Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -3183,7 +3183,7 @@ char *surf_parse_text;
  * 
  * Some parts, here collectively called "Part A", are found in the 
  * FleXML package.  They are Copyright (C) 1999-2005 Kristoffer Rose
- * and Copyright (C) 2003-2006 Martin Quinson. All rights reserved.
+ * and Copyright (C) 2003-2011 Martin Quinson. All rights reserved.
  *
  * You can redistribute, use, perform, display and/or modify "Part A"
  * provided the following two conditions hold:
@@ -3219,7 +3219,7 @@ char *surf_parse_text;
 const char rcs_surfxml_flexml_skeleton[] =
  "$" "Id: skel,v 1.40 2007/10/11 09:57:24 mquinson Exp $";
 const char rcs_surfxml_flexml[] =
- "$" "Id: flexml.pl,v 1.66 2011/10/30 21:03:48 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp $";
 
 /* ANSI headers. */
 #include <stdlib.h> /* for realloc() -- needed here when using flex 2.5.4 */
@@ -3256,166 +3256,247 @@ extern char *surfxml_bufferstack;
 #define surfxml_pcdata (surfxml_bufferstack + surfxml_pcdata_ix)
 AT_surfxml_random_generator AX_surfxml_random_generator;
 #define A_surfxml_random_generator AX_surfxml_random_generator
+short int surfxml_random_generator_isset;
 AT_surfxml_ASroute_gw_dst AX_surfxml_ASroute_gw_dst;
 #define A_surfxml_ASroute_gw_dst (surfxml_bufferstack + AX_surfxml_ASroute_gw_dst)
+short int surfxml_ASroute_gw_dst_isset;
 AT_surfxml_trace_connect_element AX_surfxml_trace_connect_element;
 #define A_surfxml_trace_connect_element (surfxml_bufferstack + AX_surfxml_trace_connect_element)
+short int surfxml_trace_connect_element_isset;
 AT_surfxml_prop_id AX_surfxml_prop_id;
 #define A_surfxml_prop_id (surfxml_bufferstack + AX_surfxml_prop_id)
+short int surfxml_prop_id_isset;
 AT_surfxml_host_id AX_surfxml_host_id;
 #define A_surfxml_host_id (surfxml_bufferstack + AX_surfxml_host_id)
+short int surfxml_host_id_isset;
 AT_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical;
 #define A_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical
+short int surfxml_ASroute_symmetrical_isset;
 AT_surfxml_peer_lat AX_surfxml_peer_lat;
 #define A_surfxml_peer_lat (surfxml_bufferstack + AX_surfxml_peer_lat)
+short int surfxml_peer_lat_isset;
 AT_surfxml_link_latency_file AX_surfxml_link_latency_file;
 #define A_surfxml_link_latency_file (surfxml_bufferstack + AX_surfxml_link_latency_file)
+short int surfxml_link_latency_file_isset;
 AT_surfxml_peer_availability_file AX_surfxml_peer_availability_file;
 #define A_surfxml_peer_availability_file (surfxml_bufferstack + AX_surfxml_peer_availability_file)
+short int surfxml_peer_availability_file_isset;
 AT_surfxml_link_ctn_direction AX_surfxml_link_ctn_direction;
 #define A_surfxml_link_ctn_direction AX_surfxml_link_ctn_direction
+short int surfxml_link_ctn_direction_isset;
 AT_surfxml_host_state AX_surfxml_host_state;
 #define A_surfxml_host_state AX_surfxml_host_state
+short int surfxml_host_state_isset;
 AT_surfxml_AS_id AX_surfxml_AS_id;
 #define A_surfxml_AS_id (surfxml_bufferstack + AX_surfxml_AS_id)
+short int surfxml_AS_id_isset;
 AT_surfxml_host_power AX_surfxml_host_power;
 #define A_surfxml_host_power (surfxml_bufferstack + AX_surfxml_host_power)
+short int surfxml_host_power_isset;
 AT_surfxml_router_id AX_surfxml_router_id;
 #define A_surfxml_router_id (surfxml_bufferstack + AX_surfxml_router_id)
+short int surfxml_router_id_isset;
 AT_surfxml_process_start_time AX_surfxml_process_start_time;
 #define A_surfxml_process_start_time (surfxml_bufferstack + AX_surfxml_process_start_time)
+short int surfxml_process_start_time_isset;
 AT_surfxml_cluster_suffix AX_surfxml_cluster_suffix;
 #define A_surfxml_cluster_suffix (surfxml_bufferstack + AX_surfxml_cluster_suffix)
+short int surfxml_cluster_suffix_isset;
 AT_surfxml_ASroute_src AX_surfxml_ASroute_src;
 #define A_surfxml_ASroute_src (surfxml_bufferstack + AX_surfxml_ASroute_src)
+short int surfxml_ASroute_src_isset;
 AT_surfxml_cluster_prefix AX_surfxml_cluster_prefix;
 #define A_surfxml_cluster_prefix (surfxml_bufferstack + AX_surfxml_cluster_prefix)
+short int surfxml_cluster_prefix_isset;
 AT_surfxml_trace_file AX_surfxml_trace_file;
 #define A_surfxml_trace_file (surfxml_bufferstack + AX_surfxml_trace_file)
+short int surfxml_trace_file_isset;
 AT_surfxml_link_sharing_policy AX_surfxml_link_sharing_policy;
 #define A_surfxml_link_sharing_policy AX_surfxml_link_sharing_policy
+short int surfxml_link_sharing_policy_isset;
 AT_surfxml_random_min AX_surfxml_random_min;
 #define A_surfxml_random_min (surfxml_bufferstack + AX_surfxml_random_min)
+short int surfxml_random_min_isset;
 AT_surfxml_link_ctn_id AX_surfxml_link_ctn_id;
 #define A_surfxml_link_ctn_id (surfxml_bufferstack + AX_surfxml_link_ctn_id)
+short int surfxml_link_ctn_id_isset;
 AT_surfxml_peer_bw_out AX_surfxml_peer_bw_out;
 #define A_surfxml_peer_bw_out (surfxml_bufferstack + AX_surfxml_peer_bw_out)
+short int surfxml_peer_bw_out_isset;
 AT_surfxml_cluster_availability_file AX_surfxml_cluster_availability_file;
 #define A_surfxml_cluster_availability_file (surfxml_bufferstack + AX_surfxml_cluster_availability_file)
+short int surfxml_cluster_availability_file_isset;
 AT_surfxml_process_kill_time AX_surfxml_process_kill_time;
 #define A_surfxml_process_kill_time (surfxml_bufferstack + AX_surfxml_process_kill_time)
+short int surfxml_process_kill_time_isset;
 AT_surfxml_cluster_bb_bw AX_surfxml_cluster_bb_bw;
 #define A_surfxml_cluster_bb_bw (surfxml_bufferstack + AX_surfxml_cluster_bb_bw)
+short int surfxml_cluster_bb_bw_isset;
 AT_surfxml_argument_value AX_surfxml_argument_value;
 #define A_surfxml_argument_value (surfxml_bufferstack + AX_surfxml_argument_value)
+short int surfxml_argument_value_isset;
 AT_surfxml_link_state AX_surfxml_link_state;
 #define A_surfxml_link_state AX_surfxml_link_state
+short int surfxml_link_state_isset;
 AT_surfxml_ASroute_gw_src AX_surfxml_ASroute_gw_src;
 #define A_surfxml_ASroute_gw_src (surfxml_bufferstack + AX_surfxml_ASroute_gw_src)
+short int surfxml_ASroute_gw_src_isset;
 AT_surfxml_AS_routing AX_surfxml_AS_routing;
 #define A_surfxml_AS_routing (surfxml_bufferstack + AX_surfxml_AS_routing)
+short int surfxml_AS_routing_isset;
 AT_surfxml_link_bandwidth AX_surfxml_link_bandwidth;
 #define A_surfxml_link_bandwidth (surfxml_bufferstack + AX_surfxml_link_bandwidth)
+short int surfxml_link_bandwidth_isset;
 AT_surfxml_cluster_id AX_surfxml_cluster_id;
 #define A_surfxml_cluster_id (surfxml_bufferstack + AX_surfxml_cluster_id)
+short int surfxml_cluster_id_isset;
 AT_surfxml_peer_bw_in AX_surfxml_peer_bw_in;
 #define A_surfxml_peer_bw_in (surfxml_bufferstack + AX_surfxml_peer_bw_in)
+short int surfxml_peer_bw_in_isset;
 AT_surfxml_random_mean AX_surfxml_random_mean;
 #define A_surfxml_random_mean (surfxml_bufferstack + AX_surfxml_random_mean)
+short int surfxml_random_mean_isset;
 AT_surfxml_cluster_bb_lat AX_surfxml_cluster_bb_lat;
 #define A_surfxml_cluster_bb_lat (surfxml_bufferstack + AX_surfxml_cluster_bb_lat)
+short int surfxml_cluster_bb_lat_isset;
 AT_surfxml_link_latency AX_surfxml_link_latency;
 #define A_surfxml_link_latency (surfxml_bufferstack + AX_surfxml_link_latency)
+short int surfxml_link_latency_isset;
 AT_surfxml_trace_connect_kind AX_surfxml_trace_connect_kind;
 #define A_surfxml_trace_connect_kind AX_surfxml_trace_connect_kind
+short int surfxml_trace_connect_kind_isset;
 AT_surfxml_random_seed AX_surfxml_random_seed;
 #define A_surfxml_random_seed (surfxml_bufferstack + AX_surfxml_random_seed)
+short int surfxml_random_seed_isset;
 AT_surfxml_cluster_state_file AX_surfxml_cluster_state_file;
 #define A_surfxml_cluster_state_file (surfxml_bufferstack + AX_surfxml_cluster_state_file)
+short int surfxml_cluster_state_file_isset;
 AT_surfxml_link_bandwidth_file AX_surfxml_link_bandwidth_file;
 #define A_surfxml_link_bandwidth_file (surfxml_bufferstack + AX_surfxml_link_bandwidth_file)
+short int surfxml_link_bandwidth_file_isset;
 AT_surfxml_route_symmetrical AX_surfxml_route_symmetrical;
 #define A_surfxml_route_symmetrical AX_surfxml_route_symmetrical
+short int surfxml_route_symmetrical_isset;
 AT_surfxml_random_id AX_surfxml_random_id;
 #define A_surfxml_random_id (surfxml_bufferstack + AX_surfxml_random_id)
+short int surfxml_random_id_isset;
 AT_surfxml_random_max AX_surfxml_random_max;
 #define A_surfxml_random_max (surfxml_bufferstack + AX_surfxml_random_max)
+short int surfxml_random_max_isset;
 AT_surfxml_link_id AX_surfxml_link_id;
 #define A_surfxml_link_id (surfxml_bufferstack + AX_surfxml_link_id)
+short int surfxml_link_id_isset;
 AT_surfxml_process_host AX_surfxml_process_host;
 #define A_surfxml_process_host (surfxml_bufferstack + AX_surfxml_process_host)
+short int surfxml_process_host_isset;
 AT_surfxml_host_availability_file AX_surfxml_host_availability_file;
 #define A_surfxml_host_availability_file (surfxml_bufferstack + AX_surfxml_host_availability_file)
+short int surfxml_host_availability_file_isset;
 AT_surfxml_cluster_lat AX_surfxml_cluster_lat;
 #define A_surfxml_cluster_lat (surfxml_bufferstack + AX_surfxml_cluster_lat)
+short int surfxml_cluster_lat_isset;
 AT_surfxml_trace_periodicity AX_surfxml_trace_periodicity;
 #define A_surfxml_trace_periodicity (surfxml_bufferstack + AX_surfxml_trace_periodicity)
+short int surfxml_trace_periodicity_isset;
 AT_surfxml_cluster_bb_sharing_policy AX_surfxml_cluster_bb_sharing_policy;
 #define A_surfxml_cluster_bb_sharing_policy AX_surfxml_cluster_bb_sharing_policy
+short int surfxml_cluster_bb_sharing_policy_isset;
 AT_surfxml_router_coordinates AX_surfxml_router_coordinates;
 #define A_surfxml_router_coordinates (surfxml_bufferstack + AX_surfxml_router_coordinates)
+short int surfxml_router_coordinates_isset;
 AT_surfxml_peer_coordinates AX_surfxml_peer_coordinates;
 #define A_surfxml_peer_coordinates (surfxml_bufferstack + AX_surfxml_peer_coordinates)
+short int surfxml_peer_coordinates_isset;
 AT_surfxml_peer_state_file AX_surfxml_peer_state_file;
 #define A_surfxml_peer_state_file (surfxml_bufferstack + AX_surfxml_peer_state_file)
+short int surfxml_peer_state_file_isset;
 AT_surfxml_prop_value AX_surfxml_prop_value;
 #define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
+short int surfxml_prop_value_isset;
 AT_surfxml_ASroute_dst AX_surfxml_ASroute_dst;
 #define A_surfxml_ASroute_dst (surfxml_bufferstack + AX_surfxml_ASroute_dst)
+short int surfxml_ASroute_dst_isset;
 AT_surfxml_random_radical AX_surfxml_random_radical;
 #define A_surfxml_random_radical (surfxml_bufferstack + AX_surfxml_random_radical)
+short int surfxml_random_radical_isset;
 AT_surfxml_link_state_file AX_surfxml_link_state_file;
 #define A_surfxml_link_state_file (surfxml_bufferstack + AX_surfxml_link_state_file)
+short int surfxml_link_state_file_isset;
 AT_surfxml_trace_connect_trace AX_surfxml_trace_connect_trace;
 #define A_surfxml_trace_connect_trace (surfxml_bufferstack + AX_surfxml_trace_connect_trace)
+short int surfxml_trace_connect_trace_isset;
 AT_surfxml_cluster_power AX_surfxml_cluster_power;
 #define A_surfxml_cluster_power (surfxml_bufferstack + AX_surfxml_cluster_power)
+short int surfxml_cluster_power_isset;
 AT_surfxml_process_function AX_surfxml_process_function;
 #define A_surfxml_process_function (surfxml_bufferstack + AX_surfxml_process_function)
+short int surfxml_process_function_isset;
 AT_surfxml_peer_id AX_surfxml_peer_id;
 #define A_surfxml_peer_id (surfxml_bufferstack + AX_surfxml_peer_id)
+short int surfxml_peer_id_isset;
 AT_surfxml_cluster_router_id AX_surfxml_cluster_router_id;
 #define A_surfxml_cluster_router_id (surfxml_bufferstack + AX_surfxml_cluster_router_id)
+short int surfxml_cluster_router_id_isset;
 AT_surfxml_cluster_sharing_policy AX_surfxml_cluster_sharing_policy;
 #define A_surfxml_cluster_sharing_policy AX_surfxml_cluster_sharing_policy
+short int surfxml_cluster_sharing_policy_isset;
 AT_surfxml_bypassRoute_dst AX_surfxml_bypassRoute_dst;
 #define A_surfxml_bypassRoute_dst (surfxml_bufferstack + AX_surfxml_bypassRoute_dst)
+short int surfxml_bypassRoute_dst_isset;
 AT_surfxml_host_core AX_surfxml_host_core;
 #define A_surfxml_host_core (surfxml_bufferstack + AX_surfxml_host_core)
+short int surfxml_host_core_isset;
 AT_surfxml_host_availability AX_surfxml_host_availability;
 #define A_surfxml_host_availability (surfxml_bufferstack + AX_surfxml_host_availability)
+short int surfxml_host_availability_isset;
 AT_surfxml_bypassRoute_src AX_surfxml_bypassRoute_src;
 #define A_surfxml_bypassRoute_src (surfxml_bufferstack + AX_surfxml_bypassRoute_src)
+short int surfxml_bypassRoute_src_isset;
 AT_surfxml_route_src AX_surfxml_route_src;
 #define A_surfxml_route_src (surfxml_bufferstack + AX_surfxml_route_src)
+short int surfxml_route_src_isset;
 AT_surfxml_bypassRoute_gw_dst AX_surfxml_bypassRoute_gw_dst;
 #define A_surfxml_bypassRoute_gw_dst (surfxml_bufferstack + AX_surfxml_bypassRoute_gw_dst)
+short int surfxml_bypassRoute_gw_dst_isset;
 AT_surfxml_host_coordinates AX_surfxml_host_coordinates;
 #define A_surfxml_host_coordinates (surfxml_bufferstack + AX_surfxml_host_coordinates)
+short int surfxml_host_coordinates_isset;
 AT_surfxml_trace_id AX_surfxml_trace_id;
 #define A_surfxml_trace_id (surfxml_bufferstack + AX_surfxml_trace_id)
+short int surfxml_trace_id_isset;
 AT_surfxml_peer_power AX_surfxml_peer_power;
 #define A_surfxml_peer_power (surfxml_bufferstack + AX_surfxml_peer_power)
+short int surfxml_peer_power_isset;
 AT_surfxml_cluster_radical AX_surfxml_cluster_radical;
 #define A_surfxml_cluster_radical (surfxml_bufferstack + AX_surfxml_cluster_radical)
+short int surfxml_cluster_radical_isset;
 AT_surfxml_config_id AX_surfxml_config_id;
 #define A_surfxml_config_id (surfxml_bufferstack + AX_surfxml_config_id)
+short int surfxml_config_id_isset;
 AT_surfxml_bypassRoute_gw_src AX_surfxml_bypassRoute_gw_src;
 #define A_surfxml_bypassRoute_gw_src (surfxml_bufferstack + AX_surfxml_bypassRoute_gw_src)
+short int surfxml_bypassRoute_gw_src_isset;
 AT_surfxml_cluster_core AX_surfxml_cluster_core;
 #define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
+short int surfxml_cluster_core_isset;
 AT_surfxml_include_file AX_surfxml_include_file;
 #define A_surfxml_include_file (surfxml_bufferstack + AX_surfxml_include_file)
+short int surfxml_include_file_isset;
 AT_surfxml_random_std_deviation AX_surfxml_random_std_deviation;
 #define A_surfxml_random_std_deviation (surfxml_bufferstack + AX_surfxml_random_std_deviation)
+short int surfxml_random_std_deviation_isset;
 AT_surfxml_host_state_file AX_surfxml_host_state_file;
 #define A_surfxml_host_state_file (surfxml_bufferstack + AX_surfxml_host_state_file)
+short int surfxml_host_state_file_isset;
 AT_surfxml_route_dst AX_surfxml_route_dst;
 #define A_surfxml_route_dst (surfxml_bufferstack + AX_surfxml_route_dst)
+short int surfxml_route_dst_isset;
 AT_surfxml_cluster_bw AX_surfxml_cluster_bw;
 #define A_surfxml_cluster_bw (surfxml_bufferstack + AX_surfxml_cluster_bw)
+short int surfxml_cluster_bw_isset;
 AT_surfxml_platform_version AX_surfxml_platform_version;
 #define A_surfxml_platform_version (surfxml_bufferstack + AX_surfxml_platform_version)
+short int surfxml_platform_version_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG

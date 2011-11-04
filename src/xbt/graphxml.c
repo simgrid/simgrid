@@ -1057,8 +1057,8 @@ char *xbt_graph_parse_text;
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
- * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.66 2011/10/30 21:03:48 mquinson Exp).
+ * FleXML is Copyright (C) 2003-2011 Martin Quinson.  All rights reserved.
+ * (Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -1067,7 +1067,7 @@ char *xbt_graph_parse_text;
  * 
  * Some parts, here collectively called "Part A", are found in the 
  * FleXML package.  They are Copyright (C) 1999-2005 Kristoffer Rose
- * and Copyright (C) 2003-2006 Martin Quinson. All rights reserved.
+ * and Copyright (C) 2003-2011 Martin Quinson. All rights reserved.
  *
  * You can redistribute, use, perform, display and/or modify "Part A"
  * provided the following two conditions hold:
@@ -1103,7 +1103,7 @@ char *xbt_graph_parse_text;
 const char rcs_graphxml_flexml_skeleton[] =
  "$" "Id: skel,v 1.40 2007/10/11 09:57:24 mquinson Exp $";
 const char rcs_graphxml_flexml[] =
- "$" "Id: flexml.pl,v 1.66 2011/10/30 21:03:48 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp $";
 
 /* ANSI headers. */
 #include <stdlib.h> /* for realloc() -- needed here when using flex 2.5.4 */
@@ -1140,28 +1140,40 @@ extern char *graphxml_bufferstack;
 #define graphxml_pcdata (graphxml_bufferstack + graphxml_pcdata_ix)
 AT_graphxml_node_name AX_graphxml_node_name;
 #define A_graphxml_node_name (graphxml_bufferstack + AX_graphxml_node_name)
+short int graphxml_node_name_isset;
 AT_graphxml_edge_source AX_graphxml_edge_source;
 #define A_graphxml_edge_source (graphxml_bufferstack + AX_graphxml_edge_source)
+short int graphxml_edge_source_isset;
 AT_graphxml_node_position_y AX_graphxml_node_position_y;
 #define A_graphxml_node_position_y (graphxml_bufferstack + AX_graphxml_node_position_y)
+short int graphxml_node_position_y_isset;
 AT_graphxml_node_position_x AX_graphxml_node_position_x;
 #define A_graphxml_node_position_x (graphxml_bufferstack + AX_graphxml_node_position_x)
+short int graphxml_node_position_x_isset;
 AT_graphxml_edge_data AX_graphxml_edge_data;
 #define A_graphxml_edge_data (graphxml_bufferstack + AX_graphxml_edge_data)
+short int graphxml_edge_data_isset;
 AT_graphxml_edge_target AX_graphxml_edge_target;
 #define A_graphxml_edge_target (graphxml_bufferstack + AX_graphxml_edge_target)
+short int graphxml_edge_target_isset;
 AT_graphxml_graph_isDirected AX_graphxml_graph_isDirected;
 #define A_graphxml_graph_isDirected AX_graphxml_graph_isDirected
+short int graphxml_graph_isDirected_isset;
 AT_graphxml_node_label AX_graphxml_node_label;
 #define A_graphxml_node_label (graphxml_bufferstack + AX_graphxml_node_label)
+short int graphxml_node_label_isset;
 AT_graphxml_node_data AX_graphxml_node_data;
 #define A_graphxml_node_data (graphxml_bufferstack + AX_graphxml_node_data)
+short int graphxml_node_data_isset;
 AT_graphxml_edge_label AX_graphxml_edge_label;
 #define A_graphxml_edge_label (graphxml_bufferstack + AX_graphxml_edge_label)
+short int graphxml_edge_label_isset;
 AT_graphxml_edge_length AX_graphxml_edge_length;
 #define A_graphxml_edge_length (graphxml_bufferstack + AX_graphxml_edge_length)
+short int graphxml_edge_length_isset;
 AT_graphxml_edge_name AX_graphxml_edge_name;
 #define A_graphxml_edge_name (graphxml_bufferstack + AX_graphxml_edge_name)
+short int graphxml_edge_name_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
