@@ -47,6 +47,8 @@ typedef struct s_cluster {
 	char* S_cluster_router_id;
 	int V_cluster_sharing_policy;
 	int V_cluster_bb_sharing_policy;
+	char* V_cluster_availability_file;
+	char* V_cluster_state_file;
 } s_cluster_t;
 
 typedef struct s_router *router_t;

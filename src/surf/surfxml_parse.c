@@ -363,6 +363,9 @@ void STag_surfxml_cluster(void){
 	struct_cluster->V_cluster_sharing_policy = AX_surfxml_cluster_sharing_policy;
 	struct_cluster->V_cluster_bb_sharing_policy = AX_surfxml_cluster_bb_sharing_policy;
 
+	struct_cluster->V_cluster_availability_file = xbt_strdup(A_surfxml_cluster_availability_file);
+	struct_cluster->V_cluster_state_file = xbt_strdup(A_surfxml_cluster_state_file);
+
 	surfxml_call_cb_functions(STag_surfxml_cluster_cb_list);
 }
 void ETag_surfxml_cluster(void){
@@ -372,6 +375,8 @@ void ETag_surfxml_cluster(void){
 	xbt_free(struct_cluster->V_cluster_suffix);
 	xbt_free(struct_cluster->V_cluster_radical);
 	xbt_free(struct_cluster->S_cluster_router_id);
+	xbt_free(struct_cluster->V_cluster_availability_file);
+	xbt_free(struct_cluster->V_cluster_state_file);
 	xbt_free(struct_cluster);
 }
 
