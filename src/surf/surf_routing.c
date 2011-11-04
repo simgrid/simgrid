@@ -1501,6 +1501,101 @@ static void routing_parse_Econfig(void)
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 }
 
+static void parse_create_host_link(int i)
+{
+	char *host_id, *link_id = NULL;
+
+	host_id = bprintf("%s%d%s", struct_cluster->V_cluster_prefix, i, struct_cluster->V_cluster_suffix);
+	link_id = bprintf("%s_link_%d", struct_cluster->V_cluster_id, i);
+
+	A_surfxml_host_state = A_surfxml_host_state_ON;
+
+	XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->S_cluster_power);
+	struct_host = xbt_new0(s_surf_parsing_host_arg_t, 1);
+	struct_host->V_host_id = xbt_strdup(host_id);
+	if(strcmp(struct_cluster->V_cluster_availability_file,"")){
+	  xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
+	  char* tmp_availability_file = xbt_strdup(struct_cluster->V_cluster_availability_file);
+	  xbt_str_varsubst(tmp_availability_file,patterns);
+	  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
+	  struct_host->V_host_power_trace = tmgr_trace_new(tmp_availability_file);
+	  xbt_free(tmp_availability_file);
+	}
+	else
+	{
+	  XBT_DEBUG("\tavailability_file=\"\"");
+	}
+	if(strcmp(struct_cluster->V_cluster_state_file,"")){
+	  char *tmp_state_file = xbt_strdup(struct_cluster->V_cluster_state_file);
+	  xbt_str_varsubst(tmp_state_file,patterns);
+	  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
+	  struct_host->V_host_state_trace = tmgr_trace_new(tmp_state_file);
+	  xbt_free(tmp_state_file);
+	}
+	else
+	{
+	  XBT_DEBUG("\tstate_file=\"\"");
+	}
+
+	struct_host->V_host_power_peak = struct_cluster->S_cluster_power;
+	struct_host->V_host_power_scale = 1.0;
+	struct_host->V_host_core = struct_cluster->S_cluster_core;
+	struct_host->V_host_state_initial = SURF_RESOURCE_ON;
+	struct_host->V_host_coord = "";
+	STag_surfxml_host_cluster();
+	XBT_DEBUG("</host>");
+
+	A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+	if(AX_surfxml_cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
+	{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
+	if(AX_surfxml_cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
+	{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
+
+	XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
+
+	struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
+	struct_lnk->V_link_id = xbt_strdup(link_id);
+	struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bw;
+	struct_lnk->V_link_latency = struct_cluster->S_cluster_lat;
+	struct_lnk->V_link_bandwidth_file = NULL;
+	struct_lnk->V_link_latency_file = NULL;
+	struct_lnk->V_link_state_file = NULL;
+	struct_lnk->V_link_state = SURF_RESOURCE_ON;
+	struct_lnk->V_link_sharing_policy = A_surfxml_link_sharing_policy;
+
+	if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
+		struct_lnk->V_policy_initial_link = SURF_LINK_SHARED;
+	else
+	{
+	 if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
+		 struct_lnk->V_policy_initial_link = SURF_LINK_FATPIPE;
+	 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
+		 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
+	}
+	STag_surfxml_link_cluster();
+
+	ETag_surfxml_host();
+	ETag_surfxml_link();
+
+	surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
+
+	if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX){
+		char* tmp_link =  bprintf("%s_UP",link_id);
+		info->link_up   = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+		free(tmp_link);
+		tmp_link =  bprintf("%s_DOWN",link_id);
+		info->link_down = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+		free(tmp_link);
+	}
+	else{
+		info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
+		info->link_down = info->link_up;
+	}
+	xbt_dict_set(cluster_host_link,host_id,info,xbt_free);
+	xbt_free(link_id);
+	xbt_free(host_id);
+}
+
 void routing_parse_Scluster(void)
 {
   if(!cluster_host_link)
@@ -1514,7 +1609,6 @@ void routing_parse_Scluster(void)
   {
 	  if(xbt_dict_size(patterns)==0)
 		  patterns = xbt_dict_new();
-	  XBT_INFO("'%s' '%s'",A_surfxml_cluster_state_file,struct_cluster->V_cluster_availability_file);
 	  xbt_dict_set(patterns,"id",struct_cluster->V_cluster_id,NULL);
 	  xbt_dict_set(patterns,"prefix",struct_cluster->V_cluster_prefix,NULL);
 	  xbt_dict_set(patterns,"suffix",struct_cluster->V_cluster_suffix,NULL);
@@ -1524,16 +1618,11 @@ void routing_parse_Scluster(void)
   int start, end, i;
   xbt_dynar_t radical_elements;
   xbt_dynar_t radical_ends;
-  int cluster_sharing_policy = AX_surfxml_cluster_sharing_policy;
-  int cluster_bb_sharing_policy = AX_surfxml_cluster_bb_sharing_policy;
-  if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
-	  xbt_dict_set(cluster_host_link,struct_cluster->V_cluster_id,bprintf("fullduplex"),free);
 
   static unsigned int surfxml_buffer_stack_stack_ptr = 1;
   static unsigned int surfxml_buffer_stack_stack[1024];
 
   surfxml_buffer_stack_stack[0] = 0;
-
   surfxml_bufferstack_push(1);
 
   SURFXML_BUFFER_SET(AS_id, struct_cluster->V_cluster_id);
@@ -1541,169 +1630,23 @@ void routing_parse_Scluster(void)
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", struct_cluster->V_cluster_id);
   SURFXML_START_TAG(AS);
 
+  //Make all hosts
   radical_elements = xbt_str_split(struct_cluster->V_cluster_radical, ",");
   xbt_dynar_foreach(radical_elements, iter, groups) {
     radical_ends = xbt_str_split(groups, "-");
     switch (xbt_dynar_length(radical_ends)) {
     case 1:
 		surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char *));
-		host_id = bprintf("%s%d%s", struct_cluster->V_cluster_prefix, start, struct_cluster->V_cluster_suffix);
-		link_id = bprintf("%s_link_%d", struct_cluster->V_cluster_id, start);
-
-		XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->S_cluster_power);
-		struct_host = xbt_new0(s_surf_parsing_host_arg_t, 1);
-		struct_host->V_host_id = host_id;
-		if(strcmp(struct_cluster->V_cluster_availability_file,"")){
-		  xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
-		  char* tmp_availability_file = xbt_strdup(struct_cluster->V_cluster_availability_file);
-		  xbt_str_varsubst(tmp_availability_file,patterns);
-		  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
-		  struct_host->V_host_power_trace = tmgr_trace_new(tmp_availability_file);
-		  xbt_free(tmp_availability_file);
-		}
-		else
-		{
-		  XBT_DEBUG("\tavailability_file=\"\"");
-		}
-		if(strcmp(struct_cluster->V_cluster_state_file,"")){
-		  char *tmp_state_file = xbt_strdup(struct_cluster->V_cluster_state_file);
-		  xbt_str_varsubst(tmp_state_file,patterns);
-		  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
-		  struct_host->V_host_state_trace = tmgr_trace_new(tmp_state_file);
-		  xbt_free(tmp_state_file);
-		}
-		else
-		{
-		  XBT_DEBUG("\tstate_file=\"\"");
-		}
-
-		struct_host->V_host_power_peak = struct_cluster->S_cluster_power;
-		struct_host->V_host_power_scale = 1.0;
-		struct_host->V_host_core = struct_cluster->S_cluster_core;
-		struct_host->V_host_state_initial = SURF_RESOURCE_ON;
-		struct_host->V_host_coord = "";
-		STag_surfxml_host_cluster();
-		XBT_DEBUG("</host>");
-
-		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-		if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
-		{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
-		if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
-		{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
-
-		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
-
-		struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-		struct_lnk->V_link_id = link_id;
-		struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bw;
-		struct_lnk->V_link_latency = struct_cluster->S_cluster_lat;
-		struct_lnk->V_link_bandwidth_file = NULL;
-		struct_lnk->V_link_latency_file = NULL;
-		struct_lnk->V_link_state_file = NULL;
-		struct_lnk->V_link_state = SURF_RESOURCE_ON;
-		struct_lnk->V_link_sharing_policy = A_surfxml_link_sharing_policy;
-
-		if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-			struct_lnk->V_policy_initial_link = SURF_LINK_SHARED;
-		else
-		{
-		 if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
-			 struct_lnk->V_policy_initial_link = SURF_LINK_FATPIPE;
-		 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-			 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
-		}
-		STag_surfxml_link_cluster();
-
-		xbt_dict_set(cluster_host_link,host_id,strdup(link_id),free);
-//		XBT_INFO("key '%s' Value '%s'",host_id,link_id);
-		ETag_surfxml_host();
-		ETag_surfxml_link();
-
+		parse_create_host_link(start);
 		break;
 
     case 2:
-
-      surf_parse_get_int(&start,
-                         xbt_dynar_get_as(radical_ends, 0, char *));
-      surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
-      for (i = start; i <= end; i++) {
-		host_id = bprintf("%s%d%s", struct_cluster->V_cluster_prefix, i, struct_cluster->V_cluster_suffix);
-		link_id = bprintf("%s_link_%d", struct_cluster->V_cluster_id, i);
-
-		A_surfxml_host_state = A_surfxml_host_state_ON;
-
-		XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->S_cluster_power);
-		struct_host = xbt_new0(s_surf_parsing_host_arg_t, 1);
-		struct_host->V_host_id = host_id;
-		if(strcmp(struct_cluster->V_cluster_availability_file,"")){
-		  xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
-		  char* tmp_availability_file = xbt_strdup(struct_cluster->V_cluster_availability_file);
-		  xbt_str_varsubst(tmp_availability_file,patterns);
-		  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
-		  struct_host->V_host_power_trace = tmgr_trace_new(tmp_availability_file);
-		  xbt_free(tmp_availability_file);
+		surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char *));
+		surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
+		for (i = start; i <= end; i++) {
+		  parse_create_host_link(i);
 		}
-		else
-		{
-		  XBT_DEBUG("\tavailability_file=\"\"");
-		}
-		if(strcmp(struct_cluster->V_cluster_state_file,"")){
-		  char *tmp_state_file = xbt_strdup(struct_cluster->V_cluster_state_file);
-		  xbt_str_varsubst(tmp_state_file,patterns);
-		  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
-		  struct_host->V_host_state_trace = tmgr_trace_new(tmp_state_file);
-		  xbt_free(tmp_state_file);
-		}
-		else
-		{
-		  XBT_DEBUG("\tstate_file=\"\"");
-		}
-
-		struct_host->V_host_power_peak = struct_cluster->S_cluster_power;
-		struct_host->V_host_power_scale = 1.0;
-		struct_host->V_host_core = struct_cluster->S_cluster_core;
-		struct_host->V_host_state_initial = SURF_RESOURCE_ON;
-		struct_host->V_host_coord = "";
-		STag_surfxml_host_cluster();
-		XBT_DEBUG("</host>");
-
-		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-		if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
-		{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
-		if(cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FATPIPE)
-		{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
-
-		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
-
-		struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-		struct_lnk->V_link_id = link_id;
-		struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bw;
-		struct_lnk->V_link_latency = struct_cluster->S_cluster_lat;
-		struct_lnk->V_link_bandwidth_file = NULL;
-		struct_lnk->V_link_latency_file = NULL;
-		struct_lnk->V_link_state_file = NULL;
-		struct_lnk->V_link_state = SURF_RESOURCE_ON;
-		struct_lnk->V_link_sharing_policy = A_surfxml_link_sharing_policy;
-
-		if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-			struct_lnk->V_policy_initial_link = SURF_LINK_SHARED;
-		else
-		{
-		 if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
-			 struct_lnk->V_policy_initial_link = SURF_LINK_FATPIPE;
-		 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-			 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
-		}
-		STag_surfxml_link_cluster();
-
-		xbt_dict_set(cluster_host_link,host_id,strdup(link_id),free);
-//		XBT_INFO("key '%s' Value '%s'",host_id,link_id);
-
-		ETag_surfxml_host();
-		ETag_surfxml_link();
-
-      }
-      break;
+		break;
 
     default:
       XBT_DEBUG("Malformed radical");
@@ -1714,6 +1657,7 @@ void routing_parse_Scluster(void)
   }
   xbt_dynar_free(&radical_elements);
 
+  //Make the router
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", struct_cluster->S_cluster_router_id);
   SURFXML_BUFFER_SET(router_id, struct_cluster->S_cluster_router_id);
@@ -1721,16 +1665,17 @@ void routing_parse_Scluster(void)
   SURFXML_START_TAG(router);
   SURFXML_END_TAG(router);
 
+  //Make the backbone
   if( (struct_cluster->S_cluster_bb_bw!= 0)  && (struct_cluster->S_cluster_bb_lat!=0)  ){
 	  char *link_backbone = bprintf("%s_backbone", struct_cluster->V_cluster_id);
 	  XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link_backbone,struct_cluster->S_cluster_bb_bw, struct_cluster->S_cluster_bb_lat);
 
 	  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-	  if(cluster_bb_sharing_policy == A_surfxml_cluster_bb_sharing_policy_FATPIPE)
+	  if(AX_surfxml_cluster_bb_sharing_policy == A_surfxml_cluster_bb_sharing_policy_FATPIPE)
 	  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
 
 	  struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-	  struct_lnk->V_link_id = link_backbone;
+	  struct_lnk->V_link_id = xbt_strdup(link_backbone);
 	  struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bb_bw;
 	  struct_lnk->V_link_latency = struct_cluster->S_cluster_bb_lat;
 	  struct_lnk->V_link_bandwidth_file = NULL;
@@ -1742,15 +1687,16 @@ void routing_parse_Scluster(void)
 	  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
 		  struct_lnk->V_policy_initial_link = SURF_LINK_SHARED;
 	  else
-	  {
-	   if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
-		   struct_lnk->V_policy_initial_link = SURF_LINK_FATPIPE;
-	   else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-		   struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
-	  }
+		  struct_lnk->V_policy_initial_link = SURF_LINK_FATPIPE;
 
 	  STag_surfxml_link_cluster();
 	  ETag_surfxml_link();
+
+	  surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
+	  info->link_up   = xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL);
+	  info->link_down = info->link_up;
+	  xbt_dict_set(cluster_host_link,struct_cluster->V_cluster_id,info,xbt_free);
+	  free(link_backbone);
   }
 
   XBT_DEBUG(" ");
@@ -1778,14 +1724,6 @@ void routing_parse_Scluster(void)
   XBT_DEBUG(" ");
 
   surfxml_bufferstack_pop(1);
-
-//  xbt_dict_cursor_t cursor = NULL;
-//  char *key,*data;
-//
-//  XBT_INFO("\n");
-//  xbt_dict_foreach(cluster_host_link,cursor,key,data){
-//	  XBT_INFO("%s : %s",key,data);
-//  }
 }
 /*
  * This function take a string and replace parameters from patterns dict.
