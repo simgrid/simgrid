@@ -75,7 +75,6 @@ static char *trace_id = NULL;
 
 static void parse_Stag_trace(void)
 {
-  surf_parse_models_setup(); /* ensure that the models are created after the last <config> tag. See comment in simgrid.dtd */
   trace_id = xbt_strdup(A_surfxml_trace_id);
   trace_file = xbt_strdup(A_surfxml_trace_file);
   surf_parse_get_double(&trace_periodicity, A_surfxml_trace_periodicity);
@@ -103,8 +102,6 @@ static void parse_Etag_trace(void)
 
 static void parse_Stag_trace_connect(void)
 {
-  surf_parse_models_setup(); /* ensure that the models are created after the last <config> tag. See comment in simgrid.dtd */
-
   xbt_assert(xbt_dict_get_or_null
               (traces_set_list, A_surfxml_trace_connect_trace),
               "Cannot connect trace %s to %s: trace unknown",

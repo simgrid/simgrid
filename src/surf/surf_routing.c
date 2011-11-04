@@ -429,6 +429,9 @@ void routing_AS_init(const char *AS_id, const char *wanted_routing_type)
   routing_component_t new_routing;
   model_type_t model = NULL;
   int cpt;
+
+  surf_parse_models_setup(); /* ensure that the models are created after the last <config> tag and before the first <AS>-like */
+
   /* search the routing model */
   for (cpt = 0; routing_models[cpt].name; cpt++)
     if (!strcmp(wanted_routing_type, routing_models[cpt].name))

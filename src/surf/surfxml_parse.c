@@ -349,8 +349,6 @@ void ETag_surfxml_router(void){
 }
 
 void STag_surfxml_cluster(void){
-  surf_parse_models_setup(); /* ensure that the models are created after the last <config> tag. See comment in simgrid.dtd */
-
 	struct_cluster = xbt_new0(s_surf_parsing_cluster_arg_t, 1);
 	struct_cluster->V_cluster_id = xbt_strdup(A_surfxml_cluster_id);
 	struct_cluster->V_cluster_prefix = xbt_strdup(A_surfxml_cluster_prefix);
@@ -393,8 +391,6 @@ void ETag_surfxml_cluster(void){
 }
 
 void STag_surfxml_peer(void){
-  surf_parse_models_setup(); /* ensure that the models are created after the last <config> tag. See comment in simgrid.dtd */
-
 	struct_peer = xbt_new0(s_surf_parsing_peer_arg_t, 1);
 	struct_peer->V_peer_id = xbt_strdup(A_surfxml_peer_id);
 	struct_peer->V_peer_power = xbt_strdup(A_surfxml_peer_power);
@@ -477,8 +473,6 @@ void STag_surfxml_trace_connect(void){
 	surfxml_call_cb_functions(STag_surfxml_trace_connect_cb_list);
 }
 void STag_surfxml_AS(void){
-  surf_parse_models_setup(); /* ensure that the models are created after the last <config> tag. See comment in simgrid.dtd */
-
 	surfxml_call_cb_functions(STag_surfxml_AS_cb_list);
 }
 void STag_surfxml_ASroute(void){
