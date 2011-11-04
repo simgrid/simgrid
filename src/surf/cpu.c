@@ -32,7 +32,7 @@ lmm_system_t cpu_maxmin_system = NULL;
 static xbt_swag_t cpu_running_action_set_that_does_not_need_being_checked =
     NULL;
 
-static void* cpu_create_resource(char *name, double power_peak,
+static void* cpu_create_resource(const char *name, double power_peak,
                            double power_scale,
                            tmgr_trace_t power_trace,
                            int core,
@@ -41,13 +41,12 @@ static void* cpu_create_resource(char *name, double power_peak,
                            xbt_dict_t cpu_properties)
 {
 
-  cpu_Cas01_t cpu = xbt_new0(s_cpu_Cas01_t, 1);
+  cpu_Cas01_t cpu = NULL;
   xbt_assert(!surf_cpu_resource_by_name(name),
               "Host '%s' declared several times in the platform file",
               name);
-  cpu->generic_resource.model = surf_cpu_model;
-  cpu->generic_resource.name = name;
-  cpu->generic_resource.properties = cpu_properties;
+  cpu = (cpu_Cas01_t) surf_resource_new(sizeof(s_cpu_Cas01_t),
+          surf_cpu_model, name,cpu_properties);
   cpu->power_peak = power_peak;
   xbt_assert(cpu->power_peak > 0, "Power has to be >0");
   cpu->power_scale = power_scale;

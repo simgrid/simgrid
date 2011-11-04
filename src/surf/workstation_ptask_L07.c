@@ -614,22 +614,22 @@ static int ptask_link_shared(const void *link)
 /*** Resource Creation & Destruction **/
 /**************************************/
 
-static void* ptask_cpu_create_resource(char *name, double power_scale,
+static void* ptask_cpu_create_resource(const char *name, double power_scale,
                                double power_initial,
                                tmgr_trace_t power_trace,
                                e_surf_resource_state_t state_initial,
                                tmgr_trace_t state_trace,
                                xbt_dict_t cpu_properties)
 {
-  cpu_L07_t cpu = xbt_new0(s_cpu_L07_t, 1);
+  cpu_L07_t cpu = NULL;
   xbt_assert(!surf_workstation_resource_by_name(name),
               "Host '%s' declared several times in the platform file.",
               name);
 
-  cpu->generic_resource.model = surf_workstation_model;
+  cpu = (cpu_L07_t) surf_resource_new(sizeof(s_cpu_L07_t),
+          surf_workstation_model, name,cpu_properties);
+
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
-  cpu->generic_resource.name = xbt_strdup(name);
-  cpu->generic_resource.properties = cpu_properties;
   cpu->id = ptask_host_count++;
 
   cpu->power_scale = power_scale;
@@ -667,7 +667,7 @@ static void ptask_parse_cpu_init(void)
   current_property_set=NULL;
 }
 
-static void* ptask_link_create_resource(char *name,
+static void* ptask_link_create_resource(const char *name,
                                  double bw_initial,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
@@ -685,7 +685,7 @@ static void* ptask_link_create_resource(char *name,
 
   nw_link->generic_resource.model = surf_workstation_model;
   nw_link->generic_resource.properties = properties;
-  nw_link->generic_resource.name = name;
+  nw_link->generic_resource.name = xbt_strdup(name);
   nw_link->type = SURF_WORKSTATION_RESOURCE_LINK;
   nw_link->bw_current = bw_initial;
   if (bw_trace)

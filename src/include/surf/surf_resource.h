@@ -11,12 +11,12 @@
 
 static XBT_INLINE
     surf_resource_t surf_resource_new(size_t childsize,
-                                      surf_model_t model, char *name,
+                                      surf_model_t model, const char *name,
                                       xbt_dict_t props)
 {
   surf_resource_t res = xbt_malloc0(childsize);
   res->model = model;
-  res->name = name;
+  res->name = xbt_strdup(name);
   res->properties = props;
   return res;
 }

@@ -47,7 +47,7 @@ extern int sg_maxmin_selective_update;
 static xbt_swag_t
     cpu_im_running_action_set_that_does_not_need_being_checked = NULL;
 
-static void* cpu_im_create_resource(char *name, double power_peak,
+static void* cpu_im_create_resource(const char *name, double power_peak,
                                  double power_scale,
                                  tmgr_trace_t power_trace,
                                  int core,
@@ -57,14 +57,12 @@ static void* cpu_im_create_resource(char *name, double power_peak,
 {
   cpu_Cas01_im_t cpu = NULL;
   s_surf_action_cpu_Cas01_im_t action;
-  cpu = xbt_new0(s_cpu_Cas01_im_t, 1);
 
   xbt_assert(!surf_cpu_resource_by_name(name),
               "Host '%s' declared several times in the platform file",
               name);
-  cpu->generic_resource.model = surf_cpu_model;
-  cpu->generic_resource.name = name;
-  cpu->generic_resource.properties = cpu_properties;
+  cpu = (cpu_Cas01_im_t) surf_resource_new(sizeof(s_cpu_Cas01_im_t),
+          surf_cpu_model, name,cpu_properties);
   cpu->power_peak = power_peak;
   xbt_assert(cpu->power_peak > 0, "Power has to be >0");
   cpu->power_scale = power_scale;
@@ -143,10 +141,10 @@ static void cpu_im_define_callbacks()
                        &cpu_im_add_traces_cpu);
 }
 
-static int cpu_im_resource_used(void *resource_id)
+static int cpu_im_resource_used(void *resource)
 {
   return lmm_constraint_used(cpu_im_maxmin_system,
-                             ((cpu_Cas01_im_t) resource_id)->constraint);
+                             ((cpu_Cas01_im_t) resource)->constraint);
 }
 
 static int cpu_im_action_unref(surf_action_t action)

@@ -150,7 +150,7 @@ static double (*im_bandwidth_constraint_callback) (double, double, double) =
     &im_constant_bandwidth_constraint;
 
 
-static void* im_net_create_resource(char *name,
+static void* im_net_create_resource(const char *name,
                                 double bw_initial,
                                 tmgr_trace_t bw_trace,
                                 double lat_initial,

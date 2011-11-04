@@ -143,7 +143,7 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
 }
 
 
-static void* cpu_ti_create_resource(char *name, double power_peak,
+static void* cpu_ti_create_resource(const char *name, double power_peak,
                            double power_scale,
                            tmgr_trace_t power_trace,
                            int core,
@@ -153,18 +153,17 @@ static void* cpu_ti_create_resource(char *name, double power_peak,
 {
   tmgr_trace_t empty_trace;
   s_tmgr_event_t val;
-  cpu_ti_t cpu = xbt_new0(s_cpu_ti_t, 1);
+  cpu_ti_t cpu = NULL;
   s_surf_action_cpu_ti_t ti_action;
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   xbt_assert(!surf_cpu_resource_by_name(name),
               "Host '%s' declared several times in the platform file",
               name);
   xbt_assert(core==1,"Multi-core not handled with this model yet");
+  cpu = (cpu_ti_t) surf_resource_new(sizeof(s_cpu_ti_t),
+          surf_cpu_model, name,cpu_properties);
   cpu->action_set =
       xbt_swag_new(xbt_swag_offset(ti_action, cpu_list_hookup));
-  cpu->generic_resource.model = surf_cpu_model;
-  cpu->generic_resource.name = name;
-  cpu->generic_resource.properties = cpu_properties;
   cpu->power_peak = power_peak;
   xbt_assert(cpu->power_peak > 0, "Power has to be >0");
   XBT_DEBUG("power scale %lf", power_scale);
