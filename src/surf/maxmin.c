@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -423,8 +423,7 @@ void lmm_print(lmm_system_t sys)
   trace_buf =
       xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
   strcat(trace_buf, print_buf);
-  fprintf(stderr, "%s", trace_buf);
-  //XBT_DEBUG("%20s", trace_buf); FIXME
+  XBT_DEBUG("%20s", trace_buf);
   trace_buf[0] = '\000';
 
   XBT_DEBUG("Constraints");
@@ -466,8 +465,7 @@ void lmm_print(lmm_system_t sys)
                       strlen(trace_buf) + strlen(print_buf) + 1);
       strcat(trace_buf, print_buf);
     }
-    //   XBT_DEBUG("%s", trace_buf);
-    fprintf(stderr, "%s\n", trace_buf);
+    XBT_DEBUG("%s", trace_buf);
     trace_buf[0] = '\000';
     xbt_assert(!double_positive(sum - cnst->bound),
                 "Incorrect value (%f is not smaller than %f): %g",
