@@ -406,6 +406,7 @@ set(headers_to_install
 	include/xbt/mmalloc.h
 	include/xbt/replay_trace_reader.h
 	include/xbt/parmap.h
+	include/simgrid/platf.h
 	include/mc/modelchecker.h
 	include/msg/msg.h
 	include/msg/datatypes.h

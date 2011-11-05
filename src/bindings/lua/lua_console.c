@@ -7,6 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid_lua.h"
+#include "simgrid/platf.h"
 #include <string.h>
 #include <ctype.h>
 
@@ -15,15 +16,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_console, bindings, "Lua Bindings");
 
 //AS List
 static xbt_dynar_t as_list_d;
-
-/*
- * Initialize platform model routing
- */
-
-static void create_AS(const char *id, const char *mode)
-{
-  routing_AS_init(id, mode);
-}
 
 /**
  * create host resource via CPU model [for MSG]
@@ -707,7 +699,7 @@ static int surf_parse_bypass_platform()
   // Add AS
   xbt_dynar_foreach(as_list_d, i,p_as)
   {
-	  create_AS(p_as->id, p_as->mode);
+    sg_platf_new_AS_open(p_as->id,p_as->mode);
 	  // add associated Hosts
 	  xbt_dynar_foreach(p_as->host_list_d, j, p_host){
 		  create_host(p_host->id, p_host->power_peak, p_host->power_scale,
@@ -732,7 +724,7 @@ static int surf_parse_bypass_platform()
 	  }
 
 	  // Finalize AS
-	  routing_AS_end(p_as->id);
+	  sg_platf_new_AS_close();
   }
 
   // add traces
@@ -760,7 +752,7 @@ static int surf_wsL07_parse_bypass_platform()
   xbt_dynar_foreach(as_list_d, i, p_as)
   {
 	  // Init AS
-	  create_AS(p_as->id, p_as->mode);
+    sg_platf_new_AS_open(p_as->id,p_as->mode);
 
 	  // add Sub AS
 
@@ -789,7 +781,7 @@ static int surf_wsL07_parse_bypass_platform()
 	      }
 	  /* </AS> */
 	  // Finalize AS
-	  routing_AS_end(p_as->id);
+	  sg_platf_new_AS_close();
   }
   // add traces
   surf_wsL07_add_traces();

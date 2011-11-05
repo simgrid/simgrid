@@ -791,11 +791,8 @@ XBT_PUBLIC(void) surf_add_link_traces(void);
 XBT_PUBLIC(void) surf_wsL07_add_traces(void);
 
 /*
- * init AS from lua console
- * see surf_routing.c
+ * lua console
  */
-XBT_PUBLIC(void) routing_AS_init(const char *id, const char *mode);
-XBT_PUBLIC(void) routing_AS_end(const char *id);
 // add host to network element list
 XBT_PUBLIC(void) routing_add_host(const char *host_id);
 //Set a new link on the actual list of link for a route or ASroute

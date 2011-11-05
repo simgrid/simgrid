@@ -1,10 +1,13 @@
-/* Copyright (c) 2009, 2010. The SimGrid Team. 
+/* Copyright (c) 2009, 2010, 2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <pcre.h>               /* regular expression library */
+
+#include "simgrid/platf.h" // platform creation API
+
 #include "surf_routing_private.h"
 #include "surf/surf_routing.h"
 #include "surf/surfxml_parse_values.h"
@@ -419,12 +422,19 @@ static void parse_E_bypassRoute_store_route(void)
 }
 
 /**
- * \brief Make a new routing component
+ * \brief Make a new routing component to the platform
  *
- * make the new structure and
- * set the parsing functions to allows parsing the part of the routing tree
+ * Add a new autonomous system to the platform. Any elements (such as host,
+ * router or sub-AS) added after this call and before the corresponding call
+ * to sg_platf_new_AS_close() will be added to this AS.
+ *
+ * Once this function was called, the configuration concerning the used
+ * models cannot be changed anymore.
+ *
+ * @param AS_id name of this autonomous system. Must be uniq in the platform
+ * @param wanted_routing_type one of Full, Floyd, Dijkstra or similar. Full list in the variable routing_models, in src/surf/surf_routing.c
  */
-void routing_AS_init(const char *AS_id, const char *wanted_routing_type)
+void sg_platf_new_AS_open(const char *AS_id, const char *wanted_routing_type)
 {
   routing_component_t new_routing;
   model_type_t model = NULL;
@@ -491,16 +501,20 @@ void routing_AS_init(const char *AS_id, const char *wanted_routing_type)
 }
 
 /**
- * \brief Finish the creation of a new routing component
+ * \brief Specify that the current description of AS is finished
  *
- * When you finish to read the routing component, other structures must be created. 
- * the "end" method allow to do that for any routing model type
+ * Once you've declared all the content of your AS, you have to close
+ * it with this call. Your AS is not usable until you call this function.
+ *
+ * @fixme: this call is not as robust as wanted: bad things WILL happen
+ * if you call it twice for the same AS, or if you forget calling it, or
+ * even if you add stuff to a closed AS
+ *
  */
-void routing_AS_end(const char *AS_id)
-{
+void sg_platf_new_AS_close() {
 
   if (current_routing == NULL) {
-    THROWF(arg_error, 0, "Close AS(%s), that were never opened", AS_id);
+    THROWF(arg_error, 0, "Close an AS, but none was under construction");
   } else {
     network_element_info_t info = NULL;
     xbt_assert(!xbt_lib_get_or_null(as_router_lib,current_routing->name, ROUTING_ASR_LEVEL),

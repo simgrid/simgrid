@@ -8,6 +8,7 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/dict.h"
+#include "simgrid/platf.h"
 #include "surf/surfxml_parse_private.h"
 #include "surf/surf_private.h"
 
@@ -141,10 +142,10 @@ static void parse_Stag_trace_connect(void)
 
 /* Call the right C function when we see the <AS> tags */
 static void parse_S_AS(void) {
-  routing_AS_init(A_surfxml_AS_id, A_surfxml_AS_routing);
+  sg_platf_new_AS_open(A_surfxml_AS_id, A_surfxml_AS_routing);
 }
 static void parse_E_AS(void) {
-  routing_AS_end(A_surfxml_AS_id);
+  sg_platf_new_AS_close();
 }
 
 
