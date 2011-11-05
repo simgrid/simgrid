@@ -18,44 +18,50 @@ extern const char *xbt_log_priority_names[8];
 
 static double format_begin_of_time = -1;
 
-#define ERRMSG "Unknown %%%c sequence in layout format (%s).\nKnown sequences:\n"                       \
-  "  what:        %%m: user message  %%c: log category  %%p: log priority\n"                      \
-  "  where:\n"                                                                                    \
+#define ERRMSG                                                          \
+  "Unknown %%%c sequence in layout format (%s).\n"                      \
+  "Known sequences:\n"                                                  \
+  "  what:        %%m: user message  %%c: log category  %%p: log priority\n" \
+  "  where:\n"                                                          \
   "    source:    %%F: file          %%L: line          %%M: function  %%l: location (%%F:%%L)\n" \
-  "    runtime:   %%h: hostname      %%t: thread        %%P: process   %%i: PID\n"                \
-  "    backtrace: %%b: full          %%B: short\n"                                                \
-  "  when:        %%d: date          %%r: app. age\n"                                             \
+  "    runtime:   %%h: hostname      %%t: thread        %%P: process   %%i: PID\n" \
+  "    backtrace: %%b: full          %%B: short\n"                      \
+  "  when:        %%d: date          %%r: app. age\n"                   \
   "  other:       %%%%: %%             %%n: new line      %%e: plain space\n"
 
-#define XBT_LOG_BUFF_SIZE (ev->buffer_size)
+#define check_overflow(len)                                             \
+  if ((rem_size -= (len)) > 0) {                                        \
+    p += (len);                                                         \
+  } else                                                                \
+    return 0
 
-#undef check_overflow
-#define check_overflow \
-  if (p - ev->buffer >= XBT_LOG_BUFF_SIZE) { /* buffer overflow */ \
-    return 0;                                                      \
-  } else ((void)0)
+#define set_sz_from_precision()                                         \
+  if (1) {                                                              \
+    sz = rem_size;                                                      \
+    if (precision != -1) {                                              \
+      if (precision < sz)                                               \
+        sz = precision + 1;     /* +1 for the final '\0' */             \
+      precision = -1;                                                   \
+    }                                                                   \
+  } else (void)0
 
-#define show_it(data,letter) \
-  do { \
-    if (precision == -1 && length == -1) { \
-      p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%" letter, data); \
-    } else if (precision == -1) { \
-      sprintf(tmpfmt,"%%%d" letter,length); \
-      p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), tmpfmt, data); \
-      length = -1; \
-    } else if (length == -1) { \
-      p += sprintf(p, "%.*" letter, \
-                   (int) MIN(XBT_LOG_BUFF_SIZE - (p - ev->buffer), precision), \
-                   data);\
-      precision = -1; \
-    } else { \
-      sprintf(tmpfmt,"%%%d.%d" letter,length, \
-          (int) MIN(XBT_LOG_BUFF_SIZE - (p - ev->buffer), precision));\
-      p += sprintf(p, tmpfmt, data);\
-      length = precision = -1; \
-    } \
-    check_overflow; \
-  } while (0)
+#define show_it(data, letter)                                           \
+  if (1) {                                                              \
+    int len, wd;                                                        \
+    if (length == -1) {                                                 \
+      wd = 0;                                                           \
+    } else {                                                            \
+      wd = length;                                                      \
+      length = -1;                                                      \
+    }                                                                   \
+    if (precision == -1) {                                              \
+      len = snprintf(p, rem_size, "%*" letter, wd, data);               \
+    } else {                                                            \
+      len = snprintf(p, rem_size, "%*.*" letter, wd, precision, data);  \
+      precision = -1;                                                   \
+    }                                                                   \
+    check_overflow(len);                                                \
+  } else (void)0
 
 #define show_string(data) show_it(data, "s")
 #define show_int(data)    show_it(data, "d")
@@ -65,42 +71,34 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
                                       xbt_log_event_t ev,
                                       const char *msg_fmt)
 {
-  char *p, *q;
-  char tmpfmt[50];
+  char *p = ev->buffer;
+  int rem_size = ev->buffer_size;
   int precision = -1;
   int length = -1;
+  char *q;
 
-
-  p = ev->buffer;
-  q = l->data;
-
-  while (*q != '\0') {
+  for (q = l->data ; *q != '\0' ; q++) {
     if (*q == '%') {
       q++;
     handle_modifier:
       switch (*q) {
       case '\0':
-        fprintf(stderr, "Layout format (%s) ending with %%\n",
-                (char *) l->data);
-        abort();
+        xbt_die("Layout format (%s) ending with %%\n", (char *)l->data);
       case '%':
-        *p++ = '%';
+        *p = '%';
+        check_overflow(1);
         break;
-      case 'n':                /* platform-dependant line separator (LOG4J compliant) */
-        p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "\n");
-        check_overflow;
+      case 'n':         /* platform-dependant line separator; LOG4J compliant */
+        *p = '\n';
+        check_overflow(1);
         break;
-      case 'e':                /* plain space (SimGrid extension) */
-        p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), " ");
-        check_overflow;
+      case 'e':                 /* plain space; SimGrid extension */
+        *p = ' ';
+        check_overflow(1);
         break;
-
-      case '.':                /* precision specifyier */
-        q++;
-        sscanf(q, "%d", &precision);
-        q += (precision>9?2:1);
+      case '.':                 /* precision specifier */
+        precision = strtol(q + 1, &q, 10);
         goto handle_modifier;
-
       case '0':
       case '1':
       case '2':
@@ -110,61 +108,50 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
       case '6':
       case '7':
       case '8':
-      case '9': /* length modifier */
-        sscanf(q, "%d", &length);
-        q += (length>9?2:1);
+      case '9':                 /* length modifier */
+        length = strtol(q, &q, 10);
         goto handle_modifier;
-
-      case 'c':                /* category name; LOG4J compliant
-                                   should accept a precision postfix to show the hierarchy */
+      case 'c':                 /* category name; LOG4J compliant
+                                   should accept a precision postfix to show the
+                                   hierarchy */
         show_string(ev->cat->name);
         break;
-      case 'p':                /* priority name; LOG4J compliant */
+      case 'p':                 /* priority name; LOG4J compliant */
         show_string(xbt_log_priority_names[ev->priority]);
         break;
-
-      case 'h':                /* host name; SimGrid extension */
+      case 'h':                 /* host name; SimGrid extension */
         show_string(gras_os_myname());
         break;
-      case 't':                /* thread name; LOG4J compliant */
+      case 't':                 /* thread name; LOG4J compliant */
         show_string(xbt_thread_self_name());
         break;
-      case 'P':                /* process name; SimGrid extension */
+      case 'P':                 /* process name; SimGrid extension */
         show_string(xbt_procname());
         break;
-      case 'i':                /* process PID name; SimGrid extension */
-        show_int((*xbt_getpid) ());
+      case 'i':                 /* process PID name; SimGrid extension */
+        show_int(xbt_getpid());
         break;
-
-      case 'F':                /* file name; LOG4J compliant */
+      case 'F':                 /* file name; LOG4J compliant */
         show_string(ev->fileName);
         break;
-      case 'l':                /* location; LOG4J compliant */
-        if (precision == -1) {
-          p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), "%s:%d",
-                        ev->fileName, ev->lineNum);
-          check_overflow;
-        } else {
-          p += snprintf(p,
-                        (int) MIN(XBT_LOG_BUFF_SIZE - (p - ev->buffer),
-                                  precision), "%s:%d", ev->fileName,
-                        ev->lineNum);
-          check_overflow;
-          precision = -1;
-        }
+      case 'l': {               /* location; LOG4J compliant */
+        int len, sz;
+        set_sz_from_precision();
+        len = snprintf(p, sz, "%s:%d", ev->fileName, ev->lineNum);
+        check_overflow(MIN(sz, len));
         break;
-      case 'L':                /* line number; LOG4J compliant */
+      }
+      case 'L':                 /* line number; LOG4J compliant */
         show_int(ev->lineNum);
         break;
       case 'M':                /* method (ie, function) name; LOG4J compliant */
         show_string(ev->functionName);
         break;
-      case 'b':                /* backtrace; called %throwable in LOG4J */
-      case 'B':                /* short backtrace; called %throwable{short} in LOG4J */
+      case 'b':                 /* backtrace; called %throwable in LOG4J */
+      case 'B':         /* short backtrace; called %throwable{short} in LOG4J */
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
         {
           xbt_ex_t e;
-          int i;
 
           e.used = backtrace((void **) e.bt, XBT_BACKTRACE_SIZE);
           e.bt_strings = NULL;
@@ -174,59 +161,40 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
           if (*q == 'B') {
             show_string(e.bt_strings[2] + 8);
           } else {
-            for (i = 2; i < e.used; i++)
-              if (precision == -1) {
-                p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer),
-                              "%s\n", e.bt_strings[i] + 8);
-                check_overflow;
-              } else {
-                p += sprintf(p, "%.*s\n",
-                             (int) MIN(XBT_LOG_BUFF_SIZE -
-                                       (p - ev->buffer), precision),
-                             e.bt_strings[i] + 8);
-                check_overflow;
-                precision = -1;
-              }
+            xbt_strbuff_t buff = xbt_strbuff_new();
+            int i;
+            for (i = 2; i < e.used; i++) {
+              xbt_strbuff_append(buff, e.bt_strings[i] + 8);
+              xbt_strbuff_append(buff, "\n");
+            }
+            show_string(buff->data);
+            xbt_strbuff_free(buff);
           }
-
           xbt_ex_free(e);
         }
 #else
-        p += snprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer),
-                      "(no backtrace on this arch)");
-        check_overflow;
+        show_string("(no backtrace on this arch)");
 #endif
         break;
-
-      case 'd':                /* date; LOG4J compliant */
+      case 'd':                 /* date; LOG4J compliant */
         show_double(gras_os_time());
         break;
-      case 'r':                /* application age; LOG4J compliant */
+      case 'r':                 /* application age; LOG4J compliant */
         show_double(gras_os_time() - format_begin_of_time);
         break;
-
-      case 'm':                /* user-provided message; LOG4J compliant */
-        if (precision == -1) {
-          p += vsnprintf(p, XBT_LOG_BUFF_SIZE - (p - ev->buffer), msg_fmt,
-                         ev->ap);
-          check_overflow;
-        } else {
-          p += vsnprintf(p,
-                         (int) MIN(XBT_LOG_BUFF_SIZE - (p - ev->buffer),
-                                   precision), msg_fmt, ev->ap);
-          check_overflow;
-          precision = -1;
-        }
+      case 'm': {               /* user-provided message; LOG4J compliant */
+        int len, sz;
+        set_sz_from_precision();
+        len = vsnprintf(p, sz, msg_fmt, ev->ap);
+        check_overflow(MIN(sz, len));
         break;
-
-      default:
-        fprintf(stderr, ERRMSG, *q, (char *) l->data);
-        abort();
       }
-      q++;
+      default:
+        xbt_die(ERRMSG, *q, (char *)l->data);
+      }
     } else {
-      *(p++) = *(q++);
-      check_overflow;
+      *p = *q;
+      check_overflow(1);
     }
   }
   *p = '\0';
