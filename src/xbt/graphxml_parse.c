@@ -122,11 +122,13 @@ static int _xbt_graph_parse(void)
 
 int_f_void_t xbt_graph_parse = _xbt_graph_parse;
 
-void xbt_graph_parse_get_double(double *value, const char *string)
+double xbt_graph_parse_get_double(const char *string)
 {
+  double result;
   int ret = 0;
 
-  ret = sscanf(string, "%lg", value);
+  ret = sscanf(string, "%lg", &result);
   xbt_assert((ret == 1), "Parse error line %d : %s not a number",
               xbt_graph_parse_lineno, string);
+  return result;
 }

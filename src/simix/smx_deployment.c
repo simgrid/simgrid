@@ -33,8 +33,8 @@ static void parse_process_init(void)
   parse_argc++;
   parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
   parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
-  surf_parse_get_double(&start_time, A_surfxml_process_start_time);
-  surf_parse_get_double(&kill_time, A_surfxml_process_kill_time);
+  start_time= surf_parse_get_double(A_surfxml_process_start_time);
+  kill_time = surf_parse_get_double(A_surfxml_process_kill_time);
 }
 
 static void parse_argument(void)

@@ -78,7 +78,7 @@ static void parse_Stag_trace(void)
 {
   trace_id = xbt_strdup(A_surfxml_trace_id);
   trace_file = xbt_strdup(A_surfxml_trace_file);
-  surf_parse_get_double(&trace_periodicity, A_surfxml_trace_periodicity);
+  trace_periodicity = surf_parse_get_double(A_surfxml_trace_periodicity);
 }
 
 static void parse_Etag_trace(void)

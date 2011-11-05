@@ -25,16 +25,20 @@ static void surf_parse_error(char *msg) {
   xbt_die("Parse error on line %d: %s\n", surf_parse_lineno, msg);
 }
 
-void surf_parse_get_double(double *value, const char *string) {
-  int ret = sscanf(string, "%lg", value);
+double surf_parse_get_double(const char *string) {
+  double res;
+  int ret = sscanf(string, "%lg", &res);
   if (ret != 1)
     surf_parse_error(bprintf("%s is not a double", string));
+  return res;
 }
 
-void surf_parse_get_int(int *value, const char *string) {
-  int ret = sscanf(string, "%d", value);
+int surf_parse_get_int(const char *string) {
+  int res;
+  int ret = sscanf(string, "%d", &res);
   if (ret != 1)
     surf_parse_error(bprintf("%s is not an integer", string));
+  return res;
 }
 
 
@@ -264,8 +268,7 @@ void surf_parse_free_callbacks(void)
 
 void STag_surfxml_platform(void)
 {
-  double version;
-  surf_parse_get_double(&version, A_surfxml_platform_version);
+  double version = surf_parse_get_double(A_surfxml_platform_version);
 
   xbt_assert((version >= 1.0), "******* BIG FAT WARNING *********\n "
       "You're using an ancient XML file.\n"
@@ -298,8 +301,8 @@ void STag_surfxml_host(void){
 
 	host.V_host_id = xbt_strdup(A_surfxml_host_id);
 	host.V_host_power_peak = get_cpu_power(A_surfxml_host_power);
-	surf_parse_get_double(&(host.V_host_power_scale), A_surfxml_host_availability);
-	surf_parse_get_int(&(host.V_host_core),A_surfxml_host_core);
+	host.V_host_power_scale = surf_parse_get_double( A_surfxml_host_availability);
+	host.V_host_core = surf_parse_get_int(A_surfxml_host_core);
 	host.V_host_power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
 	host.V_host_state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 	xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
@@ -346,14 +349,14 @@ void STag_surfxml_cluster(void){
 	struct_cluster->V_cluster_prefix = xbt_strdup(A_surfxml_cluster_prefix);
 	struct_cluster->V_cluster_suffix = xbt_strdup(A_surfxml_cluster_suffix);
 	struct_cluster->V_cluster_radical = xbt_strdup(A_surfxml_cluster_radical);
-	surf_parse_get_double(&struct_cluster->S_cluster_power,A_surfxml_cluster_power);
-	surf_parse_get_int(&struct_cluster->S_cluster_core,A_surfxml_cluster_core);
-	surf_parse_get_double(&struct_cluster->S_cluster_bw,A_surfxml_cluster_bw);
-	surf_parse_get_double(&struct_cluster->S_cluster_lat,A_surfxml_cluster_lat);
+	struct_cluster->S_cluster_power= surf_parse_get_double(A_surfxml_cluster_power);
+	struct_cluster->S_cluster_core = surf_parse_get_int(A_surfxml_cluster_core);
+	struct_cluster->S_cluster_bw =   surf_parse_get_double(A_surfxml_cluster_bw);
+	struct_cluster->S_cluster_lat =  surf_parse_get_double(A_surfxml_cluster_lat);
 	if(strcmp(A_surfxml_cluster_bb_bw,""))
-		surf_parse_get_double(&struct_cluster->S_cluster_bb_bw,A_surfxml_cluster_bb_bw);
+	  struct_cluster->S_cluster_bb_bw = surf_parse_get_double(A_surfxml_cluster_bb_bw);
 	if(strcmp(A_surfxml_cluster_bb_lat,""))
-		surf_parse_get_double(&struct_cluster->S_cluster_bb_lat,A_surfxml_cluster_bb_lat);
+	  struct_cluster->S_cluster_bb_lat = surf_parse_get_double(A_surfxml_cluster_bb_lat);
 	if(!strcmp(A_surfxml_cluster_router_id,""))
 		struct_cluster->S_cluster_router_id = bprintf("%s%s_router%s",
 				struct_cluster->V_cluster_prefix,
@@ -409,9 +412,9 @@ void ETag_surfxml_peer(void){
 void STag_surfxml_link(void){
 	struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
 	struct_lnk->V_link_id = xbt_strdup(A_surfxml_link_id);
-	surf_parse_get_double(&(struct_lnk->V_link_bandwidth),A_surfxml_link_bandwidth);
+	struct_lnk->V_link_bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
 	struct_lnk->V_link_bandwidth_file = tmgr_trace_new(A_surfxml_link_bandwidth_file);
-	surf_parse_get_double(&(struct_lnk->V_link_latency),A_surfxml_link_latency);
+	struct_lnk->V_link_latency = surf_parse_get_double(A_surfxml_link_latency);
 	struct_lnk->V_link_latency_file = tmgr_trace_new(A_surfxml_link_latency_file);
 	xbt_assert((A_surfxml_link_state == A_surfxml_link_state_ON) ||
 			  (A_surfxml_link_state == A_surfxml_link_state_OFF), "Invalid state");
@@ -653,7 +656,7 @@ double get_cpu_power(const char *power)
       power_scale = random_generate(random);
     }
   } else {
-    surf_parse_get_double(&power_scale, power);
+    power_scale = surf_parse_get_double(power);
   }
   return power_scale;
 }
@@ -665,11 +668,10 @@ char *random_id;
 static void init_randomness(void)
 {
   random_id = A_surfxml_random_id;
-  surf_parse_get_double(&random_min, A_surfxml_random_min);
-  surf_parse_get_double(&random_max, A_surfxml_random_max);
-  surf_parse_get_double(&random_mean, A_surfxml_random_mean);
-  surf_parse_get_double(&random_std_deviation,
-                        A_surfxml_random_std_deviation);
+  random_min = surf_parse_get_double(A_surfxml_random_min);
+  random_max = surf_parse_get_double(A_surfxml_random_max);
+  random_mean = surf_parse_get_double(A_surfxml_random_mean);
+  random_std_deviation = surf_parse_get_double(A_surfxml_random_std_deviation);
   random_generator = A_surfxml_random_generator;
 }
 

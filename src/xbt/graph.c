@@ -578,10 +578,8 @@ static void __parse_node(void)
   if (__parse_node_label_and_data)
     node->data = __parse_node_label_and_data(node, A_graphxml_node_label,
                                              A_graphxml_node_data);
-  xbt_graph_parse_get_double(&(node->position_x),
-                             A_graphxml_node_position_x);
-  xbt_graph_parse_get_double(&(node->position_y),
-                             A_graphxml_node_position_y);
+  node->position_x = xbt_graph_parse_get_double(A_graphxml_node_position_x);
+  node->position_y = xbt_graph_parse_get_double(A_graphxml_node_position_y);
 
   xbt_dict_set(parsed_nodes, A_graphxml_node_name, (void *) node, NULL);
 }
@@ -599,7 +597,7 @@ static void __parse_edge(void)
     edge->data = __parse_edge_label_and_data(edge, A_graphxml_edge_label,
                                              A_graphxml_edge_data);
 
-  xbt_graph_parse_get_double(&(edge->length), A_graphxml_edge_length);
+  edge->length = xbt_graph_parse_get_double(A_graphxml_edge_length);
 
   XBT_DEBUG("<edge  source=\"%s\" target=\"%s\" length=\"%f\"/>",
          (char *) (edge->src)->data,

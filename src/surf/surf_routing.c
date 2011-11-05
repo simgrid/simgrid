@@ -1610,7 +1610,7 @@ void routing_parse_Scluster(void)
     radical_ends = xbt_str_split(groups, "-");
     switch (xbt_dynar_length(radical_ends)) {
     case 1:
-		surf_parse_get_int(&start, xbt_dynar_get_as(radical_ends, 0, char *));
+		start=surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
 		host_id = bprintf("%s%d%s", struct_cluster->V_cluster_prefix, start, struct_cluster->V_cluster_suffix);
 		link_id = bprintf("%s_link_%d", struct_cluster->V_cluster_id, start);
 
@@ -1686,9 +1686,8 @@ void routing_parse_Scluster(void)
 
     case 2:
 
-      surf_parse_get_int(&start,
-                         xbt_dynar_get_as(radical_ends, 0, char *));
-      surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
+      start=surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
+      end=  surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
       for (i = start; i <= end; i++) {
 		host_id = bprintf("%s%d%s", struct_cluster->V_cluster_prefix, i, struct_cluster->V_cluster_suffix);
 		link_id = bprintf("%s_link_%d", struct_cluster->V_cluster_id, i);
@@ -2002,11 +2001,11 @@ static void routing_parse_Srandom(void)
 	  char *random_radical = A_surfxml_random_radical;
 	  char *rd_name = NULL;
 	  char *rd_value;
-	  surf_parse_get_double(&mean,A_surfxml_random_mean);
-	  surf_parse_get_double(&std,A_surfxml_random_std_deviation);
-	  surf_parse_get_double(&min,A_surfxml_random_min);
-	  surf_parse_get_double(&max,A_surfxml_random_max);
-	  surf_parse_get_double(&seed,A_surfxml_random_seed);
+	  mean = surf_parse_get_double(A_surfxml_random_mean);
+	  std  = surf_parse_get_double(A_surfxml_random_std_deviation);
+	  min  = surf_parse_get_double(A_surfxml_random_min);
+	  max  = surf_parse_get_double(A_surfxml_random_max);
+	  seed = surf_parse_get_double(A_surfxml_random_seed);
 
 	  double res = 0;
 	  int i = 0;
@@ -2075,9 +2074,9 @@ static void routing_parse_Srandom(void)
                                           xbt_free(tmpbuf);
 					  break;
 
-			case 2:	  surf_parse_get_int(&start,
-										 xbt_dynar_get_as(radical_ends, 0, char *));
-					  surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
+			case 2:
+			      start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
+			      end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
 					  for (i = start; i <= end; i++) {
 						  xbt_assert(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",bprintf("%s%d",random_id,i));
 						  res = random_generate(random);
