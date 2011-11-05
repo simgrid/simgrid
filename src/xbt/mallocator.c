@@ -1,6 +1,6 @@
 /* mallocator - recycle objects to avoid malloc() / free()                  */
 
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2006-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -55,8 +55,6 @@ xbt_mallocator_t xbt_mallocator_new(int size,
 
   m = xbt_new0(s_xbt_mallocator_t, 1);
   XBT_VERB("Create mallocator %p", m);
-  if (XBT_LOG_ISENABLED(xbt_mallocator, xbt_log_priority_verbose))
-    xbt_backtrace_display_current();
 
   m->objects = xbt_new0(void *, MC_IS_ENABLED ? 1 : size);
   m->max_size = size;
