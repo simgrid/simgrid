@@ -79,8 +79,6 @@ xbt_dynar_t STag_surfxml_ASroute_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_ASroute_cb_list = NULL;
 xbt_dynar_t STag_surfxml_bypassRoute_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_bypassRoute_cb_list = NULL;
-xbt_dynar_t STag_surfxml_config_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_config_cb_list = NULL;
 xbt_dynar_t STag_surfxml_include_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_include_cb_list = NULL;
 
@@ -209,10 +207,6 @@ void surf_parse_init_callbacks(void)
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_peer_cb_list =
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  STag_surfxml_config_cb_list =
-			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  ETag_surfxml_config_cb_list =
-			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_include_cb_list =
 			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_include_cb_list =
@@ -262,8 +256,6 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_cluster_cb_list);
   xbt_dynar_free(&STag_surfxml_peer_cb_list);
   xbt_dynar_free(&ETag_surfxml_peer_cb_list);
-  xbt_dynar_free(&STag_surfxml_config_cb_list);
-  xbt_dynar_free(&ETag_surfxml_config_cb_list);
   xbt_dynar_free(&STag_surfxml_include_cb_list);
   xbt_dynar_free(&ETag_surfxml_include_cb_list);
 }
@@ -482,7 +474,26 @@ void STag_surfxml_bypassRoute(void){
 	surfxml_call_cb_functions(STag_surfxml_bypassRoute_cb_list);
 }
 void STag_surfxml_config(void){
-	surfxml_call_cb_functions(STag_surfxml_config_cb_list);
+  XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  current_property_set = xbt_dict_new();
+
+}
+void ETag_surfxml_config(void){
+  xbt_dict_cursor_t cursor = NULL;
+  char *key;
+  char *elem;
+  char *cfg;
+  xbt_dict_foreach(current_property_set, cursor, key, elem) {
+    cfg = bprintf("%s:%s",key,elem);
+    if(xbt_cfg_is_default_value(_surf_cfg_set, key))
+      xbt_cfg_set_parse(_surf_cfg_set, cfg);
+    else
+      XBT_INFO("The custom configuration '%s' is already defined by user!",key);
+    free(cfg);
+  }
+  XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
+  current_property_set = NULL;
 }
 void STag_surfxml_random(void){
 	surfxml_call_cb_functions(STag_surfxml_random_cb_list);
@@ -503,7 +514,6 @@ parse_method(E, random);
 parse_method(E, AS);
 parse_method(E, ASroute);
 parse_method(E, bypassRoute);
-parse_method(E, config);
 
 /* Open and Close parse file */
 

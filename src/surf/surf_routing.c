@@ -55,9 +55,6 @@ static void routing_parse_Speer(void);          /* peer bypass */
 static void routing_parse_Srandom(void);        /* random bypass */
 static void routing_parse_Erandom(void);        /* random bypass */
 
-static void routing_parse_Sconfig(void);        /* config Tag */
-static void routing_parse_Econfig(void);        /* config Tag */
-
 static char* replace_random_parameter(char * chaine);
 static void clean_routing_after_parse(void);
 
@@ -1007,8 +1004,6 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
 
 void surf_parse_add_callback_config(void)
 {
-	surfxml_add_callback(STag_surfxml_config_cb_list, &routing_parse_Sconfig);
-	surfxml_add_callback(ETag_surfxml_config_cb_list, &routing_parse_Econfig);
 	surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties_XML);
 	surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
 }
@@ -1474,27 +1469,6 @@ void generic_src_dst_check(routing_component_t rc, const char *src,
      src,dst,src_as->name, dst_as->name,rc->name);
 }
 
-static void routing_parse_Sconfig(void)
-{
-  XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
-}
-
-static void routing_parse_Econfig(void)
-{
-  xbt_dict_cursor_t cursor = NULL;
-  char *key;
-  char *elem;
-  char *cfg;
-  xbt_dict_foreach(current_property_set, cursor, key, elem) {
-	  cfg = bprintf("%s:%s",key,elem);
-	  if(xbt_cfg_is_default_value(_surf_cfg_set, key))
-		  xbt_cfg_set_parse(_surf_cfg_set, cfg);
-	  else
-		  XBT_INFO("The custom configuration '%s' is already defined by user!",key);
-	  free(cfg);
-  }
-  XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
-}
 
 static void parse_create_host_link(int i)
 {
