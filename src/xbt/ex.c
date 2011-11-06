@@ -98,7 +98,7 @@ void xbt_backtrace_display(xbt_ex_t * e)
 
     fprintf(stderr, "Backtrace (displayed in thread %p):\n",
             (void *) xbt_thread_self());
-    for (i = 1; i < e->used; i++)       /* no need to display "xbt_display_backtrace" */
+    for (i = 1; i < e->used; i++)       /* no need to display "xbt_backtrace_display" */
       fprintf(stderr, "---> %s\n", e->bt_strings[i] + 4);
   }
 
