@@ -7,6 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "portable.h"           /* execinfo when available */
+#include "xbt/ex_interface.h"
 #include "xbt/sysdep.h"
 #include "xbt/strbuff.h"
 #include "xbt/log_private.h"
@@ -157,15 +158,16 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
           e.bt_strings = NULL;
           e.msg = NULL;
           e.remote = 0;
-          xbt_backtrace_current(&e);
+          xbt_ex_setup_backtrace(&e);
           if (*q == 'B') {
-            show_string(e.bt_strings[2] + 8);
+            show_string(e.bt_strings[1] + 8);
           } else {
             xbt_strbuff_t buff = xbt_strbuff_new();
             int i;
+            xbt_strbuff_append(buff, e.bt_strings[1] + 8);
             for (i = 2; i < e.used; i++) {
-              xbt_strbuff_append(buff, e.bt_strings[i] + 8);
               xbt_strbuff_append(buff, "\n");
+              xbt_strbuff_append(buff, e.bt_strings[i] + 8);
             }
             show_string(buff->data);
             xbt_strbuff_free(buff);
