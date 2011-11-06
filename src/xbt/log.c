@@ -604,10 +604,11 @@ void xbt_log_postexit(void)
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
 }
 
-#define XBT_LOG_STATIC_BUFFER_SIZE 2048 /* Size of the static string in which we
-                                         * build the log string */
-#define XBT_LOG_DYNAMIC_BUFFER_SIZE 256 /* Minimum size of the dynamic string in
-                                         * which we build the log string */
+ /* Size of the static string in which we  build the log string */
+#define XBT_LOG_STATIC_BUFFER_SIZE 2048
+/* Minimum size of the dynamic string in which we build the log string
+   (should be greater than XBT_LOG_STATIC_BUFFER_SIZE) */
+#define XBT_LOG_DYNAMIC_BUFFER_SIZE 4096
 
 void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
 {
@@ -644,8 +645,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
     }
 
     /* The static buffer was too small, use a dynamically expanded one */
-    ev->buffer_size = MAX(2 * XBT_LOG_STATIC_BUFFER_SIZE,
-                          XBT_LOG_DYNAMIC_BUFFER_SIZE);
+    ev->buffer_size = XBT_LOG_DYNAMIC_BUFFER_SIZE;
     ev->buffer = xbt_malloc(ev->buffer_size);
     while (1) {
       int done;
