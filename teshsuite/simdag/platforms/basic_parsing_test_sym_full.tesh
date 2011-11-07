@@ -313,7 +313,7 @@ $ ${bindir:=.}/basic_parsing_test two_hosts_one_link_fullduplex.xml FULL_LINK "-
 > 	Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
 > 	Route latency = 0.000015, route bandwidth = 498000000.000000
 
-$ ${bindir:=.}/basic_parsing_test Dijkstra.xml FULL_LINK --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ ${bindir:=.}/basic_parsing_test Dijkstra.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 2, link number: 6
 > Route between NODO01 and NODO01

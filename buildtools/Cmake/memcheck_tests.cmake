@@ -81,7 +81,7 @@ ADD_TEST(memcheck-tesh-simdag-parser-sym-full-0 ${CMAKE_BINARY_DIR}/teshsuite/si
 ADD_TEST(memcheck-tesh-simdag-parser-sym-full-1 ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test two_clusters_symmetric.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/)
 ADD_TEST(memcheck-tesh-simdag-parser-sym-full-2 ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test two_hosts_one_link_symmetrical.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/)
 ADD_TEST(memcheck-tesh-simdag-parser-sym-full-3 ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test two_hosts_one_link_fullduplex.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/)
-ADD_TEST(memcheck-tesh-simdag-parser-sym-full-4 ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test Dijkstra.xml FULL_LINK --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/)
+ADD_TEST(memcheck-tesh-simdag-parser-sym-full-4 ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test Dijkstra.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/)
 ADD_TEST(memcheck-tesh-simdag-flatifier-0 ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/flatifier one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/)
 ADD_TEST(memcheck-tesh-simdag-flatifier-1 ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/flatifier one_host_availability.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/)
 ADD_TEST(memcheck-tesh-simdag-flatifier-2 ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/flatifier one_host_properties.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/)
@@ -359,12 +359,12 @@ ADD_TEST(memcheck-gras-synchro-sg-64-raw-0 ${CMAKE_BINARY_DIR}/examples/gras/syn
 endif(HAVE_RAWCTX)
 
 ENDIF(${ARCH_32_BITS})
-ADD_TEST(memcheck-gras-properties-sg-thread-0 ${CMAKE_BINARY_DIR}/examples/gras/properties/properties_simulator ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/../../platforms/prop.xml ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/properties.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n --cfg=contexts/factory:thread  --cd ${CMAKE_BINARY_DIR}/examples/gras/properties/)
+ADD_TEST(memcheck-gras-properties-sg-thread-0 ${CMAKE_BINARY_DIR}/examples/gras/properties/properties_simulator ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/../../platforms/prop.xml ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/properties.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:thread  --cd ${CMAKE_BINARY_DIR}/examples/gras/properties/)
 if(HAVE_UCONTEXT_H)
-ADD_TEST(memcheck-gras-properties-sg-ucontext-0 ${CMAKE_BINARY_DIR}/examples/gras/properties/properties_simulator ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/../../platforms/prop.xml ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/properties.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n --cfg=contexts/factory:ucontext  --cd ${CMAKE_BINARY_DIR}/examples/gras/properties/)
+ADD_TEST(memcheck-gras-properties-sg-ucontext-0 ${CMAKE_BINARY_DIR}/examples/gras/properties/properties_simulator ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/../../platforms/prop.xml ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/properties.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext  --cd ${CMAKE_BINARY_DIR}/examples/gras/properties/)
 endif(HAVE_UCONTEXT_H)
 if(HAVE_RAWCTX)
-ADD_TEST(memcheck-gras-properties-sg-raw-0 ${CMAKE_BINARY_DIR}/examples/gras/properties/properties_simulator ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/../../platforms/prop.xml ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/properties.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n --cfg=contexts/factory:raw  --cd ${CMAKE_BINARY_DIR}/examples/gras/properties/)
+ADD_TEST(memcheck-gras-properties-sg-raw-0 ${CMAKE_BINARY_DIR}/examples/gras/properties/properties_simulator ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/../../platforms/prop.xml ${CMAKE_HOME_DIRECTORY}/examples/gras/properties/properties.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:raw  --cd ${CMAKE_BINARY_DIR}/examples/gras/properties/)
 endif(HAVE_RAWCTX)
 
 # amok examples
