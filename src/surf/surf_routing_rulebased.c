@@ -420,17 +420,3 @@ void *model_rulebased_create(void)
                     &rule_route_extended_free);
   return new_component;
 }
-
-void model_rulebased_load(void)
-{
-  /* use "surfxml_add_callback" to add a parse function call */
-}
-
-void model_rulebased_unload(void)
-{
-  /* use "surfxml_del_callback" to remove a parse function call */
-}
-
-void model_rulebased_end(void)
-{
-}
