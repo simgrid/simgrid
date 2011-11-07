@@ -20,13 +20,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 #define AS_MODULE_NAME "simgrid.AS"
 #define TRACE_MODULE_NAME "simgrid.Trace"
 
-/**
- * @brief Userdata type for tasks.
- */
-typedef struct s_sglua_task {
-  m_task_t msg_task;    /**< the task, or NULL if I sent it to someone else */
-} s_sglua_task_t, *sglua_task_t;
-
 static lua_State* sglua_maestro_state;
 
 static void register_c_functions(lua_State *L);
