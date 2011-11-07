@@ -309,7 +309,7 @@ void STag_surfxml_host(void){
 		host.V_host_state_initial = SURF_RESOURCE_OFF;
 	host.V_host_coord = xbt_strdup(A_surfxml_host_coordinates);
 
-	surf_parse_host(&host);
+	sg_platf_new_host(&host);
 }
 void ETag_surfxml_host(void){
 	surfxml_call_cb_functions(ETag_surfxml_host_cb_list);

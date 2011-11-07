@@ -23,7 +23,7 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&surf_parse_host_cb_list);
 }
 
-void surf_parse_host(surf_parsing_host_arg_t h){
+void sg_platf_new_host(surf_parsing_host_arg_t h){
   unsigned int iterator;
   surf_parse_host_fct_t fun;
   xbt_dynar_foreach(surf_parse_host_cb_list, iterator, fun) {

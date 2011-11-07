@@ -20,7 +20,6 @@ void sg_platf_exit(void);
 typedef void (*surf_parse_host_fct_t)(surf_parsing_host_arg_t);
 void surf_parse_host_add_cb(surf_parse_host_fct_t);
 
-void surf_parse_host(surf_parsing_host_arg_t h);
 
 
 

@@ -1512,7 +1512,7 @@ static void parse_create_host_link(int i)
 	host.V_host_core = struct_cluster->S_cluster_core;
 	host.V_host_state_initial = SURF_RESOURCE_ON;
 	host.V_host_coord = "";
-	surf_parse_host(&host);
+	sg_platf_new_host(&host);
 	XBT_DEBUG("</host>");
 
 	A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
@@ -1645,7 +1645,7 @@ void routing_parse_Scluster(void)
 		host.V_host_core = struct_cluster->S_cluster_core;
 		host.V_host_state_initial = SURF_RESOURCE_ON;
 		host.V_host_coord = "";
-		surf_parse_host(&host);
+		sg_platf_new_host(&host);
 		XBT_DEBUG("</host>");
 
 		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
@@ -1725,7 +1725,7 @@ void routing_parse_Scluster(void)
 		host.V_host_core = struct_cluster->S_cluster_core;
 		host.V_host_state_initial = SURF_RESOURCE_ON;
 		host.V_host_coord = "";
-		surf_parse_host(&host);
+		sg_platf_new_host(&host);
 		XBT_DEBUG("</host>");
 
 		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;

@@ -20,6 +20,16 @@ typedef enum {
 } e_surf_resource_state_t;
 
 
+/*
+ * Platform creation functions. Instead of passing 123 arguments to the creation functions
+ * (one for each possible XML attribute), we pass structures containing them all. It removes the
+ * chances of switching arguments by error, and reduce the burden when we add a new attribute:
+ * old models can just continue to ignore it without having to update their headers.
+ *
+ * It shouldn't be too costly at runtime, provided that structures living on the stack are
+ * used, instead of malloced structures.
+ */
+
 typedef struct s_surf_parsing_host_arg {
   char* V_host_id;                          //id
   double V_host_power_peak;                     //power
@@ -34,5 +44,7 @@ typedef struct s_surf_parsing_host_arg {
 
 XBT_PUBLIC(void) sg_platf_new_AS_open(const char *id, const char *mode);
 XBT_PUBLIC(void) sg_platf_new_AS_close(void);
+
+XBT_PUBLIC(void) sg_platf_new_host(surf_parsing_host_arg_t h);
 
 #endif                          /* SG_PLATF_H */
