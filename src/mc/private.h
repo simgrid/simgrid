@@ -44,6 +44,7 @@ extern double *mc_time;
 
 /* Bound of the MC depth-first search algorithm */
 #define MAX_DEPTH 1000
+#define MAX_DEPTH_LIVENESS 150
 
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack);
