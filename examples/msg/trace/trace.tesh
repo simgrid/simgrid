@@ -7,6 +7,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test1.
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 10.000000] (1:test_trace@CPU1) Task size: 400.000000
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -19,6 +20,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test2.
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 10.000000] (1:test_trace@CPU1) Task size: 850.000000
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -32,6 +34,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test3.
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 10.000000] (1:test_trace@CPU1) Task size: 1980.000000
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -44,6 +47,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test4.
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 80.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 80.000000] (1:test_trace@CPU1) Task size: 400.000000
 > [ 80.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -56,6 +60,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test5.
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 90.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 90.000000] (1:test_trace@CPU1) Task size: 850.000000
 > [ 90.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -68,6 +73,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test6.
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 80.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 80.000000] (1:test_trace@CPU1) Task size: 1980.000000
 > [ 80.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -80,6 +86,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test7.
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 10.000000] (1:test_trace@CPU1) Task size: 400.000000
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 1.500000
@@ -96,6 +103,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test8.
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 10.000000] (1:test_trace@CPU1) Task size: 400.000000
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 2.500000
@@ -112,6 +120,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test9.
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [  0.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [  0.000000] (1:test_trace@CPU1) Task size: 400.000000
 > [  0.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -132,6 +141,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test10
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [  0.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [  0.000000] (1:test_trace@CPU1) Task size: 420.000000
 > [  0.000000] (1:test_trace@CPU1) Task prio: 2.000000
