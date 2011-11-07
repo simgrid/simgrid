@@ -295,7 +295,7 @@ void STag_surfxml_host(void){
   s_surf_parsing_host_arg_t host;
   memset(&host,0,sizeof(host));
 
-	host.V_host_id = xbt_strdup(A_surfxml_host_id);
+	host.V_host_id = A_surfxml_host_id;
 	host.V_host_power_peak = get_cpu_power(A_surfxml_host_power);
 	host.V_host_power_scale = surf_parse_get_double( A_surfxml_host_availability);
 	host.V_host_core = surf_parse_get_int(A_surfxml_host_core);
@@ -307,7 +307,7 @@ void STag_surfxml_host(void){
 		host.V_host_state_initial = SURF_RESOURCE_ON;
 	if (A_surfxml_host_state == A_surfxml_host_state_OFF)
 		host.V_host_state_initial = SURF_RESOURCE_OFF;
-	host.V_host_coord = xbt_strdup(A_surfxml_host_coordinates);
+	host.V_host_coord = A_surfxml_host_coordinates;
 
 	sg_platf_new_host(&host);
 }
