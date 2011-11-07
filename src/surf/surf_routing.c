@@ -1553,7 +1553,7 @@ void routing_parse_Scluster(void)
 		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
 
 		struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-		struct_lnk->V_link_id = link_id;
+		struct_lnk->V_link_id = xbt_strdup(link_id);
 		struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bw;
 		struct_lnk->V_link_latency = struct_cluster->S_cluster_lat;
 		struct_lnk->V_link_bandwidth_file = NULL;
@@ -1573,10 +1573,25 @@ void routing_parse_Scluster(void)
 		}
 		surf_parse_link();
 
-		xbt_dict_set(cluster_host_link,host_id,strdup(link_id),free);
-//		XBT_INFO("key '%s' Value '%s'",host_id,link_id);
 		ETag_surfxml_host();
 		ETag_surfxml_link();
+
+		surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
+		if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX){
+			char* tmp_link =  bprintf("%s_UP",link_id);
+			info->link_up   = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+			free(tmp_link);
+			tmp_link =  bprintf("%s_DOWN",link_id);
+			info->link_down = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+			free(tmp_link);
+		}
+		else{
+			info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
+			info->link_down = info->link_up;
+		}
+		xbt_dict_set(cluster_host_link,host_id,info,xbt_free);
+		xbt_free(link_id);
+		xbt_free(host_id);
 
 		break;
 
@@ -1633,7 +1648,7 @@ void routing_parse_Scluster(void)
 		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
 
 		struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-		struct_lnk->V_link_id = link_id;
+		struct_lnk->V_link_id = xbt_strdup(link_id);
 		struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bw;
 		struct_lnk->V_link_latency = struct_cluster->S_cluster_lat;
 		struct_lnk->V_link_bandwidth_file = NULL;
@@ -1653,11 +1668,25 @@ void routing_parse_Scluster(void)
 		}
 		surf_parse_link();
 
-		xbt_dict_set(cluster_host_link,host_id,strdup(link_id),free);
-//		XBT_INFO("key '%s' Value '%s'",host_id,link_id);
-
 		ETag_surfxml_host();
 		ETag_surfxml_link();
+
+		surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
+		if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX){
+			char* tmp_link =  bprintf("%s_UP",link_id);
+			info->link_up   = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+			free(tmp_link);
+			tmp_link =  bprintf("%s_DOWN",link_id);
+			info->link_down = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+			free(tmp_link);
+		}
+		else{
+			info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
+			info->link_down = info->link_up;
+		}
+		xbt_dict_set(cluster_host_link,host_id,info,xbt_free);
+		xbt_free(link_id);
+		xbt_free(host_id);
 
       }
       break;
