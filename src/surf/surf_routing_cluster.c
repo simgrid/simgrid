@@ -22,22 +22,10 @@ typedef struct {
   xbt_dict_t dict_autonomous_systems;
 } s_routing_component_cluster_t, *routing_component_cluster_t;
 
-/* Parse routing model functions */
-
-static route_extended_t cluster_get_route(routing_component_t rc,
-                                            const char *src,
-                                            const char *dst);
-
 /* Business methods */
 static route_extended_t cluster_get_route(routing_component_t rc,
                                             const char *src,
-                                            const char *dst)
-{
-	  xbt_assert(rc && src
-	              && dst,
-	              "Invalid params for \"get_route\" function at AS \"%s\"",
-	              rc->name);
-
+                                            const char *dst) {
 
 	  xbt_dynar_t links_list = xbt_dynar_new(global_routing->size_of_link, NULL);
 

@@ -172,17 +172,6 @@ static void parse_S_host(const char *host_id, const char* coord)
   }
 }
 
-static void parse_E_host(void)
-{
-	 xbt_dict_cursor_t cursor = NULL;
-	  char *key;
-	  char *elem;
-
-	  xbt_dict_foreach(current_property_set, cursor, key, elem) {
-		  XBT_DEBUG("property : %s = %s",key,elem);
-		}
-}
-
 /*
  * \brief Add a host to the network element list from XML
  */
@@ -190,19 +179,6 @@ static void parse_S_host_XML(sg_platf_host_cbarg_t h)
 {
 	parse_S_host(h->V_host_id, h->V_host_coord);
 }
-static void parse_E_host_XML(void)
-{
-	parse_E_host();
-}
-
-/*
- * \brief Add a host to the network element list from lua script
- */
-static void parse_S_host_lua(const char *host_id, const char *coord)
-{
-  parse_S_host(host_id, coord);
-}
-
 
 /**
  * \brief Add a "router" to the network element list
@@ -961,7 +937,6 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
 
   /* parse generic elements */
   sg_platf_host_add_cb(parse_S_host_XML);
-  surfxml_add_callback(ETag_surfxml_host_cb_list, &parse_E_host_XML);
   sg_platf_router_add_cb(parse_S_router);
 
   surfxml_add_callback(STag_surfxml_route_cb_list,
@@ -1573,7 +1548,6 @@ void routing_parse_Scluster(void)
 		}
 		surf_parse_link();
 
-		ETag_surfxml_host();
 		ETag_surfxml_link();
 
 		surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
@@ -1668,7 +1642,6 @@ void routing_parse_Scluster(void)
 		}
 		surf_parse_link();
 
-		ETag_surfxml_host();
 		ETag_surfxml_link();
 
 		surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
@@ -2049,7 +2022,7 @@ static void routing_parse_Erandom(void)
 
 void routing_add_host(const char *host_id)
 {
-  parse_S_host_lua((char *) host_id, (char*)""); // FIXME propagate coordinate system to lua
+  parse_S_host(host_id, ""); // FIXME propagate coordinate system to lua
 }
 
 /*

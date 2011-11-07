@@ -51,7 +51,6 @@ int surf_parse_get_int(const char *string) {
 //xbt_dynar_t STag_surfxml_host_cb_list = NULL;
 xbt_dynar_t STag_surfxml_platform_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_platform_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_host_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_router_cb_list = NULL;
 xbt_dynar_t STag_surfxml_link_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_link_cb_list = NULL;
@@ -161,7 +160,6 @@ void surf_parse_init_callbacks(void)
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 
 	  sg_platf_init();
-	  ETag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
@@ -225,7 +223,6 @@ void surf_parse_free_callbacks(void)
 
   xbt_dynar_free(&STag_surfxml_platform_cb_list);
   xbt_dynar_free(&ETag_surfxml_platform_cb_list);
-  xbt_dynar_free(&ETag_surfxml_host_cb_list);
   xbt_dynar_free(&ETag_surfxml_router_cb_list);
   xbt_dynar_free(&STag_surfxml_link_cb_list);
   xbt_dynar_free(&ETag_surfxml_link_cb_list);
@@ -310,11 +307,10 @@ void STag_surfxml_host(void){
 	host.V_host_coord = A_surfxml_host_coordinates;
 
 	sg_platf_new_host(&host);
-}
-void ETag_surfxml_host(void){
+
   current_property_set = NULL;
-	surfxml_call_cb_functions(ETag_surfxml_host_cb_list);
 }
+void ETag_surfxml_host(void){ /* ignored -- do not add content here */ }
 
 
 void STag_surfxml_router(void){
