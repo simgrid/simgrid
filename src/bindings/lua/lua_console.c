@@ -707,8 +707,7 @@ static int surf_parse_bypass_platform()
 		                  p_host->state_trace, p_host->properties);
 
 
-		   //add to routing model host list
-		   surf_route_add_host((char *) p_host->id);
+		   //FIXME: should use sg_platf instead. That would add to routing model host list, amongst other benefits
 	  }
 	  // add associated Links
 	  xbt_dynar_foreach(p_as->link_list_d, j, p_link){
@@ -765,7 +764,6 @@ static int surf_wsL07_parse_bypass_platform()
 	                      p_host->power_trace, p_host->state_initial,
 	                      p_host->state_trace);
 	    //add to routing model host list
-	    surf_route_add_host((char *) p_host->id);
 	  }
 	  //add Links
 	  xbt_dynar_foreach(p_as->link_list_d, j, p_link) {

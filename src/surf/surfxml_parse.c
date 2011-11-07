@@ -728,14 +728,6 @@ void* surf_wsL07_link_create_resource(char *name,
                            properties);
 }
 
-/*
- * add host to the network element list
- */
-void surf_route_add_host(const char *host_id)
-{
-  routing_add_host(host_id);
-}
-
 /**
  * set route
  */

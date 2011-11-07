@@ -101,36 +101,27 @@ struct s_model_type routing_models[] = { {"Full",
 /**
  * \brief Add a "host" to the network element list
  */
-static void parse_S_host(const char *host_id, const char* coord)
-{
+static void parse_S_host(sg_platf_host_cbarg_t host) {
   network_element_info_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
-  xbt_assert(!xbt_lib_get_or_null(host_lib, host_id,ROUTING_HOST_LEVEL),
+  xbt_assert(!xbt_lib_get_or_null(host_lib, host->V_host_id,ROUTING_HOST_LEVEL),
               "Reading a host, processing unit \"%s\" already exists",
-              host_id);
+              host->V_host_id);
   xbt_assert(current_routing->set_processing_unit,
               "no defined method \"set_processing_unit\" in \"%s\"",
               current_routing->name);
-  (*(current_routing->set_processing_unit)) (current_routing, host_id);
+  (*(current_routing->set_processing_unit)) (current_routing, host->V_host_id);
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
-  xbt_lib_set(host_lib,host_id,ROUTING_HOST_LEVEL,(void *) info);
-  if (strcmp(coord,"")) {
-	if(!COORD_HOST_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
-    xbt_dynar_t ctn = xbt_str_split_str(coord, " ");
+  xbt_lib_set(host_lib,host->V_host_id,ROUTING_HOST_LEVEL,(void *) info);
+  if (strcmp(host->V_host_coord,"")) {
+    if(!COORD_HOST_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
+    xbt_dynar_t ctn = xbt_str_split_str(host->V_host_coord, " ");
     xbt_dynar_shrink(ctn, 0);
-    xbt_lib_set(host_lib,host_id,COORD_HOST_LEVEL,(void *) ctn);
+    xbt_lib_set(host_lib,host->V_host_id,COORD_HOST_LEVEL,(void *) ctn);
   }
-}
-
-/*
- * \brief Add a host to the network element list from XML
- */
-static void parse_S_host_XML(sg_platf_host_cbarg_t h)
-{
-	parse_S_host(h->V_host_id, h->V_host_coord);
 }
 
 /**
@@ -884,7 +875,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   current_routing = NULL;
 
   /* parse generic elements */
-  sg_platf_host_add_cb(parse_S_host_XML);
+  sg_platf_host_add_cb(parse_S_host);
   sg_platf_router_add_cb(parse_S_router);
 
   surfxml_add_callback(STag_surfxml_route_cb_list,
@@ -1951,19 +1942,6 @@ static void routing_parse_Srandom(void)
     }
 }
 
-/*
- * New methods to init the routing model component from the lua script
- */
-
-
-/*
- * add a host to the network element list
- */
-
-void routing_add_host(const char *host_id)
-{
-  parse_S_host(host_id, ""); // FIXME propagate coordinate system to lua
-}
 
 /*
  * Set a new link on the actual list of link for a route or ASroute
