@@ -11,6 +11,7 @@
 #include "xbt/dynar.h"
 #include "surf/maxmin.h"
 #include "surf/datatypes.h"
+#include "simgrid/platf_interface.h"
 
 /* Creation functions */
 XBT_PUBLIC(tmgr_history_t) tmgr_history_new(void);

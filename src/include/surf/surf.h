@@ -16,13 +16,10 @@
 #include "surf/datatypes.h"
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
+#include "simgrid/platf_interface.h"
 
 SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
-typedef enum {
-  SURF_RESOURCE_ON = 1,                   /**< Up & ready        */
-  SURF_RESOURCE_OFF = 0                   /**< Down & broken     */
-} e_surf_resource_state_t;
 
 typedef enum {
   SURF_LINK_FULLDUPLEX = 2,

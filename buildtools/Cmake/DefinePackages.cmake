@@ -48,6 +48,7 @@ set(EXTRA_DIST
 	src/surf/gtnets/gtnets_topology.h
 	src/surf/cpu_ti_private.h
 	src/surf/surf_routing_private.h
+	src/include/simgrid/platf_interface.h
 	src/include/surf/surf_resource.h
 	src/include/surf/datatypes.h
 	src/include/surf/maxmin.h
@@ -230,6 +231,7 @@ set(SURF_SRC
 	src/surf/workstation_ptask_L07.c
 	src/surf/cpu_ti.c
 	src/surf/cpu_im.c
+	src/surf/sg_platf.c
 	src/xbt/xbt_sg_stubs.c
 )
 

@@ -6,7 +6,7 @@
 
 #include <pcre.h>               /* regular expression library */
 
-#include "simgrid/platf.h" // platform creation API
+#include "simgrid/platf_interface.h" // platform creation API internal interface
 
 #include "surf_routing_private.h"
 #include "surf/surf_routing.h"

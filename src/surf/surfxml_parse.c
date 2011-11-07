@@ -49,7 +49,6 @@ int surf_parse_get_int(const char *string) {
 
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
 //xbt_dynar_t STag_surfxml_host_cb_list = NULL;
-xbt_dynar_t surf_parse_host_cb_list = NULL; // of functions of type: surf_parsing_host_arg_t -> void
 xbt_dynar_t STag_surfxml_platform_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_platform_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_host_cb_list = NULL;
@@ -162,8 +161,7 @@ void surf_parse_init_callbacks(void)
 	  ETag_surfxml_platform_cb_list =
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 
-	  surf_parse_host_cb_list = xbt_dynar_new(sizeof(surf_parse_host_fct_t), NULL);
-
+	  sg_platf_init();
 	  ETag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
@@ -225,7 +223,7 @@ void surf_parse_reset_callbacks(void)
 
 void surf_parse_free_callbacks(void)
 {
-  xbt_dynar_free(&surf_parse_host_cb_list);
+  sg_platf_exit();
 
   xbt_dynar_free(&STag_surfxml_platform_cb_list);
   xbt_dynar_free(&ETag_surfxml_platform_cb_list);
@@ -294,7 +292,6 @@ void STag_surfxml_platform(void)
 }
 
 void STag_surfxml_host(void){
-//	XBT_INFO("STag_surfxml_host [%s]",A_surfxml_host_id);
   s_surf_parsing_host_arg_t host;
   memset(&host,0,sizeof(host));
 
@@ -313,16 +310,6 @@ void STag_surfxml_host(void){
 	host.V_host_coord = xbt_strdup(A_surfxml_host_coordinates);
 
 	surf_parse_host(&host);
-}
-void surf_parse_host(surf_parsing_host_arg_t h){
-  unsigned int iterator;
-  surf_parse_host_fct_t fun;
-  xbt_dynar_foreach(surf_parse_host_cb_list, iterator, fun) {
-    if (fun) (*fun) (h);
-  }
-}
-void surf_parse_host_add_cb(surf_parse_host_fct_t fct) {
-  xbt_dynar_push(surf_parse_host_cb_list, &fct);
 }
 void ETag_surfxml_host(void){
 	surfxml_call_cb_functions(ETag_surfxml_host_cb_list);
