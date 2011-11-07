@@ -37,7 +37,7 @@ int master(int argc, char *argv[])
   double task_comp_size = 0;
   double task_comm_size = 0;
   int i;
-  int read;
+  _XBT_GNUC_UNUSED int read;
 
   read = sscanf(argv[1], "%d", &number_of_tasks);
   xbt_assert(read, "Invalid argument %s\n", argv[1]);

@@ -125,7 +125,7 @@ int_f_void_t xbt_graph_parse = _xbt_graph_parse;
 double xbt_graph_parse_get_double(const char *string)
 {
   double result;
-  int ret = 0;
+  _XBT_GNUC_UNUSED int ret = 0;
 
   ret = sscanf(string, "%lg", &result);
   xbt_assert((ret == 1), "Parse error line %d : %s not a number",

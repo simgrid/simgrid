@@ -268,7 +268,7 @@ void surf_parse_free_callbacks(void)
 
 void STag_surfxml_platform(void)
 {
-  double version = surf_parse_get_double(A_surfxml_platform_version);
+  _XBT_GNUC_UNUSED double version = surf_parse_get_double(A_surfxml_platform_version);
 
   xbt_assert((version >= 1.0), "******* BIG FAT WARNING *********\n "
       "You're using an ancient XML file.\n"
@@ -291,7 +291,6 @@ void STag_surfxml_platform(void)
       "available in the tools/ directory of the source archive.");
 
   surfxml_call_cb_functions(STag_surfxml_platform_cb_list);
-
 }
 
 void STag_surfxml_host(void){

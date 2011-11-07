@@ -34,7 +34,8 @@ int client(int argc, char *argv[])
   gras_socket_t from;
   xbt_matrix_t request[2], answer;
 
-  int i, j;
+  int i;
+  _XBT_GNUC_UNUSED int j;
 
   const char *host = "127.0.0.1";
   int port = 4000;

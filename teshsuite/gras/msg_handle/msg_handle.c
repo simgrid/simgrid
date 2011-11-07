@@ -30,8 +30,8 @@ int server(int argc, char *argv[])
   char *palstr;
 
   xbt_ex_t e;
-  int got_expected;
-  double now;
+  _XBT_GNUC_UNUSED int got_expected;
+  _XBT_GNUC_UNUSED double now;
 
 
   gras_init(&argc, argv);

@@ -179,7 +179,7 @@ static char *remplace(char *value, const char **src_list, int src_size,
 
       /* solve the indication */
       const char **param_list;
-      int param_size;
+      _XBT_GNUC_UNUSED int param_size;
       if (value[i] == 's' && value[i + 1] == 'r' && value[i + 2] == 'c') {
         param_list = src_list;
         param_size = src_size;
@@ -309,7 +309,7 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
   int ovector_dst[OVECCOUNT];
   const char **list_src = NULL;
   const char **list_dst = NULL;
-  int res;
+  _XBT_GNUC_UNUSED int res;
   xbt_dynar_foreach(rule_list, cpt, ruleroute) {
     rc_src =
         pcre_exec(ruleroute->re_src, NULL, src, src_length, 0, 0,

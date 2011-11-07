@@ -21,7 +21,7 @@ int alice(int argc, char *argv[])
 
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data;
-  const char *value;
+  _XBT_GNUC_UNUSED const char *value;
 
   /* Let the other process change the host props */
   gras_os_sleep(1);
@@ -64,7 +64,7 @@ int bob(int argc, char *argv[])
   xbt_dict_t host_props = gras_os_host_properties();
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data;
-  const char *value;
+  _XBT_GNUC_UNUSED const char *value;
 
   XBT_INFO("== Dump all the properties of host1");
   xbt_dict_foreach(host_props, cursor, key, data)

@@ -546,7 +546,7 @@ static int run_lua_code(int argc, char **argv)
     lua_pushstring(L, argv[i]);
 
   /* call the function */
-  int err;
+  _XBT_GNUC_UNUSED int err;
   err = lua_pcall(L, argc - 1, 1, 0);
   xbt_assert(err == 0, "error running function `%s': %s", argv[0],
               lua_tostring(L, -1));

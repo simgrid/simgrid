@@ -104,7 +104,7 @@ static void parse_process_finalize(void)
  */
 void SIMIX_launch_application(const char *file)
 {
-  int parse_status;
+  _XBT_GNUC_UNUSED int parse_status;
   xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_launch_application.");
 
