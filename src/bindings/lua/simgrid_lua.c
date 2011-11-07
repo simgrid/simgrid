@@ -12,8 +12,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
-static lua_State *lua_maestro_state;
-
 #define TASK_MODULE_NAME "simgrid.Task"
 #define HOST_MODULE_NAME "simgrid.Host"
 // Surf (bypass XML)
@@ -22,20 +20,38 @@ static lua_State *lua_maestro_state;
 #define AS_MODULE_NAME "simgrid.AS"
 #define TRACE_MODULE_NAME "simgrid.Trace"
 
+/**
+ * @brief Userdata type for tasks.
+ */
+typedef struct s_sglua_task {
+  m_task_t msg_task;    /**< the task, or NULL if I sent it to someone else */
+} s_sglua_task_t, *sglua_task_t;
+
+static lua_State* sglua_maestro_state;
+
 static void register_c_functions(lua_State *L);
 
-static void *my_checkudata (lua_State *L, int ud, const char *tname) {
+/**
+ * \brief Like luaL_checkudata, with additional debug logs.
+ * \param L a lua state
+ * \param ud index of the userdata to check in the stack
+ * \param tname key of the metatable of this userdata in the registry
+ */
+static void* my_checkudata(lua_State* L, int ud, const char* tname) {
 
-  XBT_DEBUG("Checking the task: ud = %d", ud);
+  XBT_DEBUG("Checking the userdata: ud = %d", ud);
   sglua_stack_dump("my_checkudata: ", L);
-  void *p = lua_touserdata(L, ud);
+  void* p = lua_touserdata(L, ud);
   lua_getfield(L, LUA_REGISTRYINDEX, tname);
   const void* correct_mt = lua_topointer(L, -1);
 
   int has_mt = lua_getmetatable(L, ud);
-  XBT_DEBUG("Checking the task: has metatable ? %d", has_mt);
+  XBT_DEBUG("Checking the userdata: has metatable ? %d", has_mt);
   const void* actual_mt = NULL;
-  if (has_mt) { actual_mt = lua_topointer(L, -1); lua_pop(L, 1); }
+  if (has_mt) {
+    actual_mt = lua_topointer(L, -1);
+    lua_pop(L, 1);
+  }
   XBT_DEBUG("Checking the task's metatable: expected %p, found %p", correct_mt, actual_mt);
   sglua_stack_dump("my_checkudata: ", L);
 
@@ -46,28 +62,27 @@ static void *my_checkudata (lua_State *L, int ud, const char *tname) {
 }
 
 /**
- * @brief Ensures that a userdata on the stack is a task
- * and returns the pointer inside the userdata.
+ * @brief Ensures that a value is a valid task and returns it.
  * @param L a Lua state
  * @param index an index in the Lua stack
  * @return the task at this index
  */
-static m_task_t checkTask(lua_State * L, int index)
+static m_task_t checkTask(lua_State* L, int index)
 {
-  m_task_t *pi, tk;
-  XBT_DEBUG("Lua task: %s", sglua_tostring(L, index));
+  sglua_stack_dump("checkTask: ", L);
   luaL_checktype(L, index, LUA_TTABLE);
+                                  /* ... task ... */
   lua_getfield(L, index, "__simgrid_task");
-
-  pi = (m_task_t *) luaL_checkudata(L, lua_gettop(L), TASK_MODULE_NAME);
-
-  if (pi == NULL)
-    luaL_typerror(L, index, TASK_MODULE_NAME);
-  tk = *pi;
-  if (!tk)
-    luaL_error(L, "null Task");
+                                  /* ... task ... ctask */
+  m_task_t task = *((m_task_t*) luaL_checkudata(L, -1, TASK_MODULE_NAME));
   lua_pop(L, 1);
-  return tk;
+                                  /* ... task ... */
+
+  if (task == NULL) {
+    luaL_error(L, "This task was sent to someone else, you cannot access it anymore");
+  }
+
+  return task;
 }
 
 /* ********************************************************************************* */
@@ -75,91 +90,86 @@ static m_task_t checkTask(lua_State * L, int index)
 /* ********************************************************************************* */
 
 /**
- * A task is either something to compute somewhere, or something to exchange between two hosts (or both).
- * It is defined by a computing amount and a message size.
+ * \brief Creates a new task and leaves it onto the stack.
  *
+ * Lua arguments:
+ * - task name (string)
+ * - computation size (integer)
+ * - communication size (integer)
  */
-
-/* *              * *
- * * Constructors * *
- * *              * */
-
-/**
- * @brief Constructs a new task with the specified processing amount and amount
- * of data needed.
- *
- * @param name	Task's name
- *
- * @param computeDuration 	A value of the processing amount (in flop) needed to process the task.
- *				If 0, then it cannot be executed with the execute() method.
- *				This value has to be >= 0.
- *
- * @param messageSize		A value of amount of data (in bytes) needed to transfert this task.
- *				If 0, then it cannot be transfered with the get() and put() methods.
- *				This value has to be >= 0.
- */
-static int Task_new(lua_State * L)
+static int Task_new(lua_State* L)
 {
-  XBT_DEBUG("Task new...");
-  const char *name = luaL_checkstring(L, 1);
+  XBT_DEBUG("Task new");
+  const char* name = luaL_checkstring(L, 1);
   int comp_size = luaL_checkint(L, 2);
   int msg_size = luaL_checkint(L, 3);
+                                  /* name comp comm */
+  lua_settop(L, 0);
+                                  /* -- */
   m_task_t msg_task = MSG_task_create(name, comp_size, msg_size, NULL);
-  lua_newtable(L);              /* create a table, put the userdata on top of it */
-  m_task_t *lua_task = (m_task_t *) lua_newuserdata(L, sizeof(m_task_t));
+
+  lua_newtable(L);
+                                  /* task */
+  m_task_t* lua_task = (m_task_t*) lua_newuserdata(L, sizeof(m_task_t));
+                                  /* task ctask */
   *lua_task = msg_task;
   luaL_getmetatable(L, TASK_MODULE_NAME);
+                                  /* task ctask mt */
   lua_setmetatable(L, -2);
-  lua_setfield(L, -2, "__simgrid_task");        /* put the userdata as field of the table */
-  /* remove the args from the stack */
-  lua_remove(L, 1);
-  lua_remove(L, 1);
-  lua_remove(L, 1);
+                                  /* task ctask */
+  lua_setfield(L, -2, "__simgrid_task");
+                                  /* task */
   return 1;
 }
 
-static int Task_get_name(lua_State * L)
+static int Task_get_name(lua_State* L)
 {
-  m_task_t tk = checkTask(L, -1);
-  lua_pushstring(L, MSG_task_get_name(tk));
+  m_task_t task = checkTask(L, 1);
+  lua_pushstring(L, MSG_task_get_name(task));
   return 1;
 }
 
-static int Task_computation_duration(lua_State * L)
+static int Task_computation_duration(lua_State* L)
 {
-  m_task_t tk = checkTask(L, -1);
-  lua_pushnumber(L, MSG_task_get_compute_duration(tk));
+  m_task_t task = checkTask(L, 1);
+  lua_pushnumber(L, MSG_task_get_compute_duration(task));
   return 1;
 }
 
-static int Task_execute(lua_State * L)
+static int Task_execute(lua_State* L)
 {
-  m_task_t tk = checkTask(L, -1);
-  int res = MSG_task_execute(tk);
+  m_task_t task = checkTask(L, 1);
+  int res = MSG_task_execute(task);
   lua_pushnumber(L, res);
   return 1;
 }
 
-static int Task_destroy(lua_State * L)
+static int Task_send(lua_State* L)
 {
-  m_task_t tk = checkTask(L, -1);
-  int res = MSG_task_destroy(tk);
-  lua_pushnumber(L, res);
-  return 1;
-}
+  m_task_t task = checkTask(L, 1);
+  const char* mailbox = luaL_checkstring(L, 2);
+                                  /* task mailbox */
+  lua_settop(L, 1);
+                                  /* task */
+  /* copy my stack into the task, so that the receiver can copy the lua task */
+  MSG_task_set_data(task, L);
+  MSG_error_t res = MSG_task_send(task, mailbox);
+  while (MSG_task_get_data(task) != NULL) {
+    /* don't mess up with my stack: the receiver didn't copy the data yet */
+    MSG_process_sleep(0);
+  }
 
-static int Task_send(lua_State * L)
-{
-  //stack_dump("send ", L);
-  m_task_t tk = checkTask(L, 1);
-  const char *mailbox = luaL_checkstring(L, 2);
-  lua_pop(L, 1);                // remove the string so that the task is on top of it
-  MSG_task_set_data(tk, L);     // Copy my stack into the task, so that the receiver can copy the lua task directly
-  MSG_error_t res = MSG_task_send(tk, mailbox);
-  while (MSG_task_get_data(tk) != NULL) // Don't mess up with my stack: the receiver didn't copy the data yet
-    MSG_process_sleep(0);       // yield
-
-  if (res != MSG_OK)
+  if (res == MSG_OK) {
+    /* the receiver is the owner of the task and may destroy it:
+     * remove the C task on my side so that I don't garbage collect it */
+    lua_getfield(L, 1, "__simgrid_task");
+                                  /* task ctask */
+    m_task_t* udata = (m_task_t*) luaL_checkudata(L, -1, TASK_MODULE_NAME);
+    *udata = NULL;
+    lua_pop(L, 1);
+                                  /* task */
+  }
+  else {
     switch (res) {
     case MSG_TIMEOUT:
       XBT_DEBUG("MSG_task_send failed : Timeout");
@@ -175,20 +185,26 @@ static int Task_send(lua_State * L)
           ("MSG_task_send failed : Unexpected error , please report this bug");
       break;
     }
+  }
   return 0;
 }
 
 static int Task_recv_with_timeout(lua_State *L)
 {
-  m_task_t tk = NULL;
-  const char *mailbox = luaL_checkstring(L, -2);
-  int timeout = luaL_checknumber(L, -1);
-  MSG_error_t res = MSG_task_receive_with_timeout(&tk, mailbox, timeout);
+  m_task_t task = NULL;
+  const char* mailbox = luaL_checkstring(L, 1);
+  int timeout = luaL_checknumber(L, 2);
+                                  /* mailbox timeout */
+  lua_settop(L, 0);
+                                  /* -- */
+  MSG_error_t res = MSG_task_receive_with_timeout(&task, mailbox, timeout);
 
   if (res == MSG_OK) {
-    lua_State *sender_stack = MSG_task_get_data(tk);
-    sglua_move_value(sender_stack, L);        // copy the data directly from sender's stack
-    MSG_task_set_data(tk, NULL);
+    /* copy the data directly from sender's stack */
+    lua_State* sender_stack = MSG_task_get_data(task);
+    sglua_copy_value(sender_stack, L);
+                                  /* task */
+    MSG_task_set_data(task, NULL);
   }
   else {
     switch (res) {
@@ -206,7 +222,9 @@ static int Task_recv_with_timeout(lua_State *L)
       break;
     }
     lua_pushnil(L);
+                                  /* nil */
   }
+                                  /* task/nil */
   return 1;
 }
 
@@ -221,24 +239,27 @@ static const luaL_reg Task_methods[] = {
   {"name", Task_get_name},
   {"computation_duration", Task_computation_duration},
   {"execute", Task_execute},
-  {"destroy", Task_destroy},
   {"send", Task_send},
   {"recv", Task_recv},
   {"recv_timeout", Task_recv_with_timeout},
   {NULL, NULL}
 };
 
-static int Task_gc(lua_State * L)
+static int Task_gc(lua_State* L)
 {
-  m_task_t tk = checkTask(L, -1);
-  if (tk)
-    MSG_task_destroy(tk);
+                                  /* ctask */
+  m_task_t task = *((m_task_t*) luaL_checkudata(L, 1, TASK_MODULE_NAME));
+  /* the task is NULL if I sent it to someone else */
+  if (task != NULL) {
+    MSG_task_destroy(task);
+  }
   return 0;
 }
 
-static int Task_tostring(lua_State * L)
+static int Task_tostring(lua_State* L)
 {
-  lua_pushfstring(L, "Task :%p", lua_touserdata(L, 1));
+  m_task_t task = checkTask(L, 1);
+  lua_pushfstring(L, "Task: %p", task);
   return 1;
 }
 
@@ -741,7 +762,7 @@ int luaopen_simgrid(lua_State *L)
   }
 
   /* Keep the context mechanism informed of our lua world today */
-  lua_maestro_state = L;
+  sglua_maestro_state = L;
 
   /* initialize access to my tables by children Lua states */
   lua_newtable(L);
@@ -758,7 +779,7 @@ int luaopen_simgrid(lua_State *L)
  * @return true if this is maestro
  */
 int sglua_is_maestro(lua_State* L) {
-  return L == lua_maestro_state;
+  return L == sglua_maestro_state;
 }
 
 /**
@@ -766,7 +787,7 @@ int sglua_is_maestro(lua_State* L) {
  * @return true the maestro Lua state
  */
 lua_State* sglua_get_maestro(void) {
-  return lua_maestro_state;
+  return sglua_maestro_state;
 }
 
 /**
