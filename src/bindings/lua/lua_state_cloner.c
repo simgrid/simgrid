@@ -134,7 +134,22 @@ static void sglua_get_table_by_ptr(lua_State* L, void* maestro_table_ptr) {
  * @param src the source state (not necessarily maestro)
  * @param dst the destination state
  */
-void sglua_move_value(lua_State* src, lua_State *dst) {
+void sglua_move_value(lua_State* src, lua_State* dst) {
+
+  sglua_copy_value(src, dst);
+  lua_pop(src, 1);
+}
+
+/**
+ * @brief Pushes onto the stack a copy of the value on top another stack.
+ * If the value is a table, its content is copied recursively.
+ *
+ * This function allows to move a value between two different global states.
+ *
+ * @param src the source state (not necessarily maestro)
+ * @param dst the destination state
+ */
+void sglua_copy_value(lua_State* src, lua_State* dst) {
 
   luaL_checkany(src, -1);                  /* check the value to copy */
 
@@ -183,13 +198,10 @@ void sglua_move_value(lua_State* src, lua_State *dst) {
       break;
   }
 
-  /* the value has been copied to dst: remove it from src */
-  lua_pop(src, 1);
-
   indent -= 2;
   XBT_DEBUG("%sData copied", sglua_get_spaces(indent));
 
-  sglua_stack_dump("src after copying a value (should be ...): ", src);
+  sglua_stack_dump("src after copying a value (should be ... value): ", src);
   sglua_stack_dump("dst after copying a value (should be ... value): ", dst);
 }
 
