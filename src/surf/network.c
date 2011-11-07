@@ -199,22 +199,37 @@ static void net_parse_link_init(sg_platf_link_cbarg_t link)
 {
   XBT_DEBUG("link_CM02");
 
-  if(link->policy == SURF_LINK_FULLDUPLEX)
-  {
-    net_create_resource(bprintf("%s_UP",link->id), link->bandwidth, link->bandwidth_trace,
-	               link->latency, link->latency_trace, link->state, link->state_trace,
-	               link->policy, link->properties);
-    net_create_resource(bprintf("%s_DOWN",link->id), link->bandwidth, link->bandwidth_trace,
-            link->latency, link->latency_trace, link->state, link->state_trace,
-            link->policy, NULL); // FIXME: We need to deep copy the properties or we won't be able to free it
+  if (link->policy == SURF_LINK_FULLDUPLEX) {
+    net_create_resource(bprintf("%s_UP", link->id),
+                        link->bandwidth,
+                        link->bandwidth_trace,
+                        link->latency,
+                        link->latency_trace,
+                        link->state,
+                        link->state_trace,
+                        link->policy,
+                        link->properties);
+    net_create_resource(bprintf("%s_DOWN", link->id),
+                        link->bandwidth,
+                        link->bandwidth_trace,
+                        link->latency,
+                        link->latency_trace,
+                        link->state,
+                        link->state_trace,
+                        link->policy,
+                        NULL); /* FIXME: We need to deep copy the properties or
+                                * we won't be able to free it */
+  } else {
+    net_create_resource(xbt_strdup(link->id),
+                        link->bandwidth,
+                        link->bandwidth_trace,
+                        link->latency,
+                        link->latency_trace,
+                        link->state,
+                        link->state_trace,
+                        link->policy,
+                        link->properties);
   }
-  else
-  {
-    net_create_resource(xbt_strdup(link->id), link->bandwidth, link->bandwidth_trace,
-    		link->latency, link->latency_trace, link->state, link->state_trace,
-	               link->policy, link->properties);
-  }
-
 }
 
 static void net_add_traces(void)
@@ -816,11 +831,12 @@ static void surf_network_model_init_internal(void)
     network_maxmin_system = lmm_system_new();
 
   routing_model_create(sizeof(link_CM02_t),
-      net_create_resource(xbt_strdup("__loopback__"),
-          498000000, NULL, 0.000015, NULL,
-            SURF_RESOURCE_ON, NULL,
-            SURF_LINK_FATPIPE, NULL),
-            net_get_link_latency);
+                       net_create_resource(xbt_strdup("__loopback__"),
+                                           498000000, NULL,
+                                           0.000015, NULL,
+                                           SURF_RESOURCE_ON, NULL,
+                                           SURF_LINK_FATPIPE, NULL),
+                       net_get_link_latency);
 }
 
 
