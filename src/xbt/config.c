@@ -660,10 +660,17 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
     CATCH(e) {
       if (e.category == not_found_error) {
         xbt_ex_free(e);
-        name = xbt_strdup(name);
-        free(optionlist_cpy);
-        THROWF(not_found_error, 0,
-               "No registered variable corresponding to '%s'.", name);
+        TRY {
+          THROWF(not_found_error, 0,
+                 "No registered variable corresponding to '%s'.", name);
+        }
+        TRY_CLEANUP {
+          /* name points into optionlist_cpy, it cannot be freed before */
+          free(optionlist_cpy);
+        }
+        CATCH_ANONYMOUS {
+          RETHROW;
+        }
       }
       free(optionlist_cpy);
       RETHROW;
