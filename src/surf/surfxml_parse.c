@@ -21,7 +21,7 @@ int ETag_surfxml_include_state(void);
 /*
  * Helping functions
  */
-static void surf_parse_error(char *msg) {
+void surf_parse_error(char *msg) {
   xbt_die("Parse error on line %d: %s\n", surf_parse_lineno, msg);
 }
 
@@ -48,9 +48,6 @@ int surf_parse_get_int(const char *string) {
  */
 
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
-//xbt_dynar_t STag_surfxml_host_cb_list = NULL;
-xbt_dynar_t STag_surfxml_link_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_link_cb_list = NULL;
 xbt_dynar_t STag_surfxml_route_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_route_cb_list = NULL;
 xbt_dynar_t STag_surfxml_link_ctn_cb_list = NULL;
@@ -153,8 +150,6 @@ void surf_parse_init_callbacks(void)
 {
 	  sg_platf_init(); // FIXME: move to a proper place?
 
-	  STag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  ETag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_link_ctn_cb_list =
@@ -213,8 +208,6 @@ void surf_parse_free_callbacks(void)
 {
   sg_platf_exit(); // FIXME: better place?
 
-  xbt_dynar_free(&STag_surfxml_link_cb_list);
-  xbt_dynar_free(&ETag_surfxml_link_cb_list);
   xbt_dynar_free(&STag_surfxml_route_cb_list);
   xbt_dynar_free(&ETag_surfxml_route_cb_list);
   xbt_dynar_free(&STag_surfxml_link_ctn_cb_list);
@@ -378,39 +371,40 @@ void ETag_surfxml_peer(void){
 	xbt_free(struct_peer);
 }
 void STag_surfxml_link(void){
-	struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-	struct_lnk->V_link_id = A_surfxml_link_id;
-	struct_lnk->V_link_bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
-	struct_lnk->V_link_bandwidth_file = tmgr_trace_new(A_surfxml_link_bandwidth_file);
-	struct_lnk->V_link_latency = surf_parse_get_double(A_surfxml_link_latency);
-	struct_lnk->V_link_latency_file = tmgr_trace_new(A_surfxml_link_latency_file);
+  s_sg_platf_link_cbarg_t link;
+  memset(&link,0,sizeof(link));
+
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  link.properties = current_property_set = xbt_dict_new();
+
+	link.V_link_id = A_surfxml_link_id;
+	link.V_link_bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
+	link.V_link_bandwidth_file = tmgr_trace_new(A_surfxml_link_bandwidth_file);
+	link.V_link_latency = surf_parse_get_double(A_surfxml_link_latency);
+	link.V_link_latency_file = tmgr_trace_new(A_surfxml_link_latency_file);
 	xbt_assert((A_surfxml_link_state == A_surfxml_link_state_ON) ||
 			  (A_surfxml_link_state == A_surfxml_link_state_OFF), "Invalid state");
 	if (A_surfxml_link_state == A_surfxml_link_state_ON)
-		struct_lnk->V_link_state = SURF_RESOURCE_ON;
+		link.V_link_state = SURF_RESOURCE_ON;
 	if (A_surfxml_link_state == A_surfxml_link_state_OFF)
-		struct_lnk->V_link_state = SURF_RESOURCE_OFF;
-	struct_lnk->V_link_state_file = tmgr_trace_new(A_surfxml_link_state_file);
-	struct_lnk->V_link_sharing_policy = A_surfxml_link_sharing_policy;
+		link.V_link_state = SURF_RESOURCE_OFF;
+	link.V_link_state_file = tmgr_trace_new(A_surfxml_link_state_file);
+	link.V_link_sharing_policy = A_surfxml_link_sharing_policy;
 
 	if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-		struct_lnk->V_policy_initial_link = SURF_LINK_SHARED;
+		link.V_policy_initial_link = SURF_LINK_SHARED;
 	else
 	{
 	 if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
-		 struct_lnk->V_policy_initial_link = SURF_LINK_FATPIPE;
+		 link.V_policy_initial_link = SURF_LINK_FATPIPE;
 	 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-		 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
+		 link.V_policy_initial_link = SURF_LINK_FULLDUPLEX;
 	}
 
-	surf_parse_link();
-}
-void surf_parse_link(void){
-	surfxml_call_cb_functions(STag_surfxml_link_cb_list);
+	sg_platf_new_link(&link);
 }
 void ETag_surfxml_link(void){
-	surfxml_call_cb_functions(ETag_surfxml_link_cb_list);
-	xbt_free(struct_lnk);
+  current_property_set = NULL;
 }
 
 void STag_surfxml_route(void){

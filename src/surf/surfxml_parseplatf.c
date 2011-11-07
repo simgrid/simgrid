@@ -53,11 +53,8 @@ void surfxml_bufferstack_pop(int new)
  * Pass arguments to parsing callback as structures to save some time (and allow callbacks to ignore some)
  */
 
-sg_platf_router_cbarg_t struct_router = NULL;
 surf_parsing_cluster_arg_t struct_cluster = NULL;
 surf_parsing_peer_arg_t struct_peer = NULL;
-surf_parsing_link_arg_t struct_lnk = NULL;
-
 
 /*
  * Trace related stuff

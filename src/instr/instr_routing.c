@@ -186,23 +186,23 @@ static void instr_routing_parse_end_AS ()
   }
 }
 
-static void instr_routing_parse_start_link ()
+static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
 
-  double bandwidth_value = struct_lnk->V_link_bandwidth;
-  double latency_value = struct_lnk->V_link_latency;
+  double bandwidth_value = link->V_link_bandwidth;
+  double latency_value = link->V_link_latency;
   xbt_dynar_t links_to_create = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
 
-  if (struct_lnk->V_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX){
-    char *up = bprintf("%s_UP", struct_lnk->V_link_id);
-    char *down = bprintf("%s_DOWN", struct_lnk->V_link_id);
+  if (link->V_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX){
+    char *up = bprintf("%s_UP", link->V_link_id);
+    char *down = bprintf("%s_DOWN", link->V_link_id);
     xbt_dynar_push_as (links_to_create, char*, xbt_strdup(up));
     xbt_dynar_push_as (links_to_create, char*, xbt_strdup(down));
     free (up);
     free (down);
   }else{
-    xbt_dynar_push_as (links_to_create, char*, strdup(struct_lnk->V_link_id));
+    xbt_dynar_push_as (links_to_create, char*, strdup(link->V_link_id));
   }
 
   char *link_name = NULL;
@@ -291,7 +291,7 @@ void instr_routing_define_callbacks ()
   surfxml_add_callback(STag_surfxml_AS_cb_list, &instr_routing_parse_start_AS);
   surfxml_add_callback(ETag_surfxml_AS_cb_list, &instr_routing_parse_end_AS);
   if (!TRACE_needs_platform()) return;
-  surfxml_add_callback(STag_surfxml_link_cb_list, &instr_routing_parse_start_link);
+  sg_platf_link_add_cb(instr_routing_parse_start_link);
   sg_platf_host_add_cb(instr_routing_parse_start_host);
   sg_platf_router_add_cb(instr_routing_parse_start_router);
 

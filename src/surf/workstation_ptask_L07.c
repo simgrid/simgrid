@@ -710,22 +710,22 @@ static void* ptask_link_create_resource(const char *name,
   return nw_link;
 }
 
-static void ptask_parse_link_init(void)
+static void ptask_parse_link_init(sg_platf_link_cbarg_t link)
 {
-  if(struct_lnk->V_policy_initial_link == SURF_LINK_FULLDUPLEX)
+  if(link->V_policy_initial_link == SURF_LINK_FULLDUPLEX)
   {
-	  ptask_link_create_resource(bprintf("%s_UP",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
-	               struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
-	               struct_lnk->V_policy_initial_link, current_property_set);
-    ptask_link_create_resource(bprintf("%s_DOWN",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
-            struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
-	               struct_lnk->V_policy_initial_link, current_property_set);
+	  ptask_link_create_resource(bprintf("%s_UP",link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
+	               link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
+	               link->V_policy_initial_link, link->properties);
+    ptask_link_create_resource(bprintf("%s_DOWN",link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
+            link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
+            link->V_policy_initial_link, NULL); // FIXME: We need to deep copy the properties or we won't be able to free it
   }
   else
   {
-	  ptask_link_create_resource(xbt_strdup(struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
-    		struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
-	               struct_lnk->V_policy_initial_link, current_property_set);
+	  ptask_link_create_resource(xbt_strdup(link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
+    		link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
+	               link->V_policy_initial_link, link->properties);
   }
 
   current_property_set = NULL;
@@ -800,9 +800,8 @@ static void ptask_add_traces(void)
 
 static void ptask_define_callbacks()
 {
-  /* Adding callback functions */
   sg_platf_host_add_cb(ptask_parse_cpu_init);
-  surfxml_add_callback(ETag_surfxml_link_cb_list, &ptask_parse_link_init);
+  sg_platf_link_add_cb(ptask_parse_link_init);
   sg_platf_postparse_add_cb(ptask_add_traces);
 }
 

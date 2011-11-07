@@ -9,10 +9,10 @@
 #include "xbt/str.h"
 #include "xbt/dict.h"
 #include "simgrid/platf_interface.h"
-#include "surf/surf_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 xbt_dynar_t sg_platf_host_cb_list = NULL;   // of sg_platf_host_cb_t
+xbt_dynar_t sg_platf_link_cb_list = NULL;   // of sg_platf_link_cb_t
 xbt_dynar_t sg_platf_router_cb_list = NULL; // of sg_platf_router_cb_t
 xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
 
@@ -20,7 +20,8 @@ xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
 void sg_platf_init(void) {
   sg_platf_host_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
   sg_platf_router_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
-  sg_platf_postparse_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  sg_platf_link_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
+  sg_platf_postparse_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t),NULL);
 }
 /** Module management function: frees all internal data structures */
 void sg_platf_exit(void) {
@@ -43,6 +44,14 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router) {
     (*fun) (router);
   }
 }
+void sg_platf_new_link(sg_platf_link_cbarg_t link){
+  unsigned int iterator;
+  sg_platf_link_cb_t fun;
+  xbt_dynar_foreach(sg_platf_link_cb_list, iterator, fun) {
+    (*fun) (link);
+  }
+}
+
 void sg_platf_open() { /* Do nothing: just for symmetry of user code */ }
 
 void sg_platf_close() {
@@ -56,6 +65,9 @@ void sg_platf_close() {
 
 void sg_platf_host_add_cb(sg_platf_host_cb_t fct) {
   xbt_dynar_push(sg_platf_host_cb_list, &fct);
+}
+void sg_platf_link_add_cb(sg_platf_link_cb_t fct) {
+  xbt_dynar_push(sg_platf_link_cb_list, &fct);
 }
 void sg_platf_router_add_cb(sg_platf_router_cb_t fct) {
   xbt_dynar_push(sg_platf_router_cb_list, &fct);

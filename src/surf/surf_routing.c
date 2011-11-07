@@ -1393,6 +1393,7 @@ void routing_parse_Scluster(void)
   char *host_id, *groups, *link_id = NULL;
 
   s_sg_platf_host_cbarg_t host;
+  s_sg_platf_link_cbarg_t link;
 
   if( strcmp(struct_cluster->V_cluster_availability_file,"")
 	  || strcmp(struct_cluster->V_cluster_state_file,"") )
@@ -1466,6 +1467,7 @@ void routing_parse_Scluster(void)
 		sg_platf_new_host(&host);
 		XBT_DEBUG("</host>");
 
+
 		A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
 		if(struct_cluster->V_cluster_sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX)
 		{A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FULLDUPLEX;}
@@ -1474,28 +1476,31 @@ void routing_parse_Scluster(void)
 
 		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
 
-		struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-		struct_lnk->V_link_id = link_id;
-		struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bw;
-		struct_lnk->V_link_latency = struct_cluster->S_cluster_lat;
-		struct_lnk->V_link_bandwidth_file = NULL;
-		struct_lnk->V_link_latency_file = NULL;
-		struct_lnk->V_link_state_file = NULL;
-		struct_lnk->V_link_state = SURF_RESOURCE_ON;
-		struct_lnk->V_link_sharing_policy = A_surfxml_link_sharing_policy;
+		memset(&link,0,sizeof(link));
+		link.V_link_id = link_id;
+		link.V_link_bandwidth = struct_cluster->S_cluster_bw;
+		link.V_link_latency = struct_cluster->S_cluster_lat;
+		link.V_link_bandwidth_file = NULL;
+		link.V_link_latency_file = NULL;
+		link.V_link_state_file = NULL;
+		link.V_link_state = SURF_RESOURCE_ON;
+		link.V_link_sharing_policy = A_surfxml_link_sharing_policy;
 
-		if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-			struct_lnk->V_policy_initial_link = SURF_LINK_SHARED;
-		else
-		{
-		 if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
-			 struct_lnk->V_policy_initial_link = SURF_LINK_FATPIPE;
-		 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-			 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
+		switch (A_surfxml_link_sharing_policy) {
+		case A_surfxml_link_sharing_policy_SHARED:
+			link.V_policy_initial_link = SURF_LINK_SHARED;
+			break;
+		case A_surfxml_link_sharing_policy_FATPIPE:
+		  link.V_policy_initial_link = SURF_LINK_FATPIPE;
+		  break;
+		case A_surfxml_link_sharing_policy_FULLDUPLEX:
+		  link.V_policy_initial_link = SURF_LINK_FULLDUPLEX;
+		  break;
+		case AU_surfxml_link_sharing_policy:
+		  surf_parse_error(bprintf("Invalid sharing policy in cluster %s (please report this bug, this shouldn't happen)",struct_cluster->V_cluster_id));
 		}
-		surf_parse_link();
 
-		ETag_surfxml_link();
+		sg_platf_new_link(&link);
 
 		surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
 		if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX){
@@ -1568,26 +1573,26 @@ void routing_parse_Scluster(void)
 
 		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
 
-		struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-		struct_lnk->V_link_id = link_id;
-		struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bw;
-		struct_lnk->V_link_latency = struct_cluster->S_cluster_lat;
-		struct_lnk->V_link_bandwidth_file = NULL;
-		struct_lnk->V_link_latency_file = NULL;
-		struct_lnk->V_link_state_file = NULL;
-		struct_lnk->V_link_state = SURF_RESOURCE_ON;
-		struct_lnk->V_link_sharing_policy = A_surfxml_link_sharing_policy;
+		memset(&link,0,sizeof(link));
+		link.V_link_id = link_id;
+		link.V_link_bandwidth = struct_cluster->S_cluster_bw;
+		link.V_link_latency = struct_cluster->S_cluster_lat;
+		link.V_link_bandwidth_file = NULL;
+		link.V_link_latency_file = NULL;
+		link.V_link_state_file = NULL;
+		link.V_link_state = SURF_RESOURCE_ON;
+		link.V_link_sharing_policy = A_surfxml_link_sharing_policy;
 
 		if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-			struct_lnk->V_policy_initial_link = SURF_LINK_SHARED;
+			link.V_policy_initial_link = SURF_LINK_SHARED;
 		else
 		{
 		 if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
-			 struct_lnk->V_policy_initial_link = SURF_LINK_FATPIPE;
+			 link.V_policy_initial_link = SURF_LINK_FATPIPE;
 		 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-			 struct_lnk->V_policy_initial_link = SURF_LINK_FULLDUPLEX;
+			 link.V_policy_initial_link = SURF_LINK_FULLDUPLEX;
 		}
-		surf_parse_link();
+		sg_platf_new_link(&link);
 
 		ETag_surfxml_link();
 
@@ -1637,22 +1642,22 @@ void routing_parse_Scluster(void)
 	  if(AX_surfxml_cluster_bb_sharing_policy == A_surfxml_cluster_bb_sharing_policy_FATPIPE)
 	  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
 
-	  struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-	  struct_lnk->V_link_id = link_backbone;
-	  struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bb_bw;
-	  struct_lnk->V_link_latency = struct_cluster->S_cluster_bb_lat;
-	  struct_lnk->V_link_bandwidth_file = NULL;
-	  struct_lnk->V_link_latency_file = NULL;
-	  struct_lnk->V_link_state_file = NULL;
-	  struct_lnk->V_link_state = SURF_RESOURCE_ON;
-	  struct_lnk->V_link_sharing_policy = A_surfxml_link_sharing_policy;
+	  memset(&link,0,sizeof(link));
+	  link.V_link_id = link_backbone;
+	  link.V_link_bandwidth = struct_cluster->S_cluster_bb_bw;
+	  link.V_link_latency = struct_cluster->S_cluster_bb_lat;
+	  link.V_link_bandwidth_file = NULL;
+	  link.V_link_latency_file = NULL;
+	  link.V_link_state_file = NULL;
+	  link.V_link_state = SURF_RESOURCE_ON;
+	  link.V_link_sharing_policy = A_surfxml_link_sharing_policy;
 
 	  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-		  struct_lnk->V_policy_initial_link = SURF_LINK_SHARED;
+		  link.V_policy_initial_link = SURF_LINK_SHARED;
 	  else
-		  struct_lnk->V_policy_initial_link = SURF_LINK_FATPIPE;
+		  link.V_policy_initial_link = SURF_LINK_FATPIPE;
 
-	  surf_parse_link();
+	  sg_platf_new_link(&link);
 	  ETag_surfxml_link();
 
 	  surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);

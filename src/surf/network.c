@@ -192,24 +192,24 @@ static void* net_create_resource(const char *name,
   return nw_link;
 }
 
-static void net_parse_link_init(void)
+static void net_parse_link_init(sg_platf_link_cbarg_t link)
 {
   XBT_DEBUG("link_CM02");
 
-  if(struct_lnk->V_policy_initial_link == SURF_LINK_FULLDUPLEX)
+  if(link->V_policy_initial_link == SURF_LINK_FULLDUPLEX)
   {
-    net_create_resource(bprintf("%s_UP",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
-	               struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
-	               struct_lnk->V_policy_initial_link, xbt_dict_new());
-    net_create_resource(bprintf("%s_DOWN",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
-            struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
-	               struct_lnk->V_policy_initial_link, xbt_dict_new());
+    net_create_resource(bprintf("%s_UP",link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
+	               link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
+	               link->V_policy_initial_link, link->properties);
+    net_create_resource(bprintf("%s_DOWN",link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
+            link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
+            link->V_policy_initial_link, NULL); // FIXME: We need to deep copy the properties or we won't be able to free it
   }
   else
   {
-    net_create_resource(xbt_strdup(struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_bandwidth_file,
-    		struct_lnk->V_link_latency, struct_lnk->V_link_latency_file, struct_lnk->V_link_state, struct_lnk->V_link_state_file,
-	               struct_lnk->V_policy_initial_link, xbt_dict_new());
+    net_create_resource(xbt_strdup(link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
+    		link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
+	               link->V_policy_initial_link, link->properties);
   }
 
 }
@@ -273,7 +273,7 @@ static void net_add_traces(void)
 static void net_define_callbacks(void)
 {
   /* Figuring out the network links */
-  surfxml_add_callback(STag_surfxml_link_cb_list, &net_parse_link_init);
+  sg_platf_link_add_cb(net_parse_link_init);
   sg_platf_postparse_add_cb(net_add_traces);
 }
 

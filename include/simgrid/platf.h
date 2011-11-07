@@ -47,6 +47,20 @@ typedef struct {
   const char* V_router_coord;
 } s_sg_platf_router_cbarg_t, *sg_platf_router_cbarg_t;
 
+typedef struct {
+  char* V_link_id;
+  double V_link_bandwidth;
+  tmgr_trace_t V_link_bandwidth_file;
+  double V_link_latency;
+  tmgr_trace_t V_link_latency_file;
+  e_surf_resource_state_t V_link_state;
+  tmgr_trace_t V_link_state_file;
+  int V_link_sharing_policy;
+  int V_policy_initial_link;
+  xbt_dict_t properties;
+} s_sg_platf_link_cbarg_t, *sg_platf_link_cbarg_t;
+
+
 XBT_PUBLIC(void) sg_platf_open(void);  // Start a new platform
 XBT_PUBLIC(void) sg_platf_close(void); // Finish the creation of the platform
 
@@ -55,6 +69,7 @@ XBT_PUBLIC(void) sg_platf_new_AS_close(void);                            // That
 
 XBT_PUBLIC(void) sg_platf_new_host  (sg_platf_host_cbarg_t   host);   // Add an host  to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_router(sg_platf_router_cbarg_t router); // Add a router to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_link(sg_platf_link_cbarg_t link);       // Add a link   to the currently described AS
 
 
 #endif                          /* SG_PLATF_H */

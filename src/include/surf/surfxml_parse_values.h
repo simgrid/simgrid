@@ -19,19 +19,6 @@ typedef struct s_surf_parsing_peer_arg {
 	char* V_peer_state_trace;
 } s_surf_parsing_peer_arg_t;
 
-typedef struct s_surf_parsing_link_arg *surf_parsing_link_arg_t;
-typedef struct s_surf_parsing_link_arg {
-	char* V_link_id;
-	double V_link_bandwidth;
-	tmgr_trace_t V_link_bandwidth_file;
-	double V_link_latency;
-	tmgr_trace_t V_link_latency_file;
-	e_surf_resource_state_t V_link_state;
-	tmgr_trace_t V_link_state_file;
-	int V_link_sharing_policy;
-	int V_policy_initial_link;
-} s_surf_parsing_link_arg_t;
-
 typedef struct s_surf_parsing_cluster_arg *surf_parsing_cluster_arg_t;
 typedef struct s_surf_parsing_cluster_arg {
 	char* V_cluster_id;
@@ -60,8 +47,5 @@ typedef struct s_surf_parsing_link_up_down {
 
 extern surf_parsing_cluster_arg_t struct_cluster;
 extern surf_parsing_peer_arg_t struct_peer;
-extern surf_parsing_link_arg_t struct_lnk;
-
-void surf_parse_link(void);
 
 #endif /* SURFXML_PARSE_VALUES_H_ */

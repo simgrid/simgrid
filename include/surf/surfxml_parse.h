@@ -15,8 +15,6 @@
 SG_BEGIN_DECL()
 
 /* Hook for the different tags. All the functions which pointer to are push into here are run when the tag is encountered */
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_link_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_link_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_route_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_route_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_link_ctn_cb_list;
@@ -51,6 +49,7 @@ XBT_PUBLIC(void) surf_parse_close(void);
 XBT_PUBLIC(void) surf_parse_init_callbacks(void);
 XBT_PUBLIC(void) surf_parse_reset_callbacks(void);
 XBT_PUBLIC(void) surf_parse_free_callbacks(void);
+XBT_PUBLIC(void) surf_parse_error(char *msg);
 XBT_PUBLIC(double) surf_parse_get_double(const char *string);
 XBT_PUBLIC(int) surf_parse_get_int(const char *string);
 XBT_PUBLIC(void) surf_parse_add_callback_config(void);
