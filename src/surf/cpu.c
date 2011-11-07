@@ -71,7 +71,7 @@ static void* cpu_create_resource(const char *name, double power_peak,
 }
 
 
-static void parse_cpu_init(surf_parsing_host_arg_t host)
+static void parse_cpu_init(sg_platf_host_cbarg_t host)
 {
   if(strcmp(host->V_host_coord,"")) xbt_die("Coordinates not implemented yet!");
 
@@ -124,7 +124,7 @@ static void add_traces_cpu(void)
 
 static void cpu_define_callbacks(void)
 {
-  surf_parse_host_add_cb(parse_cpu_init);
+  sg_platf_host_add_cb(parse_cpu_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces_cpu);
 }
 

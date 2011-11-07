@@ -289,7 +289,7 @@ void STag_surfxml_platform(void)
 }
 
 void STag_surfxml_host(void){
-  s_surf_parsing_host_arg_t host;
+  s_sg_platf_host_cbarg_t host;
   memset(&host,0,sizeof(host));
 
 	host.V_host_id = A_surfxml_host_id;
@@ -314,7 +314,7 @@ void ETag_surfxml_host(void){
 
 
 void STag_surfxml_router(void){
-  s_surf_parsing_router_arg_t router;
+  s_sg_platf_router_cbarg_t router;
   memset(&router, 0, sizeof(router));
 
 	router.V_router_id = xbt_strdup(A_surfxml_router_id);

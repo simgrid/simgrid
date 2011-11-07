@@ -654,7 +654,7 @@ static void* ptask_cpu_create_resource(const char *name, double power_scale,
   return cpu;
 }
 
-static void ptask_parse_cpu_init(surf_parsing_host_arg_t host)
+static void ptask_parse_cpu_init(sg_platf_host_cbarg_t host)
 {
   ptask_cpu_create_resource(
 		  host->V_host_id,
@@ -802,7 +802,7 @@ static void ptask_add_traces(void)
 static void ptask_define_callbacks()
 {
   /* Adding callback functions */
-  surf_parse_host_add_cb(ptask_parse_cpu_init);
+  sg_platf_host_add_cb(ptask_parse_cpu_init);
   surfxml_add_callback(ETag_surfxml_link_cb_list, &ptask_parse_link_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &ptask_add_traces);
 }

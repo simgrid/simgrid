@@ -30,7 +30,7 @@ typedef enum {
  * used, instead of malloced structures.
  */
 
-typedef struct s_surf_parsing_host_arg {
+typedef struct {
   char* V_host_id;                          //id
   double V_host_power_peak;                     //power
   int V_host_core;                          //core
@@ -39,19 +39,19 @@ typedef struct s_surf_parsing_host_arg {
   e_surf_resource_state_t V_host_state_initial;           //state
   tmgr_trace_t V_host_state_trace;                  //state file
   const char* V_host_coord;
-} s_surf_parsing_host_arg_t, *surf_parsing_host_arg_t;
+} s_sg_platf_host_cbarg_t, *sg_platf_host_cbarg_t;
 
-typedef struct s_surf_parsing_router_arg {
+typedef struct {
   const char* V_router_id;
   const char* V_router_coord;
-} s_surf_parsing_router_arg_t, *surf_parsing_router_arg_t;
+} s_sg_platf_router_cbarg_t, *sg_platf_router_cbarg_t;
 
 
 XBT_PUBLIC(void) sg_platf_new_AS_open(const char *id, const char *mode);
 XBT_PUBLIC(void) sg_platf_new_AS_close(void);
 
-XBT_PUBLIC(void) sg_platf_new_host(surf_parsing_host_arg_t h);
-XBT_PUBLIC(void) sg_platf_new_router(surf_parsing_router_arg_t router);
+XBT_PUBLIC(void) sg_platf_new_host  (sg_platf_host_cbarg_t   host);
+XBT_PUBLIC(void) sg_platf_new_router(sg_platf_router_cbarg_t router);
 
 
 #endif                          /* SG_PLATF_H */

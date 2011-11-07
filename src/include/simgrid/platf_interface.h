@@ -17,10 +17,10 @@ void sg_platf_exit(void);
 
 /* Managing the parsing callbacks */
 
-typedef void (*surf_parse_host_fct_t)(surf_parsing_host_arg_t);
-typedef void (*surf_parse_router_fct_t)(surf_parsing_router_arg_t);
-void surf_parse_host_add_cb(surf_parse_host_fct_t);
-void surf_parse_router_add_cb(surf_parse_router_fct_t);
+typedef void (*sg_platf_host_cb_t)(sg_platf_host_cbarg_t);
+typedef void (*sg_platf_router_cb_t)(sg_platf_router_cbarg_t);
+void sg_platf_host_add_cb(sg_platf_host_cb_t);
+void sg_platf_router_add_cb(sg_platf_router_cb_t);
 
 
 

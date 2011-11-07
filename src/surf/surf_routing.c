@@ -186,7 +186,7 @@ static void parse_E_host(void)
 /*
  * \brief Add a host to the network element list from XML
  */
-static void parse_S_host_XML(surf_parsing_host_arg_t h)
+static void parse_S_host_XML(sg_platf_host_cbarg_t h)
 {
 	parse_S_host(h->V_host_id, h->V_host_coord);
 }
@@ -207,7 +207,7 @@ static void parse_S_host_lua(const char *host_id, const char *coord)
 /**
  * \brief Add a "router" to the network element list
  */
-static void parse_S_router(surf_parsing_router_arg_t router)
+static void parse_S_router(sg_platf_router_cbarg_t router)
 {
   network_element_info_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
@@ -237,7 +237,7 @@ static void parse_S_router(surf_parsing_router_arg_t router)
  * brief Add a "router" to the network element list from XML description
  */
 static void parse_S_router_lua(const char* router_id) {
-  s_surf_parsing_router_arg_t router;
+  s_sg_platf_router_cbarg_t router;
   memset(&router,0,sizeof(router));
 	router.V_router_id = router_id;
 	router.V_router_coord = "";
@@ -960,9 +960,9 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   current_routing = NULL;
 
   /* parse generic elements */
-  surf_parse_host_add_cb(parse_S_host_XML);
+  sg_platf_host_add_cb(parse_S_host_XML);
   surfxml_add_callback(ETag_surfxml_host_cb_list, &parse_E_host_XML);
-  surf_parse_router_add_cb(parse_S_router);
+  sg_platf_router_add_cb(parse_S_router);
 
   surfxml_add_callback(STag_surfxml_route_cb_list,
                        &parse_S_route_new_and_endpoints_XML);
@@ -1466,7 +1466,7 @@ void generic_src_dst_check(routing_component_t rc, const char *src,
 static void parse_create_host_link(int i)
 {
 	char *host_id, *link_id = NULL;
-	s_surf_parsing_host_arg_t host;
+	s_sg_platf_host_cbarg_t host;
 	memset(&host,0,sizeof(host));
 
 	host_id = bprintf("%s%d%s", struct_cluster->V_cluster_prefix, i, struct_cluster->V_cluster_suffix);
@@ -1567,7 +1567,7 @@ void routing_parse_Scluster(void)
   static int AX_ptr = 0;
   char *host_id, *groups, *link_id = NULL;
 
-  s_surf_parsing_host_arg_t host;
+  s_sg_platf_host_cbarg_t host;
 
   if( strcmp(struct_cluster->V_cluster_availability_file,"")
 	  || strcmp(struct_cluster->V_cluster_state_file,"") )

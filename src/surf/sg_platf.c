@@ -12,40 +12,40 @@
 #include "surf/surf_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
-xbt_dynar_t surf_parse_host_cb_list = NULL; // of functions of type: surf_parsing_host_arg_t -> void
-xbt_dynar_t surf_parse_router_cb_list = NULL; // of functions of type: surf_parsing_router_arg_t -> void
+xbt_dynar_t sg_platf_host_cb_list = NULL;   // of sg_platf_host_cb_t
+xbt_dynar_t sg_platf_router_cb_list = NULL; // of sg_platf_router_cb_t
 
 /** Module management function: creates all internal data structures */
 void sg_platf_init(void) {
-  surf_parse_host_cb_list = xbt_dynar_new(sizeof(surf_parse_host_fct_t), NULL);
-  surf_parse_router_cb_list = xbt_dynar_new(sizeof(surf_parse_host_fct_t), NULL);
+  sg_platf_host_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
+  sg_platf_router_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
 }
 /** Module management function: frees all internal data structures */
 void sg_platf_exit(void) {
-  xbt_dynar_free(&surf_parse_host_cb_list);
-  xbt_dynar_free(&surf_parse_router_cb_list);
+  xbt_dynar_free(&sg_platf_host_cb_list);
+  xbt_dynar_free(&sg_platf_router_cb_list);
 }
 
-void sg_platf_new_host(surf_parsing_host_arg_t h){
+void sg_platf_new_host(sg_platf_host_cbarg_t h){
   unsigned int iterator;
-  surf_parse_host_fct_t fun;
-  xbt_dynar_foreach(surf_parse_host_cb_list, iterator, fun) {
+  sg_platf_host_cb_t fun;
+  xbt_dynar_foreach(sg_platf_host_cb_list, iterator, fun) {
     if (fun) (*fun) (h);
   }
 }
-void sg_platf_new_router(surf_parsing_router_arg_t router) {
+void sg_platf_new_router(sg_platf_router_cbarg_t router) {
   unsigned int iterator;
-  surf_parse_router_fct_t fun;
-  xbt_dynar_foreach(surf_parse_router_cb_list, iterator, fun) {
+  sg_platf_router_cb_t fun;
+  xbt_dynar_foreach(sg_platf_router_cb_list, iterator, fun) {
     if (fun) (*fun) (router);
   }
 }
 
 
-void surf_parse_host_add_cb(surf_parse_host_fct_t fct) {
-  xbt_dynar_push(surf_parse_host_cb_list, &fct);
+void sg_platf_host_add_cb(sg_platf_host_cb_t fct) {
+  xbt_dynar_push(sg_platf_host_cb_list, &fct);
 }
-void surf_parse_router_add_cb(surf_parse_router_fct_t fct) {
-  xbt_dynar_push(surf_parse_router_cb_list, &fct);
+void sg_platf_router_add_cb(sg_platf_router_cb_t fct) {
+  xbt_dynar_push(sg_platf_router_cb_list, &fct);
 }
 

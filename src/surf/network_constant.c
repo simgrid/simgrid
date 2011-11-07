@@ -21,14 +21,14 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 static random_data_t random_latency = NULL;
 static int host_number_int = 0;
 
-static void netcste_count_hosts(surf_parsing_host_arg_t h)
+static void netcste_count_hosts(sg_platf_host_cbarg_t h)
 {
   host_number_int++;
 }
 
 static void netcste_define_callbacks(void)
 {
-  surf_parse_host_add_cb(netcste_count_hosts);
+  sg_platf_host_add_cb(netcste_count_hosts);
 }
 
 static int netcste_resource_used(void *resource_id)

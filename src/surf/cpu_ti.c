@@ -190,7 +190,7 @@ static void* cpu_ti_create_resource(const char *name, double power_peak,
 }
 
 
-static void parse_cpu_ti_init(surf_parsing_host_arg_t host)
+static void parse_cpu_ti_init(sg_platf_host_cbarg_t host)
 {
   cpu_ti_create_resource(host->V_host_id,
 			  host->V_host_power_peak,
@@ -263,7 +263,7 @@ static void add_traces_cpu_ti(void)
 
 static void cpu_ti_define_callbacks()
 {
-  surf_parse_host_add_cb(parse_cpu_ti_init);
+  sg_platf_host_add_cb(parse_cpu_ti_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces_cpu_ti);
 }
 

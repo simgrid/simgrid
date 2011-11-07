@@ -88,7 +88,7 @@ static void* cpu_im_create_resource(const char *name, double power_peak,
 }
 
 
-static void parse_cpu_im_init(surf_parsing_host_arg_t host)
+static void parse_cpu_im_init(sg_platf_host_cbarg_t host)
 {
 	cpu_im_create_resource(host->V_host_id,
 			  host->V_host_power_peak,
@@ -136,7 +136,7 @@ static void cpu_im_add_traces_cpu(void)
 
 static void cpu_im_define_callbacks()
 {
-  surf_parse_host_add_cb(parse_cpu_im_init);
+  sg_platf_host_add_cb(parse_cpu_im_init);
   surfxml_add_callback(ETag_surfxml_platform_cb_list,
                        &cpu_im_add_traces_cpu);
 }
