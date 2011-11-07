@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
   ws_list = SD_workstation_get_list();
   reclaimed = xbt_dynar_new(sizeof(bcast_task_t),xbt_free_ref);
   xbt_dynar_t done = NULL;
-  send_one(0,262144);
+  send_one(0,SD_workstation_get_number());
   do {
     if (done != NULL && xbt_dynar_length(done) > 0) {
       unsigned int cursor;

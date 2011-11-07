@@ -74,16 +74,18 @@ void model_floyd_set_route(routing_component_t rc, const char *src,
 /* ************************************************** */
 /* ************** RULE-BASED ROUTING **************** */
 void *model_rulebased_create(void);      /* create structures for rulebased routing model */
-void model_rulebased_load(void);         /* load parse functions for rulebased routing model */
-void model_rulebased_unload(void);       /* unload parse functions for rulebased routing model */
-void model_rulebased_end(void);          /* finalize the creation of rulebased routing model */
 
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
 void *model_cluster_create(void);      /* create structures for cluster routing model */
-void model_cluster_load(void);         /* load parse functions for cluster routing model */
-void model_cluster_unload(void);       /* unload parse functions for cluster routing model */
-void model_cluster_end(void);          /* finalize the creation of cluster routing model */
+
+/* ************************************************** */
+/* **************  Vivaldi ROUTING   **************** */
+void *model_vivaldi_create(void);      /* create structures for vivaldi routing model */
+#define HOST_PEER(peername) bprintf("peer_%s", peername)
+#define ROUTER_PEER(peername) bprintf("router_%s", peername)
+#define LINK_UP_PEER(peername) bprintf("link_%s_up", peername)
+#define LINK_DOWN_PEER(peername) bprintf("link_%s_down", peername)
 
 /* ************************************************************************** */
 /* ********** Dijkstra & Dijkstra Cached ROUTING **************************** */

@@ -5226,11 +5226,5 @@
 
 		<peer id="peer-1739" coordinates="36.2 -52.2 0.7 " power="730000000.0"
 		bw_in="13380000" bw_out="1024000" lat="5E-4" />
-
-		<ASroute src="(.*)"
-			dst="(.*)"
-			gw_src="router_$1src"
-			gw_dst="router_$1dst">
-		</ASroute>
 	</AS>
 </platform> 

@@ -91,59 +91,13 @@ struct s_model_type routing_models[] = { {"Full",
 {"none", "No routing (usable with Constant network only)",
  model_none_create, model_none_load, model_none_unload, model_none_end},
 {"RuleBased", "Rule-Based routing data (...)", model_rulebased_create,
- model_rulebased_load, model_rulebased_unload, model_rulebased_end},
-{"Vivaldi", "Vivaldi routing", model_rulebased_create,
-  model_rulebased_load, model_rulebased_unload, model_rulebased_end},
+ model_none_load, model_none_unload, model_none_end},
+{"Vivaldi", "Vivaldi routing", model_vivaldi_create,
+  model_none_load, model_none_unload, model_none_end},
 {"Cluster", "Cluster routing", model_cluster_create,
-  model_rulebased_load, model_rulebased_unload, model_rulebased_end},
+  model_none_load, model_none_unload, model_none_end},
 {NULL, NULL, NULL, NULL, NULL, NULL}
 };
-
-static double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
-{
-	double src_coord, dst_coord;
-
-	src_coord = atof(xbt_dynar_get_as(src, index, char *));
-	dst_coord = atof(xbt_dynar_get_as(dst, index, char *));
-
-	return (src_coord-dst_coord)*(src_coord-dst_coord);
-
-}
-
-static double base_vivaldi_get_latency (const char *src, const char *dst)
-{
-  double euclidean_dist;
-  xbt_dynar_t src_ctn, dst_ctn;
-  src_ctn = xbt_lib_get_or_null(host_lib, src, COORD_HOST_LEVEL);
-  if(!src_ctn) src_ctn = xbt_lib_get_or_null(as_router_lib, src, COORD_ASR_LEVEL);
-  dst_ctn = xbt_lib_get_or_null(host_lib, dst, COORD_HOST_LEVEL);
-  if(!dst_ctn) dst_ctn = xbt_lib_get_or_null(as_router_lib, dst, COORD_ASR_LEVEL);
-
-  if(dst_ctn == NULL || src_ctn == NULL)
-  xbt_die("Coord src '%s' :%p   dst '%s' :%p",src,src_ctn,dst,dst_ctn);
-
-  euclidean_dist = sqrt (euclidean_dist_comp(0,src_ctn,dst_ctn)+euclidean_dist_comp(1,src_ctn,dst_ctn))
-  				 + fabs(atof(xbt_dynar_get_as(src_ctn, 2, char *)))+fabs(atof(xbt_dynar_get_as(dst_ctn, 2, char *)));
-
-  xbt_assert(euclidean_dist>=0, "Euclidean Dist is less than 0\"%s\" and \"%.2f\"", src, euclidean_dist);
-
-  //From .ms to .s
-  return euclidean_dist / 1000;
-}
-
-static double vivaldi_get_link_latency (routing_component_t rc,const char *src, const char *dst, route_extended_t e_route)
-{
-  if(get_network_element_type(src) == SURF_NETWORK_ELEMENT_AS) {
-	  int need_to_clean = e_route?0:1;
-	  double latency;
-	  e_route = e_route?e_route:(*(rc->get_route)) (rc, src, dst);
-	  latency = base_vivaldi_get_latency(e_route->src_gateway,e_route->dst_gateway);
-	  if(need_to_clean) generic_free_extended_route(e_route);
-	  return latency;
-  } else {
-	  return base_vivaldi_get_latency(src,dst);
-  }
-}
 
 /**
  * \brief Add a "host" to the network element list
@@ -428,10 +382,6 @@ void sg_platf_new_AS_open(const char *AS_id, const char *wanted_routing_type)
   new_routing->hierarchy = SURF_ROUTING_NULL;
   new_routing->name = xbt_strdup(AS_id);
   new_routing->routing_sons = xbt_dict_new();
-
-  /* Hack for Vivaldi */
-  if(!strcmp(model->name,"Vivaldi"))
-  	new_routing->get_latency = vivaldi_get_link_latency;
 
   if (current_routing == NULL && global_routing->root == NULL) {
 
@@ -1792,10 +1742,10 @@ static void routing_parse_Speer(void)
   SURFXML_START_TAG(AS);
 
   XBT_DEBUG(" ");
-  host_id = bprintf("peer_%s", struct_peer->V_peer_id);
-  router_id = bprintf("router_%s", struct_peer->V_peer_id);
-  link_id_up = bprintf("link_%s_up", struct_peer->V_peer_id);
-  link_id_down = bprintf("link_%s_down", struct_peer->V_peer_id);
+  host_id = HOST_PEER(struct_peer->V_peer_id);
+  router_id = ROUTER_PEER(struct_peer->V_peer_id);
+  link_id_up = LINK_UP_PEER(struct_peer->V_peer_id);
+  link_id_down = LINK_DOWN_PEER(struct_peer->V_peer_id);
 
   link_router = bprintf("%s_link_router", struct_peer->V_peer_id);
   link_backbone = bprintf("%s_backbone", struct_peer->V_peer_id);
