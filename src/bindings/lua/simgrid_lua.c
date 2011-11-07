@@ -517,6 +517,7 @@ static const luaL_reg AS_methods[] = {
   {"new", console_add_AS},
   {"addHost", console_add_host},
   {"addLink", console_add_link},
+  {"addRouter", console_add_router},
   {"addRoute", console_add_route},
   {NULL, NULL}
 };

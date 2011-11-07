@@ -101,6 +101,7 @@ typedef struct t_router_attr {
 
 int console_add_host(lua_State*);
 int console_add_link(lua_State*);
+int console_add_router(lua_State* L);
 int console_add_route(lua_State*);
 int console_add_AS(lua_State*);
 int console_set_function(lua_State*);

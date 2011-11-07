@@ -249,346 +249,6 @@ static int AS_add(lua_State *L)
 	return 0;
 }
 
-
-/*
- * add new host to platform hosts list
- */
-static int Host_new(lua_State * L)
-{
-  p_host_attr host;
-  unsigned int i;
-  p_AS_attr p_as,current_as = NULL;
-  const char *AS_id;
-  const char *id;
-  const char *power_trace;
-  const char *state_trace;
-  double power, power_scale;
-  int state_initial,core;
-  //get values from the table passed as argument
-  if (lua_istable(L, -1)) {
-	// get AS id
-	lua_pushstring(L, "AS");
-	lua_gettable(L, -2);
-	AS_id = lua_tostring(L, -1);
-	lua_pop(L,1);
-
-    // get Id Value
-    lua_pushstring(L, "id");
-    lua_gettable(L, -2);
-    id = lua_tostring(L, -1);
-    lua_pop(L, 1);
-
-    // get power value
-    lua_pushstring(L, "power");
-    lua_gettable(L, -2);
-    power = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-    //get power_scale
-    lua_pushstring(L, "power_scale");
-    lua_gettable(L, -2);
-    power_scale = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-    //get power_trace
-    lua_pushstring(L, "power_trace");
-    lua_gettable(L, -2);
-    power_trace = lua_tostring(L, -1);
-    lua_pop(L, 1);
-
-    lua_pushstring(L, "core");
-    lua_gettable(L, -2);
-    core = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-    //get state initial
-    lua_pushstring(L, "state_initial");
-    lua_gettable(L, -2);
-    state_initial = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-    //get trace state
-    lua_pushstring(L, "state_trace");
-    lua_gettable(L, -2);
-    state_trace = lua_tostring(L, -1);
-    lua_pop(L, 1);
-
-  } else {
-    XBT_ERROR
-        ("Bad Arguments to create host, Should be a table with named arguments");
-    return -1;
-  }
-  xbt_dynar_foreach(as_list_d, i, p_as){
-	  if (p_as->id == AS_id){
-		  current_as = p_as;
-		  break;
-	  }
-  }
-
-  if (!current_as)
-  {
-	  XBT_ERROR("No AS_id :%s found",AS_id);
-	  return -2;
-  }
-
-  host = malloc(sizeof(host_attr));
-  host->id = id;
-  host->power_peak = power;
-  host->power_scale = power_scale;
-  host->power_trace = power_trace;
-  host->core = core;
-  host->state_initial = state_initial;
-  host->state_trace = state_trace;
-  host->function = NULL;
-  host->properties = xbt_dict_new();
-  xbt_dynar_push(current_as->host_list_d, &host);
-
-  return 0;
-}
-
-/**
- * add link to AS links list
- */
-static int Link_new(lua_State * L)      // (id,bandwidth,latency)
-{
-  const char *AS_id;
-  unsigned int i;
-  p_AS_attr p_as,current_as = NULL;
-  const char* id;
-  double bandwidth, latency;
-  const char *bandwidth_trace;
-  const char *latency_trace;
-  const char *state_trace;
-  int state_initial, policy;
-
-  //get values from the table passed as argument
-  if (lua_istable(L, -1)) {
-
-	//get AS id
-	lua_pushstring(L, "AS");
-	lua_gettable(L, -2);
-	AS_id = lua_tostring(L, -1);
-	lua_pop(L, 1);
-
-    // get Id Value
-    lua_pushstring(L, "id");
-    lua_gettable(L, -2);
-    id = lua_tostring(L, -1);
-    lua_pop(L, 1);
-
-    // get bandwidth value
-    lua_pushstring(L, "bandwidth");
-    lua_gettable(L, -2);
-    bandwidth = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-    //get latency value
-    lua_pushstring(L, "latency");
-    lua_gettable(L, -2);
-    latency = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-    /*Optional Arguments  */
-
-    //get bandwidth_trace value
-    lua_pushstring(L, "bandwidth_trace");
-    lua_gettable(L, -2);
-    bandwidth_trace = lua_tostring(L, -1);
-    lua_pop(L, 1);
-
-    //get latency_trace value
-    lua_pushstring(L, "latency_trace");
-    lua_gettable(L, -2);
-    latency_trace = lua_tostring(L, -1);
-    lua_pop(L, 1);
-
-    //get state_trace value
-    lua_pushstring(L, "state_trace");
-    lua_gettable(L, -2);
-    state_trace = lua_tostring(L, -1);
-    lua_pop(L, 1);
-
-    //get state_initial value
-    lua_pushstring(L, "state_initial");
-    lua_gettable(L, -2);
-    state_initial = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-    //get policy value
-    lua_pushstring(L, "policy");
-    lua_gettable(L, -2);
-    policy = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-  } else {
-    XBT_ERROR
-        ("Bad Arguments to create link, Should be a table with named arguments");
-    return -1;
-  }
-  xbt_dynar_foreach(as_list_d, i, p_as){
-	  if (p_as->id == AS_id){
-		  current_as = p_as;
-		  break;
-	  }
-  }
-
-  if (!current_as)
-  {
-	  XBT_ERROR("No AS_id :%s found",AS_id);
-	  return -2;
-  }
-  p_link_attr link = malloc(sizeof(link_attr));
-  link->id = id;
-  link->bandwidth = bandwidth;
-  link->latency = latency;
-  link->bandwidth_trace = bandwidth_trace;
-  link->latency_trace = latency_trace;
-  link->state_trace = state_trace;
-  link->state_initial = state_initial;
-  link->policy = policy;
-  xbt_dynar_push(current_as->link_list_d, &link);
-
-  return 0;
-}
-
-/**
- * add route to AS routes list
- */
-static int Route_new(lua_State * L)     // (src_id,dest_id,links_number,link_table)
-{
-  const char* AS_id;
-  unsigned int i;
-  p_AS_attr p_as,current_as = NULL;
-  const char *links;
-  const char* link_id;
-  p_route_attr route = malloc(sizeof(route_attr));
-
-
-  if (!lua_istable(L, 4)) { // if Route.new is declared as an indexed table (FIXME : we check the third arg if it's not a table)
-
-	 //get AS_id
-	 lua_pushstring(L, "AS");
-	 lua_gettable(L, -2);
-	 AS_id = lua_tostring(L, -1);
-	 lua_pop(L, 1);
-
-	 xbt_dynar_foreach(as_list_d, i, p_as){
-	  if (p_as->id == AS_id){
-		  current_as = p_as;
-		  break;
-	  }
-	 }
-
-	 if (!current_as)
-	 {
-	  XBT_ERROR("addRoute: No AS_id :%s found",AS_id);
-	  return -2;
-	 }
-	 // get Source Value
-     lua_pushstring(L, "src");
-     lua_gettable(L, -2);
-     route->src_id = lua_tostring(L, -1);
-     lua_pop(L, 1);
-
-     // get Destination Value
-     lua_pushstring(L, "dest");
-     lua_gettable(L, -2);
-     route->dest_id = lua_tostring(L, -1);
-     lua_pop(L, 1);
-
-     // get Links Table (char* to be splited later)
-     lua_pushstring(L, "links");
-     lua_gettable(L, -2);
-     links = lua_tostring(L, -1);
-     lua_pop(L,1);
-
-     route->links_id = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-
-     char *tmp_links = xbt_strdup(links);
-     link_id = strtok(tmp_links,",");   //tmp_link = strtok((char*)links,",");
-     while(link_id != NULL)
-       {
-          xbt_dynar_push(route->links_id, &link_id);
-          link_id = strtok(NULL,","); //Alternatively, a null pointer may be specified, in which case the function continues scanning where a previous successful call to the function ended.
-        }
-     xbt_dynar_push(current_as->route_list_d, &route);
-     return 0;
-      }
-  else { // Route.new is declared as a function
-	 AS_id = luaL_checkstring(L, 1);
-	 xbt_dynar_foreach(as_list_d, i, p_as){
-	 	  if (p_as->id == AS_id){
-	 		  current_as = p_as;
-	 		  break;
-	 	  }
-	 	 }
-
-	 if (!current_as)
-	 {
-		XBT_ERROR("addRoute: No AS_id :%s found",AS_id);
-	 	return -2;
-	 }
-     route->src_id = luaL_checkstring(L, 2);
-     route->dest_id = luaL_checkstring(L, 3);
-     route->links_id = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-     lua_pushnil(L);
-     while (lua_next(L, 4) != 0)
-		{
-    	 link_id = lua_tostring(L, -1);
-    	 xbt_dynar_push(route->links_id, &link_id);
-         XBT_DEBUG("index = %f , Link_id = %s \n", lua_tonumber(L, -2),
-    	 lua_tostring(L, -1));
-    	 lua_pop(L, 1);
-    	}
-    lua_pop(L, 1);
-    //add route to platform's route list
-    xbt_dynar_push(current_as->route_list_d, &route);
-    return 0;
-    }
-
-  return -1;
-}
-/**
- * add Router to AS components
- */
-static int Router_new(lua_State* L)
-{
-	p_router_attr router;
-	const char* AS_id;
-	unsigned int i;
-	p_AS_attr p_as,current_as = NULL;
-	const char* id;
-	if (lua_istable(L, -1)) {
-		// get AS id
-		lua_pushstring(L, "AS");
-		lua_gettable(L, -2);
-		AS_id = lua_tostring(L, -1);
-		lua_pop(L,1);
-
-		lua_pushstring(L, "id");
-		lua_gettable(L, -2);
-		id = lua_tostring(L, -1);
-		lua_pop(L,1);
-	}
-	xbt_dynar_foreach(as_list_d, i, p_as){
-		  if (p_as->id == AS_id){
-			  current_as = p_as;
-			  break;
-		  }
-	  }
-
-	  if (!current_as)
-	  {
-		  XBT_ERROR("No AS_id :%s found",AS_id);
-		  return -2;
-	  }
-	router = malloc(sizeof(router_attr));
-	router->id = id;
-	xbt_dynar_push(current_as->router_list_d, &router);
-	return 0;
-
-}
-
 /**
  * set function to process
  */
@@ -809,17 +469,331 @@ static int surf_parse_bypass_application()
  */
 int console_add_host(lua_State *L)
 {
-	return Host_new(L);
+  p_host_attr host;
+  unsigned int i;
+  p_AS_attr p_as,current_as = NULL;
+  const char *AS_id;
+  const char *id;
+  const char *power_trace;
+  const char *state_trace;
+  double power, power_scale;
+  int state_initial,core;
+  //get values from the table passed as argument
+  if (lua_istable(L, -1)) {
+  // get AS id
+  lua_pushstring(L, "AS");
+  lua_gettable(L, -2);
+  AS_id = lua_tostring(L, -1);
+  lua_pop(L,1);
+
+    // get Id Value
+    lua_pushstring(L, "id");
+    lua_gettable(L, -2);
+    id = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    // get power value
+    lua_pushstring(L, "power");
+    lua_gettable(L, -2);
+    power = lua_tonumber(L, -1);
+    lua_pop(L, 1);
+
+    //get power_scale
+    lua_pushstring(L, "power_scale");
+    lua_gettable(L, -2);
+    power_scale = lua_tonumber(L, -1);
+    lua_pop(L, 1);
+
+    //get power_trace
+    lua_pushstring(L, "power_trace");
+    lua_gettable(L, -2);
+    power_trace = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    lua_pushstring(L, "core");
+    lua_gettable(L, -2);
+    core = lua_tonumber(L, -1);
+    lua_pop(L, 1);
+
+    //get state initial
+    lua_pushstring(L, "state_initial");
+    lua_gettable(L, -2);
+    state_initial = lua_tonumber(L, -1);
+    lua_pop(L, 1);
+
+    //get trace state
+    lua_pushstring(L, "state_trace");
+    lua_gettable(L, -2);
+    state_trace = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+  } else {
+    XBT_ERROR
+        ("Bad Arguments to create host, Should be a table with named arguments");
+    return -1;
+  }
+  xbt_dynar_foreach(as_list_d, i, p_as){
+    if (p_as->id == AS_id){
+      current_as = p_as;
+      break;
+    }
+  }
+
+  if (!current_as)
+  {
+    XBT_ERROR("No AS_id :%s found",AS_id);
+    return -2;
+  }
+
+  host = malloc(sizeof(host_attr));
+  host->id = id;
+  host->power_peak = power;
+  host->power_scale = power_scale;
+  host->power_trace = power_trace;
+  host->core = core;
+  host->state_initial = state_initial;
+  host->state_trace = state_trace;
+  host->function = NULL;
+  host->properties = xbt_dict_new();
+  xbt_dynar_push(current_as->host_list_d, &host);
+
+  return 0;
 }
 
-int  console_add_link(lua_State *L)
-{
-	return Link_new(L);
+int  console_add_link(lua_State *L) {
+  const char *AS_id;
+  unsigned int i;
+  p_AS_attr p_as,current_as = NULL;
+  const char* id;
+  double bandwidth, latency;
+  const char *bandwidth_trace;
+  const char *latency_trace;
+  const char *state_trace;
+  int state_initial, policy;
+
+  //get values from the table passed as argument
+  if (lua_istable(L, -1)) {
+
+  //get AS id
+  lua_pushstring(L, "AS");
+  lua_gettable(L, -2);
+  AS_id = lua_tostring(L, -1);
+  lua_pop(L, 1);
+
+    // get Id Value
+    lua_pushstring(L, "id");
+    lua_gettable(L, -2);
+    id = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    // get bandwidth value
+    lua_pushstring(L, "bandwidth");
+    lua_gettable(L, -2);
+    bandwidth = lua_tonumber(L, -1);
+    lua_pop(L, 1);
+
+    //get latency value
+    lua_pushstring(L, "latency");
+    lua_gettable(L, -2);
+    latency = lua_tonumber(L, -1);
+    lua_pop(L, 1);
+
+    /*Optional Arguments  */
+
+    //get bandwidth_trace value
+    lua_pushstring(L, "bandwidth_trace");
+    lua_gettable(L, -2);
+    bandwidth_trace = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    //get latency_trace value
+    lua_pushstring(L, "latency_trace");
+    lua_gettable(L, -2);
+    latency_trace = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    //get state_trace value
+    lua_pushstring(L, "state_trace");
+    lua_gettable(L, -2);
+    state_trace = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    //get state_initial value
+    lua_pushstring(L, "state_initial");
+    lua_gettable(L, -2);
+    state_initial = lua_tonumber(L, -1);
+    lua_pop(L, 1);
+
+    //get policy value
+    lua_pushstring(L, "policy");
+    lua_gettable(L, -2);
+    policy = lua_tonumber(L, -1);
+    lua_pop(L, 1);
+
+  } else {
+    XBT_ERROR
+        ("Bad Arguments to create link, Should be a table with named arguments");
+    return -1;
+  }
+  xbt_dynar_foreach(as_list_d, i, p_as){
+    if (p_as->id == AS_id){
+      current_as = p_as;
+      break;
+    }
+  }
+
+  if (!current_as)
+  {
+    XBT_ERROR("No AS_id :%s found",AS_id);
+    return -2;
+  }
+  p_link_attr link = malloc(sizeof(link_attr));
+  link->id = id;
+  link->bandwidth = bandwidth;
+  link->latency = latency;
+  link->bandwidth_trace = bandwidth_trace;
+  link->latency_trace = latency_trace;
+  link->state_trace = state_trace;
+  link->state_initial = state_initial;
+  link->policy = policy;
+  xbt_dynar_push(current_as->link_list_d, &link);
+
+  return 0;
 }
+/**
+ * add Router to AS components
+ */
+int console_add_router(lua_State* L) {
+  p_router_attr router;
+  const char* AS_id;
+  unsigned int i;
+  p_AS_attr p_as,current_as = NULL;
+  const char* id;
+  if (lua_istable(L, -1)) {
+    // get AS id
+    lua_pushstring(L, "AS");
+    lua_gettable(L, -2);
+    AS_id = lua_tostring(L, -1);
+    lua_pop(L,1);
+
+    lua_pushstring(L, "id");
+    lua_gettable(L, -2);
+    id = lua_tostring(L, -1);
+    lua_pop(L,1);
+  }
+  xbt_dynar_foreach(as_list_d, i, p_as){
+      if (p_as->id == AS_id){
+        current_as = p_as;
+        break;
+      }
+    }
+
+    if (!current_as)
+    {
+      XBT_ERROR("No AS_id '%s' found",AS_id);
+      return -2;
+    }
+  router = malloc(sizeof(router_attr));
+  router->id = id;
+  xbt_dynar_push(current_as->router_list_d, &router);
+  return 0;
+
+}
+
 
 int console_add_route(lua_State *L)
 {
-	return Route_new(L);
+  const char* AS_id;
+  unsigned int i;
+  p_AS_attr p_as,current_as = NULL;
+  const char *links;
+  const char* link_id;
+  p_route_attr route = malloc(sizeof(route_attr));
+
+
+  if (!lua_istable(L, 4)) { // if Route.new is declared as an indexed table (FIXME : we check the third arg if it's not a table)
+
+   //get AS_id
+   lua_pushstring(L, "AS");
+   lua_gettable(L, -2);
+   AS_id = lua_tostring(L, -1);
+   lua_pop(L, 1);
+
+   xbt_dynar_foreach(as_list_d, i, p_as){
+    if (p_as->id == AS_id){
+      current_as = p_as;
+      break;
+    }
+   }
+
+   if (!current_as)
+   {
+    XBT_ERROR("addRoute: No AS_id :%s found",AS_id);
+    return -2;
+   }
+   // get Source Value
+     lua_pushstring(L, "src");
+     lua_gettable(L, -2);
+     route->src_id = lua_tostring(L, -1);
+     lua_pop(L, 1);
+
+     // get Destination Value
+     lua_pushstring(L, "dest");
+     lua_gettable(L, -2);
+     route->dest_id = lua_tostring(L, -1);
+     lua_pop(L, 1);
+
+     // get Links Table (char* to be splited later)
+     lua_pushstring(L, "links");
+     lua_gettable(L, -2);
+     links = lua_tostring(L, -1);
+     lua_pop(L,1);
+
+     route->links_id = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+
+     char *tmp_links = xbt_strdup(links);
+     link_id = strtok(tmp_links,",");   //tmp_link = strtok((char*)links,",");
+     while(link_id != NULL)
+       {
+          xbt_dynar_push(route->links_id, &link_id);
+          link_id = strtok(NULL,","); //Alternatively, a null pointer may be specified, in which case the function continues scanning where a previous successful call to the function ended.
+        }
+     xbt_dynar_push(current_as->route_list_d, &route);
+     return 0;
+      }
+  else { // Route.new is declared as a function
+   AS_id = luaL_checkstring(L, 1);
+   xbt_dynar_foreach(as_list_d, i, p_as){
+      if (p_as->id == AS_id){
+        current_as = p_as;
+        break;
+      }
+     }
+
+   if (!current_as)
+   {
+    XBT_ERROR("addRoute: No AS_id :%s found",AS_id);
+    return -2;
+   }
+     route->src_id = luaL_checkstring(L, 2);
+     route->dest_id = luaL_checkstring(L, 3);
+     route->links_id = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+     lua_pushnil(L);
+     while (lua_next(L, 4) != 0)
+    {
+       link_id = lua_tostring(L, -1);
+       xbt_dynar_push(route->links_id, &link_id);
+         XBT_DEBUG("index = %f , Link_id = %s \n", lua_tonumber(L, -2),
+       lua_tostring(L, -1));
+       lua_pop(L, 1);
+      }
+    lua_pop(L, 1);
+    //add route to platform's route list
+    xbt_dynar_push(current_as->route_list_d, &route);
+    return 0;
+    }
+
+  return -1;
 }
 
 int console_add_AS(lua_State *L)
