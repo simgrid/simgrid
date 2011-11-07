@@ -663,8 +663,7 @@ static void ptask_parse_cpu_init(sg_platf_host_cbarg_t host)
 		  host->V_host_power_trace,
 		  host->V_host_state_initial,
 		  host->V_host_state_trace,
-		  current_property_set);
-  current_property_set=NULL;
+		  host->properties);
 }
 
 static void* ptask_link_create_resource(const char *name,

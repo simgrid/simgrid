@@ -292,6 +292,9 @@ void STag_surfxml_host(void){
   s_sg_platf_host_cbarg_t host;
   memset(&host,0,sizeof(host));
 
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  host.properties = current_property_set = xbt_dict_new();
+
 	host.V_host_id = A_surfxml_host_id;
 	host.V_host_power_peak = get_cpu_power(A_surfxml_host_power);
 	host.V_host_power_scale = surf_parse_get_double( A_surfxml_host_availability);
@@ -309,6 +312,7 @@ void STag_surfxml_host(void){
 	sg_platf_new_host(&host);
 }
 void ETag_surfxml_host(void){
+  current_property_set = NULL;
 	surfxml_call_cb_functions(ETag_surfxml_host_cb_list);
 }
 

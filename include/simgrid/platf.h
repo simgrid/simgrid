@@ -39,6 +39,7 @@ typedef struct {
   e_surf_resource_state_t V_host_state_initial;           //state
   tmgr_trace_t V_host_state_trace;                  //state file
   const char* V_host_coord;
+  xbt_dict_t properties;
 } s_sg_platf_host_cbarg_t, *sg_platf_host_cbarg_t;
 
 typedef struct {

@@ -199,8 +199,7 @@ static void parse_cpu_ti_init(sg_platf_host_cbarg_t host)
 			  host->V_host_core,
 			  host->V_host_state_initial,
 			  host->V_host_state_trace,
-			  current_property_set);
-  current_property_set = NULL;
+			  host->properties);
 
 }
 
