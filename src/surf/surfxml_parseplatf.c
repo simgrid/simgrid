@@ -148,7 +148,6 @@ static void parse_E_AS(void) {
   sg_platf_new_AS_close();
 }
 
-
 /* Init and free parse data */
 
 static void init_data(void)
@@ -191,6 +190,9 @@ void parse_platform_file(const char *file)
   int parse_status;
 
   surf_parse_reset_callbacks();
+
+  /* Register classical callbacks */
+  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties_XML);
   surf_parse_add_callback_config();
 
   surfxml_buffer_stack_stack_ptr = 1;

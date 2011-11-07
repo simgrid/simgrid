@@ -263,7 +263,7 @@ static void add_traces_cpu_ti(void)
 static void cpu_ti_define_callbacks()
 {
   sg_platf_host_add_cb(parse_cpu_ti_init);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces_cpu_ti);
+  sg_platf_postparse_add_cb(add_traces_cpu_ti);
 }
 
 static int cpu_ti_resource_used(void *resource_id)

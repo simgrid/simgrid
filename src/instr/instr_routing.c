@@ -294,7 +294,8 @@ void instr_routing_define_callbacks ()
   surfxml_add_callback(STag_surfxml_link_cb_list, &instr_routing_parse_start_link);
   sg_platf_host_add_cb(instr_routing_parse_start_host);
   sg_platf_router_add_cb(instr_routing_parse_start_router);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &instr_routing_parse_end_platform);
+
+  sg_platf_postparse_add_cb(instr_routing_parse_end_platform);
 }
 
 /*

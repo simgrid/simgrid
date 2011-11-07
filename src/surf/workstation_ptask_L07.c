@@ -803,7 +803,7 @@ static void ptask_define_callbacks()
   /* Adding callback functions */
   sg_platf_host_add_cb(ptask_parse_cpu_init);
   surfxml_add_callback(ETag_surfxml_link_cb_list, &ptask_parse_link_init);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &ptask_add_traces);
+  sg_platf_postparse_add_cb(ptask_add_traces);
 }
 
 /**************************************/

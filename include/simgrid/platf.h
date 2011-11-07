@@ -47,12 +47,14 @@ typedef struct {
   const char* V_router_coord;
 } s_sg_platf_router_cbarg_t, *sg_platf_router_cbarg_t;
 
+XBT_PUBLIC(void) sg_platf_open(void);  // Start a new platform
+XBT_PUBLIC(void) sg_platf_close(void); // Finish the creation of the platform
 
-XBT_PUBLIC(void) sg_platf_new_AS_open(const char *id, const char *mode);
-XBT_PUBLIC(void) sg_platf_new_AS_close(void);
+XBT_PUBLIC(void) sg_platf_new_AS_open(const char *id, const char *mode); // Begin description of new AS
+XBT_PUBLIC(void) sg_platf_new_AS_close(void);                            // That AS is fully described
 
-XBT_PUBLIC(void) sg_platf_new_host  (sg_platf_host_cbarg_t   host);
-XBT_PUBLIC(void) sg_platf_new_router(sg_platf_router_cbarg_t router);
+XBT_PUBLIC(void) sg_platf_new_host  (sg_platf_host_cbarg_t   host);   // Add an host  to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_router(sg_platf_router_cbarg_t router); // Add a router to the currently described AS
 
 
 #endif                          /* SG_PLATF_H */

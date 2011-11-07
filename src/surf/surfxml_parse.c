@@ -49,8 +49,6 @@ int surf_parse_get_int(const char *string) {
 
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
 //xbt_dynar_t STag_surfxml_host_cb_list = NULL;
-xbt_dynar_t STag_surfxml_platform_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_platform_cb_list = NULL;
 xbt_dynar_t STag_surfxml_link_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_link_cb_list = NULL;
 xbt_dynar_t STag_surfxml_route_cb_list = NULL;
@@ -153,12 +151,8 @@ int ETag_surfxml_include_state(void)
 
 void surf_parse_init_callbacks(void)
 {
-	  STag_surfxml_platform_cb_list =
-	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  ETag_surfxml_platform_cb_list =
-	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
+	  sg_platf_init(); // FIXME: move to a proper place?
 
-	  sg_platf_init();
 	  STag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
@@ -217,10 +211,8 @@ void surf_parse_reset_callbacks(void)
 
 void surf_parse_free_callbacks(void)
 {
-  sg_platf_exit();
+  sg_platf_exit(); // FIXME: better place?
 
-  xbt_dynar_free(&STag_surfxml_platform_cb_list);
-  xbt_dynar_free(&ETag_surfxml_platform_cb_list);
   xbt_dynar_free(&STag_surfxml_link_cb_list);
   xbt_dynar_free(&ETag_surfxml_link_cb_list);
   xbt_dynar_free(&STag_surfxml_route_cb_list);
@@ -254,11 +246,9 @@ void surf_parse_free_callbacks(void)
 }
 
 /* Stag and Etag parse functions */
-void ETag_surfxml_host(void)  { /* ignored -- do not add content here */ }
-void ETag_surfxml_router(void){ /* ignored -- do not add content here */ }
+void ETag_surfxml_router(void)  { /* ignored -- do not add content here */ }
 
-void STag_surfxml_platform(void)
-{
+void STag_surfxml_platform(void) {
   _XBT_GNUC_UNUSED double version = surf_parse_get_double(A_surfxml_platform_version);
 
   xbt_assert((version >= 1.0), "******* BIG FAT WARNING *********\n "
@@ -281,7 +271,10 @@ void STag_surfxml_platform(void)
       "This program is installed automatically with SimGrid, or "
       "available in the tools/ directory of the source archive.");
 
-  surfxml_call_cb_functions(STag_surfxml_platform_cb_list);
+  sg_platf_open();
+}
+void ETag_surfxml_platform(void){
+  sg_platf_close();
 }
 
 void STag_surfxml_host(void){
@@ -306,7 +299,8 @@ void STag_surfxml_host(void){
 	host.V_host_coord = A_surfxml_host_coordinates;
 
 	sg_platf_new_host(&host);
-
+}
+void ETag_surfxml_host(void)    {
   current_property_set = NULL;
 }
 
@@ -316,6 +310,7 @@ void STag_surfxml_router(void){
 
 	router.V_router_id = A_surfxml_router_id;
 	router.V_router_coord = A_surfxml_router_coordinates;
+
 	sg_platf_new_router(&router);
 }
 
@@ -468,7 +463,7 @@ void ETag_surfxml_config(void){
     free(cfg);
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
-  current_property_set = NULL;
+  xbt_dict_free(&current_property_set);
 }
 void STag_surfxml_random(void){
 	surfxml_call_cb_functions(STag_surfxml_random_cb_list);
@@ -477,7 +472,6 @@ void STag_surfxml_random(void){
 #define parse_method(type,name) \
 void type##Tag_surfxml_##name(void) \
 { surfxml_call_cb_functions(type##Tag_surfxml_##name##_cb_list); }
-parse_method(E, platform);
 parse_method(E, route);
 parse_method(E, link_ctn);
 parse_method(E, process);
@@ -580,7 +574,6 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
 
 void parse_properties(const char* prop_id, const char* prop_value)
 {
-    char *value = NULL;
 	if (!current_property_set)
 	    current_property_set = xbt_dict_new();      // Maybe, it should raise an error
 	if(!strcmp(prop_id,"coordinates")){
@@ -594,8 +587,7 @@ void parse_properties(const char* prop_id, const char* prop_value)
 			  xbt_die("Setting XML prop coordinates must be \"yes\"");
 	  }
 	else{
-		  value = xbt_strdup(prop_value);
-		  xbt_dict_set(current_property_set, prop_id, value, free);
+		  xbt_dict_set(current_property_set, prop_id, xbt_strdup(prop_value), free);
 	 }
 }
 

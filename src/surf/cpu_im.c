@@ -136,8 +136,7 @@ static void cpu_im_add_traces_cpu(void)
 static void cpu_im_define_callbacks()
 {
   sg_platf_host_add_cb(parse_cpu_im_init);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list,
-                       &cpu_im_add_traces_cpu);
+  sg_platf_postparse_add_cb(cpu_im_add_traces_cpu);
 }
 
 static int cpu_im_resource_used(void *resource)

@@ -267,7 +267,7 @@ static void im_net_define_callbacks(void)
 {
   /* Figuring out the network links */
   surfxml_add_callback(STag_surfxml_link_cb_list, &im_net_parse_link_init);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &im_net_add_traces);
+  sg_platf_postparse_add_cb(im_net_add_traces);
 }
 
 static int im_net_resource_used(void *resource_id)

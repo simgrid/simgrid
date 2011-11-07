@@ -53,7 +53,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
 static void routing_parse_Speer(void);          /* peer bypass */
 static void routing_parse_Srandom(void);        /* random bypass */
-static void routing_parse_Erandom(void);        /* random bypass */
 
 static char* replace_random_parameter(char * chaine);
 static void clean_routing_after_parse(void);
@@ -763,7 +762,6 @@ void surf_parse_models_setup()
   if (surf_parse_models_setup_already_called)
     return;
   surf_parse_models_setup_already_called=1;
-  routing_parse_Erandom();
   surf_config_models_setup();
 }
 
@@ -912,8 +910,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   surfxml_add_callback(STag_surfxml_peer_cb_list,
                          &routing_parse_Speer);
 
-  surfxml_add_callback(ETag_surfxml_platform_cb_list,
-						  &clean_routing_after_parse);
+  sg_platf_postparse_add_cb(clean_routing_after_parse);
 
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();
@@ -922,9 +919,9 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
 
 void surf_parse_add_callback_config(void)
 {
-	surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties_XML);
-	surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
+  surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
 }
+
 
 /* ************************************************** */
 /* ********** PATERN FOR NEW ROUTING **************** */
@@ -1844,121 +1841,109 @@ static void routing_parse_Speer(void)
 
 static void routing_parse_Srandom(void)
 {
-	  double mean, std, min, max, seed;
-	  char *random_id = A_surfxml_random_id;
-	  char *random_radical = A_surfxml_random_radical;
-	  char *rd_name = NULL;
-	  char *rd_value;
-	  mean = surf_parse_get_double(A_surfxml_random_mean);
-	  std  = surf_parse_get_double(A_surfxml_random_std_deviation);
-	  min  = surf_parse_get_double(A_surfxml_random_min);
-	  max  = surf_parse_get_double(A_surfxml_random_max);
-	  seed = surf_parse_get_double(A_surfxml_random_seed);
+    double mean, std, min, max, seed;
+    char *random_id = A_surfxml_random_id;
+    char *random_radical = A_surfxml_random_radical;
+    char *rd_name = NULL;
+    char *rd_value;
+    mean = surf_parse_get_double(A_surfxml_random_mean);
+    std  = surf_parse_get_double(A_surfxml_random_std_deviation);
+    min  = surf_parse_get_double(A_surfxml_random_min);
+    max  = surf_parse_get_double(A_surfxml_random_max);
+    seed = surf_parse_get_double(A_surfxml_random_seed);
 
-	  double res = 0;
-	  int i = 0;
-	  random_data_t random = xbt_new0(s_random_data_t, 1);
+    double res = 0;
+    int i = 0;
+    random_data_t random = xbt_new0(s_random_data_t, 1);
           char *tmpbuf;
 
-	  xbt_dynar_t radical_elements;
-	  unsigned int iter;
-	  char *groups;
-	  int start, end;
-	  xbt_dynar_t radical_ends;
+    xbt_dynar_t radical_elements;
+    unsigned int iter;
+    char *groups;
+    int start, end;
+    xbt_dynar_t radical_ends;
 
-	  random->generator = A_surfxml_random_generator;
-	  random->seed = seed;
-	  random->min = min;
-	  random->max = max;
+    random->generator = A_surfxml_random_generator;
+    random->seed = seed;
+    random->min = min;
+    random->max = max;
 
-	  /* Check user stupidities */
-	  if (max < min)
-	    THROWF(arg_error, 0, "random->max < random->min (%f < %f)", max, min);
-	  if (mean < min)
-	    THROWF(arg_error, 0, "random->mean < random->min (%f < %f)", mean,
-		   min);
-	  if (mean > max)
-	    THROWF(arg_error, 0, "random->mean > random->max (%f > %f)", mean,
-		   max);
+    /* Check user stupidities */
+    if (max < min)
+      THROWF(arg_error, 0, "random->max < random->min (%f < %f)", max, min);
+    if (mean < min)
+      THROWF(arg_error, 0, "random->mean < random->min (%f < %f)", mean,
+       min);
+    if (mean > max)
+      THROWF(arg_error, 0, "random->mean > random->max (%f > %f)", mean,
+       max);
 
-	  /* normalize the mean and standard deviation before storing */
-	  random->mean = (mean - min) / (max - min);
-	  random->std = std / (max - min);
+    /* normalize the mean and standard deviation before storing */
+    random->mean = (mean - min) / (max - min);
+    random->std = std / (max - min);
 
-	  if (random->mean * (1 - random->mean) < random->std * random->std)
-	    THROWF(arg_error, 0, "Invalid mean and standard deviation (%f and %f)",
-		   random->mean, random->std);
+    if (random->mean * (1 - random->mean) < random->std * random->std)
+      THROWF(arg_error, 0, "Invalid mean and standard deviation (%f and %f)",
+       random->mean, random->std);
 
-	  XBT_DEBUG("id = '%s' min = '%f' max = '%f' mean = '%f' std_deviatinon = '%f' generator = '%d' seed = '%ld' radical = '%s'",
-	  random_id,
-	  random->min,
-	  random->max,
-	  random->mean,
-	  random->std,
-	  random->generator,
-	  random->seed,
-	  random_radical);
+    XBT_DEBUG("id = '%s' min = '%f' max = '%f' mean = '%f' std_deviatinon = '%f' generator = '%d' seed = '%ld' radical = '%s'",
+    random_id,
+    random->min,
+    random->max,
+    random->mean,
+    random->std,
+    random->generator,
+    random->seed,
+    random_radical);
 
-	  if(xbt_dict_size(random_value)==0)
-		  random_value = xbt_dict_new();
+    if(xbt_dict_size(random_value)==0)
+      random_value = xbt_dict_new();
 
-	  if(!strcmp(random_radical,""))
-	  {
-		  res = random_generate(random);
-		  rd_value = bprintf("%f",res);
-		  xbt_dict_set(random_value, random_id, rd_value, free);
-	  }
-	  else
-	  {
-		  radical_elements = xbt_str_split(random_radical, ",");
-		  xbt_dynar_foreach(radical_elements, iter, groups) {
-			radical_ends = xbt_str_split(groups, "-");
-			switch (xbt_dynar_length(radical_ends)) {
-			case 1:
-					  xbt_assert(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",random_id);
-					  res = random_generate(random);
+    if(!strcmp(random_radical,""))
+    {
+      res = random_generate(random);
+      rd_value = bprintf("%f",res);
+      xbt_dict_set(random_value, random_id, rd_value, free);
+    }
+    else
+    {
+      radical_elements = xbt_str_split(random_radical, ",");
+      xbt_dynar_foreach(radical_elements, iter, groups) {
+      radical_ends = xbt_str_split(groups, "-");
+      switch (xbt_dynar_length(radical_ends)) {
+      case 1:
+            xbt_assert(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",random_id);
+            res = random_generate(random);
                                           tmpbuf = bprintf("%s%d",random_id,atoi(xbt_dynar_getfirst_as(radical_ends,char *)));
                                           xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);
                                           xbt_free(tmpbuf);
-					  break;
+            break;
 
-			case 2:
-			      start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
-			      end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
-					  for (i = start; i <= end; i++) {
-						  xbt_assert(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",bprintf("%s%d",random_id,i));
-						  res = random_generate(random);
+      case 2:
+            start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
+            end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
+            for (i = start; i <= end; i++) {
+              xbt_assert(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",bprintf("%s%d",random_id,i));
+              res = random_generate(random);
                           tmpbuf = bprintf("%s%d",random_id,i);
-						  xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);
+              xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);
                           xbt_free(tmpbuf);
-					  }
-					  break;
-			default:
-				XBT_INFO("Malformed radical");
-				break;
-			}
-			res = random_generate(random);
-			rd_name  = bprintf("%s_router",random_id);
-			rd_value = bprintf("%f",res);
-			xbt_dict_set(random_value, rd_name, rd_value, free);
+            }
+            break;
+      default:
+        XBT_INFO("Malformed radical");
+        break;
+      }
+      res = random_generate(random);
+      rd_name  = bprintf("%s_router",random_id);
+      rd_value = bprintf("%f",res);
+      xbt_dict_set(random_value, rd_name, rd_value, free);
 
-			xbt_dynar_free(&radical_ends);
-		  }
-		  free(rd_name);
-		  xbt_dynar_free(&radical_elements);
-	  }
-}
-
-static void routing_parse_Erandom(void)
-{
-	/*xbt_dict_cursor_t cursor = NULL;
-	char *key;
-	char *elem;
-
-	xbt_dict_foreach(random_value, cursor, key, elem) {
-	  XBT_DEBUG("%s = %s",key,elem);
-	}
-*/
+      xbt_dynar_free(&radical_ends);
+      }
+      free(rd_name);
+      xbt_dynar_free(&radical_elements);
+    }
 }
 
 /*
