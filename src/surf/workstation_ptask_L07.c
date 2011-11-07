@@ -715,7 +715,9 @@ static void* ptask_link_create_resource(const char *name,
 static void ptask_parse_link_init(sg_platf_link_cbarg_t link)
 {
   if (link->policy == SURF_LINK_FULLDUPLEX) {
-    ptask_link_create_resource(bprintf("%s_UP", link->id),
+    char *link_id;
+    link_id = bprintf("%s_UP", link->id);
+    ptask_link_create_resource(link_id,
                                link->bandwidth,
                                link->bandwidth_trace,
                                link->latency,
@@ -724,6 +726,8 @@ static void ptask_parse_link_init(sg_platf_link_cbarg_t link)
                                link->state_trace,
                                link->policy,
                                link->properties);
+    xbt_free(link_id);
+    link_id = bprintf("%s_DOWN", link->id);
     ptask_link_create_resource(bprintf("%s_DOWN", link->id),
                                link->bandwidth,
                                link->bandwidth_trace,
@@ -735,8 +739,9 @@ static void ptask_parse_link_init(sg_platf_link_cbarg_t link)
                                NULL); /* FIXME: We need to deep copy the
                                        * properties or we won't be able to free
                                        * it */
+    xbt_free(link_id);
   } else {
-    ptask_link_create_resource(xbt_strdup(link->id),
+    ptask_link_create_resource(link->id,
                                link->bandwidth,
                                link->bandwidth_trace,
                                link->latency,
@@ -887,7 +892,7 @@ static void ptask_model_init_internal(void)
     ptask_maxmin_system = lmm_system_new();
 
   routing_model_create(sizeof(link_L07_t),
-                       ptask_link_create_resource(xbt_strdup("__loopback__"),
+                       ptask_link_create_resource("__loopback__",
                                                   498000000, NULL,
                                                   0.000015, NULL,
                                                   SURF_RESOURCE_ON, NULL,
