@@ -393,7 +393,6 @@ extern xbt_log_layout_t xbt_log_default_layout;
   fprintf(stderr,"%s:%d:\n" f, __FILE__, __LINE__, __VA_ARGS__)
 # define XBT_LOG(...) XBT_CLOG(0, __VA_ARGS__)
 #else
-# include <string.h>            /* memset */
 # define XBT_CLOG_(catv, prio, ...)                                     \
   do {                                                                  \
     if (_XBT_LOG_ISENABLEDV(catv, prio)) {                              \
