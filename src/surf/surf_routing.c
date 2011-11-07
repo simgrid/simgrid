@@ -1553,7 +1553,7 @@ void routing_parse_Scluster(void)
 		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
 
 		struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-		struct_lnk->V_link_id = xbt_strdup(link_id);
+		struct_lnk->V_link_id = link_id;
 		struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bw;
 		struct_lnk->V_link_latency = struct_cluster->S_cluster_lat;
 		struct_lnk->V_link_bandwidth_file = NULL;
@@ -1648,7 +1648,7 @@ void routing_parse_Scluster(void)
 		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
 
 		struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-		struct_lnk->V_link_id = xbt_strdup(link_id);
+		struct_lnk->V_link_id = link_id;
 		struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bw;
 		struct_lnk->V_link_latency = struct_cluster->S_cluster_lat;
 		struct_lnk->V_link_bandwidth_file = NULL;
@@ -1718,7 +1718,7 @@ void routing_parse_Scluster(void)
 	  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
 
 	  struct_lnk = xbt_new0(s_surf_parsing_link_arg_t, 1);
-	  struct_lnk->V_link_id = xbt_strdup(link_backbone);
+	  struct_lnk->V_link_id = link_backbone;
 	  struct_lnk->V_link_bandwidth = struct_cluster->S_cluster_bb_bw;
 	  struct_lnk->V_link_latency = struct_cluster->S_cluster_bb_lat;
 	  struct_lnk->V_link_bandwidth_file = NULL;
