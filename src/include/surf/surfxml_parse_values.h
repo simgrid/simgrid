@@ -51,12 +51,6 @@ typedef struct s_surf_parsing_cluster_arg {
 	char* V_cluster_state_file;
 } s_surf_parsing_cluster_arg_t;
 
-typedef struct s_surf_parsing_router_arg *surf_parsing_router_arg_t;
-typedef struct s_surf_parsing_router_arg {
-	char* V_router_id;
-	char* V_router_coord;
-} s_surf_parsing_router_arg_t;
-
 typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
 typedef struct s_surf_parsing_link_up_down {
 	void* link_up;
@@ -64,7 +58,6 @@ typedef struct s_surf_parsing_link_up_down {
 } s_surf_parsing_link_up_down_t;
 
 
-extern surf_parsing_router_arg_t struct_router;
 extern surf_parsing_cluster_arg_t struct_cluster;
 extern surf_parsing_peer_arg_t struct_peer;
 extern surf_parsing_link_arg_t struct_lnk;

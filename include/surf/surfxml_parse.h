@@ -18,7 +18,6 @@ SG_BEGIN_DECL()
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_platform_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_platform_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_host_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_router_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_router_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_link_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_link_cb_list;

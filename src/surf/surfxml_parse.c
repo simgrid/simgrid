@@ -52,7 +52,6 @@ int surf_parse_get_int(const char *string) {
 xbt_dynar_t STag_surfxml_platform_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_platform_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_host_cb_list = NULL;
-xbt_dynar_t STag_surfxml_router_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_router_cb_list = NULL;
 xbt_dynar_t STag_surfxml_link_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_link_cb_list = NULL;
@@ -163,7 +162,6 @@ void surf_parse_init_callbacks(void)
 
 	  sg_platf_init();
 	  ETag_surfxml_host_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  STag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_router_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_link_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
@@ -228,7 +226,6 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&STag_surfxml_platform_cb_list);
   xbt_dynar_free(&ETag_surfxml_platform_cb_list);
   xbt_dynar_free(&ETag_surfxml_host_cb_list);
-  xbt_dynar_free(&STag_surfxml_router_cb_list);
   xbt_dynar_free(&ETag_surfxml_router_cb_list);
   xbt_dynar_free(&STag_surfxml_link_cb_list);
   xbt_dynar_free(&ETag_surfxml_link_cb_list);
@@ -317,16 +314,15 @@ void ETag_surfxml_host(void){
 
 
 void STag_surfxml_router(void){
-	struct_router = xbt_new0(s_surf_parsing_router_arg_t, 1);
-	struct_router->V_router_id = xbt_strdup(A_surfxml_router_id);
-	struct_router->V_router_coord = xbt_strdup(A_surfxml_router_coordinates);
-	surfxml_call_cb_functions(STag_surfxml_router_cb_list);
+  s_surf_parsing_router_arg_t router;
+  memset(&router, 0, sizeof(router));
+
+	router.V_router_id = xbt_strdup(A_surfxml_router_id);
+	router.V_router_coord = xbt_strdup(A_surfxml_router_coordinates);
+	sg_platf_new_router(&router);
 }
 void ETag_surfxml_router(void){
 	surfxml_call_cb_functions(ETag_surfxml_router_cb_list);
-	xbt_free(struct_router->V_router_id);
-	xbt_free(struct_router->V_router_coord);
-	xbt_free(struct_router);
 }
 
 void STag_surfxml_cluster(void){

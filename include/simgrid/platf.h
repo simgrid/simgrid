@@ -41,10 +41,17 @@ typedef struct s_surf_parsing_host_arg {
   const char* V_host_coord;
 } s_surf_parsing_host_arg_t, *surf_parsing_host_arg_t;
 
+typedef struct s_surf_parsing_router_arg {
+  const char* V_router_id;
+  const char* V_router_coord;
+} s_surf_parsing_router_arg_t, *surf_parsing_router_arg_t;
+
 
 XBT_PUBLIC(void) sg_platf_new_AS_open(const char *id, const char *mode);
 XBT_PUBLIC(void) sg_platf_new_AS_close(void);
 
 XBT_PUBLIC(void) sg_platf_new_host(surf_parsing_host_arg_t h);
+XBT_PUBLIC(void) sg_platf_new_router(surf_parsing_router_arg_t router);
+
 
 #endif                          /* SG_PLATF_H */

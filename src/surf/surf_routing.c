@@ -207,48 +207,41 @@ static void parse_S_host_lua(const char *host_id, const char *coord)
 /**
  * \brief Add a "router" to the network element list
  */
-static void parse_S_router(void)
+static void parse_S_router(surf_parsing_router_arg_t router)
 {
   network_element_info_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
-  xbt_assert(!xbt_lib_get_or_null(as_router_lib,struct_router->V_router_id, ROUTING_ASR_LEVEL),
+  xbt_assert(!xbt_lib_get_or_null(as_router_lib,router->V_router_id, ROUTING_ASR_LEVEL),
               "Reading a router, processing unit \"%s\" already exists",
-              struct_router->V_router_id);
+              router->V_router_id);
   xbt_assert(current_routing->set_processing_unit,
               "no defined method \"set_processing_unit\" in \"%s\"",
               current_routing->name);
   (*(current_routing->set_processing_unit)) (current_routing,
-		  struct_router->V_router_id);
+		  router->V_router_id);
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_ROUTER;
 
-  xbt_lib_set(as_router_lib,struct_router->V_router_id,ROUTING_ASR_LEVEL,(void *) info);
+  xbt_lib_set(as_router_lib,router->V_router_id,ROUTING_ASR_LEVEL,(void *) info);
   if (strcmp(A_surfxml_router_coordinates,"")) {
 	if(!COORD_ASR_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
     xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
     xbt_dynar_shrink(ctn, 0);
-    xbt_lib_set(as_router_lib,struct_router->V_router_id,COORD_ASR_LEVEL,(void *) ctn);
+    xbt_lib_set(as_router_lib,router->V_router_id,COORD_ASR_LEVEL,(void *) ctn);
   }
 }
 
 /**
  * brief Add a "router" to the network element list from XML description
  */
-static void parse_S_router_XML(void)
-{
-	return parse_S_router();
-}
-
-/**
- * brief Add a "router" to the network element list from XML description
- */
-static void parse_S_router_lua(const char* router_id)
-{
-	struct_router->V_router_id = xbt_strdup(router_id);
-	struct_router->V_router_coord = xbt_strdup("");
-	return parse_S_router();
+static void parse_S_router_lua(const char* router_id) {
+  s_surf_parsing_router_arg_t router;
+  memset(&router,0,sizeof(router));
+	router.V_router_id = router_id;
+	router.V_router_coord = "";
+	return parse_S_router(&router);
 }
 
 /**
@@ -969,7 +962,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   /* parse generic elements */
   surf_parse_host_add_cb(parse_S_host_XML);
   surfxml_add_callback(ETag_surfxml_host_cb_list, &parse_E_host_XML);
-  surfxml_add_callback(STag_surfxml_router_cb_list, &parse_S_router_XML);
+  surf_parse_router_add_cb(parse_S_router);
 
   surfxml_add_callback(STag_surfxml_route_cb_list,
                        &parse_S_route_new_and_endpoints_XML);
