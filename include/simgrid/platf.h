@@ -31,7 +31,7 @@ typedef enum {
  */
 
 typedef struct {
-  char* V_host_id;                          //id
+  const char* V_host_id;                          //id
   double V_host_power_peak;                     //power
   int V_host_core;                          //core
   double V_host_power_scale;                      //availability
@@ -48,7 +48,7 @@ typedef struct {
 } s_sg_platf_router_cbarg_t, *sg_platf_router_cbarg_t;
 
 typedef struct {
-  char* V_link_id;
+  const char* V_link_id;
   double V_link_bandwidth;
   tmgr_trace_t V_link_bandwidth_file;
   double V_link_latency;
@@ -69,7 +69,7 @@ XBT_PUBLIC(void) sg_platf_new_AS_close(void);                            // That
 
 XBT_PUBLIC(void) sg_platf_new_host  (sg_platf_host_cbarg_t   host);   // Add an host  to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_router(sg_platf_router_cbarg_t router); // Add a router to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_link(sg_platf_link_cbarg_t link);       // Add a link   to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_link  (sg_platf_link_cbarg_t link);     // Add a link   to the currently described AS
 
 
 #endif                          /* SG_PLATF_H */

@@ -116,7 +116,7 @@ static void parse_S_host(sg_platf_host_cbarg_t host) {
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
   xbt_lib_set(host_lib,host->V_host_id,ROUTING_HOST_LEVEL,(void *) info);
-  if (strcmp(host->V_host_coord,"")) {
+  if (host->V_host_coord && strcmp(host->V_host_coord,"")) {
     if(!COORD_HOST_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
     xbt_dynar_t ctn = xbt_str_split_str(host->V_host_coord, " ");
     xbt_dynar_shrink(ctn, 0);

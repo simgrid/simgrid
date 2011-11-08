@@ -17,8 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 // Surf (bypass XML)
 #define LINK_MODULE_NAME "simgrid.Link"
 #define ROUTE_MODULE_NAME "simgrid.Route"
-#define AS_MODULE_NAME "simgrid.AS"
-#define TRACE_MODULE_NAME "simgrid.Trace"
+#define PLATF_MODULE_NAME "simgrid.platf"
 
 static lua_State* sglua_maestro_state;
 
@@ -435,40 +434,6 @@ static int gras_generate(lua_State * L)
   return 0;
 }
 
-/***********************************
- * 	Tracing
- **********************************/
-static int trace_start(lua_State *L)
-{
-#ifdef HAVE_TRACING
-  TRACE_start();
-#endif
-  return 1;
-}
-
-static int trace_category(lua_State * L)
-{
-#ifdef HAVE_TRACING
-  TRACE_category(luaL_checkstring(L, 1));
-#endif
-  return 1;
-}
-
-static int trace_set_task_category(lua_State *L)
-{
-#ifdef HAVE_TRACING
-  TRACE_msg_set_task_category(checkTask(L, -2), luaL_checkstring(L, -1));
-#endif
-  return 1;
-}
-
-static int trace_end(lua_State *L)
-{
-#ifdef HAVE_TRACING
-  TRACE_end();
-#endif
-  return 1;
-}
 
 // *********** Register Methods ******************************************* //
 
@@ -513,24 +478,16 @@ static const luaL_reg Host_meta[] = {
 /*
  * AS Methods
  */
-static const luaL_reg AS_methods[] = {
-  {"new", console_add_AS},
-  {"addHost", console_add_host},
-  {"addLink", console_add_link},
-  {"addRouter", console_add_router},
-  {"addRoute", console_add_route},
-  {NULL, NULL}
-};
-
-/**
- * Tracing Functions
- */
-static const luaL_reg Trace_methods[] = {
-  {"start", trace_start},
-  {"category", trace_category},
-  {"setTaskCategory", trace_set_task_category},
-  {"finish", trace_end},
-  {NULL, NULL}
+static const luaL_reg platf_methods[] = {
+    {"open", console_open},
+    {"close", console_close},
+    {"AS_open", console_AS_open},
+    {"AS_close", console_AS_close},
+    {"host_new", console_add_host},
+    {"link_new", console_add_link},
+    {"router_new", console_add_router},
+    {"route_new", console_add_route},
+    {NULL, NULL}
 };
 
 /*
@@ -629,7 +586,7 @@ static int clean(lua_State * L)
 static int msg_register_platform(lua_State * L)
 {
   /* Tell Simgrid we dont wanna use its parser */
-  surf_parse = console_parse_platform;
+  //surf_parse = console_parse_platform;
   surf_parse_reset_callbacks();
   MSG_create_environment(NULL);
   return 0;
@@ -641,7 +598,7 @@ static int msg_register_platform(lua_State * L)
 
 static int sd_register_platform(lua_State * L)
 {
-  surf_parse = console_parse_platform_wsL07;
+  //surf_parse = console_parse_platform_wsL07;
   surf_parse_reset_callbacks();
   SD_create_environment(NULL);
   return 0;
@@ -652,8 +609,7 @@ static int sd_register_platform(lua_State * L)
  */
 static int gras_register_platform(lua_State * L)
 {
-  /* Tell Simgrid we dont wanna use surf parser */
-  surf_parse = console_parse_platform;
+  //surf_parse = console_parse_platform;
   surf_parse_reset_callbacks();
   gras_create_environment(NULL);
   return 0;
@@ -665,7 +621,7 @@ static int gras_register_platform(lua_State * L)
 static int msg_register_application(lua_State * L)
 {
   MSG_function_register_default(run_lua_code);
-  surf_parse = console_parse_application;
+  //surf_parse = console_parse_application;
   MSG_launch_application(NULL);
   return 0;
 }
@@ -676,7 +632,7 @@ static int msg_register_application(lua_State * L)
 static int gras_register_application(lua_State * L)
 {
   gras_function_register_default(run_lua_code);
-  surf_parse = console_parse_application;
+  //surf_parse = console_parse_application;
   gras_launch_application(NULL);
   return 0;
 }
@@ -818,12 +774,7 @@ void register_c_functions(lua_State *L) {
   lua_pop(L, 1);
 
   /* register the links methods to lua */
-  luaL_openlib(L, AS_MODULE_NAME, AS_methods, 0);
-  luaL_newmetatable(L, AS_MODULE_NAME);
-  lua_pop(L, 1);
-
-  /* register the Tracing functions to lua */
-  luaL_openlib(L, TRACE_MODULE_NAME, Trace_methods, 0);
-  luaL_newmetatable(L, TRACE_MODULE_NAME);
+  luaL_openlib(L, PLATF_MODULE_NAME, platf_methods, 0);
+  luaL_newmetatable(L, PLATF_MODULE_NAME);
   lua_pop(L, 1);
 }
