@@ -144,7 +144,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
   info->rc_type = SURF_NETWORK_ELEMENT_ROUTER;
 
   xbt_lib_set(as_router_lib,router->id,ROUTING_ASR_LEVEL,(void *) info);
-  if (strcmp(A_surfxml_router_coordinates,"")) {
+  if (strcmp(router->coord,"")) {
 	if(!COORD_ASR_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
     xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
     xbt_dynar_shrink(ctn, 0);
