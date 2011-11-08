@@ -382,13 +382,17 @@ void STag_surfxml_link(void){
 	link.bandwidth_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
 	link.latency = surf_parse_get_double(A_surfxml_link_latency);
 	link.latency_trace = tmgr_trace_new(A_surfxml_link_latency_file);
-	/* FIXME: use a switch here */
-	xbt_assert((A_surfxml_link_state == A_surfxml_link_state_ON) ||
-			  (A_surfxml_link_state == A_surfxml_link_state_OFF), "Invalid state");
-	if (A_surfxml_link_state == A_surfxml_link_state_ON)
+
+	switch (A_surfxml_link_state) {
+	case A_surfxml_link_state_ON:
 		link.state = SURF_RESOURCE_ON;
-	if (A_surfxml_link_state == A_surfxml_link_state_OFF)
+		break;
+	case A_surfxml_link_state_OFF:
 		link.state = SURF_RESOURCE_OFF;
+		break;
+	default:
+	  surf_parse_error(bprintf("invalid state for link %s",link.id));
+	}
 	link.state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
 	switch (A_surfxml_link_sharing_policy) {
