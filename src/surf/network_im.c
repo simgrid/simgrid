@@ -190,20 +190,20 @@ static void* im_net_create_resource(const char *name,
 
 static void im_net_parse_link_init(sg_platf_link_cbarg_t link)
 {
-  if(link->V_policy_initial_link == SURF_LINK_FULLDUPLEX)
+  if(link->policy == SURF_LINK_FULLDUPLEX)
   {
-	  im_net_create_resource(bprintf("%s_UP",link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
-	               link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
-	               link->V_policy_initial_link, link->properties);
-	  im_net_create_resource(bprintf("%s_DOWN",link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
-            link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
-            link->V_policy_initial_link, NULL); // FIXME: We need to deep copy the properties or we won't be able to free it
+	  im_net_create_resource(bprintf("%s_UP",link->id), link->bandwidth, link->bandwidth_trace,
+	               link->latency, link->latency_trace, link->state, link->state_trace,
+	               link->policy, link->properties);
+	  im_net_create_resource(bprintf("%s_DOWN",link->id), link->bandwidth, link->bandwidth_trace,
+            link->latency, link->latency_trace, link->state, link->state_trace,
+            link->policy, NULL); // FIXME: We need to deep copy the properties or we won't be able to free it
   }
   else
   {
-	  im_net_create_resource(xbt_strdup(link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
-    		link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
-	               link->V_policy_initial_link, link->properties);
+	  im_net_create_resource(xbt_strdup(link->id), link->bandwidth, link->bandwidth_trace,
+    		link->latency, link->latency_trace, link->state, link->state_trace,
+	               link->policy, link->properties);
   }
 }
 

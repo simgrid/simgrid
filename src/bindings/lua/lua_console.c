@@ -104,19 +104,19 @@ int  console_add_link(lua_State *L) {
   // get Id Value
   lua_pushstring(L, "id");
   lua_gettable(L, -2);
-  link.V_link_id = lua_tostring(L, -1);
+  link.id = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   // get bandwidth value
   lua_pushstring(L, "bandwidth");
   lua_gettable(L, -2);
-  link.V_link_bandwidth = lua_tonumber(L, -1);
+  link.bandwidth = lua_tonumber(L, -1);
   lua_pop(L, 1);
 
   //get latency value
   lua_pushstring(L, "latency");
   lua_gettable(L, -2);
-  link.V_link_latency = lua_tonumber(L, -1);
+  link.latency = lua_tonumber(L, -1);
   lua_pop(L, 1);
 
   /*Optional Arguments  */
@@ -124,28 +124,28 @@ int  console_add_link(lua_State *L) {
   //get bandwidth_trace value
   lua_pushstring(L, "bandwidth_trace");
   lua_gettable(L, -2);
-  link.V_link_bandwidth_file = tmgr_trace_new(lua_tostring(L, -1));
+  link.bandwidth_trace = tmgr_trace_new(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get latency_trace value
   lua_pushstring(L, "latency_trace");
   lua_gettable(L, -2);
-  link.V_link_latency_file = tmgr_trace_new(lua_tostring(L, -1));
+  link.latency_trace = tmgr_trace_new(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get state_trace value
   lua_pushstring(L, "state_trace");
   lua_gettable(L, -2);
-  link.V_link_state_file = tmgr_trace_new(lua_tostring(L, -1));
+  link.state_trace = tmgr_trace_new(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get state_initial value
   lua_pushstring(L, "state_initial");
   lua_gettable(L, -2);
   if (lua_tonumber(L, -1))
-    link.V_link_state = SURF_RESOURCE_ON;
+    link.state = SURF_RESOURCE_ON;
   else
-    link.V_link_state = SURF_RESOURCE_OFF;
+    link.state = SURF_RESOURCE_OFF;
   lua_pop(L, 1);
 
   //get policy value
@@ -154,11 +154,11 @@ int  console_add_link(lua_State *L) {
   policy = lua_tostring(L, -1);
   lua_pop(L, 1);
   if (policy && !strcmp(policy,"FULLDUPLEX")) {
-    link.V_link_sharing_policy = SURF_LINK_FULLDUPLEX;
+    link.policy = SURF_LINK_FULLDUPLEX;
   } else if (policy && !strcmp(policy,"FATPIPE")) {
-    link.V_link_sharing_policy = SURF_LINK_FATPIPE;
+    link.policy = SURF_LINK_FATPIPE;
   } else {
-    link.V_link_sharing_policy = SURF_LINK_SHARED;
+    link.policy = SURF_LINK_SHARED;
   }
 
   sg_platf_new_link(&link);

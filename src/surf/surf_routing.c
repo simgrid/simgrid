@@ -1467,24 +1467,20 @@ void routing_parse_Scluster(void)
 		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
 
 		memset(&link,0,sizeof(link));
-		link.V_link_id = link_id;
-		link.V_link_bandwidth = struct_cluster->S_cluster_bw;
-		link.V_link_latency = struct_cluster->S_cluster_lat;
-		link.V_link_bandwidth_file = NULL;
-		link.V_link_latency_file = NULL;
-		link.V_link_state_file = NULL;
-		link.V_link_state = SURF_RESOURCE_ON;
-		link.V_link_sharing_policy = A_surfxml_link_sharing_policy;
+		link.id = link_id;
+		link.bandwidth = struct_cluster->S_cluster_bw;
+		link.latency = struct_cluster->S_cluster_lat;
+		link.state = SURF_RESOURCE_ON;
 
 		switch (A_surfxml_link_sharing_policy) {
 		case A_surfxml_link_sharing_policy_SHARED:
-			link.V_policy_initial_link = SURF_LINK_SHARED;
+			link.policy = SURF_LINK_SHARED;
 			break;
 		case A_surfxml_link_sharing_policy_FATPIPE:
-		  link.V_policy_initial_link = SURF_LINK_FATPIPE;
+		  link.policy = SURF_LINK_FATPIPE;
 		  break;
 		case A_surfxml_link_sharing_policy_FULLDUPLEX:
-		  link.V_policy_initial_link = SURF_LINK_FULLDUPLEX;
+		  link.policy = SURF_LINK_FULLDUPLEX;
 		  break;
 		case AU_surfxml_link_sharing_policy:
 		  surf_parse_error(bprintf("Invalid sharing policy in cluster %s (please report this bug, this shouldn't happen)",struct_cluster->V_cluster_id));
@@ -1564,23 +1560,20 @@ void routing_parse_Scluster(void)
 		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->S_cluster_bw, struct_cluster->S_cluster_lat);
 
 		memset(&link,0,sizeof(link));
-		link.V_link_id = link_id;
-		link.V_link_bandwidth = struct_cluster->S_cluster_bw;
-		link.V_link_latency = struct_cluster->S_cluster_lat;
-		link.V_link_bandwidth_file = NULL;
-		link.V_link_latency_file = NULL;
-		link.V_link_state_file = NULL;
-		link.V_link_state = SURF_RESOURCE_ON;
-		link.V_link_sharing_policy = A_surfxml_link_sharing_policy;
+		link.id = link_id;
+		link.bandwidth = struct_cluster->S_cluster_bw;
+		link.latency = struct_cluster->S_cluster_lat;
+		link.state = SURF_RESOURCE_ON;
 
+		/* FIXME: use a switch here */
 		if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-			link.V_policy_initial_link = SURF_LINK_SHARED;
+			link.policy = SURF_LINK_SHARED;
 		else
 		{
 		 if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
-			 link.V_policy_initial_link = SURF_LINK_FATPIPE;
+			 link.policy = SURF_LINK_FATPIPE;
 		 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-			 link.V_policy_initial_link = SURF_LINK_FULLDUPLEX;
+			 link.policy = SURF_LINK_FULLDUPLEX;
 		}
 		sg_platf_new_link(&link);
 
@@ -1633,19 +1626,16 @@ void routing_parse_Scluster(void)
 	  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
 
 	  memset(&link,0,sizeof(link));
-	  link.V_link_id = link_backbone;
-	  link.V_link_bandwidth = struct_cluster->S_cluster_bb_bw;
-	  link.V_link_latency = struct_cluster->S_cluster_bb_lat;
-	  link.V_link_bandwidth_file = NULL;
-	  link.V_link_latency_file = NULL;
-	  link.V_link_state_file = NULL;
-	  link.V_link_state = SURF_RESOURCE_ON;
-	  link.V_link_sharing_policy = A_surfxml_link_sharing_policy;
+	  link.id = link_backbone;
+	  link.bandwidth = struct_cluster->S_cluster_bb_bw;
+	  link.latency = struct_cluster->S_cluster_bb_lat;
+	  link.state = SURF_RESOURCE_ON;
 
+	  /* FIXME: use a switch, and deal with FULLDUPLEX here */
 	  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-		  link.V_policy_initial_link = SURF_LINK_SHARED;
+		  link.policy = SURF_LINK_SHARED;
 	  else
-		  link.V_policy_initial_link = SURF_LINK_FATPIPE;
+		  link.policy = SURF_LINK_FATPIPE;
 
 	  sg_platf_new_link(&link);
 	  ETag_surfxml_link();

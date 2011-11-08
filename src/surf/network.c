@@ -196,20 +196,20 @@ static void net_parse_link_init(sg_platf_link_cbarg_t link)
 {
   XBT_DEBUG("link_CM02");
 
-  if(link->V_policy_initial_link == SURF_LINK_FULLDUPLEX)
+  if(link->policy == SURF_LINK_FULLDUPLEX)
   {
-    net_create_resource(bprintf("%s_UP",link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
-	               link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
-	               link->V_policy_initial_link, link->properties);
-    net_create_resource(bprintf("%s_DOWN",link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
-            link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
-            link->V_policy_initial_link, NULL); // FIXME: We need to deep copy the properties or we won't be able to free it
+    net_create_resource(bprintf("%s_UP",link->id), link->bandwidth, link->bandwidth_trace,
+	               link->latency, link->latency_trace, link->state, link->state_trace,
+	               link->policy, link->properties);
+    net_create_resource(bprintf("%s_DOWN",link->id), link->bandwidth, link->bandwidth_trace,
+            link->latency, link->latency_trace, link->state, link->state_trace,
+            link->policy, NULL); // FIXME: We need to deep copy the properties or we won't be able to free it
   }
   else
   {
-    net_create_resource(xbt_strdup(link->V_link_id), link->V_link_bandwidth, link->V_link_bandwidth_file,
-    		link->V_link_latency, link->V_link_latency_file, link->V_link_state, link->V_link_state_file,
-	               link->V_policy_initial_link, link->properties);
+    net_create_resource(xbt_strdup(link->id), link->bandwidth, link->bandwidth_trace,
+    		link->latency, link->latency_trace, link->state, link->state_trace,
+	               link->policy, link->properties);
   }
 
 }

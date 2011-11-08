@@ -377,28 +377,29 @@ void STag_surfxml_link(void){
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
   link.properties = current_property_set = xbt_dict_new();
 
-	link.V_link_id = A_surfxml_link_id;
-	link.V_link_bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
-	link.V_link_bandwidth_file = tmgr_trace_new(A_surfxml_link_bandwidth_file);
-	link.V_link_latency = surf_parse_get_double(A_surfxml_link_latency);
-	link.V_link_latency_file = tmgr_trace_new(A_surfxml_link_latency_file);
+	link.id = A_surfxml_link_id;
+	link.bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
+	link.bandwidth_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
+	link.latency = surf_parse_get_double(A_surfxml_link_latency);
+	link.latency_trace = tmgr_trace_new(A_surfxml_link_latency_file);
+	/* FIXME: use a switch here */
 	xbt_assert((A_surfxml_link_state == A_surfxml_link_state_ON) ||
 			  (A_surfxml_link_state == A_surfxml_link_state_OFF), "Invalid state");
 	if (A_surfxml_link_state == A_surfxml_link_state_ON)
-		link.V_link_state = SURF_RESOURCE_ON;
+		link.state = SURF_RESOURCE_ON;
 	if (A_surfxml_link_state == A_surfxml_link_state_OFF)
-		link.V_link_state = SURF_RESOURCE_OFF;
-	link.V_link_state_file = tmgr_trace_new(A_surfxml_link_state_file);
-	link.V_link_sharing_policy = A_surfxml_link_sharing_policy;
+		link.state = SURF_RESOURCE_OFF;
+	link.state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
+	/* FIXME: use a switch here */
 	if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-		link.V_policy_initial_link = SURF_LINK_SHARED;
+		link.policy = SURF_LINK_SHARED;
 	else
 	{
 	 if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
-		 link.V_policy_initial_link = SURF_LINK_FATPIPE;
+		 link.policy = SURF_LINK_FATPIPE;
 	 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-		 link.V_policy_initial_link = SURF_LINK_FULLDUPLEX;
+		 link.policy = SURF_LINK_FULLDUPLEX;
 	}
 
 	sg_platf_new_link(&link);

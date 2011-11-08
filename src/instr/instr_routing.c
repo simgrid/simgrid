@@ -190,19 +190,19 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
 
-  double bandwidth_value = link->V_link_bandwidth;
-  double latency_value = link->V_link_latency;
+  double bandwidth_value = link->bandwidth;
+  double latency_value = link->latency;
   xbt_dynar_t links_to_create = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
 
-  if (link->V_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX){
-    char *up = bprintf("%s_UP", link->V_link_id);
-    char *down = bprintf("%s_DOWN", link->V_link_id);
+  if (link->policy == SURF_LINK_FULLDUPLEX){
+    char *up = bprintf("%s_UP", link->id);
+    char *down = bprintf("%s_DOWN", link->id);
     xbt_dynar_push_as (links_to_create, char*, xbt_strdup(up));
     xbt_dynar_push_as (links_to_create, char*, xbt_strdup(down));
     free (up);
     free (down);
   }else{
-    xbt_dynar_push_as (links_to_create, char*, strdup(link->V_link_id));
+    xbt_dynar_push_as (links_to_create, char*, strdup(link->id));
   }
 
   char *link_name = NULL;

@@ -19,6 +19,11 @@ typedef enum {
   SURF_RESOURCE_OFF = 0                   /**< Down & broken     */
 } e_surf_resource_state_t;
 
+typedef enum {
+  SURF_LINK_FULLDUPLEX = 2,
+  SURF_LINK_SHARED = 1,
+  SURF_LINK_FATPIPE = 0
+} e_surf_link_sharing_policy_t;
 
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions
@@ -48,15 +53,14 @@ typedef struct {
 } s_sg_platf_router_cbarg_t, *sg_platf_router_cbarg_t;
 
 typedef struct {
-  const char* V_link_id;
-  double V_link_bandwidth;
-  tmgr_trace_t V_link_bandwidth_file;
-  double V_link_latency;
-  tmgr_trace_t V_link_latency_file;
-  e_surf_resource_state_t V_link_state;
-  tmgr_trace_t V_link_state_file;
-  int V_link_sharing_policy;
-  int V_policy_initial_link;
+  const char* id;
+  double bandwidth;
+  tmgr_trace_t bandwidth_trace;
+  double latency;
+  tmgr_trace_t latency_trace;
+  e_surf_resource_state_t state;
+  tmgr_trace_t state_trace;
+  e_surf_link_sharing_policy_t policy;
   xbt_dict_t properties;
 } s_sg_platf_link_cbarg_t, *sg_platf_link_cbarg_t;
 

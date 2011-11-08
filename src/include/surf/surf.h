@@ -22,12 +22,6 @@ SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
 
 typedef enum {
-  SURF_LINK_FULLDUPLEX = 2,
-  SURF_LINK_SHARED = 1,
-  SURF_LINK_FATPIPE = 0
-} e_surf_link_sharing_policy_t;
-
-typedef enum {
   SURF_NETWORK_ELEMENT_NULL = 0,        /* NULL */
   SURF_NETWORK_ELEMENT_HOST,    /* host type */
   SURF_NETWORK_ELEMENT_ROUTER,  /* router type */
