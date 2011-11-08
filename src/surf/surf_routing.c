@@ -837,38 +837,6 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   current_routing = NULL;
 }
 
-void routing_register_callbacks() {
-  sg_platf_host_add_cb(parse_S_host);
-  sg_platf_router_add_cb(parse_S_router);
-
-  surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
-
-  surfxml_add_callback(STag_surfxml_route_cb_list,
-      &parse_S_route_new_and_endpoints_XML);
-  surfxml_add_callback(STag_surfxml_ASroute_cb_list,
-      &parse_S_ASroute_new_and_endpoints);
-  surfxml_add_callback(STag_surfxml_bypassRoute_cb_list,
-      &parse_S_bypassRoute_new_and_endpoints);
-
-  surfxml_add_callback(ETag_surfxml_link_ctn_cb_list, &routing_parse_link_ctn);
-
-  surfxml_add_callback(ETag_surfxml_route_cb_list,
-      &parse_E_route_store_route);
-  surfxml_add_callback(ETag_surfxml_ASroute_cb_list,
-      &parse_E_ASroute_store_route);
-  surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,
-      &parse_E_bypassRoute_store_route);
-
-  surfxml_add_callback(STag_surfxml_cluster_cb_list,
-      &routing_parse_Scluster);
-
-  sg_platf_peer_add_cb(routing_parse_Speer); // FIXME: inline in the sg_platf_new_peer instead
-  sg_platf_postparse_add_cb(clean_routing_after_parse);
-
-#ifdef HAVE_TRACING
-  instr_routing_define_callbacks();
-#endif
-}
 
 /* ************************************************** */
 /* ********** PATERN FOR NEW ROUTING **************** */
@@ -1331,7 +1299,7 @@ void generic_src_dst_check(routing_component_t rc, const char *src,
         src,dst,src_as->name, dst_as->name,rc->name);
 }
 
-void routing_parse_Scluster(void) {
+static void routing_parse_cluster(void) {
   char *host_id, *groups, *link_id = NULL;
 
   s_sg_platf_host_cbarg_t host;
@@ -1853,4 +1821,37 @@ static void routing_parse_Srandom(void)
     free(rd_name);
     xbt_dynar_free(&radical_elements);
   }
+}
+
+void routing_register_callbacks() {
+  sg_platf_host_add_cb(parse_S_host);
+  sg_platf_router_add_cb(parse_S_router);
+
+  surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
+
+  surfxml_add_callback(STag_surfxml_route_cb_list,
+      &parse_S_route_new_and_endpoints_XML);
+  surfxml_add_callback(STag_surfxml_ASroute_cb_list,
+      &parse_S_ASroute_new_and_endpoints);
+  surfxml_add_callback(STag_surfxml_bypassRoute_cb_list,
+      &parse_S_bypassRoute_new_and_endpoints);
+
+  surfxml_add_callback(ETag_surfxml_link_ctn_cb_list, &routing_parse_link_ctn);
+
+  surfxml_add_callback(ETag_surfxml_route_cb_list,
+      &parse_E_route_store_route);
+  surfxml_add_callback(ETag_surfxml_ASroute_cb_list,
+      &parse_E_ASroute_store_route);
+  surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,
+      &parse_E_bypassRoute_store_route);
+
+  surfxml_add_callback(STag_surfxml_cluster_cb_list,
+      &routing_parse_cluster);
+
+  sg_platf_peer_add_cb(routing_parse_Speer); // FIXME: inline in the sg_platf_new_peer instead
+  sg_platf_postparse_add_cb(clean_routing_after_parse);
+
+#ifdef HAVE_TRACING
+  instr_routing_define_callbacks();
+#endif
 }
