@@ -1,42 +1,50 @@
 
-Examples containing in this directory
+Examples contained in this directory
+
+To execute any SimGrid Lua example, the SimGrid dynamic library must be in
+your LUA_CPATH. For example:
+
+export LUA_CPATH="${LUA_CPATH};/path/to/simgrid/examples/lua/?.so"
 
 ===============================================================================
-* master_slave.lua           
+* masterslave
 ===============================================================================
+
     - Description:
     Simple master slave application
 
+    - Directory:
+    examples/lua/masterslave
+
     - Platform Files:
-    ../msg/small_platform.xml
+    ../../msg/small_platform.xml
 	
     - Deployment Files:
-    ../ruby/deploy.xml
+    ../deploy.xml
 
     - Execute: 
-    (WARNING: the current directory must be examples/lua/)
     lua master_slave.lua
 
 ===============================================================================
-* mult_matrix.lua
+* multi_matrix
 ===============================================================================
 
-
     - Description:
-    Simple example to demonstrate how 2 process could exchage data via a shared Task
-    in this example :
-	*Process Sender : Send two matrix with a fixed size to the 'Receiver' process
-	*Process Receiver : Receive the Matrix, make multiplication and put the result
-			    into the shared task that the Sender could read it .   
+    Simple example to demonstrate how 2 processes can exchange data via a task.
+    In this example:
+	* Process Sender: sends two matrices with a fixed size to the receiver.
+	* Process Receiver: receive the matrices and makes the multiplication.
+
+    - Directory:
+    examples/lua/multi_matrix
     
     - Platform Files:
-    ../ruby/quicksort_platform.xml    
+    quicksort_platform.xml    
 	
     - Deployment Files:
-    ../ruby/quicksort_deployment.xml
+    quicksort_deployment.xml
 
     - Execute: 
-    (WARNING: the current directory must be examples/lua/)
     lua mult_matrix.lua
 	    
 ================================================================================
