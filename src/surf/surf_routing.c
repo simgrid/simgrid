@@ -1390,9 +1390,9 @@ void routing_parse_Scluster(void)
   {
 	  if(xbt_dict_size(patterns)==0)
 		  patterns = xbt_dict_new();
-	  xbt_dict_set(patterns,"id",struct_cluster->id,NULL);
-	  xbt_dict_set(patterns,"prefix",struct_cluster->prefix,NULL);
-	  xbt_dict_set(patterns,"suffix",struct_cluster->suffix,NULL);
+	  xbt_dict_set(patterns,"id",xbt_strdup(struct_cluster->id),free);
+	  xbt_dict_set(patterns,"prefix",xbt_strdup(struct_cluster->prefix),free);
+	  xbt_dict_set(patterns,"suffix",xbt_strdup(struct_cluster->suffix),free);
   }
 
   unsigned int iter;

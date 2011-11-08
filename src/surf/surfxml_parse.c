@@ -332,42 +332,30 @@ void STag_surfxml_cluster(void){
 	struct_cluster->sharing_policy = AX_surfxml_cluster_sharing_policy;
 	struct_cluster->bb_sharing_policy = AX_surfxml_cluster_bb_sharing_policy;
 
-	struct_cluster->availability_trace = xbt_strdup(A_surfxml_cluster_availability_file);
-	struct_cluster->state_trace = xbt_strdup(A_surfxml_cluster_state_file);
+	struct_cluster->availability_trace = A_surfxml_cluster_availability_file;
+	struct_cluster->state_trace = A_surfxml_cluster_state_file;
 
 	surfxml_call_cb_functions(STag_surfxml_cluster_cb_list);
 }
 void ETag_surfxml_cluster(void){
 	surfxml_call_cb_functions(ETag_surfxml_cluster_cb_list);
-	if( !strcmp(A_surfxml_cluster_router_id,""))
-			xbt_free(struct_cluster->router_id);
-	xbt_free(struct_cluster->availability_trace);
-	xbt_free(struct_cluster->state_trace);
 	xbt_free(struct_cluster);
 }
 
 void STag_surfxml_peer(void){
 	struct_peer = xbt_new0(s_surf_parsing_peer_arg_t, 1);
-	struct_peer->id = xbt_strdup(A_surfxml_peer_id);
-	struct_peer->power = xbt_strdup(A_surfxml_peer_power);
-	struct_peer->bw_in = xbt_strdup(A_surfxml_peer_bw_in);
-	struct_peer->bw_out = xbt_strdup(A_surfxml_peer_bw_out);
-	struct_peer->lat = xbt_strdup(A_surfxml_peer_lat);
-	struct_peer->coord = xbt_strdup(A_surfxml_peer_coordinates);
-	struct_peer->availability_trace = xbt_strdup(A_surfxml_peer_availability_file);
-	struct_peer->state_trace = xbt_strdup(A_surfxml_peer_state_file);
+	struct_peer->id = A_surfxml_peer_id;
+	struct_peer->power = A_surfxml_peer_power;
+	struct_peer->bw_in = A_surfxml_peer_bw_in;
+	struct_peer->bw_out = A_surfxml_peer_bw_out;
+	struct_peer->lat = A_surfxml_peer_lat;
+	struct_peer->coord = A_surfxml_peer_coordinates;
+	struct_peer->availability_trace = A_surfxml_peer_availability_file;
+	struct_peer->state_trace = A_surfxml_peer_state_file;
 	surfxml_call_cb_functions(STag_surfxml_peer_cb_list);
 }
 void ETag_surfxml_peer(void){
 	surfxml_call_cb_functions(ETag_surfxml_peer_cb_list);
-	xbt_free(struct_peer->id);
-	xbt_free(struct_peer->power);
-	xbt_free(struct_peer->bw_in);
-	xbt_free(struct_peer->bw_out);
-	xbt_free(struct_peer->lat);
-	xbt_free(struct_peer->coord);
-	xbt_free(struct_peer->availability_trace);
-	xbt_free(struct_peer->state_trace);
 	xbt_free(struct_peer);
 }
 void STag_surfxml_link(void){

@@ -9,33 +9,33 @@
 
 typedef struct s_surf_parsing_peer_arg *surf_parsing_peer_arg_t;
 typedef struct s_surf_parsing_peer_arg {
-	char* id; //FIXME: convert to const char
-	char* power;//FIXME: convert to double
-	char* bw_in;
-	char* bw_out;
-	char* lat;
-	char* coord;
-	char* availability_trace;
-	char* state_trace;
+	const char* id;
+	const char* power;//FIXME: convert to double
+	const char* bw_in;
+	const char* bw_out;
+	const char* lat;
+	const char* coord;
+	const char* availability_trace;
+	const char* state_trace;
 } s_surf_parsing_peer_arg_t;
 
 typedef struct s_surf_parsing_cluster_arg *surf_parsing_cluster_arg_t;
 typedef struct s_surf_parsing_cluster_arg {
-	char* id;
-	char* prefix;
-	char* suffix;
-	char* radical;
+	const char* id;
+	const char* prefix;
+	const char* suffix;
+	const char* radical;
 	double power;
 	int core_amount;
 	double bw;
 	double lat;
 	double bb_bw;
 	double bb_lat;
-	char* router_id;
+	const char* router_id;
 	int sharing_policy;
 	int bb_sharing_policy;
-	char* availability_trace;
-	char* state_trace;
+	const char* availability_trace; //FIXME: convert to tmgr
+	const char* state_trace;
 } s_surf_parsing_cluster_arg_t;
 
 typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
