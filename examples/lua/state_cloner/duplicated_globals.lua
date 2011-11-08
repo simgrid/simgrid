@@ -32,7 +32,7 @@ end
 -- Prints the value of global_string
 function print_global()
 
-  simgrid.info("Global string is '"..global_string.."'")
+  simgrid.info("Global string is '" .. global_string .. "'")
 end
 
 print_global()
