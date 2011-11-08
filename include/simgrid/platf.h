@@ -43,8 +43,8 @@ typedef struct {
 } s_sg_platf_host_cbarg_t, *sg_platf_host_cbarg_t;
 
 typedef struct {
-  const char* V_router_id;
-  const char* V_router_coord;
+  const char* id;
+  const char* coord;
 } s_sg_platf_router_cbarg_t, *sg_platf_router_cbarg_t;
 
 typedef struct {

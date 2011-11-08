@@ -179,12 +179,12 @@ int console_add_router(lua_State* L) {
 
   lua_pushstring(L, "id");
   lua_gettable(L, -2);
-  router.V_router_id = lua_tostring(L, -1);
+  router.id = lua_tostring(L, -1);
   lua_pop(L,1);
 
   lua_pushstring(L,"coord");
   lua_gettable(L,-2);
-  router.V_router_coord = lua_tostring(L, -1);
+  router.coord = lua_tostring(L, -1);
   lua_pop(L,1);
 
   sg_platf_new_router(&router);

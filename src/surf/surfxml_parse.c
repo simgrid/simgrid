@@ -301,8 +301,8 @@ void STag_surfxml_router(void){
   s_sg_platf_router_cbarg_t router;
   memset(&router, 0, sizeof(router));
 
-	router.V_router_id = A_surfxml_router_id;
-	router.V_router_coord = A_surfxml_router_coordinates;
+	router.id = A_surfxml_router_id;
+	router.coord = A_surfxml_router_coordinates;
 
 	sg_platf_new_router(&router);
 }

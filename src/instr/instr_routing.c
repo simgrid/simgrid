@@ -269,7 +269,7 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
 static void instr_routing_parse_start_router (sg_platf_router_cbarg_t router)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  newContainer (router->V_router_id, INSTR_ROUTER, father);
+  newContainer (router->id, INSTR_ROUTER, father);
 }
 
 static void instr_routing_parse_end_platform ()
