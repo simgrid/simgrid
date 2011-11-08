@@ -33,6 +33,7 @@ void sg_platf_init(void) {
 void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_host_cb_list);
   xbt_dynar_free(&sg_platf_router_cb_list);
+  xbt_dynar_free(&sg_platf_link_cb_list);
   xbt_dynar_free(&sg_platf_postparse_cb_list);
   xbt_dynar_free(&sg_platf_peer_cb_list);
   xbt_dynar_free(&sg_platf_ASopen_cb_list);
