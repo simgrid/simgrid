@@ -1621,21 +1621,22 @@ void routing_parse_Scluster(void)
 	  char *link_backbone = bprintf("%s_backbone", struct_cluster->V_cluster_id);
 	  XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link_backbone,struct_cluster->S_cluster_bb_bw, struct_cluster->S_cluster_bb_lat);
 
-	  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-	  if(AX_surfxml_cluster_bb_sharing_policy == A_surfxml_cluster_bb_sharing_policy_FATPIPE)
-	  {A_surfxml_link_sharing_policy =  A_surfxml_link_sharing_policy_FATPIPE;}
-
 	  memset(&link,0,sizeof(link));
 	  link.id = link_backbone;
 	  link.bandwidth = struct_cluster->S_cluster_bb_bw;
 	  link.latency = struct_cluster->S_cluster_bb_lat;
 	  link.state = SURF_RESOURCE_ON;
 
-	  /* FIXME: use a switch, and deal with FULLDUPLEX here */
-	  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-		  link.policy = SURF_LINK_SHARED;
-	  else
-		  link.policy = SURF_LINK_FATPIPE;
+	  switch (AX_surfxml_cluster_bb_sharing_policy) {
+	  case A_surfxml_cluster_bb_sharing_policy_FATPIPE:
+	    link.policy = SURF_LINK_FATPIPE;
+	    break;
+	  case A_surfxml_cluster_bb_sharing_policy_SHARED:
+	     link.policy = SURF_LINK_SHARED;
+	     break;
+	  default:
+	    surf_parse_error(bprintf("Invalid bb sharing policy in cluster %s",struct_cluster->V_cluster_id));
+	  }
 
 	  sg_platf_new_link(&link);
 	  ETag_surfxml_link();

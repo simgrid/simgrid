@@ -391,15 +391,18 @@ void STag_surfxml_link(void){
 		link.state = SURF_RESOURCE_OFF;
 	link.state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
-	/* FIXME: use a switch here */
-	if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
+	switch (A_surfxml_link_sharing_policy) {
+	case A_surfxml_link_sharing_policy_SHARED:
 		link.policy = SURF_LINK_SHARED;
-	else
-	{
-	 if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
+		break;
+	case A_surfxml_link_sharing_policy_FATPIPE:
 		 link.policy = SURF_LINK_FATPIPE;
-	 else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
+		 break;
+	case A_surfxml_link_sharing_policy_FULLDUPLEX:
 		 link.policy = SURF_LINK_FULLDUPLEX;
+		 break;
+	default:
+	  surf_parse_error(bprintf("Invalid sharing policy in link %s",link.id));
 	}
 
 	sg_platf_new_link(&link);
