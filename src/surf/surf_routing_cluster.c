@@ -14,7 +14,9 @@ extern xbt_dict_t cluster_host_link;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");
 
-/* Routing model structure */
+/* This routing is specifically setup to represent clusters, aka homogeneous sets of machines
+ * Note that a router is created, easing the interconnexion with the rest of the world.
+ */
 
 typedef struct {
   s_routing_component_t generic_routing;
