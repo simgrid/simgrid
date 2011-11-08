@@ -105,22 +105,22 @@ static void parse_S_host(sg_platf_host_cbarg_t host) {
   network_element_info_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
-  xbt_assert(!xbt_lib_get_or_null(host_lib, host->V_host_id,ROUTING_HOST_LEVEL),
+  xbt_assert(!xbt_lib_get_or_null(host_lib, host->id,ROUTING_HOST_LEVEL),
               "Reading a host, processing unit \"%s\" already exists",
-              host->V_host_id);
+              host->id);
   xbt_assert(current_routing->set_processing_unit,
               "no defined method \"set_processing_unit\" in \"%s\"",
               current_routing->name);
-  (*(current_routing->set_processing_unit)) (current_routing, host->V_host_id);
+  (*(current_routing->set_processing_unit)) (current_routing, host->id);
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
-  xbt_lib_set(host_lib,host->V_host_id,ROUTING_HOST_LEVEL,(void *) info);
-  if (host->V_host_coord && strcmp(host->V_host_coord,"")) {
+  xbt_lib_set(host_lib,host->id,ROUTING_HOST_LEVEL,(void *) info);
+  if (host->coord && strcmp(host->coord,"")) {
     if(!COORD_HOST_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
-    xbt_dynar_t ctn = xbt_str_split_str(host->V_host_coord, " ");
+    xbt_dynar_t ctn = xbt_str_split_str(host->coord, " ");
     xbt_dynar_shrink(ctn, 0);
-    xbt_lib_set(host_lib,host->V_host_id,COORD_HOST_LEVEL,(void *) ctn);
+    xbt_lib_set(host_lib,host->id,COORD_HOST_LEVEL,(void *) ctn);
   }
 }
 
@@ -1425,13 +1425,13 @@ void routing_parse_Scluster(void)
 		link_id = bprintf("%s_link_%d", struct_cluster->V_cluster_id, start);
 
 		XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->S_cluster_power);
-		host.V_host_id = host_id;
+		host.id = host_id;
 		if(strcmp(struct_cluster->V_cluster_availability_file,"")){
 		  xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
 		  char* tmp_availability_file = xbt_strdup(struct_cluster->V_cluster_availability_file);
 		  xbt_str_varsubst(tmp_availability_file,patterns);
 		  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
-		  host.V_host_power_trace = tmgr_trace_new(tmp_availability_file);
+		  host.power_trace = tmgr_trace_new(tmp_availability_file);
 		  xbt_free(tmp_availability_file);
 		}
 		else
@@ -1442,7 +1442,7 @@ void routing_parse_Scluster(void)
 		  char *tmp_state_file = xbt_strdup(struct_cluster->V_cluster_state_file);
 		  xbt_str_varsubst(tmp_state_file,patterns);
 		  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
-		  host.V_host_state_trace = tmgr_trace_new(tmp_state_file);
+		  host.state_trace = tmgr_trace_new(tmp_state_file);
 		  xbt_free(tmp_state_file);
 		}
 		else
@@ -1450,11 +1450,11 @@ void routing_parse_Scluster(void)
 		  XBT_DEBUG("\tstate_file=\"\"");
 		}
 
-		host.V_host_power_peak = struct_cluster->S_cluster_power;
-		host.V_host_power_scale = 1.0;
-		host.V_host_core = struct_cluster->S_cluster_core;
-		host.V_host_state_initial = SURF_RESOURCE_ON;
-		host.V_host_coord = "";
+		host.power_peak = struct_cluster->S_cluster_power;
+		host.power_scale = 1.0;
+		host.core_amount = struct_cluster->S_cluster_core;
+		host.initial_state = SURF_RESOURCE_ON;
+		host.coord = "";
 		sg_platf_new_host(&host);
 		XBT_DEBUG("</host>");
 
@@ -1523,13 +1523,13 @@ void routing_parse_Scluster(void)
 		A_surfxml_host_state = A_surfxml_host_state_ON;
 
 		XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->S_cluster_power);
-		host.V_host_id = host_id;
+		host.id = host_id;
 		if(strcmp(struct_cluster->V_cluster_availability_file,"")){
 		  xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
 		  char* tmp_availability_file = xbt_strdup(struct_cluster->V_cluster_availability_file);
 		  xbt_str_varsubst(tmp_availability_file,patterns);
 		  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
-		  host.V_host_power_trace = tmgr_trace_new(tmp_availability_file);
+		  host.power_trace = tmgr_trace_new(tmp_availability_file);
 		  xbt_free(tmp_availability_file);
 		}
 		else
@@ -1540,7 +1540,7 @@ void routing_parse_Scluster(void)
 		  char *tmp_state_file = xbt_strdup(struct_cluster->V_cluster_state_file);
 		  xbt_str_varsubst(tmp_state_file,patterns);
 		  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
-		  host.V_host_state_trace = tmgr_trace_new(tmp_state_file);
+		  host.state_trace = tmgr_trace_new(tmp_state_file);
 		  xbt_free(tmp_state_file);
 		}
 		else
@@ -1548,11 +1548,11 @@ void routing_parse_Scluster(void)
 		  XBT_DEBUG("\tstate_file=\"\"");
 		}
 
-		host.V_host_power_peak = struct_cluster->S_cluster_power;
-		host.V_host_power_scale = 1.0;
-		host.V_host_core = struct_cluster->S_cluster_core;
-		host.V_host_state_initial = SURF_RESOURCE_ON;
-		host.V_host_coord = "";
+		host.power_peak = struct_cluster->S_cluster_power;
+		host.power_scale = 1.0;
+		host.core_amount = struct_cluster->S_cluster_core;
+		host.initial_state = SURF_RESOURCE_ON;
+		host.coord = "";
 		sg_platf_new_host(&host);
 		XBT_DEBUG("</host>");
 

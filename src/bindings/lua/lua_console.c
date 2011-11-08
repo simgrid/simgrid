@@ -41,32 +41,32 @@ int console_add_host(lua_State *L) {
   // get Id Value
   lua_pushstring(L, "id");
   lua_gettable(L, -2);
-  host.V_host_id = lua_tostring(L, -1);
+  host.id = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   // get power value
   lua_pushstring(L, "power");
   lua_gettable(L, -2);
-  host.V_host_power_peak = lua_tonumber(L, -1);
+  host.power_peak = lua_tonumber(L, -1);
   lua_pop(L, 1);
 
   //get power_scale
   lua_pushstring(L, "power_scale");
   lua_gettable(L, -2);
-  host.V_host_power_scale = lua_tonumber(L, -1);
+  host.power_scale = lua_tonumber(L, -1);
   lua_pop(L, 1);
 
   //get power_trace
   lua_pushstring(L, "power_trace");
   lua_gettable(L, -2);
-  host.V_host_power_trace = tmgr_trace_new(lua_tostring(L, -1));
+  host.power_trace = tmgr_trace_new(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   lua_pushstring(L, "core");
   lua_gettable(L, -2);
-  host.V_host_core = lua_tonumber(L, -1);
-  if (host.V_host_core == 0)
-    host.V_host_core = 1;
+  host.core_amount = lua_tonumber(L, -1);
+  if (host.core_amount == 0)
+    host.core_amount = 1;
   lua_pop(L, 1);
 
   //get state initial
@@ -75,14 +75,14 @@ int console_add_host(lua_State *L) {
   state = lua_tonumber(L, -1);
   lua_pop(L, 1);
   if (state)
-    host.V_host_state_initial = SURF_RESOURCE_ON;
+    host.initial_state = SURF_RESOURCE_ON;
   else
-    host.V_host_state_initial = SURF_RESOURCE_OFF;
+    host.initial_state = SURF_RESOURCE_OFF;
 
   //get trace state
   lua_pushstring(L, "state_trace");
   lua_gettable(L, -2);
-  host.V_host_state_trace = tmgr_trace_new(lua_tostring(L, -1));
+  host.state_trace = tmgr_trace_new(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   sg_platf_new_host(&host);

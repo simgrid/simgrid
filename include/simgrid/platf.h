@@ -31,14 +31,14 @@ typedef enum {
  */
 
 typedef struct {
-  const char* V_host_id;                          //id
-  double V_host_power_peak;                     //power
-  int V_host_core;                          //core
-  double V_host_power_scale;                      //availability
-  tmgr_trace_t V_host_power_trace;                  //availability file
-  e_surf_resource_state_t V_host_state_initial;           //state
-  tmgr_trace_t V_host_state_trace;                  //state file
-  const char* V_host_coord;
+  const char* id;
+  double power_peak;
+  int core_amount;
+  double power_scale;
+  tmgr_trace_t power_trace;
+  e_surf_resource_state_t initial_state;
+  tmgr_trace_t state_trace;
+  const char* coord;
   xbt_dict_t properties;
 } s_sg_platf_host_cbarg_t, *sg_platf_host_cbarg_t;
 

@@ -277,19 +277,19 @@ void STag_surfxml_host(void){
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
   host.properties = current_property_set = xbt_dict_new();
 
-	host.V_host_id = A_surfxml_host_id;
-	host.V_host_power_peak = get_cpu_power(A_surfxml_host_power);
-	host.V_host_power_scale = surf_parse_get_double( A_surfxml_host_availability);
-	host.V_host_core = surf_parse_get_int(A_surfxml_host_core);
-	host.V_host_power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
-	host.V_host_state_trace = tmgr_trace_new(A_surfxml_host_state_file);
+	host.id = A_surfxml_host_id;
+	host.power_peak = get_cpu_power(A_surfxml_host_power);
+	host.power_scale = surf_parse_get_double( A_surfxml_host_availability);
+	host.core_amount = surf_parse_get_int(A_surfxml_host_core);
+	host.power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
+	host.state_trace = tmgr_trace_new(A_surfxml_host_state_file);
 	xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
 			  (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
 	if (A_surfxml_host_state == A_surfxml_host_state_ON)
-		host.V_host_state_initial = SURF_RESOURCE_ON;
+		host.initial_state = SURF_RESOURCE_ON;
 	if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-		host.V_host_state_initial = SURF_RESOURCE_OFF;
-	host.V_host_coord = A_surfxml_host_coordinates;
+		host.initial_state = SURF_RESOURCE_OFF;
+	host.coord = A_surfxml_host_coordinates;
 
 	sg_platf_new_host(&host);
 }

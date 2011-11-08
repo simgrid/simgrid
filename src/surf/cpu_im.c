@@ -90,13 +90,13 @@ static void* cpu_im_create_resource(const char *name, double power_peak,
 
 static void parse_cpu_im_init(sg_platf_host_cbarg_t host)
 {
-	cpu_im_create_resource(host->V_host_id,
-			  host->V_host_power_peak,
-			  host->V_host_power_scale,
-			  host->V_host_power_trace,
-			  host->V_host_core,
-			  host->V_host_state_initial,
-			  host->V_host_state_trace,
+	cpu_im_create_resource(host->id,
+			  host->power_peak,
+			  host->power_scale,
+			  host->power_trace,
+			  host->core_amount,
+			  host->initial_state,
+			  host->state_trace,
 			  host->properties);
 }
 

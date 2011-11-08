@@ -228,11 +228,11 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
 static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  container_t new = newContainer (host->V_host_id, INSTR_HOST, father);
+  container_t new = newContainer (host->id, INSTR_HOST, father);
 
   if (TRACE_categorized() || TRACE_uncategorized()) {
     type_t power = getVariableType ("power", NULL, new->type);
-    new_pajeSetVariable (0, new, power, host->V_host_power_peak);
+    new_pajeSetVariable (0, new, power, host->power_peak);
   }
   if (TRACE_uncategorized()){
     getVariableType ("power_used", "0.5 0.5 0.5", new->type);

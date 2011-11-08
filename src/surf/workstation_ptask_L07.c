@@ -657,12 +657,12 @@ static void* ptask_cpu_create_resource(const char *name, double power_scale,
 static void ptask_parse_cpu_init(sg_platf_host_cbarg_t host)
 {
   ptask_cpu_create_resource(
-		  host->V_host_id,
-		  host->V_host_power_peak,
-		  host->V_host_power_scale,
-		  host->V_host_power_trace,
-		  host->V_host_state_initial,
-		  host->V_host_state_trace,
+		  host->id,
+		  host->power_peak,
+		  host->power_scale,
+		  host->power_trace,
+		  host->initial_state,
+		  host->state_trace,
 		  host->properties);
 }
 
