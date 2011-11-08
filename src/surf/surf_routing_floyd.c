@@ -174,7 +174,7 @@ static void floyd_finalize(routing_component_t rc)
   }
 }
 
-void *model_floyd_create(void)
+routing_component_t model_floyd_create(void)
 {
   routing_component_floyd_t new_component =
       xbt_new0(s_routing_component_floyd_t, 1);
@@ -195,7 +195,7 @@ void *model_floyd_create(void)
   new_component->generic_routing.to_index = xbt_dict_new();
   new_component->generic_routing.bypassRoutes = xbt_dict_new();
   new_component->generic_routing.get_network_element_type = get_network_element_type;
-  return new_component;
+  return (routing_component_t)new_component;
 }
 
 void model_floyd_load(void)

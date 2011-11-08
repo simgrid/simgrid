@@ -394,7 +394,7 @@ static void rulebased_finalize(routing_component_t rc)
 }
 
 /* Creation routing model functions */
-void *model_rulebased_create(void)
+routing_component_t model_rulebased_create(void)
 {
   routing_component_rulebased_t new_component =
       xbt_new0(s_routing_component_rulebased_t, 1);
@@ -418,5 +418,5 @@ void *model_rulebased_create(void)
   new_component->list_ASroute =
       xbt_dynar_new(sizeof(rule_route_extended_t),
                     &rule_route_extended_free);
-  return new_component;
+  return (routing_component_t) new_component;
 }

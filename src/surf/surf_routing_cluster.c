@@ -48,12 +48,12 @@ static route_extended_t cluster_get_route(routing_component_t rc,
 }
 
 /* Creation routing model functions */
-void *model_cluster_create(void)
+routing_component_t model_cluster_create(void)
 {
-  routing_component_cluster_t new_component = model_rulebased_create();
-  new_component->generic_routing.get_route = cluster_get_route;
+  routing_component_t new_component = model_rulebased_create();
+  new_component->get_route = cluster_get_route;
 
-  return new_component;
+  return (routing_component_t) new_component;
 }
 void model_cluster_unload(void) {
 //  xbt_dict_free(&cluster_host_link); //FIXME: do it once the module management is clean in routing

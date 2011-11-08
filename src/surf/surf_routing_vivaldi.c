@@ -7,20 +7,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf");
 
-/* Routing model structure */
-
-typedef struct {
-  s_routing_component_t generic_routing;
-  xbt_dict_t dict_processing_units;
-  xbt_dict_t dict_autonomous_systems;
-} s_routing_component_vivaldi_t, *routing_component_vivaldi_t;
-
-/* Parse routing model functions */
-
-static route_extended_t vivaldi_get_route(routing_component_t rc,
-                                            const char *src,
-                                            const char *dst);
-
 /* Business methods */
 static route_extended_t vivaldi_get_route(routing_component_t rc,
                                             const char *src,
@@ -85,10 +71,10 @@ static double vivaldi_get_link_latency (routing_component_t rc,const char *src, 
 }
 
 /* Creation routing model functions */
-void *model_vivaldi_create(void)
+routing_component_t model_vivaldi_create(void)
 {
-	  routing_component_vivaldi_t new_component = model_none_create();
-	  new_component->generic_routing.get_route = vivaldi_get_route;
-	  new_component->generic_routing.get_latency = vivaldi_get_link_latency;
+	  routing_component_t new_component = model_none_create();
+	  new_component->get_route = vivaldi_get_route;
+	  new_component->get_latency = vivaldi_get_link_latency;
 	  return new_component;
 }

@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
 /* Routing model structure */
 
-typedef struct {
+typedef struct s_routing_component_full {
   s_routing_component_t generic_routing;
   route_extended_t *routing_table;
 } s_routing_component_full_t, *routing_component_full_t;
@@ -124,7 +124,7 @@ static void full_finalize(routing_component_t rc)
 
 /* Creation routing model functions */
 
-void *model_full_create(void)
+routing_component_t model_full_create(void)
 {
   routing_component_full_t new_component =
       xbt_new0(s_routing_component_full_t, 1);
@@ -145,7 +145,7 @@ void *model_full_create(void)
   new_component->generic_routing.to_index = xbt_dict_new();
   new_component->generic_routing.bypassRoutes = xbt_dict_new();
   new_component->generic_routing.get_network_element_type = get_network_element_type;
-  return new_component;
+  return (routing_component_t) new_component;
 }
 
 void model_full_load(void)

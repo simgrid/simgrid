@@ -101,11 +101,12 @@ typedef struct s_onelink {
 /**
  * Routing logic
  */
+typedef struct s_routing_component *routing_component_t;
 
 typedef struct s_model_type {
   const char *name;
   const char *desc;
-  void *(*create) ();
+  routing_component_t (*create) ();
   void (*load) ();
   void (*unload) ();
   void (*end) ();

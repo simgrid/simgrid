@@ -64,7 +64,7 @@ void generic_src_dst_check(routing_component_t rc, const char *src,
 
 /* ************************************************************************** */
 /* *************************** FLOYD ROUTING ******************************** */
-void *model_floyd_create(void);  /* create structures for floyd routing model */
+routing_component_t model_floyd_create(void);  /* create structures for floyd routing model */
 void model_floyd_load(void);     /* load parse functions for floyd routing model */
 void model_floyd_unload(void);   /* unload parse functions for floyd routing model */
 void model_floyd_end(void);      /* finalize the creation of floyd routing model */
@@ -73,18 +73,18 @@ void model_floyd_set_route(routing_component_t rc, const char *src,
 
 /* ************************************************** */
 /* ************** RULE-BASED ROUTING **************** */
-void *model_rulebased_create(void);      /* create structures for rulebased routing model */
+routing_component_t model_rulebased_create(void);      /* create structures for rulebased routing model */
 
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
-void *model_cluster_create(void);      /* create structures for cluster routing model */
+routing_component_t model_cluster_create(void);      /* create structures for cluster routing model */
 void model_cluster_unload(void);          /* Finalize the routing model */
 
 void surf_routing_cluster_add_link(const char* host_id,surf_parsing_link_up_down_t info);
 
 /* ************************************************** */
 /* **************  Vivaldi ROUTING   **************** */
-void *model_vivaldi_create(void);      /* create structures for vivaldi routing model */
+routing_component_t model_vivaldi_create(void);      /* create structures for vivaldi routing model */
 #define HOST_PEER(peername) bprintf("peer_%s", peername)
 #define ROUTER_PEER(peername) bprintf("router_%s", peername)
 #define LINK_UP_PEER(peername) bprintf("link_%s_up", peername)
@@ -92,9 +92,9 @@ void *model_vivaldi_create(void);      /* create structures for vivaldi routing 
 
 /* ************************************************************************** */
 /* ********** Dijkstra & Dijkstra Cached ROUTING **************************** */
-void *model_dijkstra_both_create(int cached);    /* create by calling dijkstra or dijkstracache */
-void *model_dijkstra_create(void);       /* create structures for dijkstra routing model */
-void *model_dijkstracache_create(void);  /* create structures for dijkstracache routing model */
+routing_component_t model_dijkstra_both_create(int cached);    /* create by calling dijkstra or dijkstracache */
+routing_component_t model_dijkstra_create(void);       /* create structures for dijkstra routing model */
+routing_component_t model_dijkstracache_create(void);  /* create structures for dijkstracache routing model */
 void model_dijkstra_both_load(void);     /* load parse functions for dijkstra routing model */
 void model_dijkstra_both_unload(void);   /* unload parse functions for dijkstra routing model */
 void model_dijkstra_both_end(void);      /* finalize the creation of dijkstra routing model */
@@ -103,7 +103,7 @@ void model_dijkstra_both_set_route (routing_component_t rc, const char *src,
 
 /* ************************************************************************** */
 /* *************************** FULL ROUTING ********************************* */
-void *model_full_create(void);   /* create structures for full routing model */
+routing_component_t model_full_create(void);   /* create structures for full routing model */
 void model_full_load(void);      /* load parse functions for full routing model */
 void model_full_unload(void);    /* unload parse functions for full routing model */
 void model_full_end(void);       /* finalize the creation of full routing model */
@@ -112,7 +112,7 @@ void model_full_set_route(	/* Set the route and ASroute between src and dst */
 
 /* ************************************************************************** */
 /* ******************************* NO ROUTING ******************************* */
-void *model_none_create(void);           /* none routing model */
+routing_component_t model_none_create(void);           /* none routing model */
 void model_none_load(void);              /* none routing model */
 void model_none_unload(void);            /* none routing model */
 void model_none_end(void);               /* none routing model */

@@ -447,7 +447,7 @@ static void dijkstra_finalize(routing_component_t rc)
 
 /* Creation routing model functions */
 
-void *model_dijkstra_both_create(int cached)
+routing_component_t model_dijkstra_both_create(int cached)
 {
   routing_component_dijkstra_t new_component =
       xbt_new0(s_routing_component_dijkstra_t, 1);
@@ -469,15 +469,15 @@ void *model_dijkstra_both_create(int cached)
   new_component->generic_routing.to_index = xbt_dict_new();
   new_component->generic_routing.bypassRoutes = xbt_dict_new();
   new_component->generic_routing.get_network_element_type = get_network_element_type;
-  return new_component;
+  return (routing_component_t)new_component;
 }
 
-void *model_dijkstra_create(void)
+routing_component_t model_dijkstra_create(void)
 {
   return model_dijkstra_both_create(0);
 }
 
-void *model_dijkstracache_create(void)
+routing_component_t model_dijkstracache_create(void)
 {
   return model_dijkstra_both_create(1);
 }

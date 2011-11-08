@@ -53,7 +53,7 @@ static void none_set_autonomous_system(routing_component_t rc,
 }
 
 /* Creation routing model functions */
-void *model_none_create(void)
+routing_component_t model_none_create(void)
 {
   routing_component_none_t new_component =
       xbt_new0(s_routing_component_none_t, 1);
@@ -69,7 +69,7 @@ void *model_none_create(void)
       none_get_onelink_routes;
   new_component->generic_routing.get_bypass_route = none_get_bypass_route;
   new_component->generic_routing.finalize = none_finalize;
-  return new_component;
+  return (routing_component_t) new_component;
 }
 
 void model_none_load(void)
