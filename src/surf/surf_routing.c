@@ -1729,15 +1729,15 @@ static void routing_parse_Speer(void)
   link_router = bprintf("%s_link_router", struct_peer->id);
   link_backbone = bprintf("%s_backbone", struct_peer->id);
 
-  XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\"/>", host_id, struct_peer->power);
+  XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, struct_peer->power);
   s_sg_platf_host_cbarg_t host;
   memset(&host,0,sizeof(host));
   host.initial_state = SURF_RESOURCE_ON;
   host.id = host_id;
-  host.power_peak = surf_parse_get_double(struct_peer->power);
+  host.power_peak = struct_peer->power;
   host.power_scale = 1.0;
-  host.power_trace = tmgr_trace_new(struct_peer->availability_trace);
-  host.state_trace = tmgr_trace_new(struct_peer->state_trace);
+  host.power_trace = struct_peer->availability_trace;
+  host.state_trace = struct_peer->state_trace;
   host.core_amount = 1;
   sg_platf_new_host(&host);
 
@@ -1749,17 +1749,19 @@ static void routing_parse_Speer(void)
   router.coord = struct_peer->coord;
   sg_platf_new_router(&router);
 
-  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_up, struct_peer->bw_in, struct_peer->lat);
+  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id_up, struct_peer->bw_in, struct_peer->lat);
   s_sg_platf_link_cbarg_t link;
   memset(&link,0,sizeof(link));
   link.state = SURF_RESOURCE_ON;
   link.policy = SURF_LINK_SHARED;
   link.id = link_id_up;
-  link.bandwidth = surf_parse_get_double(struct_peer->bw_in);
-  link.latency = surf_parse_get_double(struct_peer->lat);
+  link.bandwidth = struct_peer->bw_in;
+  link.latency = struct_peer->lat;
   sg_platf_new_link(&link);
 
-  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_down, struct_peer->bw_out, struct_peer->lat);
+  // FIXME: dealing with full duplex is not the role of this piece of code, I'd say [Mt]
+  // Instead, it should be created fullduplex, and the models will do what's needed in this case
+  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id_down, struct_peer->bw_out, struct_peer->lat);
   link.id = link_id_down;
   sg_platf_new_link(&link);
 

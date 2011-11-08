@@ -10,13 +10,13 @@
 typedef struct s_surf_parsing_peer_arg *surf_parsing_peer_arg_t;
 typedef struct s_surf_parsing_peer_arg {
 	const char* id;
-	const char* power;//FIXME: convert to double
-	const char* bw_in;
-	const char* bw_out;
-	const char* lat;
+	double power;
+	double bw_in;
+	double bw_out;
+	double lat;
 	const char* coord;
-	const char* availability_trace;
-	const char* state_trace;
+	tmgr_trace_t availability_trace;
+	tmgr_trace_t state_trace;
 } s_surf_parsing_peer_arg_t;
 
 typedef struct s_surf_parsing_cluster_arg *surf_parsing_cluster_arg_t;

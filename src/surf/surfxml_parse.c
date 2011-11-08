@@ -339,13 +339,13 @@ void ETag_surfxml_cluster(void){
 void STag_surfxml_peer(void){
 	struct_peer = xbt_new0(s_surf_parsing_peer_arg_t, 1);
 	struct_peer->id = A_surfxml_peer_id;
-	struct_peer->power = A_surfxml_peer_power;
-	struct_peer->bw_in = A_surfxml_peer_bw_in;
-	struct_peer->bw_out = A_surfxml_peer_bw_out;
-	struct_peer->lat = A_surfxml_peer_lat;
+	struct_peer->power = surf_parse_get_double(A_surfxml_peer_power);
+	struct_peer->bw_in = surf_parse_get_double(A_surfxml_peer_bw_in);
+	struct_peer->bw_out = surf_parse_get_double(A_surfxml_peer_bw_out);
+	struct_peer->lat = surf_parse_get_double(A_surfxml_peer_lat);
 	struct_peer->coord = A_surfxml_peer_coordinates;
-	struct_peer->availability_trace = A_surfxml_peer_availability_file;
-	struct_peer->state_trace = A_surfxml_peer_state_file;
+	struct_peer->availability_trace = tmgr_trace_new(A_surfxml_peer_availability_file);
+	struct_peer->state_trace = tmgr_trace_new(A_surfxml_peer_state_file);
 	surfxml_call_cb_functions(STag_surfxml_peer_cb_list);
 }
 void ETag_surfxml_peer(void){
