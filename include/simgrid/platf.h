@@ -68,8 +68,8 @@ typedef struct {
   xbt_dict_t properties;
 } s_sg_platf_link_cbarg_t, *sg_platf_link_cbarg_t;
 
-typedef struct s_surf_parsing_peer_arg *sg_platf_peer_cbarg_t;
-typedef struct s_surf_parsing_peer_arg {
+typedef struct s_sg_platf_peer_cbarg *sg_platf_peer_cbarg_t;
+typedef struct s_sg_platf_peer_cbarg {
   const char* id;
   double power;
   double bw_in;
@@ -78,7 +78,7 @@ typedef struct s_surf_parsing_peer_arg {
   const char* coord;
   tmgr_trace_t availability_trace;
   tmgr_trace_t state_trace;
-} s_surf_parsing_peer_arg_t;
+} s_sg_platf_peer_cbarg_t;
 
 
 XBT_PUBLIC(void) sg_platf_open(void);  // Start a new platform

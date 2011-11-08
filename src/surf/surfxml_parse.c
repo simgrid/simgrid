@@ -331,7 +331,7 @@ void ETag_surfxml_cluster(void){
 }
 
 void STag_surfxml_peer(void){
-  s_surf_parsing_peer_arg_t peer;
+  s_sg_platf_peer_cbarg_t peer;
   memset(&peer,0,sizeof(peer));
 	peer.id = A_surfxml_peer_id;
 	peer.power = surf_parse_get_double(A_surfxml_peer_power);
