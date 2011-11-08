@@ -68,33 +68,33 @@ typedef enum {
   SURF_MODEL_CLUSTER
 } e_routing_types;
 
-struct s_model_type routing_models[] = { {"Full",
-                                          "Full routing data (fast, large memory requirements, fully expressive)",
-                                          model_full_create,
-                                          model_full_load,
-                                          model_full_unload,
-                                          model_full_end},
-{"Floyd",
- "Floyd routing data (slow initialization, fast lookup, lesser memory requirements, shortest path routing only)",
- model_floyd_create, model_floyd_load, model_floyd_unload,
- model_floyd_end},
-{"Dijkstra",
- "Dijkstra routing data (fast initialization, slow lookup, small memory requirements, shortest path routing only)",
- model_dijkstra_create, model_dijkstra_both_load,
- model_dijkstra_both_unload, model_dijkstra_both_end},
-{"DijkstraCache",
- "Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only)",
- model_dijkstracache_create, model_dijkstra_both_load,
- model_dijkstra_both_unload, model_dijkstra_both_end},
-{"none", "No routing (usable with Constant network only)",
- model_none_create, model_none_load, model_none_unload, model_none_end},
-{"RuleBased", "Rule-Based routing data (...)", model_rulebased_create,
- model_none_load, model_none_unload, model_none_end},
-{"Vivaldi", "Vivaldi routing", model_vivaldi_create,
-  model_none_load, model_none_unload, model_none_end},
-{"Cluster", "Cluster routing", model_cluster_create,
-  model_none_load, model_cluster_unload, model_none_end},
-{NULL, NULL, NULL, NULL, NULL, NULL}
+struct s_model_type routing_models[] = {
+    { "Full", "Full routing data (fast, large memory requirements, fully expressive)",
+        model_full_create, model_full_load, model_full_unload, model_full_end
+    },
+    { "Floyd", "Floyd routing data (slow initialization, fast lookup, lesser memory requirements, shortest path routing only)",
+        model_floyd_create, model_floyd_load, model_floyd_unload, model_floyd_end
+    },
+    { "Dijkstra", "Dijkstra routing data (fast initialization, slow lookup, small memory requirements, shortest path routing only)",
+        model_dijkstra_create, model_dijkstra_both_load,
+        model_dijkstra_both_unload, model_dijkstra_both_end
+    },
+    { "DijkstraCache", "Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only)",
+        model_dijkstracache_create, model_dijkstra_both_load, model_dijkstra_both_unload, model_dijkstra_both_end
+    },
+    { "none", "No routing (usable with Constant network only)",
+        model_none_create, model_none_load, model_none_unload, model_none_end
+    },
+    { "RuleBased", "Rule-Based routing data (...)",
+        model_rulebased_create, model_none_load, model_none_unload, model_none_end
+    },
+    { "Vivaldi", "Vivaldi routing",
+        model_vivaldi_create, model_none_load, model_none_unload, model_none_end
+    },
+    {"Cluster", "Cluster routing",
+        model_cluster_create, model_none_load, model_cluster_unload, model_none_end
+    },
+    {NULL, NULL, NULL, NULL, NULL, NULL}
 };
 
 /**
@@ -105,11 +105,11 @@ static void parse_S_host(sg_platf_host_cbarg_t host) {
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
   xbt_assert(!xbt_lib_get_or_null(host_lib, host->id,ROUTING_HOST_LEVEL),
-              "Reading a host, processing unit \"%s\" already exists",
-              host->id);
+      "Reading a host, processing unit \"%s\" already exists",
+      host->id);
   xbt_assert(current_routing->set_processing_unit,
-              "no defined method \"set_processing_unit\" in \"%s\"",
-              current_routing->name);
+      "no defined method \"set_processing_unit\" in \"%s\"",
+      current_routing->name);
   (*(current_routing->set_processing_unit)) (current_routing, host->id);
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
@@ -132,11 +132,11 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
   xbt_assert(!xbt_lib_get_or_null(as_router_lib,router->id, ROUTING_ASR_LEVEL),
-              "Reading a router, processing unit \"%s\" already exists",
-              router->id);
+      "Reading a router, processing unit \"%s\" already exists",
+      router->id);
   xbt_assert(current_routing->set_processing_unit,
-              "no defined method \"set_processing_unit\" in \"%s\"",
-              current_routing->name);
+      "no defined method \"set_processing_unit\" in \"%s\"",
+      current_routing->name);
   (*(current_routing->set_processing_unit)) (current_routing, router->id);
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
@@ -144,7 +144,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
 
   xbt_lib_set(as_router_lib,router->id,ROUTING_ASR_LEVEL,(void *) info);
   if (strcmp(router->coord,"")) {
-	if(!COORD_ASR_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
+    if(!COORD_ASR_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
     xbt_dynar_t ctn = xbt_str_split_str(router->coord, " ");
     xbt_dynar_shrink(ctn, 0);
     xbt_lib_set(as_router_lib,router->id,COORD_ASR_LEVEL,(void *) ctn);
@@ -158,12 +158,12 @@ static void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_
 {
   if (src != NULL && dst != NULL && link_list != NULL)
     THROWF(arg_error, 0, "Route between %s to %s can not be defined",
-           src_id, dst_id);
+        src_id, dst_id);
   src = src_id;
   dst = dst_id;
   xbt_assert(strlen(src) > 0 || strlen(dst) > 0,
-              "Some limits are null in the route between \"%s\" and \"%s\"",
-              src, dst);
+      "Some limits are null in the route between \"%s\" and \"%s\"",
+      src, dst);
   link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
@@ -173,7 +173,7 @@ static void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_
 static void parse_S_route_new_and_endpoints_XML(void)
 {
   parse_S_route_new_and_endpoints(A_surfxml_route_src,
-                                  A_surfxml_route_dst);
+      A_surfxml_route_dst);
 }
 
 /**
@@ -183,15 +183,15 @@ static void parse_S_ASroute_new_and_endpoints(void)
 {
   if (src != NULL && dst != NULL && link_list != NULL)
     THROWF(arg_error, 0, "Route between %s to %s can not be defined",
-           A_surfxml_ASroute_src, A_surfxml_ASroute_dst);
+        A_surfxml_ASroute_src, A_surfxml_ASroute_dst);
   src = A_surfxml_ASroute_src;
   dst = A_surfxml_ASroute_dst;
   gw_src = A_surfxml_ASroute_gw_src;
   gw_dst = A_surfxml_ASroute_gw_dst;
   xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0
-              || strlen(gw_dst) > 0,
-              "Some limits are null in the route between \"%s\" and \"%s\"",
-              src, dst);
+      || strlen(gw_dst) > 0,
+      "Some limits are null in the route between \"%s\" and \"%s\"",
+      src, dst);
   link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
@@ -202,16 +202,16 @@ static void parse_S_bypassRoute_new_and_endpoints(void)
 {
   if (src != NULL && dst != NULL && link_list != NULL)
     THROWF(arg_error, 0,
-           "Bypass Route between %s to %s can not be defined",
-           A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
+        "Bypass Route between %s to %s can not be defined",
+        A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
   src = A_surfxml_bypassRoute_src;
   dst = A_surfxml_bypassRoute_dst;
   gw_src = A_surfxml_bypassRoute_gw_src;
   gw_dst = A_surfxml_bypassRoute_gw_dst;
   xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0
-              || strlen(gw_dst) > 0,
-              "Some limits are null in the route between \"%s\" and \"%s\"",
-              src, dst);
+      || strlen(gw_dst) > 0,
+      "Some limits are null in the route between \"%s\" and \"%s\"",
+      src, dst);
   link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
@@ -253,8 +253,8 @@ static void parse_E_route_store_route(void)
   name_route_extended_t route = xbt_new0(s_name_route_extended_t, 1);
   route->generic_route.link_list = link_list;
   xbt_assert(current_routing->set_route,
-              "no defined method \"set_route\" in \"%s\"",
-              current_routing->name);
+      "no defined method \"set_route\" in \"%s\"",
+      current_routing->name);
   (*(current_routing->set_route)) (current_routing, src, dst, route);
   link_list = NULL;
   src = NULL;
@@ -271,8 +271,8 @@ static void parse_E_ASroute_store_route(void)
   e_route->src_gateway = xbt_strdup(gw_src);
   e_route->dst_gateway = xbt_strdup(gw_dst);
   xbt_assert(current_routing->set_ASroute,
-              "no defined method \"set_ASroute\" in \"%s\"",
-              current_routing->name);
+      "no defined method \"set_ASroute\" in \"%s\"",
+      current_routing->name);
   (*(current_routing->set_ASroute)) (current_routing, src, dst, e_route);
   link_list = NULL;
   src = NULL;
@@ -291,10 +291,10 @@ static void parse_E_bypassRoute_store_route(void)
   e_route->src_gateway = xbt_strdup(gw_src);
   e_route->dst_gateway = xbt_strdup(gw_dst);
   xbt_assert(current_routing->set_bypassroute,
-              "no defined method \"set_bypassroute\" in \"%s\"",
-              current_routing->name);
+      "no defined method \"set_bypassroute\" in \"%s\"",
+      current_routing->name);
   (*(current_routing->set_bypassroute)) (current_routing, src, dst,
-                                         e_route);
+      e_route);
   link_list = NULL;
   src = NULL;
   dst = NULL;
@@ -330,10 +330,10 @@ void routing_AS_open(const char *AS_id, const char *wanted_routing_type)
   /* if its not exist, error */
   if (model == NULL) {
     fprintf(stderr, "Routing model %s not found. Existing models:\n",
-            wanted_routing_type);
+        wanted_routing_type);
     for (cpt = 0; routing_models[cpt].name; cpt++)
-        fprintf(stderr, "   %s: %s\n", routing_models[cpt].name,
-                routing_models[cpt].desc);
+      fprintf(stderr, "   %s: %s\n", routing_models[cpt].name,
+          routing_models[cpt].desc);
     xbt_die(NULL);
   }
 
@@ -353,8 +353,8 @@ void routing_AS_open(const char *AS_id, const char *wanted_routing_type)
   } else if (current_routing != NULL && global_routing->root != NULL) {
 
     xbt_assert(!xbt_dict_get_or_null
-                (current_routing->routing_sons, AS_id),
-                "The AS \"%s\" already exists", AS_id);
+        (current_routing->routing_sons, AS_id),
+        "The AS \"%s\" already exists", AS_id);
     /* it is a part of the tree */
     new_routing->routing_father = current_routing;
     /* set the father behavior */
@@ -362,7 +362,7 @@ void routing_AS_open(const char *AS_id, const char *wanted_routing_type)
       current_routing->hierarchy = SURF_ROUTING_RECURSIVE;
     /* add to the sons dictionary */
     xbt_dict_set(current_routing->routing_sons, AS_id,
-                 (void *) new_routing, NULL);
+        (void *) new_routing, NULL);
     /* add to the father element list */
     (*(current_routing->set_autonomous_system)) (current_routing, AS_id);
     /* unload the prev parse rules */
@@ -395,7 +395,7 @@ void routing_AS_close() {
   } else {
     network_element_info_t info = NULL;
     xbt_assert(!xbt_lib_get_or_null(as_router_lib,current_routing->name, ROUTING_ASR_LEVEL),
-    		"The AS \"%s\" already exists",current_routing->name);
+        "The AS \"%s\" already exists",current_routing->name);
     info = xbt_new0(s_network_element_info_t, 1);
     info->rc_component = current_routing->routing_father;
     info->rc_type = SURF_NETWORK_ELEMENT_AS;
@@ -418,14 +418,14 @@ void routing_AS_close() {
  *
  */
 static char* elements_As_name(const char *name)
-{
+                                        {
   routing_component_t as_comp;
 
   /* (1) find the as where the host is located */
   as_comp = ((network_element_info_t)
-            xbt_lib_get_or_null(host_lib,name, ROUTING_HOST_LEVEL))->rc_component;
+      xbt_lib_get_or_null(host_lib,name, ROUTING_HOST_LEVEL))->rc_component;
   return as_comp->name;
-}
+                                        }
 
 
 /**
@@ -438,9 +438,9 @@ static char* elements_As_name(const char *name)
  * father in the chain
  */
 static void elements_father(const char *src, const char *dst,
-                            routing_component_t *res_father,
-                            routing_component_t *res_src,
-                            routing_component_t *res_dst)
+    routing_component_t *res_father,
+    routing_component_t *res_src,
+    routing_component_t *res_dst)
 {
   xbt_assert(src && dst, "bad parameters for \"elements_father\" method");
 #define ELEMENTS_FATHER_MAXDEPTH 16 /* increase if it is not enough */
@@ -456,9 +456,9 @@ static void elements_father(const char *src, const char *dst,
 
   /* (1) find the as where the src and dst are located */
   network_element_info_t src_data = xbt_lib_get_or_null(host_lib, src,
-                                                        ROUTING_HOST_LEVEL);
+      ROUTING_HOST_LEVEL);
   network_element_info_t dst_data = xbt_lib_get_or_null(host_lib, dst,
-                                                        ROUTING_HOST_LEVEL);
+      ROUTING_HOST_LEVEL);
   if (!src_data)
     src_data = xbt_lib_get_or_null(as_router_lib, src, ROUTING_ASR_LEVEL);
   if (!dst_data)
@@ -467,7 +467,7 @@ static void elements_father(const char *src, const char *dst,
   dst_as = dst_data->rc_component;
 
   xbt_assert(src_as && dst_as,
-             "Ask for route \"from\"(%s) or \"to\"(%s) no found", src, dst);
+      "Ask for route \"from\"(%s) or \"to\"(%s) no found", src, dst);
 
   /* (2) find the path to the root routing component */
   for (current = src_as ; current != NULL ; current = current->routing_father) {
@@ -515,7 +515,7 @@ static void elements_father(const char *src, const char *dst,
  * recursively through the routing components tree.
  */
 static void _get_route_latency(const char *src, const char *dst,
-                               xbt_dynar_t *route, double *latency)
+    xbt_dynar_t *route, double *latency)
 {
   XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src, dst);
   xbt_assert(src && dst, "bad parameters for \"_get_route_latency\" method");
@@ -536,7 +536,7 @@ static void _get_route_latency(const char *src, const char *dst,
     if (latency) {
       *latency = common_father->get_latency(common_father, src, dst, e_route);
       xbt_assert(*latency >= 0.0,
-                 "latency error on route between \"%s\" and \"%s\"", src, dst);
+          "latency error on route between \"%s\" and \"%s\"", src, dst);
     }
     if (e_route) {
       xbt_free(e_route->src_gateway);
@@ -551,30 +551,30 @@ static void _get_route_latency(const char *src, const char *dst,
       e_route_bypass = common_father->get_bypass_route(common_father, src, dst);
 
     xbt_assert(!latency || !e_route_bypass,
-               "Bypass cannot work yet with get_latency");
+        "Bypass cannot work yet with get_latency");
 
     route_extended_t e_route_cnt = e_route_bypass
-      ? e_route_bypass
-      : common_father->get_route(common_father,
-                               src_father->name, dst_father->name);
+        ? e_route_bypass
+            : common_father->get_route(common_father,
+                src_father->name, dst_father->name);
 
     xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"",
-               src_father->name, dst_father->name);
+        src_father->name, dst_father->name);
 
     xbt_assert((e_route_cnt->src_gateway == NULL) ==
-               (e_route_cnt->dst_gateway == NULL),
-               "bad gateway for route between \"%s\" and \"%s\"", src, dst);
+        (e_route_cnt->dst_gateway == NULL),
+        "bad gateway for route between \"%s\" and \"%s\"", src, dst);
 
     if (route) {
       *route = xbt_dynar_new(global_routing->size_of_link, NULL);
     }
     if (latency) {
       *latency = common_father->get_latency(common_father,
-                                            src_father->name, dst_father->name,
-                                            e_route_cnt);
+          src_father->name, dst_father->name,
+          e_route_cnt);
       xbt_assert(*latency >= 0.0,
-                 "latency error on route between \"%s\" and \"%s\"",
-                 src_father->name, dst_father->name);
+          "latency error on route between \"%s\" and \"%s\"",
+          src_father->name, dst_father->name);
     }
 
     void *link;
@@ -585,11 +585,11 @@ static void _get_route_latency(const char *src, const char *dst,
       xbt_dynar_t route_src;
 
       _get_route_latency(src, e_route_cnt->src_gateway,
-                         (route ? &route_src : NULL),
-                         (latency ? &latency_src : NULL));
+          (route ? &route_src : NULL),
+          (latency ? &latency_src : NULL));
       if (route) {
         xbt_assert(route_src, "no route between \"%s\" and \"%s\"",
-                   src, e_route_cnt->src_gateway);
+            src, e_route_cnt->src_gateway);
         xbt_dynar_foreach(route_src, cpt, link) {
           xbt_dynar_push(*route, &link);
         }
@@ -597,8 +597,8 @@ static void _get_route_latency(const char *src, const char *dst,
       }
       if (latency) {
         xbt_assert(latency_src >= 0.0,
-                   "latency error on route between \"%s\" and \"%s\"",
-                   src, e_route_cnt->src_gateway);
+            "latency error on route between \"%s\" and \"%s\"",
+            src, e_route_cnt->src_gateway);
         *latency += latency_src;
       }
     }
@@ -614,11 +614,11 @@ static void _get_route_latency(const char *src, const char *dst,
       xbt_dynar_t route_dst;
 
       _get_route_latency(e_route_cnt->dst_gateway, dst,
-                         (route ? &route_dst : NULL),
-                         (latency ? &latency_dst : NULL));
+          (route ? &route_dst : NULL),
+          (latency ? &latency_dst : NULL));
       if (route) {
         xbt_assert(route_dst, "no route between \"%s\" and \"%s\"",
-                   e_route_cnt->dst_gateway, dst);
+            e_route_cnt->dst_gateway, dst);
         xbt_dynar_foreach(route_dst, cpt, link) {
           xbt_dynar_push(*route, &link);
         }
@@ -626,8 +626,8 @@ static void _get_route_latency(const char *src, const char *dst,
       }
       if (latency) {
         xbt_assert(latency_dst >= 0.0,
-                   "latency error on route between \"%s\" and \"%s\"",
-                   e_route_cnt->dst_gateway, dst);
+            "latency error on route between \"%s\" and \"%s\"",
+            e_route_cnt->dst_gateway, dst);
         *latency += latency_dst;
       }
     }
@@ -640,12 +640,12 @@ static void _get_route_latency(const char *src, const char *dst,
  * \brief Generic function for get_route, get_route_no_cleanup, and get_latency
  */
 static void get_route_latency(const char *src, const char *dst,
-                              xbt_dynar_t *route, double *latency, int cleanup)
+    xbt_dynar_t *route, double *latency, int cleanup)
 {
   _get_route_latency(src, dst, route, latency);
   xbt_assert(!route || *route, "no route between \"%s\" and \"%s\"", src, dst);
   xbt_assert(!latency || *latency >= 0.0,
-             "latency error on route between \"%s\" and \"%s\"", src, dst);
+      "latency error on route between \"%s\" and \"%s\"", src, dst);
   if (route) {
     xbt_dynar_free(&global_routing->last_route);
     global_routing->last_route = cleanup ? *route : NULL;
@@ -750,7 +750,7 @@ static void _finalize(routing_component_t rc)
     xbt_dict_free(&tmp_sons);
     xbt_free(tmp_name);
     xbt_assert(rc->finalize, "no defined method \"finalize\" in \"%s\"",
-                current_routing->name);
+        current_routing->name);
     (*(rc->finalize)) (rc);
   }
 }
@@ -807,7 +807,7 @@ static xbt_dynar_t get_onelink_routes(void)
 }
 
 e_surf_network_element_type_t get_network_element_type(const char
-                                                              *name)
+    *name)
 {
   network_element_info_t rc = NULL;
 
@@ -850,24 +850,24 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   sg_platf_router_add_cb(parse_S_router);
 
   surfxml_add_callback(STag_surfxml_route_cb_list,
-                       &parse_S_route_new_and_endpoints_XML);
+      &parse_S_route_new_and_endpoints_XML);
   surfxml_add_callback(STag_surfxml_ASroute_cb_list,
-                       &parse_S_ASroute_new_and_endpoints);
+      &parse_S_ASroute_new_and_endpoints);
   surfxml_add_callback(STag_surfxml_bypassRoute_cb_list,
-                       &parse_S_bypassRoute_new_and_endpoints);
+      &parse_S_bypassRoute_new_and_endpoints);
 
   surfxml_add_callback(ETag_surfxml_link_ctn_cb_list,
-                       &parse_E_link_ctn_new_elem_XML);
+      &parse_E_link_ctn_new_elem_XML);
 
   surfxml_add_callback(ETag_surfxml_route_cb_list,
-                       &parse_E_route_store_route);
+      &parse_E_route_store_route);
   surfxml_add_callback(ETag_surfxml_ASroute_cb_list,
-                       &parse_E_ASroute_store_route);
+      &parse_E_ASroute_store_route);
   surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,
-                       &parse_E_bypassRoute_store_route);
+      &parse_E_bypassRoute_store_route);
 
   surfxml_add_callback(STag_surfxml_cluster_cb_list,
-                       &routing_parse_Scluster);
+      &routing_parse_Scluster);
 
   sg_platf_peer_add_cb(routing_parse_Speer); // FIXME: inline in the sg_platf_new_peer instead
   sg_platf_postparse_add_cb(clean_routing_after_parse);
@@ -930,7 +930,7 @@ void surf_parse_add_callback_config(void)
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */
 
 void generic_set_processing_unit(routing_component_t rc,
-                                        const char *name)
+    const char *name)
 {
   XBT_DEBUG("Load process unit \"%s\"", name);
   int *id = xbt_new0(int, 1);
@@ -941,7 +941,7 @@ void generic_set_processing_unit(routing_component_t rc,
 }
 
 void generic_set_autonomous_system(routing_component_t rc,
-                                          const char *name)
+    const char *name)
 {
   XBT_DEBUG("Load Autonomous system \"%s\"", name);
   int *id = xbt_new0(int, 1);
@@ -962,8 +962,8 @@ int surf_link_resource_cmp(const void *a, const void *b)
 }
 
 void generic_set_bypassroute(routing_component_t rc,
-                                    const char *src, const char *dst,
-                                    route_extended_t e_route)
+    const char *src, const char *dst,
+    route_extended_t e_route)
 {
   XBT_DEBUG("Load bypassRoute from \"%s\" to \"%s\"", src, dst);
   xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
@@ -971,11 +971,11 @@ void generic_set_bypassroute(routing_component_t rc,
 
   route_name = bprintf("%s#%s", src, dst);
   xbt_assert(xbt_dynar_length(e_route->generic_route.link_list) > 0,
-              "Invalid count of links, must be greater than zero (%s,%s)",
-              src, dst);
+      "Invalid count of links, must be greater than zero (%s,%s)",
+      src, dst);
   xbt_assert(!xbt_dict_get_or_null(dict_bypassRoutes, route_name),
-              "The bypass route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exists",
-              src, e_route->src_gateway, dst, e_route->dst_gateway);
+      "The bypass route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exists",
+      src, e_route->src_gateway, dst, e_route->dst_gateway);
 
   route_extended_t new_e_route =
       generic_new_extended_route(SURF_ROUTING_RECURSIVE, e_route, 0);
@@ -983,7 +983,7 @@ void generic_set_bypassroute(routing_component_t rc,
   xbt_free(e_route);
 
   xbt_dict_set(dict_bypassRoutes, route_name, new_e_route,
-               (void (*)(void *)) generic_free_extended_route);
+      (void (*)(void *)) generic_free_extended_route);
   xbt_free(route_name);
 }
 
@@ -991,20 +991,20 @@ void generic_set_bypassroute(routing_component_t rc,
 /* *********************** GENERIC BUSINESS METHODS ************************* */
 
 double generic_get_link_latency(routing_component_t rc,
-                                       const char *src, const char *dst,
-                                       route_extended_t route)
+    const char *src, const char *dst,
+    route_extended_t route)
 {
-	int need_to_clean = route?0:1;
-	void * link;
-	unsigned int i;
-	double latency = 0.0;
+  int need_to_clean = route?0:1;
+  void * link;
+  unsigned int i;
+  double latency = 0.0;
 
-	route = route?route:rc->get_route(rc,src,dst);
+  route = route?route:rc->get_route(rc,src,dst);
 
-	xbt_dynar_foreach(route->generic_route.link_list,i,link) {
-		latency += get_link_latency(link);
-	}
-	if(need_to_clean) generic_free_extended_route(route);
+  xbt_dynar_foreach(route->generic_route.link_list,i,link) {
+    latency += get_link_latency(link);
+  }
+  if(need_to_clean) generic_free_extended_route(route);
   return latency;
 }
 
@@ -1014,8 +1014,8 @@ xbt_dynar_t generic_get_onelink_routes(routing_component_t rc)
 }
 
 route_extended_t generic_get_bypassroute(routing_component_t rc,
-                                                const char *src,
-                                                const char *dst)
+    const char *src,
+    const char *dst)
 {
   xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
   routing_component_t src_as, dst_as;
@@ -1033,8 +1033,8 @@ route_extended_t generic_get_bypassroute(routing_component_t rc,
   if(!dst_data) dst_data = xbt_lib_get_or_null(as_router_lib,dst, ROUTING_ASR_LEVEL);
 
   if(src_data == NULL || dst_data == NULL)
-	  xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-	             src, dst, rc->name);
+    xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
+        src, dst, rc->name);
 
   src_as = ((network_element_info_t)src_data)->rc_component;
   dst_as = ((network_element_info_t)dst_data)->rc_component;
@@ -1079,12 +1079,12 @@ route_extended_t generic_get_bypassroute(routing_component_t rc,
     for (i = 0; i < max; i++) {
       if (i <= max_index_src && max <= max_index_dst) {
         char *route_name = bprintf("%s#%s",
-                                   (*(routing_component_t *)
-                                    (xbt_dynar_get_ptr
-                                     (path_src, i)))->name,
-                                   (*(routing_component_t *)
-                                    (xbt_dynar_get_ptr
-                                     (path_dst, max)))->name);
+            (*(routing_component_t *)
+                (xbt_dynar_get_ptr
+                    (path_src, i)))->name,
+                    (*(routing_component_t *)
+                        (xbt_dynar_get_ptr
+                            (path_dst, max)))->name);
         e_route_bypass =
             xbt_dict_get_or_null(dict_bypassRoutes, route_name);
         xbt_free(route_name);
@@ -1093,12 +1093,12 @@ route_extended_t generic_get_bypassroute(routing_component_t rc,
         break;
       if (max <= max_index_src && i <= max_index_dst) {
         char *route_name = bprintf("%s#%s",
-                                   (*(routing_component_t *)
-                                    (xbt_dynar_get_ptr
-                                     (path_src, max)))->name,
-                                   (*(routing_component_t *)
-                                    (xbt_dynar_get_ptr
-                                     (path_dst, i)))->name);
+            (*(routing_component_t *)
+                (xbt_dynar_get_ptr
+                    (path_src, max)))->name,
+                    (*(routing_component_t *)
+                        (xbt_dynar_get_ptr
+                            (path_dst, i)))->name);
         e_route_bypass =
             xbt_dict_get_or_null(dict_bypassRoutes, route_name);
         xbt_free(route_name);
@@ -1112,12 +1112,12 @@ route_extended_t generic_get_bypassroute(routing_component_t rc,
 
     if (max <= max_index_src && max <= max_index_dst) {
       char *route_name = bprintf("%s#%s",
-                                 (*(routing_component_t *)
-                                  (xbt_dynar_get_ptr
-                                   (path_src, max)))->name,
-                                 (*(routing_component_t *)
-                                  (xbt_dynar_get_ptr
-                                   (path_dst, max)))->name);
+          (*(routing_component_t *)
+              (xbt_dynar_get_ptr
+                  (path_src, max)))->name,
+                  (*(routing_component_t *)
+                      (xbt_dynar_get_ptr
+                          (path_dst, max)))->name);
       e_route_bypass = xbt_dict_get_or_null(dict_bypassRoutes, route_name);
       xbt_free(route_name);
     }
@@ -1151,7 +1151,7 @@ route_extended_t generic_get_bypassroute(routing_component_t rc,
 
 route_t
 generic_new_route(e_surf_routing_hierarchy_t hierarchy,
-                           void *data, int order)
+    void *data, int order)
 {
 
   char *link_name;
@@ -1164,7 +1164,7 @@ generic_new_route(e_surf_routing_hierarchy_t hierarchy,
       xbt_dynar_new(global_routing->size_of_link, NULL);
 
   xbt_assert(hierarchy == SURF_ROUTING_BASE,
-              "the hierarchy type is not SURF_ROUTING_BASE");
+      "the hierarchy type is not SURF_ROUTING_BASE");
 
   links = ((route_t) data)->link_list;
 
@@ -1174,7 +1174,7 @@ generic_new_route(e_surf_routing_hierarchy_t hierarchy,
   xbt_dynar_foreach(links, cpt, link_name) {
 
     void *link =
-    		xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+        xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
     if (link) {
       if (order)
         xbt_dynar_push(links_id, &link);
@@ -1189,7 +1189,7 @@ generic_new_route(e_surf_routing_hierarchy_t hierarchy,
 
 route_extended_t
 generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
-                           void *data, int order)
+    void *data, int order)
 {
 
   char *link_name;
@@ -1205,8 +1205,8 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
   new_e_route->dst_gateway = NULL;
 
   xbt_assert(hierarchy == SURF_ROUTING_BASE
-              || hierarchy == SURF_ROUTING_RECURSIVE,
-              "the hierarchy type is not defined");
+      || hierarchy == SURF_ROUTING_RECURSIVE,
+      "the hierarchy type is not defined");
 
   if (hierarchy == SURF_ROUTING_BASE) {
 
@@ -1217,7 +1217,7 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
 
     e_route = (route_extended_t) data;
     xbt_assert(e_route->src_gateway
-                && e_route->dst_gateway, "bad gateway, is null");
+        && e_route->dst_gateway, "bad gateway, is null");
     links = e_route->generic_route.link_list;
 
     /* remeber not erase the gateway names */
@@ -1230,7 +1230,7 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
   xbt_dynar_foreach(links, cpt, link_name) {
 
     void *link =
-    		xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+        xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
     if (link) {
       if (order)
         xbt_dynar_push(links_id, &link);
@@ -1264,7 +1264,7 @@ void generic_free_extended_route(route_extended_t e_route)
 }
 
 static routing_component_t generic_as_exist(routing_component_t find_from,
-                                            routing_component_t to_find)
+    routing_component_t to_find)
 {
   //return to_find; // FIXME: BYPASSERROR OF FOREACH WITH BREAK
   xbt_dict_cursor_t cursor = NULL;
@@ -1290,7 +1290,7 @@ generic_autonomous_system_exist(routing_component_t rc, char *element)
   xbt_dict_cursor_t cursor = NULL;
   char *key;
   element_as = ((network_element_info_t)
-                xbt_lib_get_or_null(as_router_lib, element, ROUTING_ASR_LEVEL))->rc_component;
+      xbt_lib_get_or_null(as_router_lib, element, ROUTING_ASR_LEVEL))->rc_component;
   result = ((routing_component_t) - 1);
   if (element_as != rc)
     result = generic_as_exist(rc, element_as);
@@ -1313,15 +1313,15 @@ generic_processing_units_exist(routing_component_t rc, char *element)
 {
   routing_component_t element_as;
   element_as = ((network_element_info_t)
-                xbt_lib_get_or_null(host_lib,
-                 element, ROUTING_HOST_LEVEL))->rc_component;
+      xbt_lib_get_or_null(host_lib,
+          element, ROUTING_HOST_LEVEL))->rc_component;
   if (element_as == rc)
     return element_as;
   return generic_as_exist(rc, element_as);
 }
 
 void generic_src_dst_check(routing_component_t rc, const char *src,
-                                  const char *dst)
+    const char *dst)
 {
 
   void * src_data = xbt_lib_get_or_null(host_lib,src, ROUTING_HOST_LEVEL);
@@ -1330,18 +1330,18 @@ void generic_src_dst_check(routing_component_t rc, const char *src,
   if(!dst_data) dst_data = xbt_lib_get_or_null(as_router_lib,dst, ROUTING_ASR_LEVEL);
 
   if(src_data == NULL || dst_data == NULL)
-	  xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-	             src, dst, rc->name);
+    xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
+        src, dst, rc->name);
 
   routing_component_t src_as = ((network_element_info_t)src_data)->rc_component;
   routing_component_t dst_as = ((network_element_info_t)dst_data)->rc_component;
 
   if(src_as != dst_as)
-	  xbt_die("The src(%s in %s) and dst(%s in %s) are in differents AS",
-              src, src_as->name, dst, dst_as->name);
+    xbt_die("The src(%s in %s) and dst(%s in %s) are in differents AS",
+        src, src_as->name, dst, dst_as->name);
   if(rc != dst_as)
-	 xbt_die("The routing component of src'%s' and dst'%s' is not the same as the network elements belong (%s?=%s?=%s)",
-     src,dst,src_as->name, dst_as->name,rc->name);
+    xbt_die("The routing component of src'%s' and dst'%s' is not the same as the network elements belong (%s?=%s?=%s)",
+        src,dst,src_as->name, dst_as->name,rc->name);
 }
 
 void routing_parse_Scluster(void) {
@@ -1351,13 +1351,13 @@ void routing_parse_Scluster(void) {
   s_sg_platf_link_cbarg_t link;
 
   if( strcmp(struct_cluster->availability_trace,"")
-	  || strcmp(struct_cluster->state_trace,"") )
+      || strcmp(struct_cluster->state_trace,"") )
   {
-	  if(xbt_dict_size(patterns)==0)
-		  patterns = xbt_dict_new();
-	  xbt_dict_set(patterns,"id",xbt_strdup(struct_cluster->id),free);
-	  xbt_dict_set(patterns,"prefix",xbt_strdup(struct_cluster->prefix),free);
-	  xbt_dict_set(patterns,"suffix",xbt_strdup(struct_cluster->suffix),free);
+    if(xbt_dict_size(patterns)==0)
+      patterns = xbt_dict_new();
+    xbt_dict_set(patterns,"id",xbt_strdup(struct_cluster->id),free);
+    xbt_dict_set(patterns,"prefix",xbt_strdup(struct_cluster->prefix),free);
+    xbt_dict_set(patterns,"suffix",xbt_strdup(struct_cluster->suffix),free);
   }
 
   unsigned int iter;
@@ -1376,174 +1376,174 @@ void routing_parse_Scluster(void) {
     radical_ends = xbt_str_split(groups, "-");
     switch (xbt_dynar_length(radical_ends)) {
     case 1:
-		start=surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
-		host_id = bprintf("%s%d%s", struct_cluster->prefix, start, struct_cluster->suffix);
-		link_id = bprintf("%s_link_%d", struct_cluster->id, start);
-
-		XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->power);
-		host.id = host_id;
-		if(strcmp(struct_cluster->availability_trace,"")){
-		  xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
-		  char* tmp_availability_file = xbt_strdup(struct_cluster->availability_trace);
-		  xbt_str_varsubst(tmp_availability_file,patterns);
-		  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
-		  host.power_trace = tmgr_trace_new(tmp_availability_file);
-		  xbt_free(tmp_availability_file);
-		}
-		else
-		{
-		  XBT_DEBUG("\tavailability_file=\"\"");
-		}
-		if(strcmp(struct_cluster->state_trace,"")){
-		  char *tmp_state_file = xbt_strdup(struct_cluster->state_trace);
-		  xbt_str_varsubst(tmp_state_file,patterns);
-		  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
-		  host.state_trace = tmgr_trace_new(tmp_state_file);
-		  xbt_free(tmp_state_file);
-		}
-		else
-		{
-		  XBT_DEBUG("\tstate_file=\"\"");
-		}
-
-		host.power_peak = struct_cluster->power;
-		host.power_scale = 1.0;
-		host.core_amount = struct_cluster->core_amount;
-		host.initial_state = SURF_RESOURCE_ON;
-		host.coord = "";
-		sg_platf_new_host(&host);
-		XBT_DEBUG("</host>");
-
-
-		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->bw, struct_cluster->lat);
-
-		memset(&link,0,sizeof(link));
-		link.id = link_id;
-		link.bandwidth = struct_cluster->bw;
-		link.latency = struct_cluster->lat;
-		link.state = SURF_RESOURCE_ON;
-
-		switch (struct_cluster->sharing_policy) {
-		case A_surfxml_cluster_sharing_policy_FATPIPE:
-		  link.policy = SURF_LINK_FATPIPE;
-		  break;
-		case A_surfxml_cluster_sharing_policy_FULLDUPLEX:
-		  link.policy = SURF_LINK_FULLDUPLEX;
-		  break;
-		default:
-      link.policy = SURF_LINK_SHARED;
-		}
-
-		sg_platf_new_link(&link);
-
-		surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
-		if (struct_cluster->sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX){
-			char* tmp_link =  bprintf("%s_UP",link_id);
-			info->link_up   = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-			free(tmp_link);
-			tmp_link =  bprintf("%s_DOWN",link_id);
-			info->link_down = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-			free(tmp_link);
-		}
-		else{
-			info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
-			info->link_down = info->link_up;
-		}
-		surf_routing_cluster_add_link(host_id,info);
-		xbt_free(link_id);
-		xbt_free(host_id);
-
-		break;
-
-    case 2:
-
       start=surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
-      end=  surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
-      for (i = start; i <= end; i++) {
-		host_id = bprintf("%s%d%s", struct_cluster->prefix, i, struct_cluster->suffix);
-		link_id = bprintf("%s_link_%d", struct_cluster->id, i);
+      host_id = bprintf("%s%d%s", struct_cluster->prefix, start, struct_cluster->suffix);
+      link_id = bprintf("%s_link_%d", struct_cluster->id, start);
 
-		XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->power);
-		host.id = host_id;
-		if(strcmp(struct_cluster->availability_trace,"")){
-		  xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
-		  char* tmp_availability_file = xbt_strdup(struct_cluster->availability_trace);
-		  xbt_str_varsubst(tmp_availability_file,patterns);
-		  XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
-		  host.power_trace = tmgr_trace_new(tmp_availability_file);
-		  xbt_free(tmp_availability_file);
-		}
-		else
-		{
-		  XBT_DEBUG("\tavailability_file=\"\"");
-		}
-		if(strcmp(struct_cluster->state_trace,"")){
-		  char *tmp_state_file = xbt_strdup(struct_cluster->state_trace);
-		  xbt_str_varsubst(tmp_state_file,patterns);
-		  XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
-		  host.state_trace = tmgr_trace_new(tmp_state_file);
-		  xbt_free(tmp_state_file);
-		}
-		else
-		{
-		  XBT_DEBUG("\tstate_file=\"\"");
-		}
-
-		host.power_peak = struct_cluster->power;
-		host.power_scale = 1.0;
-		host.core_amount = struct_cluster->core_amount;
-		host.initial_state = SURF_RESOURCE_ON;
-		host.coord = "";
-		sg_platf_new_host(&host);
-		XBT_DEBUG("</host>");
-
-		XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->bw, struct_cluster->lat);
-
-		memset(&link,0,sizeof(link));
-		link.id = link_id;
-		link.bandwidth = struct_cluster->bw;
-		link.latency = struct_cluster->lat;
-		link.state = SURF_RESOURCE_ON;
-
-		switch (struct_cluster->sharing_policy) {
-		case A_surfxml_cluster_sharing_policy_SHARED:
-      link.policy = SURF_LINK_SHARED;
-      break;
-		case A_surfxml_cluster_sharing_policy_FULLDUPLEX:
-		  link.policy = SURF_LINK_FULLDUPLEX;
-		  break;
-		case A_surfxml_cluster_sharing_policy_FATPIPE:
-		  link.policy = SURF_LINK_FATPIPE;
-		  break;
-		default:
-		  surf_parse_error(bprintf("Invalid cluster sharing policy for cluster %s",struct_cluster->id));
-		}
-		sg_platf_new_link(&link);
-
-		surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
-		if (link.policy == SURF_LINK_FULLDUPLEX) {
-			char* tmp_link =  bprintf("%s_UP",link_id);
-			info->link_up   = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-			free(tmp_link);
-			tmp_link =  bprintf("%s_DOWN",link_id);
-			info->link_down = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-			free(tmp_link);
-		}
-		else{
-			info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
-			info->link_down = info->link_up;
-		}
-		surf_routing_cluster_add_link(host_id,info);
-
-		xbt_free(link_id);
-		xbt_free(host_id);
-
+      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->power);
+      host.id = host_id;
+      if(strcmp(struct_cluster->availability_trace,"")){
+        xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
+        char* tmp_availability_file = xbt_strdup(struct_cluster->availability_trace);
+        xbt_str_varsubst(tmp_availability_file,patterns);
+        XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
+        host.power_trace = tmgr_trace_new(tmp_availability_file);
+        xbt_free(tmp_availability_file);
       }
+      else
+      {
+        XBT_DEBUG("\tavailability_file=\"\"");
+      }
+      if(strcmp(struct_cluster->state_trace,"")){
+        char *tmp_state_file = xbt_strdup(struct_cluster->state_trace);
+        xbt_str_varsubst(tmp_state_file,patterns);
+        XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
+        host.state_trace = tmgr_trace_new(tmp_state_file);
+        xbt_free(tmp_state_file);
+      }
+      else
+      {
+        XBT_DEBUG("\tstate_file=\"\"");
+      }
+
+      host.power_peak = struct_cluster->power;
+      host.power_scale = 1.0;
+      host.core_amount = struct_cluster->core_amount;
+      host.initial_state = SURF_RESOURCE_ON;
+      host.coord = "";
+      sg_platf_new_host(&host);
+      XBT_DEBUG("</host>");
+
+
+      XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->bw, struct_cluster->lat);
+
+      memset(&link,0,sizeof(link));
+      link.id = link_id;
+      link.bandwidth = struct_cluster->bw;
+      link.latency = struct_cluster->lat;
+      link.state = SURF_RESOURCE_ON;
+
+      switch (struct_cluster->sharing_policy) {
+      case A_surfxml_cluster_sharing_policy_FATPIPE:
+        link.policy = SURF_LINK_FATPIPE;
+        break;
+      case A_surfxml_cluster_sharing_policy_FULLDUPLEX:
+        link.policy = SURF_LINK_FULLDUPLEX;
+        break;
+      default:
+        link.policy = SURF_LINK_SHARED;
+      }
+
+      sg_platf_new_link(&link);
+
+      surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
+      if (struct_cluster->sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX){
+        char* tmp_link =  bprintf("%s_UP",link_id);
+        info->link_up   = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+        free(tmp_link);
+        tmp_link =  bprintf("%s_DOWN",link_id);
+        info->link_down = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+        free(tmp_link);
+      }
+      else{
+        info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
+        info->link_down = info->link_up;
+      }
+      surf_routing_cluster_add_link(host_id,info);
+      xbt_free(link_id);
+      xbt_free(host_id);
+
       break;
 
-    default:
-      XBT_DEBUG("Malformed radical");
-      break;
+      case 2:
+
+        start=surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
+        end=  surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
+        for (i = start; i <= end; i++) {
+          host_id = bprintf("%s%d%s", struct_cluster->prefix, i, struct_cluster->suffix);
+          link_id = bprintf("%s_link_%d", struct_cluster->id, i);
+
+          XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->power);
+          host.id = host_id;
+          if(strcmp(struct_cluster->availability_trace,"")){
+            xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
+            char* tmp_availability_file = xbt_strdup(struct_cluster->availability_trace);
+            xbt_str_varsubst(tmp_availability_file,patterns);
+            XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
+            host.power_trace = tmgr_trace_new(tmp_availability_file);
+            xbt_free(tmp_availability_file);
+          }
+          else
+          {
+            XBT_DEBUG("\tavailability_file=\"\"");
+          }
+          if(strcmp(struct_cluster->state_trace,"")){
+            char *tmp_state_file = xbt_strdup(struct_cluster->state_trace);
+            xbt_str_varsubst(tmp_state_file,patterns);
+            XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
+            host.state_trace = tmgr_trace_new(tmp_state_file);
+            xbt_free(tmp_state_file);
+          }
+          else
+          {
+            XBT_DEBUG("\tstate_file=\"\"");
+          }
+
+          host.power_peak = struct_cluster->power;
+          host.power_scale = 1.0;
+          host.core_amount = struct_cluster->core_amount;
+          host.initial_state = SURF_RESOURCE_ON;
+          host.coord = "";
+          sg_platf_new_host(&host);
+          XBT_DEBUG("</host>");
+
+          XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->bw, struct_cluster->lat);
+
+          memset(&link,0,sizeof(link));
+          link.id = link_id;
+          link.bandwidth = struct_cluster->bw;
+          link.latency = struct_cluster->lat;
+          link.state = SURF_RESOURCE_ON;
+
+          switch (struct_cluster->sharing_policy) {
+          case A_surfxml_cluster_sharing_policy_SHARED:
+            link.policy = SURF_LINK_SHARED;
+            break;
+          case A_surfxml_cluster_sharing_policy_FULLDUPLEX:
+            link.policy = SURF_LINK_FULLDUPLEX;
+            break;
+          case A_surfxml_cluster_sharing_policy_FATPIPE:
+            link.policy = SURF_LINK_FATPIPE;
+            break;
+          default:
+            surf_parse_error(bprintf("Invalid cluster sharing policy for cluster %s",struct_cluster->id));
+          }
+          sg_platf_new_link(&link);
+
+          surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
+          if (link.policy == SURF_LINK_FULLDUPLEX) {
+            char* tmp_link =  bprintf("%s_UP",link_id);
+            info->link_up   = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+            free(tmp_link);
+            tmp_link =  bprintf("%s_DOWN",link_id);
+            info->link_down = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+            free(tmp_link);
+          }
+          else{
+            info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
+            info->link_down = info->link_up;
+          }
+          surf_routing_cluster_add_link(host_id,info);
+
+          xbt_free(link_id);
+          xbt_free(host_id);
+
+        }
+        break;
+
+      default:
+        XBT_DEBUG("Malformed radical");
+        break;
     }
 
     xbt_dynar_free(&radical_ends);
@@ -1566,34 +1566,34 @@ void routing_parse_Scluster(void) {
 
   //Make the backbone
   if( (struct_cluster->bb_bw!= 0)  && (struct_cluster->bb_lat!=0)  ){
-	  char *link_backbone = bprintf("%s_backbone", struct_cluster->id);
-	  XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link_backbone,struct_cluster->bb_bw, struct_cluster->bb_lat);
+    char *link_backbone = bprintf("%s_backbone", struct_cluster->id);
+    XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link_backbone,struct_cluster->bb_bw, struct_cluster->bb_lat);
 
-	  memset(&link,0,sizeof(link));
-	  link.id = link_backbone;
-	  link.bandwidth = struct_cluster->bb_bw;
-	  link.latency = struct_cluster->bb_lat;
-	  link.state = SURF_RESOURCE_ON;
+    memset(&link,0,sizeof(link));
+    link.id = link_backbone;
+    link.bandwidth = struct_cluster->bb_bw;
+    link.latency = struct_cluster->bb_lat;
+    link.state = SURF_RESOURCE_ON;
 
-	  switch (struct_cluster->bb_sharing_policy) {
-	  case A_surfxml_cluster_bb_sharing_policy_FATPIPE:
-	    link.policy = SURF_LINK_FATPIPE;
-	    break;
-	  case A_surfxml_cluster_bb_sharing_policy_SHARED:
-	     link.policy = SURF_LINK_SHARED;
-	     break;
-	  default:
-	    surf_parse_error(bprintf("Invalid bb sharing policy in cluster %s",struct_cluster->id));
-	  }
+    switch (struct_cluster->bb_sharing_policy) {
+    case A_surfxml_cluster_bb_sharing_policy_FATPIPE:
+      link.policy = SURF_LINK_FATPIPE;
+      break;
+    case A_surfxml_cluster_bb_sharing_policy_SHARED:
+      link.policy = SURF_LINK_SHARED;
+      break;
+    default:
+      surf_parse_error(bprintf("Invalid bb sharing policy in cluster %s",struct_cluster->id));
+    }
 
-	  sg_platf_new_link(&link);
+    sg_platf_new_link(&link);
 
-	  surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
-	  info->link_up   = xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL);
-	  info->link_down = info->link_up;
-	  surf_routing_cluster_add_link(struct_cluster->id, info);
+    surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
+    info->link_up   = xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL);
+    info->link_down = info->link_up;
+    surf_routing_cluster_add_link(struct_cluster->id, info);
 
-	  free(link_backbone);
+    free(link_backbone);
   }
 
   XBT_DEBUG(" ");
@@ -1613,8 +1613,8 @@ void routing_parse_Scluster(void) {
   xbt_free(new_suffix);
 
   if( strcmp(struct_cluster->availability_trace,"")
-		  || strcmp(struct_cluster->state_trace,"") )
-	  xbt_dict_free(&patterns);
+      || strcmp(struct_cluster->state_trace,"") )
+    xbt_dict_free(&patterns);
 
   XBT_DEBUG("</AS>");
   sg_platf_new_AS_close();
@@ -1625,7 +1625,7 @@ void routing_parse_Scluster(void) {
  * It returns the new value.
  */
 static char* replace_random_parameter(char * string)
-{
+                                        {
   char *test_string = NULL;
 
   if(xbt_dict_size(random_value)==0)
@@ -1640,14 +1640,14 @@ static char* replace_random_parameter(char * string)
     string = test_string;
   } //In other case take old value (without ${})
   else
-	free(test_string);
+    free(test_string);
   return string;
-}
+                                        }
 
 static void clean_routing_after_parse(void)
 {
-	xbt_dict_free(&random_value);
-	xbt_dict_free(&patterns);
+  xbt_dict_free(&random_value);
+  xbt_dict_free(&patterns);
 }
 
 static void routing_parse_Speer(sg_platf_peer_cbarg_t peer)
@@ -1752,106 +1752,106 @@ static void routing_parse_Speer(sg_platf_peer_cbarg_t peer)
   XBT_DEBUG(" ");
 
   //xbt_dynar_free(&tab_elements_num);
-	free(host_id);
-	free(router_id);
-	free(link_router);
-	free(link_backbone);
-	free(link_id_up);
-	free(link_id_down);
+  free(host_id);
+  free(router_id);
+  free(link_router);
+  free(link_backbone);
+  free(link_id_up);
+  free(link_id_down);
   surfxml_bufferstack_pop(1);
 }
 
 static void routing_parse_Srandom(void)
 {
-    double mean, std, min, max, seed;
-    char *random_id = A_surfxml_random_id;
-    char *random_radical = A_surfxml_random_radical;
-    char *rd_name = NULL;
-    char *rd_value;
-    mean = surf_parse_get_double(A_surfxml_random_mean);
-    std  = surf_parse_get_double(A_surfxml_random_std_deviation);
-    min  = surf_parse_get_double(A_surfxml_random_min);
-    max  = surf_parse_get_double(A_surfxml_random_max);
-    seed = surf_parse_get_double(A_surfxml_random_seed);
+  double mean, std, min, max, seed;
+  char *random_id = A_surfxml_random_id;
+  char *random_radical = A_surfxml_random_radical;
+  char *rd_name = NULL;
+  char *rd_value;
+  mean = surf_parse_get_double(A_surfxml_random_mean);
+  std  = surf_parse_get_double(A_surfxml_random_std_deviation);
+  min  = surf_parse_get_double(A_surfxml_random_min);
+  max  = surf_parse_get_double(A_surfxml_random_max);
+  seed = surf_parse_get_double(A_surfxml_random_seed);
 
-    double res = 0;
-    int i = 0;
-    random_data_t random = xbt_new0(s_random_data_t, 1);
-          char *tmpbuf;
+  double res = 0;
+  int i = 0;
+  random_data_t random = xbt_new0(s_random_data_t, 1);
+  char *tmpbuf;
 
-    xbt_dynar_t radical_elements;
-    unsigned int iter;
-    char *groups;
-    int start, end;
-    xbt_dynar_t radical_ends;
+  xbt_dynar_t radical_elements;
+  unsigned int iter;
+  char *groups;
+  int start, end;
+  xbt_dynar_t radical_ends;
 
-    random->generator = A_surfxml_random_generator;
-    random->seed = seed;
-    random->min = min;
-    random->max = max;
+  random->generator = A_surfxml_random_generator;
+  random->seed = seed;
+  random->min = min;
+  random->max = max;
 
-    /* Check user stupidities */
-    if (max < min)
-      THROWF(arg_error, 0, "random->max < random->min (%f < %f)", max, min);
-    if (mean < min)
-      THROWF(arg_error, 0, "random->mean < random->min (%f < %f)", mean,
-       min);
-    if (mean > max)
-      THROWF(arg_error, 0, "random->mean > random->max (%f > %f)", mean,
-       max);
+  /* Check user stupidities */
+  if (max < min)
+    THROWF(arg_error, 0, "random->max < random->min (%f < %f)", max, min);
+  if (mean < min)
+    THROWF(arg_error, 0, "random->mean < random->min (%f < %f)", mean,
+        min);
+  if (mean > max)
+    THROWF(arg_error, 0, "random->mean > random->max (%f > %f)", mean,
+        max);
 
-    /* normalize the mean and standard deviation before storing */
-    random->mean = (mean - min) / (max - min);
-    random->std = std / (max - min);
+  /* normalize the mean and standard deviation before storing */
+  random->mean = (mean - min) / (max - min);
+  random->std = std / (max - min);
 
-    if (random->mean * (1 - random->mean) < random->std * random->std)
-      THROWF(arg_error, 0, "Invalid mean and standard deviation (%f and %f)",
-       random->mean, random->std);
+  if (random->mean * (1 - random->mean) < random->std * random->std)
+    THROWF(arg_error, 0, "Invalid mean and standard deviation (%f and %f)",
+        random->mean, random->std);
 
-    XBT_DEBUG("id = '%s' min = '%f' max = '%f' mean = '%f' std_deviatinon = '%f' generator = '%d' seed = '%ld' radical = '%s'",
-    random_id,
-    random->min,
-    random->max,
-    random->mean,
-    random->std,
-    random->generator,
-    random->seed,
-    random_radical);
+  XBT_DEBUG("id = '%s' min = '%f' max = '%f' mean = '%f' std_deviatinon = '%f' generator = '%d' seed = '%ld' radical = '%s'",
+      random_id,
+      random->min,
+      random->max,
+      random->mean,
+      random->std,
+      random->generator,
+      random->seed,
+      random_radical);
 
-    if(xbt_dict_size(random_value)==0)
-      random_value = xbt_dict_new();
+  if(xbt_dict_size(random_value)==0)
+    random_value = xbt_dict_new();
 
-    if(!strcmp(random_radical,""))
-    {
-      res = random_generate(random);
-      rd_value = bprintf("%f",res);
-      xbt_dict_set(random_value, random_id, rd_value, free);
-    }
-    else
-    {
-      radical_elements = xbt_str_split(random_radical, ",");
-      xbt_dynar_foreach(radical_elements, iter, groups) {
+  if(!strcmp(random_radical,""))
+  {
+    res = random_generate(random);
+    rd_value = bprintf("%f",res);
+    xbt_dict_set(random_value, random_id, rd_value, free);
+  }
+  else
+  {
+    radical_elements = xbt_str_split(random_radical, ",");
+    xbt_dynar_foreach(radical_elements, iter, groups) {
       radical_ends = xbt_str_split(groups, "-");
       switch (xbt_dynar_length(radical_ends)) {
       case 1:
-            xbt_assert(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",random_id);
-            res = random_generate(random);
-                                          tmpbuf = bprintf("%s%d",random_id,atoi(xbt_dynar_getfirst_as(radical_ends,char *)));
-                                          xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);
-                                          xbt_free(tmpbuf);
-            break;
+        xbt_assert(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",random_id);
+        res = random_generate(random);
+        tmpbuf = bprintf("%s%d",random_id,atoi(xbt_dynar_getfirst_as(radical_ends,char *)));
+        xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);
+        xbt_free(tmpbuf);
+        break;
 
       case 2:
-            start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
-            end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
-            for (i = start; i <= end; i++) {
-              xbt_assert(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",bprintf("%s%d",random_id,i));
-              res = random_generate(random);
-                          tmpbuf = bprintf("%s%d",random_id,i);
-              xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);
-                          xbt_free(tmpbuf);
-            }
-            break;
+        start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
+        end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
+        for (i = start; i <= end; i++) {
+          xbt_assert(!xbt_dict_get_or_null(random_value,random_id),"Custom Random '%s' already exists !",bprintf("%s%d",random_id,i));
+          res = random_generate(random);
+          tmpbuf = bprintf("%s%d",random_id,i);
+          xbt_dict_set(random_value, tmpbuf, bprintf("%f",res), free);
+          xbt_free(tmpbuf);
+        }
+        break;
       default:
         XBT_INFO("Malformed radical");
         break;
@@ -1862,8 +1862,8 @@ static void routing_parse_Srandom(void)
       xbt_dict_set(random_value, rd_name, rd_value, free);
 
       xbt_dynar_free(&radical_ends);
-      }
-      free(rd_name);
-      xbt_dynar_free(&radical_elements);
     }
+    free(rd_name);
+    xbt_dynar_free(&radical_elements);
+  }
 }
