@@ -30,7 +30,6 @@ extern double sg_gtnets_jitter;
 extern int sg_gtnets_jitter_seed;
 #endif
 
-extern xbt_dict_t cluster_host_link;
 
 extern const char *surf_action_state_names[6];
 

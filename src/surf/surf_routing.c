@@ -47,7 +47,6 @@ static const char *dst = NULL;        /* temporary store the destination name of
 static char *gw_src = NULL;     /* temporary store the gateway source name of a route */
 static char *gw_dst = NULL;     /* temporary store the gateway destination name of a route */
 static double_f_cpvoid_t get_link_latency = NULL;
-xbt_dict_t cluster_host_link = NULL; /* for tag cluster */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
@@ -94,7 +93,7 @@ struct s_model_type routing_models[] = { {"Full",
 {"Vivaldi", "Vivaldi routing", model_vivaldi_create,
   model_none_load, model_none_unload, model_none_end},
 {"Cluster", "Cluster routing", model_cluster_create,
-  model_none_load, model_none_unload, model_none_end},
+  model_none_load, model_cluster_unload, model_none_end},
 {NULL, NULL, NULL, NULL, NULL, NULL}
 };
 
@@ -1374,9 +1373,6 @@ void generic_src_dst_check(routing_component_t rc, const char *src,
 
 void routing_parse_Scluster(void)
 {
-  if(!cluster_host_link)
-	  cluster_host_link = xbt_dict_new();
-
   static int AX_ptr = 0;
   char *host_id, *groups, *link_id = NULL;
 
@@ -1499,7 +1495,7 @@ void routing_parse_Scluster(void)
 			info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
 			info->link_down = info->link_up;
 		}
-		xbt_dict_set(cluster_host_link,host_id,info,xbt_free);
+		surf_routing_cluster_add_link(host_id,info);
 		xbt_free(link_id);
 		xbt_free(host_id);
 
@@ -1585,7 +1581,8 @@ void routing_parse_Scluster(void)
 			info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
 			info->link_down = info->link_up;
 		}
-		xbt_dict_set(cluster_host_link,host_id,info,xbt_free);
+		surf_routing_cluster_add_link(host_id,info);
+
 		xbt_free(link_id);
 		xbt_free(host_id);
 
@@ -1642,7 +1639,8 @@ void routing_parse_Scluster(void)
 	  surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
 	  info->link_up   = xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL);
 	  info->link_down = info->link_up;
-	  xbt_dict_set(cluster_host_link,struct_cluster->id,info,xbt_free);
+	  surf_routing_cluster_add_link(struct_cluster->id, info);
+
 	  free(link_backbone);
   }
 

@@ -7,16 +7,14 @@
 
 /* Global vars */
 extern routing_global_t global_routing;
-extern routing_component_t current_routing;
-extern model_type_t current_routing_model;
-extern xbt_dynar_t link_list;
-extern xbt_dict_t cluster_host_link;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");
 
 /* This routing is specifically setup to represent clusters, aka homogeneous sets of machines
  * Note that a router is created, easing the interconnexion with the rest of the world.
  */
+
+static xbt_dict_t cluster_host_link = NULL; /* for tag cluster */
 
 typedef struct {
   s_routing_component_t generic_routing;
@@ -56,4 +54,14 @@ void *model_cluster_create(void)
   new_component->generic_routing.get_route = cluster_get_route;
 
   return new_component;
+}
+void model_cluster_unload(void) {
+//  xbt_dict_free(&cluster_host_link); //FIXME: do it once the module management is clean in routing
+}
+
+void surf_routing_cluster_add_link(const char* host_id,surf_parsing_link_up_down_t info) {
+  if(!cluster_host_link)
+    cluster_host_link = xbt_dict_new();
+
+ xbt_dict_set(cluster_host_link,host_id,info,xbt_free);
 }
