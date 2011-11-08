@@ -151,10 +151,10 @@ static void recursiveGraphExtraction (routing_component_t rc, container_t contai
 /*
  * Callbacks
  */
-static void instr_routing_parse_start_AS ()
+static void instr_routing_parse_start_AS (const char*id,const char*routing)
 {
   if (getRootContainer() == NULL){
-    container_t root = newContainer (A_surfxml_AS_id, INSTR_AS, NULL);
+    container_t root = newContainer (id, INSTR_AS, NULL);
     instr_paje_init (root);
 
     if (TRACE_smpi_is_enabled()) {
@@ -174,7 +174,7 @@ static void instr_routing_parse_start_AS ()
 
   if (TRACE_needs_platform()){
     container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-    container_t new = newContainer (A_surfxml_AS_id, INSTR_AS, father);
+    container_t new = newContainer (id, INSTR_AS, father);
     xbt_dynar_push (currentContainer, &new);
   }
 }

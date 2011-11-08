@@ -1344,9 +1344,7 @@ void generic_src_dst_check(routing_component_t rc, const char *src,
      src,dst,src_as->name, dst_as->name,rc->name);
 }
 
-void routing_parse_Scluster(void)
-{
-  static int AX_ptr = 0;
+void routing_parse_Scluster(void) {
   char *host_id, *groups, *link_id = NULL;
 
   s_sg_platf_host_cbarg_t host;
@@ -1367,16 +1365,8 @@ void routing_parse_Scluster(void)
   xbt_dynar_t radical_elements;
   xbt_dynar_t radical_ends;
 
-  static unsigned int surfxml_buffer_stack_stack_ptr = 1;
-  static unsigned int surfxml_buffer_stack_stack[1024];
-
-  surfxml_buffer_stack_stack[0] = 0;
-  surfxml_bufferstack_push(1);
-
-  SURFXML_BUFFER_SET(AS_id, struct_cluster->id);
-  SURFXML_BUFFER_SET(AS_routing, "Cluster");
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", struct_cluster->id);
-  SURFXML_START_TAG(AS);
+  sg_platf_new_AS_open(struct_cluster->id,"Cluster");
 
   //Make all hosts
   radical_elements = xbt_str_split(struct_cluster->radical, ",");
@@ -1472,8 +1462,6 @@ void routing_parse_Scluster(void)
       for (i = start; i <= end; i++) {
 		host_id = bprintf("%s%d%s", struct_cluster->prefix, i, struct_cluster->suffix);
 		link_id = bprintf("%s_link_%d", struct_cluster->id, i);
-
-		A_surfxml_host_state = A_surfxml_host_state_ON;
 
 		XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->power);
 		host.id = host_id;
@@ -1587,7 +1575,7 @@ void routing_parse_Scluster(void)
 	  link.latency = struct_cluster->bb_lat;
 	  link.state = SURF_RESOURCE_ON;
 
-	  switch (AX_surfxml_cluster_bb_sharing_policy) {
+	  switch (struct_cluster->bb_sharing_policy) {
 	  case A_surfxml_cluster_bb_sharing_policy_FATPIPE:
 	    link.policy = SURF_LINK_FATPIPE;
 	    break;
@@ -1629,10 +1617,8 @@ void routing_parse_Scluster(void)
 	  xbt_dict_free(&patterns);
 
   XBT_DEBUG("</AS>");
-  SURFXML_END_TAG(AS);
+  sg_platf_new_AS_close();
   XBT_DEBUG(" ");
-
-  surfxml_bufferstack_pop(1);
 }
 /*
  * This function take a string and replace parameters from patterns dict.
