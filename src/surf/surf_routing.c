@@ -1717,12 +1717,8 @@ static void routing_parse_Speer(void)
 
   surfxml_bufferstack_push(1);
 
-  SURFXML_BUFFER_SET(AS_id, struct_peer->id);
-
-  SURFXML_BUFFER_SET(AS_routing, "Full");
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", struct_peer->id);
-
-  SURFXML_START_TAG(AS);
+  sg_platf_new_AS_open(struct_peer->id, "Full");
 
   XBT_DEBUG(" ");
   host_id = HOST_PEER(struct_peer->id);
@@ -1734,46 +1730,38 @@ static void routing_parse_Speer(void)
   link_backbone = bprintf("%s_backbone", struct_peer->id);
 
   XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%s\"/>", host_id, struct_peer->power);
-  A_surfxml_host_state = A_surfxml_host_state_ON;
-  SURFXML_BUFFER_SET(host_id, host_id);
-  SURFXML_BUFFER_SET(host_power, struct_peer->power);
-  SURFXML_BUFFER_SET(host_availability, "1.0");
-  SURFXML_BUFFER_SET(host_availability_file, struct_peer->availability_trace);
-  SURFXML_BUFFER_SET(host_state_file, struct_peer->state_trace);
-  SURFXML_BUFFER_SET(host_coordinates, "");
-  SURFXML_BUFFER_SET(host_core, "1.0");
-  SURFXML_START_TAG(host);
-  SURFXML_END_TAG(host);
+  s_sg_platf_host_cbarg_t host;
+  memset(&host,0,sizeof(host));
+  host.initial_state = SURF_RESOURCE_ON;
+  host.id = host_id;
+  host.power_peak = surf_parse_get_double(struct_peer->power);
+  host.power_scale = 1.0;
+  host.power_trace = tmgr_trace_new(struct_peer->availability_trace);
+  host.state_trace = tmgr_trace_new(struct_peer->state_trace);
+  host.core_amount = 1;
+  sg_platf_new_host(&host);
+
 
   XBT_DEBUG("<router id=\"%s\"\tcoordinates=\"%s\"/>", router_id, struct_peer->coord);
-  SURFXML_BUFFER_SET(router_id, router_id);
-  SURFXML_BUFFER_SET(router_coordinates, struct_peer->coord);
-  SURFXML_START_TAG(router);
-  SURFXML_END_TAG(router);
+  s_sg_platf_router_cbarg_t router;
+  memset(&router,0,sizeof(router));
+  router.id = router_id;
+  router.coord = struct_peer->coord;
+  sg_platf_new_router(&router);
 
   XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_up, struct_peer->bw_in, struct_peer->lat);
-  A_surfxml_link_state = A_surfxml_link_state_ON;
-  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-  SURFXML_BUFFER_SET(link_id, link_id_up);
-  SURFXML_BUFFER_SET(link_bandwidth, struct_peer->bw_in);
-  SURFXML_BUFFER_SET(link_latency, struct_peer->lat);
-  SURFXML_BUFFER_SET(link_bandwidth_file, "");
-  SURFXML_BUFFER_SET(link_latency_file, "");
-  SURFXML_BUFFER_SET(link_state_file, "");
-  SURFXML_START_TAG(link);
-  SURFXML_END_TAG(link);
+  s_sg_platf_link_cbarg_t link;
+  memset(&link,0,sizeof(link));
+  link.state = SURF_RESOURCE_ON;
+  link.policy = SURF_LINK_SHARED;
+  link.id = link_id_up;
+  link.bandwidth = surf_parse_get_double(struct_peer->bw_in);
+  link.latency = surf_parse_get_double(struct_peer->lat);
+  sg_platf_new_link(&link);
 
   XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%s\"\tlat=\"%s\"/>", link_id_down, struct_peer->bw_out, struct_peer->lat);
-  A_surfxml_link_state = A_surfxml_link_state_ON;
-  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
-  SURFXML_BUFFER_SET(link_id, link_id_down);
-  SURFXML_BUFFER_SET(link_bandwidth, struct_peer->bw_out);
-  SURFXML_BUFFER_SET(link_latency, struct_peer->lat);
-  SURFXML_BUFFER_SET(link_bandwidth_file, "");
-  SURFXML_BUFFER_SET(link_latency_file, "");
-  SURFXML_BUFFER_SET(link_state_file, "");
-  SURFXML_START_TAG(link);
-  SURFXML_END_TAG(link);
+  link.id = link_id_down;
+  sg_platf_new_link(&link);
 
   XBT_DEBUG(" ");
 
@@ -1812,7 +1800,7 @@ static void routing_parse_Speer(void)
   SURFXML_END_TAG(route);
 
   XBT_DEBUG("</AS>");
-  SURFXML_END_TAG(AS);
+  sg_platf_new_AS_close();
   XBT_DEBUG(" ");
 
   //xbt_dynar_free(&tab_elements_num);
