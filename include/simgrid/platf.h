@@ -9,7 +9,7 @@
 #ifndef SG_PLATF_H
 #define SG_PLATF_H
 
-#include <xbt.h>                /* our toolbox */
+#include <xbt.h>
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 

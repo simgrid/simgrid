@@ -9,33 +9,33 @@
 
 typedef struct s_surf_parsing_peer_arg *surf_parsing_peer_arg_t;
 typedef struct s_surf_parsing_peer_arg {
-	char* V_peer_id;
-	char* V_peer_power;
-	char* V_peer_bw_in;
-	char* V_peer_bw_out;
-	char* V_peer_lat;
-	char* V_peer_coord;
-	char* V_peer_availability_trace;
-	char* V_peer_state_trace;
+	char* id; //FIXME: convert to const char
+	char* power;//FIXME: convert to double
+	char* bw_in;
+	char* bw_out;
+	char* lat;
+	char* coord;
+	char* availability_trace;
+	char* state_trace;
 } s_surf_parsing_peer_arg_t;
 
 typedef struct s_surf_parsing_cluster_arg *surf_parsing_cluster_arg_t;
 typedef struct s_surf_parsing_cluster_arg {
-	char* V_cluster_id;
-	char* V_cluster_prefix;
-	char* V_cluster_suffix;
-	char* V_cluster_radical;
-	double S_cluster_power;
-	int S_cluster_core;
-	double S_cluster_bw;
-	double S_cluster_lat;
-	double S_cluster_bb_bw;
-	double S_cluster_bb_lat;
-	char* S_cluster_router_id;
-	int V_cluster_sharing_policy;
-	int V_cluster_bb_sharing_policy;
-	char* V_cluster_availability_file;
-	char* V_cluster_state_file;
+	char* id;
+	char* prefix;
+	char* suffix;
+	char* radical;
+	double power;
+	int core_amount;
+	double bw;
+	double lat;
+	double bb_bw;
+	double bb_lat;
+	char* router_id;
+	int sharing_policy;
+	int bb_sharing_policy;
+	char* availability_trace;
+	char* state_trace;
 } s_surf_parsing_cluster_arg_t;
 
 typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
