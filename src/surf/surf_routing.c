@@ -151,16 +151,17 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
   }
 }
 
+
 /**
- * \brief Set the endponints for a route
+ * \brief Set the end points for a route
  */
-static void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_id)
+static void routing_parse_S_route(void)
 {
   if (src != NULL && dst != NULL && link_list != NULL)
     THROWF(arg_error, 0, "Route between %s to %s can not be defined",
-        src_id, dst_id);
-  src = src_id;
-  dst = dst_id;
+        A_surfxml_route_src, A_surfxml_route_dst);
+  src = A_surfxml_route_src;
+  dst = A_surfxml_route_dst;
   xbt_assert(strlen(src) > 0 || strlen(dst) > 0,
       "Some limits are null in the route between \"%s\" and \"%s\"",
       src, dst);
@@ -168,16 +169,7 @@ static void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_
 }
 
 /**
- * \brief Set the endpoints for a route from XML
- */
-static void routing_parse_S_route(void)
-{
-  parse_S_route_new_and_endpoints(A_surfxml_route_src,
-      A_surfxml_route_dst);
-}
-
-/**
- * \brief Set the endponints and gateways for a ASroute
+ * \brief Set the end points and gateways for a ASroute
  */
 static void routing_parse_S_ASroute(void)
 {
@@ -196,7 +188,7 @@ static void routing_parse_S_ASroute(void)
 }
 
 /**
- * \brief Set the endponints for a bypassRoute
+ * \brief Set the end points for a bypassRoute
  */
 static void routing_parse_S_bypassRoute(void)
 {
@@ -282,7 +274,7 @@ static void routing_parse_E_bypassRoute(void)
   e_route->src_gateway = xbt_strdup(gw_src);
   e_route->dst_gateway = xbt_strdup(gw_dst);
   xbt_assert(current_routing->set_bypassroute,
-      "no defined method \"set_bypassroute\" in \"%s\"",
+      "Bypassing mechanism not implemented by routing '%s'",
       current_routing->name);
   (*(current_routing->set_bypassroute)) (current_routing, src, dst,
       e_route);
