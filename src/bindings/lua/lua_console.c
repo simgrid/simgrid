@@ -164,288 +164,6 @@ static void create_link_wsL07(const char *name,
                                   policy_initial_link, xbt_dict_new());
 }
 
-
-/*
- * Append new AS to the Platform
- */
-
-static int AS_new(lua_State * L)
-{
-
-   if (xbt_dynar_is_empty(as_list_d))
-	    as_list_d = xbt_dynar_new(sizeof(p_AS_attr), &xbt_free_ref);
-
-  p_AS_attr AS;
-  const char *id;
-  const char *mode;
-  if (lua_istable(L, 1)) {
-    lua_pushstring(L, "id");
-    lua_gettable(L, -2);
-    id = lua_tostring(L, -1);
-    lua_pop(L, 1);
-
-    lua_pushstring(L, "mode");
-    lua_gettable(L, -2);
-    mode = lua_tostring(L, -1);
-    lua_pop(L, 1);
-  } else {
-    XBT_ERROR
-        ("Bad Arguments to AS.new, Should be a table with named arguments");
-    return -1;
-  }
-  AS = malloc(sizeof(AS_attr));
-  AS->id = id;
-  AS->mode = mode;
-  AS->host_list_d = xbt_dynar_new(sizeof(p_host_attr),&xbt_free_ref);
-  AS->link_list_d = xbt_dynar_new(sizeof(p_link_attr),&xbt_free_ref);
-  AS->route_list_d = xbt_dynar_new(sizeof(p_route_attr),&xbt_free_ref);
-  AS->router_list_d = xbt_dynar_new(sizeof(p_router_attr),&xbt_free_ref);
-  AS->sub_as_list_id = xbt_dynar_new(sizeof(p_AS_attr),&xbt_free_ref);
-  xbt_dynar_push(as_list_d, &AS);
-
-  return 0;
-}
-
-/**
- * add sub AS to the Parent AS
- */
-static int AS_add(lua_State *L)
-{
-	unsigned int i;
-	p_AS_attr AS;
-	p_AS_attr super_as,p_as;
-	const char *super_AS_id;
-	const char *sub_AS_id = NULL;
-	const char *sub_AS_routing= NULL;
-	if(lua_istable(L, -1))
-	{
-		lua_pushstring(L, "AS");
-		lua_gettable(L, -2);
-		super_AS_id = lua_tostring(L, -1);
-		lua_pop(L,1);
-
-		lua_pushstring(L, "id");
-		lua_gettable(L, -2);
-		sub_AS_id = lua_tostring(L, -1);
-		lua_pop(L,1);
-
-	}
-
-	xbt_dynar_foreach(as_list_d, i, p_as){
-		  if (p_as->id == super_AS_id){
-			  super_as = p_as;
-			  break;
-		  }
-	}
-	AS = malloc(sizeof(AS_attr));
-	AS->id = sub_AS_id;
-	AS->mode = sub_AS_routing;
-	AS->host_list_d = xbt_dynar_new(sizeof(p_host_attr),&xbt_free_ref);
-	AS->link_list_d = xbt_dynar_new(sizeof(p_link_attr),&xbt_free_ref);
-	AS->route_list_d = xbt_dynar_new(sizeof(p_route_attr),&xbt_free_ref);
-	AS->sub_as_list_id = xbt_dynar_new(sizeof(p_AS_attr),&xbt_free_ref);
-	xbt_dynar_push(super_as->sub_as_list_id, &AS);
-
-	return 0;
-}
-
-/**
- * set function to process
- */
-static int Host_set_function(lua_State * L)     //(host,function,nb_args,list_args)
-{
-	p_AS_attr p_as;
-	p_host_attr p_host;
-	unsigned int i,j;
-	const char *host_id ;
-	const char *function_id;
-	const char *args;
-	char * tmp_arg;
-
-   if (lua_istable(L, -1)) {
-	 // get Host id
-	 lua_pushstring(L, "host");
-	 lua_gettable(L, -2);
-	 host_id = lua_tostring(L, -1);
-	 lua_pop(L, 1);
-	 // get Function Name
-	 lua_pushstring(L, "fct");
-	 lua_gettable(L, -2);
-     function_id = lua_tostring(L, -1);
-     lua_pop(L, 1);
-     //get args
-     lua_pushstring(L,"args");
-     lua_gettable(L, -2);
-     args = lua_tostring(L,-1);
-     lua_pop(L, 1);
-   }
-   else {
-	   XBT_ERROR("Bad Arguments to create link, Should be a table with named arguments");
-	   return -1;
-   }
-
-  // look for the index of host in host_list for each AS
-   xbt_dynar_foreach(as_list_d, i, p_as)
-   {
-	   xbt_dynar_foreach(p_as->host_list_d, j, p_host) {
-		   if (p_host->id == host_id) {
-			   p_host->function = function_id;
-			   p_host->args_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-			   // split & fill the args list
-			   tmp_arg = strtok((char*)args,",");
-			   while (tmp_arg != NULL) {
-				   xbt_dynar_push(p_host->args_list, &tmp_arg);
-				   tmp_arg = strtok(NULL,",");
-			   }
-			   return 0;
-		   }
-      	}
-   }
-	  XBT_ERROR("Host : %s Not Found !!", host_id);
-	  return 1;
-
-}
-
-static int Host_set_property(lua_State* L)
-{
-	p_AS_attr p_as;
-	p_host_attr p_host;
-	unsigned int i,j;
-	const char* host_id ="";
-	const char* prop_id = "";
-	const char* prop_value = "";
-	if (lua_istable(L, -1)) {
-		 // get Host id
-		 lua_pushstring(L, "host");
-		 lua_gettable(L, -2);
-		 host_id = lua_tostring(L, -1);
-		 lua_pop(L, 1);
-		 // get Function Name
-		 lua_pushstring(L, "prop_id");
-		 lua_gettable(L, -2);
-	     prop_id = lua_tostring(L, -1);
-	     lua_pop(L, 1);
-	     //get args
-	     lua_pushstring(L,"prop_value");
-	     lua_gettable(L, -2);
-	     prop_value = lua_tostring(L,-1);
-	     lua_pop(L, 1);
-	 }
-	xbt_dynar_foreach(as_list_d, i, p_as)
-	   {
-		   xbt_dynar_foreach(p_as->host_list_d, j, p_host) {
-			   if (p_host->id == host_id) {
-				   xbt_dict_set(p_host->properties, prop_id, xbt_strdup(prop_value), free);
-			   }
-		   }
-      }
-	return 1;
-
-}
-/*
- * surf parse bypass platform
- * through CPU/network Models
- */
-
-static int surf_parse_bypass_platform()
-{
-  unsigned int i,j;
-  p_AS_attr p_as;
-  p_host_attr p_host;
-  p_link_attr p_link;
-  p_route_attr p_route;
-
-
-  // Add AS
-  xbt_dynar_foreach(as_list_d, i,p_as)
-  {
-    sg_platf_new_AS_open(p_as->id,p_as->mode);
-	  // add associated Hosts
-	  xbt_dynar_foreach(p_as->host_list_d, j, p_host){
-		  create_host(p_host->id, p_host->power_peak, p_host->power_scale,
-		                  p_host->power_trace, p_host->core, p_host->state_initial,
-		                  p_host->state_trace, p_host->properties);
-
-
-		   //FIXME: should use sg_platf instead. That would add to routing model host list, amongst other benefits
-	  }
-	  // add associated Links
-	  xbt_dynar_foreach(p_as->link_list_d, j, p_link){
-		  create_link(p_link->id, p_link->bandwidth, p_link->bandwidth_trace,
-		                  p_link->latency, p_link->latency_trace,
-		                  p_link->state_initial, p_link->state_trace,
-		                  p_link->policy);
-	  }
-	  // add associated Routes
-	  xbt_dynar_foreach(p_as->route_list_d, j, p_route){
-		  surf_routing_add_route((char *) p_route->src_id,
-		                             (char *) p_route->dest_id, p_route->links_id);
-	  }
-
-	  // Finalize AS
-	  sg_platf_new_AS_close();
-  }
-
-  // add traces
-  surf_add_host_traces();
-  surf_add_link_traces();
-
-  return 0;                     // must return 0 ?!!
-
-}
-
-/**
- *
- * surf parse bypass platform
- * through workstation_ptask_L07 Model
- */
-
-static int surf_wsL07_parse_bypass_platform()
-{
-  unsigned int i,j;
-  p_AS_attr p_as, p_sub_as;
-  p_host_attr p_host;
-  p_link_attr p_link;
-  p_route_attr p_route;
-
-  xbt_dynar_foreach(as_list_d, i, p_as)
-  {
-	  // Init AS
-    sg_platf_new_AS_open(p_as->id,p_as->mode);
-
-	  // add Sub AS
-
-	  // Add Hosts
-	  xbt_dynar_foreach(p_as->sub_as_list_id, j, p_sub_as) {
-			  //...
-	  }
-	  xbt_dynar_foreach(p_as->host_list_d, j, p_host) {
-	    create_host_wsL07(p_host->id, p_host->power_peak, p_host->power_scale,
-	                      p_host->power_trace, p_host->state_initial,
-	                      p_host->state_trace);
-	    //add to routing model host list
-	  }
-	  //add Links
-	  xbt_dynar_foreach(p_as->link_list_d, j, p_link) {
-	      create_link_wsL07(p_link->id, p_link->bandwidth,
-	                        p_link->bandwidth_trace, p_link->latency,
-	                        p_link->latency_trace, p_link->state_initial,
-	                        p_link->state_trace, p_link->policy);
-	    }
-	    // add route
-	  xbt_dynar_foreach(p_as->route_list_d, j, p_route) {
-	        surf_routing_add_route((char *) p_route->src_id,
-	                               (char *) p_route->dest_id, p_route->links_id);
-	      }
-	  /* </AS> */
-	  // Finalize AS
-	  sg_platf_new_AS_close();
-  }
-  // add traces
-  surf_wsL07_add_traces();
-  return 0;
-}
-
 /*
  * surf parse bypass application for MSG Module
  */
@@ -798,22 +516,169 @@ int console_add_route(lua_State *L)
 
 int console_add_AS(lua_State *L)
 {
-	return AS_new(L);
+  if (xbt_dynar_is_empty(as_list_d))
+     as_list_d = xbt_dynar_new(sizeof(p_AS_attr), &xbt_free_ref);
+
+ p_AS_attr AS;
+ const char *id;
+ const char *mode;
+ if (lua_istable(L, 1)) {
+   lua_pushstring(L, "id");
+   lua_gettable(L, -2);
+   id = lua_tostring(L, -1);
+   lua_pop(L, 1);
+
+   lua_pushstring(L, "mode");
+   lua_gettable(L, -2);
+   mode = lua_tostring(L, -1);
+   lua_pop(L, 1);
+ } else {
+   XBT_ERROR
+       ("Bad Arguments to AS.new, Should be a table with named arguments");
+   return -1;
+ }
+ AS = malloc(sizeof(AS_attr));
+ AS->id = id;
+ AS->mode = mode;
+ AS->host_list_d = xbt_dynar_new(sizeof(p_host_attr),&xbt_free_ref);
+ AS->link_list_d = xbt_dynar_new(sizeof(p_link_attr),&xbt_free_ref);
+ AS->route_list_d = xbt_dynar_new(sizeof(p_route_attr),&xbt_free_ref);
+ AS->router_list_d = xbt_dynar_new(sizeof(p_router_attr),&xbt_free_ref);
+ AS->sub_as_list_id = xbt_dynar_new(sizeof(p_AS_attr),&xbt_free_ref);
+ xbt_dynar_push(as_list_d, &AS);
+
+ return 0;
 }
 
-int console_set_function(lua_State *L)
-{
-	return Host_set_function(L);
+int console_set_function(lua_State *L) {
+  p_AS_attr p_as;
+  p_host_attr p_host;
+  unsigned int i,j;
+  const char *host_id ;
+  const char *function_id;
+  const char *args;
+  char * tmp_arg;
+
+   if (lua_istable(L, -1)) {
+   // get Host id
+   lua_pushstring(L, "host");
+   lua_gettable(L, -2);
+   host_id = lua_tostring(L, -1);
+   lua_pop(L, 1);
+   // get Function Name
+   lua_pushstring(L, "fct");
+   lua_gettable(L, -2);
+     function_id = lua_tostring(L, -1);
+     lua_pop(L, 1);
+     //get args
+     lua_pushstring(L,"args");
+     lua_gettable(L, -2);
+     args = lua_tostring(L,-1);
+     lua_pop(L, 1);
+   }
+   else {
+     XBT_ERROR("Bad Arguments to create link, Should be a table with named arguments");
+     return -1;
+   }
+
+  // look for the index of host in host_list for each AS
+   xbt_dynar_foreach(as_list_d, i, p_as)
+   {
+     xbt_dynar_foreach(p_as->host_list_d, j, p_host) {
+       if (p_host->id == host_id) {
+         p_host->function = function_id;
+         p_host->args_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+         // split & fill the args list
+         tmp_arg = strtok((char*)args,",");
+         while (tmp_arg != NULL) {
+           xbt_dynar_push(p_host->args_list, &tmp_arg);
+           tmp_arg = strtok(NULL,",");
+         }
+         return 0;
+       }
+        }
+   }
+    XBT_ERROR("Host : %s Not Found !!", host_id);
+    return 1;
 }
 
-int console_host_set_property(lua_State *L)
-{
-	return Host_set_property(L);
+int console_host_set_property(lua_State *L) {
+  p_AS_attr p_as;
+  p_host_attr p_host;
+  unsigned int i,j;
+  const char* host_id ="";
+  const char* prop_id = "";
+  const char* prop_value = "";
+  if (lua_istable(L, -1)) {
+     // get Host id
+     lua_pushstring(L, "host");
+     lua_gettable(L, -2);
+     host_id = lua_tostring(L, -1);
+     lua_pop(L, 1);
+     // get Function Name
+     lua_pushstring(L, "prop_id");
+     lua_gettable(L, -2);
+       prop_id = lua_tostring(L, -1);
+       lua_pop(L, 1);
+       //get args
+       lua_pushstring(L,"prop_value");
+       lua_gettable(L, -2);
+       prop_value = lua_tostring(L,-1);
+       lua_pop(L, 1);
+   }
+  xbt_dynar_foreach(as_list_d, i, p_as) {
+    xbt_dynar_foreach(p_as->host_list_d, j, p_host) {
+      if (p_host->id == host_id) {
+        xbt_dict_set(p_host->properties, prop_id, xbt_strdup(prop_value), free);
+      }
+    }
+  }
+  return 1;
 }
 
-int console_parse_platform()
-{
-	return surf_parse_bypass_platform();
+int console_parse_platform() {
+  unsigned int i,j;
+  p_AS_attr p_as;
+  p_host_attr p_host;
+  p_link_attr p_link;
+  p_route_attr p_route;
+
+
+  // Add AS
+  xbt_dynar_foreach(as_list_d, i,p_as)
+  {
+    sg_platf_new_AS_open(p_as->id,p_as->mode);
+    // add associated Hosts
+    xbt_dynar_foreach(p_as->host_list_d, j, p_host){
+      create_host(p_host->id, p_host->power_peak, p_host->power_scale,
+                      p_host->power_trace, p_host->core, p_host->state_initial,
+                      p_host->state_trace, p_host->properties);
+
+
+       //FIXME: should use sg_platf instead. That would add to routing model host list, amongst other benefits
+    }
+    // add associated Links
+    xbt_dynar_foreach(p_as->link_list_d, j, p_link){
+      create_link(p_link->id, p_link->bandwidth, p_link->bandwidth_trace,
+                      p_link->latency, p_link->latency_trace,
+                      p_link->state_initial, p_link->state_trace,
+                      p_link->policy);
+    }
+    // add associated Routes
+    xbt_dynar_foreach(p_as->route_list_d, j, p_route){
+      surf_routing_add_route((char *) p_route->src_id,
+                                 (char *) p_route->dest_id, p_route->links_id);
+    }
+
+    // Finalize AS
+    sg_platf_new_AS_close();
+  }
+
+  // add traces
+  surf_add_host_traces();
+  surf_add_link_traces();
+
+  return 0;                     // must return 0 ?!!
 }
 
 int  console_parse_application()
@@ -823,5 +688,46 @@ int  console_parse_application()
 
 int console_parse_platform_wsL07()
 {
-	return surf_wsL07_parse_bypass_platform();
+  unsigned int i,j;
+  p_AS_attr p_as, p_sub_as;
+  p_host_attr p_host;
+  p_link_attr p_link;
+  p_route_attr p_route;
+
+  xbt_dynar_foreach(as_list_d, i, p_as)
+  {
+    // Init AS
+    sg_platf_new_AS_open(p_as->id,p_as->mode);
+
+    // add Sub AS
+
+    // Add Hosts
+    xbt_dynar_foreach(p_as->sub_as_list_id, j, p_sub_as) {
+        //...
+    }
+    xbt_dynar_foreach(p_as->host_list_d, j, p_host) {
+      create_host_wsL07(p_host->id, p_host->power_peak, p_host->power_scale,
+                        p_host->power_trace, p_host->state_initial,
+                        p_host->state_trace);
+      //add to routing model host list
+    }
+    //add Links
+    xbt_dynar_foreach(p_as->link_list_d, j, p_link) {
+        create_link_wsL07(p_link->id, p_link->bandwidth,
+                          p_link->bandwidth_trace, p_link->latency,
+                          p_link->latency_trace, p_link->state_initial,
+                          p_link->state_trace, p_link->policy);
+      }
+      // add route
+    xbt_dynar_foreach(p_as->route_list_d, j, p_route) {
+          surf_routing_add_route((char *) p_route->src_id,
+                                 (char *) p_route->dest_id, p_route->links_id);
+        }
+    /* </AS> */
+    // Finalize AS
+    sg_platf_new_AS_close();
+  }
+  // add traces
+  surf_wsL07_add_traces();
+  return 0;
 }
