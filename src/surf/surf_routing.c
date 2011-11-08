@@ -835,10 +835,13 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   get_link_latency = get_link_latency_fun;
   /* no current routing at moment */
   current_routing = NULL;
+}
 
-  /* parse generic elements */
+void routing_register_callbacks() {
   sg_platf_host_add_cb(parse_S_host);
   sg_platf_router_add_cb(parse_S_router);
+
+  surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
 
   surfxml_add_callback(STag_surfxml_route_cb_list,
       &parse_S_route_new_and_endpoints_XML);
@@ -866,12 +869,6 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   instr_routing_define_callbacks();
 #endif
 }
-
-void surf_parse_add_callback_config(void)
-{
-  surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
-}
-
 
 /* ************************************************** */
 /* ********** PATERN FOR NEW ROUTING **************** */

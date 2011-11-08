@@ -197,6 +197,7 @@ struct s_routing_global {
 };
 
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback, double_f_cpvoid_t get_link_latency_fun);
+XBT_PUBLIC(void) routing_register_callbacks(void);
 
 XBT_PUBLIC(void) routing_parse_Scluster(void);       /* cluster bypass */
 

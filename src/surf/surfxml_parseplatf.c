@@ -181,7 +181,7 @@ void parse_platform_file(const char *file)
 
   /* Register classical callbacks */
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties_XML);
-  surf_parse_add_callback_config();
+  routing_register_callbacks();
 
   surfxml_buffer_stack_stack_ptr = 1;
   surfxml_buffer_stack_stack[0] = 0;
