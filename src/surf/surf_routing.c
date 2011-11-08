@@ -1611,13 +1611,19 @@ void routing_parse_Scluster(void)
   }
   xbt_dynar_free(&radical_elements);
 
-  //Make the router
+  // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written, and it's very useful to connect clusters together
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", struct_cluster->router_id);
-  SURFXML_BUFFER_SET(router_id, struct_cluster->router_id);
-  SURFXML_BUFFER_SET(router_coordinates, "");
-  SURFXML_START_TAG(router);
-  SURFXML_END_TAG(router);
+  s_sg_platf_router_cbarg_t router;
+  char *newid=NULL;
+  memset(&router,0,sizeof(router));
+  router.id = struct_cluster->router_id;
+  router.coord = "";
+  if (!router.id || !strcmp(router.id,""))
+    router.id = newid = bprintf("%s%s_router%s", struct_cluster->prefix, struct_cluster->id, struct_cluster->suffix);
+  sg_platf_new_router(&router);
+  if (newid)
+    free(newid);
 
   //Make the backbone
   if( (struct_cluster->bb_bw!= 0)  && (struct_cluster->bb_lat!=0)  ){
@@ -1642,7 +1648,7 @@ void routing_parse_Scluster(void)
 	  }
 
 	  sg_platf_new_link(&link);
-	  ETag_surfxml_link();
+	  ETag_surfxml_link();//FIXME: killme
 
 	  surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
 	  info->link_up   = xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL);

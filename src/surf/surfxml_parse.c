@@ -321,13 +321,7 @@ void STag_surfxml_cluster(void){
 	  struct_cluster->bb_bw = surf_parse_get_double(A_surfxml_cluster_bb_bw);
 	if(strcmp(A_surfxml_cluster_bb_lat,""))
 	  struct_cluster->bb_lat = surf_parse_get_double(A_surfxml_cluster_bb_lat);
-	if(!strcmp(A_surfxml_cluster_router_id,""))
-		struct_cluster->router_id = bprintf("%s%s_router%s",
-				struct_cluster->prefix,
-				struct_cluster->id,
-				struct_cluster->suffix);
-	else
-		struct_cluster->router_id = A_surfxml_cluster_router_id;
+	struct_cluster->router_id = A_surfxml_cluster_router_id;
 
 	struct_cluster->sharing_policy = AX_surfxml_cluster_sharing_policy;
 	struct_cluster->bb_sharing_policy = AX_surfxml_cluster_bb_sharing_policy;
