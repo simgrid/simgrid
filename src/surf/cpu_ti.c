@@ -14,6 +14,7 @@
 #include "trace_mgr_private.h"
 #include "cpu_ti_private.h"
 #include "xbt/heap.h"
+#include "surf/surf_resource.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf,
                                 "Logging specific to the SURF CPU TRACE INTEGRATION module");

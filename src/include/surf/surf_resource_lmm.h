@@ -9,6 +9,8 @@
 #define SURF_RESOURCE_LMM_H
 #include "surf/surf.h"
 #include "surf/trace_mgr.h"
+#include "surf/surf_resource.h"
+
 
 static XBT_INLINE
     surf_resource_lmm_t surf_resource_lmm_new(size_t childsize,

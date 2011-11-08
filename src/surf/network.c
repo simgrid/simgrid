@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,6 +9,9 @@
 #include "xbt/str.h"
 
 #include "surf/surfxml_parse_values.h"
+#include "surf/surf_resource.h"
+#include "surf/surf_resource_lmm.h"
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
                                 "Logging specific to the SURF network module");

@@ -9,6 +9,9 @@
 #include "surf_private.h"
 #include "xbt/module.h"
 #include "mc/mc.h"
+#include "surf/surf_resource.h"
+//#include "surf/surf_resource_lmm.h"
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");

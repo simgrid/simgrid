@@ -17,6 +17,8 @@
 #include "surf_private.h"
 #include "xbt/dict.h"
 #include "maxmin_private.h"
+#include "surf/surf_resource_lmm.h"
+
 
 #undef GENERIC_ACTION
 #define GENERIC_ACTION(action) action->generic_action

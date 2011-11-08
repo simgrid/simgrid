@@ -8,6 +8,8 @@
 #include "xbt/str.h"
 #include "xbt/dict.h"
 #include "surf_private.h"
+#include "surf/surf_resource.h"
+//#include "surf/surf_resource_lmm.h"
 
 typedef enum {
   SURF_WORKSTATION_RESOURCE_CPU,

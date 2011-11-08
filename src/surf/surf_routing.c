@@ -146,7 +146,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
   xbt_lib_set(as_router_lib,router->id,ROUTING_ASR_LEVEL,(void *) info);
   if (strcmp(router->coord,"")) {
 	if(!COORD_ASR_LEVEL) xbt_die("To use coordinates, you must set configuration 'coordinates' to 'yes'");
-    xbt_dynar_t ctn = xbt_str_split_str(A_surfxml_router_coordinates, " ");
+    xbt_dynar_t ctn = xbt_str_split_str(router->coord, " ");
     xbt_dynar_shrink(ctn, 0);
     xbt_lib_set(as_router_lib,router->id,COORD_ASR_LEVEL,(void *) ctn);
   }
@@ -1932,27 +1932,3 @@ static void routing_parse_Srandom(void)
     }
 }
 
-
-/*
- * Set a new link on the actual list of link for a route or ASroute
- */
-void routing_add_link(const char *link_id)
-{
-  parse_E_link_c_ctn_new_elem_lua((char *) link_id);
-}
-
-/*
- *Set the endpoints for a route
- */
-void routing_set_route(const char *src_id, const char *dst_id)
-{
-  parse_S_route_new_and_endpoints_lua(src_id, dst_id);
-}
-
-/*
- * Store the route by calling parse_E_route_store_route
- */
-void routing_store_route(void)
-{
-  parse_E_route_store_route();
-}

@@ -12,6 +12,10 @@
 #include <xbt.h>
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
+XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new(const char *filename);
+XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
+                                                    const char *input,
+                                                    double periodicity);
 
 /** Defines whether a given resource is working or not */
 typedef enum {

@@ -1,10 +1,12 @@
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_private.h"
+#include "surf/surf_resource.h"
+
 
 #undef GENERIC_LMM_ACTION
 #undef GENERIC_ACTION

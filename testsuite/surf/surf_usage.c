@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include "surf/surf.h"
+#include "surf/surf_resource.h"
 #include "surf/surfxml_parse.h" // for reset callback
 
 #include "xbt/log.h"
