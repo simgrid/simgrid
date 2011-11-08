@@ -152,17 +152,6 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
 }
 
 /**
- * brief Add a "router" to the network element list from XML description
- */
-static void parse_S_router_lua(const char* router_id) {
-  s_sg_platf_router_cbarg_t router;
-  memset(&router,0,sizeof(router));
-	router.id = router_id;
-	router.coord = "";
-	return parse_S_router(&router);
-}
-
-/**
  * \brief Set the endponints for a route
  */
 static void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_id)
@@ -185,14 +174,6 @@ static void parse_S_route_new_and_endpoints_XML(void)
 {
   parse_S_route_new_and_endpoints(A_surfxml_route_src,
                                   A_surfxml_route_dst);
-}
-
-/**
- * \brief Set the endpoints for a route from lua
- */
-static void parse_S_route_new_and_endpoints_lua(const char *id_src, const char *id_dst)
-{
-  parse_S_route_new_and_endpoints(id_src, id_dst);
 }
 
 /**
@@ -262,14 +243,6 @@ static void parse_E_link_ctn_new_elem_XML(void)
     parse_E_link_ctn_new_elem(link_id);
     free(link_id);
   }
-}
-
-/**
- * \brief Set a new link on the actual list of link for a route or ASroute from lua
- */
-static void parse_E_link_c_ctn_new_elem_lua(const char *link_id)
-{
-  parse_E_link_ctn_new_elem(link_id);
 }
 
 /**
@@ -790,7 +763,7 @@ static void _finalize(routing_component_t rc)
  */
 static void finalize(void)
 {
-  /* delete recursibly all the tree */
+  /* delete recursively all the tree */
   _finalize(global_routing->root);
   /* delete last_route */
   xbt_dynar_free(&(global_routing->last_route));
