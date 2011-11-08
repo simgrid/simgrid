@@ -216,33 +216,24 @@ static void parse_S_bypassRoute_new_and_endpoints(void)
 }
 
 /**
- * \brief Set a new link on the actual list of link for a route or ASroute
- */
-static void parse_E_link_ctn_new_elem(const char *link_id)
-{
-  char *val;
-  val = xbt_strdup(link_id);
-  xbt_dynar_push(link_list, &val);
-}
-
-/**
  * \brief Set a new link on the actual list of link for a route or ASroute from XML
  */
 
-static void parse_E_link_ctn_new_elem_XML(void)
+static void routing_parse_link_ctn(void)
 {
-  if (A_surfxml_link_ctn_direction == A_surfxml_link_ctn_direction_NONE)
-    parse_E_link_ctn_new_elem(A_surfxml_link_ctn_id);
-  if (A_surfxml_link_ctn_direction == A_surfxml_link_ctn_direction_UP) {
-    char *link_id = bprintf("%s_UP", A_surfxml_link_ctn_id);
-    parse_E_link_ctn_new_elem(link_id);
-    free(link_id);
+  char *link_id;
+  switch (A_surfxml_link_ctn_direction) {
+  case AU_surfxml_link_ctn_direction:
+  case A_surfxml_link_ctn_direction_NONE:
+    link_id = xbt_strdup(A_surfxml_link_ctn_id);
+    break;
+  case A_surfxml_link_ctn_direction_UP:
+    link_id = bprintf("%s_UP", A_surfxml_link_ctn_id);
+    break;
+  case A_surfxml_link_ctn_direction_DOWN:
+    link_id = bprintf("%s_DOWN", A_surfxml_link_ctn_id);
   }
-  if (A_surfxml_link_ctn_direction == A_surfxml_link_ctn_direction_DOWN) {
-    char *link_id = bprintf("%s_DOWN", A_surfxml_link_ctn_id);
-    parse_E_link_ctn_new_elem(link_id);
-    free(link_id);
-  }
+  xbt_dynar_push(link_list,&link_id);
 }
 
 /**
@@ -856,8 +847,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   surfxml_add_callback(STag_surfxml_bypassRoute_cb_list,
       &parse_S_bypassRoute_new_and_endpoints);
 
-  surfxml_add_callback(ETag_surfxml_link_ctn_cb_list,
-      &parse_E_link_ctn_new_elem_XML);
+  surfxml_add_callback(ETag_surfxml_link_ctn_cb_list, &routing_parse_link_ctn);
 
   surfxml_add_callback(ETag_surfxml_route_cb_list,
       &parse_E_route_store_route);
