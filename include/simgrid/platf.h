@@ -80,6 +80,12 @@ typedef struct s_sg_platf_peer_cbarg {
   tmgr_trace_t state_trace;
 } s_sg_platf_peer_cbarg_t;
 
+typedef struct s_sg_platf_linkctn_cbarg *sg_platf_linkctn_cbarg_t;
+typedef struct s_sg_platf_linkctn_cbarg {
+  const char *id;
+  const char *direction;
+} s_sg_platf_linkctn_cbarg_t;
+
 
 XBT_PUBLIC(void) sg_platf_open(void);  // Start a new platform
 XBT_PUBLIC(void) sg_platf_close(void); // Finish the creation of the platform
