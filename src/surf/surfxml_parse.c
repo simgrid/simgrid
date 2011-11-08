@@ -68,8 +68,6 @@ xbt_dynar_t STag_surfxml_trace_connect_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_trace_connect_cb_list = NULL;
 xbt_dynar_t STag_surfxml_random_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_random_cb_list = NULL;
-xbt_dynar_t STag_surfxml_AS_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_AS_cb_list = NULL;
 xbt_dynar_t STag_surfxml_ASroute_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_ASroute_cb_list = NULL;
 xbt_dynar_t STag_surfxml_bypassRoute_cb_list = NULL;
@@ -174,8 +172,6 @@ void surf_parse_init_callbacks(void)
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_random_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_random_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  STag_surfxml_AS_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  ETag_surfxml_AS_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_ASroute_cb_list =
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_ASroute_cb_list =
@@ -224,8 +220,6 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_trace_connect_cb_list);
   xbt_dynar_free(&STag_surfxml_random_cb_list);
   xbt_dynar_free(&ETag_surfxml_random_cb_list);
-  xbt_dynar_free(&STag_surfxml_AS_cb_list);
-  xbt_dynar_free(&ETag_surfxml_AS_cb_list);
   xbt_dynar_free(&STag_surfxml_ASroute_cb_list);
   xbt_dynar_free(&ETag_surfxml_ASroute_cb_list);
   xbt_dynar_free(&STag_surfxml_bypassRoute_cb_list);
@@ -421,7 +415,10 @@ void STag_surfxml_trace_connect(void){
 	surfxml_call_cb_functions(STag_surfxml_trace_connect_cb_list);
 }
 void STag_surfxml_AS(void){
-	surfxml_call_cb_functions(STag_surfxml_AS_cb_list);
+  sg_platf_new_AS_open(A_surfxml_AS_id,A_surfxml_AS_routing);
+}
+void ETag_surfxml_AS(void){
+  sg_platf_new_AS_close();
 }
 void STag_surfxml_ASroute(void){
 	surfxml_call_cb_functions(STag_surfxml_ASroute_cb_list);
@@ -466,7 +463,6 @@ parse_method(E, prop);
 parse_method(E, trace);
 parse_method(E, trace_connect);
 parse_method(E, random);
-parse_method(E, AS);
 parse_method(E, ASroute);
 parse_method(E, bypassRoute);
 

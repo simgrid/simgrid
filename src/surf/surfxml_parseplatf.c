@@ -136,14 +136,6 @@ static void parse_Stag_trace_connect(void)
   }
 }
 
-/* Call the right C function when we see the <AS> tags */
-static void parse_S_AS(void) {
-  sg_platf_new_AS_open(A_surfxml_AS_id, A_surfxml_AS_routing);
-}
-static void parse_E_AS(void) {
-  sg_platf_new_AS_close();
-}
-
 /* Init and free parse data */
 
 static void init_data(void)
@@ -164,8 +156,8 @@ static void init_data(void)
              &parse_Stag_trace_connect);
 
   /* we care about the ASes while parsing the platf. Incredible, isnt it? */
-  surfxml_add_callback(STag_surfxml_AS_cb_list, &parse_S_AS);
-  surfxml_add_callback(ETag_surfxml_AS_cb_list, &parse_E_AS);
+  sg_platf_ASclose_add_cb(routing_AS_close);
+  sg_platf_ASopen_add_cb(routing_AS_open);
 }
 
 static void free_data(void)

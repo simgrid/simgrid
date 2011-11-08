@@ -312,10 +312,10 @@ static void parse_E_bypassRoute_store_route(void)
  * Once this function was called, the configuration concerning the used
  * models cannot be changed anymore.
  *
- * @param AS_id name of this autonomous system. Must be uniq in the platform
+ * @param AS_id name of this autonomous system. Must be unique in the platform
  * @param wanted_routing_type one of Full, Floyd, Dijkstra or similar. Full list in the variable routing_models, in src/surf/surf_routing.c
  */
-void sg_platf_new_AS_open(const char *AS_id, const char *wanted_routing_type)
+void routing_AS_open(const char *AS_id, const char *wanted_routing_type)
 {
   routing_component_t new_routing;
   model_type_t model = NULL;
@@ -388,7 +388,7 @@ void sg_platf_new_AS_open(const char *AS_id, const char *wanted_routing_type)
  * even if you add stuff to a closed AS
  *
  */
-void sg_platf_new_AS_close() {
+void routing_AS_close() {
 
   if (current_routing == NULL) {
     THROWF(arg_error, 0, "Close an AS, but none was under construction");
@@ -1881,4 +1881,3 @@ static void routing_parse_Srandom(void)
       xbt_dynar_free(&radical_elements);
     }
 }
-

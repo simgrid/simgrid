@@ -31,8 +31,6 @@ XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_trace_connect_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_trace_connect_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_random_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_random_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_AS_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_AS_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_ASroute_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_ASroute_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_bypassRoute_cb_list;
