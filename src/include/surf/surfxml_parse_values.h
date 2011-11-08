@@ -23,7 +23,7 @@ typedef struct s_surf_parsing_cluster_arg {
 	const char* router_id;
 	int sharing_policy;
 	int bb_sharing_policy;
-	const char* availability_trace; //FIXME: convert to tmgr
+	const char* availability_trace; //don't convert to tmgr_trace_t since there is a trace per host and some rewriting is needed
 	const char* state_trace;
 } s_surf_parsing_cluster_arg_t;
 
