@@ -68,6 +68,18 @@ typedef struct {
   xbt_dict_t properties;
 } s_sg_platf_link_cbarg_t, *sg_platf_link_cbarg_t;
 
+typedef struct s_surf_parsing_peer_arg *sg_platf_peer_cbarg_t;
+typedef struct s_surf_parsing_peer_arg {
+  const char* id;
+  double power;
+  double bw_in;
+  double bw_out;
+  double lat;
+  const char* coord;
+  tmgr_trace_t availability_trace;
+  tmgr_trace_t state_trace;
+} s_surf_parsing_peer_arg_t;
+
 
 XBT_PUBLIC(void) sg_platf_open(void);  // Start a new platform
 XBT_PUBLIC(void) sg_platf_close(void); // Finish the creation of the platform
@@ -78,6 +90,7 @@ XBT_PUBLIC(void) sg_platf_new_AS_close(void);                            // That
 XBT_PUBLIC(void) sg_platf_new_host  (sg_platf_host_cbarg_t   host);   // Add an host  to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_router(sg_platf_router_cbarg_t router); // Add a router to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_link  (sg_platf_link_cbarg_t link);     // Add a link   to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_peer(sg_platf_peer_cbarg_t peer);       // Add a peer   to the currently described AS
 
 
 #endif                          /* SG_PLATF_H */

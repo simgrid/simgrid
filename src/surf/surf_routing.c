@@ -51,7 +51,7 @@ xbt_dict_t cluster_host_link = NULL; /* for tag cluster */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
-static void routing_parse_Speer(void);          /* peer bypass */
+static void routing_parse_Speer(sg_platf_peer_cbarg_t peer);          /* peer bypass */
 static void routing_parse_Srandom(void);        /* random bypass */
 
 static char* replace_random_parameter(char * chaine);
@@ -897,9 +897,7 @@ void routing_model_create(size_t size_of_links, void *loopback, double_f_cpvoid_
   surfxml_add_callback(STag_surfxml_cluster_cb_list,
                        &routing_parse_Scluster);
 
-  surfxml_add_callback(STag_surfxml_peer_cb_list,
-                         &routing_parse_Speer);
-
+  sg_platf_peer_add_cb(routing_parse_Speer); // FIXME: inline in the sg_platf_new_peer instead
   sg_platf_postparse_add_cb(clean_routing_after_parse);
 
 #ifdef HAVE_TRACING
@@ -1704,7 +1702,7 @@ static void clean_routing_after_parse(void)
 	xbt_dict_free(&patterns);
 }
 
-static void routing_parse_Speer(void)
+static void routing_parse_Speer(sg_platf_peer_cbarg_t peer)
 {
   static int AX_ptr = 0;
   char *host_id = NULL;
@@ -1717,51 +1715,51 @@ static void routing_parse_Speer(void)
 
   surfxml_bufferstack_push(1);
 
-  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", struct_peer->id);
-  sg_platf_new_AS_open(struct_peer->id, "Full");
+  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", peer->id);
+  sg_platf_new_AS_open(peer->id, "Full");
 
   XBT_DEBUG(" ");
-  host_id = HOST_PEER(struct_peer->id);
-  router_id = ROUTER_PEER(struct_peer->id);
-  link_id_up = LINK_UP_PEER(struct_peer->id);
-  link_id_down = LINK_DOWN_PEER(struct_peer->id);
+  host_id = HOST_PEER(peer->id);
+  router_id = ROUTER_PEER(peer->id);
+  link_id_up = LINK_UP_PEER(peer->id);
+  link_id_down = LINK_DOWN_PEER(peer->id);
 
-  link_router = bprintf("%s_link_router", struct_peer->id);
-  link_backbone = bprintf("%s_backbone", struct_peer->id);
+  link_router = bprintf("%s_link_router", peer->id);
+  link_backbone = bprintf("%s_backbone", peer->id);
 
-  XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, struct_peer->power);
+  XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->power);
   s_sg_platf_host_cbarg_t host;
   memset(&host,0,sizeof(host));
   host.initial_state = SURF_RESOURCE_ON;
   host.id = host_id;
-  host.power_peak = struct_peer->power;
+  host.power_peak = peer->power;
   host.power_scale = 1.0;
-  host.power_trace = struct_peer->availability_trace;
-  host.state_trace = struct_peer->state_trace;
+  host.power_trace = peer->availability_trace;
+  host.state_trace = peer->state_trace;
   host.core_amount = 1;
   sg_platf_new_host(&host);
 
 
-  XBT_DEBUG("<router id=\"%s\"\tcoordinates=\"%s\"/>", router_id, struct_peer->coord);
+  XBT_DEBUG("<router id=\"%s\"\tcoordinates=\"%s\"/>", router_id, peer->coord);
   s_sg_platf_router_cbarg_t router;
   memset(&router,0,sizeof(router));
   router.id = router_id;
-  router.coord = struct_peer->coord;
+  router.coord = peer->coord;
   sg_platf_new_router(&router);
 
-  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id_up, struct_peer->bw_in, struct_peer->lat);
+  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id_up, peer->bw_in, peer->lat);
   s_sg_platf_link_cbarg_t link;
   memset(&link,0,sizeof(link));
   link.state = SURF_RESOURCE_ON;
   link.policy = SURF_LINK_SHARED;
   link.id = link_id_up;
-  link.bandwidth = struct_peer->bw_in;
-  link.latency = struct_peer->lat;
+  link.bandwidth = peer->bw_in;
+  link.latency = peer->lat;
   sg_platf_new_link(&link);
 
   // FIXME: dealing with full duplex is not the role of this piece of code, I'd say [Mt]
   // Instead, it should be created fullduplex, and the models will do what's needed in this case
-  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id_down, struct_peer->bw_out, struct_peer->lat);
+  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id_down, peer->bw_out, peer->lat);
   link.id = link_id_down;
   sg_platf_new_link(&link);
 

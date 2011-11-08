@@ -54,7 +54,6 @@ void surfxml_bufferstack_pop(int new)
  */
 
 surf_parsing_cluster_arg_t struct_cluster = NULL;
-surf_parsing_peer_arg_t struct_peer = NULL;
 
 /*
  * Trace related stuff

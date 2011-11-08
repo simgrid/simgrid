@@ -7,17 +7,6 @@
 #ifndef SURFXML_PARSE_VALUES_H_
 #define SURFXML_PARSE_VALUES_H_
 
-typedef struct s_surf_parsing_peer_arg *surf_parsing_peer_arg_t;
-typedef struct s_surf_parsing_peer_arg {
-	const char* id;
-	double power;
-	double bw_in;
-	double bw_out;
-	double lat;
-	const char* coord;
-	tmgr_trace_t availability_trace;
-	tmgr_trace_t state_trace;
-} s_surf_parsing_peer_arg_t;
 
 typedef struct s_surf_parsing_cluster_arg *surf_parsing_cluster_arg_t;
 typedef struct s_surf_parsing_cluster_arg {
@@ -46,6 +35,5 @@ typedef struct s_surf_parsing_link_up_down {
 
 
 extern surf_parsing_cluster_arg_t struct_cluster;
-extern surf_parsing_peer_arg_t struct_peer;
 
 #endif /* SURFXML_PARSE_VALUES_H_ */
