@@ -50,11 +50,11 @@ static double_f_cpvoid_t get_link_latency = NULL;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
-static void routing_parse_Speer(sg_platf_peer_cbarg_t peer);          /* peer bypass */
+static void routing_parse_peer(sg_platf_peer_cbarg_t peer);          /* peer bypass */
 static void routing_parse_Srandom(void);        /* random bypass */
 
 static char* replace_random_parameter(char * chaine);
-static void clean_routing_after_parse(void);
+static void routing_parse_postparse(void);
 
 /* this lines are only for replace use like index in the model table */
 typedef enum {
@@ -170,7 +170,7 @@ static void parse_S_route_new_and_endpoints(const char *src_id, const char *dst_
 /**
  * \brief Set the endpoints for a route from XML
  */
-static void parse_S_route_new_and_endpoints_XML(void)
+static void routing_parse_S_route(void)
 {
   parse_S_route_new_and_endpoints(A_surfxml_route_src,
       A_surfxml_route_dst);
@@ -179,7 +179,7 @@ static void parse_S_route_new_and_endpoints_XML(void)
 /**
  * \brief Set the endponints and gateways for a ASroute
  */
-static void parse_S_ASroute_new_and_endpoints(void)
+static void routing_parse_S_ASroute(void)
 {
   if (src != NULL && dst != NULL && link_list != NULL)
     THROWF(arg_error, 0, "Route between %s to %s can not be defined",
@@ -198,7 +198,7 @@ static void parse_S_ASroute_new_and_endpoints(void)
 /**
  * \brief Set the endponints for a bypassRoute
  */
-static void parse_S_bypassRoute_new_and_endpoints(void)
+static void routing_parse_S_bypassRoute(void)
 {
   if (src != NULL && dst != NULL && link_list != NULL)
     THROWF(arg_error, 0,
@@ -239,7 +239,7 @@ static void routing_parse_link_ctn(void)
 /**
  * \brief Store the route by calling the set_route function of the current routing component
  */
-static void parse_E_route_store_route(void)
+static void routing_parse_E_route(void)
 {
   name_route_extended_t route = xbt_new0(s_name_route_extended_t, 1);
   route->generic_route.link_list = link_list;
@@ -255,7 +255,7 @@ static void parse_E_route_store_route(void)
 /**
  * \brief Store the ASroute by calling the set_ASroute function of the current routing component
  */
-static void parse_E_ASroute_store_route(void)
+static void routing_parse_E_ASroute(void)
 {
   name_route_extended_t e_route = xbt_new0(s_name_route_extended_t, 1);
   e_route->generic_route.link_list = link_list;
@@ -275,7 +275,7 @@ static void parse_E_ASroute_store_route(void)
 /**
  * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
  */
-static void parse_E_bypassRoute_store_route(void)
+static void routing_parse_E_bypassRoute(void)
 {
   route_extended_t e_route = xbt_new0(s_route_extended_t, 1);
   e_route->generic_route.link_list = link_list;
@@ -1599,13 +1599,13 @@ static char* replace_random_parameter(char * string)
   return string;
                                         }
 
-static void clean_routing_after_parse(void)
+static void routing_parse_postparse(void)
 {
   xbt_dict_free(&random_value);
   xbt_dict_free(&patterns);
 }
 
-static void routing_parse_Speer(sg_platf_peer_cbarg_t peer)
+static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
 {
   static int AX_ptr = 0;
   char *host_id = NULL;
@@ -1829,27 +1829,21 @@ void routing_register_callbacks() {
 
   surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
 
-  surfxml_add_callback(STag_surfxml_route_cb_list,
-      &parse_S_route_new_and_endpoints_XML);
-  surfxml_add_callback(STag_surfxml_ASroute_cb_list,
-      &parse_S_ASroute_new_and_endpoints);
-  surfxml_add_callback(STag_surfxml_bypassRoute_cb_list,
-      &parse_S_bypassRoute_new_and_endpoints);
+  surfxml_add_callback(STag_surfxml_route_cb_list,      &routing_parse_S_route);
+  surfxml_add_callback(STag_surfxml_ASroute_cb_list,    &routing_parse_S_ASroute);
+  surfxml_add_callback(STag_surfxml_bypassRoute_cb_list,&routing_parse_S_bypassRoute);
 
   surfxml_add_callback(ETag_surfxml_link_ctn_cb_list, &routing_parse_link_ctn);
 
-  surfxml_add_callback(ETag_surfxml_route_cb_list,
-      &parse_E_route_store_route);
-  surfxml_add_callback(ETag_surfxml_ASroute_cb_list,
-      &parse_E_ASroute_store_route);
-  surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,
-      &parse_E_bypassRoute_store_route);
+  surfxml_add_callback(ETag_surfxml_route_cb_list,      &routing_parse_E_route);
+  surfxml_add_callback(ETag_surfxml_ASroute_cb_list,    &routing_parse_E_ASroute);
+  surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,&routing_parse_E_bypassRoute);
 
   surfxml_add_callback(STag_surfxml_cluster_cb_list,
       &routing_parse_cluster);
 
-  sg_platf_peer_add_cb(routing_parse_Speer); // FIXME: inline in the sg_platf_new_peer instead
-  sg_platf_postparse_add_cb(clean_routing_after_parse);
+  sg_platf_peer_add_cb(routing_parse_peer);
+  sg_platf_postparse_add_cb(routing_parse_postparse);
 
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();
