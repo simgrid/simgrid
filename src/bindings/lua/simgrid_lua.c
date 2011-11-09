@@ -448,7 +448,7 @@ static int l_host_sleep(lua_State *L)
 {
   int time = luaL_checknumber(L, 1);
   MSG_process_sleep(time);
-  return 1;
+  return 0;
 }
 
 /**
@@ -462,7 +462,7 @@ static int l_host_destroy(lua_State *L)
 {
   m_host_t ht = sglua_checkhost(L, 1);
   __MSG_host_destroy(ht);
-  return 1;
+  return 0;
 }
 
 static const luaL_reg host_functions[] = {
