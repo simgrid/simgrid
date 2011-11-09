@@ -185,7 +185,7 @@ xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys,
 {
   volatile xbt_dict_t thislevel;
   volatile xbt_dict_t nextlevel = NULL;
-  int i;
+  volatile int i;
   xbt_ex_t e;
 
   unsigned long int thislen;
