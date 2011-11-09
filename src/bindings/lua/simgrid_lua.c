@@ -829,42 +829,108 @@ lua_State* sglua_get_maestro(void) {
 }
 
 /**
- * \brief Makes the appropriate Simgrid functions available to the Lua world.
+ * \brief Registers the task functions into the table simgrid.task.
+ *
+ * Also initialize the metatable of the task userdata type.
+ *
+ * \param L a lua state
+ */
+static void register_task_functions(lua_State* L) {
+
+  /* create a table simgrid.task and fill it with task functions */
+  luaL_openlib(L, TASK_MODULE_NAME, task_functions, 0);
+                                  /* simgrid.task */
+
+  /* create the metatable for tasks, add it to the Lua registry */
+  luaL_newmetatable(L, TASK_MODULE_NAME);
+                                  /* simgrid.task mt */
+  /* fill the metatable */
+  luaL_openlib(L, NULL, task_meta, 0);
+                                  /* simgrid.task mt */
+  lua_pushvalue(L, -2);
+                                  /* simgrid.task mt simgrid.task */
+  /* metatable.__index = simgrid.task
+   * we put the task functions inside the task userdata itself:
+   * this allows to write task:method(args) for
+   * simgrid.task.method(task, args) */
+  // FIXME: in the current implementation, a Lua task is a table with a
+  // __simgrid_task field that contains the userdata, so the OO-style
+  // writing doesn't work
+  lua_setfield(L, -2, "__index");
+                                  /* simgrid.task mt */
+  lua_pushliteral(L, "__metatable");
+                                  /* simgrid.task mt "__metatable" */
+  lua_pushnumber(L, 0);
+                                  /* simgrid.task mt "__metatable" 0 */
+  /* protect the metatable from Lua code (by setting any value to __metatable) */
+  lua_rawset(L, -3);              /* simgrid.task mt */
+  lua_pop(L, 2);
+                                  /* -- */
+}
+
+/**
+ * \brief Registers the host functions into the table simgrid.host.
+ *
+ * Also initialize the metatable of the host userdata type.
+ *
+ * \param L a lua state
+ */
+static void register_host_functions(lua_State* L) {
+
+  /* create a table simgrid.host and fill it with host functions */
+  luaL_openlib(L, HOST_MODULE_NAME, host_functions, 0);
+                                  /* simgrid.host */
+
+  /* create the metatable for host, add it to the Lua registry */
+  luaL_newmetatable(L, HOST_MODULE_NAME);
+                                  /* simgrid.host mt */
+  /* fill the metatable */
+  luaL_openlib(L, NULL, host_meta, 0);
+                                  /* simgrid.host mt */
+  lua_pushvalue(L, -2);
+                                  /* simgrid.host mt simgrid.host */
+  /* metatable.__index = simgrid.host
+   * we put the host functions inside the host userdata itself:
+   * this allows to write host(args) for
+   * simgrid.host.method(host, args) */
+  // FIXME: cannot work currently, same problem as tasks
+  lua_setfield(L, -2, "__index");
+                                  /* simgrid.host mt */
+  lua_pushliteral(L, "__metatable");
+                                  /* simgrid.host mt "__metatable" */
+  lua_pushnumber(L, 0);
+                                  /* simgrid.host mt "__metatable" 0 */
+  /* protect the metatable from Lua code (by setting any value to __metatable) */
+  lua_rawset(L, -3);              /* simgrid.host mt */
+  lua_pop(L, 2);
+                                  /* -- */
+}
+
+/**
+ * \brief Registers the platform functions into the table simgrid.platf.
+ * \param L a lua state
+ */
+static void register_platf_functions(lua_State* L) {
+
+  luaL_openlib(L, PLATF_MODULE_NAME, platf_functions, 0);
+                                  /* simgrid.platf */
+  lua_pop(L, 1);
+}
+
+/**
+ * \brief Makes the Simgrid functions available to the Lua world.
  * \param L a Lua world
  */
-void register_c_functions(lua_State *L) {
+static void register_c_functions(lua_State *L) {
 
   /* register the core C functions to lua */
   luaL_register(L, "simgrid", simgrid_functions);
-
-  /* register the task methods to lua */
-  luaL_openlib(L, TASK_MODULE_NAME, task_functions, 0);   // create methods table, add it to the globals
-  luaL_newmetatable(L, TASK_MODULE_NAME);       // create metatable for Task, add it to the Lua registry
-  luaL_openlib(L, 0, task_meta, 0);     // fill metatable
-  lua_pushliteral(L, "__index");
-  lua_pushvalue(L, -3);         // dup methods table
-  lua_rawset(L, -3);            // metatable.__index = methods
-  lua_pushliteral(L, "__metatable");
-  lua_pushvalue(L, -3);         // dup methods table
-  lua_rawset(L, -3);            // hide metatable:metatable.__metatable = methods
-  lua_pop(L, 1);                // drop metatable
-
-  /* register the hosts methods to lua */
-  luaL_openlib(L, HOST_MODULE_NAME, host_functions, 0);
-  luaL_newmetatable(L, HOST_MODULE_NAME);
-  luaL_openlib(L, 0, host_meta, 0);
-  lua_pushliteral(L, "__index");
-  lua_pushvalue(L, -3);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "__metatable");
-  lua_pushvalue(L, -3);
-  lua_rawset(L, -3);
+                                  /* simgrid */
   lua_pop(L, 1);
-
-  /* register the platform methods to lua */
-  luaL_openlib(L, PLATF_MODULE_NAME, platf_functions, 0);
-  luaL_newmetatable(L, PLATF_MODULE_NAME);
-  lua_pop(L, 1);
+                                  /* -- */
+  register_task_functions(L);
+  register_host_functions(L);
+  register_platf_functions(L);
 }
 
 /**
@@ -877,13 +943,14 @@ static int run_lua_code(int argc, char **argv)
 {
   XBT_DEBUG("Run lua code %s", argv[0]);
 
+  /* create a new state, getting globals from maestro */
   lua_State *L = sglua_clone_maestro();
   int res = 1;
 
   /* start the function */
   lua_getglobal(L, argv[0]);
   xbt_assert(lua_isfunction(L, -1),
-              "The lua function %s does not seem to exist", argv[0]);
+              "There is no Lua function with name `%s'", argv[0]);
 
   /* push arguments onto the stack */
   int i;
@@ -893,7 +960,7 @@ static int run_lua_code(int argc, char **argv)
   /* call the function */
   _XBT_GNUC_UNUSED int err;
   err = lua_pcall(L, argc - 1, 1, 0);
-  xbt_assert(err == 0, "error running function `%s': %s", argv[0],
+  xbt_assert(err == 0, "Error running function `%s': %s", argv[0],
               lua_tostring(L, -1));
 
   /* retrieve result */

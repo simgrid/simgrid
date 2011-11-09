@@ -622,7 +622,7 @@ lua_State* sglua_clone_maestro(void) {
   /* create the table of known tables from maestro */
   lua_pushstring(L, "simgrid.maestro_tables");
                                             /* "simgrid.maestro_tables" */
-  lua_newtable(L);                          /* "simgrid.maestro_tables" maestrotbs*/
+  lua_newtable(L);                          /* "simgrid.maestro_tables" maestrotbs */
   lua_rawset(L, LUA_REGISTRYINDEX);
                                             /* -- */
 
