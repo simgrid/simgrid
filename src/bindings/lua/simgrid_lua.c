@@ -455,14 +455,6 @@ static const luaL_reg host_functions[] = {
   {NULL, NULL}
 };
 
-static int l_host_gc(lua_State * L)
-{
-  m_host_t ht = sglua_checkhost(L, -1);
-  if (ht)
-    ht = NULL;
-  return 0;
-}
-
 static int l_host_tostring(lua_State * L)
 {
   lua_pushfstring(L, "Host :%p", lua_touserdata(L, 1));
@@ -470,7 +462,6 @@ static int l_host_tostring(lua_State * L)
 }
 
 static const luaL_reg host_meta[] = {
-  {"__gc", l_host_gc},
   {"__tostring", l_host_tostring},
   {0, 0}
 };
