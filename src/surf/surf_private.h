@@ -137,7 +137,6 @@ typedef enum {
   SURF_ROUTING_RECURSIVE   /**< Recursive case: also return gateway informations */
 } e_surf_routing_hierarchy_t;
 
-typedef struct s_routing_component *routing_component_t;
 typedef struct s_routing_component {
   xbt_dict_t to_index;			/* char* -> network_element_t */
   xbt_dict_t bypassRoutes;		/* store bypass routes */
