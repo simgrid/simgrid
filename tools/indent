@@ -1,0 +1,19 @@
+#!/bin/bash
+
+declare -a OPTIONS
+OPTIONS=(
+    -kr         # Use Kernighan & Ritchie coding style. 
+    -l80        # Set maximum line length for non-comment lines to 80.
+    -nut        # Use spaces instead of tabs.
+    -i2         # Set indentation level to 2 spaces.
+    -lps        # Leave space between ‘#’ and preprocessor directive.
+    -npcs       # Do not put space after the function in function calls.
+    -br         # Put braces on line with if, etc.
+    -brs        # Put braces on struct declaration line.
+    -ce         # Cuddle else and preceding ‘}’.
+    -cdw        # Cuddle while of do {} while; and preceding ‘}’.
+    -bbo        # Prefer to break long lines before boolean operators.
+    -npsl       # Put the type of a procedure on the same line as its name.
+)
+
+exec indent "${OPTIONS[@]}" "$@"
