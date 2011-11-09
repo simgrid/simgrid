@@ -242,11 +242,12 @@ void MC_ddfs_stateful(xbt_automaton_t a, int search_cycle, int restore);
 typedef struct s_mc_pair_stateless{
   mc_state_t graph_state;
   xbt_state_t automaton_state;
+  int requests;
 }s_mc_pair_stateless_t, *mc_pair_stateless_t;
 
 extern xbt_fifo_t mc_stack_liveness_stateless;
 
-mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st);
+mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r);
 void MC_ddfs_stateless_init(xbt_automaton_t a);
 void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay);
 void MC_show_stack_liveness_stateless(xbt_fifo_t stack);
