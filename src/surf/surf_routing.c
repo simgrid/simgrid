@@ -224,6 +224,7 @@ static void routing_parse_link_ctn(void)
     break;
   case A_surfxml_link_ctn_direction_DOWN:
     link_id = bprintf("%s_DOWN", A_surfxml_link_ctn_id);
+    break;
   }
   xbt_dynar_push(link_list,&link_id);
 }
@@ -1321,176 +1322,98 @@ static void routing_parse_cluster(void) {
     memset(&host,0,sizeof(host));
 
     radical_ends = xbt_str_split(groups, "-");
+    start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
+
     switch (xbt_dynar_length(radical_ends)) {
     case 1:
-      start=surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
-      host_id = bprintf("%s%d%s", struct_cluster->prefix, start, struct_cluster->suffix);
-      link_id = bprintf("%s_link_%d", struct_cluster->id, start);
+    	end = start;
+    	break;
+    case 2:
+    	end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
+    	break;
+    default:
+    	surf_parse_error("Malformed radical");
+      	break;
+    }
+	for (i = start; i <= end; i++) {
+	  host_id = bprintf("%s%d%s", struct_cluster->prefix, i, struct_cluster->suffix);
+	  link_id = bprintf("%s_link_%d", struct_cluster->id, i);
 
-      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->power);
-      host.id = host_id;
-      if(strcmp(struct_cluster->availability_trace,"")){
-        xbt_dict_set(patterns, "radical", bprintf("%d", start), xbt_free);
-        char* tmp_availability_file = xbt_strdup(struct_cluster->availability_trace);
-        xbt_str_varsubst(tmp_availability_file,patterns);
-        XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
-        host.power_trace = tmgr_trace_new(tmp_availability_file);
-        xbt_free(tmp_availability_file);
-      }
-      else
-      {
-        XBT_DEBUG("\tavailability_file=\"\"");
-      }
-      if(strcmp(struct_cluster->state_trace,"")){
-        char *tmp_state_file = xbt_strdup(struct_cluster->state_trace);
-        xbt_str_varsubst(tmp_state_file,patterns);
-        XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
-        host.state_trace = tmgr_trace_new(tmp_state_file);
-        xbt_free(tmp_state_file);
-      }
-      else
-      {
-        XBT_DEBUG("\tstate_file=\"\"");
-      }
+	  XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->power);
+	  host.id = host_id;
+	  if(strcmp(struct_cluster->availability_trace,"")){
+		xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
+		char* tmp_availability_file = xbt_strdup(struct_cluster->availability_trace);
+		xbt_str_varsubst(tmp_availability_file,patterns);
+		XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
+		host.power_trace = tmgr_trace_new(tmp_availability_file);
+		xbt_free(tmp_availability_file);
+	  }
+	  else
+	  {
+		XBT_DEBUG("\tavailability_file=\"\"");
+	  }
+	  if(strcmp(struct_cluster->state_trace,"")){
+		char *tmp_state_file = xbt_strdup(struct_cluster->state_trace);
+		xbt_str_varsubst(tmp_state_file,patterns);
+		XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
+		host.state_trace = tmgr_trace_new(tmp_state_file);
+		xbt_free(tmp_state_file);
+	  }
+	  else
+	  {
+		XBT_DEBUG("\tstate_file=\"\"");
+	  }
 
-      host.power_peak = struct_cluster->power;
-      host.power_scale = 1.0;
-      host.core_amount = struct_cluster->core_amount;
-      host.initial_state = SURF_RESOURCE_ON;
-      host.coord = "";
-      sg_platf_new_host(&host);
-      XBT_DEBUG("</host>");
+	  host.power_peak = struct_cluster->power;
+	  host.power_scale = 1.0;
+	  host.core_amount = struct_cluster->core_amount;
+	  host.initial_state = SURF_RESOURCE_ON;
+	  host.coord = "";
+	  sg_platf_new_host(&host);
+	  XBT_DEBUG("</host>");
 
+	  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->bw, struct_cluster->lat);
 
-      XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->bw, struct_cluster->lat);
+	  memset(&link,0,sizeof(link));
+	  link.id = link_id;
+	  link.bandwidth = struct_cluster->bw;
+	  link.latency = struct_cluster->lat;
+	  link.state = SURF_RESOURCE_ON;
 
-      memset(&link,0,sizeof(link));
-      link.id = link_id;
-      link.bandwidth = struct_cluster->bw;
-      link.latency = struct_cluster->lat;
-      link.state = SURF_RESOURCE_ON;
+	  switch (struct_cluster->sharing_policy) {
+	  case A_surfxml_cluster_sharing_policy_SHARED:
+		link.policy = SURF_LINK_SHARED;
+		break;
+	  case A_surfxml_cluster_sharing_policy_FULLDUPLEX:
+		link.policy = SURF_LINK_FULLDUPLEX;
+		break;
+	  case A_surfxml_cluster_sharing_policy_FATPIPE:
+		link.policy = SURF_LINK_FATPIPE;
+		break;
+	  default:
+		surf_parse_error(bprintf("Invalid cluster sharing policy for cluster %s",struct_cluster->id));
+		break;
+	  }
+	  sg_platf_new_link(&link);
 
-      switch (struct_cluster->sharing_policy) {
-      case A_surfxml_cluster_sharing_policy_FATPIPE:
-        link.policy = SURF_LINK_FATPIPE;
-        break;
-      case A_surfxml_cluster_sharing_policy_FULLDUPLEX:
-        link.policy = SURF_LINK_FULLDUPLEX;
-        break;
-      default:
-        link.policy = SURF_LINK_SHARED;
-      }
+	  surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
+	  if (link.policy == SURF_LINK_FULLDUPLEX) {
+		char* tmp_link =  bprintf("%s_UP",link_id);
+		info->link_up   = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+		free(tmp_link);
+		tmp_link =  bprintf("%s_DOWN",link_id);
+		info->link_down = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+		free(tmp_link);
+	  }
+	  else{
+		info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
+		info->link_down = info->link_up;
+	  }
+	  surf_routing_cluster_add_link(host_id,info);
 
-      sg_platf_new_link(&link);
-
-      surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
-      if (struct_cluster->sharing_policy == A_surfxml_cluster_sharing_policy_FULLDUPLEX){
-        char* tmp_link =  bprintf("%s_UP",link_id);
-        info->link_up   = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-        free(tmp_link);
-        tmp_link =  bprintf("%s_DOWN",link_id);
-        info->link_down = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-        free(tmp_link);
-      }
-      else{
-        info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
-        info->link_down = info->link_up;
-      }
-      surf_routing_cluster_add_link(host_id,info);
-      xbt_free(link_id);
-      xbt_free(host_id);
-
-      break;
-
-      case 2:
-
-        start=surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
-        end=  surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
-        for (i = start; i <= end; i++) {
-          host_id = bprintf("%s%d%s", struct_cluster->prefix, i, struct_cluster->suffix);
-          link_id = bprintf("%s_link_%d", struct_cluster->id, i);
-
-          XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->power);
-          host.id = host_id;
-          if(strcmp(struct_cluster->availability_trace,"")){
-            xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
-            char* tmp_availability_file = xbt_strdup(struct_cluster->availability_trace);
-            xbt_str_varsubst(tmp_availability_file,patterns);
-            XBT_DEBUG("\tavailability_file=\"%s\"",tmp_availability_file);
-            host.power_trace = tmgr_trace_new(tmp_availability_file);
-            xbt_free(tmp_availability_file);
-          }
-          else
-          {
-            XBT_DEBUG("\tavailability_file=\"\"");
-          }
-          if(strcmp(struct_cluster->state_trace,"")){
-            char *tmp_state_file = xbt_strdup(struct_cluster->state_trace);
-            xbt_str_varsubst(tmp_state_file,patterns);
-            XBT_DEBUG("\tstate_file=\"%s\"",tmp_state_file);
-            host.state_trace = tmgr_trace_new(tmp_state_file);
-            xbt_free(tmp_state_file);
-          }
-          else
-          {
-            XBT_DEBUG("\tstate_file=\"\"");
-          }
-
-          host.power_peak = struct_cluster->power;
-          host.power_scale = 1.0;
-          host.core_amount = struct_cluster->core_amount;
-          host.initial_state = SURF_RESOURCE_ON;
-          host.coord = "";
-          sg_platf_new_host(&host);
-          XBT_DEBUG("</host>");
-
-          XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,struct_cluster->bw, struct_cluster->lat);
-
-          memset(&link,0,sizeof(link));
-          link.id = link_id;
-          link.bandwidth = struct_cluster->bw;
-          link.latency = struct_cluster->lat;
-          link.state = SURF_RESOURCE_ON;
-
-          switch (struct_cluster->sharing_policy) {
-          case A_surfxml_cluster_sharing_policy_SHARED:
-            link.policy = SURF_LINK_SHARED;
-            break;
-          case A_surfxml_cluster_sharing_policy_FULLDUPLEX:
-            link.policy = SURF_LINK_FULLDUPLEX;
-            break;
-          case A_surfxml_cluster_sharing_policy_FATPIPE:
-            link.policy = SURF_LINK_FATPIPE;
-            break;
-          default:
-            surf_parse_error(bprintf("Invalid cluster sharing policy for cluster %s",struct_cluster->id));
-          }
-          sg_platf_new_link(&link);
-
-          surf_parsing_link_up_down_t info = xbt_new0(s_surf_parsing_link_up_down_t, 1);
-          if (link.policy == SURF_LINK_FULLDUPLEX) {
-            char* tmp_link =  bprintf("%s_UP",link_id);
-            info->link_up   = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-            free(tmp_link);
-            tmp_link =  bprintf("%s_DOWN",link_id);
-            info->link_down = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-            free(tmp_link);
-          }
-          else{
-            info->link_up   = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
-            info->link_down = info->link_up;
-          }
-          surf_routing_cluster_add_link(host_id,info);
-
-          xbt_free(link_id);
-          xbt_free(host_id);
-
-        }
-        break;
-
-      default:
-        XBT_DEBUG("Malformed radical");
-        break;
+	  xbt_free(link_id);
+	  xbt_free(host_id);
     }
 
     xbt_dynar_free(&radical_ends);
@@ -1531,6 +1454,7 @@ static void routing_parse_cluster(void) {
       break;
     default:
       surf_parse_error(bprintf("Invalid bb sharing policy in cluster %s",struct_cluster->id));
+      break;
     }
 
     sg_platf_new_link(&link);
