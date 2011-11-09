@@ -149,7 +149,7 @@ s_surf_model_description_t surf_network_model_description[] = {
   {"Vegas",
    "Model using lagrange_solve instead of lmm_solve (experts only)",
    surf_network_model_init_Vegas},
-  {NULL, NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_cpu_model_description[] = {
@@ -161,18 +161,18 @@ s_surf_model_description_t surf_cpu_model_description[] = {
   {"CpuTI",
    "Variation of Cas01 with also trace integration. Should produce the same values, only faster if you use availability traces",
    surf_cpu_model_init_ti},
-  {NULL, NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_workstation_model_description[] = {
   {"CLM03",
    "Default workstation model, using LV08 and CM02 as network and CPU",
-   surf_workstation_model_init_CLM03, create_workstations},
+   surf_workstation_model_init_CLM03},
   {"compound",
    "Workstation model allowing you to use other network and CPU models",
-   surf_workstation_model_init_compound, create_workstations},
+   surf_workstation_model_init_compound},
   {"ptask_L07", "Workstation model with better parallel task modeling",
-   surf_workstation_model_init_ptask_L07, NULL},
+   surf_workstation_model_init_ptask_L07},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 

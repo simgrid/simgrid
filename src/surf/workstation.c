@@ -356,6 +356,7 @@ void surf_workstation_model_init_CLM03(void)
   surf_cpu_model_init_Cas01_im();
   surf_network_model_init_LegrandVelho();
   xbt_dynar_push(model_list, &surf_workstation_model);
+  sg_platf_postparse_add_cb(create_workstations);
 }
 
 void surf_workstation_model_init_compound()
@@ -365,4 +366,5 @@ void surf_workstation_model_init_compound()
   xbt_assert(surf_network_model, "No network model defined yet!");
   surf_workstation_model_init_internal();
   xbt_dynar_push(model_list, &surf_workstation_model);
+  sg_platf_postparse_add_cb(create_workstations);
 }

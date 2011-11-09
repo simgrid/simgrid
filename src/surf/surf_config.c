@@ -525,16 +525,3 @@ void surf_config_models_setup()
   XBT_DEBUG("Call workstation_model_init");
   surf_workstation_model_description[workstation_id].model_init_preparse();
 }
-
-void surf_config_models_create_elms(void)
-{
-  char *workstation_model_name =
-      xbt_cfg_get_string(_surf_cfg_set, "workstation/model");
-  int workstation_id =
-      find_model_description(surf_workstation_model_description,
-                             workstation_model_name);
-  if (surf_workstation_model_description
-      [workstation_id].model_init_postparse != NULL)
-    surf_workstation_model_description[workstation_id].model_init_postparse
-        ();
-}

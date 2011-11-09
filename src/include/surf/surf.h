@@ -49,7 +49,6 @@ typedef struct surf_model_description {
   const char *name;
   const char *description;
   void (*model_init_preparse) (void);
-  void (*model_init_postparse) (void);
 } s_surf_model_description_t, *surf_model_description_t;
 
 XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
@@ -634,12 +633,6 @@ XBT_PUBLIC_DATA(xbt_cfg_t) _surf_cfg_set;
  *  surf_workstation_model_init_KCCFLN05(), surf_workstation_model_init_compound(), surf_exit()
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common structures */
-
-/** \brief create the elements of the models
- *
- * Must be called after parsing the platform file and before using any elements
- */
-XBT_PUBLIC(void) surf_config_models_create_elms(void);
 
 /** \brief Finish simulation initialization
  *  \ingroup SURF_simulation
