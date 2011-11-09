@@ -1,14 +1,14 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<!--              _________
-				|	       |
-				|  router  |
-	____________|__________|_____________ backbone
-	  |   |   |              |     |   |  	
-    l0|	l1|	l2|           l97| l96 |   | l99
-      |	  |	  |   ........   |     |   |
+<!--             _________
+                |          |
+                |  router  |
+    ____________|__________|_____________ backbone
+      |   |   |              |     |   |  	
+    l0|	l1| l2|           l97| l96 |   | l99
+      |   |   |   ........   |     |   |
       |                                |
-   c-0.me                             c-99.me	
+    c-0.me                             c-99.me	
 -->
 <platform version="3">
 <AS  id="AS0"  routing="Full">
