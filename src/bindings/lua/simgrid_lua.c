@@ -300,7 +300,7 @@ static int l_host_get_by_name(lua_State * L)
 
 static int l_host_get_name(lua_State * L)
 {
-  m_host_t ht = sglua_checkhost(L, -1);
+  m_host_t ht = sglua_checkhost(L, 1);
   lua_pushstring(L, MSG_host_get_name(ht));
   return 1;
 }
@@ -345,22 +345,22 @@ static int l_host_self(lua_State * L)
 
 static int l_host_get_property_value(lua_State * L)
 {
-  m_host_t ht = sglua_checkhost(L, -2);
-  const char *prop = luaL_checkstring(L, -1);
+  m_host_t ht = sglua_checkhost(L, 1);
+  const char *prop = luaL_checkstring(L, 2);
   lua_pushstring(L,MSG_host_get_property_value(ht,prop));
   return 1;
 }
 
 static int l_host_sleep(lua_State *L)
 {
-  int time = luaL_checknumber(L, -1);
+  int time = luaL_checknumber(L, 1);
   MSG_process_sleep(time);
   return 1;
 }
 
 static int l_host_destroy(lua_State *L)
 {
-  m_host_t ht = sglua_checkhost(L, -1);
+  m_host_t ht = sglua_checkhost(L, 1);
   __MSG_host_destroy(ht);
   return 1;
 }
