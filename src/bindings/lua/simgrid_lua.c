@@ -59,9 +59,9 @@ static void* my_checkudata(lua_State* L, int ud, const char* tname) {
  * @param index an index in the Lua stack
  * @return the task at this index
  */
-static m_task_t checkTask(lua_State* L, int index)
+static m_task_t sglua_checktask(lua_State* L, int index)
 {
-  sglua_stack_dump("checkTask: ", L);
+  sglua_stack_dump("check task: ", L);
   luaL_checktype(L, index, LUA_TTABLE);
                                   /* ... task ... */
   lua_getfield(L, index, "__simgrid_task");
@@ -89,7 +89,7 @@ static m_task_t checkTask(lua_State* L, int index)
  * - computation size (integer)
  * - communication size (integer)
  */
-static int Task_new(lua_State* L)
+static int l_task_new(lua_State* L)
 {
   XBT_DEBUG("Task new");
   const char* name = luaL_checkstring(L, 1);
@@ -114,31 +114,31 @@ static int Task_new(lua_State* L)
   return 1;
 }
 
-static int Task_get_name(lua_State* L)
+static int l_task_get_name(lua_State* L)
 {
-  m_task_t task = checkTask(L, 1);
+  m_task_t task = sglua_checktask(L, 1);
   lua_pushstring(L, MSG_task_get_name(task));
   return 1;
 }
 
-static int Task_computation_duration(lua_State* L)
+static int l_task_computation_duration(lua_State* L)
 {
-  m_task_t task = checkTask(L, 1);
+  m_task_t task = sglua_checktask(L, 1);
   lua_pushnumber(L, MSG_task_get_compute_duration(task));
   return 1;
 }
 
-static int Task_execute(lua_State* L)
+static int l_task_execute(lua_State* L)
 {
-  m_task_t task = checkTask(L, 1);
+  m_task_t task = sglua_checktask(L, 1);
   int res = MSG_task_execute(task);
   lua_pushnumber(L, res);
   return 1;
 }
 
-static int Task_send(lua_State* L)
+static int l_task_send(lua_State* L)
 {
-  m_task_t task = checkTask(L, 1);
+  m_task_t task = sglua_checktask(L, 1);
   const char* mailbox = luaL_checkstring(L, 2);
                                   /* task mailbox */
   lua_settop(L, 1);
@@ -181,7 +181,7 @@ static int Task_send(lua_State* L)
   return 0;
 }
 
-static int Task_recv_with_timeout(lua_State *L)
+static int l_task_recv_with_timeout(lua_State *L)
 {
   m_task_t task = NULL;
   const char* mailbox = luaL_checkstring(L, 1);
@@ -220,24 +220,24 @@ static int Task_recv_with_timeout(lua_State *L)
   return 1;
 }
 
-static int Task_recv(lua_State * L)
+static int l_task_recv(lua_State * L)
 {
   lua_pushnumber(L, -1.0);
-  return Task_recv_with_timeout(L);
+  return l_task_recv_with_timeout(L);
 }
 
-static const luaL_reg Task_methods[] = {
-  {"new", Task_new},
-  {"name", Task_get_name},
-  {"computation_duration", Task_computation_duration},
-  {"execute", Task_execute},
-  {"send", Task_send},
-  {"recv", Task_recv},
-  {"recv_timeout", Task_recv_with_timeout},
+static const luaL_reg task_functions[] = {
+  {"new", l_task_new},
+  {"name", l_task_get_name},
+  {"computation_duration", l_task_computation_duration},
+  {"execute", l_task_execute},
+  {"send", l_task_send},
+  {"recv", l_task_recv},
+  {"recv_timeout", l_task_recv_with_timeout},
   {NULL, NULL}
 };
 
-static int Task_gc(lua_State* L)
+static int l_task_gc(lua_State* L)
 {
                                   /* ctask */
   m_task_t task = *((m_task_t*) luaL_checkudata(L, 1, TASK_MODULE_NAME));
@@ -248,23 +248,23 @@ static int Task_gc(lua_State* L)
   return 0;
 }
 
-static int Task_tostring(lua_State* L)
+static int l_task_tostring(lua_State* L)
 {
-  m_task_t task = checkTask(L, 1);
+  m_task_t task = sglua_checktask(L, 1);
   lua_pushfstring(L, "Task: %p", task);
   return 1;
 }
 
 static const luaL_reg Task_meta[] = {
-  {"__gc", Task_gc},
-  {"__tostring", Task_tostring},
+  {"__gc", l_task_gc},
+  {"__tostring", l_task_tostring},
   {NULL, NULL}
 };
 
 /**
  * Host
  */
-static m_host_t checkHost(lua_State * L, int index)
+static m_host_t sglua_checkhost(lua_State * L, int index)
 {
   m_host_t *pi, ht;
   luaL_checktype(L, index, LUA_TTABLE);
@@ -279,7 +279,7 @@ static m_host_t checkHost(lua_State * L, int index)
   return ht;
 }
 
-static int Host_get_by_name(lua_State * L)
+static int l_host_get_by_name(lua_State * L)
 {
   const char *name = luaL_checkstring(L, 1);
   XBT_DEBUG("Getting Host from name...");
@@ -298,20 +298,20 @@ static int Host_get_by_name(lua_State * L)
   return 1;
 }
 
-static int Host_get_name(lua_State * L)
+static int l_host_get_name(lua_State * L)
 {
-  m_host_t ht = checkHost(L, -1);
+  m_host_t ht = sglua_checkhost(L, -1);
   lua_pushstring(L, MSG_host_get_name(ht));
   return 1;
 }
 
-static int Host_number(lua_State * L)
+static int l_host_number(lua_State * L)
 {
   lua_pushnumber(L, MSG_get_host_number());
   return 1;
 }
 
-static int Host_at(lua_State * L)
+static int l_host_at(lua_State * L)
 {
   int index = luaL_checkinteger(L, 1);
   m_host_t host = MSG_get_host_table()[index - 1];      // lua indexing start by 1 (lua[1] <=> C[0])
@@ -325,7 +325,7 @@ static int Host_at(lua_State * L)
 
 }
 
-static int Host_self(lua_State * L)
+static int l_host_self(lua_State * L)
 {
                                   /* -- */
   m_host_t host = MSG_host_self();
@@ -343,24 +343,24 @@ static int Host_self(lua_State * L)
   return 1;
 }
 
-static int Host_get_property_value(lua_State * L)
+static int l_host_get_property_value(lua_State * L)
 {
-  m_host_t ht = checkHost(L, -2);
+  m_host_t ht = sglua_checkhost(L, -2);
   const char *prop = luaL_checkstring(L, -1);
   lua_pushstring(L,MSG_host_get_property_value(ht,prop));
   return 1;
 }
 
-static int Host_sleep(lua_State *L)
+static int l_host_sleep(lua_State *L)
 {
   int time = luaL_checknumber(L, -1);
   MSG_process_sleep(time);
   return 1;
 }
 
-static int Host_destroy(lua_State *L)
+static int l_host_destroy(lua_State *L)
 {
-  m_host_t ht = checkHost(L, -1);
+  m_host_t ht = sglua_checkhost(L, -1);
   __MSG_host_destroy(ht);
   return 1;
 }
@@ -440,45 +440,45 @@ static int gras_generate(lua_State * L)
 /*
  * Host Methods
  */
-static const luaL_reg Host_methods[] = {
-  {"getByName", Host_get_by_name},
-  {"name", Host_get_name},
-  {"number", Host_number},
-  {"at", Host_at},
-  {"self", Host_self},
-  {"getPropValue", Host_get_property_value},
-  {"sleep", Host_sleep},
-  {"destroy", Host_destroy},
+static const luaL_reg host_functions[] = {
+  {"getByName", l_host_get_by_name},
+  {"name", l_host_get_name},
+  {"number", l_host_number},
+  {"at", l_host_at},
+  {"self", l_host_self},
+  {"getPropValue", l_host_get_property_value},
+  {"sleep", l_host_sleep},
+  {"destroy", l_host_destroy},
   // Bypass XML Methods
   {"setFunction", console_set_function},
   {"setProperty", console_host_set_property},
   {NULL, NULL}
 };
 
-static int Host_gc(lua_State * L)
+static int l_host_gc(lua_State * L)
 {
-  m_host_t ht = checkHost(L, -1);
+  m_host_t ht = sglua_checkhost(L, -1);
   if (ht)
     ht = NULL;
   return 0;
 }
 
-static int Host_tostring(lua_State * L)
+static int l_host_tostring(lua_State * L)
 {
   lua_pushfstring(L, "Host :%p", lua_touserdata(L, 1));
   return 1;
 }
 
-static const luaL_reg Host_meta[] = {
-  {"__gc", Host_gc},
-  {"__tostring", Host_tostring},
+static const luaL_reg host_meta[] = {
+  {"__gc", l_host_gc},
+  {"__tostring", l_host_tostring},
   {0, 0}
 };
 
 /*
  * AS Methods
  */
-static const luaL_reg platf_methods[] = {
+static const luaL_reg platf_functions[] = {
     {"open", console_open},
     {"close", console_close},
     {"AS_open", console_AS_open},
@@ -637,7 +637,7 @@ static int gras_register_application(lua_State * L)
   return 0;
 }
 
-static const luaL_Reg simgrid_funcs[] = {
+static const luaL_Reg simgrid_functions[] = {
   {"create_environment", create_environment},
   {"launch_application", launch_application},
   {"debug", debug},
@@ -747,24 +747,24 @@ lua_State* sglua_get_maestro(void) {
 void register_c_functions(lua_State *L) {
 
   /* register the core C functions to lua */
-  luaL_register(L, "simgrid", simgrid_funcs);
+  luaL_register(L, "simgrid", simgrid_functions);
 
   /* register the task methods to lua */
-  luaL_openlib(L, TASK_MODULE_NAME, Task_methods, 0);   // create methods table, add it to the globals
+  luaL_openlib(L, TASK_MODULE_NAME, task_functions, 0);   // create methods table, add it to the globals
   luaL_newmetatable(L, TASK_MODULE_NAME);       // create metatable for Task, add it to the Lua registry
   luaL_openlib(L, 0, Task_meta, 0);     // fill metatable
   lua_pushliteral(L, "__index");
   lua_pushvalue(L, -3);         // dup methods table
-  lua_rawset(L, -3);            // matatable.__index = methods
+  lua_rawset(L, -3);            // metatable.__index = methods
   lua_pushliteral(L, "__metatable");
   lua_pushvalue(L, -3);         // dup methods table
   lua_rawset(L, -3);            // hide metatable:metatable.__metatable = methods
   lua_pop(L, 1);                // drop metatable
 
   /* register the hosts methods to lua */
-  luaL_openlib(L, HOST_MODULE_NAME, Host_methods, 0);
+  luaL_openlib(L, HOST_MODULE_NAME, host_functions, 0);
   luaL_newmetatable(L, HOST_MODULE_NAME);
-  luaL_openlib(L, 0, Host_meta, 0);
+  luaL_openlib(L, 0, host_meta, 0);
   lua_pushliteral(L, "__index");
   lua_pushvalue(L, -3);
   lua_rawset(L, -3);
@@ -773,8 +773,8 @@ void register_c_functions(lua_State *L) {
   lua_rawset(L, -3);
   lua_pop(L, 1);
 
-  /* register the links methods to lua */
-  luaL_openlib(L, PLATF_MODULE_NAME, platf_methods, 0);
+  /* register the platform methods to lua */
+  luaL_openlib(L, PLATF_MODULE_NAME, platf_functions, 0);
   luaL_newmetatable(L, PLATF_MODULE_NAME);
   lua_pop(L, 1);
 }
