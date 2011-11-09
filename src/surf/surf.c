@@ -218,7 +218,6 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
   double value = -1;
 #define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + (offset))))
 
-  xbt_assert(solve, "Give me a real solver function!");
   solve(sys);
 
   xbt_swag_foreach(action, running_actions) {
