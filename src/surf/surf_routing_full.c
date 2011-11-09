@@ -148,16 +148,6 @@ routing_component_t model_full_create(void)
   return (routing_component_t) new_component;
 }
 
-void model_full_load(void)
-{
-  /* use "surfxml_add_callback" to add a parse function call */
-}
-
-void model_full_unload(void)
-{
-  /* use "surfxml_del_callback" to remove a parse function call */
-}
-
 void model_full_end(void)
 {
   unsigned int i;

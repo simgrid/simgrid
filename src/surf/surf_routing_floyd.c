@@ -198,16 +198,6 @@ routing_component_t model_floyd_create(void)
   return (routing_component_t)new_component;
 }
 
-void model_floyd_load(void)
-{
-  /* use "surfxml_add_callback" to add a parse function call */
-}
-
-void model_floyd_unload(void)
-{
-  /* use "surfxml_del_callback" to remove a parse function call */
-}
-
 void model_floyd_end(void)
 {
 

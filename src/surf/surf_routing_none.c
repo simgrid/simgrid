@@ -72,14 +72,3 @@ routing_component_t model_none_create(void)
   return (routing_component_t) new_component;
 }
 
-void model_none_load(void)
-{
-}
-
-void model_none_unload(void)
-{
-}
-
-void model_none_end(void)
-{
-}

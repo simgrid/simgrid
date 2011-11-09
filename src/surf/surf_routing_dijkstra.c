@@ -478,16 +478,6 @@ routing_component_t model_dijkstracache_create(void)
   return model_dijkstra_both_create(1);
 }
 
-void model_dijkstra_both_load(void)
-{
-  /* use "surfxml_add_callback" to add a parse function call */
-}
-
-void model_dijkstra_both_unload(void)
-{
-  /* use "surfxml_del_callback" to remove a parse function call */
-}
-
 void model_dijkstra_both_end(void)
 {
   routing_component_dijkstra_t routing =
