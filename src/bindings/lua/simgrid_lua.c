@@ -317,7 +317,7 @@ static int l_task_gc(lua_State* L)
  */
 static int l_task_tostring(lua_State* L)
 {
-  m_task_t task = sglua_checktask(L, 1);
+  m_task_t task = *((m_task_t*) luaL_checkudata(L, 1, TASK_MODULE_NAME));
   lua_pushfstring(L, "Task: %p", task);
   return 1;
 }
