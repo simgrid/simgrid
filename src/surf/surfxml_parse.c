@@ -21,7 +21,7 @@ int ETag_surfxml_include_state(void);
 /*
  * Helping functions
  */
-void surf_parse_error(char *msg) {
+void surf_parse_error(const char *msg) {
   xbt_die("Parse error on line %d: %s\n", surf_parse_lineno, msg);
 }
 
