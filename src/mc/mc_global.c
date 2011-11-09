@@ -290,6 +290,7 @@ void MC_replay_liveness(xbt_fifo_t stack)
   xbt_fifo_item_t item;
   mc_state_t state;
   mc_pair_stateless_t pair;
+  int depth = 1;
 
   XBT_DEBUG("**** Begin Replay ****");
 
@@ -306,26 +307,33 @@ void MC_replay_liveness(xbt_fifo_t stack)
 
     pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
     state = (mc_state_t) pair->graph_state;
-    saved_req = MC_state_get_executed_request(state, &value);
-    //XBT_DEBUG("SavedReq->call %u", saved_req->call);
-   
-    if(saved_req != NULL){
-      /* because we got a copy of the executed request, we have to fetch the  
-         real one, pointed by the request field of the issuer process */
-      req = &saved_req->issuer->request;
-      //XBT_DEBUG("Req->call %u", req->call);
 
-      /* Debug information */
-      if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
-        req_str = MC_request_to_string(req, value);
-        XBT_DEBUG("Replay: %s (%p)", req_str, state);
-        xbt_free(req_str);
+    if(pair->requests > 0){
+   
+      saved_req = MC_state_get_executed_request(state, &value);
+      //XBT_DEBUG("SavedReq->call %u", saved_req->call);
+      
+      if(saved_req != NULL){
+	/* because we got a copy of the executed request, we have to fetch the  
+	   real one, pointed by the request field of the issuer process */
+	req = &saved_req->issuer->request;
+	//XBT_DEBUG("Req->call %u", req->call);
+	
+	/* Debug information */
+	if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
+	  req_str = MC_request_to_string(req, value);
+	  XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
+	  xbt_free(req_str);
+	}
+	
       }
+ 
+      SIMIX_request_pre(req, value);
+      MC_wait_for_requests();
     }
-         
-    SIMIX_request_pre(req, value);
-    MC_wait_for_requests();
-         
+
+    depth++;
+    
     /* Update statistics */
     mc_stats_pair->visited_pairs++;
   }  
@@ -473,9 +481,13 @@ void MC_show_stack_liveness_stateless(xbt_fifo_t stack){
         : (NULL)); item = xbt_fifo_get_prev_item(item)) {
     req = MC_state_get_executed_request(pair->graph_state, &value);
     if(req){
-      req_str = MC_request_to_string(req, value);
-      XBT_INFO("%s", req_str);
-      xbt_free(req_str);
+      if(pair->requests>0){
+	req_str = MC_request_to_string(req, value);
+	XBT_INFO("%s", req_str);
+	xbt_free(req_str);
+      }else{
+	XBT_INFO("End of system requests but evolution in Büchi automaton");
+      }
     }
   }
 }
