@@ -437,8 +437,12 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
  * \brief Sends a task on a mailbox.
  *
  * This is a non blocking detached send function.
- * Think of it as a best effort send. The task should
- * be destroyed by the receiver.
+ * Think of it as a best effort send. Keep in mind that the third parameter
+ * is only called if the communication fails. If the communication does work,
+ * it is responsibility of the receiver code to free anything related to
+ * the task, as usual. More details on this can be obtained on
+ * <a href="http://lists.gforge.inria.fr/pipermail/simgrid-user/2011-November/002649.html">this thread</a>
+ * in the SimGrid-user mailing list archive.
  *
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
