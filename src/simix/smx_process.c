@@ -46,28 +46,38 @@ void SIMIX_process_cleanup(smx_process_t process)
     SIMIX_comm_cancel(action);
 
     if (action->comm.src_proc == process) {
-      XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d",
-          action, action->comm.detached, action->state);
+      XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p",
+          action, action->comm.detached, action->state, action->comm.src_proc, action->comm.dst_proc);
       action->comm.src_proc = NULL;
 
       if (action->comm.detached) {
-        /* the receiver was supposed to destroy the comm after completion,
-         * but the comm will actually never finish */
-        action->comm.refcount++;
+         if (action->comm.refcount == 0) {
+           /* I'm not supposed to destroy a detached comm from the sender side,
+            * unless there is no receiver matching the rdv */
+           action->comm.refcount++;
+           SIMIX_comm_destroy(action);
+         }
+      }
+      else {
+        SIMIX_comm_destroy(action);
       }
     }
     else if (action->comm.dst_proc == process){
-      XBT_DEBUG("Found an unfinished recv comm %p, state %d", action, action->state);
+      XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p",
+          action, action->state, action->comm.src_proc, action->comm.dst_proc);
       action->comm.dst_proc = NULL;
+
+      if (action->comm.detached && action->comm.refcount == 1
+          && action->comm.src_proc != NULL) {
+        /* the comm will be freed right now, remove it from the sender */
+        xbt_fifo_remove(action->comm.src_proc->comms, action);
+      }
+      SIMIX_comm_destroy(action);
     }
     else {
-      XBT_DEBUG("Strange, I'm not in comm %p, state = %d, src = %p, dst = %p", action,
-          action->state, action->comm.src_proc, action->comm.dst_proc);
-      THROW_IMPOSSIBLE;
+      xbt_die("Communication action %p is in my list but I'm not the sender "
+          "or the receiver", action);
     }
-
-    /* FIXME uncommenting this instruction crashes complex simulations
-    SIMIX_comm_destroy(action); */
   }
 
   /*xbt_swag_remove(process, simix_global->process_to_run);*/
