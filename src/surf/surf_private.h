@@ -116,20 +116,11 @@ typedef struct s_route {
   xbt_dynar_t link_list;
 } s_route_t, *route_t;
 
-typedef struct s_name_route {
-  xbt_dynar_t link_name_list;
-} s_name_route_t, *name_route_t;
-
 typedef struct s_name_route_extended {
   s_route_t generic_route;
   char *src_gateway;
   char *dst_gateway;
 } s_name_route_extended_t, *name_route_extended_t;
-
-typedef struct s_route_limits {
-  char *src_gateway;
-  char *dst_gateway;
-} s_route_limits_t, *route_limits_t;
 
 typedef struct s_route_extended {
   s_route_t generic_route;
