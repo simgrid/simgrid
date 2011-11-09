@@ -222,21 +222,29 @@ static int l_task_send(lua_State* L)
 }
 
 /**
- * \brief Receives a task or fails after a timeout.
+ * \brief Receives a task.
  * \param L a Lua state
  * \return number of values returned to Lua
  *
  * - Argument 1 (string): mailbox
- * - Argument 2 (number): timeout
+ * - Argument 2 (number, optional): timeout (default is no timeout)
  * - Return value (task/nil): the task received or nil if the communication
  * has failed
  */
-static int l_task_recv_with_timeout(lua_State *L)
+static int l_task_recv(lua_State *L)
 {
   m_task_t task = NULL;
   const char* mailbox = luaL_checkstring(L, 1);
-  int timeout = luaL_checknumber(L, 2);
+  int timeout;
+  if (lua_gettop(L) >= 2) {
                                   /* mailbox timeout */
+    timeout = luaL_checknumber(L, 2);
+  }
+  else {
+                                  /* mailbox */
+    timeout = -1;
+    /* no timeout by default */
+  }
   lua_settop(L, 0);
                                   /* -- */
   MSG_error_t res = MSG_task_receive_with_timeout(&task, mailbox, timeout);
@@ -270,21 +278,6 @@ static int l_task_recv_with_timeout(lua_State *L)
   return 1;
 }
 
-/**
- * \brief Receives a task.
- * \param L a Lua state
- * \return number of values returned to Lua
- *
- * - Argument 1 (string): mailbox
- * - Return value (task/nil): the task received or nil if the communication
- * has failed
- */
-static int l_task_recv(lua_State * L)
-{
-  lua_pushnumber(L, -1.0);
-  return l_task_recv_with_timeout(L);
-}
-
 static const luaL_reg task_functions[] = {
   {"new", l_task_new},
   {"name", l_task_get_name},
@@ -292,7 +285,6 @@ static const luaL_reg task_functions[] = {
   {"execute", l_task_execute},
   {"send", l_task_send},
   {"recv", l_task_recv},
-  {"recv_timeout", l_task_recv_with_timeout},
   {NULL, NULL}
 };
 

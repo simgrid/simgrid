@@ -75,7 +75,7 @@ end
 -- event Methods
 function events.sleep(time)
   my_mailbox = job.me.ip()..":"..job.me.port()
-  task = simgrid.task.recv_timeout(my_mailbox, time)
+  task = simgrid.task.recv(my_mailbox, time)
 
   if task ~= nil then
     -- an RPC call just woke me up
