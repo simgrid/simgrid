@@ -668,6 +668,7 @@ void SIMIX_comm_finish(smx_action_t action)
     }
 
     req->issuer->waiting_action = NULL;
+    xbt_fifo_remove(req->issuer->comms, action);
     SIMIX_request_answer(req);
     destroy_count++;
   }
