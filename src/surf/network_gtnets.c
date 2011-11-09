@@ -113,9 +113,8 @@ static void create_gtnets_topology()
   int src_id,dst_id;
 
    XBT_DEBUG("Starting topology generation");
-// À refaire plus tard. Il faut prendre la liste des hôtes/routeurs (dans routing)
-// À partir de cette liste, on les numérote.
-// Ensuite, on peut utiliser les id pour refaire les appels GTNets qui suivent.
+// FIXME: We should take the list of hosts/routers (in the routing module), number the elements of this list,
+//   and then you can use the id to reimplement properly the following GTNets calls
 
    //get the onelinks from the parsed platform
    xbt_dynar_t onelink_routes = global_routing->get_onelink_routes();
