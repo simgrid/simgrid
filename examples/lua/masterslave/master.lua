@@ -18,11 +18,11 @@ function Master(...)
   -- Dispatch the tasks
 
   for i = 1, nb_task do
-    local tk = simgrid.Task.new("Task "..i, comp_size, comm_size)
-    local task_name = simgrid.Task.name(tk)
+    local tk = simgrid.task.new("Task "..i, comp_size, comm_size)
+    local task_name = simgrid.task.name(tk)
     local alias = "slave " .. (i % slave_count)
     simgrid.info("Master sending  '" .. task_name .. "' To '" .. alias .."'")
-    simgrid.Task.send(tk,alias) -- C user data set to NULL
+    simgrid.task.send(tk,alias) -- C user data set to NULL
     simgrid.info("Master done sending '".. task_name .. "' To '" .. alias .."'")
   end
 
@@ -32,8 +32,8 @@ function Master(...)
   for i = 0, slave_count - 1 do
     local alias = "slave " .. i
     simgrid.info("Master: sending finalize to " .. alias)
-    local finalize = simgrid.Task.new("finalize", comp_size, comm_size)
-    simgrid.Task.send(finalize, alias)
+    local finalize = simgrid.task.new("finalize", comp_size, comm_size)
+    simgrid.task.send(finalize, alias)
   end
   simgrid.info("Master: Everything's done.")
 end -- Master

@@ -1,11 +1,11 @@
 function Receiver(...)
 
   simgrid.info("Hello From Receiver")
-  local sender = simgrid.Host.getByName(arg[1])
+  local sender = simgrid.host.get_by_name(arg[1])
   local send_alias = arg[2]
   local recv_alias = "Receiver"
-  simgrid.info("Receiving Task from " .. simgrid.Host.name(sender))
-  local task = simgrid.Task.recv(recv_alias)
+  simgrid.info("Receiving Task from " .. simgrid.host.name(sender))
+  local task = simgrid.task.recv(recv_alias)
   local mm = mmult(task['size'], task['size'], task['matrix_1'], task['matrix_2'])
   --mprint(task['size'], task['size'], mm)
   task['matrix_res'] = mm

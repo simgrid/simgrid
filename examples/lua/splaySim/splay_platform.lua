@@ -11,7 +11,7 @@ require "simgrid"
   for i=10,0,-1 do
     simgrid.AS.addLink{AS="AS0",id=i,bandwidth=252750+ i*768,latency=0.000270544+i*0.087};   
   end
-  -- simgrid.Route.new(src_id,des_id,links_nb,links_list)
+  -- simgrid.route.new(src_id,des_id,links_nb,links_list)
    simgrid.AS.addRoute("AS0","Splayd_1","Splayd_2",{"1"});
    simgrid.AS.addRoute("AS0","Splayd_1","Splayd_3",{"0","1","2","3","4","8"});
    simgrid.AS.addRoute("AS0","Splayd_1","Splayd_4",{"3","4","5"});

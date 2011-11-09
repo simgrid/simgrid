@@ -1,7 +1,7 @@
 function Sender(...) 
 
 	simgrid.info("Hello From Sender")
-	receiver = simgrid.Host.getByName(arg[1])
+	receiver = simgrid.host.get_by_name(arg[1])
 	task_comp = arg[2]
 	task_comm = arg[3]
 	rec_alias = arg[4]
@@ -16,12 +16,12 @@ function Sender(...)
 	simgrid.info("Argc="..(#arg).." (should be 4)")
 
 	-- Sending Task
-	task = simgrid.Task.new("matrix_task",task_comp,task_comm);
+	task = simgrid.task.new("matrix_task",task_comp,task_comm);
 	task['matrix_1'] = m1;
 	task['matrix_2'] = m2;
 	task['size'] = size;
-	simgrid.info("Sending "..simgrid.Task.name(task).." to "..simgrid.Host.name(receiver));
-	simgrid.Task.send(task,rec_alias);
+	simgrid.info("Sending "..simgrid.task.name(task).." to "..simgrid.host.name(receiver));
+	simgrid.task.send(task,rec_alias);
 	-- Read The Result 
 	mm = task['matrix_res']
 	simgrid.info("Got the Multiplication result ...Bye");
@@ -32,11 +32,11 @@ end
 function Receiver(...)
 	
 	simgrid.info("Hello From Receiver")
-	sender = simgrid.Host.getByName(arg[1])
+	sender = simgrid.host.get_by_name(arg[1])
 	send_alias = arg[2]
 	recv_alias = "Receiver";
-	simgrid.info("Receiving Task from "..simgrid.Host.name(sender));
-	task = simgrid.Task.recv(recv_alias);
+	simgrid.info("Receiving Task from "..simgrid.host.name(sender));
+	task = simgrid.task.recv(recv_alias);
 	mm = mmult(task['size'],task['size'],task['matrix_1'],task['matrix_2']);
 	--mprint(task['size'],task['size'],mm)
 	task['matrix_res'] = mm;

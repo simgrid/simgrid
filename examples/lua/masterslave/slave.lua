@@ -5,14 +5,14 @@ function Slave(...)
 
   while true do
 
-    local tk = simgrid.Task.recv(my_mailbox)
-    if (simgrid.Task.name(tk) == "finalize") then
+    local tk = simgrid.task.recv(my_mailbox)
+    if (simgrid.task.name(tk) == "finalize") then
       simgrid.info("Slave '" .. my_mailbox .. "' got finalize msg")
       break
     end
-    local task_name = simgrid.Task.name(tk) 
+    local task_name = simgrid.task.name(tk) 
     simgrid.info("Slave '" .. my_mailbox.. "' processing " .. task_name)
-    simgrid.Task.execute(tk)
+    simgrid.task.execute(tk)
     simgrid.info("Slave '" .. my_mailbox .. "': task " .. task_name .. " done")
   end
 

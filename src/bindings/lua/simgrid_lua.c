@@ -12,11 +12,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
-#define TASK_MODULE_NAME "simgrid.Task"
-#define HOST_MODULE_NAME "simgrid.Host"
+#define TASK_MODULE_NAME "simgrid.task"
+#define HOST_MODULE_NAME "simgrid.host"
 // Surf (bypass XML)
-#define LINK_MODULE_NAME "simgrid.Link"
-#define ROUTE_MODULE_NAME "simgrid.Route"
+#define LINK_MODULE_NAME "simgrid.link"
+#define ROUTE_MODULE_NAME "simgrid.route"
 #define PLATF_MODULE_NAME "simgrid.platf"
 
 static lua_State* sglua_maestro_state;
@@ -255,7 +255,7 @@ static int l_task_tostring(lua_State* L)
   return 1;
 }
 
-static const luaL_reg Task_meta[] = {
+static const luaL_reg task_meta[] = {
   {"__gc", l_task_gc},
   {"__tostring", l_task_tostring},
   {NULL, NULL}
@@ -441,17 +441,17 @@ static int gras_generate(lua_State * L)
  * Host Methods
  */
 static const luaL_reg host_functions[] = {
-  {"getByName", l_host_get_by_name},
+  {"get_by_name", l_host_get_by_name},
   {"name", l_host_get_name},
   {"number", l_host_number},
   {"at", l_host_at},
   {"self", l_host_self},
-  {"getPropValue", l_host_get_property_value},
+  {"get_prop_value", l_host_get_property_value},
   {"sleep", l_host_sleep},
   {"destroy", l_host_destroy},
   // Bypass XML Methods
-  {"setFunction", console_set_function},
-  {"setProperty", console_host_set_property},
+  {"set_function", console_set_function},
+  {"set_property", console_host_set_property},
   {NULL, NULL}
 };
 
@@ -752,7 +752,7 @@ void register_c_functions(lua_State *L) {
   /* register the task methods to lua */
   luaL_openlib(L, TASK_MODULE_NAME, task_functions, 0);   // create methods table, add it to the globals
   luaL_newmetatable(L, TASK_MODULE_NAME);       // create metatable for Task, add it to the Lua registry
-  luaL_openlib(L, 0, Task_meta, 0);     // fill metatable
+  luaL_openlib(L, 0, task_meta, 0);     // fill metatable
   lua_pushliteral(L, "__index");
   lua_pushvalue(L, -3);         // dup methods table
   lua_rawset(L, -3);            // metatable.__index = methods
