@@ -21,16 +21,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
 static lua_State* sglua_maestro_state;
 
+int luaopen_simgrid(lua_State *L);
 static void register_c_functions(lua_State *L);
+static int run_lua_code(int argc, char **argv);
+
 
 /**
  * \brief Like luaL_checkudata, with additional debug logs.
+ *
+ * This function is for debugging purposes only.
+ *
  * \param L a lua state
  * \param ud index of the userdata to check in the stack
  * \param tname key of the metatable of this userdata in the registry
  */
-static void* my_checkudata(lua_State* L, int ud, const char* tname) {
-
+static void* my_checkudata(lua_State* L, int ud, const char* tname)
+{
   XBT_DEBUG("Checking the userdata: ud = %d", ud);
   sglua_stack_dump("my_checkudata: ", L);
   void* p = lua_touserdata(L, ud);
@@ -53,11 +59,15 @@ static void* my_checkudata(lua_State* L, int ud, const char* tname) {
   return p;
 }
 
+/* ********************************************************************************* */
+/*                                simgrid.task API                                   */
+/* ********************************************************************************* */
+
 /**
- * @brief Ensures that a value is a valid task and returns it.
- * @param L a Lua state
- * @param index an index in the Lua stack
- * @return the task at this index
+ * \brief Ensures that a value in the stack is a valid task and returns it.
+ * \param L a Lua state
+ * \param index an index in the Lua stack
+ * \return the C task corresponding to this Lua task
  */
 static m_task_t sglua_checktask(lua_State* L, int index)
 {
@@ -77,17 +87,15 @@ static m_task_t sglua_checktask(lua_State* L, int index)
   return task;
 }
 
-/* ********************************************************************************* */
-/*                           wrapper functions                                       */
-/* ********************************************************************************* */
-
 /**
  * \brief Creates a new task and leaves it onto the stack.
+ * \param L a Lua state
+ * \return number of values returned to Lua
  *
- * Lua arguments:
- * - task name (string)
- * - computation size (integer)
- * - communication size (integer)
+ * - Argument 1 (string): name of the task
+ * - Argument 2 (number): computation size
+ * - Argument 3 (number): communication size
+ * - Return value (task): the task created
  */
 static int l_task_new(lua_State* L)
 {
@@ -114,6 +122,14 @@ static int l_task_new(lua_State* L)
   return 1;
 }
 
+/**
+ * \brief Returns the name of a task.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (task): a task
+ * - Return value (string): name of the task
+ */
 static int l_task_get_name(lua_State* L)
 {
   m_task_t task = sglua_checktask(L, 1);
@@ -121,6 +137,14 @@ static int l_task_get_name(lua_State* L)
   return 1;
 }
 
+/**
+ * \brief Returns the computation duration of a task.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (task): a task
+ * - Return value (number): computation duration of this task
+ */
 static int l_task_computation_duration(lua_State* L)
 {
   m_task_t task = sglua_checktask(L, 1);
@@ -128,6 +152,14 @@ static int l_task_computation_duration(lua_State* L)
   return 1;
 }
 
+/**
+ * \brief Executes a task.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (task): the task to execute
+ * - Return value (number): error code
+ */
 static int l_task_execute(lua_State* L)
 {
   m_task_t task = sglua_checktask(L, 1);
@@ -136,6 +168,14 @@ static int l_task_execute(lua_State* L)
   return 1;
 }
 
+/**
+ * \brief Sends a task to a mailbox and waits for its completion.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (task): the task to send
+ * - Argument 2 (string): mailbox
+ */
 static int l_task_send(lua_State* L)
 {
   m_task_t task = sglua_checktask(L, 1);
@@ -181,6 +221,16 @@ static int l_task_send(lua_State* L)
   return 0;
 }
 
+/**
+ * \brief Receives a task or fails after a timeout.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (string): mailbox
+ * - Argument 2 (number): timeout
+ * - Return value (task/nil): the task received or nil if the communication
+ * has failed
+ */
 static int l_task_recv_with_timeout(lua_State *L)
 {
   m_task_t task = NULL;
@@ -220,6 +270,15 @@ static int l_task_recv_with_timeout(lua_State *L)
   return 1;
 }
 
+/**
+ * \brief Receives a task.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (string): mailbox
+ * - Return value (task/nil): the task received or nil if the communication
+ * has failed
+ */
 static int l_task_recv(lua_State * L)
 {
   lua_pushnumber(L, -1.0);
@@ -237,6 +296,14 @@ static const luaL_reg task_functions[] = {
   {NULL, NULL}
 };
 
+/**
+ * \brief Finalizes the userdata of a task.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (userdata): a C task, possibly NULL if it was sent to another
+ * Lua state
+ */
 static int l_task_gc(lua_State* L)
 {
                                   /* ctask */
@@ -248,6 +315,14 @@ static int l_task_gc(lua_State* L)
   return 0;
 }
 
+/**
+ * \brief Returns a string representation of a C task.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (userdata): a task
+ * - Return value (string): a string describing this task
+ */
 static int l_task_tostring(lua_State* L)
 {
   m_task_t task = sglua_checktask(L, 1);
@@ -261,8 +336,15 @@ static const luaL_reg task_meta[] = {
   {NULL, NULL}
 };
 
+/* ********************************************************************************* */
+/*                                simgrid.host API                                   */
+/* ********************************************************************************* */
+
 /**
- * Host
+ * \brief Ensures that a value in the stack is a host and returns it.
+ * \param L a Lua state
+ * \param index an index in the Lua stack
+ * \return the C host corresponding to this Lua host
  */
 static m_host_t sglua_checkhost(lua_State * L, int index)
 {
@@ -279,6 +361,14 @@ static m_host_t sglua_checkhost(lua_State * L, int index)
   return ht;
 }
 
+/**
+ * \brief Returns a host given its name.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (string): name of a host
+ * - Return value (host): the corresponding host
+ */
 static int l_host_get_by_name(lua_State * L)
 {
   const char *name = luaL_checkstring(L, 1);
@@ -298,6 +388,14 @@ static int l_host_get_by_name(lua_State * L)
   return 1;
 }
 
+/**
+ * \brief Returns the name of a host.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (host): a host
+ * - Return value (string): name of this host
+ */
 static int l_host_get_name(lua_State * L)
 {
   m_host_t ht = sglua_checkhost(L, 1);
@@ -305,12 +403,27 @@ static int l_host_get_name(lua_State * L)
   return 1;
 }
 
+/**
+ * \brief Returns the number of existing hosts.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Return value (number): number of hosts
+ */
 static int l_host_number(lua_State * L)
 {
   lua_pushnumber(L, MSG_get_host_number());
   return 1;
 }
 
+/**
+ * \brief Returns the host given its index.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (number): an index (1 is the first)
+ * - Return value (host): the host at this index
+ */
 static int l_host_at(lua_State * L)
 {
   int index = luaL_checkinteger(L, 1);
@@ -322,9 +435,15 @@ static int l_host_at(lua_State * L)
   lua_setmetatable(L, -2);
   lua_setfield(L, -2, "__simgrid_host");        /* put the userdata as field of the table */
   return 1;
-
 }
 
+/**
+ * \brief Returns the host where the current process is located.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Return value (host): the current host
+ */
 static int l_host_self(lua_State * L)
 {
                                   /* -- */
@@ -343,6 +462,15 @@ static int l_host_self(lua_State * L)
   return 1;
 }
 
+/**
+ * \brief Returns the value of a host property.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (host): a host
+ * - Argument 2 (string): name of the property to get
+ * - Return value (string): the value of this property
+ */
 static int l_host_get_property_value(lua_State * L)
 {
   m_host_t ht = sglua_checkhost(L, 1);
@@ -351,6 +479,13 @@ static int l_host_get_property_value(lua_State * L)
   return 1;
 }
 
+/**
+ * \brief Makes the current process sleep for a while.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (number): duration of the sleep
+ */
 static int l_host_sleep(lua_State *L)
 {
   int time = luaL_checknumber(L, 1);
@@ -358,12 +493,53 @@ static int l_host_sleep(lua_State *L)
   return 1;
 }
 
+/**
+ * \brief Destroys a host.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (host): the host to destroy
+ */
 static int l_host_destroy(lua_State *L)
 {
   m_host_t ht = sglua_checkhost(L, 1);
   __MSG_host_destroy(ht);
   return 1;
 }
+
+static const luaL_reg host_functions[] = {
+  {"get_by_name", l_host_get_by_name},
+  {"name", l_host_get_name},
+  {"number", l_host_number},
+  {"at", l_host_at},
+  {"self", l_host_self},
+  {"get_prop_value", l_host_get_property_value},
+  {"sleep", l_host_sleep},
+  {"destroy", l_host_destroy},
+  // Bypass XML Methods
+  {"set_function", console_set_function},
+  {"set_property", console_host_set_property},
+  {NULL, NULL}
+};
+
+/**
+ * \brief Returns a string representation of a host.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (userdata): a host
+ * - Return value (string): a string describing this host
+ */
+static int l_host_tostring(lua_State * L)
+{
+  lua_pushfstring(L, "Host :%p", lua_touserdata(L, 1));
+  return 1;
+}
+
+static const luaL_reg host_meta[] = {
+  {"__tostring", l_host_tostring},
+  {0, 0}
+};
 
 /* ********************************************************************************* */
 /*                           lua_stub_generator functions                            */
@@ -424,7 +600,6 @@ static int gras_add_process_function(lua_State * L)
   return 0;
 }
 
-
 static int gras_generate(lua_State * L)
 {
   const char *project_name = luaL_checkstring(L, 1);
@@ -434,41 +609,10 @@ static int gras_generate(lua_State * L)
   return 0;
 }
 
+/* ********************************************************************************* */
+/*                               simgrid.platf API                                   */
+/* ********************************************************************************* */
 
-// *********** Register Methods ******************************************* //
-
-/*
- * Host Methods
- */
-static const luaL_reg host_functions[] = {
-  {"get_by_name", l_host_get_by_name},
-  {"name", l_host_get_name},
-  {"number", l_host_number},
-  {"at", l_host_at},
-  {"self", l_host_self},
-  {"get_prop_value", l_host_get_property_value},
-  {"sleep", l_host_sleep},
-  {"destroy", l_host_destroy},
-  // Bypass XML Methods
-  {"set_function", console_set_function},
-  {"set_property", console_host_set_property},
-  {NULL, NULL}
-};
-
-static int l_host_tostring(lua_State * L)
-{
-  lua_pushfstring(L, "Host :%p", lua_touserdata(L, 1));
-  return 1;
-}
-
-static const luaL_reg host_meta[] = {
-  {"__tostring", l_host_tostring},
-  {0, 0}
-};
-
-/*
- * AS Methods
- */
 static const luaL_reg platf_functions[] = {
     {"open", console_open},
     {"close", console_close},
@@ -481,50 +625,17 @@ static const luaL_reg platf_functions[] = {
     {NULL, NULL}
 };
 
-/*
- * Environment related
- */
+/* ********************************************************************************* */
+/*                                  simgrid API                                      */
+/* ********************************************************************************* */
 
 /**
- * @brief Runs a Lua function as a new simulated process.
- * @param argc number of arguments of the function
- * @param argv name of the Lua function and array of its arguments
- * @return result of the function
+ * \brief Deploys your application.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (string): name of the deployment file to load
  */
-static int run_lua_code(int argc, char **argv)
-{
-  XBT_DEBUG("Run lua code %s", argv[0]);
-
-  lua_State *L = sglua_clone_maestro();
-  int res = 1;
-
-  /* start the function */
-  lua_getglobal(L, argv[0]);
-  xbt_assert(lua_isfunction(L, -1),
-              "The lua function %s does not seem to exist", argv[0]);
-
-  /* push arguments onto the stack */
-  int i;
-  for (i = 1; i < argc; i++)
-    lua_pushstring(L, argv[i]);
-
-  /* call the function */
-  _XBT_GNUC_UNUSED int err;
-  err = lua_pcall(L, argc - 1, 1, 0);
-  xbt_assert(err == 0, "error running function `%s': %s", argv[0],
-              lua_tostring(L, -1));
-
-  /* retrieve result */
-  if (lua_isnumber(L, -1)) {
-    res = lua_tonumber(L, -1);
-    lua_pop(L, 1);              /* pop returned value */
-  }
-
-  XBT_DEBUG("Execution of Lua code %s is over", (argv ? argv[0] : "(null)"));
-
-  return res;
-}
-
 static int launch_application(lua_State * L)
 {
   const char *file = luaL_checkstring(L, 1);
@@ -533,6 +644,13 @@ static int launch_application(lua_State * L)
   return 0;
 }
 
+/**
+ * \brief Creates the platform.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (string): name of the platform file to load
+ */
 static int create_environment(lua_State * L)
 {
   const char *file = luaL_checkstring(L, 1);
@@ -541,6 +659,13 @@ static int create_environment(lua_State * L)
   return 0;
 }
 
+/**
+ * \brief Prints a log string with debug level.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (string): the text to print
+ */
 static int debug(lua_State * L)
 {
   const char *str = luaL_checkstring(L, 1);
@@ -548,6 +673,13 @@ static int debug(lua_State * L)
   return 0;
 }
 
+/**
+ * \brief Prints a log string with info level.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (string): the text to print
+ */
 static int info(lua_State * L)
 {
   const char *str = luaL_checkstring(L, 1);
@@ -555,21 +687,27 @@ static int info(lua_State * L)
   return 0;
 }
 
+/**
+ * \brief Runs your application.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ */
 static int run(lua_State * L)
 {
   MSG_main();
   return 0;
 }
 
+/**
+ * \brief Cleans the simulation.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ */
 static int clean(lua_State * L)
 {
   MSG_clean();
   return 0;
 }
-
-/*
- * Bypass XML Parser (lua console)
- */
 
 /*
  * Register platform for MSG
@@ -651,17 +789,18 @@ static const luaL_Reg simgrid_functions[] = {
 };
 
 /* ********************************************************************************* */
-/*                       module management functions                                 */
+/*                           module management functions                             */
 /* ********************************************************************************* */
 
 #define LUA_MAX_ARGS_COUNT 10   /* maximum amount of arguments we can get from lua on command line */
 
-int luaopen_simgrid(lua_State *L);     // Fuck gcc: we don't need that prototype
-
 /**
- * This function is called automatically by the Lua interpreter when some Lua code requires
- * the "simgrid" module.
- * @param L the Lua state
+ * \brief Opens the simgrid Lua module.
+ *
+ * This function is called automatically by the Lua interpreter when some
+ * Lua code requires the "simgrid" module.
+ *
+ * \param L the Lua state
  */
 int luaopen_simgrid(lua_State *L)
 {
@@ -715,25 +854,25 @@ int luaopen_simgrid(lua_State *L)
 }
 
 /**
- * @brief Returns whether a Lua state is the maestro state.
- * @param L a Lua state
- * @return true if this is maestro
+ * \brief Returns whether a Lua state is the maestro state.
+ * \param L a Lua state
+ * \return true if this is maestro
  */
 int sglua_is_maestro(lua_State* L) {
   return L == sglua_maestro_state;
 }
 
 /**
- * @brief Returns the maestro state.
- * @return true the maestro Lua state
+ * \brief Returns the maestro state.
+ * \return the maestro Lua state
  */
 lua_State* sglua_get_maestro(void) {
   return sglua_maestro_state;
 }
 
 /**
- * Makes the appropriate Simgrid functions available to the Lua world.
- * @param L a Lua world
+ * \brief Makes the appropriate Simgrid functions available to the Lua world.
+ * \param L a Lua world
  */
 void register_c_functions(lua_State *L) {
 
@@ -768,4 +907,44 @@ void register_c_functions(lua_State *L) {
   luaL_openlib(L, PLATF_MODULE_NAME, platf_functions, 0);
   luaL_newmetatable(L, PLATF_MODULE_NAME);
   lua_pop(L, 1);
+}
+
+/**
+ * \brief Runs a Lua function as a new simulated process.
+ * \param argc number of arguments of the function
+ * \param argv name of the Lua function and array of its arguments
+ * \return result of the function
+ */
+static int run_lua_code(int argc, char **argv)
+{
+  XBT_DEBUG("Run lua code %s", argv[0]);
+
+  lua_State *L = sglua_clone_maestro();
+  int res = 1;
+
+  /* start the function */
+  lua_getglobal(L, argv[0]);
+  xbt_assert(lua_isfunction(L, -1),
+              "The lua function %s does not seem to exist", argv[0]);
+
+  /* push arguments onto the stack */
+  int i;
+  for (i = 1; i < argc; i++)
+    lua_pushstring(L, argv[i]);
+
+  /* call the function */
+  _XBT_GNUC_UNUSED int err;
+  err = lua_pcall(L, argc - 1, 1, 0);
+  xbt_assert(err == 0, "error running function `%s': %s", argv[0],
+              lua_tostring(L, -1));
+
+  /* retrieve result */
+  if (lua_isnumber(L, -1)) {
+    res = lua_tonumber(L, -1);
+    lua_pop(L, 1);              /* pop returned value */
+  }
+
+  XBT_DEBUG("Execution of Lua code %s is over", (argv ? argv[0] : "(null)"));
+
+  return res;
 }
