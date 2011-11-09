@@ -911,8 +911,5 @@ void surf_workstation_model_init_ptask_L07(void)
   surf_network_model = surf_model_init();
   ptask_define_callbacks();
   ptask_model_init_internal();
-
-  update_model_description(surf_workstation_model_description,
-                           "ptask_L07", surf_workstation_model);
   xbt_dynar_push(model_list, &surf_workstation_model);
 }

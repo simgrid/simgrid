@@ -48,14 +48,10 @@ XBT_PUBLIC(void *) surf_action_new(size_t size, double cost,
 typedef struct surf_model_description {
   const char *name;
   const char *description;
-  surf_model_t model;
   void (*model_init_preparse) (void);
   void (*model_init_postparse) (void);
 } s_surf_model_description_t, *surf_model_description_t;
 
-XBT_PUBLIC(void) update_model_description(s_surf_model_description_t *
-                                          table, const char *name,
-                                          surf_model_t model);
 XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
                                        const char *name);
 XBT_PUBLIC(void) model_help(const char *category,

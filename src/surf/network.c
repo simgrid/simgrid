@@ -864,8 +864,6 @@ void surf_network_model_init_SMPI(void)
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/sender_gap", 10e-6);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
 
-  update_model_description(surf_network_model_description,
-                           "SMPI", surf_network_model);
 }
 
 /************************************************************************/
@@ -886,8 +884,6 @@ void surf_network_model_init_LegrandVelho(void)
                             0.92);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
 
-  update_model_description(surf_network_model_description,
-                           "LV08_fullupdate", surf_network_model);
 }
 
 /***************************************************************************/
@@ -910,9 +906,6 @@ void surf_network_model_init_CM02(void)
   net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
-
-  update_model_description(surf_network_model_description,
-                           "CM02", surf_network_model);
 }
 
 void surf_network_model_init_Reno(void)
@@ -931,9 +924,6 @@ void surf_network_model_init_Reno(void)
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
                             0.92);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
-
-  update_model_description(surf_network_model_description,
-                           "Reno", surf_network_model);
 }
 
 
@@ -954,9 +944,6 @@ void surf_network_model_init_Reno2(void)
                             0.92);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S_parameter",
                             8775);
-
-  update_model_description(surf_network_model_description,
-                           "Reno2", surf_network_model);
 }
 
 void surf_network_model_init_Vegas(void)
@@ -975,7 +962,4 @@ void surf_network_model_init_Vegas(void)
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
                             0.92);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
-
-  update_model_description(surf_network_model_description,
-                           "Vegas", surf_network_model);
 }

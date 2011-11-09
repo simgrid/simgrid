@@ -898,9 +898,6 @@ void im_surf_network_model_init_LegrandVelho(void)
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
                             0.92);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
-
-  update_model_description(surf_network_model_description,
-                           "LV08", surf_network_model);
 }
 
 
