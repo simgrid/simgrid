@@ -101,9 +101,7 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
     current_routing->hierarchy = SURF_ROUTING_BASE;
   xbt_assert(!xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL),
              "Reading a host, processing unit \"%s\" already exists", host->id);
-  xbt_assert(current_routing->set_processing_unit,
-             "no defined method \"set_processing_unit\" in \"%s\"",
-             current_routing->name);
+
   (*(current_routing->set_processing_unit)) (current_routing, host->id);
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
@@ -130,9 +128,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
   xbt_assert(!xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
              "Reading a router, processing unit \"%s\" already exists",
              router->id);
-  xbt_assert(current_routing->set_processing_unit,
-             "no defined method \"set_processing_unit\" in \"%s\"",
-             current_routing->name);
+
   (*(current_routing->set_processing_unit)) (current_routing, router->id);
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
