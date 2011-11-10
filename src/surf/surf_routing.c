@@ -32,7 +32,6 @@ int ROUTING_ASR_LEVEL;          //Routing level
 int COORD_ASR_LEVEL;            //Coordinates level
 int NS3_ASR_LEVEL;              //host node for ns3
 
-static xbt_dict_t patterns = NULL;
 static xbt_dict_t random_value = NULL;
 
 /* Global vars */
@@ -661,9 +660,7 @@ static xbt_dynar_t get_route_no_cleanup(const char *src, const char *dst)
   return route;
 }
 
-/*Get Latency*/
-static double get_latency(const char *src, const char *dst)
-{
+static double get_latency(const char *src, const char *dst) {
   double latency = -1.0;
   get_route_latency(src, dst, NULL, &latency, 0);
   return latency;
@@ -677,19 +674,17 @@ static double get_latency(const char *src, const char *dst)
  * This fuction is call by "finalize". It allow to finalize the 
  * AS or routing components. It delete all the structures.
  */
-static void finalize_rec(AS_t as)
-{
-  if (as) {
-    xbt_dict_cursor_t cursor = NULL;
-    char *key;
-    AS_t elem;
-    xbt_dict_foreach(as->routing_sons, cursor, key, elem)
-      finalize_rec(elem);
+static void finalize_rec(AS_t as) {
+  xbt_dict_cursor_t cursor = NULL;
+  char *key;
+  AS_t elem;
 
-    xbt_dict_free(&as->routing_sons);
-    xbt_free(as->name);
-    as->finalize(as);
-  }
+  xbt_dict_foreach(as->routing_sons, cursor, key, elem)
+  finalize_rec(elem);
+
+  xbt_dict_free(&as->routing_sons);
+  xbt_free(as->name);
+  as->finalize(as);
 }
 
 /**
@@ -698,13 +693,9 @@ static void finalize_rec(AS_t as)
  * walk through the routing components tree and delete the structures
  * by calling the different "finalize" functions in each routing component
  */
-static void finalize(void)
-{
-  /* delete recursively all the tree */
+static void finalize(void) {
   finalize_rec(global_routing->root);
-  /* delete last_route */
-  xbt_dynar_free(&(global_routing->last_route));
-  /* delete global routing structure */
+  xbt_dynar_free(&global_routing->last_route);
   xbt_free(global_routing);
 }
 
@@ -832,14 +823,14 @@ void routing_model_create(size_t size_of_links, void *loopback)
 static void routing_parse_cluster(void)
 {
   char *host_id, *groups, *link_id = NULL;
+  xbt_dict_t patterns = NULL;
 
   s_sg_platf_host_cbarg_t host;
   s_sg_platf_link_cbarg_t link;
 
   if (strcmp(struct_cluster->availability_trace, "")
       || strcmp(struct_cluster->state_trace, "")) {
-    if (xbt_dict_size(patterns) == 0)
-      patterns = xbt_dict_new();
+    patterns = xbt_dict_new();
     xbt_dict_set(patterns, "id", xbt_strdup(struct_cluster->id), free);
     xbt_dict_set(patterns, "prefix", xbt_strdup(struct_cluster->prefix), free);
     xbt_dict_set(patterns, "suffix", xbt_strdup(struct_cluster->suffix), free);
@@ -1030,19 +1021,14 @@ static void routing_parse_cluster(void)
   xbt_dynar_free(&radical_elements);
   xbt_free(new_suffix);
 
-  if (strcmp(struct_cluster->availability_trace, "")
-      || strcmp(struct_cluster->state_trace, ""))
-    xbt_dict_free(&patterns);
-
   XBT_DEBUG("</AS>");
   sg_platf_new_AS_end();
   XBT_DEBUG(" ");
+  xbt_dict_free(&patterns); // no op if it were never set
 }
 
-static void routing_parse_postparse(void)
-{
+static void routing_parse_postparse(void) {
   xbt_dict_free(&random_value);
-  xbt_dict_free(&patterns);
 }
 
 static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
