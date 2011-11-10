@@ -383,24 +383,6 @@ void routing_AS_end()
 /* Aux Business methods */
 
 /**
- * \brief Get the AS name of the element
- *
- * \param name the host name
- *
- */
-static char *elements_As_name(const char *name)
-{
-  routing_component_t as_comp;
-
-  /* (1) find the as where the host is located */
-  as_comp = ((network_element_info_t)
-             xbt_lib_get_or_null(host_lib, name,
-                                 ROUTING_HOST_LEVEL))->rc_component;
-  return as_comp->name;
-}
-
-
-/**
  * \brief Get the AS father and the first elements of the chain
  *
  * \param src the source host name 
@@ -1059,30 +1041,6 @@ static void routing_parse_cluster(void)
   XBT_DEBUG("</AS>");
   sg_platf_new_AS_end();
   XBT_DEBUG(" ");
-}
-
-/*
- * This function take a string and replace parameters from patterns dict.
- * It returns the new value.
- */
-static char *replace_random_parameter(char *string)
-{
-  char *test_string = NULL;
-
-  if (xbt_dict_size(random_value) == 0)
-    return string;
-
-  string = xbt_str_varsubst(string, patterns);  // for patterns of cluster
-  test_string = bprintf("${%s}", string);
-  test_string = xbt_str_varsubst(test_string, random_value);    //Add ${xxxxx} for random Generator
-
-  if (strcmp(test_string, "")) {        //if not empty, keep this value.
-    xbt_free(string);
-    string = test_string;
-  }                             //In other case take old value (without ${})
-  else
-    free(test_string);
-  return string;
 }
 
 static void routing_parse_postparse(void)
