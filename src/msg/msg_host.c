@@ -4,10 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg/private.h"
+#include "msg/msg_private.h"
+#include "msg/msg_mailbox.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "mailbox.h"
 
 /** \defgroup m_host_management Management functions of Hosts
  *  \brief This section describes the host structure of MSG

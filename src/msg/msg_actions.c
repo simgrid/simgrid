@@ -6,7 +6,7 @@
 
 #include "simgrid_config.h" //For getline, keep that include first
 
-#include "msg/private.h"
+#include "msg_private.h"
 #include "xbt/str.h"
 #include "xbt/dynar.h"
 #include "xbt/replay_trace_reader.h"

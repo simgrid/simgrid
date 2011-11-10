@@ -4,11 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
-#include "xbt/sysdep.h"
+#include "msg_private.h"
+#include "msg_mailbox.h"
 #include "mc/mc.h"
 #include "xbt/log.h"
-#include "mailbox.h"
+#include "xbt/sysdep.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,

@@ -8,7 +8,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
-#include "msg/mailbox.h"
 #include "mc/mc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,

@@ -64,8 +64,8 @@ set(EXTRA_DIST
 	src/include/mc/datatypes.h
 	src/include/mc/mc.h
 	src/include/simix/context.h
-	src/msg/private.h
-	src/msg/mailbox.h
+	src/msg/msg_private.h
+	src/msg/msg_mailbox.h
 	src/simdag/private.h
 	src/simdag/dax.dtd
 	src/simdag/dax_dtd.h
@@ -254,13 +254,13 @@ set(SIMIX_SRC
 
 set(MSG_SRC
 	src/msg/msg_config.c
-	src/msg/task.c
-	src/msg/host.c
-	src/msg/m_process.c
-	src/msg/gos.c
-	src/msg/global.c
-	src/msg/environment.c
-	src/msg/deployment.c
+	src/msg/msg_task.c
+	src/msg/msg_host.c
+	src/msg/msg_process.c
+	src/msg/msg_gos.c
+	src/msg/msg_global.c
+	src/msg/msg_environment.c
+	src/msg/msg_deployment.c
 	src/msg/msg_mailbox.c
 	src/msg/msg_actions.c
 )
