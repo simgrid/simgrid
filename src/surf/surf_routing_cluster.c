@@ -16,12 +16,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
 
 static xbt_dict_t cluster_host_link = NULL; /* for tag cluster */
 
-typedef struct {
-  s_routing_component_t generic_routing;
-  xbt_dict_t dict_processing_units;
-  xbt_dict_t dict_autonomous_systems;
-} s_routing_component_cluster_t, *routing_component_cluster_t;
-
 /* Business methods */
 static route_extended_t cluster_get_route(routing_component_t rc,
                                             const char *src,
@@ -50,7 +44,7 @@ static route_extended_t cluster_get_route(routing_component_t rc,
 /* Creation routing model functions */
 routing_component_t model_cluster_create(void)
 {
-  routing_component_t new_component = model_rulebased_create();
+  routing_component_t new_component = model_none_create();
   new_component->get_route = cluster_get_route;
 
   return (routing_component_t) new_component;
