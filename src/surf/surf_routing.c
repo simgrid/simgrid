@@ -874,8 +874,7 @@ static void routing_parse_cluster(void)
       if (strcmp(struct_cluster->availability_trace, "")) {
         xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
         char *tmp_availability_file =
-            xbt_strdup(struct_cluster->availability_trace);
-        xbt_str_varsubst(tmp_availability_file, patterns);
+            xbt_str_varsubst(struct_cluster->availability_trace, patterns);
         XBT_DEBUG("\tavailability_file=\"%s\"", tmp_availability_file);
         host.power_trace = tmgr_trace_new(tmp_availability_file);
         xbt_free(tmp_availability_file);
@@ -883,8 +882,8 @@ static void routing_parse_cluster(void)
         XBT_DEBUG("\tavailability_file=\"\"");
       }
       if (strcmp(struct_cluster->state_trace, "")) {
-        char *tmp_state_file = xbt_strdup(struct_cluster->state_trace);
-        xbt_str_varsubst(tmp_state_file, patterns);
+        char *tmp_state_file =
+            xbt_str_varsubst(struct_cluster->state_trace, patterns);
         XBT_DEBUG("\tstate_file=\"%s\"", tmp_state_file);
         host.state_trace = tmgr_trace_new(tmp_state_file);
         xbt_free(tmp_state_file);
