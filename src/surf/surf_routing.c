@@ -932,22 +932,6 @@ static void routing_parse_cluster(void)
     free(link_backbone);
   }
 
-  XBT_DEBUG(" ");
-
-  char *new_suffix = xbt_strdup("");
-
-  radical_elements = xbt_str_split(struct_cluster->suffix, ".");
-  xbt_dynar_foreach(radical_elements, iter, groups) {
-    if (strcmp(groups, "")) {
-      char *old_suffix = new_suffix;
-      new_suffix = bprintf("%s\\.%s", old_suffix, groups);
-      free(old_suffix);
-    }
-  }
-
-  xbt_dynar_free(&radical_elements);
-  xbt_free(new_suffix);
-
   XBT_DEBUG("</AS>");
   sg_platf_new_AS_end();
   XBT_DEBUG(" ");
