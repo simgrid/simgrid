@@ -410,7 +410,6 @@ static void ptask_finalize(void)
   surf_workstation_model = NULL;
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
-  global_routing->finalize();
 
   ptask_host_count = 0;
 

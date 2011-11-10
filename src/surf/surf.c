@@ -366,6 +366,7 @@ void surf_exit(void)
   xbt_dynar_foreach(model_list, iter, model)
       model->model_private->finalize();
   xbt_dynar_free(&model_list);
+  routing_exit();
 
   if (maxmin_system) {
     lmm_system_free(maxmin_system);

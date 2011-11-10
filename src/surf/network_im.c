@@ -810,8 +810,6 @@ static void im_net_finalize(void)
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
 
-  global_routing->finalize();
-
   lmm_system_free(network_im_maxmin_system);
   network_im_maxmin_system = NULL;
 

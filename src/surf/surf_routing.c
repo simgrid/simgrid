@@ -665,38 +665,6 @@ static double get_latency(const char *src, const char *dst) {
   return latency;
 }
 
-/**
- * \brief Recursive function for finalize
- *
- * \param rc the source host name 
- * 
- * This fuction is call by "finalize". It allow to finalize the 
- * AS or routing components. It delete all the structures.
- */
-static void finalize_rec(AS_t as) {
-  xbt_dict_cursor_t cursor = NULL;
-  char *key;
-  AS_t elem;
-
-  xbt_dict_foreach(as->routing_sons, cursor, key, elem)
-  finalize_rec(elem);
-
-  xbt_dict_free(&as->routing_sons);
-  xbt_free(as->name);
-  as->finalize(as);
-}
-
-/**
- * \brief Generic method: delete all the routing structures
- * 
- * walk through the routing components tree and delete the structures
- * by calling the different "finalize" functions in each routing component
- */
-static void finalize(void) {
-  finalize_rec(global_routing->root);
-  xbt_dynar_free(&global_routing->last_route);
-  xbt_free(global_routing);
-}
 
 static xbt_dynar_t recursive_get_onelink_routes(AS_t rc)
 {
@@ -763,7 +731,6 @@ void routing_model_create(size_t size_of_links, void *loopback)
   global_routing->get_onelink_routes = get_onelink_routes;
   global_routing->get_route_latency = get_route_latency;
   global_routing->get_network_element_type = get_network_element_type;
-  global_routing->finalize = finalize;
   global_routing->loopback = loopback;
   global_routing->size_of_link = size_of_links;
   global_routing->last_route = NULL;
@@ -1272,4 +1239,34 @@ void routing_register_callbacks()
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();
 #endif
+}
+
+/**
+ * \brief Recursive function for finalize
+ *
+ * \param rc the source host name
+ *
+ * This fuction is call by "finalize". It allow to finalize the
+ * AS or routing components. It delete all the structures.
+ */
+static void finalize_rec(AS_t as) {
+  xbt_dict_cursor_t cursor = NULL;
+  char *key;
+  AS_t elem;
+
+  xbt_dict_foreach(as->routing_sons, cursor, key, elem)
+  finalize_rec(elem);
+
+  xbt_dict_free(&as->routing_sons);
+  xbt_free(as->name);
+  as->finalize(as);
+}
+
+/** \brief Frees all memory allocated by the routing module */
+void routing_exit(void) {
+  if (!global_routing)
+    return;
+  finalize_rec(global_routing->root);
+  xbt_dynar_free(&global_routing->last_route);
+  xbt_free(global_routing);
 }
