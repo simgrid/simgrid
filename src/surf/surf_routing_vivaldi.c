@@ -58,7 +58,7 @@ static double base_vivaldi_get_latency (const char *src, const char *dst)
 
 static double vivaldi_get_link_latency (AS_t rc,const char *src, const char *dst, route_extended_t e_route)
 {
-  if(get_network_element_type(src) == SURF_NETWORK_ELEMENT_AS) {
+  if(routing_get_network_element_type(src) == SURF_NETWORK_ELEMENT_AS) {
 	  int need_to_clean = e_route?0:1;
 	  double latency;
 	  e_route = e_route?e_route:(*(rc->get_route)) (rc, src, dst);

@@ -28,8 +28,8 @@ typedef enum {
   SURF_NETWORK_ELEMENT_AS,      /* AS type */
 } e_surf_network_element_type_t;
 
-XBT_PUBLIC(e_surf_network_element_type_t) get_network_element_type(const char
-                                                              *name);
+XBT_PUBLIC(e_surf_network_element_type_t)
+  routing_get_network_element_type(const char *name);
 
 /** @Brief Specify that we use that action */
 XBT_PUBLIC(void) surf_action_ref(surf_action_t action);

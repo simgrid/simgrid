@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 		  }
 		  xbt_lib_foreach(as_router_lib, cursor_dst, dst, value) //to router
 		  {
-			    if(get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
+			    if(routing_get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
 				printf("  <route src=\"%s\" dst=\"%s\">\n	"
 					  ,src
 					  ,dst);
@@ -169,10 +169,10 @@ int main(int argc, char **argv)
 
   xbt_lib_foreach(as_router_lib, cursor_src, src, value) // Routes from router
   {
-	  if(get_network_element_type(src) == SURF_NETWORK_ELEMENT_ROUTER){
+	  if(routing_get_network_element_type(src) == SURF_NETWORK_ELEMENT_ROUTER){
 		  xbt_lib_foreach(as_router_lib, cursor_dst, dst, value) //to router
 		  {
-				if(get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
+				if(routing_get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
 				printf("  <route src=\"%s\" dst=\"%s\">\n	"
 					  ,src
 					  ,dst);

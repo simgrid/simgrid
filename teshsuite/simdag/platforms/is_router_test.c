@@ -29,12 +29,12 @@ int main(int argc, char **argv)
 
   xbt_lib_foreach(host_lib, cursor, key, data) {
     printf("   - Seen: \"%s\" is type : %d\n", key,
-           (int) global_routing->get_network_element_type(key));
+           (int) routing_get_network_element_type(key));
   }
 
   xbt_lib_foreach(as_router_lib, cursor, key, data) {
     printf("   - Seen: \"%s\" is type : %d\n", key,
-           (int) global_routing->get_network_element_type(key));
+           (int) routing_get_network_element_type(key));
   }
 
   SD_exit();

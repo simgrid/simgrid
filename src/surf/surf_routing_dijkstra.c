@@ -519,9 +519,9 @@ void model_dijkstra_both_parse_route (AS_t asg, const char *src,
 	else{
 	  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
 			 route->src_gateway, dst, route->dst_gateway);
-	  if(global_routing->get_network_element_type((const char*)route->dst_gateway) == SURF_NETWORK_ELEMENT_NULL)
+	  if(routing_get_network_element_type((const char*)route->dst_gateway) == SURF_NETWORK_ELEMENT_NULL)
 		  xbt_die("The dst_gateway '%s' does not exist!",route->dst_gateway);
-	  if(global_routing->get_network_element_type((const char*)route->src_gateway) == SURF_NETWORK_ELEMENT_NULL)
+	  if(routing_get_network_element_type((const char*)route->src_gateway) == SURF_NETWORK_ELEMENT_NULL)
 		  xbt_die("The src_gateway '%s' does not exist!",route->src_gateway);
 	}
 

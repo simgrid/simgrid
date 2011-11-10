@@ -230,7 +230,7 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
   //find router
   char *router = NULL;
   xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
-    if (rc->get_network_element_type(k1) == SURF_NETWORK_ELEMENT_ROUTER){
+    if (routing_get_network_element_type(k1) == SURF_NETWORK_ELEMENT_ROUTER){
       router = k1;
     }
   }

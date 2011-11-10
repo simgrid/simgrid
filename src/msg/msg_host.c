@@ -168,7 +168,7 @@ m_host_t *MSG_get_host_table(void)
 		array = xbt_new0(void *, host_lib->count);
 
 	  xbt_lib_foreach(host_lib, cursor, key, data) {
-	    if(get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
+	    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
 	    	array[i++] = data[MSG_HOST_LEVEL];
 	  }
 

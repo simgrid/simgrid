@@ -594,13 +594,15 @@ static void _get_route_latency(const char *src, const char *dst,
 static void get_route_latency(const char *src, const char *dst,
                               xbt_dynar_t * route, double *latency, int cleanup)
 {
+  static xbt_dynar_t last_route = NULL;
+
   _get_route_latency(src, dst, route, latency);
   xbt_assert(!route || *route, "no route between \"%s\" and \"%s\"", src, dst);
   xbt_assert(!latency || *latency >= 0.0,
              "latency error on route between \"%s\" and \"%s\"", src, dst);
   if (route) {
-    xbt_dynar_free(&global_routing->last_route);
-    global_routing->last_route = cleanup ? *route : NULL;
+    xbt_dynar_free(&last_route);
+    last_route = cleanup ? *route : NULL;
   }
 }
 
@@ -670,7 +672,7 @@ static xbt_dynar_t get_onelink_routes(void)
   return recursive_get_onelink_routes(global_routing->root);
 }
 
-e_surf_network_element_type_t get_network_element_type(const char *name)
+e_surf_network_element_type_t routing_get_network_element_type(const char *name)
 {
   network_element_info_t rc = NULL;
 
@@ -698,10 +700,8 @@ void routing_model_create(size_t size_of_links, void *loopback)
   global_routing->get_route_no_cleanup = get_route_no_cleanup;
   global_routing->get_onelink_routes = get_onelink_routes;
   global_routing->get_route_latency = get_route_latency;
-  global_routing->get_network_element_type = get_network_element_type;
   global_routing->loopback = loopback;
   global_routing->size_of_link = size_of_links;
-  global_routing->last_route = NULL;
   /* no current routing at moment */
   current_routing = NULL;
 }
@@ -1235,6 +1235,5 @@ void routing_exit(void) {
   if (!global_routing)
     return;
   finalize_rec(global_routing->root);
-  xbt_dynar_free(&global_routing->last_route);
   xbt_free(global_routing);
 }

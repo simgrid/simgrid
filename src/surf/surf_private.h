@@ -140,7 +140,6 @@ typedef struct s_as {
   double(*get_latency) (AS_t as, const char *src,
                         const char *dst, route_extended_t e_route);
   xbt_dynar_t(*get_onelink_routes) (AS_t as);
-  e_surf_network_element_type_t(*get_network_element_type) (const char *name);
   route_extended_t(*get_bypass_route) (AS_t as,
                                        const char *src, const char *dst);
   void (*finalize) (AS_t as);
@@ -173,8 +172,6 @@ struct s_routing_global {
   xbt_dynar_t(*get_onelink_routes) (void);
   void (*get_route_latency)(const char *src, const char *dst,
                             xbt_dynar_t *route, double *latency, int cleanup);
-  e_surf_network_element_type_t(*get_network_element_type) (const char *name);
-  xbt_dynar_t last_route;
 };
 
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback);

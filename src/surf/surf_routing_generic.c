@@ -30,7 +30,6 @@ AS_t routmod_generic_create(size_t childsize) {
   new_component->finalize = NULL;
   new_component->to_index = xbt_dict_new();
   new_component->bypassRoutes = xbt_dict_new();
-  new_component->get_network_element_type = get_network_element_type;
 
   return new_component;
 }
