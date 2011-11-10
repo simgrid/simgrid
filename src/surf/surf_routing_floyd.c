@@ -261,6 +261,12 @@ void model_floyd_end(void)
 	}
 }
 
+static int surf_pointer_resource_cmp(const void *a, const void *b) {
+  return a != b;
+}
+
+//FIXME: kill dupplicates in next function with full routing
+
 void model_floyd_set_route(routing_component_t rc, const char *src,
         const char *dst, name_route_extended_t route)
 {

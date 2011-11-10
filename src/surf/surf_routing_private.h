@@ -30,9 +30,6 @@ void generic_set_bypassroute(routing_component_t rc,
                                     const char *src, const char *dst,
                                     route_extended_t e_route);
 
-int surf_link_resource_cmp(const void *a, const void *b);
-int surf_pointer_resource_cmp(const void *a, const void *b);
-
 /* ************************************************************************** */
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
 

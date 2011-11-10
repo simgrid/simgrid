@@ -180,6 +180,10 @@ void model_full_end(void)
   }
 }
 
+static int surf_pointer_resource_cmp(const void *a, const void *b) {
+  return a != b;
+}
+
 void model_full_set_route(routing_component_t rc, const char *src,
 		const char *dst, name_route_extended_t route)
 {

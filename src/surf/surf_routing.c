@@ -902,16 +902,6 @@ void generic_set_autonomous_system(routing_component_t rc, const char *name)
   xbt_dict_set(_to_index, name, id, xbt_free);
 }
 
-int surf_pointer_resource_cmp(const void *a, const void *b)
-{
-  return a != b;
-}
-
-int surf_link_resource_cmp(const void *a, const void *b)
-{
-  return ! !memcmp(a, b, global_routing->size_of_link);
-}
-
 void generic_set_bypassroute(routing_component_t rc,
                              const char *src, const char *dst,
                              route_extended_t e_route)
