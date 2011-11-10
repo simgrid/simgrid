@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 				printf("  <route src=\"%s\" dst=\"%s\">\n	"
 					  ,src
 					  ,dst);
-				xbt_dynar_t route = global_routing->get_route(src,dst);
+				xbt_dynar_t route = routing_get_route(src,dst);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 				printf("  <route src=\"%s\" dst=\"%s\">\n	"
 					  ,src
 					  ,dst);
-				xbt_dynar_t route = global_routing->get_route(src,dst);
+				xbt_dynar_t route = routing_get_route(src,dst);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
 				printf("  <route src=\"%s\" dst=\"%s\">\n	"
 					  ,src
 					  ,dst);
-				xbt_dynar_t route = global_routing->get_route(src,dst);
+				xbt_dynar_t route = routing_get_route(src,dst);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
@@ -193,7 +193,7 @@ int main(int argc, char **argv)
 				printf("  <route src=\"%s\" dst=\"%s\">\n	"
 					  ,src
 					  ,dst);
-				xbt_dynar_t route = global_routing->get_route(src,dst);
+				xbt_dynar_t route = routing_get_route(src,dst);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);

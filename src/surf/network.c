@@ -413,8 +413,7 @@ static void net_update_actions_state(double now, double delta)
     }
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      xbt_dynar_t route = global_routing->get_route(action->src_name,
-                                                    action->dst_name);
+      xbt_dynar_t route = routing_get_route(action->src_name, action->dst_name);
       link_CM02_t link;
       unsigned int i;
       xbt_dynar_foreach(route, i, link) {
@@ -590,7 +589,7 @@ static surf_action_t net_communicate(const char *src_name,
   global_routing->get_route_latency(src_name, dst_name, &route, &latency, 0);
 
   if (sg_network_fullduplex == 1) {
-    back_route = global_routing->get_route(dst_name, src_name);
+    back_route = routing_get_route(dst_name, src_name);
   }
 
   /* LARGE PLATFORMS HACK:
@@ -723,7 +722,7 @@ static surf_action_t net_communicate(const char *src_name,
 
 static xbt_dynar_t net_get_route(const char *src, const char *dst)
 {
-  return global_routing->get_route(src, dst);
+  return routing_get_route(src, dst);
 }
 
 static double net_get_link_bandwidth(const void *link)

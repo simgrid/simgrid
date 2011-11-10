@@ -412,7 +412,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
           (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER) &&
           strcmp (child1_name, child2_name) != 0){
 
-        xbt_dynar_t route = global_routing->get_route (child1_name, child2_name);
+        xbt_dynar_t route = routing_get_route (child1_name, child2_name);
         if (TRACE_onelink_only()){
           if (xbt_dynar_length (route) > 1) continue;
         }

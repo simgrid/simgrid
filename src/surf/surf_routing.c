@@ -605,7 +605,7 @@ static void get_route_latency(const char *src, const char *dst,
 }
 
 /**
- * \brief Generic method: find a route between hosts
+ * \brief Find a route between hosts
  *
  * \param src the source host name 
  * \param dst the destination host name
@@ -614,8 +614,7 @@ static void get_route_latency(const char *src, const char *dst,
  * by calling the differents "get_route" functions in each routing component.
  * No need to free the returned dynar. It will be freed at the next call.
  */
-static xbt_dynar_t get_route(const char *src, const char *dst)
-{
+xbt_dynar_t routing_get_route(const char *src, const char *dst) {
   xbt_dynar_t route = NULL;
   get_route_latency(src, dst, &route, NULL, 1);
   return route;
@@ -724,7 +723,6 @@ void routing_model_create(size_t size_of_links, void *loopback)
   /* config the uniq global routing */
   global_routing = xbt_new0(s_routing_global_t, 1);
   global_routing->root = NULL;
-  global_routing->get_route = get_route;
   global_routing->get_route_or_null = get_route_or_null;
   global_routing->get_latency = get_latency;
   global_routing->get_route_no_cleanup = get_route_no_cleanup;

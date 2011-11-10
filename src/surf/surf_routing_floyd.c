@@ -116,7 +116,7 @@ static route_extended_t floyd_get_route(AS_t asg,
     if (asg->hierarchy == SURF_ROUTING_RECURSIVE && !first
         && strcmp(gw_dst, prev_gw_src)) {
       xbt_dynar_t e_route_as_to_as =
-          (*(global_routing->get_route)) (gw_dst, prev_gw_src);
+          routing_get_route(gw_dst, prev_gw_src);
       xbt_assert(e_route_as_to_as, "no route between \"%s\" and \"%s\"",
                   gw_dst, prev_gw_src);
       links = e_route_as_to_as;

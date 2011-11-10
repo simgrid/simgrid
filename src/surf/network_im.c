@@ -610,7 +610,7 @@ static surf_action_t im_net_communicate(const char *src_name,
 
 
   if (sg_network_fullduplex == 1) {
-    back_route = global_routing->get_route(dst_name, src_name);
+    back_route = routing_get_route(dst_name, src_name);
   }
 
   /* LARGE PLATFORMS HACK:
@@ -747,7 +747,7 @@ static surf_action_t im_net_communicate(const char *src_name,
 
 static xbt_dynar_t im_net_get_route(const char *src, const char *dst)
 {
-  return global_routing->get_route(src, dst);
+  return routing_get_route(src, dst);
 }
 
 static double im_net_get_link_bandwidth(const void *link)

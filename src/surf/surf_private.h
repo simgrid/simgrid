@@ -169,7 +169,6 @@ struct s_routing_global {
   AS_t root;
   void *loopback;
   size_t size_of_link;
-  xbt_dynar_t(*get_route) (const char *src, const char *dst);
   xbt_dynar_t(*get_route_or_null) (const char *src, const char *dst);
   xbt_dynar_t(*get_route_no_cleanup) (const char *src, const char *dst);
   xbt_dynar_t(*get_onelink_routes) (void);
@@ -183,6 +182,8 @@ struct s_routing_global {
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback);
 XBT_PUBLIC(void) routing_exit(void);
 XBT_PUBLIC(void) routing_register_callbacks(void);
+
+XBT_PUBLIC(xbt_dynar_t) routing_get_route(const char *src, const char *dst);
 
 /**
  * Resource protected methods

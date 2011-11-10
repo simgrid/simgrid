@@ -82,7 +82,7 @@ static void ptask_update_action_bound(surf_action_workstation_L07_t action)
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
       xbt_dynar_t route =
-          global_routing->get_route(surf_resource_name
+          routing_get_route(surf_resource_name
                                     (action->workstation_list[i]),
                                     surf_resource_name(action->
                                                        workstation_list
@@ -463,7 +463,7 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
     for (j = 0; j < workstation_nb; j++) {
       link_L07_t link;
       xbt_dynar_t route =
-          global_routing->get_route(surf_resource_name
+          routing_get_route(surf_resource_name
                                     (workstation_list[i]),
                                     surf_resource_name(workstation_list
                                                        [j]));
@@ -517,7 +517,7 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
     for (j = 0; j < workstation_nb; j++) {
       link_L07_t link;
       xbt_dynar_t route =
-          global_routing->get_route(surf_resource_name
+          routing_get_route(surf_resource_name
                                     (workstation_list[i]),
                                     surf_resource_name(workstation_list
                                                        [j]));
@@ -589,9 +589,9 @@ static surf_action_t ptask_action_sleep(void *cpu, double duration)
   return (surf_action_t) action;
 }
 
-static xbt_dynar_t ptask_get_route(void *src, void *dst)
+static xbt_dynar_t ptask_get_route(void *src, void *dst) // FIXME: kill that callback kind?
 {
-  return global_routing->get_route(surf_resource_name(src),
+  return routing_get_route(surf_resource_name(src),
                                    surf_resource_name(dst));
 }
 
