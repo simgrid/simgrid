@@ -858,12 +858,6 @@ static void register_task_functions(lua_State* L) {
   // writing doesn't work
   lua_setfield(L, -2, "__index");
                                   /* simgrid.task mt */
-  lua_pushliteral(L, "__metatable");
-                                  /* simgrid.task mt "__metatable" */
-  lua_pushnumber(L, 0);
-                                  /* simgrid.task mt "__metatable" 0 */
-  /* protect the metatable from Lua code (by setting any value to __metatable) */
-  lua_rawset(L, -3);              /* simgrid.task mt */
   lua_pop(L, 2);
                                   /* -- */
 }
@@ -896,12 +890,6 @@ static void register_host_functions(lua_State* L) {
   // FIXME: cannot work currently, same problem as tasks
   lua_setfield(L, -2, "__index");
                                   /* simgrid.host mt */
-  lua_pushliteral(L, "__metatable");
-                                  /* simgrid.host mt "__metatable" */
-  lua_pushnumber(L, 0);
-                                  /* simgrid.host mt "__metatable" 0 */
-  /* protect the metatable from Lua code (by setting any value to __metatable) */
-  lua_rawset(L, -3);              /* simgrid.host mt */
   lua_pop(L, 2);
                                   /* -- */
 }
