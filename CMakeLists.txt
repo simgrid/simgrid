@@ -354,3 +354,10 @@ file(WRITE ${CMAKE_BINARY_DIR}/Testing/Notes/Build  "GIT version : ${GIT_VERSION
 file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Release     : ${DIST_NAME}\n")
 file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Pipol user  : $ENV{PIPOL_USER}\n")
 file(APPEND ${CMAKE_BINARY_DIR}/Testing/Notes/Build "Pipol image : $ENV{PIPOL_IMAGE}\n")
+
+#######
+# DOC #
+#######
+set(WARNING "This file is generated, don't edit it!")
+set(srcdir ${CMAKE_HOME_DIRECTORY})
+include(GenerateDoc.cmake)
