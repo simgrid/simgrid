@@ -125,7 +125,7 @@ static void full_finalize(AS_t rc)
 AS_t model_full_create(void)
 {
   routing_component_full_t new_component = (routing_component_full_t)
-      routmod_generic_create(sizeof(s_routing_component_full_t));
+      model_generic_create_sized(sizeof(s_routing_component_full_t));
 
   new_component->generic_routing.parse_route = model_full_set_route;
   new_component->generic_routing.parse_ASroute = model_full_set_route;

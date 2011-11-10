@@ -437,7 +437,7 @@ static void dijkstra_finalize(AS_t asg)
 AS_t model_dijkstra_both_create(int cached)
 {
   as_dijkstra_t new_component = (as_dijkstra_t)
-      routmod_generic_create(sizeof(s_as_dijkstra_t));
+      model_generic_create_sized(sizeof(s_as_dijkstra_t));
 
   new_component->generic_routing.parse_route = model_dijkstra_both_parse_route;
   new_component->generic_routing.parse_ASroute = model_dijkstra_both_parse_route;

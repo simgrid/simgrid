@@ -1,9 +1,8 @@
-/*
- * surf_routing_private.h
- *
- *  Created on: 14 avr. 2011
- *      Author: navarrop
- */
+/* Copyright (c) 2009, 2010, 2011. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef _SURF_SURF_ROUTING_PRIVATE_H
 #define _SURF_SURF_ROUTING_PRIVATE_H
@@ -20,16 +19,18 @@
 #include "surf/surfxml_parse.h"
 
 /* ************************************************************************** */
-/* ***************** GENERIC PARSE FUNCTIONS (declarations) ***************** */
-AS_t routmod_generic_create(size_t childsize);
+/* ******************************* NO ROUTING ******************************* */
+/* Only save the AS tree, and forward calls to child ASes */
+AS_t model_none_create(void);
 
-void generic_parse_PU(AS_t rc,
-                                        const char *name);
-void generic_parse_AS(AS_t rc,
-                                          const char *name);
-void generic_parse_bypassroute(AS_t rc,
-                                    const char *src, const char *dst,
-                                    route_extended_t e_route);
+/* ************************************************************************** */
+/* ***************** GENERIC PARSE FUNCTIONS (declarations) ***************** */
+AS_t model_generic_create_sized(size_t childsize);
+
+void generic_parse_PU(AS_t rc, const char *name);
+void generic_parse_AS(AS_t rc, const char *name);
+void generic_parse_bypassroute(AS_t rc, const char *src, const char *dst,
+                               route_extended_t e_route);
 
 /* ************************************************************************** */
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
@@ -101,8 +102,5 @@ void model_full_end(AS_t as);       /* finalize the creation of full routing mod
 void model_full_set_route(	/* Set the route and ASroute between src and dst */
 		AS_t rc, const char *src, const char *dst, route_extended_t route);
 
-/* ************************************************************************** */
-/* ******************************* NO ROUTING ******************************* */
-AS_t model_none_create(void);           /* none routing model */
 
 #endif                          /* _SURF_SURF_ROUTING_PRIVATE_H */

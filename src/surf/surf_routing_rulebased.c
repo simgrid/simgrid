@@ -395,7 +395,7 @@ static void rulebased_finalize(AS_t rc)
 AS_t model_rulebased_create(void) {
 
   routing_component_rulebased_t new_component = (routing_component_rulebased_t)
-      routmod_generic_create(sizeof(s_routing_component_rulebased_t));
+      model_generic_create_sized(sizeof(s_routing_component_rulebased_t));
 
   new_component->generic_routing.parse_PU = model_rulebased_parse_PU;
   new_component->generic_routing.parse_AS = model_rulebased_parse_AS;

@@ -14,7 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 
-AS_t routmod_generic_create(size_t childsize) {
+AS_t model_generic_create_sized(size_t childsize) {
   AS_t new_component = xbt_malloc0(childsize);
 
   new_component->parse_PU = generic_parse_PU;
