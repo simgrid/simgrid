@@ -873,8 +873,7 @@ static void im_surf_network_model_init_internal(void)
       im_net_create_resource(xbt_strdup("__loopback__"),
           498000000, NULL, 0.000015, NULL,
           SURF_RESOURCE_ON, NULL,
-          SURF_LINK_FATPIPE, NULL),
-          im_net_get_link_latency);
+          SURF_LINK_FATPIPE, NULL));
   im_net_modified_set =
       xbt_swag_new(xbt_swag_offset(comm, action_list_hookup));
 }

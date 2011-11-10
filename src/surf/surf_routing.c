@@ -46,7 +46,6 @@ static const char *src = NULL;  /* temporary store the source name of a route */
 static const char *dst = NULL;  /* temporary store the destination name of a route */
 static char *gw_src = NULL;     /* temporary store the gateway source name of a route */
 static char *gw_dst = NULL;     /* temporary store the gateway destination name of a route */
-static double_f_cpvoid_t get_link_latency = NULL;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
@@ -816,8 +815,7 @@ e_surf_network_element_type_t get_network_element_type(const char *name)
  * 
  * Make a global routing structure and set all the parsing functions.
  */
-void routing_model_create(size_t size_of_links, void *loopback,
-                          double_f_cpvoid_t get_link_latency_fun)
+void routing_model_create(size_t size_of_links, void *loopback)
 {
   /* config the uniq global routing */
   global_routing = xbt_new0(s_routing_global_t, 1);
@@ -833,7 +831,6 @@ void routing_model_create(size_t size_of_links, void *loopback,
   global_routing->loopback = loopback;
   global_routing->size_of_link = size_of_links;
   global_routing->last_route = NULL;
-  get_link_latency = get_link_latency_fun;
   /* no current routing at moment */
   current_routing = NULL;
 }
@@ -956,7 +953,7 @@ double generic_get_link_latency(routing_component_t rc,
   route = route ? route : rc->get_route(rc, src, dst);
 
   xbt_dynar_foreach(route->generic_route.link_list, i, link) {
-    latency += get_link_latency(link);
+    latency += surf_network_model->extension.network.get_link_latency(link);
   }
   if (need_to_clean)
     generic_free_extended_route(route);

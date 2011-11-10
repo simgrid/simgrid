@@ -895,8 +895,7 @@ static void ptask_model_init_internal(void)
                                                   498000000, NULL,
                                                   0.000015, NULL,
                                                   SURF_RESOURCE_ON, NULL,
-                                                  SURF_LINK_FATPIPE, NULL),
-                       ptask_get_link_latency);
+                                                  SURF_LINK_FATPIPE, NULL));
 
 }
 
