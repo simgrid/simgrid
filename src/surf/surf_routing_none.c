@@ -38,12 +38,12 @@ static void none_finalize(routing_component_t rc)
   xbt_free(rc);
 }
 
-static void none_set_processing_unit(routing_component_t rc,
+static void none_parse_PU(routing_component_t rc,
                                      const char *name)
 {
 }
 
-static void none_set_autonomous_system(routing_component_t rc,
+static void none_parse_AS(routing_component_t rc,
                                        const char *name)
 {
 }
@@ -52,11 +52,11 @@ static void none_set_autonomous_system(routing_component_t rc,
 routing_component_t model_none_create(void)
 {
   routing_component_t new_component = xbt_new(s_routing_component_t, 1);
-  new_component->set_processing_unit = none_set_processing_unit;
-  new_component->set_autonomous_system = none_set_autonomous_system;
-  new_component->set_route = NULL;
-  new_component->set_ASroute = NULL;
-  new_component->set_bypassroute = NULL;
+  new_component->parse_PU = none_parse_PU;
+  new_component->parse_AS = none_parse_AS;
+  new_component->parse_route = NULL;
+  new_component->parse_ASroute = NULL;
+  new_component->parse_bypassroute = NULL;
   new_component->get_route = none_get_route;
   new_component->get_onelink_routes = none_get_onelink_routes;
   new_component->get_bypass_route = none_get_bypass_route;

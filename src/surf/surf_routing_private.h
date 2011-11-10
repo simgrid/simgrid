@@ -23,11 +23,11 @@
 /* ***************** GENERIC PARSE FUNCTIONS (declarations) ***************** */
 routing_component_t routmod_generic_create(size_t childsize);
 
-void generic_set_processing_unit(routing_component_t rc,
+void generic_parse_PU(routing_component_t rc,
                                         const char *name);
-void generic_set_autonomous_system(routing_component_t rc,
+void generic_parse_AS(routing_component_t rc,
                                           const char *name);
-void generic_set_bypassroute(routing_component_t rc,
+void generic_parse_bypassroute(routing_component_t rc,
                                     const char *src, const char *dst,
                                     route_extended_t e_route);
 
@@ -64,7 +64,7 @@ void generic_src_dst_check(routing_component_t rc, const char *src,
 /* *************************** FLOYD ROUTING ******************************** */
 routing_component_t model_floyd_create(void);  /* create structures for floyd routing model */
 void model_floyd_end(void);      /* finalize the creation of floyd routing model */
-void model_floyd_set_route(routing_component_t rc, const char *src,
+void model_floyd_parse_route(routing_component_t rc, const char *src,
         const char *dst, name_route_extended_t route);
 
 /* ************************************************** */
@@ -91,7 +91,7 @@ routing_component_t model_dijkstra_both_create(int cached);    /* create by call
 routing_component_t model_dijkstra_create(void);       /* create structures for dijkstra routing model */
 routing_component_t model_dijkstracache_create(void);  /* create structures for dijkstracache routing model */
 void model_dijkstra_both_end(void);      /* finalize the creation of dijkstra routing model */
-void model_dijkstra_both_set_route (routing_component_t rc, const char *src,
+void model_dijkstra_both_parse_route (routing_component_t rc, const char *src,
                      const char *dst, name_route_extended_t route);
 
 /* ************************************************************************** */

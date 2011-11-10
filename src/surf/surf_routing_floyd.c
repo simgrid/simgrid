@@ -177,8 +177,8 @@ static void floyd_finalize(routing_component_t rc)
 routing_component_t model_floyd_create(void)
 {
   routing_component_floyd_t new_component = (routing_component_floyd_t)routmod_generic_create(sizeof(s_routing_component_floyd_t));
-  new_component->generic_routing.set_route = model_floyd_set_route;
-  new_component->generic_routing.set_ASroute = model_floyd_set_route;
+  new_component->generic_routing.parse_route = model_floyd_parse_route;
+  new_component->generic_routing.parse_ASroute = model_floyd_parse_route;
   new_component->generic_routing.get_route = floyd_get_route;
   new_component->generic_routing.get_onelink_routes =
       floyd_get_onelink_routes;
@@ -255,7 +255,7 @@ static int surf_pointer_resource_cmp(const void *a, const void *b) {
 
 //FIXME: kill dupplicates in next function with full routing
 
-void model_floyd_set_route(routing_component_t rc, const char *src,
+void model_floyd_parse_route(routing_component_t rc, const char *src,
         const char *dst, name_route_extended_t route)
 {
 	routing_component_floyd_t routing = (routing_component_floyd_t) rc;

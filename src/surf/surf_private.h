@@ -155,13 +155,17 @@ typedef struct s_routing_component {
    route_extended_t(*get_bypass_route) (routing_component_t rc,
                                         const char *src, const char *dst);
   void (*finalize) (routing_component_t rc);
-  void (*set_processing_unit) (routing_component_t rc, const char *name);
-  void (*set_autonomous_system) (routing_component_t rc, const char *name);
-  void (*set_route) (routing_component_t rc, const char *src,
+  /* The parser calls the following functions to inform the routing models
+   * that a new element is added to the AS currently built.
+   *
+   * Of course, only the routing model of this AS is informed, not every ones */
+  void (*parse_PU) (routing_component_t rc, const char *name); /* A host or a router, whatever */
+  void (*parse_AS) (routing_component_t rc, const char *name);
+  void (*parse_route) (routing_component_t rc, const char *src,
                      const char *dst, name_route_extended_t route);
-  void (*set_ASroute) (routing_component_t rc, const char *src,
+  void (*parse_ASroute) (routing_component_t rc, const char *src,
                        const char *dst, name_route_extended_t route);
-  void (*set_bypassroute) (routing_component_t rc, const char *src,
+  void (*parse_bypassroute) (routing_component_t rc, const char *src,
                            const char *dst, route_extended_t e_route);
 } s_routing_component_t;
 

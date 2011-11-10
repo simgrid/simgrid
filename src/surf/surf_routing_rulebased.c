@@ -67,7 +67,7 @@ static void rule_route_extended_free(void *e)
 
 /* Parse routing model functions */
 
-static void model_rulebased_set_processing_unit(routing_component_t rc,
+static void model_rulebased_parse_PU(routing_component_t rc,
                                                 const char *name)
 {
   routing_component_rulebased_t routing =
@@ -75,7 +75,7 @@ static void model_rulebased_set_processing_unit(routing_component_t rc,
   xbt_dict_set(routing->dict_processing_units, name, (void *) (-1), NULL);
 }
 
-static void model_rulebased_set_autonomous_system(routing_component_t rc,
+static void model_rulebased_parse_AS(routing_component_t rc,
                                                   const char *name)
 {
   routing_component_rulebased_t routing =
@@ -84,7 +84,7 @@ static void model_rulebased_set_autonomous_system(routing_component_t rc,
                NULL);
 }
 
-static void model_rulebased_set_route(routing_component_t rc,
+static void model_rulebased_parse_route(routing_component_t rc,
                                       const char *src, const char *dst,
                                       name_route_extended_t route)
 {
@@ -112,7 +112,7 @@ static void model_rulebased_set_route(routing_component_t rc,
   xbt_free(route);
 }
 
-static void model_rulebased_set_ASroute(routing_component_t rc,
+static void model_rulebased_parse_ASroute(routing_component_t rc,
                                         const char *src, const char *dst,
                                         name_route_extended_t route)
 {
@@ -147,7 +147,7 @@ static void model_rulebased_set_ASroute(routing_component_t rc,
   xbt_free(route);
 }
 
-static void model_rulebased_set_bypassroute(routing_component_t rc,
+static void model_rulebased_parse_bypassroute(routing_component_t rc,
                                             const char *src,
                                             const char *dst,
                                             route_extended_t e_route)
@@ -399,13 +399,11 @@ routing_component_t model_rulebased_create(void) {
   routing_component_rulebased_t new_component = (routing_component_rulebased_t)
       routmod_generic_create(sizeof(s_routing_component_rulebased_t));
 
-  new_component->generic_routing.set_processing_unit =
-      model_rulebased_set_processing_unit;
-  new_component->generic_routing.set_autonomous_system =
-      model_rulebased_set_autonomous_system;
-  new_component->generic_routing.set_route = model_rulebased_set_route;
-  new_component->generic_routing.set_ASroute = model_rulebased_set_ASroute;
-  new_component->generic_routing.set_bypassroute = model_rulebased_set_bypassroute;
+  new_component->generic_routing.parse_PU = model_rulebased_parse_PU;
+  new_component->generic_routing.parse_AS = model_rulebased_parse_AS;
+  new_component->generic_routing.parse_route = model_rulebased_parse_route;
+  new_component->generic_routing.parse_ASroute = model_rulebased_parse_ASroute;
+  new_component->generic_routing.parse_bypassroute = model_rulebased_parse_bypassroute;
   new_component->generic_routing.get_onelink_routes = rulebased_get_onelink_routes;
   new_component->generic_routing.get_route = rulebased_get_route;
   new_component->generic_routing.get_bypass_route = rulebased_get_bypass_route;

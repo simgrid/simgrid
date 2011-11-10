@@ -19,11 +19,11 @@ extern routing_component_t current_routing;
 routing_component_t routmod_generic_create(size_t childsize) {
   routing_component_t new_component = xbt_malloc0(childsize);
 
-  new_component->set_processing_unit = generic_set_processing_unit;
-  new_component->set_autonomous_system = generic_set_autonomous_system;
-  new_component->set_route = NULL;
-  new_component->set_ASroute = NULL;
-  new_component->set_bypassroute = generic_set_bypassroute;
+  new_component->parse_PU = generic_parse_PU;
+  new_component->parse_AS = generic_parse_AS;
+  new_component->parse_route = NULL;
+  new_component->parse_ASroute = NULL;
+  new_component->parse_bypassroute = generic_parse_bypassroute;
   new_component->get_route = NULL;
   new_component->get_latency = generic_get_link_latency;
   new_component->get_onelink_routes = NULL;
@@ -38,7 +38,7 @@ routing_component_t routmod_generic_create(size_t childsize) {
 }
 
 
-void generic_set_processing_unit(routing_component_t rc, const char *name)
+void generic_parse_PU(routing_component_t rc, const char *name)
 {
   XBT_DEBUG("Load process unit \"%s\"", name);
   int *id = xbt_new0(int, 1);
@@ -48,7 +48,7 @@ void generic_set_processing_unit(routing_component_t rc, const char *name)
   xbt_dict_set(_to_index, name, id, xbt_free);
 }
 
-void generic_set_autonomous_system(routing_component_t rc, const char *name)
+void generic_parse_AS(routing_component_t rc, const char *name)
 {
   XBT_DEBUG("Load Autonomous system \"%s\"", name);
   int *id = xbt_new0(int, 1);
@@ -58,7 +58,7 @@ void generic_set_autonomous_system(routing_component_t rc, const char *name)
   xbt_dict_set(_to_index, name, id, xbt_free);
 }
 
-void generic_set_bypassroute(routing_component_t rc,
+void generic_parse_bypassroute(routing_component_t rc,
                              const char *src, const char *dst,
                              route_extended_t e_route)
 {

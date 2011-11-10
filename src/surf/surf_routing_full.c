@@ -129,8 +129,8 @@ routing_component_t model_full_create(void)
   routing_component_full_t new_component = (routing_component_full_t)
       routmod_generic_create(sizeof(s_routing_component_full_t));
 
-  new_component->generic_routing.set_route = model_full_set_route;
-  new_component->generic_routing.set_ASroute = model_full_set_route;
+  new_component->generic_routing.parse_route = model_full_set_route;
+  new_component->generic_routing.parse_ASroute = model_full_set_route;
   new_component->generic_routing.get_route = full_get_route;
   new_component->generic_routing.get_onelink_routes =
       full_get_onelink_routes;

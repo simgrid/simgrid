@@ -448,8 +448,8 @@ routing_component_t model_dijkstra_both_create(int cached)
   routing_component_dijkstra_t new_component = (routing_component_dijkstra_t)
       routmod_generic_create(sizeof(s_routing_component_dijkstra_t));
 
-  new_component->generic_routing.set_route = model_dijkstra_both_set_route;
-  new_component->generic_routing.set_ASroute = model_dijkstra_both_set_route;
+  new_component->generic_routing.parse_route = model_dijkstra_both_parse_route;
+  new_component->generic_routing.parse_ASroute = model_dijkstra_both_parse_route;
   new_component->generic_routing.get_route = dijkstra_get_route;
   new_component->generic_routing.get_onelink_routes =
       dijkstra_get_onelink_routes;
@@ -500,7 +500,7 @@ void model_dijkstra_both_end(void)
   }
 
 }
-void model_dijkstra_both_set_route (routing_component_t rc, const char *src,
+void model_dijkstra_both_parse_route (routing_component_t rc, const char *src,
                      const char *dst, name_route_extended_t route)
 {
 	routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
