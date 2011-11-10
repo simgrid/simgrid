@@ -315,7 +315,6 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
   new_as->model_desc = model;
   new_as->hierarchy = SURF_ROUTING_NULL;
   new_as->name = xbt_strdup(AS_id);
-  new_as->routing_sons = xbt_dict_new();
 
   if (current_routing == NULL && global_routing->root == NULL) {
 
@@ -1222,11 +1221,10 @@ static void finalize_rec(AS_t as) {
   char *key;
   AS_t elem;
 
-  xbt_dict_foreach(as->routing_sons, cursor, key, elem)
-  finalize_rec(elem);
+  xbt_dict_foreach(as->routing_sons, cursor, key, elem) {
+    finalize_rec(elem);
+  }
 
-  xbt_dict_free(&as->routing_sons);
-  xbt_free(as->name);
   as->finalize(as);
 }
 

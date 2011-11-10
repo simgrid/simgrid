@@ -8,10 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");
 
-/* Routing model structure */
-/* Business methods */
-static xbt_dynar_t none_get_onelink_routes(AS_t rc)
-{
+static xbt_dynar_t none_get_onelink_routes(AS_t rc) {
   return NULL;
 }
 
@@ -23,23 +20,16 @@ static route_extended_t none_get_route(AS_t rc,
 
 static route_extended_t none_get_bypass_route(AS_t rc,
                                               const char *src,
-                                              const char *dst)
-{
+                                              const char *dst) {
   return NULL;
 }
 
-void model_none_finalize(AS_t as) {
-  xbt_free(as);
+static void none_parse_PU(AS_t rc, const char *name) {
+  /* don't care about PUs */
 }
 
-static void none_parse_PU(AS_t rc,
-                                     const char *name)
-{
-}
-
-static void none_parse_AS(AS_t rc,
-                                       const char *name)
-{
+static void none_parse_AS(AS_t rc, const char *name) {
+  /* even don't care about sub-ASes */
 }
 
 /* Creation routing model functions */
@@ -57,6 +47,15 @@ AS_t model_none_create_sized(size_t childsize) {
   new_component->get_onelink_routes = none_get_onelink_routes;
   new_component->get_bypass_route = none_get_bypass_route;
   new_component->finalize = model_none_finalize;
+
+  new_component->routing_sons = xbt_dict_new();
+
   return new_component;
+}
+
+void model_none_finalize(AS_t as) {
+  xbt_dict_free(&as->routing_sons);
+  xbt_free(as->name);
+  xbt_free(as);
 }
 
