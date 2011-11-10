@@ -55,9 +55,6 @@ routing_component_t model_cluster_create(void)
 
   return (routing_component_t) new_component;
 }
-void model_cluster_unload(void) {
-//  xbt_dict_free(&cluster_host_link); //FIXME: do it once the module management is clean in routing
-}
 
 void surf_routing_cluster_add_link(const char* host_id,surf_parsing_link_up_down_t info) {
   if(!cluster_host_link)

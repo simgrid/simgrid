@@ -74,7 +74,6 @@ routing_component_t model_rulebased_create(void);      /* create structures for 
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
 routing_component_t model_cluster_create(void);      /* create structures for cluster routing model */
-void model_cluster_unload(void);          /* Finalize the routing model */
 
 void surf_routing_cluster_add_link(const char* host_id,surf_parsing_link_up_down_t info);
 
