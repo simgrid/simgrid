@@ -144,12 +144,6 @@ static void netcste_action_set_category(surf_action_t action, const char *catego
 }
 #endif
 
-/* returns an array of link_Constant_t */
-static xbt_dynar_t netcste_get_route(void *src, void *dst)
-{
-  xbt_die("Calling this function does not make any sense");
-}
-
 static double netcste_get_link_bandwidth(const void *link)
 {
   DIE_IMPOSSIBLE;
