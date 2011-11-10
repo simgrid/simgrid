@@ -8,8 +8,6 @@
 
 /* Global vars */
 extern routing_global_t global_routing;
-extern AS_t current_routing;
-extern routing_model_description_t current_routing_model;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf -- dijkstra routing logic");
 
@@ -462,30 +460,29 @@ AS_t model_dijkstracache_create(void)
   return model_dijkstra_both_create(1);
 }
 
-void model_dijkstra_both_end(void)
+void model_dijkstra_both_end(AS_t as)
 {
-  as_dijkstra_t routing =
-      (as_dijkstra_t) current_routing;
+  as_dijkstra_t THIS = (as_dijkstra_t) as;
 
   xbt_node_t node = NULL;
   unsigned int cursor2;
   xbt_dynar_t nodes = NULL;
 
   /* Create the topology graph */
-  if(!routing->route_graph)
-  routing->route_graph = xbt_graph_new_graph(1, NULL);
-  if(!routing->graph_node_map)
-  routing->graph_node_map = xbt_dict_new();
+  if(!THIS->route_graph)
+  THIS->route_graph = xbt_graph_new_graph(1, NULL);
+  if(!THIS->graph_node_map)
+  THIS->graph_node_map = xbt_dict_new();
 
-  if (routing->cached && !routing->route_cache)
-  routing->route_cache = xbt_dict_new();
+  if (THIS->cached && !THIS->route_cache)
+  THIS->route_cache = xbt_dict_new();
 
   /* Add the loopback if needed */
-  if (current_routing->hierarchy == SURF_ROUTING_BASE)
-    add_loopback_dijkstra(routing);
+  if (as->hierarchy == SURF_ROUTING_BASE)
+    add_loopback_dijkstra(THIS);
 
   /* initialize graph indexes in nodes after graph has been built */
-  nodes = xbt_graph_get_nodes(routing->route_graph);
+  nodes = xbt_graph_get_nodes(THIS->route_graph);
 
   xbt_dynar_foreach(nodes, cursor2, node) {
     graph_node_data_t data = xbt_graph_node_get_data(node);
@@ -529,6 +526,6 @@ void model_dijkstra_both_parse_route (AS_t asg, const char *src,
 	}
 
 	route_extended_t e_route =
-		generic_new_extended_route(current_routing->hierarchy, route, 1);
+		generic_new_extended_route(asg->hierarchy, route, 1);
 	route_new_dijkstra(as, *src_id, *dst_id, e_route);
 }

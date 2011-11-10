@@ -8,8 +8,6 @@
 
 /* Global vars */
 extern routing_global_t global_routing;
-extern AS_t current_routing;
-extern routing_model_description_t current_routing_model;
 extern xbt_dynar_t link_list;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_rulebased, surf, "Routing part of surf");

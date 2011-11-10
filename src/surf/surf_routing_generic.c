@@ -14,8 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 
-extern AS_t current_routing;
-
 AS_t routmod_generic_create(size_t childsize) {
   AS_t new_component = xbt_malloc0(childsize);
 
@@ -38,22 +36,22 @@ AS_t routmod_generic_create(size_t childsize) {
 }
 
 
-void generic_parse_PU(AS_t rc, const char *name)
+void generic_parse_PU(AS_t as, const char *name)
 {
   XBT_DEBUG("Load process unit \"%s\"", name);
   int *id = xbt_new0(int, 1);
   xbt_dict_t _to_index;
-  _to_index = current_routing->to_index;
+  _to_index = as->to_index;
   *id = xbt_dict_length(_to_index);
   xbt_dict_set(_to_index, name, id, xbt_free);
 }
 
-void generic_parse_AS(AS_t rc, const char *name)
+void generic_parse_AS(AS_t as, const char *name)
 {
   XBT_DEBUG("Load Autonomous system \"%s\"", name);
   int *id = xbt_new0(int, 1);
   xbt_dict_t _to_index;
-  _to_index = current_routing->to_index;
+  _to_index = as->to_index;
   *id = xbt_dict_length(_to_index);
   xbt_dict_set(_to_index, name, id, xbt_free);
 }

@@ -107,7 +107,7 @@ typedef struct s_model_type {
   const char *name;
   const char *desc;
   AS_t (*create) ();
-  void (*end) ();
+  void (*end) (AS_t as);
 } s_routing_model_description_t, *routing_model_description_t;
 
 typedef struct s_route {

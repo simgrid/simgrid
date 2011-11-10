@@ -63,7 +63,7 @@ void generic_src_dst_check(AS_t rc, const char *src,
 /* ************************************************************************** */
 /* *************************** FLOYD ROUTING ******************************** */
 AS_t model_floyd_create(void);  /* create structures for floyd routing model */
-void model_floyd_end(void);      /* finalize the creation of floyd routing model */
+void model_floyd_end(AS_t as);      /* finalize the creation of floyd routing model */
 void model_floyd_parse_route(AS_t rc, const char *src,
         const char *dst, route_extended_t route);
 
@@ -90,14 +90,14 @@ AS_t model_vivaldi_create(void);      /* create structures for vivaldi routing m
 AS_t model_dijkstra_both_create(int cached);    /* create by calling dijkstra or dijkstracache */
 AS_t model_dijkstra_create(void);       /* create structures for dijkstra routing model */
 AS_t model_dijkstracache_create(void);  /* create structures for dijkstracache routing model */
-void model_dijkstra_both_end(void);      /* finalize the creation of dijkstra routing model */
+void model_dijkstra_both_end(AS_t as);      /* finalize the creation of dijkstra routing model */
 void model_dijkstra_both_parse_route (AS_t rc, const char *src,
                      const char *dst, route_extended_t route);
 
 /* ************************************************************************** */
 /* *************************** FULL ROUTING ********************************* */
 AS_t model_full_create(void);   /* create structures for full routing model */
-void model_full_end(void);       /* finalize the creation of full routing model */
+void model_full_end(AS_t as);       /* finalize the creation of full routing model */
 void model_full_set_route(	/* Set the route and ASroute between src and dst */
 		AS_t rc, const char *src, const char *dst, route_extended_t route);
 

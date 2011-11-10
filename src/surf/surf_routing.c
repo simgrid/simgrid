@@ -374,7 +374,7 @@ void routing_AS_end()
                 (void *) info);
 
     if (current_routing->routing->end)
-      (*(current_routing->routing->end)) ();
+      (*(current_routing->routing->end)) (current_routing);
     current_routing = current_routing->routing_father;
   }
 }

@@ -8,8 +8,6 @@
 
 /* Global vars */
 extern routing_global_t global_routing;
-extern AS_t current_routing;
-extern routing_model_description_t current_routing_model;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 
@@ -183,7 +181,7 @@ AS_t model_floyd_create(void)
   return (AS_t)new_component;
 }
 
-void model_floyd_end(void)
+void model_floyd_end(AS_t current_routing)
 {
 
 	as_floyd_t as =

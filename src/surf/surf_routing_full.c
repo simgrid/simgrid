@@ -8,8 +8,6 @@
 
 /* Global vars */
 extern routing_global_t global_routing;
-extern AS_t current_routing;
-extern routing_model_description_t current_routing_model;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
@@ -139,7 +137,7 @@ AS_t model_full_create(void)
   return (AS_t) new_component;
 }
 
-void model_full_end(void)
+void model_full_end(AS_t current_routing)
 {
   unsigned int i;
   route_extended_t e_route;
