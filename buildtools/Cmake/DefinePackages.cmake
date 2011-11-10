@@ -208,11 +208,12 @@ set(SURF_SRC
 	src/surf/surf_model.c
 	src/surf/surf_action.c
 	src/surf/surf_routing.c
+	src/surf/surf_routing_none.c
+	src/surf/surf_routing_generic.c
 	src/surf/surf_routing_full.c
 	src/surf/surf_routing_floyd.c
 	src/surf/surf_routing_rulebased.c
 	src/surf/surf_routing_dijkstra.c
-	src/surf/surf_routing_none.c
 	src/surf/surf_routing_cluster.c
 	src/surf/surf_routing_vivaldi.c
 	src/surf/surf_config.c
