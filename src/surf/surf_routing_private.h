@@ -21,6 +21,7 @@
 
 /* ************************************************************************** */
 /* ***************** GENERIC PARSE FUNCTIONS (declarations) ***************** */
+routing_component_t routmod_generic_create(size_t childsize);
 
 void generic_set_processing_unit(routing_component_t rc,
                                         const char *name);

@@ -394,10 +394,11 @@ static void rulebased_finalize(routing_component_t rc)
 }
 
 /* Creation routing model functions */
-routing_component_t model_rulebased_create(void)
-{
-  routing_component_rulebased_t new_component =
-      xbt_new0(s_routing_component_rulebased_t, 1);
+routing_component_t model_rulebased_create(void) {
+
+  routing_component_rulebased_t new_component = (routing_component_rulebased_t)
+      routmod_generic_create(sizeof(s_routing_component_rulebased_t));
+
   new_component->generic_routing.set_processing_unit =
       model_rulebased_set_processing_unit;
   new_component->generic_routing.set_autonomous_system =
@@ -407,10 +408,8 @@ routing_component_t model_rulebased_create(void)
   new_component->generic_routing.set_bypassroute = model_rulebased_set_bypassroute;
   new_component->generic_routing.get_onelink_routes = rulebased_get_onelink_routes;
   new_component->generic_routing.get_route = rulebased_get_route;
-  new_component->generic_routing.get_latency = generic_get_link_latency;
   new_component->generic_routing.get_bypass_route = rulebased_get_bypass_route;
   new_component->generic_routing.finalize = rulebased_finalize;
-  new_component->generic_routing.get_network_element_type = get_network_element_type;
   /* initialization of internal structures */
   new_component->dict_processing_units = xbt_dict_new();
   new_component->dict_autonomous_systems = xbt_dict_new();
@@ -418,5 +417,6 @@ routing_component_t model_rulebased_create(void)
   new_component->list_ASroute =
       xbt_dynar_new(sizeof(rule_route_extended_t),
                     &rule_route_extended_free);
+
   return (routing_component_t) new_component;
 }

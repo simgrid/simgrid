@@ -445,26 +445,17 @@ static void dijkstra_finalize(routing_component_t rc)
 
 routing_component_t model_dijkstra_both_create(int cached)
 {
-  routing_component_dijkstra_t new_component =
-      xbt_new0(s_routing_component_dijkstra_t, 1);
-  new_component->generic_routing.set_processing_unit =
-      generic_set_processing_unit;
-  new_component->generic_routing.set_autonomous_system =
-      generic_set_autonomous_system;
+  routing_component_dijkstra_t new_component = (routing_component_dijkstra_t)
+      routmod_generic_create(sizeof(s_routing_component_dijkstra_t));
+
   new_component->generic_routing.set_route = model_dijkstra_both_set_route;
   new_component->generic_routing.set_ASroute = model_dijkstra_both_set_route;
-  new_component->generic_routing.set_bypassroute = generic_set_bypassroute;
   new_component->generic_routing.get_route = dijkstra_get_route;
-  new_component->generic_routing.get_latency = generic_get_link_latency;
   new_component->generic_routing.get_onelink_routes =
       dijkstra_get_onelink_routes;
-  new_component->generic_routing.get_bypass_route =
-      generic_get_bypassroute;
   new_component->generic_routing.finalize = dijkstra_finalize;
   new_component->cached = cached;
-  new_component->generic_routing.to_index = xbt_dict_new();
-  new_component->generic_routing.bypassRoutes = xbt_dict_new();
-  new_component->generic_routing.get_network_element_type = get_network_element_type;
+
   return (routing_component_t)new_component;
 }
 

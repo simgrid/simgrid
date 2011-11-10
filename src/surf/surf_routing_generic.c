@@ -16,6 +16,27 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic imple
 
 extern routing_component_t current_routing;
 
+routing_component_t routmod_generic_create(size_t childsize) {
+  routing_component_t new_component = xbt_malloc0(childsize);
+
+  new_component->set_processing_unit = generic_set_processing_unit;
+  new_component->set_autonomous_system = generic_set_autonomous_system;
+  new_component->set_route = NULL;
+  new_component->set_ASroute = NULL;
+  new_component->set_bypassroute = generic_set_bypassroute;
+  new_component->get_route = NULL;
+  new_component->get_latency = generic_get_link_latency;
+  new_component->get_onelink_routes = NULL;
+  new_component->get_bypass_route =
+      generic_get_bypassroute;
+  new_component->finalize = NULL;
+  new_component->to_index = xbt_dict_new();
+  new_component->bypassRoutes = xbt_dict_new();
+  new_component->get_network_element_type = get_network_element_type;
+
+  return new_component;
+}
+
 
 void generic_set_processing_unit(routing_component_t rc, const char *name)
 {
