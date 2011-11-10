@@ -677,22 +677,20 @@ static double get_latency(const char *src, const char *dst)
  * This fuction is call by "finalize". It allow to finalize the 
  * AS or routing components. It delete all the structures.
  */
-static void _finalize(AS_t rc)
+static void finalize_rec(AS_t as)
 {
-  if (rc) {
+  if (as) {
     xbt_dict_cursor_t cursor = NULL;
     char *key;
     AS_t elem;
-    xbt_dict_foreach(rc->routing_sons, cursor, key, elem) {
-      _finalize(elem);
-    }
-    xbt_dict_t tmp_sons = rc->routing_sons;
-    char *tmp_name = rc->name;
+    xbt_dict_foreach(as->routing_sons, cursor, key, elem)
+      finalize_rec(elem);
+
+    xbt_dict_t tmp_sons = as->routing_sons;
+    char *tmp_name = as->name;
     xbt_dict_free(&tmp_sons);
     xbt_free(tmp_name);
-    xbt_assert(rc->finalize, "no defined method \"finalize\" in \"%s\"",
-               current_routing->name);
-    (*(rc->finalize)) (rc);
+    as->finalize(as);
   }
 }
 
@@ -705,7 +703,7 @@ static void _finalize(AS_t rc)
 static void finalize(void)
 {
   /* delete recursively all the tree */
-  _finalize(global_routing->root);
+  finalize_rec(global_routing->root);
   /* delete last_route */
   xbt_dynar_free(&(global_routing->last_route));
   /* delete global routing structure */
