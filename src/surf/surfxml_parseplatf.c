@@ -136,10 +136,24 @@ static void parse_Stag_trace_connect(void)
   }
 }
 
-/* Init and free parse data */
-
-static void init_data(void)
+/* This function acts as a main in the parsing area. */
+void parse_platform_file(const char *file)
 {
+  int parse_status;
+
+  surf_parse_reset_callbacks();
+
+  /* Register classical callbacks */
+  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties_XML);
+  routing_register_callbacks();
+
+  /* init the flex parser */
+  surfxml_buffer_stack_stack_ptr = 1;
+  surfxml_buffer_stack_stack[0] = 0;
+
+  surf_parse_open(file);
+
+  /* Init my data */
   if (!surfxml_bufferstack_stack)
     surfxml_bufferstack_stack = xbt_dynar_new(sizeof(char *), NULL);
 
@@ -158,10 +172,12 @@ static void init_data(void)
   /* we care about the ASes while parsing the platf. Incredible, isnt it? */
   sg_platf_AS_end_add_cb(routing_AS_end);
   sg_platf_AS_begin_add_cb(routing_AS_begin);
-}
 
-static void free_data(void)
-{
+
+  /* Do the actual parsing */
+  parse_status = surf_parse();
+
+  /* Free my data */
   xbt_dict_free(&trace_connect_list_host_avail);
   xbt_dict_free(&trace_connect_list_power);
   xbt_dict_free(&trace_connect_list_link_avail);
@@ -170,26 +186,8 @@ static void free_data(void)
   xbt_dict_free(&traces_set_list);
   xbt_dict_free(&random_data_list);
   xbt_dynar_free(&surfxml_bufferstack_stack);
-}
 
-/* This function acts as a main in the parsing area. */
-void parse_platform_file(const char *file)
-{
-  int parse_status;
-
-  surf_parse_reset_callbacks();
-
-  /* Register classical callbacks */
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties_XML);
-  routing_register_callbacks();
-
-  surfxml_buffer_stack_stack_ptr = 1;
-  surfxml_buffer_stack_stack[0] = 0;
-
-  surf_parse_open(file);
-  init_data();
-  parse_status = surf_parse();
-  free_data();
+  /* Stop the flex parser */
   surf_parse_close();
   if (parse_status)
     xbt_die("Parse error in %s", file);
