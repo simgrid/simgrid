@@ -171,7 +171,7 @@ static void floyd_finalize(AS_t rc)
 
 AS_t model_floyd_create(void)
 {
-  as_floyd_t new_component = (as_floyd_t)routmod_generic_create(sizeof(s_as_floyd_t));
+  as_floyd_t new_component = (as_floyd_t)model_generic_create_sized(sizeof(s_as_floyd_t));
   new_component->generic_routing.parse_route = model_floyd_parse_route;
   new_component->generic_routing.parse_ASroute = model_floyd_parse_route;
   new_component->generic_routing.get_route = floyd_get_route;

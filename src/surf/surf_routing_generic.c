@@ -14,8 +14,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 
-AS_t routmod_generic_create(size_t childsize) {
-  AS_t new_component = xbt_malloc0(childsize);
+AS_t model_generic_create_sized(size_t childsize) {
+  AS_t new_component = model_none_create_sized(childsize);
 
   new_component->parse_PU = generic_parse_PU;
   new_component->parse_AS = generic_parse_AS;
@@ -27,13 +27,18 @@ AS_t routmod_generic_create(size_t childsize) {
   new_component->get_onelink_routes = NULL;
   new_component->get_bypass_route =
       generic_get_bypassroute;
-  new_component->finalize = NULL;
+  new_component->finalize = model_generic_finalize;
+
   new_component->to_index = xbt_dict_new();
   new_component->bypassRoutes = xbt_dict_new();
 
   return new_component;
 }
-
+void model_generic_finalize(AS_t as) {
+  xbt_dict_free(&as->to_index);
+  xbt_dict_free(&as->bypassRoutes);
+  model_none_finalize(as);
+}
 
 void generic_parse_PU(AS_t as, const char *name)
 {

@@ -417,19 +417,13 @@ static void dijkstra_finalize(AS_t asg)
 {
   as_dijkstra_t as = (as_dijkstra_t) asg;
 
-  if (as) {
-    xbt_graph_free_graph(as->route_graph, &xbt_free,
-                         &graph_edge_data_free, &xbt_free);
-    xbt_dict_free(&as->graph_node_map);
-    if (as->cached)
-      xbt_dict_free(&as->route_cache);
-    /* Delete bypass dict */
-    xbt_dict_free(&as->generic_routing.bypassRoutes);
-    /* Delete index dict */
-    xbt_dict_free(&(as->generic_routing.to_index));
-    /* Delete structure */
-    xbt_free(as);
-  }
+  xbt_graph_free_graph(as->route_graph, &xbt_free,
+      &graph_edge_data_free, &xbt_free);
+  xbt_dict_free(&as->graph_node_map);
+  if (as->cached)
+    xbt_dict_free(&as->route_cache);
+
+  model_generic_finalize(asg);
 }
 
 /* Creation routing model functions */
@@ -437,7 +431,7 @@ static void dijkstra_finalize(AS_t asg)
 AS_t model_dijkstra_both_create(int cached)
 {
   as_dijkstra_t new_component = (as_dijkstra_t)
-      routmod_generic_create(sizeof(s_as_dijkstra_t));
+      model_generic_create_sized(sizeof(s_as_dijkstra_t));
 
   new_component->generic_routing.parse_route = model_dijkstra_both_parse_route;
   new_component->generic_routing.parse_ASroute = model_dijkstra_both_parse_route;

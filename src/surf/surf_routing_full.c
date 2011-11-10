@@ -111,12 +111,7 @@ static void full_finalize(AS_t rc)
       for (j = 0; j < table_size; j++)
         generic_free_extended_route(TO_ROUTE_FULL(i, j));
     xbt_free(routing->routing_table);
-    /* Delete bypass dict */
-    xbt_dict_free(&rc->bypassRoutes);
-    /* Delete index dict */
-    xbt_dict_free(&rc->to_index);
-    /* Delete structure */
-    xbt_free(rc);
+    model_generic_finalize(rc);
   }
 }
 
@@ -125,7 +120,7 @@ static void full_finalize(AS_t rc)
 AS_t model_full_create(void)
 {
   routing_component_full_t new_component = (routing_component_full_t)
-      routmod_generic_create(sizeof(s_routing_component_full_t));
+      model_generic_create_sized(sizeof(s_routing_component_full_t));
 
   new_component->generic_routing.parse_route = model_full_set_route;
   new_component->generic_routing.parse_ASroute = model_full_set_route;
