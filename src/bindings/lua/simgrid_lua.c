@@ -62,6 +62,11 @@ static m_task_t sglua_checktask(lua_State* L, int index)
  * - Argument 2 (number): computation size
  * - Argument 3 (number): communication size
  * - Return value (task): the task created
+ *
+ * A Lua task is a regular table with a full userdata inside, and both share
+ * the same metatable. For the regular table, the metatable allows OO-style
+ * writing such as your_task:send(someone).
+ * For the userdata, the metatable is used to check its type.
  */
 static int l_task_new(lua_State* L)
 {
@@ -75,6 +80,10 @@ static int l_task_new(lua_State* L)
   m_task_t msg_task = MSG_task_create(name, comp_size, msg_size, NULL);
 
   lua_newtable(L);
+                                  /* task */
+  luaL_getmetatable(L, TASK_MODULE_NAME);
+                                  /* task mt */
+  lua_setmetatable(L, -2);
                                   /* task */
   m_task_t* lua_task = (m_task_t*) lua_newuserdata(L, sizeof(m_task_t));
                                   /* task ctask */
@@ -288,8 +297,11 @@ static int l_task_tostring(lua_State* L)
   return 1;
 }
 
+/**
+ * \brief Metamethods of both a task table and the userdata inside it.
+ */
 static const luaL_reg task_meta[] = {
-  {"__gc", l_task_gc},
+  {"__gc", l_task_gc}, /* will be called only for userdata */
   {"__tostring", l_task_tostring},
   {NULL, NULL}
 };
@@ -849,12 +861,9 @@ static void register_task_functions(lua_State* L)
   lua_pushvalue(L, -2);
                                   /* simgrid.task mt simgrid.task */
   /* metatable.__index = simgrid.task
-   * we put the task functions inside the task userdata itself:
+   * we put the task functions inside the task itself:
    * this allows to write task:method(args) for
    * simgrid.task.method(task, args) */
-  // FIXME: in the current implementation, a Lua task is a table with a
-  // __simgrid_task field that contains the userdata, so the OO-style
-  // writing doesn't work
   lua_setfield(L, -2, "__index");
                                   /* simgrid.task mt */
   lua_pop(L, 2);
