@@ -22,7 +22,8 @@
 /* ******************************* NO ROUTING ******************************* */
 /* Only save the AS tree, and forward calls to child ASes */
 AS_t model_none_create(void);
-
+AS_t model_none_create_sized(size_t childsize);
+void model_none_finalize(AS_t as);
 /* ************************************************************************** */
 /* ***************** GENERIC PARSE FUNCTIONS (declarations) ***************** */
 AS_t model_generic_create_sized(size_t childsize);
