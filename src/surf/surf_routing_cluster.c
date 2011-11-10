@@ -14,6 +14,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
  * Note that a router is created, easing the interconnexion with the rest of the world.
  */
 
+typedef struct {
+  s_as_t generic_routing;
+  void *backbone;
+} s_as_cluster_t, *as_cluster_t;
+
+
 static xbt_dict_t cluster_host_link = NULL;
 
 /* Business methods */
@@ -28,8 +34,8 @@ static route_extended_t cluster_get_route(AS_t as,
 	  info = xbt_dict_get_or_null(cluster_host_link,src);
 	  if(info) xbt_dynar_push_as(links_list,void*,info->link_up); //link_up
 
-	  info = xbt_dict_get_or_null(cluster_host_link,as->name);
-	  if(info)  xbt_dynar_push_as(links_list,void*,info->link_up); //link_bb
+	  if ( ((as_cluster_t)as)->backbone )
+	    xbt_dynar_push_as(links_list,void*, ((as_cluster_t)as)->backbone) ;
 
 	  info = xbt_dict_get_or_null(cluster_host_link,dst);
 	  if(info) xbt_dynar_push_as(links_list,void*,info->link_down); //link_down
@@ -48,7 +54,7 @@ static void model_cluster_finalize(AS_t as) {
 /* Creation routing model functions */
 AS_t model_cluster_create(void)
 {
-  AS_t result = model_none_create();
+  AS_t result = model_none_create_sized(sizeof(s_as_cluster_t));
   result->get_route = cluster_get_route;
   result->finalize = model_cluster_finalize;
 
@@ -60,4 +66,8 @@ void surf_routing_cluster_add_link(const char* host_id,surf_parsing_link_up_down
     cluster_host_link = xbt_dict_new();
 
  xbt_dict_set(cluster_host_link,host_id,info,xbt_free);
+}
+
+void surf_routing_cluster_add_backbone(AS_t as, void* bb) {
+  ((as_cluster_t)as)->backbone = bb;
 }

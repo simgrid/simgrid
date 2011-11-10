@@ -927,12 +927,7 @@ static void routing_parse_cluster(void)
 
     sg_platf_new_link(&link);
 
-    surf_parsing_link_up_down_t info =
-        xbt_new0(s_surf_parsing_link_up_down_t, 1);
-    info->link_up =
-        xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL);
-    info->link_down = info->link_up;
-    surf_routing_cluster_add_link(struct_cluster->id, info);
+    surf_routing_cluster_add_backbone(current_routing, xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL));
 
     free(link_backbone);
   }
