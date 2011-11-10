@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
  * Note that a router is created, easing the interconnexion with the rest of the world.
  */
 
-static xbt_dict_t cluster_host_link = NULL; /* for tag cluster */
+static xbt_dict_t cluster_host_link = NULL;
 
 /* Business methods */
 static route_extended_t cluster_get_route(AS_t as,

@@ -37,7 +37,6 @@ static xbt_dict_t random_value = NULL;
 /* Global vars */
 routing_global_t global_routing = NULL;
 AS_t current_routing = NULL;
-routing_model_description_t current_routing_model = NULL;
 
 /* global parse functions */
 xbt_dynar_t link_list = NULL;   /* temporary store of current list link of a route */

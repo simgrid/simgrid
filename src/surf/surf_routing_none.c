@@ -6,9 +6,6 @@
 
 #include "surf_routing_private.h"
 
-/* Global vars */
-extern routing_global_t global_routing;
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");
 
 /* Routing model structure */
