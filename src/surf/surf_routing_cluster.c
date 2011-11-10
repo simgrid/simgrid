@@ -17,9 +17,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
 static xbt_dict_t cluster_host_link = NULL; /* for tag cluster */
 
 /* Business methods */
-static route_extended_t cluster_get_route(routing_component_t rc,
-                                            const char *src,
-                                            const char *dst) {
+static route_extended_t cluster_get_route(AS_t as,
+                                          const char *src,
+                                          const char *dst) {
 
 	  xbt_dynar_t links_list = xbt_dynar_new(global_routing->size_of_link, NULL);
 
@@ -28,7 +28,7 @@ static route_extended_t cluster_get_route(routing_component_t rc,
 	  info = xbt_dict_get_or_null(cluster_host_link,src);
 	  if(info) xbt_dynar_push_as(links_list,void*,info->link_up); //link_up
 
-	  info = xbt_dict_get_or_null(cluster_host_link,rc->name);
+	  info = xbt_dict_get_or_null(cluster_host_link,as->name);
 	  if(info)  xbt_dynar_push_as(links_list,void*,info->link_up); //link_bb
 
 	  info = xbt_dict_get_or_null(cluster_host_link,dst);
@@ -42,12 +42,12 @@ static route_extended_t cluster_get_route(routing_component_t rc,
 }
 
 /* Creation routing model functions */
-routing_component_t model_cluster_create(void)
+AS_t model_cluster_create(void)
 {
-  routing_component_t new_component = model_none_create();
-  new_component->get_route = cluster_get_route;
+  AS_t result = model_none_create();
+  result->get_route = cluster_get_route;
 
-  return (routing_component_t) new_component;
+  return (AS_t) result;
 }
 
 void surf_routing_cluster_add_link(const char* host_id,surf_parsing_link_up_down_t info) {

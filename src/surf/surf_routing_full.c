@@ -8,7 +8,7 @@
 
 /* Global vars */
 extern routing_global_t global_routing;
-extern routing_component_t current_routing;
+extern AS_t current_routing;
 extern routing_model_description_t current_routing_model;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
@@ -18,12 +18,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 /* Routing model structure */
 
 typedef struct s_routing_component_full {
-  s_routing_component_t generic_routing;
+  s_as_t generic_routing;
   route_extended_t *routing_table;
 } s_routing_component_full_t, *routing_component_full_t;
 
 /* Business methods */
-static xbt_dynar_t full_get_onelink_routes(routing_component_t rc)
+static xbt_dynar_t full_get_onelink_routes(AS_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
 
@@ -63,7 +63,7 @@ static xbt_dynar_t full_get_onelink_routes(routing_component_t rc)
   return ret;
 }
 
-static route_extended_t full_get_route(routing_component_t rc,
+static route_extended_t full_get_route(AS_t rc,
                                        const char *src, const char *dst)
 {
   xbt_assert(rc && src
@@ -102,7 +102,7 @@ static route_extended_t full_get_route(routing_component_t rc,
   return new_e_route;
 }
 
-static void full_finalize(routing_component_t rc)
+static void full_finalize(AS_t rc)
 {
   routing_component_full_t routing = (routing_component_full_t) rc;
   size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
@@ -124,7 +124,7 @@ static void full_finalize(routing_component_t rc)
 
 /* Creation routing model functions */
 
-routing_component_t model_full_create(void)
+AS_t model_full_create(void)
 {
   routing_component_full_t new_component = (routing_component_full_t)
       routmod_generic_create(sizeof(s_routing_component_full_t));
@@ -136,7 +136,7 @@ routing_component_t model_full_create(void)
       full_get_onelink_routes;
   new_component->generic_routing.finalize = full_finalize;
 
-  return (routing_component_t) new_component;
+  return (AS_t) new_component;
 }
 
 void model_full_end(void)
@@ -175,7 +175,7 @@ static int surf_pointer_resource_cmp(const void *a, const void *b) {
   return a != b;
 }
 
-void model_full_set_route(routing_component_t rc, const char *src,
+void model_full_set_route(AS_t rc, const char *src,
 		const char *dst, route_extended_t route)
 {
 	int *src_id, *dst_id;

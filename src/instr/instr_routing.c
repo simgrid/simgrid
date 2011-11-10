@@ -83,11 +83,11 @@ static void linkContainers (container_t father, container_t src, container_t dst
   new_pajeEndLink(SIMIX_get_clock(), father, link_type, dst, "G", key);
 }
 
-static void recursiveGraphExtraction (routing_component_t rc, container_t container, xbt_dict_t filter)
+static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t filter)
 {
   if (xbt_dict_length (rc->routing_sons)){
     xbt_dict_cursor_t cursor = NULL;
-    routing_component_t rc_son;
+    AS_t rc_son;
     char *child_name;
     //bottom-up recursion
     xbt_dict_foreach(rc->routing_sons, cursor, child_name, rc_son) {
@@ -386,11 +386,11 @@ static xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_
 }
 
 static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
-    routing_component_t rc, container_t container)
+    AS_t rc, container_t container)
 {
   if (xbt_dict_length (rc->routing_sons)){
     xbt_dict_cursor_t cursor = NULL;
-    routing_component_t rc_son;
+    AS_t rc_son;
     char *child_name;
     //bottom-up recursion
     xbt_dict_foreach(rc->routing_sons, cursor, child_name, rc_son) {

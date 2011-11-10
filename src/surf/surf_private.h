@@ -101,12 +101,12 @@ typedef struct s_onelink {
 /**
  * Routing logic
  */
-typedef struct s_routing_component *routing_component_t;
+typedef struct s_as *AS_t;
 
 typedef struct s_model_type {
   const char *name;
   const char *desc;
-  routing_component_t (*create) ();
+  AS_t (*create) ();
   void (*end) ();
 } s_routing_model_description_t, *routing_model_description_t;
 
@@ -127,46 +127,46 @@ typedef enum {
   SURF_ROUTING_RECURSIVE   /**< Recursive case: also return gateway informations */
 } e_surf_routing_hierarchy_t;
 
-typedef struct s_routing_component {
+typedef struct s_as {
   xbt_dict_t to_index;			/* char* -> network_element_t */
   xbt_dict_t bypassRoutes;		/* store bypass routes */
   routing_model_description_t routing;
   e_surf_routing_hierarchy_t hierarchy;
   char *name;
-  struct s_routing_component *routing_father;
+  struct s_as *routing_father;
   xbt_dict_t routing_sons;
-  route_extended_t(*get_route) (routing_component_t rc, const char *src,
+  route_extended_t(*get_route) (AS_t as, const char *src,
                                 const char *dst);
-  double(*get_latency) (routing_component_t rc, const char *src,
+  double(*get_latency) (AS_t as, const char *src,
                         const char *dst, route_extended_t e_route);
-  xbt_dynar_t(*get_onelink_routes) (routing_component_t rc);
+  xbt_dynar_t(*get_onelink_routes) (AS_t as);
   e_surf_network_element_type_t(*get_network_element_type) (const char *name);
-  route_extended_t(*get_bypass_route) (routing_component_t rc,
+  route_extended_t(*get_bypass_route) (AS_t as,
                                        const char *src, const char *dst);
-  void (*finalize) (routing_component_t rc);
+  void (*finalize) (AS_t as);
   /* The parser calls the following functions to inform the routing models
    * that a new element is added to the AS currently built.
    *
    * Of course, only the routing model of this AS is informed, not every ones */
-  void (*parse_PU) (routing_component_t rc, const char *name); /* A host or a router, whatever */
-  void (*parse_AS) (routing_component_t rc, const char *name);
-  void (*parse_route) (routing_component_t rc, const char *src,
+  void (*parse_PU) (AS_t as, const char *name); /* A host or a router, whatever */
+  void (*parse_AS) (AS_t as, const char *name);
+  void (*parse_route) (AS_t as, const char *src,
                      const char *dst, route_extended_t route);
-  void (*parse_ASroute) (routing_component_t rc, const char *src,
+  void (*parse_ASroute) (AS_t as, const char *src,
                        const char *dst, route_extended_t route);
-  void (*parse_bypassroute) (routing_component_t rc, const char *src,
+  void (*parse_bypassroute) (AS_t as, const char *src,
                            const char *dst, route_extended_t e_route);
-} s_routing_component_t;
+} s_as_t;
 
 typedef struct s_network_element_info {
-  routing_component_t rc_component;
+  AS_t rc_component;
   e_surf_network_element_type_t rc_type;
 } s_network_element_info_t, *network_element_info_t;
 
 typedef int *network_element_t;
 
 struct s_routing_global {
-  routing_component_t root;
+  AS_t root;
   void *loopback;
   size_t size_of_link;
   xbt_dynar_t(*get_route) (const char *src, const char *dst);

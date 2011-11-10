@@ -8,7 +8,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf");
 
 /* Business methods */
-static route_extended_t vivaldi_get_route(routing_component_t rc,
+static route_extended_t vivaldi_get_route(AS_t rc,
                                             const char *src,
                                             const char *dst)
 {
@@ -56,7 +56,7 @@ static double base_vivaldi_get_latency (const char *src, const char *dst)
   return euclidean_dist / 1000;
 }
 
-static double vivaldi_get_link_latency (routing_component_t rc,const char *src, const char *dst, route_extended_t e_route)
+static double vivaldi_get_link_latency (AS_t rc,const char *src, const char *dst, route_extended_t e_route)
 {
   if(get_network_element_type(src) == SURF_NETWORK_ELEMENT_AS) {
 	  int need_to_clean = e_route?0:1;
@@ -71,9 +71,9 @@ static double vivaldi_get_link_latency (routing_component_t rc,const char *src, 
 }
 
 /* Creation routing model functions */
-routing_component_t model_vivaldi_create(void)
+AS_t model_vivaldi_create(void)
 {
-	  routing_component_t new_component = model_none_create();
+	  AS_t new_component = model_none_create();
 	  new_component->get_route = vivaldi_get_route;
 	  new_component->get_latency = vivaldi_get_link_latency;
 	  return new_component;

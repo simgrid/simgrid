@@ -8,40 +8,38 @@
 
 /* Global vars */
 extern routing_global_t global_routing;
-extern routing_component_t current_routing;
+extern AS_t current_routing;
 extern routing_model_description_t current_routing_model;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 
-#define TO_FLOYD_COST(i,j) (routing->cost_table)[(i)+(j)*table_size]
-#define TO_FLOYD_PRED(i,j) (routing->predecessor_table)[(i)+(j)*table_size]
-#define TO_FLOYD_LINK(i,j) (routing->link_table)[(i)+(j)*table_size]
+#define TO_FLOYD_COST(i,j) (as->cost_table)[(i)+(j)*table_size]
+#define TO_FLOYD_PRED(i,j) (as->predecessor_table)[(i)+(j)*table_size]
+#define TO_FLOYD_LINK(i,j) (as->link_table)[(i)+(j)*table_size]
 
 /* Routing model structure */
 
 typedef struct {
-  s_routing_component_t generic_routing;
+  s_as_t generic_routing;
   /* vars for calculate the floyd algorith. */
   int *predecessor_table;
   double *cost_table;
-  route_extended_t *link_table; /* char* -> int* */
-} s_routing_component_floyd_t, *routing_component_floyd_t;
+  route_extended_t *link_table;
+} s_as_floyd_t, *as_floyd_t;
 
-static route_extended_t floyd_get_route(routing_component_t rc,
+static route_extended_t floyd_get_route(AS_t asg,
                                         const char *src, const char *dst);
 
 /* Business methods */
-static xbt_dynar_t floyd_get_onelink_routes(routing_component_t rc)
+static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
 
-  routing_component_floyd_t routing = (routing_component_floyd_t) rc;
-  //size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
   xbt_dict_cursor_t c1 = NULL, c2 = NULL;
   char *k1, *d1, *k2, *d2;
-  xbt_dict_foreach(routing->generic_routing.to_index, c1, k1, d1) {
-    xbt_dict_foreach(routing->generic_routing.to_index, c2, k2, d2) {
-      route_extended_t route = floyd_get_route(rc, k1, k2);
+  xbt_dict_foreach(asg->to_index, c1, k1, d1) {
+    xbt_dict_foreach(asg->to_index, c2, k2, d2) {
+      route_extended_t route = floyd_get_route(asg, k1, k2);
       if (route) {
         if (xbt_dynar_length(route->generic_route.link_list) == 1) {
           void *link =
@@ -49,11 +47,10 @@ static xbt_dynar_t floyd_get_onelink_routes(routing_component_t rc)
                                            0);
           onelink_t onelink = xbt_new0(s_onelink_t, 1);
           onelink->link_ptr = link;
-          if (routing->generic_routing.hierarchy == SURF_ROUTING_BASE) {
+          if (asg->hierarchy == SURF_ROUTING_BASE) {
             onelink->src = xbt_strdup(k1);
             onelink->dst = xbt_strdup(k2);
-          } else if (routing->generic_routing.hierarchy ==
-                     SURF_ROUTING_RECURSIVE) {
+          } else if (asg->hierarchy == SURF_ROUTING_RECURSIVE) {
             onelink->src = xbt_strdup(route->src_gateway);
             onelink->dst = xbt_strdup(route->dst_gateway);
           }
@@ -65,21 +62,21 @@ static xbt_dynar_t floyd_get_onelink_routes(routing_component_t rc)
   return ret;
 }
 
-static route_extended_t floyd_get_route(routing_component_t rc,
+static route_extended_t floyd_get_route(AS_t asg,
                                         const char *src, const char *dst)
 {
-  xbt_assert(rc && src
+  xbt_assert(asg && src
               && dst,
               "Invalid params for \"get_route\" function at AS \"%s\"",
-              rc->name);
+              asg->name);
 
   /* set utils vars */
-  routing_component_floyd_t routing = (routing_component_floyd_t) rc;
-  size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
+  as_floyd_t as = (as_floyd_t)asg;
+  size_t table_size = xbt_dict_length(asg->to_index);
 
-  generic_src_dst_check(rc, src, dst);
-  int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
-  int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, dst);
+  generic_src_dst_check(asg, src, dst);
+  int *src_id = xbt_dict_get_or_null(asg->to_index, src);
+  int *dst_id = xbt_dict_get_or_null(asg->to_index, dst);
   xbt_assert(src_id
               && dst_id,
               "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
@@ -118,7 +115,7 @@ static route_extended_t floyd_get_route(routing_component_t rc,
     if (first)
       first_gw = gw_dst;
 
-    if (rc->hierarchy == SURF_ROUTING_RECURSIVE && !first
+    if (asg->hierarchy == SURF_ROUTING_RECURSIVE && !first
         && strcmp(gw_dst, prev_gw_src)) {
       xbt_dynar_t e_route_as_to_as =
           (*(global_routing->get_route)) (gw_dst, prev_gw_src);
@@ -143,7 +140,7 @@ static route_extended_t floyd_get_route(routing_component_t rc,
   xbt_assert(pred != -1, "no route from host %d to %d (\"%s\" to \"%s\")",
               *src_id, *dst_id, src, dst);
 
-  if (rc->hierarchy == SURF_ROUTING_RECURSIVE) {
+  if (asg->hierarchy == SURF_ROUTING_RECURSIVE) {
     new_e_route->src_gateway = xbt_strdup(gw_src);
     new_e_route->dst_gateway = xbt_strdup(first_gw);
   }
@@ -151,58 +148,58 @@ static route_extended_t floyd_get_route(routing_component_t rc,
   return new_e_route;
 }
 
-static void floyd_finalize(routing_component_t rc)
+static void floyd_finalize(AS_t rc)
 {
-  routing_component_floyd_t routing = (routing_component_floyd_t) rc;
+  as_floyd_t as = (as_floyd_t) rc;
   int i, j;
   size_t table_size;
-  if (routing) {
-    table_size = xbt_dict_length(routing->generic_routing.to_index);
+  if (as) {
+    table_size = xbt_dict_length(as->generic_routing.to_index);
     /* Delete link_table */
     for (i = 0; i < table_size; i++)
       for (j = 0; j < table_size; j++)
         generic_free_extended_route(TO_FLOYD_LINK(i, j));
-    xbt_free(routing->link_table);
+    xbt_free(as->link_table);
     /* Delete bypass dict */
-    xbt_dict_free(&routing->generic_routing.bypassRoutes);
+    xbt_dict_free(&as->generic_routing.bypassRoutes);
     /* Delete index dict */
-    xbt_dict_free(&(routing->generic_routing.to_index));
+    xbt_dict_free(&(as->generic_routing.to_index));
     /* Delete dictionary index dict, predecessor and links table */
-    xbt_free(routing->predecessor_table);
+    xbt_free(as->predecessor_table);
     /* Delete structure */
     xbt_free(rc);
   }
 }
 
-routing_component_t model_floyd_create(void)
+AS_t model_floyd_create(void)
 {
-  routing_component_floyd_t new_component = (routing_component_floyd_t)routmod_generic_create(sizeof(s_routing_component_floyd_t));
+  as_floyd_t new_component = (as_floyd_t)routmod_generic_create(sizeof(s_as_floyd_t));
   new_component->generic_routing.parse_route = model_floyd_parse_route;
   new_component->generic_routing.parse_ASroute = model_floyd_parse_route;
   new_component->generic_routing.get_route = floyd_get_route;
   new_component->generic_routing.get_onelink_routes =
       floyd_get_onelink_routes;
   new_component->generic_routing.finalize = floyd_finalize;
-  return (routing_component_t)new_component;
+  return (AS_t)new_component;
 }
 
 void model_floyd_end(void)
 {
 
-	routing_component_floyd_t routing =
-	  ((routing_component_floyd_t) current_routing);
+	as_floyd_t as =
+	  ((as_floyd_t) current_routing);
 
 	unsigned int i, j, a, b, c;
 
 	/* set the size of table routing */
-	size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
+	size_t table_size = xbt_dict_length(as->generic_routing.to_index);
 
-	if(!routing->link_table)
+	if(!as->link_table)
 	{
 		/* Create Cost, Predecessor and Link tables */
-		routing->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
-		routing->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
-		routing->link_table = xbt_new0(route_extended_t, table_size * table_size);    /* actual link between src and dst */
+		as->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
+		as->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
+		as->link_table = xbt_new0(route_extended_t, table_size * table_size);    /* actual link between src and dst */
 
 		/* Initialize costs and predecessors */
 		for (i = 0; i < table_size; i++)
@@ -255,10 +252,10 @@ static int surf_pointer_resource_cmp(const void *a, const void *b) {
 
 //FIXME: kill dupplicates in next function with full routing
 
-void model_floyd_parse_route(routing_component_t rc, const char *src,
+void model_floyd_parse_route(AS_t rc, const char *src,
         const char *dst, route_extended_t route)
 {
-	routing_component_floyd_t routing = (routing_component_floyd_t) rc;
+	as_floyd_t as = (as_floyd_t) rc;
 
 	/* set the size of table routing */
 	size_t table_size = xbt_dict_length(rc->to_index);
@@ -271,12 +268,12 @@ void model_floyd_parse_route(routing_component_t rc, const char *src,
 	xbt_assert(src_id, "Network elements %s not found", src);
 	xbt_assert(dst_id, "Network elements %s not found", dst);
 
-	if(!routing->link_table)
+	if(!as->link_table)
 	{
 		/* Create Cost, Predecessor and Link tables */
-		routing->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
-		routing->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
-		routing->link_table = xbt_new0(route_extended_t, table_size * table_size);    /* actual link between src and dst */
+		as->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
+		as->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
+		as->link_table = xbt_new0(route_extended_t, table_size * table_size);    /* actual link between src and dst */
 
 		/* Initialize costs and predecessors */
 		for (i = 0; i < table_size; i++)

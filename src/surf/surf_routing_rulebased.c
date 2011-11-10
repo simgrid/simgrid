@@ -8,7 +8,7 @@
 
 /* Global vars */
 extern routing_global_t global_routing;
-extern routing_component_t current_routing;
+extern AS_t current_routing;
 extern routing_model_description_t current_routing_model;
 extern xbt_dynar_t link_list;
 
@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_rulebased, surf, "Routing part of sur
 /* Routing model structure */
 
 typedef struct {
-  s_routing_component_t generic_routing;
+  s_as_t generic_routing;
   xbt_dict_t dict_processing_units;
   xbt_dict_t dict_autonomous_systems;
   xbt_dynar_t list_route;
@@ -67,7 +67,7 @@ static void rule_route_extended_free(void *e)
 
 /* Parse routing model functions */
 
-static void model_rulebased_parse_PU(routing_component_t rc,
+static void model_rulebased_parse_PU(AS_t rc,
                                                 const char *name)
 {
   routing_component_rulebased_t routing =
@@ -75,7 +75,7 @@ static void model_rulebased_parse_PU(routing_component_t rc,
   xbt_dict_set(routing->dict_processing_units, name, (void *) (-1), NULL);
 }
 
-static void model_rulebased_parse_AS(routing_component_t rc,
+static void model_rulebased_parse_AS(AS_t rc,
                                                   const char *name)
 {
   routing_component_rulebased_t routing =
@@ -84,7 +84,7 @@ static void model_rulebased_parse_AS(routing_component_t rc,
                NULL);
 }
 
-static void model_rulebased_parse_route(routing_component_t rc,
+static void model_rulebased_parse_route(AS_t rc,
                                       const char *src, const char *dst,
                                       route_extended_t route)
 {
@@ -112,7 +112,7 @@ static void model_rulebased_parse_route(routing_component_t rc,
   xbt_free(route);
 }
 
-static void model_rulebased_parse_ASroute(routing_component_t rc,
+static void model_rulebased_parse_ASroute(AS_t rc,
                                         const char *src, const char *dst,
                                         route_extended_t route)
 {
@@ -147,7 +147,7 @@ static void model_rulebased_parse_ASroute(routing_component_t rc,
   xbt_free(route);
 }
 
-static void model_rulebased_parse_bypassroute(routing_component_t rc,
+static void model_rulebased_parse_bypassroute(AS_t rc,
                                             const char *src,
                                             const char *dst,
                                             route_extended_t e_route)
@@ -213,10 +213,10 @@ static char *remplace(char *value, const char **src_list, int src_size,
   return memcpy(res, result, i_res);
 }
 
-static route_extended_t rulebased_get_route(routing_component_t rc,
+static route_extended_t rulebased_get_route(AS_t rc,
                                             const char *src,
                                             const char *dst);
-static xbt_dynar_t rulebased_get_onelink_routes(routing_component_t rc)
+static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
 
@@ -267,7 +267,7 @@ static xbt_dynar_t rulebased_get_onelink_routes(routing_component_t rc)
 }
 
 /* Business methods */
-static route_extended_t rulebased_get_route(routing_component_t rc,
+static route_extended_t rulebased_get_route(AS_t rc,
                                             const char *src,
                                             const char *dst)
 {
@@ -372,14 +372,14 @@ static route_extended_t rulebased_get_route(routing_component_t rc,
   return new_e_route;
 }
 
-static route_extended_t rulebased_get_bypass_route(routing_component_t rc,
+static route_extended_t rulebased_get_bypass_route(AS_t rc,
                                                    const char *src,
                                                    const char *dst)
 {
   return NULL;
 }
 
-static void rulebased_finalize(routing_component_t rc)
+static void rulebased_finalize(AS_t rc)
 {
   routing_component_rulebased_t routing =
       (routing_component_rulebased_t) rc;
@@ -394,7 +394,7 @@ static void rulebased_finalize(routing_component_t rc)
 }
 
 /* Creation routing model functions */
-routing_component_t model_rulebased_create(void) {
+AS_t model_rulebased_create(void) {
 
   routing_component_rulebased_t new_component = (routing_component_rulebased_t)
       routmod_generic_create(sizeof(s_routing_component_rulebased_t));
@@ -416,5 +416,5 @@ routing_component_t model_rulebased_create(void) {
       xbt_dynar_new(sizeof(rule_route_extended_t),
                     &rule_route_extended_free);
 
-  return (routing_component_t) new_component;
+  return (AS_t) new_component;
 }

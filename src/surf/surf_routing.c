@@ -37,7 +37,7 @@ static xbt_dict_t random_value = NULL;
 
 /* Global vars */
 routing_global_t global_routing = NULL;
-routing_component_t current_routing = NULL;
+AS_t current_routing = NULL;
 routing_model_description_t current_routing_model = NULL;
 
 /* global parse functions */
@@ -294,7 +294,7 @@ static void routing_parse_E_bypassRoute(void)
  */
 void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
 {
-  routing_component_t new_routing;
+  AS_t new_routing;
   routing_model_description_t model = NULL;
   int cpt;
 
@@ -313,7 +313,7 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
   }
 
   /* make a new routing component */
-  new_routing = (routing_component_t) (*(model->create)) ();
+  new_routing = (AS_t) (*(model->create)) ();
   new_routing->routing = model;
   new_routing->hierarchy = SURF_ROUTING_NULL;
   new_routing->name = xbt_strdup(AS_id);
@@ -392,21 +392,21 @@ void routing_AS_end()
  * father in the chain
  */
 static void elements_father(const char *src, const char *dst,
-                            routing_component_t * res_father,
-                            routing_component_t * res_src,
-                            routing_component_t * res_dst)
+                            AS_t * res_father,
+                            AS_t * res_src,
+                            AS_t * res_dst)
 {
   xbt_assert(src && dst, "bad parameters for \"elements_father\" method");
 #define ELEMENTS_FATHER_MAXDEPTH 16     /* increase if it is not enough */
-  routing_component_t src_as, dst_as;
-  routing_component_t path_src[ELEMENTS_FATHER_MAXDEPTH];
-  routing_component_t path_dst[ELEMENTS_FATHER_MAXDEPTH];
+  AS_t src_as, dst_as;
+  AS_t path_src[ELEMENTS_FATHER_MAXDEPTH];
+  AS_t path_dst[ELEMENTS_FATHER_MAXDEPTH];
   int index_src = 0;
   int index_dst = 0;
-  routing_component_t current;
-  routing_component_t current_src;
-  routing_component_t current_dst;
-  routing_component_t father;
+  AS_t current;
+  AS_t current_src;
+  AS_t current_dst;
+  AS_t father;
 
   /* (1) find the as where the src and dst are located */
   network_element_info_t src_data = xbt_lib_get_or_null(host_lib, src,
@@ -474,9 +474,9 @@ static void _get_route_latency(const char *src, const char *dst,
   XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src, dst);
   xbt_assert(src && dst, "bad parameters for \"_get_route_latency\" method");
 
-  routing_component_t common_father;
-  routing_component_t src_father;
-  routing_component_t dst_father;
+  AS_t common_father;
+  AS_t src_father;
+  AS_t dst_father;
   elements_father(src, dst, &common_father, &src_father, &dst_father);
 
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
@@ -677,12 +677,12 @@ static double get_latency(const char *src, const char *dst)
  * This fuction is call by "finalize". It allow to finalize the 
  * AS or routing components. It delete all the structures.
  */
-static void _finalize(routing_component_t rc)
+static void _finalize(AS_t rc)
 {
   if (rc) {
     xbt_dict_cursor_t cursor = NULL;
     char *key;
-    routing_component_t elem;
+    AS_t elem;
     xbt_dict_foreach(rc->routing_sons, cursor, key, elem) {
       _finalize(elem);
     }
@@ -712,7 +712,7 @@ static void finalize(void)
   xbt_free(global_routing);
 }
 
-static xbt_dynar_t recursive_get_onelink_routes(routing_component_t rc)
+static xbt_dynar_t recursive_get_onelink_routes(AS_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
 
@@ -728,7 +728,7 @@ static xbt_dynar_t recursive_get_onelink_routes(routing_component_t rc)
   //recursing
   char *key;
   xbt_dict_cursor_t cursor = NULL;
-  routing_component_t rc_child;
+  AS_t rc_child;
   xbt_dict_foreach(rc->routing_sons, cursor, key, rc_child) {
     xbt_dynar_t onelink_child = recursive_get_onelink_routes(rc_child);
     if (onelink_child) {
