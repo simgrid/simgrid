@@ -86,10 +86,6 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t);
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = NULL;
 
-static void parse_Stag_trace(void);
-static void parse_Etag_trace(void);
-static void parse_Stag_trace_connect(void);
-
 static void init_randomness(void);
 static void add_randomness(void);
 

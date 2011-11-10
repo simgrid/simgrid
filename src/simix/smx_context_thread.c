@@ -34,7 +34,6 @@ smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc,
 static void smx_ctx_thread_free(smx_context_t context);
 static void smx_ctx_thread_stop(smx_context_t context);
 static void smx_ctx_thread_suspend(smx_context_t context);
-static void smx_ctx_thread_resume(smx_context_t new_context);
 static void smx_ctx_thread_runall_serial(void);
 static void smx_ctx_thread_runall_parallel(void);
 static smx_context_t smx_ctx_thread_self(void);

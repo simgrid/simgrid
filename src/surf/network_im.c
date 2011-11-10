@@ -90,7 +90,6 @@ static int im_net_get_link_latency_limited(surf_action_t action);
 static int im_net_action_is_suspended(surf_action_t action);
 static double im_net_action_get_remains(surf_action_t action);
 static void im_net_action_set_max_duration(surf_action_t action, double duration);
-static void surf_network_model_init_CM02_im(const char *filename);
 static void im_net_update_actions_state(double now, double delta);
 static void update_action_remaining(double now);
 
