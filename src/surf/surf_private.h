@@ -171,7 +171,6 @@ struct s_routing_global {
   size_t size_of_link;
   xbt_dynar_t(*get_route_no_cleanup) (const char *src, const char *dst);
   xbt_dynar_t(*get_onelink_routes) (void);
-  double (*get_latency) (const char *src, const char *dst);
   void (*get_route_latency)(const char *src, const char *dst,
                             xbt_dynar_t *route, double *latency, int cleanup);
   e_surf_network_element_type_t(*get_network_element_type) (const char *name);

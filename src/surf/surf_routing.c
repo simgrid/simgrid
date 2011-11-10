@@ -637,13 +637,6 @@ static xbt_dynar_t get_route_no_cleanup(const char *src, const char *dst)
   return route;
 }
 
-static double get_latency(const char *src, const char *dst) {
-  double latency = -1.0;
-  get_route_latency(src, dst, NULL, &latency, 0);
-  return latency;
-}
-
-
 static xbt_dynar_t recursive_get_onelink_routes(AS_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
@@ -702,7 +695,6 @@ void routing_model_create(size_t size_of_links, void *loopback)
   /* config the uniq global routing */
   global_routing = xbt_new0(s_routing_global_t, 1);
   global_routing->root = NULL;
-  global_routing->get_latency = get_latency;
   global_routing->get_route_no_cleanup = get_route_no_cleanup;
   global_routing->get_onelink_routes = get_onelink_routes;
   global_routing->get_route_latency = get_route_latency;
