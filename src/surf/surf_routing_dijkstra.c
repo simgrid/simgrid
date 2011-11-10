@@ -11,7 +11,7 @@ extern routing_global_t global_routing;
 extern routing_component_t current_routing;
 extern model_type_t current_routing_model;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf -- dijkstra routing logic");
 
 typedef struct {
   s_routing_component_t generic_routing;
