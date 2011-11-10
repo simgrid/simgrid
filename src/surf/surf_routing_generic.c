@@ -27,13 +27,18 @@ AS_t model_generic_create_sized(size_t childsize) {
   new_component->get_onelink_routes = NULL;
   new_component->get_bypass_route =
       generic_get_bypassroute;
-  new_component->finalize = model_none_finalize;
+  new_component->finalize = model_generic_finalize;
+
   new_component->to_index = xbt_dict_new();
   new_component->bypassRoutes = xbt_dict_new();
 
   return new_component;
 }
-
+void model_generic_finalize(AS_t as) {
+  xbt_dict_free(&as->to_index);
+  xbt_dict_free(&as->bypassRoutes);
+  model_none_finalize(as);
+}
 
 void generic_parse_PU(AS_t as, const char *name)
 {

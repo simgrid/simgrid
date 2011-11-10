@@ -111,12 +111,7 @@ static void full_finalize(AS_t rc)
       for (j = 0; j < table_size; j++)
         generic_free_extended_route(TO_ROUTE_FULL(i, j));
     xbt_free(routing->routing_table);
-    /* Delete bypass dict */
-    xbt_dict_free(&rc->bypassRoutes);
-    /* Delete index dict */
-    xbt_dict_free(&rc->to_index);
-    /* Delete structure */
-    xbt_free(rc);
+    model_generic_finalize(rc);
   }
 }
 

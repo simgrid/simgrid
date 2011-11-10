@@ -41,11 +41,16 @@ static route_extended_t cluster_get_route(AS_t as,
 	  return new_e_route;
 }
 
+static void model_cluster_finalize(AS_t as) {
+  xbt_dict_free(&cluster_host_link);
+  model_none_finalize(as);
+}
 /* Creation routing model functions */
 AS_t model_cluster_create(void)
 {
   AS_t result = model_none_create();
   result->get_route = cluster_get_route;
+  result->finalize = model_cluster_finalize;
 
   return (AS_t) result;
 }

@@ -27,6 +27,7 @@ void model_none_finalize(AS_t as);
 /* ************************************************************************** */
 /* ***************** GENERIC PARSE FUNCTIONS (declarations) ***************** */
 AS_t model_generic_create_sized(size_t childsize);
+void model_generic_finalize(AS_t as);
 
 void generic_parse_PU(AS_t rc, const char *name);
 void generic_parse_AS(AS_t rc, const char *name);
