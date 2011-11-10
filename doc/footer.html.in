@@ -8,7 +8,7 @@
 Back to the main Simgrid Documentation page</b></a>
 </td>
 <td align=middle>
-<small>The version of Simgrid documented here is v@SIMGRID_JAVA_VERSION_MAJOR@.@SIMGRID_JAVA_VERSION_MINOR@.<br/>
+<small>The version of Simgrid-java documented here is v@SIMGRID_JAVA_VERSION_MAJOR@.@SIMGRID_JAVA_VERSION_MINOR@.<br/>
 Documentation of other versions can be found in their respective
 archive files (directory doc/html).
 </td>

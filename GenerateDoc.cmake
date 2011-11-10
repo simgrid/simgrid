@@ -24,6 +24,13 @@ if(DOXYGEN_PATH AND JAVADOC_PATH)
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/
 	)
 	
+	ADD_CUSTOM_COMMAND(TARGET documentation
+        COMMAND ${CMAKE_COMMAND} -E echo "XX Post-processing Doxygen result"
+        COMMAND ${CMAKE_HOME_DIRECTORY}/doxygen_postprocesser.pl
+        
+        WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
+    )
+	
 else(DOXYGEN_PATH AND JAVADOC_PATH)
 	ADD_CUSTOM_TARGET(documentation
 			COMMENT "Generating the SimGrid documentation..."
@@ -36,3 +43,12 @@ else(DOXYGEN_PATH AND JAVADOC_PATH)
 			COMMAND false
 			)	
 endif(DOXYGEN_PATH AND JAVADOC_PATH)
+
+add_custom_target(sync-gforge-doc
+COMMAND chmod g+rw -R doc/
+COMMAND chmod a+rX -R doc/
+COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times 
+doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid-java/${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR}/doc/ || true
+WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
+)
+add_dependencies(sync-gforge-doc documentation)
