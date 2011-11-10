@@ -4,13 +4,8 @@ dofile 'slave.lua'
 
 require "simgrid"
 
-if (#arg == 2) then
-  simgrid.platform(arg[1])
-  simgrid.application(arg[2])
-else
-  simgrid.platform("../../msg/small_platform.xml")
-  simgrid.application("../deploy.xml")
-end
+simgrid.platform(arg[1] or "../../msg/small_platform.xml")
+simgrid.application(arg[2] or "../deploy.xml")
 simgrid.run()
-simgrid.info("Simulation's over.See you.")
+simgrid.info("Simulation's over. See you.")
 

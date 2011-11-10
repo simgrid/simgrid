@@ -1,40 +1,34 @@
 function Master(...) 
 
-  simgrid.info("Hello from lua, I'm the master")
-  for i, v in ipairs(arg) do
-    simgrid.info("Got "..v)
-  end
-
-  local nb_task = arg[1]
-  local comp_size = arg[2]
-  local comm_size = arg[3]
-  local slave_count = arg[4]
-
   if #arg ~= 4 then
-    error("Argc should be 4")
+    error("Wrong number of arguments (got " .. #arg ..
+        ", expected 4: nb_tasks comp_size comm_size slave_count)")
   end
-  simgrid.info("Argc=" .. (#arg) .. " (should be 4)")
+
+  simgrid.info("Hello from lua, I'm the master")
+
+  local nb_task, comp_size, comm_size, slave_count = unpack(arg)
 
   -- Dispatch the tasks
 
   for i = 1, nb_task do
-    local tk = simgrid.task.new("Task "..i, comp_size, comm_size)
-    local task_name = simgrid.task.name(tk)
+    local task = simgrid.task.new("Task " .. i, comp_size, comm_size)
+    local task_name = task:name()
     local alias = "slave " .. (i % slave_count)
-    simgrid.info("Master sending  '" .. task_name .. "' To '" .. alias .."'")
-    simgrid.task.send(tk,alias) -- C user data set to NULL
-    simgrid.info("Master done sending '".. task_name .. "' To '" .. alias .."'")
+    simgrid.info("Sending  '" .. task_name .. "' to '" .. alias .."'")
+    task:send(alias) -- C user data set to NULL
+    simgrid.info("Done sending '".. task_name .. "' to '" .. alias .."'")
   end
 
   -- Sending Finalize Message To Others
 
-  simgrid.info("Master: All tasks have been dispatched. Let's tell everybody the computation is over.")
+  simgrid.info("All tasks have been dispatched. Let's tell everybody the computation is over.")
   for i = 0, slave_count - 1 do
     local alias = "slave " .. i
-    simgrid.info("Master: sending finalize to " .. alias)
+    simgrid.info("Sending finalize to '" .. alias .. "'")
     local finalize = simgrid.task.new("finalize", comp_size, comm_size)
-    simgrid.task.send(finalize, alias)
+    finalize:send(alias)
   end
-  simgrid.info("Master: Everything's done.")
+  simgrid.info("Everything's done.")
 end -- Master
 
