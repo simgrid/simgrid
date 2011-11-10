@@ -40,12 +40,12 @@ xbt_strbuff_t xbt_strbuff_new(void)
 
 /** @brief creates a new string buffer containing the provided string
  *
- * Beware, we store the ctn directly, not a copy of it
+ * Beware, the ctn is copied, you want to free it afterward, anyhow
  */
-XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(char *ctn)
+XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(const char *ctn)
 {
   xbt_strbuff_t res = malloc(sizeof(s_xbt_strbuff_t));
-  res->data = ctn;
+  res->data = xbt_strdup(ctn);
   res->used = res->size = strlen(ctn);
   return res;
 }

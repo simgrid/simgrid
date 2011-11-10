@@ -41,7 +41,7 @@ XBT_PUBLIC(char *) xbt_str_join_array(const char *const *strs, const char *sep);
 
 /* */
 XBT_PUBLIC(void) xbt_str_subst(char *str, char from, char to, int amount);
-XBT_PUBLIC(char *) xbt_str_varsubst(char *str, xbt_dict_t patterns);
+XBT_PUBLIC(char *) xbt_str_varsubst(const char *str, xbt_dict_t patterns);
 
 /* */
 XBT_PUBLIC(void) xbt_str_strip_spaces(char *);
