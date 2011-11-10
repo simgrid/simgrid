@@ -176,7 +176,7 @@ static int surf_pointer_resource_cmp(const void *a, const void *b) {
 }
 
 void model_full_set_route(routing_component_t rc, const char *src,
-		const char *dst, name_route_extended_t route)
+		const char *dst, route_extended_t route)
 {
 	int *src_id, *dst_id;
 	src_id = xbt_dict_get_or_null(rc->to_index, src);

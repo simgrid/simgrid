@@ -501,7 +501,7 @@ void model_dijkstra_both_end(void)
 
 }
 void model_dijkstra_both_parse_route (routing_component_t rc, const char *src,
-                     const char *dst, name_route_extended_t route)
+                     const char *dst, route_extended_t route)
 {
 	routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
 	int *src_id, *dst_id;

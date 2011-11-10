@@ -228,7 +228,7 @@ static void routing_parse_link_ctn(void)
  */
 static void routing_parse_E_route(void)
 {
-  name_route_extended_t route = xbt_new0(s_name_route_extended_t, 1);
+  route_extended_t route = xbt_new0(s_route_extended_t, 1);
   route->generic_route.link_list = link_list;
   xbt_assert(current_routing->parse_route,
              "no defined method \"set_route\" in \"%s\"",
@@ -244,7 +244,7 @@ static void routing_parse_E_route(void)
  */
 static void routing_parse_E_ASroute(void)
 {
-  name_route_extended_t e_route = xbt_new0(s_name_route_extended_t, 1);
+  route_extended_t e_route = xbt_new0(s_route_extended_t, 1);
   e_route->generic_route.link_list = link_list;
   e_route->src_gateway = xbt_strdup(gw_src);
   e_route->dst_gateway = xbt_strdup(gw_dst);

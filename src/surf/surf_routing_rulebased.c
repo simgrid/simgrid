@@ -86,7 +86,7 @@ static void model_rulebased_parse_AS(routing_component_t rc,
 
 static void model_rulebased_parse_route(routing_component_t rc,
                                       const char *src, const char *dst,
-                                      name_route_extended_t route)
+                                      route_extended_t route)
 {
   routing_component_rulebased_t routing =
       (routing_component_rulebased_t) rc;
@@ -114,7 +114,7 @@ static void model_rulebased_parse_route(routing_component_t rc,
 
 static void model_rulebased_parse_ASroute(routing_component_t rc,
                                         const char *src, const char *dst,
-                                        name_route_extended_t route)
+                                        route_extended_t route)
 {
   routing_component_rulebased_t routing =
       (routing_component_rulebased_t) rc;

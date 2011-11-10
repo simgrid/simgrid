@@ -114,12 +114,6 @@ typedef struct s_route {
   xbt_dynar_t link_list;
 } s_route_t, *route_t;
 
-typedef struct s_name_route_extended {
-  s_route_t generic_route;
-  char *src_gateway;
-  char *dst_gateway;
-} s_name_route_extended_t, *name_route_extended_t;
-
 typedef struct s_route_extended {
   s_route_t generic_route;
   char *src_gateway;
@@ -157,9 +151,9 @@ typedef struct s_routing_component {
   void (*parse_PU) (routing_component_t rc, const char *name); /* A host or a router, whatever */
   void (*parse_AS) (routing_component_t rc, const char *name);
   void (*parse_route) (routing_component_t rc, const char *src,
-                     const char *dst, name_route_extended_t route);
+                     const char *dst, route_extended_t route);
   void (*parse_ASroute) (routing_component_t rc, const char *src,
-                       const char *dst, name_route_extended_t route);
+                       const char *dst, route_extended_t route);
   void (*parse_bypassroute) (routing_component_t rc, const char *src,
                            const char *dst, route_extended_t e_route);
 } s_routing_component_t;

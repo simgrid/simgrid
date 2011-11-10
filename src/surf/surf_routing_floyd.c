@@ -256,7 +256,7 @@ static int surf_pointer_resource_cmp(const void *a, const void *b) {
 //FIXME: kill dupplicates in next function with full routing
 
 void model_floyd_parse_route(routing_component_t rc, const char *src,
-        const char *dst, name_route_extended_t route)
+        const char *dst, route_extended_t route)
 {
 	routing_component_floyd_t routing = (routing_component_floyd_t) rc;
 

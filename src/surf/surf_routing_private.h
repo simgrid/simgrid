@@ -65,7 +65,7 @@ void generic_src_dst_check(routing_component_t rc, const char *src,
 routing_component_t model_floyd_create(void);  /* create structures for floyd routing model */
 void model_floyd_end(void);      /* finalize the creation of floyd routing model */
 void model_floyd_parse_route(routing_component_t rc, const char *src,
-        const char *dst, name_route_extended_t route);
+        const char *dst, route_extended_t route);
 
 /* ************************************************** */
 /* ************** RULE-BASED ROUTING **************** */
@@ -92,14 +92,14 @@ routing_component_t model_dijkstra_create(void);       /* create structures for 
 routing_component_t model_dijkstracache_create(void);  /* create structures for dijkstracache routing model */
 void model_dijkstra_both_end(void);      /* finalize the creation of dijkstra routing model */
 void model_dijkstra_both_parse_route (routing_component_t rc, const char *src,
-                     const char *dst, name_route_extended_t route);
+                     const char *dst, route_extended_t route);
 
 /* ************************************************************************** */
 /* *************************** FULL ROUTING ********************************* */
 routing_component_t model_full_create(void);   /* create structures for full routing model */
 void model_full_end(void);       /* finalize the creation of full routing model */
 void model_full_set_route(	/* Set the route and ASroute between src and dst */
-		routing_component_t rc, const char *src, const char *dst, name_route_extended_t route);
+		routing_component_t rc, const char *src, const char *dst, route_extended_t route);
 
 /* ************************************************************************** */
 /* ******************************* NO ROUTING ******************************* */
