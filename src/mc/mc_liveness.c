@@ -17,17 +17,6 @@ mc_snapshot_t next_snapshot = NULL;
 mc_snapshot_t current_snapshot = NULL;
 
 
-mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st){
-  mc_pair_t p = NULL;
-  p = xbt_new0(s_mc_pair_t, 1);
-  p->system_state = sn;
-  p->automaton_state = st;
-  p->graph_state = sg;
-  mc_stats_pair->expanded_pairs++;
-  return p;
-    
-}
-
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   
   if(s1->num_reg != s2->num_reg)
@@ -287,7 +276,7 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
     return;
 
   if(replay == 1){
-    MC_replay_liveness(mc_stack_liveness_stateless);
+    MC_replay_liveness(mc_stack_liveness_stateless, 0);
     current_pair = (mc_pair_stateless_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_liveness_stateless));
     xbt_swag_foreach(process, simix_global->process_list){
       if(MC_process_is_enabled(process)){
@@ -322,10 +311,11 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
   mc_pair_stateless_t pair_succ;
 
 
-  if(MC_state_interleave_size(current_pair->graph_state) > 0){
+  if(current_pair->requests > 0){
 
     while((req = MC_state_get_request(current_pair->graph_state, &value)) != NULL && (xbt_fifo_size(mc_stack_liveness_stateless) < MAX_DEPTH_LIVENESS)){
    
+      
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
 	req_str = MC_request_to_string(req, value);
@@ -398,18 +388,20 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
 	MC_UNSET_RAW_MEM;
       }
 
-      cursor = 0; 
+      /*MC_SET_RAW_MEM;
+      MC_take_snapshot(snapshot);
+      MC_UNSET_RAW_MEM;*/
 
+      cursor = 0; 
+      
       xbt_dynar_foreach(successors, cursor, pair_succ){
 
-     
-
 	if((search_cycle == 1) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)) ){
-	
+
 	  MC_SET_RAW_MEM;
 	  MC_take_snapshot(snapshot);
 	  MC_UNSET_RAW_MEM;
-
+	
 	  if(reached(a, pair_succ->automaton_state, snapshot) == 1){
 
 	    XBT_DEBUG("Next pair (depth = %d) already reached !", xbt_fifo_size(mc_stack_liveness_stateless) + 1);
@@ -426,32 +418,36 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
 	}
       
 
-	if((search_cycle == 0) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2))){
-	  XBT_DEBUG("Take snapshot of acceptance pair (depth = %d)", xbt_fifo_size(mc_stack_liveness_stateless) + 1 );
-	  MC_SET_RAW_MEM;
-	  MC_take_snapshot(snapshot);
-	  MC_UNSET_RAW_MEM;
-	}
-
 	MC_SET_RAW_MEM;
 	xbt_fifo_unshift(mc_stack_liveness_stateless, pair_succ);
 	MC_UNSET_RAW_MEM;
+
+	if(xbt_fifo_size(mc_stack_liveness_stateless) == MAX_DEPTH_LIVENESS){
+	  XBT_DEBUG("Maximum depth reached");
+	}
       
 	MC_ddfs_stateless(a, search_cycle, 0);
 
 
-	if((search_cycle == 0) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2))){
+	if((search_cycle == 0) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)) && (xbt_fifo_size(mc_stack_liveness_stateless) < (MAX_DEPTH_LIVENESS - 1))){
        
 	  XBT_DEBUG("Acceptance pair : graph=%p, automaton=%p(%s)", pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
 
-		
-	  set_pair_reached(a, pair_succ->automaton_state, snapshot);
-
-	
 	  /* Pair shifted from stack when first MC_ddfs finished and returned at this point */
 	  MC_SET_RAW_MEM;
 	  xbt_fifo_unshift(mc_stack_liveness_stateless, pair_succ);
 	  MC_UNSET_RAW_MEM;
+
+	  /* Restore system before starting detection of acceptance cycle */
+	  MC_replay_liveness(mc_stack_liveness_stateless, 0);
+	
+	  MC_SET_RAW_MEM;
+	  MC_take_snapshot(snapshot);
+	  MC_UNSET_RAW_MEM;
+		
+	  set_pair_reached(a, pair_succ->automaton_state, snapshot); 
+
+	  XBT_DEBUG("Detection of acceptance cycle enabled");
       
 	  MC_ddfs_stateless(a, 1, 1);
 
@@ -461,11 +457,16 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
 	  MC_UNSET_RAW_MEM;
 	  
 	}
+
+	/* Restore system before checking others successors */
+	MC_replay_liveness(mc_stack_liveness_stateless, 1);
+	
       }
 
-      
-      XBT_DEBUG("Backtracking to depth %u", xbt_fifo_size(mc_stack_liveness_stateless));
-      MC_replay_liveness(mc_stack_liveness_stateless);
+      if(xbt_dynar_is_empty(successors)){
+	XBT_DEBUG("Backtracking to depth %u", xbt_fifo_size(mc_stack_liveness_stateless));
+	MC_replay_liveness(mc_stack_liveness_stateless, 0);
+      }
   
     }
 
@@ -473,14 +474,6 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
   }else{  /*No request to execute, search evolution in Büchi automaton */
     
     if((xbt_fifo_size(mc_stack_liveness_stateless) < MAX_DEPTH_LIVENESS)){
-
-      // MC_state_set_executed_request(current_pair->graph_state, NULL, value);   
-    
-      /* Answer the request */
-      //SIMIX_request_pre(req, value);
-
-      /* Wait for requests (schedules processes) */
-      //MC_wait_for_requests();
 
       MC_SET_RAW_MEM;
 
@@ -553,14 +546,6 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
 	    exit(0);
 	  }
 	}
-      
-
-	if((search_cycle == 0) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2))){
-	  XBT_DEBUG("Take snapshot of acceptance pair (depth = %d)", xbt_fifo_size(mc_stack_liveness_stateless) + 1 );
-	  MC_SET_RAW_MEM;
-	  MC_take_snapshot(snapshot);
-	  MC_UNSET_RAW_MEM;
-	}
 
 	MC_SET_RAW_MEM;
 	xbt_fifo_unshift(mc_stack_liveness_stateless, pair_succ);
@@ -569,18 +554,25 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
 	MC_ddfs_stateless(a, search_cycle, 0);
 
 
-	if((search_cycle == 0) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2))){
+	if((search_cycle == 0) && ((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)) && (xbt_fifo_size(mc_stack_liveness_stateless) < (MAX_DEPTH_LIVENESS - 1))){
        
 	  XBT_DEBUG("Acceptance pair : graph=%p, automaton=%p(%s)", pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
 
+	  /* Restore system before taking snapshot of system */
+	  MC_replay_liveness(mc_stack_liveness_stateless, 0);
+	
+	  MC_SET_RAW_MEM;
+	  MC_take_snapshot(snapshot);
+	  MC_UNSET_RAW_MEM;
 		
 	  set_pair_reached(a, pair_succ->automaton_state, snapshot);
-
-	
+	 
 	  /* Pair shifted from stack when first MC_ddfs finished and returned at this point */
 	  MC_SET_RAW_MEM;
 	  xbt_fifo_unshift(mc_stack_liveness_stateless, pair_succ);
-	  MC_UNSET_RAW_MEM;
+	  MC_UNSET_RAW_MEM;	  
+
+	  XBT_DEBUG("Backtracking to depth %d, detection of acceptance cycle enabled", xbt_fifo_size(mc_stack_liveness_stateless));
       
 	  MC_ddfs_stateless(a, 1, 1);
 
@@ -590,20 +582,38 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay){
 	  MC_UNSET_RAW_MEM;
 	  
 	}
+
+	/* Restore system before checking others successors */
+	MC_replay_liveness(mc_stack_liveness_stateless, 1);
+
       }
     }
 
   }
   
   MC_SET_RAW_MEM;
+  if(xbt_fifo_size(mc_stack_liveness_stateless) == MAX_DEPTH_LIVENESS - 1){
+    XBT_DEBUG("Pair (graph=%p, automaton =%p, search_cycle = %u) shifted in stack, maximum depth reached", current_pair->graph_state, current_pair->automaton_state, search_cycle);
+  }else{
+    XBT_DEBUG("Pair (graph=%p, automaton =%p, search_cycle = %u) shifted in stack", current_pair->graph_state, current_pair->automaton_state, search_cycle);
+  }
   xbt_fifo_shift(mc_stack_liveness_stateless);
-  XBT_DEBUG("Pair (graph=%p, automaton =%p, search_cycle = %u) shifted in stack", current_pair->graph_state, current_pair->automaton_state, search_cycle);
   MC_UNSET_RAW_MEM;
 
 }
 
 /********************* Double-DFS stateful without visited state *******************/
 
+mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st){
+  mc_pair_t p = NULL;
+  p = xbt_new0(s_mc_pair_t, 1);
+  p->system_state = sn;
+  p->automaton_state = st;
+  p->graph_state = sg;
+  mc_stats_pair->expanded_pairs++;
+  return p;
+    
+}
 
 void MC_ddfs_stateful_init(xbt_automaton_t a){
 

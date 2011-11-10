@@ -48,7 +48,7 @@ extern double *mc_time;
 
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack);
-void MC_replay_liveness(xbt_fifo_t stack);
+void MC_replay_liveness(xbt_fifo_t stack, int all_stack);
 void MC_wait_for_requests(void);
 void MC_get_enabled_processes();
 void MC_show_deadlock(smx_req_t req);

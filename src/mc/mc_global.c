@@ -282,7 +282,7 @@ void MC_replay(xbt_fifo_t stack)
   XBT_DEBUG("**** End Replay ****");
 }
 
-void MC_replay_liveness(xbt_fifo_t stack)
+void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 {
   int value;
   char *req_str;
@@ -300,42 +300,86 @@ void MC_replay_liveness(xbt_fifo_t stack)
    * it will set it back again, we have to unset it to continue  */
   MC_UNSET_RAW_MEM;
 
-  /* Traverse the stack from the initial state and re-execute the transitions */
-  for (item = xbt_fifo_get_last_item(stack);
-       item != xbt_fifo_get_first_item(stack);
-       item = xbt_fifo_get_prev_item(item)) {
+  if(all_stack){
 
-    pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
-    state = (mc_state_t) pair->graph_state;
+    item = xbt_fifo_get_last_item(stack);
 
-    if(pair->requests > 0){
+    while(depth <= xbt_fifo_size(stack)){
+
+      pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
+      state = (mc_state_t) pair->graph_state;
+
+      if(pair->requests > 0){
    
-      saved_req = MC_state_get_executed_request(state, &value);
-      //XBT_DEBUG("SavedReq->call %u", saved_req->call);
+	saved_req = MC_state_get_executed_request(state, &value);
+	//XBT_DEBUG("SavedReq->call %u", saved_req->call);
       
-      if(saved_req != NULL){
-	/* because we got a copy of the executed request, we have to fetch the  
-	   real one, pointed by the request field of the issuer process */
-	req = &saved_req->issuer->request;
-	//XBT_DEBUG("Req->call %u", req->call);
+	if(saved_req != NULL){
+	  /* because we got a copy of the executed request, we have to fetch the  
+	     real one, pointed by the request field of the issuer process */
+	  req = &saved_req->issuer->request;
+	  //XBT_DEBUG("Req->call %u", req->call);
 	
-	/* Debug information */
-	if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
-	  req_str = MC_request_to_string(req, value);
-	  XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
-	  xbt_free(req_str);
+	  /* Debug information */
+	  if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
+	    req_str = MC_request_to_string(req, value);
+	    XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
+	    xbt_free(req_str);
+	  }
+	
 	}
-	
-      }
  
-      SIMIX_request_pre(req, value);
-      MC_wait_for_requests();
+	SIMIX_request_pre(req, value);
+	MC_wait_for_requests();
+      }
+
+      depth++;
+    
+      /* Update statistics */
+      mc_stats_pair->visited_pairs++;
+
+      item = xbt_fifo_get_prev_item(item);
     }
 
-    depth++;
+  }else{
+
+    /* Traverse the stack from the initial state and re-execute the transitions */
+    for (item = xbt_fifo_get_last_item(stack);
+	 item != xbt_fifo_get_first_item(stack);
+	 item = xbt_fifo_get_prev_item(item)) {
+
+      pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
+      state = (mc_state_t) pair->graph_state;
+
+      if(pair->requests > 0){
+   
+	saved_req = MC_state_get_executed_request(state, &value);
+	//XBT_DEBUG("SavedReq->call %u", saved_req->call);
+      
+	if(saved_req != NULL){
+	  /* because we got a copy of the executed request, we have to fetch the  
+	     real one, pointed by the request field of the issuer process */
+	  req = &saved_req->issuer->request;
+	  //XBT_DEBUG("Req->call %u", req->call);
+	
+	  /* Debug information */
+	  if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
+	    req_str = MC_request_to_string(req, value);
+	    XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
+	    xbt_free(req_str);
+	  }
+	
+	}
+ 
+	SIMIX_request_pre(req, value);
+	MC_wait_for_requests();
+      }
+
+      depth++;
     
-    /* Update statistics */
-    mc_stats_pair->visited_pairs++;
+      /* Update statistics */
+      mc_stats_pair->visited_pairs++;
+    }
   }  
 
   XBT_DEBUG("**** End Replay ****");
