@@ -761,6 +761,11 @@ static void routing_parse_cluster(void)
   s_sg_platf_host_cbarg_t host;
   s_sg_platf_link_cbarg_t link;
 
+  unsigned int iter;
+  int start, end, i;
+  xbt_dynar_t radical_elements;
+  xbt_dynar_t radical_ends;
+
   if (strcmp(struct_cluster->availability_trace, "")
       || strcmp(struct_cluster->state_trace, "")) {
     patterns = xbt_dict_new();
@@ -769,10 +774,6 @@ static void routing_parse_cluster(void)
     xbt_dict_set(patterns, "suffix", xbt_strdup(struct_cluster->suffix), free);
   }
 
-  unsigned int iter;
-  int start, end, i;
-  xbt_dynar_t radical_elements;
-  xbt_dynar_t radical_ends;
 
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", struct_cluster->id);
   sg_platf_new_AS_begin(struct_cluster->id, "Cluster");
@@ -780,7 +781,6 @@ static void routing_parse_cluster(void)
   //Make all hosts
   radical_elements = xbt_str_split(struct_cluster->radical, ",");
   xbt_dynar_foreach(radical_elements, iter, groups) {
-    memset(&host, 0, sizeof(host));
 
     radical_ends = xbt_str_split(groups, "-");
     start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
@@ -801,25 +801,25 @@ static void routing_parse_cluster(void)
           bprintf("%s%d%s", struct_cluster->prefix, i, struct_cluster->suffix);
       link_id = bprintf("%s_link_%d", struct_cluster->id, i);
 
-      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id,
-                struct_cluster->power);
+      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->power);
+
+      memset(&host, 0, sizeof(host));
       host.id = host_id;
       if (strcmp(struct_cluster->availability_trace, "")) {
         xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
-        char *tmp_availability_file =
-            xbt_str_varsubst(struct_cluster->availability_trace, patterns);
-        XBT_DEBUG("\tavailability_file=\"%s\"", tmp_availability_file);
-        host.power_trace = tmgr_trace_new(tmp_availability_file);
-        xbt_free(tmp_availability_file);
+        char *avail_file = xbt_str_varsubst(struct_cluster->availability_trace, patterns);
+        XBT_DEBUG("\tavailability_file=\"%s\"", avail_file);
+        host.power_trace = tmgr_trace_new(avail_file);
+        xbt_free(avail_file);
       } else {
         XBT_DEBUG("\tavailability_file=\"\"");
       }
+
       if (strcmp(struct_cluster->state_trace, "")) {
-        char *tmp_state_file =
-            xbt_str_varsubst(struct_cluster->state_trace, patterns);
-        XBT_DEBUG("\tstate_file=\"%s\"", tmp_state_file);
-        host.state_trace = tmgr_trace_new(tmp_state_file);
-        xbt_free(tmp_state_file);
+        char *avail_file = xbt_str_varsubst(struct_cluster->state_trace, patterns);
+        XBT_DEBUG("\tstate_file=\"%s\"", avail_file);
+        host.state_trace = tmgr_trace_new(avail_file);
+        xbt_free(avail_file);
       } else {
         XBT_DEBUG("\tstate_file=\"\"");
       }
@@ -884,11 +884,12 @@ static void routing_parse_cluster(void)
   }
   xbt_dynar_free(&radical_elements);
 
-  // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written, and it's very useful to connect clusters together
+  // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written,
+  // and it's very useful to connect clusters together
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", struct_cluster->router_id);
-  s_sg_platf_router_cbarg_t router;
   char *newid = NULL;
+  s_sg_platf_router_cbarg_t router;
   memset(&router, 0, sizeof(router));
   router.id = struct_cluster->router_id;
   router.coord = "";
