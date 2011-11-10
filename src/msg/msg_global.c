@@ -178,6 +178,7 @@ int MSG_process_killall(int reset_PIDs)
  */
 MSG_error_t MSG_clean(void)
 {
+  XBT_DEBUG("Closing MSG");
 
 #ifdef HAVE_TRACING
   TRACE_surf_release();

@@ -13,5 +13,4 @@ else
 end
 simgrid.run()
 simgrid.info("Simulation's over.See you.")
-simgrid.clean()
 

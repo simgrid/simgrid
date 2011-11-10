@@ -40,5 +40,4 @@ print_global()
 simgrid.platform("../../msg/small_platform.xml")
 simgrid.application("deployment_duplicated_globals.xml")
 simgrid.run()
-simgrid.clean()
 

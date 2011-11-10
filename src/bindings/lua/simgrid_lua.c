@@ -661,7 +661,7 @@ static int run(lua_State * L)
  * \param L a Lua state
  * \return number of values returned to Lua
  */
-static int clean(lua_State * L)
+static int simgrid_gc(lua_State * L)
 {
   MSG_clean();
   return 0;
@@ -730,7 +730,6 @@ static const luaL_Reg simgrid_functions[] = {
   {"debug", debug},
   {"info", info},
   {"run", run},
-  {"clean", clean},
   /* short names */
   {"platform", create_environment},
   {"application", launch_application},
@@ -835,8 +834,8 @@ lua_State* sglua_get_maestro(void) {
  *
  * \param L a lua state
  */
-static void register_task_functions(lua_State* L) {
-
+static void register_task_functions(lua_State* L)
+{
   /* create a table simgrid.task and fill it with task functions */
   luaL_openlib(L, TASK_MODULE_NAME, task_functions, 0);
                                   /* simgrid.task */
@@ -869,8 +868,8 @@ static void register_task_functions(lua_State* L) {
  *
  * \param L a lua state
  */
-static void register_host_functions(lua_State* L) {
-
+static void register_host_functions(lua_State* L)
+{
   /* create a table simgrid.host and fill it with host functions */
   luaL_openlib(L, HOST_MODULE_NAME, host_functions, 0);
                                   /* simgrid.host */
@@ -898,24 +897,48 @@ static void register_host_functions(lua_State* L) {
  * \brief Registers the platform functions into the table simgrid.platf.
  * \param L a lua state
  */
-static void register_platf_functions(lua_State* L) {
-
+static void register_platf_functions(lua_State* L)
+{
   luaL_openlib(L, PLATF_MODULE_NAME, platf_functions, 0);
                                   /* simgrid.platf */
   lua_pop(L, 1);
 }
 
 /**
- * \brief Makes the Simgrid functions available to the Lua world.
+ * \brief Makes the core functions available to the Lua world.
  * \param L a Lua world
  */
-static void register_c_functions(lua_State *L) {
-
+static void register_core_functions(lua_State *L)
+{
   /* register the core C functions to lua */
   luaL_register(L, "simgrid", simgrid_functions);
                                   /* simgrid */
+
+  /* set a finalizer that cleans simgrid, by adding to the simgrid module a
+   * dummy userdata whose __gc metamethod calls MSG_clean() */
+  lua_newuserdata(L, sizeof(void*));
+                                  /* simgrid udata */
+  lua_newtable(L);
+                                  /* simgrid udata mt */
+  lua_pushcfunction(L, simgrid_gc);
+                                  /* simgrid udata mt simgrid_gc */
+  lua_setfield(L, -2, "__gc");
+                                  /* simgrid udata mt */
+  lua_setmetatable(L, -2);
+                                  /* simgrid udata */
+  lua_setfield(L, -2, "__simgrid_loaded");
+                                  /* simgrid */
   lua_pop(L, 1);
                                   /* -- */
+}
+
+/**
+ * \brief Creates the simgrid module and make it available to Lua.
+ * \param L a Lua world
+ */
+static void register_c_functions(lua_State *L)
+{
+  register_core_functions(L);
   register_task_functions(L);
   register_host_functions(L);
   register_platf_functions(L);
