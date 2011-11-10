@@ -107,10 +107,6 @@ typedef struct s_model_type {
   const char *name;
   const char *desc;
   routing_component_t (*create) ();
-  void (*load) ();     /* Add parsing callbacks for the time of the creation of this AS
-                          FIXME: that feature is unused and could maybe be killed? */
-  void (*unload) ();   /* Remove the callbacks at the end of this AS's creation
-                          FIXME: that feature is unused and could maybe be killed? */
   void (*end) ();
 } s_model_type_t, *model_type_t;
 

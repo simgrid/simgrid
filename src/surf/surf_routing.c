@@ -70,25 +70,25 @@ typedef enum {
 struct s_model_type routing_models[] = {
   {"Full",
    "Full routing data (fast, large memory requirements, fully expressive)",
-   model_full_create, NULL,NULL, model_full_end},
+   model_full_create, model_full_end},
   {"Floyd",
    "Floyd routing data (slow initialization, fast lookup, lesser memory requirements, shortest path routing only)",
-   model_floyd_create, NULL,NULL, model_floyd_end},
+   model_floyd_create, model_floyd_end},
   {"Dijkstra",
    "Dijkstra routing data (fast initialization, slow lookup, small memory requirements, shortest path routing only)",
-   model_dijkstra_create, NULL,NULL, model_dijkstra_both_end},
+   model_dijkstra_create, model_dijkstra_both_end},
   {"DijkstraCache",
    "Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only)",
-   model_dijkstracache_create, NULL,NULL, model_dijkstra_both_end},
+   model_dijkstracache_create, model_dijkstra_both_end},
   {"none", "No routing (usable with Constant network only)",
-   model_none_create, NULL, NULL, NULL},
+   model_none_create,  NULL},
   {"RuleBased", "Rule-Based routing data (...)",
-   model_rulebased_create, NULL, NULL, NULL},
+   model_rulebased_create, NULL},
   {"Vivaldi", "Vivaldi routing",
-   model_vivaldi_create, NULL, NULL, NULL},
+   model_vivaldi_create, NULL},
   {"Cluster", "Cluster routing",
-   model_cluster_create, NULL, NULL, NULL},
-  {NULL, NULL, NULL, NULL, NULL, NULL}
+   model_cluster_create, NULL},
+  {NULL, NULL, NULL, NULL}
 };
 
 /**
@@ -342,16 +342,9 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
                  (void *) new_routing, NULL);
     /* add to the father element list */
     (*(current_routing->parse_AS)) (current_routing, AS_id);
-    /* unload the prev parse rules */
-    if (current_routing->routing->unload)
-      (*(current_routing->routing->unload)) ();
-
   } else {
     THROWF(arg_error, 0, "All defined components must be belong to a AS");
   }
-  /* set the new parse rules */
-  if (new_routing->routing->load)
-    (*(new_routing->routing->load)) ();
   /* set the new current component of the tree */
   current_routing = new_routing;
 }
@@ -383,13 +376,9 @@ void routing_AS_end()
     xbt_lib_set(as_router_lib, current_routing->name, ROUTING_ASR_LEVEL,
                 (void *) info);
 
-    if (current_routing->routing->unload)
-      (*(current_routing->routing->unload)) ();
     if (current_routing->routing->end)
       (*(current_routing->routing->end)) ();
     current_routing = current_routing->routing_father;
-    if (current_routing != NULL && current_routing->routing->load != NULL)
-      (*(current_routing->routing->load)) ();
   }
 }
 
