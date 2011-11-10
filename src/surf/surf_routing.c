@@ -38,7 +38,7 @@ static xbt_dict_t random_value = NULL;
 /* Global vars */
 routing_global_t global_routing = NULL;
 routing_component_t current_routing = NULL;
-model_type_t current_routing_model = NULL;
+routing_model_description_t current_routing_model = NULL;
 
 /* global parse functions */
 xbt_dynar_t link_list = NULL;   /* temporary store of current list link of a route */
@@ -295,7 +295,7 @@ static void routing_parse_E_bypassRoute(void)
 void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
 {
   routing_component_t new_routing;
-  model_type_t model = NULL;
+  routing_model_description_t model = NULL;
   int cpt;
 
   /* search the routing model */

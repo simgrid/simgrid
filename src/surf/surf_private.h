@@ -108,7 +108,7 @@ typedef struct s_model_type {
   const char *desc;
   routing_component_t (*create) ();
   void (*end) ();
-} s_model_type_t, *model_type_t;
+} s_routing_model_description_t, *routing_model_description_t;
 
 typedef struct s_route {
   xbt_dynar_t link_list;
@@ -136,7 +136,7 @@ typedef enum {
 typedef struct s_routing_component {
   xbt_dict_t to_index;			/* char* -> network_element_t */
   xbt_dict_t bypassRoutes;		/* store bypass routes */
-  model_type_t routing;
+  routing_model_description_t routing;
   e_surf_routing_hierarchy_t hierarchy;
   char *name;
   struct s_routing_component *routing_father;

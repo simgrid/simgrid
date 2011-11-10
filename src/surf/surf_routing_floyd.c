@@ -9,7 +9,7 @@
 /* Global vars */
 extern routing_global_t global_routing;
 extern routing_component_t current_routing;
-extern model_type_t current_routing_model;
+extern routing_model_description_t current_routing_model;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 
