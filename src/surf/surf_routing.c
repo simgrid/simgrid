@@ -298,8 +298,6 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
   model_type_t model = NULL;
   int cpt;
 
-  surf_parse_models_setup();    /* ensure that the models are created after the last <config> tag and before the first <AS>-like */
-
   /* search the routing model */
   for (cpt = 0; routing_models[cpt].name; cpt++)
     if (!strcmp(wanted_routing_type, routing_models[cpt].name))
@@ -689,19 +687,6 @@ static double get_latency(const char *src, const char *dst)
   return latency;
 }
 
-static int surf_parse_models_setup_already_called = 0;
-/* Call the last initialization functions, that must be called after the
- * <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
- */
-void surf_parse_models_setup()
-{
-  if (surf_parse_models_setup_already_called)
-    return;
-  surf_parse_models_setup_already_called = 1;
-  surf_config_models_setup();
-}
-
-
 /**
  * \brief Recursive function for finalize
  *
@@ -733,7 +718,7 @@ static void _finalize(routing_component_t rc)
  * \brief Generic method: delete all the routing structures
  * 
  * walk through the routing components tree and delete the structures
- * by calling the differents "finalize" functions in each routing component
+ * by calling the different "finalize" functions in each routing component
  */
 static void finalize(void)
 {
@@ -743,8 +728,6 @@ static void finalize(void)
   xbt_dynar_free(&(global_routing->last_route));
   /* delete global routing structure */
   xbt_free(global_routing);
-  /* make sure that we will reinit the models while loading the platf once reinited -- HACK but there is no proper surf_routing_init() */
-  surf_parse_models_setup_already_called = 0;
 }
 
 static xbt_dynar_t recursive_get_onelink_routes(routing_component_t rc)

@@ -50,7 +50,6 @@ XBT_PUBLIC(void) surf_parse_free_callbacks(void);
 XBT_PUBLIC(void) surf_parse_error(const char *msg) _XBT_GNUC_NORETURN;
 XBT_PUBLIC(double) surf_parse_get_double(const char *string);
 XBT_PUBLIC(int) surf_parse_get_int(const char *string);
-XBT_PUBLIC(void) surf_parse_models_setup(void);
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC(int) surf_parse_lex(void);
 XBT_PUBLIC(int) surf_parse_get_lineno(void);

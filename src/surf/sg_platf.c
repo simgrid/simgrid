@@ -19,6 +19,9 @@ xbt_dynar_t sg_platf_AS_begin_cb_list = NULL; //of sg_platf_AS_begin_cb_t
 xbt_dynar_t sg_platf_AS_end_cb_list = NULL; //of void_f_void_t
 xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
 
+static int surf_parse_models_setup_already_called;
+
+
 /** Module management function: creates all internal data structures */
 void sg_platf_init(void) {
   sg_platf_host_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
@@ -38,6 +41,9 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_peer_cb_list);
   xbt_dynar_free(&sg_platf_AS_begin_cb_list);
   xbt_dynar_free(&sg_platf_AS_end_cb_list);
+
+  /* make sure that we will reinit the models while loading the platf once reinited */
+  surf_parse_models_setup_already_called = 0;
 }
 
 void sg_platf_new_host(sg_platf_host_cbarg_t h){
@@ -79,9 +85,29 @@ void sg_platf_end() {
   }
 }
 
+static int surf_parse_models_setup_already_called = 0;
+
 void sg_platf_new_AS_begin(const char *id, const char *routing) {
   unsigned int iterator;
   sg_platf_AS_begin_cb_t fun;
+
+  if (!surf_parse_models_setup_already_called && xbt_dynar_length(sg_platf_AS_begin_cb_list)) {
+    /* Initialize the surf models. That must be done after we got all config, and before we need the models.
+     * That is, after the last <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
+     *
+     * I'm not sure for <trace> and <trace_connect>, there may be a bug here
+     * (FIXME: check it out by creating a file beginning with one of these tags)
+     * but cluster and peer create ASes internally, so putting the code in there is ok.
+     *
+     * We are also guarding against xbt_dynar_length(sg_platf_AS_begin_cb_list) because we don't
+     * want to initialize the models if we are parsing the file to get the deployment. That could happen if
+     * the same file would be used for platf and deploy: it'd contain AS tags even during the deploy parsing.
+     * Removing that guard would result of the models to get re-inited when parsing for deploy.
+     */
+    surf_parse_models_setup_already_called = 1;
+    surf_config_models_setup();
+  }
+
   xbt_dynar_foreach(sg_platf_AS_begin_cb_list, iterator, fun) {
     (*fun) (id,routing);
   }

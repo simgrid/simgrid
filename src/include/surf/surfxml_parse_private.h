@@ -12,10 +12,6 @@
 #include "surf/surfxml_parse.h"
 #include "surf/trace_mgr.h"
 
-/** \brief Pick the right models for CPU, net and workstation, and call their model_init_preparse
- *
- * Must be called within parsing/creating the environment (after the <config>s, if any, and before <AS> or friends such as <cluster>)
- */
-void surf_config_models_setup(void);
+/* FIXME: kill that file */
 
 #endif

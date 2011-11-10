@@ -31,6 +31,11 @@ void sg_platf_postparse_add_cb(void_f_void_t fct);
 void sg_platf_AS_begin_add_cb(sg_platf_AS_begin_cb_t fct);
 void sg_platf_AS_end_add_cb(void_f_void_t fct);
 
+/** \brief Pick the right models for CPU, net and workstation, and call their model_init_preparse
+ *
+ * Must be called within parsing/creating the environment (after the <config>s, if any, and before <AS> or friends such as <cluster>)
+ */
+void surf_config_models_setup(void);
 
 
 
