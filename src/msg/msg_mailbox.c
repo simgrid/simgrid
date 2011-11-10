@@ -87,7 +87,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 
   if (*task)
     XBT_CRITICAL
-        ("MSG_task_get() was asked to write in a non empty task struct.");
+        ("MSG_task_receive() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
   TRY {
