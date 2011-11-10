@@ -17,7 +17,6 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
                              smx_process_t issuer, smx_req_t req);
 static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
                             smx_req_t req);
-static void SIMIX_sem_block_onto(smx_sem_t sem);
 
 /***************************** Synchro action *********************************/
 

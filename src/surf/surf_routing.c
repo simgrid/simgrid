@@ -50,7 +50,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 static void routing_parse_peer(sg_platf_peer_cbarg_t peer);     /* peer bypass */
 static void routing_parse_Srandom(void);        /* random bypass */
 
-static char *replace_random_parameter(char *chaine);
 static void routing_parse_postparse(void);
 
 /* this lines are only for replace use like index in the model table */
