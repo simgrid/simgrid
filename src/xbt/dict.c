@@ -684,7 +684,7 @@ void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
         while (element != NULL) {
           printf(" %s -> '", element->key);
           if (output != NULL) {
-            (*output) (element->content);
+            output(element->content);
           }
           printf("'\n");
           element = element->next;

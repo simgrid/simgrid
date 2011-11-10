@@ -48,34 +48,34 @@ void xbt_graph_parse_reset_parser(void)
 
 void STag_graphxml_graph(void)
 {
-  (*STag_graphxml_graph_fun) ();
+  STag_graphxml_graph_fun();
 }
 
 void ETag_graphxml_graph(void)
 {
-  (*ETag_graphxml_graph_fun) ();
+  ETag_graphxml_graph_fun();
 }
 
 
 void STag_graphxml_node(void)
 {
-  (*STag_graphxml_node_fun) ();
+  STag_graphxml_node_fun();
 }
 
 void ETag_graphxml_node(void)
 {
-  (*ETag_graphxml_node_fun) ();
+  ETag_graphxml_node_fun();
 }
 
 
 void STag_graphxml_edge(void)
 {
-  (*STag_graphxml_edge_fun) ();
+  STag_graphxml_edge_fun();
 }
 
 void ETag_graphxml_edge(void)
 {
-  (*ETag_graphxml_edge_fun) ();
+  ETag_graphxml_edge_fun();
 }
 
 

@@ -47,7 +47,7 @@ void xbt_matrix_free(xbt_matrix_t mat)
   if (mat) {
     if (mat->free_f) {
       for (i = 0; i < (mat->lines * mat->rows); i++) {
-        (*(mat->free_f)) ((void *) &(mat->data[i * mat->elmsize]));
+        mat->free_f((void *) &(mat->data[i * mat->elmsize]));
       }
     }
     free(mat->data);
@@ -78,7 +78,7 @@ void xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords,
         fprintf(stderr, " (%d,%d)=", i, j);
       else
         fprintf(stderr, " ");
-      (*display_fun) (xbt_matrix_get_ptr(matrix, i, j));
+      display_fun(xbt_matrix_get_ptr(matrix, i, j));
     }
     fprintf(stderr, "\n");
   }
@@ -128,7 +128,7 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
     if (cpy_f) {
       for (j = 0; j < lsize; j++)
         xbt_matrix_get_as(dst, j + lpos_dst, i + rpos_dst, void *) =
-            (*cpy_f) (xbt_matrix_get_ptr(src, j + rpos_src, i + lpos_src));
+            cpy_f(xbt_matrix_get_ptr(src, j + rpos_src, i + lpos_src));
     } else {
       memcpy(xbt_matrix_get_ptr(dst, lpos_dst, i + rpos_dst),
              xbt_matrix_get_ptr(src, lpos_src, i + rpos_src),

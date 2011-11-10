@@ -50,28 +50,28 @@ void sg_platf_new_host(sg_platf_host_cbarg_t h){
   unsigned int iterator;
   sg_platf_host_cb_t fun;
   xbt_dynar_foreach(sg_platf_host_cb_list, iterator, fun) {
-    (*fun) (h);
+    fun(h);
   }
 }
 void sg_platf_new_router(sg_platf_router_cbarg_t router) {
   unsigned int iterator;
   sg_platf_router_cb_t fun;
   xbt_dynar_foreach(sg_platf_router_cb_list, iterator, fun) {
-    (*fun) (router);
+    fun(router);
   }
 }
 void sg_platf_new_link(sg_platf_link_cbarg_t link){
   unsigned int iterator;
   sg_platf_link_cb_t fun;
   xbt_dynar_foreach(sg_platf_link_cb_list, iterator, fun) {
-    (*fun) (link);
+    fun(link);
   }
 }
 void sg_platf_new_peer(sg_platf_peer_cbarg_t peer){
   unsigned int iterator;
   sg_platf_peer_cb_t fun;
   xbt_dynar_foreach(sg_platf_link_cb_list, iterator, fun) {
-    (*fun) (peer);
+    fun(peer);
   }
 }
 
@@ -81,7 +81,7 @@ void sg_platf_end() {
   unsigned int iterator;
   void_f_void_t fun;
   xbt_dynar_foreach(sg_platf_postparse_cb_list, iterator, fun) {
-    (*fun) ();
+    fun();
   }
 }
 
@@ -109,7 +109,7 @@ void sg_platf_new_AS_begin(const char *id, const char *routing) {
   }
 
   xbt_dynar_foreach(sg_platf_AS_begin_cb_list, iterator, fun) {
-    (*fun) (id,routing);
+    fun(id, routing);
   }
 }
 
@@ -117,7 +117,7 @@ void sg_platf_new_AS_end() {
   unsigned int iterator;
   void_f_void_t fun;
   xbt_dynar_foreach(sg_platf_AS_end_cb_list, iterator, fun) {
-    (*fun) ();
+    fun();
   }
 }
 

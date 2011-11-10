@@ -31,7 +31,7 @@ static void *xbt_thread_create_wrapper(void *p)
 {
   xbt_thread_t t = (xbt_thread_t) p;
   XBT_DEBUG("I'm thread %p", p);
-  (*t->code) (t->userparam);
+  t->code(t->userparam);
   return NULL;
 }
 

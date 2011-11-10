@@ -627,21 +627,21 @@ static surf_action_t net_communicate(const char *src_name,
         (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
     if (bandwidth_bound < 0.0)
       bandwidth_bound =
-          (*bandwidth_factor_callback) (size) *
+          bandwidth_factor_callback(size) *
           (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
     else
       bandwidth_bound =
           min(bandwidth_bound,
-              (*bandwidth_factor_callback) (size) *
+              bandwidth_factor_callback(size) *
               (link->lmm_resource.power.peak *
                link->lmm_resource.power.scale));
   }
   /* LARGE PLATFORMS HACK:
      Add src->link and dst->link latencies */
   action->lat_current = action->latency;
-  action->latency *= (*latency_factor_callback) (size);
+  action->latency *= latency_factor_callback(size);
   action->rate =
-      (*bandwidth_constraint_callback) (action->rate, bandwidth_bound,
+      bandwidth_constraint_callback(action->rate, bandwidth_bound,
                                         size);
 
   if(xbt_dynar_length(route) > 0) {

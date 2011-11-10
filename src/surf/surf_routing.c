@@ -100,7 +100,7 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
   xbt_assert(!xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL),
              "Reading a host, processing unit \"%s\" already exists", host->id);
 
-  (*(current_routing->parse_PU)) (current_routing, host->id);
+  current_routing->parse_PU(current_routing, host->id);
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
@@ -127,7 +127,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
              "Reading a router, processing unit \"%s\" already exists",
              router->id);
 
-  (*(current_routing->parse_PU)) (current_routing, router->id);
+  current_routing->parse_PU(current_routing, router->id);
   info = xbt_new0(s_network_element_info_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_ROUTER;
@@ -231,7 +231,7 @@ static void routing_parse_E_route(void)
   xbt_assert(current_routing->parse_route,
              "no defined method \"set_route\" in \"%s\"",
              current_routing->name);
-  (*(current_routing->parse_route)) (current_routing, src, dst, route);
+  current_routing->parse_route(current_routing, src, dst, route);
   link_list = NULL;
   src = NULL;
   dst = NULL;
@@ -249,7 +249,7 @@ static void routing_parse_E_ASroute(void)
   xbt_assert(current_routing->parse_ASroute,
              "no defined method \"set_ASroute\" in \"%s\"",
              current_routing->name);
-  (*(current_routing->parse_ASroute)) (current_routing, src, dst, e_route);
+  current_routing->parse_ASroute(current_routing, src, dst, e_route);
   link_list = NULL;
   src = NULL;
   dst = NULL;
@@ -269,7 +269,7 @@ static void routing_parse_E_bypassRoute(void)
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
-  (*(current_routing->parse_bypassroute)) (current_routing, src, dst, e_route);
+  current_routing->parse_bypassroute(current_routing, src, dst, e_route);
   link_list = NULL;
   src = NULL;
   dst = NULL;
@@ -311,7 +311,7 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
   }
 
   /* make a new routing component */
-  new_as = (AS_t) (*(model->create)) ();
+  new_as = (AS_t) model->create();
   new_as->model_desc = model;
   new_as->hierarchy = SURF_ROUTING_NULL;
   new_as->name = xbt_strdup(AS_id);
@@ -336,7 +336,7 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
     xbt_dict_set(current_routing->routing_sons, AS_id,
                  (void *) new_as, NULL);
     /* add to the father element list */
-    (*(current_routing->parse_AS)) (current_routing, AS_id);
+    current_routing->parse_AS(current_routing, AS_id);
   } else {
     THROWF(arg_error, 0, "All defined components must be belong to a AS");
   }
@@ -372,7 +372,7 @@ void routing_AS_end()
                 (void *) info);
 
     if (current_routing->model_desc->end)
-      (*(current_routing->model_desc->end)) (current_routing);
+      current_routing->model_desc->end(current_routing);
     current_routing = current_routing->routing_father;
   }
 }

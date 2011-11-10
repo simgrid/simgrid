@@ -829,7 +829,7 @@ void xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val)
 
   if (variable->max == 1) {
     if (variable->cb_rm && xbt_dynar_length(variable->content))
-      (*variable->cb_rm) (name, 0);
+      variable->cb_rm(name, 0);
 
     xbt_dynar_set(variable->content, 0, &val);
   } else {
@@ -844,7 +844,7 @@ void xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val)
   }
 
   if (variable->cb_set)
-    (*variable->cb_set) (name, xbt_dynar_length(variable->content) - 1);
+    variable->cb_set(name, xbt_dynar_length(variable->content) - 1);
   variable->isdefault = 0;
 }
 
@@ -864,7 +864,7 @@ void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val)
 
   if (variable->max == 1) {
     if (variable->cb_rm && xbt_dynar_length(variable->content))
-      (*variable->cb_rm) (name, 0);
+      variable->cb_rm(name, 0);
 
     xbt_dynar_set(variable->content, 0, &val);
   } else {
@@ -878,7 +878,7 @@ void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val)
   }
 
   if (variable->cb_set)
-    (*variable->cb_set) (name, xbt_dynar_length(variable->content) - 1);
+    variable->cb_set(name, xbt_dynar_length(variable->content) - 1);
   variable->isdefault = 0;
 }
 
@@ -904,7 +904,7 @@ void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val)
   if (variable->max == 1) {
     if (xbt_dynar_length(variable->content)) {
       if (variable->cb_rm)
-        (*variable->cb_rm) (name, 0);
+        variable->cb_rm(name, 0);
       else if (variable->type == xbt_cfgelm_string) {
         char *sval = xbt_dynar_get_as(variable->content, 0, char *);
         free(sval);
@@ -923,7 +923,7 @@ void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val)
   }
 
   if (variable->cb_set)
-    (*variable->cb_set) (name, xbt_dynar_length(variable->content) - 1);
+    variable->cb_set(name, xbt_dynar_length(variable->content) - 1);
   variable->isdefault = 0;
 }
 
@@ -950,7 +950,7 @@ xbt_cfg_set_peer(xbt_cfg_t cfg, const char *name, const char *peer,
 
   if (variable->max == 1) {
     if (variable->cb_rm && xbt_dynar_length(variable->content))
-      (*variable->cb_rm) (name, 0);
+      variable->cb_rm(name, 0);
 
     xbt_dynar_set(variable->content, 0, &val);
   } else {
@@ -964,7 +964,7 @@ xbt_cfg_set_peer(xbt_cfg_t cfg, const char *name, const char *peer,
   }
 
   if (variable->cb_set)
-    (*variable->cb_set) (name, xbt_dynar_length(variable->content) - 1);
+    variable->cb_set(name, xbt_dynar_length(variable->content) - 1);
   variable->isdefault = 0;
 }
 
@@ -993,7 +993,7 @@ void xbt_cfg_rm_int(xbt_cfg_t cfg, const char *name, int val)
   xbt_dynar_foreach(variable->content, cpt, seen) {
     if (seen == val) {
       if (variable->cb_rm)
-        (*variable->cb_rm) (name, cpt);
+        variable->cb_rm(name, cpt);
       xbt_dynar_cursor_rm(variable->content, &cpt);
       return;
     }
@@ -1028,7 +1028,7 @@ void xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, double val)
     if (seen == val) {
       xbt_dynar_cursor_rm(variable->content, &cpt);
       if (variable->cb_rm)
-        (*variable->cb_rm) (name, cpt);
+        variable->cb_rm(name, cpt);
       return;
     }
   }
@@ -1060,7 +1060,7 @@ void xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, const char *val)
   xbt_dynar_foreach(variable->content, cpt, seen) {
     if (!strcpy(seen, val)) {
       if (variable->cb_rm)
-        (*variable->cb_rm) (name, cpt);
+        variable->cb_rm(name, cpt);
       xbt_dynar_cursor_rm(variable->content, &cpt);
       return;
     }
@@ -1097,7 +1097,7 @@ xbt_cfg_rm_peer(xbt_cfg_t cfg, const char *name, const char *peer,
   xbt_dynar_foreach(variable->content, cpt, seen) {
     if (!strcpy(seen->name, peer) && seen->port == port) {
       if (variable->cb_rm)
-        (*variable->cb_rm) (name, cpt);
+        variable->cb_rm(name, cpt);
       xbt_dynar_cursor_rm(variable->content, &cpt);
       return;
     }
@@ -1123,7 +1123,7 @@ void xbt_cfg_rm_at(xbt_cfg_t cfg, const char *name, int pos)
            pos, name, variable->min);
 
   if (variable->cb_rm)
-    (*variable->cb_rm) (name, pos);
+    variable->cb_rm(name, pos);
   xbt_dynar_remove_at(variable->content, pos, NULL);
 }
 
@@ -1156,7 +1156,7 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name)
       unsigned int cpt;
       void *ignored;
       xbt_dynar_foreach(variable->content, cpt, ignored) {
-        (*variable->cb_rm) (name, cpt);
+        variable->cb_rm(name, cpt);
       }
     }
     xbt_dynar_reset(variable->content);

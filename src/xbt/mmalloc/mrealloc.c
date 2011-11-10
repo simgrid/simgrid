@@ -46,7 +46,7 @@ void *mrealloc(void *md, void *ptr, size_t size)
   }
 
   if (mdp->mrealloc_hook != NULL) {
-    return ((*mdp->mrealloc_hook) (md, ptr, size));
+    return mdp->mrealloc_hook(md, ptr, size);
   }
 
   block = BLOCK(ptr);

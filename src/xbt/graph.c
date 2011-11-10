@@ -144,12 +144,12 @@ void xbt_graph_free_graph(xbt_graph_t g,
     xbt_dynar_free(&(node->out));
     xbt_dynar_free(&(node->in));
     if (node_free_function)
-      (*node_free_function) (node->data);
+      node_free_function(node->data);
   }
 
   xbt_dynar_foreach(g->edges, cursor, edge) {
     if (edge_free_function)
-      (*edge_free_function) (edge->data);
+      edge_free_function(edge->data);
   }
 
   xbt_dynar_foreach(g->nodes, cursor, node)
@@ -160,7 +160,7 @@ void xbt_graph_free_graph(xbt_graph_t g,
       free(edge);
   xbt_dynar_free(&(g->edges));
   if (graph_free_function)
-    (*graph_free_function) (g->data);
+    graph_free_function(g->data);
   free(g);
   xbt_graph_parse_lex_destroy();
   return;
@@ -190,7 +190,7 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
   }
 
   if ((node_free_function) && (n->data))
-    (*node_free_function) (n->data);
+    node_free_function(n->data);
 
   cursor = 0;
   xbt_dynar_foreach(g->nodes, cursor, node)
@@ -214,7 +214,7 @@ void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
   xbt_edge_t edge = NULL;
 
   if ((free_function) && (e->data))
-    (*free_function) (e->data);
+    free_function(e->data);
 
   xbt_dynar_foreach(g->edges, cursor, edge) {
     if (edge == e) {
@@ -628,7 +628,7 @@ xbt_graph_t xbt_graph_read(const char *filename,
 
   xbt_graph_parse_open(filename);
   _XBT_GNUC_UNUSED int res;
-  res = (*xbt_graph_parse) ();
+  res = xbt_graph_parse();
   xbt_assert(!res, "Parse error in %s", filename);
   xbt_graph_parse_close();
 

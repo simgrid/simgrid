@@ -403,7 +403,7 @@ void gras_msg_handle(volatile double timeOut)
           XBT_DEBUG
               ("Use the callback #%d (@%p) for incomming msg '%s' (payload_size=%d)",
                cpt + 1, cb, msg.type->name, msg.payl_size);
-          if (!(*cb) (&ctx, msg.payl)) {
+          if (!cb(&ctx, msg.payl)) {
             /* cb handled the message */
             free(msg.payl);
             ran_ok = 1;

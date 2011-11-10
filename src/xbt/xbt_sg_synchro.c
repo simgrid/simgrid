@@ -39,7 +39,7 @@ static int xbt_thread_create_wrapper(int argc, char *argv[])
   xbt_thread_t t =
       (xbt_thread_t) SIMIX_process_self_get_data();
   SIMIX_req_process_set_data(SIMIX_process_self(), t->father_data);
-  (*t->code) (t->userparam);
+  t->code(t->userparam);
   if (t->joinable) {
     t->done = 1;
     xbt_mutex_acquire(t->mutex);

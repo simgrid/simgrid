@@ -85,7 +85,7 @@ void smx_ctx_base_free(smx_context_t context)
 void smx_ctx_base_stop(smx_context_t context)
 {
   if (context->cleanup_func)
-    (*(context->cleanup_func)) (context->data);
+    context->cleanup_func(context->data);
   context->iwannadie = 0;
   SIMIX_req_process_cleanup(context->data);
 }

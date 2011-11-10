@@ -654,21 +654,21 @@ static surf_action_t im_net_communicate(const char *src_name,
         (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
     if (bandwidth_bound < 0.0)
       bandwidth_bound =
-          (*im_bandwidth_factor_callback) (size) *
+          im_bandwidth_factor_callback(size) *
           (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
     else
       bandwidth_bound =
           min(bandwidth_bound,
-              (*im_bandwidth_factor_callback) (size) *
+              im_bandwidth_factor_callback(size) *
               (link->lmm_resource.power.peak *
                link->lmm_resource.power.scale));
   }
   /* LARGE PLATFORMS HACK:
      Add src->link and dst->link latencies */
   action->lat_current = action->latency;
-  action->latency *= (*im_latency_factor_callback) (size);
+  action->latency *= im_latency_factor_callback(size);
   action->rate =
-      (*im_bandwidth_constraint_callback) (action->rate, bandwidth_bound,
+      im_bandwidth_constraint_callback(action->rate, bandwidth_bound,
                                         size);
 
   /* LARGE PLATFORMS HACK:

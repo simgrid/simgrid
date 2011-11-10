@@ -235,7 +235,7 @@ gras_datadesc_memcpy_rec(gras_cbps_t state,
       /* Detect the referenced type */
       sub_type = ref_data.type;
       if (sub_type == NULL) {
-        sub_type = (*ref_data.selector) (type, state, src);
+        sub_type = ref_data.selector(type, state, src);
       }
 
       /* Send the pointed data only if not already sent */
@@ -525,7 +525,7 @@ gras_datadesc_send_rec(gras_socket_t sock,
       /* Detect the referenced type and send it to peer if needed */
       sub_type = ref_data.type;
       if (sub_type == NULL) {
-        sub_type = (*ref_data.selector) (type, state, data);
+        sub_type = ref_data.selector(type, state, data);
         gras_dd_send_int(sock, &(sub_type->code), 1 /*stable */ );
       }
 

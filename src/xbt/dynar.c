@@ -152,11 +152,11 @@ _xbt_dynar_remove_at(xbt_dynar_t const dynar,
     if (dynar->elmsize <= SIZEOF_MAX) {
       char elm[SIZEOF_MAX];
       _xbt_dynar_get_elm(elm, dynar, idx);
-      (*dynar->free_f) (elm);
+      dynar->free_f(elm);
     } else {
       char *elm = malloc(dynar->elmsize);
       _xbt_dynar_get_elm(elm, dynar, idx);
-      (*dynar->free_f) (elm);
+      dynar->free_f(elm);
       free(elm);
     }
   }
@@ -459,7 +459,7 @@ xbt_dynar_replace(xbt_dynar_t dynar,
   if (idx < dynar->used && dynar->free_f) {
     void *const old_object = _xbt_dynar_elm(dynar, idx);
 
-    (*(dynar->free_f)) (old_object);
+    dynar->free_f(old_object);
   }
 
   _xbt_dynar_set(dynar, idx, object);
@@ -674,7 +674,7 @@ static void _dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
 
   for (i = 0; i < used; i++) {
     char* elm = (char*) data + i * elmsize;
-    (*op) (elm);
+    op(elm);
   }
 }
 

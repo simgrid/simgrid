@@ -541,7 +541,7 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
   unsigned int iterator;
   void_f_void_t fun;
   xbt_dynar_foreach(cb_list, iterator, fun) {
-    if (fun) (*fun) ();
+    if (fun) fun();
   }
 }
 

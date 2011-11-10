@@ -888,7 +888,7 @@ void SIMIX_comm_copy_data(smx_action_t comm)
   if (buff_size == 0)
     return;
 
-  (*SIMIX_comm_copy_data_callback) (comm, buff_size);
+  SIMIX_comm_copy_data_callback(comm, buff_size);
 
   /* Set the copied flag so we copy data only once */
   /* (this function might be called from both communication ends) */

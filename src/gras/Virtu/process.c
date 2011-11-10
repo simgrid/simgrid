@@ -150,7 +150,7 @@ void gras_procdata_init()
              "MayDay: two modules use '%s' as libdata name", fab.name);
 
     /* Add the data in place, after some more sanity checking */
-    elem = (*(fab.constructor)) ();
+    elem = fab.constructor();
     if (elem->name_len && elem->name_len != strlen(elem->name)) {
       elem->name_len = strlen(elem->name);
       XBT_WARN

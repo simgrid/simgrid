@@ -394,7 +394,7 @@ int job_execute(job_t job)
   if (!job)
     return EINVAL;
 
-  return (*(job->func)) (job->argc, job->argv);
+  return job->func(job->argc, job->argv);
 }
 
 int job_free(job_t * ref)

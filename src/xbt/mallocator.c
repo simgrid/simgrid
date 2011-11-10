@@ -90,7 +90,7 @@ void xbt_mallocator_free(xbt_mallocator_t m)
   XBT_VERB("Frees mallocator %p (size:%d/%d)", m, m->current_size,
         m->max_size);
   for (i = 0; i < m->current_size; i++) {
-    (*(m->free_f)) (m->objects[i]);
+    m->free_f(m->objects[i]);
   }
   xbt_free(m->objects);
   xbt_free(m);
@@ -126,7 +126,7 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
       int i;
       int amount = MIN(m->max_size / 2, 1000);
       for (i = 0; i < amount; i++)
-        m->objects[i] = (*(m->new_f)) ();
+        m->objects[i] = m->new_f();
       m->current_size = amount;
     }
 
@@ -135,10 +135,10 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
     /*           m, m->current_size, m->max_size); */
     object = m->objects[--m->current_size];
   } else {
-    object = (*(m->new_f)) ();
+    object = m->new_f();
   }
 
-  (*(m->reset_f)) (object);
+  m->reset_f(object);
   return object;
 }
 
@@ -167,6 +167,6 @@ void xbt_mallocator_release(xbt_mallocator_t m, void *object)
     /* otherwise we don't have a choice, we must free the object */
     /* XBT_DEBUG("Free deleted object: mallocator %p is full (size:%d/%d)", m,
            m->current_size, m->max_size); */
-    (*(m->free_f)) (object);
+    m->free_f(object);
   }
 }

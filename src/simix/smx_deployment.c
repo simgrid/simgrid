@@ -66,12 +66,12 @@ static void parse_process_finalize(void)
     XBT_DEBUG("Starting Process %s(%s) right now", parse_argv[0], parse_host);
 
     if (simix_global->create_process_function)
-      (*simix_global->create_process_function) (&process,
-                                                parse_argv[0],
-                                                parse_code, NULL,
-                                                parse_host, parse_argc,
-                                                parse_argv,
-                                                current_property_set);
+      simix_global->create_process_function(&process,
+                                            parse_argv[0],
+                                            parse_code, NULL,
+                                            parse_host, parse_argc,
+                                            parse_argv,
+                                            current_property_set);
     else
       SIMIX_req_process_create(&process, parse_argv[0], parse_code, NULL, parse_host, parse_argc, parse_argv,
                                current_property_set);

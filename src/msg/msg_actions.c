@@ -57,7 +57,7 @@ static int MSG_action_runner(int argc, char *argv[])
 
     while ((evt = action_get_action(argv[0]))) {
       msg_action_fun function = xbt_dict_get(action_funs, evt[1]);
-      (*function) (evt);
+      function(evt);
       free(evt);
     }
   } else {                      // Should have got my trace file in argument
@@ -70,7 +70,7 @@ static int MSG_action_runner(int argc, char *argv[])
     while ((evt=xbt_replay_trace_reader_get(reader))) {
       if (!strcmp(argv[0],evt[0])) {
         msg_action_fun function = xbt_dict_get(action_funs, evt[1]);
-        (*function) (evt);
+        function(evt);
         free(evt);
       } else {
         XBT_WARN("%s: Ignore trace element not for me",
