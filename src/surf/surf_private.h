@@ -169,7 +169,6 @@ struct s_routing_global {
   AS_t root;
   void *loopback;
   size_t size_of_link;
-  xbt_dynar_t(*get_route_or_null) (const char *src, const char *dst);
   xbt_dynar_t(*get_route_no_cleanup) (const char *src, const char *dst);
   xbt_dynar_t(*get_onelink_routes) (void);
   double (*get_latency) (const char *src, const char *dst);

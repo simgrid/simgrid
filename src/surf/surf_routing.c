@@ -626,27 +626,6 @@ xbt_dynar_t routing_get_route(const char *src, const char *dst) {
  * \param src the source host name
  * \param dst the destination host name
  *
- * same as get_route, but return NULL if any exception is raised.
- */
-static xbt_dynar_t get_route_or_null(const char *src, const char *dst)
-{
-  xbt_dynar_t route = NULL;
-  xbt_ex_t exception;
-  TRY {
-    get_route_latency(src, dst, &route, NULL, 1);
-  } CATCH(exception) {
-    xbt_ex_free(exception);
-    return NULL;
-  }
-  return route;
-}
-
-/**
- * \brief Generic method: find a route between hosts
- *
- * \param src the source host name
- * \param dst the destination host name
- *
  * walk through the routing components tree and find a route between hosts
  * by calling the differents "get_route" functions in each routing component.
  * Leaves the caller the responsability to clean the returned dynar.
@@ -723,7 +702,6 @@ void routing_model_create(size_t size_of_links, void *loopback)
   /* config the uniq global routing */
   global_routing = xbt_new0(s_routing_global_t, 1);
   global_routing->root = NULL;
-  global_routing->get_route_or_null = get_route_or_null;
   global_routing->get_latency = get_latency;
   global_routing->get_route_no_cleanup = get_route_no_cleanup;
   global_routing->get_onelink_routes = get_onelink_routes;
