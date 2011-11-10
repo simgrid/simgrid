@@ -686,10 +686,8 @@ static void finalize_rec(AS_t as)
     xbt_dict_foreach(as->routing_sons, cursor, key, elem)
       finalize_rec(elem);
 
-    xbt_dict_t tmp_sons = as->routing_sons;
-    char *tmp_name = as->name;
-    xbt_dict_free(&tmp_sons);
-    xbt_free(tmp_name);
+    xbt_dict_free(&as->routing_sons);
+    xbt_free(as->name);
     as->finalize(as);
   }
 }
