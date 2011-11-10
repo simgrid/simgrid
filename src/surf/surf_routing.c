@@ -292,7 +292,7 @@ static void routing_parse_E_bypassRoute(void)
  */
 void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
 {
-  AS_t new_routing;
+  AS_t new_as;
   routing_model_description_t model = NULL;
   int cpt;
 
@@ -311,17 +311,17 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
   }
 
   /* make a new routing component */
-  new_routing = (AS_t) (*(model->create)) ();
-  new_routing->routing = model;
-  new_routing->hierarchy = SURF_ROUTING_NULL;
-  new_routing->name = xbt_strdup(AS_id);
-  new_routing->routing_sons = xbt_dict_new();
+  new_as = (AS_t) (*(model->create)) ();
+  new_as->model_desc = model;
+  new_as->hierarchy = SURF_ROUTING_NULL;
+  new_as->name = xbt_strdup(AS_id);
+  new_as->routing_sons = xbt_dict_new();
 
   if (current_routing == NULL && global_routing->root == NULL) {
 
     /* it is the first one */
-    new_routing->routing_father = NULL;
-    global_routing->root = new_routing;
+    new_as->routing_father = NULL;
+    global_routing->root = new_as;
 
   } else if (current_routing != NULL && global_routing->root != NULL) {
 
@@ -329,20 +329,20 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
                (current_routing->routing_sons, AS_id),
                "The AS \"%s\" already exists", AS_id);
     /* it is a part of the tree */
-    new_routing->routing_father = current_routing;
+    new_as->routing_father = current_routing;
     /* set the father behavior */
     if (current_routing->hierarchy == SURF_ROUTING_NULL)
       current_routing->hierarchy = SURF_ROUTING_RECURSIVE;
     /* add to the sons dictionary */
     xbt_dict_set(current_routing->routing_sons, AS_id,
-                 (void *) new_routing, NULL);
+                 (void *) new_as, NULL);
     /* add to the father element list */
     (*(current_routing->parse_AS)) (current_routing, AS_id);
   } else {
     THROWF(arg_error, 0, "All defined components must be belong to a AS");
   }
   /* set the new current component of the tree */
-  current_routing = new_routing;
+  current_routing = new_as;
 }
 
 /**
@@ -372,8 +372,8 @@ void routing_AS_end()
     xbt_lib_set(as_router_lib, current_routing->name, ROUTING_ASR_LEVEL,
                 (void *) info);
 
-    if (current_routing->routing->end)
-      (*(current_routing->routing->end)) (current_routing);
+    if (current_routing->model_desc->end)
+      (*(current_routing->model_desc->end)) (current_routing);
     current_routing = current_routing->routing_father;
   }
 }
