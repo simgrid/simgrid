@@ -314,19 +314,19 @@ static void im_net_action_cancel(surf_action_t action)
   heap_remove((surf_action_network_CM02_im_t) action);
 }
 
-void im_net_action_recycle(surf_action_t action)
+static void im_net_action_recycle(surf_action_t action)
 {
   return;
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-int im_net_get_link_latency_limited(surf_action_t action)
+static int im_net_get_link_latency_limited(surf_action_t action)
 {
   return action->latency_limited;
 }
 #endif
 
-double im_net_action_get_remains(surf_action_t action)
+static double im_net_action_get_remains(surf_action_t action)
 {
   /* update remains before return it */
   update_action_remaining(surf_get_clock());
@@ -798,7 +798,7 @@ static int im_net_action_is_suspended(surf_action_t action)
   return ((surf_action_network_CM02_im_t) action)->suspended;
 }
 
-void im_net_action_set_max_duration(surf_action_t action, double duration)
+static void im_net_action_set_max_duration(surf_action_t action, double duration)
 {
   action->max_duration = duration;
   // remove action from the heap
