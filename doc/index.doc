@@ -2,8 +2,17 @@
 
 \section welcome Welcome to Simgrid-java documentation home page
 
-
 Simgrid-java is a java API that let you use <a href="http://simgrid.gforge.inria.fr/">SimGrid</a> MSG API in your favorite language (java). Without it, you would be forced to use C or one of the other bindings provided. 
+
+MSG was the first distributed programming environment provided within
+SimGrid. While almost realistic, it remains quite simple (simplistic?).
+This describes the Java bindings to this interface.
+
+\section jMSG_who Who should use this (and who shouldn't)
+You should use MSG if you want to study some heuristics for a
+given problem you don't really want to implement. If you want to
+use the Java programming language, your are in the right
+section.
 
 To make a long story short, it's a JNI binding, so it implies that :
 \li Most of the MSG and SimGrid documentation about behavioral aspects applies directly to what you are programming. 
