@@ -156,8 +156,8 @@ static void init_data(void)
              &parse_Stag_trace_connect);
 
   /* we care about the ASes while parsing the platf. Incredible, isnt it? */
-  sg_platf_ASclose_add_cb(routing_AS_close);
-  sg_platf_ASopen_add_cb(routing_AS_open);
+  sg_platf_AS_end_add_cb(routing_AS_end);
+  sg_platf_AS_begin_add_cb(routing_AS_begin);
 }
 
 static void free_data(void)

@@ -87,11 +87,11 @@ typedef struct s_sg_platf_linkctn_cbarg {
 } s_sg_platf_linkctn_cbarg_t;
 
 
-XBT_PUBLIC(void) sg_platf_open(void);  // Start a new platform
-XBT_PUBLIC(void) sg_platf_close(void); // Finish the creation of the platform
+XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
+XBT_PUBLIC(void) sg_platf_end(void); // Finish the creation of the platform
 
-XBT_PUBLIC(void) sg_platf_new_AS_open(const char *id, const char *mode); // Begin description of new AS
-XBT_PUBLIC(void) sg_platf_new_AS_close(void);                            // That AS is fully described
+XBT_PUBLIC(void) sg_platf_new_AS_begin(const char *id, const char *mode); // Begin description of new AS
+XBT_PUBLIC(void) sg_platf_new_AS_end(void);                            // That AS is fully described
 
 XBT_PUBLIC(void) sg_platf_new_host  (sg_platf_host_cbarg_t   host);   // Add an host  to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_router(sg_platf_router_cbarg_t router); // Add a router to the currently described AS

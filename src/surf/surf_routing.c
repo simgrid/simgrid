@@ -292,7 +292,7 @@ static void routing_parse_E_bypassRoute(void)
  * @param AS_id name of this autonomous system. Must be unique in the platform
  * @param wanted_routing_type one of Full, Floyd, Dijkstra or similar. Full list in the variable routing_models, in src/surf/surf_routing.c
  */
-void routing_AS_open(const char *AS_id, const char *wanted_routing_type)
+void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
 {
   routing_component_t new_routing;
   model_type_t model = NULL;
@@ -367,7 +367,7 @@ void routing_AS_open(const char *AS_id, const char *wanted_routing_type)
  * even if you add stuff to a closed AS
  *
  */
-void routing_AS_close()
+void routing_AS_end()
 {
 
   if (current_routing == NULL) {
@@ -901,7 +901,7 @@ static void routing_parse_cluster(void)
   xbt_dynar_t radical_ends;
 
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", struct_cluster->id);
-  sg_platf_new_AS_open(struct_cluster->id, "Cluster");
+  sg_platf_new_AS_begin(struct_cluster->id, "Cluster");
 
   //Make all hosts
   radical_elements = xbt_str_split(struct_cluster->radical, ",");
@@ -1085,7 +1085,7 @@ static void routing_parse_cluster(void)
     xbt_dict_free(&patterns);
 
   XBT_DEBUG("</AS>");
-  sg_platf_new_AS_close();
+  sg_platf_new_AS_end();
   XBT_DEBUG(" ");
 }
 
@@ -1133,7 +1133,7 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   surfxml_bufferstack_push(1);
 
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", peer->id);
-  sg_platf_new_AS_open(peer->id, "Full");
+  sg_platf_new_AS_begin(peer->id, "Full");
 
   XBT_DEBUG(" ");
   host_id = HOST_PEER(peer->id);
@@ -1219,7 +1219,7 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   SURFXML_END_TAG(route);
 
   XBT_DEBUG("</AS>");
-  sg_platf_new_AS_close();
+  sg_platf_new_AS_end();
   XBT_DEBUG(" ");
 
   //xbt_dynar_free(&tab_elements_num);

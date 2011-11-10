@@ -15,8 +15,8 @@ xbt_dynar_t sg_platf_host_cb_list = NULL;   // of sg_platf_host_cb_t
 xbt_dynar_t sg_platf_link_cb_list = NULL;   // of sg_platf_link_cb_t
 xbt_dynar_t sg_platf_router_cb_list = NULL; // of sg_platf_router_cb_t
 xbt_dynar_t sg_platf_peer_cb_list = NULL; // of sg_platf_peer_cb_t
-xbt_dynar_t sg_platf_ASopen_cb_list = NULL; //of sg_platf_ASopen_cb_t
-xbt_dynar_t sg_platf_ASclose_cb_list = NULL; //of void_f_void_t
+xbt_dynar_t sg_platf_AS_begin_cb_list = NULL; //of sg_platf_AS_begin_cb_t
+xbt_dynar_t sg_platf_AS_end_cb_list = NULL; //of void_f_void_t
 xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
 
 /** Module management function: creates all internal data structures */
@@ -26,8 +26,8 @@ void sg_platf_init(void) {
   sg_platf_link_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
   sg_platf_peer_cb_list = xbt_dynar_new(sizeof(sg_platf_peer_cb_t), NULL);
   sg_platf_postparse_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t),NULL);
-  sg_platf_ASopen_cb_list = xbt_dynar_new(sizeof(sg_platf_ASopen_cb_t),NULL);
-  sg_platf_ASclose_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  sg_platf_AS_begin_cb_list = xbt_dynar_new(sizeof(sg_platf_AS_begin_cb_t),NULL);
+  sg_platf_AS_end_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
 }
 /** Module management function: frees all internal data structures */
 void sg_platf_exit(void) {
@@ -36,8 +36,8 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_link_cb_list);
   xbt_dynar_free(&sg_platf_postparse_cb_list);
   xbt_dynar_free(&sg_platf_peer_cb_list);
-  xbt_dynar_free(&sg_platf_ASopen_cb_list);
-  xbt_dynar_free(&sg_platf_ASclose_cb_list);
+  xbt_dynar_free(&sg_platf_AS_begin_cb_list);
+  xbt_dynar_free(&sg_platf_AS_end_cb_list);
 }
 
 void sg_platf_new_host(sg_platf_host_cbarg_t h){
@@ -69,9 +69,9 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer){
   }
 }
 
-void sg_platf_open() { /* Do nothing: just for symmetry of user code */ }
+void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }
 
-void sg_platf_close() {
+void sg_platf_end() {
   unsigned int iterator;
   void_f_void_t fun;
   xbt_dynar_foreach(sg_platf_postparse_cb_list, iterator, fun) {
@@ -79,18 +79,18 @@ void sg_platf_close() {
   }
 }
 
-void sg_platf_new_AS_open(const char *id, const char *routing) {
+void sg_platf_new_AS_begin(const char *id, const char *routing) {
   unsigned int iterator;
-  sg_platf_ASopen_cb_t fun;
-  xbt_dynar_foreach(sg_platf_ASopen_cb_list, iterator, fun) {
+  sg_platf_AS_begin_cb_t fun;
+  xbt_dynar_foreach(sg_platf_AS_begin_cb_list, iterator, fun) {
     (*fun) (id,routing);
   }
 }
 
-void sg_platf_new_AS_close() {
+void sg_platf_new_AS_end() {
   unsigned int iterator;
   void_f_void_t fun;
-  xbt_dynar_foreach(sg_platf_ASclose_cb_list, iterator, fun) {
+  xbt_dynar_foreach(sg_platf_AS_end_cb_list, iterator, fun) {
     (*fun) ();
   }
 }
@@ -111,10 +111,10 @@ void sg_platf_peer_add_cb(sg_platf_peer_cb_t fct) {
 void sg_platf_postparse_add_cb(void_f_void_t fct) {
   xbt_dynar_push(sg_platf_postparse_cb_list, &fct);
 }
-void sg_platf_ASopen_add_cb(sg_platf_ASopen_cb_t fct) {
-  xbt_dynar_push(sg_platf_ASopen_cb_list, &fct);
+void sg_platf_AS_begin_add_cb(sg_platf_AS_begin_cb_t fct) {
+  xbt_dynar_push(sg_platf_AS_begin_cb_list, &fct);
 }
-void sg_platf_ASclose_add_cb(void_f_void_t fct) {
-  xbt_dynar_push(sg_platf_ASclose_cb_list, &fct);
+void sg_platf_AS_end_add_cb(void_f_void_t fct) {
+  xbt_dynar_push(sg_platf_AS_end_cb_list, &fct);
 }
 

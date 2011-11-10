@@ -15,13 +15,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_console, bindings, "Lua Bindings");
 
 int console_open(lua_State *L) {
   sg_platf_init();
-  sg_platf_open();
+  sg_platf_begin();
   surf_parse_init_callbacks();
   return 0;
 }
 
 int console_close(lua_State *L) {
-  sg_platf_close();
+  sg_platf_end();
   sg_platf_exit();
   return 0;
 }
@@ -279,12 +279,12 @@ int console_AS_open(lua_State *L) {
  mode = lua_tostring(L, -1);
  lua_pop(L, 1);
 
- sg_platf_new_AS_open(id,mode);
+ sg_platf_new_AS_begin(id,mode);
 
  return 0;
 }
 int console_AS_close(lua_State *L) {
-  sg_platf_new_AS_close();
+  sg_platf_new_AS_end();
   return 0;
 }
 

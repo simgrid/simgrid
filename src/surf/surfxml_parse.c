@@ -254,10 +254,10 @@ void STag_surfxml_platform(void) {
       "This program is installed automatically with SimGrid, or "
       "available in the tools/ directory of the source archive.");
 
-  sg_platf_open();
+  sg_platf_begin();
 }
 void ETag_surfxml_platform(void){
-  sg_platf_close();
+  sg_platf_end();
 }
 
 void STag_surfxml_host(void){
@@ -411,10 +411,10 @@ void STag_surfxml_trace_connect(void){
 	surfxml_call_cb_functions(STag_surfxml_trace_connect_cb_list);
 }
 void STag_surfxml_AS(void){
-  sg_platf_new_AS_open(A_surfxml_AS_id,A_surfxml_AS_routing);
+  sg_platf_new_AS_begin(A_surfxml_AS_id,A_surfxml_AS_routing);
 }
 void ETag_surfxml_AS(void){
-  sg_platf_new_AS_close();
+  sg_platf_new_AS_end();
 }
 void STag_surfxml_ASroute(void){
 	surfxml_call_cb_functions(STag_surfxml_ASroute_cb_list);
