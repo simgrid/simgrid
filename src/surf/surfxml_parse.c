@@ -313,8 +313,35 @@ void STag_surfxml_cluster(void){
 	  struct_cluster->bb_lat = surf_parse_get_double(A_surfxml_cluster_bb_lat);
 	struct_cluster->router_id = A_surfxml_cluster_router_id;
 
-	struct_cluster->sharing_policy = AX_surfxml_cluster_sharing_policy;
-	struct_cluster->bb_sharing_policy = AX_surfxml_cluster_bb_sharing_policy;
+  switch (AX_surfxml_cluster_sharing_policy) {
+  case A_surfxml_cluster_sharing_policy_SHARED:
+    struct_cluster->sharing_policy = SURF_LINK_SHARED;
+    break;
+  case A_surfxml_cluster_sharing_policy_FULLDUPLEX:
+    struct_cluster->sharing_policy = SURF_LINK_FULLDUPLEX;
+    break;
+  case A_surfxml_cluster_sharing_policy_FATPIPE:
+    struct_cluster->sharing_policy = SURF_LINK_FATPIPE;
+    break;
+  default:
+    surf_parse_error(bprintf
+                     ("Invalid cluster sharing policy for cluster %s",
+                      struct_cluster->id));
+    break;
+  }
+  switch (AX_surfxml_cluster_bb_sharing_policy) {
+  case A_surfxml_cluster_bb_sharing_policy_FATPIPE:
+    struct_cluster->bb_sharing_policy = SURF_LINK_FATPIPE;
+    break;
+  case A_surfxml_cluster_bb_sharing_policy_SHARED:
+    struct_cluster->bb_sharing_policy = SURF_LINK_SHARED;
+    break;
+  default:
+    surf_parse_error(bprintf
+                     ("Invalid bb sharing policy in cluster %s",
+                      struct_cluster->id));
+    break;
+  }
 
 	struct_cluster->availability_trace = A_surfxml_cluster_availability_file;
 	struct_cluster->state_trace = A_surfxml_cluster_state_file;

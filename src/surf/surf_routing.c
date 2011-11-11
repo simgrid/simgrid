@@ -839,23 +839,7 @@ static void routing_parse_cluster(void)
       link.bandwidth = struct_cluster->bw;
       link.latency = struct_cluster->lat;
       link.state = SURF_RESOURCE_ON;
-
-      switch (struct_cluster->sharing_policy) {
-      case A_surfxml_cluster_sharing_policy_SHARED:
-        link.policy = SURF_LINK_SHARED;
-        break;
-      case A_surfxml_cluster_sharing_policy_FULLDUPLEX:
-        link.policy = SURF_LINK_FULLDUPLEX;
-        break;
-      case A_surfxml_cluster_sharing_policy_FATPIPE:
-        link.policy = SURF_LINK_FATPIPE;
-        break;
-      default:
-        surf_parse_error(bprintf
-                         ("Invalid cluster sharing policy for cluster %s",
-                          struct_cluster->id));
-        break;
-      }
+      link.policy = struct_cluster->sharing_policy;
       sg_platf_new_link(&link);
 
       surf_parsing_link_up_down_t info =
@@ -910,20 +894,7 @@ static void routing_parse_cluster(void)
     link.bandwidth = struct_cluster->bb_bw;
     link.latency = struct_cluster->bb_lat;
     link.state = SURF_RESOURCE_ON;
-
-    switch (struct_cluster->bb_sharing_policy) {
-    case A_surfxml_cluster_bb_sharing_policy_FATPIPE:
-      link.policy = SURF_LINK_FATPIPE;
-      break;
-    case A_surfxml_cluster_bb_sharing_policy_SHARED:
-      link.policy = SURF_LINK_SHARED;
-      break;
-    default:
-      surf_parse_error(bprintf
-                       ("Invalid bb sharing policy in cluster %s",
-                        struct_cluster->id));
-      break;
-    }
+    link.policy = struct_cluster->bb_sharing_policy;
 
     sg_platf_new_link(&link);
 

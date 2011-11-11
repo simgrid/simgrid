@@ -21,8 +21,8 @@ typedef struct s_surf_parsing_cluster_arg {
 	double bb_bw;
 	double bb_lat;
 	const char* router_id;
-	int sharing_policy; // FIXME: convert to e_surf_link_sharing_policy_t
-	int bb_sharing_policy; // FIXME: convert to e_surf_link_sharing_policy_t
+	e_surf_link_sharing_policy_t sharing_policy;
+	e_surf_link_sharing_policy_t bb_sharing_policy;
 	const char* availability_trace; //don't convert to tmgr_trace_t since there is a trace per host and some rewriting is needed
 	const char* state_trace;
 } s_surf_parsing_cluster_arg_t;
