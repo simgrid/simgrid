@@ -9,7 +9,7 @@
 #include "xbt/str.h"
 #include "xbt/dict.h"
 #include "simgrid/platf.h"
-#include "surf/surfxml_parse_private.h"
+#include "surf/surfxml_parse.h"
 #include "surf/surf_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);

@@ -8,7 +8,7 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/dict.h"
-#include "surf/surfxml_parse_private.h"
+#include "surf/surfxml_parse.h"
 #include "surf/surf_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
