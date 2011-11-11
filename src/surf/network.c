@@ -585,8 +585,8 @@ static surf_action_t net_communicate(const char *src_name,
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
   xbt_dynar_t route;
-  // I will need this route for some time so require for no cleanup
-  global_routing->get_route_latency(src_name, dst_name, &route, &latency, 0);
+  // I need to have the forward and backward routes at the same time, so I don't ask the routing to cleanup the route right away for me
+  routing_get_route_and_latency(src_name, dst_name, &route, &latency, 0);
 
   if (sg_network_fullduplex == 1) {
     back_route = routing_get_route(dst_name, src_name);

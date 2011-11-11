@@ -589,7 +589,7 @@ static void _get_route_latency(const char *src, const char *dst,
 /**
  * \brief Generic function for get_route, get_route_no_cleanup, and get_latency
  */
-static void get_route_latency(const char *src, const char *dst,
+void routing_get_route_and_latency(const char *src, const char *dst,
                               xbt_dynar_t * route, double *latency, int cleanup)
 {
   static xbt_dynar_t last_route = NULL;
@@ -616,7 +616,7 @@ static void get_route_latency(const char *src, const char *dst,
  */
 xbt_dynar_t routing_get_route(const char *src, const char *dst) {
   xbt_dynar_t route = NULL;
-  get_route_latency(src, dst, &route, NULL, 1);
+  routing_get_route_and_latency(src, dst, &route, NULL, 1);
   return route;
 }
 
@@ -633,7 +633,7 @@ xbt_dynar_t routing_get_route(const char *src, const char *dst) {
 static xbt_dynar_t get_route_no_cleanup(const char *src, const char *dst)
 {
   xbt_dynar_t route = NULL;
-  get_route_latency(src, dst, &route, NULL, 0);
+  routing_get_route_and_latency(src, dst, &route, NULL, 0);
   return route;
 }
 
@@ -697,7 +697,6 @@ void routing_model_create(size_t size_of_links, void *loopback)
   global_routing->root = NULL;
   global_routing->get_route_no_cleanup = get_route_no_cleanup;
   global_routing->get_onelink_routes = get_onelink_routes;
-  global_routing->get_route_latency = get_route_latency;
   global_routing->loopback = loopback;
   global_routing->size_of_link = size_of_links;
   /* no current routing at moment */
