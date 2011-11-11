@@ -8,32 +8,10 @@
 #define SURFXML_PARSE_VALUES_H_
 
 
-typedef struct s_surf_parsing_cluster_arg *surf_parsing_cluster_arg_t;
-typedef struct s_surf_parsing_cluster_arg {
-	const char* id;
-	const char* prefix;
-	const char* suffix;
-	const char* radical;
-	double power;
-	int core_amount;
-	double bw;
-	double lat;
-	double bb_bw;
-	double bb_lat;
-	const char* router_id;
-	e_surf_link_sharing_policy_t sharing_policy;
-	e_surf_link_sharing_policy_t bb_sharing_policy;
-	const char* availability_trace; //don't convert to tmgr_trace_t since there is a trace per host and some rewriting is needed
-	const char* state_trace;
-} s_surf_parsing_cluster_arg_t;
-
 typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
 typedef struct s_surf_parsing_link_up_down {
 	void* link_up;
 	void* link_down;
 } s_surf_parsing_link_up_down_t;
-
-
-extern surf_parsing_cluster_arg_t struct_cluster;
 
 #endif /* SURFXML_PARSE_VALUES_H_ */

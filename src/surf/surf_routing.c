@@ -752,7 +752,7 @@ void routing_model_create(size_t size_of_links, void *loopback)
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */
 
 
-static void routing_parse_cluster(void)
+static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 {
   char *host_id, *groups, *link_id = NULL;
   xbt_dict_t patterns = NULL;
@@ -765,20 +765,20 @@ static void routing_parse_cluster(void)
   xbt_dynar_t radical_elements;
   xbt_dynar_t radical_ends;
 
-  if (strcmp(struct_cluster->availability_trace, "")
-      || strcmp(struct_cluster->state_trace, "")) {
+  if (strcmp(cluster->availability_trace, "")
+      || strcmp(cluster->state_trace, "")) {
     patterns = xbt_dict_new();
-    xbt_dict_set(patterns, "id", xbt_strdup(struct_cluster->id), free);
-    xbt_dict_set(patterns, "prefix", xbt_strdup(struct_cluster->prefix), free);
-    xbt_dict_set(patterns, "suffix", xbt_strdup(struct_cluster->suffix), free);
+    xbt_dict_set(patterns, "id", xbt_strdup(cluster->id), free);
+    xbt_dict_set(patterns, "prefix", xbt_strdup(cluster->prefix), free);
+    xbt_dict_set(patterns, "suffix", xbt_strdup(cluster->suffix), free);
   }
 
 
-  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", struct_cluster->id);
-  sg_platf_new_AS_begin(struct_cluster->id, "Cluster");
+  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
+  sg_platf_new_AS_begin(cluster->id, "Cluster");
 
   //Make all hosts
-  radical_elements = xbt_str_split(struct_cluster->radical, ",");
+  radical_elements = xbt_str_split(cluster->radical, ",");
   xbt_dynar_foreach(radical_elements, iter, groups) {
 
     radical_ends = xbt_str_split(groups, "-");
@@ -797,16 +797,16 @@ static void routing_parse_cluster(void)
     }
     for (i = start; i <= end; i++) {
       host_id =
-          bprintf("%s%d%s", struct_cluster->prefix, i, struct_cluster->suffix);
-      link_id = bprintf("%s_link_%d", struct_cluster->id, i);
+          bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
+      link_id = bprintf("%s_link_%d", cluster->id, i);
 
-      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, struct_cluster->power);
+      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, cluster->power);
 
       memset(&host, 0, sizeof(host));
       host.id = host_id;
-      if (strcmp(struct_cluster->availability_trace, "")) {
+      if (strcmp(cluster->availability_trace, "")) {
         xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
-        char *avail_file = xbt_str_varsubst(struct_cluster->availability_trace, patterns);
+        char *avail_file = xbt_str_varsubst(cluster->availability_trace, patterns);
         XBT_DEBUG("\tavailability_file=\"%s\"", avail_file);
         host.power_trace = tmgr_trace_new(avail_file);
         xbt_free(avail_file);
@@ -814,8 +814,8 @@ static void routing_parse_cluster(void)
         XBT_DEBUG("\tavailability_file=\"\"");
       }
 
-      if (strcmp(struct_cluster->state_trace, "")) {
-        char *avail_file = xbt_str_varsubst(struct_cluster->state_trace, patterns);
+      if (strcmp(cluster->state_trace, "")) {
+        char *avail_file = xbt_str_varsubst(cluster->state_trace, patterns);
         XBT_DEBUG("\tstate_file=\"%s\"", avail_file);
         host.state_trace = tmgr_trace_new(avail_file);
         xbt_free(avail_file);
@@ -823,23 +823,23 @@ static void routing_parse_cluster(void)
         XBT_DEBUG("\tstate_file=\"\"");
       }
 
-      host.power_peak = struct_cluster->power;
+      host.power_peak = cluster->power;
       host.power_scale = 1.0;
-      host.core_amount = struct_cluster->core_amount;
+      host.core_amount = cluster->core_amount;
       host.initial_state = SURF_RESOURCE_ON;
       host.coord = "";
       sg_platf_new_host(&host);
       XBT_DEBUG("</host>");
 
       XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,
-                struct_cluster->bw, struct_cluster->lat);
+                cluster->bw, cluster->lat);
 
       memset(&link, 0, sizeof(link));
       link.id = link_id;
-      link.bandwidth = struct_cluster->bw;
-      link.latency = struct_cluster->lat;
+      link.bandwidth = cluster->bw;
+      link.latency = cluster->lat;
       link.state = SURF_RESOURCE_ON;
-      link.policy = struct_cluster->sharing_policy;
+      link.policy = cluster->sharing_policy;
       sg_platf_new_link(&link);
 
       surf_parsing_link_up_down_t info =
@@ -870,31 +870,31 @@ static void routing_parse_cluster(void)
   // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written,
   // and it's very useful to connect clusters together
   XBT_DEBUG(" ");
-  XBT_DEBUG("<router id=\"%s\"/>", struct_cluster->router_id);
+  XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id);
   char *newid = NULL;
   s_sg_platf_router_cbarg_t router;
   memset(&router, 0, sizeof(router));
-  router.id = struct_cluster->router_id;
+  router.id = cluster->router_id;
   router.coord = "";
   if (!router.id || !strcmp(router.id, ""))
     router.id = newid =
-        bprintf("%s%s_router%s", struct_cluster->prefix, struct_cluster->id,
-                struct_cluster->suffix);
+        bprintf("%s%s_router%s", cluster->prefix, cluster->id,
+                cluster->suffix);
   sg_platf_new_router(&router);
   free(newid);
 
   //Make the backbone
-  if ((struct_cluster->bb_bw != 0) && (struct_cluster->bb_lat != 0)) {
-    char *link_backbone = bprintf("%s_backbone", struct_cluster->id);
+  if ((cluster->bb_bw != 0) && (cluster->bb_lat != 0)) {
+    char *link_backbone = bprintf("%s_backbone", cluster->id);
     XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link_backbone,
-              struct_cluster->bb_bw, struct_cluster->bb_lat);
+              cluster->bb_bw, cluster->bb_lat);
 
     memset(&link, 0, sizeof(link));
     link.id = link_backbone;
-    link.bandwidth = struct_cluster->bb_bw;
-    link.latency = struct_cluster->bb_lat;
+    link.bandwidth = cluster->bb_bw;
+    link.latency = cluster->bb_lat;
     link.state = SURF_RESOURCE_ON;
-    link.policy = struct_cluster->bb_sharing_policy;
+    link.policy = cluster->bb_sharing_policy;
 
     sg_platf_new_link(&link);
 
@@ -1148,7 +1148,7 @@ void routing_register_callbacks()
   surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,
                        &routing_parse_E_bypassRoute);
 
-  surfxml_add_callback(STag_surfxml_cluster_cb_list, &routing_parse_cluster);
+  sg_platf_cluster_add_cb(routing_parse_cluster);
 
   sg_platf_peer_add_cb(routing_parse_peer);
   sg_platf_postparse_add_cb(routing_parse_postparse);

@@ -58,8 +58,6 @@ xbt_dynar_t STag_surfxml_argument_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_argument_cb_list = NULL;
 xbt_dynar_t STag_surfxml_prop_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_prop_cb_list = NULL;
-xbt_dynar_t STag_surfxml_cluster_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_cluster_cb_list = NULL;
 xbt_dynar_t STag_surfxml_peer_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_peer_cb_list = NULL;
 xbt_dynar_t STag_surfxml_trace_cb_list = NULL;
@@ -176,10 +174,6 @@ void surf_parse_init_callbacks(void)
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_bypassRoute_cb_list =
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  STag_surfxml_cluster_cb_list =
-	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  ETag_surfxml_cluster_cb_list =
-	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_peer_cb_list =
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_peer_cb_list =
@@ -220,8 +214,6 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_ASroute_cb_list);
   xbt_dynar_free(&STag_surfxml_bypassRoute_cb_list);
   xbt_dynar_free(&ETag_surfxml_bypassRoute_cb_list);
-  xbt_dynar_free(&STag_surfxml_cluster_cb_list);
-  xbt_dynar_free(&ETag_surfxml_cluster_cb_list);
   xbt_dynar_free(&STag_surfxml_peer_cb_list);
   xbt_dynar_free(&ETag_surfxml_peer_cb_list);
   xbt_dynar_free(&STag_surfxml_include_cb_list);
@@ -298,59 +290,58 @@ void STag_surfxml_router(void){
 }
 
 void STag_surfxml_cluster(void){
-	struct_cluster = xbt_new0(s_surf_parsing_cluster_arg_t, 1);
-	struct_cluster->id = A_surfxml_cluster_id;
-	struct_cluster->prefix = A_surfxml_cluster_prefix;
-	struct_cluster->suffix = A_surfxml_cluster_suffix;
-	struct_cluster->radical = A_surfxml_cluster_radical;
-	struct_cluster->power= surf_parse_get_double(A_surfxml_cluster_power);
-	struct_cluster->core_amount = surf_parse_get_int(A_surfxml_cluster_core);
-	struct_cluster->bw =   surf_parse_get_double(A_surfxml_cluster_bw);
-	struct_cluster->lat =  surf_parse_get_double(A_surfxml_cluster_lat);
+  s_sg_platf_cluster_cbarg_t cluster;
+  memset(&cluster,0,sizeof(cluster));
+	cluster.id = A_surfxml_cluster_id;
+	cluster.prefix = A_surfxml_cluster_prefix;
+	cluster.suffix = A_surfxml_cluster_suffix;
+	cluster.radical = A_surfxml_cluster_radical;
+	cluster.power= surf_parse_get_double(A_surfxml_cluster_power);
+	cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
+	cluster.bw =   surf_parse_get_double(A_surfxml_cluster_bw);
+	cluster.lat =  surf_parse_get_double(A_surfxml_cluster_lat);
 	if(strcmp(A_surfxml_cluster_bb_bw,""))
-	  struct_cluster->bb_bw = surf_parse_get_double(A_surfxml_cluster_bb_bw);
+	  cluster.bb_bw = surf_parse_get_double(A_surfxml_cluster_bb_bw);
 	if(strcmp(A_surfxml_cluster_bb_lat,""))
-	  struct_cluster->bb_lat = surf_parse_get_double(A_surfxml_cluster_bb_lat);
-	struct_cluster->router_id = A_surfxml_cluster_router_id;
+	  cluster.bb_lat = surf_parse_get_double(A_surfxml_cluster_bb_lat);
+	cluster.router_id = A_surfxml_cluster_router_id;
 
   switch (AX_surfxml_cluster_sharing_policy) {
   case A_surfxml_cluster_sharing_policy_SHARED:
-    struct_cluster->sharing_policy = SURF_LINK_SHARED;
+    cluster.sharing_policy = SURF_LINK_SHARED;
     break;
   case A_surfxml_cluster_sharing_policy_FULLDUPLEX:
-    struct_cluster->sharing_policy = SURF_LINK_FULLDUPLEX;
+    cluster.sharing_policy = SURF_LINK_FULLDUPLEX;
     break;
   case A_surfxml_cluster_sharing_policy_FATPIPE:
-    struct_cluster->sharing_policy = SURF_LINK_FATPIPE;
+    cluster.sharing_policy = SURF_LINK_FATPIPE;
     break;
   default:
     surf_parse_error(bprintf
                      ("Invalid cluster sharing policy for cluster %s",
-                      struct_cluster->id));
+                      cluster.id));
     break;
   }
   switch (AX_surfxml_cluster_bb_sharing_policy) {
   case A_surfxml_cluster_bb_sharing_policy_FATPIPE:
-    struct_cluster->bb_sharing_policy = SURF_LINK_FATPIPE;
+    cluster.bb_sharing_policy = SURF_LINK_FATPIPE;
     break;
   case A_surfxml_cluster_bb_sharing_policy_SHARED:
-    struct_cluster->bb_sharing_policy = SURF_LINK_SHARED;
+    cluster.bb_sharing_policy = SURF_LINK_SHARED;
     break;
   default:
     surf_parse_error(bprintf
                      ("Invalid bb sharing policy in cluster %s",
-                      struct_cluster->id));
+                      cluster.id));
     break;
   }
 
-	struct_cluster->availability_trace = A_surfxml_cluster_availability_file;
-	struct_cluster->state_trace = A_surfxml_cluster_state_file;
-
-	surfxml_call_cb_functions(STag_surfxml_cluster_cb_list);
+	cluster.availability_trace = A_surfxml_cluster_availability_file;
+	cluster.state_trace = A_surfxml_cluster_state_file;
+	sg_platf_new_cluster(&cluster);
 }
 void ETag_surfxml_cluster(void){
-	surfxml_call_cb_functions(ETag_surfxml_cluster_cb_list);
-	xbt_free(struct_cluster);
+  /* nothing I can think of */
 }
 
 void STag_surfxml_peer(void){
