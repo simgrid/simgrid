@@ -1,5 +1,7 @@
 SimGrid (3.7) NOT RELEASED; urgency=low 
 
+  The "Simplicity does not preceed complexity, but follows it" release.
+
   Models:
   * Use the partial invalidation optimization by default for the
     network too. Should produce the exact same results, only faster.
