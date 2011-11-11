@@ -90,7 +90,7 @@ const char *__surf_get_initial_path(void);
 int __surf_is_absolute_file_path(const char *file_path);
 
 /*
- * One link routing list
+ * Link of lenght 1, alongside with its source and destination. This is mainly usefull in the bindings to gtnets and ns3
  */
 typedef struct s_onelink {
   char *src;
@@ -135,14 +135,18 @@ typedef struct s_as {
   char *name;
   struct s_as *routing_father;
   xbt_dict_t routing_sons;
-  route_extended_t(*get_route) (AS_t as, const char *src,
-                                const char *dst);
-  double(*get_latency) (AS_t as, const char *src,
-                        const char *dst, route_extended_t e_route);
+
+  route_extended_t(*get_route) (AS_t as,
+                                const char *src, const char *dst);
+  double(*get_latency) (AS_t as,
+                        const char *src, const char *dst,
+                        route_extended_t e_route);
   xbt_dynar_t(*get_onelink_routes) (AS_t as);
   route_extended_t(*get_bypass_route) (AS_t as,
                                        const char *src, const char *dst);
   void (*finalize) (AS_t as);
+
+
   /* The parser calls the following functions to inform the routing models
    * that a new element is added to the AS currently built.
    *
