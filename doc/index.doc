@@ -2,11 +2,21 @@
 
 <center>
 \htmlonly
-<a href="http://simgrid.gforge.inria.fr" border="0"><img align=center src="simgrid_logo.png" alt="SimGrid"></a><br>
+<table width="100%"> 
+	<tr> 
+		<td valign="middle" align="left">			
+				<img src="simgrid_logo_2011.png" alt="SimGrid - Scalable simulation of distributed systems, ranging from grids to peer-to-peer systems" />		
+		</td> 
+		<td valign="middle" align="left"> 
+\endhtmlonly
+\htmlinclude .index.doc.toc			
+\htmlonly
+		</td> 
+	</tr> 
+</table> 
 \endhtmlonly
 </center>
 
-\htmlinclude .index.doc.toc
 SimGrid is a toolkit that provides core functionalities for the simulation
 of distributed applications in heterogeneous distributed environments.
 \htmlonly <!-- ______BODY_BEGIN______ --!> \endhtmlonly
