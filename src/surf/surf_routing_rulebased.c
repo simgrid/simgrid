@@ -20,7 +20,7 @@ typedef struct {
   xbt_dict_t dict_autonomous_systems;
   xbt_dynar_t list_route;
   xbt_dynar_t list_ASroute;
-} s_routing_component_rulebased_t, *routing_component_rulebased_t;
+} s_AS_rulebased_t, *AS_rulebased_t;
 
 typedef struct s_rule_route s_rule_route_t, *rule_route_t;
 typedef struct s_rule_route_extended s_rule_route_extended_t,
@@ -65,19 +65,15 @@ static void rule_route_extended_free(void *e)
 
 /* Parse routing model functions */
 
-static void model_rulebased_parse_PU(AS_t rc,
-                                                const char *name)
+static void model_rulebased_parse_PU(AS_t rc, const char *name)
 {
-  routing_component_rulebased_t routing =
-      (routing_component_rulebased_t) rc;
+  AS_rulebased_t routing = (AS_rulebased_t) rc;
   xbt_dict_set(routing->dict_processing_units, name, (void *) (-1), NULL);
 }
 
-static void model_rulebased_parse_AS(AS_t rc,
-                                                  const char *name)
+static void model_rulebased_parse_AS(AS_t rc, const char *name)
 {
-  routing_component_rulebased_t routing =
-      (routing_component_rulebased_t) rc;
+  AS_rulebased_t routing = (AS_rulebased_t) rc;
   xbt_dict_set(routing->dict_autonomous_systems, name, (void *) (-1),
                NULL);
 }
@@ -86,8 +82,7 @@ static void model_rulebased_parse_route(AS_t rc,
                                       const char *src, const char *dst,
                                       route_t route)
 {
-  routing_component_rulebased_t routing =
-      (routing_component_rulebased_t) rc;
+  AS_rulebased_t routing = (AS_rulebased_t) rc;
   rule_route_t ruleroute = xbt_new0(s_rule_route_t, 1);
   const char *error;
   int erroffset;
@@ -114,8 +109,7 @@ static void model_rulebased_parse_ASroute(AS_t rc,
                                         const char *src, const char *dst,
                                         route_t route)
 {
-  routing_component_rulebased_t routing =
-      (routing_component_rulebased_t) rc;
+  AS_rulebased_t routing = (AS_rulebased_t) rc;
   rule_route_extended_t ruleroute_e = xbt_new0(s_rule_route_extended_t, 1);
   const char *error;
   int erroffset;
@@ -222,7 +216,7 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
   if(!strcmp(surf_network_model->name,"network NS3"))
 	return ret;
 
-  routing_component_rulebased_t routing = (routing_component_rulebased_t)rc;
+  AS_rulebased_t routing = (AS_rulebased_t)rc;
 
   xbt_dict_cursor_t c1 = NULL;
   char *k1, *d1;
@@ -275,8 +269,8 @@ static route_t rulebased_get_route(AS_t rc,
               rc->name);
 
   /* set utils vars */
-  routing_component_rulebased_t routing =
-      (routing_component_rulebased_t) rc;
+  AS_rulebased_t routing =
+      (AS_rulebased_t) rc;
 
   int are_processing_units=0;
   xbt_dynar_t rule_list;
@@ -376,8 +370,8 @@ static route_t rulebased_get_bypass_route(AS_t rc, const char *src, const char *
 
 static void rulebased_finalize(AS_t rc)
 {
-  routing_component_rulebased_t routing =
-      (routing_component_rulebased_t) rc;
+  AS_rulebased_t routing =
+      (AS_rulebased_t) rc;
   if (routing) {
     xbt_dict_free(&routing->dict_processing_units);
     xbt_dict_free(&routing->dict_autonomous_systems);
@@ -391,8 +385,8 @@ static void rulebased_finalize(AS_t rc)
 /* Creation routing model functions */
 AS_t model_rulebased_create(void) {
 
-  routing_component_rulebased_t new_component = (routing_component_rulebased_t)
-      model_generic_create_sized(sizeof(s_routing_component_rulebased_t));
+  AS_rulebased_t new_component = (AS_rulebased_t)
+      model_generic_create_sized(sizeof(s_AS_rulebased_t));
 
   new_component->generic_routing.parse_PU = model_rulebased_parse_PU;
   new_component->generic_routing.parse_AS = model_rulebased_parse_AS;
