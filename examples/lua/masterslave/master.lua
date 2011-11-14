@@ -13,7 +13,7 @@ function Master(...)
 
   for i = 1, nb_task do
     local task = simgrid.task.new("Task " .. i, comp_size, comm_size)
-    local task_name = task:name()
+    local task_name = task:get_name()
     local alias = "slave " .. (i % slave_count)
     simgrid.info("Sending  '" .. task_name .. "' to '" .. alias .."'")
     task:send(alias) -- C user data set to NULL

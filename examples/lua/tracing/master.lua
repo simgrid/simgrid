@@ -26,9 +26,9 @@ for i=1,nb_task do
   alias = "slave "..(i%slave_count);
   -- Set Trace Category
   simgrid.Trace.setTaskCategory(tk,"compute");
-  simgrid.info("Master sending  '" .. simgrid.task.name(tk) .."' To '" .. alias .."'");
+  simgrid.info("Master sending  '" .. simgrid.task.get_name(tk) .."' To '" .. alias .."'");
   simgrid.task.send(tk,alias); -- C user data set to NULL
-  simgrid.info("Master done sending '".. simgrid.task.name(tk) .."' To '" .. alias .."'");
+  simgrid.info("Master done sending '".. simgrid.task.get_name(tk) .."' To '" .. alias .."'");
 end
 
 -- Sending Finalize Message To Others

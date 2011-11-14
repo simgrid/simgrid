@@ -20,7 +20,7 @@ simgrid.info("Argc="..(#arg).." (should be 4)")
 
 for i=1,nb_task do
   tk = simgrid.task.new("Task "..i,comp_size,comm_size);
-  local task_name = simgrid.task.name(tk)
+  local task_name = simgrid.task.get_name(tk)
   alias = "slave "..(i%slave_count);
   simgrid.info("Master sending  '" .. task_name .."' To '" .. alias .."'");
   simgrid.task.send(tk,alias); -- C user data set to NULL

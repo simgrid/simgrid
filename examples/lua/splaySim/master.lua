@@ -21,9 +21,9 @@ simgrid.info("Argc="..(#arg).." (should be 4)")
 for i=1,nb_task do
   tk = simgrid.task.new("Task "..i,comp_size,comm_size);
   alias = "slave "..(i%slave_count);
-  simgrid.info("Master sending  '" .. simgrid.task.name(tk) .."' To '" .. alias .."'");
+  simgrid.info("Master sending  '" .. simgrid.task.get_name(tk) .."' To '" .. alias .."'");
   simgrid.task.send(tk,alias); -- C user data set to NULL
-  simgrid.info("Master done sending '".. simgrid.task.name(tk) .."' To '" .. alias .."'");
+  simgrid.info("Master done sending '".. simgrid.task.get_name(tk) .."' To '" .. alias .."'");
 end
 
 -- Sending Finalize Message To Others

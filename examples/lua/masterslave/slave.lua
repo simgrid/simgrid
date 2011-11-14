@@ -10,7 +10,7 @@ function Slave(...)
   while true do
 
     local task = simgrid.task.recv(my_mailbox)
-    local task_name = task:name()
+    local task_name = task:get_name()
     if (task_name == "finalize") then
       simgrid.info("Got finalize message")
       break

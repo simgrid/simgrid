@@ -120,7 +120,7 @@ static int l_task_get_name(lua_State* L)
  * - Argument 1 (task): a task
  * - Return value (number): computation duration of this task
  */
-static int l_task_computation_duration(lua_State* L)
+static int l_task_get_computation_duration(lua_State* L)
 {
   m_task_t task = sglua_checktask(L, 1);
   lua_pushnumber(L, MSG_task_get_compute_duration(task));
@@ -255,8 +255,8 @@ static int l_task_recv(lua_State *L)
 
 static const luaL_reg task_functions[] = {
   {"new", l_task_new},
-  {"name", l_task_get_name},
-  {"computation_duration", l_task_computation_duration},
+  {"get_name", l_task_get_name},
+  {"get_computation_duration", l_task_get_computation_duration},
   {"execute", l_task_execute},
   {"send", l_task_send},
   {"recv", l_task_recv},
