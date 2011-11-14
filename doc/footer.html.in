@@ -5,7 +5,7 @@
 <tr>
 <td align=left>
 <a href="index.html"><b>
-Back to the main Simgrid Documentation page</b></a>
+Back to the main Simgrid-Java Documentation page</b></a>
 </td>
 <td align=middle>
 <small>The version of Simgrid-java documented here is v@SIMGRID_JAVA_VERSION_MAJOR@.@SIMGRID_JAVA_VERSION_MINOR@.<br/>

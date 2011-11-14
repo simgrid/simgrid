@@ -33,7 +33,7 @@ while (<FROM>) {
 		$tmp_buff .= $_;
 		$tmp_buff .= '      <li><a href="install.html"><span>Install SimGrid-Java</span></a></li>'."\n";
 		$tmp_buff .= '      <li><a href="javadoc/index.html"><span>Javadoc</span></a></li>'."\n";
-
+		$tmp_buff .= '      <li><a href="http://simgrid.gforge.inria.fr/"><span>Website</span></a></li>'."\n";
 		$tabs = 0;
 	
 		my $filename = $file;
