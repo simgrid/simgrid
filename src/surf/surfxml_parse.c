@@ -566,19 +566,15 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
 
 /* Prop tag functions */
 
-void parse_properties(const char* prop_id, const char* prop_value)
-{
-	if (!current_property_set)
-	    current_property_set = xbt_dict_new();      // Maybe, it should raise an error
-	xbt_dict_set(current_property_set, prop_id, xbt_strdup(prop_value), free);
-}
-
 /**
  * With XML parser
  */
-void parse_properties_XML(void)
+void parse_properties(void)
 {
-  parse_properties(A_surfxml_prop_id, A_surfxml_prop_value);
+  if (!current_property_set)
+      current_property_set = xbt_dict_new();      // Maybe, it should raise an error
+
+  xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), free);
 }
 
 
