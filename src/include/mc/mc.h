@@ -31,7 +31,7 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(void) MC_init_safety_stateless(void);
 XBT_PUBLIC(void) MC_init_safety_stateful(void);
 XBT_PUBLIC(void) MC_init_liveness_stateful(xbt_automaton_t a);
-XBT_PUBLIC(void) MC_init_liveness_stateless(xbt_automaton_t a);
+XBT_PUBLIC(void) MC_init_liveness_stateless(xbt_automaton_t a, char *prgm);
 XBT_PUBLIC(void) MC_exit(void);
 XBT_PUBLIC(void) MC_exit_liveness(void);
 XBT_PUBLIC(void) MC_assert(int);
@@ -41,7 +41,7 @@ XBT_PUBLIC(void) MC_assert_pair_stateless(int);
 XBT_PUBLIC(void) MC_modelcheck(void);
 XBT_PUBLIC(void) MC_modelcheck_stateful(void);
 XBT_PUBLIC(void) MC_modelcheck_liveness_stateful(xbt_automaton_t a);
-XBT_PUBLIC(void) MC_modelcheck_liveness_stateless(xbt_automaton_t a);
+XBT_PUBLIC(void) MC_modelcheck_liveness_stateless(xbt_automaton_t a, char *prgm);
 XBT_PUBLIC(int) MC_random(int, int);
 XBT_PUBLIC(void) MC_process_clock_add(smx_process_t, double);
 XBT_PUBLIC(double) MC_process_clock_get(smx_process_t);

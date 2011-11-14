@@ -183,14 +183,14 @@ MSG_error_t MSG_main_liveness_stateful(xbt_automaton_t a)
   return MSG_OK;
 }
 
-MSG_error_t MSG_main_liveness_stateless(xbt_automaton_t a)
+MSG_error_t MSG_main_liveness_stateless(xbt_automaton_t a, char *prgm)
 {
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
 
   if (MC_IS_ENABLED) {
-    MC_modelcheck_liveness_stateless(a);
+    MC_modelcheck_liveness_stateless(a, prgm);
   }
   else {
     SIMIX_run();

@@ -116,12 +116,12 @@ void MC_init_liveness_stateful(xbt_automaton_t a){
 
   MC_UNSET_RAW_MEM;
 
-  MC_ddfs_stateful_init(a);
+  //MC_ddfs_stateful_init(a);
   //MC_dpor2_init(a);
   //MC_dpor3_init(a);
 }
 
-void MC_init_liveness_stateless(xbt_automaton_t a){
+void MC_init_liveness_stateless(xbt_automaton_t a, char *prgm){
 
   XBT_DEBUG("Start init mc");
   
@@ -142,7 +142,7 @@ void MC_init_liveness_stateless(xbt_automaton_t a){
 
   MC_UNSET_RAW_MEM;
 
-  MC_ddfs_stateless_init(a);
+  MC_ddfs_stateless_init(a, prgm);
 
   
 }
@@ -167,8 +167,8 @@ void MC_modelcheck_liveness_stateful(xbt_automaton_t a){
   MC_exit_liveness();
 }
 
-void MC_modelcheck_liveness_stateless(xbt_automaton_t a){
-  MC_init_liveness_stateless(a);
+void MC_modelcheck_liveness_stateless(xbt_automaton_t a, char *prgm){
+  MC_init_liveness_stateless(a, prgm);
   MC_exit_liveness();
 }
 

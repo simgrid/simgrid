@@ -36,6 +36,7 @@ typedef struct s_mc_snapshot{
 } s_mc_snapshot_t, *mc_snapshot_t;
 
 void MC_take_snapshot(mc_snapshot_t);
+void MC_take_snapshot_liveness(mc_snapshot_t s, char *prgm);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 
@@ -44,7 +45,7 @@ extern double *mc_time;
 
 /* Bound of the MC depth-first search algorithm */
 #define MAX_DEPTH 1000
-#define MAX_DEPTH_LIVENESS 150
+#define MAX_DEPTH_LIVENESS 1000
 
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack);
@@ -248,8 +249,8 @@ typedef struct s_mc_pair_stateless{
 extern xbt_fifo_t mc_stack_liveness_stateless;
 
 mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r);
-void MC_ddfs_stateless_init(xbt_automaton_t a);
-void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay);
+void MC_ddfs_stateless_init(xbt_automaton_t a, char *prgm);
+void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *prgm);
 void MC_show_stack_liveness_stateless(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateless(xbt_fifo_t stack);
 void MC_pair_stateless_delete(mc_pair_stateless_t pair);
