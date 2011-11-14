@@ -163,7 +163,6 @@ ADD_TEST(memcheck-msg-masterslave-mailbox-raw-0 ${CMAKE_BINARY_DIR}/examples/msg
 ADD_TEST(memcheck-msg-masterslave-kill-raw-0 ${CMAKE_BINARY_DIR}/examples/msg/masterslave/masterslave_kill ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/platform_kill.xml ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/deployment_masterslave_kill.xml --cfg=contexts/factory:raw  --cd ${CMAKE_BINARY_DIR}/examples/msg/)
 endif(HAVE_RAWCTX)
 
-if (enable_pcre)
 ADD_TEST(memcheck-msg-masterslave-vivaldi-thread-0 ${CMAKE_BINARY_DIR}/examples/msg/masterslave/masterslave_mailbox  ${CMAKE_HOME_DIRECTORY}/examples/msg/../platforms/vivaldi.xml ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/deployment_masterslave_vivaldi.xml --cfg=network/latency_factor:1.0 --cfg=network/bandwidth_factor:1.0 --cfg=contexts/factory:thread  --cd ${CMAKE_BINARY_DIR}/examples/msg/)
 ADD_TEST(memcheck-msg-token-ring-thread-0 token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/two_clusters.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:thread  --cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring/)
 ADD_TEST(memcheck-msg-token-ring-thread-1 token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/two_peers.xml --cfg=coordinates:yes "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:thread  --cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring/)
@@ -177,7 +176,6 @@ ADD_TEST(memcheck-msg-masterslave-vivaldi-ucontext-0 ${CMAKE_BINARY_DIR}/example
 ADD_TEST(memcheck-msg-token-ring-ucontext-0 token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/two_clusters.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext  --cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring/)
 ADD_TEST(memcheck-msg-token-ring-ucontext-1 token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/two_peers.xml --cfg=coordinates:yes "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext  --cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring/)
   endif(HAVE_UCONTEXT_H)
-endif (enable_pcre)
 
 ADD_TEST(memcheck-msg-masterslave-multicore-thread-0 ${CMAKE_BINARY_DIR}/examples/msg/masterslave/masterslave_mailbox ${CMAKE_HOME_DIRECTORY}/examples/msg/../platforms/multicore_machine.xml ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/deployment_masterslave_mailbox_multicore.xml --cfg=cpu/model:Cas01_fullupdate --cfg=contexts/factory:thread  --cd ${CMAKE_BINARY_DIR}/examples/msg/)
 ADD_TEST(memcheck-msg-migration-thread-0 ${CMAKE_BINARY_DIR}/examples/msg/migration/migration ${CMAKE_HOME_DIRECTORY}/examples/msg/msg_platform.xml ${CMAKE_HOME_DIRECTORY}/examples/msg/migration/migration.deploy  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:thread  --cd ${CMAKE_BINARY_DIR}/examples/msg/)
