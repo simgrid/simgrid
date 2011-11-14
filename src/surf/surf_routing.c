@@ -464,8 +464,8 @@ static void elements_father(const char *src, const char *dst,
  * This function is called by "get_route" and "get_latency". It allows to walk
  * recursively through the routing components tree.
  */
-static void _get_route_latency(const char *src, const char *dst,
-                               xbt_dynar_t * route, double *latency)
+static void _get_route_and_latency(const char *src, const char *dst,
+                                   xbt_dynar_t * route, double *latency)
 {
   XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src, dst);
   xbt_assert(src && dst, "bad parameters for \"_get_route_latency\" method");
@@ -534,7 +534,7 @@ static void _get_route_latency(const char *src, const char *dst,
       double latency_src;
       xbt_dynar_t route_src;
 
-      _get_route_latency(src, e_route_cnt->src_gateway,
+      _get_route_and_latency(src, e_route_cnt->src_gateway,
                          (route ? &route_src : NULL),
                          (latency ? &latency_src : NULL));
       if (route) {
@@ -563,7 +563,7 @@ static void _get_route_latency(const char *src, const char *dst,
       double latency_dst;
       xbt_dynar_t route_dst;
 
-      _get_route_latency(e_route_cnt->dst_gateway, dst,
+      _get_route_and_latency(e_route_cnt->dst_gateway, dst,
                          (route ? &route_dst : NULL),
                          (latency ? &latency_dst : NULL));
       if (route) {
@@ -594,7 +594,7 @@ void routing_get_route_and_latency(const char *src, const char *dst,
 {
   static xbt_dynar_t last_route = NULL;
 
-  _get_route_latency(src, dst, route, latency);
+  _get_route_and_latency(src, dst, route, latency);
   xbt_assert(!route || *route, "no route between \"%s\" and \"%s\"", src, dst);
   xbt_assert(!latency || *latency >= 0.0,
              "latency error on route between \"%s\" and \"%s\"", src, dst);
