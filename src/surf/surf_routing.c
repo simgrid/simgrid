@@ -482,19 +482,22 @@ static void elements_father(const char *src, const char *dst,
  * \param *latency the latency, if needed
  * 
  * This function is called by "get_route" and "get_latency". It allows to walk
- * recursively through the routing components tree.
+ * recursively through the ASes tree.
  */
 static void _get_route_and_latency(const char *src, const char *dst,
                                    xbt_dynar_t * route, double *latency)
 {
+  void *link;
+  unsigned int cpt;
+
   XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src, dst);
   xbt_assert(src && dst, "bad parameters for \"_get_route_latency\" method");
 
-  AS_t common_father;
-  AS_t src_father;
-  AS_t dst_father;
+  /* Find how src and dst are interconnected */
+  AS_t common_father, src_father, dst_father;
   elements_father(src, dst, &common_father, &src_father, &dst_father);
 
+  /* If src and dst are in the same AS, life is good */
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
     route_t e_route = NULL;
@@ -513,97 +516,114 @@ static void _get_route_and_latency(const char *src, const char *dst,
       xbt_free(e_route->dst_gateway);
       xbt_free(e_route);
     }
+    return;
+  }
 
-  } else {                      /* SURF_ROUTING_RECURSIVE */
+  /* If we are here, src and dst are not in the same AS; check whether a direct bypass is defined */
 
-    route_t e_route_bypass = NULL;
-    if (common_father->get_bypass_route)
-      e_route_bypass = common_father->get_bypass_route(common_father, src, dst);
+  route_t e_route_bypass = NULL;
+  if (common_father->get_bypass_route)
+    e_route_bypass = common_father->get_bypass_route(common_father, src, dst);
 
-    xbt_assert(!latency || !e_route_bypass,
-               "Bypass cannot work yet with get_latency");
+  if (e_route_bypass) { /* Common ancestor is kind enough to declare a bypass route from src to dst -- use it and bail out */
+    if (latency)
+      xbt_die("Bypass cannot work yet with get_latency"); // FIXME: that limitation seems supurious to me -- check with alvin
 
-    route_t e_route_cnt = e_route_bypass
-        ? e_route_bypass : common_father->get_route(common_father,
-                                                    src_father->name,
-                                                    dst_father->name);
+    if (!route)
+      xbt_die("You're asking for route and latency but don't ask for any of them, you weirdo");
+    *route = xbt_dynar_new(global_routing->size_of_link, NULL);
 
-    xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"",
-               src_father->name, dst_father->name);
+    xbt_dynar_foreach(e_route_bypass->link_list, cpt, link) {
+      xbt_dynar_push(*route, &link);
+    }
 
-    xbt_assert((e_route_cnt->src_gateway == NULL) ==
-               (e_route_cnt->dst_gateway == NULL),
-               "bad gateway for route between \"%s\" and \"%s\"", src, dst);
+    generic_free_route(e_route_bypass);
+    return;
+  }
 
+
+  /* Not in the same AS, no bypass. We'll have to find our path between the ASes recursively*/
+
+  route_t e_route_cnt = e_route_bypass
+      ? e_route_bypass : common_father->get_route(common_father,
+          src_father->name,
+          dst_father->name);
+
+  xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"",
+      src_father->name, dst_father->name);
+
+  xbt_assert((e_route_cnt->src_gateway == NULL) ==
+      (e_route_cnt->dst_gateway == NULL),
+      "bad gateway for route between \"%s\" and \"%s\"", src, dst);
+
+  if (route) {
+    *route = xbt_dynar_new(global_routing->size_of_link, NULL);
+  }
+  if (latency) {
+    *latency = common_father->get_latency(common_father,
+        src_father->name, dst_father->name,
+        e_route_cnt);
+    xbt_assert(*latency >= 0.0,
+        "latency error on route between \"%s\" and \"%s\"",
+        src_father->name, dst_father->name);
+  }
+
+
+  /* If source gateway is not our source, we have to recursively find our way up to this point */
+  if (strcmp(src, e_route_cnt->src_gateway)) {
+    double latency_src;
+    xbt_dynar_t route_src;
+
+    _get_route_and_latency(src, e_route_cnt->src_gateway,
+        (route ? &route_src : NULL),
+        (latency ? &latency_src : NULL));
     if (route) {
-      *route = xbt_dynar_new(global_routing->size_of_link, NULL);
-    }
-    if (latency) {
-      *latency = common_father->get_latency(common_father,
-                                            src_father->name, dst_father->name,
-                                            e_route_cnt);
-      xbt_assert(*latency >= 0.0,
-                 "latency error on route between \"%s\" and \"%s\"",
-                 src_father->name, dst_father->name);
-    }
-
-    void *link;
-    unsigned int cpt;
-
-    if (strcmp(src, e_route_cnt->src_gateway)) {
-      double latency_src;
-      xbt_dynar_t route_src;
-
-      _get_route_and_latency(src, e_route_cnt->src_gateway,
-                         (route ? &route_src : NULL),
-                         (latency ? &latency_src : NULL));
-      if (route) {
-        xbt_assert(route_src, "no route between \"%s\" and \"%s\"",
-                   src, e_route_cnt->src_gateway);
-        xbt_dynar_foreach(route_src, cpt, link) {
-          xbt_dynar_push(*route, &link);
-        }
-        xbt_dynar_free(&route_src);
-      }
-      if (latency) {
-        xbt_assert(latency_src >= 0.0,
-                   "latency error on route between \"%s\" and \"%s\"",
-                   src, e_route_cnt->src_gateway);
-        *latency += latency_src;
-      }
-    }
-
-    if (route) {
-      xbt_dynar_foreach(e_route_cnt->link_list, cpt, link) {
+      xbt_assert(route_src, "no route between \"%s\" and \"%s\"",
+          src, e_route_cnt->src_gateway);
+      xbt_dynar_foreach(route_src, cpt, link) {
         xbt_dynar_push(*route, &link);
       }
+      xbt_dynar_free(&route_src);
     }
-
-    if (strcmp(e_route_cnt->dst_gateway, dst)) {
-      double latency_dst;
-      xbt_dynar_t route_dst;
-
-      _get_route_and_latency(e_route_cnt->dst_gateway, dst,
-                         (route ? &route_dst : NULL),
-                         (latency ? &latency_dst : NULL));
-      if (route) {
-        xbt_assert(route_dst, "no route between \"%s\" and \"%s\"",
-                   e_route_cnt->dst_gateway, dst);
-        xbt_dynar_foreach(route_dst, cpt, link) {
-          xbt_dynar_push(*route, &link);
-        }
-        xbt_dynar_free(&route_dst);
-      }
-      if (latency) {
-        xbt_assert(latency_dst >= 0.0,
-                   "latency error on route between \"%s\" and \"%s\"",
-                   e_route_cnt->dst_gateway, dst);
-        *latency += latency_dst;
-      }
+    if (latency) {
+      xbt_assert(latency_src >= 0.0,
+          "latency error on route between \"%s\" and \"%s\"",
+          src, e_route_cnt->src_gateway);
+      *latency += latency_src;
     }
-
-    generic_free_route(e_route_cnt);
   }
+
+  if (route) {
+    xbt_dynar_foreach(e_route_cnt->link_list, cpt, link) {
+      xbt_dynar_push(*route, &link);
+    }
+  }
+
+  /* If dest gateway is not our destination, we have to recursively find our way from this point */
+  if (strcmp(e_route_cnt->dst_gateway, dst)) {
+    double latency_dst;
+    xbt_dynar_t route_dst;
+
+    _get_route_and_latency(e_route_cnt->dst_gateway, dst,
+        (route ? &route_dst : NULL),
+        (latency ? &latency_dst : NULL));
+    if (route) {
+      xbt_assert(route_dst, "no route between \"%s\" and \"%s\"",
+          e_route_cnt->dst_gateway, dst);
+      xbt_dynar_foreach(route_dst, cpt, link) {
+        xbt_dynar_push(*route, &link);
+      }
+      xbt_dynar_free(&route_dst);
+    }
+    if (latency) {
+      xbt_assert(latency_dst >= 0.0,
+          "latency error on route between \"%s\" and \"%s\"",
+          e_route_cnt->dst_gateway, dst);
+      *latency += latency_dst;
+    }
+  }
+
+  generic_free_route(e_route_cnt);
 }
 
 /**
