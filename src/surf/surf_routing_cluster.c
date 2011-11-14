@@ -56,6 +56,7 @@ AS_t model_cluster_create(void)
 {
   AS_t result = model_none_create_sized(sizeof(s_as_cluster_t));
   result->get_route = cluster_get_route;
+  result->get_latency = generic_get_link_latency;
   result->finalize = model_cluster_finalize;
 
   return (AS_t) result;

@@ -73,7 +73,7 @@ static double vivaldi_get_link_latency (AS_t rc,const char *src, const char *dst
 /* Creation routing model functions */
 AS_t model_vivaldi_create(void)
 {
-	  AS_t new_component = model_none_create();
+	  AS_t new_component = model_rulebased_create();
 	  new_component->get_route = vivaldi_get_route;
 	  new_component->get_latency = vivaldi_get_link_latency;
 	  return new_component;
