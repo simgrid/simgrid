@@ -14,6 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
 #define TASK_MODULE_NAME "simgrid.task"
 #define HOST_MODULE_NAME "simgrid.host"
+#define PROCESS_MODULE_NAME "simgrid.process"
 // Surf (bypass XML)
 #define LINK_MODULE_NAME "simgrid.link"
 #define ROUTE_MODULE_NAME "simgrid.route"
@@ -133,8 +134,9 @@ static int l_task_get_computation_duration(lua_State* L)
  * \return number of values returned to Lua
  *
  * - Argument 1 (task): the task to execute
- * - Return value (nil or error): none if the task was successfully executed, or an error
- * string in case of failure, which may be "task canceled" or "host failure"
+ * - Return value (nil or string): nil if the task was successfully executed,
+ * or an error string in case of failure, which may be "task canceled" or
+ * "host failure"
  */
 static int l_task_execute(lua_State* L)
 {
@@ -167,7 +169,7 @@ static int l_task_execute(lua_State* L)
  * - Argument 1 (task): the task to send
  * - Argument 2 (string or compatible): mailbox name, as a real string or any
  * type convertible to string (numbers always are)
- * - Return value (nil or error): none if the communication was successful,
+ * - Return values (nil or string): nil if the communication was successful,
  * or an error string in case of failure, which may be "timeout",
  * "host failure" or "transfer failure"
  */
@@ -228,8 +230,8 @@ static int l_task_send(lua_State* L)
  * - Argument 1 (string or compatible): mailbox name, as a real string or any
  * type convertible to string (numbers always are)
  * - Argument 2 (number, optional): timeout (default is no timeout)
- * - Return value (task or nil+err): the task received, or nil plus an error message if
- * the communication has failed
+ * - Return values (task or nil+string): the task received, or nil plus an
+ * error message if the communication has failed
  */
 static int l_task_recv(lua_State* L)
 {
@@ -540,6 +542,46 @@ static int l_host_tostring(lua_State * L)
 static const luaL_reg host_meta[] = {
   {"__tostring", l_host_tostring},
   {0, 0}
+};
+
+/* ********************************************************************************* */
+/*                              simgrid.process API                                  */
+/* ********************************************************************************* */
+
+/**
+ * \brief Makes the current process sleep for a while.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (number): duration of the sleep
+ * - Return value (nil or string): nil in everything went ok, or a string error
+ * if case of failure ("host failure")
+ */
+static int l_process_sleep(lua_State* L)
+{
+  double duration = luaL_checknumber(L, 1);
+  MSG_error_t res = MSG_process_sleep(duration);
+
+  switch (res) {
+
+  case MSG_OK:
+    return 0;
+
+  case MSG_HOST_FAILURE:
+    lua_pushliteral(L, "host failure");
+    return 1;
+
+  default:
+    xbt_die("Unexpected result of MSG_process_sleep: %d, please report this bug", res);
+  }
+}
+
+static const luaL_reg process_functions[] = {
+    {"sleep", l_process_sleep},
+    /* TODO: self, create, kill, suspend, is_suspended, resume, get_name,
+     * get_pid, get_ppid, migrate
+     */
+    {NULL, NULL}
 };
 
 /* ********************************************************************************* */
@@ -948,6 +990,17 @@ static void register_host_functions(lua_State* L)
 }
 
 /**
+ * \brief Registers the process functions into the table simgrid.process.
+ * \param L a lua state
+ */
+static void register_process_functions(lua_State* L)
+{
+  luaL_openlib(L, PROCESS_MODULE_NAME, process_functions, 0);
+                                  /* simgrid.process */
+  lua_pop(L, 1);
+}
+
+/**
  * \brief Registers the platform functions into the table simgrid.platf.
  * \param L a lua state
  */
@@ -995,6 +1048,7 @@ static void register_c_functions(lua_State *L)
   register_core_functions(L);
   register_task_functions(L);
   register_host_functions(L);
+  register_process_functions(L);
   register_platf_functions(L);
 }
 
