@@ -23,7 +23,7 @@ typedef struct {
 static xbt_dict_t cluster_host_link = NULL;
 
 /* Business methods */
-static route_extended_t cluster_get_route(AS_t as,
+static route_t cluster_get_route(AS_t as,
                                           const char *src,
                                           const char *dst) {
 
@@ -40,9 +40,9 @@ static route_extended_t cluster_get_route(AS_t as,
 	  info = xbt_dict_get_or_null(cluster_host_link,dst);
 	  if(info) xbt_dynar_push_as(links_list,void*,info->link_down); //link_down
 
-	  route_extended_t new_e_route = NULL;
-	  new_e_route = xbt_new0(s_route_extended_t, 1);
-	  new_e_route->generic_route.link_list = links_list;
+	  route_t new_e_route = NULL;
+	  new_e_route = xbt_new0(s_route_t, 1);
+	  new_e_route->link_list = links_list;
 
 	  return new_e_route;
 }

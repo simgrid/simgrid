@@ -22,11 +22,10 @@ typedef struct {
   /* vars for calculate the floyd algorith. */
   int *predecessor_table;
   double *cost_table;
-  route_extended_t *link_table;
+  route_t *link_table;
 } s_as_floyd_t, *as_floyd_t;
 
-static route_extended_t floyd_get_route(AS_t asg,
-                                        const char *src, const char *dst);
+static route_t floyd_get_route(AS_t asg, const char *src, const char *dst);
 
 /* Business methods */
 static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
@@ -37,12 +36,11 @@ static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
   char *k1, *d1, *k2, *d2;
   xbt_dict_foreach(asg->to_index, c1, k1, d1) {
     xbt_dict_foreach(asg->to_index, c2, k2, d2) {
-      route_extended_t route = floyd_get_route(asg, k1, k2);
+      route_t route = floyd_get_route(asg, k1, k2);
       if (route) {
-        if (xbt_dynar_length(route->generic_route.link_list) == 1) {
+        if (xbt_dynar_length(route->link_list) == 1) {
           void *link =
-              *(void **) xbt_dynar_get_ptr(route->generic_route.link_list,
-                                           0);
+              *(void **) xbt_dynar_get_ptr(route->link_list, 0);
           onelink_t onelink = xbt_new0(s_onelink_t, 1);
           onelink->link_ptr = link;
           if (asg->hierarchy == SURF_ROUTING_BASE) {
@@ -60,8 +58,7 @@ static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
   return ret;
 }
 
-static route_extended_t floyd_get_route(AS_t asg,
-                                        const char *src, const char *dst)
+static route_t floyd_get_route(AS_t asg, const char *src, const char *dst)
 {
   xbt_assert(asg && src
               && dst,
@@ -81,11 +78,8 @@ static route_extended_t floyd_get_route(AS_t asg,
               src, dst);
 
   /* create a result route */
-  route_extended_t new_e_route = xbt_new0(s_route_extended_t, 1);
-  new_e_route->generic_route.link_list =
-      xbt_dynar_new(global_routing->size_of_link, NULL);
-  new_e_route->src_gateway = NULL;
-  new_e_route->dst_gateway = NULL;
+  route_t new_e_route = xbt_new0(s_route_t, 1);
+  new_e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
 
   int first = 1;
   int pred = *dst_id;
@@ -106,7 +100,7 @@ static route_extended_t floyd_get_route(AS_t asg,
 
     prev_gw_src = gw_src;
 
-    route_extended_t e_route = TO_FLOYD_LINK(pred, prev_pred);
+    route_t e_route = TO_FLOYD_LINK(pred, prev_pred);
     gw_src = e_route->src_gateway;
     gw_dst = e_route->dst_gateway;
 
@@ -122,15 +116,14 @@ static route_extended_t floyd_get_route(AS_t asg,
       links = e_route_as_to_as;
       int pos = 0;
       xbt_dynar_foreach(links, cpt, link) {
-        xbt_dynar_insert_at(new_e_route->generic_route.link_list, pos,
-                            &link);
+        xbt_dynar_insert_at(new_e_route->link_list, pos, &link);
         pos++;
       }
     }
 
-    links = e_route->generic_route.link_list;
+    links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
-      xbt_dynar_unshift(new_e_route->generic_route.link_list, &link);
+      xbt_dynar_unshift(new_e_route->link_list, &link);
     }
     first = 0;
 
@@ -156,7 +149,7 @@ static void floyd_finalize(AS_t rc)
     /* Delete link_table */
     for (i = 0; i < table_size; i++)
       for (j = 0; j < table_size; j++)
-        generic_free_extended_route(TO_FLOYD_LINK(i, j));
+        generic_free_route(TO_FLOYD_LINK(i, j));
     xbt_free(as->link_table);
     /* Delete bypass dict */
     xbt_dict_free(&as->generic_routing.bypassRoutes);
@@ -197,7 +190,7 @@ void model_floyd_end(AS_t current_routing)
 		/* Create Cost, Predecessor and Link tables */
 		as->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
 		as->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
-		as->link_table = xbt_new0(route_extended_t, table_size * table_size);    /* actual link between src and dst */
+		as->link_table = xbt_new0(route_t, table_size * table_size);    /* actual link between src and dst */
 
 		/* Initialize costs and predecessors */
 		for (i = 0; i < table_size; i++)
@@ -211,15 +204,14 @@ void model_floyd_end(AS_t current_routing)
 	/* Add the loopback if needed */
 	if (current_routing->hierarchy == SURF_ROUTING_BASE) {
 		for (i = 0; i < table_size; i++) {
-		  route_extended_t e_route = TO_FLOYD_LINK(i, i);
+		  route_t e_route = TO_FLOYD_LINK(i, i);
 		  if (!e_route) {
-			e_route = xbt_new0(s_route_extended_t, 1);
+			e_route = xbt_new0(s_route_t, 1);
 			e_route->src_gateway = NULL;
 			e_route->dst_gateway = NULL;
-			e_route->generic_route.link_list =
+			e_route->link_list =
 				xbt_dynar_new(global_routing->size_of_link, NULL);
-			xbt_dynar_push(e_route->generic_route.link_list,
-						   &global_routing->loopback);
+			xbt_dynar_push(e_route->link_list, &global_routing->loopback);
 			TO_FLOYD_LINK(i, i) = e_route;
 			TO_FLOYD_PRED(i, i) = i;
 			TO_FLOYD_COST(i, i) = 1;
@@ -251,7 +243,7 @@ static int surf_pointer_resource_cmp(const void *a, const void *b) {
 //FIXME: kill dupplicates in next function with full routing
 
 void model_floyd_parse_route(AS_t rc, const char *src,
-        const char *dst, route_extended_t route)
+        const char *dst, route_t route)
 {
 	as_floyd_t as = (as_floyd_t) rc;
 
@@ -271,7 +263,7 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 		/* Create Cost, Predecessor and Link tables */
 		as->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
 		as->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
-		as->link_table = xbt_new0(route_extended_t, table_size * table_size);    /* actual link between src and dst */
+		as->link_table = xbt_new0(route_t, table_size * table_size);    /* actual link between src and dst */
 
 		/* Initialize costs and predecessors */
 		for (i = 0; i < table_size; i++)
@@ -292,14 +284,14 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 		char * link_name;
 		unsigned int cpt;
 		xbt_dynar_t link_route_to_test = xbt_dynar_new(global_routing->size_of_link, NULL);
-		xbt_dynar_foreach(route->generic_route.link_list,cpt,link_name)
+		xbt_dynar_foreach(route->link_list,cpt,link_name)
 		{
 			void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
 			xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
 			xbt_dynar_push(link_route_to_test,&link);
 		}
 		xbt_assert(!xbt_dynar_compare(
-			  (void*)TO_FLOYD_LINK(*src_id, *dst_id)->generic_route.link_list,
+			  (void*)TO_FLOYD_LINK(*src_id, *dst_id)->link_list,
 			  (void*)link_route_to_test,
 			  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
 			  "The route between \"%s\" and \"%s\" already exists", src,dst);
@@ -320,7 +312,7 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 	    		generic_new_extended_route(rc->hierarchy, route, 1);
 	    TO_FLOYD_PRED(*src_id, *dst_id) = *src_id;
 	    TO_FLOYD_COST(*src_id, *dst_id) =
-	    		((TO_FLOYD_LINK(*src_id, *dst_id))->generic_route.link_list)->used;   /* count of links, old model assume 1 */
+	    		((TO_FLOYD_LINK(*src_id, *dst_id))->link_list)->used;   /* count of links, old model assume 1 */
 	}
 
 	if( A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES
@@ -336,15 +328,15 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 			char * link_name;
 			unsigned int i;
 			xbt_dynar_t link_route_to_test = xbt_dynar_new(global_routing->size_of_link, NULL);
-			for(i=xbt_dynar_length(route->generic_route.link_list) ;i>0 ;i--)
+			for(i=xbt_dynar_length(route->link_list) ;i>0 ;i--)
 			{
-				link_name = xbt_dynar_get_as(route->generic_route.link_list,i-1,void *);
+				link_name = xbt_dynar_get_as(route->link_list,i-1,void *);
 				void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
 				xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
 				xbt_dynar_push(link_route_to_test,&link);
 			}
 			xbt_assert(!xbt_dynar_compare(
-				  (void*)TO_FLOYD_LINK(*dst_id, *src_id)->generic_route.link_list,
+				  (void*)TO_FLOYD_LINK(*dst_id, *src_id)->link_list,
 			      (void*)link_route_to_test,
 				  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
 				  "The route between \"%s\" and \"%s\" already exists", src,dst);
@@ -369,7 +361,7 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 		    		generic_new_extended_route(rc->hierarchy, route, 0);
 		    TO_FLOYD_PRED(*dst_id, *src_id) = *dst_id;
 		    TO_FLOYD_COST(*dst_id, *src_id) =
-		    		((TO_FLOYD_LINK(*dst_id, *src_id))->generic_route.link_list)->used;   /* count of links, old model assume 1 */
+		    		((TO_FLOYD_LINK(*dst_id, *src_id))->link_list)->used;   /* count of links, old model assume 1 */
 		}
 	}
 }

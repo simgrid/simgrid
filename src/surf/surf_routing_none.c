@@ -12,13 +12,13 @@ static xbt_dynar_t none_get_onelink_routes(AS_t rc) {
   return NULL;
 }
 
-static route_extended_t none_get_route(AS_t rc,
+static route_t none_get_route(AS_t rc,
                                        const char *src, const char *dst)
 {
   return NULL;
 }
 
-static route_extended_t none_get_bypass_route(AS_t rc,
+static route_t none_get_bypass_route(AS_t rc,
                                               const char *src,
                                               const char *dst) {
   return NULL;

@@ -225,8 +225,8 @@ static void routing_parse_link_ctn(void)
  */
 static void routing_parse_E_route(void)
 {
-  route_extended_t route = xbt_new0(s_route_extended_t, 1);
-  route->generic_route.link_list = link_list;
+  route_t route = xbt_new0(s_route_t, 1);
+  route->link_list = link_list;
   xbt_assert(current_routing->parse_route,
              "no defined method \"set_route\" in \"%s\"",
              current_routing->name);
@@ -241,8 +241,8 @@ static void routing_parse_E_route(void)
  */
 static void routing_parse_E_ASroute(void)
 {
-  route_extended_t e_route = xbt_new0(s_route_extended_t, 1);
-  e_route->generic_route.link_list = link_list;
+  route_t e_route = xbt_new0(s_route_t, 1);
+  e_route->link_list = link_list;
   e_route->src_gateway = xbt_strdup(gw_src);
   e_route->dst_gateway = xbt_strdup(gw_dst);
   xbt_assert(current_routing->parse_ASroute,
@@ -261,8 +261,8 @@ static void routing_parse_E_ASroute(void)
  */
 static void routing_parse_E_bypassRoute(void)
 {
-  route_extended_t e_route = xbt_new0(s_route_extended_t, 1);
-  e_route->generic_route.link_list = link_list;
+  route_t e_route = xbt_new0(s_route_t, 1);
+  e_route->link_list = link_list;
   e_route->src_gateway = xbt_strdup(gw_src);
   e_route->dst_gateway = xbt_strdup(gw_dst);
   xbt_assert(current_routing->parse_bypassroute,
@@ -477,11 +477,11 @@ static void _get_route_and_latency(const char *src, const char *dst,
 
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
-    route_extended_t e_route = NULL;
+    route_t e_route = NULL;
     if (route) {
       e_route = common_father->get_route(common_father, src, dst);
       xbt_assert(e_route, "no route between \"%s\" and \"%s\"", src, dst);
-      *route = e_route->generic_route.link_list;
+      *route = e_route->link_list;
     }
     if (latency) {
       *latency = common_father->get_latency(common_father, src, dst, e_route);
@@ -496,14 +496,14 @@ static void _get_route_and_latency(const char *src, const char *dst,
 
   } else {                      /* SURF_ROUTING_RECURSIVE */
 
-    route_extended_t e_route_bypass = NULL;
+    route_t e_route_bypass = NULL;
     if (common_father->get_bypass_route)
       e_route_bypass = common_father->get_bypass_route(common_father, src, dst);
 
     xbt_assert(!latency || !e_route_bypass,
                "Bypass cannot work yet with get_latency");
 
-    route_extended_t e_route_cnt = e_route_bypass
+    route_t e_route_cnt = e_route_bypass
         ? e_route_bypass : common_father->get_route(common_father,
                                                     src_father->name,
                                                     dst_father->name);
@@ -554,7 +554,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
     }
 
     if (route) {
-      xbt_dynar_foreach(e_route_cnt->generic_route.link_list, cpt, link) {
+      xbt_dynar_foreach(e_route_cnt->link_list, cpt, link) {
         xbt_dynar_push(*route, &link);
       }
     }
@@ -582,7 +582,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
       }
     }
 
-    generic_free_extended_route(e_route_cnt);
+    generic_free_route(e_route_cnt);
   }
 }
 

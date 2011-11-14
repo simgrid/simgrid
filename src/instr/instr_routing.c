@@ -137,11 +137,11 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
                 child2->kind == INSTR_AS &&
                 strcmp(child1_name, child2_name) != 0){
 
-        route_extended_t route = rc->get_route (rc, child1_name, child2_name);
+        route_t route = rc->get_route (rc, child1_name, child2_name);
         unsigned int cpt;
         void *link;
         container_t previous = getContainerByName(route->src_gateway);
-        xbt_dynar_foreach (route->generic_route.link_list, cpt, link) {
+        xbt_dynar_foreach (route->link_list, cpt, link) {
           char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
           container_t current = getContainerByName(link_name);
           linkContainers (container, previous, current, filter);
@@ -439,11 +439,11 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
                 child2->kind == INSTR_AS &&
                 strcmp(child1_name, child2_name) != 0){
 
-        route_extended_t route = rc->get_route (rc, child1_name, child2_name);
+        route_t route = rc->get_route (rc, child1_name, child2_name);
         unsigned int cpt;
         void *link;
         xbt_node_t current, previous = new_xbt_graph_node(graph, route->src_gateway, nodes);
-        xbt_dynar_foreach (route->generic_route.link_list, cpt, link) {
+        xbt_dynar_foreach (route->link_list, cpt, link) {
           char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
           current = new_xbt_graph_node(graph, link_name, nodes);
           //previous -> current

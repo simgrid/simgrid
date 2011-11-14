@@ -112,13 +112,9 @@ typedef struct s_model_type {
 
 typedef struct s_route {
   xbt_dynar_t link_list;
-} s_route_t, *route_t;
-
-typedef struct s_route_extended {
-  s_route_t generic_route;
   char *src_gateway;
   char *dst_gateway;
-} s_route_extended_t, *route_extended_t;
+} s_route_t, *route_t;
 
 /* This enum used in the routing structure helps knowing in which situation we are. */
 typedef enum {
@@ -136,14 +132,13 @@ typedef struct s_as {
   struct s_as *routing_father;
   xbt_dict_t routing_sons;
 
-  route_extended_t(*get_route) (AS_t as,
+  route_t(*get_route) (AS_t as,
                                 const char *src, const char *dst);
   double(*get_latency) (AS_t as,
                         const char *src, const char *dst,
-                        route_extended_t e_route);
+                        route_t e_route);
   xbt_dynar_t(*get_onelink_routes) (AS_t as);
-  route_extended_t(*get_bypass_route) (AS_t as,
-                                       const char *src, const char *dst);
+  route_t(*get_bypass_route) (AS_t as, const char *src, const char *dst);
   void (*finalize) (AS_t as);
 
 
@@ -154,11 +149,11 @@ typedef struct s_as {
   void (*parse_PU) (AS_t as, const char *name); /* A host or a router, whatever */
   void (*parse_AS) (AS_t as, const char *name);
   void (*parse_route) (AS_t as, const char *src,
-                     const char *dst, route_extended_t route);
+                     const char *dst, route_t route);
   void (*parse_ASroute) (AS_t as, const char *src,
-                       const char *dst, route_extended_t route);
+                       const char *dst, route_t route);
   void (*parse_bypassroute) (AS_t as, const char *src,
-                           const char *dst, route_extended_t e_route);
+                           const char *dst, route_t e_route);
 } s_as_t;
 
 typedef struct s_network_element_info {

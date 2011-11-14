@@ -84,7 +84,7 @@ static void model_rulebased_parse_AS(AS_t rc,
 
 static void model_rulebased_parse_route(AS_t rc,
                                       const char *src, const char *dst,
-                                      route_extended_t route)
+                                      route_t route)
 {
   routing_component_rulebased_t routing =
       (routing_component_rulebased_t) rc;
@@ -93,7 +93,7 @@ static void model_rulebased_parse_route(AS_t rc,
   int erroffset;
 
   if(!strcmp(rc->model_desc->name,"Vivaldi")){
-	  if(!xbt_dynar_is_empty(route->generic_route.link_list))
+	  if(!xbt_dynar_is_empty(route->link_list))
 		  xbt_die("You can't have link_ctn with Model Vivaldi.");
   }
 
@@ -105,14 +105,14 @@ static void model_rulebased_parse_route(AS_t rc,
   xbt_assert(ruleroute->re_src,
               "PCRE compilation failed at offset %d (\"%s\"): %s\n",
               erroffset, dst, error);
-  ruleroute->re_str_link = route->generic_route.link_list;
+  ruleroute->re_str_link = route->link_list;
   xbt_dynar_push(routing->list_route, &ruleroute);
   xbt_free(route);
 }
 
 static void model_rulebased_parse_ASroute(AS_t rc,
                                         const char *src, const char *dst,
-                                        route_extended_t route)
+                                        route_t route)
 {
   routing_component_rulebased_t routing =
       (routing_component_rulebased_t) rc;
@@ -121,7 +121,7 @@ static void model_rulebased_parse_ASroute(AS_t rc,
   int erroffset;
 
   if(!strcmp(rc->model_desc->name,"Vivaldi")){
-	  if(!xbt_dynar_is_empty(route->generic_route.link_list))
+	  if(!xbt_dynar_is_empty(route->link_list))
 		  xbt_die("You can't have link_ctn with Model Vivaldi.");
   }
 
@@ -136,7 +136,7 @@ static void model_rulebased_parse_ASroute(AS_t rc,
               "PCRE compilation failed at offset %d (\"%s\"): %s\n",
               erroffset, dst, error);
   ruleroute_e->generic_rule_route.re_str_link =
-      route->generic_route.link_list;
+      route->link_list;
   ruleroute_e->re_src_gateway = route->src_gateway;
   ruleroute_e->re_dst_gateway = route->dst_gateway;
   xbt_dynar_push(routing->list_ASroute, &ruleroute_e);
@@ -148,7 +148,7 @@ static void model_rulebased_parse_ASroute(AS_t rc,
 static void model_rulebased_parse_bypassroute(AS_t rc,
                                             const char *src,
                                             const char *dst,
-                                            route_extended_t e_route)
+                                            route_t e_route)
 {
   xbt_die("bypass routing not supported for Route-Based model");
 }
@@ -211,7 +211,7 @@ static char *remplace(char *value, const char **src_list, int src_size,
   return memcpy(res, result, i_res);
 }
 
-static route_extended_t rulebased_get_route(AS_t rc,
+static route_t rulebased_get_route(AS_t rc,
                                             const char *src,
                                             const char *dst);
 static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
@@ -240,9 +240,9 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
   }
 
   xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
-    route_extended_t route = rulebased_get_route (rc, router, k1);
+    route_t route = rulebased_get_route (rc, router, k1);
 
-    int number_of_links = xbt_dynar_length(route->generic_route.link_list);
+    int number_of_links = xbt_dynar_length(route->link_list);
 
     if(number_of_links == 1) {
 		//loopback
@@ -253,7 +253,7 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 		}
 
 		void *link_ptr;
-		xbt_dynar_get_cpy (route->generic_route.link_list, 1, &link_ptr);
+		xbt_dynar_get_cpy (route->link_list, 1, &link_ptr);
 		onelink_t onelink = xbt_new0 (s_onelink_t, 1);
 		onelink->src = xbt_strdup (k1);
 		onelink->dst = xbt_strdup (router);
@@ -265,7 +265,7 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 }
 
 /* Business methods */
-static route_extended_t rulebased_get_route(AS_t rc,
+static route_t rulebased_get_route(AS_t rc,
                                             const char *src,
                                             const char *dst)
 {
@@ -339,14 +339,14 @@ static route_extended_t rulebased_get_route(AS_t rc,
       break;
   }
 
-  route_extended_t new_e_route = NULL;
+  route_t new_e_route = NULL;
   if (rc_src >= 0 && rc_dst >= 0) {
-    new_e_route = xbt_new0(s_route_extended_t, 1);
-    new_e_route->generic_route.link_list = links_list;
+    new_e_route = xbt_new0(s_route_t, 1);
+    new_e_route->link_list = links_list;
   } else if (!strcmp(src, dst) && are_processing_units) {
-    new_e_route = xbt_new0(s_route_extended_t, 1);
+    new_e_route = xbt_new0(s_route_t, 1);
     xbt_dynar_push(links_list, &(global_routing->loopback));
-    new_e_route->generic_route.link_list = links_list;
+    new_e_route->link_list = links_list;
   } else {
     xbt_dynar_free(&link_list);
   }
@@ -370,10 +370,7 @@ static route_extended_t rulebased_get_route(AS_t rc,
   return new_e_route;
 }
 
-static route_extended_t rulebased_get_bypass_route(AS_t rc,
-                                                   const char *src,
-                                                   const char *dst)
-{
+static route_t rulebased_get_bypass_route(AS_t rc, const char *src, const char *dst) {
   return NULL;
 }
 

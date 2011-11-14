@@ -62,27 +62,27 @@ void generic_parse_AS(AS_t as, const char *name)
 
 void generic_parse_bypassroute(AS_t rc,
                              const char *src, const char *dst,
-                             route_extended_t e_route)
+                             route_t e_route)
 {
   XBT_DEBUG("Load bypassRoute from \"%s\" to \"%s\"", src, dst);
   xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
   char *route_name;
 
   route_name = bprintf("%s#%s", src, dst);
-  xbt_assert(!xbt_dynar_is_empty(e_route->generic_route.link_list),
+  xbt_assert(!xbt_dynar_is_empty(e_route->link_list),
              "Invalid count of links, must be greater than zero (%s,%s)",
              src, dst);
   xbt_assert(!xbt_dict_get_or_null(dict_bypassRoutes, route_name),
              "The bypass route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exists",
              src, e_route->src_gateway, dst, e_route->dst_gateway);
 
-  route_extended_t new_e_route =
+  route_t new_e_route =
       generic_new_extended_route(SURF_ROUTING_RECURSIVE, e_route, 0);
-  xbt_dynar_free(&(e_route->generic_route.link_list));
+  xbt_dynar_free(&(e_route->link_list));
   xbt_free(e_route);
 
   xbt_dict_set(dict_bypassRoutes, route_name, new_e_route,
-               (void (*)(void *)) generic_free_extended_route);
+               (void (*)(void *)) generic_free_route);
   xbt_free(route_name);
 }
 
@@ -91,7 +91,7 @@ void generic_parse_bypassroute(AS_t rc,
 
 double generic_get_link_latency(AS_t rc,
                                 const char *src, const char *dst,
-                                route_extended_t route)
+                                route_t route)
 {
   int need_to_clean = route ? 0 : 1;
   void *link;
@@ -100,11 +100,11 @@ double generic_get_link_latency(AS_t rc,
 
   route = route ? route : rc->get_route(rc, src, dst);
 
-  xbt_dynar_foreach(route->generic_route.link_list, i, link) {
+  xbt_dynar_foreach(route->link_list, i, link) {
     latency += surf_network_model->extension.network.get_link_latency(link);
   }
   if (need_to_clean)
-    generic_free_extended_route(route);
+    generic_free_route(route);
   return latency;
 }
 
@@ -113,7 +113,7 @@ xbt_dynar_t generic_get_onelink_routes(AS_t rc)
   xbt_die("\"generic_get_onelink_routes\" not implemented yet");
 }
 
-route_extended_t generic_get_bypassroute(AS_t rc,
+route_t generic_get_bypassroute(AS_t rc,
                                          const char *src, const char *dst)
 {
   xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
@@ -174,7 +174,7 @@ route_extended_t generic_get_bypassroute(AS_t rc,
   int max_index = max(max_index_src, max_index_dst);
   int i, max;
 
-  route_extended_t e_route_bypass = NULL;
+  route_t e_route_bypass = NULL;
 
   for (max = 0; max <= max_index; max++) {
     for (i = 0; i < max; i++) {
@@ -221,18 +221,18 @@ route_extended_t generic_get_bypassroute(AS_t rc,
   xbt_dynar_free(&path_src);
   xbt_dynar_free(&path_dst);
 
-  route_extended_t new_e_route = NULL;
+  route_t new_e_route = NULL;
 
   if (e_route_bypass) {
     void *link;
     unsigned int cpt = 0;
-    new_e_route = xbt_new0(s_route_extended_t, 1);
+    new_e_route = xbt_new0(s_route_t, 1);
     new_e_route->src_gateway = xbt_strdup(e_route_bypass->src_gateway);
     new_e_route->dst_gateway = xbt_strdup(e_route_bypass->dst_gateway);
-    new_e_route->generic_route.link_list =
+    new_e_route->link_list =
         xbt_dynar_new(global_routing->size_of_link, NULL);
-    xbt_dynar_foreach(e_route_bypass->generic_route.link_list, cpt, link) {
-      xbt_dynar_push(new_e_route->generic_route.link_list, &link);
+    xbt_dynar_foreach(e_route_bypass->link_list, cpt, link) {
+      xbt_dynar_push(new_e_route->link_list, &link);
     }
   }
 
@@ -277,22 +277,19 @@ generic_new_route(e_surf_routing_hierarchy_t hierarchy, void *data, int order)
   return new_route;
 }
 
-route_extended_t
+route_t
 generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
                            void *data, int order)
 {
 
   char *link_name;
-  route_extended_t e_route, new_e_route;
+  route_t e_route, new_e_route;
   route_t route;
   unsigned int cpt;
   xbt_dynar_t links = NULL, links_id = NULL;
 
-  new_e_route = xbt_new0(s_route_extended_t, 1);
-  new_e_route->generic_route.link_list =
-      xbt_dynar_new(global_routing->size_of_link, NULL);
-  new_e_route->src_gateway = NULL;
-  new_e_route->dst_gateway = NULL;
+  new_e_route = xbt_new0(s_route_t, 1);
+  new_e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
 
   xbt_assert(hierarchy == SURF_ROUTING_BASE
              || hierarchy == SURF_ROUTING_RECURSIVE,
@@ -305,17 +302,17 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
 
   } else if (hierarchy == SURF_ROUTING_RECURSIVE) {
 
-    e_route = (route_extended_t) data;
+    e_route = (route_t) data;
     xbt_assert(e_route->src_gateway
                && e_route->dst_gateway, "bad gateway, is null");
-    links = e_route->generic_route.link_list;
+    links = e_route->link_list;
 
     /* remeber not erase the gateway names */
     new_e_route->src_gateway = strdup(e_route->src_gateway);
     new_e_route->dst_gateway = strdup(e_route->dst_gateway);
   }
 
-  links_id = new_e_route->generic_route.link_list;
+  links_id = new_e_route->link_list;
 
   xbt_dynar_foreach(links, cpt, link_name) {
 
@@ -336,17 +333,9 @@ void generic_free_route(route_t route)
 {
   if (route) {
     xbt_dynar_free(&(route->link_list));
+    xbt_free(route->src_gateway);
+    xbt_free(route->dst_gateway);
     xbt_free(route);
-  }
-}
-
-void generic_free_extended_route(route_extended_t e_route)
-{
-  if (e_route) {
-    xbt_dynar_free(&(e_route->generic_route.link_list));
-    xbt_free(e_route->src_gateway);
-    xbt_free(e_route->dst_gateway);
-    xbt_free(e_route);
   }
 }
 

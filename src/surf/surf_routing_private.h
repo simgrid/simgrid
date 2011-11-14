@@ -32,29 +32,28 @@ void model_generic_finalize(AS_t as);
 void generic_parse_PU(AS_t rc, const char *name);
 void generic_parse_AS(AS_t rc, const char *name);
 void generic_parse_bypassroute(AS_t rc, const char *src, const char *dst,
-                               route_extended_t e_route);
+                               route_t e_route);
 
 /* ************************************************************************** */
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
 
 double generic_get_link_latency(AS_t rc, const char *src, const char *dst,
-										route_extended_t e_route);
+										route_t e_route);
 xbt_dynar_t generic_get_onelink_routes(AS_t rc);
-route_extended_t generic_get_bypassroute(AS_t rc,
+route_t generic_get_bypassroute(AS_t rc,
                                                 const char *src,
                                                 const char *dst);
 
 /* ************************************************************************** */
 /* ****************** GENERIC AUX FUNCTIONS (declarations) ****************** */
 
-route_extended_t
+route_t
 generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
                            void *data, int order);
 route_t
 generic_new_route(e_surf_routing_hierarchy_t hierarchy,
                            void *data, int order);
 void generic_free_route(route_t route);
-void generic_free_extended_route(route_extended_t e_route);
 AS_t
 generic_autonomous_system_exist(AS_t rc, char *element);
 AS_t
@@ -68,7 +67,7 @@ void generic_src_dst_check(AS_t rc, const char *src,
 AS_t model_floyd_create(void);  /* create structures for floyd routing model */
 void model_floyd_end(AS_t as);      /* finalize the creation of floyd routing model */
 void model_floyd_parse_route(AS_t rc, const char *src,
-        const char *dst, route_extended_t route);
+        const char *dst, route_t route);
 
 /* ************************************************** */
 /* ************** RULE-BASED ROUTING **************** */
@@ -97,14 +96,14 @@ AS_t model_dijkstra_create(void);       /* create structures for dijkstra routin
 AS_t model_dijkstracache_create(void);  /* create structures for dijkstracache routing model */
 void model_dijkstra_both_end(AS_t as);      /* finalize the creation of dijkstra routing model */
 void model_dijkstra_both_parse_route (AS_t rc, const char *src,
-                     const char *dst, route_extended_t route);
+                     const char *dst, route_t route);
 
 /* ************************************************************************** */
 /* *************************** FULL ROUTING ********************************* */
 AS_t model_full_create(void);   /* create structures for full routing model */
 void model_full_end(AS_t as);       /* finalize the creation of full routing model */
 void model_full_set_route(	/* Set the route and ASroute between src and dst */
-		AS_t rc, const char *src, const char *dst, route_extended_t route);
+		AS_t rc, const char *src, const char *dst, route_t route);
 
 
 #endif                          /* _SURF_SURF_ROUTING_PRIVATE_H */

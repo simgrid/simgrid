@@ -51,11 +51,11 @@ static void graph_node_map_elem_free(void *e)
   xbt_free(elm);
 }
 
-static void graph_edge_data_free(void *e)
+static void graph_edge_data_free(void *e) // FIXME: useless code dupplication
 {
-  route_extended_t e_route = (route_extended_t) e;
+  route_t e_route = (route_t) e;
   if (e_route) {
-    xbt_dynar_free(&(e_route->generic_route.link_list));
+    xbt_dynar_free(&(e_route->link_list));
     xbt_free(e_route->src_gateway);
     xbt_free(e_route->dst_gateway);
     xbt_free(e_route);
@@ -97,7 +97,7 @@ graph_node_map_search(as_dijkstra_t as, int id)
 /* Parsing */
 
 static void route_new_dijkstra(as_dijkstra_t as, int src_id,
-                               int dst_id, route_extended_t e_route)
+                               int dst_id, route_t e_route)
 {
   XBT_DEBUG("Load Route from \"%d\" to \"%d\"", src_id, dst_id);
   xbt_node_t src = NULL;
@@ -156,19 +156,16 @@ static void add_loopback_dijkstra(as_dijkstra_t as) {
     }
 
     if (!found) {
-      route_extended_t e_route = xbt_new0(s_route_extended_t, 1);
-      e_route->src_gateway = NULL;
-      e_route->dst_gateway = NULL;
-      e_route->generic_route.link_list =
-          xbt_dynar_new(global_routing->size_of_link, NULL);
-      xbt_dynar_push(e_route->generic_route.link_list,
+      route_t e_route = xbt_new0(s_route_t, 1);
+      e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+      xbt_dynar_push(e_route->link_list,
                      &global_routing->loopback);
       xbt_graph_new_edge(as->route_graph, node, node, e_route);
     }
   }
 }
 
-static route_extended_t dijkstra_get_route(AS_t as_generic,
+static route_t dijkstra_get_route(AS_t as_generic,
         const char *src,
         const char *dst);
 
@@ -182,12 +179,11 @@ static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 	  char *k1, *d1, *k2, *d2;
 	  xbt_dict_foreach(as->to_index, c1, k1, d1) {
 	    xbt_dict_foreach(as->to_index, c2, k2, d2) {
-	      route_extended_t route = dijkstra_get_route(as, k1, k2);
+	      route_t route = dijkstra_get_route(as, k1, k2);
 	      if (route) {
-	        if (xbt_dynar_length(route->generic_route.link_list) == 1) {
+	        if (xbt_dynar_length(route->link_list) == 1) {
 	          void *link =
-	              *(void **) xbt_dynar_get_ptr(route->generic_route.link_list,
-	                                           0);
+	              *(void **) xbt_dynar_get_ptr(route->link_list, 0);
 	          onelink_t onelink = xbt_new0(s_onelink_t, 1);
 	          onelink->link_ptr = link;
 	          if (as->hierarchy == SURF_ROUTING_BASE) {
@@ -206,7 +202,7 @@ static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 	  return ret;
 }
 
-static route_extended_t dijkstra_get_route(AS_t asg,
+static route_t dijkstra_get_route(AS_t asg,
                                            const char *src,
                                            const char *dst)
 {
@@ -227,9 +223,8 @@ static route_extended_t dijkstra_get_route(AS_t asg,
               src, dst);
 
   /* create a result route */
-  route_extended_t new_e_route = xbt_new0(s_route_extended_t, 1);
-  new_e_route->generic_route.link_list =
-      xbt_dynar_new(global_routing->size_of_link, NULL);
+  route_t new_e_route = xbt_new0(s_route_t, 1);
+  new_e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
   new_e_route->src_gateway = NULL;
   new_e_route->dst_gateway = NULL;
 
@@ -238,7 +233,7 @@ static route_extended_t dijkstra_get_route(AS_t asg,
   int dst_node_id = 0;
   int *nodeid = NULL;
   int v;
-  route_extended_t e_route;
+  route_t e_route;
   int size = 0;
   unsigned int cpt;
   void *link;
@@ -270,11 +265,11 @@ static route_extended_t dijkstra_get_route(AS_t asg,
     xbt_assert(edge != NULL, "no route between host %d and %d", *src_id,
                 *dst_id);
 
-    e_route = (route_extended_t) xbt_graph_edge_get_data(edge);
+    e_route = (route_t) xbt_graph_edge_get_data(edge);
 
-    links = e_route->generic_route.link_list;
+    links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
-      xbt_dynar_unshift(new_e_route->generic_route.link_list, &link);
+      xbt_dynar_unshift(new_e_route->link_list, &link);
     }
 
     return new_e_route;
@@ -328,9 +323,8 @@ static route_extended_t dijkstra_get_route(AS_t asg,
         xbt_node_t u_node = xbt_graph_edge_get_target(edge);
         graph_node_data_t data = xbt_graph_node_get_data(u_node);
         int u_id = data->graph_id;
-        route_extended_t tmp_e_route =
-            (route_extended_t) xbt_graph_edge_get_data(edge);
-        int cost_v_u = (tmp_e_route->generic_route.link_list)->used;    /* count of links, old model assume 1 */
+        route_t tmp_e_route = (route_t) xbt_graph_edge_get_data(edge);
+        int cost_v_u = (tmp_e_route->link_list)->used;    /* count of links, old model assume 1 */
 
         if (cost_v_u + cost_arr[*v_id] < cost_arr[u_id]) {
           pred_arr[u_id] = *v_id;
@@ -364,7 +358,7 @@ static route_extended_t dijkstra_get_route(AS_t asg,
 
     prev_gw_src = gw_src;
 
-    e_route = (route_extended_t) xbt_graph_edge_get_data(edge);
+    e_route = (route_t) xbt_graph_edge_get_data(edge);
     gw_src = e_route->src_gateway;
     gw_dst = e_route->dst_gateway;
 
@@ -380,15 +374,14 @@ static route_extended_t dijkstra_get_route(AS_t asg,
       links = e_route_as_to_as;
       int pos = 0;
       xbt_dynar_foreach(links, cpt, link) {
-        xbt_dynar_insert_at(new_e_route->generic_route.link_list, pos,
-                            &link);
+        xbt_dynar_insert_at(new_e_route->link_list, pos, &link);
         pos++;
       }
     }
 
-    links = e_route->generic_route.link_list;
+    links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
-      xbt_dynar_unshift(new_e_route->generic_route.link_list, &link);
+      xbt_dynar_unshift(new_e_route->link_list, &link);
     }
     size++;
   }
@@ -485,7 +478,7 @@ void model_dijkstra_both_end(AS_t as)
 
 }
 void model_dijkstra_both_parse_route (AS_t asg, const char *src,
-                     const char *dst, route_extended_t route)
+                     const char *dst, route_t route)
 {
 	as_dijkstra_t as = (as_dijkstra_t) asg;
 	int *src_id, *dst_id;
@@ -519,7 +512,6 @@ void model_dijkstra_both_parse_route (AS_t asg, const char *src,
 		  xbt_die("The src_gateway '%s' does not exist!",route->src_gateway);
 	}
 
-	route_extended_t e_route =
-		generic_new_extended_route(asg->hierarchy, route, 1);
+	route_t e_route = generic_new_extended_route(asg->hierarchy, route, 1);
 	route_new_dijkstra(as, *src_id, *dst_id, e_route);
 }
