@@ -67,8 +67,8 @@ int master(int argc, char *argv[])
 
   /* friends, we're ready. Come and play */
   XBT_INFO("Wait for peers for a while. I need %d peers",
-        xbt_dict_size(pals_int));
-  while (xbt_dynar_length(peers) < xbt_dict_size(pals_int)) {
+        xbt_dict_length(pals_int));
+  while (xbt_dynar_length(peers) < xbt_dict_length(pals_int)) {
     TRY {
       gras_msg_handle(20);
     }

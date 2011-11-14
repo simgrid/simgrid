@@ -1075,7 +1075,7 @@ static void routing_parse_Srandom(void)
        random_id, random->min, random->max, random->mean, random->std,
        random->generator, random->seed, random_radical);
 
-  if (xbt_dict_size(random_value) == 0)
+  if (!random_value)
     random_value = xbt_dict_new();
 
   if (!strcmp(random_radical, "")) {

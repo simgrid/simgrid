@@ -658,7 +658,7 @@ void xbt_dict_dump_output_string(void *s)
  */
 XBT_INLINE int xbt_dict_is_empty(xbt_dict_t dict)
 {
-  return (xbt_dict_size(dict) == 0);
+  return !dict || (xbt_dict_length(dict) == 0);
 }
 
 /**

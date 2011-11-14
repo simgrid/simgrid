@@ -176,7 +176,7 @@ MSG_error_t MSG_action_trace_run(char *path)
   }
   res = MSG_main();
 
-  if (xbt_dict_size(action_queues)) {
+  if (!xbt_dict_is_empty(action_queues)) {
     XBT_WARN
         ("Not all actions got consumed. If the simulation ended successfully (without deadlock), you may want to add new processes to your deployment file.");
 

@@ -81,7 +81,7 @@ static void gap_remove(surf_action_network_CM02_t action) {
       if(size == 0) {
          xbt_fifo_free(fifo);
          xbt_dict_remove(gap_lookup, action->sender.link_name);
-         size = xbt_dict_size(gap_lookup);
+         size = xbt_dict_length(gap_lookup);
          if(size == 0) {
             xbt_dict_free(&gap_lookup);
          }
