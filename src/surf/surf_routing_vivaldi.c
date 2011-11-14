@@ -22,13 +22,12 @@ static route_t vivaldi_get_route(AS_t rc, const char *src, const char *dst)
 	  return new_e_route;
 }
 
-static double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
+static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
 {
 	double src_coord, dst_coord;
 
-	// FIXME converting from string to float each time we need a coordinate is ... suboptimal
-	src_coord = atof(xbt_dynar_get_as(src, index, char *));
-	dst_coord = atof(xbt_dynar_get_as(dst, index, char *));
+  src_coord = xbt_dynar_get_as(src, index, double);
+  dst_coord = xbt_dynar_get_as(dst, index, double);
 
 	return (src_coord-dst_coord)*(src_coord-dst_coord);
 
@@ -47,7 +46,7 @@ static double base_vivaldi_get_latency (const char *src, const char *dst)
   xbt_die("Coord src '%s' :%p   dst '%s' :%p",src,src_ctn,dst,dst_ctn);
 
   euclidean_dist = sqrt (euclidean_dist_comp(0,src_ctn,dst_ctn)+euclidean_dist_comp(1,src_ctn,dst_ctn))
-  				 + fabs(atof(xbt_dynar_get_as(src_ctn, 2, char *)))+fabs(atof(xbt_dynar_get_as(dst_ctn, 2, char *)));
+  				 + fabs(xbt_dynar_get_as(src_ctn, 2, double))+fabs(xbt_dynar_get_as(dst_ctn, 2, double));
 
   //From .ms to .s
   return euclidean_dist / 1000;

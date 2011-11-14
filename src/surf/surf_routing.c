@@ -105,11 +105,21 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
   xbt_lib_set(host_lib, host->id, ROUTING_HOST_LEVEL, (void *) info);
   if (host->coord && strcmp(host->coord, "")) {
+    unsigned int cursor;
+    char*str;
+
     if (!COORD_HOST_LEVEL)
-      xbt_die
-          ("To use host coordinates, please add --cfg=coordinates:yes to your command line");
-    xbt_dynar_t ctn = xbt_str_split_str(host->coord, " ");
+      xbt_die ("To use host coordinates, please add --cfg=coordinates:yes to your command line");
+
+    /* Pre-parse the host coordinates -- FIXME factorize with routers by overloading the routing->parse_PU function*/
+    xbt_dynar_t ctn_str = xbt_str_split_str(host->coord, " ");
+    xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
+    xbt_dynar_foreach(ctn_str,cursor, str) {
+      double val = atof(str);
+      xbt_dynar_push(ctn,&val);
+    }
     xbt_dynar_shrink(ctn, 0);
+    xbt_dynar_free(&ctn_str);
     xbt_lib_set(host_lib, host->id, COORD_HOST_LEVEL, (void *) ctn);
   }
 }
@@ -133,11 +143,21 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
 
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
   if (strcmp(router->coord, "")) {
+    unsigned int cursor;
+    char*str;
+
     if (!COORD_ASR_LEVEL)
-      xbt_die
-          ("To use coordinates, you must set configuration 'coordinates' to 'yes'");
-    xbt_dynar_t ctn = xbt_str_split_str(router->coord, " ");
+      xbt_die ("To use host coordinates, please add --cfg=coordinates:yes to your command line");
+
+    /* Pre-parse the host coordinates */
+    xbt_dynar_t ctn_str = xbt_str_split_str(router->coord, " ");
+    xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
+    xbt_dynar_foreach(ctn_str,cursor, str) {
+      double val = atof(str);
+      xbt_dynar_push(ctn,&val);
+    }
     xbt_dynar_shrink(ctn, 0);
+    xbt_dynar_free(&ctn_str);
     xbt_lib_set(as_router_lib, router->id, COORD_ASR_LEVEL, (void *) ctn);
   }
 }
@@ -947,6 +967,7 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   host.power_trace = peer->availability_trace;
   host.state_trace = peer->state_trace;
   host.core_amount = 1;
+  host.coord = peer->coord;
   sg_platf_new_host(&host);
 
 
@@ -1113,7 +1134,7 @@ static void routing_parse_Srandom(void)
         }
         break;
       default:
-        XBT_INFO("Malformed radical");
+        XBT_CRITICAL("Malformed radical");
         break;
       }
       res = random_generate(random);
