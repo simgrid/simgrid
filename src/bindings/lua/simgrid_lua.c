@@ -637,9 +637,9 @@ static const luaL_reg platf_functions[] = {
  *
  * - Argument 1 (string): name of the deployment file to load
  */
-static int launch_application(lua_State * L)
-{
-  const char *file = luaL_checkstring(L, 1);
+static int launch_application(lua_State* L) {
+
+  const char* file = luaL_checkstring(L, 1);
   MSG_function_register_default(run_lua_code);
   MSG_launch_application(file);
   return 0;
@@ -652,9 +652,9 @@ static int launch_application(lua_State * L)
  *
  * - Argument 1 (string): name of the platform file to load
  */
-static int create_environment(lua_State * L)
-{
-  const char *file = luaL_checkstring(L, 1);
+static int create_environment(lua_State* L) {
+
+  const char* file = luaL_checkstring(L, 1);
   XBT_DEBUG("Loading environment file %s", file);
   MSG_create_environment(file);
   return 0;
@@ -667,9 +667,9 @@ static int create_environment(lua_State * L)
  *
  * - Argument 1 (string): the text to print
  */
-static int debug(lua_State * L)
-{
-  const char *str = luaL_checkstring(L, 1);
+static int debug(lua_State* L) {
+
+  const char* str = luaL_checkstring(L, 1);
   XBT_DEBUG("%s", str);
   return 0;
 }
@@ -681,9 +681,9 @@ static int debug(lua_State * L)
  *
  * - Argument 1 (string): the text to print
  */
-static int info(lua_State * L)
-{
-  const char *str = luaL_checkstring(L, 1);
+static int info(lua_State* L) {
+
+  const char* str = luaL_checkstring(L, 1);
   XBT_INFO("%s", str);
   return 0;
 }
@@ -693,10 +693,23 @@ static int info(lua_State * L)
  * \param L a Lua state
  * \return number of values returned to Lua
  */
-static int run(lua_State * L)
-{
+static int run(lua_State*  L) {
+
   MSG_main();
   return 0;
+}
+
+/**
+ * \brief Returns the current simulated time.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Return value (number): the simulated time
+ */
+static int get_clock(lua_State* L) {
+
+  lua_pushnumber(L, MSG_get_clock());
+  return 1;
 }
 
 /**
@@ -773,6 +786,7 @@ static const luaL_Reg simgrid_functions[] = {
   {"debug", debug},
   {"info", info},
   {"run", run},
+  {"get_clock", get_clock},
   /* short names */
   {"platform", create_environment},
   {"application", launch_application},
