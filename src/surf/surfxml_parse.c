@@ -128,7 +128,7 @@ int ETag_surfxml_include_state(void)
 {
   fflush(NULL);
   XBT_INFO("ETag_surfxml_include_state '%s'",A_surfxml_include_file);
-  if(xbt_dynar_length(surf_input_buffer_stack)!= 0)
+  if(!xbt_dynar_is_empty(surf_input_buffer_stack))
 	  return 1;
   fclose(surf_file_to_parse);
   xbt_dynar_pop(surf_file_to_parse_stack, &surf_file_to_parse);

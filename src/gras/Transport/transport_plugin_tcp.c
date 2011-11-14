@@ -767,12 +767,12 @@ void gras_trp_buf_socket_close(gras_socket_t sock)
 
 #ifdef HAVE_READV
   if (data->in_buf_v) {
-    if (xbt_dynar_length(data->in_buf_v))
+    if (!xbt_dynar_is_empty(data->in_buf_v))
       XBT_WARN("Socket closed, but some bytes were unread");
     xbt_dynar_free(&data->in_buf_v);
   }
   if (data->out_buf_v) {
-    if (xbt_dynar_length(data->out_buf_v)) {
+    if (!xbt_dynar_is_empty(data->out_buf_v)) {
       XBT_DEBUG("Flush the socket before closing");
       gras_trp_bufiov_flush(sock);
     }

@@ -29,7 +29,7 @@ xbt_workload_elm_t xbt_workload_elm_parse(char *line)
 
   xbt_dynar_t w = xbt_str_split(line, " ");
 
-  if (xbt_dynar_length(w) == 0) {
+  if (xbt_dynar_is_empty(w)) {
     free(res);
     xbt_dynar_free(&w);
     return NULL;

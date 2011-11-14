@@ -828,7 +828,7 @@ void xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val)
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
 
   if (variable->max == 1) {
-    if (variable->cb_rm && xbt_dynar_length(variable->content))
+    if (variable->cb_rm && !xbt_dynar_is_empty(variable->content))
       variable->cb_rm(name, 0);
 
     xbt_dynar_set(variable->content, 0, &val);
@@ -863,7 +863,7 @@ void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val)
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_double);
 
   if (variable->max == 1) {
-    if (variable->cb_rm && xbt_dynar_length(variable->content))
+    if (variable->cb_rm && !xbt_dynar_is_empty(variable->content))
       variable->cb_rm(name, 0);
 
     xbt_dynar_set(variable->content, 0, &val);
@@ -902,7 +902,7 @@ void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val)
          xbt_cfgelm_type_name[variable->type], variable->type, variable);
 
   if (variable->max == 1) {
-    if (xbt_dynar_length(variable->content)) {
+    if (!xbt_dynar_is_empty(variable->content)) {
       if (variable->cb_rm)
         variable->cb_rm(name, 0);
       else if (variable->type == xbt_cfgelm_string) {
@@ -949,7 +949,7 @@ xbt_cfg_set_peer(xbt_cfg_t cfg, const char *name, const char *peer,
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_peer);
 
   if (variable->max == 1) {
-    if (variable->cb_rm && xbt_dynar_length(variable->content))
+    if (variable->cb_rm && !xbt_dynar_is_empty(variable->content))
       variable->cb_rm(name, 0);
 
     xbt_dynar_set(variable->content, 0, &val);
@@ -1245,7 +1245,7 @@ char *xbt_cfg_get_string(xbt_cfg_t cfg, const char *name)
     XBT_WARN
         ("You asked for the first value of the config element '%s', but there is %lu values\n",
          name, xbt_dynar_length(variable->content));
-  } else if (xbt_dynar_length(variable->content) == 0) {
+  } else if (xbt_dynar_is_empty(variable->content)) {
     return NULL;
   }
 

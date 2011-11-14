@@ -103,7 +103,7 @@ static const char **action_get_action(char *name)
   char *evtname = NULL;
 
   xbt_dynar_t myqueue = xbt_dict_get_or_null(action_queues, name);
-  if (myqueue == NULL || xbt_dynar_length(myqueue) == 0) {      // nothing stored for me. Read the file further
+  if (myqueue == NULL || xbt_dynar_is_empty(myqueue)) {      // nothing stored for me. Read the file further
 
     if (action_fp == NULL) {    // File closed now. There's nothing more to read. I'm out of here
       goto todo_done;

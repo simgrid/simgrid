@@ -326,7 +326,7 @@ void gras_msg_handle(volatile double timeOut)
 
   /* get a message (from the queue or from the net) */
   timeouted = 0;
-  if (xbt_dynar_length(pd->msg_queue)) {
+  if (!xbt_dynar_is_empty(pd->msg_queue)) {
     XBT_DEBUG("Get a message from the queue");
     xbt_dynar_shift(pd->msg_queue, &msg);
   } else {

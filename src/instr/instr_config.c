@@ -459,7 +459,7 @@ void TRACE_generate_triva_cat_conf (void)
     char *name, *name2, *value, *value2;
 
     //check if we do have categories declared
-    if (xbt_dict_length(created_categories) == 0){
+    if (xbt_dict_is_empty(created_categories)){
       XBT_INFO("No categories declared, ignoring generation of triva graph configuration");
       return;
     }

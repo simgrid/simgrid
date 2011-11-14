@@ -1060,7 +1060,7 @@ void xbt_log_control_set(const char *control_string)
   /* split the string, and remove empty entries */
   set_strings = xbt_str_split_quoted(control_string);
 
-  if (xbt_dynar_length(set_strings) == 0) {     /* vicious user! */
+  if (xbt_dynar_is_empty(set_strings)) {     /* vicious user! */
     xbt_dynar_free(&set_strings);
     return;
   }

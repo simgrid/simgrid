@@ -843,7 +843,7 @@ unsigned int SIMIX_req_comm_waitany(xbt_dynar_t comms)
 int SIMIX_req_comm_testany(xbt_dynar_t comms)
 {
   smx_req_t req = SIMIX_req_mine();
-  if (xbt_dynar_length(comms)==0)
+  if (xbt_dynar_is_empty(comms))
     return -1;
 
   req->call = REQ_COMM_TESTANY;

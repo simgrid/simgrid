@@ -101,7 +101,7 @@ void sg_platf_new_AS_begin(const char *id, const char *routing) {
   unsigned int iterator;
   sg_platf_AS_begin_cb_t fun;
 
-  if (!surf_parse_models_setup_already_called && xbt_dynar_length(sg_platf_AS_begin_cb_list)) {
+  if (!surf_parse_models_setup_already_called && !xbt_dynar_is_empty(sg_platf_AS_begin_cb_list)) {
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
      * That is, after the last <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
      *

@@ -43,7 +43,7 @@ int server_release_cb(gras_msg_cb_ctx_t ctx, void *payload)
 {
   server_data_t *globals = (server_data_t *) gras_userdata_get();
 
-  if (xbt_dynar_length(globals->waiting_queue)) {
+  if (!xbt_dynar_is_empty(globals->waiting_queue)) {
     gras_socket_t s;
     xbt_dynar_pop(globals->waiting_queue, &s);
 

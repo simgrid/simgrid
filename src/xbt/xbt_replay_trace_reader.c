@@ -56,7 +56,7 @@ const char **xbt_replay_trace_reader_get(xbt_replay_trace_reader_t reader)
     return xbt_replay_trace_reader_get(reader); /* Get next line */
 
   d=xbt_str_split_quoted_in_place(reader->line);
-  if (xbt_dynar_length(d)==0) {
+  if (xbt_dynar_is_empty(d)) {
     xbt_dynar_free(&d);
     return xbt_replay_trace_reader_get(reader); /* Get next line */
   }

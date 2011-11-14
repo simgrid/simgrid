@@ -93,7 +93,7 @@ static void model_rulebased_parse_route(AS_t rc,
   int erroffset;
 
   if(!strcmp(rc->model_desc->name,"Vivaldi")){
-	  if(xbt_dynar_length(route->generic_route.link_list) != 0)
+	  if(!xbt_dynar_is_empty(route->generic_route.link_list))
 		  xbt_die("You can't have link_ctn with Model Vivaldi.");
   }
 
@@ -121,7 +121,7 @@ static void model_rulebased_parse_ASroute(AS_t rc,
   int erroffset;
 
   if(!strcmp(rc->model_desc->name,"Vivaldi")){
-	  if(xbt_dynar_length(route->generic_route.link_list) != 0)
+	  if(!xbt_dynar_is_empty(route->generic_route.link_list))
 		  xbt_die("You can't have link_ctn with Model Vivaldi.");
   }
 

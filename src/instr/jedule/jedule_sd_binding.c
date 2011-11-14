@@ -60,7 +60,7 @@ static void create_hierarchy(AS_t current_comp,
 	AS_t elem;
 	network_element_t network_elem;
 
-	if( xbt_dict_length(current_comp->routing_sons) == 0 ) {
+	if(xbt_dict_is_empty(current_comp->routing_sons)) {
 		// I am no AS
 		// add hosts to jedule platform
 		xbt_dynar_t hosts;

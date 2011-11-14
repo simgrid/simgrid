@@ -180,7 +180,7 @@ void model_full_set_route(AS_t rc, const char *src,
 	xbt_assert(src_id, "Network elements %s not found", src);
 	xbt_assert(dst_id, "Network elements %s not found", dst);
 
-	xbt_assert(xbt_dynar_length(route->generic_route.link_list) > 0,
+	xbt_assert(!xbt_dynar_is_empty(route->generic_route.link_list),
 			  "Invalid count of links, must be greater than zero (%s,%s)",
 			  src, dst);
 

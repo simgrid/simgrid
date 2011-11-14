@@ -189,7 +189,7 @@ void TRACE_paje_dump_buffer (int force)
     buffer = xbt_dynar_new (sizeof(paje_event_t), NULL);
   }else{
     paje_event_t event;
-    while (xbt_dynar_length (buffer) > 0){
+    while (!xbt_dynar_is_empty(buffer)){
       double head_timestamp = (*(paje_event_t*)xbt_dynar_get_ptr(buffer, 0))->timestamp;
       if (head_timestamp > TRACE_last_timestamp_to_dump){
         break;

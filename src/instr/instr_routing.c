@@ -85,7 +85,7 @@ static void linkContainers (container_t father, container_t src, container_t dst
 
 static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t filter)
 {
-  if (xbt_dict_length (rc->routing_sons)){
+  if (!xbt_dict_is_empty(rc->routing_sons)){
     xbt_dict_cursor_t cursor = NULL;
     AS_t rc_son;
     char *child_name;
@@ -394,7 +394,7 @@ static xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_
 static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
     AS_t rc, container_t container)
 {
-  if (xbt_dict_length (rc->routing_sons)){
+  if (!xbt_dict_is_empty(rc->routing_sons)){
     xbt_dict_cursor_t cursor = NULL;
     AS_t rc_son;
     char *child_name;

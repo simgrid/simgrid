@@ -88,7 +88,7 @@ int main(int argc, char **argv)
            SD_workstation_get_name(hosts[i]),
            SD_workstation_get_power(hosts[i]));
     props = SD_workstation_get_properties(hosts[i]);
-    if (props && xbt_dict_length(props) > 0) {
+    if (props && !xbt_dict_is_empty(props)) {
       printf(">\n");
       xbt_dict_foreach(props, cursor, key, data) {
         printf("    <prop id=\"%s\" value=\"%s\"/>\n", key, data);

@@ -100,7 +100,7 @@ void xbt_queue_push(xbt_queue_t queue, const void *src)
 void xbt_queue_pop(xbt_queue_t queue, void *const dst)
 {
   xbt_mutex_acquire(queue->mutex);
-  while (xbt_dynar_length(queue->data) == 0) {
+  while (xbt_dynar_is_empty(queue->data)) {
     XBT_DEBUG("Queue %p empty. Waiting", queue);
     xbt_cond_wait(queue->not_empty, queue->mutex);
   }
@@ -140,7 +140,7 @@ void xbt_queue_unshift(xbt_queue_t queue, const void *src)
 void xbt_queue_shift(xbt_queue_t queue, void *const dst)
 {
   xbt_mutex_acquire(queue->mutex);
-  while (xbt_dynar_length(queue->data) == 0) {
+  while (xbt_dynar_is_empty(queue->data)) {
     XBT_DEBUG("Queue %p empty. Waiting", queue);
     xbt_cond_wait(queue->not_empty, queue->mutex);
   }
@@ -207,12 +207,12 @@ void xbt_queue_pop_timed(xbt_queue_t queue, void *const dst, double delay)
   xbt_mutex_acquire(queue->mutex);
 
   if (delay == 0) {
-    if (xbt_dynar_length(queue->data) == 0) {
+    if (xbt_dynar_is_empty(queue->data)) {
       xbt_mutex_release(queue->mutex);
       THROWF(timeout_error, 0, "Delay = 0, and queue is empty");
     }
   } else {
-    while ((xbt_dynar_length(queue->data) == 0) &&
+    while ((xbt_dynar_is_empty(queue->data)) &&
            (delay < 0 || (xbt_time() - begin) <= delay)) {
       XBT_DEBUG("Queue %p empty. Waiting", queue);
       TRY {
@@ -288,12 +288,12 @@ void xbt_queue_shift_timed(xbt_queue_t queue, void *const dst,
   xbt_mutex_acquire(queue->mutex);
 
   if (delay == 0) {
-    if (xbt_dynar_length(queue->data) == 0) {
+    if (xbt_dynar_is_empty(queue->data)) {
       xbt_mutex_release(queue->mutex);
       THROWF(timeout_error, 0, "Delay = 0, and queue is empty");
     }
   } else {
-    while ((xbt_dynar_length(queue->data) == 0) &&
+    while ((xbt_dynar_is_empty(queue->data)) &&
            (delay < 0 || (xbt_time() - begin) <= delay)) {
       XBT_DEBUG("Queue %p empty. Waiting", queue);
       TRY {
@@ -307,7 +307,7 @@ void xbt_queue_shift_timed(xbt_queue_t queue, void *const dst,
     }
   }
 
-  if (xbt_dynar_length(queue->data) == 0) {
+  if (xbt_dynar_is_empty(queue->data)) {
     xbt_mutex_release(queue->mutex);
     THROWF(timeout_error, 0, "Timeout (%f) elapsed, but queue still empty",
            delay);

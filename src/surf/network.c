@@ -598,7 +598,7 @@ static surf_action_t net_communicate(const char *src_name,
   XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
-  xbt_assert(xbt_dynar_length(route) || latency,
+  xbt_assert(!xbt_dynar_is_empty(route) || latency,
               "You're trying to send data from %s to %s but there is no connection at all between these two hosts.",
               src_name, dst_name);
 
@@ -644,7 +644,7 @@ static surf_action_t net_communicate(const char *src_name,
       bandwidth_constraint_callback(action->rate, bandwidth_bound,
                                         size);
 
-  if(xbt_dynar_length(route) > 0) {
+  if(!xbt_dynar_is_empty(route)) {
     link = *(link_CM02_t*)xbt_dynar_get_ptr(route, 0);
     gap_append(size, link, action);
     XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)",

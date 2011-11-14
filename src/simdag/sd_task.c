@@ -373,13 +373,13 @@ void SD_task_dump(SD_task_t task)
   }
   XBT_INFO("  - amount: %.0f", SD_task_get_amount(task));
   XBT_INFO("  - Dependencies to satisfy: %d", task->unsatisfied_dependencies);
-  if (xbt_dynar_length(task->tasks_before)) {
+  if (!xbt_dynar_is_empty(task->tasks_before)) {
     XBT_INFO("  - pre-dependencies:");
     xbt_dynar_foreach(task->tasks_before, counter, dependency) {
       XBT_INFO("    %s", SD_task_get_name(dependency->src));
     }
   }
-  if (xbt_dynar_length(task->tasks_after)) {
+  if (!xbt_dynar_is_empty(task->tasks_after)) {
     XBT_INFO("  - post-dependencies:");
     xbt_dynar_foreach(task->tasks_after, counter, dependency) {
       XBT_INFO("    %s", SD_task_get_name(dependency->dst));
@@ -1188,12 +1188,12 @@ static void __SD_task_remove_dependencies(SD_task_t task)
   /* we must destroy the dependencies carefuly (with SD_dependency_remove)
      because each one is stored twice */
   SD_dependency_t dependency;
-  while (xbt_dynar_length(task->tasks_before) > 0) {
+  while (!xbt_dynar_is_empty(task->tasks_before)) {
     xbt_dynar_get_cpy(task->tasks_before, 0, &dependency);
     SD_task_dependency_remove(dependency->src, dependency->dst);
   }
 
-  while (xbt_dynar_length(task->tasks_after) > 0) {
+  while (!xbt_dynar_is_empty(task->tasks_after)) {
     xbt_dynar_get_cpy(task->tasks_after, 0, &dependency);
     SD_task_dependency_remove(dependency->src, dependency->dst);
   }

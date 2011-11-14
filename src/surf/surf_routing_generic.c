@@ -69,7 +69,7 @@ void generic_parse_bypassroute(AS_t rc,
   char *route_name;
 
   route_name = bprintf("%s#%s", src, dst);
-  xbt_assert(xbt_dynar_length(e_route->generic_route.link_list) > 0,
+  xbt_assert(!xbt_dynar_is_empty(e_route->generic_route.link_list),
              "Invalid count of links, must be greater than zero (%s,%s)",
              src, dst);
   xbt_assert(!xbt_dict_get_or_null(dict_bypassRoutes, route_name),

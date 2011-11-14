@@ -80,7 +80,7 @@ void MC_wait_for_requests(void)
   smx_req_t req;
   unsigned int iter;
 
-  while (xbt_dynar_length(simix_global->process_to_run)) {
+  while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
     SIMIX_process_runall();
     xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
       req = &process->request;

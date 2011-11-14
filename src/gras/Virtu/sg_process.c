@@ -100,7 +100,7 @@ void gras_process_exit()
   XBT_VERB("GRAS: Finalizing process '%s' (%d)",
         SIMIX_req_process_get_name(SIMIX_process_self()), gras_os_getpid());
 
-  if (xbt_dynar_length(msg_pd->msg_queue)) {
+  if (!xbt_dynar_is_empty(msg_pd->msg_queue)) {
     unsigned int cpt;
     s_gras_msg_t msg;
     XBT_WARN

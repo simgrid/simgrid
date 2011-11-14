@@ -235,7 +235,7 @@ static void smx_ctx_sysv_resume_serial(smx_process_t first_process)
 
 static void smx_ctx_sysv_runall_serial(void)
 {
-  if (xbt_dynar_length(simix_global->process_to_run) > 0) {
+  if (!xbt_dynar_is_empty(simix_global->process_to_run)) {
     smx_process_t first_process =
         xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
     smx_ctx_sysv_process_index = 1;

@@ -84,7 +84,7 @@ static double finish_on_at(SD_task_t task, SD_workstation_t workstation)
 
   parents = SD_task_get_parents(task);
 
-  if (xbt_dynar_length(parents)) {
+  if (!xbt_dynar_is_empty(parents)) {
     /* compute last_data_available */
     last_data_available = -1.0;
     xbt_dynar_foreach(parents, i, parent) {
@@ -292,7 +292,7 @@ int main(int argc, char **argv)
   while (!xbt_dynar_is_empty((changed = SD_simulate(-1.0)))) {
     /* Get the set of ready tasks */
     ready_tasks = get_ready_tasks(dax);
-    if (!xbt_dynar_length(ready_tasks)) {
+    if (xbt_dynar_is_empty(ready_tasks)) {
       xbt_dynar_free_container(&ready_tasks);
       xbt_dynar_free_container(&changed);
       /* there is no ready task, let advance the simulation */

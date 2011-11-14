@@ -1002,7 +1002,7 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
                      "The retrieved value is not the same than the injected one (%d!=%d)",
                      cursor, cpt);
   }
-  xbt_test_assert(xbt_dynar_length(d) == 0,
+  xbt_test_assert(xbt_dynar_is_empty(d),
                    "There is still %lu elements in the dynar after removing everything",
                    xbt_dynar_length(d));
   xbt_dynar_free(&d);
@@ -1030,7 +1030,7 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
                      "The retrieved value is not the same than the injected one (%d!=%d)",
                      cursor, cpt);
   }
-  xbt_test_assert(xbt_dynar_length(d) == 0,
+  xbt_test_assert(xbt_dynar_is_empty(d),
                    "There is still %lu elements in the dynar after removing everything",
                    xbt_dynar_length(d));
   xbt_dynar_free(&d);

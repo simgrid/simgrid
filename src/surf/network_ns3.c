@@ -489,7 +489,7 @@ static void ns3_update_actions_state(double now, double delta)
 	    }
 	  }
 
-	  while (xbt_dynar_length(socket_to_destroy)){
+	  while (!xbt_dynar_is_empty(socket_to_destroy)){
 	    xbt_dynar_pop(socket_to_destroy,&key);
 
 	    void *data = xbt_dict_get (dict_socket, key);

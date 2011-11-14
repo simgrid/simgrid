@@ -239,7 +239,7 @@ int worker(int argc, char *argv[])
         switch (cmd->action) {
         case XBT_WORKLOAD_COMPUTE:
           /* If any communication were queued, do them in parallel */
-          if (xbt_dynar_length(cmd_to_go)) {
+          if (!xbt_dynar_is_empty(cmd_to_go)) {
             TRY {
               xbt_dynar_dopar(cmd_to_go, do_command);
               xbt_dynar_reset(cmd_to_go);
@@ -268,7 +268,7 @@ int worker(int argc, char *argv[])
     /* do in parallel any communication still queued */
     XBT_INFO("Do %ld pending communications after end of TODO list",
           xbt_dynar_length(cmd_to_go));
-    if (xbt_dynar_length(cmd_to_go)) {
+    if (!xbt_dynar_is_empty(cmd_to_go)) {
       xbt_dynar_dopar(cmd_to_go, do_command);
       xbt_dynar_reset(cmd_to_go);
     }

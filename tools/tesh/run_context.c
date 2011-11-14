@@ -115,7 +115,7 @@ void rctx_wait_bg(void)
 {
   /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon
    * from working */
-  while (xbt_dynar_length(bg_jobs)) {
+  while (!xbt_dynar_is_empty(bg_jobs)) {
     rctx_t rctx = xbt_dynar_getlast_as(bg_jobs, rctx_t);
     wait_it(rctx);
     xbt_dynar_pop(bg_jobs, &rctx);

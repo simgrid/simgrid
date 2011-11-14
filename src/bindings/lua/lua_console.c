@@ -226,7 +226,7 @@ int console_add_route(lua_State *L) {
   lua_pushstring(L,"links");
   lua_gettable(L,-2);
   links = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
-  if (xbt_dynar_length(links)==0)
+  if (xbt_dynar_is_empty(links))
     xbt_dynar_push_as(links,char*,xbt_strdup(lua_tostring(L, -1)));
   lua_pop(L,1);
 

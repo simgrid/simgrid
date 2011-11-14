@@ -428,7 +428,7 @@ void smx_ctx_raw_new_sr(void)
 #else
 static void smx_ctx_raw_runall_serial(void)
 {
-  if (xbt_dynar_length(simix_global->process_to_run) > 0) {
+  if (!xbt_dynar_is_empty(simix_global->process_to_run)) {
     smx_process_t first_process =
         xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
     raw_process_index = 1;
