@@ -133,14 +133,30 @@ static int l_task_get_computation_duration(lua_State* L)
  * \return number of values returned to Lua
  *
  * - Argument 1 (task): the task to execute
- * - Return value (number): error code
+ * - Return value (nil / error): none if the task was successfully executed, or an error
+ * string in case of failure, which may be "task canceled" or "host failure"
  */
 static int l_task_execute(lua_State* L)
 {
   m_task_t task = sglua_checktask(L, 1);
-  int res = MSG_task_execute(task);
-  lua_pushnumber(L, res);
-  return 1;
+  MSG_error_t res = MSG_task_execute(task);
+
+  switch (res) {
+
+    case MSG_OK:
+      return 0;
+
+    case MSG_TASK_CANCELED:
+      lua_pushliteral(L, "task canceled");
+      return 1;
+
+    case MSG_HOST_FAILURE:
+      lua_pushliteral(L, "host failure");
+      return 1;
+
+    default:
+      xbt_die("Unexpected result of MSG_task_execute(): %d, please report this bug", res);
+  }
 }
 
 /**
@@ -150,6 +166,9 @@ static int l_task_execute(lua_State* L)
  *
  * - Argument 1 (task): the task to send
  * - Argument 2 (string): mailbox
+ * - Return value (nil / error): none if the communication was successful, or an error string
+ * in case of failure, which may be "timeout", "host failure" or
+ * "transfer failure"
  */
 static int l_task_send(lua_State* L)
 {
@@ -166,34 +185,38 @@ static int l_task_send(lua_State* L)
     MSG_process_sleep(0);
   }
 
-  if (res == MSG_OK) {
+  switch (res) {
+
+  case MSG_OK:
     /* the receiver is the owner of the task and may destroy it:
      * remove the C task on my side so that I don't garbage collect it */
     lua_getfield(L, 1, "__simgrid_task");
                                   /* task ctask */
     m_task_t* udata = (m_task_t*) luaL_checkudata(L, -1, TASK_MODULE_NAME);
     *udata = NULL;
-    lua_pop(L, 1);
-                                  /* task */
+    return 0;
+
+  case MSG_TIMEOUT:
+    XBT_DEBUG("MSG_task_send failed: timeout");
+    lua_settop(L, 0);
+    lua_pushliteral(L, "timeout");
+    return 1;
+
+  case MSG_TRANSFER_FAILURE:
+    XBT_DEBUG("MSG_task_send failed: transfer failure");
+    lua_settop(L, 0);
+    lua_pushliteral(L, "transfer failure");
+    return 1;
+
+  case MSG_HOST_FAILURE:
+    XBT_DEBUG("MSG_task_send failed: host failure");
+    lua_settop(L, 0);
+    lua_pushliteral(L, "host failure");
+    return 1;
+
+  default:
+    xbt_die("Unexpected result of MSG_task_send: %d, please report this bug", res);
   }
-  else {
-    switch (res) {
-    case MSG_TIMEOUT:
-      XBT_DEBUG("MSG_task_send failed : Timeout");
-      break;
-    case MSG_TRANSFER_FAILURE:
-      XBT_DEBUG("MSG_task_send failed : Transfer Failure");
-      break;
-    case MSG_HOST_FAILURE:
-      XBT_DEBUG("MSG_task_send failed : Host Failure ");
-      break;
-    default:
-      XBT_ERROR
-          ("MSG_task_send failed : Unexpected error , please report this bug");
-      break;
-    }
-  }
-  return 0;
 }
 
 /**
@@ -203,8 +226,8 @@ static int l_task_send(lua_State* L)
  *
  * - Argument 1 (string): mailbox
  * - Argument 2 (number, optional): timeout (default is no timeout)
- * - Return value (task/nil): the task received or nil if the communication
- * has failed
+ * - Return value (task / nil+err): the task received, or nil plus an error message if
+ * the communication has failed
  */
 static int l_task_recv(lua_State *L)
 {
@@ -224,33 +247,39 @@ static int l_task_recv(lua_State *L)
                                   /* -- */
   MSG_error_t res = MSG_task_receive_with_timeout(&task, mailbox, timeout);
 
-  if (res == MSG_OK) {
+  switch (res) {
+
+  case MSG_OK:
     /* copy the data directly from sender's stack */
+  {
     lua_State* sender_stack = MSG_task_get_data(task);
     sglua_copy_value(sender_stack, L);
                                   /* task */
     MSG_task_set_data(task, NULL);
+    return 1;
   }
-  else {
-    switch (res) {
-    case MSG_TIMEOUT:
-      XBT_DEBUG("MSG_task_receive failed : Timeout");
-      break;
-    case MSG_TRANSFER_FAILURE:
-      XBT_DEBUG("MSG_task_receive failed : Transfer Failure");
-      break;
-    case MSG_HOST_FAILURE:
-      XBT_DEBUG("MSG_task_receive failed : Host Failure ");
-      break;
-    default:
-      XBT_ERROR("MSG_task_receive failed : Unexpected error , please report this bug");
-      break;
-    }
+
+  case MSG_TIMEOUT:
+    XBT_DEBUG("MSG_task_send failed: timeout");
     lua_pushnil(L);
-                                  /* nil */
+    lua_pushliteral(L, "timeout");
+    return 2;
+
+  case MSG_TRANSFER_FAILURE:
+    XBT_DEBUG("MSG_task_send failed: transfer failure");
+    lua_pushnil(L);
+    lua_pushliteral(L, "transfer failure");
+    return 2;
+
+  case MSG_HOST_FAILURE:
+    XBT_DEBUG("MSG_task_send failed: host failure");
+    lua_pushnil(L);
+    lua_pushliteral(L, "host failure");
+    return 2;
+
+  default:
+    xbt_die("Unexpected result of MSG_task_recv: %d, please report this bug", res);
   }
-                                  /* task/nil */
-  return 1;
 }
 
 static const luaL_reg task_functions[] = {

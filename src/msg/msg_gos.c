@@ -31,8 +31,8 @@ MSG_error_t MSG_get_errno(void)
  * takes only one parameter.
  * \param task a #m_task_t to execute on the location on which the
  agent is running.
- * \return #MSG_FATAL if \a task is not properly initialized and
- * #MSG_OK otherwise.
+ * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
+ * or #MSG_HOST_FAILURE otherwise
  */
 MSG_error_t MSG_task_execute(m_task_t task)
 {
