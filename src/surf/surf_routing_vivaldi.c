@@ -26,6 +26,7 @@ static double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
 {
 	double src_coord, dst_coord;
 
+	// FIXME converting from string to float each time we need a coordinate is ... suboptimal
 	src_coord = atof(xbt_dynar_get_as(src, index, char *));
 	dst_coord = atof(xbt_dynar_get_as(dst, index, char *));
 
@@ -54,7 +55,7 @@ static double base_vivaldi_get_latency (const char *src, const char *dst)
   return euclidean_dist / 1000;
 }
 
-static double vivaldi_get_link_latency (AS_t rc,const char *src, const char *dst, route_t e_route)
+static double vivaldi_get_latency (AS_t rc,const char *src, const char *dst, route_t e_route)
 {
   if(routing_get_network_element_type(src) == SURF_NETWORK_ELEMENT_AS) {
 	  int need_to_clean = e_route?0:1;
@@ -73,6 +74,6 @@ AS_t model_vivaldi_create(void)
 {
 	  AS_t new_component = model_rulebased_create();
 	  new_component->get_route = vivaldi_get_route;
-	  new_component->get_latency = vivaldi_get_link_latency;
+	  new_component->get_latency = vivaldi_get_latency;
 	  return new_component;
 }
