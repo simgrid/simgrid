@@ -226,9 +226,9 @@ static void _surf_cfg_cb__surf_network_coordinates(const char *name,
     }
   } else if (!strcmp(val, "no")) {
     if (COORD_HOST_LEVEL)
-      XBT_WARN("Cannot disable CMD prop coordinates, once set.");
+      XBT_WARN("Setting of whether to use coordinate cannot be disabled once set.");
   } else {
-    XBT_WARN("Setting CMD prop coordinates must be \"yes\" or \"no\"");
+    XBT_WARN("Command line setting of whether to use coordinates must be either \"yes\" or \"no\"");
   }
 }
 
