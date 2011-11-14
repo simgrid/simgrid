@@ -49,8 +49,6 @@ static double base_vivaldi_get_latency (const char *src, const char *dst)
   euclidean_dist = sqrt (euclidean_dist_comp(0,src_ctn,dst_ctn)+euclidean_dist_comp(1,src_ctn,dst_ctn))
   				 + fabs(atof(xbt_dynar_get_as(src_ctn, 2, char *)))+fabs(atof(xbt_dynar_get_as(dst_ctn, 2, char *)));
 
-  xbt_assert(euclidean_dist>=0, "Euclidean Dist is less than 0\"%s\" and \"%.2f\"", src, euclidean_dist);
-
   //From .ms to .s
   return euclidean_dist / 1000;
 }
