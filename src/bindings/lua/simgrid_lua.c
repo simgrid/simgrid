@@ -13,6 +13,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
 #define TASK_MODULE_NAME "simgrid.task"
+#define COMM_MODULE_NAME "simgrid.comm"
 #define HOST_MODULE_NAME "simgrid.host"
 #define PROCESS_MODULE_NAME "simgrid.process"
 // Surf (bypass XML)
@@ -21,6 +22,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 #define PLATF_MODULE_NAME "simgrid.platf"
 
 static lua_State* sglua_maestro_state;
+
+static const char* msg_errors[] = {
+    NULL,
+    "timeout",
+    "transfer failure",
+    "host failure",
+    "task canceled"
+};
 
 int luaopen_simgrid(lua_State *L);
 static void register_c_functions(lua_State *L);
@@ -143,21 +152,12 @@ static int l_task_execute(lua_State* L)
   m_task_t task = sglua_checktask(L, 1);
   MSG_error_t res = MSG_task_execute(task);
 
-  switch (res) {
-
-    case MSG_OK:
-      return 0;
-
-    case MSG_TASK_CANCELED:
-      lua_pushliteral(L, "task canceled");
-      return 1;
-
-    case MSG_HOST_FAILURE:
-      lua_pushliteral(L, "host failure");
-      return 1;
-
-    default:
-      xbt_die("Unexpected result of MSG_task_execute(): %d, please report this bug", res);
+  if (res == MSG_OK) {
+    return 0;
+  }
+  else {
+    lua_pushstring(L, msg_errors[res]);
+    return 1;
   }
 }
 
@@ -188,9 +188,7 @@ static int l_task_send(lua_State* L)
     MSG_process_sleep(0);
   }
 
-  switch (res) {
-
-  case MSG_OK:
+  if (res == MSG_OK) {
     /* the receiver is the owner of the task and may destroy it:
      * remove the C task on my side so that I don't garbage collect it */
     lua_getfield(L, 1, "__simgrid_task");
@@ -198,28 +196,24 @@ static int l_task_send(lua_State* L)
     m_task_t* udata = (m_task_t*) luaL_checkudata(L, -1, TASK_MODULE_NAME);
     *udata = NULL;
     return 0;
-
-  case MSG_TIMEOUT:
-    XBT_DEBUG("MSG_task_send failed: timeout");
-    lua_settop(L, 0);
-    lua_pushliteral(L, "timeout");
-    return 1;
-
-  case MSG_TRANSFER_FAILURE:
-    XBT_DEBUG("MSG_task_send failed: transfer failure");
-    lua_settop(L, 0);
-    lua_pushliteral(L, "transfer failure");
-    return 1;
-
-  case MSG_HOST_FAILURE:
-    XBT_DEBUG("MSG_task_send failed: host failure");
-    lua_settop(L, 0);
-    lua_pushliteral(L, "host failure");
-    return 1;
-
-  default:
-    xbt_die("Unexpected result of MSG_task_send: %d, please report this bug", res);
   }
+  else {
+    lua_settop(L, 0);
+    lua_pushstring(L, msg_errors[res]);
+    return 1;
+  }
+}
+
+static int l_task_isend(lua_State* L)
+{
+  // TODO
+  return 0;
+}
+
+static int l_task_dsend(lua_State* L)
+{
+  // TODO
+  return 0;
 }
 
 /**
@@ -230,7 +224,7 @@ static int l_task_send(lua_State* L)
  * - Argument 1 (string or compatible): mailbox name, as a real string or any
  * type convertible to string (numbers always are)
  * - Argument 2 (number, optional): timeout (default is no timeout)
- * - Return values (task or nil+string): the task received, or nil plus an
+ * - Return values (task or nil + string): the task received, or nil plus an
  * error message if the communication has failed
  */
 static int l_task_recv(lua_State* L)
@@ -251,39 +245,25 @@ static int l_task_recv(lua_State* L)
                                   /* -- */
   MSG_error_t res = MSG_task_receive_with_timeout(&task, mailbox, timeout);
 
-  switch (res) {
-
-  case MSG_OK:
+  if (res == MSG_OK) {
     /* copy the data directly from sender's stack */
-  {
     lua_State* sender_stack = MSG_task_get_data(task);
     sglua_copy_value(sender_stack, L);
                                   /* task */
     MSG_task_set_data(task, NULL);
     return 1;
   }
-
-  case MSG_TIMEOUT:
-    XBT_DEBUG("MSG_task_send failed: timeout");
+  else {
     lua_pushnil(L);
-    lua_pushliteral(L, "timeout");
+    lua_pushstring(L, msg_errors[res]);
     return 2;
-
-  case MSG_TRANSFER_FAILURE:
-    XBT_DEBUG("MSG_task_send failed: transfer failure");
-    lua_pushnil(L);
-    lua_pushliteral(L, "transfer failure");
-    return 2;
-
-  case MSG_HOST_FAILURE:
-    XBT_DEBUG("MSG_task_send failed: host failure");
-    lua_pushnil(L);
-    lua_pushliteral(L, "host failure");
-    return 2;
-
-  default:
-    xbt_die("Unexpected result of MSG_task_recv: %d, please report this bug", res);
   }
+}
+
+static int l_task_irecv(lua_State* L)
+{
+  // TODO
+  return 0;
 }
 
 static const luaL_reg task_functions[] = {
@@ -292,7 +272,10 @@ static const luaL_reg task_functions[] = {
   {"get_computation_duration", l_task_get_computation_duration},
   {"execute", l_task_execute},
   {"send", l_task_send},
+  {"isend", l_task_isend},
+  {"dsend", l_task_dsend},
   {"recv", l_task_recv},
+  {"irecv", l_task_irecv},
   {NULL, NULL}
 };
 
@@ -336,6 +319,140 @@ static int l_task_tostring(lua_State* L)
 static const luaL_reg task_meta[] = {
   {"__gc", l_task_gc}, /* will be called only for userdata */
   {"__tostring", l_task_tostring},
+  {NULL, NULL}
+};
+
+/* ********************************************************************************* */
+/*                                simgrid.comm API                                   */
+/* ********************************************************************************* */
+
+/**
+ * \brief Ensures that a value in the stack is a comm and returns it.
+ * \param L a Lua state
+ * \param index an index in the Lua stack
+ * \return the C comm
+ */
+static msg_comm_t sglua_checkcomm(lua_State* L, int index)
+{
+  msg_comm_t comm = *((msg_comm_t*) luaL_checkudata(L, index, COMM_MODULE_NAME));
+  lua_pop(L, 1);
+  return comm;
+}
+
+/**
+ * \brief Blocks the current process until a communication is finished.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * This function performs a waitany operation: you can specify an
+ * individual communication or a list of communications.
+ * If you provide a list, the function returns whenever one communication of
+ * the list is finished, and this communication will be removed from you list.
+ * This means you can make a waitall operation with successive calls to this
+ * function.
+ *
+ * - Argument 1 (comm or table): a comm or an array of comms
+ * - Argument 2 (number, optional): timeout (supported only when there is only
+ * one comm)
+ * - Return values (comm + string): the first comm of your list that finishes,
+ * plus an error string if this comm was unsuccessful.
+ */
+static int l_comm_wait(lua_State* L) {
+
+  if (lua_istable(L, 1)) {
+    // TODO implement waitany
+    THROW_UNIMPLEMENTED;
+  }
+  else {
+    /* only one comm */
+    msg_comm_t comm = sglua_checkcomm(L, 1);
+    double timeout = -1;
+    if (lua_gettop(L) >= 2) {
+      timeout = luaL_checknumber(L, 2);
+    }
+                                  /* comm ... */
+    MSG_error_t res = MSG_comm_wait(comm, timeout);
+    lua_settop(L, 1);
+                                  /* comm */
+    if (res == MSG_OK) {
+      return 1;
+    }
+    else {
+      lua_pushstring(L, msg_errors[res]);
+                                  /* comm error */
+      return 2;
+    }
+  }
+  return 0;
+}
+
+/**
+ * @brief Returns whether a communication is finished.
+ *
+ * This function always returns immediately.
+ * It performs a testany operation: you can provide an individual
+ * communication or a list of communications.
+ *
+ * - Argument 1 (comm or table): a comm or an array of comms
+ * - Return values (nil or comm + string): if no comm from your list is finished
+ * yet, returns nil. If a comm is finished, removes it from your list and
+ * returns it, plus an error string if it was unsuccessful.
+ */
+static int l_comm_test(lua_State* L) {
+
+  if (lua_istable(L, 1)) {
+    /* TODO implement testany */
+    THROW_UNIMPLEMENTED;
+  }
+  else {
+    /* only one comm */
+    msg_comm_t comm = sglua_checkcomm(L, 1);
+                                  /* comm ... */
+    if (!MSG_comm_test(comm)) {
+      return 0;
+    }
+    else {
+      lua_settop(L, 1);
+                                  /* comm */
+      MSG_error_t res = MSG_comm_get_status(comm);
+      if (res == MSG_OK) {
+        return 1;
+      }
+      else {
+        lua_pushstring(L, msg_errors[res]);
+                                  /* comm error */
+        return 2;
+      }
+    }
+  }
+}
+
+static const luaL_reg comm_functions[] = {
+  {"wait", l_comm_wait},
+  {"test", l_comm_test},
+  {NULL, NULL}
+};
+
+/**
+ * \brief Finalizes a comm userdata.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * - Argument 1 (userdata): a comm
+ */
+static int l_comm_gc(lua_State* L)
+{
+                                  /* ctask */
+  msg_comm_t comm = *((msg_comm_t*) luaL_checkudata(L, 1, COMM_MODULE_NAME));
+  MSG_comm_destroy(comm);
+  return 0;
+}
+
+/**
+ * \brief Metamethods of the comm userdata.
+ */
+static const luaL_reg comm_meta[] = {
+  {"__gc", l_comm_gc},
   {NULL, NULL}
 };
 
@@ -949,10 +1066,41 @@ static void register_task_functions(lua_State* L)
                                   /* simgrid.task mt simgrid.task */
   /* metatable.__index = simgrid.task
    * we put the task functions inside the task itself:
-   * this allows to write task:method(args) for
-   * simgrid.task.method(task, args) */
+   * this allows to write my_task:method(args) for
+   * simgrid.task.method(my_task, args) */
   lua_setfield(L, -2, "__index");
                                   /* simgrid.task mt */
+  lua_pop(L, 2);
+                                  /* -- */
+}
+
+/**
+ * \brief Registers the comm functions into the table simgrid.comm.
+ *
+ * Also initialize the metatable of the comm userdata type.
+ *
+ * \param L a lua state
+ */
+static void register_comm_functions(lua_State* L)
+{
+  /* create a table simgrid.com and fill it with com functions */
+  luaL_openlib(L, COMM_MODULE_NAME, comm_functions, 0);
+                                  /* simgrid.comm */
+
+  /* create the metatable for comms, add it to the Lua registry */
+  luaL_newmetatable(L, COMM_MODULE_NAME);
+                                  /* simgrid.comm mt */
+  /* fill the metatable */
+  luaL_openlib(L, NULL, comm_meta, 0);
+                                  /* simgrid.comm mt */
+  lua_pushvalue(L, -2);
+                                  /* simgrid.comm mt simgrid.comm */
+  /* metatable.__index = simgrid.comm
+   * we put the comm functions inside the comm itself:
+   * this allows to write my_comm:method(args) for
+   * simgrid.comm.method(my_comm, args) */
+  lua_setfield(L, -2, "__index");
+                                  /* simgrid.comm mt */
   lua_pop(L, 2);
                                   /* -- */
 }
@@ -980,9 +1128,8 @@ static void register_host_functions(lua_State* L)
                                   /* simgrid.host mt simgrid.host */
   /* metatable.__index = simgrid.host
    * we put the host functions inside the host userdata itself:
-   * this allows to write host(args) for
-   * simgrid.host.method(host, args) */
-  // FIXME: cannot work currently, same problem as tasks
+   * this allows to write my_host:method(args) for
+   * simgrid.host.method(my_host, args) */
   lua_setfield(L, -2, "__index");
                                   /* simgrid.host mt */
   lua_pop(L, 2);
@@ -1047,6 +1194,7 @@ static void register_c_functions(lua_State *L)
 {
   register_core_functions(L);
   register_task_functions(L);
+  register_comm_functions(L);
   register_host_functions(L);
   register_process_functions(L);
   register_platf_functions(L);
