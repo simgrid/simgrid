@@ -236,6 +236,7 @@ MSG_error_t MSG_action_trace_run(char *path);
         MSG_mailbox_put_with_timeout(mailbox, task, timeout)
 
 #define MSG_process_change_host(h) MSG_process_migrate(MSG_process_self(),h);
+#define MSG_TASK_CANCELLED MSG_TASK_CANCELED
 #endif
 
 #include "instr/instr.h"

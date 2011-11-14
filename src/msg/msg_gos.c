@@ -103,7 +103,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
 #ifdef HAVE_TRACING
     TRACE_msg_task_execute_end(task);
 #endif
-    MSG_RETURN(MSG_TASK_CANCELLED);
+    MSG_RETURN(MSG_TASK_CANCELED);
   }
 }
 
@@ -214,7 +214,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
     simdata->comm = NULL;
     simdata->compute = NULL;
-    MSG_RETURN(MSG_TASK_CANCELLED);
+    MSG_RETURN(MSG_TASK_CANCELED);
   }
 }
 

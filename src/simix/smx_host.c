@@ -381,7 +381,7 @@ void SIMIX_post_host_execute(smx_action_t action)
   /* FIXME: check if the host running the action failed or not*/
   /*if(surf_workstation_model->extension.workstation.get_state(action->host->host))*/
 
-  /* If the host running the action didn't fail, then the action was cancelled */
+  /* If the host running the action didn't fail, then the action was canceled */
   if (surf_workstation_model->action_state_get(action->execution.surf_exec) == SURF_ACTION_FAILED)
      action->state = SIMIX_CANCELED;
   else
