@@ -19,7 +19,7 @@ int SURF_WKS_LEVEL;             //Surf workstation level
 int SIMIX_HOST_LEVEL;           //Simix level
 int MSG_HOST_LEVEL;             //Msg level
 int SD_HOST_LEVEL;              //Simdag level
-int COORD_HOST_LEVEL;           //Coordinates level
+int COORD_HOST_LEVEL=0;         //Coordinates level
 int NS3_HOST_LEVEL;             //host node for ns3
 
 xbt_lib_t link_lib;
@@ -107,7 +107,7 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
   if (host->coord && strcmp(host->coord, "")) {
     if (!COORD_HOST_LEVEL)
       xbt_die
-          ("To use coordinates, you must set configuration 'coordinates' to 'yes'");
+          ("To use host coordinates, please add --cfg=coordinates:yes to your command line");
     xbt_dynar_t ctn = xbt_str_split_str(host->coord, " ");
     xbt_dynar_shrink(ctn, 0);
     xbt_lib_set(host_lib, host->id, COORD_HOST_LEVEL, (void *) ctn);
