@@ -133,7 +133,7 @@ static int l_task_get_computation_duration(lua_State* L)
  * \return number of values returned to Lua
  *
  * - Argument 1 (task): the task to execute
- * - Return value (nil / error): none if the task was successfully executed, or an error
+ * - Return value (nil or error): none if the task was successfully executed, or an error
  * string in case of failure, which may be "task canceled" or "host failure"
  */
 static int l_task_execute(lua_State* L)
@@ -165,10 +165,11 @@ static int l_task_execute(lua_State* L)
  * \return number of values returned to Lua
  *
  * - Argument 1 (task): the task to send
- * - Argument 2 (string): mailbox
- * - Return value (nil / error): none if the communication was successful, or an error string
- * in case of failure, which may be "timeout", "host failure" or
- * "transfer failure"
+ * - Argument 2 (string or compatible): mailbox name, as a real string or any
+ * type convertible to string (numbers always are)
+ * - Return value (nil or error): none if the communication was successful,
+ * or an error string in case of failure, which may be "timeout",
+ * "host failure" or "transfer failure"
  */
 static int l_task_send(lua_State* L)
 {
@@ -224,12 +225,13 @@ static int l_task_send(lua_State* L)
  * \param L a Lua state
  * \return number of values returned to Lua
  *
- * - Argument 1 (string): mailbox
+ * - Argument 1 (string or compatible): mailbox name, as a real string or any
+ * type convertible to string (numbers always are)
  * - Argument 2 (number, optional): timeout (default is no timeout)
- * - Return value (task / nil+err): the task received, or nil plus an error message if
+ * - Return value (task or nil+err): the task received, or nil plus an error message if
  * the communication has failed
  */
-static int l_task_recv(lua_State *L)
+static int l_task_recv(lua_State* L)
 {
   m_task_t task = NULL;
   const char* mailbox = luaL_checkstring(L, 1);
