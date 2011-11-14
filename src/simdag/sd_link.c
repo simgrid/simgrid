@@ -51,7 +51,7 @@ const SD_link_t *SD_link_get_list(void)
   int i;
 
   if (sd_global->link_list == NULL) {   /* this is the first time the function is called */
-    sd_global->link_list = xbt_new(SD_link_t, link_lib->count);
+    sd_global->link_list = xbt_new(SD_link_t, xbt_lib_length(link_lib));
 
     i = 0;
     xbt_lib_foreach(link_lib, cursor, key, data) {
@@ -69,7 +69,7 @@ const SD_link_t *SD_link_get_list(void)
  */
 int SD_link_get_number(void)
 {
-  return link_lib->count;
+  return xbt_lib_length(link_lib);
 }
 
 /**

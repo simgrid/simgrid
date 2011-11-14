@@ -70,7 +70,7 @@ const SD_workstation_t *SD_workstation_get_list(void)
 
   if (sd_global->workstation_list == NULL) {    /* this is the first time the function is called */
     sd_global->workstation_list =
-        xbt_new(SD_workstation_t, host_lib->count);
+      xbt_new(SD_workstation_t, xbt_lib_length(host_lib));
 
     i = 0;
     xbt_lib_foreach(host_lib, cursor, key, data) {
@@ -89,7 +89,7 @@ const SD_workstation_t *SD_workstation_get_list(void)
  */
 int SD_workstation_get_number(void)
 {
-  return host_lib->count;
+  return xbt_lib_length(host_lib);
 }
 
 /**

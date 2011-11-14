@@ -148,7 +148,7 @@ void __MSG_host_destroy(m_host_t host)
  */
 int MSG_get_host_number(void)
 {
-  return host_lib->count;
+  return xbt_lib_length(host_lib);
 }
 
 /** \ingroup m_host_management
@@ -162,10 +162,10 @@ m_host_t *MSG_get_host_table(void)
 	  char *key;
 	  void **data;
 
-	  if (host_lib->count == 0)
+	  if (xbt_lib_length(host_lib) == 0)
 		return NULL;
 	  else
-		array = xbt_new0(void *, host_lib->count);
+		array = xbt_new0(void *, xbt_lib_length(host_lib));
 
 	  xbt_lib_foreach(host_lib, cursor, key, data) {
 	    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
