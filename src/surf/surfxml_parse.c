@@ -570,19 +570,7 @@ void parse_properties(const char* prop_id, const char* prop_value)
 {
 	if (!current_property_set)
 	    current_property_set = xbt_dict_new();      // Maybe, it should raise an error
-	if(!strcmp(prop_id,"coordinates")){
-		if(!strcmp(prop_value,"yes") && !COORD_HOST_LEVEL)
-		  {
-			    XBT_INFO("Configuration change: Set '%s' to '%s'", prop_id, prop_value);
-				COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_dynar_free_voidp);
-				COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
-		  }
-		if(strcmp(A_surfxml_prop_value,"yes"))
-			  xbt_die("Setting XML prop coordinates must be \"yes\"");
-	  }
-	else{
-		  xbt_dict_set(current_property_set, prop_id, xbt_strdup(prop_value), free);
-	 }
+	xbt_dict_set(current_property_set, prop_id, xbt_strdup(prop_value), free);
 }
 
 /**
