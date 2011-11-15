@@ -156,7 +156,6 @@ XBT_PUBLIC(int) MSG_task_Iprobe(m_channel_t channel);
 XBT_PUBLIC(int) MSG_task_probe_from(m_channel_t channel);
 XBT_PUBLIC(int) MSG_task_probe_from_host(int channel, m_host_t host);
 XBT_PUBLIC(MSG_error_t) MSG_process_sleep(double nb_sec);
-XBT_PUBLIC(MSG_error_t) MSG_get_errno(void);
 
 XBT_PUBLIC(double) MSG_task_get_compute_duration(m_task_t task);
 XBT_PUBLIC(void) MSG_task_set_compute_duration(m_task_t task,
@@ -237,6 +236,7 @@ MSG_error_t MSG_action_trace_run(char *path);
         MSG_mailbox_put_with_timeout(mailbox, task, timeout)
 
 #define MSG_process_change_host(h) MSG_process_migrate(MSG_process_self(),h);
+XBT_PUBLIC(MSG_error_t) MSG_get_errno(void);
 #endif
 
 #include "instr/instr.h"

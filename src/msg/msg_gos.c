@@ -15,16 +15,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
                                 "Logging specific to MSG (gos)");
 
 /** \ingroup msg_gos_functions
- *
- * \brief Return the last value returned by a MSG function (except
- * MSG_get_errno...).
- */
-MSG_error_t MSG_get_errno(void)
-{
-  return PROCESS_GET_ERRNO();
-}
-
-/** \ingroup msg_gos_functions
  * \brief Executes a task and waits for its termination.
  *
  * This function is used for describing the behavior of an agent. It
@@ -982,3 +972,15 @@ int MSG_task_listen_from(const char *alias)
 
   return MSG_process_get_PID(task->simdata->sender);
 }
+
+#ifdef MSG_USE_DEPRECATED
+/** \ingroup msg_gos_functions
+ *
+ * \brief Return the last value returned by a MSG function (except
+ * MSG_get_errno...).
+ */
+MSG_error_t MSG_get_errno(void)
+{
+  return PROCESS_GET_ERRNO();
+}
+#endif
