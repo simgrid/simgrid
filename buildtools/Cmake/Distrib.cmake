@@ -308,6 +308,13 @@ COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_synchro_unit.c
 WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 
+add_custom_target(supernovae-clean
+COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_gras.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_sg.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_smpi.c
+WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
+)
+
 #############################################
 ### Fill in the "make sync-gforge" target ###
 #############################################

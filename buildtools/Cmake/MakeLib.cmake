@@ -3,6 +3,9 @@
 ###############################
 # Declare the library content #
 ###############################
+# If we want supernovae, rewrite the libs' content to use it
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Supernovae.cmake)
+
 # Actually declare our libraries
 
 add_library(simgrid SHARED ${simgrid_sources})
@@ -25,6 +28,22 @@ endif(enable_smpi)
 
 add_dependencies(gras maintainer_files)
 add_dependencies(simgrid maintainer_files)				
+
+# if supernovaeing, we need some depends to make sure that the source gets generated
+if (enable_supernovae)
+	add_dependencies(simgrid ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c)
+	if(enable_lib_static)
+		add_dependencies(simgrid_static ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c)
+	endif(enable_lib_static)
+	add_dependencies(gras ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c)
+
+	if(enable_smpi)
+		add_dependencies(smpi ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
+		if(enable_lib_static)
+			add_dependencies(smpi_static ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
+		endif(enable_lib_static)
+	endif(enable_smpi)
+endif(enable_supernovae)	
 
 # Compute the dependencies of GRAS
 ##################################

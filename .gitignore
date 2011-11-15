@@ -34,9 +34,10 @@ examples/msg/masterslave/simgrid.so
 examples/simdag/simgrid.so
 
 ################################################
-### Units files
+### Units and supernovae files
 src/simgrid_units_main.c
 src/*_unit.c
+src/supernovae_*.c
 
 ################################################
 ### Generated files

@@ -231,7 +231,7 @@ void model_floyd_end(AS_t current_routing)
 	}
 }
 
-static int surf_pointer_resource_cmp(const void *a, const void *b) {
+static int floyd_pointer_resource_cmp(const void *a, const void *b) {
   return a != b;
 }
 
@@ -288,7 +288,7 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 		xbt_assert(!xbt_dynar_compare(
 			  (void*)TO_FLOYD_LINK(*src_id, *dst_id)->link_list,
 			  (void*)link_route_to_test,
-			  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
+			  (int_f_cpvoid_cpvoid_t) floyd_pointer_resource_cmp),
 			  "The route between \"%s\" and \"%s\" already exists", src,dst);
 	}
 	else
@@ -333,7 +333,7 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 			xbt_assert(!xbt_dynar_compare(
 				  (void*)TO_FLOYD_LINK(*dst_id, *src_id)->link_list,
 			      (void*)link_route_to_test,
-				  (int_f_cpvoid_cpvoid_t) surf_pointer_resource_cmp),
+				  (int_f_cpvoid_cpvoid_t) floyd_pointer_resource_cmp),
 				  "The route between \"%s\" and \"%s\" already exists", src,dst);
 		}
 		else
