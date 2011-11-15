@@ -33,6 +33,7 @@ option(enable_model-checking "" off)
 option(enable_lib_static "" off)
 option(enable_jedule "Jedule output of SimDAG." off)
 option(enable_debug "Set NDEBUG flag" on)
+option(enable_supernovae "Whether Supernovae mode (helping compiler optimization) is activated." on)
 
 if(enable_supernovae AND enable_model-checking)
 	set(enable_model-checking false CACHE TYPE INTERNAL FORCE)
