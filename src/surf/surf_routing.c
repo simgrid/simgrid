@@ -502,10 +502,9 @@ static void _get_route_and_latency(const char *src, const char *dst,
   /* If src and dst are in the same AS, life is good */
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
-    route.link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+    route.link_list = *links;
 
     common_father->get_route_and_latency(common_father, src, dst, &route,latency);
-    *links = route.link_list;
 
     xbt_free(route.src_gateway);
     xbt_free(route.dst_gateway);
@@ -553,7 +552,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (strcmp(src, src_gateway))
-    _get_route_and_latency(src, src_gateway, links,latency);
+    _get_route_and_latency(src, src_gateway, links, latency);
 
   xbt_dynar_foreach(e_route_cnt->link_list, cpt, link) {
     xbt_dynar_push(*links, &link);
@@ -562,10 +561,9 @@ static void _get_route_and_latency(const char *src, const char *dst,
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
   // FIXME why can't I factorize it the same way than [src;src_gw] without breaking the examples??
   if (strcmp(dst_gateway, dst)) {
-    xbt_dynar_t route_dst;
+    xbt_dynar_t route_dst = xbt_dynar_new(global_routing->size_of_link,NULL);
 
-    _get_route_and_latency(dst_gateway, dst,
-        &route_dst, latency);
+    _get_route_and_latency(dst_gateway, dst, &route_dst, latency);
 
     xbt_dynar_foreach(route_dst, cpt, link) {
       xbt_dynar_push(*links, &link);
