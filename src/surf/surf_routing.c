@@ -504,7 +504,6 @@ static void _get_route_and_latency(const char *src, const char *dst,
     e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
 
     common_father->get_route(common_father, src, dst, e_route);
-    xbt_assert(e_route, "no route between \"%s\" and \"%s\"", src, dst);
     *route = e_route->link_list;
 
     if (latency)
@@ -567,8 +566,6 @@ static void _get_route_and_latency(const char *src, const char *dst,
         (route ? &route_src : NULL),
         latency);
 
-    xbt_assert(route_src, "no route between \"%s\" and \"%s\"",
-        src, e_route_cnt->src_gateway);
     xbt_dynar_foreach(route_src, cpt, link) {
       xbt_dynar_push(*route, &link);
     }
@@ -587,8 +584,6 @@ static void _get_route_and_latency(const char *src, const char *dst,
         (route ? &route_dst : NULL),
         latency);
 
-    xbt_assert(route_dst, "no route between \"%s\" and \"%s\"",
-        e_route_cnt->dst_gateway, dst);
     xbt_dynar_foreach(route_dst, cpt, link) {
       xbt_dynar_push(*route, &link);
     }
