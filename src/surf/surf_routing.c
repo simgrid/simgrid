@@ -519,7 +519,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
 
   if (e_route_bypass) { /* Common ancestor is kind enough to declare a bypass route from src to dst -- use it and bail out */
     if (latency)
-      xbt_die("Bypass cannot work yet with get_latency"); // FIXME: that limitation seems supurious to me -- check with alvin
+      xbt_die("Bypass cannot work yet with get_latency"); // FIXME: that limitation seems spurious to me -- check with alvin
 
     *links = xbt_dynar_new(global_routing->size_of_link, NULL);
 
@@ -534,27 +534,23 @@ static void _get_route_and_latency(const char *src, const char *dst,
 
   /* Not in the same AS, no bypass. We'll have to find our path between the ASes recursively*/
 
-  route_t e_route_cnt = xbt_new0(s_route_t, 1);
-  e_route_cnt->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
-  common_father->get_route_and_latency(common_father, src_father->name, dst_father->name, e_route_cnt,latency);
+  route.link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+  common_father->get_route_and_latency(common_father, src_father->name, dst_father->name, &route,latency);
 
-  xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"",
-      src_father->name, dst_father->name);
-
-  xbt_assert((e_route_cnt->src_gateway == NULL) ==
-      (e_route_cnt->dst_gateway == NULL),
+  xbt_assert((route.src_gateway == NULL) ==
+      (route.dst_gateway == NULL),
       "bad gateways for route from \"%s\" to \"%s\"", src, dst);
 
   *links = xbt_dynar_new(global_routing->size_of_link, NULL);
 
-  char*src_gateway = e_route_cnt->src_gateway;
-  char*dst_gateway = e_route_cnt->dst_gateway;
+  char*src_gateway = route.src_gateway;
+  char*dst_gateway = route.dst_gateway;
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (strcmp(src, src_gateway))
     _get_route_and_latency(src, src_gateway, links, latency);
 
-  xbt_dynar_foreach(e_route_cnt->link_list, cpt, link) {
+  xbt_dynar_foreach(route.link_list, cpt, link) {
     xbt_dynar_push(*links, &link);
   }
 
@@ -571,8 +567,6 @@ static void _get_route_and_latency(const char *src, const char *dst,
     xbt_dynar_free(&route_dst);
 
   }
-
-  generic_free_route(e_route_cnt);
 }
 
 /**
