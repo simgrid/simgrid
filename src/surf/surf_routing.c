@@ -523,8 +523,8 @@ static void _get_route_and_latency(const char *src, const char *dst,
     if (latency)
       xbt_die("Bypass cannot work yet with get_latency"); // FIXME: get_bypass_route should update the latency itself, just like get_route
 
-    // FIXME this path is never tested. I need examples to check the bypass mechanism...
-    THROW_UNIMPLEMENTED; // let's warn the users of the problem
+//    // FIXME this path is never tested. I need examples to check the bypass mechanism...
+//    THROW_UNIMPLEMENTED; // let's warn the users of the problem
     xbt_dynar_foreach(e_route_bypass->link_list, cpt, link) {
       xbt_dynar_push(*links, &link);
     }

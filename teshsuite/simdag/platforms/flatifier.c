@@ -133,7 +133,7 @@ int main(int argc, char **argv)
   {
 		  xbt_lib_foreach(host_lib, cursor_dst, dst, value) //to host
 		  {
-				printf("  <route src=\"%s\" dst=\"%s\">\n	"
+				printf("  <route src=\"%s\" dst=\"%s\">\n  "
 					  ,src
 					  ,dst);
 				xbt_dynar_t route=NULL;
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
 		  xbt_lib_foreach(as_router_lib, cursor_dst, dst, value) //to router
 		  {
 			    if(routing_get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
-				printf("  <route src=\"%s\" dst=\"%s\">\n	"
+				printf("  <route src=\"%s\" dst=\"%s\">\n  "
 					  ,src
 					  ,dst);
 				xbt_dynar_t route=NULL;
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
 		  xbt_lib_foreach(as_router_lib, cursor_dst, dst, value) //to router
 		  {
 				if(routing_get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
-				printf("  <route src=\"%s\" dst=\"%s\">\n	"
+				printf("  <route src=\"%s\" dst=\"%s\">\n  "
 					  ,src
 					  ,dst);
 				xbt_dynar_t route=NULL;
@@ -193,7 +193,7 @@ int main(int argc, char **argv)
 		  }
 		  xbt_lib_foreach(host_lib, cursor_dst, dst, value) //to host
 		  {
-				printf("  <route src=\"%s\" dst=\"%s\">\n	"
+				printf("  <route src=\"%s\" dst=\"%s\">\n  "
 					  ,src, dst);
 				xbt_dynar_t route=NULL;
 				routing_get_route_and_latency(src,dst,&route, NULL);
