@@ -61,10 +61,6 @@ static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
 
 static void floyd_get_route(AS_t asg, const char *src, const char *dst, route_t res)
 {
-  xbt_assert(asg && src
-              && dst,
-              "Invalid params for \"get_route\" function at AS \"%s\"",
-              asg->name);
 
   /* set utils vars */
   as_floyd_t as = (as_floyd_t)asg;
@@ -73,10 +69,8 @@ static void floyd_get_route(AS_t asg, const char *src, const char *dst, route_t 
   generic_src_dst_check(asg, src, dst);
   int *src_id = xbt_dict_get_or_null(asg->to_index, src);
   int *dst_id = xbt_dict_get_or_null(asg->to_index, dst);
-  xbt_assert(src_id
-              && dst_id,
-              "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
-              src, dst);
+  if (src_id == NULL || dst_id == NULL)
+    THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
 
   /* create a result route */
 
@@ -110,8 +104,6 @@ static void floyd_get_route(AS_t asg, const char *src, const char *dst, route_t 
         && strcmp(gw_dst, prev_gw_src)) {
       xbt_dynar_t e_route_as_to_as=NULL;
       routing_get_route_and_latency(gw_dst, prev_gw_src,&e_route_as_to_as,NULL);
-      xbt_assert(e_route_as_to_as, "no route between \"%s\" and \"%s\"",
-                  gw_dst, prev_gw_src);
       links = e_route_as_to_as;
       int pos = 0;
       xbt_dynar_foreach(links, cpt, link) {
@@ -127,14 +119,13 @@ static void floyd_get_route(AS_t asg, const char *src, const char *dst, route_t 
     first = 0;
 
   } while (pred != *src_id);
-  xbt_assert(pred != -1, "no route from host %d to %d (\"%s\" to \"%s\")",
-              *src_id, *dst_id, src, dst);
+  if (pred == -1)
+    THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
 
   if (asg->hierarchy == SURF_ROUTING_RECURSIVE) {
     res->src_gateway = xbt_strdup(gw_src);
     res->dst_gateway = xbt_strdup(first_gw);
   }
-
 }
 
 static void floyd_finalize(AS_t rc)

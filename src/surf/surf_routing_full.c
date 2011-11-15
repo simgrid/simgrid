@@ -65,10 +65,6 @@ static void full_get_route(AS_t rc,
                            const char *src, const char *dst,
                            route_t res)
 {
-  xbt_assert(rc && src
-              && dst,
-              "Invalid params for \"get_route\" function at AS \"%s\"",
-              rc->name);
 
   /* set utils vars */
   routing_component_full_t routing = (routing_component_full_t) rc;
@@ -76,10 +72,9 @@ static void full_get_route(AS_t rc,
 
   int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
   int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, dst);
-  xbt_assert(src_id
-              && dst_id,
-              "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
-              src, dst);
+
+  if (!src_id || !dst_id)
+    THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
 
   route_t e_route = NULL;
   void *link;

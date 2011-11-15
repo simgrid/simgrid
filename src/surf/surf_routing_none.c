@@ -28,7 +28,7 @@ static void none_parse_PU(AS_t rc, const char *name) {
 }
 
 static void none_parse_AS(AS_t rc, const char *name) {
-  /* even don't care about sub-ASes */
+  /* even don't care about sub-ASes -- I'm as nihilist as an old punk*/
 }
 
 /* Creation routing model functions */

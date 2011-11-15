@@ -206,10 +206,6 @@ static void dijkstra_get_route(AS_t asg,
                                const char *src, const char *dst,
                                route_t route)
 {
-  xbt_assert(asg && src
-              && dst,
-              "Invalid params for \"get_route\" function at AS \"%s\"",
-              asg->name);
 
   /* set utils vars */
   as_dijkstra_t as = (as_dijkstra_t) asg;
@@ -217,10 +213,8 @@ static void dijkstra_get_route(AS_t asg,
   generic_src_dst_check(asg, src, dst);
   int *src_id = xbt_dict_get_or_null(asg->to_index, src);
   int *dst_id = xbt_dict_get_or_null(asg->to_index, dst);
-  xbt_assert(src_id
-              && dst_id,
-              "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
-              src, dst);
+  if (!src_id || !dst_id)
+    THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
 
   int *pred_arr = NULL;
   int src_node_id = 0;
@@ -240,15 +234,13 @@ static void dijkstra_get_route(AS_t asg,
       graph_node_map_search(as, *src_id);
   graph_node_map_element_t dst_elm =
       graph_node_map_search(as, *dst_id);
-  xbt_assert(src_elm != NULL
-              && dst_elm != NULL, "src %d or dst %d does not exist",
-              *src_id, *dst_id);
+
   src_node_id = ((graph_node_data_t)
                  xbt_graph_node_get_data(src_elm->node))->graph_id;
   dst_node_id = ((graph_node_data_t)
                  xbt_graph_node_get_data(dst_elm->node))->graph_id;
 
-  /* if the src and dst are the same *//* fixed, missing in the previous version */
+  /* if the src and dst are the same */
   if (src_node_id == dst_node_id) {
 
     xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src_node_id, xbt_node_t);
@@ -256,8 +248,8 @@ static void dijkstra_get_route(AS_t asg,
     xbt_edge_t edge =
         xbt_graph_get_edge(as->route_graph, node_s_v, node_e_v);
 
-    xbt_assert(edge != NULL, "no route between host %d and %d", *src_id,
-                *dst_id);
+    if (edge == NULL)
+      THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
 
     e_route = (route_t) xbt_graph_edge_get_data(edge);
 
@@ -346,8 +338,8 @@ static void dijkstra_get_route(AS_t asg,
     xbt_edge_t edge =
         xbt_graph_get_edge(as->route_graph, node_pred_v, node_v);
 
-    xbt_assert(edge != NULL, "no route between host %d and %d", *src_id,
-                *dst_id);
+    if (edge == NULL)
+      THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
 
     prev_gw_src = gw_src;
 
@@ -362,8 +354,8 @@ static void dijkstra_get_route(AS_t asg,
         && strcmp(gw_dst, prev_gw_src)) {
       xbt_dynar_t e_route_as_to_as=NULL;
       routing_get_route_and_latency(gw_dst, prev_gw_src,&e_route_as_to_as,NULL);
-      xbt_assert(e_route_as_to_as, "no route between \"%s\" and \"%s\"",
-                  gw_dst, prev_gw_src);
+      if (edge == NULL)
+        THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
       links = e_route_as_to_as;
       int pos = 0;
       xbt_dynar_foreach(links, cpt, link) {

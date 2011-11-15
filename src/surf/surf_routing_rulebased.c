@@ -285,8 +285,7 @@ static void rulebased_get_route(AS_t rc,
     are_processing_units = 0;
     rule_list = routing->list_ASroute;
   } else
-    xbt_die("Ask for route \"from\"(%s)  or \"to\"(%s) no found in "
-            "the local table", src, dst);
+    THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
 
   int rc_src = -1;
   int rc_dst = -1;
@@ -336,7 +335,8 @@ static void rulebased_get_route(AS_t rc,
   } else if (!strcmp(src, dst) && are_processing_units) {
     xbt_dynar_push(route->link_list, &(global_routing->loopback));
   } else {
-    xbt_dynar_reset(route->link_list);
+    THROWF(arg_error,0,"No route from '%s' to '%s'??",src,dst);
+    //xbt_dynar_reset(route->link_list);
   }
 
   if (!are_processing_units && !xbt_dynar_is_empty(route->link_list)) {
