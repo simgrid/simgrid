@@ -18,7 +18,7 @@ my_node = {
   id = my_id,
   next_finger_to_fix = 1,
   fingers = {},
-  predecessor = nil
+  predecessor = nil,
   comm_recv = nil
 }
 
@@ -28,7 +28,7 @@ my_node = {
 -- - the id of a guy I know in the system (except for the first node)
 function node(my_id, known_id)
 
-  simgrid.info("Hello, I'm a node")
+  simgrid.debug("Hello, I'm a node with id " .. my_id .. " and I know " .. known_id)
 
   -- join the ring
   local success = false
@@ -94,27 +94,27 @@ end
 -- - task: the task received
 function handle_task(task)
 
-  local type = task[type]
+  local type = task.type
 
   if type == "find successor" then
 
     -- is my successor the successor?
-    if is_in_interval(task[request_id], my_node.id + 1, my_node.fingers[1]) then
-      task[type] = "find successor answer"
-      task[answer] = my_node.fingers[1]
-      task:dsend(task[answer_to])
+    if is_in_interval(task.request_id, my_node.id + 1, my_node.fingers[1]) then
+      task.type = "find successor answer"
+      task.answer = my_node.fingers[1]
+      task:dsend(task.answer_to)
     else
       -- forward the request to the closest preceding finger in my table
-      task:dsend(closest_preceding_node(task[request_id]))
+      task:dsend(closest_preceding_node(task.request_id))
     end
 
   elseif type == "get predecessor" then
-    task[answer] = my_node.predecessor
-    task:dsend(task[answer_to])
+    task.answer = my_node.predecessor
+    task:dsend(task.answer_to)
 
   elseif type == "notify" then
     -- someone is telling me that he may be my new predecessor
-    notify(task[request_id])
+    notify(task.request_id)
 
   elseif type == "predecessor leaving" then
     -- TODO
@@ -129,7 +129,7 @@ function handle_task(task)
     -- ignoring
 
   else
-    error("Unknown type of task received: " .. task[type])
+    error("Unknown type of task received: " .. task.type)
   end
 end
 
@@ -158,6 +158,20 @@ function is_in_interval(id, a, b)
   end
 
   return id <= b
+end
+
+-- Attemps to join the Chord ring.
+-- - known_id: id of a node already in the ring
+-- - return value: true if the join was successful
+function join(known_id)
+
+  local successor = remote_find_successor(known_id, my_node.id)
+  if successor == nil then
+    return false
+  end
+
+  my_node.finger[1] = successor
+  return true
 end
 
 -- Returns the closest preceding finger of an id with respect to the finger
@@ -195,10 +209,10 @@ end
 -- return value: the id of the successor, or nil if the request failed
 function remote_find_successor(ask_to, id)
 
-  local task = simgrid.task.new(comp_size, comm_size)
-  task[type] = "find successor"
-  task[request_id] = id
-  task[answer_to] = my_node.id
+  local task = simgrid.task.new("", comp_size, comm_size)
+  task.type = "find successor"
+  task.request_id = id
+  task.answer_to = my_node.id
 
   if task:send(ask_to, timeout) then
     -- request successfully sent: wait for an answer
@@ -211,12 +225,12 @@ function remote_find_successor(ask_to, id)
 	return nil
       else
 	-- a task was received: is it the expected answer?
-	if task[type] ~= "find successor answer" or task[request_id] ~= id then
+	if task.type ~= "find successor answer" or task[request_id] ~= id then
           -- this is not our answer
 	  handle_task(task)
 	else
 	  -- this is our answer
-	  return task[answer]
+	  return task.answer
 	end
       end
     end
@@ -230,9 +244,9 @@ end
 -- return value: the id of its predecessor, or nil if the request failed
 function remote_get_predecessor(ask_to)
 
-  local task = simgrid.task.new(comp_size, comm_size)
-  task[type] = "get predecessor"
-  task[answer_to] = my_node.id
+  local task = simgrid.task.new("", comp_size, comm_size)
+  task.type = "get predecessor"
+  task.answer_to = my_node.id
 
   if task:send(ask_to, timeout) then
     -- request successfully sent: wait for an answer
@@ -245,13 +259,13 @@ function remote_get_predecessor(ask_to)
 	return nil
       else
 	-- a task was received: is it the expected answer?
-	if task[type] ~= "get predecessor answer" then
+	if task.type ~= "get predecessor answer" then
           -- this is not our answer
 	  handle_task(task)
 	else
 	  -- this is our answer
 	  -- FIXME make sure the message answers to this particular request
-	  return task[answer]
+	  return task.answer
 	end
       end
     end
@@ -296,9 +310,9 @@ end
 -- - candidate the possible new predecessor
 function remote_notify(notify_to, candidate_predecessor)
 
-  local task = simgrid.task.new(comp_size, comm_size)
-  task[type] = "notify"
-  task[request_id] = candidate_predecessor
+  local task = simgrid.task.new("", comp_size, comm_size)
+  task.type = "notify"
+  task.request_id = candidate_predecessor
   task:dsend(notify_to)
 end
 
