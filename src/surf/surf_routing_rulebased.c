@@ -100,9 +100,11 @@ static void model_rulebased_parse_route(AS_t rc,
   xbt_assert(ruleroute->re_src,
               "PCRE compilation failed at offset %d (\"%s\"): %s\n",
               erroffset, dst, error);
+
   ruleroute->re_str_link = route->link_list;
+  route->link_list = NULL; // Don't free it twice in each container
+
   xbt_dynar_push(routing->list_route, &ruleroute);
-  xbt_free(route);
 }
 
 static void model_rulebased_parse_ASroute(AS_t rc,
@@ -134,9 +136,10 @@ static void model_rulebased_parse_ASroute(AS_t rc,
   ruleroute_e->re_src_gateway = route->src_gateway;
   ruleroute_e->re_dst_gateway = route->dst_gateway;
   xbt_dynar_push(routing->list_ASroute, &ruleroute_e);
-//  xbt_free(route->src_gateway);
-//  xbt_free(route->dst_gateway);
-  xbt_free(route);
+
+  /* make sure that they don't get freed */
+  route->link_list = NULL;
+  route->src_gateway = route->dst_gateway = NULL;
 }
 
 static void model_rulebased_parse_bypassroute(AS_t rc,
@@ -373,8 +376,8 @@ static void rulebased_finalize(AS_t rc)
     xbt_dict_free(&routing->dict_autonomous_systems);
     xbt_dynar_free(&routing->list_route);
     xbt_dynar_free(&routing->list_ASroute);
-    /* Delete structure */
-    xbt_free(routing);
+
+    model_generic_finalize(rc);
   }
 }
 

@@ -251,6 +251,7 @@ static void routing_parse_E_route(void)
              "no defined method \"set_route\" in \"%s\"",
              current_routing->name);
   current_routing->parse_route(current_routing, src, dst, route);
+  generic_free_route(route);
   parsed_link_list = NULL;
   src = NULL;
   dst = NULL;
@@ -269,6 +270,7 @@ static void routing_parse_E_ASroute(void)
              "no defined method \"set_ASroute\" in \"%s\"",
              current_routing->name);
   current_routing->parse_ASroute(current_routing, src, dst, e_route);
+  generic_free_route(e_route);
   parsed_link_list = NULL;
   src = NULL;
   dst = NULL;

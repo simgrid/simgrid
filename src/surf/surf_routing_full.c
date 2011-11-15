@@ -251,6 +251,4 @@ void model_full_set_route(AS_t rc, const char *src,
 		      xbt_dynar_shrink(TO_ROUTE_FULL(*dst_id, *src_id)->link_list, 0);
 		}
 	}
-
-	generic_free_route((route_t)route) ;
 }
