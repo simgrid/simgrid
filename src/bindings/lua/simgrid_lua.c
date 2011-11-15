@@ -392,8 +392,8 @@ static int l_task_irecv(lua_State* L)
 {
   const char* mailbox = luaL_checkstring(L, 1);
                                   /* mailbox ... */
-  m_task_t task;
-  msg_comm_t comm = MSG_task_irecv(&task, mailbox);
+  m_task_t* task = xbt_new0(m_task_t, 1); // FIXME fix this leak
+  msg_comm_t comm = MSG_task_irecv(task, mailbox);
 
   msg_comm_t* userdata = (msg_comm_t*) lua_newuserdata(L, sizeof(msg_comm_t));
                                   /* mailbox ... comm */
@@ -528,44 +528,48 @@ static int l_comm_wait(lua_State* L) {
  * Unlike wait(), This function always returns immediately.
  *
  * - Argument 1 (comm): a comm (previously created by isend or irecv)
- * - Return value 1 (boolean): indicates whether the comm is finished
- * (note that a finished comm may have failed)
- * - Return value 2 (task): if you are the receiver, returns the task received
- * in case of success, or nil if the comm has failed
- * - Return value 3 (string): if the comm has failed, returns an error string
+ * - Return values (task/boolean or nil + string): if the communication is not
+ * finished, return false. If the communication is finished and was successful,
+ * returns the task received if you are the receiver or true if you are the
+ * sender. If the communication is finished and has failed, returns nil
+ * plus an error string.
  */
 static int l_comm_test(lua_State* L) {
 
   msg_comm_t comm = sglua_checkcomm(L, 1);
                                   /* comm ... */
   if (!MSG_comm_test(comm)) {
-    return 0;
+    /* not finished yet */
+    lua_pushboolean(L, 0);
+                                  /* comm ... false */
+    return 1;
   }
   else {
+    /* finished but may have failed */
     MSG_error_t res = MSG_comm_get_status(comm);
 
     if (res == MSG_OK) {
-      lua_pushboolean(L, 1);
-                                  /* comm ... true */
       m_task_t task = MSG_comm_get_task(comm);
       if (MSG_task_get_sender(task) == MSG_process_self()) {
         /* I'm the sender */
+        lua_pushboolean(L, 1);
+                                  /* comm ... true */
         return 1;
       }
       else {
         /* I'm the receiver: copy the Lua task from the sender */
         task_copy(L, task);
-                                    /* comm ... true task */
-        return 2;
+                                  /* comm ... task */
+        return 1;
       }
     }
     else {
       /* the communication has failed */
       lua_pushnil(L);
-                                    /* comm ... true nil */
+                                  /* comm ... nil */
       lua_pushstring(L, msg_errors[res]);
-                                    /* comm ... true nil error */
-      return 3;
+                                  /* comm ... nil error */
+      return 2;
     }
   }
 }
