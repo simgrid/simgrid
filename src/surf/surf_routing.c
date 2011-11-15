@@ -507,11 +507,8 @@ static void _get_route_and_latency(const char *src, const char *dst,
     xbt_assert(e_route, "no route between \"%s\" and \"%s\"", src, dst);
     *route = e_route->link_list;
 
-    if (latency) {
-      *latency = common_father->get_latency(common_father, src, dst, e_route);
-      xbt_assert(*latency >= 0.0,
-                 "latency error on route between \"%s\" and \"%s\"", src, dst);
-    }
+    if (latency)
+      *latency += common_father->get_latency(common_father, src, dst, e_route);
 
     xbt_free(e_route->src_gateway);
     xbt_free(e_route->dst_gateway);
@@ -556,12 +553,9 @@ static void _get_route_and_latency(const char *src, const char *dst,
   *route = xbt_dynar_new(global_routing->size_of_link, NULL);
 
   if (latency) {
-    *latency = common_father->get_latency(common_father,
+    *latency += common_father->get_latency(common_father,
         src_father->name, dst_father->name,
         e_route_cnt);
-    xbt_assert(*latency >= 0.0,
-        "latency error on route between \"%s\" and \"%s\"",
-        src_father->name, dst_father->name);
   }
 
 
@@ -581,12 +575,8 @@ static void _get_route_and_latency(const char *src, const char *dst,
     }
     xbt_dynar_free(&route_src);
 
-    if (latency) {
-      xbt_assert(latency_src >= 0.0,
-          "latency error on route between \"%s\" and \"%s\"",
-          src, e_route_cnt->src_gateway);
+    if (latency)
       *latency += latency_src;
-    }
   }
 
   xbt_dynar_foreach(e_route_cnt->link_list, cpt, link) {
@@ -609,12 +599,8 @@ static void _get_route_and_latency(const char *src, const char *dst,
     }
     xbt_dynar_free(&route_dst);
 
-    if (latency) {
-      xbt_assert(latency_dst >= 0.0,
-          "latency error on route between \"%s\" and \"%s\"",
-          e_route_cnt->dst_gateway, dst);
+    if (latency)
       *latency += latency_dst;
-    }
   }
 
   generic_free_route(e_route_cnt);
@@ -628,6 +614,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
  * \param route where to store the list of links.
  *              If *route=NULL, create a short lived dynar. Else, fill the provided dynar
  * \param latency where to store the latency experienced on the path (or NULL if not interested)
+ *                It is the caller responsability to initialize latency to 0 (we add to provided route)
  * \pre route!=NULL
  *
  * walk through the routing components tree and find a route between hosts
