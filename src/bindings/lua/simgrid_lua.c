@@ -77,6 +77,7 @@ static m_task_t sglua_checktask(lua_State* L, int index)
  * the same metatable. For the regular table, the metatable allows OO-style
  * writing such as your_task:send(someone).
  * For the userdata, the metatable is used to check its type.
+ * TODO: make the task name an optional last parameter
  */
 static int l_task_new(lua_State* L)
 {
@@ -249,7 +250,7 @@ static int l_task_send(lua_State* L)
 {
   m_task_t task = sglua_checktask(L, 1);
   const char* mailbox = luaL_checkstring(L, 2);
-                                  /* task mailbox */
+                                  /* task mailbox ... */
   lua_settop(L, 1);
                                   /* task */
   task_register(L);
@@ -269,15 +270,65 @@ static int l_task_send(lua_State* L)
   }
 }
 
+/**
+ * \brief Sends a task on a mailbox.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * This is a non-blocking function: use simgrid.comm.wait() or
+ * simgrid.comm.test() to end the communication.
+ *
+ * - Argument 1 (task): the task to send
+ * - Argument 2 (string or compatible): mailbox name, as a real string or any
+ * type convertible to string (numbers always are)
+ * - Return value (comm): a communication object to be used later with wait or test
+ */
 static int l_task_isend(lua_State* L)
 {
-  // TODO
-  return 0;
+  m_task_t task = sglua_checktask(L, 1);
+  const char* mailbox = luaL_checkstring(L, 2);
+                                  /* task mailbox ... */
+  lua_settop(L, 1);
+                                  /* task */
+  task_register(L);
+                                  /* -- */
+  msg_comm_t comm = MSG_task_isend(task, mailbox);
+
+  msg_comm_t* userdata = (msg_comm_t*) lua_newuserdata(L, sizeof(msg_comm_t));
+                                  /* comm */
+  *userdata = comm;
+  luaL_getmetatable(L, COMM_MODULE_NAME);
+                                  /* comm mt */
+  lua_setmetatable(L, -2);
+                                  /* comm */
+  return 1;
 }
 
+/**
+ * \brief Sends a task on a mailbox on a best effort way (detached send).
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * Like simgrid.task.isend, this is a non-blocking function.
+ * You can use this function if you don't care about when the communication
+ * ends and whether it succeeds.
+ * FIXME: isn't this equivalent to calling simgrid.task.isend() and ignoring
+ * the result?
+ *
+ * - Argument 1 (task): the task to send
+ * - Argument 2 (string or compatible): mailbox name, as a real string or any
+ * type convertible to string (numbers always are)
+ */
 static int l_task_dsend(lua_State* L)
 {
-  // TODO
+  m_task_t task = sglua_checktask(L, 1);
+  const char* mailbox = luaL_checkstring(L, 2);
+                                  /* task mailbox ... */
+  lua_settop(L, 1);
+                                  /* task */
+  task_register(L);
+                                  /* -- */
+  MSG_task_dsend(task, mailbox, NULL);
   return 0;
 }
 
@@ -298,7 +349,7 @@ static int l_task_recv(lua_State* L)
   const char* mailbox = luaL_checkstring(L, 1);
   int timeout;
   if (lua_gettop(L) >= 2) {
-                                  /* mailbox timeout */
+                                  /* mailbox timeout ... */
     timeout = luaL_checknumber(L, 2);
   }
   else {
@@ -306,7 +357,7 @@ static int l_task_recv(lua_State* L)
     timeout = -1;
     /* no timeout by default */
   }
-                                  /* mailbox ... -- */
+                                  /* mailbox ... */
   MSG_error_t res = MSG_task_receive_with_timeout(&task, mailbox, timeout);
 
   if (res == MSG_OK) {
@@ -323,10 +374,35 @@ static int l_task_recv(lua_State* L)
   }
 }
 
+/**
+ * \brief Asynchronously receives a task on a mailbox.
+ * \param L a Lua state
+ * \return number of values returned to Lua
+ *
+ * This is a non-blocking function: use simgrid.comm.wait() or
+ * simgrid.comm.test() to end the communication and get the task in case of
+ * success.
+ *
+ * - Argument 1 (string or compatible): mailbox name, as a real string or any
+ * type convertible to string (numbers always are)
+ * - Return value (comm): a communication object to be used later with wait or test
+ */
+
 static int l_task_irecv(lua_State* L)
 {
-  // TODO
-  return 0;
+  const char* mailbox = luaL_checkstring(L, 1);
+                                  /* mailbox ... */
+  m_task_t task;
+  msg_comm_t comm = MSG_task_irecv(&task, mailbox);
+
+  msg_comm_t* userdata = (msg_comm_t*) lua_newuserdata(L, sizeof(msg_comm_t));
+                                  /* mailbox ... comm */
+  *userdata = comm;
+  luaL_getmetatable(L, COMM_MODULE_NAME);
+                                  /* mailbox ... comm mt */
+  lua_setmetatable(L, -2);
+                                  /* mailbox ... comm */
+  return 1;
 }
 
 static const luaL_reg task_functions[] = {
