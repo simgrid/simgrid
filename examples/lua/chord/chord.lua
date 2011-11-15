@@ -26,18 +26,26 @@ my_node = {
 -- Arguments:
 -- - my id
 -- - the id of a guy I know in the system (except for the first node)
-function node(my_id, known_id)
+function node(...)
 
-  simgrid.debug("Hello, I'm a node with id " .. my_id .. " and I know " .. known_id)
+  -- TODO simplify the parameters
+  local known_id
+  local args = {...}
+  my_node.id = tonumber(args[1])
+  if #args == 4 then
+    known_id = tonumber(args[2])
+  end
+
+  simgrid.debug("Hello, I'm a node")
 
   -- join the ring
-  local success = false
+  local join_success = false
   if known_id == nil then
     -- first node
     create()
-    success = true
+    join_success = true
   else
-    success = join(known_id)
+    join_success = join(known_id)
   end
 
   -- main loop
@@ -49,17 +57,20 @@ function node(my_id, known_id)
     local next_check_predecessor_date = now + check_predecessor_delay
     local next_lookup_date = now + lookup_delay
 
-    local task
+    local task, success
     my_node.comm_recv = simgrid.task.irecv(my_node.id)
 
     while now < max_simulation_time do
 
-      task = simgrid.comm.test(node.comm_recv)
+      task, success = simgrid.comm.test(my_node.comm_recv)
 
       if task then
 	-- I received a task: answer it
         my_node.comm_recv = simgrid.task.irecv(my_node.id)
 	handle_task(task)
+      elseif failed then
+        -- the communication has failed: nevermind
+        my_node.comm_recv = simgrid.task.irecv(my_node.id)
       else
         -- no task was received: do periodic calls
 	if now >= next_stabilize_date then
@@ -158,6 +169,11 @@ function is_in_interval(id, a, b)
   end
 
   return id <= b
+end
+
+-- Creates a new Chord ring.
+function create()
+  my_node.predecessor = nil
 end
 
 -- Attemps to join the Chord ring.
