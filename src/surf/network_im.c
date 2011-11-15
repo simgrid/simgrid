@@ -605,8 +605,9 @@ static surf_action_t im_net_communicate(const char *src_name,
 
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
-  // I will need this route for some time so let's call get_route_no_cleanup
-  xbt_dynar_t route = global_routing->get_route_no_cleanup(src_name, dst_name);
+  // I will need this route for some time so let's call get_route with 0 as last argument to preserve it
+  xbt_dynar_t route;
+  routing_get_route_and_latency(src_name, dst_name,&route,NULL,0);
 
 
   if (sg_network_fullduplex == 1) {

@@ -637,7 +637,6 @@ static void _get_route_and_latency(const char *src, const char *dst,
  *
  * walk through the routing components tree and find a route between hosts
  * by calling the differents "get_route" functions in each routing component.
- * No need to free the returned dynar. It will be freed at the next call.
  */
 void routing_get_route_and_latency(const char *src, const char *dst,
                               xbt_dynar_t * route, double *latency, int cleanup)
@@ -652,23 +651,6 @@ void routing_get_route_and_latency(const char *src, const char *dst,
     xbt_dynar_free(&last_route);
     last_route = cleanup ? *route : NULL;
   }
-}
-
-/**
- * \brief Generic method: find a route between hosts
- *
- * \param src the source host name
- * \param dst the destination host name
- *
- * walk through the routing components tree and find a route between hosts
- * by calling the differents "get_route" functions in each routing component.
- * Leaves the caller the responsability to clean the returned dynar.
- */
-static xbt_dynar_t get_route_no_cleanup(const char *src, const char *dst)
-{
-  xbt_dynar_t route = NULL;
-  routing_get_route_and_latency(src, dst, &route, NULL, 0);
-  return route;
 }
 
 static xbt_dynar_t recursive_get_onelink_routes(AS_t rc)
@@ -729,7 +711,6 @@ void routing_model_create(size_t size_of_links, void *loopback)
   /* config the uniq global routing */
   global_routing = xbt_new0(s_routing_global_t, 1);
   global_routing->root = NULL;
-  global_routing->get_route_no_cleanup = get_route_no_cleanup;
   global_routing->get_onelink_routes = get_onelink_routes;
   global_routing->loopback = loopback;
   global_routing->size_of_link = size_of_links;
