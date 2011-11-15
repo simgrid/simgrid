@@ -232,11 +232,11 @@ MSG_error_t MSG_action_trace_run(char *path);
 #ifdef MSG_USE_DEPRECATED
 /* these are the functions which are deprecated. Do not use them, they may get removed in future releases */
 #define MSG_TIMEOUT_FAILURE MSG_TIMEOUT
+#define MSG_TASK_CANCELLED MSG_TASK_CANCELED
 #define MSG_mailbox_put_with_time_out(mailbox, task, timeout) \
         MSG_mailbox_put_with_timeout(mailbox, task, timeout)
 
 #define MSG_process_change_host(h) MSG_process_migrate(MSG_process_self(),h);
-#define MSG_TASK_CANCELLED MSG_TASK_CANCELED
 #endif
 
 #include "instr/instr.h"
