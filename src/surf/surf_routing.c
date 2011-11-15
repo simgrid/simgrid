@@ -519,10 +519,10 @@ static void _get_route_and_latency(const char *src, const char *dst,
 
   if (e_route_bypass) { /* Common ancestor is kind enough to declare a bypass route from src to dst -- use it and bail out */
     if (latency)
-      xbt_die("Bypass cannot work yet with get_latency"); // FIXME: that limitation seems spurious to me -- check with alvin
+      xbt_die("Bypass cannot work yet with get_latency"); // FIXME: get_bypass_route should update the latency itself, just like get_route
 
-    *links = xbt_dynar_new(global_routing->size_of_link, NULL);
-
+    // FIXME this path is never tested. I need examples to check the bypass mechanism...
+    THROW_UNIMPLEMENTED; // let's warn the users of the problem
     xbt_dynar_foreach(e_route_bypass->link_list, cpt, link) {
       xbt_dynar_push(*links, &link);
     }
@@ -537,8 +537,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
   route.link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
   common_father->get_route_and_latency(common_father, src_father->name, dst_father->name, &route,latency);
 
-  xbt_assert((route.src_gateway == NULL) ==
-      (route.dst_gateway == NULL),
+  xbt_assert((route.src_gateway != NULL) && (route.dst_gateway != NULL),
       "bad gateways for route from \"%s\" to \"%s\"", src, dst);
 
   *links = xbt_dynar_new(global_routing->size_of_link, NULL);
