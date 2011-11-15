@@ -39,7 +39,7 @@ routing_global_t global_routing = NULL;
 AS_t current_routing = NULL;
 
 /* global parse functions */
-xbt_dynar_t link_list = NULL;   /* temporary store of current list link of a route */
+xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link of a route */
 static const char *src = NULL;  /* temporary store the source name of a route */
 static const char *dst = NULL;  /* temporary store the destination name of a route */
 static char *gw_src = NULL;     /* temporary store the gateway source name of a route */
@@ -168,7 +168,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
  */
 static void routing_parse_S_route(void)
 {
-  if (src != NULL && dst != NULL && link_list != NULL)
+  if (src != NULL && dst != NULL && parsed_link_list != NULL)
     THROWF(arg_error, 0, "Route between %s to %s can not be defined",
            A_surfxml_route_src, A_surfxml_route_dst);
   src = A_surfxml_route_src;
@@ -176,7 +176,7 @@ static void routing_parse_S_route(void)
   xbt_assert(strlen(src) > 0 || strlen(dst) > 0,
              "Some limits are null in the route between \"%s\" and \"%s\"",
              src, dst);
-  link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 /**
@@ -184,7 +184,7 @@ static void routing_parse_S_route(void)
  */
 static void routing_parse_S_ASroute(void)
 {
-  if (src != NULL && dst != NULL && link_list != NULL)
+  if (src != NULL && dst != NULL && parsed_link_list != NULL)
     THROWF(arg_error, 0, "Route between %s to %s can not be defined",
            A_surfxml_ASroute_src, A_surfxml_ASroute_dst);
   src = A_surfxml_ASroute_src;
@@ -195,7 +195,7 @@ static void routing_parse_S_ASroute(void)
              || strlen(gw_dst) > 0,
              "Some limits are null in the route between \"%s\" and \"%s\"",
              src, dst);
-  link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 /**
@@ -203,7 +203,7 @@ static void routing_parse_S_ASroute(void)
  */
 static void routing_parse_S_bypassRoute(void)
 {
-  if (src != NULL && dst != NULL && link_list != NULL)
+  if (src != NULL && dst != NULL && parsed_link_list != NULL)
     THROWF(arg_error, 0,
            "Bypass Route between %s to %s can not be defined",
            A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
@@ -215,7 +215,7 @@ static void routing_parse_S_bypassRoute(void)
              || strlen(gw_dst) > 0,
              "Some limits are null in the route between \"%s\" and \"%s\"",
              src, dst);
-  link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 /**
@@ -237,7 +237,7 @@ static void routing_parse_link_ctn(void)
     link_id = bprintf("%s_DOWN", A_surfxml_link_ctn_id);
     break;
   }
-  xbt_dynar_push(link_list, &link_id);
+  xbt_dynar_push(parsed_link_list, &link_id);
 }
 
 /**
@@ -246,12 +246,12 @@ static void routing_parse_link_ctn(void)
 static void routing_parse_E_route(void)
 {
   route_t route = xbt_new0(s_route_t, 1);
-  route->link_list = link_list;
+  route->link_list = parsed_link_list;
   xbt_assert(current_routing->parse_route,
              "no defined method \"set_route\" in \"%s\"",
              current_routing->name);
   current_routing->parse_route(current_routing, src, dst, route);
-  link_list = NULL;
+  parsed_link_list = NULL;
   src = NULL;
   dst = NULL;
 }
@@ -262,14 +262,14 @@ static void routing_parse_E_route(void)
 static void routing_parse_E_ASroute(void)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = link_list;
+  e_route->link_list = parsed_link_list;
   e_route->src_gateway = xbt_strdup(gw_src);
   e_route->dst_gateway = xbt_strdup(gw_dst);
   xbt_assert(current_routing->parse_ASroute,
              "no defined method \"set_ASroute\" in \"%s\"",
              current_routing->name);
   current_routing->parse_ASroute(current_routing, src, dst, e_route);
-  link_list = NULL;
+  parsed_link_list = NULL;
   src = NULL;
   dst = NULL;
   gw_src = NULL;
@@ -282,14 +282,14 @@ static void routing_parse_E_ASroute(void)
 static void routing_parse_E_bypassRoute(void)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = link_list;
+  e_route->link_list = parsed_link_list;
   e_route->src_gateway = xbt_strdup(gw_src);
   e_route->dst_gateway = xbt_strdup(gw_dst);
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
   current_routing->parse_bypassroute(current_routing, src, dst, e_route);
-  link_list = NULL;
+  parsed_link_list = NULL;
   src = NULL;
   dst = NULL;
   gw_src = NULL;
@@ -485,10 +485,12 @@ static void elements_father(const char *src, const char *dst,
  * recursively through the ASes tree.
  */
 static void _get_route_and_latency(const char *src, const char *dst,
-                                   xbt_dynar_t * route, double *latency)
+                                   xbt_dynar_t * links, double *latency)
 {
   void *link;
   unsigned int cpt;
+  s_route_t route;
+  memset(&route,0,sizeof(route));
 
   XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src, dst);
   xbt_assert(src && dst, "bad parameters for \"_get_route_latency\" method");
@@ -500,18 +502,16 @@ static void _get_route_and_latency(const char *src, const char *dst,
   /* If src and dst are in the same AS, life is good */
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
-    route_t e_route = xbt_new0(s_route_t, 1);
-    e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+    route.link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
 
-    common_father->get_route(common_father, src, dst, e_route);
-    *route = e_route->link_list;
+    common_father->get_route(common_father, src, dst, &route);
+    *links = route.link_list;
 
     if (latency)
-      *latency += common_father->get_latency(common_father, src, dst, e_route);
+      *latency += common_father->get_latency(common_father, src, dst, &route);
 
-    xbt_free(e_route->src_gateway);
-    xbt_free(e_route->dst_gateway);
-    xbt_free(e_route);
+    xbt_free(route.src_gateway);
+    xbt_free(route.dst_gateway);
     return;
   }
 
@@ -525,10 +525,10 @@ static void _get_route_and_latency(const char *src, const char *dst,
     if (latency)
       xbt_die("Bypass cannot work yet with get_latency"); // FIXME: that limitation seems supurious to me -- check with alvin
 
-    *route = xbt_dynar_new(global_routing->size_of_link, NULL);
+    *links = xbt_dynar_new(global_routing->size_of_link, NULL);
 
     xbt_dynar_foreach(e_route_bypass->link_list, cpt, link) {
-      xbt_dynar_push(*route, &link);
+      xbt_dynar_push(*links, &link);
     }
 
     generic_free_route(e_route_bypass);
@@ -549,7 +549,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
       (e_route_cnt->dst_gateway == NULL),
       "bad gateway for route between \"%s\" and \"%s\"", src, dst);
 
-  *route = xbt_dynar_new(global_routing->size_of_link, NULL);
+  *links = xbt_dynar_new(global_routing->size_of_link, NULL);
 
   if (latency) {
     *latency += common_father->get_latency(common_father,
@@ -563,17 +563,17 @@ static void _get_route_and_latency(const char *src, const char *dst,
     xbt_dynar_t route_src;
 
     _get_route_and_latency(src, e_route_cnt->src_gateway,
-        (route ? &route_src : NULL),
+        (links ? &route_src : NULL),
         latency);
 
     xbt_dynar_foreach(route_src, cpt, link) {
-      xbt_dynar_push(*route, &link);
+      xbt_dynar_push(*links, &link);
     }
     xbt_dynar_free(&route_src);
   }
 
   xbt_dynar_foreach(e_route_cnt->link_list, cpt, link) {
-    xbt_dynar_push(*route, &link);
+    xbt_dynar_push(*links, &link);
   }
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
@@ -581,11 +581,11 @@ static void _get_route_and_latency(const char *src, const char *dst,
     xbt_dynar_t route_dst;
 
     _get_route_and_latency(e_route_cnt->dst_gateway, dst,
-        (route ? &route_dst : NULL),
+        (links ? &route_dst : NULL),
         latency);
 
     xbt_dynar_foreach(route_dst, cpt, link) {
-      xbt_dynar_push(*route, &link);
+      xbt_dynar_push(*links, &link);
     }
     xbt_dynar_free(&route_dst);
 
