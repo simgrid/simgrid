@@ -478,7 +478,7 @@ static void elements_father(const char *src, const char *dst,
  *
  * \param src the source host name 
  * \param dst the destination host name
- * \param *route the route where the links are stored.
+ * \param *route the route where the links are stored. It is either NULL or a ready to use dynar
  * \param *latency the latency, if needed
  * 
  * This function is called by "get_route" and "get_latency". It allows to walk
@@ -502,21 +502,20 @@ static void _get_route_and_latency(const char *src, const char *dst,
 
     route_t e_route = xbt_new0(s_route_t, 1);
     e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
-    if (route) {
-      common_father->get_route(common_father, src, dst, e_route);
-      xbt_assert(e_route, "no route between \"%s\" and \"%s\"", src, dst);
-      *route = e_route->link_list;
-    }
+
+    common_father->get_route(common_father, src, dst, e_route);
+    xbt_assert(e_route, "no route between \"%s\" and \"%s\"", src, dst);
+    *route = e_route->link_list;
+
     if (latency) {
       *latency = common_father->get_latency(common_father, src, dst, e_route);
       xbt_assert(*latency >= 0.0,
                  "latency error on route between \"%s\" and \"%s\"", src, dst);
     }
-    if (e_route) {
-      xbt_free(e_route->src_gateway);
-      xbt_free(e_route->dst_gateway);
-      xbt_free(e_route);
-    }
+
+    xbt_free(e_route->src_gateway);
+    xbt_free(e_route->dst_gateway);
+    xbt_free(e_route);
     return;
   }
 
@@ -530,8 +529,6 @@ static void _get_route_and_latency(const char *src, const char *dst,
     if (latency)
       xbt_die("Bypass cannot work yet with get_latency"); // FIXME: that limitation seems supurious to me -- check with alvin
 
-    if (!route)
-      xbt_die("You're asking for route and latency but don't ask for any of them, you weirdo");
     *route = xbt_dynar_new(global_routing->size_of_link, NULL);
 
     xbt_dynar_foreach(e_route_bypass->link_list, cpt, link) {
@@ -556,9 +553,8 @@ static void _get_route_and_latency(const char *src, const char *dst,
       (e_route_cnt->dst_gateway == NULL),
       "bad gateway for route between \"%s\" and \"%s\"", src, dst);
 
-  if (route) {
-    *route = xbt_dynar_new(global_routing->size_of_link, NULL);
-  }
+  *route = xbt_dynar_new(global_routing->size_of_link, NULL);
+
   if (latency) {
     *latency = common_father->get_latency(common_father,
         src_father->name, dst_father->name,
@@ -577,14 +573,14 @@ static void _get_route_and_latency(const char *src, const char *dst,
     _get_route_and_latency(src, e_route_cnt->src_gateway,
         (route ? &route_src : NULL),
         (latency ? &latency_src : NULL));
-    if (route) {
-      xbt_assert(route_src, "no route between \"%s\" and \"%s\"",
-          src, e_route_cnt->src_gateway);
-      xbt_dynar_foreach(route_src, cpt, link) {
-        xbt_dynar_push(*route, &link);
-      }
-      xbt_dynar_free(&route_src);
+
+    xbt_assert(route_src, "no route between \"%s\" and \"%s\"",
+        src, e_route_cnt->src_gateway);
+    xbt_dynar_foreach(route_src, cpt, link) {
+      xbt_dynar_push(*route, &link);
     }
+    xbt_dynar_free(&route_src);
+
     if (latency) {
       xbt_assert(latency_src >= 0.0,
           "latency error on route between \"%s\" and \"%s\"",
@@ -593,10 +589,8 @@ static void _get_route_and_latency(const char *src, const char *dst,
     }
   }
 
-  if (route) {
-    xbt_dynar_foreach(e_route_cnt->link_list, cpt, link) {
-      xbt_dynar_push(*route, &link);
-    }
+  xbt_dynar_foreach(e_route_cnt->link_list, cpt, link) {
+    xbt_dynar_push(*route, &link);
   }
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
@@ -607,14 +601,14 @@ static void _get_route_and_latency(const char *src, const char *dst,
     _get_route_and_latency(e_route_cnt->dst_gateway, dst,
         (route ? &route_dst : NULL),
         (latency ? &latency_dst : NULL));
-    if (route) {
-      xbt_assert(route_dst, "no route between \"%s\" and \"%s\"",
-          e_route_cnt->dst_gateway, dst);
-      xbt_dynar_foreach(route_dst, cpt, link) {
-        xbt_dynar_push(*route, &link);
-      }
-      xbt_dynar_free(&route_dst);
+
+    xbt_assert(route_dst, "no route between \"%s\" and \"%s\"",
+        e_route_cnt->dst_gateway, dst);
+    xbt_dynar_foreach(route_dst, cpt, link) {
+      xbt_dynar_push(*route, &link);
     }
+    xbt_dynar_free(&route_dst);
+
     if (latency) {
       xbt_assert(latency_dst >= 0.0,
           "latency error on route between \"%s\" and \"%s\"",
@@ -631,9 +625,10 @@ static void _get_route_and_latency(const char *src, const char *dst,
  *
  * \param src the source host name
  * \param dst the destination host name
- * \param route where to store the list of links. If route=NULL, we don't care about the route.
+ * \param route where to store the list of links.
  *              If *route=NULL, create a short lived dynar. Else, fill the provided dynar
  * \param latency where to store the latency experienced on the path (or NULL if not interested)
+ * \pre route!=NULL
  *
  * walk through the routing components tree and find a route between hosts
  * by calling the differents "get_route" functions in each routing component.
@@ -642,7 +637,8 @@ void routing_get_route_and_latency(const char *src, const char *dst,
                                    xbt_dynar_t * route, double *latency)
 {
   static xbt_dynar_t last_route = NULL;
-  int need_cleanup = route && !(*route);
+
+  int need_cleanup = !(*route);
 
   if (need_cleanup) {
     xbt_dynar_free(&last_route);
@@ -651,7 +647,6 @@ void routing_get_route_and_latency(const char *src, const char *dst,
 
   _get_route_and_latency(src, dst, route, latency);
 
-  xbt_assert(!route || *route, "no route between \"%s\" and \"%s\"", src, dst);
   xbt_assert(!latency || *latency >= 0.0,
              "negative latency on route between \"%s\" and \"%s\"", src, dst);
 }

@@ -117,8 +117,7 @@ xbt_dynar_t generic_get_onelink_routes(AS_t rc)
   xbt_die("\"generic_get_onelink_routes\" not implemented yet");
 }
 
-route_t generic_get_bypassroute(AS_t rc,
-                                         const char *src, const char *dst)
+route_t generic_get_bypassroute(AS_t rc, const char *src, const char *dst)
 {
   xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
   AS_t src_as, dst_as;
