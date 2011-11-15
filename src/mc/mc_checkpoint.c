@@ -8,7 +8,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size);
 static void MC_region_restore(mc_mem_region_t reg);
 static void MC_region_destroy(mc_mem_region_t reg);
-static void MC_snapshot_destroy(mc_snapshot_t s);
 
 static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start_addr, size_t size);
 
@@ -51,8 +50,6 @@ void MC_take_snapshot(mc_snapshot_t snapshot)
   s_map_region reg;
   memory_map_t maps = get_memory_map();
 
-  XBT_DEBUG("Take snapshot");
-
   /* Save the std heap and the writable mapped pages of libsimgrid */
   while (i < maps->mapsize) {
     reg = maps->regions[i];
@@ -70,31 +67,15 @@ void MC_take_snapshot(mc_snapshot_t snapshot)
     i++;
   }
 
-
   /* FIXME: free the memory map */
 }
 
-static void MC_snapshot_destroy(mc_snapshot_t s){
-
-  int i;
-
-  for(i=0; i< s->num_reg; i++){
-    MC_region_destroy(s->regions[i]);
-  }
-
-  s->num_reg=0;
-
-}
 
 void MC_take_snapshot_liveness(mc_snapshot_t snapshot, char *prgm)
 {
   unsigned int i = 0;
   s_map_region reg;
   memory_map_t maps = get_memory_map();
-
-  MC_snapshot_destroy(snapshot);
-
-  XBT_DEBUG("Take snapshot");
 
   /* Save the std heap and the writable mapped pages of libsimgrid */
   while (i < maps->mapsize) {
@@ -103,23 +84,19 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot, char *prgm)
       if (maps->regions[i].pathname == NULL){
         if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
           MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-	  //XBT_DEBUG("Region heap");
         }
       } else {
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-	  //XBT_DEBUG("Region simgrid");
         } else {
 	  if (!memcmp(basename(maps->regions[i].pathname), basename(prgm), strlen(basename(prgm)))){
 	    MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-	    //XBT_DEBUG("Region prog");
 	  } 
 	}
       }
     }
     i++;
   }
-
 
   /* FIXME: free the memory map */
 }
