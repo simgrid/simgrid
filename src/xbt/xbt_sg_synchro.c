@@ -36,9 +36,10 @@ typedef struct s_xbt_thread_ {
 
 static int xbt_thread_create_wrapper(int argc, char *argv[])
 {
+  smx_process_t self = SIMIX_process_self();
   xbt_thread_t t =
-      (xbt_thread_t) SIMIX_process_self_get_data();
-  SIMIX_req_process_set_data(SIMIX_process_self(), t->father_data);
+      (xbt_thread_t) SIMIX_process_self_get_data(self);
+  SIMIX_req_process_set_data(self, t->father_data);
   t->code(t->userparam);
   if (t->joinable) {
     t->done = 1;
@@ -61,7 +62,7 @@ xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
   res->name = xbt_strdup(name);
   res->userparam = param;
   res->code = code;
-  res->father_data = SIMIX_process_self_get_data();
+  res->father_data = SIMIX_process_self_get_data(SIMIX_process_self());
   /*   char*name = bprintf("%s#%p",SIMIX_process_self_get_name(), param); */
   SIMIX_req_process_create(&res->s_process, name,
                            xbt_thread_create_wrapper, res,
@@ -118,12 +119,12 @@ void xbt_thread_exit()
 
 xbt_thread_t xbt_thread_self(void)
 {
-  return SIMIX_process_self_get_data();
+  return SIMIX_process_self_get_data(SIMIX_process_self());
 }
 
 void xbt_thread_yield(void)
 {
-  SIMIX_process_yield();
+  SIMIX_process_yield(SIMIX_process_self());
 }
 
 /****** mutex related functions ******/

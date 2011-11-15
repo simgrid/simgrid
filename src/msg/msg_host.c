@@ -117,7 +117,7 @@ const char *MSG_host_get_name(m_host_t host)
  */
 m_host_t MSG_host_self(void)
 {
-  return MSG_process_get_host(MSG_process_self());
+  return MSG_process_get_host(NULL);
 }
 
 /** \ingroup m_host_management

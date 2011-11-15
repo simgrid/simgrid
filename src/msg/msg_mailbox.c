@@ -130,7 +130,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   MSG_error_t ret = MSG_OK;
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
-  simdata_process_t p_simdata = SIMIX_process_self_get_data();
+  simdata_process_t p_simdata = SIMIX_process_self_get_data(process);
   CHECK_HOST();
 
 #ifdef HAVE_TRACING
@@ -140,7 +140,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = MSG_host_self();
+  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
 
   xbt_assert(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");

@@ -504,7 +504,7 @@ typedef struct s_smx_req {
 
 /******************************** General *************************************/
 
-void SIMIX_request_push(void);
+void SIMIX_request_push(smx_process_t self);
 void SIMIX_request_answer(smx_req_t);
 void SIMIX_request_pre(smx_req_t, int);
 void SIMIX_request_post(smx_action_t);

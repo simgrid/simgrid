@@ -186,6 +186,7 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->smx_host = host;
     (*process)->data = data;
     (*process)->comms = xbt_fifo_new();
+    (*process)->request.issuer = *process;
 
     XBT_VERB("Create context %s", (*process)->name);
     (*process)->context = SIMIX_context_new(code, argc, argv,
@@ -413,18 +414,21 @@ int SIMIX_process_count(void)
   return xbt_swag_size(simix_global->process_list);
 }
 
-void* SIMIX_process_self_get_data(void)
+void* SIMIX_process_self_get_data(smx_process_t self)
 {
-  smx_process_t me = SIMIX_process_self();
-  if (!me) {
+  xbt_assert(self == SIMIX_process_self(), "This is not the current process");
+
+  if (!self) {
     return NULL;
   }
-  return SIMIX_process_get_data(me);
+  return SIMIX_process_get_data(self);
 }
 
-void SIMIX_process_self_set_data(void *data)
+void SIMIX_process_self_set_data(smx_process_t self, void *data)
 {
-  SIMIX_process_set_data(SIMIX_process_self(), data);
+  xbt_assert(self == SIMIX_process_self(), "This is not the current process");
+
+  SIMIX_process_set_data(self, data);
 }
 
 void* SIMIX_process_get_data(smx_process_t process)
@@ -568,13 +572,15 @@ void SIMIX_process_sleep_resume(smx_action_t action)
 }
 
 /** 
- * Calling this function makes the process to yield.
- * Only the processes can call this function, giving back the control to maestro
+ * \brief Calling this function makes the process to yield.
+ *
+ * Only the current process can call this function, giving back the control to
+ * maestro.
+ *
+ * \param self the current process
  */
-void SIMIX_process_yield(void)
+void SIMIX_process_yield(smx_process_t self)
 {
-  smx_process_t self = SIMIX_process_self();
-
   XBT_DEBUG("Yield process '%s'", self->name);
 
   /* Go into sleep and return control to maestro */

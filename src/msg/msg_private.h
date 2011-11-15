@@ -94,9 +94,9 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 /*************************************************************/
 
 #define PROCESS_SET_ERRNO(val) \
-  (((simdata_process_t) SIMIX_process_self_get_data())->last_errno=val)
+  (((simdata_process_t) SIMIX_process_self_get_data(SIMIX_process_self()))->last_errno=val)
 #define PROCESS_GET_ERRNO() \
-  (((simdata_process_t) SIMIX_process_self_get_data())->last_errno)
+  (((simdata_process_t) SIMIX_process_self_get_data(SIMIX_process_self()))->last_errno)
 #define MSG_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
 /* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
 

@@ -62,16 +62,18 @@ MSG_error_t MSG_task_execute(m_task_t task)
 #endif
     return MSG_OK;
   }
+
+  m_process_t self = SIMIX_process_self();
+  p_simdata = SIMIX_process_self_get_data(self);
   simdata->isused=1;
   simdata->compute =
-      SIMIX_req_host_execute(task->name, SIMIX_host_self(),
+      SIMIX_req_host_execute(task->name, p_simdata->m_host->simdata->smx_host,
                            simdata->computation_amount,
                            simdata->priority);
 #ifdef HAVE_TRACING
   SIMIX_req_set_category(simdata->compute, task->category);
 #endif
 
-  p_simdata = SIMIX_process_self_get_data();
   p_simdata->waiting_action = simdata->compute;
   comp_state = SIMIX_req_host_execution_wait(simdata->compute);
   p_simdata->waiting_action = NULL;
@@ -171,7 +173,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   CHECK_HOST();
 
   simdata = task->simdata;
-  p_simdata = SIMIX_process_self_get_data();
+  p_simdata = SIMIX_process_self_get_data(SIMIX_process_self());
 
   xbt_assert((!simdata->compute)
               && (task->simdata->isused == 0),
@@ -385,6 +387,7 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
 {
   return MSG_task_isend_with_matching(task,alias,NULL,NULL);
 }
+
 /** \ingroup msg_gos_functions
  * \brief Sends a task on a mailbox, with support for matching requests
  *
@@ -412,7 +415,7 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = MSG_host_self();
+  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
 
   xbt_assert(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
@@ -467,7 +470,7 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = MSG_host_self();
+  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
 
   xbt_assert(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");

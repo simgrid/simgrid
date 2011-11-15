@@ -32,7 +32,7 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 
   if (smx_proc == SIMIX_process_self()) {
     /* avoid a SIMIX request if this function is called by the process itself */
-    msg_proc = SIMIX_process_self_get_data();
+    msg_proc = SIMIX_process_self_get_data(smx_proc);
   }
   else {
     msg_proc = SIMIX_req_process_get_data(smx_proc);
@@ -258,16 +258,19 @@ MSG_error_t MSG_process_set_data(m_process_t process, void *data)
 
 /** \ingroup m_process_management
  * \brief Return the location on which an agent is running.
- *
- * This function checks whether \a process is a valid pointer or not
-   and return the m_host_t corresponding to the location on which \a
-   process is running.
+ * \param process a process (NULL means the current one)
+ * \return the m_host_t corresponding to the location on which \a
+ * process is running.
  */
 m_host_t MSG_process_get_host(m_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter");
-
-  simdata_process_t simdata = SIMIX_req_process_get_data(process);
+  simdata_process_t simdata;
+  if (process == NULL) {
+    simdata = SIMIX_process_self_get_data(SIMIX_process_self());
+  }
+  else {
+    simdata = SIMIX_req_process_get_data(process);
+  }
   return simdata->m_host;
 }
 

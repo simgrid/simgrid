@@ -38,6 +38,7 @@ void gras_agent_spawn(const char *name,
 
 void gras_process_init()
 {
+  smx_process_t self = SIMIX_process_self();
   gras_hostdata_t *hd =
       (gras_hostdata_t *) SIMIX_host_self_get_data();
   gras_procdata_t *pd = xbt_new0(gras_procdata_t, 1);
@@ -54,13 +55,13 @@ void gras_process_init()
     hd->refcount++;
   }
 
-  SIMIX_process_self_set_data((void *) pd);
+  SIMIX_process_self_set_data(self, (void *) pd);
   gras_procdata_init();
 
   trp_pd = (gras_trp_procdata_t) gras_libdata_by_name("gras_trp");
   pd->pid = pid;
 
-  if (SIMIX_process_self() != NULL) {
+  if (self != NULL) {
     pd->ppid = gras_os_getpid();
   } else
     pd->ppid = -1;
@@ -179,7 +180,7 @@ xbt_dict_t gras_process_properties(void)
 int gras_os_getpid(void)
 {
   gras_procdata_t *data;
-  data = (gras_procdata_t *) SIMIX_process_self_get_data();
+  data = (gras_procdata_t *) SIMIX_process_self_get_data(SIMIX_process_self());
   if (data != NULL)
     return data->pid;
 

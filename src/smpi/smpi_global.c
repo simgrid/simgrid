@@ -105,7 +105,7 @@ int smpi_global_size(void) {
 
 smpi_process_data_t smpi_process_data(void)
 {
-  return SIMIX_process_self_get_data();
+  return SIMIX_process_self_get_data(SIMIX_process_self());
 }
 
 smpi_process_data_t smpi_process_remote_data(int index)
