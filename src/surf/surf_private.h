@@ -176,7 +176,6 @@ XBT_PUBLIC(void) routing_register_callbacks(void);
 XBT_PUBLIC(void) generic_free_route(route_t route); // FIXME rename to routing_route_free
 
 
-XBT_PUBLIC(xbt_dynar_t) routing_get_route(const char *src, const char *dst);
 XBT_PUBLIC(void) routing_get_route_and_latency(const char *src, const char *dst, //FIXME too much functions avail?
                               xbt_dynar_t * route, double *latency, int cleanup);
 

@@ -81,13 +81,13 @@ static void ptask_update_action_bound(surf_action_workstation_L07_t action)
 
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
-      xbt_dynar_t route =
-          routing_get_route(surf_resource_name
-                                    (action->workstation_list[i]),
-                                    surf_resource_name(action->
-                                                       workstation_list
-                                                       [j]));
+      xbt_dynar_t route;
+      routing_get_route_and_latency(surf_resource_name
+          (action->workstation_list[i]),
+          surf_resource_name(action->workstation_list[j]),
+          &route, NULL,1);
 
+      // FIXME do we really need to recompute the latency here?
       double lat = 0.0;
 
       if (action->communication_amount[i * workstation_nb + j] > 0) {
@@ -462,11 +462,11 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
       link_L07_t link;
-      xbt_dynar_t route =
-          routing_get_route(surf_resource_name
-                                    (workstation_list[i]),
-                                    surf_resource_name(workstation_list
-                                                       [j]));
+      xbt_dynar_t route;
+      routing_get_route_and_latency(
+          surf_resource_name(workstation_list[i]),
+          surf_resource_name(workstation_list[j]),
+          &route,NULL,1); // FIXME: do we want to recompute the latency?
       double lat = 0.0;
 
       if (communication_amount[i * workstation_nb + j] > 0)
@@ -516,11 +516,11 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
       link_L07_t link;
-      xbt_dynar_t route =
-          routing_get_route(surf_resource_name
-                                    (workstation_list[i]),
-                                    surf_resource_name(workstation_list
-                                                       [j]));
+      xbt_dynar_t route;
+      routing_get_route_and_latency(
+          surf_resource_name(workstation_list[i]),
+          surf_resource_name(workstation_list[j]),
+          &route,NULL,1);
 
       if (communication_amount[i * workstation_nb + j] == 0.0)
         continue;
@@ -591,8 +591,11 @@ static surf_action_t ptask_action_sleep(void *cpu, double duration)
 
 static xbt_dynar_t ptask_get_route(void *src, void *dst) // FIXME: kill that callback kind?
 {
-  return routing_get_route(surf_resource_name(src),
-                                   surf_resource_name(dst));
+  xbt_dynar_t route;
+  routing_get_route_and_latency(
+      surf_resource_name(src), surf_resource_name(dst),
+      &route,NULL,1);
+  return route;
 }
 
 static double ptask_get_link_bandwidth(const void *link)

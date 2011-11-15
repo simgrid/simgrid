@@ -627,7 +627,17 @@ static void _get_route_and_latency(const char *src, const char *dst,
 }
 
 /**
- * \brief Generic function for get_route, get_route_no_cleanup, and get_latency
+ * \brief Find a route between hosts
+ *
+ * \param src the source host name
+ * \param dst the destination host name
+ * \param route where to store the list of links (or NULL if you are not interested in it)
+ * \param latency where to store the latency experienced on the path (or NULL if not interested)
+ * \param cleanup boolean whether the dynar should be automatically destroyed or not
+ *
+ * walk through the routing components tree and find a route between hosts
+ * by calling the differents "get_route" functions in each routing component.
+ * No need to free the returned dynar. It will be freed at the next call.
  */
 void routing_get_route_and_latency(const char *src, const char *dst,
                               xbt_dynar_t * route, double *latency, int cleanup)
@@ -642,22 +652,6 @@ void routing_get_route_and_latency(const char *src, const char *dst,
     xbt_dynar_free(&last_route);
     last_route = cleanup ? *route : NULL;
   }
-}
-
-/**
- * \brief Find a route between hosts
- *
- * \param src the source host name 
- * \param dst the destination host name
- * 
- * walk through the routing components tree and find a route between hosts
- * by calling the differents "get_route" functions in each routing component.
- * No need to free the returned dynar. It will be freed at the next call.
- */
-xbt_dynar_t routing_get_route(const char *src, const char *dst) {
-  xbt_dynar_t route = NULL;
-  routing_get_route_and_latency(src, dst, &route, NULL, 1);
-  return route;
 }
 
 /**

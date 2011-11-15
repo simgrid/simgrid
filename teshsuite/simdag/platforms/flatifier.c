@@ -136,7 +136,8 @@ int main(int argc, char **argv)
 				printf("  <route src=\"%s\" dst=\"%s\">\n	"
 					  ,src
 					  ,dst);
-				xbt_dynar_t route = routing_get_route(src,dst);
+				xbt_dynar_t route;
+				routing_get_route_and_latency(src,dst,&route,NULL,1);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
@@ -153,7 +154,8 @@ int main(int argc, char **argv)
 				printf("  <route src=\"%s\" dst=\"%s\">\n	"
 					  ,src
 					  ,dst);
-				xbt_dynar_t route = routing_get_route(src,dst);
+				xbt_dynar_t route;
+				routing_get_route_and_latency(src,dst,&route,NULL,1);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
@@ -176,7 +178,8 @@ int main(int argc, char **argv)
 				printf("  <route src=\"%s\" dst=\"%s\">\n	"
 					  ,src
 					  ,dst);
-				xbt_dynar_t route = routing_get_route(src,dst);
+				xbt_dynar_t route;
+				routing_get_route_and_latency(src,dst,&route,NULL,1);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
@@ -191,9 +194,9 @@ int main(int argc, char **argv)
 		  xbt_lib_foreach(host_lib, cursor_dst, dst, value) //to host
 		  {
 				printf("  <route src=\"%s\" dst=\"%s\">\n	"
-					  ,src
-					  ,dst);
-				xbt_dynar_t route = routing_get_route(src,dst);
+					  ,src, dst);
+				xbt_dynar_t route;
+				routing_get_route_and_latency(src,dst,&route, NULL,1);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
