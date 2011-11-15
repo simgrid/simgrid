@@ -11,6 +11,7 @@ extern mc_snapshot_t initial_snapshot;
 
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
+  XBT_DEBUG("Compare snapshot");
   
   if(s1->num_reg != s2->num_reg){
     XBT_DEBUG("Different num_reg");
@@ -209,8 +210,6 @@ mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r){
   mc_stats_pair->expanded_pairs++;
   return p;
 }
-
-
 
 void MC_ddfs_stateless_init(xbt_automaton_t a, char *prgm){
 
@@ -605,9 +604,14 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
   xbt_fifo_shift(mc_stack_liveness_stateless);
   if((current_pair->automaton_state->type == 1) || (current_pair->automaton_state->type == 2)){
     xbt_fifo_shift(reached_pairs);
-    MC_free_snapshot(snapshot);
   }
+  if(snapshot != NULL)
+    MC_free_snapshot(snapshot);
   MC_UNSET_RAW_MEM;
+
+  MC_pair_stateless_delete(current_pair);
+
+  /* FIXME : free memory (pair, snapshot)*/
 
 }
 
