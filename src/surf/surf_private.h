@@ -173,10 +173,11 @@ XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback);
 XBT_PUBLIC(void) routing_exit(void);
 XBT_PUBLIC(void) routing_register_callbacks(void);
 XBT_PUBLIC(void) generic_free_route(route_t route); // FIXME rename to routing_route_free
+ // FIXME: make previous function private to routing again?
 
 
-XBT_PUBLIC(void) routing_get_route_and_latency(const char *src, const char *dst, //FIXME too much functions avail?
-                              xbt_dynar_t * route, double *latency, int cleanup);
+XBT_PUBLIC(void) routing_get_route_and_latency(const char *src, const char *dst,
+                              xbt_dynar_t * route, double *latency);
 
 /**
  * Resource protected methods

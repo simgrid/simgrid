@@ -176,7 +176,7 @@ typedef struct surf_network_model_extension_public {
   surf_action_t(*communicate) (const char *src_name,
                                const char *dst_name,
                                double size, double rate);
-  xbt_dynar_t(*get_route) (const char *src_name, const char *dst_name);
+  xbt_dynar_t(*get_route) (const char *src_name, const char *dst_name); //FIXME: kill field? That is done by the routing nowadays
   double (*get_link_bandwidth) (const void *link);
   double (*get_link_latency) (const void *link);
   int (*link_shared) (const void *link);
@@ -208,6 +208,7 @@ typedef struct surf_workstation_model_extension_public {
    surf_action_t(*communicate) (void *workstation_src,                                     /**< Execute a communication amount between two workstations */
                                 void *workstation_dst, double size,
                                 double max_rate);
+   // FIXME: kill next field, which duplicates the routing
    xbt_dynar_t(*get_route) (void *workstation_src, void *workstation_dst);                 /**< Get the list of links between two ws */
 
    surf_action_t(*execute_parallel_task) (int workstation_nb,                              /**< Execute a parallel task on several workstations */

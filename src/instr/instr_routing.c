@@ -113,7 +113,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
         xbt_ex_t e;
 
         TRY {
-          routing_get_route_and_latency(child1_name, child2_name, &route, NULL, 1);
+          routing_get_route_and_latency(child1_name, child2_name, &route, NULL);
         } CATCH(e) {
           xbt_ex_free(e);
         }
@@ -421,9 +421,9 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
           (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER) &&
           strcmp (child1_name, child2_name) != 0){
 
-        // FIXME factorize route creation once possible
-        xbt_dynar_t route;
-        routing_get_route_and_latency (child1_name, child2_name,&route,NULL,1);
+        // FIXME factorize route creation with else branch below (once possible)
+        xbt_dynar_t route=NULL;
+        routing_get_route_and_latency (child1_name, child2_name,&route,NULL);
         if (TRACE_onelink_only()){
           if (xbt_dynar_length (route) > 1) continue;
         }

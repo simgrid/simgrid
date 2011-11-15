@@ -605,13 +605,13 @@ static surf_action_t im_net_communicate(const char *src_name,
 
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
-  // I will need this route for some time so let's call get_route with 0 as last argument to preserve it
-  xbt_dynar_t route;
-  routing_get_route_and_latency(src_name, dst_name,&route,NULL,0);
+  // I need to have the forward and backward routes at the same time, so allocate "route". That way, the routing wont clean it up
+  xbt_dynar_t route=xbt_dynar_new(global_routing->size_of_link,NULL);
+  routing_get_route_and_latency(src_name, dst_name,&route,NULL);
 
 
   if (sg_network_fullduplex == 1) {
-    routing_get_route_and_latency(dst_name, src_name, &back_route, NULL,1);
+    routing_get_route_and_latency(dst_name, src_name, &back_route, NULL);
   }
 
   /* LARGE PLATFORMS HACK:
@@ -748,8 +748,8 @@ static surf_action_t im_net_communicate(const char *src_name,
 
 static xbt_dynar_t im_net_get_route(const char *src, const char *dst)
 {
-  xbt_dynar_t route;
-  routing_get_route_and_latency(src, dst,&route,NULL,1);
+  xbt_dynar_t route=NULL;
+  routing_get_route_and_latency(src, dst,&route,NULL);
   return route;
 }
 

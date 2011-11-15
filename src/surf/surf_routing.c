@@ -478,7 +478,7 @@ static void elements_father(const char *src, const char *dst,
  *
  * \param src the source host name 
  * \param dst the destination host name
- * \param *e_route the route where the links are stored
+ * \param *route the route where the links are stored.
  * \param *latency the latency, if needed
  * 
  * This function is called by "get_route" and "get_latency". It allows to walk
@@ -631,26 +631,29 @@ static void _get_route_and_latency(const char *src, const char *dst,
  *
  * \param src the source host name
  * \param dst the destination host name
- * \param route where to store the list of links (or NULL if you are not interested in it)
+ * \param route where to store the list of links. If route=NULL, we don't care about the route.
+ *              If *route=NULL, create a short lived dynar. Else, fill the provided dynar
  * \param latency where to store the latency experienced on the path (or NULL if not interested)
- * \param cleanup boolean whether the dynar should be automatically destroyed or not
  *
  * walk through the routing components tree and find a route between hosts
  * by calling the differents "get_route" functions in each routing component.
  */
 void routing_get_route_and_latency(const char *src, const char *dst,
-                              xbt_dynar_t * route, double *latency, int cleanup)
+                                   xbt_dynar_t * route, double *latency)
 {
   static xbt_dynar_t last_route = NULL;
+  int need_cleanup = route && !(*route);
+
+  if (need_cleanup) {
+    xbt_dynar_free(&last_route);
+    last_route = *route = xbt_dynar_new(global_routing->size_of_link,NULL);
+  }
 
   _get_route_and_latency(src, dst, route, latency);
+
   xbt_assert(!route || *route, "no route between \"%s\" and \"%s\"", src, dst);
   xbt_assert(!latency || *latency >= 0.0,
-             "latency error on route between \"%s\" and \"%s\"", src, dst);
-  if (route) {
-    xbt_dynar_free(&last_route);
-    last_route = cleanup ? *route : NULL;
-  }
+             "negative latency on route between \"%s\" and \"%s\"", src, dst);
 }
 
 static xbt_dynar_t recursive_get_onelink_routes(AS_t rc)

@@ -413,8 +413,8 @@ static void net_update_actions_state(double now, double delta)
     }
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      xbt_dynar_t route;
-      routing_get_route_and_latency(action->src_name, action->dst_name,&route,NULL,1);
+      xbt_dynar_t route=NULL;
+      routing_get_route_and_latency(action->src_name, action->dst_name,&route,NULL);
       link_CM02_t link;
       unsigned int i;
       xbt_dynar_foreach(route, i, link) {
@@ -585,12 +585,13 @@ static surf_action_t net_communicate(const char *src_name,
 
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
-  xbt_dynar_t route;
-  // I need to have the forward and backward routes at the same time, so I don't ask the routing to cleanup the route right away for me
-  routing_get_route_and_latency(src_name, dst_name, &route, &latency, 0);
+  xbt_dynar_t route = xbt_dynar_new(sizeof(void*),NULL);
+  // I need to have the forward and backward routes at the same time, so allocate "route". That way, the routing wont clean it up
+  routing_get_route_and_latency(src_name, dst_name, &route, &latency);
 
   if (sg_network_fullduplex == 1) {
-    routing_get_route_and_latency(dst_name, src_name, &back_route,NULL,1);
+    // FIXME: fill route directly
+    routing_get_route_and_latency(dst_name, src_name, &back_route,NULL);
   }
 
   /* LARGE PLATFORMS HACK:
@@ -723,8 +724,8 @@ static surf_action_t net_communicate(const char *src_name,
 
 static xbt_dynar_t net_get_route(const char *src, const char *dst)
 {
-  xbt_dynar_t route;
-  routing_get_route_and_latency(src, dst,&route, NULL,1);
+  xbt_dynar_t route=NULL;
+  routing_get_route_and_latency(src, dst,&route, NULL);
   return route;
 }
 

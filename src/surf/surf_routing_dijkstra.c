@@ -360,8 +360,8 @@ static void dijkstra_get_route(AS_t asg,
 
     if (asg->hierarchy == SURF_ROUTING_RECURSIVE && v != dst_node_id
         && strcmp(gw_dst, prev_gw_src)) {
-      xbt_dynar_t e_route_as_to_as;
-      routing_get_route_and_latency(gw_dst, prev_gw_src,&e_route_as_to_as,NULL,1);
+      xbt_dynar_t e_route_as_to_as=NULL;
+      routing_get_route_and_latency(gw_dst, prev_gw_src,&e_route_as_to_as,NULL);
       xbt_assert(e_route_as_to_as, "no route between \"%s\" and \"%s\"",
                   gw_dst, prev_gw_src);
       links = e_route_as_to_as;
