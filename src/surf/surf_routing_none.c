@@ -12,8 +12,8 @@ static xbt_dynar_t none_get_onelink_routes(AS_t rc) {
   return NULL;
 }
 
-static void none_get_route(AS_t rc, const char *src, const char *dst,
-                           route_t res)
+static void none_get_route_and_latency(AS_t rc, const char *src, const char *dst,
+                                       route_t res,double *lat)
 {
 }
 
@@ -42,7 +42,7 @@ AS_t model_none_create_sized(size_t childsize) {
   new_component->parse_route = NULL;
   new_component->parse_ASroute = NULL;
   new_component->parse_bypassroute = NULL;
-  new_component->get_route = none_get_route;
+  new_component->get_route_and_latency = none_get_route_and_latency;
   new_component->get_onelink_routes = none_get_onelink_routes;
   new_component->get_bypass_route = none_get_bypass_route;
   new_component->finalize = model_none_finalize;

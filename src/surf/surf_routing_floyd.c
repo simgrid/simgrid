@@ -25,7 +25,8 @@ typedef struct {
   route_t *link_table;
 } s_as_floyd_t, *as_floyd_t;
 
-static void floyd_get_route(AS_t asg, const char *src, const char *dst, route_t res);
+static void floyd_get_route_and_latency(AS_t asg, const char *src, const char *dst,
+    route_t res, double *lat);
 
 /* Business methods */
 static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
@@ -40,7 +41,7 @@ static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
   xbt_dict_foreach(asg->to_index, c1, k1, d1) {
     xbt_dict_foreach(asg->to_index, c2, k2, d2) {
       xbt_dynar_reset(route->link_list);
-      floyd_get_route(asg, k1, k2, route);
+      floyd_get_route_and_latency(asg, k1, k2, route, NULL);
       if (xbt_dynar_length(route->link_list) == 1) {
         void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
         onelink_t onelink = xbt_new0(s_onelink_t, 1);
@@ -59,7 +60,8 @@ static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
   return ret;
 }
 
-static void floyd_get_route(AS_t asg, const char *src, const char *dst, route_t res)
+static void floyd_get_route_and_latency(AS_t asg, const char *src, const char *dst,
+    route_t res, double *lat)
 {
 
   /* set utils vars */
@@ -108,6 +110,8 @@ static void floyd_get_route(AS_t asg, const char *src, const char *dst, route_t 
       int pos = 0;
       xbt_dynar_foreach(links, cpt, link) {
         xbt_dynar_insert_at(res->link_list, pos, &link);
+        if (lat)
+          *lat += surf_network_model->extension.network.get_link_latency(link);
         pos++;
       }
     }
@@ -115,6 +119,8 @@ static void floyd_get_route(AS_t asg, const char *src, const char *dst, route_t 
     links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_unshift(res->link_list, &link);
+      if (lat)
+        *lat += surf_network_model->extension.network.get_link_latency(link);
     }
     first = 0;
 
@@ -156,7 +162,7 @@ AS_t model_floyd_create(void)
   as_floyd_t new_component = (as_floyd_t)model_generic_create_sized(sizeof(s_as_floyd_t));
   new_component->generic_routing.parse_route = model_floyd_parse_route;
   new_component->generic_routing.parse_ASroute = model_floyd_parse_route;
-  new_component->generic_routing.get_route = floyd_get_route;
+  new_component->generic_routing.get_route_and_latency = floyd_get_route_and_latency;
   new_component->generic_routing.get_onelink_routes =
       floyd_get_onelink_routes;
   new_component->generic_routing.finalize = floyd_finalize;

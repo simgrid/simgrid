@@ -23,20 +23,31 @@ typedef struct {
 static xbt_dict_t cluster_host_link = NULL;
 
 /* Business methods */
-static void cluster_get_route(AS_t as,
-                              const char *src, const char *dst,
-                              route_t route) {
+static void cluster_get_route_and_latency(AS_t as,
+                                          const char *src, const char *dst,
+                                          route_t route, double *lat) {
 
 	  surf_parsing_link_up_down_t info;
 
 	  info = xbt_dict_get_or_null(cluster_host_link,src);
-	  if(info) xbt_dynar_push_as(route->link_list,void*,info->link_up); //link_up
+	  if(info) { // link up
+	    xbt_dynar_push_as(route->link_list,void*,info->link_up);
+      if (lat)
+        *lat += surf_network_model->extension.network.get_link_latency(info->link_up);
+	  }
 
-	  if ( ((as_cluster_t)as)->backbone )
+	  if ( ((as_cluster_t)as)->backbone ) {
 	    xbt_dynar_push_as(route->link_list,void*, ((as_cluster_t)as)->backbone) ;
+      if (lat)
+        *lat += surf_network_model->extension.network.get_link_latency(((as_cluster_t)as)->backbone);
+	  }
 
 	  info = xbt_dict_get_or_null(cluster_host_link,dst);
-	  if(info) xbt_dynar_push_as(route->link_list,void*,info->link_down); //link_down
+	  if(info) { // link down
+	    xbt_dynar_push_as(route->link_list,void*,info->link_down);
+      if (lat)
+        *lat += surf_network_model->extension.network.get_link_latency(info->link_down);
+	  }
 }
 
 static void model_cluster_finalize(AS_t as) {
@@ -47,8 +58,7 @@ static void model_cluster_finalize(AS_t as) {
 AS_t model_cluster_create(void)
 {
   AS_t result = model_none_create_sized(sizeof(s_as_cluster_t));
-  result->get_route = cluster_get_route;
-  result->get_latency = generic_get_link_latency;
+  result->get_route_and_latency = cluster_get_route_and_latency;
   result->finalize = model_cluster_finalize;
 
   return (AS_t) result;

@@ -61,9 +61,9 @@ static xbt_dynar_t full_get_onelink_routes(AS_t rc)
   return ret;
 }
 
-static void full_get_route(AS_t rc,
+static void full_get_route_and_latency(AS_t rc,
                            const char *src, const char *dst,
-                           route_t res)
+                           route_t res,double *lat)
 {
 
   /* set utils vars */
@@ -87,6 +87,8 @@ static void full_get_route(AS_t rc,
     res->dst_gateway = xbt_strdup(e_route->dst_gateway);
     xbt_dynar_foreach(e_route->link_list, cpt, link) {
       xbt_dynar_push(res->link_list, &link);
+      if (lat)
+        *lat += surf_network_model->extension.network.get_link_latency(link);
     }
   }
 }
@@ -115,7 +117,7 @@ AS_t model_full_create(void)
 
   new_component->generic_routing.parse_route = model_full_set_route;
   new_component->generic_routing.parse_ASroute = model_full_set_route;
-  new_component->generic_routing.get_route = full_get_route;
+  new_component->generic_routing.get_route_and_latency = full_get_route_and_latency;
   new_component->generic_routing.get_onelink_routes =
       full_get_onelink_routes;
   new_component->generic_routing.finalize = full_finalize;

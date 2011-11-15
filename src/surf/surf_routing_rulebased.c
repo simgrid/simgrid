@@ -205,9 +205,9 @@ static char *remplace(char *value, const char **src_list, int src_size,
   return memcpy(res, result, i_res);
 }
 
-static void rulebased_get_route(AS_t rc,
+static void rulebased_get_route_and_latency(AS_t rc,
                                 const char *src, const char *dst,
-                                route_t res);
+                                route_t res,double*lat);
 static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
@@ -236,7 +236,7 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
   xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
     route_t route = xbt_new0(s_route_t,1);
     route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-    rulebased_get_route (rc, router, k1, route);
+    rulebased_get_route_and_latency (rc, router, k1, route,NULL);
 
     int number_of_links = xbt_dynar_length(route->link_list);
 
@@ -261,9 +261,9 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 }
 
 /* Business methods */
-static void rulebased_get_route(AS_t rc,
+static void rulebased_get_route_and_latency(AS_t rc,
                                 const char *src, const char *dst,
-                                route_t route)
+                                route_t route, double *lat)
 {
   xbt_assert(rc && src
               && dst,
@@ -318,9 +318,11 @@ static void rulebased_get_route(AS_t rc,
               remplace(link_name, list_src, rc_src, list_dst, rc_dst);
           void *link =
         		  xbt_lib_get_or_null(link_lib, new_link_name, SURF_LINK_LEVEL);
-          if (link)
+          if (link) {
             xbt_dynar_push(route->link_list, &link);
-          else
+            if (lat)
+              *lat += surf_network_model->extension.network.get_link_latency(link);
+          } else
             THROWF(mismatch_error, 0, "Link %s not found", new_link_name);
           xbt_free(new_link_name);
         }
@@ -334,6 +336,8 @@ static void rulebased_get_route(AS_t rc,
     /* matched src and dest, nothing more to do (?) */
   } else if (!strcmp(src, dst) && are_processing_units) {
     xbt_dynar_push(route->link_list, &(global_routing->loopback));
+    if (lat)
+      *lat += surf_network_model->extension.network.get_link_latency(link);
   } else {
     THROWF(arg_error,0,"No route from '%s' to '%s'??",src,dst);
     //xbt_dynar_reset(route->link_list);
@@ -386,7 +390,7 @@ AS_t model_rulebased_create(void) {
   new_component->generic_routing.parse_ASroute = model_rulebased_parse_ASroute;
   new_component->generic_routing.parse_bypassroute = model_rulebased_parse_bypassroute;
   new_component->generic_routing.get_onelink_routes = rulebased_get_onelink_routes;
-  new_component->generic_routing.get_route = rulebased_get_route;
+  new_component->generic_routing.get_route_and_latency = rulebased_get_route_and_latency;
   new_component->generic_routing.get_bypass_route = rulebased_get_bypass_route;
   new_component->generic_routing.finalize = rulebased_finalize;
   /* initialization of internal structures */

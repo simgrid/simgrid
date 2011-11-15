@@ -139,7 +139,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
 
         route_t route = xbt_new0(s_route_t,1);
         route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-        rc->get_route (rc, child1_name, child2_name, route);
+        rc->get_route_and_latency (rc, child1_name, child2_name, route,NULL);
         unsigned int cpt;
         void *link;
         container_t previous = getContainerByName(route->src_gateway);
@@ -446,7 +446,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
 
         route_t route = xbt_new0(s_route_t,1);
         route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-        rc->get_route (rc, child1_name, child2_name,route);
+        rc->get_route_and_latency (rc, child1_name, child2_name,route, NULL);
         unsigned int cpt;
         void *link;
         xbt_node_t current, previous = new_xbt_graph_node(graph, route->src_gateway, nodes);

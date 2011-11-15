@@ -22,8 +22,7 @@ AS_t model_generic_create_sized(size_t childsize) {
   new_component->parse_route = NULL;
   new_component->parse_ASroute = NULL;
   new_component->parse_bypassroute = generic_parse_bypassroute;
-  new_component->get_route = NULL;
-  new_component->get_latency = generic_get_link_latency;
+  new_component->get_route_and_latency = NULL;
   new_component->get_onelink_routes = NULL;
   new_component->get_bypass_route =
       generic_get_bypassroute;
@@ -89,31 +88,7 @@ void generic_parse_bypassroute(AS_t rc,
 /* ************************************************************************** */
 /* *********************** GENERIC BUSINESS METHODS ************************* */
 
-double generic_get_link_latency(AS_t rc,
-                                const char *src, const char *dst,
-                                route_t route)
-{
-  int need_to_clean = route ? 0 : 1;
-  void *link;
-  unsigned int i;
-  double latency = 0.0;
-
-  if (route == NULL) {
-    route = xbt_new0(s_route_t, 1);
-    route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
-    rc->get_route(rc, src, dst, route);
-  }
-
-  xbt_dynar_foreach(route->link_list, i, link) {
-    latency += surf_network_model->extension.network.get_link_latency(link);
-  }
-  if (need_to_clean)
-    generic_free_route(route);
-  return latency;
-}
-
-xbt_dynar_t generic_get_onelink_routes(AS_t rc)
-{
+xbt_dynar_t generic_get_onelink_routes(AS_t rc) { // FIXME: kill that stub
   xbt_die("\"generic_get_onelink_routes\" not implemented yet");
 }
 

@@ -165,12 +165,11 @@ static void add_loopback_dijkstra(as_dijkstra_t as) {
   }
 }
 
-static void dijkstra_get_route(AS_t as_generic,
-        const char *src, const char *dst, route_t route);
+static void dijkstra_get_route_and_latency(AS_t as_generic,
+        const char *src, const char *dst, route_t route, double *lat);
 
 static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 {
- // xbt_die("\"dijkstra_get_onelink_routes\" function not implemented yet");
 	  xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
 
 	  //size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
@@ -180,7 +179,7 @@ static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 	    xbt_dict_foreach(as->to_index, c2, k2, d2) {
 	      route_t route = xbt_new0(s_route_t,1);
 	      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-	      dijkstra_get_route(as, k1, k2,route);
+	      dijkstra_get_route_and_latency(as, k1, k2,route, NULL);
 
 	      if (xbt_dynar_length(route->link_list) == 1) {
 	        void *link =
@@ -202,9 +201,9 @@ static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 	  return ret;
 }
 
-static void dijkstra_get_route(AS_t asg,
+static void dijkstra_get_route_and_latency(AS_t asg,
                                const char *src, const char *dst,
-                               route_t route)
+                               route_t route, double *lat)
 {
 
   /* set utils vars */
@@ -256,6 +255,8 @@ static void dijkstra_get_route(AS_t asg,
     links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_unshift(route->link_list, &link);
+      if (lat)
+        *lat += surf_network_model->extension.network.get_link_latency(link);
     }
 
   }
@@ -360,6 +361,8 @@ static void dijkstra_get_route(AS_t asg,
       int pos = 0;
       xbt_dynar_foreach(links, cpt, link) {
         xbt_dynar_insert_at(route->link_list, pos, &link);
+        if (lat)
+          *lat += surf_network_model->extension.network.get_link_latency(link);
         pos++;
       }
     }
@@ -367,6 +370,8 @@ static void dijkstra_get_route(AS_t asg,
     links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_unshift(route->link_list, &link);
+      if (lat)
+        *lat += surf_network_model->extension.network.get_link_latency(link);
     }
     size++;
   }
@@ -411,7 +416,7 @@ AS_t model_dijkstra_both_create(int cached)
 
   new_component->generic_routing.parse_route = model_dijkstra_both_parse_route;
   new_component->generic_routing.parse_ASroute = model_dijkstra_both_parse_route;
-  new_component->generic_routing.get_route = dijkstra_get_route;
+  new_component->generic_routing.get_route_and_latency = dijkstra_get_route_and_latency;
   new_component->generic_routing.get_onelink_routes =
       dijkstra_get_onelink_routes;
   new_component->generic_routing.finalize = dijkstra_finalize;

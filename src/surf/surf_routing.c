@@ -504,11 +504,8 @@ static void _get_route_and_latency(const char *src, const char *dst,
 
     route.link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
 
-    common_father->get_route(common_father, src, dst, &route);
+    common_father->get_route_and_latency(common_father, src, dst, &route,latency);
     *links = route.link_list;
-
-    if (latency)
-      *latency += common_father->get_latency(common_father, src, dst, &route);
 
     xbt_free(route.src_gateway);
     xbt_free(route.dst_gateway);
@@ -540,7 +537,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
 
   route_t e_route_cnt = xbt_new0(s_route_t, 1);
   e_route_cnt->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
-  common_father->get_route(common_father, src_father->name, dst_father->name, e_route_cnt);
+  common_father->get_route_and_latency(common_father, src_father->name, dst_father->name, e_route_cnt,latency);
 
   xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"",
       src_father->name, dst_father->name);
@@ -550,13 +547,6 @@ static void _get_route_and_latency(const char *src, const char *dst,
       "bad gateway for route between \"%s\" and \"%s\"", src, dst);
 
   *links = xbt_dynar_new(global_routing->size_of_link, NULL);
-
-  if (latency) {
-    *latency += common_father->get_latency(common_father,
-        src_father->name, dst_father->name,
-        e_route_cnt);
-  }
-
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (strcmp(src, e_route_cnt->src_gateway)) {

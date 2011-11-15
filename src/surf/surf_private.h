@@ -132,10 +132,8 @@ typedef struct s_as {
   struct s_as *routing_father;
   xbt_dict_t routing_sons;
 
-  void (*get_route) (AS_t as, const char *src, const char *dst, route_t into);
-  double(*get_latency) (AS_t as,
-                        const char *src, const char *dst,
-                        route_t e_route);
+  void (*get_route_and_latency) (AS_t as, const char *src, const char *dst, route_t into, double *latency);
+
   xbt_dynar_t(*get_onelink_routes) (AS_t as);
   route_t(*get_bypass_route) (AS_t as, const char *src, const char *dst);
   void (*finalize) (AS_t as);

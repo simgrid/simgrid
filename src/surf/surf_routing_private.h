@@ -37,8 +37,6 @@ void generic_parse_bypassroute(AS_t rc, const char *src, const char *dst,
 /* ************************************************************************** */
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
 
-double generic_get_link_latency(AS_t rc, const char *src, const char *dst,
-										route_t e_route);
 xbt_dynar_t generic_get_onelink_routes(AS_t rc);
 route_t generic_get_bypassroute(AS_t rc,
                                                 const char *src,
