@@ -15,7 +15,7 @@ function Slave(...)
       simgrid.info("Got finalize message")
       break
     end
-    simgrid.info("Received task '" .. task_name .. "' on mailbox '" .. my_mailbox)
+    simgrid.info("Received task '" .. task_name .. "' on mailbox '" .. my_mailbox .. "'")
     task:execute()
     simgrid.info("Task '" .. task_name .. "' is done")
   end
