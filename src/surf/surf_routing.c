@@ -542,8 +542,6 @@ static void _get_route_and_latency(const char *src, const char *dst,
   xbt_assert((route.src_gateway != NULL) && (route.dst_gateway != NULL),
       "bad gateways for route from \"%s\" to \"%s\"", src, dst);
 
-  *links = xbt_dynar_new(global_routing->size_of_link, NULL);
-
   char*src_gateway = route.src_gateway;
   char*dst_gateway = route.dst_gateway;
 
@@ -566,8 +564,11 @@ static void _get_route_and_latency(const char *src, const char *dst,
       xbt_dynar_push(*links, &link);
     }
     xbt_dynar_free(&route_dst);
-
   }
+
+  xbt_free(src_gateway);
+  xbt_free_f(dst_gateway);
+  xbt_dynar_free(&route.link_list);
 }
 
 /**
