@@ -185,7 +185,6 @@ static void* im_net_create_resource(const char *name,
 
   xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, nw_link);
 
-
   return nw_link;
 }
 
@@ -193,16 +192,20 @@ static void im_net_parse_link_init(sg_platf_link_cbarg_t link)
 {
   if(link->policy == SURF_LINK_FULLDUPLEX)
   {
-	  im_net_create_resource(bprintf("%s_UP",link->id), link->bandwidth, link->bandwidth_trace,
+    char *name = bprintf("%s_UP",link->id);
+	  im_net_create_resource(name, link->bandwidth, link->bandwidth_trace,
 	               link->latency, link->latency_trace, link->state, link->state_trace,
 	               link->policy, link->properties);
-	  im_net_create_resource(bprintf("%s_DOWN",link->id), link->bandwidth, link->bandwidth_trace,
+	  xbt_free(name);
+	  name = bprintf("%s_DOWN",link->id);
+	  im_net_create_resource(name, link->bandwidth, link->bandwidth_trace,
             link->latency, link->latency_trace, link->state, link->state_trace,
             link->policy, NULL); // FIXME: We need to deep copy the properties or we won't be able to free it
+	  xbt_free(name);
   }
   else
   {
-	  im_net_create_resource(xbt_strdup(link->id), link->bandwidth, link->bandwidth_trace,
+	  im_net_create_resource(link->id, link->bandwidth, link->bandwidth_trace,
     		link->latency, link->latency_trace, link->state, link->state_trace,
 	               link->policy, link->properties);
   }
@@ -870,7 +873,7 @@ static void im_surf_network_model_init_internal(void)
   xbt_heap_set_update_callback(im_net_action_heap, im_net_action_update_index_heap);
 
   routing_model_create(sizeof(link_CM02_im_t),
-      im_net_create_resource(xbt_strdup("__loopback__"),
+      im_net_create_resource("__loopback__",
           498000000, NULL, 0.000015, NULL,
           SURF_RESOURCE_ON, NULL,
           SURF_LINK_FATPIPE, NULL));
