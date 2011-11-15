@@ -205,9 +205,9 @@ static char *remplace(char *value, const char **src_list, int src_size,
   return memcpy(res, result, i_res);
 }
 
-static route_t rulebased_get_route(AS_t rc,
-                                            const char *src,
-                                            const char *dst);
+static void rulebased_get_route(AS_t rc,
+                                const char *src, const char *dst,
+                                route_t res);
 static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
@@ -226,15 +226,17 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
   xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
     if (routing_get_network_element_type(k1) == SURF_NETWORK_ELEMENT_ROUTER){
       router = k1;
+      break;
     }
   }
 
-  if (!router){
+  if (!router)
     xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
-  }
 
   xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
-    route_t route = rulebased_get_route (rc, router, k1);
+    route_t route = xbt_new0(s_route_t,1);
+    route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+    rulebased_get_route (rc, router, k1, route);
 
     int number_of_links = xbt_dynar_length(route->link_list);
 
@@ -259,9 +261,9 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 }
 
 /* Business methods */
-static route_t rulebased_get_route(AS_t rc,
-                                            const char *src,
-                                            const char *dst)
+static void rulebased_get_route(AS_t rc,
+                                const char *src, const char *dst,
+                                route_t route)
 {
   xbt_assert(rc && src
               && dst,
@@ -269,8 +271,7 @@ static route_t rulebased_get_route(AS_t rc,
               rc->name);
 
   /* set utils vars */
-  AS_rulebased_t routing =
-      (AS_rulebased_t) rc;
+  AS_rulebased_t routing = (AS_rulebased_t) rc;
 
   int are_processing_units=0;
   xbt_dynar_t rule_list;
@@ -291,9 +292,6 @@ static route_t rulebased_get_route(AS_t rc,
   int rc_dst = -1;
   int src_length = (int) strlen(src);
   int dst_length = (int) strlen(dst);
-
-  xbt_dynar_t links_list =
-      xbt_dynar_new(global_routing->size_of_link, NULL);
 
   rule_route_t ruleroute;
   unsigned int cpt;
@@ -322,7 +320,7 @@ static route_t rulebased_get_route(AS_t rc,
           void *link =
         		  xbt_lib_get_or_null(link_lib, new_link_name, SURF_LINK_LEVEL);
           if (link)
-            xbt_dynar_push(links_list, &link);
+            xbt_dynar_push(route->link_list, &link);
           else
             THROWF(mismatch_error, 0, "Link %s not found", new_link_name);
           xbt_free(new_link_name);
@@ -333,25 +331,21 @@ static route_t rulebased_get_route(AS_t rc,
       break;
   }
 
-  route_t new_e_route = NULL;
   if (rc_src >= 0 && rc_dst >= 0) {
-    new_e_route = xbt_new0(s_route_t, 1);
-    new_e_route->link_list = links_list;
+    /* matched src and dest, nothing more to do (?) */
   } else if (!strcmp(src, dst) && are_processing_units) {
-    new_e_route = xbt_new0(s_route_t, 1);
-    xbt_dynar_push(links_list, &(global_routing->loopback));
-    new_e_route->link_list = links_list;
+    xbt_dynar_push(route->link_list, &(global_routing->loopback));
   } else {
-    xbt_dynar_free(&link_list);
+    xbt_dynar_reset(route->link_list);
   }
 
-  if (!are_processing_units && new_e_route) {
+  if (!are_processing_units && !xbt_dynar_is_empty(route->link_list)) {
     rule_route_extended_t ruleroute_extended =
         (rule_route_extended_t) ruleroute;
-    new_e_route->src_gateway =
+    route->src_gateway =
         remplace(ruleroute_extended->re_src_gateway, list_src, rc_src,
                  list_dst, rc_dst);
-    new_e_route->dst_gateway =
+    route->dst_gateway =
         remplace(ruleroute_extended->re_dst_gateway, list_src, rc_src,
                  list_dst, rc_dst);
   }
@@ -360,8 +354,6 @@ static route_t rulebased_get_route(AS_t rc,
     pcre_free_substring_list(list_src);
   if (list_dst)
     pcre_free_substring_list(list_dst);
-
-  return new_e_route;
 }
 
 static route_t rulebased_get_bypass_route(AS_t rc, const char *src, const char *dst) {

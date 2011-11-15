@@ -8,18 +8,16 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf");
 
 /* Business methods */
-static route_t vivaldi_get_route(AS_t rc, const char *src, const char *dst)
+static void vivaldi_get_route(AS_t rc, const char *src, const char *dst,
+    route_t route)
 {
 	  xbt_assert(rc && src
 	              && dst,
 	              "Invalid params for \"get_route\" function at AS \"%s\"",
 	              rc->name);
 
-	  route_t new_e_route = xbt_new0(s_route_t, 1);
-	  new_e_route->src_gateway = ROUTER_PEER(src);
-	  new_e_route->dst_gateway = ROUTER_PEER(dst);
-	  new_e_route->link_list =  xbt_dynar_new(0, NULL);
-	  return new_e_route;
+	  route->src_gateway = ROUTER_PEER(src);
+	  route->dst_gateway = ROUTER_PEER(dst);
 }
 
 static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
@@ -55,12 +53,9 @@ static double base_vivaldi_get_latency (const char *src, const char *dst)
 static double vivaldi_get_latency (AS_t rc,const char *src, const char *dst, route_t e_route)
 {
   if(routing_get_network_element_type(src) == SURF_NETWORK_ELEMENT_AS) {
-	  int need_to_clean = e_route?0:1;
-	  double latency;
-	  e_route = e_route ? e_route : rc->get_route(rc, src, dst);
-	  latency = base_vivaldi_get_latency(e_route->src_gateway,e_route->dst_gateway);
-	  if(need_to_clean) generic_free_route(e_route);
-	  return latency;
+    if (e_route)
+      return base_vivaldi_get_latency(e_route->src_gateway,e_route->dst_gateway);
+    return base_vivaldi_get_latency(ROUTER_PEER(src),ROUTER_PEER(dst));
   } else {
 	  return base_vivaldi_get_latency(src,dst);
   }

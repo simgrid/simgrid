@@ -132,7 +132,7 @@ typedef struct s_as {
   struct s_as *routing_father;
   xbt_dict_t routing_sons;
 
-  route_t(*get_route) (AS_t as, const char *src, const char *dst);
+  void (*get_route) (AS_t as, const char *src, const char *dst, route_t into);
   double(*get_latency) (AS_t as,
                         const char *src, const char *dst,
                         route_t e_route);
@@ -173,6 +173,8 @@ struct s_routing_global {
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback);
 XBT_PUBLIC(void) routing_exit(void);
 XBT_PUBLIC(void) routing_register_callbacks(void);
+XBT_PUBLIC(void) generic_free_route(route_t route); // FIXME rename to routing_route_free
+
 
 XBT_PUBLIC(xbt_dynar_t) routing_get_route(const char *src, const char *dst);
 XBT_PUBLIC(void) routing_get_route_and_latency(const char *src, const char *dst, //FIXME too much functions avail?

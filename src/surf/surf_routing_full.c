@@ -61,8 +61,9 @@ static xbt_dynar_t full_get_onelink_routes(AS_t rc)
   return ret;
 }
 
-static route_t full_get_route(AS_t rc,
-                                       const char *src, const char *dst)
+static void full_get_route(AS_t rc,
+                           const char *src, const char *dst,
+                           route_t res)
 {
   xbt_assert(rc && src
               && dst,
@@ -81,23 +82,18 @@ static route_t full_get_route(AS_t rc,
               src, dst);
 
   route_t e_route = NULL;
-  route_t new_e_route = NULL;
   void *link;
   unsigned int cpt = 0;
 
   e_route = TO_ROUTE_FULL(*src_id, *dst_id);
 
   if (e_route) {
-    new_e_route = xbt_new0(s_route_t, 1);
-    new_e_route->src_gateway = xbt_strdup(e_route->src_gateway);
-    new_e_route->dst_gateway = xbt_strdup(e_route->dst_gateway);
-    new_e_route->link_list =
-        xbt_dynar_new(global_routing->size_of_link, NULL);
+    res->src_gateway = xbt_strdup(e_route->src_gateway);
+    res->dst_gateway = xbt_strdup(e_route->dst_gateway);
     xbt_dynar_foreach(e_route->link_list, cpt, link) {
-      xbt_dynar_push(new_e_route->link_list, &link);
+      xbt_dynar_push(res->link_list, &link);
     }
   }
-  return new_e_route;
 }
 
 static void full_finalize(AS_t rc)

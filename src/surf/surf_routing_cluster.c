@@ -23,28 +23,20 @@ typedef struct {
 static xbt_dict_t cluster_host_link = NULL;
 
 /* Business methods */
-static route_t cluster_get_route(AS_t as,
-                                          const char *src,
-                                          const char *dst) {
-
-	  xbt_dynar_t links_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+static void cluster_get_route(AS_t as,
+                              const char *src, const char *dst,
+                              route_t route) {
 
 	  surf_parsing_link_up_down_t info;
 
 	  info = xbt_dict_get_or_null(cluster_host_link,src);
-	  if(info) xbt_dynar_push_as(links_list,void*,info->link_up); //link_up
+	  if(info) xbt_dynar_push_as(route->link_list,void*,info->link_up); //link_up
 
 	  if ( ((as_cluster_t)as)->backbone )
-	    xbt_dynar_push_as(links_list,void*, ((as_cluster_t)as)->backbone) ;
+	    xbt_dynar_push_as(route->link_list,void*, ((as_cluster_t)as)->backbone) ;
 
 	  info = xbt_dict_get_or_null(cluster_host_link,dst);
-	  if(info) xbt_dynar_push_as(links_list,void*,info->link_down); //link_down
-
-	  route_t new_e_route = NULL;
-	  new_e_route = xbt_new0(s_route_t, 1);
-	  new_e_route->link_list = links_list;
-
-	  return new_e_route;
+	  if(info) xbt_dynar_push_as(route->link_list,void*,info->link_down); //link_down
 }
 
 static void model_cluster_finalize(AS_t as) {

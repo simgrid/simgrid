@@ -98,7 +98,11 @@ double generic_get_link_latency(AS_t rc,
   unsigned int i;
   double latency = 0.0;
 
-  route = route ? route : rc->get_route(rc, src, dst);
+  if (route == NULL) {
+    route = xbt_new0(s_route_t, 1);
+    route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+    rc->get_route(rc, src, dst, route);
+  }
 
   xbt_dynar_foreach(route->link_list, i, link) {
     latency += surf_network_model->extension.network.get_link_latency(link);
@@ -332,7 +336,7 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
 void generic_free_route(route_t route)
 {
   if (route) {
-    xbt_dynar_free(&(route->link_list));
+    xbt_dynar_free(&route->link_list);
     xbt_free(route->src_gateway);
     xbt_free(route->dst_gateway);
     xbt_free(route);

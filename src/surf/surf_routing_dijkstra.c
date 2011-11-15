@@ -165,9 +165,8 @@ static void add_loopback_dijkstra(as_dijkstra_t as) {
   }
 }
 
-static route_t dijkstra_get_route(AS_t as_generic,
-        const char *src,
-        const char *dst);
+static void dijkstra_get_route(AS_t as_generic,
+        const char *src, const char *dst, route_t route);
 
 static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 {
@@ -179,32 +178,33 @@ static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 	  char *k1, *d1, *k2, *d2;
 	  xbt_dict_foreach(as->to_index, c1, k1, d1) {
 	    xbt_dict_foreach(as->to_index, c2, k2, d2) {
-	      route_t route = dijkstra_get_route(as, k1, k2);
-	      if (route) {
-	        if (xbt_dynar_length(route->link_list) == 1) {
-	          void *link =
-	              *(void **) xbt_dynar_get_ptr(route->link_list, 0);
-	          onelink_t onelink = xbt_new0(s_onelink_t, 1);
-	          onelink->link_ptr = link;
-	          if (as->hierarchy == SURF_ROUTING_BASE) {
-	            onelink->src = xbt_strdup(k1);
-	            onelink->dst = xbt_strdup(k2);
-	          } else if (as->hierarchy ==
-	                     SURF_ROUTING_RECURSIVE) {
-	            onelink->src = xbt_strdup(route->src_gateway);
-	            onelink->dst = xbt_strdup(route->dst_gateway);
-	          }
-	          xbt_dynar_push(ret, &onelink);
+	      route_t route = xbt_new0(s_route_t,1);
+	      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+	      dijkstra_get_route(as, k1, k2,route);
+
+	      if (xbt_dynar_length(route->link_list) == 1) {
+	        void *link =
+	            *(void **) xbt_dynar_get_ptr(route->link_list, 0);
+	        onelink_t onelink = xbt_new0(s_onelink_t, 1);
+	        onelink->link_ptr = link;
+	        if (as->hierarchy == SURF_ROUTING_BASE) {
+	          onelink->src = xbt_strdup(k1);
+	          onelink->dst = xbt_strdup(k2);
+	        } else if (as->hierarchy ==
+	            SURF_ROUTING_RECURSIVE) {
+	          onelink->src = xbt_strdup(route->src_gateway);
+	          onelink->dst = xbt_strdup(route->dst_gateway);
 	        }
+	        xbt_dynar_push(ret, &onelink);
 	      }
 	    }
 	  }
 	  return ret;
 }
 
-static route_t dijkstra_get_route(AS_t asg,
-                                           const char *src,
-                                           const char *dst)
+static void dijkstra_get_route(AS_t asg,
+                               const char *src, const char *dst,
+                               route_t route)
 {
   xbt_assert(asg && src
               && dst,
@@ -221,12 +221,6 @@ static route_t dijkstra_get_route(AS_t asg,
               && dst_id,
               "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
               src, dst);
-
-  /* create a result route */
-  route_t new_e_route = xbt_new0(s_route_t, 1);
-  new_e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
-  new_e_route->src_gateway = NULL;
-  new_e_route->dst_gateway = NULL;
 
   int *pred_arr = NULL;
   int src_node_id = 0;
@@ -269,10 +263,9 @@ static route_t dijkstra_get_route(AS_t asg,
 
     links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
-      xbt_dynar_unshift(new_e_route->link_list, &link);
+      xbt_dynar_unshift(route->link_list, &link);
     }
 
-    return new_e_route;
   }
 
   if (as->cached) {
@@ -374,21 +367,21 @@ static route_t dijkstra_get_route(AS_t asg,
       links = e_route_as_to_as;
       int pos = 0;
       xbt_dynar_foreach(links, cpt, link) {
-        xbt_dynar_insert_at(new_e_route->link_list, pos, &link);
+        xbt_dynar_insert_at(route->link_list, pos, &link);
         pos++;
       }
     }
 
     links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
-      xbt_dynar_unshift(new_e_route->link_list, &link);
+      xbt_dynar_unshift(route->link_list, &link);
     }
     size++;
   }
 
   if (asg->hierarchy == SURF_ROUTING_RECURSIVE) {
-    new_e_route->src_gateway = xbt_strdup(gw_src);
-    new_e_route->dst_gateway = xbt_strdup(first_gw);
+    route->src_gateway = xbt_strdup(gw_src);
+    route->dst_gateway = xbt_strdup(first_gw);
   }
 
   if (as->cached && elm == NULL) {
@@ -402,8 +395,6 @@ static route_t dijkstra_get_route(AS_t asg,
 
   if (!as->cached)
     xbt_free(pred_arr);
-
-  return new_e_route;
 }
 
 static void dijkstra_finalize(AS_t asg)

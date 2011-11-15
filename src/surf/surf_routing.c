@@ -500,9 +500,10 @@ static void _get_route_and_latency(const char *src, const char *dst,
   /* If src and dst are in the same AS, life is good */
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
-    route_t e_route = NULL;
+    route_t e_route = xbt_new0(s_route_t, 1);
+    e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
     if (route) {
-      e_route = common_father->get_route(common_father, src, dst);
+      common_father->get_route(common_father, src, dst, e_route);
       xbt_assert(e_route, "no route between \"%s\" and \"%s\"", src, dst);
       *route = e_route->link_list;
     }
@@ -544,10 +545,9 @@ static void _get_route_and_latency(const char *src, const char *dst,
 
   /* Not in the same AS, no bypass. We'll have to find our path between the ASes recursively*/
 
-  route_t e_route_cnt = e_route_bypass
-      ? e_route_bypass : common_father->get_route(common_father,
-          src_father->name,
-          dst_father->name);
+  route_t e_route_cnt = xbt_new0(s_route_t, 1);
+  e_route_cnt->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+  common_father->get_route(common_father, src_father->name, dst_father->name, e_route_cnt);
 
   xbt_assert(e_route_cnt, "no route between \"%s\" and \"%s\"",
       src_father->name, dst_father->name);

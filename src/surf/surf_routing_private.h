@@ -53,7 +53,6 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
 route_t
 generic_new_route(e_surf_routing_hierarchy_t hierarchy,
                            void *data, int order);
-void generic_free_route(route_t route);
 AS_t
 generic_autonomous_system_exist(AS_t rc, char *element);
 AS_t

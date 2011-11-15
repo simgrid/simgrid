@@ -137,7 +137,9 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
                 child2->kind == INSTR_AS &&
                 strcmp(child1_name, child2_name) != 0){
 
-        route_t route = rc->get_route (rc, child1_name, child2_name);
+        route_t route = xbt_new0(s_route_t,1);
+        route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+        rc->get_route (rc, child1_name, child2_name, route);
         unsigned int cpt;
         void *link;
         container_t previous = getContainerByName(route->src_gateway);
@@ -149,6 +151,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
         }
         container_t last = getContainerByName(route->dst_gateway);
         linkContainers (container, previous, last, filter);
+        generic_free_route(route);
       }
     }
   }
@@ -418,6 +421,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
           (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER) &&
           strcmp (child1_name, child2_name) != 0){
 
+        // FIXME factorize route creation once possible
         xbt_dynar_t route = routing_get_route (child1_name, child2_name);
         if (TRACE_onelink_only()){
           if (xbt_dynar_length (route) > 1) continue;
@@ -439,7 +443,9 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
                 child2->kind == INSTR_AS &&
                 strcmp(child1_name, child2_name) != 0){
 
-        route_t route = rc->get_route (rc, child1_name, child2_name);
+        route_t route = xbt_new0(s_route_t,1);
+        route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+        rc->get_route (rc, child1_name, child2_name,route);
         unsigned int cpt;
         void *link;
         xbt_node_t current, previous = new_xbt_graph_node(graph, route->src_gateway, nodes);
@@ -451,6 +457,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
         }
         current = new_xbt_graph_node(graph, route->dst_gateway, nodes);
         new_xbt_graph_edge (graph, previous, current, edges);
+        generic_free_route(route);
       }
     }
   }

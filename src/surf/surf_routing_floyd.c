@@ -25,40 +25,41 @@ typedef struct {
   route_t *link_table;
 } s_as_floyd_t, *as_floyd_t;
 
-static route_t floyd_get_route(AS_t asg, const char *src, const char *dst);
+static void floyd_get_route(AS_t asg, const char *src, const char *dst, route_t res);
 
 /* Business methods */
 static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
 
+  route_t route =   xbt_new0(s_route_t, 1);
+  route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+
   xbt_dict_cursor_t c1 = NULL, c2 = NULL;
   char *k1, *d1, *k2, *d2;
   xbt_dict_foreach(asg->to_index, c1, k1, d1) {
     xbt_dict_foreach(asg->to_index, c2, k2, d2) {
-      route_t route = floyd_get_route(asg, k1, k2);
-      if (route) {
-        if (xbt_dynar_length(route->link_list) == 1) {
-          void *link =
-              *(void **) xbt_dynar_get_ptr(route->link_list, 0);
-          onelink_t onelink = xbt_new0(s_onelink_t, 1);
-          onelink->link_ptr = link;
-          if (asg->hierarchy == SURF_ROUTING_BASE) {
-            onelink->src = xbt_strdup(k1);
-            onelink->dst = xbt_strdup(k2);
-          } else if (asg->hierarchy == SURF_ROUTING_RECURSIVE) {
-            onelink->src = xbt_strdup(route->src_gateway);
-            onelink->dst = xbt_strdup(route->dst_gateway);
-          }
-          xbt_dynar_push(ret, &onelink);
+      xbt_dynar_reset(route->link_list);
+      floyd_get_route(asg, k1, k2, route);
+      if (xbt_dynar_length(route->link_list) == 1) {
+        void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
+        onelink_t onelink = xbt_new0(s_onelink_t, 1);
+        onelink->link_ptr = link;
+        if (asg->hierarchy == SURF_ROUTING_BASE) {
+          onelink->src = xbt_strdup(k1);
+          onelink->dst = xbt_strdup(k2);
+        } else if (asg->hierarchy == SURF_ROUTING_RECURSIVE) {
+          onelink->src = xbt_strdup(route->src_gateway);
+          onelink->dst = xbt_strdup(route->dst_gateway);
         }
+        xbt_dynar_push(ret, &onelink);
       }
     }
   }
   return ret;
 }
 
-static route_t floyd_get_route(AS_t asg, const char *src, const char *dst)
+static void floyd_get_route(AS_t asg, const char *src, const char *dst, route_t res)
 {
   xbt_assert(asg && src
               && dst,
@@ -78,8 +79,6 @@ static route_t floyd_get_route(AS_t asg, const char *src, const char *dst)
               src, dst);
 
   /* create a result route */
-  route_t new_e_route = xbt_new0(s_route_t, 1);
-  new_e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
 
   int first = 1;
   int pred = *dst_id;
@@ -116,14 +115,14 @@ static route_t floyd_get_route(AS_t asg, const char *src, const char *dst)
       links = e_route_as_to_as;
       int pos = 0;
       xbt_dynar_foreach(links, cpt, link) {
-        xbt_dynar_insert_at(new_e_route->link_list, pos, &link);
+        xbt_dynar_insert_at(res->link_list, pos, &link);
         pos++;
       }
     }
 
     links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
-      xbt_dynar_unshift(new_e_route->link_list, &link);
+      xbt_dynar_unshift(res->link_list, &link);
     }
     first = 0;
 
@@ -132,11 +131,10 @@ static route_t floyd_get_route(AS_t asg, const char *src, const char *dst)
               *src_id, *dst_id, src, dst);
 
   if (asg->hierarchy == SURF_ROUTING_RECURSIVE) {
-    new_e_route->src_gateway = xbt_strdup(gw_src);
-    new_e_route->dst_gateway = xbt_strdup(first_gw);
+    res->src_gateway = xbt_strdup(gw_src);
+    res->dst_gateway = xbt_strdup(first_gw);
   }
 
-  return new_e_route;
 }
 
 static void floyd_finalize(AS_t rc)
