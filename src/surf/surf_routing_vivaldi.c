@@ -14,9 +14,7 @@ static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dyn
   dst_coord = xbt_dynar_get_as(dst, index, double);
 
   return (src_coord-dst_coord)*(src_coord-dst_coord);
-
 }
-
 
 static void vivaldi_get_route_and_latency(
     AS_t rc, const char *src_p, const char *dst_p,
@@ -37,8 +35,8 @@ static void vivaldi_get_route_and_latency(
   dst_ctn = xbt_lib_get_or_null(host_lib, dst, COORD_HOST_LEVEL);
   if(!dst_ctn) dst_ctn = xbt_lib_get_or_null(as_router_lib, dst, COORD_ASR_LEVEL);
 
-  if(dst_ctn == NULL || src_ctn == NULL)
-    xbt_die("Coord src '%s' :%p   dst '%s' :%p",src,src_ctn,dst,dst_ctn);
+  xbt_assert(src_ctn,"No coordinate found for element '%s'",src);
+  xbt_assert(dst_ctn,"No coordinate found for element '%s'",dst);
 
   euclidean_dist = sqrt (euclidean_dist_comp(0,src_ctn,dst_ctn)+euclidean_dist_comp(1,src_ctn,dst_ctn))
 	               + fabs(xbt_dynar_get_as(src_ctn, 2, double))+fabs(xbt_dynar_get_as(dst_ctn, 2, double));
