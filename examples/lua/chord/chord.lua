@@ -36,7 +36,11 @@ function node(...)
     known_id = tonumber(args[2])
   end
 
-  simgrid.debug("Hello, I'm a node")
+  -- initialize the node
+  for i = 1, nb_bits do
+    my_node.fingers[i] = my_node.id
+  end
+  my_node.comm_recv = simgrid.task.irecv(my_node.id)
 
   -- join the ring
   local join_success = false
@@ -58,7 +62,6 @@ function node(...)
     local next_lookup_date = now + lookup_delay
 
     local task, success
-    my_node.comm_recv = simgrid.task.irecv(my_node.id)
 
     while now < max_simulation_time do
 
@@ -101,6 +104,13 @@ function node(...)
   end
 end
 
+-- Makes the current node leave the ring
+function leave()
+
+  simgrid.info("Leaving the ring")
+  -- TODO: notify others
+end
+
 -- This function is called when the current node receives a task.
 -- - task: the task received
 function handle_task(task)
@@ -109,19 +119,38 @@ function handle_task(task)
 
   if type == "find successor" then
 
+    simgrid.info("Received a 'find successor' request from " .. task.answer_to ..
+        " for id " .. task.request_id)
+
     -- is my successor the successor?
     if is_in_interval(task.request_id, my_node.id + 1, my_node.fingers[1]) then
-      task.type = "find successor answer"
-      task.answer = my_node.fingers[1]
-      task:dsend(task.answer_to)
+
+      simgrid.info("Sending back a 'find successor answer' to " ..
+          task.answer_to .. ": the successor of " .. task.request_id ..
+	  " is " .. my_node.fingers[1])
+
+      local ans_task = simgrid.task.new("", comp_size, comm_size)
+      ans_task.type = "find successor answer"
+      ans_task.request_id = task.request_id
+      ans_task.answer = my_node.fingers[1]
+      ans_task:dsend(task.answer_to)
     else
       -- forward the request to the closest preceding finger in my table
-      task:dsend(closest_preceding_node(task.request_id))
+
+      simgrid.info("Forwarding the 'find successor' request to my closest preceding finger")
+
+      local next_task = simgrid.task.new("", comp_size, comm_size)
+      next_task.type = "find successor"
+      next_task.request_id = task.request_id
+      next_task.answer_to = task.answer_to
+      next_task:dsend(closest_preceding_node(next_task.request_id))
     end
 
   elseif type == "get predecessor" then
-    task.answer = my_node.predecessor
-    task:dsend(task.answer_to)
+    local ans_task = simgrid.task.new("", comp_size, comm_size)
+    ans_task.type = "get predecessor answer"
+    ans_task.answer = my_node.predecessor
+    ans_task:dsend(task.answer_to)
 
   elseif type == "notify" then
     -- someone is telling me that he may be my new predecessor
@@ -171,9 +200,16 @@ function is_in_interval(id, a, b)
   return id <= b
 end
 
+-- Returns whether the current node is in the ring.
+function has_joined()
+
+  return my_node.fingers[1] ~= nil
+end
+
 -- Creates a new Chord ring.
 function create()
   my_node.predecessor = nil
+  my_node.fingers[1] = my_node.id
 end
 
 -- Attemps to join the Chord ring.
@@ -181,12 +217,16 @@ end
 -- - return value: true if the join was successful
 function join(known_id)
 
+  simgrid.info("Joining the ring with id " .. my_node.id .. ", knowing node " .. known_id)
+
   local successor = remote_find_successor(known_id, my_node.id)
   if successor == nil then
+    simgrid.info("Cannot join the ring.")
     return false
   end
 
-  my_node.finger[1] = successor
+  my_node.predecessor = nil
+  my_node.fingers[1] = successor
   return true
 end
 
@@ -197,16 +237,16 @@ end
 function closest_preceding_node(id)
 
   for i = nb_bits, 1, -1 do
-    if is_in_interval(my_node.fingers[i].id, my_node.id + 1, id - 1) then
+    if is_in_interval(my_node.fingers[i], my_node.id + 1, id - 1) then
       -- finger i is the first one before id
-      return my_node.fingers[i].id
+      return my_node.fingers[i]
     end
   end
 end
 
 -- Finds the successor of an id
 -- id: the id to find
--- return value: the id of the successor, or -1 if the request failed
+-- return value: the id of the successor, or nil if the request failed
 function find_successor(id)
 
   if is_in_interval(id, my_node.id + 1, my_node.fingers[1]) then
@@ -230,26 +270,38 @@ function remote_find_successor(ask_to, id)
   task.request_id = id
   task.answer_to = my_node.id
 
+  simgrid.info("Sending a 'find successor' request to " .. ask_to .. " for id " .. id)
   if task:send(ask_to, timeout) then
     -- request successfully sent: wait for an answer
+
+    simgrid.info("Sent the 'find successor' request to " .. ask_to ..
+        " for id " .. id .. ", waiting for the answer")
+
     while true do
       task = simgrid.comm.wait(my_node.comm_recv, timeout)
       my_node.comm_recv = simgrid.task.irecv(my_node.id)
     
       if not task then
 	-- failed to receive the answer
+	simgrid.info("Failed to receive the answer to my 'find successor' request")
 	return nil
       else
 	-- a task was received: is it the expected answer?
-	if task.type ~= "find successor answer" or task[request_id] ~= id then
+	if task.type ~= "find successor answer" or task.request_id ~= id then
           -- this is not our answer
+	  simgrid.info("Received another request of type " .. task.type)
 	  handle_task(task)
 	else
 	  -- this is our answer
+	  simgrid.info("Received the answer to my 'find successor' request for id " ..
+	      id .. ": the successor is " .. task.answer)
 	  return task.answer
 	end
       end
     end
+  else
+    simgrid.info("Failed to send the 'find successor' request to " .. ask_to ..
+        " for id " .. id)
   end
 
   return successor
@@ -302,7 +354,7 @@ function stabilize()
   end
 
   -- this node is a candidate to become my new successor
-  if candidate ~= nil and is_in_interval(candidate, my_node.id + 1, successor -1) then
+  if candidate ~= nil and is_in_interval(candidate, my_node.id + 1, successor - 1) then
     my_node.fingers[1] = candidate
   end
 
@@ -339,7 +391,7 @@ function fix_fingers()
   local id = find_successor(my_node.id + 2^i)
   if id ~= nil then
     if id ~= my_node.fingers[i] then
-      fingers[i] = id
+      my_node.fingers[i] = id
     end
     my_node.next_finger_to_fix = (i % nb_bits) + 1
   end
