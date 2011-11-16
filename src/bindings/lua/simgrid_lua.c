@@ -242,8 +242,8 @@ static void task_copy(lua_State* dst, m_task_t task) {
  * - Argument 1 (task): the task to send
  * - Argument 2 (string or compatible): mailbox name, as a real string or any
  * type convertible to string (numbers always are)
- * - Return values (nil or string): nil if the communication was successful,
- * or an error string in case of failure, which may be "timeout",
+ * - Return values (boolean + string): true if the communication was successful,
+ * or false plus an error string in case of failure, which may be "timeout",
  * "host failure" or "transfer failure"
  */
 static int l_task_send(lua_State* L)
@@ -258,15 +258,19 @@ static int l_task_send(lua_State* L)
   MSG_error_t res = MSG_task_send(task, mailbox);
 
   if (res == MSG_OK) {
-    return 0;
+    lua_pushboolean(L, 1);
+                                  /* true */
+    return 1;
   }
   else {
     /* the communication has failed, I'm still the owner of the task */
     task_unregister(L, task);
                                   /* task */
+    lua_pushboolean(L, 0);
+                                  /* task false */
     lua_pushstring(L, msg_errors[res]);
-                                  /* task error */
-    return 1;
+                                  /* task false error */
+    return 2;
   }
 }
 
@@ -474,7 +478,6 @@ static const luaL_reg task_meta[] = {
 static msg_comm_t sglua_checkcomm(lua_State* L, int index)
 {
   msg_comm_t comm = *((msg_comm_t*) luaL_checkudata(L, index, COMM_MODULE_NAME));
-  lua_pop(L, 1);
   return comm;
 }
 
