@@ -361,6 +361,15 @@ XBT_PUBLIC(void) surf_cpu_model_init_ti(void);
  */
 XBT_PUBLIC(void) surf_cpu_model_init_Cas01_im(void);
 
+/** \brief This function call the share resources function needed
+ *
+ */
+XBT_PUBLIC(double) generic_share_resources(double now);
+
+/** \brief This function call the update action state function needed
+ *
+ */
+XBT_PUBLIC(void)   generic_update_actions_state(double now, double delta);
 /** \brief The list of all available cpu model models
  *  \ingroup SURF_models
  */

@@ -152,7 +152,7 @@ s_surf_model_description_t surf_network_model_description[] = {
 
 s_surf_model_description_t surf_cpu_model_description[] = {
   {"Cas01_fullupdate", "CPU classical model time=size/power",
-   surf_cpu_model_init_Cas01},
+   surf_cpu_model_init_Cas01_im},
   {"Cas01",
    "Variation of Cas01_fullupdate with partial invalidation optimization of lmm system. Should produce the same values, only faster",
    surf_cpu_model_init_Cas01_im},
