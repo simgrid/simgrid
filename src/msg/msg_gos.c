@@ -522,6 +522,11 @@ int MSG_comm_test(msg_comm_t comm)
   int finished = 0;
   TRY {
     finished = SIMIX_req_comm_test(comm->s_comm);
+
+    if (finished && comm->task_received != NULL) {
+      /* I am the receiver */
+      (*comm->task_received)->simdata->isused = 0;
+    }
   }
   CATCH(e) {
     switch (e.category) {
@@ -603,6 +608,11 @@ int MSG_comm_testany(xbt_dynar_t comms)
     comm = xbt_dynar_get_as(comms, finished_index, msg_comm_t);
     /* the communication is finished */
     comm->status = status;
+
+    if (status == MSG_OK && comm->task_received != NULL) {
+      /* I am the receiver */
+      (*comm->task_received)->simdata->isused = 0;
+    }
   }
 
   return finished_index;
