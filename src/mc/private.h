@@ -45,7 +45,7 @@ extern double *mc_time;
 
 /* Bound of the MC depth-first search algorithm */
 #define MAX_DEPTH 1000
-#define MAX_DEPTH_LIVENESS 1000
+#define MAX_DEPTH_LIVENESS 50
 
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack);
@@ -219,7 +219,12 @@ typedef struct s_mc_pair_reached{
   mc_snapshot_t system_state;
 }s_mc_pair_reached_t, *mc_pair_reached_t;
 
-extern xbt_fifo_t mc_stack_liveness_stateful;
+typedef struct s_mc_pair_visited{
+  xbt_state_t automaton_state;
+  xbt_dynar_t prop_ato;
+  mc_snapshot_t system_state;
+  int search_cycle;
+}s_mc_pair_visited_t, *mc_pair_visited_t;
 
 int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
@@ -232,8 +237,12 @@ void MC_dump_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_pair_delete(mc_pair_t pair);
 void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
+int visited(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s, int search_cycle);
+void set_pair_visited(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s, int search_cycle);
 
 /* **** Double-DFS stateful without visited state **** */
+
+extern xbt_fifo_t mc_stack_liveness_stateful;
 
 void MC_ddfs_stateful_init(xbt_automaton_t a);
 void MC_ddfs_stateful(xbt_automaton_t a, int search_cycle, int restore);
