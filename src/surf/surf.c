@@ -198,7 +198,7 @@ int find_model_description(s_surf_model_description_t * table,
   for (i = 1; table[i].name; i++) {
     name_list =
         xbt_realloc(name_list,
-                    strlen(name_list) + strlen(table[i].name) + 2);
+                    strlen(name_list) + strlen(table[i].name) + 3);
     strcat(name_list, ", ");
     strcat(name_list, table[i].name);
   }
