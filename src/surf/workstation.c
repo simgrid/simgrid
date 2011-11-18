@@ -354,7 +354,10 @@ void surf_workstation_model_init_CLM03(void)
 {
   surf_workstation_model_init_internal();
   surf_cpu_model_init_Cas01_im();
-  surf_network_model_init_LegrandVelho();
+  im_surf_network_model_init_LegrandVelho();
+  // FIXME: prefer the proper interface instead of bypassing the cfg module that way
+  //xbt_cfg_set_parse(_surf_cfg_set, "network/model:LV08");
+  //xbt_cfg_set_parse(_surf_cfg_set, "cpu/model:Cas01");
   xbt_dynar_push(model_list, &surf_workstation_model);
   sg_platf_postparse_add_cb(create_workstations);
 }
