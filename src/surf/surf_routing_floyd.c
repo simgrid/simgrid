@@ -150,8 +150,9 @@ static void floyd_finalize(AS_t rc)
     xbt_dict_free(&as->generic_routing.bypassRoutes);
     /* Delete index dict */
     xbt_dict_free(&(as->generic_routing.to_index));
-    /* Delete dictionary index dict, predecessor and links table */
+    /* Delete predecessor and cost table */
     xbt_free(as->predecessor_table);
+    xbt_free(as->cost_table);
 
     model_generic_finalize(rc);
   }
