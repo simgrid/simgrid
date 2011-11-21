@@ -104,7 +104,8 @@ static void floyd_get_route_and_latency(AS_t asg, const char *src, const char *d
 
     if (asg->hierarchy == SURF_ROUTING_RECURSIVE && !first
         && strcmp(gw_dst, prev_gw_src)) {
-      xbt_dynar_t e_route_as_to_as=NULL;
+      xbt_dynar_t e_route_as_to_as;
+      e_route_as_to_as = xbt_dynar_new(global_routing->size_of_link, NULL);
       routing_get_route_and_latency(gw_dst, prev_gw_src,&e_route_as_to_as,NULL);
       links = e_route_as_to_as;
       int pos = 0;
@@ -114,6 +115,7 @@ static void floyd_get_route_and_latency(AS_t asg, const char *src, const char *d
           *lat += surf_network_model->extension.network.get_link_latency(link);
         pos++;
       }
+      xbt_dynar_free(&e_route_as_to_as);
     }
 
     links = e_route->link_list;
