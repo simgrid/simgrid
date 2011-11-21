@@ -1,7 +1,7 @@
 #! ./tesh
 
 ! output sort
-$ $SG_TEST_EXENV token_ring ${srcdir:=.}/two_clusters.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/token_ring ${srcdir:=.}/two_clusters.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
 > [  0.066240] (1:master@bob1.hamburger.edu) Send Data to "host1"
 > [  0.066240] (2:slave@bob3.hamburger.edu) Received "Token"
@@ -26,7 +26,7 @@ $ $SG_TEST_EXENV token_ring ${srcdir:=.}/two_clusters.xml "--log=root.fmt:[%10.6
 > [  1.104000] (1:master@bob1.hamburger.edu) Received "Token"
 
 ! output sort
-$ $SG_TEST_EXENV token_ring ${srcdir:=.}/two_peers.xml --cfg=coordinates:yes "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/token_ring ${srcdir:=.}/two_peers.xml --cfg=coordinates:yes "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
 > [    0.000000] (0:@) Configuration change: Set 'coordinates' to 'yes'
 > [    0.000000] (0:@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
 > [    5.221778] (1:master@peer_100030591) Send Data to "host1"
