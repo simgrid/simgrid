@@ -340,8 +340,8 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 		{
 			if(route->dst_gateway && route->src_gateway)
 			{
-                          char *gw_src = xbt_strdup(route->src_gateway);
-                          char *gw_dst = xbt_strdup(route->dst_gateway);
+                          char *gw_src = route->src_gateway;
+                          char *gw_dst = route->dst_gateway;
                           route->src_gateway = gw_dst;
                           route->dst_gateway = gw_src;
 			}
