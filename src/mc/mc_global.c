@@ -30,6 +30,7 @@ mc_stats_t mc_stats = NULL;
 xbt_fifo_t mc_stack_liveness_stateful = NULL;
 mc_stats_pair_t mc_stats_pair = NULL;
 xbt_fifo_t mc_stack_liveness_stateless = NULL;
+mc_snapshot_t initial_snapshot_liveness = NULL;
 
 
 /**
@@ -176,7 +177,8 @@ void MC_exit_liveness(void)
 {
   MC_print_statistics_pairs(mc_stats_pair);
   //xbt_free(mc_time);
-  MC_memory_exit();
+  //MC_memory_exit();
+  exit(0);
 }
 
 
@@ -295,7 +297,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
   XBT_DEBUG("**** Begin Replay ****");
 
   /* Restore the initial state */
-  MC_restore_snapshot(initial_snapshot);
+  MC_restore_snapshot(initial_snapshot_liveness);
   /* At the moment of taking the snapshot the raw heap was set, so restoring
    * it will set it back again, we have to unset it to continue  */
   MC_UNSET_RAW_MEM;

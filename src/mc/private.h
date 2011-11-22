@@ -229,16 +229,16 @@ typedef struct s_mc_pair_visited{
 int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
-int reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s);
-void set_pair_reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s);
+int reached(xbt_automaton_t a, xbt_state_t st, char *prgm);
+void set_pair_reached(xbt_automaton_t a, xbt_state_t st, char *prgm);
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
 void MC_show_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_pair_delete(mc_pair_t pair);
 void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
-int visited(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s, int search_cycle);
-void set_pair_visited(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s, int search_cycle);
+int visited(xbt_automaton_t a, xbt_state_t st, int search_cycle, char *prgm);
+void set_pair_visited(xbt_automaton_t a, xbt_state_t st, int search_cycle, char *prgm);
 
 /* **** Double-DFS stateful without visited state **** */
 
@@ -256,6 +256,7 @@ typedef struct s_mc_pair_stateless{
 }s_mc_pair_stateless_t, *mc_pair_stateless_t;
 
 extern xbt_fifo_t mc_stack_liveness_stateless;
+extern mc_snapshot_t initial_snapshot_liveness;
 
 mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r);
 void MC_ddfs_stateless_init(xbt_automaton_t a, char *prgm);

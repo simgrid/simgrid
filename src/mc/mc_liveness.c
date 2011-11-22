@@ -4,62 +4,102 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
                                 "Logging specific to algorithms for liveness properties verification");
 
-xbt_dynar_t initial_pairs = NULL;
 xbt_fifo_t reached_pairs;
 xbt_fifo_t visited_pairs;
 xbt_dynar_t successors = NULL;
-extern mc_snapshot_t initial_snapshot;
+
+//mc_snapshot_t snapshot;
 
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
-  XBT_DEBUG("Compare snapshot");
+  //XBT_DEBUG("Compare snapshot");
   
   if(s1->num_reg != s2->num_reg){
     XBT_DEBUG("Different num_reg (s1 = %d, s2 = %d)", s1->num_reg, s2->num_reg);
     return 1;
   }
 
+  //XBT_DEBUG("Num reg : %d", s1->num_reg);
+
   int i;
   int errors = 0;
 
   for(i=0 ; i< s1->num_reg ; i++){
-    
-    if(s1->regions[i]->size != s2->regions[i]->size){
-      XBT_DEBUG("Different size of region");
-      return 1;
-    }
-    
-    if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-      XBT_DEBUG("Different start addr of region");
-      return 1;
-    }
-    
+
     if(s1->regions[i]->type != s2->regions[i]->type){
-      XBT_DEBUG("Different type of region");
+      //XBT_DEBUG("Different type of region");
       return 1;
     }
 
-
-    if(s1->regions[i]->type == 0){ 
+    switch(s1->regions[i]->type){
+    case 0:
+      //XBT_DEBUG("Region : heap");
+      if(s1->regions[i]->size != s2->regions[i]->size){
+	//XBT_DEBUG("Different size of heap (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	return 1;
+      }
+      if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
+	//XBT_DEBUG("Different start addr of heap (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+      return 1;
+      }
       if(mmalloc_compare_heap(s1->regions[i]->start_addr, s2->regions[i]->start_addr)){
-	XBT_DEBUG("Different heap (mmalloc_compare)");
+	//XBT_DEBUG("Different heap (mmalloc_compare)");
 	errors++; 
       }
-    }else{
+      break;
+    case 1 :
+      //XBT_DEBUG("Region : libsimgrid");
+      if(s1->regions[i]->size != s2->regions[i]->size){
+	//XBT_DEBUG("Different size of libsimgrid (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	return 1;
+      }
+      if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
+	//XBT_DEBUG("Different start addr of libsimgrid (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+      return 1;
+      }
       if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
-    	XBT_DEBUG("Different memcmp for data in libsimgrid or program");
+    	//XBT_DEBUG("Different memcmp for data in libsimgrid");
     	errors++;
       }
+      break;
+    case 2:
+      //XBT_DEBUG("Region : program");
+      if(s1->regions[i]->size != s2->regions[i]->size){
+	//XBT_DEBUG("Different size of program (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	return 1;
+      }
+      if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
+	//XBT_DEBUG("Different start addr of program (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+	return 1;
+      }
+      if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
+    	//XBT_DEBUG("Different memcmp for data in program");
+    	errors++;
+      }
+      break;
+    case 3:
+      //XBT_DEBUG("Region : stack");
+      if(s1->regions[i]->size != s2->regions[i]->size){
+	//XBT_DEBUG("Different size of stack (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	return 1;
+      }
+      if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
+	//XBT_DEBUG("Different start addr of stack (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+	return 1;
+      }
+      if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
+    	//XBT_DEBUG("Different memcmp for data in stack");
+    	errors++;
+      }
+      break;
     }
-    
-    
   }
 
   return (errors>0);
-
+  
 }
 
-int reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s){
+int reached(xbt_automaton_t a, xbt_state_t st, char *prgm){
 
 
   if(xbt_fifo_size(reached_pairs) == 0){
@@ -67,8 +107,6 @@ int reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s){
     return 0;
 
   }else{
-
-    MC_SET_RAW_MEM;
     
     xbt_dynar_t prop_ato = xbt_dynar_new(sizeof(int), NULL);
 
@@ -81,7 +119,10 @@ int reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s){
       xbt_dynar_push_as(prop_ato, int, res);
     }
 
-
+    MC_SET_RAW_MEM;
+    mc_snapshot_t sn = xbt_new0(s_mc_snapshot_t, 1);
+    MC_take_snapshot_liveness(sn, prgm);
+    MC_UNSET_RAW_MEM;
 
     int i=0;
     xbt_fifo_item_t item = xbt_fifo_get_first_item(reached_pairs);
@@ -93,7 +134,9 @@ int reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s){
       
       if(automaton_state_compare(pair_test->automaton_state, st) == 0){
 	if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
-	  if(snapshot_compare(s, pair_test->system_state) == 0){
+	  if(snapshot_compare(sn, pair_test->system_state) == 0){
+	    MC_SET_RAW_MEM;
+	    MC_free_snapshot(sn);
 	    MC_UNSET_RAW_MEM;
 	    return 1;
 	  }
@@ -106,13 +149,15 @@ int reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s){
 
     }
 
+    MC_SET_RAW_MEM;
+    MC_free_snapshot(sn);
     MC_UNSET_RAW_MEM;
     return 0;
     
   }
 }
 
-void set_pair_reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t sn){
+void set_pair_reached(xbt_automaton_t a, xbt_state_t st, char *prgm){
 
  
   MC_SET_RAW_MEM;
@@ -121,7 +166,8 @@ void set_pair_reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t sn){
   pair = xbt_new0(s_mc_pair_reached_t, 1);
   pair->automaton_state = st;
   pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-  pair->system_state = sn;
+  pair->system_state = xbt_new0(s_mc_snapshot_t, 1);
+  MC_take_snapshot_liveness(pair->system_state, prgm);
 
   /* Get values of propositional symbols */
   unsigned int cursor = 0;
@@ -139,7 +185,7 @@ void set_pair_reached(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t sn){
   
 }
 
-int visited(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s, int sc){
+int visited(xbt_automaton_t a, xbt_state_t st, int sc, char *prgm){
 
 
   if(xbt_fifo_size(visited_pairs) == 0){
@@ -147,8 +193,6 @@ int visited(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s, int sc){
     return 0;
 
   }else{
-
-    MC_SET_RAW_MEM;
     
     xbt_dynar_t prop_ato = xbt_dynar_new(sizeof(int), NULL);
 
@@ -161,6 +205,10 @@ int visited(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s, int sc){
       xbt_dynar_push_as(prop_ato, int, res);
     }
 
+    MC_SET_RAW_MEM;
+    mc_snapshot_t sn = xbt_new0(s_mc_snapshot_t, 1);
+    MC_take_snapshot_liveness(sn, prgm);
+    MC_UNSET_RAW_MEM;
 
 
     int i=0;
@@ -174,7 +222,9 @@ int visited(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s, int sc){
       if(pair_test->search_cycle == sc) {
 	if(automaton_state_compare(pair_test->automaton_state, st) == 0){
 	  if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
-	    if(snapshot_compare(s, pair_test->system_state) == 0){
+	    if(snapshot_compare(sn, pair_test->system_state) == 0){
+	      MC_SET_RAW_MEM;
+	      MC_free_snapshot(sn);
 	      MC_UNSET_RAW_MEM;
 	      return 1;
 	    }
@@ -188,22 +238,25 @@ int visited(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t s, int sc){
 
     }
 
+    MC_SET_RAW_MEM;
+    MC_free_snapshot(sn);
     MC_UNSET_RAW_MEM;
     return 0;
     
   }
 }
 
-void set_pair_visited(xbt_automaton_t a, xbt_state_t st, mc_snapshot_t sn, int sc){
+void set_pair_visited(xbt_automaton_t a, xbt_state_t st, int sc, char *prgm){
 
  
   MC_SET_RAW_MEM;
-  
+ 
   mc_pair_visited_t pair = NULL;
   pair = xbt_new0(s_mc_pair_visited_t, 1);
   pair->automaton_state = st;
   pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-  pair->system_state = sn;
+  pair->system_state = xbt_new0(s_mc_snapshot_t, 1);
+  MC_take_snapshot_liveness(pair->system_state, prgm);
   pair->search_cycle = sc;
 
   /* Get values of propositional symbols */
@@ -320,8 +373,9 @@ void MC_ddfs_stateless_init(xbt_automaton_t a, char *prgm){
   visited_pairs = xbt_fifo_new();
   successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
 
-  initial_snapshot = xbt_new0(s_mc_snapshot_t, 1);
-  MC_take_snapshot_liveness(initial_snapshot, prgm);
+  /* Save the initial state */
+  initial_snapshot_liveness = xbt_new0(s_mc_snapshot_t, 1);
+  MC_take_snapshot_liveness(initial_snapshot_liveness, prgm);
 
   MC_UNSET_RAW_MEM; 
 
@@ -337,7 +391,7 @@ void MC_ddfs_stateless_init(xbt_automaton_t a, char *prgm){
       MC_UNSET_RAW_MEM;
       
       if(cursor != 0){
-	MC_restore_snapshot(initial_snapshot);
+	MC_restore_snapshot(initial_snapshot_liveness);
 	MC_UNSET_RAW_MEM;
       }
 
@@ -351,10 +405,10 @@ void MC_ddfs_stateless_init(xbt_automaton_t a, char *prgm){
 	xbt_fifo_unshift(mc_stack_liveness_stateless, mc_initial_pair);
 	MC_UNSET_RAW_MEM;
 
-	set_pair_reached(a, state, initial_snapshot);
+	set_pair_reached(a, state, prgm);
 	
 	if(cursor != 0){
-	  MC_restore_snapshot(initial_snapshot);
+	  MC_restore_snapshot(initial_snapshot_liveness);
 	  MC_UNSET_RAW_MEM;
 	}
 	
@@ -371,8 +425,8 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
 
   smx_process_t process;
   mc_pair_stateless_t current_pair = NULL;
-  mc_snapshot_t snapshot = NULL;
-  mc_snapshot_t current_snapshot = NULL;
+
+  //mc_snapshot_t current_snapshot = NULL;
 
   if(xbt_fifo_size(mc_stack_liveness_stateless) == 0)
     return;
@@ -399,6 +453,8 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
  
   mc_stats_pair->visited_pairs++;
 
+  //sleep(1);
+
   int value;
   mc_state_t next_graph_state = NULL;
   smx_req_t req = NULL;
@@ -413,12 +469,7 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
 
   if(xbt_fifo_size(mc_stack_liveness_stateless) < MAX_DEPTH_LIVENESS){
 
-    MC_SET_RAW_MEM;
-    current_snapshot = xbt_new0(s_mc_snapshot_t, 1);
-    MC_take_snapshot_liveness(current_snapshot, prgm);
-    MC_UNSET_RAW_MEM;
-
-    set_pair_visited(a, current_pair->automaton_state, current_snapshot, search_cycle);
+    set_pair_visited(a, current_pair->automaton_state, search_cycle, prgm);
 
     if(current_pair->requests > 0){
 
@@ -487,21 +538,16 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
 	}
 
 	cursor = 0; 
-
-	MC_SET_RAW_MEM;
-	snapshot = xbt_new0(s_mc_snapshot_t, 1);
-	MC_take_snapshot_liveness(snapshot, prgm);
-	MC_UNSET_RAW_MEM;
 	
 	xbt_dynar_foreach(successors, cursor, pair_succ){
 
-	  if(!visited(a, pair_succ->automaton_state, snapshot, search_cycle)){
+	  if(!visited(a, pair_succ->automaton_state, search_cycle, prgm)){
 
 	    if(search_cycle == 1){
 
 	      if((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)){ 
 		      
-		if(reached(a, pair_succ->automaton_state, snapshot) == 1){
+		if(reached(a, pair_succ->automaton_state, prgm) == 1){
 
 		  XBT_DEBUG("Next pair (depth = %d, %d interleave) already reached !", xbt_fifo_size(mc_stack_liveness_stateless) + 1, MC_state_interleave_size(pair_succ->graph_state));
 
@@ -518,7 +564,7 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
 
 		  XBT_DEBUG("Next pair (depth =%d) -> Acceptance pair : graph=%p, automaton=%p(%s)", xbt_fifo_size(mc_stack_liveness_stateless) + 1, pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
 	      
-		  set_pair_reached(a, pair_succ->automaton_state, snapshot); 
+		  set_pair_reached(a, pair_succ->automaton_state, prgm); 
 
 		}
 
@@ -530,7 +576,7 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
 
 		XBT_DEBUG("Next pair (depth =%d) -> Acceptance pair : graph=%p, automaton=%p(%s)", xbt_fifo_size(mc_stack_liveness_stateless) + 1, pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
 	    
-		set_pair_reached(a, pair_succ->automaton_state, snapshot); 
+		set_pair_reached(a, pair_succ->automaton_state, prgm); 
 	      
 		search_cycle = 1;
 
@@ -604,21 +650,16 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
       }
 
       cursor = 0; 
-
-      MC_SET_RAW_MEM;
-      snapshot = xbt_new0(s_mc_snapshot_t, 1);
-      MC_take_snapshot_liveness(snapshot, prgm);
-      MC_UNSET_RAW_MEM;
      
       xbt_dynar_foreach(successors, cursor, pair_succ){
 
-	if(!visited(a, pair_succ->automaton_state, snapshot, search_cycle)){
+	if(!visited(a, pair_succ->automaton_state, search_cycle, prgm)){
 
 	  if(search_cycle == 1){
 
 	    if((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)){ 
 
-	      if(reached(a, pair_succ->automaton_state, snapshot) == 1){
+	      if(reached(a, pair_succ->automaton_state, prgm) == 1){
 
 		XBT_DEBUG("Next pair (depth = %d) already reached !", xbt_fifo_size(mc_stack_liveness_stateless) + 1);
 
@@ -635,7 +676,7 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
 
 		XBT_DEBUG("Next pair (depth =%d) -> Acceptance pair : graph=%p, automaton=%p(%s)", xbt_fifo_size(mc_stack_liveness_stateless) + 1, pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
 	      
-		set_pair_reached(a, pair_succ->automaton_state, snapshot); 
+		set_pair_reached(a, pair_succ->automaton_state, prgm); 
 
 	      }
 
@@ -645,7 +686,7 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
 	  
 	    if(((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)) && (xbt_fifo_size(mc_stack_liveness_stateless) < (MAX_DEPTH_LIVENESS - 1))){
 
-	      set_pair_reached(a, pair_succ->automaton_state, snapshot); 
+	      set_pair_reached(a, pair_succ->automaton_state, prgm); 
 	    	    
 	      search_cycle = 1;
 
@@ -680,9 +721,9 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
   }
 
   if(xbt_fifo_size(mc_stack_liveness_stateless) == MAX_DEPTH_LIVENESS ){
-    XBT_DEBUG("Pair (graph=%p, automaton =%p, search_cycle = %u) shifted in stack, maximum depth reached", current_pair->graph_state, current_pair->automaton_state, search_cycle);
+    XBT_DEBUG("Pair (graph=%p, automaton =%p, search_cycle = %u, depth = %d) shifted in stack, maximum depth reached", current_pair->graph_state, current_pair->automaton_state, search_cycle, xbt_fifo_size(mc_stack_liveness_stateless) );
   }else{
-    XBT_DEBUG("Pair (graph=%p, automaton =%p, search_cycle = %u) shifted in stack", current_pair->graph_state, current_pair->automaton_state, search_cycle);
+    XBT_DEBUG("Pair (graph=%p, automaton =%p, search_cycle = %u, depth = %d) shifted in stack", current_pair->graph_state, current_pair->automaton_state, search_cycle, xbt_fifo_size(mc_stack_liveness_stateless) );
   }
 
   
@@ -691,9 +732,6 @@ void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *pr
   if((current_pair->automaton_state->type == 1) || (current_pair->automaton_state->type == 2)){
     xbt_fifo_shift(reached_pairs);
   }
-  if(snapshot != NULL)
-    MC_free_snapshot(snapshot);
-  MC_pair_stateless_delete(current_pair);
   MC_UNSET_RAW_MEM;
   
 
