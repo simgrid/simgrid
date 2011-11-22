@@ -22,6 +22,9 @@ memory_map_t get_memory_map(void)
 /* to be returned. */
   fp = fopen("/proc/self/maps", "r");
 
+  if(fp == NULL)
+    perror("fopen failed");
+
   xbt_assert(fp,
               "Cannot open /proc/self/maps to investigate the memory map of the process. Please report this bug.");
 
@@ -141,7 +144,10 @@ memory_map_t get_memory_map(void)
 
   }
 
-  free(line);
+  if(line)
+    free(line);
+
+  fclose(fp);
 
   return ret;
 }
