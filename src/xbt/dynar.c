@@ -228,18 +228,11 @@ xbt_dynar_new_sync(const unsigned long elmsize,
 void xbt_dynar_free_container(xbt_dynar_t * dynar)
 {
   if (dynar && *dynar) {
-
-    if ((*dynar)->data) {
-      _xbt_clear_mem((*dynar)->data, (*dynar)->size);
-      free((*dynar)->data);
-    }
-
-    if ((*dynar)->mutex)
-      xbt_mutex_destroy((*dynar)->mutex);
-
-    _xbt_clear_mem(*dynar, sizeof(s_xbt_dynar_t));
-
-    free(*dynar);
+    xbt_dynar_t d = *dynar;
+    free(d->data);
+    if (d->mutex)
+      xbt_mutex_destroy(d->mutex);
+    free(d);
     *dynar = NULL;
   }
 }
