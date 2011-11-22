@@ -70,7 +70,7 @@ int bob(int argc, char *argv[])
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data;
   const char *noexist = "UnknownProcessProp";
-  const char *value;
+  _XBT_GNUC_UNUSED const char *value;
 
   XBT_INFO("== Print the properties of the process");
   xbt_dict_foreach(props, cursor, key, data)

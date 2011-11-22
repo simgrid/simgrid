@@ -6,7 +6,7 @@
 
 #include "simgrid_config.h" //For getline, keep that include first
 
-#include "msg/private.h"
+#include "msg_private.h"
 #include "xbt/str.h"
 #include "xbt/dynar.h"
 #include "xbt/replay_trace_reader.h"
@@ -57,7 +57,7 @@ static int MSG_action_runner(int argc, char *argv[])
 
     while ((evt = action_get_action(argv[0]))) {
       msg_action_fun function = xbt_dict_get(action_funs, evt[1]);
-      (*function) (evt);
+      function(evt);
       free(evt);
     }
   } else {                      // Should have got my trace file in argument
@@ -70,7 +70,7 @@ static int MSG_action_runner(int argc, char *argv[])
     while ((evt=xbt_replay_trace_reader_get(reader))) {
       if (!strcmp(argv[0],evt[0])) {
         msg_action_fun function = xbt_dict_get(action_funs, evt[1]);
-        (*function) (evt);
+        function(evt);
         free(evt);
       } else {
         XBT_WARN("%s: Ignore trace element not for me",
@@ -103,7 +103,7 @@ static const char **action_get_action(char *name)
   char *evtname = NULL;
 
   xbt_dynar_t myqueue = xbt_dict_get_or_null(action_queues, name);
-  if (myqueue == NULL || xbt_dynar_length(myqueue) == 0) {      // nothing stored for me. Read the file further
+  if (myqueue == NULL || xbt_dynar_is_empty(myqueue)) {      // nothing stored for me. Read the file further
 
     if (action_fp == NULL) {    // File closed now. There's nothing more to read. I'm out of here
       goto todo_done;
@@ -176,7 +176,7 @@ MSG_error_t MSG_action_trace_run(char *path)
   }
   res = MSG_main();
 
-  if (xbt_dict_size(action_queues)) {
+  if (!xbt_dict_is_empty(action_queues)) {
     XBT_WARN
         ("Not all actions got consumed. If the simulation ended successfully (without deadlock), you may want to add new processes to your deployment file.");
 
@@ -186,8 +186,7 @@ MSG_error_t MSG_action_trace_run(char *path)
     }
   }
 
-  if (action_line)
-    free(action_line);
+  free(action_line);
   if (path)
     fclose(action_fp);
   xbt_dict_free(&action_queues);

@@ -16,39 +16,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task, sd,
 static void __SD_task_remove_dependencies(SD_task_t task);
 static void __SD_task_destroy_scheduling_data(SD_task_t task);
 
-void* SD_task_new_f(void) {
+void* SD_task_new_f(void)
+{
   SD_task_t task = xbt_new0(s_SD_task_t, 1);
   task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
   task->tasks_after = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
 
   return task;
 }
-void SD_task_recycle_f(void *t) {
-  SD_task_t task = (SD_task_t)t;
 
-  __SD_task_remove_dependencies(task);
-  /* if the task was scheduled or runnable we have to free the scheduling parameters */
-  if (__SD_task_is_scheduled_or_runnable(task))
-    __SD_task_destroy_scheduling_data(task);
-  if (task->state_set != NULL) {/* would be null if just created */
-    xbt_swag_remove(task, task->state_set);
-  }
-  xbt_swag_remove(task, sd_global->return_set);
-
-  if (task->name != NULL)
-    xbt_free(task->name);
-
-  if (task->surf_action != NULL)
-    surf_workstation_model->action_unref(task->surf_action);
-
-  if (task->workstation_list != NULL)
-    xbt_free(task->workstation_list);
-
-  if (task->communication_amount)
-    xbt_free(task->communication_amount);
-
-  if (task->computation_amount)
-    xbt_free(task->computation_amount);
+void SD_task_recycle_f(void *t)
+{
+  SD_task_t task = (SD_task_t) t;
 
   /* Reset the content */
   task->kind = SD_TASK_NOT_TYPED;
@@ -68,8 +47,8 @@ void SD_task_recycle_f(void *t) {
   task->watch_points = 0;
 
   /* dependencies */
-  xbt_dynar_reset(task->tasks_before); // =  new(sizeof(SD_dependency_t), NULL);
-  xbt_dynar_reset(task->tasks_after);  // = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
+  xbt_dynar_reset(task->tasks_before);
+  xbt_dynar_reset(task->tasks_after);
   task->unsatisfied_dependencies = 0;
   task->is_not_ready = 0;
 
@@ -79,46 +58,16 @@ void SD_task_recycle_f(void *t) {
   task->computation_amount = NULL;
   task->communication_amount = NULL;
   task->rate = -1;
-
-#ifdef HAVE_TRACING
-  TRACE_sd_task_create(task);
-#endif
 }
-void SD_task_free_f(void *t) {
+
+void SD_task_free_f(void *t)
+{
   SD_task_t task = (SD_task_t)t;
-
-  __SD_task_remove_dependencies(task);
-  /* if the task was scheduled or runnable we have to free the scheduling parameters */
-  if (__SD_task_is_scheduled_or_runnable(task))
-    __SD_task_destroy_scheduling_data(task);
-  if (task->state_set != NULL) /* would be null if just created */
-    xbt_swag_remove(task, task->state_set);
-
-  xbt_swag_remove(task, sd_global->return_set);
-
-  if (task->name != NULL)
-    xbt_free(task->name);
-
-  if (task->surf_action != NULL)
-    surf_workstation_model->action_unref(task->surf_action);
-
-  if (task->workstation_list != NULL)
-    xbt_free(task->workstation_list);
-
-  if (task->communication_amount)
-    xbt_free(task->communication_amount);
-
-  if (task->computation_amount)
-    xbt_free(task->computation_amount);
-#ifdef HAVE_TRACING
-  TRACE_sd_task_destroy(task);
-#endif
 
   xbt_dynar_free(&task->tasks_before);
   xbt_dynar_free(&task->tasks_after);
   xbt_free(task);
 }
-
 
 /**
  * \brief Creates a new task.
@@ -141,8 +90,13 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
 
   sd_global->task_number++;
 
+#ifdef HAVE_TRACING
+  TRACE_sd_task_create(task);
+#endif
+
   return task;
 }
+
 /**
  * \brief Destroys a task.
  *
@@ -155,12 +109,33 @@ void SD_task_destroy(SD_task_t task)
 {
   XBT_DEBUG("Destroying task %s...", SD_task_get_name(task));
 
+  __SD_task_remove_dependencies(task);
+  /* if the task was scheduled or runnable we have to free the scheduling parameters */
+  if (__SD_task_is_scheduled_or_runnable(task))
+    __SD_task_destroy_scheduling_data(task);
+  if (task->state_set != NULL) /* would be null if just created */
+    xbt_swag_remove(task, task->state_set);
+
+  xbt_swag_remove(task, sd_global->return_set);
+
+  xbt_free(task->name);
+
+  if (task->surf_action != NULL)
+    surf_workstation_model->action_unref(task->surf_action);
+
+  xbt_free(task->workstation_list);
+  xbt_free(task->communication_amount);
+  xbt_free(task->computation_amount);
+
   xbt_mallocator_release(sd_global->task_mallocator,task);
   sd_global->task_number--;
 
+#ifdef HAVE_TRACING
+  TRACE_sd_task_destroy(task);
+#endif
+
   XBT_DEBUG("Task destroyed.");
 }
-
 
 /**
  * \brief Returns the user data of a task
@@ -398,13 +373,13 @@ void SD_task_dump(SD_task_t task)
   }
   XBT_INFO("  - amount: %.0f", SD_task_get_amount(task));
   XBT_INFO("  - Dependencies to satisfy: %d", task->unsatisfied_dependencies);
-  if (xbt_dynar_length(task->tasks_before)) {
+  if (!xbt_dynar_is_empty(task->tasks_before)) {
     XBT_INFO("  - pre-dependencies:");
     xbt_dynar_foreach(task->tasks_before, counter, dependency) {
       XBT_INFO("    %s", SD_task_get_name(dependency->src));
     }
   }
-  if (xbt_dynar_length(task->tasks_after)) {
+  if (!xbt_dynar_is_empty(task->tasks_after)) {
     XBT_INFO("  - post-dependencies:");
     xbt_dynar_foreach(task->tasks_after, counter, dependency) {
       XBT_INFO("    %s", SD_task_get_name(dependency->dst));
@@ -438,8 +413,7 @@ void SD_task_dotty(SD_task_t task, void *out)
  */
 static void __SD_task_dependency_destroy(void *dependency)
 {
-  if (((SD_dependency_t) dependency)->name != NULL)
-    xbt_free(((SD_dependency_t) dependency)->name);
+  xbt_free(((SD_dependency_t)dependency)->name);
   xbt_free(dependency);
 }
 
@@ -1214,12 +1188,12 @@ static void __SD_task_remove_dependencies(SD_task_t task)
   /* we must destroy the dependencies carefuly (with SD_dependency_remove)
      because each one is stored twice */
   SD_dependency_t dependency;
-  while (xbt_dynar_length(task->tasks_before) > 0) {
+  while (!xbt_dynar_is_empty(task->tasks_before)) {
     xbt_dynar_get_cpy(task->tasks_before, 0, &dependency);
     SD_task_dependency_remove(dependency->src, dependency->dst);
   }
 
-  while (xbt_dynar_length(task->tasks_after) > 0) {
+  while (!xbt_dynar_is_empty(task->tasks_after)) {
     xbt_dynar_get_cpy(task->tasks_after, 0, &dependency);
     SD_task_dependency_remove(dependency->src, dependency->dst);
   }

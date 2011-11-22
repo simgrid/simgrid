@@ -92,7 +92,7 @@ int main(int argc, char **argv)
                    &(computation_amount[1]), SD_SCHED_NO_COST, rate);
 
   /* let's launch the simulation! */
-  while (xbt_dynar_length(changed_tasks = SD_simulate(-1.0)) > 0) {
+  while (!xbt_dynar_is_empty(changed_tasks = SD_simulate(-1.0))) {
     for (i = 0; i < 2; i++) {
       task = SD_workstation_get_current_task(workstations[i]);
       if (task)

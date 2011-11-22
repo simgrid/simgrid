@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include "surf/surf.h"
+#include "surf/surf_resource.h"
 #include "surf/surfxml_parse.h" // for reset callback
 
 #include "xbt/log.h"
@@ -51,9 +52,8 @@ void test(char *platform)
   e_surf_action_state_t stateActionB;
   e_surf_action_state_t stateActionC;
   double now = -1.0;
-  surf_parse_reset_callbacks();
-  surf_cpu_model_init_Cas01(platform);  /* Now it is possible to use CPUs */
-  surf_network_model_init_CM02(platform);       /* Now it is possible to use eth0 */
+  xbt_cfg_set_parse(_surf_cfg_set, "cpu/model:Cas01");
+  xbt_cfg_set_parse(_surf_cfg_set, "network/model:CM02");
   parse_platform_file(platform);
 
   /*********************** CPU ***********************************/

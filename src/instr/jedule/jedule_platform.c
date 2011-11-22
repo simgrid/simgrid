@@ -46,9 +46,7 @@ static int compare_ids(const void *num1, const void *num2) {
 static void jed_free_container(jed_simgrid_container_t container) {
 
 	xbt_dict_free(&container->name2id);
-	if( container->resource_list != NULL ) {
-		xbt_dynar_free(&container->resource_list);
-	}
+	xbt_dynar_free(&container->resource_list);
 
 	if( container->container_children != NULL ) {
 		unsigned int iter;

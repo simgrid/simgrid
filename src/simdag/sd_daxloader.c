@@ -117,14 +117,14 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
   xbt_dynar_foreach(dag,count,task){
     if(task->kind == SD_TASK_COMM_E2E) continue;
     task->marked = 0;
-    if(xbt_dynar_length(task->tasks_after) == 0){
+    if(xbt_dynar_is_empty(task->tasks_after)){
       xbt_dynar_push(current, &task);
     }
   }
   task = NULL;
   count = 0;
   //test if something has to be done for the next iteration
-  while(xbt_dynar_length(current) != 0){
+  while(!xbt_dynar_is_empty(current)){
     next = xbt_dynar_new(sizeof(SD_task_t),NULL);
     //test if the current iteration is done
     count_current=0;
@@ -177,7 +177,7 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
     current = xbt_dynar_new(sizeof(SD_task_t),NULL);
     xbt_dynar_foreach(dag,count,task){
       if(task->kind == SD_TASK_COMM_E2E) continue;
-      if(xbt_dynar_length(task->tasks_before) == 0){
+      if(xbt_dynar_is_empty(task->tasks_before)){
         xbt_dynar_push(current, &task);
       }
     }
@@ -186,7 +186,7 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
     task = NULL;
     xbt_dynar_foreach(dag,count,task){
       if(task->kind == SD_TASK_COMM_E2E) continue;
-      if(xbt_dynar_length(task->tasks_before) == 0){
+      if(xbt_dynar_is_empty(task->tasks_before)){
         task->marked = 1;
         xbt_dynar_push(current, &task);
       }
@@ -194,7 +194,7 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
     task = NULL;
     count = 0;
     //test if something has to be done for the next iteration
-    while(xbt_dynar_length(current) != 0){
+    while(!xbt_dynar_is_empty(current)){
       next = xbt_dynar_new(sizeof(SD_task_t),NULL);
       //test if the current iteration is done
       count_current=0;
@@ -295,12 +295,13 @@ xbt_dynar_t SD_daxload(const char *filename)
   xbt_dynar_push(result, &root_task);
   end_task = SD_task_create_comp_seq("end", NULL, 0);
 
-  int res;
+  _XBT_GNUC_UNUSED int res;
   res = dax_lex();
   xbt_assert(!res, "Parse error in %s: %s", filename,
               dax__parse_err_msg());
   dax__delete_buffer(input_buffer);
   fclose(in_file);
+  dax_lex_destroy();
   xbt_dict_free(&jobs);
 
   /* And now, post-process the files.
@@ -313,7 +314,7 @@ xbt_dynar_t SD_daxload(const char *filename)
     unsigned int cpt1, cpt2;
     SD_task_t newfile = NULL;
     SD_dependency_t depbefore, depafter;
-    if (xbt_dynar_length(file->tasks_before) == 0) {
+    if (xbt_dynar_is_empty(file->tasks_before)) {
       xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
         SD_task_t newfile =
             SD_task_create_comm_e2e(file->name, NULL, file->amount);
@@ -330,7 +331,7 @@ xbt_dynar_t SD_daxload(const char *filename)
 #endif
         xbt_dynar_push(result, &newfile);
       }
-    } else if (xbt_dynar_length(file->tasks_after) == 0) {
+    } else if (xbt_dynar_is_empty(file->tasks_after)) {
       xbt_dynar_foreach(file->tasks_before, cpt2, depbefore) {
         SD_task_t newfile =
             SD_task_create_comm_e2e(file->name, NULL, file->amount);
@@ -392,7 +393,7 @@ xbt_dynar_t SD_daxload(const char *filename)
 
 void STag_dax__adag(void)
 {
-  double version;
+  _XBT_GNUC_UNUSED double version;
   version = dax_parse_double(A_dax__adag_version);
 
   xbt_assert(version == 2.1,

@@ -14,7 +14,7 @@
 #include "trace_mgr_private.h"
 #include "cpu_ti_private.h"
 #include "xbt/heap.h"
-
+#include "surf/surf_resource.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf,
                                 "Logging specific to the SURF CPU TRACE INTEGRATION module");
@@ -50,10 +50,8 @@ static int surf_cpu_ti_binary_search(double *array, double a, int low,
 
 static void surf_cpu_ti_free_trace(surf_cpu_ti_trace_t trace)
 {
-  if (trace->time_points)
-    xbt_free(trace->time_points);
-  if (trace->integral)
-    xbt_free(trace->integral);
+  xbt_free(trace->time_points);
+  xbt_free(trace->integral);
   xbt_free(trace);
 }
 
@@ -144,7 +142,7 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
 }
 
 
-static void* cpu_ti_create_resource(char *name, double power_peak,
+static void* cpu_ti_create_resource(const char *name, double power_peak,
                            double power_scale,
                            tmgr_trace_t power_trace,
                            int core,
@@ -154,18 +152,17 @@ static void* cpu_ti_create_resource(char *name, double power_peak,
 {
   tmgr_trace_t empty_trace;
   s_tmgr_event_t val;
-  cpu_ti_t cpu = xbt_new0(s_cpu_ti_t, 1);
+  cpu_ti_t cpu = NULL;
   s_surf_action_cpu_ti_t ti_action;
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   xbt_assert(!surf_cpu_resource_by_name(name),
               "Host '%s' declared several times in the platform file",
               name);
   xbt_assert(core==1,"Multi-core not handled with this model yet");
+  cpu = (cpu_ti_t) surf_resource_new(sizeof(s_cpu_ti_t),
+          surf_cpu_model, name,cpu_properties);
   cpu->action_set =
       xbt_swag_new(xbt_swag_offset(ti_action, cpu_list_hookup));
-  cpu->generic_resource.model = surf_cpu_model;
-  cpu->generic_resource.name = name;
-  cpu->generic_resource.properties = cpu_properties;
   cpu->power_peak = power_peak;
   xbt_assert(cpu->power_peak > 0, "Power has to be >0");
   XBT_DEBUG("power scale %lf", power_scale);
@@ -192,33 +189,16 @@ static void* cpu_ti_create_resource(char *name, double power_peak,
 }
 
 
-static void parse_cpu_ti_init(void)
+static void parse_cpu_ti_init(sg_platf_host_cbarg_t host)
 {
-  double power_peak = 0.0;
-  double power_scale = 0.0;
-  int core = 0;
-  tmgr_trace_t power_trace = NULL;
-  e_surf_resource_state_t state_initial = SURF_RESOURCE_OFF;
-  tmgr_trace_t state_trace = NULL;
-
-  power_peak = get_cpu_power(A_surfxml_host_power);
-  surf_parse_get_double(&power_scale, A_surfxml_host_availability);
-  power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
-  surf_parse_get_int(&core, A_surfxml_host_core);
-
-  xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
-              (A_surfxml_host_state == A_surfxml_host_state_OFF),
-              "Invalid state");
-  if (A_surfxml_host_state == A_surfxml_host_state_ON)
-    state_initial = SURF_RESOURCE_ON;
-  if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-    state_initial = SURF_RESOURCE_OFF;
-  state_trace = tmgr_trace_new(A_surfxml_host_state_file);
-
-  cpu_ti_create_resource(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
-             power_trace, core, state_initial, state_trace,
-             current_property_set);
-  current_property_set = NULL;
+  cpu_ti_create_resource(host->id,
+			  host->power_peak,
+			  host->power_scale,
+			  host->power_trace,
+			  host->core_amount,
+			  host->initial_state,
+			  host->state_trace,
+			  host->properties);
 
 }
 
@@ -279,10 +259,10 @@ static void add_traces_cpu_ti(void)
   }
 }
 
-static void cpu_ti_define_callbacks(const char *file)
+static void cpu_ti_define_callbacks()
 {
-  surfxml_add_callback(ETag_surfxml_host_cb_list, parse_cpu_ti_init);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &add_traces_cpu_ti);
+  sg_platf_host_add_cb(parse_cpu_ti_init);
+  sg_platf_postparse_add_cb(add_traces_cpu_ti);
 }
 
 static int cpu_ti_resource_used(void *resource_id)
@@ -822,12 +802,12 @@ static void surf_cpu_ti_model_init_internal(void)
 
 }
 
-void surf_cpu_model_init_ti(const char *filename)
+void surf_cpu_model_init_ti()
 {
   if (surf_cpu_model)
     return;
   surf_cpu_ti_model_init_internal();
-  cpu_ti_define_callbacks(filename);
+  cpu_ti_define_callbacks();
   xbt_dynar_push(model_list, &surf_cpu_model);
 }
 

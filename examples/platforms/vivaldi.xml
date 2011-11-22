@@ -46,6 +46,5 @@
 	<host id="100422926" coordinates="-23.1 -7.6 39.9" power="1600000000.0" />
 	<host id="100427449" coordinates="135.5 -21.0 83.4" power="1400000000.0" />
 	<host id="100429957" coordinates="17.5 6.7 18.8" power="830000000.0" />
-	<route src=".*" dst=".*"></route>
 	</AS>
 </platform>

@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <math.h> // sqrt
 #include "private.h"
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
@@ -35,15 +36,9 @@ typedef struct {
 
 void smpi_bench_destroy(void)
 {
-  if (allocs) {
-    xbt_dict_free(&allocs);
-  }
-  if (samples) {
-    xbt_dict_free(&samples);
-  }
-  if(calls) {
-    xbt_dict_free(&calls);
-  }
+  xbt_dict_free(&allocs);
+  xbt_dict_free(&samples);
+  xbt_dict_free(&calls);
 }
 
 static void smpi_execute_flops(double flops)

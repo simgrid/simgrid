@@ -4,13 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg/private.h"
+#include "msg_private.h"
+#include "msg_mailbox.h"
 #include "mc/mc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/virtu.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
-#include "mailbox.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
                                 "Logging specific to MSG (kernel)");
@@ -223,6 +223,7 @@ int MSG_process_killall(int reset_PIDs)
  */
 MSG_error_t MSG_clean(void)
 {
+  XBT_DEBUG("Closing MSG");
 
 #ifdef HAVE_TRACING
   TRACE_surf_release();

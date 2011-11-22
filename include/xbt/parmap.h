@@ -18,9 +18,13 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_parmap
   * @brief Parallel map.
   *
-  * A function is applied to all the elements of a dynar in parallel
-  * using threads. The threads are persistent until the destruction
-  * of the parmap object.
+  * A function is applied to the n first elements of a dynar in parallel,
+  * where n is the number of threads. The threads are persistent until the
+  * destruction of the parmap object.
+  *
+  * If there are more than n elements in the dynar, the worker threads should
+  * fetch themselves remaining work with xbt_parmap_next() and execute it.
+  *
   * @{
   */
   /** \brief Queue data type (opaque type) */
@@ -28,12 +32,13 @@ SG_BEGIN_DECL()
 typedef struct s_xbt_parmap *xbt_parmap_t;
 
 XBT_PUBLIC(xbt_parmap_t) xbt_parmap_new(unsigned int num_workers);
+XBT_PUBLIC(void) xbt_parmap_destroy(xbt_parmap_t parmap);
 
 XBT_PUBLIC(void) xbt_parmap_apply(xbt_parmap_t parmap,
                                   void_f_pvoid_t fun,
                                   xbt_dynar_t data);
-
-XBT_PUBLIC(void) xbt_parmap_destroy(xbt_parmap_t parmap);
+XBT_PUBLIC(void*) xbt_parmap_next(xbt_parmap_t parmap);
+XBT_PUBLIC(unsigned long) xbt_parmap_get_worker_id(xbt_parmap_t parmap);
 
 /** @} */
 

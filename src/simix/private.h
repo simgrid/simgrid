@@ -197,8 +197,10 @@ static XBT_INLINE smx_context_t SIMIX_context_new(xbt_main_func_t code,
                                                   smx_process_t simix_process)
 {
 
-  return (*(simix_global->context_factory->create_context))
-      (code, argc, argv, cleanup_func, simix_process);
+  return simix_global->context_factory->create_context(code,
+                                                       argc, argv,
+                                                       cleanup_func,
+                                                       simix_process);
 }
 
 /**
@@ -208,7 +210,7 @@ static XBT_INLINE smx_context_t SIMIX_context_new(xbt_main_func_t code,
  */
 static XBT_INLINE void SIMIX_context_free(smx_context_t context)
 {
-  (*(simix_global->context_factory->free)) (context);
+  simix_global->context_factory->free(context);
 }
 
 /**
@@ -217,7 +219,7 @@ static XBT_INLINE void SIMIX_context_free(smx_context_t context)
  */
 static XBT_INLINE void SIMIX_context_stop(smx_context_t context)
 {
-  (*(simix_global->context_factory->stop)) (context);
+  simix_global->context_factory->stop(context);
 }
 
 /**
@@ -227,16 +229,15 @@ static XBT_INLINE void SIMIX_context_stop(smx_context_t context)
  */
 static XBT_INLINE void SIMIX_context_suspend(smx_context_t context)
 {
-  (*(simix_global->context_factory->suspend)) (context);
+  simix_global->context_factory->suspend(context);
 }
 
 /**
- \brief executes all the processes (in parallel if possible)
- \param processes the dynar of processes to execute
+ \brief Executes all the processes to run (in parallel if possible).
  */
-static XBT_INLINE void SIMIX_context_runall(xbt_dynar_t processes)
+static XBT_INLINE void SIMIX_context_runall()
 {
-  (*(simix_global->context_factory->runall)) (processes);
+  simix_global->context_factory->runall();
 }
 
 /**
@@ -245,7 +246,7 @@ static XBT_INLINE void SIMIX_context_runall(xbt_dynar_t processes)
 static XBT_INLINE smx_context_t SIMIX_context_self(void)
 {
   if (simix_global && simix_global->context_factory != NULL) {
-    return (*(simix_global->context_factory->self))();
+    return simix_global->context_factory->self();
   }
 
   return NULL;
@@ -258,7 +259,7 @@ static XBT_INLINE smx_context_t SIMIX_context_self(void)
  */
 static XBT_INLINE void* SIMIX_context_get_data(smx_context_t context)
 {
-  return (*(simix_global->context_factory->get_data))(context);
+  return simix_global->context_factory->get_data(context);
 }
 
 XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);

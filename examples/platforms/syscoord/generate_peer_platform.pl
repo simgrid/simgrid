@@ -27,7 +27,6 @@ while(defined($line=<SITES_LIGNE>))
 		print "\t\tbw_in=\"13380000\" bw_out=\"1024000\" lat=\"5E-4\" />\n\n";
 		}
 }
-print "\t\t<ASroute src=\"(.*)\"\n\t\t\tdst=\"(.*)\"\n\t\t\tgw_src=\"router_\$1src\"\n\t\t\tgw_dst=\"router_\$1dst\">\n\t\t</ASroute>\n";		
 			
 print "\t</AS>\n";
 print "</platform>";

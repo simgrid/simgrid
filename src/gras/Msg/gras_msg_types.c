@@ -78,23 +78,11 @@ gras_msgtype_declare_ext(const char *name,
 
   gras_msgtype_t msgtype = NULL;
   char *namev = make_namev(name, version);
-  volatile int found = 0;
-  xbt_ex_t e;
 
-  TRY {
-    msgtype =
-        (gras_msgtype_t) xbt_set_get_by_name(_gras_msgtype_set, namev);
-    found = 1;
-  }
-  CATCH(e) {
-    if (e.category != not_found_error) {
-      xbt_free(namev);
-      RETHROW;
-    }
-    xbt_ex_free(e);
-  }
+  msgtype = (gras_msgtype_t) xbt_set_get_by_name_or_null(
+      _gras_msgtype_set, (const char*) namev);
 
-  if (found) {
+  if (msgtype != NULL) {
     XBT_DEBUG
         ("Re-register version %d of message '%s' (same kind & payload, ignored).",
          version, name);
@@ -104,13 +92,13 @@ gras_msgtype_declare_ext(const char *name,
                 e_gras_msg_kind_names[msgtype->kind]);
     xbt_assert(!gras_datadesc_type_cmp
                 (msgtype->ctn_type, payload_request),
-                "Message %s re-registred with another payload (%s was %s)",
+                "Message %s re-registered with another payload (%s was %s)",
                 namev, gras_datadesc_get_name(payload_request),
                 gras_datadesc_get_name(msgtype->ctn_type));
 
     xbt_assert(!gras_datadesc_type_cmp
                 (msgtype->answer_type, payload_answer),
-                "Message %s re-registred with another answer payload (%s was %s)",
+                "Message %s re-registered with another answer payload (%s was %s)",
                 namev, gras_datadesc_get_name(payload_answer),
                 gras_datadesc_get_name(msgtype->answer_type));
 
@@ -196,21 +184,13 @@ gras_msgtype_t gras_msgtype_by_namev(const char *name, short int version)
 {
   gras_msgtype_t res = NULL;
   char *namev = make_namev(name, version);
-  volatile int found = 0;
-  xbt_ex_t e;
 
-  TRY {
-    res = (gras_msgtype_t) xbt_set_get_by_name(_gras_msgtype_set, namev);
-    found = 1;
-  }
-  CATCH(e) {
-    xbt_ex_free(e);
-  }
-  if (!found)
-    THROWF(not_found_error, 0, "No registred message of that name: %s",
-           name);
-
+  res = (gras_msgtype_t) xbt_set_get_by_name_or_null(_gras_msgtype_set, namev);
   free(namev);
+
+  if (res == NULL)
+    THROWF(not_found_error, 0, "No registered message of that name: %s",
+           name);
 
   return res;
 }

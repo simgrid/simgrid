@@ -147,7 +147,7 @@ static void test_dynar_empty(gras_socket_t sock, int direction)
   write_read("xbt_dynar_of_int", &i, &j, sock, direction);
   /*  xbt_dynar_dump(j); */
   if (direction == READ || direction == COPY) {
-    xbt_assert(xbt_dynar_length(j) == 0);
+    xbt_assert(xbt_dynar_is_empty(j));
     xbt_dynar_free(&j);
   }
   xbt_dynar_free(&i);

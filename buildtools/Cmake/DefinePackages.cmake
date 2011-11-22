@@ -49,12 +49,13 @@ set(EXTRA_DIST
 	src/surf/gtnets/gtnets_topology.h
 	src/surf/cpu_ti_private.h
 	src/surf/surf_routing_private.h
+	src/include/simgrid/platf_interface.h
 	src/include/surf/surf_resource.h
 	src/include/surf/datatypes.h
 	src/include/surf/maxmin.h
 	src/include/surf/trace_mgr.h
 	src/include/surf/surf.h
-	src/include/surf/surfxml_parse_private.h
+	src/include/surf/surfxml_parse_values.h
 	src/include/surf/random_mgr.h
 	src/include/surf/surf_resource_lmm.h
 	src/include/xbt/wine_dbghelp.h
@@ -63,8 +64,8 @@ set(EXTRA_DIST
 	src/include/mc/datatypes.h
 	src/include/mc/mc.h
 	src/include/simix/context.h
-	src/msg/private.h
-	src/msg/mailbox.h
+	src/msg/msg_private.h
+	src/msg/msg_mailbox.h
 	src/simdag/private.h
 	src/simdag/dax.dtd
 	src/simdag/dax_dtd.h
@@ -88,6 +89,7 @@ set(EXTRA_DIST
 	src/smpi/private.h
 	src/smpi/smpi_mpi_dt_private.h
 	src/smpi/README
+	src/mk_supernovae.pl
 	
 	examples/gras/ping/ping.h
 	examples/gras/console/ping.h
@@ -208,11 +210,14 @@ set(SURF_SRC
 	src/surf/surf_model.c
 	src/surf/surf_action.c
 	src/surf/surf_routing.c
+	src/surf/surf_routing_none.c
+	src/surf/surf_routing_generic.c
 	src/surf/surf_routing_full.c
 	src/surf/surf_routing_floyd.c
 	src/surf/surf_routing_rulebased.c
 	src/surf/surf_routing_dijkstra.c
-	src/surf/surf_routing_none.c
+	src/surf/surf_routing_cluster.c
+	src/surf/surf_routing_vivaldi.c
 	src/surf/surf_config.c
 	src/surf/maxmin.c
 	src/surf/fair_bottleneck.c
@@ -221,6 +226,7 @@ set(SURF_SRC
 	src/surf/random_mgr.c
 	src/surf/surf.c
 	src/surf/surfxml_parse.c
+	src/surf/surfxml_parseplatf.c
 	src/surf/cpu.c
 	src/surf/network.c
 	src/surf/network_im.c
@@ -229,6 +235,7 @@ set(SURF_SRC
 	src/surf/workstation_ptask_L07.c
 	src/surf/cpu_ti.c
 	src/surf/cpu_im.c
+	src/surf/sg_platf.c
 	src/xbt/xbt_sg_stubs.c
 )
 
@@ -249,13 +256,13 @@ set(SIMIX_SRC
 
 set(MSG_SRC
 	src/msg/msg_config.c
-	src/msg/task.c
-	src/msg/host.c
-	src/msg/m_process.c
-	src/msg/gos.c
-	src/msg/global.c
-	src/msg/environment.c
-	src/msg/deployment.c
+	src/msg/msg_task.c
+	src/msg/msg_host.c
+	src/msg/msg_process.c
+	src/msg/msg_gos.c
+	src/msg/msg_global.c
+	src/msg/msg_environment.c
+	src/msg/msg_deployment.c
 	src/msg/msg_mailbox.c
 	src/msg/msg_actions.c
 )
@@ -408,6 +415,7 @@ set(headers_to_install
 	include/xbt/parmap.h
 	include/xbt/automaton.h
 	include/xbt/automatonparse_promela.h
+	include/simgrid/platf.h
 	include/mc/modelchecker.h
 	include/msg/msg.h
 	include/msg/datatypes.h

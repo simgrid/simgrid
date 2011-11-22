@@ -1,6 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -242,8 +242,6 @@ typedef struct xbt_log_category_s s_xbt_log_category_t,
  * Do NOT access any members of this structure directly. FIXME: move to private?
  */
 
-#define XBT_LOG_BUFF_SIZE 2048  /* Size of the static string in which we build the log string */
-
 struct xbt_log_category_s {
   xbt_log_category_t parent;
   xbt_log_category_t firstChild;
@@ -263,8 +261,8 @@ struct xbt_log_event_s {
   const char *functionName;
   int lineNum;
   va_list ap;
-  va_list ap_copy;              /* need a copy to launch dynamic layouts when the static ones overflowed */
-  char buffer[XBT_LOG_BUFF_SIZE];
+  char *buffer;
+  int buffer_size;
 };
 
 /**
@@ -395,7 +393,6 @@ extern xbt_log_layout_t xbt_log_default_layout;
   fprintf(stderr,"%s:%d:\n" f, __FILE__, __LINE__, __VA_ARGS__)
 # define XBT_LOG(...) XBT_CLOG(0, __VA_ARGS__)
 #else
-# include <string.h>            /* memset */
 # define XBT_CLOG_(catv, prio, ...)                                     \
   do {                                                                  \
     if (_XBT_LOG_ISENABLEDV(catv, prio)) {                              \
@@ -405,7 +402,6 @@ extern xbt_log_layout_t xbt_log_default_layout;
       _log_ev.fileName = __FILE__;                                      \
       _log_ev.functionName = _XBT_FUNCTION;                             \
       _log_ev.lineNum = __LINE__;                                       \
-      memset(_log_ev.buffer, 0, XBT_LOG_BUFF_SIZE);                     \
       _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
     }                                                                   \
   }  while (0)

@@ -175,8 +175,7 @@ const char *hexa_str(unsigned char *data, int size, int downside)
   int begin, increment;
 
   if (buffsize < 5 * (size + 1)) {
-    if (buff)
-      free(buff);
+    free(buff);
     buffsize = 5 * (size + 1);
     buff = xbt_malloc(buffsize);
   }

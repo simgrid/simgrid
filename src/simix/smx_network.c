@@ -18,7 +18,6 @@ unsigned long int smx_total_comms = 0;
 static void SIMIX_waitany_req_remove_from_actions(smx_req_t req);
 static void SIMIX_comm_copy_data(smx_action_t comm);
 static smx_action_t SIMIX_comm_new(e_smx_comm_type_t type);
-static void SIMIX_comm_remove_from_processes(smx_action_t action);
 static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm);
 static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm);
 static smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
@@ -135,7 +134,7 @@ smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
   xbt_fifo_item_t item;
   void* req_data = NULL;
 
-  xbt_fifo_foreach(rdv->comm_fifo, item, action, smx_action_t){
+  xbt_fifo_foreach(rdv->comm_fifo, item, action, smx_action_t) {
     if (action->comm.type == SIMIX_COMM_SEND) {
       req_data = action->comm.src_data;
     } else if (action->comm.type == SIMIX_COMM_RECEIVE) {
@@ -188,7 +187,7 @@ int SIMIX_comm_has_recv_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), voi
   smx_action_t action;
   xbt_fifo_item_t item;
 
-  xbt_fifo_foreach(rdv->comm_fifo, item, action, smx_action_t){
+  xbt_fifo_foreach(rdv->comm_fifo, item, action, smx_action_t) {
     if (action->comm.type == SIMIX_COMM_RECEIVE
         && (!match_fun || match_fun(data, action->comm.dst_data))) {
       XBT_DEBUG("Found a matching communication action %p", action);
@@ -214,6 +213,7 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
 
   /* alloc structures */
   act = xbt_mallocator_get(simix_global->action_mallocator);
+
   act->type = SIMIX_ACTION_COMMUNICATE;
   act->state = SIMIX_WAITING;
 
@@ -242,11 +242,12 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
  */
 void SIMIX_comm_destroy(smx_action_t action)
 {
-  XBT_DEBUG("Destroy action %p (refcount:%d)", action, action->comm.refcount);
+  XBT_DEBUG("Destroy action %p (refcount: %d), state: %d",
+      action, action->comm.refcount, action->state);
 
-  if (action->comm.refcount <= 0)
-    xbt_die("the refcount of comm %p is already 0 before decreasing it. "
-            "That's a bug!", action);
+  xbt_assert(action->comm.refcount > 0,
+      "The refcount of comm %p is already 0 before decreasing it. "
+      "That's a bug!", action);
 
   action->comm.refcount--;
   if (action->comm.refcount > 0)
@@ -547,12 +548,14 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
   }
 }
 
+/**
+ * \brief Answers the SIMIX requests associated to a communication action.
+ * \param action a finished communication action
+ */
 void SIMIX_comm_finish(smx_action_t action)
 {
   unsigned int destroy_count = 0;
   smx_req_t req;
-
-  SIMIX_comm_remove_from_processes(action);
 
   while ((req = xbt_fifo_shift(action->request_list))) {
 
@@ -636,8 +639,22 @@ void SIMIX_comm_finish(smx_action_t action)
         }
         break;
 
+      case SIMIX_CANCELED:
+        TRY {
+          if (req->issuer == action->comm.dst_proc) {
+            THROWF(cancel_error, 0, "Communication canceled by the sender");
+          }
+          else {
+            THROWF(cancel_error, 0, "Communication canceled by the receiver");
+          }
+        }
+        CATCH(req->issuer->running_ctx->exception) {
+          req->issuer->doexception = 1;
+        }
+        break;
+
       default:
-        THROW_IMPOSSIBLE;
+        xbt_die("Unexpected action state in SIMIX_comm_finish: %d", action->state);
     }
 
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
@@ -651,6 +668,7 @@ void SIMIX_comm_finish(smx_action_t action)
     }
 
     req->issuer->waiting_action = NULL;
+    xbt_fifo_remove(req->issuer->comms, action);
     SIMIX_request_answer(req);
     destroy_count++;
   }
@@ -659,6 +677,10 @@ void SIMIX_comm_finish(smx_action_t action)
     SIMIX_comm_destroy(action);
 }
 
+/**
+ * \brief This function is called when a Surf communication action is finished.
+ * \param action the corresponding Simix communication
+ */
 void SIMIX_post_comm(smx_action_t action)
 {
   /* Update action state */
@@ -686,27 +708,18 @@ void SIMIX_post_comm(smx_action_t action)
   /* destroy the surf actions associated with the Simix communication */
   SIMIX_comm_destroy_internal_actions(action);
 
-  /* if there are requests associated with the action, then answer them */
-  if (xbt_fifo_size(action->request_list)) {
-    SIMIX_comm_finish(action);
-  }
-  else {
-    SIMIX_comm_remove_from_processes(action);
-  }
-}
-
-/**
- * \brief Removes a communication action from the list of pending communications
- * of both processes (if they still exist)
- * \param action a communication action
- */
-static void SIMIX_comm_remove_from_processes(smx_action_t action) {
-
+  /* remove the communication action from the list of pending communications
+   * of both processes (if they still exist) */
   if (action->comm.src_proc) {
     xbt_fifo_remove(action->comm.src_proc->comms, action);
   }
   if (action->comm.dst_proc) {
     xbt_fifo_remove(action->comm.dst_proc->comms, action);
+  }
+
+  /* if there are requests associated with the action, then answer them */
+  if (xbt_fifo_size(action->request_list)) {
+    SIMIX_comm_finish(action);
   }
 }
 
@@ -718,10 +731,9 @@ void SIMIX_comm_cancel(smx_action_t action)
     SIMIX_rdv_remove(action->comm.rdv, action);
     action->state = SIMIX_CANCELED;
   }
-  else if (!MC_IS_ENABLED
+  else if (!MC_IS_ENABLED /* when running the MC there are no surf actions */
       && (action->state == SIMIX_READY || action->state == SIMIX_RUNNING)) {
 
-    /* when running the MC there are no surf actions */
     surf_workstation_model->action_cancel(action->comm.surf_comm);
   }
 }
@@ -876,7 +888,7 @@ void SIMIX_comm_copy_data(smx_action_t comm)
   if (buff_size == 0)
     return;
 
-  (*SIMIX_comm_copy_data_callback) (comm, buff_size);
+  SIMIX_comm_copy_data_callback(comm, buff_size);
 
   /* Set the copied flag so we copy data only once */
   /* (this function might be called from both communication ends) */

@@ -94,7 +94,7 @@ gras_cbps_v_push(gras_cbps_t ps,
 
     XBT_DEBUG("Create a new variable stack for '%s' into the space", name);
     varstack = xbt_dynar_new(sizeof(gras_cbps_elm_t *), NULL);
-    xbt_dict_set(ps->space, varname, (void **) varstack, NULL);
+    xbt_dict_set(ps->space, name, (void **) varstack, NULL);
     xbt_ex_free(e);
     /* leaking, you think? only if you do not close all the openned blocks ;) */
   }
@@ -139,7 +139,7 @@ gras_cbps_v_pop(gras_cbps_t ps,
   }
   xbt_dynar_pop(varstack, &var);
 
-  if (!xbt_dynar_length(varstack)) {
+  if (xbt_dynar_is_empty(varstack)) {
     XBT_DEBUG("Last incarnation of %s poped. Kill it", name);
     xbt_dict_remove(ps->space, name);
     xbt_dynar_free(&varstack);
@@ -277,13 +277,12 @@ void gras_cbps_block_end(gras_cbps_t ps)
     varstack = xbt_dict_get(ps->space, name);
     xbt_dynar_pop(varstack, &var);
 
-    if (!xbt_dynar_length(varstack)) {
+    if (xbt_dynar_is_empty(varstack)) {
       xbt_dict_remove(ps->space, name);
       xbt_dynar_free_container(&varstack);      /*already empty, save a test ;) */
     }
 
-    if (var->data)
-      free(var->data);
+    free(var->data);
     free(var);
     free(name);
   }
@@ -304,7 +303,7 @@ int gras_cbps_i_pop(gras_cbps_t ps)
 {
   int ret;
 
-  xbt_assert(xbt_dynar_length(ps->lints) > 0,
+  xbt_assert(!xbt_dynar_is_empty(ps->lints),
               "gras_cbps_i_pop: no value to pop");
   ret = xbt_dynar_pop_as(ps->lints, int);
   XBT_DEBUG("pop %d as a size", ret);

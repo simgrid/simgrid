@@ -16,9 +16,9 @@ job.list_type = "random"
 
 -- Init nodes tables
 function init_nodes()
-  for i = 1, simgrid.Host.number() do		
-    job.nodes[i] = { ip = simgrid.Host.getPropValue(simgrid.Host.at(i), "ip"),
-                     port = simgrid.Host.getPropValue(simgrid.Host.at(i), "port") }
+  for i = 1, simgrid.host.number() do		
+    job.nodes[i] = { ip = simgrid.host.get_prop_value(simgrid.host.at(i), "ip"),
+                     port = simgrid.host.get_prop_value(simgrid.host.at(i), "port") }
   end 	
 end
 
@@ -28,16 +28,16 @@ end
 
 -- Job methods
 function job.me.ip()
-  return simgrid.Host.getPropValue(simgrid.Host.self(), "ip")
+  return simgrid.host.get_prop_value(simgrid.host.self(), "ip")
 end
 
 function job.me.port()
-  return simgrid.Host.getPropValue(simgrid.Host.self(), "port")
+  return simgrid.host.get_prop_value(simgrid.host.self(), "port")
 end
 
 
 function job.position()
-  return simgrid.Host.getPropValue(simgrid.Host.self(), "position")
+  return simgrid.host.get_prop_value(simgrid.host.self(), "position")
 end
 
 -- log Methods
@@ -60,11 +60,11 @@ function rpc.call(node, call)
     func = call[1]
     arg = call[2]
   end
-  task_call = simgrid.Task.new("splay_task", 10000, 10000)
+  task_call = simgrid.task.new("splay_task", 10000, 10000)
   task_call['func_call_name'] = func
   task_call['func_call_arg'] = arg
   log:print("Sending Task to mailbox "..mailbox.." to call '"..func.."' with arg '"..arg.."'")
-  simgrid.Task.send(task_call, mailbox)
+  simgrid.task.send(task_call, mailbox)
 
 end
 
@@ -75,7 +75,7 @@ end
 -- event Methods
 function events.sleep(time)
   my_mailbox = job.me.ip()..":"..job.me.port()
-  task = simgrid.Task.recv_timeout(my_mailbox, time)
+  task = simgrid.task.recv(my_mailbox, time)
 
   if task ~= nil then
     -- an RPC call just woke me up
@@ -91,7 +91,7 @@ end
 
 -- OS methods
 function os.exit()
-  simgrid.Host.destroy(simgrid.Host.self())
+  simgrid.host.destroy(simgrid.host.self())
 end
 
 -- Start Methods

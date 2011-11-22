@@ -8,6 +8,9 @@
 #include "xbt/dict.h"
 #include "portable.h"
 #include "surf_private.h"
+#include "surf/surf_resource.h"
+
+
 
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
@@ -347,25 +350,24 @@ static void surf_workstation_model_init_internal(void)
 /*   month = {may}, */
 /*   year = {2003} */
 /* } */
-void surf_workstation_model_init_CLM03(const char *filename)
+void surf_workstation_model_init_CLM03(void)
 {
   surf_workstation_model_init_internal();
-  surf_cpu_model_init_Cas01_im(filename);
-  surf_network_model_init_LegrandVelho(filename);
-  update_model_description(surf_workstation_model_description,
-                           "CLM03", surf_workstation_model);
+  surf_cpu_model_init_Cas01_im();
+  im_surf_network_model_init_LegrandVelho();
+  // FIXME: prefer the proper interface instead of bypassing the cfg module that way
+  //xbt_cfg_set_parse(_surf_cfg_set, "network/model:LV08");
+  //xbt_cfg_set_parse(_surf_cfg_set, "cpu/model:Cas01");
   xbt_dynar_push(model_list, &surf_workstation_model);
+  sg_platf_postparse_add_cb(create_workstations);
 }
 
-void surf_workstation_model_init_compound(const char *filename)
+void surf_workstation_model_init_compound()
 {
 
   xbt_assert(surf_cpu_model, "No CPU model defined yet!");
   xbt_assert(surf_network_model, "No network model defined yet!");
   surf_workstation_model_init_internal();
-
-  update_model_description(surf_workstation_model_description,
-                           "compound", surf_workstation_model);
-
   xbt_dynar_push(model_list, &surf_workstation_model);
+  sg_platf_postparse_add_cb(create_workstations);
 }

@@ -145,7 +145,7 @@ static int normalize(int id)
 }
 
 /**
- * \brief Returns whether a id belongs to the interval [start, end].
+ * \brief Returns whether an id belongs to the interval [start, end].
  *
  * The parameters are noramlized to make sure they are between 0 and nb_keys - 1).
  * 1 belongs to [62, 3]

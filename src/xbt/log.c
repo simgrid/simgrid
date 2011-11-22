@@ -1,6 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -486,8 +486,7 @@ static void _free_setting(void *s)
   xbt_log_setting_t set = *(xbt_log_setting_t *) s;
   if (set) {
     free(set->catname);
-    if (set->fmt)
-      free(set->fmt);
+    free(set->fmt);
     free(set);
   }
 }
@@ -604,29 +603,67 @@ void xbt_log_postexit(void)
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
 }
 
+ /* Size of the static string in which we  build the log string */
+#define XBT_LOG_STATIC_BUFFER_SIZE 2048
+/* Minimum size of the dynamic string in which we build the log string
+   (should be greater than XBT_LOG_STATIC_BUFFER_SIZE) */
+#define XBT_LOG_DYNAMIC_BUFFER_SIZE 4096
+
 void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
 {
-
   xbt_log_category_t cat = ev->cat;
 
-  va_start(ev->ap, fmt);
-  va_start(ev->ap_copy, fmt);
-  while (1) {
-    xbt_log_appender_t appender = cat->appender;
-    if (appender != NULL) {
-      xbt_assert(cat->layout,
-                  "No valid layout for the appender of category %s",
-                  cat->name);
-      cat->layout->do_layout(cat->layout, ev, fmt, appender);
-    }
-    if (!cat->additivity)
-      break;
+  xbt_assert(ev->priority >= 0,
+             "Negative logging priority naturally forbidden");
+  xbt_assert(ev->priority < sizeof(xbt_log_priority_names),
+             "Priority %d is greater than the biggest allowed value",
+             ev->priority);
 
-    cat = cat->parent;
-  }
-  va_end(ev->ap);
-  va_end(ev->ap_copy);
+  do {
+    xbt_log_appender_t appender = cat->appender;
+
+    if (!appender)
+      continue;                 /* No appender, try next */
+
+    xbt_assert(cat->layout,
+               "No valid layout for the appender of category %s", cat->name);
+
+    /* First, try with a static buffer */
+    if (XBT_LOG_STATIC_BUFFER_SIZE) {
+      char buff[XBT_LOG_STATIC_BUFFER_SIZE];
+      int done;
+      ev->buffer = buff;
+      ev->buffer_size = sizeof buff;
+      va_start(ev->ap, fmt);
+      done = cat->layout->do_layout(cat->layout, ev, fmt);
+      va_end(ev->ap);
+      if (done) {
+        appender->do_append(appender, buff);
+        continue;               /* Ok, that worked: go next */
+      }
+    }
+
+    /* The static buffer was too small, use a dynamically expanded one */
+    ev->buffer_size = XBT_LOG_DYNAMIC_BUFFER_SIZE;
+    ev->buffer = xbt_malloc(ev->buffer_size);
+    while (1) {
+      int done;
+      va_start(ev->ap, fmt);
+      done = cat->layout->do_layout(cat->layout, ev, fmt);
+      va_end(ev->ap);
+      if (done)
+        break;                  /* Got it */
+      ev->buffer_size *= 2;
+      ev->buffer = xbt_realloc(ev->buffer, ev->buffer_size);
+    }
+    appender->do_append(appender, ev->buffer);
+    xbt_free(ev->buffer);
+
+  } while (cat->additivity && (cat = cat->parent, 1));
 }
+
+#undef XBT_LOG_DYNAMIC_BUFFER_SIZE
+#undef XBT_LOG_STATIC_BUFFER_SIZE
 
 /* NOTE:
  *
@@ -1023,7 +1060,7 @@ void xbt_log_control_set(const char *control_string)
   /* split the string, and remove empty entries */
   set_strings = xbt_str_split_quoted(control_string);
 
-  if (xbt_dynar_length(set_strings) == 0) {     /* vicious user! */
+  if (xbt_dynar_is_empty(set_strings)) {     /* vicious user! */
     xbt_dynar_free(&set_strings);
     return;
   }

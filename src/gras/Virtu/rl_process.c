@@ -103,7 +103,7 @@ typedef struct {
 
 static void *spawner_wrapper(void *data) {
   spawner_wrapper_args *a = data;
-  (*(a->code))(a->argc,a->argv);
+  a->code(a->argc, a->argv);
   free(a);
   return NULL;
 }

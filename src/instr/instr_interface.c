@@ -138,7 +138,8 @@ static void instr_user_srcdst_variable(double time,
                               double value,
                               InstrUserVariable what)
 {
-  xbt_dynar_t route = global_routing->get_route (src, dst);
+  xbt_dynar_t route=NULL;
+  routing_get_route_and_latency (src, dst, &route,NULL);
   unsigned int i;
   void *link;
   xbt_dynar_foreach (route, i, link) {

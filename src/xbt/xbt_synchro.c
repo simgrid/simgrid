@@ -29,7 +29,7 @@ static void worker_wait_n_free(void *w)
 static void worker_wrapper(void *w)
 {
   worker_data_t me = (worker_data_t) w;
-  (*me->function) (me->rank, xbt_dynar_get_ptr(me->data, me->rank));
+  me->function(me->rank, xbt_dynar_get_ptr(me->data, me->rank));
 }
 
 void xbt_dynar_dopar(xbt_dynar_t datas, void_f_int_pvoid_t function)
@@ -38,11 +38,11 @@ void xbt_dynar_dopar(xbt_dynar_t datas, void_f_int_pvoid_t function)
       xbt_dynar_new(sizeof(worker_data_t), worker_wait_n_free);
   unsigned int cursor;
   void *data;
-  if (xbt_dynar_length(datas) == 0)
+  if (xbt_dynar_is_empty(datas))
     return;                     /* nothing to do */
   if (xbt_dynar_length(datas) == 1) {
     /* don't start any new thread, do it directly */
-    (*function) (0, xbt_dynar_get_ptr(datas, 0));
+    function(0, xbt_dynar_get_ptr(datas, 0));
     return;
   }
   /* Start all workers */

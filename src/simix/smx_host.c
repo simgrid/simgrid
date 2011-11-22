@@ -331,7 +331,7 @@ void SIMIX_host_execution_resume(smx_action_t action)
 
 void SIMIX_execution_finish(smx_action_t action)
 {
-  xbt_fifo_item_t item;
+  volatile xbt_fifo_item_t item;
   smx_req_t req;
 
   xbt_fifo_foreach(action->request_list, item, req, smx_req_t) {
@@ -339,13 +339,13 @@ void SIMIX_execution_finish(smx_action_t action)
     switch (action->state) {
 
       case SIMIX_DONE:
-        /* do nothing, action done*/
+        /* do nothing, action done */
 	XBT_DEBUG("SIMIX_execution_finished: execution successful");
         break;
 
       case SIMIX_FAILED:
+        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", req->issuer->smx_host->name);
         TRY {
-	  XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", req->issuer->smx_host->name);
           THROWF(host_error, 0, "Host failed");
         }
 	CATCH(req->issuer->running_ctx->exception) {
@@ -354,8 +354,8 @@ void SIMIX_execution_finish(smx_action_t action)
       break;
 
       case SIMIX_CANCELED:
+        XBT_DEBUG("SIMIX_execution_finished: execution canceled");
         TRY {
-	  XBT_DEBUG("SIMIX_execution_finished: execution canceled");
           THROWF(cancel_error, 0, "Canceled");
         }
 	CATCH(req->issuer->running_ctx->exception) {
@@ -364,7 +364,8 @@ void SIMIX_execution_finish(smx_action_t action)
 	break;
 
       default:
-        THROW_IMPOSSIBLE;
+        xbt_die("Internal error in SIMIX_execution_finish: unexpected action state %d",
+            action->state);
     }
     req->issuer->waiting_action = NULL;
     req->host_execution_wait.result = action->state;
@@ -380,7 +381,7 @@ void SIMIX_post_host_execute(smx_action_t action)
   /* FIXME: check if the host running the action failed or not*/
   /*if(surf_workstation_model->extension.workstation.get_state(action->host->host))*/
 
-  /* If the host running the action didn't fail, then the action was cancelled */
+  /* If the host running the action didn't fail, then the action was canceled */
   if (surf_workstation_model->action_state_get(action->execution.surf_exec) == SURF_ACTION_FAILED)
      action->state = SIMIX_CANCELED;
   else

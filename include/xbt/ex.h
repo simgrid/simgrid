@@ -55,15 +55,15 @@ SG_BEGIN_DECL()
 # include <stdio.h>
 #include <errno.h>
 #  define MAYDAY_SAVE(m)    printf("%d %s:%d save %p\n",                \
-                                   (*xbt_getpid)(),__FILE__,__LINE__,  \
+                                   xbt_getpid(), __FILE__, __LINE__,    \
                                    (m)->jb                              \
                                   ),
 #  define MAYDAY_RESTORE(m) printf("%d %s:%d restore %p\n",             \
-                                   (*xbt_getpid)(),__FILE__,__LINE__,  \
+                                   xbt_getpid(), __FILE__, __LINE__,    \
                                    (m)->jb                              \
                                   ),
 #  define MAYDAY_CATCH(e)   printf("%d %s:%d Catched '%s'\n",           \
-                                   (*xbt_getpid)(),__FILE__,__LINE__,  \
+                                   xbt_getpid(), __FILE__, __LINE__,    \
                                    (e).msg                              \
 				  ),
 #else
@@ -450,7 +450,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
      _throw_ctx->exception.remote   = 0;                                     \
      _throw_ctx->exception.host     = (char*)NULL;                           \
      _throw_ctx->exception.procname = (char*)xbt_procname();                 \
-     _throw_ctx->exception.pid      = (*xbt_getpid)();                       \
+     _throw_ctx->exception.pid      = xbt_getpid();                          \
      _throw_ctx->exception.file     = (char*)__FILE__;                       \
      _throw_ctx->exception.line     = __LINE__;                              \
      _throw_ctx->exception.func     = (char*)_XBT_FUNCTION;                  \

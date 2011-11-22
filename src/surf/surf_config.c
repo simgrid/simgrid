@@ -37,24 +37,18 @@ static void surf_config_cmd_line(int *argc, char **argv)
       printf
           ("Description of the configuration accepted by this simulator:\n");
       xbt_cfg_help(_surf_cfg_set);
-      printf
-          ("\nYou can also use --help-models to see the details of all models known by this simulator.\n");
+      printf("\nYou can also use --help-models to see the details of all models known by this simulator.\n");
 #ifdef HAVE_TRACING
-      printf
-          ("\nYou can also use --help-tracing to see the details of all tracing options known by this simulator.\n");
+      printf("\nYou can also use --help-tracing to see the details of all tracing options known by this simulator.\n");
 #endif
       exit(0);
-    } else
-        if (!strncmp
-            (argv[i], "--help-models", strlen("--help-models") + 1)) {
+    } else if (!strncmp(argv[i], "--help-models", strlen("--help-models") + 1)) {
       model_help("workstation", surf_workstation_model_description);
       model_help("CPU", surf_cpu_model_description);
       model_help("network", surf_network_model_description);
       exit(0);
 #ifdef HAVE_TRACING
-    }else
-        if (!strncmp
-            (argv[i], "--help-tracing", strlen("--help-tracing") + 1)) {
+    } else if (!strncmp(argv[i], "--help-tracing", strlen("--help-tracing") + 1)) {
       TRACE_help (1);
       exit(0);
 #endif
@@ -232,9 +226,9 @@ static void _surf_cfg_cb__surf_network_coordinates(const char *name,
     }
   } else if (!strcmp(val, "no")) {
     if (COORD_HOST_LEVEL)
-      XBT_WARN("Cannot disable CMD prop coordinates, once set.");
+      XBT_WARN("Setting of whether to use coordinate cannot be disabled once set.");
   } else {
-    XBT_WARN("Setting CMD prop coordinates must be \"yes\" or \"no\"");
+    XBT_WARN("Command line setting of whether to use coordinates must be either \"yes\" or \"no\"");
   }
 }
 
@@ -411,7 +405,7 @@ void surf_config_init(int *argc, char **argv)
     /* minimal number of user contexts to be run in parallel */
     default_value_int = 1;
     xbt_cfg_register(&_surf_cfg_set, "contexts/parallel_threshold",
-        "Minimal number of user contexts to be run in parallel",
+        "Minimal number of user contexts to be run in parallel (raw contexts only)",
         xbt_cfgelm_int, &default_value_int, 1, 1,
         _surf_cfg_cb_contexts_parallel_threshold, NULL);
 
@@ -475,7 +469,8 @@ void surf_config_finalize(void)
   _surf_init_status = 0;
 }
 
-void surf_config_models_setup(const char *platform_file)
+/* Pick the right models for CPU, net and workstation, and call their model_init_preparse */
+void surf_config_models_setup()
 {
   char *workstation_model_name;
   int workstation_id = -1;
@@ -523,25 +518,10 @@ void surf_config_models_setup(const char *platform_file)
     cpu_id =
         find_model_description(surf_cpu_model_description, cpu_model_name);
 
-    surf_cpu_model_description[cpu_id].model_init_preparse(platform_file);
-    surf_network_model_description[network_id].model_init_preparse
-        (platform_file);
+    surf_cpu_model_description[cpu_id].model_init_preparse();
+    surf_network_model_description[network_id].model_init_preparse();
   }
 
   XBT_DEBUG("Call workstation_model_init");
-  surf_workstation_model_description[workstation_id].model_init_preparse
-      (platform_file);
-}
-
-void surf_config_models_create_elms(void)
-{
-  char *workstation_model_name =
-      xbt_cfg_get_string(_surf_cfg_set, "workstation/model");
-  int workstation_id =
-      find_model_description(surf_workstation_model_description,
-                             workstation_model_name);
-  if (surf_workstation_model_description
-      [workstation_id].model_init_postparse != NULL)
-    surf_workstation_model_description[workstation_id].model_init_postparse
-        ();
+  surf_workstation_model_description[workstation_id].model_init_preparse();
 }

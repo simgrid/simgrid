@@ -6,6 +6,7 @@
 
 /* SimGrid Lua helper functions                                             */
 
+#include <lauxlib.h>
 #include "lua_utils.h"
 #include "xbt.h"
 #include "xbt/log.h"
@@ -103,7 +104,9 @@ const char* sglua_get_spaces(int length) {
   static char spaces[128];
 
   xbt_assert(length < 128);
-  memset(spaces, ' ', length);
+  if (length != 0) {
+    memset(spaces, ' ', length);
+  }
   spaces[length] = '\0';
   return spaces;
 }
@@ -133,6 +136,39 @@ void sglua_stack_dump(const char* msg, lua_State* L)
     }
     XBT_DEBUG("%s%s", msg, buff);
   }
+}
+
+/**
+ * \brief Like luaL_checkudata, with additional debug logs.
+ *
+ * This function is for debugging purposes only.
+ *
+ * \param L a lua state
+ * \param ud index of the userdata to check in the stack
+ * \param tname key of the metatable of this userdata in the registry
+ */
+void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
+{
+  XBT_DEBUG("Checking the userdata: ud = %d", ud);
+  sglua_stack_dump("my_checkudata: ", L);
+  void* p = lua_touserdata(L, ud);
+  lua_getfield(L, LUA_REGISTRYINDEX, tname);
+  const void* correct_mt = lua_topointer(L, -1);
+
+  int has_mt = lua_getmetatable(L, ud);
+  XBT_DEBUG("Checking the userdata: has metatable ? %d", has_mt);
+  const void* actual_mt = NULL;
+  if (has_mt) {
+    actual_mt = lua_topointer(L, -1);
+    lua_pop(L, 1);
+  }
+  XBT_DEBUG("Checking the task's metatable: expected %p, found %p", correct_mt, actual_mt);
+  sglua_stack_dump("my_checkudata: ", L);
+
+  if (p == NULL || !lua_getmetatable(L, ud) || !lua_rawequal(L, -1, -2))
+    luaL_typerror(L, ud, tname);
+  lua_pop(L, 2);
+  return p;
 }
 
 /**

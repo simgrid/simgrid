@@ -197,7 +197,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
     unsigned int cpt1, cpt2;
     SD_task_t newfile = NULL;
     SD_dependency_t depbefore, depafter;
-    if (xbt_dynar_length(file->tasks_before) == 0) {
+    if (xbt_dynar_is_empty(file->tasks_before)) {
       xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
         SD_task_t newfile =
             SD_task_create_comm_e2e(file->name, NULL, file->amount);
@@ -205,7 +205,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
         SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
         xbt_dynar_push(result, &newfile);
       }
-    } else if (xbt_dynar_length(file->tasks_after) == 0) {
+    } else if (xbt_dynar_is_empty(file->tasks_after)) {
       xbt_dynar_foreach(file->tasks_before, cpt2, depbefore) {
         SD_task_t newfile =
             SD_task_create_comm_e2e(file->name, NULL, file->amount);
@@ -318,7 +318,7 @@ void dot_add_task(Agnode_t * dag_node)
         computer = xbt_dynar_new(sizeof(SD_task_t), NULL);
         xbt_dict_set(computers, char_performer, computer, NULL);
       }
-      if(performer < host_lib->count){
+      if(performer < xbt_lib_length(host_lib)){
         // the  wanted computer is available
         SD_task_t *task_test = NULL;
         if(order < computer->used)

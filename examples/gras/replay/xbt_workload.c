@@ -29,7 +29,7 @@ xbt_workload_elm_t xbt_workload_elm_parse(char *line)
 
   xbt_dynar_t w = xbt_str_split(line, " ");
 
-  if (xbt_dynar_length(w) == 0) {
+  if (xbt_dynar_is_empty(w)) {
     free(res);
     xbt_dynar_free(&w);
     return NULL;
@@ -71,12 +71,9 @@ void xbt_workload_elm_free(xbt_workload_elm_t cmd)
 {
   if (!cmd)
     return;
-  if (cmd->who)
-    free(cmd->who);
-  if (cmd->comment)
-    free(cmd->comment);
-  if (cmd->str_arg)
-    free(cmd->str_arg);
+  free(cmd->who);
+  free(cmd->comment);
+  free(cmd->str_arg);
   free(cmd);
 }
 

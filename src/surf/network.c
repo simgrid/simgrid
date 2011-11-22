@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,6 +7,11 @@
 #include "network_private.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
+
+#include "surf/surfxml_parse_values.h"
+#include "surf/surf_resource.h"
+#include "surf/surf_resource_lmm.h"
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
                                 "Logging specific to the SURF network module");
@@ -76,7 +81,7 @@ static void gap_remove(surf_action_network_CM02_t action) {
       if(size == 0) {
          xbt_fifo_free(fifo);
          xbt_dict_remove(gap_lookup, action->sender.link_name);
-         size = xbt_dict_size(gap_lookup);
+         size = xbt_dict_length(gap_lookup);
          if(size == 0) {
             xbt_dict_free(&gap_lookup);
          }
@@ -153,7 +158,7 @@ static double (*bandwidth_constraint_callback) (double, double, double) =
     &constant_bandwidth_constraint;
 
 
-static void* net_create_resource(char *name,
+static void* net_create_resource(const char *name,
                                 double bw_initial,
                                 tmgr_trace_t bw_trace,
                                 double lat_initial,
@@ -190,59 +195,46 @@ static void* net_create_resource(char *name,
   return nw_link;
 }
 
-static void net_parse_link_init(void)
+static void net_parse_link_init(sg_platf_link_cbarg_t link)
 {
-  char *name_link;
-  double bw_initial;
-  tmgr_trace_t bw_trace;
-  double lat_initial;
-  tmgr_trace_t lat_trace;
-  e_surf_resource_state_t state_initial_link = SURF_RESOURCE_ON;
-  e_surf_link_sharing_policy_t policy_initial_link = SURF_LINK_SHARED;
-  tmgr_trace_t state_trace;
   XBT_DEBUG("link_CM02");
-  name_link = xbt_strdup(A_surfxml_link_id);
-  surf_parse_get_double(&bw_initial, A_surfxml_link_bandwidth);
-  bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
-  surf_parse_get_double(&lat_initial, A_surfxml_link_latency);
-  lat_trace = tmgr_trace_new(A_surfxml_link_latency_file);
 
-  xbt_assert((A_surfxml_link_state == A_surfxml_link_state_ON)
-              || (A_surfxml_link_state ==
-                  A_surfxml_link_state_OFF), "Invalid state");
-  if (A_surfxml_link_state == A_surfxml_link_state_ON)
-    state_initial_link = SURF_RESOURCE_ON;
-  else if (A_surfxml_link_state == A_surfxml_link_state_OFF)
-    state_initial_link = SURF_RESOURCE_OFF;
-
-  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_SHARED)
-    policy_initial_link = SURF_LINK_SHARED;
-  else
-	  {
-	  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FATPIPE)
-		  policy_initial_link = SURF_LINK_FATPIPE;
-	  else if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
-		  policy_initial_link = SURF_LINK_FULLDUPLEX;
-	  }
-
-  state_trace = tmgr_trace_new(A_surfxml_link_state_file);
-
-  if(policy_initial_link == SURF_LINK_FULLDUPLEX)
-  {
-    net_create_resource(bprintf("%s_UP",name_link), bw_initial, bw_trace,
-	               lat_initial, lat_trace, state_initial_link, state_trace,
-	               policy_initial_link, xbt_dict_new());
-    net_create_resource(bprintf("%s_DOWN",name_link), bw_initial, bw_trace,
-	               lat_initial, lat_trace, state_initial_link, state_trace,
-	               policy_initial_link, xbt_dict_new());
+  if (link->policy == SURF_LINK_FULLDUPLEX) {
+    char *link_id;
+    link_id = bprintf("%s_UP", link->id);
+    net_create_resource(link_id,
+                        link->bandwidth,
+                        link->bandwidth_trace,
+                        link->latency,
+                        link->latency_trace,
+                        link->state,
+                        link->state_trace,
+                        link->policy,
+                        link->properties);
+    xbt_free(link_id);
+    link_id = bprintf("%s_DOWN", link->id);
+    net_create_resource(link_id,
+                        link->bandwidth,
+                        link->bandwidth_trace,
+                        link->latency,
+                        link->latency_trace,
+                        link->state,
+                        link->state_trace,
+                        link->policy,
+                        NULL); /* FIXME: We need to deep copy the properties or
+                                * we won't be able to free it */
+    xbt_free(link_id);
+  } else {
+    net_create_resource(link->id,
+                        link->bandwidth,
+                        link->bandwidth_trace,
+                        link->latency,
+                        link->latency_trace,
+                        link->state,
+                        link->state_trace,
+                        link->policy,
+                        link->properties);
   }
-  else
-  {
-    net_create_resource(name_link, bw_initial, bw_trace,
-	               lat_initial, lat_trace, state_initial_link, state_trace,
-	               policy_initial_link, xbt_dict_new());
-  }
-
 }
 
 static void net_add_traces(void)
@@ -301,11 +293,11 @@ static void net_add_traces(void)
   }
 }
 
-static void net_define_callbacks(const char *file)
+static void net_define_callbacks(void)
 {
   /* Figuring out the network links */
-  surfxml_add_callback(STag_surfxml_link_cb_list, &net_parse_link_init);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &net_add_traces);
+  sg_platf_link_add_cb(net_parse_link_init);
+  sg_platf_postparse_add_cb(net_add_traces);
 }
 
 static int net_resource_used(void *resource_id)
@@ -326,8 +318,7 @@ static int net_action_unref(surf_action_t action)
 #ifdef HAVE_TRACING
     xbt_free(((surf_action_network_CM02_t) action)->src_name);
     xbt_free(((surf_action_network_CM02_t) action)->dst_name);
-    if (action->category)
-      xbt_free(action->category);
+    xbt_free(action->category);
 #endif
     surf_action_free(&action);
     return 1;
@@ -422,8 +413,8 @@ static void net_update_actions_state(double now, double delta)
     }
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      xbt_dynar_t route = global_routing->get_route(action->src_name,
-                                                    action->dst_name);
+      xbt_dynar_t route=NULL;
+      routing_get_route_and_latency(action->src_name, action->dst_name,&route,NULL);
       link_CM02_t link;
       unsigned int i;
       xbt_dynar_foreach(route, i, link) {
@@ -594,12 +585,13 @@ static surf_action_t net_communicate(const char *src_name,
 
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
-  xbt_dynar_t route;
-  // I will need this route for some time so require for no cleanup
-  global_routing->get_route_latency(src_name, dst_name, &route, &latency, 0);
+  xbt_dynar_t route = xbt_dynar_new(sizeof(void*),NULL);
+  // I need to have the forward and backward routes at the same time, so allocate "route". That way, the routing wont clean it up
+  routing_get_route_and_latency(src_name, dst_name, &route, &latency);
 
   if (sg_network_fullduplex == 1) {
-    back_route = global_routing->get_route(dst_name, src_name);
+    // FIXME: fill route directly
+    routing_get_route_and_latency(dst_name, src_name, &back_route,NULL);
   }
 
   /* LARGE PLATFORMS HACK:
@@ -608,7 +600,7 @@ static surf_action_t net_communicate(const char *src_name,
   XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
-  xbt_assert(xbt_dynar_length(route) || latency,
+  xbt_assert(!xbt_dynar_is_empty(route) || latency,
               "You're trying to send data from %s to %s but there is no connection at all between these two hosts.",
               src_name, dst_name);
 
@@ -637,24 +629,24 @@ static surf_action_t net_communicate(const char *src_name,
         (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
     if (bandwidth_bound < 0.0)
       bandwidth_bound =
-          (*bandwidth_factor_callback) (size) *
+          bandwidth_factor_callback(size) *
           (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
     else
       bandwidth_bound =
           min(bandwidth_bound,
-              (*bandwidth_factor_callback) (size) *
+              bandwidth_factor_callback(size) *
               (link->lmm_resource.power.peak *
                link->lmm_resource.power.scale));
   }
   /* LARGE PLATFORMS HACK:
      Add src->link and dst->link latencies */
   action->lat_current = action->latency;
-  action->latency *= (*latency_factor_callback) (size);
+  action->latency *= latency_factor_callback(size);
   action->rate =
-      (*bandwidth_constraint_callback) (action->rate, bandwidth_bound,
+      bandwidth_constraint_callback(action->rate, bandwidth_bound,
                                         size);
 
-  if(xbt_dynar_length(route) > 0) {
+  if(!xbt_dynar_is_empty(route)) {
     link = *(link_CM02_t*)xbt_dynar_get_ptr(route, 0);
     gap_append(size, link, action);
     XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)",
@@ -732,7 +724,9 @@ static surf_action_t net_communicate(const char *src_name,
 
 static xbt_dynar_t net_get_route(const char *src, const char *dst)
 {
-  return global_routing->get_route(src, dst);
+  xbt_dynar_t route=NULL;
+  routing_get_route_and_latency(src, dst,&route, NULL);
+  return route;
 }
 
 static double net_get_link_bandwidth(const void *link)
@@ -794,8 +788,6 @@ static void net_finalize(void)
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
 
-  global_routing->finalize();
-
   lmm_system_free(network_maxmin_system);
   network_maxmin_system = NULL;
 }
@@ -844,11 +836,11 @@ static void surf_network_model_init_internal(void)
     network_maxmin_system = lmm_system_new();
 
   routing_model_create(sizeof(link_CM02_t),
-      net_create_resource(xbt_strdup("__loopback__"),
-          498000000, NULL, 0.000015, NULL,
-            SURF_RESOURCE_ON, NULL,
-            SURF_LINK_FATPIPE, NULL),
-            net_get_link_latency);
+                       net_create_resource("__loopback__",
+                                           498000000, NULL,
+                                           0.000015, NULL,
+                                           SURF_RESOURCE_ON, NULL,
+                                           SURF_LINK_FATPIPE, NULL));
 }
 
 
@@ -856,7 +848,7 @@ static void surf_network_model_init_internal(void)
 /************************************************************************/
 /* New model based on LV08 and experimental results of MPI ping-pongs   */
 /************************************************************************/
-void surf_network_model_init_SMPI(const char *filename)
+void surf_network_model_init_SMPI(void)
 {
 
   if (surf_network_model)
@@ -865,27 +857,25 @@ void surf_network_model_init_SMPI(const char *filename)
   latency_factor_callback = &smpi_latency_factor;
   bandwidth_factor_callback = &smpi_bandwidth_factor;
   bandwidth_constraint_callback = &smpi_bandwidth_constraint;
-  net_define_callbacks(filename);
+  net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/sender_gap", 10e-6);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
 
-  update_model_description(surf_network_model_description,
-                           "SMPI", surf_network_model);
 }
 
 /************************************************************************/
 /* New model based on optimizations discussed during this thesis        */
 /************************************************************************/
-void surf_network_model_init_LegrandVelho(const char *filename)
+void surf_network_model_init_LegrandVelho(void)
 {
 
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  net_define_callbacks(filename);
+  net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
@@ -894,8 +884,6 @@ void surf_network_model_init_LegrandVelho(const char *filename)
                             0.92);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
 
-  update_model_description(surf_network_model_description,
-                           "LV08_fullupdate", surf_network_model);
 }
 
 /***************************************************************************/
@@ -909,26 +897,23 @@ void surf_network_model_init_LegrandVelho(const char *filename)
 /*   month         = {oct}, */
 /*   year          = {2002} */
 /* } */
-void surf_network_model_init_CM02(const char *filename)
+void surf_network_model_init_CM02(void)
 {
 
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  net_define_callbacks(filename);
+  net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
-
-  update_model_description(surf_network_model_description,
-                           "CM02", surf_network_model);
 }
 
-void surf_network_model_init_Reno(const char *filename)
+void surf_network_model_init_Reno(void)
 {
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  net_define_callbacks(filename);
+  net_define_callbacks();
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp,
@@ -939,18 +924,15 @@ void surf_network_model_init_Reno(const char *filename)
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
                             0.92);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
-
-  update_model_description(surf_network_model_description,
-                           "Reno", surf_network_model);
 }
 
 
-void surf_network_model_init_Reno2(const char *filename)
+void surf_network_model_init_Reno2(void)
 {
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  net_define_callbacks(filename);
+  net_define_callbacks();
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp,
@@ -962,17 +944,14 @@ void surf_network_model_init_Reno2(const char *filename)
                             0.92);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S_parameter",
                             8775);
-
-  update_model_description(surf_network_model_description,
-                           "Reno2", surf_network_model);
 }
 
-void surf_network_model_init_Vegas(const char *filename)
+void surf_network_model_init_Vegas(void)
 {
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  net_define_callbacks(filename);
+  net_define_callbacks();
 
   xbt_dynar_push(model_list, &surf_network_model);
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,
@@ -983,7 +962,4 @@ void surf_network_model_init_Vegas(const char *filename)
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
                             0.92);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
-
-  update_model_description(surf_network_model_description,
-                           "Vegas", surf_network_model);
 }

@@ -12,7 +12,7 @@ require "simgrid"
   for i=10,0,-1 do
     simgrid.AS.addLink{AS="AS0",id=i,bandwidth=252750+ i*768,latency=0.000270544+i*0.087};   
   end
-  -- simgrid.Route.new(src_id,des_id,links_nb,links_list)
+  -- simgrid.route.new(src_id,des_id,links_nb,links_list)
    simgrid.AS.addRoute("AS0","Tremblay","Jupiter",{"1"});
    simgrid.AS.addRoute("AS0","Tremblay","Fafard",{"0","1","2","3","4","8"});
    simgrid.AS.addRoute("AS0","Tremblay","Ginette",{"3","4","5"});
@@ -42,11 +42,11 @@ require "simgrid"
    simgrid.msg_register_platform();
 
   --Set Application
-   simgrid.Host.setFunction{host="Tremblay",fct="master",args="20,550000000,1000000,4"};
-   simgrid.Host.setFunction{host="Bourassa",fct="slave",args="0"};
-   simgrid.Host.setFunction{host="Jupiter",fct="slave",args="1"};
-   simgrid.Host.setFunction{host="Fafard",fct="slave",args="2"};
-   simgrid.Host.setFunction{host="Ginette",fct="slave",args="3"};
+   simgrid.host.set_function{host="Tremblay",fct="master",args="20,550000000,1000000,4"};
+   simgrid.host.set_function{host="Bourassa",fct="slave",args="0"};
+   simgrid.host.set_function{host="Jupiter",fct="slave",args="1"};
+   simgrid.host.set_function{host="Fafard",fct="slave",args="2"};
+   simgrid.host.set_function{host="Ginette",fct="slave",args="3"};
    
   --Save Application 
    simgrid.msg_register_application(); 

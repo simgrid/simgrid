@@ -53,14 +53,14 @@ void jedule_log_sd_event(SD_task_t task) {
 	xbt_dynar_free(&host_list);
 }
 
-static void create_hierarchy(routing_component_t current_comp,
+static void create_hierarchy(AS_t current_comp,
 		jed_simgrid_container_t current_container) {
 	xbt_dict_cursor_t cursor = NULL;
 	char *key;
-	routing_component_t elem;
+	AS_t elem;
 	network_element_t network_elem;
 
-	if( xbt_dict_length(current_comp->routing_sons) == 0 ) {
+	if(xbt_dict_is_empty(current_comp->routing_sons)) {
 		// I am no AS
 		// add hosts to jedule platform
 		xbt_dynar_t hosts;
@@ -90,7 +90,7 @@ static void create_hierarchy(routing_component_t current_comp,
 
 void jedule_setup_platform() {
 
-	routing_component_t root_comp;
+	AS_t root_comp;
 	// e_surf_network_element_type_t type;
 
 	jed_simgrid_container_t root_container;

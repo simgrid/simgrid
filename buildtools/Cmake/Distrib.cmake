@@ -16,14 +16,16 @@ install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
 
 #### Generate the manpages
 if( NOT MANPAGE_DIR )
-	set( MANPAGE_DIR $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/share/man/man1 )
+	set( MANPAGE_DIR ${CMAKE_BINARY_DIR}/manpages )
 endif( NOT MANPAGE_DIR)
 
-add_custom_target(TARGET install
+add_custom_target(manpages ALL
         COMMAND ${CMAKE_COMMAND} -E make_directory ${MANPAGE_DIR}
-	COMMAND pod2man tools/simgrid_update_xml.pl > ${MANPAGE_DIR}/simgrid_update_xml.1
+	COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl > ${MANPAGE_DIR}/simgrid_update_xml.1
 	COMMENT "Generating manpages"
 )
+install(FILES ${MANPAGE_DIR}/simgrid_update_xml.1
+        DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/usr/share/man/man1)
 
 # binaries
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
@@ -306,6 +308,13 @@ COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_synchro_unit.c
 WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 
+add_custom_target(supernovae-clean
+COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_gras.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_sg.c
+COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_smpi.c
+WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
+)
+
 #############################################
 ### Fill in the "make sync-gforge" target ###
 #############################################
@@ -314,8 +323,8 @@ add_custom_target(sync-gforge-doc
 COMMAND chmod g+rw -R doc/
 COMMAND chmod a+rX -R doc/
 COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times 
-doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/${release_version}/doc/ || true
-COMMAND scp doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/simgrid_logo.png  doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/${release_version}/
+doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
+COMMAND scp doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/simgrid_logo.png  doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
 WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 add_dependencies(sync-gforge-doc simgrid_documentation)

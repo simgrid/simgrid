@@ -152,11 +152,11 @@ _xbt_dynar_remove_at(xbt_dynar_t const dynar,
     if (dynar->elmsize <= SIZEOF_MAX) {
       char elm[SIZEOF_MAX];
       _xbt_dynar_get_elm(elm, dynar, idx);
-      (*dynar->free_f) (elm);
+      dynar->free_f(elm);
     } else {
       char *elm = malloc(dynar->elmsize);
       _xbt_dynar_get_elm(elm, dynar, idx);
-      (*dynar->free_f) (elm);
+      dynar->free_f(elm);
       free(elm);
     }
   }
@@ -259,7 +259,6 @@ XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
     _dynar_map(dynar, dynar->free_f);
   }
   /*
-     if (dynar->data)
      free(dynar->data);
 
      dynar->size = 0;
@@ -460,7 +459,7 @@ xbt_dynar_replace(xbt_dynar_t dynar,
   if (idx < dynar->used && dynar->free_f) {
     void *const old_object = _xbt_dynar_elm(dynar, idx);
 
-    (*(dynar->free_f)) (old_object);
+    dynar->free_f(old_object);
   }
 
   _xbt_dynar_set(dynar, idx, object);
@@ -675,7 +674,7 @@ static void _dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
 
   for (i = 0; i < used; i++) {
     char* elm = (char*) data + i * elmsize;
-    (*op) (elm);
+    op(elm);
   }
 }
 
@@ -1003,7 +1002,7 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
                      "The retrieved value is not the same than the injected one (%d!=%d)",
                      cursor, cpt);
   }
-  xbt_test_assert(xbt_dynar_length(d) == 0,
+  xbt_test_assert(xbt_dynar_is_empty(d),
                    "There is still %lu elements in the dynar after removing everything",
                    xbt_dynar_length(d));
   xbt_dynar_free(&d);
@@ -1031,7 +1030,7 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
                      "The retrieved value is not the same than the injected one (%d!=%d)",
                      cursor, cpt);
   }
-  xbt_test_assert(xbt_dynar_length(d) == 0,
+  xbt_test_assert(xbt_dynar_is_empty(d),
                    "There is still %lu elements in the dynar after removing everything",
                    xbt_dynar_length(d));
   xbt_dynar_free(&d);
@@ -1324,7 +1323,7 @@ static void pusher_f(void *a)
 static void poper_f(void *a)
 {
   xbt_dynar_t d = (xbt_dynar_t) a;
-  int i;
+  volatile int i;
   int data;
   xbt_ex_t e;
 

@@ -100,11 +100,9 @@ void Buffer_free(Buffer_t buffer)
   if (NULL == buffer)
     return;
 
-  if (NULL != buffer->data)
-    free(buffer->data);
+  free(buffer->data);
 
-  if (NULL != buffer)
-    free(buffer);
+  free(buffer);
 }
 
 /* 

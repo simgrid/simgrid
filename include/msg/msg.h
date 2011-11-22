@@ -161,7 +161,6 @@ XBT_PUBLIC(int) MSG_task_Iprobe(m_channel_t channel);
 XBT_PUBLIC(int) MSG_task_probe_from(m_channel_t channel);
 XBT_PUBLIC(int) MSG_task_probe_from_host(int channel, m_host_t host);
 XBT_PUBLIC(MSG_error_t) MSG_process_sleep(double nb_sec);
-XBT_PUBLIC(MSG_error_t) MSG_get_errno(void);
 
 XBT_PUBLIC(double) MSG_task_get_compute_duration(m_task_t task);
 XBT_PUBLIC(void) MSG_task_set_compute_duration(m_task_t task,
@@ -182,6 +181,7 @@ XBT_PUBLIC(MSG_error_t)
 
 XBT_PUBLIC(MSG_error_t)
     MSG_task_receive(m_task_t * task, const char *alias);
+#define MSG_task_recv(t,a) MSG_task_receive(t,a)
 
 XBT_PUBLIC(msg_comm_t) MSG_task_isend(m_task_t task, const char *alias);
 XBT_INLINE XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(m_task_t task, const char *alias,
@@ -236,10 +236,12 @@ MSG_error_t MSG_action_trace_run(char *path);
 #ifdef MSG_USE_DEPRECATED
 /* these are the functions which are deprecated. Do not use them, they may get removed in future releases */
 #define MSG_TIMEOUT_FAILURE MSG_TIMEOUT
+#define MSG_TASK_CANCELLED MSG_TASK_CANCELED
 #define MSG_mailbox_put_with_time_out(mailbox, task, timeout) \
         MSG_mailbox_put_with_timeout(mailbox, task, timeout)
 
 #define MSG_process_change_host(h) MSG_process_migrate(MSG_process_self(),h);
+XBT_PUBLIC(MSG_error_t) MSG_get_errno(void);
 #endif
 
 #include "instr/instr.h"

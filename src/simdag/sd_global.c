@@ -182,15 +182,7 @@ void SD_create_environment(const char *platform_file)
   void **surf_workstation = NULL;
   void **surf_link = NULL;
 
-  platform_filename = xbt_strdup(platform_file);
-
-  // Reset callbacks
-  surf_parse_reset_callbacks();
-  // Add config callbacks
-  surf_parse_add_callback_config();
-
   parse_platform_file(platform_file);
-  surf_config_models_create_elms();
 
   /* now let's create the SD wrappers for workstations and links */
   xbt_lib_foreach(host_lib, cursor, name, surf_workstation){
@@ -259,7 +251,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
   while(xbt_swag_extract(sd_global->return_set)) {}
 
   /* explore the runnable tasks */
-  xbt_swag_foreach(task, sd_global->runnable_task_set) {
+  xbt_swag_foreach_safe(task, task_safe, sd_global->runnable_task_set) {
     XBT_VERB("Executing task '%s'", SD_task_get_name(task));
     if (__SD_task_try_to_run(task))
       xbt_swag_insert(task,sd_global->return_set);
@@ -403,15 +395,10 @@ void SD_exit(void)
 
   xbt_mallocator_free(sd_global->task_mallocator);
 
-  XBT_DEBUG("Destroying workstation and link arrays if necessary...");
-  if (sd_global->workstation_list != NULL)
-    xbt_free(sd_global->workstation_list);
-
-  if (sd_global->link_list != NULL)
-    xbt_free(sd_global->link_list);
-
-  if (sd_global->recyclable_route != NULL)
-    xbt_free(sd_global->recyclable_route);
+  XBT_DEBUG("Destroying workstation and link arrays...");
+  xbt_free(sd_global->workstation_list);
+  xbt_free(sd_global->link_list);
+  xbt_free(sd_global->recyclable_route);
 
   XBT_DEBUG("Destroying the swags...");
   xbt_swag_free(sd_global->not_scheduled_task_set);

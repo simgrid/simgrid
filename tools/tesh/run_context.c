@@ -115,7 +115,7 @@ void rctx_wait_bg(void)
 {
   /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon
    * from working */
-  while (xbt_dynar_length(bg_jobs)) {
+  while (!xbt_dynar_is_empty(bg_jobs)) {
     rctx_t rctx = xbt_dynar_getlast_as(bg_jobs, rctx_t);
     wait_it(rctx);
     xbt_dynar_pop(bg_jobs, &rctx);
@@ -189,14 +189,12 @@ void rctx_empty(rctx_t rc)
   char **env_it;
   void *filepos;
 
-  if (rc->cmd)
-    free(rc->cmd);
+  free(rc->cmd);
   rc->cmd = NULL;
   /* avoid race with rctx_armageddon log messages */
   filepos = rc->filepos;
   rc->filepos = NULL;
-  if (filepos)
-    free(filepos);
+  free(filepos);
   for (i = 0, env_it = environ; *env_it; i++, env_it++);
   if (rc->env) {
     for (env_it = rctx->env + i; *env_it; env_it++)
@@ -241,10 +239,8 @@ void rctx_free(rctx_t rctx)
   if (!rctx)
     return;
 
-  if (rctx->cmd)
-    free(rctx->cmd);
-  if (rctx->filepos)
-    free(rctx->filepos);
+  free(rctx->cmd);
+  free(rctx->filepos);
   if (rctx->env) {
     int i;
     char **env_it;
@@ -526,8 +522,7 @@ static void start_command(rctx_t rctx)
         xbt_dynar_t path = xbt_str_split(environ[i] + 5, ":");
 
         xbt_dynar_foreach(path, it, str) {
-          if (binary_name)
-            free(binary_name);
+          free(binary_name);
           binary_name = bprintf("%s/%s", str, args[0]);
           if (!stat(binary_name, &stat_buf)) {
             /* Found. */
@@ -811,10 +806,8 @@ void *rctx_wait(void *r)
     }
     rctx->expected_return = 0;
 
-    if (rctx->expected_signal) {
-      free(rctx->expected_signal);
-      rctx->expected_signal = NULL;
-    }
+    free(rctx->expected_signal);
+    rctx->expected_signal = NULL;
   }
 
   if ((errcode && errcode != 1) || rctx->interrupted) {

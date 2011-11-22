@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2006-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,6 +9,9 @@
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
+#include "surf/surf_resource.h"
+
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_workstation, sd,
                                 "Logging specific to SimDag (workstation)");
@@ -67,7 +70,7 @@ const SD_workstation_t *SD_workstation_get_list(void)
 
   if (sd_global->workstation_list == NULL) {    /* this is the first time the function is called */
     sd_global->workstation_list =
-        xbt_new(SD_workstation_t, host_lib->count);
+      xbt_new(SD_workstation_t, xbt_lib_length(host_lib));
 
     i = 0;
     xbt_lib_foreach(host_lib, cursor, key, data) {
@@ -86,7 +89,7 @@ const SD_workstation_t *SD_workstation_get_list(void)
  */
 int SD_workstation_get_number(void)
 {
-  return host_lib->count;
+  return xbt_lib_length(host_lib);
 }
 
 /**

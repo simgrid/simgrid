@@ -33,7 +33,7 @@ static void send_one(int from, int to) {
   count++;
 
   bcast_task_t bt;
-  if (xbt_dynar_length(reclaimed)>0) {
+  if (!xbt_dynar_is_empty(reclaimed)) {
      bt = xbt_dynar_pop_as(reclaimed,bcast_task_t);
   } else {
     bt = xbt_new(s_bcast_task_t,1);
@@ -64,9 +64,9 @@ int main(int argc, char **argv) {
   ws_list = SD_workstation_get_list();
   reclaimed = xbt_dynar_new(sizeof(bcast_task_t),xbt_free_ref);
   xbt_dynar_t done = NULL;
-  send_one(0,262144);
+  send_one(0,SD_workstation_get_number());
   do {
-    if (done != NULL && xbt_dynar_length(done) > 0) {
+    if (done != NULL && !xbt_dynar_is_empty(done)) {
       unsigned int cursor;
       SD_task_t task;
 
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
       xbt_dynar_free(&done);
     }
     done=SD_simulate(-1);
-  } while(xbt_dynar_length(done) > 0);
+  } while(!xbt_dynar_is_empty(done));
   xbt_dynar_free(&done);
   xbt_dynar_free(&reclaimed);
 

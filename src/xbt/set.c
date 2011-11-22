@@ -57,7 +57,7 @@ void xbt_set_free(xbt_set_t * set)
 static int _xbt_set_get_id(xbt_set_t set)
 {
   int id;
-  if (xbt_dynar_length(set->available_ids) > 0) {
+  if (!xbt_dynar_is_empty(set->available_ids)) {
     /* if there are some available ids */
     xbt_dynar_pop(set->available_ids, &id);
   } else {

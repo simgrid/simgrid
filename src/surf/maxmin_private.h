@@ -80,8 +80,8 @@ typedef struct lmm_system {
   xbt_mallocator_t variable_mallocator;
 } s_lmm_system_t;
 
-#define extract_variable(sys) xbt_swag_remove(xbt_swag_getFirst(&(sys->variable_set)),&(sys->variable_set))
-#define extract_constraint(sys) xbt_swag_remove(xbt_swag_getFirst(&(sys->constraint_set)),&(sys->constraint_set))
+#define extract_variable(sys) xbt_swag_extract(&(sys->variable_set))
+#define extract_constraint(sys) xbt_swag_extract(&(sys->constraint_set))
 #define insert_constraint(sys,cnst) xbt_swag_insert(cnst,&(sys->constraint_set))
 #define remove_variable(sys,var) do {xbt_swag_remove(var,&(sys->variable_set));\
                                  xbt_swag_remove(var,&(sys->saturated_variable_set));} while(0)

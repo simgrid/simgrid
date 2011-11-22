@@ -40,12 +40,12 @@ xbt_strbuff_t xbt_strbuff_new(void)
 
 /** @brief creates a new string buffer containing the provided string
  *
- * Beware, we store the ctn directly, not a copy of it
+ * Beware, the ctn is copied, you want to free it afterward, anyhow
  */
-XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(char *ctn)
+XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(const char *ctn)
 {
   xbt_strbuff_t res = malloc(sizeof(s_xbt_strbuff_t));
-  res->data = ctn;
+  res->data = xbt_strdup(ctn);
   res->used = res->size = strlen(ctn);
   return res;
 }
@@ -60,8 +60,7 @@ XBT_INLINE void xbt_strbuff_free_container(xbt_strbuff_t b)
 XBT_INLINE void xbt_strbuff_free(xbt_strbuff_t b)
 {
   if (b) {
-    if (b->data)
-      free(b->data);
+    free(b->data);
     free(b);
   }
 }
@@ -78,9 +77,8 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
   needed_space = b->used + addlen + 1;
 
   if (needed_space > b->size) {
-    b->data =
-        realloc(b->data, MAX(minimal_increment + b->used, needed_space));
     b->size = MAX(minimal_increment + b->used, needed_space);
+    b->data = realloc(b->data, b->size);
   }
   strcpy(b->data + b->used, toadd);
   b->used += addlen;
@@ -273,8 +271,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
         }
         free(value);
 
-        if (default_value)
-          free(default_value);
+        free(default_value);
 
         end--;                  /* compensate the next end++ */
       }

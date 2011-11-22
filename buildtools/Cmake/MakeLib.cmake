@@ -3,6 +3,9 @@
 ###############################
 # Declare the library content #
 ###############################
+# If we want supernovae, rewrite the libs' content to use it
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Supernovae.cmake)
+
 # Actually declare our libraries
 
 add_library(simgrid SHARED ${simgrid_sources})
@@ -26,9 +29,25 @@ endif(enable_smpi)
 add_dependencies(gras maintainer_files)
 add_dependencies(simgrid maintainer_files)				
 
+# if supernovaeing, we need some depends to make sure that the source gets generated
+if (enable_supernovae)
+	add_dependencies(simgrid ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c)
+	if(enable_lib_static)
+		add_dependencies(simgrid_static ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c)
+	endif(enable_lib_static)
+	add_dependencies(gras ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c)
+
+	if(enable_smpi)
+		add_dependencies(smpi ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
+		if(enable_lib_static)
+			add_dependencies(smpi_static ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
+		endif(enable_lib_static)
+	endif(enable_smpi)
+endif(enable_supernovae)	
+
 # Compute the dependencies of GRAS
 ##################################
-set(GRAS_DEP "-lm -lpthread")
+set(GRAS_DEP "-lm -pthread")
 
 if(HAVE_POSIX_GETTIME)
 	SET(GRAS_DEP "${GRAS_DEP} -lrt")
@@ -51,7 +70,7 @@ set(SIMGRID_DEP "-lm -lpcre")
 
 if(pthread)
 	if(${CONTEXT_THREADS})
-		SET(SIMGRID_DEP "${SIMGRID_DEP} -lpthread")
+		SET(SIMGRID_DEP "${SIMGRID_DEP} -pthread")
 	endif(${CONTEXT_THREADS})	
 endif(pthread)
 
@@ -101,7 +120,7 @@ if(HAVE_NS3)
 	    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_NS3_3_10")
 	    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_NS3_3_10")
 	else(${NS3_VERSION} EQUAL 310)
-	    SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3-core -lns3-csma -lns3-point-to-point")
+	    SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3-core -lns3-csma -lns3-point-to-point -lns3-internet -lns3-applications")
 	endif(${NS3_VERSION} EQUAL 310)
 endif(HAVE_NS3)
 

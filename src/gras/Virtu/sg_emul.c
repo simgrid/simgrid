@@ -48,8 +48,7 @@ void gras_emul_init(void)
 
 void gras_emul_exit(void)
 {
-  if (locbuf)
-    free(locbuf);
+  free(locbuf);
   xbt_dict_free(&benchmark_set);
   xbt_os_timer_free(timer);
 }

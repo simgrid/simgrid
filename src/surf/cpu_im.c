@@ -1,10 +1,12 @@
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_private.h"
+#include "surf/surf_resource.h"
+
 
 #undef GENERIC_LMM_ACTION
 #undef GENERIC_ACTION
@@ -47,7 +49,7 @@ extern int sg_maxmin_selective_update;
 static xbt_swag_t
     cpu_im_running_action_set_that_does_not_need_being_checked = NULL;
 
-static void* cpu_im_create_resource(char *name, double power_peak,
+static void* cpu_im_create_resource(const char *name, double power_peak,
                                  double power_scale,
                                  tmgr_trace_t power_trace,
                                  int core,
@@ -57,14 +59,12 @@ static void* cpu_im_create_resource(char *name, double power_peak,
 {
   cpu_Cas01_im_t cpu = NULL;
   s_surf_action_cpu_Cas01_im_t action;
-  cpu = xbt_new0(s_cpu_Cas01_im_t, 1);
 
   xbt_assert(!surf_cpu_resource_by_name(name),
               "Host '%s' declared several times in the platform file",
               name);
-  cpu->generic_resource.model = surf_cpu_model;
-  cpu->generic_resource.name = name;
-  cpu->generic_resource.properties = cpu_properties;
+  cpu = (cpu_Cas01_im_t) surf_resource_new(sizeof(s_cpu_Cas01_im_t),
+          surf_cpu_model, name,cpu_properties);
   cpu->power_peak = power_peak;
   xbt_assert(cpu->power_peak > 0, "Power has to be >0");
   cpu->power_scale = power_scale;
@@ -90,34 +90,16 @@ static void* cpu_im_create_resource(char *name, double power_peak,
 }
 
 
-static void parse_cpu_im_init(void)
+static void parse_cpu_im_init(sg_platf_host_cbarg_t host)
 {
-  double power_peak = 0.0;
-  double power_scale = 0.0;
-  int core = 0;
-  tmgr_trace_t power_trace = NULL;
-  e_surf_resource_state_t state_initial = SURF_RESOURCE_OFF;
-  tmgr_trace_t state_trace = NULL;
-
-  power_peak = get_cpu_power(A_surfxml_host_power);
-  surf_parse_get_double(&power_scale, A_surfxml_host_availability);
-  power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
-  surf_parse_get_int(&core, A_surfxml_host_core);
-
-  xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
-              (A_surfxml_host_state == A_surfxml_host_state_OFF),
-              "Invalid state");
-  if (A_surfxml_host_state == A_surfxml_host_state_ON)
-    state_initial = SURF_RESOURCE_ON;
-  if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-    state_initial = SURF_RESOURCE_OFF;
-  state_trace = tmgr_trace_new(A_surfxml_host_state_file);
-
-  cpu_im_create_resource(xbt_strdup(A_surfxml_host_id), power_peak, power_scale,
-             power_trace, core, state_initial, state_trace,
-             current_property_set);
-  current_property_set = NULL;
-
+	cpu_im_create_resource(host->id,
+			  host->power_peak,
+			  host->power_scale,
+			  host->power_trace,
+			  host->core_amount,
+			  host->initial_state,
+			  host->state_trace,
+			  host->properties);
 }
 
 static void cpu_im_add_traces_cpu(void)
@@ -153,17 +135,16 @@ static void cpu_im_add_traces_cpu(void)
   }
 }
 
-static void cpu_im_define_callbacks(const char *file)
+static void cpu_im_define_callbacks()
 {
-  surfxml_add_callback(ETag_surfxml_host_cb_list, parse_cpu_im_init);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list,
-                       &cpu_im_add_traces_cpu);
+  sg_platf_host_add_cb(parse_cpu_im_init);
+  sg_platf_postparse_add_cb(cpu_im_add_traces_cpu);
 }
 
-static int cpu_im_resource_used(void *resource_id)
+static int cpu_im_resource_used(void *resource)
 {
   return lmm_constraint_used(cpu_im_maxmin_system,
-                             ((cpu_Cas01_im_t) resource_id)->constraint);
+                             ((cpu_Cas01_im_t) resource)->constraint);
 }
 
 static int cpu_im_action_unref(surf_action_t action)
@@ -181,8 +162,7 @@ static int cpu_im_action_unref(surf_action_t action)
                     ((cpu_Cas01_im_t) ACTION_GET_CPU(action))->action_set);
     xbt_swag_insert(ACTION_GET_CPU(action), cpu_im_modified_cpu);
 #ifdef HAVE_TRACING
-    if (action->category)
-      xbt_free(action->category);
+    xbt_free(action->category);
 #endif
     surf_action_free(&action);
     return 1;
@@ -677,11 +657,11 @@ static void surf_cpu_im_model_init_internal(void)
 /*   note =         "Available at */
 /*                  \url{http://grail.sdsc.edu/papers/simgrid_ccgrid01.ps.gz}." */
 /* } */
-void surf_cpu_model_init_Cas01_im(const char *filename)
+void surf_cpu_model_init_Cas01_im()
 {
   if (surf_cpu_model)
     return;
   surf_cpu_im_model_init_internal();
-  cpu_im_define_callbacks(filename);
+  cpu_im_define_callbacks();
   xbt_dynar_push(model_list, &surf_cpu_model);
 }

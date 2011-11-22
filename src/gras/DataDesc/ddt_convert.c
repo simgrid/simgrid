@@ -197,7 +197,9 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
           padding = (*r_sign > 127) ? 0xff : 0;
         }
 
-        memset(l_data, padding, l_size);
+        if (l_size != 0) {
+          memset(l_data, padding, l_size);
+        }
         memcpy(!gras_arches[r_arch].endian ? l_data
                : ((char *) l_data + sizeChange), r_data, r_size);
 

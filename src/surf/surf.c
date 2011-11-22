@@ -9,6 +9,7 @@
 #include "surf_private.h"
 #include "xbt/module.h"
 #include "mc/mc.h"
+#include "surf/surf_resource.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");
@@ -114,71 +115,64 @@ xbt_dynar_t surf_path = NULL;
 s_surf_model_description_t surf_network_model_description[] = {
   {"Constant",
    "Simplistic network model where all communication take a constant time (one second)",
-   NULL, surf_network_model_init_Constant},
+   surf_network_model_init_Constant},
   {"CM02",
    "Realistic network model with lmm_solve and no correction factors",
-   NULL, surf_network_model_init_CM02},
+   surf_network_model_init_CM02},
   {"LV08",
    "Realistic network model with lmm_solve, adequate correction factors (latency*=10.4, bandwidth*=.92, S=8775) and partial invalidation optimization",
-   NULL, im_surf_network_model_init_LegrandVelho},
+   im_surf_network_model_init_LegrandVelho},
    {"LV08_fullupdate",
     "Realistic network model wit lmm_solve, adequate correction factors (latency*=10.4, bandwidth*=.92, S=8775) but no further optimization. Should produce the same results as LV08, only slower.",
-    NULL, surf_network_model_init_LegrandVelho},
+    surf_network_model_init_LegrandVelho},
   {"SMPI",
    "Realistic network model with lmm_solve and correction factors on three intervals (< 1KiB, < 64 KiB, >= 64 KiB)",
-   NULL, surf_network_model_init_SMPI},
+   surf_network_model_init_SMPI},
 #ifdef HAVE_GTNETS
   {"GTNets",
    "Network Pseudo-model using the GTNets simulator instead of an analytic model",
-   NULL, surf_network_model_init_GTNETS},
+   surf_network_model_init_GTNETS},
 #endif
 #ifdef HAVE_NS3
   {"NS3",
    "Use NS3 tcp model",
-	NULL, surf_network_model_init_NS3},
+	surf_network_model_init_NS3},
 #endif
   {"Reno",
-   "Model using lagrange_solve instead of lmm_solve (experts only)", NULL,
+   "Model using lagrange_solve instead of lmm_solve (experts only)",
    surf_network_model_init_Reno},
   {"Reno2",
-   "Model using lagrange_solve instead of lmm_solve (experts only)", NULL,
+   "Model using lagrange_solve instead of lmm_solve (experts only)",
    surf_network_model_init_Reno2},
   {"Vegas",
-   "Model using lagrange_solve instead of lmm_solve (experts only)", NULL,
+   "Model using lagrange_solve instead of lmm_solve (experts only)",
    surf_network_model_init_Vegas},
-  {NULL, NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_cpu_model_description[] = {
-  {"Cas01_fullupdate", "CPU classical model time=size/power", NULL,
+  {"Cas01_fullupdate", "CPU classical model time=size/power",
    surf_cpu_model_init_Cas01},
   {"Cas01",
    "Variation of Cas01_fullupdate with partial invalidation optimization of lmm system. Should produce the same values, only faster",
-   NULL, surf_cpu_model_init_Cas01_im},
+   surf_cpu_model_init_Cas01_im},
   {"CpuTI",
    "Variation of Cas01 with also trace integration. Should produce the same values, only faster if you use availability traces",
-   NULL, surf_cpu_model_init_ti},
-  {NULL, NULL, NULL, NULL}      /* this array must be NULL terminated */
+   surf_cpu_model_init_ti},
+  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_workstation_model_description[] = {
   {"CLM03",
    "Default workstation model, using LV08 and CM02 as network and CPU",
-   NULL, surf_workstation_model_init_CLM03, create_workstations},
+   surf_workstation_model_init_CLM03},
   {"compound",
    "Workstation model allowing you to use other network and CPU models",
-   NULL, surf_workstation_model_init_compound, create_workstations},
+   surf_workstation_model_init_compound},
   {"ptask_L07", "Workstation model with better parallel task modeling",
-   NULL, surf_workstation_model_init_ptask_L07, NULL},
-  {NULL, NULL, NULL, NULL}      /* this array must be NULL terminated */
+   surf_workstation_model_init_ptask_L07},
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
-
-void update_model_description(s_surf_model_description_t * table,
-                              const char *name, surf_model_t model)
-{
-  int i = find_model_description(table, name);
-  table[i].model = model;
-}
 
 /** Displays the long description of all registered models, and quit */
 void model_help(const char *category, s_surf_model_description_t * table)
@@ -204,7 +198,7 @@ int find_model_description(s_surf_model_description_t * table,
   for (i = 1; table[i].name; i++) {
     name_list =
         xbt_realloc(name_list,
-                    strlen(name_list) + strlen(table[i].name) + 2);
+                    strlen(name_list) + strlen(table[i].name) + 3);
     strcat(name_list, ", ");
     strcat(name_list, table[i].name);
   }
@@ -222,7 +216,6 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
   double value = -1;
 #define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + (offset))))
 
-  xbt_assert(solve, "Give me a real solver function!");
   solve(sys);
 
   xbt_swag_foreach(action, running_actions) {
@@ -373,6 +366,7 @@ void surf_exit(void)
   xbt_dynar_foreach(model_list, iter, model)
       model->model_private->finalize();
   xbt_dynar_free(&model_list);
+  routing_exit();
 
   if (maxmin_system) {
     lmm_system_free(maxmin_system);
@@ -384,12 +378,12 @@ void surf_exit(void)
   }
   surf_action_exit();
 
-  if (surf_path)
-    xbt_dynar_free(&surf_path);
+  xbt_dynar_free(&surf_path);
 
   xbt_lib_free(&host_lib);
   xbt_lib_free(&link_lib);
   xbt_lib_free(&as_router_lib);
+
 
   tmgr_finalize();
   surf_parse_lex_destroy();

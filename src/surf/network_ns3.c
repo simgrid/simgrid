@@ -79,8 +79,7 @@ void parse_ns3_add_host(void)
 }
 
 static void ns3_free_dynar(void * elmts){
-	if(elmts)
-		free(elmts);
+	free(elmts);
 	return;
 }
 
@@ -283,8 +282,8 @@ void create_ns3_topology()
 
      if( strcmp(src,dst) && ((surf_ns3_link_t)link)->created){
      XBT_DEBUG("Route from '%s' to '%s' with link '%s'",src,dst,((surf_ns3_link_t)link)->data->id);
-     char * link_bdw = bprintf("%s",((surf_ns3_link_t)link)->data->bdw);
-	 char * link_lat = bprintf("%s",(((surf_ns3_link_t)link)->data->lat));
+     char * link_bdw = xbt_strdup(((surf_ns3_link_t)link)->data->bdw);
+	 char * link_lat = xbt_strdup(((surf_ns3_link_t)link)->data->lat);
  	 replace_lat_ns3(&link_lat);
  	 replace_bdw_ns3(&link_bdw);
 	 ((surf_ns3_link_t)link)->created = 0;
@@ -312,7 +311,7 @@ void create_ns3_topology()
    }
 }
 
-static void define_callbacks_ns3(const char *filename)
+static void define_callbacks_ns3(void)
 {
   surfxml_add_callback(STag_surfxml_host_cb_list, &parse_ns3_add_host);	      //HOST
   surfxml_add_callback(STag_surfxml_router_cb_list, &parse_ns3_add_router);	  //ROUTER
@@ -357,7 +356,7 @@ static void ns3_action_set_category(surf_action_t action, const char *category)
 }
 #endif
 
-void surf_network_model_init_NS3(const char *filename)
+void surf_network_model_init_NS3()
 {
 	if (surf_network_model)
 		return;
@@ -389,7 +388,7 @@ void surf_network_model_init_NS3(const char *filename)
 	}
 
 	routing_model_create(sizeof(s_surf_ns3_link_t), NULL, NULL);
-	define_callbacks_ns3(filename);
+	define_callbacks_ns3();
 
 	NS3_HOST_LEVEL = xbt_lib_add_level(host_lib,(void_f_pvoid_t)free_ns3_host);
 	NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,(void_f_pvoid_t)free_ns3_host);
@@ -490,7 +489,7 @@ static void ns3_update_actions_state(double now, double delta)
 	    }
 	  }
 
-	  while (xbt_dynar_length(socket_to_destroy)){
+	  while (!xbt_dynar_is_empty(socket_to_destroy)){
 	    xbt_dynar_pop(socket_to_destroy,&key);
 
 	    void *data = xbt_dict_get (dict_socket, key);
@@ -548,8 +547,7 @@ static int action_unref(surf_action_t action)
 #ifdef HAVE_TRACING
     xbt_free(((surf_action_network_ns3_t)action)->src_name);
     xbt_free(((surf_action_network_ns3_t)action)->dst_name);
-    if (action->category)
-      xbt_free(action->category);
+    xbt_free(action->category);
 #endif
     XBT_DEBUG ("Removing action %p", action);
     surf_action_free(&action);

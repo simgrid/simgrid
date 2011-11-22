@@ -85,7 +85,7 @@ $ ${bindir:=.}/basic_parsing_test ./properties.xml
 $ ${bindir:=.}/basic_parsing_test ./properties.xml --cfg=cpu/model:CpuTI
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'CpuTI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '0.000010'
-> [0.000000] [surf_route/INFO] The custom configuration 'cpu/model' is already define by user!
+> [0.000000] [surf_parse/INFO] The custom configuration 'cpu/model' is already defined by user!
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to '~/'
@@ -119,3 +119,15 @@ $ ${bindir:=.}/is_router_test ./test_of_is_router.xml
 >    - Seen: "AS3" is type : 3
 >    - Seen: "AS4" is type : 3
 >    - Seen: "AS" is type : 3
+
+$ ${bindir:=.}/basic_parsing_test ./Two_clusters_rulebased.xml ONE_LINK
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 4, link number: 8
+> Route between c-0.me and c-3.me
+> Route size 5
+>   Link my_cluster_1_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link my_cluster_1_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+>   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link my_cluster_2_backbone: latency = 0.000500, bandwidth = 2250000000.000000
+>   Link my_cluster_2_link_3: latency = 0.000050, bandwidth = 125000000.000000
+> Route latency = 0.001600, route bandwidth = 125000000.000000

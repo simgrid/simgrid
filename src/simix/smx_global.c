@@ -197,7 +197,7 @@ void SIMIX_run(void)
 #ifdef TIME_BENCH
     smx_ctx_raw_new_sr();
 #endif
-    while (xbt_dynar_length(simix_global->process_to_run)) {
+    while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu",
               xbt_dynar_length(simix_global->process_to_run));
       SIMIX_process_runall();
@@ -240,7 +240,7 @@ void SIMIX_run(void)
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
 
-  } while (time != -1.0 || xbt_dynar_length(simix_global->process_to_run) > 0);
+  } while (time != -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
 
   if (xbt_swag_size(simix_global->process_list) != 0) {
 
@@ -360,8 +360,10 @@ void SIMIX_display_process_status(void)
 	  action_description = "I/O";
 	  break;
       }
-      XBT_INFO("Process %ld (%s@%s): waiting for %s action %p (%s) to finish", process->pid, process->name, process->smx_host->name,
-	  action_description, process->waiting_action, process->waiting_action->name);
+      XBT_INFO("Process %ld (%s@%s): waiting for %s action %p (%s) in state %d to finish",
+          process->pid, process->name, process->smx_host->name,
+	  action_description, process->waiting_action,
+	  process->waiting_action->name, process->waiting_action->state);
     }
     else {
       XBT_INFO("Process %ld (%s@%s)", process->pid, process->name, process->smx_host->name);

@@ -235,7 +235,7 @@ sub get_switch {
 						{
 							if(!($radical =~ /^$/))
 							{
-								$radical = $radical.";";
+								$radical = $radical.",";
 							}
 							$radical = $radical.$deb."-".$fin;
 							$deb = $num[$i];
@@ -243,7 +243,7 @@ sub get_switch {
 						}
 						else
 						{
-							$radical=$radical.";".$num[$i];
+							$radical=$radical.",".$num[$i];
 						}
 			
 					}

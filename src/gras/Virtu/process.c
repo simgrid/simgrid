@@ -124,7 +124,6 @@ void gras_procdata_init()
 
   unsigned int cursor;
 
-  xbt_ex_t e;
   xbt_set_elm_t elem;
 
   if (!pd->libdata) {
@@ -133,7 +132,6 @@ void gras_procdata_init()
   }
 
   xbt_dynar_foreach(_gras_procdata_fabrics, cursor, fab) {
-    volatile int found = 0;
 
     if (cursor + 1 <= xbt_set_length(pd->libdata)) {
       XBT_DEBUG("Skip fabric %d: there is already %ld libdata",
@@ -146,20 +144,13 @@ void gras_procdata_init()
     xbt_assert(fab.name, "Name of fabric #%d is NULL!", cursor);
     XBT_DEBUG("Create the procdata for %s", fab.name);
     /* Check for our own errors */
-    TRY {
-      xbt_set_get_by_name(pd->libdata, fab.name);
-      found = 1;
-    }
-    CATCH(e) {
-      xbt_ex_free(e);
-      found = 0;
-    }
-    if (found)
+
+    if (xbt_set_get_by_name_or_null(pd->libdata, fab.name) != NULL)
       THROWF(unknown_error, 0,
              "MayDay: two modules use '%s' as libdata name", fab.name);
 
     /* Add the data in place, after some more sanity checking */
-    elem = (*(fab.constructor)) ();
+    elem = fab.constructor();
     if (elem->name_len && elem->name_len != strlen(elem->name)) {
       elem->name_len = strlen(elem->name);
       XBT_WARN
@@ -188,8 +179,7 @@ void gras_procdata_exit()
 const char *gras_os_hostport()
 {
   static char *res = NULL;
-  if (res)
-    free(res);                  /* my port may have changed */
+  free(res);                  /* my port may have changed */
   res = bprintf("%s:%d", gras_os_myname(), gras_os_myport());
   return (const char *) res;
 }

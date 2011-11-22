@@ -614,7 +614,7 @@ static gras_datadesc_type_t parse_struct(char *definition)
   xbt_dynar_t fields_to_push;
   char *name;
 
-  gras_datadesc_type_t struct_type;
+  volatile gras_datadesc_type_t struct_type;
 
   XBT_IN("");
   identifiers = xbt_dynar_new(sizeof(s_identifier_t), NULL);

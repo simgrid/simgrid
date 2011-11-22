@@ -101,7 +101,7 @@ static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
   xbt_dynar_t d = xbt_dict_get_or_null(keys, aux);
 
-  xbt_assert(xbt_dynar_length(d)!=0,
+  xbt_assert(!xbt_dynar_is_empty(d),
       "Trying to get a link key (for message reception) that has no corresponding send (%s).", __FUNCTION__);
   char *s = xbt_dynar_get_as (d, 0, char *);
   snprintf (key, n, "%s", s);

@@ -658,7 +658,7 @@ void xbt_dict_dump_output_string(void *s)
  */
 XBT_INLINE int xbt_dict_is_empty(xbt_dict_t dict)
 {
-  return (xbt_dict_size(dict) == 0);
+  return !dict || (xbt_dict_length(dict) == 0);
 }
 
 /**
@@ -684,7 +684,7 @@ void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
         while (element != NULL) {
           printf(" %s -> '", element->key);
           if (output != NULL) {
-            (*output) (element->content);
+            output(element->content);
           }
           printf("'\n");
           element = element->next;
@@ -975,7 +975,8 @@ static void count(xbt_dict_t dict, int length)
 static void count_check_get_key(xbt_dict_t dict, int length)
 {
   xbt_dict_cursor_t cursor;
-  char *key, *key2;
+  char *key;
+  _XBT_GNUC_UNUSED char *key2;
   void *data;
   int effective = 0;
 

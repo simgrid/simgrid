@@ -11,15 +11,12 @@
 #include "xbt/dynar.h"
 #include "surf/maxmin.h"
 #include "surf/datatypes.h"
+#include "simgrid/platf_interface.h"
 
 /* Creation functions */
 XBT_PUBLIC(tmgr_history_t) tmgr_history_new(void);
 XBT_PUBLIC(void) tmgr_history_free(tmgr_history_t history);
 
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new(const char *filename);
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
-                                                    const char *input,
-                                                    double periodicity);
 XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);
 XBT_INLINE XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
 /**

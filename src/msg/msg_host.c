@@ -4,10 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg/private.h"
+#include "msg/msg_private.h"
+#include "msg/msg_mailbox.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "mailbox.h"
 
 /** \defgroup m_host_management Management functions of Hosts
  *  \brief This section describes the host structure of MSG
@@ -117,7 +117,7 @@ const char *MSG_host_get_name(m_host_t host)
  */
 m_host_t MSG_host_self(void)
 {
-  return MSG_process_get_host(MSG_process_self());
+  return MSG_process_get_host(NULL);
 }
 
 /** \ingroup m_host_management
@@ -148,7 +148,7 @@ void __MSG_host_destroy(m_host_t host)
  */
 int MSG_get_host_number(void)
 {
-  return host_lib->count;
+  return xbt_lib_length(host_lib);
 }
 
 /** \ingroup m_host_management
@@ -162,13 +162,13 @@ m_host_t *MSG_get_host_table(void)
 	  char *key;
 	  void **data;
 
-	  if (host_lib->count == 0)
+	  if (xbt_lib_length(host_lib) == 0)
 		return NULL;
 	  else
-		array = xbt_new0(void *, host_lib->count);
+		array = xbt_new0(void *, xbt_lib_length(host_lib));
 
 	  xbt_lib_foreach(host_lib, cursor, key, data) {
-	    if(get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
+	    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
 	    	array[i++] = data[MSG_HOST_LEVEL];
 	  }
 

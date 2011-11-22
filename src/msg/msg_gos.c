@@ -4,25 +4,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
-#include "xbt/sysdep.h"
+#include "msg_private.h"
+#include "msg_mailbox.h"
 #include "mc/mc.h"
 #include "xbt/log.h"
-#include "mailbox.h"
+#include "xbt/sysdep.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
                                 "Logging specific to MSG (gos)");
-
-/** \ingroup msg_gos_functions
- *
- * \brief Return the last value returned by a MSG function (except
- * MSG_get_errno...).
- */
-MSG_error_t MSG_get_errno(void)
-{
-  return PROCESS_GET_ERRNO();
-}
 
 /** \ingroup msg_gos_functions
  * \brief Executes a task and waits for its termination.
@@ -31,8 +21,8 @@ MSG_error_t MSG_get_errno(void)
  * takes only one parameter.
  * \param task a #m_task_t to execute on the location on which the
  agent is running.
- * \return #MSG_FATAL if \a task is not properly initialized and
- * #MSG_OK otherwise.
+ * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
+ * or #MSG_HOST_FAILURE otherwise
  */
 MSG_error_t MSG_task_execute(m_task_t task)
 {
@@ -62,16 +52,18 @@ MSG_error_t MSG_task_execute(m_task_t task)
 #endif
     return MSG_OK;
   }
+
+  m_process_t self = SIMIX_process_self();
+  p_simdata = SIMIX_process_self_get_data(self);
   simdata->isused=1;
   simdata->compute =
-      SIMIX_req_host_execute(task->name, SIMIX_host_self(),
+      SIMIX_req_host_execute(task->name, p_simdata->m_host->simdata->smx_host,
                            simdata->computation_amount,
                            simdata->priority);
 #ifdef HAVE_TRACING
   SIMIX_req_set_category(simdata->compute, task->category);
 #endif
 
-  p_simdata = SIMIX_process_self_get_data();
   p_simdata->waiting_action = simdata->compute;
   comp_state = SIMIX_req_host_execution_wait(simdata->compute);
   p_simdata->waiting_action = NULL;
@@ -103,7 +95,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
 #ifdef HAVE_TRACING
     TRACE_msg_task_execute_end(task);
 #endif
-    MSG_RETURN(MSG_TASK_CANCELLED);
+    MSG_RETURN(MSG_TASK_CANCELED);
   }
 }
 
@@ -171,7 +163,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   CHECK_HOST();
 
   simdata = task->simdata;
-  p_simdata = SIMIX_process_self_get_data();
+  p_simdata = SIMIX_process_self_get_data(SIMIX_process_self());
 
   xbt_assert((!simdata->compute)
               && (task->simdata->isused == 0),
@@ -214,7 +206,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
     simdata->comm = NULL;
     simdata->compute = NULL;
-    MSG_RETURN(MSG_TASK_CANCELLED);
+    MSG_RETURN(MSG_TASK_CANCELED);
   }
 }
 
@@ -385,6 +377,7 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
 {
   return MSG_task_isend_with_matching(task,alias,NULL,NULL);
 }
+
 /** \ingroup msg_gos_functions
  * \brief Sends a task on a mailbox, with support for matching requests
  *
@@ -412,7 +405,7 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = MSG_host_self();
+  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
 
   xbt_assert(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
@@ -437,8 +430,12 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
  * \brief Sends a task on a mailbox.
  *
  * This is a non blocking detached send function.
- * Think of it as a best effort send. The task should
- * be destroyed by the receiver.
+ * Think of it as a best effort send. Keep in mind that the third parameter
+ * is only called if the communication fails. If the communication does work,
+ * it is responsibility of the receiver code to free anything related to
+ * the task, as usual. More details on this can be obtained on
+ * <a href="http://lists.gforge.inria.fr/pipermail/simgrid-user/2011-November/002649.html">this thread</a>
+ * in the SimGrid-user mailing list archive.
  *
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
@@ -463,7 +460,7 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = MSG_host_self();
+  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
 
   xbt_assert(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
@@ -525,6 +522,11 @@ int MSG_comm_test(msg_comm_t comm)
   int finished = 0;
   TRY {
     finished = SIMIX_req_comm_test(comm->s_comm);
+
+    if (finished && comm->task_received != NULL) {
+      /* I am the receiver */
+      (*comm->task_received)->simdata->isused = 0;
+    }
   }
   CATCH(e) {
     switch (e.category) {
@@ -606,6 +608,11 @@ int MSG_comm_testany(xbt_dynar_t comms)
     comm = xbt_dynar_get_as(comms, finished_index, msg_comm_t);
     /* the communication is finished */
     comm->status = status;
+
+    if (status == MSG_OK && comm->task_received != NULL) {
+      /* I am the receiver */
+      (*comm->task_received)->simdata->isused = 0;
+    }
   }
 
   return finished_index;
@@ -975,3 +982,15 @@ int MSG_task_listen_from(const char *alias)
 
   return MSG_process_get_PID(task->simdata->sender);
 }
+
+#ifdef MSG_USE_DEPRECATED
+/** \ingroup msg_gos_functions
+ *
+ * \brief Return the last value returned by a MSG function (except
+ * MSG_get_errno...).
+ */
+MSG_error_t MSG_get_errno(void)
+{
+  return PROCESS_GET_ERRNO();
+}
+#endif

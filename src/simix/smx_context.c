@@ -39,7 +39,7 @@ void SIMIX_context_mod_init(void)
   if (!simix_global->context_factory) {
     /* select the context factory to use to create the contexts */
     if (smx_factory_initializer_to_use) {
-      (*smx_factory_initializer_to_use)(&(simix_global->context_factory));
+      smx_factory_initializer_to_use(&simix_global->context_factory);
     }
     else { /* use the factory specified by --cfg=contexts/factory:value */
 
@@ -104,7 +104,7 @@ void SIMIX_context_mod_exit(void)
 
     /* finalize the context factory */
     finalize_factory = simix_global->context_factory->finalize;
-    (*finalize_factory) (&simix_global->context_factory);
+    finalize_factory(&simix_global->context_factory);
   }
   xbt_dict_remove((xbt_dict_t) _surf_cfg_set,"contexts/factory");
 }

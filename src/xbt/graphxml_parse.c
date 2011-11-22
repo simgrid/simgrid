@@ -48,34 +48,34 @@ void xbt_graph_parse_reset_parser(void)
 
 void STag_graphxml_graph(void)
 {
-  (*STag_graphxml_graph_fun) ();
+  STag_graphxml_graph_fun();
 }
 
 void ETag_graphxml_graph(void)
 {
-  (*ETag_graphxml_graph_fun) ();
+  ETag_graphxml_graph_fun();
 }
 
 
 void STag_graphxml_node(void)
 {
-  (*STag_graphxml_node_fun) ();
+  STag_graphxml_node_fun();
 }
 
 void ETag_graphxml_node(void)
 {
-  (*ETag_graphxml_node_fun) ();
+  ETag_graphxml_node_fun();
 }
 
 
 void STag_graphxml_edge(void)
 {
-  (*STag_graphxml_edge_fun) ();
+  STag_graphxml_edge_fun();
 }
 
 void ETag_graphxml_edge(void)
 {
-  (*ETag_graphxml_edge_fun) ();
+  ETag_graphxml_edge_fun();
 }
 
 
@@ -103,10 +103,8 @@ void xbt_graph_parse_open(const char *file)
 
 void xbt_graph_parse_close(void)
 {
-  if (xbt_graph_input_buffer_stack)
-    xbt_dynar_free(&xbt_graph_input_buffer_stack);
-  if (xbt_graph_file_to_parse_stack)
-    xbt_dynar_free(&xbt_graph_file_to_parse_stack);
+  xbt_dynar_free(&xbt_graph_input_buffer_stack);
+  xbt_dynar_free(&xbt_graph_file_to_parse_stack);
 
   if (xbt_graph_file_to_parse) {
     xbt_graph_parse__delete_buffer(xbt_graph_input_buffer);
@@ -122,11 +120,13 @@ static int _xbt_graph_parse(void)
 
 int_f_void_t xbt_graph_parse = _xbt_graph_parse;
 
-void xbt_graph_parse_get_double(double *value, const char *string)
+double xbt_graph_parse_get_double(const char *string)
 {
-  int ret = 0;
+  double result;
+  _XBT_GNUC_UNUSED int ret = 0;
 
-  ret = sscanf(string, "%lg", value);
+  ret = sscanf(string, "%lg", &result);
   xbt_assert((ret == 1), "Parse error line %d : %s not a number",
               xbt_graph_parse_lineno, string);
+  return result;
 }

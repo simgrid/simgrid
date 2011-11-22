@@ -808,6 +808,9 @@ ${CMAKE_BINARY_DIR}/bin/smpirun
 ${CMAKE_BINARY_DIR}/bin/colorize
 ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml
 ${CMAKE_BINARY_DIR}/examples/smpi/smpi_traced.trace
+${CMAKE_BINARY_DIR}/src/supernovae_sg.c
+${CMAKE_BINARY_DIR}/src/supernovae_gras.c
+${CMAKE_BINARY_DIR}/src/supernovae_smpi.c
 )
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")

@@ -32,7 +32,7 @@ end
 -- Prints the value of global_string
 function print_global()
 
-  simgrid.info("Global string is '"..global_string.."'")
+  simgrid.info("Global string is '" .. global_string .. "'")
 end
 
 print_global()
@@ -40,5 +40,4 @@ print_global()
 simgrid.platform("../../msg/small_platform.xml")
 simgrid.application("deployment_duplicated_globals.xml")
 simgrid.run()
-simgrid.clean()
 

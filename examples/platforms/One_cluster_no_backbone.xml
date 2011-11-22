@@ -1,16 +1,16 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 
-<!--              _________
-				|	       |
-				|  router  |
-				|__________|
-					/ | \
-				   /  |  \
-			   l0 / l1|   \l2 
-				 /    |    \
-				/	  |     \
-			host0   host1   host2	
+<!--             _________
+                |          |
+                |  router  |
+                |__________|
+                    / | \
+                   /  |  \
+               l0 / l1|   \l2 
+                 /    |    \
+                /     |     \
+            host0   host1   host2	
 -->
 
 <platform version="3">

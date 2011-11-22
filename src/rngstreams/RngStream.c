@@ -339,8 +339,7 @@ void RngStream_DeleteStream (RngStream * p)
 {
    if (*p == NULL)
       return;
-   if ((*p)->name != NULL)
-      free ((*p)->name);
+   free((*p)->name);
    free (*p);
    *p = NULL;
 }

@@ -185,7 +185,7 @@ double gras_msg_timer_handle(void)
                timer->action);
         xbt_dynar_cursor_rm(pd->timers, &cursor);
       }
-      (*action) ();
+      action();
       return 0.0;
     } else if (untilthis < untilnext || untilnext == -1) {
       untilnext = untilthis;

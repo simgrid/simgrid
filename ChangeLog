@@ -1,4 +1,6 @@
-SimGrid (3.7) NOT RELEASED; urgency=low 
+SimGrid (3.7) NOT RELEASED; urgency=low
+
+  The "Simplicity does not preceed complexity, but follows it" release.
 
   Models:
   * Use the partial invalidation optimization by default for the
@@ -11,7 +13,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
 
   -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
-SimGrid (3.6.2) stable; urgency=low 
+SimGrid (3.6.2) stable; urgency=low
 
  The "Not coding new stuff allows to polish old things" release.
 
@@ -22,10 +24,10 @@ SimGrid (3.6.2) stable; urgency=low
  * libpcre is now mandatory in any cases since not using it led to
     severe performance loss and possibly other issues
  * Update the XML platforms:
-   - G5K: include the lastest machine in Nancy 
+   - G5K: include the lastest machine in Nancy
    - GridPP and LCG: new platforms
  * Documentation was partially updated, at least (more to come)
-   
+
  Bug fixes, cosmetics and small improvements
  * Free terminated processes before the end of the simulation to avoid
    exhausting the memory of users having very dynamic amount of
@@ -36,8 +38,8 @@ SimGrid (3.6.2) stable; urgency=low
  Portability
  * Create an installer for windows with nsis (amd64 and win32)
    - Add an hello world project to illustrate simgrid project creation.
-   - Embed libpcre into the Simgrid installer to avoid 
-     its compilation burden 
+   - Embed libpcre into the Simgrid installer to avoid
+     its compilation burden
  * The raw execution contextes should work on Apple now
  * Port to Windows 64 bits
     - Sysv contextes now have an implementation for this arch
@@ -51,12 +53,12 @@ SimGrid (3.6.2) stable; urgency=low
  -- Wed Oct  5 15:51:01 CEST 2011 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 
-SimGrid (3.6.1) stable; urgency=low 
+SimGrid (3.6.1) stable; urgency=low
 
  The "Oops, we broke Macs too" release
 
  Portability
- * Fixed contextes detection so that raw ones are used when possible   
+ * Fixed contextes detection so that raw ones are used when possible
  * On Mac, do not use Posix Ucontextes with gcc v4.[1-5] since this
    leads to a strange error, with user code segfaulting sometimes when
    the generated code is not perfectly aligned (which is not
@@ -71,14 +73,14 @@ SimGrid (3.6) stable; urgency=medium
 
  The Summer Release, also known as the "OMG! They Killed Kenny!" version
 
- Java and Ruby: 
+ Java and Ruby:
  * Bindings now constitute their own package, separated from the main one.
    Rationale: reduce our maintainance nightmare by reducing the module coupling
-   They will soon be released on their own on gforge. 
+   They will soon be released on their own on gforge.
  * In the meanwhile:
    svn co svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java
    svn co svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-ruby
- 
+
  GRAS: It is not considered as stable anymore, but experimental. Sorry.
  * It's not quite deprecated for now because we have no replacement,
    but it may soon become the case.
@@ -128,7 +130,7 @@ SimGrid (3.6) stable; urgency=medium
    combine Vivaldi based latencies with last-mile platforms.
 
  SIMIX
- * Added a check for NaN of IEEE754 infinite in the double entries of 
+ * Added a check for NaN of IEEE754 infinite in the double entries of
    the smx_user.c file
  * Introduce a new context factory "raw", highly inspirated from the
    ucontext factory, but using manually crafted functions in assembly to
@@ -144,7 +146,7 @@ SimGrid (3.6) stable; urgency=medium
    When nthreads > 1, you can use --cfg=contexts/threshold:P to run the user
    processes in parallel only when their number is greater than or equal to P
    (the default is 2).
- * Added a check for NaN of IEEE754 infinite in the double entries of 
+ * Added a check for NaN of IEEE754 infinite in the double entries of
    the smx_user.c file
 
  XBT
@@ -190,9 +192,9 @@ SimGrid (3.6) stable; urgency=medium
    at the tools directory (fix-paje-trace.sh) can be used to put the events
    in order. We have changed the tracing so it can generate ordered timestamped
    events in the final trace, but depending on the simulator (and how much time
-   is simulated) that can lead to a huge memory utilization. It is desactivated 
+   is simulated) that can lead to a huge memory utilization. It is desactivated
    by default, but it can be activated using the --cfg=tracing/buffer:1 switch.
-   
+
  Build Infrastructure
  * Define a SIMGRID_VERSION macro in simgrid_config.h.
    - We are trying hard to keep the API stable, but it may happen that
@@ -1138,7 +1140,7 @@ SimGrid (3.2) stable; urgency=high
     and (2) msg_size. This was changed to (1) msg_size and (2) amount of
     messages. This was need for the fool willing to send more than MAXINT
     bytes on quite fat pipes.
-	
+
   AMOK:
   * Do really rename the hostmanagement module to peermanagement. [Mt]
     Ie, rename functions from amok_hm_* to amok_pm_*. This breaks the API,
@@ -1216,7 +1218,7 @@ SimGrid (3.1) stable; urgency=high
     directly on top of SURF and provides an API rather close to the old
     SG. Some old codes using SG are currently under rewrite to check that
     all needful functions are provided. [Christophe Thiery]
-	
+
   SURF:
   * Complete rewrite of the KCCFLN05 workstation model. It is now an
     extension of the classical CLM03 model that gracefully handles
@@ -1330,7 +1332,7 @@ SimGrid (3.0.1) stable; urgency=low
   SURF:
   * Add additionnal checkings on communications. Assert that two
     communicating hosts are connected by a set of links... [AL]
-	
+
   MSG:
   * Add additionnal checkings on channel values in communication [AL]
   * New: MSG_task_get_source to see on which host a task was generated [HC]
@@ -1339,7 +1341,7 @@ SimGrid (3.0.1) stable; urgency=low
     by host. [AL]
   * New: MSG_error_t MSG_task_get_from_host(m_task_t * task, int channel, m_host_t host);
     waits for the first task coming from a given host.. [AL]
-	
+
   GRAS new functionnalities: [MQ]
   * Enhance the parsing macro to allow the size of multidimentional objects
     to be given thru annotations.
@@ -1402,7 +1404,7 @@ SimGrid (3.00) stable; urgency=high
   * New! Give the possibility to hijack the surf parser and thus bypass
     MSG_create_environment and MSG_launch_application. Have a look at
     examples/msg/msg_test_surfxml_bypassed.c to see how it can be done.
-	
+
  -- Arnaud Legrand <simgrid-devel@lists.gforge.inria.fr>  Sat, 20 Aug 2005 23:25:25 -0700
 
 SimGrid (2.96) unstable; urgency=low
@@ -1740,7 +1742,7 @@ SimGrid (2.90) unstable; urgency=low
   - Main loop and datastructures of SURF. A cpu resource object is
     functional. Surf can thus be used to create cpu's with variable
     performance on which you can execute some actions.
-	
+
 2004-11-15 Martin Quinson
   - Port to ARM. Simply added the alignment and size descriptions. Should
     work, but the ARM machines are so slow that I didn't had the opportunity

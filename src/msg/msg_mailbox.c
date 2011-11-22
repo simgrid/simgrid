@@ -6,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mailbox.h"
-#include "msg/private.h"
+#include "msg_mailbox.h"
+#include "msg_private.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg,
                                 "Logging specific to MSG (mailbox)");
 
@@ -86,8 +86,8 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   xbt_assert(task, "Null pointer for the task storage");
 
   if (*task)
-    XBT_CRITICAL
-        ("MSG_task_get() was asked to write in a non empty task struct.");
+    XBT_WARN
+        ("Asked to write the received task in a non empty struct -- proceeding.");
 
   /* Try to receive it by calling SIMIX network layer */
   TRY {
@@ -130,7 +130,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   MSG_error_t ret = MSG_OK;
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
-  simdata_process_t p_simdata = SIMIX_process_self_get_data();
+  simdata_process_t p_simdata = SIMIX_process_self_get_data(process);
   CHECK_HOST();
 
 #ifdef HAVE_TRACING
@@ -140,7 +140,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = MSG_host_self();
+  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
 
   xbt_assert(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");

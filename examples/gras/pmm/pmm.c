@@ -67,6 +67,34 @@ static void register_messages(void)
   gras_msgtype_declare("pmm_sync", 0);
 }
 
+static gras_socket_t try_gras_socket_client_from_string(const char *host)
+{
+  volatile gras_socket_t sock = NULL;
+  xbt_ex_t e;
+  TRY {
+    sock = gras_socket_client_from_string(host);
+  }
+  CATCH(e) {
+    if (e.category != system_error)
+      /* dunno what happened, let the exception go through */
+      RETHROWF("Unable to connect to the server: %s");
+    xbt_ex_free(e);
+  }
+  return sock;
+}
+
+static void my_gras_msg_wait(double timeout, const char* msgt_want,
+                             gras_socket_t* expeditor, void *payload,
+                             const char *error_msg)
+{
+  TRY {
+    gras_msg_wait(timeout, msgt_want, expeditor, payload);
+  }
+  CATCH_ANONYMOUS {
+    RETHROWF("%s: %s", error_msg);
+  }
+}
+
 /* Function prototypes */
 int slave(int argc, char *argv[]);
 int master(int argc, char *argv[]);
@@ -305,13 +333,9 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
       bB = xbt_matrix_new_sub(mydataB,
                               submatrix_size, submatrix_size, 0, 0, NULL);
     } else {
-      TRY {
-        xbt_matrix_free(bB);
-        gras_msg_wait(600, "dataB", &from, &bB);
-      }
-      CATCH_ANONYMOUS {
-        RETHROWF("Can't get a data message from line : %s");
-      }
+      xbt_matrix_free(bB);
+      my_gras_msg_wait(600, "dataB", &from, &bB,
+                       "Can't get a data message from line");
       XBT_VERB("LINE: step(%d) <> Myline(%d). Receive data from %s", step,
             myline, gras_socket_peer_name(from));
     }
@@ -328,19 +352,15 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
       bA = xbt_matrix_new_sub(mydataA,
                               submatrix_size, submatrix_size, 0, 0, NULL);
     } else {
-      TRY {
-        xbt_matrix_free(bA);
-        gras_msg_wait(1200, "dataA", &from, &bA);
-      }
-      CATCH_ANONYMOUS {
-        RETHROWF("Can't get a data message from row : %s");
-      }
+      xbt_matrix_free(bA);
+      my_gras_msg_wait(1200, "dataA", &from, &bA,
+                       "Can't get a data message from row");
       XBT_VERB("ROW: step(%d)<>myrow(%d). Receive data from %s", step, myrow,
             gras_socket_peer_name(from));
     }
     xbt_matrix_double_addmult(bA, bB, bC);
 
-  };
+  }
 
   /* send Result to master */
   result.C = bC;
@@ -380,7 +400,6 @@ int slave(int argc, char *argv[])
 {
   gras_socket_t mysock;
   gras_socket_t master = NULL;
-  int connected = 0;
   int rank;
 
   /* Init the GRAS's infrastructure */
@@ -400,19 +419,8 @@ int slave(int argc, char *argv[])
   /* Create the connexions */
   mysock = gras_socket_server_range(3000, 9999, 0, 0);
   XBT_INFO("Sensor %d starting", rank);
-  while (!connected) {
-    xbt_ex_t e;
-    TRY {
-      master = gras_socket_client_from_string(argv[1]);
-      connected = 1;
-    }
-    CATCH(e) {
-      if (e.category != system_error)
-        RETHROW;
-      xbt_ex_free(e);
-      gras_os_sleep(0.5);
-    }
-  }
+  while (!(master = try_gras_socket_client_from_string(argv[1])))
+    gras_os_sleep(0.5);
 
   /* Join and run the group */
   rank = amok_pm_group_join(master, "pmm");

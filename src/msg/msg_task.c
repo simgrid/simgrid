@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg/private.h"
+#include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
@@ -152,7 +152,13 @@ void MSG_task_set_name(m_task_t task, const char *name)
  * \brief Destroy a #m_task_t.
  *
  * Destructor for #m_task_t. Note that you should free user data, if any, \b 
-   before calling this function.
+ * before calling this function.
+ *
+ * Only the process that owns the task can destroy it.
+ * The owner changes after a successful send.
+ * If a task is successfully sent, the receiver becomes the owner and is
+ * supposed to destroy it. The sender should not use it anymore.
+ * If the task failed to be sent, the sender remains the owner of the task.
  */
 MSG_error_t MSG_task_destroy(m_task_t task)
 {
@@ -160,7 +166,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   xbt_assert((task != NULL), "Invalid parameter");
 
   if (task->simdata->isused) {
-    /* the task is still being used, it may be an unfinished dsend */
+    /* the task is being sent or executed: cancel it first */
     MSG_task_cancel(task);
   }
 #ifdef HAVE_TRACING

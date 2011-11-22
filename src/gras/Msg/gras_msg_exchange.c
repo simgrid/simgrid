@@ -290,13 +290,13 @@ void gras_msg_handleall(double period)
  *
  * @sa gras_msg_handleall().
  */
-void gras_msg_handle(double timeOut)
+void gras_msg_handle(volatile double timeOut)
 {
 
   double untiltimer;
 
   unsigned int cpt;
-  int volatile ran_ok;
+  volatile int ran_ok;
 
   s_gras_msg_t msg;
 
@@ -306,7 +306,7 @@ void gras_msg_handle(double timeOut)
   gras_msg_cb_t cb;
   s_gras_msg_cb_ctx_t ctx;
 
-  int timerexpected, timeouted;
+  volatile int timerexpected, timeouted;
   xbt_ex_t e;
 
   XBT_VERB("Handling message within the next %.2fs", timeOut);
@@ -326,7 +326,7 @@ void gras_msg_handle(double timeOut)
 
   /* get a message (from the queue or from the net) */
   timeouted = 0;
-  if (xbt_dynar_length(pd->msg_queue)) {
+  if (!xbt_dynar_is_empty(pd->msg_queue)) {
     XBT_DEBUG("Get a message from the queue");
     xbt_dynar_shift(pd->msg_queue, &msg);
   } else {
@@ -398,16 +398,18 @@ void gras_msg_handle(double timeOut)
     ran_ok = 0;
     TRY {
       xbt_dynar_foreach(list->cbs, cpt, cb) {
+        volatile unsigned int cpt2 = cpt;
         if (!ran_ok) {
           XBT_DEBUG
               ("Use the callback #%d (@%p) for incomming msg '%s' (payload_size=%d)",
                cpt + 1, cb, msg.type->name, msg.payl_size);
-          if (!(*cb) (&ctx, msg.payl)) {
+          if (!cb(&ctx, msg.payl)) {
             /* cb handled the message */
             free(msg.payl);
             ran_ok = 1;
           }
         }
+        cpt = cpt2;
       }
     }
     CATCH(e) {

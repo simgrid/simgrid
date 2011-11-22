@@ -25,6 +25,7 @@ typedef struct s_sglua_buffer {
 const char* sglua_tostring(lua_State* L, int index);
 const char* sglua_keyvalue_tostring(lua_State* L, int key_index, int value_index);
 void sglua_stack_dump(const char *msg, lua_State* L);
+void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname);
 const char* sglua_get_spaces(int length);
 int sglua_memory_writer(lua_State* L, const void* source, size_t size, void* userdata);
 

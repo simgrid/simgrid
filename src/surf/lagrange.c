@@ -37,8 +37,6 @@ void lagrange_solve(lmm_system_t sys);
 //computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
 static double dichotomy(double init, double diff(double, void *),
                         void *var_cnst, double min_error);
-//computes the value of the differential of variable param_var applied to mu  
-static double partial_diff_mu(double mu, void *param_var);
 //computes the value of the differential of constraint param_cnst applied to lambda  
 static double partial_diff_lambda(double lambda, void *param_cnst);
 

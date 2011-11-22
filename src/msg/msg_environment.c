@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg/private.h"
+#include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
@@ -70,10 +70,9 @@ void MSG_create_environment(const char *file)
 
   /* Initialize MSG hosts */
   xbt_lib_foreach(host_lib, cursor, name, data) {
-	if(data[SIMIX_HOST_LEVEL])
+    if(data[SIMIX_HOST_LEVEL])
       __MSG_host_create((smx_host_t)data[SIMIX_HOST_LEVEL], NULL);
   }
-  return;
 }
 
 /**
@@ -97,5 +96,4 @@ void MSG_load_platform_script(const char *script_file)
   xbt_die
       ("Lua is not available!! to call MSG_load_platform_script, lua should be available...");
 #endif
-  return;
 }
