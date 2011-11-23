@@ -6,7 +6,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "portable.h"           /* SIZEOF_MAX */
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -141,16 +140,7 @@ _xbt_dynar_remove_at(xbt_dynar_t const dynar,
   if (object) {
     _xbt_dynar_get_elm(object, dynar, idx);
   } else if (dynar->free_f) {
-    if (dynar->elmsize <= SIZEOF_MAX) {
-      char elm[SIZEOF_MAX];
-      _xbt_dynar_get_elm(elm, dynar, idx);
-      dynar->free_f(elm);
-    } else {
-      char *elm = malloc(dynar->elmsize);
-      _xbt_dynar_get_elm(elm, dynar, idx);
-      dynar->free_f(elm);
-      free(elm);
-    }
+    dynar->free_f(_xbt_dynar_elm(dynar, idx));
   }
 
   nb_shift = dynar->used - 1 - idx;
