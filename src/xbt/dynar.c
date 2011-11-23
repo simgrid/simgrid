@@ -251,16 +251,9 @@ XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
   if (dynar->free_f) {
     _dynar_map(dynar, dynar->free_f);
   }
-  /*
-     free(dynar->data);
-
-     dynar->size = 0;
-   */
   dynar->used = 0;
 
   _dynar_unlock(dynar);
-
-  /*  dynar->data = NULL; */
 }
 
 /**
