@@ -374,12 +374,10 @@ XBT_INLINE void *xbt_dynar_get_ptr(const xbt_dynar_t dynar,
   return res;
 }
 
-XBT_INLINE void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
-                                      const unsigned long idx)
+/* not synchronized */
+static XBT_INLINE void *_xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
+                                              const unsigned long idx)
 {
-
-  void *res;
-  _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
 
   if (idx >= dynar->used) {
@@ -388,10 +386,16 @@ XBT_INLINE void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
                    (idx + 1 - dynar->used)*dynar->elmsize);
     dynar->used = idx + 1;
   }
-  res = _xbt_dynar_elm(dynar, idx);
+  return _xbt_dynar_elm(dynar, idx);
+}
 
+XBT_INLINE void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
+                                      const unsigned long idx)
+{
+  void *res;
+  _dynar_lock(dynar);
+  res = _xbt_dynar_set_at_ptr(dynar, idx);
   _dynar_unlock(dynar);
-
   return res;
 }
 
@@ -399,17 +403,7 @@ static void XBT_INLINE          /* not synchronized */
 _xbt_dynar_set(xbt_dynar_t dynar,
                const unsigned long idx, const void *const src)
 {
-
-  _sanity_check_dynar(dynar);
-
-  if (idx >= dynar->used) {
-    _xbt_dynar_expand(dynar, idx + 1);
-    _xbt_clear_mem(((char * const)dynar->data) + dynar->used * dynar->elmsize,
-                   (idx + 1 - dynar->used)*dynar->elmsize);
-    dynar->used = idx + 1;
-  }
-
-  _xbt_dynar_put_elm(dynar, idx, src);
+  memcpy(_xbt_dynar_set_at_ptr(dynar, idx), src, dynar->elmsize);
 }
 
 /** @brief Set the Nth element of a dynar (expanded if needed). Previous value at this position is NOT freed
