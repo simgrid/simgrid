@@ -81,24 +81,24 @@ static XBT_INLINE
 }
 
 static XBT_INLINE
+void _xbt_dynar_resize(xbt_dynar_t dynar, unsigned long new_size)
+{
+  if (new_size != dynar->size) {
+    dynar->size = new_size;
+    dynar->data = xbt_realloc(dynar->data, new_size * dynar->elmsize);
+  }
+}
+
+static XBT_INLINE
     void _xbt_dynar_expand(xbt_dynar_t const dynar, const unsigned long nb)
 {
   const unsigned long old_size = dynar->size;
 
   if (nb > old_size) {
-    void *const old_data = dynar->data;
-    const unsigned long elmsize = dynar->elmsize;
-    const unsigned long old_length = old_size * elmsize;
-
     const unsigned long expand = 2 * (old_size + 1);
-    const unsigned long new_size = (nb > expand ? nb : expand);
-    const unsigned long new_length = new_size * elmsize;
-    void *const new_data = xbt_realloc(old_data, new_length);
-
-    XBT_DEBUG("expand %p from %lu to %lu elements", dynar, old_size, new_size);
-
-    dynar->size = new_size;
-    dynar->data = new_data;
+    _xbt_dynar_resize(dynar, (nb > expand ? nb : expand));
+    XBT_DEBUG("expand %p from %lu to %lu elements",
+              dynar, old_size, dynar->size);
   }
 }
 
@@ -271,15 +271,8 @@ XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
  */
 void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
 {
-  unsigned long size_wanted;
-
   _dynar_lock(dynar);
-
-  size_wanted = dynar->used + empty_slots_wanted;
-  if (size_wanted != dynar->size) {
-    dynar->size = size_wanted;
-    dynar->data = xbt_realloc(dynar->data, dynar->elmsize * dynar->size);
-  }
+  _xbt_dynar_resize(dynar, dynar->used + empty_slots_wanted);
   _dynar_unlock(dynar);
 }
 
