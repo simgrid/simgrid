@@ -360,8 +360,10 @@ static XBT_INLINE void *_xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
 
   if (idx >= dynar->used) {
     _xbt_dynar_expand(dynar, idx + 1);
-    memset(((char * const)dynar->data) + dynar->used * dynar->elmsize, 0,
-           (idx + 1 - dynar->used)*dynar->elmsize);
+    if (idx > dynar->used) {
+      memset(_xbt_dynar_elm(dynar, dynar->used), 0,
+             (idx - dynar->used) * dynar->elmsize);
+    }
     dynar->used = idx + 1;
   }
   return _xbt_dynar_elm(dynar, idx);
