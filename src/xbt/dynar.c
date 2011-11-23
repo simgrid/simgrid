@@ -388,10 +388,9 @@ XBT_INLINE void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
                    (idx + 1 - dynar->used)*dynar->elmsize);
     dynar->used = idx + 1;
   }
-  
-  _dynar_unlock(dynar);
-
   res = _xbt_dynar_elm(dynar, idx);
+
+  _dynar_unlock(dynar);
 
   return res;
 }
