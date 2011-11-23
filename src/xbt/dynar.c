@@ -97,8 +97,6 @@ static XBT_INLINE
 
     XBT_DEBUG("expand %p from %lu to %lu elements", dynar, old_size, new_size);
 
-    _xbt_clear_mem((char *)new_data + old_length, new_length - old_length);
-
     dynar->size = new_size;
     dynar->data = new_data;
   }
