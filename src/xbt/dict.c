@@ -32,7 +32,7 @@ static void dict_mallocator_reset_f(void *dict);
 /**
  * \brief Constructor
  * \return pointer to the destination
- * \see xbt_dict_new_ext(), xbt_dict_free()
+ * \see xbt_dict_free()
  *
  * Creates and initialize a new dictionary with a default hashtable size.
  */
