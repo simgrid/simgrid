@@ -729,7 +729,7 @@ static void ptask_parse_link_init(sg_platf_link_cbarg_t link)
                                link->properties);
     xbt_free(link_id);
     link_id = bprintf("%s_DOWN", link->id);
-    ptask_link_create_resource(bprintf("%s_DOWN", link->id),
+    ptask_link_create_resource(link_id,
                                link->bandwidth,
                                link->bandwidth_trace,
                                link->latency,
