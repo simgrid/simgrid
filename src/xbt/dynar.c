@@ -75,12 +75,6 @@ static XBT_INLINE void _check_populated_dynar(xbt_dynar_t dynar)
 static void _dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op);
 
 static XBT_INLINE
-    void _xbt_clear_mem(void *const ptr, const unsigned long length)
-{
-  memset(ptr, 0, length);
-}
-
-static XBT_INLINE
 void _xbt_dynar_resize(xbt_dynar_t dynar, unsigned long new_size)
 {
   if (new_size != dynar->size) {
@@ -366,8 +360,8 @@ static XBT_INLINE void *_xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
 
   if (idx >= dynar->used) {
     _xbt_dynar_expand(dynar, idx + 1);
-    _xbt_clear_mem(((char * const)dynar->data) + dynar->used * dynar->elmsize,
-                   (idx + 1 - dynar->used)*dynar->elmsize);
+    memset(((char * const)dynar->data) + dynar->used * dynar->elmsize, 0,
+           (idx + 1 - dynar->used)*dynar->elmsize);
     dynar->used = idx + 1;
   }
   return _xbt_dynar_elm(dynar, idx);
