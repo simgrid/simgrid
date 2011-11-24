@@ -473,8 +473,8 @@ xbt_log_layout_t xbt_log_default_layout = NULL; /* set in log_init */
 
 typedef struct {
   char *catname;
-  e_xbt_log_priority_t thresh;
   char *fmt;
+  e_xbt_log_priority_t thresh;
   int additivity;
   xbt_log_appender_t appender;
 } s_xbt_log_setting_t, *xbt_log_setting_t;

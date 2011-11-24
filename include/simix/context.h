@@ -74,11 +74,11 @@ extern smx_context_t smx_current_context;
 typedef struct s_smx_context {
   s_xbt_swag_hookup_t hookup;
   xbt_main_func_t code;
-  int argc;
-  char **argv;
   void_pfn_smxprocess_t cleanup_func;
-  int iwannadie:1;
   void *data;   /* Here SIMIX stores the smx_process_t containing the context */
+  char **argv;
+  int argc;
+  int iwannadie:1;
 } s_smx_ctx_base_t;
 
 /* methods of this class */
