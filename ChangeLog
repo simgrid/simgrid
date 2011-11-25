@@ -75,6 +75,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     create homogeneous dictionaries, where all the elements share the
     same free function. Non homogeneous dictionaries will be
     deprecated in the next release.
+  * Dicts: dicts of scalar elements (xbt_dicti_*) are deprecated.
   * mmalloc module:
     - cleanups and simplifications to make it maintainable again
     - exotic features (such as memalign and valloc) were removed

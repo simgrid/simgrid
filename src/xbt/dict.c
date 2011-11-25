@@ -495,6 +495,7 @@ XBT_INLINE void xbt_dict_remove(xbt_dict_t dict, const char *key)
   xbt_dict_remove_ext(dict, key, strlen(key));
 }
 
+#ifdef XBT_USE_DEPRECATED
 /**
  * \brief Add data to the dict (arbitrary key)
  * \param dict the container
@@ -529,7 +530,7 @@ XBT_INLINE void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key)
 {
   xbt_dict_remove_ext(dict, (void *)&key, sizeof key);
 }
-
+#endif
 
 /**
  * \brief Remove all data from the dict
@@ -1123,6 +1124,7 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
   xbt_dict_free(&head);
 }
 
+#ifdef XBT_USE_DEPRECATED
 static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data)
 {
   uintptr_t stored_data = 0;
@@ -1138,9 +1140,11 @@ static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data)
                    "Retrieved data (%zu) is not what I just stored (%zu) under key %zu",
                    stored_data, data, key);
 }
+#endif
 
 XBT_TEST_UNIT("dicti", test_dict_scalar, "Scalar data and key management")
 {
+#if XBT_USE_DEPRECATED
   xbt_test_add("Fill in the dictionnary");
 
   head = xbt_dict_new();
@@ -1163,6 +1167,7 @@ XBT_TEST_UNIT("dicti", test_dict_scalar, "Scalar data and key management")
   debuged_addi(head, 0, 0);
 
   xbt_dict_free(&head);
+#endif
 }
 
 #define NB_ELM 20000

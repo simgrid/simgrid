@@ -91,12 +91,12 @@ XBT_PUBLIC(void *) xbt_dict_get_or_null_ext(xbt_dict_t dict,
 XBT_PUBLIC(void) xbt_dict_remove_ext(xbt_dict_t dict, const char *key,
                                      int key_len);
 
-
+#ifdef XBT_USE_DEPRECATED
 XBT_PUBLIC(void) xbt_dicti_set(xbt_dict_t dict, uintptr_t key,
                                uintptr_t data);
 XBT_PUBLIC(uintptr_t) xbt_dicti_get(xbt_dict_t dict, uintptr_t key);
 XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
-
+#endif
 
 /** @} */
 /** @defgroup XBT_dict_curs Cursors on dictionaries
