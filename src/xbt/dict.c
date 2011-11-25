@@ -751,39 +751,41 @@ static void print_str(void *str)
 }
 
 static void debuged_add_ext(xbt_dict_t head, const char *key,
-                            const char *data_to_fill)
+                            const char *data_to_fill, void_f_pvoid_t free_f)
 {
   char *data = xbt_strdup(data_to_fill);
 
   xbt_test_log("Add %s under %s", PRINTF_STR(data_to_fill),
                 PRINTF_STR(key));
 
-  xbt_dict_set(head, key, data, &free);
+  xbt_dict_set(head, key, data, free_f);
   if (XBT_LOG_ISENABLED(xbt_dict, xbt_log_priority_debug)) {
     xbt_dict_dump(head, (void (*)(void *)) &printf);
     fflush(stdout);
   }
 }
 
-static void debuged_add(xbt_dict_t head, const char *key)
+static void debuged_add(xbt_dict_t head, const char *key, void_f_pvoid_t free_f)
 {
-  debuged_add_ext(head, key, key);
+  debuged_add_ext(head, key, key, free_f);
 }
 
-static void fill(xbt_dict_t * head)
+static void fill(xbt_dict_t * head, int homogeneous)
 {
+  void_f_pvoid_t free_f = homogeneous ? NULL : &free;
+
   xbt_test_add("Fill in the dictionnary");
 
-  *head = xbt_dict_new();
-  debuged_add(*head, "12");
-  debuged_add(*head, "12a");
-  debuged_add(*head, "12b");
-  debuged_add(*head, "123");
-  debuged_add(*head, "123456");
+  *head = homogeneous ? xbt_dict_new_homogeneous(&free) : xbt_dict_new();
+  debuged_add(*head, "12", free_f);
+  debuged_add(*head, "12a", free_f);
+  debuged_add(*head, "12b", free_f);
+  debuged_add(*head, "123", free_f);
+  debuged_add(*head, "123456", free_f);
   /* Child becomes child of what to add */
-  debuged_add(*head, "1234");
+  debuged_add(*head, "1234", free_f);
   /* Need of common ancestor */
-  debuged_add(*head, "123457");
+  debuged_add(*head, "123457", free_f);
 }
 
 
@@ -912,14 +914,15 @@ xbt_ex_t e;
 xbt_dict_t head = NULL;
 char *data;
 
-
-XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse")
+static void basic_test(int homogeneous)
 {
+  void_f_pvoid_t free_f;
+
   xbt_test_add("Traversal the null dictionary");
   traverse(head);
 
   xbt_test_add("Traversal and search the empty dictionary");
-  head = xbt_dict_new();
+  head = homogeneous ? xbt_dict_new_homogeneous(&free) : xbt_dict_new();
   traverse(head);
   TRY {
     debuged_remove(head, "12346");
@@ -931,11 +934,13 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse
   }
   xbt_dict_free(&head);
 
+  free_f = homogeneous ? NULL : &free;
+
   xbt_test_add("Traverse the full dictionary");
-  fill(&head);
+  fill(&head, homogeneous);
   count_check_get_key(head, 7);
 
-  debuged_add_ext(head, "toto", "tutu");
+  debuged_add_ext(head, "toto", "tutu", free_f);
   search_ext(head, "toto", "tutu");
   debuged_remove(head, "toto");
 
@@ -947,22 +952,22 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse
   xbt_dict_free(&head);
 
   /* CHANGING */
-  fill(&head);
+  fill(&head, homogeneous);
   count_check_get_key(head, 7);
   xbt_test_add("Change 123 to 'Changed 123'");
-  xbt_dict_set(head, "123", strdup("Changed 123"), &free);
+  xbt_dict_set(head, "123", strdup("Changed 123"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 123 back to '123'");
-  xbt_dict_set(head, "123", strdup("123"), &free);
+  xbt_dict_set(head, "123", strdup("123"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 12a to 'Dummy 12a'");
-  xbt_dict_set(head, "12a", strdup("Dummy 12a"), &free);
+  xbt_dict_set(head, "12a", strdup("Dummy 12a"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 12a to '12a'");
-  xbt_dict_set(head, "12a", strdup("12a"), &free);
+  xbt_dict_set(head, "12a", strdup("12a"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Traverse the resulting dictionary");
@@ -998,9 +1003,19 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse
   traverse(head);
 }
 
-XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
+XBT_TEST_UNIT("basic (heterogeneous)", test_dict_basic_heterogeneous, "Basic usage: change, retrieve, traverse: heterogeneous dictionary")
 {
-  fill(&head);
+  basic_test(0);
+}
+
+XBT_TEST_UNIT("basic (homogeneous)", test_dict_basic_homogeneous, "Basic usage: change, retrieve, traverse: homogeneous dictionary")
+{
+  basic_test(1);
+}
+
+static void remove_test(int homogeneous)
+{
+  fill(&head, homogeneous);
   count(head, 7);
   xbt_test_add("Remove non existing data");
   TRY {
@@ -1017,7 +1032,7 @@ XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
 
   xbt_test_add
       ("Remove each data manually (traversing the resulting dictionary each time)");
-  fill(&head);
+  fill(&head, homogeneous);
   debuged_remove(head, "12a");
   traverse(head);
   count(head, 6);
@@ -1058,7 +1073,7 @@ XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
   xbt_test_add
       ("Free dict, create new fresh one, and then reset the dict");
   xbt_dict_free(&head);
-  fill(&head);
+  fill(&head, homogeneous);
   xbt_dict_reset(head);
   count(head, 0);
   traverse(head);
@@ -1068,9 +1083,19 @@ XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
   xbt_dict_free(&head);
 }
 
+XBT_TEST_UNIT("remove (heterogeneous)", test_dict_remove_heterogeneous, "Removing some values: heterogeneous dictionary")
+{
+  remove_test(0);
+}
+
+XBT_TEST_UNIT("remove (homogeneous)", test_dict_remove_homogeneous, "Removing some values: homogeneous dictionary")
+{
+  remove_test(1);
+}
+
 XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
 {
-  fill(&head);
+  fill(&head, 1);
 
   xbt_test_add("Store NULL under 'null'");
   xbt_dict_set(head, "null", NULL, NULL);
