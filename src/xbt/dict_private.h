@@ -17,11 +17,11 @@
 #include "xbt/dict.h"
 #include "xbt/mallocator.h"
 
-typedef struct xbt_dictelm_ *xbt_dictelm_t;
+typedef struct s_xbt_dictelm *xbt_dictelm_t;
 
 #define MAX_FILL_PERCENT 80
 
-typedef struct xbt_dictelm_ {
+typedef struct s_xbt_dictelm {
   int dictielem:1;
   char *key;
   int key_len;
@@ -33,14 +33,14 @@ typedef struct xbt_dictelm_ {
   xbt_dictelm_t next;
 } s_xbt_dictelm_t;
 
-typedef struct xbt_dict_ {
+typedef struct s_xbt_dict {
   xbt_dictelm_t *table;
   int table_size;
   int count;
   int fill;
 } s_xbt_dict_t;
 
-typedef struct xbt_dict_cursor_ s_xbt_dict_cursor_t;
+typedef struct s_xbt_dict_cursor s_xbt_dict_cursor_t;
 
 extern xbt_mallocator_t dict_elm_mallocator;
 extern void *dict_elm_mallocator_new_f(void);
