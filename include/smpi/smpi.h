@@ -71,6 +71,7 @@ typedef struct {
 } MPI_Status;
 
 #define MPI_STATUS_IGNORE NULL
+#define MPI_STATUSES_IGNORE NULL
 
 #define MPI_DATATYPE_NULL NULL
 extern MPI_Datatype MPI_CHAR;

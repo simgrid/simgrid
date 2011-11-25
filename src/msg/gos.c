@@ -499,7 +499,7 @@ msg_comm_t MSG_task_irecv(m_task_t *task, const char *name)
 
   if (*task)
     XBT_CRITICAL
-        ("MSG_task_get() was asked to write in a non empty task struct.");
+        ("MSG_task_irecv() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
   msg_comm_t comm = xbt_new0(s_msg_comm_t, 1);
