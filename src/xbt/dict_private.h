@@ -1,7 +1,7 @@
 /* dict_elm - elements of generic dictionnaries                             */
 /* This file is not to be loaded from anywhere but dict.c                   */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -22,7 +22,6 @@ typedef struct s_xbt_dictelm *xbt_dictelm_t;
 #define MAX_FILL_PERCENT 80
 
 typedef struct s_xbt_dictelm {
-  int dictielem:1;
   char *key;
   int key_len;
   unsigned int hash_code;
@@ -51,8 +50,6 @@ extern void *dict_elm_mallocator_new_f(void);
 xbt_dictelm_t xbt_dictelm_new(const char *key, int key_len,
                               unsigned int hash_code, void *content,
                               void_f_pvoid_t free_f);
-xbt_dictelm_t xbt_dictielm_new(uintptr_t key, unsigned int hash_code,
-                               uintptr_t content);
 void xbt_dictelm_free(xbt_dictelm_t element);
 
 #endif                          /* _XBT_DICT_PRIVATE_H_ */

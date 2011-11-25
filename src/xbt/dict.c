@@ -490,45 +490,7 @@ XBT_INLINE void xbt_dict_remove(xbt_dict_t dict, const char *key)
 XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
                               uintptr_t key, uintptr_t data)
 {
-
-  unsigned int hash_code =
-      xbt_dict_hash_ext((void *) &key, sizeof(uintptr_t));
-
-  xbt_dictelm_t current, previous = NULL;
-  xbt_assert(dict);
-
-  XBT_DEBUG("ADD %zu->%zu; hash = %d, size = %d, & = %d", key, data,
-         hash_code, dict->table_size, hash_code & dict->table_size);
-  current = dict->table[hash_code & dict->table_size];
-  while (current != NULL &&
-         (hash_code != current->hash_code
-          || sizeof(uintptr_t) != current->key_len
-          || (((uintptr_t) key) != ((uintptr_t) current->key)))) {
-    previous = current;
-    current = current->next;
-  }
-
-  if (current == NULL) {
-    /* this key doesn't exist yet */
-    current = xbt_dictielm_new(key, hash_code, data);
-    dict->count++;
-    if (previous == NULL) {
-      dict->table[hash_code & dict->table_size] = current;
-      dict->fill++;
-      if ((dict->fill * 100) / (dict->table_size + 1) > MAX_FILL_PERCENT)
-        xbt_dict_rehash(dict);
-    } else {
-      previous->next = current;
-    }
-  } else {
-
-    /* there is already an element with the same key: overwrite it */
-    if (current->content != NULL && current->free_f != NULL) {
-      current->free_f(current->content);
-    }
-    current->content = (void *) data;
-    current->free_f = NULL;
-  }
+  xbt_dict_set_ext(dict, (void *)&key, sizeof key, (void*)data, NULL);
 }
 
 /**
@@ -542,59 +504,13 @@ XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
  */
 XBT_INLINE uintptr_t xbt_dicti_get(xbt_dict_t dict, uintptr_t key)
 {
-
-  unsigned int hash_code =
-      xbt_dict_hash_ext(((void *) &key), sizeof(uintptr_t));
-  xbt_dictelm_t current;
-
-  xbt_assert(dict);
-
-  current = dict->table[hash_code & dict->table_size];
-  while (current != NULL &&
-         (hash_code != current->hash_code
-          || sizeof(uintptr_t) != current->key_len
-          || (((uintptr_t) key) != ((uintptr_t) current->key)))) {
-    current = current->next;
-  }
-
-  if (current == NULL)
-    return 0;
-
-  return (uintptr_t) (current->content);
+  return (uintptr_t)xbt_dict_get_or_null_ext(dict, (void *)&key, sizeof key);
 }
 
 /** Remove a uintptr_t key from the dict */
 XBT_INLINE void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key)
 {
-
-  unsigned int hash_code =
-      xbt_dict_hash_ext(((void *) &key), sizeof(uintptr_t));
-  xbt_dictelm_t current, previous = NULL;
-
-
-  current = dict->table[hash_code & dict->table_size];
-  while (current != NULL &&
-         (hash_code != current->hash_code
-          || sizeof(uintptr_t) != current->key_len
-          || (((uintptr_t) key) != ((uintptr_t) current->key)))) {
-    previous = current;         /* save the previous node */
-    current = current->next;
-  }
-
-  if (current == NULL)
-    THROWF(not_found_error, 0, "key %zu not found", key);
-
-  if (previous != NULL) {
-    previous->next = current->next;
-  } else {
-    dict->table[hash_code & dict->table_size] = current->next;
-  }
-
-  if (!dict->table[hash_code & dict->table_size])
-    dict->fill--;
-
-  xbt_dictelm_free(current);
-  dict->count--;
+  xbt_dict_remove_ext(dict, (void *)&key, sizeof key);
 }
 
 
