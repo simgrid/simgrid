@@ -67,7 +67,7 @@ void xbt_dict_free(xbt_dict_t * dict)
       while (current != NULL) {
         previous = current;
         current = current->next;
-        xbt_dictelm_free(previous);
+        xbt_dictelm_free(*dict, previous);
         (*dict)->count--;
       }
     }
@@ -244,7 +244,7 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
 
   if (current == NULL) {
     /* this key doesn't exist yet */
-    current = xbt_dictelm_new(key, key_len, hash_code, data, free_ctn);
+    current = xbt_dictelm_new(dict, key, key_len, hash_code, data, free_ctn);
     dict->count++;
     if (previous == NULL) {
       dict->table[hash_code & dict->table_size] = current;
@@ -461,7 +461,7 @@ XBT_INLINE void xbt_dict_remove_ext(xbt_dict_t dict, const char *key,
   if (!dict->table[hash_code & dict->table_size])
     dict->fill--;
 
-  xbt_dictelm_free(current);
+  xbt_dictelm_free(dict, current);
   dict->count--;
 }
 
@@ -536,7 +536,7 @@ void xbt_dict_reset(xbt_dict_t dict)
     while (current != NULL) {
       previous = current;
       current = current->next;
-      xbt_dictelm_free(previous);
+      xbt_dictelm_free(dict, previous);
     }
     dict->table[i] = NULL;
   }

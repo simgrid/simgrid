@@ -23,10 +23,9 @@ XBT_LOG_NEW_SUBCATEGORY(xbt_dict_collapse, xbt_dict,
 
 xbt_mallocator_t dict_elm_mallocator = NULL;
 
-xbt_dictelm_t xbt_dictelm_new(const char *key,
-                              int key_len,
-                              unsigned int hash_code,
-                              void *content, void_f_pvoid_t free_f)
+xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len,
+                              unsigned int hash_code, void *content,
+                              void_f_pvoid_t free_f)
 {
   xbt_dictelm_t element = xbt_mallocator_get(dict_elm_mallocator);
 
@@ -44,7 +43,7 @@ xbt_dictelm_t xbt_dictelm_new(const char *key,
   return element;
 }
 
-void xbt_dictelm_free(xbt_dictelm_t element)
+void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element)
 {
   if (element != NULL) {
     xbt_free(element->key);
