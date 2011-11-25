@@ -255,16 +255,11 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
       previous->next = current;
     }
   } else {
-
     XBT_DEBUG("Replace %.*s by %.*s under key %.*s",
            key_len, (char *) current->content,
            key_len, (char *) data, key_len, (char *) key);
     /* there is already an element with the same key: overwrite it */
-    if (current->content != NULL && current->free_f != NULL) {
-      current->free_f(current->content);
-    }
-    current->content = data;
-    current->free_f = free_ctn;
+    xbt_dictelm_set_data(dict, current, data, free_ctn);
   }
 }
 

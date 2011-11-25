@@ -56,6 +56,16 @@ void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element)
   }
 }
 
+void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element,
+                          void *data, void_f_pvoid_t free_ctn)
+{
+  if (element->free_f && element->content)
+    element->free_f(element->content);
+
+  element->content = data;
+  element->free_f = free_ctn;
+}
+
 void *dict_elm_mallocator_new_f(void)
 {
   return xbt_new(s_xbt_dictelm_t, 1);

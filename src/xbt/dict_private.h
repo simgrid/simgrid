@@ -53,5 +53,7 @@ xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len,
                               unsigned int hash_code, void *content,
                               void_f_pvoid_t free_f);
 void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element);
+void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element,
+                          void *data, void_f_pvoid_t free_ctn);
 
 #endif                          /* _XBT_DICT_PRIVATE_H_ */
