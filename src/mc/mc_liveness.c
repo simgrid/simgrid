@@ -42,7 +42,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 	//XBT_DEBUG("Different start addr of heap (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
       return 1;
       }
-      if(mmalloc_compare_heap(s1->regions[i]->start_addr, s2->regions[i]->start_addr)){
+      if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data)){
 	//XBT_DEBUG("Different heap (mmalloc_compare)");
 	errors++; 
       }
