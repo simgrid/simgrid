@@ -130,7 +130,7 @@ gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe,
 #include "xbt/mallocator.h"
 extern xbt_mallocator_t gras_msg_ctx_mallocator;
 void *gras_msg_ctx_mallocator_new_f(void);
-void gras_msg_ctx_mallocator_free_f(void *dict);
+#define gras_msg_ctx_mallocator_free_f xbt_free_f
 void gras_msg_ctx_mallocator_reset_f(void *dict);
 
 

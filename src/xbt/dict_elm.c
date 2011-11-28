@@ -81,13 +81,3 @@ void *dict_elm_mallocator_new_f(void)
 {
   return xbt_new(s_xbt_dictelm_t, 1);
 }
-
-void dict_elm_mallocator_free_f(void *elem)
-{
-  xbt_free(elem);
-}
-
-void dict_elm_mallocator_reset_f(void *elem)
-{
-
-}

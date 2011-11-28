@@ -146,12 +146,3 @@ e_SD_link_sharing_policy_t SD_link_get_sharing_policy(SD_link_t link)
 {
   return link->sharing_policy;
 }
-
-
-/* Destroys a link.
- */
-void __SD_link_destroy(void *link)
-{
-  /* link->surf_link is freed by surf_exit and link->data is freed by the user */
-  xbt_free(link);
-}

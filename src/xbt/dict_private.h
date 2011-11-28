@@ -44,8 +44,8 @@ typedef struct xbt_dict_cursor_ s_xbt_dict_cursor_t;
 
 extern xbt_mallocator_t dict_elm_mallocator;
 extern void *dict_elm_mallocator_new_f(void);
-extern void dict_elm_mallocator_free_f(void *elem);
-extern void dict_elm_mallocator_reset_f(void *elem);
+#define dict_elm_mallocator_free_f xbt_free_f
+#define dict_elm_mallocator_reset_f ((void_f_pvoid_t)NULL)
 
 /*####[ Function prototypes ]################################################*/
 xbt_dictelm_t xbt_dictelm_new(const char *key, int key_len,
