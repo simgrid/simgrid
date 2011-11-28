@@ -11,6 +11,9 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     tasks that are finished and should constitute the return value of
     SD_simulate.
 
+  XBT:
+  * Mallocators: allow value NULL for the reset function.
+
   -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.6.2) stable; urgency=low

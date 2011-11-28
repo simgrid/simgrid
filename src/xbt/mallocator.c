@@ -35,7 +35,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
  * in \a xbt_mallocator_release() when the stack is full, and when
  * the mallocator is freed.
  * \param reset_f function to reinitialise an object of your datatype, called
- * when you extract an object from the mallocator
+ * when you extract an object from the mallocator (can be NULL)
  *
  * Create and initialize a new mallocator for a given datatype.
  *
@@ -50,8 +50,7 @@ xbt_mallocator_t xbt_mallocator_new(int size,
   xbt_mallocator_t m;
 
   xbt_assert(size > 0, "size must be positive");
-  xbt_assert(new_f != NULL && free_f != NULL
-              && reset_f != NULL, "invalid parameter");
+  xbt_assert(new_f != NULL && free_f != NULL, "invalid parameter");
 
   m = xbt_new0(s_xbt_mallocator_t, 1);
   XBT_VERB("Create mallocator %p", m);
@@ -108,7 +107,7 @@ void xbt_mallocator_free(xbt_mallocator_t m)
  * If the mallocator is empty, a new object is created,
  * by calling the function new_f().
  *
- * In both cases, the function reset_f() is called on the object.
+ * In both cases, the function reset_f() (if defined) is called on the object.
  *
  * \see xbt_mallocator_release()
  */
@@ -138,7 +137,8 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
     object = m->new_f();
   }
 
-  m->reset_f(object);
+  if (m->reset_f)
+    m->reset_f(object);
   return object;
 }
 
