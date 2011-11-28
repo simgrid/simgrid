@@ -171,7 +171,9 @@ void smpi_bench_end(void)
 
 unsigned int smpi_sleep(unsigned int secs)
 {
+  smpi_bench_end();
   smpi_execute((double) secs);
+  smpi_bench_begin();
   return secs;
 }
 
