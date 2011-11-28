@@ -32,10 +32,12 @@ xbt_dict_t xbt_dict_new(void)
   xbt_dict_t dict;
 
   dict = xbt_new(s_xbt_dict_t, 1);
+  dict->free_f = NULL;
   dict->table_size = 127;
   dict->table = xbt_new0(xbt_dictelm_t, dict->table_size + 1);
   dict->count = 0;
   dict->fill = 0;
+  dict->homogeneous = 0;
 
   return dict;
 }

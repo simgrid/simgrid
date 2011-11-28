@@ -33,10 +33,12 @@ typedef struct s_xbt_dictelm {
 } s_xbt_dictelm_t;
 
 typedef struct s_xbt_dict {
+  void_f_pvoid_t free_f;
   xbt_dictelm_t *table;
   int table_size;
   int count;
   int fill;
+  int homogeneous;
 } s_xbt_dict_t;
 
 typedef struct s_xbt_dict_cursor s_xbt_dict_cursor_t;
