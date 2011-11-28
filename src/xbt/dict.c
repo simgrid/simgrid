@@ -1124,52 +1124,6 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
   xbt_dict_free(&head);
 }
 
-#ifdef XBT_USE_DEPRECATED
-static void debuged_addi(xbt_dict_t head, uintptr_t key, uintptr_t data)
-{
-  uintptr_t stored_data = 0;
-  xbt_test_log("Add %zu under %zu", data, key);
-
-  xbt_dicti_set(head, key, data);
-  if (XBT_LOG_ISENABLED(xbt_dict, xbt_log_priority_debug)) {
-    xbt_dict_dump(head, (void (*)(void *)) &printf);
-    fflush(stdout);
-  }
-  stored_data = xbt_dicti_get(head, key);
-  xbt_test_assert(stored_data == data,
-                   "Retrieved data (%zu) is not what I just stored (%zu) under key %zu",
-                   stored_data, data, key);
-}
-#endif
-
-XBT_TEST_UNIT("dicti", test_dict_scalar, "Scalar data and key management")
-{
-#if XBT_USE_DEPRECATED
-  xbt_test_add("Fill in the dictionnary");
-
-  head = xbt_dict_new();
-  debuged_addi(head, 12, 12);
-  debuged_addi(head, 13, 13);
-  debuged_addi(head, 14, 14);
-  debuged_addi(head, 15, 15);
-  /* Change values */
-  debuged_addi(head, 12, 15);
-  debuged_addi(head, 15, 2000);
-  debuged_addi(head, 15, 3000);
-  /* 0 as key */
-  debuged_addi(head, 0, 1000);
-  debuged_addi(head, 0, 2000);
-  debuged_addi(head, 0, 3000);
-  /* 0 as value */
-  debuged_addi(head, 12, 0);
-  debuged_addi(head, 13, 0);
-  debuged_addi(head, 12, 0);
-  debuged_addi(head, 0, 0);
-
-  xbt_dict_free(&head);
-#endif
-}
-
 #define NB_ELM 20000
 #define SIZEOFKEY 1024
 static int countelems(xbt_dict_t head)
