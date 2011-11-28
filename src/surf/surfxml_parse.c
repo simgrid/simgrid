@@ -257,7 +257,7 @@ void STag_surfxml_host(void){
   memset(&host,0,sizeof(host));
 
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
-  host.properties = current_property_set = xbt_dict_new();
+  host.properties = current_property_set = xbt_dict_new_homogeneous(xbt_free_f);
 
 	host.id = A_surfxml_host_id;
 	host.power_peak = get_cpu_power(A_surfxml_host_power);
@@ -367,7 +367,7 @@ void STag_surfxml_link(void){
   memset(&link,0,sizeof(link));
 
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
-  link.properties = current_property_set = xbt_dict_new();
+  link.properties = current_property_set = xbt_dict_new_homogeneous(xbt_free_f);
 
 	link.id = A_surfxml_link_id;
 	link.bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
@@ -443,7 +443,7 @@ void STag_surfxml_bypassRoute(void){
 void STag_surfxml_config(void){
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
-  current_property_set = xbt_dict_new();
+  current_property_set = xbt_dict_new_homogeneous(xbt_free_f);
 
 }
 void ETag_surfxml_config(void){
@@ -572,9 +572,9 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
 void parse_properties(void)
 {
   if (!current_property_set)
-      current_property_set = xbt_dict_new();      // Maybe, it should raise an error
+    current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
 
-  xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), free);
+  xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
 }
 
 

@@ -261,7 +261,7 @@ static void _amok_pm_join(void *p)
   mod->groups = NULL;
 
   mod->done = 0;
-  mod->groups = xbt_dict_new();
+  mod->groups = xbt_dict_new_homogeneous(NULL);
 
   /* callbacks */
   gras_cb_register("amok_pm_kill", &amok_pm_cb_kill);

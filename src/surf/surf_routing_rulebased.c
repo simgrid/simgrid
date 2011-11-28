@@ -74,8 +74,7 @@ static void model_rulebased_parse_PU(AS_t rc, const char *name)
 static void model_rulebased_parse_AS(AS_t rc, const char *name)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
-  xbt_dict_set(routing->dict_autonomous_systems, name, (void *) (-1),
-               NULL);
+  xbt_dict_set(routing->dict_autonomous_systems, name, (void *) (-1), NULL);
 }
 
 static void model_rulebased_parse_route(AS_t rc,
@@ -397,8 +396,8 @@ AS_t model_rulebased_create(void) {
   new_component->generic_routing.get_bypass_route = rulebased_get_bypass_route;
   new_component->generic_routing.finalize = rulebased_finalize;
   /* initialization of internal structures */
-  new_component->dict_processing_units = xbt_dict_new();
-  new_component->dict_autonomous_systems = xbt_dict_new();
+  new_component->dict_processing_units = xbt_dict_new_homogeneous(NULL);
+  new_component->dict_autonomous_systems = xbt_dict_new_homogeneous(NULL);
   new_component->list_route = xbt_dynar_new(sizeof(rule_route_t), &rule_route_free);
   new_component->list_ASroute =
       xbt_dynar_new(sizeof(rule_route_extended_t),

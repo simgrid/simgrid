@@ -98,7 +98,7 @@ static XBT_INLINE void gras_dd_alloc_ref(xbt_dict_t refs, long int size, char **
            *(void **) r_ref);
 
     if (detect_cycle)
-      xbt_dict_set_ext(refs, (const char *) r_ref, r_len, ptr, xbt_free_f);
+      xbt_dict_set_ext(refs, (const char *) r_ref, r_len, ptr, NULL);
   }
 }
 
@@ -395,7 +395,7 @@ int gras_datadesc_memcpy(gras_datadesc_type_t type, void *src, void *dst)
          dst);
   if (!state) {
     state = gras_cbps_new();
-    refs = xbt_dict_new();
+    refs = xbt_dict_new_homogeneous(xbt_free_f);
   }
 
   TRY {
@@ -638,7 +638,7 @@ void gras_datadesc_send(gras_socket_t sock,
 
   if (!state) {
     state = gras_cbps_new();
-    refs = xbt_dict_new();
+    refs = xbt_dict_new_homogeneous(NULL);
   }
 
   TRY {
@@ -976,7 +976,7 @@ gras_datadesc_recv(gras_socket_t sock,
 
   if (!state) {
     state = gras_cbps_new();
-    refs = xbt_dict_new();
+    refs = xbt_dict_new_homogeneous(xbt_free_f);
   }
 
   xbt_assert(type, "called with NULL type descriptor");

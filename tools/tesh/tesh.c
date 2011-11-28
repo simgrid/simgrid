@@ -183,12 +183,12 @@ static void parse_environ()
   int i;
   char *eq = NULL;
   char *key = NULL;
-  env = xbt_dict_new();
+  env = xbt_dict_new_homogeneous(xbt_free_f);
   for (i = 0; environ[i]; i++) {
     p = environ[i];
     eq = strchr(p, '=');
     key = bprintf("%.*s", (int) (eq - p), p);
-    xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
+    xbt_dict_set(env, key, xbt_strdup(eq + 1), NULL);
     free(key);
   }
 }
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
       char *eq = strchr(argv[i+1], '=');
       xbt_assert(eq,"The argument of --setenv must contain a '=' (got %s instead)",argv[i+1]);
       char *key = bprintf("%.*s", (int) (eq - argv[i+1]), argv[i+1]);
-      xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
+      xbt_dict_set(env, key, xbt_strdup(eq + 1), NULL);
       XBT_INFO("setting environment variable '%s' to '%s'", key, eq+1);
       free(key);
       memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));

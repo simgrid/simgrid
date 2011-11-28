@@ -39,8 +39,8 @@ void gras_process_init()
   gras_procdata_init();
 
   /* initialize the host & process properties */
-  _host_properties = xbt_dict_new();
-  _process_properties = xbt_dict_new();
+  _host_properties = xbt_dict_new_homogeneous(xbt_free_f);
+  _process_properties = xbt_dict_new_homogeneous(xbt_free_f);
   env_iter = environ;
   while (*env_iter) {
     char *equal, *buf = xbt_strdup(*env_iter);
@@ -52,8 +52,7 @@ void gras_process_init()
       continue;
     }
     *equal = '\0';
-    xbt_dict_set(_process_properties, buf, xbt_strdup(equal + 1),
-                 xbt_free_f);
+    xbt_dict_set(_process_properties, buf, xbt_strdup(equal + 1), NULL);
     free(buf);
     env_iter++;
   }

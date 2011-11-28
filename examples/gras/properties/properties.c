@@ -43,8 +43,7 @@ int alice(int argc, char *argv[])
   XBT_INFO("== Trying to modify a process property");
   value = gras_process_property_value("new prop");
   xbt_assert(!value, "Property 'new prop' exists before I add it!");
-  xbt_dict_set(process_props, "new prop", xbt_strdup("new value"),
-               xbt_free_f);
+  xbt_dict_set(process_props, "new prop", xbt_strdup("new value"), NULL);
 
   /* Test if we have changed the value */
   value = gras_process_property_value("new prop");
@@ -78,7 +77,7 @@ int bob(int argc, char *argv[])
 
   XBT_INFO
       ("== Set a host property that alice will try to retrieve in SG (from bob->hello)");
-  xbt_dict_set(host_props, "from bob", xbt_strdup("hello"), xbt_free_f);
+  xbt_dict_set(host_props, "from bob", xbt_strdup("hello"), NULL);
 
   XBT_INFO("== Dump all the properties of host1 again to check the addition");
   xbt_dict_foreach(host_props, cursor, key, data)

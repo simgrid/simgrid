@@ -63,8 +63,8 @@ static void linkContainers (container_t father, container_t src, container_t dst
     if (xbt_dict_get_or_null (filter, aux2)) return;
 
     //ok, not found, register it
-    xbt_dict_set (filter, aux1, xbt_strdup ("1"), xbt_free);
-    xbt_dict_set (filter, aux2, xbt_strdup ("1"), xbt_free);
+    xbt_dict_set (filter, aux1, xbt_strdup ("1"), NULL);
+    xbt_dict_set (filter, aux2, xbt_strdup ("1"), NULL);
   }
 
   //declare type
@@ -73,7 +73,7 @@ static void linkContainers (container_t father, container_t src, container_t dst
   type_t link_type = getLinkType (link_typename, father->type, src->type, dst->type);
 
   //register EDGE types for triva configuration
-  xbt_dict_set (trivaEdgeTypes, link_type->name, xbt_strdup("1"), xbt_free);
+  xbt_dict_set (trivaEdgeTypes, link_type->name, xbt_strdup("1"), NULL);
 
   //create the link
   static long long counter = 0;
@@ -285,7 +285,7 @@ static void instr_routing_parse_end_platform ()
 {
   xbt_dynar_free(&currentContainer);
   currentContainer = NULL;
-  xbt_dict_t filter = xbt_dict_new ();
+  xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free);
   recursiveGraphExtraction (global_routing->root, getRootContainer(), filter);
   xbt_dict_free(&filter);
   platform_created = 1;
@@ -468,8 +468,8 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
 xbt_graph_t instr_routing_platform_graph (void)
 {
   xbt_graph_t ret = xbt_graph_new_graph (0, NULL);
-  xbt_dict_t nodes = xbt_dict_new ();
-  xbt_dict_t edges = xbt_dict_new ();
+  xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
+  xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
   recursiveXBTGraphExtraction (ret, nodes, edges, global_routing->root, getRootContainer());
   return ret;
 }

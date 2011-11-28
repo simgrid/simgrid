@@ -309,14 +309,14 @@ static void mytest(const char *input, const char *patterns,
   char *str;                    /*foreach */
   xbt_strbuff_t sb;             /* what we test */
 
-  p = xbt_dict_new();
+  p = xbt_dict_new_homogeneous(free);
   dyn_patterns = xbt_str_split(patterns, " ");
   xbt_dynar_foreach(dyn_patterns, cpt, str) {
     xbt_dynar_t keyvals = xbt_str_split(str, "=");
     char *key = xbt_dynar_get_as(keyvals, 0, char *);
     char *val = xbt_dynar_get_as(keyvals, 1, char *);
     xbt_str_subst(key, '_', ' ', 0);    // to put space in names without breaking the enclosing dynar_foreach
-    xbt_dict_set(p, key, xbt_strdup(val), free);
+    xbt_dict_set(p, key, xbt_strdup(val), NULL);
     xbt_dynar_free(&keyvals);
   }
   xbt_dynar_free(&dyn_patterns);

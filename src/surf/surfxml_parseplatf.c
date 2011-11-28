@@ -102,25 +102,25 @@ static void parse_Stag_trace_connect(void)
   case A_surfxml_trace_connect_kind_HOST_AVAIL:
     xbt_dict_set(trace_connect_list_host_avail,
                  A_surfxml_trace_connect_trace,
-                 xbt_strdup(A_surfxml_trace_connect_element), free);
+                 xbt_strdup(A_surfxml_trace_connect_element), NULL);
     break;
   case A_surfxml_trace_connect_kind_POWER:
     xbt_dict_set(trace_connect_list_power, A_surfxml_trace_connect_trace,
-                 xbt_strdup(A_surfxml_trace_connect_element), free);
+                 xbt_strdup(A_surfxml_trace_connect_element), NULL);
     break;
   case A_surfxml_trace_connect_kind_LINK_AVAIL:
     xbt_dict_set(trace_connect_list_link_avail,
                  A_surfxml_trace_connect_trace,
-                 xbt_strdup(A_surfxml_trace_connect_element), free);
+                 xbt_strdup(A_surfxml_trace_connect_element), NULL);
     break;
   case A_surfxml_trace_connect_kind_BANDWIDTH:
     xbt_dict_set(trace_connect_list_bandwidth,
                  A_surfxml_trace_connect_trace,
-                 xbt_strdup(A_surfxml_trace_connect_element), free);
+                 xbt_strdup(A_surfxml_trace_connect_element), NULL);
     break;
   case A_surfxml_trace_connect_kind_LATENCY:
     xbt_dict_set(trace_connect_list_latency, A_surfxml_trace_connect_trace,
-                 xbt_strdup(A_surfxml_trace_connect_element), free);
+                 xbt_strdup(A_surfxml_trace_connect_element), NULL);
     break;
   default:
     xbt_die("Cannot connect trace %s to %s: kind of trace unknown",
@@ -150,12 +150,12 @@ void parse_platform_file(const char *file)
   if (!surfxml_bufferstack_stack)
     surfxml_bufferstack_stack = xbt_dynar_new(sizeof(char *), NULL);
 
-  traces_set_list = xbt_dict_new();
-  trace_connect_list_host_avail = xbt_dict_new();
-  trace_connect_list_power = xbt_dict_new();
-  trace_connect_list_link_avail = xbt_dict_new();
-  trace_connect_list_bandwidth = xbt_dict_new();
-  trace_connect_list_latency = xbt_dict_new();
+  traces_set_list = xbt_dict_new_homogeneous(NULL);
+  trace_connect_list_host_avail = xbt_dict_new_homogeneous(free);
+  trace_connect_list_power = xbt_dict_new_homogeneous(free);
+  trace_connect_list_link_avail = xbt_dict_new_homogeneous(free);
+  trace_connect_list_bandwidth = xbt_dict_new_homogeneous(free);
+  trace_connect_list_latency = xbt_dict_new_homogeneous(free);
 
   surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
   surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);

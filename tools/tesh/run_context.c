@@ -361,7 +361,7 @@ void rctx_pushline(const char *filepos, char kind, char *line)
       int len = strlen("setenv ");
       char *eq = strchr(line + len, '=');
       char *key = bprintf("%.*s", (int) (eq - line - len), line + len);
-      xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
+      xbt_dict_set(env, key, xbt_strdup(eq + 1), NULL);
       free(key);
 
       rctx->env = realloc(rctx->env, ++(rctx->env_size) * sizeof(char *));
