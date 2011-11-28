@@ -27,10 +27,14 @@ typedef struct s_xbt_dictelm {
   unsigned int hash_code;
 
   void *content;
-  void_f_pvoid_t free_f;
 
   xbt_dictelm_t next;
 } s_xbt_dictelm_t;
+
+typedef struct s_xbt_het_dictelm {
+  s_xbt_dictelm_t element;
+  void_f_pvoid_t free_f;
+} s_xbt_het_dictelm_t, *xbt_het_dictelm_t;
 
 typedef struct s_xbt_dict {
   void_f_pvoid_t free_f;
@@ -47,6 +51,11 @@ extern xbt_mallocator_t dict_elm_mallocator;
 extern void *dict_elm_mallocator_new_f(void);
 #define dict_elm_mallocator_free_f xbt_free_f
 #define dict_elm_mallocator_reset_f ((void_f_pvoid_t)NULL)
+
+extern xbt_mallocator_t dict_het_elm_mallocator;
+extern void *dict_het_elm_mallocator_new_f(void);
+#define dict_het_elm_mallocator_free_f xbt_free_f
+#define dict_het_elm_mallocator_reset_f ((void_f_pvoid_t)NULL)
 
 /*####[ Function prototypes ]################################################*/
 xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len,

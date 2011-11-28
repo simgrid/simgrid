@@ -22,12 +22,14 @@ XBT_LOG_NEW_SUBCATEGORY(xbt_dict_collapse, xbt_dict,
                         "Dictionaries internals: post-removal cleanup");
 
 xbt_mallocator_t dict_elm_mallocator = NULL;
+xbt_mallocator_t dict_het_elm_mallocator = NULL;
 
 xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len,
                               unsigned int hash_code, void *content,
                               void_f_pvoid_t free_f)
 {
-  xbt_dictelm_t element = xbt_mallocator_get(dict_elm_mallocator);
+  xbt_het_dictelm_t het_element = xbt_mallocator_get(dict_het_elm_mallocator);
+  xbt_dictelm_t element = &het_element->element;
 
   element->key = xbt_new(char, key_len + 1);
   memcpy((void *) element->key, (void *) key, key_len);
@@ -37,7 +39,7 @@ xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len,
   element->hash_code = hash_code;
 
   element->content = content;
-  element->free_f = free_f;
+  het_element->free_f = free_f;
   element->next = NULL;
 
   return element;
@@ -46,27 +48,34 @@ xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len,
 void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element)
 {
   if (element != NULL) {
+    xbt_het_dictelm_t het_element = (xbt_het_dictelm_t)element;
     xbt_free(element->key);
 
-    if (element->free_f != NULL && element->content != NULL) {
-      element->free_f(element->content);
+    if (het_element->free_f != NULL && element->content != NULL) {
+      het_element->free_f(element->content);
     }
 
-    xbt_mallocator_release(dict_elm_mallocator, element);
+    xbt_mallocator_release(dict_het_elm_mallocator, het_element);
   }
 }
 
 void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element,
                           void *data, void_f_pvoid_t free_ctn)
 {
-  if (element->free_f && element->content)
-    element->free_f(element->content);
+  xbt_het_dictelm_t het_element = (xbt_het_dictelm_t)element;
+  if (het_element->free_f && element->content)
+    het_element->free_f(element->content);
 
   element->content = data;
-  element->free_f = free_ctn;
+  het_element->free_f = free_ctn;
 }
 
 void *dict_elm_mallocator_new_f(void)
 {
   return xbt_new(s_xbt_dictelm_t, 1);
+}
+
+void *dict_het_elm_mallocator_new_f(void)
+{
+  return xbt_new(s_xbt_het_dictelm_t, 1);
 }

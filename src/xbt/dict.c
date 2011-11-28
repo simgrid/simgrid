@@ -671,12 +671,17 @@ void xbt_dict_preinit(void)
   if (dict_elm_mallocator != NULL) {
     /* Already created. I guess we want to switch to MC mode, so kill the previously created mallocator */
     xbt_mallocator_free(dict_elm_mallocator);
+    xbt_mallocator_free(dict_het_elm_mallocator);
   }
 
   dict_elm_mallocator = xbt_mallocator_new(256,
                                            dict_elm_mallocator_new_f,
                                            dict_elm_mallocator_free_f,
                                            dict_elm_mallocator_reset_f);
+  dict_het_elm_mallocator = xbt_mallocator_new(256,
+                                               dict_het_elm_mallocator_new_f,
+                                               dict_het_elm_mallocator_free_f,
+                                               dict_het_elm_mallocator_reset_f);
 }
 
 /**
@@ -688,6 +693,8 @@ void xbt_dict_postexit(void)
   if (dict_elm_mallocator != NULL) {
     xbt_mallocator_free(dict_elm_mallocator);
     dict_elm_mallocator = NULL;
+    xbt_mallocator_free(dict_het_elm_mallocator);
+    dict_het_elm_mallocator = NULL;
   }
   if (all_sizes) {
     unsigned int count;
