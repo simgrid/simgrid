@@ -146,6 +146,9 @@
 /* Indicates that we have GTNETS support */
 #cmakedefine HAVE_GTNETS @HAVE_GTNETS@
 
+/* Indicates that we have SMPI support */
+#cmakedefine HAVE_SMPI @HAVE_SMPI@
+
 /* Indicates that we have NS3 support */
 #cmakedefine HAVE_NS3 @HAVE_NS3@
 
