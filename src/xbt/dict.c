@@ -26,18 +26,38 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt,
  * \see xbt_dict_free()
  *
  * Creates and initialize a new dictionary with a default hashtable size.
+ * The dictionary is heterogeneous: each element can have a different free
+ * function.
  */
 xbt_dict_t xbt_dict_new(void)
+{
+  xbt_dict_t dict = xbt_dict_new_homogeneous(NULL);
+  dict->homogeneous = 0;
+
+  return dict;
+}
+
+/**
+ * \brief Constructor
+ * \param free_ctn function to call with (\a data as argument) when
+ *        \a data is removed from the dictionary
+ * \return pointer to the destination
+ * \see xbt_dict_new(), xbt_dict_free()
+ *
+ * Creates and initialize a new dictionary with a default hashtable size.
+ * The dictionary is homogeneous: each element share the same free function.
+ */
+xbt_dict_t xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn)
 {
   xbt_dict_t dict;
 
   dict = xbt_new(s_xbt_dict_t, 1);
-  dict->free_f = NULL;
+  dict->free_f = free_ctn;
   dict->table_size = 127;
   dict->table = xbt_new0(xbt_dictelm_t, dict->table_size + 1);
   dict->count = 0;
   dict->fill = 0;
-  dict->homogeneous = 0;
+  dict->homogeneous = 1;
 
   return dict;
 }
