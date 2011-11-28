@@ -144,8 +144,7 @@ memory_map_t get_memory_map(void)
 
   }
 
-  if(line)
-    free(line);
+  free(line);
 
   fclose(fp);
 
