@@ -38,7 +38,7 @@ void surf_action_init(void) {
   /* the action mallocator will always provide actions of the following size,
    * so this size should be set to the maximum size of the surf action structures
    */
-  action_mallocator_allocated_size = sizeof(s_surf_action_network_CM02_t);
+  action_mallocator_allocated_size = sizeof(s_surf_action_network_CM02_im_t);
   action_mallocator = xbt_mallocator_new(65536, surf_action_mallocator_new_f,
       surf_action_mallocator_free_f, surf_action_mallocator_reset_f);
 }

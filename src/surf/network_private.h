@@ -20,30 +20,40 @@ typedef struct network_link_CM02 {
   tmgr_trace_event_t lat_event;
 } s_link_CM02_t, *link_CM02_t;
 
+enum heap_action_type{
+  LATENCY = 100,
+  MAX_DURATION,
+  NORMAL,
+  NOTSET
+};
 
-typedef struct surf_action_network_CM02 {
+typedef struct surf_action_network_CM02_im {
   s_surf_action_t generic_action;
+  s_xbt_swag_hookup_t action_list_hookup;
   double latency;
   double lat_current;
   double weight;
   lmm_variable_t variable;
   double rate;
+#ifdef HAVE_SMPI
   struct {
      const char* link_name;
      double gap;
      double size;
      xbt_fifo_item_t fifo_item;
   } sender;
+#endif
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int latency_limited;
 #endif
   int suspended;
-
 #ifdef HAVE_TRACING
   char *src_name;
   char *dst_name;
 #endif
-
-} s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
+  int index_heap;
+  enum heap_action_type hat;
+  double last_update;
+} s_surf_action_network_CM02_im_t, *surf_action_network_CM02_im_t;
 
 #endif                          /* _SURF_NETWORK_PRIVATE_H */

@@ -193,8 +193,8 @@ void surf_network_model_init_Constant()
   surf_network_model->name = "constant time network";
   surf_network_model->action_unref = netcste_action_unref;
   surf_network_model->action_cancel = netcste_action_cancel;
-  surf_network_model->action_recycle = net_action_recycle;
-  surf_network_model->get_remains = net_action_get_remains;
+  surf_network_model->action_recycle = im_net_action_recycle;
+  surf_network_model->get_remains = im_net_action_get_remains;
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   surf_network_model->get_latency_limited = net_get_link_latency_limited;
 #endif
@@ -211,7 +211,7 @@ void surf_network_model_init_Constant()
   surf_network_model->suspend = netcste_action_suspend;
   surf_network_model->resume = netcste_action_resume;
   surf_network_model->is_suspended = netcste_action_is_suspended;
-  surf_cpu_model->set_max_duration = net_action_set_max_duration;
+  surf_cpu_model->set_max_duration = im_net_action_set_max_duration;
 
   surf_network_model->extension.network.communicate = netcste_communicate;
   surf_network_model->extension.network.get_link_bandwidth =

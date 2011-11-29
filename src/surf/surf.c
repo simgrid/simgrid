@@ -124,7 +124,7 @@ s_surf_model_description_t surf_network_model_description[] = {
    im_surf_network_model_init_LegrandVelho},
    {"LV08_fullupdate",
     "Realistic network model wit lmm_solve, adequate correction factors (latency*=10.4, bandwidth*=.92, S=8775) but no further optimization. Should produce the same results as LV08, only slower.",
-    surf_network_model_init_LegrandVelho},
+   im_surf_network_model_init_LegrandVelho},
   {"SMPI",
    "Realistic network model with lmm_solve and correction factors on three intervals (< 1KiB, < 64 KiB, >= 64 KiB)",
    surf_network_model_init_SMPI},

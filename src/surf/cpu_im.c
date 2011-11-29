@@ -9,13 +9,6 @@
 
 surf_model_t surf_cpu_model = NULL;
 lmm_system_t cpu_maxmin_system = NULL;
-
-typedef enum {
-  UM_FULL,
-  UM_LAZY,
-  UM_UNDEFINED,
-} e_UM_t;
-
 e_UM_t update_mechanism = UM_LAZY;
 
 #undef GENERIC_LMM_ACTION

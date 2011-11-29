@@ -12,11 +12,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "network_private.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
+
 #include "surf_private.h"
 #include "xbt/dict.h"
 #include "maxmin_private.h"
+#include "surf/surfxml_parse_values.h"
+#include "surf/surf_resource.h"
 #include "surf/surf_resource_lmm.h"
 
 
@@ -24,38 +28,22 @@
 #define GENERIC_ACTION(action) action->generic_action
 
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_im, surf,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
                                 "Logging specific to the SURF network module");
 
+surf_model_t surf_network_model = NULL;
+static lmm_system_t network_im_maxmin_system = NULL;
+static void (*network_im_solve) (lmm_system_t) = NULL;
 
-enum heap_action_type{
-  LATENCY = 100,
-  MAX_DURATION,
-  NORMAL,
-  NOTSET
-};
+double sg_sender_gap = 0.0;
+double sg_latency_factor = 1.0; /* default value; can be set by model or from command line */
+double sg_bandwidth_factor = 1.0;       /* default value; can be set by model or from command line */
+double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or from command line */
 
-typedef struct surf_action_network_CM02_im {
-  s_surf_action_t generic_action;
-  s_xbt_swag_hookup_t action_list_hookup;
-  double latency;
-  double lat_current;
-  double weight;
-  lmm_variable_t variable;
-  double rate;
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  int latency_limited;
-#endif
-  int suspended;
-#ifdef HAVE_TRACING
-  char *src_name;
-  char *dst_name;
-#endif
-  int index_heap;
-  enum heap_action_type hat;
-  double last_update;
-} s_surf_action_network_CM02_im_t, *surf_action_network_CM02_im_t;
+double sg_tcp_gamma = 0.0;
+int sg_network_fullduplex = 0;
 
+xbt_dict_t gap_lookup = NULL;
 
 typedef struct network_link_CM02_im {
   s_surf_resource_lmm_t lmm_resource;   /* must remain first to be added to a trace */
@@ -66,30 +54,7 @@ typedef struct network_link_CM02_im {
   tmgr_trace_event_t lat_event;
 } s_link_CM02_im_t, *link_CM02_im_t;
 
-
-
-
-
-
-
-
-extern surf_model_t surf_network_model;
-static lmm_system_t network_im_maxmin_system = NULL;
-static void (*network_im_solve) (lmm_system_t) = NULL;
-
-extern double sg_latency_factor;
-extern double sg_bandwidth_factor;
-extern double sg_weight_S_parameter;
-
-extern double sg_tcp_gamma;
-extern int sg_network_fullduplex;
-
-
-static void im_net_action_recycle(surf_action_t action);
-static int im_net_get_link_latency_limited(surf_action_t action);
 static int im_net_action_is_suspended(surf_action_t action);
-static double im_net_action_get_remains(surf_action_t action);
-static void im_net_action_set_max_duration(surf_action_t action, double duration);
 static void im_net_update_actions_state(double now, double delta);
 static void update_action_remaining(double now);
 
@@ -97,6 +62,13 @@ static xbt_swag_t im_net_modified_set = NULL;
 static xbt_heap_t im_net_action_heap = NULL;
 xbt_swag_t keep_track = NULL;
 extern int sg_maxmin_selective_update;
+extern e_UM_t update_mechanism;
+
+#ifdef HAVE_SMPI
+static void gap_append(double size, const link_CM02_im_t link, surf_action_network_CM02_im_t action);
+static void gap_unknown(surf_action_network_CM02_im_t action);
+static void gap_remove(surf_action_network_CM02_im_t action);
+#endif
 
 /* added to manage the communication action's heap */
 static void im_net_action_update_index_heap(void *action, int i)
@@ -142,6 +114,47 @@ static double im_constant_bandwidth_constraint(double rate, double bound,
   return rate;
 }
 
+
+/**********************/
+/*   SMPI callbacks   */
+/**********************/
+static double smpi_latency_factor(double size)
+{
+  /* 1 B <= size <= 1 KiB */
+  if (size <= 1024.0) {
+    return 1.0056;
+  }
+
+  /* 2 KiB <= size <= 32 KiB */
+  if (size <= 32768.0) {
+    return 1.8805;
+  }
+
+  /* 64 KiB <= size <= 4 MiB */
+  return 22.7111;
+}
+
+static double smpi_bandwidth_factor(double size)
+{
+  /* 1 B <= size <= 1 KiB */
+  if (size <= 1024.0) {
+    return 0.2758;
+  }
+
+  /* 2 KiB <= size <= 32 KiB */
+  if (size <= 32768.0) {
+    return 0.5477;
+  }
+
+  /* 64 KiB <= size <= 4 MiB */
+  return 0.9359;
+}
+
+static double smpi_bandwidth_constraint(double rate, double bound,
+                                        double size)
+{
+  return rate < 0 ? bound : min(bound, rate * smpi_bandwidth_factor(size));
+}
 
 static double (*im_latency_factor_callback) (double) =
     &im_constant_latency_factor;
@@ -190,24 +203,42 @@ static void* im_net_create_resource(const char *name,
 
 static void im_net_parse_link_init(sg_platf_link_cbarg_t link)
 {
-  if(link->policy == SURF_LINK_FULLDUPLEX)
-  {
-    char *name = bprintf("%s_UP",link->id);
-	  im_net_create_resource(name, link->bandwidth, link->bandwidth_trace,
-	               link->latency, link->latency_trace, link->state, link->state_trace,
-	               link->policy, link->properties);
-	  xbt_free(name);
-	  name = bprintf("%s_DOWN",link->id);
-	  im_net_create_resource(name, link->bandwidth, link->bandwidth_trace,
-            link->latency, link->latency_trace, link->state, link->state_trace,
-            link->policy, NULL); // FIXME: We need to deep copy the properties or we won't be able to free it
-	  xbt_free(name);
+  if(link->policy == SURF_LINK_FULLDUPLEX){
+    char *link_id;
+    link_id = bprintf("%s_UP", link->id);
+	  im_net_create_resource(link_id,
+                           link->bandwidth,
+                           link->bandwidth_trace,
+                           link->latency,
+                           link->latency_trace,
+                           link->state,
+                           link->state_trace,
+                           link->policy,
+                           link->properties);
+	  xbt_free(link_id);
+    link_id = bprintf("%s_DOWN", link->id);
+    im_net_create_resource(link_id,
+                        link->bandwidth,
+                        link->bandwidth_trace,
+                        link->latency,
+                        link->latency_trace,
+                        link->state,
+                        link->state_trace,
+                        link->policy,
+                        NULL); /* FIXME: We need to deep copy the properties or
+                                * we won't be able to free it */
+    xbt_free(link_id);
   }
-  else
-  {
-	  im_net_create_resource(link->id, link->bandwidth, link->bandwidth_trace,
-    		link->latency, link->latency_trace, link->state, link->state_trace,
-	               link->policy, link->properties);
+  else{
+    im_net_create_resource(link->id,
+                        link->bandwidth,
+                        link->bandwidth_trace,
+                        link->latency,
+                        link->latency_trace,
+                        link->state,
+                        link->state_trace,
+                        link->policy,
+                        link->properties);
   }
 }
 
@@ -290,10 +321,10 @@ static int im_net_action_unref(surf_action_t action)
       lmm_variable_free(network_im_maxmin_system,
                         ((surf_action_network_CM02_im_t) action)->variable);
     }
-    // remove action from the heap
-    heap_remove((surf_action_network_CM02_im_t) action);
-
-    xbt_swag_remove(action, im_net_modified_set);
+    if(update_mechanism == UM_FULL){// remove action from the heap
+      heap_remove((surf_action_network_CM02_im_t) action);
+      xbt_swag_remove(action, im_net_modified_set);
+    }
 #ifdef HAVE_TRACING
     xbt_free(((surf_action_network_CM02_im_t) action)->src_name);
     xbt_free(((surf_action_network_CM02_im_t) action)->dst_name);
@@ -310,13 +341,13 @@ static int im_net_action_unref(surf_action_t action)
 static void im_net_action_cancel(surf_action_t action)
 {
   surf_network_model->action_state_set(action, SURF_ACTION_FAILED);
-
-  xbt_swag_remove(action, im_net_modified_set);
-  // remove action from the heap
-  heap_remove((surf_action_network_CM02_im_t) action);
+  if(update_mechanism == UM_FULL){// remove action from the heap
+    xbt_swag_remove(action, im_net_modified_set);
+    heap_remove((surf_action_network_CM02_im_t) action);
+  }
 }
 
-static void im_net_action_recycle(surf_action_t action)
+void im_net_action_recycle(surf_action_t action)
 {
   return;
 }
@@ -328,10 +359,10 @@ static int im_net_get_link_latency_limited(surf_action_t action)
 }
 #endif
 
-static double im_net_action_get_remains(surf_action_t action)
+double im_net_action_get_remains(surf_action_t action)
 {
-  /* update remains before return it */
-  update_action_remaining(surf_get_clock());
+  if(update_mechanism == UM_FULL)/* update remains before return it */
+    update_action_remaining(surf_get_clock());
   return action->remains;
 }
 
@@ -369,6 +400,43 @@ static void update_action_remaining(double now){
 
     action->last_update = now;
   }
+}
+
+static double net_share_resources(double now)
+{
+  s_surf_action_network_CM02_im_t s_action;
+  surf_action_network_CM02_im_t action = NULL;
+  xbt_swag_t running_actions =
+      surf_network_model->states.running_action_set;
+  double min;
+
+  min = generic_maxmin_share_resources(running_actions,
+                                       xbt_swag_offset(s_action,
+                                                       variable),
+                                       network_im_maxmin_system,
+                                       network_im_solve);
+
+#define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + xbt_swag_offset(s_action, variable)  )))
+
+  xbt_swag_foreach(action, running_actions) {
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+    if (lmm_is_variable_limited_by_latency(action->variable)) {
+      (action->generic_action).latency_limited = 1;
+    } else {
+      (action->generic_action).latency_limited = 0;
+    }
+#endif
+    if (action->latency > 0) {
+      if (min < 0)
+        min = action->latency;
+      else if (action->latency < min)
+        min = action->latency;
+    }
+  }
+
+  XBT_DEBUG("Min of share resources %f", min);
+
+  return min;
 }
 
 static double im_net_share_resources(double now)
@@ -445,6 +513,96 @@ static double im_net_share_resources(double now)
   return min;
 }
 
+static double generic_net_share_resources(double now)
+{
+  if(update_mechanism == UM_FULL)
+    return im_net_share_resources(now);
+  else if (update_mechanism == UM_LAZY)
+  {
+    return net_share_resources(now);
+  } else {
+    xbt_die("Invalide update mechanism!");
+    return 0;
+  }
+}
+
+static void net_update_actions_state(double now, double delta)
+{
+  double deltap = 0.0;
+  surf_action_network_CM02_im_t action = NULL;
+  surf_action_network_CM02_im_t next_action = NULL;
+  xbt_swag_t running_actions =
+      surf_network_model->states.running_action_set;
+  /*
+     xbt_swag_t failed_actions =
+     surf_network_model->states.failed_action_set;
+   */
+
+  xbt_swag_foreach_safe(action, next_action, running_actions) {
+    deltap = delta;
+    if (action->latency > 0) {
+      if (action->latency > deltap) {
+        double_update(&(action->latency), deltap);
+        deltap = 0.0;
+      } else {
+        double_update(&(deltap), action->latency);
+        action->latency = 0.0;
+      }
+      if ((action->latency == 0.0) && !(action->suspended))
+        lmm_update_variable_weight(network_im_maxmin_system, action->variable,
+                                   action->weight);
+    }
+#ifdef HAVE_TRACING
+    if (TRACE_is_enabled()) {
+      xbt_dynar_t route=NULL;
+      routing_get_route_and_latency(action->src_name, action->dst_name,&route,NULL);
+      link_CM02_im_t link;
+      unsigned int i;
+      xbt_dynar_foreach(route, i, link) {
+        TRACE_surf_link_set_utilization(link->lmm_resource.generic_resource.name,
+                                        action->generic_action.data,
+                                        (surf_action_t) action,
+                                        lmm_variable_getvalue
+                                        (action->variable), now - delta,
+                                        delta);
+      }
+    }
+#endif
+    if(!lmm_get_number_of_cnst_from_var(network_im_maxmin_system, action->variable)) {
+        /* There is actually no link used, hence an infinite bandwidth.
+         * This happens often when using models like vivaldi.
+         * In such case, just make sure that the action completes immediately.
+         */
+      double_update(&(action->generic_action.remains),
+          action->generic_action.remains);
+    }
+    double_update(&(action->generic_action.remains),
+                  lmm_variable_getvalue(action->variable) * deltap);
+    if (action->generic_action.max_duration != NO_MAX_DURATION)
+      double_update(&(action->generic_action.max_duration), delta);
+
+    if ((action->generic_action.remains <= 0) &&
+        (lmm_get_variable_weight(action->variable) > 0)) {
+      action->generic_action.finish = surf_get_clock();
+      surf_network_model->action_state_set((surf_action_t) action,
+                                           SURF_ACTION_DONE);
+#ifdef HAVE_SMPI
+      gap_remove(action);
+#endif
+    } else if ((action->generic_action.max_duration != NO_MAX_DURATION)
+               && (action->generic_action.max_duration <= 0)) {
+      action->generic_action.finish = surf_get_clock();
+      surf_network_model->action_state_set((surf_action_t) action,
+                                           SURF_ACTION_DONE);
+#ifdef HAVE_SMPI
+      gap_remove(action);
+#endif
+    }
+  }
+
+  return;
+}
+
 static void im_net_update_actions_state(double now, double delta)
 {
   surf_action_network_CM02_im_t action = NULL;
@@ -479,6 +637,18 @@ static void im_net_update_actions_state(double now, double delta)
     }
   }
   return;
+}
+
+static void generic_net_update_actions_state(double now, double delta)
+{
+  if(update_mechanism == UM_FULL)
+    im_net_update_actions_state(now,delta);
+  else if (update_mechanism == UM_LAZY)
+  {
+    net_update_actions_state(now,delta);
+  } else {
+    xbt_die("Invalide update mechanism!");
+  }
 }
 
 static void im_net_update_resource_state(void *id,
@@ -602,6 +772,7 @@ static surf_action_t im_net_communicate(const char *src_name,
   int failed = 0;
   surf_action_network_CM02_im_t action = NULL;
   double bandwidth_bound;
+  double latency=0.0;
   /* LARGE PLATFORMS HACK:
      Add a link_CM02_im_t *link and a int link_nb to network_card_CM02_im_t. It will represent local links for this node
      Use the cluster_id for ->id */
@@ -610,11 +781,11 @@ static surf_action_t im_net_communicate(const char *src_name,
   int constraints_per_variable = 0;
   // I need to have the forward and backward routes at the same time, so allocate "route". That way, the routing wont clean it up
   xbt_dynar_t route=xbt_dynar_new(global_routing->size_of_link,NULL);
-  routing_get_route_and_latency(src_name, dst_name,&route,NULL);
-
+  routing_get_route_and_latency(src_name, dst_name, &route, &latency);
 
   if (sg_network_fullduplex == 1) {
-    routing_get_route_and_latency(dst_name, src_name, &back_route, NULL);
+    // FIXME: fill route directly (unclear: check with blame who put the FIXME)
+    routing_get_route_and_latency(dst_name, src_name, &back_route,NULL);
   }
 
   /* LARGE PLATFORMS HACK:
@@ -623,8 +794,8 @@ static surf_action_t im_net_communicate(const char *src_name,
   XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   /* LARGE PLATFORMS HACK:
      assert on total_route_size */
-  xbt_assert(xbt_dynar_length(route),
-              "You're trying to send data from %s to %s but there is no connection between these two hosts.",
+  xbt_assert(!xbt_dynar_is_empty(route) || latency,
+              "You're trying to send data from %s to %s but there is no connection at all between these two hosts.",
               src_name, dst_name);
 
   xbt_dynar_foreach(route, i, link) {
@@ -636,24 +807,23 @@ static surf_action_t im_net_communicate(const char *src_name,
   action =
       surf_action_new(sizeof(s_surf_action_network_CM02_im_t), size,
                       surf_network_model, failed);
-
-
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   (action->generic_action).latency_limited = 0;
 #endif
+  action->weight = action->latency = latency;
 
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
-  action->index_heap = -1;
-  action->latency = 0.0;
-  action->weight = 0.0;
-  action->last_update = surf_get_clock();
+  if(update_mechanism == UM_FULL){
+    action->index_heap = -1;
+    action->latency = 0.0;
+    action->weight = 0.0;
+    action->last_update = surf_get_clock();
+  }
 
   bandwidth_bound = -1.0;
   xbt_dynar_foreach(route, i, link) {
-    action->latency += link->lat_current;
     action->weight +=
-        link->lat_current +
         sg_weight_S_parameter /
         (link->lmm_resource.power.peak * link->lmm_resource.power.scale);
     if (bandwidth_bound < 0.0)
@@ -674,6 +844,16 @@ static surf_action_t im_net_communicate(const char *src_name,
   action->rate =
       im_bandwidth_constraint_callback(action->rate, bandwidth_bound,
                                         size);
+#ifdef HAVE_SMPI
+  if(!xbt_dynar_is_empty(route)) {
+    link = *(link_CM02_im_t*)xbt_dynar_get_ptr(route, 0);
+    gap_append(size, link, action);
+    XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)",
+           action, src_name, dst_name, action->sender.gap, action->latency);
+  } else {
+    gap_unknown(action);
+  }
+#endif
 
   /* LARGE PLATFORMS HACK:
      lmm_variable_new(..., total_route_size) */
@@ -688,9 +868,11 @@ static surf_action_t im_net_communicate(const char *src_name,
       action->variable =
         lmm_variable_new(network_im_maxmin_system, action, 0.0, -1.0,
                          constraints_per_variable);
-    // add to the heap the event when the latency is payed
-    XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency + action->last_update);
-    heap_insert(action, action->latency + action->last_update, LATENCY);
+    if(update_mechanism == UM_FULL){
+      // add to the heap the event when the latency is payed
+      XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency + action->last_update);
+      heap_insert(action, action->latency + action->last_update, LATENCY);
+    }
 #ifdef HAVE_LATENCY_BOUND_TRACKING
         (action->generic_action).latency_limited = 1;
 #endif
@@ -780,8 +962,8 @@ static void im_net_action_suspend(surf_action_t action)
                              ((surf_action_network_CM02_im_t)
                               action)->variable, 0.0);
 
-  // remove action from the heap
-  heap_remove((surf_action_network_CM02_im_t) action);
+  if(update_mechanism == UM_FULL)// remove action from the heap
+    heap_remove((surf_action_network_CM02_im_t) action);
 }
 
 static void im_net_action_resume(surf_action_t action)
@@ -793,8 +975,8 @@ static void im_net_action_resume(surf_action_t action)
                                ((surf_action_network_CM02_im_t)
                                 action)->weight);
     ((surf_action_network_CM02_im_t) action)->suspended = 0;
-    // remove action from the heap
-    heap_remove((surf_action_network_CM02_im_t) action);
+    if(update_mechanism == UM_FULL)// remove action from the heap
+      heap_remove((surf_action_network_CM02_im_t) action);
   }
 }
 
@@ -803,13 +985,19 @@ static int im_net_action_is_suspended(surf_action_t action)
   return ((surf_action_network_CM02_im_t) action)->suspended;
 }
 
-static void im_net_action_set_max_duration(surf_action_t action, double duration)
+void im_net_action_set_max_duration(surf_action_t action, double duration)
 {
   action->max_duration = duration;
-  // remove action from the heap
-  heap_remove((surf_action_network_CM02_im_t) action);
+  if(update_mechanism == UM_FULL)// remove action from the heap
+    heap_remove((surf_action_network_CM02_im_t) action);
 }
 
+#ifdef HAVE_TRACING
+static void net_action_set_category(surf_action_t action, const char *category)
+{
+  action->category = xbt_strdup (category);
+}
+#endif
 
 static void im_net_finalize(void)
 {
@@ -819,10 +1007,70 @@ static void im_net_finalize(void)
   lmm_system_free(network_im_maxmin_system);
   network_im_maxmin_system = NULL;
 
-  xbt_heap_free(im_net_action_heap);
-  xbt_swag_free(im_net_modified_set);
-
+  if(update_mechanism == UM_FULL){
+    xbt_heap_free(im_net_action_heap);
+    xbt_swag_free(im_net_modified_set);
+  }
 }
+
+#ifdef HAVE_SMPI
+static void gap_append(double size, const link_CM02_im_t link, surf_action_network_CM02_im_t action) {
+   const char* src = link->lmm_resource.generic_resource.name;
+   xbt_fifo_t fifo;
+   surf_action_network_CM02_im_t last_action;
+   double bw;
+
+   if(sg_sender_gap > 0.0) {
+      if(!gap_lookup) {
+         gap_lookup = xbt_dict_new();
+      }
+      fifo = (xbt_fifo_t)xbt_dict_get_or_null(gap_lookup, src);
+      action->sender.gap = 0.0;
+      if(fifo && xbt_fifo_size(fifo) > 0) {
+         /* Compute gap from last send */
+         last_action = (surf_action_network_CM02_im_t)xbt_fifo_get_item_content(xbt_fifo_get_last_item(fifo));
+         bw = im_net_get_link_bandwidth(link);
+         action->sender.gap = last_action->sender.gap + max(sg_sender_gap, last_action->sender.size / bw);
+         action->latency += action->sender.gap;
+      }
+      /* Append action as last send */
+      action->sender.link_name = link->lmm_resource.generic_resource.name;
+      fifo = (xbt_fifo_t)xbt_dict_get_or_null(gap_lookup, action->sender.link_name);
+      if(!fifo) {
+         fifo = xbt_fifo_new();
+         xbt_dict_set(gap_lookup, action->sender.link_name, fifo, NULL);
+      }
+      action->sender.fifo_item = xbt_fifo_push(fifo, action);
+      action->sender.size = size;
+   }
+}
+
+static void gap_unknown(surf_action_network_CM02_im_t action) {
+   action->sender.gap = 0.0;
+   action->sender.link_name = NULL;
+   action->sender.fifo_item = NULL;
+   action->sender.size = 0.0;
+}
+
+static void gap_remove(surf_action_network_CM02_im_t action) {
+   xbt_fifo_t fifo;
+   size_t size;
+
+   if(sg_sender_gap > 0.0 && action->sender.link_name && action->sender.fifo_item) {
+      fifo = (xbt_fifo_t)xbt_dict_get_or_null(gap_lookup, action->sender.link_name);
+      xbt_fifo_remove_item(fifo, action->sender.fifo_item);
+      size = xbt_fifo_size(fifo);
+      if(size == 0) {
+         xbt_fifo_free(fifo);
+         xbt_dict_remove(gap_lookup, action->sender.link_name);
+         size = xbt_dict_length(gap_lookup);
+         if(size == 0) {
+            xbt_dict_free(&gap_lookup);
+         }
+      }
+   }
+}
+#endif
 
 static void im_surf_network_model_init_internal(void)
 {
@@ -840,9 +1088,9 @@ static void im_surf_network_model_init_internal(void)
 #endif
 
   surf_network_model->model_private->resource_used = im_net_resource_used;
-  surf_network_model->model_private->share_resources = im_net_share_resources;
+  surf_network_model->model_private->share_resources = generic_net_share_resources;
   surf_network_model->model_private->update_actions_state =
-		  im_net_update_actions_state;
+      generic_net_update_actions_state;
   surf_network_model->model_private->update_resource_state =
 		  im_net_update_resource_state;
   surf_network_model->model_private->finalize = im_net_finalize;
@@ -863,25 +1111,44 @@ static void im_surf_network_model_init_internal(void)
   surf_network_model->extension.network.create_resource =
 		  im_net_create_resource;
 
-
-  if (!network_im_maxmin_system){
-	sg_maxmin_selective_update = 1;
+  if (!network_im_maxmin_system)
     network_im_maxmin_system = lmm_system_new();
-  }
-  im_net_action_heap = xbt_heap_new(8,NULL);
 
-  xbt_heap_set_update_callback(im_net_action_heap, im_net_action_update_index_heap);
-
-  routing_model_create(sizeof(link_CM02_im_t),
+ routing_model_create(sizeof(link_CM02_im_t),
       im_net_create_resource("__loopback__",
           498000000, NULL, 0.000015, NULL,
           SURF_RESOURCE_ON, NULL,
           SURF_LINK_FATPIPE, NULL));
-  im_net_modified_set =
-      xbt_swag_new(xbt_swag_offset(comm, action_list_hookup));
+
+  if(update_mechanism == UM_FULL){
+    sg_maxmin_selective_update = 1;
+    im_net_action_heap = xbt_heap_new(8,NULL);
+    xbt_heap_set_update_callback(im_net_action_heap, im_net_action_update_index_heap);
+    im_net_modified_set =
+        xbt_swag_new(xbt_swag_offset(comm, action_list_hookup));
+  }
 }
 
+/************************************************************************/
+/* New model based on LV08 and experimental results of MPI ping-pongs   */
+/************************************************************************/
+void surf_network_model_init_SMPI(void)
+{
 
+  if (surf_network_model)
+    return;
+  im_surf_network_model_init_internal();
+  im_latency_factor_callback = &smpi_latency_factor;
+  im_bandwidth_factor_callback = &smpi_bandwidth_factor;
+  im_bandwidth_constraint_callback = &smpi_bandwidth_constraint;
+  im_net_define_callbacks();
+  xbt_dynar_push(model_list, &surf_network_model);
+  network_im_solve = lmm_solve;
+
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/sender_gap", 10e-6);
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
+
+}
 
 /************************************************************************/
 /* New model based on optimizations discussed during this thesis        */
@@ -902,5 +1169,80 @@ void im_surf_network_model_init_LegrandVelho(void)
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
 }
 
+/***************************************************************************/
+/* The nice TCP sharing model designed by Loris Marchal and Henri Casanova */
+/***************************************************************************/
+/* @TechReport{      rr-lip2002-40, */
+/*   author        = {Henri Casanova and Loris Marchal}, */
+/*   institution   = {LIP}, */
+/*   title         = {A Network Model for Simulation of Grid Application}, */
+/*   number        = {2002-40}, */
+/*   month         = {oct}, */
+/*   year          = {2002} */
+/* } */
+void surf_network_model_init_CM02(void)
+{
+
+  if (surf_network_model)
+    return;
+  im_surf_network_model_init_internal();
+  im_net_define_callbacks();
+  xbt_dynar_push(model_list, &surf_network_model);
+  network_im_solve = lmm_solve;
+}
+
+void surf_network_model_init_Reno(void)
+{
+  if (surf_network_model)
+    return;
+  im_surf_network_model_init_internal();
+  im_net_define_callbacks();
+
+  xbt_dynar_push(model_list, &surf_network_model);
+  lmm_set_default_protocol_function(func_reno_f, func_reno_fp,
+                                    func_reno_fpi);
+  network_im_solve = lagrange_solve;
+
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor", 10.4);
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
+                            0.92);
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
+}
 
 
+void surf_network_model_init_Reno2(void)
+{
+  if (surf_network_model)
+    return;
+  im_surf_network_model_init_internal();
+  im_net_define_callbacks();
+
+  xbt_dynar_push(model_list, &surf_network_model);
+  lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp,
+                                    func_reno2_fpi);
+  network_im_solve = lagrange_solve;
+
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor", 10.4);
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
+                            0.92);
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S_parameter",
+                            8775);
+}
+
+void surf_network_model_init_Vegas(void)
+{
+  if (surf_network_model)
+    return;
+  im_surf_network_model_init_internal();
+  im_net_define_callbacks();
+
+  xbt_dynar_push(model_list, &surf_network_model);
+  lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,
+                                    func_vegas_fpi);
+  network_im_solve = lagrange_solve;
+
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor", 10.4);
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
+                            0.92);
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
+}
