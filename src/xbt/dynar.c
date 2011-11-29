@@ -704,13 +704,12 @@ XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
  */
 XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
 {
-  void * res;
-	void * last = xbt_new0(char,dynar->elmsize);
-	xbt_dynar_push(dynar, last);
-	free(last);
-	res = dynar->data;
-	free(dynar);
-	return res;
+  void *res;
+  xbt_dynar_shrink(dynar, 1);
+  memset(xbt_dynar_push_ptr(dynar), 0, dynar->elmsize);
+  res = dynar->data;
+  free(dynar);
+  return res;
 }
 
 /*
