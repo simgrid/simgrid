@@ -653,7 +653,7 @@ static int cmpstringp(const void *p1, const void *p2) {
 
   int res = strncmp(s1, s2, sort_len);
   if (res == 0)
-    return p1>p2;
+    res = p1 > p2 ? 1 : (p1 < p2 ? -1 : 0);
   return res;
 }
 
