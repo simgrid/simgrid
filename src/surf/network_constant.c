@@ -52,21 +52,10 @@ static void netcste_action_cancel(surf_action_t action)
 
 static double netcste_share_resources(double now)
 {
-  surf_action_network_Constant_t action = NULL;
-  xbt_swag_t running_actions =
-      surf_network_model->states.running_action_set;
-  double min = -1.0;
-
-  xbt_swag_foreach(action, running_actions) {
-    if (action->latency > 0) {
-      if (min < 0)
-        min = action->latency;
-      else if (action->latency < min)
-        min = action->latency;
-    }
+  if (!xbt_swag_size(surf_network_model->states.running_action_set)) {
+    return -1.0;
   }
-
-  return min;
+  return sg_latency_factor;
 }
 
 static void netcste_update_actions_state(double now, double delta)
