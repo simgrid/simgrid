@@ -708,6 +708,8 @@ XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
   xbt_dynar_shrink(dynar, 1);
   memset(xbt_dynar_push_ptr(dynar), 0, dynar->elmsize);
   res = dynar->data;
+  if (dynar->mutex)
+    xbt_mutex_destroy(dynar->mutex);
   free(dynar);
   return res;
 }
