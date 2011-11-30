@@ -19,7 +19,7 @@ double sg_maxmin_precision = 0.00001;
 
 static void *lmm_variable_mallocator_new_f(void);
 static void lmm_variable_mallocator_free_f(void *var);
-static void lmm_variable_mallocator_reset_f(void *var);
+#define lmm_variable_mallocator_reset_f ((void_f_pvoid_t)NULL)
 static void lmm_update_modified_set(lmm_system_t sys,
                                     lmm_constraint_t cnst);
 static void lmm_remove_all_modified_set(lmm_system_t sys);
@@ -171,11 +171,6 @@ static void lmm_variable_mallocator_free_f(void *var)
 {
   xbt_free(((lmm_variable_t) var)->cnsts);
   xbt_free(var);
-}
-
-static void lmm_variable_mallocator_reset_f(void *var)
-{
-  /* lmm_variable_new() initializes everything */
 }
 
 lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,

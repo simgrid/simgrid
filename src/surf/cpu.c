@@ -15,8 +15,8 @@ typedef struct cpu_Cas01 {
   s_surf_resource_t generic_resource;
   double power_peak;
   double power_scale;
-  int core;
   tmgr_trace_event_t power_event;
+  int core;
   e_surf_resource_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;

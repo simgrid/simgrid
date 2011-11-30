@@ -27,7 +27,7 @@ const char *surf_action_state_names[6] = {
 static xbt_mallocator_t action_mallocator = NULL;
 static int action_mallocator_allocated_size = 0;
 static void* surf_action_mallocator_new_f(void);
-static void surf_action_mallocator_free_f(void* action);
+#define surf_action_mallocator_free_f xbt_free_f
 static void surf_action_mallocator_reset_f(void* action);
 
 /**
@@ -53,10 +53,6 @@ void surf_action_exit(void) {
 
 static void* surf_action_mallocator_new_f(void) {
   return xbt_malloc(action_mallocator_allocated_size);
-}
-
-static void surf_action_mallocator_free_f(void* action) {
-  xbt_free(action);
 }
 
 static void surf_action_mallocator_reset_f(void* action) {

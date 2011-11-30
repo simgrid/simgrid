@@ -71,7 +71,7 @@ static int _xbt_set_get_id(xbt_set_t set)
  *
  * \param set set to populate
  * \param elm element to add.
- * \param free_func How to add the data
+ * \param free_func how to free the data
  *
  * elm->name must be set;
  * if elm->name_len <= 0, it is recomputed. If >0, it's used as is;

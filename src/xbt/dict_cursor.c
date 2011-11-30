@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_cursor, xbt_dict,
 /* To traverse (simple) dicts                                               */
 /* Don't add or remove entries to the dict while traversing !!!             */
 /*###########################################################################*/
-struct xbt_dict_cursor_ {
+struct s_xbt_dict_cursor {
   xbt_dictelm_t current;
   int line;
   xbt_dict_t dict;

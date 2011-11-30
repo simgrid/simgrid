@@ -43,7 +43,7 @@ SG_BEGIN_DECL()
  */
 
   /** \brief Dictionary data type (opaque structure) */
-typedef struct xbt_dict_ *xbt_dict_t;
+typedef struct s_xbt_dict *xbt_dict_t;
 XBT_PUBLIC(xbt_dict_t) xbt_dict_new(void);
 XBT_PUBLIC(void) xbt_dict_free(xbt_dict_t * dict);
 XBT_PUBLIC(unsigned int) xbt_dict_size(xbt_dict_t dict);
@@ -120,7 +120,7 @@ XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
  *  @{ */
 
   /** @brief Cursor on dictionaries (opaque type) */
-typedef struct xbt_dict_cursor_ *xbt_dict_cursor_t;
+typedef struct s_xbt_dict_cursor *xbt_dict_cursor_t;
 XBT_PUBLIC(xbt_dict_cursor_t) xbt_dict_cursor_new(const xbt_dict_t dict);
 XBT_PUBLIC(void) xbt_dict_cursor_free(xbt_dict_cursor_t * cursor);
 

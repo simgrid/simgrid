@@ -23,8 +23,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt,
 
 static xbt_mallocator_t dict_mallocator = NULL;
 static void *dict_mallocator_new_f(void);
-static void dict_mallocator_free_f(void *dict);
-static void dict_mallocator_reset_f(void *dict);
+#define dict_mallocator_free_f xbt_free_f
+#define dict_mallocator_reset_f ((void_f_pvoid_t)NULL)
 
 
 /*####[ Code ]###############################################################*/
@@ -32,7 +32,7 @@ static void dict_mallocator_reset_f(void *dict);
 /**
  * \brief Constructor
  * \return pointer to the destination
- * \see xbt_dict_new_ext(), xbt_dict_free()
+ * \see xbt_dict_free()
  *
  * Creates and initialize a new dictionary with a default hashtable size.
  */
@@ -814,18 +814,6 @@ void xbt_dict_postexit(void)
 static void *dict_mallocator_new_f(void)
 {
   return xbt_new(s_xbt_dict_t, 1);
-}
-
-static void dict_mallocator_free_f(void *dict)
-{
-  xbt_free(dict);
-}
-
-static void dict_mallocator_reset_f(void *dict)
-{
-  /* nothing to do because all fields are
-   * initialized in xbt_dict_new
-   */
 }
 
 #ifdef SIMGRID_TEST

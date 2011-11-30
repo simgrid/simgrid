@@ -13,7 +13,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_fifo, xbt, "FIFO");
 
 static void *fifo_item_mallocator_new_f(void);
-static void fifo_item_mallocator_free_f(void *item);
+#define fifo_item_mallocator_free_f xbt_free_f
 static void fifo_item_mallocator_reset_f(void *item);
 
 static xbt_mallocator_t item_mallocator = NULL;
@@ -373,11 +373,6 @@ xbt_fifo_t xbt_fifo_copy(xbt_fifo_t f)
 static void *fifo_item_mallocator_new_f(void)
 {
   return xbt_new(s_xbt_fifo_item_t, 1);
-}
-
-static void fifo_item_mallocator_free_f(void *item)
-{
-  xbt_free(item);
 }
 
 static void fifo_item_mallocator_reset_f(void *item)

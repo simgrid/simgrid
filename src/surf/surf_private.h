@@ -164,6 +164,7 @@ struct s_routing_global {
   AS_t root;
   void *loopback;
   size_t size_of_link;
+  xbt_dynar_t last_route;
   xbt_dynar_t(*get_onelink_routes) (void);
 };
 

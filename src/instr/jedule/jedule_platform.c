@@ -86,8 +86,7 @@ void jed_simgrid_add_resources(jed_simgrid_container_t parent,
 
 	unsigned int iter;
 	char *host_name;
-	char buf[16];
-	char *buf_copy;
+	char *buf;
 
 	parent->is_lowest = 1;
 	xbt_dynar_free(&parent->container_children);
@@ -99,10 +98,9 @@ void jed_simgrid_add_resources(jed_simgrid_container_t parent,
 	xbt_dynar_sort (host_names,	&compare_hostnames);
 
 	xbt_dynar_foreach(host_names, iter, host_name) {
-		buf_copy = strdup(buf);
-		sprintf(buf_copy, "%d", parent->last_id);
+		buf = bprintf("%d", parent->last_id);
 		(parent->last_id)++;
-		xbt_dict_set(parent->name2id, host_name, buf_copy, NULL);
+		xbt_dict_set(parent->name2id, host_name, buf, xbt_free);
 		xbt_dict_set(host2_simgrid_parent_container, host_name, parent, NULL);
 		xbt_dynar_push(parent->resource_list, &host_name);
 	}

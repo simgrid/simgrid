@@ -79,7 +79,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   CHECK_HOST();
 #ifdef HAVE_TRACING
   TRACE_msg_task_get_start();
-  double start_time = MSG_get_clock();
+  volatile double start_time = MSG_get_clock();
 #endif
 
   /* Sanity check */
