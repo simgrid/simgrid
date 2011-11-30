@@ -24,7 +24,7 @@ long number_of_jobs;
 long number_of_slaves;
 
 long my_random(long n) {
-  return n*(rand()/(RAND_MAX+1));
+  return n * (rand() / ((double)RAND_MAX + 1));
 }
 
 /** Emitter function  */
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
   number_of_jobs = atol(argv[2]);
   number_of_slaves = atol(argv[3]);
-
+  long number_max = MSG_get_host_number();
   XBT_INFO("Got %ld slaves, %ld tasks to process, and %d hosts", number_of_slaves, number_of_jobs,MSG_get_host_number());
 
   m_host_t *host_table =  MSG_get_host_table();
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
   MSG_process_create( "master",
                       master,
                       NULL,
-                      host_table[my_random(number_of_slaves)]
+                      host_table[my_random(number_max)]
                       );
 
   for(i = 0 ; i<number_of_slaves; i++)
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
       MSG_process_create( name_host,
                           slave,
                           NULL,
-                          host_table[my_random(number_of_slaves)]
+                          host_table[my_random(number_max)]
                           );
       free(name_host);
   }
