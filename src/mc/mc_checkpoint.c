@@ -145,11 +145,11 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot, char *prgm)
         } else {
 	  if (!memcmp(basename(maps->regions[i].pathname), basename(prgm), strlen(basename(prgm)))){
 	    MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-	  } else {
-	    if (!memcmp(maps->regions[i].pathname, "[stack]", 7)){
-	      MC_snapshot_add_region(snapshot, 3, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-	    }
-	  }
+	  } //else {
+	    //if (!memcmp(maps->regions[i].pathname, "[stack]", 7)){
+	  //MC_snapshot_add_region(snapshot, 3, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+	  //}
+	  //}
 	}
       }
     }
