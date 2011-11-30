@@ -8,6 +8,7 @@
 
 #include "mmprivate.h"
 #include "gras_config.h"
+#include <math.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mm_legacy, xbt,
                                 "Logging specific to mm_legacy in mmalloc");
@@ -173,6 +174,8 @@ int mmalloc_compare_heap(void *h1, void *h2){
     XBT_DEBUG("Malloc descriptors null");
     return 0;
   }
+
+  XBT_DEBUG("Blocksize : %Zu - Heap : %Zu", BLOCKSIZE, HEAP);
  
 
   /* Heapstats */
@@ -181,27 +184,27 @@ int mmalloc_compare_heap(void *h1, void *h2){
   struct mstats ms2 = mmstats(h2);
 
   if(ms1.bytes_total !=  ms2.bytes_total){
-    XBT_DEBUG("Different total size of the heap");
+    XBT_DEBUG("Different total size of the heap : %Zu - %Zu", ms1.bytes_total, ms2.bytes_total );
     return 1;
   }
 
   if(ms1.chunks_used !=  ms2.chunks_used){
-    XBT_DEBUG("Different chunks allocated by the user");
+    XBT_DEBUG("Different chunks allocated by the user : %Zu - %Zu", ms1.chunks_used, ms2.chunks_used);
     return 1;
   }
 
   if(ms1.bytes_used !=  ms2.bytes_used){
-    XBT_DEBUG("Different byte total of user-allocated chunks");
+    XBT_DEBUG("Different byte total of user-allocated chunks : %Zu - %Zu", ms1.bytes_used, ms2.bytes_used);
     return 1;
   }
 
   if(ms1.bytes_free !=  ms2.bytes_free){
-    XBT_DEBUG("Different byte total of chunks in the free list");
+    XBT_DEBUG("Different byte total of chunks in the free list : %Zu - %Zu", ms1.bytes_free, ms2.bytes_free);
     return 1;
   }
 
   if(ms1.chunks_free !=  ms2.chunks_free){
-    XBT_DEBUG("Different chunks in the free list");
+    XBT_DEBUG("Different chunks in the free list : %Zu - %Zu", ms1.chunks_free, ms2.chunks_free);
     return 1;
   }
 
@@ -217,9 +220,6 @@ int mmalloc_compare_heap(void *h1, void *h2){
 }
 
 int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
-
-  struct mdesc* mdp;
-  
 
   if(mdp1->headersize != mdp2->headersize){
     XBT_DEBUG("Different size of the file header for the mapped files");
@@ -246,7 +246,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
     return 1;
   }
 
-  // XBT_DEBUG("Heap size : %Zu", mdp1->heapsize);
+  //XBT_DEBUG("Heap size : %Zu", mdp1->heapsize);
 
   if(mdp1->heapbase != mdp2->heapbase){
     XBT_DEBUG("Different first block of the heap");
@@ -255,7 +255,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
 
   if(mdp1->heapindex != mdp2->heapindex){
-    XBT_DEBUG("Different index for the heap table");
+    XBT_DEBUG("Different index for the heap table : %Zu - %Zu", mdp1->heapindex, mdp2->heapindex);
     return 1;
   }
 
@@ -300,10 +300,10 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   }
 
  
-  size_t block_free1, block_free2 , next_block_free, first_block_free ;
+  size_t block_free1, block_free2 , next_block_free, first_block_free, block_free ;
   size_t i, j;
   void *addr_block1, *addr_block2;
-
+  size_t frag_size;
  
 
   /* Search index of the first free block */
@@ -326,15 +326,24 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   first_block_free = block_free1;
 
-  if(mdp1->heapinfo[block_free1].free.size != mdp2->heapinfo[block_free2].free.size){ 
+  if(mdp1->heapinfo[first_block_free].free.size != mdp2->heapinfo[first_block_free].free.size){ 
     XBT_DEBUG("Different size (in blocks) of the first free cluster");
     return 1;
   }
 
   /* Check busy blocks (circular checking)*/
 
-  i = block_free1 + mdp1->heapinfo[block_free1].free.size;
-  next_block_free = mdp1->heapinfo[block_free1].free.next;
+  i = first_block_free + mdp1->heapinfo[first_block_free].free.size;
+
+  if(mdp1->heapinfo[first_block_free].free.next != mdp2->heapinfo[first_block_free].free.next){
+    XBT_DEBUG("Different next block free");
+    return 1;
+  }
+  
+  block_free = first_block_free;
+  next_block_free = mdp1->heapinfo[first_block_free].free.next;
+
+  //XBT_DEBUG("First block free : %Zu (size=%Zu), Next block free : %Zu", first_block_free, mdp1->heapinfo[block_free1].free.size, next_block_free);
 
   if(next_block_free == 0)
     next_block_free = mdp1->heaplimit;
@@ -344,25 +353,20 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
     while(i<next_block_free){
 
-      j = i;
-
       if(mdp1->heapinfo[i].busy.type != mdp2->heapinfo[i].busy.type){
 	XBT_DEBUG("Different type of busy block");
 	return 1;
       }else{
-	if(i == 0)
-	  j++;
-	mdp = mdp1;
-	addr_block1 = ADDRESS(j);
-	mdp = mdp2;
-	addr_block2 = ADDRESS(j); 
+
+	addr_block1 = (char *)mdp1 + sizeof(struct mdesc) + ((i-1) * BLOCKSIZE); 
+	addr_block2 = (char *)mdp2 + sizeof(struct mdesc) + ((i-1) * BLOCKSIZE); 
+	
 	switch(mdp1->heapinfo[i].busy.type){
 	case 0 :
 	  if(mdp1->heapinfo[i].busy.info.size != mdp2->heapinfo[i].busy.info.size){
 	    XBT_DEBUG("Different size of a large cluster");
 	    return 1;
 	  }else{
-	    XBT_DEBUG("Block : %Zu", i);
 	    if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy.info.size * BLOCKSIZE)) != 0){
 	      XBT_DEBUG("Different data in block %Zu", i);
 	      return 1;
@@ -372,33 +376,46 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	  break;
 	default :	  
 	  if(mdp1->heapinfo[i].busy.info.frag.nfree != mdp2->heapinfo[i].busy.info.frag.nfree){
-	    XBT_DEBUG("Different free fragments in a fragmented block");
+	    XBT_DEBUG("Different free fragments in the fragmented block %Zu", i);
 	    return 1;
 	  }else{
 	    if(mdp1->heapinfo[i].busy.info.frag.first != mdp2->heapinfo[i].busy.info.frag.first){
-	      XBT_DEBUG("Different first free fragments of the block");
+	      XBT_DEBUG("Different first free fragments in the block %Zu", i);
 	      return 1; 
 	    }else{
-	      if(memcmp(addr_block1, addr_block2, BLOCKSIZE) != 0){
-		XBT_DEBUG("Different data in fragmented block %Zu", i);
-		return 1;
-	      } 
+	      frag_size = pow(2,mdp1->heapinfo[i].busy.type);
+	      for(j=0 ; j< (BLOCKSIZE/frag_size); j++){
+		if(memcmp((char *)addr_block1 + (j * frag_size), (char *)addr_block2 + (j * frag_size), frag_size) != 0){
+		  XBT_DEBUG("Different data in fragment %d of block %Zu", j + 1, i);
+		  return 1;
+		} 
+	      }
 	    }
 	  }
 	  i++;
 	  break;
 	}
+
       }
     }
 
+    if(mdp1->heapinfo[block_free].free.next != mdp2->heapinfo[block_free].free.next){
+      XBT_DEBUG("Different next block free");
+      return 1;
+    }
      
-    block_free1 = mdp1->heapinfo[block_free1].free.next;
-    next_block_free = mdp1->heapinfo[block_free1].free.next;
+    block_free = mdp1->heapinfo[block_free].free.next;
+    next_block_free = mdp1->heapinfo[block_free].free.next;
     if(i != first_block_free){
-      if(block_free1 != 0)
-	i = block_free1 + mdp1->heapinfo[block_free1].free.size;
-      else
+      if(block_free != 0){
+	if(mdp1->heapinfo[block_free].free.size != mdp2->heapinfo[block_free].free.size){
+	  XBT_DEBUG("Different size of block free");
+	  return 1;
+	}
+	i = block_free + mdp1->heapinfo[block_free].free.size;
+      }else{
 	i = 0;
+      }
     }
       
   }
