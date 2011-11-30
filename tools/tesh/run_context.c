@@ -647,20 +647,35 @@ void rctx_start(void)
 
 /* Helper function to sort the output */
 static int cmpstringp(const void *p1, const void *p2) {
-  /* Sort only using the 19 first chars (date+pid)
-   * If the dates are the same, then, sort using pointer address (be stable wrt output of each process)
+  /* Sort only using the sort_len first chars
+   * If they are the same, then, sort using pointer address
+   * (be stable wrt output of each process)
    */
-  const char *s1 = *((const char**) p1);
-  const char *s2 = *((const char**) p2);
+  const char **s1 = *(const char***)p1;
+  const char **s2 = *(const char***)p2;
 
-  XBT_DEBUG("Compare strings '%s' and '%s'", s1, s2);
+  XBT_DEBUG("Compare strings '%s' and '%s'", *s1, *s2);
 
-  int res = strncmp(s1, s2, sort_len);
+  int res = strncmp(*s1, *s2, sort_len);
   if (res == 0)
-    res = p1 > p2 ? 1 : (p1 < p2 ? -1 : 0);
+    res = s1 > s2 ? 1 : (s1 < s2 ? -1 : 0);
   return res;
 }
 
+static void stable_sort(xbt_dynar_t a)
+{
+  unsigned long len = xbt_dynar_length(a);
+  void **b = xbt_new(void*, len);
+  unsigned long i;
+  for (i = 0 ; i < len ; i++)   /* fill the array b with pointers to strings */
+    b[i] = xbt_dynar_get_ptr(a, i);
+  qsort(b, len, sizeof *b, cmpstringp); /* sort it */
+  for (i = 0 ; i < len ; i++) /* dereference the pointers to get the strings */
+    b[i] = *(char**)b[i];
+  for (i = 0 ; i < len ; i++)   /* put everything in place */
+    xbt_dynar_set_as(a, i, char*, b[i]);
+  xbt_free(b);
+}
 
 /* Waits for the child to end (or to timeout), and check its
    ending conditions. This is launched from rctx_start but either in main
@@ -724,7 +739,7 @@ void *rctx_wait(void *r)
     }
 
     if (rctx->output_sort) {
-      xbt_dynar_sort(b, cmpstringp);
+      stable_sort(b);
       /* If empty lines moved in first position, remove them */
       while (!xbt_dynar_is_empty(b) && *xbt_dynar_getfirst_as(b, char*) == '\0')
         xbt_dynar_shift(b, NULL);

@@ -23,7 +23,8 @@ int slave(int argc, char *argv[]);
 long number_of_jobs;
 long number_of_slaves;
 
-long my_random(long n) {
+static long my_random(long n)
+{
   return n * (rand() / ((double)RAND_MAX + 1));
 }
 
@@ -67,7 +68,6 @@ int slave(int argc, char *argv[])
 {
   m_task_t task = NULL;
   _XBT_GNUC_UNUSED int res;
-  int id = -1;
 
   XBT_DEBUG("mailbox: %s",MSG_process_get_name(MSG_process_self()));
   while (1) {
