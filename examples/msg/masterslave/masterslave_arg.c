@@ -123,12 +123,15 @@ int main(int argc, char *argv[])
 
   for(i = 0 ; i<number_of_slaves; i++)
   {
-      MSG_process_create(bprintf("slave-%ld",i),
+    char* name_host = bprintf("slave-%ld",i);
+      MSG_process_create( name_host,
                           slave,
                           NULL,
                           host_table[my_random(number_of_slaves)]
                           );
+      free(name_host);
   }
+  xbt_free(host_table);
 
   res = MSG_main();
 
