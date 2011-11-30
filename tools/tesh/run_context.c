@@ -298,8 +298,10 @@ void rctx_pushline(const char *filepos, char kind, char *line)
 
     rctx->cmd = xbt_strdup(line);
     rctx->filepos = xbt_strdup(filepos);
-    if(option){
-    	rctx->cmd = bprintf("%s %s",rctx->cmd,option);
+    if (option){
+      char *newcmd = bprintf("%s %s", rctx->cmd, option);
+      free(rctx->cmd);
+      rctx->cmd = newcmd;
     }
     XBT_INFO("[%s] %s%s", filepos, rctx->cmd,
           ((rctx->is_background) ? " (background command)" : ""));
@@ -560,7 +562,9 @@ void rctx_start(void)
   int child_out[2];
 
   XBT_DEBUG("Cmd before rewriting %s", rctx->cmd);
-  rctx->cmd = xbt_str_varsubst(rctx->cmd, env);
+  char *newcmd = xbt_str_varsubst(rctx->cmd, env);
+  free(rctx->cmd);
+  rctx->cmd = newcmd;
   XBT_VERB("Start %s %s", rctx->cmd,
         (rctx->is_background ? "(background job)" : ""));
   xbt_os_mutex_acquire(armageddon_mutex);

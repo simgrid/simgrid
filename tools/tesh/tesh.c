@@ -245,10 +245,12 @@ int main(int argc, char *argv[])
             XBT_ERROR("--cfg argument requires an argument");
             exit(1);
       }
-      if(!option){ //if option is NULL
+      if (!option){ //if option is NULL
     	option = bprintf("--cfg=%s",argv[i+1]);
-      }else{
-    	option = bprintf("%s --cfg=%s",option,argv[i+1]);
+      } else {
+        char *newoption = bprintf("%s --cfg=%s", option, argv[i+1]);
+        free(option);
+        option = newoption;
       }
       XBT_INFO("Add option \'--cfg=%s\' to command line",argv[i+1]);
       memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));
@@ -300,6 +302,6 @@ int main(int argc, char *argv[])
 
   rctx_exit();
   xbt_dict_free(&env);
-  xbt_free_f(option);
+  free(option);
   return 0;
 }
