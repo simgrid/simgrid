@@ -18,14 +18,15 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 
 int alice(int argc, char *argv[]);
 int bob(int argc, char *argv[]);
+int carole(int argc, char *argv[]);
 int forwarder(int argc, char *argv[]);
 MSG_error_t test_all(const char *platform_file,
                      const char *application_file);
 
-int alice(int argc, char *argv[])
+static void test_host(const char*hostname) 
 {
-  m_host_t host1 = MSG_get_host_by_name("host1");
-  xbt_dict_t props = MSG_host_get_properties(host1);
+  m_host_t thehost = MSG_get_host_by_name(hostname);
+  xbt_dict_t props = MSG_host_get_properties(thehost);
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data;
   const char *noexist = "Unknown";
@@ -37,11 +38,11 @@ int alice(int argc, char *argv[])
       XBT_INFO("  Host property: '%s' -> '%s'", key, data);
 
   XBT_INFO("== Try to get a host property that does not exist");
-  value = MSG_host_get_property_value(host1, noexist);
+  value = MSG_host_get_property_value(thehost, noexist);
   xbt_assert(!value, "The key exists (it's not supposed to)");
 
   XBT_INFO("== Try to get a host property that does exist");
-  value = MSG_host_get_property_value(host1, exist);
+  value = MSG_host_get_property_value(thehost, exist);
   xbt_assert(value, "\tProperty %s is undefined (where it should)",
               exist);
   xbt_assert(!strcmp(value, "180"),
@@ -53,13 +54,24 @@ int alice(int argc, char *argv[])
   xbt_dict_set(props, exist, xbt_strdup("250"), xbt_free_f);
 
   /* Test if we have changed the value */
-  value = MSG_host_get_property_value(host1, exist);
+  value = MSG_host_get_property_value(thehost, exist);
   xbt_assert(value, "Property %s is undefined (where it should)", exist);
   xbt_assert(!strcmp(value, "250"),
               "Value of property %s is defined to %s (where it should be 250)",
               exist, value);
   XBT_INFO("   Property: %s old value: %s", exist, value);
+   
+  /* Restore the value for the next test */
+  xbt_dict_set(props, exist, xbt_strdup("180"), xbt_free_f);
+}
 
+int alice(int argc, char *argv[]) { /* Dump what we have on the current host */
+  test_host("host1");
+  return 0;
+}
+int carole(int argc, char *argv[]) {/* Dump what we have on a remote host */
+  MSG_process_sleep(1); // Wait for alice to be done with its experiment
+  test_host("host1");
   return 0;
 }
 
@@ -90,6 +102,7 @@ MSG_error_t test_all(const char *platform_file,
 {
   MSG_function_register("alice", alice);
   MSG_function_register("bob", bob);
+  MSG_function_register("carole", carole);
 
   MSG_create_environment(platform_file);
   MSG_launch_application(application_file);
