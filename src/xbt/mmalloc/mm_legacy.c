@@ -174,49 +174,13 @@ int mmalloc_compare_heap(void *h1, void *h2){
     XBT_DEBUG("Malloc descriptors null");
     return 0;
   }
-
-  XBT_DEBUG("Blocksize : %Zu - Heap : %Zu", BLOCKSIZE, HEAP);
  
-
-  /* Heapstats */
-
-  struct mstats ms1 = mmstats(h1);
-  struct mstats ms2 = mmstats(h2);
-
-  if(ms1.bytes_total !=  ms2.bytes_total){
-    XBT_DEBUG("Different total size of the heap : %Zu - %Zu", ms1.bytes_total, ms2.bytes_total );
-    return 1;
-  }
-
-  if(ms1.chunks_used !=  ms2.chunks_used){
-    XBT_DEBUG("Different chunks allocated by the user : %Zu - %Zu", ms1.chunks_used, ms2.chunks_used);
-    return 1;
-  }
-
-  if(ms1.bytes_used !=  ms2.bytes_used){
-    XBT_DEBUG("Different byte total of user-allocated chunks : %Zu - %Zu", ms1.bytes_used, ms2.bytes_used);
-    return 1;
-  }
-
-  if(ms1.bytes_free !=  ms2.bytes_free){
-    XBT_DEBUG("Different byte total of chunks in the free list : %Zu - %Zu", ms1.bytes_free, ms2.bytes_free);
-    return 1;
-  }
-
-  if(ms1.chunks_free !=  ms2.chunks_free){
-    XBT_DEBUG("Different chunks in the free list : %Zu - %Zu", ms1.chunks_free, ms2.chunks_free);
-    return 1;
-  }
-
   struct mdesc *mdp1, *mdp2;
   mdp1 = MD_TO_MDP(h1);
   mdp2 = MD_TO_MDP(h2);
   
-  if(mmalloc_compare_mdesc(mdp1, mdp2))
-    return 1;
-  
-
-  return 0;
+  return mmalloc_compare_mdesc(mdp1, mdp2))
+ 
 }
 
 int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
