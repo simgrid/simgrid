@@ -1,5 +1,3 @@
-/* 	$Id: datatypes.h 5497 2008-05-26 12:19:15Z cristianrosa $	 */
-
 /* Copyright (c) 2008 Martin Quinson, Cristian Rosa.
    All rights reserved.                                          */
 

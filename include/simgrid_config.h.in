@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* simgrid_config.h - Results of the configure made visible to user code    */
 
 /* Copyright (c) 2009, 2010, 2011. Da SimGrid team. All rights reserved.    */

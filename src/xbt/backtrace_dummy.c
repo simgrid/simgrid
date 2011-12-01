@@ -1,5 +1,3 @@
-/* $Id: ex_interface.h 3782 2007-07-14 09:11:06Z mquinson $ */
-
 /* backtrace_dummy -- stubs of this module for non-supported archs          */
 
 /* Copyright (c) 2008, 2009, 2010. The SimGrid Team.

@@ -1,5 +1,3 @@
-/* $ID$ */
-
 /* Copyright (c) 2007, 2009, 2010. The SimGrid Team.
  * All rights reserved.                                                     */
 

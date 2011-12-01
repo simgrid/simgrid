@@ -1,5 +1,3 @@
-/* $Id: str.h,v 1.5 2007/05/02 10:08:55 mquinson Exp $ */
-
 /* hash.h - Various hashing functions.                                      */
 
 /* Copyright (c) 2008, 2009, 2010. The SimGrid Team.

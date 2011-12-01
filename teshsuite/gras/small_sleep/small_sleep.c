@@ -1,5 +1,3 @@
-/* $Id: gras.c 3859 2007-07-18 12:29:51Z donassbr $ */
-
 /* small_sleep.c -- check what happens when the processes do sleeps very shortly*/
 
 /* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
