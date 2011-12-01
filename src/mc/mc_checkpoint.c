@@ -41,13 +41,8 @@ static void MC_region_restore(mc_mem_region_t reg)
 	  void *segment = malloc(reg->size + diff);
 	  XBT_DEBUG("Size of segment : %lu", sizeof(segment));
 	  memcpy((char *)segment + diff, reg->data, reg->size);
-	  //memset(segment, '\0', diff);
-	  //XBT_DEBUG("Memset ok");
-	  //memcpy(segment+diff, reg->data, reg->size);
-	  //XBT_DEBUG("Memcpy segment ok");
 	  memcpy(r.start_addr, segment, sizeof(segment));
 	  XBT_DEBUG("Memcpy region ok");
-	  //memcpy(r.start_addr, reg->data, sizeof(reg->data));
 	  break;
 	}
       }
@@ -58,7 +53,7 @@ static void MC_region_restore(mc_mem_region_t reg)
     memcpy(reg->start_addr, reg->data, reg->size);
   }
   
-  //return;
+  return;
 }
 
 static void MC_region_destroy(mc_mem_region_t reg)
@@ -71,16 +66,16 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start
 {
   switch(type){
   case 0 : 
-    XBT_DEBUG("New region heap");
+    XBT_DEBUG("New region heap (%Zu)", size);
     break;
   case 1 : 
-    XBT_DEBUG("New region libsimgrid");
+    XBT_DEBUG("New region libsimgrid (%Zu)", size);
     break;
   case 2 : 
-    XBT_DEBUG("New region program");
+    XBT_DEBUG("New region program (%Zu)", size);
     break;
   case 3 : 
-    XBT_DEBUG("New region stack");
+    XBT_DEBUG("New region stack (%Zu)", size);
     break;
   }
   mc_mem_region_t new_reg = MC_region_new(type, start_addr, size);
@@ -137,7 +132,7 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot, char *prgm)
     if ((reg.prot & PROT_WRITE)){
       if (maps->regions[i].pathname == NULL){
         if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
-          MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+	  MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
         }
       } else {
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
@@ -145,11 +140,49 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot, char *prgm)
         } else {
 	  if (!memcmp(basename(maps->regions[i].pathname), basename(prgm), strlen(basename(prgm)))){
 	    MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-	  } //else {
-	    //if (!memcmp(maps->regions[i].pathname, "[stack]", 7)){
-	  //MC_snapshot_add_region(snapshot, 3, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-	  //}
-	  //}
+	  } /*else {
+	    if (!memcmp(maps->regions[i].pathname, "[stack]", 7)){
+	      MC_snapshot_add_region(snapshot, 3, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+	    }
+	    }*/
+	}
+      }
+    }
+    i++;
+  }
+
+  /* FIXME: free the memory map */
+}
+
+void MC_take_snapshot_to_restore_liveness(mc_snapshot_t snapshot, char *prgm)
+{
+  unsigned int i = 0;
+  s_map_region reg;
+  memory_map_t maps = get_memory_map();
+
+  for(i=0; i< snapshot->num_reg; i++){
+    MC_region_destroy(snapshot->regions[i]);
+  }
+
+  snapshot->num_reg = 0;
+
+  i = 0;
+
+  /* Save the std heap and the writable mapped pages of libsimgrid */
+  while (i < maps->mapsize) {
+    reg = maps->regions[i];
+    if ((reg.prot & PROT_WRITE)){
+      if (maps->regions[i].pathname == NULL){
+        if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
+	  MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+        }
+      } else {
+        if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
+          MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+        } else {
+	  if (!memcmp(basename(maps->regions[i].pathname), basename(prgm), strlen(basename(prgm)))){
+	    MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+	  } 
 	}
       }
     }
