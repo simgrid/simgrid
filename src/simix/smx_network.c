@@ -554,7 +554,7 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
  */
 void SIMIX_comm_finish(smx_action_t action)
 {
-  unsigned int destroy_count = 0;
+  volatile unsigned int destroy_count = 0;
   smx_req_t req;
 
   while ((req = xbt_fifo_shift(action->request_list))) {
