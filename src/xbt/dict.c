@@ -1,6 +1,6 @@
 /* dict - a generic dictionary, variation over hash table                   */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,15 +19,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt,
                                 "Dictionaries provide the same functionalities than hash tables");
-/*####[ Private prototypes ]#################################################*/
-
-static xbt_mallocator_t dict_mallocator = NULL;
-static void *dict_mallocator_new_f(void);
-#define dict_mallocator_free_f xbt_free_f
-#define dict_mallocator_reset_f ((void_f_pvoid_t)NULL)
-
-
-/*####[ Code ]###############################################################*/
 
 /**
  * \brief Constructor
@@ -40,7 +31,7 @@ xbt_dict_t xbt_dict_new(void)
 {
   xbt_dict_t dict;
 
-  dict = xbt_mallocator_get(dict_mallocator);
+  dict = xbt_new(s_xbt_dict_t, 1);
   dict->table_size = 127;
   dict->table = xbt_new0(xbt_dictelm_t, dict->table_size + 1);
   dict->count = 0;
@@ -79,7 +70,7 @@ void xbt_dict_free(xbt_dict_t * dict)
       }
     }
     xbt_free(table);
-    xbt_mallocator_release(dict_mallocator, *dict);
+    xbt_free(*dict);
     *dict = NULL;
   }
 }
@@ -764,16 +755,11 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
  */
 void xbt_dict_preinit(void)
 {
-  if (dict_mallocator != NULL) {
+  if (dict_elm_mallocator != NULL) {
     /* Already created. I guess we want to switch to MC mode, so kill the previously created mallocator */
-    xbt_mallocator_free(dict_mallocator);
     xbt_mallocator_free(dict_elm_mallocator);
   }
 
-  dict_mallocator = xbt_mallocator_new(256,
-                                       dict_mallocator_new_f,
-                                       dict_mallocator_free_f,
-                                       dict_mallocator_reset_f);
   dict_elm_mallocator = xbt_mallocator_new(256,
                                            dict_elm_mallocator_new_f,
                                            dict_elm_mallocator_free_f,
@@ -786,9 +772,7 @@ void xbt_dict_preinit(void)
  */
 void xbt_dict_postexit(void)
 {
-  if (dict_mallocator != NULL) {
-    xbt_mallocator_free(dict_mallocator);
-    dict_mallocator = NULL;
+  if (dict_elm_mallocator != NULL) {
     xbt_mallocator_free(dict_elm_mallocator);
     dict_elm_mallocator = NULL;
   }
@@ -809,11 +793,6 @@ void xbt_dict_postexit(void)
     }
     printf("; %f elm per cell\n", avg / (double) total_count);
   }
-}
-
-static void *dict_mallocator_new_f(void)
-{
-  return xbt_new(s_xbt_dict_t, 1);
 }
 
 #ifdef SIMGRID_TEST
