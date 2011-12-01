@@ -32,6 +32,8 @@ mc_stats_pair_t mc_stats_pair = NULL;
 xbt_fifo_t mc_stack_liveness_stateless = NULL;
 mc_snapshot_t initial_snapshot_liveness = NULL;
 
+xbt_automaton_t automaton;
+char *prog_name;
 
 /**
  *  \brief Initialize the model-checker data structures
@@ -143,7 +145,10 @@ void MC_init_liveness_stateless(xbt_automaton_t a, char *prgm){
 
   MC_UNSET_RAW_MEM;
 
-  MC_ddfs_stateless_init(a, prgm);
+  automaton = a;
+  prog_name = strdup(prgm);
+
+  MC_ddfs_stateless_init();
 
   
 }

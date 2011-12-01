@@ -35,9 +35,11 @@ typedef struct s_mc_snapshot{
   mc_mem_region_t *regions;
 } s_mc_snapshot_t, *mc_snapshot_t;
 
+extern char *prog_name;
+
 void MC_take_snapshot(mc_snapshot_t);
-void MC_take_snapshot_liveness(mc_snapshot_t s, char *prgm);
-void MC_take_snapshot_to_restore_liveness(mc_snapshot_t s, char *prgm);
+void MC_take_snapshot_liveness(mc_snapshot_t s);
+void MC_take_snapshot_to_restore_liveness(mc_snapshot_t s);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 
@@ -227,19 +229,19 @@ typedef struct s_mc_pair_visited{
   int search_cycle;
 }s_mc_pair_visited_t, *mc_pair_visited_t;
 
-int MC_automaton_evaluate_label(xbt_automaton_t a, xbt_exp_label_t l);
+int MC_automaton_evaluate_label(xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
-int reached(xbt_automaton_t a, xbt_state_t st, char *prgm);
-void set_pair_reached(xbt_automaton_t a, xbt_state_t st, char *prgm);
+int reached(xbt_state_t st);
+void set_pair_reached(xbt_state_t st);
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
 void MC_show_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_pair_delete(mc_pair_t pair);
 void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
-int visited(xbt_automaton_t a, xbt_state_t st, int search_cycle, char *prgm);
-void set_pair_visited(xbt_automaton_t a, xbt_state_t st, int search_cycle, char *prgm);
+int visited(xbt_state_t st, int search_cycle);
+void set_pair_visited(xbt_state_t st, int search_cycle);
 
 /* **** Double-DFS stateful without visited state **** */
 
@@ -258,10 +260,11 @@ typedef struct s_mc_pair_stateless{
 
 extern xbt_fifo_t mc_stack_liveness_stateless;
 extern mc_snapshot_t initial_snapshot_liveness;
+extern xbt_automaton_t automaton;
 
 mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r);
-void MC_ddfs_stateless_init(xbt_automaton_t a, char *prgm);
-void MC_ddfs_stateless(xbt_automaton_t a, int search_cycle, int replay, char *prgm);
+void MC_ddfs_stateless_init();
+void MC_ddfs_stateless(int search_cycle);
 void MC_show_stack_liveness_stateless(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateless(xbt_fifo_t stack);
 void MC_pair_stateless_delete(mc_pair_stateless_t pair);

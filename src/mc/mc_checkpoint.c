@@ -112,7 +112,7 @@ void MC_take_snapshot(mc_snapshot_t snapshot)
 }
 
 
-void MC_take_snapshot_liveness(mc_snapshot_t snapshot, char *prgm)
+void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
 {
   unsigned int i = 0;
   s_map_region reg;
@@ -138,7 +138,7 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot, char *prgm)
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
         } else {
-	  if (!memcmp(basename(maps->regions[i].pathname), basename(prgm), strlen(basename(prgm)))){
+	  if (!memcmp(basename(maps->regions[i].pathname), basename(prog_name), strlen(basename(prog_name)))){
 	    MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
 	  } /*else {
 	    if (!memcmp(maps->regions[i].pathname, "[stack]", 7)){
@@ -154,7 +154,7 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot, char *prgm)
   /* FIXME: free the memory map */
 }
 
-void MC_take_snapshot_to_restore_liveness(mc_snapshot_t snapshot, char *prgm)
+void MC_take_snapshot_to_restore_liveness(mc_snapshot_t snapshot)
 {
   unsigned int i = 0;
   s_map_region reg;
@@ -180,7 +180,7 @@ void MC_take_snapshot_to_restore_liveness(mc_snapshot_t snapshot, char *prgm)
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
         } else {
-	  if (!memcmp(basename(maps->regions[i].pathname), basename(prgm), strlen(basename(prgm)))){
+	  if (!memcmp(basename(maps->regions[i].pathname), basename(prog_name), strlen(basename(prog_name)))){
 	    MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
 	  } 
 	}
