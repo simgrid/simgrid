@@ -45,6 +45,8 @@ int sg_network_fullduplex = 0;
 
 xbt_dict_t gap_lookup = NULL;
 
+e_UM_t network_update_mechanism = UM_FULL;
+
 typedef struct network_link_CM02_im {
   s_surf_resource_lmm_t lmm_resource;   /* must remain first to be added to a trace */
 
@@ -62,7 +64,6 @@ static xbt_swag_t im_net_modified_set = NULL;
 static xbt_heap_t im_net_action_heap = NULL;
 xbt_swag_t keep_track = NULL;
 extern int sg_maxmin_selective_update;
-extern e_UM_t update_mechanism;
 
 #ifdef HAVE_SMPI
 static void gap_append(double size, const link_CM02_im_t link, surf_action_network_CM02_im_t action);
@@ -225,8 +226,7 @@ static void im_net_parse_link_init(sg_platf_link_cbarg_t link)
                         link->state,
                         link->state_trace,
                         link->policy,
-                        NULL); /* FIXME: We need to deep copy the properties or
-                                * we won't be able to free it */
+                        link->properties);
     xbt_free(link_id);
   }
   else{
@@ -321,7 +321,7 @@ static int im_net_action_unref(surf_action_t action)
       lmm_variable_free(network_im_maxmin_system,
                         ((surf_action_network_CM02_im_t) action)->variable);
     }
-    if(update_mechanism == UM_FULL){// remove action from the heap
+    if(network_update_mechanism == UM_LAZY){// remove action from the heap
       heap_remove((surf_action_network_CM02_im_t) action);
       xbt_swag_remove(action, im_net_modified_set);
     }
@@ -341,7 +341,7 @@ static int im_net_action_unref(surf_action_t action)
 static void im_net_action_cancel(surf_action_t action)
 {
   surf_network_model->action_state_set(action, SURF_ACTION_FAILED);
-  if(update_mechanism == UM_FULL){// remove action from the heap
+  if(network_update_mechanism == UM_LAZY){// remove action from the heap
     xbt_swag_remove(action, im_net_modified_set);
     heap_remove((surf_action_network_CM02_im_t) action);
   }
@@ -361,7 +361,7 @@ static int im_net_get_link_latency_limited(surf_action_t action)
 
 double im_net_action_get_remains(surf_action_t action)
 {
-  if(update_mechanism == UM_FULL)/* update remains before return it */
+  if(network_update_mechanism == UM_LAZY)/* update remains before return it */
     update_action_remaining(surf_get_clock());
   return action->remains;
 }
@@ -515,9 +515,9 @@ static double im_net_share_resources(double now)
 
 static double generic_net_share_resources(double now)
 {
-  if(update_mechanism == UM_FULL)
+  if(network_update_mechanism == UM_LAZY)
     return im_net_share_resources(now);
-  else if (update_mechanism == UM_LAZY)
+  else if (network_update_mechanism == UM_FULL)
   {
     return net_share_resources(now);
   } else {
@@ -641,9 +641,9 @@ static void im_net_update_actions_state(double now, double delta)
 
 static void generic_net_update_actions_state(double now, double delta)
 {
-  if(update_mechanism == UM_FULL)
+  if(network_update_mechanism == UM_LAZY)
     im_net_update_actions_state(now,delta);
-  else if (update_mechanism == UM_LAZY)
+  else if (network_update_mechanism == UM_FULL)
   {
     net_update_actions_state(now,delta);
   } else {
@@ -814,7 +814,7 @@ static surf_action_t im_net_communicate(const char *src_name,
 
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
-  if(update_mechanism == UM_FULL){
+  if(network_update_mechanism == UM_LAZY){
     action->index_heap = -1;
     action->latency = 0.0;
     action->weight = 0.0;
@@ -868,7 +868,7 @@ static surf_action_t im_net_communicate(const char *src_name,
       action->variable =
         lmm_variable_new(network_im_maxmin_system, action, 0.0, -1.0,
                          constraints_per_variable);
-    if(update_mechanism == UM_FULL){
+    if(network_update_mechanism == UM_LAZY){
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency + action->last_update);
       heap_insert(action, action->latency + action->last_update, LATENCY);
@@ -962,7 +962,7 @@ static void im_net_action_suspend(surf_action_t action)
                              ((surf_action_network_CM02_im_t)
                               action)->variable, 0.0);
 
-  if(update_mechanism == UM_FULL)// remove action from the heap
+  if(network_update_mechanism == UM_LAZY)// remove action from the heap
     heap_remove((surf_action_network_CM02_im_t) action);
 }
 
@@ -975,7 +975,7 @@ static void im_net_action_resume(surf_action_t action)
                                ((surf_action_network_CM02_im_t)
                                 action)->weight);
     ((surf_action_network_CM02_im_t) action)->suspended = 0;
-    if(update_mechanism == UM_FULL)// remove action from the heap
+    if(network_update_mechanism == UM_LAZY)// remove action from the heap
       heap_remove((surf_action_network_CM02_im_t) action);
   }
 }
@@ -988,7 +988,7 @@ static int im_net_action_is_suspended(surf_action_t action)
 void im_net_action_set_max_duration(surf_action_t action, double duration)
 {
   action->max_duration = duration;
-  if(update_mechanism == UM_FULL)// remove action from the heap
+  if(network_update_mechanism == UM_LAZY)// remove action from the heap
     heap_remove((surf_action_network_CM02_im_t) action);
 }
 
@@ -1007,7 +1007,7 @@ static void im_net_finalize(void)
   lmm_system_free(network_im_maxmin_system);
   network_im_maxmin_system = NULL;
 
-  if(update_mechanism == UM_FULL){
+  if(network_update_mechanism == UM_LAZY){
     xbt_heap_free(im_net_action_heap);
     xbt_swag_free(im_net_modified_set);
   }
@@ -1120,7 +1120,7 @@ static void im_surf_network_model_init_internal(void)
           SURF_RESOURCE_ON, NULL,
           SURF_LINK_FATPIPE, NULL));
 
-  if(update_mechanism == UM_FULL){
+  if(network_update_mechanism == UM_LAZY){
     sg_maxmin_selective_update = 1;
     im_net_action_heap = xbt_heap_new(8,NULL);
     xbt_heap_set_update_callback(im_net_action_heap, im_net_action_update_index_heap);
@@ -1155,6 +1155,10 @@ void surf_network_model_init_SMPI(void)
 /************************************************************************/
 void im_surf_network_model_init_LegrandVelho(void)
 {
+  if( strcmp(xbt_cfg_get_string(_surf_cfg_set, "network/model"),"LV08"))
+    network_update_mechanism = UM_LAZY;
+  else
+    network_update_mechanism = UM_FULL;
 
   if (surf_network_model)
     return;
@@ -1189,6 +1193,10 @@ void surf_network_model_init_CM02(void)
   im_net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
   network_im_solve = lmm_solve;
+
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor", 1.0);
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor", 1.0);
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 0.0);
 }
 
 void surf_network_model_init_Reno(void)
