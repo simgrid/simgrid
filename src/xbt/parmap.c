@@ -37,10 +37,10 @@ typedef struct s_xbt_event {
   unsigned int threads_to_wait;
 } s_xbt_event_t, *xbt_event_t;
 
-void xbt_event_init(xbt_event_t event);
-void xbt_event_signal(xbt_event_t event);
-void xbt_event_wait(xbt_event_t event);
-void xbt_event_end(xbt_event_t event);
+static void xbt_event_init(xbt_event_t event);
+static void xbt_event_signal(xbt_event_t event);
+static void xbt_event_wait(xbt_event_t event);
+static void xbt_event_end(xbt_event_t event);
 #endif
 
 typedef struct s_xbt_parmap {
@@ -176,7 +176,7 @@ static void futex_wake(int *uaddr, int val)
   syscall(SYS_futex, uaddr, FUTEX_WAKE_PRIVATE, val, NULL, NULL, 0);
 }
 
-void xbt_event_init(xbt_event_t event)
+static void xbt_event_init(xbt_event_t event)
 {
   int myflag = event->done;
   if (event->thread_counter < event->threads_to_wait) {
@@ -184,7 +184,7 @@ void xbt_event_init(xbt_event_t event)
   }
 }
 
-void xbt_event_signal(xbt_event_t event)
+static void xbt_event_signal(xbt_event_t event)
 {
   int myflag = event->done;
   event->thread_counter = 0;
@@ -193,7 +193,7 @@ void xbt_event_signal(xbt_event_t event)
   futex_wait(&event->done, myflag);
 }
 
-void xbt_event_wait(xbt_event_t event)
+static void xbt_event_wait(xbt_event_t event)
 {
   int myflag;
   unsigned int mycount;
@@ -208,7 +208,7 @@ void xbt_event_wait(xbt_event_t event)
   futex_wait(&event->work, myflag);
 }
 
-void xbt_event_end(xbt_event_t event)
+static void xbt_event_end(xbt_event_t event)
 {
   unsigned int mycount;
 
