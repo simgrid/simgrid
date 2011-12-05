@@ -290,24 +290,28 @@ int visited_hash(xbt_state_t st, int sc){
     xbt_fifo_item_t item = xbt_fifo_get_first_item(visited_pairs_hash);
     mc_pair_visited_hash_t pair_test = NULL;
 
+    int region_diff = 0;
+
     while(i < xbt_fifo_size(visited_pairs_hash) && item != NULL){
 
       pair_test = (mc_pair_visited_hash_t) xbt_fifo_get_item_content(item);
-      
+
       if(pair_test != NULL){
 	if(pair_test->search_cycle == sc) {
 	  if(automaton_state_compare(pair_test->automaton_state, st) == 0){
 	    if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
 	      for(j=0 ; j< sn->num_reg ; j++){
 		if(xbt_dict_get_or_null_ext(pair_test->hash_regions, sn->regions[j]->data, sn->regions[j]->size) == NULL){
-		  return 0;
+		  region_diff++;
 		}
 	      }
-	      MC_free_snapshot(sn);
-	      xbt_dynar_reset(prop_ato);
-	      xbt_free(prop_ato);
-	      MC_UNSET_RAW_MEM;
-	      return 1;
+	      if(region_diff == 0){
+		MC_free_snapshot(sn);
+		xbt_dynar_reset(prop_ato);
+		xbt_free(prop_ato);
+		MC_UNSET_RAW_MEM;
+		return 1;
+	      }
 	    }
 	  }
 	}
@@ -316,9 +320,9 @@ int visited_hash(xbt_state_t st, int sc){
       item = xbt_fifo_get_next_item(item);
       
       i++;
+      region_diff = 0;
 
     }
-
 
     MC_free_snapshot(sn);
     xbt_dynar_reset(prop_ato);
@@ -331,52 +335,55 @@ int visited_hash(xbt_state_t st, int sc){
 
 void set_pair_visited_hash(xbt_state_t st, int sc){
 
+  if(!visited_hash(st, sc)){
  
-  MC_SET_RAW_MEM;
+    MC_SET_RAW_MEM;
 
-  mc_snapshot_t sn = xbt_new0(s_mc_snapshot_t, 1);
-  MC_take_snapshot_liveness(sn);
+    mc_snapshot_t sn = xbt_new0(s_mc_snapshot_t, 1);
+    MC_take_snapshot_liveness(sn);
  
-  mc_pair_visited_hash_t pair = NULL;
-  pair = xbt_new0(s_mc_pair_visited_hash_t, 1);
-  pair->automaton_state = st;
-  pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-  pair->search_cycle = sc;
-  pair->hash_regions = xbt_dict_new();
+    mc_pair_visited_hash_t pair = NULL;
+    pair = xbt_new0(s_mc_pair_visited_hash_t, 1);
+    pair->automaton_state = st;
+    pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
+    pair->search_cycle = sc;
+    pair->hash_regions = xbt_dict_new();
   
-  int i = 0;
+    int i = 0;
 
-  for(i=0 ; i< sn->num_reg ; i++){
-    switch(sn->regions[i]->type){
-    case 0:
-      xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "heap", NULL);
-      break;
-    case 1:
-      xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "libsimgrid", NULL);
-      break;
-    case 2:
-      xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "prog", NULL);
-      break;
+    for(i=0 ; i< sn->num_reg ; i++){
+      switch(sn->regions[i]->type){
+      case 0:
+	xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "heap", NULL);
+	break;
+      case 1:
+	xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "libsimgrid", NULL);
+	break;
+      case 2:
+	xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "prog", NULL);
+	break;
+      }
     }
-  }
   
-  /* Get values of propositional symbols */
-  unsigned int cursor = 0;
-  xbt_propositional_symbol_t ps = NULL;
-  int res;
-  int (*f)();
+    /* Get values of propositional symbols */
+    unsigned int cursor = 0;
+    xbt_propositional_symbol_t ps = NULL;
+    int res;
+    int (*f)();
 
-  xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
-    f = ps->function;
-    res = (*f)();
-    xbt_dynar_push_as(pair->prop_ato, int, res);
-  }
+    xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
+      f = ps->function;
+      res = (*f)();
+      xbt_dynar_push_as(pair->prop_ato, int, res);
+    }
   
-  xbt_fifo_unshift(visited_pairs_hash, pair);
+    xbt_fifo_unshift(visited_pairs_hash, pair);
 
-  MC_free_snapshot(sn);
+    MC_free_snapshot(sn);
   
-  MC_UNSET_RAW_MEM;
+    MC_UNSET_RAW_MEM;
+  
+  }
   
   
 }
@@ -445,9 +452,10 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
   case 3 : { 
     unsigned int cursor = 0;
     xbt_propositional_symbol_t p = NULL;
+    int (*f)();
     xbt_dynar_foreach(automaton->propositional_symbols, cursor, p){
       if(strcmp(p->pred, l->u.predicat) == 0){
-	int (*f)() = p->function;
+	f = p->function;
 	return (*f)();
       }
     }
@@ -600,7 +608,7 @@ void MC_ddfs_stateless(int search_cycle){
     set_pair_visited_hash(current_pair->automaton_state, search_cycle);
 
     //XBT_DEBUG("Visited pairs : %d", xbt_fifo_size(visited_pairs));
-    //XBT_DEBUG("Visited pairs : %d", xbt_fifo_size(visited_pairs_hash));
+    XBT_DEBUG("Visited pairs : %d", xbt_fifo_size(visited_pairs_hash));
 
     if(current_pair->requests > 0){
 
