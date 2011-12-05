@@ -437,27 +437,27 @@ AS_t model_dijkstracache_create(void)
 
 void model_dijkstra_both_end(AS_t as)
 {
-  as_dijkstra_t THIS = (as_dijkstra_t) as;
+  as_dijkstra_t THIS_AS = (as_dijkstra_t) as;
 
   xbt_node_t node = NULL;
   unsigned int cursor2;
   xbt_dynar_t nodes = NULL;
 
   /* Create the topology graph */
-  if(!THIS->route_graph)
-  THIS->route_graph = xbt_graph_new_graph(1, NULL);
-  if(!THIS->graph_node_map)
-  THIS->graph_node_map = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
+  if(!THIS_AS->route_graph)
+  THIS_AS->route_graph = xbt_graph_new_graph(1, NULL);
+  if(!THIS_AS->graph_node_map)
+  THIS_AS->graph_node_map = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
-  if (THIS->cached && !THIS->route_cache)
-  THIS->route_cache = xbt_dict_new_homogeneous(&route_cache_elem_free);
+  if (THIS_AS->cached && !THIS_AS->route_cache)
+  THIS_AS->route_cache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
   /* Add the loopback if needed */
   if (as->hierarchy == SURF_ROUTING_BASE)
-    add_loopback_dijkstra(THIS);
+    add_loopback_dijkstra(THIS_AS);
 
   /* initialize graph indexes in nodes after graph has been built */
-  nodes = xbt_graph_get_nodes(THIS->route_graph);
+  nodes = xbt_graph_get_nodes(THIS_AS->route_graph);
 
   xbt_dynar_foreach(nodes, cursor2, node) {
     graph_node_data_t data = xbt_graph_node_get_data(node);
