@@ -22,12 +22,11 @@ smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
 int smx_context_stack_size = 128 * 1024;
 
 #ifdef HAVE_THREAD_LOCAL_STORAGE
-__thread smx_context_t smx_current_context;
+static __thread smx_context_t smx_current_context_parallel;
 #else
-smx_context_t smx_current_context; /* define it anyway, will be used in non-parallel mode */
 static xbt_os_thread_key_t smx_current_context_key = 0;
 #endif
-
+static smx_context_t smx_current_context_serial;
 static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
 
@@ -182,11 +181,16 @@ XBT_INLINE int SIMIX_context_get_parallel_threshold(void) {
  */
 XBT_INLINE smx_context_t SIMIX_context_get_current(void)
 {
+  if (SIMIX_context_is_parallel()) {
 #ifdef HAVE_THREAD_LOCAL_STORAGE
-  return smx_current_context;
+    return smx_current_context_parallel;
 #else
-  return xbt_os_thread_get_specific(smx_current_context_key);
+    return xbt_os_thread_get_specific(smx_current_context_key);
 #endif
+  }
+  else {
+    return smx_current_context_serial;
+  }
 }
 
 /**
@@ -195,10 +199,15 @@ XBT_INLINE smx_context_t SIMIX_context_get_current(void)
  */
 XBT_INLINE void SIMIX_context_set_current(smx_context_t context)
 {
+  if (SIMIX_context_is_parallel()) {
 #ifdef HAVE_THREAD_LOCAL_STORAGE
-  smx_current_context = context;
+    smx_current_context_parallel = context;
 #else
-  xbt_os_thread_set_specific(smx_current_context_key, context);
+    xbt_os_thread_set_specific(smx_current_context_key, context);
 #endif
+  }
+  else {
+    smx_current_context_serial = context;
+  }
 }
 
