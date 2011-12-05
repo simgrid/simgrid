@@ -339,7 +339,7 @@ static void rulebased_get_route_and_latency(AS_t rc,
   } else if (!strcmp(src, dst) && are_processing_units) {
     xbt_dynar_push(route->link_list, &(global_routing->loopback));
     if (lat)
-      *lat += surf_network_model->extension.network.get_link_latency(link);
+      *lat += surf_network_model->extension.network.get_link_latency(global_routing->loopback);
   } else {
     THROWF(arg_error,0,"No route from '%s' to '%s'??",src,dst);
     //xbt_dynar_reset(route->link_list);
