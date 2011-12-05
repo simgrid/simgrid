@@ -64,7 +64,7 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
 
 xbt_cfg_t xbt_cfg_new(void)
 {
-  return (xbt_cfg_t) xbt_dict_new();
+  return (xbt_cfg_t) xbt_dict_new_homogeneous(&xbt_cfgelm_free);
 }
 
 /** \brief Copy an existing configuration set
@@ -263,7 +263,7 @@ xbt_cfg_register(xbt_cfg_t * cfg,
     XBT_ERROR("%d is an invalide type code", type);
   }
 
-  xbt_dict_set((xbt_dict_t) * cfg, name, res, &xbt_cfgelm_free);
+  xbt_dict_set((xbt_dict_t) * cfg, name, res, NULL);
 }
 
 /** @brief Unregister an element from a config set.

@@ -1,5 +1,3 @@
-/* 	$Id: private.h 5497 2008-05-26 12:19:15Z cristianrosa $	 */
-
 /* Copyright (c) 2007 Arnaud Legrand, Bruno Donnassolo.
    All rights reserved.                                          */
 

@@ -47,7 +47,7 @@ AS_t model_none_create_sized(size_t childsize) {
   new_component->get_bypass_route = none_get_bypass_route;
   new_component->finalize = model_none_finalize;
 
-  new_component->routing_sons = xbt_dict_new();
+  new_component->routing_sons = xbt_dict_new_homogeneous(NULL);
 
   return new_component;
 }

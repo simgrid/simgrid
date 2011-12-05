@@ -1,6 +1,6 @@
-/* dict - a generic dictionary, variation over the B-tree concept           */
+/* dict - a generic dictionary, variation over hash table                   */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -22,62 +22,83 @@ XBT_LOG_NEW_SUBCATEGORY(xbt_dict_collapse, xbt_dict,
                         "Dictionaries internals: post-removal cleanup");
 
 xbt_mallocator_t dict_elm_mallocator = NULL;
+xbt_mallocator_t dict_het_elm_mallocator = NULL;
 
-xbt_dictelm_t xbt_dictelm_new(const char *key,
-                              int key_len,
-                              unsigned int hash_code,
-                              void *content, void_f_pvoid_t free_f)
+xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len,
+                              unsigned int hash_code, void *content,
+                              void_f_pvoid_t free_f)
 {
-  xbt_dictelm_t element = xbt_mallocator_get(dict_elm_mallocator);
+  xbt_dictelm_t element;
 
-  element->dictielem = 0;       /* please free the key on free */
+  if (dict->homogeneous) {
+    xbt_assert(!free_f,
+               "Cannot set an individual free function in homogeneous dicts.");
+    element = xbt_mallocator_get(dict_elm_mallocator);
+  } else {
+    xbt_het_dictelm_t het_element = xbt_mallocator_get(dict_het_elm_mallocator);
+    het_element->free_f = free_f;
+    element = &het_element->element;
+  }
   element->key = xbt_new(char, key_len + 1);
-  memcpy((void *) element->key, (void *) key, key_len);
+  memcpy(element->key, key, key_len);
   element->key[key_len] = '\0';
 
   element->key_len = key_len;
   element->hash_code = hash_code;
 
   element->content = content;
-  element->free_f = free_f;
   element->next = NULL;
 
   return element;
 }
 
-xbt_dictelm_t xbt_dictielm_new(uintptr_t key, unsigned int hash_code,
-                               uintptr_t content)
+void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element)
 {
-  xbt_dictelm_t element = xbt_mallocator_get(dict_elm_mallocator);
-
-  element->key = (void *) key;
-
-  element->dictielem = 1;       /* please DONT free the key on free */
-  element->key_len = sizeof(uintptr_t);
-  element->hash_code = hash_code;
-
-  element->content = (void *) content;
-  element->free_f = NULL;
-  element->next = NULL;
-
-  return element;
-}
-
-void xbt_dictelm_free(xbt_dictelm_t element)
-{
-  if (element != NULL) {
-    if (!element->dictielem)
-      xbt_free(element->key);
-
-    if (element->free_f != NULL && element->content != NULL) {
-      element->free_f(element->content);
+  if (element) {
+    char *key = element->key;
+    void *content = element->content;
+    void_f_pvoid_t free_f;
+    if (dict->homogeneous) {
+      free_f = dict->free_f;
+      xbt_mallocator_release(dict_elm_mallocator, element);
+    } else {
+      xbt_het_dictelm_t het_element = (xbt_het_dictelm_t)element;
+      free_f = het_element->free_f;
+      xbt_mallocator_release(dict_het_elm_mallocator, het_element);
     }
 
-    xbt_mallocator_release(dict_elm_mallocator, element);
+    xbt_free(key);
+    if (free_f && content)
+      free_f(content);
   }
+}
+
+void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element,
+                          void *data, void_f_pvoid_t free_ctn)
+{
+  void_f_pvoid_t free_f;
+  if (dict->homogeneous) {
+    free_f = dict->free_f;
+    xbt_assert(!free_ctn,
+               "Cannot set an individual free function in homogeneous dicts.");
+  } else {
+    xbt_het_dictelm_t het_element = (xbt_het_dictelm_t)element;
+    free_f  = het_element->free_f;
+    het_element->free_f = free_ctn;
+  }
+
+  if (free_f && element->content)
+    free_f(element->content);
+
+  element->content = data;
 }
 
 void *dict_elm_mallocator_new_f(void)
 {
   return xbt_new(s_xbt_dictelm_t, 1);
+}
+
+void *dict_het_elm_mallocator_new_f(void)
+{
+  return xbt_new(s_xbt_het_dictelm_t, 1);
 }

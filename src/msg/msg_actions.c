@@ -84,8 +84,8 @@ static int MSG_action_runner(int argc, char *argv[])
 
 void _MSG_action_init()
 {
-  action_funs = xbt_dict_new();
-  action_queues = xbt_dict_new();
+  action_funs = xbt_dict_new_homogeneous(NULL);
+  action_queues = xbt_dict_new_homogeneous(NULL);
   MSG_function_register_default(MSG_action_runner);
 }
 
@@ -190,7 +190,7 @@ MSG_error_t MSG_action_trace_run(char *path)
   if (path)
     fclose(action_fp);
   xbt_dict_free(&action_queues);
-  action_queues = xbt_dict_new();
+  action_queues = xbt_dict_new_homogeneous(NULL);
 
   return res;
 }

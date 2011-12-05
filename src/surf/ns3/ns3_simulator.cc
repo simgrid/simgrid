@@ -61,7 +61,7 @@ void NS3Sim::create_flow_NS3(
 		uint32_t totalBytes,
 		void * action)
 {
-	if(!dict_socket) dict_socket = xbt_dict_new();
+	if(!dict_socket) dict_socket = xbt_dict_new_homogeneous(free);
 
 	PacketSinkHelper sink ("ns3::TcpSocketFactory",
 							InetSocketAddress (Ipv4Address::GetAny(),
@@ -80,7 +80,7 @@ void NS3Sim::create_flow_NS3(
 	mysocket->action = action;
 
 	transformSocketPtr(sock);
-	xbt_dict_set(dict_socket,socket_key, mysocket,free);
+	xbt_dict_set(dict_socket,socket_key, mysocket,NULL);
 
 	sock->Bind(InetSocketAddress(port_number));
 	XBT_DEBUG("Create flow starting to %fs + %fs = %fs",start-ns3_time(), ns3_time(), start);

@@ -1,5 +1,3 @@
-/* $Id: gras.c 3859 2007-07-18 12:29:51Z donassbr $ */
-
 /* empty_main.c -- check what happens when the processes do nothing         */
 /* Thanks to Loris Marshal for reporting a problem in that case             */
 

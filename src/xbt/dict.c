@@ -1,6 +1,6 @@
 /* dict - a generic dictionary, variation over hash table                   */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,15 +19,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt,
                                 "Dictionaries provide the same functionalities than hash tables");
-/*####[ Private prototypes ]#################################################*/
-
-static xbt_mallocator_t dict_mallocator = NULL;
-static void *dict_mallocator_new_f(void);
-#define dict_mallocator_free_f xbt_free_f
-#define dict_mallocator_reset_f ((void_f_pvoid_t)NULL)
-
-
-/*####[ Code ]###############################################################*/
 
 /**
  * \brief Constructor
@@ -35,16 +26,38 @@ static void *dict_mallocator_new_f(void);
  * \see xbt_dict_free()
  *
  * Creates and initialize a new dictionary with a default hashtable size.
+ * The dictionary is heterogeneous: each element can have a different free
+ * function.
  */
 xbt_dict_t xbt_dict_new(void)
 {
+  xbt_dict_t dict = xbt_dict_new_homogeneous(NULL);
+  dict->homogeneous = 0;
+
+  return dict;
+}
+
+/**
+ * \brief Constructor
+ * \param free_ctn function to call with (\a data as argument) when
+ *        \a data is removed from the dictionary
+ * \return pointer to the destination
+ * \see xbt_dict_new(), xbt_dict_free()
+ *
+ * Creates and initialize a new dictionary with a default hashtable size.
+ * The dictionary is homogeneous: each element share the same free function.
+ */
+xbt_dict_t xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn)
+{
   xbt_dict_t dict;
 
-  dict = xbt_mallocator_get(dict_mallocator);
+  dict = xbt_new(s_xbt_dict_t, 1);
+  dict->free_f = free_ctn;
   dict->table_size = 127;
   dict->table = xbt_new0(xbt_dictelm_t, dict->table_size + 1);
   dict->count = 0;
   dict->fill = 0;
+  dict->homogeneous = 1;
 
   return dict;
 }
@@ -74,12 +87,12 @@ void xbt_dict_free(xbt_dict_t * dict)
       while (current != NULL) {
         previous = current;
         current = current->next;
-        xbt_dictelm_free(previous);
+        xbt_dictelm_free(*dict, previous);
         (*dict)->count--;
       }
     }
     xbt_free(table);
-    xbt_mallocator_release(dict_mallocator, *dict);
+    xbt_free(*dict);
     *dict = NULL;
   }
 }
@@ -251,7 +264,7 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
 
   if (current == NULL) {
     /* this key doesn't exist yet */
-    current = xbt_dictelm_new(key, key_len, hash_code, data, free_ctn);
+    current = xbt_dictelm_new(dict, key, key_len, hash_code, data, free_ctn);
     dict->count++;
     if (previous == NULL) {
       dict->table[hash_code & dict->table_size] = current;
@@ -262,16 +275,11 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
       previous->next = current;
     }
   } else {
-
     XBT_DEBUG("Replace %.*s by %.*s under key %.*s",
            key_len, (char *) current->content,
            key_len, (char *) data, key_len, (char *) key);
     /* there is already an element with the same key: overwrite it */
-    if (current->content != NULL && current->free_f != NULL) {
-      current->free_f(current->content);
-    }
-    current->content = data;
-    current->free_f = free_ctn;
+    xbt_dictelm_set_data(dict, current, data, free_ctn);
   }
 }
 
@@ -468,7 +476,7 @@ XBT_INLINE void xbt_dict_remove_ext(xbt_dict_t dict, const char *key,
   if (!dict->table[hash_code & dict->table_size])
     dict->fill--;
 
-  xbt_dictelm_free(current);
+  xbt_dictelm_free(dict, current);
   dict->count--;
 }
 
@@ -499,45 +507,7 @@ XBT_INLINE void xbt_dict_remove(xbt_dict_t dict, const char *key)
 XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
                               uintptr_t key, uintptr_t data)
 {
-
-  unsigned int hash_code =
-      xbt_dict_hash_ext((void *) &key, sizeof(uintptr_t));
-
-  xbt_dictelm_t current, previous = NULL;
-  xbt_assert(dict);
-
-  XBT_DEBUG("ADD %zu->%zu; hash = %d, size = %d, & = %d", key, data,
-         hash_code, dict->table_size, hash_code & dict->table_size);
-  current = dict->table[hash_code & dict->table_size];
-  while (current != NULL &&
-         (hash_code != current->hash_code
-          || sizeof(uintptr_t) != current->key_len
-          || (((uintptr_t) key) != ((uintptr_t) current->key)))) {
-    previous = current;
-    current = current->next;
-  }
-
-  if (current == NULL) {
-    /* this key doesn't exist yet */
-    current = xbt_dictielm_new(key, hash_code, data);
-    dict->count++;
-    if (previous == NULL) {
-      dict->table[hash_code & dict->table_size] = current;
-      dict->fill++;
-      if ((dict->fill * 100) / (dict->table_size + 1) > MAX_FILL_PERCENT)
-        xbt_dict_rehash(dict);
-    } else {
-      previous->next = current;
-    }
-  } else {
-
-    /* there is already an element with the same key: overwrite it */
-    if (current->content != NULL && current->free_f != NULL) {
-      current->free_f(current->content);
-    }
-    current->content = (void *) data;
-    current->free_f = NULL;
-  }
+  xbt_dict_set_ext(dict, (void *)&key, sizeof key, (void*)data, NULL);
 }
 
 /**
@@ -551,59 +521,13 @@ XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
  */
 XBT_INLINE uintptr_t xbt_dicti_get(xbt_dict_t dict, uintptr_t key)
 {
-
-  unsigned int hash_code =
-      xbt_dict_hash_ext(((void *) &key), sizeof(uintptr_t));
-  xbt_dictelm_t current;
-
-  xbt_assert(dict);
-
-  current = dict->table[hash_code & dict->table_size];
-  while (current != NULL &&
-         (hash_code != current->hash_code
-          || sizeof(uintptr_t) != current->key_len
-          || (((uintptr_t) key) != ((uintptr_t) current->key)))) {
-    current = current->next;
-  }
-
-  if (current == NULL)
-    return 0;
-
-  return (uintptr_t) (current->content);
+  return (uintptr_t)xbt_dict_get_or_null_ext(dict, (void *)&key, sizeof key);
 }
 
 /** Remove a uintptr_t key from the dict */
 XBT_INLINE void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key)
 {
-
-  unsigned int hash_code =
-      xbt_dict_hash_ext(((void *) &key), sizeof(uintptr_t));
-  xbt_dictelm_t current, previous = NULL;
-
-
-  current = dict->table[hash_code & dict->table_size];
-  while (current != NULL &&
-         (hash_code != current->hash_code
-          || sizeof(uintptr_t) != current->key_len
-          || (((uintptr_t) key) != ((uintptr_t) current->key)))) {
-    previous = current;         /* save the previous node */
-    current = current->next;
-  }
-
-  if (current == NULL)
-    THROWF(not_found_error, 0, "key %zu not found", key);
-
-  if (previous != NULL) {
-    previous->next = current->next;
-  } else {
-    dict->table[hash_code & dict->table_size] = current->next;
-  }
-
-  if (!dict->table[hash_code & dict->table_size])
-    dict->fill--;
-
-  xbt_dictelm_free(current);
-  dict->count--;
+  xbt_dict_remove_ext(dict, (void *)&key, sizeof key);
 }
 
 
@@ -627,7 +551,7 @@ void xbt_dict_reset(xbt_dict_t dict)
     while (current != NULL) {
       previous = current;
       current = current->next;
-      xbt_dictelm_free(previous);
+      xbt_dictelm_free(dict, previous);
     }
     dict->table[i] = NULL;
   }
@@ -764,20 +688,20 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
  */
 void xbt_dict_preinit(void)
 {
-  if (dict_mallocator != NULL) {
+  if (dict_elm_mallocator != NULL) {
     /* Already created. I guess we want to switch to MC mode, so kill the previously created mallocator */
-    xbt_mallocator_free(dict_mallocator);
     xbt_mallocator_free(dict_elm_mallocator);
+    xbt_mallocator_free(dict_het_elm_mallocator);
   }
 
-  dict_mallocator = xbt_mallocator_new(256,
-                                       dict_mallocator_new_f,
-                                       dict_mallocator_free_f,
-                                       dict_mallocator_reset_f);
   dict_elm_mallocator = xbt_mallocator_new(256,
                                            dict_elm_mallocator_new_f,
                                            dict_elm_mallocator_free_f,
                                            dict_elm_mallocator_reset_f);
+  dict_het_elm_mallocator = xbt_mallocator_new(256,
+                                               dict_het_elm_mallocator_new_f,
+                                               dict_het_elm_mallocator_free_f,
+                                               dict_het_elm_mallocator_reset_f);
 }
 
 /**
@@ -786,11 +710,11 @@ void xbt_dict_preinit(void)
  */
 void xbt_dict_postexit(void)
 {
-  if (dict_mallocator != NULL) {
-    xbt_mallocator_free(dict_mallocator);
-    dict_mallocator = NULL;
+  if (dict_elm_mallocator != NULL) {
     xbt_mallocator_free(dict_elm_mallocator);
     dict_elm_mallocator = NULL;
+    xbt_mallocator_free(dict_het_elm_mallocator);
+    dict_het_elm_mallocator = NULL;
   }
   if (all_sizes) {
     unsigned int count;
@@ -811,11 +735,6 @@ void xbt_dict_postexit(void)
   }
 }
 
-static void *dict_mallocator_new_f(void)
-{
-  return xbt_new(s_xbt_dict_t, 1);
-}
-
 #ifdef SIMGRID_TEST
 #include "xbt.h"
 #include "xbt/ex.h"
@@ -832,39 +751,41 @@ static void print_str(void *str)
 }
 
 static void debuged_add_ext(xbt_dict_t head, const char *key,
-                            const char *data_to_fill)
+                            const char *data_to_fill, void_f_pvoid_t free_f)
 {
   char *data = xbt_strdup(data_to_fill);
 
   xbt_test_log("Add %s under %s", PRINTF_STR(data_to_fill),
                 PRINTF_STR(key));
 
-  xbt_dict_set(head, key, data, &free);
+  xbt_dict_set(head, key, data, free_f);
   if (XBT_LOG_ISENABLED(xbt_dict, xbt_log_priority_debug)) {
     xbt_dict_dump(head, (void (*)(void *)) &printf);
     fflush(stdout);
   }
 }
 
-static void debuged_add(xbt_dict_t head, const char *key)
+static void debuged_add(xbt_dict_t head, const char *key, void_f_pvoid_t free_f)
 {
-  debuged_add_ext(head, key, key);
+  debuged_add_ext(head, key, key, free_f);
 }
 
-static void fill(xbt_dict_t * head)
+static void fill(xbt_dict_t * head, int homogeneous)
 {
+  void_f_pvoid_t free_f = homogeneous ? NULL : &free;
+
   xbt_test_add("Fill in the dictionnary");
 
-  *head = xbt_dict_new();
-  debuged_add(*head, "12");
-  debuged_add(*head, "12a");
-  debuged_add(*head, "12b");
-  debuged_add(*head, "123");
-  debuged_add(*head, "123456");
+  *head = homogeneous ? xbt_dict_new_homogeneous(&free) : xbt_dict_new();
+  debuged_add(*head, "12", free_f);
+  debuged_add(*head, "12a", free_f);
+  debuged_add(*head, "12b", free_f);
+  debuged_add(*head, "123", free_f);
+  debuged_add(*head, "123456", free_f);
   /* Child becomes child of what to add */
-  debuged_add(*head, "1234");
+  debuged_add(*head, "1234", free_f);
   /* Need of common ancestor */
-  debuged_add(*head, "123457");
+  debuged_add(*head, "123457", free_f);
 }
 
 
@@ -993,14 +914,15 @@ xbt_ex_t e;
 xbt_dict_t head = NULL;
 char *data;
 
-
-XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse")
+static void basic_test(int homogeneous)
 {
+  void_f_pvoid_t free_f;
+
   xbt_test_add("Traversal the null dictionary");
   traverse(head);
 
   xbt_test_add("Traversal and search the empty dictionary");
-  head = xbt_dict_new();
+  head = homogeneous ? xbt_dict_new_homogeneous(&free) : xbt_dict_new();
   traverse(head);
   TRY {
     debuged_remove(head, "12346");
@@ -1012,11 +934,13 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse
   }
   xbt_dict_free(&head);
 
+  free_f = homogeneous ? NULL : &free;
+
   xbt_test_add("Traverse the full dictionary");
-  fill(&head);
+  fill(&head, homogeneous);
   count_check_get_key(head, 7);
 
-  debuged_add_ext(head, "toto", "tutu");
+  debuged_add_ext(head, "toto", "tutu", free_f);
   search_ext(head, "toto", "tutu");
   debuged_remove(head, "toto");
 
@@ -1028,22 +952,22 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse
   xbt_dict_free(&head);
 
   /* CHANGING */
-  fill(&head);
+  fill(&head, homogeneous);
   count_check_get_key(head, 7);
   xbt_test_add("Change 123 to 'Changed 123'");
-  xbt_dict_set(head, "123", strdup("Changed 123"), &free);
+  xbt_dict_set(head, "123", strdup("Changed 123"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 123 back to '123'");
-  xbt_dict_set(head, "123", strdup("123"), &free);
+  xbt_dict_set(head, "123", strdup("123"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 12a to 'Dummy 12a'");
-  xbt_dict_set(head, "12a", strdup("Dummy 12a"), &free);
+  xbt_dict_set(head, "12a", strdup("Dummy 12a"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 12a to '12a'");
-  xbt_dict_set(head, "12a", strdup("12a"), &free);
+  xbt_dict_set(head, "12a", strdup("12a"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Traverse the resulting dictionary");
@@ -1079,9 +1003,19 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve, traverse
   traverse(head);
 }
 
-XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
+XBT_TEST_UNIT("basic (heterogeneous)", test_dict_basic_heterogeneous, "Basic usage: change, retrieve, traverse: heterogeneous dictionary")
 {
-  fill(&head);
+  basic_test(0);
+}
+
+XBT_TEST_UNIT("basic (homogeneous)", test_dict_basic_homogeneous, "Basic usage: change, retrieve, traverse: homogeneous dictionary")
+{
+  basic_test(1);
+}
+
+static void remove_test(int homogeneous)
+{
+  fill(&head, homogeneous);
   count(head, 7);
   xbt_test_add("Remove non existing data");
   TRY {
@@ -1098,7 +1032,7 @@ XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
 
   xbt_test_add
       ("Remove each data manually (traversing the resulting dictionary each time)");
-  fill(&head);
+  fill(&head, homogeneous);
   debuged_remove(head, "12a");
   traverse(head);
   count(head, 6);
@@ -1139,7 +1073,7 @@ XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
   xbt_test_add
       ("Free dict, create new fresh one, and then reset the dict");
   xbt_dict_free(&head);
-  fill(&head);
+  fill(&head, homogeneous);
   xbt_dict_reset(head);
   count(head, 0);
   traverse(head);
@@ -1149,9 +1083,19 @@ XBT_TEST_UNIT("remove", test_dict_remove, "Removing some values")
   xbt_dict_free(&head);
 }
 
+XBT_TEST_UNIT("remove (heterogeneous)", test_dict_remove_heterogeneous, "Removing some values: heterogeneous dictionary")
+{
+  remove_test(0);
+}
+
+XBT_TEST_UNIT("remove (homogeneous)", test_dict_remove_homogeneous, "Removing some values: homogeneous dictionary")
+{
+  remove_test(1);
+}
+
 XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
 {
-  fill(&head);
+  fill(&head, 1);
 
   xbt_test_add("Store NULL under 'null'");
   xbt_dict_set(head, "null", NULL, NULL);

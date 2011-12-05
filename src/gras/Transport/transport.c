@@ -52,14 +52,14 @@ static void gras_trp_plugin_new(const char *name, gras_trp_setup_t setup)
   }
 
   if (plug)
-    xbt_dict_set(_gras_trp_plugins, name, plug, gras_trp_plugin_free);
+    xbt_dict_set(_gras_trp_plugins, name, plug, NULL);
 }
 
 void gras_trp_init(void)
 {
   if (!_gras_trp_started) {
     /* make room for all plugins */
-    _gras_trp_plugins = xbt_dict_new();
+    _gras_trp_plugins = xbt_dict_new_homogeneous(gras_trp_plugin_free);
 
 #ifdef HAVE_WINSOCK2_H
     /* initialize the windows mechanism */

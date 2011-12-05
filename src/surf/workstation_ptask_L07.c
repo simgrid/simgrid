@@ -454,7 +454,7 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
   double latency = 0.0;
 
   if (ptask_parallel_task_link_set == NULL)
-    ptask_parallel_task_link_set = xbt_dict_new();
+    ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
 
   xbt_dict_reset(ptask_parallel_task_link_set);
 

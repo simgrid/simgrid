@@ -363,7 +363,7 @@ int console_host_set_property(lua_State *L) {
     return -1;
   }
   xbt_dict_t props = MSG_host_get_properties(host);
-  xbt_dict_set(props,prop_id,xbt_strdup(prop_value),free);
+  xbt_dict_set(props,prop_id,xbt_strdup(prop_value),NULL);
 
   return 0;
 }

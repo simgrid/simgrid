@@ -66,9 +66,9 @@ AS_t model_cluster_create(void)
 
 void surf_routing_cluster_add_link(const char* host_id,surf_parsing_link_up_down_t info) {
   if(!cluster_host_link)
-    cluster_host_link = xbt_dict_new();
+    cluster_host_link = xbt_dict_new_homogeneous(xbt_free);
 
- xbt_dict_set(cluster_host_link,host_id,info,xbt_free);
+ xbt_dict_set(cluster_host_link,host_id,info,NULL);
 }
 
 void surf_routing_cluster_add_backbone(AS_t as, void* bb) {

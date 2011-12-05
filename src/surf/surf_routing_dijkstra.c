@@ -79,7 +79,7 @@ static xbt_node_t route_graph_new_node(as_dijkstra_t as,
   elm = xbt_new0(struct graph_node_map_element, 1);
   elm->node = node;
   xbt_dict_set_ext(as->graph_node_map, (char *) (&id), sizeof(int),
-                   (xbt_set_elm_t) elm, &graph_node_map_elem_free);
+                   (xbt_set_elm_t) elm, NULL);
 
   return node;
 }
@@ -387,7 +387,7 @@ static void dijkstra_get_route_and_latency(AS_t asg,
     elm->pred_arr = pred_arr;
     elm->size = size;
     xbt_dict_set_ext(as->route_cache, (char *) (&src_id), sizeof(int),
-                     (xbt_set_elm_t) elm, &route_cache_elem_free);
+                     (xbt_set_elm_t) elm, NULL);
   }
 
   if (!as->cached)
@@ -447,10 +447,10 @@ void model_dijkstra_both_end(AS_t as)
   if(!THIS->route_graph)
   THIS->route_graph = xbt_graph_new_graph(1, NULL);
   if(!THIS->graph_node_map)
-  THIS->graph_node_map = xbt_dict_new();
+  THIS->graph_node_map = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   if (THIS->cached && !THIS->route_cache)
-  THIS->route_cache = xbt_dict_new();
+  THIS->route_cache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
   /* Add the loopback if needed */
   if (as->hierarchy == SURF_ROUTING_BASE)
@@ -480,10 +480,10 @@ void model_dijkstra_both_parse_route (AS_t asg, const char *src,
 	if(!as->route_graph)
 	as->route_graph = xbt_graph_new_graph(1, NULL);
 	if(!as->graph_node_map)
-	as->graph_node_map = xbt_dict_new();
+	as->graph_node_map = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
 	if (as->cached && !as->route_cache)
-	as->route_cache = xbt_dict_new();
+	as->route_cache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
 	if( A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES
 		|| A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES )

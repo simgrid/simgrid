@@ -26,8 +26,7 @@ static void __TRACE_surf_check_variable_set_to_zero(double now,
     container_t container = getContainerByName (resource);
     type_t type = getVariableType (variable, NULL, container->type);
     new_pajeSetVariable (now, container, type, 0);
-    xbt_dict_set(platform_variables, resource, array,
-                 xbt_dynar_free_voidp);
+    xbt_dict_set(platform_variables, resource, array, NULL);
   } else {
     xbt_dynar_t array = xbt_dict_get(platform_variables, resource);
     unsigned int i;
@@ -153,7 +152,7 @@ void TRACE_surf_host_set_utilization(const char *resource,
 
 void TRACE_surf_resource_utilization_alloc()
 {
-  platform_variables = xbt_dict_new();
+  platform_variables = xbt_dict_new_homogeneous(xbt_dynar_free_voidp);
 }
 
 void TRACE_surf_resource_utilization_release()

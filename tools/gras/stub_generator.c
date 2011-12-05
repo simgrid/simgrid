@@ -56,8 +56,7 @@ static s_process_t process;
 
 static void parse_process_init(void)
 {
-  xbt_dict_set(process_function_set, A_surfxml_process_function, NULL,
-               NULL);
+  xbt_dict_set(process_function_set, A_surfxml_process_function, NULL, NULL);
   xbt_dict_set(machine_set, A_surfxml_process_host, NULL, NULL);
   process.argc = 1;
   process.argv = xbt_new(char *, 1);
@@ -96,9 +95,9 @@ int main(int argc, char *argv[])
   int i;
 
   surf_init(&argc, argv);
-  process_function_set = xbt_dict_new();
+  process_function_set = xbt_dict_new_homogeneous(NULL);
   process_list = xbt_dynar_new(sizeof(s_process_t), s_process_free);
-  machine_set = xbt_dict_new();
+  machine_set = xbt_dict_new_homogeneous(NULL);
 
   for (i = 1; i < argc; i++) {
     int need_removal = 0;
