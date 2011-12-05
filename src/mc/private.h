@@ -229,6 +229,13 @@ typedef struct s_mc_pair_visited{
   int search_cycle;
 }s_mc_pair_visited_t, *mc_pair_visited_t;
 
+typedef struct s_mc_pair_visited_hash{
+  xbt_state_t automaton_state;
+  xbt_dynar_t prop_ato;
+  xbt_dict_t hash_regions;
+  int search_cycle;
+}s_mc_pair_visited_hash_t, *mc_pair_visited_hash_t;
+
 int MC_automaton_evaluate_label(xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
@@ -242,6 +249,8 @@ void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
 int visited(xbt_state_t st, int search_cycle);
 void set_pair_visited(xbt_state_t st, int search_cycle);
+int visited_hash(xbt_state_t st, int search_cycle);
+void set_pair_visited_hash(xbt_state_t st, int search_cycle);
 
 /* **** Double-DFS stateful without visited state **** */
 
