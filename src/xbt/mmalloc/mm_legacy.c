@@ -403,7 +403,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	}
 	i = block_free + mdp1->heapinfo[block_free].free.size;
       }else{
-	i = 0;
+	i = 1;
       }
     }
       
