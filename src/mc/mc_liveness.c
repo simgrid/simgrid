@@ -4,7 +4,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
                                 "Logging specific to algorithms for liveness properties verification");
 
-xbt_fifo_t reached_pairs;
+xbt_dynar_t reached_pairs;
 xbt_dynar_t visited_pairs;
 xbt_dynar_t visited_pairs_hash;
 xbt_dynar_t successors;
@@ -13,7 +13,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   
   if(s1->num_reg != s2->num_reg){
-    //XBT_DEBUG("Different num_reg (s1 = %d, s2 = %d)", s1->num_reg, s2->num_reg);
+    XBT_DEBUG("Different num_reg (s1 = %d, s2 = %d)", s1->num_reg, s2->num_reg);
     return 1;
   }
 
@@ -22,64 +22,64 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   for(i=0 ; i< s1->num_reg ; i++){
 
     if(s1->regions[i]->type != s2->regions[i]->type){
-      //XBT_DEBUG("Different type of region");
+      XBT_DEBUG("Different type of region");
       return 1;
     }
 
     switch(s1->regions[i]->type){
     case 0:
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of heap (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	XBT_DEBUG("Different size of heap (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
 	return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-	//XBT_DEBUG("Different start addr of heap (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+	XBT_DEBUG("Different start addr of heap (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
 	return 1;
       }
       if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data)){
-	//XBT_DEBUG("Different heap (mmalloc_compare)");
+	XBT_DEBUG("Different heap (mmalloc_compare)");
 	return 1; 
       }
       break;
     case 1 :
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of libsimgrid (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	XBT_DEBUG("Different size of libsimgrid (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
 	return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-	//XBT_DEBUG("Different start addr of libsimgrid (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+	XBT_DEBUG("Different start addr of libsimgrid (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
 	return 1;
       }
       if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
-    	//XBT_DEBUG("Different memcmp for data in libsimgrid");
+    	XBT_DEBUG("Different memcmp for data in libsimgrid");
     	return 1;
       }
       break;
     case 2:
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of program (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	XBT_DEBUG("Different size of program (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
 	return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-	//XBT_DEBUG("Different start addr of program (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+	XBT_DEBUG("Different start addr of program (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
 	return 1;
       }
       if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
-    	//XBT_DEBUG("Different memcmp for data in program");
+    	XBT_DEBUG("Different memcmp for data in program");
     	return 1;
       }
       break;
     case 3:
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of stack (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	XBT_DEBUG("Different size of stack (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
 	return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-	//XBT_DEBUG("Different start addr of stack (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+	XBT_DEBUG("Different start addr of stack (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
 	return 1;
       }
       if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
-    	//XBT_DEBUG("Different memcmp for data in stack");
+    	XBT_DEBUG("Different memcmp for data in stack");
     	return 1;
       }
       break;
@@ -91,7 +91,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 int reached(xbt_state_t st){
 
 
-  if(xbt_fifo_size(reached_pairs) == 0){
+  if(xbt_dynar_is_empty(reached_pairs)){
 
     return 0;
 
@@ -115,34 +115,23 @@ int reached(xbt_state_t st){
       xbt_dynar_push_as(prop_ato, int, res);
     }
 
-    int i=0;
-    xbt_fifo_item_t item = xbt_fifo_get_first_item(reached_pairs);
+    cursor = 0;
     mc_pair_reached_t pair_test = NULL;
 
 
-    while(i < xbt_fifo_size(reached_pairs) && item != NULL){
+    xbt_dynar_foreach(reached_pairs, cursor, pair_test){
+      if(automaton_state_compare(pair_test->automaton_state, st) == 0){
+	if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
+	  if(snapshot_compare(pair_test->system_state, sn) == 0){
 
-      pair_test = (mc_pair_reached_t) xbt_fifo_get_item_content(item);
-      
-      if(pair_test != NULL){
-	if(automaton_state_compare(pair_test->automaton_state, st) == 0){
-	  if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
-	    if(snapshot_compare(sn, pair_test->system_state) == 0){
-
-	      MC_free_snapshot(sn);
-	      xbt_dynar_reset(prop_ato);
-	      xbt_free(prop_ato);
-	      MC_UNSET_RAW_MEM;
-	      return 1;
-	    }
+	    MC_free_snapshot(sn);
+	    xbt_dynar_reset(prop_ato);
+	    xbt_free(prop_ato);
+	    MC_UNSET_RAW_MEM;
+	    return 1;
 	  }
 	}
       }
-
-      item = xbt_fifo_get_next_item(item);
-      
-      i++;
-
     }
 
     MC_free_snapshot(sn);
@@ -178,7 +167,7 @@ void set_pair_reached(xbt_state_t st){
     xbt_dynar_push_as(pair->prop_ato, int, res);
   }
   
-  xbt_fifo_unshift(reached_pairs, pair); 
+  xbt_dynar_push(reached_pairs, &pair); 
 
   MC_UNSET_RAW_MEM;
   
@@ -215,7 +204,7 @@ int visited(xbt_state_t st, int sc){
     cursor = 0;
     mc_pair_visited_t pair_test = NULL;
 
-    xbt_dynar_foreach(visited_pairs_hash, cursor, pair_test){
+    xbt_dynar_foreach(visited_pairs, cursor, pair_test){
       if(pair_test->search_cycle == sc) {
 	if(automaton_state_compare(pair_test->automaton_state, st) == 0){
 	  if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
@@ -227,13 +216,11 @@ int visited(xbt_state_t st, int sc){
 	      MC_UNSET_RAW_MEM;
 		
 	      return 1;
-		  
-		
+	
 	    }
 	  }
 	}
       }
-   
     }
 
 
@@ -260,8 +247,6 @@ int visited_hash(xbt_state_t st, int sc){
 
     mc_snapshot_t sn = xbt_new0(s_mc_snapshot_t, 1);
     MC_take_snapshot_liveness(sn);
-   
-    int i, j;
     
     xbt_dynar_t prop_ato = xbt_dynar_new(sizeof(int), NULL);
 
@@ -280,9 +265,11 @@ int visited_hash(xbt_state_t st, int sc){
     mc_pair_visited_hash_t pair_test = NULL;
 
     int region_diff = 0;
+    int j;
     cursor = 0;
 
     xbt_dynar_foreach(visited_pairs_hash, cursor, pair_test){
+  
       if(pair_test->search_cycle == sc) {
 	if(automaton_state_compare(pair_test->automaton_state, st) == 0){
 	  if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
@@ -301,6 +288,7 @@ int visited_hash(xbt_state_t st, int sc){
 	  }
 	}
       }
+     
       region_diff = 0;
     }
     
@@ -314,56 +302,54 @@ int visited_hash(xbt_state_t st, int sc){
 }
 
 void set_pair_visited_hash(xbt_state_t st, int sc){
-
-  //if(!visited_hash(st, sc)){
  
-    MC_SET_RAW_MEM;
+  MC_SET_RAW_MEM;
 
-    mc_snapshot_t sn = xbt_new0(s_mc_snapshot_t, 1);
-    MC_take_snapshot_liveness(sn);
+  mc_snapshot_t sn = xbt_new0(s_mc_snapshot_t, 1);
+  MC_take_snapshot_liveness(sn);
  
-    mc_pair_visited_hash_t pair = NULL;
-    pair = xbt_new0(s_mc_pair_visited_hash_t, 1);
-    pair->automaton_state = st;
-    pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-    pair->search_cycle = sc;
-    pair->hash_regions = xbt_dict_new();
+  mc_pair_visited_hash_t pair = NULL;
+  pair = xbt_new0(s_mc_pair_visited_hash_t, 1);
+  pair->automaton_state = st;
+  pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
+  pair->search_cycle = sc;
+  pair->hash_regions = xbt_dict_new();
   
-    int i = 0;
+  int i;
 
-    for(i=0 ; i< sn->num_reg ; i++){
-      switch(sn->regions[i]->type){
-      case 0:
-	xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "heap", NULL);
-	break;
-      case 1:
-	xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "libsimgrid", NULL);
-	break;
-      case 2:
-	xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "prog", NULL);
-	break;
-      }
+  for(i=0 ; i< sn->num_reg ; i++){
+    switch(sn->regions[i]->type){
+    case 0:
+      xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "heap", NULL);
+      break;
+    case 1:
+      xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "libsimgrid", NULL);
+      break;
+    case 2:
+      xbt_dict_set_ext(pair->hash_regions, sn->regions[i]->data, sn->regions[i]->size, "prog", NULL);
+      break;
     }
+  }
   
-    /* Get values of propositional symbols */
-    unsigned int cursor = 0;
-    xbt_propositional_symbol_t ps = NULL;
-    int res;
-    int (*f)();
+  /* Get values of propositional symbols */
+  unsigned int cursor = 0;
+  xbt_propositional_symbol_t ps = NULL;
+  int res;
+  int (*f)();
 
-    xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
-      f = ps->function;
-      res = (*f)();
-      xbt_dynar_push_as(pair->prop_ato, int, res);
-    }
+  xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
+    f = ps->function;
+    res = (*f)();
+    xbt_dynar_push_as(pair->prop_ato, int, res);
+  }
   
-    xbt_dynar_push(visited_pairs_hash, &pair);
+  xbt_dynar_push(visited_pairs_hash, &pair);
 
-    MC_free_snapshot(sn);
+  MC_free_snapshot(sn);
   
-    MC_UNSET_RAW_MEM;
+  MC_UNSET_RAW_MEM;
   
-    //}
+ 
   
   
 }
@@ -394,7 +380,7 @@ void set_pair_visited(xbt_state_t st, int sc){
     xbt_dynar_push_as(pair->prop_ato, int, res);
   }
   
-  xbt_dynar_push(visited_pairs_hash, &pair);
+  xbt_dynar_push(visited_pairs, &pair);
   
   MC_UNSET_RAW_MEM;
   
@@ -494,7 +480,7 @@ void MC_ddfs_stateless_init(){
     }
   }
 
-  reached_pairs = xbt_fifo_new(); 
+  reached_pairs = xbt_dynar_new(sizeof(mc_pair_reached_t), NULL);
   //visited_pairs = xbt_dynar_new(sizeof(mc_pair_visited_t), NULL);
   visited_pairs_hash = xbt_dynar_new(sizeof(mc_pair_visited_hash_t), NULL);
   successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
@@ -585,10 +571,10 @@ void MC_ddfs_stateless(int search_cycle){
   if(xbt_fifo_size(mc_stack_liveness_stateless) < MAX_DEPTH_LIVENESS){
 
     //set_pair_visited(current_pair->automaton_state, search_cycle);
-    set_pair_visited_hash(current_pair->automaton_state, search_cycle);
+    //set_pair_visited_hash(current_pair->automaton_state, search_cycle);
 
-    //XBT_DEBUG("Visited pairs : %d", xbt_fifo_size(visited_pairs));
-    XBT_DEBUG("Visited pairs : %lu", xbt_dynar_length(visited_pairs_hash));
+    //XBT_DEBUG("Visited pairs : %lu", xbt_dynar_length(visited_pairs));
+    //XBT_DEBUG("Visited pairs : %lu", xbt_dynar_length(visited_pairs_hash));
 
     if(current_pair->requests > 0){
 
@@ -661,7 +647,7 @@ void MC_ddfs_stateless(int search_cycle){
 	xbt_dynar_foreach(successors, cursor, pair_succ){
 
 	  //if(!visited(pair_succ->automaton_state, search_cycle)){
-	  if(!visited_hash(pair_succ->automaton_state, search_cycle)){
+	  //if(!visited_hash(pair_succ->automaton_state, search_cycle)){
 
 	    if(search_cycle == 1){
 
@@ -686,7 +672,7 @@ void MC_ddfs_stateless(int search_cycle){
 	      
 		  set_pair_reached(pair_succ->automaton_state); 
 
-		  XBT_DEBUG("Reached pairs : %d", xbt_fifo_size(reached_pairs));
+		  XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
 
 		}
 
@@ -702,7 +688,7 @@ void MC_ddfs_stateless(int search_cycle){
 	      
 		search_cycle = 1;
 
-		XBT_DEBUG("Reached pairs : %d", xbt_fifo_size(reached_pairs));
+		XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
 
 	      }
 
@@ -718,7 +704,7 @@ void MC_ddfs_stateless(int search_cycle){
 	    if(cursor != (xbt_dynar_length(successors) - 1))
 	      MC_replay_liveness(mc_stack_liveness_stateless, 1);
 	
-	}else{
+	    /*}else{
 	    
 	    XBT_DEBUG("Next pair already visited");
 
@@ -744,7 +730,7 @@ void MC_ddfs_stateless(int search_cycle){
 	      }
 	    }
 	    
-	}
+	    }*/
 	  }
 
 	if(MC_state_interleave_size(current_pair->graph_state) > 0){
@@ -800,7 +786,7 @@ void MC_ddfs_stateless(int search_cycle){
       xbt_dynar_foreach(successors, cursor, pair_succ){
 
 	//if(!visited(pair_succ->automaton_state, search_cycle)){
-	if(!visited_hash(pair_succ->automaton_state, search_cycle)){
+	//if(!visited_hash(pair_succ->automaton_state, search_cycle)){
 
 	  if(search_cycle == 1){
 
@@ -825,7 +811,7 @@ void MC_ddfs_stateless(int search_cycle){
 	      
 		set_pair_reached(pair_succ->automaton_state); 
 		
-		XBT_DEBUG("Reached pairs : %d", xbt_fifo_size(reached_pairs));
+		XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
 
 	      }
 
@@ -839,7 +825,7 @@ void MC_ddfs_stateless(int search_cycle){
 	    	    
 	      search_cycle = 1;
 
-	      XBT_DEBUG("Reached pairs : %d", xbt_fifo_size(reached_pairs));
+	      XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
 
 	    }
 
@@ -855,7 +841,7 @@ void MC_ddfs_stateless(int search_cycle){
 	  if(cursor != xbt_dynar_length(successors) - 1)
 	    MC_replay_liveness(mc_stack_liveness_stateless, 1);
 
-	  }else{
+	  /* }else{
 	    
 	  XBT_DEBUG("Next pair already visited");
 
@@ -881,7 +867,7 @@ void MC_ddfs_stateless(int search_cycle){
 	    }
 	      
 	  }
-	}
+	  }*/
 	  
       }
            
@@ -903,7 +889,7 @@ void MC_ddfs_stateless(int search_cycle){
   MC_SET_RAW_MEM;
   xbt_fifo_shift(mc_stack_liveness_stateless);
   if((current_pair->automaton_state->type == 1) || (current_pair->automaton_state->type == 2)){
-    xbt_fifo_shift(reached_pairs);
+    xbt_dynar_pop(reached_pairs, NULL);
   }
   MC_UNSET_RAW_MEM;
   
