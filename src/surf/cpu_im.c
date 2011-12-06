@@ -679,7 +679,6 @@ static void surf_cpu_im_model_init_internal(const char* name)
 
 void surf_cpu_model_init_Cas01_im()
 {
-  char* name;
   if( strcmp(xbt_cfg_get_string(_surf_cfg_set, "cpu/model"),"Cas01"))
     cpu_update_mechanism = UM_LAZY;
   else
