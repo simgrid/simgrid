@@ -30,8 +30,8 @@ typedef struct lmm_constraint {
   s_xbt_swag_hookup_t modified_constraint_set_hookup;
   s_xbt_swag_hookup_t saturated_constraint_set_hookup;
 
-  s_xbt_swag_t element_set;     /* a list of lmm_mat_element_t */
-  s_xbt_swag_t active_element_set;      /* a list of lmm_mat_element_t */
+  s_xbt_swag_t element_set;     /* a list of lmm_element_t */
+  s_xbt_swag_t active_element_set;      /* a list of lmm_element_t */
   double bound;
   double lambda;
   double new_lambda;
