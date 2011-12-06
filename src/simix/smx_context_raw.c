@@ -30,7 +30,7 @@ typedef struct s_smx_ctx_raw {
 
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t raw_parmap;
-static raw_stack_t* raw_local_maestro_stacks; /* space to save maestro's stack in each thread */
+static raw_stack_t* raw_workers_stacks; /* space to save the worker stack in each thread */
 #endif
 
 static unsigned long raw_process_index = 0;   /* index of the next process to run in the
@@ -226,7 +226,7 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 #ifdef CONTEXT_THREADS
     int nthreads = SIMIX_context_get_nthreads();
     raw_parmap = xbt_parmap_new(nthreads);
-    raw_local_maestro_stacks = xbt_new(raw_stack_t, nthreads);
+    raw_workers_stacks = xbt_new(raw_stack_t, nthreads);
 #endif
     if (SIMIX_context_get_parallel_threshold() > 1) {
       /* choose dynamically */
@@ -259,7 +259,7 @@ static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 #ifdef CONTEXT_THREADS
   if (raw_parmap)
     xbt_parmap_destroy(raw_parmap);
-  xbt_free(raw_local_maestro_stacks);
+  xbt_free(raw_workers_stacks);
 #endif
   return smx_ctx_base_factory_finalize(factory);
 }
@@ -464,7 +464,7 @@ static void smx_ctx_raw_suspend_parallel(smx_context_t context)
     XBT_DEBUG("No more processes to run");
     next_context = (smx_context_t) raw_maestro_context;
     unsigned long worker_id = xbt_parmap_get_worker_id(raw_parmap);
-    next_stack = raw_local_maestro_stacks[worker_id];
+    next_stack = raw_workers_stacks[worker_id];
   }
 
   SIMIX_context_set_current(next_context);
@@ -476,11 +476,11 @@ static void smx_ctx_raw_resume_parallel(smx_process_t first_process)
 {
 #ifdef CONTEXT_THREADS
   unsigned long worker_id = xbt_parmap_get_worker_id(raw_parmap);
-  raw_stack_t* local_maestro_stack = &raw_local_maestro_stacks[worker_id];
+  raw_stack_t* worker_stack = &raw_workers_stacks[worker_id];
 
   smx_context_t context = first_process->context;
   SIMIX_context_set_current(context);
-  raw_swapcontext(local_maestro_stack, ((smx_ctx_raw_t) context)->stack_top);
+  raw_swapcontext(worker_stack, ((smx_ctx_raw_t) context)->stack_top);
 #endif
 }
 

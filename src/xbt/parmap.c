@@ -102,7 +102,7 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
  */
 void xbt_parmap_apply(xbt_parmap_t parmap, void_f_pvoid_t fun, xbt_dynar_t data)
 {
-  /* Assign resources to worker threads*/
+  /* Assign resources to worker threads */
   parmap->fun = fun;
   parmap->data = data;
   parmap->index = 0;
@@ -150,7 +150,7 @@ static void *xbt_parmap_worker_main(void *arg)
   xbt_os_thread_set_extra_data((void*) (unsigned long) worker_id);
 
   XBT_DEBUG("New worker thread created (%u)", worker_id);
-  
+
   /* Worker's main loop */
   while (1) {
     xbt_parmap_wait(parmap);
@@ -301,7 +301,7 @@ XBT_TEST_UNIT("basic", test_parmap_basic, "Basic usage")
   /* Create the parallel map */
   parmap = xbt_parmap_new(10);
 
-  for(j = 0; j < 100; j++) {
+  for (j = 0; j < 100; j++) {
     xbt_dynar_push_as(data, void *, (void *)j);
   }
 

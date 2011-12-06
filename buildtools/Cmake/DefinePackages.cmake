@@ -692,7 +692,6 @@ set(add_src_files
 	src/smpi/smpif2c.in
 	src/smpi/smpiff.in
 	src/smpi/smpirun.in
-	src/simix/smx_context_sysv_private.h
 )
 
 file(GLOB_RECURSE xml_files
