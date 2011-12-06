@@ -15,7 +15,8 @@ install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
 )
 
 #### Generate the manpages
-if( NOT MANPAGE_DIR )
+if(NOT WIN32)
+if( NOT MANPAGE_DIR)
 	set( MANPAGE_DIR ${CMAKE_BINARY_DIR}/manpages )
 endif( NOT MANPAGE_DIR)
 
@@ -26,6 +27,8 @@ add_custom_target(manpages ALL
 )
 install(FILES ${MANPAGE_DIR}/simgrid_update_xml.1
         DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/usr/share/man/man1)
+
+endif(NOT WIN32)
 
 # binaries
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc

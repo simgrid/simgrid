@@ -588,13 +588,9 @@ static void _get_route_and_latency(const char *src, const char *dst,
 void routing_get_route_and_latency(const char *src, const char *dst,
                                    xbt_dynar_t * route, double *latency)
 {
-  static xbt_dynar_t last_route = NULL;
-
-  int need_cleanup = !(*route);
-
-  if (need_cleanup) {
-    xbt_dynar_free(&last_route);
-    last_route = *route = xbt_dynar_new(global_routing->size_of_link,NULL);
+  if (!*route) {
+    xbt_dynar_reset(global_routing->last_route);
+    *route = global_routing->last_route;
   }
 
   _get_route_and_latency(src, dst, route, latency);
@@ -664,6 +660,7 @@ void routing_model_create(size_t size_of_links, void *loopback)
   global_routing->get_onelink_routes = get_onelink_routes;
   global_routing->loopback = loopback;
   global_routing->size_of_link = size_of_links;
+  global_routing->last_route = xbt_dynar_new(global_routing->size_of_link,NULL);
   /* no current routing at moment */
   current_routing = NULL;
 }
@@ -731,10 +728,10 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
   if (strcmp(cluster->availability_trace, "")
       || strcmp(cluster->state_trace, "")) {
-    patterns = xbt_dict_new();
-    xbt_dict_set(patterns, "id", xbt_strdup(cluster->id), free);
-    xbt_dict_set(patterns, "prefix", xbt_strdup(cluster->prefix), free);
-    xbt_dict_set(patterns, "suffix", xbt_strdup(cluster->suffix), free);
+    patterns = xbt_dict_new_homogeneous(xbt_free_f);
+    xbt_dict_set(patterns, "id", xbt_strdup(cluster->id), NULL);
+    xbt_dict_set(patterns, "prefix", xbt_strdup(cluster->prefix), NULL);
+    xbt_dict_set(patterns, "suffix", xbt_strdup(cluster->suffix), NULL);
   }
 
 
@@ -769,7 +766,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
       memset(&host, 0, sizeof(host));
       host.id = host_id;
       if (strcmp(cluster->availability_trace, "")) {
-        xbt_dict_set(patterns, "radical", bprintf("%d", i), xbt_free);
+        xbt_dict_set(patterns, "radical", bprintf("%d", i), NULL);
         char *avail_file = xbt_str_varsubst(cluster->availability_trace, patterns);
         XBT_DEBUG("\tavailability_file=\"%s\"", avail_file);
         host.power_trace = tmgr_trace_new(avail_file);
@@ -1042,12 +1039,12 @@ static void routing_parse_Srandom(void)
        random->generator, random->seed, random_radical);
 
   if (!random_value)
-    random_value = xbt_dict_new();
+    random_value = xbt_dict_new_homogeneous(free);
 
   if (!strcmp(random_radical, "")) {
     res = random_generate(random);
     rd_value = bprintf("%f", res);
-    xbt_dict_set(random_value, random_id, rd_value, free);
+    xbt_dict_set(random_value, random_id, rd_value, NULL);
   } else {
     radical_elements = xbt_str_split(random_radical, ",");
     xbt_dynar_foreach(radical_elements, iter, groups) {
@@ -1060,7 +1057,7 @@ static void routing_parse_Srandom(void)
         tmpbuf =
             bprintf("%s%d", random_id,
                     atoi(xbt_dynar_getfirst_as(radical_ends, char *)));
-        xbt_dict_set(random_value, tmpbuf, bprintf("%f", res), free);
+        xbt_dict_set(random_value, tmpbuf, bprintf("%f", res), NULL);
         xbt_free(tmpbuf);
         break;
 
@@ -1074,7 +1071,7 @@ static void routing_parse_Srandom(void)
                                                                     i));
           res = random_generate(random);
           tmpbuf = bprintf("%s%d", random_id, i);
-          xbt_dict_set(random_value, tmpbuf, bprintf("%f", res), free);
+          xbt_dict_set(random_value, tmpbuf, bprintf("%f", res), NULL);
           xbt_free(tmpbuf);
         }
         break;
@@ -1085,7 +1082,7 @@ static void routing_parse_Srandom(void)
       res = random_generate(random);
       rd_name = bprintf("%s_router", random_id);
       rd_value = bprintf("%f", res);
-      xbt_dict_set(random_value, rd_name, rd_value, free);
+      xbt_dict_set(random_value, rd_name, rd_value, NULL);
 
       xbt_dynar_free(&radical_ends);
     }
@@ -1147,6 +1144,7 @@ static void finalize_rec(AS_t as) {
 void routing_exit(void) {
   if (!global_routing)
     return;
+  xbt_dynar_free(&global_routing->last_route);
   finalize_rec(global_routing->root);
   xbt_free(global_routing);
 }

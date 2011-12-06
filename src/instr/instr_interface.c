@@ -38,7 +38,7 @@ void TRACE_category_with_color (const char *category, const char *color)
   //check if category is already created
   char *created = xbt_dict_get_or_null(created_categories, category);
   if (created) return;
-  xbt_dict_set (created_categories, category, xbt_strdup("1"), xbt_free);
+  xbt_dict_set (created_categories, category, xbt_strdup("1"), NULL);
 
   //define final_color
   char final_color[INSTR_DEFAULT_STR_SIZE];

@@ -18,9 +18,9 @@ xbt_dict_t trivaEdgeTypes = NULL;     /* all host types defined */
 
 void instr_paje_init (container_t root)
 {
-  allContainers = xbt_dict_new ();
-  trivaNodeTypes = xbt_dict_new ();
-  trivaEdgeTypes = xbt_dict_new ();
+  allContainers = xbt_dict_new_homogeneous(NULL);
+  trivaNodeTypes = xbt_dict_new_homogeneous(xbt_free);
+  trivaEdgeTypes = xbt_dict_new_homogeneous(xbt_free);
   rootContainer = root;
 }
 
@@ -70,8 +70,8 @@ static type_t newType (const char *typename, const char *key, const char *color,
   ret->name = xbt_strdup (typename);
   ret->father = father;
   ret->kind = kind;
-  ret->children = xbt_dict_new ();
-  ret->values = xbt_dict_new ();
+  ret->children = xbt_dict_new_homogeneous(NULL);
+  ret->values = xbt_dict_new_homogeneous(NULL);
   ret->color = xbt_strdup (color);
 
   char str_id[INSTR_DEFAULT_STR_SIZE];
@@ -215,7 +215,7 @@ container_t newContainer (const char *name, e_container_types kind, container_t 
       default: xbt_die ("Congratulations, you have found a bug on newContainer function of instr_routing.c"); break;
     }
   }
-  new->children = xbt_dict_new();
+  new->children = xbt_dict_new_homogeneous(NULL);
   if (new->father){
     xbt_dict_set(new->father->children, new->name, new, NULL);
     new_pajeCreateContainer (new);
@@ -226,7 +226,7 @@ container_t newContainer (const char *name, e_container_types kind, container_t 
     xbt_dict_set (allContainers, new->name, new, NULL);
 
     //register NODE types for triva configuration
-    xbt_dict_set (trivaNodeTypes, new->type->name, xbt_strdup("1"), xbt_free);
+    xbt_dict_set (trivaNodeTypes, new->type->name, xbt_strdup("1"), NULL);
   }
   return new;
 }

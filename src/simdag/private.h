@@ -117,7 +117,7 @@ XBT_PUBLIC(xbt_swag_t) SD_simulate_swag(double how_long); /* could be public, bu
 
 
 SD_link_t __SD_link_create(void *surf_link, void *data);
-void __SD_link_destroy(void *link);
+#define __SD_link_destroy xbt_free_f
 
 SD_workstation_t __SD_workstation_create(void *surf_workstation,
                                          void *data);

@@ -36,10 +36,10 @@ typedef struct lmm_constraint {
   double lambda;
   double new_lambda;
   double remaining;
-  int shared;
   double usage;
   void *id;
   int id_int;
+  int shared;
 } s_lmm_constraint_t;
 
 typedef struct lmm_variable {

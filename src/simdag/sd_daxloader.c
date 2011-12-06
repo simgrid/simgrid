@@ -286,8 +286,8 @@ xbt_dynar_t SD_daxload(const char *filename)
   dax_lineno = 1;
 
   result = xbt_dynar_new(sizeof(SD_task_t), dax_task_free);
-  files = xbt_dict_new();
-  jobs = xbt_dict_new();
+  files = xbt_dict_new_homogeneous(&dax_task_free);
+  jobs = xbt_dict_new_homogeneous(NULL);
   root_task = SD_task_create_comp_seq("root", NULL, 0);
   /* by design the root task is always SCHEDULABLE */
   __SD_task_set_state(root_task, SD_SCHEDULABLE);
@@ -430,7 +430,7 @@ void STag_dax__uses(void)
   file = xbt_dict_get_or_null(files, A_dax__uses_file);
   if (file == NULL) {
     file = SD_task_create_comm_e2e(A_dax__uses_file, NULL, size);
-    xbt_dict_set(files, A_dax__uses_file, file, &dax_task_free);
+    xbt_dict_set(files, A_dax__uses_file, file, NULL);
   } else {
     if (SD_task_get_amount(file) != size) {
       XBT_WARN("Ignoring file %s size redefinition from %.0f to %.0f",

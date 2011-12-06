@@ -561,7 +561,7 @@ static void __parse_graph_begin(void)
   else
     parsed_graph = xbt_graph_new_graph(0, NULL);
 
-  parsed_nodes = xbt_dict_new();
+  parsed_nodes = xbt_dict_new_homogeneous(NULL);
 }
 
 static void __parse_graph_end(void)
@@ -735,7 +735,7 @@ xbt_graph_t xbt_graph_load (const char *filename)
   file = fopen (filename, "r");
   xbt_assert(file, "Failed to open %s \n", filename);
 
-  xbt_dict_t nodes_dict = xbt_dict_new ();
+  xbt_dict_t nodes_dict = xbt_dict_new_homogeneous(NULL);
   xbt_graph_t ret = xbt_graph_new_graph (0, NULL);
 
   //read the number of nodes

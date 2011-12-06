@@ -26,8 +26,8 @@ typedef struct cpu_L07 {
   double power_scale;
   double power_current;
   tmgr_trace_event_t power_event;
-  e_surf_resource_state_t state_current;
   tmgr_trace_event_t state_event;
+  e_surf_resource_state_t state_current;
   int id;                       /* cpu and network card are a single object... */
 } s_cpu_L07_t, *cpu_L07_t;
 
@@ -454,7 +454,7 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
   double latency = 0.0;
 
   if (ptask_parallel_task_link_set == NULL)
-    ptask_parallel_task_link_set = xbt_dict_new();
+    ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
 
   xbt_dict_reset(ptask_parallel_task_link_set);
 
@@ -729,7 +729,7 @@ static void ptask_parse_link_init(sg_platf_link_cbarg_t link)
                                link->properties);
     xbt_free(link_id);
     link_id = bprintf("%s_DOWN", link->id);
-    ptask_link_create_resource(bprintf("%s_DOWN", link->id),
+    ptask_link_create_resource(link_id,
                                link->bandwidth,
                                link->bandwidth_trace,
                                link->latency,

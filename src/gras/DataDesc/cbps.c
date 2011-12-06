@@ -32,7 +32,7 @@ gras_cbps_t gras_cbps_new(void)
   res = xbt_new(s_gras_cbps_t, 1);
 
   res->lints = xbt_dynar_new(sizeof(int), NULL);
-  res->space = xbt_dict_new();
+  res->space = xbt_dict_new_homogeneous(NULL);
   /* no leak, the content is freed manually on block_end */
   res->frames = xbt_dynar_new(sizeof(xbt_dynar_t), NULL);
   res->globals = xbt_dynar_new(sizeof(char *), NULL);

@@ -12,6 +12,7 @@
 #include "xbt/dynar.h"
 
 #include "surf/surf_private.h"
+#include "surf/surf_resource.h"
 #include "surf/surf.h"
 
 #include "instr/jedule/jedule_sd_binding.h"

@@ -1,5 +1,3 @@
-/* $Id: buff.h 3483 2007-05-07 11:18:56Z mquinson $ */
-
 /* strbuff -- string buffers                                                */
 
 /* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.

@@ -28,8 +28,8 @@ AS_t model_generic_create_sized(size_t childsize) {
       generic_get_bypassroute;
   new_component->finalize = model_generic_finalize;
 
-  new_component->to_index = xbt_dict_new();
-  new_component->bypassRoutes = xbt_dict_new();
+  new_component->to_index = xbt_dict_new_homogeneous(xbt_free);
+  new_component->bypassRoutes = xbt_dict_new_homogeneous((void (*)(void *)) generic_free_route);
 
   return new_component;
 }
@@ -46,7 +46,7 @@ void generic_parse_PU(AS_t as, const char *name)
   xbt_dict_t _to_index;
   _to_index = as->to_index;
   *id = xbt_dict_length(_to_index);
-  xbt_dict_set(_to_index, name, id, xbt_free);
+  xbt_dict_set(_to_index, name, id, NULL);
 }
 
 void generic_parse_AS(AS_t as, const char *name)
@@ -56,7 +56,7 @@ void generic_parse_AS(AS_t as, const char *name)
   xbt_dict_t _to_index;
   _to_index = as->to_index;
   *id = xbt_dict_length(_to_index);
-  xbt_dict_set(_to_index, name, id, xbt_free);
+  xbt_dict_set(_to_index, name, id, NULL);
 }
 
 void generic_parse_bypassroute(AS_t rc,
@@ -80,8 +80,7 @@ void generic_parse_bypassroute(AS_t rc,
   xbt_dynar_free(&(e_route->link_list));
   xbt_free(e_route);
 
-  xbt_dict_set(dict_bypassRoutes, route_name, new_e_route,
-               (void (*)(void *)) generic_free_route);
+  xbt_dict_set(dict_bypassRoutes, route_name, new_e_route, NULL);
   xbt_free(route_name);
 }
 

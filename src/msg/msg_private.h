@@ -55,8 +55,8 @@ typedef struct simdata_process {
   m_channel_t put_channel;      /* used for debugging purposes */
   smx_action_t waiting_action;
   m_task_t waiting_task;
-  int argc;                     /* arguments number if any */
   char **argv;                  /* arguments table if any */
+  int argc;                     /* arguments number if any */
   MSG_error_t last_errno;       /* the last value returned by a MSG_function */
   void* data;                   /* user data */
 } s_simdata_process_t, *simdata_process_t;

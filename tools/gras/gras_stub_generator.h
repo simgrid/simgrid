@@ -1,5 +1,3 @@
-/* 	$Id$	 */
-
 /* gras_stub_generator - creates the main() to use a GRAS program           */
 
 /* Copyright (c) 2003-2007 Martin Quinson, Arnaud Legrand, Malek Cherier.   */

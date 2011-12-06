@@ -51,7 +51,7 @@ static void test_host(const char*hostname)
   XBT_INFO("   Property: %s old value: %s", exist, value);
 
   XBT_INFO("== Trying to modify a host property");
-  xbt_dict_set(props, exist, xbt_strdup("250"), xbt_free_f);
+  xbt_dict_set(props, exist, xbt_strdup("250"), NULL);
 
   /* Test if we have changed the value */
   value = MSG_host_get_property_value(thehost, exist);

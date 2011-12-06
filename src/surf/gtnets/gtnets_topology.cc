@@ -1,5 +1,3 @@
-/* $ID$ */
-
 /* Copyright (c) 2007 Kayo Fujiwara. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it

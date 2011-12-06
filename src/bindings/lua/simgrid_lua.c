@@ -880,9 +880,9 @@ static int gras_add_process_function(lua_State * L)
   if (xbt_dict_is_empty(machine_set)
       || xbt_dict_is_empty(process_function_set)
       || xbt_dynar_is_empty(process_list)) {
-    process_function_set = xbt_dict_new();
+    process_function_set = xbt_dict_new_homogeneous(NULL);
     process_list = xbt_dynar_new(sizeof(s_process_t), s_process_free);
-    machine_set = xbt_dict_new();
+    machine_set = xbt_dict_new_homogeneous(NULL);
   }
 
   xbt_dict_set(machine_set, process_host, NULL, NULL);

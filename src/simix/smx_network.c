@@ -26,7 +26,7 @@ static void SIMIX_rdv_free(void *data);
 
 void SIMIX_network_init(void)
 {
-  rdv_points = xbt_dict_new();
+  rdv_points = xbt_dict_new_homogeneous(SIMIX_rdv_free);
 }
 
 void SIMIX_network_exit(void)
@@ -49,7 +49,7 @@ smx_rdv_t SIMIX_rdv_create(const char *name)
     rdv->comm_fifo = xbt_fifo_new();
 
     if (rdv->name)
-      xbt_dict_set(rdv_points, rdv->name, rdv, SIMIX_rdv_free);
+      xbt_dict_set(rdv_points, rdv->name, rdv, NULL);
   }
   return rdv;
 }
@@ -554,7 +554,7 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
  */
 void SIMIX_comm_finish(smx_action_t action)
 {
-  unsigned int destroy_count = 0;
+  volatile unsigned int destroy_count = 0;
   smx_req_t req;
 
   while ((req = xbt_fifo_shift(action->request_list))) {

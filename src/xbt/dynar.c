@@ -6,7 +6,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "portable.h"           /* SIZEOF_MAX */
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -75,9 +74,12 @@ static XBT_INLINE void _check_populated_dynar(xbt_dynar_t dynar)
 static void _dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op);
 
 static XBT_INLINE
-    void _xbt_clear_mem(void *const ptr, const unsigned long length)
+void _xbt_dynar_resize(xbt_dynar_t dynar, unsigned long new_size)
 {
-  memset(ptr, 0, length);
+  if (new_size != dynar->size) {
+    dynar->size = new_size;
+    dynar->data = xbt_realloc(dynar->data, new_size * dynar->elmsize);
+  }
 }
 
 static XBT_INLINE
@@ -86,21 +88,10 @@ static XBT_INLINE
   const unsigned long old_size = dynar->size;
 
   if (nb > old_size) {
-    void *const old_data = dynar->data;
-    const unsigned long elmsize = dynar->elmsize;
-    const unsigned long old_length = old_size * elmsize;
-
     const unsigned long expand = 2 * (old_size + 1);
-    const unsigned long new_size = (nb > expand ? nb : expand);
-    const unsigned long new_length = new_size * elmsize;
-    void *const new_data = xbt_realloc(old_data, new_length);
-
-    XBT_DEBUG("expand %p from %lu to %lu elements", dynar, old_size, new_size);
-
-    _xbt_clear_mem((char *)new_data + old_length, new_length - old_length);
-
-    dynar->size = new_size;
-    dynar->data = new_data;
+    _xbt_dynar_resize(dynar, (nb > expand ? nb : expand));
+    XBT_DEBUG("expand %p from %lu to %lu elements",
+              dynar, old_size, dynar->size);
   }
 }
 
@@ -149,16 +140,7 @@ _xbt_dynar_remove_at(xbt_dynar_t const dynar,
   if (object) {
     _xbt_dynar_get_elm(object, dynar, idx);
   } else if (dynar->free_f) {
-    if (dynar->elmsize <= SIZEOF_MAX) {
-      char elm[SIZEOF_MAX];
-      _xbt_dynar_get_elm(elm, dynar, idx);
-      dynar->free_f(elm);
-    } else {
-      char *elm = malloc(dynar->elmsize);
-      _xbt_dynar_get_elm(elm, dynar, idx);
-      dynar->free_f(elm);
-      free(elm);
-    }
+    dynar->free_f(_xbt_dynar_elm(dynar, idx));
   }
 
   nb_shift = dynar->used - 1 - idx;
@@ -228,18 +210,11 @@ xbt_dynar_new_sync(const unsigned long elmsize,
 void xbt_dynar_free_container(xbt_dynar_t * dynar)
 {
   if (dynar && *dynar) {
-
-    if ((*dynar)->data) {
-      _xbt_clear_mem((*dynar)->data, (*dynar)->size);
-      free((*dynar)->data);
-    }
-
-    if ((*dynar)->mutex)
-      xbt_mutex_destroy((*dynar)->mutex);
-
-    _xbt_clear_mem(*dynar, sizeof(s_xbt_dynar_t));
-
-    free(*dynar);
+    xbt_dynar_t d = *dynar;
+    free(d->data);
+    if (d->mutex)
+      xbt_mutex_destroy(d->mutex);
+    free(d);
     *dynar = NULL;
   }
 }
@@ -258,16 +233,9 @@ XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
   if (dynar->free_f) {
     _dynar_map(dynar, dynar->free_f);
   }
-  /*
-     free(dynar->data);
-
-     dynar->size = 0;
-   */
   dynar->used = 0;
 
   _dynar_unlock(dynar);
-
-  /*  dynar->data = NULL; */
 }
 
 /**
@@ -287,15 +255,8 @@ XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
  */
 void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
 {
-  unsigned long size_wanted;
-
   _dynar_lock(dynar);
-
-  size_wanted = dynar->used + empty_slots_wanted;
-  if (size_wanted != dynar->size) {
-    dynar->size = size_wanted;
-    dynar->data = xbt_realloc(dynar->data, dynar->elmsize * dynar->size);
-  }
+  _xbt_dynar_resize(dynar, dynar->used + empty_slots_wanted);
   _dynar_unlock(dynar);
 }
 
@@ -381,26 +342,30 @@ XBT_INLINE void *xbt_dynar_get_ptr(const xbt_dynar_t dynar,
   return res;
 }
 
+/* not synchronized */
+static XBT_INLINE void *_xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
+                                              const unsigned long idx)
+{
+  _sanity_check_dynar(dynar);
+
+  if (idx >= dynar->used) {
+    _xbt_dynar_expand(dynar, idx + 1);
+    if (idx > dynar->used) {
+      memset(_xbt_dynar_elm(dynar, dynar->used), 0,
+             (idx - dynar->used) * dynar->elmsize);
+    }
+    dynar->used = idx + 1;
+  }
+  return _xbt_dynar_elm(dynar, idx);
+}
+
 XBT_INLINE void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
                                       const unsigned long idx)
 {
-
   void *res;
   _dynar_lock(dynar);
-  _sanity_check_dynar(dynar);
-
-  _xbt_dynar_expand(dynar, idx + 1);
-
-  if (idx >= dynar->used) {
-    _xbt_clear_mem(((char * const)dynar->data) + dynar->used * dynar->elmsize,
-                   (idx + 1 - dynar->used)*dynar->elmsize);
-    dynar->used = idx + 1;
-  }
-  
+  res = _xbt_dynar_set_at_ptr(dynar, idx);
   _dynar_unlock(dynar);
-
-  res = _xbt_dynar_elm(dynar, idx);
-
   return res;
 }
 
@@ -408,18 +373,7 @@ static void XBT_INLINE          /* not synchronized */
 _xbt_dynar_set(xbt_dynar_t dynar,
                const unsigned long idx, const void *const src)
 {
-
-  _sanity_check_dynar(dynar);
-
-  _xbt_dynar_expand(dynar, idx + 1);
-
-  if (idx >= dynar->used) {
-    _xbt_clear_mem(((char * const)dynar->data) + dynar->used * dynar->elmsize,
-                   (idx + 1 - dynar->used)*dynar->elmsize);
-    dynar->used = idx + 1;
-  }
-
-  _xbt_dynar_put_elm(dynar, idx, src);
+  memcpy(_xbt_dynar_set_at_ptr(dynar, idx), src, dynar->elmsize);
 }
 
 /** @brief Set the Nth element of a dynar (expanded if needed). Previous value at this position is NOT freed
@@ -750,13 +704,14 @@ XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
  */
 XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
 {
-  void * res;
-	void * last = xbt_new0(char,dynar->elmsize);
-	xbt_dynar_push(dynar, last);
-	free(last);
-	res = dynar->data;
-	free(dynar);
-	return res;
+  void *res;
+  xbt_dynar_shrink(dynar, 1);
+  memset(xbt_dynar_push_ptr(dynar), 0, dynar->elmsize);
+  res = dynar->data;
+  if (dynar->mutex)
+    xbt_mutex_destroy(dynar->mutex);
+  free(dynar);
+  return res;
 }
 
 /*

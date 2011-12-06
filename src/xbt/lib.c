@@ -17,7 +17,7 @@ xbt_lib_t xbt_lib_new(void)
 {
   xbt_lib_t lib;
   lib = xbt_new(s_xbt_lib_t, 1);
-  lib->dict = xbt_dict_new();
+  lib->dict = xbt_dict_new_homogeneous(xbt_free);
   lib->levels = 0;
   lib->free_f = NULL;
   return lib;
@@ -60,7 +60,7 @@ void xbt_lib_set(xbt_lib_t lib, const char *key, int level, void *obj)
   void **elts = xbt_dict_get_or_null(lib->dict, key);
   if (!elts) {
     elts = xbt_new0(void *, lib->levels);
-    xbt_dict_set(lib->dict, key, elts, xbt_free);
+    xbt_dict_set(lib->dict, key, elts, NULL);
   }
   if (elts[level]) {
     XBT_DEBUG("Replace %p by %p element under key '%s:%d'",

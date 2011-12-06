@@ -159,9 +159,9 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
   dag_dot = agread(in_file, NIL(Agdisc_t *));
 
   result = xbt_dynar_new(sizeof(SD_task_t), dot_task_free);
-  files = xbt_dict_new();
-  jobs = xbt_dict_new();
-  computers = xbt_dict_new();
+  files = xbt_dict_new_homogeneous(&dot_task_free);
+  jobs = xbt_dict_new_homogeneous(NULL);
+  computers = xbt_dict_new_homogeneous(NULL);
   root_task = SD_task_create_comp_seq("root", NULL, 0);
   /* by design the root task is always SCHEDULABLE */
   __SD_task_set_state(root_task, SD_SCHEDULABLE);
@@ -368,7 +368,7 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
 #ifdef HAVE_TRACING
       TRACE_sd_dotloader (file, agget (edge, (char*)"category"));
 #endif
-      xbt_dict_set(files, name, file, &dot_task_free);
+      xbt_dict_set(files, name, file, NULL);
     } else {
       if (SD_task_get_amount(file) != size) {
         XBT_WARN("Ignoring file %s size redefinition from %.0f to %.0f",
@@ -406,7 +406,7 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
 #ifdef HAVE_TRACING
       TRACE_sd_dotloader (file, agget (edge, (char*)"category"));
 #endif
-      xbt_dict_set(files, name, file, &dot_task_free);
+      xbt_dict_set(files, name, file, NULL);
     } else {
       if (SD_task_get_amount(file) != size) {
         XBT_WARN("Ignoring file %s size redefinition from %.0f to %.0f",

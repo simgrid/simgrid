@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
 
   /* Trying to set a new property */
-  xbt_dict_set(props, "NewProp", strdup("newValue"), free);
+  xbt_dict_set(props, "NewProp", strdup("newValue"), NULL);
 
   /* Print the properties of the workstation 1 */
   xbt_dict_foreach(props, cursor, key, data) {
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     XBT_INFO("\tProperty: %s is undefined", exist);
   else {
     XBT_INFO("\tProperty: %s old value: %s", exist, value);
-    xbt_dict_set(props, exist, strdup("250"), free);
+    xbt_dict_set(props, exist, strdup("250"), NULL);
   }
 
   /* Test if we have changed the value */

@@ -81,7 +81,7 @@ int TRACE_start()
   XBT_DEBUG ("Tracing is on");
 
   /* other trace initialization */
-  created_categories = xbt_dict_new();
+  created_categories = xbt_dict_new_homogeneous(xbt_free);
   TRACE_surf_alloc();
   TRACE_smpi_alloc();
   return 0;

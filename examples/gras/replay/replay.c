@@ -56,7 +56,7 @@ int master(int argc, char *argv[])
   xbt_workload_elm_t cmd;
   xbt_dict_cursor_t dict_cursor;
 
-  xbt_dict_t pals_int = xbt_dict_new();
+  xbt_dict_t pals_int = xbt_dict_new_homogeneous(NULL);
   xbt_dynar_foreach(cmds, cursor, cmd) {
     int *p = xbt_dict_get_or_null(pals_int, cmd->who);
     if (!p) {
@@ -88,7 +88,7 @@ int master(int argc, char *argv[])
   xbt_dict_free(&pals_int);
 
   /* Check who came */
-  xbt_dict_t pals = xbt_dict_new();
+  xbt_dict_t pals = xbt_dict_new_homogeneous(NULL);
   gras_socket_t pal;
   xbt_dynar_foreach(peers, cursor, peer) {
     //XBT_INFO("%s is here",peer->name);
@@ -199,7 +199,7 @@ int worker(int argc, char *argv[])
   int connected = 0;
 
   gras_cb_register("commands", worker_commands_cb);
-  globals->peers = xbt_dict_new();
+  globals->peers = xbt_dict_new_homogeneous(NULL);
 
   if (gras_if_RL())
     XBT_INFO("Sensor %s starting. Connecting to master on %s",

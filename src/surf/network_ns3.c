@@ -323,10 +323,6 @@ static void define_callbacks_ns3(void)
   surfxml_add_callback(ETag_surfxml_platform_cb_list, &parse_ns3_end_platform); //InitializeRoutes
 }
 
-static void free_ns3_elmts(void * elmts)
-{
-}
-
 static void free_ns3_link(void * elmts)
 {
 	ns3_link_t link = elmts;

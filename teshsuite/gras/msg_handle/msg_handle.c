@@ -1,5 +1,3 @@
-/* $Id: mmrpc.c 3399 2007-04-11 19:34:43Z cherierm $ */
-
 /* msg_handle - ensures the semantic of gras_msg_handle(i) for i<0,=0 or >0 */
 
 /* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.

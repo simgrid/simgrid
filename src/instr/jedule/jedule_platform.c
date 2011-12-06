@@ -86,23 +86,21 @@ void jed_simgrid_add_resources(jed_simgrid_container_t parent,
 
 	unsigned int iter;
 	char *host_name;
-	char buf[16];
-	char *buf_copy;
+	char *buf;
 
 	parent->is_lowest = 1;
 	xbt_dynar_free(&parent->container_children);
 	parent->container_children = NULL;
-	parent->name2id = xbt_dict_new();
+	parent->name2id = xbt_dict_new_homogeneous(xbt_free);
 	parent->last_id = 0;
 	parent->resource_list = xbt_dynar_new(sizeof(char *), NULL);
 
 	xbt_dynar_sort (host_names,	&compare_hostnames);
 
 	xbt_dynar_foreach(host_names, iter, host_name) {
-		buf_copy = strdup(buf);
-		sprintf(buf_copy, "%d", parent->last_id);
+		buf = bprintf("%d", parent->last_id);
 		(parent->last_id)++;
-		xbt_dict_set(parent->name2id, host_name, buf_copy, NULL);
+		xbt_dict_set(parent->name2id, host_name, buf, NULL);
 		xbt_dict_set(host2_simgrid_parent_container, host_name, parent, NULL);
 		xbt_dynar_push(parent->resource_list, &host_name);
 	}
@@ -206,7 +204,7 @@ void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list,
 	unsigned int iter;
 	xbt_dict_t parent2hostgroup;  // group hosts by parent
 
-	parent2hostgroup = xbt_dict_new();
+	parent2hostgroup = xbt_dict_new_homogeneous(NULL);
 
 	xbt_assert( host_names != NULL );
 
@@ -264,9 +262,9 @@ void jedule_add_meta_info(jedule_t jedule, char *key, char *value) {
 
 void jed_create_jedule(jedule_t *jedule) {
 	*jedule = (jedule_t)calloc(1,sizeof(s_jedule_t));
-	host2_simgrid_parent_container = xbt_dict_new();
-	container_name2container       = xbt_dict_new();
-	(*jedule)->jedule_meta_info    = xbt_dict_new();
+	host2_simgrid_parent_container = xbt_dict_new_homogeneous(NULL);
+	container_name2container       = xbt_dict_new_homogeneous(NULL);
+	(*jedule)->jedule_meta_info    = xbt_dict_new_homogeneous(NULL);
 }
 
 void jed_free_jedule(jedule_t jedule) {
