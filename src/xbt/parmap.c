@@ -132,33 +132,28 @@ void* xbt_parmap_next(xbt_parmap_t parmap)
  */
 static void *xbt_parmap_worker_main(void *arg)
 {
-  unsigned int worker_id;
   xbt_parmap_t parmap = (xbt_parmap_t) arg;
 
-  /* Fetch a worker id */
-  worker_id = __sync_fetch_and_add(&parmap->workers_max_id, 1);
-  xbt_os_thread_set_extra_data((void*) (unsigned long) worker_id);
-
-  XBT_DEBUG("New worker thread created (%u)", worker_id);
+  XBT_DEBUG("New worker thread created");
 
   /* Worker's main loop */
   while (1) {
     xbt_parmap_wait(parmap);
     if (parmap->status == PARMAP_WORK) {
 
-      XBT_DEBUG("Worker %u got a job", worker_id);
+      XBT_DEBUG("Worker got a job");
 
       void* work = xbt_parmap_next(parmap);
       if (work != NULL) {
         parmap->fun(work);
       }
 
-      XBT_DEBUG("Worker %u has finished", worker_id);
+      XBT_DEBUG("Worker has finished");
 
     /* We are destroying the parmap */
     } else {
       xbt_parmap_end(parmap);
-      XBT_DEBUG("Shutting down worker %u", worker_id);
+      XBT_DEBUG("Shutting down worker");
       return NULL;
     }
   }
