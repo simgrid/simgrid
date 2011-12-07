@@ -11,7 +11,7 @@
 #include "y.tab.c"
 
 #define AMOUNT_OF_CLIENTS 2
-#define CS_PER_PROCESS 2
+#define CS_PER_PROCESS 10
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(example_liveness_with_cycle, "my log messages");
 
