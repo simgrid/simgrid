@@ -16,7 +16,6 @@ set(EXTRA_DIST
 	src/xbt/backtrace_windows.c
 	src/xbt/backtrace_dummy.c
 	src/xbt/setset_private.h
-	src/xbt/parmap_private.h
 	src/xbt/automatonparse_promela.c
 	src/xbt/mmalloc/attach.c
 	src/xbt/mmalloc/detach.c	
