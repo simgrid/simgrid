@@ -624,9 +624,6 @@ void lmm_solve(lmm_system_t sys)
     }
 
     /* Find out which variables reach the maximum */
-    cnst_list =
-        sys->selective_update_active ? &(sys->modified_constraint_set) :
-        &(sys->active_constraint_set);
     min_usage = -1;
     min_bound = -1;
     xbt_swag_foreach(cnst, cnst_list) {
