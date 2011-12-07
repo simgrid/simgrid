@@ -127,16 +127,6 @@ void* xbt_parmap_next(xbt_parmap_t parmap)
 }
 
 /**
- * \brief Returns the worker id of the current thread.
- * \param parmap a parmap
- * \return the worker id
- */
-unsigned long xbt_parmap_get_worker_id(xbt_parmap_t parmap)
-{
-  return (unsigned long) xbt_os_thread_get_extra_data();
-}
-
-/**
  * \brief Main function of a worker thread.
  * \param arg the parmap
  */

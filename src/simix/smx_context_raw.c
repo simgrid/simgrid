@@ -30,7 +30,9 @@ typedef struct s_smx_ctx_raw {
 
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t raw_parmap;
-static raw_stack_t* raw_workers_stacks; /* space to save the worker stack in each thread */
+static raw_stack_t* raw_workers_stacks;       /* space to save the worker stack in each thread */
+static unsigned long raw_threads_working;     /* number of threads that have started their work */
+static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the thread id */
 #endif
 
 static unsigned long raw_process_index = 0;   /* index of the next process to run in the
@@ -227,6 +229,7 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
     int nthreads = SIMIX_context_get_nthreads();
     raw_parmap = xbt_parmap_new(nthreads);
     raw_workers_stacks = xbt_new(raw_stack_t, nthreads);
+    xbt_os_thread_key_create(&raw_worker_id_key);
 #endif
     if (SIMIX_context_get_parallel_threshold() > 1) {
       /* choose dynamically */
@@ -463,7 +466,10 @@ static void smx_ctx_raw_suspend_parallel(smx_context_t context)
     /* all processes were run, go to the barrier */
     XBT_DEBUG("No more processes to run");
     next_context = (smx_context_t) raw_maestro_context;
-    unsigned long worker_id = xbt_parmap_get_worker_id(raw_parmap);
+    unsigned long worker_id =
+        (unsigned long) xbt_os_thread_get_specific(raw_worker_id_key);
+    XBT_DEBUG("Restoring worker stack %lu (working threads = %lu)",
+        worker_id, raw_threads_working);
     next_stack = raw_workers_stacks[worker_id];
   }
 
@@ -475,7 +481,9 @@ static void smx_ctx_raw_suspend_parallel(smx_context_t context)
 static void smx_ctx_raw_resume_parallel(smx_process_t first_process)
 {
 #ifdef CONTEXT_THREADS
-  unsigned long worker_id = xbt_parmap_get_worker_id(raw_parmap);
+  unsigned long worker_id = __sync_fetch_and_add(&raw_threads_working, 1);
+  xbt_os_thread_set_specific(raw_worker_id_key, (void*) worker_id);
+  XBT_DEBUG("Saving worker stack %lu", worker_id);
   raw_stack_t* worker_stack = &raw_workers_stacks[worker_id];
 
   smx_context_t context = first_process->context;
@@ -487,6 +495,7 @@ static void smx_ctx_raw_resume_parallel(smx_process_t first_process)
 static void smx_ctx_raw_runall_parallel(void)
 {
 #ifdef CONTEXT_THREADS
+  raw_threads_working = 0;
   xbt_parmap_apply(raw_parmap, (void_f_pvoid_t) smx_ctx_raw_resume_parallel,
       simix_global->process_to_run);
 #endif
