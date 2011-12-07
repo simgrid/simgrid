@@ -212,6 +212,10 @@ static void smx_ctx_raw_resume_parallel(smx_process_t first_process);
 static void smx_ctx_raw_runall_parallel(void);
 static void smx_ctx_raw_runall(void);
 
+/**
+ * \brief Initializes the raw context factory.
+ * \param factory where to initialize the factory
+ */
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 {
   XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
@@ -252,6 +256,10 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 #endif
 }
 
+/**
+ * \brief Finalizes the raw context factory.
+ * \param factory the raw context factory
+ */
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 {
 #ifdef TIME_BENCH
@@ -267,6 +275,16 @@ static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
   return smx_ctx_base_factory_finalize(factory);
 }
 
+/**
+ * \brief Creates a new raw context.
+ * \param code main function of this context or NULL to create the maestro
+ * context
+ * \param argc argument number
+ * \param argv arguments to pass to the main function
+ * \param cleanup_func a function to call to free the user data when the
+ * context finished
+ * \param data user data
+ */
 static smx_context_t
 smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
     void_pfn_smxprocess_t cleanup_func,
@@ -288,7 +306,7 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
        context->malloced_stack = xbt_malloc0(smx_context_stack_size);
        context->stack_top =
            raw_makecontext(context->malloced_stack, smx_context_stack_size,
-               (void(*)(void*))smx_ctx_raw_wrapper,context);
+               (void_f_pvoid_t) smx_ctx_raw_wrapper, context);
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
        context->valgrind_stack_id =
@@ -303,6 +321,10 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
      return (smx_context_t) context;
 }
 
+/**
+ * \brief Destroys a raw context.
+ * \param context a raw context
+ */
 static void smx_ctx_raw_free(smx_context_t context)
 {
 
@@ -313,11 +335,15 @@ static void smx_ctx_raw_free(smx_context_t context)
         context)->valgrind_stack_id);
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
 
-    free(((smx_ctx_raw_t)context)->malloced_stack);
+    free(((smx_ctx_raw_t) context)->malloced_stack);
   }
   smx_ctx_base_free(context);
 }
 
+/**
+ * \brief Wrapper for the main function of a context.
+ * \param context a raw context
+ */
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context)
 {
   (context->super.code) (context->super.argc, context->super.argv);
@@ -325,12 +351,24 @@ static void smx_ctx_raw_wrapper(smx_ctx_raw_t context)
   smx_ctx_raw_stop((smx_context_t) context);
 }
 
+/**
+ * \brief Stops a raw context.
+ *
+ * This function is called when the main function of the context if finished.
+ *
+ * \param context the current context
+ */
 static void smx_ctx_raw_stop(smx_context_t context)
 {
   smx_ctx_base_stop(context);
   simix_global->context_factory->suspend(context);
 }
 
+/**
+ * \brief Suspends a running context and resumes another one or returns to
+ * maestro.
+ * \param context the current context
+ */
 static void smx_ctx_raw_suspend_serial(smx_context_t context)
 {
   /* determine the next context */
@@ -341,7 +379,7 @@ static void smx_ctx_raw_suspend_serial(smx_context_t context)
     /* execute the next process */
     XBT_DEBUG("Run next process");
     next_context = xbt_dynar_get_as(
-        simix_global->process_to_run,i, smx_process_t)->context;
+        simix_global->process_to_run, i, smx_process_t)->context;
   }
   else {
     /* all processes were run, return to maestro */
@@ -353,6 +391,10 @@ static void smx_ctx_raw_suspend_serial(smx_context_t context)
       ((smx_ctx_raw_t) next_context)->stack_top);
 }
 
+/**
+ * \brief Resumes sequentially all processes ready to run.
+ * \param first_process the first process to resume
+ */
 static void smx_ctx_raw_resume_serial(smx_process_t first_process)
 {
   smx_ctx_raw_t context = (smx_ctx_raw_t) first_process->context;
@@ -429,6 +471,10 @@ void smx_ctx_raw_new_sr(void)
   XBT_VERB("New scheduling round");
 }
 #else
+
+/**
+ * \brief Resumes sequentially all processes ready to run.
+ */
 static void smx_ctx_raw_runall_serial(void)
 {
   if (!xbt_dynar_is_empty(simix_global->process_to_run)) {
@@ -442,12 +488,24 @@ static void smx_ctx_raw_runall_serial(void)
 }
 #endif
 
+/**
+ * \brief Stops a raw context.
+ *
+ * This function is called when the main function of the context if finished.
+ *
+ * \param context the context of the current worker thread
+ */
 static void smx_ctx_raw_stop_parallel(smx_context_t context)
 {
   smx_ctx_base_stop(context);
   smx_ctx_raw_suspend_parallel(context);
 }
 
+/**
+ * \brief Suspends a running context and resumes another one or returns to
+ * the main function of the current worker thread.
+ * \param context the context of the current worker thread
+ */
 static void smx_ctx_raw_suspend_parallel(smx_context_t context)
 {
 #ifdef CONTEXT_THREADS
@@ -478,6 +536,11 @@ static void smx_ctx_raw_suspend_parallel(smx_context_t context)
 #endif
 }
 
+/**
+ * \brief Resumes sequentially in the current worker thread the processes ready
+ * to run.
+ * \param first_process the first process to resume
+ */
 static void smx_ctx_raw_resume_parallel(smx_process_t first_process)
 {
 #ifdef CONTEXT_THREADS
@@ -492,6 +555,9 @@ static void smx_ctx_raw_resume_parallel(smx_process_t first_process)
 #endif
 }
 
+/**
+ * \brief Resumes in parallel all processes ready to run.
+ */
 static void smx_ctx_raw_runall_parallel(void)
 {
 #ifdef CONTEXT_THREADS
@@ -501,6 +567,9 @@ static void smx_ctx_raw_runall_parallel(void)
 #endif
 }
 
+/**
+ * \brief Resumes all processes ready to run.
+ */
 static void smx_ctx_raw_runall(void)
 {
   unsigned long nb_processes = xbt_dynar_length(simix_global->process_to_run);
