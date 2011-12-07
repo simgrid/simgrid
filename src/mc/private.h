@@ -46,7 +46,7 @@ extern double *mc_time;
 
 /* Bound of the MC depth-first search algorithm */
 #define MAX_DEPTH 1000
-#define MAX_DEPTH_LIVENESS 50
+#define MAX_DEPTH_LIVENESS 20
 
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack);
@@ -230,15 +230,23 @@ typedef struct s_mc_pair_visited{
 typedef struct s_mc_pair_visited_hash{
   xbt_state_t automaton_state;
   xbt_dynar_t prop_ato;
-  xbt_dict_t hash_regions;
+  unsigned int *hash_regions;
   int search_cycle;
 }s_mc_pair_visited_hash_t, *mc_pair_visited_hash_t;
+
+typedef struct s_mc_pair_reached_hash{
+  xbt_state_t automaton_state;
+  xbt_dynar_t prop_ato;
+  unsigned int *hash_regions;
+}s_mc_pair_reached_hash_t, *mc_pair_reached_hash_t;
 
 int MC_automaton_evaluate_label(xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
 int reached(xbt_state_t st);
 void set_pair_reached(xbt_state_t st);
+int reached_hash(xbt_state_t st);
+void set_pair_reached_hash(xbt_state_t st);
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
 void MC_show_stack_liveness_stateful(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateful(xbt_fifo_t stack);
@@ -275,6 +283,8 @@ void MC_ddfs_stateless(int search_cycle);
 void MC_show_stack_liveness_stateless(xbt_fifo_t stack);
 void MC_dump_stack_liveness_stateless(xbt_fifo_t stack);
 void MC_pair_stateless_delete(mc_pair_stateless_t pair);
+
+unsigned int hash_region(char *str, int str_len);
 
 
 
