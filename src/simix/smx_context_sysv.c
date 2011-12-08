@@ -52,7 +52,6 @@ smx_ctx_sysv_create_context_sized(size_t structure_size,
                                   void_pfn_smxprocess_t cleanup_func,
                                   void *data);
 static void smx_ctx_sysv_free(smx_context_t context);
-static smx_context_t smx_ctx_sysv_self_parallel(void);
 static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
     void_pfn_smxprocess_t cleanup_func, void* data);
