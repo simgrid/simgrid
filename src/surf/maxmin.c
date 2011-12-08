@@ -117,7 +117,7 @@ static XBT_INLINE void lmm_cnst_free(lmm_system_t sys,
 {
 /*   xbt_assert(xbt_swag_size(&(cnst->element_set)), */
 /* 	      "This list should be empty!"); */
-  remove_active_constraint(sys, cnst);
+  make_constraint_inactive(sys, cnst);
   free(cnst);
 }
 
