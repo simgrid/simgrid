@@ -808,11 +808,5 @@ static void lmm_update_modified_set(lmm_system_t sys,
  */
 static void lmm_remove_all_modified_set(lmm_system_t sys)
 {
-  xbt_swag_t modified_constraint_set = &sys->modified_constraint_set;
-  lmm_constraint_t cnst;
-  lmm_constraint_t cnst_next;
-
-  xbt_swag_foreach_safe(cnst, cnst_next, modified_constraint_set) {
-    xbt_swag_remove(cnst, modified_constraint_set);
-  }
+  xbt_swag_reset(&sys->modified_constraint_set);
 }
