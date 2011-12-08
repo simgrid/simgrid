@@ -91,6 +91,13 @@ XBT_PUBLIC(void) xbt_swag_free(xbt_swag_t swag);
 XBT_PUBLIC(void) xbt_swag_init(xbt_swag_t swag, size_t offset);
 
 /**
+ * \brief Makes a swag empty.
+ * \param swag a swag
+ * @hideinitializer
+ */
+#define xbt_swag_reset(swag) do {} while(xbt_swag_extract(swag))
+
+/**
  * \param obj the objet to insert in the swag
  * \param swag a swag
  * @hideinitializer
