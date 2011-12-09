@@ -143,8 +143,9 @@ static void *xbt_parmap_worker_main(void *arg)
       XBT_DEBUG("Worker got a job");
 
       void* work = xbt_parmap_next(parmap);
-      if (work != NULL) {
+      while (work != NULL) {
         parmap->fun(work);
+        work = xbt_parmap_next(parmap);
       }
 
       XBT_DEBUG("Worker has finished");

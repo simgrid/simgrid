@@ -18,12 +18,13 @@ SG_BEGIN_DECL()
 /** \addtogroup XBT_parmap
   * \brief Parallel map.
   *
-  * A function is applied to the n first elements of a dynar in parallel,
-  * where n is the number of threads. The threads are persistent until the
-  * destruction of the parmap object.
+  * A function is applied to all elements of a dynar in parallel with n worker
+  * threads.
+  * The worker threads are persistent until the destruction of the parmap.
   *
-  * If there are more than n elements in the dynar, the worker threads should
-  * fetch themselves remaining work with xbt_parmap_next() and execute it.
+  * If there are more than n elements in the dynar, the worker threads are
+  * allowed to fetch themselves remaining work with xbt_parmap_next() and
+  * execute it.
   *
   * \{
   */
