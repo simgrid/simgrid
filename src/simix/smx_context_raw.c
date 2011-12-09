@@ -37,7 +37,7 @@ static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the
 
 static unsigned long raw_process_index = 0;   /* index of the next process to run in the
                                                * list of runnable processes */
-smx_ctx_raw_t raw_maestro_context;
+static smx_ctx_raw_t raw_maestro_context;
 
 extern raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
                                    rawctx_entry_point_t entry_point, void* arg);
