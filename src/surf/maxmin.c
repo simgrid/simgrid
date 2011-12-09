@@ -719,12 +719,12 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
       xbt_swag_insert_at_head(elem, &(elem->constraint->element_set));
     else
       xbt_swag_insert_at_tail(elem, &(elem->constraint->element_set));
+
+    if (i == 0)
+      lmm_update_modified_set(sys, elem->constraint);
   }
   if (!weight)
     var->value = 0.0;
-
-  if (var->cnsts_number)
-     lmm_update_modified_set(sys, var->cnsts[0].constraint);
 
   XBT_OUT();
 }
@@ -789,17 +789,16 @@ static void lmm_update_modified_set_rec(lmm_system_t sys,
     lmm_variable_t var = elem->variable;
     s_lmm_element_t *cnsts = var->cnsts;
     int i;
-    if (var->visited == sys->visited_counter)
-       continue;
-    var->visited = sys->visited_counter;
-    for (i = 0; i < var->cnsts_number; i++) {
-      if (cnsts[i].constraint != cnst
+    for (i = 0; var->visited != sys->visited_counter
+             && i < var->cnsts_number ; i++) {
+    if (cnsts[i].constraint != cnst
           && !xbt_swag_belongs(cnsts[i].constraint,
                                &sys->modified_constraint_set)) {
         xbt_swag_insert(cnsts[i].constraint, &sys->modified_constraint_set);
         lmm_update_modified_set_rec(sys, cnsts[i].constraint);
       }
     }
+    var->visited = sys->visited_counter;
   }
 }
 
