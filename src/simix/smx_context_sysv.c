@@ -98,7 +98,7 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
   if (SIMIX_context_is_parallel()) {
 #ifdef CONTEXT_THREADS	/* To use parallel ucontexts a thread pool is needed */
     int nthreads = SIMIX_context_get_nthreads();
-    sysv_parmap = xbt_parmap_new(nthreads);
+    sysv_parmap = xbt_parmap_new(nthreads, SIMIX_context_get_parallel_mode());
     sysv_workers_stacks = xbt_new(ucontext_t, nthreads);
     xbt_os_thread_key_create(&sysv_worker_id_key);
     (*factory)->stop = smx_ctx_sysv_stop_parallel;

@@ -215,6 +215,24 @@ static void _surf_cfg_cb_contexts_parallel_threshold(const char *name, int pos)
   SIMIX_context_set_parallel_threshold(xbt_cfg_get_int(_surf_cfg_set, name));
 }
 
+static void _surf_cfg_cb_contexts_parallel_mode(const char *name, int pos)
+{
+  const char* mode_name = xbt_cfg_get_string(_surf_cfg_set, name);
+  if (!strcmp(mode_name, "posix")) {
+    SIMIX_context_set_parallel_mode(XBT_PARMAP_POSIX);
+  }
+  else if (!strcmp(mode_name, "futex")) {
+    SIMIX_context_set_parallel_mode(XBT_PARMAP_FUTEX);
+  }
+  else if (!strcmp(mode_name, "busy_wait")) {
+    SIMIX_context_set_parallel_mode(XBT_PARMAP_BUSY_WAIT);
+  }
+  else {
+    XBT_WARN("Command line setting of the parallel synchronization mode should "
+        "be one of \"posix\", \"futex\" or \"busy_wait\"");
+  }
+}
+
 static void _surf_cfg_cb__surf_network_coordinates(const char *name,
                                                    int pos)
 {
@@ -408,6 +426,13 @@ void surf_config_init(int *argc, char **argv)
         "Minimal number of user contexts to be run in parallel (raw contexts only)",
         xbt_cfgelm_int, &default_value_int, 1, 1,
         _surf_cfg_cb_contexts_parallel_threshold, NULL);
+
+    /* minimal number of user contexts to be run in parallel */
+    default_value = xbt_strdup("futex");
+    xbt_cfg_register(&_surf_cfg_set, "contexts/parallel_mode",
+        "Synchronization mode to use when running contexts in parallel",
+        xbt_cfgelm_string, &default_value, 1, 1,
+        _surf_cfg_cb_contexts_parallel_mode, NULL);
 
     default_value = xbt_strdup("no");
     xbt_cfg_register(&_surf_cfg_set, "coordinates",

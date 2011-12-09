@@ -25,42 +25,61 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_parmap, xbt, "parmap: parallel map");
 XBT_LOG_NEW_SUBCATEGORY(xbt_parmap_unit, xbt_parmap, "parmap unit testing");
 
 typedef enum {
-  PARMAP_WORK = 0,
-  PARMAP_DESTROY
+  XBT_PARMAP_WORK = 0,
+  XBT_PARMAP_DESTROY
 } e_xbt_parmap_flag_t;
 
-static void xbt_parmap_start(xbt_parmap_t parmap);
-static void xbt_parmap_signal(xbt_parmap_t parmap);
-static void xbt_parmap_wait(xbt_parmap_t parmap);
-static void xbt_parmap_end(xbt_parmap_t parmap);
+static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode);
 static void *xbt_parmap_worker_main(void *parmap);
 
+static void xbt_parmap_posix_start(xbt_parmap_t parmap);
+static void xbt_parmap_posix_end(xbt_parmap_t parmap);
+static void xbt_parmap_posix_signal(xbt_parmap_t parmap);
+static void xbt_parmap_posix_wait(xbt_parmap_t parmap);
+
 #ifdef HAVE_FUTEX_H
+static void xbt_parmap_futex_start(xbt_parmap_t parmap);
+static void xbt_parmap_futex_end(xbt_parmap_t parmap);
+static void xbt_parmap_futex_signal(xbt_parmap_t parmap);
+static void xbt_parmap_futex_wait(xbt_parmap_t parmap);
 static void futex_wait(int *uaddr, int val);
 static void futex_wake(int *uaddr, int val);
 #endif
+
+static void xbt_parmap_busy_start(xbt_parmap_t parmap);
+static void xbt_parmap_busy_end(xbt_parmap_t parmap);
+static void xbt_parmap_busy_signal(xbt_parmap_t parmap);
+static void xbt_parmap_busy_wait(xbt_parmap_t parmap);
+
 
 /**
  * \brief Parallel map structure
  */
 typedef struct s_xbt_parmap {
-  e_xbt_parmap_flag_t status;      /* is the parmap active or being destroyed? */
+  e_xbt_parmap_flag_t status;      /**< is the parmap active or being destroyed? */
+  int work;                        /**< index of the current round (1 is the first) */
+  int done;                        /**< number of rounds already done (futexes only) */
+  unsigned int thread_counter;     /**< number of threads currently working */
+  unsigned int num_workers;        /**< total number of worker threads including the controller */
+  void_f_pvoid_t fun;              /**< function to run in parallel on each element of data */
+  xbt_dynar_t data;                /**< parameters to pass to fun in parallel */
+  unsigned int index;              /**< index of the next element of data to pick */
 
-  int work;                        /* index of the current round (1 is the first) */
-  int done;                        /* number of rounds already done */
-  unsigned int thread_counter;     /* number of threads currently working */
-  unsigned int num_workers;        /* total number of worker threads including the controller */
-  void_f_pvoid_t fun;              /* function to run in parallel on each element of data */
-  xbt_dynar_t data;                /* parameters to pass to fun in parallel */
-  unsigned int index;              /* index of the next element of data to pick */
+  /* fields that depend on the synchronization mode */
+  e_xbt_parmap_mode_t mode;        /**< synchronization mode */
+  void (*start_f)(xbt_parmap_t);   /**< initializes the worker threads */
+  void (*end_f)(xbt_parmap_t);     /**< finalizes the worker threads */
+  void (*signal_f)(xbt_parmap_t);  /**< wakes the workers threads to process tasks */
+  void (*wait_f)(xbt_parmap_t);    /**< waits for more work */
 } s_xbt_parmap_t;
 
 /**
  * \brief Creates a parallel map object
  * \param num_workers number of worker threads to create
+ * \param mode how to synchronize the worker threads
  * \return the parmap created
  */
-xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
+xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
 {
   unsigned int i;
   xbt_os_thread_t worker = NULL;
@@ -71,14 +90,15 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
   xbt_parmap_t parmap = xbt_new0(s_xbt_parmap_t, 1);
 
   parmap->num_workers = num_workers;
-  parmap->status = PARMAP_WORK;
+  parmap->status = XBT_PARMAP_WORK;
+  xbt_parmap_set_mode(parmap, mode);
 
   /* Create the pool of worker threads */
   for (i = 0; i < num_workers - 1; i++) {
     worker = xbt_os_thread_create(NULL, xbt_parmap_worker_main, parmap, NULL);
     xbt_os_thread_detach(worker);
   }
-  xbt_parmap_start(parmap);
+  parmap->start_f(parmap);
   return parmap;
 }
 
@@ -88,9 +108,43 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers)
  */
 void xbt_parmap_destroy(xbt_parmap_t parmap)
 {
-  parmap->status = PARMAP_DESTROY;
-  xbt_parmap_signal(parmap);
+  parmap->status = XBT_PARMAP_DESTROY;
+  parmap->signal_f(parmap);
   xbt_free(parmap);
+}
+
+/**
+ * \brief Sets the synchronization mode of a parmap.
+ * \param parmap a parallel map object
+ * \param mode the synchronization mode
+ */
+static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
+{
+  parmap->mode = mode;
+
+  switch (mode) {
+
+    case XBT_PARMAP_POSIX:
+      parmap->start_f = xbt_parmap_posix_start;
+      parmap->end_f = xbt_parmap_posix_end;
+      parmap->signal_f = xbt_parmap_posix_signal;
+      parmap->wait_f = xbt_parmap_posix_wait;
+      break;
+
+    case XBT_PARMAP_FUTEX:
+      parmap->start_f = xbt_parmap_futex_start;
+      parmap->end_f = xbt_parmap_futex_end;
+      parmap->signal_f = xbt_parmap_futex_signal;
+      parmap->wait_f = xbt_parmap_futex_wait;
+      break;
+
+    case XBT_PARMAP_BUSY_WAIT:
+      parmap->start_f = xbt_parmap_busy_start;
+      parmap->end_f = xbt_parmap_busy_end;
+      parmap->signal_f = xbt_parmap_busy_signal;
+      parmap->wait_f = xbt_parmap_busy_wait;
+      break;
+  }
 }
 
 /**
@@ -105,7 +159,7 @@ void xbt_parmap_apply(xbt_parmap_t parmap, void_f_pvoid_t fun, xbt_dynar_t data)
   parmap->fun = fun;
   parmap->data = data;
   parmap->index = 0;
-  xbt_parmap_signal(parmap);
+  parmap->signal_f(parmap);
   XBT_DEBUG("Job done");
 }
 
@@ -137,8 +191,8 @@ static void *xbt_parmap_worker_main(void *arg)
 
   /* Worker's main loop */
   while (1) {
-    xbt_parmap_wait(parmap);
-    if (parmap->status == PARMAP_WORK) {
+    parmap->wait_f(parmap);
+    if (parmap->status == XBT_PARMAP_WORK) {
 
       XBT_DEBUG("Worker got a job");
 
@@ -152,7 +206,7 @@ static void *xbt_parmap_worker_main(void *arg)
 
     /* We are destroying the parmap */
     } else {
-      xbt_parmap_end(parmap);
+      parmap->end_f(parmap);
       XBT_DEBUG("Shutting down worker");
       return NULL;
     }
@@ -173,6 +227,27 @@ static void futex_wake(int *uaddr, int val)
 }
 #endif
 
+static void xbt_parmap_posix_start(xbt_parmap_t parmap)
+{
+  THROW_UNIMPLEMENTED;
+}
+
+static void xbt_parmap_posix_end(xbt_parmap_t parmap)
+{
+  THROW_UNIMPLEMENTED;
+}
+
+static void xbt_parmap_posix_signal(xbt_parmap_t parmap)
+{
+  THROW_UNIMPLEMENTED;
+}
+
+static void xbt_parmap_posix_wait(xbt_parmap_t parmap)
+{
+  THROW_UNIMPLEMENTED;
+}
+
+#ifdef HAVE_FUTEX_H
 /**
  * \brief Starts the parmap: waits for all workers to be ready and returns.
  *
@@ -180,16 +255,34 @@ static void futex_wake(int *uaddr, int val)
  *
  * \param parmap a parmap
  */
-static void xbt_parmap_start(xbt_parmap_t parmap)
+static void xbt_parmap_futex_start(xbt_parmap_t parmap)
 {
-#ifdef HAVE_FUTEX_H
   int myflag = parmap->done;
   __sync_fetch_and_add(&parmap->thread_counter, 1);
   if (parmap->thread_counter < parmap->num_workers) {
     /* wait for all workers to be ready */
     futex_wait(&parmap->done, myflag);
   }
-#endif
+}
+
+/**
+ * \brief Ends the parmap: wakes the controller thread when all workers terminate.
+ *
+ * This function is called by all worker threads when they end (not including
+ * the controller).
+ *
+ * \param parmap a parmap
+ */
+static void xbt_parmap_futex_end(xbt_parmap_t parmap)
+{
+  unsigned int mycount;
+
+  mycount = __sync_add_and_fetch(&parmap->thread_counter, 1);
+  if (mycount == parmap->num_workers) {
+    /* all workers have finished, wake the controller */
+    parmap->done++;
+    futex_wake(&parmap->done, 1);
+  }
 }
 
 /**
@@ -199,9 +292,8 @@ static void xbt_parmap_start(xbt_parmap_t parmap)
  *
  * \param parmap a parmap
  */
-static void xbt_parmap_signal(xbt_parmap_t parmap)
+static void xbt_parmap_futex_signal(xbt_parmap_t parmap)
 {
-#ifdef HAVE_FUTEX_H
   int myflag = parmap->done;
   parmap->thread_counter = 0;
   parmap->work++;
@@ -209,11 +301,12 @@ static void xbt_parmap_signal(xbt_parmap_t parmap)
   /* wake all workers */
   futex_wake(&parmap->work, parmap->num_workers);
 
-  if (parmap->status == PARMAP_WORK) {
+  if (parmap->status == XBT_PARMAP_WORK) {
     /* also work myself */
     void* work = xbt_parmap_next(parmap);
-    if (work != NULL) {
+    while (work != NULL) {
       parmap->fun(work);
+      work = xbt_parmap_next(parmap);
     }
   }
 
@@ -222,20 +315,18 @@ static void xbt_parmap_signal(xbt_parmap_t parmap)
     /* some workers have not finished yet */
     futex_wait(&parmap->done, myflag);
   }
-
-#endif
 }
 
 /**
  * \brief Waits for some work to process.
  *
- * This function is called by each worker when it has no more work to do.
+ * This function is called by each worker thread (not including the controller)
+ * when it has no more work to do.
  *
  * \param parmap a parmap
  */
-static void xbt_parmap_wait(xbt_parmap_t parmap)
+static void xbt_parmap_futex_wait(xbt_parmap_t parmap)
 {
-#ifdef HAVE_FUTEX_H
   int myflag;
   unsigned int mycount;
 
@@ -249,7 +340,22 @@ static void xbt_parmap_wait(xbt_parmap_t parmap)
 
   /* wait for more work */
   futex_wait(&parmap->work, myflag);
+}
 #endif
+
+/**
+ * \brief Starts the parmap: waits for all workers to be ready and returns.
+ *
+ * This function is called by the controller thread.
+ *
+ * \param parmap a parmap
+ */
+static void xbt_parmap_busy_start(xbt_parmap_t parmap)
+{
+  __sync_fetch_and_add(&parmap->thread_counter, 1);
+  while (parmap->thread_counter < parmap->num_workers) {
+    xbt_os_thread_yield();
+  }
 }
 
 /**
@@ -259,18 +365,56 @@ static void xbt_parmap_wait(xbt_parmap_t parmap)
  *
  * \param parmap a parmap
  */
-static void xbt_parmap_end(xbt_parmap_t parmap)
+static void xbt_parmap_busy_end(xbt_parmap_t parmap)
 {
-#ifdef HAVE_FUTEX_H
-  unsigned int mycount;
+  __sync_add_and_fetch(&parmap->thread_counter, 1);
+}
 
-  mycount = __sync_add_and_fetch(&parmap->thread_counter, 1);
-  if (mycount == parmap->num_workers) {
-    /* all workers have finished, wake the controller */
-    parmap->done++;
-    futex_wake(&parmap->done, 1);
+/**
+ * \brief Wakes all workers and waits for them to finish the tasks.
+ *
+ * This function is called by the controller thread.
+ *
+ * \param parmap a parmap
+ */
+static void xbt_parmap_busy_signal(xbt_parmap_t parmap)
+{
+  parmap->thread_counter = 0;
+  parmap->work++;
+
+  if (parmap->status == XBT_PARMAP_WORK) {
+    /* also work myself */
+    void* work = xbt_parmap_next(parmap);
+    while (work != NULL) {
+      parmap->fun(work);
+      work = xbt_parmap_next(parmap);
+    }
   }
-#endif
+
+  /* I have finished, wait for the others */
+  __sync_add_and_fetch(&parmap->thread_counter, 1);
+  while (parmap->thread_counter < parmap->num_workers) {
+    xbt_os_thread_yield();
+  }
+}
+
+/**
+ * \brief Waits for some work to process.
+ *
+ * This function is called by each worker thread (not including the controller)
+ * when it has no more work to do.
+ *
+ * \param parmap a parmap
+ */
+static void xbt_parmap_busy_wait(xbt_parmap_t parmap)
+{
+  int work = parmap->work;
+  __sync_add_and_fetch(&parmap->thread_counter, 1);
+
+  /* wait for more work */
+  while (parmap->work == work) {
+    xbt_os_thread_yield();
+  }
 }
 
 #ifdef SIMGRID_TEST
