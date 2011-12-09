@@ -258,6 +258,8 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
 
   make_constraint_active(sys, cnst);
   lmm_update_modified_set(sys, cnst);
+  if (var->cnsts_number > 1)
+    lmm_update_modified_set(sys, var->cnsts[0].constraint);
 }
 
 void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
