@@ -37,6 +37,7 @@ lmm_system_t lmm_system_new(int selective_update)
 
   l->modified = 0;
   l->selective_update_active = selective_update;
+  l->visited_counter = 1;
 
   XBT_DEBUG("Setting selective_update_active flag to %d\n",
          l->selective_update_active);
@@ -211,7 +212,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   var->weight = weight;
   var->bound = bound;
   var->value = 0.0;
-
+  var->visited = sys->visited_counter - 1;
   var->mu = 0.0;
   var->new_mu = 0.0;
   var->func_f = func_f_def;
@@ -788,6 +789,9 @@ static void lmm_update_modified_set_rec(lmm_system_t sys,
     lmm_variable_t var = elem->variable;
     s_lmm_element_t *cnsts = var->cnsts;
     int i;
+    if (var->visited == sys->visited_counter)
+       continue;
+    var->visited = sys->visited_counter;
     for (i = 0; i < var->cnsts_number; i++) {
       if (cnsts[i].constraint != cnst
           && !xbt_swag_belongs(cnsts[i].constraint,
@@ -816,5 +820,11 @@ static void lmm_update_modified_set(lmm_system_t sys,
  */
 static void lmm_remove_all_modified_set(lmm_system_t sys)
 {
+  if (++sys->visited_counter == 1) {
+    /* the counter wrapped around, reset each variable->visited */
+    lmm_variable_t var;
+    xbt_swag_foreach(var, &sys->variable_set)
+      var->visited = 0;
+  }
   xbt_swag_reset(&sys->modified_constraint_set);
 }
