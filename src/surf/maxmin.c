@@ -779,36 +779,34 @@ XBT_INLINE int lmm_is_variable_limited_by_latency(lmm_variable_t var)
  *  constraints that have changed. Each constraint change is propagated
  *  to the list of constraints for each variable.
  */
+static void lmm_update_modified_set_rec(lmm_system_t sys,
+                                        lmm_constraint_t cnst)
+{
+  lmm_element_t elem;
+
+  xbt_swag_foreach(elem, &cnst->element_set) {
+    lmm_variable_t var = elem->variable;
+    s_lmm_element_t *cnsts = var->cnsts;
+    int i;
+    for (i = 0; i < var->cnsts_number; i++) {
+      if (cnsts[i].constraint != cnst
+          && !xbt_swag_belongs(cnsts[i].constraint,
+                               &sys->modified_constraint_set)) {
+        xbt_swag_insert(cnsts[i].constraint, &sys->modified_constraint_set);
+        lmm_update_modified_set_rec(sys, cnsts[i].constraint);
+      }
+    }
+  }
+}
+
 static void lmm_update_modified_set(lmm_system_t sys,
                                     lmm_constraint_t cnst)
 {
-  lmm_element_t elem = NULL;
-  lmm_variable_t var = NULL;
-  xbt_swag_t elem_list = NULL;
-  int i;
-
-  /* return if selective update isn't active */
-  if (!sys->selective_update_active)
-    return;
-
-  //XBT_DEBUG("Updating modified constraint set with constraint %d", cnst->id_int);
-
-  if (xbt_swag_belongs(cnst, &(sys->modified_constraint_set)))
-    return;
-
-  //XBT_DEBUG("Inserting into modified constraint set %d", cnst->id_int);
-
-  /* add to modified set */
-  xbt_swag_insert(cnst, &(sys->modified_constraint_set));
-
-  elem_list = &(cnst->element_set);
-  xbt_swag_foreach(elem, elem_list) {
-    var = elem->variable;
-    for (i = 0; i < var->cnsts_number; i++)
-      if (cnst != var->cnsts[i].constraint) {
-        //XBT_DEBUG("Updating modified %d calling for %d", cnst->id_int, var->cnsts[i].constraint->id_int);
-        lmm_update_modified_set(sys, var->cnsts[i].constraint);
-      }
+  /* nothing to do if selective update isn't active */
+  if (sys->selective_update_active
+      && !xbt_swag_belongs(cnst, &sys->modified_constraint_set)) {
+    xbt_swag_insert(cnst, &sys->modified_constraint_set);
+    lmm_update_modified_set_rec(sys, cnst);
   }
 }
 
