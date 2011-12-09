@@ -88,7 +88,9 @@ typedef struct lmm_system {
 #define remove_constraint(sys,cnst) do {xbt_swag_remove(cnst,&(sys->constraint_set));\
                                         xbt_swag_remove(cnst,&(sys->saturated_constraint_set));} while(0)
 #define make_constraint_active(sys,cnst) xbt_swag_insert(cnst,&(sys->active_constraint_set))
-#define make_constraint_inactive(sys,cnst) xbt_swag_remove(cnst,&(sys->active_constraint_set))
+#define make_constraint_inactive(sys,cnst) \
+  do { xbt_swag_remove(cnst, &sys->active_constraint_set);              \
+    xbt_swag_remove(cnst, &sys->modified_constraint_set); } while (0)
 
 static void lmm_var_free(lmm_system_t sys, lmm_variable_t var);
 static XBT_INLINE void lmm_cnst_free(lmm_system_t sys,
