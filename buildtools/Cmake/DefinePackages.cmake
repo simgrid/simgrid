@@ -229,7 +229,7 @@ set(SURF_SRC
 	src/surf/workstation.c
 	src/surf/workstation_ptask_L07.c
 	src/surf/cpu_ti.c
-	src/surf/cpu_im.c
+	src/surf/cpu_cas01.c
 	src/surf/sg_platf.c
 	src/xbt/xbt_sg_stubs.c
 )
