@@ -1137,6 +1137,14 @@ static void set_update_mechanism(void) {
 /************************************************************************/
 /* New model based on LV08 and experimental results of MPI ping-pongs   */
 /************************************************************************/
+/* @Inproceedings{smpi_ipdps, */
+/*  author={Pierre-Nicolas Clauss and Mark Stillwell and Stéphane Genaud and Frédéric Suter and Henri Casanova and Martin Quinson}, */
+/*  title={Single Node On-Line Simulation of {MPI} Applications with SMPI}, */
+/*  booktitle={25th IEEE International Parallel and Distributed Processing Symposium (IPDPS'11)}, */
+/*  address={Anchorage (Alaska) USA}, */
+/*  month=may, */
+/*  year={2011} */
+/*  } */
 void surf_network_model_init_SMPI(void)
 {
 
@@ -1157,8 +1165,19 @@ void surf_network_model_init_SMPI(void)
 }
 
 /************************************************************************/
-/* New model based on optimizations discussed during this thesis        */
+/* New model based on optimizations discussed during Pedro Velho's thesis*/
 /************************************************************************/
+/* @techreport{VELHO:2011:HAL-00646896:1, */
+/*      url = {http://hal.inria.fr/hal-00646896/en/}, */
+/*      title = {{Flow-level network models: have we reached the limits?}}, */
+/*      author = {Velho, Pedro and Schnorr, Lucas and Casanova, Henri and Legrand, Arnaud}, */
+/*      type = {Rapport de recherche}, */
+/*      institution = {INRIA}, */
+/*      number = {RR-7821}, */
+/*      year = {2011}, */
+/*      month = Nov, */
+/*      pdf = {http://hal.inria.fr/hal-00646896/PDF/rr-validity.pdf}, */
+/*  } */
 void im_surf_network_model_init_LegrandVelho(void)
 {
   char *model = xbt_cfg_get_string(_surf_cfg_set, "network/model");
@@ -1209,6 +1228,16 @@ void surf_network_model_init_CM02(void)
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 0.0);
 }
 
+/***************************************************************************/
+/* The models from Steven H. Low                                           */
+/***************************************************************************/
+/* @article{Low03,                                                         */
+/*   author={Steven H. Low},                                               */
+/*   title={A Duality Model of {TCP} and Queue Management Algorithms},     */
+/*   year={2003},                                                          */
+/*   journal={{IEEE/ACM} Transactions on Networking},                      */
+/*    volume={11}, number={4},                                             */
+/*  }                                                                      */
 void surf_network_model_init_Reno(void)
 {
   if (surf_network_model)
