@@ -303,6 +303,13 @@ static double cpu_share_resources_lazy(double now)
       0 ? xbt_heap_maxkey(cpu_action_heap) - now : -1;
 }
 
+static double cpu_share_resources_full(double now) {
+  surf_action_cpu_Cas01_t action;
+  return generic_maxmin_share_resources(surf_cpu_model->states.running_action_set,
+      xbt_swag_offset(*action, generic_lmm_action.variable),
+      cpu_maxmin_system, lmm_solve);
+}
+
 static void cpu_update_actions_state_lazy(double now, double delta)
 {
   surf_action_cpu_Cas01_t action;
@@ -353,6 +360,45 @@ static void cpu_update_actions_state_lazy(double now, double delta)
     }
   }
 #endif
+  return;
+}
+
+static void cpu_update_actions_state_full(double now, double delta)
+{
+  surf_action_cpu_Cas01_t action = NULL;
+  surf_action_cpu_Cas01_t next_action = NULL;
+  xbt_swag_t running_actions = surf_cpu_model->states.running_action_set;
+  xbt_swag_foreach_safe(action, next_action, running_actions) {
+#ifdef HAVE_TRACING
+    if (TRACE_is_enabled()) {
+      cpu_Cas01_t x =
+        lmm_constraint_id(lmm_get_cnst_from_var
+                          (cpu_maxmin_system, GENERIC_LMM_ACTION(action).variable, 0));
+
+      TRACE_surf_host_set_utilization(x->generic_resource.name,
+                                      GENERIC_ACTION(action).data,
+                                      (surf_action_t) action,
+                                      lmm_variable_getvalue
+                                      (GENERIC_LMM_ACTION(action).variable), now - delta,
+                                      delta);
+      TRACE_last_timestamp_to_dump = now-delta;
+    }
+#endif
+    double_update(&(GENERIC_ACTION(action).remains),
+                  lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable) * delta);
+    if (GENERIC_LMM_ACTION(action).generic_action.max_duration != NO_MAX_DURATION)
+      double_update(&(GENERIC_ACTION(action).max_duration), delta);
+    if ((GENERIC_ACTION(action).remains <= 0) &&
+        (lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) > 0)) {
+      GENERIC_ACTION(action).finish = surf_get_clock();
+      cpu_cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
+    } else if ((GENERIC_ACTION(action).max_duration != NO_MAX_DURATION) &&
+               (GENERIC_ACTION(action).max_duration <= 0)) {
+      GENERIC_ACTION(action).finish = surf_get_clock();
+      cpu_cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
+    }
+  }
+
   return;
 }
 
@@ -620,9 +666,21 @@ static void surf_cpu_model_init_internal(const char* name)
   surf_cpu_model->action_state_set = cpu_cpu_action_state_set;
 
   surf_cpu_model->model_private->resource_used = cpu_resource_used;
-  surf_cpu_model->model_private->share_resources = generic_share_resources;
-  surf_cpu_model->model_private->update_actions_state =
-      generic_update_actions_state;
+
+  if(cpu_update_mechanism == UM_LAZY)
+    surf_cpu_model->model_private->share_resources = cpu_share_resources_lazy;
+  else if (cpu_update_mechanism == UM_FULL)
+    surf_cpu_model->model_private->share_resources = cpu_share_resources_full;
+  else
+    xbt_die("Invalide update mechanism!");
+
+  if(cpu_update_mechanism == UM_LAZY)
+    surf_cpu_model->model_private->update_actions_state = cpu_update_actions_state_lazy;
+  else if(cpu_update_mechanism == UM_FULL)
+    surf_cpu_model->model_private->update_actions_state = cpu_update_actions_state_full;
+  else
+    xbt_die("Incompatible optimization mode");
+
   surf_cpu_model->model_private->update_resource_state =
       cpu_update_resource_state;
   surf_cpu_model->model_private->finalize = cpu_finalize;
@@ -689,9 +747,9 @@ void surf_cpu_model_init_Cas01()
 
   if(!strcmp(optim,"Full")) {
     cpu_update_mechanism = UM_FULL;
-  } else if (strcmp(optim,"Lazy")) {
+  } else if (!strcmp(optim,"Lazy")) {
     cpu_update_mechanism = UM_LAZY;
-  } else if (strcmp(optim,"TI")) {
+  } else if (!strcmp(optim,"TI")) {
     surf_cpu_model_init_ti();
     return;
   } else {
@@ -703,68 +761,4 @@ void surf_cpu_model_init_Cas01()
   surf_cpu_model_init_internal("CPU");
   cpu_define_callbacks();
   xbt_dynar_push(model_list, &surf_cpu_model);
-}
-
-double generic_share_resources(double now)
-{
-  surf_action_cpu_Cas01_t action;
-  if(cpu_update_mechanism == UM_LAZY)
-    return cpu_share_resources_lazy(now);
-  else if (cpu_update_mechanism == UM_FULL)
-    return generic_maxmin_share_resources(surf_cpu_model->states.running_action_set,
-        xbt_swag_offset(*action, generic_lmm_action.variable),
-          cpu_maxmin_system, lmm_solve);
-  else
-    xbt_die("Invalide update mechanism!");
-
-  return 0;
-}
-
-static void cpu_update_actions_state_full(double now, double delta)
-{
-  surf_action_cpu_Cas01_t action = NULL;
-  surf_action_cpu_Cas01_t next_action = NULL;
-  xbt_swag_t running_actions = surf_cpu_model->states.running_action_set;
-  xbt_swag_foreach_safe(action, next_action, running_actions) {
-#ifdef HAVE_TRACING
-    if (TRACE_is_enabled()) {
-      cpu_Cas01_t x =
-        lmm_constraint_id(lmm_get_cnst_from_var
-                          (cpu_maxmin_system, GENERIC_LMM_ACTION(action).variable, 0));
-
-      TRACE_surf_host_set_utilization(x->generic_resource.name,
-                                      GENERIC_ACTION(action).data,
-                                      (surf_action_t) action,
-                                      lmm_variable_getvalue
-                                      (GENERIC_LMM_ACTION(action).variable), now - delta,
-                                      delta);
-      TRACE_last_timestamp_to_dump = now-delta;
-    }
-#endif
-    double_update(&(GENERIC_ACTION(action).remains),
-                  lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable) * delta);
-    if (GENERIC_LMM_ACTION(action).generic_action.max_duration != NO_MAX_DURATION)
-      double_update(&(GENERIC_ACTION(action).max_duration), delta);
-    if ((GENERIC_ACTION(action).remains <= 0) &&
-        (lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) > 0)) {
-      GENERIC_ACTION(action).finish = surf_get_clock();
-      cpu_cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    } else if ((GENERIC_ACTION(action).max_duration != NO_MAX_DURATION) &&
-               (GENERIC_ACTION(action).max_duration <= 0)) {
-      GENERIC_ACTION(action).finish = surf_get_clock();
-      cpu_cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    }
-  }
-
-  return;
-}
-
-void generic_update_actions_state(double now, double delta)
-{
-  if(cpu_update_mechanism == UM_LAZY)
-    cpu_update_actions_state_lazy(now, delta);
-  else if(cpu_update_mechanism == UM_FULL)
-    cpu_update_actions_state_full(now, delta);
-  else
-    xbt_die("Not recognized surf cpu model!");
 }
