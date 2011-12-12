@@ -1138,6 +1138,18 @@ static void im_surf_network_model_init_internal(void)
   }
 }
 
+static void set_update_mechanism(void) {
+  char *optim = xbt_cfg_get_string(_surf_cfg_set, "network/optim");
+
+  if(!strcmp(optim,"Full")) {
+    network_update_mechanism = UM_FULL;
+  } else if (!strcmp(optim,"Lazy")) {
+    network_update_mechanism = UM_LAZY;
+  } else {
+    xbt_die("Unsupported optimization (%s) for this model",optim);
+  }
+}
+
 /************************************************************************/
 /* New model based on LV08 and experimental results of MPI ping-pongs   */
 /************************************************************************/
@@ -1146,6 +1158,8 @@ void surf_network_model_init_SMPI(void)
 
   if (surf_network_model)
     return;
+  set_update_mechanism();
+
   im_surf_network_model_init_internal();
   im_latency_factor_callback = &smpi_latency_factor;
   im_bandwidth_factor_callback = &smpi_bandwidth_factor;
@@ -1156,7 +1170,6 @@ void surf_network_model_init_SMPI(void)
 
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/sender_gap", 10e-6);
   xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
-
 }
 
 /************************************************************************/
@@ -1164,13 +1177,16 @@ void surf_network_model_init_SMPI(void)
 /************************************************************************/
 void im_surf_network_model_init_LegrandVelho(void)
 {
-  if( strcmp(xbt_cfg_get_string(_surf_cfg_set, "network/model"),"LV08"))
-    network_update_mechanism = UM_LAZY;
-  else
-    network_update_mechanism = UM_FULL;
+  char *model = xbt_cfg_get_string(_surf_cfg_set, "network/model");
 
   if (surf_network_model)
     return;
+
+  if(!strcmp(model,"LV08_fullupdate")) {
+    XBT_WARN("[*Deprecated*. Use --cfg=network/model:LV08 with option --cfg=network/optim:Full instead.]");
+  }
+  set_update_mechanism();
+
   im_surf_network_model_init_internal();
   im_net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
@@ -1197,6 +1213,8 @@ void surf_network_model_init_CM02(void)
 
   if (surf_network_model)
     return;
+
+  set_update_mechanism();
   im_surf_network_model_init_internal();
   im_net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
@@ -1211,6 +1229,8 @@ void surf_network_model_init_Reno(void)
 {
   if (surf_network_model)
     return;
+
+  set_update_mechanism();
   im_surf_network_model_init_internal();
   im_net_define_callbacks();
 
@@ -1230,6 +1250,8 @@ void surf_network_model_init_Reno2(void)
 {
   if (surf_network_model)
     return;
+
+  set_update_mechanism();
   im_surf_network_model_init_internal();
   im_net_define_callbacks();
 
@@ -1249,6 +1271,8 @@ void surf_network_model_init_Vegas(void)
 {
   if (surf_network_model)
     return;
+
+  set_update_mechanism();
   im_surf_network_model_init_internal();
   im_net_define_callbacks();
 
