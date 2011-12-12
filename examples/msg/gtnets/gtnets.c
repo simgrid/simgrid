@@ -45,7 +45,6 @@ int master(int argc, char *argv[])
   char *slavename = NULL;
   double task_comm_size = 0;
   m_task_t todo;
-  m_host_t slave;
   char id_alias[10];
   //unique id to control statistics
   int id = -1;
@@ -75,10 +74,6 @@ int master(int argc, char *argv[])
     //keep track of running tasks
     gl_task_array[id] = todo;
     gl_data_size[id] = task_comm_size;
-  }
-
-  {                             /* Process organisation */
-    slave = MSG_get_host_by_name(slavename);
   }
 
   count_finished++;
