@@ -45,7 +45,8 @@ int sg_network_crosstraffic = 0;
 
 xbt_dict_t gap_lookup = NULL;
 
-e_UM_t network_update_mechanism = UM_FULL;
+e_UM_t network_update_mechanism = UM_UNDEFINED;
+static int selective_update = 0;
 
 typedef struct network_link_CM02_im {
   s_surf_resource_lmm_t lmm_resource;   /* must remain first to be added to a trace */
@@ -1059,7 +1060,6 @@ static void gap_remove(surf_action_network_CM02_im_t action) {
 static void im_surf_network_model_init_internal(void)
 {
   s_surf_action_network_CM02_im_t comm;
-
   surf_network_model = surf_model_init();
 
   surf_network_model->name = "network";
@@ -1100,8 +1100,8 @@ static void im_surf_network_model_init_internal(void)
   surf_network_model->extension.network.create_resource =
 		  im_net_create_resource;
 
-  if (!network_im_maxmin_system)
-    network_im_maxmin_system = lmm_system_new();
+ if (!network_im_maxmin_system)
+    network_im_maxmin_system = lmm_system_new(selective_update);
 
  routing_model_create(sizeof(link_CM02_im_t),
       im_net_create_resource("__loopback__",
@@ -1110,7 +1110,6 @@ static void im_surf_network_model_init_internal(void)
           SURF_LINK_FATPIPE, NULL));
 
   if(network_update_mechanism == UM_LAZY){
-    sg_maxmin_selective_update = 1;
     im_net_action_heap = xbt_heap_new(8,NULL);
     xbt_heap_set_update_callback(im_net_action_heap, im_net_action_update_index_heap);
     im_net_modified_set =
@@ -1120,11 +1119,16 @@ static void im_surf_network_model_init_internal(void)
 
 static void set_update_mechanism(void) {
   char *optim = xbt_cfg_get_string(_surf_cfg_set, "network/optim");
+  int select = xbt_cfg_get_int(_surf_cfg_set, "network/maxmin_selective_update");
 
   if(!strcmp(optim,"Full")) {
     network_update_mechanism = UM_FULL;
+    selective_update = select;
   } else if (!strcmp(optim,"Lazy")) {
     network_update_mechanism = UM_LAZY;
+    selective_update = 1;
+    xbt_assert((select==1) || (xbt_cfg_is_default_value(_surf_cfg_set,"network/maxmin_selective_update")),
+        "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
     xbt_die("Unsupported optimization (%s) for this model",optim);
   }

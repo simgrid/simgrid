@@ -890,7 +890,7 @@ static void ptask_model_init_internal(void)
       ptask_add_traces;
 
   if (!ptask_maxmin_system)
-    ptask_maxmin_system = lmm_system_new();
+    ptask_maxmin_system = lmm_system_new(1);
 
   routing_model_create(sizeof(link_L07_t),
                        ptask_link_create_resource("__loopback__",

@@ -178,12 +178,6 @@ static void _surf_cfg_cb__weight_S(const char *name, int pos)
   sg_weight_S_parameter = xbt_cfg_get_double(_surf_cfg_set, name);
 }
 
-static void _surf_cfg_cb__surf_maxmin_selective_update(const char *name,
-                                                       int pos)
-{
-  sg_maxmin_selective_update = xbt_cfg_get_int(_surf_cfg_set, name);
-}
-
 /* callback of the inclusion path */
 static void _surf_cfg_cb__surf_path(const char *name, int pos)
 {
@@ -421,10 +415,15 @@ void surf_config_init(int *argc, char **argv)
                      _surf_cfg_cb__surf_path, NULL);
 
     default_value_int = 0;
-    xbt_cfg_register(&_surf_cfg_set, "maxmin_selective_update",
-                     "Update the constraint set propagating recursively to others constraints",
+    xbt_cfg_register(&_surf_cfg_set, "cpu/maxmin_selective_update",
+                     "Update the constraint set propagating recursively to others constraints (1 by default when optim is set to lazy)",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
-                     _surf_cfg_cb__surf_maxmin_selective_update, NULL);
+                     NULL, NULL);
+    default_value_int = 0;
+    xbt_cfg_register(&_surf_cfg_set, "network/maxmin_selective_update",
+                     "Update the constraint set propagating recursively to others constraints (1 by default when optim is set to lazy)",
+                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     NULL, NULL);
 
     /* do model-check */
     default_value_int = 0;

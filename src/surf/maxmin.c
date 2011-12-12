@@ -23,12 +23,11 @@ static void lmm_variable_mallocator_free_f(void *var);
 static void lmm_update_modified_set(lmm_system_t sys,
                                     lmm_constraint_t cnst);
 static void lmm_remove_all_modified_set(lmm_system_t sys);
-int sg_maxmin_selective_update = 1;
 static int Global_debug_id = 1;
 static int Global_const_debug_id = 1;
 extern xbt_swag_t keep_track;
 
-lmm_system_t lmm_system_new(void)
+lmm_system_t lmm_system_new(int selective_update)
 {
   lmm_system_t l = NULL;
   s_lmm_variable_t var;
@@ -37,7 +36,7 @@ lmm_system_t lmm_system_new(void)
   l = xbt_new0(s_lmm_system_t, 1);
 
   l->modified = 0;
-  l->selective_update_active = sg_maxmin_selective_update;
+  l->selective_update_active = selective_update;
 
   XBT_DEBUG("Setting selective_update_active flag to %d\n",
          l->selective_update_active);

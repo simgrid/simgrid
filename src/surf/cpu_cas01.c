@@ -10,9 +10,10 @@
 surf_model_t surf_cpu_model = NULL;
 lmm_system_t cpu_maxmin_system = NULL;
 e_UM_t cpu_update_mechanism = UM_UNDEFINED;
+static int selective_update = 0;
+
 static xbt_swag_t cpu_modified_cpu = NULL;
 static xbt_heap_t cpu_action_heap = NULL;
-extern int sg_maxmin_selective_update;
 
 #undef GENERIC_LMM_ACTION
 #undef GENERIC_ACTION
@@ -701,8 +702,7 @@ static void surf_cpu_model_init_internal(const char* name)
   surf_cpu_model->extension.cpu.add_traces = cpu_add_traces_cpu;
 
   if (!cpu_maxmin_system) {
-    sg_maxmin_selective_update = 1;
-    cpu_maxmin_system = lmm_system_new();
+    cpu_maxmin_system = lmm_system_new(selective_update);
   }
   if(cpu_update_mechanism == UM_LAZY){
     cpu_action_heap = xbt_heap_new(8, NULL);
@@ -733,6 +733,7 @@ void surf_cpu_model_init_Cas01()
 {
   char *optim = xbt_cfg_get_string(_surf_cfg_set, "cpu/optim");
   char *model = xbt_cfg_get_string(_surf_cfg_set, "cpu/model");
+  int select = xbt_cfg_get_int(_surf_cfg_set, "cpu/maxmin_selective_update");
 
   if(!strcmp(model,"Cas01_fullupdate")) {
     XBT_WARN("[*Deprecated*. Use --cfg=cpu/model:Cas01 with option --cfg=cpu/optim:Full instead.]");
@@ -742,8 +743,12 @@ void surf_cpu_model_init_Cas01()
 
   if(!strcmp(optim,"Full")) {
     cpu_update_mechanism = UM_FULL;
+    selective_update = select;
   } else if (!strcmp(optim,"Lazy")) {
     cpu_update_mechanism = UM_LAZY;
+    selective_update = 1;
+    xbt_assert((select==1) || (xbt_cfg_is_default_value(_surf_cfg_set,"cpu/maxmin_selective_update")),
+        "Disabling selective update while using the lazy update mechanism is dumb!");
   } else if (!strcmp(optim,"TI")) {
     surf_cpu_model_init_ti();
     return;
