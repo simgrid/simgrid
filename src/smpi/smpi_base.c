@@ -93,13 +93,13 @@ void smpi_mpi_start(MPI_Request request)
   if(request->flags & RECV) {
     print_request("New recv", request);
     mailbox = smpi_process_mailbox();
-    // FIXME: SIMIX does not yet support don-contiguous datatypes
+    // FIXME: SIMIX does not yet support non-contiguous datatypes
     request->action = SIMIX_req_comm_irecv(mailbox, request->buf, &request->size, &match_recv, request);
   } else {
     print_request("New send", request);
     mailbox = smpi_process_remote_mailbox(
         smpi_group_index(smpi_comm_group(request->comm), request->dst));
-    // FIXME: SIMIX does not yet support don-contiguous datatypes
+    // FIXME: SIMIX does not yet support non-contiguous datatypes
     request->action = SIMIX_req_comm_isend(mailbox, request->size, -1.0,
                                            request->buf, request->size, &match_send, request, 0);
 #ifdef HAVE_TRACING
