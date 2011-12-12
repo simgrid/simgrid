@@ -269,10 +269,10 @@ static void _surf_cfg_cb__surf_network_coordinates(const char *name,
   }
 }
 
-static void _surf_cfg_cb__surf_network_fullduplex(const char *name,
+static void _surf_cfg_cb__surf_network_crosstraffic(const char *name,
                                                   int pos)
 {
-  sg_network_fullduplex = xbt_cfg_get_int(_surf_cfg_set, name);
+  sg_network_crosstraffic = xbt_cfg_get_int(_surf_cfg_set, name);
 }
 
 #ifdef HAVE_GTNETS
@@ -489,11 +489,11 @@ void surf_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_surf_cfg_set, "coordinates", default_value);
 
     default_value_int = 0;
-    xbt_cfg_register(&_surf_cfg_set, "fullduplex",
+    xbt_cfg_register(&_surf_cfg_set, "network/crosstraffic",
                      "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
-                     _surf_cfg_cb__surf_network_fullduplex, NULL);
-    xbt_cfg_setdefault_int(_surf_cfg_set, "fullduplex", default_value_int);
+                     _surf_cfg_cb__surf_network_crosstraffic, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "network/crosstraffic", default_value_int);
 
 #ifdef HAVE_GTNETS
     xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter",

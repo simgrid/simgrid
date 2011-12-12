@@ -41,7 +41,7 @@ double sg_bandwidth_factor = 1.0;       /* default value; can be set by model or
 double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or from command line */
 
 double sg_tcp_gamma = 0.0;
-int sg_network_fullduplex = 0;
+int sg_network_crosstraffic = 0;
 
 xbt_dict_t gap_lookup = NULL;
 
@@ -783,7 +783,7 @@ static surf_action_t im_net_communicate(const char *src_name,
   xbt_dynar_t route=xbt_dynar_new(global_routing->size_of_link,NULL);
   routing_get_route_and_latency(src_name, dst_name, &route, &latency);
 
-  if (sg_network_fullduplex == 1) {
+  if (sg_network_crosstraffic == 1) {
     // FIXME: fill route directly (unclear: check with blame who put the FIXME)
     routing_get_route_and_latency(dst_name, src_name, &back_route,NULL);
   }
@@ -906,7 +906,7 @@ static surf_action_t im_net_communicate(const char *src_name,
                action->variable, 1.0);
   }
 
-  if (sg_network_fullduplex == 1) {
+  if (sg_network_crosstraffic == 1) {
     XBT_DEBUG("Fullduplex active adding backward flow using 5%c", '%');
     xbt_dynar_foreach(back_route, i, link) {
       lmm_expand(network_im_maxmin_system, link->lmm_resource.constraint,

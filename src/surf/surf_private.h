@@ -30,7 +30,7 @@ extern double sg_latency_factor;
 extern double sg_bandwidth_factor;
 extern double sg_weight_S_parameter;
 extern int sg_maxmin_selective_update;
-extern int sg_network_fullduplex;
+extern int sg_network_crosstraffic;
 #ifdef HAVE_GTNETS
 extern double sg_gtnets_jitter;
 extern int sg_gtnets_jitter_seed;
