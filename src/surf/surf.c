@@ -117,16 +117,16 @@ s_surf_model_description_t surf_network_model_description[] = {
    "Simplistic network model where all communication take a constant time (one second)",
    surf_network_model_init_Constant},
   {"CM02",
-   "Realistic network model with lmm_solve and no correction factors",
+   "Legacy network model with lmm_solve (slow-start and bottleneck sharing with small bandwidth poorly modeled).",
    surf_network_model_init_CM02},
   {"LV08",
-   "Realistic network model with lmm_solve, adequate correction factors (latency*=10.4, bandwidth*=.92, S=8775) and partial invalidation optimization",
+   "Realistic network model (slow-start modeled by multiplying latency by 10.4, bandwidth by .92 and bottleneck sharing uses a payload of S=8775 for evaluating RTT). Uses partial invalidation optimization of lmm system and a heap for action management by default (option --cfg=network/optim:Lazy)",
    im_surf_network_model_init_LegrandVelho},
    {"LV08_fullupdate",
-    "Realistic network model wit lmm_solve, adequate correction factors (latency*=10.4, bandwidth*=.92, S=8775) but no further optimization. Should produce the same results as LV08, only slower.",
+    "Realistic network model (see LV08) [Deprecated. Use LV08 with option --cfg=network/optim:Full. The Full option updates all actions at every step, which may be useful for debug.]",
    im_surf_network_model_init_LegrandVelho},
   {"SMPI",
-   "Realistic network model with lmm_solve and correction factors on three intervals (< 1KiB, < 64 KiB, >= 64 KiB)",
+   "Realistic network model with lmm_solve specifically tailored for HPC setting (accurate modeling of slow start with correction factors on three intervals (< 1KiB, < 64 KiB, >= 64 KiB))",
    surf_network_model_init_SMPI},
 #ifdef HAVE_GTNETS
   {"GTNets",
@@ -139,38 +139,54 @@ s_surf_model_description_t surf_network_model_description[] = {
 	surf_network_model_init_NS3},
 #endif
   {"Reno",
-   "Model using lagrange_solve instead of lmm_solve (experts only)",
+   "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info)",
    surf_network_model_init_Reno},
   {"Reno2",
-   "Model using lagrange_solve instead of lmm_solve (experts only)",
+   "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info)",
    surf_network_model_init_Reno2},
   {"Vegas",
-   "Model using lagrange_solve instead of lmm_solve (experts only)",
+   "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info)",
    surf_network_model_init_Vegas},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_cpu_model_description[] = {
-  {"Cas01_fullupdate", "CPU classical model time=size/power",
-   surf_cpu_model_init_Cas01_im},
+  {"Cas01_fullupdate", "CPU classical model time=size/power (Cas01). [Deprecated. Use Cas01 with option --cfg=cpu/optim:Full. The Full option updates all actions at every step, which may be useful for debug.]",
+   surf_cpu_model_init_Cas01},
   {"Cas01",
-   "Variation of Cas01_fullupdate with partial invalidation optimization of lmm system. Should produce the same values, only faster",
-   surf_cpu_model_init_Cas01_im},
+   "CPU classical model time=size/power. Default version uses partial invalidation optimization of lmm system and a heap for action management (default option is --cfg=cpu/optim:Lazy)",
+   surf_cpu_model_init_Cas01},
   {"CpuTI",
-   "Variation of Cas01 with also trace integration. Should produce the same values, only faster if you use availability traces",
+   "CPU classical model time=size/power (Cas01). [Deprecated. Use Cas01 with option --cfg=cpu/optim:TI. The TI optimization is highly optimized when using traces]",
    surf_cpu_model_init_ti},
   {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_workstation_model_description[] = {
+  {"current_default",
+   "Curent default workstation model (may change with versions of SimGrid). Currently Cas01 and LV08 (with full duplex support) as CPU and Network",
+   surf_workstation_model_init_current_default},
   {"CLM03",
-   "Default workstation model, using LV08 and CM02 as network and CPU",
+   "Default workstation model, using Cas01 and CM02 as CPU and Network",
    surf_workstation_model_init_CLM03},
   {"compound",
    "Workstation model allowing you to use other network and CPU models",
    surf_workstation_model_init_compound},
   {"ptask_L07", "Workstation model with better parallel task modeling",
    surf_workstation_model_init_ptask_L07},
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
+s_surf_model_description_t surf_optimization_mode_description[] = {
+  {"Lazy",
+   "Lazy action management (partial invalidation in lmm + heap in action remaining).",
+   NULL},
+  {"TI",
+   "Trace integration. Highly optimized mode for the Cas01 model when using availability traces.",
+    NULL},
+  {"Full",
+   "Full update of remaining and variables. Slow but may be useful when debugging.",
+   NULL},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 

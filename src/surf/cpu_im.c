@@ -677,12 +677,27 @@ static void surf_cpu_im_model_init_internal(const char* name)
 /*                  \url{http://grail.sdsc.edu/papers/simgrid_ccgrid01.ps.gz}." */
 /* } */
 
-void surf_cpu_model_init_Cas01_im()
+void surf_cpu_model_init_Cas01()
 {
-  if( strcmp(xbt_cfg_get_string(_surf_cfg_set, "cpu/model"),"Cas01"))
-    cpu_update_mechanism = UM_LAZY;
-  else
+  char *optim = xbt_cfg_get_string(_surf_cfg_set, "cpu/optim");
+  char *model = xbt_cfg_get_string(_surf_cfg_set, "cpu/model");
+
+  if(!strcmp(model,"Cas01_fullupdate")) {
+    XBT_WARN("[*Deprecated*. Use --cfg=cpu/model:Cas01 with option --cfg=cpu/optim:Full instead.]");
+  } else if(!strcmp(model,"CpuTI")) {
+    XBT_WARN("[*Deprecated*. Use --cfg=cpu/model:Cas01 with option --cfg=cpu/optim:TI instead.]");
+  }
+
+  if(!strcmp(optim,"Full")) {
     cpu_update_mechanism = UM_FULL;
+  } else if (strcmp(optim,"Lazy")) {
+    cpu_update_mechanism = UM_LAZY;
+  } else if (strcmp(optim,"TI")) {
+    surf_cpu_model_init_ti();
+    return;
+  } else {
+    xbt_die("Unsupported optimization (%s) for this model",optim);
+  }
 
   if (surf_cpu_model)
     return;

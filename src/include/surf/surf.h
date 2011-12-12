@@ -338,6 +338,11 @@ XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model;
 /** \brief Initializes the CPU model with the model Cas01
  *  \ingroup SURF_models
  *
+ *  By default, this model uses the lazy optimization mechanism that
+ *  relies on partial invalidation in LMM and a heap for lazy action update.
+ *  You can change this behavior by setting the cpu/optim configuration
+ *  variable to a different value.
+ *
  *  This function is called by surf_workstation_model_init_CLM03
  *  so you shouldn't have to call it by yourself.
  *
@@ -345,21 +350,13 @@ XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model;
  */
 XBT_PUBLIC(void) surf_cpu_model_init_Cas01(void);
 
-/** \brief Initializes the CPU model with trace integration
+/** \brief Initializes the CPU model with trace integration [Deprecated]
  *  \ingroup SURF_models
  *
- */
-XBT_PUBLIC(void) surf_cpu_model_init_ti(void);
-
-/** \brief Initializes the CPU model with the model Cas01 Improved. This model uses a heap to order the events, decreasing the time complexity to get the minimum next event.
- *  \ingroup SURF_models
- *
- *  This function is called by surf_workstation_model_init_CLM03
- *  so you shouldn't have to call it by yourself.
- *
+ *  You shouldn't have to call it by yourself.
  *  \see surf_workstation_model_init_CLM03()
  */
-XBT_PUBLIC(void) surf_cpu_model_init_Cas01_im(void);
+XBT_PUBLIC(void) surf_cpu_model_init_ti(void);
 
 /** \brief This function call the share resources function needed
  *
@@ -370,6 +367,13 @@ XBT_PUBLIC(double) generic_share_resources(double now);
  *
  */
 XBT_PUBLIC(void)   generic_update_actions_state(double now, double delta);
+
+/** \brief The list of all available optimization modes (both for cpu and networks).
+ *  \ingroup SURF_models
+ *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:...
+ */
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_optimization_mode_description[];
+
 /** \brief The list of all available cpu model models
  *  \ingroup SURF_models
  */
@@ -566,7 +570,6 @@ XBT_PUBLIC_DATA(surf_model_t) surf_workstation_model;
 
 /** \brief Initializes the platform with a compound workstation model
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  *  This function should be called after a cpu_model and a
  *  network_model have been set up.
@@ -574,9 +577,20 @@ XBT_PUBLIC_DATA(surf_model_t) surf_workstation_model;
  */
 XBT_PUBLIC(void) surf_workstation_model_init_compound(void);
 
+/** \brief Initializes the platform with the current best network and cpu models at hand
+ *  \ingroup SURF_models
+ *
+ *  This platform model seperates the workstation model and the network model.
+ *  The workstation model will be initialized with the model compound, the network
+ *  model with the model LV08 (with cross traffic support) and the CPU model with
+ *  the model Cas01.
+ *  Such model is subject to modification with warning in the ChangeLog so monitor it!
+ *
+ */
+XBT_PUBLIC(void) surf_workstation_model_init_current_default(void);
+
 /** \brief Initializes the platform with the workstation model CLM03
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  *  This platform model seperates the workstation model and the network model.
  *  The workstation model will be initialized with the model CLM03, the network
@@ -584,26 +598,11 @@ XBT_PUBLIC(void) surf_workstation_model_init_compound(void);
  *  In future releases, some other network models will be implemented and will be
  *  combined with the workstation model CLM03.
  *
- *  \see surf_workstation_model_init_KCCFLN05()
  */
 XBT_PUBLIC(void) surf_workstation_model_init_CLM03(void);
 
 /** \brief Initializes the platform with the model KCCFLN05
  *  \ingroup SURF_models
- *  \param filename XML platform file name
- *
- *  With this model, the workstations and the network are handled
- *  together. The network model is roughly the same as in CM02 but
- *  interference between computations and communications can be taken
- *  into account. This platform model is the default one for MSG and
- *  SimDag.
- *
- */
-XBT_PUBLIC(void) surf_workstation_model_init_KCCFLN05(void);
-
-/** \brief Initializes the platform with the model KCCFLN05
- *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  *  With this model, only parallel tasks can be used. Resource sharing
  *  is done by identifying bottlenecks and giving an equal share of
@@ -636,11 +635,9 @@ XBT_PUBLIC_DATA(xbt_cfg_t) _surf_cfg_set;
  *  This function has to be called to initialize the common
  *  structures.  Then you will have to create the environment by
  *  calling 
- *  e.g. surf_workstation_model_init_CLM03() or
- *  surf_workstation_model_init_KCCFLN05().
+ *  e.g. surf_workstation_model_init_CLM03()
  *
- *  \see surf_workstation_model_init_CLM03(),
- *  surf_workstation_model_init_KCCFLN05(), surf_workstation_model_init_compound(), surf_exit()
+ *  \see surf_workstation_model_init_CLM03(), surf_workstation_model_init_compound(), surf_exit()
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common structures */
 

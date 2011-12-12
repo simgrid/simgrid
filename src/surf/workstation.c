@@ -339,6 +339,16 @@ static void surf_workstation_model_init_internal(void)
 
 }
 
+void surf_workstation_model_init_current_default(void)
+{
+  surf_workstation_model_init_internal();
+  surf_cpu_model_init_Cas01();
+  im_surf_network_model_init_LegrandVelho();
+
+  xbt_dynar_push(model_list, &surf_workstation_model);
+  sg_platf_postparse_add_cb(create_workstations);
+}
+
 /********************************************************************/
 /* The model used in MSG and presented at CCGrid03                  */
 /********************************************************************/
@@ -353,8 +363,8 @@ static void surf_workstation_model_init_internal(void)
 void surf_workstation_model_init_CLM03(void)
 {
   surf_workstation_model_init_internal();
-  surf_cpu_model_init_Cas01_im();
-  im_surf_network_model_init_LegrandVelho();
+  surf_cpu_model_init_Cas01();
+  surf_network_model_init_CM02();
 
   xbt_dynar_push(model_list, &surf_workstation_model);
   sg_platf_postparse_add_cb(create_workstations);

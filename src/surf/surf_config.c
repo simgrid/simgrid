@@ -108,6 +108,25 @@ static void _surf_cfg_cb__cpu_model(const char *name, int pos)
   find_model_description(surf_cpu_model_description, val);
 }
 
+/* callback of the cpu/model variable */
+static void _surf_cfg_cb__optimization_mode(const char *name, int pos)
+{
+  char *val;
+
+  xbt_assert(_surf_init_status < 2,
+              "Cannot change the model after the initialization");
+
+  val = xbt_cfg_get_string(_surf_cfg_set, name);
+
+  if (!strcmp(val, "help")) {
+    model_help("optimization", surf_optimization_mode_description);
+    exit(0);
+  }
+
+  /* New Module missing */
+  find_model_description(surf_optimization_mode_description, val);
+}
+
 /* callback of the workstation_model variable */
 static void _surf_cfg_cb__network_model(const char *name, int pos)
 {
@@ -296,6 +315,20 @@ void surf_config_init(int *argc, char **argv)
                      &default_value, 1, 1, &_surf_cfg_cb__cpu_model, NULL);
 
     sprintf(description,
+            "The optimization modes to use for the CPU. Possible values: ");
+    p = description;
+    while (*(++p) != '\0');
+    for (i = 0; surf_optimization_mode_description[i].name; i++)
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_optimization_mode_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each optimization mode)");
+    default_value = xbt_strdup("Lazy");
+    xbt_cfg_register(&_surf_cfg_set,
+                     "cpu/optim", description, xbt_cfgelm_string,
+                     &default_value, 1, 1, &_surf_cfg_cb__optimization_mode, NULL);
+
+    sprintf(description,
             "The model to use for the network. Possible values: ");
     p = description;
     while (*(++p) != '\0');
@@ -309,6 +342,20 @@ void surf_config_init(int *argc, char **argv)
                      "network/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__network_model,
                      NULL);
+
+    sprintf(description,
+            "The optimization modes to use for the network. Possible values: ");
+    p = description;
+    while (*(++p) != '\0');
+    for (i = 0; surf_optimization_mode_description[i].name; i++)
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_optimization_mode_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each optimization mode)");
+    default_value = xbt_strdup("Lazy");
+    xbt_cfg_register(&_surf_cfg_set,
+                     "network/optim", description, xbt_cfgelm_string,
+                     &default_value, 1, 1, &_surf_cfg_cb__optimization_mode, NULL);
 
     sprintf(description,
             "The model to use for the workstation. Possible values: ");
