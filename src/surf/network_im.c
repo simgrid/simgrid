@@ -1072,15 +1072,13 @@ static void im_surf_network_model_init_internal(void)
 #endif
 
   surf_network_model->model_private->resource_used = im_net_resource_used;
-  if(network_update_mechanism == UM_LAZY)
+  if(network_update_mechanism == UM_LAZY) {
     surf_network_model->model_private->share_resources = net_share_resources_lazy;
-  else if(network_update_mechanism == UM_FULL)
+    surf_network_model->model_private->update_actions_state = net_update_actions_state_lazy;
+  } else if(network_update_mechanism == UM_FULL) {
     surf_network_model->model_private->share_resources = net_share_resources_full;
-
-  if(network_update_mechanism == UM_LAZY)
-    surf_network_model->model_private->update_actions_state =net_update_actions_state_lazy;
-  else if(network_update_mechanism == UM_FULL)
-    surf_network_model->model_private->update_actions_state =net_update_actions_state_full;
+    surf_network_model->model_private->update_actions_state = net_update_actions_state_full;
+  }
 
   surf_network_model->model_private->update_resource_state =
 		  net_update_resource_state;

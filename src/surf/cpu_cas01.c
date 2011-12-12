@@ -667,19 +667,14 @@ static void surf_cpu_model_init_internal(const char* name)
 
   surf_cpu_model->model_private->resource_used = cpu_resource_used;
 
-  if(cpu_update_mechanism == UM_LAZY)
+  if(cpu_update_mechanism == UM_LAZY) {
     surf_cpu_model->model_private->share_resources = cpu_share_resources_lazy;
-  else if (cpu_update_mechanism == UM_FULL)
-    surf_cpu_model->model_private->share_resources = cpu_share_resources_full;
-  else
-    xbt_die("Invalide update mechanism!");
-
-  if(cpu_update_mechanism == UM_LAZY)
     surf_cpu_model->model_private->update_actions_state = cpu_update_actions_state_lazy;
-  else if(cpu_update_mechanism == UM_FULL)
+  } else if (cpu_update_mechanism == UM_FULL) {
+    surf_cpu_model->model_private->share_resources = cpu_share_resources_full;
     surf_cpu_model->model_private->update_actions_state = cpu_update_actions_state_full;
-  else
-    xbt_die("Incompatible optimization mode");
+  } else
+    xbt_die("Invalid update mechanism!");
 
   surf_cpu_model->model_private->update_resource_state =
       cpu_update_resource_state;
