@@ -75,12 +75,12 @@ void surf_config_init(int *argc, char **argv);
 void surf_config_finalize(void);
 void surf_config(const char *name, va_list pa);
 
-void im_net_action_recycle(surf_action_t action);
-double im_net_action_get_remains(surf_action_t action);
+void net_action_recycle(surf_action_t action);
+double net_action_get_remains(surf_action_t action);
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 int net_get_link_latency_limited(surf_action_t action);
 #endif
-void im_net_action_set_max_duration(surf_action_t action, double duration);
+void net_action_set_max_duration(surf_action_t action, double duration);
 /*
  * Returns the initial path. On Windows the initial path is
  * the current directory for the current process in the other

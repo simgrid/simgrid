@@ -398,45 +398,29 @@ XBT_PUBLIC_DATA(surf_model_t) surf_network_model;
 
 /** \brief Same as network model 'LagrangeVelho', only with different correction factors.
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  * This model is proposed by Pierre-Nicolas Clauss and Martin Quinson and Stéphane Génaud
  * based on the model 'LV08' and different correction factors depending on the communication
  * size (< 1KiB, < 64KiB, >= 64KiB).
+ * See comments in the code for more information.
  *
  *  \see surf_workstation_model_init_SMPI()
  */
 XBT_PUBLIC(void) surf_network_model_init_SMPI(void);
 
-/** \brief Initializes the platform with the network model 'LagrangeVelho'
+/** \brief Initializes the platform with the network model 'LegrandVelho'
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  * This model is proposed by Arnaud Legrand and Pedro Velho based on
  * the results obtained with the GTNets simulator for onelink and
- * dogbone sharing scenarios.
+ * dogbone sharing scenarios. See comments in the code for more information.
  *
  *  \see surf_workstation_model_init_LegrandVelho()
  */
 XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(void);
 
-
-/** \brief Initializes the platform with the network model 'LV08_im'
- *  \ingroup SURF_models
- *  \param filename XML platform file name
- *
- * This model is adds the lazy management improvement to Legrand and
- * Velho model. This improvement essentially replaces the list of actions
- * inside the simulation kernel by a heap in order to reduce the complexity
- * at each iteration of the simulation kernel.
- *
- *  \see surf_workstation_model_init_LegrandVelho()
- */
-XBT_PUBLIC(void) im_surf_network_model_init_LegrandVelho(void);
-
 /** \brief Initializes the platform with the network model 'Constant'
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  *  In this model, the communication time between two network cards is
  *  constant, hence no need for a routing table. This is particularly
@@ -450,10 +434,10 @@ XBT_PUBLIC(void) surf_network_model_init_Constant(void);
 
 /** \brief Initializes the platform with the network model CM02
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  *  This function is called by surf_workstation_model_init_CLM03
  *  or by yourself only if you plan using surf_workstation_model_init_compound
+ *  See comments in the code for more information.
  *
  *  \see surf_workstation_model_init_CLM03()
  */

@@ -27,7 +27,7 @@ enum heap_action_type{
   NOTSET
 };
 
-typedef struct surf_action_network_CM02_im {
+typedef struct surf_action_network_CM02 {
   s_surf_action_t generic_action;
   s_xbt_swag_hookup_t action_list_hookup;
   double latency;
@@ -54,6 +54,6 @@ typedef struct surf_action_network_CM02_im {
   int index_heap;
   enum heap_action_type hat;
   double last_update;
-} s_surf_action_network_CM02_im_t, *surf_action_network_CM02_im_t;
+} s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
 
 #endif                          /* _SURF_NETWORK_PRIVATE_H */
