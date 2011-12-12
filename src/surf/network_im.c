@@ -402,7 +402,7 @@ static void update_action_remaining(double now){
   }
 }
 
-static double net_share_resources(double now)
+static double net_share_resources_full(double now)
 {
   s_surf_action_network_CM02_im_t s_action;
   surf_action_network_CM02_im_t action = NULL;
@@ -439,7 +439,7 @@ static double net_share_resources(double now)
   return min;
 }
 
-static double im_net_share_resources(double now)
+static double net_share_resources_lazy(double now)
 {
   surf_action_network_CM02_im_t action = NULL;
   double min=-1;
@@ -513,20 +513,7 @@ static double im_net_share_resources(double now)
   return min;
 }
 
-static double generic_net_share_resources(double now)
-{
-  if(network_update_mechanism == UM_LAZY)
-    return im_net_share_resources(now);
-  else if (network_update_mechanism == UM_FULL)
-  {
-    return net_share_resources(now);
-  } else {
-    xbt_die("Invalide update mechanism!");
-    return 0;
-  }
-}
-
-static void net_update_actions_state(double now, double delta)
+static void net_update_actions_state_full(double now, double delta)
 {
   double deltap = 0.0;
   surf_action_network_CM02_im_t action = NULL;
@@ -603,7 +590,7 @@ static void net_update_actions_state(double now, double delta)
   return;
 }
 
-static void im_net_update_actions_state(double now, double delta)
+static void net_update_actions_state_lazy(double now, double delta)
 {
   surf_action_network_CM02_im_t action = NULL;
 
@@ -639,19 +626,7 @@ static void im_net_update_actions_state(double now, double delta)
   return;
 }
 
-static void generic_net_update_actions_state(double now, double delta)
-{
-  if(network_update_mechanism == UM_LAZY)
-    im_net_update_actions_state(now,delta);
-  else if (network_update_mechanism == UM_FULL)
-  {
-    net_update_actions_state(now,delta);
-  } else {
-    xbt_die("Invalide update mechanism!");
-  }
-}
-
-static void im_net_update_resource_state(void *id,
+static void net_update_resource_state(void *id,
                                       tmgr_trace_event_t event_type,
                                       double value, double date)
 {
@@ -1097,11 +1072,18 @@ static void im_surf_network_model_init_internal(void)
 #endif
 
   surf_network_model->model_private->resource_used = im_net_resource_used;
-  surf_network_model->model_private->share_resources = generic_net_share_resources;
-  surf_network_model->model_private->update_actions_state =
-      generic_net_update_actions_state;
+  if(network_update_mechanism == UM_LAZY)
+    surf_network_model->model_private->share_resources = net_share_resources_lazy;
+  else if(network_update_mechanism == UM_FULL)
+    surf_network_model->model_private->share_resources = net_share_resources_full;
+
+  if(network_update_mechanism == UM_LAZY)
+    surf_network_model->model_private->update_actions_state =net_update_actions_state_lazy;
+  else if(network_update_mechanism == UM_FULL)
+    surf_network_model->model_private->update_actions_state =net_update_actions_state_full;
+
   surf_network_model->model_private->update_resource_state =
-		  im_net_update_resource_state;
+		  net_update_resource_state;
   surf_network_model->model_private->finalize = im_net_finalize;
 
   surf_network_model->suspend = im_net_action_suspend;
