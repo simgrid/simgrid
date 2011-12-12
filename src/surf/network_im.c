@@ -804,6 +804,15 @@ static surf_action_t im_net_communicate(const char *src_name,
       break;
     }
   }
+  if (sg_network_crosstraffic == 1) {
+    xbt_dynar_foreach(back_route, i, link) {
+      if (link->lmm_resource.state_current == SURF_RESOURCE_OFF) {
+        failed = 1;
+        break;
+      }
+    }
+  }
+
   action =
       surf_action_new(sizeof(s_surf_action_network_CM02_im_t), size,
                       surf_network_model, failed);
