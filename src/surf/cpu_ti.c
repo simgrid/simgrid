@@ -681,8 +681,8 @@ static double cpu_ti_action_get_remains(surf_action_t action)
   cpu_ti_update_remaining_amount((cpu_ti_t)
                                  ((surf_action_cpu_ti_t) action)->cpu,
                                  surf_get_clock());
-  return action->remains;
   XBT_OUT();
+  return action->remains;
 }
 
 static e_surf_resource_state_t cpu_ti_get_state(void *cpu)

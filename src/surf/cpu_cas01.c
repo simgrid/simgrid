@@ -598,8 +598,8 @@ static double cpu_action_get_remains(surf_action_t action)
   /* update remains before return it */
   if(cpu_update_mechanism == UM_LAZY)
     cpu_update_remains(ACTION_GET_CPU(action), surf_get_clock());
-  return action->remains;
   XBT_OUT();
+  return action->remains;
 }
 
 static e_surf_resource_state_t cpu_get_state(void *cpu)

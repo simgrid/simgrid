@@ -50,6 +50,7 @@ void create_workstations(void)
 static int ws_resource_used(void *resource_id)
 {
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
+  return -1;
 }
 
 static void ws_parallel_action_cancel(surf_action_t action)
@@ -60,6 +61,7 @@ static void ws_parallel_action_cancel(surf_action_t action)
 static int ws_parallel_action_free(surf_action_t action)
 {
   THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
+  return -1;
 }
 
 static int ws_action_unref(surf_action_t action)
@@ -158,6 +160,7 @@ static int ws_action_is_suspended(surf_action_t action)
   if (action->model_type == surf_cpu_model)
     return surf_cpu_model->is_suspended(action);
   DIE_IMPOSSIBLE;
+  return -1;
 }
 
 static void ws_action_set_max_duration(surf_action_t action,
@@ -210,6 +213,7 @@ static double ws_action_get_remains(surf_action_t action)
   if (action->model_type == surf_cpu_model)
     return surf_cpu_model->get_remains(action);
   DIE_IMPOSSIBLE;
+  return -1.0;
 }
 
 static surf_action_t ws_communicate(void *workstation_src,
@@ -249,6 +253,7 @@ static surf_action_t ws_execute_parallel_task(int workstation_nb,
                                               double amount, double rate)
 {
   THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
+  return NULL;
 }
 
 

@@ -48,13 +48,11 @@ e_UM_t network_update_mechanism = UM_UNDEFINED;
 static int selective_update = 0;
 
 static int net_action_is_suspended(surf_action_t action);
-static void net_update_actions_state(double now, double delta);
 static void update_action_remaining(double now);
 
 static xbt_swag_t net_modified_set = NULL;
 static xbt_heap_t net_action_heap = NULL;
 xbt_swag_t keep_track = NULL;
-extern int sg_maxmin_selective_update;
 
 #ifdef HAVE_SMPI
 static void gap_append(double size, const link_CM02_t link, surf_action_network_CM02_t action);

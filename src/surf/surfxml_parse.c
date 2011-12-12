@@ -387,6 +387,7 @@ void ETag_surfxml_link(void){
     break;
   default:
     surf_parse_error(bprintf("invalid state for link %s",link.id));
+    break;
   }
   link.state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
@@ -402,6 +403,7 @@ void ETag_surfxml_link(void){
      break;
   default:
     surf_parse_error(bprintf("Invalid sharing policy in link %s",link.id));
+    break;
   }
 
   sg_platf_new_link(&link);

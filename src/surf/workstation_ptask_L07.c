@@ -195,8 +195,8 @@ static void ptask_action_set_priority(surf_action_t action,
 static double ptask_action_get_remains(surf_action_t action)
 {
   XBT_IN("(%p)", action);
-  return action->remains;
   XBT_OUT();
+  return action->remains;
 }
 
 /**************************************/
