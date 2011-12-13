@@ -23,8 +23,7 @@ XBT_PUBLIC(MSG_error_t) MSG_set_channel_number(int number);
 XBT_PUBLIC(int) MSG_get_channel_number(void);
 XBT_PUBLIC(MSG_error_t) MSG_main(void);
 XBT_PUBLIC(MSG_error_t) MSG_main_stateful(void);
-XBT_PUBLIC(MSG_error_t) MSG_main_liveness_stateful(xbt_automaton_t a);
-XBT_PUBLIC(MSG_error_t) MSG_main_liveness_stateless(xbt_automaton_t a, char *prgm);
+XBT_PUBLIC(MSG_error_t) MSG_main_liveness(xbt_automaton_t a, char *prgm);
 XBT_PUBLIC(MSG_error_t) MSG_clean(void);
 XBT_PUBLIC(void) MSG_function_register(const char *name,
                                        xbt_main_func_t code);

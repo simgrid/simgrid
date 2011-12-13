@@ -16,7 +16,6 @@ automatonparse_promela.c example_liveness_with_cycle.c)
 
 
 
-
 target_link_libraries(centralized simgrid m )
 target_link_libraries(bugged1     simgrid m )
 target_link_libraries(bugged1_stateful simgrid m)

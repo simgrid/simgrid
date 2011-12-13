@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);
   MSG_launch_application("deploy_mutex2.xml");
-  MSG_main_liveness_stateless(automaton, argv[0]);
-  
+  MSG_main_liveness(automaton, argv[0]);
+
   return 0;
 }

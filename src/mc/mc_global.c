@@ -27,9 +27,8 @@ mc_stats_t mc_stats = NULL;
 
 /* Liveness */
 
-xbt_fifo_t mc_stack_liveness_stateful = NULL;
 mc_stats_pair_t mc_stats_pair = NULL;
-xbt_fifo_t mc_stack_liveness_stateless = NULL;
+xbt_fifo_t mc_stack_liveness = NULL;
 mc_snapshot_t initial_snapshot_liveness = NULL;
 
 xbt_automaton_t automaton;
@@ -96,35 +95,7 @@ void MC_init_safety_stateful(void){
 
 }
 
-void MC_init_liveness_stateful(xbt_automaton_t a){
-
-  XBT_DEBUG("Start init mc");
-  
-  mc_time = xbt_new0(double, simix_process_maxpid);
-
-  /* Initialize the data structures that must be persistent across every
-     iteration of the model-checker (in RAW memory) */
-
-  MC_SET_RAW_MEM;
-
-  /* Initialize statistics */
-  mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
-  //mc_stats = xbt_new0(s_mc_stats_t, 1);
-
-  XBT_DEBUG("Creating snapshot_stack");
-
- /* Create exploration stack */
-  mc_stack_liveness_stateful = xbt_fifo_new();
-
-
-  MC_UNSET_RAW_MEM;
-
-  //MC_ddfs_stateful_init(a);
-  //MC_dpor2_init(a);
-  //MC_dpor3_init(a);
-}
-
-void MC_init_liveness_stateless(xbt_automaton_t a, char *prgm){
+void MC_init_liveness(xbt_automaton_t a, char *prgm){
 
   XBT_DEBUG("Start init mc");
   
@@ -141,14 +112,14 @@ void MC_init_liveness_stateless(xbt_automaton_t a, char *prgm){
   XBT_DEBUG("Creating stack");
 
  /* Create exploration stack */
-  mc_stack_liveness_stateless = xbt_fifo_new();
+  mc_stack_liveness = xbt_fifo_new();
 
   MC_UNSET_RAW_MEM;
 
   automaton = a;
   prog_name = strdup(prgm);
 
-  MC_ddfs_stateless_init();
+  MC_ddfs_init();
 
   
 }
@@ -168,13 +139,9 @@ void MC_modelcheck_stateful(void)
   MC_exit();
 }
 
-void MC_modelcheck_liveness_stateful(xbt_automaton_t a){
-  MC_init_liveness_stateful(a);
-  MC_exit_liveness();
-}
 
-void MC_modelcheck_liveness_stateless(xbt_automaton_t a, char *prgm){
-  MC_init_liveness_stateless(a, prgm);
+void MC_modelcheck_liveness(xbt_automaton_t a, char *prgm){
+  MC_init_liveness(a, prgm);
   MC_exit_liveness();
 }
 
@@ -492,35 +459,8 @@ void MC_show_stack_safety_stateful(xbt_fifo_t stack)
   }
 }
 
-void MC_show_stack_liveness_stateful(xbt_fifo_t stack){
-  int value;
-  mc_pair_t pair;
-  xbt_fifo_item_t item;
-  smx_req_t req;
-  char *req_str = NULL;
-  
-  for (item = xbt_fifo_get_last_item(stack);
-       (item ? (pair = (mc_pair_t) (xbt_fifo_get_item_content(item)))
-        : (NULL)); item = xbt_fifo_get_prev_item(item)) {
-    req = MC_state_get_executed_request(pair->graph_state, &value);
-    if(req){
-      req_str = MC_request_to_string(req, value);
-      XBT_INFO("%s", req_str);
-      xbt_free(req_str);
-    }
-  }
-}
 
-void MC_dump_stack_liveness_stateful(xbt_fifo_t stack){
-  mc_pair_t pair;
-
-  MC_SET_RAW_MEM;
-  while ((pair = (mc_pair_t) xbt_fifo_pop(stack)) != NULL)
-    MC_pair_delete(pair);
-  MC_UNSET_RAW_MEM;
-}
-
-void MC_show_stack_liveness_stateless(xbt_fifo_t stack){
+void MC_show_stack_liveness(xbt_fifo_t stack){
   int value;
   mc_pair_stateless_t pair;
   xbt_fifo_item_t item;
@@ -543,7 +483,7 @@ void MC_show_stack_liveness_stateless(xbt_fifo_t stack){
   }
 }
 
-void MC_dump_stack_liveness_stateless(xbt_fifo_t stack){
+void MC_dump_stack_liveness(xbt_fifo_t stack){
   mc_pair_stateless_t pair;
 
   MC_SET_RAW_MEM;
@@ -602,26 +542,14 @@ void MC_assert_stateful(int prop)
   }
 }
 
-void MC_assert_pair_stateful(int prop){
-  if (MC_IS_ENABLED && !prop) {
-    XBT_INFO("**************************");
-    XBT_INFO("*** PROPERTY NOT VALID ***");
-    XBT_INFO("**************************");
-    //XBT_INFO("Counter-example execution trace:");
-    MC_show_stack_liveness_stateful(mc_stack_liveness_stateful);
-    //MC_dump_snapshot_stack(mc_snapshot_stack);
-    MC_print_statistics_pairs(mc_stats_pair);
-    xbt_abort();
-  }
-}
 
-void MC_assert_pair_stateless(int prop){
+void MC_assert_pair(int prop){
   if (MC_IS_ENABLED && !prop) {
     XBT_INFO("**************************");
     XBT_INFO("*** PROPERTY NOT VALID ***");
     XBT_INFO("**************************");
     //XBT_INFO("Counter-example execution trace:");
-    MC_show_stack_liveness_stateless(mc_stack_liveness_stateless);
+    MC_show_stack_liveness(mc_stack_liveness);
     //MC_dump_snapshot_stack(mc_snapshot_stack);
     MC_print_statistics_pairs(mc_stats_pair);
     xbt_abort();
