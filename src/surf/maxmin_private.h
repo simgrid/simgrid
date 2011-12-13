@@ -30,8 +30,8 @@ typedef struct lmm_constraint {
   s_xbt_swag_hookup_t modified_constraint_set_hookup;
   s_xbt_swag_hookup_t saturated_constraint_set_hookup;
 
-  s_xbt_swag_t element_set;     /* a list of lmm_mat_element_t */
-  s_xbt_swag_t active_element_set;      /* a list of lmm_mat_element_t */
+  s_xbt_swag_t element_set;     /* a list of lmm_element_t */
+  s_xbt_swag_t active_element_set;      /* a list of lmm_element_t */
   double bound;
   double lambda;
   double new_lambda;
@@ -87,9 +87,8 @@ typedef struct lmm_system {
                                  xbt_swag_remove(var,&(sys->saturated_variable_set));} while(0)
 #define remove_constraint(sys,cnst) do {xbt_swag_remove(cnst,&(sys->constraint_set));\
                                         xbt_swag_remove(cnst,&(sys->saturated_constraint_set));} while(0)
-#define remove_active_constraint(sys,cnst) xbt_swag_remove(cnst,&(sys->active_constraint_set))
 #define make_constraint_active(sys,cnst) xbt_swag_insert(cnst,&(sys->active_constraint_set))
-#define make_constraint_inactive(sys,cnst) remove_active_constraint(sys,cnst)
+#define make_constraint_inactive(sys,cnst) xbt_swag_remove(cnst,&(sys->active_constraint_set))
 
 static void lmm_var_free(lmm_system_t sys, lmm_variable_t var);
 static XBT_INLINE void lmm_cnst_free(lmm_system_t sys,
