@@ -765,7 +765,7 @@ static void surf_cpu_ti_model_init_internal(void)
   cpu_ti_modified_cpu =
       xbt_swag_new(xbt_swag_offset(cpu, modified_cpu_hookup));
 
-  surf_cpu_model->name = "CPU_TI";
+  surf_cpu_model->name = "cpu_ti";
 
   surf_cpu_model->action_unref = cpu_ti_action_unref;
   surf_cpu_model->action_cancel = cpu_ti_action_cancel;

@@ -650,7 +650,7 @@ static void cpu_finalize(void)
   if(cpu_modified_cpu) xbt_swag_free(cpu_modified_cpu);
 }
 
-static void surf_cpu_model_init_internal(const char* name)
+static void surf_cpu_model_init_internal()
 {
   s_surf_action_t action;
   s_cpu_Cas01_t cpu;
@@ -660,7 +660,7 @@ static void surf_cpu_model_init_internal(const char* name)
   cpu_running_action_set_that_does_not_need_being_checked =
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
-  surf_cpu_model->name = name;
+  surf_cpu_model->name = "cpu";
 
   surf_cpu_model->action_unref = cpu_action_unref;
   surf_cpu_model->action_cancel = cpu_action_cancel;
@@ -758,7 +758,7 @@ void surf_cpu_model_init_Cas01()
 
   if (surf_cpu_model)
     return;
-  surf_cpu_model_init_internal("CPU");
+  surf_cpu_model_init_internal();
   cpu_define_callbacks();
   xbt_dynar_push(model_list, &surf_cpu_model);
 }
