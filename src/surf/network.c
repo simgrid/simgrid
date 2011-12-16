@@ -103,61 +103,54 @@ static double constant_bandwidth_constraint(double rate, double bound,
   return rate;
 }
 
-/**
- *------------------ <copy/paste C code snippet in surf/network.c> ----------------------
- *
- * produced by: ./calibrate_piecewise.py griffon_skampi_pt2pt.ski.dat 2 2.4e-5 1.25e8 1536 65536
- *
- *---------------------------------------------------------------------------------------
- **/
+/**--------- <copy/paste C code snippet in surf/network.c> -------------
+  * produced by:
+  * ./regression2.py ./pingpong-in.dat 0.15 100 2 2.4e-5 1.25e8
+  * outliers: 65
+  * gnuplot: 
+    plot "./pingpong-in.dat" using 1:2 with lines title "data", \
+        (x >= 65472) ? 0.00850436*x+558.894 : \
+        (x >= 15424) ? 0.0114635*x+167.446 : \
+        (x >= 9376) ? 0.0136219*x+124.464 : \
+        (x >= 5776) ? 0.00735707*x+105.022 : \
+        (x >= 3484) ? 0.0103235*x+90.2886 : \
+        (x >= 1426) ? 0.0131384*x+77.3159 : \
+        (x >= 732) ? 0.0233927*x+93.6146 : \
+        (x >= 257) ? 0.0236608*x+93.7637 : \
+        (x >= 0) ? 0.00985119*x+96.704 : \
+        1.0 with lines title "piecewise function"
+  *-------------------------------------------------------------------*/
+
 static double smpi_bandwidth_factor(double size)
 {
-	 /* case 0.0 KiB <= size <= 1.5 KiB */
-	 if (1 <=  size && size <= 1536) 
-		return(0.193137361131);
-	 /* case 2.0 KiB <= size <= 64.0 KiB */
-	 if (2048 <=  size && size <= 65536) 
-		return(0.584680317461);
-	 /* case 65.0 KiB <= size */
-	 if (66560 <=  size) 
-		return(0.933246215769);
 
-	 /* ..:: inter-segment corrections ::.. */
-
-	 /* case 1.5 KiB < size < 2.0 KiB */
-	 if (1536 <  size && size < 2048) 
-		return(0.765607476636);
-	 /* case 64.0 KiB < size < 65.0 KiB */
-	 if (65536 <  size && size < 66560) 
-		return(1.24121212121);
+    if (size >= 65472) return 0.940694;
+    if (size >= 15424) return 0.697866;
+    if (size >= 9376) return 0.58729;
+    if (size >= 5776) return 1.08739;
+    if (size >= 3484) return 0.77493;
+    if (size >= 1426) return 0.608902;
+    if (size >= 732) return 0.341987;
+    if (size >= 257) return 0.338112;
+    if (size >= 0) return 0.812084;
+    return 1.0;
 }
 
 static double smpi_latency_factor(double size)
 {
-	 /* case 0.0 KiB <= size <= 1.5 KiB */
-	 if (1 <=  size && size <= 1536) 
-		return(1.15019564848);
-	 /* case 2.0 KiB <= size <= 64.0 KiB */
-	 if (2048 <=  size && size <= 65536) 
-		return(1.80598448863);
-	 /* case 65.0 KiB <= size <= 8192.0 KiB */
-	 if (66560 <=  size) 
-		return(14.6187359323);
 
-	 /* ..:: inter-segment corrections ::.. */
-
-	 /* case 1.5 KiB < size < 2.0 KiB */
-	 if (1536 <  size && size < 2048) 
-		return(2.1375);
-	 /* case 64.0 KiB < size < 65.0 KiB */
-	 if (65536 <  size && size < 66560) 
-		return(14.6375);
+    if (size >= 65472) return 11.6436;
+    if (size >= 15424) return 3.48845;
+    if (size >= 9376) return 2.59299;
+    if (size >= 5776) return 2.18796;
+    if (size >= 3484) return 1.88101;
+    if (size >= 1426) return 1.61075;
+    if (size >= 732) return 1.9503;
+    if (size >= 257) return 1.95341;
+    if (size >= 0) return 2.01467;
+    return 1.0;
 }
-
-/**
- *------------------ </copy/paste C code snippet in surf/network.c> ---------------------
- **/
-
+/**--------- <copy/paste C code snippet in surf/network.c> -----------*/
 
 static double smpi_bandwidth_constraint(double rate, double bound,
                                         double size)
