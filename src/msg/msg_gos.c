@@ -469,8 +469,9 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
+  smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
                        t_simdata->rate, task, sizeof(void *), NULL, cleanup, 1);
+  t_simdata->comm = comm;
 }
 
 /** \ingroup msg_gos_functions
