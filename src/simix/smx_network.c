@@ -244,10 +244,12 @@ void SIMIX_comm_destroy(smx_action_t action)
 {
   XBT_DEBUG("Destroy action %p (refcount:%d)", action, action->comm.refcount);
 
-  if (action->comm.refcount <= 0)
+  if (action->comm.refcount <= 0) {
+	xbt_backtrace_display_current();
     xbt_die("the refcount of comm %p is already 0 before decreasing it. "
             "That's a bug!", action);
 
+  }
   action->comm.refcount--;
   if (action->comm.refcount > 0)
     return;
@@ -332,7 +334,7 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
   }
 
   SIMIX_comm_start(action);
-  return action;
+  return (detached ? NULL : action);
 }
 
 smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,

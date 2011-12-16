@@ -98,10 +98,15 @@ void smpi_mpi_start(MPI_Request request)
   } else {
     print_request("New send", request);
     mailbox = smpi_process_remote_mailbox(
-        smpi_group_index(smpi_comm_group(request->comm), request->dst));
+			  smpi_group_index(smpi_comm_group(request->comm), request->dst));
     // FIXME: SIMIX does not yet support non-contiguous datatypes
-    request->action = SIMIX_req_comm_isend(mailbox, request->size, -1.0,
-                                           request->buf, request->size, &match_send, request, 0);
+
+    request->action = 
+		SIMIX_req_comm_isend(mailbox, request->size, -1.0,
+				    request->buf, request->size, &match_send, request,  
+				    // detach if msg size < eager/rdv switch limit
+				    request->size < 64*1024 ? 1:0);
+    // if detached  request->action == NULL
 #ifdef HAVE_TRACING
     SIMIX_req_set_category (request->action, TRACE_internal_smpi_get_category());
 #endif
@@ -110,7 +115,7 @@ void smpi_mpi_start(MPI_Request request)
 
 void smpi_mpi_startall(int count, MPI_Request * requests)
 {
-  int i;
+	  int i;
 
   for(i = 0; i < count; i++) {
     smpi_mpi_start(requests[i]);
@@ -226,14 +231,17 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
   }
 }
 
-int smpi_mpi_test(MPI_Request * request, MPI_Status * status)
-{
-   int flag = SIMIX_req_comm_test((*request)->action);
+int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
+int flag;
 
+   if ((*request)->action == NULL)
+	flag = 1;
+   else 
+    flag = SIMIX_req_comm_test((*request)->action);
    if(flag) {
-      smpi_mpi_wait(request, status);
-   }
-   return flag;
+		    smpi_mpi_wait(request, status);
+	  }
+	  return flag;
 }
 
 int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
@@ -274,7 +282,8 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
 void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
 {
   print_request("Waiting", *request);
-  SIMIX_req_comm_wait((*request)->action, -1.0);
+  if ((*request)->action != NULL ) 
+ 	 SIMIX_req_comm_wait((*request)->action, -1.0);
   finish_wait(request, status);
 }
 
@@ -293,7 +302,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
     size = 0;
     XBT_DEBUG("Wait for one of");
     for(i = 0; i < count; i++) {
-      if(requests[i] != MPI_REQUEST_NULL) {
+      if((requests[i] != MPI_REQUEST_NULL) && (requests[i]->action != NULL)) {
         print_request("   ", requests[i]);
         xbt_dynar_push(comms, &requests[i]->action);
         map[size] = i;
