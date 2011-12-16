@@ -804,7 +804,7 @@ static surf_action_t net_communicate(const char *src_name,
     if(network_update_mechanism == UM_LAZY){
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency + action->last_update);
-      heap_insert(action, action->latency + action->last_update, LATENCY);
+      heap_insert(action, action->latency + action->last_update, xbt_dynar_is_empty(route)?NORMAL:LATENCY);
     }
   } else
     action->variable =
