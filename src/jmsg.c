@@ -751,7 +751,7 @@ Java_org_simgrid_msg_MsgNative_taskExecute(JNIEnv * env, jclass cls,
   MSG_error_t rv = MSG_task_execute(task);
 
   jxbt_check_res("MSG_task_execute()", rv,
-                 MSG_HOST_FAILURE | MSG_TASK_CANCELLED,
+                 MSG_HOST_FAILURE | MSG_TASK_CANCELED,
                  bprintf("while executing task %s",
                          MSG_task_get_name(task)));
 }
