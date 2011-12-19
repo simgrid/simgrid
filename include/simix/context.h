@@ -95,6 +95,8 @@ void smx_ctx_base_stop(smx_context_t context);
 smx_context_t smx_ctx_base_self(void);
 void *smx_ctx_base_get_data(smx_context_t context);
 
+XBT_INLINE xbt_dynar_t SIMIX_process_get_runnable(void);
+
 /* parallelism */
 XBT_INLINE int SIMIX_context_is_parallel(void);
 XBT_INLINE int SIMIX_context_get_nthreads(void);
