@@ -35,14 +35,12 @@ typedef struct surf_action_network_CM02 {
   double weight;
   lmm_variable_t variable;
   double rate;
-#ifdef HAVE_SMPI
   struct {
      const char* link_name;
      double gap;
      double size;
      xbt_fifo_item_t fifo_item;
   } sender;
-#endif
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int latency_limited;
 #endif
