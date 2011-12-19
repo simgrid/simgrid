@@ -27,7 +27,7 @@ static void smx_ctx_java_free(smx_context_t context);
 static void smx_ctx_java_start(smx_context_t context);
 static void smx_ctx_java_suspend(smx_context_t context);
 static void smx_ctx_java_resume(smx_context_t new_context);
-static void smx_ctx_java_runall(xbt_dynar_t processes);
+static void smx_ctx_java_runall(void);
 
 void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
 {
@@ -143,13 +143,13 @@ static void smx_ctx_java_resume(smx_context_t new_context)
   jprocess_schedule(new_context);
 }
 
-static void smx_ctx_java_runall(xbt_dynar_t processes)
+static void smx_ctx_java_runall(void)
 {
+  xbt_dynar_t processes = SIMIX_process_get_runnable();
   XBT_DEBUG("XXXX Run all\n");
   smx_process_t process;
   smx_context_t old_context;
   unsigned int cursor;
-
   xbt_dynar_foreach(processes, cursor, process) {
     old_context = my_current_context;
     my_current_context = SIMIX_process_get_context(process);
