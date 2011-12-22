@@ -261,7 +261,7 @@ static surf_action_t ws_execute_parallel_task(int workstation_nb,
 static xbt_dynar_t ws_get_route(void *src, void *dst)
 {
   return surf_network_model->extension.
-      network.get_route(surf_resource_name(src), surf_resource_name(src));
+      network.get_route(surf_resource_name(src), surf_resource_name(dst));
 }
 
 static double ws_get_link_bandwidth(const void *link)
