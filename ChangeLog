@@ -5,7 +5,17 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   Models:
   * Use the partial invalidation optimization by default for the
     network too. Should produce the exact same results, only faster.
-
+  * Major cleanup in surf to merge models and split some optimization
+    mechanisms from the core of the models. As a result you can now
+    specify which model to use (e.g., --cfg=network/model:LV08
+    --cfg=cpu/model:Cas01) and which optimization mode to use
+    (e.g., --cfg=network/optim:lazy --cfg=cpu/optim:TI).
+    Incompatible combinations should err at initialization. See
+    --help-models for the list of all models and optimization modes.
+  * Use now crosstraffic keyword instead of the terribly missleading 
+    fullduplex keyword. Use --cfg=network/crosstraffic:1. This is
+    activated by default now in the current default model.
+    
   SimDag:
   * Performance boost by using a swag internally to compute the set of
     tasks that are finished and should constitute the return value of

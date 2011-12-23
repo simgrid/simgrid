@@ -40,7 +40,7 @@ void test(int nb_cnst, int nb_var, int nb_elem)
   int *used = xbt_new0(int, nb_cnst);
   int i, j, k;
 
-  Sys = lmm_system_new();
+  Sys = lmm_system_new(1);
 
   for (i = 0; i < nb_cnst; i++) {
     cnst[i] = lmm_constraint_new(Sys, NULL, float_random(10.0));

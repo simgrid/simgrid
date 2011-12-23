@@ -253,29 +253,30 @@ void ETag_surfxml_platform(void){
 }
 
 void STag_surfxml_host(void){
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+}
+
+void ETag_surfxml_host(void)    {
   s_sg_platf_host_cbarg_t host;
   memset(&host,0,sizeof(host));
 
-  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
-  host.properties = current_property_set = xbt_dict_new_homogeneous(xbt_free_f);
+  host.properties = current_property_set;
 
-	host.id = A_surfxml_host_id;
-	host.power_peak = get_cpu_power(A_surfxml_host_power);
-	host.power_scale = surf_parse_get_double( A_surfxml_host_availability);
-	host.core_amount = surf_parse_get_int(A_surfxml_host_core);
-	host.power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
-	host.state_trace = tmgr_trace_new(A_surfxml_host_state_file);
-	xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
-			  (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
-	if (A_surfxml_host_state == A_surfxml_host_state_ON)
-		host.initial_state = SURF_RESOURCE_ON;
-	if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-		host.initial_state = SURF_RESOURCE_OFF;
-	host.coord = A_surfxml_host_coordinates;
+  host.id = A_surfxml_host_id;
+  host.power_peak = get_cpu_power(A_surfxml_host_power);
+  host.power_scale = surf_parse_get_double( A_surfxml_host_availability);
+  host.core_amount = surf_parse_get_int(A_surfxml_host_core);
+  host.power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
+  host.state_trace = tmgr_trace_new(A_surfxml_host_state_file);
+  xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
+        (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
+  if (A_surfxml_host_state == A_surfxml_host_state_ON)
+    host.initial_state = SURF_RESOURCE_ON;
+  if (A_surfxml_host_state == A_surfxml_host_state_OFF)
+    host.initial_state = SURF_RESOURCE_OFF;
+  host.coord = A_surfxml_host_coordinates;
 
-	sg_platf_new_host(&host);
-}
-void ETag_surfxml_host(void)    {
+  sg_platf_new_host(&host);
   current_property_set = NULL;
 }
 
@@ -363,47 +364,50 @@ void ETag_surfxml_peer(void){
   /* nothing to do here */
 }
 void STag_surfxml_link(void){
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+}
+void ETag_surfxml_link(void){
   s_sg_platf_link_cbarg_t link;
   memset(&link,0,sizeof(link));
 
-  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
-  link.properties = current_property_set = xbt_dict_new_homogeneous(xbt_free_f);
+  link.properties = current_property_set;
 
-	link.id = A_surfxml_link_id;
-	link.bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
-	link.bandwidth_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
-	link.latency = surf_parse_get_double(A_surfxml_link_latency);
-	link.latency_trace = tmgr_trace_new(A_surfxml_link_latency_file);
+  link.id = A_surfxml_link_id;
+  link.bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
+  link.bandwidth_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
+  link.latency = surf_parse_get_double(A_surfxml_link_latency);
+  link.latency_trace = tmgr_trace_new(A_surfxml_link_latency_file);
 
-	switch (A_surfxml_link_state) {
-	case A_surfxml_link_state_ON:
-		link.state = SURF_RESOURCE_ON;
-		break;
-	case A_surfxml_link_state_OFF:
-		link.state = SURF_RESOURCE_OFF;
-		break;
-	default:
-	  surf_parse_error(bprintf("invalid state for link %s",link.id));
-	}
-	link.state_trace = tmgr_trace_new(A_surfxml_link_state_file);
+  switch (A_surfxml_link_state) {
+  case A_surfxml_link_state_ON:
+    link.state = SURF_RESOURCE_ON;
+    break;
+  case A_surfxml_link_state_OFF:
+    link.state = SURF_RESOURCE_OFF;
+    break;
+  default:
+    surf_parse_error(bprintf("invalid state for link %s",link.id));
+    break;
+  }
+  link.state_trace = tmgr_trace_new(A_surfxml_link_state_file);
 
-	switch (A_surfxml_link_sharing_policy) {
-	case A_surfxml_link_sharing_policy_SHARED:
-		link.policy = SURF_LINK_SHARED;
-		break;
-	case A_surfxml_link_sharing_policy_FATPIPE:
-		 link.policy = SURF_LINK_FATPIPE;
-		 break;
-	case A_surfxml_link_sharing_policy_FULLDUPLEX:
-		 link.policy = SURF_LINK_FULLDUPLEX;
-		 break;
-	default:
-	  surf_parse_error(bprintf("Invalid sharing policy in link %s",link.id));
-	}
+  switch (A_surfxml_link_sharing_policy) {
+  case A_surfxml_link_sharing_policy_SHARED:
+    link.policy = SURF_LINK_SHARED;
+    break;
+  case A_surfxml_link_sharing_policy_FATPIPE:
+     link.policy = SURF_LINK_FATPIPE;
+     break;
+  case A_surfxml_link_sharing_policy_FULLDUPLEX:
+     link.policy = SURF_LINK_FULLDUPLEX;
+     break;
+  default:
+    surf_parse_error(bprintf("Invalid sharing policy in link %s",link.id));
+    break;
+  }
 
-	sg_platf_new_link(&link);
-}
-void ETag_surfxml_link(void){
+  sg_platf_new_link(&link);
+
   current_property_set = NULL;
 }
 
@@ -443,8 +447,6 @@ void STag_surfxml_bypassRoute(void){
 void STag_surfxml_config(void){
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
-  current_property_set = xbt_dict_new_homogeneous(xbt_free_f);
-
 }
 void ETag_surfxml_config(void){
   xbt_dict_cursor_t cursor = NULL;

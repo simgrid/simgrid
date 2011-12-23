@@ -147,16 +147,19 @@ static void netcste_action_set_category(surf_action_t action, const char *catego
 static double netcste_get_link_bandwidth(const void *link)
 {
   DIE_IMPOSSIBLE;
+  return -1.0;
 }
 
 static double netcste_get_link_latency(const void *link)
 {
   DIE_IMPOSSIBLE;
+  return -1.0;
 }
 
 static int link_shared(const void *link)
 {
   DIE_IMPOSSIBLE;
+  return -1;
 }
 
 static void netcste_action_suspend(surf_action_t action)

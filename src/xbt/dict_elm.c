@@ -12,15 +12,6 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_elm, xbt_dict,
                                 "Dictionaries internals");
 
-XBT_LOG_NEW_SUBCATEGORY(xbt_dict_add, xbt_dict,
-                        "Dictionaries internals: elements addition");
-XBT_LOG_NEW_SUBCATEGORY(xbt_dict_search, xbt_dict,
-                        "Dictionaries internals: searching");
-XBT_LOG_NEW_SUBCATEGORY(xbt_dict_remove, xbt_dict,
-                        "Dictionaries internals: elements removal");
-XBT_LOG_NEW_SUBCATEGORY(xbt_dict_collapse, xbt_dict,
-                        "Dictionaries internals: post-removal cleanup");
-
 xbt_mallocator_t dict_elm_mallocator = NULL;
 xbt_mallocator_t dict_het_elm_mallocator = NULL;
 

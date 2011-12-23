@@ -50,6 +50,7 @@ void create_workstations(void)
 static int ws_resource_used(void *resource_id)
 {
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
+  return -1;
 }
 
 static void ws_parallel_action_cancel(surf_action_t action)
@@ -60,6 +61,7 @@ static void ws_parallel_action_cancel(surf_action_t action)
 static int ws_parallel_action_free(surf_action_t action)
 {
   THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
+  return -1;
 }
 
 static int ws_action_unref(surf_action_t action)
@@ -158,6 +160,7 @@ static int ws_action_is_suspended(surf_action_t action)
   if (action->model_type == surf_cpu_model)
     return surf_cpu_model->is_suspended(action);
   DIE_IMPOSSIBLE;
+  return -1;
 }
 
 static void ws_action_set_max_duration(surf_action_t action,
@@ -210,6 +213,7 @@ static double ws_action_get_remains(surf_action_t action)
   if (action->model_type == surf_cpu_model)
     return surf_cpu_model->get_remains(action);
   DIE_IMPOSSIBLE;
+  return -1.0;
 }
 
 static surf_action_t ws_communicate(void *workstation_src,
@@ -249,6 +253,7 @@ static surf_action_t ws_execute_parallel_task(int workstation_nb,
                                               double amount, double rate)
 {
   THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
+  return NULL;
 }
 
 
@@ -256,7 +261,7 @@ static surf_action_t ws_execute_parallel_task(int workstation_nb,
 static xbt_dynar_t ws_get_route(void *src, void *dst)
 {
   return surf_network_model->extension.
-      network.get_route(surf_resource_name(src), surf_resource_name(src));
+      network.get_route(surf_resource_name(src), surf_resource_name(dst));
 }
 
 static double ws_get_link_bandwidth(const void *link)
@@ -339,6 +344,17 @@ static void surf_workstation_model_init_internal(void)
 
 }
 
+void surf_workstation_model_init_current_default(void)
+{
+  surf_workstation_model_init_internal();
+  //xbt_cfg_setdefault_int(_surf_cfg_set, "network/crosstraffic", 1);
+  surf_cpu_model_init_Cas01();
+  surf_network_model_init_LegrandVelho();
+
+  xbt_dynar_push(model_list, &surf_workstation_model);
+  sg_platf_postparse_add_cb(create_workstations);
+}
+
 /********************************************************************/
 /* The model used in MSG and presented at CCGrid03                  */
 /********************************************************************/
@@ -353,11 +369,9 @@ static void surf_workstation_model_init_internal(void)
 void surf_workstation_model_init_CLM03(void)
 {
   surf_workstation_model_init_internal();
-  surf_cpu_model_init_Cas01_im();
-  im_surf_network_model_init_LegrandVelho();
-  // FIXME: prefer the proper interface instead of bypassing the cfg module that way
-  //xbt_cfg_set_parse(_surf_cfg_set, "network/model:LV08");
-  //xbt_cfg_set_parse(_surf_cfg_set, "cpu/model:Cas01");
+  surf_cpu_model_init_Cas01();
+  surf_network_model_init_CM02();
+
   xbt_dynar_push(model_list, &surf_workstation_model);
   sg_platf_postparse_add_cb(create_workstations);
 }

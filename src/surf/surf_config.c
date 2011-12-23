@@ -108,6 +108,25 @@ static void _surf_cfg_cb__cpu_model(const char *name, int pos)
   find_model_description(surf_cpu_model_description, val);
 }
 
+/* callback of the cpu/model variable */
+static void _surf_cfg_cb__optimization_mode(const char *name, int pos)
+{
+  char *val;
+
+  xbt_assert(_surf_init_status < 2,
+              "Cannot change the model after the initialization");
+
+  val = xbt_cfg_get_string(_surf_cfg_set, name);
+
+  if (!strcmp(val, "help")) {
+    model_help("optimization", surf_optimization_mode_description);
+    exit(0);
+  }
+
+  /* New Module missing */
+  find_model_description(surf_optimization_mode_description, val);
+}
+
 /* callback of the workstation_model variable */
 static void _surf_cfg_cb__network_model(const char *name, int pos)
 {
@@ -157,12 +176,6 @@ static void _surf_cfg_cb__bandwidth_factor(const char *name, int pos)
 static void _surf_cfg_cb__weight_S(const char *name, int pos)
 {
   sg_weight_S_parameter = xbt_cfg_get_double(_surf_cfg_set, name);
-}
-
-static void _surf_cfg_cb__surf_maxmin_selective_update(const char *name,
-                                                       int pos)
-{
-  sg_maxmin_selective_update = xbt_cfg_get_int(_surf_cfg_set, name);
 }
 
 /* callback of the inclusion path */
@@ -215,6 +228,24 @@ static void _surf_cfg_cb_contexts_parallel_threshold(const char *name, int pos)
   SIMIX_context_set_parallel_threshold(xbt_cfg_get_int(_surf_cfg_set, name));
 }
 
+static void _surf_cfg_cb_contexts_parallel_mode(const char *name, int pos)
+{
+  const char* mode_name = xbt_cfg_get_string(_surf_cfg_set, name);
+  if (!strcmp(mode_name, "posix")) {
+    SIMIX_context_set_parallel_mode(XBT_PARMAP_POSIX);
+  }
+  else if (!strcmp(mode_name, "futex")) {
+    SIMIX_context_set_parallel_mode(XBT_PARMAP_FUTEX);
+  }
+  else if (!strcmp(mode_name, "busy_wait")) {
+    SIMIX_context_set_parallel_mode(XBT_PARMAP_BUSY_WAIT);
+  }
+  else {
+    XBT_WARN("Command line setting of the parallel synchronization mode should "
+        "be one of \"posix\", \"futex\" or \"busy_wait\"");
+  }
+}
+
 static void _surf_cfg_cb__surf_network_coordinates(const char *name,
                                                    int pos)
 {
@@ -232,10 +263,10 @@ static void _surf_cfg_cb__surf_network_coordinates(const char *name,
   }
 }
 
-static void _surf_cfg_cb__surf_network_fullduplex(const char *name,
+static void _surf_cfg_cb__surf_network_crosstraffic(const char *name,
                                                   int pos)
 {
-  sg_network_fullduplex = xbt_cfg_get_int(_surf_cfg_set, name);
+  sg_network_crosstraffic = xbt_cfg_get_int(_surf_cfg_set, name);
 }
 
 #ifdef HAVE_GTNETS
@@ -278,6 +309,20 @@ void surf_config_init(int *argc, char **argv)
                      &default_value, 1, 1, &_surf_cfg_cb__cpu_model, NULL);
 
     sprintf(description,
+            "The optimization modes to use for the CPU. Possible values: ");
+    p = description;
+    while (*(++p) != '\0');
+    for (i = 0; surf_optimization_mode_description[i].name; i++)
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_optimization_mode_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each optimization mode)");
+    default_value = xbt_strdup("Lazy");
+    xbt_cfg_register(&_surf_cfg_set,
+                     "cpu/optim", description, xbt_cfgelm_string,
+                     &default_value, 1, 1, &_surf_cfg_cb__optimization_mode, NULL);
+
+    sprintf(description,
             "The model to use for the network. Possible values: ");
     p = description;
     while (*(++p) != '\0');
@@ -293,6 +338,20 @@ void surf_config_init(int *argc, char **argv)
                      NULL);
 
     sprintf(description,
+            "The optimization modes to use for the network. Possible values: ");
+    p = description;
+    while (*(++p) != '\0');
+    for (i = 0; surf_optimization_mode_description[i].name; i++)
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_optimization_mode_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each optimization mode)");
+    default_value = xbt_strdup("Lazy");
+    xbt_cfg_register(&_surf_cfg_set,
+                     "network/optim", description, xbt_cfgelm_string,
+                     &default_value, 1, 1, &_surf_cfg_cb__optimization_mode, NULL);
+
+    sprintf(description,
             "The model to use for the workstation. Possible values: ");
     p = description;
     while (*(++p) != '\0');
@@ -301,7 +360,7 @@ void surf_config_init(int *argc, char **argv)
                    surf_workstation_model_description[i].name);
     sprintf(p,
             ".\n       (use 'help' as a value to see the long description of each model)");
-    default_value = xbt_strdup("CLM03");
+    default_value = xbt_strdup("current_default");
     xbt_cfg_register(&_surf_cfg_set,
                      "workstation/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1,
@@ -356,10 +415,15 @@ void surf_config_init(int *argc, char **argv)
                      _surf_cfg_cb__surf_path, NULL);
 
     default_value_int = 0;
-    xbt_cfg_register(&_surf_cfg_set, "maxmin_selective_update",
-                     "Update the constraint set propagating recursively to others constraints",
+    xbt_cfg_register(&_surf_cfg_set, "cpu/maxmin_selective_update",
+                     "Update the constraint set propagating recursively to others constraints (1 by default when optim is set to lazy)",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
-                     _surf_cfg_cb__surf_maxmin_selective_update, NULL);
+                     NULL, NULL);
+    default_value_int = 0;
+    xbt_cfg_register(&_surf_cfg_set, "network/maxmin_selective_update",
+                     "Update the constraint set propagating recursively to others constraints (1 by default when optim is set to lazy)",
+                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     NULL, NULL);
 
     /* do model-check */
     default_value_int = 0;
@@ -409,6 +473,13 @@ void surf_config_init(int *argc, char **argv)
         xbt_cfgelm_int, &default_value_int, 1, 1,
         _surf_cfg_cb_contexts_parallel_threshold, NULL);
 
+    /* minimal number of user contexts to be run in parallel */
+    default_value = xbt_strdup("futex");
+    xbt_cfg_register(&_surf_cfg_set, "contexts/parallel_mode",
+        "Synchronization mode to use when running contexts in parallel",
+        xbt_cfgelm_string, &default_value, 1, 1,
+        _surf_cfg_cb_contexts_parallel_mode, NULL);
+
     default_value = xbt_strdup("no");
     xbt_cfg_register(&_surf_cfg_set, "coordinates",
                      "\"yes\" or \"no\" (FIXME: document)",
@@ -417,11 +488,11 @@ void surf_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_surf_cfg_set, "coordinates", default_value);
 
     default_value_int = 0;
-    xbt_cfg_register(&_surf_cfg_set, "fullduplex",
+    xbt_cfg_register(&_surf_cfg_set, "network/crosstraffic",
                      "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
-                     _surf_cfg_cb__surf_network_fullduplex, NULL);
-    xbt_cfg_setdefault_int(_surf_cfg_set, "fullduplex", default_value_int);
+                     _surf_cfg_cb__surf_network_crosstraffic, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "network/crosstraffic", default_value_int);
 
 #ifdef HAVE_GTNETS
     xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter",

@@ -29,6 +29,7 @@ static xbt_os_thread_key_t smx_current_context_key = 0;
 static smx_context_t smx_current_context_serial;
 static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
+static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_FUTEX;
 
 /** 
  * This function is called by SIMIX_global_init() to initialize the context module.
@@ -109,6 +110,24 @@ void SIMIX_context_mod_exit(void)
 }
 
 /**
+ * \brief Returns whether some parallel threads are used
+ * for the user contexts.
+ * \return 1 if parallelism is used
+ */
+XBT_INLINE int SIMIX_context_is_parallel(void) {
+  return smx_parallel_contexts > 1;
+}
+
+/**
+ * \brief Returns the number of parallel threads used
+ * for the user contexts.
+ * \return the number of threads (1 means no parallelism)
+ */
+XBT_INLINE int SIMIX_context_get_nthreads(void) {
+  return smx_parallel_contexts;
+}
+
+/**
  * \brief Sets the number of parallel threads to use
  * for the user contexts.
  *
@@ -132,21 +151,16 @@ XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
 }
 
 /**
- * \brief Returns the number of parallel threads used
- * for the user contexts.
- * \return the number of threads (1 means no parallelism)
+ * \brief Returns the threshold above which user processes are run in parallel.
+ *
+ * If the number of threads is set to 1, there is no parallelism and this
+ * threshold has no effect.
+ *
+ * \return when the number of user processes ready to run is above
+ * this threshold, they are run in parallel
  */
-XBT_INLINE int SIMIX_context_get_nthreads(void) {
-  return smx_parallel_contexts;
-}
-
-/**
- * \brief Returns whether some parallel threads are used
- * for the user contexts.
- * \return 1 if parallelism is used
- */
-XBT_INLINE int SIMIX_context_is_parallel(void) {
-  return smx_parallel_contexts > 1;
+XBT_INLINE int SIMIX_context_get_parallel_threshold(void) {
+  return smx_parallel_threshold;
 }
 
 /**
@@ -163,16 +177,21 @@ XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold) {
 }
 
 /**
- * \brief Returns the threshold above which user processes are run in parallel.
- *
- * If the number of threads is set to 1, there is no parallelism and this
- * threshold has no effect.
- *
- * \return when the number of user processes ready to run is above
- * this threshold, they are run in parallel
+ * \brief Returns the synchronization mode used when processes are run in
+ * parallel.
+ * \return how threads are synchronized if processes are run in parallel
  */
-XBT_INLINE int SIMIX_context_get_parallel_threshold(void) {
-  return smx_parallel_threshold;
+XBT_INLINE e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void) {
+  return smx_parallel_synchronization_mode;
+}
+
+/**
+ * \brief Sets the synchronization mode to use when processes are run in
+ * parallel.
+ * \param mode how to synchronize threads if processes are run in parallel
+ */
+XBT_INLINE void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
+  smx_parallel_synchronization_mode = mode;
 }
 
 /**

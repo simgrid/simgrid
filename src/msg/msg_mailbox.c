@@ -153,21 +153,16 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   /* Try to send it by calling SIMIX network layer */
   TRY {
-#ifdef HAVE_TRACING
-    if (TRACE_is_enabled()) {
       smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
                                   t_simdata->rate, task, sizeof(void *),
                                   NULL, NULL, 0);
-      SIMIX_req_set_category(comm, task->category);
-      SIMIX_req_comm_wait(comm, timeout);
-    } else {
-#endif
-      SIMIX_req_comm_send(mailbox, t_simdata->message_size,
-                          t_simdata->rate, task, sizeof(void*),
-                          NULL, NULL, timeout);
 #ifdef HAVE_TRACING
+    if (TRACE_is_enabled()) {
+      SIMIX_req_set_category(comm, task->category);
     }
 #endif
+     t_simdata->comm = comm;
+     SIMIX_req_comm_wait(comm, timeout);
   }
 
   CATCH(e) {
@@ -189,6 +184,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
     /* If the send failed, it is not used anymore */
     t_simdata->isused = 0;
   }
+
 
   p_simdata->waiting_task = NULL;
 #ifdef HAVE_TRACING

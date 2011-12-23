@@ -195,8 +195,8 @@ static void ptask_action_set_priority(surf_action_t action,
 static double ptask_action_get_remains(surf_action_t action)
 {
   XBT_IN("(%p)", action);
-  return action->remains;
   XBT_OUT();
+  return action->remains;
 }
 
 /**************************************/
@@ -890,7 +890,7 @@ static void ptask_model_init_internal(void)
       ptask_add_traces;
 
   if (!ptask_maxmin_system)
-    ptask_maxmin_system = lmm_system_new();
+    ptask_maxmin_system = lmm_system_new(1);
 
   routing_model_create(sizeof(link_L07_t),
                        ptask_link_create_resource("__loopback__",

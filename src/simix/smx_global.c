@@ -135,6 +135,7 @@ void SIMIX_clean(void)
   SIMIX_network_exit();
 
   xbt_heap_free(simix_timers);
+  simix_timers = NULL;
   /* Free the remaining data structures */
   xbt_dynar_free(&simix_global->process_to_run);
   xbt_dynar_free(&simix_global->process_that_ran);

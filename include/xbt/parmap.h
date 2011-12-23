@@ -18,12 +18,13 @@ SG_BEGIN_DECL()
 /** \addtogroup XBT_parmap
   * \brief Parallel map.
   *
-  * A function is applied to the n first elements of a dynar in parallel,
-  * where n is the number of threads. The threads are persistent until the
-  * destruction of the parmap object.
+  * A function is applied to all elements of a dynar in parallel with n worker
+  * threads.
+  * The worker threads are persistent until the destruction of the parmap.
   *
-  * If there are more than n elements in the dynar, the worker threads should
-  * fetch themselves remaining work with xbt_parmap_next() and execute it.
+  * If there are more than n elements in the dynar, the worker threads are
+  * allowed to fetch themselves remaining work with xbt_parmap_next() and
+  * execute it.
   *
   * \{
   */
@@ -31,7 +32,17 @@ SG_BEGIN_DECL()
 /** \brief Parallel map data type (opaque type) */
 typedef struct s_xbt_parmap *xbt_parmap_t;
 
-XBT_PUBLIC(xbt_parmap_t) xbt_parmap_new(unsigned int num_workers);
+/**
+ * \brief Synchronization mode of the worker threads of a parmap.
+ */
+typedef enum {
+  XBT_PARMAP_POSIX,          /**< use POSIX synchronization primitives */
+  XBT_PARMAP_FUTEX,          /**< use Linux futex system call */
+  XBT_PARMAP_BUSY_WAIT       /**< busy waits (no system calls, maximum CPU usage) */
+} e_xbt_parmap_mode_t;
+
+XBT_PUBLIC(xbt_parmap_t) xbt_parmap_new(unsigned int num_workers,
+    e_xbt_parmap_mode_t mode);
 XBT_PUBLIC(void) xbt_parmap_destroy(xbt_parmap_t parmap);
 
 XBT_PUBLIC(void) xbt_parmap_apply(xbt_parmap_t parmap,

@@ -45,7 +45,6 @@ int master(int argc, char *argv[])
   char *slavename = NULL;
   double task_comm_size = 0;
   m_task_t todo;
-  m_host_t slave;
   char id_alias[10];
   //unique id to control statistics
   int id = -1;
@@ -75,10 +74,6 @@ int master(int argc, char *argv[])
     //keep track of running tasks
     gl_task_array[id] = todo;
     gl_data_size[id] = task_comm_size;
-  }
-
-  {                             /* Process organisation */
-    slave = MSG_get_host_by_name(slavename);
   }
 
   count_finished++;
@@ -160,8 +155,8 @@ int slave(int argc, char *argv[])
     bool_printed = 1;
     
     for (id = 0; id < NTASKS; id++) {
-      if (gl_task_array[id] == NULL) {
-      } else if (gl_task_array[id] == task) {
+      if (gl_task_array[id] == NULL) continue;
+      if (gl_task_array[id] == task) {
 #ifdef HAVE_LATENCY_BOUND_TRACKING
         limited_latency = MSG_task_is_latency_bounded(gl_task_array[id]);
         if (limited_latency) {
@@ -172,6 +167,8 @@ int slave(int argc, char *argv[])
             ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
              id, gl_data_size[id] / elapsed_time, masternames[id],
              slavenames[id], 0.0);
+        MSG_task_destroy(gl_task_array[id]);
+        gl_task_array[id]=NULL;
       } else {
         remaining =
             MSG_task_get_remaining_communication(gl_task_array[id]);
@@ -186,15 +183,19 @@ int slave(int argc, char *argv[])
             ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
              id, (gl_data_size[id] - remaining) / elapsed_time,
              masternames[id], slavenames[id], remaining);
+        if(remaining==0) {
+          MSG_task_destroy(gl_task_array[id]);
+          gl_task_array[id]=NULL;
+        }
       }
-
     }
+    bool_printed = 2;
   }
   char mark[100];
   snprintf(mark, 100, "flow_%d_finished", trace_id);
   TRACE_mark("endmark", mark);
 
-  MSG_task_destroy(task);
+  if(bool_printed==2 && gl_task_array[trace_id]) MSG_task_destroy(gl_task_array[trace_id]);
 
   return 0;
 }                               /* end_of_slave */

@@ -3,20 +3,18 @@
 p Testing the surf network maxmin fairness model
 
 ! output sort
-$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=workstation/model:CLM03 --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=workstation/model:CLM03 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'CLM03'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'Cas01'
-> [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) test_all
 > [  0.000000] (1:sender@Inmos) sender
 > [  0.000000] (1:sender@Inmos) host = Bellevue
 > [  0.000000] (1:sender@Inmos) task_la->data = 0.000000e+00
 > [  0.000000] (2:receiver@Bellevue) receiver
-> [  1.040100] (1:sender@Inmos) task_bw->data = 1.040100e+00
-> [  1.040100] (2:receiver@Bellevue) Task received : latency task
-> [  1.040100] (2:receiver@Bellevue) Communic. time 1.040100e+00
-> [  1.040100] (2:receiver@Bellevue) --- la 1.040100 ----
-> [10002.080100] (0:@) Total simulation time: 1.000208e+04
-> [10002.080100] (2:receiver@Bellevue) Task received : bandwidth task
-> [10002.080100] (2:receiver@Bellevue) Communic. time 1.000104e+04
-> [10002.080100] (2:receiver@Bellevue) --- bw 99989.601081 ----
+> [  0.100100] (1:sender@Inmos) task_bw->data = 1.001000e-01
+> [  0.100100] (2:receiver@Bellevue) Task received : latency task
+> [  0.100100] (2:receiver@Bellevue) Communic. time 1.001000e-01
+> [  0.100100] (2:receiver@Bellevue) --- la 0.100100 ----
+> [10000.200100] (0:@) Total simulation time: 1.000020e+04
+> [10000.200100] (2:receiver@Bellevue) Task received : bandwidth task
+> [10000.200100] (2:receiver@Bellevue) Communic. time 1.000010e+04
+> [10000.200100] (2:receiver@Bellevue) --- bw 99999.000010 ----

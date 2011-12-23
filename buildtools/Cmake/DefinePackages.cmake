@@ -224,14 +224,12 @@ set(SURF_SRC
 	src/surf/surf.c
 	src/surf/surfxml_parse.c
 	src/surf/surfxml_parseplatf.c
-	src/surf/cpu.c
 	src/surf/network.c
-	src/surf/network_im.c
 	src/surf/network_constant.c
 	src/surf/workstation.c
 	src/surf/workstation_ptask_L07.c
 	src/surf/cpu_ti.c
-	src/surf/cpu_im.c
+	src/surf/cpu_cas01.c
 	src/surf/sg_platf.c
 	src/xbt/xbt_sg_stubs.c
 )

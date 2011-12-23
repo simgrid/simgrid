@@ -122,7 +122,7 @@ void test1(method_t method)
     lmm_set_default_protocol_function(func_reno_f, func_reno_fpi,
                                       func_reno_fpi);
 
-  Sys = lmm_system_new();
+  Sys = lmm_system_new(1);
   L1 = lmm_constraint_new(Sys, (void *) "L1", a);
   L2 = lmm_constraint_new(Sys, (void *) "L2", b);
   L3 = lmm_constraint_new(Sys, (void *) "L3", a);
@@ -254,7 +254,7 @@ void test2(method_t method)
     lmm_set_default_protocol_function(func_reno_f, func_reno_fp,
                                       func_reno_fpi);
 
-  Sys = lmm_system_new();
+  Sys = lmm_system_new(1);
   CPU1 = lmm_constraint_new(Sys, (void *) "CPU1", 200.0);
   CPU2 = lmm_constraint_new(Sys, (void *) "CPU2", 100.0);
 
@@ -403,7 +403,7 @@ void test3(method_t method)
     lmm_set_default_protocol_function(func_reno_f, func_reno_fp,
                                       func_reno_fpi);
 
-  Sys = lmm_system_new();
+  Sys = lmm_system_new(1);
 
 
 

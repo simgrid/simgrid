@@ -248,7 +248,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
 
   sd_global->watch_point_reached = 0;
 
-  while(xbt_swag_extract(sd_global->return_set)) {}
+  xbt_swag_reset(sd_global->return_set);
 
   /* explore the runnable tasks */
   xbt_swag_foreach_safe(task, task_safe, sd_global->runnable_task_set) {

@@ -10,6 +10,7 @@
 #define _SIMIX_CONTEXT_H
 
 #include "xbt/swag.h"
+#include "xbt/parmap.h"
 #include "simix/datatypes.h"
 #include "simgrid_config.h"
 
@@ -49,8 +50,6 @@ typedef struct s_smx_context_factory {
   smx_pfn_context_self_t self;
   smx_pfn_context_get_data_t get_data;
 } s_smx_context_factory_t;
-
-
 
 /* Hack: let msg load directly the right factory */
 typedef void (*smx_ctx_factory_initializer_t)(smx_context_factory_t*);
@@ -96,12 +95,16 @@ void smx_ctx_base_stop(smx_context_t context);
 smx_context_t smx_ctx_base_self(void);
 void *smx_ctx_base_get_data(smx_context_t context);
 
+XBT_INLINE xbt_dynar_t SIMIX_process_get_runnable(void);
+
 /* parallelism */
-XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads);
-XBT_INLINE int SIMIX_context_get_nthreads(void);
 XBT_INLINE int SIMIX_context_is_parallel(void);
-XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold);
+XBT_INLINE int SIMIX_context_get_nthreads(void);
+XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads);
 XBT_INLINE int SIMIX_context_get_parallel_threshold(void);
+XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold);
+XBT_INLINE e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void);
+XBT_INLINE void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
 
 SG_END_DECL()
 
