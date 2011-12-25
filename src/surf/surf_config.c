@@ -379,14 +379,14 @@ void surf_config_init(int *argc, char **argv)
                      "Model to use to store the routing information",
                      xbt_cfgelm_string, &default_value, 1, 1, NULL, NULL);
 
-    xbt_cfg_register(&_surf_cfg_set, "TCP_gamma",
+    xbt_cfg_register(&_surf_cfg_set, "network/TCP_gamma",
                      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)",
                      xbt_cfgelm_double, NULL, 1, 1,
                      _surf_cfg_cb__tcp_gamma, NULL);
-    xbt_cfg_setdefault_double(_surf_cfg_set, "TCP_gamma", 20000.0);
+    xbt_cfg_setdefault_double(_surf_cfg_set, "network/TCP_gamma", 20000.0);
 
     xbt_cfg_register(&_surf_cfg_set, "maxmin/precision",
-                     "Minimum retained action value when updating simulation",
+                     "Minimum retained action value when updating simulation (similar to numerical precision)",
                      xbt_cfgelm_double, NULL, 1, 1, _surf_cfg_cb__maxmin_precision, NULL);
     xbt_cfg_setdefault_double(_surf_cfg_set, "maxmin/precision", 0.00001); // FIXME use setdefault everywhere here!
 

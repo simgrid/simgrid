@@ -137,7 +137,22 @@ variables). The accepted values are (both default to 'Lazy'):
     useful when debugging.
 
 
-\subsection options_simgrid_configuration_fullduplex Simulating cross-traffic
+\subsection options_model_network Configuring the Network model
+
+\subsubsection options_model_network_gamma Maximal TCP window size (network/TCP_gamma)
+
+The analytical models need to know the maximal TCP window size to take
+the TCP congestion mechanism into account. This is set to 20000 by
+default, but can be changed using the network/TCP_gamma variable.
+
+On linux, this value can be retrieved using the following
+commands. Both give a set of values, and you should use the last one,
+which is the maximal size.\verbatim
+cat /proc/sys/net/ipv4/tcp_rmem # gives the sender window
+cat /proc/sys/net/ipv4/tcp_wmem # gives the receiver window
+\endverbatim
+
+\subsubsection options_model_network_crosstraffic Simulating cross-traffic (network/crosstraffic)
 
 As of SimGrid v3.7, cross-traffic effects can be taken into account in
 analytical simulations. It means that ongoing and incoming

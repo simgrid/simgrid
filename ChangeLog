@@ -14,6 +14,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     --help-models for the list of all models and optimization modes.
   * The CLM03 workstation model were dropped for simplicity because it
     used the deprecated CM02 network model. Use default instead.
+  * Rename the TCP_gamma configuration option to network/TCP_gamma
   * Use now crosstraffic keyword instead of the terribly missleading 
     fullduplex keyword. Use --cfg=network/crosstraffic:1. This is
     activated by default now in the current default model.
