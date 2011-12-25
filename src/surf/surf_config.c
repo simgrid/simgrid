@@ -366,7 +366,7 @@ void surf_config_init(int *argc, char **argv)
                    surf_workstation_model_description[i].name);
     sprintf(p,
             ".\n       (use 'help' as a value to see the long description of each model)");
-    default_value = xbt_strdup("current_default");
+    default_value = xbt_strdup("default");
     xbt_cfg_register(&_surf_cfg_set,
                      "workstation/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1,

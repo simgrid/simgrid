@@ -75,17 +75,17 @@ $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd_bis.xml
 > Workstation number: 5, link number: 7
 
 $ ${bindir:=.}/basic_parsing_test ./properties.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/optim' to 'TI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '0.000010'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'CpuTI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to '~/'
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test ./properties.xml --cfg=cpu/model:CpuTI
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'CpuTI'
+$ ${bindir:=.}/basic_parsing_test ./properties.xml --cfg=cpu/optim:TI
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/optim' to 'TI'
+> [0.000000] [surf_parse/INFO] The custom configuration 'cpu/optim' is already defined by user!
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '0.000010'
-> [0.000000] [surf_parse/INFO] The custom configuration 'cpu/model' is already defined by user!
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to '~/'
