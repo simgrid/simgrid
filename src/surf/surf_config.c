@@ -44,7 +44,9 @@ static void surf_config_cmd_line(int *argc, char **argv)
       exit(0);
     } else if (!strncmp(argv[i], "--help-models", strlen("--help-models") + 1)) {
       model_help("workstation", surf_workstation_model_description);
+      printf("\n");
       model_help("CPU", surf_cpu_model_description);
+      printf("\n");
       model_help("network", surf_network_model_description);
       printf("\nLong description of all optimization levels accepted by the models of this simulator:\n");
       for (i = 0; surf_optimization_mode_description[i].name; i++)
