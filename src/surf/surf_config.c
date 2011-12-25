@@ -374,11 +374,6 @@ void surf_config_init(int *argc, char **argv)
 
     xbt_free(description);
 
-    default_value = xbt_strdup("Full");
-    xbt_cfg_register(&_surf_cfg_set, "routing",
-                     "Model to use to store the routing information",
-                     xbt_cfgelm_string, &default_value, 1, 1, NULL, NULL);
-
     xbt_cfg_register(&_surf_cfg_set, "network/TCP_gamma",
                      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)",
                      xbt_cfgelm_double, NULL, 1, 1,
