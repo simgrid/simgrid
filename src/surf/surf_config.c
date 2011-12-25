@@ -491,14 +491,14 @@ void surf_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_int(_surf_cfg_set, "network/crosstraffic", default_value_int);
 
 #ifdef HAVE_GTNETS
-    xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter",
+    xbt_cfg_register(&_surf_cfg_set, "gtnets/jitter",
                      "Double value to oscillate the link latency, uniformly in random interval [-latency*gtnets_jitter,latency*gtnets_jitter)",
                      xbt_cfgelm_double, NULL, 1, 1,
                      _surf_cfg_cb__gtnets_jitter, NULL);
     xbt_cfg_setdefault_double(_surf_cfg_set, "gtnets_jitter", 0.0);
 
     default_value_int = 10;
-    xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter_seed",
+    xbt_cfg_register(&_surf_cfg_set, "gtnets/jitter_seed",
                      "Use a positive seed to reproduce jitted results, value must be in [1,1e8], default is 10",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
                      _surf_cfg_cb__gtnets_jitter_seed, NULL);

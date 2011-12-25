@@ -100,7 +100,8 @@ described in
 
 If you compiled SimGrid accordingly, you can use packet-level network
 simulators as network models (see \ref pls). In that case, you have
-two extra models:
+two extra models, described below, and some \ref options_pls "specific
+additional configuration flags".
   - \b GTNets: Network pseudo-model using the GTNets simulator instead
     of an analytic model 
   - \b NS3: Network pseudo-model using the NS3 tcp model instead of an
@@ -205,14 +206,14 @@ available in <tt>examples/msg/gtnets/crosstraffic-p.xml</tt>.
 This is activated through the \b network/crosstraffic variable, that
 can be set to 0 (disable this feature) or 1 (enable it).
 
-\subsection options_model_network_coord Coordinated-based network models
+\subsubsection options_model_network_coord Coordinated-based network models
 
 When you want to use network coordinates, as it happens when you use
 an \<AS\> in your platform file with \c Vivaldi as a routing, you must
 set the \b network/coordinates to \c yes so that all mandatory
 initialization are done in the simulator.
 
-\subsection options_model_network_sendergap Simulating sender gap
+\subsubsection options_model_network_sendergap Simulating sender gap
 
 (this variable is experimental and may change or disapear)
 
@@ -220,6 +221,27 @@ It is possible to specify a timing gap between consecutive emission on
 the same network card through the \b network/sender_gap variable. This
 is still under investigation as of writting, and the default value is
 to wait 0 seconds between emissions (no gap applied).
+
+\subsubsection options_pls Configuring packet-level pseudo-models
+
+When using the packet-level pseudo-models, several specific
+configuration flags are provided to configure the associated tools.
+There is by far not enough such SimGrid flags to cover every aspects
+of the associated tools, since we only added the variables that we
+needed ourselves. Feel free to request more variables (or even better:
+provide patches adding more variables).
+
+When using NS3, the only existing variable is \b ns3/TcpModel,
+corresponding to the ns3::TcpL4Protocol::SocketType configuration item
+in NS3. The only valid values (enforced on the SimGrid side) are
+'NewReno' or 'Reno' or 'Tahoe'.
+
+When using GTNeTS, two variables exist: 
+ - \b gtnets/jitter, that is a double value to oscillate
+   the link latency, uniformly in random interval
+   [-latency*gtnets_jitter,latency*gtnets_jitter). It defaults to 0.
+ - \b gtnets/jitter_seed, the positive seed used to reproduce jitted
+   results. Its value must be in [1,1e8] and defaults to 10.
 
 \section options_modelchecking Model-Checking specific configuration variables
 
@@ -362,6 +384,8 @@ when \b verbose-exit is set to 0 (it is to 1 by default).
 - \c network/sender_gap: \ref options_model_network_sendergap
 - \c network/TCP_gamma: \ref options_model_network_gamma
 - \c network/weight_S: \ref options_model_network_coefs
+
+- \c ns3/TcpModel: \ref options_pls
 
 - \c path: \ref options_generic_path
 - \c verbose-exit: \ref options_generic_exit
