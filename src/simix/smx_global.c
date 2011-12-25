@@ -43,7 +43,7 @@ static void _XBT_CALL inthandler(int ignored)
      SIMIX_display_process_status();
   }
   else {
-     XBT_INFO("CTRL-C pressed. bailing out without displaying because verbose-exit disabled");
+     XBT_INFO("CTRL-C pressed. bailing out without displaying because verbose-exit is disabled");
   }
   exit(1);
 }

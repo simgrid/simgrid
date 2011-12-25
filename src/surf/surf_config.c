@@ -445,7 +445,7 @@ void surf_config_init(int *argc, char **argv)
        xbt_cfg_set_int(_surf_cfg_set, "model-check", default_value_int); */
 
     /* do verbose-exit */
-    default_value_int = 0;
+    default_value_int = 1;
     xbt_cfg_register(&_surf_cfg_set, "verbose-exit",
                      "Activate the \"do nothing\" mode in Ctrl-C",
                      xbt_cfgelm_int, &default_value_int, 0, 1,

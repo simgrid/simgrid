@@ -205,18 +205,6 @@ available in <tt>examples/msg/gtnets/crosstraffic-p.xml</tt>.
 This is activated through the \b network/crosstraffic variable, that
 can be set to 0 (disable this feature) or 1 (enable it).
 
-\section options_modelchecking Model-Checking
-\subsection options_modelchecking_howto How to use it
-To enable the experimental SimGrid model-checking support the program should
-be executed with the command line argument 
-\verbatim
---cfg=model-check:1 
-\endverbatim
-Properties are expressed as assertions using the function
-\verbatim
-void MC_assert(int prop);
-\endverbatim
-
 \subsection options_model_network_coord Coordinated-based network models
 
 When you want to use network coordinates, as it happens when you use
@@ -232,6 +220,37 @@ It is possible to specify a timing gap between consecutive emission on
 the same network card through the \b network/sender_gap variable. This
 is still under investigation as of writting, and the default value is
 to wait 0 seconds between emissions (no gap applied).
+
+\section options_modelchecking Model-Checking specific configuration variables
+
+To enable the experimental SimGrid model-checking support the program should
+be executed with the command line argument 
+\verbatim
+--cfg=model-check:1 
+\endverbatim
+Properties are expressed as assertions using the function
+\verbatim
+void MC_assert(int prop);
+\endverbatim
+
+\section options_generic Various generic configuration variables
+
+\section options_generic_path XML file inclusion path
+
+It is possible to specify a list of directories to search into for the
+\<include\> tag in XML files by using the \b path configuration
+variable. To add several directory to the path, set the configuration
+variable several times, as in \verbatim
+--cfg=path:toto --cfg=path:tutu
+\endverbatim
+
+\section options_generic_exit Behavior on Ctrl-C
+
+By default, when Ctrl-C is pressed, the status of all existing
+simulated processes is displayed. This is very useful to debug your
+code, but it can reveal troublesome in some cases (such as when the 
+amount of processes becomes really big). This behavior is disabled
+when \b verbose-exit is set to 0 (it is to 1 by default).
 
 \section options_index Index of all existing variables
 
@@ -251,6 +270,9 @@ to wait 0 seconds between emissions (no gap applied).
 - \c network/sender_gap: \ref options_model_network_sendergap
 - \c network/TCP_gamma: \ref options_model_network_gamma
 - \c network/weight_S: \ref options_model_network_coefs
+
+- \c path: \ref options_generic_path
+- \c verbose-exit: \ref options_generic_exit
 
 - \c workstation/model: \ref options_model_select
 
