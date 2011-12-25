@@ -263,9 +263,9 @@ static void _surf_cfg_cb__surf_network_coordinates(const char *name,
     }
   } else if (!strcmp(val, "no")) {
     if (COORD_HOST_LEVEL)
-      XBT_WARN("Setting of whether to use coordinate cannot be disabled once set.");
+      xbt_die("Setting of whether to use coordinate cannot be disabled once set.");
   } else {
-    XBT_WARN("Command line setting of whether to use coordinates must be either \"yes\" or \"no\"");
+    xbt_die("Command line setting of whether to use coordinates must be either \"yes\" or \"no\"");
   }
 }
 
@@ -487,11 +487,11 @@ void surf_config_init(int *argc, char **argv)
         _surf_cfg_cb_contexts_parallel_mode, NULL);
 
     default_value = xbt_strdup("no");
-    xbt_cfg_register(&_surf_cfg_set, "coordinates",
-                     "\"yes\" or \"no\" (FIXME: document)",
+    xbt_cfg_register(&_surf_cfg_set, "network/coordinates",
+                     "\"yes\" or \"no\", specifying whether we use a coordinate-based routing (as Vivaldi)",
                      xbt_cfgelm_string, &default_value, 1, 1,
                      _surf_cfg_cb__surf_network_coordinates, NULL);
-    xbt_cfg_setdefault_string(_surf_cfg_set, "coordinates", default_value);
+    xbt_cfg_setdefault_string(_surf_cfg_set, "network/coordinates", default_value);
 
     default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "network/crosstraffic",

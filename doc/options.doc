@@ -217,6 +217,13 @@ Properties are expressed as assertions using the function
 void MC_assert(int prop);
 \endverbatim
 
+\subsection options_model_network_coord Coordinated-based network models
+
+When you want to use network coordinates, as it happens when you use
+an \<AS\> in your platform file with \c Vivaldi as a routing, you must
+set the \b network/coordinates to \c yes so that all mandatory
+initialization are done in the simulator.
+
 \subsection options_model_network_sendergap Simulating sender gap
 
 (this variable is experimental and may change or disapear)
@@ -235,6 +242,7 @@ to wait 0 seconds between emissions (no gap applied).
 - \c maxmin/precision: \ref options_model_precision
 
 - \c network/bandwidth_factor: \ref options_model_network_coefs
+- \c network/coordinates: \ref options_model_network_coord
 - \c network/crosstraffic: \ref options_model_network_crosstraffic 
 - \c network/latency_factor: \ref options_model_network_coefs
 - \c network/maxmin_selective_update: \ref options_model_optim
