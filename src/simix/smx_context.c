@@ -1,6 +1,6 @@
 /* a fast and simple context switching library                              */
 
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009 - 2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -143,7 +143,7 @@ XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
 
   if (nb_threads > 1) {
 #ifndef CONTEXT_THREADS
-    THROWF(arg_error, 0, "No thread support for parallel context execution");
+    THROWF(arg_error, 0, "The thread factory cannot be run in parallel");
 #endif
   }
 

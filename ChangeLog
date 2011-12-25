@@ -20,7 +20,15 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Use now crosstraffic keyword instead of the terribly missleading 
     fullduplex keyword. Use --cfg=network/crosstraffic:1. This is
     activated by default now in the current default model.
-    
+
+  Simix:
+  * Stabilize the parallel execution mode of user contexts
+  * Introduce configuration variables to control parallel execution:
+    - contexts/synchro: Synchronization mode to use when running
+      contexts in parallel (either futex, posix or busy_wait)
+    - contexts/parallel_threshold: Minimal number of user contexts
+      to be run in parallel (raw contexts only)
+
   SimDag:
   * Performance boost by using a swag internally to compute the set of
     tasks that are finished and should constitute the return value of

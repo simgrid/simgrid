@@ -310,8 +310,7 @@ void surf_config_init(int *argc, char **argv)
     sprintf(p,
             ".\n       (use 'help' as a value to see the long description of each model)");
     default_value = xbt_strdup("Cas01");
-    xbt_cfg_register(&_surf_cfg_set,
-                     "cpu/model", description, xbt_cfgelm_string,
+    xbt_cfg_register(&_surf_cfg_set, "cpu/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__cpu_model, NULL);
 
     sprintf(description,
@@ -324,8 +323,7 @@ void surf_config_init(int *argc, char **argv)
     sprintf(p,
             ".\n       (use 'help' as a value to see the long description of each optimization mode)");
     default_value = xbt_strdup("Lazy");
-    xbt_cfg_register(&_surf_cfg_set,
-                     "cpu/optim", description, xbt_cfgelm_string,
+    xbt_cfg_register(&_surf_cfg_set, "cpu/optim", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__optimization_mode, NULL);
 
     sprintf(description,
@@ -338,8 +336,7 @@ void surf_config_init(int *argc, char **argv)
     sprintf(p,
             ".\n       (use 'help' as a value to see the long description of each model)");
     default_value = xbt_strdup("LV08");
-    xbt_cfg_register(&_surf_cfg_set,
-                     "network/model", description, xbt_cfgelm_string,
+    xbt_cfg_register(&_surf_cfg_set, "network/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__network_model,
                      NULL);
 
@@ -353,8 +350,7 @@ void surf_config_init(int *argc, char **argv)
     sprintf(p,
             ".\n       (use 'help' as a value to see the long description of each optimization mode)");
     default_value = xbt_strdup("Lazy");
-    xbt_cfg_register(&_surf_cfg_set,
-                     "network/optim", description, xbt_cfgelm_string,
+    xbt_cfg_register(&_surf_cfg_set, "network/optim", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__optimization_mode, NULL);
 
     sprintf(description,
@@ -367,8 +363,7 @@ void surf_config_init(int *argc, char **argv)
     sprintf(p,
             ".\n       (use 'help' as a value to see the long description of each model)");
     default_value = xbt_strdup("default");
-    xbt_cfg_register(&_surf_cfg_set,
-                     "workstation/model", description, xbt_cfgelm_string,
+    xbt_cfg_register(&_surf_cfg_set, "workstation/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1,
                      &_surf_cfg_cb__workstation_model, NULL);
 
@@ -456,19 +451,19 @@ void surf_config_init(int *argc, char **argv)
     /* stack size of contexts in Ko */
     default_value_int = 128;
     xbt_cfg_register(&_surf_cfg_set, "contexts/stack_size",
-                     "Stack size of contexts in Ko (ucontext or raw only)",
+                     "Stack size of contexts in Kib (ucontext or raw only)",
                      xbt_cfgelm_int, &default_value_int, 1, 1,
                      _surf_cfg_cb_context_stack_size, NULL);
 
     /* number of parallel threads for user processes */
     default_value_int = 1;
     xbt_cfg_register(&_surf_cfg_set, "contexts/nthreads",
-                     "Number of parallel threads for user contexts (EXPERIMENTAL)",
+                     "Number of parallel threads used to execute user contexts",
                      xbt_cfgelm_int, &default_value_int, 1, 1,
                      _surf_cfg_cb_contexts_nthreads, NULL);
 
     /* minimal number of user contexts to be run in parallel */
-    default_value_int = 1;
+    default_value_int = 2;
     xbt_cfg_register(&_surf_cfg_set, "contexts/parallel_threshold",
         "Minimal number of user contexts to be run in parallel (raw contexts only)",
         xbt_cfgelm_int, &default_value_int, 1, 1,
@@ -476,8 +471,8 @@ void surf_config_init(int *argc, char **argv)
 
     /* minimal number of user contexts to be run in parallel */
     default_value = xbt_strdup("futex");
-    xbt_cfg_register(&_surf_cfg_set, "contexts/parallel_mode",
-        "Synchronization mode to use when running contexts in parallel",
+    xbt_cfg_register(&_surf_cfg_set, "contexts/synchro",
+        "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)",
         xbt_cfgelm_string, &default_value, 1, 1,
         _surf_cfg_cb_contexts_parallel_mode, NULL);
 

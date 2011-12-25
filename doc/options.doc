@@ -233,6 +233,91 @@ Properties are expressed as assertions using the function
 void MC_assert(int prop);
 \endverbatim
 
+\section options_virt User process virtualization options
+
+\subsection options_virt_factory Selecting the virtualization factory
+
+In SimGrid, the user code is virtualized in a specific mecanism
+allowing the simulation kernel to control its execution: when a user
+process requires a blocking action (such as sending a message), it is
+interrupted, and only gets released when the simulated clock reaches
+the point where the blocking operation is done.
+
+In SimGrid, the containers in which user processes are virtualized are
+called contexts. Several context factory are provided, and you can
+select the one you want to use with the \b contexts/factory
+configuration variable. Some of the following may not exist on your
+machine because of portability issues. In any case, the default one
+should be the most effcient one (please report bugs if the
+auto-detection fails for you). They are sorted here from the slowest
+to the most effient:
+ - \b thread: very slow factory using full featured threads (either
+   ptheads or windows native threads) 
+ - \b ucontext: fast factory using System V contexts (or a portability
+   layer of our own on top of Windows fibers)
+ - \b raw: amazingly fast factory using a context switching mecanism
+   of our own, directly implemented in assembly (only available for x86 
+   and amd64 platforms for now)
+
+The only reason to change this setting is when the debuging tools get
+fooled by the optimized context factories. Threads are the most
+debugging-friendly contextes.
+
+\subsection options_virt_stacksize Adapting the used stack size
+
+(this only works if you use ucontexts or raw context factories)
+
+Each virtualized used process is executed using a specific system
+stack. The size of this stack has a huge impact on the simulation
+scalability, but its default value is rather large. This is because
+the error messages that you get when the stack size is too small are
+rather disturbing: this leads to stack overflow (overwriting other
+stacks), leading to segfaults with corrupted stack traces.
+
+If you want to push the scalability limits of your code, you really
+want to reduce the \b contexts/stack_size variable. Its default value
+is 128 (in Kib), while our Chord simulation works with stacks as small
+as 16 Kib, for example.
+
+\subsection options_virt_parallel Running user code in parallel
+
+Parallel execution of the user code is only considered stable in
+SimGrid v3.7 and higher. It is described in 
+<a href="http://hal.inria.fr/inria-00602216/">INRIA RR-7653</a>.
+
+If you are using the \c ucontext or \c raw context factories, you can
+request to execute the user code in parallel. Several threads are
+launched, each of them handling as much user contexts at each run. To
+actiave this, set the \b contexts/nthreads variable to the amount of
+core that you have in your computer.
+
+Even if you asked several worker threads using the previous option,
+you can request to start the parallel execution (and pay the
+associated synchronization costs) only if the potential parallelism is
+large enough. For that, set the \b contexts/parallel_threshold
+variable to the minimal amount of user contexts needed to start the
+parallel execution. In any given simulation round, if that amount is
+not reached, the contexts will be run sequentially directly by the
+main thread (thus saving the synchronization costs). Note that this
+option is mainly useful when the grain of the user code is very fine,
+because our synchronization is now very efficient.
+
+When parallel execution is activated, you can choose the
+synchronization schema used with the \b contexts/synchro variable,
+which value is either:
+ - \b futex: ultra optimized synchronisation schema, based on futexes
+   (fast user-mode mutexes), and thus only available on Linux systems.
+   This is the default mode when available.
+ - \b posix: slow but portable synchronisation using only POSIX
+   primitives.
+ - \b busy_wait: not really a synchronisation: the worker threads
+   constantly request new contexts to execute. It should be the most
+   efficient synchronisation schema, but it loads all the cores of your 
+   machine for no good reason. You probably prefer the other less
+   eager schemas.
+
+
+
 \section options_generic Various generic configuration variables
 
 \section options_generic_path XML file inclusion path
@@ -253,6 +338,13 @@ amount of processes becomes really big). This behavior is disabled
 when \b verbose-exit is set to 0 (it is to 1 by default).
 
 \section options_index Index of all existing variables
+
+- \c contexts/factory: \ref options_virt_factory
+- \c contexts/nthreads: \ref options_virt_parallel
+- \c contexts/parallel_threshold: \ref options_virt_parallel
+- \c contexts/stack_size: \ref options_virt_stacksize
+- \c contexts/synchro: \ref options_virt_parallel
+
 
 - \c cpu/maxmin_selective_update: \ref options_model_optim
 - \c cpu/model: \ref options_model_select
