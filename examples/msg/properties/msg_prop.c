@@ -62,7 +62,7 @@ static void test_host(const char*hostname)
   XBT_INFO("   Property: %s old value: %s", exist, value);
    
   /* Restore the value for the next test */
-  xbt_dict_set(props, exist, xbt_strdup("180"), xbt_free_f);
+  xbt_dict_set(props, exist, xbt_strdup("180"), NULL);
 }
 
 int alice(int argc, char *argv[]) { /* Dump what we have on the current host */
