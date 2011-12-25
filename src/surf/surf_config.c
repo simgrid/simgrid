@@ -386,7 +386,7 @@ void surf_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_double(_surf_cfg_set, "network/TCP_gamma", 20000.0);
 
     xbt_cfg_register(&_surf_cfg_set, "maxmin/precision",
-                     "Minimum retained action value when updating simulation (similar to numerical precision)",
+                     "Numerical precision used when updating simulation models (epsilon in double comparisons)",
                      xbt_cfgelm_double, NULL, 1, 1, _surf_cfg_cb__maxmin_precision, NULL);
     xbt_cfg_setdefault_double(_surf_cfg_set, "maxmin/precision", 0.00001); // FIXME use setdefault everywhere here!
 

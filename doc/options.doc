@@ -86,7 +86,8 @@ described in
     realism, but is (marginally) faster.
   - \b SMPI: Realistic network model specifically tailored for HPC
     settings (accurate modeling of slow start with correction factors on
-    three intervals: < 1KiB, < 64 KiB, >= 64 KiB)
+    three intervals: < 1KiB, < 64 KiB, >= 64 KiB). See also \ref
+    options_model_network_coefs "this section" for more info.
   - \b CM02: Legacy network analytic model (Very similar to LV08, but
     without corrective factors. The timings of small messages are thus
     poorly modeled)
@@ -124,26 +125,49 @@ when using SimDag.
   - \b ptask_L07: Workstation model somehow similar to Cas01+CM02 but
     allowing parallel tasks
   
-Finally, the network and CPU models that are based on lmm_solve (that
-is, all our analytical models) accept specific optimization
-configurations (through the \b network/optim and \b CPU/optim
-variables). The accepted values are (both default to 'Lazy'):
-  - \b Lazy: Lazy action management (partial invalidation in lmm +
-    heap in action remaining).
-  - \b TI: Trace integration. Highly optimized mode when using
-    availability traces (only available for the Cas01 CPU model for
-    now). 
-  - \b Full: Full update of remaining and variables. Slow but may be
-    useful when debugging.
+\subsection options_model_optim Optimization level of the platform models
 
+The network and CPU models that are based on lmm_solve (that
+is, all our analytical models) accept specific optimization
+configurations.
+  - variables \b network/optim and \b CPU/optim (both default to 'Lazy'):
+    - \b Lazy: Lazy action management (partial invalidation in lmm +
+      heap in action remaining).
+    - \b TI: Trace integration. Highly optimized mode when using
+      availability traces (only available for the Cas01 CPU model for
+      now). 
+    - \b Full: Full update of remaining and variables. Slow but may be
+      useful when debugging.
+  - variables \b network/maxmin_selective_update and
+    \b cpu/maxmin_selective_update: configure whether the underlying
+    should be lazily updated or not. It should have no impact on the
+    computed timings, but should speed up the computation. 
+    
+It is still possible to disable the \c maxmin_selective_update feature
+because it can reveal counter-productive in very specific scenarios
+where the interaction level is high. In particular, if all your
+communication share a given backbone link, you should disable it:
+without \c maxmin_selective_update, every communications are updated
+at each step through a simple loop over them. With that feature
+enabled, every communications will still get updated in this case
+(because of the dependency induced by the backbone), but through a
+complicated pattern aiming at following the actual dependencies.
+
+\subsection options_model_precision Numerical precision of the platform models
+
+The analytical models handle a lot of floating point values. It is
+possible to change the epsilon used to update and compare them through
+the \b maxmin/precision variable (default value: 1e-9). Changing it
+may speedup the simulation by discarding very small actions, at the
+price of a reduced numerical precision.
 
 \subsection options_model_network Configuring the Network model
 
-\subsubsection options_model_network_gamma Maximal TCP window size (network/TCP_gamma)
+\subsubsection options_model_network_gamma Maximal TCP window size
 
 The analytical models need to know the maximal TCP window size to take
 the TCP congestion mechanism into account. This is set to 20000 by
-default, but can be changed using the network/TCP_gamma variable.
+default, but can be changed using the \b network/TCP_gamma variable.
 
 On linux, this value can be retrieved using the following
 commands. Both give a set of values, and you should use the last one,
@@ -152,7 +176,20 @@ cat /proc/sys/net/ipv4/tcp_rmem # gives the sender window
 cat /proc/sys/net/ipv4/tcp_wmem # gives the receiver window
 \endverbatim
 
-\subsubsection options_model_network_crosstraffic Simulating cross-traffic (network/crosstraffic)
+\subsubsection options_model_network_coefs Corrective simulation factors 
+
+These factors allow to betterly take the slow start into account.
+The corresponding values were computed through data fitting one the
+timings of packet-level simulators. You should not change these values
+unless you are really certain of what you are doing. See 
+<a href="http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf">Accuracy Study and Improvement of Network Simulation in the SimGrid Framework</a>
+for more informations about these coeficients.
+
+If you are using the SMPI model, these correction coeficients are
+themselves corrected by constant values depending on the size of the
+exchange. Again, only hardcore experts should bother about this fact.
+
+\subsubsection options_model_network_crosstraffic Simulating cross-traffic
 
 As of SimGrid v3.7, cross-traffic effects can be taken into account in
 analytical simulations. It means that ongoing and incoming
@@ -179,5 +216,34 @@ Properties are expressed as assertions using the function
 \verbatim
 void MC_assert(int prop);
 \endverbatim
+
+\subsection options_model_network_sendergap Simulating sender gap
+
+(this variable is experimental and may change or disapear)
+
+It is possible to specify a timing gap between consecutive emission on
+the same network card through the \b network/sender_gap variable. This
+is still under investigation as of writting, and the default value is
+to wait 0 seconds between emissions (no gap applied).
+
+\section options_index Index of all existing variables
+
+- \c cpu/maxmin_selective_update: \ref options_model_optim
+- \c cpu/model: \ref options_model_select
+- \c cpu/optim: \ref options_model_optim
+
+- \c maxmin/precision: \ref options_model_precision
+
+- \c network/bandwidth_factor: \ref options_model_network_coefs
+- \c network/crosstraffic: \ref options_model_network_crosstraffic 
+- \c network/latency_factor: \ref options_model_network_coefs
+- \c network/maxmin_selective_update: \ref options_model_optim
+- \c network/model: \ref options_model_select
+- \c network/optim: \ref options_model_optim
+- \c network/sender_gap: \ref options_model_network_sendergap
+- \c network/TCP_gamma: \ref options_model_network_gamma
+- \c network/weight_S: \ref options_model_network_coefs
+
+- \c workstation/model: \ref options_model_select
 
 */
