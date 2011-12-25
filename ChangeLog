@@ -12,6 +12,8 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     (e.g., --cfg=network/optim:lazy --cfg=cpu/optim:TI).
     Incompatible combinations should err at initialization. See
     --help-models for the list of all models and optimization modes.
+  * The CLM03 workstation model were dropped for simplicity because it
+    used the deprecated CM02 network model. Use default instead.
   * Use now crosstraffic keyword instead of the terribly missleading 
     fullduplex keyword. Use --cfg=network/crosstraffic:1. This is
     activated by default now in the current default model.

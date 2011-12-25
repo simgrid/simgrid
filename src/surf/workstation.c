@@ -355,27 +355,6 @@ void surf_workstation_model_init_current_default(void)
   sg_platf_postparse_add_cb(create_workstations);
 }
 
-/********************************************************************/
-/* The model used in MSG and presented at CCGrid03                  */
-/********************************************************************/
-/* @InProceedings{Casanova.CLM_03, */
-/*   author = {Henri Casanova and Arnaud Legrand and Loris Marchal}, */
-/*   title = {Scheduling Distributed Applications: the SimGrid Simulation Framework}, */
-/*   booktitle = {Proceedings of the third IEEE International Symposium on Cluster Computing and the Grid (CCGrid'03)}, */
-/*   publisher = {"IEEE Computer Society Press"}, */
-/*   month = {may}, */
-/*   year = {2003} */
-/* } */
-void surf_workstation_model_init_CLM03(void)
-{
-  surf_workstation_model_init_internal();
-  surf_cpu_model_init_Cas01();
-  surf_network_model_init_CM02();
-
-  xbt_dynar_push(model_list, &surf_workstation_model);
-  sg_platf_postparse_add_cb(create_workstations);
-}
-
 void surf_workstation_model_init_compound()
 {
 

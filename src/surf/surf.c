@@ -155,12 +155,9 @@ s_surf_model_description_t surf_cpu_model_description[] = {
 };
 
 s_surf_model_description_t surf_workstation_model_description[] = {
-  {"current_default",
-   "Curent default workstation model (may change with versions of SimGrid). Currently Cas01 and LV08 (with full duplex support) as CPU and Network",
+  {"default",
+   "Default workstation model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)",
    surf_workstation_model_init_current_default},
-  {"CLM03",
-   "Default workstation model, using Cas01 and CM02 as CPU and Network",
-   surf_workstation_model_init_CLM03},
   {"compound",
    "Workstation model that is automatically chosen if you change the network and CPU models",
    surf_workstation_model_init_compound},
