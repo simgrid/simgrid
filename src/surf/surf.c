@@ -148,14 +148,9 @@ s_surf_model_description_t surf_network_model_description[] = {
 };
 
 s_surf_model_description_t surf_cpu_model_description[] = {
-  {"Cas01_fullupdate", "CPU classical model time=size/power (Cas01). [Deprecated. Use Cas01 with option --cfg=cpu/optim:Full. The Full option updates all actions at every step, which may be useful for debug.]",
-   surf_cpu_model_init_Cas01},
   {"Cas01",
    "Simplistic CPU model (time=size/power).",
    surf_cpu_model_init_Cas01},
-  {"CpuTI",
-   "CPU classical model time=size/power (Cas01). [Deprecated. Use Cas01 with option --cfg=cpu/optim:TI. The TI optimization is highly optimized when using traces]",
-   surf_cpu_model_init_ti},
   {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 

@@ -1107,14 +1107,9 @@ void surf_network_model_init_SMPI(void)
 /*  } */
 void surf_network_model_init_LegrandVelho(void)
 {
-  char *model = xbt_cfg_get_string(_surf_cfg_set, "network/model");
-
   if (surf_network_model)
     return;
 
-  if(!strcmp(model,"LV08_fullupdate")) {
-    XBT_WARN("[*Deprecated*. Use --cfg=network/model:LV08 with option --cfg=network/optim:Full instead.]");
-  }
   set_update_mechanism();
 
   surf_network_model_init_internal();

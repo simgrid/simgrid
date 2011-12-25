@@ -732,14 +732,7 @@ static void surf_cpu_model_init_internal()
 void surf_cpu_model_init_Cas01()
 {
   char *optim = xbt_cfg_get_string(_surf_cfg_set, "cpu/optim");
-  char *model = xbt_cfg_get_string(_surf_cfg_set, "cpu/model");
   int select = xbt_cfg_get_int(_surf_cfg_set, "cpu/maxmin_selective_update");
-
-  if(!strcmp(model,"Cas01_fullupdate")) {
-    XBT_WARN("[*Deprecated*. Use --cfg=cpu/model:Cas01 with option --cfg=cpu/optim:Full instead.]");
-  } else if(!strcmp(model,"CpuTI")) {
-    XBT_WARN("[*Deprecated*. Use --cfg=cpu/model:Cas01 with option --cfg=cpu/optim:TI instead.]");
-  }
 
   if(!strcmp(optim,"Full")) {
     cpu_update_mechanism = UM_FULL;
