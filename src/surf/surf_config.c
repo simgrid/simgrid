@@ -46,6 +46,10 @@ static void surf_config_cmd_line(int *argc, char **argv)
       model_help("workstation", surf_workstation_model_description);
       model_help("CPU", surf_cpu_model_description);
       model_help("network", surf_network_model_description);
+      printf("\nLong description of all optimization levels accepted by the models of this simulator:\n");
+      for (i = 0; surf_optimization_mode_description[i].name; i++)
+        printf("  %s: %s\n", surf_optimization_mode_description[i].name, surf_optimization_mode_description[i].description);
+      printf("Both network and CPU models have 'Lazy' as default optimization level\n");
       exit(0);
 #ifdef HAVE_TRACING
     } else if (!strncmp(argv[i], "--help-tracing", strlen("--help-tracing") + 1)) {
