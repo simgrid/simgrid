@@ -2,68 +2,156 @@
 
 \htmlinclude .options.doc.toc
 
-\section options_simgrid_configuration Changing SimGrid's behavior
-
 A number of options can be given at runtime to change the default
-SimGrid behavior. In particular, you can change the default cpu and
-network models...
+SimGrid behavior. For a complete list of all configuration options
+accepted by the SimGrid version used in your simulator, simply pass
+the --help configuration flag to your program. If some of the options
+are not documented on this page, this is a bug that you should please
+report so that we can fix it.
 
-\subsection options_simgrid_configuration_fullduplex Using Fullduplex
+\section options_using Passing configuration options to the simulators
 
-Experimental fullduplex support is now available on the svn branch. In order to fullduple to work your platform must have two links for each pair
-of interconnected hosts, see an example here:
-\verbatim
-	simgrid_svn_sources/exemples/msg/gtnets/fullduplex-p.xml
+There is several way to pass configuration options to the simulators.
+The most common way is to use the \c --cfg command line argument. For
+example, to set the variable \c Variable to the value \c Value, simply
+type the following: \verbatim
+my_simulator --cfg=Variable:Value (other arguments)
 \endverbatim
 
-Using fullduplex support ongoing and incoming communication flows are
-treated independently for most models. The exception is the LV08 model which 
-adds 0.05 of usage on the opposite direction for each new created flow. This 
-can be useful to simulate some important TCP phenomena such as ack compression. 
+Several \c --cfg command line arguments can naturally be used. If you
+need to include spaces in the argument, don't forget to quote the
+argument. You can even escape the included quotes (write \' for ' if
+you have your argument between ').
 
-Running a fullduplex example:
-\verbatim
-	cd simgrid_svn_sources/exemples/msg/gtnets
-	./gtnets fullduplex-p.xml fullduplex-d.xml --cfg=fullduplex:1
+Another solution is to use the \c \<config\> tag in the platform file. The
+only restriction is that this tag must occure before the first
+platform element (be it \c \<AS\>, \c \<cluster\>, \c \<peer\> or whatever).
+The \c \<config\> tag takes an \c id attribute, but it is currently
+ignored so you don't really need to pass it. The important par is that
+within that tag, you can pass one or several \c \<prop\> tags to specify
+the configuration to use. For example, setting \c Variable to \c Value
+can be done by adding the following to the beginning of your platform
+file: \verbatim
+<config>
+  <prop id="Variable" value="Value"/>
+</config>
 \endverbatim
 
-\subsection options_simgrid_configuration_alternate_network Using alternative flow models
+A last solution is to pass your configuration directly using the C
+interface. Unfortunately, this path is not really easy to use right
+now, and you mess directly with surf variables as follows. Check the
+\ref XBT_config "relevant page" for details on all the functions you
+can use in this context (\c _surf_cfg_set is the only configuration set
+currently used in SimGrid). \code
+#include <xbt/config.h>
 
-The default simgrid network model uses a max-min based approach as
-explained in the research report
-<a href="ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-40.ps.gz">A Network Model for Simulation of Grid Application</a>.
-Other models have been proposed and implemented since then (see for example 
-<a href="http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf">Accuracy Study and Improvement of Network Simulation in the SimGrid Framework</a>)
-and can be activated at runtime. For example:
-\verbatim
-./mycode platform.xml deployment.xml --cfg=workstation/model:compound --cfg=network/model:LV08 -cfg=cpu/model:Cas01
-\endverbatim
+extern xbt_cfg_t _surf_cfg_set;
 
-Possible models for the network are currently "Constant", "CM02",
-"LegrandVelho", "GTNets", Reno", "Reno2", "Vegas". Others will
-probably be added in the future and many of the previous ones are
-experimental and are likely to disappear without notice... To know the
-list of the currently  implemented models, you should use the
---help-models command line option.
+int main(int argc, char *argv[]) {
+     MSG_global_init(&argc, argv);
+     
+     xbt_cfg_set_parse(_surf_cfg_set,"Variable:Value");
+     
+     // Rest of your code
+}
+\endcode
 
-\verbatim
-./masterslave_forwarder ../small_platform.xml deployment_masterslave.xml  --help-models
-Long description of the workstation models accepted by this simulator:
-  CLM03: Default workstation model, using LV08 and CM02 as network and CPU
-  compound: Workstation model allowing you to use other network and CPU models
-  ptask_L07: Workstation model with better parallel task modeling
-Long description of the CPU models accepted by this simulator:
-  Cas01_fullupdate: CPU classical model time=size/power
-  Cas01: Variation of Cas01_fullupdate with partial invalidation optimization of lmm system. Should produce the same values, only faster
-  CpuTI: Variation of Cas01 with also trace integration. Should produce the same values, only faster if you use availability traces
-Long description of the network models accepted by this simulator:
-  Constant: Simplistic network model where all communication take a constant time (one second)
-  CM02: Realistic network model with lmm_solve and no correction factors
-  LV08: Realistic network model with lmm_solve and these correction factors: latency*=10.4, bandwidth*=.92, S=8775
-  Reno: Model using lagrange_solve instead of lmm_solve (experts only)
-  Reno2: Model using lagrange_solve instead of lmm_solve (experts only)
-  Vegas: Model using lagrange_solve instead of lmm_solve (experts only)
-\endverbatim
+\section options_model Configuring the platform models
+
+\subsection options_model_select Selecting the platform models
+
+SimGrid comes with several network and CPU models built in, and you
+can change the used model at runtime by changing the passed
+configuration. The three main configuration variables are given below.
+For each of these variable, passing the special \c help value gives
+you a short description of all possible values. 
+   - \b network/model: specify the used network model
+   - \b cpu/model: specify the used CPU model
+   - \b workstation/model: specify the used workstation model
+
+As of writting, the accepted network models are the following. Over
+the time new models can be added, and some experimental models can be
+removed; check the values on your simulators for an uptodate
+information. Note that the CM02 model is described in the research report
+<a href="ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-40.ps.gz">A
+Network Model for Simulation of Grid Application</a> while LV08 is
+described in 
+<a href="http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf">Accuracy Study and Improvement of Network Simulation in the SimGrid Framework</a>.
+
+  - \b LV08 (default one): Realistic network analytic model
+    (slow-start modeled by multiplying latency by 10.4, bandwidth by
+    .92; bottleneck sharing uses a payload of S=8775 for evaluating RTT)
+  - \b Constant: Simplistic network model where all communication
+    take a constant time (one second). This model provides the lowest
+    realism, but is (marginally) faster.
+  - \b SMPI: Realistic network model specifically tailored for HPC
+    settings (accurate modeling of slow start with correction factors on
+    three intervals: < 1KiB, < 64 KiB, >= 64 KiB)
+  - \b CM02: Legacy network analytic model (Very similar to LV08, but
+    without corrective factors. The timings of small messages are thus
+    poorly modeled)
+  - \b Reno: Model from Steven H. Low using lagrange_solve instead of
+    lmm_solve (experts only; check the code for more info).
+  - \b Reno2: Model from Steven H. Low using lagrange_solve instead of
+    lmm_solve (experts only; check the code for more info).
+  - \b Vegas: Model from Steven H. Low using lagrange_solve instead of
+    lmm_solve (experts only; check the code for more info).
+
+If you compiled SimGrid accordingly, you can use packet-level network
+simulators as network models (see \ref pls). In that case, you have
+two extra models:
+  - \b GTNets: Network pseudo-model using the GTNets simulator instead
+    of an analytic model 
+  - \b NS3: Network pseudo-model using the NS3 tcp model instead of an
+    analytic model	
+
+Concerning the CPU, we have only one model for now:
+  - \b Cas01: Simplistic CPU model (time=size/power)
+  
+The workstation concept is the aggregation of a CPU with a network
+card. Three models exists, but actually, only 2 of them are
+interesting. The "compound" one is simply due to the way our internal
+code is organized, and can easily be ignored. So at the end, you have
+two workstation models: The default one allows to aggregate an
+existing CPU model with an existing network model, but does not allow
+parallel tasks because these beasts need some collaboration between
+the network and CPU model. That is why, ptask_07 is used by default
+when using SimDag.
+  - \b default: Default workstation model. Currently, CPU:Cas01 and 
+    network:LV08 (with cross traffic enabled)
+  - \b compound: Workstation model that is automatically chosen if
+    you change the network and CPU models
+  - \b ptask_L07: Workstation model somehow similar to Cas01+CM02 but
+    allowing parallel tasks
+  
+Finally, the network and CPU models that are based on lmm_solve (that
+is, all our analytical models) accept specific optimization
+configurations (through the \b network/optim and \b CPU/optim
+variables). The accepted values are (both default to 'Lazy'):
+  - \b Lazy: Lazy action management (partial invalidation in lmm +
+    heap in action remaining).
+  - \b TI: Trace integration. Highly optimized mode when using
+    availability traces (only available for the Cas01 CPU model for
+    now). 
+  - \b Full: Full update of remaining and variables. Slow but may be
+    useful when debugging.
+
+
+\subsection options_simgrid_configuration_fullduplex Simulating cross-traffic
+
+As of SimGrid v3.7, cross-traffic effects can be taken into account in
+analytical simulations. It means that ongoing and incoming
+communication flows are treated independently. In addition, the LV08
+model adds 0.05 of usage on the opposite direction for each new
+created flow. This can be useful to simulate some important TCP
+phenomena such as ack compression.
+
+For that to work, your platform must have two links for each
+pair of interconnected hosts. An example of usable platform is
+available in <tt>examples/msg/gtnets/crosstraffic-p.xml</tt>.
+
+This is activated through the \b network/crosstraffic variable, that
+can be set to 0 (disable this feature) or 1 (enable it).
 
 \section options_modelchecking Model-Checking
 \subsection options_modelchecking_howto How to use it
