@@ -579,7 +579,7 @@ static void net_update_actions_state_lazy(double now, double delta)
     XBT_DEBUG("Action %p: finish", action);
     GENERIC_ACTION(action).finish = surf_get_clock();
 
-    // if I am wearing a latency heat
+    // if I am wearing a latency hat
     if( action->hat ==  LATENCY){
         lmm_update_variable_weight(network_maxmin_system, action->variable,
                                            action->weight);
