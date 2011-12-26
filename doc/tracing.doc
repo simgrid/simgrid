@@ -357,14 +357,14 @@ visualization tool <a href="http://triva.gforge.inria.fr">Triva</a>, with
 special configurations tunned to SimGrid needs. This part of the documentation
 explains how to configure and use Triva to analyse a SimGrid trace file.
 
-- <b>Installing Triva</b>: the tool is available in the INRIAGforge, 
+- <b>Installing Triva</b>: the tool is available in the Inria's Forge, 
 at <a href="http://triva.gforge.inria.fr">http://triva.gforge.inria.fr</a>.
 Use the following command to get the sources, and then check the file
 <i>INSTALL</i>. This file contains instructions to install
 the tool's dependencies in a Ubuntu/Debian Linux. The tool can also
-be compiled in MacOSes natively, check <i>INSTALL.mac</i> file.
+be compiled in MacOSX natively, check <i>INSTALL.mac</i> file.
 \verbatim
-$ svn checkout svn://scm.gforge.inria.fr/svn/triva
+$ git clone git://scm.gforge.inria.fr/triva/triva.git
 $ cd triva
 $ cat INSTALL
 \endverbatim
