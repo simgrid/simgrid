@@ -107,8 +107,10 @@ void smpi_mpi_start(MPI_Request request)
     	detached = 1;
     	request->buf = malloc(request->size);
     	memcpy(request->buf,oldbuf,request->size);
+    	XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
+    } else {
+    	XBT_DEBUG("Send request %p is not detached (buf: %p)",request,request->buf);
     }
-
     request->action = 
 		SIMIX_req_comm_isend(mailbox, request->size, -1.0,
 				    request->buf, request->size, &match_send, request,  
