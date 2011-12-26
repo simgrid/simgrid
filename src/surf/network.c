@@ -995,6 +995,9 @@ static void surf_network_model_init_internal(void)
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   surf_network_model->get_latency_limited = net_get_link_latency_limited;
 #endif
+#ifdef HAVE_TRACING
+  surf_network_model->set_category = net_action_set_category;
+#endif
 
   surf_network_model->model_private->resource_used = net_resource_used;
   if(network_update_mechanism == UM_LAZY) {
