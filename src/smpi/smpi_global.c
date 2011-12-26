@@ -271,7 +271,7 @@ int MAIN__(void)
   // parse the platform file: get the host list
   SIMIX_create_environment(xargv[1]);
 
-  SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
+  SIMIX_function_register_default(smpi_simulated_main);
   SIMIX_launch_application(xargv[2]);
 
   smpi_global_init();
