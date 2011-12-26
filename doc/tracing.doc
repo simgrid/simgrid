@@ -273,7 +273,7 @@ triva/uncategorized
   This option generates a graph configuration file for Triva considering
   uncategorized resource utilization.
 \verbatim
---cfg=triva/categorized:graph_uncategorized.plist
+--cfg=triva/uncategorized:graph_uncategorized.plist
 \endverbatim
 
 \subsection tracing_tracing_example_parameters Case studies
