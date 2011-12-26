@@ -76,6 +76,20 @@ created with the function \c MSG_task_create. The second parameter
 \c category must contain a category that was previously defined by the function
 \c TRACE_category.
 
+\li <b>\c TRACE_declare_mark(const char *mark_type)</b>: This function
+declares a new Paje event type in the trace file that can be used by
+simulators to declare application-level marks. This function is
+independent of which API is used in SimGrid.
+
+\li <b>\c TRACE_mark(const char *mark_type, const char *mark_value)</b>:
+This function creates a mark in the trace file. The first parameter
+had to be previously declared using \c TRACE_declare_mark, the second
+is the identifier for this mark instance. We recommend that the \c
+mark_value (the second parameter) is a unique value for the whole
+trace file (the whole simulation). Nevertheless, this is not a strong
+requirement: the trace will be valid if there are multiple mark
+identifiers for the same trace.
+
 \li <b>\c TRACE_[host|link]_variable_declare (const char *variable)</b>:
 Declare a user variable that will be associated to host/link. A variable can
 be used to trace user variables such as the number of tasks in a server,
