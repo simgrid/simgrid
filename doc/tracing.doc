@@ -95,6 +95,13 @@ Declare a user variable that will be associated to host/link. A variable can
 be used to trace user variables such as the number of tasks in a server,
 the number of clients in an application (for hosts), and so on.
 
+\li <b>\c TRACE_[host|link]_variable_declare_with_color (const char
+*var, const char *color)</b>: Same as \c
+TRACE_[host|link]_variable_declare, but user decides which color will
+be assigned to the variable. The color needs to be a string with three
+numbers separated by spaces in the range [0,1]. A light-gray color can
+be specified using "0.7 0.7 0.7" as color.
+
 \li <b>\c TRACE_[host|link]_variable_[set|add|sub] (const char *[host|link], const char *variable, double value)</b>:
 Set the value of a given user variable for a given host/link. The value
 of this variable is always associated to the host/link. The host/link 
