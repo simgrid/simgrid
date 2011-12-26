@@ -341,7 +341,41 @@ which value is either:
 
 \section options_tracing Configuring the tracing subsystem
 
-(TODO)
+The \ref tracing "tracing subsystem" can be configured in several
+different ways depending on the nature of the simulator (MSG, SimDag,
+SMPI) and the kind of traces that need to be obtained. See the \ref
+tracing_tracing_options "Tracing Configuration Options subsection" to
+get a detailed description of each configuration option.
+
+We detail here a simple way to get the traces working for you, even if
+you never used the tracing API.
+
+
+- Any SimGrid-based simulator (MSG, SimDag, SMPI, ...) and raw traces:
+\verbatim
+--cfg=tracing:1 --cfg=tracing/uncategorized:1 --cfg=triva/uncategorized:uncat.plist
+\endverbatim
+    The first parameter activates the tracing subsystem, the second
+    tells it to trace host and link utilization (without any
+    categorization) and the third creates a graph configuration file
+    to configure Triva when analysing the resulting trace file.
+
+- MSG or SimDag-based simulator and categorized traces (you need to declare categories and classify your tasks according to them)
+\verbatim
+--cfg=tracing:1 --cfg=tracing/categorized:1 --cfg=triva/categorized:cat.plist
+\endverbatim
+    The first parameter activates the tracing subsystem, the second
+    tells it to trace host and link categorized utilization and the
+    third creates a graph configuration file to configure Triva when
+    analysing the resulting trace file.
+
+- SMPI simulator and traces for a space/time view:
+\verbatim
+smpirun -trace ...
+\endverbatim
+    The <i>-trace</i> parameter for the smpirun script runs the
+simulation with --cfg=tracing:1 and --cfg=tracing/smpi:1. Check the
+smpirun's <i>-help</i> parameter for additional tracing options.
 
 \section options_smpi Configuring SMPI
 
