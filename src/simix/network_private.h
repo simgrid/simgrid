@@ -38,7 +38,9 @@ void SIMIX_comm_send(smx_process_t src_proc, smx_rdv_t rdv,
 smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
-                              int (*)(void *, void *), void *data,
+                              int (*)(void *, void *),
+                              void (*clean_fun)(void *), // used to free the action in case of problem after a detached send
+                              void *data,
                               int detached);
 void SIMIX_comm_recv(smx_process_t dst_proc, smx_rdv_t rdv,
                      void *dst_buff, size_t *dst_buff_size,

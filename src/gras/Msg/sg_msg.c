@@ -238,7 +238,7 @@ void gras_msg_send_ext(gras_socket_t sock,
                                                 payload, msg->payl);
   }
 
-  comm = SIMIX_req_comm_isend(target_rdv, whole_payload_size, -1, msg, sizeof(void *), NULL, msg, 0);
+  comm = SIMIX_req_comm_isend(target_rdv, whole_payload_size, -1, msg, sizeof(void *), NULL,NULL, msg, 0);
   SIMIX_req_comm_wait(comm, -1);
 
   XBT_VERB("Message sent (and received)");

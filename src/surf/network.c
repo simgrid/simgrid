@@ -101,13 +101,6 @@ static double constant_bandwidth_constraint(double rate, double bound,
 /**********************/
 /*   SMPI callbacks   */
 /**********************/
-static double smpi_latency_factor(double size)
-{
-  /* 1 B <= size <= 1 KiB */
-  if (size <= 1024.0) {
-    return 1.0056;
-  }
-
 static double smpi_bandwidth_factor(double size)
 {
 
@@ -330,6 +323,7 @@ static int net_action_unref(surf_action_t action)
 
 static void net_action_cancel(surf_action_t action)
 {
+	XBT_DEBUG("cancel action %p",action);
   surf_network_model->action_state_set(action, SURF_ACTION_FAILED);
   if(network_update_mechanism == UM_LAZY){// remove action from the heap
     xbt_swag_remove(action, net_modified_set);

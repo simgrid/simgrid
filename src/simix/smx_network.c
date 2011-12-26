@@ -266,7 +266,8 @@ void SIMIX_comm_destroy(smx_action_t action)
   if (action->comm.detached && action->state != SIMIX_DONE) {
     /* the communication has failed and was detached:
      * we have to free the buffer */
-    ((void_f_pvoid_t) action->comm.src_data)(action->comm.src_buff);
+    action->comm.clean_fun(action->comm.src_buff);
+    action->comm.src_buff = NULL;
   }
 
   xbt_mallocator_release(simix_global->action_mallocator, action);
@@ -296,7 +297,9 @@ void SIMIX_comm_destroy_internal_actions(smx_action_t action)
 smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
-                              int (*match_fun)(void *, void *), void *data,
+                              int (*match_fun)(void *, void *),
+                              void (*clean_fun)(void *), // used to free the action in case of problem after a detached send
+                              void *data,
                               int detached)
 {
   smx_action_t action;
@@ -319,6 +322,9 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
   if (detached) {
     action->comm.detached = 1;
     action->comm.refcount--;
+    action->comm.clean_fun = clean_fun;
+  } else {
+    action->comm.clean_fun = NULL;
   }
 
   /* Setup the communication request */
@@ -375,6 +381,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
 
 void SIMIX_pre_comm_wait(smx_req_t req, smx_action_t action, double timeout, int idx)
 {
+
   /* the request may be a wait, a send or a recv */
   surf_action_t sleep;
 
@@ -400,12 +407,15 @@ void SIMIX_pre_comm_wait(smx_req_t req, smx_action_t action, double timeout, int
     SIMIX_comm_finish(action);
     return;
   }
+	XBT_INFO("Comm_wait. state:%d; I'm %s",action->state,
+			req->issuer == action->comm.src_proc?"sender":"receiver");
 
   /* If the action has already finish perform the error handling, */
   /* otherwise set up a waiting timeout on the right side         */
   if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(action);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
+	XBT_INFO("Not done, we need a sleep action");
     sleep = surf_workstation_model->extension.workstation.sleep(req->issuer->smx_host->host, timeout);
     surf_workstation_model->action_data_set(sleep, action);
 
@@ -628,11 +638,18 @@ void SIMIX_comm_finish(smx_action_t action)
 
       case SIMIX_LINK_FAILURE:
         TRY {
-	  XBT_DEBUG("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p)",
+	  XBT_INFO("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
 	      action,
 	      action->comm.src_proc ? action->comm.src_proc->smx_host->name : NULL,
 	      action->comm.dst_proc ? action->comm.dst_proc->smx_host->name : NULL,
-	      req->issuer->name, req->issuer);
+	      req->issuer->name, req->issuer,action->comm.detached);
+	  if (action->comm.src_proc == req->issuer) {
+		  XBT_INFO("I'm source");
+	  } else if (action->comm.dst_proc == req->issuer) {
+		  XBT_INFO("I'm dest");
+	  } else {
+		  XBT_INFO("I'm neither source nor dest");
+	  }
           THROWF(network_error, 0, "Link failure");
         }
 	CATCH(req->issuer->running_ctx->exception) {
@@ -698,9 +715,10 @@ void SIMIX_post_comm(smx_action_t action)
           surf_workstation_model->action_state_get(action->comm.dst_timeout) == SURF_ACTION_FAILED)
      action->state = SIMIX_DST_HOST_FAILURE;
   else if (action->comm.surf_comm &&
-          surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED)
+          surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED) {
+	  XBT_INFO("Puta madre. Surf says that the link broke");
      action->state = SIMIX_LINK_FAILURE;
-  else
+  } else
     action->state = SIMIX_DONE;
 
   XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d",
@@ -864,9 +882,12 @@ void SIMIX_comm_copy_buffer_callback(smx_action_t comm, size_t buff_size)
 
 void smpi_comm_copy_data_callback(smx_action_t comm, size_t buff_size)
 {
+  XBT_INFO("Copy the data over");
   memcpy(comm->comm.dst_buff, comm->comm.src_buff, buff_size);
-  if (comm->comm.detached) // if this is a detached send, the source buffer was duplicated by SMPI sender to make the original buffer available to the application ASAP
-	  free(comm->comm.src_buff);
+  if (comm->comm.detached) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the original buffer available to the application ASAP
+	  comm->comm.clean_fun(comm->comm.src_buff);
+	  comm->comm.src_buff = NULL;
+  }
 }
 
 /**
@@ -893,15 +914,8 @@ void SIMIX_comm_copy_data(smx_action_t comm)
   if (comm->comm.dst_buff_size)
     *comm->comm.dst_buff_size = buff_size;
 
-<<<<<<< HEAD
   if (buff_size > 0)
-    (*SIMIX_comm_copy_data_callback) (comm, buff_size);
-=======
-  if (buff_size == 0)
-    return;
-
-  SIMIX_comm_copy_data_callback(comm, buff_size);
->>>>>>> master
+    SIMIX_comm_copy_data_callback (comm, buff_size);
 
   /* Set the copied flag so we copy data only once */
   /* (this function might be called from both communication ends) */

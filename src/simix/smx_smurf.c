@@ -70,6 +70,7 @@ void SIMIX_request_pre(smx_req_t req, int value)
           req->comm_send.src_buff,
           req->comm_send.src_buff_size,
           req->comm_send.match_fun,
+          NULL, /* no clean function since it's not detached */
           req->comm_send.data,
           0);
       SIMIX_pre_comm_wait(req, comm, req->comm_send.timeout, 0);
@@ -85,6 +86,7 @@ void SIMIX_request_pre(smx_req_t req, int value)
           req->comm_isend.src_buff,
           req->comm_isend.src_buff_size,
           req->comm_isend.match_fun,
+          req->comm_isend.clean_fun,
           req->comm_isend.data,
           req->comm_isend.detached);
       SIMIX_request_answer(req);

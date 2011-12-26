@@ -51,11 +51,13 @@ void SIMIX_process_cleanup(smx_process_t process)
 
       if (action->comm.detached) {
          if (action->comm.refcount == 0) {
+           XBT_DEBUG("Increase the refcount before destroying it");
            /* I'm not supposed to destroy a detached comm from the sender side,
             * unless there is no receiver matching the rdv */
            action->comm.refcount++;
            SIMIX_comm_destroy(action);
          }
+         XBT_DEBUG("Don't destroy it since its refcount is %d",action->comm.refcount);
       }
       else {
         SIMIX_comm_destroy(action);
