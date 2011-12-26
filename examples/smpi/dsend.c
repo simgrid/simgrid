@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <mpi.h>
 
+XBT_LOG_NEW_DEFAULT_CATEGORY(dsend,"the dsend test");
+
 int main(int argc, char *argv[]) {
   int rank;
   int data=11;
@@ -27,7 +29,7 @@ int main(int argc, char *argv[]) {
 	  }
   }
 
-  printf("rank %d: data exchanged\n", rank);
+  XBT_INFO("rank %d: data exchanged", rank);
   MPI_Finalize();
   return 0;
 }

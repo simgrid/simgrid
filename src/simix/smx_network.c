@@ -407,15 +407,12 @@ void SIMIX_pre_comm_wait(smx_req_t req, smx_action_t action, double timeout, int
     SIMIX_comm_finish(action);
     return;
   }
-	XBT_INFO("Comm_wait. state:%d; I'm %s",action->state,
-			req->issuer == action->comm.src_proc?"sender":"receiver");
 
   /* If the action has already finish perform the error handling, */
   /* otherwise set up a waiting timeout on the right side         */
   if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(action);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
-	XBT_INFO("Not done, we need a sleep action");
     sleep = surf_workstation_model->extension.workstation.sleep(req->issuer->smx_host->host, timeout);
     surf_workstation_model->action_data_set(sleep, action);
 
@@ -877,12 +874,13 @@ void SIMIX_comm_copy_pointer_callback(smx_action_t comm, size_t buff_size)
 
 void SIMIX_comm_copy_buffer_callback(smx_action_t comm, size_t buff_size)
 {
+  XBT_DEBUG("Copy the data over");
   memcpy(comm->comm.dst_buff, comm->comm.src_buff, buff_size);
 }
 
 void smpi_comm_copy_data_callback(smx_action_t comm, size_t buff_size)
 {
-  XBT_INFO("Copy the data over");
+  XBT_DEBUG("Copy the data over");
   memcpy(comm->comm.dst_buff, comm->comm.src_buff, buff_size);
   if (comm->comm.detached) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the original buffer available to the application ASAP
 	  comm->comm.clean_fun(comm->comm.src_buff);
