@@ -339,6 +339,10 @@ which value is either:
    machine for no good reason. You probably prefer the other less
    eager schemas.
 
+\section options_tracing Configuring the tracing subsystem
+
+(TODO)
+
 \section options_smpi Configuring SMPI
 
 The SMPI interface provides several specific configuration items.
@@ -377,8 +381,6 @@ when the simulation ends. If you set the \b smpi/display_timing item
 to 1, \c smpirun will display this information when the simulation ends. \verbatim
 Simulation time: 1e3 seconds.
 \endverbatim
-    
-
 
 \section options_generic Configuring other aspects of SimGrid
 
