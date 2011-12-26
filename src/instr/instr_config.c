@@ -222,10 +222,10 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_tracing, 0, 1,
                    NULL, NULL);
 
-  /* tracing platform*/
+  /* register platform in the trace */
   int default_tracing_platform = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM,
-                   "Enable Tracing Platform.",
+                   "Register the platform in the trace as a graph.",
                    xbt_cfgelm_int, &default_tracing_platform, 0, 1,
                    NULL, NULL);
 
@@ -244,17 +244,17 @@ void TRACE_global_init(int *argc, char **argv)
                    NULL, NULL);
 
 
-  /* platform */
+  /* tracing categorized resource utilization traces */
   int default_tracing_categorized = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_CATEGORIZED,
-                   "Tracing of categorized platform (host and link) utilization.",
+                   "Tracing categorized resource utilization of hosts and links.",
                    xbt_cfgelm_int, &default_tracing_categorized, 0, 1,
                    NULL, NULL);
 
   /* tracing uncategorized resource utilization */
   int default_tracing_uncategorized = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_UNCATEGORIZED,
-                   "Tracing of uncategorized resource (host and link) utilization.",
+                   "Tracing uncategorized resource utilization of hosts and links.",
                    xbt_cfgelm_int, &default_tracing_uncategorized, 0, 1,
                    NULL, NULL);
 
