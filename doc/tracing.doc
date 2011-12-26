@@ -222,6 +222,42 @@ tracing/msg/process
 --cfg=tracing/msg/process:1
 \endverbatim
 
+\li <b>\c
+tracing/buffer
+</b>:
+ This option put some events in a time-ordered buffer using the
+ insertion sort algorithm. The process of acquiring and releasing
+ locks to access this buffer and the cost of the sorting algorithm
+ make this process slow. The simulator performance can be severely
+ impacted if this option is activated, but you are sure to get a trace
+ file with events sorted.
+\verbatim
+--cfg=tracing/buffer:1
+\endverbatim
+
+\li <b>\c
+tracing/onelink_only
+</b>:
+This option changes the way SimGrid register its platform on the trace
+file. Normally, the tracing considers all routes (no matter their
+size) on the platform file to re-create the resource topology. If this
+option is activated, only the routes with one link are used to
+register the topology within an AS.  Routes among AS continue to be
+traced as usual.
+\verbatim
+--cfg=tracing/onelink_only:1
+\endverbatim
+
+\li <b>\c
+tracing/disable_destroy
+</b>:
+Disable the destruction of containers at the end of simulation. This
+can be used with simulators that have a different notion of time
+(different from the simulated time).
+\verbatim
+--cfg=tracing/disable_destroy:1
+\endverbatim
+
 \li <b>\c 
 triva/categorized
 </b>:
