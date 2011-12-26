@@ -13,9 +13,9 @@ report so that we can fix it.
 
 There is several way to pass configuration options to the simulators.
 The most common way is to use the \c --cfg command line argument. For
-example, to set the variable \c Variable to the value \c Value, simply
+example, to set the item \c Item to the value \c Value, simply
 type the following: \verbatim
-my_simulator --cfg=Variable:Value (other arguments)
+my_simulator --cfg=Item:Value (other arguments)
 \endverbatim
 
 Several \c --cfg command line arguments can naturally be used. If you
@@ -29,20 +29,20 @@ platform element (be it \c \<AS\>, \c \<cluster\>, \c \<peer\> or whatever).
 The \c \<config\> tag takes an \c id attribute, but it is currently
 ignored so you don't really need to pass it. The important par is that
 within that tag, you can pass one or several \c \<prop\> tags to specify
-the configuration to use. For example, setting \c Variable to \c Value
+the configuration to use. For example, setting \c Item to \c Value
 can be done by adding the following to the beginning of your platform
 file: \verbatim
 <config>
-  <prop id="Variable" value="Value"/>
+  <prop id="Item" value="Value"/>
 </config>
 \endverbatim
 
 A last solution is to pass your configuration directly using the C
 interface. Unfortunately, this path is not really easy to use right
-now, and you mess directly with surf variables as follows. Check the
+now, and you mess directly with surf internal variables as follows. Check the
 \ref XBT_config "relevant page" for details on all the functions you
-can use in this context (\c _surf_cfg_set is the only configuration set
-currently used in SimGrid). \code
+can use in this context, \c _surf_cfg_set being the only configuration set
+currently used in SimGrid. \code
 #include <xbt/config.h>
 
 extern xbt_cfg_t _surf_cfg_set;
@@ -50,7 +50,7 @@ extern xbt_cfg_t _surf_cfg_set;
 int main(int argc, char *argv[]) {
      MSG_global_init(&argc, argv);
      
-     xbt_cfg_set_parse(_surf_cfg_set,"Variable:Value");
+     xbt_cfg_set_parse(_surf_cfg_set,"Item:Value");
      
      // Rest of your code
 }
@@ -62,8 +62,8 @@ int main(int argc, char *argv[]) {
 
 SimGrid comes with several network and CPU models built in, and you
 can change the used model at runtime by changing the passed
-configuration. The three main configuration variables are given below.
-For each of these variable, passing the special \c help value gives
+configuration. The three main configuration items are given below.
+For each of these items, passing the special \c help value gives
 you a short description of all possible values. 
    - \b network/model: specify the used network model
    - \b cpu/model: specify the used CPU model
@@ -131,7 +131,7 @@ when using SimDag.
 The network and CPU models that are based on lmm_solve (that
 is, all our analytical models) accept specific optimization
 configurations.
-  - variables \b network/optim and \b CPU/optim (both default to 'Lazy'):
+  - items \b network/optim and \b CPU/optim (both default to 'Lazy'):
     - \b Lazy: Lazy action management (partial invalidation in lmm +
       heap in action remaining).
     - \b TI: Trace integration. Highly optimized mode when using
@@ -139,7 +139,7 @@ configurations.
       now). 
     - \b Full: Full update of remaining and variables. Slow but may be
       useful when debugging.
-  - variables \b network/maxmin_selective_update and
+  - items \b network/maxmin_selective_update and
     \b cpu/maxmin_selective_update: configure whether the underlying
     should be lazily updated or not. It should have no impact on the
     computed timings, but should speed up the computation. 
@@ -158,7 +158,7 @@ complicated pattern aiming at following the actual dependencies.
 
 The analytical models handle a lot of floating point values. It is
 possible to change the epsilon used to update and compare them through
-the \b maxmin/precision variable (default value: 1e-9). Changing it
+the \b maxmin/precision item (default value: 1e-9). Changing it
 may speedup the simulation by discarding very small actions, at the
 price of a reduced numerical precision.
 
@@ -168,7 +168,7 @@ price of a reduced numerical precision.
 
 The analytical models need to know the maximal TCP window size to take
 the TCP congestion mechanism into account. This is set to 20000 by
-default, but can be changed using the \b network/TCP_gamma variable.
+default, but can be changed using the \b network/TCP_gamma item.
 
 On linux, this value can be retrieved using the following
 commands. Both give a set of values, and you should use the last one,
@@ -203,7 +203,7 @@ For that to work, your platform must have two links for each
 pair of interconnected hosts. An example of usable platform is
 available in <tt>examples/msg/gtnets/crosstraffic-p.xml</tt>.
 
-This is activated through the \b network/crosstraffic variable, that
+This is activated through the \b network/crosstraffic item, that
 can be set to 0 (disable this feature) or 1 (enable it).
 
 \subsubsection options_model_network_coord Coordinated-based network models
@@ -215,10 +215,10 @@ initialization are done in the simulator.
 
 \subsubsection options_model_network_sendergap Simulating sender gap
 
-(this variable is experimental and may change or disapear)
+(this configuration item is experimental and may change or disapear)
 
 It is possible to specify a timing gap between consecutive emission on
-the same network card through the \b network/sender_gap variable. This
+the same network card through the \b network/sender_gap item. This
 is still under investigation as of writting, and the default value is
 to wait 0 seconds between emissions (no gap applied).
 
@@ -227,23 +227,23 @@ to wait 0 seconds between emissions (no gap applied).
 When using the packet-level pseudo-models, several specific
 configuration flags are provided to configure the associated tools.
 There is by far not enough such SimGrid flags to cover every aspects
-of the associated tools, since we only added the variables that we
-needed ourselves. Feel free to request more variables (or even better:
-provide patches adding more variables).
+of the associated tools, since we only added the items that we
+needed ourselves. Feel free to request more items (or even better:
+provide patches adding more items).
 
-When using NS3, the only existing variable is \b ns3/TcpModel,
+When using NS3, the only existing item is \b ns3/TcpModel,
 corresponding to the ns3::TcpL4Protocol::SocketType configuration item
 in NS3. The only valid values (enforced on the SimGrid side) are
 'NewReno' or 'Reno' or 'Tahoe'.
 
-When using GTNeTS, two variables exist: 
+When using GTNeTS, two items exist: 
  - \b gtnets/jitter, that is a double value to oscillate
    the link latency, uniformly in random interval
    [-latency*gtnets_jitter,latency*gtnets_jitter). It defaults to 0.
  - \b gtnets/jitter_seed, the positive seed used to reproduce jitted
    results. Its value must be in [1,1e8] and defaults to 10.
 
-\section options_modelchecking Model-Checking specific configuration variables
+\section options_modelchecking Configuring the Model-Checking
 
 To enable the experimental SimGrid model-checking support the program should
 be executed with the command line argument 
@@ -255,7 +255,7 @@ Properties are expressed as assertions using the function
 void MC_assert(int prop);
 \endverbatim
 
-\section options_virt User process virtualization options
+\section options_virt Configuring the User Process Virtualization
 
 \subsection options_virt_factory Selecting the virtualization factory
 
@@ -268,7 +268,7 @@ the point where the blocking operation is done.
 In SimGrid, the containers in which user processes are virtualized are
 called contexts. Several context factory are provided, and you can
 select the one you want to use with the \b contexts/factory
-configuration variable. Some of the following may not exist on your
+configuration item. Some of the following may not exist on your
 machine because of portability issues. In any case, the default one
 should be the most effcient one (please report bugs if the
 auto-detection fails for you). They are sorted here from the slowest
@@ -297,7 +297,7 @@ rather disturbing: this leads to stack overflow (overwriting other
 stacks), leading to segfaults with corrupted stack traces.
 
 If you want to push the scalability limits of your code, you really
-want to reduce the \b contexts/stack_size variable. Its default value
+want to reduce the \b contexts/stack_size item. Its default value
 is 128 (in Kib), while our Chord simulation works with stacks as small
 as 16 Kib, for example.
 
@@ -310,14 +310,14 @@ SimGrid v3.7 and higher. It is described in
 If you are using the \c ucontext or \c raw context factories, you can
 request to execute the user code in parallel. Several threads are
 launched, each of them handling as much user contexts at each run. To
-actiave this, set the \b contexts/nthreads variable to the amount of
+actiave this, set the \b contexts/nthreads item to the amount of
 core that you have in your computer.
 
 Even if you asked several worker threads using the previous option,
 you can request to start the parallel execution (and pay the
 associated synchronization costs) only if the potential parallelism is
 large enough. For that, set the \b contexts/parallel_threshold
-variable to the minimal amount of user contexts needed to start the
+item to the minimal amount of user contexts needed to start the
 parallel execution. In any given simulation round, if that amount is
 not reached, the contexts will be run sequentially directly by the
 main thread (thus saving the synchronization costs). Note that this
@@ -325,7 +325,7 @@ option is mainly useful when the grain of the user code is very fine,
 because our synchronization is now very efficient.
 
 When parallel execution is activated, you can choose the
-synchronization schema used with the \b contexts/synchro variable,
+synchronization schema used with the \b contexts/synchro item,
 which value is either:
  - \b futex: ultra optimized synchronisation schema, based on futexes
    (fast user-mode mutexes), and thus only available on Linux systems.
@@ -338,20 +338,18 @@ which value is either:
    machine for no good reason. You probably prefer the other less
    eager schemas.
 
+\section options_generic Configuring other aspects of SimGrid
 
-
-\section options_generic Various generic configuration variables
-
-\section options_generic_path XML file inclusion path
+\subsection options_generic_path XML file inclusion path
 
 It is possible to specify a list of directories to search into for the
 \<include\> tag in XML files by using the \b path configuration
-variable. To add several directory to the path, set the configuration
-variable several times, as in \verbatim
+item. To add several directory to the path, set the configuration
+item several times, as in \verbatim
 --cfg=path:toto --cfg=path:tutu
 \endverbatim
 
-\section options_generic_exit Behavior on Ctrl-C
+\subsection options_generic_exit Behavior on Ctrl-C
 
 By default, when Ctrl-C is pressed, the status of all existing
 simulated processes is displayed. This is very useful to debug your
@@ -359,7 +357,7 @@ code, but it can reveal troublesome in some cases (such as when the
 amount of processes becomes really big). This behavior is disabled
 when \b verbose-exit is set to 0 (it is to 1 by default).
 
-\section options_index Index of all existing variables
+\section options_index Index of all existing configuration items
 
 - \c contexts/factory: \ref options_virt_factory
 - \c contexts/nthreads: \ref options_virt_parallel
@@ -367,10 +365,12 @@ when \b verbose-exit is set to 0 (it is to 1 by default).
 - \c contexts/stack_size: \ref options_virt_stacksize
 - \c contexts/synchro: \ref options_virt_parallel
 
-
 - \c cpu/maxmin_selective_update: \ref options_model_optim
 - \c cpu/model: \ref options_model_select
 - \c cpu/optim: \ref options_model_optim
+
+- \c gtnets/jitter: \ref options_pls
+- \c gtnets/jitter_seed: \ref options_pls
 
 - \c maxmin/precision: \ref options_model_precision
 
