@@ -1,5 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2011. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -261,8 +260,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \param host the host that is to be watched.
- * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
- if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
+ * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
 MSG_error_t
 MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
@@ -281,8 +279,7 @@ MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
  * \param channel the channel on which the agent should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
- * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
- * if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
+ * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
 MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
 {
@@ -304,8 +301,7 @@ MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
  up. In such a case, #MSG_TRANSFER_FAILURE will be returned, \a task
  will not be modified and will still be
  equal to \c NULL when returning.
- * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
- if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
+ * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
 MSG_error_t
 MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel,
@@ -786,11 +782,10 @@ m_task_t MSG_comm_get_task(msg_comm_t comm)
  * \param channel the channel on which the agent should put this
  task. This value has to be >=0 and < than the maximal number of
  channels fixed with MSG_set_channel_number().
- * \return #MSG_FATAL if \a task is not properly initialized and
- * #MSG_OK otherwise. Returns #MSG_HOST_FAILURE if the host on which
- * this function was called was shut down. Returns
+ * \return #MSG_HOST_FAILURE if the host on which
+ * this function was called was shut down,
  * #MSG_TRANSFER_FAILURE if the transfer could not be properly done
- * (network failure, dest failure)
+ * (network failure, dest failure) or #MSG_OK if it succeeded.
  */
 MSG_error_t MSG_task_put(m_task_t task, m_host_t dest, m_channel_t channel)
 {
@@ -834,11 +829,10 @@ MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel,
  * \param timeout the maximum time to wait for a task before giving
  up. In such a case, #MSG_TRANSFER_FAILURE will be returned, \a task
  will not be modified
- * \return #MSG_FATAL if \a task is not properly initialized and
-#MSG_OK otherwise. Returns #MSG_HOST_FAILURE if the host on which
-this function was called was shut down. Returns
+ * \return #MSG_HOST_FAILURE if the host on which
+this function was called was shut down,
 #MSG_TRANSFER_FAILURE if the transfer could not be properly done
-(network failure, dest failure, timeout...)
+(network failure, dest failure, timeout...) or #MSG_OK if the communication succeeded.
  */
 MSG_error_t
 MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
