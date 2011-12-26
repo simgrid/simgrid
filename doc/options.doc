@@ -64,7 +64,8 @@ SimGrid comes with several network and CPU models built in, and you
 can change the used model at runtime by changing the passed
 configuration. The three main configuration items are given below.
 For each of these items, passing the special \c help value gives
-you a short description of all possible values. 
+you a short description of all possible values. Also, \c --help-models
+should provide information about all models for all existing resources. 
    - \b network/model: specify the used network model
    - \b cpu/model: specify the used CPU model
    - \b workstation/model: specify the used workstation model
@@ -338,6 +339,47 @@ which value is either:
    machine for no good reason. You probably prefer the other less
    eager schemas.
 
+\section options_smpi Configuring SMPI
+
+The SMPI interface provides several specific configuration items.
+These are uneasy to see since the code is usually launched through the
+\c smiprun script directly.
+
+\subsection options_smpi_bench Automatic benchmarking of SMPI code
+
+In SMPI, the sequential code is automatically benchmarked, and these
+computations are automatically reported to the simulator. That is to
+say that if you have a large computation between a \c MPI_Recv() and a
+\c MPI_Send(), SMPI will automatically benchmark the duration of this
+code, and create an execution task within the simulator to take this
+into account. For that, the actual duration is measured on the host
+machine and then scaled to the power of the corresponding simulated
+machine. The variable \b smpi/running_power allows to specify the
+computational power of the host machine (in flop/s) to use when
+scaling the execution times. It defaults to 20000, but you really want
+to update it to get accurate simulation results.
+
+When the code is constituted of numerous consecutive MPI calls, the
+previous mechanism feeds the simulation kernel with numerous tiny
+computations. The \b smpi/cpu_threshold item becomes handy when this
+impacts badly the simulation performance. It specify a threshold (in
+second) under which the execution chunks are not reported to the
+simulation kernel (default value: 1e-6). Please note that in some
+circonstances, this optimization can hinder the simulation accuracy. 
+
+\subsection options_smpi_timing Reporting simulation time
+
+Most of the time, you run MPI code through SMPI to compute the time it
+would take to run it on a platform that you don't have. But since the
+code is run through the \c smpirun script, you don't have any control
+on the launcher code, making difficult to report the simulated time
+when the simulation ends. If you set the \b smpi/display_timing item
+to 1, \c smpirun will display this information when the simulation ends. \verbatim
+Simulation time: 1e3 seconds.
+\endverbatim
+    
+
+
 \section options_generic Configuring other aspects of SimGrid
 
 \subsection options_generic_path XML file inclusion path
@@ -386,6 +428,10 @@ when \b verbose-exit is set to 0 (it is to 1 by default).
 - \c network/weight_S: \ref options_model_network_coefs
 
 - \c ns3/TcpModel: \ref options_pls
+
+- \c smpi/running_power: \ref options_smpi_bench
+- \c smpi/display_timing: \ref options_smpi_timing
+- \c smpi/cpu_threshold: \ref options_smpi_bench
 
 - \c path: \ref options_generic_path
 - \c verbose-exit: \ref options_generic_exit

@@ -57,6 +57,7 @@ static void smpi_execute_flops(double flops)
 
 static void smpi_execute(double duration)
 {
+  /* FIXME: a global variable would be less expensive to consult than a call to xbt_cfg_get_double() right on the critical path */
   if (duration >= xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold")) {
     XBT_DEBUG("Sleep for %f to handle real computation time", duration);
     smpi_execute_flops(duration *
