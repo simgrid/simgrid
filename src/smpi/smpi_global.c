@@ -180,8 +180,7 @@ void smpi_global_init(void)
   MPI_Group group;
   char name[MAILBOX_NAME_MAXLEN];
 
-  SIMIX_comm_set_copy_data_callback
-      (&SIMIX_comm_copy_buffer_callback);
+  SIMIX_comm_set_copy_data_callback(&smpi_comm_copy_data_callback);
   process_count = SIMIX_process_count();
   process_data = xbt_new(smpi_process_data_t, process_count);
   for (i = 0; i < process_count; i++) {

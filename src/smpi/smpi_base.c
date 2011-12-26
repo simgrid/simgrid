@@ -87,6 +87,7 @@ MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
 void smpi_mpi_start(MPI_Request request)
 {
   smx_rdv_t mailbox;
+  int detached = 0;
 
   xbt_assert(!request->action,
               "Cannot (re)start a non-finished communication");
@@ -101,12 +102,19 @@ void smpi_mpi_start(MPI_Request request)
 			  smpi_group_index(smpi_comm_group(request->comm), request->dst));
     // FIXME: SIMIX does not yet support non-contiguous datatypes
 
+    if (request->size < 64*1024 ) { // eager mode => detached send (FIXME: this limit should be configurable)
+    	void *oldbuf = request->buf;
+    	detached = 1;
+    	request->buf = malloc(request->size);
+    	memcpy(request->buf,oldbuf,request->size);
+    }
+
     request->action = 
 		SIMIX_req_comm_isend(mailbox, request->size, -1.0,
 				    request->buf, request->size, &match_send, request,  
 				    // detach if msg size < eager/rdv switch limit
-				    request->size < 64*1024 ? 1:0);
-    // if detached  request->action == NULL
+				    detached);
+
 #ifdef HAVE_TRACING
     SIMIX_req_set_category (request->action, TRACE_internal_smpi_get_category());
 #endif

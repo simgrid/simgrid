@@ -823,6 +823,13 @@ void SIMIX_comm_copy_buffer_callback(smx_action_t comm, size_t buff_size)
   memcpy(comm->comm.dst_buff, comm->comm.src_buff, buff_size);
 }
 
+void smpi_comm_copy_data_callback(smx_action_t comm, size_t buff_size)
+{
+  memcpy(comm->comm.dst_buff, comm->comm.src_buff, buff_size);
+  if (comm->comm.detached) // if this is a detached send, the source buffer was duplicated by SMPI sender to make the original buffer available to the application ASAP
+	  free(comm->comm.src_buff);
+}
+
 /**
  *  \brief Copy the communication data from the sender's buffer to the receiver's one
  *  \param comm The communication
