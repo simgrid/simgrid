@@ -34,8 +34,7 @@ xbt_replay_trace_reader_t xbt_replay_trace_reader_new(const char *filename)
 
 const char *xbt_replay_trace_reader_position(xbt_replay_trace_reader_t reader)
 {
-  if (reader->position)
-    free(reader->position);
+  free(reader->position);
   reader->position = bprintf("%s:%d",reader->filename,reader->linenum);
   return reader->position;
 }
@@ -57,7 +56,7 @@ const char **xbt_replay_trace_reader_get(xbt_replay_trace_reader_t reader)
     return xbt_replay_trace_reader_get(reader); /* Get next line */
 
   d=xbt_str_split_quoted_in_place(reader->line);
-  if (xbt_dynar_length(d)==0) {
+  if (xbt_dynar_is_empty(d)) {
     xbt_dynar_free(&d);
     return xbt_replay_trace_reader_get(reader); /* Get next line */
   }
@@ -67,8 +66,7 @@ const char **xbt_replay_trace_reader_get(xbt_replay_trace_reader_t reader)
 void xbt_replay_trace_reader_free(xbt_replay_trace_reader_t *reader)
 {
   free((*reader)->filename);
-  if ((*reader)->position)
-    free((*reader)->position);
+  free((*reader)->position);
   fclose((*reader)->fp);
   free((*reader)->line);
   free(*reader);

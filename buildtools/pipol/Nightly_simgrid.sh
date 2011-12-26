@@ -2,151 +2,121 @@
 
 #PRE-PIPOL /home/mescal/navarro/pre-simgrid.sh
 
+#___________________________________________________________________________________________________
+#Ubuntu 9.10________________________________________________________________________________________
 #PIPOL esn i386-linux-ubuntu-karmic.dd.gz none 02:00 --user --silent
 #PIPOL esn amd64-linux-ubuntu-karmic.dd.gz none 02:00 --user --silent
+
+#Ubuntu 10.04
 #PIPOL esn i386-linux-ubuntu-lucid.dd.gz none 02:00 --user --silent
-#PIPOL esn amd64-linux-ubuntu-lucid.dd.gz none 02:00 --user --silent
+#PIPOL esn amd64-linux-ubuntu-lucid.dd.gz pipol8 05:00 --user --silent
+
+#Ubuntu 10.10
 #PIPOL esn amd64_2010-linux-ubuntu-maverick.dd.gz none 02:00 --user --silent
 
+#___________________________________________________________________________________________________
+#Fedora 12__________________________________________________________________________________________
 #PIPOL esn i386-linux-fedora-core12.dd.gz none 02:00 --user --silent
 #PIPOL esn amd64-linux-fedora-core12.dd.gz none 02:00 --user --silent
+
+#Fedora 13
 #PIPOL esn i386-linux-fedora-core13.dd.gz none 02:00 --user --silent
 #PIPOL esn amd64-linux-fedora-core13.dd.gz none 02:00 --user --silent
 
-#PIPOL esn i386_kvm-linux-debian-lenny none 02:00 --user --silent
-#PIPOL esn amd64_kvm-linux-debian-lenny none 02:00 --user --silent
-#PIPOL esn i386_kvm-linux-debian-testing none 02:00 --user --silent
-#PIPOL esn amd64_kvm-linux-debian-testing none 02:00 --user --silent
+#Fedora 14
+#PIPOL esn amd64_2010-linux-fedora-core14.dd.gz none 02:00 --user --silent
+#PIPOL esn i386_2010-linux-fedora-core14.dd.gz none 02:00 --user --silent
 
-#PIPOL  esn x86_64_mac-mac-osx-server-snow-leopard.dd.gz none 02:00 --user --silent
-#PIPOL  esn x86_mac-mac-osx-server-snow-leopard.dd.gz none 02:00 --user --silent
+#__________________________________________________________________________________________________
+#Debian Lenny 5.0___________________________________________________________________________________
+#PIPOL esn i386-linux-debian-lenny.dd.gz none 02:00 --user --silent
+#PIPOL esn amd64-linux-debian-lenny.dd.gz none 02:00 --user --silent
 
-#PIPOL esn amd64-windows-server-2008-64bits.dd.gz none 02:00 --root
+#Debian Lenny 6.0
+#PIPOL esn amd64_2010-linux-debian-squeeze.dd.gz none 02:00 --user --silent
+#PIPOL esn i386_2010-linux-debian-squeeze-navarro-2011-10-03-171100.dd.gz none 02:00 --user --silent
+
+#Debian Testing
+#PIPOL esn i386-linux-debian-testing none 02:00 --user --silent
+#PIPOL esn amd64-linux-debian-testing none 02:00 --user --silent
+
+#___________________________________________________________________________________________________
+#MacOS Snow Leopard 10.6____________________________________________________________________________
+#PIPOL esn x86_mac-mac-osx-server-snow-leopard-navarro-2011-09-22-113726.dd.gz none 02:00 --user --silent
+
+#___________________________________________________________________________________________________
+#windows-server-2008-64bits_________________________________________________________________________
+#PIPOL esn amd64-windows-server-2008-64bits.dd.gz none 02:00 --root --user --silent
 
 if [ -e ./pipol ] ; then
-	rm -rf ./pipol/$PIPOL_HOST
-	mkdir ./pipol/$PIPOL_HOST
+        rm -rf ./pipol/$PIPOL_HOST
+        mkdir ./pipol/$PIPOL_HOST
 else
-	mkdir ./pipol
-	rm -rf ./pipol/$PIPOL_HOST
-	mkdir ./pipol/$PIPOL_HOST
+        mkdir ./pipol
+        rm -rf ./pipol/$PIPOL_HOST
+        mkdir ./pipol/$PIPOL_HOST
 fi
 cd ./pipol/$PIPOL_HOST
 
 git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid --quiet
 cd simgrid
 
-if [ x$PIPOL_IMAGE == "xamd64-windows-server-2008-64bits.dd.gz" ] ; then
+perl ./buildtools/pipol/cmake.pl
+perl ./buildtools/pipol/ruby.pl
 
-	export PATH=/cygdrive/c/:/cygdrive/c/GnuWin32/bin/:/cygdrive/c/Windows/system32:/cygdrive/c/Windows
-	export PATH=$PATH:/cygdrive/c/CMake\ 2.8/bin/:/cygdrive/c/strawberry/c/bin:/cygdrive/c/strawberry/perl/site/bin:/cygdrive/c/strawberry/perl/bin
-
-	cmake \
-	-G"Unix Makefiles" \
-	-Denable_lua=off \
-	-Denable_tracing=off \
-	-Denable_smpi=off \
-	-Denable_supernovae=off \
-	-Denable_compile_optimizations=off \
-	-Denable_compile_warnings=off \
-	-Denable_lib_static=off \
-	-Denable_model-checking=off \
-	-Denable_latency_bound_tracking=off \
-	-Drelease=on \
-	-Denable_gtnets=off .
-	ctest -D NightlyStart
-	ctest -D NightlyConfigure
-	ctest -D NightlyBuild
-	ctest -D NightlySubmit
+if [ -e /usr/bin/gcc-4.6 ] ; then
+export CC=gcc-4.6
+export CXX=g++-4.6
 else
-	sh ./buildtools/pipol/install_gtnets.sh ./gtnets_install
-	SIMGRID_DIR=`pwd`
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_DIR/gtnets_install/lib
-	perl ./buildtools/pipol/cmake.pl
-	perl ./buildtools/pipol/ruby.pl
-	
-	if [ x$PIPOL_IMAGE == "xamd64_2010-linux-ubuntu-maverick.dd.gz" ] ; then
-		#mem-check
-		cmake \
-		-Denable_lua=off \
-		-Denable_tracing=off \
-		-Denable_smpi=off \
-		-Denable_supernovae=off \
-		-Denable_compile_optimizations=off \
-		-Denable_compile_warnings=on \
-		-Denable_lib_static=off \
-		-Denable_model-checking=off \
-		-Denable_latency_bound_tracking=off \
-		-Denable_gtnets=off \
-		-Denable_jedule=off \
-		-Drelease=on \
-		-Denable_memcheck=on ./
-		ctest -D NightlyStart
-		ctest -D NightlyConfigure
-		ctest -D NightlyBuild
-		ctest -D NightlyMemCheck
-		ctest -D NightlySubmit
-	else
-		#supernovae
-		cmake \
-		-Denable_lua=on \
-		-Denable_tracing=on \
-		-Denable_smpi=on \
-		-Denable_supernovae=on \
-		-Denable_compile_optimizations=on \
-		-Denable_compile_warnings=on \
-		-Denable_lib_static=off \
-		-Denable_model-checking=off \
-		-Denable_latency_bound_tracking=off \
-		-Drelease=on \
-		-Denable_gtnets=off .
-		ctest -D NightlyStart
-		ctest -D NightlyConfigure
-		ctest -D NightlyBuild
-		ctest -D NightlyTest
-		ctest -D NightlySubmit
-		make clean
-		
-		#MC
-		cmake \
-		-Denable_latency_bound_tracking=on \
-		-Denable_gtnets=on \
-		-Dgtnets_path=./gtnets_install \
-		-Denable_coverage=on \
-		-Denable_model-checking=on \
-		-Denable_compile_optimizations=off \
-		-Denable_auto_install=on \
-		-DCMAKE_INSTALL_PREFIX=./simgrid_install \
-		-Drelease=on \
-		-Denable_supernovae=off .
-		ctest -D NightlyStart
-		ctest -D NightlyConfigure
-		ctest -D NightlyBuild
-		ctest -D NightlyTest
-		ctest -D NightlyCoverage
-		ctest -D NightlySubmit
-	fi
-	
-	export SIMGRID_ROOT=`pwd`
-	export LD_LIBRARY_PATH=`pwd`/lib
-	
-	cd ../
-	svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java simgrid-java --quiet
-	cd simgrid-java
-	cmake .
-	ctest -D NightlyStart
-	ctest -D NightlyConfigure
-	ctest -D NightlyBuild
-	ctest -D NightlyTest
-	ctest -D NightlySubmit
-	
-	cd ../
-	svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-ruby simgrid-ruby --quiet
-	cd simgrid-ruby
-	cmake .
-	ctest -D NightlyStart
-	ctest -D NightlyConfigure
-	ctest -D NightlyBuild
-	ctest -D NightlyTest
-	ctest -D NightlySubmit
+export CC=gcc
+export CXX=g++
 fi
+
+#DEFAULT CONF
+cmake -Drelease=on .
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyTest
+ctest -D NightlySubmit
+make clean
+
+#MC
+cmake \
+-Denable_coverage=on \
+-Denable_model-checking=on \
+-Denable_compile_optimizations=off \
+-Drelease=on .
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyTest
+ctest -D NightlyCoverage
+ctest -D NightlySubmit
+
+export SIMGRID_ROOT=`pwd`
+export LD_LIBRARY_PATH=`pwd`/lib
+export DYLD_LIBRARY_PATH=`pwd`/lib              
+cd ../
+git clone git://scm.gforge.inria.fr/simgrid/simgrid-java.git simgrid-java --quiet
+cd simgrid-java
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:`pwd`/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/lib
+
+cmake .
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyTest
+ctest -D NightlySubmit
+
+cd ../
+git clone git://scm.gforge.inria.fr/simgrid/simgrid-ruby.git simgrid-ruby --quiet
+cd simgrid-ruby
+
+cmake .
+ctest -D NightlyStart
+ctest -D NightlyConfigure
+ctest -D NightlyBuild
+ctest -D NightlyTest
+ctest -D NightlySubmit

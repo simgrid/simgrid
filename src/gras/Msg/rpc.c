@@ -104,11 +104,6 @@ void *gras_msg_ctx_mallocator_new_f(void)
   return xbt_new0(s_gras_msg_cb_ctx_t, 1);
 }
 
-void gras_msg_ctx_mallocator_free_f(void *ctx)
-{
-  xbt_free(ctx);
-}
-
 void gras_msg_ctx_mallocator_reset_f(void *ctx)
 {
   memset(ctx, 0, sizeof(s_gras_msg_cb_ctx_t));

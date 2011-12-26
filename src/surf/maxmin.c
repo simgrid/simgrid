@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,16 +19,15 @@ double sg_maxmin_precision = 0.00001;
 
 static void *lmm_variable_mallocator_new_f(void);
 static void lmm_variable_mallocator_free_f(void *var);
-static void lmm_variable_mallocator_reset_f(void *var);
+#define lmm_variable_mallocator_reset_f ((void_f_pvoid_t)NULL)
 static void lmm_update_modified_set(lmm_system_t sys,
                                     lmm_constraint_t cnst);
 static void lmm_remove_all_modified_set(lmm_system_t sys);
-int sg_maxmin_selective_update = 1;
 static int Global_debug_id = 1;
 static int Global_const_debug_id = 1;
 extern xbt_swag_t keep_track;
 
-lmm_system_t lmm_system_new(void)
+lmm_system_t lmm_system_new(int selective_update)
 {
   lmm_system_t l = NULL;
   s_lmm_variable_t var;
@@ -37,7 +36,7 @@ lmm_system_t lmm_system_new(void)
   l = xbt_new0(s_lmm_system_t, 1);
 
   l->modified = 0;
-  l->selective_update_active = sg_maxmin_selective_update;
+  l->selective_update_active = selective_update;
 
   XBT_DEBUG("Setting selective_update_active flag to %d\n",
          l->selective_update_active);
@@ -117,7 +116,7 @@ static XBT_INLINE void lmm_cnst_free(lmm_system_t sys,
 {
 /*   xbt_assert(xbt_swag_size(&(cnst->element_set)), */
 /* 	      "This list should be empty!"); */
-  remove_active_constraint(sys, cnst);
+  make_constraint_inactive(sys, cnst);
   free(cnst);
 }
 
@@ -171,11 +170,6 @@ static void lmm_variable_mallocator_free_f(void *var)
 {
   xbt_free(((lmm_variable_t) var)->cnsts);
   xbt_free(var);
-}
-
-static void lmm_variable_mallocator_reset_f(void *var)
-{
-  /* lmm_variable_new() initializes everything */
 }
 
 lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
@@ -423,8 +417,7 @@ void lmm_print(lmm_system_t sys)
   trace_buf =
       xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
   strcat(trace_buf, print_buf);
-  fprintf(stderr, "%s", trace_buf);
-  //XBT_DEBUG("%20s", trace_buf); FIXME
+  XBT_DEBUG("%20s", trace_buf);
   trace_buf[0] = '\000';
 
   XBT_DEBUG("Constraints");
@@ -466,8 +459,7 @@ void lmm_print(lmm_system_t sys)
                       strlen(trace_buf) + strlen(print_buf) + 1);
       strcat(trace_buf, print_buf);
     }
-    //   XBT_DEBUG("%s", trace_buf);
-    fprintf(stderr, "%s\n", trace_buf);
+    XBT_DEBUG("%s", trace_buf);
     trace_buf[0] = '\000';
     xbt_assert(!double_positive(sum - cnst->bound),
                 "Incorrect value (%f is not smaller than %f): %g",
@@ -631,9 +623,6 @@ void lmm_solve(lmm_system_t sys)
     }
 
     /* Find out which variables reach the maximum */
-    cnst_list =
-        sys->selective_update_active ? &(sys->modified_constraint_set) :
-        &(sys->active_constraint_set);
     min_usage = -1;
     min_bound = -1;
     xbt_swag_foreach(cnst, cnst_list) {
@@ -818,12 +807,5 @@ static void lmm_update_modified_set(lmm_system_t sys,
  */
 static void lmm_remove_all_modified_set(lmm_system_t sys)
 {
-  lmm_element_t elem = NULL;
-  lmm_element_t elem_next = NULL;
-  xbt_swag_t elem_list = NULL;
-
-  elem_list = &(sys->modified_constraint_set);
-  xbt_swag_foreach_safe(elem, elem_next, elem_list) {
-    xbt_swag_remove(elem, elem_list);
-  }
+  xbt_swag_reset(&sys->modified_constraint_set);
 }

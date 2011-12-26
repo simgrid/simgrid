@@ -13,6 +13,17 @@
 *.trace
 
 ################################################
+### Maintainer mode
+src/simdag/dax_dtd.l
+src/surf/simgrid_dtd.l
+src/xbt/graphxml.l
+
+################################################
+### Jedule
+examples/simdag/scheduling/simgrid.jed
+teshsuite/simdag/platforms/simgrid.jed
+
+################################################
 ### Libraries links 
 src/bindings/ruby/simgrid.so
 examples/ruby/simgrid.so
@@ -73,6 +84,18 @@ buildtools/Cmake/test_prog/prog_va_copy.c
 ### Documentation
 doc/all_bib.html
 doc/logcategories.sh
+doc/realtoc.sh
+doc/tmp.realtoc
+doc/using_bib.html
+doc/Doxyfile
+doc/footer.html
+*.doc.toc
+doc/latex/
+doc/html
+doc/index-API.doc
+doc/index.php
+doc/simgrid.tag
+doc/simgrid_modules.map
 doc/publis_core.bib
 doc/publis_core_bib.html
 doc/publis_count.html
@@ -80,11 +103,6 @@ doc/publis_extern.bib
 doc/publis_extern_bib.html
 doc/publis_intra.bib
 doc/publis_intra_bib.html
-doc/realtoc.sh
-doc/tmp.realtoc
-doc/using_bib.html
-doc/Doxyfile
-doc/footer.html
 
 ################################################
 ### Specific of project 
@@ -121,6 +139,7 @@ examples/msg/tracing/volume
 examples/msg/mc/bugged3
 examples/msg/mc/random_test
 examples/msg/chord/chord
+examples/msg/chord/chord*.xml
 examples/msg/token_ring/token_ring
 examples/simdag/ex_sd_seq_access
 examples/simdag/sd_seq_access
@@ -198,6 +217,7 @@ examples/simdag/properties/sd_prop
 examples/simdag/sd_test
 examples/simdag/sd_test2
 examples/simdag/dax/dax_test
+examples/simdag/goal/goal_test
 examples/simdag/scheduling/minmin_test
 examples/smpi/reduce
 examples/smpi/bcast
@@ -281,3 +301,28 @@ test_sg
 examples/smpi/smpi_traced.trace
 examples/simdag/dot/simulate_dot
 teshsuite/simdag/platforms/graphicator
+
+#########################################""
+## tutorial files
+doc/gtut-files/01-bones_client
+doc/gtut-files/01-bones_server
+doc/gtut-files/02-simple_client
+doc/gtut-files/02-simple_server
+doc/gtut-files/03-args_client
+doc/gtut-files/03-args_server
+doc/gtut-files/04-callback_client
+doc/gtut-files/04-callback_server
+doc/gtut-files/05-globals_client
+doc/gtut-files/05-globals_server
+doc/gtut-files/06-logs_client
+doc/gtut-files/06-logs_server
+doc/gtut-files/07-timers_client
+doc/gtut-files/07-timers_server
+doc/gtut-files/08-exceptions_client
+doc/gtut-files/08-exceptions_server
+doc/gtut-files/09-simpledata_client
+doc/gtut-files/09-simpledata_server
+doc/gtut-files/10-rpc_client
+doc/gtut-files/10-rpc_server
+doc/gtut-files/11-explicitwait_client
+doc/gtut-files/11-explicitwait_server

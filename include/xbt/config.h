@@ -88,8 +88,8 @@ SG_BEGIN_DECL()
  *
  * @{
  */
-  /** @brief Configuration set are only special dynars. But don't rely on it, it may change. */
-typedef xbt_dynar_t xbt_cfg_t;
+/** @brief Configuration set's data type is opaque. */
+typedef void* xbt_cfg_t;
 
 XBT_PUBLIC(void) xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...);
 XBT_PUBLIC(void) xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name,

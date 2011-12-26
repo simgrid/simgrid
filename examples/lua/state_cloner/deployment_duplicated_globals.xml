@@ -1,0 +1,13 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <process host="Tremblay" function="set_global_string">
+    <argument value="Calling set_global_string() from Tremblay"/>
+  </process>
+  <process host="Bourassa" function="replace">
+    <argument value="Calling replace() from Bourassa"/>
+  </process>
+  <process host="Jupiter" function="please_dont_replace_me">
+    <argument value="Calling please_dont_replace_me() from Jupiter"/>
+  </process>
+</platform>

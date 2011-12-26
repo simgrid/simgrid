@@ -1,0 +1,20 @@
+#! ./tesh
+
+p Testing crosstraffic TCP option DISABLED
+
+$ gtnets/gtnets ${srcdir:=.}/gtnets/crosstraffic-p.xml ${srcdir:=.}/gtnets/crosstraffic-d.xml --cfg=network/crosstraffic:0
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '0'
+> [S1:slave:(8) 108.799652] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 3063.735285 ;  message from S1 to C1  with remaining : 666666.666667
+> [S1:slave:(8) 108.799652] [msg_test/INFO] ===> Estimated Bw of FLOW[2] : 3063.735285 ;  message from S1 to C1  with remaining : 666666.666667
+> [S1:slave:(8) 108.799652] [msg_test/INFO] ===> Estimated Bw of FLOW[3] : 3063.735285 ;  message from S1 to C1  with remaining : 666666.666667
+> [S1:slave:(8) 108.799652] [msg_test/INFO] ===> Estimated Bw of FLOW[4] : 9191.205854 ;  message from C1 to S1  with remaining : 0.000000
+
+
+p Testing crosstraffic TCP option ENABLED
+
+$ gtnets/gtnets ${srcdir:=.}/gtnets/crosstraffic-p.xml ${srcdir:=.}/gtnets/crosstraffic-d.xml --cfg=network/crosstraffic:1
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '1'
+> [C1:slave:(4) 331.625739] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 3015.447482 ;  message from S1 to C1  with remaining : 0.000000
+> [C1:slave:(4) 331.625739] [msg_test/INFO] ===> Estimated Bw of FLOW[2] : 3015.447482 ;  message from S1 to C1  with remaining : 0.000000
+> [C1:slave:(4) 331.625739] [msg_test/INFO] ===> Estimated Bw of FLOW[3] : 3015.447482 ;  message from S1 to C1  with remaining : 0.000000
+> [C1:slave:(4) 331.625739] [msg_test/INFO] ===> Estimated Bw of FLOW[4] : 3015.447482 ;  message from C1 to S1  with remaining : 0.000000

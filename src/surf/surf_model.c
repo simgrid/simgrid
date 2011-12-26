@@ -16,6 +16,7 @@ static void void_die_impossible_paction(surf_action_t action)
 static int int_die_impossible_paction(surf_action_t action)
 {
   DIE_IMPOSSIBLE;
+  return -1;
 }
 
 /** @brief initialize common datastructures to all models */

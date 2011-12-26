@@ -250,7 +250,7 @@
 
 			<AS id="AS_griffon" routing="RuleBased" >
 				<cluster id="AS_sgriffon1" prefix="griffon-" suffix=".nancy.grid5000.fr"
-					radical="1-29;58-60" power="20.678E9" bw="1.25E8" lat="1.0E-4"
+					radical="1-29,58-60" power="20.678E9" bw="1.25E8" lat="1.0E-4"
 					bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
 				<cluster id="AS_sgriffon2" prefix="griffon-" suffix=".nancy.grid5000.fr"
 					radical="30-57" power="20.678E9" bw="1.25E8" lat="1.0E-4"

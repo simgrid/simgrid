@@ -1,6 +1,6 @@
 #! /bin/bash
 
-CC="gcc"
+CC=@CMAKE_C_COMPILER@
 CFLAGS="-O2 -Dmain=smpi_simulated_main"
 
 #FIXME: probably only want the last two pairs after 'make install'

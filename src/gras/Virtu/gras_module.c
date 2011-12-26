@@ -187,7 +187,7 @@ static void moddata_freep(void *p)
   int id = xbt_dynar_search(pd->moddata, p);
   gras_module_t mod = (gras_module_t) xbt_set_get_by_id(_gras_modules, id);
 
-  (*mod->leave_f) (gras_moddata_by_id(id));
+  mod->leave_f(gras_moddata_by_id(id));
 }
 
 void gras_module_join(const char *name)
@@ -204,7 +204,7 @@ void gras_module_join(const char *name)
     XBT_VERB("Init module %s", name);
     mod->name = xbt_strdup(name);
 
-    (*mod->init_f) ();
+    mod->init_f();
   } else {
     XBT_DEBUG("Module %s already inited. Refcount=%d ID=%d",
            mod->name, mod->refcount, *(mod->p_id));
@@ -221,7 +221,7 @@ void gras_module_join(const char *name)
 
   xbt_dynar_set(pd->moddata, *(mod->p_id), &moddata);
 
-  (*mod->join_f) (moddata);
+  mod->join_f(moddata);
 
   XBT_DEBUG("Module %s joined successfully (ID=%d)", name, *(mod->p_id));
 }
@@ -236,14 +236,14 @@ void gras_module_leave(const char *name)
 
   /* LEAVE */
   moddata = gras_moddata_by_id(*(mod->p_id));
-  (*mod->leave_f) (moddata);
+  mod->leave_f(moddata);
 
   /* EXIT */
   mod->refcount--;
   if (!mod->refcount) {
     XBT_VERB("Exit module %s", name);
 
-    (*mod->exit_f) ();
+    mod->exit_f();
 
     /* Don't remove the module for real, sets don't allow to
 

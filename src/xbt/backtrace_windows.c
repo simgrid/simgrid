@@ -123,10 +123,10 @@ void xbt_backtrace_preinit(void)
     return;
   }
 
-  (*fun_set_options) ((*fun_get_options) () |
+  fun_set_options(fun_get_options() |
                       SYMOPT_LOAD_LINES | SYMOPT_DEFERRED_LOADS);
 
-  if (!(*fun_initialize) (process_handle, 0, 1)) {
+  if (!fun_initialize(process_handle, 0, 1)) {
     FreeLibrary(hlp_dbg_instance);
     hlp_dbg_instance = NULL;
   }
@@ -137,7 +137,7 @@ void xbt_backtrace_postexit(void)
   if (!hlp_dbg_instance)
     return;
 
-  if ((*fun_cleanup) (process_handle))
+  if (fun_cleanup(process_handle))
     FreeLibrary(hlp_dbg_instance);
 
   hlp_dbg_instance = NULL;
@@ -318,9 +318,9 @@ char **backtrace_symbols(void *const *buffer, int size)
 
     if (NULL != stack_frame) {
 
-      if ((*fun_get_sym_from_addr)
+      if (fun_get_sym_from_addr
           (process_handle, stack_frame->AddrPC.Offset, &offset, pSym)) {
-        if ((*fun_get_line_from_addr)
+        if (fun_get_line_from_addr
             (process_handle, stack_frame->AddrPC.Offset, &offset,
              &line_info)) {
           strings[pos] =

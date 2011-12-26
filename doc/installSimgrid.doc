@@ -1,0 +1,451 @@
+/*! \page installSimgrid Install Simgrid
+
+\htmlinclude .installSimgrid.doc.toc
+
+\section installSimgrid_cmake Installing the SimGrid library
+
+\subsection installSimgrid_intro Some generalitty
+
+\subsubsection installSimgrid_intro1 What is Cmake?
+
+CMake is a family of tools designed to build, test and package software. CMake is used to control the software compilation process using simple platform and compiler independent configuration files. CMake generates native makefiles and workspaces that can be used in the compiler environment of your choice. For more information see official web site <a href="http://www.cmake.org/">here</a>.
+
+\subsubsection installSimgrid_intro2 Why cmake?
+
+CMake permits to developers to compil projects on different plateforms. Then many tools are embedded like ctest for making test, a link to cdash for vizualise results but also test coverage and bug reports. 
+
+\subsubsection installSimgrid_intro3 What cmake need?
+
+CMake needs some prerequists like :
+
+For Unix and MacOS:
+  \li make
+  \li perl and libpcre
+  \li c and c++ compiler
+  \li ccmake for graphical used of CMake
+  \li cmake <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
+
+For Windows :
+  \li cmake 2.8 <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
+  \li perl strawberry <a href="http://www.strawberryperl.com/download/5.12.2.0/strawberry-perl-5.12.2.0.msi">(download page)</a>
+  \li git <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">(download page)</a>
+  
+\subsubsection installSimgrid_cmakeoption1 Liste of options
+
+\verbatim
+"cmake -D[name]=[value] ... ./"
+
+[name] 	enable_gtnets		[value] ON/OFF or TRUE/FALSE or 1/0
+	enable_lua			ON/OFF or TRUE/FALSE or 1/0
+	enable_compile_optimizations	ON/OFF or TRUE/FALSE or 1/0
+	enable_compile_warnings		ON/OFF or TRUE/FALSE or 1/0
+	enable_smpi			ON/OFF or TRUE/FALSE or 1/0
+	enable_maintainer_mode		ON/OFF or TRUE/FALSE or 1/0
+	enable_tracing 			ON/OFF or TRUE/FALSE or 1/0
+	enable_coverage 		ON/OFF or TRUE/FALSE or 1/0
+	enable_memcheck 		ON/OFF or TRUE/FALSE or 1/0
+	enable_model-checking		ON/OFF or TRUE/FALSE or 1/0
+	enable_debug			ON/OFF or TRUE/FALSE or 1/0
+	enable_jedule 	 		ON/OFF or TRUE/FALSE or 1/0
+	enable_latency_bound_tracking 	ON/OFF or TRUE/FALSE or 1/0
+	enable_lib_static		ON/OFF or TRUE/FALSE or 1/0
+	custom_flags 			<flags>
+	gtnets_path			<path_to_gtnets_directory>
+	CMAKE_INSTALL_PREFIX		<path_to_install_directory>
+	CMAKE_C_COMPILER		<path_to_compiler>
+	CMAKE_CXX_COMPILER		<path_to_compiler>
+	pipol_user			<pipol_username>
+\endverbatim
+                                                                                                                                                          
+\subsubsection installSimgrid_cmakeoption2 Options explaination
+
+  \li enable_gtnets : set to true implie that user wants to use gtnets.
+
+  \li enable_lua : set to true implie that user wants to add lua langage into simgrid compilation.
+
+  \li enable_compile_optimizations : add flags "-O3 -finline-functions -funroll-loops -fno-strict-aliasing"
+
+  \li enable_compile_warnings : add flags "-Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror"
+
+  \li enable_smpi : Set to true if you want to use smpi lib. Actually on simgrid v3.4.1 Mac doesn't support lib smpi.
+
+  \li enable_maintainer_mode : set to true it remakes some files. 
+
+  \li enable_tracing : To enable the generation of simulation traces for visualization.
+
+  \li enable_coverage : When set to true this option enable code coverage by setting -fprofile-arcs -ftest-coverage flags.
+
+  \li enable_memcheck : When set to true this option enable tests for memcheck.
+
+  \li enable_model-checking : Enable the model checking when set to true.
+
+  \li enable_debug : If enable_debug is set to 'off' Simgrid compil flag has '-DNDEBUG' option.
+  
+  \li enable_jedule : To enable jedule mode, which creates visualizations of task schedules with Simdag. 
+  
+  \li enable_latency_bound_tracking : Set to on if you want to be warned when communications are limited by round trip time.
+  
+  \li enable_lib_static : Enable generated Simgrid and smpi static libraries.	
+  
+  \li custom_flags : If user wants to use a specific flag during compilation, give here.
+
+  \li gtnets_path : Path to gtnets install directory (ex /usr)
+
+  \li CMAKE_INSTALL_PREFIX : Path where are installed lib/ doc/ and include/ directories (ex /usr/local)
+  
+  \li CMAKE_C_COMPILER : Change the c compiler.
+  
+  \li CMAKE_CXX_COMPILER : Change the c++ compiler. 
+  
+  \li pipol_user : specify your pipol username if you want to use the pipol-remote command.
+
+\subsubsection installSimgrid_cmakeoption3 Initialisation
+
+Those options are initialized the first time you launch "cmake ." whithout specified option.
+
+\verbatim
+enable_gtnets			on
+enable_lua			on
+enable_smpi			on
+enable_tracing			on
+enable_compile_optimizations	on
+enable_debug			on
+enable_compile_warnings		off
+enable_maintainer_mode		off
+enable_coverage 		off
+enable_memcheck 		off
+enable_model-checking		off
+enable_jedule 	 		off
+enable_latency_bound_tracking 	off 
+enable_lib_static		off
+CMAKE_INSTALL_PREFIX		/usr/local
+custom_flags			null
+gtnets_path			null
+pipol_user			null
+\endverbatim
+
+\subsubsection installSimgrid_cmakeoption4 Option's cache and how to reset?
+
+When options have been set they are keep into a cache file named "CMakeCache.txt". So if you want 
+reset values you just delete this file located to the project directory.
+
+\subsection installSimgrid_cmakecompilation Cmake compilation
+
+\subsubsection installSimgrid_cmakecompilation1 With command line.
+
+On Unix or Mac platform:
+
+\verbatim
+cmake -D[name]=[value] ... ./
+make
+\endverbatim
+
+On Windows platform:
+
+\verbatim
+cmake -G"Unix Makefiles" -D[name]=[value] ... ./
+gmake
+\endverbatim
+
+\subsubsection installSimgrid_cmakecompilation2 With ccmake tool.
+
+\verbatim
+"ccmake ./"
+\endverbatim
+Then follow instructions.
+
+\subsubsection installSimgrid_cmakecompilation2bis Build out of source.
+
+As cmake generate many files used for compilation, we recommand to make a build directory.
+For examples you can make :
+
+\verbatim
+"navarrop@caraja:~/Developments$ cd simgrid/"
+"navarrop@caraja:~/Developments/simgrid$ mkdir build_directory"
+"navarrop@caraja:~/Developments/simgrid$ cd build_directory/"
+"navarrop@caraja:~/Developments/simgrid/build_directory$ cmake ../"
+"navarrop@caraja:~/Developments/simgrid/build_directory$ make"
+\endverbatim
+
+Or complety out of sources :
+
+\verbatim
+"navarrop@caraja:~/Developments$ mkdir build_dir"
+"navarrop@caraja:~/Developments$ cd build_dir/"
+"navarrop@caraja:~/Developments/build_dir$ cmake ../simgrid/"
+"navarrop@caraja:~/Developments/build_dir$ make"
+\endverbatim
+
+Those two kind of compilation permit to delete files created by compilation easier.
+
+\subsubsection installSimgrid_cmakecompilation3 Resume of command line
+
+ \li CMake
+\verbatim
+cmake <path>			configure the project for Unix and Mac
+cmake -G"Unix Makefiles" <path>	configure the project for Windows
+make				build all targets for Unix and Mac
+gmake				buill all targets for windows
+(g)make VERBOSE=1		build all targets and print build command lines
+make check			test all targets and summarize
+make dist			make the distrib
+make distcheck			check the dist (make + make dist + make check) 
+(g)make install 		install the project (doc/ bin/ lib/ include/)
+(g)make uninstall		uninstall the project (doc/ bin/ lib/ include/)
+(g)make clean			clean all targets
+make simgrid_documentation	Create simgrid documentation
+\endverbatim
+
+When the project have been succesfully compiling and build you can make tests.
+
+ \li CTest
+\verbatim
+ctest			launch only tests
+ctest -D Continuous
+ctest -D Continuous(Start|Update|Configure|Build)
+ctest -D Continuous(Test|Coverage|MemCheck|Submit)
+ctest -D Experimental
+ctest -D Experimental(Start|Update|Configure|Build)
+ctest -D Experimental(Test|Coverage|MemCheck|Submit)
+ctest -D Nightly				
+ctest -D Nightly(Start|Update|Configure|Build)
+ctest -D Nightly(Test|Coverage|MemCheck|Submit)
+ctest -D NightlyMemoryCheck
+\endverbatim
+
+If you want to test before make a commit you can simply make "ctest -D Experimental" and then you can visualize results submitted into Cdash. <a href="http://cdash.inria.fr/CDash/index.php?project=Simgrid">(Go to Cdash site)</a>.
+
+\subsection installSimgrid_cmakeinstall How to install with cmake?
+
+\subsubsection installSimgrid_cmakeinstall1 From Git. 
+
+\verbatim
+git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid
+cd simgrid
+cmake -Denable_maintainer_mode=on -DCMAKE_INSTALL_PREFIX=/home/navarrop/Bureau/install_simgrid ./
+make 
+make install
+\endverbatim
+
+\subsubsection installSimgrid_cmakeinstall2 From a distrib
+
+\verbatim
+wget https://gforge.inria.fr/frs/download.php/28674/simgrid-3.6.1.tar.gz
+tar xf simgrid-3.6.1.tar.gz
+cd simgrid-3.6.1
+cmake -DCMAKE_INSTALL_PREFIX=/home/navarrop/Bureau/install_simgrid ./
+make
+make install
+\endverbatim
+
+
+\subsection installSimgrid_cmakehowto How to modified sources files for developers
+
+\subsubsection installSimgrid_cmakehowto1 Add an executable or examples.
+
+If you want make an executable you have to create a CMakeList.txt to the src directory. 
+You must specified where to create the executable, source list, dependencies and the name of the binary.
+
+\verbatim
+cmake_minimum_required(VERSION 2.6)
+
+set(EXECUTABLE_OUTPUT_PATH "./")			
+set(LIBRARY_OUTPUT_PATH "${CMAKE_HOME_DIRECTORY}/lib")
+
+add_executable(get_sender get_sender.c)					#add_executable(<name_of_target> <src list>)
+
+### Add definitions for compile
+target_link_libraries(get_sender simgrid m pthread) 	#target_link_libraries(<name_of_targe> <dependencies>)
+\endverbatim
+
+Then you have to modified <project/directory>/buildtools/Cmake/MakeExeLib.cmake and add 
+this line :
+\verbatim
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
+\endverbatim
+
+\subsubsection installSimgrid_cmakehowto2 Delete/add sources to lib.
+
+If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/DefinePackages.cmake
+
+\verbatim
+set(JMSG_JAVA_SRC
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/MsgException.java
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/JniException.java
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/NativeException.java
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/HostNotFoundException.java
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/ProcessNotFoundException.java
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Msg.java
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Process.java
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Host.java
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Task.java
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/MsgNative.java
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/ApplicationHandler.java
+	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Sem.java
+)
+\endverbatim
+
+\section installSimgrid_Win Installing the SimGrid library with Windows pakage
+
+\subsection installSimgrid_Win_install Installing SimGrid
+
+Before start the installation, you need to be sure to have the following dependencies:
+  \li cmake 2.8 <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
+  \li perl strawberry <a href="http://www.strawberryperl.com/download/5.12.2.0/strawberry-perl-5.12.2.0.msi">(download page)</a>
+  \li git <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">(download page)</a>
+  
+Then download the package <a href="https://gforge.inria.fr/frs/?group_id=12">SimGrid Installer</a>,
+execute it and follow instructions.
+
+\htmlonly
+<a href="win_install_01.png" border=0><img src="win_install_01.png" border=0></a>
+\endhtmlonly
+
+Step 1: Accept the license. 
+
+\htmlonly
+<a href="win_install_02.png" border=0><img src="win_install_02.png" border=0></a>
+\endhtmlonly
+
+Step 2: Select packets to install.
+
+\htmlonly
+<a href="win_install_03.png" border=0><img src="win_install_03.png" border=0></a>
+\endhtmlonly
+
+Step 3: Choice where to install packets previously selected. Please don't use spaces in path.
+ 
+\htmlonly
+<a href="win_install_04.png" border=0><img src="win_install_04.png" border=0></a>
+\endhtmlonly
+
+Step 4: Restart your computer to take in consideration environment variables.
+
+\subsection installSimgrid_Win_compile1 Compile a project "HelloWorld"
+
+In the SimGrid install directroy you should have an HelloWorld project to explain you how to start 
+compiling a source file. There are:
+\verbatim
+- HelloWorld.c		The example source file.
+- CMakeLists.txt	It allows to configure the project.
+- FindPCRE.cmake	This finds and links to the pcre library (Normally included into Simgrid directory "GnuWin32").
+- README 		This explaination.
+\endverbatim
+
+Now let's compil this example:
+\li Run "Git bash" (installed with git) or windows shell "cmd".
+\li Open HelloWorld Directory ('cd' command line).
+\li Create a build directory and change directory. (optional)
+\li Type 'cmake -G"Unix Makefiles" \<path_to_HelloWorld_project\>'
+\li Run gmake
+\li You should obtain a runnable example ("HelloWorld.exe").
+
+For compiling your own code you can simply copy the HelloWorld project and rename source name. It will
+create a target with the same name of the source. 
+
+\subsection installSimgrid_Win_compile2 How to add and compile a new example
+
+\li Put your source file into the helloWord directory.
+\li Edit CMakeLists.txt by removing the Find Targets section and add those two lines into this section
+\verbatim 
+################
+# FIND TARGETS #
+################
+add_executable(TARGET_NAME SOURCES) 		#It creates a target called 'TARGET_NAME.exe' with the sources 'SOURCES'
+target_link_libraries(TARGET_NAME simgrid pcre) #Links TARGET_NAME with simgrid and pcre
+\endverbatim	
+\li To initialize and build your project, you'll need to run
+\verbatim
+cmake -G"Unix Makefiles" \<path_to_HelloWorld_project\>
+\endverbatim
+\li Run "gmake"
+\li You should obtain "TARGET_NAME.exe".
+
+\section installSimgrid_setting_MSG Setting up your own MSG code
+
+Do not build your simulator by modifying the SimGrid examples.  Go
+outside the SimGrid source tree and create your own working directory
+(say <tt>/home/joe/SimGrid/MyFirstScheduler/</tt>).
+
+Suppose your simulation has the following structure (remember it is
+just an example to illustrate a possible way to compile everything;
+feel free to organize it as you want).
+
+      \li <tt>sched.h</tt>: a description of the core of the
+          scheduler (i.e. which functions are can be used by the
+          agents). For example we could find the following functions
+          (master, forwarder, slave).
+
+      \li <tt>sched.c</tt>: a C file including <tt>sched.h</tt> and
+          implementing the core of the scheduler. Most of these
+          functions use the MSG functions defined in section \ref
+          msg_gos_functions.
+
+      \li <tt>masterslave.c</tt>: a C file with the main function, i.e.
+          the MSG initialization (MSG_global_init()), the platform
+          creation (e.g. with MSG_create_environment()), the
+          deployment phase (e.g. with MSG_function_register() and
+          MSG_launch_application()) and the call to
+          MSG_main()).
+
+To compile such a program, we suggest to use the following
+Makefile. It is a generic Makefile that we have used many times with
+our students when we teach the C language.
+
+\verbatim
+all: masterslave 
+masterslave: masterslave.o sched.o
+
+INSTALL_PATH = $$HOME
+CC = gcc
+PEDANTIC_PARANOID_FREAK =       -O0 -Wshadow -Wcast-align \
+				-Waggregate-return -Wmissing-prototypes -Wmissing-declarations \
+				-Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
+				-Wmissing-noreturn -Wredundant-decls -Wnested-externs \
+				-Wpointer-arith -Wwrite-strings -finline-functions
+REASONABLY_CAREFUL_DUDE =	-Wall
+NO_PRAYER_FOR_THE_WICKED =	-w -O2 
+WARNINGS = 			$(REASONABLY_CAREFUL_DUDE)
+CFLAGS = -g $(WARNINGS)
+
+INCLUDES = -I$(INSTALL_PATH)/include
+DEFS = -L$(INSTALL_PATH)/lib/
+LDADD = -lm -lsimgrid 
+LIBS = 
+
+%: %.o
+	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS) $(LDADD) -o $@ 
+
+%.o: %.c
+	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) -c -o $@ $<
+
+clean:
+	rm -f $(BIN_FILES) *.o *~
+.SUFFIXES:
+.PHONY : clean
+
+\endverbatim
+
+The first two lines indicates what should be build when typing make
+(<tt>masterslave</tt>) and of which files it is to be made of
+(<tt>masterslave.o</tt> and <tt>sched.o</tt>). This makefile assumes
+that you have set up correctly your <tt>LD_LIBRARY_PATH</tt> variable
+(look, there is a <tt>LDADD = -lm -lsimgrid</tt>). If you prefer using
+the static version, remove the <tt>-lsimgrid</tt> and add a
+<tt>$(INSTALL_PATH)/lib/libsimgrid.a</tt> on the next line, right
+after the <tt>LIBS = </tt>.
+
+More generally, if you have never written a Makefile by yourself, type
+in a terminal : <tt>info make</tt> and read the introduction. The
+previous example should be enough for a first try but you may want to
+perform some more complex compilations...
+
+\section installSimgrid_setting_GRAS Setting up your own GRAS code
+
+If you use the GRAS interface instead of the MSG one, then previous section
+is not the better source of information. Instead, you should check the GRAS
+tutorial in general, and the \ref GRAS_tut_tour_setup in particular.
+
+
+
+*/

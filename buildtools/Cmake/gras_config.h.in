@@ -46,9 +46,6 @@
 /* Set to true if have the mergesort function */
 #cmakedefine HAVE_MERGESORT @HAVE_MERGESORT@
 
-/* Set to true if lib pcre is present */
-#cmakedefine HAVE_PCRE_LIB @HAVE_PCRE_LIB@
-
 /* If have linux_futex.h */
 #cmakedefine HAVE_FUTEX_H @HAVE_FUTEX_H@
 
@@ -148,6 +145,9 @@
 
 /* Indicates that we have GTNETS support */
 #cmakedefine HAVE_GTNETS @HAVE_GTNETS@
+
+/* Indicates that we have SMPI support */
+#cmakedefine HAVE_SMPI @HAVE_SMPI@
 
 /* Indicates that we have NS3 support */
 #cmakedefine HAVE_NS3 @HAVE_NS3@

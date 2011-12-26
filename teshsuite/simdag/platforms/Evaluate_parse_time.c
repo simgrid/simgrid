@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2008, 2009, 2010, 2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,41 +10,33 @@
 #include <stdlib.h>
 #include "simdag/simdag.h"
 #include "surf/surf_private.h"
-#include <time.h>
+#include "xbt/xbt_os_time.h"
 
-#define BILLION  1000000000L;
 extern routing_global_t global_routing;
 
 int main(int argc, char **argv)
 {
-	struct timespec start, stop;
-	double accum;
+  xbt_os_timer_t timer = xbt_os_timer_new();
 
-	/* initialisation of SD */
+	/* initialization of SD */
 	SD_init(&argc, argv);
 
-	if( clock_gettime( CLOCK_REALTIME, &start) == -1 ) {
-	perror( "clock gettime" );
-	return EXIT_FAILURE;
-	}
-
-	/* creation of the environment */
+	/* creation of the environment, timed */
+	xbt_os_timer_start(timer);
 	SD_create_environment(argv[1]);
+  xbt_os_timer_stop(timer);
 
-	if( clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
-	perror( "clock gettime" );
-	return EXIT_FAILURE;
+  /* Display the result and exit after cleanup */
+	printf( "%lf\n", xbt_os_timer_elapsed(timer) );
+	  printf("Workstation number: %d, link number: %d\n",
+	         SD_workstation_get_number(), SD_link_get_number());
+	if(argv[2]){
+		printf("Wait for %ss\n",argv[2]);
+		sleep(atoi(argv[2]));
 	}
-
-	accum = ( stop.tv_sec - start.tv_sec )
-		   + (double)( stop.tv_nsec - start.tv_nsec )
-			 / (double)BILLION;
-
-	printf( "%lf\n", accum );
-
-	sleep(20);
 
 	SD_exit();
 
+	free(timer);
 	return 0;
 }

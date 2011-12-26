@@ -149,7 +149,7 @@ static void *wrapper_start_routine(void *s)
     THROWF(system_error, errcode,
            "pthread_setspecific failed for xbt_self_thread_key");
 
-  void *res = (*(t->start_routine)) (t->param);
+  void *res = t->start_routine(t->param);
   if (t->detached)
     xbt_os_thread_free_thread_data(t);
   return res;
@@ -729,8 +729,7 @@ void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
 
   CloseHandle(thread->handle);
 
-  if (thread->name)
-    free(thread->name);
+  free(thread->name);
 
   free(thread);
 }

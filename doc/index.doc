@@ -2,11 +2,21 @@
 
 <center>
 \htmlonly
-<a href="http://simgrid.gforge.inria.fr" border="0"><img align=center src="simgrid_logo.png" alt="SimGrid"></a><br>
+<table width="100%"> 
+	<tr> 
+		<td valign="middle" align="left">			
+				<img src="simgrid_logo_2011.png" alt="SimGrid - Scalable simulation of distributed systems, ranging from grids to peer-to-peer systems" />		
+		</td> 
+		<td valign="middle" align="left"> 
+\endhtmlonly
+\htmlinclude .index.doc.toc			
+\htmlonly
+		</td> 
+	</tr> 
+</table> 
 \endhtmlonly
 </center>
 
-\htmlinclude .index.doc.toc
 SimGrid is a toolkit that provides core functionalities for the simulation
 of distributed applications in heterogeneous distributed environments.
 \htmlonly <!-- ______BODY_BEGIN______ --!> \endhtmlonly
@@ -17,10 +27,10 @@ Grids.
 \htmlonly <!-- ______BODY_END______ --!> \endhtmlonly
 
   - The official webpage is <a href="http://simgrid.gforge.inria.fr/">simgrid.gforge.inria.fr</a>. 
-  - The Frequently Asked Questions are <a href="faq.html">here</a>. 
+  - The Frequently Asked Questions are <a href="http://simgrid.gforge.inria.fr/faq.html">here</a>. 
   - The development webpage is <a href="https://gforge.inria.fr/projects/simgrid//">gforge.inria.fr/projects/simgrid</a>. 
   - The user mailing list is <simgrid-user@lists.gforge.inria.fr>
-  - The SimGrid software package can be downloaded from <a href="https://gforge.inria.fr/frs/?group_id=12">here</a>.
+  - The SimGrid software package can be downloaded from <a href="http://simgrid.gforge.inria.fr/download.php">here</a>.
 <br>
 
 <hr>
@@ -113,10 +123,10 @@ See the \ref XBT_API section for more details.
 \htmlonly <!-- ______BODY_BEGIN______ --!> \endhtmlonly
 <br>
 The SimGrid software package can be downloaded from 
-<a href="https://gforge.inria.fr/frs/?group_id=12">here</a>.<br>
+<a href="http://simgrid.gforge.inria.fr/download.php">here</a>.<br>
 
 If you are interested in the history of SimGrid and in current and planned development,
-you can find out more <a href="history.html">here</a>.
+you can find out more <a href="http://simgrid.gforge.inria.fr/history.html">here</a>.
 
 Any question, remark or suggestion are welcome on the 
 <a href="http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user">SimGrid users
@@ -128,8 +138,6 @@ mailing list</a>.
 \htmlonly
 <center>
 <a href="http://creativecommons.org/licenses/LGPL/2.1/"><img alt="CC-GNU LGPL" border="0" src="http://creativecommons.org/images/public/cc-LGPL-a.png" /></a>
-
-<a href="http://simgrid.gforge.inria.fr/"><img src="http://gforge.org/images/pow-gforge.png" alt="Back to the gforge site" border="0" /></a>
 </center>
 \endhtmlonly
 

@@ -7,4 +7,6 @@
   <process host="host1" function="bob">
     <prop id="SomeProp" value="SomeValue"/>
   </process>
+  
+  <process host="host2" function="carole" />
 </platform>

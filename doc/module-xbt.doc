@@ -16,6 +16,7 @@
       - \ref XBT_set 
         Data are associated to both an ID (0(1) search) and a name
       - \ref XBT_fifo
+      - \ref XBT_queue
       - \ref XBT_swag
       - \ref XBT_heap
     - \ref XBT_misc

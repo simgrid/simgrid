@@ -107,7 +107,7 @@ int smpi_global_size(void) {
 
 smpi_process_data_t smpi_process_data(void)
 {
-  return SIMIX_process_self_get_data();
+  return SIMIX_process_self_get_data(SIMIX_process_self());
 }
 
 smpi_process_data_t smpi_process_remote_data(int index)
@@ -254,6 +254,7 @@ int MAIN__(void)
                    NULL);
 
   if(getenv("SMPI_PRETEND_CC") != NULL) {
+	/* Hack to ensure that smpicc can pretend to be a simple compiler. Particularly handy to pass it to the configuration tools */
     return 0;
   }
 
@@ -285,7 +286,7 @@ int MAIN__(void)
     SIMIX_run();
 
   if (xbt_cfg_get_int(_surf_cfg_set, "smpi/display_timing"))
-    XBT_INFO("simulation time %g", SIMIX_get_clock());
+    XBT_INFO("Simulation time: %g seconds.", SIMIX_get_clock());
 
   smpi_global_destroy();
 

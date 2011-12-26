@@ -6,7 +6,8 @@ if(WIN32)
     SET(CMAKE_RC_COMPILER "windres")
 endif(WIN32)
 
-project(HelloWorld C)
+project(MY_SIMGRID_PROJECT C)
+
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 
@@ -27,15 +28,19 @@ else("$ENV{SIMGRID_ROOT}" STREQUAL "")
     message(STATUS "Looking for lib Simgrid - found") 
 endif("$ENV{SIMGRID_ROOT}" STREQUAL "")
 
-###########
-# TARGETS #
-###########
+################
+# FIND TARGETS #
+################
+file(GLOB SOURCE_FILE
+RELATIVE ${CMAKE_HOME_DIRECTORY}/
+"*.c"
+)
+string(REPLACE ".c" "" TARGET_NAME ${SOURCE_FILE})
 
-#########################
-# add_executable        #
-#    args1 target name  #
-#    args2 sources      #
-#########################
-add_executable(HelloWorld HelloWorld.c)
-# Any targets need to be linked with simgrid and pcre
-target_link_libraries(HelloWorld simgrid pcre) 
+foreach(target "${TARGET_NAME}")
+    add_executable(${target} "${target}.c")
+    message(STATUS "source_file: ${target}.c")
+    message(STATUS "target name: ${target}.exe")
+    # Any targets need to be linked with simgrid and pcre
+    target_link_libraries(${target} simgrid pcre) 
+endforeach(target ${SOURCE_FILE})

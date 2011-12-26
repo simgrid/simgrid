@@ -133,8 +133,7 @@ memory_map_t get_memory_map(void)
     ret->mapsize++;
   }
 
-  if (line)
-    free(line);
+  free(line);
 
   return ret;
 }

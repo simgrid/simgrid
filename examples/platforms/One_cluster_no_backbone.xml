@@ -1,21 +1,21 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 
-<!--              _________
-				|	       |
-				|  router  |
-				|__________|
-					/ | \
-				   /  |  \
-			   l0 / l1|   \l2 
-				 /    |    \
-				/	  |     \
-			host0   host1   host2	
+<!--             _________
+                |          |
+                |  router  |
+                |__________|
+                    / | \
+                   /  |  \
+               l0 / l1|   \l2 
+                 /    |    \
+                /     |     \
+            host0   host1   host2	
 -->
 
 <platform version="3">
 <AS  id="AS0"  routing="Full">
-  <cluster id="my_cluster_1" prefix="c-" suffix=".me"
-  		radical="0-2"	power="1000000000"    bw="125000000"     lat="5E-5"/>
+  <cluster id="my_cluster_1" prefix="" suffix=""
+  		radical="0-262144"	power="1000000000"    bw="125000000"     lat="5E-5"/>
 </AS>
 </platform>

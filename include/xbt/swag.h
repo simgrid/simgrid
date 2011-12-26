@@ -88,7 +88,14 @@ typedef struct xbt_swag {
 
 XBT_PUBLIC(xbt_swag_t) xbt_swag_new(size_t offset);
 XBT_PUBLIC(void) xbt_swag_free(xbt_swag_t swag);
-XBT_INLINE XBT_PUBLIC(void) xbt_swag_init(xbt_swag_t swag, size_t offset);
+XBT_PUBLIC(void) xbt_swag_init(xbt_swag_t swag, size_t offset);
+
+/**
+ * \brief Makes a swag empty.
+ * \param swag a swag
+ * @hideinitializer
+ */
+#define xbt_swag_reset(swag) do {} while(xbt_swag_extract(swag))
 
 /**
  * \param obj the objet to insert in the swag
@@ -105,15 +112,9 @@ XBT_PUBLIC(void *) xbt_swag_remove(void *obj, xbt_swag_t swag);
 XBT_PUBLIC(void *) xbt_swag_extract(xbt_swag_t swag);
 XBT_PUBLIC(int) xbt_swag_size(xbt_swag_t swag);
 
-#define xbt_swag_getPrev(obj,offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->prev)
-#define xbt_swag_getNext(obj,offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->next)
-
-static XBT_INLINE int xbt_swag_belongs(void *obj, xbt_swag_t swag)
-{
-  return ((xbt_swag_getNext(obj, swag->offset))
-          || (xbt_swag_getPrev(obj, swag->offset))
-          || (swag->head == obj));
-}
+#define xbt_swag_getPrev(obj, offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->prev)
+#define xbt_swag_getNext(obj, offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->next)
+#define xbt_swag_belongs(obj, swag) (xbt_swag_getNext((obj), (swag)->offset) || (swag)->tail == (obj))
 
 static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
 {

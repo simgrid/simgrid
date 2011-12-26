@@ -1,0 +1,70 @@
+#! ./tesh
+
+p Test sorting and filtering of output
+
+$ true
+
+! output sort
+$ true
+
+$ printf 'profiling: foo\\n'
+
+$ printf 'profiling: foo'
+
+! output sort
+$ printf 'profiling: foo\\n'
+
+! output sort
+$ printf 'profiling: foo'
+
+$ printf 'a\\nb\\nc\\nd\\n'
+> a
+> b
+> c
+> d
+
+$ printf 'a\\nb\\nc\\nd'
+> a
+> b
+> c
+> d
+
+! output sort
+$ printf 'c\\nd\\nb\\na\\n'
+> a
+> b
+> c
+> d
+
+! output sort
+$ printf 'c\\nd\\nb\\na'
+> a
+> b
+> c
+> d
+
+$ printf 'a\\nprofiling: foo\\nprofiling: bar\\nb\\nc\\nd\\nprofiling: baz\\n'
+> a
+> b
+> c
+> d
+
+$ printf 'a\\nprofiling: foo\\nprofiling: bar\\nb\\nc\\nd\\nprofiling: baz'
+> a
+> b
+> c
+> d
+
+! output sort
+$ printf 'c\\nprofiling: foo\\nprofiling: bar\\nd\\nb\\na\\nprofiling: baz\\n'
+> a
+> b
+> c
+> d
+
+! output sort
+$ printf 'c\\nprofiling: foo\\nprofiling: bar\\nd\\nb\\na\\nprofiling: baz'
+> a
+> b
+> c
+> d

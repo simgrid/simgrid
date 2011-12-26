@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2006-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,6 +9,8 @@
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
+#include "surf/surf_resource.h"
+
 
 /* Creates a link and registers it in SD.
  */
@@ -17,9 +19,6 @@ SD_link_t __SD_link_create(void *surf_link, void *data)
 
   SD_link_t link;
   const char *name;
-
-  SD_CHECK_INIT_DONE();
-  xbt_assert(surf_link != NULL, "surf_link is NULL !");
 
   link = xbt_new(s_SD_link_t, 1);
   link->surf_link = surf_link;
@@ -51,11 +50,8 @@ const SD_link_t *SD_link_get_list(void)
   void **data;
   int i;
 
-  SD_CHECK_INIT_DONE();
-  xbt_assert(SD_link_get_number() > 0, "There is no link!");
-
   if (sd_global->link_list == NULL) {   /* this is the first time the function is called */
-    sd_global->link_list = xbt_new(SD_link_t, link_lib->count);
+    sd_global->link_list = xbt_new(SD_link_t, xbt_lib_length(link_lib));
 
     i = 0;
     xbt_lib_foreach(link_lib, cursor, key, data) {
@@ -73,8 +69,7 @@ const SD_link_t *SD_link_get_list(void)
  */
 int SD_link_get_number(void)
 {
-  SD_CHECK_INIT_DONE();
-  return link_lib->count;
+  return xbt_lib_length(link_lib);
 }
 
 /**
@@ -86,8 +81,6 @@ int SD_link_get_number(void)
  */
 void *SD_link_get_data(SD_link_t link)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(link != NULL, "Invalid parameter");
   return link->data;
 }
 
@@ -103,8 +96,6 @@ void *SD_link_get_data(SD_link_t link)
  */
 void SD_link_set_data(SD_link_t link, void *data)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(link != NULL, "Invalid parameter");
   link->data = data;
 }
 
@@ -116,8 +107,6 @@ void SD_link_set_data(SD_link_t link, void *data)
  */
 const char *SD_link_get_name(SD_link_t link)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(link != NULL, "Invalid parameter");
   return surf_resource_name(link->surf_link);
 }
 
@@ -129,8 +118,6 @@ const char *SD_link_get_name(SD_link_t link)
  */
 double SD_link_get_current_bandwidth(SD_link_t link)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(link != NULL, "Invalid parameter");
   return surf_workstation_model->extension.workstation.
       get_link_bandwidth(link->surf_link);
 }
@@ -143,8 +130,6 @@ double SD_link_get_current_bandwidth(SD_link_t link)
  */
 double SD_link_get_current_latency(SD_link_t link)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(link != NULL, "Invalid parameter");
   return surf_workstation_model->extension.workstation.
       get_link_latency(link->surf_link);
 }
@@ -159,18 +144,5 @@ double SD_link_get_current_latency(SD_link_t link)
  */
 e_SD_link_sharing_policy_t SD_link_get_sharing_policy(SD_link_t link)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(link != NULL, "Invalid parameter");
   return link->sharing_policy;
-}
-
-
-/* Destroys a link.
- */
-void __SD_link_destroy(void *link)
-{
-  SD_CHECK_INIT_DONE();
-  xbt_assert(link != NULL, "Invalid parameter");
-  /* link->surf_link is freed by surf_exit and link->data is freed by the user */
-  xbt_free(link);
 }

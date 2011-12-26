@@ -115,7 +115,7 @@ void rctx_wait_bg(void)
 {
   /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon
    * from working */
-  while (xbt_dynar_length(bg_jobs)) {
+  while (!xbt_dynar_is_empty(bg_jobs)) {
     rctx_t rctx = xbt_dynar_getlast_as(bg_jobs, rctx_t);
     wait_it(rctx);
     xbt_dynar_pop(bg_jobs, &rctx);
@@ -189,14 +189,12 @@ void rctx_empty(rctx_t rc)
   char **env_it;
   void *filepos;
 
-  if (rc->cmd)
-    free(rc->cmd);
+  free(rc->cmd);
   rc->cmd = NULL;
   /* avoid race with rctx_armageddon log messages */
   filepos = rc->filepos;
   rc->filepos = NULL;
-  if (filepos)
-    free(filepos);
+  free(filepos);
   for (i = 0, env_it = environ; *env_it; i++, env_it++);
   if (rc->env) {
     for (env_it = rctx->env + i; *env_it; env_it++)
@@ -241,10 +239,8 @@ void rctx_free(rctx_t rctx)
   if (!rctx)
     return;
 
-  if (rctx->cmd)
-    free(rctx->cmd);
-  if (rctx->filepos)
-    free(rctx->filepos);
+  free(rctx->cmd);
+  free(rctx->filepos);
   if (rctx->env) {
     int i;
     char **env_it;
@@ -302,8 +298,10 @@ void rctx_pushline(const char *filepos, char kind, char *line)
 
     rctx->cmd = xbt_strdup(line);
     rctx->filepos = xbt_strdup(filepos);
-    if(option){
-    	rctx->cmd = bprintf("%s %s",rctx->cmd,option);
+    if (option){
+      char *newcmd = bprintf("%s %s", rctx->cmd, option);
+      free(rctx->cmd);
+      rctx->cmd = newcmd;
     }
     XBT_INFO("[%s] %s%s", filepos, rctx->cmd,
           ((rctx->is_background) ? " (background command)" : ""));
@@ -363,7 +361,7 @@ void rctx_pushline(const char *filepos, char kind, char *line)
       int len = strlen("setenv ");
       char *eq = strchr(line + len, '=');
       char *key = bprintf("%.*s", (int) (eq - line - len), line + len);
-      xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
+      xbt_dict_set(env, key, xbt_strdup(eq + 1), NULL);
       free(key);
 
       rctx->env = realloc(rctx->env, ++(rctx->env_size) * sizeof(char *));
@@ -526,8 +524,7 @@ static void start_command(rctx_t rctx)
         xbt_dynar_t path = xbt_str_split(environ[i] + 5, ":");
 
         xbt_dynar_foreach(path, it, str) {
-          if (binary_name)
-            free(binary_name);
+          free(binary_name);
           binary_name = bprintf("%s/%s", str, args[0]);
           if (!stat(binary_name, &stat_buf)) {
             /* Found. */
@@ -565,7 +562,9 @@ void rctx_start(void)
   int child_out[2];
 
   XBT_DEBUG("Cmd before rewriting %s", rctx->cmd);
-  rctx->cmd = xbt_str_varsubst(rctx->cmd, env);
+  char *newcmd = xbt_str_varsubst(rctx->cmd, env);
+  free(rctx->cmd);
+  rctx->cmd = newcmd;
   XBT_VERB("Start %s %s", rctx->cmd,
         (rctx->is_background ? "(background job)" : ""));
   xbt_os_mutex_acquire(armageddon_mutex);
@@ -648,20 +647,35 @@ void rctx_start(void)
 
 /* Helper function to sort the output */
 static int cmpstringp(const void *p1, const void *p2) {
-  /* Sort only using the 19 first chars (date+pid)
-   * If the dates are the same, then, sort using pointer address (be stable wrt output of each process)
+  /* Sort only using the sort_len first chars
+   * If they are the same, then, sort using pointer address
+   * (be stable wrt output of each process)
    */
-  const char *s1 = *((const char**) p1);
-  const char *s2 = *((const char**) p2);
+  const char **s1 = *(const char***)p1;
+  const char **s2 = *(const char***)p2;
 
-  XBT_DEBUG("Compare strings '%s' and '%s'", s1, s2);
+  XBT_DEBUG("Compare strings '%s' and '%s'", *s1, *s2);
 
-  int res = strncmp(s1, s2, sort_len);
+  int res = strncmp(*s1, *s2, sort_len);
   if (res == 0)
-    return p1>p2;
+    res = s1 > s2 ? 1 : (s1 < s2 ? -1 : 0);
   return res;
 }
 
+static void stable_sort(xbt_dynar_t a)
+{
+  unsigned long len = xbt_dynar_length(a);
+  void **b = xbt_new(void*, len);
+  unsigned long i;
+  for (i = 0 ; i < len ; i++)   /* fill the array b with pointers to strings */
+    b[i] = xbt_dynar_get_ptr(a, i);
+  qsort(b, len, sizeof *b, cmpstringp); /* sort it */
+  for (i = 0 ; i < len ; i++) /* dereference the pointers to get the strings */
+    b[i] = *(char**)b[i];
+  for (i = 0 ; i < len ; i++)   /* put everything in place */
+    xbt_dynar_set_as(a, i, char*, b[i]);
+  xbt_free(b);
+}
 
 /* Waits for the child to end (or to timeout), and check its
    ending conditions. This is launched from rctx_start but either in main
@@ -706,6 +720,41 @@ void *rctx_wait(void *r)
      if (rctx->interrupted)
      return NULL;
      xbt_os_mutex_acquire(rctx->interruption); */
+
+  {
+    xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
+    xbt_dynar_t b = xbt_dynar_new(sizeof(char *), NULL);
+    unsigned cpt;
+    char *str;
+    xbt_dynar_foreach(a, cpt, str) {
+      if (strncmp(str, "TESH_ERROR ", (sizeof "TESH_ERROR ") - 1) == 0) {
+        XBT_CRITICAL("%s", str);
+        errcode = 1;
+      } else if (coverage &&
+                 strncmp(str, "profiling:", (sizeof "profiling:") - 1) == 0) {
+        XBT_DEBUG("Remove line [%u]: '%s'", cpt, str);
+      } else {
+        xbt_dynar_push_as(b, char *, str);
+      }
+    }
+
+    if (rctx->output_sort) {
+      stable_sort(b);
+      /* If empty lines moved in first position, remove them */
+      while (!xbt_dynar_is_empty(b) && *xbt_dynar_getfirst_as(b, char*) == '\0')
+        xbt_dynar_shift(b, NULL);
+    }
+
+    if (rctx->output_sort || xbt_dynar_length(b) != xbt_dynar_length(a)) {
+      char *newbuf = xbt_str_join(b, "\n");
+      strcpy(rctx->output_got->data, newbuf);
+      rctx->output_got->used = strlen(newbuf);
+      xbt_free(newbuf);
+    }
+
+    xbt_dynar_free(&b);
+    xbt_dynar_free(&a);
+  }
 
   xbt_strbuff_chomp(rctx->output_got);
   xbt_strbuff_chomp(rctx->output_wanted);
@@ -776,39 +825,10 @@ void *rctx_wait(void *r)
     }
     rctx->expected_return = 0;
 
-    if (rctx->expected_signal) {
-      free(rctx->expected_signal);
-      rctx->expected_signal = NULL;
-    }
-  }
-  while (rctx->output_got->used
-         && !strncmp(rctx->output_got->data, "TESH_ERROR ",
-                     strlen("TESH_ERROR "))) {
-    int marklen = strlen("TESH_ERROR ");
-    char *endline = strchr(rctx->output_got->data, '\n');
-
-    XBT_CRITICAL("%.*s", (int) (endline - rctx->output_got->data - marklen),
-              rctx->output_got->data + marklen);
-    memmove(rctx->output_got->data, rctx->output_got->data + marklen,
-            rctx->output_got->used - marklen);
-    rctx->output_got->used -= endline - rctx->output_got->data + 1;
-    rctx->output_got->data[rctx->output_got->used] = '\0';
-    errcode = 1;
+    free(rctx->expected_signal);
+    rctx->expected_signal = NULL;
   }
 
-  if (rctx->output_sort) {
-    xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
-    xbt_dynar_sort(a,cmpstringp);
-    char *sorted_output = xbt_str_join(a, "\n");
-    strcpy(rctx->output_got->data, sorted_output);
-    xbt_free(sorted_output);
-    xbt_dynar_free(&a);
-    /* If an empty line moved in first position, move it back to the end */
-    if (rctx->output_got->data[0]=='\n') {
-      memmove(rctx->output_got->data,rctx->output_got->data+1,rctx->output_got->used-1);
-      rctx->output_got->data[rctx->output_got->used-1] = '\n';
-    }
-  }
   if ((errcode && errcode != 1) || rctx->interrupted) {
     /* checking output, and matching */
     xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");

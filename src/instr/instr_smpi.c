@@ -82,7 +82,7 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
   xbt_dynar_t d = xbt_dict_get_or_null(keys, aux);
   if (d == NULL) {
     d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-    xbt_dict_set(keys, aux, d, xbt_free);
+    xbt_dict_set(keys, aux, d, NULL);
   }
   //generate the key
   static unsigned long long counter = 0;
@@ -101,7 +101,7 @@ static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
   xbt_dynar_t d = xbt_dict_get_or_null(keys, aux);
 
-  xbt_assert(xbt_dynar_length(d)!=0,
+  xbt_assert(!xbt_dynar_is_empty(d),
       "Trying to get a link key (for message reception) that has no corresponding send (%s).", __FUNCTION__);
   char *s = xbt_dynar_get_as (d, 0, char *);
   snprintf (key, n, "%s", s);
@@ -123,7 +123,7 @@ void TRACE_internal_smpi_set_category (const char *category)
   if (xbt_dict_get_or_null (process_category, processid))
     xbt_dict_remove (process_category, processid);
   if (category != NULL)
-    xbt_dict_set (process_category, processid, xbt_strdup(category), xbt_free);
+    xbt_dict_set (process_category, processid, xbt_strdup(category), NULL);
 }
 
 const char *TRACE_internal_smpi_get_category (void)
@@ -137,8 +137,8 @@ const char *TRACE_internal_smpi_get_category (void)
 
 void TRACE_smpi_alloc()
 {
-  keys = xbt_dict_new();
-  process_category = xbt_dict_new();
+  keys = xbt_dict_new_homogeneous(xbt_free);
+  process_category = xbt_dict_new_homogeneous(xbt_free);
 }
 
 void TRACE_smpi_start(void)

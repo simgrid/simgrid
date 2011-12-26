@@ -9,12 +9,14 @@
 #define SURF_RESOURCE_LMM_H
 #include "surf/surf.h"
 #include "surf/trace_mgr.h"
+#include "surf/surf_resource.h"
+
 
 static XBT_INLINE
     surf_resource_lmm_t surf_resource_lmm_new(size_t childsize,
                                               /* for superclass */
                                               surf_model_t model,
-                                              char *name, xbt_dict_t props,
+                                              const char *name, xbt_dict_t props,
                                               lmm_system_t system,
                                               double constraint_value,
                                               tmgr_history_t history,

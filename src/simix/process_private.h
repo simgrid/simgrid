@@ -26,7 +26,8 @@ typedef struct s_smx_process {
   int blocked:1;
   int suspended:1;
   smx_host_t new_host;          /* if not null, the host on which the process must migrate to */
-  smx_action_t waiting_action;
+  smx_action_t waiting_action;  /* the current blocking action if any */
+  xbt_fifo_t comms;       /* the current non-blocking communication actions */
   xbt_dict_t properties;
   s_smx_req_t request;
   void *data;                   /* kept for compatibility, it should be replaced with moddata */
@@ -58,7 +59,7 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args);
 void SIMIX_create_maestro_process(void);
 void SIMIX_process_cleanup(smx_process_t arg);
 void SIMIX_process_empty_trash(void);
-void SIMIX_process_yield(void);
+void SIMIX_process_yield(smx_process_t self);
 xbt_running_ctx_t *SIMIX_process_get_running_context(void);
 void SIMIX_process_exception_terminate(xbt_ex_t * e);
 void SIMIX_pre_process_change_host(smx_process_t process,

@@ -17,7 +17,8 @@ $ gcc -o segfault segfault.c
 
 ! expect return 15
 < $ ./segfault
-$ ../tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ../tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
+> Enable coverage
 > Test suite from stdin
 > [(stdin):1] ./segfault
 > Test suite `(stdin)': NOK (<(stdin):1> got signal SIGSEGV)

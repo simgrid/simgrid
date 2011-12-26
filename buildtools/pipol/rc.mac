@@ -1,19 +1,17 @@
 #!/bin/bash
 
-sudo fink -y -q -b selfupdate
-sudo fink -y -q -b selfupdate-rsync
+#sudo port install wget
+#sudo port install pcre
+#sudo port install gcc46
+#sudo port install graphviz-devel
+#sudo port install lua
+#sudo port select bf2c
 
-sudo fink -y -q -b install make
-sudo fink -y -q -b install lua51-dev lua51
-sudo fink -y -q -b install unzip
-sudo fink -y -q -b install cmake
-sudo fink -y -q -b install wget
-sudo fink -y -q -b install perl
-sudo fink -y -q -b install gd2 graphviz graphviz-dev
-sudo fink -y -q -b install pcre
-sudo fink -y -q -b install f2c
-sudo fink -y -q -b install git
-sudo fink -y -q -b install gcc45
+sudo port install ruby19
+sudo ln -sf /opt/local/lib/libruby.1.9.1.dylib /usr/lib/libruby.dylib
+sudo ln -sf /opt/local/bin/ruby1.9 /usr/bin/ruby
+
+#sudo port select gcc mp-gcc46
 
 which_gcc=`which gcc`		#gcc gcc necessary
 which_gpp=`which g++`		#gcc g++ necessary

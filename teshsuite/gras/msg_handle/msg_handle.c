@@ -1,5 +1,3 @@
-/* $Id: mmrpc.c 3399 2007-04-11 19:34:43Z cherierm $ */
-
 /* msg_handle - ensures the semantic of gras_msg_handle(i) for i<0,=0 or >0 */
 
 /* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
@@ -25,13 +23,13 @@ static int server_cb_hello_handler(gras_msg_cb_ctx_t ctx,
 
 int server(int argc, char *argv[])
 {
-  gras_socket_t me = NULL, pal = NULL;
+  volatile gras_socket_t me = NULL, pal = NULL;
   int myport;
   char *palstr;
 
   xbt_ex_t e;
-  int got_expected;
-  double now;
+  _XBT_GNUC_UNUSED int got_expected;
+  _XBT_GNUC_UNUSED double now;
 
 
   gras_init(&argc, argv);
@@ -116,7 +114,7 @@ int server(int argc, char *argv[])
 
 int client(int argc, char *argv[])
 {
-  gras_socket_t me = NULL, pal = NULL;
+  volatile gras_socket_t me = NULL, pal = NULL;
   int myport;
   char *palstr;
 

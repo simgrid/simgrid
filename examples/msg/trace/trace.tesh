@@ -3,10 +3,11 @@
 p Testing trace integration using file.trace and test1.xml, a < max(time), b < max(time)
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test1.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test1.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 10.000000] (1:test_trace@CPU1) Task size: 400.000000
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -15,10 +16,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test1.
 p Testing trace integration using file.trace and test2.xml, a < max(time), max(time) < b < 2 max(time) 
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test2.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test2.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 10.000000] (1:test_trace@CPU1) Task size: 850.000000
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -28,10 +30,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test2.
 p Testing trace integration using file.trace and test3.xml, a < max(time), b > 2 max(time) 
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test3.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test3.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 10.000000] (1:test_trace@CPU1) Task size: 1980.000000
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -40,10 +43,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test3.
 p Testing trace integration using file.trace and test4.xml, max(time) < a < 2max(time), max(time) < b < 2max(time)
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test4.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test4.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 80.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 80.000000] (1:test_trace@CPU1) Task size: 400.000000
 > [ 80.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -52,10 +56,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test4.
 p Testing trace integration using file.trace and test5.xml, max(time) < a < 2max(time), 2max(time) < b < 3max(time)
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test5.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test5.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 90.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 90.000000] (1:test_trace@CPU1) Task size: 850.000000
 > [ 90.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -64,10 +69,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test5.
 p Testing trace integration using file.trace and test6.xml, max(time) < a < 2max(time), b > 3max(time)
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test6.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test6.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 80.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 80.000000] (1:test_trace@CPU1) Task size: 1980.000000
 > [ 80.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -76,10 +82,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test6.
 p Testing trace integration using file.trace and test7.xml, two process with same priority
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test7.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test7.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 10.000000] (1:test_trace@CPU1) Task size: 400.000000
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 1.500000
@@ -92,10 +99,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test7.
 p Testing trace integration using file.trace and test8.xml, two process with different priority
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test8.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test8.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [ 10.000000] (1:test_trace@CPU1) Task size: 400.000000
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 2.500000
@@ -108,10 +116,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test8.
 p Testing trace integration using file.trace and test9.xml, three process with same priority
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test9.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test9.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [  0.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [  0.000000] (1:test_trace@CPU1) Task size: 400.000000
 > [  0.000000] (1:test_trace@CPU1) Task prio: 1.000000
@@ -128,10 +137,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test9.
 p Testing trace integration using file.trace and test10.xml, three process with different priority
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test10.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test10.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:@) Ignoring redefinition of trace trace/file.trace
 > [  0.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [  0.000000] (1:test_trace@CPU1) Task size: 420.000000
 > [  0.000000] (1:test_trace@CPU1) Task prio: 2.000000
@@ -148,10 +158,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test10
 p Testing trace integration using file.trace and test11.xml, three process with different priority. Changed timestep to 0.1.
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test11.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test11.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
 > [  0.000000] (1:test_trace@CPU1) Task size: 420.000000
 > [  0.000000] (1:test_trace@CPU1) Task prio: 2.000000

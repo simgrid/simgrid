@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 	<AS id="main" routing="Full">
-		<include file="/home/navarrop/Developments/simgrid-git/teshsuite/simdag/platforms/clusterA.xml"/>
-		<include file="/home/navarrop/Developments/simgrid-git/teshsuite/simdag/platforms/clusterB.xml"/>
+		<include file="clusterA.xml"/>
+		<include file="clusterB.xml"/>
 	</AS>
 </platform>

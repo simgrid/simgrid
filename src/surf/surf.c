@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,6 +9,7 @@
 #include "surf_private.h"
 #include "xbt/module.h"
 #include "mc/mc.h"
+#include "surf/surf_resource.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");
@@ -112,73 +113,71 @@ xbt_dynar_t surf_path = NULL;
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
-  {"Constant",
-   "Simplistic network model where all communication take a constant time (one second)",
-   NULL, surf_network_model_init_Constant},
-  {"CM02",
-   "Realistic network model with lmm_solve and no correction factors",
-   NULL, surf_network_model_init_CM02},
   {"LV08",
-   "Realistic network model with lmm_solve and these correction factors: latency*=10.4, bandwidth*=.92, S=8775",
-   NULL, surf_network_model_init_LegrandVelho},
-   {"LV08_im",
-    "Realistic network model with IMPROVED ACTION MANAGEMENT and these correction factors: latency*=10.4, bandwidth*=.92, S=8775",
-    NULL, im_surf_network_model_init_LegrandVelho},
+   "Realistic network analytic model (slow-start modeled by multiplying latency by 10.4, bandwidth by .92; bottleneck sharing uses a payload of S=8775 for evaluating RTT). ",
+   surf_network_model_init_LegrandVelho},
+  {"Constant",
+   "Simplistic network model where all communication take a constant time (one second). This model provides the lowest realism, but is (marginally) faster.",
+   surf_network_model_init_Constant},
   {"SMPI",
-   "Realistic network model with lmm_solve and correction factors on three intervals (< 1KiB, < 64 KiB, >= 64 KiB)",
-   NULL, surf_network_model_init_SMPI},
+   "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
+   surf_network_model_init_SMPI},
+  {"CM02",
+   "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of small messages are thus poorly modeled).",
+   surf_network_model_init_CM02},
 #ifdef HAVE_GTNETS
   {"GTNets",
-   "Network Pseudo-model using the GTNets simulator instead of an analytic model",
-   NULL, surf_network_model_init_GTNETS},
+   "Network pseudo-model using the GTNets simulator instead of an analytic model",
+   surf_network_model_init_GTNETS},
 #endif
 #ifdef HAVE_NS3
   {"NS3",
-   "TODO",
-   NULL, surf_network_model_init_NS3},
+   "Network pseudo-model using the NS3 tcp model instead of an analytic model",
+	surf_network_model_init_NS3},
 #endif
   {"Reno",
-   "Model using lagrange_solve instead of lmm_solve (experts only)", NULL,
+   "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
    surf_network_model_init_Reno},
   {"Reno2",
-   "Model using lagrange_solve instead of lmm_solve (experts only)", NULL,
+   "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
    surf_network_model_init_Reno2},
   {"Vegas",
-   "Model using lagrange_solve instead of lmm_solve (experts only)", NULL,
+   "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
    surf_network_model_init_Vegas},
-  {NULL, NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_cpu_model_description[] = {
-  {"Cas01_fullupdate", "CPU classical model time=size/power", NULL,
-   surf_cpu_model_init_Cas01},
   {"Cas01",
-   "Variation of Cas01_fullupdate with partial invalidation optimization of lmm system. Should produce the same values, only faster",
-   NULL, surf_cpu_model_init_Cas01_im},
-  {"CpuTI",
-   "Variation of Cas01 with also trace integration. Should produce the same values, only faster if you use availability traces",
-   NULL, surf_cpu_model_init_ti},
-  {NULL, NULL, NULL, NULL}      /* this array must be NULL terminated */
+   "Simplistic CPU model (time=size/power).",
+   surf_cpu_model_init_Cas01},
+  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_workstation_model_description[] = {
-  {"CLM03",
-   "Default workstation model, using LV08 and CM02 as network and CPU",
-   NULL, surf_workstation_model_init_CLM03, create_workstations},
+  {"default",
+   "Default workstation model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)",
+   surf_workstation_model_init_current_default},
   {"compound",
-   "Workstation model allowing you to use other network and CPU models",
-   NULL, surf_workstation_model_init_compound, create_workstations},
-  {"ptask_L07", "Workstation model with better parallel task modeling",
-   NULL, surf_workstation_model_init_ptask_L07, NULL},
-  {NULL, NULL, NULL, NULL}      /* this array must be NULL terminated */
+   "Workstation model that is automatically chosen if you change the network and CPU models",
+   surf_workstation_model_init_compound},
+  {"ptask_L07", "Workstation model somehow similar to Cas01+CM02 but allowing parallel tasks",
+   surf_workstation_model_init_ptask_L07},
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
-void update_model_description(s_surf_model_description_t * table,
-                              const char *name, surf_model_t model)
-{
-  int i = find_model_description(table, name);
-  table[i].model = model;
-}
+s_surf_model_description_t surf_optimization_mode_description[] = {
+  {"Lazy",
+   "Lazy action management (partial invalidation in lmm + heap in action remaining).",
+   NULL},
+  {"TI",
+   "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU model for now).",
+    NULL},
+  {"Full",
+   "Full update of remaining and variables. Slow but may be useful when debugging.",
+   NULL},
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
 
 /** Displays the long description of all registered models, and quit */
 void model_help(const char *category, s_surf_model_description_t * table)
@@ -204,7 +203,7 @@ int find_model_description(s_surf_model_description_t * table,
   for (i = 1; table[i].name; i++) {
     name_list =
         xbt_realloc(name_list,
-                    strlen(name_list) + strlen(table[i].name) + 2);
+                    strlen(name_list) + strlen(table[i].name) + 3);
     strcat(name_list, ", ");
     strcat(name_list, table[i].name);
   }
@@ -222,7 +221,6 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
   double value = -1;
 #define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + (offset))))
 
-  xbt_assert(solve, "Give me a real solver function!");
   solve(sys);
 
   xbt_swag_foreach(action, running_actions) {
@@ -373,6 +371,7 @@ void surf_exit(void)
   xbt_dynar_foreach(model_list, iter, model)
       model->model_private->finalize();
   xbt_dynar_free(&model_list);
+  routing_exit();
 
   if (maxmin_system) {
     lmm_system_free(maxmin_system);
@@ -384,12 +383,12 @@ void surf_exit(void)
   }
   surf_action_exit();
 
-  if (surf_path)
-    xbt_dynar_free(&surf_path);
+  xbt_dynar_free(&surf_path);
 
   xbt_lib_free(&host_lib);
   xbt_lib_free(&link_lib);
   xbt_lib_free(&as_router_lib);
+
 
   tmgr_finalize();
   surf_parse_lex_destroy();
@@ -440,23 +439,48 @@ double surf_solve(double max_date)
     min = max_date - NOW;
   }
 
-  XBT_DEBUG("Looking for next action end");
+  XBT_DEBUG("Looking for next action end for all models except NS3");
   xbt_dynar_foreach(model_list, iter, model) {
-    XBT_DEBUG("Running for Resource [%s]", model->name);
-    model_next_action_end = model->model_private->share_resources(NOW);
-    XBT_DEBUG("Resource [%s] : next action end = %f",
-           model->name, model_next_action_end);
-    if (((min < 0.0) || (model_next_action_end < min))
-        && (model_next_action_end >= 0.0))
-      min = model_next_action_end;
+    if(strcmp(model->name,"network NS3") ){
+      XBT_DEBUG("Running for Resource [%s]", model->name);
+      model_next_action_end = model->model_private->share_resources(NOW);
+      XBT_DEBUG("Resource [%s] : next action end = %f",
+          model->name, model_next_action_end);
+      if (((min < 0.0) || (model_next_action_end < min))
+          && (model_next_action_end >= 0.0))
+        min = model_next_action_end;
+    }
   }
-  XBT_DEBUG("Next action end : %f", min);
 
-  XBT_DEBUG("Looking for next event");
-  while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
+  XBT_DEBUG("Min for resources (except NS3) : %f", min);
+
+  XBT_DEBUG("Looking for next trace event");
+
+  do {
     XBT_DEBUG("Next TRACE event : %f", next_event_date);
-    if ((min != -1.0) && (next_event_date > NOW + min))
-      break;
+
+    next_event_date = tmgr_history_next_date(history);
+
+    if(surf_network_model->name && !strcmp(surf_network_model->name,"network NS3")){
+      if(next_event_date!=-1.0 && min!=-1.0) {
+        min = MIN(next_event_date - NOW, min);
+      } else{
+        min = MAX(next_event_date - NOW, min);
+      }
+
+      XBT_DEBUG("Run for NS3 at most %f", min);
+      // run until min or next flow
+      model_next_action_end = surf_network_model->model_private->share_resources(min);
+
+      XBT_DEBUG("Min for NS3 : %f", model_next_action_end);
+      if(model_next_action_end>=0.0)
+        min = model_next_action_end;
+    }
+
+    if (next_event_date == -1.0) break;
+
+    if ((min != -1.0) && (next_event_date > NOW + min)) break;
+
     XBT_DEBUG("Updating models");
     while ((event =
             tmgr_history_get_next_event_leq(history, next_event_date,
@@ -476,8 +500,7 @@ double surf_solve(double max_date)
                                                             event, value,
                                                             NOW + min);
     }
-  }
-
+  } while (1);
 
   /* FIXME: Moved this test to here to avoid stoping simulation if there are actions running on cpus and all cpus are with availability = 0. 
    * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.

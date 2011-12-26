@@ -7,6 +7,7 @@
 #include "network_gtnets_private.h"
 #include "gtnets/gtnets_interface.h"
 #include "xbt/str.h"
+#include "surf/surfxml_parse_values.h"
 
 static double time_to_next_flow_completion = -1;
 
@@ -84,38 +85,25 @@ static void route_onehop_new(int src_id, int dst_id,
 /* Parse the XML for a network link */
 static void parse_link_init(void)
 {
-  char *name;
-  double bw;
-  double lat;
   e_surf_resource_state_t state;
-  name = xbt_strdup(A_surfxml_link_id);
-  surf_parse_get_double(&bw, A_surfxml_link_bandwidth);
-  surf_parse_get_double(&lat, A_surfxml_link_latency);
   state = SURF_RESOURCE_ON;
   XBT_DEBUG("link_gtnets");
-  tmgr_trace_t bw_trace;
-  tmgr_trace_t state_trace;
-  tmgr_trace_t lat_trace;
 
-  bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
-  lat_trace = tmgr_trace_new(A_surfxml_link_latency_file);
-  state_trace = tmgr_trace_new(A_surfxml_link_state_file);
-
-  if (bw_trace)
+  if (struct_lnk->V_link_bandwidth_file)
     XBT_INFO
         ("The GTNetS network model doesn't support bandwidth state traces");
-  if (lat_trace)
+  if (struct_lnk->V_link_latency_file)
     XBT_INFO("The GTNetS network model doesn't support latency state traces");
-  if (state_trace)
+  if (struct_lnk->V_link_state_file)
     XBT_INFO("The GTNetS network model doesn't support link state traces");
 
-  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
+  if (struct_lnk->V_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX)
   {
-	  link_new(bprintf("%s_UP",name), bw, lat, current_property_set);
-	  link_new(bprintf("%s_DOWN",name), bw, lat, current_property_set);
+	  link_new(bprintf("%s_UP",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_latency, current_property_set);
+	  link_new(bprintf("%s_DOWN",struct_lnk->V_link_id), struct_lnk->V_link_bandwidth, struct_lnk->V_link_latency, current_property_set);
 
   }
-  else  link_new(name, bw, lat, current_property_set);
+  else  link_new(struct_lnk->V_link_id, struct_lnk->V_link_bandwidth, struct_lnk->V_link_latency, current_property_set);
   current_property_set = NULL;
 }
 
@@ -125,9 +113,8 @@ static void create_gtnets_topology()
   int src_id,dst_id;
 
    XBT_DEBUG("Starting topology generation");
-// À refaire plus tard. Il faut prendre la liste des hôtes/routeurs (dans routing)
-// À partir de cette liste, on les numérote.
-// Ensuite, on peut utiliser les id pour refaire les appels GTNets qui suivent.
+// FIXME: We should take the list of hosts/routers (in the routing module), number the elements of this list,
+//   and then you can use the id to reimplement properly the following GTNets calls
 
    //get the onelinks from the parsed platform
    xbt_dynar_t onelink_routes = global_routing->get_onelink_routes();
@@ -163,7 +150,7 @@ static void create_gtnets_topology()
 }
 
 /* Main XML parsing */
-static void define_callbacks(const char *file)
+static void define_callbacks(void)
 {
   /* Figuring out the network links */
   surfxml_add_callback(ETag_surfxml_link_cb_list, &parse_link_init);
@@ -182,8 +169,7 @@ static int action_unref(surf_action_t action)
   if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
 #ifdef HAVE_TRACING
-    if (action->category)
-      xbt_free(action->category);
+    xbt_free(action->category);
 #endif
     surf_action_free(&action);
     return 1;
@@ -466,12 +452,12 @@ static int get_latency_limited(surf_action_t action)
 }
 #endif
 
-void surf_network_model_init_GTNETS(const char *filename)
+void surf_network_model_init_GTNETS(void)
 {
   if (surf_network_model)
     return;
   surf_network_model_init_internal();
-  define_callbacks(filename);
+  define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING

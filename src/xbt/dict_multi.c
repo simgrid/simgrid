@@ -125,7 +125,7 @@ void *xbt_multidict_get_ext(xbt_dict_t mdict,
   int keys_len = xbt_dynar_length(keys);
 
   xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
-  xbt_assert(xbt_dynar_length(keys) >= 1,
+  xbt_assert(!xbt_dynar_is_empty(keys),
               "Can't get a zero-long key set in a multidict");
 
   XBT_DEBUG("xbt_multidict_get(%p, %ld)", mdict, xbt_dynar_length(keys));
@@ -183,8 +183,9 @@ void
 xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys,
                          xbt_dynar_t lens)
 {
-  xbt_dict_t thislevel, nextlevel = NULL;
-  int i;
+  volatile xbt_dict_t thislevel;
+  volatile xbt_dict_t nextlevel = NULL;
+  volatile int i;
   xbt_ex_t e;
 
   unsigned long int thislen;

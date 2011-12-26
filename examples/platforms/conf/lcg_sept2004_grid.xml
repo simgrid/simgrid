@@ -1,0 +1,618 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+<AS  id="AS0"  routing="Floyd">
+	<host id="0" power="1470000000000"/>
+	<host id="1" power="1820000000"/>
+	<host id="2" power="1"/>
+	<host id="4" power="593460000000"/>
+	<host id="5" power="560000000"/>
+	<host id="6" power="560000000"/>
+	<host id="7" power="560000000"/>
+	<host id="8" power="96000000"/>
+	<host id="9" power="7680000000"/>
+	<host id="10" power="910000000"/>
+	<host id="12" power="250000000"/>
+	<host id="13" power="448000000"/>
+	<host id="15" power="12500000"/>
+	<host id="16" power="12500000"/>
+	<host id="18" power="78000000"/>
+	<host id="20" power="560000000"/>
+	<host id="23" power="60000000"/>
+	<host id="24" power="154524000000"/>
+	<host id="25" power="60000000"/>
+	<host id="26" power="60000000"/>
+	<host id="27" power="60000000"/>
+	<host id="28" power="60000000"/>
+	<host id="29" power="60000000"/>
+	<host id="30" power="60000000"/>
+	<host id="31" power="1"/>
+	<host id="32" power="2100000000"/>
+	<host id="33" power="21000000000"/>
+	<host id="35" power="442000000"/>
+	<host id="36" power="6500000000"/>
+	<host id="38" power="300000000"/>
+	<host id="39" power="1200000000"/>
+	<host id="42" power="540000000"/>
+	<host id="43" power="390000000"/>
+	<host id="44" power="208000000"/>
+	<host id="45" power="600000000"/>
+	<host id="49" power="44352000000"/>
+	<host id="50" power="4564000000"/>
+	<host id="52" power="78522000000"/>
+	<host id="54" power="9200000000"/>
+	<host id="56" power="142476000000"/>
+	<host id="57" power="448000000"/>
+	<host id="59" power="3780000000"/>
+	<host id="60" power="250000000"/>
+	<host id="61" power="650000000"/>
+	<host id="64" power="9200000000"/>
+	<host id="65" power="250000000"/>
+	<host id="66" power="250000000"/>
+	<host id="67" power="592000000"/>
+	<host id="68" power="250000000"/>
+	<host id="69" power="250000000"/>
+	<host id="70" power="250000000"/>
+	<host id="71" power="4000000"/>
+	<host id="72" power="250000000"/>
+	<host id="73" power="250000000"/>
+	<host id="74" power="1"/>
+	<host id="75" power="53600000000"/>
+	<host id="77" power="14248000000"/>
+	<host id="79" power="24000000"/>
+	<host id="82" power="240000000"/>
+	<host id="83" power="2560000000"/>
+	<host id="86" power="2280000000"/>
+	<host id="89" power="20000000"/>
+	<host id="93" power="250000000"/>
+	<host id="95" power="8636000000"/>
+	<host id="97" power="250000000"/>
+	<host id="98" power="250000000"/>
+	<host id="99" power="28098000000"/>
+	<host id="100" power="250000000"/>
+
+	<router id="3"/>
+	<router id="11"/>
+	<router id="14"/>
+	<router id="17"/>
+	<router id="19"/>
+	<router id="21"/>
+	<router id="22"/>
+	<router id="34"/>
+	<router id="37"/>
+	<router id="40"/>
+	<router id="41"/>
+	<router id="46"/>
+	<router id="47"/>
+	<router id="48"/>
+	<router id="51"/>
+	<router id="53"/>
+	<router id="55"/>
+	<router id="58"/>
+	<router id="62"/>
+	<router id="63"/>
+	<router id="76"/>
+	<router id="78"/>
+	<router id="80"/>
+	<router id="81"/>
+	<router id="84"/>
+	<router id="85"/>
+	<router id="87"/>
+	<router id="88"/>
+	<router id="90"/>
+	<router id="91"/>
+	<router id="92"/>
+	<router id="94"/>
+	<router id="96"/>
+
+	<link id="link0" bandwidth="1000"/>
+	<link id="link1" bandwidth="10000"/>
+	<link id="link2" bandwidth="10000"/>
+	<link id="link3" bandwidth="155"/>
+	<link id="link4" bandwidth="10000"/>
+	<link id="link5" bandwidth="10000"/>
+	<link id="link6" bandwidth="10000"/>
+	<link id="link7" bandwidth="155"/>
+	<link id="link8" bandwidth="155"/>
+	<link id="link9" bandwidth="155"/>
+	<link id="link10" bandwidth="155"/>
+	<link id="link11" bandwidth="155"/>
+	<link id="link12" bandwidth="155"/>
+	<link id="link13" bandwidth="155"/>
+	<link id="link14" bandwidth="155"/>
+	<link id="link15" bandwidth="10000"/>
+	<link id="link16" bandwidth="10000"/>
+	<link id="link17" bandwidth="155"/>
+	<link id="link18" bandwidth="155"/>
+	<link id="link19" bandwidth="155"/>
+	<link id="link20" bandwidth="155"/>
+	<link id="link21" bandwidth="155"/>
+	<link id="link22" bandwidth="622"/>
+	<link id="link23" bandwidth="622"/>
+	<link id="link24" bandwidth="155"/>
+	<link id="link25" bandwidth="10000"/>
+	<link id="link26" bandwidth="2500"/>
+	<link id="link27" bandwidth="155"/>
+	<link id="link28" bandwidth="2500"/>
+	<link id="link29" bandwidth="1000"/>
+	<link id="link30" bandwidth="10000"/>
+	<link id="link31" bandwidth="10000"/>
+	<link id="link32" bandwidth="155"/>
+	<link id="link33" bandwidth="1000"/>
+	<link id="link34" bandwidth="155"/>
+	<link id="link35" bandwidth="155"/>
+	<link id="link36" bandwidth="155"/>
+	<link id="link37" bandwidth="155"/>
+	<link id="link38" bandwidth="155"/>
+	<link id="link39" bandwidth="155"/>
+	<link id="link40" bandwidth="1000"/>
+	<link id="link41" bandwidth="1000"/>
+	<link id="link42" bandwidth="10000"/>
+	<link id="link43" bandwidth="2500"/>
+	<link id="link44" bandwidth="10000"/>
+	<link id="link45" bandwidth="155"/>
+	<link id="link46" bandwidth="155"/>
+	<link id="link47" bandwidth="2500"/>
+	<link id="link48" bandwidth="155"/>
+	<link id="link49" bandwidth="155"/>
+	<link id="link50" bandwidth="10000"/>
+	<link id="link51" bandwidth="155"/>
+	<link id="link52" bandwidth="10000"/>
+	<link id="link53" bandwidth="155"/>
+	<link id="link54" bandwidth="155"/>
+	<link id="link55" bandwidth="155"/>
+	<link id="link56" bandwidth="155"/>
+	<link id="link57" bandwidth="2500"/>
+	<link id="link58" bandwidth="1000"/>
+	<link id="link59" bandwidth="10000"/>
+	<link id="link60" bandwidth="2500"/>
+	<link id="link61" bandwidth="2500"/>
+	<link id="link62" bandwidth="155"/>
+	<link id="link63" bandwidth="10000"/>
+	<link id="link64" bandwidth="10000"/>
+	<link id="link65" bandwidth="1000"/>
+	<link id="link66" bandwidth="155"/>
+	<link id="link67" bandwidth="10000"/>
+	<link id="link68" bandwidth="10000"/>
+	<link id="link69" bandwidth="1000"/>
+	<link id="link70" bandwidth="10000"/>
+	<link id="link71" bandwidth="1000"/>
+	<link id="link72" bandwidth="10000"/>
+	<link id="link73" bandwidth="622"/>
+	<link id="link74" bandwidth="1000"/>
+	<link id="link75" bandwidth="1000"/>
+	<link id="link76" bandwidth="1000"/>
+	<link id="link77" bandwidth="10000"/>
+	<link id="link78" bandwidth="155"/>
+	<link id="link79" bandwidth="155"/>
+	<link id="link80" bandwidth="155"/>
+	<link id="link81" bandwidth="155"/>
+	<link id="link82" bandwidth="155"/>
+	<link id="link83" bandwidth="155"/>
+	<link id="link84" bandwidth="155"/>
+	<link id="link85" bandwidth="155"/>
+	<link id="link86" bandwidth="155"/>
+	<link id="link87" bandwidth="155"/>
+	<link id="link88" bandwidth="155"/>
+	<link id="link89" bandwidth="2500"/>
+	<link id="link90" bandwidth="10000"/>
+	<link id="link91" bandwidth="3000"/>
+	<link id="link92" bandwidth="3000"/>
+	<link id="link93" bandwidth="10000"/>
+	<link id="link94" bandwidth="10000"/>
+	<link id="link95" bandwidth="622"/>
+	<link id="link96" bandwidth="622"/>
+	<link id="link97" bandwidth="1000"/>
+	<link id="link98" bandwidth="3000"/>
+	<link id="link99" bandwidth="3000"/>
+	<link id="link100" bandwidth="10000"/>
+	<link id="link101" bandwidth="2500"/>
+	<link id="link102" bandwidth="155"/>
+	<link id="link103" bandwidth="10000"/>
+	<link id="link104" bandwidth="10000"/>
+	<link id="link105" bandwidth="155"/>
+	<link id="link106" bandwidth="155"/>
+	<link id="link107" bandwidth="10000"/>
+	<link id="link108" bandwidth="10000"/>
+	<link id="link109" bandwidth="10000"/>
+	<link id="link110" bandwidth="155"/>
+	<link id="link111" bandwidth="10000"/>
+	<link id="link112" bandwidth="10000"/>
+	<link id="link113" bandwidth="3000"/>
+	<link id="link114" bandwidth="155"/>
+	<link id="link115" bandwidth="3000"/>
+	<link id="link116" bandwidth="10000"/>
+	<link id="link117" bandwidth="622"/>
+	<link id="link118" bandwidth="155"/>
+	<link id="link119" bandwidth="33"/>
+	<link id="link120" bandwidth="1000"/>
+	<link id="link121" bandwidth="622"/>
+	<link id="link122" bandwidth="155"/>
+	<link id="link123" bandwidth="155"/>
+	<link id="link124" bandwidth="155"/>
+	<link id="link125" bandwidth="155"/>
+	<link id="link126" bandwidth="622"/>
+
+	<route src="0" dst="2">
+		<link_ctn id="link0"/>
+	</route>
+	<route src="0" dst="31">
+		<link_ctn id="link1"/>
+	</route>
+	<route src="0" dst="74">
+		<link_ctn id="link2"/>
+	</route>
+	<route src="1" dst="2">
+		<link_ctn id="link3"/>
+	</route>
+	<route src="2" dst="2">
+		<link_ctn id="link4"/>
+	</route>
+	<route src="2" dst="16">
+		<link_ctn id="link5"/>
+	</route>
+	<route src="2" dst="57">
+		<link_ctn id="link6"/>
+	</route>
+	<route src="3" dst="3">
+		<link_ctn id="link7"/>
+	</route>
+	<route src="3" dst="4">
+		<link_ctn id="link8"/>
+	</route>
+	<route src="3" dst="5">
+		<link_ctn id="link9"/>
+	</route>
+	<route src="3" dst="6">
+		<link_ctn id="link10"/>
+	</route>
+	<route src="3" dst="7">
+		<link_ctn id="link11"/>
+	</route>
+	<route src="3" dst="8">
+		<link_ctn id="link12"/>
+	</route>
+	<route src="3" dst="9">
+		<link_ctn id="link13"/>
+	</route>
+	<route src="3" dst="10">
+		<link_ctn id="link14"/>
+	</route>
+	<route src="3" dst="20">
+		<link_ctn id="link15"/>
+	</route>
+	<route src="3" dst="61">
+		<link_ctn id="link16"/>
+	</route>
+	<route src="11" dst="11">
+		<link_ctn id="link17"/>
+	</route>
+	<route src="11" dst="12">
+		<link_ctn id="link18"/>
+	</route>
+	<route src="11" dst="30">
+		<link_ctn id="link19"/>
+	</route>
+	<route src="14" dst="14">
+		<link_ctn id="link20"/>
+	</route>
+	<route src="14" dst="15">
+		<link_ctn id="link21"/>
+	</route>
+	<route src="14" dst="20">
+		<link_ctn id="link22"/>
+	</route>
+	<route src="14" dst="45">
+		<link_ctn id="link23"/>
+	</route>
+	<route src="17" dst="17">
+		<link_ctn id="link24"/>
+	</route>
+	<route src="17" dst="18">
+		<link_ctn id="link25"/>
+	</route>
+	<route src="17" dst="20">
+		<link_ctn id="link26"/>
+	</route>
+	<route src="19" dst="19">
+		<link_ctn id="link27"/>
+	</route>
+	<route src="19" dst="33">
+		<link_ctn id="link28"/>
+	</route>
+	<route src="21" dst="21">
+		<link_ctn id="link29"/>
+	</route>
+	<route src="21" dst="30">
+		<link_ctn id="link30"/>
+	</route>
+	<route src="21" dst="57">
+		<link_ctn id="link31"/>
+	</route>
+	<route src="22" dst="22">
+		<link_ctn id="link32"/>
+	</route>
+	<route src="22" dst="23">
+		<link_ctn id="link33"/>
+	</route>
+	<route src="22" dst="24">
+		<link_ctn id="link34"/>
+	</route>
+	<route src="22" dst="25">
+		<link_ctn id="link35"/>
+	</route>
+	<route src="22" dst="26">
+		<link_ctn id="link36"/>
+	</route>
+	<route src="22" dst="27">
+		<link_ctn id="link37"/>
+	</route>
+	<route src="22" dst="28">
+		<link_ctn id="link38"/>
+	</route>
+	<route src="22" dst="29">
+		<link_ctn id="link39"/>
+	</route>
+	<route src="31" dst="31">
+		<link_ctn id="link40"/>
+	</route>
+	<route src="31" dst="32">
+		<link_ctn id="link41"/>
+	</route>
+	<route src="31" dst="45">
+		<link_ctn id="link42"/>
+	</route>
+	<route src="31" dst="57">
+		<link_ctn id="link43"/>
+	</route>
+	<route src="31" dst="73">
+		<link_ctn id="link44"/>
+	</route>
+	<route src="34" dst="34">
+		<link_ctn id="link45"/>
+	</route>
+	<route src="34" dst="35">
+		<link_ctn id="link46"/>
+	</route>
+	<route src="34" dst="36">
+		<link_ctn id="link47"/>
+	</route>
+	<route src="37" dst="37">
+		<link_ctn id="link48"/>
+	</route>
+	<route src="37" dst="38">
+		<link_ctn id="link49"/>
+	</route>
+	<route src="37" dst="39">
+		<link_ctn id="link50"/>
+	</route>
+	<route src="40" dst="40">
+		<link_ctn id="link51"/>
+	</route>
+	<route src="40" dst="45">
+		<link_ctn id="link52"/>
+	</route>
+	<route src="41" dst="41">
+		<link_ctn id="link53"/>
+	</route>
+	<route src="41" dst="42">
+		<link_ctn id="link54"/>
+	</route>
+	<route src="41" dst="43">
+		<link_ctn id="link55"/>
+	</route>
+	<route src="41" dst="44">
+		<link_ctn id="link56"/>
+	</route>
+	<route src="46" dst="46">
+		<link_ctn id="link57"/>
+	</route>
+	<route src="46" dst="56">
+		<link_ctn id="link58"/>
+	</route>
+	<route src="46" dst="57">
+		<link_ctn id="link59"/>
+	</route>
+	<route src="46" dst="75">
+		<link_ctn id="link60"/>
+	</route>
+	<route src="46" dst="79">
+		<link_ctn id="link61"/>
+	</route>
+	<route src="46" dst="95">
+		<link_ctn id="link62"/>
+	</route>
+	<route src="47" dst="47">
+		<link_ctn id="link63"/>
+	</route>
+	<route src="47" dst="54">
+		<link_ctn id="link64"/>
+	</route>
+	<route src="48" dst="48">
+		<link_ctn id="link65"/>
+	</route>
+	<route src="48" dst="49">
+		<link_ctn id="link66"/>
+	</route>
+	<route src="48" dst="50">
+		<link_ctn id="link67"/>
+	</route>
+	<route src="48" dst="54">
+		<link_ctn id="link68"/>
+	</route>
+	<route src="51" dst="51">
+		<link_ctn id="link69"/>
+	</route>
+	<route src="51" dst="52">
+		<link_ctn id="link70"/>
+	</route>
+	<route src="53" dst="53">
+		<link_ctn id="link71"/>
+	</route>
+	<route src="53" dst="54">
+		<link_ctn id="link72"/>
+	</route>
+	<route src="55" dst="55">
+		<link_ctn id="link73"/>
+	</route>
+	<route src="58" dst="58">
+		<link_ctn id="link74"/>
+	</route>
+	<route src="58" dst="59">
+		<link_ctn id="link75"/>
+	</route>
+	<route src="58" dst="60">
+		<link_ctn id="link76"/>
+	</route>
+	<route src="58" dst="61">
+		<link_ctn id="link77"/>
+	</route>
+	<route src="62" dst="62">
+		<link_ctn id="link78"/>
+	</route>
+	<route src="62" dst="65">
+		<link_ctn id="link79"/>
+	</route>
+	<route src="62" dst="66">
+		<link_ctn id="link80"/>
+	</route>
+	<route src="62" dst="67">
+		<link_ctn id="link81"/>
+	</route>
+	<route src="62" dst="68">
+		<link_ctn id="link82"/>
+	</route>
+	<route src="62" dst="69">
+		<link_ctn id="link83"/>
+	</route>
+	<route src="62" dst="70">
+		<link_ctn id="link84"/>
+	</route>
+	<route src="62" dst="71">
+		<link_ctn id="link85"/>
+	</route>
+	<route src="62" dst="72">
+		<link_ctn id="link86"/>
+	</route>
+	<route src="63" dst="63">
+		<link_ctn id="link87"/>
+	</route>
+	<route src="63" dst="64">
+		<link_ctn id="link88"/>
+	</route>
+	<route src="74" dst="74">
+		<link_ctn id="link89"/>
+	</route>
+	<route src="74" dst="75">
+		<link_ctn id="link90"/>
+	</route>
+	<route src="74" dst="80">
+		<link_ctn id="link91"/>
+	</route>
+	<route src="74" dst="83">
+		<link_ctn id="link92"/>
+	</route>
+	<route src="74" dst="89">
+		<link_ctn id="link93"/>
+	</route>
+	<route src="74" dst="90">
+		<link_ctn id="link94"/>
+	</route>
+	<route src="74" dst="95">
+		<link_ctn id="link95"/>
+	</route>
+	<route src="74" dst="99">
+		<link_ctn id="link96"/>
+	</route>
+	<route src="76" dst="76">
+		<link_ctn id="link97"/>
+	</route>
+	<route src="76" dst="77">
+		<link_ctn id="link98"/>
+	</route>
+	<route src="76" dst="80">
+		<link_ctn id="link99"/>
+	</route>
+	<route src="76" dst="90">
+		<link_ctn id="link100"/>
+	</route>
+	<route src="76" dst="93">
+		<link_ctn id="link101"/>
+	</route>
+	<route src="78" dst="78">
+		<link_ctn id="link102"/>
+	</route>
+	<route src="78" dst="79">
+		<link_ctn id="link103"/>
+	</route>
+	<route src="80" dst="80">
+		<link_ctn id="link104"/>
+	</route>
+	<route src="81" dst="81">
+		<link_ctn id="link105"/>
+	</route>
+	<route src="81" dst="82">
+		<link_ctn id="link106"/>
+	</route>
+	<route src="81" dst="83">
+		<link_ctn id="link107"/>
+	</route>
+	<route src="84" dst="84">
+		<link_ctn id="link108"/>
+	</route>
+	<route src="84" dst="86">
+		<link_ctn id="link109"/>
+	</route>
+	<route src="85" dst="85">
+		<link_ctn id="link110"/>
+	</route>
+	<route src="85" dst="86">
+		<link_ctn id="link111"/>
+	</route>
+	<route src="87" dst="87">
+		<link_ctn id="link112"/>
+	</route>
+	<route src="87" dst="89">
+		<link_ctn id="link113"/>
+	</route>
+	<route src="88" dst="88">
+		<link_ctn id="link114"/>
+	</route>
+	<route src="88" dst="89">
+		<link_ctn id="link115"/>
+	</route>
+	<route src="90" dst="90">
+		<link_ctn id="link116"/>
+	</route>
+	<route src="90" dst="91">
+		<link_ctn id="link117"/>
+	</route>
+	<route src="90" dst="95">
+		<link_ctn id="link118"/>
+	</route>
+	<route src="91" dst="93">
+		<link_ctn id="link119"/>
+	</route>
+	<route src="92" dst="92">
+		<link_ctn id="link120"/>
+	</route>
+	<route src="92" dst="93">
+		<link_ctn id="link121"/>
+	</route>
+	<route src="94" dst="94">
+		<link_ctn id="link122"/>
+	</route>
+	<route src="94" dst="95">
+		<link_ctn id="link123"/>
+	</route>
+	<route src="96" dst="96">
+		<link_ctn id="link124"/>
+	</route>
+	<route src="96" dst="97">
+		<link_ctn id="link125"/>
+	</route>
+	<route src="96" dst="98">
+		<link_ctn id="link126"/>
+	</route>
+</AS>
+</platform> 

@@ -614,7 +614,7 @@ static gras_datadesc_type_t parse_struct(char *definition)
   xbt_dynar_t fields_to_push;
   char *name;
 
-  gras_datadesc_type_t struct_type;
+  volatile gras_datadesc_type_t struct_type;
 
   XBT_IN("");
   identifiers = xbt_dynar_new(sizeof(s_identifier_t), NULL);
@@ -704,7 +704,6 @@ static gras_datadesc_type_t parse_typedef(char *definition)
 
   s_type_modifier_t tm;
 
-  gras_datadesc_type_t struct_desc = NULL;
   gras_datadesc_type_t typedef_desc = NULL;
 
   XBT_IN("");
@@ -714,7 +713,7 @@ static gras_datadesc_type_t parse_typedef(char *definition)
   parse_type_modifier(&tm);
 
   if (tm.is_struct) {
-    struct_desc = parse_struct(definition);
+     parse_struct(definition);
   }
 
   parse_type_modifier(&tm);
@@ -812,5 +811,5 @@ void gras_datadesc_set_const(const char *name, int value)
   int *stored = xbt_new(int, 1);
   *stored = value;
 
-  xbt_dict_set(gras_dd_constants, name, stored, xbt_free_f);
+  xbt_dict_set(gras_dd_constants, name, stored, NULL);
 }

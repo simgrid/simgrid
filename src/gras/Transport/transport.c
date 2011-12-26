@@ -52,14 +52,14 @@ static void gras_trp_plugin_new(const char *name, gras_trp_setup_t setup)
   }
 
   if (plug)
-    xbt_dict_set(_gras_trp_plugins, name, plug, gras_trp_plugin_free);
+    xbt_dict_set(_gras_trp_plugins, name, plug, NULL);
 }
 
 void gras_trp_init(void)
 {
   if (!_gras_trp_started) {
     /* make room for all plugins */
-    _gras_trp_plugins = xbt_dict_new();
+    _gras_trp_plugins = xbt_dict_new_homogeneous(gras_trp_plugin_free);
 
 #ifdef HAVE_WINSOCK2_H
     /* initialize the windows mechanism */
@@ -395,7 +395,7 @@ void gras_socket_close(gras_socket_t sock)
 void gras_trp_send(gras_socket_t sd, char *data, long int size, int stable)
 {
   xbt_assert(sd->outgoing, "Socket not suited for data send");
-  (*sd->plugin->send) (sd, data, size, stable);
+  sd->plugin->send(sd, data, size, stable);
 }
 
 /**
@@ -429,7 +429,7 @@ int gras_socket_my_port(gras_socket_t sock)
 {
   if (!sock->plugin->my_port)
     THROWF(unknown_error,0,"Function my_port unimplemented in plugin %s",sock->plugin->name);
-  return (*sock->plugin->my_port)(sock);
+  return sock->plugin->my_port(sock);
 
 }
 
@@ -437,23 +437,23 @@ int gras_socket_peer_port(gras_socket_t sock)
 {
   if (!sock->plugin->peer_port)
     THROWF(unknown_error,0,"Function peer_port unimplemented in plugin %s",sock->plugin->name);
-  return (*sock->plugin->peer_port)(sock);
+  return sock->plugin->peer_port(sock);
 }
 
 const char *gras_socket_peer_name(gras_socket_t sock)
 {
   xbt_assert(sock->plugin);
-  return (*sock->plugin->peer_name)(sock);
+  return sock->plugin->peer_name(sock);
 }
 
 const char *gras_socket_peer_proc(gras_socket_t sock)
 {
-  return (*sock->plugin->peer_proc)(sock);
+  return sock->plugin->peer_proc(sock);
 }
 
 void gras_socket_peer_proc_set(gras_socket_t sock, char *peer_proc)
 {
-  return (*sock->plugin->peer_proc_set)(sock,peer_proc);
+  return sock->plugin->peer_proc_set(sock,peer_proc);
 }
 
 /** \brief Check if the provided socket is a measurement one (or a regular one) */
@@ -505,7 +505,7 @@ void gras_socket_meas_send(gras_socket_t peer,
             "Sent %lu msgs of %lu (size of each: %ld) to %s:%d",
             sent_sofar, msg_amount, msg_size, gras_socket_peer_name(peer),
             gras_socket_peer_port(peer));
-    (*peer->plugin->raw_send) (peer, chunk, msg_size);
+    peer->plugin->raw_send(peer, chunk, msg_size);
   }
   XBT_CDEBUG(gras_trp_meas,
           "Sent %lu msgs of %lu (size of each: %ld) to %s:%d", sent_sofar,

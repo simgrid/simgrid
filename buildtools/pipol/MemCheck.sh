@@ -16,12 +16,18 @@ cd simgrid
 perl ./buildtools/pipol/cmake.pl
 perl ./buildtools/pipol/ruby.pl
 
+if [ -e /usr/bin/gcc-4.6 ] ; then
+export CC=gcc-4.6
+export CXX=g++-4.6
+else
+export CC=gcc
+export CXX=g++
+fi
+
 #mem-check
 cmake \
 -Denable_lua=off \
 -Denable_tracing=off \
--Denable_smpi=off \
--Denable_supernovae=off \
 -Denable_compile_optimizations=off \
 -Denable_compile_warnings=on \
 -Denable_lib_static=off \
@@ -29,6 +35,7 @@ cmake \
 -Denable_latency_bound_tracking=off \
 -Denable_gtnets=off \
 -Denable_jedule=off \
+-Drelease=on \
 -Denable_memcheck=on ./
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure

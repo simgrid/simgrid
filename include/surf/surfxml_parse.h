@@ -14,17 +14,7 @@
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC_DATA(char *) platform_filename;
-
 /* Hook for the different tags. All the functions which pointer to are push into here are run when the tag is encountered */
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_platform_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_platform_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_host_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_host_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_router_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_router_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_link_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_link_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_route_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_route_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_link_ctn_cb_list;
@@ -41,31 +31,23 @@ XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_trace_connect_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_trace_connect_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_random_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_random_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_AS_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_AS_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_ASroute_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_ASroute_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_bypassRoute_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_bypassRoute_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_cluster_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_cluster_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_peer_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_peer_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_config_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_config_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_include_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_include_cb_list;
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);
-XBT_PUBLIC(int)  surf_parse_no_callbacks(void);
 XBT_PUBLIC(void) surf_parse_init_callbacks(void);
 XBT_PUBLIC(void) surf_parse_reset_callbacks(void);
 XBT_PUBLIC(void) surf_parse_free_callbacks(void);
-XBT_PUBLIC(void) surf_parse_get_double(double *value, const char *string);
-XBT_PUBLIC(void) surf_parse_get_int(int *value, const char *string);
-XBT_PUBLIC(void) surf_parse_add_callback_config(void);
-XBT_PUBLIC(void) surf_parse_models_setup(void);
+XBT_PUBLIC(void) surf_parse_error(const char *msg) _XBT_GNUC_NORETURN;
+XBT_PUBLIC(double) surf_parse_get_double(const char *string);
+XBT_PUBLIC(int) surf_parse_get_int(const char *string);
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC(int) surf_parse_lex(void);
 XBT_PUBLIC(int) surf_parse_get_lineno(void);

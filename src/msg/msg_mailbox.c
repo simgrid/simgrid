@@ -6,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mailbox.h"
-#include "msg/private.h"
+#include "msg_mailbox.h"
+#include "msg_private.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg,
                                 "Logging specific to MSG (mailbox)");
 
@@ -79,15 +79,15 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   CHECK_HOST();
 #ifdef HAVE_TRACING
   TRACE_msg_task_get_start();
-  double start_time = MSG_get_clock();
+  volatile double start_time = MSG_get_clock();
 #endif
 
   /* Sanity check */
   xbt_assert(task, "Null pointer for the task storage");
 
   if (*task)
-    XBT_CRITICAL
-        ("MSG_task_get() was asked to write in a non empty task struct.");
+    XBT_WARN
+        ("Asked to write the received task in a non empty struct -- proceeding.");
 
   /* Try to receive it by calling SIMIX network layer */
   TRY {
@@ -130,21 +130,17 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   MSG_error_t ret = MSG_OK;
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
-  simdata_process_t p_simdata = SIMIX_process_self_get_data();
-#ifdef HAVE_TRACING
-  volatile smx_action_t comm = NULL;
-  int call_end = 0;
-#endif
+  simdata_process_t p_simdata = SIMIX_process_self_get_data(process);
   CHECK_HOST();
 
 #ifdef HAVE_TRACING
-  call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
+  int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
 #endif
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = MSG_host_self();
+  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
 
   xbt_assert(t_simdata->isused == 0,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
@@ -157,22 +153,16 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   /* Try to send it by calling SIMIX network layer */
   TRY {
-#ifdef HAVE_TRACING
-    if (TRACE_is_enabled()) {
-      comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
+      smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
                                   t_simdata->rate, task, sizeof(void *),
                                   NULL, NULL, 0);
-      t_simdata->comm = comm;
-      SIMIX_req_set_category(comm, task->category);
-      SIMIX_req_comm_wait(comm, timeout);
-    } else {
-#endif
-      SIMIX_req_comm_send(mailbox, t_simdata->message_size,
-                          t_simdata->rate, task, sizeof(void*),
-                          NULL, NULL, timeout);
 #ifdef HAVE_TRACING
+    if (TRACE_is_enabled()) {
+      SIMIX_req_set_category(comm, task->category);
     }
 #endif
+     t_simdata->comm = comm;
+     SIMIX_req_comm_wait(comm, timeout);
   }
 
   CATCH(e) {
@@ -194,6 +184,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
     /* If the send failed, it is not used anymore */
     t_simdata->isused = 0;
   }
+
 
   p_simdata->waiting_task = NULL;
 #ifdef HAVE_TRACING

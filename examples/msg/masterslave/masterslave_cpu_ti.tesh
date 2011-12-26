@@ -3,9 +3,8 @@
 p Testing a simple master/slave example application
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT small_platform.xml masterslave/deployment_masterslave.xml --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
-> [  0.000000] (0:@) Switching workstation model to compound since you changed the network and/or cpu model(s)
+$ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT small_platform.xml masterslave/deployment_masterslave.xml --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:master@Tremblay) Got 5 slaves and 20 tasks to process
 > [  0.000000] (1:master@Tremblay) Sending "Task_0" to "Jupiter"
 > [  0.165962] (1:master@Tremblay) Sent
@@ -128,9 +127,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT small_platform.xml ma
 p Testing a master/slave example application with a forwarder module
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT msg_platform.xml masterslave/deployment_masterslave_forwarder.xml --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
-> [  0.000000] (0:@) Switching workstation model to compound since you changed the network and/or cpu model(s)
+$ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT msg_platform.xml masterslave/deployment_masterslave_forwarder.xml --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:master@Jacquelin) Got 5 slaves and 20 tasks to process
 > [  0.000000] (1:master@Jacquelin) Sending "Task_0" to "iRMX"
 > [  4.772530] (1:master@Jacquelin) Sent
@@ -279,8 +277,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT msg_platform.xml mast
 p Testing a simple master/slave example application handling failures
 
 ! output sort
-$ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc small_platform_with_failures.xml masterslave/deployment_masterslave.xml --cfg=path:${srcdir} --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Switching workstation model to compound since you changed the network and/or cpu model(s)
+$ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc small_platform_with_failures.xml masterslave/deployment_masterslave.xml --cfg=path:${srcdir} --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Cannot launch process 'slave' on failed host 'Fafard'
 > [  0.000000] (1:master@Tremblay) Got 5 slave(s) :
 > [  0.000000] (1:master@Tremblay) Jupiter
@@ -374,10 +371,9 @@ $ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_
 p Testing the bypassing of the flexml parser
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/masterslave_bypass --log=no_loc --cfg=cpu/model:CpuTI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'CpuTI'
+$ $SG_TEST_EXENV ${bindir:=.}/masterslave_bypass --log=no_loc --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (0:@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
-> [  0.000000] (0:@) Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [  0.000000] (1:master@host A) Got 1 slave(s) :
 > [  0.000000] (1:master@host A) 	 host B
 > [  0.000000] (1:master@host A) Got 20 task to process :

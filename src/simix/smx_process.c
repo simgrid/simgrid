@@ -8,7 +8,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
-#include "msg/mailbox.h"
 #include "mc/mc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
@@ -35,7 +34,51 @@ XBT_INLINE smx_process_t SIMIX_process_self(void)
  */
 void SIMIX_process_cleanup(smx_process_t process)
 {
-  XBT_DEBUG("Cleanup process %s", process->name);
+  XBT_DEBUG("Cleanup process %s (%p), waiting action %p",
+      process->name, process, process->waiting_action);
+
+  /* cancel non-blocking communications */
+  smx_action_t action;
+  while ((action = xbt_fifo_pop(process->comms))) {
+
+    /* make sure no one will finish the comm after this process is destroyed */
+    SIMIX_comm_cancel(action);
+
+    if (action->comm.src_proc == process) {
+      XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p",
+          action, action->comm.detached, action->state, action->comm.src_proc, action->comm.dst_proc);
+      action->comm.src_proc = NULL;
+
+      if (action->comm.detached) {
+         if (action->comm.refcount == 0) {
+           /* I'm not supposed to destroy a detached comm from the sender side,
+            * unless there is no receiver matching the rdv */
+           action->comm.refcount++;
+           SIMIX_comm_destroy(action);
+         }
+      }
+      else {
+        SIMIX_comm_destroy(action);
+      }
+    }
+    else if (action->comm.dst_proc == process){
+      XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p",
+          action, action->state, action->comm.src_proc, action->comm.dst_proc);
+      action->comm.dst_proc = NULL;
+
+      if (action->comm.detached && action->comm.refcount == 1
+          && action->comm.src_proc != NULL) {
+        /* the comm will be freed right now, remove it from the sender */
+        xbt_fifo_remove(action->comm.src_proc->comms, action);
+      }
+      SIMIX_comm_destroy(action);
+    }
+    else {
+      xbt_die("Communication action %p is in my list but I'm not the sender "
+          "or the receiver", action);
+    }
+  }
+
   /*xbt_swag_remove(process, simix_global->process_to_run);*/
   xbt_swag_remove(process, simix_global->process_list);
   xbt_swag_remove(process, process->smx_host->process_list);
@@ -56,13 +99,12 @@ void SIMIX_process_empty_trash(void)
     SIMIX_context_free(process->context);
 
     /* Free the exception allocated at creation time */
-    if (process->running_ctx)
-      free(process->running_ctx);
-    if (process->properties)
-      xbt_dict_free(&process->properties);
+    free(process->running_ctx);
+    xbt_dict_free(&process->properties);
+
+    xbt_fifo_free(process->comms);
 
     free(process->name);
-    process->name = NULL;
     free(process);
   }
 }
@@ -143,6 +185,8 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->name = xbt_strdup(name);
     (*process)->smx_host = host;
     (*process)->data = data;
+    (*process)->comms = xbt_fifo_new();
+    (*process)->request.issuer = *process;
 
     XBT_VERB("Create context %s", (*process)->name);
     (*process)->context = SIMIX_context_new(code, argc, argv,
@@ -177,7 +221,8 @@ void SIMIX_process_create(smx_process_t *process,
  */
 void SIMIX_process_runall(void)
 {
-  SIMIX_context_runall(simix_global->process_to_run);
+  SIMIX_context_runall();
+
   xbt_dynar_t tmp = simix_global->process_that_ran;
   simix_global->process_that_ran = simix_global->process_to_run;
   simix_global->process_to_run = tmp;
@@ -201,6 +246,7 @@ void SIMIX_process_kill(smx_process_t process) {
   process->suspended = 0;
   /* FIXME: set doexception to 0 also? */
 
+  /* destroy the blocking action if any */
   if (process->waiting_action) {
 
     switch (process->waiting_action->type) {
@@ -278,10 +324,17 @@ void SIMIX_pre_process_suspend(smx_req_t req)
 
 void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 {
+  xbt_assert((process != NULL), "Invalid parameters");
+
+  if (process->suspended) {
+    XBT_DEBUG("Process '%s' is already suspended", process->name);
+    return;
+  }
+
   process->suspended = 1;
 
   /* If we are suspending another process, and it is waiting on an action,
-     suspend it's action. */
+     suspend its action. */
   if (process != issuer) {
 
     if (process->waiting_action) {
@@ -302,7 +355,8 @@ void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
           break;
 
         default:
-          THROW_IMPOSSIBLE;
+          xbt_die("Internal error in SIMIX_process_suspend: unexpected action type %d",
+              process->waiting_action->type);
       }
     }
   }
@@ -311,6 +365,11 @@ void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 {
   xbt_assert((process != NULL), "Invalid parameters");
+
+  if (!process->suspended) {
+    XBT_DEBUG("Process '%s' is not suspended", process->name);
+    return;
+  }
 
   process->suspended = 0;
 
@@ -336,7 +395,8 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
           break;
 
         default:
-          THROW_IMPOSSIBLE;
+          xbt_die("Internal error in SIMIX_process_resume: unexpected action type %d",
+              process->waiting_action->type);
       }
     }
     else {
@@ -354,18 +414,21 @@ int SIMIX_process_count(void)
   return xbt_swag_size(simix_global->process_list);
 }
 
-void* SIMIX_process_self_get_data(void)
+void* SIMIX_process_self_get_data(smx_process_t self)
 {
-  smx_process_t me = SIMIX_process_self();
-  if (!me) {
+  xbt_assert(self == SIMIX_process_self(), "This is not the current process");
+
+  if (!self) {
     return NULL;
   }
-  return SIMIX_process_get_data(me);
+  return SIMIX_process_get_data(self);
 }
 
-void SIMIX_process_self_set_data(void *data)
+void SIMIX_process_self_set_data(smx_process_t self, void *data)
 {
-  SIMIX_process_set_data(SIMIX_process_self(), data);
+  xbt_assert(self == SIMIX_process_self(), "This is not the current process");
+
+  SIMIX_process_set_data(self, data);
 }
 
 void* SIMIX_process_get_data(smx_process_t process)
@@ -509,20 +572,22 @@ void SIMIX_process_sleep_resume(smx_action_t action)
 }
 
 /** 
- * Calling this function makes the process to yield.
- * Only the processes can call this function, giving back the control to maestro
+ * \brief Calling this function makes the process to yield.
+ *
+ * Only the current process can call this function, giving back the control to
+ * maestro.
+ *
+ * \param self the current process
  */
-void SIMIX_process_yield(void)
+void SIMIX_process_yield(smx_process_t self)
 {
-  smx_process_t self = SIMIX_process_self();
-
   XBT_DEBUG("Yield process '%s'", self->name);
 
   /* Go into sleep and return control to maestro */
   SIMIX_context_suspend(self->context);
 
   /* Ok, maestro returned control to us */
-  XBT_DEBUG("Maestro returned control to me: '%s'", self->name);
+  XBT_DEBUG("Control returned to me: '%s'", self->name);
 
   if (self->context->iwannadie){
     XBT_DEBUG("I wanna die!");
@@ -560,4 +625,12 @@ smx_context_t SIMIX_process_get_context(smx_process_t p) {
 
 void SIMIX_process_set_context(smx_process_t p,smx_context_t c) {
   p->context = c;
+}
+
+/**
+ * \brief Returns the list of processes to run.
+ */
+XBT_INLINE xbt_dynar_t SIMIX_process_get_runnable(void)
+{
+  return simix_global->process_to_run;
 }

@@ -16,19 +16,10 @@
 #include "surf/datatypes.h"
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
+#include "simgrid/platf_interface.h"
 
 SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
-typedef enum {
-  SURF_RESOURCE_ON = 1,                   /**< Up & ready        */
-  SURF_RESOURCE_OFF = 0                   /**< Down & broken     */
-} e_surf_resource_state_t;
-
-typedef enum {
-  SURF_LINK_FULLDUPLEX = 2,
-  SURF_LINK_SHARED = 1,
-  SURF_LINK_FATPIPE = 0
-} e_surf_link_sharing_policy_t;
 
 typedef enum {
   SURF_NETWORK_ELEMENT_NULL = 0,        /* NULL */
@@ -37,8 +28,8 @@ typedef enum {
   SURF_NETWORK_ELEMENT_AS,      /* AS type */
 } e_surf_network_element_type_t;
 
-XBT_PUBLIC(e_surf_network_element_type_t) get_network_element_type(const char
-                                                              *name);
+XBT_PUBLIC(e_surf_network_element_type_t)
+  routing_get_network_element_type(const char *name);
 
 /** @Brief Specify that we use that action */
 XBT_PUBLIC(void) surf_action_ref(surf_action_t action);
@@ -57,14 +48,9 @@ XBT_PUBLIC(void *) surf_action_new(size_t size, double cost,
 typedef struct surf_model_description {
   const char *name;
   const char *description;
-  surf_model_t model;
-  void (*model_init_preparse) (const char *filename);
-  void (*model_init_postparse) (void);
+  void_f_void_t model_init_preparse;
 } s_surf_model_description_t, *surf_model_description_t;
 
-XBT_PUBLIC(void) update_model_description(s_surf_model_description_t *
-                                          table, const char *name,
-                                          surf_model_t model);
 XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
                                        const char *name);
 XBT_PUBLIC(void) model_help(const char *category,
@@ -169,7 +155,7 @@ typedef struct surf_cpu_model_extension_public {
   e_surf_resource_state_t(*get_state) (void *cpu);
   double (*get_speed) (void *cpu, double load);
   double (*get_available_speed) (void *cpu);
-  void (*create_resource) (char *name, double power_peak,
+  void* (*create_resource) (const char *name, double power_peak,
                            double power_scale,
                            tmgr_trace_t power_trace,
                            int core,
@@ -190,12 +176,12 @@ typedef struct surf_network_model_extension_public {
   surf_action_t(*communicate) (const char *src_name,
                                const char *dst_name,
                                double size, double rate);
-  xbt_dynar_t(*get_route) (const char *src_name, const char *dst_name);
+  xbt_dynar_t(*get_route) (const char *src_name, const char *dst_name); //FIXME: kill field? That is done by the routing nowadays
   double (*get_link_bandwidth) (const void *link);
   double (*get_link_latency) (const void *link);
   int (*link_shared) (const void *link);
   void (*add_traces) (void);
-  void (*create_resource) (char *name,
+  void* (*create_resource) (const char *name,
                            double bw_initial,
                            tmgr_trace_t bw_trace,
                            double lat_initial,
@@ -222,6 +208,7 @@ typedef struct surf_workstation_model_extension_public {
    surf_action_t(*communicate) (void *workstation_src,                                     /**< Execute a communication amount between two workstations */
                                 void *workstation_dst, double size,
                                 double max_rate);
+   // FIXME: kill next field, which duplicates the routing
    xbt_dynar_t(*get_route) (void *workstation_src, void *workstation_dst);                 /**< Get the list of links between two ws */
 
    surf_action_t(*execute_parallel_task) (int workstation_nb,                              /**< Execute a parallel task on several workstations */
@@ -233,7 +220,7 @@ typedef struct surf_workstation_model_extension_public {
   double (*get_link_latency) (const void *link);                                           /**< Return the current latency of a network link */
   int (*link_shared) (const void *link);
    xbt_dict_t(*get_properties) (const void *resource);
-  void (*link_create_resource) (char *name,
+  void* (*link_create_resource) (const char *name,
                                 double bw_initial,
                                 tmgr_trace_t bw_trace,
                                 double lat_initial,
@@ -243,7 +230,7 @@ typedef struct surf_workstation_model_extension_public {
                                 tmgr_trace_t state_trace,
                                 e_surf_link_sharing_policy_t
                                 policy, xbt_dict_t properties);
-  void (*cpu_create_resource) (char *name, double power_peak,
+  void* (*cpu_create_resource) (const char *name, double power_peak,
                                double power_scale,
                                tmgr_trace_t power_trace,
                                e_surf_resource_state_t state_initial,
@@ -351,28 +338,41 @@ XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model;
 /** \brief Initializes the CPU model with the model Cas01
  *  \ingroup SURF_models
  *
- *  This function is called by surf_workstation_model_init_CLM03
- *  so you shouldn't have to call it by yourself.
- *
- *  \see surf_workstation_model_init_CLM03()
- */
-XBT_PUBLIC(void) surf_cpu_model_init_Cas01(const char *filename);
-
-/** \brief Initializes the CPU model with trace integration
- *  \ingroup SURF_models
- *
- */
-XBT_PUBLIC(void) surf_cpu_model_init_ti(const char *filename);
-
-/** \brief Initializes the CPU model with the model Cas01 Improved. This model uses a heap to order the events, decreasing the time complexity to get the minimum next event.
- *  \ingroup SURF_models
+ *  By default, this model uses the lazy optimization mechanism that
+ *  relies on partial invalidation in LMM and a heap for lazy action update.
+ *  You can change this behavior by setting the cpu/optim configuration
+ *  variable to a different value.
  *
  *  This function is called by surf_workstation_model_init_CLM03
  *  so you shouldn't have to call it by yourself.
  *
  *  \see surf_workstation_model_init_CLM03()
  */
-XBT_PUBLIC(void) surf_cpu_model_init_Cas01_im(const char *filename);
+XBT_PUBLIC(void) surf_cpu_model_init_Cas01(void);
+
+/** \brief Initializes the CPU model with trace integration [Deprecated]
+ *  \ingroup SURF_models
+ *
+ *  You shouldn't have to call it by yourself.
+ *  \see surf_workstation_model_init_CLM03()
+ */
+XBT_PUBLIC(void) surf_cpu_model_init_ti(void);
+
+/** \brief This function call the share resources function needed
+ *
+ */
+XBT_PUBLIC(double) generic_share_resources(double now);
+
+/** \brief This function call the update action state function needed
+ *
+ */
+XBT_PUBLIC(void)   generic_update_actions_state(double now, double delta);
+
+/** \brief The list of all available optimization modes (both for cpu and networks).
+ *  \ingroup SURF_models
+ *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:...
+ */
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_optimization_mode_description[];
 
 /** \brief The list of all available cpu model models
  *  \ingroup SURF_models
@@ -398,47 +398,29 @@ XBT_PUBLIC_DATA(surf_model_t) surf_network_model;
 
 /** \brief Same as network model 'LagrangeVelho', only with different correction factors.
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  * This model is proposed by Pierre-Nicolas Clauss and Martin Quinson and Stéphane Génaud
  * based on the model 'LV08' and different correction factors depending on the communication
  * size (< 1KiB, < 64KiB, >= 64KiB).
+ * See comments in the code for more information.
  *
  *  \see surf_workstation_model_init_SMPI()
  */
-XBT_PUBLIC(void) surf_network_model_init_SMPI(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_SMPI(void);
 
-/** \brief Initializes the platform with the network model 'LagrangeVelho'
+/** \brief Initializes the platform with the network model 'LegrandVelho'
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  * This model is proposed by Arnaud Legrand and Pedro Velho based on
  * the results obtained with the GTNets simulator for onelink and
- * dogbone sharing scenarios.
+ * dogbone sharing scenarios. See comments in the code for more information.
  *
  *  \see surf_workstation_model_init_LegrandVelho()
  */
-XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(const char
-                                                      *filename);
-
-
-/** \brief Initializes the platform with the network model 'LV08_im'
- *  \ingroup SURF_models
- *  \param filename XML platform file name
- *
- * This model is adds the lazy management improvement to Legrand and
- * Velho model. This improvement essentially replaces the list of actions
- * inside the simulation kernel by a heap in order to reduce the complexity
- * at each iteration of the simulation kernel.
- *
- *  \see surf_workstation_model_init_LegrandVelho()
- */
-XBT_PUBLIC(void) im_surf_network_model_init_LegrandVelho(const char
-                                                      *filename);
+XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(void);
 
 /** \brief Initializes the platform with the network model 'Constant'
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  *  In this model, the communication time between two network cards is
  *  constant, hence no need for a routing table. This is particularly
@@ -448,18 +430,18 @@ XBT_PUBLIC(void) im_surf_network_model_init_LegrandVelho(const char
  *
  *  \see surf_workstation_model_init_compound()
  */
-XBT_PUBLIC(void) surf_network_model_init_Constant(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_Constant(void);
 
 /** \brief Initializes the platform with the network model CM02
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  *  This function is called by surf_workstation_model_init_CLM03
  *  or by yourself only if you plan using surf_workstation_model_init_compound
+ *  See comments in the code for more information.
  *
  *  \see surf_workstation_model_init_CLM03()
  */
-XBT_PUBLIC(void) surf_network_model_init_CM02(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_CM02(void);
 
 /**
  * brief initialize the the network model bypassing the XML parser
@@ -478,7 +460,7 @@ XBT_PUBLIC(void) surf_network_model_init_bypass(const char *id,
  *
  *  \see surf_workstation_model_init_GTNETS()
  */
-XBT_PUBLIC(void) surf_network_model_init_GTNETS(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_GbTNETS(void);
 #endif
 
 #ifdef HAVE_NS3
@@ -491,7 +473,7 @@ XBT_PUBLIC(void) surf_network_model_init_GTNETS(const char *filename);
  *
  *  \see surf_workstation_model_init_NS3()
  */
-XBT_PUBLIC(void) surf_network_model_init_NS3(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_NS3(void);
 
 XBT_PUBLIC(void) parse_ns3_add_host(void);
 XBT_PUBLIC(void) parse_ns3_add_router(void);
@@ -520,7 +502,7 @@ XBT_PUBLIC(double) ns3_get_link_bandwidth(const void *link);
  *  Call this function only if you plan using surf_workstation_model_init_compound.
  *
  */
-XBT_PUBLIC(void) surf_network_model_init_Reno(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_Reno(void);
 
 /** \brief Initializes the platform with the network model Reno2
  *  \ingroup SURF_models
@@ -535,7 +517,7 @@ XBT_PUBLIC(void) surf_network_model_init_Reno(const char *filename);
  *  Call this function only if you plan using surf_workstation_model_init_compound.
  *
  */
-XBT_PUBLIC(void) surf_network_model_init_Reno2(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_Reno2(void);
 
 /** \brief Initializes the platform with the network model Vegas
  *  \ingroup SURF_models
@@ -551,7 +533,7 @@ XBT_PUBLIC(void) surf_network_model_init_Reno2(const char *filename);
  *  Call this function only if you plan using surf_workstation_model_init_compound.
  *
  */
-XBT_PUBLIC(void) surf_network_model_init_Vegas(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_Vegas(void);
 
 /** \brief The list of all available network model models
  *  \ingroup SURF_models
@@ -572,18 +554,27 @@ XBT_PUBLIC_DATA(surf_model_t) surf_workstation_model;
 
 /** \brief Initializes the platform with a compound workstation model
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  *  This function should be called after a cpu_model and a
  *  network_model have been set up.
  *
  */
-XBT_PUBLIC(void) surf_workstation_model_init_compound(const char
-                                                      *filename);
+XBT_PUBLIC(void) surf_workstation_model_init_compound(void);
+
+/** \brief Initializes the platform with the current best network and cpu models at hand
+ *  \ingroup SURF_models
+ *
+ *  This platform model seperates the workstation model and the network model.
+ *  The workstation model will be initialized with the model compound, the network
+ *  model with the model LV08 (with cross traffic support) and the CPU model with
+ *  the model Cas01.
+ *  Such model is subject to modification with warning in the ChangeLog so monitor it!
+ *
+ */
+XBT_PUBLIC(void) surf_workstation_model_init_current_default(void);
 
 /** \brief Initializes the platform with the workstation model CLM03
  *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  *  This platform model seperates the workstation model and the network model.
  *  The workstation model will be initialized with the model CLM03, the network
@@ -591,35 +582,18 @@ XBT_PUBLIC(void) surf_workstation_model_init_compound(const char
  *  In future releases, some other network models will be implemented and will be
  *  combined with the workstation model CLM03.
  *
- *  \see surf_workstation_model_init_KCCFLN05()
  */
-XBT_PUBLIC(void) surf_workstation_model_init_CLM03(const char *filename);
+XBT_PUBLIC(void) surf_workstation_model_init_CLM03(void);
 
 /** \brief Initializes the platform with the model KCCFLN05
  *  \ingroup SURF_models
- *  \param filename XML platform file name
- *
- *  With this model, the workstations and the network are handled
- *  together. The network model is roughly the same as in CM02 but
- *  interference between computations and communications can be taken
- *  into account. This platform model is the default one for MSG and
- *  SimDag.
- *
- */
-XBT_PUBLIC(void) surf_workstation_model_init_KCCFLN05(const char
-                                                      *filename);
-
-/** \brief Initializes the platform with the model KCCFLN05
- *  \ingroup SURF_models
- *  \param filename XML platform file name
  *
  *  With this model, only parallel tasks can be used. Resource sharing
  *  is done by identifying bottlenecks and giving an equal share of
  *  the model to each action.
  *
  */
-XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(const char
-                                                       *filename);
+XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(void);
 
 /** \brief The list of all available workstation model models
  *  \ingroup SURF_models
@@ -645,28 +619,11 @@ XBT_PUBLIC_DATA(xbt_cfg_t) _surf_cfg_set;
  *  This function has to be called to initialize the common
  *  structures.  Then you will have to create the environment by
  *  calling 
- *  e.g. surf_workstation_model_init_CLM03() or
- *  surf_workstation_model_init_KCCFLN05().
+ *  e.g. surf_workstation_model_init_CLM03()
  *
- *  \see surf_workstation_model_init_CLM03(),
- *  surf_workstation_model_init_KCCFLN05(), surf_workstation_model_init_compound(), surf_exit()
+ *  \see surf_workstation_model_init_CLM03(), surf_workstation_model_init_compound(), surf_exit()
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common structures */
-
-/** \brief Initialize the used models.
- *
- * Must be called after the surf_init so that configuration infrastructure is created
- * Must be called before parsing/creating the environment
- * Must not be called within the initialization process so that the use get a chance to change the settings from
- * its code between, say, MSG_init and MSG_create_environment using MSG_config
- */
-XBT_PUBLIC(void) surf_config_models_setup(const char *platform_file);
-
-/** \brief create the elements of the models
- *
- * Must be called after parsing the platform file and before using any elements
- */
-XBT_PUBLIC(void) surf_config_models_create_elms(void);
 
 /** \brief Finish simulation initialization
  *  \ingroup SURF_simulation
@@ -706,9 +663,7 @@ XBT_PUBLIC(void) surf_exit(void);
 
 /* Prototypes of the functions that handle the properties */
 XBT_PUBLIC_DATA(xbt_dict_t) current_property_set;       /* the prop set for the currently parsed element (also used in SIMIX) */
-XBT_PUBLIC_DATA(void) parse_properties(const char* prop_id, const char* prop_value);
-XBT_PUBLIC_DATA(void) parse_properties_XML(void);
-XBT_PUBLIC_DATA(void) parse_properties_lua(const char* prop_id, const char* prop_value);
+XBT_PUBLIC(void) parse_properties(void);
 
 /* surf parse file related (public because called from a test suite) */
 XBT_PUBLIC(void) parse_platform_file(const char *file);
@@ -726,113 +681,6 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 
 XBT_PUBLIC(double) get_cpu_power(const char *power);
-
-/*public interface to create resource bypassing the parser via cpu/network model
- *
- * see surfxml_parse.c
- * */
-XBT_PUBLIC(void) surf_host_create_resource(char *name, double power_peak,
-                                           double power_scale,
-                                           tmgr_trace_t power_trace,
-                                           int core,
-                                           e_surf_resource_state_t
-                                           state_initial,
-                                           tmgr_trace_t state_trace,
-                                           xbt_dict_t cpu_properties);
-
-/*public interface to create resource bypassing the parser via workstation_ptask_L07 model
- *
- * see surfxml_parse.c
- * */
-XBT_PUBLIC(void) surf_wsL07_host_create_resource(char *name,
-                                                 double power_peak,
-                                                 double power_scale,
-                                                 tmgr_trace_t power_trace,
-                                                 e_surf_resource_state_t
-                                                 state_initial,
-                                                 tmgr_trace_t state_trace,
-                                                 xbt_dict_t
-                                                 cpu_properties);
-/**
- * create link resource
- * see surfxml_parse.c
- */
-XBT_PUBLIC(void) surf_link_create_resource(char *name,
-                                           double bw_initial,
-                                           tmgr_trace_t bw_trace,
-                                           double lat_initial,
-                                           tmgr_trace_t lat_trace,
-                                           e_surf_resource_state_t
-                                           state_initial,
-                                           tmgr_trace_t state_trace,
-                                           e_surf_link_sharing_policy_t
-                                           policy, xbt_dict_t properties);
-
-
-XBT_PUBLIC(void) surf_wsL07_link_create_resource(char *name,
-                                                 double bw_initial,
-                                                 tmgr_trace_t bw_trace,
-                                                 double lat_initial,
-                                                 tmgr_trace_t lat_trace,
-                                                 e_surf_resource_state_t
-                                                 state_initial,
-                                                 tmgr_trace_t state_trace,
-                                                 e_surf_link_sharing_policy_t
-                                                 policy,
-                                                 xbt_dict_t properties);
-/**
- * add route element (link_ctn) bypassing the parser
- *
- * see surfxml_parse.c
- *
- */
-XBT_PUBLIC(void) surf_add_route_element(char *link_ctn_id);
-
-/**
- * set route src_id,dest_id, and create a route resource
- *
- * see surf_routing.c && surfxml_parse.c
- */
-
-XBT_PUBLIC(void) surf_set_routes(void);
-
-
-/**
- * add traces
- * see surfxml_parse.c
- */
-XBT_PUBLIC(void) surf_add_host_traces(void);
-XBT_PUBLIC(void) surf_add_link_traces(void);
-XBT_PUBLIC(void) surf_wsL07_add_traces(void);
-
-/*
- * init AS from lua console
- * see surf_routing.c
- */
-XBT_PUBLIC(void) routing_AS_init(const char *id, const char *mode);
-XBT_PUBLIC(void) routing_AS_end(const char *id);
-// add host to network element list
-XBT_PUBLIC(void) routing_add_host(const char *host_id);
-//Set a new link on the actual list of link for a route or ASroute
-XBT_PUBLIC(void) routing_add_link(const char *link_id);
-//Set the endpoints for a route
-XBT_PUBLIC(void) routing_set_route(const char *src_id, const char *dst_id);
-//Store the route
-XBT_PUBLIC(void) routing_store_route(void);
-
-/*
- * interface between surf and lua bindings
- * see surfxml_parse.c
- */
-XBT_PUBLIC(void) surf_AS_new(const char *id, const char *mode);
-XBT_PUBLIC(void) surf_AS_finalize(const char *id);
-XBT_PUBLIC(void) surf_route_add_host(const char *id);
-XBT_PUBLIC(void) surf_routing_add_route(const char *src_id,
-                                        const char *dest_id,
-                                        xbt_dynar_t links_id);
-
-#include "surf/surf_resource.h"
-#include "surf/surf_resource_lmm.h"
 
 SG_END_DECL()
 #endif                          /* _SURF_SURF_H */

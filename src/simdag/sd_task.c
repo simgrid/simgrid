@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -16,6 +16,59 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task, sd,
 static void __SD_task_remove_dependencies(SD_task_t task);
 static void __SD_task_destroy_scheduling_data(SD_task_t task);
 
+void* SD_task_new_f(void)
+{
+  SD_task_t task = xbt_new0(s_SD_task_t, 1);
+  task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
+  task->tasks_after = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
+
+  return task;
+}
+
+void SD_task_recycle_f(void *t)
+{
+  SD_task_t task = (SD_task_t) t;
+
+  /* Reset the content */
+  task->kind = SD_TASK_NOT_TYPED;
+  task->state_hookup.prev = NULL;
+  task->state_hookup.next = NULL;
+  task->state_set = sd_global->not_scheduled_task_set;
+  xbt_swag_insert(task, task->state_set);
+  task->state = SD_NOT_SCHEDULED;
+  task->return_hookup.prev = NULL;
+  task->return_hookup.next = NULL;
+
+  task->marked = 0;
+
+  task->start_time = -1.0;
+  task->finish_time = -1.0;
+  task->surf_action = NULL;
+  task->watch_points = 0;
+
+  /* dependencies */
+  xbt_dynar_reset(task->tasks_before);
+  xbt_dynar_reset(task->tasks_after);
+  task->unsatisfied_dependencies = 0;
+  task->is_not_ready = 0;
+
+  /* scheduling parameters */
+  task->workstation_nb = 0;
+  task->workstation_list = NULL;
+  task->computation_amount = NULL;
+  task->communication_amount = NULL;
+  task->rate = -1;
+}
+
+void SD_task_free_f(void *t)
+{
+  SD_task_t task = (SD_task_t)t;
+
+  xbt_dynar_free(&task->tasks_before);
+  xbt_dynar_free(&task->tasks_after);
+  xbt_free(task);
+}
+
 /**
  * \brief Creates a new task.
  *
@@ -27,42 +80,13 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task);
  */
 SD_task_t SD_task_create(const char *name, void *data, double amount)
 {
-
-  SD_task_t task;
-  SD_CHECK_INIT_DONE();
-
-  task = xbt_new(s_SD_task_t, 1);
+  SD_task_t task = xbt_mallocator_get(sd_global->task_mallocator);
 
   /* general information */
   task->data = data;            /* user data */
   task->name = xbt_strdup(name);
-  task->kind = SD_TASK_NOT_TYPED;
-  task->state_hookup.prev = NULL;
-  task->state_hookup.next = NULL;
-  task->state_set = sd_global->not_scheduled_task_set;
-  task->state = SD_NOT_SCHEDULED;
-  task->marked = 0;
-  xbt_swag_insert(task, task->state_set);
-
   task->amount = amount;
   task->remains = amount;
-  task->start_time = -1.0;
-  task->finish_time = -1.0;
-  task->surf_action = NULL;
-  task->watch_points = 0;
-
-  /* dependencies */
-  task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
-  task->tasks_after = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
-  task->unsatisfied_dependencies = 0;
-  task->is_not_ready = 0;
-
-  /* scheduling parameters */
-  task->workstation_nb = 0;
-  task->workstation_list = NULL;
-  task->computation_amount = NULL;
-  task->communication_amount = NULL;
-  task->rate = -1;
 
   sd_global->task_number++;
 
@@ -74,6 +98,46 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
 }
 
 /**
+ * \brief Destroys a task.
+ *
+ * The user data (if any) should have been destroyed first.
+ *
+ * \param task the task you want to destroy
+ * \see SD_task_create()
+ */
+void SD_task_destroy(SD_task_t task)
+{
+  XBT_DEBUG("Destroying task %s...", SD_task_get_name(task));
+
+  __SD_task_remove_dependencies(task);
+  /* if the task was scheduled or runnable we have to free the scheduling parameters */
+  if (__SD_task_is_scheduled_or_runnable(task))
+    __SD_task_destroy_scheduling_data(task);
+  if (task->state_set != NULL) /* would be null if just created */
+    xbt_swag_remove(task, task->state_set);
+
+  xbt_swag_remove(task, sd_global->return_set);
+
+  xbt_free(task->name);
+
+  if (task->surf_action != NULL)
+    surf_workstation_model->action_unref(task->surf_action);
+
+  xbt_free(task->workstation_list);
+  xbt_free(task->communication_amount);
+  xbt_free(task->computation_amount);
+
+  xbt_mallocator_release(sd_global->task_mallocator,task);
+  sd_global->task_number--;
+
+#ifdef HAVE_TRACING
+  TRACE_sd_task_destroy(task);
+#endif
+
+  XBT_DEBUG("Task destroyed.");
+}
+
+/**
  * \brief Returns the user data of a task
  *
  * \param task a task
@@ -82,8 +146,6 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
  */
 void *SD_task_get_data(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
   return task->data;
 }
 
@@ -99,8 +161,6 @@ void *SD_task_get_data(SD_task_t task)
  */
 void SD_task_set_data(SD_task_t task, void *data)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
   task->data = data;
 }
 
@@ -114,8 +174,6 @@ void SD_task_set_data(SD_task_t task, void *data)
  */
 e_SD_task_state_t SD_task_get_state(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
   return task->state;
 }
 
@@ -178,8 +236,6 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
  */
 const char *SD_task_get_name(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
   return task->name;
 }
 
@@ -201,8 +257,6 @@ xbt_dynar_t SD_task_get_parents(SD_task_t task)
   unsigned int i;
   xbt_dynar_t parents;
   SD_dependency_t dep;
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
 
   parents = xbt_dynar_new(sizeof(SD_task_t), NULL);
   xbt_dynar_foreach(task->tasks_before, i, dep) {
@@ -221,8 +275,6 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
   unsigned int i;
   xbt_dynar_t children;
   SD_dependency_t dep;
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
 
   children = xbt_dynar_new(sizeof(SD_task_t), NULL);
   xbt_dynar_foreach(task->tasks_after, i, dep) {
@@ -239,10 +291,6 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
  */
 int SD_task_get_workstation_count(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
-  //xbt_assert(task->state_set != sd_global->scheduled_task_set,
-  //           "Unscheduled task %s", task->name);
   return task->workstation_nb;
 }
 
@@ -254,10 +302,6 @@ int SD_task_get_workstation_count(SD_task_t task)
  */
 SD_workstation_t *SD_task_get_workstation_list(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
-  //xbt_assert(task->state_set != sd_global->scheduled_task_set,
-  //           "Unscheduled task %s", task->name);
   return task->workstation_list;
 }
 
@@ -270,8 +314,6 @@ SD_workstation_t *SD_task_get_workstation_list(SD_task_t task)
  */
 double SD_task_get_amount(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
   return task->amount;
 }
 
@@ -284,9 +326,6 @@ double SD_task_get_amount(SD_task_t task)
  */
 double SD_task_get_remaining_amount(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
-
   if (task->surf_action)
     return surf_workstation_model->get_remains(task->surf_action);
   else
@@ -334,13 +373,13 @@ void SD_task_dump(SD_task_t task)
   }
   XBT_INFO("  - amount: %.0f", SD_task_get_amount(task));
   XBT_INFO("  - Dependencies to satisfy: %d", task->unsatisfied_dependencies);
-  if (xbt_dynar_length(task->tasks_before)) {
+  if (!xbt_dynar_is_empty(task->tasks_before)) {
     XBT_INFO("  - pre-dependencies:");
     xbt_dynar_foreach(task->tasks_before, counter, dependency) {
       XBT_INFO("    %s", SD_task_get_name(dependency->src));
     }
   }
-  if (xbt_dynar_length(task->tasks_after)) {
+  if (!xbt_dynar_is_empty(task->tasks_after)) {
     XBT_INFO("  - post-dependencies:");
     xbt_dynar_foreach(task->tasks_after, counter, dependency) {
       XBT_INFO("    %s", SD_task_get_name(dependency->dst));
@@ -374,8 +413,7 @@ void SD_task_dotty(SD_task_t task, void *out)
  */
 static void __SD_task_dependency_destroy(void *dependency)
 {
-  if (((SD_dependency_t) dependency)->name != NULL)
-    xbt_free(((SD_dependency_t) dependency)->name);
+  xbt_free(((SD_dependency_t)dependency)->name);
   xbt_free(dependency);
 }
 
@@ -399,9 +437,6 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
   int found = 0;
   int i;
   SD_dependency_t dependency;
-
-  SD_CHECK_INIT_DONE();
-  xbt_assert(src != NULL && dst != NULL, "Invalid parameter");
 
   dynar = src->tasks_after;
   length = xbt_dynar_length(dynar);
@@ -478,7 +513,6 @@ int SD_task_dependency_exists(SD_task_t src, SD_task_t dst)
   unsigned int counter;
   SD_dependency_t dependency;
 
-  SD_CHECK_INIT_DONE();
   xbt_assert(src != NULL
               || dst != NULL,
               "Invalid parameter: both src and dst are NULL");
@@ -513,9 +547,6 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
   int found = 0;
   int i;
   SD_dependency_t dependency;
-
-  SD_CHECK_INIT_DONE();
-  xbt_assert(src != NULL && dst != NULL, "Invalid parameter");
 
   /* remove the dependency from src->tasks_after */
   dynar = src->tasks_after;
@@ -588,10 +619,6 @@ void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
   int i;
   SD_dependency_t dependency;
 
-
-  SD_CHECK_INIT_DONE();
-  xbt_assert(src != NULL && dst != NULL, "Invalid parameter");
-
   dynar = src->tasks_after;
   length = xbt_dynar_length(dynar);
 
@@ -642,9 +669,6 @@ static void __SD_print_watch_points(SD_task_t task)
  */
 void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
-
   if (state & SD_NOT_SCHEDULED)
     THROWF(arg_error, 0,
            "Cannot add a watch point for state SD_NOT_SCHEDULED");
@@ -662,8 +686,6 @@ void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
  */
 void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
   xbt_assert(state != SD_NOT_SCHEDULED,
               "SimDag error: Cannot have a watch point for state SD_NOT_SCHEDULED");
 
@@ -693,9 +715,7 @@ double SD_task_get_execution_time(SD_task_t task,
 {
   double time, max_time = 0.0;
   int i, j;
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL && workstation_nb > 0
-              && workstation_list != NULL, "Invalid parameter");
+  xbt_assert(workstation_nb > 0, "Invalid parameter");
 
   /* the task execution time is the maximum execution time of the parallel tasks */
 
@@ -725,8 +745,6 @@ double SD_task_get_execution_time(SD_task_t task,
 
 static XBT_INLINE void SD_task_do_schedule(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
-
   if (!__SD_task_is_not_scheduled(task) && !__SD_task_is_schedulable(task))
     THROWF(arg_error, 0, "Task '%s' has already been scheduled",
            SD_task_get_name(task));
@@ -808,9 +826,6 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
  */
 void SD_task_unschedule(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
-
   if (task->state_set != sd_global->scheduled_task_set &&
       task->state_set != sd_global->runnable_task_set &&
       task->state_set != sd_global->running_task_set &&
@@ -839,7 +854,6 @@ void SD_task_unschedule(SD_task_t task)
  */
 static void __SD_task_destroy_scheduling_data(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
   if (!__SD_task_is_scheduled_or_runnable(task)
       && !__SD_task_is_in_fifo(task))
     THROWF(arg_error, 0,
@@ -861,8 +875,6 @@ void __SD_task_really_run(SD_task_t task)
   int i;
   void **surf_workstations;
 
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
   xbt_assert(__SD_task_is_runnable_or_in_fifo(task),
               "Task '%s' is not runnable or in a fifo! Task state: %d",
               SD_task_get_name(task), SD_task_get_state(task));
@@ -984,8 +996,6 @@ int __SD_task_try_to_run(SD_task_t task)
   int i;
   SD_workstation_t workstation;
 
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
   xbt_assert(__SD_task_is_runnable(task),
               "Task '%s' is not runnable! Task state: %d",
               SD_task_get_name(task), SD_task_get_state(task));
@@ -1034,8 +1044,6 @@ void __SD_task_just_done(SD_task_t task)
   SD_task_t *candidates;
   int can_start = 1;
 
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
   xbt_assert(__SD_task_is_running(task),
               "The task must be running! Task state: %d",
               SD_task_get_state(task));
@@ -1180,12 +1188,12 @@ static void __SD_task_remove_dependencies(SD_task_t task)
   /* we must destroy the dependencies carefuly (with SD_dependency_remove)
      because each one is stored twice */
   SD_dependency_t dependency;
-  while (xbt_dynar_length(task->tasks_before) > 0) {
+  while (!xbt_dynar_is_empty(task->tasks_before)) {
     xbt_dynar_get_cpy(task->tasks_before, 0, &dependency);
     SD_task_dependency_remove(dependency->src, dependency->dst);
   }
 
-  while (xbt_dynar_length(task->tasks_after) > 0) {
+  while (!xbt_dynar_is_empty(task->tasks_after)) {
     xbt_dynar_get_cpy(task->tasks_after, 0, &dependency);
     SD_task_dependency_remove(dependency->src, dependency->dst);
   }
@@ -1201,8 +1209,6 @@ static void __SD_task_remove_dependencies(SD_task_t task)
  */
 double SD_task_get_start_time(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
   if (task->surf_action)
     return surf_workstation_model->
         action_get_start_time(task->surf_action);
@@ -1223,65 +1229,12 @@ double SD_task_get_start_time(SD_task_t task)
  */
 double SD_task_get_finish_time(SD_task_t task)
 {
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
-
   if (task->surf_action)        /* should never happen as actions are destroyed right after their completion */
     return surf_workstation_model->
         action_get_finish_time(task->surf_action);
   else
     return task->finish_time;
 }
-
-/**
- * \brief Destroys a task.
- *
- * The user data (if any) should have been destroyed first.
- *
- * \param task the task you want to destroy
- * \see SD_task_create()
- */
-void SD_task_destroy(SD_task_t task)
-{
-  SD_CHECK_INIT_DONE();
-  xbt_assert(task != NULL, "Invalid parameter");
-
-  XBT_DEBUG("Destroying task %s...", SD_task_get_name(task));
-
-  __SD_task_remove_dependencies(task);
-  /* if the task was scheduled or runnable we have to free the scheduling parameters */
-  if (__SD_task_is_scheduled_or_runnable(task))
-    __SD_task_destroy_scheduling_data(task);
-  xbt_swag_remove(task, task->state_set);
-
-  if (task->name != NULL)
-    xbt_free(task->name);
-
-  if (task->surf_action != NULL)
-    surf_workstation_model->action_unref(task->surf_action);
-
-  if (task->workstation_list != NULL)
-    xbt_free(task->workstation_list);
-
-  if (task->communication_amount)
-    xbt_free(task->communication_amount);
-
-  if (task->computation_amount)
-    xbt_free(task->computation_amount);
-
-#ifdef HAVE_TRACING
-  TRACE_sd_task_destroy(task);
-#endif
-
-  xbt_dynar_free(&task->tasks_before);
-  xbt_dynar_free(&task->tasks_after);
-  xbt_free(task);
-
-  sd_global->task_number--;
-
-  XBT_DEBUG("Task destroyed.");
-}
-
 
 static XBT_INLINE SD_task_t SD_task_create_sized(const char *name,
                                                  void *data, double amount,
@@ -1364,7 +1317,7 @@ void SD_task_schedulev(SD_task_t task, int count,
   switch (task->kind) {
   case SD_TASK_COMM_E2E:
   case SD_TASK_COMP_SEQ:
-    xbt_assert(task->workstation_nb == count);
+    xbt_assert(task->workstation_nb == count,"Got %d locations, but were expecting %d locations",count,task->workstation_nb);
     for (i = 0; i < count; i++)
       task->workstation_list[i] = list[i];
     SD_task_do_schedule(task);

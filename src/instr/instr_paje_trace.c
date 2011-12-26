@@ -189,7 +189,7 @@ void TRACE_paje_dump_buffer (int force)
     buffer = xbt_dynar_new (sizeof(paje_event_t), NULL);
   }else{
     paje_event_t event;
-    while (xbt_dynar_length (buffer) > 0){
+    while (!xbt_dynar_is_empty(buffer)){
       double head_timestamp = (*(paje_event_t*)xbt_dynar_get_ptr(buffer, 0))->timestamp;
       if (head_timestamp > TRACE_last_timestamp_to_dump){
         break;
@@ -224,7 +224,7 @@ void TRACE_paje_create_header(void)
 %%EndEventDef \n\
 %%EventDef PajeDefineEventType %d \n\
 %%       Alias string \n\
-%%       EntityType string \n\
+%%       ContainerType string \n\
 %%       Name string \n\
 %%       Color color \n\
 %%EndEventDef \n\
@@ -251,46 +251,46 @@ void TRACE_paje_create_header(void)
 %%EventDef PajeDestroyContainer %d \n\
 %%       Time date \n\
 %%       Type string \n\
-%%       Container string \n\
+%%       Name string \n\
 %%EndEventDef \n\
 %%EventDef PajeSetVariable %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
-%%       Value string \n\
+%%       Value double \n\
 %%EndEventDef\n\
 %%EventDef PajeAddVariable %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
-%%       Value string \n\
+%%       Value double \n\
 %%EndEventDef\n\
 %%EventDef PajeSubVariable %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
-%%       Value string \n\
+%%       Value double \n\
 %%EndEventDef\n\
 %%EventDef PajeSetState %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%EndEventDef\n\
 %%EventDef PajePushState %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%EndEventDef\n\
 %%EventDef PajePopState %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%EndEventDef\n\
 %%EventDef PajeStartLink %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%       SourceContainer string \n\
@@ -298,7 +298,7 @@ void TRACE_paje_create_header(void)
 %%EndEventDef\n\
 %%EventDef PajeEndLink %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%       DestContainer string \n\
@@ -306,7 +306,7 @@ void TRACE_paje_create_header(void)
 %%EndEventDef\n\
 %%EventDef PajeNewEvent %d \n\
 %%       Time date \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
 %%EndEventDef\n",
@@ -422,14 +422,14 @@ static void print_pajeCreateContainer(paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s %s %s\n",
+    fprintf(tracing_file, "%d 0 %s %s %s \"%s\"\n",
         event->event_type,
         ((createContainer_t)event->data)->container->id,
         ((createContainer_t)event->data)->container->type->id,
         ((createContainer_t)event->data)->container->father->id,
         ((createContainer_t)event->data)->container->name);
   }else{
-    fprintf(tracing_file, "%d %lf %s %s %s %s\n",
+    fprintf(tracing_file, "%d %lf %s %s %s \"%s\"\n",
         event->event_type,
         event->timestamp,
         ((createContainer_t)event->data)->container->id,

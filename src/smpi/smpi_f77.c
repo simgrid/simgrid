@@ -79,7 +79,7 @@ void mpi_init__(int* ierr) {
    comm_lookup = xbt_dynar_new(sizeof(MPI_Comm), NULL);
    new_comm(MPI_COMM_WORLD);
 
-   request_lookup = xbt_dict_new();
+   request_lookup = xbt_dict_new_homogeneous(NULL);
 
    datatype_lookup = xbt_dynar_new(sizeof(MPI_Datatype), NULL);
    new_datatype(MPI_BYTE);

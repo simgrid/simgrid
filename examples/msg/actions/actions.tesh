@@ -75,7 +75,7 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deplo
 > [150.005200] (2:p1@host1) p1 send p2 1e9 50.005200
 > [150.005200] (3:p2@host2) p2 wait 100.005200
 > [150.005200] (3:p2@host2) p2 Isend p0 1e9 0.000000
+> [200.005200] (0:@) Simulation time 200.005
+> [200.005200] (1:p0@host0) p0 recv p2 50.000000
 > [200.005200] (3:p2@host2) p2 compute 5e8 50.000000
-> [200.010400] (0:@) Simulation time 200.01
-> [200.010400] (1:p0@host0) p0 recv p2 50.005200
 

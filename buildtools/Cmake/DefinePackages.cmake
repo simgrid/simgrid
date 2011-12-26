@@ -8,7 +8,6 @@ set(EXTRA_DIST
 	src/xbt/fifo_private.h
 	src/xbt/graph_private.h
 	src/xbt/graphxml_parse.c
-	src/xbt/graphxml.l
 	src/xbt/graphxml.c
 	src/xbt/graphxml.dtd
 	src/xbt/log_private.h
@@ -17,7 +16,6 @@ set(EXTRA_DIST
 	src/xbt/backtrace_windows.c
 	src/xbt/backtrace_dummy.c
 	src/xbt/setset_private.h
-	src/xbt/parmap_private.h
 	src/xbt/mmalloc/attach.c
 	src/xbt/mmalloc/detach.c	
 	src/xbt/mmalloc/keys.c
@@ -40,7 +38,6 @@ set(EXTRA_DIST
 	src/surf/trace_mgr_private.h
 	src/surf/surf_private.h
 	src/surf/surfxml_parse.c
-	src/surf/simgrid_dtd.l
 	src/surf/simgrid_dtd.c
 	src/surf/simgrid.dtd
 	src/surf/network_private.h
@@ -50,12 +47,13 @@ set(EXTRA_DIST
 	src/surf/gtnets/gtnets_topology.h
 	src/surf/cpu_ti_private.h
 	src/surf/surf_routing_private.h
+	src/include/simgrid/platf_interface.h
 	src/include/surf/surf_resource.h
 	src/include/surf/datatypes.h
 	src/include/surf/maxmin.h
 	src/include/surf/trace_mgr.h
 	src/include/surf/surf.h
-	src/include/surf/surfxml_parse_private.h
+	src/include/surf/surfxml_parse_values.h
 	src/include/surf/random_mgr.h
 	src/include/surf/surf_resource_lmm.h
 	src/include/xbt/wine_dbghelp.h
@@ -64,11 +62,10 @@ set(EXTRA_DIST
 	src/include/mc/datatypes.h
 	src/include/mc/mc.h
 	src/include/simix/context.h
-	src/msg/private.h
-	src/msg/mailbox.h
+	src/msg/msg_private.h
+	src/msg/msg_mailbox.h
 	src/simdag/private.h
 	src/simdag/dax.dtd
-	src/simdag/dax_dtd.l
 	src/simdag/dax_dtd.h
 	src/simdag/dax_dtd.c
 	src/gras/DataDesc/ddt_parse.yy.l
@@ -99,6 +96,12 @@ set(EXTRA_DIST
 	tools/gras/gras_stub_generator.h
 	tools/tesh/run_context.h  
 	tools/tesh/tesh.h
+	
+	src/surf/network_ns3_private.h
+	src/surf/ns3/ns3_interface.h
+	src/surf/ns3/ns3_simulator.h
+	src/surf/ns3/my-point-to-point-helper.h
+	src/surf/ns3/red-queue.h
 )
 
 set(XBT_RL_SRC 
@@ -196,17 +199,22 @@ set(NS3_SRC
 	src/surf/network_ns3.c
 	src/surf/ns3/ns3_interface.cc
 	src/surf/ns3/ns3_simulator.cc
-	)
-
+	src/surf/ns3/red-queue.cc
+	src/surf/ns3/my-point-to-point-helper.cc
+)
+	
 set(SURF_SRC 
 	src/surf/surf_model.c
 	src/surf/surf_action.c
 	src/surf/surf_routing.c
+	src/surf/surf_routing_none.c
+	src/surf/surf_routing_generic.c
 	src/surf/surf_routing_full.c
 	src/surf/surf_routing_floyd.c
 	src/surf/surf_routing_rulebased.c
 	src/surf/surf_routing_dijkstra.c
-	src/surf/surf_routing_none.c
+	src/surf/surf_routing_cluster.c
+	src/surf/surf_routing_vivaldi.c
 	src/surf/surf_config.c
 	src/surf/maxmin.c
 	src/surf/fair_bottleneck.c
@@ -215,14 +223,14 @@ set(SURF_SRC
 	src/surf/random_mgr.c
 	src/surf/surf.c
 	src/surf/surfxml_parse.c
-	src/surf/cpu.c
+	src/surf/surfxml_parseplatf.c
 	src/surf/network.c
-	src/surf/network_im.c
 	src/surf/network_constant.c
 	src/surf/workstation.c
 	src/surf/workstation_ptask_L07.c
 	src/surf/cpu_ti.c
-	src/surf/cpu_im.c
+	src/surf/cpu_cas01.c
+	src/surf/sg_platf.c
 	src/xbt/xbt_sg_stubs.c
 )
 
@@ -243,13 +251,13 @@ set(SIMIX_SRC
 
 set(MSG_SRC
 	src/msg/msg_config.c
-	src/msg/task.c
-	src/msg/host.c
-	src/msg/m_process.c
-	src/msg/gos.c
-	src/msg/global.c
-	src/msg/environment.c
-	src/msg/deployment.c
+	src/msg/msg_task.c
+	src/msg/msg_host.c
+	src/msg/msg_process.c
+	src/msg/msg_gos.c
+	src/msg/msg_global.c
+	src/msg/msg_environment.c
+	src/msg/msg_deployment.c
 	src/msg/msg_mailbox.c
 	src/msg/msg_actions.c
 )
@@ -317,6 +325,8 @@ set(LUA_SRC
 	src/bindings/lua/simgrid_lua.c
 	src/bindings/lua/lua_stub_generator.c
 	src/bindings/lua/lua_console.c
+        src/bindings/lua/lua_utils.c
+        src/bindings/lua/lua_state_cloner.c
 )
 
 set(TRACING_SRC
@@ -397,6 +407,7 @@ set(headers_to_install
 	include/xbt/mmalloc.h
 	include/xbt/replay_trace_reader.h
 	include/xbt/parmap.h
+	include/simgrid/platf.h
 	include/mc/modelchecker.h
 	include/msg/msg.h
 	include/msg/datatypes.h
@@ -544,9 +555,15 @@ file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*README"
 )
 
+
+    
 set(DOC_SOURCES
-	doc/contrib.doc
-	doc/FAQ.doc
+	doc/installSimgrid.doc
+	doc/bindings.doc
+	doc/options.doc
+	doc/use.doc
+	doc/tracing.doc
+	doc/pls.doc
 	doc/gtut-howto-design.doc
 	doc/gtut-howto.doc
 	doc/gtut-introduction.doc
@@ -570,7 +587,7 @@ set(DOC_SOURCES
 	doc/gtut-tour-16-exchangecb.doc
 	doc/gtut-tour.doc
 	doc/gtut-tour-recap-messages.doc
-	doc/history.doc
+	
 	#doc/index-API.doc
 	doc/index.doc
 	doc/module-amok.doc
@@ -580,8 +597,6 @@ set(DOC_SOURCES
 	doc/modules.doc
 	doc/module-surf.doc
 	doc/module-xbt.doc
-	doc/people.doc	
-	doc/publis.doc
 	
 	doc/gtut-files/01-bones.c
 	doc/gtut-files/01-bones.output
@@ -622,10 +637,8 @@ set(DOC_SOURCES
 	doc/webcruft/Paje_MSG_screenshot.jpg
 	doc/webcruft/Paje_MSG_screenshot_thn.jpg
 	doc/webcruft/poster_thumbnail.png
-	doc/webcruft/robots.txt
 	doc/webcruft/simgrid_logo.png
 	doc/webcruft/simgrid_logo_small.png
-	doc/webcruft/fish.gif
 	doc/triva-graph_configuration.png
 	doc/triva-graph_visualization.png
 	doc/simgrid.css
@@ -633,13 +646,11 @@ set(DOC_SOURCES
 	doc/Doxyfile.in
 	doc/footer.html.in
 	
-	tools/doxygen/bibtex2html_table_count.pl
 	tools/doxygen/doxygen_postprocesser.pl
 	tools/doxygen/index_create.pl
 	tools/doxygen/toc_create.pl
 	tools/doxygen/bibtex2html_wrapper.pl
 	tools/doxygen/fig2dev_postprocessor.pl
-	tools/doxygen/index_php.pl
 	tools/doxygen/xbt_log_extract_hierarchy.pl
 )
 
@@ -649,10 +660,6 @@ set(DOC_FIGS
 	${CMAKE_HOME_DIRECTORY}/doc/fig/amok_bw_test.fig
 	${CMAKE_HOME_DIRECTORY}/doc/fig/amok_bw_sat.fig
 	${CMAKE_HOME_DIRECTORY}/doc/fig/gras_comm.fig
-)
-
-set(DOC_bib
-	${CMAKE_HOME_DIRECTORY}/doc/all.bib
 )
 
 file(GLOB_RECURSE add_src_files
@@ -683,7 +690,6 @@ set(add_src_files
 	src/smpi/smpif2c.in
 	src/smpi/smpiff.in
 	src/smpi/smpirun.in
-	src/simix/smx_context_sysv_private.h
 )
 
 file(GLOB_RECURSE xml_files
@@ -823,6 +829,7 @@ set(source_to_pack
 	${GRAS_RL_SRC}
 	${XBT_SRC}
 	${GTNETS_SRC}
+	${NS3_SRC}
 	${SURF_SRC}
 	${SIMIX_SRC}
 	${TRACING_SRC}
@@ -843,7 +850,6 @@ set(source_to_pack
 	${bin_files}
 	${DOC_SOURCES}
 	${DOC_FIGS}
-	${DOC_bib}
 	${README_files}
 	buildtools/Cmake/simgrid.nsi.in 
 )

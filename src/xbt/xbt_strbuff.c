@@ -1,5 +1,3 @@
-/* $Id: buff.c 3483 2007-05-07 11:18:56Z mquinson $ */
-
 /* strbuff -- string buffers                                                */
 
 /* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
@@ -26,8 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(strbuff, xbt, "String buffers");
 XBT_INLINE void xbt_strbuff_empty(xbt_strbuff_t b)
 {
   b->used = 0;
-  b->data[0] = '\n';
-  b->data[1] = '\0';
+  b->data[0] = '\0';
 }
 
 xbt_strbuff_t xbt_strbuff_new(void)
@@ -41,12 +38,12 @@ xbt_strbuff_t xbt_strbuff_new(void)
 
 /** @brief creates a new string buffer containing the provided string
  *
- * Beware, we store the ctn directly, not a copy of it
+ * Beware, the ctn is copied, you want to free it afterward, anyhow
  */
-XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(char *ctn)
+XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(const char *ctn)
 {
   xbt_strbuff_t res = malloc(sizeof(s_xbt_strbuff_t));
-  res->data = ctn;
+  res->data = xbt_strdup(ctn);
   res->used = res->size = strlen(ctn);
   return res;
 }
@@ -61,8 +58,7 @@ XBT_INLINE void xbt_strbuff_free_container(xbt_strbuff_t b)
 XBT_INLINE void xbt_strbuff_free(xbt_strbuff_t b)
 {
   if (b) {
-    if (b->data)
-      free(b->data);
+    free(b->data);
     free(b);
   }
 }
@@ -79,9 +75,8 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
   needed_space = b->used + addlen + 1;
 
   if (needed_space > b->size) {
-    b->data =
-        realloc(b->data, MAX(minimal_increment + b->used, needed_space));
     b->size = MAX(minimal_increment + b->used, needed_space);
+    b->data = realloc(b->data, b->size);
   }
   strcpy(b->data + b->used, toadd);
   b->used += addlen;
@@ -89,10 +84,9 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
 
 XBT_INLINE void xbt_strbuff_chomp(xbt_strbuff_t b)
 {
-  while (b->data[b->used] == '\n') {
+  while (b->used && b->data[b->used - 1] == '\n') {
+    b->used--;
     b->data[b->used] = '\0';
-    if (b->used)
-      b->used--;
   }
 }
 
@@ -275,8 +269,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
         }
         free(value);
 
-        if (default_value)
-          free(default_value);
+        free(default_value);
 
         end--;                  /* compensate the next end++ */
       }
@@ -314,14 +307,14 @@ static void mytest(const char *input, const char *patterns,
   char *str;                    /*foreach */
   xbt_strbuff_t sb;             /* what we test */
 
-  p = xbt_dict_new();
+  p = xbt_dict_new_homogeneous(free);
   dyn_patterns = xbt_str_split(patterns, " ");
   xbt_dynar_foreach(dyn_patterns, cpt, str) {
     xbt_dynar_t keyvals = xbt_str_split(str, "=");
     char *key = xbt_dynar_get_as(keyvals, 0, char *);
     char *val = xbt_dynar_get_as(keyvals, 1, char *);
     xbt_str_subst(key, '_', ' ', 0);    // to put space in names without breaking the enclosing dynar_foreach
-    xbt_dict_set(p, key, xbt_strdup(val), free);
+    xbt_dict_set(p, key, xbt_strdup(val), NULL);
     xbt_dynar_free(&keyvals);
   }
   xbt_dynar_free(&dyn_patterns);

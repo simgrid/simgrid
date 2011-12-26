@@ -29,11 +29,22 @@ typedef struct ns3_nodes{
 extern "C" {
 #endif
 
+XBT_PUBLIC(int)    ns3_finalize(void);
+XBT_PUBLIC(int)    ns3_initialize(const char* TcpProtocol);
+XBT_PUBLIC(int)    ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,void * action);
+XBT_PUBLIC(void)   ns3_simulator(double min);
+XBT_PUBLIC(double) ns3_time(void);
+XBT_PUBLIC(void*)  ns3_get_socket_action(void *socket);
+XBT_PUBLIC(double) ns3_get_socket_remains(void *socket);
+XBT_PUBLIC(double) ns3_get_socket_sent(void *socket);
+XBT_PUBLIC(char)   ns3_get_socket_is_finished(void *socket);
 XBT_PUBLIC(void *) ns3_add_host(char * id);
 XBT_PUBLIC(void *) ns3_add_host_cluster(char * id);
 XBT_PUBLIC(void *) ns3_add_router(char * id);
 XBT_PUBLIC(void *) ns3_add_AS(char * id);
-XBT_PUBLIC(void *) ns3_add_link(int src,int dst,char * bw,char * lat);
+XBT_PUBLIC(void *) ns3_add_link(int src, e_ns3_network_element_type_t type_src,
+								int dst, e_ns3_network_element_type_t type_dst,
+								char * bw,char * lat);
 XBT_PUBLIC(void *) ns3_end_platform(void);
 XBT_PUBLIC(void *) ns3_add_cluster(char * bw,char * lat,char *id);
 #ifdef __cplusplus

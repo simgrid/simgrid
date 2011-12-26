@@ -129,7 +129,7 @@ void test(char *graph_file)
     XBT_INFO("Before Node deletion: %lu nodes, %lu edges",
           xbt_dynar_length(nodes), xbt_dynar_length(edges));
 
-    while (xbt_dynar_length(nodes))
+    while (!xbt_dynar_is_empty(nodes))
       xbt_graph_free_node(graph,
                           *((xbt_node_t *) xbt_dynar_get_ptr(nodes, 0)),
                           free_label, NULL);
@@ -144,7 +144,7 @@ void test(char *graph_file)
     XBT_INFO("Before Edge deletion: %lu nodes, %lu edges",
           xbt_dynar_length(nodes), xbt_dynar_length(edges));
 
-    while (xbt_dynar_length(edges))
+    while (!xbt_dynar_is_empty(edges))
       xbt_graph_free_edge(graph,
                           *((xbt_edge_t *) xbt_dynar_get_ptr(edges, 0)),
                           NULL);

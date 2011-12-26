@@ -29,4 +29,9 @@ extern int ROUTING_ASR_LEVEL;	//Routing level
 extern int COORD_ASR_LEVEL;	//Coordinates level
 extern int NS3_ASR_LEVEL;		//host node for ns3
 
+
+/* The callbacks to register for the routing to work */
+void routing_AS_begin(const char *AS_id, const char *wanted_routing_type);
+void routing_AS_end(void);
+
 #endif                          /* _SURF_SURF_H */

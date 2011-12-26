@@ -12,10 +12,11 @@ $ ls
 # Check that tesh detects properly cd to non-existing directories
 ! expect return 4
 < $ cd toto
+> Enable coverage
 > Test suite from stdin
 > Chdir to toto failed: No such file or directory
 > Test suite `(stdin)': NOK (system error)
-$ ../tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ../tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
 
 # The next command checks that there is a testdir_temp-cd in the upper directory, 
 # ie that mkdir and cd both worked.

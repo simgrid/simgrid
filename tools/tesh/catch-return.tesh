@@ -16,7 +16,8 @@ $ gcc -o return1 return1.c
 
 ! expect return 41
 < $ ./return1
-$ ../tesh --log='log.thresh:info tesh.fmt:%m%n'
+$ ../tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
+> Enable coverage
 > Test suite from stdin
 > [(stdin):1] ./return1
 > Test suite `(stdin)': NOK (<(stdin):1> returned code 1)

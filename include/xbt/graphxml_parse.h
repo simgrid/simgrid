@@ -1,5 +1,3 @@
-/* 	$Id $	 */
-
 /* Copyright (c) 2006, 2007, 2009, 2010. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -29,8 +27,7 @@ extern void_f_void_t ETag_graphxml_edge_fun;
 XBT_PUBLIC(void) xbt_graph_parse_open(const char *file);
 XBT_PUBLIC(void) xbt_graph_parse_close(void);
 XBT_PUBLIC(void) xbt_graph_parse_reset_parser(void);
-XBT_PUBLIC(void) xbt_graph_parse_get_double(double *value,
-                                            const char *string);
+XBT_PUBLIC(double) xbt_graph_parse_get_double(const char *string);
 
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC(int) xbt_graph_parse_lex(void);

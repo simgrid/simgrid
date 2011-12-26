@@ -10,6 +10,7 @@
 #define _SIMIX_CONTEXT_H
 
 #include "xbt/swag.h"
+#include "xbt/parmap.h"
 #include "simix/datatypes.h"
 #include "simgrid_config.h"
 
@@ -33,7 +34,7 @@ typedef void (*smx_pfn_context_free_t) (smx_context_t);
 typedef void (*smx_pfn_context_start_t) (smx_context_t);
 typedef void (*smx_pfn_context_stop_t) (smx_context_t);
 typedef void (*smx_pfn_context_suspend_t) (smx_context_t context);
-typedef void (*smx_pfn_context_runall_t) (xbt_dynar_t processes);
+typedef void (*smx_pfn_context_runall_t) (void);
 typedef smx_context_t (*smx_pfn_context_self_t) (void);
 typedef void* (*smx_pfn_context_get_data_t) (smx_context_t context);
 
@@ -49,8 +50,6 @@ typedef struct s_smx_context_factory {
   smx_pfn_context_self_t self;
   smx_pfn_context_get_data_t get_data;
 } s_smx_context_factory_t;
-
-
 
 /* Hack: let msg load directly the right factory */
 typedef void (*smx_ctx_factory_initializer_t)(smx_context_factory_t*);
@@ -74,11 +73,11 @@ extern smx_context_t smx_current_context;
 typedef struct s_smx_context {
   s_xbt_swag_hookup_t hookup;
   xbt_main_func_t code;
-  int argc;
-  char **argv;
   void_pfn_smxprocess_t cleanup_func;
-  int iwannadie:1;
   void *data;   /* Here SIMIX stores the smx_process_t containing the context */
+  char **argv;
+  int argc;
+  int iwannadie:1;
 } s_smx_ctx_base_t;
 
 /* methods of this class */
@@ -96,12 +95,16 @@ void smx_ctx_base_stop(smx_context_t context);
 smx_context_t smx_ctx_base_self(void);
 void *smx_ctx_base_get_data(smx_context_t context);
 
+XBT_INLINE xbt_dynar_t SIMIX_process_get_runnable(void);
+
 /* parallelism */
-XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads);
-XBT_INLINE int SIMIX_context_get_nthreads(void);
 XBT_INLINE int SIMIX_context_is_parallel(void);
-XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold);
+XBT_INLINE int SIMIX_context_get_nthreads(void);
+XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads);
 XBT_INLINE int SIMIX_context_get_parallel_threshold(void);
+XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold);
+XBT_INLINE e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void);
+XBT_INLINE void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
 
 SG_END_DECL()
 

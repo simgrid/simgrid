@@ -1,6 +1,6 @@
 /* file_appender - a dumb log appender which simply prints to stdout        */
 
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,7 +19,7 @@ extern const char *xbt_log_priority_names[8];
 
 static void append_file(xbt_log_appender_t this_appender, char *str)
 {
-  fprintf((FILE *) (this_appender->data), "%s", str);
+  fputs(str, (FILE *) (this_appender->data));
 }
 
 static void free_(xbt_log_appender_t this_)

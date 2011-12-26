@@ -12,6 +12,15 @@ find_library(PATH_PCRE_LIB
     /sw
     /usr)
     
+string(REGEX MATCH ".dll.a" operation "${PATH_PCRE_LIB}")
+
+if(NOT operation)
+    if(WIN32)
+           set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-DPCRE_STATIC ")
+    endif(WIN32)
+endif(NOT operation)
+
+
 find_path(PATH_PCRE_H "pcre.h"
     HINTS
     $ENV{SIMGRID_PCRE_LIBRARY_PATH}
@@ -24,8 +33,6 @@ find_path(PATH_PCRE_H "pcre.h"
     /opt/csw
     /sw
     /usr)
-       
-set(HAVE_PCRE_LIB 0)
 
 message(STATUS "Looking for pcre.h")
 if(PATH_PCRE_H)
@@ -73,13 +80,8 @@ if(PATH_PCRE_LIB AND PATH_PCRE_H)
 	   if(NOT operation)
 			SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${PATH_PCRE_H} ")
 	   endif(NOT operation)	   
-       set(HAVE_PCRE_LIB 1)
 else(PATH_PCRE_LIB)
-		if(enable_pcre STREQUAL "ON")
-			message(FATAL_ERROR "Please install the libpcre3-dev package or equivalent before using it.")
-		else(enable_pcre STREQUAL "ON")
-			message(STATUS "Warning: You should install libpcre (please install the libpcre3-dev package or equivalent).")
-		endif(enable_pcre STREQUAL "ON")
+	   message(FATAL_ERROR "Please install the libpcre3-dev package or equivalent before using SimGrid.")
 endif(PATH_PCRE_LIB AND PATH_PCRE_H)
     
 mark_as_advanced(PATH_PCRE_H)

@@ -5,31 +5,33 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
                                 "Logging specific to SIMIX (SMURF)");
 
-/* FIXME: we may want to save the initialization of issuer... */
 XBT_INLINE smx_req_t SIMIX_req_mine()
 {
   smx_process_t issuer = SIMIX_process_self();
   return &issuer->request;
 }
 
-void SIMIX_request_push()
+/**
+ * \brief Makes the current process do a request to the kernel and yields
+ * until completion.
+ * \param self the current process
+ */
+void SIMIX_request_push(smx_process_t self)
 {
-  smx_process_t issuer = SIMIX_process_self();
-
-  if (issuer != simix_global->maestro_process){
-    issuer->request.issuer = issuer;
-    XBT_DEBUG("Yield process '%s' on request of type %s (%d)", issuer->name,
-        SIMIX_request_name(issuer->request.call), issuer->request.call);
-    SIMIX_process_yield();
+  if (self != simix_global->maestro_process) {
+    XBT_DEBUG("Yield process '%s' on request of type %s (%d)", self->name,
+        SIMIX_request_name(self->request.call), self->request.call);
+    SIMIX_process_yield(self);
   } else {
-    SIMIX_request_pre(&issuer->request, 0);
+    SIMIX_request_pre(&self->request, 0);
   }
 }
 
 void SIMIX_request_answer(smx_req_t req)
 {
   if (req->issuer != simix_global->maestro_process){
-    XBT_DEBUG("Answer request %s (%d)", SIMIX_request_name(req->call), req->call);
+    XBT_DEBUG("Answer request %s (%d) issued by %s (%p)", SIMIX_request_name(req->call), req->call,
+        req->issuer->name, req->issuer);
     req->issuer->request.call = REQ_NO_REQ;
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, req->issuer);
   }

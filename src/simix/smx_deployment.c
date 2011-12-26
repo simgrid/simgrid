@@ -8,7 +8,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
-#include "surf/surfxml_parse_private.h"
+#include "surf/surfxml_parse.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
                                 "Logging specific to SIMIX (deployment)");
@@ -33,8 +33,8 @@ static void parse_process_init(void)
   parse_argc++;
   parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
   parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
-  surf_parse_get_double(&start_time, A_surfxml_process_start_time);
-  surf_parse_get_double(&kill_time, A_surfxml_process_kill_time);
+  start_time= surf_parse_get_double(A_surfxml_process_start_time);
+  kill_time = surf_parse_get_double(A_surfxml_process_kill_time);
 }
 
 static void parse_argument(void)
@@ -66,12 +66,12 @@ static void parse_process_finalize(void)
     XBT_DEBUG("Starting Process %s(%s) right now", parse_argv[0], parse_host);
 
     if (simix_global->create_process_function)
-      (*simix_global->create_process_function) (&process,
-                                                parse_argv[0],
-                                                parse_code, NULL,
-                                                parse_host, parse_argc,
-                                                parse_argv,
-                                                current_property_set);
+      simix_global->create_process_function(&process,
+                                            parse_argv[0],
+                                            parse_code, NULL,
+                                            parse_host, parse_argc,
+                                            parse_argv,
+                                            current_property_set);
     else
       SIMIX_req_process_create(&process, parse_argv[0], parse_code, NULL, parse_host, parse_argc, parse_argv,
                                current_property_set);
@@ -104,16 +104,15 @@ static void parse_process_finalize(void)
  */
 void SIMIX_launch_application(const char *file)
 {
-  int parse_status;
+  _XBT_GNUC_UNUSED int parse_status;
   xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_launch_application.");
 
-  // Reset callbacks
   surf_parse_reset_callbacks();
 
   surfxml_add_callback(STag_surfxml_process_cb_list, parse_process_init);
   surfxml_add_callback(ETag_surfxml_argument_cb_list, parse_argument);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties_XML);
+  surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
   surfxml_add_callback(ETag_surfxml_process_cb_list,
                        parse_process_finalize);
 

@@ -25,7 +25,7 @@
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|include|link|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect)*,(bypassRoute|trace|trace_connect)*)|((host|router|link|trace|trace_connect)*,(route|trace|trace_connect)*))>
+<!ELEMENT AS (((AS|include|link|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect)*,(bypassRoute|trace|trace_connect)*)|((include|host|router|link|trace|trace_connect)*,(route|trace|trace_connect)*))>
 
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing CDATA #REQUIRED>
@@ -55,6 +55,7 @@
 <!ATTLIST cluster bb_sharing_policy (SHARED|FATPIPE) "SHARED">
 <!ATTLIST cluster availability_file CDATA "">
 <!ATTLIST cluster state_file CDATA "">
+<!ATTLIST cluster router_id CDATA "">
 
 <!ELEMENT peer EMPTY>
 <!ATTLIST peer id CDATA #REQUIRED>

@@ -1,8 +1,6 @@
 ### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see after)
 ### ex: cmake -Denable_java=ON -Denable_gtnets=ON ./
 
-
-
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib and include")
 set(ns3_path ${ns3_path} CACHE PATH "Path to ns3 lib and include")
@@ -17,26 +15,16 @@ endif(NOT CMAKE_INSTALL_PREFIX)
 set(pipol_user ${pipol_user} CACHE TYPE INTERNAL FORCE)
 
 option(release "Whether Release Mode is activated (disable tests on experimental parts)" on)
+option(enable_compile_optimizations "" on)
+option(enable_debug "Set NDEBUG flag" on)
 
-option(enable_gtnets "Whether gtnets model is activated." on)
+option(enable_gtnets "Whether gtnets model is activated." off)
 option(enable_ns3    "Whether ns3 model is activated." off)
 option(enable_smpi "This variable set smpi lib." off)
-option(enable_lua "Whether the lua bindings are activated." on)
-set(enable_pcre ${enable_pcre} CACHE FORCE "Whether the pcre lib is activated.")
-if(enable_pcre STREQUAL "")
-	set(enable_pcre "AUTO")
-endif(enable_pcre STREQUAL "")
-
-if(WIN32 OR APPLE) 
-set(enable_smpi off CACHE TYPE INTERNAL FORCE)
-set(enable_lua off CACHE TYPE INTERNAL FORCE)
-endif(WIN32 OR APPLE) 
-
-option(enable_compile_optimizations "" on)
+option(enable_lua "Whether the lua bindings are activated." off)
 option(enable_compile_warnings "Whether compilation warnings should be turned into errors." off)
 option(enable_maintainer_mode "Whether flex and flexml files should be rebuilt." off)
-option(enable_supernovae "Whether Supernovae mode (helping compiler optimization) is activated." on)
-option(enable_tracing "Tracing simulations for visualization." on)
+option(enable_tracing "Tracing simulations for visualization." off)
 option(enable_latency_bound_tracking "" off)
 option(enable_coverage "Enable coverage." off)
 option(enable_memcheck "Enable memcheck." off)
@@ -45,6 +33,7 @@ option(enable_model-checking "" off)
 option(enable_lib_static "" off)
 option(enable_jedule "Jedule output of SimDAG." off)
 option(enable_debug "Set NDEBUG flag" on)
+option(enable_supernovae "Whether Supernovae mode (helping compiler optimization) is activated." on)
 
 if(enable_supernovae AND enable_model-checking)
 	set(enable_model-checking false CACHE TYPE INTERNAL FORCE)

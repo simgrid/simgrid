@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2008, 2009, 2010, 2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include "simdag/simdag.h"
 #include "surf/surf_private.h"
-#include <time.h>
+#include "xbt/xbt_os_time.h"
 
 #define BILLION  1000000000L;
 extern routing_global_t global_routing;
@@ -22,8 +22,7 @@ int main(int argc, char **argv)
 	const SD_workstation_t *workstations;
 	int i, j;
 	int list_size;
-	struct timespec start, stop;
-	double accum;
+	xbt_os_timer_t timer = xbt_os_timer_new();
 
 	/* initialisation of SD */
 	SD_init(&argc, argv);
@@ -34,12 +33,8 @@ int main(int argc, char **argv)
 	workstations = SD_workstation_get_list();
 	list_size = SD_workstation_get_number();
 
-	unsigned int seed;
-	struct timespec time;
-	clock_gettime( CLOCK_REALTIME, &time);
-	seed = time.tv_nsec;
-
-	srand(seed);
+	/* Random number initialization */
+	srand( (int) (xbt_os_time()*1000) );
 
 	do{
 		i = rand()%list_size;
@@ -50,22 +45,11 @@ int main(int argc, char **argv)
 	w2 = workstations[j];
 	printf("%d\tand\t%d\t\t",i,j);
 
-	if( clock_gettime( CLOCK_REALTIME, &start) == -1 ) {
-	perror( "clock gettime" );
-	return EXIT_FAILURE;
-	}
-
+	xbt_os_timer_start(timer);
 	SD_route_get_list(w1, w2);
+  xbt_os_timer_stop(timer);
 
-	if( clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
-	perror( "clock gettime" );
-	return EXIT_FAILURE;
-	}
-
-	accum = ( stop.tv_sec - start.tv_sec )
-	   + (double)( stop.tv_nsec - start.tv_nsec )
-		 / (double)BILLION;
-	printf("%lf\n", accum);
+	printf("%lf\n", xbt_os_timer_elapsed(timer) );
 
 	SD_exit();
 

@@ -71,8 +71,7 @@ void *realloc(void *p, size_t s)
     else
       ret = mmalloc(mdp, s);
   } else {
-    if (p)
-      mfree(mdp, p);
+    mfree(mdp, p);
   }
   UNLOCK(mdp);
 

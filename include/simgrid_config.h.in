@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* simgrid_config.h - Results of the configure made visible to user code    */
 
 /* Copyright (c) 2009, 2010, 2011. Da SimGrid team. All rights reserved.    */
@@ -20,9 +18,9 @@ SG_BEGIN_DECL()
 #define MAKE_SIMGRID_VERSION(major, minor, patch)       \
   (100UL * (100UL * (major) + (minor)) + (patch))
 
-#cmakedefine SIMGRID_VERSION_MAJOR @SIMGRID_VERSION_MAJOR@
-#cmakedefine SIMGRID_VERSION_MINOR @SIMGRID_VERSION_MINOR@
-#cmakedefine SIMGRID_VERSION_PATCH @SIMGRID_VERSION_PATCH@
+#define SIMGRID_VERSION_MAJOR @SIMGRID_VERSION_MAJOR@
+#define SIMGRID_VERSION_MINOR @SIMGRID_VERSION_MINOR@
+#define SIMGRID_VERSION_PATCH @SIMGRID_VERSION_PATCH@
 
 #define SIMGRID_VERSION MAKE_SIMGRID_VERSION(SIMGRID_VERSION_MAJOR, \
                                              SIMGRID_VERSION_MINOR, \

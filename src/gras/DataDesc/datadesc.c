@@ -158,7 +158,7 @@ void gras_datadesc_init(void)
   ddt = gras_datadesc_ref("xbt_peer_t", ddt);
 
   /* Dict containing the constant value (for the parsing macro) */
-  gras_dd_constants = xbt_dict_new();
+  gras_dd_constants = xbt_dict_new_homogeneous(xbt_free_f);
 
 }
 

@@ -22,4 +22,14 @@ typedef struct surf_ns3_link{
 	int created;
 }s_surf_ns3_link_t, *surf_ns3_link_t;
 
+typedef struct surf_action_network_ns3 {
+  s_surf_action_t generic_action;
+#ifdef HAVE_TRACING
+  double last_sent;
+  char *src_name;
+  char *dst_name;
+#endif //HAVE_TRACING
+} s_surf_action_network_ns3_t, *surf_action_network_ns3_t;
+
+
 #endif                          /* _SURF_NETWORK_NS3_PRIVATE_H */

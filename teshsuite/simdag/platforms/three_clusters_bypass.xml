@@ -1,0 +1,46 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+<AS  id="AS0"  routing="Full">
+  <cluster id="my_cluster_1" prefix="" suffix=""
+  		radical="1"	power="1000000000"    bw="125000000"     lat="5E-5"/>
+		
+  <cluster id="my_cluster_2" prefix="" suffix=""
+ 	    radical="2" power="1000000000"	bw="125000000"	lat="5E-5"/>  
+ 	    
+  <cluster id="my_cluster_3" prefix="" suffix=""
+        radical="3" power="1000000000"    bw="125000000"  lat="5E-5"/>  
+       
+     <link id="link1" bandwidth="1250000000" latency="5E-4"/>  
+ 	 <link id="link2" bandwidth="1250000000" latency="5E-4"/>
+ 	 <link id="link3" bandwidth="1250000000" latency="5E-4"/>
+ 	 <link id="link_tmp"  bandwidth="1250000000" latency="5E-4"/>
+ 	
+     <ASroute src="my_cluster_1" dst="my_cluster_2" 
+	 gw_src="my_cluster_1_router" 
+	 gw_dst="my_cluster_2_router">
+ 		<link_ctn id="link1"/>
+ 		<link_ctn id="link2"/>
+     </ASroute>
+     
+     <ASroute src="my_cluster_1" dst="my_cluster_3" 
+     gw_src="my_cluster_1_router" 
+     gw_dst="my_cluster_3_router">
+        <link_ctn id="link1"/>
+        <link_ctn id="link3"/>
+     </ASroute>
+     
+     <ASroute src="my_cluster_2" dst="my_cluster_3" 
+     gw_src="my_cluster_2_router" 
+     gw_dst="my_cluster_3_router">
+        <link_ctn id="link2"/>
+        <link_ctn id="link3"/>
+     </ASroute>
+     
+     <bypassRoute src="my_cluster_1" dst="my_cluster_2"
+     gw_src="my_cluster_$1src_router" 
+     gw_dst="my_cluster_$1dst_router">
+        <link_ctn id="link_tmp"/>  
+     </bypassRoute>
+</AS>
+</platform>

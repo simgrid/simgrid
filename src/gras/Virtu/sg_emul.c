@@ -41,15 +41,14 @@ static unsigned int locbufsize;
 void gras_emul_init(void)
 {
   if (!benchmark_set) {
-    benchmark_set = xbt_dict_new();
+    benchmark_set = xbt_dict_new_homogeneous(xbt_free_f);
     timer = xbt_os_timer_new();
   }
 }
 
 void gras_emul_exit(void)
 {
-  if (locbuf)
-    free(locbuf);
+  free(locbuf);
   xbt_dict_free(&benchmark_set);
   xbt_os_timer_free(timer);
 }
@@ -62,7 +61,7 @@ static void store_in_dict(xbt_dict_t dict, const char *key, double value)
   ir = xbt_dict_get_or_null(dict, key);
   if (!ir) {
     ir = xbt_new0(double, 1);
-    xbt_dict_set(dict, key, ir, xbt_free_f);
+    xbt_dict_set(dict, key, ir, NULL);
   }
   *ir = value;
 }

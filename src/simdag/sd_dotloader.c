@@ -27,16 +27,22 @@ xbt_dynar_t SD_dotload_generic(const char * filename);
 
 static double dot_parse_double(const char *string)
 {
-  if (string == NULL)
-    return -1;
-  int ret = 0;
-  double value = -1;
+    if (string == NULL)
+          return -1;
+      double value = -1;
+        char *err;
 
-  ret = sscanf(string, "%lg", &value);
-  if (ret != 1)
-    XBT_WARN("%s is not a double", string);
-  return value;
+          //ret = sscanf(string, "%lg", &value);
+          errno = 0;
+            value = strtod(string,&err);
+              if(errno)
+                  {
+                        XBT_WARN("Failed to convert string to double: %s\n",strerror(errno));
+                            return -1;
+                              }
+                return value;
 }
+
 
 static int dot_parse_int(const char *string)
 {
@@ -153,9 +159,9 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
   dag_dot = agread(in_file, NIL(Agdisc_t *));
 
   result = xbt_dynar_new(sizeof(SD_task_t), dot_task_free);
-  files = xbt_dict_new();
-  jobs = xbt_dict_new();
-  computers = xbt_dict_new();
+  files = xbt_dict_new_homogeneous(&dot_task_free);
+  jobs = xbt_dict_new_homogeneous(NULL);
+  computers = xbt_dict_new_homogeneous(NULL);
   root_task = SD_task_create_comp_seq("root", NULL, 0);
   /* by design the root task is always SCHEDULABLE */
   __SD_task_set_state(root_task, SD_SCHEDULABLE);
@@ -191,7 +197,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
     unsigned int cpt1, cpt2;
     SD_task_t newfile = NULL;
     SD_dependency_t depbefore, depafter;
-    if (xbt_dynar_length(file->tasks_before) == 0) {
+    if (xbt_dynar_is_empty(file->tasks_before)) {
       xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
         SD_task_t newfile =
             SD_task_create_comm_e2e(file->name, NULL, file->amount);
@@ -199,7 +205,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
         SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
         xbt_dynar_push(result, &newfile);
       }
-    } else if (xbt_dynar_length(file->tasks_after) == 0) {
+    } else if (xbt_dynar_is_empty(file->tasks_after)) {
       xbt_dynar_foreach(file->tasks_before, cpt2, depbefore) {
         SD_task_t newfile =
             SD_task_create_comm_e2e(file->name, NULL, file->amount);
@@ -312,7 +318,7 @@ void dot_add_task(Agnode_t * dag_node)
         computer = xbt_dynar_new(sizeof(SD_task_t), NULL);
         xbt_dict_set(computers, char_performer, computer, NULL);
       }
-      if(performer < host_lib->count){
+      if(performer < xbt_lib_length(host_lib)){
         // the  wanted computer is available
         SD_task_t *task_test = NULL;
         if(order < computer->used)
@@ -348,9 +354,10 @@ void dot_add_task(Agnode_t * dag_node)
 void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
 {
   SD_task_t file;
-
-  char name[80];
-  sprintf(name, "%s->%s", agnameof(agtail(edge)), agnameof(aghead(edge)));
+  char *name_tail=agnameof(agtail(edge));
+  char *name_head=agnameof(aghead(edge));
+  char *name = malloc((strlen(name_head)+strlen(name_tail)+3)*sizeof(char));
+  sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
   XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
 
@@ -361,7 +368,7 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
 #ifdef HAVE_TRACING
       TRACE_sd_dotloader (file, agget (edge, (char*)"category"));
 #endif
-      xbt_dict_set(files, name, file, &dot_task_free);
+      xbt_dict_set(files, name, file, NULL);
     } else {
       if (SD_task_get_amount(file) != size) {
         XBT_WARN("Ignoring file %s size redefinition from %.0f to %.0f",
@@ -375,6 +382,7 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
       SD_task_dependency_add(NULL, NULL, file, current_job);
     }
   }
+  free(name);
 }
 
 /* dot_add_output_dependencies create the dependencies between a
@@ -384,8 +392,10 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
 void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
 {
   SD_task_t file;
-  char name[80];
-  sprintf(name, "%s->%s", agnameof(agtail(edge)), agnameof(aghead(edge)));
+  char *name_tail=agnameof(agtail(edge));
+  char *name_head=agnameof(aghead(edge));
+  char *name = malloc((strlen(name_head)+strlen(name_tail)+3)*sizeof(char));
+  sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
   XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
 
@@ -396,7 +406,7 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
 #ifdef HAVE_TRACING
       TRACE_sd_dotloader (file, agget (edge, (char*)"category"));
 #endif
-      xbt_dict_set(files, name, file, &dot_task_free);
+      xbt_dict_set(files, name, file, NULL);
     } else {
       if (SD_task_get_amount(file) != size) {
         XBT_WARN("Ignoring file %s size redefinition from %.0f to %.0f",
@@ -413,4 +423,5 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
       SD_task_dependency_add(NULL, NULL, current_job, file);
     }
   }
+  free(name);
 }

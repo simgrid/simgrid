@@ -63,8 +63,8 @@ static void linkContainers (container_t father, container_t src, container_t dst
     if (xbt_dict_get_or_null (filter, aux2)) return;
 
     //ok, not found, register it
-    xbt_dict_set (filter, aux1, xbt_strdup ("1"), xbt_free);
-    xbt_dict_set (filter, aux2, xbt_strdup ("1"), xbt_free);
+    xbt_dict_set (filter, aux1, xbt_strdup ("1"), NULL);
+    xbt_dict_set (filter, aux2, xbt_strdup ("1"), NULL);
   }
 
   //declare type
@@ -73,7 +73,7 @@ static void linkContainers (container_t father, container_t src, container_t dst
   type_t link_type = getLinkType (link_typename, father->type, src->type, dst->type);
 
   //register EDGE types for triva configuration
-  xbt_dict_set (trivaEdgeTypes, link_type->name, xbt_strdup("1"), xbt_free);
+  xbt_dict_set (trivaEdgeTypes, link_type->name, xbt_strdup("1"), NULL);
 
   //create the link
   static long long counter = 0;
@@ -83,11 +83,11 @@ static void linkContainers (container_t father, container_t src, container_t dst
   new_pajeEndLink(SIMIX_get_clock(), father, link_type, dst, "G", key);
 }
 
-static void recursiveGraphExtraction (routing_component_t rc, container_t container, xbt_dict_t filter)
+static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t filter)
 {
-  if (xbt_dict_length (rc->routing_sons)){
+  if (!xbt_dict_is_empty(rc->routing_sons)){
     xbt_dict_cursor_t cursor = NULL;
-    routing_component_t rc_son;
+    AS_t rc_son;
     char *child_name;
     //bottom-up recursion
     xbt_dict_foreach(rc->routing_sons, cursor, child_name, rc_son) {
@@ -109,15 +109,24 @@ static void recursiveGraphExtraction (routing_component_t rc, container_t contai
           (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER) &&
           strcmp (child1_name, child2_name) != 0){
 
-        xbt_dynar_t route = global_routing->get_route (child1_name, child2_name);
+        xbt_dynar_t route = NULL;
+        xbt_ex_t e;
+
+        TRY {
+          routing_get_route_and_latency(child1_name, child2_name, &route, NULL);
+        } CATCH(e) {
+          xbt_ex_free(e);
+        }
+        if (route == NULL) continue;
+
         if (TRACE_onelink_only()){
           if (xbt_dynar_length (route) > 1) continue;
         }
-        unsigned int cpt;
-        void *link;
         container_t previous = child1;
-        xbt_dynar_foreach (route, cpt, link) {
-          char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+        int i;
+        for (i = 0; i < xbt_dynar_length(route); i++){
+          link_CM02_t *link = ((link_CM02_t*)xbt_dynar_get_ptr (route, i));
+          char *link_name = (*link)->lmm_resource.generic_resource.name;
           container_t current = getContainerByName(link_name);
           linkContainers(container, previous, current, filter);
           previous = current;
@@ -128,11 +137,13 @@ static void recursiveGraphExtraction (routing_component_t rc, container_t contai
                 child2->kind == INSTR_AS &&
                 strcmp(child1_name, child2_name) != 0){
 
-        route_extended_t route = rc->get_route (rc, child1_name, child2_name);
+        route_t route = xbt_new0(s_route_t,1);
+        route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+        rc->get_route_and_latency (rc, child1_name, child2_name, route,NULL);
         unsigned int cpt;
         void *link;
         container_t previous = getContainerByName(route->src_gateway);
-        xbt_dynar_foreach (route->generic_route.link_list, cpt, link) {
+        xbt_dynar_foreach (route->link_list, cpt, link) {
           char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
           container_t current = getContainerByName(link_name);
           linkContainers (container, previous, current, filter);
@@ -140,6 +151,7 @@ static void recursiveGraphExtraction (routing_component_t rc, container_t contai
         }
         container_t last = getContainerByName(route->dst_gateway);
         linkContainers (container, previous, last, filter);
+        generic_free_route(route);
       }
     }
   }
@@ -148,10 +160,10 @@ static void recursiveGraphExtraction (routing_component_t rc, container_t contai
 /*
  * Callbacks
  */
-static void instr_routing_parse_start_AS ()
+static void instr_routing_parse_start_AS (const char*id,const char*routing)
 {
   if (getRootContainer() == NULL){
-    container_t root = newContainer (A_surfxml_AS_id, INSTR_AS, NULL);
+    container_t root = newContainer (id, INSTR_AS, NULL);
     instr_paje_init (root);
 
     if (TRACE_smpi_is_enabled()) {
@@ -171,7 +183,7 @@ static void instr_routing_parse_start_AS ()
 
   if (TRACE_needs_platform()){
     container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-    container_t new = newContainer (A_surfxml_AS_id, INSTR_AS, father);
+    container_t new = newContainer (id, INSTR_AS, father);
     xbt_dynar_push (currentContainer, &new);
   }
 }
@@ -183,24 +195,23 @@ static void instr_routing_parse_end_AS ()
   }
 }
 
-static void instr_routing_parse_start_link ()
+static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  const char *link_id = A_surfxml_link_id;
 
-  double bandwidth_value = atof(A_surfxml_link_bandwidth);
-  double latency_value = atof(A_surfxml_link_latency);
+  double bandwidth_value = link->bandwidth;
+  double latency_value = link->latency;
   xbt_dynar_t links_to_create = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
 
-  if (A_surfxml_link_sharing_policy == A_surfxml_link_sharing_policy_FULLDUPLEX){
-    char *up = bprintf("%s_UP", link_id);
-    char *down = bprintf("%s_DOWN", link_id);
+  if (link->policy == SURF_LINK_FULLDUPLEX){
+    char *up = bprintf("%s_UP", link->id);
+    char *down = bprintf("%s_DOWN", link->id);
     xbt_dynar_push_as (links_to_create, char*, xbt_strdup(up));
     xbt_dynar_push_as (links_to_create, char*, xbt_strdup(down));
     free (up);
     free (down);
   }else{
-    xbt_dynar_push_as (links_to_create, char*, strdup(link_id));
+    xbt_dynar_push_as (links_to_create, char*, strdup(link->id));
   }
 
   char *link_name = NULL;
@@ -223,18 +234,14 @@ static void instr_routing_parse_start_link ()
   xbt_dynar_free (&links_to_create);
 }
 
-static void instr_routing_parse_end_link ()
-{
-}
-
-static void instr_routing_parse_start_host ()
+static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  container_t new = newContainer (A_surfxml_host_id, INSTR_HOST, father);
+  container_t new = newContainer (host->id, INSTR_HOST, father);
 
   if (TRACE_categorized() || TRACE_uncategorized()) {
     type_t power = getVariableType ("power", NULL, new->type);
-    new_pajeSetVariable (0, new, power, atof(A_surfxml_host_power));
+    new_pajeSetVariable (0, new, power, host->power_peak);
   }
   if (TRACE_uncategorized()){
     getVariableType ("power_used", "0.5 0.5 0.5", new->type);
@@ -268,25 +275,17 @@ static void instr_routing_parse_start_host ()
   }
 }
 
-static void instr_routing_parse_end_host ()
-{
-}
-
-static void instr_routing_parse_start_router ()
+static void instr_routing_parse_start_router (sg_platf_router_cbarg_t router)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  newContainer (A_surfxml_router_id, INSTR_ROUTER, father);
-}
-
-static void instr_routing_parse_end_router ()
-{
+  newContainer (router->id, INSTR_ROUTER, father);
 }
 
 static void instr_routing_parse_end_platform ()
 {
   xbt_dynar_free(&currentContainer);
   currentContainer = NULL;
-  xbt_dict_t filter = xbt_dict_new ();
+  xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free);
   recursiveGraphExtraction (global_routing->root, getRootContainer(), filter);
   xbt_dict_free(&filter);
   platform_created = 1;
@@ -298,16 +297,14 @@ void instr_routing_define_callbacks ()
   if (!TRACE_is_enabled()) return;
   //always need the call backs to ASes (we need only the root AS),
   //to create the rootContainer and the rootType properly
-  surfxml_add_callback(STag_surfxml_AS_cb_list, &instr_routing_parse_start_AS);
-  surfxml_add_callback(ETag_surfxml_AS_cb_list, &instr_routing_parse_end_AS);
+  sg_platf_AS_begin_add_cb(instr_routing_parse_start_AS);
+  sg_platf_AS_end_add_cb(instr_routing_parse_end_AS);
   if (!TRACE_needs_platform()) return;
-  surfxml_add_callback(STag_surfxml_link_cb_list, &instr_routing_parse_start_link);
-  surfxml_add_callback(ETag_surfxml_link_cb_list, &instr_routing_parse_end_link);
-  surfxml_add_callback(STag_surfxml_host_cb_list, &instr_routing_parse_start_host);
-  surfxml_add_callback(ETag_surfxml_host_cb_list, &instr_routing_parse_end_host);
-  surfxml_add_callback(STag_surfxml_router_cb_list, &instr_routing_parse_start_router);
-  surfxml_add_callback(ETag_surfxml_router_cb_list, &instr_routing_parse_end_router);
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &instr_routing_parse_end_platform);
+  sg_platf_link_add_cb(instr_routing_parse_start_link);
+  sg_platf_host_add_cb(instr_routing_parse_start_host);
+  sg_platf_router_add_cb(instr_routing_parse_start_router);
+
+  sg_platf_postparse_add_cb(instr_routing_parse_end_platform);
 }
 
 /*
@@ -398,11 +395,11 @@ static xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_
 }
 
 static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
-    routing_component_t rc, container_t container)
+    AS_t rc, container_t container)
 {
-  if (xbt_dict_length (rc->routing_sons)){
+  if (!xbt_dict_is_empty(rc->routing_sons)){
     xbt_dict_cursor_t cursor = NULL;
-    routing_component_t rc_son;
+    AS_t rc_son;
     char *child_name;
     //bottom-up recursion
     xbt_dict_foreach(rc->routing_sons, cursor, child_name, rc_son) {
@@ -424,7 +421,9 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
           (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER) &&
           strcmp (child1_name, child2_name) != 0){
 
-        xbt_dynar_t route = global_routing->get_route (child1_name, child2_name);
+        // FIXME factorize route creation with else branch below (once possible)
+        xbt_dynar_t route=NULL;
+        routing_get_route_and_latency (child1_name, child2_name,&route,NULL);
         if (TRACE_onelink_only()){
           if (xbt_dynar_length (route) > 1) continue;
         }
@@ -445,11 +444,13 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
                 child2->kind == INSTR_AS &&
                 strcmp(child1_name, child2_name) != 0){
 
-        route_extended_t route = rc->get_route (rc, child1_name, child2_name);
+        route_t route = xbt_new0(s_route_t,1);
+        route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+        rc->get_route_and_latency (rc, child1_name, child2_name,route, NULL);
         unsigned int cpt;
         void *link;
         xbt_node_t current, previous = new_xbt_graph_node(graph, route->src_gateway, nodes);
-        xbt_dynar_foreach (route->generic_route.link_list, cpt, link) {
+        xbt_dynar_foreach (route->link_list, cpt, link) {
           char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
           current = new_xbt_graph_node(graph, link_name, nodes);
           //previous -> current
@@ -457,6 +458,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
         }
         current = new_xbt_graph_node(graph, route->dst_gateway, nodes);
         new_xbt_graph_edge (graph, previous, current, edges);
+        generic_free_route(route);
       }
     }
   }
@@ -466,8 +468,8 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
 xbt_graph_t instr_routing_platform_graph (void)
 {
   xbt_graph_t ret = xbt_graph_new_graph (0, NULL);
-  xbt_dict_t nodes = xbt_dict_new ();
-  xbt_dict_t edges = xbt_dict_new ();
+  xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
+  xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
   recursiveXBTGraphExtraction (ret, nodes, edges, global_routing->root, getRootContainer());
   return ret;
 }

@@ -1,6 +1,6 @@
 /* dict_cursor - iterators over dictionnaries                               */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_cursor, xbt_dict,
 /* To traverse (simple) dicts                                               */
 /* Don't add or remove entries to the dict while traversing !!!             */
 /*###########################################################################*/
-struct xbt_dict_cursor_ {
+struct s_xbt_dict_cursor {
   xbt_dictelm_t current;
   int line;
   xbt_dict_t dict;
@@ -51,10 +51,8 @@ XBT_INLINE xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict)
  */
 XBT_INLINE void xbt_dict_cursor_free(xbt_dict_cursor_t * cursor)
 {
-  if (*cursor) {
-    xbt_free(*cursor);
-    *cursor = NULL;
-  }
+  xbt_free(*cursor);
+  *cursor = NULL;
 }
 
 /*
@@ -199,10 +197,5 @@ XBT_INLINE void xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor,
                                          void_f_pvoid_t free_ctn)
 {
   __cursor_not_null(cursor);
-  if (cursor->current->free_f)
-    cursor->current->free_f(cursor->current->content);
-
-  cursor->current->content = data;
-  cursor->current->free_f = free_ctn;
-  return;
+  xbt_dictelm_set_data(cursor->dict, cursor->current, data, free_ctn);
 }

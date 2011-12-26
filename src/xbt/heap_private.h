@@ -18,7 +18,7 @@ typedef struct xbt_heap_item {
 typedef struct xbt_heap {
   int size;
   int count;
-  xbt_heap_item_t items;
+  s_xbt_heap_item_t* items; /* array of structs */
   void_f_pvoid_t free;
   void (*update_callback) (void *, int);
 } s_xbt_heap_t;

@@ -64,7 +64,7 @@ int sender(int argc, char *argv[])
   sprintf(mailbox, "finalize");
 
   msg_comm_t res_irecv;
-  MSG_error_t res_wait;
+  _XBT_GNUC_UNUSED MSG_error_t res_wait;
   for (i = 0; i < receivers_count; i++) {
     task = NULL;
     res_irecv = MSG_task_irecv(&(task), mailbox);
@@ -88,7 +88,7 @@ int receiver(int argc, char *argv[])
   int tasks = atof(argv[2]);
   m_task_t *task = xbt_new(m_task_t, tasks);
 
-  int read;
+  _XBT_GNUC_UNUSED int read;
   read = sscanf(argv[1], "%d", &id);
   xbt_assert(read, "Invalid argument %s\n", argv[1]);
   sprintf(mailbox, "receiver-%d", id);
@@ -104,7 +104,7 @@ int receiver(int argc, char *argv[])
   /* Here we are waiting for the receiving of all communications */
   m_task_t task_com;
   while (!xbt_dynar_is_empty(comms)) {
-    MSG_error_t err;
+    _XBT_GNUC_UNUSED MSG_error_t err;
     xbt_dynar_remove_at(comms, MSG_comm_waitany(comms), &res_irecv);
     task_com = MSG_comm_get_task(res_irecv);
     MSG_comm_destroy(res_irecv);

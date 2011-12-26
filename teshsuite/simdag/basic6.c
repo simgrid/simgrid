@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "simdag/simdag.h"
+#include "xbt/asserts.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic6, sd, "SimDag test basic6");
@@ -32,6 +33,8 @@ int main(int argc, char **argv)
                    comm_cost, -1.0);
 
   ret = SD_simulate(-1.0);
+  xbt_assert(xbt_dynar_length(ret) == 2,
+      "I was expecting the terminaison of 2 tasks, but I got %lu instead", xbt_dynar_length(ret));
   xbt_dynar_free(&ret);
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);

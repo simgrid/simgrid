@@ -13,10 +13,9 @@
 #include "simdag/simdag.h"
 #include "simdag/datatypes.h"
 #include "surf/surf.h"
+#include "xbt/swag.h"
+#include "xbt/mallocator.h"
 #include <stdbool.h>
-
-#define SD_INITIALISED() (sd_global != NULL)
-#define SD_CHECK_INIT_DONE() xbt_assert(SD_INITIALISED(), "Call SD_init() first");
 
 /* Global variables */
 
@@ -27,6 +26,8 @@ typedef struct SD_global {
                                    necessary in SD_link_get_list */
   SD_link_t *recyclable_route;  /* array returned by SD_route_get_list
                                    and mallocated only once */
+
+  xbt_mallocator_t task_mallocator; /* to not remalloc new tasks */
 
   int watch_point_reached;      /* has a task just reached a watch point? */
 
@@ -40,6 +41,7 @@ typedef struct SD_global {
   xbt_swag_t done_task_set;
   xbt_swag_t failed_task_set;
 
+  xbt_swag_t return_set;
   int task_number;
 
 } s_SD_global_t, *SD_global_t;
@@ -66,6 +68,7 @@ typedef struct SD_workstation {
 /* Task */
 typedef struct SD_task {
   s_xbt_swag_hookup_t state_hookup;
+  s_xbt_swag_hookup_t return_hookup;
   xbt_swag_t state_set;
   e_SD_task_state_t state;
   void *data;                   /* user data */
@@ -110,9 +113,11 @@ typedef struct SD_dependency {
 } s_SD_dependency_t, *SD_dependency_t;
 
 /* SimDag private functions */
+XBT_PUBLIC(xbt_swag_t) SD_simulate_swag(double how_long); /* could be public, but you need to see the internals of the SD_task_t to use it */
+
 
 SD_link_t __SD_link_create(void *surf_link, void *data);
-void __SD_link_destroy(void *link);
+#define __SD_link_destroy xbt_free_f
 
 SD_workstation_t __SD_workstation_create(void *surf_workstation,
                                          void *data);
@@ -124,6 +129,11 @@ void __SD_task_really_run(SD_task_t task);
 int __SD_task_try_to_run(SD_task_t task);
 void __SD_task_just_done(SD_task_t task);
 bool acyclic_graph_detail(xbt_dynar_t dag);
+
+/* Task mallocator functions */
+void* SD_task_new_f(void);
+void SD_task_recycle_f(void *t);
+void SD_task_free_f(void *t);
 
 /* Functions to test if the task is in a given state. */
 

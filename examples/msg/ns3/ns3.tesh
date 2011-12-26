@@ -1,0 +1,41 @@
+#! ./tesh
+
+p 3hosts 2links
+
+$ ns3/ns3 ${srcdir:=.}/ns3/3hosts_2links_p.xml ${srcdir:=.}/ns3/3hosts_2links_d.xml --cfg=network/model:NS3
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [c:slave:(2) 0.700000] [msg_test/INFO] FLOW[1] : Receive 100 bytes from a to c
+
+p 6hosts 3links
+
+$ ns3/ns3 ${srcdir:=.}/ns3/3links-p.xml ${srcdir:=.}/ns3/3links-d.xml --cfg=network/model:NS3
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [C1:slave:(2) 0.104428] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from S1 to C1
+> [C2:slave:(4) 1.041346] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from S2 to C2
+> [C3:slave:(6) 2.082380] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from S3 to C3
+
+
+$ ns3/ns3 ${srcdir:=.}/ns3/3links-p.xml ${srcdir:=.}/ns3/3links-d-timer.xml --cfg=network/model:NS3
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [C1:slave:(2) 0.104428] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from S1 to C1
+> [C2:slave:(4) 1.041346] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from S2 to C2
+> [C3:slave:(6) 2.082422] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from S3 to C3
+> [C3:slave:(7) 4.164594] [msg_test/INFO] FLOW[4] : Receive 2000000 bytes from S3 to C3
+
+
+p One cluster
+
+$ ns3/ns3 ${srcdir:=.}/ns3/One_cluster.xml ${srcdir:=.}/ns3/One_cluster-d.xml --cfg=network/model:NS3
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [c-6.me:slave:(2) 0.006614] [msg_test/INFO] FLOW[1] : Receive 100 bytes from c-2.me to c-6.me
+
+p Two clusters
+
+$ ns3/ns3 ${srcdir:=.}/ns3/Two_clusters.xml ${srcdir:=.}/ns3/Two_clusters-d.xml --cfg=network/model:NS3
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [c-16.me:slave:(2) 0.012453] [msg_test/INFO] FLOW[1] : Receive 100 bytes from c-3.me to c-16.me

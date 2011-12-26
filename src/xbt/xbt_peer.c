@@ -48,8 +48,7 @@ xbt_peer_t xbt_peer_from_string(const char *peerport)
 void xbt_peer_free(xbt_peer_t peer)
 {
   if (peer) {
-    if (peer->name)
-      free(peer->name);
+    free(peer->name);
     free(peer);
   }
 }

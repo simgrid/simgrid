@@ -34,7 +34,7 @@ int coordinator(int argc, char *argv[])
         CS_used = 1;
       }
     } else {                    // that's a release. Check if someone was waiting for the lock
-      if (xbt_dynar_length(requests) > 0) {
+      if (!xbt_dynar_is_empty(requests)) {
         XBT_INFO("CS release. Grant to queued requests (queue size: %lu)",
               xbt_dynar_length(requests));
         char *req;

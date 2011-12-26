@@ -36,7 +36,7 @@ $ cat tracing/procmig.trace
 > %EndEventDef 
 > %EventDef PajeDefineEventType 3 
 > %       Alias string 
-> %       EntityType string 
+> %       ContainerType string 
 > %       Name string 
 > %       Color color 
 > %EndEventDef 
@@ -63,46 +63,46 @@ $ cat tracing/procmig.trace
 > %EventDef PajeDestroyContainer 7 
 > %       Time date 
 > %       Type string 
-> %       Container string 
+> %       Name string 
 > %EndEventDef 
 > %EventDef PajeSetVariable 8 
 > %       Time date 
-> %       EntityType string 
+> %       Type string 
 > %       Container string 
-> %       Value string 
+> %       Value double 
 > %EndEventDef
 > %EventDef PajeAddVariable 9 
 > %       Time date 
-> %       EntityType string 
+> %       Type string 
 > %       Container string 
-> %       Value string 
+> %       Value double 
 > %EndEventDef
 > %EventDef PajeSubVariable 10 
 > %       Time date 
-> %       EntityType string 
+> %       Type string 
 > %       Container string 
-> %       Value string 
+> %       Value double 
 > %EndEventDef
 > %EventDef PajeSetState 11 
 > %       Time date 
-> %       EntityType string 
+> %       Type string 
 > %       Container string 
 > %       Value string 
 > %EndEventDef
 > %EventDef PajePushState 12 
 > %       Time date 
-> %       EntityType string 
+> %       Type string 
 > %       Container string 
 > %       Value string 
 > %EndEventDef
 > %EventDef PajePopState 13 
 > %       Time date 
-> %       EntityType string 
+> %       Type string 
 > %       Container string 
 > %EndEventDef
 > %EventDef PajeStartLink 14 
 > %       Time date 
-> %       EntityType string 
+> %       Type string 
 > %       Container string 
 > %       Value string 
 > %       SourceContainer string 
@@ -110,7 +110,7 @@ $ cat tracing/procmig.trace
 > %EndEventDef
 > %EventDef PajeEndLink 15 
 > %       Time date 
-> %       EntityType string 
+> %       Type string 
 > %       Container string 
 > %       Value string 
 > %       DestContainer string 
@@ -118,12 +118,12 @@ $ cat tracing/procmig.trace
 > %EndEventDef
 > %EventDef PajeNewEvent 16 
 > %       Time date 
-> %       EntityType string 
+> %       Type string 
 > %       Container string 
 > %       Value string 
 > %EndEventDef
 > 0 1 0 HOST
-> 6 0 1 1 0 Tremblay
+> 6 0 1 1 0 "Tremblay"
 > 0 2 1 MSG_PROCESS
 > 2 3 2 MSG_PROCESS_STATE
 > 5 4 3 executing "0 1 0"
@@ -134,21 +134,21 @@ $ cat tracing/procmig.trace
 > 5 9 3 task_execute "0 1 1"
 > 4 10 0 2 2 MSG_PROCESS_LINK
 > 4 11 0 2 2 MSG_PROCESS_TASK_LINK
-> 6 0 2 1 0 Jupiter
-> 6 0 3 1 0 Fafard
-> 6 0 4 1 0 Ginette
-> 6 0 5 1 0 Bourassa
+> 6 0 2 1 0 "Jupiter"
+> 6 0 3 1 0 "Fafard"
+> 6 0 4 1 0 "Ginette"
+> 6 0 5 1 0 "Bourassa"
 > 0 12 0 LINK
-> 6 0 6 12 0 6
-> 6 0 7 12 0 3
-> 6 0 8 12 0 7
-> 6 0 9 12 0 9
-> 6 0 10 12 0 2
-> 6 0 11 12 0 8
-> 6 0 12 12 0 1
-> 6 0 13 12 0 4
-> 6 0 14 12 0 0
-> 6 0 15 12 0 5
+> 6 0 6 12 0 "6"
+> 6 0 7 12 0 "3"
+> 6 0 8 12 0 "7"
+> 6 0 9 12 0 "9"
+> 6 0 10 12 0 "2"
+> 6 0 11 12 0 "8"
+> 6 0 12 12 0 "1"
+> 6 0 13 12 0 "4"
+> 6 0 14 12 0 "0"
+> 6 0 15 12 0 "5"
 > 4 13 0 1 12 HOST-LINK
 > 4 14 0 12 12 LINK-LINK
 > 4 15 0 12 1 LINK-HOST
@@ -186,8 +186,8 @@ $ cat tracing/procmig.trace
 > 15 0 13 0 G 9 15
 > 14 0 14 0 G 7 16
 > 15 0 14 0 G 15 16
-> 6 0 16 2 3 emigrant-1
-> 6 0 17 2 1 master-2
+> 6 0 16 2 3 "emigrant-1"
+> 6 0 17 2 1 "master-2"
 > 11 0 3 16 4
 > 11 0 3 17 4
 > 12 0 3 16 6
@@ -202,7 +202,7 @@ $ cat tracing/procmig.trace
 > 15 2.020551 11 0 SR 16 p0
 > 14 2.020551 10 0 M 16 0
 > 7 2.020551 2 16
-> 6 2.020551 18 2 1 emigrant-1
+> 6 2.020551 18 2 1 "emigrant-1"
 > 11 2.020551 3 18 4
 > 15 2.020551 10 0 M 18 0
 > 12 2.020551 3 18 6
@@ -215,7 +215,7 @@ $ cat tracing/procmig.trace
 > 15 4.020707 11 0 SR 18 p1
 > 14 4.020707 10 0 M 18 1
 > 7 4.020707 2 18
-> 6 4.020707 19 2 2 emigrant-1
+> 6 4.020707 19 2 2 "emigrant-1"
 > 11 4.020707 3 19 4
 > 15 4.020707 10 0 M 19 1
 > 12 4.020707 3 19 6
@@ -228,7 +228,7 @@ $ cat tracing/procmig.trace
 > 15 6.035906 11 0 SR 19 p2
 > 14 6.035906 10 0 M 19 2
 > 7 6.035906 2 19
-> 6 6.035906 20 2 3 emigrant-1
+> 6 6.035906 20 2 3 "emigrant-1"
 > 11 6.035906 3 20 4
 > 15 6.035906 10 0 M 20 2
 > 12 6.035906 3 20 6
@@ -241,7 +241,7 @@ $ cat tracing/procmig.trace
 > 15 8.056457 11 0 SR 20 p3
 > 14 8.056457 10 0 M 20 3
 > 7 8.056457 2 20
-> 6 8.056457 21 2 4 emigrant-1
+> 6 8.056457 21 2 4 "emigrant-1"
 > 11 8.056457 3 21 4
 > 15 8.056457 10 0 M 21 3
 > 12 8.056457 3 21 6
@@ -254,7 +254,7 @@ $ cat tracing/procmig.trace
 > 15 10.069689 11 0 SR 21 p4
 > 14 10.069689 10 0 M 21 4
 > 7 10.069689 2 21
-> 6 10.069689 22 2 5 emigrant-1
+> 6 10.069689 22 2 5 "emigrant-1"
 > 11 10.069689 3 22 4
 > 15 10.069689 10 0 M 22 4
 > 12 10.069689 3 22 6
@@ -267,7 +267,7 @@ $ cat tracing/procmig.trace
 > 15 12.090025 11 0 SR 22 p5
 > 14 12.090025 10 0 M 22 5
 > 7 12.090025 2 22
-> 6 12.090025 23 2 3 emigrant-1
+> 6 12.090025 23 2 3 "emigrant-1"
 > 11 12.090025 3 23 4
 > 15 12.090025 10 0 M 23 5
 > 12 12.090025 3 23 6
@@ -280,7 +280,7 @@ $ cat tracing/procmig.trace
 > 15 14.110575 11 0 SR 23 p6
 > 14 14.110575 10 0 M 23 6
 > 7 14.110575 2 23
-> 6 14.110575 24 2 1 emigrant-1
+> 6 14.110575 24 2 1 "emigrant-1"
 > 11 14.110575 3 24 4
 > 15 14.110575 10 0 M 24 6
 > 12 14.110575 3 24 6
@@ -293,7 +293,7 @@ $ cat tracing/procmig.trace
 > 15 16.110731 11 0 SR 24 p7
 > 14 16.110731 10 0 M 24 7
 > 7 16.110731 2 24
-> 6 16.110731 25 2 4 emigrant-1
+> 6 16.110731 25 2 4 "emigrant-1"
 > 11 16.110731 3 25 4
 > 15 16.110731 10 0 M 25 7
 > 12 16.110731 3 25 6

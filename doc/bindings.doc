@@ -1,0 +1,156 @@
+/*! \page bindings Bindings
+
+\htmlinclude .bindings.doc.toc
+
+\section bindings_binding_Java Java Binding
+<a href="http://simgrid.gforge.inria.fr/simgrid-java/1.0/doc/">Simgrid-Java documentation</a>.
+
+\section bindings_binding_Ruby Ruby Binding
+<a href="http://simgrid.gforge.inria.fr/simgrid-ruby/1.0/doc/">Simgrid-Ruby documentation</a>.
+
+\section bindings_binding_lua Lua Binding
+
+Most of Simgrid modules require a  good level in C programming, since simgrid is used to be as standard C library.
+ Sometime users prefer using some kind of « easy scripts » or a language easier to code with, for their works,
+ which avoid dealing with C errors, and sometime an important  gain of time.
+Besides Java Binding, Lua  and Ruby bindings are available since version 3.4 of Simgrid
+for MSG Module, and we are currenlty working on bindings for other modules.
+
+
+\subsection bindings_binding_lua_about What is lua ?
+Lua is a lightweight, reflective, imperative and functional programming language,
+ designed as a scripting language with extensible semantics as a primary goal (see official web site <a href="http://www.lua.org">here</a>).
+\subsubsection bindings_binding_lua_why Why lua ?
+Lua is a fast, portable and powerful script language, quite simple to use for developpers.
+it combines procedural features with powerful data description facilities,
+ by using a simple, yet powerful, mechanism of tables.
+Lua has a relatively simple C API compared to other scripting languages,
+and accordingly it provides a robust, easy to use it.
+\subsubsection bindings_binding_lua_simgrid How to use lua in Simgrid ?
+Actually, the use of lua in Simgrid is quite simple, you have just to follow the same steps as coding with C in Simgird :
+  - Coding functions coresponding to each process
+  - loading the platforme/deployment XML file that describe the environment of simulation
+  - and … Running the Simulation.
+  
+\dontinclude lua/masterslave/master.lua
+\subsection bindings_binding_lua_example_master_slave Master/Slave Example
+
+ \li Master Code
+ \until end_of_master
+we mainly  use   simgrid.Task.new(task_name,computation_size,communication_size) to create our MSG Task, 
+	 then simgrid.Task.send(task,alias) to send it.
+we use also simgrid.Task.name(task), to get the task's name. 
+
+\dontinclude lua/masterslave/slave.lua
+\li Slave Code
+\until end_of_slave
+Here, we see the use of simgrid.Task.recv(alias) to receive a task with a specific alias,
+this function return directly the task recevied.
+
+\dontinclude lua/masterslave/master_slave.lua
+\li Set Environmenet and run application
+\until simgrid.clean()
+
+\subsection bindings_binding_lua_example_data Exchanging Data
+You can also exchange data between Process using lua. for that, you have to deal with lua task as a table,
+since lua is based itself on a mechanism of tables,
+so you can exchange any kind of data (tables, matrix, strings,…) between process via tasks.
+
+\li Sender process
+\verbatim 
+  task = simgrid.Task.new("data_task",task_comp,task_comm);
+  task['matrix'] = my_matrix;
+  task['table'] = my_table;
+  task['message'] = "Hello from (Lua || Simgrid ) !! "
+  …
+  simgrid.Task.send(task,alias)
+\endverbatim
+	After creating task, we associate to it various kind of data with a specific key (string in this case)
+	to distinguish between data variables. The receiver will use this key to access easily to datas.
+
+
+\li Receiver processe
+\verbatim
+  task = simgrid.Task.recv(alias);
+  sender_matrix = task['matrix'];
+  sender_table = task['table'];
+  sender_message = task['message']
+  ...
+\endverbatim
+  	Note that in lua, both sender and receiver share the same lua task.
+	So that the receiver could joint data directly on the received task without sending it back.
+	You can find  a complet example (matrix multiplication case) in the file example/lua/mult_matrix.lua. 
+
+
+\subsection bindings_binding_lua_example_bypass Bypass XML
+	maybe you wonder if there is a way to bypass the XML files,
+	 and describe your platform directly from the code, with lua bindings it's Possible !! how ?
+	We provide some additional (tricky?) functions in lua that allows you to set up your own platform without using the XML files
+     ( this can be useful for large platforms, so a simple for loop will avoid you to deal with an annoying XML File ;) )
+     
+
+\li set Routing mode
+\verbatim
+   simgrid.AS.new{id="AS0",mode="Full"};
+\endverbatim
+
+\li set Hosts
+\verbatim
+  simgrid.Host.new{id="Tremblay",power=98095000};
+  simgrid.Host.new{id="Jupiter",power=76296000};
+  simgrid.Host.new{id="Fafard",power=76296000};
+  simgrid.Host.new{id="Ginette",power=48492000};
+  simgrid.Host.new{id="Bourassa",power=48492000};
+\endverbatim
+  we use simgrid.Host.new{id=id_host,power=power_host} to instanciate our hosts.
+
+\li set Links
+\verbatim
+  for i=0,11 do
+    simgrid.Link.new{id=i,bandwidth=252750+ i*768,latency=0.000270544+i*0.087};    --  some crazy values ;)
+  end
+\endverbatim
+  we used simgrid.Link.new{id=link_id,bandwidth=bw,latency=lat} with a simple for loop to create all links we need (much easier than XML hein ?)
+
+\li set Routes
+\verbatim
+-- simgrid.Route.new(src_id,des_id,links_nb,links_list)
+   simgrid.Route.new("Tremblay","Jupiter",1,{"1"});
+   simgrid.Route.new("Tremblay","Fafard",6,{"0","1","2","3","4","8"});
+   simgrid.Route.new("Tremblay","Ginette",3,{"3","4","5"});
+   simgrid.Route.new("Tremblay","Bourassa",7,{"0","1","3","2","4","6","7"});
+
+   simgrid.Route.new("Jupiter","Tremblay",1,{"1"});
+   simgrid.Route.new("Jupiter","Fafard",7,{"0","1","2","3","4","8","9"});
+   simgrid.Route.new("Jupiter","Ginette",4,{"3","4","5","9"});
+   simgrid.Route.new("Jupiter","Bourassa",8,{"0","1","2","3","4","6","7","9"});
+   ...
+\endverbatim
+  for each host you have to specify which route to choose to access to the rest of hosts connected in the grid.
+  
+\li Save platform
+\verbatim
+  simgrid.register_platform();
+\endverbatim
+Don't forget to register your platform, that SURF callbacks starts their work ;)
+
+\li set application
+\verbatim
+   simgrid.Host.setFunction("Tremblay","Master",4,{"20","550000000","1000000","4"});
+   simgrid.Host.setFunction("Bourassa","Slave",1,{"0"});
+   simgrid.Host.setFunction("Jupiter","Slave",1,{"1"});
+   simgrid.Host.setFunction("Fafard","Slave",1,{"2"});
+   simgrid.Host.setFunction("Ginette","Slave",1,{"3"});
+\endverbatim
+  you don't  need to use a deployment XML file, thanks to  simgrid.Host.setFunction(host_id,function,args_number,args_list) 
+  you can associate functions for each host with arguments if needed .
+
+\li
+\verbatim
+   simgrid.register_application();
+\endverbatim
+Yes, Here too you have to resgiter your application before running the simulation.
+
+the full example is distributed in the file examples/lua/master_slave_bypass.lua
+
+ */

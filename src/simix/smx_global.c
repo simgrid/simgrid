@@ -43,7 +43,7 @@ static void _XBT_CALL inthandler(int ignored)
      SIMIX_display_process_status();
   }
   else {
-     XBT_INFO("CTRL-C pressed. bailing out without displaying because verbose-exit disabled");
+     XBT_INFO("CTRL-C pressed. bailing out without displaying because verbose-exit is disabled");
   }
   exit(1);
 }
@@ -86,7 +86,7 @@ void SIMIX_global_init(int *argc, char **argv)
         xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
 
     simix_global->maestro_process = NULL;
-    simix_global->registered_functions = xbt_dict_new();
+    simix_global->registered_functions = xbt_dict_new_homogeneous(NULL);
 
     simix_global->create_process_function = SIMIX_process_create;
     simix_global->kill_process_function = SIMIX_process_kill;
@@ -135,6 +135,7 @@ void SIMIX_clean(void)
   SIMIX_network_exit();
 
   xbt_heap_free(simix_timers);
+  simix_timers = NULL;
   /* Free the remaining data structures */
   xbt_dynar_free(&simix_global->process_to_run);
   xbt_dynar_free(&simix_global->process_that_ran);
@@ -197,7 +198,7 @@ void SIMIX_run(void)
 #ifdef TIME_BENCH
     smx_ctx_raw_new_sr();
 #endif
-    while (xbt_dynar_length(simix_global->process_to_run)) {
+    while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu",
               xbt_dynar_length(simix_global->process_to_run));
       SIMIX_process_runall();
@@ -209,7 +210,9 @@ void SIMIX_run(void)
       }
     }
 
-    time = surf_solve(SIMIX_timer_next());
+    time = SIMIX_timer_next();
+    if (time != -1.0 || xbt_swag_size(simix_global->process_list) != 0)
+      time = surf_solve(time);
 
     /* Notify all the hosts that have failed */
     /* FIXME: iterate through the list of failed host and mark each of them */
@@ -238,7 +241,7 @@ void SIMIX_run(void)
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
 
-  } while (time != -1.0);
+  } while (time != -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
 
   if (xbt_swag_size(simix_global->process_list) != 0) {
 
@@ -326,7 +329,7 @@ void SIMIX_display_process_status(void)
   XBT_INFO("%d processes are still running, waiting for something.", nbprocess);
   /*  List the process and their state */
   XBT_INFO
-    ("Legend of the following listing: \"<process> on <host>: <status>.\"");
+    ("Legend of the following listing: \"<process>(<pid>) on <host>: <status>.\"");
   xbt_swag_foreach(process, simix_global->process_list) {
 
     if (process->waiting_action) {
@@ -358,7 +361,13 @@ void SIMIX_display_process_status(void)
 	  action_description = "I/O";
 	  break;
       }
-      XBT_INFO("Waiting for %s action %p to finish", action_description, process->waiting_action);
+      XBT_INFO("Process %ld (%s@%s): waiting for %s action %p (%s) in state %d to finish",
+          process->pid, process->name, process->smx_host->name,
+	  action_description, process->waiting_action,
+	  process->waiting_action->name, process->waiting_action->state);
+    }
+    else {
+      XBT_INFO("Process %ld (%s@%s)", process->pid, process->name, process->smx_host->name);
     }
   }
 }

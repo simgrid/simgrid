@@ -191,14 +191,21 @@ void xbt_str_subst(char *str, char from, char to, int occurence)
 
 /** @brief Replaces a set of variables by their values
  *
- * @param str where to apply the change
- * @param patterns what to change
+ * @param str The input of the replacement process
+ * @param patterns The changes to apply
  * @return The string modified
  *
- * Check xbt_strbuff_varsubst() for more details, and remember that the string may be reallocated (moved) in the process.
+ * Both '$toto' and '${toto}' are valid (and the two writing are equivalent).
+ *
+ * If the variable name contains spaces, use the brace version (ie, ${toto tutu})
+ *
+ * You can provide a default value to use if the variable is not set in the dict by using
+ * '${var:=default}' or '${var:-default}'. These two forms are equivalent, even if they
+ * shouldn't to respect the shell standard (:= form should set the value in the dict,
+ * but does not) (BUG).
  */
 
-char *xbt_str_varsubst(char *str, xbt_dict_t patterns)
+char *xbt_str_varsubst(const char *str, xbt_dict_t patterns)
 {
   xbt_strbuff_t buff = xbt_strbuff_new_from(str);
   char *res;

@@ -1,6 +1,6 @@
 /* xbt/dict.h -- api to a generic dictionary                                */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -43,8 +43,9 @@ SG_BEGIN_DECL()
  */
 
   /** \brief Dictionary data type (opaque structure) */
-typedef struct xbt_dict_ *xbt_dict_t;
+typedef struct s_xbt_dict *xbt_dict_t;
 XBT_PUBLIC(xbt_dict_t) xbt_dict_new(void);
+XBT_PUBLIC(xbt_dict_t) xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn);
 XBT_PUBLIC(void) xbt_dict_free(xbt_dict_t * dict);
 XBT_PUBLIC(unsigned int) xbt_dict_size(xbt_dict_t dict);
 
@@ -120,12 +121,11 @@ XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
  *  @{ */
 
   /** @brief Cursor on dictionaries (opaque type) */
-typedef struct xbt_dict_cursor_ *xbt_dict_cursor_t;
+typedef struct s_xbt_dict_cursor *xbt_dict_cursor_t;
 XBT_PUBLIC(xbt_dict_cursor_t) xbt_dict_cursor_new(const xbt_dict_t dict);
 XBT_PUBLIC(void) xbt_dict_cursor_free(xbt_dict_cursor_t * cursor);
 
-XBT_INLINE XBT_PUBLIC(void) xbt_dict_cursor_rewind(xbt_dict_cursor_t
-                                                   cursor);
+XBT_PUBLIC(void) xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor);
 
 
 XBT_PUBLIC(char *) xbt_dict_cursor_get_key(xbt_dict_cursor_t cursor);
@@ -136,7 +136,7 @@ XBT_PUBLIC(void) xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor,
 
 XBT_PUBLIC(void) xbt_dict_cursor_first(const xbt_dict_t dict,
                                        xbt_dict_cursor_t * cursor);
-XBT_INLINE XBT_PUBLIC(void) xbt_dict_cursor_step(xbt_dict_cursor_t cursor);
+XBT_PUBLIC(void) xbt_dict_cursor_step(xbt_dict_cursor_t cursor);
 XBT_PUBLIC(int) xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
                                             char **key, void **data);
   /** @def xbt_dict_foreach

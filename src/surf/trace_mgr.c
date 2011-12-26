@@ -88,10 +88,9 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
     last_event->delta = periodicity;
 
   if (!trace_list)
-    trace_list = xbt_dict_new();
+    trace_list = xbt_dict_new_homogeneous((void (*)(void *)) tmgr_trace_free);
 
-  xbt_dict_set(trace_list, id, (void *) trace,
-               (void (*)(void *)) tmgr_trace_free);
+  xbt_dict_set(trace_list, id, (void *) trace, NULL);
 
   xbt_dynar_free(&list);
   return trace;

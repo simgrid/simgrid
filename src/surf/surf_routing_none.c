@@ -6,80 +6,55 @@
 
 #include "surf_routing_private.h"
 
-/* Global vars */
-extern routing_global_t global_routing;
-extern routing_component_t current_routing;
-extern model_type_t current_routing_model;
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");
 
-/* Routing model structure */
-typedef struct {
-  s_routing_component_t generic_routing;
-} s_routing_component_none_t, *routing_component_none_t;
-
-/* Business methods */
-static xbt_dynar_t none_get_onelink_routes(routing_component_t rc)
-{
+static xbt_dynar_t none_get_onelink_routes(AS_t rc) {
   return NULL;
 }
 
-static route_extended_t none_get_route(routing_component_t rc,
-                                       const char *src, const char *dst)
+static void none_get_route_and_latency(AS_t rc, const char *src, const char *dst,
+                                       route_t res,double *lat)
 {
-  return NULL;
 }
 
-static route_extended_t none_get_bypass_route(routing_component_t rc,
+static route_t none_get_bypass_route(AS_t rc,
                                               const char *src,
-                                              const char *dst)
-{
+                                              const char *dst) {
   return NULL;
 }
 
-static void none_finalize(routing_component_t rc)
-{
-  xbt_free(rc);
+static void none_parse_PU(AS_t rc, const char *name) {
+  /* don't care about PUs */
 }
 
-static void none_set_processing_unit(routing_component_t rc,
-                                     const char *name)
-{
-}
-
-static void none_set_autonomous_system(routing_component_t rc,
-                                       const char *name)
-{
+static void none_parse_AS(AS_t rc, const char *name) {
+  /* even don't care about sub-ASes -- I'm as nihilist as an old punk*/
 }
 
 /* Creation routing model functions */
-void *model_none_create(void)
-{
-  routing_component_none_t new_component =
-      xbt_new0(s_routing_component_none_t, 1);
-  new_component->generic_routing.set_processing_unit =
-      none_set_processing_unit;
-  new_component->generic_routing.set_autonomous_system =
-      none_set_autonomous_system;
-  new_component->generic_routing.set_route = NULL;
-  new_component->generic_routing.set_ASroute = NULL;
-  new_component->generic_routing.set_bypassroute = NULL;
-  new_component->generic_routing.get_route = none_get_route;
-  new_component->generic_routing.get_onelink_routes =
-      none_get_onelink_routes;
-  new_component->generic_routing.get_bypass_route = none_get_bypass_route;
-  new_component->generic_routing.finalize = none_finalize;
+AS_t model_none_create() {
+  return model_none_create_sized(sizeof(s_as_t));
+}
+AS_t model_none_create_sized(size_t childsize) {
+  AS_t new_component = xbt_malloc0(childsize);
+  new_component->parse_PU = none_parse_PU;
+  new_component->parse_AS = none_parse_AS;
+  new_component->parse_route = NULL;
+  new_component->parse_ASroute = NULL;
+  new_component->parse_bypassroute = NULL;
+  new_component->get_route_and_latency = none_get_route_and_latency;
+  new_component->get_onelink_routes = none_get_onelink_routes;
+  new_component->get_bypass_route = none_get_bypass_route;
+  new_component->finalize = model_none_finalize;
+
+  new_component->routing_sons = xbt_dict_new_homogeneous(NULL);
+
   return new_component;
 }
 
-void model_none_load(void)
-{
+void model_none_finalize(AS_t as) {
+  xbt_dict_free(&as->routing_sons);
+  xbt_free(as->name);
+  xbt_free(as);
 }
 
-void model_none_unload(void)
-{
-}
-
-void model_none_end(void)
-{
-}

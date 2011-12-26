@@ -50,7 +50,7 @@ static void checkhdr(struct mdesc *mdp, const struct hdr *hdr)
 {
   if (hdr->magic != MAGICWORD ||
       ((char *) &hdr[1])[hdr->size] != MAGICBYTE) {
-    (*mdp->abortfunc) ();
+    mdp->abortfunc();
   }
 }
 

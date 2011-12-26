@@ -1,0 +1,23 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+
+  <process host="S1" function="master">
+      <argument value="20000000"/>
+      <argument value="C1"/>
+      <argument value="0"/>
+  </process>
+
+  <process host="S2" function="master">
+      <argument value="20000000"/>
+      <argument value="C2"/>
+      <argument value="1"/>
+  </process>
+
+  <process host="C1" function="slave">
+      <argument value="0"/>
+  </process>
+  <process host="C2" function="slave">
+      <argument value="1"/>
+  </process>
+</platform>

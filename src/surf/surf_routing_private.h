@@ -1,9 +1,8 @@
-/*
- * surf_routing_private.h
- *
- *  Created on: 14 avr. 2011
- *      Author: navarrop
- */
+/* Copyright (c) 2009, 2010, 2011. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef _SURF_SURF_ROUTING_PRIVATE_H
 #define _SURF_SURF_ROUTING_PRIVATE_H
@@ -20,92 +19,88 @@
 #include "surf/surfxml_parse.h"
 
 /* ************************************************************************** */
+/* ******************************* NO ROUTING ******************************* */
+/* Only save the AS tree, and forward calls to child ASes */
+AS_t model_none_create(void);
+AS_t model_none_create_sized(size_t childsize);
+void model_none_finalize(AS_t as);
+/* ************************************************************************** */
 /* ***************** GENERIC PARSE FUNCTIONS (declarations) ***************** */
+AS_t model_generic_create_sized(size_t childsize);
+void model_generic_finalize(AS_t as);
 
-void generic_set_processing_unit(routing_component_t rc,
-                                        const char *name);
-void generic_set_autonomous_system(routing_component_t rc,
-                                          const char *name);
-void generic_set_bypassroute(routing_component_t rc,
-                                    const char *src, const char *dst,
-                                    route_extended_t e_route);
-
-int surf_link_resource_cmp(const void *a, const void *b);
-int surf_pointer_resource_cmp(const void *a, const void *b);
+void generic_parse_PU(AS_t rc, const char *name);
+void generic_parse_AS(AS_t rc, const char *name);
+void generic_parse_bypassroute(AS_t rc, const char *src, const char *dst,
+                               route_t e_route);
 
 /* ************************************************************************** */
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
 
-double generic_get_link_latency(routing_component_t rc, const char *src, const char *dst,
-										route_extended_t e_route);
-xbt_dynar_t generic_get_onelink_routes(routing_component_t rc);
-route_extended_t generic_get_bypassroute(routing_component_t rc,
+xbt_dynar_t generic_get_onelink_routes(AS_t rc);
+route_t generic_get_bypassroute(AS_t rc,
                                                 const char *src,
                                                 const char *dst);
 
 /* ************************************************************************** */
 /* ****************** GENERIC AUX FUNCTIONS (declarations) ****************** */
 
-route_extended_t
+route_t
 generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
                            void *data, int order);
 route_t
 generic_new_route(e_surf_routing_hierarchy_t hierarchy,
                            void *data, int order);
-void generic_free_route(route_t route);
-void generic_free_extended_route(route_extended_t e_route);
-routing_component_t
-generic_autonomous_system_exist(routing_component_t rc, char *element);
-routing_component_t
-generic_processing_units_exist(routing_component_t rc, char *element);
-void generic_src_dst_check(routing_component_t rc, const char *src,
+AS_t
+generic_autonomous_system_exist(AS_t rc, char *element);
+AS_t
+generic_processing_units_exist(AS_t rc, char *element);
+void generic_src_dst_check(AS_t rc, const char *src,
                                   const char *dst);
 
 
 /* ************************************************************************** */
 /* *************************** FLOYD ROUTING ******************************** */
-void *model_floyd_create(void);  /* create structures for floyd routing model */
-void model_floyd_load(void);     /* load parse functions for floyd routing model */
-void model_floyd_unload(void);   /* unload parse functions for floyd routing model */
-void model_floyd_end(void);      /* finalize the creation of floyd routing model */
-void model_floyd_set_route(routing_component_t rc, const char *src,
-        const char *dst, name_route_extended_t route);
+AS_t model_floyd_create(void);  /* create structures for floyd routing model */
+void model_floyd_end(AS_t as);      /* finalize the creation of floyd routing model */
+void model_floyd_parse_route(AS_t rc, const char *src,
+        const char *dst, route_t route);
 
-
-#ifdef HAVE_PCRE_LIB
 /* ************************************************** */
 /* ************** RULE-BASED ROUTING **************** */
-void *model_rulebased_create(void);      /* create structures for rulebased routing model */
-void model_rulebased_load(void);         /* load parse functions for rulebased routing model */
-void model_rulebased_unload(void);       /* unload parse functions for rulebased routing model */
-void model_rulebased_end(void);          /* finalize the creation of rulebased routing model */
-#endif
+AS_t model_rulebased_create(void);      /* create structures for rulebased routing model */
+
+/* ************************************************** */
+/* **************  Cluster ROUTING   **************** */
+AS_t model_cluster_create(void);      /* create structures for cluster routing model */
+
+/* Pass info from the cluster parser to the cluster routing */
+void surf_routing_cluster_add_link(const char* host_id,surf_parsing_link_up_down_t info);
+void surf_routing_cluster_add_backbone(AS_t as, void* bb);
+
+/* ************************************************** */
+/* **************  Vivaldi ROUTING   **************** */
+AS_t model_vivaldi_create(void);      /* create structures for vivaldi routing model */
+#define HOST_PEER(peername) bprintf("peer_%s", peername)
+#define ROUTER_PEER(peername) bprintf("router_%s", peername)
+#define LINK_UP_PEER(peername) bprintf("link_%s_up", peername)
+#define LINK_DOWN_PEER(peername) bprintf("link_%s_down", peername)
 
 /* ************************************************************************** */
 /* ********** Dijkstra & Dijkstra Cached ROUTING **************************** */
-void *model_dijkstra_both_create(int cached);    /* create by calling dijkstra or dijkstracache */
-void *model_dijkstra_create(void);       /* create structures for dijkstra routing model */
-void *model_dijkstracache_create(void);  /* create structures for dijkstracache routing model */
-void model_dijkstra_both_load(void);     /* load parse functions for dijkstra routing model */
-void model_dijkstra_both_unload(void);   /* unload parse functions for dijkstra routing model */
-void model_dijkstra_both_end(void);      /* finalize the creation of dijkstra routing model */
-void model_dijkstra_both_set_route (routing_component_t rc, const char *src,
-                     const char *dst, name_route_extended_t route);
+AS_t model_dijkstra_both_create(int cached);    /* create by calling dijkstra or dijkstracache */
+AS_t model_dijkstra_create(void);       /* create structures for dijkstra routing model */
+AS_t model_dijkstracache_create(void);  /* create structures for dijkstracache routing model */
+void model_dijkstra_both_end(AS_t as);      /* finalize the creation of dijkstra routing model */
+void model_dijkstra_both_parse_route (AS_t rc, const char *src,
+                     const char *dst, route_t route);
 
 /* ************************************************************************** */
 /* *************************** FULL ROUTING ********************************* */
-void *model_full_create(void);   /* create structures for full routing model */
-void model_full_load(void);      /* load parse functions for full routing model */
-void model_full_unload(void);    /* unload parse functions for full routing model */
-void model_full_end(void);       /* finalize the creation of full routing model */
+AS_t model_full_create(void);   /* create structures for full routing model */
+void model_full_end(AS_t as);       /* finalize the creation of full routing model */
 void model_full_set_route(	/* Set the route and ASroute between src and dst */
-		routing_component_t rc, const char *src, const char *dst, name_route_extended_t route);
+		AS_t rc, const char *src, const char *dst, route_t route);
 
-/* ************************************************************************** */
-/* ******************************* NO ROUTING ******************************* */
-void *model_none_create(void);           /* none routing model */
-void model_none_load(void);              /* none routing model */
-void model_none_unload(void);            /* none routing model */
-void model_none_end(void);               /* none routing model */
 
 #endif                          /* _SURF_SURF_ROUTING_PRIVATE_H */

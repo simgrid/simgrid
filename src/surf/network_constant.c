@@ -21,14 +21,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 static random_data_t random_latency = NULL;
 static int host_number_int = 0;
 
-static void netcste_count_hosts(void)
-{
+static void netcste_count_hosts(sg_platf_host_cbarg_t h) {
   host_number_int++;
 }
 
-static void netcste_define_callbacks(const char *file)
-{
-  surfxml_add_callback(STag_surfxml_host_cb_list, &netcste_count_hosts);
+static void netcste_define_callbacks(void) {
+  sg_platf_host_add_cb(netcste_count_hosts);
 }
 
 static int netcste_resource_used(void *resource_id)
@@ -146,25 +144,22 @@ static void netcste_action_set_category(surf_action_t action, const char *catego
 }
 #endif
 
-/* returns an array of link_Constant_t */
-static xbt_dynar_t netcste_get_route(void *src, void *dst)
-{
-  xbt_die("Calling this function does not make any sense");
-}
-
 static double netcste_get_link_bandwidth(const void *link)
 {
   DIE_IMPOSSIBLE;
+  return -1.0;
 }
 
 static double netcste_get_link_latency(const void *link)
 {
   DIE_IMPOSSIBLE;
+  return -1.0;
 }
 
 static int link_shared(const void *link)
 {
   DIE_IMPOSSIBLE;
+  return -1;
 }
 
 static void netcste_action_suspend(surf_action_t action)
@@ -191,7 +186,7 @@ static void netcste_finalize(void)
 
 
 
-void surf_network_model_init_Constant(const char *filename)
+void surf_network_model_init_Constant()
 {
   xbt_assert(surf_network_model == NULL);
   if (surf_network_model)
@@ -233,12 +228,9 @@ void surf_network_model_init_Constant(const char *filename)
 
   if (!random_latency)
     random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);
-  netcste_define_callbacks(filename);
+  netcste_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
 
-  update_model_description(surf_network_model_description,
-                           "Constant", surf_network_model);
-
   xbt_cfg_set_string(_surf_cfg_set, "routing", "none");
-  routing_model_create(sizeof(double), NULL, netcste_get_link_latency);
+  routing_model_create(sizeof(double), NULL);
 }

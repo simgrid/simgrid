@@ -47,7 +47,7 @@ endif(enable_supernovae)
 
 # Compute the dependencies of GRAS
 ##################################
-set(GRAS_DEP "-lm -lpthread")
+set(GRAS_DEP "-lm -pthread")
 
 if(HAVE_POSIX_GETTIME)
 	SET(GRAS_DEP "${GRAS_DEP} -lrt")
@@ -66,14 +66,11 @@ target_link_libraries(gras 	${GRAS_DEP})
 
 # Compute the dependencies of SimGrid
 #####################################
-set(SIMGRID_DEP "-lm")
-if(HAVE_PCRE_LIB)
-       SET(SIMGRID_DEP "${SIMGRID_DEP} -lpcre")
-endif(HAVE_PCRE_LIB)
+set(SIMGRID_DEP "-lm -lpcre")
 
 if(pthread)
 	if(${CONTEXT_THREADS})
-		SET(SIMGRID_DEP "${SIMGRID_DEP} -lpthread")
+		SET(SIMGRID_DEP "${SIMGRID_DEP} -pthread")
 	endif(${CONTEXT_THREADS})	
 endif(pthread)
 
@@ -118,7 +115,13 @@ if(HAVE_GTNETS)
 endif(HAVE_GTNETS)
 
 if(HAVE_NS3)
-	SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3")
+    if(${NS3_VERSION} EQUAL 310)
+	    SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3")
+	    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_NS3_3_10")
+	    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_NS3_3_10")
+	else(${NS3_VERSION} EQUAL 310)
+	    SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3-core -lns3-csma -lns3-point-to-point -lns3-internet -lns3-applications")
+	endif(${NS3_VERSION} EQUAL 310)
 endif(HAVE_NS3)
 
 if(HAVE_POSIX_GETTIME)

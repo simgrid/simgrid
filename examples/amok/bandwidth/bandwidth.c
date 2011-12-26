@@ -18,6 +18,19 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(Bandwidth,
  * Sensor code
  * **********************************************************************/
 
+static gras_socket_t try_gras_socket_client_from_string(const char *host)
+{
+  volatile gras_socket_t sock = NULL;
+  xbt_ex_t e;
+  TRY {
+    sock = gras_socket_client_from_string(host);
+  }
+  CATCH(e) {
+    xbt_ex_free(e);
+  }
+  return sock;
+}
+
 /* Function prototypes */
 int sensor(int argc, char *argv[]);
 
@@ -26,7 +39,6 @@ int sensor(int argc, char *argv[])
   gras_socket_t mysock;
   gras_socket_t master = NULL;
   int connection_try = 10;
-  xbt_ex_t e;
 
   gras_init(&argc, argv);
   amok_bw_init();
@@ -34,19 +46,10 @@ int sensor(int argc, char *argv[])
 
   mysock = gras_socket_server_range(3000, 9999, 0, 0);
   XBT_INFO("Sensor starting (on port %d)", gras_os_myport());
-  while (connection_try > 0 && master == NULL) {
-    int connected = 0;
-    TRY {
-      master = gras_socket_client_from_string(argv[1]);
-      connected = 1;
-    }
-    CATCH(e) {
-      xbt_ex_free(e);
-    }
-    if (!connected) {
-      connection_try--;
-      gras_os_sleep(0.5);       /* let the master get ready */
-    }
+  while (connection_try > 0 &&
+         !(master = try_gras_socket_client_from_string(argv[1]))) {
+    connection_try--;
+    gras_os_sleep(0.5);       /* let the master get ready */
   }
 
   amok_pm_group_join(master, "bandwidth");

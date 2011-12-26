@@ -22,6 +22,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(tesh, "TEst SHell utility");
 int timeout_value = 5;          /* child timeout value */
 int sort_len = 19;              /* length of the prefix to sort */
 char *option;
+int coverage = 0;				/* whether the code coverage is enable */
 
 rctx_t rctx;
 const char *testsuite_name;
@@ -171,8 +172,7 @@ static void handle_suite(const char *filename, FILE * IN)
   rctx_free(rctx);
 
   /* Clear buffers */
-  if (line)
-    free(line);
+  free(line);
   xbt_strbuff_free(buff);
 
 }
@@ -183,12 +183,12 @@ static void parse_environ()
   int i;
   char *eq = NULL;
   char *key = NULL;
-  env = xbt_dict_new();
+  env = xbt_dict_new_homogeneous(xbt_free_f);
   for (i = 0; environ[i]; i++) {
     p = environ[i];
     eq = strchr(p, '=');
     key = bprintf("%.*s", (int) (eq - p), p);
-    xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
+    xbt_dict_set(env, key, xbt_strdup(eq + 1), NULL);
     free(key);
   }
 }
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
       char *eq = strchr(argv[i+1], '=');
       xbt_assert(eq,"The argument of --setenv must contain a '=' (got %s instead)",argv[i+1]);
       char *key = bprintf("%.*s", (int) (eq - argv[i+1]), argv[i+1]);
-      xbt_dict_set(env, key, xbt_strdup(eq + 1), xbt_free_f);
+      xbt_dict_set(env, key, xbt_strdup(eq + 1), NULL);
       XBT_INFO("setting environment variable '%s' to '%s'", key, eq+1);
       free(key);
       memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));
@@ -245,15 +245,24 @@ int main(int argc, char *argv[])
             XBT_ERROR("--cfg argument requires an argument");
             exit(1);
       }
-      if(!option){ //if option is NULL
+      if (!option){ //if option is NULL
     	option = bprintf("--cfg=%s",argv[i+1]);
-      }else{
-    	option = bprintf("%s --cfg=%s",option,argv[i+1]);
+      } else {
+        char *newoption = bprintf("%s --cfg=%s", option, argv[i+1]);
+        free(option);
+        option = newoption;
       }
       XBT_INFO("Add option \'--cfg=%s\' to command line",argv[i+1]);
       memmove(argv + i, argv + i + 2, (argc - i - 1) * sizeof(char *));
       argc -= 2;
       i -= 2;
+    }
+    else if (!strcmp(argv[i], "--enable-coverage" )){
+    	coverage = 1;
+    	XBT_INFO("Enable coverage");
+    	memmove(argv + i, argv + i + 1, (argc - i - 1) * sizeof(char *));
+    	argc -= 1;
+    	i -= 1;
     }
   }
 
@@ -293,6 +302,6 @@ int main(int argc, char *argv[])
 
   rctx_exit();
   xbt_dict_free(&env);
-  xbt_free_f(option);
+  free(option);
   return 0;
 }

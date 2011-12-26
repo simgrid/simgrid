@@ -2,7 +2,7 @@
   --create new routing model
   --simgrid.AS.new(AS_id,AS_mode)
   simgrid.AS.new{id="AS0",mode="Full"}; 
-  --simgrid.Host.new(host_id,power)
+  --simgrid.host.new(host_id,power)
   simgrid.AS.addHost{AS="AS0",id="Tremblay",power=98095000};
   simgrid.AS.addHost{AS="AS0",id="Jupiter",power=76296000};
   simgrid.AS.addHost{AS="AS0",id="Fafard",power=76296000};
@@ -13,7 +13,7 @@
   for i=10,0,-1 do
     simgrid.AS.addLink{AS="AS0",id=i,bandwidth=252750+ i*768,latency=0.000270544+i*0.087};  
   end
-  -- simgrid.Route.new(src_id,des_id,links_nb,links_list)
+  -- simgrid.route.new(src_id,des_id,links_nb,links_list)
    simgrid.AS.addRoute{AS="AS0",src="Tremblay",dest="Jupiter",links="1"};
    simgrid.AS.addRoute{AS="AS0",src="Tremblay",dest="Fafard",links="0,1,2,3,4,8"};
    simgrid.AS.addRoute{AS="AS0",src="Tremblay",dest="Ginette",links="3,4,5"};

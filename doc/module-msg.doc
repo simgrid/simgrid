@@ -1,27 +1,3 @@
-/** \defgroup MSG_JAVA      jMSG
-    \ingroup MSG_API
-    \brief Java bindings to MSG (\ref MSG_API)
-
-    \htmlonly <!-- 
-      DOXYGEN_NAVBAR_LABEL="JAVA bindings" 
-      DOXYGEN_NAVBAR_CHILD "Simulation functions"=classsimgrid_1_1msg_1_1Msg.html
-      DOXYGEN_NAVBAR_CHILD "Host"=classsimgrid_1_1msg_1_1Host.html
-      DOXYGEN_NAVBAR_CHILD "Process"=classsimgrid_1_1msg_1_1Process.html
-      DOXYGEN_NAVBAR_CHILD "Task"=classsimgrid_1_1msg_1_1Task.html      
-      DOXYGEN_NAVBAR_CHILD "MsgException"=classsimgrid_1_1msg_1_1MsgException.html
-    --> \endhtmlonly 
-	  
-      MSG was the first distributed programming environment provided within
-      SimGrid. While almost realistic, it remains quite simple (simplistic?).
-      This describes the Java bindings to this interface.
-
-      \section jMSG_who Who should use this (and who shouldn't)
-      
-      You should use MSG if you want to study some heuristics for a
-      given problem you don't really want to implement. If you want to
-      use the Java programming language, your are in the right
-      section. To use the C interface, please refer to \ref MSG_C.
-*/
 
 /** \defgroup MSG_C      MSG native
     \ingroup MSG_API
@@ -38,8 +14,8 @@
       You should use MSG if you want to study some heuristics for a
       given problem you don't really want to implement. If you want to
       use the C programming language, your are in the right
-      section. To use the Java programming interface, please refer to
-      \ref MSG_JAVA.
+      section. To use the Java or Ruby programming interfaces, please refer to
+      the documentation provided in the relevant packages.
 */
 
 
@@ -88,9 +64,9 @@
 /** @addtogroup MSG_LUA
 
   \section MSG_Lua_funct  Lua offered functionnalities in MSG
-   - \ref host_management
-   - \ref tasks_management
-   - \ref environment_management
+   - \ref lua_host_management
+   - \ref lua_tasks_management
+   - \ref lua_environment_management
   \section Lua_examples Examples of lua MSG
  
    - \ref MSG_ex_master_slave_lua

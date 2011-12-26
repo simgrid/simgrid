@@ -2,7 +2,6 @@
 
 sudo yum -y -q update
 
-sudo yum -y -q install subversion
 sudo yum -y -q install gcc
 sudo yum -y -q install make
 sudo yum -y -q install java-1.6.0-openjdk
@@ -15,6 +14,7 @@ sudo yum -y -q install graphviz-dev graphviz
 sudo yum -y -q install f2c
 sudo yum -y -q install pcre-devel pcre-static
 sudo yum -y -q install git-core
+sudo yum -y -q install ruby ruby-devel
 
 which_svn=`which svn`		#svn necessary
 which_gcc=`which gcc`		#gcc gcc necessary
@@ -46,10 +46,3 @@ echo $which_f2c
 echo $which_gcov
 echo $which_git
 echo "FIN------------------------------------"
-
-wget ftp://ftp.ruby-lang.org//pub/ruby/1.9/ruby-1.9.1-p378.tar.gz
-tar zxvf ruby-1.9.1-p378.tar.gz
-cd ./ruby-1.9.1-p378
-./configure -prefix=/usr
-make
-sudo make install

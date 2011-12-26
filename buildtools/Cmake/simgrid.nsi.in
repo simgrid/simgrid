@@ -27,13 +27,20 @@
 ;--------------------------------
 
 Name "Simgrid"
-outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@_@SIMGRID_SYSTEM_PROCESSOR@@BIN_EXE@"
+outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@_@NSIS_WIN_VERSION@@BIN_EXE@"
 Icon "@CMAKE_HOME_DIRECTORY@\doc\webcruft\SimGrid.ico"
 
 # set the default installation directory
 InstallDir c:\SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
 
 Section "Libraries and Headers" LibSection
+
+	setOutPath $INSTDIR
+	file @CMAKE_HOME_DIRECTORY@\AUTHORS
+	file @CMAKE_HOME_DIRECTORY@\Changelog
+	file @CMAKE_HOME_DIRECTORY@\COPYING
+	file @CMAKE_HOME_DIRECTORY@\LICENSE-LGPL-2.1
+	file @CMAKE_HOME_DIRECTORY@\NEWS
 
 	# install lib
 	CreateDirectory $INSTDIR\lib
@@ -165,17 +172,33 @@ Section "Documentation" DocSection
 	# create a shortcut in the start menu programs directory
 	CreateDirectory "$SMPROGRAMS\SimGrid"
 	createShortCut  "$SMPROGRAMS\SimGrid\Documentation.lnk"	"$INSTDIR\doc\html\index.html"
+	createShortCut  "$SMPROGRAMS\SimGrid\Website.lnk"	"http://simgrid.gforge.inria.fr/"
 	
 SectionEnd
 Section "Examples" ExamplesSection	
-	
-	# install examples
+
 	CreateDirectory $INSTDIR\examples
 	setOutPath $INSTDIR\examples
+	
+	#install examples for platforms
 	file /r @CMAKE_HOME_DIRECTORY@\examples\platforms
+	
+	# install example HelloWorld
 	file /r @CMAKE_HOME_DIRECTORY@\doc\HelloWorld
-	# create a shortcut in the start menu programs directory
-	createShortCut  "$SMPROGRAMS\SimGrid\HelloWorld project.lnk"	"$INSTDIR\examples\HelloWorld"	
+		
+	# install example MasterSlave
+	CreateDirectory $INSTDIR\examples\MasterSlave
+	setOutPath $INSTDIR\examples\MasterSlave
+	file @CMAKE_HOME_DIRECTORY@\examples\msg\masterslave\masterslave_forwarder.c
+	file @CMAKE_HOME_DIRECTORY@\examples\msg\masterslave\deployment_masterslave_forwarder.xml
+	file @CMAKE_HOME_DIRECTORY@\examples\msg\msg_platform.xml
+	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\CMakeLists.txt
+	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\FindPCRE.cmake
+	
+	# create shortcuts in the start menu programs directory
+	CreateDirectory "$SMPROGRAMS\SimGrid\Examples\"
+	createShortCut  "$SMPROGRAMS\SimGrid\Examples\HelloWorld project.lnk"	"$INSTDIR\examples\HelloWorld"
+	createShortCut  "$SMPROGRAMS\SimGrid\Examples\MasterSlave project.lnk"	"$INSTDIR\examples\MasterSlave"
 	
 SectionEnd
 Section "Pcre library" PCRESection	
@@ -335,7 +358,16 @@ section "Uninstall"
 	# delete link
 	delete "$SMPROGRAMS\SimGrid\Uninstall simgrid.lnk"
 	delete "$SMPROGRAMS\SimGrid\Documentation.lnk"
-	delete "$SMPROGRAMS\SimGrid\HelloWorld project.lnk"
+	delete "$SMPROGRAMS\SimGrid\Website.lnk"
+	delete "$SMPROGRAMS\SimGrid\Examples\HelloWorld project.lnk"
+	delete "$SMPROGRAMS\SimGrid\Examples\MasterSlave project.lnk"
+	
+	# delete EXTRA FILES
+	delete $INSTDIR\AUTHORS
+	delete $INSTDIR\Changelog
+	delete $INSTDIR\COPYING
+	delete $INSTDIR\LICENSE-LGPL-2.1
+	delete $INSTDIR\NEWS
 	
 	# now delete directories
 	RMDir  "$INSTDIR\bin"
@@ -353,17 +385,21 @@ section "Uninstall"
 	RMDir  "$INSTDIR\include"
 	RMDir  /r "$INSTDIR\doc"
 	RMDir  /r "$INSTDIR\examples"
+	RMDir  "$SMPROGRAMS\SimGrid\Examples"
 	RMDir  "$SMPROGRAMS\SimGrid"
 	
 	# delete PCRE
-	RMDir   "$INSTDIR\GnuWin32"
+	RMDir   /r "$INSTDIR\GnuWin32"
 	
 	# Delete variable
 	DeleteRegValue ${env_hklm} SIMGRID_ROOT
 	DeleteRegValue ${env_hklm} SIMGRID_VERSION
 	DeleteRegValue ${env_hklm} SIMGRID_PCRE_LIBRARY_PATH
 	DeleteRegValue ${env_hklm} SIMGRID_PCRE_LIBRARY_VERSION
-      DeleteRegKey HKCU "SOFTWARE\SimGrid"
+    DeleteRegKey HKCU "SOFTWARE\SimGrid"
+    
+    # delete INSTDIR
+    RMDir  /r "$INSTDIR"
     
 # uninstall section end
 sectionEnd

@@ -65,15 +65,18 @@ if(HAVE_MC)
 	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/mc)
 endif(HAVE_MC)
 
-if(HAVE_GTNETS)
-	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets)
-endif(HAVE_GTNETS)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets)
+
+if(HAVE_NS3)
+	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/ns3)
+endif(HAVE_NS3)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/amok/bandwidth)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/amok/saturate)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dax)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/goal)
 if(HAVE_GRAPHVIZ)
   add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dot)
 endif(HAVE_GRAPHVIZ)

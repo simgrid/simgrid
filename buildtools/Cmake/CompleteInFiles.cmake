@@ -67,17 +67,17 @@ include(TestBigEndian)
 TEST_BIG_ENDIAN(BIGENDIAN)
 
 include(FindGraphviz)
-
-string(TOUPPER ${enable_pcre} enable_pcre)
-if(enable_pcre STREQUAL "AUTO" OR enable_pcre STREQUAL "ON")
 include(FindPCRE)
-endif(enable_pcre STREQUAL "AUTO" OR enable_pcre STREQUAL "ON")
+
 set(HAVE_GTNETS 0)
 if(enable_gtnets)	
 	include(FindGTnets)
 endif(enable_gtnets)
 if(enable_smpi)
 	include(FindF2c)
+	if(HAVE_F2C_H)
+        SET(HAVE_SMPI 1)
+    endif(HAVE_F2C_H)
 endif(enable_smpi)
 if(enable_lua)
 	include(FindLua51Simgrid)
@@ -211,7 +211,7 @@ if(pthread)
 	### Test that we have a way to create semaphores
   	
   	if(HAVE_SEM_OPEN_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_open.c -o testprog"
+		exec_program("${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_open.c -lpthread -o testprog"
 		             OUTPUT_VARIABLE HAVE_SEM_OPEN_run)
 	    	if(HAVE_SEM_OPEN_run)
 			set(HAVE_SEM_OPEN 0)
@@ -230,7 +230,7 @@ if(pthread)
   	endif(HAVE_SEM_OPEN_LIB)
 
   	if(HAVE_SEM_INIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -o testprog" 
+		exec_program("${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -lpthread -o testprog"
 		             OUTPUT_VARIABLE HAVE_SEM_INIT_run)
 	    	if(HAVE_SEM_INIT_run)
 			set(HAVE_SEM_INIT 0)
@@ -297,14 +297,14 @@ IF(CMAKE_CROSSCOMPILING)
 	ENDIF(WIN32)
 ELSE(CMAKE_CROSSCOMPILING)
 	try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
-		${simgrid_BINARY_DIR}
+		${PROJECT_BINARY_DIR}
 		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
 		COMPILE_DEFINITIONS "${mcsc_flags}"
 		OUTPUT_VARIABLE var_compil
 		)
 		
-		if(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
-			file(READ "${simgrid_BINARY_DIR}/conftestval" mcsc)
+		if(EXISTS "${PROJECT_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
+			file(READ "${PROJECT_BINARY_DIR}/conftestval" mcsc)
 			STRING(REPLACE "\n" "" mcsc "${mcsc}")
 			if(mcsc)
    				set(mcsc "yes")
@@ -312,9 +312,9 @@ ELSE(CMAKE_CROSSCOMPILING)
 			else(mcsc)
 				set(mcsc "no")
 			endif(mcsc)
-	    else(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
+	    else(EXISTS "${PROJECT_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
 			set(mcsc "no")
-		endif(EXISTS "${simgrid_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
+		endif(EXISTS "${PROJECT_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
 ENDIF(CMAKE_CROSSCOMPILING)
 
 if(mcsc MATCHES "no" AND pthread)
@@ -352,7 +352,8 @@ endif(pthread)
 ###############
 ## SVN version check
 ##
-exec_program("git remote" OUTPUT_VARIABLE remote RETURN_VALUE ret)
+if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
+exec_program("git remote | head -n 1" OUTPUT_VARIABLE remote RETURN_VALUE ret)
 exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
 
 if(url)
@@ -365,7 +366,7 @@ if(url)
 	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
 endif(url)
-
+endif(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
 
 ###################################
 ## SimGrid and GRAS specific checks
@@ -374,7 +375,7 @@ endif(url)
 IF(NOT CMAKE_CROSSCOMPILING)
 # Check architecture signature begin
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
-	${simgrid_BINARY_DIR}
+	${PROJECT_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
 	RUN_OUTPUT_VARIABLE var1
 	)
@@ -485,7 +486,7 @@ endif(GRAS_THISARCH MATCHES "none")
 
 # Check architecture signature end
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
-	${simgrid_BINARY_DIR}
+	${PROJECT_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_CHECK_STRUCT_COMPACTION.c
 	RUN_OUTPUT_VARIABLE var2
 	)
@@ -496,7 +497,7 @@ endforeach(var_tmp ${var2})
 
 # Check for [SIZEOF_MAX]
 try_run(RUN_SM_VAR COMPILE_SM_VAR
-	${simgrid_BINARY_DIR}
+	${PROJECT_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_max_size.c
 	RUN_OUTPUT_VARIABLE var3
 	)
@@ -522,11 +523,11 @@ if(HAVE_MAKECONTEXT OR WIN32)
 	endif(WIN32 AND __GNUC__)
 	
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
-		${simgrid_BINARY_DIR}
+		${PROJECT_BINARY_DIR}
 		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
-	file(READ ${simgrid_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
+	file(READ ${PROJECT_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
 	string(REPLACE "\n" "" MAKECONTEXT_ADDR_SIZE "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;^.*,;MAKECONTEXT_ADDR "${MAKECONTEXT_ADDR_SIZE}")
 	string(REGEX MATCH ;,.*$; MAKECONTEXT_SIZE "${MAKECONTEXT_ADDR_SIZE}")
@@ -542,10 +543,10 @@ endif(HAVE_MAKECONTEXT OR WIN32)
 ### check for stackgrowth
 if (NOT CMAKE_CROSSCOMPILING)
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
-		${simgrid_BINARY_DIR}
+		${PROJECT_BINARY_DIR}
 		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_stackgrowth.c
 		)
-file(READ "${simgrid_BINARY_DIR}/conftestval" stack)
+file(READ "${PROJECT_BINARY_DIR}/conftestval" stack)
 if(stack MATCHES "down")
 	set(PTH_STACKGROWTH "-1")
 endif(stack MATCHES "down")
@@ -567,7 +568,7 @@ endif(NOT CMAKE_CROSSCOMPILING)
 
 #AC_PRINTF_NULL
 try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
-	${simgrid_BINARY_DIR}
+	${PROJECT_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_printf_null.c
 	)
 
@@ -620,7 +621,7 @@ foreach(fct ${diff_va})
 	}"
 	)
 	try_compile(COMPILE_VA_NULL_VAR
-	${simgrid_BINARY_DIR}
+	${PROJECT_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c
 	)
 	if(COMPILE_VA_NULL_VAR)
@@ -678,7 +679,7 @@ endforeach(fct ${diff_va})
 #--------------------------------------------------------------------------------------------------
 ### check for getline
 try_compile(COMPILE_RESULT_VAR
-	${simgrid_BINARY_DIR}
+	${PROJECT_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_getline.c
 	)
 
@@ -702,7 +703,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
 		#set(PREFER_PORTABLE_SNPRINTF 1)
 	else(CMAKE_CROSSCOMPILING)
   	    try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
-	  	${simgrid_BINARY_DIR}
+	  	${PROJECT_BINARY_DIR}
 		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_snprintf.c
 	    )	
 	endif(CMAKE_CROSSCOMPILING)
@@ -712,7 +713,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
 		set(PREFER_PORTABLE_VSNPRINTF 1)
 	else(CMAKE_CROSSCOMPILING)
   	   try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
-		${simgrid_BINARY_DIR}
+		${PROJECT_BINARY_DIR}
 		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_vsnprintf.c
 	   )
 	endif(CMAKE_CROSSCOMPILING)

@@ -1,7 +1,7 @@
 p Runs the 'properties' test within the simulator (simulation times valid for 32bits architectures)
 
 ! output sort
-$ $SG_TEST_EXENV ./properties_simulator${EXEEXT:=} ${srcdir:=.}/../../platforms/prop.xml ${srcdir:=.}/properties.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ $SG_TEST_EXENV ./properties_simulator${EXEEXT:=} ${srcdir:=.}/../../platforms/prop.xml ${srcdir:=.}/properties.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (2:bob@host1) == Dump all the properties of host1
 > [  0.000000] (2:bob@host1)   Host property: 'SG_TEST_Hdd' has value: '180'
 > [  0.000000] (2:bob@host1)   Host property: 'SG_TEST_mem' has value: '4'

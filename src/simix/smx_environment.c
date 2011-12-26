@@ -39,18 +39,8 @@ void SIMIX_create_environment(const char *file)
 
   double start, end;
 
-  platform_filename = xbt_strdup(file);
-
-  // Reset callbacks
-  surf_parse_reset_callbacks();
-  // Add config callbacks
-  surf_parse_add_callback_config();
-
-  parse_platform_file(file);
-  surf_config_models_create_elms();
-
   start = xbt_os_time();
-  /* FIXME: what time are we measuring ??? */
+  parse_platform_file(file);
   end = xbt_os_time();
   XBT_DEBUG("PARSE TIME: %lg", (end - start));
 

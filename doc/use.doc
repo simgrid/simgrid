@@ -1,0 +1,23 @@
+/*! \page use Using SimGrid
+
+\section use_generic First steps with SimGrid
+
+If you decide to go for the MSG interface, please read carefully the
+\ref MSG_examples. You'll find in \ref MSG_ex_master_slave a very
+simple consisting of a master (that owns a bunch of tasks and
+distributes them) , some slaves (that process tasks whenever they
+receive one) and some forwarder agents (that simply pass the tasks
+they receive to some slaves).
+
+If you decide to go for the GRAS interface, you should definitively
+read the \ref GRAS_tut. The first section constitutes an introduction
+to the tool and presents the model we use. The second section
+constitutes a complete step-by-step tutorial building a distributed
+application from the beginning and exemplifying most of the GRAS
+features in the process. The last section groups some HOWTOS
+highlighting a given feature of the framework in a more concise way.
+
+If you decide to go for another interface, I'm afraid your only sources
+of information will be the source code and the mailing lists...
+
+*/

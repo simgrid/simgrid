@@ -129,7 +129,7 @@ static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload)
  * each of the messages occupy the connexion one second
  */
 void amok_bw_saturate_begin(const char *to_name, unsigned int to_port,
-                            unsigned int msg_size, double duration,
+                            volatile unsigned int msg_size, double duration,
                             /*out */ double *elapsed_res, double *bw_res)
 {
 
@@ -142,7 +142,7 @@ void amok_bw_saturate_begin(const char *to_name, unsigned int to_port,
 
   s_gras_msg_t msg_got;
 
-  unsigned int packet_sent = 0;
+  volatile unsigned int packet_sent = 0;
   double start, elapsed = -1;   /* timer */
   double bw;
 
@@ -263,10 +263,10 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload)
   sat_request_t answer = xbt_new0(s_sat_request_t, 1);
   volatile int saturate_further = 1;
   xbt_ex_t e;
-  gras_socket_t measMaster = NULL, meas = NULL;
-  gras_socket_t from = gras_msg_cb_ctx_from(ctx);
+  volatile gras_socket_t measMaster = NULL, meas = NULL;
+  volatile gras_socket_t from = gras_msg_cb_ctx_from(ctx);
 
-  int port = 6000;
+  volatile int port = 6000;
   while (port <= 10000 && measMaster == NULL) {
     TRY {
       measMaster = gras_socket_server_ext(port, 0 /*bufsize: auto */ ,

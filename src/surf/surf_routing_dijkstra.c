@@ -8,18 +8,16 @@
 
 /* Global vars */
 extern routing_global_t global_routing;
-extern routing_component_t current_routing;
-extern model_type_t current_routing_model;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf -- dijkstra routing logic");
 
 typedef struct {
-  s_routing_component_t generic_routing;
+  s_as_t generic_routing;
   xbt_graph_t route_graph;      /* xbt_graph */
   xbt_dict_t graph_node_map;    /* map */
   xbt_dict_t route_cache;       /* use in cache mode */
   int cached;
-} s_routing_component_dijkstra_t, *routing_component_dijkstra_t;
+} s_as_dijkstra_t, *as_dijkstra_t;
 
 
 typedef struct graph_node_data {
@@ -50,30 +48,25 @@ static void route_cache_elem_free(void *e)
 static void graph_node_map_elem_free(void *e)
 {
   graph_node_map_element_t elm = (graph_node_map_element_t) e;
-  if (elm) {
-    xbt_free(elm);
-  }
+  xbt_free(elm);
 }
 
-static void graph_edge_data_free(void *e)
+static void graph_edge_data_free(void *e) // FIXME: useless code dupplication
 {
-  route_extended_t e_route = (route_extended_t) e;
+  route_t e_route = (route_t) e;
   if (e_route) {
-    xbt_dynar_free(&(e_route->generic_route.link_list));
-    if (e_route->src_gateway)
-      xbt_free(e_route->src_gateway);
-    if (e_route->dst_gateway)
-      xbt_free(e_route->dst_gateway);
+    xbt_dynar_free(&(e_route->link_list));
+    xbt_free(e_route->src_gateway);
+    xbt_free(e_route->dst_gateway);
     xbt_free(e_route);
   }
 }
 
 /* Utility functions */
 
-static xbt_node_t route_graph_new_node(routing_component_dijkstra_t rc,
+static xbt_node_t route_graph_new_node(as_dijkstra_t as,
                                        int id, int graph_id)
 {
-  routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
   xbt_node_t node = NULL;
   graph_node_data_t data = NULL;
   graph_node_map_element_t elm = NULL;
@@ -81,22 +74,21 @@ static xbt_node_t route_graph_new_node(routing_component_dijkstra_t rc,
   data = xbt_new0(struct graph_node_data, 1);
   data->id = id;
   data->graph_id = graph_id;
-  node = xbt_graph_new_node(routing->route_graph, data);
+  node = xbt_graph_new_node(as->route_graph, data);
 
   elm = xbt_new0(struct graph_node_map_element, 1);
   elm->node = node;
-  xbt_dict_set_ext(routing->graph_node_map, (char *) (&id), sizeof(int),
-                   (xbt_set_elm_t) elm, &graph_node_map_elem_free);
+  xbt_dict_set_ext(as->graph_node_map, (char *) (&id), sizeof(int),
+                   (xbt_set_elm_t) elm, NULL);
 
   return node;
 }
 
 static graph_node_map_element_t
-graph_node_map_search(routing_component_dijkstra_t rc, int id)
+graph_node_map_search(as_dijkstra_t as, int id)
 {
-  routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
   graph_node_map_element_t elm = (graph_node_map_element_t)
-      xbt_dict_get_or_null_ext(routing->graph_node_map,
+      xbt_dict_get_or_null_ext(as->graph_node_map,
                                (char *) (&id),
                                sizeof(int));
   return elm;
@@ -104,20 +96,19 @@ graph_node_map_search(routing_component_dijkstra_t rc, int id)
 
 /* Parsing */
 
-static void route_new_dijkstra(routing_component_dijkstra_t rc, int src_id,
-                               int dst_id, route_extended_t e_route)
+static void route_new_dijkstra(as_dijkstra_t as, int src_id,
+                               int dst_id, route_t e_route)
 {
-  routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
   XBT_DEBUG("Load Route from \"%d\" to \"%d\"", src_id, dst_id);
   xbt_node_t src = NULL;
   xbt_node_t dst = NULL;
 
   graph_node_map_element_t src_elm = (graph_node_map_element_t)
-      xbt_dict_get_or_null_ext(routing->graph_node_map,
+      xbt_dict_get_or_null_ext(as->graph_node_map,
                                (char *) (&src_id),
                                sizeof(int));
   graph_node_map_element_t dst_elm = (graph_node_map_element_t)
-      xbt_dict_get_or_null_ext(routing->graph_node_map,
+      xbt_dict_get_or_null_ext(as->graph_node_map,
                                (char *) (&dst_id),
                                sizeof(int));
 
@@ -130,26 +121,23 @@ static void route_new_dijkstra(routing_component_dijkstra_t rc, int src_id,
 
   /* add nodes if they don't exist in the graph */
   if (src_id == dst_id && src == NULL && dst == NULL) {
-    src = route_graph_new_node(rc, src_id, -1);
+    src = route_graph_new_node(as, src_id, -1);
     dst = src;
   } else {
     if (src == NULL) {
-      src = route_graph_new_node(rc, src_id, -1);
+      src = route_graph_new_node(as, src_id, -1);
     }
     if (dst == NULL) {
-      dst = route_graph_new_node(rc, dst_id, -1);
+      dst = route_graph_new_node(as, dst_id, -1);
     }
   }
 
   /* add link as edge to graph */
-  xbt_graph_new_edge(routing->route_graph, src, dst, e_route);
+  xbt_graph_new_edge(as->route_graph, src, dst, e_route);
 }
 
-static void add_loopback_dijkstra(routing_component_dijkstra_t rc)
-{
-  routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
-
-  xbt_dynar_t nodes = xbt_graph_get_nodes(routing->route_graph);
+static void add_loopback_dijkstra(as_dijkstra_t as) {
+  xbt_dynar_t nodes = xbt_graph_get_nodes(as->route_graph);
 
   xbt_node_t node = NULL;
   unsigned int cursor2;
@@ -168,135 +156,115 @@ static void add_loopback_dijkstra(routing_component_dijkstra_t rc)
     }
 
     if (!found) {
-      route_extended_t e_route = xbt_new0(s_route_extended_t, 1);
-      e_route->src_gateway = NULL;
-      e_route->dst_gateway = NULL;
-      e_route->generic_route.link_list =
-          xbt_dynar_new(global_routing->size_of_link, NULL);
-      xbt_dynar_push(e_route->generic_route.link_list,
+      route_t e_route = xbt_new0(s_route_t, 1);
+      e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+      xbt_dynar_push(e_route->link_list,
                      &global_routing->loopback);
-      xbt_graph_new_edge(routing->route_graph, node, node, e_route);
+      xbt_graph_new_edge(as->route_graph, node, node, e_route);
     }
   }
 }
 
-static route_extended_t dijkstra_get_route(routing_component_t rc,
-        const char *src,
-        const char *dst);
+static void dijkstra_get_route_and_latency(AS_t as_generic,
+        const char *src, const char *dst, route_t route, double *lat);
 
-static xbt_dynar_t dijkstra_get_onelink_routes(routing_component_t rc)
+static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 {
- // xbt_die("\"dijkstra_get_onelink_routes\" function not implemented yet");
 	  xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
 
-	  routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
 	  //size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
 	  xbt_dict_cursor_t c1 = NULL, c2 = NULL;
 	  char *k1, *d1, *k2, *d2;
-	  xbt_dict_foreach(routing->generic_routing.to_index, c1, k1, d1) {
-	    xbt_dict_foreach(routing->generic_routing.to_index, c2, k2, d2) {
-	      route_extended_t route = dijkstra_get_route(rc, k1, k2);
-	      if (route) {
-	        if (xbt_dynar_length(route->generic_route.link_list) == 1) {
-	          void *link =
-	              *(void **) xbt_dynar_get_ptr(route->generic_route.link_list,
-	                                           0);
-	          onelink_t onelink = xbt_new0(s_onelink_t, 1);
-	          onelink->link_ptr = link;
-	          if (routing->generic_routing.hierarchy == SURF_ROUTING_BASE) {
-	            onelink->src = xbt_strdup(k1);
-	            onelink->dst = xbt_strdup(k2);
-	          } else if (routing->generic_routing.hierarchy ==
-	                     SURF_ROUTING_RECURSIVE) {
-	            onelink->src = xbt_strdup(route->src_gateway);
-	            onelink->dst = xbt_strdup(route->dst_gateway);
-	          }
-	          xbt_dynar_push(ret, &onelink);
+	  xbt_dict_foreach(as->to_index, c1, k1, d1) {
+	    xbt_dict_foreach(as->to_index, c2, k2, d2) {
+	      route_t route = xbt_new0(s_route_t,1);
+	      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+	      dijkstra_get_route_and_latency(as, k1, k2,route, NULL);
+
+	      if (xbt_dynar_length(route->link_list) == 1) {
+	        void *link =
+	            *(void **) xbt_dynar_get_ptr(route->link_list, 0);
+	        onelink_t onelink = xbt_new0(s_onelink_t, 1);
+	        onelink->link_ptr = link;
+	        if (as->hierarchy == SURF_ROUTING_BASE) {
+	          onelink->src = xbt_strdup(k1);
+	          onelink->dst = xbt_strdup(k2);
+	        } else if (as->hierarchy ==
+	            SURF_ROUTING_RECURSIVE) {
+	          onelink->src = xbt_strdup(route->src_gateway);
+	          onelink->dst = xbt_strdup(route->dst_gateway);
 	        }
+	        xbt_dynar_push(ret, &onelink);
 	      }
 	    }
 	  }
 	  return ret;
 }
 
-static route_extended_t dijkstra_get_route(routing_component_t rc,
-                                           const char *src,
-                                           const char *dst)
+static void dijkstra_get_route_and_latency(AS_t asg,
+                               const char *src, const char *dst,
+                               route_t route, double *lat)
 {
-  xbt_assert(rc && src
-              && dst,
-              "Invalid params for \"get_route\" function at AS \"%s\"",
-              rc->name);
 
   /* set utils vars */
-  routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
+  as_dijkstra_t as = (as_dijkstra_t) asg;
 
-  generic_src_dst_check(rc, src, dst);
-  int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, src);
-  int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, dst);
-  xbt_assert(src_id
-              && dst_id,
-              "Ask for route \"from\"(%s)  or \"to\"(%s) no found in the local table",
-              src, dst);
-
-  /* create a result route */
-  route_extended_t new_e_route = xbt_new0(s_route_extended_t, 1);
-  new_e_route->generic_route.link_list =
-      xbt_dynar_new(global_routing->size_of_link, NULL);
-  new_e_route->src_gateway = NULL;
-  new_e_route->dst_gateway = NULL;
+  generic_src_dst_check(asg, src, dst);
+  int *src_id = xbt_dict_get_or_null(asg->to_index, src);
+  int *dst_id = xbt_dict_get_or_null(asg->to_index, dst);
+  if (!src_id || !dst_id)
+    THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
 
   int *pred_arr = NULL;
   int src_node_id = 0;
   int dst_node_id = 0;
   int *nodeid = NULL;
   int v;
-  route_extended_t e_route;
+  route_t e_route;
   int size = 0;
   unsigned int cpt;
   void *link;
   xbt_dynar_t links = NULL;
   route_cache_element_t elm = NULL;
-  xbt_dynar_t nodes = xbt_graph_get_nodes(routing->route_graph);
+  xbt_dynar_t nodes = xbt_graph_get_nodes(as->route_graph);
 
   /* Use the graph_node id mapping set to quickly find the nodes */
   graph_node_map_element_t src_elm =
-      graph_node_map_search(routing, *src_id);
+      graph_node_map_search(as, *src_id);
   graph_node_map_element_t dst_elm =
-      graph_node_map_search(routing, *dst_id);
-  xbt_assert(src_elm != NULL
-              && dst_elm != NULL, "src %d or dst %d does not exist",
-              *src_id, *dst_id);
+      graph_node_map_search(as, *dst_id);
+
   src_node_id = ((graph_node_data_t)
                  xbt_graph_node_get_data(src_elm->node))->graph_id;
   dst_node_id = ((graph_node_data_t)
                  xbt_graph_node_get_data(dst_elm->node))->graph_id;
 
-  /* if the src and dst are the same *//* fixed, missing in the previous version */
+  /* if the src and dst are the same */
   if (src_node_id == dst_node_id) {
 
     xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src_node_id, xbt_node_t);
     xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst_node_id, xbt_node_t);
     xbt_edge_t edge =
-        xbt_graph_get_edge(routing->route_graph, node_s_v, node_e_v);
+        xbt_graph_get_edge(as->route_graph, node_s_v, node_e_v);
 
-    xbt_assert(edge != NULL, "no route between host %d and %d", *src_id,
-                *dst_id);
+    if (edge == NULL)
+      THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
 
-    e_route = (route_extended_t) xbt_graph_edge_get_data(edge);
+    e_route = (route_t) xbt_graph_edge_get_data(edge);
 
-    links = e_route->generic_route.link_list;
+    links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
-      xbt_dynar_unshift(new_e_route->generic_route.link_list, &link);
+      xbt_dynar_unshift(route->link_list, &link);
+      if (lat)
+        *lat += surf_network_model->extension.network.get_link_latency(link);
     }
 
-    return new_e_route;
   }
 
-  if (routing->cached) {
+  if (as->cached) {
     /*check if there is a cached predecessor list avail */
     elm = (route_cache_element_t)
-        xbt_dict_get_or_null_ext(routing->route_cache, (char *) (&src_id),
+        xbt_dict_get_or_null_ext(as->route_cache, (char *) (&src_id),
                                  sizeof(int));
   }
 
@@ -341,9 +309,8 @@ static route_extended_t dijkstra_get_route(routing_component_t rc,
         xbt_node_t u_node = xbt_graph_edge_get_target(edge);
         graph_node_data_t data = xbt_graph_node_get_data(u_node);
         int u_id = data->graph_id;
-        route_extended_t tmp_e_route =
-            (route_extended_t) xbt_graph_edge_get_data(edge);
-        int cost_v_u = (tmp_e_route->generic_route.link_list)->used;    /* count of links, old model assume 1 */
+        route_t tmp_e_route = (route_t) xbt_graph_edge_get_data(edge);
+        int cost_v_u = (tmp_e_route->link_list)->used;    /* count of links, old model assume 1 */
 
         if (cost_v_u + cost_arr[*v_id] < cost_arr[u_id]) {
           pred_arr[u_id] = *v_id;
@@ -370,152 +337,127 @@ static route_extended_t dijkstra_get_route(routing_component_t rc,
         xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
     xbt_node_t node_v = xbt_dynar_get_as(nodes, v, xbt_node_t);
     xbt_edge_t edge =
-        xbt_graph_get_edge(routing->route_graph, node_pred_v, node_v);
+        xbt_graph_get_edge(as->route_graph, node_pred_v, node_v);
 
-    xbt_assert(edge != NULL, "no route between host %d and %d", *src_id,
-                *dst_id);
+    if (edge == NULL)
+      THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
 
     prev_gw_src = gw_src;
 
-    e_route = (route_extended_t) xbt_graph_edge_get_data(edge);
+    e_route = (route_t) xbt_graph_edge_get_data(edge);
     gw_src = e_route->src_gateway;
     gw_dst = e_route->dst_gateway;
 
     if (v == dst_node_id)
       first_gw = gw_dst;
 
-    if (rc->hierarchy == SURF_ROUTING_RECURSIVE && v != dst_node_id
+    if (asg->hierarchy == SURF_ROUTING_RECURSIVE && v != dst_node_id
         && strcmp(gw_dst, prev_gw_src)) {
-      xbt_dynar_t e_route_as_to_as =
-          (*(global_routing->get_route)) (gw_dst, prev_gw_src);
-      xbt_assert(e_route_as_to_as, "no route between \"%s\" and \"%s\"",
-                  gw_dst, prev_gw_src);
+      xbt_dynar_t e_route_as_to_as=NULL;
+      routing_get_route_and_latency(gw_dst, prev_gw_src,&e_route_as_to_as,NULL);
+      if (edge == NULL)
+        THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
       links = e_route_as_to_as;
       int pos = 0;
       xbt_dynar_foreach(links, cpt, link) {
-        xbt_dynar_insert_at(new_e_route->generic_route.link_list, pos,
-                            &link);
+        xbt_dynar_insert_at(route->link_list, pos, &link);
+        if (lat)
+          *lat += surf_network_model->extension.network.get_link_latency(link);
         pos++;
       }
     }
 
-    links = e_route->generic_route.link_list;
+    links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
-      xbt_dynar_unshift(new_e_route->generic_route.link_list, &link);
+      xbt_dynar_unshift(route->link_list, &link);
+      if (lat)
+        *lat += surf_network_model->extension.network.get_link_latency(link);
     }
     size++;
   }
 
-  if (rc->hierarchy == SURF_ROUTING_RECURSIVE) {
-    new_e_route->src_gateway = xbt_strdup(gw_src);
-    new_e_route->dst_gateway = xbt_strdup(first_gw);
+  if (asg->hierarchy == SURF_ROUTING_RECURSIVE) {
+    route->src_gateway = xbt_strdup(gw_src);
+    route->dst_gateway = xbt_strdup(first_gw);
   }
 
-  if (routing->cached && elm == NULL) {
+  if (as->cached && elm == NULL) {
     /* add to predecessor list of the current src-host to cache */
     elm = xbt_new0(struct route_cache_element, 1);
     elm->pred_arr = pred_arr;
     elm->size = size;
-    xbt_dict_set_ext(routing->route_cache, (char *) (&src_id), sizeof(int),
-                     (xbt_set_elm_t) elm, &route_cache_elem_free);
+    xbt_dict_set_ext(as->route_cache, (char *) (&src_id), sizeof(int),
+                     (xbt_set_elm_t) elm, NULL);
   }
 
-  if (!routing->cached)
+  if (!as->cached)
     xbt_free(pred_arr);
-
-  return new_e_route;
 }
 
-static void dijkstra_finalize(routing_component_t rc)
+static void dijkstra_finalize(AS_t asg)
 {
-  routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
+  as_dijkstra_t as = (as_dijkstra_t) asg;
 
-  if (routing) {
-    xbt_graph_free_graph(routing->route_graph, &xbt_free,
-                         &graph_edge_data_free, &xbt_free);
-    xbt_dict_free(&routing->graph_node_map);
-    if (routing->cached)
-      xbt_dict_free(&routing->route_cache);
-    /* Delete bypass dict */
-    xbt_dict_free(&routing->generic_routing.bypassRoutes);
-    /* Delete index dict */
-    xbt_dict_free(&(routing->generic_routing.to_index));
-    /* Delete structure */
-    xbt_free(routing);
-  }
+  xbt_graph_free_graph(as->route_graph, &xbt_free,
+      &graph_edge_data_free, &xbt_free);
+  xbt_dict_free(&as->graph_node_map);
+  if (as->cached)
+    xbt_dict_free(&as->route_cache);
+
+  model_generic_finalize(asg);
 }
 
 /* Creation routing model functions */
 
-void *model_dijkstra_both_create(int cached)
+AS_t model_dijkstra_both_create(int cached)
 {
-  routing_component_dijkstra_t new_component =
-      xbt_new0(s_routing_component_dijkstra_t, 1);
-  new_component->generic_routing.set_processing_unit =
-      generic_set_processing_unit;
-  new_component->generic_routing.set_autonomous_system =
-      generic_set_autonomous_system;
-  new_component->generic_routing.set_route = model_dijkstra_both_set_route;
-  new_component->generic_routing.set_ASroute = model_dijkstra_both_set_route;
-  new_component->generic_routing.set_bypassroute = generic_set_bypassroute;
-  new_component->generic_routing.get_route = dijkstra_get_route;
-  new_component->generic_routing.get_latency = generic_get_link_latency;
+  as_dijkstra_t new_component = (as_dijkstra_t)
+      model_generic_create_sized(sizeof(s_as_dijkstra_t));
+
+  new_component->generic_routing.parse_route = model_dijkstra_both_parse_route;
+  new_component->generic_routing.parse_ASroute = model_dijkstra_both_parse_route;
+  new_component->generic_routing.get_route_and_latency = dijkstra_get_route_and_latency;
   new_component->generic_routing.get_onelink_routes =
       dijkstra_get_onelink_routes;
-  new_component->generic_routing.get_bypass_route =
-      generic_get_bypassroute;
   new_component->generic_routing.finalize = dijkstra_finalize;
   new_component->cached = cached;
-  new_component->generic_routing.to_index = xbt_dict_new();
-  new_component->generic_routing.bypassRoutes = xbt_dict_new();
-  new_component->generic_routing.get_network_element_type = get_network_element_type;
-  return new_component;
+
+  return (AS_t)new_component;
 }
 
-void *model_dijkstra_create(void)
+AS_t model_dijkstra_create(void)
 {
   return model_dijkstra_both_create(0);
 }
 
-void *model_dijkstracache_create(void)
+AS_t model_dijkstracache_create(void)
 {
   return model_dijkstra_both_create(1);
 }
 
-void model_dijkstra_both_load(void)
+void model_dijkstra_both_end(AS_t as)
 {
-  /* use "surfxml_add_callback" to add a parse function call */
-}
-
-void model_dijkstra_both_unload(void)
-{
-  /* use "surfxml_del_callback" to remove a parse function call */
-}
-
-void model_dijkstra_both_end(void)
-{
-  routing_component_dijkstra_t routing =
-      (routing_component_dijkstra_t) current_routing;
+  as_dijkstra_t THIS_AS = (as_dijkstra_t) as;
 
   xbt_node_t node = NULL;
   unsigned int cursor2;
   xbt_dynar_t nodes = NULL;
 
   /* Create the topology graph */
-  if(!routing->route_graph)
-  routing->route_graph = xbt_graph_new_graph(1, NULL);
-  if(!routing->graph_node_map)
-  routing->graph_node_map = xbt_dict_new();
+  if(!THIS_AS->route_graph)
+  THIS_AS->route_graph = xbt_graph_new_graph(1, NULL);
+  if(!THIS_AS->graph_node_map)
+  THIS_AS->graph_node_map = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
-  if (routing->cached && !routing->route_cache)
-  routing->route_cache = xbt_dict_new();
+  if (THIS_AS->cached && !THIS_AS->route_cache)
+  THIS_AS->route_cache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
   /* Add the loopback if needed */
-  if (current_routing->hierarchy == SURF_ROUTING_BASE)
-    add_loopback_dijkstra(routing);
+  if (as->hierarchy == SURF_ROUTING_BASE)
+    add_loopback_dijkstra(THIS_AS);
 
   /* initialize graph indexes in nodes after graph has been built */
-  nodes = xbt_graph_get_nodes(routing->route_graph);
+  nodes = xbt_graph_get_nodes(THIS_AS->route_graph);
 
   xbt_dynar_foreach(nodes, cursor2, node) {
     graph_node_data_t data = xbt_graph_node_get_data(node);
@@ -523,25 +465,25 @@ void model_dijkstra_both_end(void)
   }
 
 }
-void model_dijkstra_both_set_route (routing_component_t rc, const char *src,
-                     const char *dst, name_route_extended_t route)
+void model_dijkstra_both_parse_route (AS_t asg, const char *src,
+                     const char *dst, route_t route)
 {
-	routing_component_dijkstra_t routing = (routing_component_dijkstra_t) rc;
+	as_dijkstra_t as = (as_dijkstra_t) asg;
 	int *src_id, *dst_id;
-	src_id = xbt_dict_get_or_null(rc->to_index, src);
-	dst_id = xbt_dict_get_or_null(rc->to_index, dst);
+	src_id = xbt_dict_get_or_null(asg->to_index, src);
+	dst_id = xbt_dict_get_or_null(asg->to_index, dst);
 
 	xbt_assert(src_id, "Network elements %s not found", src);
 	xbt_assert(dst_id, "Network elements %s not found", dst);
 
     /* Create the topology graph */
-	if(!routing->route_graph)
-	routing->route_graph = xbt_graph_new_graph(1, NULL);
-	if(!routing->graph_node_map)
-	routing->graph_node_map = xbt_dict_new();
+	if(!as->route_graph)
+	as->route_graph = xbt_graph_new_graph(1, NULL);
+	if(!as->graph_node_map)
+	as->graph_node_map = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
-	if (routing->cached && !routing->route_cache)
-	routing->route_cache = xbt_dict_new();
+	if (as->cached && !as->route_cache)
+	as->route_cache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
 	if( A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES
 		|| A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES )
@@ -552,13 +494,12 @@ void model_dijkstra_both_set_route (routing_component_t rc, const char *src,
 	else{
 	  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
 			 route->src_gateway, dst, route->dst_gateway);
-	  if(global_routing->get_network_element_type((const char*)route->dst_gateway) == SURF_NETWORK_ELEMENT_NULL)
+	  if(routing_get_network_element_type((const char*)route->dst_gateway) == SURF_NETWORK_ELEMENT_NULL)
 		  xbt_die("The dst_gateway '%s' does not exist!",route->dst_gateway);
-	  if(global_routing->get_network_element_type((const char*)route->src_gateway) == SURF_NETWORK_ELEMENT_NULL)
+	  if(routing_get_network_element_type((const char*)route->src_gateway) == SURF_NETWORK_ELEMENT_NULL)
 		  xbt_die("The src_gateway '%s' does not exist!",route->src_gateway);
 	}
 
-	route_extended_t e_route =
-		generic_new_extended_route(current_routing->hierarchy, route, 1);
-	route_new_dijkstra(routing, *src_id, *dst_id, e_route);
+	route_t e_route = generic_new_extended_route(asg->hierarchy, route, 1);
+	route_new_dijkstra(as, *src_id, *dst_id, e_route);
 }

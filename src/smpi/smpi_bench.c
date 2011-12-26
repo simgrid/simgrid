@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <math.h> // sqrt
 #include "private.h"
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
@@ -120,15 +121,9 @@ typedef struct {
 
 void smpi_bench_destroy(void)
 {
-  if (allocs) {
-    xbt_dict_free(&allocs);
-  }
-  if (samples) {
-    xbt_dict_free(&samples);
-  }
-  if(calls) {
-    xbt_dict_free(&calls);
-  }
+  xbt_dict_free(&allocs);
+  xbt_dict_free(&samples);
+  xbt_dict_free(&calls);
 }
 
 static void smpi_execute_flops(double flops)
@@ -147,6 +142,7 @@ static void smpi_execute_flops(double flops)
 
 static void smpi_execute(double duration)
 {
+  /* FIXME: a global variable would be less expensive to consult than a call to xbt_cfg_get_double() right on the critical path */
   if (duration >= xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold")) {
     XBT_DEBUG("Sleep for %f to handle real computation time", duration);
     smpi_execute_flops(duration *
@@ -206,7 +202,7 @@ int smpi_sample_1(int global, const char *file, int line, int iters, double thre
 
   smpi_bench_end();     /* Take time from previous MPI call into account */
   if (!samples) {
-    samples = xbt_dict_new();
+    samples = xbt_dict_new_homogeneous(free);
   }
   data = xbt_dict_get_or_null(samples, loc);
   if (!data) {
@@ -217,7 +213,7 @@ int smpi_sample_1(int global, const char *file, int line, int iters, double thre
     data->iters = iters;
     data->threshold = threshold;
     data->started = 0;
-    xbt_dict_set(samples, loc, data, &free);
+    xbt_dict_set(samples, loc, data, NULL);
     return 0;
   }
   free(loc);
@@ -295,7 +291,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
     }
   }
   if (!allocs) {
-    allocs = xbt_dict_new();
+    allocs = xbt_dict_new_homogeneous(free);
   }
   data = xbt_dict_get_or_null(allocs, loc);
   if(!data) {
@@ -316,7 +312,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
     if(shm_unlink(loc) < 0) {
       XBT_WARN("Could not early unlink %s: %s", loc, strerror(errno));
     }
-    xbt_dict_set(allocs, loc, data, &free);
+    xbt_dict_set(allocs, loc, data, NULL);
     XBT_DEBUG("Mapping %s at %p through %d", loc, mem, fd);
   } else {
     mem = shm_map(data->fd, size, data);
@@ -367,7 +363,7 @@ int smpi_shared_known_call(const char* func, const char* input) {
    int known;
 
    if(!calls) {
-      calls = xbt_dict_new();
+      calls = xbt_dict_new_homogeneous(NULL);
    }
    TRY {
       xbt_dict_get(calls, loc); /* Succeed or throw */
@@ -390,7 +386,7 @@ void* smpi_shared_get_call(const char* func, const char* input) {
    void* data;
 
    if(!calls) {
-      calls = xbt_dict_new();
+      calls = xbt_dict_new_homogeneous(NULL);
    }
    data = xbt_dict_get(calls, loc);
    free(loc);
@@ -401,7 +397,7 @@ void* smpi_shared_set_call(const char* func, const char* input, void* data) {
    char* loc = bprintf("%s:%s", func, input);
 
    if(!calls) {
-      calls = xbt_dict_new();
+      calls = xbt_dict_new_homogeneous(NULL);
    }
    xbt_dict_set(calls, loc, data, NULL);
    free(loc);

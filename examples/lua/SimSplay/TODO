@@ -1,0 +1,26 @@
+--------------------------------------------
+A few notes abouts what I would like to do
+to make Splay applications work with SimGrid
+--------------------------------------------
+
+Create an executable "simsplay" that runs a Splay Lua script
+with SimGrid.
+
+Ideally, its usage would be:
+
+simsplay platform_file.{xml|lua} deployment_file.{xml|lua} splay_script.lua [simgrid_options...]
+
+I'm not sure about the format of the platform and deployment files yet.
+We could accept both XML and Lua files, since there is a great Lua API to
+describe platforms, or only the XML ones.
+
+The simsplay executable (which is compiled C) would initialize SimGrid, create
+the environment, and for each simulated process, create a new lua_State*
+object that runs the Lua script provided by the user (splay_script.lua in the
+example above).
+
+The current Lua API of SimGrid (3.6) uses Lua coroutines (i.e. sequential,
+lightweight threads) to simulate processes in a single, shared Lua state.
+However, in Splay, the Lua global values must not be shared between simulated
+processes: this is why we need distinct Lua states.
+

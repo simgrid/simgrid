@@ -1,4 +1,4 @@
-/* context_raw - context switching with ucontextes from System V           */
+/* context_raw - fast context switching inspired from System V ucontextes   */
 
 /* Copyright (c) 2009, 2010. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -9,7 +9,6 @@
 #include "simix/private.h"
 #include "xbt/parmap.h"
 
-
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
@@ -18,19 +17,27 @@ typedef char * raw_stack_t;
 typedef void (*rawctx_entry_point_t)(void *);
 
 typedef struct s_smx_ctx_raw {
-  s_smx_ctx_base_t super;       /* Fields of super implementation */
-  char *malloced_stack; /* malloced area containing the stack */
-  raw_stack_t stack_top; /* pointer to stack top (within previous area) */
-  raw_stack_t old_stack_top; /* to whom I should return the control */
+  s_smx_ctx_base_t super;         /* Fields of super implementation */
+  char *malloced_stack;           /* malloced area containing the stack */
+  raw_stack_t stack_top;          /* pointer to stack top (within previous area) */
 #ifdef HAVE_VALGRIND_VALGRIND_H
-  unsigned int valgrind_stack_id;       /* the valgrind stack id */
+  unsigned int valgrind_stack_id; /* the valgrind stack id */
 #endif
 #ifdef TIME_BENCH
-  unsigned int thread;  /* Just for measuring purposes */
+  unsigned int thread;            /* Just for measuring purposes */
 #endif
 } s_smx_ctx_raw_t, *smx_ctx_raw_t;
 
-smx_ctx_raw_t maestro_raw_context;
+#ifdef CONTEXT_THREADS
+static xbt_parmap_t raw_parmap;
+static raw_stack_t* raw_workers_stacks;       /* space to save the worker stack in each thread */
+static unsigned long raw_threads_working;     /* number of threads that have started their work */
+static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the thread id */
+#endif
+
+static unsigned long raw_process_index = 0;   /* index of the next process to run in the
+                                               * list of runnable processes */
+static smx_ctx_raw_t raw_maestro_context;
 
 extern raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
                                    rawctx_entry_point_t entry_point, void* arg);
@@ -129,7 +136,7 @@ __asm__ (
    ".text\n"
    ".globl raw_swapcontext\n"
    ".type raw_swapcontext,@function\n"
-   "raw_swapcontext:\n"	/* Calling convention sets the arguments in rdi and rsi, respectively */
+   "raw_swapcontext:\n" /* Calling convention sets the arguments in rdi and rsi, respectively */
 #endif
    "   pushq %rdi\n"
    "   pushq %rsi\n"
@@ -161,8 +168,8 @@ __asm__ (
 );
 #else
 
-/* If you implement raw contextes for other processors, don't forget to 
-   update the definition of HAVE_RAWCTX in buildtools/Cmake/AddTests.cmake */
+/* If you implement raw contexts for other processors, don't forget to
+   update the definition of HAVE_RAWCTX in buildtools/Cmake/CompleteInFiles.cmake */
 
 raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
                             rawctx_entry_point_t entry_point, void* arg) {
@@ -176,10 +183,6 @@ void raw_swapcontext(raw_stack_t* old, raw_stack_t new) {
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
-
-#ifdef CONTEXT_THREADS
-static xbt_parmap_t parmap;
-#endif
 
 #ifdef TIME_BENCH
 #include "xbt/xbt_os_time.h"
@@ -195,7 +198,68 @@ static char new_sr = 0;
 #endif
 
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
+static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory);
+static smx_context_t smx_ctx_raw_create_context(xbt_main_func_t code, int argc,
+    char **argv, void_pfn_smxprocess_t cleanup_func, void *data);
+static void smx_ctx_raw_free(smx_context_t context);
+static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
+static void smx_ctx_raw_stop(smx_context_t context);
+static void smx_ctx_raw_suspend_serial(smx_context_t context);
+static void smx_ctx_raw_resume_serial(smx_process_t first_process);
+static void smx_ctx_raw_runall_serial(void);
+static void smx_ctx_raw_suspend_parallel(smx_context_t context);
+static void smx_ctx_raw_resume_parallel(smx_process_t first_process);
+static void smx_ctx_raw_runall_parallel(void);
+static void smx_ctx_raw_runall(void);
 
+/**
+ * \brief Initializes the raw context factory.
+ * \param factory where to initialize the factory
+ */
+void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
+{
+  XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
+  smx_ctx_base_factory_init(factory);
+
+  (*factory)->finalize  = smx_ctx_raw_factory_finalize;
+  (*factory)->create_context = smx_ctx_raw_create_context;
+  /* Do not overload that method (*factory)->finalize */
+  (*factory)->free = smx_ctx_raw_free;
+  (*factory)->stop = smx_ctx_raw_stop;
+  (*factory)->name = "smx_raw_context_factory";
+
+  if (SIMIX_context_is_parallel()) {
+#ifdef CONTEXT_THREADS
+    int nthreads = SIMIX_context_get_nthreads();
+    raw_parmap = xbt_parmap_new(nthreads, SIMIX_context_get_parallel_mode());
+    raw_workers_stacks = xbt_new(raw_stack_t, nthreads);
+    xbt_os_thread_key_create(&raw_worker_id_key);
+#endif
+    if (SIMIX_context_get_parallel_threshold() > 1) {
+      /* choose dynamically */
+      (*factory)->runall = smx_ctx_raw_runall;
+      (*factory)->suspend = NULL;
+    }
+    else {
+      /* always parallel */
+      (*factory)->runall = smx_ctx_raw_runall_parallel;
+      (*factory)->suspend = smx_ctx_raw_suspend_parallel;
+    }
+  }
+  else {
+    /* always serial */
+    (*factory)->runall = smx_ctx_raw_runall_serial;
+    (*factory)->suspend = smx_ctx_raw_suspend_serial;
+  }
+#ifdef TIME_BENCH
+  timer = xbt_os_timer_new();
+#endif
+}
+
+/**
+ * \brief Finalizes the raw context factory.
+ * \param factory the raw context factory
+ */
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 {
 #ifdef TIME_BENCH
@@ -204,13 +268,23 @@ static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 #endif
 
 #ifdef CONTEXT_THREADS
-  if(parmap)
-      xbt_parmap_destroy(parmap);
+  if (raw_parmap)
+    xbt_parmap_destroy(raw_parmap);
+  xbt_free(raw_workers_stacks);
 #endif
   return smx_ctx_base_factory_finalize(factory);
 }
 
-
+/**
+ * \brief Creates a new raw context.
+ * \param code main function of this context or NULL to create the maestro
+ * context
+ * \param argc argument number
+ * \param argv arguments to pass to the main function
+ * \param cleanup_func a function to call to free the user data when the
+ * context finished
+ * \param data user data
+ */
 static smx_context_t
 smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
     void_pfn_smxprocess_t cleanup_func,
@@ -226,13 +300,13 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
           cleanup_func,
           data);
 
-  /* If the user provided a function for the process then use it
-     otherwise is the context for maestro */
+  /* if the user provided a function for the process then use it,
+     otherwise it is the context for maestro */
      if (code) {
        context->malloced_stack = xbt_malloc0(smx_context_stack_size);
        context->stack_top =
            raw_makecontext(context->malloced_stack, smx_context_stack_size,
-               (void(*)(void*))smx_ctx_raw_wrapper,context);
+               (void_f_pvoid_t) smx_ctx_raw_wrapper, context);
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
        context->valgrind_stack_id =
@@ -240,16 +314,19 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
                context->malloced_stack + smx_context_stack_size);
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
 
-     }else{
-       maestro_raw_context = context;
+     } else {
+       raw_maestro_context = context;
      }
 
      return (smx_context_t) context;
 }
 
+/**
+ * \brief Destroys a raw context.
+ * \param context a raw context
+ */
 static void smx_ctx_raw_free(smx_context_t context)
 {
-
   if (context) {
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
@@ -257,38 +334,71 @@ static void smx_ctx_raw_free(smx_context_t context)
         context)->valgrind_stack_id);
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
 
-    free(((smx_ctx_raw_t)context)->malloced_stack);
+    free(((smx_ctx_raw_t) context)->malloced_stack);
   }
   smx_ctx_base_free(context);
 }
 
-static void smx_ctx_raw_suspend(smx_context_t context)
-{
-  SIMIX_context_set_current((smx_context_t) maestro_raw_context);
-  raw_swapcontext(
-      &((smx_ctx_raw_t) context)->stack_top,
-      ((smx_ctx_raw_t) context)->old_stack_top);
-}
-
-static void smx_ctx_raw_stop(smx_context_t context)
-{
-  smx_ctx_base_stop(context);
-  smx_ctx_raw_suspend(context);
-}
-
+/**
+ * \brief Wrapper for the main function of a context.
+ * \param context a raw context
+ */
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context)
-{ 
+{
   (context->super.code) (context->super.argc, context->super.argv);
 
   smx_ctx_raw_stop((smx_context_t) context);
 }
 
-static void smx_ctx_raw_resume(smx_process_t process)
+/**
+ * \brief Stops a raw context.
+ *
+ * This function is called when the main function of the context if finished.
+ *
+ * \param context the current context
+ */
+static void smx_ctx_raw_stop(smx_context_t context)
 {
-  smx_ctx_raw_t context = (smx_ctx_raw_t)process->context;
+  smx_ctx_base_stop(context);
+  simix_global->context_factory->suspend(context);
+}
+
+/**
+ * \brief Suspends a running context and resumes another one or returns to
+ * maestro.
+ * \param context the current context
+ */
+static void smx_ctx_raw_suspend_serial(smx_context_t context)
+{
+  /* determine the next context */
+  smx_context_t next_context;
+  unsigned long int i = raw_process_index++;
+
+  if (i < xbt_dynar_length(simix_global->process_to_run)) {
+    /* execute the next process */
+    XBT_DEBUG("Run next process");
+    next_context = xbt_dynar_get_as(
+        simix_global->process_to_run, i, smx_process_t)->context;
+  }
+  else {
+    /* all processes were run, return to maestro */
+    XBT_DEBUG("No more process to run");
+    next_context = (smx_context_t) raw_maestro_context;
+  }
+  SIMIX_context_set_current(next_context);
+  raw_swapcontext(&((smx_ctx_raw_t) context)->stack_top,
+      ((smx_ctx_raw_t) next_context)->stack_top);
+}
+
+/**
+ * \brief Resumes sequentially all processes ready to run.
+ * \param first_process the first process to resume
+ */
+static void smx_ctx_raw_resume_serial(smx_process_t first_process)
+{
+  smx_ctx_raw_t context = (smx_ctx_raw_t) first_process->context;
   SIMIX_context_set_current((smx_context_t) context);
-  raw_swapcontext(
-      &((smx_ctx_raw_t) context)->old_stack_top,
+  raw_swapcontext(&raw_maestro_context->stack_top,
       ((smx_ctx_raw_t) context)->stack_top);
 }
 
@@ -360,67 +470,115 @@ void smx_ctx_raw_new_sr(void)
   XBT_VERB("New scheduling round");
 }
 #else
-static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
-{
-  smx_process_t process;
-  unsigned int cursor;
 
-  xbt_dynar_foreach(processes, cursor, process) {
-    XBT_DEBUG("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
-    smx_ctx_raw_resume(process);
+/**
+ * \brief Resumes sequentially all processes ready to run.
+ */
+static void smx_ctx_raw_runall_serial(void)
+{
+  if (!xbt_dynar_is_empty(simix_global->process_to_run)) {
+    smx_process_t first_process =
+        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
+    raw_process_index = 1;
+
+    /* execute the first process */
+    smx_ctx_raw_resume_serial(first_process);
   }
 }
 #endif
 
-static void smx_ctx_raw_runall_parallel(xbt_dynar_t processes)
+/**
+ * \brief Stops a raw context.
+ *
+ * This function is called when the main function of the context if finished.
+ *
+ * \param context the context of the current worker thread
+ */
+static void smx_ctx_raw_stop_parallel(smx_context_t context)
 {
-#ifdef CONTEXT_THREADS
-  xbt_parmap_apply(parmap, (void_f_pvoid_t)smx_ctx_raw_resume, processes);
-#endif
+  smx_ctx_base_stop(context);
+  smx_ctx_raw_suspend_parallel(context);
 }
 
-static void smx_ctx_raw_runall(xbt_dynar_t processes)
+/**
+ * \brief Suspends a running context and resumes another one or returns to
+ * the main function of the current worker thread.
+ * \param context the context of the current worker thread
+ */
+static void smx_ctx_raw_suspend_parallel(smx_context_t context)
 {
-  if (xbt_dynar_length(processes) >= SIMIX_context_get_parallel_threshold()) {
-    XBT_DEBUG("Runall // %lu", xbt_dynar_length(processes));
-    smx_ctx_raw_runall_parallel(processes);
-  } else {
-    XBT_DEBUG("Runall serial %lu", xbt_dynar_length(processes));
-    smx_ctx_raw_runall_serial(processes);
-  }
-}
-
-void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
-{
-  XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
-  smx_ctx_base_factory_init(factory);
-
-  (*factory)->finalize  = smx_ctx_raw_factory_finalize;
-  (*factory)->create_context = smx_ctx_raw_create_context;
-  /* Do not overload that method (*factory)->finalize */
-  (*factory)->free = smx_ctx_raw_free;
-  (*factory)->stop = smx_ctx_raw_stop;
-  (*factory)->suspend = smx_ctx_raw_suspend;
-  (*factory)->name = "smx_raw_context_factory";
-
-  if (SIMIX_context_is_parallel()) {
 #ifdef CONTEXT_THREADS
-    parmap = xbt_parmap_new(SIMIX_context_get_nthreads());
-#endif
-    if (SIMIX_context_get_parallel_threshold() > 1) {
-      /* choose dynamically */
-      (*factory)->runall = smx_ctx_raw_runall;
-    }
-    else {
-      /* always parallel */
-      (*factory)->runall = smx_ctx_raw_runall_parallel;
-    }
+  /* determine the next context */
+  smx_process_t next_work = xbt_parmap_next(raw_parmap);
+  smx_context_t next_context;
+  raw_stack_t next_stack;
+
+  if (next_work != NULL) {
+    /* there is a next process to resume */
+    XBT_DEBUG("Run next process");
+    next_context = next_work->context;
+    next_stack = ((smx_ctx_raw_t) next_context)->stack_top;
   }
   else {
-    /* always serial */
-    (*factory)->runall = smx_ctx_raw_runall_serial;
+    /* all processes were run, go to the barrier */
+    XBT_DEBUG("No more processes to run");
+    next_context = (smx_context_t) raw_maestro_context;
+    unsigned long worker_id =
+        (unsigned long) xbt_os_thread_get_specific(raw_worker_id_key);
+    XBT_DEBUG("Restoring worker stack %lu (working threads = %lu)",
+        worker_id, raw_threads_working);
+    next_stack = raw_workers_stacks[worker_id];
   }
-#ifdef TIME_BENCH
-  timer = xbt_os_timer_new();
+
+  SIMIX_context_set_current(next_context);
+  raw_swapcontext(&((smx_ctx_raw_t) context)->stack_top, next_stack);
 #endif
+}
+
+/**
+ * \brief Resumes sequentially in the current worker thread the processes ready
+ * to run.
+ * \param first_process the first process to resume
+ */
+static void smx_ctx_raw_resume_parallel(smx_process_t first_process)
+{
+#ifdef CONTEXT_THREADS
+  unsigned long worker_id = __sync_fetch_and_add(&raw_threads_working, 1);
+  xbt_os_thread_set_specific(raw_worker_id_key, (void*) worker_id);
+  XBT_DEBUG("Saving worker stack %lu", worker_id);
+  raw_stack_t* worker_stack = &raw_workers_stacks[worker_id];
+
+  smx_context_t context = first_process->context;
+  SIMIX_context_set_current(context);
+  raw_swapcontext(worker_stack, ((smx_ctx_raw_t) context)->stack_top);
+#endif
+}
+
+/**
+ * \brief Resumes in parallel all processes ready to run.
+ */
+static void smx_ctx_raw_runall_parallel(void)
+{
+#ifdef CONTEXT_THREADS
+  raw_threads_working = 0;
+  xbt_parmap_apply(raw_parmap, (void_f_pvoid_t) smx_ctx_raw_resume_parallel,
+      simix_global->process_to_run);
+#endif
+}
+
+/**
+ * \brief Resumes all processes ready to run.
+ */
+static void smx_ctx_raw_runall(void)
+{
+  unsigned long nb_processes = xbt_dynar_length(simix_global->process_to_run);
+  if (nb_processes >= SIMIX_context_get_parallel_threshold()) {
+    XBT_DEBUG("Runall // %lu", nb_processes);
+    simix_global->context_factory->suspend = smx_ctx_raw_suspend_parallel;
+    smx_ctx_raw_runall_parallel();
+  } else {
+    XBT_DEBUG("Runall serial %lu", nb_processes);
+    simix_global->context_factory->suspend = smx_ctx_raw_suspend_serial;
+    smx_ctx_raw_runall_serial();
+  }
 }

@@ -59,6 +59,8 @@ int main(int argc, char **argv)
   const SD_workstation_t *hosts;
   const SD_link_t *links;
 
+  setvbuf(stdout, NULL, _IOLBF, 0);
+
   SD_init(&argc, argv);
 
   platformFile = argv[1];
@@ -86,7 +88,7 @@ int main(int argc, char **argv)
            SD_workstation_get_name(hosts[i]),
            SD_workstation_get_power(hosts[i]));
     props = SD_workstation_get_properties(hosts[i]);
-    if (props && xbt_dict_length(props) > 0) {
+    if (props && !xbt_dict_is_empty(props)) {
       printf(">\n");
       xbt_dict_foreach(props, cursor, key, data) {
         printf("    <prop id=\"%s\" value=\"%s\"/>\n", key, data);
@@ -131,10 +133,11 @@ int main(int argc, char **argv)
   {
 		  xbt_lib_foreach(host_lib, cursor_dst, dst, value) //to host
 		  {
-				printf("  <route src=\"%s\" dst=\"%s\">\n	"
+				printf("  <route src=\"%s\" dst=\"%s\">\n  "
 					  ,src
 					  ,dst);
-				xbt_dynar_t route = global_routing->get_route(src,dst);
+				xbt_dynar_t route=NULL;
+				routing_get_route_and_latency(src,dst,&route,NULL);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
@@ -147,11 +150,12 @@ int main(int argc, char **argv)
 		  }
 		  xbt_lib_foreach(as_router_lib, cursor_dst, dst, value) //to router
 		  {
-			    if(get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
-				printf("  <route src=\"%s\" dst=\"%s\">\n	"
+			    if(routing_get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
+				printf("  <route src=\"%s\" dst=\"%s\">\n  "
 					  ,src
 					  ,dst);
-				xbt_dynar_t route = global_routing->get_route(src,dst);
+				xbt_dynar_t route=NULL;
+				routing_get_route_and_latency(src,dst,&route,NULL);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
@@ -167,14 +171,15 @@ int main(int argc, char **argv)
 
   xbt_lib_foreach(as_router_lib, cursor_src, src, value) // Routes from router
   {
-	  if(get_network_element_type(src) == SURF_NETWORK_ELEMENT_ROUTER){
+	  if(routing_get_network_element_type(src) == SURF_NETWORK_ELEMENT_ROUTER){
 		  xbt_lib_foreach(as_router_lib, cursor_dst, dst, value) //to router
 		  {
-				if(get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
-				printf("  <route src=\"%s\" dst=\"%s\">\n	"
+				if(routing_get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
+				printf("  <route src=\"%s\" dst=\"%s\">\n  "
 					  ,src
 					  ,dst);
-				xbt_dynar_t route = global_routing->get_route(src,dst);
+				xbt_dynar_t route=NULL;
+				routing_get_route_and_latency(src,dst,&route,NULL);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
@@ -188,10 +193,10 @@ int main(int argc, char **argv)
 		  }
 		  xbt_lib_foreach(host_lib, cursor_dst, dst, value) //to host
 		  {
-				printf("  <route src=\"%s\" dst=\"%s\">\n	"
-					  ,src
-					  ,dst);
-				xbt_dynar_t route = global_routing->get_route(src,dst);
+				printf("  <route src=\"%s\" dst=\"%s\">\n  "
+					  ,src, dst);
+				xbt_dynar_t route=NULL;
+				routing_get_route_and_latency(src,dst,&route, NULL);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);

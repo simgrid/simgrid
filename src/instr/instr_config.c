@@ -81,7 +81,7 @@ int TRACE_start()
   XBT_DEBUG ("Tracing is on");
 
   /* other trace initialization */
-  created_categories = xbt_dict_new();
+  created_categories = xbt_dict_new_homogeneous(xbt_free);
   TRACE_surf_alloc();
   TRACE_smpi_alloc();
   return 0;
@@ -381,8 +381,8 @@ void TRACE_help (int detailed)
       "  Routes among AS continue to be traced as usual.",
       detailed);
   print_line (OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction",
-      "  Disable the destruction of containers at the end of simulation. This can be"
-      "  used with simulators that have a different notion of time (different from"
+      "  Disable the destruction of containers at the end of simulation. This can be\n"
+      "  used with simulators that have a different notion of time (different from\n"
       "  the simulated time).",
       detailed);
   print_line (OPT_TRIVA_UNCAT_CONF, "Generate graph configuration for Triva",
@@ -459,7 +459,7 @@ void TRACE_generate_triva_cat_conf (void)
     char *name, *name2, *value, *value2;
 
     //check if we do have categories declared
-    if (xbt_dict_length(created_categories) == 0){
+    if (xbt_dict_is_empty(created_categories)){
       XBT_INFO("No categories declared, ignoring generation of triva graph configuration");
       return;
     }
