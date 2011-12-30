@@ -10,7 +10,7 @@
 surf_model_t surf_cpu_model = NULL;
 lmm_system_t cpu_maxmin_system = NULL;
 e_UM_t cpu_update_mechanism = UM_UNDEFINED;
-static int selective_update = 0;
+static int cpu_selective_update = 0;
 
 static xbt_swag_t cpu_modified_cpu = NULL;
 static xbt_heap_t cpu_action_heap = NULL;
@@ -702,7 +702,7 @@ static void surf_cpu_model_init_internal()
   surf_cpu_model->extension.cpu.add_traces = cpu_add_traces_cpu;
 
   if (!cpu_maxmin_system) {
-    cpu_maxmin_system = lmm_system_new(selective_update);
+    cpu_maxmin_system = lmm_system_new(cpu_selective_update);
   }
   if(cpu_update_mechanism == UM_LAZY){
     cpu_action_heap = xbt_heap_new(8, NULL);
@@ -736,10 +736,10 @@ void surf_cpu_model_init_Cas01()
 
   if(!strcmp(optim,"Full")) {
     cpu_update_mechanism = UM_FULL;
-    selective_update = select;
+    cpu_selective_update = select;
   } else if (!strcmp(optim,"Lazy")) {
     cpu_update_mechanism = UM_LAZY;
-    selective_update = 1;
+    cpu_selective_update = 1;
     xbt_assert((select==1) || (xbt_cfg_is_default_value(_surf_cfg_set,"cpu/maxmin_selective_update")),
         "Disabling selective update while using the lazy update mechanism is dumb!");
   } else if (!strcmp(optim,"TI")) {

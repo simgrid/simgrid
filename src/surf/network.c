@@ -45,7 +45,7 @@ int sg_network_crosstraffic = 0;
 xbt_dict_t gap_lookup = NULL;
 
 e_UM_t network_update_mechanism = UM_UNDEFINED;
-static int selective_update = 0;
+static int net_selective_update = 0;
 
 static int net_action_is_suspended(surf_action_t action);
 static void update_action_remaining(double now);
@@ -1029,7 +1029,7 @@ static void surf_network_model_init_internal(void)
 		  net_create_resource;
 
  if (!network_maxmin_system)
-    network_maxmin_system = lmm_system_new(selective_update);
+    network_maxmin_system = lmm_system_new(net_selective_update);
 
  routing_model_create(sizeof(link_CM02_t),
       net_create_resource("__loopback__",
@@ -1055,10 +1055,10 @@ static void set_update_mechanism(void) {
 
   if(!strcmp(optim,"Full")) {
     network_update_mechanism = UM_FULL;
-    selective_update = select;
+    net_selective_update = select;
   } else if (!strcmp(optim,"Lazy")) {
     network_update_mechanism = UM_LAZY;
-    selective_update = 1;
+    net_selective_update = 1;
     xbt_assert((select==1) || (xbt_cfg_is_default_value(_surf_cfg_set,"network/maxmin_selective_update")),
         "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
