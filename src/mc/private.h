@@ -272,7 +272,7 @@ typedef struct s_mc_pair_stateless{
 extern xbt_fifo_t mc_stack_liveness;
 
 mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r);
-void MC_ddfs_init();
+void MC_ddfs_init(void);
 void MC_ddfs(int search_cycle);
 void MC_show_stack_liveness(xbt_fifo_t stack);
 void MC_dump_stack_liveness(xbt_fifo_t stack);

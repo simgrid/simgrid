@@ -375,7 +375,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	      frag_size = pow(2,mdp1->heapinfo[i].busy.type);
 	      for(j=0 ; j< (BLOCKSIZE/frag_size); j++){
 		if(memcmp((char *)addr_block1 + (j * frag_size), (char *)addr_block2 + (j * frag_size), frag_size) != 0){
-		  XBT_DEBUG("Different data in fragment %d of block %Zu", j + 1, i);
+		  XBT_DEBUG("Different data in fragment %Zu of block %Zu", j + 1, i);
 		  return 1;
 		} 
 	      }
