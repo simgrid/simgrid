@@ -205,7 +205,7 @@ char *MC_request_to_string(smx_req_t req, int value)
       break;
     case REQ_COMM_TEST:
       act = req->comm_test.comm;
-      if(act->comm.src_proc == NULL || act->comm.src_proc == NULL){
+      if(act->comm.src_proc == NULL || act->comm.dst_proc == NULL){
         type = xbt_strdup("Test FALSE");
 	p = pointer_to_string(act);
         args = bprintf("comm=%s", p);
@@ -213,10 +213,8 @@ char *MC_request_to_string(smx_req_t req, int value)
         type = xbt_strdup("Test TRUE");
 	p = pointer_to_string(act);
         args  = bprintf("comm=%s [(%lu)%s -> (%lu)%s]", p,
-                        act->comm.src_proc ? act->comm.src_proc->pid : 0,
-                        act->comm.src_proc ? act->comm.src_proc->name : "",
-                        act->comm.dst_proc ? act->comm.dst_proc->pid : 0,
-                        act->comm.dst_proc ? act->comm.dst_proc->name : "");
+                        act->comm.src_proc->pid, act->comm.src_proc->name,
+                        act->comm.dst_proc->pid, act->comm.dst_proc->name);
       }
       break;
 
