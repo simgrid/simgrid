@@ -30,7 +30,16 @@ XBT_INLINE smx_process_t SIMIX_process_self(void)
 }
 
 /**
- * \brief Move a process to the list of processes to destroy.
+ * \brief Returns whether a process has pending asynchronous communications.
+ * \return true if there are asynchronous communications in this process
+ */
+int SIMIX_process_has_pending_comms(smx_process_t process) {
+
+  return xbt_fifo_size(process->comms) > 0;
+}
+
+/**
+ * \brief Moves a process to the list of processes to destroy.
  */
 void SIMIX_process_cleanup(smx_process_t process)
 {

@@ -70,6 +70,17 @@ void smpi_process_destroy(void)
   XBT_DEBUG("<%d> Process left the game", index);
 }
 
+/**
+ * @brief Prepares the current process for termination.
+ */
+void smpi_process_finalize(void)
+{
+  // wait for all pending asynchronous comms to finish
+  while (SIMIX_process_has_pending_comms(SIMIX_process_self())) {
+    SIMIX_req_process_sleep(1);
+  }
+}
+
 int smpi_process_argc(void) {
   smpi_process_data_t data = smpi_process_data();
 
