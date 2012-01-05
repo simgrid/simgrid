@@ -445,8 +445,11 @@ XBT_TEST_UNIT("basic", test_parmap_basic, "Basic usage")
   xbt_dynar_t data = xbt_dynar_new(sizeof(void *), NULL);
 
   /* Create the parallel map */
+#ifdef HAVE_FUTEX_H
   parmap = xbt_parmap_new(10, XBT_PARMAP_FUTEX);
-
+#else
+  parmap = xbt_parmap_new(10, XBT_PARMAP_BUSY_WAIT);
+#endif
   for (j = 0; j < 100; j++) {
     xbt_dynar_push_as(data, void *, (void *)j);
   }

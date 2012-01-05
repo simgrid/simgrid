@@ -470,7 +470,11 @@ void surf_config_init(int *argc, char **argv)
         _surf_cfg_cb_contexts_parallel_threshold, NULL);
 
     /* minimal number of user contexts to be run in parallel */
+#ifdef HAVE_FUTEX_H
     default_value = xbt_strdup("futex");
+#else //No futex on mac and posix is unimplememted yet
+    default_value = xbt_strdup("busy_wait");
+#endif
     xbt_cfg_register(&_surf_cfg_set, "contexts/synchro",
         "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)",
         xbt_cfgelm_string, &default_value, 1, 1,
