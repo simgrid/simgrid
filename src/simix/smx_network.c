@@ -884,8 +884,8 @@ void smpi_comm_copy_data_callback(smx_action_t comm, size_t buff_size)
   XBT_DEBUG("Copy the data over");
   memcpy(comm->comm.dst_buff, comm->comm.src_buff, buff_size);
   if (comm->comm.detached) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the original buffer available to the application ASAP
-	  comm->comm.clean_fun(comm->comm.src_buff);
-	  comm->comm.src_buff = NULL;
+    xbt_free(comm->comm.src_buff);
+    comm->comm.src_buff = NULL;
   }
 }
 
