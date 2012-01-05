@@ -19,7 +19,6 @@ static void SIMIX_waitany_req_remove_from_actions(smx_req_t req);
 static void SIMIX_comm_copy_data(smx_action_t comm);
 static smx_action_t SIMIX_comm_new(e_smx_comm_type_t type);
 static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm);
-static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm);
 static smx_action_t SIMIX_rdv_get_request(smx_rdv_t rdv, e_smx_comm_type_t type,
 					  int (*match_fun)(void *, void *), void *);
 static void SIMIX_rdv_free(void *data);
@@ -108,7 +107,7 @@ static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm)
  *  \param rdv The rendez-vous point
  *  \param comm The communication request
  */
-static XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm)
+XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm)
 {
   xbt_fifo_remove(rdv->comm_fifo, comm);
   comm->comm.rdv = NULL;
@@ -495,8 +494,10 @@ void SIMIX_pre_comm_waitany(smx_req_t req, int idx)
   }
 
   xbt_dynar_foreach(actions, cursor, action){
-    /* Associate this request to the action */
+    /* associate this request to the the action */
     xbt_fifo_push(action->request_list, req);
+
+    /* see if the action is already finished */
     if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING){
       SIMIX_comm_finish(action);
       break;
@@ -635,18 +636,18 @@ void SIMIX_comm_finish(smx_action_t action)
 
       case SIMIX_LINK_FAILURE:
         TRY {
-	  XBT_INFO("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
-	      action,
-	      action->comm.src_proc ? action->comm.src_proc->smx_host->name : NULL,
-	      action->comm.dst_proc ? action->comm.dst_proc->smx_host->name : NULL,
-	      req->issuer->name, req->issuer,action->comm.detached);
-	  if (action->comm.src_proc == req->issuer) {
-		  XBT_INFO("I'm source");
-	  } else if (action->comm.dst_proc == req->issuer) {
-		  XBT_INFO("I'm dest");
-	  } else {
-		  XBT_INFO("I'm neither source nor dest");
-	  }
+          XBT_DEBUG("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
+              action,
+              action->comm.src_proc ? action->comm.src_proc->smx_host->name : NULL,
+              action->comm.dst_proc ? action->comm.dst_proc->smx_host->name : NULL,
+              req->issuer->name, req->issuer, action->comm.detached);
+          if (action->comm.src_proc == req->issuer) {
+            XBT_DEBUG("I'm source");
+          } else if (action->comm.dst_proc == req->issuer) {
+            XBT_DEBUG("I'm dest");
+          } else {
+            XBT_DEBUG("I'm neither source nor dest");
+          }
           THROWF(network_error, 0, "Link failure");
         }
 	CATCH(req->issuer->running_ctx->exception) {
@@ -713,7 +714,7 @@ void SIMIX_post_comm(smx_action_t action)
      action->state = SIMIX_DST_HOST_FAILURE;
   else if (action->comm.surf_comm &&
           surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED) {
-	  XBT_INFO("Puta madre. Surf says that the link broke");
+	  XBT_DEBUG("Puta madre. Surf says that the link broke");
      action->state = SIMIX_LINK_FAILURE;
   } else
     action->state = SIMIX_DONE;
@@ -901,8 +902,10 @@ void SIMIX_comm_copy_data(smx_action_t comm)
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
          comm,
-         comm->comm.src_proc->smx_host->name, comm->comm.src_buff,
-         comm->comm.dst_proc->smx_host->name, comm->comm.dst_buff, buff_size);
+         comm->comm.src_proc ? comm->comm.src_proc->smx_host->name : "a finished process",
+         comm->comm.src_buff,
+         comm->comm.dst_proc ? comm->comm.dst_proc->smx_host->name : "a finished process",
+         comm->comm.dst_buff, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
   if (comm->comm.dst_buff_size)

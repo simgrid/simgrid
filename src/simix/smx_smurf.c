@@ -39,6 +39,7 @@ void SIMIX_request_answer(smx_req_t req)
 
 void SIMIX_request_pre(smx_req_t req, int value)
 {
+  XBT_DEBUG("Handling request %p: %s", req, SIMIX_request_name(req->call));
 
   switch (req->call) {
     case REQ_COMM_TEST:
