@@ -41,9 +41,9 @@ void SIMIX_process_cleanup(smx_process_t process)
   smx_action_t action;
   while ((action = xbt_fifo_pop(process->comms))) {
 
-    /* make sure no one will finish the comm after this process is destroyed (unless it's detached) */
-	if (!action->comm.detached || action->comm.src_proc != process)
-		SIMIX_comm_cancel(action);
+    /* make sure no one will finish the comm after this process is destroyed,
+     * because src_proc or dst_proc would be an invalid pointer */
+    SIMIX_comm_cancel(action);
 
     if (action->comm.src_proc == process) {
       XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p",
@@ -58,7 +58,9 @@ void SIMIX_process_cleanup(smx_process_t process)
            action->comm.refcount++;
            SIMIX_comm_destroy(action);
          }
-         XBT_DEBUG("Don't destroy it since its refcount is %d",action->comm.refcount);
+         else {
+           XBT_DEBUG("Don't destroy it since its refcount is %d", action->comm.refcount);
+         }
       } else {
         SIMIX_comm_destroy(action);
       }
