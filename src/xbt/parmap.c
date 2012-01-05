@@ -131,11 +131,15 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
       parmap->wait_f = xbt_parmap_posix_wait;
       break;
 
+
     case XBT_PARMAP_FUTEX:
+#ifdef HAVE_FUTEX_H
       parmap->start_f = xbt_parmap_futex_start;
       parmap->end_f = xbt_parmap_futex_end;
       parmap->signal_f = xbt_parmap_futex_signal;
       parmap->wait_f = xbt_parmap_futex_wait;
+#endif
+      xbt_die("Impossible to use futex on Mac");
       break;
 
     case XBT_PARMAP_BUSY_WAIT:
