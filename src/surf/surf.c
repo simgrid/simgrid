@@ -508,7 +508,7 @@ double surf_solve(double max_date)
   /* FIXME: Moved this test to here to avoid stopping simulation if there are actions running on cpus and all cpus are with availability = 0.
    * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.
    * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed */
-  if (min < 0.0) {
+  if (min == -1.0) {
 	XBT_DEBUG("No next event at all. Bail out now.");
     return -1.0;
   }
