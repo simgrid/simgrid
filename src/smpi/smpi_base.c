@@ -294,11 +294,11 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
 void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
 {
   print_request("Waiting", *request);
-  if ((*request)->action != NULL) {
-
-      SIMIX_req_comm_wait((*request)->action, -1.0);
+  if ((*request)->action != NULL) { // this is not a detached send
+    SIMIX_req_comm_wait((*request)->action, -1.0);
+    finish_wait(request, status);
   }
-  finish_wait(request, status);
+  // FIXME for a detached send, finish_wait is not called:
 }
 
 int smpi_mpi_waitany(int count, MPI_Request requests[],
