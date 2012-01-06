@@ -1,7 +1,8 @@
 #! ./tesh
 
 ! output sort 20
-$ $SG_TEST_EXENV ./pmm_simulator$EXEEXT ${srcdir:=.}/../../msg/msg_platform.xml ${srcdir:=.}/pmm.xml "--log=root.fmt:[%10.6r]%e(%2i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ./pmm_simulator$EXEEXT ${srcdir:=.}/../../msg/msg_platform.xml ${srcdir:=.}/pmm.xml --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%2i:%P@%h)%e%m%n"
+> [  0.000000] ( 0:@) Configuration change: Set 'network/crosstraffic' to '0'
 > [  0.000156] ( 1:master@Jacquelin) Wait for peers for 2 sec
 > [  0.000156] ( 2:slave@Boivin) Sensor 0 starting
 > [  0.000156] ( 3:slave@Jean_Yves) Sensor 1 starting
