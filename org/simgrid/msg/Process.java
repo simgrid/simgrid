@@ -364,7 +364,9 @@ public abstract class Process extends Thread {
 		try {
 			schedEnd.release();
 			schedBegin.acquire();
-		} catch(InterruptedException e) {
+		} catch (InterruptedException e) {
+			/* stopped by jprocess_exit: I must terminate right now */
+			/* FIXME: how to do that? */
 		}
 	}
 

@@ -81,14 +81,16 @@ static void smx_ctx_java_free(smx_context_t context)
   if (context) {
     smx_ctx_java_t ctx_java = (smx_ctx_java_t) context;
 
-    if (ctx_java->jprocess) {
+    if (ctx_java->jprocess) { /* the java process still exists */
       jobject jprocess = ctx_java->jprocess;
-
       ctx_java->jprocess = NULL;
 
-      /* if the java process is alive join it */
-      if (jprocess_is_alive(jprocess, get_current_thread_env()))
-        jprocess_join(jprocess, get_current_thread_env());
+      /* stop it */
+      XBT_DEBUG("The process still exists, making it exit now");
+      jprocess_exit(jprocess, get_current_thread_env());
+
+      /* it's dead now, remove it from the JVM */
+      jprocess_delete_global_ref(jprocess, get_current_thread_env());
     }
   }
 
@@ -97,38 +99,17 @@ static void smx_ctx_java_free(smx_context_t context)
 
 void smx_ctx_java_stop(smx_context_t context)
 {
-  jobject jprocess = NULL;
-  XBT_DEBUG("XXXX Context Stop\n");
-
+  xbt_assert(context == my_current_context,
+      "The context to stop must be the current one");
+  /* I am the current process and I am dying */
   smx_ctx_base_stop(context);
 
-  smx_ctx_java_t ctx_java;
+  XBT_DEBUG("I am dying");
 
-  ctx_java = (smx_ctx_java_t) context;
-
-  /*FIXME: is this really necessary? Seems to. */
-  if (my_current_context->iwannadie) {
-    XBT_INFO("I wannadie");
-    /* The maestro call xbt_context_stop() with an exit code set to one */
-    if (ctx_java->jprocess) {
-      /* if the java process is alive schedule it */
-      if (jprocess_is_alive(ctx_java->jprocess, get_current_thread_env())) {
-        jprocess_schedule(my_current_context);
-        jprocess = ctx_java->jprocess;
-        ctx_java->jprocess = NULL;
-
-        /* interrupt the java process */
-        jprocess_exit(jprocess, get_current_thread_env());
-      }
-    }
-  } else {
-    /* the java process exits */
-    jprocess = ctx_java->jprocess;
-    ctx_java->jprocess = NULL;
-  }
-
-  /* delete the global reference associated with the java process */
-  jprocess_delete_global_ref(jprocess, get_current_thread_env());
+  /* suspend myself again, smx_ctx_java_free() will destroy me later
+   * from maeastro */
+  jprocess_unschedule(context);
+  xbt_die("This function was not supposed to return");
 }
 
 static void smx_ctx_java_suspend(smx_context_t context)
