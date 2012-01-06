@@ -176,9 +176,6 @@ Java_org_simgrid_msg_MsgNative_processKill(JNIEnv * env, jclass cls,
     return;
   }
 
-  /* delete the global reference */
-  jprocess_delete_global_ref(native_to_java_process(process), env);
-
   /* kill the native process (this wrapper is call by the destructor of the java 
    * process instance)
    */
