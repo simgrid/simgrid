@@ -98,41 +98,39 @@ static double constant_bandwidth_constraint(double rate, double bound,
   return rate;
 }
 
-
 /**********************/
 /*   SMPI callbacks   */
 /**********************/
-static double smpi_latency_factor(double size)
-{
-  /* 1 B <= size <= 1 KiB */
-  if (size <= 1024.0) {
-    return 1.0056;
-  }
-
-  /* 2 KiB <= size <= 32 KiB */
-  if (size <= 32768.0) {
-    return 1.8805;
-  }
-
-  /* 64 KiB <= size <= 4 MiB */
-  return 22.7111;
-}
-
 static double smpi_bandwidth_factor(double size)
 {
-  /* 1 B <= size <= 1 KiB */
-  if (size <= 1024.0) {
-    return 0.2758;
-  }
 
-  /* 2 KiB <= size <= 32 KiB */
-  if (size <= 32768.0) {
-    return 0.5477;
-  }
-
-  /* 64 KiB <= size <= 4 MiB */
-  return 0.9359;
+    if (size >= 65472) return 0.940694;
+    if (size >= 15424) return 0.697866;
+    if (size >= 9376) return 0.58729;
+    if (size >= 5776) return 1.08739;
+    if (size >= 3484) return 0.77493;
+    if (size >= 1426) return 0.608902;
+    if (size >= 732) return 0.341987;
+    if (size >= 257) return 0.338112;
+    if (size >= 0) return 0.812084;
+    return 1.0;
 }
+
+static double smpi_latency_factor(double size)
+{
+
+    if (size >= 65472) return 11.6436;
+    if (size >= 15424) return 3.48845;
+    if (size >= 9376) return 2.59299;
+    if (size >= 5776) return 2.18796;
+    if (size >= 3484) return 1.88101;
+    if (size >= 1426) return 1.61075;
+    if (size >= 732) return 1.9503;
+    if (size >= 257) return 1.95341;
+    if (size >= 0) return 2.01467;
+    return 1.0;
+}
+/**--------- <copy/paste C code snippet in surf/network.c> -----------*/
 
 static double smpi_bandwidth_constraint(double rate, double bound,
                                         double size)
@@ -325,6 +323,7 @@ static int net_action_unref(surf_action_t action)
 
 static void net_action_cancel(surf_action_t action)
 {
+	XBT_DEBUG("cancel action %p",action);
   surf_network_model->action_state_set(action, SURF_ACTION_FAILED);
   if(network_update_mechanism == UM_LAZY){// remove action from the heap
     xbt_swag_remove(action, net_modified_set);

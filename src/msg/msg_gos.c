@@ -416,7 +416,7 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
   comm->status = MSG_OK;
   comm->s_comm =
     SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                         t_simdata->rate, task, sizeof(void *), match_fun, match_data, 0);
+                         t_simdata->rate, task, sizeof(void *), match_fun, NULL, match_data, 0);
   t_simdata->comm = comm->s_comm; /* FIXME: is the field t_simdata->comm still useful? */
 
   return comm;
@@ -466,7 +466,7 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 
   /* Send it by calling SIMIX network layer */
   smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                       t_simdata->rate, task, sizeof(void *), NULL, cleanup, 1);
+                       t_simdata->rate, task, sizeof(void *), NULL,cleanup, NULL, 1);
   t_simdata->comm = comm;
 }
 
@@ -493,7 +493,7 @@ msg_comm_t MSG_task_irecv(m_task_t *task, const char *name)
 
   if (*task)
     XBT_CRITICAL
-        ("MSG_task_get() was asked to write in a non empty task struct.");
+        ("MSG_task_irecv() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
   msg_comm_t comm = xbt_new0(s_msg_comm_t, 1);

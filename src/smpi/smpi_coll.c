@@ -58,31 +58,28 @@ static void free_tree(proc_tree_t tree)
 
 /**
  * Build the tree depending on a process rank (index) and the group size (extent)
- * @param index the rank of the calling process
- * @param extent the total number of processes
+ * @param root the rank of the tree root
+ * @param rank the rank of the calling process
+ * @param size the total number of processes
  **/
-static void build_tree(int index, int extent, proc_tree_t * tree)
+static void build_tree(int root, int rank, int size, proc_tree_t * tree)
 {
-  int places = (*tree)->PROCTREE_A * index;
-  int i, ch, pr;
+  int index = (rank - root + size) % size;
+  int firstChildIdx = index * (*tree)->PROCTREE_A + 1;
+  int i;
 
-  (*tree)->me = index;
-  (*tree)->root = 0;
-  for (i = 1; i <= (*tree)->PROCTREE_A; i++) {
-    ++places;
-    ch = (*tree)->PROCTREE_A * index + i + (*tree)->root;
-    ch %= extent;
-    if (places < extent) {
-      (*tree)->child[i - 1] = ch;
-      (*tree)->numChildren++;
-    }
+  (*tree)->me = rank;
+  (*tree)->root = root;
+
+  for (i = 0; i < (*tree)->PROCTREE_A && firstChildIdx + i < size; i++) {
+    (*tree)->child[i] = (firstChildIdx + i + root) % size;
+    (*tree)->numChildren++;
   }
-  if (index == (*tree)->root) {
+  if (rank == root) {
     (*tree)->isRoot = 1;
   } else {
     (*tree)->isRoot = 0;
-    pr = (index - 1) / (*tree)->PROCTREE_A;
-    (*tree)->parent = pr;
+    (*tree)->parent = (((index - 1) / (*tree)->PROCTREE_A) + root) % size;
   }
 }
 
@@ -90,7 +87,7 @@ static void build_tree(int index, int extent, proc_tree_t * tree)
  * bcast
  **/
 static void tree_bcast(void *buf, int count, MPI_Datatype datatype,
-                       int root, MPI_Comm comm, proc_tree_t tree)
+                       MPI_Comm comm, proc_tree_t tree)
 {
   int system_tag = 999;         // used negative int but smpi_create_request() declares this illegal (to be checked)
   int rank, i;
@@ -128,7 +125,7 @@ static void tree_bcast(void *buf, int count, MPI_Datatype datatype,
  * anti-bcast
  **/
 static void tree_antibcast(void *buf, int count, MPI_Datatype datatype,
-                           int root, MPI_Comm comm, proc_tree_t tree)
+                           MPI_Comm comm, proc_tree_t tree)
 {
   int system_tag = 999;         // used negative int but smpi_create_request() declares this illegal (to be checked)
   int rank, i;
@@ -173,8 +170,8 @@ void nary_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
 
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
-  build_tree(rank, size, &tree);
-  tree_bcast(buf, count, datatype, root, comm, tree);
+  build_tree(root, rank, size, &tree);
+  tree_bcast(buf, count, datatype, comm, tree);
   free_tree(tree);
 }
 
@@ -189,9 +186,9 @@ void nary_tree_barrier(MPI_Comm comm, int arity)
 
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
-  build_tree(rank, size, &tree);
-  tree_antibcast(&dummy, 1, MPI_CHAR, 0, comm, tree);
-  tree_bcast(&dummy, 1, MPI_CHAR, 0, comm, tree);
+  build_tree(0, rank, size, &tree);
+  tree_antibcast(&dummy, 1, MPI_CHAR, comm, tree);
+  tree_bcast(&dummy, 1, MPI_CHAR, comm, tree);
   free_tree(tree);
 }
 
@@ -199,6 +196,8 @@ void nary_tree_barrier(MPI_Comm comm, int arity)
  * Alltoall Bruck
  *
  * Openmpi calls this routine when the message size sent to each rank < 2000 bytes and size < 12
+ * FIXME: uh, check smpi_pmpi again, but this routine is called for > 12, not
+ * less...
  **/
 int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
                                    MPI_Datatype sendtype, void *recvbuf,
@@ -208,20 +207,21 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
   int system_tag = 777;
   int i, rank, size, err, count;
   MPI_Aint lb;
-  MPI_Aint sendextent = 0;
-  MPI_Aint recvextent = 0;
+  MPI_Aint sendext = 0;
+  MPI_Aint recvext = 0;
   MPI_Request *requests;
 
   // FIXME: check implementation
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm alltoall_bruck() called.", rank);
-  err = smpi_datatype_extent(sendtype, &lb, &sendextent);
-  err = smpi_datatype_extent(recvtype, &lb, &recvextent);
+  err = smpi_datatype_extent(sendtype, &lb, &sendext);
+  err = smpi_datatype_extent(recvtype, &lb, &recvext);
   /* Local copy from self */
   err =
-      smpi_datatype_copy(&((char *) sendbuf)[rank * sendextent], sendcount,
-                         sendtype, &((char *) recvbuf)[rank * recvextent],
+      smpi_datatype_copy((char *)sendbuf + rank * sendcount * sendext, 
+                         sendcount, sendtype, 
+                         (char *)recvbuf + rank * recvcount * recvext,
                          recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -235,7 +235,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
         continue;
       }
       requests[count] =
-          smpi_irecv_init(&((char *) recvbuf)[i * recvextent], recvcount,
+          smpi_irecv_init((char *)recvbuf + i * recvcount * recvext, recvcount,
                           recvtype, i, system_tag, comm);
       count++;
     }
@@ -247,7 +247,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
         continue;
       }
       requests[count] =
-          smpi_isend_init(&((char *) sendbuf)[i * sendextent], sendcount,
+          smpi_isend_init((char *)sendbuf + i * sendcount * sendext, sendcount,
                           sendtype, i, system_tag, comm);
       count++;
     }
@@ -271,24 +271,20 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
 {
   int system_tag = 888;
   int i, rank, size, err, count;
-  MPI_Aint lb;
-  MPI_Aint sendinc = 0;
-  MPI_Aint recvinc = 0;
+  MPI_Aint lb = 0, sendext = 0, recvext = 0;
   MPI_Request *requests;
 
   /* Initialize. */
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm alltoall_basic_linear() called.", rank);
-  err = smpi_datatype_extent(sendtype, &lb, &sendinc);
-  err = smpi_datatype_extent(recvtype, &lb, &recvinc);
-  sendinc *= sendcount;
-  recvinc *= recvcount;
+  err = smpi_datatype_extent(sendtype, &lb, &sendext);
+  err = smpi_datatype_extent(recvtype, &lb, &recvext);
   /* simple optimization */
-  err =
-      smpi_datatype_copy(&((char *) sendbuf)[rank * sendinc], sendcount,
-                         sendtype, &((char *) recvbuf)[rank * recvinc],
-                         recvcount, recvtype);
+  err = smpi_datatype_copy((char *)sendbuf + rank * sendcount * sendext, 
+                           sendcount, sendtype, 
+                           (char *)recvbuf + rank * recvcount * recvext, 
+                           recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
     requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -296,7 +292,7 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
     count = 0;
     for (i = (rank + 1) % size; i != rank; i = (i + 1) % size) {
       requests[count] =
-          smpi_irecv_init(&((char *) recvbuf)[i * recvinc], recvcount,
+          smpi_irecv_init((char *)recvbuf + i * recvcount * recvext, recvcount, 
                           recvtype, i, system_tag, comm);
       count++;
     }
@@ -305,10 +301,9 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
      *     when messages actually arrive in the order in which they were posted.
      * TODO: check the previous assertion
      */
-    for (i = (rank + size - 1) % size; i != rank;
-         i = (i + size - 1) % size) {
+    for (i = (rank + size - 1) % size; i != rank; i = (i + size - 1) % size) {
       requests[count] =
-          smpi_isend_init(&((char *) sendbuf)[i * sendinc], sendcount,
+          smpi_isend_init((char *)sendbuf + i * sendcount * sendext, sendcount,
                           sendtype, i, system_tag, comm);
       count++;
     }
@@ -367,22 +362,20 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
 {
   int system_tag = 889;
   int i, rank, size, err, count;
-  MPI_Aint lb;
-  MPI_Aint sendextent = 0;
-  MPI_Aint recvextent = 0;
+  MPI_Aint lb = 0, sendext = 0, recvext = 0;
   MPI_Request *requests;
 
   /* Initialize. */
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm basic_alltoallv() called.", rank);
-  err = smpi_datatype_extent(sendtype, &lb, &sendextent);
-  err = smpi_datatype_extent(recvtype, &lb, &recvextent);
+  err = smpi_datatype_extent(sendtype, &lb, &sendext);
+  err = smpi_datatype_extent(recvtype, &lb, &recvext);
   /* Local copy from self */
   err =
-      smpi_datatype_copy(&((char *) sendbuf)[senddisps[rank] * sendextent],
+      smpi_datatype_copy((char *)sendbuf + senddisps[rank] * sendext, 
                          sendcounts[rank], sendtype,
-                         &((char *) recvbuf)[recvdisps[rank] * recvextent],
+                         (char *)recvbuf + recvdisps[rank] * recvext, 
                          recvcounts[rank], recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -397,7 +390,7 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
         continue;
       }
       requests[count] =
-          smpi_irecv_init(&((char *) recvbuf)[recvdisps[i] * recvextent],
+          smpi_irecv_init((char *)recvbuf + recvdisps[i] * recvext, 
                           recvcounts[i], recvtype, i, system_tag, comm);
       count++;
     }
@@ -410,7 +403,7 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
         continue;
       }
       requests[count] =
-          smpi_isend_init(&((char *) sendbuf)[senddisps[i] * sendextent],
+          smpi_isend_init((char *)sendbuf + senddisps[i] * sendext, 
                           sendcounts[i], sendtype, i, system_tag, comm);
       count++;
     }

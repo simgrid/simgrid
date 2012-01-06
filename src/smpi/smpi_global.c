@@ -5,6 +5,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "private.h"
@@ -69,6 +70,17 @@ void smpi_process_destroy(void)
   XBT_DEBUG("<%d> Process left the game", index);
 }
 
+/**
+ * @brief Prepares the current process for termination.
+ */
+void smpi_process_finalize(void)
+{
+  // wait for all pending asynchronous comms to finish
+  while (SIMIX_process_has_pending_comms(SIMIX_process_self())) {
+    SIMIX_req_process_sleep(1);
+  }
+}
+
 int smpi_process_argc(void) {
   smpi_process_data_t data = smpi_process_data();
 
@@ -98,6 +110,7 @@ int smpi_global_size(void) {
    char* value = getenv("SMPI_GLOBAL_SIZE");
 
    if(!value) {
+      fprintf(stderr, "Please set env var SMPI_GLOBAL_SIZE to expected number of processes.\n");
       abort();
    }
    return atoi(value);
@@ -178,8 +191,7 @@ void smpi_global_init(void)
   MPI_Group group;
   char name[MAILBOX_NAME_MAXLEN];
 
-  SIMIX_comm_set_copy_data_callback
-      (&SIMIX_comm_copy_buffer_callback);
+  SIMIX_comm_set_copy_data_callback(&smpi_comm_copy_data_callback);
   process_count = SIMIX_process_count();
   process_data = xbt_new(smpi_process_data_t, process_count);
   for (i = 0; i < process_count; i++) {
@@ -270,7 +282,7 @@ int MAIN__(void)
   // parse the platform file: get the host list
   SIMIX_create_environment(xargv[1]);
 
-  SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
+  SIMIX_function_register_default(smpi_simulated_main);
   SIMIX_launch_application(xargv[2]);
 
   smpi_global_init();

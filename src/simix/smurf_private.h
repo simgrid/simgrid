@@ -325,6 +325,7 @@ typedef struct s_smx_req {
       void *src_buff;
       size_t src_buff_size;
       int (*match_fun)(void *, void *);
+      void (*clean_fun)(void *);
       void *data;
       int detached;
       smx_action_t result;

@@ -452,7 +452,7 @@ double surf_solve(double max_date)
     }
   }
 
-  XBT_DEBUG("Min for resources (except NS3) : %f", min);
+  XBT_DEBUG("Min for resources (remember that NS3 dont update that value) : %f", min);
 
   XBT_DEBUG("Looking for next trace event");
 
@@ -477,7 +477,10 @@ double surf_solve(double max_date)
         min = model_next_action_end;
     }
 
-    if (next_event_date == -1.0) break;
+    if (next_event_date == -1.0) {
+    	XBT_DEBUG("no next TRACE event. Stop searching for it");
+    	break;
+    }
 
     if ((min != -1.0) && (next_event_date > NOW + min)) break;
 
@@ -502,11 +505,13 @@ double surf_solve(double max_date)
     }
   } while (1);
 
-  /* FIXME: Moved this test to here to avoid stoping simulation if there are actions running on cpus and all cpus are with availability = 0. 
+  /* FIXME: Moved this test to here to avoid stopping simulation if there are actions running on cpus and all cpus are with availability = 0.
    * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.
    * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed */
-  if (min < 0.0)
+  if (min == -1.0) {
+	XBT_DEBUG("No next event at all. Bail out now.");
     return -1.0;
+  }
 
   XBT_DEBUG("Duration set to %f", min);
 

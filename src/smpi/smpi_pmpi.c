@@ -36,6 +36,7 @@ int PMPI_Init(int *argc, char ***argv)
 
 int PMPI_Finalize(void)
 {
+  smpi_process_finalize();
   smpi_bench_end();
 #ifdef HAVE_TRACING
   TRACE_smpi_finalize(smpi_process_index());
