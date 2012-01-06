@@ -17,38 +17,40 @@ my($line_exec);
 my($l);
 my($tmp);
 
-print "#! ./tesh\n";
-
 while(defined($line=<SH_LIGNE>))
 {
-	if($line =~ /^p(.*)$/)
+	if($line =~ /^\$(.*)$/)
 	{
-		print "$line\n";
-	}
-	else
-	{
-		if($line =~ /^\$(.*)$/) 
-	    	{
-			$line_exec = $line;
-			$line =~ s/\$\{srcdir\:\=\.\}/./g;
-			$line =~ s/\$SG_TEST_EXENV//g;
-			$line =~ s/\$EXEEXT//g;
-			$line =~ s/^\$\ */.\//g;
-			$line =~ s/^.\/lua/lua/g;
-			$line =~ s/^.\/ruby/ruby/g;
-			$line =~ s/--log=([^ ]*)/--log="$1"/g;
-			print "\n$line_exec";
-			chomp $line;
-			open (FILE, "$line 2>&1|");
-			while(defined($l=<FILE>))
-			{
-			chomp $l;
-			print "\> $l\n";
-			}
-
-		}
+		$line_exec = $line;
+		$line =~ s/\$\{srcdir\:\=\.\}/./g;
+		$line =~ s/\(/\\(/g;
+		$line =~ s/\)/\\)/g;
+		$line =~ s/\$SG_TEST_EXENV//g;
+		$line =~ s/\$EXEEXT//g;
+		$line =~ s/^\$\ */.\//g;
+		$line =~ s/^.\/lua/lua/g;
+		$line =~ s/^.\/ruby/ruby/g;
+		$line =~ s/--log=([^ ]*)/--log="$1"/g;
+		print "$line_exec";
+		chomp $line;
+		open (FILE, "$line 2>&1|");
+		while(defined($l=<FILE>))
+		{
+		chomp $l;
+		print "\> $l\n";
+	    	}
 		close(FILE);
     	}
+	else
+	{
+		if($line =~ /^\>(.*)$/)
+		{
+		}
+		else
+		{
+		print "$line";
+		}
+	}	
 }
 
 close(SH_LIGNE);
