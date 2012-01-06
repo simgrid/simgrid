@@ -86,20 +86,31 @@ void lmm_system_free(lmm_system_t sys)
 XBT_INLINE void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
 {
   int i;
+  int n;
+
   lmm_element_t elem = NULL;
 
   XBT_IN("(sys=%p, var=%p)", sys, var);
   sys->modified = 1;
 
+  n = 0;
   for (i = 0; i < var->cnsts_number; i++) {
     elem = &var->cnsts[i];
     xbt_swag_remove(elem, &(elem->constraint->element_set));
     xbt_swag_remove(elem, &(elem->constraint->active_element_set));
     if (!xbt_swag_size(&(elem->constraint->element_set)))
       make_constraint_inactive(sys, elem->constraint);
-    else
-      lmm_update_modified_set(sys, elem->constraint);
+    else {
+      if (n < i)
+        var->cnsts[n].constraint = elem->constraint;
+      n++;
+    }
   }
+  if (n) {
+    var->cnsts_number = n;
+    lmm_update_modified_set(sys, var->cnsts[0].constraint);
+  }
+
   var->cnsts_number = 0;
   XBT_OUT();
 }
@@ -675,14 +686,11 @@ void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
 void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
                                double bound)
 {
-  int i;
-
   sys->modified = 1;
   var->bound = bound;
 
-  for (i = 0; i < var->cnsts_number; i++)
-    lmm_update_modified_set(sys, var->cnsts[i].constraint);
-
+  if (var->cnsts_number)
+    lmm_update_modified_set(sys, var->cnsts[0].constraint);
 }
 
 
@@ -710,11 +718,12 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
       xbt_swag_insert_at_head(elem, &(elem->constraint->element_set));
     else
       xbt_swag_insert_at_tail(elem, &(elem->constraint->element_set));
-
-    lmm_update_modified_set(sys, elem->constraint);
   }
   if (!weight)
     var->value = 0.0;
+
+  if (var->cnsts_number)
+     lmm_update_modified_set(sys, var->cnsts[0].constraint);
 
   XBT_OUT();
 }
