@@ -108,6 +108,10 @@ int TRACE_end()
 
   /* destroy all data structures of tracing (and free) */
   destroyAllContainers();
+  instr_paje_free();
+  TRACE_surf_release();
+  TRACE_smpi_release();
+  xbt_dict_free(&created_categories);
 
   /* close the trace file */
   TRACE_paje_end();

@@ -18,39 +18,28 @@ static void __TRACE_surf_check_variable_set_to_zero(double now,
                                                     const char *variable,
                                                     const char *resource)
 {
-  /* check if we have to set it to 0 */
-  if (!xbt_dict_get_or_null(platform_variables, resource)) {
-    xbt_dynar_t array = xbt_dynar_new(sizeof(char *), xbt_free);
-    char *var_cpy = xbt_strdup(variable);
-    xbt_dynar_push(array, &var_cpy);
+  /*
+   * To trace resource utilization, we use pajeAddVariable and pajeSubVariable only.
+   * The Paje simulator needs a pajeSetVariable in the first place so it knows
+   * the initial value of all variables for subsequent adds/subs. If we don't do
+   * so, the first pajeAddVariable is added to a non-determined value within
+   * the Paje simulator, causing analysis problems.
+   */
+
+  // create a key considering the resource and variable
+  int n = strlen(variable)+strlen(resource)+1;
+  char *key = (char*)xbt_malloc(n*sizeof(char));
+  snprintf (key, n, "%s%s", resource, variable);
+
+  // check if key exists: if it doesn't, set the variable to zero and mark this in the dict
+  if (!xbt_dict_get_or_null(platform_variables, key)) {
     container_t container = getContainerByName (resource);
     type_t type = getVariableType (variable, NULL, container->type);
     new_pajeSetVariable (now, container, type, 0);
-    xbt_dict_set(platform_variables, resource, array, NULL);
-  } else {
-    xbt_dynar_t array = xbt_dict_get(platform_variables, resource);
-    unsigned int i;
-    char *cat;
-    int flag = 0;
-    xbt_dynar_foreach(array, i, cat) {
-      if (strcmp(variable, cat) == 0) {
-        flag = 1;
-      }
-    }
-    if (flag == 0) {
-      char *var_cpy = xbt_strdup(variable);
-      xbt_dynar_push(array, &var_cpy);
-      if (TRACE_categorized ()){
-        container_t container = getContainerByName (resource);
-        type_t type = getVariableType (variable, NULL, container->type);
-        new_pajeSetVariable (now, container, type, 0);
-      }
-    }
+    xbt_dict_set(platform_variables, key, "", NULL);
   }
-  /* end of check */
+  xbt_free(key);
 }
-
-
 
 /*
 static void __TRACE_A_event(smx_action_t action, double now, double delta,
@@ -152,10 +141,11 @@ void TRACE_surf_host_set_utilization(const char *resource,
 
 void TRACE_surf_resource_utilization_alloc()
 {
-  platform_variables = xbt_dict_new_homogeneous(xbt_dynar_free_voidp);
+  platform_variables = xbt_dict_new_homogeneous(NULL);
 }
 
 void TRACE_surf_resource_utilization_release()
 {
+  xbt_dict_free(&platform_variables);
 }
 #endif /* HAVE_TRACING */

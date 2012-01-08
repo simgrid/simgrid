@@ -209,6 +209,7 @@ char *getContainerIdByName (const char *name);
 char *getVariableTypeIdByName (const char *name, type_t father);
 container_t getRootContainer (void);
 void instr_paje_init (container_t root);
+void instr_paje_free (void);
 type_t getRootType (void);
 type_t getContainerType (const char *name, type_t father);
 type_t getEventType (const char *name, const char *color, type_t father);
