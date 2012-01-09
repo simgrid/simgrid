@@ -291,7 +291,7 @@ XBT_INLINE unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
   return (dynar ? (unsigned long) dynar->used : (unsigned long) 0);
 }
 
-/**@brief check if a dynar is empty
+ /**@brief check if a dynar is empty
  *
  *\param dynar the dynat we want to check
  */

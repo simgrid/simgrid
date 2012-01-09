@@ -6,15 +6,19 @@
 
   <process host="Tremblay" function="coordinator" />
 
-  <process host="Fafard" function="client" />
+  <process host="Fafard" function="client" >
+    <argument value="1"/>
+  </process>
 
-  <process host="Boivin" function="client" />
+  <process host="Boivin" function="client" >
+    <argument value="2"/>
+  </process>
 
-  <process host="TeX" function="client" />
+  <!-- <process host="TeX" function="client" />
 
   <process host="Geoff" function="client" />
   
-  <!-- <process host="Disney" function="client" />
+  <process host="Disney" function="client" />
     
   <process host="iRMX" function="client" />
       

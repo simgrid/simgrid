@@ -487,6 +487,7 @@ void SIMIX_request_pre(smx_req_t req, int value)
           SIMIX_host_get_name(SIMIX_process_get_host(req->issuer))
           );
       break;
+
   }
 }
 

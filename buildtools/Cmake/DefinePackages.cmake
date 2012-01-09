@@ -16,6 +16,7 @@ set(EXTRA_DIST
 	src/xbt/backtrace_windows.c
 	src/xbt/backtrace_dummy.c
 	src/xbt/setset_private.h
+	src/xbt/automatonparse_promela.c
 	src/xbt/mmalloc/attach.c
 	src/xbt/mmalloc/detach.c	
 	src/xbt/mmalloc/keys.c
@@ -179,6 +180,7 @@ set(XBT_SRC
 	src/xbt/parmap.c
 	src/xbt/xbt_replay_trace_reader.c
 	src/xbt/lib.c
+	src/xbt/automaton.c
 )
 
 if(HAVE_MMAP)
@@ -365,6 +367,7 @@ set(MC_SRC
 	src/mc/mc_dpor.c
 	src/mc/mc_request.c
 	src/mc/private.h
+	src/mc/mc_liveness.c
 )
 
 set(RNGSTREAM_SRC
@@ -407,6 +410,8 @@ set(headers_to_install
 	include/xbt/mmalloc.h
 	include/xbt/replay_trace_reader.h
 	include/xbt/parmap.h
+	include/xbt/automaton.h
+	include/xbt/automatonparse_promela.h
 	include/simgrid/platf.h
 	include/mc/modelchecker.h
 	include/msg/msg.h

@@ -2,6 +2,9 @@
 #include "private.h"
 #include <stdlib.h>
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory_map, mc,
+                                "Logging specific to algorithms for memory_map");
+
 memory_map_t get_memory_map(void)
 {
   FILE *fp;                     /* File pointer to process's proc maps file */
@@ -19,13 +22,20 @@ memory_map_t get_memory_map(void)
 /* to be returned. */
   fp = fopen("/proc/self/maps", "r");
 
+  if(fp == NULL)
+    perror("fopen failed");
+
   xbt_assert(fp,
               "Cannot open /proc/self/maps to investigate the memory map of the process. Please report this bug.");
+
+  //XBT_DEBUG("/proc/self/maps");
 
   ret = xbt_new0(s_memory_map_t, 1);
 
   /* Read one line at the time, parse it and add it to the memory map to be returned */
   while ((read = getline(&line, &n, fp)) != -1) {
+
+    XBT_DEBUG("%s", line);
 
     /* Wipeout the new line character */
     line[read - 1] = '\0';
@@ -131,9 +141,12 @@ memory_map_t get_memory_map(void)
         xbt_realloc(ret->regions, sizeof(memreg) * (ret->mapsize + 1));
     memcpy(ret->regions + ret->mapsize, &memreg, sizeof(memreg));
     ret->mapsize++;
+
   }
 
   free(line);
+
+  fclose(fp);
 
   return ret;
 }

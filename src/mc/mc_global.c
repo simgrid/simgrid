@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/time.h>
 
 #include "../surf/surf_private.h"
 #include "../simix/private.h"
@@ -12,17 +13,33 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
 
 /* MC global data structures */
-mc_snapshot_t initial_snapshot = NULL;
-xbt_fifo_t mc_stack = NULL;
-mc_stats_t mc_stats = NULL;
+
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 double *mc_time = NULL;
+mc_snapshot_t initial_snapshot = NULL;
+
+/* Safety */
+
+xbt_fifo_t mc_stack_safety_stateful = NULL;
+xbt_fifo_t mc_stack_safety_stateless = NULL;
+mc_stats_t mc_stats = NULL;
+
+/* Liveness */
+
+mc_stats_pair_t mc_stats_pair = NULL;
+xbt_fifo_t mc_stack_liveness = NULL;
+mc_snapshot_t initial_snapshot_liveness = NULL;
+
+xbt_automaton_t automaton;
+char *prog_name;
+
 /**
  *  \brief Initialize the model-checker data structures
  */
-void MC_init(void)
+void MC_init_safety_stateless(void)
 {
+
   /* Check if MC is already initialized */
   if (initial_snapshot)
     return;
@@ -38,7 +55,7 @@ void MC_init(void)
   mc_stats->state_size = 1;
 
   /* Create exploration stack */
-  mc_stack = xbt_fifo_new();
+  mc_stack_safety_stateless = xbt_fifo_new();
 
   MC_UNSET_RAW_MEM;
 
@@ -51,12 +68,91 @@ void MC_init(void)
   MC_UNSET_RAW_MEM;
 }
 
+void MC_init_safety_stateful(void){
+
+  
+   /* Check if MC is already initialized */
+  if (initial_snapshot)
+    return;
+
+  mc_time = xbt_new0(double, simix_process_maxpid);
+
+  /* Initialize the data structures that must be persistent across every
+     iteration of the model-checker (in RAW memory) */
+  MC_SET_RAW_MEM;
+
+  /* Initialize statistics */
+  mc_stats = xbt_new0(s_mc_stats_t, 1);
+  mc_stats->state_size = 1;
+
+  /* Create exploration stack */
+  mc_stack_safety_stateful = xbt_fifo_new();
+
+  MC_UNSET_RAW_MEM;
+
+  MC_dpor_stateful_init();
+
+
+}
+
+void MC_init_liveness(xbt_automaton_t a, char *prgm){
+
+  XBT_DEBUG("Start init mc");
+  
+  mc_time = xbt_new0(double, simix_process_maxpid);
+
+  /* Initialize the data structures that must be persistent across every
+     iteration of the model-checker (in RAW memory) */
+
+  MC_SET_RAW_MEM;
+
+  /* Initialize statistics */
+  mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
+
+  XBT_DEBUG("Creating stack");
+
+ /* Create exploration stack */
+  mc_stack_liveness = xbt_fifo_new();
+
+  MC_UNSET_RAW_MEM;
+
+  automaton = a;
+  prog_name = strdup(prgm);
+
+  MC_ddfs_init();
+
+  
+}
+
+
 void MC_modelcheck(void)
 {
-  MC_init();
+  MC_init_safety_stateless();
   MC_dpor();
   MC_exit();
 }
+
+void MC_modelcheck_stateful(void)
+{
+  MC_init_safety_stateful();
+  MC_dpor_stateful();
+  MC_exit();
+}
+
+
+void MC_modelcheck_liveness(xbt_automaton_t a, char *prgm){
+  MC_init_liveness(a, prgm);
+  MC_exit_liveness();
+}
+
+void MC_exit_liveness(void)
+{
+  MC_print_statistics_pairs(mc_stats_pair);
+  //xbt_free(mc_time);
+  //MC_memory_exit();
+  exit(0);
+}
+
 
 void MC_exit(void)
 {
@@ -64,6 +160,7 @@ void MC_exit(void)
   xbt_free(mc_time);
   MC_memory_exit();
 }
+
 
 int MC_random(int min, int max)
 {
@@ -159,16 +256,120 @@ void MC_replay(xbt_fifo_t stack)
   XBT_DEBUG("**** End Replay ****");
 }
 
+void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
+{
+  int value;
+  char *req_str;
+  smx_req_t req = NULL, saved_req = NULL;
+  xbt_fifo_item_t item;
+  mc_state_t state;
+  mc_pair_stateless_t pair;
+  int depth = 1;
+
+  XBT_DEBUG("**** Begin Replay ****");
+
+  /* Restore the initial state */
+  MC_restore_snapshot(initial_snapshot_liveness);
+  /* At the moment of taking the snapshot the raw heap was set, so restoring
+   * it will set it back again, we have to unset it to continue  */
+  MC_UNSET_RAW_MEM;
+
+  if(all_stack){
+
+    item = xbt_fifo_get_last_item(stack);
+
+    while(depth <= xbt_fifo_size(stack)){
+
+      pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
+      state = (mc_state_t) pair->graph_state;
+
+      if(pair->requests > 0){
+   
+	saved_req = MC_state_get_executed_request(state, &value);
+	//XBT_DEBUG("SavedReq->call %u", saved_req->call);
+      
+	if(saved_req != NULL){
+	  /* because we got a copy of the executed request, we have to fetch the  
+	     real one, pointed by the request field of the issuer process */
+	  req = &saved_req->issuer->request;
+	  //XBT_DEBUG("Req->call %u", req->call);
+	
+	  /* Debug information */
+	  if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
+	    req_str = MC_request_to_string(req, value);
+	    XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
+	    xbt_free(req_str);
+	  }
+	
+	}
+ 
+	SIMIX_request_pre(req, value);
+	MC_wait_for_requests();
+      }
+
+      depth++;
+    
+      /* Update statistics */
+      mc_stats_pair->visited_pairs++;
+
+      item = xbt_fifo_get_prev_item(item);
+    }
+
+  }else{
+
+    /* Traverse the stack from the initial state and re-execute the transitions */
+    for (item = xbt_fifo_get_last_item(stack);
+	 item != xbt_fifo_get_first_item(stack);
+	 item = xbt_fifo_get_prev_item(item)) {
+
+      pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
+      state = (mc_state_t) pair->graph_state;
+
+      if(pair->requests > 0){
+   
+	saved_req = MC_state_get_executed_request(state, &value);
+	//XBT_DEBUG("SavedReq->call %u", saved_req->call);
+      
+	if(saved_req != NULL){
+	  /* because we got a copy of the executed request, we have to fetch the  
+	     real one, pointed by the request field of the issuer process */
+	  req = &saved_req->issuer->request;
+	  //XBT_DEBUG("Req->call %u", req->call);
+	
+	  /* Debug information */
+	  if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
+	    req_str = MC_request_to_string(req, value);
+	    XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
+	    xbt_free(req_str);
+	  }
+	
+	}
+ 
+	SIMIX_request_pre(req, value);
+	MC_wait_for_requests();
+      }
+
+      depth++;
+    
+      /* Update statistics */
+      mc_stats_pair->visited_pairs++;
+    }
+  }  
+
+  XBT_DEBUG("**** End Replay ****");
+}
+
+
 /**
  * \brief Dumps the contents of a model-checker's stack and shows the actual
  *        execution trace
  * \param stack The stack to dump
 */
-void MC_dump_stack(xbt_fifo_t stack)
+void MC_dump_stack_safety_stateless(xbt_fifo_t stack)
 {
   mc_state_t state;
 
-  MC_show_stack(stack);
+  MC_show_stack_safety_stateless(stack);
 
   MC_SET_RAW_MEM;
   while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
@@ -176,7 +377,8 @@ void MC_dump_stack(xbt_fifo_t stack)
   MC_UNSET_RAW_MEM;
 }
 
-void MC_show_stack(xbt_fifo_t stack)
+
+void MC_show_stack_safety_stateless(xbt_fifo_t stack)
 {
   int value;
   mc_state_t state;
@@ -207,8 +409,89 @@ void MC_show_deadlock(smx_req_t req)
   XBT_INFO("%s", req_str);
   xbt_free(req_str);*/
   XBT_INFO("Counter-example execution trace:");
-  MC_dump_stack(mc_stack);
+  MC_dump_stack_safety_stateless(mc_stack_safety_stateless);
 }
+
+void MC_show_deadlock_stateful(smx_req_t req)
+{
+  /*char *req_str = NULL;*/
+  XBT_INFO("**************************");
+  XBT_INFO("*** DEAD-LOCK DETECTED ***");
+  XBT_INFO("**************************");
+  XBT_INFO("Locked request:");
+  /*req_str = MC_request_to_string(req);
+  XBT_INFO("%s", req_str);
+  xbt_free(req_str);*/
+  XBT_INFO("Counter-example execution trace:");
+  MC_show_stack_safety_stateful(mc_stack_safety_stateful);
+}
+
+void MC_dump_stack_safety_stateful(xbt_fifo_t stack)
+{
+  //mc_state_ws_t state;
+
+  MC_show_stack_safety_stateful(stack);
+
+  /*MC_SET_RAW_MEM;
+  while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
+    MC_state_delete(state);
+    MC_UNSET_RAW_MEM;*/
+}
+
+
+void MC_show_stack_safety_stateful(xbt_fifo_t stack)
+{
+  int value;
+  mc_state_ws_t state;
+  xbt_fifo_item_t item;
+  smx_req_t req;
+  char *req_str = NULL;
+  
+  for (item = xbt_fifo_get_last_item(stack);
+       (item ? (state = (mc_state_ws_t) (xbt_fifo_get_item_content(item)))
+        : (NULL)); item = xbt_fifo_get_prev_item(item)) {
+    req = MC_state_get_executed_request(state->graph_state, &value);
+    if(req){
+      req_str = MC_request_to_string(req, value);
+      XBT_INFO("%s", req_str);
+      xbt_free(req_str);
+    }
+  }
+}
+
+
+void MC_show_stack_liveness(xbt_fifo_t stack){
+  int value;
+  mc_pair_stateless_t pair;
+  xbt_fifo_item_t item;
+  smx_req_t req;
+  char *req_str = NULL;
+  
+  for (item = xbt_fifo_get_last_item(stack);
+       (item ? (pair = (mc_pair_stateless_t) (xbt_fifo_get_item_content(item)))
+        : (NULL)); item = xbt_fifo_get_prev_item(item)) {
+    req = MC_state_get_executed_request(pair->graph_state, &value);
+    if(req){
+      if(pair->requests>0){
+	req_str = MC_request_to_string(req, value);
+	XBT_INFO("%s", req_str);
+	xbt_free(req_str);
+      }else{
+	XBT_INFO("End of system requests but evolution in Büchi automaton");
+      }
+    }
+  }
+}
+
+void MC_dump_stack_liveness(xbt_fifo_t stack){
+  mc_pair_stateless_t pair;
+
+  MC_SET_RAW_MEM;
+  while ((pair = (mc_pair_stateless_t) xbt_fifo_pop(stack)) != NULL)
+    MC_pair_stateless_delete(pair);
+  MC_UNSET_RAW_MEM;
+}
+
 
 void MC_print_statistics(mc_stats_t stats)
 {
@@ -222,6 +505,17 @@ void MC_print_statistics(mc_stats_t stats)
      (double)stats->expanded_states / stats->state_size); */
 }
 
+void MC_print_statistics_pairs(mc_stats_pair_t stats)
+{
+  XBT_INFO("Expanded pairs = %lu", stats->expanded_pairs);
+  XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
+  //XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
+  XBT_INFO("Expanded / Visited = %lf",
+        (double) stats->visited_pairs / stats->expanded_pairs);
+  /*XBT_INFO("Exploration coverage = %lf",
+     (double)stats->expanded_states / stats->state_size); */
+}
+
 void MC_assert(int prop)
 {
   if (MC_IS_ENABLED && !prop) {
@@ -229,8 +523,35 @@ void MC_assert(int prop)
     XBT_INFO("*** PROPERTY NOT VALID ***");
     XBT_INFO("**************************");
     XBT_INFO("Counter-example execution trace:");
-    MC_dump_stack(mc_stack);
+    MC_dump_stack_safety_stateless(mc_stack_safety_stateless);
     MC_print_statistics(mc_stats);
+    xbt_abort();
+  }
+}
+
+void MC_assert_stateful(int prop)
+{
+  if (MC_IS_ENABLED && !prop) {
+    XBT_INFO("**************************");
+    XBT_INFO("*** PROPERTY NOT VALID ***");
+    XBT_INFO("**************************");
+    XBT_INFO("Counter-example execution trace:");
+    MC_dump_stack_safety_stateful(mc_stack_safety_stateful);
+    MC_print_statistics(mc_stats);
+    xbt_abort();
+  }
+}
+
+
+void MC_assert_pair(int prop){
+  if (MC_IS_ENABLED && !prop) {
+    XBT_INFO("**************************");
+    XBT_INFO("*** PROPERTY NOT VALID ***");
+    XBT_INFO("**************************");
+    //XBT_INFO("Counter-example execution trace:");
+    MC_show_stack_liveness(mc_stack_liveness);
+    //MC_dump_snapshot_stack(mc_snapshot_stack);
+    MC_print_statistics_pairs(mc_stats_pair);
     xbt_abort();
   }
 }

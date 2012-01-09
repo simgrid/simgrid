@@ -16,10 +16,13 @@
 #include "xbt/function_types.h"
 #include "xbt/mmalloc.h"
 #include "../simix/private.h"
+#include "xbt/automaton.h"
+#include "xbt/hash.h"
 
 /****************************** Snapshots ***********************************/
 
 typedef struct s_mc_mem_region{
+  int type;
   void *start_addr;
   void *data;
   size_t size;
@@ -30,7 +33,11 @@ typedef struct s_mc_snapshot{
   mc_mem_region_t *regions;
 } s_mc_snapshot_t, *mc_snapshot_t;
 
+extern char *prog_name;
+
 void MC_take_snapshot(mc_snapshot_t);
+void MC_take_snapshot_liveness(mc_snapshot_t s);
+void MC_take_snapshot_to_restore_liveness(mc_snapshot_t s);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 
@@ -39,14 +46,19 @@ extern double *mc_time;
 
 /* Bound of the MC depth-first search algorithm */
 #define MAX_DEPTH 1000
+#define MAX_DEPTH_LIVENESS 500
 
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack);
+void MC_replay_liveness(xbt_fifo_t stack, int all_stack);
 void MC_wait_for_requests(void);
 void MC_get_enabled_processes();
 void MC_show_deadlock(smx_req_t req);
-void MC_show_stack(xbt_fifo_t stack);
-void MC_dump_stack(xbt_fifo_t stack);
+void MC_show_deadlock_stateful(smx_req_t req);
+void MC_show_stack_safety_stateless(xbt_fifo_t stack);
+void MC_dump_stack_safety_stateless(xbt_fifo_t stack);
+void MC_show_stack_safety_stateful(xbt_fifo_t stack);
+void MC_dump_stack_safety_stateful(xbt_fifo_t stack);
 
 /********************************* Requests ***********************************/
 int MC_request_depend(smx_req_t req1, smx_req_t req2);
@@ -58,10 +70,6 @@ int MC_request_is_enabled(smx_req_t req);
 int MC_request_is_enabled_by_idx(smx_req_t req, unsigned int idx);
 int MC_process_is_enabled(smx_process_t process);
 
-/********************************** DPOR **************************************/
-void MC_dpor_init(void);
-void MC_dpor(void);
-void MC_dpor_exit(void);
 
 /******************************** States **************************************/
 /* Possible exploration status of a process in a state */
@@ -89,7 +97,7 @@ typedef struct mc_state {
                                        multi-request like waitany ) */
 } s_mc_state_t, *mc_state_t;
 
-extern xbt_fifo_t mc_stack;
+extern xbt_fifo_t mc_stack_safety_stateless;
 
 mc_state_t MC_state_new(void);
 void MC_state_delete(mc_state_t state);
@@ -109,9 +117,18 @@ typedef struct mc_stats {
   unsigned long executed_transitions;
 } s_mc_stats_t, *mc_stats_t;
 
+typedef struct mc_stats_pair {
+  //unsigned long pair_size;
+  unsigned long visited_pairs;
+  unsigned long expanded_pairs;
+  unsigned long executed_transitions;
+} s_mc_stats_pair_t, *mc_stats_pair_t;
+
 extern mc_stats_t mc_stats;
+extern mc_stats_pair_t mc_stats_pair;
 
 void MC_print_statistics(mc_stats_t);
+void MC_print_statistics_pairs(mc_stats_pair_t);
 
 /********************************** MEMORY ******************************/
 /* The possible memory modes for the modelchecker are standard and raw. */
@@ -165,6 +182,101 @@ typedef struct s_memory_map {
 } s_memory_map_t, *memory_map_t;
 
 memory_map_t get_memory_map(void);
+
+
+/********************************** DPOR for safety (stateless) **************************************/
+void MC_dpor_init(void);
+void MC_dpor(void);
+void MC_dpor_exit(void);
+
+/***** DPOR for safety (stateful) **** */
+
+typedef struct s_mc_state_with_snapshot{
+  mc_snapshot_t system_state;
+  mc_state_t graph_state;
+}s_mc_state_ws_t, *mc_state_ws_t;
+
+extern xbt_fifo_t mc_stack_safety_stateful;
+
+void MC_init_stateful(void);
+void MC_modelcheck_stateful(void);
+mc_state_ws_t new_state_ws(mc_snapshot_t s, mc_state_t gs);
+void MC_dpor_stateful_init(void);
+void MC_dpor_stateful(void);
+void MC_exit_stateful(void);
+
+
+/********************************** Double-DFS for liveness property**************************************/
+
+extern mc_snapshot_t initial_snapshot_liveness;
+extern xbt_automaton_t automaton;
+
+typedef struct s_mc_pair{
+  mc_snapshot_t system_state;
+  mc_state_t graph_state;
+  xbt_state_t automaton_state;
+}s_mc_pair_t, *mc_pair_t;
+
+typedef struct s_mc_pair_reached{
+  xbt_state_t automaton_state;
+  xbt_dynar_t prop_ato;
+  mc_snapshot_t system_state;
+}s_mc_pair_reached_t, *mc_pair_reached_t;
+
+typedef struct s_mc_pair_visited{
+  xbt_state_t automaton_state;
+  xbt_dynar_t prop_ato;
+  mc_snapshot_t system_state;
+  int search_cycle;
+}s_mc_pair_visited_t, *mc_pair_visited_t;
+
+typedef struct s_mc_pair_visited_hash{
+  xbt_state_t automaton_state;
+  xbt_dynar_t prop_ato;
+  unsigned int *hash_regions;
+  int search_cycle;
+}s_mc_pair_visited_hash_t, *mc_pair_visited_hash_t;
+
+typedef struct s_mc_pair_reached_hash{
+  xbt_state_t automaton_state;
+  xbt_dynar_t prop_ato;
+  unsigned int *hash_regions;
+}s_mc_pair_reached_hash_t, *mc_pair_reached_hash_t;
+
+int MC_automaton_evaluate_label(xbt_exp_label_t l);
+mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
+
+int reached(xbt_state_t st);
+void set_pair_reached(xbt_state_t st);
+int reached_hash(xbt_state_t st);
+void set_pair_reached_hash(xbt_state_t st);
+int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
+void MC_pair_delete(mc_pair_t pair);
+void MC_exit_liveness(void);
+mc_state_t MC_state_pair_new(void);
+int visited(xbt_state_t st, int search_cycle);
+void set_pair_visited(xbt_state_t st, int search_cycle);
+int visited_hash(xbt_state_t st, int search_cycle);
+void set_pair_visited_hash(xbt_state_t st, int search_cycle);
+unsigned int hash_region(char *str, int str_len);
+
+
+/* **** Double-DFS stateless **** */
+
+typedef struct s_mc_pair_stateless{
+  mc_state_t graph_state;
+  xbt_state_t automaton_state;
+  int requests;
+}s_mc_pair_stateless_t, *mc_pair_stateless_t;
+
+extern xbt_fifo_t mc_stack_liveness;
+
+mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r);
+void MC_ddfs_init();
+void MC_ddfs(int search_cycle);
+void MC_show_stack_liveness(xbt_fifo_t stack);
+void MC_dump_stack_liveness(xbt_fifo_t stack);
+void MC_pair_stateless_delete(mc_pair_stateless_t pair);
 
 
 #endif

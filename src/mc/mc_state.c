@@ -1,3 +1,5 @@
+
+
 #include "../simix/private.h"
 #include "xbt/fifo.h"
 #include "private.h"
@@ -14,6 +16,18 @@ mc_state_t MC_state_new(void)
   state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
   
   mc_stats->expanded_states++;
+  return state;
+}
+
+mc_state_t MC_state_pair_new(void)
+{
+  mc_state_t state = NULL;
+  
+  state = xbt_new0(s_mc_state_t, 1);
+  state->max_pid = simix_process_maxpid;
+  state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
+  
+  //mc_stats->expanded_states++;
   return state;
 }
 
