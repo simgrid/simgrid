@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+
+<platform version="3">
+
+  <process host="Tremblay" function="coordinator" />
+
+  <process host="Fafard" function="consumer" >
+    <argument value="1"/>
+  </process>
+
+  <process host="Boivin" function="producer" >
+    <argument value="2"/>
+  </process>
+
+
+</platform>
