@@ -205,7 +205,9 @@ pair of interconnected hosts. An example of usable platform is
 available in <tt>examples/msg/gtnets/crosstraffic-p.xml</tt>.
 
 This is activated through the \b network/crosstraffic item, that
-can be set to 0 (disable this feature) or 1 (enable it).
+can be set to 0 (disable this feature) or 1 (enable it). 
+
+Note that with the default workstation model this option is activated by default.
 
 \subsubsection options_model_network_coord Coordinated-based network models
 
