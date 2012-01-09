@@ -63,6 +63,11 @@ static MPI_Request build_request(void *buf, int count,
   return request;
 }
 
+static void smpi_mpi_request_free_voidp(void* request)
+{
+  smpi_mpi_request_free(request);
+}
+
 /* MPI Low level calls */
 MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
                                int dst, int tag, MPI_Comm comm)
@@ -115,7 +120,7 @@ void smpi_mpi_start(MPI_Request request)
 		SIMIX_req_comm_isend(mailbox, request->size, -1.0,
 				    request->buf, request->size,
 				    &match_send,
-				    (void (*)(void *))&smpi_mpi_request_free, // how to free the userdata if a detached send fails
+				    &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
 				    request,
 				    // detach if msg size < eager/rdv switch limit
 				    detached);
