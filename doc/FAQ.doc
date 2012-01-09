@@ -464,7 +464,7 @@ released a very comparable tool, and called it GridG.
 \subsubsection faq_SURF_multicore Modeling multi-core resources 
 
 Since version 3.6 of simgrid we can specify the core number of a resource.
-To use this feature use tag 'host' with 'core' parameter.
+To use this feature use tag 'host' with 'core' attribute. 
 \verbatim
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
@@ -474,6 +474,13 @@ To use this feature use tag 'host' with 'core' parameter.
     </AS>
 </platform>
 \endverbatim
+
+The specified computing power will be available to up to 6 sequential
+tasks without sharing. If more tasks are placed on this host, the
+resource will be shared accordingly. For example, if you schedule 12
+tasks on the host, each will get half of the computing power. Please
+note that although sound, this model were never scientifically
+assessed. Please keep this fact in mind when using it.
 
 \subsubsection faq_SURF_dynamic Modeling dynamic resource availability 
 
