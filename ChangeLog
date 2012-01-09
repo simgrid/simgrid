@@ -3,6 +3,9 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   The "Simplicity does not preceed complexity, but follows it" release.
 
   Models:
+  * Change the correction factors used in LMM model, according to
+    the lastest experiments described in INRIA RR-7821. 
+    Accuracy should be improved this way.
   * Use the partial invalidation optimization by default for the
     network too. Should produce the exact same results, only faster.
   * Major cleanup in surf to merge models and split some optimization
@@ -18,8 +21,8 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Rename the coordinates configuration option to
     network/coordinates, and document it
   * Use now crosstraffic keyword instead of the terribly missleading 
-    fullduplex keyword. Use --cfg=network/crosstraffic:1. This is
-    activated by default now in the current default model.
+    fullduplex keyword. It is activated by default now in the current
+    default model, use --cfg=network/crosstraffic:0 to turn it off.
 
   Simix:
   * Stabilize the parallel execution mode of user contexts
