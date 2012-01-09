@@ -6,7 +6,7 @@ use strict;
 my @extra_files = qw(html/index.html html/pages.html html/modules.html html/annotated.html html/functions.html 
 					 html/functions_vars.html index.php 
                      html/GRAS_tut.html html/tracing.html html/installSimgrid.html html/bindings.html
-                     html/options.html html/use.html html/pls.html);
+                     html/options.html html/use.html html/pls.html html/FAQ.html);
 
 # GRAS tutorial
 map {push @extra_files, "html/GRAS_tut_$_.html"} qw (intro 
@@ -385,6 +385,7 @@ foreach my $file (@allfiles) {
       		$tmp_buff .= '      <li><a href="http://gforge.inria.fr/projects/simgrid"><span>Forge</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="http://simgrid.gforge.inria.fr/"><span>Website</span></a></li>'."\n";
       		$tmp_buff .= '      <li><a href="pages.html"><span>Documentation&nbsp;index</span></a></li>'."\n";
+		$tmp_buff .= '      <li><a href="FAQ.html"><span>FAQ</span></a></li>'."\n";
       	  	$tmp_buff .= $_;
       	  	$tabs = 0;
 
@@ -425,7 +426,8 @@ foreach my $file (@allfiles) {
 	
 	      # Rework the navbar
 	      # Fix the current "button" of buggy Doxygen tabs   
-	      if($file =~ /^html\/pages.*/)
+	      if($file =~ /^html\/pages.*/
+	      || $file =~ /^html\/FAQ.*/)
 	      {
 		      my $filename = $file;
 		      $filename =~ s/html\///g;
