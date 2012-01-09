@@ -646,6 +646,8 @@ static void free_paje_event (paje_event_t event)
     xbt_free (((endLink_t)(event->data))->value);
     xbt_free (((endLink_t)(event->data))->key);
     break;
+  default:
+    break;
   }
   xbt_free (event->data);
   xbt_free (event);
