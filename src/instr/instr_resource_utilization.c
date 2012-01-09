@@ -36,7 +36,7 @@ static void __TRACE_surf_check_variable_set_to_zero(double now,
     container_t container = getContainerByName (resource);
     type_t type = getVariableType (variable, NULL, container->type);
     new_pajeSetVariable (now, container, type, 0);
-    xbt_dict_set(platform_variables, key, "", NULL);
+    xbt_dict_set(platform_variables, key, (char*)"", NULL);
   }
   xbt_free(key);
 }
