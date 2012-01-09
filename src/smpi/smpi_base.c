@@ -115,7 +115,7 @@ void smpi_mpi_start(MPI_Request request)
 		SIMIX_req_comm_isend(mailbox, request->size, -1.0,
 				    request->buf, request->size,
 				    &match_send,
-				    &smpi_mpi_request_free, // how to free the userdata if a detached send fails
+				    (void (*)(void *))&smpi_mpi_request_free, // how to free the userdata if a detached send fails
 				    request,
 				    // detach if msg size < eager/rdv switch limit
 				    detached);
