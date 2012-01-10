@@ -6,6 +6,7 @@ ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
 # x86_64
 # x86
 # i.86
+
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
     IF(${ARCH_32_BITS})
         set(PROCESSOR_i686 1)
@@ -139,8 +140,12 @@ CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 CHECK_FUNCTION_EXISTS(mergesort HAVE_MERGESORT)
 
 #Check if __thread is defined
-exec_program("${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_thread_storage.c" 
-			OUTPUT_VARIABLE HAVE_thread_storage_run)
+execute_process(
+COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_thread_storage.c"
+WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+OUTPUT_VARIABLE HAVE_thread_storage_run
+)
+
 if(HAVE_thread_storage_run)
 	set(HAVE_THREAD_LOCAL_STORAGE 0)
 else(HAVE_thread_storage_run)
@@ -209,43 +214,65 @@ endif(pthread)
 
 if(pthread)
 	### Test that we have a way to create semaphores
-  	
-  	if(HAVE_SEM_OPEN_LIB)
-		exec_program("${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_open.c -lpthread -o testprog"
-		             OUTPUT_VARIABLE HAVE_SEM_OPEN_run)
-	    	if(HAVE_SEM_OPEN_run)
-			set(HAVE_SEM_OPEN 0)
-			message(STATUS "Warning: sem_open not compilable")
-	    	else(HAVE_SEM_OPEN_run)
-			exec_program("./testprog" RETURN_VALUE HAVE_SEM_OPEN_run2 OUTPUT_VARIABLE var_compil)
-		    	if(HAVE_SEM_OPEN_run2)
-				set(HAVE_SEM_OPEN 0)
-				message(STATUS "Warning: sem_open not executable")
-	    		else(HAVE_SEM_OPEN_run2)
-				set(HAVE_SEM_OPEN 1)
-	    		endif(HAVE_SEM_OPEN_run2)	
-		endif(HAVE_SEM_OPEN_run)
-        else(HAVE_SEM_OPEN_LIB)
+
+    if(HAVE_SEM_OPEN_LIB)
+    
+        exec_program(
+        "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_open.c -lpthread -o testprog"
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        OUTPUT_VARIABLE HAVE_SEM_OPEN_compil
+        )
+    
+      	if(HAVE_SEM_OPEN_compil)
+    		set(HAVE_SEM_OPEN 0)
+    		message(STATUS "Warning: sem_open not compilable")
+    		message(STATUS "HAVE_SEM_OPEN_comp_output: ${HAVE_SEM_OPEN_comp_output}")    	
+    	else(HAVE_SEM_OPEN_compil)
+    		set(HAVE_SEM_OPEN 1)
+            message(STATUS "sem_open is compilable")
+    	endif(HAVE_SEM_OPEN_compil)
+        
+        exec_program("${CMAKE_BINARY_DIR}/testprog" RETURN_VALUE HAVE_SEM_OPEN_run OUTPUT_VARIABLE var_compil)
+        file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
+    	
+    	if(NOT HAVE_SEM_OPEN_run)
+    	    set(HAVE_SEM_OPEN 1)
+            message(STATUS "sem_open is executable")
+        else(NOT HAVE_SEM_OPEN_run)
+    		set(HAVE_SEM_OPEN 0)
+    	    message(STATUS "Warning: sem_open not executable")    	
+        endif(NOT HAVE_SEM_OPEN_run)	
+    
+    else(HAVE_SEM_OPEN_LIB)
 		set(HAVE_SEM_OPEN 0)
   	endif(HAVE_SEM_OPEN_LIB)
 
   	if(HAVE_SEM_INIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -lpthread -o testprog"
-		             OUTPUT_VARIABLE HAVE_SEM_INIT_run)
-	    	if(HAVE_SEM_INIT_run)
-			set(HAVE_SEM_INIT 0)
-			message(STATUS "Warning: sem_init not compilable")
-	    	else(HAVE_SEM_INIT_run)
-			exec_program("./testprog" RETURN_VALUE HAVE_SEM_INIT_run OUTPUT_VARIABLE var_compil)
-			if(HAVE_SEM_INIT_run)
-				set(HAVE_SEM_INIT 0)
-				message(STATUS "Warning: sem_init not executable")
-			else(HAVE_SEM_INIT_run)
-				set(HAVE_SEM_INIT 1)
-			endif(HAVE_SEM_INIT_run)
-		endif(HAVE_SEM_INIT_run)
-        else(HAVE_SEM_INIT_LIB)
-		set(HAVE_SEM_INIT 0)
+        exec_program(
+        "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -lpthread -o testprog"
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        OUTPUT_VARIABLE HAVE_SEM_INIT_compil
+        )
+    
+      	if(HAVE_SEM_INIT_compil)
+    		set(HAVE_SEM_INIT 0)
+    		message(STATUS "Warning: sem_init not compilable")
+    		message(STATUS "HAVE_SEM_INIT_comp_output: ${HAVE_SEM_OPEN_comp_output}")    	
+    	else(HAVE_SEM_INIT_compil)
+    		set(HAVE_SEM_INIT 1)
+            message(STATUS "sem_init is compilable")
+    	endif(HAVE_SEM_INIT_compil)
+
+        exec_program("${CMAKE_BINARY_DIR}/testprog" RETURN_VALUE HAVE_SEM_INIT_run OUTPUT_VARIABLE var_compil)
+        file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
+        
+    	if(NOT HAVE_SEM_INIT_run)
+    	    set(HAVE_SEM_INIT 1)
+            message(STATUS "sem_init is executable")
+        else(NOT HAVE_SEM_INIT_run)
+    		set(HAVE_SEM_INIT 0)
+    	    message(STATUS "Warning: sem_init not executable")
+        endif(NOT HAVE_SEM_INIT_run)	
   	endif(HAVE_SEM_INIT_LIB)
 
 	if(NOT HAVE_SEM_OPEN AND NOT HAVE_SEM_INIT)
@@ -255,21 +282,37 @@ if(pthread)
 	### Test that we have a way to timewait for semaphores
 
 	if(HAVE_SEM_TIMEDWAIT_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_timedwait.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+
+        execute_process(
+        COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_timedwait.c -lpthread"
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run
+        )
+        
 		if(HAVE_SEM_TIMEDWAIT_run)
 			set(HAVE_SEM_TIMEDWAIT 0)
+			message(STATUS "timedwait not compilable")
 		else(HAVE_SEM_TIMEDWAIT_run)
 			set(HAVE_SEM_TIMEDWAIT 1)
+            message(STATUS "timedwait is compilable")
 		endif(HAVE_SEM_TIMEDWAIT_run)
 	endif(HAVE_SEM_TIMEDWAIT_LIB)
 
 	### HAVE_MUTEX_TIMEDLOCK
 
 	if(HAVE_MUTEX_TIMEDLOCK_LIB)
-		exec_program("${CMAKE_C_COMPILER} -lpthread ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_mutex_timedlock.c" OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run)
+
+        execute_process(
+        COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_mutex_timedlock.c -lpthread"
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        OUTPUT_VARIABLE HAVE_MUTEX_TIMEDLOCK_run
+        )
+
 		if(HAVE_MUTEX_TIMEDLOCK_run)
 			set(HAVE_MUTEX_TIMEDLOCK 0)
+			message(STATUS "timedlock not compilable")
 		else(HAVE_MUTEX_TIMEDLOCK_run)
+			message(STATUS "timedlock is compilable")
 			set(HAVE_MUTEX_TIMEDLOCK 1)
 		endif(HAVE_MUTEX_TIMEDLOCK_run)
 	endif(HAVE_MUTEX_TIMEDLOCK_LIB)
@@ -282,12 +325,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 if(WIN32)
-    if(__VISUALC__)
-	set(mcsc_flags "/D_XBT_WIN32 /I${CMAKE_HOME_DIRECTORY}/include/xbt /I${CMAKE_HOME_DIRECTORY}/src/xbt")
-	endif(__VISUALC__)
-	if(__GNUC__)
-		set(mcsc_flags "-D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
-	endif(__GNUC__)
+	set(mcsc_flags "-D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
 endif(WIN32)
 
 IF(CMAKE_CROSSCOMPILING)
@@ -296,25 +334,31 @@ IF(CMAKE_CROSSCOMPILING)
 		set(IS_WINDOWS 1)	
 	ENDIF(WIN32)
 ELSE(CMAKE_CROSSCOMPILING)
-	try_run(RUN_mcsc_VAR COMPILE_mcsc_VAR
-		${PROJECT_BINARY_DIR}
-		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
-		COMPILE_DEFINITIONS "${mcsc_flags}"
-		OUTPUT_VARIABLE var_compil
-		)
-		
-		if(EXISTS "${PROJECT_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
-			file(READ "${PROJECT_BINARY_DIR}/conftestval" mcsc)
-			STRING(REPLACE "\n" "" mcsc "${mcsc}")
-			if(mcsc)
-   				set(mcsc "yes")
-   				set(HAVE_UCONTEXT_H 1)
-			else(mcsc)
-				set(mcsc "no")
-			endif(mcsc)
-	    else(EXISTS "${PROJECT_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
+    exec_program(
+                 "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c ${mcsc_flags} -o testprog"
+                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+                 OUTPUT_VARIABLE COMPILE_mcsc_VAR)
+
+    file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
+    if(NOT COMPILE_mcsc_VAR)
+        exec_program("${CMAKE_BINARY_DIR}/testprog" OUTPUT_VARIABLE var_compil)
+    endif(NOT COMPILE_mcsc_VAR)
+    file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
+    
+	if(EXISTS "${CMAKE_BINARY_DIR}/conftestval")
+		file(READ "${CMAKE_BINARY_DIR}/conftestval" mcsc)
+		STRING(REPLACE "\n" "" mcsc "${mcsc}")
+		if(mcsc)
+			set(mcsc "yes")
+			set(HAVE_UCONTEXT_H 1)
+		else(mcsc)
 			set(mcsc "no")
-		endif(EXISTS "${PROJECT_BINARY_DIR}/conftestval" AND COMPILE_mcsc_VAR)
+		endif(mcsc)
+    else(EXISTS "${CMAKE_BINARY_DIR}/conftestval")
+		set(mcsc "no")
+	endif(EXISTS "${CMAKE_BINARY_DIR}/conftestval")
+	
+	message(STATUS "mcsc: ${mcsc}")   
 ENDIF(CMAKE_CROSSCOMPILING)
 
 if(mcsc MATCHES "no" AND pthread)
@@ -352,7 +396,7 @@ endif(pthread)
 ###############
 ## SVN version check
 ##
-if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
+if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
 exec_program("git remote | head -n 1" OUTPUT_VARIABLE remote RETURN_VALUE ret)
 exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
 
@@ -366,7 +410,7 @@ if(url)
 	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
 endif(url)
-endif(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
+endif(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
 
 ###################################
 ## SimGrid and GRAS specific checks
@@ -375,7 +419,7 @@ endif(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
 IF(NOT CMAKE_CROSSCOMPILING)
 # Check architecture signature begin
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
-	${PROJECT_BINARY_DIR}
+	${CMAKE_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
 	RUN_OUTPUT_VARIABLE var1
 	)
@@ -486,7 +530,7 @@ endif(GRAS_THISARCH MATCHES "none")
 
 # Check architecture signature end
 try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
-	${PROJECT_BINARY_DIR}
+	${CMAKE_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_CHECK_STRUCT_COMPACTION.c
 	RUN_OUTPUT_VARIABLE var2
 	)
@@ -497,10 +541,11 @@ endforeach(var_tmp ${var2})
 
 # Check for [SIZEOF_MAX]
 try_run(RUN_SM_VAR COMPILE_SM_VAR
-	${PROJECT_BINARY_DIR}
+	${CMAKE_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_max_size.c
 	RUN_OUTPUT_VARIABLE var3
 	)
+message(STATUS "SIZEOF_MAX ${var3}")
 SET(SIZEOF_MAX ${var3})
 ENDIF(NOT CMAKE_CROSSCOMPILING)
 
@@ -513,29 +558,37 @@ if(HAVE_MAKECONTEXT OR WIN32)
 		set(makecontext_CPPFLAGS_2 "-D_XOPEN_SOURCE")
 	endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	
-    if(WIN32 AND __VISUALC__)
-        set(makecontext_CPPFLAGS "/DTEST_makecontext")
-	    set(makecontext_CPPFLAGS_2 "/D_XBT_WIN32 /I${CMAKE_HOME_DIRECTORY}/include/xbt /I${CMAKE_HOME_DIRECTORY}/src/xbt")
-	endif(WIN32 AND __VISUALC__)
-	if(WIN32 AND __GNUC__)
+    if(WIN32)
+        if(ARCH_32_BITS)
 	    set(makecontext_CPPFLAGS "-DTEST_makecontext")
+	    else(ARCH_32_BITS)
+	    set(makecontext_CPPFLAGS "-DTEST_makecontext -D_AMD64_")
+	    endif(ARCH_32_BITS)
 	    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
-	endif(WIN32 AND __GNUC__)
+	endif(WIN32)
+
+    file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
 	
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
-		${PROJECT_BINARY_DIR}
+		${CMAKE_BINARY_DIR}
 		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
 		COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
 		)
-	file(READ ${PROJECT_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
-	string(REPLACE "\n" "" MAKECONTEXT_ADDR_SIZE "${MAKECONTEXT_ADDR_SIZE}")
-	string(REGEX MATCH ;^.*,;MAKECONTEXT_ADDR "${MAKECONTEXT_ADDR_SIZE}")
-	string(REGEX MATCH ;,.*$; MAKECONTEXT_SIZE "${MAKECONTEXT_ADDR_SIZE}")
-	string(REPLACE "," "" makecontext_addr "${MAKECONTEXT_ADDR}")
-	string(REPLACE "," "" makecontext_size "${MAKECONTEXT_SIZE}")	
-	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
-	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
-	
+
+    if(EXISTS ${CMAKE_BINARY_DIR}/conftestval)
+    	file(READ ${CMAKE_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
+    	string(REPLACE "\n" "" MAKECONTEXT_ADDR_SIZE "${MAKECONTEXT_ADDR_SIZE}")
+    	string(REGEX MATCH ;^.*,;MAKECONTEXT_ADDR "${MAKECONTEXT_ADDR_SIZE}")
+    	string(REGEX MATCH ;,.*$; MAKECONTEXT_SIZE "${MAKECONTEXT_ADDR_SIZE}")
+    	string(REPLACE "," "" makecontext_addr "${MAKECONTEXT_ADDR}")
+    	string(REPLACE "," "" makecontext_size "${MAKECONTEXT_SIZE}")	
+    	set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
+    	set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
+    	message(STATUS "${pth_skaddr_makecontext}")
+    	message(STATUS "${pth_sksize_makecontext}")
+	else(EXISTS ${CMAKE_BINARY_DIR}/conftestval)
+#	    message(FATAL_ERROR "makecontext is not compilable")
+	endif(EXISTS ${CMAKE_BINARY_DIR}/conftestval)
 endif(HAVE_MAKECONTEXT OR WIN32)
 
 #--------------------------------------------------------------------------------------------------
@@ -543,10 +596,10 @@ endif(HAVE_MAKECONTEXT OR WIN32)
 ### check for stackgrowth
 if (NOT CMAKE_CROSSCOMPILING)
 	try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
-		${PROJECT_BINARY_DIR}
+		${CMAKE_BINARY_DIR}
 		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_stackgrowth.c
 		)
-file(READ "${PROJECT_BINARY_DIR}/conftestval" stack)
+file(READ "${CMAKE_BINARY_DIR}/conftestval" stack)
 if(stack MATCHES "down")
 	set(PTH_STACKGROWTH "-1")
 endif(stack MATCHES "down")
@@ -568,7 +621,7 @@ endif(NOT CMAKE_CROSSCOMPILING)
 
 #AC_PRINTF_NULL
 try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
-	${PROJECT_BINARY_DIR}
+	${CMAKE_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_printf_null.c
 	)
 
@@ -621,7 +674,7 @@ foreach(fct ${diff_va})
 	}"
 	)
 	try_compile(COMPILE_VA_NULL_VAR
-	${PROJECT_BINARY_DIR}
+	${CMAKE_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c
 	)
 	if(COMPILE_VA_NULL_VAR)
@@ -679,7 +732,7 @@ endforeach(fct ${diff_va})
 #--------------------------------------------------------------------------------------------------
 ### check for getline
 try_compile(COMPILE_RESULT_VAR
-	${PROJECT_BINARY_DIR}
+	${CMAKE_BINARY_DIR}
 	${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_getline.c
 	)
 
@@ -703,7 +756,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
 		#set(PREFER_PORTABLE_SNPRINTF 1)
 	else(CMAKE_CROSSCOMPILING)
   	    try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
-	  	${PROJECT_BINARY_DIR}
+	  	${CMAKE_BINARY_DIR}
 		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_snprintf.c
 	    )	
 	endif(CMAKE_CROSSCOMPILING)
@@ -713,7 +766,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
 		set(PREFER_PORTABLE_VSNPRINTF 1)
 	else(CMAKE_CROSSCOMPILING)
   	   try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
-		${PROJECT_BINARY_DIR}
+		${CMAKE_BINARY_DIR}
 		${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_vsnprintf.c
 	   )
 	endif(CMAKE_CROSSCOMPILING)
@@ -786,10 +839,12 @@ configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_BINARY_DIR}/b
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_BINARY_DIR}/bin/smpiff @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_BINARY_DIR}/bin/smpirun @ONLY)
 
+if(NOT WIN32)
 exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE OKITOKI)
 exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE OKITOKI)
 exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE OKITOKI)
 exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE OKITOKI)
+endif(NOT WIN32)
 
 set(generated_headers_to_install
 	${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
