@@ -49,7 +49,7 @@ static void MC_region_restore(mc_mem_region_t reg)
       i++;
     }
   }else{
-    XBT_DEBUG("Memcpy : dest %p, src %p, size %Zu", reg->start_addr, reg->data, reg->size);
+    XBT_DEBUG("Memcpy : dest %p, src %p, size %zu", reg->start_addr, reg->data, reg->size);
     memcpy(reg->start_addr, reg->data, reg->size);
   }
   
@@ -66,16 +66,16 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start
 {
   switch(type){
   case 0 : 
-    XBT_DEBUG("New region heap (%Zu)", size);
+    XBT_DEBUG("New region heap (%zu)", size);
     break;
   case 1 : 
-    XBT_DEBUG("New region libsimgrid (%Zu)", size);
+    XBT_DEBUG("New region libsimgrid (%zu)", size);
     break;
   case 2 : 
-    XBT_DEBUG("New region program (%Zu)", size);
+    XBT_DEBUG("New region program (%zu)", size);
     break;
   case 3 : 
-    XBT_DEBUG("New region stack (%Zu)", size);
+    XBT_DEBUG("New region stack (%zu)", size);
     break;
   }
   mc_mem_region_t new_reg = MC_region_new(type, start_addr, size);

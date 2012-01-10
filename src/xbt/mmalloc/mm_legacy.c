@@ -181,22 +181,22 @@ int mmalloc_compare_heap(void *h1, void *h2){
   struct mstats ms2 = mmstats(h2);
 
   if(ms1.chunks_used !=  ms2.chunks_used){
-    XBT_DEBUG("Different chunks allocated by the user : %Zu - %Zu", ms1.chunks_used, ms2.chunks_used);
+    XBT_DEBUG("Different chunks allocated by the user : %zu - %zu", ms1.chunks_used, ms2.chunks_used);
     return 1;
   }
 
   if(ms1.bytes_used !=  ms2.bytes_used){
-    XBT_DEBUG("Different byte total of user-allocated chunks : %Zu - %Zu", ms1.bytes_used, ms2.bytes_used);
+    XBT_DEBUG("Different byte total of user-allocated chunks : %zu - %zu", ms1.bytes_used, ms2.bytes_used);
     return 1;
   }
 
   if(ms1.bytes_free !=  ms2.bytes_free){
-    XBT_DEBUG("Different byte total of chunks in the free list : %Zu - %Zu", ms1.bytes_free, ms2.bytes_free);
+    XBT_DEBUG("Different byte total of chunks in the free list : %zu - %zu", ms1.bytes_free, ms2.bytes_free);
     return 1;
   }
 
   if(ms1.chunks_free !=  ms2.chunks_free){
-    XBT_DEBUG("Different chunks in the free list : %Zu - %Zu", ms1.chunks_free, ms2.chunks_free);
+    XBT_DEBUG("Different chunks in the free list : %zu - %zu", ms1.chunks_free, ms2.chunks_free);
     return 1;
   }
 
@@ -235,7 +235,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
     return 1;
   }
 
-  //XBT_DEBUG("Heap size : %Zu", mdp1->heapsize);
+  //XBT_DEBUG("Heap size : %zu", mdp1->heapsize);
 
   if(mdp1->heapbase != mdp2->heapbase){
     XBT_DEBUG("Different first block of the heap");
@@ -244,11 +244,11 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
 
   if(mdp1->heapindex != mdp2->heapindex){
-    XBT_DEBUG("Different index for the heap table : %Zu - %Zu", mdp1->heapindex, mdp2->heapindex);
+    XBT_DEBUG("Different index for the heap table : %zu - %zu", mdp1->heapindex, mdp2->heapindex);
     return 1;
   }
 
-  //XBT_DEBUG("Heap index : %Zu", mdp1->heapindex);
+  //XBT_DEBUG("Heap index : %zu", mdp1->heapindex);
 
   if(mdp1->base != mdp2->base){
     XBT_DEBUG("Different base address of the memory region");
@@ -270,7 +270,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
     return 1;
   }
 
-  //XBT_DEBUG("Heap limit : %Zu", mdp1->heaplimit);
+  //XBT_DEBUG("Heap limit : %zu", mdp1->heaplimit);
 
 
   if(mdp1->fd != mdp2->fd){
@@ -332,7 +332,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   block_free = first_block_free;
   next_block_free = mdp1->heapinfo[first_block_free].free.next;
 
-  //XBT_DEBUG("First block free : %Zu (size=%Zu), Next block free : %Zu", first_block_free, mdp1->heapinfo[block_free1].free.size, next_block_free);
+  //XBT_DEBUG("First block free : %zu (size=%zu), Next block free : %zu", first_block_free, mdp1->heapinfo[block_free1].free.size, next_block_free);
 
   if(next_block_free == 0)
     next_block_free = mdp1->heaplimit;
@@ -357,7 +357,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	    return 1;
 	  }else{
 	    if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy.info.size * BLOCKSIZE)) != 0){
-	      XBT_DEBUG("Different data in block %Zu", i);
+	      XBT_DEBUG("Different data in block %zu", i);
 	      return 1;
 	    } 
 	  }
@@ -365,17 +365,17 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	  break;
 	default :	  
 	  if(mdp1->heapinfo[i].busy.info.frag.nfree != mdp2->heapinfo[i].busy.info.frag.nfree){
-	    XBT_DEBUG("Different free fragments in the fragmented block %Zu", i);
+	    XBT_DEBUG("Different free fragments in the fragmented block %zu", i);
 	    return 1;
 	  }else{
 	    if(mdp1->heapinfo[i].busy.info.frag.first != mdp2->heapinfo[i].busy.info.frag.first){
-	      XBT_DEBUG("Different first free fragments in the block %Zu", i);
+	      XBT_DEBUG("Different first free fragments in the block %zu", i);
 	      return 1; 
 	    }else{
 	      frag_size = pow(2,mdp1->heapinfo[i].busy.type);
 	      for(j=0 ; j< (BLOCKSIZE/frag_size); j++){
 		if(memcmp((char *)addr_block1 + (j * frag_size), (char *)addr_block2 + (j * frag_size), frag_size) != 0){
-		  XBT_DEBUG("Different data in fragment %d of block %Zu", j + 1, i);
+		  XBT_DEBUG("Different data in fragment %d of block %zu", j + 1, i);
 		  return 1;
 		} 
 	      }

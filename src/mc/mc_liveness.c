@@ -46,7 +46,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     switch(s1->regions[i]->type){
     case 0:
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of heap (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	//XBT_DEBUG("Different size of heap (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
 	return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
@@ -60,7 +60,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       break;
     case 1 :
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of libsimgrid (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	//XBT_DEBUG("Different size of libsimgrid (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
 	return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
@@ -74,7 +74,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       break;
     case 2:
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of program (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	//XBT_DEBUG("Different size of program (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
 	return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
@@ -88,7 +88,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       break;
     case 3:
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of stack (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	//XBT_DEBUG("Different size of stack (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
 	return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
