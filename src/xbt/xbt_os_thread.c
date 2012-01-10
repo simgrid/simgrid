@@ -137,7 +137,11 @@ void xbt_os_thread_mod_postexit(void)
 int xbt_os_thread_atfork(void (*prepare)(void),
                          void (*parent)(void), void (*child)(void))
 {
+#ifdef WIN32
+	xbt_die("Function pthread_atfork not implemented");
+#else
   return pthread_atfork(prepare, parent, child);
+#endif
 }
 
 static void *wrapper_start_routine(void *s)
