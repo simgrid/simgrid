@@ -1,0 +1,17 @@
+never { /* !(G((pready U produce) -> Fconsume)) */
+T1_init :    /* init */
+	if
+	:: (1) -> goto T1_init
+	:: (pready && !consume) -> goto T0_S2
+	:: (produce && !consume) -> goto accept_S3
+	fi;
+T0_S2 :    /* 1 */
+	if
+	:: (pready && !consume) -> goto T0_S2
+	:: (produce && !consume) -> goto accept_S3
+	fi;
+accept_S3 :    /* 2 */
+	if
+	:: (!consume) -> goto accept_S3
+	fi;
+}
