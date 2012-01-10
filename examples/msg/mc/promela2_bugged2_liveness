@@ -1,4 +1,4 @@
-never { /* !(G((pready U produce) -> Fconsume)) */
+never { /* !(G((pready U produce) -> F(cready U consume))) */
 T1_init :    /* init */
 	if
 	:: (1) -> goto T1_init

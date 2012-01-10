@@ -1,9 +1,6 @@
 /***************** Producer/Consumer Algorithm *************************/
 /* This example implements a producer/consumer algorithm.              */
 /* If consumer work before producer, message is empty                  */
-/* LTL property checked : GF((pready U produce) -> (cready U consume)) */
-/* (pready = producer got CS, produce=message pushed in the buffer)    */
-/* (cready = consumer got CS, consume=message display by consumer)     */
 /***********************************************************************/
 
 
