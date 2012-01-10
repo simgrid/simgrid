@@ -581,7 +581,7 @@ mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r){
   return p;
 }
 
-void MC_ddfs_init(){
+void MC_ddfs_init(void){
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Double-DFS init");
