@@ -205,17 +205,11 @@ Section "Pcre library" PCRESection
 	# install pcre library
 	CreateDirectory $INSTDIR\GnuWin32
 	setOutPath $INSTDIR\GnuWin32
-	file "@PATH_PCRE_LICENCE@\LICENCE"
-
-	CreateDirectory $INSTDIR\GnuWin32\lib
-	setOutPath $INSTDIR\GnuWin32\lib
-	file @PATHLIBPCRE@\libpcre.a
-	file @PATHLIBPCRE@\libpcreposix.a
-	
-	CreateDirectory $INSTDIR\GnuWin32\include
-	setOutPath $INSTDIR\GnuWin32\include
-	file @PATH_PCRE_H@\pcre.h
-	file @PATH_PCRE_H@\pcreposix.h
+	file /r "@PCRE_LIBRARY_PATH@\lib"
+	file /r "@PCRE_LIBRARY_PATH@\include"
+	file /nonfatal /r "@PCRE_LIBRARY_PATH@\bin"
+	file /nonfatal /r "@PCRE_LIBRARY_PATH@\man"
+	file /nonfatal /r "@PCRE_LIBRARY_PATH@\share"
 SectionEnd
 
 # default section start
@@ -237,7 +231,7 @@ section
 	WriteRegExpandStr ${env_hklm} SIMGRID_VERSION @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
 
 	WriteRegExpandStr ${env_hklm} SIMGRID_PCRE_LIBRARY_PATH $INSTDIR\GnuWin32
-	WriteRegExpandStr ${env_hklm} SIMGRID_PCRE_LIBRARY_VERSION "8.12"
+	WriteRegExpandStr ${env_hklm} SIMGRID_PCRE_LIBRARY_VERSION "8.21"
 
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "Version" "@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@"
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "InstallPath" "$INSTDIR"
