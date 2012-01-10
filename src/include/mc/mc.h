@@ -38,6 +38,7 @@ XBT_PUBLIC(void) MC_assert_pair_stateful(int);
 XBT_PUBLIC(void) MC_assert_pair_stateless(int);
 XBT_PUBLIC(void) MC_modelcheck(void);
 XBT_PUBLIC(void) MC_modelcheck_stateful(void);
+XBT_PUBLIC(void) MC_modelcheck_liveness(xbt_automaton_t a, char *prgm);
 XBT_PUBLIC(void) MC_modelcheck_liveness_stateful(xbt_automaton_t a, char *prgm);
 XBT_PUBLIC(void) MC_modelcheck_liveness_stateless(xbt_automaton_t a, char *prgm);
 XBT_PUBLIC(int) MC_random(int, int);
