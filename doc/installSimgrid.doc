@@ -27,7 +27,8 @@ For Unix and MacOS:
 
 For Windows :
   \li cmake 2.8 <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
-  \li perl strawberry <a href="http://www.strawberryperl.com/download/5.12.2.0/strawberry-perl-5.12.2.0.msi">(download page)</a>
+  \li MinGW <a href="http://sourceforge.net/projects/mingw/files/MinGW/">(download page)</a>
+  \li perl <a href="http://www.activestate.com/activeperl/downloads">(download page)</a>
   \li git <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">(download page)</a>
   
 \subsubsection installSimgrid_cmakeoption1 Liste of options
@@ -143,7 +144,7 @@ make
 On Windows platform:
 
 \verbatim
-cmake -G"Unix Makefiles" -D[name]=[value] ... ./
+cmake -G"MinGW Makefiles" -D[name]=[value] ... ./
 gmake
 \endverbatim
 
@@ -183,7 +184,7 @@ Those two kind of compilation permit to delete files created by compilation easi
  \li CMake
 \verbatim
 cmake <path>			configure the project for Unix and Mac
-cmake -G"Unix Makefiles" <path>	configure the project for Windows
+cmake -G"MinGW Makefiles" <path>	configure the project for Windows
 make				build all targets for Unix and Mac
 gmake				buill all targets for windows
 (g)make VERBOSE=1		build all targets and print build command lines
@@ -291,7 +292,8 @@ set(JMSG_JAVA_SRC
 
 Before start the installation, you need to be sure to have the following dependencies:
   \li cmake 2.8 <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
-  \li perl strawberry <a href="http://www.strawberryperl.com/download/5.12.2.0/strawberry-perl-5.12.2.0.msi">(download page)</a>
+  \li MinGW <a href="http://sourceforge.net/projects/mingw/files/MinGW/">(download page)</a>
+  \li perl <a href="http://www.activestate.com/activeperl/downloads">(download page)</a>
   \li git <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">(download page)</a>
   
 Then download the package <a href="https://gforge.inria.fr/frs/?group_id=12">SimGrid Installer</a>,
@@ -336,7 +338,7 @@ Now let's compil this example:
 \li Run "Git bash" (installed with git) or windows shell "cmd".
 \li Open HelloWorld Directory ('cd' command line).
 \li Create a build directory and change directory. (optional)
-\li Type 'cmake -G"Unix Makefiles" \<path_to_HelloWorld_project\>'
+\li Type 'cmake -G"MinGW Makefiles" \<path_to_HelloWorld_project\>'
 \li Run gmake
 \li You should obtain a runnable example ("HelloWorld.exe").
 
@@ -356,7 +358,7 @@ target_link_libraries(TARGET_NAME simgrid pcre) #Links TARGET_NAME with simgrid 
 \endverbatim	
 \li To initialize and build your project, you'll need to run
 \verbatim
-cmake -G"Unix Makefiles" \<path_to_HelloWorld_project\>
+cmake -G"MinGW Makefiles" \<path_to_HelloWorld_project\>
 \endverbatim
 \li Run "gmake"
 \li You should obtain "TARGET_NAME.exe".
