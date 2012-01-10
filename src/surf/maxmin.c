@@ -791,7 +791,7 @@ static void lmm_update_modified_set_rec(lmm_system_t sys,
     int i;
     for (i = 0; var->visited != sys->visited_counter
              && i < var->cnsts_number ; i++) {
-    if (cnsts[i].constraint != cnst
+      if (cnsts[i].constraint != cnst
           && !xbt_swag_belongs(cnsts[i].constraint,
                                &sys->modified_constraint_set)) {
         xbt_swag_insert(cnsts[i].constraint, &sys->modified_constraint_set);
