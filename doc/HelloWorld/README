@@ -2,11 +2,11 @@ This is a very simple example to explain how to compile with simgrid.
 
 1) How to compile an example: (HelloWorld)
 
-- Run "Git bash" (installed with git) or windows shell "cmd".
+- Run windows shell "cmd".
 - Open HelloWorld Directory ('cd' command line).
 - Create a build directory and change directory. (optional)
-- Type 'cmake -G"Unix Makefiles" <path_to_HelloWorld_project>'
-- Run gmake
+- Type 'cmake -G"MinGW Makefiles" <path_to_HelloWorld_project>'
+- Run mingw32-make
 - You should obtain a runnable example ("HelloWorld.exe").
 
 2) Content of this directory

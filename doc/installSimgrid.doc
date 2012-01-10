@@ -145,7 +145,7 @@ On Windows platform:
 
 \verbatim
 cmake -G"MinGW Makefiles" -D[name]=[value] ... ./
-gmake
+mingw32-make
 \endverbatim
 
 \subsubsection installSimgrid_cmakecompilation2 With ccmake tool.
@@ -186,7 +186,7 @@ Those two kind of compilation permit to delete files created by compilation easi
 cmake <path>			configure the project for Unix and Mac
 cmake -G"MinGW Makefiles" <path>	configure the project for Windows
 make				build all targets for Unix and Mac
-gmake				buill all targets for windows
+ming32-make				buill all targets for windows
 (g)make VERBOSE=1		build all targets and print build command lines
 make check			test all targets and summarize
 make dist			make the distrib
@@ -335,11 +335,11 @@ compiling a source file. There are:
 \endverbatim
 
 Now let's compil this example:
-\li Run "Git bash" (installed with git) or windows shell "cmd".
+\li Run windows shell "cmd".
 \li Open HelloWorld Directory ('cd' command line).
 \li Create a build directory and change directory. (optional)
 \li Type 'cmake -G"MinGW Makefiles" \<path_to_HelloWorld_project\>'
-\li Run gmake
+\li Run mingw32-make
 \li You should obtain a runnable example ("HelloWorld.exe").
 
 For compiling your own code you can simply copy the HelloWorld project and rename source name. It will
@@ -360,7 +360,7 @@ target_link_libraries(TARGET_NAME simgrid pcre) #Links TARGET_NAME with simgrid 
 \verbatim
 cmake -G"MinGW Makefiles" \<path_to_HelloWorld_project\>
 \endverbatim
-\li Run "gmake"
+\li Run "mingw32-make"
 \li You should obtain "TARGET_NAME.exe".
 
 \section installSimgrid_setting_MSG Setting up your own MSG code
