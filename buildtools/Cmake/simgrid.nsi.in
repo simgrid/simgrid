@@ -91,6 +91,12 @@ Section "Libraries and Headers" LibSection
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\mmalloc.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\replay_trace_reader.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\parmap.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\automaton.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\automatonparse_promela.h
+
+	CreateDirectory  $INSTDIR\include\simgrid
+	setOutPath $INSTDIR\include\simgrid
+	file @CMAKE_HOME_DIRECTORY@\include\simgrid\platf.h
 	
 	CreateDirectory  $INSTDIR\include\mc
 	setOutPath $INSTDIR\include\mc
