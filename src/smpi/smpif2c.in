@@ -31,7 +31,7 @@ foreach my $fortran (@ARGV) {
          if(/^} (.*?);/) {
             $_ = "}* __attribute__((weak)) $1 = NULL;\n";
          } elsif(/^#define\s*(\S*)\s*\(?([^.]*)(\..*?)?\)?$/) {
-            $_ = "#define $1 $2\[smpi_process_index()\]";
+            $_ = "#define $1 $2\[smpi_current_rank\]";
             if(defined $3) {
                $_ .= $3;
             }

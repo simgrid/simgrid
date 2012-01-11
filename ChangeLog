@@ -3,8 +3,34 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   The "Simplicity does not preceed complexity, but follows it" release.
 
   Models:
+  * Change the correction factors used in LMM model, according to
+    the lastest experiments described in INRIA RR-7821. 
+    Accuracy should be improved this way.
   * Use the partial invalidation optimization by default for the
     network too. Should produce the exact same results, only faster.
+  * Major cleanup in surf to merge models and split some optimization
+    mechanisms from the core of the models. As a result you can now
+    specify which model to use (e.g., --cfg=network/model:LV08
+    --cfg=cpu/model:Cas01) and which optimization mode to use
+    (e.g., --cfg=network/optim:lazy --cfg=cpu/optim:TI).
+    Incompatible combinations should err at initialization. See
+    --help-models for the list of all models and optimization modes.
+  * The CLM03 workstation model were dropped for simplicity because it
+    used the deprecated CM02 network model. Use default instead.
+  * Rename the TCP_gamma configuration option to network/TCP_gamma
+  * Rename the coordinates configuration option to
+    network/coordinates, and document it
+  * Use now crosstraffic keyword instead of the terribly missleading 
+    fullduplex keyword. It is activated by default now in the current
+    default model, use --cfg=network/crosstraffic:0 to turn it off.
+
+  Simix:
+  * Stabilize the parallel execution mode of user contexts
+  * Introduce configuration variables to control parallel execution:
+    - contexts/synchro: Synchronization mode to use when running
+      contexts in parallel (either futex, posix or busy_wait)
+    - contexts/parallel_threshold: Minimal number of user contexts
+      to be run in parallel (raw contexts only)
 
   SimDag:
   * Performance boost by using a swag internally to compute the set of

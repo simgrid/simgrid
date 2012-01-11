@@ -89,6 +89,7 @@ void generic_parse_bypassroute(AS_t rc,
 
 xbt_dynar_t generic_get_onelink_routes(AS_t rc) { // FIXME: kill that stub
   xbt_die("\"generic_get_onelink_routes\" not implemented yet");
+  return NULL;
 }
 
 route_t generic_get_bypassroute(AS_t rc, const char *src, const char *dst)

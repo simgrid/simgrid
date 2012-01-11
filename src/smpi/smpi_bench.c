@@ -11,17 +11,102 @@
 #include "xbt/ex.h"
 #include "surf/surf.h"
 
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
                                 "Logging specific to SMPI (benchmarking)");
 
-xbt_dict_t allocs = NULL;       /* Allocated on first use */
-xbt_dict_t samples = NULL;      /* Allocated on first use */
-xbt_dict_t calls = NULL;        /* Allocated on first use */
+/* Shared allocations are handled through shared memory segments.
+ * Associated data and metadata are used as follows:
+ *
+ *                                                                    mmap #1
+ *    `allocs' dict                                                     ---- -.
+ *    ----------      shared_data_t               shared_metadata_t   / |  |  |
+ * .->| <name> | ---> -------------------- <--.   -----------------   | |  |  |
+ * |  ----------      | fd of <name>     |    |   | size of mmap  | --| |  |  |
+ * |                  | count (2)        |    |-- | data          |   \ |  |  |
+ * `----------------- | <name>           |    |   -----------------     ----  |
+ *                    --------------------    |   ^                           |
+ *                                            |   |                           |
+ *                                            |   |   `allocs_metadata' dict  |
+ *                                            |   |   ----------------------  |
+ *                                            |   `-- | <addr of mmap #1>  |<-'
+ *                                            |   .-- | <addr of mmap #2>  |<-.
+ *                                            |   |   ----------------------  |
+ *                                            |   |                           |
+ *                                            |   |                           |
+ *                                            |   |                           |
+ *                                            |   |                   mmap #2 |
+ *                                            |   v                     ---- -'
+ *                                            |   shared_metadata_t   / |  |
+ *                                            |   -----------------   | |  |
+ *                                            |   | size of mmap  | --| |  |
+ *                                            `-- | data          |   | |  |
+ *                                                -----------------   | |  |
+ *                                                                    \ |  |
+ *                                                                      ----
+ */
+
+#define PTR_STRLEN (2 + 2 * sizeof(void*) + 1)
+
+xbt_dict_t allocs = NULL;          /* Allocated on first use */
+xbt_dict_t allocs_metadata = NULL; /* Allocated on first use */
+xbt_dict_t samples = NULL;         /* Allocated on first use */
+xbt_dict_t calls = NULL;           /* Allocated on first use */
+__thread int smpi_current_rank = 0;      /* Updated after each MPI call */
 
 typedef struct {
+  int fd;
   int count;
-  char data[];
+  char* loc;
 } shared_data_t;
+
+typedef struct  {
+  size_t size;
+  shared_data_t* data;
+} shared_metadata_t;
+
+static size_t shm_size(int fd) {
+  struct stat st;
+
+  if(fstat(fd, &st) < 0) {
+    xbt_die("Could not stat fd %d: %s", fd, strerror(errno));
+  }
+  return (size_t)st.st_size;
+}
+
+static void* shm_map(int fd, size_t size, shared_data_t* data) {
+  void* mem;
+  char loc[PTR_STRLEN];
+  shared_metadata_t* meta;
+
+  if(size > shm_size(fd)) {
+    if(ftruncate(fd, (off_t)size) < 0) {
+      xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
+    }
+  }
+  mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  if(mem == MAP_FAILED) {
+    xbt_die("Could not map fd %d: %s", fd, strerror(errno));
+  }
+  if(!allocs_metadata) {
+    allocs_metadata = xbt_dict_new();
+  }
+  snprintf(loc, PTR_STRLEN, "%p", mem);
+  meta = xbt_new(shared_metadata_t, 1);
+  meta->size = size;
+  meta->data = data;
+  xbt_dict_set(allocs_metadata, loc, meta, &free);
+  XBT_DEBUG("MMAP %zu to %p", size, mem);
+  return mem;
+}
 
 typedef struct {
   int count;
@@ -57,17 +142,22 @@ static void smpi_execute_flops(double flops)
 
 static void smpi_execute(double duration)
 {
+  /* FIXME: a global variable would be less expensive to consult than a call to xbt_cfg_get_double() right on the critical path */
   if (duration >= xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold")) {
     XBT_DEBUG("Sleep for %f to handle real computation time", duration);
     smpi_execute_flops(duration *
                        xbt_cfg_get_double(_surf_cfg_set,
                                           "smpi/running_power"));
+  } else {
+	  XBT_DEBUG("Real computation took %f while threshold is set to %f; ignore it",
+			  duration, xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold"));
   }
 }
 
 void smpi_bench_begin(void)
 {
   xbt_os_timer_start(smpi_process_timer());
+  smpi_current_rank = smpi_process_index();
 }
 
 void smpi_bench_end(void)
@@ -80,18 +170,22 @@ void smpi_bench_end(void)
 
 unsigned int smpi_sleep(unsigned int secs)
 {
+  smpi_bench_end();
   smpi_execute((double) secs);
+  smpi_bench_begin();
   return secs;
 }
 
 int smpi_gettimeofday(struct timeval *tv, struct timezone *tz)
 {
-  double now = SIMIX_get_clock();
-
+  double now;
+  smpi_bench_end();
+  now = SIMIX_get_clock();
   if (tv) {
-    tv->tv_sec = (time_t) now;
-    tv->tv_usec = (suseconds_t) (now * 1e6);
+    tv->tv_sec = (time_t)now;
+    tv->tv_usec = (suseconds_t)((now - tv->tv_sec) * 1e6);
   }
+  smpi_bench_begin();
   return 0;
 }
 
@@ -186,41 +280,83 @@ void smpi_sample_flops(double flops)
 
 void *smpi_shared_malloc(size_t size, const char *file, int line)
 {
-  char *loc = bprintf("%s:%d:%zu", file, line, size);
+  char *loc = bprintf("%zu_%s_%d", (size_t)getpid(), file, line);
+  size_t len = strlen(loc);
+  size_t i;
+  int fd;
+  void* mem;
   shared_data_t *data;
 
+  for(i = 0; i < len; i++) {
+    /* Make the 'loc' ID be a flat filename */
+    if(loc[i] == '/') {
+      loc[i] = '_';
+    }
+  }
   if (!allocs) {
     allocs = xbt_dict_new_homogeneous(free);
   }
   data = xbt_dict_get_or_null(allocs, loc);
-  if (!data) {
-    data = (shared_data_t *) xbt_malloc0(sizeof(int) + size);
+  if(!data) {
+    fd = shm_open(loc, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if(fd < 0) {
+      switch(errno) {
+        case EEXIST:
+          xbt_die("Please cleanup /dev/shm/%s", loc);
+        default:
+          xbt_die("An unhandled error occured while opening %s: %s", loc, strerror(errno));
+      }
+    }
+    data = xbt_new(shared_data_t, 1);
+    data->fd = fd;
     data->count = 1;
+    data->loc = loc;
+    mem = shm_map(fd, size, data);
+    if(shm_unlink(loc) < 0) {
+      XBT_WARN("Could not early unlink %s: %s", loc, strerror(errno));
+    }
     xbt_dict_set(allocs, loc, data, NULL);
+    XBT_DEBUG("Mapping %s at %p through %d", loc, mem, fd);
   } else {
+    mem = shm_map(data->fd, size, data);
     data->count++;
   }
-  free(loc);
-  return data->data;
+  XBT_DEBUG("Malloc %zu in %p (metadata at %p)", size, mem, data);
+  return mem;
 }
 
 void smpi_shared_free(void *ptr)
 {
-  shared_data_t *data = (shared_data_t *) ((int *) ptr - 1);
-  char *loc;
+  char loc[PTR_STRLEN];
+  shared_metadata_t* meta;
+  shared_data_t* data;
 
   if (!allocs) {
     XBT_WARN("Cannot free: nothing was allocated");
     return;
   }
-  loc = xbt_dict_get_key(allocs, data);
-  if (!loc) {
+  if(!allocs_metadata) {
+    XBT_WARN("Cannot free: no metadata was allocated");
+  }
+  snprintf(loc, PTR_STRLEN, "%p", ptr);
+  meta = (shared_metadata_t*)xbt_dict_get_or_null(allocs_metadata, loc);
+  if (!meta) {
     XBT_WARN("Cannot free: %p was not shared-allocated by SMPI", ptr);
     return;
   }
+  data = meta->data;
+  if(!data) {
+    XBT_WARN("Cannot free: something is broken in the metadata link");
+    return;
+  }
+  if(munmap(ptr, meta->size) < 0) {
+    XBT_WARN("Unmapping of fd %d failed: %s", data->fd, strerror(errno));
+  }
   data->count--;
   if (data->count <= 0) {
-    xbt_dict_remove(allocs, loc);
+    close(data->fd);
+    xbt_dict_remove(allocs, data->loc);
+    free(data->loc);
   }
 }
 

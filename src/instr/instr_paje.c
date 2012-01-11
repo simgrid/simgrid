@@ -24,10 +24,25 @@ void instr_paje_init (container_t root)
   rootContainer = root;
 }
 
+void instr_paje_free (void)
+{
+  xbt_dict_free (&allContainers);
+  xbt_dict_free (&trivaNodeTypes);
+  xbt_dict_free (&trivaEdgeTypes);
+}
+
 static long long int new_type_id (void)
 {
   static long long int type_id = 0;
   return type_id++;
+}
+
+static void destroyValue (void *value)
+{
+  xbt_free(((val_t)value)->name);
+  xbt_free(((val_t)value)->color);
+  xbt_free(((val_t)value)->id);
+  xbt_free(value);
 }
 
 static val_t newValue (const char *valuename, const char *color, type_t father)
@@ -297,11 +312,6 @@ type_t getType (const char *name, type_t father)
 
 void destroyContainer (container_t container)
 {
-  //remove me from my father
-  if (container->father){
-    xbt_dict_remove(container->father->children, container->name);
-  }
-
   XBT_DEBUG("destroy container %s", container->name);
 
   //obligation to dump previous events because they might
@@ -318,7 +328,7 @@ void destroyContainer (container_t container)
   //free
   xbt_free (container->name);
   xbt_free (container->id);
-  xbt_free (container->children);
+  xbt_dict_free (&container->children);
   xbt_free (container);
   container = NULL;
 }
@@ -344,8 +354,14 @@ static void recursiveDestroyType (type_t type)
   }
   xbt_free (type->name);
   xbt_free (type->id);
-  xbt_free (type->children);
-  xbt_free (type->values);
+  xbt_free (type->color);
+  xbt_dict_free (&type->children);
+  val_t value;
+  char *value_name;
+  xbt_dict_foreach(type->values, cursor, value_name, value) {
+    destroyValue (value);
+  }
+  xbt_dict_free (&type->values);
   xbt_free (type);
   type = NULL;
 }

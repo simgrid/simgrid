@@ -23,12 +23,11 @@ static void lmm_variable_mallocator_free_f(void *var);
 static void lmm_update_modified_set(lmm_system_t sys,
                                     lmm_constraint_t cnst);
 static void lmm_remove_all_modified_set(lmm_system_t sys);
-int sg_maxmin_selective_update = 1;
 static int Global_debug_id = 1;
 static int Global_const_debug_id = 1;
 extern xbt_swag_t keep_track;
 
-lmm_system_t lmm_system_new(void)
+lmm_system_t lmm_system_new(int selective_update)
 {
   lmm_system_t l = NULL;
   s_lmm_variable_t var;
@@ -37,7 +36,8 @@ lmm_system_t lmm_system_new(void)
   l = xbt_new0(s_lmm_system_t, 1);
 
   l->modified = 0;
-  l->selective_update_active = sg_maxmin_selective_update;
+  l->selective_update_active = selective_update;
+  l->visited_counter = 1;
 
   XBT_DEBUG("Setting selective_update_active flag to %d\n",
          l->selective_update_active);
@@ -87,20 +87,31 @@ void lmm_system_free(lmm_system_t sys)
 XBT_INLINE void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
 {
   int i;
+  int n;
+
   lmm_element_t elem = NULL;
 
   XBT_IN("(sys=%p, var=%p)", sys, var);
   sys->modified = 1;
 
+  n = 0;
   for (i = 0; i < var->cnsts_number; i++) {
     elem = &var->cnsts[i];
     xbt_swag_remove(elem, &(elem->constraint->element_set));
     xbt_swag_remove(elem, &(elem->constraint->active_element_set));
     if (!xbt_swag_size(&(elem->constraint->element_set)))
       make_constraint_inactive(sys, elem->constraint);
-    else
-      lmm_update_modified_set(sys, elem->constraint);
+    else {
+      if (n < i)
+        var->cnsts[n].constraint = elem->constraint;
+      n++;
+    }
   }
+  if (n) {
+    var->cnsts_number = n;
+    lmm_update_modified_set(sys, var->cnsts[0].constraint);
+  }
+
   var->cnsts_number = 0;
   XBT_OUT();
 }
@@ -201,7 +212,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   var->weight = weight;
   var->bound = bound;
   var->value = 0.0;
-
+  var->visited = sys->visited_counter - 1;
   var->mu = 0.0;
   var->new_mu = 0.0;
   var->func_f = func_f_def;
@@ -259,6 +270,8 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
 
   make_constraint_active(sys, cnst);
   lmm_update_modified_set(sys, cnst);
+  if (var->cnsts_number > 1)
+    lmm_update_modified_set(sys, var->cnsts[0].constraint);
 }
 
 void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
@@ -674,14 +687,11 @@ void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
 void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
                                double bound)
 {
-  int i;
-
   sys->modified = 1;
   var->bound = bound;
 
-  for (i = 0; i < var->cnsts_number; i++)
-    lmm_update_modified_set(sys, var->cnsts[i].constraint);
-
+  if (var->cnsts_number)
+    lmm_update_modified_set(sys, var->cnsts[0].constraint);
 }
 
 
@@ -710,7 +720,8 @@ void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
     else
       xbt_swag_insert_at_tail(elem, &(elem->constraint->element_set));
 
-    lmm_update_modified_set(sys, elem->constraint);
+    if (i == 0)
+      lmm_update_modified_set(sys, elem->constraint);
   }
   if (!weight)
     var->value = 0.0;
@@ -769,36 +780,36 @@ XBT_INLINE int lmm_is_variable_limited_by_latency(lmm_variable_t var)
  *  constraints that have changed. Each constraint change is propagated
  *  to the list of constraints for each variable.
  */
+static void lmm_update_modified_set_rec(lmm_system_t sys,
+                                        lmm_constraint_t cnst)
+{
+  lmm_element_t elem;
+
+  xbt_swag_foreach(elem, &cnst->element_set) {
+    lmm_variable_t var = elem->variable;
+    s_lmm_element_t *cnsts = var->cnsts;
+    int i;
+    for (i = 0; var->visited != sys->visited_counter
+             && i < var->cnsts_number ; i++) {
+    if (cnsts[i].constraint != cnst
+          && !xbt_swag_belongs(cnsts[i].constraint,
+                               &sys->modified_constraint_set)) {
+        xbt_swag_insert(cnsts[i].constraint, &sys->modified_constraint_set);
+        lmm_update_modified_set_rec(sys, cnsts[i].constraint);
+      }
+    }
+    var->visited = sys->visited_counter;
+  }
+}
+
 static void lmm_update_modified_set(lmm_system_t sys,
                                     lmm_constraint_t cnst)
 {
-  lmm_element_t elem = NULL;
-  lmm_variable_t var = NULL;
-  xbt_swag_t elem_list = NULL;
-  int i;
-
-  /* return if selective update isn't active */
-  if (!sys->selective_update_active)
-    return;
-
-  //XBT_DEBUG("Updating modified constraint set with constraint %d", cnst->id_int);
-
-  if (xbt_swag_belongs(cnst, &(sys->modified_constraint_set)))
-    return;
-
-  //XBT_DEBUG("Inserting into modified constraint set %d", cnst->id_int);
-
-  /* add to modified set */
-  xbt_swag_insert(cnst, &(sys->modified_constraint_set));
-
-  elem_list = &(cnst->element_set);
-  xbt_swag_foreach(elem, elem_list) {
-    var = elem->variable;
-    for (i = 0; i < var->cnsts_number; i++)
-      if (cnst != var->cnsts[i].constraint) {
-        //XBT_DEBUG("Updating modified %d calling for %d", cnst->id_int, var->cnsts[i].constraint->id_int);
-        lmm_update_modified_set(sys, var->cnsts[i].constraint);
-      }
+  /* nothing to do if selective update isn't active */
+  if (sys->selective_update_active
+      && !xbt_swag_belongs(cnst, &sys->modified_constraint_set)) {
+    xbt_swag_insert(cnst, &sys->modified_constraint_set);
+    lmm_update_modified_set_rec(sys, cnst);
   }
 }
 
@@ -808,5 +819,11 @@ static void lmm_update_modified_set(lmm_system_t sys,
  */
 static void lmm_remove_all_modified_set(lmm_system_t sys)
 {
+  if (++sys->visited_counter == 1) {
+    /* the counter wrapped around, reset each variable->visited */
+    lmm_variable_t var;
+    xbt_swag_foreach(var, &sys->variable_set)
+      var->visited = 0;
+  }
   xbt_swag_reset(&sys->modified_constraint_set);
 }

@@ -14,8 +14,8 @@
       You should use MSG if you want to study some heuristics for a
       given problem you don't really want to implement. If you want to
       use the C programming language, your are in the right
-      section. To use the Java programming interface, please refer to
-      \ref MSG_JAVA.
+      section. To use the Java or Ruby programming interfaces, please refer to
+      the documentation provided in the relevant packages.
 */
 
 
@@ -64,9 +64,9 @@
 /** @addtogroup MSG_LUA
 
   \section MSG_Lua_funct  Lua offered functionnalities in MSG
-   - \ref host_management
-   - \ref tasks_management
-   - \ref environment_management
+   - \ref lua_host_management
+   - \ref lua_tasks_management
+   - \ref lua_environment_management
   \section Lua_examples Examples of lua MSG
  
    - \ref MSG_ex_master_slave_lua

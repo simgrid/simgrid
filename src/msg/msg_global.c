@@ -67,6 +67,7 @@ void MSG_global_init(int *argc, char **argv)
     msg_global->max_channel = 0;
     msg_global->PID = 1;
     msg_global->sent_msg = 0;
+    msg_global->task_copy_callback = NULL;
 
     /* initialization of the action module */
     _MSG_action_init();
@@ -74,6 +75,7 @@ void MSG_global_init(int *argc, char **argv)
     SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
     SIMIX_function_register_process_kill(MSG_process_kill_from_SIMIX);
+    SIMIX_comm_set_copy_data_callback(MSG_comm_copy_data_from_SIMIX);
   }
 #ifdef HAVE_TRACING
   TRACE_start();

@@ -95,7 +95,7 @@ void MC_init_safety_stateful(void){
 
 }
 
-void MC_init_liveness(xbt_automaton_t a, char *prgm){
+static void MC_init_liveness(xbt_automaton_t a, char *prgm){
 
   XBT_DEBUG("Start init mc");
   
@@ -543,7 +543,7 @@ void MC_assert_stateful(int prop)
 }
 
 
-void MC_assert_pair(int prop){
+static void MC_assert_pair(int prop){
   if (MC_IS_ENABLED && !prop) {
     XBT_INFO("**************************");
     XBT_INFO("*** PROPERTY NOT VALID ***");

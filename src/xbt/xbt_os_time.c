@@ -55,12 +55,13 @@ double xbt_os_time(void)
 
 void xbt_os_sleep(double sec)
 {
-#ifdef HAVE_USLEEP
+
+#ifdef _XBT_WIN32
+  Sleep((floor(sec) * 1000) + ((sec - floor(sec)) * 1000));
+
+#elif HAVE_USLEEP
   sleep(sec);
   (void) usleep((sec - floor(sec)) * 1000000);
-
-#elif _XBT_WIN32
-  Sleep((floor(sec) * 1000) + ((sec - floor(sec)) * 1000));
 
 #else                           /* don't have usleep. Use select to sleep less than one second */
   struct timeval timeout;

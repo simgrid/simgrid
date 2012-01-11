@@ -24,11 +24,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/token_ring ${srcdir:=.}/two_clusters.xml "--log=ro
 > [  1.104000] (1:0@bob1.hamburger.edu) Host "0" received "Token"
 > [  1.104000] (0:@) Simulation time 1.104
 
-$ $SG_TEST_EXENV ${bindir:=.}/token_ring ${srcdir:=.}/two_peers.xml --cfg=coordinates:yes "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
-> [    0.000000] (0:@) Configuration change: Set 'coordinates' to 'yes'
+$ $SG_TEST_EXENV ${bindir:=.}/token_ring ${srcdir:=.}/two_peers.xml --cfg=network/coordinates:yes "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
+> [    0.000000] (0:@) Configuration change: Set 'network/coordinates' to 'yes'
 > [    0.000000] (0:@) Number of host '2'
 > [    0.000000] (1:0@peer_100030591) Host "0" send 'Token' to Host "1"
-> [    0.110400] (2:1@peer_100036570) Host "1" received "Token"
-> [    0.110400] (2:1@peer_100036570) Host "1" send 'Token' to Host "0"
-> [    0.220800] (1:0@peer_100030591) Host "0" received "Token"
-> [    0.220800] (0:@) Simulation time 0.2208
+> [    5.221778] (2:1@peer_100036570) Host "1" received "Token"
+> [    5.221778] (2:1@peer_100036570) Host "1" send 'Token' to Host "0"
+> [   10.443556] (1:0@peer_100030591) Host "0" received "Token"
+> [   10.443556] (0:@) Simulation time 10.4436

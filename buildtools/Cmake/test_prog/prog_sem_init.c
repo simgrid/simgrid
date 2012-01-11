@@ -4,6 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <semaphore.h>
 
 int main(void)

@@ -88,6 +88,7 @@ void smx_ctx_base_stop(smx_context_t context)
     context->cleanup_func(context->data);
   context->iwannadie = 0;
   SIMIX_req_process_cleanup(context->data);
+  context->iwannadie = 1;
 }
 
 smx_context_t smx_ctx_base_self(void)

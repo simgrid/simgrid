@@ -131,12 +131,17 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
       parmap->wait_f = xbt_parmap_posix_wait;
       break;
 
+
     case XBT_PARMAP_FUTEX:
+#ifdef HAVE_FUTEX_H
       parmap->start_f = xbt_parmap_futex_start;
       parmap->end_f = xbt_parmap_futex_end;
       parmap->signal_f = xbt_parmap_futex_signal;
       parmap->wait_f = xbt_parmap_futex_wait;
       break;
+#else
+      xbt_die("Futex is not available on this OS (maybe you are on a Mac).");
+#endif
 
     case XBT_PARMAP_BUSY_WAIT:
       parmap->start_f = xbt_parmap_busy_start;
@@ -441,8 +446,11 @@ XBT_TEST_UNIT("basic", test_parmap_basic, "Basic usage")
   xbt_dynar_t data = xbt_dynar_new(sizeof(void *), NULL);
 
   /* Create the parallel map */
+#ifdef HAVE_FUTEX_H
   parmap = xbt_parmap_new(10, XBT_PARMAP_FUTEX);
-
+#else
+  parmap = xbt_parmap_new(10, XBT_PARMAP_BUSY_WAIT);
+#endif
   for (j = 0; j < 100; j++) {
     xbt_dynar_push_as(data, void *, (void *)j);
   }

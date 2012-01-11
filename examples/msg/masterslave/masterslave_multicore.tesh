@@ -2,8 +2,9 @@
 
 p Testing a simple master/slave example application
 
-$ $SG_TEST_EXENV ./masterslave/masterslave_mailbox ${srcdir:=.}/../platforms/multicore_machine.xml ${srcdir:=.}/masterslave/deployment_masterslave_mailbox_multicore.xml --cfg=cpu/model:Cas01_fullupdate
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01_fullupdate'
+$ $SG_TEST_EXENV ./masterslave/masterslave_mailbox ${srcdir:=.}/../platforms/multicore_machine.xml ${srcdir:=.}/masterslave/deployment_masterslave_mailbox_multicore.xml --cfg=cpu/model:Cas01 --cfg=cpu/optim:Full
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/optim' to 'Full'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 6 slaves and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" (of 20) to mailbox "slave-0"

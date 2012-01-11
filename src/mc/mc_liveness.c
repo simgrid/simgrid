@@ -109,7 +109,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 	}else{
 	  return 1;
 	}
-      }      
+      } 
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
 	  XBT_DEBUG("Different start addr of program (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
@@ -641,7 +641,7 @@ mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r){
   return p;
 }
 
-void MC_ddfs_init(){
+void MC_ddfs_init(void){
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Double-DFS init");

@@ -139,7 +139,6 @@ examples/msg/tracing/volume
 examples/msg/mc/bugged3
 examples/msg/mc/random_test
 examples/msg/chord/chord
-examples/msg/chord/chord*.xml
 examples/msg/token_ring/token_ring
 examples/simdag/ex_sd_seq_access
 examples/simdag/sd_seq_access

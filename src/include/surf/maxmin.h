@@ -31,7 +31,7 @@ static XBT_INLINE int double_equals(double value1, double value2)
   return (fabs(value1 - value2) < MAXMIN_PRECISION);
 }
 
-XBT_PUBLIC(lmm_system_t) lmm_system_new(void);
+XBT_PUBLIC(lmm_system_t) lmm_system_new(int selective_update);
 XBT_PUBLIC(void) lmm_system_free(lmm_system_t sys);
 void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var);
 

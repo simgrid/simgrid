@@ -16,7 +16,7 @@ NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
 NUMPROCS="${DEFAULT_NUMPROCS}"
 POWER="${DEFAULT_POWER}"
 
-SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=TCP_gamma:4194304"
+SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304"
 
 #usage to print the way this script should be called
 function usage () {
@@ -229,7 +229,7 @@ do
   else
 	host="${hostnames[$j]}"
   fi
-  echo "  <process host=\"${host}\" function=\"smpi_simulated_main\">" >> ${APPLICATIONTMP}
+  echo "  <process host=\"${host}\" function=\"rank$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
   echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
   for ARG in $*; do
     echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}

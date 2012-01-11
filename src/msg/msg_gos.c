@@ -1,5 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2011. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,7 +8,6 @@
 #include "mc/mc.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
-
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
                                 "Logging specific to MSG (gos)");
@@ -261,8 +259,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \param host the host that is to be watched.
- * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
- if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
+ * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
 MSG_error_t
 MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
@@ -281,8 +278,7 @@ MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
  * \param channel the channel on which the agent should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
- * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
- * if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
+ * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
 MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
 {
@@ -304,8 +300,7 @@ MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
  up. In such a case, #MSG_TRANSFER_FAILURE will be returned, \a task
  will not be modified and will still be
  equal to \c NULL when returning.
- * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
- if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
+ * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
 MSG_error_t
 MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel,
@@ -420,7 +415,7 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
   comm->status = MSG_OK;
   comm->s_comm =
     SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                         t_simdata->rate, task, sizeof(void *), match_fun, match_data, 0);
+                         t_simdata->rate, task, sizeof(void *), match_fun, NULL, match_data, 0);
   t_simdata->comm = comm->s_comm; /* FIXME: is the field t_simdata->comm still useful? */
 
   return comm;
@@ -469,8 +464,9 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                       t_simdata->rate, task, sizeof(void *), NULL, cleanup, 1);
+  smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
+                       t_simdata->rate, task, sizeof(void *), NULL,cleanup, NULL, 1);
+  t_simdata->comm = comm;
 }
 
 /** \ingroup msg_gos_functions
@@ -496,7 +492,7 @@ msg_comm_t MSG_task_irecv(m_task_t *task, const char *name)
 
   if (*task)
     XBT_CRITICAL
-        ("MSG_task_get() was asked to write in a non empty task struct.");
+        ("MSG_task_irecv() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
   msg_comm_t comm = xbt_new0(s_msg_comm_t, 1);
@@ -765,6 +761,23 @@ m_task_t MSG_comm_get_task(msg_comm_t comm)
   return comm->task_received ? *comm->task_received : comm->task_sent;
 }
 
+/**
+ * \brief This function is called by SIMIX to copy the data of a comm.
+ * \param comm the comm
+ * \param buff_size size of the buffer
+ */
+void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, size_t buff_size) {
+
+  // copy the task
+  SIMIX_comm_copy_pointer_callback(comm, buff_size);
+
+  // notify the user callback if any
+  if (msg_global->task_copy_callback) {
+    msg_global->task_copy_callback(SIMIX_req_comm_get_src_data(comm),
+        SIMIX_req_comm_get_src_proc(comm), SIMIX_req_comm_get_dst_proc(comm));
+  }
+}
+
 /** \ingroup msg_gos_functions
  * \brief Put a task on a channel of an host and waits for the end of the
  * transmission.
@@ -785,11 +798,10 @@ m_task_t MSG_comm_get_task(msg_comm_t comm)
  * \param channel the channel on which the agent should put this
  task. This value has to be >=0 and < than the maximal number of
  channels fixed with MSG_set_channel_number().
- * \return #MSG_FATAL if \a task is not properly initialized and
- * #MSG_OK otherwise. Returns #MSG_HOST_FAILURE if the host on which
- * this function was called was shut down. Returns
+ * \return #MSG_HOST_FAILURE if the host on which
+ * this function was called was shut down,
  * #MSG_TRANSFER_FAILURE if the transfer could not be properly done
- * (network failure, dest failure)
+ * (network failure, dest failure) or #MSG_OK if it succeeded.
  */
 MSG_error_t MSG_task_put(m_task_t task, m_host_t dest, m_channel_t channel)
 {
@@ -833,11 +845,10 @@ MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel,
  * \param timeout the maximum time to wait for a task before giving
  up. In such a case, #MSG_TRANSFER_FAILURE will be returned, \a task
  will not be modified
- * \return #MSG_FATAL if \a task is not properly initialized and
-#MSG_OK otherwise. Returns #MSG_HOST_FAILURE if the host on which
-this function was called was shut down. Returns
+ * \return #MSG_HOST_FAILURE if the host on which
+this function was called was shut down,
 #MSG_TRANSFER_FAILURE if the transfer could not be properly done
-(network failure, dest failure, timeout...)
+(network failure, dest failure, timeout...) or #MSG_OK if the communication succeeded.
  */
 MSG_error_t
 MSG_task_put_with_timeout(m_task_t task, m_host_t dest,

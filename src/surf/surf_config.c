@@ -44,8 +44,14 @@ static void surf_config_cmd_line(int *argc, char **argv)
       exit(0);
     } else if (!strncmp(argv[i], "--help-models", strlen("--help-models") + 1)) {
       model_help("workstation", surf_workstation_model_description);
+      printf("\n");
       model_help("CPU", surf_cpu_model_description);
+      printf("\n");
       model_help("network", surf_network_model_description);
+      printf("\nLong description of all optimization levels accepted by the models of this simulator:\n");
+      for (i = 0; surf_optimization_mode_description[i].name; i++)
+        printf("  %s: %s\n", surf_optimization_mode_description[i].name, surf_optimization_mode_description[i].description);
+      printf("Both network and CPU models have 'Lazy' as default optimization level\n");
       exit(0);
 #ifdef HAVE_TRACING
     } else if (!strncmp(argv[i], "--help-tracing", strlen("--help-tracing") + 1)) {
@@ -108,6 +114,25 @@ static void _surf_cfg_cb__cpu_model(const char *name, int pos)
   find_model_description(surf_cpu_model_description, val);
 }
 
+/* callback of the cpu/model variable */
+static void _surf_cfg_cb__optimization_mode(const char *name, int pos)
+{
+  char *val;
+
+  xbt_assert(_surf_init_status < 2,
+              "Cannot change the model after the initialization");
+
+  val = xbt_cfg_get_string(_surf_cfg_set, name);
+
+  if (!strcmp(val, "help")) {
+    model_help("optimization", surf_optimization_mode_description);
+    exit(0);
+  }
+
+  /* New Module missing */
+  find_model_description(surf_optimization_mode_description, val);
+}
+
 /* callback of the workstation_model variable */
 static void _surf_cfg_cb__network_model(const char *name, int pos)
 {
@@ -157,12 +182,6 @@ static void _surf_cfg_cb__bandwidth_factor(const char *name, int pos)
 static void _surf_cfg_cb__weight_S(const char *name, int pos)
 {
   sg_weight_S_parameter = xbt_cfg_get_double(_surf_cfg_set, name);
-}
-
-static void _surf_cfg_cb__surf_maxmin_selective_update(const char *name,
-                                                       int pos)
-{
-  sg_maxmin_selective_update = xbt_cfg_get_int(_surf_cfg_set, name);
 }
 
 /* callback of the inclusion path */
@@ -244,16 +263,16 @@ static void _surf_cfg_cb__surf_network_coordinates(const char *name,
     }
   } else if (!strcmp(val, "no")) {
     if (COORD_HOST_LEVEL)
-      XBT_WARN("Setting of whether to use coordinate cannot be disabled once set.");
+      xbt_die("Setting of whether to use coordinate cannot be disabled once set.");
   } else {
-    XBT_WARN("Command line setting of whether to use coordinates must be either \"yes\" or \"no\"");
+    xbt_die("Command line setting of whether to use coordinates must be either \"yes\" or \"no\"");
   }
 }
 
-static void _surf_cfg_cb__surf_network_fullduplex(const char *name,
+static void _surf_cfg_cb__surf_network_crosstraffic(const char *name,
                                                   int pos)
 {
-  sg_network_fullduplex = xbt_cfg_get_int(_surf_cfg_set, name);
+  sg_network_crosstraffic = xbt_cfg_get_int(_surf_cfg_set, name);
 }
 
 #ifdef HAVE_GTNETS
@@ -291,9 +310,21 @@ void surf_config_init(int *argc, char **argv)
     sprintf(p,
             ".\n       (use 'help' as a value to see the long description of each model)");
     default_value = xbt_strdup("Cas01");
-    xbt_cfg_register(&_surf_cfg_set,
-                     "cpu/model", description, xbt_cfgelm_string,
+    xbt_cfg_register(&_surf_cfg_set, "cpu/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__cpu_model, NULL);
+
+    sprintf(description,
+            "The optimization modes to use for the CPU. Possible values: ");
+    p = description;
+    while (*(++p) != '\0');
+    for (i = 0; surf_optimization_mode_description[i].name; i++)
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_optimization_mode_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each optimization mode)");
+    default_value = xbt_strdup("Lazy");
+    xbt_cfg_register(&_surf_cfg_set, "cpu/optim", description, xbt_cfgelm_string,
+                     &default_value, 1, 1, &_surf_cfg_cb__optimization_mode, NULL);
 
     sprintf(description,
             "The model to use for the network. Possible values: ");
@@ -305,10 +336,22 @@ void surf_config_init(int *argc, char **argv)
     sprintf(p,
             ".\n       (use 'help' as a value to see the long description of each model)");
     default_value = xbt_strdup("LV08");
-    xbt_cfg_register(&_surf_cfg_set,
-                     "network/model", description, xbt_cfgelm_string,
+    xbt_cfg_register(&_surf_cfg_set, "network/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__network_model,
                      NULL);
+
+    sprintf(description,
+            "The optimization modes to use for the network. Possible values: ");
+    p = description;
+    while (*(++p) != '\0');
+    for (i = 0; surf_optimization_mode_description[i].name; i++)
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_optimization_mode_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each optimization mode)");
+    default_value = xbt_strdup("Lazy");
+    xbt_cfg_register(&_surf_cfg_set, "network/optim", description, xbt_cfgelm_string,
+                     &default_value, 1, 1, &_surf_cfg_cb__optimization_mode, NULL);
 
     sprintf(description,
             "The model to use for the workstation. Possible values: ");
@@ -319,27 +362,21 @@ void surf_config_init(int *argc, char **argv)
                    surf_workstation_model_description[i].name);
     sprintf(p,
             ".\n       (use 'help' as a value to see the long description of each model)");
-    default_value = xbt_strdup("CLM03");
-    xbt_cfg_register(&_surf_cfg_set,
-                     "workstation/model", description, xbt_cfgelm_string,
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_surf_cfg_set, "workstation/model", description, xbt_cfgelm_string,
                      &default_value, 1, 1,
                      &_surf_cfg_cb__workstation_model, NULL);
 
     xbt_free(description);
 
-    default_value = xbt_strdup("Full");
-    xbt_cfg_register(&_surf_cfg_set, "routing",
-                     "Model to use to store the routing information",
-                     xbt_cfgelm_string, &default_value, 1, 1, NULL, NULL);
-
-    xbt_cfg_register(&_surf_cfg_set, "TCP_gamma",
+    xbt_cfg_register(&_surf_cfg_set, "network/TCP_gamma",
                      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)",
                      xbt_cfgelm_double, NULL, 1, 1,
                      _surf_cfg_cb__tcp_gamma, NULL);
-    xbt_cfg_setdefault_double(_surf_cfg_set, "TCP_gamma", 20000.0);
+    xbt_cfg_setdefault_double(_surf_cfg_set, "network/TCP_gamma", 20000.0);
 
     xbt_cfg_register(&_surf_cfg_set, "maxmin/precision",
-                     "Minimum retained action value when updating simulation",
+                     "Numerical precision used when updating simulation models (epsilon in double comparisons)",
                      xbt_cfgelm_double, NULL, 1, 1, _surf_cfg_cb__maxmin_precision, NULL);
     xbt_cfg_setdefault_double(_surf_cfg_set, "maxmin/precision", 0.00001); // FIXME use setdefault everywhere here!
 
@@ -374,10 +411,15 @@ void surf_config_init(int *argc, char **argv)
                      _surf_cfg_cb__surf_path, NULL);
 
     default_value_int = 0;
-    xbt_cfg_register(&_surf_cfg_set, "maxmin_selective_update",
-                     "Update the constraint set propagating recursively to others constraints",
+    xbt_cfg_register(&_surf_cfg_set, "cpu/maxmin_selective_update",
+                     "Update the constraint set propagating recursively to others constraints (1 by default when optim is set to lazy)",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
-                     _surf_cfg_cb__surf_maxmin_selective_update, NULL);
+                     NULL, NULL);
+    default_value_int = 0;
+    xbt_cfg_register(&_surf_cfg_set, "network/maxmin_selective_update",
+                     "Update the constraint set propagating recursively to others constraints (1 by default when optim is set to lazy)",
+                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     NULL, NULL);
 
     /* do model-check */
     default_value_int = 0;
@@ -393,7 +435,7 @@ void surf_config_init(int *argc, char **argv)
        xbt_cfg_set_int(_surf_cfg_set, "model-check", default_value_int); */
 
     /* do verbose-exit */
-    default_value_int = 0;
+    default_value_int = 1;
     xbt_cfg_register(&_surf_cfg_set, "verbose-exit",
                      "Activate the \"do nothing\" mode in Ctrl-C",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
@@ -409,54 +451,58 @@ void surf_config_init(int *argc, char **argv)
     /* stack size of contexts in Ko */
     default_value_int = 128;
     xbt_cfg_register(&_surf_cfg_set, "contexts/stack_size",
-                     "Stack size of contexts in Ko (ucontext or raw only)",
+                     "Stack size of contexts in Kib (ucontext or raw only)",
                      xbt_cfgelm_int, &default_value_int, 1, 1,
                      _surf_cfg_cb_context_stack_size, NULL);
 
     /* number of parallel threads for user processes */
     default_value_int = 1;
     xbt_cfg_register(&_surf_cfg_set, "contexts/nthreads",
-                     "Number of parallel threads for user contexts (EXPERIMENTAL)",
+                     "Number of parallel threads used to execute user contexts",
                      xbt_cfgelm_int, &default_value_int, 1, 1,
                      _surf_cfg_cb_contexts_nthreads, NULL);
 
     /* minimal number of user contexts to be run in parallel */
-    default_value_int = 1;
+    default_value_int = 2;
     xbt_cfg_register(&_surf_cfg_set, "contexts/parallel_threshold",
         "Minimal number of user contexts to be run in parallel (raw contexts only)",
         xbt_cfgelm_int, &default_value_int, 1, 1,
         _surf_cfg_cb_contexts_parallel_threshold, NULL);
 
     /* minimal number of user contexts to be run in parallel */
+#ifdef HAVE_FUTEX_H
     default_value = xbt_strdup("futex");
-    xbt_cfg_register(&_surf_cfg_set, "contexts/parallel_mode",
-        "Synchronization mode to use when running contexts in parallel",
+#else //No futex on mac and posix is unimplememted yet
+    default_value = xbt_strdup("busy_wait");
+#endif
+    xbt_cfg_register(&_surf_cfg_set, "contexts/synchro",
+        "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)",
         xbt_cfgelm_string, &default_value, 1, 1,
         _surf_cfg_cb_contexts_parallel_mode, NULL);
 
     default_value = xbt_strdup("no");
-    xbt_cfg_register(&_surf_cfg_set, "coordinates",
-                     "\"yes\" or \"no\" (FIXME: document)",
+    xbt_cfg_register(&_surf_cfg_set, "network/coordinates",
+                     "\"yes\" or \"no\", specifying whether we use a coordinate-based routing (as Vivaldi)",
                      xbt_cfgelm_string, &default_value, 1, 1,
                      _surf_cfg_cb__surf_network_coordinates, NULL);
-    xbt_cfg_setdefault_string(_surf_cfg_set, "coordinates", default_value);
+    xbt_cfg_setdefault_string(_surf_cfg_set, "network/coordinates", default_value);
 
     default_value_int = 0;
-    xbt_cfg_register(&_surf_cfg_set, "fullduplex",
+    xbt_cfg_register(&_surf_cfg_set, "network/crosstraffic",
                      "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
-                     _surf_cfg_cb__surf_network_fullduplex, NULL);
-    xbt_cfg_setdefault_int(_surf_cfg_set, "fullduplex", default_value_int);
+                     _surf_cfg_cb__surf_network_crosstraffic, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "network/crosstraffic", default_value_int);
 
 #ifdef HAVE_GTNETS
-    xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter",
+    xbt_cfg_register(&_surf_cfg_set, "gtnets/jitter",
                      "Double value to oscillate the link latency, uniformly in random interval [-latency*gtnets_jitter,latency*gtnets_jitter)",
                      xbt_cfgelm_double, NULL, 1, 1,
                      _surf_cfg_cb__gtnets_jitter, NULL);
     xbt_cfg_setdefault_double(_surf_cfg_set, "gtnets_jitter", 0.0);
 
     default_value_int = 10;
-    xbt_cfg_register(&_surf_cfg_set, "gtnets_jitter_seed",
+    xbt_cfg_register(&_surf_cfg_set, "gtnets/jitter_seed",
                      "Use a positive seed to reproduce jitted results, value must be in [1,1e8], default is 10",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
                      _surf_cfg_cb__gtnets_jitter_seed, NULL);

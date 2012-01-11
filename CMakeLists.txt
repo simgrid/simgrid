@@ -136,24 +136,7 @@ if(WIN32)
     string(REGEX REPLACE "/bin/gcc.*" "/include"  CMAKE_INCLUDE_WIN "${CMAKE_INCLUDE_WIN}")
     string(REGEX REPLACE "/bin/gcc.*" "/lib"  CMAKE_LIB_WIN "${CMAKE_LIB_WIN}")
     set(INCLUDES ${INCLUDES} ${CMAKE_INCLUDE_WIN})
-    
-    if(BORLAND)			### BORLAND COMPILER
-	    set(__BORLANDC__ 1)
-	    set(CMAKE_COMPILER_IS_GNUCC 0)
-	    set(MSVC 0)
-	    set(_XBT_BORLANDC_COMPILER 1)
-    endif(BORLAND)
-    
-    if(MSVC)	### MicroSoftVisualC COMPILER
-	    set(__VISUALC__ 1)
-	    set(BORLAND 0)
-	    set(CMAKE_COMPILER_IS_GNUCC 0)
-	    set(_XBT_VISUALC_COMPILER 1)
-	    set(_MSC_VER 1)
-        set(__STRICT_ANSI__ 1)
-        set(_M_IX86 1)
-    endif(MSVC)
-    
+        
     if(CMAKE_COMPILER_IS_GNUCC)
         set(__GNUC__ 1)
         exec_program("${CMAKE_C_COMPILER} --version" OUTPUT_VARIABLE "COMPILER_C_VERSION")
@@ -169,6 +152,8 @@ if(WIN32)
         endif(COMPILER_C_MINOR_VERSION)
         set(MSVC 0)
 	    set(BORLAND 0)
+    else(CMAKE_COMPILER_IS_GNUCC)
+        message(FATAL_ERROR "Please use MinGW to compile SimGrid!")
     endif(CMAKE_COMPILER_IS_GNUCC)
     
     if(ARCH_32_BITS)	### Arch 32bits
@@ -241,10 +226,13 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
 ### Pipol compilation
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Pipol.cmake)
 
-if(NOT WIN32)
 ### Build the doc
+if(NOT WIN32)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
+else(NOT WIN32)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDocWin.cmake)  
 endif(NOT WIN32)
+
 ### Print ARGS
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)
 

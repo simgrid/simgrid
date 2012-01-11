@@ -19,6 +19,8 @@ static char *parse_host = NULL;
 static double start_time = 0.0;
 static double kill_time = -1.0;
 
+extern int surf_parse_lineno;
+
 static void parse_process_init(void)
 {
   smx_host_t host = SIMIX_host_get_by_name(A_surfxml_process_host);
@@ -104,6 +106,8 @@ static void parse_process_finalize(void)
  */
 void SIMIX_launch_application(const char *file)
 {
+  xbt_ex_t e;
+
   _XBT_GNUC_UNUSED int parse_status;
   xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_launch_application.");
@@ -117,9 +121,14 @@ void SIMIX_launch_application(const char *file)
                        parse_process_finalize);
 
   surf_parse_open(file);
-  parse_status = surf_parse();
-  surf_parse_close();
-  xbt_assert(!parse_status, "Parse error in %s", file);
+  TRY {
+	  parse_status = surf_parse();
+	  surf_parse_close();
+	  xbt_assert(!parse_status, "Parse error at %s:%d", file,surf_parse_lineno);
+  } CATCH(e) {
+	  xbt_die("Unrecoverable error at %s:%d: %s", file,surf_parse_lineno,
+			  __xbt_running_ctx_fetch()->exception.msg); //FIXME: that pimple is due to the fact that e.msg does not seem to be set on CATCH(e). The pimple should be removed when the bug is gone.
+  }
 }
 
 /**

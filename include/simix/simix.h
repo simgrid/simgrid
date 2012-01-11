@@ -67,11 +67,14 @@ XBT_PUBLIC(void) SIMIX_process_self_set_data(smx_process_t self, void *data);
 XBT_PUBLIC(void*) SIMIX_process_self_get_data(smx_process_t self);
 XBT_PUBLIC(smx_context_t) SIMIX_process_get_context(smx_process_t);
 XBT_PUBLIC(void) SIMIX_process_set_context(smx_process_t p,smx_context_t c);
+XBT_PUBLIC(int) SIMIX_process_has_pending_comms(smx_process_t process);
 
 /****************************** Communication *********************************/
 XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_action_t, size_t));
 XBT_PUBLIC(void) SIMIX_comm_copy_pointer_callback(smx_action_t comm, size_t buff_size);
 XBT_PUBLIC(void) SIMIX_comm_copy_buffer_callback(smx_action_t comm, size_t buff_size);
+XBT_PUBLIC(void) smpi_comm_copy_data_callback(smx_action_t comm, size_t buff_size);
+
 XBT_PUBLIC(smx_action_t) SIMIX_comm_get_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(int) SIMIX_comm_has_recv_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
@@ -170,6 +173,7 @@ XBT_PUBLIC(smx_action_t) SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size,
                                               double rate, void *src_buff,
                                               size_t src_buff_size,
                                               int (*match_fun)(void *, void *),
+                                              void (*clean_fun)(void *),
                                               void *data, int detached);
 
 XBT_PUBLIC(void) SIMIX_req_comm_recv(smx_rdv_t rdv, void *dst_buff,
@@ -199,9 +203,6 @@ XBT_PUBLIC(void *) SIMIX_req_comm_get_src_data(smx_action_t comm);
 XBT_PUBLIC(void *) SIMIX_req_comm_get_dst_data(smx_action_t comm);
 XBT_PUBLIC(smx_process_t) SIMIX_req_comm_get_src_proc(smx_action_t comm);
 XBT_PUBLIC(smx_process_t) SIMIX_req_comm_get_dst_proc(smx_action_t comm);
-XBT_PUBLIC(void) SIMIX_req_comm_set_copy_data_callback(void (*callback)(smx_action_t,size_t));
-XBT_PUBLIC(void) SIMIX_req_comm_copy_pointer_callback(smx_action_t comm, size_t buff_size);
-XBT_PUBLIC(void) SIMIX_req_comm_copy_buffer_callback(smx_action_t comm, size_t buff_size);
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 XBT_PUBLIC(int) SIMIX_req_comm_is_latency_bounded(smx_action_t comm);

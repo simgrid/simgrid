@@ -94,6 +94,8 @@ typedef struct s_smx_action {
       int refcount;                   /* Number of processes involved in the cond */
       int detached;                   /* If detached or not */
 
+      void (*clean_fun)(void*);       /* Function to clean the detached src_buf if something goes wrong */
+
       /* Surf action data */
       surf_action_t surf_comm;        /* The Surf communication action encapsulated */
       surf_action_t src_timeout;      /* Surf's actions to instrument the timeouts */

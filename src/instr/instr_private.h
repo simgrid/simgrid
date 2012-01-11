@@ -172,6 +172,7 @@ void TRACE_global_init(int *argc, char **argv);
 void TRACE_help(int detailed);
 void TRACE_generate_triva_uncat_conf (void);
 void TRACE_generate_triva_cat_conf (void);
+void TRACE_set_network_update_mechanism (void);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization(const char *resource,
@@ -208,6 +209,7 @@ char *getContainerIdByName (const char *name);
 char *getVariableTypeIdByName (const char *name, type_t father);
 container_t getRootContainer (void);
 void instr_paje_init (container_t root);
+void instr_paje_free (void);
 type_t getRootType (void);
 type_t getContainerType (const char *name, type_t father);
 type_t getEventType (const char *name, const char *color, type_t father);

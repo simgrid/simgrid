@@ -169,6 +169,7 @@ void TRACE_paje_end(void)
 {
   fclose(tracing_file);
   char *filename = TRACE_get_filename();
+  xbt_dynar_free (&buffer);
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
@@ -636,12 +637,17 @@ static void print_pajeNewEvent (paje_event_t event)
 static void free_paje_event (paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, event->event_type, event->timestamp);
-  if (event->event_type == PAJE_StartLink){
+  switch (event->event_type){
+  case PAJE_StartLink:
     xbt_free (((startLink_t)(event->data))->value);
     xbt_free (((startLink_t)(event->data))->key);
-  }else if (event->event_type == PAJE_EndLink){
+    break;
+  case PAJE_EndLink:
     xbt_free (((endLink_t)(event->data))->value);
     xbt_free (((endLink_t)(event->data))->key);
+    break;
+  default:
+    break;
   }
   xbt_free (event->data);
   xbt_free (event);

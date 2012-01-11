@@ -108,6 +108,10 @@ int TRACE_end()
 
   /* destroy all data structures of tracing (and free) */
   destroyAllContainers();
+  instr_paje_free();
+  TRACE_surf_release();
+  TRACE_smpi_release();
+  xbt_dict_free(&created_categories);
 
   /* close the trace file */
   TRACE_paje_end();
@@ -222,10 +226,10 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_tracing, 0, 1,
                    NULL, NULL);
 
-  /* tracing platform*/
+  /* register platform in the trace */
   int default_tracing_platform = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM,
-                   "Enable Tracing Platform.",
+                   "Register the platform in the trace as a graph.",
                    xbt_cfgelm_int, &default_tracing_platform, 0, 1,
                    NULL, NULL);
 
@@ -244,17 +248,17 @@ void TRACE_global_init(int *argc, char **argv)
                    NULL, NULL);
 
 
-  /* platform */
+  /* tracing categorized resource utilization traces */
   int default_tracing_categorized = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_CATEGORIZED,
-                   "Tracing of categorized platform (host and link) utilization.",
+                   "Tracing categorized resource utilization of hosts and links.",
                    xbt_cfgelm_int, &default_tracing_categorized, 0, 1,
                    NULL, NULL);
 
   /* tracing uncategorized resource utilization */
   int default_tracing_uncategorized = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_UNCATEGORIZED,
-                   "Tracing of uncategorized resource (host and link) utilization.",
+                   "Tracing uncategorized resource utilization of hosts and links.",
                    xbt_cfgelm_int, &default_tracing_uncategorized, 0, 1,
                    NULL, NULL);
 
@@ -514,6 +518,16 @@ void TRACE_generate_triva_cat_conf (void)
     //close
     fprintf (file, "}\n");
     fclose (file);
+  }
+}
+
+void TRACE_set_network_update_mechanism (void)
+{
+  if (TRACE_is_enabled()){
+    if (TRACE_categorized() || TRACE_uncategorized()){
+      XBT_INFO ("Tracing resource utilization active, network/optim configuration now set to Full.");
+      xbt_cfg_set_string (_surf_cfg_set, "network/optim", "Full");
+    }
   }
 }
 

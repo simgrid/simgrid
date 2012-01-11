@@ -105,6 +105,15 @@ void MSG_task_set_data(m_task_t task, void *data)
 }
 
 /** \ingroup m_task_management
+ * \brief Sets a function to be called when a task has just been copied.
+ * \param callback a callback function
+ */
+void MSG_task_set_copy_callback(void (*callback)
+    (m_task_t task, m_process_t sender, m_process_t receiver)) {
+  msg_global->task_copy_callback = callback;
+}
+
+/** \ingroup m_task_management
  * \brief Return the sender of a #m_task_t.
  *
  * This functions returns the #m_process_t which sent this task

@@ -709,7 +709,7 @@ void SIMIX_req_comm_send(smx_rdv_t rdv, double task_size, double rate,
   if (MC_IS_ENABLED) {
     /* the model-checker wants two separate requests */
     smx_action_t comm = SIMIX_req_comm_isend(rdv, task_size, rate,
-        src_buff, src_buff_size, match_fun, data, 0);
+        src_buff, src_buff_size, match_fun, NULL, data, 0);
     SIMIX_req_comm_wait(comm, timeout);
   }
   else {
@@ -731,7 +731,9 @@ void SIMIX_req_comm_send(smx_rdv_t rdv, double task_size, double rate,
 
 smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
-                              int (*match_fun)(void *, void *), void *data,
+                              int (*match_fun)(void *, void *),
+                              void (*clean_fun)(void *),
+                              void *data,
                               int detached)
 {
   /* checking for infinite values */
@@ -749,6 +751,7 @@ smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
   req->comm_isend.src_buff = src_buff;
   req->comm_isend.src_buff_size = src_buff_size;
   req->comm_isend.match_fun = match_fun;
+  req->comm_isend.clean_fun = clean_fun;
   req->comm_isend.data = data;
   req->comm_isend.detached = detached;
 

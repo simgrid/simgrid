@@ -65,9 +65,7 @@ if(HAVE_MC)
 	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/mc)
 endif(HAVE_MC)
 
-if(HAVE_GTNETS)
-	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets)
-endif(HAVE_GTNETS)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets)
 
 if(HAVE_NS3)
 	add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/ns3)

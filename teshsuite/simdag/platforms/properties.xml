@@ -4,7 +4,7 @@
 	
 <config id="General">
 	<prop id="maxmin/precision" value="0.000010"></prop>
-	<prop id="cpu/model" value="CpuTI"></prop>
+	<prop id="cpu/optim" value="TI"></prop>
 	<prop id="workstation/model" value="compound"></prop>
 	<prop id="network/model" value="Vegas"></prop>
 	<prop id="path" value="~/"></prop>

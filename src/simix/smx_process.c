@@ -30,7 +30,16 @@ XBT_INLINE smx_process_t SIMIX_process_self(void)
 }
 
 /**
- * \brief Move a process to the list of processes to destroy.
+ * \brief Returns whether a process has pending asynchronous communications.
+ * \return true if there are asynchronous communications in this process
+ */
+int SIMIX_process_has_pending_comms(smx_process_t process) {
+
+  return xbt_fifo_size(process->comms) > 0;
+}
+
+/**
+ * \brief Moves a process to the list of processes to destroy.
  */
 void SIMIX_process_cleanup(smx_process_t process)
 {
@@ -41,7 +50,8 @@ void SIMIX_process_cleanup(smx_process_t process)
   smx_action_t action;
   while ((action = xbt_fifo_pop(process->comms))) {
 
-    /* make sure no one will finish the comm after this process is destroyed */
+    /* make sure no one will finish the comm after this process is destroyed,
+     * because src_proc or dst_proc would be an invalid pointer */
     SIMIX_comm_cancel(action);
 
     if (action->comm.src_proc == process) {
@@ -51,13 +61,16 @@ void SIMIX_process_cleanup(smx_process_t process)
 
       if (action->comm.detached) {
          if (action->comm.refcount == 0) {
+           XBT_DEBUG("Increase the refcount before destroying it since it's detached");
            /* I'm not supposed to destroy a detached comm from the sender side,
             * unless there is no receiver matching the rdv */
            action->comm.refcount++;
            SIMIX_comm_destroy(action);
          }
-      }
-      else {
+         else {
+           XBT_DEBUG("Don't destroy it since its refcount is %d", action->comm.refcount);
+         }
+      } else {
         SIMIX_comm_destroy(action);
       }
     }
@@ -257,6 +270,7 @@ void SIMIX_process_kill(smx_process_t process) {
         break;
 
       case SIMIX_ACTION_COMMUNICATE:
+        xbt_fifo_remove(process->comms, process->waiting_action);
         SIMIX_comm_destroy(process->waiting_action);
         break;
 
@@ -625,4 +639,12 @@ smx_context_t SIMIX_process_get_context(smx_process_t p) {
 
 void SIMIX_process_set_context(smx_process_t p,smx_context_t c) {
   p->context = c;
+}
+
+/**
+ * \brief Returns the list of processes to run.
+ */
+XBT_INLINE xbt_dynar_t SIMIX_process_get_runnable(void)
+{
+  return simix_global->process_to_run;
 }

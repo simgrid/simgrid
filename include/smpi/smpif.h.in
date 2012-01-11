@@ -17,6 +17,8 @@
 #include <smpi/smpi.h>
 #include <f2c.h>
 
+XBT_PUBLIC_DATA(__thread int) smpi_current_rank;
+
 XBT_PUBLIC(int) smpi_process_argc(void);
 XBT_PUBLIC(int) smpi_process_getarg(integer* index, char* dst, ftnlen len);
 XBT_PUBLIC(int) smpi_global_size(void);

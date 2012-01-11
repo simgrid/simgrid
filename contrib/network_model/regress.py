@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 #---------------------------------------------------------------------------------------------------
+# Example invokation:
+# % ./regress.py griffon_skampi_pt2pt.ski.dat 65536 120832
+#
+#
 # Given two vectors of same length n: message size S(.. s_i ..), and communication time T( .. t_i .. )
 # where t_i is the time associated to a mesage size s_i, computes the segmentation of the vectors   
 # in 3 segments such that linear regressions on the 3 segments maximize correlation.
@@ -25,7 +29,7 @@ from math import sqrt,log,exp
 
 if len(sys.argv) != 2 and len(sys.argv) != 4:
 	print("Usage : {} datafile".format(sys.argv[0]))
-	print("or    : {} datafile p1 p2".format(sys.argv[0]))
+	print("or    : {0} datafile p1 p2".format(sys.argv[0]))
 	print("where : p1 < p2 belongs to sizes in datafiles")
 	sys.exit(-1)
 
@@ -119,7 +123,6 @@ def correl_split_weighted_logerr( X , Y , segments ):
 			Z.append( a * X[i] + b )
 		# compare real values and computed values
 		e = mean_logerr( Y[start:stop+1] , Z )
-		#print("   range [%d,%d] err=%f‰ weight=%f" % (X[start],X[stop],e,(stop-start+1)/len(X))) 
 		correl.append( (e, stop-start+1) );   # store correl. coef + number of values (segment length)
 		interv.append( (a,b, X[start],X[stop],e) );
 	
@@ -296,7 +299,8 @@ if len(sys.argv) == 4:
 
 	for k in range(top_n_sol):
 		(err,interval) = result[k]
-		print("\n   RANK {}\n-------".format(k))
+		print(k)
+		print("\n   RANK {0}\n-------".format(k))
 		print("** overall metric = {0}".format(err))
 		for (a,b,i,j,e) in interval:
 			print("** OPT: [{0} .. {1}] segment_metric={2}		slope: {3} x + {4}".format(i,j,e,a,b))

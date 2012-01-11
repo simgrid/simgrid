@@ -43,7 +43,7 @@ static void _XBT_CALL inthandler(int ignored)
      SIMIX_display_process_status();
   }
   else {
-     XBT_INFO("CTRL-C pressed. bailing out without displaying because verbose-exit disabled");
+     XBT_INFO("CTRL-C pressed. bailing out without displaying because verbose-exit is disabled");
   }
   exit(1);
 }
@@ -135,6 +135,7 @@ void SIMIX_clean(void)
   SIMIX_network_exit();
 
   xbt_heap_free(simix_timers);
+  simix_timers = NULL;
   /* Free the remaining data structures */
   xbt_dynar_free(&simix_global->process_to_run);
   xbt_dynar_free(&simix_global->process_that_ran);
@@ -203,7 +204,6 @@ void SIMIX_run(void)
       SIMIX_process_runall();
       xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
         if (process->request.call != REQ_NO_REQ) {
-          XBT_DEBUG("Handling request %p", &process->request);
           SIMIX_request_pre(&process->request, 0);
         }
       }
@@ -328,7 +328,7 @@ void SIMIX_display_process_status(void)
   XBT_INFO("%d processes are still running, waiting for something.", nbprocess);
   /*  List the process and their state */
   XBT_INFO
-    ("Legend of the following listing: \"<process>(<pid>) on <host>: <status>.\"");
+    ("Legend of the following listing: \"Process <pid> (<name>@<host>): <status>\"");
   xbt_swag_foreach(process, simix_global->process_list) {
 
     if (process->waiting_action) {

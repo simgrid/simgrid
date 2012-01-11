@@ -26,6 +26,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
  */
 
 /******************************** Process ************************************/
+
+/**
+ * \brief Cleans the MSG data of a process.
+ * \param smx_proc a SIMIX process
+ */
 void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 {
   simdata_process_t msg_proc;
@@ -33,9 +38,11 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
   if (smx_proc == SIMIX_process_self()) {
     /* avoid a SIMIX request if this function is called by the process itself */
     msg_proc = SIMIX_process_self_get_data(smx_proc);
+    SIMIX_process_self_set_data(smx_proc, NULL);
   }
   else {
     msg_proc = SIMIX_req_process_get_data(smx_proc);
+    SIMIX_req_process_set_data(smx_proc, NULL);
   }
 
 #ifdef HAVE_TRACING

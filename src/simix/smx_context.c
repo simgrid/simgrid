@@ -1,6 +1,6 @@
 /* a fast and simple context switching library                              */
 
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009 - 2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -29,7 +29,6 @@ static xbt_os_thread_key_t smx_current_context_key = 0;
 static smx_context_t smx_current_context_serial;
 static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
-static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_FUTEX;
 
 /** 
  * This function is called by SIMIX_global_init() to initialize the context module.
@@ -143,7 +142,7 @@ XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
 
   if (nb_threads > 1) {
 #ifndef CONTEXT_THREADS
-    THROWF(arg_error, 0, "No thread support for parallel context execution");
+    THROWF(arg_error, 0, "The thread factory cannot be run in parallel");
 #endif
   }
 
@@ -182,7 +181,22 @@ XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold) {
  * \return how threads are synchronized if processes are run in parallel
  */
 XBT_INLINE e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void) {
-  return smx_parallel_synchronization_mode;
+  e_xbt_parmap_mode_t mode = XBT_PARMAP_FUTEX;
+  const char* mode_name = xbt_cfg_get_string(_surf_cfg_set, "contexts/synchro");
+  if (!strcmp(mode_name, "posix")) {
+	  mode = XBT_PARMAP_POSIX;
+  }
+  else if (!strcmp(mode_name, "futex")) {
+	  mode = XBT_PARMAP_FUTEX;
+  }
+  else if (!strcmp(mode_name, "busy_wait")) {
+	  mode = XBT_PARMAP_BUSY_WAIT;
+  }
+  else {
+    XBT_WARN("Command line setting of the parallel synchronization mode should "
+        "be one of \"posix\", \"futex\" or \"busy_wait\"");
+  }
+  return mode;
 }
 
 /**
@@ -191,7 +205,19 @@ XBT_INLINE e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void) {
  * \param mode how to synchronize threads if processes are run in parallel
  */
 XBT_INLINE void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
-  smx_parallel_synchronization_mode = mode;
+  if (mode == XBT_PARMAP_POSIX) {
+	  xbt_cfg_set_string(_surf_cfg_set, "contexts/synchro", "posix");
+  }
+  else if (mode == XBT_PARMAP_FUTEX) {
+	  xbt_cfg_set_string(_surf_cfg_set, "contexts/synchro", "futex");
+  }
+  else if (XBT_PARMAP_BUSY_WAIT) {
+	  xbt_cfg_set_string(_surf_cfg_set, "contexts/synchro", "busy_wait");
+  }
+  else {
+    XBT_WARN("Command line setting of the parallel synchronization mode should "
+        "be one of \"posix\", \"futex\" or \"busy_wait\"");
+  }
 }
 
 /**

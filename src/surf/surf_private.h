@@ -17,6 +17,12 @@
 
 #define NO_MAX_DURATION -1.0
 
+typedef enum {
+  UM_FULL,
+  UM_LAZY,
+  UM_UNDEFINED,
+} e_UM_t;
+
 /* user-visible parameters */
 extern double sg_tcp_gamma;
 extern double sg_sender_gap;
@@ -24,7 +30,7 @@ extern double sg_latency_factor;
 extern double sg_bandwidth_factor;
 extern double sg_weight_S_parameter;
 extern int sg_maxmin_selective_update;
-extern int sg_network_fullduplex;
+extern int sg_network_crosstraffic;
 #ifdef HAVE_GTNETS
 extern double sg_gtnets_jitter;
 extern int sg_gtnets_jitter_seed;
