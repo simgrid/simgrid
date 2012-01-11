@@ -226,10 +226,13 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
 ### Pipol compilation
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Pipol.cmake)
 
-if(NOT WIN32)
 ### Build the doc
+if(NOT WIN32)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
+else(NOT WIN32)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDocWin.cmake)  
 endif(NOT WIN32)
+
 ### Print ARGS
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)
 
