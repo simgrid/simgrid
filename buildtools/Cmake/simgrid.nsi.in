@@ -4,7 +4,7 @@
 ;Interface Configuration
 
   !define MUI_HEADERIMAGE
-  !define MUI_HEADERIMAGE_BITMAP "@CMAKE_HOME_DIRECTORY@\doc\webcruft\simgrid_logo_win.bmp" ; optional
+  !define MUI_HEADERIMAGE_BITMAP "@CMAKE_HOME_DIRECTORY@\doc\webcruft\simgrid_logo_win_2011.bmp" ; optional
   !define MUI_ABORTWARNING
 
 ;--------------------------------
