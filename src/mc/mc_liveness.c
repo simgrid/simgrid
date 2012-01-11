@@ -30,80 +30,139 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   
   if(s1->num_reg != s2->num_reg){
-    //XBT_DEBUG("Different num_reg (s1 = %d, s2 = %d)", s1->num_reg, s2->num_reg);
+    XBT_DEBUG("Different num_reg (s1 = %d, s2 = %d)", s1->num_reg, s2->num_reg);
     return 1;
   }
 
   int i;
+  int errors = 0;
 
   for(i=0 ; i< s1->num_reg ; i++){
 
     if(s1->regions[i]->type != s2->regions[i]->type){
-      //XBT_DEBUG("Different type of region");
-      return 1;
+      if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	XBT_DEBUG("Different type of region");
+	errors++;
+      }else{
+	return 1;
+      }
     }
 
     switch(s1->regions[i]->type){
     case 0:
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of heap (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
-	return 1;
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different size of heap (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	  errors++;
+	}else{
+	  return 1;
+	}
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-	//XBT_DEBUG("Different start addr of heap (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
-	return 1;
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different start addr of heap (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+	  errors++;
+	}else{
+	  return 1;
+	}
       }
       if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data)){
-	//XBT_DEBUG("Different heap (mmalloc_compare)");
-	return 1; 
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different heap (mmalloc_compare)");
+	  errors++; 
+	}else{
+	  return 1;
+	}
       }
       break;
     case 1 :
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of libsimgrid (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
-	return 1;
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different size of libsimgrid (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	  errors++;
+	}else{
+	  return 1;
+	}
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-	//XBT_DEBUG("Different start addr of libsimgrid (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
-	return 1;
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different start addr of libsimgrid (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+ 	  errors++;
+	}else{
+	  return 1;
+	}
       }
       if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
-    	//XBT_DEBUG("Different memcmp for data in libsimgrid");
-    	return 1;
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different memcmp for data in libsimgrid");
+ 	  errors++;
+	}else{
+	  return 1;
+	}
       }
       break;
-    case 2:
+      /*case 2:
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of program (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
-	return 1;
-      }
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different size of program (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	  errors++;
+	}else{
+	  return 1;
+	}
+      }      
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-	//XBT_DEBUG("Different start addr of program (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
-	return 1;
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different start addr of program (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+	  errors++;
+	}else{
+	  return 1;
+	}
       }
       if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
-    	//XBT_DEBUG("Different memcmp for data in program");
-    	return 1;
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different memcmp for data in program");
+	  errors++;
+	}else{
+	  return 1;
+	}
       }
-      break;
+      break;*/
     case 3:
       if(s1->regions[i]->size != s2->regions[i]->size){
-	//XBT_DEBUG("Different size of stack (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
-	return 1;
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different size of stack (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	  errors++;
+	}else{
+	  return 1;
+	}
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-	//XBT_DEBUG("Different start addr of stack (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
-	return 1;
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different start addr of stack (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+	  errors++;
+	}else{
+	  return 1;
+	}
       }
       if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
-    	//XBT_DEBUG("Different memcmp for data in stack");
-    	return 1;
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different memcmp for data in stack");
+	  errors++;
+	}else{
+	  return 1;
+	}
       }
+      break;
+    default:
       break;
     }
   }
 
-  return 0;
+  if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+    return (errors>0);
+  }else{
+    return 0;
+  }
   
 }
 
@@ -141,6 +200,7 @@ int reached(xbt_state_t st){
     xbt_dynar_foreach(reached_pairs, cursor, pair_test){
       if(automaton_state_compare(pair_test->automaton_state, st) == 0){
 	if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
+	  XBT_DEBUG("Pair reached %d", cursor+1);
 	  if(snapshot_compare(pair_test->system_state, sn) == 0){
 	    MC_free_snapshot(sn);
 	    xbt_dynar_reset(prop_ato);
@@ -602,8 +662,8 @@ void MC_ddfs_init(){
     }
   }
 
-  //reached_pairs = xbt_dynar_new(sizeof(mc_pair_reached_t), NULL);
-  reached_pairs_hash = xbt_dynar_new(sizeof(mc_pair_reached_hash_t), NULL);
+  reached_pairs = xbt_dynar_new(sizeof(mc_pair_reached_t), NULL);
+  //reached_pairs_hash = xbt_dynar_new(sizeof(mc_pair_reached_hash_t), NULL);
   //visited_pairs = xbt_dynar_new(sizeof(mc_pair_visited_t), NULL);
   visited_pairs_hash = xbt_dynar_new(sizeof(mc_pair_visited_hash_t), NULL);
   successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
@@ -640,8 +700,8 @@ void MC_ddfs_init(){
 	xbt_fifo_unshift(mc_stack_liveness, mc_initial_pair);
 	MC_UNSET_RAW_MEM;
 
-	//set_pair_reached(state);
-	set_pair_reached_hash(state);
+	set_pair_reached(state);
+	//set_pair_reached_hash(state);
 
 	if(cursor != 0){
 	  MC_restore_snapshot(initial_snapshot_liveness);
@@ -678,7 +738,7 @@ void MC_ddfs(int search_cycle){
  
   mc_stats_pair->visited_pairs++;
 
-  //sleep(1);
+  sleep(1);
 
   int value;
   mc_state_t next_graph_state = NULL;
@@ -774,8 +834,8 @@ void MC_ddfs(int search_cycle){
 
 	    if((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)){ 
 		      
-	      //if(reached(pair_succ->automaton_state)){
-	      if(reached_hash(pair_succ->automaton_state)){
+	      if(reached(pair_succ->automaton_state)){
+		//if(reached_hash(pair_succ->automaton_state)){
 	      
 		XBT_DEBUG("Next pair (depth = %d, %d interleave) already reached !", xbt_fifo_size(mc_stack_liveness) + 1, MC_state_interleave_size(pair_succ->graph_state));
 
@@ -792,11 +852,11 @@ void MC_ddfs(int search_cycle){
 
 		XBT_DEBUG("Next pair (depth =%d) -> Acceptance pair : graph=%p, automaton=%p(%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
 	      
-		//set_pair_reached(pair_succ->automaton_state);
-		set_pair_reached_hash(pair_succ->automaton_state);
+		set_pair_reached(pair_succ->automaton_state);
+		//set_pair_reached_hash(pair_succ->automaton_state);
 
-		//XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
-		XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs_hash));
+		XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
+		//XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs_hash));
 
 		MC_SET_RAW_MEM;
 		xbt_fifo_unshift(mc_stack_liveness, pair_succ);
@@ -831,13 +891,13 @@ void MC_ddfs(int search_cycle){
 
 	      XBT_DEBUG("Next pair (depth =%d) -> Acceptance pair : graph=%p, automaton=%p(%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
 	    
-	      //set_pair_reached(pair_succ->automaton_state); 
-	      set_pair_reached_hash(pair_succ->automaton_state);
+	      set_pair_reached(pair_succ->automaton_state); 
+	      //set_pair_reached_hash(pair_succ->automaton_state);
 
 	      search_cycle = 1;
 
-	      //XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
-	      XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs_hash));
+	      XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
+	      //XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs_hash));
 
 	    }
 
@@ -922,8 +982,8 @@ void MC_ddfs(int search_cycle){
 
 	  if((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)){ 
 
-	    //if(reached(pair_succ->automaton_state)){
-	    if(reached_hash(pair_succ->automaton_state)){
+	    if(reached(pair_succ->automaton_state)){
+	      //if(reached_hash(pair_succ->automaton_state)){
 
 	      XBT_DEBUG("Next pair (depth = %d) already reached !", xbt_fifo_size(mc_stack_liveness) + 1);
 
@@ -940,11 +1000,11 @@ void MC_ddfs(int search_cycle){
 
 	      XBT_DEBUG("Next pair (depth = %d) -> Acceptance pair : graph=%p, automaton=%p(%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
 	      
-	      //set_pair_reached(pair_succ->automaton_state);
-	      set_pair_reached_hash(pair_succ->automaton_state);
+	      set_pair_reached(pair_succ->automaton_state);
+	      //set_pair_reached_hash(pair_succ->automaton_state);
 		
-	      //XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
-	      XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs_hash));
+	      XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
+	      //XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs_hash));
 
 	      MC_SET_RAW_MEM;
 	      xbt_fifo_unshift(mc_stack_liveness, pair_succ);
@@ -977,18 +1037,18 @@ void MC_ddfs(int search_cycle){
 	    
 	  if(((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2))){
 
-	    //set_pair_reached(pair_succ->automaton_state);
-	    set_pair_reached_hash(pair_succ->automaton_state);
+	    set_pair_reached(pair_succ->automaton_state);
+	    //set_pair_reached_hash(pair_succ->automaton_state);
 	    	    
 	    search_cycle = 1;
 
-	    //XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
-	    XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs_hash));
+	    XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
+	    //XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs_hash));
 
 	  }
 
-	  //if(!visited_hash(pair_succ->automaton_state, search_cycle)){
-	  if(!visited(pair_succ->automaton_state, search_cycle)){
+	  if(!visited_hash(pair_succ->automaton_state, search_cycle)){
+	    //if(!visited(pair_succ->automaton_state, search_cycle)){
 
 	    MC_SET_RAW_MEM;
 	    xbt_fifo_unshift(mc_stack_liveness, pair_succ);
@@ -1029,8 +1089,8 @@ void MC_ddfs(int search_cycle){
   MC_SET_RAW_MEM;
   xbt_fifo_shift(mc_stack_liveness);
   if((current_pair->automaton_state->type == 1) || (current_pair->automaton_state->type == 2)){
-    //xbt_dynar_pop(reached_pairs, NULL);
-    xbt_dynar_pop(reached_pairs_hash, NULL);
+    xbt_dynar_pop(reached_pairs, NULL);
+    //xbt_dynar_pop(reached_pairs_hash, NULL);
   }
   MC_UNSET_RAW_MEM;
   
