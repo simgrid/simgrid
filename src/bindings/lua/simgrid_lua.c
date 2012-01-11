@@ -163,12 +163,8 @@ static int l_task_execute(lua_State* L)
 }
 
 /**
- * \brief Pops the Lua task on top of the stack and registers it so that a
- * receiver can retrieve it later knowing the C task.
- *
- * After calling this function, you can send the C task to someone and he
- * will be able to also get the corresponding Lua task.
- *
+ * \brief Pops the Lua task from the stack and registers it so that the
+ * process can retrieve it later knowing the C task.
  * \param L a lua state
  */
 static void task_register(lua_State* L) {
@@ -202,18 +198,19 @@ static void task_unregister(lua_State* L, m_task_t task) {
 }
 
 /**
- * \brief When a C task has been received, retrieves the corresponding Lua
- * task from the sender and pushes it onto the receiver's stack.
+ * \brief This function is called when a C task has just been copied.
  *
- * This function should be called from the receiver process.
+ * This callback is used to copy the corresponding Lua task.
  *
- * \param dst the receiver
- * \param task the task just received
+ * \param task the task copied
+ * \param src_process the sender
+ * \param dst_process the receiver
  */
-static void task_copy(lua_State* dst, m_task_t task) {
+static void task_copy_callback(m_task_t task, m_process_t src_process,
+    m_process_t dst_process) {
 
-  m_process_t src_proc = MSG_task_get_sender(task);
-  lua_State* src = MSG_process_get_data(src_proc);
+  lua_State* src = MSG_process_get_data(src_process);
+  lua_State* dst = MSG_process_get_data(dst_process);
 
                                   /* src: ...
                                      dst: ... */
@@ -222,10 +219,10 @@ static void task_copy(lua_State* dst, m_task_t task) {
   sglua_copy_value(src, dst);
                                   /* src: ... task
                                      dst: ... task */
+  task_register(dst);             /* dst: ... */
 
-  /* the receiver is the owner of the task and may destroy it:
-   * make the C task NULL on the sender side so that it doesn't garbage
-   * collect it */
+  /* the receiver is now the owner of the task and may destroy it:
+   * make the sender forget the C task so that it doesn't garbage */
   lua_getfield(src, -1, "__simgrid_task");
                                   /* src: ... task ctask */
   m_task_t* udata = (m_task_t*) luaL_checkudata(src, -1, TASK_MODULE_NAME);
@@ -365,7 +362,7 @@ static int l_task_recv(lua_State* L)
   MSG_error_t res = MSG_task_receive_with_timeout(&task, mailbox, timeout);
 
   if (res == MSG_OK) {
-    task_copy(L, task);
+    task_unregister(L, task);
                                   /* mailbox ... task */
     return 1;
   }
@@ -509,8 +506,8 @@ static int l_comm_wait(lua_State* L) {
       return 0;
     }
     else {
-      /* I'm the receiver: copy the Lua task from the sender */
-      task_copy(L, task);
+      /* I'm the receiver: find the Lua task from the C task */
+      task_unregister(L, task);
                                   /* comm ... task */
       return 1;
     }
@@ -560,8 +557,8 @@ static int l_comm_test(lua_State* L) {
         return 1;
       }
       else {
-        /* I'm the receiver: copy the Lua task from the sender */
-        task_copy(L, task);
+        /* I'm the receiver: find the Lua task from the C task*/
+        task_unregister(L, task);
                                   /* comm ... task */
         return 1;
       }
@@ -1223,6 +1220,9 @@ static void register_task_functions(lua_State* L)
                                   /* simgrid.task mt */
   lua_pop(L, 2);
                                   /* -- */
+
+  /* set up MSG to copy Lua tasks between states */
+  MSG_task_set_copy_callback(task_copy_callback);
 }
 
 /**
