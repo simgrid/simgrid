@@ -52,7 +52,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     case 0:
       if(s1->regions[i]->size != s2->regions[i]->size){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-	  XBT_DEBUG("Different size of heap (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	  XBT_DEBUG("Different size of heap (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
 	  errors++;
 	}else{
 	  return 1;
@@ -78,7 +78,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     case 1 :
       if(s1->regions[i]->size != s2->regions[i]->size){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-	  XBT_DEBUG("Different size of libsimgrid (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	  XBT_DEBUG("Different size of libsimgrid (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
 	  errors++;
 	}else{
 	  return 1;
@@ -104,7 +104,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       /*case 2:
       if(s1->regions[i]->size != s2->regions[i]->size){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-	  XBT_DEBUG("Different size of program (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	  XBT_DEBUG("Different size of program (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
 	  errors++;
 	}else{
 	  return 1;
@@ -130,7 +130,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     case 3:
       if(s1->regions[i]->size != s2->regions[i]->size){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-	  XBT_DEBUG("Different size of stack (s1 = %Zu, s2 = %Zu)", s1->regions[i]->size, s2->regions[i]->size);
+	  XBT_DEBUG("Different size of stack (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
 	  errors++;
 	}else{
 	  return 1;
