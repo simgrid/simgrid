@@ -28,12 +28,10 @@ SG_BEGIN_DECL()
 /********************************* Global *************************************/
 XBT_PUBLIC(void) MC_init_safety_stateless(void);
 XBT_PUBLIC(void) MC_init_safety_stateful(void);
-XBT_PUBLIC(void) MC_init_liveness(xbt_automaton_t a, char *prgm);
 XBT_PUBLIC(void) MC_exit(void);
 XBT_PUBLIC(void) MC_exit_liveness(void);
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(void) MC_assert_stateful(int);
-XBT_PUBLIC(void) MC_assert_pair(int);
 XBT_PUBLIC(void) MC_modelcheck(void);
 XBT_PUBLIC(void) MC_modelcheck_stateful(void);
 XBT_PUBLIC(void) MC_modelcheck_liveness(xbt_automaton_t a, char *prgm);
