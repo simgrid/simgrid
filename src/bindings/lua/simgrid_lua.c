@@ -200,7 +200,15 @@ static void task_unregister(lua_State* L, m_task_t task) {
 /**
  * \brief This function is called when a C task has just been copied.
  *
- * This callback is used to copy the corresponding Lua task.
+ * This callback is used to move the corresponding Lua task from the sender
+ * process to the receiver process.
+ * It is executed in SIMIX kernel mode when the communication finishes,
+ * before both processes are awaken. Thus, this function is thread-safe when
+ * user processes are executed in parallel, though it modifies the Lua
+ * stack of both processes to move the task.
+ * After this function, both Lua stacks are restored in their previous state.
+ * The task is moved from the registry of the sender to the registry of the
+ * receiver.
  *
  * \param task the task copied
  * \param src_process the sender
