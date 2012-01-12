@@ -7,6 +7,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid_lua.h"
+#include "xbt.h"
+#include <stdio.h>
+#include <string.h>
 
 #define WARN "/***********\n * DO NOT EDIT! THIS FILE HAS BEEN AUTOMATICALLY GENERATED FROM %s BY gras_stub_generator\n ***********/\n"
 #define SIM_SOURCENAME  "_%s_simulator.c"

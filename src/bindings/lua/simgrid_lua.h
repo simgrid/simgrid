@@ -4,21 +4,9 @@
 #ifndef SIMGRID_LUA_H
 #define SIMGRID_LUA_H
 
-#include <stdio.h>
-#include <lauxlib.h>
-#include <lualib.h>
-#include "msg/msg.h"
-#include "simdag/simdag.h"
-#include <gras.h>
-#include "xbt.h"
-#include "xbt/dynar.h"
 #include "xbt/dict.h"
-#include "xbt/sysdep.h"
-#include "xbt/function_types.h"
-#include "xbt/log.h"
-#include "surf/surfxml_parse.h"
-#include "surf/surf.h"
-#include <stdarg.h>
+#include "xbt/dynar.h"
+#include <lua.h>
 
 extern xbt_dict_t process_function_set;
 extern xbt_dynar_t process_list;
@@ -39,9 +27,9 @@ void generate_makefile_am(const char *project);
 void generate_makefile_local(const char *project);
 
 /* ********************************************************************************* */
-/*                           Console functions                                       */
+/*                           Plaftorm functions                                      */
 /* ********************************************************************************* */
-// Public Functions
+
 int console_open(lua_State *L);
 int console_close(lua_State *L);
 

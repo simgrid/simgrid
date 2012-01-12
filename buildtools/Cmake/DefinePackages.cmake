@@ -325,10 +325,14 @@ set(AMOK_SRC
 
 set(LUA_SRC
 	src/bindings/lua/simgrid_lua.c
-	src/bindings/lua/lua_stub_generator.c
-	src/bindings/lua/lua_console.c
+	src/bindings/lua/lua_task.c
+	src/bindings/lua/lua_comm.c
+	src/bindings/lua/lua_host.c
+	src/bindings/lua/lua_process.c
+	src/bindings/lua/lua_platf.c
         src/bindings/lua/lua_utils.c
         src/bindings/lua/lua_state_cloner.c
+	src/bindings/lua/lua_stub_generator.c
 )
 
 set(TRACING_SRC

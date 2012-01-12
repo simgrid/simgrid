@@ -1,17 +1,38 @@
-/* SimGrid Lua Console                                                    */
-
 /* Copyright (c) 2010. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid_lua.h"
-#include "simgrid/platf.h"
+/* SimGrid Lua bindings                                                     */
+
+#include "lua_private.h"
+#include "simgrid/platf_interface.h"
+#include "surf/surfxml_parse.h"
+#include "surf/surf_routing.h"
 #include <string.h>
 #include <ctype.h>
+#include <lauxlib.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_console, bindings, "Lua Bindings");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_platf, bindings, "Lua bindings (platform module)");
+
+#define PLATF_MODULE_NAME "simgrid.platf"
+
+/* ********************************************************************************* */
+/*                               simgrid.platf API                                   */
+/* ********************************************************************************* */
+
+static const luaL_reg platf_functions[] = {
+    {"open", console_open},
+    {"close", console_close},
+    {"AS_open", console_AS_open},
+    {"AS_close", console_AS_close},
+    {"host_new", console_add_host},
+    {"link_new", console_add_link},
+    {"router_new", console_add_router},
+    {"route_new", console_add_route},
+    {NULL, NULL}
+};
 
 int console_open(lua_State *L) {
   sg_platf_init();
@@ -366,5 +387,16 @@ int console_host_set_property(lua_State *L) {
   xbt_dict_set(props,prop_id,xbt_strdup(prop_value),NULL);
 
   return 0;
+}
+
+/**
+ * \brief Registers the platform functions into the table simgrid.platf.
+ * \param L a lua state
+ */
+void sglua_register_platf_functions(lua_State* L)
+{
+  luaL_openlib(L, PLATF_MODULE_NAME, platf_functions, 0);
+                                  /* simgrid.platf */
+  lua_pop(L, 1);
 }
 
