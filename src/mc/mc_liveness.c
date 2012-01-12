@@ -207,8 +207,14 @@ int reached(xbt_state_t st){
 	    xbt_free(prop_ato);
 	    MC_UNSET_RAW_MEM;
 	    return 1;
+	  }else{
+	    XBT_DEBUG("Different snapshot");
 	  }
+	}else{
+	  XBT_DEBUG("Different values of propositional symbols");
 	}
+      }else{
+	XBT_DEBUG("Different automaton state");
       }
     }
 
@@ -306,11 +312,16 @@ int reached_hash(xbt_state_t st){
 	    xbt_free(prop_ato);
 	    MC_UNSET_RAW_MEM;
 	    return 1;
+	  }else{
+	    XBT_DEBUG("Different snapshot");
 	  }
+	}else{
+	  XBT_DEBUG("Different values of propositional symbols");
 	}
+      }else{
+	XBT_DEBUG("Different automaton state");
       }
-      
-     
+
       region_diff = 0;
     }
     
@@ -407,9 +418,17 @@ int visited(xbt_state_t st, int sc){
 		
 	      return 1;
 	
+	    }else{
+	      XBT_DEBUG("Different snapshot");
 	    }
+	  }else{
+	    XBT_DEBUG("Different values of propositional symbols"); 
 	  }
+	}else{
+	  XBT_DEBUG("Different automaton state");
 	}
+      }else{
+	XBT_DEBUG("Different value of search_cycle");
       }
     }
 
@@ -479,11 +498,19 @@ int visited_hash(xbt_state_t st, int sc){
 	      xbt_free(prop_ato);
 	      MC_UNSET_RAW_MEM;
 	      return 1;
+	    }else{
+	      XBT_DEBUG("Different snapshot");
 	    }
+	  }else{
+	    XBT_DEBUG("Different values of propositional symbols"); 
 	  }
+	}else{
+	  XBT_DEBUG("Different automaton state");
 	}
+      }else{
+	XBT_DEBUG("Different value of search_cycle");
       }
-     
+      
       region_diff = 0;
     }
     
