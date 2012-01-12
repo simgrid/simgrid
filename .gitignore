@@ -18,6 +18,7 @@ src/simdag/dax_dtd.l
 src/surf/simgrid_dtd.l
 src/xbt/graphxml.l
 
+:e a
 ################################################
 ### Jedule
 examples/simdag/scheduling/simgrid.jed
@@ -139,6 +140,9 @@ examples/msg/tracing/volume
 examples/msg/mc/bugged3
 examples/msg/mc/random_test
 examples/msg/chord/chord
+examples/msg/chord/chord_stateful
+examples/msg/chord/deployments
+examples/msg/chord/exp_*
 examples/msg/token_ring/token_ring
 examples/simdag/ex_sd_seq_access
 examples/simdag/sd_seq_access
@@ -195,6 +199,8 @@ examples/msg/masterslave/masterslave_bypass
 examples/msg/masterslave/masterslave_failure
 examples/msg/masterslave/masterslave_forwarder
 examples/msg/masterslave/masterslave_mailbox
+examples/msg/masterslave/masterslave_kill
+examples/msg/masterslave/masterslave_arg
 examples/msg/migration/migration
 examples/msg/parallel_task/parallel_task
 examples/msg/parallel_task/test_ptask
@@ -237,6 +243,7 @@ examples/smpi/alltoall_basic
 examples/smpi/alltoallv
 examples/smpi/sendrecv
 examples/smpi/smpi_sendrecv
+examples/smpi/dsend
 examples/smpi/mc_bugged1
 examples/smpi/mc_bugged2
 src/replay/replay
@@ -266,6 +273,9 @@ teshsuite/simdag/network/p2p/test_latency_bound
 teshsuite/simdag/network/test_reinit_costs
 teshsuite/simdag/platforms/basic_parsing_test
 teshsuite/simdag/platforms/flatifier
+teshsuite/simdag/platforms/basic_tracing
+teshsuite/simdag/platforms/evaluate_get_route_time
+teshsuite/simdag/platforms/evaluate_parse_time
 teshsuite/simdag/partask/test_comp_only_par
 teshsuite/simdag/partask/test_comp_only_seq
 teshsuite/xbt/log_large_test
