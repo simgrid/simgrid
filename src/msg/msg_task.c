@@ -110,7 +110,15 @@ void MSG_task_set_data(m_task_t task, void *data)
  */
 void MSG_task_set_copy_callback(void (*callback)
     (m_task_t task, m_process_t sender, m_process_t receiver)) {
+
   msg_global->task_copy_callback = callback;
+
+  if (callback) {
+    SIMIX_comm_set_copy_data_callback(MSG_comm_copy_data_from_SIMIX);
+  }
+  else {
+    SIMIX_comm_set_copy_data_callback(SIMIX_comm_copy_pointer_callback);
+  }
 }
 
 /** \ingroup m_task_management
