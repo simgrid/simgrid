@@ -13,7 +13,7 @@ fix_fingers_delay = 120
 check_predecessor_delay = 120
 lookup_delay = 10
 
--- current node (don't worry, globals are duplicated in each process)
+-- current node (don't worry, globals are duplicated in each simulated process)
 my_node = {
   id = my_id,
   next_finger_to_fix = 1,
@@ -28,7 +28,7 @@ my_node = {
 -- - the id of a guy I know in the system (except for the first node)
 function node(...)
 
-  -- TODO simplify the parameters
+  -- TODO simplify the deployment file
   local known_id
   local args = {...}
   my_node.id = tonumber(args[1])
@@ -61,17 +61,17 @@ function node(...)
     local next_check_predecessor_date = now + check_predecessor_delay
     local next_lookup_date = now + lookup_delay
 
-    local task, success
+    local task, err
 
     while now < max_simulation_time do
 
-      task, success = simgrid.comm.test(my_node.comm_recv)
+      task, err = simgrid.comm.test(my_node.comm_recv)
 
       if task then
 	-- I received a task: answer it
         my_node.comm_recv = simgrid.task.irecv(my_node.id)
 	handle_task(task)
-      elseif failed then
+      elseif err then
         -- the communication has failed: nevermind
         my_node.comm_recv = simgrid.task.irecv(my_node.id)
       else
@@ -87,6 +87,7 @@ function node(...)
 	elseif now >= next_check_predecessor_date then
 	  check_predecessor()
 	  next_check_predecessor_date = simgrid.get_clock() + check_predecessor_delay
+
 	elseif now >= next_lookup_date then
 	  random_lookup()
 	  next_lookup_date = simgrid.get_clock() + lookup_delay
