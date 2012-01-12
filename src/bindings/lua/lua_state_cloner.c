@@ -16,6 +16,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_state_cloner, bindings, "Lua state management");
 
 static void sglua_add_maestro_table(lua_State* L, int index, void* maestro_table_ptr);
+static void sglua_remove_maestro_table(lua_State* L, int index, void* maestro_table_ptr);
 static void* sglua_get_maestro_table_ptr(lua_State* L, int index);
 static void sglua_get_table_by_ptr(lua_State* L, void* table_ptr);
 static int l_get_from_maestro(lua_State* L);
@@ -41,7 +42,7 @@ static void sglua_copy_thread(lua_State* src, lua_State* dst);
  * @param index index of the copy of the maestro table in the stack of L
  * @param maestro_table_ptr pointer to the original table in maestro's world
  */
-void sglua_add_maestro_table(lua_State* L, int index, void* maestro_table_ptr) {
+static void sglua_add_maestro_table(lua_State* L, int index, void* maestro_table_ptr) {
 
   /* we will set both [ptr] -> table and [table] -> ptr */
 
@@ -62,6 +63,41 @@ void sglua_add_maestro_table(lua_State* L, int index, void* maestro_table_ptr) {
                                   /* ... table maestrotbs table tableptr tableptr table */
   lua_settable(L, -5);
                                   /* ... table maestrotbs table tableptr */
+  lua_settable(L, -3);
+                                  /* ... table maestrotbs */
+  lua_pop(L, 2);
+                                  /* ... */
+}
+
+/**
+ * @brief Removes a reference to a maestro table to the list of known maestro
+ * tables of a state.
+ *
+ * @param L a state (can be maestro itself)
+ * @param index index of the copy of the maestro table in the stack of L
+ * @param maestro_table_ptr pointer to the original table in maestro's world
+ */
+static void sglua_remove_maestro_table(lua_State* L, int index, void* maestro_table_ptr) {
+
+  /* we will unset both [ptr] -> table and [table] -> ptr */
+
+                                  /* ... */
+  lua_pushvalue(L, index);
+                                  /* ... table */
+  lua_pushstring(L, "simgrid.maestro_tables");
+                                  /* ... table "simgrid.maestro_tables" */
+  lua_rawget(L, LUA_REGISTRYINDEX);
+                                  /* ... table maestrotbs */
+  lua_pushvalue(L, -2);
+                                  /* ... table maestrotbs table */
+  lua_pushnil(L);
+                                  /* ... table maestrotbs table nil */
+  lua_pushlightuserdata(L, maestro_table_ptr);
+                                  /* ... table maestrotbs table nil tableptr */
+  lua_pushnil(L);
+                                  /* ... table maestrotbs table nil tableptr nil*/
+  lua_settable(L, -5);
+                                  /* ... table maestrotbs table nil */
   lua_settable(L, -3);
                                   /* ... table maestrotbs */
   lua_pop(L, 2);
@@ -244,12 +280,12 @@ static void sglua_copy_string(lua_State* src, lua_State* dst) {
 }
 
 /**
- * @brief Copies the table value on the top of src to the top of dst.
+ * @brief Copies the table value on top of src to the top of dst.
  *
  * A deep copy of the table is made. If the table has a metatable, the
  * metatable is also copied.
- * If the table is already known by the destination state, it is not copied
- * again.
+ * If the table comes from maestro and is already known by the destination
+ * state, it is not copied again.
  *
  * @param src source state
  * @param dst destination state
@@ -262,14 +298,13 @@ static void sglua_copy_table(lua_State* src, lua_State* dst) {
 
   /* get from maestro the pointer that identifies this table */
   void* table_ptr = sglua_get_maestro_table_ptr(src, -1);
-  if (table_ptr == NULL) {
+  int known_by_maestro = (table_ptr != NULL);
+
+  if (!known_by_maestro) {
     /* the table didn't come from maestro: nevermind, use the pointer of src */
     table_ptr = (void*) lua_topointer(src, -1);
-
-    if (!sglua_is_maestro(src)) {
-      XBT_DEBUG("%sMaestro does not know this table",
-          sglua_get_spaces(indent));
-    }
+    XBT_DEBUG("%sMaestro does not know this table",
+        sglua_get_spaces(indent));
   }
 
   if (sglua_is_maestro(src)) {
@@ -277,6 +312,7 @@ static void sglua_copy_table(lua_State* src, lua_State* dst) {
     XBT_DEBUG("%sKeeping track of this table in maestro itself",
         sglua_get_spaces(indent));
     sglua_add_maestro_table(src, -1, table_ptr);
+    known_by_maestro = 1;
     xbt_assert(sglua_get_maestro_table_ptr(src, -1) == table_ptr);
   }
 
@@ -301,8 +337,8 @@ static void sglua_copy_table(lua_State* src, lua_State* dst) {
 
     /* mark the table as known right now to avoid infinite recursion */
     sglua_add_maestro_table(dst, -1, table_ptr);
-    /* FIXME: we may have added a table with a non-maestro pointer, is this a
-       problem? */
+    /* we may have added a table with a non-maestro pointer, but if it was the
+     * case, we will remove it later */
     XBT_DEBUG("%sTable marked as known", sglua_get_spaces(indent));
     xbt_assert(sglua_get_maestro_table_ptr(dst, -1) == table_ptr);
 
@@ -374,6 +410,11 @@ static void sglua_copy_table(lua_State* src, lua_State* dst) {
       XBT_DEBUG("%sTable element copied", sglua_get_spaces(indent));
     }
     XBT_DEBUG("%sFinished traversing the table", sglua_get_spaces(indent));
+  }
+
+  if (!known_by_maestro) {
+    /* actually,it was not a maestro table: forget the pointer */
+    sglua_remove_maestro_table(dst, -1, table_ptr);
   }
 }
 
