@@ -4,12 +4,18 @@
 /* Set somes variables for Windows compilation */
 
 #ifdef _XBT_DLL_EXPORT
-	#define DLL_EXPORT
+	#ifndef DLL_EXPORT
+		#define DLL_EXPORT
+	#endif
 #else
 	#ifdef _XBT_DLL_STATIC
-		#define DLL_STATIC
+		#ifndef DLL_STATIC
+			#define DLL_STATIC
+		#endif
 	#else
-		#define DLL_IMPORT
+		#ifndef DLL_EXPORT
+			#define DLL_IMPORT
+		#endif
 	#endif
 #endif
 
