@@ -22,7 +22,7 @@ string(REPLACE "${COMPILER_C_VERSION_MAJOR_MINOR}." "" COMPILER_C_VERSION_PATCH 
 ########
 ## GIT #
 ########
-if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
+if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
 exec_program("git remote | head -n 1" OUTPUT_VARIABLE remote RETURN_VALUE ret)
 exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
 
@@ -36,7 +36,7 @@ if(url)
 	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
 	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
 endif(url)
-endif(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
+endif(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
 
 #########
 # CDASH #
