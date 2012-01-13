@@ -8,7 +8,6 @@
 #include "mc/mc.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
-#include "simix/private.h" // FIXME
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
                                 "Logging specific to MSG (gos)");
@@ -764,16 +763,18 @@ m_task_t MSG_comm_get_task(msg_comm_t comm)
 /**
  * \brief This function is called by SIMIX to copy the data of a comm.
  * \param comm the comm
+ * \param buff the data copied
  * \param buff_size size of the buffer
  */
-void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, size_t buff_size) {
+void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_size) {
 
   // copy the task
-  SIMIX_comm_copy_pointer_callback(comm, buff_size);
+  SIMIX_comm_copy_pointer_callback(comm, buff, buff_size);
 
   // notify the user callback if any
   if (msg_global->task_copy_callback) {
-    msg_global->task_copy_callback(SIMIX_req_comm_get_src_data(comm),
+    m_task_t task = buff;
+    msg_global->task_copy_callback(task,
         SIMIX_req_comm_get_src_proc(comm), SIMIX_req_comm_get_dst_proc(comm));
   }
 }

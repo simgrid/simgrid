@@ -857,34 +857,34 @@ XBT_INLINE int SIMIX_comm_is_latency_bounded(smx_action_t action)
 /******************************************************************************/
 /*                    SIMIX_comm_copy_data callbacks                       */
 /******************************************************************************/
-static void (*SIMIX_comm_copy_data_callback) (smx_action_t, size_t) =
+static void (*SIMIX_comm_copy_data_callback) (smx_action_t, void*, size_t) =
     &SIMIX_comm_copy_pointer_callback;
 
 void
-SIMIX_comm_set_copy_data_callback(void (*callback) (smx_action_t, size_t))
+SIMIX_comm_set_copy_data_callback(void (*callback) (smx_action_t, void*, size_t))
 {
   SIMIX_comm_copy_data_callback = callback;
 }
 
-void SIMIX_comm_copy_pointer_callback(smx_action_t comm, size_t buff_size)
+void SIMIX_comm_copy_pointer_callback(smx_action_t comm, void* buff, size_t buff_size)
 {
   xbt_assert((buff_size == sizeof(void *)),
               "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
-  *(void **) (comm->comm.dst_buff) = comm->comm.src_buff;
+  *(void **) (comm->comm.dst_buff) = buff;
 }
 
-void SIMIX_comm_copy_buffer_callback(smx_action_t comm, size_t buff_size)
+void SIMIX_comm_copy_buffer_callback(smx_action_t comm, void* buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
-  memcpy(comm->comm.dst_buff, comm->comm.src_buff, buff_size);
+  memcpy(comm->comm.dst_buff, buff, buff_size);
 }
 
-void smpi_comm_copy_data_callback(smx_action_t comm, size_t buff_size)
+void smpi_comm_copy_data_callback(smx_action_t comm, void* buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
-  memcpy(comm->comm.dst_buff, comm->comm.src_buff, buff_size);
+  memcpy(comm->comm.dst_buff, buff, buff_size);
   if (comm->comm.detached) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the original buffer available to the application ASAP
-    xbt_free(comm->comm.src_buff);
+    xbt_free(buff);
     comm->comm.src_buff = NULL;
   }
 }
@@ -916,7 +916,7 @@ void SIMIX_comm_copy_data(smx_action_t comm)
     *comm->comm.dst_buff_size = buff_size;
 
   if (buff_size > 0)
-    SIMIX_comm_copy_data_callback (comm, buff_size);
+    SIMIX_comm_copy_data_callback (comm, comm->comm.src_buff, buff_size);
 
   /* Set the copied flag so we copy data only once */
   /* (this function might be called from both communication ends) */
