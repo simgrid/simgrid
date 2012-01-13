@@ -644,7 +644,7 @@ void SIMIX_process_set_context(smx_process_t p,smx_context_t c) {
 /**
  * \brief Returns the list of processes to run.
  */
-XBT_INLINE xbt_dynar_t SIMIX_process_get_runnable(void)
+xbt_dynar_t SIMIX_process_get_runnable(void)
 {
   return simix_global->process_to_run;
 }

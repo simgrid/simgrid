@@ -81,21 +81,21 @@ typedef struct s_smx_context {
 } s_smx_ctx_base_t;
 
 /* methods of this class */
-void smx_ctx_base_factory_init(smx_context_factory_t *factory);
-int smx_ctx_base_factory_finalize(smx_context_factory_t *factory);
+XBT_PUBLIC(void) smx_ctx_base_factory_init(smx_context_factory_t *factory);
+XBT_PUBLIC(int) smx_ctx_base_factory_finalize(smx_context_factory_t *factory);
 
-smx_context_t
+XBT_PUBLIC(smx_context_t)
 smx_ctx_base_factory_create_context_sized(size_t size,
                                           xbt_main_func_t code, int argc,
                                           char **argv,
                                           void_pfn_smxprocess_t cleanup,
                                           void* data);
-void smx_ctx_base_free(smx_context_t context);
-void smx_ctx_base_stop(smx_context_t context);
-smx_context_t smx_ctx_base_self(void);
-void *smx_ctx_base_get_data(smx_context_t context);
+XBT_PUBLIC(void) smx_ctx_base_free(smx_context_t context);
+XBT_PUBLIC(void) smx_ctx_base_stop(smx_context_t context);
+XBT_PUBLIC(smx_context_t) smx_ctx_base_self(void);
+XBT_PUBLIC(void) *smx_ctx_base_get_data(smx_context_t context);
 
-XBT_INLINE xbt_dynar_t SIMIX_process_get_runnable(void);
+XBT_PUBLIC(xbt_dynar_t) SIMIX_process_get_runnable(void);
 
 /* parallelism */
 XBT_INLINE int SIMIX_context_is_parallel(void);
