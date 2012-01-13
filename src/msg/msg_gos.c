@@ -8,6 +8,7 @@
 #include "mc/mc.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
+#include "simix/private.h" // FIXME
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
                                 "Logging specific to MSG (gos)");
@@ -620,12 +621,6 @@ int MSG_comm_testany(xbt_dynar_t comms)
  */
 void MSG_comm_destroy(msg_comm_t comm)
 {
-  if (comm->task_received != NULL
-      && *comm->task_received != NULL
-      && MSG_comm_get_status(comm) == MSG_OK) {
-    (*comm->task_received)->simdata->isused = 0;
-  }
-
   xbt_free(comm);
 }
 
@@ -738,6 +733,11 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   comm = xbt_dynar_get_as(comms, finished_index, msg_comm_t);
   /* the communication is finished */
   comm->status = status;
+
+  if (comm->task_received != NULL) {
+    /* I am the receiver */
+    (*comm->task_received)->simdata->isused = 0;
+  }
 
   return finished_index;
 }

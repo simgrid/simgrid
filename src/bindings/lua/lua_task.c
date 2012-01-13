@@ -205,7 +205,8 @@ static void task_copy_callback(m_task_t task, m_process_t src_process,
   sglua_copy_value(src, dst);
                                   /* src: ... task
                                      dst: ... task */
-  sglua_task_register(dst);             /* dst: ... */
+  sglua_task_register(dst);
+                                  /* dst: ... */
 
   /* the receiver is now the owner of the task and may destroy it:
    * make the sender forget the C task so that it doesn't garbage */

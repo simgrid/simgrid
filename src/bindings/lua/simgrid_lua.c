@@ -204,7 +204,6 @@ static int msg_register_platform(lua_State * L)
 /*
  * Register platform for Simdag
  */
-
 static int sd_register_platform(lua_State * L)
 {
   //surf_parse = console_parse_platform_wsL07;
