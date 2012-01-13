@@ -34,6 +34,10 @@ mc_snapshot_t initial_snapshot_liveness = NULL;
 xbt_automaton_t automaton;
 char *prog_name;
 
+static void MC_init_liveness(xbt_automaton_t a, char *prgm);
+static void MC_assert_pair(int prop);
+
+
 /**
  *  \brief Initialize the model-checker data structures
  */

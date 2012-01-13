@@ -1,12 +1,11 @@
-#ifndef _EXAMPLE_LIVENESS_WITH_CYCLE_H
-#define _EXAMPLE_LIVENESS_WITH_CYCLE_H
+#ifndef _CENTRALIZED_LIVENESS_H
+#define _CENTRALIZED_LIVENESS_H
 
 int yyparse(void);
 int yywrap(void);
 int yylex(void);
 
-int predP(void);
-int predQ(void);
+int predCS2(void);
 
 int coordinator(int argc, char *argv[]);
 int client(int argc, char *argv[]);

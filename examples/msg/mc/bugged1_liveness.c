@@ -1,30 +1,31 @@
 /***************** Centralized Mutual Exclusion Algorithm *********************/
 /* This example implements a centralized mutual exclusion algorithm.          */
 /* CS requests of client 2 not satisfied                                      */
+/* LTL property checked : G(r->F(cs)); (r=request of CS, cs=CS ok)            */
 /******************************************************************************/
 
 #include "msg/msg.h"
 #include "mc/mc.h"
 #include "xbt/automaton.h"
 #include "xbt/automatonparse_promela.h"
-#include "example_liveness_with_cycle.h"
+#include "bugged1_liveness.h"
 #include "y.tab.c"
 
 #define AMOUNT_OF_CLIENTS 2
-#define CS_PER_PROCESS 3
+#define CS_PER_PROCESS 1
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(example_liveness_with_cycle2, "my log messages");
+XBT_LOG_NEW_DEFAULT_CATEGORY(example_liveness_with_cycle, "my log messages");
 
 
-int p=0; 
-int q=0;
+int r=0; 
+int cs=0;
 
-int predP(){
-  return p;
+int predR(){
+  return r;
 }
 
-int predQ(){
-  return q;
+int predCS(){
+  return cs;
 }
 
 
@@ -32,8 +33,8 @@ int coordinator(int argc, char *argv[])
 {
   xbt_dynar_t requests = xbt_dynar_new(sizeof(char *), NULL);   // dynamic vector storing requests (which are char*)
   int CS_used = 0;              // initially the CS is idle
-
-  while(1){
+  int todo = AMOUNT_OF_CLIENTS * CS_PER_PROCESS;        // amount of releases we are expecting
+  while (todo > 0) {
     m_task_t task = NULL;
     MSG_task_receive(&task, "coordinator");
     const char *kind = MSG_task_get_name(task); //is it a request or a release?
@@ -58,12 +59,17 @@ int coordinator(int argc, char *argv[])
 	if(strcmp(req, "1") == 0){
 	  xbt_dynar_pop(requests, &req);
 	  MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
+	  todo--;
 	}else{
+	  xbt_dynar_pop(requests, &req);
+	  MSG_task_send(MSG_task_create("notgrant", 0, 1000, NULL), req);
 	  CS_used = 0;
+	  todo--;
 	}
       } else {                  // nobody wants it
         XBT_INFO("CS release. resource now idle");
         CS_used = 0;
+        todo--;
       }
     }
     MSG_task_destroy(task);
@@ -77,42 +83,43 @@ int client(int argc, char *argv[])
   int my_pid = MSG_process_get_PID(MSG_process_self());
 
   char *my_mailbox = bprintf("%s", argv[1]);
- 
-  while(1){  
+  int i;
 
+  // request the CS 4 times, sleeping a bit in between
+  for (i = 0; i < CS_PER_PROCESS; i++) {
+      
     XBT_INFO("Ask the request");
-   
     MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox), "coordinator");
-    
+
     if(strcmp(my_mailbox, "2") == 0){
-      p = 1;
-      q = 0;
-      XBT_INFO("Propositions changed (p=1, q=0)");
+      r = 1;
+      cs = 0;
+      XBT_DEBUG("Propositions changed : r=1, cs=0");
     }
 
     // wait the answer
-
     m_task_t grant = NULL;
     MSG_task_receive(&grant, my_mailbox);
+    const char *kind = MSG_task_get_name(grant);
 
-    if((strcmp(my_mailbox, "2") == 0) && (strcmp(MSG_task_get_name(grant), "grant") == 0)){
-      q = 1;
-      p = 0;
-      XBT_INFO("Propositions changed (q=1, p=0)");
+    if((strcmp(my_mailbox, "2") == 0) && (strcmp("grant", kind) == 0)){
+      cs = 1;
+      r = 0;
+      XBT_DEBUG("Propositions changed : r=0, cs=1");
     }
+
 
     MSG_task_destroy(grant);
     XBT_INFO("%s got the answer. Sleep a bit and release it", argv[1]);
     MSG_process_sleep(1);
-    
     MSG_task_send(MSG_task_create("release", 0, 1000, NULL), "coordinator");
 
     MSG_process_sleep(my_pid);
     
     if(strcmp(my_mailbox, "2") == 0){
-      q=0;
-      p=0;
-      XBT_INFO("Propositions changed (q=0, p=0)");
+      cs=0;
+      r=0;
+      XBT_DEBUG("Propositions changed : r=0, cs=0");
     }
     
   }
@@ -126,15 +133,15 @@ int main(int argc, char *argv[])
   init();
   yyparse();
   automaton = get_automaton();
-  xbt_new_propositional_symbol(automaton,"p", &predP); 
-  xbt_new_propositional_symbol(automaton,"q", &predQ); 
+  xbt_new_propositional_symbol(automaton,"r", &predR); 
+  xbt_new_propositional_symbol(automaton,"cs", &predCS); 
   
   MSG_global_init(&argc, argv);
   MSG_create_environment("../msg_platform.xml");
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);
-  MSG_launch_application("deploy_mutex2.xml");
+  MSG_launch_application("deploy_bugged1_liveness.xml");
   MSG_main_liveness(automaton, argv[0]);
-  
+
   return 0;
 }

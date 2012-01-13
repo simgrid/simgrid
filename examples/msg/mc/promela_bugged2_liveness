@@ -1,0 +1,23 @@
+never { /* !(GF((pready U produce) -> (cready U consume))) */
+T0_init :    /* init */
+	if
+	:: (1) -> goto T1_S1
+	:: (produce && !consume) -> goto accept_S5
+	:: (pready && !consume) -> goto T0_S5
+	fi;
+T1_S1 :    /* 1 */
+	if
+	:: (1) -> goto T1_S1
+	:: (produce && !consume) || (pready && !consume) -> goto accept_S5
+	fi;
+accept_S5 :    /* 2 */
+	if
+	:: (pready && !consume) -> goto T0_S5
+	:: (produce && !consume) -> goto accept_S5
+	fi;
+T0_S5 :    /* 3 */
+	if
+	:: (pready && !consume) -> goto T0_S5
+	:: (produce && !consume) -> goto accept_S5
+	fi;
+}
