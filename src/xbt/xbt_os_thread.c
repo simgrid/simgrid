@@ -138,7 +138,7 @@ int xbt_os_thread_atfork(void (*prepare)(void),
                          void (*parent)(void), void (*child)(void))
 {
 #ifdef WIN32
-	return 0; //pthread_atfork is not implemented in pthread.h on windows
+	THROW_UNIMPLEMENTED; //pthread_atfork is not implemented in pthread.h on windows
 #else
   return pthread_atfork(prepare, parent, child);
 #endif
