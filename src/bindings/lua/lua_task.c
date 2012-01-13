@@ -226,6 +226,7 @@ static void task_copy_callback(m_task_t task, m_process_t src_process,
  * - Argument 1 (task): the task to send
  * - Argument 2 (string or compatible): mailbox name, as a real string or any
  * type convertible to string (numbers always are)
+ * - Argument 3 (number, optional): timeout (default is no timeout)
  * - Return values (boolean + string): true if the communication was successful,
  * or false plus an error string in case of failure, which may be "timeout",
  * "host failure" or "transfer failure"
@@ -234,12 +235,19 @@ static int l_task_send(lua_State* L)
 {
   m_task_t task = sglua_check_task(L, 1);
   const char* mailbox = luaL_checkstring(L, 2);
-                                  /* task mailbox ... */
+  double timeout;
+  if (lua_gettop(L) >= 3) {
+    timeout = luaL_checknumber(L, 3);
+  }
+  else {
+    timeout = -1;
+    /* no timeout by default */
+  }
   lua_settop(L, 1);
                                   /* task */
   sglua_task_register(L);
                                   /* -- */
-  MSG_error_t res = MSG_task_send(task, mailbox);
+  MSG_error_t res = MSG_task_send_with_timeout(task, mailbox, timeout);
 
   if (res == MSG_OK) {
     lua_pushboolean(L, 1);
@@ -330,7 +338,7 @@ static int l_task_recv(lua_State* L)
 {
   m_task_t task = NULL;
   const char* mailbox = luaL_checkstring(L, 1);
-  int timeout;
+  double timeout;
   if (lua_gettop(L) >= 2) {
                                   /* mailbox timeout ... */
     timeout = luaL_checknumber(L, 2);
