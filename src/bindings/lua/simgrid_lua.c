@@ -185,7 +185,9 @@ static int get_clock(lua_State* L) {
  */
 static int simgrid_gc(lua_State * L)
 {
-  MSG_clean();
+  if (sglua_is_maestro(L)) {
+    MSG_clean();
+  }
   return 0;
 }
 
@@ -317,6 +319,7 @@ int luaopen_simgrid(lua_State *L)
 
     /* Initialize the MSG core */
     MSG_global_init(&argc, argv);
+    MSG_process_set_data_cleanup((void_f_pvoid_t) lua_close);
     XBT_DEBUG("Still %d arguments on command line", argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
   }
 

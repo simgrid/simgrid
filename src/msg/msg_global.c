@@ -68,6 +68,7 @@ void MSG_global_init(int *argc, char **argv)
     msg_global->PID = 1;
     msg_global->sent_msg = 0;
     msg_global->task_copy_callback = NULL;
+    msg_global->process_data_cleanup = NULL;
 
     /* initialization of the action module */
     _MSG_action_init();

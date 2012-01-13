@@ -35,6 +35,7 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 {
   simdata_process_t msg_proc;
 
+  // get the MSG process from the SIMIX process
   if (smx_proc == SIMIX_process_self()) {
     /* avoid a SIMIX request if this function is called by the process itself */
     msg_proc = SIMIX_process_self_get_data(smx_proc);
@@ -49,6 +50,12 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
   TRACE_msg_process_end(smx_proc);
 #endif
 
+  // free the data if a function was provided
+  if (msg_proc->data && msg_global->process_data_cleanup) {
+    msg_global->process_data_cleanup(msg_proc->data);
+  }
+
+  // free the MSG process
   xbt_free(msg_proc);
 }
 
@@ -261,6 +268,17 @@ MSG_error_t MSG_process_set_data(m_process_t process, void *data)
   simdata->data = data;
 
   return MSG_OK;
+}
+
+/** \ingroup m_process_management
+ * \brief Sets a cleanup function to be called to free the userdata of a
+ * process when a process is destroyed.
+ * \param data_cleanup a cleanup function for the userdata of a process,
+ * or NULL to call no function
+ */
+XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup) {
+
+  msg_global->process_data_cleanup = data_cleanup;
 }
 
 /** \ingroup m_process_management

@@ -86,6 +86,7 @@ typedef struct MSG_Global {
   int session;
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
   void (*task_copy_callback) (m_task_t task, m_process_t src, m_process_t dst);
+  void_f_pvoid_t process_data_cleanup;
 } s_MSG_Global_t, *MSG_Global_t;
 
 /*extern MSG_Global_t msg_global;*/
