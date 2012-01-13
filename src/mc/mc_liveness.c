@@ -643,6 +643,7 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
   }
   default : 
     return -1;
+    break;
   }
 }
 
