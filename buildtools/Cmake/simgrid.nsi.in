@@ -47,6 +47,9 @@ Section "Libraries and Headers" LibSection
 	setOutPath $INSTDIR\lib
 	file lib\libgras.@LIB_EXE@
 	file lib\libsimgrid.@LIB_EXE@
+	file /nonfatal lib\libsimgrid.dll
+	file /nonfatal lib\libsimgrid.dll.a
+	file /nonfatal lib\libsimgrid.ref
 	
 	#install headers
 	CreateDirectory  $INSTDIR\include

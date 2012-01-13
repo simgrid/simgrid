@@ -16,7 +16,7 @@ endif(WGET_PATH)
 if(NSIS_PATH)
 ADD_CUSTOM_TARGET(nsis
 	COMMENT "Generating the SimGrid installor for Windows..."
-	DEPENDS simgrid gras graphicator gras_stub_generator tesh simgrid-colorizer simgrid_update_xml
+	DEPENDS simgrid simgrid_shared gras graphicator gras_stub_generator tesh simgrid-colorizer simgrid_update_xml
 	COMMAND ${NSIS_PATH}/makensis.exe simgrid.nsi
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
 )
