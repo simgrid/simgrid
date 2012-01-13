@@ -271,6 +271,8 @@ int mmalloc_compare_heap(void *h1, void *h2);
 
 int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2);
 
+void mmalloc_display_info(void *h);
+
 /* Bits to look at in the malloc descriptor flags word */
 
 #define MMALLOC_DEVZERO		(1 << 0)        /* Have mapped to /dev/zero */
