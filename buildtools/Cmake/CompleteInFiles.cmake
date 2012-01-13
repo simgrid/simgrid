@@ -334,14 +334,18 @@ IF(CMAKE_CROSSCOMPILING)
 		set(IS_WINDOWS 1)	
 	ENDIF(WIN32)
 ELSE(CMAKE_CROSSCOMPILING)
+    file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
+    file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
     exec_program(
                  "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c ${mcsc_flags} -o testprog"
                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
                  OUTPUT_VARIABLE COMPILE_mcsc_VAR)
 
-    file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
     if(NOT COMPILE_mcsc_VAR)
+        message(STATUS "prog_AC_CHECK_MCSC.c is compilable")
         exec_program("${CMAKE_BINARY_DIR}/testprog" OUTPUT_VARIABLE var_compil)
+    else(NOT COMPILE_mcsc_VAR)
+        message(STATUS "prog_AC_CHECK_MCSC.c is not compilable")
     endif(NOT COMPILE_mcsc_VAR)
     file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
     
@@ -560,7 +564,7 @@ if(HAVE_MAKECONTEXT OR WIN32)
 	
     if(WIN32)
         if(ARCH_32_BITS)
-	    set(makecontext_CPPFLAGS "-DTEST_makecontext")
+	    set(makecontext_CPPFLAGS "-DTEST_makecontext -D_I_X86_")
 	    else(ARCH_32_BITS)
 	    set(makecontext_CPPFLAGS "-DTEST_makecontext -D_AMD64_")
 	    endif(ARCH_32_BITS)

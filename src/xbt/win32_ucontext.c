@@ -59,7 +59,7 @@ int makecontext(ucontext_t * ucp, void (*func) (), int argc, ...)
   }
   
       /* Set the instruction and the stack pointer */
-  #ifdef I_X86_
+  #ifdef _I_X86_
   ucp->uc_mcontext.Eip = (DWORD) func;
   ucp->uc_mcontext.Esp = (DWORD) sp - sizeof(void*);
   #endif
