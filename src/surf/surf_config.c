@@ -514,6 +514,28 @@ void surf_config_init(int *argc, char **argv)
                      NULL, NULL);
     xbt_cfg_setdefault_string(_surf_cfg_set, "ns3/TcpModel", "default");
 #endif
+
+//SMPI
+    double default_reference_speed = 20000.0;
+    xbt_cfg_register(&_surf_cfg_set, "smpi/running_power",
+                     "Power of the host running the simulation (in flop/s). Used to bench the operations.",
+                     xbt_cfgelm_double, &default_reference_speed, 1, 1, NULL,
+                     NULL);
+
+    int default_display_timing = 0;
+    xbt_cfg_register(&_surf_cfg_set, "smpi/display_timing",
+                     "Boolean indicating whether we should display the timing after simulation.",
+                     xbt_cfgelm_int, &default_display_timing, 1, 1, NULL,
+                     NULL);
+
+    double default_threshold = 1e-6;
+    xbt_cfg_register(&_surf_cfg_set, "smpi/cpu_threshold",
+                     "Minimal computation time (in seconds) not discarded.",
+                     xbt_cfgelm_double, &default_threshold, 1, 1, NULL,
+                     NULL);
+//END SMPI
+
+
     if (!surf_path) {
       /* retrieves the current directory of the        current process */
       const char *initial_path = __surf_get_initial_path();
