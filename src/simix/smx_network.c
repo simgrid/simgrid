@@ -265,7 +265,9 @@ void SIMIX_comm_destroy(smx_action_t action)
   if (action->comm.detached && action->state != SIMIX_DONE) {
     /* the communication has failed and was detached:
      * we have to free the buffer */
-    action->comm.clean_fun(action->comm.src_buff);
+    if (action->comm.clean_fun) {
+      action->comm.clean_fun(action->comm.src_buff);
+    }
     action->comm.src_buff = NULL;
   }
 

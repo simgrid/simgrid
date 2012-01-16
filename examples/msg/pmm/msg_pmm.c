@@ -158,7 +158,7 @@ int node(int argc, char **argv)
     result->sC =
       xbt_matrix_new_sub(sC, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE, 0, 0, NULL);
     task = MSG_task_create("result",100,100,result);
-    MSG_task_dsend(task, "0", NULL);
+    MSG_task_dsend(task, "0", (void_f_pvoid_t) MSG_task_destroy);
   }
 
   /* Clean up and finish*/

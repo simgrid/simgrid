@@ -435,8 +435,8 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
  * \param cleanup a function to destroy the task if the
- * communication fails (if NULL, MSG_task_destroy() will
- * be used by default)
+ * communication fails, e.g. MSG_task_destroy
+ * (if NULL, no function will be called)
  */
 void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
@@ -445,10 +445,6 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
   CHECK_HOST();
-
-  if (cleanup == NULL) {
-    cleanup = (void_f_pvoid_t) MSG_task_destroy;
-  }
 
   /* FIXME: these functions are not traceable */
 
@@ -465,7 +461,7 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 
   /* Send it by calling SIMIX network layer */
   smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                       t_simdata->rate, task, sizeof(void *), NULL,cleanup, NULL, 1);
+                       t_simdata->rate, task, sizeof(void *), NULL, cleanup, NULL, 1);
   t_simdata->comm = comm;
 }
 
