@@ -6,6 +6,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Change the correction factors used in LMM model, according to
     the lastest experiments described in INRIA RR-7821. 
     Accuracy should be improved this way.
+    (TODO: this is not true in the code, yet)
   * Use the partial invalidation optimization by default for the
     network too. Should produce the exact same results, only faster.
   * Major cleanup in surf to merge models and split some optimization
@@ -23,6 +24,8 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Use now crosstraffic keyword instead of the terribly missleading 
     fullduplex keyword. It is activated by default now in the current
     default model, use --cfg=network/crosstraffic:0 to turn it off.
+  * Ongoing refactoring the model parsing to make XML files optional
+    (more work is needed here to fully achieve this goal)
 
   Simix:
   * Stabilize the parallel execution mode of user contexts
