@@ -534,6 +534,11 @@ void surf_config_init(int *argc, char **argv)
                      xbt_cfgelm_double, &default_threshold, 1, 1, NULL,
                      NULL);
 
+    //For smpi/bw_factor and smpi/lat_factor
+    //Default value have to be "threshold0:value0;threshold1:value1;...;thresholdN:valueN"
+    //test is if( size >= thresholdN ) return valueN;
+    //Values can be modified with command line --cfg=smpi/bw_factor:"threshold0:value0;threshold1:value1;...;thresholdN:valueN"
+    //	or with tag config put line <prop id="smpi/bw_factor" value="threshold0:value0;threshold1:value1;...;thresholdN:valueN"></prop>
     xbt_cfg_register(&_surf_cfg_set, "smpi/bw_factor",
                      "Bandwidth factors for smpi.",
                      xbt_cfgelm_string, NULL, 1, 1, NULL,
