@@ -130,28 +130,20 @@ function handle_task(task)
           task.answer_to .. ": the successor of " .. task.request_id ..
 	  " is " .. my_node.fingers[1])
 
-      local ans_task = simgrid.task.new("", comp_size, comm_size)
-      ans_task.type = "find successor answer"
-      ans_task.request_id = task.request_id
-      ans_task.answer = my_node.fingers[1]
-      ans_task:dsend(task.answer_to)
+      task.type = "find successor answer"
+      task.answer = my_node.fingers[1]
+      task:dsend(task.answer_to)
     else
       -- forward the request to the closest preceding finger in my table
 
       simgrid.info("Forwarding the 'find successor' request to my closest preceding finger")
-
-      local next_task = simgrid.task.new("", comp_size, comm_size)
-      next_task.type = "find successor"
-      next_task.request_id = task.request_id
-      next_task.answer_to = task.answer_to
-      next_task:dsend(closest_preceding_node(next_task.request_id))
+      task:dsend(closest_preceding_node(task.request_id))
     end
 
   elseif type == "get predecessor" then
-    local ans_task = simgrid.task.new("", comp_size, comm_size)
-    ans_task.type = "get predecessor answer"
-    ans_task.answer = my_node.predecessor
-    ans_task:dsend(task.answer_to)
+    task.type = "get predecessor answer"
+    task.answer = my_node.predecessor
+    task:dsend(task.answer_to)
 
   elseif type == "notify" then
     -- someone is telling me that he may be my new predecessor

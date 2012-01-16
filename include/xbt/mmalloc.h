@@ -66,6 +66,8 @@ extern void *mmalloc_findbase(int size);
 
 extern int mmalloc_compare_heap(void *h1, void *h2);
 
+extern void mmalloc_display_info_heap(void *h);
+
 /* To change the heap used when using the legacy version malloc/free/realloc and such */
 void mmalloc_set_current_heap(void *new_heap);
 void *mmalloc_get_current_heap(void);

@@ -435,8 +435,8 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
  * \param cleanup a function to destroy the task if the
- * communication fails (if NULL, MSG_task_destroy() will
- * be used by default)
+ * communication fails, e.g. MSG_task_destroy
+ * (if NULL, no function will be called)
  */
 void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
@@ -445,10 +445,6 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
   CHECK_HOST();
-
-  if (cleanup == NULL) {
-    cleanup = (void_f_pvoid_t) MSG_task_destroy;
-  }
 
   /* FIXME: these functions are not traceable */
 
@@ -465,7 +461,7 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 
   /* Send it by calling SIMIX network layer */
   smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                       t_simdata->rate, task, sizeof(void *), NULL,cleanup, NULL, 1);
+                       t_simdata->rate, task, sizeof(void *), NULL, cleanup, NULL, 1);
   t_simdata->comm = comm;
 }
 
@@ -620,12 +616,6 @@ int MSG_comm_testany(xbt_dynar_t comms)
  */
 void MSG_comm_destroy(msg_comm_t comm)
 {
-  if (comm->task_received != NULL
-      && *comm->task_received != NULL
-      && MSG_comm_get_status(comm) == MSG_OK) {
-    (*comm->task_received)->simdata->isused = 0;
-  }
-
   xbt_free(comm);
 }
 
@@ -739,6 +729,11 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   /* the communication is finished */
   comm->status = status;
 
+  if (comm->task_received != NULL) {
+    /* I am the receiver */
+    (*comm->task_received)->simdata->isused = 0;
+  }
+
   return finished_index;
 }
 
@@ -764,16 +759,18 @@ m_task_t MSG_comm_get_task(msg_comm_t comm)
 /**
  * \brief This function is called by SIMIX to copy the data of a comm.
  * \param comm the comm
+ * \param buff the data copied
  * \param buff_size size of the buffer
  */
-void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, size_t buff_size) {
+void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_size) {
 
   // copy the task
-  SIMIX_comm_copy_pointer_callback(comm, buff_size);
+  SIMIX_comm_copy_pointer_callback(comm, buff, buff_size);
 
   // notify the user callback if any
   if (msg_global->task_copy_callback) {
-    msg_global->task_copy_callback(SIMIX_req_comm_get_src_data(comm),
+    m_task_t task = buff;
+    msg_global->task_copy_callback(task,
         SIMIX_req_comm_get_src_proc(comm), SIMIX_req_comm_get_dst_proc(comm));
   }
 }

@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
                                 "Context switching mecanism");
 
 char* smx_context_factory_name = NULL; /* factory name specified by --cfg=contexts/factory:value */
-XBT_PUBLIC(smx_ctx_factory_initializer_t) smx_factory_initializer_to_use = NULL;
+smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
 int smx_context_stack_size = 128 * 1024;
 
 #ifdef HAVE_THREAD_LOCAL_STORAGE

@@ -86,6 +86,7 @@ typedef struct MSG_Global {
   int session;
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
   void (*task_copy_callback) (m_task_t task, m_process_t src, m_process_t dst);
+  void_f_pvoid_t process_data_cleanup;
 } s_MSG_Global_t, *MSG_Global_t;
 
 /*extern MSG_Global_t msg_global;*/
@@ -120,7 +121,7 @@ void MSG_process_create_from_SIMIX(smx_process_t *process, const char *name,
                                    const char *hostname, int argc,
                                    char **argv, xbt_dict_t properties);
 void MSG_process_kill_from_SIMIX(smx_process_t p);
-void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, size_t buff_size);
+void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_size);
 
 void _MSG_action_init(void);
 void _MSG_action_exit(void);

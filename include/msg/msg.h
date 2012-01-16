@@ -90,6 +90,7 @@ XBT_PUBLIC(MSG_error_t) MSG_process_migrate(m_process_t process, m_host_t host);
 XBT_PUBLIC(void *) MSG_process_get_data(m_process_t process);
 XBT_PUBLIC(MSG_error_t) MSG_process_set_data(m_process_t process,
                                              void *data);
+XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup);
 XBT_PUBLIC(m_host_t) MSG_process_get_host(m_process_t process);
 XBT_PUBLIC(m_process_t) MSG_process_from_PID(int PID);
 XBT_PUBLIC(int) MSG_process_get_PID(m_process_t process);

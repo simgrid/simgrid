@@ -70,10 +70,10 @@ XBT_PUBLIC(void) SIMIX_process_set_context(smx_process_t p,smx_context_t c);
 XBT_PUBLIC(int) SIMIX_process_has_pending_comms(smx_process_t process);
 
 /****************************** Communication *********************************/
-XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_action_t, size_t));
-XBT_PUBLIC(void) SIMIX_comm_copy_pointer_callback(smx_action_t comm, size_t buff_size);
-XBT_PUBLIC(void) SIMIX_comm_copy_buffer_callback(smx_action_t comm, size_t buff_size);
-XBT_PUBLIC(void) smpi_comm_copy_data_callback(smx_action_t comm, size_t buff_size);
+XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_action_t, void*, size_t));
+XBT_PUBLIC(void) SIMIX_comm_copy_pointer_callback(smx_action_t comm, void* buff, size_t buff_size);
+XBT_PUBLIC(void) SIMIX_comm_copy_buffer_callback(smx_action_t comm, void* buff, size_t buff_size);
+XBT_PUBLIC(void) smpi_comm_copy_data_callback(smx_action_t comm, void* buff, size_t buff_size);
 
 XBT_PUBLIC(smx_action_t) SIMIX_comm_get_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
