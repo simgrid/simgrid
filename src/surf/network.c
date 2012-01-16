@@ -26,13 +26,21 @@
 #undef GENERIC_ACTION
 #define GENERIC_ACTION(action) action->generic_action
 
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
                                 "Logging specific to the SURF network module");
 
 surf_model_t surf_network_model = NULL;
 static lmm_system_t network_maxmin_system = NULL;
 static void (*network_solve) (lmm_system_t) = NULL;
+
+xbt_dynar_t smpi_bw_factor = NULL;
+xbt_dynar_t smpi_lat_factor = NULL;
+
+typedef struct s_smpi_factor *smpi_factor_t;
+typedef struct s_smpi_factor {
+	long factor;
+	double value;
+} s_smpi_factor_t;
 
 double sg_sender_gap = 0.0;
 double sg_latency_factor = 1.0; /* default value; can be set by model or from command line */
@@ -103,31 +111,78 @@ static double constant_bandwidth_constraint(double rate, double bound,
 /**********************/
 static double smpi_bandwidth_factor(double size)
 {
+	char *value = NULL;
+	unsigned int iter;
+	smpi_factor_t fact;
 
-    if (size >= 65472) return 0.940694;
-    if (size >= 15424) return 0.697866;
-    if (size >= 9376) return 0.58729;
-    if (size >= 5776) return 1.08739;
-    if (size >= 3484) return 0.77493;
-    if (size >= 1426) return 0.608902;
-    if (size >= 732) return 0.341987;
-    if (size >= 257) return 0.338112;
-    if (size >= 0) return 0.812084;
+	if(!smpi_bw_factor){
+		xbt_dynar_t radical_elements,radical_elements2;
+
+		char *smpi_coef_string = xbt_cfg_get_string(_surf_cfg_set,"smpi/bw_factor");
+		smpi_bw_factor = xbt_dynar_new(sizeof(s_smpi_factor_t),free);
+		radical_elements = xbt_str_split(smpi_coef_string, ";");
+		xbt_dynar_foreach(radical_elements, iter, value) {
+
+			radical_elements2 = xbt_str_split(value, ":");
+			if(xbt_dynar_length(radical_elements2) != 2)
+				xbt_die("Malformed radical for smpi/bw_factor!");
+			fact = xbt_new(s_smpi_factor_t,1);
+			fact->factor = atol(xbt_dynar_get_as(radical_elements2,0,char*));
+			fact->value = atof(xbt_dynar_get_as(radical_elements2,1,char*));
+			xbt_dynar_push_as(smpi_bw_factor,smpi_factor_t,fact);
+			XBT_DEBUG("smpi_bandwidth_factor:\t%ld : %f",fact->factor,fact->value);
+			xbt_dynar_free(&radical_elements2);
+		}
+		xbt_dynar_free(&radical_elements);
+	}
+
+	xbt_dynar_foreach(smpi_bw_factor, iter, fact) {
+		if(size >= fact->factor)
+		{
+			XBT_DEBUG("%lf >= %ld return %f",size,fact->factor,fact->value);
+			return fact->value;
+		}
+
+	}
+
     return 1.0;
 }
 
 static double smpi_latency_factor(double size)
 {
+	char *value = NULL;
+	unsigned int iter;
+	smpi_factor_t fact;
 
-    if (size >= 65472) return 11.6436;
-    if (size >= 15424) return 3.48845;
-    if (size >= 9376) return 2.59299;
-    if (size >= 5776) return 2.18796;
-    if (size >= 3484) return 1.88101;
-    if (size >= 1426) return 1.61075;
-    if (size >= 732) return 1.9503;
-    if (size >= 257) return 1.95341;
-    if (size >= 0) return 2.01467;
+	if(!smpi_lat_factor){
+		xbt_dynar_t radical_elements,radical_elements2;
+
+		char *smpi_coef_string = xbt_cfg_get_string(_surf_cfg_set,"smpi/lat_factor");
+		smpi_lat_factor = xbt_dynar_new(sizeof(s_smpi_factor_t),free);
+		radical_elements = xbt_str_split(smpi_coef_string, ";");
+		xbt_dynar_foreach(radical_elements, iter, value) {
+
+			radical_elements2 = xbt_str_split(value, ":");
+			if(xbt_dynar_length(radical_elements2) != 2)
+				xbt_die("Malformed radical for smpi/lat_factor!");
+			fact = xbt_new(s_smpi_factor_t,1);
+			fact->factor = atol(xbt_dynar_get_as(radical_elements2,0,char*));
+			fact->value = atof(xbt_dynar_get_as(radical_elements2,1,char*));
+			xbt_dynar_push_as(smpi_lat_factor,smpi_factor_t,fact);
+			XBT_DEBUG("smpi_latency_factor:\t%ld : %f",fact->factor,fact->value);
+			xbt_dynar_free(&radical_elements2);
+		}
+		xbt_dynar_free(&radical_elements);
+	}
+
+	xbt_dynar_foreach(smpi_lat_factor, iter, fact) {
+		if(size >= fact->factor)
+		{
+			XBT_DEBUG("%lf >= %ld return %f",size,fact->factor,fact->value);
+			return fact->value;
+		}
+	}
+
     return 1.0;
 }
 /**--------- <copy/paste C code snippet in surf/network.c> -----------*/
