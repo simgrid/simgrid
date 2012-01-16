@@ -403,11 +403,13 @@ ADD_TEST(lua-masterslave				${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${C
 ADD_TEST(lua-mult-matrix				${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_HOME_DIRECTORY}/examples/lua/multi_matrix mult_matrix.tesh)
 ADD_TEST(lua-masterslave-bypass 		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_HOME_DIRECTORY}/examples/lua/console master_slave_bypass.tesh)
 ADD_TEST(lua-msg-masterslave-console	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/examples/msg/masterslave --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave	${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_console.tesh)
+ADD_TEST(lua-chord				${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_HOME_DIRECTORY}/examples/lua/chord chord.tesh)
 set_tests_properties(lua-duplicated-globals 				PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
 set_tests_properties(lua-masterslave 				PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
 set_tests_properties(lua-mult-matrix  				PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
 set_tests_properties(lua-masterslave-bypass  		PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
 set_tests_properties(lua-msg-masterslave-console  	PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
+set_tests_properties(lua-chord 				PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
 endif(HAVE_LUA)
 
 # END TESH TESTS
