@@ -45,6 +45,11 @@ static int xbt_log_layout_simple_doit(xbt_log_layout_t l,
                    gras_os_myname(), procname, xbt_getpid());
     check_overflow(len);
   }
+  else if (!procname)  {
+	len = snprintf(p, rem_size, "%s::(%d) ",
+				   gras_os_myname(), xbt_getpid());
+	check_overflow(len);
+  }
 
   /* Display the date */
   len = snprintf(p, rem_size, "%f] ",
