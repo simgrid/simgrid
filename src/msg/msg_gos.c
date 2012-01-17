@@ -264,6 +264,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 MSG_error_t
 MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive_from_host");
   return MSG_task_get_ext(task, channel, -1, host);
 }
 
@@ -282,6 +283,7 @@ MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
  */
 MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive");
   return MSG_task_get_with_timeout(task, channel, -1);
 }
 
@@ -306,6 +308,7 @@ MSG_error_t
 MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel,
                           double max_duration)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive_with_timeout");
   return MSG_task_get_ext(task, channel, max_duration, NULL);
 }
 
@@ -318,6 +321,7 @@ MSG_error_t
 MSG_task_get_ext(m_task_t * task, m_channel_t channel, double timeout,
                  m_host_t host)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive_ext");
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
@@ -802,6 +806,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
  */
 MSG_error_t MSG_task_put(m_task_t task, m_host_t dest, m_channel_t channel)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_send");
   return MSG_task_put_with_timeout(task, dest, channel, -1.0);
 }
 
@@ -815,6 +820,7 @@ MSG_error_t
 MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel,
                      double maxrate)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_send_bounded");
   task->simdata->rate = maxrate;
   return MSG_task_put(task, dest, channel);
 }
@@ -851,6 +857,7 @@ MSG_error_t
 MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
                           m_channel_t channel, double timeout)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_send_with_timeout");
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
@@ -902,6 +909,7 @@ int MSG_task_listen(const char *alias)
  */
 int MSG_task_Iprobe(m_channel_t channel)
 {
+  XBT_WARN("DEPRECATED!");
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
@@ -928,6 +936,7 @@ int MSG_task_Iprobe(m_channel_t channel)
  */
 int MSG_task_probe_from_host(int channel, m_host_t host)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_listen_from_host");
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
@@ -961,6 +970,7 @@ int MSG_task_listen_from_host(const char *alias, m_host_t host)
  */
 int MSG_task_probe_from(m_channel_t channel)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_listen_from");
   m_task_t task;
 
   CHECK_HOST();
