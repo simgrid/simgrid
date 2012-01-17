@@ -112,14 +112,14 @@ static double constant_bandwidth_constraint(double rate, double bound,
 static double smpi_bandwidth_factor(double size)
 {
 	char *value = NULL;
-	unsigned int iter;
-	smpi_factor_t fact;
+	unsigned int iter = 0;
+	smpi_factor_t fact = NULL;
 
 	if(!smpi_bw_factor){
-		xbt_dynar_t radical_elements,radical_elements2;
+		xbt_dynar_t radical_elements,radical_elements2 = NULL;
 
 		char *smpi_coef_string = xbt_cfg_get_string(_surf_cfg_set,"smpi/bw_factor");
-		smpi_bw_factor = xbt_dynar_new(sizeof(s_smpi_factor_t),free);
+		smpi_bw_factor = xbt_dynar_new(sizeof(smpi_factor_t),free);
 		radical_elements = xbt_str_split(smpi_coef_string, ";");
 		xbt_dynar_foreach(radical_elements, iter, value) {
 
@@ -151,14 +151,14 @@ static double smpi_bandwidth_factor(double size)
 static double smpi_latency_factor(double size)
 {
 	char *value = NULL;
-	unsigned int iter;
-	smpi_factor_t fact;
+	unsigned int iter = 0;
+	smpi_factor_t fact = NULL;
 
 	if(!smpi_lat_factor){
-		xbt_dynar_t radical_elements,radical_elements2;
+		xbt_dynar_t radical_elements,radical_elements2 = NULL;
 
 		char *smpi_coef_string = xbt_cfg_get_string(_surf_cfg_set,"smpi/lat_factor");
-		smpi_lat_factor = xbt_dynar_new(sizeof(s_smpi_factor_t),free);
+		smpi_lat_factor = xbt_dynar_new(sizeof(smpi_factor_t),free);
 		radical_elements = xbt_str_split(smpi_coef_string, ";");
 		xbt_dynar_foreach(radical_elements, iter, value) {
 
