@@ -109,40 +109,42 @@ static double constant_bandwidth_constraint(double rate, double bound,
 /**********************/
 /*   SMPI callbacks   */
 /**********************/
-static double smpi_bandwidth_factor(double size)
+static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 {
 	char *value = NULL;
 	unsigned int iter = 0;
-	smpi_factor_t fact = NULL;
+	s_smpi_factor_t fact;
+	xbt_dynar_t smpi_factor, radical_elements, radical_elements2 = NULL;
 
-	if(!smpi_bw_factor){
-		xbt_dynar_t radical_elements,radical_elements2 = NULL;
+	smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_t), NULL);
+	radical_elements = xbt_str_split(smpi_coef_string, ";");
+	xbt_dynar_foreach(radical_elements, iter, value) {
 
-		char *smpi_coef_string = xbt_cfg_get_string(_surf_cfg_set,"smpi/bw_factor");
-		smpi_bw_factor = xbt_dynar_new(sizeof(smpi_factor_t),free);
-		radical_elements = xbt_str_split(smpi_coef_string, ";");
-		xbt_dynar_foreach(radical_elements, iter, value) {
-
-			radical_elements2 = xbt_str_split(value, ":");
-			if(xbt_dynar_length(radical_elements2) != 2)
-				xbt_die("Malformed radical for smpi/bw_factor!");
-			fact = xbt_new(s_smpi_factor_t,1);
-			fact->factor = atol(xbt_dynar_get_as(radical_elements2,0,char*));
-			fact->value = atof(xbt_dynar_get_as(radical_elements2,1,char*));
-			xbt_dynar_push_as(smpi_bw_factor,smpi_factor_t,fact);
-			XBT_DEBUG("smpi_bandwidth_factor:\t%ld : %f",fact->factor,fact->value);
-			xbt_dynar_free(&radical_elements2);
-		}
-		xbt_dynar_free(&radical_elements);
+		radical_elements2 = xbt_str_split(value, ":");
+		if(xbt_dynar_length(radical_elements2) != 2)
+			xbt_die("Malformed radical for smpi factor!");
+		fact.factor = atol(xbt_dynar_get_as(radical_elements2,0,char*));
+		fact.value = atof(xbt_dynar_get_as(radical_elements2,1,char*));
+		xbt_dynar_push_as(smpi_factor,s_smpi_factor_t,fact);
+		XBT_DEBUG("smpi_factor:\t%ld : %f",fact.factor,fact.value);
+		xbt_dynar_free(&radical_elements2);
 	}
+	xbt_dynar_free(&radical_elements);
+	return smpi_factor;
+}
 
+static double smpi_bandwidth_factor(double size)
+{
+	if(!smpi_bw_factor)
+		smpi_bw_factor = parse_factor( xbt_cfg_get_string(_surf_cfg_set,"smpi/bw_factor") );
+
+	unsigned int iter = 0;
+	s_smpi_factor_t fact;
 	xbt_dynar_foreach(smpi_bw_factor, iter, fact) {
-		if(size >= fact->factor)
-		{
-			XBT_DEBUG("%lf >= %ld return %f",size,fact->factor,fact->value);
-			return fact->value;
+		if(size >= fact.factor){
+			XBT_DEBUG("%lf >= %ld return %f",size,fact.factor,fact.value);
+			return fact.value;
 		}
-
 	}
 
     return 1.0;
@@ -150,36 +152,15 @@ static double smpi_bandwidth_factor(double size)
 
 static double smpi_latency_factor(double size)
 {
-	char *value = NULL;
+	if(!smpi_lat_factor)
+		smpi_lat_factor = parse_factor( xbt_cfg_get_string(_surf_cfg_set,"smpi/lat_factor") );
+
 	unsigned int iter = 0;
-	smpi_factor_t fact = NULL;
-
-	if(!smpi_lat_factor){
-		xbt_dynar_t radical_elements,radical_elements2 = NULL;
-
-		char *smpi_coef_string = xbt_cfg_get_string(_surf_cfg_set,"smpi/lat_factor");
-		smpi_lat_factor = xbt_dynar_new(sizeof(smpi_factor_t),free);
-		radical_elements = xbt_str_split(smpi_coef_string, ";");
-		xbt_dynar_foreach(radical_elements, iter, value) {
-
-			radical_elements2 = xbt_str_split(value, ":");
-			if(xbt_dynar_length(radical_elements2) != 2)
-				xbt_die("Malformed radical for smpi/lat_factor!");
-			fact = xbt_new(s_smpi_factor_t,1);
-			fact->factor = atol(xbt_dynar_get_as(radical_elements2,0,char*));
-			fact->value = atof(xbt_dynar_get_as(radical_elements2,1,char*));
-			xbt_dynar_push_as(smpi_lat_factor,smpi_factor_t,fact);
-			XBT_DEBUG("smpi_latency_factor:\t%ld : %f",fact->factor,fact->value);
-			xbt_dynar_free(&radical_elements2);
-		}
-		xbt_dynar_free(&radical_elements);
-	}
-
+	s_smpi_factor_t fact;
 	xbt_dynar_foreach(smpi_lat_factor, iter, fact) {
-		if(size >= fact->factor)
-		{
-			XBT_DEBUG("%lf >= %ld return %f",size,fact->factor,fact->value);
-			return fact->value;
+		if(size >= fact.factor){
+			XBT_DEBUG("%lf >= %ld return %f",size,fact.factor,fact.value);
+			return fact.value;
 		}
 	}
 
@@ -984,6 +965,11 @@ static void net_finalize(void)
     xbt_heap_free(net_action_heap);
     xbt_swag_free(net_modified_set);
   }
+
+  if(smpi_bw_factor)
+	  xbt_dynar_free(&smpi_bw_factor);
+  if(smpi_lat_factor)
+	  xbt_dynar_free(&smpi_lat_factor);
 }
 
 static void smpi_gap_append(double size, const link_CM02_t link, surf_action_network_CM02_t action) {
