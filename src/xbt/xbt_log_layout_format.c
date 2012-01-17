@@ -64,7 +64,11 @@ static double format_begin_of_time = -1;
     check_overflow(len);                                                \
   } else (void)0
 
-#define show_string(data) show_it(data, "s")
+#define show_string(data)                                               \
+  if (1) {                                                              \
+    const char *show_string_data = (data);                              \
+    show_it(show_string_data ? show_string_data : "(null)", "s");       \
+  } else (void)0
 #define show_int(data)    show_it(data, "d")
 #define show_double(data) show_it(data, "f")
 

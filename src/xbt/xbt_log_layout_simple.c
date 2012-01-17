@@ -40,7 +40,7 @@ static int xbt_log_layout_simple_doit(xbt_log_layout_t l,
 
   /* Display the proc info if available */
   procname = xbt_procname();
-  if (*procname) {
+  if (procname && *procname) {
     len = snprintf(p, rem_size, "%s:%s:(%d) ",
                    gras_os_myname(), procname, xbt_getpid());
     check_overflow(len);
