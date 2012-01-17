@@ -22,11 +22,6 @@ MSG_error_t test_all(const char *platform_file);
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 
-typedef enum {
-  PORT_22 = 0,
-  MAX_CHANNEL
-} channel_t;
-
 /** Emitter function  */
 int master(int argc, char *argv[])
 {
@@ -87,15 +82,15 @@ int master(int argc, char *argv[])
     if (MSG_host_self() == slaves[i % slaves_count]) {
       XBT_INFO("Hey ! It's me ! :)");
     }
-    MSG_task_put(todo[i], slaves[i % slaves_count], PORT_22);
+    MSG_task_send(todo[i], MSG_host_get_name(slaves[i % slaves_count]));
     XBT_INFO("Send completed");
   }
 
   XBT_INFO
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++)
-    MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
-                 slaves[i], PORT_22);
+    MSG_task_send(MSG_task_create("finalize", 0, 0, FINALIZE),
+    		MSG_host_get_name(slaves[i]));
 
   XBT_INFO("Goodbye now!");
   free(slaves);
@@ -110,7 +105,7 @@ int slave(int argc, char *argv[])
   while (1) {
     m_task_t task = NULL;
     int a;
-    a = MSG_task_get(&(task), PORT_22);
+    a = MSG_task_receive(&(task), MSG_host_get_name(MSG_host_self()));
     if (a == MSG_OK) {
       XBT_INFO("Received \"%s\" ", MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {
@@ -202,7 +197,6 @@ static int bypass_deployment(void)
 MSG_error_t test_all(const char *platform_file)
 {
 	MSG_error_t res = MSG_OK;
-	MSG_set_channel_number(MAX_CHANNEL);
 	MSG_create_environment(platform_file);
 	MSG_function_register("master", master);
 	MSG_function_register("slave", slave);

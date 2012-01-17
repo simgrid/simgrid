@@ -20,11 +20,6 @@ int redistribute(int argc, char *argv[]);
 MSG_error_t test_all(const char *platform_file,
                      const char *application_file);
 
-typedef enum {
-  PORT_22 = 0,
-  MAX_CHANNEL
-} channel_t;
-
 
 int execute(int argc, char *argv[])
 {
@@ -145,7 +140,6 @@ MSG_error_t test_all(const char *platform_file,
   MSG_config("workstation/model", "ptask_L07");
 
   /*  Simulation setting */
-  MSG_set_channel_number(MAX_CHANNEL);
   MSG_create_environment(platform_file);
 
   /*   Application deployment */

@@ -12,11 +12,6 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
-typedef enum {
-  PORT_22 = 0,
-  MAX_CHANNEL
-} channel_t;
-
 
 /** Lazy guy function. This process suspends itself asap.  */
 static int lazy_guy(int argc, char *argv[])
@@ -51,7 +46,6 @@ static MSG_error_t test_all(const char *platform_file,
   MSG_error_t res = MSG_OK;
 
   {                             /*  Simulation setting */
-    MSG_set_channel_number(MAX_CHANNEL);
     MSG_create_environment(platform_file);
   }
   {                             /*   Application deployment */
