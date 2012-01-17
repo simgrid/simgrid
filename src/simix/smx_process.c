@@ -473,7 +473,9 @@ const char* SIMIX_process_self_get_name(void) {
 
 const char* SIMIX_process_get_name(smx_process_t process)
 {
-  return process->name;
+  if(process->name)
+	  return process->name;
+  return "";
 }
 
 smx_process_t SIMIX_process_get_by_name(const char* name)
