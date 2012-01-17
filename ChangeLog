@@ -3,6 +3,13 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   The "Simplicity does not preceed complexity, but follows it" release.
 
   Models:
+  * We can specify the smpi latency/bandwidth factor with command line
+    add --cfg=smpi/bw_factor:"threshold0:value0;...;thresholdN:valueN"
+    or add --cfg=smpi/lat_factor:"threshold0:value0;...;thresholdN:valueN"
+    You can also use the "config tag" from platform file by adding this line
+    <prop id="smpi/bw_factor" value="threshold0:value0;...;thresholdN:valueN"></prop>
+    (see "example/platforms/tag_config.xml" to use "config tag").
+    Note that the command line supersedes the platform file configuration.
   * Change the correction factors used in LMM model, according to
     the lastest experiments described in INRIA RR-7821. 
     Accuracy should be improved this way.
