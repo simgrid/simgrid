@@ -39,7 +39,7 @@ static void MC_region_restore(mc_mem_region_t reg)
 	if (!memcmp(maps->regions[i].pathname, "[stack]", 7)){
 	  size_t diff = (char*)reg->start_addr - (char*)r.start_addr;
 	  void *segment = malloc(reg->size + diff);
-	  XBT_DEBUG("Size of segment : %lu", sizeof(segment));
+	  XBT_DEBUG("Size of segment : %zu", sizeof(segment));
 	  memcpy((char *)segment + diff, reg->data, reg->size);
 	  memcpy(r.start_addr, segment, sizeof(segment));
 	  XBT_DEBUG("Memcpy region ok");
