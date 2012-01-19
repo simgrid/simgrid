@@ -517,6 +517,7 @@ void SIMIX_request_post(smx_action_t action)
       break;
 
     case SIMIX_ACTION_IO:
+      SIMIX_post_io(action);
       break;
   }
 }

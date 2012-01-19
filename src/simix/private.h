@@ -127,8 +127,8 @@ typedef struct s_smx_action {
     } synchro;
 
     struct {
-    smx_host_t host;                /* The host that is sleeping */
-    surf_action_t surf_io;
+      smx_host_t host;
+      surf_action_t surf_io;
     } io;
   };
 

@@ -12,7 +12,7 @@
 
 void SIMIX_pre_file_read(smx_req_t req);
 smx_action_t SIMIX_file_read(smx_process_t process, char* name);
-void SIMIX_post_file_read(smx_action_t action);
+void SIMIX_post_io(smx_action_t action);
 void SIMIX_io_destroy(smx_action_t action);
 void SIMIX_io_finish(smx_action_t action);
 

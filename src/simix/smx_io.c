@@ -42,7 +42,7 @@ smx_action_t SIMIX_file_read(smx_process_t process, char* name)
   action->io.host = host;
   //  TODO in surf model disk???
   //  action->io.surf_io = surf_workstation_model->extension.disk.read(host->host, name),
-    action->io.surf_io = surf_workstation_model->extension.workstation.sleep(host->host, 1.0);
+  action->io.surf_io = surf_workstation_model->extension.workstation.sleep(host->host, 1.0);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -50,13 +50,10 @@ smx_action_t SIMIX_file_read(smx_process_t process, char* name)
   return action;
 }
 
-void SIMIX_post_file_read(smx_action_t action)
+void SIMIX_post_io(smx_action_t action)
 {
-  smx_req_t req;
+  switch (surf_workstation_model->action_state_get(action->io.surf_io)) {
 
-  while ((req = xbt_fifo_shift(action->request_list))) {
-
-    switch(surf_workstation_model->action_state_get(action->io.surf_io)){
     case SURF_ACTION_FAILED:
       action->state = SIMIX_FAILED;
       break;
@@ -68,11 +65,9 @@ void SIMIX_post_file_read(smx_action_t action)
     default:
       THROW_IMPOSSIBLE;
       break;
-    }
   }
-  /* If there are requests associated with the action, then answer them */
-  if (xbt_fifo_size(action->request_list))
-	  SIMIX_io_finish(action);
+
+  SIMIX_io_finish(action);
 }
 
 void SIMIX_io_destroy(smx_action_t action)
