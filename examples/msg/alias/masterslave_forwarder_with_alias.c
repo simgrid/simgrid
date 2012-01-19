@@ -14,12 +14,6 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
-
-typedef enum {
-  PORT_22 = 0,
-  MAX_CHANNEL
-} channel_t;
-
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 int forwarder(int argc, char *argv[]);
@@ -198,7 +192,6 @@ MSG_error_t test_all(const char *platform_file,
   MSG_error_t res = MSG_OK;
 
   {                             /*  Simulation setting */
-    MSG_set_channel_number(MAX_CHANNEL);
     MSG_paje_output("msg_test.trace");
     MSG_create_environment(platform_file);
   }

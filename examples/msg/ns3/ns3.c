@@ -21,11 +21,6 @@ MSG_error_t test_all(const char *platform_file,
 
 int timer_start; //set as 1 in the master process
 
-typedef enum {
-  PORT_22 = 0,
-  MAX_CHANNEL
-} channel_t;
-
 //keep a pointer to all surf running tasks.
 #define NTASKS 1500
 int bool_printed = 0;
@@ -174,7 +169,6 @@ MSG_error_t test_all(const char *platform_file,
   /* MSG_config("workstation/model", "GTNETS"); */
   /* MSG_config("workstation/model","KCCFLN05"); */
   {                             /*  Simulation setting */
-    MSG_set_channel_number(MAX_CHANNEL);
     MSG_create_environment(platform_file);
   }
 

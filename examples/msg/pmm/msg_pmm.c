@@ -252,7 +252,6 @@ int main(int argc, char *argv[])
   const char* platform_file = options[0];
   const char* application_file = options[1];
 
-  MSG_set_channel_number(0);
   MSG_create_environment(platform_file);
 
   MSG_function_register("node", node);
