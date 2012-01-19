@@ -20,11 +20,6 @@ int forwarder(int argc, char *argv[]);
 MSG_error_t test_all(const char *platform_file,
                      const char *application_file);
 
-typedef enum {
-  PORT_22 = 0,
-  MAX_CHANNEL
-} channel_t;
-
 #define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
 
 /** Emitter function  */
@@ -70,8 +65,8 @@ int master(int argc, char *argv[])
     int a;
     *((double *) task->data) = MSG_get_clock();
 
-    a = MSG_task_put_with_timeout(task, slaves[i % slaves_count], PORT_22,
-                                  10.0);
+    a = MSG_task_send_with_timeout(task,MSG_host_get_name(slaves[i % slaves_count]),10.0);
+
     if (a == MSG_OK) {
       XBT_INFO("Send completed");
     } else if (a == MSG_HOST_FAILURE) {
@@ -103,7 +98,7 @@ int master(int argc, char *argv[])
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++) {
     m_task_t task = MSG_task_create("finalize", 0, 0, FINALIZE);
-    int a = MSG_task_put_with_timeout(task, slaves[i], PORT_22, 1.0);
+    int a = MSG_task_send_with_timeout(task,MSG_host_get_name(slaves[i]),1.0);
     if (a == MSG_OK)
       continue;
     if (a == MSG_HOST_FAILURE) {
@@ -141,7 +136,7 @@ int slave(int argc, char *argv[])
     double time1, time2;
 
     time1 = MSG_get_clock();
-    a = MSG_task_get(&(task), PORT_22);
+    a = MSG_task_receive( &(task), MSG_host_get_name(MSG_host_self()) );
     time2 = MSG_get_clock();
     if (a == MSG_OK) {
       XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
@@ -189,7 +184,6 @@ MSG_error_t test_all(const char *platform_file,
 
   /* MSG_config("workstation/model","KCCFLN05"); */
   {                             /*  Simulation setting */
-    MSG_set_channel_number(MAX_CHANNEL);
     MSG_create_environment(platform_file);
   }
   {                             /*   Application deployment */

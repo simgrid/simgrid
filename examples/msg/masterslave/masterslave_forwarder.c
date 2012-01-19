@@ -20,11 +20,6 @@ int forwarder(int argc, char *argv[]);
 MSG_error_t test_all(const char *platform_file,
                      const char *application_file);
 
-typedef enum {
-  PORT_22 = 0,
-  MAX_CHANNEL
-} channel_t;
-
 #define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
 
 /** Emitter function  */
@@ -82,7 +77,7 @@ int master(int argc, char *argv[])
       XBT_INFO("Hey ! It's me ! :)");
     }
 
-    MSG_task_put(todo[i], slaves[i % slaves_count], PORT_22);
+    MSG_task_send(todo[i], MSG_host_get_name(slaves[i % slaves_count]));
     XBT_INFO("Sent");
   }
 
@@ -90,7 +85,7 @@ int master(int argc, char *argv[])
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++) {
     m_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
-    MSG_task_put(finalize, slaves[i], PORT_22);
+    MSG_task_send(finalize, MSG_host_get_name(slaves[i]));
   }
 
   XBT_INFO("Goodbye now!");
@@ -105,7 +100,7 @@ int slave(int argc, char *argv[])
   m_task_t task = NULL;
   _XBT_GNUC_UNUSED int res;
   while (1) {
-    res = MSG_task_get(&(task), PORT_22);
+    res = MSG_task_receive(&(task),MSG_host_get_name(MSG_host_self()));
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
 
     XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
@@ -148,21 +143,21 @@ int forwarder(int argc, char *argv[])
   while (1) {
     m_task_t task = NULL;
     int a;
-    a = MSG_task_get(&(task), PORT_22);
+    a = MSG_task_receive(&(task),MSG_host_get_name(MSG_host_self()));
     if (a == MSG_OK) {
       XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {
         XBT_INFO
             ("All tasks have been dispatched. Let's tell everybody the computation is over.");
         for (i = 0; i < slaves_count; i++)
-          MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
-                       slaves[i], PORT_22);
+          MSG_task_send(MSG_task_create("finalize", 0, 0, FINALIZE),
+        		  MSG_host_get_name(slaves[i]));
         MSG_task_destroy(task);
         break;
       }
       XBT_INFO("Sending \"%s\" to \"%s\"",
             MSG_task_get_name(task), slaves[i % slaves_count]->name);
-      MSG_task_put(task, slaves[i % slaves_count], PORT_22);
+      MSG_task_send(task, MSG_host_get_name(slaves[i % slaves_count]));
       i++;
     } else {
       XBT_INFO("Hey ?! What's up ? ");
@@ -183,7 +178,6 @@ MSG_error_t test_all(const char *platform_file,
 
   /* MSG_config("workstation/model","KCCFLN05"); */
   {                             /*  Simulation setting */
-    MSG_set_channel_number(MAX_CHANNEL);
     MSG_create_environment(platform_file);
   }
   {                             /*   Application deployment */

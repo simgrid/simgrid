@@ -309,9 +309,7 @@ m_host_t MSG_process_get_host(m_process_t process)
  */
 m_process_t MSG_process_from_PID(int PID)
 {
-  /* FIXME: reimplement this function using SIMIX when we have a good PID.
-   * In the meantime, I guess nobody uses it so it should not break anything. */
-  THROW_UNIMPLEMENTED;
+	return SIMIX_process_from_PID(PID);
 }
 
 /** \ingroup m_process_management

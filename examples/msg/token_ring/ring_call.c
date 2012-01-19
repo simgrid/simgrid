@@ -50,16 +50,10 @@ int host(int argc, char *argv[])
   return 0;
 }
 
-typedef enum {
-  PORT_22 = 20,
-  MAX_CHANNEL
-} channel_t;
-
 int main(int argc, char **argv)
 {
 	int i,res;
   MSG_global_init(&argc, argv);
-  MSG_set_channel_number(MAX_CHANNEL);
   MSG_create_environment(argv[1]);
   m_host_t *host_table =  MSG_get_host_table();
   number_of_hosts = MSG_get_host_number();

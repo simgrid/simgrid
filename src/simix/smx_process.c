@@ -648,3 +648,17 @@ xbt_dynar_t SIMIX_process_get_runnable(void)
 {
   return simix_global->process_to_run;
 }
+
+/**
+ * \brief Returns the process from PID.
+ */
+smx_process_t SIMIX_process_from_PID(int PID)
+{
+	smx_process_t proc;
+	xbt_swag_foreach(proc, simix_global->process_list)
+	{
+	 if(proc->pid == PID)
+	 return proc;
+	}
+	return NULL;
+}

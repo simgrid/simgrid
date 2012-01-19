@@ -911,7 +911,6 @@ int main(int argc, char *argv[])
 
   chord_initialize();
 
-  MSG_set_channel_number(0);
   MSG_create_environment(platform_file);
 
   MSG_function_register("node", node);

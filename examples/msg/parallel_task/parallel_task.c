@@ -65,7 +65,6 @@ MSG_error_t test_all(const char *platform_file)
   m_host_t *hosts;
 
   MSG_config("workstation/model", "ptask_L07");
-  MSG_set_channel_number(1);
   MSG_create_environment(platform_file);
 
   hosts = MSG_get_host_table();

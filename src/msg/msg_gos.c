@@ -264,6 +264,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 MSG_error_t
 MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive_from_host");
   return MSG_task_get_ext(task, channel, -1, host);
 }
 
@@ -282,6 +283,7 @@ MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
  */
 MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive");
   return MSG_task_get_with_timeout(task, channel, -1);
 }
 
@@ -306,6 +308,7 @@ MSG_error_t
 MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel,
                           double max_duration)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive_with_timeout");
   return MSG_task_get_ext(task, channel, max_duration, NULL);
 }
 
@@ -318,6 +321,7 @@ MSG_error_t
 MSG_task_get_ext(m_task_t * task, m_channel_t channel, double timeout,
                  m_host_t host)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive_ext");
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
@@ -435,8 +439,8 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
  * \param cleanup a function to destroy the task if the
- * communication fails (if NULL, MSG_task_destroy() will
- * be used by default)
+ * communication fails, e.g. MSG_task_destroy
+ * (if NULL, no function will be called)
  */
 void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
@@ -445,10 +449,6 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
   CHECK_HOST();
-
-  if (cleanup == NULL) {
-    cleanup = (void_f_pvoid_t) MSG_task_destroy;
-  }
 
   /* FIXME: these functions are not traceable */
 
@@ -465,7 +465,7 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 
   /* Send it by calling SIMIX network layer */
   smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
-                       t_simdata->rate, task, sizeof(void *), NULL,cleanup, NULL, 1);
+                       t_simdata->rate, task, sizeof(void *), NULL, cleanup, NULL, 1);
   t_simdata->comm = comm;
 }
 
@@ -806,6 +806,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
  */
 MSG_error_t MSG_task_put(m_task_t task, m_host_t dest, m_channel_t channel)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_send");
   return MSG_task_put_with_timeout(task, dest, channel, -1.0);
 }
 
@@ -819,6 +820,7 @@ MSG_error_t
 MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel,
                      double maxrate)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_send_bounded");
   task->simdata->rate = maxrate;
   return MSG_task_put(task, dest, channel);
 }
@@ -855,6 +857,7 @@ MSG_error_t
 MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
                           m_channel_t channel, double timeout)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_send_with_timeout");
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
@@ -906,6 +909,7 @@ int MSG_task_listen(const char *alias)
  */
 int MSG_task_Iprobe(m_channel_t channel)
 {
+  XBT_WARN("DEPRECATED!");
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
@@ -932,6 +936,7 @@ int MSG_task_Iprobe(m_channel_t channel)
  */
 int MSG_task_probe_from_host(int channel, m_host_t host)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_listen_from_host");
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
@@ -965,6 +970,7 @@ int MSG_task_listen_from_host(const char *alias, m_host_t host)
  */
 int MSG_task_probe_from(m_channel_t channel)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_task_listen_from");
   m_task_t task;
 
   CHECK_HOST();

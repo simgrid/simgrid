@@ -58,6 +58,7 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 msg_mailbox_t MSG_mailbox_get_by_channel(m_host_t host,
                                          m_channel_t channel)
 {
+  XBT_WARN("DEPRECATED! Now use MSG_mailbox_get_by_alias");
   xbt_assert((host != NULL), "Invalid host");
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",

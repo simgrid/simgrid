@@ -22,11 +22,6 @@ int receiver(int argc, char *argv[]);
 MSG_error_t test_all(const char *platform_file,
                      const char *application_file);
 
-typedef enum {
-  PORT_22 = 0,
-  MAX_CHANNEL
-} channel_t;
-
 double task_comm_size_lat = 10e0;
 double task_comm_size_bw = 10e8;
 
@@ -61,7 +56,7 @@ int sender(int argc, char *argv[])
   task_la->data = xbt_new(double, 1);
   *(double *) task_la->data = time;
   XBT_INFO("task_la->data = %le", *((double *) task_la->data));
-  MSG_task_put(task_la, host, PORT_22);
+  MSG_task_send(task_la, argv[1]);
 
   /* Bandwidth */
   time = MSG_get_clock();
@@ -71,7 +66,7 @@ int sender(int argc, char *argv[])
   task_bw->data = xbt_new(double, 1);
   *(double *) task_bw->data = time;
   XBT_INFO("task_bw->data = %le", *((double *) task_bw->data));
-  MSG_task_put(task_bw, host, PORT_22);
+  MSG_task_send(task_bw, argv[1]);
 
   return 0;
 }                               /* end_of_client */
@@ -90,7 +85,7 @@ int receiver(int argc, char *argv[])
   time = MSG_get_clock();
 
   /* Get Latency */
-  a = MSG_task_get(&task_la, PORT_22);
+  a = MSG_task_receive(&task_la,MSG_host_get_name(MSG_host_self()));
   if (a == MSG_OK) {
     time1 = MSG_get_clock();
     sender_time = *((double *) (task_la->data));
@@ -107,7 +102,7 @@ int receiver(int argc, char *argv[])
 
 
   /* Get Bandwidth */
-  a = MSG_task_get(&task_bw, PORT_22);
+  a = MSG_task_receive(&task_bw,MSG_host_get_name(MSG_host_self()));
   if (a == MSG_OK) {
     time1 = MSG_get_clock();
     sender_time = *((double *) (task_bw->data));
@@ -139,7 +134,6 @@ MSG_error_t test_all(const char *platform_file,
   XBT_INFO("test_all");
 
   /*  Simulation setting */
-  MSG_set_channel_number(MAX_CHANNEL);
   MSG_create_environment(platform_file);
 
   /*   Application deployment */

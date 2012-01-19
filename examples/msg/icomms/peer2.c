@@ -100,7 +100,6 @@ MSG_error_t test_all(const char *platform_file,
 
   /* MSG_config("workstation/model","KCCFLN05"); */
   {                             /*  Simulation setting */
-    MSG_set_channel_number(0);
     MSG_create_environment(platform_file);
   }
   {                             /*   Application deployment */

@@ -246,24 +246,6 @@ int MAIN__(void)
 {
   srand(SMPI_RAND_SEED);
 
-  double default_reference_speed = 20000.0;
-  xbt_cfg_register(&_surf_cfg_set, "smpi/running_power",
-                   "Power of the host running the simulation (in flop/s). Used to bench the operations.",
-                   xbt_cfgelm_double, &default_reference_speed, 1, 1, NULL,
-                   NULL);
-
-  int default_display_timing = 0;
-  xbt_cfg_register(&_surf_cfg_set, "smpi/display_timing",
-                   "Boolean indicating whether we should display the timing after simulation.",
-                   xbt_cfgelm_int, &default_display_timing, 1, 1, NULL,
-                   NULL);
-
-  double default_threshold = 1e-6;
-  xbt_cfg_register(&_surf_cfg_set, "smpi/cpu_threshold",
-                   "Minimal computation time (in seconds) not discarded.",
-                   xbt_cfgelm_double, &default_threshold, 1, 1, NULL,
-                   NULL);
-
   if(getenv("SMPI_PRETEND_CC") != NULL) {
 	/* Hack to ensure that smpicc can pretend to be a simple compiler. Particularly handy to pass it to the configuration tools */
     return 0;

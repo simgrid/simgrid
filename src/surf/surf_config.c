@@ -514,6 +514,45 @@ void surf_config_init(int *argc, char **argv)
                      NULL, NULL);
     xbt_cfg_setdefault_string(_surf_cfg_set, "ns3/TcpModel", "default");
 #endif
+
+//SMPI
+    double default_reference_speed = 20000.0;
+    xbt_cfg_register(&_surf_cfg_set, "smpi/running_power",
+                     "Power of the host running the simulation (in flop/s). Used to bench the operations.",
+                     xbt_cfgelm_double, &default_reference_speed, 1, 1, NULL,
+                     NULL);
+
+    int default_display_timing = 0;
+    xbt_cfg_register(&_surf_cfg_set, "smpi/display_timing",
+                     "Boolean indicating whether we should display the timing after simulation.",
+                     xbt_cfgelm_int, &default_display_timing, 1, 1, NULL,
+                     NULL);
+
+    double default_threshold = 1e-6;
+    xbt_cfg_register(&_surf_cfg_set, "smpi/cpu_threshold",
+                     "Minimal computation time (in seconds) not discarded.",
+                     xbt_cfgelm_double, &default_threshold, 1, 1, NULL,
+                     NULL);
+
+    //For smpi/bw_factor and smpi/lat_factor
+    //Default value have to be "threshold0:value0;threshold1:value1;...;thresholdN:valueN"
+    //test is if( size >= thresholdN ) return valueN;
+    //Values can be modified with command line --cfg=smpi/bw_factor:"threshold0:value0;threshold1:value1;...;thresholdN:valueN"
+    //	or with tag config put line <prop id="smpi/bw_factor" value="threshold0:value0;threshold1:value1;...;thresholdN:valueN"></prop>
+    xbt_cfg_register(&_surf_cfg_set, "smpi/bw_factor",
+                     "Bandwidth factors for smpi.",
+                     xbt_cfgelm_string, NULL, 1, 1, NULL,
+                     NULL);
+    xbt_cfg_setdefault_string(_surf_cfg_set, "smpi/bw_factor", "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
+
+    xbt_cfg_register(&_surf_cfg_set, "smpi/lat_factor",
+                     "Latency factors for smpi.",
+                     xbt_cfgelm_string, NULL, 1, 1, NULL,
+                     NULL);
+    xbt_cfg_setdefault_string(_surf_cfg_set, "smpi/lat_factor", "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
+//END SMPI
+
+
     if (!surf_path) {
       /* retrieves the current directory of the        current process */
       const char *initial_path = __surf_get_initial_path();

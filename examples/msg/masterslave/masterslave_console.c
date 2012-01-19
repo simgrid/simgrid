@@ -18,11 +18,6 @@ int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 MSG_error_t test_all(const char *);
 
-typedef enum {
-  PORT_22 = 0,
-  MAX_CHANNEL
-} channel_t;
-
 /** Emitter function  */
 int master(int argc, char *argv[])
 {
@@ -102,8 +97,7 @@ int slave(int argc, char *argv[])
 MSG_error_t test_all(const char *file)  //(void)
 {
   MSG_error_t res = MSG_OK;
-  /*  Simulation setting */
-  MSG_set_channel_number(MAX_CHANNEL);
+
   /*start by registering functions before loading script */
   MSG_function_register("master", master);
   MSG_function_register("slave", slave);
