@@ -37,5 +37,21 @@ Cmake output
 -- Generating done
 -- Build files have been written to: /home/user/workspace/simgrid-java/build
 \endverbatim
+
+\section bindings_binding_java_use How to use Simgrid-java
+
+For execute examples you need to export LD_LIBRARY_PATH to generated libSG_java library
+(<build_dir>/lib) and libsimgrid (SIMGRID_ROOT).
+
+Take care on mac export DYLD_LIBRARY_PATH and not LD_LIBRARY_PATH.
+
+\verbatim
+$ export SIMGRID_ROOT="$HOME/Install/simgrid/"
+$ export SIMGRID_JAVA_ROOT="$HOME/workspace/simgrid-java"
+$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/lib:$SIMGRID_JAVA_ROOT/lib
+$ cd examples
+$ java -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
+\endverbatim
+
  
  */

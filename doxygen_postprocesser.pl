@@ -31,7 +31,7 @@ while (<FROM>) {
       	if( $_ =~ /<li.*>/ && $tabs){
 		my $tmp_buff="";
 		$tmp_buff .= $_;
-		$tmp_buff .= '      <li><a href="install.html"><span>Install SimGrid-Java</span></a></li>'."\n";
+		$tmp_buff .= '      <li><a href="install.html"><span>Install and Use</span></a></li>'."\n";
 		$tmp_buff .= '      <li><a href="javadoc/index.html"><span>Javadoc</span></a></li>'."\n";
 		$tmp_buff .= '      <li><a href="http://simgrid.gforge.inria.fr/"><span>Website</span></a></li>'."\n";
 		$tabs = 0;
