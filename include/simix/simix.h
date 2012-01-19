@@ -242,6 +242,8 @@ XBT_PUBLIC(void) SIMIX_req_sem_acquire_timeout(smx_sem_t sem,
 XBT_PUBLIC(unsigned int) SIMIX_req_sem_acquire_any(xbt_dynar_t sems);
 XBT_PUBLIC(int) SIMIX_req_sem_get_capacity(smx_sem_t sem);
 
+XBT_PUBLIC(void) SIMIX_req_file_read(char* name);
+
 const char *SIMIX_request_name(int kind);
 
 SG_END_DECL()

@@ -19,6 +19,7 @@
 #include "instr/instr_private.h"
 #include "process_private.h"
 #include "host_private.h"
+#include "io_private.h"
 #include "network_private.h"
 #include "smurf_private.h"
 #include "synchro_private.h"
@@ -125,6 +126,10 @@ typedef struct s_smx_action {
       surf_action_t sleep;
     } synchro;
 
+    struct {
+    smx_host_t host;                /* The host that is sleeping */
+    surf_action_t surf_io;
+    } io;
   };
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING

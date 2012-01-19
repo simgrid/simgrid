@@ -84,6 +84,7 @@ set(EXTRA_DIST
 	src/simix/network_private.h
 	src/simix/smurf_private.h
 	src/simix/synchro_private.h
+	src/simix/io_private.h
 	
 	src/smpi/private.h
 	src/smpi/smpi_mpi_dt_private.h
@@ -249,6 +250,7 @@ set(SIMIX_SRC
 	src/simix/smx_user.c
 	src/simix/smx_smurf.c
 	src/simix/smx_context_raw.c
+	src/simix/smx_io.c
 )
 
 set(MSG_SRC

@@ -284,8 +284,8 @@ void SIMIX_process_kill(smx_process_t process) {
 	break;
 
       case SIMIX_ACTION_IO:
-	THROW_UNIMPLEMENTED;
-	break;
+    SIMIX_io_destroy(process->waiting_action);
+    break;
     }
   }
 

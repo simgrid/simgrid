@@ -481,6 +481,10 @@ void SIMIX_request_pre(smx_req_t req, int value)
       SIMIX_request_answer(req);
       break;
 
+    case REQ_FILE_READ:
+      SIMIX_pre_file_read(req);
+      break;
+
     case REQ_NO_REQ:
       THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
           SIMIX_process_get_name(req->issuer),

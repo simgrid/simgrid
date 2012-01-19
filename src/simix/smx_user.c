@@ -1176,6 +1176,17 @@ int SIMIX_req_sem_get_capacity(smx_sem_t sem)
   SIMIX_request_push(req->issuer);
   return req->sem_get_capacity.result;
 }
+
+void SIMIX_req_file_read(char* name)
+{
+	  smx_req_t req = SIMIX_req_mine();
+
+	  req->call = REQ_FILE_READ;
+	  req->file_read.name = name;
+	  SIMIX_request_push(req->issuer);
+
+}
+
 /* ************************************************************************** */
 
 /** @brief returns a printable string representing the request kind */

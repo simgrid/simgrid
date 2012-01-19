@@ -83,7 +83,8 @@ SIMIX_REQ_ENUM_ELEMENT(REQ_SEM_RELEASE),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_SEM_WOULD_BLOCK),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_SEM_ACQUIRE),\
 SIMIX_REQ_ENUM_ELEMENT(REQ_SEM_ACQUIRE_TIMEOUT),\
-SIMIX_REQ_ENUM_ELEMENT(REQ_SEM_GET_CAPACITY)
+SIMIX_REQ_ENUM_ELEMENT(REQ_SEM_GET_CAPACITY),\
+SIMIX_REQ_ENUM_ELEMENT(REQ_FILE_READ)
 
 /* REQ_COMM_IS_LATENCY_BOUNDED and REQ_SET_CATEGORY make things complicated
  * because they are not always present */
@@ -500,6 +501,10 @@ typedef struct s_smx_req {
       smx_sem_t sem;
       int result;
     } sem_get_capacity;
+
+    struct {
+      char* name;;
+    } file_read;
   };
 } s_smx_req_t, *smx_req_t;
 
