@@ -347,6 +347,9 @@ void destroyContainer (container_t container)
     new_pajeDestroyContainer(container);
   }
 
+  //remove it from allContainers data structure
+  xbt_dict_remove (allContainers, container->name);
+
   //free
   xbt_free (container->name);
   xbt_free (container->id);
