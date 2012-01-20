@@ -357,6 +357,7 @@ void destroyContainer (container_t container)
 
 static void recursiveDestroyContainer (container_t container)
 {
+  XBT_DEBUG("recursiveDestroyContainer %s", container->name);
   xbt_dict_cursor_t cursor = NULL;
   container_t child;
   char *child_name;
@@ -368,6 +369,7 @@ static void recursiveDestroyContainer (container_t container)
 
 static void recursiveDestroyType (type_t type)
 {
+  XBT_DEBUG("recursiveDestroyType %s", type->name);
   xbt_dict_cursor_t cursor = NULL;
   type_t child;
   char *child_name;
