@@ -148,7 +148,9 @@ void TRACE_msg_process_end(m_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     //that's the end, let's destroy it
-    destroyContainer (getContainer(instr_process_id(process, str, len)));
+    container_t container = getContainer(instr_process_id(process, str, len));
+    removeContainerFromParent (container);
+    destroyContainer (container);
   }
 }
 
