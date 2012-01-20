@@ -159,6 +159,7 @@ int main(int argc, char *argv[])
         MPI_Wait(&req[i], &sta[i]);
       }
     }
+    free(r);
 /////////////////////////////////////////
 ////////////////// RANK 1
 ///////////////////////////////////
@@ -269,6 +270,7 @@ int main(int argc, char *argv[])
         MPI_Wait(&req[i], &sta[i]);
       }
     }
+    free(r);
 /////////////////////////////////////////
 ////////////////// RANK 2
 ///////////////////////////////////
@@ -321,6 +323,7 @@ int main(int argc, char *argv[])
     MPI_Barrier(MPI_COMM_WORLD);
     if (J) {
     }
+    free(r);
   }
   MPI_Barrier(MPI_COMM_WORLD);
   MPI_Finalize();
