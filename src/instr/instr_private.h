@@ -219,6 +219,7 @@ type_t getStateType (const char *name, type_t father);
 type_t getType (const char *name, type_t father);
 val_t getValue (const char *valuename, const char *color, type_t father);
 val_t getValueByName (const char *valuename, type_t father);
+void removeContainerFromParent (container_t child);
 void destroyContainer (container_t container);
 void destroyAllContainers (void);
 

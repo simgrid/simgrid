@@ -310,6 +310,17 @@ type_t getType (const char *name, type_t father)
   return recursiveGetType (name, father);
 }
 
+void removeContainerFromParent (container_t child)
+{
+  container_t parent = child->father;
+  if (parent){
+    XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ",
+        child->name,
+        parent->name);
+    xbt_dict_remove (parent->children, child->name);
+  }
+}
+
 void destroyContainer (container_t container)
 {
   XBT_DEBUG("destroy container %s", container->name);
