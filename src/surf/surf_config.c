@@ -486,7 +486,7 @@ void surf_config_init(int *argc, char **argv)
         _surf_cfg_cb_contexts_parallel_mode, NULL);
 
     /* number of parallel threads for Surf */
-    default_value_int = 1;
+    default_value_int = surf_get_nthreads();
     xbt_cfg_register(&_surf_cfg_set, "surf/nthreads",
                      "Number of parallel threads used to update Surf models",
                      xbt_cfgelm_int, &default_value_int, 1, 1,

@@ -183,11 +183,13 @@ s_surf_model_description_t surf_optimization_mode_description[] = {
 static xbt_parmap_t surf_parmap; /* parallel map for share_resources */
 #endif
 
-static int surf_nthreads;        /* number of threads of the parmap (1 means no parallelism) */
+static int surf_nthreads = 1;    /* number of threads of the parmap (1 means no parallelism) */
 static double *surf_mins = NULL; /* return value of share_resources for each model */
 static int surf_min_index;       /* current index in surf_mins */
+static double min;               /* duration determined by surf_solve */
 
 static void surf_share_resources(surf_model_t model);
+static void surf_update_actions_state(surf_model_t model);
 
 /** Displays the long description of all registered models, and quit */
 void model_help(const char *category, s_surf_model_description_t * table)
@@ -442,7 +444,7 @@ void surf_presolve(void)
 
 double surf_solve(double max_date)
 {
-  double min = -1.0; /* duration */
+  min = -1.0; /* duration */
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
@@ -546,8 +548,16 @@ double surf_solve(double max_date)
 
   NOW = NOW + min;
 
-  xbt_dynar_foreach(model_list, iter, model)
-      model->model_private->update_actions_state(NOW, min);
+  if (surf_get_nthreads() > 1) {
+    /* parallel version */
+    xbt_parmap_apply(surf_parmap, (void_f_pvoid_t) surf_update_actions_state, model_list);
+  }
+  else {
+    /* sequential version */
+    xbt_dynar_foreach(model_list, iter, model) {
+      surf_update_actions_state(model);
+    }
+  }
 
 #ifdef HAVE_TRACING
   TRACE_paje_dump_buffer (0);
@@ -561,8 +571,8 @@ XBT_INLINE double surf_get_clock(void)
   return NOW;
 }
 
-static void surf_share_resources(surf_model_t model) {
-
+static void surf_share_resources(surf_model_t model)
+{
   if (strcmp(model->name,"network NS3")) {
     XBT_DEBUG("Running for Resource [%s]", model->name);
     double next_action_end = model->model_private->share_resources(NOW);
@@ -571,6 +581,11 @@ static void surf_share_resources(surf_model_t model) {
     int i = __sync_fetch_and_add(&surf_min_index, 1);
     surf_mins[i] = next_action_end;
   }
+}
+
+static void surf_update_actions_state(surf_model_t model)
+{
+  model->model_private->update_actions_state(NOW, min);
 }
 
 /**
