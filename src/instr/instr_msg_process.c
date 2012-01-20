@@ -48,7 +48,9 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
     new_pajeStartLink (MSG_get_clock(), getRootContainer(), type, msg, "M", key);
 
     //destroy existing container of this process
-    destroyContainer(getContainer(instr_process_id(process, str, len)));
+    container_t existing_container = getContainer(instr_process_id(process, str, len));
+    removeContainerFromParent (existing_container);
+    destroyContainer(existing_container);
 
     //create new container on the new_host location
     msg = newContainer(instr_process_id(process, str, len), INSTR_MSG_PROCESS, getContainer(new_host->name));
