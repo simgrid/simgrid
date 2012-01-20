@@ -7,15 +7,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/procmig$EXEEXT --cfg=tracing:1 --cfg=traci
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/procmig.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to '1'
-> [Fafard:emigrant:(1) 2.020551] [msg_test/INFO] Migrating to Tremblay
-> [Tremblay:emigrant:(1) 4.020707] [msg_test/INFO] Migrating to Jupiter
-> [Jupiter:emigrant:(1) 6.035906] [msg_test/INFO] Migrating to Fafard
-> [Fafard:emigrant:(1) 8.056457] [msg_test/INFO] Migrating to Ginette
-> [Ginette:emigrant:(1) 10.069689] [msg_test/INFO] Migrating to Bourassa
-> [Bourassa:emigrant:(1) 12.090025] [msg_test/INFO] Migrating to Fafard
-> [Fafard:emigrant:(1) 14.110575] [msg_test/INFO] Migrating to Tremblay
-> [Tremblay:emigrant:(1) 16.110731] [msg_test/INFO] Migrating to Ginette
-> [18.123963] [msg_test/INFO] Simulation time 18.124
 
 $ cat tracing/procmig.trace
 > %EventDef PajeDefineContainerType 0 
