@@ -682,5 +682,8 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 XBT_PUBLIC(double) get_cpu_power(const char *power);
 
+int surf_get_nthreads(void);
+void surf_set_nthreads(int nthreads);
+
 SG_END_DECL()
 #endif                          /* _SURF_SURF_H */
