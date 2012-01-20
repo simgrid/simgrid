@@ -163,8 +163,10 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
 static void instr_routing_parse_start_AS (const char*id,const char*routing)
 {
   if (getRootContainer() == NULL){
+    instr_paje_init ();
     container_t root = newContainer (id, INSTR_AS, NULL);
-    instr_paje_init (root);
+    instr_paje_set_root (root);
+
 
     if (TRACE_smpi_is_enabled()) {
       if (!TRACE_smpi_is_grouped()){

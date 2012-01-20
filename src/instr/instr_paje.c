@@ -16,11 +16,15 @@ static xbt_dict_t allContainers = NULL;     /* all created containers indexed by
 xbt_dict_t trivaNodeTypes = NULL;     /* all link types defined */
 xbt_dict_t trivaEdgeTypes = NULL;     /* all host types defined */
 
-void instr_paje_init (container_t root)
+void instr_paje_init (void)
 {
   allContainers = xbt_dict_new_homogeneous(NULL);
   trivaNodeTypes = xbt_dict_new_homogeneous(xbt_free);
   trivaEdgeTypes = xbt_dict_new_homogeneous(xbt_free);
+}
+
+void instr_paje_set_root (container_t root)
+{
   rootContainer = root;
 }
 
