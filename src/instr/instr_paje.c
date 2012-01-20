@@ -302,11 +302,18 @@ static type_t recursiveGetType (const char *name, type_t root)
   xbt_dict_cursor_t cursor = NULL;
   type_t child;
   char *child_name;
+  type_t ret = NULL;
   xbt_dict_foreach(root->children, cursor, child_name, child) {
-    type_t ret = recursiveGetType(name, child);
-    if (ret) return ret;
+    type_t found = recursiveGetType(name, child);
+    if (found){
+      if (ret == NULL){
+        ret = found;
+      }else{
+        XBT_CRITICAL("[tracing] found two types with the same name");
+      }
+    }
   }
-  return NULL;
+  return ret;
 }
 
 type_t getType (const char *name, type_t father)
