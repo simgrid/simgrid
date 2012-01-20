@@ -22,11 +22,12 @@ static int emigrant(int argc, char *argv[])
   while (1){ // I am an eternal emigrant
     MSG_task_receive(&(task), "master_mailbox");
     destination = (char*)MSG_task_get_data (task);
+    MSG_task_destroy (task);
     if (!destination) break; //there is no destination, die
     XBT_INFO("Migrating to %s", destination);
     MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name(destination));
     MSG_process_sleep(2); // I am tired, have to sleep for 2 seconds
-    MSG_task_destroy (task);
+    free (destination);
     task = NULL;
   }
   return 0;
