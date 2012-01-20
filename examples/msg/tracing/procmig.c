@@ -73,29 +73,21 @@ int main(int argc, char *argv[])
   MSG_global_init(&argc, argv);
   if (argc < 3) {
     XBT_CRITICAL("Usage: %s platform_file deployment_file\n", argv[0]);
-    XBT_CRITICAL("example: %s msg_platform.xml msg_deployment_suspend.xml\n",
-              argv[0]);
     exit(1);
   }
 
-  /* Simulation setting */
-  MSG_create_environment(argv[1]);
+  char *platform_file = argv[1];
+  char *deployment_file = argv[2];
+  MSG_create_environment(platform_file);
 
   TRACE_category ("migration_order");
 
   /* Application deployment */
   MSG_function_register("emigrant", emigrant);
   MSG_function_register("master", master);
-  MSG_launch_application(argv[2]);
+  MSG_launch_application(deployment_file);
 
-  /* Run the simulation */
-  res = MSG_main();
-  XBT_INFO("Simulation time %g", MSG_get_clock());
-  if (res == MSG_OK)
-    res = MSG_clean();
-
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  MSG_main();
+  MSG_clean();
+  return 0;
 }                               /* end_of_main */

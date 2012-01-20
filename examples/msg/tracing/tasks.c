@@ -13,11 +13,6 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
-int master(int argc, char *argv[]);
-int slave(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file,
-                     const char *application_file);
-
 /** Emitter function  */
 int master(int argc, char *argv[])
 {
@@ -56,17 +51,14 @@ int master(int argc, char *argv[])
 int slave(int argc, char *argv[])
 {
   m_task_t task = NULL;
-  int res;
+  MSG_error_t res;
 
   while (1) {
-    res = MSG_task_receive(&(task), "master_mailbox");
-    if (res != MSG_OK) {
-      XBT_INFO("error");
-      break;
-    }
+    MSG_task_receive(&(task), "master_mailbox");
 
     char *data = MSG_task_get_data(task);
     if (data && !strcmp(data, "finalize")) {
+      free(data);
       MSG_task_destroy(task);
       break;
     }
@@ -80,49 +72,27 @@ int slave(int argc, char *argv[])
   return 0;
 }
 
-/** Test function */
-MSG_error_t test_all(const char *platform_file,
-                     const char *application_file)
-{
-  MSG_error_t res = MSG_OK;
-
-  {                             /*  Simulation setting */
-    MSG_create_environment(platform_file);
-  }
-  {
-    //declaring user categories
-    TRACE_category_with_color ("compute", "1 0 0");  //compute is red
-    TRACE_category_with_color ("finalize", "0 1 0"); //finalize is green
-  }
-  {                             /*   Application deployment */
-    MSG_function_register("master", master);
-    MSG_function_register("slave", slave);
-    MSG_launch_application(application_file);
-  }
-  res = MSG_main();
-
-  XBT_INFO("Simulation time %g", MSG_get_clock());
-  return res;
-}
-
-
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
-
   MSG_global_init(&argc, argv);
   if (argc < 3) {
     printf("Usage: %s platform_file deployment_file\n", argv[0]);
-    printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
     exit(1);
   }
 
-  res = test_all(argv[1], argv[2]);
-  MSG_clean();
+  char *platform_file = argv[1];
+  char *deployment_file = argv[2];
+  MSG_create_environment(platform_file);
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
-}                               /* end_of_main */
+  TRACE_category_with_color ("compute", "1 0 0");  //compute is red
+  TRACE_category_with_color ("finalize", "0 1 0"); //finalize is green
+
+  MSG_function_register("master", master);
+  MSG_function_register("slave", slave);
+  MSG_launch_application(deployment_file);
+
+  MSG_main();
+  MSG_clean();
+  return 0;
+}
