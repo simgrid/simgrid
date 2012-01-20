@@ -160,7 +160,6 @@ int TRACE_smpi_is_enabled(void);
 int TRACE_smpi_is_grouped(void);
 int TRACE_categorized (void);
 int TRACE_uncategorized (void);
-int TRACE_msg_task_is_enabled(void);
 int TRACE_msg_process_is_enabled(void);
 int TRACE_buffer (void);
 int TRACE_onelink_only (void);

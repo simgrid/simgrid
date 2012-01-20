@@ -78,7 +78,6 @@ ADD_TEST(msg-icomms-waitany ${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/peer3 ${
 IF(HAVE_TRACING)
   ADD_TEST(tracing-ms perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/ms.tesh)
   ADD_TEST(tracing-categories perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/categories.tesh)
-  ADD_TEST(tracing-tasks perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/tasks.tesh)
   ADD_TEST(tracing-process-migration perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/procmig.tesh)
 ENDIF(HAVE_TRACING)
 

@@ -267,14 +267,6 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
     getLinkType ("MSG_PROCESS_LINK", getRootType(), msg_process, msg_process);
     getLinkType ("MSG_PROCESS_TASK_LINK", getRootType(), msg_process, msg_process);
   }
-
-  if (TRACE_msg_task_is_enabled()) {
-    type_t msg_task = getContainerType ("MSG_TASK", new->type);
-    type_t state = getStateType ("MSG_TASK_STATE", msg_task);
-    getValue ("MSG_task_execute", "0 1 0", state);
-    getValue ("created", "1 1 0", state);
-    getLinkType ("MSG_TASK_LINK", getRootType(), msg_task, msg_task);
-  }
 }
 
 static void instr_routing_parse_start_router (sg_platf_router_cbarg_t router)

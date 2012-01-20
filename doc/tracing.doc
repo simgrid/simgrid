@@ -204,15 +204,6 @@ tracing/smpi/group
 \endverbatim
 
 \li <b>\c 
-tracing/msg/task
-</b>:
-  This option only has effect if this simulator is MSG-based. It traces the
-  behavior of all categorized MSG tasks, grouping them by hosts.
-\verbatim
---cfg=tracing/msg/task:1
-\endverbatim
-
-\li <b>\c 
 tracing/msg/process
 </b>:
   This option only has effect if this simulator is MSG-based. It traces the
