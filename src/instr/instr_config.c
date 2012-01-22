@@ -73,7 +73,9 @@ int TRACE_start()
   TRACE_paje_start();
 
   /* activate trace */
-  xbt_assert (trace_active==0, "Tracing is already active.");
+  if (trace_active == 1){
+    THROWF (tracing_error, 0, "Tracing is already active");
+  }
   trace_active = 1;
   XBT_DEBUG ("Tracing is on");
 
@@ -395,9 +397,10 @@ void TRACE_generate_triva_uncat_conf (void)
     char *name, *value;
 
     FILE *file = fopen (output, "w");
-    xbt_assert (file != NULL,
-       "Unable to open file (%s) for writing triva graph "
-       "configuration (uncategorized).", output);
+    if (file == NULL){
+      THROWF (system_error, 1, "Unable to open file (%s) for writing triva graph "
+          "configuration (uncategorized).", output);
+    }
 
     //open
     fprintf (file, "{\n");
@@ -451,9 +454,10 @@ void TRACE_generate_triva_cat_conf (void)
     }
 
     FILE *file = fopen (output, "w");
-    xbt_assert (file != NULL,
-       "Unable to open file (%s) for writing triva graph "
-       "configuration (categorized).", output);
+    if (file == NULL){
+      THROWF (system_error, 1, "Unable to open file (%s) for writing triva graph "
+          "configuration (categorized).", output);
+    }
 
     //open
     fprintf (file, "{\n");
