@@ -141,7 +141,6 @@ void TRACE_smpi_alloc(void);
 void TRACE_smpi_release(void);
 void TRACE_smpi_init(int rank);
 void TRACE_smpi_finalize(int rank);
-void TRACE_smpi_start(void);
 void TRACE_smpi_collective_in(int rank, int root, const char *operation);
 void TRACE_smpi_collective_out(int rank, int root, const char *operation);
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation);
