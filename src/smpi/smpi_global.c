@@ -258,7 +258,7 @@ int MAIN__(void)
   SIMIX_global_init(&xargc, xargv);
 
 #ifdef HAVE_TRACING
-  TRACE_smpi_start();
+  TRACE_start();
 #endif
 
   // parse the platform file: get the host list
@@ -284,7 +284,7 @@ int MAIN__(void)
   smpi_global_destroy();
 
 #ifdef HAVE_TRACING
-  TRACE_smpi_release();
+  TRACE_end();
 #endif
 
   SIMIX_clean();

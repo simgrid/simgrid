@@ -141,19 +141,10 @@ void TRACE_smpi_alloc()
   process_category = xbt_dict_new_homogeneous(xbt_free);
 }
 
-void TRACE_smpi_start(void)
-{
-  TRACE_start();
-}
-
 void TRACE_smpi_release(void)
 {
   xbt_dict_free(&keys);
   xbt_dict_free(&process_category);
-  if (!TRACE_smpi_is_enabled()) return;
-
-  TRACE_surf_release();
-  TRACE_end();
 }
 
 void TRACE_smpi_init(int rank)
