@@ -4,7 +4,7 @@
 
 Since GRAS is technically part of the SimGrid project, you have to install
 SimGrid to install GRAS. Doing so is explained in the relevant FAQ section
-(\ref installSimgrid). 
+(\ref install). 
 
 Newcommers should install the stable release from the tarball, since the 
 snapshots may suffer from (additionnal;) stability issues. Only go for the

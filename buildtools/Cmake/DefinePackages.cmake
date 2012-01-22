@@ -569,7 +569,7 @@ file(GLOB_RECURSE examples_to_install_in_doc
 
     
 set(DOC_SOURCES
-	doc/installSimgrid.doc
+	doc/install.doc
 	doc/bindings.doc
 	doc/options.doc
 	doc/use.doc
