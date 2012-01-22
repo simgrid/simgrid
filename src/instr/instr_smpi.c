@@ -170,8 +170,9 @@ void TRACE_smpi_finalize(int rank)
   if (!TRACE_smpi_is_enabled()) return;
 
   char str[INSTR_DEFAULT_STR_SIZE];
-  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  destroyContainer(getContainer (str));
+  container_t container = getContainer(smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE));
+  removeContainerFromParent (container);
+  destroyContainer (container);
 }
 
 void TRACE_smpi_collective_in(int rank, int root, const char *operation)
