@@ -1113,9 +1113,9 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
 #ifdef HAVE_TRACING
   //save requests information for tracing
   int i;
-  xbt_dynar_t srcs = xbt_dynar_new(sizeof(int), xbt_free);
-  xbt_dynar_t dsts = xbt_dynar_new(sizeof(int), xbt_free);
-  xbt_dynar_t recvs = xbt_dynar_new(sizeof(int), xbt_free);
+  xbt_dynar_t srcs = xbt_dynar_new(sizeof(int), NULL);
+  xbt_dynar_t dsts = xbt_dynar_new(sizeof(int), NULL);
+  xbt_dynar_t recvs = xbt_dynar_new(sizeof(int), NULL);
   for (i = 0; i < count; i++) {
     MPI_Request req = requests[i];      //already received requests are no longer valid
     if (req) {
@@ -1128,11 +1128,15 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
       xbt_dynar_insert_at(srcs, i, asrc);
       xbt_dynar_insert_at(dsts, i, adst);
       xbt_dynar_insert_at(recvs, i, arecv);
+      xbt_free(asrc);
+      xbt_free(adst);
+      xbt_free(arecv);
     } else {
       int *t = xbt_new(int, 1);
       xbt_dynar_insert_at(srcs, i, t);
       xbt_dynar_insert_at(dsts, i, t);
       xbt_dynar_insert_at(recvs, i, t);
+      xbt_free(t);
     }
   }
   int rank_traced = smpi_comm_rank(MPI_COMM_WORLD);
@@ -1154,9 +1158,9 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   }
   TRACE_smpi_ptp_out(rank_traced, src_traced, dst_traced, __FUNCTION__);
   //clean-up of dynars
-  xbt_free(srcs);
-  xbt_free(dsts);
-  xbt_free(recvs);
+  xbt_dynar_free(&srcs);
+  xbt_dynar_free(&dsts);
+  xbt_dynar_free(&recvs);
 #endif
   smpi_bench_begin();
   return retval;
@@ -1169,9 +1173,9 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 #ifdef HAVE_TRACING
   //save information from requests
   int i;
-  xbt_dynar_t srcs = xbt_dynar_new(sizeof(int), xbt_free);
-  xbt_dynar_t dsts = xbt_dynar_new(sizeof(int), xbt_free);
-  xbt_dynar_t recvs = xbt_dynar_new(sizeof(int), xbt_free);
+  xbt_dynar_t srcs = xbt_dynar_new(sizeof(int), NULL);
+  xbt_dynar_t dsts = xbt_dynar_new(sizeof(int), NULL);
+  xbt_dynar_t recvs = xbt_dynar_new(sizeof(int), NULL);
   for (i = 0; i < count; i++) {
     MPI_Request req = requests[i];      //all req should be valid in Waitall
     int *asrc = xbt_new(int, 1);
@@ -1183,6 +1187,9 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
     xbt_dynar_insert_at(srcs, i, asrc);
     xbt_dynar_insert_at(dsts, i, adst);
     xbt_dynar_insert_at(recvs, i, arecv);
+    xbt_free(asrc);
+    xbt_free(adst);
+    xbt_free(arecv);
   }
   int rank_traced = smpi_comm_rank (MPI_COMM_WORLD);
   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__);
@@ -1200,9 +1207,9 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   }
   TRACE_smpi_ptp_out(rank_traced, -1, -1, __FUNCTION__);
   //clean-up of dynars
-  xbt_free(srcs);
-  xbt_free(dsts);
-  xbt_free(recvs);
+  xbt_dynar_free(&srcs);
+  xbt_dynar_free(&dsts);
+  xbt_dynar_free(&recvs);
 #endif
   smpi_bench_begin();
   return MPI_SUCCESS;

@@ -118,6 +118,9 @@ static void tree_bcast(void *buf, int count, MPI_Datatype datatype,
   }
   smpi_mpi_startall(tree->numChildren, requests);
   smpi_mpi_waitall(tree->numChildren, requests, MPI_STATUS_IGNORE);
+  for (i = 0; i < tree->numChildren; i++){
+    xbt_free (requests[i]);
+  }
   xbt_free(requests);
 }
 
@@ -156,6 +159,9 @@ static void tree_antibcast(void *buf, int count, MPI_Datatype datatype,
   }
   smpi_mpi_startall(tree->numChildren, requests);
   smpi_mpi_waitall(tree->numChildren, requests, MPI_STATUS_IGNORE);
+  for (i = 0; i < tree->numChildren; i++){
+    xbt_free (requests[i]);
+  }
   xbt_free(requests);
 }
 
