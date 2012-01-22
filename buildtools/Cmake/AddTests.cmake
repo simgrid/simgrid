@@ -426,7 +426,7 @@ if(HAVE_UCONTEXT_H)
 	ADD_TEST(smpi-reduce-ucontext	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--cfg contexts/factory:ucontext			--cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/reduce.tesh)
 endif(HAVE_UCONTEXT_H)
 if(HAVE_TRACING)
-  ADD_TEST(smpi-tracing-ptp ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/smpi_traced.tesh)
+  ADD_TEST(smpi-tracing-ptp ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/tracing/smpi_traced.tesh)
 endif(HAVE_TRACING)
 endif(enable_smpi)
 								

@@ -120,7 +120,7 @@ if(enable_smpi)
 ADD_TEST(smpi-bcast 	perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/bcast.tesh)
 ADD_TEST(smpi-reduce 	perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/reduce.tesh)
 if(HAVE_TRACING)
-  ADD_TEST(smpi-tracing-ptp perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/smpi_traced.tesh)
+  ADD_TEST(smpi-tracing-ptp perl ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/tracing/smpi_traced.tesh)
 endif(HAVE_TRACING)
 endif(enable_smpi)
 								
