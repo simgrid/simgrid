@@ -268,21 +268,25 @@ static container_t recursiveGetContainer (const char *name, container_t root)
 container_t getContainer (const char *name)
 {
   if (name == NULL) return NULL;
-  return recursiveGetContainer(name, rootContainer);
+  return getContainerByName(name);
 }
 
 int knownContainerWithName (const char *name)
 {
-  if (xbt_dict_get_or_null (allContainers, name)){
-    return 1;
-  }else{
+  if (xbt_dict_get_or_null (allContainers, name) == NULL){
     return 0;
+  }else{
+    return 1;
   }
 }
 
 container_t getContainerByName (const char *name)
 {
-  return (container_t)xbt_dict_get (allContainers, name);
+  container_t ret = xbt_dict_get_or_null (allContainers, name);
+  if (ret == NULL){
+    XBT_CRITICAL("container with name %s not found", name);
+  }
+  return ret;
 }
 
 char *getContainerIdByName (const char *name)
@@ -399,6 +403,11 @@ void destroyAllContainers ()
   if (getRootType()) recursiveDestroyType (getRootType());
   rootContainer = NULL;
   rootType = NULL;
+
+  //checks
+  if (xbt_dict_length(allContainers) != 0){
+    XBT_CRITICAL("some containers still present even after destroying all of them");
+  }
 }
 
 
