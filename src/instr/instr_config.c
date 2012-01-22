@@ -104,8 +104,10 @@ int TRACE_end()
   TRACE_paje_dump_buffer(1);
 
   /* destroy all data structures of tracing (and free) */
-  destroyAllContainers();
-  instr_paje_free();
+  PJ_container_free_all();
+  PJ_type_free_all();
+  PJ_container_release();
+  PJ_type_release();
   TRACE_surf_release();
   TRACE_smpi_release();
   xbt_dict_free(&created_categories);

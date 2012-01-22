@@ -199,28 +199,35 @@ void TRACE_sd_task_destroy(SD_task_t task);
 /* instr_paje.c */
 extern xbt_dict_t trivaNodeTypes;
 extern xbt_dict_t trivaEdgeTypes;
-container_t newContainer (const char *name, e_container_types kind, container_t father);
-container_t getContainer (const char *name);
-int knownContainerWithName (const char *name);
-container_t getContainerByName (const char *name);
-char *getContainerIdByName (const char *name);
-char *getVariableTypeIdByName (const char *name, type_t father);
-container_t getRootContainer (void);
-void instr_paje_init (void);
-void instr_paje_set_root (container_t root);
-void instr_paje_free (void);
-type_t getRootType (void);
-type_t getContainerType (const char *name, type_t father);
-type_t getEventType (const char *name, const char *color, type_t father);
-type_t getVariableType (const char *name, const char *color, type_t father);
-type_t getLinkType (const char *name, type_t father, type_t source, type_t dest);
-type_t getStateType (const char *name, type_t father);
-type_t getType (const char *name, type_t father);
-val_t getValue (const char *valuename, const char *color, type_t father);
-val_t getValueByName (const char *valuename, type_t father);
-void removeContainerFromParent (container_t child);
-void destroyContainer (container_t container);
-void destroyAllContainers (void);
+long long int instr_new_paje_id (void);
+void PJ_container_alloc (void);
+void PJ_container_release (void);
+container_t PJ_container_new (const char *name, e_container_types kind, container_t father);
+container_t PJ_container_get (const char *name);
+container_t PJ_container_get_or_null (const char *name);
+container_t PJ_container_get_root (void);
+void PJ_container_set_root (container_t root);
+void PJ_container_free (container_t container);
+void PJ_container_free_all (void);
+void PJ_container_remove_from_parent (container_t container);
+
+/* instr_paje_types.c */
+void PJ_type_alloc (void);
+void PJ_type_release (void);
+type_t PJ_type_get_root (void);
+type_t PJ_type_container_new (const char *name, type_t father);
+type_t PJ_type_event_new (const char *name, const char *color, type_t father);
+type_t PJ_type_variable_new (const char *name, const char *color, type_t father);
+type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t dest);
+type_t PJ_type_state_new (const char *name, type_t father);
+type_t PJ_type_get (const char *name, const type_t father);
+void PJ_type_free (type_t type);
+void PJ_type_free_all (void);
+
+/* instr_paje_values.c */
+val_t PJ_value_new (const char *name, const char *color, type_t father);
+val_t PJ_value_get (const char *name, const type_t father);
+void PJ_value_free (val_t value);
 
 /* instr_routing.c */
 void instr_routing_define_callbacks (void);

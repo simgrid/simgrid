@@ -66,7 +66,7 @@ void TRACE_declare_mark(const char *mark_type)
   if (!mark_type) return;
 
   XBT_DEBUG("MARK,declare %s", mark_type);
-  getEventType(mark_type, NULL, getRootType());
+  PJ_type_event_new(mark_type, NULL, PJ_type_get_root());
 }
 
 void TRACE_mark(const char *mark_type, const char *mark_value)
@@ -77,9 +77,15 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   if (!mark_type || !mark_value) return;
 
   XBT_DEBUG("MARK %s %s", mark_type, mark_value);
-  type_t type = getEventType (mark_type, NULL, getRootContainer()->type);
-  val_t value = getValue (mark_value, NULL, type);
-  new_pajeNewEvent (MSG_get_clock(), getRootContainer(), type, value);
+  type_t type = PJ_type_get (mark_type, PJ_type_get_root());
+  if (type == NULL){
+    THROWF (tracing_error, 1, "mark_type with name (%s) not declared before", mark_type);
+  }
+  val_t value = PJ_value_get (mark_value, type);
+  if (value == NULL){
+    value = PJ_value_new (mark_value, NULL, type);
+  }
+  new_pajeNewEvent (MSG_get_clock(), PJ_container_get_root(), type, value);
 }
 
 static void instr_user_variable(double time,
@@ -105,22 +111,22 @@ static void instr_user_variable(double time,
     break;
   case INSTR_US_SET:
   {
-    container_t container = getContainerByName(resource);
-    type_t type = getVariableType (variable, NULL, container->type);
+    container_t container = PJ_container_get(resource);
+    type_t type = PJ_type_get (variable, container->type);
     new_pajeSetVariable(time, container, type, value);
     break;
   }
   case INSTR_US_ADD:
   {
-    container_t container = getContainerByName(resource);
-    type_t type = getVariableType (variable, NULL, container->type);
+    container_t container = PJ_container_get(resource);
+    type_t type = PJ_type_get (variable, container->type);
     new_pajeAddVariable(time, container, type, value);
     break;
   }
   case INSTR_US_SUB:
   {
-    container_t container = getContainerByName(resource);
-    type_t type = getVariableType (variable, NULL, container->type);
+    container_t container = PJ_container_get(resource);
+    type_t type = PJ_type_get (variable, container->type);
     new_pajeSubVariable(time, container, type, value);
     break;
   }

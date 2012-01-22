@@ -27,8 +27,8 @@ void TRACE_surf_host_set_power(double date, const char *resource, double power)
   if (!TRACE_is_enabled())
     return;
 
-  container_t container = getContainerByName(resource);
-  type_t type = getVariableType("power", NULL, container->type);
+  container_t container = PJ_container_get(resource);
+  type_t type = PJ_type_get ("power", container->type);
   new_pajeSetVariable(date, container, type, power);
 }
 
@@ -37,8 +37,8 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
   if (!TRACE_is_enabled())
     return;
 
-  container_t container = getContainerByName(resource);
-  type_t type = getVariableType("bandwidth", NULL, container->type);
+  container_t container = PJ_container_get(resource);
+  type_t type = PJ_type_get ("bandwidth", container->type);
   new_pajeSetVariable(date, container, type, bandwidth);
 }
 
@@ -48,8 +48,8 @@ void TRACE_surf_link_set_latency(double date, const char *resource, double laten
   if (!TRACE_is_enabled())
     return;
 
-  container_t container = getContainerByName(resource);
-  type_t type = getVariableType("latency", NULL, container->type);
+  container_t container = PJ_container_get(resource);
+  type_t type = PJ_type_get ("latency", container->type);
   new_pajeSetVariable(date, container, type, latency);
 }
 
