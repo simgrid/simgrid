@@ -488,15 +488,6 @@ if(HAVE_MC)
 	endif(HAVE_RAWCTX)
 endif(HAVE_MC)
 
-# Those tests are broken due to wrong sort of tesh... TODO sort with more characters
-set_tests_properties(msg-chord-thread msg-chord-thread-parallel PROPERTIES WILL_FAIL true)
-if(HAVE_UCONTEXT_H)
-    set_tests_properties(msg-chord-ucontext msg-chord-ucontext-parallel PROPERTIES WILL_FAIL true)
-endif(HAVE_UCONTEXT_H)
-if(HAVE_RAWCTX)
-    set_tests_properties(msg-chord-raw msg-chord-raw-parallel PROPERTIES WILL_FAIL true)
-endif(HAVE_RAWCTX)
-
 endif(release)
 
 endif(NOT enable_memcheck)
