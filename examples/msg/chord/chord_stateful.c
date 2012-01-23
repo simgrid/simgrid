@@ -892,13 +892,12 @@ int main(int argc, char *argv[])
 {
   xbt_os_timer_t timer = xbt_os_timer_new();
 
+  MSG_global_init(&argc, argv);
   if (argc < 3) {
     printf("Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n", argv[0]);
     printf("example: %s ../msg_platform.xml chord.xml\n", argv[0]);
     exit(1);
   }
-
-  MSG_global_init(&argc, argv);
 
   char **options = &argv[1];
   while (!strncmp(options[0], "-", 1)) {
