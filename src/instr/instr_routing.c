@@ -70,7 +70,7 @@ static void linkContainers (container_t father, container_t src, container_t dst
   //declare type
   char link_typename[INSTR_DEFAULT_STR_SIZE];
   snprintf (link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s", src->type->name, dst->type->name);
-  type_t link_type = PJ_type_get (link_typename, father->type);
+  type_t link_type = PJ_type_get_or_null (link_typename, father->type);
   if (link_type == NULL){
     link_type = PJ_type_link_new (link_typename, father->type, src->type, dst->type);
   }
@@ -173,7 +173,7 @@ static void instr_routing_parse_start_AS (const char*id,const char*routing)
 
     if (TRACE_smpi_is_enabled()) {
       if (!TRACE_smpi_is_grouped()){
-        type_t mpi = PJ_type_get ("MPI", root->type);
+        type_t mpi = PJ_type_get_or_null ("MPI", root->type);
         if (mpi == NULL){
           mpi = PJ_type_container_new("MPI", root->type);
           PJ_type_state_new ("MPI_STATE", mpi);
@@ -229,11 +229,11 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
     container_t new = PJ_container_new (link_name, INSTR_LINK, father);
 
     if (TRACE_categorized() || TRACE_uncategorized()){
-      type_t bandwidth = PJ_type_get ("bandwidth", new->type);
+      type_t bandwidth = PJ_type_get_or_null ("bandwidth", new->type);
       if (bandwidth == NULL){
         bandwidth = PJ_type_variable_new ("bandwidth", NULL, new->type);
       }
-      type_t latency = PJ_type_get ("latency", new->type);
+      type_t latency = PJ_type_get_or_null ("latency", new->type);
       if (latency == NULL){
         latency = PJ_type_variable_new ("latency", NULL, new->type);
       }
@@ -241,7 +241,7 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
       new_pajeSetVariable (0, new, latency, latency_value);
     }
     if (TRACE_uncategorized()){
-      type_t bandwidth_used = PJ_type_get ("bandwidth_used", new->type);
+      type_t bandwidth_used = PJ_type_get_or_null ("bandwidth_used", new->type);
       if (bandwidth_used == NULL){
         bandwidth_used = PJ_type_variable_new ("bandwidth_used", "0.5 0.5 0.5", new->type);
       }
@@ -257,21 +257,21 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
   container_t new = PJ_container_new (host->id, INSTR_HOST, father);
 
   if (TRACE_categorized() || TRACE_uncategorized()) {
-    type_t power = PJ_type_get ("power", new->type);
+    type_t power = PJ_type_get_or_null ("power", new->type);
     if (power == NULL){
       power = PJ_type_variable_new ("power", NULL, new->type);
     }
     new_pajeSetVariable (0, new, power, host->power_peak);
   }
   if (TRACE_uncategorized()){
-    type_t power_used = PJ_type_get ("power_used", new->type);
+    type_t power_used = PJ_type_get_or_null ("power_used", new->type);
     if (power_used == NULL){
       power_used = PJ_type_variable_new ("power_used", "0.5 0.5 0.5", new->type);
     }
   }
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()){
-    type_t mpi = PJ_type_get ("MPI", new->type);
+    type_t mpi = PJ_type_get_or_null ("MPI", new->type);
     if (mpi == NULL){
       mpi = PJ_type_container_new("MPI", new->type);
       PJ_type_state_new ("MPI_STATE", mpi);
@@ -280,7 +280,7 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
   }
 
   if (TRACE_msg_process_is_enabled()) {
-    type_t msg_process = PJ_type_get ("MSG_PROCESS", new->type);
+    type_t msg_process = PJ_type_get_or_null ("MSG_PROCESS", new->type);
     if (msg_process == NULL){
       msg_process = PJ_type_container_new("MSG_PROCESS", new->type);
       type_t state = PJ_type_state_new ("MSG_PROCESS_STATE", msg_process);
