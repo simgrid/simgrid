@@ -124,7 +124,8 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
 #ifdef HAVE_FUTEX_H
     mode = XBT_PARMAP_FUTEX;
 #else
-    mode = XBT_PARMAP_POSIX;
+    //For now use busy wait because posix is unimplemented
+    mode = XBT_PARMAP_BUSY_WAIT;
 #endif
   }
   parmap->mode = mode;
