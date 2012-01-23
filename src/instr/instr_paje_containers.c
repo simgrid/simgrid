@@ -8,7 +8,7 @@
 
 #ifdef HAVE_TRACING
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje, instr, "Paje tracing event system (data structures)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
 static container_t rootContainer = NULL;    /* the root container */
 static xbt_dict_t allContainers = NULL;     /* all created containers indexed by name */
