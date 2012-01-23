@@ -42,6 +42,10 @@ void PJ_container_set_root (container_t root)
 
 container_t PJ_container_new (const char *name, e_container_types kind, container_t father)
 {
+  if (name == NULL){
+    THROWF (tracing_error, 0, "can't create a container with a NULL name");
+  }
+
   static long long int container_id = 0;
   char id_str[INSTR_DEFAULT_STR_SIZE];
   snprintf (id_str, INSTR_DEFAULT_STR_SIZE, "%lld", container_id++);
@@ -81,7 +85,7 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
       case INSTR_SMPI:        snprintf (typename, INSTR_DEFAULT_STR_SIZE, "MPI");         break;
       case INSTR_MSG_PROCESS: snprintf (typename, INSTR_DEFAULT_STR_SIZE, "MSG_PROCESS"); break;
       case INSTR_MSG_TASK:    snprintf (typename, INSTR_DEFAULT_STR_SIZE, "MSG_TASK");    break;
-      default: xbt_die ("Congratulations, you have found a bug on newContainer function of instr_routing.c"); break;
+      default: THROWF (tracing_error, 0, "new container kind is unknown."); break;
     }
     type_t type = PJ_type_get (typename, new->father->type);
     if (type == NULL){
@@ -135,6 +139,10 @@ container_t PJ_container_get_root ()
 
 void PJ_container_remove_from_parent (container_t child)
 {
+  if (child == NULL){
+    THROWF (tracing_error, 0, "can't remove from parent with a NULL child");
+  }
+
   container_t parent = child->father;
   if (parent){
     XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ",
@@ -146,6 +154,9 @@ void PJ_container_remove_from_parent (container_t child)
 
 void PJ_container_free (container_t container)
 {
+  if (container == NULL){
+    THROWF (tracing_error, 0, "trying to free a NULL container");
+  }
   XBT_DEBUG("destroy container %s", container->name);
 
   //obligation to dump previous events because they might
@@ -172,6 +183,9 @@ void PJ_container_free (container_t container)
 
 static void recursiveDestroyContainer (container_t container)
 {
+  if (container == NULL){
+    THROWF (tracing_error, 0, "trying to recursively destroy a NULL container");
+  }
   XBT_DEBUG("recursiveDestroyContainer %s", container->name);
   xbt_dict_cursor_t cursor = NULL;
   container_t child;
@@ -184,7 +198,11 @@ static void recursiveDestroyContainer (container_t container)
 
 void PJ_container_free_all ()
 {
-  if (PJ_container_get_root()) recursiveDestroyContainer (PJ_container_get_root());
+  container_t root = PJ_container_get_root();
+  if (root == NULL){
+    THROWF (tracing_error, 0, "trying to free all containers, but root is NULL");
+  }
+  recursiveDestroyContainer (root);
   rootContainer = NULL;
 
   //checks

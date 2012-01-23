@@ -11,6 +11,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event s
 
 val_t PJ_value_new (const char *name, const char *color, type_t father)
 {
+  if (name == NULL || father == NULL){
+    THROWF (tracing_error, 0, "can't create a value with a NULL name (or a NULL father)");
+  }
+
   val_t ret = xbt_new0(s_val_t, 1);
   ret->name = xbt_strdup (name);
   ret->father = father;
@@ -28,6 +32,10 @@ val_t PJ_value_new (const char *name, const char *color, type_t father)
 
 val_t PJ_value_get (const char *name, type_t father)
 {
+  if (name == NULL || father == NULL){
+    THROWF (tracing_error, 0, "can't get a value with a NULL name (or a NULL father)");
+  }
+
   if (father->kind == TYPE_VARIABLE) return NULL; //Variables can't have different values
   val_t ret = (val_t)xbt_dict_get_or_null (father->values, name);
   if (ret == NULL){
