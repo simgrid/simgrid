@@ -4,12 +4,12 @@ p Runs the 'msg_handle' test within the simulator (simulation times valid for 32
 $ $SG_TEST_EXENV gras/msg_handle/msg_handle_simulator$EXEEXT ${srcdir:=.}/../examples/msg/small_platform.xml ${srcdir:=.}/gras/msg_handle/msg_handle.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:server@Tremblay) Launch server (port=4000)
 > [  0.000000] (2:client@Fafard) Launch client (port=4000)
-> [  1.000312] (1:server@Tremblay) Initialization done.
-> [  1.000312] (1:server@Tremblay) gras_msg_handle(0) works as expected (immediate timeout)
-> [  1.000312] (2:client@Fafard) Initialization done.
-> [  2.000312] (1:server@Tremblay) gras_msg_handle(1) works as expected (delayed timeout)
-> [  5.000312] (1:server@Tremblay) Unlock pal
-> [  5.020863] (1:server@Tremblay) Exiting GRAS
-> [  5.020863] (2:client@Fafard) Got the message
-> [  5.020863] (2:client@Fafard) gras_msg_handle(-1) works as expected (locked)
-> [  5.020863] (2:client@Fafard) Exiting GRAS
+> [  1.000390] (1:server@Tremblay) Initialization done.
+> [  1.000390] (1:server@Tremblay) gras_msg_handle(0) works as expected (immediate timeout)
+> [  1.000390] (2:client@Fafard) Initialization done.
+> [  2.000390] (1:server@Tremblay) gras_msg_handle(1) works as expected (delayed timeout)
+> [  5.000390] (1:server@Tremblay) Unlock pal
+> [  5.026098] (1:server@Tremblay) Exiting GRAS
+> [  5.026098] (2:client@Fafard) Got the message
+> [  5.026098] (2:client@Fafard) gras_msg_handle(-1) works as expected (locked)
+> [  5.026098] (2:client@Fafard) Exiting GRAS

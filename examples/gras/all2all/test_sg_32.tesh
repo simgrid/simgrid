@@ -8,58 +8,58 @@ $ $SG_TEST_EXENV ./all2all_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platfor
 > [  0.000000] (05:sender@Fafard) Launch current node
 > [  0.000000] (07:sender@Ginette) Launch current node
 > [  0.000000] (09:sender@Bourassa) Launch current node
-> [  0.000156] (02:receiver@Tremblay) Listening on port 4000 (expecting 4 messages)
-> [  0.000156] (04:receiver@Jupiter) Listening on port 4000 (expecting 4 messages)
-> [  0.000156] (06:receiver@Fafard) Listening on port 4000 (expecting 4 messages)
-> [  0.000156] (08:receiver@Ginette) Listening on port 4000 (expecting 4 messages)
-> [  0.000156] (10:receiver@Bourassa) Listening on port 4000 (expecting 4 messages)
-> [  0.015510] (01:sender@Tremblay)   Sent Data from Tremblay to Jupiter
-> [  0.015510] (02:receiver@Tremblay) Got Data from Jupiter:5000 (still 3 to go)
-> [  0.015510] (03:sender@Jupiter)   Sent Data from Jupiter to Tremblay
-> [  0.015510] (04:receiver@Jupiter) Got Data from Tremblay:5000 (still 3 to go)
-> [  0.036162] (02:receiver@Tremblay) Got Data from Fafard:5000 (still 2 to go)
-> [  0.036162] (05:sender@Fafard)   Sent Data from Fafard to Tremblay
-> [  0.036318] (01:sender@Tremblay)   Sent Data from Tremblay to Fafard
-> [  0.036318] (06:receiver@Fafard) Got Data from Tremblay:5000 (still 3 to go)
-> [  0.049459] (02:receiver@Tremblay) Got Data from Ginette:5000 (still 1 to go)
-> [  0.049459] (07:sender@Ginette)   Sent Data from Ginette to Tremblay
-> [  0.049771] (01:sender@Tremblay)   Sent Data from Tremblay to Ginette
-> [  0.049771] (08:receiver@Ginette) Got Data from Tremblay:5000 (still 3 to go)
-> [  0.069896] (02:receiver@Tremblay) Got Data from Bourassa:5000 (still 0 to go)
-> [  0.069896] (02:receiver@Tremblay) Exiting GRAS
-> [  0.069896] (09:sender@Bourassa)   Sent Data from Bourassa to Tremblay
-> [  0.070364] (01:sender@Tremblay)   Sent Data from Tremblay to Bourassa
-> [  0.070364] (01:sender@Tremblay) Exiting GRAS
-> [  0.070364] (10:receiver@Bourassa) Got Data from Tremblay:5000 (still 3 to go)
-> [  0.072245] (03:sender@Jupiter)   Sent Data from Jupiter to Fafard
-> [  0.072245] (04:receiver@Jupiter) Got Data from Fafard:5000 (still 2 to go)
-> [  0.072245] (05:sender@Fafard)   Sent Data from Fafard to Jupiter
-> [  0.072245] (06:receiver@Fafard) Got Data from Jupiter:5000 (still 2 to go)
-> [  0.085572] (05:sender@Fafard)   Sent Data from Fafard to Ginette
-> [  0.085572] (08:receiver@Ginette) Got Data from Fafard:5000 (still 2 to go)
-> [  0.091209] (05:sender@Fafard)   Sent Data from Fafard to Bourassa
-> [  0.091209] (05:sender@Fafard) Exiting GRAS
-> [  0.091209] (10:receiver@Bourassa) Got Data from Fafard:5000 (still 2 to go)
-> [  0.100817] (04:receiver@Jupiter) Got Data from Ginette:5000 (still 1 to go)
-> [  0.100817] (07:sender@Ginette)   Sent Data from Ginette to Jupiter
-> [  0.114144] (03:sender@Jupiter)   Sent Data from Jupiter to Ginette
-> [  0.114144] (06:receiver@Fafard) Got Data from Ginette:5000 (still 1 to go)
-> [  0.114144] (07:sender@Ginette)   Sent Data from Ginette to Fafard
-> [  0.114144] (08:receiver@Ginette) Got Data from Jupiter:5000 (still 1 to go)
-> [  0.136528] (04:receiver@Jupiter) Got Data from Bourassa:5000 (still 0 to go)
-> [  0.136528] (04:receiver@Jupiter) Exiting GRAS
-> [  0.136528] (09:sender@Bourassa)   Sent Data from Bourassa to Jupiter
-> [  0.142165] (06:receiver@Fafard) Got Data from Bourassa:5000 (still 0 to go)
-> [  0.142165] (06:receiver@Fafard) Exiting GRAS
-> [  0.142165] (09:sender@Bourassa)   Sent Data from Bourassa to Fafard
-> [  0.150011] (03:sender@Jupiter)   Sent Data from Jupiter to Bourassa
-> [  0.150011] (03:sender@Jupiter) Exiting GRAS
-> [  0.150011] (10:receiver@Bourassa) Got Data from Jupiter:5000 (still 1 to go)
-> [  0.155272] (08:receiver@Ginette) Got Data from Bourassa:5000 (still 0 to go)
-> [  0.155272] (08:receiver@Ginette) Exiting GRAS
-> [  0.155272] (09:sender@Bourassa)   Sent Data from Bourassa to Ginette
-> [  0.155272] (09:sender@Bourassa) Exiting GRAS
-> [  0.162962] (07:sender@Ginette)   Sent Data from Ginette to Bourassa
-> [  0.162962] (07:sender@Ginette) Exiting GRAS
-> [  0.162962] (10:receiver@Bourassa) Got Data from Ginette:5000 (still 0 to go)
-> [  0.162962] (10:receiver@Bourassa) Exiting GRAS
+> [  0.000195] (02:receiver@Tremblay) Listening on port 4000 (expecting 4 messages)
+> [  0.000195] (04:receiver@Jupiter) Listening on port 4000 (expecting 4 messages)
+> [  0.000195] (06:receiver@Fafard) Listening on port 4000 (expecting 4 messages)
+> [  0.000195] (08:receiver@Ginette) Listening on port 4000 (expecting 4 messages)
+> [  0.000195] (10:receiver@Bourassa) Listening on port 4000 (expecting 4 messages)
+> [  0.019284] (01:sender@Tremblay)   Sent Data from Tremblay to Jupiter
+> [  0.019284] (04:receiver@Jupiter) Got Data from Tremblay:5000 (still 3 to go)
+> [  0.025735] (02:receiver@Tremblay) Got Data from Bourassa:5000 (still 3 to go)
+> [  0.025735] (09:sender@Bourassa)   Sent Data from Bourassa to Tremblay
+> [  0.042352] (02:receiver@Tremblay) Got Data from Ginette:5000 (still 2 to go)
+> [  0.042352] (07:sender@Ginette)   Sent Data from Ginette to Tremblay
+> [  0.045289] (01:sender@Tremblay)   Sent Data from Tremblay to Fafard
+> [  0.045289] (06:receiver@Fafard) Got Data from Tremblay:5000 (still 3 to go)
+> [  0.062102] (01:sender@Tremblay)   Sent Data from Tremblay to Ginette
+> [  0.062102] (08:receiver@Ginette) Got Data from Tremblay:5000 (still 3 to go)
+> [  0.068162] (02:receiver@Tremblay) Got Data from Fafard:5000 (still 1 to go)
+> [  0.068162] (05:sender@Fafard)   Sent Data from Fafard to Tremblay
+> [  0.070559] (04:receiver@Jupiter) Got Data from Bourassa:5000 (still 2 to go)
+> [  0.070559] (09:sender@Bourassa)   Sent Data from Bourassa to Jupiter
+> [  0.077590] (06:receiver@Fafard) Got Data from Bourassa:5000 (still 2 to go)
+> [  0.077590] (09:sender@Bourassa)   Sent Data from Bourassa to Fafard
+> [  0.087251] (02:receiver@Tremblay) Got Data from Jupiter:5000 (still 0 to go)
+> [  0.087251] (02:receiver@Tremblay) Exiting GRAS
+> [  0.087251] (03:sender@Jupiter)   Sent Data from Jupiter to Tremblay
+> [  0.087837] (01:sender@Tremblay)   Sent Data from Tremblay to Bourassa
+> [  0.087837] (01:sender@Tremblay) Exiting GRAS
+> [  0.087837] (10:receiver@Bourassa) Got Data from Tremblay:5000 (still 3 to go)
+> [  0.093971] (08:receiver@Ginette) Got Data from Bourassa:5000 (still 2 to go)
+> [  0.093971] (09:sender@Bourassa)   Sent Data from Bourassa to Ginette
+> [  0.093971] (09:sender@Bourassa) Exiting GRAS
+> [  0.106266] (04:receiver@Jupiter) Got Data from Ginette:5000 (still 1 to go)
+> [  0.106266] (07:sender@Ginette)   Sent Data from Ginette to Jupiter
+> [  0.132345] (03:sender@Jupiter)   Sent Data from Jupiter to Fafard
+> [  0.132345] (06:receiver@Fafard) Got Data from Jupiter:5000 (still 1 to go)
+> [  0.148801] (06:receiver@Fafard) Got Data from Ginette:5000 (still 0 to go)
+> [  0.148801] (06:receiver@Fafard) Exiting GRAS
+> [  0.148801] (07:sender@Ginette)   Sent Data from Ginette to Fafard
+> [  0.151165] (04:receiver@Jupiter) Got Data from Fafard:5000 (still 0 to go)
+> [  0.151165] (04:receiver@Jupiter) Exiting GRAS
+> [  0.151165] (05:sender@Fafard)   Sent Data from Fafard to Jupiter
+> [  0.165182] (07:sender@Ginette)   Sent Data from Ginette to Bourassa
+> [  0.165182] (07:sender@Ginette) Exiting GRAS
+> [  0.165182] (10:receiver@Bourassa) Got Data from Ginette:5000 (still 2 to go)
+> [  0.168247] (03:sender@Jupiter)   Sent Data from Jupiter to Ginette
+> [  0.168247] (08:receiver@Ginette) Got Data from Jupiter:5000 (still 1 to go)
+> [  0.184703] (05:sender@Fafard)   Sent Data from Fafard to Ginette
+> [  0.184703] (08:receiver@Ginette) Got Data from Fafard:5000 (still 0 to go)
+> [  0.184703] (08:receiver@Ginette) Exiting GRAS
+> [  0.213071] (03:sender@Jupiter)   Sent Data from Jupiter to Bourassa
+> [  0.213071] (03:sender@Jupiter) Exiting GRAS
+> [  0.213071] (10:receiver@Bourassa) Got Data from Jupiter:5000 (still 1 to go)
+> [  0.219907] (05:sender@Fafard)   Sent Data from Fafard to Bourassa
+> [  0.219907] (05:sender@Fafard) Exiting GRAS
+> [  0.219907] (10:receiver@Bourassa) Got Data from Fafard:5000 (still 0 to go)
+> [  0.219907] (10:receiver@Bourassa) Exiting GRAS
