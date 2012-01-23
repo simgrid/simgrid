@@ -14,6 +14,9 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+int master(int argc, char *argv[]);
+int slave(int argc, char *argv[]);
+
 /** Emitter function  */
 int master(int argc, char *argv[])
 {
@@ -78,8 +81,6 @@ int slave(int argc, char *argv[])
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
-
   MSG_global_init(&argc, argv);
   if (argc < 3) {
     printf("Usage: %s platform_file deployment_file\n", argv[0]);
