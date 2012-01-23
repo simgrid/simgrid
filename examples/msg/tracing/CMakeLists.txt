@@ -7,12 +7,14 @@ add_executable(ms         ${CMAKE_CURRENT_SOURCE_DIR}/ms.c)
 add_executable(categories ${CMAKE_CURRENT_SOURCE_DIR}/categories.c)
 add_executable(procmig    ${CMAKE_CURRENT_SOURCE_DIR}/procmig.c)
 add_executable(simple     ${CMAKE_CURRENT_SOURCE_DIR}/simple.c)
+add_executable(trace_platform     ${CMAKE_CURRENT_SOURCE_DIR}/trace_platform.c)
 
 ### Add definitions for compile
 target_link_libraries(ms simgrid m )
 target_link_libraries(categories simgrid m )
 target_link_libraries(procmig simgrid m )
 target_link_libraries(simple simgrid m )
+target_link_libraries(trace_platform simgrid m )
 
 ## Clean generated files
 get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
