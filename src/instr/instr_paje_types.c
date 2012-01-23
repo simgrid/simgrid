@@ -10,18 +10,14 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
 
 static type_t rootType = NULL;        /* the root type */
-static xbt_dict_t allTypes = NULL;    /* all declared types indexed by name */
 
 void PJ_type_alloc ()
 {
-  allTypes = xbt_dict_new_homogeneous (NULL);
 }
 
 void PJ_type_release ()
 {
-  xbt_dict_free (&allTypes);
   rootType = NULL;
-  allTypes = NULL;
 }
 
 type_t PJ_type_get_root ()
@@ -51,15 +47,11 @@ static type_t newType (const char *typename, const char *key, const char *color,
     xbt_dict_set (father->children, key, ret, NULL);
     XBT_DEBUG("new type %s, child of %s", typename, father->name);
   }
-
-  xbt_dict_set (allTypes, typename, ret, NULL);
   return ret;
 }
 
 void PJ_type_free (type_t type)
 {
-  xbt_dict_remove (allTypes, type->name);
-
   val_t value;
   char *value_name;
   xbt_dict_cursor_t cursor = NULL;
@@ -91,11 +83,6 @@ void PJ_type_free_all (void)
 {
   recursiveDestroyType (PJ_type_get_root());
   rootType = NULL;
-
-  //checks
-  if (xbt_dict_length(allTypes) != 0){
-    THROWF(tracing_error, 0, "some types still present even after destroying all of them");
-  }
 }
 
 type_t PJ_type_get (const char *name, type_t father)
@@ -134,10 +121,7 @@ type_t PJ_type_container_new (const char *name, type_t father)
     THROWF (tracing_error, 0, "can't create a container type with a NULL name");
   }
 
-  type_t ret = (type_t)xbt_dict_get_or_null (allTypes, name);
-  if (ret){
-    THROWF(tracing_error, 1, "container type with name %s already exists", name);
-  }
+  type_t ret = NULL;
 
   ret = newType (name, name, NULL, TYPE_CONTAINER, father);
   if (father == NULL){
@@ -157,10 +141,7 @@ type_t PJ_type_event_new (const char *name, const char *color, type_t father)
     THROWF (tracing_error, 0, "can't create an event type with a NULL name");
   }
 
-  type_t ret = (type_t)xbt_dict_get_or_null (allTypes, name);
-  if (ret){
-    THROWF(tracing_error, 1, "event type with name %s already exists", name);
-  }
+  type_t ret = NULL;
 
   char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
   if (!color){
@@ -179,10 +160,7 @@ type_t PJ_type_variable_new (const char *name, const char *color, type_t father)
     THROWF (tracing_error, 0, "can't create a variable type with a NULL name");
   }
 
-  type_t ret = (type_t)xbt_dict_get_or_null (allTypes, name);
-  if (ret){
-    THROWF(tracing_error, 1, "variable type with name %s already exists", name);
-  }
+  type_t ret = NULL;
 
   char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
   if (!color){
@@ -201,10 +179,7 @@ type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t 
     THROWF (tracing_error, 0, "can't create a link type with a NULL name");
   }
 
-  type_t ret = (type_t)xbt_dict_get_or_null (allTypes, name);
-  if (ret){
-    THROWF(tracing_error, 1, "link type with name %s already exists", name);
-  }
+  type_t ret = NULL;
 
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", name, source->id, dest->id);
@@ -220,10 +195,7 @@ type_t PJ_type_state_new (const char *name, type_t father)
     THROWF (tracing_error, 0, "can't create a state type with a NULL name");
   }
 
-  type_t ret = (type_t)xbt_dict_get_or_null (allTypes, name);
-  if (ret){
-    THROWF(tracing_error, 1, "state type with name %s already exists", name);
-  }
+  type_t ret = NULL;
 
   ret = newType (name, name, NULL, TYPE_STATE, father);
   XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
