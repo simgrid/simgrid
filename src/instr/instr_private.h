@@ -221,6 +221,7 @@ type_t PJ_type_variable_new (const char *name, const char *color, type_t father)
 type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t dest);
 type_t PJ_type_state_new (const char *name, type_t father);
 type_t PJ_type_get (const char *name, const type_t father);
+type_t PJ_type_get_or_null (const char *name, type_t father);
 void PJ_type_free (type_t type);
 void PJ_type_free_all (void);
 

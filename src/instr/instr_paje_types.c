@@ -98,34 +98,34 @@ void PJ_type_free_all (void)
   }
 }
 
-static type_t recursiveGetType (const char *name, type_t root)
+type_t PJ_type_get (const char *name, type_t father)
 {
-  if (name == NULL || root == NULL){
-    THROWF (tracing_error, 0, "can't get type with a NULL name (or a NULL father given)");
-  }
-
-  if (strcmp (root->name, name) == 0) return root;
-
-  xbt_dict_cursor_t cursor = NULL;
-  type_t child;
-  char *child_name;
-  type_t ret = NULL;
-  xbt_dict_foreach(root->children, cursor, child_name, child) {
-    type_t found = recursiveGetType(name, child);
-    if (found){
-      if (ret == NULL){
-        ret = found;
-      }else{
-        THROWF(tracing_error, 0, "found two types with the same name");
-      }
-    }
+  type_t ret = PJ_type_get_or_null (name, father);
+  if (ret == NULL){
+    THROWF (tracing_error, 2, "type with name (%s) not found in father type (%s)", name, father->name);
   }
   return ret;
 }
 
-type_t PJ_type_get (const char *name, type_t father)
+type_t PJ_type_get_or_null (const char *name, type_t father)
 {
-  return recursiveGetType (name, father);
+  if (name == NULL || father == NULL){
+    THROWF (tracing_error, 0, "can't get type with a NULL name or from a NULL father");
+  }
+
+  type_t ret = NULL, child;
+  char *child_name;
+  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_foreach(father->children, cursor, child_name, child) {
+    if (strcmp (child->name, name) == 0){
+      if (ret != NULL){
+        THROWF (tracing_error, 0, "there are two children types with the same name?");
+      }else{
+        ret = child;
+      }
+    }
+  }
+  return ret;
 }
 
 type_t PJ_type_container_new (const char *name, type_t father)
