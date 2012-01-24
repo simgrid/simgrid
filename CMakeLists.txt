@@ -233,6 +233,9 @@ else(NOT WIN32)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDocWin.cmake)  
 endif(NOT WIN32)
 
+### Print NbCore
+include(FindNbCore)
+
 ### Print ARGS
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)
 
