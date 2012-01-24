@@ -31,6 +31,8 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Use now crosstraffic keyword instead of the terribly missleading 
     fullduplex keyword. It is activated by default now in the current
     default model, use --cfg=network/crosstraffic:0 to turn it off.
+  * Experimental: new configuration option --cfg=surf/nthreads:N to run
+    analytical models in parallel with N threads (default is 1).
   * Ongoing refactoring the model parsing to make XML files optional
     (more work is needed here to fully achieve this goal)
 
