@@ -29,7 +29,7 @@ typedef struct s_smx_process {
   smx_action_t waiting_action;  /* the current blocking action if any */
   xbt_fifo_t comms;       /* the current non-blocking communication actions */
   xbt_dict_t properties;
-  s_smx_req_t request;
+  s_smx_simcall_t simcall;
   void *data;                   /* kept for compatibility, it should be replaced with moddata */
 
 } s_smx_process_t;
@@ -67,7 +67,7 @@ void SIMIX_pre_process_change_host(smx_process_t process,
 void SIMIX_process_change_host(smx_process_t process,
 			       smx_host_t dest);
 void SIMIX_pre_process_change_host(smx_process_t process, smx_host_t host);
-void SIMIX_pre_process_suspend(smx_req_t req);
+void SIMIX_pre_process_suspend(smx_simcall_t simcall);
 void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer);
 void* SIMIX_process_get_data(smx_process_t process);
@@ -77,7 +77,7 @@ const char* SIMIX_process_get_name(smx_process_t process);
 smx_process_t SIMIX_process_get_by_name(const char* name);
 int SIMIX_process_is_suspended(smx_process_t process);
 xbt_dict_t SIMIX_process_get_properties(smx_process_t process);
-void SIMIX_pre_process_sleep(smx_req_t req);
+void SIMIX_pre_process_sleep(smx_simcall_t simcall);
 smx_action_t SIMIX_process_sleep(smx_process_t process, double duration);
 void SIMIX_post_process_sleep(smx_action_t action);
 

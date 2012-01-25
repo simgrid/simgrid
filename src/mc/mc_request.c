@@ -6,7 +6,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
 static char* pointer_to_string(void* pointer);
 static char* buff_size_to_string(size_t size);
 
-int MC_request_depend(smx_req_t r1, smx_req_t r2)
+int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
 {
   if(_surf_do_model_check == 2)
     return TRUE;
@@ -167,7 +167,7 @@ static char* buff_size_to_string(size_t buff_size) {
 }
 
 
-char *MC_request_to_string(smx_req_t req, int value)
+char *MC_request_to_string(smx_simcall_t req, int value)
 {
   char *type = NULL, *args = NULL, *str = NULL, *p = NULL, *bs = NULL;
   smx_action_t act = NULL;
@@ -247,7 +247,7 @@ char *MC_request_to_string(smx_req_t req, int value)
   return str;
 }
 
-unsigned int MC_request_testany_fail(smx_req_t req)
+unsigned int MC_request_testany_fail(smx_simcall_t req)
 {
   unsigned int cursor;
   smx_action_t action;
@@ -260,7 +260,7 @@ unsigned int MC_request_testany_fail(smx_req_t req)
   return TRUE;
 }
 
-int MC_request_is_visible(smx_req_t req)
+int MC_request_is_visible(smx_simcall_t req)
 {
   return req->call == REQ_COMM_ISEND
      || req->call == REQ_COMM_IRECV
@@ -270,7 +270,7 @@ int MC_request_is_visible(smx_req_t req)
      || req->call == REQ_COMM_TESTANY;
 }
 
-int MC_request_is_enabled(smx_req_t req)
+int MC_request_is_enabled(smx_simcall_t req)
 {
   unsigned int index = 0;
   smx_action_t act;
@@ -307,7 +307,7 @@ int MC_request_is_enabled(smx_req_t req)
   }
 }
 
-int MC_request_is_enabled_by_idx(smx_req_t req, unsigned int idx)
+int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 {
   smx_action_t act;
 
@@ -336,7 +336,7 @@ int MC_request_is_enabled_by_idx(smx_req_t req, unsigned int idx)
 
 int MC_process_is_enabled(smx_process_t process)
 {
-  if (process->request.call != REQ_NO_REQ && MC_request_is_enabled(&process->request))
+  if (process->simcall.call != REQ_NO_REQ && MC_request_is_enabled(&process->simcall))
     return TRUE;
 
   return FALSE;

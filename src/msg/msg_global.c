@@ -197,7 +197,7 @@ MSG_error_t MSG_main_liveness(xbt_automaton_t a, char *prgm)
  */
 int MSG_process_killall(int reset_PIDs)
 {
-  SIMIX_req_process_killall();
+  simcall_process_killall();
 
   if (reset_PIDs > 0) {
     msg_global->PID = reset_PIDs;

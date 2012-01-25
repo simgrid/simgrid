@@ -54,7 +54,7 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
     memset(alias, 0, MAX_ALIAS_NAME + 1);
   }
 
-  SIMIX_req_host_set_data(workstation, host);
+  simcall_host_set_data(workstation, host);
   xbt_lib_set(host_lib,name,MSG_HOST_LEVEL,host);
 
   return host;
@@ -195,7 +195,7 @@ double MSG_get_host_speed(m_host_t h)
 {
   xbt_assert((h != NULL), "Invalid parameters");
 
-  return (SIMIX_req_host_get_speed(h->simdata->smx_host));
+  return (simcall_host_get_speed(h->simdata->smx_host));
 }
 
 /** \ingroup m_host_management
@@ -220,7 +220,7 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 
-  return (SIMIX_req_host_get_properties(host->simdata->smx_host));
+  return (simcall_host_get_properties(host->simdata->smx_host));
 }
 
 
@@ -232,5 +232,5 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
 int MSG_host_is_avail(m_host_t h)
 {
   xbt_assert((h != NULL), "Invalid parameters (host is NULL)");
-  return (SIMIX_req_host_get_state(h->simdata->smx_host));
+  return (simcall_host_get_state(h->simdata->smx_host));
 }

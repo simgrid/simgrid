@@ -194,7 +194,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
 
   action = task->simdata->compute;
   if (action)
-    SIMIX_req_host_execution_destroy(action);
+    simcall_host_execution_destroy(action);
 
   /* parallel tasks only */
   xbt_free(task->simdata->host_list);
@@ -217,10 +217,10 @@ MSG_error_t MSG_task_cancel(m_task_t task)
   xbt_assert((task != NULL), "Invalid parameter");
 
   if (task->simdata->compute) {
-    SIMIX_req_host_execution_cancel(task->simdata->compute);
+    simcall_host_execution_cancel(task->simdata->compute);
   }
   else if (task->simdata->comm) {
-    SIMIX_req_comm_cancel(task->simdata->comm);
+    simcall_comm_cancel(task->simdata->comm);
     task->simdata->isused = 0;
   }
   return MSG_OK;
@@ -261,7 +261,7 @@ double MSG_task_get_remaining_computation(m_task_t task)
               && (task->simdata != NULL), "Invalid parameter");
 
   if (task->simdata->compute) {
-    return SIMIX_req_host_execution_get_remains(task->simdata->compute);
+    return simcall_host_execution_get_remains(task->simdata->compute);
   } else {
     return task->simdata->computation_amount;
   }
@@ -277,9 +277,9 @@ double MSG_task_get_remaining_communication(m_task_t task)
 {
   xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
-  XBT_DEBUG("calling SIMIX_req_communication_get_remains(%p)",
+  XBT_DEBUG("calling simcall_communication_get_remains(%p)",
          task->simdata->comm);
-  return SIMIX_req_comm_get_remains(task->simdata->comm);
+  return simcall_comm_get_remains(task->simdata->comm);
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
@@ -291,9 +291,9 @@ int MSG_task_is_latency_bounded(m_task_t task)
 {
   xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
-  XBT_DEBUG("calling SIMIX_req_communication_is_latency_bounded(%p)",
+  XBT_DEBUG("calling simcall_communication_is_latency_bounded(%p)",
          task->simdata->comm);
-  return SIMIX_req_comm_is_latency_bounded(task->simdata->comm);
+  return simcall_comm_is_latency_bounded(task->simdata->comm);
 }
 #endif
 
@@ -324,6 +324,6 @@ void MSG_task_set_priority(m_task_t task, double priority)
 
   task->simdata->priority = 1 / priority;
   if (task->simdata->compute)
-    SIMIX_req_host_execution_set_priority(task->simdata->compute,
+    simcall_host_execution_set_priority(task->simdata->compute,
                                       task->simdata->priority);
 }

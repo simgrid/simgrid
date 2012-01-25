@@ -70,7 +70,7 @@ gras_socket_t gras_trp_select(double timeout)
 
     if ((sock_data->to_socket == active_socket) &&
         (sock_data->to_host ==
-         SIMIX_req_process_get_host(active_socket_data->from_process))) {
+         simcall_process_get_host(active_socket_data->from_process))) {
       xbt_dynar_cursor_unlock(pd->sockets);
       return sock_iter;
     }
@@ -107,21 +107,21 @@ gras_socket_t gras_trp_select(double timeout)
   sockdata->to_socket = active_socket;
   /*update the peer to_socket  variable */
   active_socket_data->to_socket = res;
-  sockdata->cond = SIMIX_req_cond_init();
-  sockdata->mutex = SIMIX_req_mutex_init();
+  sockdata->cond = simcall_cond_init();
+  sockdata->mutex = simcall_mutex_init();
 
   sockdata->to_host =
-      SIMIX_req_process_get_host(active_socket_data->from_process);
+      simcall_process_get_host(active_socket_data->from_process);
 
   res->data = sockdata;
-  res->peer_name = strdup(SIMIX_req_host_get_name(sockdata->to_host));
+  res->peer_name = strdup(simcall_host_get_name(sockdata->to_host));
 
   gras_trp_buf_init_sock(res);
 
   XBT_DEBUG("Create socket to process:%s(Port %d) from process: %s(Port %d)",
-         SIMIX_req_process_get_name(sockdata->from_process),
+         simcall_process_get_name(sockdata->from_process),
          res->peer_port,
-         SIMIX_req_process_get_name(sockdata->to_process), res->port);
+         simcall_process_get_name(sockdata->to_process), res->port);
 
   return res;
 }

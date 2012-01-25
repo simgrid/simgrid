@@ -21,7 +21,7 @@
 #include "instr/instr.h"
 #include "msg/msg.h"
 #include "simdag/private.h"
-#include "simix/private.h"
+#include "simix/smx_private.h"
 #include "xbt/graph_private.h"
 
 typedef enum {

@@ -75,7 +75,7 @@ static void parse_process_finalize(void)
                                             parse_argv,
                                             current_property_set);
     else
-      SIMIX_req_process_create(&process, parse_argv[0], parse_code, NULL, parse_host, parse_argc, parse_argv,
+      simcall_process_create(&process, parse_argv[0], parse_code, NULL, parse_host, parse_argc, parse_argv,
                                current_property_set);
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
     if (!process) {

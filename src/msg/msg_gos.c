@@ -55,15 +55,15 @@ MSG_error_t MSG_task_execute(m_task_t task)
   p_simdata = SIMIX_process_self_get_data(self);
   simdata->isused=1;
   simdata->compute =
-      SIMIX_req_host_execute(task->name, p_simdata->m_host->simdata->smx_host,
+      simcall_host_execute(task->name, p_simdata->m_host->simdata->smx_host,
                            simdata->computation_amount,
                            simdata->priority);
 #ifdef HAVE_TRACING
-  SIMIX_req_set_category(simdata->compute, task->category);
+  simcall_set_category(simdata->compute, task->category);
 #endif
 
   p_simdata->waiting_action = simdata->compute;
-  comp_state = SIMIX_req_host_execution_wait(simdata->compute);
+  comp_state = simcall_host_execution_wait(simdata->compute);
   p_simdata->waiting_action = NULL;
 
   simdata->isused=0;
@@ -78,7 +78,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
     TRACE_msg_task_execute_end(task);
 #endif
     MSG_RETURN(MSG_OK);
-  } else if (SIMIX_req_host_get_state(SIMIX_host_self()) == 0) {
+  } else if (simcall_host_get_state(SIMIX_host_self()) == 0) {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
     simdata->comm = NULL;
     simdata->compute = NULL;
@@ -175,14 +175,14 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   simdata->isused=1;
 
   simdata->compute =
-      SIMIX_req_host_parallel_execute(task->name, simdata->host_nb,
+      simcall_host_parallel_execute(task->name, simdata->host_nb,
                                   simdata->host_list,
                                   simdata->comp_amount,
                                   simdata->comm_amount, 1.0, -1.0);
   XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
 
   p_simdata->waiting_action = simdata->compute;
-  comp_state = SIMIX_req_host_execution_wait(simdata->compute);
+  comp_state = simcall_host_execution_wait(simdata->compute);
   p_simdata->waiting_action = NULL;
 
   XBT_DEBUG("Finished waiting for execution of action %p, state = %d", simdata->compute, comp_state);
@@ -195,7 +195,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
     simdata->comm = NULL;
     simdata->compute = NULL;
     MSG_RETURN(MSG_OK);
-  } else if (SIMIX_req_host_get_state(SIMIX_host_self()) == 0) {
+  } else if (simcall_host_get_state(SIMIX_host_self()) == 0) {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
     simdata->comm = NULL;
     simdata->compute = NULL;
@@ -226,7 +226,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 #endif
 
   /* create action to sleep */
-  state = SIMIX_req_process_sleep(nb_sec);
+  state = simcall_process_sleep(nb_sec);
 
   /*proc->simdata->waiting_action = act_sleep;
 
@@ -418,7 +418,7 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
   comm->task_received = NULL;
   comm->status = MSG_OK;
   comm->s_comm =
-    SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
+    simcall_comm_isend(mailbox, t_simdata->message_size,
                          t_simdata->rate, task, sizeof(void *), match_fun, NULL, match_data, 0);
   t_simdata->comm = comm->s_comm; /* FIXME: is the field t_simdata->comm still useful? */
 
@@ -464,7 +464,7 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
+  smx_action_t comm = simcall_comm_isend(mailbox, t_simdata->message_size,
                        t_simdata->rate, task, sizeof(void *), NULL, cleanup, NULL, 1);
   t_simdata->comm = comm;
 }
@@ -499,7 +499,7 @@ msg_comm_t MSG_task_irecv(m_task_t *task, const char *name)
   comm->task_sent = NULL;
   comm->task_received = task;
   comm->status = MSG_OK;
-  comm->s_comm = SIMIX_req_comm_irecv(rdv, task, NULL, NULL, NULL);
+  comm->s_comm = simcall_comm_irecv(rdv, task, NULL, NULL, NULL);
 
   return comm;
 }
@@ -517,7 +517,7 @@ int MSG_comm_test(msg_comm_t comm)
   xbt_ex_t e;
   int finished = 0;
   TRY {
-    finished = SIMIX_req_comm_test(comm->s_comm);
+    finished = simcall_comm_test(comm->s_comm);
 
     if (finished && comm->task_received != NULL) {
       /* I am the receiver */
@@ -573,7 +573,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
 
   MSG_error_t status = MSG_OK;
   TRY {
-    finished_index = SIMIX_req_comm_testany(s_comms);
+    finished_index = simcall_comm_testany(s_comms);
   }
   CATCH(e) {
     switch (e.category) {
@@ -635,7 +635,7 @@ MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 {
   xbt_ex_t e;
   TRY {
-    SIMIX_req_comm_wait(comm->s_comm, timeout);
+    simcall_comm_wait(comm->s_comm, timeout);
 
     if (comm->task_received != NULL) {
       /* I am the receiver */
@@ -700,7 +700,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
   MSG_error_t status = MSG_OK;
   TRY {
-    finished_index = SIMIX_req_comm_waitany(s_comms);
+    finished_index = simcall_comm_waitany(s_comms);
   }
   CATCH(e) {
     switch (e.category) {
@@ -775,7 +775,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
   if (msg_global->task_copy_callback) {
     m_task_t task = buff;
     msg_global->task_copy_callback(task,
-        SIMIX_req_comm_get_src_proc(comm), SIMIX_req_comm_get_dst_proc(comm));
+        simcall_comm_get_src_proc(comm), simcall_comm_get_dst_proc(comm));
   }
 }
 

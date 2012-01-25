@@ -88,7 +88,7 @@ int PMPI_Abort(MPI_Comm comm, int errorcode)
   smpi_bench_end();
   smpi_process_destroy();
   // FIXME: should kill all processes in comm instead
-  SIMIX_req_process_kill(SIMIX_process_self());
+  simcall_process_kill(SIMIX_process_self());
   return MPI_SUCCESS;
 }
 

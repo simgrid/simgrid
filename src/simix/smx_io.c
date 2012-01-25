@@ -13,11 +13,11 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix,
                                 "Logging specific to SIMIX (io)");
 
-void SIMIX_pre_file_read(smx_req_t req)
+void SIMIX_pre_file_read(smx_simcall_t simcall)
 {
-  smx_action_t action = SIMIX_file_read(req->issuer, req->file_read.name);
-  xbt_fifo_push(action->request_list, req);
-  req->issuer->waiting_action = action;
+  smx_action_t action = SIMIX_file_read(simcall->issuer, simcall->file_read.name);
+  xbt_fifo_push(action->simcalls, simcall);
+  simcall->issuer->waiting_action = action;
 }
 
 smx_action_t SIMIX_file_read(smx_process_t process, char* name)
@@ -81,9 +81,9 @@ void SIMIX_io_destroy(smx_action_t action)
 void SIMIX_io_finish(smx_action_t action)
 {
   volatile xbt_fifo_item_t item;
-  smx_req_t req;
+  smx_simcall_t simcall;
 
-  xbt_fifo_foreach(action->request_list, item, req, smx_req_t) {
+  xbt_fifo_foreach(action->simcalls, item, simcall, smx_simcall_t) {
 
     switch (action->state) {
 
@@ -95,8 +95,8 @@ void SIMIX_io_finish(smx_action_t action)
         TRY {
           THROWF(io_error, 0, "IO failed");
         }
-	CATCH(req->issuer->running_ctx->exception) {
-	  req->issuer->doexception = 1;
+	CATCH(simcall->issuer->running_ctx->exception) {
+	  simcall->issuer->doexception = 1;
 	}
       break;
 
@@ -104,8 +104,8 @@ void SIMIX_io_finish(smx_action_t action)
         TRY {
           THROWF(cancel_error, 0, "Canceled");
         }
-	CATCH(req->issuer->running_ctx->exception) {
-	  req->issuer->doexception = 1;
+	CATCH(simcall->issuer->running_ctx->exception) {
+	  simcall->issuer->doexception = 1;
         }
 	break;
 
@@ -113,8 +113,8 @@ void SIMIX_io_finish(smx_action_t action)
         xbt_die("Internal error in SIMIX_io_finish: unexpected action state %d",
             action->state);
     }
-    req->issuer->waiting_action = NULL;
-    SIMIX_request_answer(req);
+    simcall->issuer->waiting_action = NULL;
+    SIMIX_simcall_answer(simcall);
   }
 
   /* We no longer need it */

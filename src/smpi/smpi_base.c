@@ -100,7 +100,7 @@ void smpi_mpi_start(MPI_Request request)
     print_request("New recv", request);
     mailbox = smpi_process_mailbox();
     // FIXME: SIMIX does not yet support non-contiguous datatypes
-    request->action = SIMIX_req_comm_irecv(mailbox, request->buf, &request->size, &match_recv, request);
+    request->action = simcall_comm_irecv(mailbox, request->buf, &request->size, &match_recv, request);
   } else {
     print_request("New send", request);
     mailbox = smpi_process_remote_mailbox(
@@ -117,7 +117,7 @@ void smpi_mpi_start(MPI_Request request)
     	XBT_DEBUG("Send request %p is not detached (buf: %p)",request,request->buf);
     }
     request->action = 
-		SIMIX_req_comm_isend(mailbox, request->size, -1.0,
+		simcall_comm_isend(mailbox, request->size, -1.0,
 				    request->buf, request->size,
 				    &match_send,
 				    &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
@@ -126,7 +126,7 @@ void smpi_mpi_start(MPI_Request request)
 				    detached);
 
 #ifdef HAVE_TRACING
-    SIMIX_req_set_category (request->action, TRACE_internal_smpi_get_category());
+    simcall_set_category (request->action, TRACE_internal_smpi_get_category());
 #endif
   }
 }
@@ -255,7 +255,7 @@ int flag;
    if ((*request)->action == NULL)
 	flag = 1;
    else 
-    flag = SIMIX_req_comm_test((*request)->action);
+    flag = simcall_comm_test((*request)->action);
    if(flag) {
 		    smpi_mpi_wait(request, status);
 	  }
@@ -283,7 +283,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
       }
     }
     if(size > 0) {
-      i = SIMIX_req_comm_testany(comms);
+      i = simcall_comm_testany(comms);
       // FIXME: MPI_UNDEFINED or does SIMIX have a return code?
       if(i != MPI_UNDEFINED) {
         *index = map[i];
@@ -301,7 +301,7 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
 {
   print_request("Waiting", *request);
   if ((*request)->action != NULL) { // this is not a detached send
-    SIMIX_req_comm_wait((*request)->action, -1.0);
+    simcall_comm_wait((*request)->action, -1.0);
     finish_wait(request, status);
   }
   // FIXME for a detached send, finish_wait is not called:
@@ -330,7 +330,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
       }
     }
     if(size > 0) {
-      i = SIMIX_req_comm_waitany(comms);
+      i = simcall_comm_waitany(comms);
       // FIXME: MPI_UNDEFINED or does SIMIX have a return code?
       if (i != MPI_UNDEFINED) {
         index = map[i];

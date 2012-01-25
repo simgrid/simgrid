@@ -79,7 +79,7 @@ typedef struct s_smx_action {
   e_smx_action_type_t type;          /* Type of SIMIX action*/
   e_smx_state_t state;               /* State of the action */
   char *name;                        /* Action name if any */
-  xbt_fifo_t request_list;           /* List of requests on this action */
+  xbt_fifo_t simcalls;               /* List of simcalls waiting for this action */
 
   /* Data specific to each action type */
   union {

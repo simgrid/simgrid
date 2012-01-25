@@ -53,21 +53,21 @@ void MC_replay(xbt_fifo_t stack);
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack);
 void MC_wait_for_requests(void);
 void MC_get_enabled_processes();
-void MC_show_deadlock(smx_req_t req);
-void MC_show_deadlock_stateful(smx_req_t req);
+void MC_show_deadlock(smx_simcall_t req);
+void MC_show_deadlock_stateful(smx_simcall_t req);
 void MC_show_stack_safety_stateless(xbt_fifo_t stack);
 void MC_dump_stack_safety_stateless(xbt_fifo_t stack);
 void MC_show_stack_safety_stateful(xbt_fifo_t stack);
 void MC_dump_stack_safety_stateful(xbt_fifo_t stack);
 
 /********************************* Requests ***********************************/
-int MC_request_depend(smx_req_t req1, smx_req_t req2);
-char* MC_request_to_string(smx_req_t req, int value);
-unsigned int MC_request_testany_fail(smx_req_t req);
+int MC_request_depend(smx_simcall_t req1, smx_simcall_t req2);
+char* MC_request_to_string(smx_simcall_t req, int value);
+unsigned int MC_request_testany_fail(smx_simcall_t req);
 /*int MC_waitany_is_enabled_by_comm(smx_req_t req, unsigned int comm);*/
-int MC_request_is_visible(smx_req_t req);
-int MC_request_is_enabled(smx_req_t req);
-int MC_request_is_enabled_by_idx(smx_req_t req, unsigned int idx);
+int MC_request_is_visible(smx_simcall_t req);
+int MC_request_is_enabled(smx_simcall_t req);
+int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx);
 int MC_process_is_enabled(smx_process_t process);
 
 
@@ -91,8 +91,8 @@ typedef struct mc_state {
   unsigned long max_pid;            /* Maximum pid at state's creation time */
   mc_procstate_t proc_status;       /* State's exploration status by process */
   s_smx_action_t internal_comm;     /* To be referenced by the internal_req */
-  s_smx_req_t internal_req;         /* Internal translation of request */
-  s_smx_req_t executed_req;         /* The executed request of the state */
+  s_smx_simcall_t internal_req;         /* Internal translation of request */
+  s_smx_simcall_t executed_req;         /* The executed request of the state */
   int req_num;                      /* The request number (in the case of a
                                        multi-request like waitany ) */
 } s_mc_state_t, *mc_state_t;
@@ -104,10 +104,10 @@ void MC_state_delete(mc_state_t state);
 void MC_state_interleave_process(mc_state_t state, smx_process_t process);
 unsigned int MC_state_interleave_size(mc_state_t state);
 int MC_state_process_is_done(mc_state_t state, smx_process_t process);
-void MC_state_set_executed_request(mc_state_t state, smx_req_t req, int value);
-smx_req_t MC_state_get_executed_request(mc_state_t state, int *value);
-smx_req_t MC_state_get_internal_request(mc_state_t state);
-smx_req_t MC_state_get_request(mc_state_t state, int *value);
+void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int value);
+smx_simcall_t MC_state_get_executed_request(mc_state_t state, int *value);
+smx_simcall_t MC_state_get_internal_request(mc_state_t state);
+smx_simcall_t MC_state_get_request(mc_state_t state, int *value);
 
 /****************************** Statistics ************************************/
 typedef struct mc_stats {

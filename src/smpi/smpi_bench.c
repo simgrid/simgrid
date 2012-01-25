@@ -133,11 +133,11 @@ static void smpi_execute_flops(double flops)
   host = SIMIX_host_self();
 
   XBT_DEBUG("Handle real computation time: %f flops", flops);
-  action = SIMIX_req_host_execute("computation", host, flops, 1);
+  action = simcall_host_execute("computation", host, flops, 1);
 #ifdef HAVE_TRACING
-  SIMIX_req_set_category (action, TRACE_internal_smpi_get_category());
+  simcall_set_category (action, TRACE_internal_smpi_get_category());
 #endif
-  SIMIX_req_host_execution_wait(action);
+  simcall_host_execution_wait(action);
 }
 
 static void smpi_execute(double duration)
