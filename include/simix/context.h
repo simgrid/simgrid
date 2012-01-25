@@ -101,7 +101,7 @@ XBT_PUBLIC(smx_process_t) SIMIX_process_from_PID(int PID);
 /* parallelism */
 XBT_INLINE int SIMIX_context_is_parallel(void);
 XBT_INLINE int SIMIX_context_get_nthreads(void);
-XBT_INLINE void SIMIX_context_set_nthreads(char* str_nb_threads);
+XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads);
 XBT_INLINE int SIMIX_context_get_parallel_threshold(void);
 XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold);
 XBT_INLINE e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void);

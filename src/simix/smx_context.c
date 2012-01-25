@@ -132,21 +132,12 @@ XBT_INLINE int SIMIX_context_get_nthreads(void) {
  * for the user contexts.
  *
  * This function should be called before initializing SIMIX.
- * A value of 1 means no parallelism.
+ * A value of 1 means no parallelism (1 thread only).
  * If the value is greater than 1, the thread support must be enabled.
  *
  * \param nb_threads the number of threads to use
  */
-XBT_INLINE void SIMIX_context_set_nthreads(char* str_nb_threads) {
-
-  int nb_threads;
-
-  if(!strcmp(str_nb_threads,"auto")){
-      nb_threads = PROCESSOR_COUNT;
-      XBT_DEBUG("Auto-setting threads to %d",nb_threads);
-  }
-  else
-    nb_threads = atoi(str_nb_threads);
+XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
 
   xbt_assert(nb_threads > 0, "Invalid number of parallel threads: %d", nb_threads);
 
