@@ -108,6 +108,10 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
  */
 void xbt_parmap_destroy(xbt_parmap_t parmap)
 {
+  if (!parmap) {
+    return;
+  }
+
   parmap->status = XBT_PARMAP_DESTROY;
   parmap->signal_f(parmap);
   xbt_free(parmap);
