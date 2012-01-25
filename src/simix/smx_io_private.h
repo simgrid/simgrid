@@ -8,7 +8,7 @@
 #define _SIMIX_IO_PRIVATE_H
 
 #include "simix/datatypes.h"
-#include "smurf_private.h"
+#include "smx_smurf_private.h"
 
 void SIMIX_pre_file_read(smx_req_t req);
 smx_action_t SIMIX_file_read(smx_process_t process, char* name);

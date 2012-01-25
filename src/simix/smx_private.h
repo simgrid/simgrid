@@ -17,12 +17,12 @@
 #include "xbt/function_types.h"
 #include "xbt/ex_interface.h"
 #include "instr/instr_private.h"
-#include "process_private.h"
-#include "host_private.h"
-#include "io_private.h"
-#include "network_private.h"
-#include "smurf_private.h"
-#include "synchro_private.h"
+#include "smx_process_private.h"
+#include "smx_host_private.h"
+#include "smx_io_private.h"
+#include "smx_network_private.h"
+#include "smx_smurf_private.h"
+#include "smx_synchro_private.h"
 #include "simix/context.h"
 
 /* Define only for SimGrid benchmarking purposes */

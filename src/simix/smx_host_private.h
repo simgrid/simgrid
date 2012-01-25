@@ -8,7 +8,7 @@
 #define _SIMIX_HOST_PRIVATE_H
 
 #include "simix/datatypes.h"
-#include "smurf_private.h"
+#include "smx_smurf_private.h"
 
 /** @brief Host datatype */
 typedef struct s_smx_host {

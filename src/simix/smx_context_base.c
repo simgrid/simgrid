@@ -10,7 +10,7 @@
 #include "xbt/function_types.h"
 #include "simix/simix.h"
 #include "simix/context.h"
-#include "simix/private.h"
+#include "smx_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(bindings);
 

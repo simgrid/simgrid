@@ -1,4 +1,4 @@
-#include "private.h"
+#include "smx_private.h"
 #include "xbt/fifo.h"
 #include "xbt/xbt_os_thread.h"
 

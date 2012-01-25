@@ -78,13 +78,13 @@ set(EXTRA_DIST
 	src/gras/Transport/transport_interface.h
 	src/amok/Bandwidth/bandwidth_private.h
 	src/amok/amok_modinter.h
-	src/simix/private.h
-	src/simix/process_private.h
-	src/simix/host_private.h
-	src/simix/network_private.h
-	src/simix/smurf_private.h
-	src/simix/synchro_private.h
-	src/simix/io_private.h
+	src/simix/smx_private.h
+	src/simix/smx_process_private.h
+	src/simix/smx_host_private.h
+	src/simix/smx_network_private.h
+	src/simix/smx_smurf_private.h
+	src/simix/smx_synchro_private.h
+	src/simix/smx_io_private.h
 	
 	src/smpi/private.h
 	src/smpi/smpi_mpi_dt_private.h

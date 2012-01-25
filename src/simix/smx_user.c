@@ -15,7 +15,7 @@
 #endif
 #include <math.h>         /* isfinite() */
 
-#include "private.h"
+#include "smx_private.h"
 #include "mc/mc.h"
 
 

@@ -15,7 +15,7 @@
 
 #include "simix/simix.h"        /* used implementation */
 #include "simix/datatypes.h"
-#include "../simix/private.h" /* FIXME */
+#include "../simix/smx_private.h" /* FIXME */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt,
                                 "Synchronization mechanism");

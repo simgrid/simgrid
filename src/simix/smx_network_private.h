@@ -8,7 +8,7 @@
 #define _SIMIX_NETWORK_PRIVATE_H
 
 #include "simix/datatypes.h"
-#include "smurf_private.h"
+#include "smx_smurf_private.h"
 
 /** @brief Rendez-vous point datatype */
 typedef struct s_smx_rvpoint {

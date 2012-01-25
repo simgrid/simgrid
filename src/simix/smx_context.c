@@ -10,7 +10,7 @@
 #include "xbt/log.h"
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
-#include "src/simix/private.h"
+#include "smx_private.h"
 #include "simix/context.h"
 #include "gras_config.h"
 

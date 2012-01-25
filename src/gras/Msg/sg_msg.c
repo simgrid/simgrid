@@ -20,7 +20,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_msg);
 
 typedef void *gras_trp_bufdata_;
 #include "simix/datatypes.h"
-#include "simix/private.h"
 
 /* Yeah, the following is awfull, breaking the encapsulation of at least 3 modules
  * at the same time, but I'm tracking this bug since too long now, I want it dead. now.
