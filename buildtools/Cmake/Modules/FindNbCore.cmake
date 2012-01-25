@@ -1,6 +1,6 @@
 if(NOT DEFINED PROCESSOR_COUNT)
-  # Unknown:
-  set(PROCESSOR_COUNT 0)
+  # Default:
+  set(PROCESSOR_COUNT 1)
 
   # Linux:
   set(cpuinfo_file "/proc/cpuinfo")
