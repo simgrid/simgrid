@@ -180,7 +180,7 @@ s_surf_model_description_t surf_optimization_mode_description[] = {
 };
 
 #ifdef CONTEXT_THREADS
-static xbt_parmap_t surf_parmap; /* parallel map for share_resources */
+static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
 
 static int surf_nthreads = 1;    /* number of threads of the parmap (1 means no parallelism) */
@@ -336,7 +336,6 @@ void surf_init(int *argc, char **argv)
     model_list = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
   if (!history)
     history = tmgr_history_new();
-  surf_parmap = xbt_parmap_new(4, XBT_PARMAP_DEFAULT);
 
   surf_config_init(argc, argv);
   surf_action_init();
@@ -607,8 +606,15 @@ void surf_set_nthreads(int nthreads) {
 
   xbt_assert(nthreads > 0, "Invalid number of parallel threads: %d", nthreads);
 
+#ifdef CONTEXT_THREADS
+  xbt_parmap_destroy(surf_parmap);
+  surf_parmap = NULL;
+#endif
+
   if (nthreads > 1) {
-#ifndef CONTEXT_THREADS
+#ifdef CONTEXT_THREADS
+    surf_parmap = xbt_parmap_new(nthreads, XBT_PARMAP_DEFAULT);
+#else
     THROWF(arg_error, 0, "Cannot activate parallel threads in Surf: your architecture does not support threads");
 #endif
   }
