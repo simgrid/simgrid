@@ -165,11 +165,6 @@ Section "Binaries" BinSection
 	file bin\graphicator@BIN_EXE@
 	file bin\gras_stub_generator@BIN_EXE@
 	file bin\simgrid_update_xml
-	file bin\smpicc
-	file bin\smpif2c
-	file bin\smpiff
-	file bin\smpirun
-	file bin\tesh
 	
 SectionEnd
 Section "Documentation" DocSection	
@@ -236,11 +231,11 @@ section
 	!define env_hklm 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 	!define env_hkcu 'HKCU "Environment"'
 	# Set Variables
-	WriteRegExpandStr ${env_hklm} SIMGRID_ROOT $INSTDIR
-	WriteRegExpandStr ${env_hklm} SIMGRID_VERSION @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
+	WriteRegExpandStr ${env_hkcu} SIMGRID_ROOT $INSTDIR
+	WriteRegExpandStr ${env_hkcu} SIMGRID_VERSION @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
 
-	WriteRegExpandStr ${env_hklm} SIMGRID_PCRE_LIBRARY_PATH $INSTDIR\GnuWin32
-	WriteRegExpandStr ${env_hklm} SIMGRID_PCRE_LIBRARY_VERSION "8.21"
+	WriteRegExpandStr ${env_hkcu} SIMGRID_PCRE_LIBRARY_PATH $INSTDIR\GnuWin32
+	WriteRegExpandStr ${env_hkcu} SIMGRID_PCRE_LIBRARY_VERSION "8.21"
 
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "Version" "@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@"
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "InstallPath" "$INSTDIR"
@@ -395,10 +390,10 @@ section "Uninstall"
 	RMDir   /r "$INSTDIR\GnuWin32"
 	
 	# Delete variable
-	DeleteRegValue ${env_hklm} SIMGRID_ROOT
-	DeleteRegValue ${env_hklm} SIMGRID_VERSION
-	DeleteRegValue ${env_hklm} SIMGRID_PCRE_LIBRARY_PATH
-	DeleteRegValue ${env_hklm} SIMGRID_PCRE_LIBRARY_VERSION
+	DeleteRegValue ${env_hkcu} SIMGRID_ROOT
+	DeleteRegValue ${env_hkcu} SIMGRID_VERSION
+	DeleteRegValue ${env_hkcu} SIMGRID_PCRE_LIBRARY_PATH
+	DeleteRegValue ${env_hkcu} SIMGRID_PCRE_LIBRARY_VERSION
     DeleteRegKey HKCU "SOFTWARE\SimGrid"
     
     # delete INSTDIR
