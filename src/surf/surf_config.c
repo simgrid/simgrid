@@ -247,7 +247,7 @@ static void _surf_cfg_cb_contexts_parallel_mode(const char *name, int pos)
     SIMIX_context_set_parallel_mode(XBT_PARMAP_BUSY_WAIT);
   }
   else {
-    XBT_WARN("Command line setting of the parallel synchronization mode should "
+    xbt_die("Command line setting of the parallel synchronization mode should "
         "be one of \"posix\", \"futex\" or \"busy_wait\"");
   }
 }
