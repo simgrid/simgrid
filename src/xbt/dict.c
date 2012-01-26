@@ -1003,12 +1003,12 @@ static void basic_test(int homogeneous)
   traverse(head);
 }
 
-XBT_TEST_UNIT("basic (heterogeneous)", test_dict_basic_heterogeneous, "Basic usage: change, retrieve, traverse: heterogeneous dictionary")
+XBT_TEST_UNIT("basic_heterogeneous", test_dict_basic_heterogeneous, "Basic usage: change, retrieve, traverse: heterogeneous dict")
 {
   basic_test(0);
 }
 
-XBT_TEST_UNIT("basic (homogeneous)", test_dict_basic_homogeneous, "Basic usage: change, retrieve, traverse: homogeneous dictionary")
+XBT_TEST_UNIT("basic_homogeneous", test_dict_basic_homogeneous, "Basic usage: change, retrieve, traverse: homogeneous dict")
 {
   basic_test(1);
 }
@@ -1083,12 +1083,12 @@ static void remove_test(int homogeneous)
   xbt_dict_free(&head);
 }
 
-XBT_TEST_UNIT("remove (heterogeneous)", test_dict_remove_heterogeneous, "Removing some values: heterogeneous dictionary")
+XBT_TEST_UNIT("remove_heterogeneous", test_dict_remove_heterogeneous, "Removing some values: heterogeneous dict")
 {
   remove_test(0);
 }
 
-XBT_TEST_UNIT("remove (homogeneous)", test_dict_remove_homogeneous, "Removing some values: homogeneous dictionary")
+XBT_TEST_UNIT("remove_homogeneous", test_dict_remove_homogeneous, "Removing some values: homogeneous dict")
 {
   remove_test(1);
 }
