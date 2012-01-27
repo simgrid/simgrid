@@ -22,9 +22,6 @@
 #cmakedefine SIZEOF_INT @SIZEOF_INT@
 #cmakedefine SIZEOF_VOIDP @SIZEOF_VOIDP@
 
-// Number of processor counted by cmake
-#cmakedefine PROCESSOR_COUNT @PROCESSOR_COUNT@
-
 /* If __thread is available */
 #cmakedefine HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@
 

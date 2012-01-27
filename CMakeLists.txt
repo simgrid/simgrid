@@ -9,11 +9,6 @@ set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_CXX_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 
-set(CMAKE_MODULE_PATH 
-${CMAKE_MODULE_PATH}
-${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
-)
-
 ## Mapping version number -> version name
 # 3.5.99 -> alpha1 (oops)
 # 3.5.9{1,2} -> beta{1,2}
@@ -193,9 +188,6 @@ include_directories(${INCLUDES})
 include(CMakeDetermineSystem)
 set(PROCESSOR_${CMAKE_SYSTEM_PROCESSOR} 1)
 
-### Print NbCore
-include(FindNbCore)
-
 ### Setup Options
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Option.cmake)
 
@@ -240,6 +232,9 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
 else(NOT WIN32)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDocWin.cmake)  
 endif(NOT WIN32)
+
+### Print NbCore
+include(FindNbCore)
 
 ### Print ARGS
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)

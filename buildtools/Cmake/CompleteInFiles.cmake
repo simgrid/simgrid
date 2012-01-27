@@ -1,3 +1,8 @@
+set(CMAKE_MODULE_PATH 
+${CMAKE_MODULE_PATH}
+${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
+)
+
 # x86_64
 # x86
 # i.86
