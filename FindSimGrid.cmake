@@ -8,7 +8,7 @@ find_library(HAVE_SIMGRID_LIB
     PATH_SUFFIXES lib
 )
 
-find_path(HAVE_GRAS_H gras.h
+find_path(HAVE_MSG_H msg.h
     HINTS
 	$ENV{SIMGRID_ROOT}
     PATH_SUFFIXES include
@@ -31,14 +31,14 @@ else(HAVE_SIMGRID_LIB)
   message(STATUS "Looking for lib SimGrid - not found")
 endif(HAVE_SIMGRID_LIB)
 
-message(STATUS "Looking for gras.h")
-if(HAVE_GRAS_H)
-message(STATUS "Looking for gras.h - found")
-else(HAVE_GRAS_H)
-message(STATUS "Looking for gras.h - not found")
-endif(HAVE_GRAS_H)
+message(STATUS "Looking for msg.h")
+if(HAVE_MSG_H)
+message(STATUS "Looking for msg.h - found")
+else(HAVE_MSG_H)
+message(STATUS "Looking for msg.h - not found")
+endif(HAVE_MSG_H)
 
-if(HAVE_SIMGRID_LIB AND HAVE_GRAS_H)
-else(HAVE_SIMGRID_LIB AND HAVE_GRAS_H)
+if(HAVE_SIMGRID_LIB AND HAVE_MSG_H)
+else(HAVE_SIMGRID_LIB AND HAVE_MSG_H)
     message(FATAL_ERROR "You need to install simgrid and set environment variable SIMGRID_ROOT!")
-endif(HAVE_SIMGRID_LIB AND HAVE_GRAS_H)
+endif(HAVE_SIMGRID_LIB AND HAVE_MSG_H)
