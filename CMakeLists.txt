@@ -174,7 +174,7 @@ string(REPLACE ".java" ".class" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES_CLASS}")
 # FLAGS #
 #########
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
-set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I$ENV{SIMGRID_ROOT}/include -I$ENV{SIMGRID_ROOT}/src -I$ENV{SIMGRID_ROOT}/src/include")
+set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I${SIMGRID_INCLUDES}")
 set(LIB_PATH "-L$ENV{SIMGRID_ROOT}/lib")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${INCLUDE_PATH} ${LIB_PATH} -DMSG_USE_DEPRECATED")
 
