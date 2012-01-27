@@ -36,12 +36,13 @@ typedef DWORD xbt_os_thread_key_t;
 #endif
 
 /* Calls pthread_atfork() if present, and else does nothing.
- * The only known user of this wrapper is mmalloc_preinit().
+ * The only known user of this wrapper is mmalloc_preinit(); This function may disapear in the near future.
  */
 XBT_PUBLIC(int) xbt_os_thread_atfork(void (*prepare)(void),
                                      void (*parent)(void),
                                      void (*child)(void));
 
+XBT_PUBLIC(int) xbt_os_get_numcores(void);
 
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_create(const char *name,
                                                  pvoid_f_pvoid_t start_routine,
