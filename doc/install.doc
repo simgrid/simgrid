@@ -3,9 +3,11 @@
 \section bindings_binding_java_install How to install Simgrid-java
 
 To use java with Simgrid you have to install some dependencies:
- \li Simgrid (see <a href="http://simgrid.gforge.inria.fr/simgrid/3.7/doc/install.html">install Simgrid</a>). Be sure having set the environment variable "SIMGRID_ROOT". 
- \li Java packages: sun-java6-jdk and libgcj10-dev. If you cannot find the
-libgcj10-dev, try another version.
+ \li Simgrid (see <a href="http://simgrid.gforge.inria.fr/simgrid/3.7/doc/install.html">install
+     Simgrid</a>). You should set the SIMGRID_ROOT environment
+     variable to the path where you installed SimGrid.
+ \li Java JDK packages, such as sun-java6-jdk (with libgcj10-dev or
+another version of gcj) or openjdk6.
  
 Then Download and install package Simgrid-java:
 \verbatim
@@ -40,10 +42,12 @@ Cmake output
 
 \section bindings_binding_java_use How to use Simgrid-java
 
-For execute examples you need to export LD_LIBRARY_PATH to generated libSG_java library
-(<build_dir>/lib) and libsimgrid (SIMGRID_ROOT).
+To execute the examples you need to add the path where you installed
+the generated libSG_java library (<build_dir>/lib) and libsimgrid
+($SIMGRID_ROOT/lib) into the LD_LIBRARY_PATH.
 
-Take care on mac export DYLD_LIBRARY_PATH and not LD_LIBRARY_PATH.
+Be careful on Mac, this variable is called DYLD_LIBRARY_PATH and not
+LD_LIBRARY_PATH.
 
 \verbatim
 $ export SIMGRID_ROOT="$HOME/Install/simgrid/"
