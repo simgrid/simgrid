@@ -167,7 +167,10 @@ price of a reduced numerical precision.
 
 By default, Surf computes the analytical models sequentially to share their
 resources and update their actions. It is possible to run them in parallel,
-using the \b surf/nthreads item (default value: 1).
+using the \b surf/nthreads item (default value: 1). If you use a
+negative value, the amount of available cores is automatically
+detected  and used instead.
+
 Depending on the workload of the models and their complexity, you may get a
 speedup or a slowdown because of the synchronization costs of threads.
 
@@ -322,7 +325,8 @@ If you are using the \c ucontext or \c raw context factories, you can
 request to execute the user code in parallel. Several threads are
 launched, each of them handling as much user contexts at each run. To
 actiave this, set the \b contexts/nthreads item to the amount of
-core that you have in your computer.
+cores that you have in your computer (or -1 to have the amount of cores
+auto-detected).
 
 Even if you asked several worker threads using the previous option,
 you can request to start the parallel execution (and pay the
