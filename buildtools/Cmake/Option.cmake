@@ -20,7 +20,7 @@ option(enable_debug "Set NDEBUG flag" on)
 
 option(enable_gtnets "Whether gtnets model is activated." off)
 option(enable_ns3    "Whether ns3 model is activated." off)
-option(enable_smpi "This variable set smpi lib." off)
+option(enable_smpi "Whether the smpi library is compiled." on)
 option(enable_lua "Whether the lua bindings are activated." off)
 option(enable_compile_warnings "Whether compilation warnings should be turned into errors." off)
 option(enable_maintainer_mode "Whether flex and flexml files should be rebuilt." off)
