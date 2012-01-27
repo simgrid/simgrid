@@ -175,7 +175,7 @@ string(REPLACE ".java" ".class" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES_CLASS}")
 #########
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
 set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I${SIMGRID_INCLUDES}")
-set(LIB_PATH "-L$ENV{SIMGRID_ROOT}/lib")
+set(LIB_PATH "-L${SIMGRID_LIB}")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${INCLUDE_PATH} ${LIB_PATH} -DMSG_USE_DEPRECATED")
 
 if(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
@@ -271,10 +271,10 @@ set(test_list basic pingPong CommTime mutualExclusion bypass kill)
 if(APPLE)
     if($ENV{DYLD_LIBRARY_PATH} STREQUAL "")
         set_tests_properties(${test_list}
-        PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
+        PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB}")
     else($ENV{DYLD_LIBRARY_PATH} STREQUAL "")
         set_tests_properties(${test_list}
-        PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=$ENV{DYLD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
+        PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=$ENV{DYLD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB}")
     endif($ENV{DYLD_LIBRARY_PATH} STREQUAL "")
 endif(APPLE)
 
@@ -283,10 +283,10 @@ endif(APPLE)
 ##########################################
 if($ENV{LD_LIBRARY_PATH} STREQUAL "")
     set_tests_properties(${test_list}
-    PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
+    PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB}")
 else($ENV{LD_LIBRARY_PATH} STREQUAL "")
     set_tests_properties(${test_list}
-    PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:$ENV{SIMGRID_ROOT}/lib")
+    PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB}")
 endif($ENV{LD_LIBRARY_PATH} STREQUAL "")
 
 ###########
