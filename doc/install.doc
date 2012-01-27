@@ -3,7 +3,7 @@
 \section bindings_binding_java_install How to install Simgrid-java
 
 To use java with Simgrid you have to install some dependencies:
- \li Simgrid (see <a href="http://simgrid.gforge.inria.fr/simgrid/3.7/doc/installSimgrid.html">install Simgrid</a>). Be sure having set the environment variable "SIMGRID_ROOT". 
+ \li Simgrid (see <a href="http://simgrid.gforge.inria.fr/simgrid/3.7/doc/install.html">install Simgrid</a>). Be sure having set the environment variable "SIMGRID_ROOT". 
  \li Java packages: sun-java6-jdk and libgcj10-dev. If you cannot find the
 libgcj10-dev, try another version.
  
