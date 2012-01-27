@@ -1,6 +1,6 @@
 SimGrid (3.7) NOT RELEASED; urgency=low
 
-  The "Simplicity does not preceed complexity, but follows it" release.
+  The "sprint cleanups (before spring)" release.
 
   Models:
   * We can specify the smpi latency/bandwidth factor with command line
@@ -48,6 +48,9 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Performance boost by using a swag internally to compute the set of
     tasks that are finished and should constitute the return value of
     SD_simulate.
+
+  SMPI:
+  * Enable it by default now that it is considered rather stable.
 
   XBT:
   * Mallocators: allow value NULL for the reset function.
