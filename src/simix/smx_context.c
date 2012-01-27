@@ -139,14 +139,17 @@ XBT_INLINE int SIMIX_context_get_nthreads(void) {
  */
 XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
 
-  xbt_assert(nb_threads > 0, "Invalid number of parallel threads: %d", nb_threads);
-
+  if (nb_threads<=0) {	
+     nb_threads = xbt_os_get_numcores();
+     XBT_INFO("Auto-setting contexts/nthreads to %d",nb_threads);
+  }   
+	
   if (nb_threads > 1) {
 #ifndef CONTEXT_THREADS
     THROWF(arg_error, 0, "The thread factory cannot be run in parallel");
 #endif
   }
-
+ 
   smx_parallel_contexts = nb_threads;
 }
 

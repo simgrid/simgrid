@@ -226,17 +226,7 @@ static void _surf_cfg_cb_context_stack_size(const char *name, int pos)
 
 static void _surf_cfg_cb_contexts_nthreads(const char *name, int pos)
 {
-  unsigned int nthreads;
-  const char* value = xbt_cfg_get_string(_surf_cfg_set, name);
-  if (!strcmp(value, "auto")) {
-    XBT_DEBUG("Auto setting contexts/nthreads to %d", PROCESSOR_COUNT);
-    nthreads = PROCESSOR_COUNT;
-  }
-  else {
-    nthreads = atoi(value);
-    xbt_assert(nthreads > 0, "context/threads should be a positive number or 'auto'");
-  }
-  SIMIX_context_set_nthreads(nthreads);
+  SIMIX_context_set_nthreads(xbt_cfg_get_int(_surf_cfg_set, name));
 }
 
 static void _surf_cfg_cb_contexts_parallel_threshold(const char *name, int pos)
@@ -471,10 +461,10 @@ void surf_config_init(int *argc, char **argv)
                      _surf_cfg_cb_context_stack_size, NULL);
 
     /* number of parallel threads for user processes */
-    default_value = xbt_strdup("1");
+    default_value_int = 1;
     xbt_cfg_register(&_surf_cfg_set, "contexts/nthreads",
                      "Number of parallel threads used to execute user contexts",
-                     xbt_cfgelm_string, &default_value, 1, 1,
+                     xbt_cfgelm_int, &default_value, 1, 1,
                      _surf_cfg_cb_contexts_nthreads, NULL);
 
     /* minimal number of user contexts to be run in parallel */

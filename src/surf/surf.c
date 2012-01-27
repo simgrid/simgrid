@@ -10,6 +10,7 @@
 #include "xbt/module.h"
 #include "mc/mc.h"
 #include "surf/surf_resource.h"
+#include "xbt/xbt_os_thread.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");
@@ -604,7 +605,10 @@ int surf_get_nthreads(void) {
  */
 void surf_set_nthreads(int nthreads) {
 
-  xbt_assert(nthreads > 0, "Invalid number of parallel threads: %d", nthreads);
+  if (nthreads<=0) {
+     nthreads = xbt_os_get_numcores();
+     XBT_INFO("Auto-setting surf/nthreads to %d",nthreads);
+  }
 
 #ifdef CONTEXT_THREADS
   xbt_parmap_destroy(surf_parmap);
