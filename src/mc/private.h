@@ -18,6 +18,9 @@
 #include "../simix/private.h"
 #include "xbt/automaton.h"
 #include "xbt/hash.h"
+#include "msg/msg.h"
+#include "msg/datatypes.h"
+#include "simix/datatypes.h"
 
 /****************************** Snapshots ***********************************/
 
@@ -221,6 +224,7 @@ typedef struct s_mc_pair_reached{
   xbt_state_t automaton_state;
   xbt_dynar_t prop_ato;
   mc_snapshot_t system_state;
+  //xbt_dict_t rdv_points;
 }s_mc_pair_reached_t, *mc_pair_reached_t;
 
 typedef struct s_mc_pair_visited{
@@ -243,6 +247,8 @@ typedef struct s_mc_pair_reached_hash{
   unsigned int *hash_regions;
 }s_mc_pair_reached_hash_t, *mc_pair_reached_hash_t;
 
+
+
 int MC_automaton_evaluate_label(xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
@@ -259,6 +265,7 @@ void set_pair_visited(xbt_state_t st, int search_cycle);
 int visited_hash(xbt_state_t st, int search_cycle);
 void set_pair_visited_hash(xbt_state_t st, int search_cycle);
 unsigned int hash_region(char *str, int str_len);
+int rdv_points_compare(xbt_dict_t d1, xbt_dict_t d2);
 
 
 /* **** Double-DFS stateless **** */

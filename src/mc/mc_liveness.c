@@ -10,6 +10,8 @@ xbt_dynar_t visited_pairs;
 xbt_dynar_t visited_pairs_hash;
 xbt_dynar_t successors;
 
+xbt_dynar_t hosts_table;
+
 
 /* fast implementation of djb2 algorithm */
 unsigned int hash_region(char *str, int str_len){
@@ -49,7 +51,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     }
 
     switch(s1->regions[i]->type){
-    case 0:
+      case 0:
       if(s1->regions[i]->size != s2->regions[i]->size){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
 	  XBT_DEBUG("Different size of heap (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
@@ -66,7 +68,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 	  return 1;
 	}
       }
-      if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data)){
+      if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data, std_heap)){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
 	  XBT_DEBUG("Different heap (mmalloc_compare)");
 	  errors++; 
@@ -75,7 +77,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 	}
       }
       break;
-    case 1 :
+      /*case 1 :
       if(s1->regions[i]->size != s2->regions[i]->size){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
 	  XBT_DEBUG("Different size of libsimgrid (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
@@ -95,74 +97,20 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
 	  XBT_DEBUG("Different memcmp for data in libsimgrid");
+	  XBT_DEBUG("Size : %zu", s1->regions[i]->size);
  	  errors++;
 	}else{
 	  return 1;
 	}
       }
-      break;
-      /*case 2:
-      if(s1->regions[i]->size != s2->regions[i]->size){
-	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-	  XBT_DEBUG("Different size of program (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
-	  errors++;
-	}else{
-	  return 1;
-	}
-      } 
-      if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-	  XBT_DEBUG("Different start addr of program (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
-	  errors++;
-	}else{
-	  return 1;
-	}
-      }
-      if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
-	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-	  XBT_DEBUG("Different memcmp for data in program");
-	  errors++;
-	}else{
-	  return 1;
-	}
-      }
       break;*/
-    case 3:
-      if(s1->regions[i]->size != s2->regions[i]->size){
-	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-	  XBT_DEBUG("Different size of stack (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
-	  errors++;
-	}else{
-	  return 1;
-	}
-      }
-      if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-	  XBT_DEBUG("Different start addr of stack (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
-	  errors++;
-	}else{
-	  return 1;
-	}
-      }
-      if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
-	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-	  XBT_DEBUG("Different memcmp for data in stack");
-	  errors++;
-	}else{
-	  return 1;
-	}
-      }
-      break;
     default:
       break;
     }
   }
 
-  if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-    return (errors>0);
-  }else{
-    return 0;
-  }
+  return (errors > 0);
+  
   
 }
 
@@ -196,20 +144,26 @@ int reached(xbt_state_t st){
     cursor = 0;
     mc_pair_reached_t pair_test = NULL;
 
-
+    //xbt_dict_t current_rdv_points = SIMIX_get_rdv_points();
+     
     xbt_dynar_foreach(reached_pairs, cursor, pair_test){
+      XBT_DEBUG("Pair reached #%d", cursor+1);
       if(automaton_state_compare(pair_test->automaton_state, st) == 0){
 	if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
-	  XBT_DEBUG("Pair reached %d", cursor+1);
-	  if(snapshot_compare(pair_test->system_state, sn) == 0){
-	    MC_free_snapshot(sn);
-	    xbt_dynar_reset(prop_ato);
-	    xbt_free(prop_ato);
-	    MC_UNSET_RAW_MEM;
-	    return 1;
+	  //XBT_DEBUG("Rdv points size %d - %d", xbt_dict_length(pair_test->rdv_points), xbt_dict_length(current_rdv_points));
+	  //if(xbt_dict_length(pair_test->rdv_points) == xbt_dict_length(current_rdv_points)){
+	  //if(rdv_points_compare(pair_test->rdv_points, current_rdv_points) == 0){
+	      if(snapshot_compare(pair_test->system_state, sn) == 0){
+		MC_free_snapshot(sn);
+		xbt_dynar_reset(prop_ato);
+		xbt_free(prop_ato);
+		MC_UNSET_RAW_MEM;
+		return 1;
+	      }
+	      /* }
 	  }else{
-	    XBT_DEBUG("Different snapshot");
-	  }
+	    XBT_DEBUG("Different size of rdv points (%d - %d)",xbt_dict_length(pair_test->rdv_points), xbt_dict_length(current_rdv_points) );
+	    }*/
 	}else{
 	  XBT_DEBUG("Different values of propositional symbols");
 	}
@@ -227,6 +181,167 @@ int reached(xbt_state_t st){
   }
 }
 
+int rdv_points_compare(xbt_dict_t d1, xbt_dict_t d2){ /* d1 = pair_test, d2 = current_pair */ 
+  
+   xbt_dict_cursor_t cursor_dict = NULL;
+   char *key;
+   char *data;
+   smx_rdv_t rdv1, rdv2;
+   xbt_fifo_item_t item1, item2;
+   smx_action_t action1, action2;
+   xbt_fifo_item_t item_req1, item_req2;
+   smx_req_t req1, req2;
+   int i=0;
+   int j=0;
+
+   xbt_dict_foreach(d1, cursor_dict, key, data){
+     rdv1 = (smx_rdv_t)data;
+     rdv2 = xbt_dict_get_or_null(d2, rdv1->name);
+     if(rdv2 == NULL){
+       XBT_DEBUG("Rdv point unknown");
+       return 1;
+     }else{
+       if(xbt_fifo_size(rdv1->comm_fifo) != xbt_fifo_size(rdv2->comm_fifo)){
+	 XBT_DEBUG("Different total of actions in mailbox \"%s\" (%d - %d)", rdv1->name, xbt_fifo_size(rdv1->comm_fifo),xbt_fifo_size(rdv2->comm_fifo) );
+	 return 1;
+       }else{
+	 
+	 XBT_DEBUG("Total of actions in mailbox \"%s\" : %d", rdv1->name, xbt_fifo_size(rdv1->comm_fifo)); 
+	 
+	 item1 = xbt_fifo_get_first_item(rdv1->comm_fifo);	
+	 item2 = xbt_fifo_get_first_item(rdv2->comm_fifo);
+
+	 while(i<xbt_fifo_size(rdv1->comm_fifo)){
+	   action1 = (smx_action_t) xbt_fifo_get_item_content(item1);
+	   action2 = (smx_action_t) xbt_fifo_get_item_content(item2);
+
+	   if(action1->type != action2->type){
+	     XBT_DEBUG("Different type of action");
+	     return 1;
+	   }
+
+	   if(action1->state != action2->state){
+	     XBT_DEBUG("Different state of action");
+	     return 1;
+	   }
+
+	   if(xbt_fifo_size(action1->request_list) != xbt_fifo_size(action2->request_list)){
+	     XBT_DEBUG("Different size of request list (%d - %d", xbt_fifo_size(action1->request_list), xbt_fifo_size(action2->request_list));
+	     return 1;
+	   }else{
+
+	     item_req1 = xbt_fifo_get_first_item(action1->request_list);	
+	     item_req2 = xbt_fifo_get_first_item(action2->request_list);
+
+	     while(j<xbt_fifo_size(action1->request_list)){
+
+	       req1 = (smx_req_t) xbt_fifo_get_item_content(item_req1);
+	       req2 = (smx_req_t) xbt_fifo_get_item_content(item_req2);
+	       
+	       if(req1->call != req2->call){
+		 XBT_DEBUG("Different request call in request_list of action (%d - %d)", req1->call, req2->call);
+		 return 1;
+	       }
+	       if(req1->issuer->pid != req2->issuer->pid){
+		 XBT_DEBUG("Different request issuer in request_list of action (%lu- %lu)", req1->issuer->pid, req2->issuer->pid);
+		 return 1;
+	       }
+
+	       item_req1 = xbt_fifo_get_next_item(item_req1);	
+	       item_req2 = xbt_fifo_get_next_item(item_req2);
+	       j++;
+	       
+	     }
+	   }
+
+	   switch(action1->type){
+	   case 0: /* execution */
+	   case 1: /* parallel execution */
+	     if(strcmp(action1->execution.host->name, action2->execution.host->name) != 0)
+	       return 1;
+	     break;
+	   case 2: /* comm */
+	     if(action1->comm.type != action2->comm.type)
+	       return 1;
+	     //XBT_DEBUG("Type of comm : %d", action1->comm.type);
+	     
+	     switch(action1->comm.type){
+	     case 0: /* SEND */
+	       if(action1->comm.src_proc->pid != action2->comm.src_proc->pid)
+		 return 1;
+	       if(strcmp(action1->comm.src_proc->smx_host->name, action2->comm.src_proc->smx_host->name) != 0)
+		 return 1;
+	       break;
+	     case 1: /* RECEIVE */
+	       if(action1->comm.dst_proc->pid != action2->comm.dst_proc->pid)
+		 return 1;
+	       if(strcmp(action1->comm.dst_proc->smx_host->name, action2->comm.dst_proc->smx_host->name) != 0)
+		 return 1;
+	       break;
+	     case 2: /* READY */
+	       if(action1->comm.src_proc->pid != action2->comm.src_proc->pid)
+		 return 1;
+	       if(strcmp(action1->comm.src_proc->smx_host->name, action2->comm.src_proc->smx_host->name) != 0)
+		 return 1;
+	       if(action1->comm.dst_proc->pid != action2->comm.dst_proc->pid)
+		 return 1;
+	       if(strcmp(action1->comm.dst_proc->smx_host->name, action2->comm.dst_proc->smx_host->name) != 0)
+		 return 1;
+	       break;
+	     case 3: /* DONE */
+	       if(action1->comm.src_proc->pid != action2->comm.src_proc->pid)
+		 return 1;
+	       if(strcmp(action1->comm.src_proc->smx_host->name, action2->comm.src_proc->smx_host->name) != 0)
+		 return 1;
+	       if(action1->comm.dst_proc->pid != action2->comm.dst_proc->pid)
+		 return 1;
+	       if(strcmp(action1->comm.dst_proc->smx_host->name, action2->comm.dst_proc->smx_host->name) != 0)
+		 return 1;
+	       break;
+	       
+	     } /* end of switch on type of comm */
+	     
+	     if(action1->comm.refcount != action2->comm.refcount)
+	       return 1;
+	     if(action1->comm.detached != action2->comm.detached)
+	       return 1;
+	     if(action1->comm.rate != action2->comm.rate)
+	       return 1;
+	     if(action1->comm.task_size != action2->comm.task_size)
+	       return 1;
+	     if(action1->comm.src_buff != action2->comm.src_buff)
+	       return 1;
+	     if(action1->comm.dst_buff != action2->comm.dst_buff)
+	       return 1;
+	     if(action1->comm.src_data != action2->comm.src_data)
+	       return 1;
+	     if(action1->comm.dst_data != action2->comm.dst_data)
+	       return 1;
+	     
+	     break;
+	   case 3: /* sleep */
+	     if(strcmp(action1->sleep.host->name, action2->sleep.host->name) != 0)
+	       return 1;
+	     break;
+	   case 4: /* synchro */
+	     
+	     break;
+	   default:
+	     break;
+	   }
+
+	   item1 = xbt_fifo_get_next_item(item1);	
+	   item2 = xbt_fifo_get_next_item(item2);
+	   i++;
+	 }
+       }
+     }
+   }
+
+   return 0;
+   
+}
+
 void set_pair_reached(xbt_state_t st){
 
  
@@ -237,6 +352,7 @@ void set_pair_reached(xbt_state_t st){
   pair->automaton_state = st;
   pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
   pair->system_state = xbt_new0(s_mc_snapshot_t, 1);
+  //pair->rdv_points = xbt_dict_new();  
   MC_take_snapshot_liveness(pair->system_state);
 
   /* Get values of propositional symbols */
@@ -250,12 +366,37 @@ void set_pair_reached(xbt_state_t st){
     res = (*f)();
     xbt_dynar_push_as(pair->prop_ato, int, res);
   }
-  
+
+  /*xbt_dict_t rdv_points = SIMIX_get_rdv_points();
+
+  xbt_dict_cursor_t cursor_dict = NULL;
+  char *key;
+  char *data;
+  xbt_fifo_item_t item;
+  smx_action_t action;
+
+  xbt_dict_foreach(rdv_points, cursor_dict, key, data){
+    smx_rdv_t new_rdv = xbt_new0(s_smx_rvpoint_t, 1);
+    new_rdv->name = strdup(((smx_rdv_t)data)->name);
+    new_rdv->comm_fifo = xbt_fifo_new();
+    xbt_fifo_foreach(((smx_rdv_t)data)->comm_fifo, item, action, smx_action_t) {
+      smx_action_t a = xbt_new0(s_smx_action_t, 1);
+      memcpy(a, action, sizeof(s_smx_action_t));
+      xbt_fifo_push(new_rdv->comm_fifo, a);
+      XBT_DEBUG("New action (type = %d, state = %d) in mailbox \"%s\"", action->type, action->state, key);
+      if(action->type==2)
+	XBT_DEBUG("Type of communication : %d, Ref count = %d", action->comm.type, action->comm.refcount);
+    }
+    //new_rdv->comm_fifo = xbt_fifo_copy(((smx_rdv_t)data)->comm_fifo);
+    xbt_dict_set(pair->rdv_points, new_rdv->name, new_rdv, NULL);
+    }*/
+ 
   xbt_dynar_push(reached_pairs, &pair); 
 
   MC_UNSET_RAW_MEM;
   
 }
+
 
 int reached_hash(xbt_state_t st){
 
@@ -646,9 +787,6 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
     break;
   }
 }
-
-
-
 
 
 /********************* Double-DFS stateless *******************/
