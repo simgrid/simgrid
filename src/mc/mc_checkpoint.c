@@ -37,7 +37,7 @@ static void MC_region_restore(mc_mem_region_t reg)
     memory_map_t maps = get_memory_map();
     MC_UNSET_RAW_MEM;
     unsigned int i=0;
-    s_map_region r;
+    s_map_region_t r;
     while(i < maps->mapsize){
       r = maps->regions[i];
       if (maps->regions[i].pathname != NULL){
@@ -90,7 +90,7 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start
 void MC_take_snapshot(mc_snapshot_t snapshot)
 {
   unsigned int i = 0;
-  s_map_region reg;
+  s_map_region_t reg;
   memory_map_t maps = get_memory_map();
 
   /* Save the std heap and the writable mapped pages of libsimgrid */
@@ -117,7 +117,7 @@ void MC_take_snapshot(mc_snapshot_t snapshot)
 void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
 {
   unsigned int i = 0;
-  s_map_region reg;
+  s_map_region_t reg;
   memory_map_t maps = get_memory_map();
 
   for(i=0; i< snapshot->num_reg; i++){
@@ -151,7 +151,7 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
 void MC_take_snapshot_to_restore_liveness(mc_snapshot_t snapshot)
 {
   unsigned int i = 0;
-  s_map_region reg;
+  s_map_region_t reg;
   memory_map_t maps = get_memory_map();
 
   for(i=0; i< snapshot->num_reg; i++){

@@ -174,11 +174,11 @@ typedef struct s_map_region {
   unsigned long inode;          /* Inode in the device */
   char *pathname;               /* Path name of the mapped file */
 
-} s_map_region;
+} s_map_region_t;
 
 typedef struct s_memory_map {
 
-  s_map_region *regions;        /* Pointer to an array of regions */
+  s_map_region_t *regions;      /* Pointer to an array of regions */
   int mapsize;                  /* Number of regions in the memory */
 
 } s_memory_map_t, *memory_map_t;

@@ -19,7 +19,7 @@ memory_map_t get_memory_map(void)
   memory_map_t ret = NULL;      /* The memory map to return */
 
 /* The following variables are used during the parsing of the file "maps" */
-  s_map_region memreg;          /* temporal map region used for creating the map */
+  s_map_region_t memreg;          /* temporal map region used for creating the map */
   char *lfields[6], *tok, *endptr;
   int i;
 
