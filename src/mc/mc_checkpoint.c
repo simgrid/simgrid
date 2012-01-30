@@ -18,7 +18,7 @@ static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
   new_reg->start_addr = start_addr;
   new_reg->size = size;
   new_reg->data = xbt_malloc0(size);
-  XBT_DEBUG("New reg data %p, start_addr %p", new_reg->data, start_addr);
+  XBT_DEBUG("New reg data %p, start_addr %p, size %zu", new_reg->data, start_addr, size);
   memcpy(new_reg->data, start_addr, size);
   
   return new_reg;
@@ -72,10 +72,7 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start
     XBT_DEBUG("New region libsimgrid (%zu)", size);
     break;
   case 2 : 
-    XBT_DEBUG("New region program (%zu)", size);
-    break;
-  case 3 : 
-    XBT_DEBUG("New region stack (%zu)", size);
+    XBT_DEBUG("New region program data (%zu)", size);
     break;
   }
   mc_mem_region_t new_reg = MC_region_new(type, start_addr, size);
@@ -134,18 +131,10 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
         if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
 	  MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
         }
-      } else {
+      }else {
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-        } else {
-	  if (!memcmp(basename(maps->regions[i].pathname), basename(prog_name), strlen(basename(prog_name)))){
-	    MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-	  } /*else {
-	    if (!memcmp(maps->regions[i].pathname, "[stack]", 7)){
-	      MC_snapshot_add_region(snapshot, 3, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-	    }
-	    }*/
-	}
+        } 
       }
     }
     i++;
@@ -205,10 +194,7 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
       XBT_DEBUG("libsimgrid (data) restored");
       break;
     case 2:
-      XBT_DEBUG("program (data) restored");
-      break;
-    case 3:
-      XBT_DEBUG("stack restored");
+      XBT_DEBUG("data program restored");
       break;
     }
 
