@@ -18,7 +18,6 @@ src/simdag/dax_dtd.l
 src/surf/simgrid_dtd.l
 src/xbt/graphxml.l
 
-:e a
 ################################################
 ### Jedule
 examples/simdag/scheduling/simgrid.jed

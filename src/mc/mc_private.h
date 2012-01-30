@@ -139,7 +139,6 @@ void MC_print_statistics_pairs(mc_stats_pair_t);
 
 extern void *std_heap;
 extern void *raw_heap;
-/* extern int raw_heap_fd; */ /* unused */
 #define STD_HEAP_SIZE   20480000        /* Maximum size of the system's heap */
 
 /* FIXME: Horrible hack! because the mmalloc library doesn't provide yet of */
