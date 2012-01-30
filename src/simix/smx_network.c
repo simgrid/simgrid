@@ -67,6 +67,11 @@ void SIMIX_rdv_free(void *data)
   xbt_free(rdv);  
 }
 
+xbt_dict_t SIMIX_get_rdv_points()
+{
+  return rdv_points;
+}
+
 smx_rdv_t SIMIX_rdv_get_by_name(const char *name)
 {
   return xbt_dict_get_or_null(rdv_points, name);

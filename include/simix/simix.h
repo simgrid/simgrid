@@ -160,6 +160,7 @@ XBT_PUBLIC(void) SIMIX_req_rdv_destroy(smx_rdv_t rvp);
 XBT_PUBLIC(smx_rdv_t) SIMIX_req_rdv_get_by_name(const char *name);
 XBT_PUBLIC(int) SIMIX_req_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host);
 XBT_PUBLIC(smx_action_t) SIMIX_req_rdv_get_head(smx_rdv_t rdv);
+XBT_PUBLIC(xbt_dict_t) SIMIX_get_rdv_points(void);
 
 /***** Communication Requests *****/
 
