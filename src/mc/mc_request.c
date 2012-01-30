@@ -15,86 +15,86 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
   if (r1->issuer == r2->issuer)
     return FALSE;
 
-  if(r1->call == REQ_COMM_ISEND && r2->call == REQ_COMM_IRECV)
+  if(r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_IRECV)
     return FALSE;
 
-  if(r1->call == REQ_COMM_IRECV && r2->call == REQ_COMM_ISEND)
+  if(r1->call == SIMCALL_COMM_IRECV && r2->call == SIMCALL_COMM_ISEND)
     return FALSE;
 
-  if(   (r1->call == REQ_COMM_ISEND || r1->call == REQ_COMM_IRECV)
-       &&  r2->call == REQ_COMM_WAIT){
+  if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
+       &&  r2->call == SIMCALL_COMM_WAIT){
 
     if(r2->comm_wait.comm->comm.rdv == NULL)
       return FALSE;
 
-    smx_rdv_t rdv = r1->call == REQ_COMM_ISEND ? r1->comm_isend.rdv : r1->comm_irecv.rdv;
+    smx_rdv_t rdv = r1->call == SIMCALL_COMM_ISEND ? r1->comm_isend.rdv : r1->comm_irecv.rdv;
 
     if(r2->comm_wait.comm->comm.rdv != rdv)
       return FALSE;
 
-    if(r2->comm_wait.comm->comm.type == SIMIX_COMM_SEND && r1->call == REQ_COMM_ISEND)
+    if(r2->comm_wait.comm->comm.type == SIMIX_COMM_SEND && r1->call == SIMCALL_COMM_ISEND)
       return FALSE;
 
-    if(r2->comm_wait.comm->comm.type == SIMIX_COMM_RECEIVE && r1->call == REQ_COMM_IRECV)
+    if(r2->comm_wait.comm->comm.type == SIMIX_COMM_RECEIVE && r1->call == SIMCALL_COMM_IRECV)
       return FALSE;
   }
 
-  if(   (r2->call == REQ_COMM_ISEND || r2->call == REQ_COMM_IRECV)
-       &&  r1->call == REQ_COMM_WAIT){
+  if(   (r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
+       &&  r1->call == SIMCALL_COMM_WAIT){
 
     if(r1->comm_wait.comm->comm.rdv != NULL)
       return FALSE;
 
-    smx_rdv_t rdv = r2->call == REQ_COMM_ISEND ? r2->comm_isend.rdv : r2->comm_irecv.rdv;
+    smx_rdv_t rdv = r2->call == SIMCALL_COMM_ISEND ? r2->comm_isend.rdv : r2->comm_irecv.rdv;
 
     if(r1->comm_wait.comm->comm.rdv != rdv)
       return FALSE;
 
-    if(r1->comm_wait.comm->comm.type == SIMIX_COMM_SEND && r2->call == REQ_COMM_ISEND)
+    if(r1->comm_wait.comm->comm.type == SIMIX_COMM_SEND && r2->call == SIMCALL_COMM_ISEND)
       return FALSE;
 
-    if(r1->comm_wait.comm->comm.type == SIMIX_COMM_RECEIVE && r2->call == REQ_COMM_IRECV)
+    if(r1->comm_wait.comm->comm.type == SIMIX_COMM_RECEIVE && r2->call == SIMCALL_COMM_IRECV)
       return FALSE;
   }
 
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
    * test call. */
-  if(   (r1->call == REQ_COMM_ISEND || r1->call == REQ_COMM_IRECV)
-     &&  r2->call == REQ_COMM_TEST)
+  if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
+     &&  r2->call == SIMCALL_COMM_TEST)
     return FALSE;
 
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
    * test call.*/
-  if(   (r2->call == REQ_COMM_ISEND || r2->call == REQ_COMM_IRECV)
-     && r1->call == REQ_COMM_TEST)
+  if(   (r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
+     && r1->call == SIMCALL_COMM_TEST)
     return FALSE;
 
-  if(r1->call == REQ_COMM_ISEND && r2->call == REQ_COMM_ISEND
+  if(r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_ISEND
       && r1->comm_isend.rdv != r2->comm_isend.rdv)
     return FALSE;
 
-  if(r1->call == REQ_COMM_IRECV && r2->call == REQ_COMM_IRECV
+  if(r1->call == SIMCALL_COMM_IRECV && r2->call == SIMCALL_COMM_IRECV
       && r1->comm_irecv.rdv != r2->comm_irecv.rdv)
     return FALSE;
 
-  if(r1->call == REQ_COMM_WAIT && (r2->call == REQ_COMM_WAIT || r2->call == REQ_COMM_TEST)
+  if(r1->call == SIMCALL_COMM_WAIT && (r2->call == SIMCALL_COMM_WAIT || r2->call == SIMCALL_COMM_TEST)
      && (r1->comm_wait.comm->comm.src_proc == NULL
          || r1->comm_wait.comm->comm.dst_proc == NULL))
     return FALSE;
 
-  if(r2->call == REQ_COMM_WAIT && (r1->call == REQ_COMM_WAIT || r1->call == REQ_COMM_TEST)
+  if(r2->call == SIMCALL_COMM_WAIT && (r1->call == SIMCALL_COMM_WAIT || r1->call == SIMCALL_COMM_TEST)
      && (r2->comm_wait.comm->comm.src_proc == NULL
          || r2->comm_wait.comm->comm.dst_proc == NULL))
     return FALSE;
 
-  if(r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_WAIT
+  if(r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_WAIT
       && r1->comm_wait.comm->comm.src_buff == r2->comm_wait.comm->comm.src_buff
       && r1->comm_wait.comm->comm.dst_buff == r2->comm_wait.comm->comm.dst_buff)
     return FALSE;
 
-  if (r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_WAIT
+  if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_WAIT
       && r1->comm_wait.comm->comm.src_buff != NULL
       && r1->comm_wait.comm->comm.dst_buff != NULL
       && r2->comm_wait.comm->comm.src_buff != NULL
@@ -104,29 +104,29 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
       && r2->comm_wait.comm->comm.dst_buff != r1->comm_wait.comm->comm.src_buff)
     return FALSE;
 
-  if(r1->call == REQ_COMM_TEST &&
+  if(r1->call == SIMCALL_COMM_TEST &&
       (r1->comm_test.comm == NULL
        || r1->comm_test.comm->comm.src_buff == NULL
        || r1->comm_test.comm->comm.dst_buff == NULL))
     return FALSE;
 
-  if(r2->call == REQ_COMM_TEST &&
+  if(r2->call == SIMCALL_COMM_TEST &&
       (r2->comm_test.comm == NULL
        || r2->comm_test.comm->comm.src_buff == NULL
        || r2->comm_test.comm->comm.dst_buff == NULL))
     return FALSE;
 
-  if(r1->call == REQ_COMM_TEST && r2->call == REQ_COMM_WAIT
+  if(r1->call == SIMCALL_COMM_TEST && r2->call == SIMCALL_COMM_WAIT
       && r1->comm_test.comm->comm.src_buff == r2->comm_wait.comm->comm.src_buff
       && r1->comm_test.comm->comm.dst_buff == r2->comm_wait.comm->comm.dst_buff)
     return FALSE;
 
-  if(r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_TEST
+  if(r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_TEST
       && r1->comm_wait.comm->comm.src_buff == r2->comm_test.comm->comm.src_buff
       && r1->comm_wait.comm->comm.dst_buff == r2->comm_test.comm->comm.dst_buff)
     return FALSE;
 
-  if (r1->call == REQ_COMM_WAIT && r2->call == REQ_COMM_TEST
+  if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_TEST
         && r1->comm_wait.comm->comm.src_buff != NULL
         && r1->comm_wait.comm->comm.dst_buff != NULL
         && r2->comm_test.comm->comm.src_buff != NULL
@@ -136,7 +136,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
         && r2->comm_test.comm->comm.dst_buff != r1->comm_wait.comm->comm.src_buff)
     return FALSE;
 
-  if (r1->call == REQ_COMM_TEST && r2->call == REQ_COMM_WAIT
+  if (r1->call == SIMCALL_COMM_TEST && r2->call == SIMCALL_COMM_WAIT
           && r1->comm_test.comm->comm.src_buff != NULL
           && r1->comm_test.comm->comm.dst_buff != NULL
           && r2->comm_wait.comm->comm.src_buff != NULL
@@ -174,20 +174,20 @@ char *MC_request_to_string(smx_simcall_t req, int value)
   size_t size = 0;
 
   switch(req->call){
-    case REQ_COMM_ISEND:
+    case SIMCALL_COMM_ISEND:
       type = xbt_strdup("iSend");
       p = pointer_to_string(req->comm_isend.src_buff);
       bs = buff_size_to_string(req->comm_isend.src_buff_size);
       args = bprintf("src=%s, buff=%s, size=%s", req->issuer->name, p, bs);
       break;
-    case REQ_COMM_IRECV:
+    case SIMCALL_COMM_IRECV:
       size = req->comm_irecv.dst_buff_size ? *req->comm_irecv.dst_buff_size : 0;
       type = xbt_strdup("iRecv");
       p = pointer_to_string(req->comm_irecv.dst_buff); 
       bs = buff_size_to_string(size);
       args = bprintf("dst=%s, buff=%s, size=%s", req->issuer->name, p, bs);
       break;
-    case REQ_COMM_WAIT:
+    case SIMCALL_COMM_WAIT:
       act = req->comm_wait.comm;
       if(value == -1){
         type = xbt_strdup("WaitTimeout");
@@ -203,7 +203,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
                         act->comm.dst_proc ? act->comm.dst_proc->name : "");
       }
       break;
-    case REQ_COMM_TEST:
+    case SIMCALL_COMM_TEST:
       act = req->comm_test.comm;
       if(act->comm.src_proc == NULL || act->comm.dst_proc == NULL){
         type = xbt_strdup("Test FALSE");
@@ -218,14 +218,14 @@ char *MC_request_to_string(smx_simcall_t req, int value)
       }
       break;
 
-    case REQ_COMM_WAITANY:
+    case SIMCALL_COMM_WAITANY:
       type = xbt_strdup("WaitAny");
       p = pointer_to_string(xbt_dynar_get_as(req->comm_waitany.comms, value, smx_action_t));
       args = bprintf("comm=%s (%d of %lu)", p,
                      value+1, xbt_dynar_length(req->comm_waitany.comms));
       break;
 
-    case REQ_COMM_TESTANY:
+    case SIMCALL_COMM_TESTANY:
       if(value == -1){
         type = xbt_strdup("TestAny FALSE");
         args = xbt_strdup("-");
@@ -262,12 +262,12 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
 
 int MC_request_is_visible(smx_simcall_t req)
 {
-  return req->call == REQ_COMM_ISEND
-     || req->call == REQ_COMM_IRECV
-     || req->call == REQ_COMM_WAIT
-     || req->call == REQ_COMM_WAITANY
-     || req->call == REQ_COMM_TEST
-     || req->call == REQ_COMM_TESTANY;
+  return req->call == SIMCALL_COMM_ISEND
+     || req->call == SIMCALL_COMM_IRECV
+     || req->call == SIMCALL_COMM_WAIT
+     || req->call == SIMCALL_COMM_WAITANY
+     || req->call == SIMCALL_COMM_TEST
+     || req->call == SIMCALL_COMM_TESTANY;
 }
 
 int MC_request_is_enabled(smx_simcall_t req)
@@ -277,7 +277,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 
   switch (req->call) {
 
-    case REQ_COMM_WAIT:
+    case SIMCALL_COMM_WAIT:
       /* FIXME: check also that src and dst processes are not suspended */
 
       /* If it has a timeout it will be always be enabled, because even if the
@@ -291,7 +291,7 @@ int MC_request_is_enabled(smx_simcall_t req)
       }
       break;
 
-    case REQ_COMM_WAITANY:
+    case SIMCALL_COMM_WAITANY:
       /* Check if it has at least one communication ready */
       xbt_dynar_foreach(req->comm_waitany.comms, index, act) {
         if (act->comm.src_proc && act->comm.dst_proc){
@@ -313,18 +313,18 @@ int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 
   switch (req->call) {
 
-    case REQ_COMM_WAIT:
+    case SIMCALL_COMM_WAIT:
       /* FIXME: check also that src and dst processes are not suspended */
       act = req->comm_wait.comm;
       return (act->comm.src_proc && act->comm.dst_proc);
       break;
 
-    case REQ_COMM_WAITANY:
+    case SIMCALL_COMM_WAITANY:
       act = xbt_dynar_get_as(req->comm_waitany.comms, idx, smx_action_t);
       return (act->comm.src_proc && act->comm.dst_proc);
       break;
 
-    case REQ_COMM_TESTANY:
+    case SIMCALL_COMM_TESTANY:
       act = xbt_dynar_get_as(req->comm_testany.comms, idx, smx_action_t);
       return (act->comm.src_proc && act->comm.dst_proc);
       break;
@@ -336,7 +336,7 @@ int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 
 int MC_process_is_enabled(smx_process_t process)
 {
-  if (process->simcall.call != REQ_NO_REQ && MC_request_is_enabled(&process->simcall))
+  if (process->simcall.call != SIMCALL_NONE && MC_request_is_enabled(&process->simcall))
     return TRUE;
 
   return FALSE;

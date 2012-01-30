@@ -15,7 +15,7 @@
 #include "xbt/config.h"
 #include "xbt/function_types.h"
 #include "xbt/mmalloc.h"
-#include "../simix/private.h"
+#include "../simix/smx_private.h"
 #include "xbt/automaton.h"
 #include "xbt/hash.h"
 #include "msg/msg.h"

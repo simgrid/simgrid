@@ -190,7 +190,7 @@ int rdv_points_compare(xbt_dict_t d1, xbt_dict_t d2){ /* d1 = pair_test, d2 = cu
    xbt_fifo_item_t item1, item2;
    smx_action_t action1, action2;
    xbt_fifo_item_t item_req1, item_req2;
-   smx_req_t req1, req2;
+   smx_simcall_t req1, req2;
    int i=0;
    int j=0;
 
@@ -225,25 +225,25 @@ int rdv_points_compare(xbt_dict_t d1, xbt_dict_t d2){ /* d1 = pair_test, d2 = cu
 	     return 1;
 	   }
 
-	   if(xbt_fifo_size(action1->request_list) != xbt_fifo_size(action2->request_list)){
-	     XBT_DEBUG("Different size of request list (%d - %d", xbt_fifo_size(action1->request_list), xbt_fifo_size(action2->request_list));
+	   if(xbt_fifo_size(action1->simcalls) != xbt_fifo_size(action2->simcalls)){
+	     XBT_DEBUG("Different size of simcall list (%d - %d", xbt_fifo_size(action1->simcalls), xbt_fifo_size(action2->simcalls));
 	     return 1;
 	   }else{
 
-	     item_req1 = xbt_fifo_get_first_item(action1->request_list);	
-	     item_req2 = xbt_fifo_get_first_item(action2->request_list);
+	     item_req1 = xbt_fifo_get_first_item(action1->simcalls);	
+	     item_req2 = xbt_fifo_get_first_item(action2->simcalls);
 
-	     while(j<xbt_fifo_size(action1->request_list)){
+	     while(j<xbt_fifo_size(action1->simcalls)){
 
-	       req1 = (smx_req_t) xbt_fifo_get_item_content(item_req1);
-	       req2 = (smx_req_t) xbt_fifo_get_item_content(item_req2);
+	       req1 = (smx_simcall_t) xbt_fifo_get_item_content(item_req1);
+	       req2 = (smx_simcall_t) xbt_fifo_get_item_content(item_req2);
 	       
 	       if(req1->call != req2->call){
-		 XBT_DEBUG("Different request call in request_list of action (%d - %d)", req1->call, req2->call);
+		 XBT_DEBUG("Different simcall call in simcalls of action (%d - %d)", req1->call, req2->call);
 		 return 1;
 	       }
 	       if(req1->issuer->pid != req2->issuer->pid){
-		 XBT_DEBUG("Different request issuer in request_list of action (%lu- %lu)", req1->issuer->pid, req2->issuer->pid);
+		 XBT_DEBUG("Different simcall issuer in simcalls of action (%lu- %lu)", req1->issuer->pid, req2->issuer->pid);
 		 return 1;
 	       }
 
