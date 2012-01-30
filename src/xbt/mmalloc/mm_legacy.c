@@ -168,7 +168,7 @@ void mmalloc_postexit(void)
   mmalloc_pre_detach(__mmalloc_default_mdp);
 }
 
-int mmalloc_compare_heap(void *h1, void *h2){
+int mmalloc_compare_heap(void *h1, void *h2, void *std_heap_addr){
 
   if(h1 == NULL && h2 == NULL){
     XBT_DEBUG("Malloc descriptors null");
@@ -222,13 +222,13 @@ int mmalloc_compare_heap(void *h1, void *h2){
   mdp1 = MD_TO_MDP(h1);
   mdp2 = MD_TO_MDP(h2);
 
-  int res = mmalloc_compare_mdesc(mdp1, mdp2);
+  int res = mmalloc_compare_mdesc(mdp1, mdp2, std_heap_addr);
 
   return ((errors + res ) > 0);
 
 }
 
-int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
+int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap_addr){
 
   int errors = 0;
 
@@ -450,7 +450,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	  }else{
 	    if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy.info.size * BLOCKSIZE)) != 0){
 	      if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){	      
-		XBT_DEBUG("Different data in block %zu (size = %zu) (addr_block1 = %p - addr_block2 = %p)", i, mdp1->heapinfo[i].busy.info.size, addr_block1, addr_block2);
+		XBT_DEBUG("Different data in block %zu (size = %zu) (addr_block1 = %p (current = %p) - addr_block2 = %p)", i, mdp1->heapinfo[i].busy.info.size, addr_block1, (char *)std_heap_addr + sizeof(struct mdesc) + ((i-1) * BLOCKSIZE), addr_block2);
 		errors++;
 	      }else{
 		return 1;
@@ -543,7 +543,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	      }else{
 		if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy.info.size * BLOCKSIZE)) != 0){
 		  if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){	      
-		    XBT_DEBUG("Different data in block %zu (addr_block1 = %p - addr_block2 = %p)", i, addr_block1, addr_block2);
+		    XBT_DEBUG("Different data in block %zu (addr_block1 = %p (current = %p) - addr_block2 = %p)", i, addr_block1, (char *)std_heap_addr + sizeof(struct mdesc) + ((i-1) * BLOCKSIZE), addr_block2);
 		    errors++;
 		  }else{
 		    return 1;

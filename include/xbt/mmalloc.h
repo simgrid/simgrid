@@ -64,7 +64,7 @@ extern int mmtrace(void);
 
 extern void *mmalloc_findbase(int size);
 
-extern int mmalloc_compare_heap(void *h1, void *h2);
+extern int mmalloc_compare_heap(void *h1, void *h2, void *std_heap_addr);
 
 extern void mmalloc_display_info_heap(void *h);
 
