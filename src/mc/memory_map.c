@@ -1,5 +1,10 @@
+/* Copyright (c) 2008-2012 Da SimGrid Team. All rights reserved.            */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #define _GNU_SOURCE
-#include "private.h"
+#include "mc_private.h"
 #include <stdlib.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory_map, mc,
